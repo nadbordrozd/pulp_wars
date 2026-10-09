@@ -106,7 +106,7 @@ mark in its own weight (section 2.1).
 
 Some abilities have one button that helps **every** eligible own unit in
 reach: Tend Wounded (a Dwarf Engineer's Repair, a Candy Confectioner's
-Frosting) and Rally (Frenzy, WAAAGH!, War Drums, Psychic Command). There
+Frosting) and Rally (Frenzy, Berserk, War Drums, Psychic Command). There
 is nothing to pick, but the player should see who is helped and by how
 much, as with a targeted heal. The Ice Folk have no such ability.
 
@@ -127,6 +127,9 @@ much, as with a targeted heal. The Ice Folk have no such ability.
   rest would ring half the army whenever a Captain is selected. Its
   recipients (from the engine's own eligibility rule) then show the
   prominent ring without a label, and the heal marks step aside for it.
+  An Orc Warboss's **Berserk** (`pulp_wars-w49.36`) has an amount to read:
+  each recipient's ring carries "+1 Move", and its radius (the 5 × 5
+  square around the Warboss) is outlined in the same green.
   On a phone, which has no hover, a Rally is therefore not marked; its
   button and tooltip are unchanged.
 - **They are not targets.** A click or tap on a marked unit selects it, as
@@ -154,7 +157,7 @@ area fixed by the rules, or it opens a screen).
 | Disembark, and the two-step landing                           | (a)   | Unarmed: a highlighted shore tile ("Land now", "Move 1, then land")  | Move                    |
 | Recover, Wait, Capture, Promote, Pillage, Disband             | (c)   | One button; acts on the unit or its own tile                         | none                    |
 | Build Field Defense (Fortify)                                 | (c)   | One button; the unit's own tile                                      | none                    |
-| Rally (Frenzy, WAAAGH!, War Drums, Psychic Command)           | (c)   | One button; its recipients are marked while it is hovered or focused | Help, broken ring (2.1) |
+| Rally (Frenzy, Berserk, War Drums, Psychic Command)           | (c)   | One button; its recipients are marked while it is hovered or focused | Help, broken ring (2.1) |
 | Tend Wounded (Repair, Frosting)                               | (c)   | One button; every recipient is marked with its heal or cure          | Help, broken ring (2.1) |
 
 ### 3.2 Faction abilities

@@ -58,9 +58,10 @@ function inspiredLabelV7(
 ): string {
   if (faction === "UNDEAD")
     return "Frenzied by Necromancer Frenzy: +1 next Attack";
-  // Revision 17: Goblin Inspired units show WAAAGH!.
-  if (faction === "GOBLIN")
-    return "WAAAGH! from an Orc Warboss: +1 next Attack";
+  // Goblin explosions and Berserk (`pulp_wars-w49.36`): the Orc Warboss
+  // inspires nobody now (its Rally is Berserk), so a Goblin unit is Inspired
+  // only by another faction's Rally (a mind-controlled Captain): plain words.
+  if (faction === "GOBLIN") return "Inspired: +1 next Attack";
   // Revision 19: Dinosaur Inspired units show War Drums.
   if (faction === "DINOSAUR")
     return "War Drums from a Shaman: +1 Attack on the next attack";

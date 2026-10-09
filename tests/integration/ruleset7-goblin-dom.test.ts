@@ -33,8 +33,10 @@ import {
 } from "../../src/render/dom/app-view-v7";
 import {
   GOBLIN_ATTACK_CHAIN_V7,
+  GOBLIN_BERSERK_V7,
   GOBLIN_SHOWCASE_V7,
   goblinAttackChainFixtureV7,
+  goblinBerserkFixtureV7,
   goblinShowcaseFixtureV7,
 } from "../fixtures/v7-goblin-ui";
 import { goblinArenaV7 } from "../fixtures/v7-goblin-arena";
@@ -224,7 +226,7 @@ describe("Revision 17 Goblin DOM", () => {
     const app = mount(controller, host);
 
     selectUnitAt(controller, host, AT.warboss);
-    expect(actionLabels()).toEqual(["WAAAGH!", "Disband", "Wait"]);
+    expect(actionLabels()).toEqual(["Berserk", "Disband", "Wait"]);
     requiredButton("unit-help").click();
     // The unit glossary (bead pulp_wars-2yc.39): plain sentences, and the
     // blast's amount stays on the Kaboom! preview.
@@ -235,13 +237,21 @@ describe("Revision 17 Goblin DOM", () => {
         ),
       ].map((entry) => entry.textContent);
     expect(glossaryLines()).toEqual([
-      "WAAAGH!Every friendly unit within 2 tiles hits harder on its next attack this turn.",
+      "BerserkYour units within 2 tiles that have not moved yet go one tile farther this turn, and enemies next to their path do not stop them.",
       "Can't captureCannot take villages or cities.",
       "Gang UpHits harder for each of your other units next to its target.",
     ]);
     requiredButton("close-unit-help").click();
 
     selectUnitAt(controller, host, AT.bombChucker);
+    // `pulp_wars-w49.36`: its Kaboom! button also says how hard it explodes
+    // when it is killed (Kaboom 4, death blast 5).
+    expect(requiredButton("command-kaboom").title).toBe(
+      `${kaboomText(GOBLIN_ROLE_MECHANICS_V7.MARKSMAN.kaboomDamage ?? 0)} If it is killed it explodes anyway: ${GOBLIN_ROLE_MECHANICS_V7.MARKSMAN.deathBlastDamage ?? 0} damage to every other unit in the 3×3 square.`,
+    );
+    expect(requiredButton("command-kaboom").title).toContain(
+      "explodes anyway: 5 damage",
+    );
     requiredButton("unit-help").click();
     // The Goblin pass (7r50): a bomb gets no Gang Up, so it has no such line.
     expect(glossaryLines()).toEqual([
@@ -438,6 +448,60 @@ describe("Revision 17 Goblin DOM", () => {
       expect(help).toContain("Tap ? on a unit");
       app.destroy();
     }
+  });
+
+  it("offers Berserk with its rule and reach, marks its units, and shows the Berserk chip after", async () => {
+    const controller = new FixtureController(goblinBerserkFixtureV7());
+    const host = new RecordingBoardHost();
+    const app = mount(controller, host);
+    const warboss = selectUnitAt(controller, host, GOBLIN_BERSERK_V7.warboss);
+    expect(actionLabels()).toContain("Berserk");
+    const button = requiredButton("command-rally");
+    expect(button.dataset.berserk).toBe("true");
+    expect(button.title).toBe(
+      "Every other unit of yours on land within 2 tiles that has not moved gets +1 Move and ignores enemy zones of control this turn.",
+    );
+    expect(button.getAttribute("aria-label")).toBe(
+      "Berserk · Every other unit of yours on land within 2 tiles that has not moved gets +1 Move and ignores enemy zones of control this turn. · Sends 3 units Berserk: Wolf Rider, Goblin, Bomb Chucker.",
+    );
+    expect(button.querySelector(".v7-berserk-chip")?.textContent).toBe(
+      "3 units",
+    );
+    expect(document.body.textContent).not.toMatch(/WAAAGH/i);
+    // Hover marks the units it reaches, with "+1 Move".
+    button.dispatchEvent(new Event("pointerenter"));
+    expect(host.lastModel?.interaction.areaSupportFocus).toEqual({
+      unitId: warboss.id,
+      kind: "RALLY",
+    });
+    button.dispatchEvent(new Event("pointerleave"));
+    button.click();
+    await waitUntil(() => controller.accepted.length === 1);
+    expect(controller.accepted[0]).toEqual({
+      kind: "RALLY",
+      unitId: warboss.id,
+    });
+    await waitUntil(() =>
+      (document.querySelector("#v7-live")?.textContent ?? "").includes(
+        "Berserk for 3 units",
+      ),
+    );
+    expect(document.querySelector("#v7-live")?.textContent).toBe(
+      "Your Orc Warboss: Berserk for 3 units (+1 Move, ignore zones of control)",
+    );
+    // The Berserk Wolf Rider's dock chip, explained by the glossary.
+    selectUnitAt(controller, host, GOBLIN_BERSERK_V7.wolfRider);
+    expect(
+      document.querySelector('[data-unit-status="berserk"]')?.textContent,
+    ).toBe("Berserk");
+    requiredButton("unit-help").click();
+    expect(
+      document.querySelector('[data-tactical-state="berserk"]')?.textContent,
+    ).toBe(
+      "BerserkIt goes one tile farther this turn, and enemies next to its path do not stop it.",
+    );
+    expect(document.body.textContent).not.toMatch(/WAAAGH/i);
+    app.destroy();
   });
 
   it("warns a Human attacker about the death-blast chain in the board model", () => {

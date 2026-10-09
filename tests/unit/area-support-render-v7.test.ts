@@ -271,8 +271,11 @@ describe("area support marks in the board plan", () => {
       for (const entry of marks(hovered)) {
         expect(entry.abilityStyle).toBe("RALLY");
         expect(entry.areaSupport).toBe("PROMINENT");
-        // A Rally has no amount: the ring stands without a label.
-        expect(entry.label).toBeUndefined();
+        // A Rally has no amount: the ring stands without a label. An Orc
+        // Warboss's Berserk (`pulp_wars-w49.36`) says what it gives.
+        expect(entry.label).toBe(
+          scene.name === "Goblin Warboss: Berserk" ? "+1 Move" : undefined,
+        );
       }
       expect(hovered.targets).toEqual(plan.targets);
     });

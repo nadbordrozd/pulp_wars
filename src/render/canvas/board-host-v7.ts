@@ -9,7 +9,7 @@ import {
   afflictionCursorCueV7,
   unitIsUndeadV7,
 } from "../undead-presentation-v7";
-import { unitIsGoblinV7 } from "../goblin-presentation-v7";
+import { berserkCursorCueV7, unitIsGoblinV7 } from "../goblin-presentation-v7";
 import { mindControlledInfoV7 } from "../martian-presentation-v7";
 import {
   eggCountdownTextV7,
@@ -2492,6 +2492,8 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
             afflictionCursorCueV7(model.view, unit.id),
             // The Candy revision: Rushed, Crashed and Splatted, said.
             candyCursorCueV7(model.view, unit),
+            // Goblin explosions and Berserk (`pulp_wars-w49.36`).
+            berserkCursorCueV7(model.view, unit),
             // The Mind Control revision: the halo, said.
             mindControlledInfoV7(model.view, unit)?.byLine ?? "",
           ]

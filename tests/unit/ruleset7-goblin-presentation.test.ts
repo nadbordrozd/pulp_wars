@@ -14,8 +14,17 @@ import {
   type PlayerViewV7,
 } from "../../src/engine/index";
 import {
+  BERSERK_DESCRIPTION_V7,
+  BERSERK_REACH_LABEL_V7,
+  BERSERK_STATUS_V7,
   GOBLIN_HELP_RULES_V7,
+  berserkCursorCueV7,
+  berserkNewReachV7,
+  berserkPreviewTextV7,
   blastPreviewPresentationV7,
+  goblinAbilityDescriptionV7,
+  goblinAbilityNameV7,
+  goblinCommandLabelV7,
   goblinAttackPreviewTextV7,
   goblinBoundaryNoticeV7,
   goblinFieldDefenseBlockedV7,
@@ -56,10 +65,19 @@ import {
 } from "../../src/render/canvas/goblin-explosion-v7";
 import {
   GOBLIN_ATTACK_CHAIN_V7,
+  GOBLIN_BERSERK_V7,
   GOBLIN_SHOWCASE_V7,
   goblinAttackChainFixtureV7,
+  goblinBerserkActiveFixtureV7,
+  goblinBerserkFixtureV7,
   goblinShowcaseFixtureV7,
 } from "../fixtures/v7-goblin-ui";
+import { tacticalAttachmentsV7 } from "../../src/render/tactical-presentation-v7";
+import {
+  BERSERK_PALETTE_V7,
+  drawBerserkGlyphV7,
+  drawBerserkReachV7,
+} from "../../src/render/canvas/goblin-canvas-v7";
 import {
   endTurnUntilV7,
   goblinArenaV7,
@@ -315,7 +333,8 @@ describe("Revision 17 Goblin presentation text", () => {
       "Orc Brutes",
       "Crash",
       "Plunder",
-      "WAAAGH!",
+      // `pulp_wars-w49.36`: Berserk replaced WAAAGH!.
+      "Berserk",
       "Trolls",
       "Discipline",
       // The ninth unit (`pulp_wars-w49.17`, 7r55): the Ogre.
@@ -348,7 +367,7 @@ describe("Revision 17 Goblin presentation text", () => {
     expect(goblinFieldDefenseBlockedV7(view, away.id)).toBe(false);
   });
 
-  it("logs explosions, Plunder, regeneration and WAAAGH!", () => {
+  it("logs explosions, Plunder, regeneration and Berserk", () => {
     const state = goblinShowcaseFixtureV7();
     const view = viewForV7(state, state.humanPlayerId);
     const kaboom = boundary(state, {
@@ -368,7 +387,7 @@ describe("Revision 17 Goblin presentation text", () => {
     expect(
       goblinBoundaryNoticeV7(rally.events.events, rally.before, rally.after),
     ).toEqual({
-      text: "Your Orc Warboss: WAAAGH! +1 Attack for 1 unit",
+      text: "Your Orc Warboss: Berserk for 1 unit (+1 Move, ignore zones of control)",
       toast: true,
     });
     const regenerated = goblinBoundaryNoticeV7(
@@ -695,6 +714,174 @@ describe("Revision 17 Goblin board previews", () => {
     expect(plan.entries.some((entry) => entry.abilityStyle === "BLAST")).toBe(
       false,
     );
+  });
+});
+
+describe("Goblin Berserk presentation (pulp_wars-w49.36)", () => {
+  const BERSERK = GOBLIN_BERSERK_V7;
+  const berserkView = (active: boolean): PlayerViewV7 => {
+    const state = active
+      ? goblinBerserkActiveFixtureV7()
+      : goblinBerserkFixtureV7();
+    return viewForV7(state, state.humanPlayerId);
+  };
+
+  it("names the Warboss's Rally Berserk everywhere and says what it does", () => {
+    expect(goblinCommandLabelV7("RALLY", "GOBLIN")).toBe("Berserk");
+    expect(goblinCommandLabelV7("RALLY", "ORIGINAL")).toBe(null);
+    expect(goblinAbilityNameV7("RALLY", "GOBLIN")).toBe("Berserk");
+    expect(goblinAbilityDescriptionV7("RALLY", "GOBLIN")).toBe(
+      BERSERK_DESCRIPTION_V7,
+    );
+    expect(BERSERK_DESCRIPTION_V7).toBe(
+      "Every other unit of yours on land within 2 tiles that has not moved gets +1 Move and ignores enemy zones of control this turn.",
+    );
+    const help = new Map(GOBLIN_HELP_RULES_V7);
+    expect(help.get("Berserk")).toBe(
+      "the Orc Warboss sends every other unit of yours on land within 2 tiles that has not moved Berserk: +1 Move this turn, and enemies next to its path do not stop it.",
+    );
+    // The blast numbers of the Help come from the registration.
+    expect(help.get("Death blasts")).toContain(
+      "(Bomb Chucker 5, Rocket Cart 7, Scrap Buggy 7)",
+    );
+    expect(help.get("Kaboom")).toContain(
+      "(Goblin 6, Wolf Rider 4, Bomb Chucker 4, Rocket Cart 5, Scrap Buggy 5)",
+    );
+    expect(
+      JSON.stringify([...GOBLIN_HELP_RULES_V7, BERSERK_DESCRIPTION_V7]),
+    ).not.toMatch(/WAAAGH/i);
+  });
+
+  it("previews the units a Berserk would reach, and none once called", () => {
+    const view = berserkView(false);
+    const warboss = unitAt(view, BERSERK.warboss);
+    expect(berserkPreviewTextV7(view, warboss.id)).toEqual({
+      unitIds: [BERSERK.wolfRider, BERSERK.goblin, BERSERK.bombChucker].map(
+        (at) => unitAt(view, at).id,
+      ),
+      chip: "3 units",
+      description: "Sends 3 units Berserk: Wolf Rider, Goblin, Bomb Chucker.",
+    });
+    // A unit whose Rally is no Berserk has no Berserk preview.
+    expect(berserkPreviewTextV7(view, unitAt(view, BERSERK.wolfRider).id)).toBe(
+      null,
+    );
+    const active = berserkView(true);
+    expect(
+      berserkPreviewTextV7(active, unitAt(active, BERSERK.warboss).id)?.chip,
+    ).toBe("0 units");
+  });
+
+  it("marks the radius and each unit it reaches with +1 Move while the button is hovered", () => {
+    const view = berserkView(false);
+    const warboss = unitAt(view, BERSERK.warboss);
+    const commands = queryPlayerCommandsV7(view);
+    const selection = { kind: "UNIT" as const, unitId: warboss.id };
+    const quiet = buildBoardRenderPlanV7(view, commands, {
+      ...NO_INTERACTION,
+      selection,
+      selectedUnitId: warboss.id,
+    });
+    expect(
+      quiet.entries.some((entry) =>
+        entry.key.startsWith("ability-area:BERSERK"),
+      ),
+    ).toBe(false);
+    const hovered = buildBoardRenderPlanV7(view, commands, {
+      ...NO_INTERACTION,
+      selection,
+      selectedUnitId: warboss.id,
+      areaSupportFocus: { unitId: warboss.id, kind: "RALLY" },
+    });
+    const rings = hovered.entries.filter(
+      (entry) =>
+        entry.kind === "ABILITY_TARGET" && entry.abilityStyle === "RALLY",
+    );
+    expect(rings.map((entry) => [entry.at, entry.label])).toEqual([
+      // In board order (y, x).
+      [BERSERK.goblin, "+1 Move"],
+      [BERSERK.wolfRider, "+1 Move"],
+      [BERSERK.bombChucker, "+1 Move"],
+    ]);
+    // The radius: the 5 × 5 square around the Warboss.
+    const area = hovered.entries.filter((entry) =>
+      entry.key.startsWith("ability-area:BERSERK"),
+    );
+    expect(area).toHaveLength(25);
+    expect(area.every((entry) => entry.abilityStyle === "RALLY")).toBe(true);
+  });
+
+  it("marks Berserk units and the Moves only Berserk gives them", () => {
+    const view = berserkView(true);
+    const plan = buildBoardRenderPlanV7(view, queryPlayerCommandsV7(view), {
+      ...NO_INTERACTION,
+    });
+    const marked = plan.entries
+      .filter((entry) => entry.kind === "UNIT" && entry.berserk === true)
+      .map((entry) => entry.at);
+    expect(marked).toEqual([
+      BERSERK.goblin,
+      BERSERK.wolfRider,
+      BERSERK.bombChucker,
+    ]);
+    const rider = unitAt(view, BERSERK.wolfRider);
+    expect(berserkCursorCueV7(view, rider)).toBe(BERSERK_STATUS_V7);
+    expect(berserkCursorCueV7(view, unitAt(view, BERSERK.farGoblin))).toBe("");
+    const selected = buildBoardRenderPlanV7(view, queryPlayerCommandsV7(view), {
+      ...NO_INTERACTION,
+      selection: { kind: "UNIT", unitId: rider.id },
+      selectedUnitId: rider.id,
+    });
+    const moveTo = (at: CoordV7) =>
+      required(
+        selected.targets.find(
+          (target) => target.family === "MOVE" && same(target.at, at),
+        ),
+      );
+    // Through the gap between the two enemies, and the extra third tile.
+    expect(moveTo(BERSERK.gap).berserkReach).toBe(true);
+    expect(moveTo(BERSERK.gap).semanticLabel).toContain(BERSERK_REACH_LABEL_V7);
+    expect(moveTo({ x: 6, y: 2 }).berserkReach).toBe(true);
+    expect(moveTo({ x: 0, y: 2 }).berserkReach).toBe(true);
+    // A tile it reached anyway is a plain Move.
+    expect(moveTo({ x: 4, y: 2 }).berserkReach).toBeUndefined();
+    expect(berserkNewReachV7(view, rider.id).has("4,2")).toBe(false);
+    // Before the Berserk nothing is marked.
+    const calm = berserkView(false);
+    const calmPlan = buildBoardRenderPlanV7(calm, queryPlayerCommandsV7(calm), {
+      ...NO_INTERACTION,
+      selection: { kind: "UNIT", unitId: rider.id },
+      selectedUnitId: rider.id,
+    });
+    expect(calmPlan.entries.some((entry) => entry.berserk === true)).toBe(
+      false,
+    );
+    expect(calmPlan.targets.some((target) => target.berserkReach)).toBe(false);
+    expect(
+      calmPlan.targets.some(
+        (target) => target.family === "MOVE" && same(target.at, BERSERK.gap),
+      ),
+    ).toBe(false);
+  });
+
+  it("draws the Berserk glyph and the reach mark in Berserk orange, white in high contrast", () => {
+    const glyph = recordingContext();
+    drawBerserkGlyphV7(glyph.context, 100, 100, 1, { chibi: true, slot: 1 });
+    expect(glyph.styles).toContain(BERSERK_PALETTE_V7.rim);
+    expect(glyph.styles).toContain(BERSERK_PALETTE_V7.chevron);
+    expect(glyph.log.filter((call) => call[0] === "arc")).toHaveLength(1);
+    const reach = recordingContext();
+    drawBerserkReachV7(reach.context, 100, 100, 1);
+    expect(reach.styles).toContain(BERSERK_PALETTE_V7.reach);
+    const contrast = recordingContext();
+    drawBerserkReachV7(contrast.context, 100, 100, 1, true);
+    expect(contrast.styles).not.toContain(BERSERK_PALETTE_V7.reach);
+    expect(contrast.styles).toContain("#ffffff");
+  });
+
+  it("keeps WAAAGH! out of the status labels", () => {
+    const view = berserkView(true);
+    expect(JSON.stringify(tacticalAttachmentsV7(view))).not.toMatch(/WAAAGH/i);
   });
 });
 

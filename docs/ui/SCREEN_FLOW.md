@@ -91,9 +91,9 @@ are in [BOARD_TARGETING.md](BOARD_TARGETING.md). In short:
   Tend Wounded, Repair and Frosting mark every unit they would help with a
   broken Help ring and the exact "+2 HP", "+4 HP" or "Cure", in every
   match, while the healer is selected; hovering or focusing the button
-  makes the marks prominent. A Rally (Frenzy, WAAAGH!, War Drums, Psychic
+  makes the marks prominent. A Rally (Frenzy, Berserk, War Drums, Psychic
   Command) marks its recipients only while its button is hovered or
-  focused. The marked units are not targets: a click selects them. Where a
+  focused (Berserk with "+1 Move" on each and its radius outlined). The marked units are not targets: a click selects them. Where a
   later section limits the Tend Wounded board labels to Undead matches or
   describes a square outline, this paragraph wins.
 
@@ -735,10 +735,16 @@ looks as in revision 16 apart from the extra faction option.
   the Goblin PixelLab portraits (`PORTRAIT:GOBLIN:<ROLE>`) wherever a Human
   card shows a portrait, and the Goblin map sprite where it shows a sprite;
   boats keep the Human ship portraits. Goblin cities use the shared
-  settlement art (no Goblin city tint). Rally reads "WAAAGH!" (its button
+  settlement art (no Goblin city tint). Rally reads "Berserk"
+  (`pulp_wars-w49.36`; "WAAAGH!" before `pulp_wars-w49.35`; its button
   shows the PixelLab `ICON:ACTION:GOBLIN:RALLY` grey tin megaphone in CHIBI,
-  `pulp_wars-0ao.14`, and the Rally art in LEGACY), Inspired Goblins show
-  "WAAAGH!", Overrun reads "Ram", and Commerce is "Plunder" in the technology
+  `pulp_wars-0ao.14`, and the Rally art in LEGACY), with the rule as its
+  tooltip and a chip with the number of units it reaches ("3 units"); a
+  Berserk unit wears an orange double-chevron glyph in its status column
+  and a "Berserk" status chip, and its Moves that only Berserk gives it
+  (the extra tile, or past an enemy zone of control) are tinted orange
+  with the same chevrons and announced as "Berserk reach". Overrun reads
+  "Ram", and Commerce is "Plunder" in the technology
   tree, its detail and research actions. Goblin Commerce lists no trade, and
   Chivalry reads "Ram: Scrap Buggies advance after a kill and may attack
   again". Rewards read "Two free Goblins" and "Troll". In a match with a
@@ -804,7 +810,8 @@ Wave 2` → `Yours −3` → `−3`), keeping its lethal red or hazard styling;
   camera follows only other players' blasts. The live region and a toast
   announce "Your Goblin blew up: N hit, K killed", "Player 2's Rocket Cart
   exploded: …", "Plunder: +N Coins" (owner only), "Your Troll regenerated 4
-  HP" and "Your Orc Warboss: WAAAGH! +1 Attack for N units". Each visible
+  HP" and "Your Orc Warboss: Berserk for N units (+1 Move, ignore zones of
+  control)". Each visible
   regenerated Troll shows the Tend heal ring with a bold green "+N" rising
   from its head (`UNITS_REGENERATED`, 640 ms); reduced motion holds the
   ring and a still "+N" at the midpoint. Help adds a

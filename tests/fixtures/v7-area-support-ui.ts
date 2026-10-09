@@ -118,7 +118,7 @@ export const AREA_SUPPORT_SCENES_V7: readonly AreaSupportSceneV7[] = [
     kind: "RALLY",
   },
   {
-    name: "Goblin Warboss: WAAAGH!",
+    name: "Goblin Warboss: Berserk",
     state: goblinShowcaseFixtureV7,
     actor: GOBLIN_SHOWCASE_V7.warboss,
     kind: "RALLY",

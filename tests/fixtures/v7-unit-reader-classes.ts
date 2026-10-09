@@ -600,6 +600,13 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/render/goblin-presentation-v7.ts::goblinFieldDefenseBlockedV7":
       "BOARD",
     "src/render/goblin-presentation-v7.ts::splashEntryFriendlyV7": "BOARD",
+    // `pulp_wars-w49.36`: Berserk reads the Warboss and its recipients on
+    // the board (the engine's own Rally target rule and the public Move
+    // query); a burrowed unit is never a Berserk target and has no Move.
+    "src/render/goblin-presentation-v7.ts::rallyIsBerserkV7": "BOARD",
+    "src/render/goblin-presentation-v7.ts::berserkPreviewTextV7": "BOARD",
+    "src/render/goblin-presentation-v7.ts::berserkRadiusCellsV7": "BOARD",
+    "src/render/goblin-presentation-v7.ts::berserkNewReachV7": "BOARD",
     "src/render/ice-folk-presentation-v7.ts::bolasPreviewLinesV7": "BOARD",
     "src/render/ice-folk-presentation-v7.ts::iceFolkBoundaryNoticeV7": "BOARD",
     "src/render/ice-folk-presentation-v7.ts::iceFolkCombatLinesV7": "BOARD",

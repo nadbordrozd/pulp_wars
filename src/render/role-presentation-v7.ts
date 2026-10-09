@@ -238,7 +238,7 @@ export function roleAbilityDescriptionV7(
   }
 }
 
-/** The name of a role ability under a faction (Frenzy, WAAAGH!, ...). */
+/** The name of a role ability under a faction (Frenzy, Berserk, ...). */
 export function roleAbilityNameV7(
   ability: string,
   faction: FactionIdV7,

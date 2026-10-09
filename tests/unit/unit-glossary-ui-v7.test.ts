@@ -404,7 +404,8 @@ describe("Ruleset 7 unit glossary", () => {
       "chill-thawing",
       "inspired",
       "frenzied",
-      "waaagh!",
+      // `pulp_wars-w49.36`: the Orc Warboss's Berserk (WAAAGH! before).
+      "berserk",
       "war-drums",
       "psychic-command",
       "charge!-+1-attack",

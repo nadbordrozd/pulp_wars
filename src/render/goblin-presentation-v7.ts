@@ -2,7 +2,12 @@ import {
   technologyDisplayNameV7,
   arePlayersHostileV7,
   blastAreaV7,
+  BERSERK_MOVE_BONUS_V7,
   effectiveRoleRuleV7,
+  isRallyTargetV7,
+  reachablePlayerMovementPathsV7,
+  unitIsBerserkV7,
+  unitRoleMechanicsV7,
   unitFactionV7,
   roleMechanicsV7,
   unitRoleRuleV7,
@@ -45,7 +50,18 @@ export function unitIsGoblinV7(
 /** Section 11.2 texts. */
 export const KABOOM_LABEL_V7 = "Kaboom!";
 export const RAM_LABEL_V7 = "Ram";
-export const WAAAGH_LABEL_V7 = "WAAAGH!";
+/**
+ * Goblin explosions and Berserk (`pulp_wars-w49.36`): the Orc Warboss's
+ * Rally is Berserk (it replaced WAAAGH! in `pulp_wars-w49.35`).
+ */
+export const BERSERK_LABEL_V7 = "Berserk";
+export const BERSERK_DESCRIPTION_V7 = `Every other unit of yours on land within 2 tiles that has not moved gets +${BERSERK_MOVE_BONUS_V7} Move and ignores enemy zones of control this turn.`;
+/** The board label on each unit a hovered Berserk would reach. */
+export const BERSERK_TARGET_LABEL_V7 = `+${BERSERK_MOVE_BONUS_V7} Move`;
+/** The marker, cursor and status wording of a Berserk unit. */
+export const BERSERK_STATUS_V7 = `Berserk: +${BERSERK_MOVE_BONUS_V7} Move, ignores zones of control this turn`;
+/** A Move tile only a Berserk unit reaches (the extra tile, or past ZOC). */
+export const BERSERK_REACH_LABEL_V7 = "Berserk reach";
 export const FOG_NOTE_V7 = "The blast may reach unexplored tiles";
 export const BITTEN_KABOOM_WARNING_V7 =
   "Bitten: this unit will rise as an enemy Zombie";
@@ -69,6 +85,38 @@ export function kaboomTooltipV7(damage: number): string {
   return `Blow up: ${damage} damage to every other unit in the 3×3 square, yours too. This unit dies.`;
 }
 
+/**
+ * `pulp_wars-w49.36`: the death blast of a unit that explodes when it is
+ * killed, beside its Kaboom! (a Rocket Cart's Kaboom is 5, its death blast
+ * 7), from the registration.
+ */
+export function deathBlastNoteV7(damage: number): string {
+  return `If it is killed it explodes anyway: ${damage} damage to every other unit in the 3×3 square.`;
+}
+
+/**
+ * The blast damage of every Goblin land role that has one, from the
+ * registration: "Goblin 6, Wolf Rider 4, ..." (`pulp_wars-w49.36`: the
+ * numbers follow the engine, so the Help never goes stale).
+ */
+function goblinBlastListV7(field: "kaboomDamage" | "deathBlastDamage"): string {
+  const roles: readonly UnitRoleIdV7[] = [
+    "FIGHTER",
+    "RAIDER",
+    "MARKSMAN",
+    "CATAPULT",
+    "KNIGHT",
+  ];
+  return roles
+    .flatMap((role) => {
+      const damage = roleMechanicsV7(role, "GOBLIN")[field];
+      return damage === null
+        ? []
+        : [`${effectiveRoleRuleV7(role, "GOBLIN").label} ${damage}`];
+    })
+    .join(", ");
+}
+
 /** Section 11.3: one sentence per rule, shown in Help in Goblin matches. */
 export const GOBLIN_HELP_RULES_V7: readonly (readonly [string, string])[] = [
   [
@@ -81,11 +129,11 @@ export const GOBLIN_HELP_RULES_V7: readonly (readonly [string, string])[] = [
   ],
   [
     "Kaboom",
-    "any goblin-crewed unit can blow itself up, dealing its blast damage to every other unit in the 3×3 square around it, yours included.",
+    `any goblin-crewed unit can blow itself up, dealing its blast damage to every other unit in the 3×3 square around it, yours included (${goblinBlastListV7("kaboomDamage")}).`,
   ],
   [
     "Death blasts",
-    "Bomb Chuckers, Rocket Carts, and Scrap Buggies explode when they die, however they die.",
+    `Bomb Chuckers, Rocket Carts, and Scrap Buggies explode when they die, however they die (${goblinBlastListV7("deathBlastDamage")}).`,
   ],
   ["Chain reactions", "a blast that kills an exploding unit sets it off too."],
   [
@@ -99,8 +147,8 @@ export const GOBLIN_HELP_RULES_V7: readonly (readonly [string, string])[] = [
     "with Plunder you get 2 Coins for each enemy unit your units or blasts kill.",
   ],
   [
-    "WAAAGH!",
-    "the Orc Warboss gives every other unit of yours on land within 2 tiles +1 Attack on its next attack this turn.",
+    BERSERK_LABEL_V7,
+    `the Orc Warboss sends every other unit of yours on land within 2 tiles that has not moved Berserk: +${BERSERK_MOVE_BONUS_V7} Move this turn, and enemies next to its path do not stop it.`,
   ],
   ["Trolls", "heal 4 HP at the start of your turn, wherever they are."],
   [
@@ -134,7 +182,7 @@ export function goblinAbilityNameV7(
   if (faction !== "GOBLIN") return null;
   switch (ability) {
     case "RALLY":
-      return WAAAGH_LABEL_V7;
+      return BERSERK_LABEL_V7;
     case "OVERRUN":
       return RAM_LABEL_V7;
     case "KABOOM":
@@ -153,7 +201,7 @@ export function goblinAbilityDescriptionV7(
   if (faction !== "GOBLIN") return null;
   switch (ability) {
     case "RALLY":
-      return "Every other unit of yours on land within 2 tiles gets +1 Attack on its next attack this turn.";
+      return BERSERK_DESCRIPTION_V7;
     case "OVERRUN":
       return "After a kill, rams forward and can attack another adjacent enemy.";
     default:
@@ -161,13 +209,13 @@ export function goblinAbilityDescriptionV7(
   }
 }
 
-/** Goblin command labels: Kaboom!, and WAAAGH! for the Warboss's Rally. */
+/** Goblin command labels: Kaboom!, and Berserk for the Warboss's Rally. */
 export function goblinCommandLabelV7(
   kind: string,
   faction: FactionIdV7,
 ): string | null {
   if (kind === "KABOOM") return KABOOM_LABEL_V7;
-  if (kind === "RALLY" && faction === "GOBLIN") return WAAAGH_LABEL_V7;
+  if (kind === "RALLY" && faction === "GOBLIN") return BERSERK_LABEL_V7;
   return null;
 }
 
@@ -179,7 +227,7 @@ export interface GoblinUnitInfoLineV7 {
     | "regenerate"
     | "gang-up"
     | "bombs"
-    | "waaagh"
+    | "berserk"
     | "no-field-defense"
     | "no-gang-up"
     | "blast-proof"
@@ -743,7 +791,7 @@ export function splashEntryFriendlyV7(
 
 /**
  * Log and toast text for revision-17 events of one projected boundary
- * (section 11.2): explosions, Plunder, Troll regeneration and WAAAGH!.
+ * (section 11.2): explosions, Plunder, Troll regeneration and Berserk.
  * A match without a Goblin seat never emits these events, so its notices
  * are unchanged.
  */
@@ -792,9 +840,153 @@ export function goblinBoundaryNoticeV7(
       toast = true;
       const count = event.unitIds.length;
       parts.push(
-        `${capitalized(possessive(after, captain.ownerId))} ${unitRoleRuleV7(after, captain).label}: WAAAGH! +1 Attack for ${count} ${count === 1 ? "unit" : "units"}`,
+        `${capitalized(possessive(after, captain.ownerId))} ${unitRoleRuleV7(after, captain).label}: Berserk for ${count} ${count === 1 ? "unit" : "units"} (+${BERSERK_MOVE_BONUS_V7} Move, ignore zones of control)`,
       );
     }
   }
   return parts.length === 0 ? null : { text: parts.join(" · "), toast };
+}
+
+// ---------------------------------------------------------------------------
+// Berserk (`pulp_wars-w49.36`, docs/product/RULESET_7_CURRENT.md section
+// 18.10): the Orc Warboss's Rally. Everything is read from the public view
+// (`berserkThisTurn`) and the engine's own rules (`isRallyTargetV7`, the
+// public movement query), so the board and the dock say what the engine
+// does.
+// ---------------------------------------------------------------------------
+
+/** Whether this unit's Rally is Berserk (an Orc Warboss, under any owner). */
+export function rallyIsBerserkV7(view: PlayerViewV7, unitId: number): boolean {
+  const unit = view.units.find((candidate) => candidate.id === unitId);
+  return (
+    unit !== undefined &&
+    unitRoleMechanicsV7(view, unit).rallyEffect === "BERSERK"
+  );
+}
+
+/** The dock text of a Berserk the Warboss could call now. */
+export interface BerserkPreviewTextV7 {
+  /** The units it would send Berserk, in the view's unit order. */
+  readonly unitIds: readonly number[];
+  /** Short button chip: "3 units". */
+  readonly chip: string;
+  /** Full sentence for the button's accessible description. */
+  readonly description: string;
+}
+
+/**
+ * The units a Berserk of `captainId` would reach (the engine's own target
+ * rule over the visible units), or null when its Rally is not Berserk.
+ */
+export function berserkPreviewTextV7(
+  view: PlayerViewV7,
+  captainId: number,
+): BerserkPreviewTextV7 | null {
+  const captain = view.units.find((unit) => unit.id === captainId);
+  if (captain === undefined || !rallyIsBerserkV7(view, captainId)) return null;
+  const targets = view.units.filter((unit) =>
+    isRallyTargetV7(view, captain, unit),
+  );
+  const count = targets.length;
+  const names = targets.map((unit) => unitRoleRuleV7(view, unit).label);
+  return {
+    unitIds: targets.map((unit) => unit.id),
+    chip: `${count} ${count === 1 ? "unit" : "units"}`,
+    description:
+      count === 0
+        ? "No unit in reach can go Berserk."
+        : `Sends ${count} ${count === 1 ? "unit" : "units"} Berserk: ${names.join(", ")}.`,
+  };
+}
+
+/**
+ * The explored cells within the Warboss's Berserk radius (Chebyshev
+ * `rallyRadius`), in (y, x) order; empty unless its Rally is Berserk.
+ */
+export function berserkRadiusCellsV7(
+  view: PlayerViewV7,
+  captainId: number,
+): readonly CoordV7[] {
+  const captain = view.units.find((unit) => unit.id === captainId);
+  if (captain === undefined || !rallyIsBerserkV7(view, captainId)) return [];
+  const radius = unitRoleMechanicsV7(view, captain).rallyRadius;
+  const cells: CoordV7[] = [];
+  for (let dy = -radius; dy <= radius; dy += 1)
+    for (let dx = -radius; dx <= radius; dx += 1) {
+      const at = { x: captain.at.x + dx, y: captain.at.y + dy };
+      if (
+        at.x < 0 ||
+        at.y < 0 ||
+        at.x >= view.board.width ||
+        at.y >= view.board.height ||
+        view.board.tiles[at.y * view.board.width + at.x]?.explored !== true
+      )
+        continue;
+      cells.push(at);
+    }
+  return cells;
+}
+
+/**
+ * Whether a visible unit shows the Berserk marker: it is in the public
+ * `berserkThisTurn` and in land form (the only form Berserk acts in).
+ */
+export function unitShowsBerserkV7(
+  view: PlayerViewV7,
+  unit: Pick<PublicUnitV7, "id" | "form">,
+): boolean {
+  return unit.form === "LAND" && unitIsBerserkV7(view, unit.id);
+}
+
+/** The spoken cue of a Berserk unit, for the board cursor; "" otherwise. */
+export function berserkCursorCueV7(
+  view: PlayerViewV7,
+  unit: Pick<PublicUnitV7, "id" | "form">,
+): string {
+  return unitShowsBerserkV7(view, unit) ? BERSERK_STATUS_V7 : "";
+}
+
+const BERSERK_REACH_CACHE = new WeakMap<
+  PlayerViewV7,
+  Map<number, ReadonlySet<string>>
+>();
+
+/**
+ * The Move destinations ("x,y") of a Berserk unit that only Berserk gives
+ * it: the extra tile, and the tiles reached past an enemy zone of control.
+ * The public movement query with and without the unit in
+ * `berserkThisTurn`; empty for a unit that is not Berserk.
+ */
+export function berserkNewReachV7(
+  view: PlayerViewV7,
+  unitId: number,
+): ReadonlySet<string> {
+  let cache = BERSERK_REACH_CACHE.get(view);
+  if (cache === undefined) {
+    cache = new Map();
+    BERSERK_REACH_CACHE.set(view, cache);
+  }
+  const cached = cache.get(unitId);
+  if (cached !== undefined) return cached;
+  const unit = view.units.find((candidate) => candidate.id === unitId);
+  let reach: ReadonlySet<string> = new Set();
+  if (unit !== undefined && unitShowsBerserkV7(view, unit)) {
+    const key = (at: CoordV7): string => `${at.x},${at.y}`;
+    const calm: PlayerViewV7 = {
+      ...view,
+      berserkThisTurn: view.berserkThisTurn.filter((id) => id !== unitId),
+    };
+    const plain = new Set(
+      reachablePlayerMovementPathsV7(calm, unit).map((path) =>
+        key(path.destination),
+      ),
+    );
+    reach = new Set(
+      reachablePlayerMovementPathsV7(view, unit)
+        .map((path) => key(path.destination))
+        .filter((at) => !plain.has(at)),
+    );
+  }
+  cache.set(unitId, reach);
+  return reach;
 }

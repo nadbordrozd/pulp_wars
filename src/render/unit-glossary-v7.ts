@@ -96,9 +96,10 @@ const ENTRIES = {
     "Frenzy",
     "Friendly units next to it hit harder on their next attack this turn.",
   ],
-  WAAAGH: [
-    "WAAAGH!",
-    "Every friendly unit within 2 tiles hits harder on its next attack this turn.",
+  // `pulp_wars-w49.36`: the Orc Warboss's Berserk replaced WAAAGH!.
+  BERSERK: [
+    "Berserk",
+    "Your units within 2 tiles that have not moved yet go one tile farther this turn, and enemies next to their path do not stop them.",
   ],
   WAR_DRUMS: [
     "War Drums",
@@ -620,6 +621,10 @@ const ENTRIES = {
     "It came up from a tunnel: it cannot step into a city or village this turn.",
   ],
   STATUS_INSPIRED: ["Inspired", "Its next attack this turn hits harder."],
+  STATUS_BERSERK: [
+    "Berserk",
+    "It goes one tile farther this turn, and enemies next to its path do not stop it.",
+  ],
   STATUS_RUN_UP: ["Charge!", "It moved this turn, so its attack hits harder."],
   STATUS_TENDED: ["Tended", "A healer has already tended it this turn."],
   STATUS_ATTACK_AGAIN: ["Attack again", "It just killed: it may attack again."],
@@ -719,7 +724,7 @@ export function abilityGlossaryIdV7(
       return faction === "UNDEAD"
         ? "FRENZY"
         : faction === "GOBLIN"
-          ? "WAAAGH"
+          ? "BERSERK"
           : faction === "DINOSAUR"
             ? "WAR_DRUMS"
             : faction === "MARTIAN"
@@ -893,7 +898,7 @@ const STATUS_IDS: Readonly<Record<string, GlossaryIdV7>> = {
   // words before their colon.
   inspired: "STATUS_INSPIRED",
   frenzied: "STATUS_INSPIRED",
-  "waaagh!": "STATUS_INSPIRED",
+  berserk: "STATUS_BERSERK",
   "war-drums": "STATUS_INSPIRED",
   "psychic-command": "STATUS_INSPIRED",
   tended: "STATUS_TENDED",

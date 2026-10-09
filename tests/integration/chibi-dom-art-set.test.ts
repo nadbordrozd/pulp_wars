@@ -570,7 +570,7 @@ describe("CHIBI art set in the Ruleset 7 DOM", () => {
     legacy.app.destroy();
   });
 
-  it("draws the Goblin Kaboom! and WAAAGH! command icons in CHIBI and keeps the code-drawn bomb in LEGACY", () => {
+  it("draws the Goblin Kaboom! and Berserk command icons in CHIBI and keeps the code-drawn bomb in LEGACY", () => {
     const bomb = () =>
       document.querySelector(
         '[data-action="command-kaboom"] svg[data-icon="bomb"]',
@@ -603,7 +603,7 @@ describe("CHIBI art set in the Ruleset 7 DOM", () => {
     ).toBe("chibi-icon-action-goblin-rally");
     chibi.app.destroy();
 
-    // Without its raster, Kaboom! keeps its vector bomb and WAAAGH! falls
+    // Without its raster, Kaboom! keeps its vector bomb and Berserk falls
     // back to the Human Rally horn.
     const failing = mount(
       goblinShowcaseFixtureV7(),

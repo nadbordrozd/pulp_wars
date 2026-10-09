@@ -261,13 +261,18 @@ import {
   type BlockedReasonV7,
 } from "../blocked-actions-v7";
 import {
+  BERSERK_DESCRIPTION_V7,
+  BERSERK_LABEL_V7,
   GOBLIN_FIELD_DEFENSE_EXPLANATION_V7,
+  berserkPreviewTextV7,
+  deathBlastNoteV7,
   goblinBoundaryNoticeV7,
   goblinCommandLabelV7,
   goblinFieldDefenseBlockedV7,
   kaboomPreviewTextV7,
   kaboomTooltipV7,
   matchHasGoblinV7,
+  rallyIsBerserkV7,
   technologyNameV7,
   type KaboomPreviewTextV7,
 } from "../goblin-presentation-v7";
@@ -5190,9 +5195,17 @@ export class Ruleset7DomAppView {
         this.#snapshot.view !== null &&
         this.#snapshot.view !== undefined &&
         isMindControlledV7(this.#snapshot.view, command.unitId);
+      // Goblin explosions and Berserk (`pulp_wars-w49.36`): an Orc
+      // Warboss's Rally is Berserk under any owner (a controlled one too).
+      const berserk =
+        command.kind === "RALLY" &&
+        this.#snapshot.view !== null &&
+        this.#snapshot.view !== undefined &&
+        rallyIsBerserkV7(this.#snapshot.view, command.unitId);
       const label =
         (released ? RELEASE_LABEL_V7 : null) ??
         candyLabel ??
+        (berserk ? BERSERK_LABEL_V7 : null) ??
         (abandonedEgg === undefined
           ? commandLabel(command, this.#viewerFaction())
           : ABANDON_EGG_LABEL_V7);
@@ -5407,6 +5420,10 @@ export class Ruleset7DomAppView {
               ),
             );
         }
+      } else if (command.kind === "RALLY" && berserk) {
+        // Goblin explosions and Berserk (`pulp_wars-w49.36`): what it does,
+        // and how many units it reaches; hover and focus mark them.
+        this.#decorateBerserkButton(action, command.unitId);
       } else if (command.kind === "KABOOM") {
         // Revision 17: the blast preview is shown on hover or focus and while
         // armed; activating the button arms it and asks for confirmation.
@@ -8092,9 +8109,18 @@ export class Ruleset7DomAppView {
     if (view === null) return;
     const preview = previewKaboomV7(view, unitId);
     const unit = view.units.find((candidate) => candidate.id === unitId);
-    const damage =
-      unit === undefined ? null : unitRoleMechanicsV7(view, unit).kaboomDamage;
-    const tooltip = damage === null ? null : kaboomTooltipV7(damage);
+    const mechanics =
+      unit === undefined ? null : unitRoleMechanicsV7(view, unit);
+    const damage = mechanics?.kaboomDamage ?? null;
+    // `pulp_wars-w49.36`: a unit that explodes on death says how hard.
+    const deathBlast = mechanics?.deathBlastDamage ?? null;
+    const tooltip =
+      damage === null
+        ? null
+        : [
+            kaboomTooltipV7(damage),
+            ...(deathBlast === null ? [] : [deathBlastNoteV7(deathBlast)]),
+          ].join(" ");
     const summary =
       preview === null ? null : kaboomPreviewTextV7(view, preview);
     action.title =
@@ -8147,6 +8173,39 @@ export class Ruleset7DomAppView {
     action.addEventListener("focus", show);
     action.addEventListener("pointerleave", hide);
     action.addEventListener("blur", hide);
+  }
+
+  /**
+   * Goblin explosions and Berserk (`pulp_wars-w49.36`): the Berserk button
+   * carries its rule as the tooltip, a chip with the number of units it
+   * reaches, and both in its accessible name. Its recipients, its radius
+   * and "+1 Move" are marked on the board on hover and focus (the area
+   * support link).
+   */
+  #decorateBerserkButton(action: HTMLButtonElement, unitId: UnitId): void {
+    const view = this.#snapshot.view;
+    if (view === null) return;
+    const preview = berserkPreviewTextV7(view, unitId);
+    action.title = BERSERK_DESCRIPTION_V7;
+    action.dataset.berserk = "true";
+    action.setAttribute(
+      "aria-label",
+      [
+        BERSERK_LABEL_V7,
+        BERSERK_DESCRIPTION_V7,
+        ...(preview === null ? [] : [preview.description]),
+      ].join(" · "),
+    );
+    if (preview !== null && preview.unitIds.length > 0) {
+      const chip = text(
+        this.#document,
+        "span",
+        preview.chip,
+        "v7-undead-preview-chip v7-berserk-chip",
+      );
+      chip.dataset.berserkUnits = String(preview.unitIds.length);
+      action.append(chip);
+    }
   }
 
   /**
@@ -11189,7 +11248,7 @@ function boundaryNoticeV7(
 ): { readonly text: string | null; readonly toast: boolean } {
   const special = specialBoundaryNoticeV7(events, after.viewer.id);
   const undead = undeadBoundaryNoticeV7(events, before, after);
-  // Revision 17: explosions, Plunder, Troll regeneration and WAAAGH!
+  // Revision 17: explosions, Plunder, Troll regeneration and Berserk
   const goblin = goblinBoundaryNoticeV7(events, before, after);
   // Revision 19: Eggs laid, hatched and lost, and growth.
   const dinosaur = dinosaurBoundaryNoticeV7(events, before, after);

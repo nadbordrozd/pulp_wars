@@ -16,9 +16,11 @@ import {
  * mid-animation, a Bomb Chucker's friendly splash with Gang Up, the Troll
  * regeneration cue (pinned mid-animation), a Human
  * attack whose death-blast chain hits its own units, the Goblin unit docks
- * and `?` details, WAAAGH!, Warrens, Plunder and Help, in the CHIBI and
- * LEGACY art sets at desktop and phone widths. It needs the Vite dev
- * server, because the fixtures are imported from `tests/fixtures`.
+ * and `?` details, Berserk (`pulp_wars-w49.36`: the button's preview, the
+ * Berserk marker and a Berserk unit's Moves past an enemy zone of
+ * control), Warrens, Plunder and Help, in the CHIBI and LEGACY art sets at
+ * desktop and phone widths. It needs the Vite dev server, because the
+ * fixtures are imported from `tests/fixtures`.
  *
  * Usage: tsx scripts/browser-goblin-review-v7.ts http://localhost:6173/ [--output-dir=<new-dir>]
  */
@@ -226,7 +228,7 @@ try {
           connection,
           `Array.from(document.querySelectorAll('.v7-selection-dock .v7-action-label')).map((node) => node.textContent)`,
         );
-        await capture(connection, `waaagh-${suffix}.png`);
+        await capture(connection, `berserk-dock-${suffix}.png`);
         await activate(connection, at.scrapBuggy as Coord);
         await capture(connection, `dock-scrap-buggy-${suffix}.png`);
         await activate(connection, { x: 8, y: 8 });
@@ -284,6 +286,28 @@ try {
         `document.getElementById(document.querySelector('canvas.board-canvas-v7')?.getAttribute('aria-describedby') ?? '')?.textContent ?? null`,
       );
       await capture(connection, `attack-chain-${suffix}.png`);
+      // Berserk (`pulp_wars-w49.36`): the hovered button marks the units
+      // it reaches and its radius; after it, a Berserk unit wears its glyph
+      // and its Moves past the enemies' zones of control are hatched.
+      await mount(connection, art, "goblinBerserkFixtureV7");
+      const berserk = (await evaluate(
+        connection,
+        `globalThis.__GOBLIN_REVIEW__.berserk`,
+      )) as Record<string, Coord>;
+      await activate(connection, berserk.warboss as Coord);
+      evidence[`${suffix}BerserkButton`] = await evaluate(
+        connection,
+        `(() => { const button = document.querySelector('[data-action="command-rally"]'); button?.dispatchEvent(new Event('pointerenter')); return button?.getAttribute('aria-label') ?? null; })()`,
+      );
+      await delay(400);
+      await capture(connection, `berserk-preview-${suffix}.png`);
+      await mount(connection, art, "goblinBerserkActiveFixtureV7");
+      await activate(connection, berserk.wolfRider as Coord);
+      evidence[`${suffix}BerserkUnit`] = await evaluate(
+        connection,
+        `({ chip: document.querySelector('[data-unit-status="berserk"]')?.textContent ?? null, cursor: document.getElementById(document.querySelector('canvas.board-canvas-v7')?.getAttribute('aria-describedby') ?? '')?.textContent ?? null })`,
+      );
+      await capture(connection, `berserk-reach-${suffix}.png`);
     }
   }
   if (errors.length > 0)

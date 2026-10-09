@@ -963,7 +963,8 @@ describe("the Goblin pass: unit text", () => {
       "Orc Brutes",
       "Crash",
       "Plunder",
-      "WAAAGH!",
+      // `pulp_wars-w49.36`: Berserk replaced WAAAGH!.
+      "Berserk",
       "Trolls",
       "Discipline",
       // The ninth unit (`pulp_wars-w49.17`, 7r55): the Ogre.

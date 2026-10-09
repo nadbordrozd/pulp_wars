@@ -90,7 +90,11 @@ import {
   drawGrowthChevronsV7,
   growthSpriteScaleV7,
 } from "./dinosaur-canvas-v7";
-import { drawGoblinBadgeV7 } from "./goblin-canvas-v7";
+import {
+  drawBerserkGlyphV7,
+  drawBerserkReachV7,
+  drawGoblinBadgeV7,
+} from "./goblin-canvas-v7";
 import {
   FLYER_LIFT_LEGACY_V7,
   FLYER_LIFT_MASTER_PX_V7,
@@ -233,10 +237,16 @@ import {
   matchHasIceFolkSeatV7,
 } from "../ice-folk-presentation-v7";
 import {
+  BERSERK_REACH_LABEL_V7,
+  BERSERK_TARGET_LABEL_V7,
+  berserkNewReachV7,
+  berserkRadiusCellsV7,
   blastPreviewPresentationV7,
   goblinAttackPreviewTextV7,
   matchHasGoblinV7,
+  rallyIsBerserkV7,
   splashEntryFriendlyV7,
+  unitShowsBerserkV7,
   type BlastPreviewPresentationV7,
 } from "../goblin-presentation-v7";
 import {
@@ -423,7 +433,7 @@ export interface BoardRenderInteractionV7 {
   /**
    * Bead pulp_wars-621: the own unit whose area support button is hovered
    * or focused, and which one: Tend Wounded (Repair, Frosting) draws its
-   * recipients' marks prominent; Rally (Frenzy, WAAAGH!, War Drums) shows
+   * recipients' marks prominent; Rally (Frenzy, Berserk, War Drums) shows
    * its recipients, which have no mark otherwise. Null or omitted leaves
    * the heal marks quiet.
    */
@@ -682,6 +692,12 @@ export interface MapCommandTargetV7 {
    */
   readonly sugarRush?: { readonly newReach: boolean };
   /**
+   * Goblin explosions and Berserk (`pulp_wars-w49.36`): a Move of a Berserk
+   * unit to a tile only Berserk reaches (the extra tile, or a tile past an
+   * enemy zone of control), drawn with the Berserk hatch.
+   */
+  readonly berserkReach?: true;
+  /**
    * The Candy revision: the ghost of the unit a Re-bake tile would bake
    * back (its sprite at half strength; the label has its price and HP).
    */
@@ -889,6 +905,12 @@ export interface BoardRenderPlanEntryV7 {
    * Sweet Home markers and the Sugar Frenzy pips of a visible unit.
    */
   readonly candy?: CandyUnitMarkersV7;
+  /**
+   * UNIT only, Goblin explosions and Berserk (`pulp_wars-w49.36`): the unit
+   * is Berserk this turn (+1 Move, ignores zones of control); it carries
+   * the Berserk glyph in its status column.
+   */
+  readonly berserk?: true;
   /**
    * UNIT only, the naval branch interface: a submerged Submarine and a
    * ship at or below its boarding line (any owner).
@@ -1329,6 +1351,9 @@ export function buildBoardRenderPlanV7(
         ),
       ...(factionUnit ? { faction } : {}),
       ...(afflictions.length > 0 ? { afflictions } : {}),
+      // Goblin explosions and Berserk (`pulp_wars-w49.36`): a Berserk unit
+      // (any owner's, from the public list) carries its marker.
+      ...(unitShowsBerserkV7(view, unit) ? { berserk: true as const } : {}),
       ...(egg ? { egg: { turnsRemaining: eggTurns.get(unit.id) ?? 1 } } : {}),
       ...(growthStage === 1 || growthStage === 2 ? { growthStage } : {}),
       ...(martian === undefined ? {} : { martian }),
@@ -3968,6 +3993,21 @@ export function drawBoardV7(input: {
             devicePixelRatio,
           });
         }
+        // Goblin explosions and Berserk (`pulp_wars-w49.36`): a Berserk
+        // unit's glyph in the next status slot after its afflictions and
+        // frost.
+        if (entry.kind === "UNIT" && entry.berserk === true) {
+          context.save();
+          context.globalAlpha = sceneAlpha;
+          drawBerserkGlyphV7(context, x, y, camera.zoom, {
+            chibi: chibiPiece,
+            slot:
+              (entry.afflictions?.length ?? 0) +
+              (entry.iceFolk?.chill === "FROSTED" ? 1 : 0),
+            highContrast: input.highContrast ?? false,
+          });
+          context.restore();
+        }
         if (entry.kind === "CITY" && entry.cityName !== undefined) {
           const cityName = entry.cityName;
           const ownerColor = entry.ownerColor;
@@ -4925,6 +4965,9 @@ function drawMapTarget(
   // The Candy revision: a tile only the armed Rush reaches sparkles.
   if (entry.target?.sugarRush?.newReach === true)
     drawCandyRushSparklesV7(context, x, y, camera.zoom);
+  // Goblin explosions and Berserk: a tile only Berserk reaches is hatched.
+  if (entry.target?.berserkReach === true)
+    drawBerserkReachV7(context, x, y, camera.zoom, highContrast);
   // Bead pulp_wars-9im: one mark per highlight style (move, attack, help,
   // place), the same for every faction; see target-highlight-v7.
   const style = targetHighlightStyleV7(family, entry.target?.highlight);
@@ -5968,12 +6011,31 @@ function addAbilityPreviews(
       });
     }
   }
-  // Rally (Frenzy, WAAAGH!, War Drums) is nearly always on offer and has
+  // Rally (Frenzy, Berserk, War Drums) is nearly always on offer and has
   // no amount to read, so its recipients are marked only while its button
   // is hovered or focused: the units the engine's own eligibility rule
   // would inspire, each a ring without a label.
   if (offered("RALLY") && areaSupportFocus === "RALLY") {
     const captain = view.units.find((unit) => unit.id === unitId);
+    // Goblin explosions and Berserk (`pulp_wars-w49.36`): an Orc Warboss's
+    // Berserk also shows its radius, and each unit it reaches says what it
+    // gets ("+1 Move").
+    const berserk = rallyIsBerserkV7(view, unitId);
+    if (berserk) {
+      const cells = berserkRadiusCellsV7(view, unitId);
+      const area = new Set(cells.map(coordKey));
+      for (const at of cells)
+        entries.push({
+          key: `ability-area:BERSERK:${coordKey(at)}`,
+          kind: "ABILITY_AREA",
+          layer: 7,
+          at,
+          abilityStyle: "RALLY",
+          targetEdges: TILE_EDGES.filter(
+            (edge) => !area.has(coordKey(neighborAcross(at, edge))),
+          ),
+        });
+    }
     if (captain !== undefined)
       for (const target of view.units)
         if (isRallyTargetV7(view, captain, target))
@@ -5984,6 +6046,7 @@ function addAbilityPreviews(
             at: target.at,
             abilityStyle: "RALLY",
             areaSupport: "PROMINENT",
+            ...(berserk ? { label: BERSERK_TARGET_LABEL_V7 } : {}),
           });
   }
   // Revision 19: adjacent own Eggs laid this turn cannot be hatched yet.
@@ -6072,10 +6135,36 @@ function mapTargets(
 ): MapCommandTargetV7[] {
   return [
     ...commandMapTargets(view, commands, selectedUnitId).map((target) =>
-      withMoveOnIceV7(view, target),
+      withBerserkReachV7(view, withMoveOnIceV7(view, target)),
     ),
     ...landingAfterMoveTargets(view, commands, selectedUnitId),
   ];
+}
+
+/**
+ * Goblin explosions and Berserk (`pulp_wars-w49.36`): a Move of a Berserk
+ * unit to a tile only Berserk reaches says so. Every other target is
+ * returned as it is (and a view with no Berserk unit never computes more).
+ */
+function withBerserkReachV7(
+  view: PlayerViewV7,
+  target: MapCommandTargetV7,
+): MapCommandTargetV7 {
+  if (
+    target.family !== "MOVE" ||
+    target.command.kind !== "MOVE" ||
+    (view.berserkThisTurn ?? []).length === 0 ||
+    !berserkNewReachV7(view, target.command.unitId).has(coordKey(target.at))
+  )
+    return target;
+  return {
+    ...target,
+    berserkReach: true,
+    semanticLabel:
+      target.semanticLabel === undefined
+        ? BERSERK_REACH_LABEL_V7
+        : `${target.semanticLabel}. ${BERSERK_REACH_LABEL_V7}`,
+  };
 }
 
 /**

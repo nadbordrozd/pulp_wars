@@ -417,6 +417,9 @@ export const KIND_READER_CLASSES_V7: Readonly<
     "KIND_RESOLVED",
   "src/render/goblin-presentation-v7.ts::goblinFieldDefenseBlockedV7": "SEAT",
   "src/render/goblin-presentation-v7.ts::roleLabel": "SEAT",
+  // `pulp_wars-w49.36`: the Goblin Help's blast numbers, read from the
+  // Goblin registration (a rule text, no unit).
+  "src/render/goblin-presentation-v7.ts::goblinBlastListV7": "SEAT",
   // The naval branch interface (`pulp_wars-5ti.7`): Seamanship's boarding
   // and Harbours are the viewer's own capabilities (a boarded prize's kind
   // follows its new owner, and Harbours is a seat-level economy rule).

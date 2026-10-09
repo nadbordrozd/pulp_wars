@@ -1584,3 +1584,26 @@ a Wolf Rider, the attack-chain fixture's attacker a Champion, the second
 Kaboom on a shielded Grunt a Wolf Rider's). The Berserk lookups read a
 missing `berserkThisTurn` as empty, as the Candy `sugarRush` lookup does,
 so a public view captured before the list existed still plans.
+
+### 15.5 The interface (`pulp_wars-w49.36`)
+
+The Warboss's button reads **Berserk** (the tin megaphone icon is kept),
+with the rule as its tooltip and a chip with the number of units it
+reaches. Hovering or focusing it rings each of those units with "+1 Move"
+and outlines the 5 × 5 radius ([BOARD_TARGETING.md section
+2.1](../ui/BOARD_TARGETING.md#21-area-support-marked-not-picked-bead-pulp_wars-621)).
+A Berserk unit wears an orange double-chevron glyph in its status column, a
+"Berserk" status chip (with its glossary line), and a cursor cue; its Moves
+that only Berserk gives it, the extra tile and the tiles past an enemy zone
+of control, are hatched orange with the same chevrons and announced as
+"Berserk reach" (the public movement query with and without the unit in
+`berserkThisTurn`). The log and toast read "Your Orc Warboss: Berserk for
+N units (+1 Move, ignore zones of control)". The death-blast and Kaboom
+numbers come from the registration everywhere (previews, board labels, the
+Kaboom! tooltip, which now also names the death blast of a unit that has
+one, and the `GOBLIN_HELP_RULES_V7` sentences). Tests:
+`tests/unit/ruleset7-goblin-presentation.test.ts` and
+`tests/integration/ruleset7-goblin-dom.test.ts` on the hand-built
+`goblinBerserkFixtureV7` and `goblinBerserkActiveFixtureV7`
+(`tests/fixtures/v7-goblin-ui.ts`); `npm run review:ruleset7-goblin-ui`
+captures the Berserk preview and reach.
