@@ -44,8 +44,8 @@ import type { IcePieceV7 } from "../fixtures/v7-ice-folk";
 // rules in a match whose every seat is Human, Undead, Goblin, Martian,
 // Dinosaur, Ice Folk, or Dwarf (a Candy seat keeps the older policy for
 // every seat): it researches toward its own units in its own order, trains
-// before it researches while it is short of capturers, takes the 4 Coins at
-// level 2, counts its fragile units as weak links of a Knight's chain,
+// before it researches while it is short of capturers, took the 4 Coins at
+// level 2 (until the reward ladder rework, `pulp_wars-zypi`, 7r63), counts its fragile units as weak links of a Knight's chain,
 // and keeps its Clockwork Gunners out of a melee unit's reach. Two-seat field (tests/fixtures/v7-dwarf.ts,
 // 11 x 11): seat 0 capital (8, 8), seat 1 capital (2, 8), villages (5, 5),
 // (8, 5), (5, 8); every other land tile open Grass.
@@ -160,9 +160,12 @@ const counts = (
 };
 
 describe("step two of the Dwarf pass: no rule changed", () => {
-  it("kept the identity and the Dwarf Survey (the area, no unit)", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r62");
-    expect([SURVEY_RAIDERS_V7.DWARF, SURVEY_RAIDERS_V7.CANDY]).toEqual([0, 0]);
+  // The reward ladder rework (`pulp_wars-zypi`, 7r63): every faction's
+  // Scouts, a level-3 reward since then, grants its fast unit, so the
+  // Dwarves a Gyrocopter (the Dwarf Survey was the area alone here).
+  it("kept the identity; the Dwarf Survey has a Gyrocopter since the reward ladder rework", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r63");
+    expect([SURVEY_RAIDERS_V7.DWARF, SURVEY_RAIDERS_V7.CANDY]).toEqual([1, 1]);
   });
 });
 
@@ -372,7 +375,11 @@ describe("step two of the Dwarf pass: the Dwarf Normal AI's army", () => {
     expect(armyGarrisonYieldsToRangedV7("CANDY", army, true)).toBe(false);
   });
 
-  it("takes the 4 Coins at level 2: a Dwarf Survey grants no unit", () => {
+  // The reward ladder rework (`pulp_wars-zypi`): level 2 offers the
+  // Stockpile or the Militia (the Survey or the Stockpile before, where
+  // this seat took the 4 Coins), and a seat with fewer than two units for
+  // each city takes the Militia's free Hammerer.
+  it("takes the Militia's free Hammerer at level 2 while short of units", () => {
     const base = field([own("FIGHTER", 8, 8), foe("FIGHTER", 2, 8)], {
       techs: techsOf("GATHERING", "FARMING"),
       coins: 10,
@@ -402,11 +409,11 @@ describe("step two of the Dwarf pass: the Dwarf Normal AI's army", () => {
     expect(built.state.pendingChoices[0]).toMatchObject({
       kind: "CITY_REWARD",
       reachedLevel: 2,
+      candidates: ["STOCKPILE", "MILITIA"],
     });
-    // 5 Coins in hand: the older rule took the Survey with 4 or more.
     expect(
       chooseNormalCommandV7(viewForV7(built.state, actor)).command,
-    ).toMatchObject({ kind: "CHOOSE_CITY_REWARD", reward: "STOCKPILE" });
+    ).toMatchObject({ kind: "CHOOSE_CITY_REWARD", reward: "MILITIA" });
   });
 });
 

@@ -17,6 +17,10 @@ import {
   SLAYER_KILLS_V7,
   TECHNOLOGY_RESEARCH_COST_V7,
   applyCommandV7,
+  cityEconomicMiracleIncomeV7,
+  cityIncomeV7,
+  playerIncomeV7,
+  ECONOMIC_MIRACLE_COINS_V7,
   effectiveRoleRuleV7,
   explorerTilesRequiredV7,
   growthSpentV7,
@@ -78,12 +82,13 @@ import {
 } from "../fixtures/v7-revision20";
 
 /**
- * The economy rejig (`pulp_wars-w49.16`, `pulp-wars-poc-7r62`;
+ * The economy rejig (`pulp_wars-w49.16`, `pulp-wars-poc-7r63`;
  * docs/product/RULESET_7_ECONOMY_REJIG.md, and Part C of
  * docs/product/RULESET_7_DESIGN_HEAVY_SLOT_AND_ECONOMY.md): mills count
  * contributors across their owner's cities, Monuments give 3, research is
  * priced per city, the achievements are harder and need no technology, and
- * every city offers its faction's giant at level 6.
+ * every city offers its faction's giant once from level 6 (since
+ * `pulp_wars-zypi` at every level from 5, with no once-per-city limit).
  *
  * The four-seat field (tests/fixtures/v7-revision20.ts, 16 by 16): seat 0's
  * capital is on (13, 4) with territory x 12-14, y 3-5; the villages are on
@@ -156,11 +161,15 @@ function applied(state: GameStateV7, seat: number, command: CommandV7): Step {
   return result;
 }
 
-/** A reward that puts no unit on the board, for each level. */
+/**
+ * A reward that puts no unit on the board and no population in the city,
+ * for each level (the Economic Miracle at level 4 since the reward ladder
+ * rework, `pulp_wars-zypi`; the 6-Coin Treasury before).
+ */
 const QUIET_REWARD: Readonly<Record<number, RewardIdV7>> = {
   2: "STOCKPILE",
   3: "WALLS",
-  4: "TREASURY_6",
+  4: "ECONOMIC_MIRACLE",
 };
 
 /** Applies `command`, then takes a quiet reward for every level it reaches. */
@@ -380,11 +389,11 @@ function harvest(state: GameStateV7, where: CoordV7): Step {
 
 describe("the economy rejig: identity", () => {
   it("is 7r54, with 7r53 the last prior identity and an obsolete save key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r62");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r62.current");
-    expect(PRIOR_RULESET_7_IDS.at(-9)).toBe("pulp-wars-poc-7r53");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r63");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r63.current");
+    expect(PRIOR_RULESET_7_IDS.at(-10)).toBe("pulp-wars-poc-7r53");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-9)).toBe(
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-10)).toBe(
       "pulpWars.save.v7r53.current",
     );
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
@@ -1260,34 +1269,28 @@ describe("C.4: the achievements", () => {
   });
 });
 
-describe("the reward ladder: the giant in every city at level 6", () => {
-  it("level 5 offers the Treasury or Barracks; level 6 and above the giant, once per city", () => {
-    expect(REWARD_UNIT_LEVEL_V7).toBe(6);
-    expect(rewardCandidatesForLevelV7(5)).toEqual(["TREASURY", "BARRACKS"]);
-    expect(rewardCandidatesForLevelV7(6)).toEqual([
-      "JUGGERNAUT",
-      "TREASURY",
-      "BARRACKS",
-    ]);
-    expect(
-      rewardCandidatesForLevelV7(7, [{ reward: "WALLS" }, { reward: "BOOM" }]),
-    ).toEqual(["JUGGERNAUT", "TREASURY", "BARRACKS"]);
-    expect(rewardCandidatesForLevelV7(7, [{ reward: "JUGGERNAUT" }])).toEqual([
-      "TREASURY",
-      "BARRACKS",
-    ]);
-    expect(rewardGiantOfferTextV7("Troll", false)).toBe(
-      "At level 6 this city can take a free Troll, once",
-    );
-    expect(rewardGiantOfferTextV7("Troll", true)).toBe(
-      "This city has taken its Troll",
+// The reward ladder rework (`pulp_wars-zypi`): every level from 5 offers
+// the giant or the Treasury, in every city, with no once-per-city limit
+// (the economy rejig offered it once per city from level 6).
+// tests/unit/ruleset-v7-tuning-4.test.ts lists the whole ladder and Scouts.
+describe("the reward ladder: the giant in every city at every level from 5", () => {
+  it("level 4 offers no giant; level 5 and every later level the giant or the Treasury", () => {
+    expect(REWARD_UNIT_LEVEL_V7).toBe(5);
+    expect(rewardCandidatesForLevelV7(4)).toEqual(["BOOM", "ECONOMIC_MIRACLE"]);
+    for (const level of [5, 6, 7, 9])
+      expect(rewardCandidatesForLevelV7(level)).toEqual([
+        "JUGGERNAUT",
+        "TREASURY",
+      ]);
+    expect(rewardGiantOfferTextV7("Troll")).toBe(
+      "From level 5, every level of this city offers a free Troll or 10 Coins",
     );
     expect(rewardGiantHelpTipV7("Colossus")).toBe(
-      "Every city can take a free Colossus as a reward once, from level 6.",
+      "Every city can take a free Colossus or 10 Coins as the reward of every level from 5.",
     );
   });
 
-  it("a second and a third city are each offered the giant at level 6, not at 5, and once", () => {
+  it("a second and a third city are each offered the giant at level 5, not at 4, and again at 6", () => {
     const SECOND = VILLAGES[0] as CoordV7;
     const THIRD = VILLAGES[1] as CoordV7;
     const start = empire(3);
@@ -1300,61 +1303,61 @@ describe("the reward ladder: the giant in every city at level 6", () => {
     for (const where of [SECOND, THIRD]) {
       const city = cityAt(state, where);
       expect(city.isCapital).toBe(false);
-      // Level 5: the Treasury or Barracks.
-      const five = harvest(oneShortOf(state, where, 5), where);
-      expect(cityAt(five.state, where).level).toBe(5);
-      expect(five.events).toContainEqual({
+      // Level 4: the Population Boom or the Economic Miracle, no giant.
+      const four = harvest(oneShortOf(state, where, 4), where);
+      expect(cityAt(four.state, where).level).toBe(4);
+      expect(four.events).toContainEqual({
         kind: "CITY_REWARD_QUEUED",
         cityId: city.id,
-        reachedLevel: 5,
-        candidates: ["TREASURY", "BARRACKS"],
+        reachedLevel: 4,
+        candidates: ["BOOM", "ECONOMIC_MIRACLE"],
       });
-      const early = applyCommandV7(five.state, human, {
+      const early = applyCommandV7(four.state, human, {
         kind: "CHOOSE_CITY_REWARD",
         cityId: city.id,
-        reachedLevel: 5,
+        reachedLevel: 4,
         reward: "JUGGERNAUT",
       });
       expect(early.accepted).toBe(false);
-      // A stored level-5 choice that offers the giant is not a valid state.
+      // A stored level-4 choice that offers the giant is not a valid state.
       expect(
         parseGameStateV7(
           JSON.parse(
             JSON.stringify({
-              ...five.state,
+              ...four.state,
               pendingChoices: [
                 {
-                  ...five.state.pendingChoices[0],
-                  candidates: ["JUGGERNAUT", "TREASURY", "BARRACKS"],
+                  ...four.state.pendingChoices[0],
+                  candidates: ["JUGGERNAUT", "TREASURY"],
                 },
               ],
             }),
           ),
         ),
       ).toBeNull();
-      // Level 6: the giant, beside the Treasury and Barracks.
-      const six = harvest(oneShortOf(state, where, 6), where);
-      expect(cityAt(six.state, where).level).toBe(6);
-      expect(six.state.pendingChoices).toEqual([
+      // Level 5: the giant or the Treasury.
+      const five = harvest(oneShortOf(state, where, 5), where);
+      expect(cityAt(five.state, where).level).toBe(5);
+      expect(five.state.pendingChoices).toEqual([
         {
           kind: "CITY_REWARD",
           cityId: city.id,
-          reachedLevel: 6,
-          candidates: ["JUGGERNAUT", "TREASURY", "BARRACKS"],
+          reachedLevel: 5,
+          candidates: ["JUGGERNAUT", "TREASURY"],
         },
       ]);
-      const before = giants(six.state).length;
-      const taken = applied(six.state, 0, {
+      const before = giants(five.state).length;
+      const taken = applied(five.state, 0, {
         kind: "CHOOSE_CITY_REWARD",
         cityId: city.id,
-        reachedLevel: 6,
+        reachedLevel: 5,
         reward: "JUGGERNAUT",
       });
       expect(taken.events).toContainEqual(
         expect.objectContaining({
           kind: "UNIT_REWARD_GRANTED",
           cityId: city.id,
-          reachedLevel: 6,
+          reachedLevel: 5,
           role: "JUGGERNAUT",
         }),
       );
@@ -1370,14 +1373,14 @@ describe("the reward ladder: the giant in every city at level 6", () => {
           Math.abs((giant?.at.y ?? 0) - where.y),
         ),
       ).toBe(1);
-      // Level 7 in the same city: no second giant.
-      const seven = harvest(
-        oneShortOf(taken.state, where, 7, { 6: "JUGGERNAUT" }),
+      // Level 6 in the same city: the giant again.
+      const six = harvest(
+        oneShortOf(taken.state, where, 6, { 5: "JUGGERNAUT" }),
         where,
       );
-      expect(seven.state.pendingChoices[0]?.candidates).toEqual([
+      expect(six.state.pendingChoices[0]?.candidates).toEqual([
+        "JUGGERNAUT",
         "TREASURY",
-        "BARRACKS",
       ]);
       state = taken.state;
     }
@@ -1385,23 +1388,23 @@ describe("the reward ladder: the giant in every city at level 6", () => {
     expect(giants(state)).toHaveLength(2);
   });
 
-  it("a city that passed at level 6 is offered the giant again at level 7, beside an occupied center", () => {
+  it("a city that took the Treasury at level 5 is offered the giant at level 6, beside an occupied center", () => {
     const SECOND = VILLAGES[0] as CoordV7;
     const start = standing(empire(2), 0, SECOND);
     const human = seatIdV7(start, 0);
     const city = cityAt(start, SECOND);
-    const seven = harvest(
-      oneShortOf(start, SECOND, 7, { 6: "BARRACKS" }),
+    const six = harvest(
+      oneShortOf(start, SECOND, 6, { 5: "TREASURY" }),
       SECOND,
     );
-    expect(seven.state.pendingChoices[0]).toMatchObject({
-      reachedLevel: 7,
-      candidates: ["JUGGERNAUT", "TREASURY", "BARRACKS"],
+    expect(six.state.pendingChoices[0]).toMatchObject({
+      reachedLevel: 6,
+      candidates: ["JUGGERNAUT", "TREASURY"],
     });
-    const taken = applied(seven.state, 0, {
+    const taken = applied(six.state, 0, {
       kind: "CHOOSE_CITY_REWARD",
       cityId: city.id,
-      reachedLevel: 7,
+      reachedLevel: 6,
       reward: "JUGGERNAUT",
     });
     const giant = taken.state.units.find(
@@ -1418,7 +1421,68 @@ describe("the reward ladder: the giant in every city at level 6", () => {
     ).toBe(1);
   });
 
-  it("a level-5 giant is not a valid event", () => {
+  it("the Economic Miracle adds a Coin to its city's income every turn, and the AI picks a legal reward at every level", () => {
+    const SECOND = VILLAGES[0] as CoordV7;
+    const start = empire(2);
+    const human = seatIdV7(start, 0);
+    const four = harvest(oneShortOf(start, SECOND, 4), SECOND).state;
+    const city = cityAt(four, SECOND);
+    expect(four.pendingChoices[0]).toMatchObject({
+      reachedLevel: 4,
+      candidates: ["BOOM", "ECONOMIC_MIRACLE"],
+    });
+    const decision = chooseNormalCommandV7(viewForV7(four, human)).command;
+    expect(decision).toMatchObject({
+      kind: "CHOOSE_CITY_REWARD",
+      cityId: city.id,
+      reachedLevel: 4,
+    });
+    expect(["BOOM", "ECONOMIC_MIRACLE"]).toContain(
+      decision?.kind === "CHOOSE_CITY_REWARD" ? decision.reward : null,
+    );
+    const miracle = applied(four, 0, {
+      kind: "CHOOSE_CITY_REWARD",
+      cityId: city.id,
+      reachedLevel: 4,
+      reward: "ECONOMIC_MIRACLE",
+    });
+    expect(miracle.events[0]).toMatchObject({
+      kind: "CITY_REWARD_CHOSEN",
+      reward: "ECONOMIC_MIRACLE",
+      coinDelta: 0,
+    });
+    const after = cityAt(miracle.state, SECOND);
+    expect(after.rewards.at(-1)).toEqual({
+      reachedLevel: 4,
+      reward: "ECONOMIC_MIRACLE",
+    });
+    expect(cityEconomicMiracleIncomeV7(after)).toBe(ECONOMIC_MIRACLE_COINS_V7);
+    expect(ECONOMIC_MIRACLE_COINS_V7).toBe(1);
+    expect(after.level).toBe(city.level);
+    expect(after.population).toBe(city.population);
+    expect(cityIncomeV7(miracle.state, after)).toBe(
+      cityIncomeV7(four, city) + 1,
+    );
+    // The income the owner collects at its next turn includes it.
+    expect(
+      playerIncomeV7(miracle.state, human).cities.find(
+        (entry) => entry.cityId === city.id,
+      )?.coins,
+    ).toBe(cityIncomeV7(four, city) + 1);
+    // The AI at every other level picks one of the offered rewards.
+    for (const level of [2, 3, 5]) {
+      const pending = harvest(oneShortOf(start, SECOND, level), SECOND).state;
+      const choice = pending.pendingChoices[0];
+      expect(choice?.reachedLevel).toBe(level);
+      const picked = chooseNormalCommandV7(viewForV7(pending, human)).command;
+      expect(picked?.kind, String(level)).toBe("CHOOSE_CITY_REWARD");
+      expect(choice?.candidates, String(level)).toContain(
+        picked?.kind === "CHOOSE_CITY_REWARD" ? picked.reward : null,
+      );
+    }
+  });
+
+  it("a level-5 giant is a valid event and a level-4 giant is not", () => {
     const fixture = rewardStateV7("JUGGERNAUT", "GOBLIN");
     expect(fixture.command.reachedLevel).toBe(6);
     const result = applied(fixture.state, 0, fixture.command);
@@ -1427,7 +1491,8 @@ describe("the reward ladder: the giant in every city at level 6", () => {
     );
     if (granted === undefined) throw new Error("no giant");
     expect(parseEventV7(granted).ok).toBe(true);
-    expect(parseEventV7({ ...granted, reachedLevel: 5 }).ok).toBe(false);
+    expect(parseEventV7({ ...granted, reachedLevel: 5 }).ok).toBe(true);
+    expect(parseEventV7({ ...granted, reachedLevel: 4 }).ok).toBe(false);
   });
 });
 
@@ -1456,7 +1521,10 @@ describe("the Normal AI under the rejig", () => {
     },
   );
 
-  it("takes Barracks at level 5, where the giant is not offered", () => {
+  // The reward ladder rework (`pulp_wars-zypi`): the giant at level 5 when
+  // the city has a free slot, the Treasury when the seat already fields a
+  // giant for every city.
+  it("takes the giant at level 5, and the Treasury once it fields a giant for every city", () => {
     const fixture = rewardStateV7("JUGGERNAUT", "ORIGINAL");
     const city = fixture.state.cities.find(
       (item) => item.id === fixture.command.cityId,
@@ -1489,11 +1557,36 @@ describe("the Normal AI under the rejig", () => {
           kind: "CITY_REWARD" as const,
           cityId: city.id,
           reachedLevel: 5,
-          candidates: ["TREASURY", "BARRACKS"] as const,
+          candidates: ["JUGGERNAUT", "TREASURY"] as const,
         },
       ],
     });
-    expect(rewardOf(five)).toBe("BARRACKS");
+    expect(rewardOf(five)).toBe("JUGGERNAUT");
+    // Level 6, after its level-5 giant: one city, one giant, the Treasury.
+    const taken = applied(five, 0, {
+      kind: "CHOOSE_CITY_REWARD",
+      cityId: city.id,
+      reachedLevel: 5,
+      reward: "JUGGERNAUT",
+    }).state;
+    const six = checkedV7({
+      ...fixture.state,
+      nextEntityId: taken.nextEntityId,
+      units: taken.units,
+      cities: fixture.state.cities.map((item) =>
+        item.id === city.id
+          ? {
+              ...item,
+              rewards: item.rewards.map((entry) =>
+                entry.reachedLevel === 5
+                  ? { ...entry, reward: "JUGGERNAUT" as const }
+                  : entry,
+              ),
+            }
+          : item,
+      ),
+    });
+    expect(rewardOf(six)).toBe("TREASURY");
   });
 
   it("reads the price of its next technology from its cities", () => {

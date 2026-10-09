@@ -93,11 +93,16 @@ Brontosaurus. This document is about the `JUGGERNAUT` role only.
   Knockback, Shatter, and Bounce (as an attacker) never apply to a
   `JUGGERNAUT`-role unit. No Pillage, no Disband, not counted for Muster.
 - **Arrival:** the city level reward. Every city offers its giant once, from
-  `REWARD_UNIT_LEVEL_V7` (6 at `7r59`; **5 after `pulp_wars-zypi`**). It is
+  `REWARD_UNIT_LEVEL_V7` (6 at `7r59`). **Since the reward ladder rework
+  (`pulp_wars-zypi`) every level from 5 offers the giant or 10 Coins, with
+  no once-per-city limit, and the Normal AI takes it for a threatened city
+  or when the city has a free slot and the seat fields fewer giants than
+  cities.** It is
   placed on the center, or beside it when the center is occupied, full HP,
   exhausted, and may exceed the city's unit limit. The Showcase capital
-  holds one; missions may place one. The Normal AI takes the giant whenever
-  it is offered and it has fewer giants than cities (`src/ai/v7.ts`).
+  holds one; missions may place one. (At `7r59` the Normal AI took the
+  giant whenever it was offered and it had fewer giants than cities,
+  `src/ai/v7.ts`.)
 - **The AI's valuation** is one formula for every giant
   (`retainedUnitValue`, the target bonus): 40 + Attack + Defense, +8 for
   Push.

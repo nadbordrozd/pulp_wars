@@ -2,13 +2,14 @@ import type { CityId, PlayerId } from "../model/ids";
 import {
   LAND_TRADE_INCOME_COINS_V7,
   MONUMENT_POPULATION_V7,
-  REWARD_UNIT_LEVEL_V7,
+  cityRewardCandidatesV7,
   cityUnitCapacityForV7,
   dockPopulationV7,
   unitCapacitySlotsV7,
   technologyCapabilitiesV7,
   unitRoleMechanicsV7,
   cityBarracksV7,
+  cityEconomicMiracleIncomeV7,
 } from "../rules/ruleset-v7";
 import { hasAcceptedStateCertificateV7 } from "./accepted-state-certificate";
 import { resolveFountainHealingV7 } from "./curiosities";
@@ -146,31 +147,25 @@ export function assignedUnitCountV7(
 }
 
 /**
- * The rewards a city is offered for a reached level. The reward unit (the
- * faction's giant) is taken at most once per city: a city whose reward
- * history (`rewards`, which travels with the city on capture) already
- * holds a `JUGGERNAUT` is offered only the Treasury or Barracks at every
- * later level.
+ * The rewards a city is offered for a reached level, in reward-ID order.
  *
- * The economy rejig (`pulp_wars-w49.16`, 7r54): every city offers the
- * giant, from level `REWARD_UNIT_LEVEL_V7` (6) until it takes it; level 5
- * offers the Treasury or Barracks. (Tuning 4 to 7r53: the owner's first
- * capital only, from level 5, so once per player.)
+ * The reward ladder rework (`pulp_wars-zypi`), for every faction: level 2
+ * Stockpile (4 Coins) or Militia; level 3 Scouts (`SURVEY`: the radius-3
+ * reveal and the faction's free `RAIDER`-role unit) or Walls; level 4
+ * Boom (+3 permanent population) or the Economic Miracle (+1 income Coin
+ * a turn); level `REWARD_UNIT_LEVEL_V7` (5) and every later level the
+ * faction's giant (`JUGGERNAUT`) or the Treasury (10 Coins), with no
+ * once-per-city limit. Barracks and `TREASURY_6` are no longer offered.
+ * (Before: level 2 Survey or Stockpile, 3 Walls or Militia, 4 Boom,
+ * `TREASURY_6`, or Barracks, 5+ the Treasury or Barracks and the giant
+ * once per city.)
  */
 export function rewardCandidatesForLevelV7(
   level: number,
-  rewards: readonly { readonly reward: RewardIdV7 }[] = [],
 ): readonly RewardIdV7[] {
-  if (level === 2) return ["SURVEY", "STOCKPILE"];
-  if (level === 3) return ["WALLS", "MILITIA"];
-  // Tuning 4: Barracks (+1 unit capacity) joins Boom and the Treasury.
-  if (level === 4) return ["BOOM", "TREASURY_6", "BARRACKS"];
-  if (level >= 5)
-    return level >= REWARD_UNIT_LEVEL_V7 &&
-      !rewards.some((record) => record.reward === "JUGGERNAUT")
-      ? ["JUGGERNAUT", "TREASURY", "BARRACKS"]
-      : ["TREASURY", "BARRACKS"];
-  throw new RangeError("INVALID_REWARD_LEVEL");
+  const candidates = cityRewardCandidatesV7(level);
+  if (candidates === null) throw new RangeError("INVALID_REWARD_LEVEL");
+  return candidates as readonly RewardIdV7[];
 }
 
 export function resolveCityGrowthV7(
@@ -420,6 +415,8 @@ export function cityIncomeV7(state: GameStateV7, city: CityStateV7): number {
   const base =
     cityLevelIncomeV7(city.level) +
     (city.isCapital ? 1 : 0) +
+    // `pulp_wars-zypi`: +1 for each Economic Miracle reward of the city.
+    cityEconomicMiracleIncomeV7(city) +
     (seaTradeCityIdsV7(state, city.ownerId).has(city.id) ? 1 : 0) +
     // Tuning 1 (7r46): Commerce pays 2 Coins per connected city.
     (landTradeCityIdsV7(state, city.ownerId).has(city.id)

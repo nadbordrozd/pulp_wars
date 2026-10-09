@@ -5,7 +5,7 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r62" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r63" as const;
 /**
  * Every earlier Ruleset 7 identity, oldest first. Readers report these as
  * incompatible (never invalid). An identity bump must append the outgoing
@@ -73,8 +73,9 @@ export const PRIOR_RULESET_7_IDS = Object.freeze([
   "pulp-wars-poc-7r59",
   "pulp-wars-poc-7r60",
   "pulp-wars-poc-7r61",
+  "pulp-wars-poc-7r62",
 ] as const);
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r62.current" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r63.current" as const;
 /**
  * The map generator a setup names (docs/product/RULESET_7_MAP_SCALE.md
  * section 8.8): `V4` is the many-seats generator of `pulp_wars-ykw.3`
@@ -308,8 +309,13 @@ export const REWARD_IDS_V7 = Object.freeze([
   "JUGGERNAUT",
   "TREASURY",
   // Tuning 4 (`pulp_wars-w49.3`): +1 unit capacity in the city. Last, so
-  // the ordinals of the older rewards (AI tie-breaks) do not move.
+  // the ordinals of the older rewards (AI tie-breaks) do not move. No
+  // longer offered since the reward ladder rework (`pulp_wars-zypi`); a
+  // record that holds it keeps its effect.
   "BARRACKS",
+  // The reward ladder rework (`pulp_wars-zypi`): +1 Coin of the city's
+  // income every turn, for good (a record that travels with the city).
+  "ECONOMIC_MIRACLE",
 ] as const);
 export const CARDINAL_DIRECTION_ORDER_V7 = Object.freeze([
   "NORTH",

@@ -194,10 +194,14 @@ export function withTileV7(
 }
 
 /**
- * A seat-0 capital of `faction` ready to choose `reward` (level 3 for
- * Militia; level 6 for the Juggernaut reward since the economy rejig,
- * `pulp_wars-w49.16`, 7r54: level 5 before), grown through Farms, with
- * every technology. Level 6 takes 20 population and the capital's eight
+ * A seat-0 capital of `faction` ready to choose `reward` (level 2 for
+ * Militia since the reward ladder rework, `pulp_wars-zypi`: level 3
+ * before; level 6 for the Juggernaut reward since the economy rejig,
+ * `pulp_wars-w49.16`, 7r54, which every level from 5 offers again since
+ * `pulp_wars-zypi`), grown through Farms, with every technology. The
+ * Juggernaut capital's reward history is of the ladder before
+ * `pulp_wars-zypi` (Survey, Walls, the 6-Coin Treasury, the Treasury),
+ * which still parses. Level 6 takes 20 population and the capital's eight
  * tiles hold seven Farms (14), so for the Juggernaut six of the Farm tiles
  * also carry 1 permanent population each (a hunt, booked before the Farm
  * was built). The capital's one free tile and its center carry none, so a
@@ -231,8 +235,8 @@ export function rewardStateV7(
     ...own.map((piece) => ({ seat: 0, ...piece })),
   ]);
   const city = cityOfV7(base, 0);
-  const reachedLevel = reward === "MILITIA" ? 3 : 6;
-  const addedPopulation = reward === "MILITIA" ? 6 : 14;
+  const reachedLevel = reward === "MILITIA" ? 2 : 6;
+  const addedPopulation = reward === "MILITIA" ? 2 : 14;
   const addedPermanent = reward === "MILITIA" ? 0 : 6;
   const growthTiles = base.board.tiles
     .filter(
@@ -255,6 +259,8 @@ export function rewardStateV7(
     city.permanentPopulation + addedPermanent,
     economicPopulation,
   ).city;
+  if (grown.level !== reachedLevel)
+    throw new Error("reward fixture reached the wrong level");
   const state = checkedV7({
     ...base,
     nextEntityId: base.nextEntityId + growthTiles.length + huntTiles.length,
@@ -266,7 +272,7 @@ export function rewardStateV7(
             cityActionAvailable: true,
             rewards:
               reward === "MILITIA"
-                ? [{ reachedLevel: 2, reward: "SURVEY" as const }]
+                ? []
                 : [
                     { reachedLevel: 2, reward: "SURVEY" as const },
                     { reachedLevel: 3, reward: "WALLS" as const },
@@ -321,8 +327,8 @@ export function rewardStateV7(
         reachedLevel,
         candidates:
           reward === "MILITIA"
-            ? (["WALLS", "MILITIA"] as const)
-            : (["JUGGERNAUT", "TREASURY", "BARRACKS"] as const),
+            ? (["STOCKPILE", "MILITIA"] as const)
+            : (["JUGGERNAUT", "TREASURY"] as const),
       },
     ],
   });

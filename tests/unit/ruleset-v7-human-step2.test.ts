@@ -163,8 +163,8 @@ describe("step two of the Human pass: identity", () => {
     // (Step two of the Undead pass, `pulp_wars-w49.24`, took 7r57, and
     // step two of the Martian pass, `pulp_wars-w49.25`, 7r58; step two of
     // the Ice Folk pass, `pulp_wars-w49.27`, 7r59.)
-    expect(PRIOR_RULESET_7_IDS.at(-6)).toBe("pulp-wars-poc-7r56");
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r62");
+    expect(PRIOR_RULESET_7_IDS.at(-7)).toBe("pulp-wars-poc-7r56");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r63");
   });
 });
 

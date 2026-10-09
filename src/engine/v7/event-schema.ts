@@ -16,6 +16,8 @@ import {
   LAND_GRANT_MINIMUM_COST_V7,
   MONUMENT_POPULATION_V7,
   REWARD_UNIT_LEVEL_V7,
+  cityRewardCandidatesV7,
+  cityRewardRecordMatchesLevelV7,
   landGrantCostV7,
   REPAIR_MACHINE_V7,
   SHIELD_CAP_V7,
@@ -1324,10 +1326,11 @@ function validPayload(
         id(e.cityId) &&
         pos(e.reachedLevel) &&
         id(e.unitId) &&
-        ((e.reachedLevel === 3 && e.role === "FIGHTER") ||
-          // Tuning 4: the Raider of a Human Survey ("Scouts").
-          (e.reachedLevel === 2 && e.role === "RAIDER") ||
-          // The economy rejig (7r54): the giant from level 6.
+        // The reward ladder rework (`pulp_wars-zypi`): the Militia unit at
+        // level 2 and the Scouts unit at level 3 (level 3 and level 2
+        // before it), and the giant at level 5 or later.
+        (((e.reachedLevel === 2 || e.reachedLevel === 3) &&
+          (e.role === "FIGHTER" || e.role === "RAIDER")) ||
           ((e.reachedLevel as number) >= REWARD_UNIT_LEVEL_V7 &&
             e.role === "JUGGERNAUT"))
       );
@@ -2663,41 +2666,19 @@ function healingResults(input: unknown): boolean {
   }
   return true;
 }
+// The reward ladder rework (`pulp_wars-zypi`): a queued choice lists the
+// current candidates (`rewardCandidatesForLevelV7`); a chosen reward may
+// be one of the ladder before it, as a city's reward record may.
 function rewards(input: unknown, level: number): boolean {
-  // Tuning 4 (`pulp_wars-w49.3`): the candidate lists of
-  // `rewardCandidatesForLevelV7`.
-  const lists: readonly (readonly RewardIdV7[])[] =
-    level === 2
-      ? [["SURVEY", "STOCKPILE"]]
-      : level === 3
-        ? [["WALLS", "MILITIA"]]
-        : level === 4
-          ? [["BOOM", "TREASURY_6", "BARRACKS"]]
-          : level >= REWARD_UNIT_LEVEL_V7
-            ? [
-                ["JUGGERNAUT", "TREASURY", "BARRACKS"],
-                ["TREASURY", "BARRACKS"],
-              ]
-            : level === 5
-              ? [["TREASURY", "BARRACKS"]]
-              : [];
+  const list = cityRewardCandidatesV7(level);
   return (
+    list !== null &&
     isDenseArrayV7(input) &&
-    lists.some((list) => list.join() === (input as unknown[]).join())
+    list.join() === (input as unknown[]).join()
   );
 }
 function rewardMatches(reward: RewardIdV7, level: number): boolean {
-  return level === 2
-    ? reward === "SURVEY" || reward === "STOCKPILE"
-    : level === 3
-      ? reward === "WALLS" || reward === "MILITIA"
-      : level === 4
-        ? reward === "BOOM" || reward === "TREASURY_6" || reward === "BARRACKS"
-        : level >= 5 &&
-          // The economy rejig (7r54): the giant from level 6.
-          ((reward === "JUGGERNAUT" && level >= REWARD_UNIT_LEVEL_V7) ||
-            reward === "TREASURY" ||
-            reward === "BARRACKS");
+  return cityRewardRecordMatchesLevelV7(reward, level);
 }
 function improvementCost(improvement: ImprovementIdV7): number {
   switch (improvement) {

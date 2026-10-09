@@ -33,7 +33,7 @@ import { goblinSetupV7 } from "../fixtures/v7-goblin-arena";
 // 3 starting Coins and tier 3 technology base cost 9) 7r41.
 
 /** The revision number of the current identity (`pulp-wars-poc-7rNN`). */
-const REVISION = 62;
+const REVISION = 63;
 const ID = `pulp-wars-poc-7r${REVISION}`;
 const PREVIOUS_ID = `pulp-wars-poc-7r${REVISION - 1}`;
 

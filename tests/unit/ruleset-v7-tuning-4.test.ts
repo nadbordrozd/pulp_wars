@@ -12,6 +12,7 @@ import {
   SURVEY_RAIDERS_V7,
   TECHNOLOGY_IDS_V7,
   TECHNOLOGY_RESEARCH_COST_V7,
+  applyCommandV7,
   cityBarracksV7,
   cityUnitCapacityV7,
   createPlayableGameV7,
@@ -108,7 +109,7 @@ const moveTargets = (state: GameStateV7, from: CoordV7): readonly string[] => {
 
 describe("tuning 4 keeps the unpublished identity", () => {
   it("is 7r47", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r62");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r63");
   });
 });
 
@@ -207,63 +208,68 @@ describe("research price (by the cities owned since the economy rejig)", () => {
   });
 });
 
+// The reward ladder rework (`pulp_wars-zypi`) replaced the ladder of
+// tuning 4 (level 2 Survey or Stockpile, 3 Walls or Militia, 4 Boom,
+// `TREASURY_6`, or Barracks, 5+ the Treasury or Barracks and the giant);
+// tests/unit/ruleset-v7-economy-rejig.test.ts holds the giant at every
+// level from 5, the Economic Miracle, and the Normal AI's choices.
 describe("the reward ladder", () => {
   it("lists the choices of every level", () => {
-    expect(rewardCandidatesForLevelV7(2)).toEqual(["SURVEY", "STOCKPILE"]);
-    expect(rewardCandidatesForLevelV7(3)).toEqual(["WALLS", "MILITIA"]);
-    expect(rewardCandidatesForLevelV7(4)).toEqual([
-      "BOOM",
-      "TREASURY_6",
-      "BARRACKS",
-    ]);
-    // The economy rejig (`pulp_wars-w49.16`, 7r54): level 5 offers the
-    // Treasury or Barracks; from level 6 every city offers the reward
-    // unit, once. (Tuning 4: from level 5, the first capital's only.)
-    expect(rewardCandidatesForLevelV7(5)).toEqual(["TREASURY", "BARRACKS"]);
-    expect(rewardCandidatesForLevelV7(6)).toEqual([
-      "JUGGERNAUT",
-      "TREASURY",
-      "BARRACKS",
-    ]);
-    expect(
-      rewardCandidatesForLevelV7(7, [
-        { reward: "JUGGERNAUT" },
-        { reward: "BARRACKS" },
-      ]),
-    ).toEqual(["TREASURY", "BARRACKS"]);
+    expect(rewardCandidatesForLevelV7(2)).toEqual(["STOCKPILE", "MILITIA"]);
+    expect(rewardCandidatesForLevelV7(3)).toEqual(["SURVEY", "WALLS"]);
+    expect(rewardCandidatesForLevelV7(4)).toEqual(["BOOM", "ECONOMIC_MIRACLE"]);
+    expect(rewardCandidatesForLevelV7(5)).toEqual(["JUGGERNAUT", "TREASURY"]);
+    expect(rewardCandidatesForLevelV7(6)).toEqual(["JUGGERNAUT", "TREASURY"]);
     expect(CITY_REWARD_COINS_V7).toEqual({
       STOCKPILE: 4,
       TREASURY_6: 6,
-      TREASURY: 6,
+      TREASURY: 10,
     });
   });
 
-  it("Scouts: a Human Survey also grants a free Raider", () => {
-    // The Undead pass (`pulp_wars-w49.13`, 7r51): an Undead Survey grants
-    // a Ghoul, as a Goblin one a Wolf Rider (7r50); since the Dinosaur pass
-    // (`pulp_wars-w49.15`, 7r53) a Dinosaur one a Raptor; the Ice Folk, the
-    // Dwarves, and the Candy none.
-    expect(SURVEY_RAIDERS_V7).toMatchObject({
-      ORIGINAL: 1,
-      UNDEAD: 1,
-      DINOSAUR: 1,
-      CANDY: 0,
-    });
-    for (const faction of ["ORIGINAL", "UNDEAD"] as const) {
+  it("Scouts: every faction's level-3 Survey also grants its free fast unit", () => {
+    // Tuning 4 gave the Humans a Raider; the faction passes the Goblins,
+    // Undead, Martians, Dinosaurs, and Ice Folk theirs; `pulp_wars-zypi`
+    // the Dwarves and the Candy.
+    for (const faction of [
+      "ORIGINAL",
+      "UNDEAD",
+      "GOBLIN",
+      "DINOSAUR",
+      "MARTIAN",
+      "ICE_FOLK",
+      "DWARF",
+      "CANDY",
+    ] as const)
+      expect(SURVEY_RAIDERS_V7[faction], faction).toBe(1);
+    for (const faction of ["ORIGINAL", "UNDEAD", "DWARF", "CANDY"] as const) {
       let state = fieldV7([{ seat: 1, role: "FIGHTER", at: at(1, 1) }], {
         factions: [faction, faction === "ORIGINAL" ? "CANDY" : "ORIGINAL"],
       });
-      for (const where of [at(7, 7), at(9, 7)]) {
+      for (const where of [at(7, 7), at(9, 7), at(7, 9), at(9, 9), at(9, 8)]) {
         state = patchTileV7(state, where, { resource: "FRUIT" });
         state = applied(state, { kind: "HARVEST_FRUIT", at: where }).state;
+        const level2 = state.pendingChoices[0];
+        if (level2?.reachedLevel === 2) {
+          expect(level2.candidates).toEqual(["STOCKPILE", "MILITIA"]);
+          state = applied(state, {
+            kind: "CHOOSE_CITY_REWARD",
+            cityId: level2.cityId,
+            reachedLevel: 2,
+            reward: "STOCKPILE",
+          }).state;
+        }
       }
       const pending = state.pendingChoices[0];
-      if (pending === undefined) throw new Error("no level-2 choice");
-      expect(pending.candidates).toEqual(["SURVEY", "STOCKPILE"]);
+      if (pending === undefined) throw new Error("no level-3 choice");
+      expect(pending).toMatchObject({
+        reachedLevel: 3,
+        candidates: ["SURVEY", "WALLS"],
+      });
       const result = applied(state, {
         kind: "CHOOSE_CITY_REWARD",
         cityId: pending.cityId,
-        reachedLevel: 2,
+        reachedLevel: 3,
         reward: "SURVEY",
       });
       const granted = result.events.filter(
@@ -283,9 +289,10 @@ describe("the reward ladder", () => {
     }
   });
 
-  it("Militia: one Human Fighter again", () => {
+  it("Militia: one Human Fighter, at level 2", () => {
     expect(MILITIA_FIGHTERS_V7).toMatchObject({ ORIGINAL: 1, GOBLIN: 2 });
     const fixture = rewardStateV7("MILITIA", "ORIGINAL");
+    expect(fixture.command.reachedLevel).toBe(2);
     const result = applied(fixture.state, {
       ...fixture.command,
       reward: "MILITIA",
@@ -295,55 +302,86 @@ describe("the reward ladder", () => {
     ).toHaveLength(1);
   });
 
-  it("Barracks: +1 unit in the city, and no unit", () => {
+  it("Barracks is no longer offered; a city that holds one keeps its unit", () => {
     const fixture = rewardStateV7("JUGGERNAUT", "ORIGINAL");
     const before = cityOfV7(fixture.state, 0);
-    expect(offered(fixture.state).map((command) => command.kind)).toEqual(
-      expect.arrayContaining(["CHOOSE_CITY_REWARD"]),
-    );
+    expect(
+      applyCommandV7(fixture.state, seatIdV7(fixture.state, 0), {
+        ...fixture.command,
+        reward: "BARRACKS",
+      }).accepted,
+    ).toBe(false);
     const result = applied(fixture.state, {
       ...fixture.command,
-      reward: "BARRACKS",
+      reward: "TREASURY",
     });
-    const after = cityOfV7(result.state, 0);
+    const held = checkedV7({
+      ...result.state,
+      cities: result.state.cities.map((city) =>
+        city.id === before.id
+          ? {
+              ...city,
+              rewards: city.rewards.map((record) =>
+                record.reachedLevel === 6
+                  ? { ...record, reward: "BARRACKS" as const }
+                  : record,
+              ),
+            }
+          : city,
+      ),
+    });
+    const after = cityOfV7(held, 0);
     expect(cityBarracksV7(after)).toBe(1);
     expect(BARRACKS_CAPACITY_V7).toBe(1);
-    expect(cityUnitCapacityV7(result.state, after)).toBe(
+    expect(cityUnitCapacityV7(held, after)).toBe(
       cityUnitCapacityV7(fixture.state, before) + 1,
     );
-    expect(result.state.units).toHaveLength(fixture.state.units.length);
-    expect(coinsOf(result.state)).toBe(coinsOf(fixture.state));
   });
 
-  it("the Treasury pays 6, and the reward unit comes once", () => {
+  it("the Treasury pays 10, and the giant is offered at every level", () => {
     const fixture = rewardStateV7("JUGGERNAUT", "ORIGINAL");
     const rich = applied(fixture.state, {
       ...fixture.command,
       reward: "TREASURY",
     });
-    expect(coinsOf(rich.state) - coinsOf(fixture.state)).toBe(6);
+    expect(coinsOf(rich.state) - coinsOf(fixture.state)).toBe(10);
     const giant = applied(fixture.state, fixture.command);
     expect(
       giant.state.units.filter((unit) => unit.role === "JUGGERNAUT"),
     ).toHaveLength(1);
-    const capital = cityOfV7(giant.state, 0);
-    expect(rewardCandidatesForLevelV7(7, capital.rewards)).toEqual([
-      "TREASURY",
-      "BARRACKS",
-    ]);
+    expect(rewardCandidatesForLevelV7(7)).toEqual(["JUGGERNAUT", "TREASURY"]);
   });
 });
 
 // Tuning 5 (`pulp_wars-w49.4`, 7r48) removed Drill, the paid Promotion at a
 // Barracks (`DRILL_UNIT`, 10 Coins); tests/unit/ruleset-v7-tuning-5.test.ts
-// covers the removal. A Barracks is the unit slot of the test above.
+// covers the removal. A city that holds a Barracks record (no longer
+// offered since `pulp_wars-zypi`) offers nothing more either.
 describe("Drill is gone", () => {
   it("offers nothing more to the unit on the center of a Barracks city", () => {
     const fixture = rewardStateV7("JUGGERNAUT", "ORIGINAL", [
       { role: "FIGHTER", at: at(8, 8) },
     ]);
+    const treasury = applied(fixture.state, {
+      ...fixture.command,
+      reward: "TREASURY",
+    }).state;
     const chosen = withCoins(
-      applied(fixture.state, { ...fixture.command, reward: "BARRACKS" }).state,
+      checkedV7({
+        ...treasury,
+        cities: treasury.cities.map((city) =>
+          city.id === fixture.command.cityId
+            ? {
+                ...city,
+                rewards: city.rewards.map((record) =>
+                  record.reachedLevel === 6
+                    ? { ...record, reward: "BARRACKS" as const }
+                    : record,
+                ),
+              }
+            : city,
+        ),
+      }),
       100,
     );
     const unit = unitAtV7(chosen, at(8, 8));

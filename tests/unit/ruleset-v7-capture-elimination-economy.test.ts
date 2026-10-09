@@ -136,7 +136,7 @@ describe("Ruleset 7 capture elimination economy", () => {
         kind: "CITY_REWARD",
         cityId: actorCity.id,
         reachedLevel: 2,
-        candidates: ["SURVEY", "STOCKPILE"],
+        candidates: ["STOCKPILE", "MILITIA"],
       },
     ]);
     expect(result.state.nextEntityId).toBe(prepared.nextEntityId);
@@ -196,7 +196,7 @@ describe("Ruleset 7 capture elimination economy", () => {
         kind: "CITY_REWARD",
         cityId: fixture.cityId,
         reachedLevel: 2,
-        candidates: ["SURVEY", "STOCKPILE"],
+        candidates: ["STOCKPILE", "MILITIA"],
       },
     ]);
     expect(

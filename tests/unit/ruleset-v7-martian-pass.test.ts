@@ -97,7 +97,7 @@ import {
   withoutTechsV7,
 } from "../fixtures/v7-revision20";
 
-// The Martian pass (`pulp_wars-w49.14`, `pulp-wars-poc-7r62`,
+// The Martian pass (`pulp_wars-w49.14`, `pulp-wars-poc-7r63`,
 // docs/product/RULESET_7_TUNING_MARTIAN.md): a unit pulled by the Tractor
 // Beam explores for its owner from the tile it lands on; Scouts for a
 // Martian city (a free Saucer); the Shield Projector's Force Field needs
@@ -205,13 +205,13 @@ describe("the Martian pass: identity", () => {
   // The Dinosaur pass (tests/unit/ruleset-v7-dinosaur-pass.test.ts) took
   // 7r53 and the economy rejig 7r54, so 7r52 is a prior identity.
   it("was 7r52 after 7r51, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r62");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r62.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-11, -9)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r63");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r63.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-12, -10)).toEqual([
       "pulp-wars-poc-7r51",
       "pulp-wars-poc-7r52",
     ]);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-11, -9)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-12, -10)).toEqual([
       "pulpWars.save.v7r51.current",
       "pulpWars.save.v7r52.current",
     ]);
@@ -436,8 +436,10 @@ describe("the Martian pass: Scouts", () => {
       MARTIAN: 1,
       // Step two of the Ice Folk pass (7r59): a Sled.
       ICE_FOLK: 1,
-      DWARF: 0,
-      CANDY: 0,
+      // The reward ladder rework (`pulp_wars-zypi`): a Gyrocopter and a
+      // Donut Racer.
+      DWARF: 1,
+      CANDY: 1,
     });
     const base = asMartian([own("FIGHTER", 8, 8), foe("FIGHTER", 2, 8)], {
       techs: { 0: techsOf("GATHERING", "FARMING"), 1: [] },
@@ -445,13 +447,18 @@ describe("the Martian pass: Scouts", () => {
     const actor = seatIdV7(base, 0);
     const capital = base.cities.find((city) => city.ownerId === actor);
     if (capital === undefined) throw new Error("capital missing");
-    const farm = at(8, 9);
+    // Since the reward ladder rework (`pulp_wars-zypi`) Scouts is a
+    // level-3 reward: three Farms, through the level-2 Stockpile.
+    const farms = [at(8, 9), at(7, 9), at(9, 9)];
     const state: GameStateV7 = {
       ...base,
+      players: base.players.map((player) =>
+        player.id === actor ? { ...player, coins: 50 } : player,
+      ),
       board: {
         ...base.board,
         tiles: base.board.tiles.map((tile) =>
-          same(tile.at, farm)
+          farms.some((farm) => same(tile.at, farm))
             ? {
                 ...tile,
                 biome: "PLAINS" as const,
@@ -463,20 +470,34 @@ describe("the Martian pass: Scouts", () => {
         ),
       },
     };
-    const built = applyOkV7(state, actor, { kind: "BUILD_FARM", at: farm });
+    let built = applyOkV7(state, actor, { kind: "BUILD_FARM", at: at(8, 9) });
     expect(built.state.pendingChoices[0]).toMatchObject({
       kind: "CITY_REWARD",
       reachedLevel: 2,
+      candidates: ["STOCKPILE", "MILITIA"],
+    });
+    built = applyOkV7(built.state, actor, {
+      kind: "CHOOSE_CITY_REWARD",
+      cityId: capital.id,
+      reachedLevel: 2,
+      reward: "STOCKPILE",
+    });
+    built = applyOkV7(built.state, actor, { kind: "BUILD_FARM", at: at(7, 9) });
+    built = applyOkV7(built.state, actor, { kind: "BUILD_FARM", at: at(9, 9) });
+    expect(built.state.pendingChoices[0]).toMatchObject({
+      kind: "CITY_REWARD",
+      reachedLevel: 3,
+      candidates: ["SURVEY", "WALLS"],
     });
     const chosen = applyOkV7(built.state, actor, {
       kind: "CHOOSE_CITY_REWARD",
       cityId: capital.id,
-      reachedLevel: 2,
+      reachedLevel: 3,
       reward: "SURVEY",
     });
     expect(
       chosen.events.find((event) => event.kind === "UNIT_REWARD_GRANTED"),
-    ).toMatchObject({ role: "RAIDER", reachedLevel: 2 });
+    ).toMatchObject({ role: "RAIDER", reachedLevel: 3 });
     // Without Scouting; beside the garrisoned center; at its Shield
     // maximum.
     const saucer = chosen.state.units.find(

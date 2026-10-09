@@ -66,7 +66,7 @@ const READY: UnitStateV7["activation"] = {
 
 describe("Ruleset 7 revision 7 networks and fortifications", () => {
   it("freezes the revision identity and removes the retired systems", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r62");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r63");
     expect(setupV7().mapGenerationRevision).toBe("REGIONAL_BIOMES_NAVAL_V4");
     expect(TECHNOLOGY_IDS_V7).toContain("ENGINEERING");
     expect(TECHNOLOGY_IDS_V7).not.toContain("GRAND_WORKS");
@@ -1483,10 +1483,11 @@ describe("Ruleset 7 revision 7 networks and fortifications", () => {
     expect(offered).toContainEqual({ kind: "BLAST_MOUNTAIN", at: oreAt });
   });
 
-  // Tuning 1 (`pulp_wars-w49.3`, 7r46): a city takes its reward unit once.
-  // The economy rejig (`pulp_wars-w49.16`, 7r54): the unit is a level-6
-  // reward; level 5 offers the Treasury or Barracks.
-  it("queues multi-level rewards one at a time: the Treasury at level 5, then one Juggernaut at level 6", () => {
+  // Tuning 1 (`pulp_wars-w49.3`, 7r46) made the reward unit once per city
+  // and the economy rejig (7r54) a level-6 reward. The reward ladder rework
+  // (`pulp_wars-zypi`): every level from 5 offers the giant or the
+  // Treasury (10 Coins), with no once-per-city limit.
+  it("queues multi-level rewards one at a time: a Juggernaut at level 5, then another at level 6", () => {
     const fixture = rewardSawmillState(91);
     const built = applyCommandV7(fixture.state, fixture.state.humanPlayerId, {
       kind: "BUILD_SAWMILL",
@@ -1498,38 +1499,45 @@ describe("Ruleset 7 revision 7 networks and fortifications", () => {
         kind: "CITY_REWARD",
         cityId: fixture.cityId,
         reachedLevel: 5,
-        candidates: ["TREASURY", "BARRACKS"],
+        candidates: ["JUGGERNAUT", "TREASURY"],
       }),
     ]);
     expect(
       built.events.filter((event) => event.kind === "CITY_REWARD_QUEUED"),
     ).toHaveLength(1);
-    const early = applyCommandV7(built.state, built.state.humanPlayerId, {
+    const barracks = applyCommandV7(built.state, built.state.humanPlayerId, {
       kind: "CHOOSE_CITY_REWARD",
       cityId: fixture.cityId,
       reachedLevel: 5,
-      reward: "JUGGERNAUT",
+      reward: "BARRACKS",
     });
-    expect(early).toMatchObject({
+    expect(barracks).toMatchObject({
       accepted: false,
       error: { code: "CITY_REWARD_MISMATCH" },
+    });
+    const treasury = applyCommandV7(built.state, built.state.humanPlayerId, {
+      kind: "CHOOSE_CITY_REWARD",
+      cityId: fixture.cityId,
+      reachedLevel: 5,
+      reward: "TREASURY",
+    });
+    if (!treasury.accepted) throw new Error(treasury.error.code);
+    expect(treasury.events[0]).toMatchObject({
+      kind: "CITY_REWARD_CHOSEN",
+      reward: "TREASURY",
+      coinDelta: 10,
     });
     const first = applyCommandV7(built.state, built.state.humanPlayerId, {
       kind: "CHOOSE_CITY_REWARD",
       cityId: fixture.cityId,
       reachedLevel: 5,
-      reward: "TREASURY",
+      reward: "JUGGERNAUT",
     });
     if (!first.accepted) throw new Error(first.error.code);
-    expect(first.events[0]).toMatchObject({
-      kind: "CITY_REWARD_CHOSEN",
-      reward: "TREASURY",
-      coinDelta: 6,
-    });
     expect(first.state.pendingChoices).toEqual([
       expect.objectContaining({
         reachedLevel: 6,
-        candidates: ["JUGGERNAUT", "TREASURY", "BARRACKS"],
+        candidates: ["JUGGERNAUT", "TREASURY"],
       }),
     ]);
     const second = applyCommandV7(first.state, first.state.humanPlayerId, {
@@ -1543,7 +1551,7 @@ describe("Ruleset 7 revision 7 networks and fortifications", () => {
       (unit) =>
         unit.homeCityId === fixture.cityId && unit.role === "JUGGERNAUT",
     );
-    expect(juggernauts).toHaveLength(1);
+    expect(juggernauts).toHaveLength(2);
     expect(second.state.pendingChoices).toEqual([]);
   });
 
@@ -1574,7 +1582,8 @@ describe("Ruleset 7 revision 7 networks and fortifications", () => {
     expect(built.state.pendingChoices).toEqual([
       expect.objectContaining({ reachedLevel: 5 }),
     ]);
-    // The economy rejig (7r54): the Treasury at level 5, the unit at 6.
+    // The Treasury at level 5, the unit at 6 (`pulp_wars-zypi`: every
+    // level from 5 offers both).
     const five = applyCommandV7(built.state, built.state.humanPlayerId, {
       kind: "CHOOSE_CITY_REWARD",
       cityId: fixture.cityId,

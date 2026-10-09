@@ -148,14 +148,19 @@ const unitById = (
 ): UnitStateV7 | undefined => state.units.find((unit) => unit.id === id);
 
 describe("the giants' signatures: the identity", () => {
-  it("is 7r62 after 7r61, whose save key is obsolete", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r62");
-    expect(PRIOR_RULESET_7_IDS.at(-1)).toBe("pulp-wars-poc-7r61");
+  // The reward ladder rework (`pulp_wars-zypi`) took 7r63 after it.
+  it("was 7r62 after 7r61, whose save keys are obsolete", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r63");
+    expect(PRIOR_RULESET_7_IDS.slice(-2)).toEqual([
+      "pulp-wars-poc-7r61",
+      "pulp-wars-poc-7r62",
+    ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r62.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r63.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-2)).toEqual([
       "pulpWars.save.v7r61.current",
-    );
+      "pulpWars.save.v7r62.current",
+    ]);
   });
 });
 

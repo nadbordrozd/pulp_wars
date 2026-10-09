@@ -1284,8 +1284,10 @@ describe("Ice Folk Showcase (section 2.4)", () => {
       [0, 6],
     ]);
     // 21: land trade pays 2 Coins (tuning 1, 7r46; 17 before) and since
-    // tuning 3 the linked capital earns it too (19 before).
-    expect(playerIncomeV7(state, iceId).totalCoins).toBe(18);
+    // tuning 3 the linked capital earns it too (19 before); 18 since
+    // tuning 4 (land trade pays 1 Coin); 20 since the reward ladder rework
+    // (`pulp_wars-zypi`: North's and Coast's Economic Miracle, +1 each).
+    expect(playerIncomeV7(state, iceId).totalCoins).toBe(20);
   });
 
   it("every Ice Folk ability can be offered on the first turns, and every offered command is accepted", () => {

@@ -36,7 +36,7 @@ import {
   type TechnologyIdV7,
   type UnitRoleIdV7,
   type UnitStateV7,
-  BARRACKS_CAPACITY_V7,
+  ECONOMIC_MIRACLE_COINS_V7,
   playerTechnologyResearchCostV7,
 } from "../src/engine/index";
 import { goblinArenaV7 } from "../tests/fixtures/v7-goblin-arena";
@@ -594,7 +594,7 @@ function economy(): string[] {
     "",
     "A city of level L needs L + 1 population to reach level L + 1, so levels 2, 3, 4, 5, 6 cost 2, 3, 4, 5, 6 more population (20 in all for level 6).",
     "",
-    `Level rewards (tuning 4): level 2 Scouts (the survey and a free Raider) or Stockpile (${CITY_REWARD_COINS_V7.STOCKPILE} Coins); level 3 Walls or Militia (one Fighter); level 4 Boom, Treasury (${CITY_REWARD_COINS_V7.TREASURY_6} Coins) or Barracks; level 5 Barracks or Treasury (${CITY_REWARD_COINS_V7.TREASURY} Coins); level ${REWARD_UNIT_LEVEL_V7}+ the same and, once per city, the Juggernaut (the economy rejig, 7r54; tuning 4 to 7r53: the first capital only, once, from level 5).`,
+    `Level rewards (the reward ladder rework, pulp_wars-zypi): level 2 Stockpile (${CITY_REWARD_COINS_V7.STOCKPILE} Coins) or Militia (one Fighter); level 3 Scouts (the survey and a free Raider) or Walls; level 4 Population Boom (+3 population) or the Economic Miracle (+${ECONOMIC_MIRACLE_COINS_V7} income a turn); level ${REWARD_UNIT_LEVEL_V7} and every later level the Juggernaut or the Treasury (${CITY_REWARD_COINS_V7.TREASURY} Coins). (Tuning 4: level 2 Scouts or Stockpile, 3 Walls or Militia, 4 Boom, a ${CITY_REWARD_COINS_V7.TREASURY_6}-Coin Treasury, or Barracks, 5+ Barracks or a 6-Coin Treasury and the first capital's Juggernaut.)`,
     "",
     `Unit capacity of a city (Human): level + 1, +1 with Planning: ${[1, 2, 3, 4, 5].map((level) => `L${level} ${cityUnitCapacityForV7(level, [], "ORIGINAL")}/${cityUnitCapacityForV7(level, ["GATHERING", "ADMINISTRATION", "PLANNING"], "ORIGINAL")}`).join(", ")} (without / with Planning). One training per city per turn; with Commerce each Market hires one more at 1.5× (a Fighter ${hireCostV7(2)}, Guard ${hireCostV7(3)}, Raider ${hireCostV7(4)}, Marksman ${hireCostV7(4)}, Captain ${hireCostV7(5)}, Catapult ${hireCostV7(8)}, Knight ${hireCostV7(9)} Coins), and the Market's city may hold 1 unit above its capacity.`,
     "",
@@ -733,13 +733,12 @@ function round4(): string[] {
     "",
     "| Level | Population it took | Choices | Coins of the Coin choice |",
     "| --- | --- | --- | --- |",
-    `| 2 | 2 | Scouts (survey + Raider, worth 4 Coins) or Stockpile | ${CITY_REWARD_COINS_V7.STOCKPILE} |`,
-    "| 3 | 3 | Walls or Militia (one Fighter, worth 2 Coins) | — |",
-    `| 4 | 4 | Boom (+3 population), Treasury or Barracks (+${BARRACKS_CAPACITY_V7} unit) | ${CITY_REWARD_COINS_V7.TREASURY_6} |`,
-    `| 5 | 5 | Barracks or Treasury | ${CITY_REWARD_COINS_V7.TREASURY} |`,
-    `| ${REWARD_UNIT_LEVEL_V7}+ | 6, 7, … | Barracks or Treasury; every city once: the Juggernaut (7r54; the first capital only, from level 5, in round 4) | ${CITY_REWARD_COINS_V7.TREASURY} |`,
+    `| 2 | 2 | Stockpile or Militia (one Fighter, worth 2 Coins) | ${CITY_REWARD_COINS_V7.STOCKPILE} |`,
+    "| 3 | 3 | Scouts (survey + Raider, worth 4 Coins) or Walls | — |",
+    `| 4 | 4 | Population Boom (+3 population) or Economic Miracle (+${ECONOMIC_MIRACLE_COINS_V7} income a turn) | — |`,
+    `| ${REWARD_UNIT_LEVEL_V7}+ | 5, 6, … | the Juggernaut or the Treasury, at every level (pulp_wars-zypi) | ${CITY_REWARD_COINS_V7.TREASURY} |`,
     "",
-    `A population point costs 2 to 3 Coins (the price list above), so level 5 costs 10 to 15 Coins of population and returns at most ${CITY_REWARD_COINS_V7.TREASURY}.`,
+    `A population point costs 2 to 3 Coins (the price list above), so level 5 costs 10 to 15 Coins of population and its Coin choice returns at most ${CITY_REWARD_COINS_V7.TREASURY}.`,
     "",
     "#### Sinks at 100 Coins and 40 income (LAB_LATE)",
     "",
@@ -1097,7 +1096,7 @@ function rejig(): string[] {
     );
   lines.push(
     "",
-    `A Monument gives +${MONUMENT_POPULATION_V7} population (2 in 7r53). Every city offers the Juggernaut once from level ${REWARD_UNIT_LEVEL_V7} (the first capital only, from level 5, in 7r53).`,
+    `A Monument gives +${MONUMENT_POPULATION_V7} population (2 in 7r53). Every city offers the Juggernaut once from level ${REWARD_UNIT_LEVEL_V7} (the first capital only, from level 5, in 7r53; every city from level 6 from 7r54 to pulp_wars-zypi).`,
   );
   return lines;
 }

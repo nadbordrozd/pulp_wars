@@ -495,12 +495,14 @@ describe("ruleset-7 revision-18 Showcase cities", () => {
         permanentPopulation: 4,
         economicPopulation: 10,
         population: 0,
+        // The reward ladder rework (`pulp_wars-zypi`): Stockpile at level
+        // 2 (Survey before) and the giant at level 5 (the Treasury from the
+        // economy rejig, 7r54).
         rewards: [
-          { reachedLevel: 2, reward: "SURVEY" },
+          { reachedLevel: 2, reward: "STOCKPILE" },
           { reachedLevel: 3, reward: "WALLS" },
           { reachedLevel: 4, reward: "BOOM" },
-          // The economy rejig (7r54): the giant is a level-6 reward.
-          { reachedLevel: 5, reward: "TREASURY" },
+          { reachedLevel: 5, reward: "JUGGERNAUT" },
         ],
       });
       expect(byId(northId)).toEqual({
@@ -512,10 +514,12 @@ describe("ruleset-7 revision-18 Showcase cities", () => {
         permanentPopulation: 0,
         economicPopulation: 11,
         population: 2,
+        // `pulp_wars-zypi`: Stockpile and the Economic Miracle (Survey and
+        // the 6-Coin Treasury before).
         rewards: [
-          { reachedLevel: 2, reward: "SURVEY" },
+          { reachedLevel: 2, reward: "STOCKPILE" },
           { reachedLevel: 3, reward: "WALLS" },
-          { reachedLevel: 4, reward: "TREASURY_6" },
+          { reachedLevel: 4, reward: "ECONOMIC_MIRACLE" },
         ],
       });
       expect(byId(coastId)).toEqual({
@@ -530,10 +534,12 @@ describe("ruleset-7 revision-18 Showcase cities", () => {
         permanentPopulation: 0,
         economicPopulation: 10,
         population: 1,
+        // `pulp_wars-zypi`: Stockpile and the Economic Miracle (Survey and
+        // the 6-Coin Treasury before).
         rewards: [
-          { reachedLevel: 2, reward: "SURVEY" },
+          { reachedLevel: 2, reward: "STOCKPILE" },
           { reachedLevel: 3, reward: "WALLS" },
-          { reachedLevel: 4, reward: "TREASURY_6" },
+          { reachedLevel: 4, reward: "ECONOMIC_MIRACLE" },
         ],
       });
       expect(tile(state, cx, 7).site).toBe("CAPITAL");
@@ -693,23 +699,25 @@ describe("ruleset-7 revision-18 Showcase cities", () => {
   // connected cities pay 6 each and the total is 19 (17 before). Tuning 3
   // (`pulp_wars-w49.3`): the capital of a Road-linked seat earns land trade
   // too (9, was 7), so the total is 21.
-  // Tuning 4: land trade pays 1 Coin, so 8 + 5 + 5 = 18.
-  it("pays the stated first income: 18 Coins, or 15 for a Goblin seat", () => {
+  // Tuning 4: land trade pays 1 Coin, so 8 + 5 + 5 = 18. The reward ladder
+  // rework (`pulp_wars-zypi`): North's and Coast's Economic Miracle add 1
+  // each, so 8 + 6 + 6 = 20 (17 for a Goblin seat).
+  it("pays the stated first income: 20 Coins, or 17 for a Goblin seat", () => {
     state.players.forEach((player, seat) => {
       const income = playerIncomeV7(state, player.id);
       const goblin = player.faction === "GOBLIN";
-      expect(income.totalCoins).toBe(goblin ? 15 : 18);
+      expect(income.totalCoins).toBe(goblin ? 17 : 20);
       expect(income.cities).toEqual([
         { cityId: 2 * seat + 1, coins: goblin ? 7 : 8 },
-        { cityId: 9 + 2 * seat, coins: goblin ? 4 : 5 },
-        { cityId: 10 + 2 * seat, coins: goblin ? 4 : 5 },
+        { cityId: 9 + 2 * seat, coins: goblin ? 5 : 6 },
+        { cityId: 10 + 2 * seat, coins: goblin ? 5 : 6 },
       ]);
     });
     // The first seat's Start Turn runs at creation and pays that income.
     for (const [faction, coins] of [
-      ["ORIGINAL", 21],
-      ["UNDEAD", 21],
-      ["GOBLIN", 18],
+      ["ORIGINAL", 23],
+      ["UNDEAD", 23],
+      ["GOBLIN", 20],
     ] as const) {
       const created = playableShowcase([faction, "ORIGINAL"]);
       expect(created.state.players.map((player) => player.coins)).toEqual([

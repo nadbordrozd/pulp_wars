@@ -344,7 +344,7 @@ $ npm run --silent play:text -- do --session S.json t.8,3.hunt_game c1.reward.ST
 OK t.8,3.hunt_game -> state #13
   GAME_HUNTED playerId=S0 cityId=c1 at=8,3 cost=2 permanentPopulationAdded=1
   CITY_LEVELED_UP c1 to level 2
-  CITY_REWARD_QUEUED cityId=c1 reachedLevel=2 candidates=[SCOUTS (free Raider); STOCKPILE]
+  CITY_REWARD_QUEUED cityId=c1 reachedLevel=2 candidates=[STOCKPILE; MILITIA]
 OK c1.reward.STOCKPILE -> state #14
   CITY_REWARD_CHOSEN playerId=S0 cityId=c1 reachedLevel=2 reward=STOCKPILE coinDelta=4
 OK u2.m.9,4 -> state #15
@@ -415,11 +415,14 @@ attack again after this kill`; a kill after which the unit cannot advance
   (the victim stands on a tile it cannot enter, or rises in place) says
   `Overrun ends: it does not advance after this kill`. A Blast Mountain line names the unit that `sets the charge and
 is not hit`.
-- **Reward names.** A Human seat's level-2 reward is printed as `SCOUTS`
-  (the engine's `SURVEY`, which also gives a Raider); `c1.reward.SURVEY`
-  is still accepted. The same holds for every faction whose Survey gives a
-  unit: a Goblin, an Undead, a Martian, a Dinosaur, and (since `7r59`) an
-  Ice Folk seat, whose line reads `SCOUTS (free Sled)`.
+- **Reward names.** The level-3 Survey is printed as `SCOUTS` (the
+  engine's `SURVEY`, which also gives the faction's fast unit);
+  `c1.reward.SURVEY` is still accepted. Since the reward ladder rework
+  (`pulp_wars-zypi`) that holds for every faction: an Ice Folk line reads
+  `SCOUTS (free Sled)`, a Dwarf one `SCOUTS (free Gyrocopter)`. The
+  ladder is level 2 `STOCKPILE` or `MILITIA`, level 3 `SCOUTS` or `WALLS`,
+  level 4 `BOOM` or `ECONOMIC_MIRACLE`, and level 5 and up `JUGGERNAUT` or
+  `TREASURY` (10 Coins).
 - **Economy previews** give the cost, the population change of the city with
   its meter before and after, the income change, and `LEVEL UP to N` when the
   command levels the city. A level-up queues a reward choice, and nothing
@@ -475,10 +478,11 @@ slot (3/3) | c9 center occupied`), and a rejected `c1.t.fighter` names the
   for each city you own beyond your first (the technologies you own do not
   matter); the first technology is free. `tech` shows the cost now and
   prints your city count and the three formulas in its first line.
-- Every city of yours is offered its faction's giant once, as a level
-  reward at level 6 or higher (level 5 offers Treasury or Barracks). From
-  level 4 a city that has not taken it has a `giant unit:` line under it
-  in `view`.
+- Every level of a city of yours from 5 offers its faction's giant or 10
+  Coins (`pulp_wars-zypi`; from the economy rejig until then the giant
+  came once per city, from level 6). A city of level 4 or more has a
+  `giant unit:` line under it in `view`, and a city with an Economic
+  Miracle an `economic miracle:` line.
 - A Windmill, Sawmill, Forge, or Workshop counts every Farm, Lumber Camp,
   or Mine of yours next to it, on any of your cities' land, and one Farm
   can feed two cities' Windmills. The build preview shows the output.

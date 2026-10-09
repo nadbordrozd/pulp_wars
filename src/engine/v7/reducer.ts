@@ -3693,8 +3693,10 @@ function applyReward(
       reward: command.reward,
     });
   // Tuning 4 (`pulp_wars-w49.3`): a Human Survey ("Scouts") also grants a
-  // Raider. Every reward unit is granted whether or not its city has a free
-  // unit slot (a level reward is never lost to a full city); it uses a slot
+  // Raider; since the reward ladder rework (`pulp_wars-zypi`) every
+  // faction's Scouts grants its `RAIDER`-role unit (`SURVEY_RAIDERS_V7`).
+  // Every reward unit is granted whether or not its city has a free unit
+  // slot (a level reward is never lost to a full city); it uses a slot
   // from then on.
   const unitRole =
     command.reward === "MILITIA"
@@ -3786,7 +3788,9 @@ function applyReward(
       contributions = recalc.populationContributions;
       events.push(...economyAndGrowth(recalc.changes));
     }
-    // Tuning 4: Barracks is its record alone (`cityBarracksV7` reads it).
+    // Tuning 4: Barracks is its record alone (`cityBarracksV7` reads it);
+    // so is the Economic Miracle (`pulp_wars-zypi`;
+    // `cityEconomicMiracleIncomeV7` reads it at every income).
     if (unitRole !== null) {
       const allocation = allocateUnitId(nextEntityId);
       nextEntityId = allocation.nextEntityId;
@@ -7796,7 +7800,7 @@ function settleCityRewardsV7(
       if (city === undefined) throw new RangeError("INVALID_STATE");
       if (city.rewards.some((reward) => reward.reachedLevel === reachedLevel))
         continue;
-      const candidates = rewardCandidatesForLevelV7(reachedLevel, city.rewards);
+      const candidates = rewardCandidatesForLevelV7(reachedLevel);
       const owner = players.find((player) => player.id === city.ownerId);
       if (owner?.status !== "ACTIVE") throw new RangeError("INVALID_STATE");
       const pendingChoices: readonly PendingChoiceV7[] = [

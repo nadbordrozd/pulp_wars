@@ -4082,7 +4082,7 @@ export const MILITIA_FIGHTERS_V7: Readonly<Record<FactionIdV7, 1 | 2>> =
   });
 
 /**
- * Tuning 4 (`pulp_wars-w49.3`): the `RAIDER`-role units the level-2 Survey
+ * Tuning 4 (`pulp_wars-w49.3`): the `RAIDER`-role units the Survey
  * reward also grants ("Scouts": the survey and a free Raider, with no
  * technology needed). Human only at first; the other factions' Survey is
  * the survey alone until their passes. The Goblin pass (`pulp_wars-w49.12`,
@@ -4100,8 +4100,11 @@ export const SURVEY_RAIDERS_V7: Readonly<Record<FactionIdV7, 0 | 1>> =
     DINOSAUR: 1,
     MARTIAN: 1,
     ICE_FOLK: 1,
-    DWARF: 0,
-    CANDY: 0,
+    // The reward ladder rework (`pulp_wars-zypi`): every faction's Scouts
+    // (a level-3 reward since then) grants its `RAIDER`-role unit, so the
+    // Dwarves a Gyrocopter and the Candy a Donut Racer.
+    DWARF: 1,
+    CANDY: 1,
   });
 
 /**

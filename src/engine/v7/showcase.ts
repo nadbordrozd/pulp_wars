@@ -74,15 +74,14 @@ export const SHOWCASE_CITY_TEMPLATES_V7: readonly ShowcaseCityTemplateV7[] =
       y: 7,
       level: 5,
       rewards: [
-        { reachedLevel: 2, reward: "SURVEY" },
+        // The reward ladder rework (`pulp_wars-zypi`): Stockpile at level
+        // 2 and Walls at level 3 (Survey and Walls before), Boom at level
+        // 4, and the giant that stands on the board at level 5 (the
+        // Treasury from the economy rejig, 7r54, to `pulp_wars-zypi`).
+        { reachedLevel: 2, reward: "STOCKPILE" },
         { reachedLevel: 3, reward: "WALLS" },
         { reachedLevel: 4, reward: "BOOM" },
-        // The economy rejig (`pulp_wars-w49.16`, 7r54): the giant is a
-        // level-6 reward, so the level-5 record is the Treasury. The
-        // capital's giant stands on the board all the same (the Showcase
-        // shows every unit), and the capital is offered its own at level 6
-        // like any city.
-        { reachedLevel: 5, reward: "TREASURY" },
+        { reachedLevel: 5, reward: "JUGGERNAUT" },
       ],
       tiles: [
         { dx: -1, y: 6, resource: "FERTILE_GROUND", improvement: "FARM" },
@@ -99,9 +98,12 @@ export const SHOWCASE_CITY_TEMPLATES_V7: readonly ShowcaseCityTemplateV7[] =
       y: 3,
       level: 4,
       rewards: [
-        { reachedLevel: 2, reward: "SURVEY" },
+        // `pulp_wars-zypi`: Stockpile, Walls, and the Economic Miracle
+        // (+1 income) of the new ladder (Survey, Walls, and the 6-Coin
+        // Treasury before).
+        { reachedLevel: 2, reward: "STOCKPILE" },
         { reachedLevel: 3, reward: "WALLS" },
-        { reachedLevel: 4, reward: "TREASURY_6" },
+        { reachedLevel: 4, reward: "ECONOMIC_MIRACLE" },
       ],
       tiles: [
         { dx: -1, y: 2, terrain: "FOREST", improvement: "LUMBER_CAMP" },
@@ -135,9 +137,12 @@ export const SHOWCASE_CITY_TEMPLATES_V7: readonly ShowcaseCityTemplateV7[] =
       // then level 4 (it was 3), with the reward North took at that level.
       level: 4,
       rewards: [
-        { reachedLevel: 2, reward: "SURVEY" },
+        // `pulp_wars-zypi`: Stockpile, Walls, and the Economic Miracle
+        // (+1 income) of the new ladder (Survey, Walls, and the 6-Coin
+        // Treasury before).
+        { reachedLevel: 2, reward: "STOCKPILE" },
         { reachedLevel: 3, reward: "WALLS" },
-        { reachedLevel: 4, reward: "TREASURY_6" },
+        { reachedLevel: 4, reward: "ECONOMIC_MIRACLE" },
       ],
       tiles: [
         { dx: -1, y: 10, resource: "FERTILE_GROUND", improvement: "FARM" },

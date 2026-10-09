@@ -65,7 +65,7 @@ import {
 } from "../fixtures/v7-revision20";
 
 /**
- * Tuning 8 (`pulp_wars-w49.11`, identity unchanged at `pulp-wars-poc-7r62`;
+ * Tuning 8 (`pulp_wars-w49.11`, identity unchanged at `pulp-wars-poc-7r63`;
  * docs/product/RULESET_7_TUNING_HUMAN.md section 15, the Normal AI of a
  * Human, Undead, or Goblin seat). Round 7 was played by hand four times
  * (`r7a` to `r7d`); every position below is one of those games, or the
@@ -383,7 +383,7 @@ function scene(options: SceneV7): GameStateV7 {
 
 describe("tuning 8 identity", () => {
   it("is still 7r49: no rule, command, state, or event shape changed", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r62");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r63");
   });
 });
 
@@ -2164,10 +2164,12 @@ describe("the bounded lab runs", () => {
   // "r7a round 9" above, not this script. The Undead pass
   // (`pulp_wars-w49.13`, 7r51): the Undead attacker in round 7 (8
   // before; its Vampires reach the Catapults behind the capital and
-  // come back).
+  // come back). The reward ladder rework (`pulp_wars-zypi`): the Goblin
+  // attacker in round 6 (7 before: the level rewards on offer, and so the
+  // seats' choices, changed).
   it.each([
     ["LAB_BREAKTHROUGH", 6],
-    ["LAB_BREAKTHROUGH_GOBLIN", 7],
+    ["LAB_BREAKTHROUGH_GOBLIN", 6],
     ["LAB_BREAKTHROUGH_UNDEAD", 7],
   ] as const)(
     "%s: against a defender that stands off with Catapults and retrains its garrison, the capital falls in round %i and no turn passes without an attack",

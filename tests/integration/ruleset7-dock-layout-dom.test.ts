@@ -26,6 +26,7 @@ import {
   afflictionHumanFixtureV7,
   undeadShowcaseFixtureV7,
 } from "../fixtures/v7-undead-ui";
+import { checkedV7 } from "../fixtures/v7-builders";
 import { rewardStateV7 } from "../fixtures/v7-dinosaur-arena";
 import { applyOkV7, seatIdV7 } from "../fixtures/v7-goblin-arena";
 import {
@@ -314,10 +315,28 @@ describe("Ruleset 7 selection dock layout", () => {
       { role: "FIGHTER", at: at(8, 8) },
     ]);
     const actor = seatIdV7(fixture.state, 0);
-    const withBarracks = applyOkV7(fixture.state, actor, {
+    // The reward ladder rework (`pulp_wars-zypi`) no longer offers
+    // Barracks: the city takes the Treasury, and its level-6 record is
+    // rewritten to a Barracks, which an older history may hold.
+    const treasury = applyOkV7(fixture.state, actor, {
       ...fixture.command,
-      reward: "BARRACKS",
+      reward: "TREASURY",
     }).state;
+    const withBarracks = checkedV7({
+      ...treasury,
+      cities: treasury.cities.map((city) =>
+        city.id === fixture.command.cityId
+          ? {
+              ...city,
+              rewards: city.rewards.map((record) =>
+                record.reachedLevel === 6
+                  ? { ...record, reward: "BARRACKS" as const }
+                  : record,
+              ),
+            }
+          : city,
+      ),
+    });
     // Tuning 5 (`pulp_wars-w49.4`) removed Drill: no such button.
     const host = new RecordingBoardHost();
     const app = mount(withBarracks, host);

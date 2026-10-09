@@ -86,8 +86,8 @@ const READY: UnitStateV7["activation"] = {
 
 describe("ruleset-7 revision-13 identity and faction registration", () => {
   it("pins the current identity, frozen faction and tree orders, and bindings", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r62");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r62.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r63");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r63.current");
     expect(FACTION_IDS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",
@@ -142,11 +142,11 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
     ).toThrow(RangeError);
   });
 
-  it("cleans obsolete keys through v7r61 and preserves the r62 save", () => {
+  it("cleans obsolete keys through v7r62 and preserves the r63 save", () => {
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
-      "pulpWars.save.v7r61.current",
+      "pulpWars.save.v7r62.current",
     );
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(61);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(62);
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
     const storage = new MemoryStorage([
       ["pulpWars.save.v7r12.current", "r12"],
@@ -2419,8 +2419,10 @@ function rewardState(
   // reward (level 5 before). Level 6 takes 20 population and the capital
   // holds seven Farms (14), so six Farm tiles also carry a hunt (1
   // permanent population each), as in `rewardStateV7`.
-  const reachedLevel = reward === "MILITIA" ? 3 : 6;
-  const addedPopulation = reward === "MILITIA" ? 6 : 14;
+  // The reward ladder rework (`pulp_wars-zypi`): Militia is a level-2
+  // reward (level 3 before).
+  const reachedLevel = reward === "MILITIA" ? 2 : 6;
+  const addedPopulation = reward === "MILITIA" ? 2 : 14;
   const addedPermanent = reward === "MILITIA" ? 0 : 6;
   const growthTiles = base.board.tiles
     .filter(
@@ -2450,7 +2452,7 @@ function rewardState(
             economicPopulation,
             rewards:
               reward === "MILITIA"
-                ? [{ reachedLevel: 2, reward: "SURVEY" as const }]
+                ? []
                 : [
                     { reachedLevel: 2, reward: "SURVEY" as const },
                     { reachedLevel: 3, reward: "WALLS" as const },
@@ -2506,8 +2508,8 @@ function rewardState(
         reachedLevel,
         candidates:
           reward === "MILITIA"
-            ? (["WALLS", "MILITIA"] as const)
-            : (["JUGGERNAUT", "TREASURY", "BARRACKS"] as const),
+            ? (["STOCKPILE", "MILITIA"] as const)
+            : (["JUGGERNAUT", "TREASURY"] as const),
       },
     ],
   });

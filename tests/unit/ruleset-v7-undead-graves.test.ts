@@ -479,11 +479,11 @@ describe("ruleset-7 revision-13 Graves: exclusions", () => {
       ],
     );
     const occupant = unitAt(state, HUMAN_CAPITAL);
-    const reward = militiaRewardState(state, neighbors.slice(0, 3));
+    const reward = militiaRewardState(state, neighbors.slice(0, 1));
     const result = apply(reward, state.humanPlayerId, {
       kind: "CHOOSE_CITY_REWARD",
       cityId: cityAt(state, HUMAN_CAPITAL).id,
-      reachedLevel: 3,
+      reachedLevel: 2,
       reward: "MILITIA",
     });
     expect(result.events).toContainEqual(
@@ -1212,7 +1212,10 @@ function withFactions(
   });
 }
 
-/** Grows the human capital to level 3 with a pending Militia choice. */
+/**
+ * Grows the human capital to level 2 with a pending Militia choice (level
+ * 3 before the reward ladder rework, `pulp_wars-zypi`).
+ */
 function militiaRewardState(
   state: GameStateV7,
   farms: readonly CoordV7[],
@@ -1232,7 +1235,7 @@ function militiaRewardState(
         ? {
             ...grown,
             economicPopulation,
-            rewards: [{ reachedLevel: 2, reward: "SURVEY" as const }],
+            rewards: [],
           }
         : candidate,
     ),
@@ -1268,8 +1271,8 @@ function militiaRewardState(
       {
         kind: "CITY_REWARD" as const,
         cityId: city.id,
-        reachedLevel: 3,
-        candidates: ["WALLS", "MILITIA"] as const,
+        reachedLevel: 2,
+        candidates: ["STOCKPILE", "MILITIA"] as const,
       },
     ],
   });

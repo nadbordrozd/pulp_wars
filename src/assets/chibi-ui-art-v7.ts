@@ -370,9 +370,11 @@ export function rewardSubjectV7(
     case "BARRACKS":
       // Tuning 4: Barracks has no art of its own yet (the Walls icon).
       return "ICON:REWARD:WALLS";
+    // `pulp_wars-zypi`: the Economic Miracle has no art of its own yet.
     case "STOCKPILE":
     case "TREASURY":
     case "TREASURY_6":
+    case "ECONOMIC_MIRACLE":
       return "ICON:HUD:COIN";
     case "BOOM":
       return "ICON:HUD:POPULATION";

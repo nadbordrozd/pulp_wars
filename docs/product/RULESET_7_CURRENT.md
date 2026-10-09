@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r62`, for all eight registered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r63`, for all eight registered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), and Candy (`CANDY`). It
 folds in
@@ -246,6 +246,26 @@ advances. The state gains the `giants` block (held victims), a city may
 carry `wallsRazed`, and a unit may carry `variant`; the commands `SWALLOW`,
 `TOSS`, `STOMP`, and `BREAK_OFF` and ten events are new. A save, replay, or
 setup of `7r61` is rejected, and the browser autosave has a new key.
+`pulp-wars-poc-7r63` (`pulp_wars-zypi`) is **the reward ladder rework**,
+which changes the city level
+rewards of every faction ([section 4.8](#48-city-rewards)): **level 2
+Stockpile (+4 Coins) or Militia; level 3 Scouts (the radius-3 reveal and
+the faction's free `RAIDER`-role unit, now also the Dwarf Gyrocopter and
+the Candy Donut Racer) or Walls; level 4 Population Boom (+3 permanent
+population) or the new Economic Miracle (+1 Coin of the city's income
+every turn); level 5 and every later level the faction's giant or the
+Treasury (+10 Coins)**, with no once-per-city limit on the giant.
+Barracks and the 6-Coin level-4 Treasury are no longer offered; a city
+whose history holds one keeps its effect. The Showcase records follow
+the new ladder ([section 2.5](#25-showcase-setup)), and the Normal AI
+chooses among the new rewards ([section 16](#16-normal-ai-summary)). One
+reward ID was added, `ECONOMIC_MIRACLE`; no state, view, command, or
+event key changed. **Where another passage of this document, the economy
+rejig record, a tuning document, or a faction's document still gives
+another reward ladder, a giant once per city or from level 6, a Treasury
+of 6 Coins, or a Survey without a unit, section 4.8 is the rule.** A
+save, replay, or setup of `7r62` is rejected, and the browser autosave
+has a new key.
 `pulp-wars-poc-7r58` (`pulp_wars-w49.25`) is
 [step two of the Martian pass](RULESET_7_TUNING_MARTIAN.md#14-step-two):
 **City Walls hold a unit on its own city center against a Saucer's Tractor
@@ -336,7 +356,8 @@ needs a technology**: half the map explored, 8 cities, 6 kinds of unit, a
 mill at 7, an enemy capital, 5 warships, 7 kills
 ([section 5](#5-achievements-and-monuments)); and **every city offers its
 faction's giant as a level reward once, from level 6**, with level 5
-offering the Treasury or Barracks ([section 4.8](#48-city-rewards)). The
+offering the Treasury or Barracks ([section 4.8](#48-city-rewards);
+replaced by the reward ladder rework, `pulp_wars-zypi`, above). The
 Normal AI takes the giant when it is offered and reads the research price
 from its cities ([section 16](#16-normal-ai-summary)). No state key was
 added or removed; the literal types that state a Monument's population (3),
@@ -695,7 +716,7 @@ the build differs (its sections 20 to 24 list them);
 the values here are current. Where a document and the code disagreed, the
 code's behavior is the rule and is stated below;
 [Known discrepancies](#25-known-discrepancies) lists the open items and the
-resolved ones as of `pulp-wars-poc-7r62`.
+resolved ones as of `pulp-wars-poc-7r63`.
 
 **Terms.** "On the board" means a unit that currently exists (HP above 0).
 **Living** has the narrower revision-13 meaning used by Wail, Plague,
@@ -796,10 +817,10 @@ separate [Ruleset 6](RULESET_6.md) route.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r62`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Ruleset                                    | `pulp-wars-poc-7r63`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r62.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Browser autosave                           | `pulpWars.save.v7r63.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                                     |
@@ -1542,17 +1563,19 @@ seat keeps the plain land and water above.
 **Cities.** Each city owns exactly its centered 3 x 3 footprint; none has
 used its Land Grant; every city has Walls; no reward choice is pending.
 Reward records are history only: setup pays no Coins, exploration, or unit
-for them. Since the economy rejig (`7r54`) the capital's level-5 record is
-`TREASURY` (`JUGGERNAUT` before, which is now a level-6 reward); the
-capital's giant stands on the board all the same, and the capital is
-offered its own at level 6 like any city
-([section 4.8](#48-city-rewards)).
+for them. The records follow the reward ladder of `pulp_wars-zypi`
+([section 4.8](#48-city-rewards)): the capital's are Stockpile, Walls,
+Boom, and at level 5 `JUGGERNAUT`, the giant that stands on the board;
+North's and Coast's are Stockpile, Walls, and the Economic Miracle, whose
++1 Coin is in their first income. (Before, every city's level-2 record
+was `SURVEY`, North's and Coast's level-4 record `TREASURY_6`, and the
+capital's level-5 record `TREASURY` from the economy rejig, `7r54`.)
 
-| City    | Center     | Level | Rewards recorded                      | Permanent | Live | Population | First income |
-| ------- | ---------- | ----: | ------------------------------------- | --------: | ---: | ---------: | -----------: |
-| North   | `(cx, 3)`  |     4 | `SURVEY`, `WALLS`, `TREASURY_6`       |         0 |   11 |          2 |            6 |
-| Capital | `(cx, 7)`  |     5 | `SURVEY`, `WALLS`, `BOOM`, `TREASURY` |         4 |   10 |          0 |            7 |
-| Coast   | `(cx, 11)` |     4 | `SURVEY`, `WALLS`, `TREASURY_6`       |         0 |   10 |          1 |            6 |
+| City    | Center     | Level | Rewards recorded                           | Permanent | Live | Population | First income |
+| ------- | ---------- | ----: | ------------------------------------------ | --------: | ---: | ---------: | -----------: |
+| North   | `(cx, 3)`  |     4 | `STOCKPILE`, `WALLS`, `ECONOMIC_MIRACLE`   |         0 |   11 |          2 |            6 |
+| Capital | `(cx, 7)`  |     5 | `STOCKPILE`, `WALLS`, `BOOM`, `JUGGERNAUT` |         4 |   10 |          0 |            8 |
+| Coast   | `(cx, 11)` |     4 | `STOCKPILE`, `WALLS`, `ECONOMIC_MIRACLE`   |         0 |   10 |          1 |            6 |
 
 | City    | Tile           | Content                               | Live population |
 | ------- | -------------- | ------------------------------------- | --------------: |
@@ -1595,17 +1618,19 @@ offered its own at level 6 like any city
   spatial rules compute, and
   `population = permanent + live − growthSpent(level)`.
 - First income ([section 4.3](#43-income)): the capital pays 4 + 1 + 2
-  (Market) + 1 land trade; North 4 + 1 land trade; Coast 4 + 1 land trade:
-  18 Coins for a Human, Undead, Dinosaur, Martian, Ice Folk, Dwarf, or Candy
-  seat (21 at round 3 of the Human tuning, when land trade paid 2) and 15
-  for a Goblin seat (Plunder
-  replaces land trade; its North and Coast cities pay 4 each, and the table
-  above shows the other factions' 5). No city has sea trade: the Port and Shipyard belong
-  to one city.
+  (Market) + 1 land trade; North 4 + 1 Economic Miracle + 1 land trade;
+  Coast 4 + 1 Economic Miracle + 1 land trade: 20 Coins for a Human,
+  Undead, Dinosaur, Martian, Ice Folk, Dwarf, or Candy seat (18 before the
+  reward ladder rework, `pulp_wars-zypi`, whose Economic Miracle records
+  add 1 each; 21 at round 3 of the Human tuning, when land trade paid 2)
+  and 17 for a Goblin seat (Plunder replaces land trade; its capital pays
+  7 and its North and Coast cities 5 each, and the table above shows the
+  other factions' incomes). No city has sea trade: the Port and Shipyard
+  belong to one city.
 
 **Players.** Every seat has all 25 technologies (nothing is left to
 research and the free opening technology does not apply), 3 Coins before its
-first Start Turn (so the first seat shows 20 Coins, or 18 for a Goblin seat),
+first Start Turn (so the first seat shows 23 Coins, or 20 for a Goblin seat),
 all 256 cells explored, and seven locked achievement entitlements. Explorer,
 Muster, and Sea Dog unlock at each seat's first evaluation (its three ships
 are Sea Dog); an Ice Folk seat unlocks Explorer and Muster only, since none
@@ -2435,7 +2460,8 @@ else max(1, min(level, 4) + capital + seaTrade + landTrade + market + min(0, pop
   Engineer's home city has such a Forge.
 - **Naval training** happens on a selected active, empty Port or Shipyard
   assigned to the city ([section 14](#14-naval-rules)).
-- **Reward units** (the Militia `FIGHTER` and the level-6+ `JUGGERNAUT`, in
+- **Reward units** (the Militia `FIGHTER`, the Scouts `RAIDER`, and the
+  level-5+ `JUGGERNAUT`, in
   the owner's faction: Fighter, Skeleton, Goblin, Caveman, Grunt, Yeti, or
   Hammerer; Juggernaut, Abomination, Troll, Brontosaurus, Colossus, Frost
   Giant, or Brass Titan) appear
@@ -2496,36 +2522,61 @@ else max(1, min(level, 4) + capital + seaTrade + landTrade + market + min(0, pop
 
 ### 4.8 City rewards
 
-Each reached level grants exactly one reward, chosen by the owner:
+Each reached level grants exactly one reward, chosen by the owner. The
+same ladder holds for every faction:
 
-| Reached level | Choices                                                                                                                                                                                         |
-| ------------: | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-|             2 | Survey: explore radius 3 around the city (Human, Goblin, Undead, Martian, Dinosaur, and Ice Folk, "Scouts": and a free Raider, Wolf Rider, Ghoul, Saucer, Raptor, or Sled); Stockpile: +4 Coins |
-|             3 | Walls: +2 fortification at the center; Militia: one free Fighter-role unit (Goblin: two Goblins)                                                                                                |
-|             4 | Boom: +3 permanent population; Treasury: +6 Coins; Barracks: +1 unit capacity                                                                                                                   |
-|             5 | Treasury: +6 Coins; Barracks: +1 unit capacity                                                                                                                                                  |
-|         6, 7… | Treasury: +6 Coins; Barracks: +1 unit capacity; until the city has taken it once: the Juggernaut-role reward unit (the faction's giant)                                                         |
+| Reached level | Choices                                                                                                                                              |
+| ------------: | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+|             2 | Stockpile: +4 Coins; Militia: one free Fighter-role unit (Goblin: two Goblins)                                                                       |
+|             3 | Scouts (`SURVEY`): explore radius 3 around the city and a free `RAIDER`-role unit; Walls: +2 fortification at the center                             |
+|             4 | Population Boom (`BOOM`): +3 permanent population; Economic Miracle (`ECONOMIC_MIRACLE`): +1 Coin of the city's income every turn, for good          |
+|      5, 6, 7… | The Juggernaut-role reward unit (the faction's giant); Treasury: +10 Coins. Every level from 5 offers both, with no limit on the giants a city gives |
 
-- **The economy rejig** (`7r54`,
-  [its record](RULESET_7_ECONOMY_REJIG.md#5-the-giant-in-every-city-at-level-6)).
-  `rewardCandidatesForLevelV7(level, rewards)` lists, in reward-ID order:
-  level 2 `SURVEY`, `STOCKPILE`; level 3 `WALLS`, `MILITIA`; level 4
-  `BOOM`, `TREASURY_6`, `BARRACKS`; level 5 `TREASURY`, `BARRACKS`; level 6
-  (`REWARD_UNIT_LEVEL_V7`) and above `JUGGERNAUT`, `TREASURY`, `BARRACKS`
-  while the city's reward history holds no `JUGGERNAUT` record, otherwise
-  `TREASURY`, `BARRACKS`. So **every city gives its giant once**: the
-  capital, a village, and a captured city alike, each at its own level 6 or
-  later; a city that takes the Treasury or Barracks at level 6 is offered
-  the giant again at level 7. The history transfers on capture, so a
-  captured city that gave its giant gives none to the captor. A `JUGGERNAUT`
-  record or `UNIT_REWARD_GRANTED` event below level 6, and a level-5 choice
-  that lists `JUGGERNAUT`, are invalid. The giant is placed like any reward
-  unit (beside the center when the center is occupied,
-  [section 4.6](#46-training-and-city-center-spawning)). The city panel
-  states "At level 6 this city can take a free <giant>, once" (as the
-  level stat's tooltip and in a level-4 or level-5 reward dialog), the
-  Help has the same rule, and the text harness prints it under every own
-  city that has not taken its giant.
+- **The reward ladder rework** (`pulp_wars-zypi`, the user, 2026-10-09:
+  "giant unit at level 5 and up; make it giant OR 10 coins so the coins
+  are an attractive choice"). `rewardCandidatesForLevelV7(level)` lists,
+  in reward-ID order: level 2 `STOCKPILE`, `MILITIA`; level 3 `SURVEY`,
+  `WALLS`; level 4 `BOOM`, `ECONOMIC_MIRACLE`; level 5
+  (`REWARD_UNIT_LEVEL_V7`) and every later level `JUGGERNAUT`, `TREASURY`.
+  It no longer reads the city's reward history: **a city may take a giant
+  at every level from 5** (the user's correction of the same day: "the
+  giant is offered at EVERY level from 5 up, not once per city"). The
+  Treasury pays 10 (`CITY_REWARD_COINS_V7.TREASURY`; 6 before).
+  **Scouts** grants the faction's `RAIDER`-role unit for every faction
+  (`SURVEY_RAIDERS_V7`): a Raider, Ghoul, Wolf Rider, Raptor (hatched, no
+  Egg), Saucer (with its Shield), Sled, Gyrocopter, or Donut Racer, homed
+  to the city and placed like any reward unit, without Scouting.
+  **The Economic Miracle** is a record in the city's reward history:
+  `cityEconomicMiracleIncomeV7` adds `ECONOMIC_MIRACLE_COINS_V7` (1) to the
+  city's income for each one, as part of the income a besieged city does
+  not pay; the record stays with the city on capture, so the captor
+  collects it. **Barracks** and the 6-Coin level-4 Treasury (`TREASURY_6`)
+  are no longer offered. Their IDs remain: a city whose history holds one
+  still parses and keeps its effect (a Barracks its unit slot), and a
+  reward record may be a reward of the ladder before the rework (level 2
+  Survey or Stockpile, level 3 Walls or Militia, level 4 Boom,
+  `TREASURY_6`, or Barracks, level 5 and later the Treasury, Barracks, or
+  the giant; `cityRewardRecordMatchesLevelV7`). A pending choice and a
+  `CITY_REWARD_QUEUED` event list the current candidates only. A
+  `UNIT_REWARD_GRANTED` event is a Fighter-role or `RAIDER`-role unit at
+  level 2 or 3, or a `JUGGERNAUT` at level 5 or later. The missions keep
+  their written histories (older records among them). The Showcase
+  records Stockpile, Walls, and Boom or the Economic Miracle
+  ([section 2.5](#25-showcase-setup)). The city panel's level tooltip
+  reads "From level 5, every level of this city offers a free <giant> or
+  10 Coins", the level-4 reward dialog says the same under its lede, the
+  Help says that a big city can choose a free giant unit or a pile of
+  Coins at every new level, and the text harness prints a `giant unit:`
+  line under every own city of level 4 or more and an `economic miracle:`
+  line under a city that has one.
+- **Before the rework.** Level 2 offered Survey (Scouts for every faction
+  but the Dwarves and the Candy) or Stockpile; level 3 Walls or Militia;
+  level 4 Boom, `TREASURY_6` (6 Coins), or Barracks; level 5 and later the
+  Treasury (6 Coins) or Barracks and, once per city, the giant (the
+  economy rejig, `7r54`,
+  [its record](RULESET_7_ECONOMY_REJIG.md#5-the-giant-in-every-city-at-level-6):
+  every city once, from level 6; level 5 again from the first step of
+  `pulp_wars-zypi`).
 - **Round 4** (`7r47`, [the Human tuning](RULESET_7_TUNING_HUMAN.md#11-round-4);
   its reward unit rule is superseded by the economy rejig above). From
   `7r47` to `7r53` the reward unit was offered from level 5, only in the
@@ -2541,17 +2592,18 @@ Each reached level grants exactly one reward, chosen by the owner:
   (no Egg), homed to the city and filling one of its unit slots like any
   reward unit, without Scouting. **Step two of the Ice Folk pass**
   (`7r59`): an Ice Folk `SURVEY` grants a Sled in the same way. The Dwarf
-  and the Candy Survey is still the survey alone.
-- **Barracks** (`BARRACKS`, the last reward ID). A record in the city's
-  reward history; each adds 1 to the city's unit capacity
-  (`cityBarracksV7`, `BARRACKS_CAPACITY_V7`), stays with the city across a
-  capture, and may be taken at every level from 4. **Round 5** (`7r48`)
+  and the Candy Survey was the survey alone until `pulp_wars-zypi`.
+- **Barracks** (`BARRACKS`). A record in the city's reward history; each
+  adds 1 to the city's unit capacity (`cityBarracksV7`,
+  `BARRACKS_CAPACITY_V7`) and stays with the city across a capture. It
+  could be taken at every level from 4 from tuning 4 to `pulp_wars-zypi`
+  and is no longer offered; a record already held keeps its slot. **Round 5** (`7r48`)
   removed **Drill**, the paid Promotion of round 4 on the center of a
   Barracks city (`DRILL_UNIT`, 10 Coins): the command kind no longer
   exists, and a veteran again has at least three kills except through a
   Shrine ([section 2.7](#27-map-curiosities)).
 - **Reward units and the unit limit.** A level reward is never lost to a
-  full city: the Scouts Raider, the Militia unit, and the reward unit are
+  full city: the Scouts unit, the Militia unit, and the giant are
   placed even when the city is at its limit, and count against it
   afterwards.
 
@@ -2567,8 +2619,7 @@ Each reached level grants exactly one reward, chosen by the owner:
   `["TREASURY"]`, which the owner still chooses. The history transfers on
   capture, so a captured city that gave its unit gives none to the captor;
   a city that took the Treasury at level 5 is offered the unit again at
-  level 6. (Since `7r54` the other candidates are the Treasury and
-  Barracks, and the first offer is at level 6.)
+  level 6. (The once-per-city limit was removed by `pulp_wars-zypi`.)
 
 - Reward units come from the owner's registration: an Undead Militia is a
   Skeleton and an Undead Juggernaut reward is an Abomination; a Goblin Militia
@@ -5844,11 +5895,19 @@ Harbours from it.
 - It avoids attacks predicted to lose the unit without a city-saving or
   capture-enabling reason, keeps a sole city defender unless replaced, and
   spreads units across objectives.
-- **The economy rejig** (`pulp_wars-w49.16`, `7r54`). At a level-6 or
-  later reward the policy takes the giant whenever it is offered and the
-  seat has fewer giants than cities (before, only for a threatened city or
-  with 12 Coins); at level 5, and once the city has its giant, Barracks,
-  otherwise the Treasury. Its research target's price, the research clock
+- **The reward ladder rework** (`pulp_wars-zypi`), kept legal and plain,
+  not tuned: at level 2 the policy takes the Militia when the city is
+  threatened or the seat is short of units (fewer than two for each city,
+  or an Undead, Martian, Dinosaur, Ice Folk, or Dwarf army seat short of
+  capturers), otherwise the
+  Stockpile; at level 3 Walls for a threatened city, otherwise Scouts; at
+  level 4 the Economic Miracle, unless the Boom takes the city to its next
+  level at once; at level 5 and later the giant for a threatened city, or
+  when the city has a free unit slot and the seat has fewer giants than
+  cities, otherwise the Treasury. (The economy rejig, `7r54`, took the
+  giant whenever it was offered while the seat had fewer giants than
+  cities.)
+- **The economy rejig** (`pulp_wars-w49.16`, `7r54`). Its research target's price, the research clock
   of a seat at war, and the Coins it keeps for a due technology are read
   from the public technology tree, so they follow the seat's cities
   (a seat with four cities pays 8 / 13 / 18). It builds mills from the
@@ -6031,8 +6090,11 @@ Harbours from it.
   ranged, siege, or support units), and one Gyrocopter for five units (two
   at most). Like the other army seats it trains before it researches while
   it fields fewer units that capture than its cities and two more (a
-  burrowed Mole and its rider count), and it takes the 4 Coins at level 2
-  (its Survey grants no unit); the garrison of a threatened city yields to
+  burrowed Mole and its rider count), and it took the 4 Coins at level 2
+  (its Survey granted no unit; since the reward ladder rework,
+  `pulp_wars-zypi`, Scouts is a level-3 reward with a free Gyrocopter and
+  the seat chooses as every seat does, [above](#16-normal-ai-summary));
+  the garrison of a threatened city yields to
   a Gunner. Its units of less than 15 HP at their maximum do not stand side
   by side in a Knight's reach, and a Steam Mole's or a Steam Tank's Move
   beside them has an escort's value; a Gunner makes no Move into the reach
@@ -10600,7 +10662,7 @@ unitId, at, ownerId, damage, hpAfter, destroyed }`. Bombs, eruptions,
 - The **Steam Tank** otherwise has Knight parity for no capture: 9 Coins,
   16 HP, Attack 3, Defense 2, **Move 2**, the advance after a melee kill,
   and **no Overrun**.
-- The **Brass Titan** is the level-6 reward unit: 36 HP, Attack 4, Defense
+- The **Brass Titan** is the level-5 reward unit: 36 HP, Attack 4, Defense
   3, Move 1, capture, the advance, no
   Pillage, no Disband, and the construct rules (Unflinching on attack only,
   no self-repair, no Grave, not living, Mind Control-immune). It arrives on
@@ -10916,7 +10978,7 @@ offered in every setup; the achievement that is to unlock them later
 | `CATAPULT`      | Pie Launcher      | Sugar Rush; Splat                                      |
 | `KNIGHT`        | Chocolate Bunny   | Sugar Rush (Rushed: Sugar Frenzy)                      |
 | `SWORDSMAN`     | Jawbreaker        | Sugar Rush; Rock Hard (`7r55`)                         |
-| `JUGGERNAUT`    | Gingerbread Giant | Sugar Rush; Break Off; Bounce; the level-6 reward      |
+| `JUGGERNAUT`    | Gingerbread Giant | Sugar Rush; Break Off; Bounce; the level-5 reward      |
 | `PATROL_BOAT`   | Patrol Boat       | the Human boat                                         |
 | `BATTLESHIP`    | Battleship        | the Human boat                                         |
 | `SUBMARINE`     | Submarine         | the Human boat                                         |
@@ -10926,7 +10988,7 @@ the land roles in land form (never a boat, and never an embarked unit except
 where a rule says so). A **Candy seat** is a player whose faction is
 `CANDY`; the seat rules (Crumbs ownership, Re-bake's Coins and slots, Home
 Sweet Home and Peppermint Surprise research) read the seat. A Candy seat
-starts with one Toffee Trooper; its Militia reward is one Toffee Trooper, its level-6
+starts with one Toffee Trooper; its Militia reward is one Toffee Trooper, its level-5
 reward a Gingerbread Giant, and its treasure unit a Donut Racer (a free slot
 is needed, otherwise the chest gives 5 Coins). Faction rules: `restless`
 false, `cityCapacityBonus` 0, `gangUpMaximum` 0, `treasureUnitRole`
@@ -11443,6 +11505,7 @@ first guesses.
 | Crowd control | `pulp-wars-poc-7r60` | `pulp_wars-w49.33` Dwarf crowd control, engine (user request of 2026-10-09): the Whirligig's **Whirl** replaces Three Hammers (one primary action that hits every visible hostile unit within 1 with its ordinary attack, unanswered, no advance; `struckThisTurn` and `ALREADY_STRUCK` removed); the Engineer's **Barricade** (3 Coins, 10 HP, Defense 2, at most 4 standing, blocks every unit's Move and every placement, attacked with `ATTACK_BARRICADE`, repaired like a machine, never regenerates, persists until destroyed; new state `barricades`); the **Bomb Run** lands up to 2 tiles from its target ([section 22.5](#225-gyrocopters-and-the-bombing-run), [section 22.8](#228-engineer-repair-and-assemble), [section 22.15](#2215-the-whirligig-whirl)). The Normal AI Whirls instead of attacking one unit and ignores Barricades as targets.                                                                                                                                                                                                                                                                                       | [Dwarf overlay section 24](RULESET_7_DWARVES.md#24-crowd-control-pulp_wars-w4933)                                                     |
 | Explosions    | `pulp-wars-poc-7r61` | `pulp_wars-w49.35` Goblin explosions and Berserk, engine (user requests of 2026-10-09): every Goblin death blast is 3 harder (Bomb Chucker 5, Rocket Cart 7, Scrap Buggy 7), the Goblin's Kaboom is 6 (the other Kabooms unchanged), and the Orc Warboss's **Berserk** replaces WAAAGH! (its `RALLY`: the own land units within 2 that have not moved get +1 Move and ignore enemy zones of control until the end of the turn; state and view list `berserkThisTurn`; unlock `BERSERK_SUPPORT`); no AI tuning                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | [Goblin tuning record, section 15](RULESET_7_TUNING_GOBLIN.md#15-goblin-explosions-and-berserk-pulp_wars-w4935)                       |
 | Giants        | `pulp-wars-poc-7r62` | `pulp_wars-w49.30` [the giants' signatures](RULESET_7_GIANTS.md#6-final-rules), engine (the identity became `7r62` when it was published after Goblin explosions and Berserk, `7r61`; a save, replay, or setup of `7r61` is rejected): every reward giant has one signature ([section 11.1](#111-the-giants-signatures)): Crushing Shove (Juggernaut), Swallow (Abomination), Goblin Toss (Troll), Thunder Stomp (Brontosaurus), Overstride and Move 2 (Colossus), Glacial Smash and no advance (Frost Giant), Siege Hammer (Brass Titan), Break Off (Gingerbread Giant: 10 HP for two Gingerbread Men, the user's change of 2026-10-09); Push only on the Juggernaut; the commands `SWALLOW`, `TOSS`, `STOMP`, `BREAK_OFF`; the state block `giants`, the city field `wallsRazed`, and the unit field `variant`; the new events and the death causes `CRUSH`, `STOMP`, `TRAMPLE`, `DIGESTED`; `lab --giant`; the Normal AI kept legal (it uses no signature yet, `pulp_wars-w49.31`)                                                                                                                                                                 |
+| Rewards       | `pulp-wars-poc-7r63` | `pulp_wars-zypi` the reward ladder rework, engine (the user, 2026-10-09; the identity became `7r63` when it was published after the giants' signatures, `7r62`; a save, replay, or setup of `7r62` is rejected): for every faction level 2 Stockpile (+4 Coins) or Militia; level 3 Scouts (the radius-3 reveal and the faction's free `RAIDER`-role unit, now also the Dwarf Gyrocopter and the Candy Donut Racer) or Walls; level 4 Population Boom or the new Economic Miracle (`ECONOMIC_MIRACLE`, +1 Coin of the city's income every turn, kept on capture); level 5 and every later level the faction's giant or the Treasury (10 Coins, 6 before), with no once-per-city limit; Barracks and the 6-Coin level-4 Treasury no longer offered (older records keep their effect); the Showcase records and first income (20 Coins, 17 for a Goblin seat); the Normal AI kept legal and plain                                                                                                                                                                                                                                                       |
 
 **Documentation parity (2026-09-28, no ruleset or identity change):** where
 older documents disagreed with the code, the code's behavior was adopted as

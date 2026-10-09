@@ -113,13 +113,13 @@ describe("tuning 1 identity", () => {
   // Tuning 1 took 7r46; tuning 2 (tests/unit/ruleset-v7-tuning-2.test.ts)
   // took 7r47, so 7r46 is the last prior identity.
   it("was 7r46, after 7r45 in the prior list", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r62");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r62.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-17, -15)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r63");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r63.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-18, -16)).toEqual([
       "pulp-wars-poc-7r45",
       "pulp-wars-poc-7r46",
     ]);
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(61);
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(62);
   });
 });
 
@@ -421,24 +421,17 @@ describe("E: the level-reward loop", () => {
   // is choosing its level-6 reward (level 5 before).
   const pendingLevelSix = () => rewardStateV7("JUGGERNAUT", "ORIGINAL");
 
-  // Tuning 4 made the reward unit the first capital's (once per player);
-  // the economy rejig gave it back to every city, once, from level 6. The
-  // second and third city, level 5, and a city that passes at level 6 are
-  // in tests/unit/ruleset-v7-economy-rejig.test.ts.
-  it("offers the reward unit once per city, from level 6; the other choices are Barracks and the Treasury", () => {
-    expect(rewardCandidatesForLevelV7(5)).toEqual(["TREASURY", "BARRACKS"]);
-    expect(rewardCandidatesForLevelV7(6)).toEqual([
-      "JUGGERNAUT",
-      "TREASURY",
-      "BARRACKS",
-    ]);
-    expect(
-      rewardCandidatesForLevelV7(7, [{ reward: "WALLS" }, { reward: "BOOM" }]),
-    ).toEqual(["JUGGERNAUT", "TREASURY", "BARRACKS"]);
-    expect(rewardCandidatesForLevelV7(7, [{ reward: "JUGGERNAUT" }])).toEqual([
-      "TREASURY",
-      "BARRACKS",
-    ]);
+  // Tuning 1 made the reward unit once per city; tuning 4 the first
+  // capital's (once per player); the economy rejig every city's, once,
+  // from level 6. The reward ladder rework (`pulp_wars-zypi`): every level
+  // from 5 offers the giant or the Treasury, with no limit. The second and
+  // third city are in tests/unit/ruleset-v7-economy-rejig.test.ts.
+  it("offers the reward unit at every level from 5; the other choice is the Treasury", () => {
+    for (const level of [5, 6, 7])
+      expect(rewardCandidatesForLevelV7(level)).toEqual([
+        "JUGGERNAUT",
+        "TREASURY",
+      ]);
 
     const fixture = pendingLevelSix();
     const actor = seatIdV7(fixture.state, 0);
@@ -449,7 +442,7 @@ describe("E: the level-reward loop", () => {
         (command) => command.kind === "CHOOSE_CITY_REWARD",
       ),
     ).toEqual(
-      (["JUGGERNAUT", "TREASURY", "BARRACKS"] as const).map((reward) => ({
+      (["JUGGERNAUT", "TREASURY"] as const).map((reward) => ({
         kind: "CHOOSE_CITY_REWARD",
         cityId: city.id,
         reachedLevel: 6,
@@ -462,14 +455,14 @@ describe("E: the level-reward loop", () => {
       ...fixture.command,
       reward: "TREASURY",
     });
-    expect(coins(treasury.state) - coins(fixture.state)).toBe(6);
+    expect(coins(treasury.state) - coins(fixture.state)).toBe(10);
     const taken = applied(fixture.state, 0, fixture.command);
     expect(cityOfV7(taken.state, 0).rewards.at(-1)).toEqual({
       reachedLevel: 6,
       reward: "JUGGERNAUT",
     });
-    // A stored level-5 choice that offers the unit is not a valid state.
-    const five = fixture.state.pendingChoices[0];
+    // A stored level-4 choice that offers the unit is not a valid state.
+    const four = fixture.state.pendingChoices[0];
     expect(
       parseGameStateV7(
         JSON.parse(
@@ -480,12 +473,12 @@ describe("E: the level-reward loop", () => {
                 ? {
                     ...candidate,
                     rewards: candidate.rewards.filter(
-                      (record) => record.reachedLevel < 5,
+                      (record) => record.reachedLevel < 4,
                     ),
                   }
                 : candidate,
             ),
-            pendingChoices: [{ ...five, reachedLevel: 5 }],
+            pendingChoices: [{ ...four, reachedLevel: 4 }],
           }),
         ),
       ),
@@ -494,55 +487,49 @@ describe("E: the level-reward loop", () => {
     expect(refused.accepted).toBe(false);
   });
 
-  it("the level-4 Treasury pays 6 Coins", () => {
+  // The level-4 Treasury of tuning 1 (`TREASURY_6`, 6 Coins) is no longer
+  // offered since `pulp_wars-zypi`; a history that holds it still parses.
+  it("the 6-Coin level-4 Treasury is a record of the old ladder only", () => {
     expect(CITY_REWARD_COINS_V7).toEqual({
       STOCKPILE: 4,
       TREASURY_6: 6,
-      TREASURY: 6,
+      TREASURY: 10,
     });
-    expect(rewardCandidatesForLevelV7(4)).toEqual([
-      "BOOM",
-      "TREASURY_6",
-      "BARRACKS",
-    ]);
+    expect(rewardCandidatesForLevelV7(4)).toEqual(["BOOM", "ECONOMIC_MIRACLE"]);
     const fixture = pendingLevelSix();
-    const actor = seatIdV7(fixture.state, 0);
     const city = cityOfV7(fixture.state, 0);
-    const state = checkedV7({
-      ...fixture.state,
-      cities: fixture.state.cities.map((candidate) =>
-        candidate.id === city.id
-          ? {
-              ...candidate,
-              rewards: candidate.rewards.filter(
-                (record) => record.reachedLevel < 4,
-              ),
-            }
-          : candidate,
-      ),
-      pendingChoices: [
-        {
-          kind: "CITY_REWARD" as const,
-          cityId: city.id,
-          reachedLevel: 4,
-          candidates: ["BOOM", "TREASURY_6", "BARRACKS"] as const,
-        },
-      ],
-    });
-    const result = applied(state, 0, {
-      kind: "CHOOSE_CITY_REWARD",
-      cityId: city.id,
+    expect(city.rewards).toContainEqual({
       reachedLevel: 4,
       reward: "TREASURY_6",
     });
-    expect(result.events[0]).toMatchObject({
-      kind: "CITY_REWARD_CHOSEN",
-      reward: "TREASURY_6",
-      coinDelta: 6,
-    });
-    const coins = (value: GameStateV7) =>
-      value.players.find((player) => player.id === actor)?.coins ?? 0;
-    expect(coins(result.state) - coins(state)).toBe(6);
+    const pendingFour = (candidates: readonly string[]) =>
+      parseGameStateV7(
+        JSON.parse(
+          JSON.stringify({
+            ...fixture.state,
+            cities: fixture.state.cities.map((candidate) =>
+              candidate.id === city.id
+                ? {
+                    ...candidate,
+                    rewards: candidate.rewards.filter(
+                      (record) => record.reachedLevel < 4,
+                    ),
+                  }
+                : candidate,
+            ),
+            pendingChoices: [
+              {
+                kind: "CITY_REWARD",
+                cityId: city.id,
+                reachedLevel: 4,
+                candidates,
+              },
+            ],
+          }),
+        ),
+      );
+    expect(pendingFour(["BOOM", "TREASURY_6", "BARRACKS"])).toBeNull();
+    expect(pendingFour(["BOOM", "ECONOMIC_MIRACLE"])).not.toBeNull();
   });
 
   // The economy rejig (`pulp_wars-w49.16`, 7r54): 3 again (tuning 1 made it

@@ -46,7 +46,7 @@ import { iceFieldV7, type IcePieceV7 } from "../fixtures/v7-ice-folk";
 // Humans against the Ice Folk AI and as the Ice Folk. One rule changed (an
 // Ice Folk city's Survey grants a free Sled, Scouts, as the other five
 // factions of the army policy have), so the identity is
-// `pulp-wars-poc-7r62`. An Ice Folk seat of the Normal AI plays the army
+// `pulp-wars-poc-7r63`. An Ice Folk seat of the Normal AI plays the army
 // rules in a match of Humans, Undead, Goblins, Martians, Dinosaurs, and Ice
 // Folk: it researches toward its own units in its own order, trains before
 // it researches while it is short of capturers, caps its Musk Oxen, counts
@@ -158,14 +158,14 @@ describe("step two of the Ice Folk pass: the identity", () => {
   it("was 7r59 after 7r58, with both save keys obsolete now", () => {
     // (Dwarf crowd control, `pulp_wars-w49.33`, took 7r60, and Goblin
     // explosions and Berserk, `pulp_wars-w49.35`, 7r61.)
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r62");
-    expect(PRIOR_RULESET_7_IDS.slice(-4, -2)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r63");
+    expect(PRIOR_RULESET_7_IDS.slice(-5, -3)).toEqual([
       "pulp-wars-poc-7r58",
       "pulp-wars-poc-7r59",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r62.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-4, -2)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r63.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-5, -3)).toEqual([
       "pulpWars.save.v7r58.current",
       "pulpWars.save.v7r59.current",
     ]);
@@ -175,21 +175,24 @@ describe("step two of the Ice Folk pass: the identity", () => {
 describe("step two of the Ice Folk pass: Scouts", () => {
   it("gives an Ice Folk city's Survey a free Sled", () => {
     expect(SURVEY_RAIDERS_V7.ICE_FOLK).toBe(1);
-    // The two factions outside the army policy are as they were.
-    expect([SURVEY_RAIDERS_V7.DWARF, SURVEY_RAIDERS_V7.CANDY]).toEqual([0, 0]);
+    // The reward ladder rework (`pulp_wars-zypi`): the Dwarves and the
+    // Candy too (a Gyrocopter and a Donut Racer).
+    expect([SURVEY_RAIDERS_V7.DWARF, SURVEY_RAIDERS_V7.CANDY]).toEqual([1, 1]);
     const base = field([own("FIGHTER", 8, 8), foe("FIGHTER", 2, 8)], {
       techs: techsOf("GATHERING", "FARMING"),
     });
     const actor = seatIdV7(base, 0);
     const capital = base.cities.find((city) => city.ownerId === actor);
     if (capital === undefined) throw new Error("capital missing");
-    const farm = at(8, 9);
+    // Since the reward ladder rework (`pulp_wars-zypi`) Scouts is a
+    // level-3 reward: three Farms, through the level-2 Stockpile.
+    const farms = [at(8, 9), at(7, 9), at(9, 9)];
     const state: GameStateV7 = {
       ...base,
       board: {
         ...base.board,
         tiles: base.board.tiles.map((tile) =>
-          same(tile.at, farm)
+          farms.some((farm) => same(tile.at, farm))
             ? {
                 ...tile,
                 biome: "PLAINS" as const,
@@ -201,23 +204,37 @@ describe("step two of the Ice Folk pass: Scouts", () => {
         ),
       },
       players: base.players.map((player) =>
-        player.id === actor ? { ...player, coins: 10 } : player,
+        player.id === actor ? { ...player, coins: 50 } : player,
       ),
     };
-    const built = applyOkV7(state, actor, { kind: "BUILD_FARM", at: farm });
+    let built = applyOkV7(state, actor, { kind: "BUILD_FARM", at: at(8, 9) });
     expect(built.state.pendingChoices[0]).toMatchObject({
       kind: "CITY_REWARD",
       reachedLevel: 2,
+      candidates: ["STOCKPILE", "MILITIA"],
+    });
+    built = applyOkV7(built.state, actor, {
+      kind: "CHOOSE_CITY_REWARD",
+      cityId: capital.id,
+      reachedLevel: 2,
+      reward: "STOCKPILE",
+    });
+    built = applyOkV7(built.state, actor, { kind: "BUILD_FARM", at: at(7, 9) });
+    built = applyOkV7(built.state, actor, { kind: "BUILD_FARM", at: at(9, 9) });
+    expect(built.state.pendingChoices[0]).toMatchObject({
+      kind: "CITY_REWARD",
+      reachedLevel: 3,
+      candidates: ["SURVEY", "WALLS"],
     });
     const chosen = applyOkV7(built.state, actor, {
       kind: "CHOOSE_CITY_REWARD",
       cityId: capital.id,
-      reachedLevel: 2,
+      reachedLevel: 3,
       reward: "SURVEY",
     });
     expect(
       chosen.events.find((event) => event.kind === "UNIT_REWARD_GRANTED"),
-    ).toMatchObject({ role: "RAIDER", reachedLevel: 2 });
+    ).toMatchObject({ role: "RAIDER", reachedLevel: 3 });
     // Without Scouting, beside the garrisoned center.
     const sled = chosen.state.units.find(
       (unit) => unit.ownerId === actor && unit.role === "RAIDER",
@@ -524,6 +541,19 @@ describe("step two of the Ice Folk pass: Chill, then Shatter", () => {
       own("FIGHTER", 8, 8),
       foe("FIGHTER", 5, 3, { hp }),
     ]);
+  /**
+   * The commands of the Sled and the Yeti. The reward ladder rework
+   * (`pulp_wars-zypi`): the free Monument's level-2 reward is the Stockpile
+   * (Scouts and a Sled, which filled the capital, before), so the capital's
+   * garrison steps off and the city trains with the 4 Coins in the same
+   * turn.
+   */
+  const duel = (state: GameStateV7, commands: readonly CommandV7[]) => {
+    const ids = [unitAtV7(state, at(5, 5)).id, unitAtV7(state, at(4, 3)).id];
+    return unitCommands(commands).filter(
+      (command) => "unitId" in command && ids.includes(command.unitId),
+    );
+  };
 
   it("throws the Bolas first, and the Yeti's blow then shatters the Fighter", () => {
     // A Fighter at 9 HP: the Yeti's hit alone leaves 4 (and the Yeti takes
@@ -533,7 +563,7 @@ describe("step two of the Ice Folk pass: Chill, then Shatter", () => {
     const yeti = unitAtV7(state, at(4, 3));
     const fighter = unitAtV7(state, at(5, 3));
     const turn = policyTurn(state);
-    expect(unitCommands(turn.commands).slice(0, 2)).toEqual([
+    expect(duel(state, turn.commands).slice(0, 2)).toEqual([
       { kind: "THROW_BOLAS", unitId: sled.id, targetUnitId: fighter.id },
       { kind: "ATTACK", unitId: yeti.id, targetUnitId: fighter.id },
     ]);
@@ -555,7 +585,7 @@ describe("step two of the Ice Folk pass: Chill, then Shatter", () => {
     // unit does, and the Sled keeps its Bolas.
     const state = position(10);
     const turn = policyTurn(state);
-    expect(unitCommands(turn.commands)).toEqual([
+    expect(duel(state, turn.commands)).toEqual([
       {
         kind: "ATTACK",
         unitId: unitAtV7(state, at(4, 3)).id,

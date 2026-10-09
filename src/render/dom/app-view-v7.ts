@@ -106,6 +106,9 @@ import {
   previewBlastMountainV7,
   publicHireCostV7,
   cityBarracksV7,
+  ECONOMIC_MIRACLE_COINS_V7,
+  REWARD_UNIT_LEVEL_V7,
+  cityEconomicMiracleIncomeV7,
   publicLandGrantPriceV7,
   FIELD_DEFENSE_FORTIFICATION_LEVELS_V7,
   isMindControlledV7,
@@ -4455,19 +4458,13 @@ export class Ruleset7DomAppView {
         text(this.#document, "dt", "Level"),
         text(this.#document, "dd", String(city.level)),
       );
-      // The economy rejig (`pulp_wars-w49.16`, 7r54): every city offers
-      // its faction's giant at level 6, once.
-      if (owned) {
+      // The reward ladder rework (`pulp_wars-zypi`): every level from
+      // `REWARD_UNIT_LEVEL_V7` (5) offers the faction's giant or the
+      // Treasury, with no once-per-city limit.
+      if (owned)
         level.title = rewardGiantOfferTextV7(
           effectiveRoleRuleV7("JUGGERNAUT", view.viewer.faction).label,
-          city.rewards.some((entry) => entry.reward === "JUGGERNAUT"),
         );
-        level.dataset.giant = city.rewards.some(
-          (entry) => entry.reward === "JUGGERNAUT",
-        )
-          ? "taken"
-          : "offered-at-6";
-      }
       const growth = el(this.#document, "div", "v7-city-stat");
       growth.dataset.stat = "population";
       growth.title = "Population until the next level";
@@ -6876,15 +6873,13 @@ export class Ruleset7DomAppView {
       text(
         this.#document,
         "p",
-        // The economy rejig (`pulp_wars-w49.16`, 7r54): below the giant's
-        // level, say when this city offers it.
+        // The economy rejig (`pulp_wars-w49.16`, 7r54): the choice of the
+        // level below the giant's says when this city offers it (level 4
+        // since the reward ladder rework, `pulp_wars-zypi`).
         `${cityNameByIdV7(view, choice.cityId) ?? "A city"} grew. Pick a reward.${
-          choice.reachedLevel >= 4 &&
-          !choice.candidates.includes("JUGGERNAUT") &&
-          city !== undefined
+          choice.reachedLevel === REWARD_UNIT_LEVEL_V7 - 1 && city !== undefined
             ? ` ${rewardGiantOfferTextV7(
                 effectiveRoleRuleV7("JUGGERNAUT", view.viewer.faction).label,
-                city.rewards.some((entry) => entry.reward === "JUGGERNAUT"),
               )}.`
             : ""
         }`,
@@ -10723,7 +10718,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffff_ffff)
     return null;
   return {
-    rulesetId: "pulp-wars-poc-7r62",
+    rulesetId: "pulp-wars-poc-7r63",
     seed,
     width: effectiveBoardSize(draft),
     height: effectiveBoardSize(draft),
@@ -10764,6 +10759,8 @@ export function cityIncomeForViewerV7(
     1,
     cityLevelIncomeV7(city.level) +
       (city.isCapital ? 1 : 0) +
+      // `pulp_wars-zypi`: the city's Economic Miracle rewards.
+      cityEconomicMiracleIncomeV7(city) +
       Number(view.naval.landTradeCityIds.includes(city.id)) *
         LAND_TRADE_INCOME_COINS_V7 +
       Number(view.naval.seaTradeCityIds.includes(city.id)) +
@@ -11375,16 +11372,33 @@ function rewardLabel(
               // Step two of the Ice Folk pass (`pulp_wars-w49.27`): and
               // the Sled (a hand player's capital of level 2 was full
               // with it and could not train in round 4).
-              `${scoutsRewardTextV7(effectiveRoleRuleV7("RAIDER", faction).label)}${faction === "MARTIAN" || faction === "DINOSAUR" || faction === "ICE_FOLK" ? " (uses a unit slot)" : ""}`,
+              // `pulp_wars-zypi`: and the Dwarf Gyrocopter and the Candy
+              // Donut Racer, now that every faction's Scouts has a unit.
+              `${scoutsRewardTextV7(effectiveRoleRuleV7("RAIDER", faction).label)}${faction === "MARTIAN" || faction === "DINOSAUR" || faction === "ICE_FOLK" || faction === "DWARF" || faction === "CANDY" ? " (uses a unit slot)" : ""}`,
         ]
       : ["Survey", "Reveal the area"];
   if (reward === "STOCKPILE") return ["Stockpile", "+4 Coins"];
   if (reward === "WALLS") return ["Walls", "Stronger city defense"];
-  if (reward === "MILITIA") return ["Militia", "A free Fighter"];
-  if (reward === "BOOM") return ["Boom", "+3 population"];
+  // `pulp_wars-zypi`: the faction's own Fighter and giant names, so a
+  // Candy seat reads a Toffee Trooper and a Gingerbread Giant (a Human
+  // one still a Fighter and a Juggernaut).
+  if (reward === "MILITIA")
+    return [
+      "Militia",
+      `A free ${effectiveRoleRuleV7("FIGHTER", faction).label}`,
+    ];
+  // `pulp_wars-zypi`: the user's names, Population Boom and Economic
+  // Miracle, for the two level-4 rewards.
+  if (reward === "BOOM") return ["Population Boom", "+3 population"];
+  if (reward === "ECONOMIC_MIRACLE")
+    return [
+      "Economic Miracle",
+      `+${ECONOMIC_MIRACLE_COINS_V7} Coin every turn from this city`,
+    ];
   if (reward === "TREASURY_6")
     return ["Treasury", `+${CITY_REWARD_COINS_V7.TREASURY_6} Coins`];
-  if (reward === "JUGGERNAUT") return ["Juggernaut", "A giant unit"];
+  if (reward === "JUGGERNAUT")
+    return [effectiveRoleRuleV7("JUGGERNAUT", faction).label, "A giant unit"];
   return [title(reward), ""];
 }
 

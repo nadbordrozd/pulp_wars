@@ -462,7 +462,7 @@ describe("Ruleset 7 revision 11 city logistics", () => {
       kind: "CHOOSE_CITY_REWARD",
       cityId: city.id,
       reachedLevel: 2,
-      reward: "SURVEY",
+      reward: "STOCKPILE",
     });
     expect(levelTwo.accepted).toBe(true);
     if (!levelTwo.accepted) return;
@@ -477,16 +477,18 @@ describe("Ruleset 7 revision 11 city logistics", () => {
       cityId: city.id,
       reachedLevel: 3,
     });
+    // The reward ladder rework (`pulp_wars-zypi`): the level-3 reward
+    // unit is the Scouts Raider (the Militia is a level-2 reward).
     const rewarded = applyCommandV7(moreGrowth, actor, {
       kind: "CHOOSE_CITY_REWARD",
       cityId: city.id,
       reachedLevel: 3,
-      reward: "MILITIA",
+      reward: "SURVEY",
     });
     expect(rewarded.accepted).toBe(true);
     if (!rewarded.accepted) return;
     expect(rewarded.events).toContainEqual(
-      expect.objectContaining({ kind: "UNIT_REWARD_GRANTED", role: "FIGHTER" }),
+      expect.objectContaining({ kind: "UNIT_REWARD_GRANTED", role: "RAIDER" }),
     );
     expect(
       rewarded.state.cities.find((candidate) => candidate.id === city.id),
@@ -1158,8 +1160,8 @@ describe("Ruleset 7 revision 11 city logistics", () => {
   });
 
   it("publishes the exact revision-11 identity", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r62");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r62.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r63");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r63.current");
   });
 });
 

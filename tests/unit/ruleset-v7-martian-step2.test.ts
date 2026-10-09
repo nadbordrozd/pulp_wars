@@ -47,7 +47,7 @@ import {
 import { checkedV7 } from "../fixtures/v7-builders";
 import { martianFieldV7, offeredV7 } from "../fixtures/v7-martian";
 
-// Step two of the Martian pass (`pulp_wars-w49.25`, `pulp-wars-poc-7r62`,
+// Step two of the Martian pass (`pulp_wars-w49.25`, `pulp-wars-poc-7r63`,
 // docs/product/RULESET_7_TUNING_MARTIAN.md section 14): hand-played games as
 // the Humans against the Martian AI and as the Martians. One rule changed:
 // City Walls hold a unit on its own city center against a Saucer's Tractor
@@ -257,14 +257,14 @@ describe("step two of the Martian pass: the identity", () => {
     // (Step two of the Ice Folk pass, `pulp_wars-w49.27`, took 7r59,
     // Dwarf crowd control, `pulp_wars-w49.33`, 7r60, and Goblin explosions
     // and Berserk, `pulp_wars-w49.35`, 7r61.)
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r62");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r62.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-5, -3)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r63");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r63.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-6, -4)).toEqual([
       "pulp-wars-poc-7r57",
       "pulp-wars-poc-7r58",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-5, -3)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-6, -4)).toEqual([
       "pulpWars.save.v7r57.current",
       "pulpWars.save.v7r58.current",
     ]);
@@ -503,7 +503,10 @@ describe("step two of the Martian pass: the Martian Normal AI's opening", () => 
     expect(kinds.indexOf("RESEARCH")).toBeLessThan(kinds.indexOf("CAPTURE"));
   });
 
-  it("makes its opening harvest with the Coins of its growth technology and takes the free Saucer", () => {
+  // The reward ladder rework (`pulp_wars-zypi`): the level-2 reward is the
+  // Stockpile or the Militia (Scouts, with the free Saucer, before), and
+  // this seat, short of Grunts, takes the Militia's free Grunt.
+  it("makes its opening harvest with the Coins of its growth technology and takes the free Grunt", () => {
     // Round 1: Gathering, 5 Coins, two Fruit in the capital's land, Fertile
     // Ground (so Farming, 7 Coins, is the target and 5 Coins are kept for
     // it). The seat kept the 5 Coins and harvested nothing; and with 1 Coin
@@ -532,15 +535,19 @@ describe("step two of the Martian pass: the Martian Normal AI's opening", () => 
       turn.commands.flatMap((command) =>
         command.kind === "CHOOSE_CITY_REWARD" ? [command.reward] : [],
       ),
-    ).toEqual(["SURVEY"]);
-    expect(
-      turn.state.units.filter(
-        (unit) => unit.ownerId === seatIdV7(start, 0) && unit.role === "RAIDER",
-      ),
-    ).toHaveLength(1);
+    ).toEqual(["MILITIA"]);
+    const grunts = (state: GameStateV7) =>
+      state.units.filter(
+        (unit) =>
+          unit.ownerId === seatIdV7(start, 0) && unit.role === "FIGHTER",
+      ).length;
+    expect(grunts(turn.state)).toBe(grunts(start) + 1);
   });
 
-  it("on the recorded opening (seed 9, round 8) trains three Grunts where it bought Force Fields and nothing else", () => {
+  // The reward ladder rework (`pulp_wars-zypi`): it still gets three Grunts
+  // and buys no technology: two trained and the Militia's free one, now the
+  // village's level-2 reward (three trained and Scouts' free Saucer before).
+  it("on the recorded opening (seed 9, round 8) gets three Grunts where it bought Force Fields and nothing else", () => {
     // Four cities, three Grunts, two Saucers, 14 Coins, the root owned.
     const start = recorded("ruleset-v7-martian-opening");
     const seat = start.players.find((player) => player.faction === "MARTIAN");
@@ -554,14 +561,19 @@ describe("step two of the Martian pass: the Martian Normal AI's opening", () => 
       ),
     ).toHaveLength(3);
     const turn = policyTurn(start);
-    expect(trainedIn(turn.commands)).toEqual(["FIGHTER", "FIGHTER", "FIGHTER"]);
+    expect(trainedIn(turn.commands)).toEqual(["FIGHTER", "FIGHTER"]);
     expect(kindsOf(turn.commands)).not.toContain("RESEARCH");
-    // And the fruit of a village takes it to level 2: another free Saucer.
+    // And the fruit of a village takes it to level 2: a free Grunt.
     expect(
       turn.commands.flatMap((command) =>
         command.kind === "CHOOSE_CITY_REWARD" ? [command.reward] : [],
       ),
-    ).toEqual(["SURVEY"]);
+    ).toEqual(["MILITIA"]);
+    expect(
+      turn.state.units.filter(
+        (unit) => unit.ownerId === seat?.id && unit.role === "FIGHTER",
+      ),
+    ).toHaveLength(6);
   });
 });
 

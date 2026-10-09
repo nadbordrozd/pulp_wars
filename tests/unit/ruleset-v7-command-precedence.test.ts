@@ -37,13 +37,13 @@ describe("ruleset-7 mandatory reward and Knight Overrun command precedence", () 
         kind: "CHOOSE_CITY_REWARD",
         cityId: fixture.cityId,
         reachedLevel: 2,
-        reward: "SURVEY",
+        reward: "STOCKPILE",
       },
       {
         kind: "CHOOSE_CITY_REWARD",
         cityId: fixture.cityId,
         reachedLevel: 2,
-        reward: "STOCKPILE",
+        reward: "MILITIA",
       },
     ]);
     for (const command of offered) {
@@ -88,7 +88,7 @@ describe("ruleset-7 mandatory reward and Knight Overrun command precedence", () 
           kind: "CHOOSE_CITY_REWARD",
           cityId: enemyCityId,
           reachedLevel: 2,
-          reward: "SURVEY",
+          reward: "STOCKPILE",
         },
         code: "PENDING_CHOICE",
       },
@@ -149,13 +149,13 @@ describe("ruleset-7 mandatory reward and Knight Overrun command precedence", () 
         kind: "CHOOSE_CITY_REWARD",
         cityId: fixture.cityId,
         reachedLevel: 3,
-        reward: "WALLS",
+        reward: "SURVEY",
       },
       {
         kind: "CHOOSE_CITY_REWARD",
         cityId: fixture.cityId,
         reachedLevel: 3,
-        reward: "MILITIA",
+        reward: "WALLS",
       },
     ]);
     expect(horse(first.state, fixture).activation).toEqual(activation);
@@ -164,17 +164,19 @@ describe("ruleset-7 mandatory reward and Knight Overrun command precedence", () 
       kind: "CHOOSE_CITY_REWARD",
       cityId: fixture.cityId,
       reachedLevel: 3,
-      reward: "MILITIA",
+      reward: "SURVEY",
     });
     if (!final.accepted) throw new Error(final.error.code);
     expect(final.state.pendingChoices).toEqual([]);
     expect(horse(final.state, fixture).activation).toEqual(activation);
-    const militia = final.state.units.find(
+    // The reward ladder rework (`pulp_wars-zypi`): level 2 Stockpile or
+    // Militia, level 3 Scouts (with the Human Raider) or Walls.
+    const scout = final.state.units.find(
       (unit) =>
         !first.state.units.some((candidate) => candidate.id === unit.id),
     );
-    expect(militia).toMatchObject({
-      role: "FIGHTER",
+    expect(scout).toMatchObject({
+      role: "RAIDER",
       activation: {
         moved: true,
         attacked: true,
@@ -277,7 +279,7 @@ function precedenceFixture(cityLevel: 2 | 3): PrecedenceFixture {
         kind: "CITY_REWARD",
         cityId: city.id,
         reachedLevel: 2,
-        candidates: ["SURVEY", "STOCKPILE"],
+        candidates: ["STOCKPILE", "MILITIA"],
       },
     ],
     treasureChests: base.treasureChests.filter(

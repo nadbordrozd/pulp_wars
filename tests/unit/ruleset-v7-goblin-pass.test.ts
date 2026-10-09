@@ -139,13 +139,13 @@ describe("the Goblin pass: identity", () => {
   // pass 7r53 (tests/unit/ruleset-v7-dinosaur-pass.test.ts), and the
   // economy rejig 7r54, so 7r50 is a prior identity.
   it("was 7r50 after 7r49, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r62");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r62.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-13, -11)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r63");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r63.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-14, -12)).toEqual([
       "pulp-wars-poc-7r49",
       "pulp-wars-poc-7r50",
     ]);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-13, -11)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-14, -12)).toEqual([
       "pulpWars.save.v7r49.current",
       "pulpWars.save.v7r50.current",
     ]);
@@ -796,28 +796,32 @@ describe("the Goblin pass: Scouts", () => {
       MARTIAN: 1,
       // Step two of the Ice Folk pass (7r59): a Sled.
       ICE_FOLK: 1,
-      DWARF: 0,
-      CANDY: 0,
+      // The reward ladder rework (`pulp_wars-zypi`): a Gyrocopter and a
+      // Donut Racer.
+      DWARF: 1,
+      CANDY: 1,
     });
-    // A Goblin capital that reaches level 2 with two Farms and takes it.
+    // A Goblin capital that reaches level 3 with three Farms (through the
+    // level-2 Stockpile) and takes it: Scouts is a level-3 reward since the
+    // reward ladder rework (`pulp_wars-zypi`; level 2 before).
     const base = goblinArenaV7(
       ["GOBLIN", "ORIGINAL"],
       [
         { seat: 0, role: "FIGHTER", at: at(8, 8) },
         { seat: 1, role: "FIGHTER", at: at(2, 8) },
       ],
-      { techs: { 0: ["GATHERING", "FARMING"], 1: [] } },
+      { techs: { 0: ["GATHERING", "FARMING"], 1: [] }, coins: 50 },
     );
     const actor = seatIdV7(base, 0);
     const capital = base.cities.find((city) => city.ownerId === actor);
     if (capital === undefined) throw new Error("capital missing");
-    const farm = at(8, 9);
+    const farms = [at(8, 9), at(7, 9), at(9, 9)];
     const state: GameStateV7 = {
       ...base,
       board: {
         ...base.board,
         tiles: base.board.tiles.map((tile) =>
-          tile.at.x === farm.x && tile.at.y === farm.y
+          farms.some((farm) => tile.at.x === farm.x && tile.at.y === farm.y)
             ? {
                 ...tile,
                 biome: "PLAINS" as const,
@@ -829,19 +833,36 @@ describe("the Goblin pass: Scouts", () => {
         ),
       },
     };
-    const built = applyOkV7(state, actor, { kind: "BUILD_FARM", at: farm });
-    const pending = built.state.pendingChoices[0];
-    expect(pending).toMatchObject({ kind: "CITY_REWARD", reachedLevel: 2 });
-    const chosen = applyOkV7(built.state, actor, {
+    let built = applyOkV7(state, actor, { kind: "BUILD_FARM", at: at(8, 9) });
+    expect(built.state.pendingChoices[0]).toMatchObject({
+      kind: "CITY_REWARD",
+      reachedLevel: 2,
+      candidates: ["STOCKPILE", "MILITIA"],
+    });
+    built = applyOkV7(built.state, actor, {
       kind: "CHOOSE_CITY_REWARD",
       cityId: capital.id,
       reachedLevel: 2,
+      reward: "STOCKPILE",
+    });
+    built = applyOkV7(built.state, actor, { kind: "BUILD_FARM", at: at(7, 9) });
+    built = applyOkV7(built.state, actor, { kind: "BUILD_FARM", at: at(9, 9) });
+    const pending = built.state.pendingChoices[0];
+    expect(pending).toMatchObject({
+      kind: "CITY_REWARD",
+      reachedLevel: 3,
+      candidates: ["SURVEY", "WALLS"],
+    });
+    const chosen = applyOkV7(built.state, actor, {
+      kind: "CHOOSE_CITY_REWARD",
+      cityId: capital.id,
+      reachedLevel: 3,
       reward: "SURVEY",
     });
     const granted = chosen.events.find(
       (event) => event.kind === "UNIT_REWARD_GRANTED",
     );
-    expect(granted).toMatchObject({ role: "RAIDER", reachedLevel: 2 });
+    expect(granted).toMatchObject({ role: "RAIDER", reachedLevel: 3 });
     const rider = chosen.state.units.find(
       (unit) => unit.ownerId === actor && unit.role === "RAIDER",
     );

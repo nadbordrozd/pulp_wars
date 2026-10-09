@@ -121,7 +121,7 @@ import {
   walledV7,
 } from "../fixtures/v7-revision20";
 
-// The Dinosaur pass (`pulp_wars-w49.15`, `pulp-wars-poc-7r62`,
+// The Dinosaur pass (`pulp_wars-w49.15`, `pulp-wars-poc-7r63`,
 // docs/product/RULESET_7_TUNING_DINOSAUR.md): Scouts for a Dinosaur city (a
 // free Raptor); a Triceratops's run-up counts one tile, two with
 // Wallbreaker; the Caveman's Pack Hunt; a Dinosaur Market hires a dinosaur
@@ -206,15 +206,15 @@ describe("the Dinosaur pass: identity", () => {
   // The economy rejig (tests/unit/ruleset-v7-economy-rejig.test.ts) took
   // 7r54, so 7r53 is the last prior identity.
   it("was 7r53 after 7r52, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r62");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r62.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r63");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r63.current");
     // The ninth unit (`pulp_wars-w49.17`) took 7r55, so 7r54 is prior too.
-    expect(PRIOR_RULESET_7_IDS.slice(-10, -7)).toEqual([
+    expect(PRIOR_RULESET_7_IDS.slice(-11, -8)).toEqual([
       "pulp-wars-poc-7r52",
       "pulp-wars-poc-7r53",
       "pulp-wars-poc-7r54",
     ]);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-10, -7)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-11, -8)).toEqual([
       "pulpWars.save.v7r52.current",
       "pulpWars.save.v7r53.current",
       "pulpWars.save.v7r54.current",
@@ -300,36 +300,58 @@ describe("the Dinosaur pass: Scouts", () => {
       MARTIAN: 1,
       // Step two of the Ice Folk pass (7r59): a Sled.
       ICE_FOLK: 1,
-      DWARF: 0,
-      CANDY: 0,
+      // The reward ladder rework (`pulp_wars-zypi`): a Gyrocopter and a
+      // Donut Racer.
+      DWARF: 1,
+      CANDY: 1,
     });
     const base = asDinosaur([own("FIGHTER", 8, 8), foe("FIGHTER", 2, 8)], {
       techs: { 0: techsOf("GATHERING", "FARMING"), 1: [] },
+      coins: 50,
     });
     const actor = seatIdV7(base, 0);
     const capital = base.cities.find((city) => city.ownerId === actor);
     if (capital === undefined) throw new Error("capital missing");
-    const farm = at(8, 9);
-    const state = patchTileV7(base, farm, {
-      biome: "PLAINS",
-      terrain: "GRASS",
-      resource: "FERTILE_GROUND",
-      improvement: null,
-    });
-    const built = applyOkV7(state, actor, { kind: "BUILD_FARM", at: farm });
+    // Since the reward ladder rework (`pulp_wars-zypi`) Scouts is a
+    // level-3 reward: three Farms take the capital to level 3, through the
+    // level-2 Stockpile.
+    const farms = [at(8, 9), at(7, 9), at(9, 9)];
+    let state = base;
+    for (const farm of farms)
+      state = patchTileV7(state, farm, {
+        biome: "PLAINS",
+        terrain: "GRASS",
+        resource: "FERTILE_GROUND",
+        improvement: null,
+      });
+    let built = applyOkV7(state, actor, { kind: "BUILD_FARM", at: at(8, 9) });
     expect(built.state.pendingChoices[0]).toMatchObject({
       kind: "CITY_REWARD",
       reachedLevel: 2,
+      candidates: ["STOCKPILE", "MILITIA"],
+    });
+    built = applyOkV7(built.state, actor, {
+      kind: "CHOOSE_CITY_REWARD",
+      cityId: capital.id,
+      reachedLevel: 2,
+      reward: "STOCKPILE",
+    });
+    built = applyOkV7(built.state, actor, { kind: "BUILD_FARM", at: at(7, 9) });
+    built = applyOkV7(built.state, actor, { kind: "BUILD_FARM", at: at(9, 9) });
+    expect(built.state.pendingChoices[0]).toMatchObject({
+      kind: "CITY_REWARD",
+      reachedLevel: 3,
+      candidates: ["SURVEY", "WALLS"],
     });
     const chosen = applyOkV7(built.state, actor, {
       kind: "CHOOSE_CITY_REWARD",
       cityId: capital.id,
-      reachedLevel: 2,
+      reachedLevel: 3,
       reward: "SURVEY",
     });
     expect(
       chosen.events.find((event) => event.kind === "UNIT_REWARD_GRANTED"),
-    ).toMatchObject({ role: "RAIDER", reachedLevel: 2 });
+    ).toMatchObject({ role: "RAIDER", reachedLevel: 3 });
     // Without Scouting; no Egg: a hatched Raptor beside the garrisoned
     // center, homed to the city.
     const raptor = chosen.state.units.find(
@@ -1249,7 +1271,10 @@ describe("the Dinosaur pass: Dinosaur seats play the army rules", () => {
       });
   });
 
-  it("takes Scouts at level 2 whatever its Coins, for the free Raptor", () => {
+  // The reward ladder rework (`pulp_wars-zypi`): Scouts is a level-3
+  // reward, beside Walls, and every seat of the Normal AI takes it for a
+  // city that is not threatened (the Dinosaur pass took it at level 2).
+  it("takes Scouts at level 3 whatever its Coins, for the free Raptor", () => {
     const choice = (opponent: FactionIdV7, coins: number) => {
       const state = asDinosaur(
         [own("FIGHTER", 8, 7), foe("FIGHTER", 2, 2)],
@@ -1263,14 +1288,20 @@ describe("the Dinosaur pass: Dinosaur seats play the army rules", () => {
       const pending: GameStateV7 = {
         ...state,
         cities: state.cities.map((city) =>
-          city.id === capital.id ? { ...city, level: 2 } : city,
+          city.id === capital.id
+            ? {
+                ...city,
+                level: 3,
+                rewards: [{ reachedLevel: 2, reward: "STOCKPILE" as const }],
+              }
+            : city,
         ),
         pendingChoices: [
           {
             kind: "CITY_REWARD",
             cityId: capital.id,
-            reachedLevel: 2,
-            candidates: ["STOCKPILE", "SURVEY"],
+            reachedLevel: 3,
+            candidates: ["SURVEY", "WALLS"],
           },
         ],
       };
@@ -1282,10 +1313,9 @@ describe("the Dinosaur pass: Dinosaur seats play the army rules", () => {
       expect(choice("ORIGINAL", coins), String(coins)).toMatchObject({
         reward: "SURVEY",
       });
-    // A Dinosaur seat that plays no army rules keeps the older choice
-    // (against a Candy seat since step two of the Dwarf pass,
-    // `pulp_wars-w49.28`).
-    expect(choice("CANDY", 0)).toMatchObject({ reward: "STOCKPILE" });
+    // So does a Dinosaur seat that plays no army rules (against a Candy
+    // seat since step two of the Dwarf pass, `pulp_wars-w49.28`).
+    expect(choice("CANDY", 0)).toMatchObject({ reward: "SURVEY" });
     expect(choice("CANDY", 20)).toMatchObject({ reward: "SURVEY" });
   });
 

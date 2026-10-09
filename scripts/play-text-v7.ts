@@ -148,6 +148,8 @@ import {
   previewBlastMountainV7,
   publicHireCostV7,
   cityBarracksV7,
+  cityEconomicMiracleIncomeV7,
+  ECONOMIC_MIRACLE_COINS_V7,
   BLAST_MOUNTAIN_COST_V7,
   CITY_REWARD_COINS_V7,
   PILLAGE_COINS_V7,
@@ -731,6 +733,8 @@ function cityIncomeV7(view: PlayerViewV7, city: PublicCityV7): number {
     1,
     cityLevelIncomeV7(city.level) +
       (city.isCapital ? 1 : 0) +
+      // `pulp_wars-zypi`: the city's Economic Miracle rewards.
+      cityEconomicMiracleIncomeV7(city) +
       Number(view.naval.landTradeCityIds.includes(city.id)) *
         LAND_TRADE_INCOME_COINS_V7 +
       Number(view.naval.seaTradeCityIds.includes(city.id)) +
@@ -1257,7 +1261,9 @@ const REWARD_TEXT_V7: Readonly<Record<string, string>> = {
   STOCKPILE: "+4 Coins",
   WALLS: "City Walls: stronger defense on the city center",
   MILITIA: "free basic unit(s) of your faction",
-  BOOM: "+3 population",
+  BOOM: "Population Boom: +3 population",
+  // `pulp_wars-zypi`.
+  ECONOMIC_MIRACLE: `Economic Miracle: +${ECONOMIC_MIRACLE_COINS_V7} Coin of this city's income every turn`,
   TREASURY_6: "+6 Coins",
   JUGGERNAUT: "a free giant unit",
   TREASURY: `+${CITY_REWARD_COINS_V7.TREASURY} Coins`,
@@ -1950,7 +1956,7 @@ function describeCommandV7(
     case "CHOOSE_CITY_REWARD": {
       const special =
         command.reward === "JUGGERNAUT"
-          ? `a free ${effectiveRoleRuleV7("JUGGERNAUT", view.viewer.faction).label} (this city's giant, once per city from level ${REWARD_UNIT_LEVEL_V7}; it may stand above the unit limit)`
+          ? `a free ${effectiveRoleRuleV7("JUGGERNAUT", view.viewer.faction).label} (this city's giant, offered at every level from ${REWARD_UNIT_LEVEL_V7}; it may stand above the unit limit)`
           : command.reward === "MILITIA"
             ? `${MILITIA_FIGHTERS_V7[view.viewer.faction] === 1 ? "one free" : "two free"} ${effectiveRoleRuleV7("FIGHTER", view.viewer.faction).label}${MILITIA_FIGHTERS_V7[view.viewer.faction] === 1 ? "" : "s"} at the city (a reward unit may stand above the unit limit)`
             : command.reward === "SURVEY" &&
@@ -3575,16 +3581,14 @@ function viewLinesV7(session: SessionV7, full: boolean): string[] {
     );
     // The Martian pass, correction: where the giant unit comes from (a
     // tester reached level 5 in another city and never found it). The
-    // economy rejig (`pulp_wars-w49.16`, 7r54): every city offers it, once,
-    // from level 6; level 5 offers the Treasury or Barracks. (Printed from
-    // level 4, two levels before the offer, so that a wide empire's view
-    // does not grow by a line for every village.)
-    if (
-      city.level >= REWARD_UNIT_LEVEL_V7 - 2 &&
-      !city.rewards.some((entry) => entry.reward === "JUGGERNAUT")
-    )
+    // reward ladder rework (`pulp_wars-zypi`): every level from
+    // `REWARD_UNIT_LEVEL_V7` (5) offers it or the Treasury, in every city,
+    // with no once-per-city limit. (Printed from level 4, the level before
+    // the offer, so that a wide empire's view does not grow by a line for
+    // every village.)
+    if (city.level >= REWARD_UNIT_LEVEL_V7 - 1)
       lines.push(
-        `   giant unit: a free ${effectiveRoleRuleV7("JUGGERNAUT", view.viewer.faction).label} is offered to this city once, as a level reward at level ${REWARD_UNIT_LEVEL_V7} or higher (every city of yours offers its own; level 5 offers Treasury or Barracks)`,
+        `   giant unit: every level of this city from ${REWARD_UNIT_LEVEL_V7} offers a free ${effectiveRoleRuleV7("JUGGERNAUT", view.viewer.faction).label} or ${CITY_REWARD_COINS_V7.TREASURY} Coins`,
       );
     // Tuning 5 (`pulp_wars-w49.4`): two things the numbers do not say.
     // The level term of income stops at 4, so more population past level 4
@@ -3621,6 +3625,11 @@ function viewLinesV7(session: SessionV7, full: boolean): string[] {
     if (cityBarracksV7(city) > 0)
       lines.push(
         `   barracks x${cityBarracksV7(city)}: +${cityBarracksV7(city)} unit slot(s)`,
+      );
+    // `pulp_wars-zypi`: the Economic Miracle's Coins, in the income above.
+    if (cityEconomicMiracleIncomeV7(city) > 0)
+      lines.push(
+        `   economic miracle: +${cityEconomicMiracleIncomeV7(city)} income every turn`,
       );
     // Tuning 2 (7r47): Commerce's capital rule, city by city.
     const landTrade = landTradeStatusV7(view, city.id);

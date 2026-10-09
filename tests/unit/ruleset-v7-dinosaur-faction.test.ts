@@ -126,22 +126,22 @@ const EGG_LAID_ROLES: readonly UnitRoleIdV7[] = [
 
 describe("ruleset-7 revision-19 identity", () => {
   it("keeps r18 among the gap-free prior identities after the r55 identity, and the save key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r62");
-    expect(RULESET_7.id).toBe("pulp-wars-poc-7r62");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r62.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r63");
+    expect(RULESET_7.id).toBe("pulp-wars-poc-7r63");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r63.current");
     expect([...PRIOR_RULESET_7_IDS]).toEqual([
       "pulp-wars-poc-7",
       ...Array.from(
-        { length: 60 },
+        { length: 61 },
         (_, index) => `pulp-wars-poc-7r${index + 2}`,
       ),
     ]);
-    expect(PRIOR_RULESET_7_IDS.at(-44)).toBe("pulp-wars-poc-7r18");
+    expect(PRIOR_RULESET_7_IDS.at(-45)).toBe("pulp-wars-poc-7r18");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
     expect([...OBSOLETE_SAVE_STORAGE_KEYS_V7]).toEqual([
       "pulpWars.save.v7.current",
       ...Array.from(
-        { length: 60 },
+        { length: 61 },
         (_, index) => `pulpWars.save.v7r${index + 2}.current`,
       ),
     ]);
@@ -179,7 +179,7 @@ describe("ruleset-7 revision-19 identity", () => {
     const setup = goblinSetupV7(["DINOSAUR", "ORIGINAL"]);
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
-    expect(created.state.rulesetId).toBe("pulp-wars-poc-7r62");
+    expect(created.state.rulesetId).toBe("pulp-wars-poc-7r63");
     const oldSetup = { ...setup, rulesetId: "pulp-wars-poc-7r18" };
     expect(parseMatchSetupV7(setup)).not.toBeNull();
     expect(parseMatchSetupV7(oldSetup)).toBeNull();
@@ -1580,9 +1580,11 @@ describe("ruleset-7 Dinosaur Showcase", () => {
     // The first income is the Human one (19 since land trade pays 2 Coins;
     // tuning 1, 7r46).
     // Tuning 3: 21, since the linked capital earns land trade too.
-    // Tuning 4: 18, since land trade pays 1 Coin.
-    expect(playerIncomeV7(state, dinosaurId).totalCoins).toBe(18);
-    expect(playerIncomeV7(reference, dinosaurId).totalCoins).toBe(18);
+    // Tuning 4: 18, since land trade pays 1 Coin. 20 since the reward
+    // ladder rework (`pulp_wars-zypi`): North's and Coast's level-4 record
+    // is the Economic Miracle (+1 Coin each).
+    expect(playerIncomeV7(state, dinosaurId).totalCoins).toBe(20);
+    expect(playerIncomeV7(reference, dinosaurId).totalCoins).toBe(20);
   });
 
   it("cannot train or lay in the over-capacity capital but can in North and at the Coast docks", () => {

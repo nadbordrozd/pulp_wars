@@ -45,8 +45,8 @@ const READY: UnitStateV7["activation"] = {
 
 describe("Ruleset 7 revision 10 playtest corrections", () => {
   it("uses the exact current identity while retaining numeric schema 7", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r62");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r62.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r63");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r63.current");
     expect(initialV7().schemaVersion).toBe(7);
   });
 
@@ -977,7 +977,7 @@ function occupiedRewardState(
   readonly command: {
     readonly kind: "CHOOSE_CITY_REWARD";
     readonly cityId: CityId;
-    readonly reachedLevel: 3 | 6;
+    readonly reachedLevel: 2 | 6;
     readonly reward: "MILITIA" | "JUGGERNAUT";
   };
 } {
@@ -989,8 +989,10 @@ function occupiedRewardState(
   // reward (level 5 before). Level 6 takes 20 population and the city
   // holds seven Farms (14), so six Farm tiles also carry a hunt (1
   // permanent population each), as in `rewardStateV7`.
-  const reachedLevel = reward === "MILITIA" ? 3 : 6;
-  const addedPopulation = reward === "MILITIA" ? 6 : 14;
+  // The reward ladder rework (`pulp_wars-zypi`): Militia is a level-2
+  // reward (level 3 before).
+  const reachedLevel = reward === "MILITIA" ? 2 : 6;
+  const addedPopulation = reward === "MILITIA" ? 2 : 14;
   const addedPermanent = reward === "MILITIA" ? 0 : 6;
   const farmCount = addedPopulation / 2;
   const growthTiles = fixture.state.board.tiles
@@ -1014,7 +1016,7 @@ function occupiedRewardState(
   ).city;
   const previousRewards =
     reward === "MILITIA"
-      ? [{ reachedLevel: 2, reward: "SURVEY" as const }]
+      ? []
       : [
           { reachedLevel: 2, reward: "SURVEY" as const },
           { reachedLevel: 3, reward: "WALLS" as const },
@@ -1023,8 +1025,8 @@ function occupiedRewardState(
         ];
   const candidates =
     reward === "MILITIA"
-      ? (["WALLS", "MILITIA"] as const)
-      : (["JUGGERNAUT", "TREASURY", "BARRACKS"] as const);
+      ? (["STOCKPILE", "MILITIA"] as const)
+      : (["JUGGERNAUT", "TREASURY"] as const);
   const state = checkedV7({
     ...fixture.state,
     nextEntityId:

@@ -91,7 +91,7 @@ const browser = spawn(
 const errors: string[] = [];
 const evidence: Record<string, unknown> = {};
 const REVIEW = "globalThis.__DWARF_REVIEW__";
-const SAVE_KEY = "pulpWars.save.v7r62.current";
+const SAVE_KEY = "pulpWars.save.v7r63.current";
 const only = process.argv
   .slice(2)
   .find((argument) => argument.startsWith("--only="))

@@ -12208,7 +12208,10 @@ function scoreCommandWithContext(
             ? 15
             : command.reward === "JUGGERNAUT"
               ? 40
-              : 0;
+              : // `pulp_wars-zypi`: a Coin of income every turn.
+                command.reward === "ECONOMIC_MIRACLE"
+                ? 10
+                : 0;
     if (command.reward === "JUGGERNAUT") {
       strategicValue = threatenedCity(context, command.cityId) ? 30 : 18;
       strategicValue -= freeCapacity(view, command.cityId) <= 1 ? 8 : 0;
@@ -21867,116 +21870,71 @@ function preferredReward(
         item.reachedLevel === command.reachedLevel,
     )
     .map((item) => item.reward);
-  // The Dinosaur pass (`pulp_wars-w49.15`): a Dinosaur army seat takes
-  // Scouts, whatever its Coins: the free Raptor is a 4-Coin unit that
-  // moves two tiles and takes villages, and needs no technology. (With
-  // Stockpile in round 1 the seat of the first diagnostic match took three
-  // villages with Cavemen by round 11 and no more.)
-  // Step two of the Martian pass (`pulp_wars-w49.25`): and a Martian army
-  // seat. The free Saucer is a 4-Coin unit that sets a Grunt down beside a
-  // village three tiles away in the turn it is trained: a hand-played
-  // Martian seat with three of them owned five cities in round 8 and seven
-  // in round 11. (The seat took Stockpile in round 1 with 1 Coin in hand
-  // and held four cities from round 6 to round 12.)
-  if (
-    command.reachedLevel === 2 &&
-    context.army &&
-    (context.view.viewer.faction === "DINOSAUR" ||
-      context.view.viewer.faction === "MARTIAN" ||
-      // Step two of the Ice Folk pass (`pulp_wars-w49.27`): and an Ice Folk
-      // army seat. The free Sled is a 3-Coin unit that moves two tiles,
-      // takes villages, and throws the Bolas before the seat owns Scouting.
-      context.view.viewer.faction === "ICE_FOLK") &&
-    offered.includes("SURVEY")
-  )
-    return "SURVEY";
-  // Step two of the Dwarf pass (`pulp_wars-w49.28`): a Dwarf army seat
-  // takes the 4 Coins: its Survey reveals the area and grants no unit (a
-  // Gyrocopter takes no village), and 4 Coins are two Hammerers.
-  if (
-    command.reachedLevel === 2 &&
-    armyDwarfSeatV7(context) &&
-    offered.includes("STOCKPILE")
-  )
-    return "STOCKPILE";
-  // Step two of the Undead pass (`pulp_wars-w49.24`): an Undead seat short
-  // of units takes the free Ghoul (`armyUndeadShortOfUnitsV7`): it moves two
-  // tiles and takes the next village. (A seat with four cities and three
-  // Skeletons took Stockpile three times in rounds 5 to 7.)
-  if (
-    command.reachedLevel === 2 &&
-    offered.includes("SURVEY") &&
-    armyUndeadShortOfUnitsV7(context)
-  )
-    return "SURVEY";
-  if (command.reachedLevel === 2)
-    return offered.includes(
-      context.view.viewer.coins < 4 ? "STOCKPILE" : "SURVEY",
-    )
-      ? context.view.viewer.coins < 4
-        ? "STOCKPILE"
-        : "SURVEY"
-      : (offered[0] ?? command.reward);
-  // Step two of the Undead pass: an Undead seat short of units takes the
-  // Militia of a city that is not threatened.
-  if (
-    command.reachedLevel === 3 &&
-    offered.includes("MILITIA") &&
-    !threatenedCity(context, command.cityId) &&
-    armyUndeadShortOfUnitsV7(context)
-  )
-    return "MILITIA";
-  if (command.reachedLevel === 3)
-    return offered.includes("MILITIA") &&
-      threatenedCity(context, command.cityId) &&
-      // The Undead pass, correction: a threatened Undead city takes its
-      // Walls (a Zombie behind Walls holds; a 5-HP militia Skeleton does
-      // not).
-      !(armyUndeadSeatV7(context) && offered.includes("WALLS"))
+  const threatened = threatenedCity(context, command.cityId);
+  // The reward ladder rework (`pulp_wars-zypi`), kept legal and plain, not
+  // tuned. The choices are read from the offered commands, so the policy
+  // never picks a reward the engine does not offer.
+  // Level 2, Stockpile or Militia: the Militia when the seat is short of
+  // units (a threatened city, an Undead, Martian, Dinosaur, Ice Folk, or
+  // Dwarf army seat short of capturers, `armyUndeadShortOfUnitsV7`, or fewer
+  // units than two for each city), otherwise the Coins.
+  if (offered.includes("MILITIA") && offered.includes("STOCKPILE"))
+    return threatened ||
+      armyUndeadShortOfUnitsV7(context) ||
+      rewardSeatShortOfUnitsV7(context)
       ? "MILITIA"
-      : offered.includes("WALLS")
-        ? "WALLS"
-        : (offered[0] ?? command.reward);
-  if (command.reachedLevel === 4) {
-    const city = context.lookup.citiesById.get(command.cityId);
-    const neutral =
-      city === undefined
-        ? 0
-        : context.view.board.tiles.filter(
-            (tile) =>
-              tile.explored &&
-              tile.territoryOwnerId === null &&
-              distance(tile.at, city.at) <= 2,
-          ).length;
-    // Tuning 6 (`pulp_wars-w49.6`): an army seat takes population (toward
-    // the next level and its unit slot) before the 6 Coins.
-    return !context.army && offered.includes("TREASURY_6") && neutral >= 4
-      ? "TREASURY_6"
-      : offered.includes("BOOM")
-        ? "BOOM"
-        : (offered[0] ?? command.reward);
+      : "STOCKPILE";
+  // Level 3, Scouts or Walls: a threatened city takes its Walls; any
+  // other takes Scouts and its free fast unit. (The Dinosaur, Martian, Ice
+  // Folk, and Undead passes found that free unit worth more than the
+  // Coins when it was a level-2 reward.)
+  if (offered.includes("SURVEY") && offered.includes("WALLS"))
+    return threatened ? "WALLS" : "SURVEY";
+  // Level 4, Boom or the Economic Miracle: the Miracle, a Coin every turn
+  // and worth more the earlier it is taken, unless the Boom's population
+  // takes the city to its next level (and its next reward) at once.
+  if (offered.includes("BOOM") && offered.includes("ECONOMIC_MIRACLE")) {
+    const city = context.view.cities.find((item) => item.id === command.cityId);
+    return city !== undefined && boomLevelsReached(city) > 0
+      ? "BOOM"
+      : "ECONOMIC_MIRACLE";
   }
-  const cityCount =
-    context.view.leaderboard.find((item) => item.isViewer)?.cityCount ?? 0;
-  const juggernauts = context.view.units.filter(
-    (unit) =>
-      unit.ownerId === context.view.viewer.id && unit.role === "JUGGERNAUT",
-  ).length;
-  // The economy rejig (`pulp_wars-w49.16`, 7r54): every city offers its
-  // giant once, from level 6, and the seat takes it when it is offered
-  // (while it has fewer giants than cities). Before, the giant was the
-  // first capital's and was taken by a threatened city or a seat with 12
-  // Coins; a seat that passed it over at level 6 is offered it again only
-  // at level 7, which few cities reach.
-  return offered.includes("JUGGERNAUT") && juggernauts < cityCount
-    ? "JUGGERNAUT"
-    : // Tuning 4 (`pulp_wars-w49.3`): a Barracks (+1 unit in the city) before
-      // the 6-Coin Treasury.
-      offered.includes("BARRACKS")
-      ? "BARRACKS"
-      : offered.includes("TREASURY")
-        ? "TREASURY"
-        : (offered[0] ?? command.reward);
+  // Level 5 and every later level, the giant or the Treasury (10 Coins):
+  // the giant for a threatened city, or when the city has a free slot for
+  // it and the seat fields fewer giants than it owns cities; otherwise the
+  // Coins. (The economy rejig, 7r54, took the giant whenever offered while
+  // the seat had fewer giants than cities; it was offered once per city
+  // then.)
+  if (offered.includes("JUGGERNAUT") && offered.includes("TREASURY")) {
+    const cityCount =
+      context.view.leaderboard.find((item) => item.isViewer)?.cityCount ?? 0;
+    const juggernauts = context.view.units.filter(
+      (unit) =>
+        unit.ownerId === context.view.viewer.id && unit.role === "JUGGERNAUT",
+    ).length;
+    return threatened ||
+      (juggernauts < cityCount &&
+        freeCapacity(context.view, command.cityId) > 0)
+      ? "JUGGERNAUT"
+      : "TREASURY";
+  }
+  return offered[0] ?? command.reward;
+}
+
+/**
+ * The reward ladder rework (`pulp_wars-zypi`): a seat that fields fewer
+ * units than two for each city it owns takes a level-2 Militia rather
+ * than the Stockpile.
+ */
+function rewardSeatShortOfUnitsV7(context: PolicyContextV7): boolean {
+  const view = context.view;
+  let cities = 0;
+  for (const city of view.cities)
+    if (city.ownerId === view.viewer.id) cities += 1;
+  let units = 0;
+  for (const unit of view.units)
+    if (unit.ownerId === view.viewer.id) units += 1;
+  return units < 2 * cities;
 }
 
 function trainingStrategicValue(

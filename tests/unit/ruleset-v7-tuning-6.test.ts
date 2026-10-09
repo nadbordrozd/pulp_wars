@@ -70,7 +70,7 @@ import {
 } from "../fixtures/v7-revision20";
 
 /**
- * Tuning 6 (`pulp_wars-w49.6`, identity `pulp-wars-poc-7r62`;
+ * Tuning 6 (`pulp_wars-w49.6`, identity `pulp-wars-poc-7r63`;
  * docs/product/RULESET_7_TUNING_HUMAN.md section 13): the Normal AI breaks
  * a line with numbers, expands and grows, researches toward its army and
  * buys its dear units, and keeps its discipline; research costs 1 Coin more
@@ -179,13 +179,13 @@ describe("tuning 6 identity and the research price", () => {
   // and the Undead pass 7r51, so 7r49 is the prior identity before the
   // last.
   it("was 7r49 after 7r48, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r62");
-    expect(PRIOR_RULESET_7_IDS.slice(-14, -12)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r63");
+    expect(PRIOR_RULESET_7_IDS.slice(-15, -13)).toEqual([
       "pulp-wars-poc-7r48",
       "pulp-wars-poc-7r49",
     ]);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r62.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-14, -12)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r63.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-15, -13)).toEqual([
       "pulpWars.save.v7r48.current",
       "pulpWars.save.v7r49.current",
     ]);
@@ -666,19 +666,33 @@ describe("expansion and growth", () => {
       { resource: "FRUIT" },
     );
 
-  it("harvests to a city level before it trains while no enemy is near, and trains with what is left", () => {
-    const turn = policyTurn(orchard(at(1, 1), 6));
+  // The reward ladder rework (`pulp_wars-zypi`): the level-2 reward is
+  // the Stockpile or the Militia, and a seat with fewer than two units for
+  // each city takes the Militia. Its free Fighter stands on the center, so
+  // the city trains no unit this turn (it took a level-2 reward and then
+  // trained a Fighter with the 2 Coins left before).
+  it("harvests to a city level before it trains while no enemy is near, and takes the Militia's free Fighter", () => {
+    const state = orchard(at(1, 1), 6);
+    const turn = policyTurn(state);
     const kinds = kindsOf(turn.commands);
-    expect(kinds.slice(0, 4)).toEqual([
+    expect(kinds.slice(0, 3)).toEqual([
       "HARVEST_FRUIT",
       "HARVEST_FRUIT",
       "CHOOSE_CITY_REWARD",
-      "TRAIN",
     ]);
-    const capital = turn.state.cities.find(
-      (city) => city.ownerId === seatIdV7(turn.state, 0),
-    );
+    expect(turn.commands[2]).toMatchObject({ reward: "MILITIA" });
+    const own = seatIdV7(turn.state, 0);
+    const capital = turn.state.cities.find((city) => city.ownerId === own);
     expect(capital?.level).toBe(2);
+    expect(
+      turn.state.units.filter(
+        (unit) => unit.ownerId === own && unit.role === "FIGHTER",
+      ),
+    ).toHaveLength(
+      state.units.filter(
+        (unit) => unit.ownerId === own && unit.role === "FIGHTER",
+      ).length + 1,
+    );
   });
 
   it("with an enemy three tiles from the center it trains first, and buys nothing else while a city can still train", () => {
@@ -697,9 +711,18 @@ describe("expansion and growth", () => {
     expect(candidates).toContain("TRAIN");
     expect(candidates).toContain("HARVEST_FRUIT");
     expect(candidates).not.toContain("RESEARCH");
+    // The reward ladder rework (`pulp_wars-zypi`): the harvests take the
+    // threatened capital to level 2, whose Militia puts a free Fighter on
+    // the center, so the turn holds that Fighter and no training (it took
+    // a level-2 reward and trained before).
     const turn = policyTurn(state);
-    expect(kindsOf(turn.commands)).toContain("TRAIN");
     expect(kindsOf(turn.commands)).toContain("HARVEST_FRUIT");
+    expect(turn.commands).toContainEqual(
+      expect.objectContaining({
+        kind: "CHOOSE_CITY_REWARD",
+        reward: "MILITIA",
+      }),
+    );
     // With 3 Coins the harvest would leave 1: the unit only, as before.
     const poor = chooseNormalCommandV7(
       viewForV7(orchard(at(5, 8), 3), seatIdV7(state, 0)),
@@ -728,10 +751,14 @@ describe("expansion and growth", () => {
     });
   });
 
-  it("takes the population, not the Coins, at level 4", () => {
-    // A level-3 capital (three Farms) takes its level-3 reward and builds
-    // two more Farms: level 4, with neutral land all around it (the old
-    // policy took the 6 Coins there).
+  // The reward ladder rework (`pulp_wars-zypi`): level 4 offers the
+  // Population Boom or the Economic Miracle (the Boom, the 6-Coin Treasury,
+  // or Barracks before, where the policy took the population). The policy
+  // takes the Miracle unless the Boom's +3 population reaches the next level
+  // at once.
+  it("takes the Economic Miracle at level 4, and the Boom when it reaches level 5 at once", () => {
+    // A level-2 capital (one Farm) takes its Militia, builds two Farms
+    // (level 3, Walls) and two more: level 4.
     const fixture = rewardStateV7("MILITIA", "ORIGINAL");
     const own = seatIdV7(fixture.state, 0);
     let state = applyOkV7(fixture.state, own, fixture.command).state;
@@ -747,8 +774,8 @@ describe("expansion and growth", () => {
             (unit) => unit.at.x === tile.at.x && unit.at.y === tile.at.y,
           ),
       )
-      .slice(0, 2);
-    expect(free).toHaveLength(2);
+      .slice(0, 4);
+    expect(free).toHaveLength(4);
     for (const tile of free) {
       state = patchTileV7(state, tile.at, {
         biome: "PLAINS",
@@ -756,13 +783,48 @@ describe("expansion and growth", () => {
         resource: "FERTILE_GROUND",
       });
       state = applyOkV7(state, own, { kind: "BUILD_FARM", at: tile.at }).state;
+      const pending = state.pendingChoices[0];
+      if (pending?.reachedLevel === 3)
+        state = applyOkV7(state, own, {
+          kind: "CHOOSE_CITY_REWARD",
+          cityId: capital.id,
+          reachedLevel: 3,
+          reward: "WALLS",
+        }).state;
     }
     expect(state.pendingChoices[0]).toMatchObject({
       kind: "CITY_REWARD",
       reachedLevel: 4,
-      candidates: ["BOOM", "TREASURY_6", "BARRACKS"],
+      candidates: ["BOOM", "ECONOMIC_MIRACLE"],
     });
-    expect(chooseNormalCommandV7(viewForV7(state, own)).command).toEqual({
+    const choice = (value: GameStateV7) =>
+      chooseNormalCommandV7(viewForV7(value, own)).command;
+    // Population 1 of the 5 that level 5 takes: the Boom does not reach it.
+    expect(state.cities.find((city) => city.id === capital.id)).toMatchObject({
+      level: 4,
+      population: 1,
+    });
+    expect(choice(state)).toEqual({
+      kind: "CHOOSE_CITY_REWARD",
+      cityId: capital.id,
+      reachedLevel: 4,
+      reward: "ECONOMIC_MIRACLE",
+    });
+    // With one more population (a view the policy reads; the ledger is not
+    // the point here) the Boom's +3 makes level 5 at once.
+    const fuller: GameStateV7 = {
+      ...state,
+      cities: state.cities.map((city) =>
+        city.id === capital.id
+          ? {
+              ...city,
+              economicPopulation: city.economicPopulation + 1,
+              population: city.population + 1,
+            }
+          : city,
+      ),
+    };
+    expect(choice(fuller)).toEqual({
       kind: "CHOOSE_CITY_REWARD",
       cityId: capital.id,
       reachedLevel: 4,
@@ -1312,18 +1374,26 @@ describe("the dear units get bought", () => {
       ),
     );
     // The Goblin pass (7r50): the free Monument takes the capital to level
-    // 2, and its Scouts reward puts a Wolf Rider on the empty center, so
-    // the city trains from the next turn on.
+    // 2. Since the reward ladder rework (`pulp_wars-zypi`) its choice is
+    // the Stockpile or the Militia, and a seat with two units for its one
+    // city takes the 4 Coins (it took Scouts and a Wolf Rider before).
     const first = policyTurn(state);
     expect(first.commands).toContainEqual(
-      expect.objectContaining({ kind: "CHOOSE_CITY_REWARD", reward: "SURVEY" }),
+      expect.objectContaining({
+        kind: "CHOOSE_CITY_REWARD",
+        reward: "STOCKPILE",
+      }),
     );
     const trained = [
       ...first.commands,
       ...policyTurn(nextRound(first.state)).commands,
     ].flatMap((command) => (command.kind === "TRAIN" ? [command.role] : []));
-    expect(trained).toHaveLength(1);
+    // With the center free (no Wolf Rider on it since `pulp_wars-zypi`)
+    // the capital trains in both turns: a dear unit first, and never the
+    // 1-Coin Goblin.
+    expect(trained.length).toBeGreaterThanOrEqual(1);
     expect(["CATAPULT", "KNIGHT"]).toContain(trained[0]);
+    expect(trained).not.toContain("FIGHTER");
   });
 });
 

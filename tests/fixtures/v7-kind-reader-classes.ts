@@ -230,7 +230,6 @@ export const KIND_READER_CLASSES_V7: Readonly<
   "src/ai/v7.ts::armyWallbreakerDueV7": "SEAT",
   "src/ai/v7.ts::dinosaurAttackRejectedV7": "SEAT",
   "src/render/dinosaur-presentation-v7.ts::shamanTendDinosaurV7": "SEAT",
-  "src/ai/v7.ts::preferredReward": "SEAT",
   // The Goblin pass, correction (`pulp_wars-w49.12`): the escort is a
   // Goblin seat's policy (the viewer's faction), whatever kind the unit is.
   "src/ai/v7.ts::armyEscortValueV7": "SEAT",

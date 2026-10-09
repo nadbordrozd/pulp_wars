@@ -1317,8 +1317,10 @@ describe("Dwarf Showcase (section 2.4)", () => {
       [3, 6],
     ]);
     // 21: land trade pays 2 Coins (tuning 1, 7r46; 17 before) and since
-    // tuning 3 the linked capital earns it too (19 before).
-    expect(playerIncomeV7(state, dwarfId).totalCoins).toBe(18);
+    // tuning 3 the linked capital earns it too (19 before); 18 since
+    // tuning 4 (land trade pays 1 Coin); 20 since the reward ladder rework
+    // (`pulp_wars-zypi`: North's and Coast's Economic Miracle, +1 each).
+    expect(playerIncomeV7(state, dwarfId).totalCoins).toBe(20);
   });
 
   it("offers a Tunnel, an Assemble, and a Cannon shot with a blocked Knockback on turn 1; every offered command is accepted", () => {

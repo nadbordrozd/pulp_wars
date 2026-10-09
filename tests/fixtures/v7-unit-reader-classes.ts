@@ -223,6 +223,9 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/ai/v7.ts::plunderResearchValueV7": "BOARD",
     "src/ai/v7.ts::policyLookupWorkV7": "BOARD",
     "src/ai/v7.ts::preferredReward": "BOARD",
+    // `pulp_wars-zypi`: a seat short of units takes a level-2 Militia; it
+    // counts the units the view shows (burrowed units are not in it).
+    "src/ai/v7.ts::rewardSeatShortOfUnitsV7": "BOARD",
     "src/ai/v7.ts::projectKnightOverrunAttack": "BOARD",
     "src/ai/v7.ts::projectPublicUnitForPolicyV7": "BOARD",
     "src/ai/v7.ts::publicKnightOverrunAttacksSteps": "BOARD",

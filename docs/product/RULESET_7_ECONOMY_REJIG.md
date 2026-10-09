@@ -206,6 +206,14 @@ one is offered.
 
 ## 5. The giant in every city at level 6
 
+**Superseded by the reward ladder rework (`pulp_wars-zypi`)** (the user,
+2026-10-08 and 2026-10-09: at level 6 the giant rarely happened in a
+game; "giant OR 10 coins"). Every level from 5 offers the giant or the
+Treasury (10 Coins), with no once-per-city limit; Barracks is no longer
+offered; and the lower levels changed too.
+[The current rules, section 4.8](RULESET_7_CURRENT.md#48-city-rewards)
+state the ladder. This section is kept as the record of `7r54`.
+
 | Level | `7r53`                                                         | `7r54`                                                  |
 | ----: | -------------------------------------------------------------- | ------------------------------------------------------- |
 |     2 | Scouts or Survey; Stockpile (4 Coins)                          | the same                                                |

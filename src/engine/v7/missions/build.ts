@@ -12,7 +12,7 @@ import { randomState } from "../../random/random";
 import {
   GROWTH_HP_V7,
   ORIGINAL_BASELINE_V5_TREE,
-  REWARD_UNIT_LEVEL_V7,
+  cityRewardRecordMatchesLevelV7,
   canEnterTerrainV7,
   dockPopulationV7,
   effectiveRoleRuleV7,
@@ -972,19 +972,10 @@ function improvementFits(
   }
 }
 
+// The reward ladder rework (`pulp_wars-zypi`): a written record may be a
+// reward of the current ladder or of the one before it.
 function rewardFitsLevel(reward: RewardIdV7, level: number): boolean {
-  return level === 2
-    ? reward === "SURVEY" || reward === "STOCKPILE"
-    : level === 3
-      ? reward === "WALLS" || reward === "MILITIA"
-      : level === 4
-        ? // Tuning 4 (`pulp_wars-w49.3`): Barracks at level 4 and above.
-          reward === "BOOM" || reward === "TREASURY_6" || reward === "BARRACKS"
-        : level >= 5 &&
-          // The economy rejig (7r54): the giant from level 6.
-          ((reward === "JUGGERNAUT" && level >= REWARD_UNIT_LEVEL_V7) ||
-            reward === "TREASURY" ||
-            reward === "BARRACKS");
+  return cityRewardRecordMatchesLevelV7(reward, level);
 }
 
 function freshActivationV7(): UnitStateV7["activation"] {

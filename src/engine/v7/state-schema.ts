@@ -14,7 +14,8 @@ import {
   NEUTRAL_MONSTER_ROLE_RULE_V7,
   BOOM_POPULATION_V7,
   MONUMENT_POPULATION_V7,
-  REWARD_UNIT_LEVEL_V7,
+  cityRewardCandidatesV7,
+  cityRewardRecordMatchesLevelV7,
   dockPopulationV7,
   effectiveRoleRuleV7,
   eggMaxHpOptionsV7,
@@ -2251,10 +2252,7 @@ function validateCrossReferences(value: CrossInput): boolean {
       choice.cityId !== firstUnrewarded.city.id ||
       choice.reachedLevel !== firstUnrewarded.level ||
       choice.candidates.join() !==
-        rewardCandidatesForLevelV7(
-          firstUnrewarded.level,
-          firstUnrewarded.city.rewards,
-        ).join()
+        rewardCandidatesForLevelV7(firstUnrewarded.level).join()
     )
       return false;
   }
@@ -2979,43 +2977,18 @@ function liveValue(
           .population;
 }
 
+// The reward ladder rework (`pulp_wars-zypi`): a record may be a reward
+// of the current ladder or of the one before it (it keeps its effect); a
+// pending choice lists the current candidates.
 function rewardMatchesLevel(reward: RewardIdV7, level: number): boolean {
-  return level === 2
-    ? reward === "SURVEY" || reward === "STOCKPILE"
-    : level === 3
-      ? reward === "WALLS" || reward === "MILITIA"
-      : level === 4
-        ? reward === "BOOM" || reward === "TREASURY_6" || reward === "BARRACKS"
-        : level >= 5 &&
-          // The economy rejig (7r54): the giant from level 6.
-          ((reward === "JUGGERNAUT" && level >= REWARD_UNIT_LEVEL_V7) ||
-            reward === "TREASURY" ||
-            reward === "BARRACKS");
+  return cityRewardRecordMatchesLevelV7(reward, level);
 }
 
 function candidateRewardsMatchLevel(
   rewards: readonly RewardIdV7[],
   level: number,
 ): boolean {
-  // The lists `rewardCandidatesForLevelV7` can return for a level (which
-  // one, by the city's history, is a state invariant). The economy rejig
-  // (7r54): the giant from level 6, in any city.
-  const lists: readonly (readonly RewardIdV7[])[] =
-    level === 2
-      ? [["SURVEY", "STOCKPILE"]]
-      : level === 3
-        ? [["WALLS", "MILITIA"]]
-        : level === 4
-          ? [["BOOM", "TREASURY_6", "BARRACKS"]]
-          : level >= REWARD_UNIT_LEVEL_V7
-            ? [
-                ["JUGGERNAUT", "TREASURY", "BARRACKS"],
-                ["TREASURY", "BARRACKS"],
-              ]
-            : level === 5
-              ? [["TREASURY", "BARRACKS"]]
-              : [];
-  return lists.some((list) => list.join() === rewards.join());
+  return cityRewardCandidatesV7(level)?.join() === rewards.join();
 }
 
 function growthSpent(level: number): number | null {

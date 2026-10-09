@@ -82,11 +82,11 @@ import {
 
 describe("ruleset-7 revision-17 identity", () => {
   it("keeps r16 among the prior identities after the r55 identity and cleans the r16 key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r62");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r62.current");
-    expect(PRIOR_RULESET_7_IDS.at(-46)).toBe("pulp-wars-poc-7r16");
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(61);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-46)).toBe(
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r63");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r63.current");
+    expect(PRIOR_RULESET_7_IDS.at(-47)).toBe("pulp-wars-poc-7r16");
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(62);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-47)).toBe(
       "pulpWars.save.v7r16.current",
     );
     const storage = new MemoryStorage([
@@ -1591,8 +1591,10 @@ function rewardState(
   // reward (level 5 before). Level 6 takes 20 population and the capital
   // holds seven Farms (14), so six Farm tiles also carry a hunt (1
   // permanent population each), as in `rewardStateV7`.
-  const reachedLevel = reward === "MILITIA" ? 3 : 6;
-  const addedPopulation = reward === "MILITIA" ? 6 : 14;
+  // The reward ladder rework (`pulp_wars-zypi`): Militia is a level-2
+  // reward (level 3 before).
+  const reachedLevel = reward === "MILITIA" ? 2 : 6;
+  const addedPopulation = reward === "MILITIA" ? 2 : 14;
   const addedPermanent = reward === "MILITIA" ? 0 : 6;
   const growthTiles = base.board.tiles
     .filter(
@@ -1622,7 +1624,7 @@ function rewardState(
             cityActionAvailable: true,
             rewards:
               reward === "MILITIA"
-                ? [{ reachedLevel: 2, reward: "SURVEY" as const }]
+                ? []
                 : [
                     { reachedLevel: 2, reward: "SURVEY" as const },
                     { reachedLevel: 3, reward: "WALLS" as const },
@@ -1677,8 +1679,8 @@ function rewardState(
         reachedLevel,
         candidates:
           reward === "MILITIA"
-            ? (["WALLS", "MILITIA"] as const)
-            : (["JUGGERNAUT", "TREASURY", "BARRACKS"] as const),
+            ? (["STOCKPILE", "MILITIA"] as const)
+            : (["JUGGERNAUT", "TREASURY"] as const),
       },
     ],
   });

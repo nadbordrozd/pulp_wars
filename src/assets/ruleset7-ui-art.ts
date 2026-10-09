@@ -217,9 +217,11 @@ export function rewardArtIdV7(reward: RewardIdV7): string {
   switch (reward) {
     case "SURVEY":
       return "ui-reward-survey";
+    // `pulp_wars-zypi`: the Economic Miracle has no art of its own yet.
     case "STOCKPILE":
     case "TREASURY":
     case "TREASURY_6":
+    case "ECONOMIC_MIRACLE":
       return "ui-hud-gold-coin-v7";
     // Tuning 4: Barracks has no art of its own; it stands in with the Walls.
     case "WALLS":

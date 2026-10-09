@@ -87,6 +87,7 @@ import {
   HIRE_EXTRA_CAPACITY_V7,
   BLAST_MOUNTAIN_COST_V7,
   cityBarracksV7,
+  cityEconomicMiracleIncomeV7,
   FIELD_DEFENSE_FORTIFICATION_LEVELS_V7,
 } from "../rules/ruleset-v7";
 import {
@@ -3724,7 +3725,7 @@ export function previewMonumentV7(
       kind: "CITY_REWARD_QUEUED",
       cityId: city.id,
       reachedLevel,
-      candidates: rewardCandidatesForLevelV7(reachedLevel, city.rewards),
+      candidates: rewardCandidatesForLevelV7(reachedLevel),
     });
     break;
   }
@@ -5874,6 +5875,8 @@ function publicCityIncomeV7(
     1,
     cityLevelIncomeV7(city.level) +
       (city.isCapital ? 1 : 0) +
+      // `pulp_wars-zypi`: the city's Economic Miracle rewards.
+      cityEconomicMiracleIncomeV7(city) +
       tradeBonuses +
       market +
       Math.min(0, city.population),

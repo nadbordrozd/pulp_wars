@@ -786,9 +786,10 @@ describe("text-mode play harness", () => {
           "| Beam Down: sets one of your units down beside itself, lifted from on or beside ANY of your city centers or from up to 2 tiles away",
         );
         expect(started).toContain(
-          // The economy rejig (`pulp_wars-w49.16`, 7r54): every city, once,
-          // from level 6 (the first capital only, from level 5, before).
-          "giant unit: a free Colossus is offered to this city once, as a level reward at level 6 or higher (every city of yours offers its own; level 5 offers Treasury or Barracks)",
+          // The reward ladder rework (`pulp_wars-zypi`): every level from 5
+          // offers the giant or the Treasury (the economy rejig, 7r54: once
+          // per city, from level 6).
+          "giant unit: every level of this city from 5 offers a free Colossus or 10 Coins",
         );
         expect(started).toContain(
           "Martian units: Gr grunt Sa saucer RG ray gunner SP shield projector Br brain Tr tripod Mo mothership Co colossus",

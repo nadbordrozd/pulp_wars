@@ -184,14 +184,14 @@ describe("step two of the Undead pass: the identity", () => {
   it("was 7r57 after 7r56, with both save keys obsolete now", () => {
     // (Step two of the Martian pass, `pulp_wars-w49.25`, took 7r58, and
     // step two of the Ice Folk pass, `pulp_wars-w49.27`, 7r59.)
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r62");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r62.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-6, -4)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r63");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r63.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-7, -5)).toEqual([
       "pulp-wars-poc-7r56",
       "pulp-wars-poc-7r57",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-6, -4)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-7, -5)).toEqual([
       "pulpWars.save.v7r56.current",
       "pulpWars.save.v7r57.current",
     ]);
@@ -559,7 +559,10 @@ describe("step two of the Undead pass: the Undead Normal AI's opening", () => {
     const rewards = turn.commands.flatMap((command) =>
       command.kind === "CHOOSE_CITY_REWARD" ? [command.reward] : [],
     );
-    expect(rewards).toEqual(["MILITIA", "SURVEY"]);
+    // The reward ladder rework (`pulp_wars-zypi`): it still takes both, in
+    // the other order (Scouts, with the Ghoul, is a level-3 reward and the
+    // Militia a level-2 one since then; the other way round before).
+    expect(rewards).toEqual(["SURVEY", "MILITIA"]);
     expect(
       turn.state.units.filter((unit) => unit.ownerId === seat?.id).length,
     ).toBeGreaterThanOrEqual(5);

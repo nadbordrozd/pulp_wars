@@ -1,4 +1,5 @@
 import {
+  CITY_REWARD_COINS_V7,
   MARKET_INCOME_CAP_V7,
   REWARD_UNIT_LEVEL_V7,
   TECHNOLOGY_RESEARCH_COST_V7,
@@ -17,19 +18,18 @@ export function researchPriceRuleTextV7(tier: 1 | 2 | 3): string {
 export const ECONOMY_REJIG_HELP_TIP_V7 = `A mill counts every Farm, Lumber Camp, or Mine of yours next to it, on any of your cities' land, and one Farm can feed two cities' mills. A technology costs ${[1, 2, 3].map((tier) => TECHNOLOGY_RESEARCH_COST_V7[tier as 1 | 2 | 3].step).join(" / ")} Coins more (tier 1 / 2 / 3) for each city you own beyond your first.`;
 
 /**
- * The economy rejig: when a city offers its faction's giant, for the city
- * panel, the level reward dialog, and the Help. `taken` is whether the
- * city's reward history already holds it.
+ * When a city offers its faction's giant, for the city panel and the
+ * level-4 reward dialog. The reward ladder rework (`pulp_wars-zypi`): at
+ * level 5 and every later level, the giant or the Treasury, with no
+ * once-per-city limit (the economy rejig, 7r54, offered it once per city).
  */
-export function rewardGiantOfferTextV7(giant: string, taken: boolean): string {
-  return taken
-    ? `This city has taken its ${giant}`
-    : `At level ${REWARD_UNIT_LEVEL_V7} this city can take a free ${giant}, once`;
+export function rewardGiantOfferTextV7(giant: string): string {
+  return `From level ${REWARD_UNIT_LEVEL_V7}, every level of this city offers a free ${giant} or ${CITY_REWARD_COINS_V7.TREASURY} Coins`;
 }
 
-/** The economy rejig: the Help tip for the reward giant. */
+/** The reward giant rule as one sentence (`pulp_wars-zypi`). */
 export function rewardGiantHelpTipV7(giant: string): string {
-  return `Every city can take a free ${giant} as a reward once, from level ${REWARD_UNIT_LEVEL_V7}.`;
+  return `Every city can take a free ${giant} or ${CITY_REWARD_COINS_V7.TREASURY} Coins as the reward of every level from ${REWARD_UNIT_LEVEL_V7}.`;
 }
 
 /** Tuning 4: where a Market may be built (its `placementMinimum`). */

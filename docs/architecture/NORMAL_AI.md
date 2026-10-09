@@ -44,9 +44,12 @@ units, `ARMY_DWARF_SKIRMISHER_MAXIMUM_V7` (2) at most.
 `preferredReward`). The rule of step two of the Undead pass holds for a
 Dwarf seat, which counts its units that capture (a Gyrocopter, an
 Engineer, a Steam Cannon, a Steam Tank, and a Whirligig take no village)
-and its burrowed Mole and rider; it takes Stockpile at level 2 (the
-Dwarf Survey grants no unit; the older rule took the Survey with 4 Coins
-or more), and the opening and correction rules of the other army seats
+and its burrowed Mole and rider; it took Stockpile at level 2 (the
+Dwarf Survey granted no unit; the older rule took the Survey with 4 Coins
+or more; since [the reward ladder
+rework](#the-reward-ladder-rework-pulp_wars-zypi) Scouts is a level-3
+reward with a free Gyrocopter and the seat chooses as every seat does),
+and the opening and correction rules of the other army seats
 (`armyOpeningSeatV7`, `armyCorrectionSeatV7`). The garrison of a
 threatened city yields to a Gunner as a Human seat's does to a Marksman
 (`armyGarrisonYieldsToRangedV7`).
@@ -1040,6 +1043,35 @@ Lakes, the Goblin breakthrough lab's bounded run (the capital falls in
 round 6, was 7), and the seeds of five tests that need a Lich to plague or
 splash or a Brain to take a unit in ordinary play.
 
+## The reward ladder rework (`pulp_wars-zypi`)
+
+[The reward ladder rework](../product/RULESET_7_CURRENT.md#48-city-rewards)
+changed the city level rewards of every faction: level 2 Stockpile or
+Militia, level 3 Scouts (with the faction's fast unit) or Walls, level 4
+Population Boom or the Economic Miracle (+1 income Coin a turn), and
+every level from 5 the giant or the Treasury (10 Coins), with no
+once-per-city limit. The policy was kept legal and plain, not tuned;
+`preferredReward` (`src/ai/v7.ts`) reads the offered commands, so it never
+picks a reward the engine does not offer:
+
+- **Level 2:** the Militia when the city is threatened or the seat is
+  short of units (fewer than two for each city, or an Undead, Martian,
+  Dinosaur, Ice Folk, or Dwarf army seat short of capturers,
+  `armyUndeadShortOfUnitsV7`), otherwise the Stockpile.
+- **Level 3:** Walls for a threatened city, otherwise Scouts and its free
+  fast unit (the faction passes had found that unit worth more than the
+  Coins when it was a level-2 reward).
+- **Level 4:** the Economic Miracle, unless the Boom's +3 population takes
+  the city to its next level at once.
+- **Level 5 and later:** the giant for a threatened city, or when the city
+  has a free unit slot and the seat fields fewer giants than it owns
+  cities; otherwise the Treasury. The command score values the Economic
+  Miracle at 10 and the Treasury at its Coins.
+
+What it does not do: weigh the Miracle against the turns left in the
+match, plan a level-5 giant, or count a giant offered at a later level.
+Those are tuning, left for a later pass.
+
 ## The economy rejig (`pulp_wars-w49.16`)
 
 **[The economy rejig](../product/RULESET_7_ECONOMY_REJIG.md)**
@@ -1047,11 +1079,13 @@ splash or a Brain to take a unit in ordinary play.
 their owner's contributors across cities, a Monument gives 3 population,
 research is priced by the cities owned (5 / 7 / 9 plus 1 / 2 / 3 Coins
 for each city beyond the first), the achievements are harder and need no
-technology, and every city offers its faction's giant once from level 6.
+technology, and every city offers its faction's giant once from level 6
+(replaced by the reward ladder rework, `pulp_wars-zypi`, below).
 The policy was kept working and not improved.
 
 **What changed in the policy.** One rule, in `preferredReward`
-(`src/ai/v7.ts`): at a level-6 or later reward the seat **takes the giant
+(`src/ai/v7.ts`): at a reward that offers the giant (level 6 or later at
+`7r54`) the seat **takes the giant
 whenever it is offered** and it has fewer giants than cities. Before, it
 took the reward unit only for a threatened city or with 12 Coins, and
 otherwise a Barracks. The giant is now offered one level later and, to a
@@ -1104,7 +1138,7 @@ offered.
 - It does not place a mill on a border tile to share contributors, and it
   does not aim at Engineer (a mill at 7).
 - It does not work toward Land Baron, Muster, or any other achievement.
-- It does not save a level-6 choice for a moment when the giant is
+- It does not save a giant choice for a moment when the giant is
   useful: it takes it at once, also in a quiet city far from the front.
 - A wide seat researches more slowly than before. In the pinned matches
   this showed as fewer technologies by round 18 and a later first
@@ -1709,7 +1743,8 @@ kept legal. It never uses `DRILL_UNIT`. At a level-5+ reward it takes the
 reward unit under its old conditions when it is offered (now only in its
 first capital, once), otherwise a Barracks, otherwise the Treasury
 (superseded by [the economy rejig](#the-economy-rejig-pulp_wars-w4916): the
-giant is every city's, from level 6, and is taken whenever offered); at
+giant is every city's, from level 6, and is taken whenever offered; and
+by [the reward ladder rework](#the-reward-ladder-rework-pulp_wars-zypi)); at
 level 4 it still takes Boom (or the Treasury with four neutral tiles
 around). Its threat estimate reads `ignoresZocStops`, so it knows a Human
 Raider passes its screens. It was not taught that research is now priced by

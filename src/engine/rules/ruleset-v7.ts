@@ -884,28 +884,41 @@ export const LAND_TRADE_INCOME_COINS_V7 = 1 as const;
  */
 export const MONUMENT_POPULATION_V7 = 3 as const;
 /**
- * The economy rejig (`pulp_wars-w49.16`, 7r54): the level from which a city
- * offers its faction's reward giant (the `JUGGERNAUT` reward), once per
- * city. Level 5 offers the Treasury or Barracks only. (From tuning 4 to
- * 7r53 the giant was offered at level 5 and above, in the owner's first
- * capital only, so once per player.)
+ * The level from which a city offers its faction's reward giant (the
+ * `JUGGERNAUT` reward) or the Treasury, at that level and every later one.
+ * The reward ladder rework (`pulp_wars-zypi`): level 5 and every level
+ * above it, with no once-per-city limit (the user: "giant OR 10 coins").
+ * History: from tuning 4 to 7r53 level 5 and above, in the owner's first
+ * capital only (once per player); the economy rejig (`pulp_wars-w49.16`,
+ * 7r54) made it every city, once, from level 6.
  */
-export const REWARD_UNIT_LEVEL_V7 = 6 as const;
+export const REWARD_UNIT_LEVEL_V7 = 5 as const;
 /** The Boom reward's permanent population (unchanged). */
 export const BOOM_POPULATION_V7 = 3 as const;
 /**
- * Coins of the three Coin rewards (the level-4 Treasury was 8). Tuning 4
- * (`pulp_wars-w49.3`): the level-5+ Treasury pays 6 (12 before), so no
- * reward returns more than the population of its level costs. The level-4
- * Treasury keeps its own ID, `TREASURY_6`.
+ * Coins of the Coin rewards. The reward ladder rework (`pulp_wars-zypi`):
+ * the level-5+ Treasury pays 10 (6 from tuning 4, 12 before), so the Coins
+ * are a real alternative to the giant. `TREASURY_6`, the level-4 Treasury
+ * of tuning 1 to `pulp_wars-zypi` (8 before tuning 1), is no longer
+ * offered; a record that holds it was paid when it was chosen.
  */
 export const CITY_REWARD_COINS_V7 = Object.freeze({
   STOCKPILE: 4,
   TREASURY_6: 6,
-  TREASURY: 6,
+  TREASURY: 10,
 } as const);
-/** Tuning 4: the unit capacity one Barracks reward adds to its city. */
+/**
+ * Tuning 4: the unit capacity one Barracks reward adds to its city. No
+ * longer offered since `pulp_wars-zypi`; a city whose reward history holds
+ * a Barracks keeps the slot.
+ */
 export const BARRACKS_CAPACITY_V7 = 1 as const;
+/**
+ * The reward ladder rework (`pulp_wars-zypi`): the Coins one Economic
+ * Miracle (a level-4 reward) adds to its city's income every turn. The
+ * record travels with the city on capture, so the captor collects it.
+ */
+export const ECONOMIC_MIRACLE_COINS_V7 = 1 as const;
 /**
  * Tuning 4: the Coins a Pillage pays (1 before), and the Field Defense's
  * fortification levels (1 before).
@@ -3915,6 +3928,67 @@ export function cityBarracksV7(city: {
     .length;
 }
 
+/**
+ * Whether a city's reward history may hold `reward` for `level`: the
+ * rewards the ladder offers now (`rewardCandidatesForLevelV7`) and those
+ * it offered before the reward ladder rework (`pulp_wars-zypi`), so a
+ * history that holds an older record (a level-2 Survey, a level-3 Militia,
+ * a level-4 `TREASURY_6` or Barracks, a level-5+ Barracks) still parses
+ * and keeps its effect. A pending choice must list the current candidates.
+ */
+export function cityRewardRecordMatchesLevelV7(
+  reward: string,
+  level: number,
+): boolean {
+  return level === 2
+    ? reward === "STOCKPILE" || reward === "MILITIA" || reward === "SURVEY"
+    : level === 3
+      ? reward === "SURVEY" || reward === "WALLS" || reward === "MILITIA"
+      : level === 4
+        ? reward === "BOOM" ||
+          reward === "ECONOMIC_MIRACLE" ||
+          reward === "TREASURY_6" ||
+          reward === "BARRACKS"
+        : level >= REWARD_UNIT_LEVEL_V7 &&
+          (reward === "JUGGERNAUT" ||
+            reward === "TREASURY" ||
+            reward === "BARRACKS");
+}
+
+/**
+ * The candidate list a level's reward choice offers (reward-ID order;
+ * `rewardCandidatesForLevelV7` in `src/engine/v7/economy.ts` returns it),
+ * or null below level 2. The reward ladder rework (`pulp_wars-zypi`).
+ */
+export function cityRewardCandidatesV7(
+  level: number,
+): readonly string[] | null {
+  return level === 2
+    ? ["STOCKPILE", "MILITIA"]
+    : level === 3
+      ? ["SURVEY", "WALLS"]
+      : level === 4
+        ? ["BOOM", "ECONOMIC_MIRACLE"]
+        : level >= REWARD_UNIT_LEVEL_V7
+          ? ["JUGGERNAUT", "TREASURY"]
+          : null;
+}
+
+/**
+ * `pulp_wars-zypi`: the income Coins a city's Economic Miracle rewards add
+ * (`ECONOMIC_MIRACLE_COINS_V7` each). Part of the city's income like its
+ * level term, so a besieged city pays none of it.
+ */
+export function cityEconomicMiracleIncomeV7(city: {
+  readonly rewards?: readonly { readonly reward: string }[];
+}): number {
+  return (
+    (city.rewards ?? []).filter(
+      (record) => record.reward === "ECONOMIC_MIRACLE",
+    ).length * ECONOMIC_MIRACLE_COINS_V7
+  );
+}
+
 export function cityUnitCapacityForV7(
   level: number,
   ownerResearchedTechs: readonly string[],
@@ -3977,7 +4051,7 @@ export const RULESET_7 = deepFreeze({
  * a technology of tier `t` costs `5 / 7 / 9 + (T - 1)`, `T` being the
  * technologies the researcher already owns.
  *
- * The economy rejig (`pulp_wars-w49.16`, `pulp-wars-poc-7r62`,
+ * The economy rejig (`pulp_wars-w49.16`, `pulp-wars-poc-7r63`,
  * docs/product/RULESET_7_ECONOMY_REJIG.md): the price is per city again and
  * the technologies owned no longer enter it. A technology of tier `t`
  * costs `5 / 7 / 9 + (1 / 2 / 3) * (C - 1)`, `C` being the cities the

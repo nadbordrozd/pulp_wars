@@ -334,7 +334,7 @@ describe("ruleset-7 naval transport", () => {
           kind: "CITY_REWARD",
           cityId: fixture.portCityId,
           reachedLevel: 2,
-          candidates: ["SURVEY", "STOCKPILE"],
+          candidates: ["STOCKPILE", "MILITIA"],
         },
       ]);
       const reward = applyCommandV7(ownerTurn.state, fixture.portOwnerId, {

@@ -190,13 +190,13 @@ describe("the Undead pass: identity", () => {
   // , the Dinosaur pass 7r53, and the economy rejig 7r54, so 7r51 is a
   // prior identity.
   it("was 7r51 after 7r50, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r62");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r62.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-12, -10)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r63");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r63.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-13, -11)).toEqual([
       "pulp-wars-poc-7r50",
       "pulp-wars-poc-7r51",
     ]);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-12, -10)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-13, -11)).toEqual([
       "pulpWars.save.v7r50.current",
       "pulpWars.save.v7r51.current",
     ]);
@@ -597,8 +597,10 @@ describe("the Undead pass: Scouts", () => {
       MARTIAN: 1,
       // Step two of the Ice Folk pass (7r59): a Sled.
       ICE_FOLK: 1,
-      DWARF: 0,
-      CANDY: 0,
+      // The reward ladder rework (`pulp_wars-zypi`): a Gyrocopter and a
+      // Donut Racer.
+      DWARF: 1,
+      CANDY: 1,
     });
     const base = goblinArenaV7(
       ["UNDEAD", "ORIGINAL"],
@@ -606,18 +608,20 @@ describe("the Undead pass: Scouts", () => {
         { seat: 0, role: "FIGHTER", at: at(8, 8) },
         { seat: 1, role: "FIGHTER", at: at(2, 8) },
       ],
-      { techs: { 0: ["GATHERING", "FARMING"], 1: [] } },
+      { techs: { 0: ["GATHERING", "FARMING"], 1: [] }, coins: 50 },
     );
     const actor = seatIdV7(base, 0);
     const capital = base.cities.find((city) => city.ownerId === actor);
     if (capital === undefined) throw new Error("capital missing");
-    const farm = at(8, 9);
+    // Since the reward ladder rework (`pulp_wars-zypi`) Scouts is a
+    // level-3 reward: three Farms, through the level-2 Stockpile.
+    const farms = [at(8, 9), at(7, 9), at(9, 9)];
     const state: GameStateV7 = {
       ...base,
       board: {
         ...base.board,
         tiles: base.board.tiles.map((tile) =>
-          same(tile.at, farm)
+          farms.some((farm) => same(tile.at, farm))
             ? {
                 ...tile,
                 biome: "PLAINS" as const,
@@ -629,20 +633,34 @@ describe("the Undead pass: Scouts", () => {
         ),
       },
     };
-    const built = applyOkV7(state, actor, { kind: "BUILD_FARM", at: farm });
+    let built = applyOkV7(state, actor, { kind: "BUILD_FARM", at: at(8, 9) });
     expect(built.state.pendingChoices[0]).toMatchObject({
       kind: "CITY_REWARD",
       reachedLevel: 2,
+      candidates: ["STOCKPILE", "MILITIA"],
+    });
+    built = applyOkV7(built.state, actor, {
+      kind: "CHOOSE_CITY_REWARD",
+      cityId: capital.id,
+      reachedLevel: 2,
+      reward: "STOCKPILE",
+    });
+    built = applyOkV7(built.state, actor, { kind: "BUILD_FARM", at: at(7, 9) });
+    built = applyOkV7(built.state, actor, { kind: "BUILD_FARM", at: at(9, 9) });
+    expect(built.state.pendingChoices[0]).toMatchObject({
+      kind: "CITY_REWARD",
+      reachedLevel: 3,
+      candidates: ["SURVEY", "WALLS"],
     });
     const chosen = applyOkV7(built.state, actor, {
       kind: "CHOOSE_CITY_REWARD",
       cityId: capital.id,
-      reachedLevel: 2,
+      reachedLevel: 3,
       reward: "SURVEY",
     });
     expect(
       chosen.events.find((event) => event.kind === "UNIT_REWARD_GRANTED"),
-    ).toMatchObject({ role: "RAIDER", reachedLevel: 2 });
+    ).toMatchObject({ role: "RAIDER", reachedLevel: 3 });
     expect(
       chosen.state.units.some(
         (unit) => unit.ownerId === actor && unit.role === "RAIDER",
@@ -2112,6 +2130,10 @@ describe("the correction: the Undead Normal AI's garrison", () => {
     expect(roles).not.toContain("CATAPULT");
   });
 
+  // The reward ladder rework (`pulp_wars-zypi`): level 3 offers Scouts or
+  // Walls (Walls or the Militia before), and every seat of the Normal AI
+  // takes the Walls for a threatened city (a Human seat took the Militia
+  // unit there before).
   it("takes Walls for a threatened city at level 3", () => {
     const offered = (faction: FactionIdV7) => {
       const { state } = field(
@@ -2139,7 +2161,7 @@ describe("the correction: the Undead Normal AI's garrison", () => {
             kind: "CITY_REWARD",
             cityId: capital.id,
             reachedLevel: 3,
-            candidates: ["WALLS", "MILITIA"],
+            candidates: ["SURVEY", "WALLS"],
           },
         ],
       };
@@ -2148,8 +2170,7 @@ describe("the correction: the Undead Normal AI's garrison", () => {
       );
     };
     expect(offered("UNDEAD")).toMatchObject({ reward: "WALLS" });
-    // A Human seat takes the Militia unit there, as before.
-    expect(offered("ORIGINAL")).toMatchObject({ reward: "MILITIA" });
+    expect(offered("ORIGINAL")).toMatchObject({ reward: "WALLS" });
   });
 });
 

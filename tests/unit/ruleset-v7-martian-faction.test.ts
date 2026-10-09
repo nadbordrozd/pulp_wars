@@ -99,7 +99,7 @@ import { at, kindsV7, movedV7 } from "../fixtures/v7-revision20";
 // (docs/product/RULESET_7_MARTIANS.md sections 2 to 4, 10.9, 10.10, and 11).
 
 /** The revision number of this identity (`pulp-wars-poc-7rNN`). */
-const REVISION = 62;
+const REVISION = 63;
 const ID = `pulp-wars-poc-7r${REVISION}`;
 const PREVIOUS_ID = `pulp-wars-poc-7r${REVISION - 1}`;
 
@@ -1539,8 +1539,10 @@ describe("Martian Showcase (section 2.4)", () => {
       [3, 6],
     ]);
     // 21: land trade pays 2 Coins (tuning 1, 7r46; 17 before) and since
-    // tuning 3 the linked capital earns it too (19 before).
-    expect(playerIncomeV7(state, martianId).totalCoins).toBe(18);
+    // tuning 3 the linked capital earns it too (19 before); 18 since
+    // tuning 4 (land trade pays 1 Coin); 20 since the reward ladder rework
+    // (`pulp_wars-zypi`: North's and Coast's Economic Miracle, +1 each).
+    expect(playerIncomeV7(state, martianId).totalCoins).toBe(20);
   });
 
   it("the first Start Turn recharges under the Force Field, and every ability can be tried on the first turn", () => {

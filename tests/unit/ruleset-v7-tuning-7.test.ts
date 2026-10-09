@@ -50,7 +50,7 @@ import {
 } from "../../src/ai/v7-campaign";
 
 /**
- * Tuning 7 (`pulp_wars-w49.10`, identity unchanged at `pulp-wars-poc-7r62`;
+ * Tuning 7 (`pulp_wars-w49.10`, identity unchanged at `pulp-wars-poc-7r63`;
  * docs/product/RULESET_7_TUNING_HUMAN.md section 14, the Normal AI of a
  * Human, Undead, or Goblin seat): it commits against the enemy in front of
  * it and keeps committing after the line breaks, every faction's seat
@@ -194,7 +194,7 @@ const whereIs = (state: GameStateV7, id: UnitId): CoordV7 => {
 
 describe("tuning 7 identity", () => {
   it("is still 7r49: no rule, command, state, or event shape changed", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r62");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r63");
   });
 });
 
@@ -852,19 +852,22 @@ describe("2. every faction's seat grows", () => {
     // second purchase is the Workshop beside it (2 population for 4 Coins;
     // a second Lumber Camp, 1 for 3, before).
     expect(kinds.slice(0, 2)).toEqual(["BUILD_LUMBER_CAMP", "BUILD_WORKSHOP"]);
-    // The Undead pass (`pulp_wars-w49.13`): an Undead level-2 Survey is
-    // Scouts, with a free Ghoul, so the level's slot is filled by the
-    // reward (it was a TRAIN after the two camps before).
+    // The Undead pass (`pulp_wars-w49.13`): an Undead level-2 Survey was
+    // Scouts, with a free Ghoul, so the level's slot was filled by the
+    // reward (it was a TRAIN after the two camps before). The reward ladder
+    // rework (`pulp_wars-zypi`): level 2 offers the Stockpile or the
+    // Militia, and this seat at its unit limit takes the Militia's free
+    // Skeleton into the new slot.
     expect(turn.commands[2]).toMatchObject({
       kind: "CHOOSE_CITY_REWARD",
-      reward: "SURVEY",
+      reward: "MILITIA",
     });
     const own = seatIdV7(turn.state, 0);
-    expect(
-      turn.state.units.filter(
-        (unit) => unit.ownerId === own && unit.role === "RAIDER",
-      ),
-    ).toHaveLength(1);
+    const fighters = (value: GameStateV7) =>
+      value.units.filter(
+        (unit) => unit.ownerId === own && unit.role === "FIGHTER",
+      ).length;
+    expect(fighters(turn.state)).toBe(fighters(state) + 1);
     const capital = turn.state.cities.find((city) => city.ownerId === own);
     expect(capital?.level).toBe(2);
   });
