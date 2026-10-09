@@ -144,6 +144,11 @@ export interface BoardVisualDirectionV7 {
      * on the ground round the feet, with no plate and no player colour.
      */
     readonly ready: "GLOW" | "BASE" | "GROUND";
+    /**
+     * BOLD is the CHIBI cobblestone path with a near-black casing; CALM
+     * (the live look) a slightly irregular brown dirt path, bead
+     * pulp_wars-g6b5 (dirt-road-v7.ts).
+     */
     readonly roads: "BOLD" | "CALM";
     readonly borders: "DASHED" | "SOLID";
   };
@@ -1002,12 +1007,6 @@ export function createDirectedChibiArtV7(input: {
 
 const OUTLINE = "#171722";
 const READY_RIM = "#fff6cf";
-
-/** CHIBI road strokes of the calm variant: a soft casing, no black line. */
-export const CALM_ROAD_STROKES_V7 = [
-  ["#8b7a55", 11],
-  ["#cdbb8f", 8],
-] as const satisfies readonly (readonly [string, number])[];
 
 export interface DirectedRectV7 {
   readonly x: number;

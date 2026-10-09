@@ -398,8 +398,8 @@ import {
 import { noteLazyRasterV7, preloadedRasterV7 } from "./preloaded-rasters-v7";
 import { drawLegacyRiftV7, riftPieceV7 } from "./rift-presentation-v7";
 import { factionColourV7 } from "./faction-colours-v7";
+import { drawDirtRoadV7 } from "./dirt-road-v7";
 import {
-  CALM_ROAD_STROKES_V7,
   DIRECTED_BASE_HP_BAR_TOP_V7,
   drawDirectedFlagV7,
   drawDirectedPieceChromeV7,
@@ -3106,19 +3106,37 @@ export function drawBoardV7(input: {
         continue;
       }
       if (entry.kind === "ROAD" || entry.kind === "ROAD_JOIN") {
-        drawRoad(
-          context,
-          entry,
-          x,
-          y,
-          camera.zoom,
-          chibiArt === undefined
-            ? ROAD_STROKES_V7
-            : (direction?.chrome.roads === "CALM"
-                ? CALM_ROAD_STROKES_V7
-                : CHIBI_ROAD_STROKES_V7
-              ).slice(...(pass === "ROAD_CASING" ? [0, 1] : [1])),
-        );
+        // The live look (CALM): slightly irregular brown dirt paths, bead
+        // pulp_wars-g6b5.
+        if (chibiArt !== undefined && direction?.chrome.roads === "CALM")
+          drawDirtRoadV7(
+            context,
+            {
+              at: entry.at,
+              neighbours: entry.roadNeighbors ?? [],
+              joins: entry.roadJoins ?? [],
+              isolated:
+                entry.kind === "ROAD" &&
+                (entry.roadNeighbors?.length ?? 0) === 0,
+            },
+            x,
+            y,
+            camera.zoom,
+            pass === "ROAD_CASING" ? "CASING" : "FILL",
+          );
+        else
+          drawRoad(
+            context,
+            entry,
+            x,
+            y,
+            camera.zoom,
+            chibiArt === undefined
+              ? ROAD_STROKES_V7
+              : CHIBI_ROAD_STROKES_V7.slice(
+                  ...(pass === "ROAD_CASING" ? [0, 1] : [1]),
+                ),
+          );
         continue;
       }
       if (entry.kind === "CURIOSITY") {

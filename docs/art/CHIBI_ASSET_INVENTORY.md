@@ -482,6 +482,13 @@ sprite and one portrait, and the Stegosaurus's Egg is the shared one.
    (LEGACY unchanged). Roads are a beige cobblestone path (`#d8c08c`) with
    the pieces' near-black casing (`CHIBI_ROAD_STROKES_V7`), and every road
    casing is drawn before any road fill so corner joins read as one path.
+   The live look (bead `pulp_wars-g6b5`) draws them instead as slightly
+   irregular brown dirt paths (`DIRT_ROAD_V7` in `dirt-road-v7.ts`): a dark
+   trodden edge (`#68432a`) round warm dirt (`#ae7c4b`) with a few rut
+   dashes and pebbles. Each link between two road cells bends sideways by
+   at most 4 world units and swells by at most 1.5, as a pure function of
+   its two cells, so both cells and any corner join draw the same path and
+   it never changes between frames, zoom levels or loads.
    Field Defense is a palisade badge (four pale birch stakes on a light
    steel crossbar, thick outline) in the cell's top-left corner above the
    HP bar strip (`CHIBI_OVERLAY_FRAME_V7.fieldDefense`); a city's

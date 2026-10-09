@@ -190,7 +190,7 @@ look stays available as Settings > Developer tools > Classic look.
 - **Chrome of the default look:** no numbered seat badge; the HP bar only
   for a damaged unit, a short bar on its plate; the ready cue as a bright
   rim round the plate; thin solid territory borders; Roads without the black
-  casing.
+  casing (since bead `pulp_wars-g6b5` slightly irregular brown dirt paths).
 - **Not converted:** ships, terrain and resources. All four factions' land
   units, portraits and cities are converted (the Dinosaurs last, in bead
   `pulp_wars-3tq.13`). Ships keep the player-coloured sail and stand in a
