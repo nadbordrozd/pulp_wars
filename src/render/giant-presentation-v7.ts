@@ -102,7 +102,7 @@ export function giantSignatureRuleV7(
     case "OVERSTRIDE":
       return `steps over units and through enemy zones of control, dealing ${mechanics.trampleDamage} to each enemy it steps over`;
     case "GLACIAL_SMASH":
-      return `its hit shatters a Chilled enemy left at ${mechanics.glacialSmashHp} HP or less, and the shards Chill the enemies around it; it never advances`;
+      return `its hit shatters a Frozen enemy left at ${mechanics.glacialSmashHp} HP or less, and the shards freeze the enemies around it; it never advances`;
     case "SIEGE_HAMMER":
       return "its blows ignore Walls, Field Defense and Dig In, smash the Field Defense, and tear down a city's Walls for good";
     case "BREAK_OFF":
@@ -153,7 +153,7 @@ const REWARD_PHRASES_V7: Readonly<Record<GiantSignatureV7, string>> = {
   TOSS: "throws Goblins",
   STOMP: "stomps everything around it",
   OVERSTRIDE: "strides over armies",
-  GLACIAL_SMASH: "shatters Chilled enemies",
+  GLACIAL_SMASH: "shatters Frozen enemies",
   SIEGE_HAMMER: "tears down city Walls",
   BREAK_OFF: "breaks off Gingerbread Men",
 };

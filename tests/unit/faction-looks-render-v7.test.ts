@@ -106,7 +106,7 @@ describe("faction looks without plates on real states (pulp_wars-w5j.3)", () => 
         ).toBe(true);
       }
       // The viewer's units are ready but one; nobody else's is. Ice Folk
-      // Freeze (`pulp_wars-w49.37`): in mix A the viewer's chilled Raider is
+      // Freeze (`pulp_wars-w49.37`): in mix A the viewer's Raider is
       // Frozen, and a Frozen unit is not ready.
       const ready = entries.filter((entry) => entry.ready === true);
       expect(ready.length, name).toBe(name === "A" ? 4 : 5);
@@ -120,8 +120,8 @@ describe("faction looks without plates on real states (pulp_wars-w5j.3)", () => 
         2,
       );
     }
-    // Mix A: a Big and an Alpha dinosaur, a dented Shield, Frosted and
-    // Frozen units.
+    // Mix A: a Big and an Alpha dinosaur, a dented Shield, and Frozen
+    // units.
     const a = units(mixes[0][1]);
     expect(a.map((entry) => entry.growthStage ?? null)).toEqual(
       expect.arrayContaining([1, 2]),
@@ -133,12 +133,10 @@ describe("faction looks without plates on real states (pulp_wars-w5j.3)", () => 
           entry.martian.shield < entry.martian.shieldSegments,
       ),
     ).toBe(true);
-    // Ice Folk Freeze (`pulp_wars-w49.37`): Frosted no longer occurs; the
-    // three chilled units are Frozen.
-    expect(a.filter((entry) => entry.iceFolk?.chill === "FROZEN")).toHaveLength(
-      3,
-    );
-    expect(a.some((entry) => entry.iceFolk?.chill === "FROSTED")).toBe(false);
+    // Ice Folk Freeze (`pulp_wars-w49.38`): three units are Frozen.
+    expect(
+      a.filter((entry) => (entry.iceFolk?.frozen ?? null) !== null),
+    ).toHaveLength(3);
   });
 
   it("draws every unit with no player colour under it in the live look: a neutral shadow, and the ready ring on the viewer's ready units", () => {

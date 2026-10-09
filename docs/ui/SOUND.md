@@ -186,6 +186,9 @@ economy is silent.
 | Shatter                                                         | `special.freeze`, then `impact.ice`                                   |
 | Cold Snap, Cold Aura, Freeze                                    | `special.freeze`                                                      |
 | Bolas                                                           | `attack.ranged`, then `special.freeze`                                |
+| Frost Bolt                                                      | `attack.ranged`, then `special.freeze`                                |
+| Black Ice and Frostbite freezes                                 | `special.freeze`                                                      |
+| Stampede                                                        | `impact.heavy`, then `impact.hit` as it reaches each unit in its way  |
 | Sweep                                                           | `attack.melee`                                                        |
 | Ice melting                                                     | `impact.splash`                                                       |
 | Lich splash                                                     | `impact.splash`                                                       |

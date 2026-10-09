@@ -250,7 +250,7 @@ export const ASSEMBLE_NO_TILE_V7 = "No free tile";
 export const ASSEMBLE_NO_HOME_V7 = "No home city";
 export const REPAIR_LABEL_V7 = "Repair";
 export const REPAIR_CHIP_V7 = `+${REPAIR_MACHINE_V7} machines, +2 others`;
-export const REPAIR_TOOLTIP_V7 = `Heal adjacent units: ${REPAIR_CHIP_V7}. Cures Plague, bites, and frost. Mends your Barricades by ${REPAIR_MACHINE_V7}`;
+export const REPAIR_TOOLTIP_V7 = `Heal adjacent units: ${REPAIR_CHIP_V7}. Cures Plague and bites, and thaws Frozen units. Mends your Barricades by ${REPAIR_MACHINE_V7}`;
 
 // ------------------------------------- Dwarf crowd control (w49.33/34)
 

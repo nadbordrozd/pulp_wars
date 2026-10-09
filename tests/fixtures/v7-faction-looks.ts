@@ -16,8 +16,7 @@ import { iceFolkUiFieldV7, type IceFolkUiPieceV7 } from "./v7-ice-folk-ui";
  * to 3). Every land tile that is not a settlement is open Grass. Seat 0's
  * units are ready (one is spent), so the ready cue shows on several units;
  * several units of every seat are damaged; a Martian seat has a dented
- * Shield; an Ice Folk seat chills a unit of two other seats (Frosted and
- * Frozen); a Dinosaur seat has a Big and an Alpha unit and two Eggs (one
+ * Shield; an Ice Folk seat has frozen units of the other seats; a Dinosaur seat has a Big and an Alpha unit and two Eggs (one
  * damaged) beside its capital. The module imports no test runner, so the
  * browser review (scripts/art/faction-looks-review.ts) mounts it through
  * the dev server.
@@ -55,8 +54,8 @@ interface LookPiece {
   /** Share of the maximum HP left (default: full). */
   readonly health?: number;
   readonly spent?: boolean;
-  /** Chilled by an Ice Folk seat, when the mix has one. */
-  readonly chill?: "FROSTED" | "FROZEN";
+  /** Frozen by an Ice Folk seat, when the mix has one. */
+  readonly frozen?: true;
   /** Kills for growth, when the seat is Dinosaur (1 Big, 2 Alpha). */
   readonly growth?: 1 | 2;
   /** Current Shield, when the seat is Martian (default: its maximum). */
@@ -74,12 +73,12 @@ const PIECES: readonly LookPiece[] = [
     role: "RAIDER",
     at: { x: 8, y: 9 },
     health: 0.7,
-    chill: "FROSTED",
+    frozen: true,
   },
   { seat: 0, role: "GUARD", at: { x: 8, y: 10 }, spent: true },
   // Seat 1, east of them.
   { seat: 1, role: "RAIDER", at: { x: 10, y: 7 } },
-  { seat: 1, role: "FIGHTER", at: { x: 10, y: 8 }, chill: "FROSTED" },
+  { seat: 1, role: "FIGHTER", at: { x: 10, y: 8 }, frozen: true },
   { seat: 1, role: "CAPTAIN", at: { x: 11, y: 8 } },
   { seat: 1, role: "MARKSMAN", at: { x: 10, y: 9 }, health: 0.5, shield: 1 },
   { seat: 1, role: "CATAPULT", at: { x: 11, y: 9 } },
@@ -92,7 +91,7 @@ const PIECES: readonly LookPiece[] = [
   { seat: 3, role: "RAIDER", at: { x: 6, y: 10 }, growth: 1 },
   { seat: 3, role: "KNIGHT", at: { x: 7, y: 11 }, growth: 2 },
   { seat: 3, role: "CATAPULT", at: { x: 6, y: 11 }, health: 0.5 },
-  { seat: 3, role: "FIGHTER", at: { x: 8, y: 11 }, chill: "FROZEN" },
+  { seat: 3, role: "FIGHTER", at: { x: 8, y: 11 }, frozen: true },
 ];
 
 /** Four different factions in contact (FACTION_LOOKS_MIXES_V7). */
@@ -111,8 +110,8 @@ export function factionLooksFixtureV7(
         ? {}
         : { hp: Math.max(1, Math.round(rule.maxHp * piece.health)) }),
       ...(piece.spent === true ? { activation: { handled: true } } : {}),
-      ...(piece.chill !== undefined && iceFolk && faction !== "ICE_FOLK"
-        ? { chill: piece.chill }
+      ...(piece.frozen === true && iceFolk && faction !== "ICE_FOLK"
+        ? { frozen: 1 as const }
         : {}),
       ...(piece.shield !== undefined && faction === "MARTIAN"
         ? { shield: piece.shield }

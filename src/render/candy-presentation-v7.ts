@@ -144,7 +144,7 @@ export function sugarTossTargetNameV7(unit: string, amount: number): string {
  * `pulp_wars-jdb.14`'s.
  */
 export const TOP_UP_LABEL_V7 = "Top-Up";
-export const TOP_UP_TOOLTIP_V7 = `One adjacent unit stops being Crashed, heals ${TOP_UP_HEAL_V7}, and is cured`;
+export const TOP_UP_TOOLTIP_V7 = `One adjacent unit stops being Crashed, heals ${TOP_UP_HEAL_V7}, is cured, and thaws if Frozen`;
 export const STICKY_TOFFEE_LABEL_V7 = "Sticky Toffee";
 export const GLAZE_TRAIL_LABEL_V7 = "Glaze Trail";
 export const RICOCHET_LABEL_V7 = "Ricochet";
@@ -499,7 +499,7 @@ export function candyHelpRulesV7(): readonly (readonly [string, string])[] {
     ],
     [
       TOP_UP_LABEL_V7,
-      `the ${candyLabelV7("CAPTAIN")} gives one neighbour a sugar top-up: it stops being Crashed, heals ${TOP_UP_HEAL_V7}, and is cured.`,
+      `the ${candyLabelV7("CAPTAIN")} gives one neighbour a sugar top-up: it stops being Crashed, heals ${TOP_UP_HEAL_V7}, is cured, and thaws if Frozen.`,
     ],
     [
       STICKY_TOFFEE_LABEL_V7,

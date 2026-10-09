@@ -168,7 +168,7 @@ The targeting rules are in
 - **The ice chip.** A selected ice tile shows "Ice · 3" (a snowflake and
   the owner's turns left) or "Ice · stays"; its tooltip says what ice is,
   when it melts, and, on the viewer's own ice with Black Ice, that enemies
-  standing there are frosted.
+  standing there are Frozen at the start of the viewer's turn.
 - **Moving on ice.** A sliding unit's destinations are the tiles it really
   stops on; each slide draws an arrow from the tile it steps from to the
   tile it stops on, and the dock's legend reads "Slide: it stops where the
@@ -1054,7 +1054,7 @@ without a Martian seat looks as before apart from the extra faction option.
     reduced motion, white on black in high contrast); and the **brain
     chip** (a brain on the dark chip) in the status slot, before Cooling.
     Both stay above the sprite and right of it, clear of the ready ring and
-    Dig In sandbags on the ground, the Shield bar, and the Chill, Plague and
+    Dig In sandbags on the ground, the Shield bar, and the Frozen, Plague and
     Bitten markers on the left. Selecting a controlled unit draws the
     dashed **control link** to its Brain with a ring round it; selecting a
     Brain links its controlled unit. The seat badge and border ring are the
@@ -1113,8 +1113,9 @@ without a Martian seat looks as before apart from the extra faction option.
   keeps the button, disabled, with the reason: **"Already acted this
   turn"** (a Saucer that attacked, beamed, or pulled: both buttons),
   **"Tractor Beam used this turn"** (a Mothership's spent pull), and
-  **"Frozen: it moved"** (a Frozen carrier that moved; it gets no second
-  "Act" button). A unit that arrived this turn (landed, trained) shows
+  **"Frozen: it cannot act this turn"** (a Frozen carrier or puller,
+  whether or not it moved, since Ice Folk Freeze `pulp_wars-w49.38`; it
+  gets no second "Act" button). A unit that arrived this turn (landed, trained) shows
   neither button, as before. A
   press aims the ability: the dock replaces the actions with the aiming
   panel of the [no-coordinates rule](#no-coordinates-minimal-text-bead-pulp_wars-b5f8)
@@ -1211,10 +1212,15 @@ This overlay implements
 and its code-drawn pieces. The Ice Folk rules are part of
 [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md#21-ice-folk-faction-rules).
 Every cue reads only public views (the tile
-flags `snow` and `blizzard`, `view.chilled`), the public unit stats' `chill`
-and `iceFolk` blocks, the public previews (`previewBolasV7`,
-`previewColdSnapV7`, `queryCombatPreviewV7`) and projected events; nothing
-recomputes a rule. A match without an Ice Folk seat looks as before apart
+flags `snow` and `blizzard`, the `frozen` and `ice` lists), the public unit
+stats' `iceFolk` block, the public previews (`previewBolasV7`,
+`previewFrostBoltV7`, `previewColdSnapV7`, `previewStampedeV7`,
+`queryCombatPreviewV7`), the public movement validation and projected
+events; nothing recomputes a rule, except the shoves and stop of a
+Stampede preview (below). Ice Folk Freeze (`pulp_wars-w49.38`, rules
+`7r67`, [current rules section 21](../product/RULESET_7_CURRENT.md#21-ice-folk-faction-rules))
+replaced Chill with Frozen: no Chill, Frosted or Thawing text or marker is
+left, and there is no thaw immunity to show. A match without an Ice Folk seat looks as before apart
 from the extra faction option.
 
 - **Setup.** Every seat's faction select offers Human, Undead, Goblin,
@@ -1231,9 +1237,10 @@ from the extra faction option.
   badge too. The dock shows an "Ice Folk" faction chip. Fortification is
   "Deep Winter" and Explosives "Brittle" (their own icons) in the tree, its
   detail and research; unit unlocks read "Train Ice Witch (Blizzard, Cold
-  Snap)", "Train Mammoth (Sweep, Trample)", "Train Boulder Yeti (ignores
-  Walls and Field Defense)", all from the registry. Rewards read "A free
-  Yeti" and "Frost Giant: A free Frost Giant, once: shatters Chilled enemies".
+  Snap, Frost Bolt)", "Train Mammoth (Sweep, Trample, Stampede)", "Train
+  Boulder Yeti (ignores Walls and Field Defense)", all from the registry.
+  Rewards read "A free Yeti" and "Frost Giant: A free Frost Giant, once:
+  shatters Frozen enemies".
 - **Snow** (`ICE_FOLK_SNOW_OVERLAY_V7`): every explored land tile whose
   flag `snow` is true gets the cached 80 x 80 overlay tile of its edges and
   variant: a soft white wash with drifts and sparkle, cut raggedly with a
@@ -1256,90 +1263,154 @@ from the extra faction option.
   hovered Witch draws the white dashed outline of her nine tiles. A
   Blizzard tile is named "Blizzard: Snow, and Ice Folk units here take half
   damage from ranged attacks".
-- **Chill markers**, on units of any owner (`ICE_FOLK_CHILL_MARKER_V7`):
-  - **Frozen** (sluggish): the unit cased in ice to the waist, built from
-    its own sprite; the dock chip "Frozen" ("Frozen: move or act, not
-    both").
-  - **Frosted**: a thin pale rime on the sprite's top edges and the frost
-    glyph (`ICON:STATUS:CHILLED`, or a code-drawn snowflake) in the status
-    slot after any Plague or Bitten marker; the chip "Frosted" ("Frosted:
-    an Ice Folk blow that leaves it at 4 HP or less shatters it", with the
-    threshold of the hostile Ice Folk seat).
-  - **Thawing**: nothing on the board; the chip "Thawing" ("Thawing: frost
-    will not slow it again this turn").
-  - **Shatter window**: the HP bar of a Frozen or Frosted unit marks its
-    lowest {threshold} HP in ice glow with a white divider (faint above the
-    current HP). In the default look a Chilled unit shows its base HP bar
-    even at full HP.
-- **Dock and unit info.** Chips: the Chill, "Blizzard" or "Snow" for an Ice
+- **Frozen marker**, on units of any owner (`ICE_FOLK_FROZEN_MARKER_V7`;
+  Ice Folk Freeze, `pulp_wars-w49.38`): the unit is cased in ice to the
+  waist (built from its own sprite) and the ice cube `ICON:STATUS:FROZEN`
+  (a code-drawn cube in LEGACY, the Classic look and high contrast) sits on
+  a dark token in the status slot after any Plague or Bitten marker. When
+  the unit stays Frozen through two of its owner's turns (frozen during its
+  own turn, by Frostbite) a small white "2" sits on the token. The
+  **Shatter window** on its HP bar marks its lowest {threshold} HP in ice
+  glow with a white divider (faint above the current HP); in the default
+  look a Frozen unit shows its base HP bar even at full HP. (The rime that
+  once marked a Frosted unit is drawn only on an icebound ship now.)
+- **Dock and unit info.** The chip **"Frozen · 1 turn"** (or "· 2 turns";
+  `data-unit-status="frozen"`, with the ice cube) says the turns left; its
+  tooltip and the "?" line say "Frozen: it cannot move or act and does not
+  strike back; it thaws at the end of this turn" (its owner's turn, one
+  turn left) or "… at the end of its next turn", and, when a hostile Ice
+  Folk seat can shatter it, "An Ice Folk blow from the next tile that
+  leaves it at 4 HP or less shatters it". The glossary's Frozen line is the
+  same for every faction. Other chips: "Blizzard" or "Snow" for an Ice
   Folk unit standing in one, "Rockfall" for a Yeti on a Mountain, and the
   Boulder Yeti's throw now ("Planted: Attack 3" or "Moved: Attack 2"). Unit
-  info adds the Chill, "Shatters at 4 HP or less" for an Ice Folk unit, its
-  Snow or Blizzard, Rockfall and the throw. Ability lines name Mountain-born,
-  Rockfall, Bolas, Cold Blood, Sweep, Trample, Blizzard, Cold Snap,
-  Boulders, Prowl and Cold Aura. A Yeti or Mammoth where a Fighter or Guard
-  would fortify shows a disabled Fortify: "Ice Folk cannot build Field
-  Defense". The balance round (`pulp_wars-1wy.5`, `7r37`): **Snow cover**
-  multiplies Defense (× 1.25), so its term in the Defense row reads
-  **"+25%"** (a Yeti's "1.5 +25%"), never the product's fraction ("+0.375",
-  1.875); its accessible name is "Snow cover: Snow cover multiplies an
-  unfortified Ice Folk unit's Defense by 1.25." The "Snow" chip's tooltip
-  is "On Snow: light cover here, and its steps from Snow to Snow cost
-  half" (without the second half for the Sabretooth). **Glide in the
-  movement range:** the range is the engine's offered Moves, so a step off
-  the Snow is a full step; the tiles a unit reaches beyond its Move by
-  half-cost steps from Snow onto Snow are outlined in **pale ice** instead
-  of the Move teal (whole outlines, also where they touch a plain Move
-  tile), the dock shows the legend "Glide: Snow to Snow at half cost"
-  while there is one, and the cursor description says the same. A unit on
-  open ground, or on the Snow's edge looking out, has none. A Frozen own
-  unit that moved shows a disabled "Act" ("Frozen: it
-  moved, so it cannot act this turn"); the engine offers it nothing else.
-- **Abilities.** Bolas (Sled) and Cold Snap (Witch) are one button each (the
-  offered commands are never buttons). Without a legal choice the button is
-  `aria-disabled` and names why: "No enemy within 2 tiles" or "Frozen: it
-  moved". A press aims it: the dock shows a compact prompt, the board's
-  only targets become the ability's (Attack marks, each labelled
-  "Frozen" or "Frosted" by the preview) and the camera frames them; Escape
-  or Cancel leaves.
-  - **Bolas**: each target on the board is named for the cursor and Tab
-    "Bolas: chills this Fighter. Will be Frozen" (or "Will be Frosted")
-    with "Yeti can then shatter it" (`shatterSetups`); a board target
-    throws it, and the dock lists no targets (bead `pulp_wars-9im`).
+  info adds "Shatters at 4 HP or less" for an Ice Folk unit, its Snow or
+  Blizzard, Rockfall and the throw. Ability lines name Mountain-born,
+  Rockfall, Bolas, Cold Blood, Sweep, Trample, Stampede, Blizzard, Cold
+  Snap, Frost Bolt, Boulders, Prowl, Cold Aura and Frostbite. A Yeti or
+  Mammoth where a Fighter or Guard would fortify shows a disabled Fortify:
+  "Ice Folk cannot build Field Defense". The balance round
+  (`pulp_wars-1wy.5`, `7r37`): **Snow cover** multiplies Defense (× 1.25),
+  so its term in the Defense row reads **"+25%"** (a Yeti's "1.5 +25%"),
+  never the product's fraction ("+0.375", 1.875); its accessible name is
+  "Snow cover: Snow cover multiplies an unfortified Ice Folk unit's Defense
+  by 1.25." The "Snow" chip's tooltip is "On Snow: light cover here, and
+  its steps from Snow to Snow cost half" (without the second half for the
+  Sabretooth). **Glide in the movement range:** the range is the engine's
+  offered Moves, so a step off the Snow is a full step; the tiles a unit
+  reaches beyond its Move by half-cost steps from Snow onto Snow are
+  outlined in **pale ice** instead of the Move teal (whole outlines, also
+  where they touch a plain Move tile), the dock shows the legend "Glide:
+  Snow to Snow at half cost" while there is one, and the cursor description
+  says the same. A unit on open ground, or on the Snow's edge looking out,
+  has none. **Glacier in the movement range** (Ice Folk Freeze): a tile
+  farther than the unit's Move that only Glacier's +1 Move across ice
+  reaches (its offered path enters ice the viewer knows and costs more than
+  the unit's Move) is outlined in **dotted pale ice** with a faint ice tint
+  and a small "+1" token in its top-right corner; the dock shows the legend
+  "Glacier: +1 Move across ice" and the cursor description says it.
+- **Can't act.** An own Frozen unit, on its owner's turn, has no orders but
+  Disband and Wait (the engine offers nothing else): its ability buttons
+  (Bolas, Cold Snap, Frost Bolt, Stampede, Beam Down, Tractor Beam, Freeze,
+  Bomb Run) are `aria-disabled` with "Frozen: it cannot move or act this
+  turn" (the Martian and frozen-sea buttons: "Frozen: it cannot act this
+  turn", "Frozen: it cannot bomb this turn"); a unit without such a button
+  shows one disabled **"Act"** with the ice cube and the same reason, and
+  pressing it repeats the reason as a notice. Moving is not the cause any
+  more: a Frozen unit cannot act whether or not it moved.
+- **Abilities.** Bolas (Sled), Cold Snap and **Frost Bolt** (Witch) and
+  **Stampede** (Mammoth) are one button each (the offered commands are never
+  buttons). Without a legal choice the button is `aria-disabled` and names
+  why: "No enemy within 2 tiles", "No enemy next to her", "It moved this
+  turn" or "No open line to charge" (Stampede), or the Frozen reason. After
+  the Witch casts one of her two spells neither button shows. A press aims
+  it: the dock shows a compact prompt, the board's only targets become the
+  ability's (Attack marks) and the camera frames them; Escape or Cancel
+  leaves.
+  - **Bolas** and **Frost Bolt**: each target on the board is labelled
+    "Freeze" (or "Stays Frozen" for a unit Frozen already) and named for
+    the cursor and Tab "Bolas: freezes this Fighter. Will be Frozen" /
+    "Frost Bolt: freezes this Marksman. Will be Frozen" with "Yeti can then
+    shatter it" (`shatterSetups`); a board target throws or casts it, and
+    the dock lists no targets (bead `pulp_wars-9im`). The Frost Bolt's
+    reach (the 5 × 5 tiles round the Witch) is tinted with an outer dashed
+    edge.
   - **Cold Snap**: the dock is "Cold Snap" with its `?` (the summary
-    "Chills 2 units: 1 Frozen, 1 Frosted") and one "Cast Cold Snap", whose
-    accessible name carries the summary and each target; the Witch's
-    two-tile reach is tinted with an outer dashed edge; a board target
-    casts it too.
-  - Both panels follow the
+    "Freezes 2 units") and one "Cast Cold Snap", whose accessible name
+    carries the summary and each target ("Will be Frozen" or "Stays
+    Frozen"); the Witch's eight tiles are tinted with an outer dashed edge
+    and each enemy on them is labelled "Freeze"; a board target casts it
+    too.
+  - **Stampede** (two choices, like a Tunnel): every open end of every line
+    of the unmoved Mammoth is an Attack mark. The focused end previews the
+    charge: the tiles it enters filled in tusk cream with a dashed edge
+    (the rest of the line, past a stop, dotted only), a broad cream arrow
+    from the Mammoth to the tile it ends on, "−3" on each unit in the way
+    (red when it dies), a short cream arrow and a dotted cream tile for
+    each shove, and a red-orange bar across the line where it stops before
+    a unit it cannot shove ("−3 · stops"). Choosing an end keeps its
+    preview drawn and labels it "Stampede · hits 2"; the dock says what
+    happens ("Stampede: charges 3 tiles. Fighter takes 3 and is shoved
+    aside. Raider takes 2 and dies. No strike-back") with one **"Charge"**
+    button; choosing the same end again, or Charge, charges. The line and
+    the hits are the engine's public preview; the shoves and the stop are
+    walked on the view with the Push rule (another seat's Engineering is
+    private, so a Mountain counts as closed to a foreign unit that is not
+    Mountain-born), so a hidden unit can still change the result.
+  - The panels follow the
     [no-coordinates rule](#no-coordinates-minimal-text-bead-pulp_wars-b5f8):
     the ability's icon and name with its `?`, no detail sentences.
+- **Frost Giant moves** (Cold Aura): each Move tile of an own Frost Giant
+  that would put it next to enemies it can freeze is labelled "Freezes 2";
+  while the tile is focused each of those enemies is marked "Freeze" in
+  pale ice, and the cursor description names them ("Cold Aura: freezes 2
+  units: Fighter, Marksman").
 - **Attack preview** (own and enemy attacks; the cursor description carries
   every line): "Shatters" replaces the damage label when the preview
-  shatters; notes "Chilled", "Rockfall: Attack 1.5 from the Mountain",
-  "Planted: +1 Attack", "Cold Blood: +0.5 Attack", "Ignores fortification"
-  (Boulders), "Snow cover", "Blizzard: half damage", "Tramples Field
-  Defense" and "A hidden Blizzard may change this"; a Mammoth's label adds
-  "sweep N" and, while the target is focused, each flank victim is marked
-  with its damage ("Sweep: Marksman 2 damage" in the description).
+  shatters; a Frozen defender that does not strike back adds **"Won't
+  strike back (Frozen)"** (and "take 0"), one that could not strike back
+  anyway and survives adds "Frozen"; other notes "Rockfall: Attack 1.5 from
+  the Mountain", "Planted: +1 Attack", "Cold Blood: +0.5 Attack", "Ignores
+  fortification" (Boulders), "Snow cover", "Blizzard: half damage",
+  "Tramples Field Defense", "Frostbite: attacker Frozen" and "A hidden
+  Blizzard may change this"; a Mammoth's label adds "sweep N" and, while
+  the target is focused, each flank victim is marked with its damage
+  ("Sweep: Marksman 2 damage" in the description).
 - **Cues** (effects canvas; reduced motion holds a frame): a **Shatter**
   follows the timeline: the defender (kept on the board after the hit) is
   cased in ice to the top, three white cracks run over it while it shakes,
   then it is gone and the burst flashes at its centre and its shards fly
   out, fall and melt; no Grave, no blast. A **Bolas** spins from the Sled
-  to its target; a **Cold Snap** ring grows from the Witch to five tiles
-  across; frost forms on each chilled unit; a **Cold Aura** flashes the
-  Giant's eight tiles; a **Sweep** draws a white arc over the Mammoth's
-  three tiles; a **Rockfall** lobs a rock like a Catapult. Without the
-  effect sprites (Classic look, LEGACY) code shapes stand in.
-- **Log.** "Your Sled chilled a Fighter", "Your Ice Witch chilled 2 units",
-  "Player 2's Frost Giant chilled 1 unit", "Your Yeti shattered a Fighter"
-  (toast), "Your Mammoth trampled Field Defense".
+  to its target; a **Frost Bolt** shoots a pale streak of ice from the
+  Witch to its target; a **Cold Snap** ring grows from the Witch; frost
+  forms on each Frozen unit (alone for **Black Ice** and **Frostbite**); a
+  **Cold Aura** flashes the Giant's eight tiles; a **Sweep** draws a white
+  arc over the Mammoth's three tiles; a **Rockfall** lobs a rock like a
+  Catapult. A **Stampede** plays over the board as it was: a cream dust
+  cloud with speed streaks races from the Mammoth down the tiles it enters,
+  leaving hoof marks, and a yellow impact star bursts on each unit as it
+  arrives (sounds: a heavy thud, then a hit for each unit); then, tile by
+  tile, the unit in the way slides to its side tile and its "−3" shows (or
+  it dies), and the Mammoth steps on, all as push slides (a unit waits
+  where its slide starts). Without the effect sprites (Classic look,
+  LEGACY) code shapes stand in.
+- **Log.** "Your Sled froze a Fighter", "Your Ice Witch's Cold Snap froze 2
+  units", "Your Ice Witch's Frost Bolt froze a Marksman", "Player 2's Frost
+  Giant froze 2 units", "Your Musk Ox's Frostbite froze a Knight", "Player
+  2's Black Ice froze a Fighter", "Your Mammoth stampeded: 2 units hit, 1
+  killed", "Your Yeti shattered a Fighter" (toast), "Your Mammoth trampled
+  Field Defense".
 - **City panel.** An Ice Folk viewer's city counts slots ("5/7 slots";
   every Ice Folk unit takes one) and every train card names its slot.
-- **Help.** An "Ice Folk" section lists the fifteen section-13.3 sentences
-  for every viewer of a match with an Ice Folk seat (numbers and names from
-  the registry); an Ice Folk viewer is not told of the Raider's Escape.
+- **Help.** Help is the short "How to play" since bead `pulp_wars-2yc.39`,
+  the same in every match; what a unit does is in its "?" and the Gallery
+  (the unit glossary: Frozen, Cold Snap, Frost Bolt, Stampede, Cold Aura,
+  Frostbite and the rest, with no Chill text). The Ice Folk rule sentences
+  (`ICE_FOLK_HELP_RULES_V7`: Frozen, Shatter, Brittle, Snow, Blizzard, Cold
+  Snap, Frost Bolt, Bolas, Cold Blood, Sweep and Trample, Mountain-born,
+  Rockfall, Boulders, Prowl, Cold Aura, Stampede, Deep Winter, Frostbite,
+  numbers and names from the registry) are kept for reference and tested.
+  On the ice, Black Ice freezes and Glacier names its +1 Move.
 
 ## Current Ruleset 7 Dwarf overlay
 

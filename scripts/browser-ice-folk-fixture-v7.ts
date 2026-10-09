@@ -5,10 +5,10 @@ import { ruleset7FixtureMountExpressionV7 } from "./browser-undead-fixture-v7";
  * dev server only, because it imports `tests/fixtures`). It replaces the
  * running app with a `Ruleset7DomAppView` over a local fixture controller
  * and exposes `globalThis.__ICE_FOLK_REVIEW__` ({ boardHost, traces, view,
- * snapshotView, at, victim }). Used by the Ice Folk review script.
+ * snapshotView, at, victim, freeze }). Used by the Ice Folk review script.
  */
 export type IceFolkUiFixtureNameV7 =
-  "iceFolkUiFixtureV7" | "iceFolkVictimFixtureV7";
+  "iceFolkUiFixtureV7" | "iceFolkVictimFixtureV7" | "iceFolkFreezeFixtureV7";
 
 export function iceFolkFixtureMountExpressionV7(
   fixture: IceFolkUiFixtureNameV7,
@@ -19,6 +19,7 @@ export function iceFolkFixtureMountExpressionV7(
     fixture,
     artSet,
     global: "__ICE_FOLK_REVIEW__",
-    extras: "at: fixtures.ICE_FOLK_UI_V7, victim: fixtures.ICE_FOLK_VICTIM_V7",
+    extras:
+      "at: fixtures.ICE_FOLK_UI_V7, victim: fixtures.ICE_FOLK_VICTIM_V7, freeze: fixtures.ICE_FOLK_FREEZE_V7",
   });
 }

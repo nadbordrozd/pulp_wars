@@ -378,7 +378,7 @@ describe("Ruleset 7 unit glossary", () => {
       "ice-crush",
       "ice-cover",
       "on-ice",
-      "chill",
+      "frozen",
       "blizzard",
       "snow",
       "rockfall",
@@ -395,7 +395,7 @@ describe("Ruleset 7 unit glossary", () => {
       expect(known.has(status), status).toBe(true);
     }
     // The chips whose IDs come from data: afflictions, Candy, the Martian
-    // per-turn chips, the three Chill states, and the engine's status lines.
+    // per-turn chips, Frozen, and the engine's status lines.
     for (const status of [
       "plague",
       "bitten",
@@ -405,9 +405,7 @@ describe("Ruleset 7 unit glossary", () => {
       "splatted",
       "beamed",
       "tractor-used",
-      "chill-frozen",
-      "chill-frosted",
-      "chill-thawing",
+      "frozen",
       "inspired",
       "frenzied",
       // `pulp_wars-w49.36`: the Orc Warboss's Berserk (WAAAGH! before).
@@ -426,7 +424,15 @@ describe("Ruleset 7 unit glossary", () => {
     ])
       expect(statusGlossaryV7(status), status).not.toBeNull();
     expect(statusGlossaryV7("no-such-status")).toBeNull();
-    expect(statusGlossaryV7("chill-frozen")?.name).toBe("Frozen");
+    expect(statusGlossaryV7("frozen")?.name).toBe("Frozen");
+    // Ice Folk Freeze (`pulp_wars-w49.38`): the Chill states are gone.
+    for (const status of [
+      "chill",
+      "chill-frozen",
+      "chill-frosted",
+      "chill-thawing",
+    ])
+      expect(statusGlossaryV7(status), status).toBeNull();
     expect(statusGlossaryV7("shield")?.id).toBe("SHIELD");
   });
 

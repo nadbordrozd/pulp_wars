@@ -135,3 +135,24 @@ export function frozenIceboundUiFixtureV7(
     ],
   });
 }
+
+/**
+ * Ice Folk Freeze (bead `pulp_wars-w49.38`, Glacier's +1 Move across ice):
+ * an Ice Folk Sabretooth (it walks on ice; Move 3) on the north shore at
+ * the head of a four-tile ice line down column 1, with every Ice Folk
+ * Naval technology (Glacier included). Without Glacier it reaches the
+ * third ice tile; the fourth, `glacierTile`, only with the bonus.
+ */
+export const FROZEN_GLACIER_UI_V7 = {
+  walker: { x: 1, y: 2 },
+  ice: lineV7({ x: 1, y: 2 }, 0, 1, 4),
+  glacierTile: { x: 1, y: 6 },
+} as const;
+
+export function frozenGlacierUiFixtureV7(): GameStateV7 {
+  return frozenArenaV7({
+    technologies: [ALL, ALL],
+    units: [{ seat: 0, role: "KNIGHT", at: FROZEN_GLACIER_UI_V7.walker }],
+    ice: FROZEN_GLACIER_UI_V7.ice.map((at) => ({ at, turnsLeft: 3 })),
+  });
+}

@@ -66,6 +66,9 @@ const EVERY_FAMILY: Readonly<
   TRACTOR_BEAM: "ATTACK",
   THROW_BOLAS: "ATTACK",
   COLD_SNAP: "ATTACK",
+  // Ice Folk Freeze (`pulp_wars-w49.38`).
+  FROST_BOLT: "ATTACK",
+  STAMPEDE: "ATTACK",
   BOMB_TARGET: "ATTACK",
   WHIRL: "ATTACK",
   BOARD: "ATTACK",

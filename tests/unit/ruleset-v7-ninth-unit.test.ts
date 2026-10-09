@@ -928,7 +928,7 @@ describe("the ninth unit: technology display names", () => {
       "MARTIAN SWORDSMAN": /^Shock Field: .* takes 3 damage/,
       "CANDY SWORDSMAN": /^Rock Hard: Nothing moves it/,
       "DINOSAUR CATAPULT": /^Thagomizer: .* 1 less Defense/,
-      "ICE_FOLK GUARD": /^Frostbite: .* is Chilled/,
+      "ICE_FOLK GUARD": /^Frostbite: .* is Frozen/,
       "DWARF KNIGHT": /^Whirl: Hits every enemy next to it at once/,
     };
     for (const [key, pattern] of Object.entries(lines)) {
@@ -957,7 +957,7 @@ describe("the ninth unit: technology display names", () => {
     ).toEqual([
       "Shock Field: attacker takes 3",
       "Cracked: 1 less Defense",
-      "Frostbite: attacker Chilled",
+      "Frostbite: attacker Frozen",
     ]);
     expect(
       ninthUnitCombatNotesV7({

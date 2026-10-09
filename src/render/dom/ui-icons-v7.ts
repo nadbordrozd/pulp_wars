@@ -149,7 +149,7 @@ const PATHS: Readonly<Record<UiIconIdV7, string>> = {
     "M12 12a1.5 1.5 0 0 1 3 0 3 3 0 0 1-6 0 4.5 4.5 0 0 1 9 0 6 6 0 0 1-12 0 7.5 7.5 0 0 1 15 0",
   "tractor-beam": "M12 3 5 20h14ZM8.3 15h7.4M9.8 10h4.4",
   // The Ice Folk revision: a six-spoke snowflake with barbs (Cold Snap and
-  // Chill), two weights on a cord (Bolas), and a snow-capped peak (the Ice
+  // Frozen), two weights on a cord (Bolas), and a snow-capped peak (the Ice
   // Folk badge, filled): LEGACY glyphs; CHIBI draws the PixelLab icons.
   "ice-peak":
     "M12 3.5 21.5 19.5h-19ZM12 3.5l3.6 6.1-1.6 1-1-1.4-1 1.4-1-1.4-1.6 1Z",

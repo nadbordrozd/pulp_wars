@@ -150,8 +150,8 @@ export const TRACTOR_USED_CHIP_V7 = "Beam used";
 export const TRACTOR_USED_V7 = "Tractor Beam used this turn";
 /** `pulp_wars-1wy.5`: a carrier or puller that used its action this turn. */
 export const MARTIAN_ACTED_V7 = "Already acted this turn";
-/** `pulp_wars-1wy.5`: a Frozen carrier or puller that moved (sluggish). */
-export const MARTIAN_FROZEN_MOVED_V7 = "Frozen: it moved";
+/** A Frozen carrier or puller (Ice Folk Freeze: it cannot act at all). */
+export const MARTIAN_FROZEN_MOVED_V7 = "Frozen: it cannot act this turn";
 /** `pulp_wars-1wy.5`: the tag on a Mothership's Tractor Beam button. */
 export const TRACTOR_FREE_TAG_V7 = "Free";
 export const MIND_CONTROL_LABEL_V7 = "Mind Control";

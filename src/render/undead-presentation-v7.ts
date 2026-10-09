@@ -451,7 +451,7 @@ export function tendPreviewPresentationV7(
 
 /**
  * Canvas label of one Tend target: `+2 HP`, `Cure`, or `+2 · Cure`. A cured
- * Chill is a cure too (bead pulp_wars-621), so a Chilled unit at full HP
+ * Frozen is a cure too (bead pulp_wars-621), so a Frozen unit at full HP
  * reads "Cure", never "+0 HP".
  */
 export function tendTargetLabelV7(

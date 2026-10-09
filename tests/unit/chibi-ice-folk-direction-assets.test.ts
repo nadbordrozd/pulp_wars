@@ -18,7 +18,7 @@ import {
 } from "../../src/assets/chibi-direction-ice-folk-art-manifest";
 import {
   ICE_FOLK_BLIZZARD_V7,
-  ICE_FOLK_CHILL_MARKER_V7,
+  ICE_FOLK_FROZEN_MARKER_V7,
   ICE_FOLK_PALETTE_V7,
   ICE_FOLK_SHATTER_TIMELINE_V7,
   ICE_FOLK_SNOW_OVERLAY_V7,
@@ -631,7 +631,7 @@ describe("the Ice Folk code-drawn pieces (pulp_wars-7g3.5)", () => {
     const line =
       Math.round(
         bottom -
-          (bottom - top + 1) * ICE_FOLK_CHILL_MARKER_V7.frozen.heightShare,
+          (bottom - top + 1) * ICE_FOLK_FROZEN_MARKER_V7.frozen.heightShare,
       ) + margin;
     let below = 0;
     for (let y = 0; y < casing.height; y += 1)

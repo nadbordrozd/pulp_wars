@@ -232,7 +232,7 @@ export function technologySubjectV7(
     return `ICON:TECH:ICE_FOLK:${tech}`;
   // The frozen sea (bead pulp_wars-5ti.7): the Ice Folk Naval branch has no
   // ship, so its cards show the ice instead of a Port, a compass, a wheel,
-  // a Battleship and a diving helmet: Rime the frost of Chill, Pack Ice
+  // a Battleship and a diving helmet: Rime the frost glyph, Pack Ice
   // the drifting floes, Icebound the pack ice, Black Ice the frost ring and
   // Glacier the ice block. Stand-ins of registered art until the faction
   // has icons of its own for them.

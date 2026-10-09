@@ -2,8 +2,9 @@
  * Presentation data of the Ice Folk production art (bead pulp_wars-7g3.5,
  * docs/art/factions/ICE_FOLK.md): pennant anchors, the palette for
  * code-drawn markers, and the code-drawn pieces the spec asks for: the
- * derived Snow overlay, the Witch's Blizzard, the Frozen and Frosted Chill
- * markers, the Shatter window on the HP bar and the Shatter timeline.
+ * derived Snow overlay, the Witch's Blizzard, the Frozen marker, the rime
+ * of an icebound ship, the Shatter window on the HP bar and the Shatter
+ * timeline.
  *
  * It imports nothing, so the review script and the tests run it in Node and
  * the game can run it in the browser. The raster functions are pure: the
@@ -273,7 +274,7 @@ export function iceFolkSnowTileV7(
  * Snow caps or rime: the top `depth` opaque pixels of each column of every
  * shape of `body` (a pixel whose `depth` pixels above include a transparent
  * one), as a layer of the same size to draw over it. Tall terrain bodies
- * get snow caps with it; a Frosted unit gets a thin rime (depth 2, ice
+ * get snow caps with it; an icebound ship gets a thin rime (depth 2, ice
  * pale, lower alpha).
  */
 export function iceFolkSnowCapsV7(
@@ -388,25 +389,29 @@ export function iceFolkBlizzardFlakesV7(
   return flakes;
 }
 
-// ------------------------------------------------------------ Chill markers
+// ----------------------------------------------------------- Frozen marker
 
 /**
- * The two Chill markers (spec 13.1), code-drawn on units of any faction:
+ * The Frozen marker (spec 13.1; Ice Folk Freeze, bead `pulp_wars-w49.38`),
+ * code-drawn on units of any faction:
  *
- * - **Frozen** (`sluggish`): the unit cased in ice to the waist. The casing
- *   covers the sprite's silhouette, widened by `spreadPx`, from its lowest
- *   pixel up to `heightShare` of its height: an `iceGlow` fill at
- *   `fillAlpha`, a 1 px `icePale` rim along its top and sides, an `iceDark`
- *   outline round it and two white glints. Heavy on purpose.
- * - **Frosted** (Chilled, not sluggish): a 2 px `icePale` rime on the top
- *   edges of the sprite (iceFolkSnowCapsV7 with depth 2) and the
- *   `ICON:STATUS:CHILLED` glyph at 16 px in the status slot. Light.
- * - Thawing: nothing on the board.
+ * - **Frozen**: the unit cased in ice to the waist. The casing covers the
+ *   sprite's silhouette, widened by `spreadPx`, from its lowest pixel up to
+ *   `heightShare` of its height: an `iceGlow` fill at `fillAlpha`, a 1 px
+ *   `icePale` rim along its top and sides, an `iceDark` outline round it
+ *   and two white glints. Heavy on purpose. The `ICON:STATUS:FROZEN` ice
+ *   cube sits in the status slot (`glyphPx` at zoom step 1), with the turns
+ *   left beside it when the unit stays Frozen through more than one of its
+ *   owner's turns.
+ * - **Rime**: a 2 px `icePale` line on the top edges of a sprite
+ *   (iceFolkSnowCapsV7 with depth 2), drawn on an icebound ship (the frozen
+ *   sea). The older light frost markers are gone (Ice Folk Freeze).
  */
-export const ICE_FOLK_CHILL_MARKER_V7 = {
+export const ICE_FOLK_FROZEN_MARKER_V7 = {
   frozen: { heightShare: 0.45, spreadPx: 2, fillAlpha: 0.5, rimAlpha: 0.95 },
-  frosted: { depth: 2, alpha: 0.85, glyphPx: 16 },
-  /** The HP bar of a Chilled unit: its lowest {threshold} HP in this tint. */
+  rime: { depth: 2, alpha: 0.85 },
+  glyph: { glyphPx: 16 },
+  /** The HP bar of a Frozen unit: its lowest {threshold} HP in this tint. */
   shatterWindow: { colour: ICE_FOLK_PALETTE_V7.iceGlow, edge: "#ffffff" },
 } as const;
 
@@ -421,9 +426,9 @@ export function iceFolkFrozenCasingV7(
     readonly height: number;
     readonly data: ArrayLike<number>;
   },
-  heightShare: number = ICE_FOLK_CHILL_MARKER_V7.frozen.heightShare,
+  heightShare: number = ICE_FOLK_FROZEN_MARKER_V7.frozen.heightShare,
 ): IceFolkRasterV7 {
-  const spec = ICE_FOLK_CHILL_MARKER_V7.frozen;
+  const spec = ICE_FOLK_FROZEN_MARKER_V7.frozen;
   const m = spec.spreadPx + 1;
   const width = sprite.width + 2 * m;
   const height = sprite.height + 2 * m;

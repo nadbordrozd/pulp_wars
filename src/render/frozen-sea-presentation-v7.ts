@@ -1,4 +1,5 @@
 import {
+  GLACIER_ICE_MOVE_BONUS_V7,
   ICE_CRUSH_DAMAGE_V7,
   ICE_SEA_DOG_UNITS_V7,
   isAfloatFormV7,
@@ -46,10 +47,9 @@ export const THAW_RULE_V7 =
 export const NO_SHIPS_RULE_V7 =
   "Ships cannot enter ice; the Ice Folk have no ships at all.";
 export const BLACK_ICE_RULE_V7 =
-  "Whoever stands on your ice at the start of your turn is frosted.";
+  "Whoever stands on your ice at the start of your turn is Frozen.";
 export const ICEBOUND_RULE_V7 = `Freeze a ship in place: it cannot sail, shoot or strike back, and the ice crushes it for ${ICE_CRUSH_DAMAGE_V7} each turn.`;
-export const GLACIER_RULE_V7 =
-  "Your ice lasts 5 turns and your units on it have cover.";
+export const GLACIER_RULE_V7 = `Your ice lasts 5 turns, your units on it have cover, and a Move of yours across ice gets +${GLACIER_ICE_MOVE_BONUS_V7} Move.`;
 
 /** Help "On the ice": the Ice Folk viewer's rules, in reading order. */
 export const ICE_HELP_RULES_V7: readonly (readonly [string, string])[] = [
@@ -72,9 +72,9 @@ export const ICE_FOR_SHIPS_HELP_V7: readonly [string, string] = [
 export const FREEZE_SHALLOW_UNLOCK_V7 = `${FREEZE_LABEL_V7}: units turn Shallow Water next to them to ice, two tiles in a line (the Ice Witch: all around her), and slide across it`;
 export const FREEZE_DEEP_UNLOCK_V7 = `${FREEZE_LABEL_V7}: Deep Water freezes too`;
 export const ICEBOUND_UNLOCK_V7 = `${ICEBOUND_LABEL_V7}: Freeze locks an enemy ship in; it cannot sail, shoot or strike back, and takes ${ICE_CRUSH_DAMAGE_V7} each turn`;
-export const BLACK_ICE_UNLOCK_V7 = `${BLACK_ICE_LABEL_V7}: enemies standing on your ice are frosted at the start of your turn`;
+export const BLACK_ICE_UNLOCK_V7 = `${BLACK_ICE_LABEL_V7}: enemies standing on your ice are Frozen at the start of your turn`;
 export function glacierUnlockTextV7(iceTurns: number): string {
-  return `${GLACIER_LABEL_V7}: your ice lasts ${iceTurns} turns and gives your units on it cover`;
+  return `${GLACIER_LABEL_V7}: your ice lasts ${iceTurns} turns, gives your units on it cover, and gives a Move across it +${GLACIER_ICE_MOVE_BONUS_V7} Move`;
 }
 export const ICE_NO_SHIPS_NOTE_V7 = "The Ice Folk build no ships";
 
@@ -86,7 +86,7 @@ export const FREEZE_PICK_V7 = "Choose a highlighted tile to freeze toward";
 export const FREEZE_NEEDS_RIME_V7 = "Needs Rime";
 export const FREEZE_NEEDS_PACK_ICE_V7 = "Deep Water needs Pack Ice";
 export const FREEZE_ALREADY_ACTED_V7 = "Already acted this turn";
-export const FREEZE_FROZEN_MOVED_V7 = "Frozen: it moved";
+export const FREEZE_FROZEN_MOVED_V7 = "Frozen: it cannot act this turn";
 export const FREEZE_NO_TARGET_V7 = "No water here can freeze";
 
 /** The role ability's description (unit information, Gallery). */
@@ -265,7 +265,7 @@ export function iceChipTooltipV7(
       : `It melts in ${ice.turnsLeft} of ${own ? "your" : "its owner's"} ${ice.turnsLeft === 1 ? "turn" : "turns"} unless a land unit stands on it`;
   const blackIce =
     own && viewerHasBlackIceV7(view)
-      ? ` ${BLACK_ICE_LABEL_V7}: enemies standing here are frosted at the start of your turn.`
+      ? ` ${BLACK_ICE_LABEL_V7}: enemies standing here are Frozen at the start of your turn.`
       : "";
   return `${ICE_LABEL_V7}: land units stand here and ships cannot enter. ${melt}.${blackIce}`;
 }
@@ -288,6 +288,11 @@ export function viewerHasBlackIceV7(view: PlayerViewV7): boolean {
 
 /** The marks of a Move on ice. */
 export const SLIDE_MOVE_LABEL_V7 = "Slide: it stops where the ice ends";
+/**
+ * Ice Folk Freeze (`pulp_wars-w49.38`): the mark of a tile only Glacier's
+ * +1 Move across ice reaches (the legend and the cursor description).
+ */
+export const GLACIER_MOVE_LABEL_V7 = `${GLACIER_LABEL_V7}: +${GLACIER_ICE_MOVE_BONUS_V7} Move across ice`;
 export const SLIP_MOVE_LABEL_V7 = "Ice: your Move ends here";
 
 /** The chips and warnings of an icebound unit. */

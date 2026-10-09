@@ -36,7 +36,7 @@ import path from "node:path";
 import process from "node:process";
 import sharp from "sharp";
 import {
-  ICE_FOLK_CHILL_MARKER_V7,
+  ICE_FOLK_FROZEN_MARKER_V7,
   ICE_FOLK_PALETTE_V7,
   iceFolkSnowCapsV7,
   iceFolkSnowTileV7,
@@ -384,9 +384,9 @@ async function drawIcebound(
   blit(
     canvas,
     iceFolkSnowCapsV7(sprite, {
-      depth: ICE_FOLK_CHILL_MARKER_V7.frosted.depth,
+      depth: ICE_FOLK_FROZEN_MARKER_V7.rime.depth,
       colour: ICE_FOLK_PALETTE_V7.icePale,
-      alpha: ICE_FOLK_CHILL_MARKER_V7.frosted.alpha,
+      alpha: ICE_FOLK_FROZEN_MARKER_V7.rime.alpha,
     }),
     left,
     top,

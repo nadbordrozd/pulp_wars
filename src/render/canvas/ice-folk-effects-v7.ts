@@ -13,7 +13,9 @@ import type { SupportEffectArtV7 } from "./support-presentation-v7";
  * docs/art/factions/ICE_FOLK.md "Ability effects" and the Shatter
  * timeline). The effect sprites of the Ice Folk art are drawn where they
  * read well: the Shatter burst and its melting shards, the Cold Snap ring,
- * the thrown Bolas and the frost forming on a chilled unit. Without a
+ * the thrown Bolas and the frost forming on a Frozen unit. Ice Folk Freeze
+ * (bead pulp_wars-w49.38) adds the Frost Bolt's icy streak, a plain freeze
+ * (Black Ice, Frostbite) and the Mammoth's Stampede, all code-drawn. Without a
  * loaded sprite (LEGACY, the classic look, still loading) each cue is
  * code-drawn alone. `progress` runs 0 to 1 over the cue's duration
  * (ICE_FOLK_EFFECT_DURATIONS_V7); reduced motion freezes a cue at its
@@ -28,6 +30,16 @@ export type IceFolkFeedbackEffectV7 =
   | "BOLAS"
   /** A Cold Aura: a flash over the Giant's eight tiles, frost on each target. */
   | "COLD_AURA"
+  /** A Frost Bolt: an icy streak from the Witch, then frost on its target. */
+  | "FROST_BOLT"
+  /** A freeze with no thrower (Black Ice, Frostbite): frost on each unit. */
+  | "FROST"
+  /**
+   * A Stampede: dust and hoof marks race down the line from the Mammoth
+   * (`from`) over `cells` (the tiles it enters), with an impact star on
+   * each tile in `hits`.
+   */
+  | "STAMPEDE"
   /** A Mammoth's Sweep: a white arc across the three tiles in front of it. */
   | "SWEEP"
   /**
@@ -46,10 +58,12 @@ export type IceFolkFeedbackEffectV7 =
 
 export interface IceFolkFeedbackV7 {
   readonly effect: IceFolkFeedbackEffectV7;
-  /** The cue's cells: the shattered unit, the chilled units, the swept tiles. */
+  /** The cue's cells: the shattered unit, the Frozen units, the swept tiles. */
   readonly cells: readonly CoordV7[];
   /** The source: the Sled, the Witch, the Giant or the Mammoth. */
   readonly from?: CoordV7;
+  /** STAMPEDE: the tiles of the units it hits. */
+  readonly hits?: readonly CoordV7[];
   /** SHATTER: the shattered unit (the board draws its casing until it bursts). */
   readonly unitId?: number;
   /** PRIZE_FLAG: the former owner's colour and the captor's. */
@@ -66,6 +80,9 @@ export const ICE_FOLK_EFFECT_DURATIONS_V7: Readonly<
   COLD_SNAP: 700,
   BOLAS: 560,
   COLD_AURA: 460,
+  FROST_BOLT: 520,
+  FROST: 420,
+  STAMPEDE: 520,
   SWEEP: 300,
   ICE_FREEZE: 520,
   ICE_MELT: 480,
@@ -412,6 +429,173 @@ export function drawIceFolkFeedbackV7(
     if (progress >= 0.3)
       for (const at of feedback.cells)
         frostHit(at, clamp01((progress - 0.3) / 0.7));
+  } else if (feedback.effect === "FROST_BOLT") {
+    // A pale streak of ice shoots from the Witch to her target, with a
+    // trail of flakes, then frost forms on it.
+    const from = feedback.from;
+    const target = feedback.cells[0];
+    const flight = 0.45;
+    if (from !== undefined && target !== undefined && progress < flight + 0.1) {
+      const local = clamp01(progress / flight);
+      const start = body(from);
+      const end = body(target);
+      const head = {
+        x: start.x + (end.x - start.x) * local,
+        y: start.y + (end.y - start.y) * local,
+      };
+      const tail = clamp01(local - 0.35);
+      const back = {
+        x: start.x + (end.x - start.x) * tail,
+        y: start.y + (end.y - start.y) * tail,
+      };
+      const fade = progress > flight ? 1 - (progress - flight) / 0.1 : 1;
+      context.save();
+      context.globalAlpha *= clamp01(fade);
+      context.lineCap = "round";
+      for (const [colour, width] of [
+        [iceDark, 9],
+        [iceGlow, 6],
+        ["#ffffff", 2.5],
+      ] as const) {
+        context.strokeStyle = colour;
+        context.lineWidth = Math.max(1, width * zoom);
+        context.beginPath();
+        context.moveTo(back.x, back.y);
+        context.lineTo(head.x, head.y);
+        context.stroke();
+      }
+      context.fillStyle = "#ffffff";
+      context.beginPath();
+      context.arc(head.x, head.y, Math.max(2, 6 * zoom), 0, Math.PI * 2);
+      context.fill();
+      context.restore();
+    }
+    if (target !== undefined && progress >= flight - 0.05)
+      frostHit(
+        target,
+        clamp01((progress - (flight - 0.05)) / (1 - flight + 0.05)),
+      );
+  } else if (feedback.effect === "FROST") {
+    for (const at of feedback.cells) frostHit(at, progress);
+  } else if (feedback.effect === "STAMPEDE") {
+    // The charge: a cream dust wave races from the Mammoth along the tiles
+    // it enters, leaving hoof marks; each unit in its way gets an impact
+    // star as the wave reaches it.
+    const from = feedback.from;
+    const cells = feedback.cells;
+    if (from !== undefined && cells.length > 0) {
+      const route = [from, ...cells].map(centre);
+      const legs = route.length - 1;
+      const run = clamp01(progress / 0.75) * legs;
+      const pointAt = (distance: number): { x: number; y: number } => {
+        const index = Math.min(legs - 1, Math.floor(distance));
+        const local = distance - index;
+        const a = route[index] ?? { x: 0, y: 0 };
+        const b = route[index + 1] ?? a;
+        return { x: a.x + (b.x - a.x) * local, y: a.y + (b.y - a.y) * local };
+      };
+      const fade = 1 - clamp01((progress - 0.75) / 0.25);
+      const head = pointAt(run);
+      const tailPoint = pointAt(Math.max(0, run - 1.2));
+      context.save();
+      context.globalAlpha *= fade;
+      // Speed streaks from the tail to the head of the wave.
+      context.lineCap = "round";
+      for (const [offset, width] of [
+        [-26, 4],
+        [0, 6],
+        [26, 4],
+      ] as const) {
+        const length =
+          Math.hypot(head.x - tailPoint.x, head.y - tailPoint.y) || 1;
+        const nx = -(head.y - tailPoint.y) / length;
+        const ny = (head.x - tailPoint.x) / length;
+        for (const [colour, extra] of [
+          ["rgba(23, 23, 34, 0.55)", 3],
+          ["#fff6df", 0],
+        ] as const) {
+          context.strokeStyle = colour;
+          context.lineWidth = Math.max(1, (width + extra) * zoom);
+          context.beginPath();
+          context.moveTo(
+            tailPoint.x + nx * offset * zoom,
+            tailPoint.y + ny * offset * zoom + 10 * zoom,
+          );
+          context.lineTo(
+            head.x + nx * offset * zoom,
+            head.y + ny * offset * zoom + 10 * zoom,
+          );
+          context.stroke();
+        }
+      }
+      // Hoof marks along the way behind the wave.
+      context.fillStyle = "rgba(23, 23, 34, 0.5)";
+      for (let mark = 0.4; mark < run; mark += 0.4) {
+        const point = pointAt(mark);
+        const side = Math.round(mark / 0.4) % 2 === 0 ? -1 : 1;
+        context.beginPath();
+        context.ellipse(
+          point.x + side * 14 * zoom,
+          point.y + 30 * zoom,
+          8 * zoom,
+          5 * zoom,
+          0,
+          0,
+          Math.PI * 2,
+        );
+        context.fill();
+      }
+      // The dust cloud: cream puffs with an ink rim at the head.
+      for (let puff = 4; puff >= 0; puff -= 1) {
+        const distance = Math.max(0, run - puff * 0.16);
+        const point = pointAt(distance);
+        const radius = (40 - puff * 5) * zoom;
+        context.globalAlpha = fade * (0.95 - puff * 0.13);
+        context.fillStyle = puff === 0 ? "#fff6df" : "#e7d3a6";
+        context.strokeStyle = "rgba(122, 96, 58, 0.8)";
+        context.lineWidth = Math.max(1, 2 * zoom);
+        context.beginPath();
+        context.arc(
+          point.x + (puff % 2 === 0 ? 0 : 10 * zoom),
+          point.y + 22 * zoom - (puff % 2) * 8 * zoom,
+          radius,
+          0,
+          Math.PI * 2,
+        );
+        context.fill();
+        context.stroke();
+      }
+      context.restore();
+      // An impact star on each unit as the wave arrives.
+      for (const hit of feedback.hits ?? []) {
+        const index = cells.findIndex(
+          (cell) => cell.x === hit.x && cell.y === hit.y,
+        );
+        const arrive = index < 0 ? legs : index + 1;
+        const local = clamp01((run - (arrive - 0.7)) / 1.1);
+        if (local <= 0 || local >= 1) continue;
+        const point = body(hit);
+        context.save();
+        context.globalAlpha *= 1 - local * local;
+        context.fillStyle = "#ffe9a0";
+        context.strokeStyle = outline;
+        context.lineWidth = Math.max(1.5, 3 * zoom);
+        const radius = (24 + 22 * local) * zoom;
+        context.beginPath();
+        for (let spike = 0; spike < 14; spike += 1) {
+          const r = spike % 2 === 0 ? radius : radius * 0.48;
+          const angle = (spike / 14) * Math.PI * 2 - Math.PI / 2;
+          const px = point.x + Math.cos(angle) * r;
+          const py = point.y + Math.sin(angle) * r;
+          if (spike === 0) context.moveTo(px, py);
+          else context.lineTo(px, py);
+        }
+        context.closePath();
+        context.fill();
+        context.stroke();
+        context.restore();
+      }
+    }
   } else if (feedback.effect === "SWEEP") {
     const from = feedback.from;
     const middle = feedback.cells[0];

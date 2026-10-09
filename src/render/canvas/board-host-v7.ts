@@ -1429,9 +1429,12 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
           this.#followCamera(first);
         // A Shatter shows the defender cased in ice, cracking, until it
         // bursts (ICE_FOLK.md timeline); every other cue shows the result
-        // (the Chill markers appear as the frost forms).
+        // (the Frozen markers appear as the frost forms).
         const shatter = step.effect === "SHATTER" && step.unitId !== undefined;
-        this.#presentedView = shatter ? before : after;
+        // Ice Folk Freeze: a Stampede's dust runs over the board as it was;
+        // its slides, hits and charge follow as their own steps.
+        this.#presentedView =
+          shatter || step.effect === "STAMPEDE" ? before : after;
         this.#draw();
         await this.#animate(step.durationMs * durationScale, (progress) => {
           this.#iceFolkFeedback = iceFolkFeedbackOf(step, progress);
@@ -3544,6 +3547,7 @@ function iceFolkFeedbackOf(
     effect: step.effect,
     cells: step.cells,
     ...(step.from === undefined ? {} : { from: step.from }),
+    ...(step.hits === undefined ? {} : { hits: step.hits }),
     ...(step.unitId === undefined ? {} : { unitId: step.unitId }),
     ...(step.fromColour === undefined ? {} : { fromColour: step.fromColour }),
     ...(step.toColour === undefined ? {} : { toColour: step.toColour }),

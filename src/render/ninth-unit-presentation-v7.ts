@@ -50,7 +50,7 @@ export function ninthUnitCombatNotesV7(preview: {
       ? [`${CRACKED_LABEL_V7}: ${half(CRACKED_DEFENSE2_V7)} less Defense`]
       : []),
     ...(preview.frostbiteApplied
-      ? [`${FROSTBITE_LABEL_V7}: attacker Chilled`]
+      ? [`${FROSTBITE_LABEL_V7}: attacker Frozen`]
       : []),
   ];
 }
@@ -105,7 +105,7 @@ export function ninthUnitMechanicsV7(
   if (mechanics.frostbite)
     result.push({
       name: FROSTBITE_LABEL_V7,
-      rule: "a unit that attacks it from the next tile and survives is Chilled",
+      rule: "a unit that attacks it from the next tile and survives is Frozen: it cannot move or act through its next turn",
     });
   // Dwarf crowd control (`pulp_wars-w49.33`): the Whirligig's Whirl.
   if (mechanics.whirl)

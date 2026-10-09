@@ -19,12 +19,10 @@ import { martianUiFieldV7, type MartianUiPieceV7 } from "./v7-martian-ui";
  */
 export interface IceFolkUiPieceV7 extends MartianUiPieceV7 {
   /**
-   * The Ice Folk revision's Chill markers. Ice Folk Freeze
-   * (`pulp_wars-w49.37`): FROZEN and FROSTED both become a Frozen entry
-   * (`turnsLeft` 1), and THAWING no entry; the interface bead
-   * (`pulp_wars-w49.38`) reworks this fixture.
+   * Ice Folk Freeze (`pulp_wars-w49.37`): a Frozen entry for the unit with
+   * this `turnsLeft` (its owner's End Turns until it thaws).
    */
-  readonly chill?: "FROZEN" | "FROSTED" | "THAWING";
+  readonly frozen?: 1 | 2;
 }
 
 export interface IceFolkUiOptionsV7 {
@@ -76,11 +74,16 @@ export function iceFolkUiFieldV7(
   return checkedV7({
     ...terrained,
     frozen: pieces
-      .filter((piece) => piece.chill !== undefined && piece.chill !== "THAWING")
-      .map((piece) => ({
-        unitId: unitAtV7(terrained, piece.at).id,
-        turnsLeft: 1 as const,
-      }))
+      .flatMap((piece) =>
+        piece.frozen === undefined
+          ? []
+          : [
+              {
+                unitId: unitAtV7(terrained, piece.at).id,
+                turnsLeft: piece.frozen,
+              },
+            ],
+      )
       .sort((left, right) => left.unitId - right.unitId),
   });
 }
@@ -93,31 +96,31 @@ export const ICE_FOLK_UI_V7 = {
   bolasTarget: { x: 4, y: 2 },
   bolasPartner: { x: 3, y: 2 },
   /**
-   * Witch (her Blizzard on Snow) with an unchilled and a Frosted enemy.
-   * Ice Folk Freeze (`pulp_wars-w49.37`): both next to her, inside the
-   * Cold Snap's new reach of 1 (they stood two tiles away before).
+   * Witch (her Blizzard on Snow) with two enemies next to her, inside the
+   * Cold Snap's reach of 1 (Ice Folk Freeze, `pulp_wars-w49.37`): one not
+   * Frozen yet, and one Frozen already.
    */
   witch: { x: 6, y: 6 },
-  snapFrozen: { x: 5, y: 6 },
-  snapFrosted: { x: 6, y: 5 },
+  snapTarget: { x: 5, y: 6 },
+  snapAlreadyFrozen: { x: 6, y: 5 },
   /** Mammoth: a target on Field Defense with an enemy on each flank. */
   mammoth: { x: 9, y: 3 },
   sweepTarget: { x: 9, y: 2 },
   sweepFlankWest: { x: 8, y: 2 },
   sweepFlankEast: { x: 10, y: 2 },
-  /** Yeti next to a Frosted, wounded enemy Fighter: the attack shatters. */
+  /** Yeti next to a Frozen, wounded enemy Fighter: the attack shatters. */
   yeti: { x: 2, y: 4 },
   shatterTarget: { x: 2, y: 5 },
-  /** A Frozen enemy Guard and a Thawing enemy Marksman. */
+  /** A Frozen enemy Guard and an enemy Marksman that is not Frozen. */
   frozenEnemy: { x: 0, y: 5 },
-  thawingEnemy: { x: 0, y: 2 },
+  unfrozenEnemy: { x: 0, y: 2 },
   /**
    * Unmoved Boulder Yeti two tiles from an enemy Guard on Field Defense in
    * its own territory (fortified; Boulders ignore it).
    */
   boulderYeti: { x: 5, y: 7 },
   boulderTarget: { x: 3, y: 7 },
-  /** Snow Hunter two tiles from the Frosted Fighter (Cold Blood). */
+  /** Snow Hunter two tiles from the Frozen Fighter (Cold Blood). */
   hunter: { x: 4, y: 4 },
   /** Yeti on a Mountain two tiles from an enemy Raider (Rockfall). */
   rockfallYeti: { x: 10, y: 5 },
@@ -167,8 +170,8 @@ export function iceFolkUiFixtureV7(
       { seat: 0, role: "KNIGHT", at: at.sabretooth },
       { seat: 0, role: "JUGGERNAUT", at: at.giant },
       { seat: 1, role: "FIGHTER", at: at.bolasTarget, hp: 7 },
-      { seat: 1, role: "MARKSMAN", at: at.snapFrozen },
-      { seat: 1, role: "FIGHTER", at: at.snapFrosted, chill: "FROSTED" },
+      { seat: 1, role: "MARKSMAN", at: at.snapTarget },
+      { seat: 1, role: "FIGHTER", at: at.snapAlreadyFrozen, frozen: 1 },
       { seat: 1, role: "FIGHTER", at: at.sweepTarget },
       { seat: 1, role: "MARKSMAN", at: at.sweepFlankWest },
       { seat: 1, role: "RAIDER", at: at.sweepFlankEast },
@@ -177,10 +180,10 @@ export function iceFolkUiFixtureV7(
         role: "FIGHTER",
         at: at.shatterTarget,
         hp: 8,
-        chill: "FROSTED",
+        frozen: 1,
       },
-      { seat: 1, role: "GUARD", at: at.frozenEnemy, chill: "FROZEN" },
-      { seat: 1, role: "MARKSMAN", at: at.thawingEnemy, chill: "THAWING" },
+      { seat: 1, role: "GUARD", at: at.frozenEnemy, frozen: 1 },
+      { seat: 1, role: "MARKSMAN", at: at.unfrozenEnemy },
       { seat: 1, role: "GUARD", at: at.boulderTarget },
       { seat: 1, role: "RAIDER", at: at.rockfallTarget },
     ],
@@ -197,7 +200,7 @@ export function iceFolkUiFixtureV7(
 /**
  * The other side: a Human viewer (seat 0) against an Ice Folk seat whose
  * Witch stands on the Human territory (her Blizzard over enemy land). The
- * Human Fighter next to her moved while Frozen; a Human Marksman can shoot
+ * Human Fighter next to her is Frozen (it moved this turn); a Human Marksman can shoot
  * a Yeti in the Blizzard (half damage); a Human Raider on Grass would stop
  * on the Snow.
  */
@@ -218,7 +221,7 @@ export function iceFolkVictimFixtureV7(): GameStateV7 {
         seat: 0,
         role: "FIGHTER",
         at: at.frozenFighter,
-        chill: "FROZEN",
+        frozen: 1,
         activation: { moved: true },
       },
       { seat: 0, role: "MARKSMAN", at: at.marksman },
@@ -229,6 +232,65 @@ export function iceFolkVictimFixtureV7(): GameStateV7 {
     ],
     { factions: ["ORIGINAL", "ICE_FOLK"] },
   );
+}
+
+/**
+ * Ice Folk Freeze UI (bead `pulp_wars-w49.38`, RULESET_7_CURRENT.md section
+ * 21): seat 0 (Ice Folk, every technology) against seat 1 (Human) on open
+ * Grass outside both territories.
+ *
+ * - The Witch has an enemy Fighter next to her (Cold Snap), an enemy
+ *   Marksman two tiles away and an enemy Raider two tiles away that is
+ *   Frozen already (Frost Bolt).
+ * - The Frost Giant: a Move to `giantTo` puts it next to two enemies.
+ * - The Mammoth charges west through a Fighter it shoves north and a
+ *   wounded Raider it kills, or south into a Guard it cannot shove (an own
+ *   Yeti and the board's edge flank it).
+ * - An own Yeti next to a Frozen enemy Fighter at full HP (it will not
+ *   strike back), and an own Sabretooth Frozen during its own turn (two
+ *   turns left: it cannot act now or next turn).
+ */
+export const ICE_FOLK_FREEZE_V7 = {
+  witch: { x: 5, y: 2 },
+  snapTarget: { x: 4, y: 2 },
+  boltTarget: { x: 7, y: 2 },
+  boltFrozen: { x: 5, y: 0 },
+  giant: { x: 1, y: 3 },
+  giantTo: { x: 1, y: 4 },
+  giantPreyA: { x: 0, y: 5 },
+  giantPreyB: { x: 2, y: 5 },
+  mammoth: { x: 10, y: 3 },
+  stampedeWest: { x: 7, y: 3 },
+  stampedeShoved: { x: 9, y: 3 },
+  stampedeShovedTo: { x: 9, y: 2 },
+  stampedeKilled: { x: 8, y: 3 },
+  stampedeSouth: { x: 10, y: 6 },
+  stampedeBlocker: { x: 10, y: 5 },
+  stampedeWall: { x: 9, y: 5 },
+  yeti: { x: 3, y: 5 },
+  frozenFighter: { x: 3, y: 6 },
+  frozenOwn: { x: 1, y: 1 },
+} as const;
+
+export function iceFolkFreezeFixtureV7(): GameStateV7 {
+  const at = ICE_FOLK_FREEZE_V7;
+  return iceFolkUiFieldV7([
+    { seat: 0, role: "CAPTAIN", at: at.witch },
+    { seat: 0, role: "JUGGERNAUT", at: at.giant },
+    { seat: 0, role: "SWORDSMAN", at: at.mammoth },
+    { seat: 0, role: "FIGHTER", at: at.stampedeWall },
+    { seat: 0, role: "FIGHTER", at: at.yeti },
+    { seat: 0, role: "KNIGHT", at: at.frozenOwn, frozen: 2 },
+    { seat: 1, role: "FIGHTER", at: at.snapTarget },
+    { seat: 1, role: "MARKSMAN", at: at.boltTarget },
+    { seat: 1, role: "RAIDER", at: at.boltFrozen, frozen: 1 },
+    { seat: 1, role: "FIGHTER", at: at.giantPreyA },
+    { seat: 1, role: "MARKSMAN", at: at.giantPreyB },
+    { seat: 1, role: "FIGHTER", at: at.stampedeShoved },
+    { seat: 1, role: "RAIDER", at: at.stampedeKilled, hp: 2 },
+    { seat: 1, role: "GUARD", at: at.stampedeBlocker },
+    { seat: 1, role: "FIGHTER", at: at.frozenFighter, frozen: 1 },
+  ]);
 }
 
 /**
@@ -278,14 +340,14 @@ export function martianFrozenFixtureV7(): GameStateV7 {
         seat: 0,
         role: "RAIDER",
         at: at.saucer,
-        chill: "FROZEN",
+        frozen: 1,
         activation: { moved: true },
       },
       {
         seat: 0,
         role: "KNIGHT",
         at: at.mothership,
-        chill: "FROZEN",
+        frozen: 1,
         activation: { moved: true },
       },
       { seat: 0, role: "FIGHTER", at: at.grunt },

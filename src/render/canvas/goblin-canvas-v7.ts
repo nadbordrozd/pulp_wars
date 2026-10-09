@@ -5,7 +5,7 @@
  * the Undead badge goes. Sizes are world units scaled by zoom.
  */
 
-import { CHILL_GLYPH_FRAME_V7 } from "./ice-folk-canvas-v7";
+import { STATUS_GLYPH_FRAME_V7 } from "./ice-folk-canvas-v7";
 import { UNDEAD_BADGE_FRAME_V7 } from "./undead-canvas-v7";
 
 /** Legacy and CHIBI Goblin badge frames: the Undead badge's corner. */
@@ -82,8 +82,8 @@ export function drawGoblinBadgeV7(
 // double chevron, "farther and past", in the Goblin blast orange.
 // ---------------------------------------------------------------------------
 
-/** The Berserk glyph's status slots: the Chill glyph's column. */
-export const BERSERK_GLYPH_FRAME_V7 = CHILL_GLYPH_FRAME_V7;
+/** The Berserk glyph's status slots: the Frozen glyph's column. */
+export const BERSERK_GLYPH_FRAME_V7 = STATUS_GLYPH_FRAME_V7;
 
 /** Berserk orange on the Goblin charcoal, with a cream edge. */
 export const BERSERK_PALETTE_V7 = {

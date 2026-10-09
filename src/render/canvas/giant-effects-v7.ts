@@ -205,7 +205,7 @@ export interface GiantFeedbackV7 {
   readonly cells: readonly CoordV7[];
   /** The "−N" of each cell (CRUSH, STOMP, TRAMPLE) or of the DIGEST. */
   readonly amounts?: readonly number[];
-  /** SHARDS: the units the shards Chill (a frost sparkle on each). */
+  /** SHARDS: the units the shards freeze (a frost sparkle on each). */
   readonly marks?: readonly CoordV7[];
   /** HAMMER: the target stood on a walled centre and the Walls fall. */
   readonly walls?: boolean;
@@ -1506,7 +1506,7 @@ function drawShards(
     context.stroke();
     context.restore();
   }
-  // The Chill on each unit the shards caught: a frost sparkle.
+  // The freeze on each unit the shards caught: a frost sparkle.
   for (const burst of plan.bursts) {
     if (burst.local <= 1) continue;
     const local = burst.local - 1;

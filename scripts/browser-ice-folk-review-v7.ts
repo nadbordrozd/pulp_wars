@@ -15,9 +15,12 @@ import {
  * Folk against Humans, and the Ice Folk beside every
  * other faction) at zoom steps 1 and 0.75; and, on the Ice Folk UI
  * fixtures, the Snow overlay over Grass, Forest, Mountain and Roads, the
- * Witch's Blizzard (over her own Snow and over enemy land), the Frosted and
- * Frozen markers with the HP Shatter window, the Bolas and Cold Snap
- * targeting, the attack previews (Shatter, Sweep, Boulders, Rockfall, Cold
+ * Witch's Blizzard (over her own Snow and over enemy land), the Frozen
+ * marker with its turns left and the HP Shatter window, the Bolas, Cold
+ * Snap and Frost Bolt targeting, a Frost Giant's Cold Aura on its Move
+ * tiles, the Mammoth's Stampede (its line, hits, shoves and stop, its cue
+ * frame by frame and a real charge; Ice Folk Freeze, bead
+ * pulp_wars-w49.38), the attack previews (Shatter, Sweep, Boulders, Rockfall, Cold
  * Blood, the Blizzard's half damage), a Shatter frame by frame and a real
  * one, the Cold Snap, Bolas, Cold Aura and Sweep cues, the dock, Help and
  * the technology tree, in the CHIBI art set (the default look; the board
@@ -25,7 +28,7 @@ import {
  * server, because the fixtures are imported from `tests/fixtures`.
  *
  * Usage: tsx scripts/browser-ice-folk-review-v7.ts http://localhost:6173/
- *   [--output-dir=<new-dir>] [--only=setup,showcase,fixtures,legacy]
+ *   [--output-dir=<new-dir>] [--only=setup,showcase,fixtures,legacy,freeze]
  */
 
 interface DebugTarget {
@@ -155,6 +158,9 @@ try {
   if (want("legacy"))
     for (const size of ["desktop", "phone"] as const)
       await boardTour(connection, "legacy", size);
+  if (want("freeze"))
+    for (const size of ["desktop", "phone"] as const)
+      await freezeTour(connection, size);
 
   if (errors.length > 0)
     throw new Error(`Browser errors: ${errors.join("\n")}`);
@@ -321,13 +327,13 @@ async function fixtureTour(
     string,
     Coord
   >;
-  // Markers: the Frosted Fighter and the Frozen Guard, close up.
+  // Markers: the Frozen Fighter and the Frozen Guard, close up.
   await focusCell(connection, at.shatterTarget as Coord);
   await capture(connection, `markers-${suffix}.png`);
-  // The dock of a Frosted enemy, of the Witch and of the Boulder Yeti.
+  // The dock of a Frozen enemy, of the Witch and of the Boulder Yeti.
   await activate(connection, at.shatterTarget as Coord);
-  evidence[`${suffix}FrostedDock`] = await dockText(connection);
-  await capture(connection, `frosted-dock-${suffix}.png`);
+  evidence[`${suffix}FrozenShatterDock`] = await dockText(connection);
+  await capture(connection, `frozen-dock-${suffix}.png`);
   await deselect(connection);
   await activate(connection, at.frozenEnemy as Coord);
   evidence[`${suffix}FrozenEnemyDock`] = await dockText(connection);
@@ -346,7 +352,7 @@ async function fixtureTour(
   evidence[`${suffix}RockfallCursor`] = await cursorText(connection);
   await capture(connection, `attack-rockfall-${suffix}.png`);
   await deselect(connection);
-  // Cold Blood on the Frosted Fighter.
+  // Cold Blood on the Frozen Fighter.
   await activate(connection, at.hunter as Coord);
   await keys(connection, ["ArrowLeft", "ArrowLeft", "ArrowDown"]);
   evidence[`${suffix}ColdBloodCursor`] = await cursorText(connection);
@@ -453,7 +459,7 @@ async function fixtureTour(
   await evaluate(
     connection,
     `${REVIEW}.boardHost.pinIceFolkFeedback([
-      { effect: 'COLD_SNAP', from: ${JSON.stringify(at.witch)}, cells: [${JSON.stringify(at.snapFrozen)}, ${JSON.stringify(at.snapFrosted)}], progress: 0.35 },
+      { effect: 'COLD_SNAP', from: ${JSON.stringify(at.witch)}, cells: [${JSON.stringify(at.snapTarget)}, ${JSON.stringify(at.snapAlreadyFrozen)}], progress: 0.35 },
       { effect: 'BOLAS', from: ${JSON.stringify(at.sled)}, cells: [${JSON.stringify(at.bolasTarget)}], progress: 0.3 },
       { effect: 'SWEEP', from: ${JSON.stringify(at.mammoth)}, cells: [${JSON.stringify(at.sweepTarget)}], progress: 0.5 },
       { effect: 'COLD_AURA', from: ${JSON.stringify(at.giant)}, cells: [], progress: 0.25 },
@@ -463,12 +469,12 @@ async function fixtureTour(
   await capture(connection, `effects-${suffix}.png`);
   await evaluate(
     connection,
-    `${REVIEW}.boardHost.pinIceFolkFeedback([{ effect: 'COLD_SNAP', from: ${JSON.stringify(at.witch)}, cells: [${JSON.stringify(at.snapFrozen)}, ${JSON.stringify(at.snapFrosted)}], progress: 0.8 }])`,
+    `${REVIEW}.boardHost.pinIceFolkFeedback([{ effect: 'COLD_SNAP', from: ${JSON.stringify(at.witch)}, cells: [${JSON.stringify(at.snapTarget)}, ${JSON.stringify(at.snapAlreadyFrozen)}], progress: 0.8 }])`,
   );
   await delay(300);
   await capture(connection, `effects-frost-hit-${suffix}.png`);
   await evaluate(connection, `${REVIEW}.boardHost.pinIceFolkFeedback([])`);
-  // A real Shatter: the Yeti on the Frosted Fighter.
+  // A real Shatter: the Yeti on the Frozen Fighter.
   await activate(connection, at.yeti as Coord);
   await evaluate(
     connection,
@@ -545,6 +551,128 @@ async function fixtureTour(
   await delay(900);
   await focusCell(connection, at.witch as Coord);
   await capture(connection, `board-classic-${size}.png`);
+}
+
+/**
+ * Ice Folk Freeze (bead pulp_wars-w49.38) on its own fixture: the Frozen
+ * marker and card (an enemy, and an own unit with two turns left), the
+ * "won't strike back" preview, Cold Snap and Frost Bolt aiming, a Frost
+ * Giant's Cold Aura on a Move tile, a Stampede's preview (open and
+ * blocked), its cue frame by frame and a real charge, and a Frost Bolt cue.
+ */
+async function freezeTour(
+  connection: Connection,
+  size: ScreenSize,
+): Promise<void> {
+  const suffix = `freeze-${size}`;
+  await viewport(connection, size);
+  await mount(connection, "chibi", "iceFolkFreezeFixtureV7");
+  const at = (await evaluate(connection, `${REVIEW}.freeze`)) as Record<
+    string,
+    Coord
+  >;
+  await focusCell(connection, at.frozenFighter as Coord);
+  await capture(connection, `frozen-board-${suffix}.png`);
+  await activate(connection, at.frozenFighter as Coord);
+  evidence[`${suffix}FrozenEnemyDock`] = await dockText(connection);
+  await capture(connection, `frozen-enemy-card-${suffix}.png`);
+  await deselect(connection);
+  await activate(connection, at.frozenOwn as Coord);
+  evidence[`${suffix}FrozenOwnDock`] = await dockText(connection);
+  await capture(connection, `frozen-own-card-${suffix}.png`);
+  await deselect(connection);
+  await activate(connection, at.yeti as Coord);
+  await keys(connection, ["ArrowDown"]);
+  evidence[`${suffix}FrozenAttackCursor`] = await cursorText(connection);
+  await capture(connection, `attack-frozen-${suffix}.png`);
+  await deselect(connection);
+  await activate(connection, at.witch as Coord);
+  await evaluate(
+    connection,
+    `document.querySelector('[data-action="ice-folk-cold-snap"]')?.click()`,
+  );
+  await delay(600);
+  await capture(connection, `cold-snap-${suffix}.png`);
+  await evaluate(
+    connection,
+    `document.querySelector('[data-action="ice-folk-pick-cancel"]')?.click()`,
+  );
+  await delay(300);
+  await evaluate(
+    connection,
+    `document.querySelector('[data-action="ice-folk-frost-bolt"]')?.click()`,
+  );
+  await delay(600);
+  await capture(connection, `frost-bolt-${suffix}.png`);
+  await deselect(connection);
+  await activate(connection, at.giant as Coord);
+  await keys(connection, ["ArrowDown"]);
+  evidence[`${suffix}GiantCursor`] = await cursorText(connection);
+  await capture(connection, `cold-aura-move-${suffix}.png`);
+  await deselect(connection);
+  await activate(connection, at.mammoth as Coord);
+  await evaluate(
+    connection,
+    `document.querySelector('[data-action="ice-folk-stampede"]')?.click()`,
+  );
+  await delay(600);
+  await evaluate(
+    connection,
+    `${REVIEW}.boardHost.activate(${JSON.stringify(at.stampedeWest)})`,
+  );
+  await delay(600);
+  evidence[`${suffix}StampedeWest`] = await dockText(connection);
+  await capture(connection, `stampede-west-${suffix}.png`);
+  await evaluate(
+    connection,
+    `${REVIEW}.boardHost.activate(${JSON.stringify(at.stampedeSouth)})`,
+  );
+  await delay(600);
+  await capture(connection, `stampede-south-blocked-${suffix}.png`);
+  await deselect(connection);
+  for (const [frame, progress] of [
+    ["1", 0.15],
+    ["2", 0.4],
+    ["3", 0.65],
+    ["4", 0.85],
+  ] as const) {
+    await evaluate(
+      connection,
+      `${REVIEW}.boardHost.pinIceFolkFeedback([{ effect: 'STAMPEDE', from: ${JSON.stringify(at.mammoth)}, cells: [${JSON.stringify(at.stampedeShoved)}, ${JSON.stringify(at.stampedeKilled)}, ${JSON.stringify(at.stampedeWest)}], hits: [${JSON.stringify(at.stampedeShoved)}, ${JSON.stringify(at.stampedeKilled)}], progress: ${progress} }])`,
+    );
+    await delay(250);
+    await capture(connection, `stampede-cue-${frame}-${suffix}.png`);
+  }
+  await evaluate(
+    connection,
+    `${REVIEW}.boardHost.pinIceFolkFeedback([{ effect: 'FROST_BOLT', from: ${JSON.stringify(at.witch)}, cells: [${JSON.stringify(at.boltTarget)}], progress: 0.3 }])`,
+  );
+  await delay(250);
+  await capture(connection, `frost-bolt-cue-${suffix}.png`);
+  await evaluate(connection, `${REVIEW}.boardHost.pinIceFolkFeedback([])`);
+  await activate(connection, at.mammoth as Coord);
+  await evaluate(
+    connection,
+    `document.querySelector('[data-action="ice-folk-stampede"]')?.click()`,
+  );
+  await delay(400);
+  for (let choice = 0; choice < 2; choice += 1) {
+    await evaluate(
+      connection,
+      `${REVIEW}.boardHost.activate(${JSON.stringify(at.stampedeWest)})`,
+    );
+    await delay(400);
+  }
+  await waitFor(
+    connection,
+    `${REVIEW}.traces.some((trace) => trace.command.kind === 'STAMPEDE')`,
+  );
+  await delay(1_600);
+  evidence[`${suffix}AfterStampede`] = await evaluate(
+    connection,
+    `({ notice: document.querySelector('#v7-live')?.textContent, events: ${REVIEW}.traces.at(-1).eventKinds })`,
+  );
+  await capture(connection, `stampede-after-${suffix}.png`);
 }
 
 async function openMenu(connection: Connection, action: string): Promise<void> {

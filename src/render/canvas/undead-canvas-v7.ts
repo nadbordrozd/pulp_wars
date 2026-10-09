@@ -47,12 +47,20 @@ export type AbilityPreviewStyleV7 =
   | "PULL_STEP"
   /**
    * The Ice Folk revision (bead pulp_wars-7g3.6): a Sweep flank victim, a
-   * Bolas or Cold Snap target, and the reach of a Cold Snap (the faction's
-   * ice glow, ICE_FOLK_PALETTE_V7).
+   * unit a freeze would catch (FROZEN: a Frost Giant's Cold Aura, an
+   * icebound ship), and the reach of a Cold Snap or Frost Bolt (the
+   * faction's ice glow, ICE_FOLK_PALETTE_V7).
    */
   | "SWEEP"
-  | "CHILL"
+  | "FROZEN"
   | "COLD_SNAP"
+  /**
+   * Ice Folk Freeze (bead pulp_wars-w49.38): the tiles a Mammoth's Stampede
+   * charges through and the hits on its way (the tusk cream of the Ice
+   * Folk bone), and the side tile a unit is shoved to.
+   */
+  | "STAMPEDE"
+  | "STAMPEDE_SHOVE"
   /**
    * The Dwarf revision (bead pulp_wars-78i.6): a Mole's chosen destination,
    * an eruption ring and its victims "if they stay" (the earth tones of
@@ -587,8 +595,10 @@ const STYLE_COLORS: Readonly<
   PULL_STEP: { fill: "rgba(255, 143, 214, 0.14)", stroke: "#ff8fd6" },
   // The Ice Folk revision: ICE_FOLK_PALETTE_V7's ice glow and pale ice.
   SWEEP: { fill: "rgba(127, 203, 255, 0.2)", stroke: "#7fcbff" },
-  CHILL: { fill: "rgba(127, 203, 255, 0.24)", stroke: "#d6f0ff" },
+  FROZEN: { fill: "rgba(127, 203, 255, 0.24)", stroke: "#d6f0ff" },
   COLD_SNAP: { fill: "rgba(127, 203, 255, 0.1)", stroke: "#7fcbff" },
+  STAMPEDE: { fill: "rgba(240, 220, 174, 0.24)", stroke: "#f0dcae" },
+  STAMPEDE_SHOVE: { fill: "rgba(240, 220, 174, 0.1)", stroke: "#f0dcae" },
   FREEZE: { fill: "rgba(214, 240, 255, 0.2)", stroke: "#ffe7a3" },
   FREEZE_FOCUS: { fill: "rgba(214, 240, 255, 0.42)", stroke: "#ffe7a3" },
   // The Dwarf revision: DWARF_PALETTE_V7's light earth and lit copper.

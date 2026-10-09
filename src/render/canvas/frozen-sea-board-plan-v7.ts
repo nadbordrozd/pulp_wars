@@ -221,7 +221,7 @@ function addIceboundPreviewEntries(
       kind: "ABILITY_TARGET",
       layer: 7.5,
       at: ship.at,
-      abilityStyle: "CHILL",
+      abilityStyle: "FROZEN",
       label: ICEBOUND_LABEL_V7,
     });
   }

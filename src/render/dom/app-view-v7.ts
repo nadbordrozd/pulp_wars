@@ -434,14 +434,21 @@ import {
   COLD_SNAP_LABEL_V7,
   COLD_SNAP_TOOLTIP_V7,
   DEEP_WINTER_UNLOCK_TEXT_V7,
-  FROZEN_MOVED_V7,
+  FROST_BOLT_LABEL_V7,
+  FROST_BOLT_PICK_V7,
+  FROST_BOLT_TOOLTIP_V7,
   GLIDE_MOVE_LABEL_V7,
   ICE_FOLK_FIELD_DEFENSE_EXPLANATION_V7,
   SNOW_LABEL_V7,
+  STAMPEDE_CHARGE_V7,
+  STAMPEDE_CONFIRM_HINT_V7,
+  STAMPEDE_LABEL_V7,
+  STAMPEDE_PICK_V7,
+  STAMPEDE_TOOLTIP_V7,
   WITCH_SUPPORT_UNLOCK_TEXT_V7,
-  chillChipV7,
   coldSnapSummaryV7,
-  frozenAfterMoveV7,
+  frozenCannotActV7,
+  frozenChipV7,
   iceFolkAbilityUnavailableTextV7,
   iceFolkBoundaryNoticeV7,
   iceFolkCommandLabelV7,
@@ -452,6 +459,10 @@ import {
   snowChipTooltipV7,
   matchHasIceFolkSeatV7,
   snowTooltipV7,
+  moveUsesGlacierV7,
+  stampedePlanV7,
+  stampedeSemanticV7,
+  type IceFolkAbilityKindV7,
 } from "../ice-folk-presentation-v7";
 import {
   moveIsGlideV7,
@@ -484,6 +495,7 @@ import {
   FREEZE_PICK_V7,
   FREEZE_RING_TOOLTIP_V7,
   FREEZE_SHALLOW_UNLOCK_V7,
+  GLACIER_MOVE_LABEL_V7,
   ICEBOUND_BLOCKED_V7,
   ICEBOUND_LABEL_V7,
   ICEBOUND_TOOLTIP_V7,
@@ -500,6 +512,7 @@ import {
   freezeOutcomeTextV7,
   freezeOutcomeV7,
   freezeUnavailableTextV7,
+  FREEZE_FROZEN_MOVED_V7,
   freezesRingV7,
   frozenSeaBoundaryNoticeV7,
   glacierUnlockTextV7,
@@ -576,6 +589,7 @@ import {
   tunnelTooltipV7,
   viewerBombDamageV7,
   viewerEruptionDamageV7,
+  BOMB_FROZEN_V7,
 } from "../dwarf-presentation-v7";
 import {
   tunnelCommandsV7,
@@ -834,9 +848,12 @@ const NON_BUTTON_COMMANDS = new Set<CommandV7["kind"]>([
   "TRACTOR_BEAM",
   // The Ice Folk revision: Bolas and Cold Snap have one button per unit
   // each; the targets are highlighted (and a Bolas target picked) on the
-  // board.
+  // board. Ice Folk Freeze (`pulp_wars-w49.38`): Frost Bolt and Stampede
+  // likewise (a Frost Bolt target, and a Stampede's end tile, on the board).
   "THROW_BOLAS",
   "COLD_SNAP",
+  "FROST_BOLT",
+  "STAMPEDE",
   // The Dwarf revision: Tunnel, Bomb Run and Assemble have one button per
   // unit each; the destination, target, landing and tile are picked on the
   // board (a Mole's tunnels alone can be dozens of commands). Dwarf crowd
@@ -886,6 +903,62 @@ const GIANT_PICK_ENTRIES_V7: readonly {
   { kind: "STOMP", label: STOMP_LABEL_V7, icon: "stampede" },
   { kind: "BREAK_OFF", label: BREAK_OFF_LABEL_V7, icon: "units" },
 ];
+
+/**
+ * The Ice Folk revision and Ice Folk Freeze (`pulp_wars-w49.38`): the four
+ * aimed Ice Folk abilities, each with its role ability, button name,
+ * tooltip and icon.
+ */
+const ICE_FOLK_ABILITY_ENTRIES_V7: readonly {
+  readonly kind: IceFolkAbilityKindV7;
+  readonly ability: string;
+  readonly label: string;
+  readonly tooltip: string;
+  readonly icon: UiIconIdV7;
+}[] = [
+  {
+    kind: "THROW_BOLAS",
+    ability: "BOLAS",
+    label: BOLAS_LABEL_V7,
+    tooltip: BOLAS_TOOLTIP_V7,
+    icon: "bolas",
+  },
+  {
+    kind: "COLD_SNAP",
+    ability: "COLD_SNAP",
+    label: COLD_SNAP_LABEL_V7,
+    tooltip: COLD_SNAP_TOOLTIP_V7,
+    icon: "snowflake",
+  },
+  {
+    kind: "FROST_BOLT",
+    ability: "FROST_BOLT",
+    label: FROST_BOLT_LABEL_V7,
+    tooltip: FROST_BOLT_TOOLTIP_V7,
+    icon: "snowflake",
+  },
+  {
+    kind: "STAMPEDE",
+    ability: "STAMPEDE",
+    label: STAMPEDE_LABEL_V7,
+    tooltip: STAMPEDE_TOOLTIP_V7,
+    icon: "stampede",
+  },
+];
+
+/** The `data-action` of an Ice Folk ability's button. */
+function iceFolkAbilityActionV7(kind: IceFolkAbilityKindV7): string {
+  switch (kind) {
+    case "THROW_BOLAS":
+      return "ice-folk-bolas";
+    case "COLD_SNAP":
+      return "ice-folk-cold-snap";
+    case "FROST_BOLT":
+      return "ice-folk-frost-bolt";
+    case "STAMPEDE":
+      return "ice-folk-stampede";
+  }
+}
 
 /** The instruction of a giant's aiming stage. */
 function giantPickPromptV7(pick: GiantPickV7): string {
@@ -4399,10 +4472,10 @@ export class Ruleset7DomAppView {
                 : "On ice: it walks here and does not slide",
           );
       }
-      // The Ice Folk revision (section 13.1): the Chill of a unit of any
-      // owner (Frozen, Frosted or Thawing), and an Ice Folk unit's Blizzard
-      // or Snow, Rockfall reach and Boulder throw, from `stats.chill` and
-      // `stats.iceFolk`.
+      // The Ice Folk revision (section 13.1): Frozen on a unit of any owner
+      // (with its turns left; Ice Folk Freeze, `pulp_wars-w49.38`), and an
+      // Ice Folk unit's Blizzard or Snow, Rockfall reach and Boulder throw,
+      // from the view's `frozen` list and `stats.iceFolk`.
       if (matchHasIceFolkSeatV7(view)) {
         const iceChip = (
           label: string,
@@ -4421,10 +4494,20 @@ export class Ruleset7DomAppView {
           identityColumn?.append(cue);
           return cue;
         };
-        const chill = chillChipV7(view, unit);
-        if (chill !== null)
-          iceChip(chill.label, "chill", chill.status).dataset.chill =
-            chill.state.toLowerCase();
+        const frozen = frozenChipV7(view, unit);
+        if (frozen !== null) {
+          const chip = iceChip(frozen.label, "frozen", frozen.status);
+          chip.dataset.turnsLeft = String(frozen.turnsLeft);
+          chip.classList.add("v7-frozen-chip");
+          const cube = this.#chibiArt(
+            "ICON:STATUS:FROZEN",
+            CHIBI_DOM_BOXES_V7.leaderboard,
+          )?.element;
+          if (cube !== undefined) {
+            cube.classList.add("v7-ice-folk-chip-icon");
+            chip.prepend(cube);
+          }
+        }
         const mechanics = stats?.iceFolk;
         if (mechanics !== undefined && unit.form === "LAND") {
           if (mechanics.inBlizzard)
@@ -4684,6 +4767,9 @@ export class Ruleset7DomAppView {
       if (launchLegend !== null) dock.append(launchLegend);
       const glideLegend = this.#glideLegend(view, unit.id);
       if (glideLegend !== null) dock.append(glideLegend);
+      // Ice Folk Freeze: the tiles only Glacier's +1 Move across ice reaches.
+      const glacierLegend = this.#glacierLegend(view, unit.id);
+      if (glacierLegend !== null) dock.append(glacierLegend);
       // The frozen sea: what the pale tiles on ice mean for this unit.
       const iceLegend = this.#iceMoveLegend(view, unit.id);
       if (iceLegend !== null) dock.append(iceLegend);
@@ -6480,6 +6566,12 @@ export class Ruleset7DomAppView {
     const view = this.#snapshot.view;
     if (view === null) return;
     const command = target.command;
+    // Ice Folk Freeze (`pulp_wars-w49.38`): a Stampede's end tile is chosen
+    // first (its preview stays drawn) and charged when chosen again.
+    if (target.family === "STAMPEDE" && command.kind === "STAMPEDE") {
+      this.#chooseStampede(command, target.semanticLabel);
+      return;
+    }
     // The Martian revision: choosing a Beam Down passenger moves on to its
     // tiles; nothing is dispatched yet.
     if (
@@ -6690,6 +6782,34 @@ export class Ruleset7DomAppView {
     const swatch = el(this.#document, "span", "v7-landing-legend-swatch");
     swatch.setAttribute("aria-hidden", "true");
     item.append(swatch, text(this.#document, "span", GLIDE_MOVE_LABEL_V7));
+    legend.append(item);
+    return legend;
+  }
+
+  /**
+   * Ice Folk Freeze (`pulp_wars-w49.38`): the legend of an Ice Folk unit's
+   * Glacier tiles (the tiles only its +1 Move across ice reaches), shown
+   * while it has any.
+   */
+  #glacierLegend(view: PlayerViewV7, unitId: UnitId): HTMLElement | null {
+    if (
+      !matchHasIceFolkSeatV7(view) ||
+      !this.#snapshot.offeredCommands.some(
+        (command) =>
+          command.kind === "MOVE" &&
+          command.unitId === unitId &&
+          !moveIsGlideV7(view, command) &&
+          moveUsesGlacierV7(view, command),
+      )
+    )
+      return null;
+    const legend = el(this.#document, "ul", "v7-landing-legend");
+    legend.setAttribute("aria-label", "Glacier markers");
+    const item = el(this.#document, "li", "v7-landing-legend-item");
+    item.dataset.landingMarker = "glacier";
+    const swatch = el(this.#document, "span", "v7-landing-legend-swatch");
+    swatch.setAttribute("aria-hidden", "true");
+    item.append(swatch, text(this.#document, "span", GLACIER_MOVE_LABEL_V7));
     legend.append(item);
     return legend;
   }
@@ -9066,11 +9186,7 @@ export class Ruleset7DomAppView {
       "[data-unit-status]",
     )) {
       const status = chip.dataset.unitStatus ?? "";
-      const entry = statusGlossaryV7(
-        status === "chill" && chip.dataset.chill !== undefined
-          ? `chill-${chip.dataset.chill}`
-          : status,
-      );
+      const entry = statusGlossaryV7(status);
       const label = (chip.textContent ?? "").trim();
       const id = entry?.id ?? status;
       // A two-slot body is already explained by its Big body line, and an
@@ -10051,11 +10167,13 @@ export class Ruleset7DomAppView {
 
   /**
    * The Ice Folk revision (section 13.1): the Bolas button of an own Sled
-   * and the Cold Snap button of an own Witch. With a legal target it aims
-   * the ability on the board (pressed while aiming); without one it is
-   * disabled and names the reason ("No enemy within 2 tiles", "Frozen: it
-   * moved"). A Frozen unit of any other role that moved gets one disabled
-   * button with the reason it cannot act.
+   * and the Cold Snap button of an own Witch; Ice Folk Freeze (bead
+   * pulp_wars-w49.38): the Witch's Frost Bolt and the Mammoth's Stampede.
+   * With a legal target each aims its ability on the board (pressed while
+   * aiming); without one it is disabled and names the reason ("No enemy
+   * within 2 tiles", "It moved this turn", "Frozen: it cannot move or act
+   * this turn"). An own Frozen unit with none of these gets one disabled
+   * "Act" button that says why it cannot act.
    */
   #iceFolkActionButtons(
     view: PlayerViewV7,
@@ -10072,29 +10190,7 @@ export class Ruleset7DomAppView {
       return [];
     const abilities = unitRoleRuleV7(view, unit).abilities as readonly string[];
     const buttons: HTMLButtonElement[] = [];
-    const entries: readonly {
-      readonly kind: "THROW_BOLAS" | "COLD_SNAP";
-      readonly ability: string;
-      readonly label: string;
-      readonly tooltip: string;
-      readonly icon: "bolas" | "snowflake";
-    }[] = [
-      {
-        kind: "THROW_BOLAS",
-        ability: "BOLAS",
-        label: BOLAS_LABEL_V7,
-        tooltip: BOLAS_TOOLTIP_V7,
-        icon: "bolas",
-      },
-      {
-        kind: "COLD_SNAP",
-        ability: "COLD_SNAP",
-        label: COLD_SNAP_LABEL_V7,
-        tooltip: COLD_SNAP_TOOLTIP_V7,
-        icon: "snowflake",
-      },
-    ];
-    for (const entry of entries) {
+    for (const entry of ICE_FOLK_ABILITY_ENTRIES_V7) {
       if (!abilities.includes(entry.ability)) continue;
       const offered = this.#snapshot.offeredCommands.some(
         (command) => command.kind === entry.kind && command.unitId === unit.id,
@@ -10109,12 +10205,16 @@ export class Ruleset7DomAppView {
       const action = button(
         this.#document,
         "",
-        `ice-folk-${entry.kind === "THROW_BOLAS" ? "bolas" : "cold-snap"}`,
+        iceFolkAbilityActionV7(entry.kind),
         "v7-context-action",
       );
       action.append(
-        this.#chibiArt(`ICON:ACTION:${entry.kind}`, CHIBI_DOM_BOXES_V7.action)
-          ?.element ??
+        (entry.kind === "THROW_BOLAS" || entry.kind === "COLD_SNAP"
+          ? this.#chibiArt(
+              `ICON:ACTION:${entry.kind}`,
+              CHIBI_DOM_BOXES_V7.action,
+            )?.element
+          : undefined) ??
           uiIconV7(this.#document, entry.icon, "v7-ui-icon v7-command-icon"),
         text(this.#document, "span", entry.label, "v7-action-label"),
       );
@@ -10147,21 +10247,21 @@ export class Ruleset7DomAppView {
       }
       buttons.push(action);
     }
-    // Section 13.1 "sluggish actions": a Frozen unit that moved cannot act.
-    // `pulp_wars-1wy.5`: a Frozen Martian carrier or puller that moved
-    // names "Frozen: it moved" on its own Beam Down and Tractor Beam
-    // buttons, so it gets no second "Act" button.
-    const martianNamesIt =
+    // Ice Folk Freeze: a Frozen unit cannot move or act until it thaws. A
+    // Frozen Martian carrier or puller, a Gyrocopter, or a unit with a
+    // Freeze beside water names it on its own button, so it gets no second
+    // "Act" button.
+    const namedElsewhere =
       beamDownUnavailableTextV7(view, unit.id, false) ===
         MARTIAN_FROZEN_MOVED_V7 ||
       tractorBeamUnavailableTextV7(view, unit.id, false) ===
-        MARTIAN_FROZEN_MOVED_V7;
-    if (
-      buttons.length === 0 &&
-      !martianNamesIt &&
-      frozenAfterMoveV7(view, unit) &&
-      !unit.activation.handled
-    ) {
+        MARTIAN_FROZEN_MOVED_V7 ||
+      (abilities.includes("BOMB_RUN") &&
+        dwarfAbilityUnavailableTextV7(view, unit, "BOMB_RUN", false) ===
+          BOMB_FROZEN_V7) ||
+      freezeUnavailableTextV7(view, unit, false) === FREEZE_FROZEN_MOVED_V7;
+    const frozenReason = frozenCannotActV7(view, unit);
+    if (buttons.length === 0 && !namedElsewhere && frozenReason !== null) {
       const frozen = button(
         this.#document,
         "",
@@ -10176,11 +10276,11 @@ export class Ruleset7DomAppView {
       );
       frozen.setAttribute("aria-disabled", "true");
       frozen.dataset.disabledReason = "frozen";
-      frozen.title = FROZEN_MOVED_V7;
-      frozen.setAttribute("aria-label", `Act unavailable. ${FROZEN_MOVED_V7}`);
+      frozen.title = frozenReason;
+      frozen.setAttribute("aria-label", `Act unavailable. ${frozenReason}`);
       frozen.onclick = () => {
-        this.#notice = `${FROZEN_MOVED_V7}.`;
-        this.#showToast(`${FROZEN_MOVED_V7}.`);
+        this.#notice = `${frozenReason}.`;
+        this.#showToast(`${frozenReason}.`);
         this.#pendingFocusAction = "ice-folk-frozen";
         this.#render();
       };
@@ -10189,14 +10289,19 @@ export class Ruleset7DomAppView {
     return buttons;
   }
 
-  /** Starts aiming a Bolas or a Cold Snap of the selected unit. */
-  #startIceFolkPick(kind: "THROW_BOLAS" | "COLD_SNAP", unitId: UnitId): void {
+  /** Starts aiming a Bolas, Cold Snap, Frost Bolt or Stampede. */
+  #startIceFolkPick(kind: IceFolkAbilityKindV7, unitId: UnitId): void {
     if (this.#localBusy()) return;
-    this.#iceFolkPick = { kind, unitId };
+    this.#iceFolkPick =
+      kind === "STAMPEDE" ? { kind, unitId, chosen: null } : { kind, unitId };
     this.#notice =
       kind === "THROW_BOLAS"
         ? `${BOLAS_PICK_V7}.`
-        : `${COLD_SNAP_LABEL_V7}: confirm to chill every highlighted unit.`;
+        : kind === "FROST_BOLT"
+          ? `${FROST_BOLT_LABEL_V7}: ${FROST_BOLT_PICK_V7.toLowerCase()}.`
+          : kind === "STAMPEDE"
+            ? `${STAMPEDE_LABEL_V7}: ${STAMPEDE_PICK_V7.toLowerCase()}.`
+            : `${COLD_SNAP_LABEL_V7}: confirm to freeze every highlighted unit.`;
     this.#pendingFocusAction = null;
     this.#render();
     // The board takes the keyboard, so the arrow keys and Enter pick.
@@ -10208,17 +10313,44 @@ export class Ruleset7DomAppView {
     const pick = this.#iceFolkPick;
     this.#iceFolkPick = null;
     this.#pendingFocusAction =
-      pick === null
-        ? null
-        : `ice-folk-${pick.kind === "THROW_BOLAS" ? "bolas" : "cold-snap"}`;
+      pick === null ? null : iceFolkAbilityActionV7(pick.kind);
     this.#render();
   }
 
   /**
-   * The Ice Folk aiming panel in the dock: the prompt, the Bolas targets
-   * (each with its Frozen or Frosted hint and the units that could then
-   * shatter it) or the Cold Snap targets and its one confirm, and Cancel.
-   * Null (and the aiming ends) when nothing is offered any more.
+   * Ice Folk Freeze: the first choice of a Stampede's end tile previews it
+   * (its line, hits, shoves and stop stay drawn); choosing the same tile
+   * again charges.
+   */
+  #chooseStampede(
+    command: Extract<CommandV7, { kind: "STAMPEDE" }>,
+    semantic: string | undefined,
+  ): void {
+    const pick = this.#iceFolkPick;
+    if (pick?.kind !== "STAMPEDE" || pick.unitId !== command.unitId) {
+      void this.#dispatch(command);
+      return;
+    }
+    if (
+      pick.chosen !== null &&
+      pick.chosen.x === command.at.x &&
+      pick.chosen.y === command.at.y
+    ) {
+      void this.#dispatch(command);
+      return;
+    }
+    this.#iceFolkPick = { ...pick, chosen: command.at };
+    this.#notice = semantic ?? `${STAMPEDE_CONFIRM_HINT_V7}.`;
+    this.#render();
+    this.#queueBoardFocus();
+  }
+
+  /**
+   * The Ice Folk aiming panel in the dock: the prompt, the Bolas or Frost
+   * Bolt targets (each with its hint and the units that could then shatter
+   * it, on the board), the Cold Snap targets and its one confirm, or the
+   * chosen Stampede's summary and its Charge confirm, and Cancel. Null (and
+   * the aiming ends) when nothing is offered any more.
    */
   #iceFolkPickPanel(view: PlayerViewV7, unitId: UnitId): HTMLElement | null {
     const pick = this.#iceFolkPick;
@@ -10238,21 +10370,57 @@ export class Ruleset7DomAppView {
         ? "unit"
         : `${possessiveName(view, target.ownerId)} ${unitRoleRuleV7(view, target).label}`;
     };
+    const entry = ICE_FOLK_ABILITY_ENTRIES_V7.find(
+      (candidate) => candidate.kind === pick.kind,
+    );
     const panel = el(
       this.#document,
       "section",
       "v7-kaboom-preview v7-martian-pick v7-ice-folk-pick v7-board-pick",
     );
     panel.dataset.v7IceFolkPick =
-      pick.kind === "THROW_BOLAS" ? "bolas" : "cold_snap";
+      pick.kind === "THROW_BOLAS" ? "bolas" : pick.kind.toLowerCase();
     const lines = el(this.#document, "div", "v7-martian-choices");
     let prompt: string;
-    if (pick.kind === "THROW_BOLAS") {
-      // Bead pulp_wars-9im: the Bolas targets are highlighted and picked on
-      // the board, each with its Frozen or Frosted hint; the dock lists
-      // none.
-      prompt = BOLAS_PICK_V7;
+    if (pick.kind === "THROW_BOLAS" || pick.kind === "FROST_BOLT") {
+      // Bead pulp_wars-9im: the targets are highlighted and picked on the
+      // board, each with its hint; the dock lists none.
+      prompt = pick.kind === "THROW_BOLAS" ? BOLAS_PICK_V7 : FROST_BOLT_PICK_V7;
       panel.dataset.boardTargets = String(commands.length);
+    } else if (pick.kind === "STAMPEDE") {
+      panel.dataset.boardTargets = String(commands.length);
+      const chosen =
+        pick.chosen === null
+          ? undefined
+          : commands.find(
+              (command): command is Extract<CommandV7, { kind: "STAMPEDE" }> =>
+                command.kind === "STAMPEDE" &&
+                pick.chosen !== null &&
+                command.at.x === pick.chosen.x &&
+                command.at.y === pick.chosen.y,
+            );
+      const plan =
+        chosen === undefined
+          ? null
+          : stampedePlanV7(view, chosen.unitId, chosen.at);
+      if (chosen === undefined || plan === null) prompt = STAMPEDE_PICK_V7;
+      else {
+        prompt = stampedeSemanticV7(plan).replace(/\.$/, "");
+        const charge = button(
+          this.#document,
+          STAMPEDE_CHARGE_V7,
+          "stampede-charge",
+          "v7-martian-choice-button",
+        );
+        charge.setAttribute(
+          "aria-label",
+          `${STAMPEDE_CHARGE_V7}. ${stampedeSemanticV7(plan)}`,
+        );
+        charge.title = STAMPEDE_TOOLTIP_V7;
+        charge.disabled = this.#localBusy();
+        charge.onclick = () => void this.#dispatch(chosen);
+        lines.append(charge);
+      }
     } else {
       const command = commands[0];
       const preview =
@@ -10263,10 +10431,13 @@ export class Ruleset7DomAppView {
       }
       prompt = coldSnapSummaryV7(preview);
       panel.dataset.boardTargets = String(preview.targets.length);
-      // Each target is labelled Frozen or Frosted on the board; the cast
-      // button names them for assistive technology.
+      // Each target is labelled on the board; the cast button names them
+      // for assistive technology.
       const targets = preview.targets
-        .map((target) => `${nameOf(target.unitId)}: Will be Frozen`)
+        .map(
+          (target) =>
+            `${nameOf(target.unitId)}: ${target.alreadyFrozen ? "Stays Frozen" : "Will be Frozen"}`,
+        )
         .join(". ");
       const cast = button(
         this.#document,
@@ -10284,13 +10455,15 @@ export class Ruleset7DomAppView {
       lines.append(cast);
     }
     // Bead pulp_wars-b5f.8: the ability's icon and name; the instruction
-    // (or the Cold Snap summary) is in the "?" and the accessible name.
+    // (or the summary) is in the "?" and the accessible name.
     panel.setAttribute("aria-label", prompt);
     panel.append(
       this.#pickHead(
-        `ICON:ACTION:${pick.kind}`,
-        pick.kind === "THROW_BOLAS" ? "bolas" : "snowflake",
-        pick.kind === "THROW_BOLAS" ? BOLAS_LABEL_V7 : COLD_SNAP_LABEL_V7,
+        pick.kind === "THROW_BOLAS" || pick.kind === "COLD_SNAP"
+          ? `ICON:ACTION:${pick.kind}`
+          : null,
+        entry?.icon ?? "snowflake",
+        entry?.label ?? COLD_SNAP_LABEL_V7,
         prompt,
       ),
     );

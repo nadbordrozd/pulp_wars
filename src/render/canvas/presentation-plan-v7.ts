@@ -88,12 +88,16 @@ export type CorePresentationStepV7 =
       /**
        * The Ice Folk cues (bead pulp_wars-7g3.6, ice-folk-effects-v7): a
        * Shatter (`unitId` is the shattered unit, shown cased in ice until it
-       * bursts), a Cold Snap, a Bolas, a Cold Aura, and a Mammoth's Sweep.
+       * bursts), a Cold Snap, a Bolas, a Cold Aura, and a Mammoth's Sweep;
+       * Ice Folk Freeze (bead pulp_wars-w49.38): a Frost Bolt, a plain
+       * freeze (Black Ice, Frostbite) and a Stampede (`cells` the tiles
+       * the Mammoth enters, `hits` the tiles of the units it hits).
        */
       readonly kind: "ICE_FOLK";
       readonly effect: IceFolkFeedbackEffectV7;
       readonly cells: readonly CoordV7[];
       readonly from?: CoordV7;
+      readonly hits?: readonly CoordV7[];
       readonly unitId?: number;
       /** PRIZE_FLAG: the former owner's colour and the captor's. */
       readonly fromColour?: string;
@@ -1103,8 +1107,9 @@ export function corePresentationPlanV7(
     } else if (event.kind === "UNITS_FROZEN") {
       // The Ice Folk revision: a Bolas flies from the Sled, a Cold Snap
       // rings out from the Witch, a Cold Aura pulses round the Giant; frost
-      // forms on each Frozen unit. Ice Folk Freeze (`pulp_wars-w49.37`): a
-      // Frost Bolt uses the Bolas cue until the interface bead gives it one.
+      // forms on each Frozen unit. Ice Folk Freeze (`pulp_wars-w49.38`): a
+      // Frost Bolt streaks from the Witch, and Black Ice and Frostbite
+      // freeze their units where they stand.
       const cells = event.results.flatMap((result) => {
         const unit = unitAnywhere(result.unitId);
         return unit === undefined || !isExplored(unit.at) ? [] : [unit.at];
@@ -1116,16 +1121,87 @@ export function corePresentationPlanV7(
       if (cells.length > 0)
         pushIceFolk({
           effect:
-            event.source === "BOLAS" || event.source === "FROST_BOLT"
+            event.source === "BOLAS"
               ? "BOLAS"
-              : event.source === "COLD_SNAP"
-                ? "COLD_SNAP"
-                : "COLD_AURA",
+              : event.source === "FROST_BOLT"
+                ? "FROST_BOLT"
+                : event.source === "COLD_SNAP"
+                  ? "COLD_SNAP"
+                  : event.source === "COLD_AURA"
+                    ? "COLD_AURA"
+                    : "FROST",
           cells,
-          ...(source === undefined || !isExplored(source.at)
+          ...(source === undefined ||
+          !isExplored(source.at) ||
+          event.source === "BLACK_ICE" ||
+          event.source === "FROSTBITE"
             ? {}
             : { from: source.at }),
         });
+    } else if (event.kind === "MAMMOTH_STAMPEDED") {
+      // Ice Folk Freeze (`pulp_wars-w49.38`): the dust races down the line,
+      // then tile by tile each unit in the way is shoved aside (or stays)
+      // and takes its hit, and the Mammoth charges on to the next tile.
+      const hits = event.results.filter((result) => isExplored(result.at));
+      pushIceFolk({
+        effect: "STAMPEDE",
+        from: event.from,
+        cells: event.path.filter(isExplored),
+        hits: hits.map((result) => result.at),
+      });
+      let position = event.from;
+      const charge = (to: CoordV7): void => {
+        if (isExplored(position) && isExplored(to))
+          steps.push({
+            kind: "MOVE",
+            unitId: event.unitId,
+            path: [position, to],
+            durationMs: 110,
+            pushSlide: true,
+            ...(enemyTurn ? { followCamera: true as const } : {}),
+          });
+        position = to;
+      };
+      const strike = (result: (typeof event.results)[number]): void => {
+        if (result.shovedTo !== null && isExplored(result.shovedTo))
+          steps.push({
+            kind: "MOVE",
+            unitId: result.unitId,
+            path: [result.at, result.shovedTo],
+            durationMs: 140,
+            pushSlide: true,
+          });
+        if (isExplored(result.at))
+          steps.push({
+            kind: "DAMAGE",
+            unitId: result.unitId,
+            at: result.shovedTo ?? result.at,
+            damage: result.damage + result.shieldDamage,
+            lethal: result.dies,
+            durationMs: 100,
+          });
+      };
+      const onTile = (at: CoordV7) =>
+        event.results.filter(
+          (result) => result.at.x === at.x && result.at.y === at.y,
+        );
+      // Tile by tile: the unit on it is hit and shoved aside, then the
+      // Mammoth enters it. A unit that stops it is hit last.
+      for (const step of event.path) {
+        for (const result of onTile(step)) strike(result);
+        charge(step);
+      }
+      for (const result of event.results)
+        if (
+          !event.path.some(
+            (step) => step.x === result.at.x && step.y === result.at.y,
+          )
+        )
+          strike(result);
+      origins.set(event.unitId, event.to);
+      for (const result of event.results)
+        if (result.shovedTo !== null)
+          origins.set(result.unitId, result.shovedTo);
     } else if (event.kind === "WATER_FROZEN") {
       // The frozen sea: frost spreads from the Freezing unit over the
       // tiles the viewer knows.

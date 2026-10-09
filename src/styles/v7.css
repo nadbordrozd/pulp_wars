@@ -4283,6 +4283,13 @@
   border-color: var(--pw-marker-slide);
 }
 
+/* Ice Folk Freeze (bead pulp_wars-w49.38): Glacier's +1 Move, dotted. */
+.v7-landing-legend-item[data-landing-marker="glacier"]
+  .v7-landing-legend-swatch {
+  border-style: dotted;
+  border-color: var(--pw-marker-slide);
+}
+
 /* Snow cover is a multiplier: its Defense term reads "+25%". */
 .v7-stat-modifier[data-modifier-source="snow"] {
   white-space: nowrap;
@@ -4320,16 +4327,21 @@
   white-space: nowrap;
 }
 
-.v7-ice-folk-chip[data-chill="frozen"] {
+/* Ice Folk Freeze (bead pulp_wars-w49.38): Frozen, its ice cube and turns. */
+.v7-ice-folk-chip[data-unit-status="frozen"] {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
   border-color: var(--pw-blue);
   background: var(--pw-blue-fill);
   color: var(--pw-text);
   font-weight: var(--pw-fw-bold);
 }
 
-.v7-ice-folk-chip[data-chill="thawing"] {
-  border-color: var(--pw-blue);
-  color: var(--pw-blue);
+.v7-ice-folk-chip .v7-ice-folk-chip-icon {
+  flex: none;
+  min-width: 0;
+  min-height: 0;
 }
 
 .v7-command-icon[data-icon="snowflake"],

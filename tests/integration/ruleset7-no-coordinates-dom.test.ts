@@ -699,7 +699,7 @@ async function sweep(fixture: () => GameStateV7): Promise<{
 
 /** The only controls an aiming panel may hold (bead pulp_wars-9im). */
 const PICK_PANEL_CONTROLS =
-  /^(pick-info|[a-z-]+-pick-cancel|[a-z-]+-pick-back|tunnel-confirm|tunnel-passenger-none|cold-snap-cast)$/;
+  /^(pick-info|[a-z-]+-pick-cancel|[a-z-]+-pick-back|tunnel-confirm|tunnel-passenger-none|cold-snap-cast|stampede-charge)$/;
 
 /**
  * Bead pulp_wars-9im, the generic guard: targets are picked on the board,

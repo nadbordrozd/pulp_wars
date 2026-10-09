@@ -17,6 +17,7 @@ import type {
   UnitRoleIdV7,
 } from "../../engine/index";
 import {
+  GLACIER_ICE_MOVE_BONUS_V7,
   isRallyTargetV7,
   previewTrampleV7,
   unitRoleRuleV7,
@@ -149,10 +150,12 @@ import { matchHasMartianV7 } from "../martian-presentation-v7";
 import {
   drawBlizzardCellV7,
   drawBlizzardRingV7,
-  drawChillGlyphV7,
+  drawStampedeArrowsV7,
+  drawGlacierReachV7,
   drawFrozenCasingV7,
-  drawFrostedRimeV7,
+  drawFrozenGlyphV7,
   drawIceFolkBadgeV7,
+  drawRimeV7,
   drawShatterCracksV7,
   drawShatterWindowV7,
   drawSnowCapsV7,
@@ -162,6 +165,7 @@ import {
 } from "./ice-folk-canvas-v7";
 import {
   addIceFolkPickEntriesV7,
+  coldAuraMoveExtrasV7,
   moveIsGlideV7,
   iceFolkAttackTargetExtrasV7,
   iceFolkPickTargetsV7,
@@ -202,7 +206,10 @@ import {
   drawSeaIceCellV7,
   drawSlideArrowV7,
 } from "./frozen-sea-canvas-v7";
-import { frozenSeaCombatNotesV7 } from "../frozen-sea-presentation-v7";
+import {
+  GLACIER_MOVE_LABEL_V7,
+  frozenSeaCombatNotesV7,
+} from "../frozen-sea-presentation-v7";
 import {
   ninthUnitStandInLetterV7,
   seaIceArtSubjectV7,
@@ -266,6 +273,7 @@ import {
 import { candyLabelV7, matchHasCandySeatV7 } from "../candy-presentation-v7";
 import {
   GLIDE_MOVE_LABEL_V7,
+  moveUsesGlacierV7,
   SHATTERS_PREVIEW_V7,
   matchHasIceFolkSeatV7,
 } from "../ice-folk-presentation-v7";
@@ -491,8 +499,9 @@ export interface BoardRenderInteractionV7 {
   readonly martianPick?: MartianPickV7 | null;
   /**
    * The Ice Folk revision (bead pulp_wars-7g3.6): the Bolas or Cold Snap
-   * being aimed by the selected unit. Its targets become the only map
-   * targets; null or omitted aims none.
+   * being aimed by the selected unit; Ice Folk Freeze (bead
+   * pulp_wars-w49.38): also a Frost Bolt or a Stampede. Its targets become
+   * the only map targets; null or omitted aims none.
    */
   readonly iceFolkPick?: IceFolkPickV7 | null;
   /**
@@ -566,10 +575,14 @@ export interface MapCommandTargetV7 {
     | "TRACTOR_BEAM"
     /**
      * The Ice Folk revision: a Bolas target, and a Cold Snap target (every
-     * one carries the same command, so choosing any of them casts it).
+     * one carries the same command, so choosing any of them casts it). Ice
+     * Folk Freeze (`pulp_wars-w49.38`): a Frost Bolt target, and the end
+     * tile of a Stampede line (chosen once, then charged).
      */
     | "THROW_BOLAS"
     | "COLD_SNAP"
+    | "FROST_BOLT"
+    | "STAMPEDE"
     /**
      * The Dwarf revision: a Tunnel destination (TUNNEL digs at once, the
      * Mole having no Hammerer that could ride; TUNNEL_DESTINATION is
@@ -736,6 +749,38 @@ export interface MapCommandTargetV7 {
     readonly label: string;
     readonly lethal: boolean;
   }[];
+  /**
+   * Ice Folk Freeze (`pulp_wars-w49.38`): the tiles of the units a Frost
+   * Giant's Move to this tile would freeze (its Cold Aura), shown while the
+   * tile is focused.
+   */
+  readonly coldAura?: readonly CoordV7[];
+  /**
+   * Ice Folk Freeze: an Ice Folk unit's Move that only Glacier's +1 Move
+   * across ice reaches. Outlined in the pale ice with a dotted edge, named
+   * by the dock's legend.
+   */
+  readonly glacier?: true;
+  /**
+   * Ice Folk Freeze: a Stampede toward this tile (section 21.18): the line,
+   * the tiles the Mammoth enters and where it ends, each hit (its damage,
+   * kill, and shove or block), shown while the tile is focused or chosen.
+   */
+  readonly stampede?: {
+    readonly from: CoordV7;
+    readonly line: readonly CoordV7[];
+    readonly path: readonly CoordV7[];
+    readonly end: CoordV7;
+    readonly stopped: boolean;
+    readonly chosen: boolean;
+    readonly hits: readonly {
+      readonly at: CoordV7;
+      readonly label: string;
+      readonly lethal: boolean;
+      readonly shovedTo: CoordV7 | null;
+      readonly blocks: boolean;
+    }[];
+  };
   /**
    * The Dwarf revision: a Tunnel destination's eruption forecast (the ring
    * and each visible hostile unit on the ground "if they stay"), shown
@@ -982,7 +1027,7 @@ export interface BoardRenderPlanEntryV7 {
    */
   readonly riftPiece?: RiftPieceV7;
   /**
-   * UNIT only, the Ice Folk revision: the Chill markers, the HP bar's
+   * UNIT only, the Ice Folk revision: the Frozen marker, the HP bar's
    * Shatter window and the Witch of a visible unit (any owner).
    */
   readonly iceFolk?: IceFolkUnitMarkersV7;
@@ -1386,7 +1431,7 @@ export function buildBoardRenderPlanV7(
       faction === "CANDY";
     // The Dwarf revision: Dig In, clockwork and the Gyrocopter's flight.
     const dwarf = dwarfMatch ? dwarfUnitMarkersV7(view, unit) : undefined;
-    // The Ice Folk revision: Chill markers on units of any owner.
+    // The Ice Folk revision: the Frozen marker on units of any owner.
     const iceFolk = iceFolkMatch ? iceFolkUnitMarkersV7(view, unit) : undefined;
     // The Candy revision: Rushed, Crashed and Splatted on units of any owner.
     const candy = candyMatch ? candyUnitMarkersV7(view, unit) : undefined;
@@ -2200,7 +2245,7 @@ export function drawBoardV7(input: {
   /**
    * The Ice Folk revision (bead pulp_wars-7g3.6): the cached Snow tiles,
    * snow caps, rime and casings. Omitted, Snow is a plain wash and the
-   * Chill markers are code-drawn stand-ins.
+   * Frozen marker is a code-drawn stand-in.
    */
   readonly iceFolkArt?: IceFolkBoardArtV7;
   /** The Blizzard flakes' clock in ms (0, the default, for reduced motion). */
@@ -3862,21 +3907,18 @@ export function drawBoardV7(input: {
               "front",
             );
           // The Ice Folk revision (section 13.1): a Frozen unit is cased in
-          // ice to the waist, a Frosted one has a thin rime on its top edges;
-          // a unit being shattered is cased to the top, then cracks.
+          // ice to the waist; a unit being shattered is cased to the top,
+          // then cracks.
           if (entry.kind === "UNIT") {
             if (shatterCue !== null && shatterCue.casing) {
               drawFrozenCasingV7(context, iceFolkArt, image, rect, 1);
               drawShatterCracksV7(context, rect, shatterCue.cracks);
-            } else if (entry.iceFolk?.chill === "FROZEN")
+            } else if ((entry.iceFolk?.frozen ?? null) !== null)
               drawFrozenCasingV7(context, iceFolkArt, image, rect);
-            // The frozen sea: an icebound ship's hull is rimed too (with
-            // the pack ice at its foot, the frost crust of section 14.1).
-            else if (
-              entry.iceFolk?.chill === "FROSTED" ||
-              entry.icebound !== undefined
-            )
-              drawFrostedRimeV7(context, iceFolkArt, image, rect);
+            // The frozen sea: an icebound ship's hull is rimed (with the
+            // pack ice at its foot, the frost crust of section 14.1).
+            else if (entry.icebound !== undefined)
+              drawRimeV7(context, iceFolkArt, image, rect);
           }
           // The Martian revision: a walker afloat wades (ripples at its feet).
           if (
@@ -4184,26 +4226,33 @@ export function drawBoardV7(input: {
           });
           context.restore();
         }
-        // The Ice Folk revision: a Frosted unit's frost glyph in the next
-        // status slot after its afflictions.
-        if (entry.kind === "UNIT" && entry.iceFolk?.chill === "FROSTED") {
+        // Ice Folk Freeze (`pulp_wars-w49.38`): a Frozen unit's ice-cube
+        // glyph in the next status slot after its afflictions, with the
+        // turns left when it stays Frozen through more than one turn.
+        const frozenMarker =
+          entry.kind === "UNIT" ? (entry.iceFolk?.frozen ?? null) : null;
+        if (frozenMarker !== null) {
           const registered =
             chibiPiece &&
             chibiArt !== undefined &&
             !(input.highContrast ?? false)
               ? chibiArt.resolve({
-                  subject: "ICON:STATUS:CHILLED",
+                  subject: "ICON:STATUS:FROZEN",
                   at: entry.at,
                   deviceScale: chibiMasterScale(camera) * devicePixelRatio,
                 })
               : null;
-          drawChillGlyphV7(context, x, y, camera.zoom, {
+          context.save();
+          context.globalAlpha = sceneAlpha;
+          drawFrozenGlyphV7(context, x, y, camera.zoom, {
             chibi: chibiPiece,
             slot: entry.afflictions?.length ?? 0,
+            turnsLeft: frozenMarker.turnsLeft,
             raster: registered?.kind === "READY" ? registered.image : null,
             highContrast: input.highContrast ?? false,
             devicePixelRatio,
           });
+          context.restore();
         }
         // Goblin explosions and Berserk (`pulp_wars-w49.36`): a Berserk
         // unit's glyph in the next status slot after its afflictions and
@@ -4215,7 +4264,9 @@ export function drawBoardV7(input: {
             chibi: chibiPiece,
             slot:
               (entry.afflictions?.length ?? 0) +
-              (entry.iceFolk?.chill === "FROSTED" ? 1 : 0),
+              (entry.kind === "UNIT" && (entry.iceFolk?.frozen ?? null) !== null
+                ? 1
+                : 0),
             highContrast: input.highContrast ?? false,
           });
           context.restore();
@@ -4377,8 +4428,8 @@ export function drawBoardV7(input: {
           }
         }
         // The Ice Folk revision (section 13.1): the Shatter window on a
-        // Chilled unit's HP bar, in the bar of the look. The live look's
-        // base bar shows only when damaged, so a Chilled unit at full HP
+        // Frozen unit's HP bar, in the bar of the look. The live look's
+        // base bar shows only when damaged, so a Frozen unit at full HP
         // gets its bar too: the window is the point.
         if (
           entry.kind === "UNIT" &&
@@ -4472,7 +4523,7 @@ export function drawBoardV7(input: {
             hpShown:
               direction?.chrome.hp === "ALWAYS" ||
               (entry.hp ?? 0) < (entry.maxHp ?? 0) ||
-              // The Ice Folk revision: a Chilled unit always shows its bar.
+              // The Ice Folk revision: a Frozen unit always shows its bar.
               (entry.iceFolk?.shatterWindow ?? null) !== null,
             garrisoned: directedGarrison,
             highContrast: input.highContrast ?? false,
@@ -4843,6 +4894,7 @@ export function drawBoardV7(input: {
       input.previewFocus ?? null,
       placer,
       defer,
+      input.highContrast ?? false,
     );
     drawGiantFocusPreviewV7(
       context,
@@ -5103,6 +5155,7 @@ function mapTargetEdges(
       const priority = (candidate: MapCommandTargetV7): number =>
         targetPriority(candidate) +
         (candidate.glide === true ||
+        candidate.glacier === true ||
         candidate.slide !== undefined ||
         candidate.slip === true
           ? 0.5
@@ -5166,6 +5219,9 @@ function targetVariant(target: MapCommandTargetV7 | undefined): {
   if (target?.launch === true)
     return { stroke: LAUNCH_TARGET_STROKE_V7, dash: [3, 5] };
   if (target?.glide === true) return { stroke: GLIDE_TARGET_STROKE_V7 };
+  // Ice Folk Freeze: a tile only Glacier's +1 Move reaches, dotted.
+  if (target?.glacier === true)
+    return { stroke: GLIDE_TARGET_STROKE_V7, dash: [2, 4] };
   // The frozen sea: the tile a slide stops on, and the tile a slip ends
   // on, take the pale ice too (the arrow and the legend say which).
   if (target?.slide !== undefined || target?.slip === true)
@@ -5222,6 +5278,16 @@ function drawMapTarget(
   // Goblin explosions and Berserk: a tile only Berserk reaches is hatched.
   if (entry.target?.berserkReach === true)
     drawBerserkReachV7(context, x, y, camera.zoom, highContrast);
+  // Ice Folk Freeze: a tile only Glacier's +1 Move across ice reaches.
+  if (entry.target?.glacier === true)
+    drawGlacierReachV7(
+      context,
+      x,
+      y,
+      camera.zoom,
+      GLACIER_ICE_MOVE_BONUS_V7,
+      highContrast,
+    );
   // Bead pulp_wars-9im: one mark per highlight style (move, attack, help,
   // place), the same for every faction; see target-highlight-v7.
   const style = targetHighlightStyleV7(family, entry.target?.highlight);
@@ -5582,7 +5648,10 @@ function drawGiantFocusPreviewV7(
 
 /**
  * The Ice Folk revision: the focused (or only) attack target's Sweep flank
- * victims, each with its damage.
+ * victims, each with its damage. Ice Folk Freeze (`pulp_wars-w49.38`): the
+ * focused Move tile's Cold Aura (each enemy a Frost Giant's Move there
+ * freezes), and the focused (or chosen) Stampede: its line, the tiles the
+ * Mammoth enters, its hits with their damage, each shove, and the stop.
  */
 function drawIceFolkFocusPreviewV7(
   context: CanvasRenderingContext2D,
@@ -5591,24 +5660,122 @@ function drawIceFolkFocusPreviewV7(
   focus: CoordV7 | null,
   placer: PreviewLabelPlacerV7,
   defer: (draw: () => void) => void,
+  highContrast = false,
 ): void {
+  const x = (at: CoordV7): number =>
+    camera.offsetX + at.x * TILE_WIDTH * camera.zoom;
+  const y = (at: CoordV7): number =>
+    camera.offsetY + at.y * TILE_HEIGHT * camera.zoom;
+  const focused = <Target extends MapCommandTargetV7>(
+    targets: readonly Target[],
+  ): Target | undefined =>
+    (focus === null
+      ? undefined
+      : targets.find((candidate) => same(candidate.at, focus))) ??
+    (targets.length === 1 ? targets[0] : undefined);
   const sweeping = plan.targets.filter(
     (target) => target.family === "ATTACK" && target.sweep !== undefined,
   );
-  const target =
-    (focus === null
-      ? undefined
-      : sweeping.find((candidate) => same(candidate.at, focus))) ??
-    (sweeping.length === 1 ? sweeping[0] : undefined);
-  for (const victim of target?.sweep ?? [])
+  for (const victim of focused(sweeping)?.sweep ?? [])
     drawAbilityTargetV7(
       context,
-      camera.offsetX + victim.at.x * TILE_WIDTH * camera.zoom,
-      camera.offsetY + victim.at.y * TILE_HEIGHT * camera.zoom,
+      x(victim.at),
+      y(victim.at),
       camera.zoom,
       "SWEEP",
       victim.label,
       victim.lethal,
+      placer,
+      defer,
+    );
+  const freezing = plan.targets.filter(
+    (target) => target.coldAura !== undefined,
+  );
+  for (const at of focused(freezing)?.coldAura ?? [])
+    drawAbilityTargetV7(
+      context,
+      x(at),
+      y(at),
+      camera.zoom,
+      "FROZEN",
+      "Freeze",
+      false,
+      placer,
+      defer,
+    );
+  const charging = plan.targets.filter(
+    (target) => target.stampede !== undefined,
+  );
+  const chosen =
+    (focus === null
+      ? undefined
+      : charging.find((candidate) => same(candidate.at, focus))) ??
+    charging.find((candidate) => candidate.stampede?.chosen === true) ??
+    (charging.length === 1 ? charging[0] : undefined);
+  const stampede = chosen?.stampede;
+  if (stampede === undefined) return;
+  context.save();
+  // The line: the tiles it enters filled in tusk cream, the rest of the
+  // line (past a stop) outlined only, dotted.
+  for (const cell of stampede.line) {
+    const entered = stampede.path.some((step) => same(step, cell));
+    if (entered)
+      drawAbilityAreaCellV7(context, x(cell), y(cell), camera.zoom, "STAMPEDE");
+    context.strokeStyle = abilityAreaStrokeV7("STAMPEDE");
+    context.lineWidth = (entered ? 2.5 : 2) * camera.zoom;
+    context.setLineDash(
+      entered
+        ? [6 * camera.zoom, 4 * camera.zoom]
+        : [2 * camera.zoom, 5 * camera.zoom],
+    );
+    for (const edge of TILE_EDGES) strokeTileEdge(context, camera, cell, edge);
+  }
+  // Each shove's side tile, outlined.
+  context.setLineDash([3 * camera.zoom, 4 * camera.zoom]);
+  context.lineWidth = 2 * camera.zoom;
+  context.strokeStyle = abilityAreaStrokeV7("STAMPEDE_SHOVE");
+  for (const hit of stampede.hits)
+    if (hit.shovedTo !== null) {
+      drawAbilityAreaCellV7(
+        context,
+        x(hit.shovedTo),
+        y(hit.shovedTo),
+        camera.zoom,
+        "STAMPEDE_SHOVE",
+      );
+      for (const edge of TILE_EDGES)
+        strokeTileEdge(context, camera, hit.shovedTo, edge);
+    }
+  context.setLineDash([]);
+  const point = (at: CoordV7) => ({ x: x(at), y: y(at) });
+  const stopIndex = stampede.path.length;
+  const stopTile = stampede.stopped ? stampede.line[stopIndex] : undefined;
+  drawStampedeArrowsV7(
+    context,
+    camera.zoom,
+    {
+      from: point(stampede.from),
+      end: stampede.path.length === 0 ? null : point(stampede.end),
+      shoves: stampede.hits.flatMap((hit) =>
+        hit.shovedTo === null
+          ? []
+          : [{ from: point(hit.at), to: point(hit.shovedTo) }],
+      ),
+      stop: stopTile === undefined ? null : point(stopTile),
+      stopFrom: stopTile === undefined ? null : point(stampede.end),
+    },
+    highContrast,
+  );
+  context.restore();
+  for (const hit of stampede.hits)
+    drawAbilityTargetV7(
+      context,
+      x(hit.at),
+      y(hit.at),
+      camera.zoom,
+      "STAMPEDE",
+      hit.blocks ? `${hit.label} · stops` : hit.label,
+      hit.lethal,
       placer,
       defer,
     );
@@ -6687,6 +6854,16 @@ function commandMapTargets(
       // half-cost steps from Snow onto Snow is outlined in pale ice.
       const glide =
         launch === null && iceFolkMatch && moveIsGlideV7(view, command);
+      // Ice Folk Freeze (`pulp_wars-w49.38`): a tile only Glacier's +1 Move
+      // across ice reaches, and the enemies a Frost Giant's Move freezes.
+      const glacier =
+        launch === null &&
+        !glide &&
+        iceFolkMatch &&
+        moveUsesGlacierV7(view, command);
+      const coldAura = iceFolkMatch
+        ? coldAuraMoveExtrasV7(view, command)
+        : null;
       // Map curiosities: a Move that ends on a hostile neutral unit's
       // provoke tiles (next to the Spider, too close to a saucer camp, in
       // the Zombies' reach), and its sentence.
@@ -6724,6 +6901,25 @@ function commandMapTargets(
               ...(glide
                 ? { glide: true as const, semanticLabel: GLIDE_MOVE_LABEL_V7 }
                 : {}),
+              ...(glacier
+                ? {
+                    glacier: true as const,
+                    semanticLabel: GLACIER_MOVE_LABEL_V7,
+                  }
+                : {}),
+              ...(coldAura === null
+                ? {}
+                : {
+                    previewLabel: coldAura.label,
+                    coldAura: coldAura.tiles,
+                    semanticLabel: [
+                      glide ? GLIDE_MOVE_LABEL_V7 : null,
+                      glacier ? GLACIER_MOVE_LABEL_V7 : null,
+                      coldAura.semantic,
+                    ]
+                      .filter((part): part is string => part !== null)
+                      .join(". "),
+                  }),
               ...(provokes
                 ? {
                     provokes: true as const,
@@ -6732,7 +6928,9 @@ function commandMapTargets(
                         ? `${launch}. Ends this unit's turn afloat. ${provokeWarning}`
                         : glide
                           ? `${GLIDE_MOVE_LABEL_V7}. ${provokeWarning}`
-                          : provokeWarning,
+                          : glacier
+                            ? `${GLACIER_MOVE_LABEL_V7}. ${provokeWarning}`
+                            : provokeWarning,
                   }
                 : {}),
               ...(eats === null
@@ -6744,6 +6942,7 @@ function commandMapTargets(
                         ? null
                         : `${launch}. Ends this unit's turn afloat`,
                       glide ? GLIDE_MOVE_LABEL_V7 : null,
+                      glacier ? GLACIER_MOVE_LABEL_V7 : null,
                       provokes ? provokeWarning : null,
                       eats.label,
                     ]
@@ -6835,7 +7034,7 @@ function commandMapTargets(
       const martian = martianMatch
         ? martianAttackTargetExtrasV7(view, preview)
         : null;
-      // The Ice Folk revision (Ice Folk matches only): Shatter, Chilled,
+      // The Ice Folk revision (Ice Folk matches only): Shatter, Frozen,
       // Sweep, Trample, Boulders, Rockfall, Planted, Cold Blood, Snow cover,
       // the Blizzard and the hidden-Blizzard caveat.
       const iceFolk = iceFolkMatch

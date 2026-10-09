@@ -3,9 +3,9 @@
  * 13.1, docs/art/factions/ICE_FOLK.md "Code-drawn pieces", bead
  * pulp_wars-7g3.6): the snow-capped peak badge over Human stand-in art (LEGACY and
  * the classic look), the Snow overlay and its snow caps, the Blizzard veil,
- * flakes and the Witch's outline, the Frozen casing and the Frosted rime,
- * the frost glyph, the Shatter window on the HP bar and the cracks of a
- * Shatter. The rasters come from the pure functions of
+ * flakes and the Witch's outline, the Frozen casing and its ice-cube glyph
+ * (Ice Folk Freeze, bead pulp_wars-w49.38), the rime of an icebound ship,
+ * the Shatter window on the HP bar and the cracks of a Shatter. The rasters come from the pure functions of
  * chibi-direction-ice-folk-presentation.ts and are built once per input and
  * cached (IceFolkBoardArtV7). Sizes are world units (128 = one cell) scaled
  * by zoom unless a name says CSS px or master px.
@@ -13,7 +13,7 @@
 
 import {
   ICE_FOLK_BLIZZARD_V7,
-  ICE_FOLK_CHILL_MARKER_V7,
+  ICE_FOLK_FROZEN_MARKER_V7,
   ICE_FOLK_PALETTE_V7,
   ICE_FOLK_SNOW_OVERLAY_V7,
   iceFolkBlizzardFlakesV7,
@@ -23,6 +23,7 @@ import {
   type IceFolkRasterV7,
 } from "../../assets/chibi-direction-ice-folk-presentation";
 import { seaIceTileV7 } from "../../assets/sea-ice-v7";
+import { BOARD_LABEL_FONT_FAMILY_V7 } from "./board-label-font-v7";
 import type { ChibiRasterEnvironmentV7 } from "./chibi-art-resolver-v7";
 import {
   SNOW_EDGE_EAST_V7,
@@ -44,38 +45,11 @@ interface Rect {
   readonly height: number;
 }
 
-/** A snowflake: six spokes with two barbs each, centred on (cx, cy). */
-function snowflakePath(
-  context: CanvasRenderingContext2D,
-  cx: number,
-  cy: number,
-  radius: number,
-): void {
-  context.beginPath();
-  for (let spoke = 0; spoke < 6; spoke += 1) {
-    const angle = (spoke / 6) * Math.PI * 2 - Math.PI / 2;
-    const dx = Math.cos(angle);
-    const dy = Math.sin(angle);
-    context.moveTo(cx, cy);
-    context.lineTo(cx + dx * radius, cy + dy * radius);
-    const bx = cx + dx * radius * 0.55;
-    const by = cy + dy * radius * 0.55;
-    for (const turn of [-0.6, 0.6]) {
-      const barb = angle + turn;
-      context.moveTo(bx, by);
-      context.lineTo(
-        bx + Math.cos(barb) * radius * 0.32,
-        by + Math.sin(barb) * radius * 0.32,
-      );
-    }
-  }
-}
-
 /**
  * The Ice Folk faction cue over Human stand-in art: a snow-capped ice-blue
  * peak (the things from the peaks) on a navy disc with a pale ice rim. Navy,
  * ice and white are off every owner colour; the peak shares no shape with
- * the other factions' badges, nor with the Frosted snowflake glyph that
+ * the other factions' badges, nor with the Frozen ice-cube glyph that
  * sits on the other side of a unit.
  */
 export function drawIceFolkBadgeV7(
@@ -245,9 +219,9 @@ export function createIceFolkBoardArtV7(
           kind === "SNOW"
             ? iceFolkSnowCapsV7(pixels)
             : iceFolkSnowCapsV7(pixels, {
-                depth: ICE_FOLK_CHILL_MARKER_V7.frosted.depth,
+                depth: ICE_FOLK_FROZEN_MARKER_V7.rime.depth,
                 colour: ICE_FOLK_PALETTE_V7.icePale,
-                alpha: ICE_FOLK_CHILL_MARKER_V7.frosted.alpha,
+                alpha: ICE_FOLK_FROZEN_MARKER_V7.rime.alpha,
               }),
         ),
       );
@@ -407,7 +381,7 @@ export function drawBlizzardRingV7(
   context.restore();
 }
 
-// ------------------------------------------------------------ Chill markers
+// ----------------------------------------------------------- Frozen marker
 
 /**
  * The Frozen casing over a sprite drawn at `rect` (heightShare 0.45 for a
@@ -419,7 +393,7 @@ export function drawFrozenCasingV7(
   art: IceFolkBoardArtV7 | undefined,
   sprite: CanvasImageSource,
   rect: Rect,
-  heightShare: number = ICE_FOLK_CHILL_MARKER_V7.frozen.heightShare,
+  heightShare: number = ICE_FOLK_FROZEN_MARKER_V7.frozen.heightShare,
   alpha = 1,
 ): void {
   const casing = art?.casing(sprite, heightShare) ?? null;
@@ -459,8 +433,8 @@ export function drawFrozenCasingV7(
   context.restore();
 }
 
-/** The Frosted rime: a thin pale line on the sprite's top edges. */
-export function drawFrostedRimeV7(
+/** The rime: a thin pale line on a sprite's top edges (an icebound ship). */
+export function drawRimeV7(
   context: CanvasRenderingContext2D,
   art: IceFolkBoardArtV7 | undefined,
   sprite: CanvasImageSource,
@@ -475,10 +449,11 @@ export function drawFrostedRimeV7(
 }
 
 /**
- * The frost glyph's frames (world units from the cell centre): the slots of
- * the Plague and Bitten markers, and a third one under them.
+ * The status glyph's frames (world units from the cell centre): the slots
+ * of the Plague and Bitten markers, and a third one under them. The
+ * Frozen glyph and the Berserk glyph share them.
  */
-export const CHILL_GLYPH_FRAME_V7 = {
+export const STATUS_GLYPH_FRAME_V7 = {
   legacy: [
     { left: -45, top: -31, size: 21 },
     { left: -45, top: -9, size: 21 },
@@ -492,13 +467,44 @@ export const CHILL_GLYPH_FRAME_V7 = {
 } as const;
 
 /** World units the 48 px status icon covers in CHIBI (16 CSS px at step 1). */
-export const CHILL_GLYPH_WORLD_SIZE_V7 = 25.6;
+export const FROZEN_GLYPH_WORLD_SIZE_V7 = 25.6;
+
+/** A code-drawn ice cube: the stand-in of `ICON:STATUS:FROZEN`. */
+function iceCubePath(
+  context: CanvasRenderingContext2D,
+  cx: number,
+  cy: number,
+  size: number,
+): void {
+  const half = size * 0.3;
+  const lift = size * 0.14;
+  context.beginPath();
+  // Top face, then the two side faces below it.
+  context.moveTo(cx, cy - half - lift);
+  context.lineTo(cx + half, cy - half);
+  context.lineTo(cx, cy - half + lift);
+  context.lineTo(cx - half, cy - half);
+  context.closePath();
+  context.moveTo(cx - half, cy - half);
+  context.lineTo(cx, cy - half + lift);
+  context.lineTo(cx, cy + half + lift * 0.4);
+  context.lineTo(cx - half, cy + half - lift * 0.6);
+  context.closePath();
+  context.moveTo(cx + half, cy - half);
+  context.lineTo(cx, cy - half + lift);
+  context.lineTo(cx, cy + half + lift * 0.4);
+  context.lineTo(cx + half, cy + half - lift * 0.6);
+  context.closePath();
+}
 
 /**
- * The Frosted frost glyph in its status slot: the `ICON:STATUS:CHILLED`
- * raster on a dark token (CHIBI), or a code-drawn snowflake.
+ * The Frozen glyph in its status slot: the `ICON:STATUS:FROZEN` ice cube on
+ * a dark token (CHIBI), or a code-drawn cube (LEGACY, high contrast, the
+ * raster still loading). With `turnsLeft` above 1 a small count sits on the
+ * token's lower right: the unit stays Frozen through that many of its
+ * owner's turns.
  */
-export function drawChillGlyphV7(
+export function drawFrozenGlyphV7(
   context: CanvasRenderingContext2D,
   x: number,
   y: number,
@@ -506,14 +512,15 @@ export function drawChillGlyphV7(
   options: {
     readonly chibi: boolean;
     readonly slot: number;
+    readonly turnsLeft: number;
     readonly raster?: CanvasImageSource | null;
     readonly highContrast?: boolean;
     readonly devicePixelRatio?: number;
   },
 ): void {
   const frames = options.chibi
-    ? CHILL_GLYPH_FRAME_V7.chibi
-    : CHILL_GLYPH_FRAME_V7.legacy;
+    ? STATUS_GLYPH_FRAME_V7.chibi
+    : STATUS_GLYPH_FRAME_V7.legacy;
   const frame = frames[Math.min(options.slot, frames.length - 1)] ?? frames[0];
   const size = frame.size * zoom;
   const cx = x + (frame.left + frame.size / 2) * zoom;
@@ -533,7 +540,7 @@ export function drawChillGlyphV7(
       options.devicePixelRatio !== undefined && options.devicePixelRatio > 0
         ? options.devicePixelRatio
         : 1;
-    const drawn = options.chibi ? CHILL_GLYPH_WORLD_SIZE_V7 * zoom : size;
+    const drawn = options.chibi ? FROZEN_GLYPH_WORLD_SIZE_V7 * zoom : size;
     const snap = (value: number): number => Math.round(value * ratio) / ratio;
     context.imageSmoothingEnabled = true;
     context.drawImage(
@@ -544,13 +551,35 @@ export function drawChillGlyphV7(
       drawn,
     );
   } else {
-    context.lineCap = "round";
+    context.lineJoin = "round";
+    context.fillStyle = highContrast ? "#ffffff" : ICE_FOLK_PALETTE_V7.ice;
     context.strokeStyle = highContrast
-      ? "#ffffff"
-      : ICE_FOLK_PALETTE_V7.iceGlow;
-    context.lineWidth = Math.max(1, size * 0.12);
-    snowflakePath(context, cx, cy, size * 0.32);
+      ? "#000000"
+      : ICE_FOLK_PALETTE_V7.icePale;
+    context.lineWidth = Math.max(1, size * 0.07);
+    iceCubePath(context, cx, cy, size);
+    context.fill();
     context.stroke();
+  }
+  if (options.turnsLeft > 1) {
+    // The count: a small white disc with the number, on the lower right.
+    const radius = Math.max(5, size * 0.3);
+    const px = cx + size * 0.42;
+    const py = cy + size * 0.38;
+    context.fillStyle = "#ffffff";
+    context.strokeStyle = highContrast
+      ? "#000000"
+      : ICE_FOLK_PALETTE_V7.iceDark;
+    context.lineWidth = Math.max(1, zoom);
+    context.beginPath();
+    context.arc(px, py, radius, 0, Math.PI * 2);
+    context.fill();
+    context.stroke();
+    context.fillStyle = highContrast ? "#000000" : ICE_FOLK_PALETTE_V7.outline;
+    context.font = `800 ${Math.max(8, radius * 1.5)}px ${BOARD_LABEL_FONT_FAMILY_V7}`;
+    context.textAlign = "center";
+    context.textBaseline = "middle";
+    context.fillText(String(options.turnsLeft), px, py + radius * 0.08);
   }
   context.restore();
 }
@@ -564,7 +593,7 @@ export interface HpBarGeometryV7 {
 }
 
 /**
- * The Shatter window on a Chilled unit's HP bar (section 13.1): its lowest
+ * The Shatter window on a Frozen unit's HP bar (section 13.1): its lowest
  * `threshold` HP in ice glow with a 1 px white divider at the threshold.
  * Where the bar is filled the window is solid; above the current HP it is
  * a faint ice tint, so the window shows at any HP.
@@ -581,7 +610,7 @@ export function drawShatterWindowV7(
   const windowShare = Math.min(1, threshold / maxHp);
   const filledShare = Math.max(0, Math.min(1, hp / maxHp));
   const solidShare = Math.min(windowShare, filledShare);
-  const { colour, edge } = ICE_FOLK_CHILL_MARKER_V7.shatterWindow;
+  const { colour, edge } = ICE_FOLK_FROZEN_MARKER_V7.shatterWindow;
   const { inner } = bar;
   context.save();
   const part = (from: number, to: number): Rect =>
@@ -666,5 +695,164 @@ export function drawShatterCracksV7(
     );
     context.stroke();
   }
+  context.restore();
+}
+
+// ---------------------------------------------------------------- Stampede
+
+/** The tusk cream of a Stampede preview, on the ink outline. */
+export const STAMPEDE_PREVIEW_CREAM_V7 = "#f0dcae";
+
+/**
+ * Ice Folk Freeze (bead pulp_wars-w49.38): the arrows of a previewed
+ * Stampede, over its tile fills. A broad cream arrow runs from the
+ * Mammoth's tile to the tile it ends on; each shoved unit gets a short
+ * cream arrow from its tile to its side tile; where the charge stops
+ * before the end of its line, a bar crosses the line at the stop. Points
+ * are tile centres in CSS px.
+ */
+export function drawStampedeArrowsV7(
+  context: CanvasRenderingContext2D,
+  zoom: number,
+  arrows: {
+    readonly from: { readonly x: number; readonly y: number };
+    readonly end: { readonly x: number; readonly y: number } | null;
+    readonly shoves: readonly {
+      readonly from: { readonly x: number; readonly y: number };
+      readonly to: { readonly x: number; readonly y: number };
+    }[];
+    /** The stop: the centre of the first tile it does not enter. */
+    readonly stop: { readonly x: number; readonly y: number } | null;
+    /** The last tile it stands on before the stop (or its own tile). */
+    readonly stopFrom: { readonly x: number; readonly y: number } | null;
+  },
+  highContrast = false,
+): void {
+  const cream = highContrast ? "#ffffff" : STAMPEDE_PREVIEW_CREAM_V7;
+  const ink = highContrast ? "#000000" : "rgba(23, 23, 34, 0.85)";
+  const arrow = (
+    from: { readonly x: number; readonly y: number },
+    to: { readonly x: number; readonly y: number },
+    width: number,
+    startInset: number,
+    endInset: number,
+    head: number,
+  ): void => {
+    const length = Math.hypot(to.x - from.x, to.y - from.y);
+    if (length <= startInset + endInset) return;
+    const ux = (to.x - from.x) / length;
+    const uy = (to.y - from.y) / length;
+    const sx = from.x + ux * startInset;
+    const sy = from.y + uy * startInset;
+    const tx = to.x - ux * endInset;
+    const ty = to.y - uy * endInset;
+    const bx = tx - ux * head;
+    const by = ty - uy * head;
+    const wing = head * 0.75;
+    for (const [colour, extra] of [
+      [ink, 3 * zoom],
+      [cream, 0],
+    ] as const) {
+      context.strokeStyle = colour;
+      context.fillStyle = colour;
+      context.lineWidth = width + extra;
+      context.beginPath();
+      context.moveTo(sx, sy);
+      context.lineTo(bx, by);
+      context.stroke();
+      context.beginPath();
+      context.moveTo(tx + ux * extra * 0.6, ty + uy * extra * 0.6);
+      context.lineTo(bx - uy * (wing + extra), by + ux * (wing + extra));
+      context.lineTo(bx + uy * (wing + extra), by - ux * (wing + extra));
+      context.closePath();
+      context.fill();
+    }
+  };
+  context.save();
+  context.lineCap = "round";
+  context.lineJoin = "round";
+  if (arrows.end !== null)
+    arrow(
+      arrows.from,
+      arrows.end,
+      Math.max(3, 9 * zoom),
+      34 * zoom,
+      30 * zoom,
+      Math.max(8, 24 * zoom),
+    );
+  for (const shove of arrows.shoves)
+    arrow(
+      shove.from,
+      shove.to,
+      Math.max(3, 7 * zoom),
+      18 * zoom,
+      22 * zoom,
+      Math.max(8, 20 * zoom),
+    );
+  if (arrows.stop !== null && arrows.stopFrom !== null) {
+    // A bar across the line, just inside the last tile it enters (clear
+    // of the hit label at the top of the blocker's tile).
+    const mx = arrows.stopFrom.x + (arrows.stop.x - arrows.stopFrom.x) * 0.36;
+    const my = arrows.stopFrom.y + (arrows.stop.y - arrows.stopFrom.y) * 0.36;
+    const length =
+      Math.hypot(
+        arrows.stop.x - arrows.stopFrom.x,
+        arrows.stop.y - arrows.stopFrom.y,
+      ) || 1;
+    const ux = (arrows.stop.x - arrows.stopFrom.x) / length;
+    const uy = (arrows.stop.y - arrows.stopFrom.y) / length;
+    const half = 54 * zoom;
+    for (const [colour, width] of [
+      [ink, 16 * zoom],
+      [highContrast ? "#ffffff" : "#ff9a7a", 10 * zoom],
+    ] as const) {
+      context.strokeStyle = colour;
+      context.lineWidth = Math.max(2, width);
+      context.beginPath();
+      context.moveTo(mx - uy * half, my + ux * half);
+      context.lineTo(mx + uy * half, my - ux * half);
+      context.stroke();
+    }
+  }
+  context.restore();
+}
+
+// ----------------------------------------------------------------- Glacier
+
+/**
+ * Ice Folk Freeze (bead pulp_wars-w49.38): a Move tile only Glacier's +1
+ * Move across ice reaches: a faint ice tint over the tile and a small
+ * "+1" token in its top-right corner (the outline is the Move mark's,
+ * dotted in pale ice). `x`, `y` are the tile centre in CSS px.
+ */
+export function drawGlacierReachV7(
+  context: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  zoom: number,
+  bonus: number,
+  highContrast = false,
+): void {
+  const half = 60 * zoom;
+  context.save();
+  if (!highContrast) {
+    context.fillStyle = "rgba(214, 240, 255, 0.22)";
+    context.fillRect(x - half, y - half, half * 2, half * 2);
+  }
+  const radius = Math.max(7, 15 * zoom);
+  const cx = x + 40 * zoom;
+  const cy = y - 40 * zoom;
+  context.fillStyle = highContrast ? "#ffffff" : ICE_FOLK_PALETTE_V7.icePale;
+  context.strokeStyle = highContrast ? "#000000" : ICE_FOLK_PALETTE_V7.iceDark;
+  context.lineWidth = Math.max(1, 2 * zoom);
+  context.beginPath();
+  context.arc(cx, cy, radius, 0, Math.PI * 2);
+  context.fill();
+  context.stroke();
+  context.fillStyle = highContrast ? "#000000" : ICE_FOLK_PALETTE_V7.outline;
+  context.font = `800 ${Math.max(8, radius * 1.05)}px ${BOARD_LABEL_FONT_FAMILY_V7}`;
+  context.textAlign = "center";
+  context.textBaseline = "middle";
+  context.fillText(`+${bonus}`, cx, cy + radius * 0.06);
   context.restore();
 }

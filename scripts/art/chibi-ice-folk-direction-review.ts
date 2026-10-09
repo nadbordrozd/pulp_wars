@@ -44,7 +44,7 @@ import process from "node:process";
 import sharp from "sharp";
 import {
   ICE_FOLK_BLIZZARD_V7,
-  ICE_FOLK_CHILL_MARKER_V7,
+  ICE_FOLK_FROZEN_MARKER_V7,
   ICE_FOLK_FLAG_ANCHORS_V7,
   ICE_FOLK_PALETTE_V7,
   iceFolkBlizzardFlakesV7,
@@ -890,7 +890,7 @@ function hpBar(hp: number, maxHp: number, threshold: number): Canvas {
     for (let y = 1; y < 5; y += 1) {
       const colour: Rgb =
         x < Math.min(filled, windowPx)
-          ? rgbOf(ICE_FOLK_CHILL_MARKER_V7.shatterWindow.colour)
+          ? rgbOf(ICE_FOLK_FROZEN_MARKER_V7.shatterWindow.colour)
           : x < filled
             ? [96, 196, 92]
             : x < windowPx
@@ -961,9 +961,9 @@ async function markersSheet(): Promise<void> {
     const top0 = CELL_H - sprite.height;
     const rime = toCanvas(
       iceFolkSnowCapsV7(sprite, {
-        depth: ICE_FOLK_CHILL_MARKER_V7.frosted.depth,
+        depth: ICE_FOLK_FROZEN_MARKER_V7.rime.depth,
         colour: ICE_FOLK_PALETTE_V7.icePale,
-        alpha: ICE_FOLK_CHILL_MARKER_V7.frosted.alpha,
+        alpha: ICE_FOLK_FROZEN_MARKER_V7.rime.alpha,
       }),
     );
     const casing = toCanvas(iceFolkFrozenCasingV7(sprite));

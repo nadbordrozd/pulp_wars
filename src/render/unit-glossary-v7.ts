@@ -374,7 +374,7 @@ const ENTRIES = {
   ],
   STAMPEDE: [
     "Stampede",
-    "If it has not moved, it charges up to three tiles in a straight line, hitting each enemy in its way for 3 and shoving it aside.",
+    "If it has not moved, it charges up to three tiles in a straight line, hitting each enemy in its way for 3 and shoving it aside. Nobody strikes back.",
   ],
   BOULDERS: [
     "Boulders",
@@ -590,19 +590,12 @@ const ENTRIES = {
     "On ice",
     "Ice Folk slide across ice. Every other unit stops when it steps onto it.",
   ],
-  STATUS_CHILLED: [
-    "Frozen",
-    "It cannot move or act until it thaws at the end of its next turn, and it does not strike back. Ice Folk can shatter a weak Frozen unit.",
-  ],
+  // Ice Folk Freeze (`pulp_wars-w49.38`): Frozen is the one Ice Folk
+  // status of a unit.
   STATUS_FROZEN: [
     "Frozen",
-    "It cannot move or act this turn, and it does not strike back.",
+    "It cannot move or act or strike back until it thaws at the end of its owner's turn (the chip counts them). Ice Folk can shatter a weak Frozen unit.",
   ],
-  STATUS_FROSTED: [
-    "Frosted",
-    "Chilled, but not slowed. An Ice Folk blow from the next tile shatters it when it is weak.",
-  ],
-  STATUS_THAWING: ["Thawing", "Frost cannot slow it again this turn."],
   STATUS_SNOW: [
     "Snow",
     "Ice Folk cross snow fast and are harder to hurt on it. Other units stop on entering it.",
@@ -903,10 +896,6 @@ const STATUS_IDS: Readonly<Record<string, GlossaryIdV7>> = {
   "ice-crush": "STATUS_ICE_CRUSH",
   "ice-cover": "STATUS_ICE_COVER",
   "on-ice": "STATUS_ON_ICE",
-  chill: "STATUS_CHILLED",
-  "chill-frozen": "STATUS_FROZEN",
-  "chill-frosted": "STATUS_FROSTED",
-  "chill-thawing": "STATUS_THAWING",
   frozen: "STATUS_FROZEN",
   snow: "STATUS_SNOW",
   blizzard: "STATUS_BLIZZARD",
@@ -950,8 +939,7 @@ export const UNIT_STATUS_IDS_V7: readonly string[] = Object.freeze(
 
 /**
  * The entry that explains a status chip of the unit dock, by the chip's
- * `data-unit-status` (a Chill chip also by its state: `chill-frozen`), or
- * null for a chip the glossary does not know.
+ * `data-unit-status`, or null for a chip the glossary does not know.
  */
 export function statusGlossaryV7(status: string): GlossaryEntryV7 | null {
   const key = status.toLowerCase();

@@ -28,15 +28,17 @@ The dock never lists one button, portrait or chip per target.
   free tile, an Attack is on a hostile unit, a heal or a Hatch is on an own
   unit), so a click on each does what its mark says.
 - **Arming where two actions could claim one target.** A Mind Control, a
-  Tractor Beam, a Bolas, a Bomb Run or a Board aims at units the unit could
-  also attack; a Tunnel, an Assemble, a Beam Down, a Re-bake, a Sugar Rush
-  or a Freeze aims at tiles it could also move to. Each has one button that arms it.
+  Tractor Beam, a Bolas, a Frost Bolt, a Bomb Run or a Board aims at units
+  the unit could also attack; a Tunnel, an Assemble, a Beam Down, a
+  Re-bake, a Sugar Rush, a Freeze or a Stampede aims at tiles it could also
+  move to (a Stampede's end tile is chosen first, then charged by choosing
+  it again or with Charge, as a Tunnel's destination is dug). Each has one button that arms it.
   While it is armed only its targets are highlighted and clickable; Back,
   Cancel, Escape or choosing something else disarms it. The choice between
   two actions on one target is therefore made with the armed button, never
   with a menu on the target.
 - **Previews at the target.** The exact numbers (damage, heal, cost, HP,
-  "Frozen", "Take · 5 HP") come from the engine's public previews and stand
+  "Freeze", "Stays Frozen", "Take · 5 HP") come from the engine's public previews and stand
   in the label at the target, as an attack's "Deal 4 · take 2" does. The
   focused or hovered target adds its ghosts, paths and rings.
 - **Keyboard.** Tab and Shift+Tab on the board step through the targets in
@@ -97,7 +99,8 @@ Until this bead every target was a dashed tile outline in a colour of its
 faction (Martian magenta, pale ice, light earth, copper, steam white, candy
 pink, cream, mint). Those colours no longer mark targets. Effect previews
 that are not targets keep their own looks: ability areas and their "−3"
-cells (Wail, Kaboom!, Raise Dead, Devour, a Cold Snap's reach, the Beam
+cells (Wail, Kaboom!, Raise Dead, Devour, a Cold Snap's or Frost Bolt's
+reach, a Stampede's line and shoves, a Frost Giant's Cold Aura, the Beam
 Down pick-up range, a pull's path, an eruption ring, a splash ring). The
 units an area support would help are the exception: they wear the Help
 mark in its own weight (section 2.1).
@@ -116,7 +119,7 @@ much, as with a targeted heal. The Ice Folk have no such ability.
 - **Heals are marked while the healer is selected** and its button is on
   offer, in every match. Each recipient carries the exact result of the
   engine's public preview at the top of its tile: "+2 HP", "+4 HP" (a
-  machine under Repair), "Cure" (Plague, a bite or Chill is removed), or
+  machine under Repair), "Cure" (Plague, a bite or Frozen is removed), or
   "+2 · Cure". At rest the ring is thin with a small plus, so it sits
   under the unit's Move and Attack marks rather than competing with them.
 - **Hovering or focusing the button makes its marks prominent**: the ring
@@ -162,39 +165,42 @@ area fixed by the rules, or it opens a screen).
 
 ### 3.2 Faction abilities
 
-| Faction  | Action               | Class | Before                                                 | Now                                                                                                          | Style                        |
-| -------- | -------------------- | ----- | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------ | ---------------------------- |
-| Undead   | Raise Dead           | (c)   | One button                                             | Unchanged: every Grave in reach rises, previewed "Rise"                                                      | none                         |
-| Undead   | Devour               | (c)   | One button                                             | Unchanged: the Grave under the Ghoul                                                                         | none                         |
-| Undead   | Wail                 | (c)   | One button                                             | Unchanged: the fixed radius, previewed per unit                                                              | none                         |
-| Goblin   | Kaboom!              | (c)   | One button, armed and confirmed                        | Unchanged: the blast is the unit's own, previewed on the board                                               | none                         |
-| Goblin   | Plunder              | (c)   | No action (a passive rule of captures and kills)       | Unchanged                                                                                                    | none                         |
-| Dinosaur | Hatch                | (b)   | One "Hatch" button per adjacent Egg                    | One Hatch button; the Eggs are highlighted unarmed and picked on the board (one Egg: the button hatches it)  | Help                         |
-| Dinosaur | Lay Egg (city)       | (a)   | A card per role, then a nest tile on the board         | Unchanged                                                                                                    | Place                        |
-| Dinosaur | Abandon Egg          | (c)   | One button on the Egg                                  | Unchanged                                                                                                    | none                         |
-| Dinosaur | Charge!, Stampede    | (c)   | No action (part of an Attack's preview)                | Unchanged                                                                                                    | Attack (the attack)          |
-| Martian  | Beam Down: passenger | (b)   | A portrait button per passenger, and board badges      | The badged units on the board only                                                                           | Help                         |
-| Martian  | Beam Down: tile      | (a)   | A tile on the board                                    | Unchanged                                                                                                    | Place                        |
-| Martian  | Mind Control         | (b)   | A chip per target, and board targets                   | The board targets only; units that cannot be taken keep their grey reason                                    | Attack                       |
-| Martian  | Tractor Beam         | (b)   | A chip per target, and board targets                   | The board targets only                                                                                       | Attack; Help for an own unit |
-| Ice Folk | Bolas                | (b)   | A chip per target, and board targets                   | The board targets only                                                                                       | Attack                       |
-| Ice Folk | Cold Snap            | (c)   | One "Cast Cold Snap" (it chills every unit in reach)   | Unchanged; the chilled units are marked and any of them casts it too                                         | Attack                       |
-| Ice Folk | Blizzard, Rockfall   | (c)   | No action (a passive aura; part of an Attack)          | Unchanged                                                                                                    | none                         |
-| Ice Folk | Freeze (a line role) | (a)   | No control (the frozen sea had no interface)           | One button arms it; the tile to freeze toward is picked on the board (section 3.5)                           | Place                        |
-| Ice Folk | Freeze (Ice Witch)   | (c)   | No control                                             | One button casts her ring; its tiles are marked while she is selected (section 3.5)                          | none (an area preview)       |
-| Dwarf    | Tunnel: passenger    | (b)   | A portrait button per Hammerer and "Alone"             | The badged Hammerers on the board; the dock shows who rides and one "Alone" toggle                           | Help                         |
-| Dwarf    | Tunnel: destination  | (a)   | A tile on the board, chosen then confirmed             | Unchanged                                                                                                    | Move                         |
-| Dwarf    | Bomb Run: target     | (b)   | A button per target, and board targets                 | The board targets only                                                                                       | Attack                       |
-| Dwarf    | Bomb Run: landing    | (a)   | A tile on the board                                    | Unchanged                                                                                                    | Move                         |
-| Dwarf    | Assemble             | (a)   | A tile on the board                                    | Unchanged                                                                                                    | Place                        |
-| Dwarf    | Repair               | (c)   | The Engineer's Tend Wounded button                     | The button is unchanged; the Repair recipients are marked (2.1), Barricades it mends too                     | Help, broken ring            |
-| Dwarf    | Whirl                | (c)   | A generic button (`pulp_wars-w49.33`)                  | One button aims it; every enemy it hits is marked with its damage, and the button or any of them whirls      | Attack                       |
-| Dwarf    | Barricade            | (a)   | A generic button per tile                              | One button arms it; the tile is picked on the board                                                          | Place                        |
-| Any      | Attack a Barricade   | (a)   | A generic button per attacker and Barricade            | An attack target on the Barricade's tile, with the damage and what is left                                   | Attack                       |
-| Candy    | Sugar Rush           | (a)   | One button arms it; a tile or an attack on the board   | Unchanged                                                                                                    | Move, Attack                 |
-| Candy    | Re-bake              | (b)   | A portrait button per Crumbs tile, and board targets   | The Crumbs tiles on the board only, each with the unit's ghost, price and HP                                 | Place                        |
-| Candy    | Sugar Toss           | (b)   | A portrait button per healable unit, and board targets | The healable units are highlighted unarmed beside the Gunner's Moves and Attacks; the button narrows to them | Help                         |
-| Candy    | Frosting             | (c)   | The Confectioner's Tend Wounded button                 | The button is unchanged; the Frosting recipients are marked (2.1)                                            | Help, broken ring            |
+| Faction  | Action               | Class | Before                                                       | Now                                                                                                                                                                                                | Style                        |
+| -------- | -------------------- | ----- | ------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------- |
+| Undead   | Raise Dead           | (c)   | One button                                                   | Unchanged: every Grave in reach rises, previewed "Rise"                                                                                                                                            | none                         |
+| Undead   | Devour               | (c)   | One button                                                   | Unchanged: the Grave under the Ghoul                                                                                                                                                               | none                         |
+| Undead   | Wail                 | (c)   | One button                                                   | Unchanged: the fixed radius, previewed per unit                                                                                                                                                    | none                         |
+| Goblin   | Kaboom!              | (c)   | One button, armed and confirmed                              | Unchanged: the blast is the unit's own, previewed on the board                                                                                                                                     | none                         |
+| Goblin   | Plunder              | (c)   | No action (a passive rule of captures and kills)             | Unchanged                                                                                                                                                                                          | none                         |
+| Dinosaur | Hatch                | (b)   | One "Hatch" button per adjacent Egg                          | One Hatch button; the Eggs are highlighted unarmed and picked on the board (one Egg: the button hatches it)                                                                                        | Help                         |
+| Dinosaur | Lay Egg (city)       | (a)   | A card per role, then a nest tile on the board               | Unchanged                                                                                                                                                                                          | Place                        |
+| Dinosaur | Abandon Egg          | (c)   | One button on the Egg                                        | Unchanged                                                                                                                                                                                          | none                         |
+| Dinosaur | Charge!, Stampede    | (c)   | No action (part of an Attack's preview)                      | Unchanged                                                                                                                                                                                          | Attack (the attack)          |
+| Martian  | Beam Down: passenger | (b)   | A portrait button per passenger, and board badges            | The badged units on the board only                                                                                                                                                                 | Help                         |
+| Martian  | Beam Down: tile      | (a)   | A tile on the board                                          | Unchanged                                                                                                                                                                                          | Place                        |
+| Martian  | Mind Control         | (b)   | A chip per target, and board targets                         | The board targets only; units that cannot be taken keep their grey reason                                                                                                                          | Attack                       |
+| Martian  | Tractor Beam         | (b)   | A chip per target, and board targets                         | The board targets only                                                                                                                                                                             | Attack; Help for an own unit |
+| Ice Folk | Bolas                | (b)   | A chip per target, and board targets                         | The board targets only                                                                                                                                                                             | Attack                       |
+| Ice Folk | Cold Snap            | (c)   | One "Cast Cold Snap" (it freezes every unit in reach)        | Unchanged; the units it freezes are marked and any of them casts it too                                                                                                                            | Attack                       |
+| Ice Folk | Frost Bolt           | (b)   | No control (a button per command, before `pulp_wars-w49.38`) | One button arms it; each unit within 2 is a board target labelled "Freeze" or "Stays Frozen"                                                                                                       | Attack                       |
+| Ice Folk | Stampede             | (a)   | No control (a button per command, before `pulp_wars-w49.38`) | One button arms it; each open end of a line is a board target; the focused or chosen end previews the line, hits, shoves and stop; the chosen end is charged by choosing it again or with "Charge" | Attack                       |
+| Ice Folk | Cold Aura            | (c)   | No action (part of the Frost Giant's Move)                   | A Move tile next to enemies reads "Freezes 2"; focused, each enemy it freezes is marked "Freeze"                                                                                                   | Move (the Move)              |
+| Ice Folk | Blizzard, Rockfall   | (c)   | No action (a passive aura; part of an Attack)                | Unchanged                                                                                                                                                                                          | none                         |
+| Ice Folk | Freeze (a line role) | (a)   | No control (the frozen sea had no interface)                 | One button arms it; the tile to freeze toward is picked on the board (section 3.5)                                                                                                                 | Place                        |
+| Ice Folk | Freeze (Ice Witch)   | (c)   | No control                                                   | One button casts her ring; its tiles are marked while she is selected (section 3.5)                                                                                                                | none (an area preview)       |
+| Dwarf    | Tunnel: passenger    | (b)   | A portrait button per Hammerer and "Alone"                   | The badged Hammerers on the board; the dock shows who rides and one "Alone" toggle                                                                                                                 | Help                         |
+| Dwarf    | Tunnel: destination  | (a)   | A tile on the board, chosen then confirmed                   | Unchanged                                                                                                                                                                                          | Move                         |
+| Dwarf    | Bomb Run: target     | (b)   | A button per target, and board targets                       | The board targets only                                                                                                                                                                             | Attack                       |
+| Dwarf    | Bomb Run: landing    | (a)   | A tile on the board                                          | Unchanged                                                                                                                                                                                          | Move                         |
+| Dwarf    | Assemble             | (a)   | A tile on the board                                          | Unchanged                                                                                                                                                                                          | Place                        |
+| Dwarf    | Repair               | (c)   | The Engineer's Tend Wounded button                           | The button is unchanged; the Repair recipients are marked (2.1), Barricades it mends too                                                                                                           | Help, broken ring            |
+| Dwarf    | Whirl                | (c)   | A generic button (`pulp_wars-w49.33`)                        | One button aims it; every enemy it hits is marked with its damage, and the button or any of them whirls                                                                                            | Attack                       |
+| Dwarf    | Barricade            | (a)   | A generic button per tile                                    | One button arms it; the tile is picked on the board                                                                                                                                                | Place                        |
+| Any      | Attack a Barricade   | (a)   | A generic button per attacker and Barricade                  | An attack target on the Barricade's tile, with the damage and what is left                                                                                                                         | Attack                       |
+| Candy    | Sugar Rush           | (a)   | One button arms it; a tile or an attack on the board         | Unchanged                                                                                                                                                                                          | Move, Attack                 |
+| Candy    | Re-bake              | (b)   | A portrait button per Crumbs tile, and board targets         | The Crumbs tiles on the board only, each with the unit's ghost, price and HP                                                                                                                       | Place                        |
+| Candy    | Sugar Toss           | (b)   | A portrait button per healable unit, and board targets       | The healable units are highlighted unarmed beside the Gunner's Moves and Attacks; the button narrows to them                                                                                       | Help                         |
+| Candy    | Frosting             | (c)   | The Confectioner's Tend Wounded button                       | The button is unchanged; the Frosting recipients are marked (2.1)                                                                                                                                  | Help, broken ring            |
 
 ### 3.3 Cities, tiles, ships and curiosities
 
@@ -306,7 +312,7 @@ arrow, the icebound marker).
   quiet marks are the preview.
 - **Reasons.** When no `FREEZE` is offered, a unit with the ability that
   stands next to water shows the button disabled with the first failing
-  row of the rules: "Needs Rime", "Frozen: it moved", "Already acted this
+  row of the rules: "Needs Rime", "Frozen: it cannot act this turn", "Already acted this
   turn", "Deep Water needs Pack Ice" or "No water here can freeze". A unit
   with no water beside it has no Freeze button.
 - **The slide is part of a Move.** The engine offers a sliding unit only
@@ -345,7 +351,7 @@ they have no button and appear in that target's preview. Code:
 | Goblin   | Goblin Toss    | (b)   | One Toss button; the Goblins next to the Troll are targets badged "Throw" (one Goblin: skipped), then the landing tiles, the focused one with the Goblin's Kaboom! area previewed                                                                                | Help, then Place            |
 | Dinosaur | Thunder Stomp  | (c)   | One Stomp button opens a panel with its confirmation ("Stomp"); the 3 x 3 area is drawn, each enemy hit is a target with its "−4" (any of them, or the confirmation, stomps) and each Field Defense reads "Smash"; the panel's summary counts the hits and kills | Attack, and an area preview |
 | Martian  | Overstride     | (c)   | Part of the Colossus's Move: a Move through enemies reads "Trample −3" and marks each trampled unit                                                                                                                                                              | Move                        |
-| Ice Folk | Glacial Smash  | (c)   | Part of the Frost Giant's Attack on a Chilled unit: the preview adds "Glacial Smash"                                                                                                                                                                             | Attack (the attack)         |
+| Ice Folk | Glacial Smash  | (c)   | Part of the Frost Giant's Attack on a Frozen unit: the preview adds "Glacial Smash"                                                                                                                                                                              | Attack (the attack)         |
 | Dwarf    | Siege Hammer   | (c)   | Part of the Titan's Attack: "Siege Hammer: no fortification", and "Tears down the Walls" on a walled city centre; the Breach note is not shown                                                                                                                   | Attack (the attack)         |
 | Candy    | Break Off      | (b)   | One Break Off button; the free tiles next to the Giant are targets, the first pick is labelled "Gingerbread Man", then the second tile is picked; the panel's summary gives the HP before and after                                                              | Place                       |
 

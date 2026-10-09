@@ -527,11 +527,11 @@ describe("Ice Folk technology cards, Help, achievements and Gallery", () => {
     );
     expect(icebound.join(" ")).not.toContain("Battleship");
     expect(lines("seamanship")).toEqual([
-      "Black Ice: enemies standing on your ice are frosted at the start of your turn",
+      "Black Ice: enemies standing on your ice are Frozen at the start of your turn",
     ]);
     const glacier = lines("submersibles");
     expect(glacier).toContain(
-      "Glacier: your ice lasts 5 turns and gives your units on it cover",
+      "Glacier: your ice lasts 5 turns, gives your units on it cover, and gives a Move across it +1 Move",
     );
     expect(glacier.join(" ")).not.toContain("Submarine");
     expect(

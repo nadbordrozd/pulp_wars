@@ -16,7 +16,7 @@ import { chibiArtUrl } from "./chibi-art-manifest";
  * Since bead `pulp_wars-7g3.6` this list is registered in the direction
  * registry (chibiDirectionArtRegistryV7), ICE_FOLK_FLAG_ANCHORS_V7 is part
  * of DIRECTION_FLAG_ANCHORS_V7, and the board draws the Snow overlay, the
- * Blizzard and the Chill markers from
+ * Blizzard and the Frozen marker from
  * chibi-direction-ice-folk-presentation.ts.
  */
 export const CHIBI_DIRECTION_ICE_FOLK_ART_ASSETS_V7: readonly ChibiArtAssetV7[] =
@@ -403,7 +403,7 @@ export const CHIBI_DIRECTION_ICE_FOLK_ART_ASSETS_V7: readonly ChibiArtAssetV7[] 
   ];
 
 export {
-  ICE_FOLK_CHILL_MARKER_V7,
+  ICE_FOLK_FROZEN_MARKER_V7,
   ICE_FOLK_FLAG_ANCHORS_V7,
   ICE_FOLK_PALETTE_V7,
   ICE_FOLK_SHATTER_TIMELINE_V7,

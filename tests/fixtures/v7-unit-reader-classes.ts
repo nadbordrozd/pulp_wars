@@ -600,6 +600,13 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     // on the board; a burrowed unit is offered no Move).
     "src/render/canvas/ice-folk-board-plan-v7.ts::glideStepsV7": "BOARD",
     "src/render/canvas/ice-folk-board-plan-v7.ts::moveIsGlideV7": "BOARD",
+    // Ice Folk Freeze (`pulp_wars-w49.38`): a Stampede's line walks the
+    // units on the board (a mound blocks a shove through the occupancy
+    // predicate, which reads the view's `burrowed` list), a Frost Giant's
+    // Move freezes units on the board, and Glacier reads the mover.
+    "src/render/ice-folk-presentation-v7.ts::stampedePlanV7": "BOARD",
+    "src/render/ice-folk-presentation-v7.ts::coldAuraMoveTargetsV7": "BOARD",
+    "src/render/ice-folk-presentation-v7.ts::moveUsesGlacierV7": "BOARD",
     "src/render/canvas/martian-board-plan-v7.ts::addMartianPickEntriesV7":
       "BOARD",
     "src/render/canvas/martian-board-plan-v7.ts::addMartianSelectionEntriesV7":

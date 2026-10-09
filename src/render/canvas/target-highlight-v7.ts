@@ -123,6 +123,10 @@ const FAMILY_STYLES_V7: Readonly<Record<string, TargetHighlightStyleV7>> = {
   TRACTOR_BEAM: "ATTACK",
   THROW_BOLAS: "ATTACK",
   COLD_SNAP: "ATTACK",
+  // Ice Folk Freeze (`pulp_wars-w49.38`): a Frost Bolt target, and the end
+  // of a Stampede's line (the charge harms what stands in it).
+  FROST_BOLT: "ATTACK",
+  STAMPEDE: "ATTACK",
   BOMB_TARGET: "ATTACK",
   // Dwarf crowd control: an enemy an aimed Whirl hits.
   WHIRL: "ATTACK",

@@ -265,7 +265,26 @@ export function soundCuesForStepV7(
         case "COLD_SNAP":
         case "COLD_AURA":
         case "ICE_FREEZE":
+        case "FROST":
           return [{ id: "special.freeze", delayMs: 0 }];
+        // Ice Folk Freeze (`pulp_wars-w49.38`): the Frost Bolt's whoosh and
+        // its freeze; the Stampede's thunder and a thud on each unit hit.
+        case "FROST_BOLT":
+          return [
+            { id: "attack.ranged", delayMs: 0 },
+            { id: "special.freeze", delayMs: step.durationMs * 0.45 },
+          ];
+        case "STAMPEDE":
+          return [
+            { id: "impact.heavy", delayMs: 0 },
+            ...(step.hits ?? []).map((_, index) => ({
+              id: "impact.hit" as const,
+              delayMs:
+                step.durationMs *
+                0.75 *
+                Math.min(1, (index + 1) / Math.max(1, step.cells.length)),
+            })),
+          ];
         case "BOLAS":
           return [
             { id: "attack.ranged", delayMs: 0 },

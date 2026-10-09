@@ -57,22 +57,29 @@ import {
 import { corePresentationPlanV7 } from "../../src/render/canvas/presentation-plan-v7";
 import { DIRECTION_FLAG_ANCHORS_V7 } from "../../src/render/canvas/visual-direction-v7";
 import {
-  CHILLED_PREVIEW_V7,
+  FROZEN_NO_STRIKE_BACK_V7,
   SHATTERS_PREVIEW_V7,
   bolasPreviewLinesV7,
   iceFolkCombatLinesV7,
 } from "../../src/render/ice-folk-presentation-v7";
 import {
+  ICE_FOLK_FREEZE_V7,
   ICE_FOLK_UI_V7,
   ICE_FOLK_VICTIM_V7,
+  iceFolkFreezeFixtureV7,
   iceFolkUiFixtureV7,
   iceFolkVictimFixtureV7,
 } from "../fixtures/v7-ice-folk-ui";
+import {
+  FROZEN_GLACIER_UI_V7,
+  frozenGlacierUiFixtureV7,
+} from "../fixtures/v7-frozen-sea-ui";
 import { martianUiFixtureV7 } from "../fixtures/v7-martian-ui";
 
 // Every Ice Folk number below is read from a public preview of the same
 // view: the balance bead (`pulp_wars-7g3.7`) may retune the faction.
 const AT = ICE_FOLK_UI_V7;
+const FREEZE = ICE_FOLK_FREEZE_V7;
 type LogEntry = readonly unknown[];
 
 function recordingContext(): {
@@ -405,7 +412,7 @@ describe("the Snow overlay and the Blizzard (section 13.1)", () => {
   });
 });
 
-describe("Chill markers on the board (section 13.1)", () => {
+describe("The Frozen marker on the board (section 13.1)", () => {
   const view = humanView(iceFolkUiFixtureV7());
   const plan = planFor(view, null);
   const marker = (at: CoordV7) =>
@@ -414,15 +421,15 @@ describe("Chill markers on the board (section 13.1)", () => {
         entry.kind === "UNIT" && entry.at.x === at.x && entry.at.y === at.y,
     );
 
-  it("marks Frozen and Frosted units of any owner, and never a thawing one", () => {
-    expect(marker(AT.frozenEnemy)?.iceFolk?.chill).toBe("FROZEN");
-    // Ice Folk Freeze (`pulp_wars-w49.37`): every entry is Frozen; Frosted
-    // no longer occurs.
-    expect(marker(AT.shatterTarget)?.iceFolk?.chill).toBe("FROZEN");
-    expect(marker(AT.thawingEnemy)?.iceFolk).toBeUndefined();
+  it("marks Frozen units of any owner with their turns left", () => {
+    expect(marker(AT.frozenEnemy)?.iceFolk?.frozen).toEqual({ turnsLeft: 1 });
+    expect(marker(AT.shatterTarget)?.iceFolk?.frozen).toEqual({
+      turnsLeft: 1,
+    });
+    expect(marker(AT.unfrozenEnemy)?.iceFolk).toBeUndefined();
     expect(marker(AT.sweepTarget)?.iceFolk).toBeUndefined();
     expect(marker(AT.witch)?.iceFolk).toEqual({
-      chill: null,
+      frozen: null,
       shatterWindow: null,
       witch: true,
     });
@@ -431,15 +438,15 @@ describe("Chill markers on the board (section 13.1)", () => {
     expect(marker(AT.shatterTarget)?.iceFolk?.shatterWindow).toBe(4);
   });
 
-  it("cases a Frozen unit and rimes a Frosted one over its own sprite", () => {
+  it("cases a Frozen unit over its own sprite, with its ice-cube glyph", () => {
     const log = draw(plan);
     const casings = drawIndexes(log, (image) => "casing" in image);
     const rimes = drawIndexes(log, (image) => image.caps === "RIME");
-    // Ice Folk Freeze (`pulp_wars-w49.37`): every Frozen unit is cased
-    // (the Guard, the Fighter beside the Yeti, and the one beside the
-    // Witch); no unit is Frosted, so none is rimed.
+    // Every Frozen unit is cased (the Guard, the Fighter beside the Yeti,
+    // and the one beside the Witch); only an icebound ship is rimed.
     expect(casings).toHaveLength(
-      plan.entries.filter((entry) => entry.iceFolk?.chill === "FROZEN").length,
+      plan.entries.filter((entry) => (entry.iceFolk?.frozen ?? null) !== null)
+        .length,
     );
     expect(casings).toHaveLength(3);
     expect(rimes).toHaveLength(0);
@@ -474,7 +481,7 @@ describe("Ice Folk targets and previews on the board (section 13.1)", () => {
   const state = iceFolkUiFixtureV7();
   const view = humanView(state);
 
-  it("aims a Bolas: only its targets, each with the Frozen or Frosted hint", () => {
+  it("aims a Bolas: only its targets, each with its freeze hint", () => {
     const sled = unitAt(view, AT.sled);
     const plan = planFor(view, AT.sled, {
       iceFolkPick: { kind: "THROW_BOLAS", unitId: sled.id },
@@ -497,8 +504,8 @@ describe("Ice Folk targets and previews on the board (section 13.1)", () => {
     );
     if (preview === null) throw new Error("no Bolas preview");
     const lines = bolasPreviewLinesV7(view, preview);
-    // Ice Folk Freeze (`pulp_wars-w49.37`): every Bolas target is Frozen.
-    expect(target?.previewLabel).toBe("Frozen");
+    // Ice Folk Freeze (`pulp_wars-w49.38`): a target not yet Frozen.
+    expect(target?.previewLabel).toBe("Freeze");
     expect(target?.previewNote).toBe(lines.slice(1).join(" · "));
   });
 
@@ -533,7 +540,8 @@ describe("Ice Folk targets and previews on the board (section 13.1)", () => {
         target.at.y === AT.shatterTarget.y,
     );
     expect(shatter?.previewLabel).toBe(SHATTERS_PREVIEW_V7);
-    expect(shatter?.previewNote).toContain(CHILLED_PREVIEW_V7);
+    // The kill: no "won't strike back" note is needed.
+    expect(shatter?.previewNote ?? "").not.toContain(FROZEN_NO_STRIKE_BACK_V7);
     const sweepPreview = queryCombatPreviewV7(
       view,
       unitAt(view, AT.mammoth).id,
@@ -668,6 +676,9 @@ describe("Ice Folk cues (section 13.1, ICE_FOLK.md effects)", () => {
       "BOLAS",
       "COLD_AURA",
       "SWEEP",
+      "FROST_BOLT",
+      "FROST",
+      "STAMPEDE",
     ] as const) {
       const { context, log } = recordingContext();
       drawIceFolkFeedbackV7(
@@ -676,7 +687,7 @@ describe("Ice Folk cues (section 13.1, ICE_FOLK.md effects)", () => {
         {
           effect,
           from: AT.witch,
-          cells: [AT.snapFrozen],
+          cells: [AT.snapTarget],
           progress: effect === "SHATTER" ? 0.3 : 0.6,
         },
       );
@@ -696,5 +707,238 @@ describe("Ice Folk cues (section 13.1, ICE_FOLK.md effects)", () => {
     expect(blizzard.map((entry) => entry.at)).toContainEqual(
       ICE_FOLK_VICTIM_V7.frozenFighter,
     );
+  });
+});
+
+describe("Ice Folk Freeze on the board (bead pulp_wars-w49.38)", () => {
+  const state = iceFolkFreezeFixtureV7();
+  const view = humanView(state);
+  const id = (at: CoordV7) => unitAt(view, at).id;
+  const texts = (log: readonly LogEntry[]): string[] =>
+    log.flatMap((call) =>
+      call[0] === "fillText" && typeof call[1] === "string" ? [call[1]] : [],
+    );
+  const at = (target: { readonly at: CoordV7 }, where: CoordV7): boolean =>
+    target.at.x === where.x && target.at.y === where.y;
+
+  it("shows the turns left on a unit Frozen for two of its turns", () => {
+    const plan = planFor(view, null);
+    const own = plan.entries.find(
+      (entry) => entry.kind === "UNIT" && at(entry, FREEZE.frozenOwn),
+    );
+    expect(own?.iceFolk?.frozen).toEqual({ turnsLeft: 2 });
+    // The glyph's count is drawn only above one turn.
+    const twos = (target: BoardRenderPlanV7): number =>
+      texts(draw(target)).filter((text) => text === "2").length;
+    const once = planFor(
+      {
+        ...view,
+        frozen: view.frozen.map((entry) => ({ ...entry, turnsLeft: 1 })),
+      },
+      null,
+    );
+    expect(twos(plan) - twos(once)).toBe(1);
+  });
+
+  it("aims a Frost Bolt: one target each, within two tiles, with its hint", () => {
+    const witch = unitAt(view, FREEZE.witch);
+    const plan = planFor(view, FREEZE.witch, {
+      iceFolkPick: { kind: "FROST_BOLT", unitId: witch.id },
+    });
+    expect(plan.targets.map((target) => target.family)).toEqual([
+      "FROST_BOLT",
+      "FROST_BOLT",
+      "FROST_BOLT",
+    ]);
+    const label = (where: CoordV7) =>
+      plan.targets.find((target) => at(target, where))?.previewLabel;
+    expect(label(FREEZE.boltTarget)).toBe("Freeze");
+    expect(label(FREEZE.snapTarget)).toBe("Freeze");
+    expect(label(FREEZE.boltFrozen)).toBe("Stays Frozen");
+    // Its reach (the 5 x 5 tiles round her) is outlined.
+    expect(
+      plan.entries.filter(
+        (entry) =>
+          entry.kind === "ABILITY_AREA" &&
+          entry.key.startsWith("ability-area:FROST_BOLT:"),
+      ),
+    ).toHaveLength(25);
+    // A Cold Snap reaches only the tile next to her.
+    const snap = planFor(view, FREEZE.witch, {
+      iceFolkPick: { kind: "COLD_SNAP", unitId: witch.id },
+    });
+    expect(snap.targets.map((target) => target.at)).toEqual([
+      FREEZE.snapTarget,
+    ]);
+  });
+
+  it("marks the enemies a Frost Giant's Move would freeze", () => {
+    const plan = planFor(view, FREEZE.giant);
+    const target = plan.targets.find(
+      (candidate) =>
+        candidate.family === "MOVE" && at(candidate, FREEZE.giantTo),
+    );
+    expect(target?.coldAura).toEqual([FREEZE.giantPreyA, FREEZE.giantPreyB]);
+    expect(target?.previewLabel).toBe("Freezes 2");
+    expect(target?.semanticLabel).toBe(
+      "Cold Aura: freezes 2 units: Fighter, Marksman",
+    );
+    expect(
+      plan.targets.find(
+        (candidate) =>
+          candidate.family === "MOVE" && at(candidate, { x: 1, y: 2 }),
+      )?.coldAura,
+    ).toBeUndefined();
+    const focused = texts(draw(plan, { previewFocus: FREEZE.giantTo }));
+    expect(focused.filter((text) => text === "Freeze")).toHaveLength(2);
+    expect(texts(draw(plan)).filter((text) => text === "Freeze")).toHaveLength(
+      0,
+    );
+  });
+
+  it("previews a Stampede on its focused or chosen line", () => {
+    const mammoth = unitAt(view, FREEZE.mammoth);
+    const aimed = planFor(view, FREEZE.mammoth, {
+      iceFolkPick: { kind: "STAMPEDE", unitId: mammoth.id, chosen: null },
+    });
+    const offered = queryPlayerCommandsV7(view).filter(
+      (command) => command.kind === "STAMPEDE" && command.unitId === mammoth.id,
+    );
+    expect(aimed.targets).toHaveLength(offered.length);
+    expect(aimed.targets.every((target) => target.family === "STAMPEDE")).toBe(
+      true,
+    );
+    // No label until a line is chosen.
+    expect(
+      aimed.targets.every((target) => target.previewLabel === undefined),
+    ).toBe(true);
+    const west = aimed.targets.find((target) =>
+      at(target, FREEZE.stampedeWest),
+    );
+    expect(west?.stampede).toMatchObject({
+      from: FREEZE.mammoth,
+      end: FREEZE.stampedeWest,
+      stopped: false,
+      chosen: false,
+      hits: [
+        {
+          at: FREEZE.stampedeShoved,
+          label: "−3",
+          lethal: false,
+          shovedTo: FREEZE.stampedeShovedTo,
+          blocks: false,
+        },
+        {
+          at: FREEZE.stampedeKilled,
+          label: "−2",
+          lethal: true,
+          shovedTo: null,
+          blocks: false,
+        },
+      ],
+    });
+    const focused = texts(draw(aimed, { previewFocus: FREEZE.stampedeWest }));
+    expect(focused).toEqual(expect.arrayContaining(["−3", "−2"]));
+    expect(texts(draw(aimed))).not.toContain("−3");
+    // Chosen: its label, and its preview stays drawn without a focus.
+    const chosen = planFor(view, FREEZE.mammoth, {
+      iceFolkPick: {
+        kind: "STAMPEDE",
+        unitId: mammoth.id,
+        chosen: FREEZE.stampedeSouth,
+      },
+    });
+    const south = chosen.targets.find((target) =>
+      at(target, FREEZE.stampedeSouth),
+    );
+    expect(south?.previewLabel).toBe("Stampede · hits 1");
+    expect(south?.stampede?.chosen).toBe(true);
+    expect(texts(draw(chosen))).toContain("−3 · stops");
+  });
+
+  it("marks the tile only Glacier's +1 Move across ice reaches", () => {
+    const glacier = humanView(frozenGlacierUiFixtureV7());
+    const plan = planFor(glacier, FROZEN_GLACIER_UI_V7.walker);
+    const marked = plan.targets.filter((target) => target.glacier === true);
+    expect(marked.map((target) => target.at)).toEqual([
+      FROZEN_GLACIER_UI_V7.glacierTile,
+    ]);
+    expect(marked[0]?.semanticLabel).toBe("Glacier: +1 Move across ice");
+    expect(texts(draw(plan)).filter((text) => text === "+1")).toHaveLength(1);
+  });
+
+  it("plays a Stampede: the dust, each shove and hit, then the charge", () => {
+    const command = queryPlayerCommandsV7(view).find(
+      (candidate) =>
+        candidate.kind === "STAMPEDE" &&
+        candidate.at.x === FREEZE.stampedeWest.x &&
+        candidate.at.y === FREEZE.stampedeWest.y,
+    );
+    if (command === undefined) throw new Error("no Stampede");
+    const result = applyCommandV7(state, state.humanPlayerId, command);
+    if (!result.accepted) throw new Error("rejected");
+    const steps = corePresentationPlanV7(
+      view,
+      projectEventsV7(state, result.state, state.humanPlayerId, result.events),
+      humanView(result.state),
+    );
+    const summary = steps.map((step) =>
+      step.kind === "MOVE"
+        ? `MOVE ${step.unitId} ${step.path.map((p) => `${p.x},${p.y}`).join(">")}`
+        : step.kind === "DAMAGE"
+          ? `DAMAGE ${step.unitId} ${step.damage}${step.lethal ? " lethal" : ""}`
+          : step.kind === "ICE_FOLK"
+            ? `ICE_FOLK ${step.effect}`
+            : step.kind,
+    );
+    const m = id(FREEZE.mammoth);
+    const shoved = id(FREEZE.stampedeShoved);
+    const killed = id(FREEZE.stampedeKilled);
+    expect(summary.slice(0, 7)).toEqual([
+      "ICE_FOLK STAMPEDE",
+      `MOVE ${shoved} 9,3>9,2`,
+      `DAMAGE ${shoved} 3`,
+      `MOVE ${m} 10,3>9,3`,
+      `DAMAGE ${killed} 2 lethal`,
+      `MOVE ${m} 9,3>8,3`,
+      `MOVE ${m} 8,3>7,3`,
+    ]);
+    expect(steps[0]).toMatchObject({
+      from: FREEZE.mammoth,
+      cells: [
+        FREEZE.stampedeShoved,
+        FREEZE.stampedeKilled,
+        FREEZE.stampedeWest,
+      ],
+      hits: [FREEZE.stampedeShoved, FREEZE.stampedeKilled],
+    });
+    // Every slide waits for its turn (a Charge!-style push boundary).
+    expect(
+      steps.every((step) => step.kind !== "MOVE" || step.pushSlide === true),
+    ).toBe(true);
+  });
+
+  it("streaks a Frost Bolt from the Witch to its target", () => {
+    const command = queryPlayerCommandsV7(view).find(
+      (candidate) =>
+        candidate.kind === "FROST_BOLT" &&
+        candidate.targetUnitId === id(FREEZE.boltTarget),
+    );
+    if (command === undefined) throw new Error("no Frost Bolt");
+    const result = applyCommandV7(state, state.humanPlayerId, command);
+    if (!result.accepted) throw new Error("rejected");
+    const steps = corePresentationPlanV7(
+      view,
+      projectEventsV7(state, result.state, state.humanPlayerId, result.events),
+      humanView(result.state),
+    );
+    expect(steps).toEqual([
+      expect.objectContaining({
+        kind: "ICE_FOLK",
+        effect: "FROST_BOLT",
+        from: FREEZE.witch,
+        cells: [FREEZE.boltTarget],
+      }),
+    ]);
   });
 });

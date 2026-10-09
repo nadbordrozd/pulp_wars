@@ -35,27 +35,37 @@ import {
   BRITTLE_UNLOCK_TEXT_V7,
   COLD_SNAP_NO_TARGET_V7,
   DEEP_WINTER_UNLOCK_TEXT_V7,
-  FROZEN_MOVED_V7,
+  FROST_BOLT_NO_TARGET_V7,
+  FROZEN_CANNOT_ACT_V7,
   GLIDE_MOVE_LABEL_V7,
   ICE_FOLK_HELP_RULES_V7,
   SHATTERS_PREVIEW_V7,
   bolasPreviewLinesV7,
-  chillChipV7,
   coldSnapSummaryV7,
+  frozenChipV7,
+  stampedePlanV7,
+  stampedeSemanticV7,
   iceFolkRoleUnlockTextV7,
   snowChipTooltipV7,
   snowTooltipV7,
 } from "../../src/render/ice-folk-presentation-v7";
 import {
+  ICE_FOLK_FREEZE_V7,
   ICE_FOLK_GLIDE_V7,
   ICE_FOLK_UI_V7,
   ICE_FOLK_VICTIM_V7,
+  iceFolkFreezeFixtureV7,
   iceFolkGlideFixtureV7,
   iceFolkUiFieldV7,
   iceFolkUiFixtureV7,
   iceFolkVictimFixtureV7,
 } from "../fixtures/v7-ice-folk-ui";
 import { martianUiFixtureV7 } from "../fixtures/v7-martian-ui";
+import {
+  FROZEN_GLACIER_UI_V7,
+  frozenGlacierUiFixtureV7,
+} from "../fixtures/v7-frozen-sea-ui";
+import { GLACIER_MOVE_LABEL_V7 } from "../../src/render/frozen-sea-presentation-v7";
 import { HELP_SECTIONS_V7 } from "../../src/render/help-text-v7";
 import { roleGlossaryV7 } from "../../src/render/unit-glossary-v7";
 
@@ -63,6 +73,7 @@ import { roleGlossaryV7 } from "../../src/render/unit-glossary-v7";
 // the engine constants or a public preview of the same view: the balance
 // bead (`pulp_wars-7g3.7`) may retune the faction.
 const AT = ICE_FOLK_UI_V7;
+const FREEZE = ICE_FOLK_FREEZE_V7;
 const label = (role: Parameters<typeof effectiveRoleRuleV7>[0]): string =>
   effectiveRoleRuleV7(role, "ICE_FOLK").label;
 
@@ -116,27 +127,29 @@ describe("Ice Folk setup", () => {
 });
 
 describe("Ice Folk unit dock", () => {
-  it("shows Frozen, Frosted and Thawing on enemy units, with their status", () => {
+  it("shows Frozen with its turns left on enemy units, with its status", () => {
     const controller = new FixtureController(iceFolkUiFixtureV7());
     const host = new RecordingBoardHost();
     const app = mount(controller, host);
     const view = required(controller.snapshot().view);
-    // Ice Folk Freeze (`pulp_wars-w49.37`): Frosted and Thawing no longer
-    // occur; both Frozen units carry the chip, the thawed one none.
     for (const at of [AT.frozenEnemy, AT.shatterTarget]) {
       const unit = selectUnitAt(controller, host, at);
-      const chip = required(chillChipV7(view, unit));
+      const chip = required(frozenChipV7(view, unit));
       const cue = requiredElement<HTMLElement>(
-        '.v7-selection-dock [data-unit-status="chill"]',
+        '.v7-selection-dock [data-unit-status="frozen"]',
       );
       expect(cue.textContent).toBe(chip.label);
+      expect(cue.textContent).toBe("Frozen · 1 turn");
+      expect(cue.dataset.turnsLeft).toBe("1");
       expect(cue.title).toBe(chip.status);
     }
-    // An unchilled enemy has no chill chip.
+    // A unit that is not Frozen has no Frozen chip.
     selectUnitAt(controller, host, AT.sweepTarget);
-    expect(chipText("chill")).toBeNull();
-    selectUnitAt(controller, host, AT.thawingEnemy);
-    expect(chipText("chill")).toBeNull();
+    expect(chipText("frozen")).toBeNull();
+    selectUnitAt(controller, host, AT.unfrozenEnemy);
+    expect(chipText("frozen")).toBeNull();
+    // No chip of the removed Chill states is left anywhere.
+    expect(document.querySelector('[data-unit-status^="chill"]')).toBeNull();
     app.destroy();
   });
 
@@ -192,18 +205,25 @@ describe("Ice Folk unit dock", () => {
     app.destroy();
   });
 
-  it("says why a Frozen unit that moved cannot act", () => {
+  it("says why a Frozen unit cannot act", () => {
     const controller = new FixtureController(iceFolkVictimFixtureV7());
     const host = new RecordingBoardHost();
     const app = mount(controller, host);
     selectUnitAt(controller, host, ICE_FOLK_VICTIM_V7.frozenFighter);
     const act = requiredButton("ice-folk-frozen");
     expect(act.getAttribute("aria-disabled")).toBe("true");
-    expect(act.title).toBe(FROZEN_MOVED_V7);
+    expect(act.title).toBe(FROZEN_CANNOT_ACT_V7);
+    expect(act.getAttribute("aria-label")).toBe(
+      `Act unavailable. ${FROZEN_CANNOT_ACT_V7}`,
+    );
+    act.click();
+    expect(document.querySelector("#v7-live")?.textContent).toBe(
+      `${FROZEN_CANNOT_ACT_V7}.`,
+    );
     // The unit information explains its Frozen chip in plain words.
     requiredButton("unit-help").click();
-    expect(requiredElement('[data-tactical-state="chill"]').textContent).toBe(
-      "FrozenIt cannot move or act this turn, and it does not strike back.",
+    expect(requiredElement('[data-tactical-state="frozen"]').textContent).toBe(
+      "Frozen · 1 turnIt cannot move or act or strike back until it thaws at the end of its owner's turn (the chip counts them). Ice Folk can shatter a weak Frozen unit.",
     );
     // The engine offers it no primary action.
     expect(
@@ -294,6 +314,24 @@ describe("Ice Folk unit dock", () => {
     expect(
       boardPlan(host).targets.some((target) => target.glide === true),
     ).toBe(false);
+    app.destroy();
+  });
+});
+
+describe("Glacier on the ice (Ice Folk Freeze)", () => {
+  it("names the tile only Glacier's +1 Move reaches", () => {
+    const controller = new FixtureController(frozenGlacierUiFixtureV7());
+    const host = new RecordingBoardHost();
+    const app = mount(controller, host);
+    selectUnitAt(controller, host, FROZEN_GLACIER_UI_V7.walker);
+    expect(requiredElement('[data-landing-marker="glacier"]').textContent).toBe(
+      GLACIER_MOVE_LABEL_V7,
+    );
+    expect(
+      boardPlan(host)
+        .targets.filter((target) => target.glacier === true)
+        .map((target) => target.at),
+    ).toEqual([FROZEN_GLACIER_UI_V7.glacierTile]);
     app.destroy();
   });
 });
@@ -389,9 +427,143 @@ describe("Ice Folk abilities", () => {
     });
     await waitUntil(() =>
       (document.querySelector("#v7-live")?.textContent ?? "").includes(
-        `Your ${label("CAPTAIN")} froze ${preview.targets.length} units`,
+        `Your ${label("CAPTAIN")}'s Cold Snap froze ${preview.targets.length} units`,
       ),
     );
+    app.destroy();
+  });
+
+  it("aims a Frost Bolt from its own button and freezes the picked unit", async () => {
+    const controller = new FixtureController(iceFolkFreezeFixtureV7());
+    const host = new RecordingBoardHost();
+    const app = mount(controller, host);
+    const witch = selectUnitAt(controller, host, FREEZE.witch);
+    // One button each; the generic per-command buttons are gone.
+    expect(
+      [...document.querySelectorAll(".v7-selection-dock .v7-action-label")].map(
+        (node) => node.textContent,
+      ),
+    ).toEqual(["Cold Snap", "Frost Bolt", "Disband", "Wait"]);
+    requiredButton("ice-folk-frost-bolt").click();
+    expect(host.lastModel?.interaction.iceFolkPick).toEqual({
+      kind: "FROST_BOLT",
+      unitId: witch.id,
+    });
+    expect(
+      requiredElement("[data-v7-ice-folk-pick]").getAttribute(
+        "data-v7-ice-folk-pick",
+      ),
+    ).toBe("frost_bolt");
+    const target = required(
+      boardPlan(host).targets.find(
+        (entry) =>
+          entry.family === "FROST_BOLT" &&
+          entry.at.x === FREEZE.boltTarget.x &&
+          entry.at.y === FREEZE.boltTarget.y,
+      ),
+    );
+    expect(target.previewLabel).toBe("Freeze");
+    host.callbacks?.onCommand(target);
+    await waitUntil(() => controller.accepted.length === 1);
+    expect(controller.accepted[0]).toEqual({
+      kind: "FROST_BOLT",
+      unitId: witch.id,
+      targetUnitId: unitAt(controller, FREEZE.boltTarget).id,
+    });
+    await waitUntil(() =>
+      (document.querySelector("#v7-live")?.textContent ?? "").includes(
+        `Your ${label("CAPTAIN")}'s Frost Bolt froze a Marksman`,
+      ),
+    );
+    app.destroy();
+  });
+
+  it("charges a Stampede in two choices: the line's end, then again (or Charge)", async () => {
+    const controller = new FixtureController(iceFolkFreezeFixtureV7());
+    const host = new RecordingBoardHost();
+    const app = mount(controller, host);
+    const mammoth = selectUnitAt(controller, host, FREEZE.mammoth);
+    expect(
+      document.querySelectorAll('.v7-selection-dock [data-action^="stampede"]'),
+    ).toHaveLength(0);
+    requiredButton("ice-folk-stampede").click();
+    expect(host.lastModel?.interaction.iceFolkPick).toEqual({
+      kind: "STAMPEDE",
+      unitId: mammoth.id,
+      chosen: null,
+    });
+    const west = () =>
+      required(
+        boardPlan(host).targets.find(
+          (entry) =>
+            entry.family === "STAMPEDE" &&
+            entry.at.x === FREEZE.stampedeWest.x &&
+            entry.at.y === FREEZE.stampedeWest.y,
+        ),
+      );
+    // The first choice only previews the charge.
+    host.callbacks?.onCommand(west());
+    expect(controller.accepted).toHaveLength(0);
+    expect(host.lastModel?.interaction.iceFolkPick).toEqual({
+      kind: "STAMPEDE",
+      unitId: mammoth.id,
+      chosen: FREEZE.stampedeWest,
+    });
+    expect(west().stampede?.chosen).toBe(true);
+    const plan = required(
+      stampedePlanV7(
+        required(controller.snapshot().view),
+        mammoth.id,
+        FREEZE.stampedeWest,
+      ),
+    );
+    expect(
+      requiredElement("[data-v7-ice-folk-pick]").getAttribute("aria-label"),
+    ).toBe(stampedeSemanticV7(plan).replace(/\.$/, ""));
+    expect(requiredButton("stampede-charge").textContent).toBe("Charge");
+    // The second choice of the same tile charges.
+    host.callbacks?.onCommand(west());
+    await waitUntil(() => controller.accepted.length === 1);
+    expect(controller.accepted[0]).toEqual({
+      kind: "STAMPEDE",
+      unitId: mammoth.id,
+      at: FREEZE.stampedeWest,
+    });
+    await waitUntil(() =>
+      (document.querySelector("#v7-live")?.textContent ?? "").includes(
+        `Your ${label("SWORDSMAN")} stampeded: 2 units hit, 1 killed`,
+      ),
+    );
+    app.destroy();
+  });
+
+  it("charges a chosen Stampede from the dock's Charge", async () => {
+    const controller = new FixtureController(iceFolkFreezeFixtureV7());
+    const host = new RecordingBoardHost();
+    const app = mount(controller, host);
+    const mammoth = selectUnitAt(controller, host, FREEZE.mammoth);
+    requiredButton("ice-folk-stampede").click();
+    const south = required(
+      boardPlan(host).targets.find(
+        (entry) =>
+          entry.family === "STAMPEDE" &&
+          entry.at.x === FREEZE.stampedeSouth.x &&
+          entry.at.y === FREEZE.stampedeSouth.y,
+      ),
+    );
+    host.callbacks?.onCommand(south);
+    expect(
+      requiredElement("[data-v7-ice-folk-pick]").getAttribute("aria-label"),
+    ).toBe(
+      "Stampede: charges 1 tile. Guard takes 3, cannot be shoved and stops the charge. No strike-back",
+    );
+    requiredButton("stampede-charge").click();
+    await waitUntil(() => controller.accepted.length === 1);
+    expect(controller.accepted[0]).toEqual({
+      kind: "STAMPEDE",
+      unitId: mammoth.id,
+      at: FREEZE.stampedeSouth,
+    });
     app.destroy();
   });
 
@@ -405,6 +577,9 @@ describe("Ice Folk abilities", () => {
     const button = requiredButton("ice-folk-cold-snap");
     expect(button.getAttribute("aria-disabled")).toBe("true");
     expect(button.dataset.disabledReason).toBe(COLD_SNAP_NO_TARGET_V7);
+    const bolt = requiredButton("ice-folk-frost-bolt");
+    expect(bolt.getAttribute("aria-disabled")).toBe("true");
+    expect(bolt.dataset.disabledReason).toBe(FROST_BOLT_NO_TARGET_V7);
     app.destroy();
   });
 

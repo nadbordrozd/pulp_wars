@@ -9,11 +9,14 @@ import {
   PLANTED_BONUS2_V7,
   ROCKFALL_ATTACK2_V7,
   SHATTER_HP_V7,
+  STAMPEDE_DAMAGE_V7,
   SWEEP_DAMAGE_V7,
   applyCommandV7,
   effectiveRoleRuleV7,
   previewBolasV7,
   previewColdSnapV7,
+  previewFrostBoltV7,
+  previewStampedeV7,
   projectEventsV7,
   queryCombatPreviewV7,
   queryPlayerCommandsV7,
@@ -28,11 +31,15 @@ import {
 import {
   BLIZZARD_PREVIEW_V7,
   BOULDERS_PREVIEW_V7,
-  CHILLED_PREVIEW_V7,
   COLD_BLOOD_PREVIEW_V7,
   COLD_SNAP_NO_TARGET_V7,
-  FROZEN_IT_MOVED_V7,
-  FROZEN_STATUS_V7,
+  FROST_BOLT_NO_TARGET_V7,
+  FROZEN_CANNOT_ACT_V7,
+  FROZEN_LABEL_V7,
+  FROZEN_NO_STRIKE_BACK_V7,
+  STAMPEDE_MOVED_V7,
+  STAMPEDE_NO_LINE_V7,
+  STAYS_FROZEN_V7,
   HIDDEN_BLIZZARD_PREVIEW_V7,
   ICE_FOLK_HELP_RULES_V7,
   PLANTED_PREVIEW_V7,
@@ -42,10 +49,12 @@ import {
   WILL_BE_FROZEN_V7,
   bolasPreviewLinesV7,
   boulderThrowTextV7,
-  chillChipV7,
-  chillStateV7,
   coldSnapSummaryV7,
-  frostedStatusTextV7,
+  frozenCannotActV7,
+  frozenChipV7,
+  frozenThawTextV7,
+  frozenTurnsLeftV7,
+  iceFolkAbilityDescriptionV7,
   iceFolkAbilityNameV7,
   iceFolkAbilityUnavailableTextV7,
   iceFolkBoundaryNoticeV7,
@@ -60,10 +69,22 @@ import {
   shatterThresholdAgainstV7,
   shatterWindowV7,
   snowTooltipV7,
+  coldAuraMoveTargetsV7,
+  moveUsesGlacierV7,
+  stampedeLabelV7,
+  stampedePlanV7,
+  stampedeSemanticV7,
 } from "../../src/render/ice-folk-presentation-v7";
 import {
+  FROZEN_GLACIER_UI_V7,
+  frozenGlacierUiFixtureV7,
+} from "../fixtures/v7-frozen-sea-ui";
+import { frozenArenaV7 } from "../fixtures/v7-frozen-sea";
+import {
+  ICE_FOLK_FREEZE_V7,
   ICE_FOLK_UI_V7,
   ICE_FOLK_VICTIM_V7,
+  iceFolkFreezeFixtureV7,
   iceFolkUiFieldV7,
   iceFolkUiFixtureV7,
   iceFolkVictimFixtureV7,
@@ -74,6 +95,7 @@ import { martianUiFixtureV7 } from "../fixtures/v7-martian-ui";
 // the public previews, so a balance retune (pulp_wars-7g3.7) needs no
 // change here.
 const AT = ICE_FOLK_UI_V7;
+const FREEZE = ICE_FOLK_FREEZE_V7;
 const label = (role: UnitRoleIdV7): string =>
   effectiveRoleRuleV7(role, "ICE_FOLK").label;
 const half = (value2: number): string => String(value2 / 2);
@@ -109,9 +131,6 @@ const preview = (
 
 describe("Ice Folk texts (section 13.2)", () => {
   it("builds every number of a sentence from the engine constants", () => {
-    expect(frostedStatusTextV7(SHATTER_HP_V7)).toBe(
-      `Frosted: an Ice Folk blow that leaves it at ${SHATTER_HP_V7} HP or less shatters it`,
-    );
     expect(ROCKFALL_PREVIEW_V7).toBe(
       `Rockfall: Attack ${half(ROCKFALL_ATTACK2_V7)} from the Mountain`,
     );
@@ -148,16 +167,23 @@ describe("Ice Folk texts (section 13.2)", () => {
     expect(iceFolkAbilityNameV7("MOUNTAIN_BORN", "ORIGINAL")).toBeNull();
     expect(iceFolkCommandLabelV7("THROW_BOLAS")).toBe("Bolas");
     expect(iceFolkCommandLabelV7("COLD_SNAP")).toBe("Cold Snap");
+    // Ice Folk Freeze (`pulp_wars-w49.38`): the Witch's Frost Bolt and the
+    // Mammoth's Stampede.
+    expect(iceFolkCommandLabelV7("FROST_BOLT")).toBe("Frost Bolt");
+    expect(iceFolkCommandLabelV7("STAMPEDE")).toBe("Stampede");
+    expect(iceFolkAbilityDescriptionV7("COLD_AURA", "ICE_FOLK")).toBe(
+      "Freezes every hostile unit next to it when it ends its own Move.",
+    );
     expect(iceFolkRewardLabelV7("MILITIA")).toEqual([
       "Militia",
       `A free ${label("FIGHTER")}`,
     ]);
     expect(iceFolkRewardLabelV7("JUGGERNAUT")?.[0]).toBe(label("JUGGERNAUT"));
     expect(iceFolkRoleUnlockTextV7("CAPTAIN")).toBe(
-      `Train ${label("CAPTAIN")} (Blizzard, Cold Snap)`,
+      `Train ${label("CAPTAIN")} (Blizzard, Cold Snap, Frost Bolt)`,
     );
     expect(iceFolkRoleUnlockTextV7("SWORDSMAN")).toBe(
-      `Train ${label("SWORDSMAN")} (Sweep, Trample)`,
+      `Train ${label("SWORDSMAN")} (Sweep, Trample, Stampede)`,
     );
     expect(iceFolkRoleUnlockTextV7("CATAPULT")).toBe(
       `Train ${label("CATAPULT")} (ignores Walls and Field Defense)`,
@@ -169,34 +195,60 @@ describe("Ice Folk texts (section 13.2)", () => {
   });
 });
 
-describe("Chill markers and the Shatter window (section 13.1)", () => {
-  it("reads Frozen, Frosted and Thawing from the view's Chill entries", () => {
+describe("Frozen and the Shatter window (section 13.1)", () => {
+  it("reads Frozen and its turns left from the view's frozen list", () => {
     const view = humanView(iceFolkUiFixtureV7());
-    expect(chillStateV7(view, unitAt(view, AT.frozenEnemy).id)).toBe("FROZEN");
-    // Ice Folk Freeze (`pulp_wars-w49.37`): every entry is Frozen, and a
-    // unit that thawed has none.
-    expect(chillStateV7(view, unitAt(view, AT.shatterTarget).id)).toBe(
-      "FROZEN",
+    expect(frozenTurnsLeftV7(view, unitAt(view, AT.frozenEnemy).id)).toBe(1);
+    expect(frozenTurnsLeftV7(view, unitAt(view, AT.shatterTarget).id)).toBe(1);
+    expect(
+      frozenTurnsLeftV7(view, unitAt(view, AT.unfrozenEnemy).id),
+    ).toBeNull();
+    expect(frozenTurnsLeftV7(view, unitAt(view, AT.sweepTarget).id)).toBeNull();
+    const chip = frozenChipV7(view, unitAt(view, AT.frozenEnemy));
+    expect(chip).toEqual({
+      label: "Frozen · 1 turn",
+      turnsLeft: 1,
+      status:
+        "Frozen: it cannot move or act and does not strike back; it thaws at the end of its next turn",
+    });
+    expect(frozenChipV7(view, unitAt(view, AT.unfrozenEnemy))).toBeNull();
+  });
+
+  it("says when a Frozen unit thaws, from its owner's turn", () => {
+    const view = humanView(iceFolkFreezeFixtureV7());
+    const own = unitAt(view, FREEZE.frozenOwn);
+    // Frozen during its own turn: this turn and the next one.
+    expect(frozenChipV7(view, own)).toMatchObject({
+      label: "Frozen · 2 turns",
+      turnsLeft: 2,
+    });
+    expect(frozenThawTextV7(view, own.ownerId, 2)).toBe(
+      "thaws at the end of its next turn",
     );
-    expect(chillStateV7(view, unitAt(view, AT.thawingEnemy).id)).toBeNull();
-    expect(chillStateV7(view, unitAt(view, AT.sweepTarget).id)).toBeNull();
-    expect(chillChipV7(view, unitAt(view, AT.frozenEnemy))?.status).toBe(
-      FROZEN_STATUS_V7,
+    expect(frozenThawTextV7(view, own.ownerId, 1)).toBe(
+      "thaws at the end of this turn",
     );
-    expect(chillChipV7(view, unitAt(view, AT.thawingEnemy))).toBeNull();
+    const enemy = unitAt(view, FREEZE.frozenFighter);
+    expect(frozenThawTextV7(view, enemy.ownerId, 1)).toBe(
+      "thaws at the end of its next turn",
+    );
+    // Only an own Frozen unit on its owner's turn is told it cannot act.
+    expect(frozenCannotActV7(view, own)).toBe(FROZEN_CANNOT_ACT_V7);
+    expect(frozenCannotActV7(view, enemy)).toBeNull();
+    expect(frozenCannotActV7(view, unitAt(view, FREEZE.yeti))).toBeNull();
   });
 
   it("uses the threshold of the hostile Ice Folk seat, Brittle included", () => {
     // The fixture researches every technology: Brittle sets the threshold.
     const own = humanView(iceFolkUiFixtureV7());
-    const frosted = unitAt(own, AT.shatterTarget);
-    expect(shatterThresholdAgainstV7(own, frosted.ownerId)).toBe(
+    const frozen = unitAt(own, AT.shatterTarget);
+    expect(shatterThresholdAgainstV7(own, frozen.ownerId)).toBe(
       BRITTLE_SHATTER_HP_V7,
     );
-    expect(shatterWindowV7(own, frosted)).toBe(BRITTLE_SHATTER_HP_V7);
-    expect(chillChipV7(own, frosted)?.status).toBe(FROZEN_STATUS_V7);
-    // Thawing units have no window; an own unit has no hostile Ice Folk.
-    expect(shatterWindowV7(own, unitAt(own, AT.thawingEnemy))).toBeNull();
+    expect(shatterWindowV7(own, frozen)).toBe(BRITTLE_SHATTER_HP_V7);
+    // A unit that is not Frozen has no window; an own unit has no hostile
+    // Ice Folk.
+    expect(shatterWindowV7(own, unitAt(own, AT.unfrozenEnemy))).toBeNull();
     expect(shatterThresholdAgainstV7(own, own.viewer.id)).toBeNull();
     // Without Brittle the base threshold applies; the other side reads it
     // from the public stats of the Ice Folk units it can see.
@@ -204,7 +256,7 @@ describe("Chill markers and the Shatter window (section 13.1)", () => {
       iceFolkUiFieldV7(
         [
           { seat: 0, role: "FIGHTER", at: { x: 5, y: 3 } },
-          { seat: 1, role: "FIGHTER", at: { x: 5, y: 4 }, chill: "FROSTED" },
+          { seat: 1, role: "FIGHTER", at: { x: 5, y: 4 }, frozen: 1 },
         ],
         { techs: { 0: [], 1: [] } },
       ),
@@ -227,20 +279,44 @@ describe("Chill markers and the Shatter window (section 13.1)", () => {
       );
     expect(ids(AT.boulderYeti)).toEqual(["threshold", "blizzard", "planted"]);
     expect(ids(AT.rockfallYeti)).toEqual(["threshold", "rockfall"]);
-    expect(ids(AT.frozenEnemy)).toEqual(["chill"]);
+    expect(ids(AT.frozenEnemy)).toEqual(["frozen"]);
     expect(ids(AT.sweepTarget)).toEqual([]);
+    const frozenLine = iceFolkUnitInfoLinesV7(
+      view,
+      unitAt(view, AT.frozenEnemy),
+      statsAt(view, AT.frozenEnemy),
+    )[0];
+    expect(frozenLine?.description).toBe(
+      `Frozen: it cannot move or act and does not strike back; it thaws at the end of its next turn. An Ice Folk blow from the next tile that leaves it at ${BRITTLE_SHATTER_HP_V7} HP or less shatters it.`,
+    );
   });
 });
 
 describe("Ice Folk attack previews (section 13.1)", () => {
   const view = humanView(iceFolkUiFixtureV7());
 
-  it("says Shatters and Chilled when the preview shatters", () => {
+  it("says Shatters when the preview shatters (the kill needs no Frozen note)", () => {
     const shatter = preview(view, AT.yeti, AT.shatterTarget);
     expect(shatter.shatters).toBe(true);
     const lines = iceFolkCombatLinesV7(view, shatter);
     expect(lines.shatters).toBe(true);
-    expect(lines.notes).toContain(CHILLED_PREVIEW_V7);
+    expect(lines.notes).not.toContain(FROZEN_NO_STRIKE_BACK_V7);
+    expect(lines.notes).not.toContain(FROZEN_LABEL_V7);
+  });
+
+  it("says a Frozen defender won't strike back", () => {
+    const freeze = humanView(iceFolkFreezeFixtureV7());
+    const attack = preview(freeze, FREEZE.yeti, FREEZE.frozenFighter);
+    expect(attack.noRetaliationReason).toBe("FROZEN");
+    expect(attack.damageToAttacker).toBe(0);
+    expect(iceFolkCombatLinesV7(freeze, attack).notes).toEqual([
+      FROZEN_NO_STRIKE_BACK_V7,
+    ]);
+    // The same attack on a unit that is not Frozen has no such note.
+    const plain = preview(freeze, FREEZE.yeti, FREEZE.giantPreyB);
+    expect(iceFolkCombatLinesV7(freeze, plain).notes).not.toContain(
+      FROZEN_NO_STRIKE_BACK_V7,
+    );
   });
 
   it("lists the Sweep flank victims and the Trample from the preview's splash", () => {
@@ -277,10 +353,16 @@ describe("Ice Folk attack previews (section 13.1)", () => {
         preview(view, AT.rockfallYeti, AT.rockfallTarget),
       ).notes,
     ).toEqual([ROCKFALL_PREVIEW_V7]);
-    expect(
-      iceFolkCombatLinesV7(view, preview(view, AT.hunter, AT.shatterTarget))
-        .notes,
-    ).toEqual([CHILLED_PREVIEW_V7, COLD_BLOOD_PREVIEW_V7]);
+    // A shot from two tiles: the Frozen Fighter could not strike back
+    // anyway, and survives, so the note is "Frozen".
+    const coldBlood = preview(view, AT.hunter, AT.shatterTarget);
+    expect(coldBlood.defenderDies).toBe(false);
+    expect(iceFolkCombatLinesV7(view, coldBlood).notes).toEqual([
+      coldBlood.noRetaliationReason === "FROZEN"
+        ? FROZEN_NO_STRIKE_BACK_V7
+        : FROZEN_LABEL_V7,
+      COLD_BLOOD_PREVIEW_V7,
+    ]);
   });
 
   it("names Snow cover, the Blizzard's half damage and a hidden Blizzard", () => {
@@ -310,7 +392,7 @@ describe("Ice Folk attack previews (section 13.1)", () => {
 describe("Bolas and Cold Snap previews (sections 13.1 and 13.2)", () => {
   const view = humanView(iceFolkUiFixtureV7());
 
-  it("hints Frozen or Frosted and the units that could then shatter", () => {
+  it("hints Will be Frozen and the units that could then shatter", () => {
     const sled = unitAt(view, AT.sled);
     const target = unitAt(view, AT.bolasTarget);
     const bolas = previewBolasV7(view, sled.id, target.id);
@@ -354,8 +436,7 @@ describe("Bolas and Cold Snap previews (sections 13.1 and 13.2)", () => {
             seat: 0,
             role: "RAIDER",
             at: { x: 5, y: 3 },
-            chill: "FROZEN",
-            activation: { moved: true },
+            frozen: 1,
           },
           { seat: 1, role: "FIGHTER", at: { x: 5, y: 4 } },
         ],
@@ -369,13 +450,196 @@ describe("Bolas and Cold Snap previews (sections 13.1 and 13.2)", () => {
         "THROW_BOLAS",
         false,
       ),
-    ).toBe(FROZEN_IT_MOVED_V7);
+    ).toBe(FROZEN_CANNOT_ACT_V7);
     expect(BOLAS_RANGE_V7).toBeGreaterThan(1);
+    // Ice Folk Freeze (`pulp_wars-w49.38`): a Witch with nobody in reach of
+    // her Frost Bolt, and a Mammoth that moved or has no open line.
+    expect(
+      iceFolkAbilityUnavailableTextV7(
+        lonely,
+        unitAt(lonely, { x: 5, y: 3 }),
+        "FROST_BOLT",
+        false,
+      ),
+    ).toBe(FROST_BOLT_NO_TARGET_V7);
+    const mammoths = humanView(
+      iceFolkUiFieldV7([
+        { seat: 0, role: "SWORDSMAN", at: { x: 5, y: 3 } },
+        {
+          seat: 0,
+          role: "SWORDSMAN",
+          at: { x: 3, y: 3 },
+          activation: { moved: true },
+        },
+      ]),
+    );
+    expect(
+      iceFolkAbilityUnavailableTextV7(
+        mammoths,
+        unitAt(mammoths, { x: 3, y: 3 }),
+        "STAMPEDE",
+        false,
+      ),
+    ).toBe(STAMPEDE_MOVED_V7);
+    expect(
+      iceFolkAbilityUnavailableTextV7(
+        mammoths,
+        unitAt(mammoths, { x: 5, y: 3 }),
+        "STAMPEDE",
+        false,
+      ),
+    ).toBe(STAMPEDE_NO_LINE_V7);
+    expect(
+      iceFolkAbilityUnavailableTextV7(
+        mammoths,
+        unitAt(mammoths, { x: 5, y: 3 }),
+        "STAMPEDE",
+        true,
+      ),
+    ).toBeNull();
+  });
+});
+
+describe("Ice Folk Freeze previews (bead pulp_wars-w49.38)", () => {
+  const state = iceFolkFreezeFixtureV7();
+  const view = humanView(state);
+  const witch = unitAt(view, FREEZE.witch);
+  const mammoth = unitAt(view, FREEZE.mammoth);
+
+  it("hints Stays Frozen for a Frost Bolt on a unit that is Frozen already", () => {
+    const fresh = previewFrostBoltV7(
+      view,
+      witch.id,
+      unitAt(view, FREEZE.boltTarget).id,
+    );
+    const again = previewFrostBoltV7(
+      view,
+      witch.id,
+      unitAt(view, FREEZE.boltFrozen).id,
+    );
+    if (fresh === null || again === null) throw new Error("no Frost Bolt");
+    expect(bolasPreviewLinesV7(view, fresh)[0]).toBe(WILL_BE_FROZEN_V7);
+    expect(bolasPreviewLinesV7(view, again)[0]).toBe(STAYS_FROZEN_V7);
+  });
+
+  it("walks a Stampede: the hits, the shove, the kill and the end", () => {
+    const plan = stampedePlanV7(view, mammoth.id, FREEZE.stampedeWest);
+    if (plan === null) throw new Error("no Stampede plan");
+    expect(plan.path).toEqual([
+      FREEZE.stampedeShoved,
+      FREEZE.stampedeKilled,
+      FREEZE.stampedeWest,
+    ]);
+    expect(plan.end).toEqual(FREEZE.stampedeWest);
+    expect(plan.stopped).toBe(false);
+    expect(plan.hits.map((hit) => [hit.at, hit.dies, hit.shovedTo])).toEqual([
+      [FREEZE.stampedeShoved, false, FREEZE.stampedeShovedTo],
+      [FREEZE.stampedeKilled, true, null],
+    ]);
+    // The hits are the engine's public preview.
+    const hits = previewStampedeV7(view, mammoth.id, FREEZE.stampedeWest);
+    expect(plan.hits.map((hit) => hit.damage)).toEqual(
+      hits?.hits.map((hit) => hit.damage + hit.shieldDamage),
+    );
+    expect(plan.hits[0]?.damage).toBe(STAMPEDE_DAMAGE_V7);
+    expect(stampedeLabelV7(plan)).toBe("Stampede · hits 2");
+    expect(stampedeSemanticV7(plan)).toBe(
+      "Stampede: charges 3 tiles. Fighter takes 3 and is shoved aside. Raider takes 2 and dies. No strike-back.",
+    );
+  });
+
+  it("stops a Stampede before a unit it cannot shove", () => {
+    const plan = stampedePlanV7(view, mammoth.id, FREEZE.stampedeSouth);
+    if (plan === null) throw new Error("no Stampede plan");
+    expect(plan.line).toHaveLength(3);
+    expect(plan.path).toEqual([{ x: 10, y: 4 }]);
+    expect(plan.end).toEqual({ x: 10, y: 4 });
+    expect(plan.stopped).toBe(true);
+    expect(plan.hits).toEqual([
+      expect.objectContaining({
+        at: FREEZE.stampedeBlocker,
+        dies: false,
+        shovedTo: null,
+        blocks: true,
+      }),
+    ]);
+    // The plan matches the engine's resolution.
+    const command = queryPlayerCommandsV7(view).find(
+      (candidate) =>
+        candidate.kind === "STAMPEDE" &&
+        candidate.at.x === FREEZE.stampedeSouth.x &&
+        candidate.at.y === FREEZE.stampedeSouth.y,
+    );
+    if (command === undefined) throw new Error("no Stampede");
+    const result = applyCommandV7(state, state.humanPlayerId, command);
+    if (!result.accepted) throw new Error("rejected");
+    const event = result.events.find(
+      (candidate) => candidate.kind === "MAMMOTH_STAMPEDED",
+    );
+    expect(event?.kind === "MAMMOTH_STAMPEDED" ? event.to : null).toEqual(
+      plan.end,
+    );
+    expect(stampedePlanV7(view, mammoth.id, { x: 0, y: 0 })).toBeNull();
+  });
+
+  it("names the enemies a Frost Giant's Move would freeze", () => {
+    const giant = unitAt(view, FREEZE.giant);
+    const moves = queryPlayerCommandsV7(view).filter(
+      (command): command is Extract<CommandV7, { kind: "MOVE" }> =>
+        command.kind === "MOVE" && command.unitId === giant.id,
+    );
+    const to = (at: CoordV7) => {
+      const move = moves.find(
+        (command) =>
+          command.path.at(-1)?.x === at.x && command.path.at(-1)?.y === at.y,
+      );
+      if (move === undefined) throw new Error("no Move");
+      return coldAuraMoveTargetsV7(view, move).map((unit) => unit.at);
+    };
+    expect(to(FREEZE.giantTo)).toEqual([FREEZE.giantPreyA, FREEZE.giantPreyB]);
+    expect(to({ x: 1, y: 2 })).toEqual([]);
+    // Another unit's Move freezes nobody.
+    const yeti = unitAt(view, FREEZE.yeti);
+    const yetiMove = queryPlayerCommandsV7(view).find(
+      (command): command is Extract<CommandV7, { kind: "MOVE" }> =>
+        command.kind === "MOVE" && command.unitId === yeti.id,
+    );
+    if (yetiMove === undefined) throw new Error("no Yeti Move");
+    expect(coldAuraMoveTargetsV7(view, yetiMove)).toEqual([]);
+  });
+
+  it("marks only the ice tile Glacier's +1 Move reaches", () => {
+    const glacier = humanView(frozenGlacierUiFixtureV7());
+    const walker = unitAt(glacier, FROZEN_GLACIER_UI_V7.walker);
+    const marked = queryPlayerCommandsV7(glacier).flatMap((command) =>
+      command.kind === "MOVE" &&
+      command.unitId === walker.id &&
+      moveUsesGlacierV7(glacier, command)
+        ? [command.path.at(-1)]
+        : [],
+    );
+    expect(marked).toEqual([FROZEN_GLACIER_UI_V7.glacierTile]);
+    // Without Glacier the tile is not offered at all.
+    const plain = humanView(
+      frozenArenaV7({
+        technologies: [["SHORECRAFT"], ["SHORECRAFT"]],
+        units: [{ seat: 0, role: "KNIGHT", at: FROZEN_GLACIER_UI_V7.walker }],
+        ice: FROZEN_GLACIER_UI_V7.ice.map((at) => ({ at })),
+      }),
+    );
+    expect(
+      queryPlayerCommandsV7(plain).some(
+        (command) =>
+          command.kind === "MOVE" &&
+          command.path.at(-1)?.x === FROZEN_GLACIER_UI_V7.glacierTile.x &&
+          command.path.at(-1)?.y === FROZEN_GLACIER_UI_V7.glacierTile.y,
+      ),
+    ).toBe(false);
   });
 });
 
 describe("Ice Folk Help (section 13.3)", () => {
-  it("states fifteen rules in the spec's sentences", () => {
+  it("states the rules in the spec's sentences, with no Chill left", () => {
     expect(ICE_FOLK_HELP_RULES_V7.map(([name]) => name)).toEqual([
       // Ice Folk Freeze (`pulp_wars-w49.37`): Frozen replaces Chill.
       "Frozen",
@@ -384,6 +648,7 @@ describe("Ice Folk Help (section 13.3)", () => {
       "Snow",
       "Blizzard",
       "Cold Snap",
+      "Frost Bolt",
       "Bolas",
       "Cold Blood",
       "Sweep and Trample",
@@ -392,6 +657,7 @@ describe("Ice Folk Help (section 13.3)", () => {
       "Boulders",
       "Prowl",
       "Cold Aura",
+      "Stampede",
       "Deep Winter",
       // The ninth unit (`pulp_wars-w49.17`, 7r55): the Musk Ox.
       "Frostbite",
@@ -409,6 +675,11 @@ describe("Ice Folk Help (section 13.3)", () => {
     );
     expect(DEEP_WINTER_RADIUS_V7).toBe(2);
     expect(rule("Sweep and Trample")).toContain(`deals ${SWEEP_DAMAGE_V7}`);
+    expect(rule("Frozen")).toContain("It can be frozen again at once.");
+    expect(rule("Stampede")).toContain(`takes ${STAMPEDE_DAMAGE_V7}`);
+    expect(rule("Frostbite")).toContain("is Frozen");
+    for (const [name, text] of ICE_FOLK_HELP_RULES_V7)
+      expect(`${name} ${text}`).not.toMatch(/chill|frosted|thaw-immune/i);
   });
 });
 
@@ -463,7 +734,7 @@ describe("Ice Folk log lines (section 13.2)", () => {
     ).toBe(`Your ${label("RAIDER")} froze a Fighter`);
     const snap = previewColdSnapV7(view, unitAt(view, AT.witch).id);
     expect(apply(state, find(view, "COLD_SNAP", AT.witch)).text).toBe(
-      `Your ${label("CAPTAIN")} froze ${snap?.targets.length ?? 0} units`,
+      `Your ${label("CAPTAIN")}'s Cold Snap froze ${snap?.targets.length ?? 0} units`,
     );
     expect(
       apply(state, find(view, "ATTACK", AT.yeti, AT.shatterTarget)).text,
@@ -471,6 +742,39 @@ describe("Ice Folk log lines (section 13.2)", () => {
     expect(
       apply(state, find(view, "ATTACK", AT.mammoth, AT.sweepTarget)).text,
     ).toBe(`Your ${label("SWORDSMAN")} trampled Field Defense`);
+  });
+
+  it("logs a Frost Bolt, a Cold Aura and a Stampede (Ice Folk Freeze)", () => {
+    const state = iceFolkFreezeFixtureV7();
+    const view = humanView(state);
+    expect(
+      apply(state, find(view, "FROST_BOLT", FREEZE.witch, FREEZE.boltTarget))
+        .text,
+    ).toBe(`Your ${label("CAPTAIN")}'s Frost Bolt froze a Marksman`);
+    const giant = unitAt(view, FREEZE.giant);
+    const move = queryPlayerCommandsV7(view).find(
+      (command) =>
+        command.kind === "MOVE" &&
+        command.unitId === giant.id &&
+        command.path.at(-1)?.x === FREEZE.giantTo.x &&
+        command.path.at(-1)?.y === FREEZE.giantTo.y,
+    );
+    if (move === undefined) throw new Error("no Giant Move");
+    expect(apply(state, move).text).toBe(
+      `Your ${label("JUGGERNAUT")} froze 2 units`,
+    );
+    const mammoth = unitAt(view, FREEZE.mammoth);
+    const charge = queryPlayerCommandsV7(view).find(
+      (command) =>
+        command.kind === "STAMPEDE" &&
+        command.unitId === mammoth.id &&
+        command.at.x === FREEZE.stampedeWest.x &&
+        command.at.y === FREEZE.stampedeWest.y,
+    );
+    if (charge === undefined) throw new Error("no Stampede");
+    expect(apply(state, charge).text).toBe(
+      `Your ${label("SWORDSMAN")} stampeded: 2 units hit, 1 killed`,
+    );
   });
 
   it("logs nothing in a match without an Ice Folk seat", () => {
