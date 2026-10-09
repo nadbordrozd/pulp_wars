@@ -50,25 +50,32 @@ import {
   trampleLabelV7,
 } from "../giant-presentation-v7";
 import {
-  MONSTER_OUT_OF_REACH_V7,
-  MONSTER_RETALIATES_V7,
-  PROVOKE_MOVE_WARNING_V7,
-  SPIDER_LABEL_V7,
+  GATE_BLOCKED_LABEL_V7,
+  GATE_EXIT_LABEL_V7,
+  GATE_SHOVED_LABEL_V7,
+  gateMovePreviewV7,
   isMonsterUnitV7,
   monsterProvokedV7,
+  monsterRetaliationNoteV7,
   moveProvokesMonsterV7,
+  neutralArtSubjectsV7,
+  neutralBreedOfUnitV7,
+  neutralUnitLabelV7,
+  provokeMoveWarningV7,
+  type CuriosityTileIdV7,
 } from "../curiosity-presentation-v7";
 import {
+  BIGFOOT_CODE_ART_ID_V7,
   SPIDER_CODE_ART_ID_V7,
   WRECK_WATERLINE_ROW_V7,
   addCuriosityEntriesV7,
+  drawCodeBigfootV7,
   drawCodeSpiderV7,
   drawCuriosityMarkerV7,
   drawProvokedMarkerV7,
   drawWreckRipplesV7,
   type MonsterUnitMarkerV7,
 } from "./curiosity-canvas-v7";
-import type { CuriosityOverlayIdV7 } from "../../assets/chibi-art-v7";
 import {
   breachCombatNotesV7,
   dinosaurCombatNoteV7,
@@ -634,10 +641,22 @@ export interface MapCommandTargetV7 {
   readonly semanticLabel?: string;
   /**
    * Map curiosities (bead pulp_wars-737.6): this Move ends next to a
-   * visible Giant Spider, which will attack the unit after this round. The
-   * tile carries the provoked marker; `semanticLabel` says the sentence.
+   * visible Giant Spider (round 2: or on a camp's provoke tiles), which will
+   * attack the unit after this round. The tile carries the provoked marker;
+   * `semanticLabel` says the sentence.
    */
   readonly provokes?: true;
+  /**
+   * Map curiosities round 2 (bead pulp_wars-737.16, section 34.1): this
+   * Move ends on a gate. The board marks its exit, and the tile the exit's
+   * occupant is shoved to, or the exit as blocked.
+   */
+  readonly gate?: {
+    readonly exit: CoordV7;
+    readonly displaceTo: CoordV7 | null;
+    readonly displaces: boolean;
+    readonly blocked: boolean;
+  };
   /**
    * Revision 13: Lifesteal and Infect outcome line (Undead matches only);
    * revision 17 adds "Gang Up +N" (Goblin matches only).
@@ -1003,9 +1022,15 @@ export interface BoardRenderPlanEntryV7 {
   readonly crumbs?: CandyCrumbsMarkerV7;
   /** BARRICADE only, Dwarf crowd control: its HP and whose it is. */
   readonly barricade?: DwarfBarricadeMarkerV7;
-  /** CURIOSITY only (bead pulp_wars-737.6): which tile overlay this is. */
-  readonly curiosity?: CuriosityOverlayIdV7;
-  /** UNIT only: the neutral Giant Spider and its provoked marker. */
+  /**
+   * CURIOSITY only (bead pulp_wars-737.6; round 2, pulp_wars-737.16):
+   * which tile overlay this is.
+   */
+  readonly curiosity?: CuriosityTileIdV7;
+  /**
+   * UNIT only: a neutral unit (the Giant Spider, a camp guard, Bigfoot),
+   * its breed and its provoked marker.
+   */
   readonly monster?: MonsterUnitMarkerV7;
 }
 
@@ -1383,9 +1408,12 @@ export function buildBoardRenderPlanV7(
     if (bittenIds.has(unit.id)) afflictions.push("BITTEN");
     const egg = unit.form === "EGG";
     const growthStage = unitGrowthStageV7(view, unit);
-    // Map curiosities: the neutral Giant Spider has its own sprite (a
-    // code-drawn disc in LEGACY), its own name and no owner colour.
+    // Map curiosities: a neutral unit has no owner colour and its own name.
+    // The Spider and Bigfoot have their own sprites (code-drawn discs in
+    // LEGACY); a camp guard wears its faction's sprite (round 2, section
+    // 34.2), with no faction badge, since it names no player.
     const monster = isMonsterUnitV7(unit);
+    const breed = monster ? neutralBreedOfUnitV7(view, unit) : null;
     // The giants' signatures (`pulp_wars-w49.32`): a Gingerbread Man, and
     // the victim an Abomination holds (its belly badge).
     const gingerbreadMan =
@@ -1401,37 +1429,42 @@ export function buildBoardRenderPlanV7(
       hp: unit.hp,
       maxHp: unit.maxHp,
       // The Egg has no legacy raster: LEGACY draws it in code.
-      assetId: monster
-        ? SPIDER_CODE_ART_ID_V7
-        : egg
-          ? EGG_CODE_ART_ID_V7
-          : unit.form === "EMBARKED" && !machine
-            ? "unit-shared-embarked-transport"
-            : RULESET7_UNIT_ART_IDS[unit.role],
+      assetId:
+        breed === "GIANT_SPIDER"
+          ? SPIDER_CODE_ART_ID_V7
+          : breed === "BIGFOOT"
+            ? BIGFOOT_CODE_ART_ID_V7
+            : egg
+              ? EGG_CODE_ART_ID_V7
+              : unit.form === "EMBARKED" && !machine
+                ? "unit-shared-embarked-transport"
+                : RULESET7_UNIT_ART_IDS[unit.role],
       // Undead and Goblin land units ask for their own art first
       // (UNIT:<FACTION>:<ROLE>); without it the renderer falls back to the
       // Human sprite plus the faction badge.
-      artSubject: monster
-        ? "UNIT:MONSTER_GIANT_SPIDER"
-        : // A submerged Submarine asks for its low-riding sprite (bead
-          // pulp_wars-5ti.6); without one (the Classic look, a faction with
-          // no Submarine art) it falls back to the whole Submarine.
-          // The giants' signatures (`pulp_wars-w49.32`): a Gingerbread Man
-          // is its Giant's sprite, drawn small.
-          unitArtSubjectV7({
-            ...unit,
-            ...(gingerbreadMan ? { role: "JUGGERNAUT" as const } : {}),
-            faction,
-            machine,
-            submerged: naval?.submerged === true,
-          }),
-      label: monster
-        ? SPIDER_LABEL_V7
-        : unit.form === "EMBARKED" && machine
-          ? `${factionLabel ?? heavyOrRoleTitle} afloat`
-          : unit.form === "EMBARKED"
-            ? `Embarked Transport · ${factionLabel ?? heavyOrRoleTitle} passenger`
-            : (factionLabel ?? heavyOrRoleTitle),
+      artSubject:
+        breed !== null
+          ? neutralArtSubjectsV7(breed, unit.role).unit
+          : // A submerged Submarine asks for its low-riding sprite (bead
+            // pulp_wars-5ti.6); without one (the Classic look, a faction with
+            // no Submarine art) it falls back to the whole Submarine.
+            // The giants' signatures (`pulp_wars-w49.32`): a Gingerbread Man
+            // is its Giant's sprite, drawn small.
+            unitArtSubjectV7({
+              ...unit,
+              ...(gingerbreadMan ? { role: "JUGGERNAUT" as const } : {}),
+              faction,
+              machine,
+              submerged: naval?.submerged === true,
+            }),
+      label:
+        breed !== null
+          ? neutralUnitLabelV7(breed)
+          : unit.form === "EMBARKED" && machine
+            ? `${factionLabel ?? heavyOrRoleTitle} afloat`
+            : unit.form === "EMBARKED"
+              ? `Embarked Transport · ${factionLabel ?? heavyOrRoleTitle} passenger`
+              : (factionLabel ?? heavyOrRoleTitle),
       ready:
         unit.ownerId === view.viewer.id &&
         !unit.activation.handled &&
@@ -1454,8 +1487,13 @@ export function buildBoardRenderPlanV7(
       ...(candy === undefined ? {} : { candy }),
       ...(naval === undefined ? {} : { naval }),
       ...(icebound === undefined ? {} : { icebound }),
-      ...(monster
-        ? { monster: { provoked: monsterProvokedV7(view, unit.id) } }
+      ...(breed !== null
+        ? {
+            monster: {
+              provoked: monsterProvokedV7(view, unit.id),
+              ...(breed === "GIANT_SPIDER" ? {} : { breed }),
+            },
+          }
         : {}),
     });
   }
@@ -3883,10 +3921,15 @@ export function drawBoardV7(input: {
           rider: entry.dwarfMound.rider,
           highContrast: input.highContrast ?? false,
         });
-      // Map curiosities: LEGACY and the classic look have no Spider raster,
-      // so the Spider is a neutral disc with a spider, drawn in code.
-      if (entry.kind === "UNIT" && entry.monster !== undefined && !chibiPiece)
-        drawCodeSpiderV7(context, x, y, camera.zoom, input.highContrast);
+      // Map curiosities: LEGACY and the classic look have no Spider or
+      // Bigfoot raster, so each is a neutral disc drawn in code (a spider,
+      // a footprint). A camp guard has its faction's legacy figure.
+      if (entry.kind === "UNIT" && entry.monster !== undefined && !chibiPiece) {
+        if (entry.monster.breed === undefined)
+          drawCodeSpiderV7(context, x, y, camera.zoom, input.highContrast);
+        else if (entry.monster.breed === "BIGFOOT")
+          drawCodeBigfootV7(context, x, y, camera.zoom, input.highContrast);
+      }
       const drawPieceOverlays = (): void => {
         // Map curiosities: the provoked marker in the cell's top-right
         // corner (16 master px), over the Spider.
@@ -4872,6 +4915,9 @@ export function drawBoardV7(input: {
     }
   }
   if (!goblinAreaFirst) drawAreaPreviews();
+  // Map curiosities round 2: every gate Move target's exit, and the tile
+  // its occupant is shoved to (or the exit as blocked).
+  drawGatePreviewV7(context, camera, input.plan, placer, defer);
   for (const entry of input.plan.entries) {
     if (entry.kind !== "ABILITY_TARGET" || entry.abilityStyle === undefined)
       continue;
@@ -5564,6 +5610,106 @@ function drawIceFolkFocusPreviewV7(
       placer,
       defer,
     );
+}
+
+/**
+ * Map curiosities round 2 (bead pulp_wars-737.16, section 34.1): each gate
+ * Move target's exit, outlined in the gate's pale light with "Exit"; when
+ * the exit holds a unit, an arrow to the tile it is shoved to ("Shoved"),
+ * or the exit greyed and crossed ("Blocked": the mover would stay on its
+ * gate). A unit near a gate has at most a couple of gate targets, and the
+ * exit is usually far away, so every one is drawn, not only the focused.
+ */
+function drawGatePreviewV7(
+  context: CanvasRenderingContext2D,
+  camera: CameraState,
+  plan: BoardRenderPlanV7,
+  placer: PreviewLabelPlacerV7,
+  defer: (draw: () => void) => void,
+): void {
+  const gates = plan.targets.filter((target) => target.gate !== undefined);
+  if (gates.length === 0) return;
+  const point = (at: CoordV7): { readonly x: number; readonly y: number } => ({
+    x: camera.offsetX + at.x * TILE_WIDTH * camera.zoom,
+    y: camera.offsetY + at.y * TILE_HEIGHT * camera.zoom,
+  });
+  const drawn = new Set<string>();
+  for (const target of gates) {
+    const gate = target.gate;
+    if (gate === undefined || drawn.has(coordKey(gate.exit))) continue;
+    drawn.add(coordKey(gate.exit));
+    const exit = point(gate.exit);
+    const style = gate.blocked ? "GATE_BLOCKED" : "GATE_EXIT";
+    drawAbilityAreaCellV7(context, exit.x, exit.y, camera.zoom, style);
+    drawAbilityTargetV7(
+      context,
+      exit.x,
+      exit.y,
+      camera.zoom,
+      style,
+      gate.blocked ? GATE_BLOCKED_LABEL_V7 : GATE_EXIT_LABEL_V7,
+      false,
+      placer,
+      defer,
+    );
+    if (gate.blocked) {
+      context.save();
+      context.strokeStyle = abilityAreaStrokeV7("GATE_BLOCKED");
+      context.lineWidth = 5 * camera.zoom;
+      context.lineCap = "round";
+      const arm = 22 * camera.zoom;
+      context.beginPath();
+      context.moveTo(exit.x - arm, exit.y - arm);
+      context.lineTo(exit.x + arm, exit.y + arm);
+      context.moveTo(exit.x + arm, exit.y - arm);
+      context.lineTo(exit.x - arm, exit.y + arm);
+      context.stroke();
+      context.restore();
+      continue;
+    }
+    if (gate.displaceTo === null) continue;
+    const to = point(gate.displaceTo);
+    drawAbilityAreaCellV7(context, to.x, to.y, camera.zoom, "GATE_SHOVE");
+    drawAbilityTargetV7(
+      context,
+      to.x,
+      to.y,
+      camera.zoom,
+      "GATE_SHOVE",
+      GATE_SHOVED_LABEL_V7,
+      false,
+      placer,
+      defer,
+    );
+    // A short arrow from the occupant to where it is shoved.
+    const length = Math.hypot(to.x - exit.x, to.y - exit.y) || 1;
+    const ux = (to.x - exit.x) / length;
+    const uy = (to.y - exit.y) / length;
+    const fromX = exit.x + ux * 30 * camera.zoom;
+    const fromY = exit.y + uy * 30 * camera.zoom;
+    const tipX = to.x - ux * 26 * camera.zoom;
+    const tipY = to.y - uy * 26 * camera.zoom;
+    context.save();
+    context.strokeStyle = abilityAreaStrokeV7("GATE_SHOVE");
+    context.lineWidth = 4 * camera.zoom;
+    context.lineCap = "round";
+    context.lineJoin = "round";
+    context.beginPath();
+    context.moveTo(fromX, fromY);
+    context.lineTo(tipX, tipY);
+    context.moveTo(tipX, tipY);
+    context.lineTo(
+      tipX - ux * 12 * camera.zoom - uy * 9 * camera.zoom,
+      tipY - uy * 12 * camera.zoom + ux * 9 * camera.zoom,
+    );
+    context.moveTo(tipX, tipY);
+    context.lineTo(
+      tipX - ux * 12 * camera.zoom + uy * 9 * camera.zoom,
+      tipY - uy * 12 * camera.zoom - ux * 9 * camera.zoom,
+    );
+    context.stroke();
+    context.restore();
+  }
 }
 
 /**
@@ -6510,6 +6656,9 @@ function commandMapTargets(
   const iceFolkMatch = matchHasIceFolkSeatV7(view);
   const dwarfMatch = matchHasDwarfSeatV7(view);
   const monsterMatch = view.monsters.length > 0;
+  const gateMatch = view.curiosities.some(
+    (curiosity) => curiosity.kind === "GATE",
+  );
   return commands.flatMap((command): readonly MapCommandTargetV7[] => {
     if (selectedUnitId === null) return [];
     // Revision 19: an adjacent own Egg the selected Shaman may hatch.
@@ -6536,8 +6685,16 @@ function commandMapTargets(
       // half-cost steps from Snow onto Snow is outlined in pale ice.
       const glide =
         launch === null && iceFolkMatch && moveIsGlideV7(view, command);
-      // Map curiosities: a Move that ends on a Spider's provoke tiles.
+      // Map curiosities: a Move that ends on a hostile neutral unit's
+      // provoke tiles (next to the Spider, too close to a saucer camp, in
+      // the Zombies' reach), and its sentence.
       const provokes = monsterMatch && moveProvokesMonsterV7(view, command);
+      const provokeWarning = provokes
+        ? (provokeMoveWarningV7(view, command) ?? "")
+        : "";
+      // Round 2 (section 34.1): a Move onto a gate shows its exit and the
+      // occupant it shoves aside, or that it is blocked.
+      const gate = gateMatch ? gateMovePreviewV7(view, command) : null;
       // The Candy revision: a Move that ends on hostile Crumbs eats them.
       const eats =
         candyMatch && at !== undefined
@@ -6570,10 +6727,10 @@ function commandMapTargets(
                     provokes: true as const,
                     semanticLabel:
                       launch !== null
-                        ? `${launch}. Ends this unit's turn afloat. ${PROVOKE_MOVE_WARNING_V7}`
+                        ? `${launch}. Ends this unit's turn afloat. ${provokeWarning}`
                         : glide
-                          ? `${GLIDE_MOVE_LABEL_V7}. ${PROVOKE_MOVE_WARNING_V7}`
-                          : PROVOKE_MOVE_WARNING_V7,
+                          ? `${GLIDE_MOVE_LABEL_V7}. ${provokeWarning}`
+                          : provokeWarning,
                   }
                 : {}),
               ...(eats === null
@@ -6585,7 +6742,7 @@ function commandMapTargets(
                         ? null
                         : `${launch}. Ends this unit's turn afloat`,
                       glide ? GLIDE_MOVE_LABEL_V7 : null,
-                      provokes ? PROVOKE_MOVE_WARNING_V7 : null,
+                      provokes ? provokeWarning : null,
                       eats.label,
                     ]
                       .filter((part): part is string => part !== null)
@@ -6596,12 +6753,29 @@ function commandMapTargets(
                 : {
                     previewLabel: trample.label,
                     semanticLabel: [
-                      provokes ? PROVOKE_MOVE_WARNING_V7 : null,
+                      provokes ? provokeWarning : null,
                       trample.semantic,
                     ]
                       .filter((part): part is string => part !== null)
                       .join(". "),
                     giantHits: trample.hits,
+                  }),
+              ...(gate === null
+                ? {}
+                : {
+                    previewLabel: gate.label,
+                    semanticLabel: [
+                      gate.sentence,
+                      provokes ? provokeWarning : null,
+                    ]
+                      .filter((part): part is string => part !== null)
+                      .join(" "),
+                    gate: {
+                      exit: gate.preview.exit,
+                      displaceTo: gate.preview.displaceTo,
+                      displaces: gate.preview.displaces !== null,
+                      blocked: gate.preview.blocked,
+                    },
                   }),
             },
           ];
@@ -6675,15 +6849,10 @@ function commandMapTargets(
       const candy = candyMatch
         ? candyAttackTargetExtrasV7(view, preview)
         : null;
-      // Map curiosities (section 10.4): whether the Spider strikes back.
+      // Map curiosities (section 10.4; round 2, section 32.5): whether the
+      // Spider, a camp's guards or nobody (Bigfoot) strike back.
       const monsterNote =
-        preview?.monsterRetaliates === undefined
-          ? null
-          : preview.monsterRetaliates
-            ? MONSTER_RETALIATES_V7
-            : preview.defenderDies || preview.attackerDies
-              ? null
-              : MONSTER_OUT_OF_REACH_V7;
+        preview === null ? null : monsterRetaliationNoteV7(view, preview);
       // The naval branch interface: the Bow Ram bonus and its shove, and a
       // torpedo's "No strike-back".
       const naval = navalAttackTargetExtrasV7(view, preview, {

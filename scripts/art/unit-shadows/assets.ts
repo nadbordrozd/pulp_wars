@@ -45,7 +45,11 @@ const MODULES = [
   ],
   [
     "/src/assets/chibi-curiosities-art-manifest.ts",
-    ["CHIBI_CURIOSITIES_ART_ASSETS_V7"],
+    [
+      "CHIBI_CURIOSITIES_ART_ASSETS_V7",
+      // Round 2's Bigfoot (bead pulp_wars-737.16).
+      "CHIBI_CURIOSITIES_ROUND2_ART_ASSETS_V7",
+    ],
   ],
 ] as const;
 

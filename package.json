@@ -115,6 +115,7 @@
     "review:ruleset7-balance-ui": "tsx scripts/browser-balance-ui-review-v7.ts",
     "review:ruleset7-rift-ui": "tsx scripts/browser-rift-review-v7.ts",
     "review:ruleset7-curiosities-ui": "tsx scripts/browser-curiosities-review-v7.ts",
+    "review:ruleset7-curiosities-round2-ui": "tsx scripts/browser-curiosities-round2-review-v7.ts",
     "smoke:browser:legacy-v5": "tsx scripts/browser-smoke.ts http://localhost:6173/?legacy-v5=1",
     "review:faction-setup": "tsx scripts/browser-smoke.ts --faction-setup-review",
     "validate:poc": "tsx scripts/validate-poc.ts",

@@ -177,9 +177,9 @@ export const GIANT_SPIDER_SHADOW_MEASUREMENT_V7 = {
  * The camp guards reuse the Martian and Undead unit sprites.
  *
  * Registered in the live direction registry (chibiDirectionArtRegistryV7,
- * so the preload fetches them), but nothing asks for their subjects until
- * the round-2 UI bead (pulp_wars-737.16), which also adds Bigfoot's entry
- * to the unit-shadow table, as pulp_wars-737.6 did for the Spider.
+ * so the preload fetches them) and drawn since the round-2 UI bead
+ * (pulp_wars-737.16), which also added Bigfoot's entry to the unit-shadow
+ * table, as pulp_wars-737.6 did for the Spider.
  */
 export const CHIBI_CURIOSITIES_ROUND2_ART_ASSETS_V7: readonly ChibiArtAssetV7[] =
   [
@@ -307,8 +307,8 @@ export const CHIBI_CURIOSITIES_ROUND2_ART_ASSETS_V7: readonly ChibiArtAssetV7[] 
 
 /**
  * Where Bigfoot touches the ground, measured on its master by
- * scripts/art/unit-shadows/measure.ts (a test checks it), for the shadow
- * table entry the UI bead adds: both huge feet sit on the contact line, so
+ * scripts/art/unit-shadows/measure.ts (a test checks it), the shadow
+ * table entry of the board: both huge feet sit on the contact line, so
  * the foot band and the base band nearly agree.
  */
 export const BIGFOOT_SHADOW_MEASUREMENT_V7 = {

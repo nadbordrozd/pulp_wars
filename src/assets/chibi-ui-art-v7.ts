@@ -336,6 +336,10 @@ export function commandSubjectV7(
       if (faction === "DINOSAUR") return "ICON:ACTION:DINOSAUR:RALLY";
       if (faction === "MARTIAN") return "ICON:ACTION:MARTIAN:RALLY";
       return "ICON:ACTION:RALLY";
+    // Map curiosities round 2 (bead pulp_wars-737.16): the Wishing Well's
+    // toss shows the Well's legend icon.
+    case "TOSS_COIN":
+      return "ICON:CURIOSITY:WISHING_WELL";
     case "TEND_WOUNDED":
       // The Candy Tend Wounded is Frosting (bead pulp_wars-jdb.6).
       return faction === "DWARF"

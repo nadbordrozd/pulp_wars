@@ -145,9 +145,9 @@ export type CuriosityEffectIdV7 =
  * legend icons with Bigfoot's footprint, and two effect sprites. The assets
  * are in chibi-curiosities-art-manifest.ts
  * (CHIBI_CURIOSITIES_ROUND2_ART_ASSETS_V7), registered in the live
- * direction registry; nothing asks for them until the round-2 UI bead
- * (pulp_wars-737.16). The camp guards have no
- * sprite of their own: they draw the Martian and Undead unit art.
+ * direction registry and drawn since the round-2 UI bead
+ * (pulp_wars-737.16). The camp guards have no sprite of their own: they
+ * draw the Martian and Undead unit art.
  */
 export type CuriosityRound2ArtSubjectV7 =
   | "UNIT:NEUTRAL_BIGFOOT"

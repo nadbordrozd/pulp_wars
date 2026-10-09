@@ -1021,8 +1021,10 @@ this stage), with no identity change and no tuning:
 ## 22. Round 2: source and scope
 
 **Status:** spec (`pulp_wars-737.12`); the engine is implemented
-(`pulp_wars-737.14`, [section 39](#39-implementation-notes-pulp_wars-73714)),
-the Normal AI and the UI are not yet. Sections 22 to 38 and [Appendix B](#appendix-b-round-2-draft-critique-and-changes) are the
+(`pulp_wars-737.14`, [section 39](#39-implementation-notes-pulp_wars-73714))
+and the UI (`pulp_wars-737.16`,
+[section 40](#40-implementation-notes-pulp_wars-73716)); the Normal AI is
+not yet. Sections 22 to 38 and [Appendix B](#appendix-b-round-2-draft-critique-and-changes) are the
 live design of round 2; they overlay
 [Ruleset 7: current rules](RULESET_7_CURRENT.md) at `pulp-wars-poc-7r59`,
 where the round-1 curiosities are folded in
@@ -2034,6 +2036,91 @@ follows:
   rule leave few pairs on 20 x 20) and Bigfoot needs a 25 x 25 Forest; the
   per-board counts of section 4.2 are unchanged (for example 16 x 16 Lakes:
   3 boards with none, 93 with one).
+
+## 40. Implementation notes (`pulp_wars-737.16`)
+
+The UI of section 34.1 is live, with the art of bead `pulp_wars-737.13`
+wired in; the screen-level description is the
+[round-2 part of the map curiosities overlay](../ui/SCREEN_FLOW.md#current-ruleset-7-map-curiosities-overlay).
+Where section 34.1 was silent, or the code's conventions differed, the
+implementation rules as follows:
+
+- **Help stays short.** Bead `pulp_wars-2yc.39` (the user's "Help is far
+  too wordy") replaced every curiosity section of Help: a curiosity
+  explains itself in its tile's dock, its cursor description, a neutral
+  unit's dock and "?" dialog, and the Gallery. So the five sentences of
+  section 23 are there (and in `curiosityHelpRulesV7`), not in Help. This
+  departs from the letter of section 34.1 ("join the Curiosities
+  section"), which no longer exists.
+- **Board.** The Downed Saucer, the Graveyard, both gates and the Well are
+  80 px overlays of their cell, drawn like the Fountain (over the Forest
+  body of their cell, under the unit on it). A guard wears its faction's
+  sprite (the Martian Grunt, Ray Gunner and Shield Projector, the Undead
+  Zombie) with no owner colour and no faction badge; Bigfoot its own
+  sprite on its measured giant shadow (Bigfoot joins the unit-shadow
+  table). LEGACY and the Classic look draw code markers (a tilted saucer
+  with a dome, three headstones and fence bars, a ring of standing stones
+  round a pale swirl, a roofed well with a coin glint) and, for Bigfoot, a
+  neutral disc with a footprint; a guard there is its role's legacy
+  figure with no owner colour.
+- **Provoked.** A guard carries the provoked marker while a visible unit
+  provokes its camp; a Zombie (which attacks anyone on sight, so every
+  unit is a provoker) only while a unit is in its reach (its likely
+  target). Bigfoot is never provoked: its dock chip is **Alert** while a
+  unit is within 3 of it (it will flee), else Calm.
+- **Selection.** A selected guard or its camp centre outlines the camp's
+  area and shades the tiles its guards could attack after one step, all
+  guards of the camp together; for a Downed Saucer the perimeter (within
+  2 of the saucer) is outlined in ochre and the guards' area keeps only
+  its inner edges (round the centre). A selected Bigfoot outlines its
+  habitat as explored. A selected gate tile marks its partner ("Other
+  gate").
+- **Move preview.** A Move target on a camp's provoke tiles carries the
+  provoked marker, with "Ends too close to the Downed Saucer: its guards
+  will attack after this round." or "Ends in the Zombies' reach: they will
+  attack after this round." as its cursor description; Bigfoot's tiles
+  carry nothing (it never attacks). A Move target on a gate is labelled
+  "Gate" ("Gate · shoves" with an occupant, "Gate blocked" when blocked);
+  the board marks the exit ("Exit"), the tile the occupant is shoved to
+  ("Shoved", with an arrow), or the exit greyed and crossed ("Blocked").
+  When a foreign occupant's private Engineering could change the outcome
+  (`exact` false), the sentence adds "unless that unit can climb
+  Mountains".
+- **Attack preview.** On a guard: "The guards (Zombies) will strike back
+  next round" or "Out of the guards' (Zombies') reach"; on Bigfoot:
+  "Bigfoot never fights back".
+- **The Well.** "Toss a Coin" with the Well's icon and its price (1 Coin)
+  in the unit's actions while the engine offers `TOSS_COIN`; its tooltip
+  names the four outcomes. The toss plays the coin-splash cue (a gold "+5"
+  for Coins, the heal ring for a heal) and toasts "Wishing Well: just a
+  splash", "Wishing Well: +5 Coins", "…is fully healed" or "…the land
+  within 5 is revealed"; another player's toss is a log line. The Well's
+  tile dock adds "Stand a unit on it to toss 1 Coin." or "You have tossed
+  your Coin."
+- **Gates in play.** A traversal plays the occupant's slide aside and the
+  gate-traverse burst at both gates, and logs "Gate: Player 2's Goblin was
+  shoved aside · Your Fighter stepped through the gate"; a block toasts
+  "Gate blocked: your Fighter stays put".
+- **Neutral turn and log.** Every neutral unit is named by its breed in
+  the neutral-turn log ("Zombie attacked your Fighter") and its death
+  ("Grunt slain: +3 Coins bounty"); the playback is the Spider's.
+- **Gallery.** The Curiosities tab has two rows of five: round 1 (the
+  Spider, its lair, the Fountain, the Shrine, the Wreck) over round 2
+  (Bigfoot, the Downed Saucer, the Graveyard, the gate, the Well). Bigfoot's
+  detail has its portrait, HP, Defense, Move and "never fights"; the camps,
+  the gate and the Well add a line or two (the compositions and bounties,
+  the toss's outcomes).
+- **Setup hint.** "Rare sights on the map: monsters, camps, gates, a
+  well, and more." (section 23).
+- **Review.** `npm run review:ruleset7-curiosities-round2-ui -- <dev server
+URL>` captures every kind, the threats, the gate previews (blocked
+  included), the toss, a traversal, the docks and the Gallery in the live
+  look and LEGACY at desktop and phone sizes, on hand-built boards
+  (`tests/fixtures/v7-curiosities-round2-ui.ts`) without ending a turn or
+  running an AI. The bead's smoke probe was replaced by DOM tests on those
+  boards (`tests/integration/ruleset7-curiosities-round2-dom.test.ts`):
+  the user's 2026-10-09 rule keeps whole-game runs, the browser smoke
+  included, for when the user asks.
 
 ## Appendix A. Draft, critique, and changes
 

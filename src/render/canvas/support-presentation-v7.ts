@@ -2,6 +2,7 @@ import type {
   CandyEffectIdV7,
   ChibiEffectIdV7,
   CuriosityEffectIdV7,
+  CuriosityRound2EffectIdV7,
   DwarfEffectIdV7,
   IceFolkEffectIdV7,
   MartianEffectIdV7,
@@ -51,13 +52,18 @@ export type SupportEffectSubjectV7 =
   /** The Candy effect sprites (bead pulp_wars-jdb.6, candy-effects-v7). */
   | `EFFECT:${CandyEffectIdV7}`
   /** The map curiosity effect sprites (bead pulp_wars-737.6). */
-  | `EFFECT:${CuriosityEffectIdV7}`;
+  | `EFFECT:${CuriosityEffectIdV7}`
+  /** The round-2 curiosity effect sprites (bead pulp_wars-737.16). */
+  | `EFFECT:${CuriosityRound2EffectIdV7}`;
 
 /** The curiosity cues' sprites, loaded only in a match with the option on. */
 export const CURIOSITY_EFFECT_SUBJECTS_V7: readonly SupportEffectSubjectV7[] = [
   "EFFECT:FOUNTAIN_HEAL",
   "EFFECT:SHRINE_BLESSING",
   "EFFECT:SALVAGE_COINS",
+  // Round 2 (bead pulp_wars-737.16).
+  "EFFECT:GATE_TRAVERSE",
+  "EFFECT:COIN_SPLASH",
 ];
 
 export const SUPPORT_EFFECT_SUBJECTS_V7: readonly SupportEffectSubjectV7[] = [
@@ -154,6 +160,20 @@ export function drawSupportFeedbackV7(
   }
   // Map curiosities: the Fountain's droplets, the Shrine's star and the
   // coins of a Wreck or a bounty, each with its ring and rising "+N".
+  if (feedback.effect === "GATE" || feedback.effect === "WELL") {
+    for (const unit of [feedback.actor, ...feedback.recipients])
+      drawRound2CuriosityCue(
+        context,
+        worldToScreen(projectGrid(unit.at), camera),
+        camera.zoom,
+        feedback.effect,
+        progress,
+        fade,
+        unit.amount,
+        sprites,
+      );
+    return;
+  }
   if (
     feedback.effect === "FOUNTAIN" ||
     feedback.effect === "BLESSING" ||
@@ -383,6 +403,8 @@ const UNDEAD_PULSE_COLORS: Readonly<
       | "BLESSING"
       | "SALVAGE"
       | "BOUNTY"
+      | "GATE"
+      | "WELL"
     >,
     string
   >
@@ -669,6 +691,93 @@ function drawCuriosityCue(
     context.lineWidth = Math.max(1, 2 * zoom);
     context.beginPath();
     context.arc(at.x, at.y, 8 * unit, 0, Math.PI * 2);
+    context.fill();
+    context.stroke();
+    context.restore();
+  }
+  if (amount !== undefined && amount > 0)
+    drawFloat(
+      context,
+      center,
+      zoom,
+      progress,
+      fade,
+      `+${amount}`,
+      CURIOSITY_COIN_TEXT_COLOR_V7,
+      "#3a2a08",
+    );
+}
+
+/**
+ * Map curiosities round 2 (bead pulp_wars-737.16). GATE: a pale ring
+ * spinning in and the white spiral burst over each gate. WELL: the Coin
+ * dropping into a white splash, and a gold "+N" when the toss paid Coins.
+ * Without the sprite (LEGACY, the classic look, still loading) the ring
+ * (or a gold coin and a splash ring) is the cue.
+ */
+function drawRound2CuriosityCue(
+  context: CanvasRenderingContext2D,
+  center: { readonly x: number; readonly y: number },
+  zoom: number,
+  effect: "GATE" | "WELL",
+  rawProgress: number,
+  fade: number,
+  amount: number | undefined,
+  sprites: SpriteDrawer | null,
+): void {
+  const unit = sprites?.step ?? zoom * 1.6;
+  // A held or reduced-motion cue may pass a progress outside [0, 1]; the
+  // rings' radii stay positive.
+  const progress = Math.max(0, Math.min(1, rawProgress));
+  if (effect === "GATE") {
+    context.save();
+    context.globalAlpha = fade;
+    context.strokeStyle = "#ece8ff";
+    context.lineWidth = Math.max(2, 4 * zoom);
+    context.beginPath();
+    context.ellipse(
+      center.x,
+      center.y + 6 * zoom,
+      (44 - 24 * progress) * zoom,
+      (22 - 12 * progress) * zoom,
+      0,
+      0,
+      Math.PI * 2,
+    );
+    context.stroke();
+    context.restore();
+    sprites?.draw(
+      "EFFECT:GATE_TRAVERSE",
+      { x: center.x, y: center.y - 10 * unit },
+      1,
+      fade,
+    );
+    return;
+  }
+  const at = {
+    x: center.x,
+    y: center.y - (16 - 10 * easeOut(progress)) * unit,
+  };
+  if (sprites?.draw("EFFECT:COIN_SPLASH", at, 1, fade) !== true) {
+    context.save();
+    context.globalAlpha = fade;
+    context.strokeStyle = "#ffffff";
+    context.lineWidth = Math.max(1, 2 * zoom);
+    context.beginPath();
+    context.ellipse(
+      center.x,
+      center.y + 6 * zoom,
+      (10 + 22 * progress) * zoom,
+      (4 + 8 * progress) * zoom,
+      0,
+      0,
+      Math.PI * 2,
+    );
+    context.stroke();
+    context.fillStyle = CURIOSITY_COIN_TEXT_COLOR_V7;
+    context.strokeStyle = "#3a2a08";
+    context.beginPath();
+    context.arc(at.x, at.y, 6 * unit, 0, Math.PI * 2);
     context.fill();
     context.stroke();
     context.restore();

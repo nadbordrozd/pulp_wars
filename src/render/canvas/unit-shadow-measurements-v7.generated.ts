@@ -862,6 +862,17 @@ export const UNIT_SHADOW_MEASUREMENTS_V7: Readonly<
     baseLeft: 6,
     baseRight: 81,
   },
+  "UNIT:NEUTRAL_BIGFOOT": {
+    assetId: "chibi-curiosity-bigfoot",
+    assetClass: "GIANT_UNIT",
+    width: 88,
+    height: 96,
+    contactY: 89,
+    footLeft: 21,
+    footRight: 66,
+    baseLeft: 21,
+    baseRight: 69,
+  },
   "UNIT:PATROL_BOAT": {
     assetId: "chibi-naval-human-patrol-boat",
     assetClass: "LARGE_UNIT",

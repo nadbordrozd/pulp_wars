@@ -7,8 +7,13 @@ import {
   IMPROVEMENT_IDS_V7,
   MONSTER_REGENERATION_V7,
   MONUMENT_POPULATION_V7,
+  NEUTRAL_BOUNTIES_V7,
   NEUTRAL_MONSTER_ROLE_RULE_V7,
+  NEUTRAL_ROLE_RULES_V7,
   ORIGINAL_BASELINE_V5_NODES,
+  WELL_COINS_V7,
+  WELL_TOSS_COST_V7,
+  WELL_VISION_RADIUS_V7,
   SPATIAL_ECONOMIC_ACTIONS_V7,
   UNIT_ROLE_IDS_V7,
   effectiveRoleRuleV7,
@@ -32,7 +37,6 @@ import {
   territoryTerrainSubjectV7,
   unitArtSubjectV7,
   type ArtSubjectV7,
-  type CuriosityOverlayIdV7,
 } from "../assets/chibi-art-v7";
 import {
   ACHIEVEMENT_GOALS_V7,
@@ -54,11 +58,14 @@ import { factionNameV7 } from "./undead-presentation-v7";
 import { technologyNameV7 } from "./goblin-presentation-v7";
 import { slotsTextV7 } from "./dinosaur-presentation-v7";
 import {
+  BIGFOOT_LABEL_V7,
+  BIGFOOT_RULE_V7,
   CURIOSITY_LABELS_V7,
   CURIOSITY_RULES_V7,
   NEUTRAL_LABEL_V7,
   SPIDER_BOUNTY_RULE_V7,
   SPIDER_LABEL_V7,
+  type CuriosityTileIdV7,
 } from "./curiosity-presentation-v7";
 import {
   GALLERY_TERRAIN_ROWS_V7,
@@ -89,16 +96,26 @@ export type GalleryTabV7 =
   /** Every sound of the game (bead pulp_wars-2yc.19, docs/ui/SOUND.md). */
   | "SOUNDS";
 
-/** A Curiosities cell: the neutral Giant Spider or a tile overlay. */
-export type GalleryCuriosityRowIdV7 = "SPIDER" | CuriosityOverlayIdV7;
+/**
+ * A Curiosities cell: a neutral unit with a sprite of its own (the Giant
+ * Spider, round 2's Bigfoot) or a tile overlay.
+ */
+export type GalleryCuriosityRowIdV7 = "SPIDER" | "BIGFOOT" | CuriosityTileIdV7;
 
-export const GALLERY_CURIOSITY_ROWS_V7: readonly GalleryCuriosityRowIdV7[] = [
-  "SPIDER",
-  "WEB",
-  "FOUNTAIN",
-  "SHRINE",
-  "WRECK",
-];
+/**
+ * The Curiosities tab's grid: round 1 (the Spider, its lair, the
+ * Fountain, the Shrine, the Wreck) over round 2 (Bigfoot, the Downed
+ * Saucer, the Graveyard, the gate, the Well; bead pulp_wars-737.16).
+ */
+export const GALLERY_CURIOSITY_GRID_V7: readonly (readonly GalleryCuriosityRowIdV7[])[] =
+  [
+    ["SPIDER", "WEB", "FOUNTAIN", "SHRINE", "WRECK"],
+    ["BIGFOOT", "DOWNED_SAUCER", "GRAVEYARD", "GATE", "WISHING_WELL"],
+  ];
+
+/** Every Curiosities cell in reading order (the detail's arrows). */
+export const GALLERY_CURIOSITY_ROWS_V7: readonly GalleryCuriosityRowIdV7[] =
+  GALLERY_CURIOSITY_GRID_V7.flat();
 
 export interface GalleryCuriosityCellV7 {
   readonly row: GalleryCuriosityRowIdV7;
@@ -119,6 +136,14 @@ export function galleryCuriosityCellV7(
       ground: "TERRAIN:GRASS",
       portrait: "PORTRAIT:MONSTER_GIANT_SPIDER",
     };
+  if (row === "BIGFOOT")
+    return {
+      row,
+      name: BIGFOOT_LABEL_V7,
+      subject: "UNIT:NEUTRAL_BIGFOOT",
+      ground: "TERRAIN:GRASS",
+      portrait: "PORTRAIT:NEUTRAL_BIGFOOT",
+    };
   return {
     row,
     name: CURIOSITY_LABELS_V7[row],
@@ -138,18 +163,47 @@ export interface GalleryCuriosityDetailsV7 {
   readonly notes: readonly string[];
 }
 
+/** Round 2: the few facts a curiosity's detail adds to its sentence. */
+const CURIOSITY_GALLERY_NOTES_V7: Partial<
+  Record<CuriosityTileIdV7, readonly string[]>
+> = {
+  DOWNED_SAUCER: [
+    "Guards: a Grunt, two Grunts, two Grunts and a Shield Projector, or a Grunt and a Ray Gunner.",
+    `Each guard pays ${NEUTRAL_BOUNTIES_V7.GRUNT} or ${NEUTRAL_BOUNTIES_V7.RAY_GUNNER} Coins.`,
+  ],
+  GRAVEYARD: [`Each Zombie pays ${NEUTRAL_BOUNTIES_V7.ZOMBIE} Coins.`],
+  GATE: ["A Move ends on a gate. Two gates, on opposite sides of a big map."],
+  WISHING_WELL: [
+    `A toss costs ${WELL_TOSS_COST_V7} Coin: a splash, ${WELL_COINS_V7} Coins, a full heal, or the land within ${WELL_VISION_RADIUS_V7} revealed.`,
+  ],
+};
+
 /** The detail texts of a curiosity (the Help sentences reused). */
 export function galleryCuriosityDetailsV7(
   row: GalleryCuriosityRowIdV7,
 ): GalleryCuriosityDetailsV7 {
   const cell = galleryCuriosityCellV7(row);
+  if (row === "BIGFOOT") {
+    const rule = NEUTRAL_ROLE_RULES_V7.BIGFOOT;
+    return {
+      name: cell.name,
+      kicker: NEUTRAL_LABEL_V7,
+      description: BIGFOOT_RULE_V7,
+      stats: [
+        { label: "HP", value: String(rule.maxHp) },
+        { label: "Defense", value: String(rule.defense2 / 2) },
+        { label: "Move", value: String(rule.move) },
+      ],
+      notes: ["It never attacks and never strikes back."],
+    };
+  }
   if (row !== "SPIDER")
     return {
       name: cell.name,
       kicker: NEUTRAL_LABEL_V7,
       description: CURIOSITY_RULES_V7[row],
       stats: [],
-      notes: [],
+      notes: CURIOSITY_GALLERY_NOTES_V7[row] ?? [],
     };
   const rule = NEUTRAL_MONSTER_ROLE_RULE_V7;
   return {
@@ -261,6 +315,11 @@ const ROW_LABELS: Readonly<Record<string, string>> = {
   FOUNTAIN: CURIOSITY_LABELS_V7.FOUNTAIN,
   SHRINE: CURIOSITY_LABELS_V7.SHRINE,
   WRECK: CURIOSITY_LABELS_V7.WRECK,
+  BIGFOOT: BIGFOOT_LABEL_V7,
+  DOWNED_SAUCER: CURIOSITY_LABELS_V7.DOWNED_SAUCER,
+  GRAVEYARD: CURIOSITY_LABELS_V7.GRAVEYARD,
+  GATE: CURIOSITY_LABELS_V7.GATE,
+  WISHING_WELL: CURIOSITY_LABELS_V7.WISHING_WELL,
 };
 
 /** The row's name: the mechanical role, building, form or curiosity. */

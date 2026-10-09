@@ -5,7 +5,10 @@ import type {
   ArtSubjectV7,
   ChibiArtAssetV7,
 } from "../../src/assets/chibi-art-v7";
-import { CHIBI_CURIOSITIES_ART_ASSETS_V7 } from "../../src/assets/chibi-curiosities-art-manifest";
+import {
+  CHIBI_CURIOSITIES_ART_ASSETS_V7,
+  CHIBI_CURIOSITIES_ROUND2_ART_ASSETS_V7,
+} from "../../src/assets/chibi-curiosities-art-manifest";
 import { CHIBI_DIRECTION_ART_ASSETS_V7 } from "../../src/assets/chibi-direction-art-manifest";
 import { CHIBI_DIRECTION_GOBLIN_ART_ASSETS_V7 } from "../../src/assets/chibi-direction-art-manifest";
 import { DWARF_FLYER_PRESENTATION_V7 } from "../../src/assets/chibi-direction-dwarf-presentation";
@@ -108,8 +111,10 @@ const LIVE_ASSETS: readonly ChibiArtAssetV7[] = [
   ...CHIBI_NAVAL_FACTION_ART_ASSETS_V7.map((entry) => entry.asset),
   // The Submarines riding low in the water (bead pulp_wars-5ti.6).
   ...CHIBI_SUBMERGED_SUBMARINE_ART_ASSETS_V7.map((entry) => entry.asset),
-  // The neutral Giant Spider (bead pulp_wars-737.6).
+  // The neutral Giant Spider (bead pulp_wars-737.6) and Bigfoot (bead
+  // pulp_wars-737.16).
   ...CHIBI_CURIOSITIES_ART_ASSETS_V7,
+  ...CHIBI_CURIOSITIES_ROUND2_ART_ASSETS_V7,
 ];
 const UNIT_SUBJECTS = [
   ...new Set(
@@ -262,12 +267,17 @@ describe("unit shadow table (pulp_wars-jg1)", () => {
     const normals = radius("NORMAL");
     // The eight Juggernaut-role giants (the Gingerbread Giant since the Candy
     // art was wired in, pulp_wars-jdb.3) and the neutral Giant Spider, whose
-    // 88 x 72 canvas is a giant's (wide and flat), not a SMALL one.
-    expect(giants).toHaveLength(9);
-    expect(UNIT_SHADOW_TABLE_V7["UNIT:MONSTER_GIANT_SPIDER"]).toMatchObject({
-      size: "GIANT",
-      motion: "GROUNDED",
-    });
+    // 88 x 72 canvas is a giant's (wide and flat), not a SMALL one; and
+    // round 2's Bigfoot (88 x 96, giant bounds).
+    expect(giants).toHaveLength(10);
+    for (const subject of [
+      "UNIT:MONSTER_GIANT_SPIDER",
+      "UNIT:NEUTRAL_BIGFOOT",
+    ] as const)
+      expect(UNIT_SHADOW_TABLE_V7[subject]).toMatchObject({
+        size: "GIANT",
+        motion: "GROUNDED",
+      });
     expect(Math.min(...giants)).toBeGreaterThan(Math.max(...normals));
     expect(Math.min(...giants)).toBeGreaterThan(Math.max(...bigs));
     expect(Math.min(...bigs)).toBeGreaterThanOrEqual(Math.max(...normals) - 1);

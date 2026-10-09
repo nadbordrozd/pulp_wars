@@ -449,6 +449,12 @@ describe("the curiosity texts", () => {
       "FOUNTAIN",
       "SHRINE",
       "WRECK",
+      // Round 2 (bead pulp_wars-737.16).
+      "DOWNED_SAUCER",
+      "GRAVEYARD",
+      "GATE",
+      "BIGFOOT",
+      "WISHING_WELL",
       "BOUNTY",
       null,
     ]);
@@ -456,7 +462,16 @@ describe("the curiosity texts", () => {
       expect(rule.rule.split(". ").length, rule.name).toBeLessThanOrEqual(2);
       expect(COORDINATE.test(rule.rule)).toBe(false);
     }
-    for (const id of ["WEB", "FOUNTAIN", "SHRINE", "WRECK"] as const) {
+    for (const id of [
+      "WEB",
+      "FOUNTAIN",
+      "SHRINE",
+      "WRECK",
+      "DOWNED_SAUCER",
+      "GRAVEYARD",
+      "GATE",
+      "WISHING_WELL",
+    ] as const) {
       expect(CURIOSITY_LABELS_V7[id].length).toBeGreaterThan(0);
       expect(CURIOSITY_RULES_V7[id].endsWith(".")).toBe(true);
     }

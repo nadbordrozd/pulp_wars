@@ -1,11 +1,19 @@
-import type { CoordV7, PlayerViewV7 } from "../../engine/index";
-import type { CuriosityOverlayIdV7 } from "../../assets/chibi-art-v7";
+import {
+  CAMP_RADIUS_V7,
+  type CoordV7,
+  type MonsterPreviewV7,
+  type NeutralBreedV7,
+  type PlayerViewV7,
+} from "../../engine/index";
 import {
   CURIOSITY_LABELS_V7,
-  isDrawnCuriosityKindV7,
+  GATE_PARTNER_LABEL_V7,
+  campAtV7,
+  gatePartnerV7,
   matchHasCuriositiesV7,
   monsterPreviewsV7,
   visibleLairsV7,
+  type CuriosityTileIdV7,
 } from "../curiosity-presentation-v7";
 import type {
   BoardRenderPlanEntryV7,
@@ -28,11 +36,15 @@ import { BOARD_LABEL_FONT_FAMILY_V7 } from "./board-label-font-v7";
 
 /** LEGACY has no Spider raster: this id resolves to no image. */
 export const SPIDER_CODE_ART_ID_V7 = "unit-neutral-giant-spider-code";
+/** LEGACY has no Bigfoot raster either (round 2, section 34.2). */
+export const BIGFOOT_CODE_ART_ID_V7 = "unit-neutral-bigfoot-code";
 
-/** UNIT entries of the neutral Giant Spider. */
+/** UNIT entries of a neutral unit (the Spider, a camp guard, Bigfoot). */
 export interface MonsterUnitMarkerV7 {
-  /** A visible unit stands next to it or hurt it: the provoked marker. */
+  /** A visible unit provokes it (never Bigfoot): the provoked marker. */
   readonly provoked: boolean;
+  /** Round 2: its breed (absent on a round-1 plan: the Spider). */
+  readonly breed?: NeutralBreedV7;
 }
 
 /**
@@ -58,13 +70,14 @@ const across = (at: CoordV7, edge: TileEdge): CoordV7 =>
 
 /**
  * Adds the curiosity entries of a view. A view with no curiosity and no
- * visible Monster adds nothing, so its plan is exactly the plan of a match
- * without the option.
+ * visible neutral unit adds nothing, so its plan is exactly the plan of a
+ * match without the option.
  *
  * Draw order: the web lies on the ground (layer 3.5, under a chest, a unit
- * and the Spider itself); the Fountain, Shrine and Wreck are pieces of
- * their cell (layer 4, like a Treasure chest) and so are drawn over the
- * Forest body of their own cell and under the unit standing on them.
+ * and the Spider itself); every other overlay (the Fountain, Shrine and
+ * Wreck; round 2, the Downed Saucer, the Graveyard, a gate and the Well)
+ * is a piece of its cell (layer 4, like a Treasure chest) and so is drawn
+ * over the Forest body of its own cell and under the unit standing on it.
  */
 export function addCuriosityEntriesV7(
   entries: BoardRenderPlanEntryV7[],
@@ -83,9 +96,7 @@ export function addCuriosityEntriesV7(
       label: CURIOSITY_LABELS_V7.WEB,
     });
   for (const curiosity of view.curiosities) {
-    // The round-2 kinds are drawn by the round-2 UI bead.
     const kind = curiosity.kind;
-    if (!isDrawnCuriosityKindV7(kind)) continue;
     entries.push({
       key: `curiosity:${kind}:${key(curiosity.at)}`,
       kind: "CURIOSITY",
@@ -96,35 +107,34 @@ export function addCuriosityEntriesV7(
       label: CURIOSITY_LABELS_V7[kind],
     });
   }
-  // A selected Spider (or its tile, or its lair): its area outlined and
-  // the tiles it could attack after one step shaded.
   if (selection === null || selection.kind === "CITY") return;
-  for (const preview of monsterPreviewsV7(view)) {
-    const unit = view.units.find(
-      (candidate) => candidate.id === preview.unitId,
-    );
-    if (unit === undefined) continue;
-    const selected =
-      selection.kind === "UNIT"
-        ? selection.unitId === preview.unitId
-        : same(selection.at, unit.at) || same(selection.at, preview.home);
-    if (!selected) continue;
-    const explored = (at: CoordV7): boolean =>
-      view.board.tiles[at.y * view.board.width + at.x]?.explored === true;
-    const area = new Set(preview.area.map(key));
-    for (const at of preview.area)
+  const explored = (at: CoordV7): boolean =>
+    view.board.tiles[at.y * view.board.width + at.x]?.explored === true;
+  const outline = (
+    tiles: readonly CoordV7[],
+    style: "MONSTER_AREA" | "CAMP_PERIMETER",
+    /** Edges toward these tiles are left to another outline. */
+    leave: ReadonlySet<string> = new Set(),
+  ): void => {
+    const set = new Set(tiles.map(key));
+    for (const at of tiles)
       entries.push({
-        key: `ability-area:MONSTER_AREA:${key(at)}`,
+        key: `ability-area:${style}:${key(at)}`,
         kind: "ABILITY_AREA",
         layer: 7,
         at,
-        abilityStyle: "MONSTER_AREA",
-        targetEdges: TILE_EDGES.filter(
-          (edge) => !area.has(key(across(at, edge))),
-        ),
+        abilityStyle: style,
+        targetEdges: TILE_EDGES.filter((edge) => {
+          const next = key(across(at, edge));
+          return !set.has(next) && (leave.size === 0 || leave.has(next));
+        }),
       });
-    for (const at of preview.reachTiles)
-      if (explored(at))
+  };
+  const shade = (tiles: readonly CoordV7[]): void => {
+    const seen = new Set<string>();
+    for (const at of tiles)
+      if (explored(at) && !seen.has(key(at))) {
+        seen.add(key(at));
         entries.push({
           key: `ability-area:MONSTER_REACH:${key(at)}`,
           kind: "ABILITY_AREA",
@@ -133,7 +143,109 @@ export function addCuriosityEntriesV7(
           abilityStyle: "MONSTER_REACH",
           targetEdges: [],
         });
+      }
+  };
+  // A selected gate (its tile) marks its partner (section 34.1).
+  if (selection.kind === "TILE") {
+    const partner = gatePartnerV7(view, selection.at);
+    if (partner !== null)
+      entries.push({
+        key: `ability-target:GATE_EXIT:${key(partner)}`,
+        kind: "ABILITY_TARGET",
+        layer: 7.5,
+        at: partner,
+        abilityStyle: "GATE_EXIT",
+        label: GATE_PARTNER_LABEL_V7,
+      });
   }
+  const selected = selectedNeutralV7(view, selection);
+  if (selected === null) return;
+  if (selected.kind === "CAMP") {
+    // A selected guard (or its camp centre): the camp's area outlined, the
+    // tiles its guards could attack after one step shaded, and the
+    // saucer's perimeter ("within 2 of the saucer") outlined too.
+    const { camp } = selected;
+    const perimeter =
+      camp.kind === "DOWNED_SAUCER"
+        ? withinOf(view, camp.centre, CAMP_RADIUS_V7).filter(explored)
+        : [];
+    // The saucer's perimeter is the line that matters: its outer edges
+    // are drawn in its own colour, and the guards' area keeps only its
+    // inner edges (round the centre, which no guard stands on).
+    outline(
+      unique(camp.guards.flatMap((preview) => preview.area)),
+      "MONSTER_AREA",
+      new Set(perimeter.map(key)),
+    );
+    shade(camp.guards.flatMap((preview) => preview.reachTiles));
+    if (perimeter.length > 0) outline(perimeter, "CAMP_PERIMETER");
+    return;
+  }
+  // The Spider: its area outlined and its reach shaded; Bigfoot: its
+  // habitat outlined as far as explored (it has no reach).
+  outline(selected.preview.area, "MONSTER_AREA");
+  shade(selected.preview.reachTiles);
+}
+
+/**
+ * The neutral unit (or camp) a selection shows: a selected neutral unit,
+ * or the neutral unit on a selected tile, or the lair or camp centre of a
+ * selected tile.
+ */
+export function selectedNeutralV7(
+  view: PlayerViewV7,
+  selection: BoardSelectionV7 | null,
+):
+  | {
+      readonly kind: "CAMP";
+      readonly camp: NonNullable<ReturnType<typeof campAtV7>>;
+    }
+  | { readonly kind: "UNIT"; readonly preview: MonsterPreviewV7 }
+  | null {
+  if (selection === null || selection.kind === "CITY") return null;
+  const previews = monsterPreviewsV7(view);
+  const preview = previews.find((candidate) => {
+    const unit = view.units.find((other) => other.id === candidate.unitId);
+    if (unit === undefined) return false;
+    return selection.kind === "UNIT"
+      ? selection.unitId === candidate.unitId
+      : same(selection.at, unit.at) ||
+          (candidate.breed === "GIANT_SPIDER" &&
+            same(selection.at, candidate.home));
+  });
+  const centre =
+    preview !== undefined
+      ? preview.breed === "GIANT_SPIDER" || preview.breed === "BIGFOOT"
+        ? null
+        : preview.home
+      : selection.kind === "TILE"
+        ? selection.at
+        : null;
+  if (centre !== null) {
+    const camp = campAtV7(view, centre);
+    if (camp !== null && camp.guards.length > 0) return { kind: "CAMP", camp };
+  }
+  return preview === undefined ? null : { kind: "UNIT", preview };
+}
+
+function unique(tiles: readonly CoordV7[]): readonly CoordV7[] {
+  const seen = new Map<string, CoordV7>();
+  for (const at of tiles) seen.set(key(at), at);
+  return [...seen.values()];
+}
+
+/** The board tiles within Chebyshev `radius` of `centre`, centre included. */
+function withinOf(
+  view: Pick<PlayerViewV7, "board">,
+  centre: CoordV7,
+  radius: number,
+): readonly CoordV7[] {
+  const tiles: CoordV7[] = [];
+  for (let y = centre.y - radius; y <= centre.y + radius; y += 1)
+    for (let x = centre.x - radius; x <= centre.x + radius; x += 1)
+      if (x >= 0 && y >= 0 && x < view.board.width && y < view.board.height)
+        tiles.push({ x, y });
+  return tiles;
 }
 
 const INK = "#1d1a17";
@@ -154,7 +266,7 @@ export function drawCuriosityMarkerV7(
   x: number,
   y: number,
   zoom: number,
-  id: CuriosityOverlayIdV7,
+  id: CuriosityTileIdV7,
   highContrast = false,
 ): void {
   const u = zoom;
@@ -235,6 +347,14 @@ export function drawCuriosityMarkerV7(
     context.arc(x, y + 20 * u, 8 * u, 0, Math.PI * 2);
     context.fill();
     context.stroke();
+  } else if (id === "DOWNED_SAUCER") {
+    drawSaucerMarker(context, x, y, u, ink, highContrast);
+  } else if (id === "GRAVEYARD") {
+    drawGraveyardMarker(context, x, y, u, highContrast);
+  } else if (id === "GATE") {
+    drawGateMarker(context, x, y, u, highContrast);
+  } else if (id === "WISHING_WELL") {
+    drawWellMarker(context, x, y, u, highContrast);
   } else {
     // A leaning broken mast with a torn sail over hull ribs: the whole
     // wreck lists, its stern under the water.
@@ -284,6 +404,250 @@ export function drawCuriosityMarkerV7(
     }
     context.restore();
     drawWreckRipplesV7(context, x, y + 40 * u, 40 * u, u);
+  }
+  context.restore();
+}
+
+const METAL = "#9ea3a8";
+const METAL_SHADE = "#6f757b";
+const GLASS = "#d9e6ea";
+const GLOW = "#f6f3ff";
+const GLOW_SWIRL = "#b9b2dc";
+const GOLD = "#ffd75a";
+
+/**
+ * Round 2 (section 34.2): the Downed Saucer's code marker, a tilted dull
+ * grey saucer with a pale dome and two scorch streaks (no Martian colour).
+ */
+function drawSaucerMarker(
+  context: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  u: number,
+  ink: string,
+  highContrast: boolean,
+): void {
+  context.save();
+  context.translate(x, y + 14 * u);
+  context.rotate(-0.38);
+  context.fillStyle = highContrast ? "#ffffff" : METAL;
+  context.beginPath();
+  context.ellipse(0, 0, 46 * u, 13 * u, 0, 0, Math.PI * 2);
+  context.fill();
+  context.stroke();
+  // The pale glass dome on top of the hull.
+  context.fillStyle = highContrast ? "#ffffff" : GLASS;
+  context.beginPath();
+  context.ellipse(0, -4 * u, 19 * u, 20 * u, 0, Math.PI, 0);
+  context.closePath();
+  context.fill();
+  context.stroke();
+  context.fillStyle = highContrast ? "#000000" : METAL_SHADE;
+  context.beginPath();
+  context.ellipse(0, 4 * u, 30 * u, 5 * u, 0, 0, Math.PI * 2);
+  context.fill();
+  // Scorch streaks over the hull.
+  context.strokeStyle = ink;
+  context.lineWidth = Math.max(1, 2.5 * u);
+  for (const [from, to] of [
+    [18, 34],
+    [24, 40],
+  ] as const) {
+    context.beginPath();
+    context.moveTo(from * u, -6 * u);
+    context.lineTo(to * u, 2 * u);
+    context.stroke();
+  }
+  context.restore();
+}
+
+/**
+ * The Graveyard's code marker: three crooked grey headstones behind a few
+ * black iron fence bars.
+ */
+function drawGraveyardMarker(
+  context: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  u: number,
+  highContrast: boolean,
+): void {
+  for (const [dx, dy, tilt, height] of [
+    [-24, -4, -0.18, 36],
+    [2, -12, 0.08, 42],
+    [27, 0, 0.22, 32],
+  ] as const) {
+    context.save();
+    context.translate(x + dx * u, y + (dy + 20) * u);
+    context.rotate(tilt);
+    context.fillStyle = highContrast ? "#ffffff" : STONE;
+    context.beginPath();
+    context.moveTo(-10 * u, 0);
+    context.lineTo(-10 * u, -(height - 10) * u);
+    context.arc(0, -(height - 10) * u, 10 * u, Math.PI, 0);
+    context.lineTo(10 * u, 0);
+    context.closePath();
+    context.fill();
+    context.stroke();
+    context.strokeStyle = highContrast ? "#000000" : STONE_SHADE;
+    context.lineWidth = Math.max(1, 2 * u);
+    context.beginPath();
+    context.moveTo(-4 * u, -(height - 12) * u);
+    context.lineTo(4 * u, -(height - 12) * u);
+    context.stroke();
+    context.restore();
+  }
+  // Iron fence bars in front, one fallen.
+  context.save();
+  context.strokeStyle = highContrast ? "#000000" : INK;
+  context.lineWidth = Math.max(1, 3 * u);
+  for (const dx of [-42, -32, 34, 44]) {
+    context.beginPath();
+    context.moveTo(x + dx * u, y + 38 * u);
+    context.lineTo(x + dx * u, y + 18 * u);
+    context.stroke();
+  }
+  context.beginPath();
+  context.moveTo(x - 46 * u, y + 24 * u);
+  context.lineTo(x - 28 * u, y + 24 * u);
+  context.moveTo(x + 30 * u, y + 24 * u);
+  context.lineTo(x + 48 * u, y + 24 * u);
+  context.moveTo(x - 14 * u, y + 40 * u);
+  context.lineTo(x + 10 * u, y + 34 * u);
+  context.stroke();
+  context.restore();
+}
+
+/**
+ * A Dimensional Gate's code marker: a ring of tall grey standing stones
+ * round a pale swirl of light (one look for both gates).
+ */
+function drawGateMarker(
+  context: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  u: number,
+  highContrast: boolean,
+): void {
+  const cy = y + 14 * u;
+  context.fillStyle = highContrast ? "#ffffff" : GLOW;
+  context.beginPath();
+  context.ellipse(x, cy, 34 * u, 17 * u, 0, 0, Math.PI * 2);
+  context.fill();
+  context.stroke();
+  context.save();
+  context.strokeStyle = highContrast ? "#000000" : GLOW_SWIRL;
+  context.lineWidth = Math.max(1, 3 * u);
+  context.beginPath();
+  for (let step = 0; step <= 24; step += 1) {
+    const angle = step * 0.55;
+    const reach = 2 + step * 1.15;
+    const px = x + Math.cos(angle) * reach * u;
+    const py = cy + Math.sin(angle) * reach * 0.5 * u;
+    if (step === 0) context.moveTo(px, py);
+    else context.lineTo(px, py);
+  }
+  context.stroke();
+  context.restore();
+  // The stones: the back ones first, so the front ones overlap them.
+  const stones = [0, 1, 2, 3, 4, 5, 6, 7]
+    .map((index) => (index * Math.PI) / 4 + Math.PI / 8)
+    .sort((left, right) => Math.sin(left) - Math.sin(right));
+  for (const angle of stones) {
+    const sx = x + Math.cos(angle) * 44 * u;
+    const sy = cy + Math.sin(angle) * 22 * u;
+    const height = 30 + Math.sin(angle) * 4;
+    context.fillStyle = highContrast ? "#ffffff" : STONE;
+    context.fillRect(sx - 5 * u, sy - height * u, 10 * u, height * u);
+    context.strokeRect(sx - 5 * u, sy - height * u, 10 * u, height * u);
+  }
+}
+
+/**
+ * The Wishing Well's code marker: a round stone well under a little roof
+ * on two posts, with a gold coin glint.
+ */
+function drawWellMarker(
+  context: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  u: number,
+  highContrast: boolean,
+): void {
+  const base = y + 30 * u;
+  // Posts and roof.
+  context.fillStyle = highContrast ? "#ffffff" : DRIFTWOOD;
+  context.fillRect(x - 30 * u, y - 30 * u, 6 * u, 54 * u);
+  context.strokeRect(x - 30 * u, y - 30 * u, 6 * u, 54 * u);
+  context.fillRect(x + 24 * u, y - 30 * u, 6 * u, 54 * u);
+  context.strokeRect(x + 24 * u, y - 30 * u, 6 * u, 54 * u);
+  context.fillStyle = highContrast ? "#ffffff" : UMBER;
+  context.beginPath();
+  context.moveTo(x - 40 * u, y - 26 * u);
+  context.lineTo(x, y - 50 * u);
+  context.lineTo(x + 40 * u, y - 26 * u);
+  context.closePath();
+  context.fill();
+  context.stroke();
+  // The stone drum.
+  context.fillStyle = highContrast ? "#ffffff" : STONE;
+  context.beginPath();
+  context.moveTo(x - 32 * u, y + 8 * u);
+  context.lineTo(x - 32 * u, base);
+  context.ellipse(x, base, 32 * u, 10 * u, 0, Math.PI, 0, true);
+  context.lineTo(x + 32 * u, y + 8 * u);
+  context.closePath();
+  context.fill();
+  context.stroke();
+  context.fillStyle = highContrast ? "#000000" : "#3c4a52";
+  context.beginPath();
+  context.ellipse(x, y + 8 * u, 32 * u, 10 * u, 0, 0, Math.PI * 2);
+  context.fill();
+  context.stroke();
+  // The coin glint.
+  context.fillStyle = GOLD;
+  context.beginPath();
+  context.arc(x + 8 * u, y + 8 * u, 4 * u, 0, Math.PI * 2);
+  context.fill();
+  context.stroke();
+}
+
+/**
+ * The code-drawn Bigfoot (LEGACY and the classic look): a neutral earth
+ * disc (no owner colour) with one big umber five-toed footprint.
+ */
+export function drawCodeBigfootV7(
+  context: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  zoom: number,
+  highContrast = false,
+): void {
+  const u = zoom;
+  const ink = highContrast ? "#000000" : INK;
+  const cy = y - 2 * u;
+  context.save();
+  context.strokeStyle = ink;
+  context.lineWidth = Math.max(1, 3 * u);
+  context.fillStyle = highContrast ? "#ffffff" : "#b9a58a";
+  context.beginPath();
+  context.arc(x, cy, 30 * u, 0, Math.PI * 2);
+  context.fill();
+  context.stroke();
+  context.fillStyle = highContrast ? "#000000" : UMBER;
+  context.beginPath();
+  context.ellipse(x, cy + 6 * u, 10 * u, 15 * u, 0.12, 0, Math.PI * 2);
+  context.fill();
+  for (const [dx, dy, r] of [
+    [-9, -13, 3.6],
+    [-3, -16, 3.2],
+    [3, -16.5, 3],
+    [8.5, -14, 2.7],
+    [12, -9, 2.4],
+  ] as const) {
+    context.beginPath();
+    context.arc(x + dx * u, cy + dy * u, r * u, 0, Math.PI * 2);
+    context.fill();
   }
   context.restore();
 }

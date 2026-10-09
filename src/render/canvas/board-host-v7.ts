@@ -1271,7 +1271,10 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
             step.effect === "FOUNTAIN" ||
             step.effect === "BLESSING" ||
             step.effect === "SALVAGE" ||
-            step.effect === "BOUNTY"
+            step.effect === "BOUNTY" ||
+            // Round 2: the gate burst and the Well's splash.
+            step.effect === "GATE" ||
+            step.effect === "WELL"
               ? 480
               : step.effect === "RECOVER"
                 ? 320

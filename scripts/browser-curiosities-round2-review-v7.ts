@@ -7,20 +7,24 @@ import { prepareSmokeOutput } from "./browser-smoke-output";
 import { ruleset7FixtureMountExpressionV7 } from "./browser-undead-fixture-v7";
 
 /**
- * Map curiosities visual review (bead pulp_wars-737.6,
- * docs/product/RULESET_7_MAP_CURIOSITIES.md section 12). On the curiosities
- * UI fixture (tests/fixtures/v7-curiosities-ui.ts) it captures, in the
- * default look, the Classic look and LEGACY, at desktop and phone widths:
- * the board with every curiosity at zoom steps 1 and 0.75, the calm and the
- * provoked Spider, its dock and unit dialog with its area and reach, the
- * provoke warning on a Knight's Moves, the attack preview, each curiosity
- * tile's dock, the four effects pinned mid-animation, a Shrine claim, the
- * frames of a neutral turn, and Help. In the default look it also captures
- * the setup screen's checkbox and the Gallery's Curiosities tab. It needs
- * the Vite dev server, because the fixture is imported from
- * `tests/fixtures`.
+ * Map curiosities round-2 visual review (bead pulp_wars-737.16,
+ * docs/product/RULESET_7_MAP_CURIOSITIES.md section 34.1). On the hand-built
+ * round-2 UI fixtures (tests/fixtures/v7-curiosities-round2-ui.ts) it
+ * captures, in the live look and LEGACY, at desktop and phone widths: each
+ * new kind on the board (the Downed Saucer and its guards, the Graveyard and
+ * its Zombies, both gates, Bigfoot, the Wishing Well) with enlarged crops;
+ * the threat overlays (a selected guard's camp, perimeter and reach, the
+ * Zombies' wander area and reach, Bigfoot's habitat) and the provoke
+ * markers on a Knight's Moves; a selected gate's partner; the gate Move
+ * preview (the exit, the occupant shoved aside, and blocked); the Toss a
+ * Coin command, the toss and its toast; a traversal; each new tile's and
+ * unit's dock; and, in the live look, the Gallery's Curiosities tab.
  *
- * Usage: tsx scripts/browser-curiosities-review-v7.ts http://localhost:6173/
+ * It never ends a turn and never runs an AI: every state is hand-built and
+ * only the human's own Move and Toss a Coin are sent. It needs the Vite dev
+ * server, because the fixture is imported from `tests/fixtures`.
+ *
+ * Usage: tsx scripts/browser-curiosities-round2-review-v7.ts http://localhost:6173/
  *   [--output-dir=<new-dir>]
  */
 
@@ -41,16 +45,16 @@ interface Connection {
   onEvent(listener: (method: string, params: unknown) => void): void;
   close(): void;
 }
-type Look = "default" | "classic" | "legacy";
+type Look = "default" | "legacy";
 type ScreenSize = "desktop" | "phone";
 interface Coord {
   readonly x: number;
   readonly y: number;
 }
 type Fixture =
-  | "curiositiesUiFixtureV7"
-  | "curiositiesWoundedSpiderFixtureV7"
-  | "curiositiesCalmFixtureV7";
+  | "round2SaucerUiFixtureV7"
+  | "round2GraveyardUiFixtureV7"
+  | "round2GateBlockedUiFixtureV7";
 
 const baseUrl = new URL(
   process.argv.slice(2).find((argument) => argument.startsWith("http")) ??
@@ -58,17 +62,17 @@ const baseUrl = new URL(
 );
 const output = await prepareSmokeOutput({
   args: process.argv.slice(2),
-  name: "curiosities-ui",
-  archiveDirectory: "art/integration/reviews/ruleset7-curiosities-ui",
+  name: "curiosities-round2-ui",
+  archiveDirectory: "art/integration/reviews/ruleset7-curiosities-round2-ui",
 });
 const chrome =
   process.env.CHROME_PATH ??
   (process.platform === "win32"
     ? "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
     : "/mnt/c/Program Files/Google/Chrome/Application/chrome.exe");
-const port = 10_860 + (process.pid % 80);
+const port = 10_940 + (process.pid % 80);
 const userData = await mkdtemp(
-  path.join(tmpdir(), "pulp-wars-curiosities-ui-"),
+  path.join(tmpdir(), "pulp-wars-curiosities-round2-ui-"),
 );
 const browser = spawn(
   chrome,
@@ -88,7 +92,7 @@ const browser = spawn(
 );
 const errors: string[] = [];
 const evidence: Record<string, unknown> = {};
-const REVIEW = "globalThis.__CURIOSITIES_REVIEW__";
+const REVIEW = "globalThis.__ROUND2_REVIEW__";
 const CLASSIC_KEY = "pulpWars.ruleset7.boardClassicLook.v1";
 
 try {
@@ -100,153 +104,140 @@ try {
   });
   await connection.send("Page.enable");
   await connection.send("Runtime.enable");
-  for (const look of ["default", "classic", "legacy"] as const)
+  for (const look of ["default", "legacy"] as const)
     for (const size of ["desktop", "phone"] as const) {
       const suffix = `${look}-${size}`;
       await viewport(connection, size);
-      // The calm Spider on its web.
-      await mount(connection, look, "curiositiesCalmFixtureV7");
+      // The saucer board: every kind but the Graveyard.
+      await mount(connection, look, "round2SaucerUiFixtureV7");
       let at = await coords(connection);
+      evidence[`${suffix}Pieces`] = await pieces(connection);
       await zoomTo(connection, 80);
-      await frame(connection, at.spider as Coord);
-      await capture(connection, `spider-idle-${suffix}.png`);
-      await crop(
-        connection,
-        `crop-spider-idle-${suffix}.png`,
-        at.spider as Coord,
-      );
-      // Every curiosity on the board; the Spider provoked.
-      await mount(connection, look, "curiositiesWoundedSpiderFixtureV7");
-      at = await coords(connection);
-      evidence[`${suffix}Pieces`] = await evaluate(
-        connection,
-        `(async () => {
-          const { buildBoardRenderPlanV7 } = await import('/src/render/canvas/board-renderer-v7.ts');
-          return buildBoardRenderPlanV7(${REVIEW}.snapshotView(), [], { selection: null, selectedUnitId: null, selectedAchievement: null })
-            .entries.filter((entry) => entry.kind === 'CURIOSITY' || entry.monster !== undefined)
-            .map((entry) => entry.artSubject + (entry.monster?.provoked ? ':provoked' : ''));
-        })()`,
-        true,
-      );
-      for (const [zoom, tile] of [
-        ["1", 80],
-        ["0.75", 60],
+      for (const [name, where] of [
+        ["saucer", at.camp],
+        ["gate-a", at.gateA],
+        ["gate-b", at.gateB],
+        ["bigfoot", at.bigfoot],
+        ["well", at.well],
       ] as const) {
-        await zoomTo(connection, tile);
-        await frame(connection, at.spider as Coord);
-        await capture(connection, `board-${suffix}-zoom-${zoom}.png`);
-        for (const [name, where] of [
-          ["spider-provoked", at.spider],
-          ["fountain", at.fountain],
-          ["shrine", at.shrine],
-          ["wreck", at.wreck],
-        ] as const) {
-          await frame(connection, where as Coord);
-          await crop(
-            connection,
-            `crop-${name}-${suffix}-zoom-${zoom}.png`,
-            where as Coord,
-          );
-        }
+        await frame(connection, where as Coord);
+        await capture(connection, `board-${name}-${suffix}.png`);
+        await crop(connection, `crop-${name}-${suffix}.png`, where as Coord);
       }
-      await zoomTo(connection, 80);
-      // The Spider's dock: its area outlined, its reach shaded.
-      await activate(connection, at.spider as Coord);
-      evidence[`${suffix}SpiderDock`] = await dockText(connection);
-      await capture(connection, `spider-dock-${suffix}.png`);
+      // Threats: a selected guard (its camp, the saucer's perimeter and the
+      // camp's reach), the camp centre, the Knight's provoked Moves, and
+      // Bigfoot's habitat.
+      const guards = at.guards as readonly Coord[];
+      await activate(connection, guards[0] as Coord);
+      evidence[`${suffix}GruntDock`] = await dockText(connection);
+      await capture(connection, `threat-saucer-guard-${suffix}.png`);
       await click(connection, '[data-action="unit-help"]');
-      await capture(connection, `spider-dialog-${suffix}.png`);
+      await capture(connection, `dialog-grunt-${suffix}.png`);
       await click(connection, '[data-action="close-unit-help"]');
       await deselect(connection);
-      // A Knight's Moves next to the Spider carry the provoked marker.
+      await activate(connection, at.camp as Coord);
+      evidence[`${suffix}SaucerDock`] = await dockText(connection);
+      await capture(connection, `threat-saucer-centre-${suffix}.png`);
+      await deselect(connection);
       await activate(connection, at.knight as Coord);
-      await capture(connection, `provoke-warning-${suffix}.png`);
+      await capture(connection, `threat-provoke-moves-${suffix}.png`);
       await deselect(connection);
-      // The attack preview says the spider will strike back.
-      await activate(connection, at.bait as Coord);
-      await capture(connection, `attack-preview-${suffix}.png`);
+      await activate(connection, at.bigfoot as Coord);
+      evidence[`${suffix}BigfootDock`] = await dockText(connection);
+      await capture(connection, `threat-bigfoot-habitat-${suffix}.png`);
+      await click(connection, '[data-action="unit-help"]');
+      await capture(connection, `dialog-bigfoot-${suffix}.png`);
+      await click(connection, '[data-action="close-unit-help"]');
       await deselect(connection);
-      // Each curiosity tile's dock.
-      for (const [name, where] of [
-        ["shrine", at.shrine],
-        ["wreck", at.wreck],
-      ] as const) {
-        await activate(connection, where as Coord);
-        evidence[`${suffix}${name}Dock`] = await dockText(connection);
-        await capture(connection, `${name}-dock-${suffix}.png`);
-        await deselect(connection);
-      }
-      // The four effects, pinned mid-animation.
-      await frame(connection, at.knight as Coord);
-      const pins = `${REVIEW}.boardHost.pinSupportFeedback([
-          { effect: 'FOUNTAIN', actor: { unitId: null, at: ${JSON.stringify(at.fountain)}, amount: 7 }, recipients: [], progress: 0.45 },
-          { effect: 'BLESSING', actor: { unitId: null, at: ${JSON.stringify(at.pilgrim)} }, recipients: [], progress: 0.45 },
-          { effect: 'SALVAGE', actor: { unitId: null, at: ${JSON.stringify(at.knight)}, amount: 8 }, recipients: [], progress: 0.45 },
-          { effect: 'BOUNTY', actor: { unitId: null, at: ${JSON.stringify(at.spider)}, amount: 10 }, recipients: [], progress: 0.45 },
-        ])`;
-      // The first draw starts the sprites' loads; the second draws them.
-      await evaluate(connection, pins);
-      await delay(700);
-      await evaluate(connection, pins);
-      await delay(200);
-      await capture(connection, `effects-${suffix}.png`);
-      for (const [name, where] of [
-        ["fountain-heal", at.fountain],
-        ["shrine-blessing", at.pilgrim],
-        ["salvage-coins", at.knight],
-        ["bounty", at.spider],
-      ] as const)
-        await crop(
-          connection,
-          `crop-effect-${name}-${suffix}.png`,
-          where as Coord,
-        );
-      await evaluate(connection, `${REVIEW}.boardHost.pinSupportFeedback([])`);
-      // A Shrine claim: the Fighter steps onto it and is Promoted.
+      // The gates: a selected gate marks its partner; the traveller's Move
+      // onto it shows the exit and the occupant shoved aside.
+      await zoomTo(connection, 60);
+      await activate(connection, at.gateA as Coord);
+      evidence[`${suffix}GateDock`] = await dockText(connection);
+      await capture(connection, `gate-tile-${suffix}.png`);
+      await focusOn(connection, at.gateA as Coord, at.gateB as Coord);
+      await capture(connection, `gate-partner-${suffix}.png`);
+      await deselect(connection);
+      await activate(connection, at.traveller as Coord);
+      await capture(connection, `gate-move-entry-${suffix}.png`);
+      await focusOn(connection, at.traveller as Coord, at.gateB as Coord);
+      await capture(connection, `gate-move-exit-${suffix}.png`);
+      await deselect(connection);
+      await zoomTo(connection, 80);
+      // The Well: its tile dock, the pilgrim's Toss a Coin, the toss.
       await activate(connection, at.pilgrim as Coord);
-      await evaluate(
+      evidence[`${suffix}PilgrimDock`] = await dockText(connection);
+      evidence[`${suffix}TossButton`] = await evaluate(
         connection,
-        `${REVIEW}.boardHost.activate(${JSON.stringify(at.shrine)})`,
+        `document.querySelector('[data-action="command-toss_coin"]')?.getAttribute('title') ?? null`,
       );
-      await delay(450);
-      await capture(connection, `shrine-claim-${suffix}.png`);
+      await capture(connection, `well-toss-button-${suffix}.png`);
+      await click(connection, '[data-action="command-toss_coin"]');
+      await delay(250);
+      await capture(connection, `well-toss-effect-${suffix}.png`);
       await delay(1_200);
-      evidence[`${suffix}ShrineNotice`] = await notice(connection);
+      evidence[`${suffix}TossNotice`] = await notice(connection);
+      await capture(connection, `well-toss-after-${suffix}.png`);
       await deselect(connection);
-      // The neutral turn: the Spider attacks, regenerates; the Fountain
-      // heals the next seat's unit.
+      await activate(connection, at.well as Coord);
+      evidence[`${suffix}WellDock`] = await dockText(connection);
+      await deselect(connection);
+      // A traversal: the traveller steps onto the gate; the occupant is
+      // shoved aside and the traveller comes out of the other gate.
+      await activate(connection, at.traveller as Coord);
       await evaluate(
         connection,
-        `document.querySelector('[data-action="end-turn"]')?.click()`,
-      );
-      for (const [index, wait] of [
-        30, 60, 80, 120, 200, 300, 400, 500,
-      ].entries()) {
-        await delay(wait);
-        await capture(connection, `neutral-turn-${suffix}-${index + 1}.png`);
-      }
-      await delay(1_500);
-      evidence[`${suffix}NeutralNotice`] = await notice(connection);
-      evidence[`${suffix}Traces`] = await evaluate(
-        connection,
-        `${REVIEW}.traces.map((trace) => trace.command.kind + ':' + trace.eventKinds.filter((kind) => /NEUTRAL|FOUNTAIN|SHRINE|MONSTER|WRECK/.test(kind)).join('+'))`,
-      );
-      await capture(connection, `neutral-turn-${suffix}-after.png`);
-      // Help: the Curiosities section.
-      await click(connection, '[data-action="compact-menu"]');
-      await click(connection, '[data-action="help"]');
-      await evaluate(
-        connection,
-        `document.querySelector('.v7-help')?.scrollIntoView({ block: 'center' })`,
+        `${REVIEW}.boardHost.activate(${JSON.stringify(at.gateA)})`,
       );
       await delay(300);
-      evidence[`${suffix}Help`] = await evaluate(
+      await capture(connection, `gate-traverse-${suffix}.png`);
+      await delay(1_400);
+      evidence[`${suffix}TraverseNotice`] = await notice(connection);
+      await frame(connection, at.gateB as Coord);
+      await capture(connection, `gate-traverse-after-${suffix}.png`);
+      evidence[`${suffix}Traces`] = await evaluate(
         connection,
-        `Array.from(document.querySelectorAll('.v7-help h3')).map((node) => node.textContent)`,
+        `${REVIEW}.traces.map((trace) => trace.command.kind + ':' + trace.eventKinds.filter((kind) => /GATE|COIN/.test(kind)).join('+'))`,
       );
-      await capture(connection, `help-${suffix}.png`);
+      // A blocked gate.
+      await mount(connection, look, "round2GateBlockedUiFixtureV7");
+      at = await coords(connection);
+      await zoomTo(connection, 60);
+      await activate(connection, at.traveller as Coord);
+      await focusOn(connection, at.traveller as Coord, at.gateB as Coord);
+      await capture(connection, `gate-blocked-exit-${suffix}.png`);
+      await crop(
+        connection,
+        `crop-gate-blocked-exit-${suffix}.png`,
+        at.gateB as Coord,
+      );
+      await deselect(connection);
+      await activate(connection, at.traveller as Coord);
+      await evaluate(
+        connection,
+        `${REVIEW}.boardHost.activate(${JSON.stringify(at.gateA)})`,
+      );
+      await delay(1_500);
+      evidence[`${suffix}BlockedNotice`] = await notice(connection);
+      await capture(connection, `gate-blocked-after-${suffix}.png`);
+      // The Graveyard board: the Zombies' wander area and reach.
+      await mount(connection, look, "round2GraveyardUiFixtureV7");
+      at = await coords(connection);
+      await zoomTo(connection, 80);
+      await frame(connection, at.camp as Coord);
+      await capture(connection, `board-graveyard-${suffix}.png`);
+      await crop(connection, `crop-graveyard-${suffix}.png`, at.camp as Coord);
+      await activate(connection, (at.guards as readonly Coord[])[0] as Coord);
+      evidence[`${suffix}ZombieDock`] = await dockText(connection);
+      await capture(connection, `threat-graveyard-zombie-${suffix}.png`);
+      await deselect(connection);
+      await activate(connection, at.camp as Coord);
+      evidence[`${suffix}GraveyardDock`] = await dockText(connection);
+      await capture(connection, `graveyard-tile-${suffix}.png`);
+      await deselect(connection);
     }
-  // The setup screen's checkbox and the Gallery's Curiosities tab.
+  // The Gallery's Curiosities tab (live look): both rows, Bigfoot and the
+  // saucer's details.
   for (const size of ["desktop", "phone"] as const) {
     await viewport(connection, size);
     await navigate(connection, url({ art: "chibi" }));
@@ -254,16 +245,6 @@ try {
       connection,
       `document.querySelector('[data-v7-setup]') !== null`,
     );
-    await evaluate(
-      connection,
-      `document.querySelector('.v7-curiosities-choice')?.scrollIntoView({ block: 'center' })`,
-    );
-    await delay(300);
-    evidence[`setup-${size}`] = await evaluate(
-      connection,
-      `(() => { const box = document.querySelector('#v7-curiosities').getBoundingClientRect(); const label = document.querySelector('.v7-curiosities-choice').getBoundingClientRect(); return { box: [Math.round(box.width), Math.round(box.height)], label: [Math.round(label.width), Math.round(label.height)], sameRow: box.top >= label.top && box.bottom <= label.bottom }; })()`,
-    );
-    await capture(connection, `setup-checkbox-${size}.png`);
     await click(connection, '[data-action="gallery"]');
     await waitFor(
       connection,
@@ -275,32 +256,37 @@ try {
       `document.querySelectorAll('.v7-gallery-curiosities .v7-gallery-tile').length === 10 && [...document.querySelectorAll('.v7-gallery-curiosities .v7-gallery-tile')].every((tile) => tile.dataset.state === 'ready')`,
     );
     await capture(connection, `gallery-curiosities-${size}.png`);
-    await click(
-      connection,
-      '.v7-gallery-curiosities .v7-gallery-cell[data-row="SPIDER"]',
-    );
-    await delay(600);
-    await capture(connection, `gallery-spider-${size}.png`);
-    await click(connection, '[data-action="gallery-next-row"]');
-    await click(connection, '[data-action="gallery-next-row"]');
-    await delay(600);
-    await capture(connection, `gallery-fountain-${size}.png`);
+    for (const row of ["BIGFOOT", "DOWNED_SAUCER", "GATE", "WISHING_WELL"]) {
+      await click(
+        connection,
+        `.v7-gallery-curiosities .v7-gallery-cell[data-row="${row}"]`,
+      );
+      await delay(600);
+      await capture(
+        connection,
+        `gallery-${row.toLowerCase().replaceAll("_", "-")}-${size}.png`,
+      );
+      await click(connection, '[data-action="gallery-detail-close"]');
+    }
   }
   for (const key of ["default-desktop", "legacy-phone"]) {
-    const pieces = JSON.stringify(
+    const found = JSON.stringify(
       [...((evidence[`${key}Pieces`] as string[] | undefined) ?? [])].sort(),
     );
     const expected = JSON.stringify(
       [
-        "CURIOSITY:FOUNTAIN",
-        "CURIOSITY:SHRINE",
-        "CURIOSITY:WEB",
-        "CURIOSITY:WRECK",
-        "UNIT:MONSTER_GIANT_SPIDER:provoked",
+        "CURIOSITY:DOWNED_SAUCER",
+        "CURIOSITY:GATE",
+        "CURIOSITY:GATE",
+        "CURIOSITY:WISHING_WELL",
+        "UNIT:MARTIAN:FIGHTER:provoked",
+        "UNIT:MARTIAN:MARKSMAN:provoked",
+        "UNIT:MARTIAN:GUARD:provoked",
+        "UNIT:NEUTRAL_BIGFOOT",
       ].sort(),
     );
-    if (pieces !== expected)
-      throw new Error(`Unexpected curiosity pieces (${key}): ${pieces}`);
+    if (found !== expected)
+      throw new Error(`Unexpected round-2 pieces (${key}): ${found}`);
   }
   if (errors.length > 0)
     throw new Error(`Browser errors: ${errors.join("\n")}`);
@@ -310,7 +296,7 @@ try {
   );
   connection.close();
   await output.publish();
-  console.log(`Curiosities UI review captured in ${output.directory}`);
+  console.log(`Curiosities round-2 UI review captured in ${output.directory}`);
 } finally {
   browser.kill();
   await delay(300);
@@ -328,25 +314,35 @@ async function mount(
     connection,
     `document.querySelector('[data-v7-setup]') !== null && globalThis.__PULP_WARS_APP__ !== undefined`,
   );
-  await evaluate(
-    connection,
-    look === "classic"
-      ? `localStorage.setItem('${CLASSIC_KEY}', JSON.stringify({ classic: true }))`
-      : `localStorage.removeItem('${CLASSIC_KEY}')`,
-  );
+  await evaluate(connection, `localStorage.removeItem('${CLASSIC_KEY}')`);
   await evaluate(
     connection,
     ruleset7FixtureMountExpressionV7({
-      module: "/tests/fixtures/v7-curiosities-ui.ts",
+      module: "/tests/fixtures/v7-curiosities-round2-ui.ts",
       fixture,
       artSet: art === "chibi" ? "CHIBI" : "LEGACY",
-      global: "__CURIOSITIES_REVIEW__",
-      extras: "at: fixtures.CURIOSITIES_UI_V7",
+      global: "__ROUND2_REVIEW__",
+      extras: "at: fixtures.ROUND2_UI_V7",
       settingsStorage: "localStorage",
     }),
     true,
   );
   await delay(1_500);
+  // The first-steps coach would cover the board's top-left corner.
+  await click(connection, '[data-action="first-step-dismiss"]');
+}
+
+async function pieces(connection: Connection): Promise<unknown> {
+  return evaluate(
+    connection,
+    `(async () => {
+      const { buildBoardRenderPlanV7 } = await import('/src/render/canvas/board-renderer-v7.ts');
+      return buildBoardRenderPlanV7(${REVIEW}.snapshotView(), [], { selection: null, selectedUnitId: null, selectedAchievement: null })
+        .entries.filter((entry) => entry.kind === 'CURIOSITY' || entry.monster !== undefined)
+        .map((entry) => entry.artSubject + (entry.monster?.provoked ? ':provoked' : ''));
+    })()`,
+    true,
+  );
 }
 
 async function coords(
@@ -362,6 +358,25 @@ async function coords(
 async function frame(connection: Connection, at: Coord): Promise<void> {
   await activate(connection, at);
   await deselect(connection);
+}
+
+/**
+ * Walks the keyboard focus from `from` to `to` (the camera follows it), so
+ * a far cell such as a gate's exit comes into view while the selection
+ * stays.
+ */
+async function focusOn(
+  connection: Connection,
+  from: Coord,
+  to: Coord,
+): Promise<void> {
+  const names: string[] = [];
+  for (let step = 0; step < Math.abs(to.x - from.x); step += 1)
+    names.push(to.x > from.x ? "ArrowRight" : "ArrowLeft");
+  for (let step = 0; step < Math.abs(to.y - from.y); step += 1)
+    names.push(to.y > from.y ? "ArrowDown" : "ArrowUp");
+  await keys(connection, names);
+  await delay(600);
 }
 
 async function notice(connection: Connection): Promise<unknown> {
@@ -446,7 +461,7 @@ async function activate(connection: Connection, at: Coord): Promise<void> {
 async function dockText(connection: Connection): Promise<unknown> {
   return evaluate(
     connection,
-    `(() => { const dock = document.querySelector('.v7-selection-dock'); return dock === null ? null : { title: dock.querySelector('h2')?.textContent, chips: Array.from(dock.querySelectorAll('.v7-chip')).map((node) => node.textContent), info: Array.from(dock.querySelectorAll('.v7-curiosity-info, [data-curiosity-info]')).map((node) => node.textContent) }; })()`,
+    `(() => { const dock = document.querySelector('.v7-selection-dock'); return dock === null ? null : { title: dock.querySelector('h2')?.textContent, chips: Array.from(dock.querySelectorAll('.v7-chip')).map((node) => node.textContent), info: Array.from(dock.querySelectorAll('.v7-curiosity-info')).map((node) => node.textContent), actions: Array.from(dock.querySelectorAll('.v7-context-action')).map((node) => node.textContent) }; })()`,
   );
 }
 
@@ -455,7 +470,9 @@ async function keys(
   names: readonly string[],
 ): Promise<void> {
   const codes: Readonly<Record<string, number>> = {
+    ArrowLeft: 37,
     ArrowUp: 38,
+    ArrowRight: 39,
     ArrowDown: 40,
   };
   for (const key of names)
@@ -483,11 +500,11 @@ async function viewport(
 }
 
 async function navigate(connection: Connection, href: string): Promise<void> {
-  await evaluate(connection, `globalThis.__CURIOSITIES_REVIEW_PRIOR__ = true`);
+  await evaluate(connection, `globalThis.__ROUND2_REVIEW_PRIOR__ = true`);
   await connection.send("Page.navigate", { url: href });
   await waitFor(
     connection,
-    `globalThis.__CURIOSITIES_REVIEW_PRIOR__ !== true && document.readyState === 'complete'`,
+    `globalThis.__ROUND2_REVIEW_PRIOR__ !== true && document.readyState === 'complete'`,
   );
 }
 

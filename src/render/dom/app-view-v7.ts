@@ -129,6 +129,7 @@ import {
   type ScoreQueryV7,
   type StarGradeQueryV7,
   type StarGradeV7,
+  WELL_TOSS_COST_V7,
 } from "../../engine/index";
 import {
   CROWDED_HINT_V7,
@@ -159,17 +160,26 @@ import {
   starsLabelV7,
 } from "../score-presentation-v7";
 import { presentedUnitFactionV7 } from "../neutral-presentation-v7";
-import { curiosityGlyphV7, spiderFigureV7 } from "./curiosity-dom-v7";
+import {
+  bigfootFigureV7,
+  curiosityGlyphV7,
+  spiderFigureV7,
+} from "./curiosity-dom-v7";
 import {
   CURIOSITIES_SETUP_HINT_V7,
   CURIOSITY_LABELS_V7,
   CURIOSITY_RULES_V7,
   NEUTRAL_LABEL_V7,
+  TOSS_COIN_LABEL_V7,
+  TOSS_COIN_TOOLTIP_V7,
   curiosityBoundaryNoticeV7,
   curiosityIconSubjectV7,
   curiosityOverlayOnTileV7,
   isMonsterUnitV7,
   monsterInfoLinesV7,
+  neutralArtSubjectsV7,
+  neutralBreedOfUnitV7,
+  wellStatusLineV7,
 } from "../curiosity-presentation-v7";
 import {
   endTurnRecoveryLabelV7,
@@ -3959,17 +3969,26 @@ export class Ruleset7DomAppView {
       // Mind Control revision: through its kind (`unitFactionV7`).
       const unitFaction = presentedUnitFactionV7(view, unit);
       const unitBadge: FactionBadgeV7 = factionBadgeV7(unitFaction);
-      // Map curiosities: the neutral Giant Spider shows its portrait (a
-      // code-drawn spider in LEGACY and the classic look) and no badge.
+      // Map curiosities: a neutral unit shows its portrait (the Spider and
+      // Bigfoot code-drawn in LEGACY and the classic look; a camp guard its
+      // faction's portrait, or its legacy figure) and no badge.
       const monster = isMonsterUnitV7(unit);
-      const unitSubject: ArtSubjectV7 = monster
-        ? "PORTRAIT:MONSTER_GIANT_SPIDER"
-        : unitArtSubjectV7({
-            ...unit,
-            ...(gingerbreadMan ? { role: "JUGGERNAUT" as const } : {}),
-            faction: unitFaction,
-            machine,
-          });
+      const breed = monster ? neutralBreedOfUnitV7(view, unit) : null;
+      const neutralFigure = (): SVGSVGElement | undefined =>
+        breed === "GIANT_SPIDER"
+          ? spiderFigureV7(this.#document)
+          : breed === "BIGFOOT"
+            ? bigfootFigureV7(this.#document)
+            : undefined;
+      const unitSubject: ArtSubjectV7 =
+        breed !== null
+          ? neutralArtSubjectsV7(breed, unit.role).portrait
+          : unitArtSubjectV7({
+              ...unit,
+              ...(gingerbreadMan ? { role: "JUGGERNAUT" as const } : {}),
+              faction: unitFaction,
+              machine,
+            });
       const transportArt = unit.form === "EMBARKED" && !machine;
       const unitColour = this.#playerColour(view, unit.ownerId);
       const dockArt = this.#chibiArt(
@@ -3983,7 +4002,7 @@ export class Ruleset7DomAppView {
         egg && dockArt === null
           ? eggFigureV7(this.#document, unitColour)
           : monster && dockArt === null
-            ? spiderFigureV7(this.#document)
+            ? neutralFigure()
             : undefined;
       dock.append(
         identity(
@@ -4030,19 +4049,19 @@ export class Ruleset7DomAppView {
         neutral.dataset.unitStatus = "neutral";
         identityColumn?.append(neutral);
         const provoked = monsterLines.find((line) => line.id === "provoked");
-        if (provoked !== undefined) {
+        // Bigfoot is never provoked: a unit near it makes it Alert (flee).
+        const alert = monsterLines.find((line) => line.id === "alert");
+        for (const line of [provoked, alert]) {
+          if (line === undefined) continue;
           const cue = text(
             this.#document,
             "span",
-            provoked.name,
+            line.name,
             "v7-chip v7-neutral-chip",
           );
-          cue.dataset.unitStatus = "provoked";
-          cue.title = provoked.description;
-          cue.setAttribute(
-            "aria-label",
-            `${provoked.name}. ${provoked.description}`,
-          );
+          cue.dataset.unitStatus = line.id;
+          cue.title = line.description;
+          cue.setAttribute("aria-label", `${line.name}. ${line.description}`);
           identityColumn?.append(cue);
         }
       }
@@ -4551,8 +4570,14 @@ export class Ruleset7DomAppView {
         for (const stat of stats.stats) {
           // An Egg cannot move or fight: only its HP and Defense matter.
           if (egg && stat.id !== "HP" && stat.id !== "DEFENSE") continue;
-          // The Giant Spider explores nothing: it has no Sight.
+          // The Giant Spider explores nothing: it has no Sight. Bigfoot
+          // (round 2) never fights: no Attack and no Range either.
           if (monster && stat.id === "SIGHT") continue;
+          if (
+            breed === "BIGFOOT" &&
+            (stat.id === "ATTACK" || stat.id === "RANGE")
+          )
+            continue;
           const exact = stat.visibility !== "BASE_ONLY";
           const value = el(this.#document, "dd", "v7-stat-value");
           value.append(
@@ -4963,15 +4988,14 @@ export class Ruleset7DomAppView {
             helpArt?.element ??
               (egg
                 ? eggFigureV7(this.#document, unitColour)
-                : monster
-                  ? spiderFigureV7(this.#document)
-                  : art(
-                      this.#document,
-                      transportArt
-                        ? "unit-shared-embarked-transport"
-                        : RULESET7_UNIT_ART_IDS[unit.role],
-                      "",
-                    )),
+                : (neutralFigure() ??
+                  art(
+                    this.#document,
+                    transportArt
+                      ? "unit-shared-embarked-transport"
+                      : RULESET7_UNIT_ART_IDS[unit.role],
+                    "",
+                  ))),
             helpArt?.factionArt === true || egg ? null : unitBadge,
           ),
           text(this.#document, "h2", roleLabel),
@@ -4985,23 +5009,35 @@ export class Ruleset7DomAppView {
         }
         // The unit glossary (bead pulp_wars-2yc.39): what the unit can do,
         // then what its chips mean right now, one plain sentence each.
-        const lines: readonly GlossaryLineV7[] = monster
-          ? [
-              ...SPIDER_GLOSSARY_IDS_V7.map(glossaryEntryV7),
-              // Whom it will attack after this round stays a live line.
-              ...monsterLines
-                .filter((line) => line.id === "provoked" || line.id === "calm")
-                .map((line) => ({
-                  id: line.id,
-                  name: line.name,
-                  text: line.description,
-                })),
-            ]
-          : egg
-            ? [glossaryEntryV7("EGG")]
-            : unit.form === "EMBARKED"
-              ? [glossaryEntryV7(machine ? "STATUS_AFLOAT" : "AT_SEA")]
-              : roleGlossaryV7(unit.role, unitFaction);
+        const lines: readonly GlossaryLineV7[] =
+          breed !== null && breed !== "GIANT_SPIDER"
+            ? // Round 2: a guard's or Bigfoot's lines are its dock lines
+              // (its one sentence, its bounty, whom it attacks or whether
+              // it will flee).
+              monsterLines.map((line) => ({
+                id: line.id,
+                name: line.name,
+                text: line.description,
+              }))
+            : monster
+              ? [
+                  ...SPIDER_GLOSSARY_IDS_V7.map(glossaryEntryV7),
+                  // Whom it will attack after this round stays a live line.
+                  ...monsterLines
+                    .filter(
+                      (line) => line.id === "provoked" || line.id === "calm",
+                    )
+                    .map((line) => ({
+                      id: line.id,
+                      name: line.name,
+                      text: line.description,
+                    })),
+                ]
+              : egg
+                ? [glossaryEntryV7("EGG")]
+                : unit.form === "EMBARKED"
+                  ? [glossaryEntryV7(machine ? "STATUS_AFLOAT" : "AT_SEA")]
+                  : roleGlossaryV7(unit.role, unitFaction);
         if (lines.length > 0)
           unitDetails.append(
             glossaryListV7(this.#document, lines, (line, entry) =>
@@ -5533,6 +5569,13 @@ export class Ruleset7DomAppView {
             text(this.#document, "strong", CURIOSITY_LABELS_V7[curiosity]),
             text(this.#document, "p", CURIOSITY_RULES_V7[curiosity]),
           );
+          // Round 2: whether the viewer may still toss its Coin.
+          const well = wellStatusLineV7(view, tile.at);
+          if (well !== null) {
+            const line = text(this.#document, "p", well, "v7-curiosity-status");
+            line.dataset.wellStatus = "true";
+            info.append(line);
+          }
           details.append(info);
         }
         if (view.graves.some((grave) => same(grave, tile.at))) {
@@ -5927,6 +5970,17 @@ export class Ruleset7DomAppView {
         action.setAttribute("aria-description", `${FROSTING_TOOLTIP_V7}.`);
         action.dataset.candyFrosting = "true";
       }
+      // Map curiosities round 2 (section 34.1): the Wishing Well's toss,
+      // with its one Coin and what it may bring.
+      if (command.kind === "TOSS_COIN") {
+        action.title = TOSS_COIN_TOOLTIP_V7;
+        action.setAttribute("aria-description", `${TOSS_COIN_TOOLTIP_V7}.`);
+        action.dataset.curiosity = "wishing_well";
+        price = WELL_TOSS_COST_V7;
+        action.append(
+          economyChips(this.#document, { cost: WELL_TOSS_COST_V7 }),
+        );
+      }
       if (command.kind === "CULTIVATE_FOREST") {
         action.title =
           "Clear for farming · Removes Forest and creates Fertile Ground";
@@ -5959,6 +6013,9 @@ export class Ruleset7DomAppView {
             trainBadge,
           ),
         );
+      // LEGACY and the classic look: the Well's code glyph.
+      if (command.kind === "TOSS_COIN" && commandArt === null)
+        action.prepend(curiosityGlyphV7(this.#document, "WISHING_WELL"));
       const factionIcon = FACTION_COMMAND_ICONS[command.kind];
       if (factionIcon !== undefined && commandArt === null)
         action.prepend(
@@ -12802,6 +12859,7 @@ const TECH_BRANCH_LABELS: Readonly<Record<string, string>> = {
   NAVAL: "Naval",
 };
 const COMMAND_LABELS: Partial<Record<CommandV7["kind"], string>> = {
+  TOSS_COIN: TOSS_COIN_LABEL_V7,
   HARVEST_FRUIT: "Harvest",
   HUNT_GAME: "Hunt",
   HARVEST_FISH: "Fish",

@@ -338,7 +338,15 @@ export type SupportEffectV7 =
   | "FOUNTAIN"
   | "BLESSING"
   | "SALVAGE"
-  | "BOUNTY";
+  | "BOUNTY"
+  /**
+   * Map curiosities round 2 (bead pulp_wars-737.16): the gate burst at both
+   * gates of a traversal (the actor at the entry, the recipient at the
+   * exit), and a Coin splashing into the Wishing Well (a gold "+N" for its
+   * Coins outcome).
+   */
+  | "GATE"
+  | "WELL";
 
 /**
  * The Mind Control revision: how long the control halo takes to shatter
@@ -627,6 +635,59 @@ export function corePresentationPlanV7(
           recipients: [],
           durationMs: 640,
         });
+    } else if (event.kind === "GATE_DISPLACED") {
+      // Round 2: the exit's occupant slides aside before the mover arrives.
+      if (isExplored(event.from) && isExplored(event.to))
+        steps.push({
+          kind: "MOVE",
+          unitId: event.unitId,
+          path: [event.from, event.to],
+          durationMs: 160,
+          pushSlide: true,
+          ...(enemyTurn ? { followCamera: true as const } : {}),
+        });
+      origins.set(event.unitId, event.to);
+    } else if (event.kind === "GATE_TRAVERSED") {
+      // The burst at both gates; the unit comes out of the exit.
+      const cells = [event.from, event.to].filter(isExplored);
+      const [first, ...rest] = cells;
+      if (first !== undefined)
+        steps.push({
+          kind: "SUPPORT",
+          effect: "GATE",
+          actor: { unitId: event.unitId, at: first },
+          recipients: rest.map((at) => ({ unitId: event.unitId, at })),
+          durationMs: 480,
+        });
+      origins.set(event.unitId, event.to);
+    } else if (event.kind === "COIN_TOSSED") {
+      // A Coin splashes into the Well; its Coins rise as a gold "+N", and a
+      // full heal plays the heal ring on the unit.
+      if (isExplored(event.at)) {
+        steps.push({
+          kind: "SUPPORT",
+          effect: "WELL",
+          actor: {
+            unitId: event.unitId,
+            at: event.at,
+            ...(event.coinsGained > 0 ? { amount: event.coinsGained } : {}),
+          },
+          recipients: [],
+          durationMs: 640,
+        });
+        const healed =
+          event.hpAfter -
+          (before.units.find((unit) => unit.id === event.unitId)?.hp ??
+            event.hpAfter);
+        if (event.outcome === "HEAL" && healed > 0)
+          steps.push({
+            kind: "SUPPORT",
+            effect: "REGENERATE",
+            actor: { unitId: event.unitId, at: event.at, amount: healed },
+            recipients: [],
+            durationMs: 480,
+          });
+      }
     } else if (event.kind === "MONSTER_REGENERATED") {
       // The Spider regenerates at the end of the neutral turn: the heal
       // ring and its "+N", like a Troll's.

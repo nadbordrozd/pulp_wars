@@ -76,6 +76,16 @@ export type AbilityPreviewStyleV7 =
   | "MONSTER_AREA"
   | "MONSTER_REACH"
   /**
+   * Map curiosities round 2 (bead pulp_wars-737.16): a selected saucer
+   * guard's camp perimeter (the tiles within 2 of the saucer, outlined in
+   * ochre), a gate's exit (pale gate light), the tile a gate's occupant is
+   * shoved to, and a blocked exit (grey).
+   */
+  | "CAMP_PERIMETER"
+  | "GATE_EXIT"
+  | "GATE_SHOVE"
+  | "GATE_BLOCKED"
+  /**
    * The frozen sea (bead pulp_wars-5ti.7): the tiles a Freeze turns to ice
    * that are not picked themselves (a line's far tile, the Ice Witch's
    * ring), in the Place style's cream on an ice tint; FREEZE_FOCUS is the
@@ -590,6 +600,11 @@ const STYLE_COLORS: Readonly<
   // Map curiosities: the Spider's bone white (area) and umber (reach).
   MONSTER_AREA: { fill: "rgba(239, 230, 208, 0)", stroke: "#efe6d0" },
   MONSTER_REACH: { fill: "rgba(138, 90, 51, 0.3)", stroke: "#efe6d0" },
+  // Round 2: the saucer's "too close" line in ochre, the gate's pale light.
+  CAMP_PERIMETER: { fill: "rgba(224, 150, 80, 0.1)", stroke: "#ffae42" },
+  GATE_EXIT: { fill: "rgba(236, 232, 255, 0.24)", stroke: "#ece8ff" },
+  GATE_SHOVE: { fill: "rgba(236, 232, 255, 0.12)", stroke: "#c9c0f2" },
+  GATE_BLOCKED: { fill: "rgba(170, 179, 192, 0.24)", stroke: "#aab3c0" },
 };
 
 /** Dark stripes that turn the friendly-fire outline into a hazard band. */

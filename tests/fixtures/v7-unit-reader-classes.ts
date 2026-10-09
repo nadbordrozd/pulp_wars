@@ -543,11 +543,17 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/headless/v7.ts::recordSnapshotV7": "BOARD",
     // Map curiosities UI (`pulp_wars-737.6`): the Spider's area and reach,
     // its dock lines and the log lines read what stands on the board (the
-    // view's `units`; a burrowed unit is never a visible provoker).
-    "src/render/canvas/curiosity-canvas-v7.ts::addCuriosityEntriesV7": "BOARD",
+    // view's `units`; a burrowed unit is never a visible provoker). Round 2
+    // (`pulp_wars-737.16`): the selected neutral unit or camp, the combat
+    // note's target and a gate's occupant are on the board too (a burrowed
+    // unit never stands on a gate: a mound never lies on one).
+    "src/render/canvas/curiosity-canvas-v7.ts::selectedNeutralV7": "BOARD",
     "src/render/curiosity-presentation-v7.ts::curiosityBoundaryNoticeV7":
       "BOARD",
+    "src/render/curiosity-presentation-v7.ts::gateMovePreviewV7": "BOARD",
     "src/render/curiosity-presentation-v7.ts::monsterInfoLinesV7": "BOARD",
+    "src/render/curiosity-presentation-v7.ts::monsterRetaliationNoteV7":
+      "BOARD",
     // The naval branch interface (`pulp_wars-5ti.7`): Board's prizes and
     // reasons, the Submarine's reason, the ram's shove and the boarding
     // notice read the ships on the board (a ship never burrows).

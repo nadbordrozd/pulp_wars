@@ -93,6 +93,9 @@ const SUPPORT_SOUNDS: Readonly<Record<SupportEffectV7, SoundIdV1>> = {
   BLESSING: "special.sparkle",
   SALVAGE: "economy.coin",
   BOUNTY: "economy.coin",
+  // Map curiosities round 2: the gate burst and the Coin in the Well.
+  GATE: "special.sparkle",
+  WELL: "economy.coin",
 };
 
 /**

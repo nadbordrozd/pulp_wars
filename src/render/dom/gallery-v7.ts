@@ -41,6 +41,7 @@ import {
 import { uiIconV7, type UiIconIdV7 } from "./ui-icons-v7";
 import {
   GALLERY_BUILDING_ROWS_V7,
+  GALLERY_CURIOSITY_GRID_V7,
   GALLERY_CURIOSITY_ROWS_V7,
   GALLERY_FACTIONS_V7,
   GALLERY_FILTERS_STORAGE_KEY_V7,
@@ -573,14 +574,18 @@ export class GalleryViewV7 {
       panel.append(this.#sounds.root);
       return panel;
     }
-    // Curiosities belong to no faction: five cells and no filters.
+    // Curiosities belong to no faction: two rows of five cells (round 1
+    // over round 2) and no filters.
     if (this.#filters.tab === "CURIOSITIES")
       panel.append(this.#curiosityTable());
     else panel.append(this.#filterControls(), this.#table());
     return panel;
   }
 
-  /** The Curiosities tab: one row, the Spider and the four tile overlays. */
+  /**
+   * The Curiosities tab: the Spider and the four round-1 tile overlays,
+   * then Bigfoot and the four round-2 overlays.
+   */
   #curiosityTable(): HTMLElement {
     const scroll = el(this.#document, "div", "v7-gallery-scroll");
     const table = el(
@@ -590,45 +595,47 @@ export class GalleryViewV7 {
     );
     table.setAttribute("role", "grid");
     table.setAttribute("aria-label", TAB_LABELS.CURIOSITIES);
-    table.setAttribute("aria-rowcount", "1");
     table.setAttribute(
-      "aria-colcount",
-      String(GALLERY_CURIOSITY_ROWS_V7.length),
+      "aria-rowcount",
+      String(GALLERY_CURIOSITY_GRID_V7.length),
     );
+    table.setAttribute("aria-colcount", String(curiosityColumns()));
     const body = this.#document.createElement("tbody");
-    const tr = this.#document.createElement("tr");
     const keys: string[] = [];
-    GALLERY_CURIOSITY_ROWS_V7.forEach((row, column) => {
-      const cell = galleryCuriosityCellV7(row);
-      const td = el(this.#document, "td", "v7-gallery-cell-wrap");
-      td.setAttribute("role", "gridcell");
-      const key = cellKey(row, null);
-      keys.push(key);
-      const node = button(
-        this.#document,
-        "",
-        "gallery-open-curiosity",
-        "v7-gallery-cell",
-      );
-      node.dataset.focusKey = key;
-      node.dataset.row = row;
-      node.dataset.owner = "neutral";
-      node.dataset.gridRow = "0";
-      node.dataset.gridColumn = String(column);
-      node.setAttribute("aria-label", `${cell.name}, neutral`);
-      node.append(
-        this.#tile(
-          { subject: cell.subject, ground: cell.ground, scale: TABLE_SCALE },
-          node,
-        ),
-        text(this.#document, "span", cell.name, "v7-gallery-cell-name"),
-      );
-      node.onclick = () =>
-        this.#openDetail({ tab: "CURIOSITIES", row, faction: null });
-      td.append(node);
-      tr.append(td);
+    GALLERY_CURIOSITY_GRID_V7.forEach((cells, gridRow) => {
+      const tr = this.#document.createElement("tr");
+      cells.forEach((row, column) => {
+        const cell = galleryCuriosityCellV7(row);
+        const td = el(this.#document, "td", "v7-gallery-cell-wrap");
+        td.setAttribute("role", "gridcell");
+        const key = cellKey(row, null);
+        keys.push(key);
+        const node = button(
+          this.#document,
+          "",
+          "gallery-open-curiosity",
+          "v7-gallery-cell",
+        );
+        node.dataset.focusKey = key;
+        node.dataset.row = row;
+        node.dataset.owner = "neutral";
+        node.dataset.gridRow = String(gridRow);
+        node.dataset.gridColumn = String(column);
+        node.setAttribute("aria-label", `${cell.name}, neutral`);
+        node.append(
+          this.#tile(
+            { subject: cell.subject, ground: cell.ground, scale: TABLE_SCALE },
+            node,
+          ),
+          text(this.#document, "span", cell.name, "v7-gallery-cell-name"),
+        );
+        node.onclick = () =>
+          this.#openDetail({ tab: "CURIOSITIES", row, faction: null });
+        td.append(node);
+        tr.append(td);
+      });
+      body.append(tr);
     });
-    body.append(tr);
     if (this.#gridFocusKey === null || !keys.includes(this.#gridFocusKey))
       this.#gridFocusKey = keys[0] ?? null;
     for (const node of body.querySelectorAll<HTMLElement>("[data-grid-row]"))
@@ -1235,7 +1242,7 @@ export class GalleryViewV7 {
       const rows = Math.max(...cells.map((node) => at(node).row)) + 1;
       const columns =
         this.#filters.tab === "CURIOSITIES"
-          ? GALLERY_CURIOSITY_ROWS_V7.length
+          ? curiosityColumns()
           : this.#filters.factions.length;
       let row = here.row;
       let column = move[1] < 0 ? here.column : here.column + here.span - 1;
@@ -2148,4 +2155,9 @@ class GalleryDemoV7 {
     this.#section.dataset.demoState = "stopped";
     this.#host.destroy();
   }
+}
+
+/** The widest row of the Curiosities grid. */
+function curiosityColumns(): number {
+  return Math.max(...GALLERY_CURIOSITY_GRID_V7.map((row) => row.length));
 }

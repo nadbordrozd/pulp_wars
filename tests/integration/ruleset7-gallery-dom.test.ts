@@ -706,7 +706,7 @@ describe("Ruleset 7 Gallery", () => {
 });
 
 describe("Ruleset 7 Gallery: Curiosities (pulp_wars-737.6)", () => {
-  it("lists the Giant Spider and the four curiosities on their own tab, without filters", () => {
+  it("lists the Giant Spider, Bigfoot and the eight curiosities on their own tab, without filters", () => {
     mount();
     openGallery();
     const tabs = [...document.querySelectorAll<HTMLElement>('[role="tab"]')];
@@ -739,13 +739,24 @@ describe("Ruleset 7 Gallery: Curiosities (pulp_wars-737.6)", () => {
       ["FOUNTAIN", "CURIOSITY:FOUNTAIN", "Fountain of Youth, neutral"],
       ["SHRINE", "CURIOSITY:SHRINE", "Shrine, neutral"],
       ["WRECK", "CURIOSITY:WRECK", "Sunken Wreck, neutral"],
+      // Round 2 (bead pulp_wars-737.16): a second row.
+      ["BIGFOOT", "UNIT:NEUTRAL_BIGFOOT", "Bigfoot, neutral"],
+      ["DOWNED_SAUCER", "CURIOSITY:DOWNED_SAUCER", "Downed Saucer, neutral"],
+      ["GRAVEYARD", "CURIOSITY:GRAVEYARD", "Graveyard, neutral"],
+      ["GATE", "CURIOSITY:GATE", "Dimensional Gate, neutral"],
+      ["WISHING_WELL", "CURIOSITY:WISHING_WELL", "Wishing Well, neutral"],
     ]);
-    // The keyboard grid: Right and End walk the row.
+    expect(
+      document.querySelectorAll(".v7-gallery-curiosities tbody tr"),
+    ).toHaveLength(2);
+    // The keyboard grid: Right and End walk the row, Down the column.
     cells()[0]?.focus();
     key(required('.v7-gallery-cell[data-row="SPIDER"]'), "ArrowRight");
     expect(document.activeElement).toBe(cells()[1]);
     key(required('.v7-gallery-cell[data-row="WEB"]'), "End");
     expect(document.activeElement).toBe(cells()[4]);
+    key(required('.v7-gallery-cell[data-row="WRECK"]'), "ArrowDown");
+    expect(document.activeElement).toBe(cells()[9]);
     // The Spider's detail: Neutral, its stats, its sentence and its bounty.
     cells()[0]?.click();
     const detail = required(".v7-gallery-detail");
@@ -778,6 +789,18 @@ describe("Ruleset 7 Gallery: Curiosities (pulp_wars-737.6)", () => {
         window.localStorage.getItem(GALLERY_FILTERS_STORAGE_KEY_V7) ?? "{}",
       ).tab,
     ).toBe("CURIOSITIES");
+    // Round 2: Bigfoot's detail, then the saucer's guards and bounties.
+    for (let step = 0; step < 3; step += 1)
+      required<HTMLButtonElement>('[data-action="gallery-next-row"]').click();
+    expect(required("#v7-gallery-detail-title").textContent).toBe("Bigfoot");
+    expect(required(".v7-gallery-detail").textContent).toContain(
+      "pays 12 Coins",
+    );
+    required<HTMLButtonElement>('[data-action="gallery-next-row"]').click();
+    expect(required("#v7-gallery-detail-title").textContent).toBe(
+      "Downed Saucer",
+    );
+    expect(required(".v7-gallery-notes").textContent).toContain("Ray Gunner");
   });
 });
 

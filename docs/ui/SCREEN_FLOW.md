@@ -1972,7 +1972,8 @@ Curiosities section whenever the match was launched with the option on).
   on one row under the Map description (it used to render as a full-width
   input above the label), with the hint "Rare sights on the map: a
   wandering monster, a Fountain of Youth, a Shrine, a Wreck." as its
-  tooltip and accessible description.
+  tooltip and accessible description (since round 2: "Rare sights on the
+  map: monsters, camps, gates, a well, and more.").
 - **Tile overlays.** The lair web, the Fountain, the Shrine and the Wreck
   are 80 px overlays of their cell (plan entries of kind `CURIOSITY`). The
   web lies on the ground under everything that stands there; the
@@ -2030,6 +2031,27 @@ Curiosities section whenever the match was launched with the option on).
   server: every curiosity and the provoked Spider are planned, the dock
   says "Neutral", a Fighter claims the Shrine, and End Turn plays the
   neutral turn and the Fountain's heal.
+
+- **Round 2** (`pulp_wars-737.16`,
+  [map curiosities section 40](../product/RULESET_7_MAP_CURIOSITIES.md#40-implementation-notes-pulp_wars-73716)).
+  The Downed Saucer, the Graveyard, the two Dimensional Gates and the
+  Wishing Well are overlays of their cell like the Fountain. A camp's
+  guards wear the Martian or Undead sprites with no owner colour and the
+  provoked marker while their camp is provoked; Bigfoot has its own sprite
+  and shadow, and its dock chip is **Alert** while a unit is within 3.
+  Selecting a guard or its camp centre outlines the camp's area, shades
+  what its guards could attack after one step, and outlines a saucer's
+  perimeter in ochre; selecting Bigfoot outlines its habitat; selecting a
+  gate marks the other gate. A Move into a camp carries the provoked
+  marker; a Move onto a gate is labelled "Gate", "Gate · shoves" or "Gate
+  blocked", and the board marks the exit, the tile its occupant is shoved
+  to, or the exit as blocked. A unit on the Well has **Toss a Coin** (1
+  Coin) in its actions; the toss splashes and toasts its outcome. Each new
+  tile's dock gives its one sentence (the Well adds whether the viewer has
+  tossed); the Gallery's Curiosities tab gains a second row (Bigfoot, the
+  Saucer, the Graveyard, the gate, the Well). LEGACY and the Classic look
+  draw code markers and a footprint disc for Bigfoot. The review is
+  `npm run review:ruleset7-curiosities-round2-ui` on hand-built boards.
 
 ## Current Ruleset 7 faction buildings overlay
 

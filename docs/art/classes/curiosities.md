@@ -279,11 +279,10 @@ limit; the hunched pose is lower than a Juggernaut). The registry lines are
 `CHIBI_CURIOSITIES_ROUND2_ART_ASSETS_V7` in
 [`chibi-curiosities-art-manifest.ts`](../../../src/assets/chibi-curiosities-art-manifest.ts),
 with `BIGFOOT_SHADOW_MEASUREMENT_V7` (contact line 89 of 96, foot band 21
-to 66, base band 21 to 69). **Registered, not drawn:** like the faction
-Monuments, they are in the live direction registry (so the preload fetches
-them), but no rule or drawing asks for their subjects until the round-2 UI
-bead (`pulp_wars-737.16`), which also adds Bigfoot to the unit-shadow
-table, as `pulp_wars-737.6` did for the Spider.
+to 66, base band 21 to 69). **Drawn since `pulp_wars-737.16`:** the board, the dock, the Gallery and
+the effects ask for every subject (spec section 40); Bigfoot is in the
+unit-shadow table, measured from its master like the Spider. Before that
+bead they were registered (preloaded) but not drawn.
 
 31 recipes, 31 PixelLab calls (21 creations, 10 edits), $0.28 in all (0.7
 to 1.6 cents a call, `usageUsd` in

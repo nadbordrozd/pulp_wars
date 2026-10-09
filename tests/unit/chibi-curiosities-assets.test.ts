@@ -391,6 +391,10 @@ describe("map curiosity art, round 2 (pulp_wars-737.13)", () => {
       baseLeft: footprint.baseLeft,
       baseRight: footprint.baseRight,
     });
+    // The board's shadow (bead pulp_wars-737.16) is anchored from it.
+    expect(UNIT_SHADOW_MEASUREMENTS_V7["UNIT:NEUTRAL_BIGFOOT"]).toEqual(
+      BIGFOOT_SHADOW_MEASUREMENT_V7,
+    );
   });
 
   it("leaves the gate readable under a unit", async () => {
