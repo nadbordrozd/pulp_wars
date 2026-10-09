@@ -94,7 +94,7 @@ export const CANDY_UI_V7 = {
   movedGumdrop: { x: 3, y: 1 },
   /** A Rushed Donut Racer next to the capital: Home Sweet Home. */
   rushedDonut: { x: 7, y: 7 },
-  /** A Rushed Chocolate Bunny: Sugar Frenzy and its two pips. */
+  /** A Rushed Chocolate Bunny. */
   rushedBear: { x: 4, y: 4 },
   /** A Crashed Marshmallow. */
   crashed: { x: 3, y: 5 },
@@ -103,11 +103,14 @@ export const CANDY_UI_V7 = {
   splatted: { x: 9, y: 2 },
   pieLauncher: { x: 9, y: 5 },
   pieTarget: { x: 10, y: 3 },
-  /** A homed Confectioner with two Crumbs and a wounded Toffee Trooper beside it. */
+  /**
+   * A homed Confectioner with two Crumbs and a wounded Toffee Trooper beside
+   * it (a Top-Up target).
+   */
   confectioner: { x: 6, y: 7 },
   crumbsBear: { x: 5, y: 7 },
   crumbsGumdrop: { x: 6, y: 6 },
-  frostingTarget: { x: 5, y: 6 },
+  topUpTarget: { x: 5, y: 6 },
   /** A Gunner with two wounded own units within two tiles. */
   gunner: { x: 1, y: 2 },
   tossNear: { x: 2, y: 3 },
@@ -120,7 +123,7 @@ export const CANDY_UI_V7 = {
  * Seat 0 (Candy) with every ability ready, against seat 1 (Human by
  * default): a unit that may Rush, a Rushed Donut Racer at home, a Rushed
  * Chocolate Bunny, a Crashed Marshmallow, a Splatted enemy, a Confectioner with
- * Crumbs to Re-bake and a unit to Frost, and a Gunner with units to heal.
+ * Crumbs to Re-bake and a unit to Top Up, and a Gunner with units to heal.
  */
 export function candyUiFixtureV7(
   options: Pick<CandyUiOptionsV7, "factions" | "coins" | "techs"> = {},
@@ -144,7 +147,7 @@ export function candyUiFixtureV7(
       { seat: 0, role: "CATAPULT", at: at.pieLauncher },
       { seat: 1, role: "FIGHTER", at: at.pieTarget },
       { seat: 0, role: "CAPTAIN", at: at.confectioner },
-      { seat: 0, role: "FIGHTER", at: at.frostingTarget, hp: 4 },
+      { seat: 0, role: "FIGHTER", at: at.topUpTarget, hp: 4 },
       { seat: 0, role: "MARKSMAN", at: at.gunner },
       { seat: 0, role: "FIGHTER", at: at.tossNear, hp: 5 },
       { seat: 0, role: "GUARD", at: at.tossFar, hp: 17 },

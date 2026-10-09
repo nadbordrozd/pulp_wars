@@ -934,60 +934,33 @@ describe("Sugar Toss (section 9)", () => {
   });
 });
 
-describe("Frosting (section 9)", () => {
-  it("is the Confectioner's Tend Wounded: heals 2, cures, thaws, and ends neither a Crash nor a Splat", () => {
+describe("Frosting is gone (the Candy redesign, section 7.5)", () => {
+  it("never offers or accepts Tend Wounded for a Confectioner; Top-Up replaces it", () => {
     const state = candyFieldV7(
       [
         { seat: 0, role: "CAPTAIN", at: at(5, 3) },
-        {
-          seat: 0,
-          role: "FIGHTER",
-          at: at(5, 4),
-          hp: 4,
-          rush: "CRASHED",
-          frozen: { turnsLeft: 1 },
-        },
-        { seat: 0, role: "GUARD", at: at(4, 3), hp: 17 },
-        { seat: 0, role: "KNIGHT", at: at(6, 3) },
-        { seat: 0, role: "FIGHTER", at: at(5, 5), hp: 4 },
+        { seat: 0, role: "FIGHTER", at: at(5, 4), hp: 4, rush: "CRASHED" },
         { seat: 1, role: "FIGHTER", at: at(1, 1) },
       ],
       { factions: ["CANDY", "ICE_FOLK"] },
     );
     const confectioner = unitAtV7(state, at(5, 3));
-    const preview = previewTendWoundedV7(activeViewV7(state), confectioner.id);
-    expect(preview).not.toBeNull();
-    const result = playV7(state, {
-      kind: "TEND_WOUNDED",
-      unitId: confectioner.id,
-    });
-    const tended = result.events.find(
-      (event) => event.kind === "WOUNDED_TENDED",
+    expect(previewTendWoundedV7(activeViewV7(state), confectioner.id)).toBe(
+      null,
     );
-    if (tended?.kind !== "WOUNDED_TENDED") throw new Error("not tended");
-    expect(tended.results.map((entry) => [entry.unitId, entry.amount])).toEqual(
-      [
-        [idAt(state, at(5, 4)), 2],
-        [idAt(state, at(4, 3)), 1],
-      ].sort((left, right) => (left[0] as number) - (right[0] as number)),
-    );
-    expect(unitAtV7(result.state, at(5, 4)).hp).toBe(6);
-    expect(unitAtV7(result.state, at(4, 3)).hp).toBe(18);
-    // Two tiles away: not reached. A full unit is not listed.
-    expect(unitAtV7(result.state, at(5, 5)).hp).toBe(4);
-    // The Frozen unit thaws (Ice Folk Freeze); the Crash stays.
+    expect(offeredV7(state, "TEND_WOUNDED")).toEqual([]);
     expect(
-      result.state.frozen.find(
-        (entry) => entry.unitId === idAt(state, at(5, 4)),
-      ),
-    ).toBeUndefined();
-    expect(result.state.sugarRush).toEqual([
-      { unitId: idAt(state, at(5, 4)), phase: "CRASHED" },
+      rejectedV7(state, { kind: "TEND_WOUNDED", unitId: confectioner.id }),
+    ).toEqual({ code: "UNIT_ROLE_INVALID", params: { role: "CAPTAIN" } });
+    expect(offeredV7(state, "TOP_UP")).toEqual([
+      {
+        kind: "TOP_UP",
+        unitId: confectioner.id,
+        targetUnitId: idAt(state, at(5, 4)),
+      },
     ]);
-    // A unit can be healed by one Frosting and one Sugar Toss per turn.
-    expect(result.state.tossedThisTurn).toEqual([]);
     // No Rally is ever offered to the Confectioner.
     expect(offeredV7(state, "RALLY")).toEqual([]);
-    expect(hasUnitAtV7(result.state, at(5, 3))).toBe(true);
+    expect(hasUnitAtV7(state, at(5, 3))).toBe(true);
   });
 });

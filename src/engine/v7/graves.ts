@@ -31,7 +31,12 @@ export type GraveDeathCauseV7 =
   | "STOMP"
   | "TRAMPLE"
   // Ice Folk Freeze (`pulp_wars-w49.37`): a Mammoth's Stampede.
-  | "STAMPEDE";
+  | "STAMPEDE"
+  // The Candy redesign (RULESET_7_CANDY_REDESIGN.md sections 7.3 and 7.7):
+  // a Gumball Gunner's Ricochet and a Chocolate Bunny's Thump, each like a
+  // splash.
+  | "RICOCHET"
+  | "THUMP";
 
 /**
  * The canonical state a Grave decision reads. The Dwarf revision: with the

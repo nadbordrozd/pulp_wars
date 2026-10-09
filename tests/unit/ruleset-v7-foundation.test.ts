@@ -39,7 +39,7 @@ const setup: MatchSetupV7 = {
 
 describe("ruleset-7 revision-8 deterministic foundation", () => {
   it("freezes the exact identity and registries", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r67");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r68");
     expect(FACTION_IDS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",
@@ -126,7 +126,9 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
     // (`pulp_wars-737.14`) add TOSS_COIN before RECOVER (67).
     // Ice Folk Freeze (`pulp_wars-w49.37`) adds FROST_BOLT and STAMPEDE
     // after BREAK_OFF (69).
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(69);
+    // The Candy redesign (`pulp_wars-jdb.12`) adds TOP_UP after
+    // TOSS_COIN (70).
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(70);
     // The revision-19 Dinosaur STAMPEDE stays gone; Ice Folk Freeze's
     // Mammoth STAMPEDE is a new command after BREAK_OFF.
     expect(COMMAND_KIND_ORDER_V7.indexOf("STAMPEDE")).toBe(
@@ -145,7 +147,10 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
     // (`pulp_wars-737.14`) add GATE_DISPLACED, GATE_TRAVERSED, GATE_BLOCKED,
     // and COIN_TOSSED (119). Ice Folk Freeze (`pulp_wars-w49.37`) renames
     // UNITS_CHILLED to UNITS_FROZEN in place and adds MAMMOTH_STAMPEDED (120).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(120);
+    // The Candy redesign (`pulp_wars-jdb.12`) adds UNIT_TOPPED_UP,
+    // TILES_GLAZED, UNIT_STUCK, TOOTHACHE_GIVEN, RICOCHETED, and THUMPED
+    // (126).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(126);
     // Revision 19 inserts HATCH after KABOOM (and, until revision 20,
     // STAMPEDE between them), LAY_EGG after TRAIN_NAVAL, EGG_LAID and
     // EGG_HATCHED after NAVAL_UNIT_TRAINED, and UNIT_GREW after

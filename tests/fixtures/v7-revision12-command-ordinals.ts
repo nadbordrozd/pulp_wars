@@ -52,6 +52,8 @@ const LATER_COMMAND_KINDS: readonly string[] = [
   // Map curiosities round 2 (`pulp_wars-737.14`) insert TOSS_COIN after
   // SUGAR_TOSS.
   "TOSS_COIN",
+  // The Candy redesign (`pulp_wars-jdb.12`) inserts TOP_UP after TOSS_COIN.
+  "TOP_UP",
   // The giants' signatures (`pulp_wars-w49.30`) insert four after RECOVER.
   "SWALLOW",
   "TOSS",

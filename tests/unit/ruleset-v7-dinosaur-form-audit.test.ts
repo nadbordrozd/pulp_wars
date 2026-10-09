@@ -516,9 +516,13 @@ describe("ruleset-7 revision-19 form audit: source", () => {
   // (candy-reducer.ts: an Egg never moves, and an embarked unit that ends a
   // Move afloat is not on Crumbs); and the state schema's `sugarRush` entry
   // (land or embarked, never an Egg or a boat) and `tossedThisTurn` entry
-  // (land form).
+  // (land form). The Candy redesign (`pulp_wars-jdb.12`) removes the
+  // Escape perk's gate (candy.ts) and adds the Top-Up target's
+  // (candy-abilities.ts: an Egg, an embarked unit, and a boat are never
+  // topped up).
   const AUDITED: Readonly<Record<string, number>> = {
-    "src/engine/v7/candy.ts": 6,
+    "src/engine/v7/candy.ts": 5,
+    "src/engine/v7/candy-abilities.ts": 1,
     "src/engine/v7/candy-reducer.ts": 1,
     // The Dinosaur pass (`pulp_wars-w49.15`): Pack Hunt counts a dinosaur
     // beside the target in land form only (`packHuntAttack2V7`: never an
@@ -552,7 +556,12 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // `pulp_wars-5ti.3`: Freeze is used by a land-form unit only (an Egg, an
     // embarked unit, and a boat must fail it).
     // Tuning 5 (`pulp_wars-w49.4`) removed Drill and its land-form gate.
-    "src/engine/v7/reducer.ts": 17,
+    // Map curiosities round 2 (`pulp_wars-737.14`): the Wishing Well's
+    // tosser stands on the Well in land form; Ice Folk Freeze
+    // (`pulp_wars-w49.37`): the Ice Witch casts in land form (an Egg, an
+    // embarked unit, and a boat must fail both). Found by the Candy
+    // redesign's rebase (`pulp_wars-jdb.12`): this pin had been left at 17.
+    "src/engine/v7/reducer.ts": 19,
     // Step two of the Martian pass (`pulp_wars-w49.25`, 7r58): City Walls
     // hold a land-form unit on its own center against a Saucer's Tractor
     // Beam (`unitHeldByCityWallsV7`; an Egg, an embarked unit, and a boat

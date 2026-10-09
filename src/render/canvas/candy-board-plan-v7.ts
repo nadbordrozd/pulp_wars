@@ -22,7 +22,6 @@ import {
   matchHasCandySeatV7,
   rebakeBoardLabelV7,
   rebakeTargetNameV7,
-  sugarFrenzyPipsV7,
   sugarTossTargetNameV7,
 } from "../candy-presentation-v7";
 import type {
@@ -51,8 +50,6 @@ export interface CandyUnitMarkersV7 {
   readonly splatted: boolean;
   /** The owner's view: a Rushed unit that will not Crash where it stands. */
   readonly home: boolean;
-  /** A Rushed Chocolate Bunny's Sugar Frenzy continuations, as pips. */
-  readonly frenzy: { readonly left: number; readonly of: number } | null;
 }
 
 /** CRUMBS only: the Crumbs of a tile. */
@@ -93,7 +90,6 @@ export function candyUnitMarkersV7(
     crashed,
     splatted,
     home: homeSweetHomeChipV7(view, unit, stats),
-    frenzy: sugarFrenzyPipsV7(unit, stats),
   };
 }
 
@@ -198,11 +194,23 @@ export function candyPickTargetsV7(
   if (pick.kind === "REBAKE") {
     const preview = previewRebakeV7(view, pick.unitId);
     if (preview === null) return [];
-    return preview.options.flatMap((option): MapCommandTargetV7[] => {
+    // The Candy redesign (`pulp_wars-jdb.12`): the copy appears on a tile
+    // next to the Confectioner, scooped from Crumbs within 2. Until the
+    // two-step pick of `pulp_wars-jdb.14`, each placement tile bakes the
+    // most expensive offered Crumbs (then the first in (y, x) order).
+    const byTile = new Map<string, (typeof preview.options)[number]>();
+    for (const option of preview.options) {
+      const key = `${option.at.x},${option.at.y}`;
+      const known = byTile.get(key);
+      if (known === undefined || option.cost > known.cost)
+        byTile.set(key, option);
+    }
+    return [...byTile.values()].flatMap((option): MapCommandTargetV7[] => {
       const command = commands.find(
         (candidate) =>
           candidate.kind === "REBAKE" &&
           candidate.unitId === pick.unitId &&
+          same(candidate.from, option.from) &&
           same(candidate.at, option.at),
       );
       return command === undefined

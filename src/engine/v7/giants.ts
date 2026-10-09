@@ -1277,7 +1277,7 @@ export function resolveFixedHitsV7(
   state: GameStateV7,
   creditUnitId: UnitId,
   results: readonly CombatSplashEntryV7[],
-  cause: "CRUSH" | "STOMP" | "TRAMPLE" | "STAMPEDE",
+  cause: "CRUSH" | "STOMP" | "TRAMPLE" | "STAMPEDE" | "RICOCHET" | "THUMP",
   events: DomainEventV7[],
 ): GameStateV7 {
   if (results.length === 0) return state;

@@ -143,9 +143,13 @@ describe("Candy persistence (section 13)", () => {
         { seat: 0, role: "FIGHTER", at: at(5, 3), rush: "RUSHED" },
         { seat: 0, role: "KNIGHT", at: at(6, 3), rush: "CRASHED" },
         { seat: 0, role: "MARKSMAN", at: at(4, 3), hp: 6, tossed: true },
-        { seat: 1, role: "GUARD", at: at(5, 1), splatted: true },
+        { seat: 1, role: "GUARD", at: at(5, 1), splatted: true, stuck: 1 },
+        { seat: 1, role: "FIGHTER", at: at(7, 1), toothache: 2 },
       ],
       {
+        // The Candy redesign (`pulp_wars-jdb.12`): Stuck, Toothache, and the
+        // Glaze.
+        glazed: [at(3, 3)],
         crumbs: [
           { at: at(4, 5), role: "CAPTAIN", turnsLeft: 2 },
           { at: at(6, 5), role: "CATAPULT", turnsLeft: 1 },
@@ -160,6 +164,9 @@ describe("Candy persistence (section 13)", () => {
       "crumbs",
       "splattedThisTurn",
       "tossedThisTurn",
+      "stuck",
+      "toothache",
+      "glazedThisTurn",
     ] as const) {
       expect(state[key].length, key).toBeGreaterThan(0);
       expect(canonicalHash({ ...state, [key]: [] }), key).not.toBe(
@@ -171,6 +178,9 @@ describe("Candy persistence (section 13)", () => {
     expect(view.sugarRush).toEqual(state.sugarRush);
     expect(view.splattedThisTurn).toEqual(state.splattedThisTurn);
     expect(view.tossedThisTurn).toEqual(state.tossedThisTurn);
+    expect(view.stuck).toEqual(state.stuck);
+    expect(view.toothache).toEqual(state.toothache);
+    expect(view.glazedThisTurn).toEqual(state.glazedThisTurn);
     expect(view.crumbs.map((entry) => entry.at)).toEqual([at(4, 5), at(6, 5)]);
     // A viewer that has not explored a Crumbs tile does not see it, nor the
     // entries of units it does not see.
@@ -369,6 +379,7 @@ describe("Candy event projection (section 12.14)", () => {
     const baked = playV7(state, {
       kind: "REBAKE",
       unitId: unitAtV7(state, at(5, 3)).id,
+      from: at(5, 4),
       at: at(5, 4),
     });
     expect(

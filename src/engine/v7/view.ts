@@ -33,6 +33,7 @@ import type {
   BoardSizeV7,
   BiomeIdV7,
   AchievementIdV7,
+  CandyStatusEntryV7,
   FrozenStatusV7,
   CoolingStatusV7,
   CoordV7,
@@ -392,6 +393,18 @@ export interface PlayerViewV7 {
   readonly splattedThisTurn: readonly UnitId[];
   /** The Candy revision: `tossedThisTurn` of visible units. */
   readonly tossedThisTurn: readonly UnitId[];
+  /**
+   * The Candy redesign (docs/product/RULESET_7_CANDY_REDESIGN.md section
+   * 6.2): the Stuck and Toothache entries of visible units (public, like
+   * Chill), sorted by unit ID.
+   */
+  readonly stuck: readonly CandyStatusEntryV7[];
+  readonly toothache: readonly CandyStatusEntryV7[];
+  /**
+   * The Candy redesign (section 7.2): the Glazed tiles of the active seat's
+   * turn on tiles the viewer has explored, sorted by (y, x).
+   */
+  readonly glazedThisTurn: readonly CoordV7[];
   /**
    * The Dinosaur pass, correction: `huntedThisTurn` of visible units (the
    * targets a Caveman of the active seat has Pack Hunt against).
@@ -1052,6 +1065,17 @@ export function viewForV7(
     tossedThisTurn: state.tossedThisTurn.filter((unitId) =>
       visibleUnitIds.has(unitId),
     ),
+    // The Candy redesign (section 6.2): Stuck and Toothache are public on
+    // visible units; the Glaze on explored tiles.
+    stuck: state.stuck
+      .filter((entry) => visibleUnitIds.has(entry.unitId))
+      .map((entry) => ({ unitId: entry.unitId, endsLeft: entry.endsLeft })),
+    toothache: state.toothache
+      .filter((entry) => visibleUnitIds.has(entry.unitId))
+      .map((entry) => ({ unitId: entry.unitId, endsLeft: entry.endsLeft })),
+    glazedThisTurn: state.glazedThisTurn
+      .filter((at) => explored.has(key(at)))
+      .map((at) => ({ x: at.x, y: at.y })),
     huntedThisTurn: state.huntedThisTurn.filter((unitId) =>
       visibleUnitIds.has(unitId),
     ),

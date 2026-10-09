@@ -224,11 +224,15 @@ export type CommandV7 =
     }
   | {
       /**
-       * The Candy revision (section 6.4): a Confectioner bakes the unit in
-       * the own Crumbs on the adjacent tile `at` back.
+       * The Candy revision (section 6.4), as the Candy redesign
+       * (docs/product/RULESET_7_CANDY_REDESIGN.md section 8.1) changed it:
+       * a Confectioner scoops the own Crumbs on `from` (within 2 tiles,
+       * from under any unit) and bakes the unit back onto the free tile `at`
+       * next to itself.
        */
       readonly kind: "REBAKE";
       readonly unitId: UnitId;
+      readonly from: CoordV7;
       readonly at: CoordV7;
     }
   | {
@@ -237,6 +241,15 @@ export type CommandV7 =
        * within 2 tiles.
        */
       readonly kind: "SUGAR_TOSS";
+      readonly unitId: UnitId;
+      readonly targetUnitId: UnitId;
+    }
+  | {
+      /**
+       * The Candy redesign (section 8.2): a Confectioner tops up an own
+       * adjacent unit (ends its Crash, heals 2, and cures it).
+       */
+      readonly kind: "TOP_UP";
       readonly unitId: UnitId;
       readonly targetUnitId: UnitId;
     }
@@ -482,6 +495,7 @@ export function parseCommandV7(input: unknown): CommandParseResultV7 {
     kind === "THROW_BOLAS" ||
     kind === "FROST_BOLT" ||
     kind === "SUGAR_TOSS" ||
+    kind === "TOP_UP" ||
     kind === "SWALLOW"
   ) {
     if (!hasExactKeysV7(input, ["kind", "unitId", "targetUnitId"]))
@@ -692,11 +706,17 @@ export function parseCommandV7(input: unknown): CommandParseResultV7 {
       ? invalid(kind)
       : { ok: true, value: { kind, unitId: unit, tiles: [first, second] } };
   }
-  if (
-    kind === "DISEMBARK" ||
-    kind === "REBAKE" ||
-    kind === "ATTACK_BARRICADE"
-  ) {
+  if (kind === "REBAKE") {
+    if (!hasExactKeysV7(input, ["at", "from", "kind", "unitId"]))
+      return invalid(kind);
+    const unit = parseUnitIdV7(candidate.unitId);
+    const from = parseCoordV7(candidate.from);
+    const at = parseCoordV7(candidate.at);
+    return unit === null || from === null || at === null
+      ? invalid(kind)
+      : { ok: true, value: { kind, unitId: unit, from, at } };
+  }
+  if (kind === "DISEMBARK" || kind === "ATTACK_BARRICADE") {
     const unit = hasExactKeysV7(input, ["at", "kind", "unitId"])
       ? parseUnitIdV7(candidate.unitId)
       : null;
@@ -781,6 +801,14 @@ export function compareCommandsV7(left: CommandV7, right: CommandV7): number {
       compareNullableCoords(left.tiles[0], right.tiles[0]) ||
       compareNullableCoords(left.tiles[1], right.tiles[1])
     );
+  // The Candy redesign: `REBAKE` in unit-ID, scooped tile (y, x), then
+  // placement (y, x) order.
+  if (left.kind === "REBAKE" && right.kind === "REBAKE")
+    return (
+      left.unitId - right.unitId ||
+      compareNullableCoords(left.from, right.from) ||
+      compareNullableCoords(left.at, right.at)
+    );
   if (left.kind === "ASSEMBLE" && right.kind === "ASSEMBLE")
     return (
       left.unitId - right.unitId || compareNullableCoords(left.to, right.to)
@@ -862,6 +890,7 @@ function referencedOrdinal(command: CommandV7): number {
     command.kind === "THROW_BOLAS" ||
     command.kind === "FROST_BOLT" ||
     command.kind === "SUGAR_TOSS" ||
+    command.kind === "TOP_UP" ||
     command.kind === "SWALLOW"
   )
     return command.targetUnitId;

@@ -147,6 +147,7 @@ const rebake = () =>
   boundary(candyUiFixtureV7(), (view) => ({
     kind: "REBAKE",
     unitId: unitAt(view, CANDY_UI_V7.confectioner).id,
+    from: CANDY_UI_V7.crumbsBear,
     at: CANDY_UI_V7.crumbsBear,
   }));
 

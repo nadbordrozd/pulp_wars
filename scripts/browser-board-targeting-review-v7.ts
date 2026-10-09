@@ -21,8 +21,10 @@ import { ruleset7FixtureMountExpressionV7 } from "./browser-undead-fixture-v7";
  *
  * Bead pulp_wars-621 adds the recipients of an area support (section 2.1):
  * a Captain's Tend Wounded at rest and with its button focused, a Rally
- * with its button focused, an Engineer's Repair, a Confectioner's Frosting
- * and a Shaman whose Egg is a target while its wounded Caveman is a mark.
+ * with its button focused, an Engineer's Repair, and a Shaman whose Egg is
+ * a target while its wounded Caveman is a mark. (The Confectioner's
+ * Frosting capture went with Frosting in the Candy redesign,
+ * `pulp_wars-jdb.12`: its Top-Up names one neighbour.)
  *
  * Usage: tsx scripts/browser-board-targeting-review-v7.ts
  *   http://localhost:6173/ [--output-dir=<new-dir>] [--only=<name-prefix>]
@@ -234,15 +236,6 @@ const SHOTS: readonly Shot[] = [
     coords: "DWARF_UI_V7",
     unit: "engineer",
     marks: ["MOVE", "AREA_SUPPORT_QUIET"],
-  },
-  {
-    name: "area-frosting-focused",
-    module: "/tests/fixtures/v7-candy-ui.ts",
-    fixture: "candyUiFixtureV7",
-    coords: "CANDY_UI_V7",
-    unit: "confectioner",
-    focus: "command-tend_wounded",
-    marks: ["MOVE", "AREA_SUPPORT_PROMINENT"],
   },
   {
     name: "area-heal-beside-hatch",

@@ -32,6 +32,15 @@ retaliation against a fortified or covered unit, the Human Catapult
 (Attack 3), or the Human Knight (13 HP);
 `tests/unit/ruleset-v7-candy-numbers.test.ts` has the current values.
 
+**Redesigned (`pulp_wars-jdb.12`):** the
+[Candy redesign](RULESET_7_CANDY_REDESIGN.md) is built: Sticky Toffee,
+Glaze Trail, Ricochet, Bunny Hop and Thump, Toothache, and the
+Confectioner's Top-Up in place of Frosting; no Rush perks (Sugar Frenzy and
+the Rushed Racer's Escape are gone); Crumbs on settlement sites; and the
+reworked Re-bake. Where this document describes Frosting, the Rush perks,
+or the old Re-bake, it is history; the rules are
+[current rules section 23](RULESET_7_CURRENT.md#23-candy-faction-rules).
+
 **Status:** **folded into [Ruleset 7: current rules](RULESET_7_CURRENT.md)
 (kept as history)** by `pulp_wars-jdb.8` at `pulp-wars-poc-7r41`: the
 current rules describe the running eight-faction game, with the Candy in

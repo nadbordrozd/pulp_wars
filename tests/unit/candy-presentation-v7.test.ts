@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
   PEPPERMINT_DAMAGE_V7,
-  SUGAR_FRENZY_MAX_CONTINUATIONS_V7,
   TECHNOLOGY_IDS_V7,
   applyCommandV7,
   effectiveRoleRuleV7,
@@ -27,13 +26,11 @@ import {
   REBAKE_NO_COINS_V7,
   REBAKE_NO_CRUMBS_V7,
   REBAKE_NO_HOME_V7,
-  RUSHED_ESCAPE_STATUS_V7,
   RUSHED_STATUS_V7,
   RUSH_PREVIEW_V7,
   SPLATTED_PREVIEW_V7,
   SPLATTED_STATUS_V7,
   SPLAT_PREVIEW_V7,
-  SUGAR_FRENZY_STATUS_V7,
   SUGAR_RUSH_CRASHED_V7,
   SUGAR_RUSH_MOVED_V7,
   SUGAR_RUSH_RUSHED_V7,
@@ -56,7 +53,6 @@ import {
   rebakeBoardLabelV7,
   rebakeTargetNameV7,
   rebakeUnavailableTextV7,
-  sugarFrenzyPipsV7,
   sugarRushUnavailableTextV7,
   sugarTossTargetNameV7,
   sugarTossUnavailableTextV7,
@@ -113,9 +109,6 @@ describe("Candy text (section 15.2)", () => {
     expect(RUSHED_STATUS_V7).toBe(
       "Rushed: +1 Move, +1 Attack on its first attack",
     );
-    expect(SUGAR_FRENZY_STATUS_V7).toBe(
-      "Sugar Frenzy: attacks again after a kill, twice at most",
-    );
     expect(SUGAR_TOSS_TOOLTIP_V7).toBe(
       "Heal an own unit within 2 tiles by 2. Each unit once a turn",
     );
@@ -150,7 +143,7 @@ describe("Candy text (section 15.2)", () => {
     for (const text of texts) expect(text).not.toMatch(/\(\d+, ?\d+\)|\d+,\d+/);
   });
 
-  it("gives Help the twelve rules, the Peppermint damage from the engine", () => {
+  it("gives Help the rules of the Candy redesign, the Peppermint damage from the engine", () => {
     expect(CANDY_HELP_RULES_V7.map(([name]) => name)).toEqual([
       "Sugar Rush",
       "Crashed",
@@ -159,9 +152,15 @@ describe("Candy text (section 15.2)", () => {
       "Splat",
       "Bounce",
       "Sugar Toss",
-      "Frosting",
-      "Sugar Frenzy",
-      label("RAIDER"),
+      // The Candy redesign (`pulp_wars-jdb.12`): Top-Up replaces Frosting;
+      // Sugar Frenzy and the Racer's Escape are gone.
+      "Top-Up",
+      "Sticky Toffee",
+      "Glaze Trail",
+      "Ricochet",
+      "Bunny Hop",
+      "Thump",
+      "Toothache",
       "Home Sweet Home",
       "Peppermint Surprise",
       // The ninth unit (`pulp_wars-w49.17`, 7r55): the Jawbreaker.
@@ -172,18 +171,20 @@ describe("Candy text (section 15.2)", () => {
     expect(rule("Peppermint Surprise")).toBe(
       `an enemy that eats your Crumbs takes ${PEPPERMINT_DAMAGE_V7} damage.`,
     );
-    expect(rule("Sugar Frenzy")).toBe(
-      `a Rushed ${label("KNIGHT")} attacks again after a kill, up to three attacks in a turn.`,
+    expect(rule("Thump")).toBe(
+      `every attack a ${label("KNIGHT")} makes thumps 2 into every other enemy around it.`,
     );
+    expect(rule("Re-bake")).toContain("within two tiles");
     expect(rule("Bounce")).toBe(
       `a melee attacker that hits a ${label("GUARD")} or a ${label("JUGGERNAUT")} and survives is bounced one tile back.`,
     );
   });
 
   it("names the Candy abilities and leaves the other factions alone", () => {
-    expect(candyAbilityNameV7("TEND_WOUNDED", "CANDY")).toBe("Frosting");
-    expect(candyAbilityNameV7("TEND_WOUNDED", "ORIGINAL")).toBeNull();
-    expect(roleAbilityNameV7("TEND_WOUNDED", "CANDY")).toBe("Frosting");
+    // The Candy redesign: no Candy unit has Tend Wounded any more.
+    expect(candyAbilityNameV7("TEND_WOUNDED", "CANDY")).toBeNull();
+    expect(candyAbilityNameV7("TOP_UP", "CANDY")).toBe("Top-Up");
+    expect(candyAbilityNameV7("TOP_UP", "ORIGINAL")).toBeNull();
     expect(roleAbilityNameV7("TEND_WOUNDED", "ORIGINAL")).toBe("Tend");
     expect(roleAbilityNameV7("REBAKE", "CANDY")).toBe("Re-bake");
     expect(roleAbilityNameV7("BOUNCE", "CANDY")).toBe("Bouncy");
@@ -193,22 +194,28 @@ describe("Candy text (section 15.2)", () => {
       "SPLAT",
       "REBAKE",
       "SUGAR_TOSS",
-      "TEND_WOUNDED",
+      "TOP_UP",
+      "STICKY",
+      "GLAZE_TRAIL",
+      "RICOCHET",
+      "HOP",
+      "THUMP",
+      "TOOTHACHE",
     ]) {
       expect(candyAbilityDescriptionV7(ability, "CANDY")).not.toBeNull();
       expect(candyAbilityDescriptionV7(ability, "DWARF")).toBeNull();
     }
-    expect(candyCommandNameV7("TEND_WOUNDED", "CANDY")).toBe("Frosting");
-    expect(candyCommandNameV7("TEND_WOUNDED", "UNDEAD")).toBeNull();
-    expect(candyCommandNameV7("SUGAR_RUSH", "CANDY")).toBe("Sugar Rush");
+    expect(candyCommandNameV7("TEND_WOUNDED")).toBeNull();
+    expect(candyCommandNameV7("TOP_UP")).toBe("Top-Up");
+    expect(candyCommandNameV7("SUGAR_RUSH")).toBe("Sugar Rush");
   });
 
   it("writes the technology unlock text of each Candy role", () => {
     expect(candyRoleUnlockTextV7("CAPTAIN")).toBe(
-      `Train ${label("CAPTAIN")} (Frosting, Re-bake)`,
+      `Train ${label("CAPTAIN")} (Re-bake, Top-Up)`,
     );
     expect(candyRoleUnlockTextV7("MARKSMAN")).toBe(
-      `Train ${label("MARKSMAN")} (Sugar Toss)`,
+      `Train ${label("MARKSMAN")} (Ricochet, Sugar Toss)`,
     );
     expect(candyRoleUnlockTextV7("CATAPULT")).toBe(
       `Train ${label("CATAPULT")} (Splat)`,
@@ -217,9 +224,14 @@ describe("Candy text (section 15.2)", () => {
       `Train ${label("GUARD")} (Bounce)`,
     );
     expect(candyRoleUnlockTextV7("KNIGHT")).toBe(
-      `Train ${label("KNIGHT")} (Sugar Frenzy while Rushed)`,
+      `Train ${label("KNIGHT")} (Bunny Hop, Thump)`,
     );
-    expect(candyRoleUnlockTextV7("RAIDER")).toBe(`Train ${label("RAIDER")}`);
+    expect(candyRoleUnlockTextV7("RAIDER")).toBe(
+      `Train ${label("RAIDER")} (Glaze Trail)`,
+    );
+    expect(candyRoleUnlockTextV7("SWORDSMAN")).toBe(
+      `Train ${label("SWORDSMAN")} (Toothache)`,
+    );
     expect(candyRecruitNotesV7("FIGHTER", "CANDY")).toEqual([
       `Leaves Crumbs: Re-bake for ${rebakePriceV7("FIGHTER")} Coin.`,
       "Candy can't build Field Defense.",
@@ -236,12 +248,12 @@ describe("Candy unit status (section 15.2)", () => {
     expect(matchHasCandySeatV7(viewOf(martianUiFixtureV7()))).toBe(false);
   });
 
-  it("gives a Rushed Donut Racer at home its perk and Home Sweet Home", () => {
+  it("gives a Rushed Donut Racer at home the Rushed chip (no perk) and Home Sweet Home", () => {
     expect(candyChipsV7(view, unitAt(view, AT.rushedDonut))).toEqual([
       {
         id: "rushed",
         label: "Rushed",
-        status: RUSHED_ESCAPE_STATUS_V7,
+        status: RUSHED_STATUS_V7,
         icon: "ICON:STATUS:RUSHED",
       },
       {
@@ -253,38 +265,14 @@ describe("Candy unit status (section 15.2)", () => {
     ]);
   });
 
-  it("shows a Rushed Chocolate Bunny's Sugar Frenzy as pips, not a number", () => {
-    const bear = unitAt(view, AT.rushedBear);
-    const [chip] = candyChipsV7(view, bear);
+  it("gives a Rushed Chocolate Bunny the plain Rushed chip (Sugar Frenzy is gone)", () => {
+    const [chip] = candyChipsV7(view, unitAt(view, AT.rushedBear));
     expect(chip).toEqual({
       id: "rushed",
-      label: "Sugar Frenzy",
-      status: SUGAR_FRENZY_STATUS_V7,
+      label: "Rushed",
+      status: RUSHED_STATUS_V7,
       icon: "ICON:STATUS:RUSHED",
-      pips: {
-        left: SUGAR_FRENZY_MAX_CONTINUATIONS_V7,
-        of: SUGAR_FRENZY_MAX_CONTINUATIONS_V7,
-      },
     });
-    expect(chip?.label).not.toMatch(/\d/);
-    // Each continuation it makes spends a pip.
-    const stats = {
-      rushed: true,
-      candy: { rushPerk: "SUGAR_FRENZY" },
-    } as const;
-    const pipsAfter = (attacksUsed: number): number | undefined =>
-      sugarFrenzyPipsV7(
-        { form: "LAND", activation: { ...bear.activation, attacksUsed } },
-        stats as never,
-      )?.left;
-    expect([0, 1, 2, 3].map(pipsAfter)).toEqual([2, 2, 1, 0]);
-    // A unit that is not a Rushed Chocolate Bunny has none.
-    expect(
-      sugarFrenzyPipsV7(unitAt(view, AT.rushedDonut), {
-        rushed: true,
-        candy: { rushPerk: "ESCAPE" } as never,
-      }),
-    ).toBeNull();
   });
 
   it("says when a Crashed unit can't act, by whose turn it is", () => {
@@ -540,6 +528,7 @@ describe("Candy log lines (section 15.2)", () => {
     const baked = play(state, {
       kind: "REBAKE",
       unitId: unitAt(view, AT.confectioner).id,
+      from: AT.crumbsBear,
       at: AT.crumbsBear,
     });
     expect(baked.text).toBe(

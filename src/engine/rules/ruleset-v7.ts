@@ -198,8 +198,8 @@ export type TechnologyUnlockV7 =
   | { readonly kind: "BLASTING_CHARGES" }
   /**
    * The Candy revision (docs/product/RULESET_7_CANDY.md section 4): the
-   * Confectioner's Frosting and Re-bake (the Candy `ADMINISTRATION`, no
-   * Rally).
+   * Confectioner's Re-bake and Top-Up (the Candy `ADMINISTRATION`, no
+   * Rally; the Candy redesign replaced Frosting with Top-Up).
    */
   | { readonly kind: "CONFECTIONER_SUPPORT" }
   /**
@@ -367,6 +367,17 @@ export type UnitRoleAbilityV7 =
   | "SPLAT"
   | "REBAKE"
   | "SUGAR_TOSS"
+  // The Candy redesign (docs/product/RULESET_7_CANDY_REDESIGN.md section
+  // 12): the Toffee Trooper's Sticky Toffee, the Donut Racer's Glaze Trail,
+  // the Gumball Gunner's Ricochet, the Chocolate Bunny's Bunny Hop and
+  // Thump, the Jawbreaker's Toothache, and the Confectioner's Top-Up.
+  | "STICKY"
+  | "GLAZE_TRAIL"
+  | "RICOCHET"
+  | "HOP"
+  | "THUMP"
+  | "TOOTHACHE"
+  | "TOP_UP"
   // The naval branch (docs/product/RULESET_7_NAVAL_BRANCH.md sections 4.1,
   // 5.2, and 5.3): the Patrol Boat's Ram, and the Submarine's Submerged and
   // Torpedo.
@@ -637,11 +648,39 @@ export interface RoleMechanicsV7 {
    */
   readonly heavyTractorBeam: boolean;
   /**
-   * The Candy revision (docs/product/RULESET_7_CANDY.md section 5.4): what
-   * the role gets while Rushed besides the Rush itself: the Donut Racer's
-   * Escape, the Chocolate Bunny's Sugar Frenzy, or nothing.
+   * The Candy redesign (docs/product/RULESET_7_CANDY_REDESIGN.md section
+   * 7.1): Sticky Toffee. A unit the role hits in an `ATTACK` exchange (its
+   * target, or the attacker it strikes back at) is Stuck (the Toffee
+   * Trooper). False for every other role.
    */
-  readonly rushPerk: "ESCAPE" | "SUGAR_FRENZY" | null;
+  readonly sticky: boolean;
+  /**
+   * The Candy redesign (section 7.2): Glaze Trail. The tiles the role's
+   * Move leaves are Glazed for the rest of the turn (the Donut Racer).
+   */
+  readonly glazeTrail: boolean;
+  /**
+   * The Candy redesign (section 7.3): Ricochet. An attack from distance 2
+   * bounces half its hit onto the weakest hostile neighbour of the target
+   * (the Gumball Gunner).
+   */
+  readonly ricochet: boolean;
+  /**
+   * The Candy redesign (section 7.7): Bunny Hop. The role's Move may jump
+   * one tile (the Chocolate Bunny).
+   */
+  readonly hop: boolean;
+  /**
+   * The Candy redesign (section 7.7): Thump. The fixed damage every attack
+   * of the role deals to each other hostile unit around it (the Chocolate
+   * Bunny's 2), or 0.
+   */
+  readonly thumpDamage: number;
+  /**
+   * The Candy redesign (section 7.8): Toothache. A unit that attacks the
+   * role from distance 1 gets Toothache (the Jawbreaker).
+   */
+  readonly toothache: boolean;
   /**
    * The Candy revision (section 6.1): a death of the role leaves Crumbs (the
    * seven trainable Candy land roles). False for every other faction.
@@ -1628,7 +1667,12 @@ const mechanics = (
           knockback: false,
           plated: null,
           heavyTractorBeam: false,
-          rushPerk: null,
+          sticky: false,
+          glazeTrail: false,
+          ricochet: false,
+          hop: false,
+          thumpDamage: 0,
+          toothache: false,
           leavesCrumbs: false,
           gangUpWeight: 1,
           riseAgainHp: null,
@@ -3337,7 +3381,8 @@ export const DWARF_BASELINE_V1_TREE: FactionTechnologyTreeV7 = deepFreeze({
 /**
  * The Candy technology graph (docs/product/RULESET_7_CANDY.md section 4):
  * identical to ORIGINAL_BASELINE_V5 except that Administration grants
- * `CONFECTIONER_SUPPORT` (Frosting and Re-bake) instead of Captain support,
+ * `CONFECTIONER_SUPPORT` (Re-bake and Top-Up; Frosting before the Candy
+ * redesign) instead of Captain support,
  * Chivalry grants no Overrun, Fortification (displayed as Home Sweet Home)
  * grants `HOME_SWEET_HOME` instead of `BUILD_FIELD_DEFENSE`, and Explosives
  * (displayed as Peppermint Surprise) keeps both of its unlocks and adds
@@ -3383,9 +3428,10 @@ export const CANDY_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: null,
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "CAPTURE", "SUGAR_RUSH"],
+    // The Candy redesign (section 7.1): Sticky Toffee.
+    abilities: ["ATTACK", "CAPTURE", "SUGAR_RUSH", "STICKY"],
   }),
-  // The Donut Racer has Escape only while Rushed (its `rushPerk`).
+  // The Candy redesign (section 7.2): Glaze Trail; no Escape, Rushed or not.
   RAIDER: role({
     role: "RAIDER",
     label: "Donut Racer",
@@ -3400,7 +3446,7 @@ export const CANDY_ROLE_RULES_V7: Readonly<
     sightRadius: 2,
     technology: "SCOUTING",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "CAPTURE", "CHARGE", "SUGAR_RUSH"],
+    abilities: ["ATTACK", "CAPTURE", "CHARGE", "SUGAR_RUSH", "GLAZE_TRAIL"],
   }),
   MARKSMAN: role({
     role: "MARKSMAN",
@@ -3416,7 +3462,7 @@ export const CANDY_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: "MARKSMANSHIP",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "CAPTURE", "SUGAR_RUSH", "SUGAR_TOSS"],
+    abilities: ["ATTACK", "CAPTURE", "SUGAR_RUSH", "SUGAR_TOSS", "RICOCHET"],
   }),
   GUARD: role({
     role: "GUARD",
@@ -3434,7 +3480,8 @@ export const CANDY_ROLE_RULES_V7: Readonly<
     mayUsePrimaryActionAfterMove: false,
     abilities: ["ATTACK", "CAPTURE", "SUGAR_RUSH", "BOUNCE"],
   }),
-  // The Confectioner has no Rally; Frosting keeps the `TEND_WOUNDED` literal.
+  // The Confectioner has no Rally. The Candy redesign (section 7.5): Top-Up
+  // replaces Frosting (`TEND_WOUNDED`).
   CAPTAIN: role({
     role: "CAPTAIN",
     label: "Confectioner",
@@ -3449,7 +3496,7 @@ export const CANDY_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: "ADMINISTRATION",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "CAPTURE", "TEND_WOUNDED", "REBAKE", "SUGAR_RUSH"],
+    abilities: ["ATTACK", "CAPTURE", "REBAKE", "TOP_UP", "SUGAR_RUSH"],
   }),
   CATAPULT: role({
     role: "CATAPULT",
@@ -3467,7 +3514,7 @@ export const CANDY_ROLE_RULES_V7: Readonly<
     mayUsePrimaryActionAfterMove: false,
     abilities: ["ATTACK", "CAPTURE", "SUGAR_RUSH", "SPLAT"],
   }),
-  // The Chocolate Bunny has Overrun (Sugar Frenzy) only while Rushed.
+  // The Candy redesign (section 7.7): Bunny Hop and Thump; no Overrun.
   KNIGHT: role({
     role: "KNIGHT",
     // Displayed as the Gummy Bear before identity 7r46 (`pulp_wars-w49.3`).
@@ -3483,7 +3530,7 @@ export const CANDY_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: "CHIVALRY",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "CAPTURE", "SUGAR_RUSH"],
+    abilities: ["ATTACK", "CAPTURE", "SUGAR_RUSH", "HOP", "THUMP"],
   }),
   JUGGERNAUT: role({
     role: "JUGGERNAUT",
@@ -3523,7 +3570,8 @@ export const CANDY_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: "METALLURGY",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "CAPTURE", "SUGAR_RUSH"],
+    // The Candy redesign (section 7.8): Toothache.
+    abilities: ["ATTACK", "CAPTURE", "SUGAR_RUSH", "TOOTHACHE"],
   }),
 });
 
@@ -3542,29 +3590,52 @@ export const SUGAR_TOSS_HEAL_V7 = 2;
 /** The Candy revision (section 9): the Sugar Toss reach (Chebyshev). */
 export const SUGAR_TOSS_RANGE_V7 = 2;
 /**
- * The Candy revision (section 5.4, root ruling 7): the most continuations a
- * Sugar Frenzy grants, so a Rushed Chocolate Bunny attacks at most three times a
- * turn. A rule, never raised by a balance pass.
+ * The Candy redesign (docs/product/RULESET_7_CANDY_REDESIGN.md section 6.2):
+ * Toothache, the `attack2` (half-units) taken off the next `ATTACK` of a unit
+ * with Toothache, after every other modifier and never below 1 (0.5 Attack).
  */
-export const SUGAR_FRENZY_MAX_CONTINUATIONS_V7 = 2;
+export const TOOTHACHE_ATTACK2_V7 = 2;
+/** The Candy redesign (section 7.7): Thump, the Chocolate Bunny's 2. */
+export const THUMP_DAMAGE_V7 = 2;
+/** The Candy redesign (section 7.3): a Ricochet deals `floor(d / 2)`. */
+export const RICOCHET_DIVISOR_V7 = 2;
+/** The Candy redesign (section 8.1): the Re-bake reach (Chebyshev). */
+export const REBAKE_REACH_V7 = 2;
+/**
+ * The Candy redesign (section 8.1): how many units a Re-bake may put the
+ * Confectioner's home city over its capacity (the reward-unit rule).
+ */
+export const REBAKE_OVER_CAPACITY_V7 = 1;
+/** The Candy redesign (section 8.2): what a Top-Up heals. */
+export const TOP_UP_HEAL_V7 = 2;
+/** The Candy redesign (section 6.2): the steps a Stuck unit's Move may have. */
+export const STUCK_MAX_STEPS_V7 = 1;
+/**
+ * The Candy redesign (section 7.2): the cost in half-points of a step onto a
+ * Glazed tile for a land-form unit of the active seat (a Road step's).
+ */
+export const GLAZE_STEP_COST_V7 = 1;
 
 /**
  * The Candy engine mechanics (section 13): no role builds Field Defense;
- * the Donut Racer and the Chocolate Bunny have a Rush perk; the seven trainable
- * land roles leave Crumbs; the Pie Launcher never advances. Every role uses
- * one slot. Boats are Human boats.
+ * the seven trainable land roles leave Crumbs; the Pie Launcher never
+ * advances. The Candy redesign (`pulp_wars-jdb.12`): the Toffee Trooper is
+ * Sticky, the Donut Racer lays a Glaze Trail, the Gumball Gunner
+ * ricochets, the Chocolate Bunny hops and thumps, and the Jawbreaker gives
+ * Toothache. Every role uses one slot. Boats are Human boats.
  */
 export const CANDY_ROLE_MECHANICS_V7 = mechanics({
-  FIGHTER: { buildsFieldDefense: false, leavesCrumbs: true },
-  RAIDER: { rushPerk: "ESCAPE", leavesCrumbs: true },
-  MARKSMAN: { leavesCrumbs: true },
+  FIGHTER: { buildsFieldDefense: false, leavesCrumbs: true, sticky: true },
+  RAIDER: { leavesCrumbs: true, glazeTrail: true },
+  MARKSMAN: { leavesCrumbs: true, ricochet: true },
   GUARD: { buildsFieldDefense: false, leavesCrumbs: true },
   CAPTAIN: { leavesCrumbs: true },
   CATAPULT: { advancesAfterKill: false, leavesCrumbs: true },
-  KNIGHT: { rushPerk: "SUGAR_FRENZY", leavesCrumbs: true },
+  KNIGHT: { leavesCrumbs: true, hop: true, thumpDamage: THUMP_DAMAGE_V7 },
   BATTLESHIP: { splash: true },
-  // The ninth unit (7r55): the Jawbreaker is Rock Hard and leaves Crumbs.
-  SWORDSMAN: { leavesCrumbs: true, immovable: true },
+  // The ninth unit (7r55): the Jawbreaker is Rock Hard and leaves Crumbs;
+  // the Candy redesign gives it Toothache.
+  SWORDSMAN: { leavesCrumbs: true, immovable: true, toothache: true },
   // The giants' signatures (section 6.8): Break Off.
   JUGGERNAUT: { breakOffHp: BREAK_OFF_HP_V7 },
 });
@@ -4213,7 +4284,7 @@ export const RULESET_7 = deepFreeze({
  * a technology of tier `t` costs `5 / 7 / 9 + (T - 1)`, `T` being the
  * technologies the researcher already owns.
  *
- * The economy rejig (`pulp_wars-w49.16`, `pulp-wars-poc-7r67`,
+ * The economy rejig (`pulp_wars-w49.16`, `pulp-wars-poc-7r68`,
  * docs/product/RULESET_7_ECONOMY_REJIG.md): the price is per city again and
  * the technologies owned no longer enter it. A technology of tier `t`
  * costs `5 / 7 / 9 + (1 / 2 / 3) * (C - 1)`, `C` being the cities the

@@ -36,7 +36,7 @@ import {
   CANDY_FIELD_DEFENSE_EXPLANATION_V7,
   CANDY_HELP_RULES_V7,
   CRASHED_NOW_STATUS_V7,
-  FROSTING_TOOLTIP_V7,
+  TOP_UP_TOOLTIP_V7,
   HOME_SWEET_HOME_STATUS_V7,
   HOME_SWEET_HOME_UNLOCK_TEXT_V7,
   PEPPERMINT_SURPRISE_UNLOCK_TEXT_V7,
@@ -44,7 +44,7 @@ import {
   REBAKE_TOOLTIP_V7,
   RUSH_PREVIEW_V7,
   SPLATTED_STATUS_V7,
-  SUGAR_FRENZY_STATUS_V7,
+  RUSHED_STATUS_V7,
   SUGAR_RUSH_CRASHED_V7,
   SUGAR_RUSH_MOVED_V7,
   SUGAR_RUSH_RUSHED_V7,
@@ -122,17 +122,15 @@ describe("Candy unit dock", () => {
     app.destroy();
   });
 
-  it("shows the Sugar Frenzy cap as two pips, not as a number", () => {
+  it("shows a Rushed Chocolate Bunny's plain Rushed chip (Sugar Frenzy is gone)", () => {
     const controller = new FixtureController(candyUiFixtureV7());
     const host = new RecordingBoardHost();
     const app = mount(controller, host);
     selectUnitAt(controller, host, AT.rushedBear);
-    const frenzy = required(chip("rushed"));
-    expect(frenzy.title).toBe(SUGAR_FRENZY_STATUS_V7);
-    expect(frenzy.textContent).toBe("Sugar Frenzy");
-    expect(frenzy.textContent).not.toMatch(/\d/);
-    const pips = [...frenzy.querySelectorAll<HTMLElement>(".v7-candy-pip")];
-    expect(pips.map((pip) => pip.dataset.filled)).toEqual(["true", "true"]);
+    const rushed = required(chip("rushed"));
+    expect(rushed.title).toBe(RUSHED_STATUS_V7);
+    expect(rushed.textContent).toBe("Rushed");
+    expect(rushed.querySelectorAll(".v7-candy-pip")).toHaveLength(0);
     app.destroy();
   });
 
@@ -297,9 +295,13 @@ describe("Candy abilities through the dock and the board", () => {
     const host = new RecordingBoardHost();
     const app = mount(controller, host);
     const confectioner = selectUnitAt(controller, host, AT.confectioner);
-    const frosting = requiredButton("command-tend_wounded");
-    expect(frosting.textContent).toContain("Frosting");
-    expect(frosting.title).toBe(FROSTING_TOOLTIP_V7);
+    // The Candy redesign (`pulp_wars-jdb.12`): Top-Up replaced Frosting.
+    expect(document.querySelector('[data-action="command-tend_wounded"]')).toBe(
+      null,
+    );
+    const topUp = requiredButton("command-top_up");
+    expect(topUp.textContent).toContain("Top-Up");
+    expect(topUp.title).toBe(TOP_UP_TOOLTIP_V7);
     const rebake = requiredButton("candy-rebake");
     expect(rebake.title).toBe(REBAKE_TOOLTIP_V7);
     rebake.click();
@@ -317,7 +319,7 @@ describe("Candy abilities through the dock and the board", () => {
         target.semanticLabel,
       ]),
     ).toEqual(
-      preview.options.map((option) => [
+      rebakeTargetsByTile(preview.options).map((option) => [
         "REBAKE",
         "PLACE",
         rebakeTargetNameV7(option.role, option.cost, option.hp),
@@ -327,7 +329,7 @@ describe("Candy abilities through the dock and the board", () => {
       requiredElement<HTMLElement>("[data-v7-candy-pick]").textContent,
     ).not.toMatch(COORDINATE);
     expect(boardPlan(host).targets.map((target) => target.at)).toEqual(
-      preview.options.map((option) => option.at),
+      rebakeTargetsByTile(preview.options).map((option) => option.at),
     );
     host.callbacks?.onCommand(
       required(
@@ -340,6 +342,7 @@ describe("Candy abilities through the dock and the board", () => {
     expect(controller.accepted[0]).toEqual({
       kind: "REBAKE",
       unitId: confectioner.id,
+      from: AT.crumbsBear,
       at: AT.crumbsBear,
     });
     await waitUntil(() =>
@@ -526,7 +529,7 @@ describe("Candy Help and technology", () => {
     const confectioner = recruitmentRolePresentationV7("CAPTAIN", "CANDY");
     expect(confectioner.label).toBe(label("CAPTAIN"));
     expect(
-      confectioner.abilities.some((line) => line.startsWith("Frosting:")),
+      confectioner.abilities.some((line) => line.startsWith("Top-Up:")),
     ).toBe(true);
     expect(
       confectioner.abilities.some((line) => line.startsWith("Re-bake:")),
@@ -768,6 +771,25 @@ function boardPlan(
     model.offeredCommands,
     model.interaction,
   );
+}
+
+/**
+ * The Candy redesign (`pulp_wars-jdb.12`): the Re-bake targets the board
+ * plan shows, one per placement tile (the dearest offered Crumbs).
+ */
+function rebakeTargetsByTile<
+  T extends {
+    readonly at: { readonly x: number; readonly y: number };
+    readonly cost: number;
+  },
+>(options: readonly T[]): readonly T[] {
+  const best = new Map<string, T>();
+  for (const option of options) {
+    const key = `${option.at.x},${option.at.y}`;
+    const known = best.get(key);
+    if (known === undefined || option.cost > known.cost) best.set(key, option);
+  }
+  return [...best.values()];
 }
 
 function requiredButton(action: string): HTMLButtonElement {

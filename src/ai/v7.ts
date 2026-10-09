@@ -553,6 +553,7 @@ import {
   rushedMovePlanV7,
   splatSavedHpV7,
   sugarTossScoreV7,
+  topUpScoreV7,
   type CandyPolicyToolsV7,
   type RushPlanV7,
 } from "./v7-candy";
@@ -9995,6 +9996,13 @@ function isPolicyCandidate(
       candyPolicyOptionsV7().sugarToss &&
       candyUnitPlayV7(context, context.lookup.unitsById.get(command.unitId))
     );
+  // The Candy redesign (`pulp_wars-jdb.12`): a basic Top-Up score (the one
+  // target its score chose) until the Candy step two (`pulp_wars-jdb.13`).
+  if (command.kind === "TOP_UP")
+    return candyUnitPlayV7(
+      context,
+      context.lookup.unitsById.get(command.unitId),
+    );
   // The Dwarf revision (`pulp_wars-78i.4`): the large Tunnel, bombing-run,
   // and Assemble offer lists are pruned to the one command per unit the
   // Dwarf plans chose (without the Dwarf rules they score as no candidate).
@@ -12887,6 +12895,13 @@ function scoreCommandWithContext(
     priority = toss.priority;
     strategicValue = toss.strategic;
     immediateValue = toss.immediate;
+  }
+
+  if (command.kind === "TOP_UP" && context.candy) {
+    const topUp = topUpScoreV7(candyCacheV7(context).tools, command);
+    priority = topUp.priority;
+    strategicValue = topUp.strategic;
+    immediateValue = topUp.immediate;
   }
 
   if (command.kind === "BEAM_DOWN" && context.martian) {

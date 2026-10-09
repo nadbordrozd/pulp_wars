@@ -46,6 +46,16 @@ import {
   unitIsRushedV7,
   unitIsSplattedV7,
 } from "./candy";
+import {
+  unitGivesToothacheV7,
+  unitHasToothacheV7,
+  unitHopsV7,
+  unitIsStuckV7,
+  unitLaysGlazeV7,
+  unitRicochetsV7,
+  unitSticksV7,
+  unitThumpDamageV7,
+} from "./candy-abilities";
 import { attackAllowanceV7, matchHasDwarvesV7, unitIsDugInV7 } from "./dwarf";
 import { crackedDefense2V7, unitIsCrackedV7 } from "./ninth-unit";
 import {
@@ -278,11 +288,20 @@ export interface PublicDwarfMechanicsV7 {
  * HP of a Re-bake of its role (null for a role that leaves no Crumbs);
  * `homeSweetHome` is the owner's unit-level capability and `crumbsBite` the
  * owner's Peppermint Surprise damage (both public: they make every Candy
- * preview exact).
+ * preview exact). The Candy redesign
+ * (docs/product/RULESET_7_CANDY_REDESIGN.md section 12): the Rush perk is
+ * gone; the role's own abilities in land form: Sticky Toffee, Glaze Trail,
+ * Ricochet, Bunny Hop, Thump (its damage, or 0), and Toothache (it gives
+ * Toothache to a unit that bites it).
  */
 export interface PublicCandyMechanicsV7 {
   readonly sugarRush: boolean;
-  readonly rushPerk: "ESCAPE" | "SUGAR_FRENZY" | null;
+  readonly sticky: boolean;
+  readonly glazeTrail: boolean;
+  readonly ricochet: boolean;
+  readonly hop: boolean;
+  readonly thumpDamage: number;
+  readonly givesToothache: boolean;
   readonly bounces: boolean;
   readonly splats: boolean;
   readonly rebake: { readonly cost: number; readonly hp: number } | null;
@@ -353,6 +372,13 @@ export interface PublicUnitStatsV7 {
   readonly crashed?: boolean;
   readonly splatted?: boolean;
   readonly tossedThisTurn?: boolean;
+  /**
+   * The Candy redesign (section 6.2): present for every unit exactly when
+   * the match has a Candy seat: the unit is Stuck (a Move of one step), or
+   * has Toothache (its next attack 1 weaker).
+   */
+  readonly stuck?: boolean;
+  readonly toothache?: boolean;
   /** The Candy revision: present exactly for units of the Candy kind. */
   readonly candy?: PublicCandyMechanicsV7;
   /**
@@ -794,9 +820,7 @@ export function publicUnitStatsV7(
               ? "Ram: attack again"
               : dinosaur
                 ? "Rampage: attack again"
-                : candy
-                  ? "Sugar Frenzy: attack again"
-                  : "Overrun: attack again",
+                : "Overrun: attack again",
           ]
         : []),
       ...(unit.activation.escapeAvailable ? ["Escape: may move again"] : []),
@@ -935,7 +959,12 @@ export function publicUnitStatsV7(
           candy: {
             sugarRush:
               unit.form === "LAND" && role.abilities.includes("SUGAR_RUSH"),
-            rushPerk: mechanics.rushPerk,
+            sticky: unitSticksV7(state, unit),
+            glazeTrail: unitLaysGlazeV7(state, unit),
+            ricochet: unitRicochetsV7(state, unit),
+            hop: unitHopsV7(state, unit),
+            thumpDamage: unitThumpDamageV7(state, unit),
+            givesToothache: unitGivesToothacheV7(state, unit),
             bounces: unitBouncesV7(state, unit),
             splats: attackSplatsV7(state, unit),
             rebake: candyRebakeV7(unit.role),
@@ -1073,7 +1102,7 @@ function candyFlagsV7(
   unit: UnitStateV7,
 ): Pick<
   PublicUnitStatsV7,
-  "rushed" | "crashed" | "splatted" | "tossedThisTurn"
+  "rushed" | "crashed" | "splatted" | "tossedThisTurn" | "stuck" | "toothache"
 > {
   if (!matchHasCandyV7(state)) return {};
   return {
@@ -1081,6 +1110,8 @@ function candyFlagsV7(
     crashed: unitIsCrashedV7(state, unit.id),
     splatted: unitIsSplattedV7(state, unit.id),
     tossedThisTurn: state.tossedThisTurn.includes(unit.id),
+    stuck: unitIsStuckV7(state, unit.id),
+    toothache: unitHasToothacheV7(state, unit.id),
   };
 }
 

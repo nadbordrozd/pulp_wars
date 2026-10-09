@@ -367,7 +367,10 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       // RECOVER and Ice Folk Freeze (`pulp_wars-w49.37`) inserts FROST_BOLT
       // and STAMPEDE after BREAK_OFF, moving the later command kinds forward
       // (was 7af48c…58bc); the revision-12-ordinal value is unchanged.
-      "858e9faf5cabc698e4e3243963e1da608cbbda9ca5dbe05854100986279c54c2",
+      // The Candy redesign (`pulp_wars-jdb.12`) inserts TOP_UP after
+      // TOSS_COIN, moving the later command kinds forward by one (was
+      // 858e9f…54c2); the revision-12-ordinal value is unchanged.
+      "a7f36eb1426036083795fe8cf45e55dc99ce57f8097831136cdeec684313592f",
     );
     // Revision 13 shifts the command-kind ordinals in AI tie-break tuples
     // (spec section 8); this is the value with revision-12 ordinals
@@ -1174,7 +1177,10 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       // RECOVER and Ice Folk Freeze (`pulp_wars-w49.37`) inserts FROST_BOLT
       // and STAMPEDE after BREAK_OFF, moving the later command kinds forward
       // (was a15d30…05b7); the revision-12-ordinal value is unchanged.
-      "888e382e63667def263690a812b8c5795fb82eefda58d487484713ce687834b5",
+      // The Candy redesign (`pulp_wars-jdb.12`) inserts TOP_UP after
+      // TOSS_COIN, moving the later command kinds forward by one (was
+      // 888e38…34b5); the revision-12-ordinal value is unchanged.
+      "c50e0f51ea94cc5154491920e132d07e1576b951d14f91aa094a9f31542c4f61",
     );
     expect(
       canonicalHash(withRevision12CandidateOrdinalsV7(revision4Candidates)),
@@ -1195,7 +1201,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     const source = upgradeRetainedPublicViewV7(retained);
 
     expect(canonicalJson(retained)).toBe(retainedBytes);
-    expect(source.rulesetId).toBe("pulp-wars-poc-7r67");
+    expect(source.rulesetId).toBe("pulp-wars-poc-7r68");
     expect(source.viewer.factionTreeId).toBe("ORIGINAL_BASELINE_V5");
     expect(
       source.players.every(

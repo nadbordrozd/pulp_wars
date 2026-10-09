@@ -148,7 +148,10 @@ export const RULESET7_LATE_PUBLIC_VIEW_NORMAL_DECISION = Object.freeze({
     // RECOVER and Ice Folk Freeze (`pulp_wars-w49.37`) inserts FROST_BOLT
     // and STAMPEDE after BREAK_OFF, moving the later command kinds forward
     // (was 6bcb02…2921); the revision-12-ordinal value is unchanged.
-    "ec779fd117cc773ced3eea17e72f89fd63cedb2a3604bc32e258c158471bfb5d",
+    // The Candy redesign (`pulp_wars-jdb.12`) inserts TOP_UP after
+    // TOSS_COIN, moving the later command kinds forward by one (was
+    // ec779f…fb5d); the revision-12-ordinal value is unchanged.
+    "9cad8701a8dc74c0fccb5dbd26fab41969e5d795ea810428f3a13f7e6dae0bcc",
   command: Object.freeze({
     kind: "TRAIN",
     cityId: 16,
@@ -237,10 +240,10 @@ export function upgradeRetainedPublicViewV7(
   });
   return {
     ...retained,
-    rulesetId: "pulp-wars-poc-7r67",
+    rulesetId: "pulp-wars-poc-7r68",
     setup: {
       ...retained.setup,
-      rulesetId: "pulp-wars-poc-7r67",
+      rulesetId: "pulp-wars-poc-7r68",
       mapType: "DRY_LAND",
       mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
       curiosities: false,

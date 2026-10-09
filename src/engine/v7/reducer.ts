@@ -83,6 +83,7 @@ import {
   HIRE_EXTRA_CAPACITY_V7,
   BLAST_MOUNTAIN_COST_V7,
   PILLAGE_COINS_V7,
+  RICOCHET_DIVISOR_V7,
 } from "../rules/ruleset-v7";
 import { hasExactKeysV7 } from "./schema";
 import {
@@ -145,7 +146,11 @@ import {
   startTurnEconomyV7,
   type CityEconomyChangeV7,
 } from "./economy";
-import type { CombatSplashEntryV7, DomainEventV7 } from "./events";
+import type {
+  CombatPreviewV7,
+  CombatSplashEntryV7,
+  DomainEventV7,
+} from "./events";
 import {
   bounceStateV7,
   attackBreachesV7,
@@ -253,17 +258,23 @@ import {
   applyRebakeV7,
   applySugarRushV7,
   applySugarTossV7,
+  applyTopUpV7,
   prunedCandyV7,
   resolveCandyEndTurnV7,
   resolveCrumbsEatingV7,
   withCrumbsLeftV7,
 } from "./candy-reducer";
+import { overrunKindV7, unitIsCrashedV7, withUnitIdV7 } from "./candy";
 import {
-  overrunKindV7,
-  overrunMayContinueV7,
-  unitIsCrashedV7,
-  withUnitIdV7,
-} from "./candy";
+  candyFixedHitV7,
+  candyStatusEndsLeftV7,
+  glazeTrailTilesV7,
+  unitLaysGlazeV7,
+  unitThumpDamageV7,
+  withCandyStatusV7,
+  withGlazedTilesV7,
+  withoutCandyStatusV7,
+} from "./candy-abilities";
 import {
   applyBreakOffV7,
   applyStompV7,
@@ -420,6 +431,8 @@ export type RuleErrorCodeV7 =
   | "SUGAR_RUSH_NOT_LEGAL"
   | "REBAKE_NOT_LEGAL"
   | "SUGAR_TOSS_NOT_LEGAL"
+  // The Candy redesign (RULESET_7_CANDY_REDESIGN.md section 8.2).
+  | "TOP_UP_NOT_LEGAL"
   // The naval branch (docs/product/RULESET_7_NAVAL_BRANCH.md section 4.2):
   // an illegal Board (`NOT_A_SHIP`, `TARGET_IMMUNE`, `OUT_OF_RANGE`,
   // `TARGET_HEALTHY`). A torpedo at a land unit is `ATTACK_NOT_LEGAL` with
@@ -1373,6 +1386,9 @@ function applyCommandCoreV7(
     return applyRebakeV7(DWARF_KIT_V7, stateInput, state, actor, command);
   if (command.kind === "SUGAR_TOSS")
     return applySugarTossV7(DWARF_KIT_V7, stateInput, state, actor, command);
+  // The Candy redesign (RULESET_7_CANDY_REDESIGN.md section 8.2).
+  if (command.kind === "TOP_UP")
+    return applyTopUpV7(DWARF_KIT_V7, stateInput, state, actor, command);
   // The giants' signatures (docs/product/RULESET_7_GIANTS.md section 6).
   if (command.kind === "SWALLOW")
     return applySwallowV7(DWARF_KIT_V7, stateInput, state, actor, command);
@@ -4626,6 +4642,28 @@ function applyMove(
     // right after the Move's own events and before the economy tail.
     if (validation.traversedPath.length > 0)
       staged = resolveCrumbsEatingV7(DWARF_KIT_V7, staged, unit.id, events);
+    // The Candy redesign (RULESET_7_CANDY_REDESIGN.md section 7.2): a Donut
+    // Racer's Glaze Trail, its start tile and the tiles its path passed (land
+    // only), for the rest of the active seat's turn; after the eating step.
+    if (unitLaysGlazeV7(state, unit)) {
+      const glazed = glazeTrailTilesV7(
+        unit.at,
+        validation.traversedPath,
+        (at) => (tileAtV7(state.board, at)?.biome ?? null) !== null,
+      );
+      if (glazed.length > 0) {
+        events.push({
+          kind: "TILES_GLAZED",
+          playerId: actor,
+          unitId: unit.id,
+          tiles: glazed,
+        });
+        staged = {
+          ...staged,
+          glazedThisTurn: withGlazedTilesV7(staged.glazedThisTurn, glazed),
+        };
+      }
+    }
     // Map curiosities round 2 (section 28.2): a Move that stepped onto a
     // gate carries the unit through it, after the entry gate's own steps.
     if (validation.traversedPath.length > 0 && !embarks) {
@@ -5001,8 +5039,17 @@ function applyAttack(
       distance,
       events,
     );
+    // The Candy redesign (RULESET_7_CANDY_REDESIGN.md sections 7.3 and
+    // 7.7): a Gumball Gunner's Ricochet or a Chocolate Bunny's Thump.
+    const candied = resolveCandyAfterAttackV7(
+      state,
+      crushed,
+      attacker,
+      exchange.preview,
+      events,
+    );
     const settlement = settleCityRewardsV7(
-      { ...crushed, commandIndex: nextSafe(state.commandIndex) },
+      { ...candied, commandIndex: nextSafe(state.commandIndex) },
       actor,
     );
     events.push(...settlement.events);
@@ -5099,6 +5146,116 @@ function resolveCrushV7(
   events.push(...economyAndGrowth(economy.changes));
   return {
     ...resolved,
+    cities: economy.cities,
+    populationContributions: economy.populationContributions,
+  };
+}
+
+/**
+ * The Candy redesign (docs/product/RULESET_7_CANDY_REDESIGN.md sections 7.3,
+ * 7.7, and 9.1): after an `ATTACK`'s exchange (its deaths, statuses,
+ * advance, Bounce, and death-blast chain) and the Crushing Shove, the
+ * Ricochet of a Gumball Gunner's shot from distance 2 and the Thump of a
+ * Chocolate Bunny's attack: the units the preview named that are still on
+ * the board take their fixed hits (recomputed on their current HP and
+ * Shield), then the deaths as `RICOCHET` or `THUMP` deaths credited to the
+ * attacker (Graves, risings, Crumbs, blasts, Plunder), then the economy
+ * tail. A Thump needs the Bunny still on the board and still the actor's.
+ * Returns `after` itself when nothing happens.
+ */
+function resolveCandyAfterAttackV7(
+  before: GameStateV7,
+  after: GameStateV7,
+  attacker: UnitStateV7,
+  preview: CombatPreviewV7,
+  events: DomainEventV7[],
+): GameStateV7 {
+  let state = after;
+  const unitOf = (unitId: UnitStateV7["id"]): UnitStateV7 | undefined =>
+    state.units.find((unit) => unit.id === unitId && unit.hp > 0);
+  if (preview.ricochet !== null) {
+    const victim = unitOf(preview.ricochet.unitId);
+    if (victim !== undefined) {
+      const hit = candyFixedHitV7(
+        state,
+        victim,
+        shieldOfV7(state.shields, victim.id),
+        Math.floor(
+          (preview.damageToDefender + preview.defenderShieldDamage) /
+            RICOCHET_DIVISOR_V7,
+        ),
+      );
+      events.push({
+        kind: "RICOCHETED",
+        playerId: attacker.ownerId,
+        unitId: attacker.id,
+        targetUnitId: victim.id,
+        damage: hit.damage,
+        shieldDamage: hit.shieldDamage,
+        dies: hit.dies,
+      });
+      state = resolveFixedHitsV7(
+        DWARF_KIT_V7,
+        state,
+        attacker.id,
+        [hit],
+        "RICOCHET",
+        events,
+      );
+    }
+  }
+  const bunny = unitOf(attacker.id);
+  const thumpDamage = unitThumpDamageV7(before, attacker);
+  if (
+    preview.thump.length > 0 &&
+    bunny !== undefined &&
+    bunny.ownerId === attacker.ownerId &&
+    thumpDamage > 0
+  ) {
+    const hits = preview.thump.flatMap((entry) => {
+      const victim = unitOf(entry.unitId);
+      return victim === undefined
+        ? []
+        : [
+            candyFixedHitV7(
+              state,
+              victim,
+              shieldOfV7(state.shields, victim.id),
+              thumpDamage,
+            ),
+          ];
+    });
+    if (hits.length > 0) {
+      events.push({
+        kind: "THUMPED",
+        playerId: attacker.ownerId,
+        unitId: attacker.id,
+        hits: hits.map((hit) => ({
+          unitId: hit.unitId,
+          damage: hit.damage,
+          shieldDamage: hit.shieldDamage,
+          dies: hit.dies,
+        })),
+      });
+      state = resolveFixedHitsV7(
+        DWARF_KIT_V7,
+        state,
+        attacker.id,
+        hits,
+        "THUMP",
+        events,
+      );
+    }
+  }
+  if (state === after) return after;
+  const economy = recomputeLiveEconomyV7(
+    state,
+    { board: state.board, cities: state.cities, units: state.units },
+    state.populationContributions,
+  );
+  events.push(...economyAndGrowth(economy.changes));
+  return {
+    ...state,
     cities: economy.cities,
     populationContributions: economy.populationContributions,
   };
@@ -5245,7 +5402,11 @@ function resolveAttackExchangeV7(
   defender: UnitStateV7,
   rule: ReturnType<typeof unitRoleRuleV7>,
   distance: number,
-): { readonly state: GameStateV7; readonly events: readonly DomainEventV7[] } {
+): {
+  readonly state: GameStateV7;
+  readonly events: readonly DomainEventV7[];
+  readonly preview: CombatPreviewV7;
+} {
   const calculated = calculateCombatPreviewV7(state, attacker.id, defender.id);
   const destinationTile = tileAtV7(state.board, defender.at);
   // The advance enters the defender's tile through the shared
@@ -5582,7 +5743,44 @@ function resolveAttackExchangeV7(
       biterPlayerId: defender.ownerId,
       biterUnitId: defender.id,
     });
+  // The Candy redesign (RULESET_7_CANDY_REDESIGN.md sections 6.2, 7.1, and
+  // 7.8): the attacker's own Toothache is used up; Sticky Toffee sticks the
+  // surviving target or the surviving attacker a Toffee Trooper struck back
+  // at; a surviving attacker of a Jawbreaker from distance 1 gets
+  // Toothache. Right after the deaths and the Splat, before the advance.
+  let stuck = state.stuck;
+  let toothache = preview.toothacheAttack
+    ? withoutCandyStatusV7(state.toothache, attacker.id)
+    : state.toothache;
+  const candyStatusEvents: DomainEventV7[] = [];
+  const stick = (source: UnitStateV7, victim: UnitStateV7): void => {
+    const endsLeft = candyStatusEndsLeftV7(actor, victim.ownerId);
+    stuck = withCandyStatusV7(stuck, victim.id, endsLeft);
+    candyStatusEvents.push({
+      kind: "UNIT_STUCK",
+      playerId: source.ownerId,
+      sourceUnitId: source.id,
+      unitId: victim.id,
+      endsLeft,
+    });
+  };
+  if (preview.stuckApplied === "TARGET" || preview.stuckApplied === "BOTH")
+    stick(attacker, defender);
+  if (preview.stuckApplied === "ATTACKER" || preview.stuckApplied === "BOTH")
+    stick(defender, attacker);
+  if (preview.toothacheApplied) {
+    const endsLeft = candyStatusEndsLeftV7(actor, attacker.ownerId);
+    toothache = withCandyStatusV7(toothache, attacker.id, endsLeft);
+    candyStatusEvents.push({
+      kind: "TOOTHACHE_GIVEN",
+      playerId: defender.ownerId,
+      sourceUnitId: defender.id,
+      unitId: attacker.id,
+      endsLeft,
+    });
+  }
   events.push(...growthEvents);
+  events.push(...candyStatusEvents);
   // Revision 20 section 2.3: the Push, then the advance (after a kill) or
   // the follow (a Charge! after a Push). Only a Charge! emits both.
   if (pushDestination !== null)
@@ -5742,11 +5940,11 @@ function resolveAttackExchangeV7(
     board,
     units,
   } as GameStateV7;
-  // The Candy revision section 5.4: a Rushed Chocolate Bunny's Sugar Frenzy is
-  // an Overrun capped at `SUGAR_FRENZY_MAX_CONTINUATIONS_V7` continuations.
-  const overrunKind = overrunKindV7(state, attacker, rule);
+  // The Candy redesign (section 6.1): no Candy unit has Overrun (Sugar
+  // Frenzy is gone).
+  const overrunKind = overrunKindV7(rule);
   const overrunContinues =
-    overrunMayContinueV7(overrunKind, attacksUsed) &&
+    overrunKind !== null &&
     preview.advances &&
     !preview.attackerDies &&
     survivor !== undefined &&
@@ -5887,11 +6085,14 @@ function resolveAttackExchangeV7(
       shields: chain.shields,
       cooling,
       splattedThisTurn,
+      stuck,
+      toothache,
       ninthUnit,
       frozen,
       populationContributions: economy.populationContributions,
     },
     events,
+    preview: finalPreview,
   };
 }
 

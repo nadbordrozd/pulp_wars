@@ -375,11 +375,11 @@ const productionOf = (
 
 describe("the ninth unit: identity", () => {
   it("was 7r55 after 7r54, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r67");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r67.current");
-    expect(PRIOR_RULESET_7_IDS.at(-13)).toBe("pulp-wars-poc-7r54");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r68");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r68.current");
+    expect(PRIOR_RULESET_7_IDS.at(-14)).toBe("pulp-wars-poc-7r54");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-13)).toBe(
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-14)).toBe(
       "pulpWars.save.v7r54.current",
     );
     const state = field([]);
@@ -411,7 +411,10 @@ describe("the ninth unit: identity", () => {
     // (`pulp_wars-737.14`) add four (119).
     // Ice Folk Freeze (`pulp_wars-w49.37`) renames UNITS_CHILLED to
     // UNITS_FROZEN in place and adds MAMMOTH_STAMPEDED (120).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(120);
+    // The Candy redesign (`pulp_wars-jdb.12`) adds UNIT_TOPPED_UP,
+    // TILES_GLAZED, UNIT_STUCK, TOOTHACHE_GIVEN, RICOCHETED, and THUMPED
+    // (126).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(126);
   });
 });
 

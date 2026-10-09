@@ -587,7 +587,8 @@ import type { DwarfPickV7 } from "../canvas/dwarf-board-plan-v7";
 import {
   CANDY_FIELD_DEFENSE_EXPLANATION_V7,
   CONFECTIONER_SUPPORT_UNLOCK_TEXT_V7,
-  FROSTING_TOOLTIP_V7,
+  TOP_UP_LABEL_V7,
+  TOP_UP_TOOLTIP_V7,
   HOME_SWEET_HOME_UNLOCK_TEXT_V7,
   PEPPERMINT_SURPRISE_UNLOCK_TEXT_V7,
   REBAKE_LABEL_V7,
@@ -4468,17 +4469,6 @@ export class Ruleset7DomAppView {
             cue.append(glyph);
           }
           cue.append(text(this.#document, "span", chip.label));
-          if (chip.pips !== undefined) {
-            const pips = el(this.#document, "span", "v7-candy-pips");
-            pips.dataset.pipsLeft = String(chip.pips.left);
-            pips.dataset.pipsOf = String(chip.pips.of);
-            for (let index = 0; index < chip.pips.of; index += 1) {
-              const pip = el(this.#document, "span", "v7-candy-pip");
-              pip.dataset.filled = String(index < chip.pips.left);
-              pips.append(pip);
-            }
-            cue.append(pips);
-          }
           cue.dataset.unitStatus = chip.id;
           cue.title = chip.status;
           cue.setAttribute("aria-label", chip.status);
@@ -5902,8 +5892,8 @@ export class Ruleset7DomAppView {
               (unit) => unit.id === command.unitId && unit.form === "EGG",
             )
           : undefined;
-      // The Candy revision (section 15.1): a Confectioner's Tend Wounded
-      // is Frosting, by the unit's kind.
+      // The Candy redesign (`pulp_wars-jdb.12`): a Confectioner's Top-Up
+      // names its target (one button per target until `pulp_wars-jdb.14`).
       const candyLabel = candyCommandLabelV7(this.#snapshot.view, command);
       // The Martian pass, correction: Disband on a controlled unit is
       // Release.
@@ -5964,11 +5954,12 @@ export class Ruleset7DomAppView {
           text(this.#document, "span", REPAIR_CHIP_V7, "v7-dwarf-repair-chip"),
         );
       }
-      // The Candy revision (section 15.2): the Frosting tooltip.
-      if (command.kind === "TEND_WOUNDED" && candyLabel !== null) {
-        action.title = FROSTING_TOOLTIP_V7;
-        action.setAttribute("aria-description", `${FROSTING_TOOLTIP_V7}.`);
-        action.dataset.candyFrosting = "true";
+      // The Candy redesign (`pulp_wars-jdb.12`): the Top-Up tooltip (its
+      // own button and target pick are `pulp_wars-jdb.14`'s).
+      if (command.kind === "TOP_UP") {
+        action.title = TOP_UP_TOOLTIP_V7;
+        action.setAttribute("aria-description", `${TOP_UP_TOOLTIP_V7}.`);
+        action.dataset.candyTopUp = "true";
       }
       // Map curiosities round 2 (section 34.1): the Wishing Well's toss,
       // with its one Coin and what it may bring.
@@ -12163,7 +12154,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffff_ffff)
     return null;
   return {
-    rulesetId: "pulp-wars-poc-7r67",
+    rulesetId: "pulp-wars-poc-7r68",
     seed,
     width: effectiveBoardSize(draft),
     height: effectiveBoardSize(draft),
@@ -12884,20 +12875,20 @@ const COMMAND_LABELS: Partial<Record<CommandV7["kind"], string>> = {
   BUILD_FIELD_DEFENSE: "Fortify",
 };
 /**
- * The Candy revision (docs/product/RULESET_7_CANDY.md section 15.2): the
- * label of a Candy command button, or null for any other command: the
- * Tend Wounded of a unit of the Candy kind is "Frosting" (Sugar Rush,
- * Re-bake and Sugar Toss are aimed from their own buttons).
+ * The Candy redesign (docs/product/RULESET_7_CANDY_REDESIGN.md section
+ * 8.2, `pulp_wars-jdb.12`): the label of a Top-Up button, "Top-Up {unit}",
+ * or null for any other command (Sugar Rush, Re-bake and Sugar Toss are
+ * aimed from their own buttons; Frosting is gone).
  */
 function candyCommandLabelV7(
   view: PlayerViewV7 | null,
   command: CommandV7,
 ): string | null {
-  if (view === null || command.kind !== "TEND_WOUNDED") return null;
-  const unit = view.units.find((entry) => entry.id === command.unitId);
-  return unit === undefined
-    ? null
-    : candyCommandNameV7(command.kind, presentedUnitFactionV7(view, unit));
+  if (view === null || command.kind !== "TOP_UP") return null;
+  const target = view.units.find((entry) => entry.id === command.targetUnitId);
+  return target === undefined
+    ? TOP_UP_LABEL_V7
+    : `${TOP_UP_LABEL_V7} ${unitRoleRuleV7(view, target).label}`;
 }
 /** "A", "A and B", "A, B and C". */
 function listV7(items: readonly string[]): string {
@@ -12923,7 +12914,7 @@ function commandLabel(command: CommandV7, faction: FactionIdV7): string {
   if (iceFolk !== null) return iceFolk;
   const dwarf = dwarfCommandLabelV7(command.kind, faction);
   if (dwarf !== null) return dwarf;
-  const candy = candyCommandNameV7(command.kind, faction);
+  const candy = candyCommandNameV7(command.kind);
   if (candy !== null) return candy;
   if (command.kind === "BUILD_MONUMENT") return "Monument";
   // Faction building looks (epic pulp_wars-xdh): an Undead "Graveyard".

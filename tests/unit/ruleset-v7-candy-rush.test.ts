@@ -262,7 +262,10 @@ describe("Rushed (section 5.2)", () => {
     };
     expect([moves("FIGHTER", false), moves("FIGHTER", true)]).toEqual([1, 2]);
     expect([moves("RAIDER", false), moves("RAIDER", true)]).toEqual([2, 3]);
-    expect([moves("KNIGHT", false), moves("KNIGHT", true)]).toEqual([2, 3]);
+    // The Candy redesign (`pulp_wars-jdb.12`): a Chocolate Bunny's Move may
+    // hop once (a hop is one ordinary step of 2 half-points that covers two
+    // tiles), so it reaches one tile farther, Rushed or not.
+    expect([moves("KNIGHT", false), moves("KNIGHT", true)]).toEqual([3, 4]);
     // A Forest stops a Rushed Toffee Trooper on entering it (without
     // Fieldcraft, whose Forest march lifts that stop since tuning 4).
     const forest = forestV7(
@@ -676,8 +679,13 @@ describe("the Crash and Home Sweet Home (section 5.3)", () => {
       { kind: "SUGAR_RUSH", unitId: id(at(5, 3)) },
       { kind: "CAPTURE", unitId: id(at(5, 5)) },
       { kind: "PILLAGE", unitId: id(at(5, 3)) },
-      { kind: "TEND_WOUNDED", unitId: id(at(4, 3)) },
-      { kind: "REBAKE", unitId: id(at(4, 3)), at: at(4, 4) },
+      // The Candy redesign: Top-Up replaced Frosting (Tend Wounded).
+      {
+        kind: "TOP_UP",
+        unitId: id(at(4, 3)),
+        targetUnitId: id(at(5, 3)),
+      },
+      { kind: "REBAKE", unitId: id(at(4, 3)), from: at(4, 4), at: at(3, 3) },
       {
         kind: "SUGAR_TOSS",
         unitId: id(at(6, 3)),
@@ -770,9 +778,9 @@ describe("the Crash and Home Sweet Home (section 5.3)", () => {
   });
 });
 
-describe("Rush perks (section 5.4)", () => {
-  it("grants a Rushed Donut Racer Escape after an attack it survives, with the ordinary budget of 2", () => {
-    const field = (rush: boolean, extra: Record<string, unknown> = {}) =>
+describe("no Rush perks (the Candy redesign, section 6.1)", () => {
+  it("gives a Rushed Donut Racer no Escape after an attack", () => {
+    const field = (rush: boolean) =>
       candyFieldV7(
         [
           {
@@ -780,7 +788,6 @@ describe("Rush perks (section 5.4)", () => {
             role: "RAIDER",
             at: at(5, 3),
             ...(rush ? { rush: "RUSHED" } : {}),
-            ...extra,
           },
           // A Mammoth (a Musk Ox's Frostbite would freeze the attacker,
           // which then has no Escape: Ice Folk Freeze, `pulp_wars-w49.37`).
@@ -788,86 +795,37 @@ describe("Rush perks (section 5.4)", () => {
         ],
         { factions: ["CANDY", "ICE_FOLK"] },
       );
-    const plain = attackV7(field(false), at(5, 3), at(5, 2));
-    expect(plain.combat.escapeAvailable).toBe(false);
-    expect(plain.attacker?.activation.escapeAvailable).toBe(false);
-    const rushed = attackV7(field(true), at(5, 3), at(5, 2));
-    expect(rushed.combat.escapeAvailable).toBe(true);
-    expect(rushed.attacker?.activation.escapeAvailable).toBe(true);
-    const escapes = reach(rushed.state, at(5, 3));
-    expect(escapes.length).toBeGreaterThan(0);
-    expect(farthest(escapes, at(5, 3))).toBe(2);
-    expectOfferedAcceptedV7(rushed.state, "MOVE");
-    // Never after a Musk Ox's Frostbite froze it.
-    const bitten = candyFieldV7(
-      [
-        { seat: 0, role: "RAIDER", at: at(5, 3), rush: "RUSHED" },
-        { seat: 1, role: "GUARD", at: at(5, 2) },
-      ],
-      { factions: ["CANDY", "ICE_FOLK"] },
-    );
-    const frostbitten = attackV7(bitten, at(5, 3), at(5, 2));
-    expect(frostbitten.combat.frostbiteApplied).toBe(true);
-    expect(frostbitten.combat.escapeAvailable).toBe(false);
-    expect(reach(frostbitten.state, at(5, 3))).toEqual([]);
+    for (const rush of [false, true]) {
+      const run = attackV7(field(rush), at(5, 3), at(5, 2));
+      expect(run.combat.escapeAvailable, String(rush)).toBe(false);
+      expect(run.attacker?.activation.escapeAvailable, String(rush)).toBe(
+        false,
+      );
+      expect(reach(run.state, at(5, 3)), String(rush)).toEqual([]);
+    }
   });
 
-  it("gives a Rushed Chocolate Bunny Sugar Frenzy with at most two continuations", () => {
-    const line = (rush: boolean, role: UnitRoleIdV7 = "KNIGHT") =>
-      candyFieldV7(
-        [
-          {
-            seat: 0,
-            role,
-            at: at(2, 3),
-            ...(rush ? { rush: "RUSHED" } : {}),
-          },
-          { seat: 1, role: "FIGHTER", at: at(3, 3), hp: 1 },
-          { seat: 1, role: "FIGHTER", at: at(4, 3), hp: 1 },
-          { seat: 1, role: "FIGHTER", at: at(5, 3), hp: 1 },
-          { seat: 1, role: "FIGHTER", at: at(6, 3), hp: 1 },
-          { seat: 1, role: "FIGHTER", at: at(7, 3), hp: 1 },
-        ],
-        role === "KNIGHT" && rush ? {} : {},
-      );
-    const state = line(true);
+  it("gives a Rushed Chocolate Bunny no Overrun (Sugar Frenzy is gone)", () => {
+    const state = candyFieldV7([
+      { seat: 0, role: "KNIGHT", at: at(2, 3), rush: "RUSHED" },
+      { seat: 1, role: "FIGHTER", at: at(3, 3), hp: 1 },
+      { seat: 1, role: "FIGHTER", at: at(4, 3), hp: 3 },
+    ]);
     const first = attackV7(state, at(2, 3), at(3, 3));
     expect(first.combat).toMatchObject({
       sugarRushApplied: true,
-      overrunAdvance: true,
-      overrunContinues: true,
-    });
-    const second = attackV7(first.state, at(3, 3), at(4, 3));
-    expect(second.combat).toMatchObject({
-      sugarRushApplied: false,
-      attack2: 6,
-      overrunAdvance: true,
-      overrunContinues: true,
-    });
-    const third = attackV7(second.state, at(4, 3), at(5, 3));
-    expect(third.combat).toMatchObject({
-      overrunAdvance: true,
+      defenderDies: true,
+      advances: true,
+      overrunAdvance: false,
       overrunContinues: false,
     });
-    // After three kills in a row the fourth attack is not offered and is
-    // rejected.
-    const bear = unitAtV7(third.state, at(5, 3));
+    const bear = unitAtV7(first.state, at(3, 3));
     expect(bear.role).toBe("KNIGHT");
-    expect(bear.activation.attacksUsed).toBe(3);
-    const fourth: CommandV7 = {
-      kind: "ATTACK",
-      unitId: bear.id,
-      targetUnitId: unitAtV7(third.state, at(6, 3)).id,
-    };
-    expect(rejectedV7(third.state, fourth).code).toBe("UNIT_ALREADY_ACTED");
-    // Not Rushed: no continuation at all.
-    const plain = attackV7(line(false), at(2, 3), at(3, 3));
-    expect(plain.combat.overrunContinues).toBe(false);
     expect(
-      rejectedV7(plain.state, {
+      rejectedV7(first.state, {
         kind: "ATTACK",
-        unitId: unitAtV7(plain.state, at(3, 3)).id,
-        targetUnitId: unitAtV7(plain.state, at(4, 3)).id,
+        unitId: bear.id,
+        targetUnitId: unitAtV7(first.state, at(4, 3)).id,
       }).code,
     ).toBe("UNIT_ALREADY_ACTED");
   });

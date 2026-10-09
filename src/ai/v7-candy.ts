@@ -1,11 +1,13 @@
 import type { UnitId } from "../engine/model/ids";
 import {
+  REBAKE_OVER_CAPACITY_V7,
+  REBAKE_REACH_V7,
   effectiveRoleRuleV7,
   factionTreeV7,
   unitMayActAfterMoveV7,
-  unitRoleMechanicsV7,
   unitRoleRuleV7,
 } from "../engine/rules/ruleset-v7";
+import { unitHopsV7 } from "../engine/v7/candy-abilities";
 import { unitIsCrashedV7, unitIsRushedV7 } from "../engine/v7/candy";
 import type { CommandV7 } from "../engine/v7/commands";
 import type { CombatPreviewV7 } from "../engine/v7/events";
@@ -13,6 +15,7 @@ import {
   previewCrumbsEatV7,
   previewRebakeV7,
   previewSugarRushV7,
+  previewTopUpV7,
   queryCombatPreviewV7,
 } from "../engine/v7/query";
 import type { CoordV7, TechnologyIdV7, UnitRoleIdV7 } from "../engine/v7/types";
@@ -449,29 +452,20 @@ function plainKillsV7(
 }
 
 /**
- * Rule 1's safety and the Chocolate Bunny's condition for one Rushed kill: the
- * unit does not end in visible lethal reach unless the kill is a key role;
- * a Chocolate Bunny Rushes only for a kill with a Sugar Frenzy target next to
- * its new tile, or for a key kill.
+ * Rule 1's safety for one Rushed kill: the unit does not end in visible
+ * lethal reach unless the kill is a key role. The Candy redesign
+ * (`pulp_wars-jdb.12`, no AI tuning until `pulp_wars-jdb.13`): Sugar
+ * Frenzy is gone, so the Chocolate Bunny (the unit that hops) Rushes only
+ * for a key kill, as its old Frenzy condition now always reads.
  */
 function rushKillAcceptableV7(
   tools: CandyPolicyToolsV7,
   unit: PublicUnitV7,
   option: AttackOptionV7,
 ): boolean {
-  const view = tools.view;
   const key = RUSH_KEY_KILL_ROLES_V7.includes(option.target.role);
   if (key) return true;
-  if (unitRoleMechanicsV7(view, unit).rushPerk === "SUGAR_FRENZY") {
-    const frenzy =
-      option.preview.overrunContinues &&
-      tools.hostiles.some(
-        (hostile) =>
-          hostile.id !== option.target.id &&
-          chebyshev(hostile.at, option.end) === 1,
-      );
-    if (!frenzy) return false;
-  }
+  if (unitHopsV7(tools.view, unit)) return false;
   const hp = unit.hp - option.preview.damageToAttacker;
   return (
     tools.dangerWithout({ ...unit, hp }, option.end, option.target.id) < hp
@@ -589,7 +583,9 @@ export function planSugarRushV7(
   // Rule 3: the unit's offered attacks that leave it by an own center.
   if (
     candyStatsV7(view, unit.id)?.homeSweetHome !== true ||
-    unitRoleMechanicsV7(view, unit).rushPerk === "SUGAR_FRENZY" ||
+    // The Chocolate Bunny (the Candy redesign: the unit that hops) keeps
+    // its Rush for a kill, as before the redesign.
+    unitHopsV7(view, unit) ||
     rule.tacticalRole === "SUPPORT" ||
     !byOwnCenterV7(view, unit.at)
   )
@@ -786,8 +782,32 @@ export function rebakeScoreV7(
   const confectioner = view.units.find((unit) => unit.id === command.unitId);
   const preview = previewRebakeV7(view, command.unitId);
   if (confectioner === undefined || preview === null) return none;
+  // The Candy redesign (`pulp_wars-jdb.12`, RULESET_7_CANDY_REDESIGN.md
+  // section 13): the most expensive role first (the Crumbs order on the
+  // scooped tile), then the placement tile next to the Confectioner with
+  // the lowest visible threat, then the tile order.
+  const threat = (option: (typeof preview.options)[number]): number =>
+    tools.danger(
+      {
+        ...confectioner,
+        role: option.role,
+        hp: option.hp,
+        maxHp: effectiveRoleRuleV7(option.role, view.viewer.faction).maxHp,
+        at: option.at,
+      },
+      option.at,
+    );
   const best = [...preview.options]
-    .sort((left, right) => crumbsOrderV7(view, left, right))
+    .sort(
+      (left, right) =>
+        crumbsOrderV7(
+          view,
+          { at: left.from, role: left.role },
+          { at: right.from, role: right.role },
+        ) ||
+        threat(left) - threat(right) ||
+        byTile(left.at, right.at),
+    )
     .find(
       (option) =>
         !fragileRebakeV7(
@@ -798,7 +818,12 @@ export function rebakeScoreV7(
           option.hp,
         ),
     );
-  if (best === undefined || !same(best.at, command.at)) return none;
+  if (
+    best === undefined ||
+    !same(best.from, command.from) ||
+    !same(best.at, command.at)
+  )
+    return none;
   return {
     priority: REBAKE_PRIORITY_V7,
     strategic:
@@ -809,11 +834,13 @@ export function rebakeScoreV7(
 }
 
 /**
- * Section 14, "Re-bake": the value of a Confectioner's Move to `to`: next
- * to the best own Crumbs within 3 it can pay for (or a step closer to them
- * when it cannot reach them this turn and they last another turn), on a
- * tile outside visible lethal reach, when no Re-bake is offered where it
- * stands.
+ * Section 14, "Re-bake": the value of a Confectioner's Move to `to`: within
+ * the Re-bake reach (the Candy redesign: 2) of the best own Crumbs within 3
+ * it can pay for (or a step closer to them when it cannot reach them this
+ * turn and they last another turn), on a tile outside visible lethal reach,
+ * when no Re-bake is offered where it stands. Units on the Crumbs no longer
+ * matter (a Re-bake scoops from under them), and the home city may go one
+ * over its capacity.
  */
 export function rebakeApproachValueV7(
   tools: CandyPolicyToolsV7,
@@ -830,7 +857,7 @@ export function rebakeApproachValueV7(
     unitIsCrashedV7(view, unit.id) ||
     !unitRoleRuleV7(view, unit).abilities.includes("REBAKE") ||
     !unitMayActAfterMoveV7(view, unit) ||
-    tools.freeCapacity(unit) <= 0 ||
+    tools.freeCapacity(unit) + REBAKE_OVER_CAPACITY_V7 <= 0 ||
     tools.commands.some(
       (command) => command.kind === "REBAKE" && command.unitId === unit.id,
     )
@@ -849,7 +876,7 @@ export function rebakeApproachValueV7(
       chebyshev(entry.at, unit.at),
       ...safeEnds.map((end) => chebyshev(end, entry.at)),
     );
-    return reached === 1 || entry.turnsLeft >= 2
+    return reached <= REBAKE_REACH_V7 || entry.turnsLeft >= 2
       ? reached
       : Number.POSITIVE_INFINITY;
   };
@@ -858,10 +885,8 @@ export function rebakeApproachValueV7(
       (entry) =>
         entry.ownerId === view.viewer.id &&
         chebyshev(entry.at, unit.at) <= REBAKE_APPROACH_RADIUS_V7 &&
-        chebyshev(entry.at, unit.at) > 1 &&
+        chebyshev(entry.at, unit.at) > REBAKE_REACH_V7 &&
         price(entry.role) <= view.viewer.coins &&
-        !view.units.some((other) => same(other.at, entry.at)) &&
-        !view.burrowed.some((mound) => same(mound.unit.at, entry.at)) &&
         !fragileRebakeV7(tools, unit, entry.at, entry.role, hp(entry.role)) &&
         nearest(entry) < chebyshev(entry.at, unit.at),
     )
@@ -968,6 +993,42 @@ export function sugarTossScoreV7(
       attacks > 0 ? SUGAR_TOSS_PRIORITY_V7 : SUGAR_TOSS_IDLE_PRIORITY_V7,
     strategic: 0,
     immediate: amount * 8,
+  };
+}
+
+/**
+ * The Candy redesign (`pulp_wars-jdb.12`, RULESET_7_CANDY_REDESIGN.md
+ * section 13): a basic score for the Confectioner's Top-Up, offered
+ * commands only, until the Candy step two (`pulp_wars-jdb.13`): the target
+ * whose Top-Up does the most (a Crash ended counts 3, a cure 2, each HP 1),
+ * then the lowest HP, then the lowest unit ID, at the idle tier of a heal
+ * (a Re-bake and every attack come first).
+ */
+export function topUpScoreV7(
+  tools: CandyPolicyToolsV7,
+  command: Extract<CommandV7, { kind: "TOP_UP" }>,
+): {
+  readonly priority: number;
+  readonly strategic: number;
+  readonly immediate: number;
+} {
+  const none = { priority: -1, strategic: 0, immediate: 0 };
+  const view = tools.view;
+  const preview = previewTopUpV7(view, command.unitId);
+  if (preview === null) return none;
+  const worth = (target: (typeof preview.targets)[number]): number =>
+    (target.crashEnded ? 3 : 0) + (target.cured ? 2 : 0) + target.amount;
+  const best = [...preview.targets].sort(
+    (left, right) =>
+      worth(right) - worth(left) ||
+      left.hpAfter - right.hpAfter ||
+      left.unitId - right.unitId,
+  )[0];
+  if (best === undefined || best.unitId !== command.targetUnitId) return none;
+  return {
+    priority: SUGAR_TOSS_IDLE_PRIORITY_V7,
+    strategic: 0,
+    immediate: worth(best) * 8,
   };
 }
 

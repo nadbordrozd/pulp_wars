@@ -150,6 +150,9 @@ export const OWNER_READER_CLASSES_V7: Readonly<
   "src/engine/v7/candy.ts::deathLeavesCrumbsV7": "NEUTRAL_SAFE",
   "src/engine/v7/query.ts::publicRebakeFactsV7": "PLAYER_ONLY",
   "src/engine/v7/state-schema.ts::candyListsValid": "NEUTRAL_AWARE",
+  // The Candy redesign (`pulp_wars-jdb.12`): the stale-Crumbs telemetry
+  // reads the Coins of the Crumbs' owner, a Candy seat.
+  "src/headless/candy-telemetry-v7.ts::staleCrumbsReasonV7": "PLAYER_ONLY",
   // The frozen sea (`pulp_wars-5ti.3`): ice is owned by a seat (the Freezing
   // unit's owner), never by the neutral owner; a Freeze is a seat's command.
   // The state check skips the neutral owner's units by name.

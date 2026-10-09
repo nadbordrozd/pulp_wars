@@ -419,7 +419,7 @@ describe("Ruleset 7 unit glossary", () => {
       "overrun",
       "ram",
       "rampage",
-      "sugar-frenzy",
+      // The Candy redesign (`pulp_wars-jdb.12`) removed Sugar Frenzy.
       "escape",
       "cracked",
       "risen",

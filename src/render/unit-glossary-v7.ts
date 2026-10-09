@@ -121,10 +121,6 @@ const ENTRIES = {
     "Repair",
     "Heals the friendly units next to it, machines most of all, and cures their ailments. It also mends your Barricades.",
   ],
-  FROSTING: [
-    "Frosting",
-    "Heals the wounded friendly units next to it and cures their ailments.",
-  ],
   OVERRUN: [
     "Overrun",
     "After a kill it takes the tile and may attack again, for as long as it keeps killing.",
@@ -453,22 +449,44 @@ const ENTRIES = {
     "Sugar Rush",
     "Before it moves: it goes farther and hits harder this turn, then Crashes and cannot act next turn.",
   ],
-  RUSH_AND_RUN: [
-    "Rush and run",
-    "On a Sugar Rush it may move again after attacking.",
-  ],
-  SUGAR_FRENZY: [
-    "Sugar Frenzy",
-    "On a Sugar Rush it attacks again after a kill.",
-  ],
   SUGAR_TOSS: ["Sugar Toss", "Heals one of your units within 2 tiles."],
+  // The Candy redesign (`pulp_wars-jdb.12`,
+  // docs/product/RULESET_7_CANDY_REDESIGN.md section 7).
+  STICKY: [
+    "Sticky Toffee",
+    "A unit it hits, or strikes back at, can move only one tile until the end of its next turn.",
+  ],
+  GLAZE_TRAIL: [
+    "Glaze Trail",
+    "The tiles it rolls off are glazed for the rest of the turn; your units move onto them at half cost.",
+  ],
+  RICOCHET: [
+    "Ricochet",
+    "A shot from two tiles bounces on to the weakest enemy next to the target for half the damage.",
+  ],
+  HOP: [
+    "Bunny Hop",
+    "Its move may hop over one tile, whatever stands there, but never over water.",
+  ],
+  THUMP: [
+    "Thump",
+    "Every attack it makes also hurts each other enemy around it a little.",
+  ],
+  TOOTHACHE: [
+    "Toothache",
+    "An enemy that bites it from the next tile has its next attack 1 weaker.",
+  ],
+  TOP_UP: [
+    "Top-Up",
+    "One of your units next to it stops being Crashed, heals a little, and is cured.",
+  ],
   BOUNCY: [
     "Bouncy",
     "An enemy that hits it from the next tile and survives is bounced one tile back.",
   ],
   REBAKE: [
     "Re-bake",
-    "Bakes a fallen Candy unit back from the Crumbs next to it, cheaply and at half health.",
+    "Scoops Crumbs within 2 tiles and bakes the fallen unit back next to itself, cheaply and at half health.",
   ],
   SPLAT: ["Splat", "A unit it hits cannot hit back for the rest of your turn."],
   CRUMBS: [
@@ -749,11 +767,9 @@ export function abilityGlossaryIdV7(
     case "TEND_WOUNDED":
       return faction === "DWARF"
         ? "REPAIR"
-        : faction === "CANDY"
-          ? "FROSTING"
-          : mechanics.tendGrowingHeal !== null
-            ? "TEND_DINOSAUR"
-            : "TEND";
+        : mechanics.tendGrowingHeal !== null
+          ? "TEND_DINOSAUR"
+          : "TEND";
     case "OVERRUN":
       return faction === "GOBLIN"
         ? "RAM_BUGGY"
@@ -828,8 +844,6 @@ export function roleTraitGlossaryIdsV7(
   if (mechanics.frostbite) traits.push("FROSTBITE");
   if (mechanics.repairsAsMachine && !mechanics.construct)
     traits.push("MACHINE");
-  if (mechanics.rushPerk === "ESCAPE") traits.push("RUSH_AND_RUN");
-  if (mechanics.rushPerk === "SUGAR_FRENZY") traits.push("SUGAR_FRENZY");
   if (mechanics.leavesCrumbs) traits.push("CRUMBS");
   if (mechanics.immovable) traits.push("ROCK_HARD");
   if (mechanics.capacitySlots > 1) traits.push("BIG_BODY");
@@ -920,7 +934,6 @@ const STATUS_IDS: Readonly<Record<string, GlossaryIdV7>> = {
   overrun: "STATUS_ATTACK_AGAIN",
   ram: "STATUS_ATTACK_AGAIN",
   rampage: "STATUS_ATTACK_AGAIN",
-  "sugar-frenzy": "STATUS_ATTACK_AGAIN",
   escape: "STATUS_ESCAPE",
   cracked: "STATUS_CRACKED",
   risen: "STATUS_RISEN",

@@ -1,12 +1,16 @@
 # Ruleset 7: the Candy redesign
 
-**Status:** design proposal (bead `pulp_wars-jdb.11`, epic `pulp_wars-jdb`),
-not implemented. Nothing here changes the running game until the engine
-bead of [section 17](#17-implementation-beads) lands; until then the rules
-are [current rules section 23](RULESET_7_CURRENT.md#23-candy-faction-rules)
-at `pulp-wars-poc-7r59`. Where this document and the
-[Candy overlay](RULESET_7_CANDY.md) differ, this document is the proposal
-and the overlay is history.
+**Status:** design (bead `pulp_wars-jdb.11`, epic `pulp_wars-jdb`), with
+the defaults of [section 18](#18-open-questions-with-defaults) accepted;
+**its engine is built** by `pulp_wars-jdb.12` at `pulp-wars-poc-7r68`, and
+[current rules section 23](RULESET_7_CURRENT.md#23-candy-faction-rules)
+states the rules as built, with the places where the code differs from
+this text in its
+[known discrepancies](RULESET_7_CURRENT.md#25-known-discrepancies). The
+Normal AI's use of the new abilities (`pulp_wars-jdb.13`) and their markers
+and effects (`pulp_wars-jdb.14`) are not built yet. Where this document and
+the [Candy overlay](RULESET_7_CANDY.md) differ, this document wins and the
+overlay is history.
 
 **Ruleset ID:** the engine bead takes the next free identity when it lands
 (written `7rNN` below; `7r59` is current). Identity work is serial: the
@@ -439,7 +443,7 @@ weakest enemy next to its target for half the damage.
   candidates are units the attacker sees).
 - From distance 1 there is no ricochet.
 - **Sugar Toss** is unchanged
-  ([current rules section 23.7](RULESET_7_CURRENT.md#237-frosting-and-sugar-toss)).
+  ([current rules section 23.7](RULESET_7_CURRENT.md#237-the-redesign-abilities)).
 - Role mechanic `ricochet: true` for the Candy `MARKSMAN` only; public
   ability `RICOCHET`.
 

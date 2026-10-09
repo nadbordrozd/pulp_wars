@@ -21,6 +21,13 @@ import {
 import { berserkIgnoresZocV7, berserkMoveBonusV7 } from "./berserk";
 import { sugarRushMoveBonusV7 } from "./candy";
 import {
+  glazeStepAppliesV7,
+  hopJumpedTileV7,
+  hopLandingsV7,
+  moveStepLimitV7,
+  unitHopsV7,
+} from "./candy-abilities";
+import {
   arePlayersAlliedV7,
   arePlayersHostileV7,
   cooperativeAlliesV7,
@@ -104,7 +111,12 @@ export type MovementFailureReasonV7 =
   | "ICEBOUND"
   // Map curiosities round 2 (section 28.2): a Dimensional Gate ends every
   // Move that enters it, so a path cannot continue past one.
-  | "GATE_STOPS_MOVE";
+  | "GATE_STOPS_MOVE"
+  // The Candy redesign (docs/product/RULESET_7_CANDY_REDESIGN.md sections
+  // 6.2 and 7.7): a Stuck unit's Move of more than one step; a hop over
+  // water or ice.
+  | "STUCK"
+  | "HOP_ILLEGAL";
 
 export type MovementPathResultV7 =
   | {
@@ -348,14 +360,41 @@ function validateMovementPathCoreV7(
   const iceFolkKind = unitKindWalksIceV7(state, unit);
   /** The direction the next step must take: the slide continues. */
   let slide: { readonly dx: number; readonly dy: number } | null = null;
+  // The Candy redesign (RULESET_7_CANDY_REDESIGN.md sections 6.2 and 7.7):
+  // a Stuck unit's Move has at most one step (a slide is not a step); a
+  // Chocolate Bunny's Move may contain one hop.
+  const stepLimit = moveStepLimitV7(state, unit.id);
+  const hops = unitHopsV7(state, unit);
+  let hopUsed = false;
+  let steps = 0;
 
   for (let index = 0; index < path.length; index += 1) {
     const step = path[index];
     if (step === undefined) throw new RangeError("INVALID_STATE");
-    if (chebyshev(current, step) !== 1)
+    const jumped =
+      chebyshev(current, step) === 2 && hops && !hopUsed && slide === null
+        ? hopJumpedTileV7(current, step)
+        : null;
+    if (chebyshev(current, step) !== 1 && jumped === null)
       return { legal: false, reason: "NOT_ADJACENT" };
+    if (jumped !== null) {
+      // Section 7.7: the jumped tile is explored and not water or ice; it
+      // is not entered (no cost, stop, ZOC, eating, or reveal of its own).
+      const jumpedTile = tileAtV7(state.board, jumped);
+      if (jumpedTile === undefined)
+        return { legal: false, reason: "OUT_OF_BOUNDS" };
+      if (!contains(explored, jumped))
+        return { legal: false, reason: "UNEXPLORED_INTERMEDIATE" };
+      if (jumpedTile.biome === null)
+        return { legal: false, reason: "HOP_ILLEGAL" };
+      hopUsed = true;
+    }
     // Section 8.6: the slide is forced; a path that turns is rejected.
     const sliding = slide !== null;
+    if (!sliding) {
+      steps += 1;
+      if (steps > stepLimit) return { legal: false, reason: "STUCK" };
+    }
     if (
       slide !== null &&
       (step.x !== current.x + slide.dx || step.y !== current.y + slide.dy)
@@ -373,11 +412,18 @@ function validateMovementPathCoreV7(
     // command); it never adds to a Road node's half cost. A slid tile costs
     // nothing.
     const stepSnow = snowAt(step);
+    // The Candy redesign (section 7.2): a step onto a Glazed tile costs a
+    // Road step's 1 for the active seat's land-form units; a hop always
+    // costs one ordinary step.
     spentPoints2 += sliding
       ? 0
-      : currentRoadNode || (glides && currentSnow && stepSnow)
-        ? 1
-        : 2;
+      : jumped !== null
+        ? 2
+        : currentRoadNode ||
+            (glides && currentSnow && stepSnow) ||
+            glazeStepAppliesV7(state, unit, step)
+          ? 1
+          : 2;
     if (spentPoints2 > budget2)
       return { legal: false, reason: "BUDGET_EXCEEDED" };
     const owner = tileOwner(state, tile);
@@ -586,7 +632,8 @@ function validateMovementPathCoreV7(
     // The Martian revision section 7.1: a walker or flyer is never stopped
     // by terrain; the Ice Folk revision section 7.1: nor is a Mountain-born
     // unit by a Mountain.
-    const roadEdge = currentRoadNode && stepRoadNode;
+    // A hop's landing is never a Road edge (the Candy redesign, 7.7).
+    const roadEdge = currentRoadNode && stepRoadNode && jumped === null;
     // The frozen sea section 8.7: slip (a ground unit of another kind ends
     // its Move on entering ice).
     const iceStops =
@@ -760,6 +807,8 @@ export function reachableMovementPathsV7(
   // The Dwarf revision section 5.4: a surfaced rider never ends on a
   // settlement center it does not own.
   const ownSitesOnly = unitAvoidsForeignSitesV7(state, unit);
+  // The Candy redesign (section 7.7): a Bunny's paths may hop once.
+  const hops = unitHopsV7(state, unit);
   const queue: CoordV7[][] = [[]];
   const best = new Map<string, number>([[key(unit.at), 0]]);
   const results = new Map<string, ReachablePathV7>();
@@ -767,7 +816,16 @@ export function reachableMovementPathsV7(
     const path = queue.shift();
     if (path === undefined) break;
     const current = path.at(-1) ?? unit.at;
-    for (const destination of adjacent(state, current)) {
+    const hopped = hops && pathHasHopV7(unit.at, path);
+    const nextSteps = [
+      ...adjacent(state, current),
+      ...(hops && !hopped
+        ? hopLandingsV7(current).filter(
+            (at) => tileAtV7(state.board, at) !== undefined,
+          )
+        : []),
+    ];
+    for (const destination of nextSteps) {
       const candidate = [...path, destination];
       const validation = validateMovementPathWithOptionsV7(
         state,
@@ -783,7 +841,8 @@ export function reachableMovementPathsV7(
       const destinationKey = key(validation.destination);
       // The frozen sea (naval branch section 8.6): a prefix that ends where
       // a slide continues is a passing state of its own (the tile and the
-      // direction), never a destination.
+      // direction), never a destination. The Candy redesign: a path that
+      // has hopped is a state of its own (it may not hop again).
       const pending = validation.slideContinues;
       // Ice Folk Freeze (Glacier): a path that has touched ice has more
       // budget, so it is a search state of its own.
@@ -791,7 +850,8 @@ export function reachableMovementPathsV7(
         (pending === undefined
           ? destinationKey
           : `${destinationKey}>${pending.dx},${pending.dy}`) +
-        (validation.iceTouched === true ? "~ice" : "");
+        (validation.iceTouched === true ? "~ice" : "") +
+        (hops && pathHasHopV7(unit.at, candidate) ? "^" : "");
       const prior = best.get(stateKey);
       if (prior !== undefined && prior <= validation.spentPoints2) continue;
       // An own-occupied tile is never a destination; it is only passed, and
@@ -818,10 +878,14 @@ export function reachableMovementPathsV7(
           ));
       if (ownOccupied && validation.stopped) continue;
       best.set(stateKey, validation.spentPoints2);
+      // The Candy redesign: a Bunny's destination keeps its cheapest path
+      // (a hop and a walk may reach the same tile).
+      const known = hops ? results.get(destinationKey) : undefined;
       if (
         !ownOccupied &&
         pending === undefined &&
-        validation.glacierPending !== true
+        validation.glacierPending !== true &&
+        (known === undefined || known.spentPoints2 > validation.spentPoints2)
       )
         results.set(destinationKey, {
           destination: validation.destination,
@@ -836,6 +900,19 @@ export function reachableMovementPathsV7(
   );
 }
 
+/**
+ * The Candy redesign (section 7.7): whether `path` from `start` contains a
+ * hop (two consecutive tiles two apart).
+ */
+function pathHasHopV7(start: CoordV7, path: readonly CoordV7[]): boolean {
+  let current = start;
+  for (const step of path) {
+    if (chebyshev(current, step) === 2) return true;
+    current = step;
+  }
+  return false;
+}
+
 /** Observation-only movement enumeration used by presentation and Normal AI. */
 export function reachablePlayerMovementPathsV7(
   view: PlayerViewV7,
@@ -844,7 +921,11 @@ export function reachablePlayerMovementPathsV7(
   // Revision 19 section 6.2: an Egg never moves.
   if (unit.form === "EGG") return [];
   const context = publicMovementContextV7(view);
+  // The Dwarf revision section 5.4: a surfaced rider never ends on a
+  // settlement center it does not own.
   const ownSitesOnly = unitAvoidsForeignSitesV7(view, unit);
+  // The Candy redesign (section 7.7): a Bunny's paths may hop once.
+  const hops = unitHopsV7(view, unit);
   const queue: CoordV7[][] = [[]];
   const best = new Map<string, number>([[key(unit.at), 0]]);
   const results = new Map<string, ReachablePathV7>();
@@ -852,7 +933,14 @@ export function reachablePlayerMovementPathsV7(
     const path = queue.shift();
     if (path === undefined) break;
     const current = path.at(-1) ?? unit.at;
-    for (const destination of adjacentPublic(view, current)) {
+    const hopped = hops && pathHasHopV7(unit.at, path);
+    const nextSteps = [
+      ...adjacentPublic(view, current),
+      ...(hops && !hopped
+        ? hopLandingsV7(current).filter((at) => publicCoordOnBoard(view, at))
+        : []),
+    ];
+    for (const destination of nextSteps) {
       const candidate = [...path, destination];
       const validation = validatePlayerMovementPathWithContextV7(
         view,
@@ -877,7 +965,8 @@ export function reachablePlayerMovementPathsV7(
         (pending === undefined
           ? destinationKey
           : `${destinationKey}>${pending.dx},${pending.dy}`) +
-        (validation.iceTouched === true ? "~ice" : "");
+        (validation.iceTouched === true ? "~ice" : "") +
+        (hops && pathHasHopV7(unit.at, candidate) ? "^" : "");
       const prior = best.get(stateKey);
       if (prior !== undefined && prior <= validation.spentPoints2) continue;
       // An own-occupied tile is never a destination; it is only passed, and
@@ -894,10 +983,14 @@ export function reachablePlayerMovementPathsV7(
           !publicFlyerMayStandV7(view, unit, publicTileAt(view, destination)));
       if (ownOccupied && validation.stopped) continue;
       best.set(stateKey, validation.spentPoints2);
+      // The Candy redesign: a Bunny's destination keeps its cheapest path
+      // (a hop and a walk may reach the same tile).
+      const known = hops ? results.get(destinationKey) : undefined;
       if (
         !ownOccupied &&
         pending === undefined &&
-        validation.glacierPending !== true
+        validation.glacierPending !== true &&
+        (known === undefined || known.spentPoints2 > validation.spentPoints2)
       )
         results.set(destinationKey, {
           destination: validation.destination,
@@ -1080,12 +1173,36 @@ function validatePlayerMovementPathCoreV7(
   const iceFolkKind = unitKindWalksIceV7(view, unit);
   let slide: { readonly dx: number; readonly dy: number } | null = null;
   const traversedPath: CoordV7[] = [];
+  // The Candy redesign (sections 6.2 and 7.7): Stuck and the hop, from the
+  // public `stuck` list and the explored tiles (as the canonical rules).
+  const stepLimit = moveStepLimitV7(view, unit.id);
+  const hops = unitHopsV7(view, unit);
+  let hopUsed = false;
+  let steps = 0;
   for (let index = 0; index < path.length; index += 1) {
     const step = path[index];
     if (step === undefined) return { legal: false, reason: "OUT_OF_BOUNDS" };
-    if (chebyshev(current, step) !== 1)
+    const jumped =
+      chebyshev(current, step) === 2 && hops && !hopUsed && slide === null
+        ? hopJumpedTileV7(current, step)
+        : null;
+    if (chebyshev(current, step) !== 1 && jumped === null)
       return { legal: false, reason: "NOT_ADJACENT" };
+    if (jumped !== null) {
+      const jumpedTile = publicTileAt(view, jumped);
+      if (jumpedTile === undefined)
+        return { legal: false, reason: "OUT_OF_BOUNDS" };
+      if (!jumpedTile.explored)
+        return { legal: false, reason: "UNEXPLORED_INTERMEDIATE" };
+      if (jumpedTile.biome === null)
+        return { legal: false, reason: "HOP_ILLEGAL" };
+      hopUsed = true;
+    }
     const sliding = slide !== null;
+    if (!sliding) {
+      steps += 1;
+      if (steps > stepLimit) return { legal: false, reason: "STUCK" };
+    }
     if (
       slide !== null &&
       (step.x !== current.x + slide.dx || step.y !== current.y + slide.dy)
@@ -1128,11 +1245,17 @@ function validatePlayerMovementPathCoreV7(
     // the public Snow flags. Hidden Snow can only make the canonical step
     // cheaper, so every offered Move stays within the canonical budget.
     const stepSnow = tile.explored && tile.snow === true;
+    // The Candy redesign (section 7.2): the Glaze (public on explored
+    // tiles); a hop costs one ordinary step.
     spentPoints2 += sliding
       ? 0
-      : currentRoadNode || (glides && currentSnow && stepSnow)
-        ? 1
-        : 2;
+      : jumped !== null
+        ? 2
+        : currentRoadNode ||
+            (glides && currentSnow && stepSnow) ||
+            glazeStepAppliesV7(view, unit, step)
+          ? 1
+          : 2;
     if (spentPoints2 > budget2)
       return { legal: false, reason: "BUDGET_EXCEEDED" };
     if (tile.explored === false && tile.diplomaticBlock === "ALLIED_TERRITORY")
@@ -1199,7 +1322,7 @@ function validatePlayerMovementPathCoreV7(
       !overstrides &&
       publicHostileZoc(view, unit, step, context);
     const stepRoadNode = isUsablePublicRoadNodeV7(view, tile, context);
-    const roadEdge = currentRoadNode && stepRoadNode;
+    const roadEdge = currentRoadNode && stepRoadNode && jumped === null;
     const snowStops = snowStopped && stepSnow && !roadEdge;
     // The frozen sea section 8.7: slip.
     const iceStops =

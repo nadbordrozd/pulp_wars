@@ -25,6 +25,9 @@ import {
   MIND_CONTROL_HP_V7,
   PEPPERMINT_DAMAGE_V7,
   SUGAR_TOSS_HEAL_V7,
+  THUMP_DAMAGE_V7,
+  TOP_UP_HEAL_V7,
+  REBAKE_REACH_V7,
   effectiveRoleRuleV7,
   rebakeHpV7,
   rebakePriceV7,
@@ -255,6 +258,7 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
     "unitId",
     "rebakedUnitId",
     "role",
+    "from",
     "at",
     "cityId",
     "cost",
@@ -282,6 +286,30 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
     "dies",
   ],
   CRUMBS_LEFT: ["kind", "playerId", "at", "role"],
+  // The Candy redesign (RULESET_7_CANDY_REDESIGN.md section 12).
+  UNIT_TOPPED_UP: [
+    "kind",
+    "playerId",
+    "unitId",
+    "targetUnitId",
+    "crashEnded",
+    "amount",
+    "hpAfter",
+    "cured",
+  ],
+  UNIT_STUCK: ["kind", "playerId", "sourceUnitId", "unitId", "endsLeft"],
+  TOOTHACHE_GIVEN: ["kind", "playerId", "sourceUnitId", "unitId", "endsLeft"],
+  TILES_GLAZED: ["kind", "playerId", "unitId", "tiles"],
+  RICOCHETED: [
+    "kind",
+    "playerId",
+    "unitId",
+    "targetUnitId",
+    "damage",
+    "shieldDamage",
+    "dies",
+  ],
+  THUMPED: ["kind", "playerId", "unitId", "hits"],
   NAVAL_UNIT_TRAINED: [
     "kind",
     "playerId",
@@ -1223,10 +1251,68 @@ function validPayload(
         e.unitId !== e.rebakedUnitId &&
         UNIT_ROLE_IDS_V7.includes(e.role as never) &&
         parseCoordV7(e.at) !== null &&
+        // The Candy redesign (section 8.1): scooped within the reach of 2,
+        // baked next to the Confectioner, so the two are at most 3 apart.
+        rebakeTilesValid(e.from, e.at) &&
         id(e.cityId) &&
         rebakePriceV7(e.role as UnitRoleIdV7) !== null &&
         e.cost === rebakePriceV7(e.role as UnitRoleIdV7) &&
         e.hp === rebakeHpV7(e.role as UnitRoleIdV7)
+      );
+    case "UNIT_TOPPED_UP":
+      // The Candy redesign (section 8.2): a heal of 0 to `TOP_UP_HEAL_V7`,
+      // and something done (a Crash ended, a heal, or a cure).
+      return (
+        id(e.playerId) &&
+        id(e.unitId) &&
+        id(e.targetUnitId) &&
+        e.unitId !== e.targetUnitId &&
+        typeof e.crashEnded === "boolean" &&
+        typeof e.cured === "boolean" &&
+        nn(e.amount) &&
+        Number(e.amount) <= TOP_UP_HEAL_V7 &&
+        pos(e.hpAfter) &&
+        Number(e.amount) < Number(e.hpAfter) &&
+        (e.crashEnded === true || e.cured === true || Number(e.amount) > 0)
+      );
+    case "UNIT_STUCK":
+    case "TOOTHACHE_GIVEN":
+      // Sections 7.1 and 7.8: a status of 1 or 2 End Turns on another unit.
+      return (
+        id(e.playerId) &&
+        id(e.sourceUnitId) &&
+        id(e.unitId) &&
+        e.sourceUnitId !== e.unitId &&
+        (e.endsLeft === 1 || e.endsLeft === 2)
+      );
+    case "TILES_GLAZED":
+      return (
+        id(e.playerId) &&
+        id(e.unitId) &&
+        sortedCoords(e.tiles) &&
+        (e.tiles as readonly unknown[]).length > 0
+      );
+    case "RICOCHETED":
+      return (
+        id(e.playerId) &&
+        id(e.unitId) &&
+        id(e.targetUnitId) &&
+        e.unitId !== e.targetUnitId &&
+        fixedHit(e.damage, e.shieldDamage, e.dies, Number.MAX_SAFE_INTEGER)
+      );
+    case "THUMPED":
+      return (
+        id(e.playerId) &&
+        id(e.unitId) &&
+        isDenseArrayV7(e.hits) &&
+        e.hits.length > 0 &&
+        e.hits.every(
+          (entry, index, all) =>
+            candyHitEntry(entry, e.unitId, THUMP_DAMAGE_V7) &&
+            (index === 0 ||
+              Number((all[index - 1] as { unitId: unknown }).unitId) <
+                Number((entry as { unitId: unknown }).unitId)),
+        )
       );
     case "UNITS_CRASHED":
       // Section 5.3: at least one unit, and no unit in both lists.
@@ -1680,6 +1766,9 @@ function validPayload(
           "DIGESTED",
           // Ice Folk Freeze (`pulp_wars-w49.37`): a Mammoth's Stampede.
           "STAMPEDE",
+          // The Candy redesign: a Ricochet and a Thump.
+          "RICOCHET",
+          "THUMP",
         ].includes(e.cause as string)
       );
     // The giants' signatures (docs/product/RULESET_7_GIANTS.md section 8).
@@ -1994,6 +2083,12 @@ function combat(input: unknown): boolean {
       "siegeHammer",
       "wallsDestroyed",
       "glacialSmash",
+      "stuckApplied",
+      "toothacheApplied",
+      "toothacheAttack",
+      "ricochet",
+      "thump",
+      "thumpUncertain",
     ])
   )
     return false;
@@ -2225,7 +2320,65 @@ function combat(input: unknown): boolean {
     typeof input.wallsDestroyed === "boolean" &&
     typeof input.glacialSmash === "boolean" &&
     (input.wallsDestroyed !== true || input.siegeHammer === true) &&
-    (input.glacialSmash !== true || input.shatters === true)
+    (input.glacialSmash !== true || input.shatters === true) &&
+    // The Candy redesign (RULESET_7_CANDY_REDESIGN.md sections 6.2, 7.1,
+    // 7.3, 7.7, and 7.8): Stuck needs a surviving target or a struck-back
+    // surviving attacker; Toothache a surviving attacker; a Ricochet and the
+    // Thump are fixed hits on units other than the target.
+    ["NONE", "TARGET", "ATTACKER", "BOTH"].includes(
+      input.stuckApplied as string,
+    ) &&
+    ((input.stuckApplied !== "TARGET" && input.stuckApplied !== "BOTH") ||
+      input.defenderDies === false) &&
+    ((input.stuckApplied !== "ATTACKER" && input.stuckApplied !== "BOTH") ||
+      (input.attackerDies === false && input.retaliation === true)) &&
+    typeof input.toothacheApplied === "boolean" &&
+    typeof input.toothacheAttack === "boolean" &&
+    typeof input.thumpUncertain === "boolean" &&
+    (input.toothacheApplied !== true || input.attackerDies === false) &&
+    candyHitEntry(input.ricochet, input.targetUnitId, null) &&
+    isDenseArrayV7(input.thump) &&
+    input.thump.every(
+      (entry, index, all) =>
+        candyHitEntry(entry, input.targetUnitId, THUMP_DAMAGE_V7) &&
+        (index === 0 ||
+          Number((all[index - 1] as { unitId: unknown }).unitId) <
+            Number((entry as { unitId: unknown }).unitId)),
+    )
+  );
+}
+/** The Candy redesign (section 8.1): `from` and `at` of a Re-bake. */
+function rebakeTilesValid(fromInput: unknown, atInput: unknown): boolean {
+  const from = parseCoordV7(fromInput);
+  const at = parseCoordV7(atInput);
+  return (
+    from !== null &&
+    at !== null &&
+    Math.max(Math.abs(from.x - at.x), Math.abs(from.y - at.y)) <=
+      REBAKE_REACH_V7 + 1
+  );
+}
+/**
+ * The Candy redesign: a Ricochet entry (null allowed) or a Thump entry: a
+ * fixed hit on a unit other than the attack's target, at most `maximum`
+ * when it is given.
+ */
+function candyHitEntry(
+  input: unknown,
+  targetUnitId: unknown,
+  maximum: number | null,
+): boolean {
+  if (input === null) return maximum === null;
+  return (
+    hasExactKeysV7(input, ["damage", "dies", "shieldDamage", "unitId"]) &&
+    id(input.unitId) &&
+    input.unitId !== targetUnitId &&
+    fixedHit(
+      input.damage,
+      input.shieldDamage,
+      input.dies,
+      maximum ?? Number.MAX_SAFE_INTEGER,
+    )
   );
 }
 function splash(input: unknown): boolean {

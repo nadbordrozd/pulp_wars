@@ -14,7 +14,14 @@ import {
   RULESET_7,
   SHOWCASE_UNIT_TEMPLATES_V7,
   STARTING_FIGHTERS_V7,
-  SUGAR_FRENZY_MAX_CONTINUATIONS_V7,
+  REBAKE_OVER_CAPACITY_V7,
+  REBAKE_REACH_V7,
+  RICOCHET_DIVISOR_V7,
+  STUCK_MAX_STEPS_V7,
+  GLAZE_STEP_COST_V7,
+  THUMP_DAMAGE_V7,
+  TOOTHACHE_ATTACK2_V7,
+  TOP_UP_HEAL_V7,
   SUGAR_RUSH_ATTACK2_V7,
   SUGAR_RUSH_MOVE_BONUS_V7,
   SUGAR_TOSS_HEAL_V7,
@@ -84,7 +91,7 @@ const ROSTER = [
     1,
     1,
     true,
-    ["ATTACK", "CAPTURE", "SUGAR_RUSH"],
+    ["ATTACK", "CAPTURE", "SUGAR_RUSH", "STICKY"],
   ],
   [
     "Donut Racer",
@@ -99,7 +106,7 @@ const ROSTER = [
     1,
     2,
     true,
-    ["ATTACK", "CAPTURE", "CHARGE", "SUGAR_RUSH"],
+    ["ATTACK", "CAPTURE", "CHARGE", "SUGAR_RUSH", "GLAZE_TRAIL"],
   ],
   [
     "Gumball Gunner",
@@ -114,7 +121,7 @@ const ROSTER = [
     2,
     1,
     true,
-    ["ATTACK", "CAPTURE", "SUGAR_RUSH", "SUGAR_TOSS"],
+    ["ATTACK", "CAPTURE", "SUGAR_RUSH", "SUGAR_TOSS", "RICOCHET"],
   ],
   [
     "Marshmallow",
@@ -144,7 +151,7 @@ const ROSTER = [
     1,
     1,
     true,
-    ["ATTACK", "CAPTURE", "TEND_WOUNDED", "REBAKE", "SUGAR_RUSH"],
+    ["ATTACK", "CAPTURE", "REBAKE", "TOP_UP", "SUGAR_RUSH"],
   ],
   [
     "Pie Launcher",
@@ -174,7 +181,7 @@ const ROSTER = [
     1,
     1,
     true,
-    ["ATTACK", "CAPTURE", "SUGAR_RUSH"],
+    ["ATTACK", "CAPTURE", "SUGAR_RUSH", "HOP", "THUMP"],
   ],
   [
     "Gingerbread Giant",
@@ -219,16 +226,27 @@ describe("Candy registration (sections 2 and 13)", () => {
       PEPPERMINT_DAMAGE_V7,
       SUGAR_TOSS_HEAL_V7,
       SUGAR_TOSS_RANGE_V7,
-      SUGAR_FRENZY_MAX_CONTINUATIONS_V7,
-    ]).toEqual([1, 2, 1, 3, 3, 2, 2, 2]);
+    ]).toEqual([1, 2, 1, 3, 3, 2, 2]);
+    // The Candy redesign (RULESET_7_CANDY_REDESIGN.md section 12).
+    expect([
+      TOOTHACHE_ATTACK2_V7,
+      THUMP_DAMAGE_V7,
+      RICOCHET_DIVISOR_V7,
+      REBAKE_REACH_V7,
+      REBAKE_OVER_CAPACITY_V7,
+      TOP_UP_HEAL_V7,
+      STUCK_MAX_STEPS_V7,
+      GLAZE_STEP_COST_V7,
+    ]).toEqual([2, 2, 2, 2, 1, 2, 1, 1]);
     expect(MIND_CONTROLLED_LOST_ABILITIES_V7).toContain("REBAKE");
   });
 
-  it("parses the three commands and the seven events strictly", () => {
+  it("parses the four commands and the seven events strictly", () => {
     const commands: readonly CommandV7[] = [
       { kind: "SUGAR_RUSH", unitId: 5 as never },
-      { kind: "REBAKE", unitId: 5 as never, at: at(3, 3) },
+      { kind: "REBAKE", unitId: 5 as never, from: at(4, 4), at: at(3, 3) },
       { kind: "SUGAR_TOSS", unitId: 5 as never, targetUnitId: 6 as never },
+      { kind: "TOP_UP", unitId: 5 as never, targetUnitId: 6 as never },
     ];
     for (const command of commands) {
       expect(parseCommandV7(command), command.kind).toEqual({
@@ -240,6 +258,11 @@ describe("Candy registration (sections 2 and 13)", () => {
       );
     }
     expect(parseCommandV7({ kind: "REBAKE", unitId: 5 }).ok).toBe(false);
+    // The Candy redesign: a Re-bake without `from` is refused.
+    expect(parseCommandV7({ kind: "REBAKE", unitId: 5, at: at(3, 3) }).ok).toBe(
+      false,
+    );
+    expect(parseCommandV7({ kind: "TOP_UP", unitId: 5 }).ok).toBe(false);
     expect(parseCommandV7({ kind: "SUGAR_TOSS", unitId: 5 }).ok).toBe(false);
     const valid: readonly unknown[] = [
       {
@@ -261,6 +284,7 @@ describe("Candy registration (sections 2 and 13)", () => {
         unitId: 5,
         rebakedUnitId: 9,
         role: "KNIGHT",
+        from: at(4, 4),
         at: at(3, 3),
         cityId: 2,
         cost: 5,
@@ -399,13 +423,15 @@ describe("Candy roster (section 3)", () => {
         movementMode: "GROUND",
         advancesAfterKill: role !== "CATAPULT",
         leavesCrumbs: role !== "JUGGERNAUT",
-        rushPerk:
-          role === "RAIDER"
-            ? "ESCAPE"
-            : role === "KNIGHT"
-              ? "SUGAR_FRENZY"
-              : null,
+        // The Candy redesign: each role's own ability, no Rush perk.
+        sticky: role === "FIGHTER",
+        glazeTrail: role === "RAIDER",
+        ricochet: role === "MARKSMAN",
+        hop: role === "KNIGHT",
+        thumpDamage: role === "KNIGHT" ? THUMP_DAMAGE_V7 : 0,
+        toothache: false,
       });
+      expect("rushPerk" in roleMechanicsV7(role, "CANDY")).toBe(false);
       expect(CANDY_ROLE_MECHANICS_V7[role]).toBe(
         roleMechanicsV7(role, "CANDY"),
       );
@@ -417,7 +443,9 @@ describe("Candy roster (section 3)", () => {
       );
       expect(roleMechanicsV7(role, "CANDY")).toMatchObject({
         leavesCrumbs: false,
-        rushPerk: null,
+        sticky: false,
+        hop: false,
+        thumpDamage: 0,
       });
       expect(effectiveRoleRuleV7(role, "CANDY").abilities).not.toContain(
         "SUGAR_RUSH",
@@ -426,13 +454,33 @@ describe("Candy roster (section 3)", () => {
   });
 
   it("no other faction has a Candy ability or mechanic", () => {
-    const candyAbilities = ["SUGAR_RUSH", "BOUNCE", "SPLAT", "REBAKE"];
+    const candyAbilities = [
+      "SUGAR_RUSH",
+      "BOUNCE",
+      "SPLAT",
+      "REBAKE",
+      "STICKY",
+      "GLAZE_TRAIL",
+      "RICOCHET",
+      "HOP",
+      "THUMP",
+      "TOOTHACHE",
+      "TOP_UP",
+    ];
     for (const faction of FACTION_IDS_V7.filter((id) => id !== "CANDY"))
       for (const role of UNIT_ROLE_IDS_V7) {
         expect(
           roleMechanicsV7(role, faction),
           `${faction} ${role}`,
-        ).toMatchObject({ rushPerk: null, leavesCrumbs: false });
+        ).toMatchObject({
+          leavesCrumbs: false,
+          sticky: false,
+          glazeTrail: false,
+          ricochet: false,
+          hop: false,
+          thumpDamage: 0,
+          toothache: false,
+        });
         expect(
           effectiveRoleRuleV7(role, faction).abilities.filter(
             (ability) =>
@@ -751,7 +799,7 @@ describe("Candy technology (section 4)", () => {
     expect(text("FORTIFICATION")).toContain("Crash");
     expect(text("FORTIFICATION")).not.toContain("Field Defense");
     expect(text("EXPLOSIVES")).toContain("Crumbs");
-    expect(text("ADMINISTRATION")).toContain("Frost");
+    expect(text("ADMINISTRATION")).toContain("Top Up");
     expect(text("ADMINISTRATION")).toContain("Re-bake");
     expect(text("ADMINISTRATION")).not.toContain("Rally");
     expect(text("CHIVALRY")).not.toContain("Overrun");
@@ -791,9 +839,16 @@ describe("Candy public unit stats (section 13)", () => {
       crashed: false,
       splatted: false,
       tossedThisTurn: false,
+      stuck: false,
+      toothache: false,
       candy: {
         sugarRush: true,
-        rushPerk: null,
+        sticky: true,
+        glazeTrail: false,
+        ricochet: false,
+        hop: false,
+        thumpDamage: 0,
+        givesToothache: false,
         bounces: false,
         splats: false,
         rebake: { cost: 1, hp: 5 },
@@ -804,7 +859,7 @@ describe("Candy public unit stats (section 13)", () => {
     expect(stats(at(5, 3))).toMatchObject({
       rushed: false,
       crashed: true,
-      candy: { rushPerk: "ESCAPE", rebake: { cost: 2, hp: 5 } },
+      candy: { glazeTrail: true, rebake: { cost: 2, hp: 5 } },
     });
     expect(stats(at(6, 3))).toMatchObject({ tossedThisTurn: true });
     expect(stats(at(4, 4)).candy).toMatchObject({
@@ -812,7 +867,7 @@ describe("Candy public unit stats (section 13)", () => {
       rebake: { cost: 2, hp: 9 },
     });
     expect(stats(at(6, 4)).candy).toMatchObject({ splats: true });
-    expect(stats(at(4, 5)).candy).toMatchObject({ rushPerk: "SUGAR_FRENZY" });
+    expect(stats(at(4, 5)).candy).toMatchObject({ hop: true, thumpDamage: 2 });
     expect(stats(at(6, 5)).candy).toMatchObject({
       bounces: true,
       rebake: null,
@@ -834,6 +889,8 @@ describe("Candy public unit stats (section 13)", () => {
       "crashed",
       "splatted",
       "tossedThisTurn",
+      "stuck",
+      "toothache",
       "candy",
     ])
       expect(key in plain, key).toBe(false);

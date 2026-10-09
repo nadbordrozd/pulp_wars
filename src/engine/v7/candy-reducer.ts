@@ -1,5 +1,6 @@
 import { allocateUnitId, type PlayerId, type UnitId } from "../model/ids";
 import {
+  REBAKE_OVER_CAPACITY_V7,
   SUGAR_RUSH_MOVE_BONUS_V7,
   canEnterTerrainV7,
   rebakeHpV7,
@@ -16,7 +17,6 @@ import {
   homeSweetHomeSparesV7,
   matchHasCandyV7,
   peppermintHitV7,
-  rebakeCrumbsV7,
   sugarRushRejectionV7,
   sugarTossAmountV7,
   sugarTossTargetRejectionV7,
@@ -26,6 +26,16 @@ import {
   withUnitIdV7,
   withoutCrumbsAtV7,
 } from "./candy";
+import {
+  countedDownCandyStatusV7,
+  rebakeSourcesV7,
+  topUpAmountV7,
+  topUpTargetRejectionV7,
+  unitHasToothacheV7,
+  unitIsAfflictedForTopUpV7,
+  unitIsStuckV7,
+  withoutCandyStatusV7,
+} from "./candy-abilities";
 import type { CommandV7 } from "./commands";
 import type { DwarfReducerKitV7 } from "./dwarf-reducer";
 import {
@@ -47,6 +57,7 @@ import {
   withFullShieldsV7,
   withShieldDamageV7,
 } from "./martian";
+import { withFrozenCuredV7 } from "./ice-folk";
 import { unitSightRadiusAtV7 } from "./movement";
 import { isUnitVisibleToPlayerV7 } from "./observation";
 import type { ApplyCommandResultV7 } from "./reducer";
@@ -75,6 +86,7 @@ export type CandyReducerKitV7 = DwarfReducerKitV7;
 type SugarRushCommandV7 = Extract<CommandV7, { kind: "SUGAR_RUSH" }>;
 type RebakeCommandV7 = Extract<CommandV7, { kind: "REBAKE" }>;
 type SugarTossCommandV7 = Extract<CommandV7, { kind: "SUGAR_TOSS" }>;
+type TopUpCommandV7 = Extract<CommandV7, { kind: "TOP_UP" }>;
 
 // --------------------------------------------------------- Sugar Rush ---
 
@@ -132,10 +144,14 @@ export function applySugarRushV7(
 // ------------------------------------------------------------ Re-bake ---
 
 /**
- * Section 6.4, row 8: whether the Crumbs tile `at` may take the re-baked
- * unit of `role` for `actor`: no unit of any owner or form and no mound,
- * enterable by the role (the shared `canEnterTerrainV7` with the actor's
- * research), and not in territory allied to the actor.
+ * Section 6.4, row 8, as the Candy redesign
+ * (docs/product/RULESET_7_CANDY_REDESIGN.md section 8.1) changed it:
+ * whether the tile `at` may take the re-baked unit of `role` for `actor`:
+ * no unit of any owner or form, no mound, and no Barricade (the shared
+ * occupancy predicate), no treasure chest and no curiosity, enterable by
+ * the role (the shared `canEnterTerrainV7` with the actor's research), and
+ * not in territory allied to the actor. The caller checks that it is one of
+ * the eight tiles around the Confectioner.
  */
 export function rebakeTileLegalV7(
   state: GameStateV7,
@@ -144,7 +160,13 @@ export function rebakeTileLegalV7(
   at: CoordV7,
 ): boolean {
   const tile = tileAtV7(state.board, at);
-  if (tile === undefined || tileOccupiedV7(state, at)) return false;
+  if (
+    tile === undefined ||
+    tileOccupiedV7(state, at) ||
+    state.treasureChests.some((chest) => same(chest, at)) ||
+    state.curiosities.some((curiosity) => same(curiosity.at, at))
+  )
+    return false;
   const player = kitPlayer(state, actor);
   // The unit is not built yet: a role-level read of the actor's seat.
   const mechanics = seatRoleMechanicsV7(state, actor, role);
@@ -173,7 +195,13 @@ export function rebakeTileLegalV7(
   );
 }
 
-/** Section 6.4: `REBAKE`, a primary action of the Confectioner. */
+/**
+ * Section 6.4, as the Candy redesign (section 8.1) changed it: `REBAKE`, a
+ * primary action of the Confectioner: it scoops its seat's Crumbs on `from`
+ * (within `REBAKE_REACH_V7`, from under any unit) and bakes the copy onto
+ * the free tile `at` next to itself, putting its home city at most
+ * `REBAKE_OVER_CAPACITY_V7` over capacity.
+ */
 export function applyRebakeV7(
   kit: CandyReducerKitV7,
   original: GameStateV7,
@@ -206,18 +234,21 @@ export function applyRebakeV7(
   const home = state.cities.find((city) => city.id === confectioner.homeCityId);
   if (home === undefined || home.ownerId !== actor)
     return kit.rejected(original, "REBAKE_NOT_LEGAL", { reason: "NO_HOME" });
-  const crumbs = rebakeCrumbsV7(state.crumbs, actor, confectioner.at).find(
-    (entry) => same(entry.at, command.at),
+  const crumbs = rebakeSourcesV7(state.crumbs, actor, confectioner.at).find(
+    (entry) => same(entry.at, command.from),
   );
   if (crumbs === undefined)
     return kit.rejected(original, "REBAKE_NOT_LEGAL", { reason: "NO_CRUMBS" });
   const role = crumbs.role;
-  if (!rebakeTileLegalV7(state, actor, role, command.at))
+  if (
+    chebyshev(command.at, confectioner.at) !== 1 ||
+    !rebakeTileLegalV7(state, actor, role, command.at)
+  )
     return kit.rejected(original, "REBAKE_NOT_LEGAL", { reason: "TILE" });
   if (
     assignedUnitCountV7(state, home.id) +
       seatRoleMechanicsV7(state, actor, role).capacitySlots >
-    cityUnitCapacityV7(state, home)
+    cityUnitCapacityV7(state, home) + REBAKE_OVER_CAPACITY_V7
   )
     return kit.rejected(original, "CITY_CAPACITY_FULL", { cityId: home.id });
   const cost = rebakePriceV7(role);
@@ -288,6 +319,7 @@ export function applyRebakeV7(
         unitId: confectioner.id,
         rebakedUnitId: rebaked.id,
         role,
+        from: { x: crumbs.at.x, y: crumbs.at.y },
         at,
         cityId: home.id,
         cost,
@@ -319,7 +351,7 @@ export function applyRebakeV7(
         ),
         units,
         shields: withFullShieldsV7(state, state.shields, [rebaked]),
-        crumbs: withoutCrumbsAtV7(state.crumbs, at),
+        crumbs: withoutCrumbsAtV7(state.crumbs, crumbs.at),
       },
       actor,
       events,
@@ -410,6 +442,119 @@ export function applySugarTossV7(
           targetUnitId: target.id,
           amount,
           hpAfter,
+        },
+      ],
+    );
+  } catch (cause) {
+    return kit.arithmeticFailure(original, cause);
+  }
+}
+
+// ------------------------------------------------------------- Top-Up ---
+
+/**
+ * The Candy redesign (docs/product/RULESET_7_CANDY_REDESIGN.md section 8.2):
+ * `TOP_UP`, a primary action of the Confectioner (it may follow a Move): one
+ * own adjacent unit stops being Crashed, heals `TOP_UP_HEAL_V7`, and is
+ * cured (Plague and Bitten removed, a Frozen unit thawed, Stuck and
+ * Toothache removed). Its activation is untouched.
+ */
+export function applyTopUpV7(
+  kit: CandyReducerKitV7,
+  original: GameStateV7,
+  state: GameStateV7,
+  actor: PlayerId,
+  command: TopUpCommandV7,
+): ApplyCommandResultV7 {
+  if (state.commandIndex >= Number.MAX_SAFE_INTEGER)
+    return kit.rejected(original, "INTEGER_OVERFLOW");
+  const actorCheck = kit.validateUnitActor(state, actor, command.unitId);
+  if (!actorCheck.ok)
+    return kit.rejected(original, actorCheck.code, actorCheck.params);
+  const confectioner = actorCheck.unit;
+  const blocked = candyActionRejectionV7(state, confectioner, "TOP_UP");
+  if (blocked === "ROLE")
+    return kit.rejected(original, "UNIT_ROLE_INVALID", {
+      role: confectioner.role,
+    });
+  if (blocked === "CRASHED")
+    return kit.rejected(original, "UNIT_CRASHED", { unitId: confectioner.id });
+  if (blocked === "ACTED")
+    return kit.rejected(original, "UNIT_ALREADY_ACTED", {
+      unitId: confectioner.id,
+    });
+  if (blocked === "EMBARKED")
+    return kit.rejected(original, "TOP_UP_NOT_LEGAL", { reason: "EMBARKED" });
+  // A unit the actor cannot see is not found (a rejection reveals nothing).
+  const named = state.units.find(
+    (unit) => unit.id === command.targetUnitId && unit.hp > 0,
+  );
+  const target =
+    named !== undefined && isUnitVisibleToPlayerV7(state, actor, named)
+      ? named
+      : undefined;
+  const afflicted =
+    target !== undefined && unitIsAfflictedForTopUpV7(state, target.id);
+  const rejection = topUpTargetRejectionV7(
+    state,
+    confectioner,
+    target,
+    afflicted,
+  );
+  if (rejection === "OUT_OF_RANGE" || rejection === "NOTHING_TO_DO")
+    return kit.rejected(original, "TOP_UP_NOT_LEGAL", { reason: rejection });
+  if (rejection !== null)
+    return kit.rejected(original, rejection, {
+      targetUnitId: command.targetUnitId,
+    });
+  if (target === undefined) return kit.rejected(original, "INVALID_STATE");
+  try {
+    const crashEnded = state.sugarRush.some(
+      (entry) => entry.unitId === target.id && entry.phase === "CRASHED",
+    );
+    const amount = topUpAmountV7(target);
+    const hpAfter = target.hp + amount;
+    const cured =
+      afflicted ||
+      unitIsStuckV7(state, target.id) ||
+      unitHasToothacheV7(state, target.id);
+    return kit.accepted(
+      kit.checked({
+        ...state,
+        commandIndex: kit.nextSafe(state.commandIndex),
+        sugarRush: crashEnded
+          ? state.sugarRush.filter((entry) => entry.unitId !== target.id)
+          : state.sugarRush,
+        plagued: state.plagued.filter((entry) => entry.unitId !== target.id),
+        bitten: state.bitten.filter((entry) => entry.unitId !== target.id),
+        frozen: withFrozenCuredV7(state.frozen, target.id),
+        stuck: withoutCandyStatusV7(state.stuck, target.id),
+        toothache: withoutCandyStatusV7(state.toothache, target.id),
+        units: state.units.map((unit) =>
+          unit.id === confectioner.id
+            ? {
+                ...unit,
+                activation: {
+                  ...unit.activation,
+                  specialActed: true,
+                  handled: true,
+                },
+              }
+            : unit.id === target.id
+              ? { ...unit, hp: hpAfter }
+              : unit,
+        ),
+      }),
+      [
+        {
+          kind: "UNIT_TOPPED_UP",
+          playerId: actor,
+          unitId: confectioner.id,
+          targetUnitId: target.id,
+          crashEnded,
+          amount,
+          hpAfter,
+          cured,
         },
       ],
     );
@@ -599,7 +744,10 @@ export function resolveCandyEndTurnV7(
     state.sugarRush.length === 0 &&
     state.crumbs.length === 0 &&
     state.splattedThisTurn.length === 0 &&
-    state.tossedThisTurn.length === 0
+    state.tossedThisTurn.length === 0 &&
+    state.stuck.length === 0 &&
+    state.toothache.length === 0 &&
+    state.glazedThisTurn.length === 0
   )
     return { state, events: [] };
   const events: DomainEventV7[] = [];
@@ -651,6 +799,10 @@ export function resolveCandyEndTurnV7(
   const countedCrumbs = state.crumbs.some((entry) => entry.ownerId === playerId)
     ? crumbs
     : state.crumbs;
+  // The Candy redesign (RULESET_7_CANDY_REDESIGN.md section 6.2): the Stuck
+  // and Toothache countdown of the active seat's units (no event).
+  const ownerOf = (unitId: UnitId): PlayerId | undefined =>
+    unitById.get(unitId)?.ownerId;
   return {
     state: {
       ...state,
@@ -660,10 +812,14 @@ export function resolveCandyEndTurnV7(
           ? state.sugarRush
           : sugarRush,
       crumbs: countedCrumbs,
+      stuck: countedDownCandyStatusV7(state.stuck, playerId, ownerOf),
+      toothache: countedDownCandyStatusV7(state.toothache, playerId, ownerOf),
       splattedThisTurn:
         state.splattedThisTurn.length === 0 ? state.splattedThisTurn : [],
       tossedThisTurn:
         state.tossedThisTurn.length === 0 ? state.tossedThisTurn : [],
+      glazedThisTurn:
+        state.glazedThisTurn.length === 0 ? state.glazedThisTurn : [],
     },
     events,
   };
@@ -702,7 +858,9 @@ export function prunedCandyV7(state: GameStateV7): GameStateV7 {
     state.sugarRush.length === 0 &&
     state.crumbs.length === 0 &&
     state.splattedThisTurn.length === 0 &&
-    state.tossedThisTurn.length === 0
+    state.tossedThisTurn.length === 0 &&
+    state.stuck.length === 0 &&
+    state.toothache.length === 0
   )
     return state;
   if (!matchHasCandyV7(state)) return state;
@@ -724,12 +882,31 @@ export function prunedCandyV7(state: GameStateV7): GameStateV7 {
       .map((player) => player.id),
   );
   const crumbs = state.crumbs.filter((entry) => active.has(entry.ownerId));
+  // The Candy redesign (section 6.2): Stuck and Toothache entries go when
+  // their unit leaves the board (death, Disband, burrow, Swallow) or is an
+  // Egg.
+  const carries = (entry: { readonly unitId: UnitId }): boolean => {
+    const unit = onBoard.get(entry.unitId);
+    return unit !== undefined && unit.form !== "EGG";
+  };
+  const stuck = state.stuck.filter(carries);
+  const toothache = state.toothache.filter(carries);
   return sugarRush.length === state.sugarRush.length &&
     splattedThisTurn.length === state.splattedThisTurn.length &&
     tossedThisTurn.length === state.tossedThisTurn.length &&
-    crumbs.length === state.crumbs.length
+    crumbs.length === state.crumbs.length &&
+    stuck.length === state.stuck.length &&
+    toothache.length === state.toothache.length
     ? state
-    : { ...state, sugarRush, splattedThisTurn, tossedThisTurn, crumbs };
+    : {
+        ...state,
+        sugarRush,
+        splattedThisTurn,
+        tossedThisTurn,
+        crumbs,
+        stuck,
+        toothache,
+      };
 }
 
 function kitPlayer(
@@ -743,3 +920,5 @@ function kitPlayer(
 
 const same = (left: CoordV7, right: CoordV7): boolean =>
   left.x === right.x && left.y === right.y;
+const chebyshev = (left: CoordV7, right: CoordV7): number =>
+  Math.max(Math.abs(left.x - right.x), Math.abs(left.y - right.y));

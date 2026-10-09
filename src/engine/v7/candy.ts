@@ -3,7 +3,6 @@ import {
   CANDY_ROLE_MECHANICS_V7,
   CRUMBS_TURNS_V7,
   HOME_SWEET_HOME_RADIUS_V7,
-  SUGAR_FRENZY_MAX_CONTINUATIONS_V7,
   SUGAR_RUSH_ATTACK2_V7,
   SUGAR_RUSH_MOVE_BONUS_V7,
   SUGAR_TOSS_HEAL_V7,
@@ -173,8 +172,9 @@ export function sugarRushRejectionV7(
 
 /**
  * Section 5.2: the extra Move of a unit's ordinary `MOVE`: a Rushed
- * land-form unit has `SUGAR_RUSH_MOVE_BONUS_V7`, except on an Escape Move
- * (the Donut Racer's perk), which has the ordinary budget.
+ * land-form unit has `SUGAR_RUSH_MOVE_BONUS_V7`, except on an Escape Move,
+ * which has the ordinary budget (no Candy unit has Escape since the Candy
+ * redesign; a Rushed unit's entry survives Mind Control).
  */
 export function sugarRushMoveBonusV7(
   lookup: SugarRushLookupV7,
@@ -241,60 +241,27 @@ function countsAsRushedV7(
 }
 
 /**
- * Section 5.4: the Overrun an `ATTACK` by this unit has: the role ability
- * `OVERRUN` (uncapped), the Chocolate Bunny's Sugar Frenzy while it is Rushed in
- * land form (capped), or none.
+ * Section 5.4, as the Candy redesign (docs/product/RULESET_7_CANDY_REDESIGN.md
+ * section 6.1) changed it: the Overrun an `ATTACK` by a unit of this role
+ * rule has: the role ability `OVERRUN`, or none. No Candy unit has Overrun
+ * (Sugar Frenzy is gone).
  */
-export function overrunKindV7(
-  lookup: FactionRosterV7 & SugarRushLookupV7,
-  unit: CandyUnitFactsV7,
-  rule: EffectiveRoleRuleV7,
-  assumeRushed = false,
-): "OVERRUN" | "SUGAR_FRENZY" | null {
-  if (rule.abilities.includes("OVERRUN")) return "OVERRUN";
-  return unit.form === "LAND" &&
-    unitRoleMechanicsV7(lookup, unit).rushPerk === "SUGAR_FRENZY" &&
-    countsAsRushedV7(lookup, unit, assumeRushed)
-    ? "SUGAR_FRENZY"
-    : null;
+export function overrunKindV7(rule: EffectiveRoleRuleV7): "OVERRUN" | null {
+  return rule.abilities.includes("OVERRUN") ? "OVERRUN" : null;
 }
 
 /**
- * Section 5.4, the cap: whether an attack that leaves the unit with
- * `attacksUsedAfter` attacks this turn may grant a continuation. An ordinary
- * Overrun always may; a Sugar Frenzy only while the unit has made at most
- * `SUGAR_FRENZY_MAX_CONTINUATIONS_V7` attacks, so it attacks three times at
- * most.
- */
-export function overrunMayContinueV7(
-  kind: "OVERRUN" | "SUGAR_FRENZY" | null,
-  attacksUsedAfter: number,
-): boolean {
-  return (
-    kind === "OVERRUN" ||
-    (kind === "SUGAR_FRENZY" &&
-      attacksUsedAfter <= SUGAR_FRENZY_MAX_CONTINUATIONS_V7)
-  );
-}
-
-/**
- * Sections 5.4 and 12.1: whether a surviving land-form attacker's role
- * grants Escape after an `ATTACK`: the role ability `ESCAPE` (the Human
- * Raider), or the Donut Racer's perk while it is Rushed. The caller adds the
- * survival and sluggish conditions.
+ * Sections 5.4 and 12.1, as the Candy redesign (section 6.1) changed them:
+ * whether a surviving land-form attacker's role grants Escape after an
+ * `ATTACK`: the role ability `ESCAPE` (the Human Raider). No Candy unit has
+ * Escape, Rushed or not. The caller adds the survival and sluggish
+ * conditions.
  */
 export function attackGrantsEscapeV7(
-  lookup: FactionRosterV7 & SugarRushLookupV7,
-  unit: CandyUnitFactsV7,
+  unit: { readonly form: UnitFormV7 },
   rule: EffectiveRoleRuleV7,
-  assumeRushed = false,
 ): boolean {
-  if (unit.form !== "LAND") return false;
-  if (rule.abilities.includes("ESCAPE")) return true;
-  return (
-    unitRoleMechanicsV7(lookup, unit).rushPerk === "ESCAPE" &&
-    countsAsRushedV7(lookup, unit, assumeRushed)
-  );
+  return unit.form === "LAND" && rule.abilities.includes("ESCAPE");
 }
 
 /** Section 7: whether an `ATTACK` by this unit Splats its target. */
@@ -388,6 +355,9 @@ export const CRUMBS_DEATH_CAUSES_V7: readonly string[] = Object.freeze([
   "TRAMPLE",
   // Ice Folk Freeze (`pulp_wars-w49.37`): a Mammoth's Stampede.
   "STAMPEDE",
+  // The Candy redesign (RULESET_7_CANDY_REDESIGN.md section 8.1).
+  "RICOCHET",
+  "THUMP",
 ]);
 
 /** The canonical facts a Crumbs decision reads. */
@@ -407,9 +377,9 @@ export interface CrumbsContextV7 {
  * caller guarantees the unit did not rise. The unit is owned by a Candy seat
  * (so it is not mind-controlled: a controlled unit's owner is its Martian
  * controller, and its kind is `CANDY`), its role leaves Crumbs, it died in
- * land form on a land tile that is not a settlement site, not a Rift, and
- * holds no treasure chest and no curiosity, by a cause of
- * {@link CRUMBS_DEATH_CAUSES_V7}.
+ * land form on a land tile that is not a Rift and holds no treasure chest
+ * and no curiosity (a settlement site holds Crumbs since the Candy
+ * redesign), by a cause of {@link CRUMBS_DEATH_CAUSES_V7}.
  */
 export function deathLeavesCrumbsV7(
   context: CrumbsContextV7,
@@ -438,7 +408,7 @@ export function deathLeavesCrumbsV7(
     tile !== undefined &&
     sameCoord(tile.at, unit.at) &&
     crumbsTerrainV7(tile.terrain, tile.biome === null) &&
-    tile.site === null &&
+    // The Candy redesign (section 8.1): a settlement site holds Crumbs.
     !context.treasureChests.some((chest) => sameCoord(chest, unit.at)) &&
     !(context.curiosities ?? []).some((curiosity) =>
       sameCoord(curiosity.at, unit.at),
@@ -632,7 +602,7 @@ type PrimaryReadyUnitV7 = CandyUnitFactsV7 & {
 export function candyActionRejectionV7(
   lookup: FrozenLookupV7 & SugarRushLookupV7,
   unit: PrimaryReadyUnitV7,
-  ability: "REBAKE" | "SUGAR_TOSS",
+  ability: "REBAKE" | "SUGAR_TOSS" | "TOP_UP",
 ): "ROLE" | "CRASHED" | "ACTED" | "EMBARKED" | null {
   if (!unitRoleRuleV7(lookup, unit).abilities.includes(ability)) return "ROLE";
   if (unitIsCrashedV7(lookup, unit.id)) return "CRASHED";
@@ -697,19 +667,6 @@ export function sugarTossAmountV7(target: {
   readonly maxHp: number;
 }): number {
   return Math.min(SUGAR_TOSS_HEAL_V7, target.maxHp - target.hp);
-}
-
-/**
- * Section 6.4, row 7: the Crumbs a Confectioner at `at` may Re-bake for
- * `actor`: those on the eight tiles around it that the actor owns, in
- * (y, x) order.
- */
-export function rebakeCrumbsV7<
-  C extends { readonly at: CoordV7; readonly ownerId: PlayerId },
->(crumbs: readonly C[], actor: PlayerId, at: CoordV7): readonly C[] {
-  return crumbs.filter(
-    (entry) => entry.ownerId === actor && chebyshev(entry.at, at) === 1,
-  );
 }
 
 /** The kind of a unit is Candy (its `sugarRush` entry is legal). */

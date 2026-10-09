@@ -2,22 +2,22 @@ import {
   CRUMBS_TURNS_V7,
   HOME_SWEET_HOME_RADIUS_V7,
   PEPPERMINT_DAMAGE_V7,
-  SUGAR_FRENZY_MAX_CONTINUATIONS_V7,
+  REBAKE_OVER_CAPACITY_V7,
+  REBAKE_REACH_V7,
   SUGAR_RUSH_ATTACK2_V7,
   SUGAR_RUSH_MOVE_BONUS_V7,
   SUGAR_TOSS_HEAL_V7,
   SUGAR_TOSS_RANGE_V7,
-  allOwnedUnitsV7,
+  THUMP_DAMAGE_V7,
+  TOOTHACHE_ATTACK2_V7,
+  TOP_UP_HEAL_V7,
   candyActionRejectionV7,
-  cityUnitCapacityForV7,
   effectiveRoleRuleV7,
-  rebakeCrumbsV7,
+  queryRebakeBlockerV7,
   rebakePriceV7,
   roleMechanicsV7,
-  seatRoleMechanicsV7,
   standsByOwnCenterV7,
   sugarRushRejectionV7,
-  unitCapacitySlotsV7,
   unitFactionV7,
   unitRoleRuleV7,
   type CombatPreviewV7,
@@ -30,7 +30,6 @@ import {
   type PublicUnitStatsV7,
   isNavalRoleV7,
   type UnitRoleIdV7,
-  cityBarracksV7,
 } from "../engine/index";
 import { ninthUnitHelpRulesV7 } from "./ninth-unit-presentation-v7";
 
@@ -86,9 +85,6 @@ function article(name: string): string {
 const NUMBER_WORDS = ["zero", "one", "two", "three", "four"] as const;
 const numberWord = (value: number): string =>
   NUMBER_WORDS[value] ?? String(value);
-const TIMES = ["never", "once", "twice"] as const;
-const timesWord = (value: number): string =>
-  TIMES[value] ?? `${numberWord(value)} times`;
 
 // ------------------------------------------------ Section 15.2: text ---
 
@@ -96,9 +92,6 @@ export const SUGAR_RUSH_LABEL_V7 = "Sugar Rush";
 export const SUGAR_RUSH_TOOLTIP_V7 = `+${SUGAR_RUSH_MOVE_BONUS_V7} Move and +${half(SUGAR_RUSH_ATTACK2_V7)} Attack on its first attack this turn. Next turn it Crashes and can't act`;
 export const RUSHED_LABEL_V7 = "Rushed";
 export const RUSHED_STATUS_V7 = `Rushed: +${SUGAR_RUSH_MOVE_BONUS_V7} Move, +${half(SUGAR_RUSH_ATTACK2_V7)} Attack on its first attack`;
-export const RUSHED_ESCAPE_STATUS_V7 = "Rushed: may move again after attacking";
-export const SUGAR_FRENZY_LABEL_V7 = "Sugar Frenzy";
-export const SUGAR_FRENZY_STATUS_V7 = `Sugar Frenzy: attacks again after a kill, ${timesWord(SUGAR_FRENZY_MAX_CONTINUATIONS_V7)} at most`;
 export const HOME_SWEET_HOME_LABEL_V7 = "Home Sweet Home";
 export const HOME_SWEET_HOME_STATUS_V7 = "Home Sweet Home: won't Crash here";
 export const CRASHED_LABEL_V7 = "Crashed";
@@ -114,12 +107,11 @@ export const SUGAR_RUSH_ACTED_V7 = "Already acted";
 export const SUGAR_RUSH_RUSHED_V7 = "Already rushed";
 
 export const REBAKE_LABEL_V7 = "Re-bake";
-export const REBAKE_TOOLTIP_V7 =
-  "Bake the unit in adjacent Crumbs back at half price and half HP. Uses a slot in its city";
-export const REBAKE_NO_CRUMBS_V7 = "No Crumbs next to it";
+export const REBAKE_TOOLTIP_V7 = `Scoop Crumbs within ${numberWord(REBAKE_REACH_V7)} tiles, even from under a unit, and bake the unit back next to it at half price and half HP. Its city may go ${numberWord(REBAKE_OVER_CAPACITY_V7)} over its limit`;
+export const REBAKE_NO_CRUMBS_V7 = `No Crumbs within ${numberWord(REBAKE_REACH_V7)} tiles`;
 export const REBAKE_NO_COINS_V7 = "Not enough Coins";
 export const REBAKE_NO_HOME_V7 = "No home city";
-export const REBAKE_BLOCKED_V7 = "The Crumbs are covered";
+export const REBAKE_BLOCKED_V7 = "No free tile next to it";
 /** "{city} is full". */
 export function rebakeCityFullTextV7(city: string): string {
   return `${city} is full`;
@@ -145,8 +137,20 @@ export function sugarTossTargetNameV7(unit: string, amount: number): string {
   return `Toss to ${unit}: +${amount}`;
 }
 
-export const FROSTING_LABEL_V7 = "Frosting";
-export const FROSTING_TOOLTIP_V7 = `Heal adjacent units by ${SUGAR_TOSS_HEAL_V7}. Cures Plague, bites, and frost`;
+/**
+ * The Candy redesign (docs/product/RULESET_7_CANDY_REDESIGN.md, bead
+ * `pulp_wars-jdb.12`): the plain names and one-sentence rules of the new
+ * Candy abilities. The markers, buttons, cues, and the full Help texts are
+ * `pulp_wars-jdb.14`'s.
+ */
+export const TOP_UP_LABEL_V7 = "Top-Up";
+export const TOP_UP_TOOLTIP_V7 = `One adjacent unit stops being Crashed, heals ${TOP_UP_HEAL_V7}, and is cured`;
+export const STICKY_TOFFEE_LABEL_V7 = "Sticky Toffee";
+export const GLAZE_TRAIL_LABEL_V7 = "Glaze Trail";
+export const RICOCHET_LABEL_V7 = "Ricochet";
+export const BUNNY_HOP_LABEL_V7 = "Bunny Hop";
+export const THUMP_LABEL_V7 = "Thump";
+export const TOOTHACHE_LABEL_V7 = "Toothache";
 
 export const RUSH_PREVIEW_V7 = `Sugar Rush +${half(SUGAR_RUSH_ATTACK2_V7)}`;
 export const SPLAT_PREVIEW_V7 = "Splat: no strike-back this turn";
@@ -198,31 +202,15 @@ export function candyStatsV7(
   unitId: number,
 ): Pick<
   PublicUnitStatsV7,
-  "rushed" | "crashed" | "splatted" | "tossedThisTurn" | "candy"
+  | "rushed"
+  | "crashed"
+  | "splatted"
+  | "tossedThisTurn"
+  | "stuck"
+  | "toothache"
+  | "candy"
 > {
   return view.unitStats.find((stats) => stats.unitId === unitId) ?? {};
-}
-
-/**
- * Section 5.4, the cap as pips: how many Sugar Frenzy continuations a
- * Rushed Chocolate Bunny still has (of `SUGAR_FRENZY_MAX_CONTINUATIONS_V7`), from
- * its public activation; null for every other unit.
- */
-export function sugarFrenzyPipsV7(
-  unit: Pick<PublicUnitV7, "form" | "activation">,
-  stats: Pick<PublicUnitStatsV7, "rushed" | "candy">,
-): { readonly left: number; readonly of: number } | null {
-  if (
-    unit.form !== "LAND" ||
-    stats.rushed !== true ||
-    stats.candy?.rushPerk !== "SUGAR_FRENZY"
-  )
-    return null;
-  const used = Math.max(0, unit.activation.attacksUsed - 1);
-  return {
-    left: Math.max(0, SUGAR_FRENZY_MAX_CONTINUATIONS_V7 - used),
-    of: SUGAR_FRENZY_MAX_CONTINUATIONS_V7,
-  };
 }
 
 /**
@@ -255,14 +243,13 @@ export interface CandyChipV7 {
     | "ICON:STATUS:CRASHED"
     | "ICON:STATUS:SPLATTED"
     | "ICON:TECH:CANDY:FORTIFICATION";
-  /** Sugar Frenzy: the continuations left, drawn as pips. */
-  readonly pips?: { readonly left: number; readonly of: number };
 }
 
 /**
- * The Candy chips of a visible unit of any owner (section 15.2): Rushed
- * (by its perk), Home Sweet Home, Crashed (by whose turn it is) and
- * Splatted. Empty in a match without a Candy seat.
+ * The Candy chips of a visible unit of any owner (section 15.2): Rushed,
+ * Home Sweet Home, Crashed (by whose turn it is) and Splatted. Empty in a
+ * match without a Candy seat. (The Candy redesign removed the Rush perks'
+ * chips; the Stuck and Toothache markers are `pulp_wars-jdb.14`'s.)
  */
 export function candyChipsV7(
   view: PlayerViewV7,
@@ -271,26 +258,12 @@ export function candyChipsV7(
   const stats = candyStatsV7(view, unit.id);
   const chips: CandyChipV7[] = [];
   if (stats.rushed === true) {
-    const pips = sugarFrenzyPipsV7(unit, stats);
-    chips.push(
-      pips !== null
-        ? {
-            id: "rushed",
-            label: SUGAR_FRENZY_LABEL_V7,
-            status: SUGAR_FRENZY_STATUS_V7,
-            icon: "ICON:STATUS:RUSHED",
-            pips,
-          }
-        : {
-            id: "rushed",
-            label: RUSHED_LABEL_V7,
-            status:
-              stats.candy?.rushPerk === "ESCAPE"
-                ? RUSHED_ESCAPE_STATUS_V7
-                : RUSHED_STATUS_V7,
-            icon: "ICON:STATUS:RUSHED",
-          },
-    );
+    chips.push({
+      id: "rushed",
+      label: RUSHED_LABEL_V7,
+      status: RUSHED_STATUS_V7,
+      icon: "ICON:STATUS:RUSHED",
+    });
     if (homeSweetHomeChipV7(view, unit, stats))
       chips.push({
         id: "home-sweet-home",
@@ -349,7 +322,7 @@ export function candyUnitInfoLinesV7(
     lines.push({
       id: "crumbs",
       name: "Crumbs",
-      description: `When it falls it leaves Crumbs for ${numberWord(CRUMBS_TURNS_V7)} turns; a ${candyLabelV7("CAPTAIN")} next to them bakes it back for ${plural(mechanics.rebake.cost, "Coin")} at ${mechanics.rebake.hp} HP.${mechanics.crumbsBite > 0 ? ` An enemy that eats them takes ${mechanics.crumbsBite}.` : ""}`,
+      description: `When it falls it leaves Crumbs for ${numberWord(CRUMBS_TURNS_V7)} turns; a ${candyLabelV7("CAPTAIN")} within ${numberWord(REBAKE_REACH_V7)} tiles bakes it back for ${plural(mechanics.rebake.cost, "Coin")} at ${mechanics.rebake.hp} HP.${mechanics.crumbsBite > 0 ? ` An enemy that eats them takes ${mechanics.crumbsBite}.` : ""}`,
     });
   return lines;
 }
@@ -379,10 +352,11 @@ export function sugarRushUnavailableTextV7(
 
 /**
  * Section 15.2 "Re-bake unavailable": why an own Confectioner that could
- * still act has no Re-bake ("Crashed", "No home city", "No Crumbs next to
- * it", "{city} is full", "Not enough Coins"); null when it has one or cannot
- * act at all. Legality is the offered command's; this only names the first
- * reason, read with the engine's own helpers from the public view.
+ * still act has no Re-bake ("Crashed", "No home city", "No Crumbs within
+ * two tiles", "No free tile next to it", "{city} is full", "Not enough
+ * Coins"); null when it has one or cannot act at all. The Candy redesign
+ * (`pulp_wars-jdb.12`, absorbing `pulp_wars-jdb.9`): the reason is the
+ * engine's public "why not" query `queryRebakeBlockerV7`.
  */
 export function rebakeUnavailableTextV7(
   view: PlayerViewV7,
@@ -391,40 +365,33 @@ export function rebakeUnavailableTextV7(
   cityName: (cityId: number) => string,
 ): string | null {
   if (offered || unit.ownerId !== view.viewer.id) return null;
-  const rejection = candyActionRejectionV7(view, unit, "REBAKE");
-  if (rejection === "CRASHED") return SUGAR_RUSH_CRASHED_V7;
-  if (rejection !== null || unit.activation.handled) return null;
-  const home = view.cities.find(
-    (city) => city.id === unit.homeCityId && city.ownerId === view.viewer.id,
-  );
-  if (home === undefined) return REBAKE_NO_HOME_V7;
-  const crumbs = rebakeCrumbsV7(view.crumbs, view.viewer.id, unit.at);
-  if (crumbs.length === 0) return REBAKE_NO_CRUMBS_V7;
-  const capacity = cityUnitCapacityForV7(
-    home.level,
-    view.viewer.researchedTechs,
-    view.viewer.faction,
-    cityBarracksV7(home),
-  );
-  const used = allOwnedUnitsV7(view, view.viewer.id)
-    .filter((candidate) => candidate.homeCityId === home.id)
-    .reduce((sum, candidate) => sum + unitCapacitySlotsV7(view, candidate), 0);
-  if (
-    crumbs.every(
-      (entry) =>
-        used +
-          seatRoleMechanicsV7(view, view.viewer.id, entry.role).capacitySlots >
-        capacity,
-    )
-  )
-    return rebakeCityFullTextV7(capitalized(cityName(home.id)));
-  if (
-    crumbs.every(
-      (entry) => view.viewer.coins < (rebakePriceV7(entry.role) ?? Infinity),
-    )
-  )
-    return REBAKE_NO_COINS_V7;
-  return REBAKE_BLOCKED_V7;
+  if (unit.activation.handled && !unitIsCrashedForTextV7(view, unit))
+    return null;
+  switch (queryRebakeBlockerV7(view, unit.id)) {
+    case "CRASHED":
+      return SUGAR_RUSH_CRASHED_V7;
+    case "NO_HOME":
+      return REBAKE_NO_HOME_V7;
+    case "NO_CRUMBS":
+      return REBAKE_NO_CRUMBS_V7;
+    case "TILE":
+      return REBAKE_BLOCKED_V7;
+    case "CITY_CAPACITY_FULL":
+      return unit.homeCityId === null
+        ? REBAKE_NO_HOME_V7
+        : rebakeCityFullTextV7(capitalized(cityName(unit.homeCityId)));
+    case "INSUFFICIENT_COINS":
+      return REBAKE_NO_COINS_V7;
+    default:
+      return null;
+  }
+}
+
+function unitIsCrashedForTextV7(
+  view: PlayerViewV7,
+  unit: PublicUnitV7,
+): boolean {
+  return candyActionRejectionV7(view, unit, "REBAKE") === "CRASHED";
 }
 
 /**
@@ -516,7 +483,7 @@ export function candyHelpRulesV7(): readonly (readonly [string, string])[] {
     ],
     [
       REBAKE_LABEL_V7,
-      `the ${candyLabelV7("CAPTAIN")} bakes the unit in adjacent Crumbs back, at half its price and half its HP.`,
+      `the ${candyLabelV7("CAPTAIN")} scoops Crumbs within ${numberWord(REBAKE_REACH_V7)} tiles, even from under a unit, and bakes the unit back next to itself at half its price and half its HP; its city may go ${numberWord(REBAKE_OVER_CAPACITY_V7)} over its limit.`,
     ],
     [
       "Splat",
@@ -531,16 +498,32 @@ export function candyHelpRulesV7(): readonly (readonly [string, string])[] {
       `the ${candyLabelV7("MARKSMAN")} heals an own unit within ${SUGAR_TOSS_RANGE_V7} tiles by ${SUGAR_TOSS_HEAL_V7}, once per unit per turn.`,
     ],
     [
-      FROSTING_LABEL_V7,
-      `the ${candyLabelV7("CAPTAIN")} heals adjacent units by ${SUGAR_TOSS_HEAL_V7} and cures Plague, bites, and Chill.`,
+      TOP_UP_LABEL_V7,
+      `the ${candyLabelV7("CAPTAIN")} gives one neighbour a sugar top-up: it stops being Crashed, heals ${TOP_UP_HEAL_V7}, and is cured.`,
     ],
     [
-      SUGAR_FRENZY_LABEL_V7,
-      `a Rushed ${candyLabelV7("KNIGHT")} attacks again after a kill, up to ${numberWord(SUGAR_FRENZY_MAX_CONTINUATIONS_V7 + 1)} attacks in a turn.`,
+      STICKY_TOFFEE_LABEL_V7,
+      `whatever a ${candyLabelV7("FIGHTER")} hits is Stuck until the end of its next turn: it can move only one tile.`,
     ],
     [
-      candyLabelV7("RAIDER"),
-      `a Rushed ${candyLabelV7("RAIDER")} may move again after attacking.`,
+      GLAZE_TRAIL_LABEL_V7,
+      `the tiles a ${candyLabelV7("RAIDER")} rolls off are Glazed for the rest of the turn, and your units move onto them at half cost.`,
+    ],
+    [
+      RICOCHET_LABEL_V7,
+      `a ${candyLabelV7("MARKSMAN")}'s shot from two tiles bounces on to the weakest enemy next to its target for half the damage.`,
+    ],
+    [
+      BUNNY_HOP_LABEL_V7,
+      `a ${candyLabelV7("KNIGHT")} can hop over one tile in its Move.`,
+    ],
+    [
+      THUMP_LABEL_V7,
+      `every attack a ${candyLabelV7("KNIGHT")} makes thumps ${THUMP_DAMAGE_V7} into every other enemy around it.`,
+    ],
+    [
+      TOOTHACHE_LABEL_V7,
+      `a unit that bites a ${candyLabelV7("SWORDSMAN")} gets Toothache: its next attack is ${half(TOOTHACHE_ATTACK2_V7)} weaker.`,
     ],
     [
       HOME_SWEET_HOME_LABEL_V7,
@@ -577,8 +560,20 @@ export function candyAbilityNameV7(
       return REBAKE_LABEL_V7;
     case "SUGAR_TOSS":
       return SUGAR_TOSS_LABEL_V7;
-    case "TEND_WOUNDED":
-      return FROSTING_LABEL_V7;
+    case "TOP_UP":
+      return TOP_UP_LABEL_V7;
+    case "STICKY":
+      return STICKY_TOFFEE_LABEL_V7;
+    case "GLAZE_TRAIL":
+      return GLAZE_TRAIL_LABEL_V7;
+    case "RICOCHET":
+      return RICOCHET_LABEL_V7;
+    case "HOP":
+      return BUNNY_HOP_LABEL_V7;
+    case "THUMP":
+      return THUMP_LABEL_V7;
+    case "TOOTHACHE":
+      return TOOTHACHE_LABEL_V7;
     default:
       return null;
   }
@@ -601,44 +596,59 @@ export function candyAbilityDescriptionV7(
       return `${REBAKE_TOOLTIP_V7}.`;
     case "SUGAR_TOSS":
       return `${SUGAR_TOSS_TOOLTIP_V7}.`;
-    case "TEND_WOUNDED":
-      return `${FROSTING_TOOLTIP_V7}.`;
+    case "TOP_UP":
+      return `${TOP_UP_TOOLTIP_V7}.`;
+    case "STICKY":
+      return "A unit it hits, or strikes back at, can move only one tile until the end of its next turn.";
+    case "GLAZE_TRAIL":
+      return "The tiles it rolls off are Glazed for the rest of the turn; your units move onto them at half cost.";
+    case "RICOCHET":
+      return "A shot from two tiles bounces on to the weakest enemy next to the target for half the damage.";
+    case "HOP":
+      return "Its Move may hop over one tile: a unit, a Forest, a Mountain, or a Rift, never water.";
+    case "THUMP":
+      return `Every attack it makes deals ${THUMP_DAMAGE_V7} to each other enemy around it.`;
+    case "TOOTHACHE":
+      return `A unit that attacks it from the next tile has its next attack ${half(TOOTHACHE_ATTACK2_V7)} weaker.`;
     default:
       return null;
   }
 }
 
-/** Candy command labels: Sugar Rush, Re-bake, Sugar Toss and Frosting. */
-export function candyCommandNameV7(
-  kind: CommandV7["kind"],
-  faction: FactionIdV7,
-): string | null {
+/** Candy command labels: Sugar Rush, Re-bake, Sugar Toss and Top-Up. */
+export function candyCommandNameV7(kind: CommandV7["kind"]): string | null {
   if (kind === "SUGAR_RUSH") return SUGAR_RUSH_LABEL_V7;
   if (kind === "REBAKE") return REBAKE_LABEL_V7;
   if (kind === "SUGAR_TOSS") return SUGAR_TOSS_LABEL_V7;
-  if (kind === "TEND_WOUNDED" && faction === "CANDY") return FROSTING_LABEL_V7;
+  if (kind === "TOP_UP") return TOP_UP_LABEL_V7;
   return null;
 }
 
 /**
- * The technology unlock text of a Candy role (section 4): "Confectioner
- * (Frosting, Re-bake)", "Chocolate Bunny (Sugar Frenzy while Rushed)", from the
- * role's registered abilities and mechanics.
+ * The technology unlock text of a Candy role (section 4, as the Candy
+ * redesign changed it, RULESET_7_CANDY_REDESIGN.md section 8.3):
+ * "Confectioner (Re-bake, Top-Up)", "Chocolate Bunny (Bunny Hop, Thump)",
+ * from the role's registered abilities.
  */
 export function candyRoleUnlockTextV7(role: UnitRoleIdV7): string {
   const abilities = effectiveRoleRuleV7(role, "CANDY")
     .abilities as readonly string[];
-  const perk = roleMechanicsV7(role, "CANDY").rushPerk;
-  const notes = [
-    ...(abilities.includes("TEND_WOUNDED") ? [FROSTING_LABEL_V7] : []),
-    ...(abilities.includes("REBAKE") ? [REBAKE_LABEL_V7] : []),
-    ...(abilities.includes("SUGAR_TOSS") ? [SUGAR_TOSS_LABEL_V7] : []),
-    ...(abilities.includes("SPLAT") ? ["Splat"] : []),
-    ...(abilities.includes("BOUNCE") ? ["Bounce"] : []),
-    ...(perk === "SUGAR_FRENZY"
-      ? [`${SUGAR_FRENZY_LABEL_V7} while Rushed`]
-      : []),
+  const named: readonly (readonly [string, string])[] = [
+    ["STICKY", STICKY_TOFFEE_LABEL_V7],
+    ["GLAZE_TRAIL", GLAZE_TRAIL_LABEL_V7],
+    ["RICOCHET", RICOCHET_LABEL_V7],
+    ["REBAKE", REBAKE_LABEL_V7],
+    ["TOP_UP", TOP_UP_LABEL_V7],
+    ["SUGAR_TOSS", SUGAR_TOSS_LABEL_V7],
+    ["SPLAT", "Splat"],
+    ["BOUNCE", "Bounce"],
+    ["HOP", BUNNY_HOP_LABEL_V7],
+    ["THUMP", THUMP_LABEL_V7],
+    ["TOOTHACHE", TOOTHACHE_LABEL_V7],
   ];
+  const notes = named
+    .filter(([ability]) => abilities.includes(ability))
+    .map(([, label]) => label);
   const label = candyLabelV7(role);
   return notes.length === 0
     ? `Train ${label}`
@@ -646,7 +656,7 @@ export function candyRoleUnlockTextV7(role: UnitRoleIdV7): string {
 }
 
 /** The Candy technology unlock texts of section 4. */
-export const CONFECTIONER_SUPPORT_UNLOCK_TEXT_V7 = `${candyLabelV7("CAPTAIN")}s Frost nearby troops or Re-bake a fallen unit from its Crumbs`;
+export const CONFECTIONER_SUPPORT_UNLOCK_TEXT_V7 = `${candyLabelV7("CAPTAIN")}s Re-bake a fallen unit from its Crumbs or Top Up a neighbour`;
 export const HOME_SWEET_HOME_UNLOCK_TEXT_V7 =
   "Rushed units that end the turn on or next to your city centers don't Crash";
 export const PEPPERMINT_SURPRISE_UNLOCK_TEXT_V7 = `Enemies that eat your Crumbs take ${PEPPERMINT_DAMAGE_V7}`;
@@ -659,14 +669,6 @@ export function candyRecruitNotesV7(
   if (faction !== "CANDY" || isNavalRoleV7(role)) return [];
   const mechanics = roleMechanicsV7(role, faction);
   return [
-    ...(mechanics.rushPerk === "ESCAPE"
-      ? ["Rushed, it may move again after attacking."]
-      : []),
-    ...(mechanics.rushPerk === "SUGAR_FRENZY"
-      ? [
-          `Rushed, it attacks again after a kill, ${timesWord(SUGAR_FRENZY_MAX_CONTINUATIONS_V7)} at most.`,
-        ]
-      : []),
     ...(mechanics.leavesCrumbs
       ? [
           `Leaves Crumbs: Re-bake for ${plural(rebakePriceV7(role) ?? 0, "Coin")}.`,

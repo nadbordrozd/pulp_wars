@@ -1,8 +1,8 @@
 {
   "schemaVersion": 7,
-  "rulesetId": "pulp-wars-poc-7r67",
+  "rulesetId": "pulp-wars-poc-7r68",
   "setup": {
-    "rulesetId": "pulp-wars-poc-7r67",
+    "rulesetId": "pulp-wars-poc-7r68",
     "seed": 20261401,
     "width": 16,
     "height": 16,
@@ -5323,6 +5323,9 @@
   "crumbs": [],
   "splattedThisTurn": [],
   "tossedThisTurn": [],
+  "stuck": [],
+  "toothache": [],
+  "glazedThisTurn": [],
   "huntedThisTurn": [],
   "berserkThisTurn": [],
   "ninthUnit": {

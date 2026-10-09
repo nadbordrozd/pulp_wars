@@ -42,7 +42,7 @@ import { goblinSetupV7 } from "../fixtures/v7-goblin-arena";
 // tier 3 technology base cost 9) 7r41.
 
 /** The revision number of the current identity (`pulp-wars-poc-7rNN`). */
-const REVISION = 67;
+const REVISION = 68;
 const ID = `pulp-wars-poc-7r${REVISION}`;
 const PREVIOUS_ID = `pulp-wars-poc-7r${REVISION - 1}`;
 
@@ -194,7 +194,9 @@ describe("the Candy revision identity (section 2.2)", () => {
     const assemble = commands.indexOf("ASSEMBLE");
     // Dwarf crowd control (`pulp_wars-w49.33`) puts its three commands in
     // between.
-    expect(commands.slice(assemble, assemble + 9)).toEqual([
+    // The Candy redesign (`pulp_wars-jdb.12`) adds TOP_UP with the Candy
+    // commands.
+    expect(commands.slice(assemble, assemble + 10)).toEqual([
       "ASSEMBLE",
       "WHIRL",
       "BUILD_BARRICADE",
@@ -204,6 +206,7 @@ describe("the Candy revision identity (section 2.2)", () => {
       "SUGAR_TOSS",
       // Map curiosities round 2 (`pulp_wars-737.14`) insert TOSS_COIN here.
       "TOSS_COIN",
+      "TOP_UP",
       "RECOVER",
     ]);
     const events: readonly string[] = DOMAIN_EVENT_KIND_ORDER_V7;
@@ -218,6 +221,17 @@ describe("the Candy revision identity (section 2.2)", () => {
     expect(after("UNITS_CRUSHED")).toBe("UNIT_SUGAR_RUSHED");
     expect(after("WOUNDED_TENDED")).toBe("SUGAR_TOSSED");
     expect(after("UNIT_MOVE_INTERRUPTED")).toBe("CRUMBS_EATEN");
+    // The Candy redesign (`pulp_wars-jdb.12`, RULESET_7_CANDY_REDESIGN.md
+    // section 12): Top-Up after the Toss, the Glaze after the eating, and
+    // the four combat events after the Barricade attack.
+    expect(after("SUGAR_TOSSED")).toBe("UNIT_TOPPED_UP");
+    expect(after("CRUMBS_EATEN")).toBe("TILES_GLAZED");
+    expect(
+      events.slice(
+        events.indexOf("BARRICADE_ATTACKED") + 1,
+        events.indexOf("BARRICADE_ATTACKED") + 5,
+      ),
+    ).toEqual(["UNIT_STUCK", "TOOTHACHE_GIVEN", "RICOCHETED", "THUMPED"]);
     expect(after("GRAVE_CREATED")).toBe("CRUMBS_LEFT");
     expect(new Set(events).size).toBe(events.length);
     expect(new Set(commands).size).toBe(commands.length);

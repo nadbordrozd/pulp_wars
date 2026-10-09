@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest";
 import {
   CRUMBS_TURNS_V7,
   PEPPERMINT_DAMAGE_V7,
-  SUGAR_FRENZY_MAX_CONTINUATIONS_V7,
   applyCommandV7,
   effectiveRoleRuleV7,
   previewRebakeV7,
@@ -172,31 +171,29 @@ describe("Candy markers in the board plan (section 15.1)", () => {
       crashed: false,
       splatted: false,
       home: true,
-      frenzy: null,
     });
     expect(markersAt(AT.crashed)).toEqual({
       rushed: false,
       crashed: true,
       splatted: false,
       home: false,
-      frenzy: null,
     });
     expect(markersAt(AT.splatted)).toEqual({
       rushed: false,
       crashed: false,
       splatted: true,
       home: false,
-      frenzy: null,
     });
     expect(markersAt(AT.gumdrop)).toBeUndefined();
   });
 
-  it("shows a Rushed Chocolate Bunny's Sugar Frenzy cap as pips", () => {
-    expect(markersAt(AT.rushedBear)?.frenzy).toEqual({
-      left: SUGAR_FRENZY_MAX_CONTINUATIONS_V7,
-      of: SUGAR_FRENZY_MAX_CONTINUATIONS_V7,
+  it("marks a Rushed Chocolate Bunny like any Rushed unit (Sugar Frenzy is gone)", () => {
+    expect(markersAt(AT.rushedBear)).toEqual({
+      rushed: true,
+      crashed: false,
+      splatted: false,
+      home: false,
     });
-    expect(SUGAR_FRENZY_MAX_CONTINUATIONS_V7).toBe(2);
   });
 
   it("plans the Crumbs of each tile under the units, with their turns", () => {
@@ -292,8 +289,18 @@ describe("Candy targets on the board (section 15.1)", () => {
     const preview = previewRebakeV7(view, confectioner.id);
     if (preview === null) throw new Error("no Re-bake preview");
     const plan = planFor(view, AT.confectioner, "REBAKE");
+    // The Candy redesign (`pulp_wars-jdb.12`): the copy appears next to the
+    // Confectioner; until the two-step pick of `pulp_wars-jdb.14` each
+    // placement tile bakes the dearest offered Crumbs.
+    const best = new Map<string, (typeof preview.options)[number]>();
+    for (const option of preview.options) {
+      const key = `${option.at.x},${option.at.y}`;
+      const known = best.get(key);
+      if (known === undefined || option.cost > known.cost)
+        best.set(key, option);
+    }
     expect(plan.targets.map((target) => target.family)).toEqual(
-      preview.options.map(() => "REBAKE"),
+      [...best.values()].map(() => "REBAKE"),
     );
     expect(
       plan.targets.map((target) => [
@@ -303,14 +310,23 @@ describe("Candy targets on the board (section 15.1)", () => {
         target.rebake?.artSubject,
       ]),
     ).toEqual(
-      preview.options.map((option) => [
+      [...best.values()].map((option) => [
         option.at,
         rebakeBoardLabelV7(option.cost, option.hp),
         option.role,
         `UNIT:CANDY:${option.role}`,
       ]),
     );
-    expect(preview.options).toHaveLength(2);
+    for (const target of plan.targets)
+      expect(
+        Math.max(
+          Math.abs(target.at.x - AT.confectioner.x),
+          Math.abs(target.at.y - AT.confectioner.y),
+        ),
+      ).toBe(1);
+    expect(new Set(preview.options.map((option) => option.role))).toEqual(
+      new Set(["KNIGHT", "FIGHTER"]),
+    );
     // The Frosting targets step aside while the Re-bake is aimed.
     expect(plan.entries.some((entry) => entry.kind === "ABILITY_TARGET")).toBe(
       false,
@@ -318,23 +334,24 @@ describe("Candy targets on the board (section 15.1)", () => {
   });
 
   it("draws the Re-bake ghost at the ghost strength", () => {
-    const log = draw(planFor(view, AT.confectioner, "REBAKE"));
+    const plan = planFor(view, AT.confectioner, "REBAKE");
+    const log = draw(plan);
     const alphas = log.filter(
       (call) =>
         call[0] === "set" &&
         call[1] === "globalAlpha" &&
         call[2] === TUNNEL_GHOST_ALPHA_V7,
     );
-    expect(alphas).toHaveLength(2);
+    expect(alphas).toHaveLength(plan.targets.length);
   });
 
-  it("highlights a Confectioner's Frosting targets from the Tend preview", () => {
+  it("highlights no Frosting targets: the Candy redesign replaced Frosting with Top-Up", () => {
     const plan = planFor(view, AT.confectioner);
     const tend = plan.entries.filter(
       (entry) =>
         entry.kind === "ABILITY_TARGET" && entry.abilityStyle === "TEND",
     );
-    expect(tend.map((entry) => entry.at)).toEqual([AT.frostingTarget]);
+    expect(tend).toEqual([]);
   });
 
   it("aims a Sugar Toss at the wounded units in reach, each with its heal", () => {
@@ -442,7 +459,6 @@ describe("Candy marker drawing (CANDY.md markers)", () => {
       crashed: true,
       splatted: true,
       home: true,
-      frenzy: null,
     };
     const withArt = recordingContext();
     drawCandyUnitMarkersV7(withArt.context, all, anchor, 1, {
@@ -470,7 +486,7 @@ describe("Candy marker drawing (CANDY.md markers)", () => {
     expect(calls(contrast.log, "drawImage")).toHaveLength(0);
   });
 
-  it("draws the Sugar Frenzy pips in place of the house, one per continuation", () => {
+  it("draws the house beside the Rushed chip, and pips one per mark", () => {
     const { context, log } = recordingContext();
     drawCandyUnitMarkersV7(
       context,
@@ -479,7 +495,6 @@ describe("Candy marker drawing (CANDY.md markers)", () => {
         crashed: false,
         splatted: false,
         home: true,
-        frenzy: { left: 1, of: 2 },
       },
       anchor,
       1,
@@ -487,7 +502,7 @@ describe("Candy marker drawing (CANDY.md markers)", () => {
     );
     expect(
       calls(log, "drawImage").map((call) => (call[1] as { name: string }).name),
-    ).toEqual(["rushed"]);
+    ).toEqual(["rushed", "home"]);
     const pips = recordingContext();
     drawCandyPipsV7(pips.context, 0, 0, 1, { left: 1, of: 2 });
     expect(calls(pips.log, "arc")).toHaveLength(2);
@@ -629,6 +644,7 @@ describe("Candy cues (CANDY.md effects)", () => {
       boundary(state, {
         kind: "REBAKE",
         unitId: unitAt(view, AT.confectioner).id,
+        from: AT.crumbsBear,
         at: AT.crumbsBear,
       }),
     ).toContainEqual({
@@ -847,8 +863,9 @@ describe("Candy in the Gallery", () => {
       "SUGAR_RUSH",
     ]);
     expect(galleryDemoCuesV7("CANDY", "CAPTAIN")).toEqual(
-      expect.arrayContaining(["TEND_WOUNDED", "REBAKE", "SUGAR_RUSH"]),
+      expect.arrayContaining(["REBAKE", "SUGAR_RUSH"]),
     );
+    expect(galleryDemoCuesV7("CANDY", "CAPTAIN")).not.toContain("TEND_WOUNDED");
     expect(galleryDemoCuesV7("CANDY", "MARKSMAN")).toEqual(
       expect.arrayContaining(["ATTACK", "SUGAR_TOSS"]),
     );

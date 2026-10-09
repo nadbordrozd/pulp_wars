@@ -73,7 +73,6 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/ai/v7-candy.ts::claimedRushTargetsV7": "BOARD",
     "src/ai/v7-candy.ts::fragileRebakeV7": "BOARD",
     "src/ai/v7-candy.ts::planSugarRushV7": "BOARD",
-    "src/ai/v7-candy.ts::rebakeApproachValueV7": "BOARD",
     "src/ai/v7-candy.ts::rebakeScoreV7": "BOARD",
     "src/ai/v7-candy.ts::splatSavedHpV7": "BOARD",
     "src/ai/v7-candy.ts::sugarTossScoreV7": "BOARD",
@@ -701,6 +700,20 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/engine/v7/query.ts::previewSugarTossV7": "BOARD",
     "src/engine/v7/query.ts::publicSugarTossTargetsV7": "BOARD",
     "src/engine/v7/state-schema.ts::candyListsValid": "BOARD",
+    // The Candy redesign (`pulp_wars-jdb.12`): a Top-Up, a Ricochet, and a
+    // Thump name units on the board (a burrowed unit is neither hit nor
+    // topped up), and the Re-bake "why not" reads the viewer's own
+    // Confectioner on the board. The stale-Crumbs telemetry counts the
+    // Confectioners standing within reach (slots through
+    // `assignedUnitCountV7`).
+    "src/engine/v7/candy-reducer.ts::applyTopUpV7": "BOARD",
+    "src/engine/v7/combat.ts::candyAttackEffectsV7": "BOARD",
+    "src/engine/v7/query.ts::queryRebakeBlockerV7": "BOARD",
+    "src/engine/v7/query.ts::publicTopUpTargetsV7": "BOARD",
+    "src/engine/v7/query.ts::previewTopUpV7": "BOARD",
+    "src/engine/v7/query.ts::publicCandyAttackEffectsV7": "BOARD",
+    "src/engine/v7/reducer.ts::resolveCandyAfterAttackV7": "BOARD",
+    "src/headless/candy-telemetry-v7.ts::staleCrumbsReasonV7": "BOARD",
     // The frozen sea (`pulp_wars-5ti.3`): ice holds, traps, Chills, and
     // crushes what stands on the board; a Freeze and its preview read the
     // board. No Ice Folk unit is afloat anywhere, a mound included, so the

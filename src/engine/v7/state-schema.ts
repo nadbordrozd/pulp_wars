@@ -55,6 +55,7 @@ import {
   type FrozenStatusV7,
   type CityRewardRecordV7,
   type CityStateV7,
+  type CandyStatusEntryV7,
   type CoolingStatusV7,
   type CoordV7,
   type CrumbsV7,
@@ -146,6 +147,7 @@ const STATE_KEYS = [
   "eggs",
   "frozen",
   "giants",
+  "glazedThisTurn",
   "graves",
   "humanPlayerId",
   "huntedThisTurn",
@@ -168,9 +170,11 @@ const STATE_KEYS = [
   "setup",
   "shields",
   "splattedThisTurn",
+  "stuck",
   "sugarRush",
   "surfacedThisTurn",
   "mindControlled",
+  "toothache",
   "tossedThisTurn",
   "tractorUsedThisTurn",
   "treasureChests",
@@ -290,6 +294,12 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
   const crumbs = parseCrumbs(input.crumbs);
   const splattedThisTurn = parseSortedUnitIds(input.splattedThisTurn);
   const tossedThisTurn = parseSortedUnitIds(input.tossedThisTurn);
+  // The Candy redesign (docs/product/RULESET_7_CANDY_REDESIGN.md section
+  // 12): Stuck, Toothache, and the Glaze; the cross references are checked
+  // below.
+  const stuck = parseCandyStatusEntries(input.stuck);
+  const toothache = parseCandyStatusEntries(input.toothache);
+  const glazedThisTurn = parseSortedCoords(input.glazedThisTurn);
   // The Dinosaur pass, correction: the units hunted this turn (Pack Hunt).
   const huntedThisTurn = parseSortedUnitIds(input.huntedThisTurn);
   // Goblin explosions and Berserk (`pulp_wars-w49.35`): the Berserk units.
@@ -344,6 +354,9 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
     crumbs === null ||
     splattedThisTurn === null ||
     tossedThisTurn === null ||
+    stuck === null ||
+    toothache === null ||
+    glazedThisTurn === null ||
     huntedThisTurn === null ||
     berserkThisTurn === null ||
     ninthUnit === null ||
@@ -407,6 +420,9 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
       crumbs,
       splattedThisTurn,
       tossedThisTurn,
+      stuck,
+      toothache,
+      glazedThisTurn,
       huntedThisTurn,
       berserkThisTurn,
       ninthUnit,
@@ -462,6 +478,9 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
     crumbs,
     splattedThisTurn,
     tossedThisTurn,
+    stuck,
+    toothache,
+    glazedThisTurn,
     huntedThisTurn,
     berserkThisTurn,
     ninthUnit,
@@ -1034,12 +1053,9 @@ function parseUnit(
   const faction = players.find((player) => player.id === kindOwner)?.faction;
   if (faction === undefined) return null;
   const rule = effectiveRoleRuleV7(role, faction);
-  // The Candy revision (section 5.4): the Chocolate Bunny's Sugar Frenzy is an
-  // Overrun and the Donut Racer's perk an Escape; that the unit is Rushed
-  // is checked with the cross references (`candyListsValid`).
-  const rushPerk = roleMechanicsV7(role, faction).rushPerk;
-  const overrun =
-    rule.abilities.includes("OVERRUN") || rushPerk === "SUGAR_FRENZY";
+  // The Candy redesign (RULESET_7_CANDY_REDESIGN.md section 6.1): the Rush
+  // perks are gone, so only the role abilities grant Overrun and Escape.
+  const overrun = rule.abilities.includes("OVERRUN");
   // Revision 19 section 6.1: an Egg is an egg-laid role of a Dinosaur seat
   // with 6 or 10 maximum HP, no kills, no Promotion, no capture eligibility,
   // and the exhausted activation at all times. Its tile, home city, and
@@ -1103,7 +1119,7 @@ function parseUnit(
     (activation.overrunActive &&
       (!overrun || !activation.attacked || activation.handled)) ||
     (activation.escapeAvailable &&
-      ((!rule.abilities.includes("ESCAPE") && rushPerk !== "ESCAPE") ||
+      (!rule.abilities.includes("ESCAPE") ||
         input.form !== "LAND" ||
         // Tuning 4: after an attack, or after a Pillage (a special action).
         (!activation.attacked && !activation.specialActed) ||
@@ -1743,6 +1759,32 @@ function parseScoreLedger(
 }
 
 /**
+ * The Candy redesign (section 6.2): the `stuck` or `toothache` entries,
+ * strictly ascending by `unitId` (so no unit has two), each with `endsLeft`
+ * 1 or 2. The cross references are checked separately.
+ */
+function parseCandyStatusEntries(
+  input: unknown,
+): readonly CandyStatusEntryV7[] | null {
+  if (!isDenseArrayV7(input)) return null;
+  const values: CandyStatusEntryV7[] = [];
+  for (const candidate of input) {
+    if (!hasExactKeysV7(candidate, ["endsLeft", "unitId"])) return null;
+    const unitId = parseUnitIdV7(candidate.unitId);
+    const endsLeft = candidate.endsLeft;
+    if (
+      unitId === null ||
+      (endsLeft !== 1 && endsLeft !== 2) ||
+      (values.length > 0 &&
+        (values.at(-1) as CandyStatusEntryV7).unitId >= unitId)
+    )
+      return null;
+    values.push({ unitId, endsLeft });
+  }
+  return values;
+}
+
+/**
  * The ninth unit (`pulp_wars-w49.17`, 7r55): the shape of `ninthUnit`: the
  * marked Graves sorted by (y, x) and the two sorted unit-ID lists. (Dwarf
  * crowd control, `pulp_wars-w49.33`: Three Hammers and its struck pairs are
@@ -2247,6 +2289,9 @@ interface CrossInput {
   crumbs: readonly CrumbsV7[];
   splattedThisTurn: readonly UnitId[];
   tossedThisTurn: readonly UnitId[];
+  stuck: readonly CandyStatusEntryV7[];
+  toothache: readonly CandyStatusEntryV7[];
+  glazedThisTurn: readonly CoordV7[];
   huntedThisTurn: readonly UnitId[];
   berserkThisTurn: readonly UnitId[];
   ninthUnit: NinthUnitStateV7;
@@ -3022,42 +3067,40 @@ function martianTurnListsValid(
 }
 
 /**
- * The Candy revision (docs/product/RULESET_7_CANDY.md section 13): the four
+ * The Candy revision (docs/product/RULESET_7_CANDY.md section 13): the
  * Candy lists are empty in a match without a Candy seat. A `sugarRush` entry
  * names a unit on the board of kind `CANDY` in land or embarked form; a
  * `splattedThisTurn` entry a unit on the board that is not a neutral
  * Monster; a `tossedThisTurn` entry a unit on the board in land form; a
- * `crumbs` entry lies on a land tile that is not a settlement site, a Rift,
- * a chest tile, or a curiosity tile, is owned by an active Candy seat, and
- * has a role that leaves Crumbs under the Candy registration.
+ * `crumbs` entry lies on a land tile that is not a Rift, a chest tile, or a
+ * curiosity tile (the Candy redesign: a settlement site holds Crumbs), is
+ * owned by an active Candy seat, and has a role that leaves Crumbs under the
+ * Candy registration. The Candy redesign (section 6.2): a `stuck` or
+ * `toothache` entry names a unit on the board that is not an Egg and not a
+ * neutral Monster; a `glazedThisTurn` tile is a land tile.
  */
 function candyListsValid(
   value: CrossInput,
   playerById: ReadonlyMap<PlayerStateV7["id"], PlayerStateV7>,
   kindOf: (unit: UnitStateV7) => FactionIdV7 | undefined,
 ): boolean {
-  const { sugarRush, crumbs, splattedThisTurn, tossedThisTurn } = value;
-  // Section 5.4: a Rush perk's flag (a Sugar Frenzy continuation, a Donut
-  // Racer's Escape) needs a Rushed unit in land form.
-  for (const unit of value.units) {
-    if (!unit.activation.overrunActive && !unit.activation.escapeAvailable)
-      continue;
-    const kind = kindOf(unit);
-    if (kind === undefined) continue;
-    const perk = roleMechanicsV7(unit.role, kind).rushPerk;
-    if (
-      perk !== null &&
-      !sugarRush.some(
-        (entry) => entry.unitId === unit.id && entry.phase === "RUSHED",
-      )
-    )
-      return false;
-  }
+  const {
+    sugarRush,
+    crumbs,
+    splattedThisTurn,
+    tossedThisTurn,
+    stuck,
+    toothache,
+    glazedThisTurn,
+  } = value;
   if (
     sugarRush.length === 0 &&
     crumbs.length === 0 &&
     splattedThisTurn.length === 0 &&
-    tossedThisTurn.length === 0
+    tossedThisTurn.length === 0 &&
+    stuck.length === 0 &&
+    toothache.length === 0 &&
+    glazedThisTurn.length === 0
   )
     return true;
   if (!value.setup.factions.includes("CANDY")) return false;
@@ -3083,6 +3126,20 @@ function candyListsValid(
     if (unit === undefined || unit.hp <= 0 || unit.form !== "LAND")
       return false;
   }
+  for (const entry of [...stuck, ...toothache]) {
+    const unit = unitById.get(entry.unitId);
+    if (
+      unit === undefined ||
+      unit.hp <= 0 ||
+      unit.form === "EGG" ||
+      isNeutralOwnerV7(unit.ownerId)
+    )
+      return false;
+  }
+  for (const at of glazedThisTurn) {
+    const tile = tileAt(value.board, at);
+    if (tile === undefined || tile.biome === null) return false;
+  }
   for (const entry of crumbs) {
     const tile = tileAt(value.board, entry.at);
     const owner = playerById.get(entry.ownerId);
@@ -3090,7 +3147,6 @@ function candyListsValid(
       tile === undefined ||
       tile.biome === null ||
       tile.terrain === "RIFT" ||
-      tile.site !== null ||
       value.treasureChests.some((chest) => sameCoordV7(chest, entry.at)) ||
       value.curiosities.some((curiosity) =>
         sameCoordV7(curiosity.at, entry.at),

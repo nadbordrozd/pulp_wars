@@ -648,17 +648,27 @@ describe("ruleset-7 revision-13 Wail: events, projection, and persistence", () =
     // (`pulp_wars-737.14`) insert GATE_DISPLACED, GATE_TRAVERSED, and
     // GATE_BLOCKED after UNIT_MOVED, and Ice Folk Freeze (`pulp_wars-w49.37`)
     // MAMMOTH_STAMPEDED after GIANT_BROKE_OFF, both before COMBAT_RESOLVED:
-    // 92 (was 88).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7.indexOf("WAIL_RESOLVED")).toBe(92);
+    // 92 (was 88). The Candy redesign (`pulp_wars-jdb.12`) inserts
+    // UNIT_TOPPED_UP and TILES_GLAZED before COMBAT_RESOLVED and UNIT_STUCK,
+    // TOOTHACHE_GIVEN, RICOCHETED, and THUMPED after BARRICADE_ATTACKED: 98
+    // (was 92), COMBAT_RESOLVED + 8.
+    expect(DOMAIN_EVENT_KIND_ORDER_V7.indexOf("WAIL_RESOLVED")).toBe(98);
     expect(DOMAIN_EVENT_KIND_ORDER_V7.indexOf("WAIL_RESOLVED")).toBe(
-      DOMAIN_EVENT_KIND_ORDER_V7.indexOf("COMBAT_RESOLVED") + 4,
+      DOMAIN_EVENT_KIND_ORDER_V7.indexOf("COMBAT_RESOLVED") + 8,
     );
     expect(
       DOMAIN_EVENT_KIND_ORDER_V7.slice(
         DOMAIN_EVENT_KIND_ORDER_V7.indexOf("UNIT_BOMBED") + 1,
         DOMAIN_EVENT_KIND_ORDER_V7.indexOf("WAIL_RESOLVED"),
       ),
-    ).toEqual(["WHIRL_RESOLVED", "BARRICADE_ATTACKED"]);
+    ).toEqual([
+      "WHIRL_RESOLVED",
+      "BARRICADE_ATTACKED",
+      "UNIT_STUCK",
+      "TOOTHACHE_GIVEN",
+      "RICOCHETED",
+      "THUMPED",
+    ]);
     expect(DOMAIN_EVENT_KIND_ORDER_V7.indexOf("UNIT_BOMBED")).toBe(
       DOMAIN_EVENT_KIND_ORDER_V7.indexOf("COMBAT_RESOLVED") + 1,
     );

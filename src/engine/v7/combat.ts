@@ -61,7 +61,16 @@ import {
   sugarRushAttack2V7,
   unitIsSplattedV7,
 } from "./candy";
+import {
+  attack2AfterToothacheV7,
+  candyExchangeStatusesV7,
+  ricochetEntryV7,
+  thumpEntriesV7,
+  unitHasToothacheV7,
+  unitThumpDamageV7,
+} from "./candy-abilities";
 import { arePlayersAlliedV7, arePlayersHostileV7 } from "./economy";
+import { isUnitVisibleToPlayerV7 } from "./observation";
 import type { CombatPreviewV7, CombatSplashEntryV7 } from "./events";
 import {
   attackMaximumRangeV7,
@@ -514,7 +523,12 @@ export function calculateCombatPreviewV7(
     (plannedPathLength ?? 0) > 0,
   );
   const torpedo = attackIsTorpedoV7(state, attacker);
-  const attack2 =
+  // The Candy redesign (RULESET_7_CANDY_REDESIGN.md section 6.2): the
+  // attacker's own Toothache, after every other modifier (only on an
+  // `ATTACK`: a Whirl passes `ignoreToothache`).
+  const toothacheAttack =
+    options.ignoreToothache !== true && unitHasToothacheV7(state, attacker.id);
+  const attack2BeforeToothache =
     attacker.form === "EMBARKED"
       ? 0
       : baseAttack2 +
@@ -529,6 +543,10 @@ export function calculateCombatPreviewV7(
         (coldBloodApplied ? attackerMechanics.coldBloodBonus2 : 0) +
         (carrionApplied ? attackerMechanics.carrionBonus2 : 0) +
         packHunt2;
+  const attack2 = attack2AfterToothacheV7(
+    attack2BeforeToothache,
+    toothacheAttack,
+  );
   // Revision 19 Acid (section 8.1): a land-form Spitter's attack removes the
   // defender's cover and fortification from the whole exchange.
   const acid = attackHasAcidV7(attackerRule, attacker);
@@ -955,16 +973,13 @@ export function calculateCombatPreviewV7(
     push,
     attacksUsed: nextAttacks,
     attacksRemaining: twinShotLeft ? 1 : 0,
-    // The Candy revision section 5.4: a Rushed Chocolate Bunny's Sugar Frenzy is
-    // an Overrun.
-    overrunAdvance:
-      overrunKindV7(state, attacker, attackerRule, assumeRushed) !== null &&
-      advances,
+    // The Candy redesign (section 6.1): no Candy unit has Overrun.
+    overrunAdvance: overrunKindV7(attackerRule) !== null && advances,
     overrunContinues: false,
-    // The Candy revision section 5.4: a Rushed Donut Racer has it. Ice Folk
+    // The Candy redesign (section 6.1): no Candy unit has Escape. Ice Folk
     // Freeze (`pulp_wars-w49.37`): an attacker Frozen by Frostbite is not.
     escapeAvailable:
-      attackGrantsEscapeV7(state, attacker, attackerRule, assumeRushed) &&
+      attackGrantsEscapeV7(attacker, attackerRule) &&
       !attackerDies &&
       !attackIsFrostbittenV7(state, attacker, defender, distance, attackerDies),
     splash,
@@ -1038,6 +1053,110 @@ export function calculateCombatPreviewV7(
         defender.at,
       ) !== undefined,
     glacialSmash: shatters && glacialThreshold !== null,
+    ...candyAttackEffectsV7(state, attacker, defender, {
+      distance,
+      retaliates,
+      attackerDies,
+      defenderDies,
+      hitOnDefender: damageToDefender + defenderShieldDamage,
+      attackerAt: advances
+        ? defender.at
+        : bounced.bounce === "WILL_BOUNCE" && bounced.bounceTo !== null
+          ? bounced.bounceTo
+          : attacker.at,
+      toothacheAttack,
+    }),
+  };
+}
+
+/**
+ * The Candy redesign (docs/product/RULESET_7_CANDY_REDESIGN.md sections
+ * 6.2, 7.1, 7.3, 7.7, and 7.8): the canonical Candy part of a preview:
+ * Stuck, Toothache, a Ricochet on the weakest hostile neighbour of the
+ * target that the attacker's owner sees, and the Thump around the tile the
+ * attacker stands on after its advance or Bounce. A unit that dies (or
+ * rises as another unit) is not "on the board" for a status.
+ */
+function candyAttackEffectsV7(
+  state: GameStateV7,
+  attacker: UnitStateV7,
+  defender: UnitStateV7,
+  facts: {
+    readonly distance: number;
+    readonly retaliates: boolean;
+    readonly attackerDies: boolean;
+    readonly defenderDies: boolean;
+    readonly hitOnDefender: number;
+    readonly attackerAt: CoordV7;
+    readonly toothacheAttack: boolean;
+  },
+): Pick<
+  CombatPreviewV7,
+  | "stuckApplied"
+  | "toothacheApplied"
+  | "toothacheAttack"
+  | "ricochet"
+  | "thump"
+  | "thumpUncertain"
+> {
+  const statuses = candyExchangeStatusesV7(state, attacker, defender, {
+    distance: facts.distance,
+    retaliates: facts.retaliates,
+    attackerRemains: !facts.attackerDies,
+    defenderRemains: !facts.defenderDies,
+  });
+  const hostile = (unit: UnitStateV7): boolean =>
+    unit.hp > 0 && arePlayersHostileV7(state, attacker.ownerId, unit.ownerId);
+  const shieldOf = (unitId: UnitId): number =>
+    shieldOfV7(state.shields, unitId);
+  const ricochet =
+    attacker.form === "LAND" &&
+    facts.distance === 2 &&
+    !isNeutralOwnerV7(attacker.ownerId)
+      ? ricochetEntryV7(
+          state,
+          attacker,
+          defender,
+          facts.distance,
+          facts.hitOnDefender,
+          state.units.filter(
+            (unit) =>
+              hostile(unit) &&
+              isUnitVisibleToPlayerV7(state, attacker.ownerId, unit),
+          ),
+          shieldOf,
+        )
+      : null;
+  const thump =
+    !facts.attackerDies && unitThumpDamageV7(state, attacker) > 0
+      ? thumpEntriesV7(
+          state,
+          attacker,
+          facts.attackerAt,
+          defender.id,
+          state.units.filter(hostile),
+          shieldOf,
+        )
+      : [];
+  return {
+    ...statuses,
+    toothacheAttack: facts.toothacheAttack,
+    ricochet:
+      ricochet === null
+        ? null
+        : {
+            unitId: ricochet.unitId,
+            damage: ricochet.damage,
+            shieldDamage: ricochet.shieldDamage,
+            dies: ricochet.dies,
+          },
+    thump: thump.map((entry) => ({
+      unitId: entry.unitId,
+      damage: entry.damage,
+      shieldDamage: entry.shieldDamage,
+      dies: entry.dies,
+    })),
+    thumpUncertain: false,
   };
 }
 
@@ -1311,6 +1430,11 @@ export interface CombatOptionsV7 {
    * first-attack conditions, for a unit that could Rush.
    */
   readonly assumeSugarRush?: boolean;
+  /**
+   * The Candy redesign (RULESET_7_CANDY_REDESIGN.md section 6.2): evaluates
+   * the hit without the attacker's Toothache (a Whirl is not an `ATTACK`).
+   */
+  readonly ignoreToothache?: boolean;
 }
 
 /**

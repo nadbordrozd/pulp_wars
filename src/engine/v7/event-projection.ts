@@ -242,6 +242,33 @@ export function projectEventsV7(
         });
       continue;
     }
+    // The Candy redesign (RULESET_7_CANDY_REDESIGN.md section 12): the
+    // Glaze is public on explored tiles (a viewer that sees the Racer gets
+    // the tiles it explored), and a Thump keeps the hits the viewer owns or
+    // sees (a viewer that cannot see the Bunny gets none).
+    if (event.kind === "TILES_GLAZED") {
+      const tiles = event.tiles.filter((at) =>
+        coordVisible(beforeState, afterState, viewerId, at),
+      );
+      if (
+        tiles.length > 0 &&
+        (event.playerId === viewerId ||
+          beforeVisible.has(event.unitId) ||
+          afterVisible.has(event.unitId))
+      )
+        projected.push({ ...event, tiles });
+      continue;
+    }
+    if (event.kind === "THUMPED") {
+      const seen = (unitId: UnitId): boolean =>
+        ownedBeforeOrAfter(unitId) ||
+        beforeVisible.has(unitId) ||
+        afterVisible.has(unitId);
+      const hits = event.hits.filter((entry) => seen(entry.unitId));
+      if (seen(event.unitId) && hits.length > 0)
+        projected.push({ ...event, hits });
+      continue;
+    }
     if (event.kind === "UNITS_CRUSHED") {
       const results = event.results.filter(
         (entry) =>
@@ -803,6 +830,14 @@ function unitIds(event: DomainEventV7): readonly UnitId[] {
       // Revision 13: the ordinary unit-visibility rule on the source Zombie
       // and the risen Zombie; the victim is covered by its own UNIT_DIED.
       return [event.sourceUnitId, event.unitId];
+    // The Candy redesign (section 12): each is shown to a viewer who sees
+    // both units it names (its actor always does).
+    case "UNIT_STUCK":
+    case "TOOTHACHE_GIVEN":
+      return [event.sourceUnitId, event.unitId];
+    case "RICOCHETED":
+    case "UNIT_TOPPED_UP":
+      return [event.unitId, event.targetUnitId];
     default:
       return "unitId" in event ? [event.unitId] : [];
   }

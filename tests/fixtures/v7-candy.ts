@@ -38,6 +38,10 @@ export interface CandyPieceV7 extends IcePieceV7 {
   readonly splatted?: boolean;
   /** The unit is in `tossedThisTurn`. */
   readonly tossed?: boolean;
+  /** The Candy redesign: a `stuck` entry with this `endsLeft`. */
+  readonly stuck?: 1 | 2;
+  /** The Candy redesign: a `toothache` entry with this `endsLeft`. */
+  readonly toothache?: 1 | 2;
 }
 
 export interface CandyFieldOptionsV7 extends IceFieldOptionsV7 {
@@ -49,6 +53,8 @@ export interface CandyFieldOptionsV7 extends IceFieldOptionsV7 {
     readonly seat?: number;
     readonly turnsLeft?: CrumbsV7["turnsLeft"];
   }[];
+  /** The Candy redesign: the Glazed tiles of the active seat's turn. */
+  readonly glazed?: readonly CoordV7[];
 }
 
 export function candyFieldV7(
@@ -64,6 +70,17 @@ export function candyFieldV7(
       .filter(predicate)
       .map((piece) => unitAtV7(state, piece.at).id)
       .sort((left, right) => left - right);
+  const statusEntries = (
+    endsLeft: (piece: CandyPieceV7) => 1 | 2 | undefined,
+  ) =>
+    pieces
+      .flatMap((piece) => {
+        const value = endsLeft(piece);
+        return value === undefined
+          ? []
+          : [{ unitId: unitAtV7(state, piece.at).id, endsLeft: value }];
+      })
+      .sort((left, right) => left.unitId - right.unitId);
   return checkedV7({
     ...state,
     sugarRush: pieces
@@ -75,6 +92,11 @@ export function candyFieldV7(
       .sort((left, right) => left.unitId - right.unitId),
     splattedThisTurn: ids((piece) => piece.splatted === true),
     tossedThisTurn: ids((piece) => piece.tossed === true),
+    stuck: statusEntries((piece) => piece.stuck),
+    toothache: statusEntries((piece) => piece.toothache),
+    glazedThisTurn: [...(options.glazed ?? [])].sort(
+      (left, right) => left.y - right.y || left.x - right.x,
+    ),
     crumbs: (options.crumbs ?? [])
       .map((entry) => ({
         at: entry.at,

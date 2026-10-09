@@ -10,6 +10,7 @@ import {
   parseGameStateV7,
   previewCrumbsEatV7,
   previewRebakeV7,
+  queryRebakeBlockerV7,
   viewForV7,
   type CommandV7,
   type CoordV7,
@@ -209,6 +210,9 @@ describe("Crumbs are left by a fallen Candy unit (section 6.1)", () => {
       "TRAMPLE",
       // Ice Folk Freeze (`pulp_wars-w49.37`): a Mammoth's Stampede.
       "STAMPEDE",
+      // The Candy redesign (`pulp_wars-jdb.12`): Ricochet and Thump.
+      "RICOCHET",
+      "THUMP",
     ]);
     for (const cause of CRUMBS_DEATH_CAUSES_V7)
       expect(deathLeavesCrumbsV7(state, dead("FIGHTER"), cause), cause).toBe(
@@ -241,8 +245,9 @@ describe("Crumbs are left by a fallen Candy unit (section 6.1)", () => {
       "KNIGHT",
       "SWORDSMAN",
     ]);
-    // Not embarked, not on water, not on a settlement site, not owned by
-    // another seat (a mind-controlled Candy unit's owner is its controller).
+    // Not embarked, not on water, not owned by another seat (a
+    // mind-controlled Candy unit's owner is its controller). The Candy
+    // redesign: a settlement site (a village, a city center) holds Crumbs.
     expect(
       deathLeavesCrumbsV7(
         state,
@@ -255,7 +260,7 @@ describe("Crumbs are left by a fallen Candy unit (section 6.1)", () => {
     ).toBe(false);
     for (const site of [at(5, 5), at(8, 8), at(2, 8)])
       expect(deathLeavesCrumbsV7(state, dead("FIGHTER", site), "ATTACK")).toBe(
-        false,
+        true,
       );
     expect(
       deathLeavesCrumbsV7(
@@ -303,7 +308,7 @@ describe("Crumbs are left by a fallen Candy unit (section 6.1)", () => {
     ).toBe(false);
   });
 
-  it("leaves none for a unit that rises, a Golem, a unit on a site, or a controlled Candy unit", () => {
+  it("leaves none for a unit that rises, a Golem, or a controlled Candy unit, and leaves them on a village", () => {
     // Infect: a Toffee Trooper killed by a Zombie rises as a Zombie.
     const infect = candyFieldV7(
       [
@@ -316,7 +321,8 @@ describe("Crumbs are left by a fallen Candy unit (section 6.1)", () => {
     expect(kindsV7(risen.events)).toContain("UNIT_INFECTED");
     expect(risen.state.crumbs).toEqual([]);
     expect(kindsV7(risen.events)).not.toContain("CRUMBS_LEFT");
-    // The Golem, and a Toffee Trooper on a village.
+    // The Golem leaves none; a Toffee Trooper on a village leaves Crumbs
+    // there (the Candy redesign, section 8.1).
     for (const [role, where] of [
       ["JUGGERNAUT", at(5, 2)],
       ["FIGHTER", at(5, 5)],
@@ -330,7 +336,10 @@ describe("Crumbs are left by a fallen Candy unit (section 6.1)", () => {
       );
       const run = attackV7(state, { x: where.x, y: where.y + 1 }, where);
       expect(run.target, role).toBeUndefined();
-      expect(run.state.crumbs, role).toEqual([]);
+      expect(
+        run.state.crumbs.map((entry) => entry.at),
+        role,
+      ).toEqual(role === "FIGHTER" ? [where] : []);
     }
     // A mind-controlled Candy unit dies as its Martian controller's unit.
     const controlled = candyFieldV7(
@@ -767,9 +776,13 @@ describe("eating Crumbs and the Peppermint Surprise (section 6.3)", () => {
   });
 });
 
-describe("the Re-bake command (section 6.4)", () => {
+describe("the Re-bake command (section 6.4, as the Candy redesign changed it)", () => {
+  // The Candy redesign (`pulp_wars-jdb.12`, RULESET_7_CANDY_REDESIGN.md
+  // section 8.1): reach 2, scooped from under any unit, the copy beside the
+  // Confectioner, and one unit over the home city's capacity.
   const CONFECTIONER = at(5, 3);
   const CRUMBS = at(5, 4);
+  const PLACE = at(4, 2);
   const field = (
     extra: Partial<CandyPieceV7> = {},
     options: Parameters<typeof candyFieldV7>[1] = {},
@@ -783,13 +796,18 @@ describe("the Re-bake command (section 6.4)", () => {
       ],
       { crumbs: [{ at: CRUMBS, role: "KNIGHT" }], ...options },
     );
-  const rebake = (state: GameStateV7, where = CRUMBS): CommandV7 => ({
+  const rebake = (
+    state: GameStateV7,
+    from = CRUMBS,
+    where = PLACE,
+  ): CommandV7 => ({
     kind: "REBAKE",
     unitId: unitAtV7(state, CONFECTIONER).id,
+    from,
     at: where,
   });
 
-  it("bakes the fallen role back at half price and half HP, exhausted, homed to the Confectioner's city", () => {
+  it("bakes the fallen role back beside the Confectioner at half price and half HP, exhausted, homed to its city", () => {
     const state = field();
     const candy = activeIdV7(state);
     const confectioner = unitAtV7(state, CONFECTIONER);
@@ -798,17 +816,27 @@ describe("the Re-bake command (section 6.4)", () => {
     expect(preview).toMatchObject({
       unitId: confectioner.id,
       cityId: confectioner.homeCityId,
-      options: [{ at: CRUMBS, role: "KNIGHT", cost: 5, hp: 7 }],
     });
+    // One option per free tile around the Confectioner, all from the pile.
+    expect(preview?.options).toHaveLength(8);
+    expect(preview?.options).toContainEqual({
+      from: CRUMBS,
+      at: PLACE,
+      role: "KNIGHT",
+      cost: 5,
+      hp: 7,
+    });
+    expect(preview?.rebakeCapacity).toBe((preview?.capacity ?? 0) + 1);
     const result = playV7(state, rebake(state));
-    const baked = unitAtV7(result.state, CRUMBS);
+    const baked = unitAtV7(result.state, PLACE);
     expect(result.events[0]).toEqual({
       kind: "UNIT_REBAKED",
       playerId: candy,
       unitId: confectioner.id,
       rebakedUnitId: baked.id,
       role: "KNIGHT",
-      at: CRUMBS,
+      from: CRUMBS,
+      at: PLACE,
       cityId: confectioner.homeCityId,
       cost: 5,
       hp: 7,
@@ -826,6 +854,7 @@ describe("the Re-bake command (section 6.4)", () => {
       captureEligible: false,
       activation: { moved: true, attacked: true, handled: true },
     });
+    expect(hasUnitAtV7(result.state, CRUMBS)).toBe(false);
     expect(result.state.players[0]?.coins).toBe(coins - 5);
     expect(result.state.crumbs).toEqual([]);
     expect(unitAtV7(result.state, CONFECTIONER).activation).toMatchObject({
@@ -845,34 +874,95 @@ describe("the Re-bake command (section 6.4)", () => {
     expect(preview?.usedSlots).toBe(1);
   });
 
-  it("may follow a Move, and is offered exactly when it is accepted", () => {
+  it("reaches 2 and not 3, may follow a Move, and is offered exactly when it is accepted", () => {
     const state = candyFieldV7(
       [
-        { seat: 0, role: "CAPTAIN", at: at(5, 2) },
+        { seat: 0, role: "CAPTAIN", at: at(5, 1) },
         { seat: 1, role: "FIGHTER", at: at(1, 1) },
       ],
       {
         crumbs: [
           { at: at(5, 4), role: "KNIGHT" },
-          { at: at(6, 4), role: "FIGHTER" },
-          { at: at(8, 4), role: "RAIDER" },
+          { at: at(7, 4), role: "FIGHTER" },
+          { at: at(9, 4), role: "RAIDER" },
         ],
       },
     );
+    // Three tiles away: nothing.
     expect(offeredV7(state, "REBAKE")).toEqual([]);
-    const moved = moveTo(state, at(5, 2), at(5, 3)).state;
+    const moved = moveTo(state, at(5, 1), at(6, 2)).state;
     const offered = expectOfferedAcceptedV7(moved, "REBAKE");
-    expect(offered).toEqual([
-      { kind: "REBAKE", unitId: unitAtV7(moved, at(5, 3)).id, at: at(5, 4) },
-      { kind: "REBAKE", unitId: unitAtV7(moved, at(5, 3)).id, at: at(6, 4) },
-    ]);
+    // Within 2 of (6, 2): the Knight's and the Trooper's piles, never the
+    // Racer's (3 away); every copy lands next to the Confectioner.
+    const sources = new Set(
+      offered.map((command) =>
+        command.kind === "REBAKE" ? `${command.from.x},${command.from.y}` : "",
+      ),
+    );
+    expect([...sources].sort()).toEqual(["5,4", "7,4"]);
+    for (const command of offered)
+      if (command.kind === "REBAKE")
+        expect(
+          Math.max(Math.abs(command.at.x - 6), Math.abs(command.at.y - 2)),
+        ).toBe(1);
     expect(
-      previewRebakeV7(activeViewV7(moved), unitAtV7(moved, at(5, 3)).id)
-        ?.options,
-    ).toEqual([
-      { at: at(5, 4), role: "KNIGHT", cost: 5, hp: 7 },
-      { at: at(6, 4), role: "FIGHTER", cost: 1, hp: 5 },
+      previewRebakeV7(activeViewV7(moved), unitAtV7(moved, at(6, 2)).id)
+        ?.options.length,
+    ).toBe(offered.length);
+  });
+
+  it("scoops the Crumbs from under a hostile or an own unit, and bakes onto the Crumbs tile itself when it is free", () => {
+    for (const seat of [0, 1]) {
+      const covered = field({}, {}, [{ seat, role: "GUARD", at: CRUMBS }]);
+      const result = playV7(covered, rebake(covered));
+      expect(result.state.crumbs, String(seat)).toEqual([]);
+      expect(unitAtV7(result.state, CRUMBS).role, String(seat)).toBe("GUARD");
+      expect(unitAtV7(result.state, PLACE).role, String(seat)).toBe("KNIGHT");
+    }
+    const open = field();
+    const onPile = playV7(open, rebake(open, CRUMBS, CRUMBS));
+    expect(unitAtV7(onPile.state, CRUMBS).role).toBe("KNIGHT");
+  });
+
+  it("bakes Crumbs left on a village and on a city center", () => {
+    for (const site of [at(5, 5), at(8, 8)]) {
+      const state = candyFieldV7(
+        [
+          { seat: 0, role: "CAPTAIN", at: at(6, 6) },
+          { seat: 1, role: "FIGHTER", at: at(1, 1) },
+        ],
+        { crumbs: [{ at: site, role: "FIGHTER" }] },
+      );
+      const command = offeredV7(state, "REBAKE").find(
+        (candidate) =>
+          candidate.kind === "REBAKE" && sameV7(candidate.from, site),
+      );
+      expect(command, `${site.x},${site.y}`).toBeDefined();
+      if (command !== undefined)
+        expect(playV7(state, command).state.crumbs).toEqual([]);
+    }
+  });
+
+  it("bakes a unit back the same turn it fell to a strike-back", () => {
+    const state = candyFieldV7([
+      { seat: 0, role: "CAPTAIN", at: at(5, 2) },
+      { seat: 0, role: "FIGHTER", at: at(5, 4), hp: 1 },
+      { seat: 1, role: "GUARD", at: at(5, 5) },
     ]);
+    const run = attackV7(state, at(5, 4), at(5, 5));
+    expect(run.attacker).toBeUndefined();
+    expect(run.state.crumbs.map((entry) => entry.at)).toEqual([at(5, 4)]);
+    const command = offeredV7(run.state, "REBAKE").find(
+      (candidate) =>
+        candidate.kind === "REBAKE" && sameV7(candidate.from, at(5, 4)),
+    );
+    expect(command).toBeDefined();
+    if (command !== undefined)
+      expect(playV7(run.state, command).events[0]).toMatchObject({
+        kind: "UNIT_REBAKED",
+        role: "FIGHTER",
+        hp: 5,
+      });
   });
 
   it("rejects each row in order, atomically", () => {
@@ -920,14 +1010,14 @@ describe("the Re-bake command (section 6.4)", () => {
       code: "REBAKE_NOT_LEGAL",
       params: { reason: "NO_HOME" },
     });
-    // Row 7: no Crumbs there, Crumbs two tiles away, or another seat's.
+    // Row 7: no Crumbs there, Crumbs three tiles away, or another seat's.
     const base = field();
     expect(rejectedV7(base, rebake(base, at(4, 4)))).toEqual({
       code: "REBAKE_NOT_LEGAL",
       params: { reason: "NO_CRUMBS" },
     });
-    const far = field({}, { crumbs: [{ at: at(7, 3), role: "KNIGHT" }] });
-    expect(rejectedV7(far, rebake(far, at(7, 3))).params).toEqual({
+    const far = field({}, { crumbs: [{ at: at(8, 3), role: "KNIGHT" }] });
+    expect(rejectedV7(far, rebake(far, at(8, 3))).params).toEqual({
       reason: "NO_CRUMBS",
     });
     const mirror = field(
@@ -940,15 +1030,22 @@ describe("the Re-bake command (section 6.4)", () => {
     expect(rejectedV7(mirror, rebake(mirror)).params).toEqual({
       reason: "NO_CRUMBS",
     });
-    // Row 8: a unit of any owner stands on the Crumbs.
+    // Row 8: not next to the Confectioner; a unit of any owner on the tile;
+    // a chest; a Mountain without Engineering.
+    expect(rejectedV7(base, rebake(base, CRUMBS, at(5, 5))).params).toEqual({
+      reason: "TILE",
+    });
     for (const seat of [0, 1]) {
-      const blocked = field({}, {}, [{ seat, role: "FIGHTER", at: CRUMBS }]);
+      const blocked = field({}, {}, [{ seat, role: "FIGHTER", at: PLACE }]);
       expect(rejectedV7(blocked, rebake(blocked)), String(seat)).toEqual({
         code: "REBAKE_NOT_LEGAL",
         params: { reason: "TILE" },
       });
     }
-    // Row 8: a Mountain without Engineering.
+    const chest = checkedV7({ ...field(), treasureChests: [PLACE] });
+    expect(rejectedV7(chest, rebake(chest)).params).toEqual({
+      reason: "TILE",
+    });
     const mountain = patchTileV7(
       field(
         {},
@@ -958,7 +1055,7 @@ describe("the Re-bake command (section 6.4)", () => {
           },
         },
       ),
-      CRUMBS,
+      PLACE,
       { terrain: "MOUNTAIN", biome: "HIGHLANDS" },
     );
     expect(rejectedV7(mountain, rebake(mountain)).params).toEqual({
@@ -974,35 +1071,41 @@ describe("the Re-bake command (section 6.4)", () => {
     expect(playV7(exact, rebake(exact)).state.players[0]?.coins).toBe(0);
   });
 
-  it("needs a free slot in the Confectioner's home city, and a besieged home does not block it", () => {
-    // Fill the home city's slots (the Confectioner uses one).
+  it("may put the home city one over its capacity, not two, and a besieged home does not block it", () => {
     const open = field();
     const home = open.cities.find(
       (city) => city.id === unitAtV7(open, CONFECTIONER).homeCityId,
     );
     if (home === undefined) throw new Error("no home city");
     const capacity = cityUnitCapacityV7(open, home);
-    const fillers = Array.from({ length: capacity - 1 }, (_, index) => ({
+    // The Confectioner uses one slot; fill the rest, then one over.
+    const fillers = Array.from({ length: capacity }, (_, index) => ({
       seat: 0,
       role: "FIGHTER" as const,
       at: at(7 + (index % 3), 7 + Math.floor(index / 3)),
     }));
-    const oneFree = field({}, {}, fillers.slice(1));
-    expect(
-      previewRebakeV7(
-        activeViewV7(oneFree),
-        unitAtV7(oneFree, CONFECTIONER).id,
-      ),
-    ).toMatchObject({ usedSlots: capacity - 1, capacity });
-    expect(playV7(oneFree, rebake(oneFree)).events[0]).toMatchObject({
-      kind: "UNIT_REBAKED",
-    });
-    const full = field({}, {}, fillers);
-    const refused = rejectedV7(full, rebake(full));
-    expect(refused.code).toBe("CITY_CAPACITY_FULL");
+    const full = field({}, {}, fillers.slice(1));
     expect(
       previewRebakeV7(activeViewV7(full), unitAtV7(full, CONFECTIONER).id),
+    ).toMatchObject({ usedSlots: capacity, capacity });
+    const over = playV7(full, rebake(full));
+    expect(over.events[0]).toMatchObject({ kind: "UNIT_REBAKED" });
+    const alreadyOver = field({}, {}, fillers);
+    expect(rejectedV7(alreadyOver, rebake(alreadyOver)).code).toBe(
+      "CITY_CAPACITY_FULL",
+    );
+    expect(
+      previewRebakeV7(
+        activeViewV7(alreadyOver),
+        unitAtV7(alreadyOver, CONFECTIONER).id,
+      ),
     ).toBeNull();
+    expect(
+      queryRebakeBlockerV7(
+        activeViewV7(alreadyOver),
+        unitAtV7(alreadyOver, CONFECTIONER).id,
+      ),
+    ).toBe("CITY_CAPACITY_FULL");
     // An enemy on the home center (a siege) changes nothing.
     const besieged = field({}, {}, [
       { seat: 1, role: "FIGHTER", at: at(8, 8) },
@@ -1012,19 +1115,56 @@ describe("the Re-bake command (section 6.4)", () => {
     });
   });
 
+  it("names why a Confectioner has no Re-bake (the public why-not query)", () => {
+    const view = (state: GameStateV7) => activeViewV7(state);
+    const id = (state: GameStateV7) => unitAtV7(state, CONFECTIONER).id;
+    const open = field();
+    expect(queryRebakeBlockerV7(view(open), id(open))).toBeNull();
+    const none = field({}, { crumbs: [] });
+    expect(queryRebakeBlockerV7(view(none), id(none))).toBe("NO_CRUMBS");
+    const crashed = field({ rush: "CRASHED" });
+    expect(queryRebakeBlockerV7(view(crashed), id(crashed))).toBe("CRASHED");
+    const orphan = patchUnitV7(field(), CONFECTIONER, { homeCityId: null });
+    expect(queryRebakeBlockerV7(view(orphan), id(orphan))).toBe("NO_HOME");
+    const poor = field({}, { coins: 4 });
+    expect(queryRebakeBlockerV7(view(poor), id(poor))).toBe(
+      "INSUFFICIENT_COINS",
+    );
+    // Every tile around it taken.
+    const ring = field(
+      {},
+      {},
+      [
+        at(4, 2),
+        at(5, 2),
+        at(6, 2),
+        at(4, 3),
+        at(6, 3),
+        at(4, 4),
+        at(5, 4),
+        at(6, 4),
+      ].map((where) => ({ seat: 1, role: "FIGHTER" as const, at: where })),
+    );
+    expect(queryRebakeBlockerV7(view(ring), id(ring))).toBe("TILE");
+    // Not a Confectioner: no reason at all.
+    const gumdrop = field({ role: "FIGHTER" });
+    expect(queryRebakeBlockerV7(view(gumdrop), id(gumdrop))).toBeNull();
+  });
+
   it("destroys hostile Field Defense under the new unit and reveals its sight", () => {
-    // Crumbs in the enemy's territory with Field Defense on them.
+    // The copy appears in the enemy's territory, on its Field Defense.
     const base = candyFieldV7(
       [
         { seat: 0, role: "CAPTAIN", at: at(4, 7) },
         { seat: 1, role: "FIGHTER", at: at(1, 1) },
       ],
-      { crumbs: [{ at: at(3, 7), role: "FIGHTER" }] },
+      { crumbs: [{ at: at(4, 6), role: "FIGHTER" }] },
     );
     const state = fieldDefenseV7(base, at(3, 7));
     const result = playV7(state, {
       kind: "REBAKE",
       unitId: unitAtV7(state, at(4, 7)).id,
+      from: at(4, 6),
       at: at(3, 7),
     });
     expect(kindsV7(result.events).slice(0, 2)).toEqual([
@@ -1053,8 +1193,9 @@ describe("the Re-bake command (section 6.4)", () => {
     expect(withEntry({ turnsLeft: 4 })).toBeNull();
     expect(withEntry({ role: "JUGGERNAUT" })).toBeNull();
     expect(withEntry({ role: "PATROL_BOAT" })).toBeNull();
-    expect(withEntry({ at: at(8, 8) })).toBeNull();
-    expect(withEntry({ at: at(5, 5) })).toBeNull();
+    // The Candy redesign: a city center and a village hold Crumbs.
+    expect(withEntry({ at: at(8, 8) })).not.toBeNull();
+    expect(withEntry({ at: at(5, 5) })).not.toBeNull();
     expect(withEntry({ ownerId: seatIdV7(state, 1) })).toBeNull();
     expect(withEntry({ at: at(40, 40) })).toBeNull();
     // Two entries on one tile, and an unsorted list.

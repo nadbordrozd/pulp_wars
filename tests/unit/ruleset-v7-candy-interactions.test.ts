@@ -83,18 +83,34 @@ describe("no Candy rule exists without a Candy seat (section 17)", () => {
         { factions: [faction, other] },
       );
       const kinds = new Set(offeredV7(state).map((command) => command.kind));
-      for (const kind of ["SUGAR_RUSH", "REBAKE", "SUGAR_TOSS"] as const) {
+      for (const kind of [
+        "SUGAR_RUSH",
+        "REBAKE",
+        "SUGAR_TOSS",
+        "TOP_UP",
+      ] as const) {
         expect(kinds.has(kind), `${faction} ${kind}`).toBe(false);
         const command = (
           kind === "SUGAR_RUSH"
             ? { kind, unitId: idAt(state, at(5, 3)) }
             : kind === "REBAKE"
-              ? { kind, unitId: idAt(state, at(4, 3)), at: at(4, 4) }
-              : {
+              ? {
                   kind,
-                  unitId: idAt(state, at(6, 3)),
-                  targetUnitId: idAt(state, at(4, 3)),
+                  unitId: idAt(state, at(4, 3)),
+                  from: at(4, 4),
+                  at: at(4, 4),
                 }
+              : kind === "TOP_UP"
+                ? {
+                    kind,
+                    unitId: idAt(state, at(4, 3)),
+                    targetUnitId: idAt(state, at(5, 3)),
+                  }
+                : {
+                    kind,
+                    unitId: idAt(state, at(6, 3)),
+                    targetUnitId: idAt(state, at(4, 3)),
+                  }
         ) as CommandV7;
         expect(rejectedV7(state, command).code, `${faction} ${kind}`).toBe(
           "UNIT_ROLE_INVALID",
@@ -106,6 +122,13 @@ describe("no Candy rule exists without a Candy seat (section 17)", () => {
         splatApplied: false,
         bounce: "NONE",
         bounceTo: null,
+        // The Candy redesign: the new preview fields are neutral.
+        stuckApplied: "NONE",
+        toothacheApplied: false,
+        toothacheAttack: false,
+        ricochet: null,
+        thump: [],
+        thumpUncertain: false,
       });
       const ended = endTurn(run.state);
       expect([
@@ -113,7 +136,10 @@ describe("no Candy rule exists without a Candy seat (section 17)", () => {
         ended.state.crumbs,
         ended.state.splattedThisTurn,
         ended.state.tossedThisTurn,
-      ]).toEqual([[], [], [], []]);
+        ended.state.stuck,
+        ended.state.toothache,
+        ended.state.glazedThisTurn,
+      ]).toEqual([[], [], [], [], [], [], []]);
       const kindsOf = kindsV7([...run.events, ...ended.events]);
       for (const kind of [
         "UNITS_CRASHED",

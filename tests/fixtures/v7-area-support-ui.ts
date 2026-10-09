@@ -1,5 +1,4 @@
 import type { CoordV7, GameStateV7 } from "../../src/engine/index";
-import { CANDY_UI_V7, candyUiFixtureV7 } from "./v7-candy-ui";
 import { dinosaurUiFieldV7 } from "./v7-dinosaur-ui";
 import { DWARF_UI_V7, dwarfUiFixtureV7 } from "./v7-dwarf-ui";
 import { goblinArenaV7 } from "./v7-goblin-arena";
@@ -15,7 +14,9 @@ import {
 /**
  * Bead pulp_wars-621: one scene per faction that has an area support (one
  * button that helps every eligible own unit in reach), for the board marks
- * of docs/ui/BOARD_TARGETING.md section 2.1. The Ice Folk have none.
+ * of docs/ui/BOARD_TARGETING.md section 2.1. The Ice Folk have none, and
+ * the Candy none since the Candy redesign (`pulp_wars-jdb.12`) replaced the
+ * Confectioner's Frosting with a one-target Top-Up.
  */
 export interface AreaSupportSceneV7 {
   readonly name: string;
@@ -97,12 +98,6 @@ export const AREA_SUPPORT_SCENES_V7: readonly AreaSupportSceneV7[] = [
     name: "Dwarf Engineer: Repair",
     state: () => dwarfUiFixtureV7(),
     actor: DWARF_UI_V7.engineer,
-    kind: "TEND_WOUNDED",
-  },
-  {
-    name: "Candy Confectioner: Frosting",
-    state: () => candyUiFixtureV7(),
-    actor: CANDY_UI_V7.confectioner,
     kind: "TEND_WOUNDED",
   },
   {

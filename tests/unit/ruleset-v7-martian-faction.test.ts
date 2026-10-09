@@ -99,7 +99,7 @@ import { at, kindsV7, movedV7 } from "../fixtures/v7-revision20";
 // (docs/product/RULESET_7_MARTIANS.md sections 2 to 4, 10.9, 10.10, and 11).
 
 /** The revision number of this identity (`pulp-wars-poc-7rNN`). */
-const REVISION = 67;
+const REVISION = 68;
 const ID = `pulp-wars-poc-7r${REVISION}`;
 const PREVIOUS_ID = `pulp-wars-poc-7r${REVISION - 1}`;
 
@@ -272,7 +272,9 @@ describe("Martian faction registration (sections 2 and 11)", () => {
     // (`pulp_wars-737.14`) add TOSS_COIN (67).
     // Ice Folk Freeze (`pulp_wars-w49.37`) adds FROST_BOLT and STAMPEDE
     // after BREAK_OFF (69).
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(69);
+    // The Candy redesign (`pulp_wars-jdb.12`) adds TOP_UP after
+    // TOSS_COIN (70).
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(70);
     const hatch = COMMAND_KIND_ORDER_V7.indexOf("HATCH");
     expect(COMMAND_KIND_ORDER_V7.slice(hatch, hatch + 4)).toEqual([
       "HATCH",
@@ -292,7 +294,10 @@ describe("Martian faction registration (sections 2 and 11)", () => {
     // (`pulp_wars-737.14`) add four (119).
     // Ice Folk Freeze (`pulp_wars-w49.37`) renames UNITS_CHILLED to
     // UNITS_FROZEN in place and adds MAMMOTH_STAMPEDED (120).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(120);
+    // The Candy redesign (`pulp_wars-jdb.12`) adds UNIT_TOPPED_UP,
+    // TILES_GLAZED, UNIT_STUCK, TOOTHACHE_GIVEN, RICOCHETED, and THUMPED
+    // (126).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(126);
     const after = (kind: string) =>
       DOMAIN_EVENT_KIND_ORDER_V7[
         DOMAIN_EVENT_KIND_ORDER_V7.indexOf(kind as never) + 1

@@ -5,7 +5,7 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r67" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r68" as const;
 /**
  * Every earlier Ruleset 7 identity, oldest first. Readers report these as
  * incompatible (never invalid). An identity bump must append the outgoing
@@ -78,8 +78,9 @@ export const PRIOR_RULESET_7_IDS = Object.freeze([
   "pulp-wars-poc-7r64",
   "pulp-wars-poc-7r65",
   "pulp-wars-poc-7r66",
+  "pulp-wars-poc-7r67",
 ] as const);
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r67.current" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r68.current" as const;
 /**
  * The map generator a setup names (docs/product/RULESET_7_MAP_SCALE.md
  * section 8.8): `V4` is the many-seats generator of `pulp_wars-ykw.3`
@@ -259,6 +260,9 @@ export const COMMAND_KIND_ORDER_V7 = Object.freeze([
   // Map curiosities round 2 (section 30.1): a unit on the Wishing Well
   // tosses a Coin.
   "TOSS_COIN",
+  // The Candy redesign (docs/product/RULESET_7_CANDY_REDESIGN.md section
+  // 8.2): the Confectioner's Top-Up, with the other Candy commands.
+  "TOP_UP",
   "RECOVER",
   // The giants' signatures (docs/product/RULESET_7_GIANTS.md sections 6.2,
   // 6.3, 6.4, and 6.8): the Abomination's Swallow, the Troll's Goblin Toss,
@@ -419,6 +423,8 @@ export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   "WOUNDED_TENDED",
   // The Candy revision: a Gumball Gunner's Sugar Toss.
   "SUGAR_TOSSED",
+  // The Candy redesign (section 8.2): a Confectioner's Top-Up.
+  "UNIT_TOPPED_UP",
   "DEAD_RAISED",
   "GRAVE_DEVOURED",
   "UNIT_PUSHED",
@@ -452,6 +458,8 @@ export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   "UNIT_MOVE_INTERRUPTED",
   // The Candy revision: a hostile unit ended its Move on Crumbs.
   "CRUMBS_EATEN",
+  // The Candy redesign (section 7.2): a Donut Racer's Glaze Trail.
+  "TILES_GLAZED",
   "TILES_REVEALED",
   "COMBAT_RESOLVED",
   // The Dwarf revision: a Gyrocopter's bombing run.
@@ -459,6 +467,12 @@ export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   // Dwarf crowd control: a Whirligig's Whirl; an attack on a Barricade.
   "WHIRL_RESOLVED",
   "BARRICADE_ATTACKED",
+  // The Candy redesign (sections 7.1, 7.3, 7.7, and 7.8): Sticky Toffee,
+  // Toothache, a Gumball Gunner's Ricochet, and a Chocolate Bunny's Thump.
+  "UNIT_STUCK",
+  "TOOTHACHE_GIVEN",
+  "RICOCHETED",
+  "THUMPED",
   "WAIL_RESOLVED",
   "EXPLOSION_RESOLVED",
   "IMPROVEMENT_PILLAGED",
@@ -1120,6 +1134,26 @@ export interface GameStateV7 {
    */
   readonly tossedThisTurn: readonly UnitId[];
   /**
+   * The Candy redesign (docs/product/RULESET_7_CANDY_REDESIGN.md section
+   * 6.2): the Stuck units (a Move of at most one step), sorted by `unitId`,
+   * at most one entry per unit. Always empty in a match whose setup has no
+   * CANDY seat.
+   */
+  readonly stuck: readonly CandyStatusEntryV7[];
+  /**
+   * The Candy redesign (section 6.2): the units with Toothache (their next
+   * `ATTACK` is 1 weaker), sorted by `unitId`, at most one entry per unit.
+   * Always empty in a match whose setup has no CANDY seat.
+   */
+  readonly toothache: readonly CandyStatusEntryV7[];
+  /**
+   * The Candy redesign (section 7.2): the land tiles a Donut Racer of the
+   * active seat Glazed this turn, sorted by (y, x), without duplicates.
+   * Emptied at its End Turn. Always empty in a match whose setup has no
+   * CANDY seat.
+   */
+  readonly glazedThisTurn: readonly CoordV7[];
+  /**
    * The Dinosaur pass, correction (`pulp_wars-w49.15`, 7r53): the units on
    * the board that a hatched dinosaur of the active seat attacked during
    * its turn and that survived, sorted. A Caveman's Pack Hunt applies
@@ -1258,6 +1292,18 @@ export interface IceTileV7 {
 export interface SugarRushStatusV7 {
   readonly unitId: UnitId;
   readonly phase: "RUSHED" | "CRASHED";
+}
+
+/**
+ * The Candy redesign (docs/product/RULESET_7_CANDY_REDESIGN.md section 6.2):
+ * a Stuck or Toothache entry of `unitId`. At every End Turn of the unit's
+ * owner `endsLeft` loses 1 and the entry goes at 0, so the status lasts
+ * until the end of the victim's next turn that begins after the hit (1 when
+ * applied during another seat's turn, 2 during its owner's own turn).
+ */
+export interface CandyStatusEntryV7 {
+  readonly unitId: UnitId;
+  readonly endsLeft: 1 | 2;
 }
 
 /**

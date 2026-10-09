@@ -519,7 +519,6 @@ export const KIND_READER_CLASSES_V7: Readonly<
   // follow its kind.
   "src/render/candy-presentation-v7.ts::matchHasCandySeatV7": "SEAT",
   "src/render/candy-presentation-v7.ts::candyLabelV7": "SEAT",
-  "src/render/candy-presentation-v7.ts::rebakeUnavailableTextV7": "SEAT",
   "src/render/candy-presentation-v7.ts::candyFieldDefenseBlockedV7": "SEAT",
   "src/render/candy-presentation-v7.ts::candyRoleUnlockTextV7": "SEAT",
   "src/render/candy-presentation-v7.ts::candyRecruitNotesV7": "SEAT",

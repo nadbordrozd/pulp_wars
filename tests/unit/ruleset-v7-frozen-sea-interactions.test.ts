@@ -400,6 +400,7 @@ describe("Candy Crumbs and Re-bake at ice (section 21.16)", () => {
       rejectV7(back.state, 0, {
         kind: "REBAKE",
         unitId: confectioner.id,
+        from: ICE1,
         at: ICE1,
       }).code,
     ).toBe("REBAKE_NOT_LEGAL");

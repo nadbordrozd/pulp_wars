@@ -251,6 +251,48 @@ export interface CombatPreviewV7 {
    * that shattered the target (`shatters` is true).
    */
   readonly glacialSmash: boolean;
+  /**
+   * The Candy redesign (docs/product/RULESET_7_CANDY_REDESIGN.md section
+   * 7.1): Sticky Toffee. `TARGET` when a Toffee Trooper's surviving target
+   * is Stuck, `ATTACKER` when a Toffee Trooper struck back at a surviving
+   * attacker, `BOTH` for a (mind-controlled) Trooper attacking a Trooper.
+   */
+  readonly stuckApplied: "NONE" | "TARGET" | "ATTACKER" | "BOTH";
+  /**
+   * Section 7.8: the surviving attacker gets Toothache for attacking a
+   * Jawbreaker from distance 1.
+   */
+  readonly toothacheApplied: boolean;
+  /**
+   * Section 6.2: the attacker's own Toothache lowered this attack (its
+   * `attack2` is 2 lower, never below 1) and is used up.
+   */
+  readonly toothacheAttack: boolean;
+  /**
+   * Section 7.3: a Gumball Gunner's Ricochet from distance 2: the unit the
+   * gumball bounces to and its fixed hit, or null.
+   */
+  readonly ricochet: {
+    readonly unitId: UnitId;
+    readonly damage: number;
+    readonly shieldDamage: number;
+    readonly dies: boolean;
+  } | null;
+  /**
+   * Section 7.7: a Chocolate Bunny's Thump on every other hostile unit
+   * around the tile it stands on after the attack, sorted by unit ID.
+   */
+  readonly thump: readonly {
+    readonly unitId: UnitId;
+    readonly damage: number;
+    readonly shieldDamage: number;
+    readonly dies: boolean;
+  }[];
+  /**
+   * Only in a public estimate: the Bunny's Bounce is `UNKNOWN_BEHIND_FOG`,
+   * so `thump` lists the units around its unbounced tile.
+   */
+  readonly thumpUncertain: boolean;
 }
 /** One unit in a Stampede's way (`MAMMOTH_STAMPEDED`). */
 export interface StampedeResultV7 {
@@ -421,6 +463,12 @@ export type DomainEventV7 =
       readonly unitId: UnitId;
       readonly rebakedUnitId: UnitId;
       readonly role: UnitRoleIdV7;
+      /**
+       * The Candy redesign (RULESET_7_CANDY_REDESIGN.md section 8.1): the
+       * Crumbs were scooped from `from` (within 2 tiles) and the copy
+       * appeared on `at`, next to the Confectioner.
+       */
+      readonly from: CoordV7;
       readonly at: CoordV7;
       readonly cityId: CityId;
       readonly cost: number;
@@ -437,6 +485,88 @@ export type DomainEventV7 =
       readonly targetUnitId: UnitId;
       readonly amount: number;
       readonly hpAfter: number;
+    }
+  | {
+      /**
+       * The Candy redesign (RULESET_7_CANDY_REDESIGN.md section 8.2): the
+       * Confectioner `unitId` of `playerId` topped up its own adjacent
+       * `targetUnitId`: `crashEnded` when it removed a Crash, a heal of
+       * `amount` (0 to 2) to `hpAfter`, and `cured` when it cured Plague,
+       * Bitten, Chill, Stuck, or Toothache.
+       */
+      readonly kind: "UNIT_TOPPED_UP";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly targetUnitId: UnitId;
+      readonly crashEnded: boolean;
+      readonly amount: number;
+      readonly hpAfter: number;
+      readonly cured: boolean;
+    }
+  | {
+      /**
+       * The Candy redesign (section 7.1): the Toffee Trooper `sourceUnitId`
+       * of `playerId` made `unitId` Stuck (a Move of one step) with
+       * `endsLeft` 1 or 2.
+       */
+      readonly kind: "UNIT_STUCK";
+      readonly playerId: PlayerId;
+      readonly sourceUnitId: UnitId;
+      readonly unitId: UnitId;
+      readonly endsLeft: 1 | 2;
+    }
+  | {
+      /**
+       * The Candy redesign (section 7.8): the Jawbreaker `sourceUnitId` of
+       * `playerId` gave the unit `unitId` that bit it Toothache (its next
+       * attack 1 weaker) with `endsLeft` 1 or 2.
+       */
+      readonly kind: "TOOTHACHE_GIVEN";
+      readonly playerId: PlayerId;
+      readonly sourceUnitId: UnitId;
+      readonly unitId: UnitId;
+      readonly endsLeft: 1 | 2;
+    }
+  | {
+      /**
+       * The Candy redesign (section 7.2): the Donut Racer `unitId` of
+       * `playerId` Glazed `tiles` (its start tile and the tiles its Move
+       * passed, land only, sorted by (y, x)) for the rest of the turn.
+       */
+      readonly kind: "TILES_GLAZED";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly tiles: readonly CoordV7[];
+    }
+  | {
+      /**
+       * The Candy redesign (section 7.3): the gumball of the Gumball Gunner
+       * `unitId` of `playerId` ricocheted onto `targetUnitId` for `damage`
+       * HP (`shieldDamage` absorbed).
+       */
+      readonly kind: "RICOCHETED";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly targetUnitId: UnitId;
+      readonly damage: number;
+      readonly shieldDamage: number;
+      readonly dies: boolean;
+    }
+  | {
+      /**
+       * The Candy redesign (section 7.7): the Chocolate Bunny `unitId` of
+       * `playerId` thumped every other hostile unit around it, sorted by
+       * unit ID.
+       */
+      readonly kind: "THUMPED";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly hits: readonly {
+        readonly unitId: UnitId;
+        readonly damage: number;
+        readonly shieldDamage: number;
+        readonly dies: boolean;
+      }[];
     }
   | {
       /**
@@ -1324,9 +1454,13 @@ export type DomainEventV7 =
         | "DIGESTED"
         /**
          * Ice Folk Freeze (`pulp_wars-w49.37`): a Mammoth's Stampede (like
-         * a splash death).
+         * a splash death). The Candy redesign (RULESET_7_CANDY_REDESIGN.md
+         * sections 7.3 and 7.7): a Gumball Gunner's Ricochet and a Chocolate
+         * Bunny's Thump (each like a splash death).
          */
-        | "STAMPEDE";
+        | "STAMPEDE"
+        | "RICOCHET"
+        | "THUMP";
     }
   | {
       /**

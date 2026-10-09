@@ -337,7 +337,6 @@ export function candyMarkerPlacesV7(
   readonly rushed: { readonly x: number; readonly y: number };
   readonly splatted: { readonly x: number; readonly y: number };
   readonly home: { readonly x: number; readonly y: number };
-  readonly frenzy: { readonly x: number; readonly y: number };
 } {
   const px = (value: number): number => value * MASTER * zoom;
   const rushedX = anchor.x + px(CANDY_MARKERS_V7.rushed.shift);
@@ -350,7 +349,6 @@ export function candyMarkerPlacesV7(
       y: anchor.top + (anchor.bottom - anchor.top) / 3,
     },
     home: { x: rushedX, y: rushedY + px(15) },
-    frenzy: { x: rushedX, y: rushedY + px(14) },
   };
 }
 
@@ -479,16 +477,7 @@ export function drawCandyUnitMarkersV7(
       context.closePath();
       context.fill();
     }
-    if (markers.frenzy !== null)
-      drawCandyPipsV7(
-        context,
-        places.frenzy.x,
-        places.frenzy.y,
-        zoom,
-        markers.frenzy,
-        { ...options, fill: white },
-      );
-    else if (markers.home) {
+    if (markers.home) {
       const { x: hx, y: hy } = places.home;
       const hs = px(13);
       token(context, hx, hy, hs * 0.62, highContrast, mint);

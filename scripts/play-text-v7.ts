@@ -101,6 +101,7 @@ import {
   previewRaiseDeadV7,
   previewRebakeV7,
   previewSugarRushV7,
+  previewTopUpV7,
   previewSugarTossV7,
   previewTendWoundedV7,
   previewTractorBeamV7,
@@ -992,6 +993,9 @@ export function textPlayCommandIdV7(command: CommandV7): string {
       return `u${command.unitId}.stampede.${xyV7(command.at)}`;
     case "SUGAR_TOSS":
       return `u${command.unitId}.toss.u${command.targetUnitId}`;
+    // The Candy redesign (`pulp_wars-jdb.12`).
+    case "TOP_UP":
+      return `u${command.unitId}.topup.u${command.targetUnitId}`;
     // The giants' signatures (`pulp_wars-w49.30`).
     case "SWALLOW":
       return `u${command.unitId}.swallow.u${command.targetUnitId}`;
@@ -1012,7 +1016,7 @@ export function textPlayCommandIdV7(command: CommandV7): string {
     case "FREEZE":
       return `u${command.unitId}.freeze.${xyV7(command.at)}`;
     case "REBAKE":
-      return `u${command.unitId}.rebake.${xyV7(command.at)}`;
+      return `u${command.unitId}.rebake.${xyV7(command.from)}>${xyV7(command.at)}`;
     case "DISEMBARK":
       return `u${command.unitId}.land.${xyV7(command.at)}`;
     case "ASSEMBLE":
@@ -1888,10 +1892,23 @@ function describeCommandV7(
       return `attack the barricade on ${xyV7(command.at)}${generic(previewAttackBarricadeV7(view, command))}`;
     case "SUGAR_RUSH":
       return `sugar rush${generic(previewSugarRushV7(view, command.unitId))}`;
-    case "REBAKE":
-      return `re-bake at ${xyV7(command.at)}${generic(previewRebakeV7(view, command.unitId))}`;
+    case "REBAKE": {
+      // The Candy redesign (`pulp_wars-jdb.12`): scoop from `from` (within
+      // 2, from under any unit), bake next to the Confectioner on `at`.
+      const option = previewRebakeV7(view, command.unitId)?.options.find(
+        (entry) =>
+          sameV7(entry.from, command.from) && sameV7(entry.at, command.at),
+      );
+      return `re-bake the Crumbs at ${xyV7(command.from)} onto ${xyV7(command.at)}${option === undefined ? "" : ` (${effectiveRoleRuleV7(option.role, view.viewer.faction).label}, ${option.cost}c, hp ${option.hp})`}`;
+    }
     case "SUGAR_TOSS":
       return `sugar toss to ${context.memory.tag(command.targetUnitId)}${generic(previewSugarTossV7(view, command.unitId))}`;
+    case "TOP_UP": {
+      const target = previewTopUpV7(view, command.unitId)?.targets.find(
+        (entry) => entry.unitId === command.targetUnitId,
+      );
+      return `top up ${context.memory.tag(command.targetUnitId)}${target === undefined ? "" : `: ${target.crashEnded ? "ends its Crash, " : ""}+${target.amount} hp to ${target.hpAfter}${target.cured ? ", cures it" : ""}`}`;
+    }
     // The giants' signatures (`pulp_wars-w49.30`).
     case "SWALLOW": {
       const preview = previewSwallowV7(
@@ -3062,6 +3079,11 @@ function unitStatusV7(view: PlayerViewV7, unit: PublicUnitV7): string {
     parts.push("mind-controlled");
   const rush = view.sugarRush.find((entry) => entry.unitId === unit.id);
   if (rush !== undefined) parts.push(rush.phase.toLowerCase());
+  // The Candy redesign (`pulp_wars-jdb.12`): Stuck and Toothache.
+  if (view.stuck.some((entry) => entry.unitId === unit.id))
+    parts.push("stuck (one step)");
+  if (view.toothache.some((entry) => entry.unitId === unit.id))
+    parts.push("toothache (next attack -1)");
   if (view.monsters.some((entry) => entry.unitId === unit.id))
     parts.push("monster");
   for (const status of stats?.statuses ?? []) parts.push(status);

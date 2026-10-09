@@ -140,7 +140,10 @@ describe("ruleset-7 late public query performance", () => {
       // RECOVER and Ice Folk Freeze (`pulp_wars-w49.37`) inserts FROST_BOLT
       // and STAMPEDE after BREAK_OFF, moving the later command kinds forward
       // (was 3ce945…244d); the revision-12-ordinal value is unchanged.
-      "dc4d3fae577deeb62a7e59bc76bd1eeb609f9f4520ec9e7d18cfb0158775a5c9",
+      // The Candy redesign (`pulp_wars-jdb.12`) inserts TOP_UP after
+      // TOSS_COIN, moving the later command kinds forward by one (was
+      // dc4d3f…a5c9); the revision-12-ordinal value is unchanged.
+      "b2ea3fc12818fcd6bb5f00e4d0cefeb7bd92ba6a2cdfb5faf3782b834aa64cea",
     );
     // Revision 13 shifts the command-kind ordinals in AI tie-break tuples
     // (spec section 8); with revision-12 ordinals the value is unchanged.

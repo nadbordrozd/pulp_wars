@@ -50,7 +50,6 @@ import {
   unitIdAtV7,
   viewerViewV7,
 } from "../fixtures/v7-dinosaur-ai";
-import { unitAtV7 } from "../fixtures/v7-goblin-arena";
 import { fieldV7 } from "../fixtures/v7-revision20";
 
 // The Candy Normal AI (`pulp_wars-jdb.4`, docs/product/RULESET_7_CANDY.md
@@ -271,18 +270,19 @@ describe("Candy Normal AI: Sugar Rush", () => {
     ).toHaveLength(1);
   });
 
-  it("Rushes a Chocolate Bunny only for a Sugar Frenzy continuation or a key kill", () => {
+  it("Rushes a Chocolate Bunny only for a key kill (no Sugar Frenzy since the Candy redesign)", () => {
     const lone = (hp: number) =>
       asCandy([own("KNIGHT", 5, 3), foe("FIGHTER", 5, 2, { hp })]);
     const hp = rushOnlyHp(lone, at(5, 3), at(5, 2), 10);
     expect(unitCandidatesV7(lone(hp), at(5, 3), "SUGAR_RUSH")).toHaveLength(0);
-    // A second target next to the first one's tile: the Frenzy continues.
+    // A second target next to the first one's tile no longer helps: the
+    // Candy redesign (`pulp_wars-jdb.12`) removed Sugar Frenzy.
     const pair = asCandy([
       own("KNIGHT", 5, 3),
       foe("FIGHTER", 5, 2, { hp }),
       foe("MARKSMAN", 5, 1, { hp: 2 }),
     ]);
-    expect(unitCandidatesV7(pair, at(5, 3), "SUGAR_RUSH")).toHaveLength(1);
+    expect(unitCandidatesV7(pair, at(5, 3), "SUGAR_RUSH")).toHaveLength(0);
     // A lone Knight is a key kill (a wounded Bear needs the Rush for it).
     const knight = (knightHp: number) =>
       asCandy([
@@ -333,7 +333,9 @@ describe("Candy Normal AI: Sugar Rush", () => {
 });
 
 describe("Candy Normal AI: Re-bake, Splat, and Sugar Toss", () => {
-  it("walks a Confectioner to Chocolate Bunny Crumbs and Re-bakes", () => {
+  it("Re-bakes the Chocolate Bunny Crumbs two tiles away, beside the Confectioner", () => {
+    // The Candy redesign (`pulp_wars-jdb.12`): Re-bake reaches 2 and bakes
+    // the copy next to the Confectioner, so no walk is needed.
     const state = asCandy([own("CAPTAIN", 6, 5), foe("FIGHTER", 1, 1)], {
       crumbs: [
         { at: at(6, 3), role: "KNIGHT" },
@@ -341,33 +343,25 @@ describe("Candy Normal AI: Re-bake, Splat, and Sugar Toss", () => {
       ],
     });
     const confectioner = unitIdAtV7(state, at(6, 5));
-    const approach = unitCandidatesV7(state, at(6, 5), "MOVE").filter(
-      (candidate) => candidate.score.priority === REBAKE_APPROACH_PRIORITY_V7,
-    );
-    expect(approach.length).toBeGreaterThan(0);
-    // The dearest Crumbs: every approach tile is next to the Bear's.
-    for (const candidate of approach) {
-      const end = endOf(candidate.command);
-      expect(end === undefined ? 0 : chebyshev(end, at(6, 3))).toBe(1);
-    }
     const turn = playTurn(state);
-    const kinds = turn.commands
-      .filter(
-        (command) => "unitId" in command && command.unitId === confectioner,
-      )
-      .map((command) => command.kind);
-    expect(kinds).toEqual(["MOVE", "REBAKE"]);
-    const bear = unitAtV7(turn.state, at(6, 3));
-    expect(bear).toMatchObject({ role: "KNIGHT", hp: 7 });
+    const commands = turn.commands.filter(
+      (command) => "unitId" in command && command.unitId === confectioner,
+    );
+    expect(commands.map((command) => command.kind)).toEqual(["REBAKE"]);
+    expect(commands[0]).toMatchObject({ from: at(6, 3) });
+    const bear = turn.state.units.find(
+      (unit) => unit.role === "KNIGHT" && unit.ownerId === state.humanPlayerId,
+    );
+    expect(bear).toMatchObject({ hp: 7 });
+    expect(chebyshev(bear?.at ?? at(0, 0), at(6, 5))).toBe(1);
     expect(turn.state.crumbs.map((entry) => entry.role)).toEqual(["FIGHTER"]);
   });
 
-  it("steps toward Crumbs three tiles away only while they last", () => {
-    const far = (turnsLeft: 1 | 2 | 3) =>
-      asCandy([own("CAPTAIN", 6, 6), foe("FIGHTER", 1, 1)], {
-        crumbs: [{ at: at(6, 3), role: "KNIGHT", turnsLeft }],
-      });
-    const approach = unitCandidatesV7(far(3), at(6, 6), "MOVE").filter(
+  it("steps within reach of Crumbs three tiles away and bakes them the same turn", () => {
+    const state = asCandy([own("CAPTAIN", 6, 6), foe("FIGHTER", 1, 1)], {
+      crumbs: [{ at: at(6, 3), role: "KNIGHT", turnsLeft: 1 }],
+    });
+    const approach = unitCandidatesV7(state, at(6, 6), "MOVE").filter(
       (candidate) => candidate.score.priority === REBAKE_APPROACH_PRIORITY_V7,
     );
     expect(approach.length).toBeGreaterThan(0);
@@ -375,12 +369,13 @@ describe("Candy Normal AI: Re-bake, Splat, and Sugar Toss", () => {
       const end = endOf(candidate.command);
       expect(end === undefined ? 0 : chebyshev(end, at(6, 3))).toBe(2);
     }
-    // Stale after this turn: not worth the walk.
-    expect(
-      unitCandidatesV7(far(1), at(6, 6), "MOVE").filter(
-        (candidate) => candidate.score.priority === REBAKE_APPROACH_PRIORITY_V7,
-      ),
-    ).toHaveLength(0);
+    const confectioner = unitIdAtV7(state, at(6, 6));
+    const kinds = playTurn(state)
+      .commands.filter(
+        (command) => "unitId" in command && command.unitId === confectioner,
+      )
+      .map((command) => command.kind);
+    expect(kinds).toEqual(["MOVE", "REBAKE"]);
   });
 
   it("scores the one best Re-bake and never a fragile one", () => {
@@ -393,7 +388,7 @@ describe("Candy Normal AI: Re-bake, Splat, and Sugar Toss", () => {
     const rebakes = unitCandidatesV7(safe, at(6, 4), "REBAKE");
     expect(rebakes).toHaveLength(1);
     expect(rebakes[0]?.score.priority).toBe(REBAKE_PRIORITY_V7);
-    expect(rebakes[0]?.command).toMatchObject({ at: at(6, 3) });
+    expect(rebakes[0]?.command).toMatchObject({ from: at(6, 3) });
     // A 5-HP Toffee Trooper beside two Knights is a free kill for them.
     const fragile = asCandy(
       [own("CAPTAIN", 6, 4), foe("KNIGHT", 6, 2), foe("KNIGHT", 5, 2)],

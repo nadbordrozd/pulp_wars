@@ -109,7 +109,9 @@ export function whirlTargetsV7(
         whirligig.id,
         unit.id,
         undefined,
-        { ignoreShatter: true },
+        // The Candy redesign: a Whirl is not an `ATTACK`, so the
+        // Whirligig's Toothache does not lower it.
+        { ignoreShatter: true, ignoreToothache: true },
       );
       return {
         unitId: unit.id,

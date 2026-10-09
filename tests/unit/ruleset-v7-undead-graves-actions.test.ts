@@ -1020,9 +1020,11 @@ describe("ruleset-7 revision-13 Grave actions: schema, Human parity, and persist
       "DEVOUR",
     ]);
     const tended = DOMAIN_EVENT_KIND_ORDER_V7.indexOf("WOUNDED_TENDED");
-    // The Candy revision inserts SUGAR_TOSSED after WOUNDED_TENDED.
-    expect(DOMAIN_EVENT_KIND_ORDER_V7.slice(tended + 1, tended + 4)).toEqual([
+    // The Candy revision inserts SUGAR_TOSSED after WOUNDED_TENDED, and the
+    // Candy redesign (`pulp_wars-jdb.12`) UNIT_TOPPED_UP after SUGAR_TOSSED.
+    expect(DOMAIN_EVENT_KIND_ORDER_V7.slice(tended + 1, tended + 5)).toEqual([
       "SUGAR_TOSSED",
+      "UNIT_TOPPED_UP",
       "DEAD_RAISED",
       "GRAVE_DEVOURED",
     ]);
