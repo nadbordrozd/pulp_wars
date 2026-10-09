@@ -11,7 +11,10 @@ import type {
   AssetPreloadResultV7,
   AssetPreloaderV7,
 } from "../../src/app/asset-preloader-v7";
-import { bootstrapPreloadedRuleset7App } from "../../src/app/v7-preload-boot";
+import {
+  bootstrapPreloadedRuleset7App,
+  startPreloadUrlsV7,
+} from "../../src/app/v7-preload-boot";
 import {
   STOCK_SOUND_ALL_CLIPS_V1,
   STOCK_SOUND_CLIPS_V1,
@@ -28,13 +31,16 @@ import {
   lazyRasterLoadsV7,
   resetPreloadedRastersV7,
 } from "../../src/render/canvas/preloaded-rasters-v7";
+import type { ChibiRasterEnvironmentV7 } from "../../src/render/canvas/chibi-art-resolver-v7";
 import { mountLoadingScreenV7 } from "../../src/render/dom/loading-screen-v7";
+import { titleSceneAssetUrlsV7 } from "../../src/render/title-scene-v7";
 
 /**
  * The start of the game behind the asset preloader (bead pulp_wars-2yc.6):
  * nothing of the app (front screen or match) is in the document before the
- * preload resolves, the loading screen is an icon and a progress bar, and
- * a failed preload still starts the game.
+ * preload resolves, the loading screen is the title scene with a progress
+ * bar over it (bead pulp_wars-502h), and a failed preload still starts the
+ * game.
  */
 class Host implements BoardHostV7 {
   model: BoardHostModelV7 | null = null;
@@ -143,18 +149,28 @@ describe("Ruleset 7 start behind the asset preloader", () => {
     });
     await flush();
     expect(audioContexts).toBe(0);
-    // The whole live look, every faction, is asked for at once.
+    // The whole live look, every faction, is asked for at once: the
+    // loading screen's scene first, then the rest, each file once.
     expect(requests).toHaveLength(1);
-    expect(requests[0]?.urls).toEqual(assetPreloadUrlsV7("LIVE"));
+    expect(requests[0]?.urls).toEqual(startPreloadUrlsV7("LIVE"));
     expect(requests[0]?.urls).toHaveLength(assetInventoryV7("LIVE").length);
+    const scene = titleSceneAssetUrlsV7();
+    expect(requests[0]?.urls.slice(0, scene.length)).toEqual(scene);
+    expect(new Set(requests[0]?.urls)).toEqual(
+      new Set(assetPreloadUrlsV7("LIVE")),
+    );
 
-    // Icon and bar, no visible text, and nothing of the app.
+    // The labelled bar on its plate over the backdrop, and nothing of the
+    // app; the scene waits for its rasters.
     const loading = query("[data-v7-loading]");
     expect(loading).not.toBeNull();
-    expect(loading?.textContent).toBe("");
+    expect(loading?.dataset.scene).toBe("waiting");
+    expect(loading?.querySelector(".v7-title-scene")).toBeNull();
     expect(loading?.querySelector("svg[aria-hidden='true']")).not.toBeNull();
     const bar = query('[role="progressbar"]');
-    expect(bar?.getAttribute("aria-label")).toBe("Loading");
+    const labelId = bar?.getAttribute("aria-labelledby");
+    expect(labelId).toBeTruthy();
+    expect(document.getElementById(labelId ?? "")?.textContent).toBe("Loading");
     expect(bar?.getAttribute("aria-valuenow")).toBe("0");
     expect(appShown()).toBe(false);
     expect(host.model).toBeNull();
@@ -228,6 +244,65 @@ describe("Ruleset 7 start behind the asset preloader", () => {
     app.destroy();
   });
 
+  it("shows the scene once the preloader holds its rasters, with the stored motion; none for the legacy set", async () => {
+    window.localStorage.setItem(
+      "pulpWars.settings.v1",
+      JSON.stringify({
+        format: "pulp-wars-settings",
+        version: 1,
+        settings: {
+          uiScale: 1,
+          motion: "REDUCED",
+          animationSpeed: "NORMAL",
+          highContrast: false,
+        },
+      }),
+    );
+    const { preloader, requests } = manualPreloader();
+    const held = new Set<string>();
+    const covering: AssetPreloaderV7 = {
+      covers: (urls) => urls.every((url) => held.has(url)),
+      preload: (urls, onProgress) => preloader.preload(urls, onProgress),
+    };
+    const starting = bootstrapPreloadedRuleset7App(document, {
+      preloader: covering,
+      loadingScreenDelayMs: 0,
+      storage: null,
+      boardHost: new Host(),
+    });
+    await flush();
+    const loading = query("[data-v7-loading]");
+    expect(query(".v7-app-shell")?.dataset.motion).toBe("reduced");
+    expect(loading?.dataset.scene).toBe("waiting");
+    const scene = titleSceneAssetUrlsV7();
+    // All but one of the scene's files: still the plain backdrop.
+    for (const url of scene.slice(1)) held.add(url);
+    requests[0]?.onProgress?.({ settled: scene.length - 1, total: 900 });
+    expect(loading?.querySelector(".v7-title-scene")).toBeNull();
+    held.add(scene[0] ?? "");
+    requests[0]?.onProgress?.({ settled: scene.length, total: 900 });
+    expect(loading?.dataset.scene).toBe("ready");
+    expect(loading?.querySelector(".v7-title-scene")).not.toBeNull();
+    requests[0]?.resolve(result(900));
+    const app = await starting;
+    expect(query("[data-v7-loading]")).toBeNull();
+    app.destroy();
+
+    document.body.innerHTML = '<div id="app"></div>';
+    const legacy = manualPreloader(true);
+    const second = bootstrapPreloadedRuleset7App(document, {
+      preloader: legacy.preloader,
+      artSet: "LEGACY",
+      loadingScreenDelayMs: 0,
+      storage: null,
+      boardHost: new Host(),
+    });
+    await flush();
+    expect(query("[data-v7-loading]")?.dataset.scene).toBe("none");
+    legacy.requests[0]?.resolve(result(1));
+    (await second).destroy();
+  });
+
   it("preloads the look in use: LEGACY for the legacy art set, the classic look when it is stored", async () => {
     const legacy = manualPreloader();
     const first = bootstrapPreloadedRuleset7App(document, {
@@ -237,7 +312,9 @@ describe("Ruleset 7 start behind the asset preloader", () => {
       boardHost: new Host(),
     });
     await flush();
+    // The legacy art set has no scene: its own inventory, as it was.
     expect(legacy.requests[0]?.urls).toEqual(assetPreloadUrlsV7("LEGACY"));
+    expect(startPreloadUrlsV7("LEGACY")).toEqual(assetPreloadUrlsV7("LEGACY"));
     legacy.requests[0]?.resolve(result(1));
     (await first).destroy();
 
@@ -253,7 +330,12 @@ describe("Ruleset 7 start behind the asset preloader", () => {
       boardHost: new Host(),
     });
     await flush();
-    expect(classic.requests[0]?.urls).toEqual(assetPreloadUrlsV7("CLASSIC"));
+    // The classic look's inventory after the scene, which its title screen
+    // draws with the direction's art.
+    expect(classic.requests[0]?.urls).toEqual(startPreloadUrlsV7("CLASSIC"));
+    expect(new Set(classic.requests[0]?.urls)).toEqual(
+      new Set([...titleSceneAssetUrlsV7(), ...assetPreloadUrlsV7("CLASSIC")]),
+    );
     classic.requests[0]?.resolve(result(1));
     (await second).destroy();
   });
@@ -307,19 +389,86 @@ describe("Ruleset 7 start behind the asset preloader", () => {
 });
 
 describe("loading screen", () => {
-  it("is an icon over a progress bar and leaves the root empty when it goes", () => {
+  const environment: ChibiRasterEnvironmentV7 = {
+    loadImage: (_url, settle) => {
+      settle(true);
+      return {} as CanvasImageSource;
+    },
+    readPixels: () => null,
+    createSurface: () => null,
+  };
+
+  it("is a labelled progress bar on a plate and leaves the root empty when it goes", () => {
     const root = query("#app");
     if (root === null) throw new Error("#app missing");
     const screen = mountLoadingScreenV7(document, root);
     expect(root.querySelectorAll("svg")).toHaveLength(1);
     expect(root.querySelectorAll('[role="progressbar"]')).toHaveLength(1);
-    expect(root.textContent).toBe("");
+    expect(query(".v7-loading-plate [role='progressbar']")).not.toBeNull();
+    // Without a scene the plain backdrop stays.
+    expect(query("[data-v7-loading]")?.dataset.scene).toBe("none");
+    expect(query(".v7-loading-label")?.textContent).toBe("Loading");
+    // The percentage repeats the bar's value and is hidden from it.
+    const percent = query(".v7-loading-percent");
+    expect(percent?.getAttribute("aria-hidden")).toBe("true");
+    expect(percent?.textContent).toBe("0%");
+    screen.update({ settled: 21, total: 50 });
+    expect(percent?.textContent).toBe("42%");
     screen.update({ settled: 0, total: 0 });
     expect(
       root.querySelector('[role="progressbar"]')?.getAttribute("aria-valuenow"),
     ).toBe("100");
+    expect(percent?.textContent).toBe("100%");
     screen.destroy();
     expect(root.childElementCount).toBe(0);
+  });
+
+  it("shows the title scene whole once its rasters are in, never before", () => {
+    const root = query("#app");
+    if (root === null) throw new Error("#app missing");
+    let ready = false;
+    let asked = 0;
+    const screen = mountLoadingScreenV7(document, root, {
+      motion: "REDUCED",
+      scene: {
+        environment,
+        ready: () => {
+          asked += 1;
+          return ready;
+        },
+      },
+    });
+    const main = query("[data-v7-loading]");
+    expect(main?.dataset.scene).toBe("waiting");
+    expect(query(".v7-title-scene")).toBeNull();
+    expect(query(".v7-app-shell")?.dataset.motion).toBe("reduced");
+    screen.update({ settled: 5, total: 900 });
+    expect(query(".v7-title-scene")).toBeNull();
+    ready = true;
+    screen.update({ settled: 90, total: 900 });
+    expect(main?.dataset.scene).toBe("ready");
+    const scene = query(".v7-title-scene");
+    // Behind the plate, hidden from assistive technology.
+    expect(main?.firstElementChild).toBe(scene);
+    expect(scene?.getAttribute("aria-hidden")).toBe("true");
+    // Asked no more once it is shown.
+    const before = asked;
+    screen.update({ settled: 500, total: 900 });
+    expect(asked).toBe(before);
+    expect(root.querySelectorAll(".v7-title-scene")).toHaveLength(1);
+    screen.destroy();
+    expect(root.childElementCount).toBe(0);
+  });
+
+  it("starts with the scene when it is already in", () => {
+    const root = query("#app");
+    if (root === null) throw new Error("#app missing");
+    const screen = mountLoadingScreenV7(document, root, {
+      scene: { environment, ready: () => true },
+    });
+    expect(query("[data-v7-loading]")?.dataset.scene).toBe("ready");
+    expect(query(".v7-app-shell")?.dataset.motion).toBe("full");
+    screen.destroy();
   });
 });
 

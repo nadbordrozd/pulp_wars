@@ -7,11 +7,14 @@ import {
 import { prefetchSoundFilesV1 } from "../audio/sound-file-store";
 import { loadStockSoundPicksV1 } from "../audio/stock-sound-picks";
 import { stockSoundsEnabledV1 } from "../audio/stock-sounds";
+import { SETTINGS_STORAGE_KEY, parseSettings } from "../persistence/index";
+import { browserChibiRasterEnvironmentV7 } from "../render/canvas/chibi-art-resolver-v7";
 import {
   lazyRasterLoadsV7,
   markRasterPreloadCompleteV7,
 } from "../render/canvas/preloaded-rasters-v7";
 import { mountLoadingScreenV7 } from "../render/dom/loading-screen-v7";
+import { titleSceneAssetUrlsV7 } from "../render/title-scene-v7";
 import { resolveArtSetV7 } from "./art-set-v7";
 import {
   browserAssetPreloaderV7,
@@ -40,6 +43,11 @@ import {
  * `?art=legacy` selects it; the classic look is part of the live look's
  * inventory. A failed raster never stops the start: the app mounts when
  * the preload settles or its time budget runs out.
+ *
+ * The loading screen is the title scene with the progress bar over it
+ * (bead pulp_wars-502h): of a CHIBI look the scene's own files come first
+ * in the one preload, so the scene is drawn after about a tenth of it while
+ * the bar shows the rest. The legacy art set has no scene.
  */
 export interface PreloadedBootOptionsV7 extends BootstrapRuleset7Options {
   /** The preloader; the browser's (image elements, decoded) by default. */
@@ -70,6 +78,38 @@ export interface PreloadedRuleset7App extends BootstrappedRuleset7App {
 }
 
 export const LOADING_SCREEN_DELAY_MS_V7 = 150;
+
+/**
+ * The files the start preloads, in order: the loading screen's scene first
+ * (a CHIBI look; the classic look gains the scene's direction rasters, which
+ * its title screen draws too), then the look's inventory, each file once.
+ */
+export function startPreloadUrlsV7(look: AssetLookV7): readonly string[] {
+  const scene = look === "LEGACY" ? [] : titleSceneAssetUrlsV7();
+  return [...new Set([...scene, ...assetPreloadUrlsV7(look)])];
+}
+
+/** Motion as the app will mount it: the stored setting, else the system's. */
+function startMotionV7(
+  documentRoot: Document,
+  settingsStorage: BootstrapRuleset7Options["settingsStorage"],
+): "FULL" | "REDUCED" {
+  let motion: "FULL" | "REDUCED" =
+    documentRoot.defaultView?.matchMedia?.("(prefers-reduced-motion: reduce)")
+      .matches === true
+      ? "REDUCED"
+      : "FULL";
+  try {
+    const stored = settingsStorage?.getItem(SETTINGS_STORAGE_KEY);
+    if (stored !== null && stored !== undefined) {
+      const parsed = parseSettings(stored);
+      if (parsed.kind === "VALID") motion = parsed.settings.motion;
+    }
+  } catch {
+    // Restricted storage: the system's preference stands.
+  }
+  return motion;
+}
 
 export async function bootstrapPreloadedRuleset7App(
   documentRoot: Document,
@@ -110,8 +150,20 @@ export async function bootstrapPreloadedRuleset7App(
   const fonts = loadInterfaceFontsV7(documentRoot);
   let screen: ReturnType<typeof mountLoadingScreenV7> | null = null;
   let progress: AssetPreloadProgressV7 | null = null;
+  const urls = startPreloadUrlsV7(look);
+  const sceneUrls = look === "LEGACY" ? null : titleSceneAssetUrlsV7();
   const show = (): void => {
-    screen = mountLoadingScreenV7(documentRoot, root);
+    screen = mountLoadingScreenV7(documentRoot, root, {
+      motion: startMotionV7(documentRoot, settingsStorage),
+      ...(sceneUrls === null
+        ? {}
+        : {
+            scene: {
+              environment: browserChibiRasterEnvironmentV7(documentRoot),
+              ready: () => preloader.covers(sceneUrls),
+            },
+          }),
+    });
     if (progress !== null) screen.update(progress);
   };
   const delay = options.loadingScreenDelayMs ?? LOADING_SCREEN_DELAY_MS_V7;
@@ -119,7 +171,7 @@ export async function bootstrapPreloadedRuleset7App(
   if (timer === null) show();
   let result: AssetPreloadResultV7;
   try {
-    result = await preloader.preload(assetPreloadUrlsV7(look), (update) => {
+    result = await preloader.preload(urls, (update) => {
       progress = update;
       screen?.update(update);
     });

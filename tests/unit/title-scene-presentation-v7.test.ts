@@ -12,9 +12,17 @@ import {
   COAST_W,
   coastLayerPixelsV7,
 } from "../../src/render/canvas/coast-sand-v7";
-import { titleSceneScaleV7 } from "../../src/render/dom/title-scene-view-v7";
+import { resolveChibiWithFallbackV7 } from "../../src/render/canvas/chibi-art-resolver-v7";
+import { factionColourV7 } from "../../src/render/canvas/faction-colours-v7";
+import { createGalleryArtV7 } from "../../src/render/canvas/gallery-sprite-v7";
+import {
+  titleSceneHorizonCssV7,
+  titleSceneScaleV7,
+} from "../../src/render/dom/title-scene-view-v7";
 import {
   CITY_CLEARING_V7,
+  titleSceneAssetUrlsV7,
+  titleSceneHorizonV7,
   titleSceneRasterUrlsV7,
   titleSceneSubjectsV7,
   titleSceneV7,
@@ -367,5 +375,91 @@ describe("title scene", () => {
     for (const item of scene.items)
       if (item.kind === "SUBJECT")
         expect(titleSceneSubjectsV7()).toContain(item.subject);
+  });
+
+  /**
+   * The loading screen (bead pulp_wars-502h) shows the scene once the start
+   * has preloaded `titleSceneAssetUrlsV7()`: every file the scene's art
+   * chain asks for must be in that list, or the scene would be drawn with a
+   * piece missing and fetched a second time.
+   */
+  it("lists every file its art chain asks for, a small part of the look", () => {
+    const listed = new Set(titleSceneAssetUrlsV7());
+    const inventory = new Set(assetInventoryV7("LIVE").map(({ url }) => url));
+    for (const url of listed) expect(inventory.has(url), url).toBe(true);
+    expect(listed.size).toBeGreaterThan(40);
+    expect(listed.size).toBeLessThan(inventory.size / 5);
+    for (const url of titleSceneRasterUrlsV7())
+      expect(listed.has(url), url).toBe(true);
+
+    const asked = new Set<string>();
+    const art = createGalleryArtV7(
+      {
+        loadImage(url, settle) {
+          asked.add(url);
+          settle(true);
+          return { url } as unknown as CanvasImageSource;
+        },
+        readPixels: (_image, width, height) =>
+          new Uint8ClampedArray(width * height * 4).fill(255),
+        createSurface: (pixels, width, height) =>
+          ({ pixels, width, height }) as unknown as CanvasImageSource,
+      },
+      () => undefined,
+    );
+    for (const [width, height] of [
+      [1440, 1000],
+      [390, 844],
+      [844, 390],
+      [1920, 1080],
+    ] as const) {
+      const scale = titleSceneScaleV7(width, height);
+      for (const dpr of [1, 2, 3]) {
+        const scene = titleSceneV7({
+          width: width / scale,
+          height: height / scale,
+        });
+        // Twice: a raster that settles may lead to a further file.
+        for (let pass = 0; pass < 2; pass += 1)
+          for (const item of scene.items) {
+            if (item.kind === "RASTER") asked.add(item.url);
+            if (item.kind !== "SUBJECT") continue;
+            const { resolution } = resolveChibiWithFallbackV7(art, {
+              subject: item.subject,
+              at: item.at,
+              ownerColor:
+                item.faction === undefined
+                  ? undefined
+                  : factionColourV7(item.faction),
+              deviceScale: scale * dpr,
+            });
+            expect(resolution.kind, item.subject).toBe("READY");
+          }
+      }
+    }
+    expect(asked.size).toBeGreaterThan(20);
+    for (const url of asked) expect(listed.has(url), url).toBe(true);
+  });
+
+  it("puts the horizon at the top of its farthest row of ground", () => {
+    for (const height of [130, 300, 333, 422, 844]) {
+      const scene = titleSceneV7({ width: 600, height });
+      const ground = scene.items.find(
+        (item) => item.kind === "SUBJECT" && item.subject === "TERRAIN:GRASS",
+      );
+      if (ground?.kind !== "SUBJECT") throw new Error("no ground");
+      expect(titleSceneHorizonV7(height)).toBe(ground.cy - 40);
+      // Nothing of the ground is drawn above it.
+      for (const item of scene.items)
+        if (item.kind === "SUBJECT" && item.subject.startsWith("TERRAIN:"))
+          expect(item.cy - 40).toBeGreaterThanOrEqual(
+            titleSceneHorizonV7(height),
+          );
+    }
+    // In CSS px, at the scale the view draws.
+    expect(titleSceneHorizonCssV7(1440, 1000)).toBe(
+      titleSceneHorizonV7(1000 / 3) * 3,
+    );
+    expect(titleSceneScaleV7(1440, 1000)).toBe(3);
   });
 });

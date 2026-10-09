@@ -531,9 +531,19 @@ Roads, that text now describes the **Classic look** developer option
 - **Loading screen** (bead `pulp_wars-2yc.6`). The game loads all the art of
   its look before the first screen: every faction's units, portraits,
   buildings and cities, terrain pieces, effects and icons. While that takes
-  longer than 150 ms the page shows a crest over a progress bar and no
-  text (the bar is labelled "Loading" for assistive technology; it does not
-  animate under reduced motion). After it, a sprite seen for the first time
+  longer than 150 ms the page shows the loading screen (bead
+  `pulp_wars-502h`): the title scene, the diorama of the game's own art,
+  with a cream plate over its sky holding a crest, the label "Loading", the
+  percentage and the progress bar. The scene's own files (about a tenth of
+  the look) are loaded first; until all of them are in, a plain sky over
+  grass, its horizon where the scene's ground will be, stands in for it,
+  so no piece is ever drawn half-loaded or broken. The scene then appears
+  whole (a short fade with full motion) while the bar shows the rest. The
+  bar (`role="progressbar"`, labelled by "Loading"; the percentage is hidden
+  from assistive technology) eases only with full motion, and under reduced
+  motion (the system setting, or the game's Motion setting once stored)
+  the scene is a still picture. The legacy art set keeps the plain
+  backdrop. After it, a sprite seen for the first time
   is drawn at once, in a match, the Gallery or a dialog. An image that
   fails to load does not hold the game back: it loads when first needed,
   with the fallback above. See

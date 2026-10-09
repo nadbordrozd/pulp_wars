@@ -1,15 +1,42 @@
+import type { ChibiRasterEnvironmentV7 } from "../canvas/chibi-art-resolver-v7";
+import {
+  TitleSceneViewV7,
+  titleSceneHorizonCssV7,
+} from "./title-scene-view-v7";
+
 /**
- * The loading screen (bead pulp_wars-2yc.6): an icon over a progress bar,
- * shown while the asset preloader fetches the look's art. It is drawn
- * without any raster (none is loaded yet) and has no visible text; the bar
- * carries its state for assistive technology. The bar moves in steps, with
- * a short eased transition only when motion is not reduced (v7.css).
+ * The loading screen (beads pulp_wars-2yc.6, pulp_wars-502h), shown while
+ * the asset preloader fetches the look's art: the title scene, the diorama
+ * of the game's own art (src/render/dom/title-scene-view-v7.ts), with a
+ * cream plate over its sky that holds the label and the progress bar.
+ *
+ * The start preloads the scene's own files first. Until all of them are in
+ * (`scene.ready()`, asked again at every progress step) the screen is a
+ * plain sky over grass drawn by CSS, so no piece is ever drawn half-loaded
+ * or as a broken image; then the scene is mounted whole, in one frame. A
+ * screen without a scene (the legacy art set) keeps the plain backdrop.
+ *
+ * The bar carries its state for assistive technology (role progressbar,
+ * labelled by the visible "Loading"; the percentage beside it repeats
+ * `aria-valuenow` and is hidden from it). The bar moves in steps, with a
+ * short eased transition and the scene fading in only with full motion;
+ * with reduced motion the scene is a still picture (v7.css).
  */
 export interface LoadingScreenV7 {
   readonly root: HTMLElement;
   /** `settled` of `total` rasters are done. */
   update(progress: { readonly settled: number; readonly total: number }): void;
   destroy(): void;
+}
+
+export interface LoadingScreenOptionsV7 {
+  /** The title scene behind the bar, once its rasters are preloaded. */
+  readonly scene?: {
+    readonly environment: ChibiRasterEnvironmentV7;
+    /** True when every raster the scene draws is preloaded. */
+    readonly ready: () => boolean;
+  };
+  readonly motion?: "FULL" | "REDUCED";
 }
 
 const SVG_NS = "http://www.w3.org/2000/svg";
@@ -40,17 +67,36 @@ function crest(documentRoot: Document): SVGElement {
 export function mountLoadingScreenV7(
   documentRoot: Document,
   root: HTMLElement,
+  options: LoadingScreenOptionsV7 = {},
 ): LoadingScreenV7 {
+  const motion = options.motion ?? "FULL";
   const shell = documentRoot.createElement("div");
   shell.className = "v7-app-shell";
   shell.dataset.phase = "loading";
+  shell.dataset.motion = motion.toLowerCase();
   const main = documentRoot.createElement("main");
   main.className = "v7-loading";
   main.dataset.v7Loading = "true";
+  main.dataset.scene = options.scene === undefined ? "none" : "waiting";
+
+  const plate = documentRoot.createElement("div");
+  plate.className = "v7-loading-plate";
+  const heading = documentRoot.createElement("div");
+  heading.className = "v7-loading-heading";
+  const label = documentRoot.createElement("span");
+  label.className = "v7-loading-label";
+  label.id = "v7-loading-label";
+  label.textContent = "Loading";
+  const percent = documentRoot.createElement("span");
+  percent.className = "v7-loading-percent";
+  percent.setAttribute("aria-hidden", "true");
+  percent.textContent = "0%";
+  heading.append(crest(documentRoot), label, percent);
+
   const bar = documentRoot.createElement("div");
   bar.className = "v7-loading-bar";
   bar.setAttribute("role", "progressbar");
-  bar.setAttribute("aria-label", "Loading");
+  bar.setAttribute("aria-labelledby", label.id);
   bar.setAttribute("aria-valuemin", "0");
   bar.setAttribute("aria-valuemax", "100");
   bar.setAttribute("aria-valuenow", "0");
@@ -58,23 +104,68 @@ export function mountLoadingScreenV7(
   fill.className = "v7-loading-fill";
   fill.style.width = "0%";
   bar.append(fill);
-  main.append(crest(documentRoot), bar);
+  plate.append(heading, bar);
+  main.append(plate);
   shell.append(main);
   root.replaceChildren(shell);
+
+  // The backdrop's horizon is where the scene's ground will start, so the
+  // scene does not move it when it arrives.
+  const browser = documentRoot.defaultView;
+  const placeHorizon = (): void => {
+    const width = documentRoot.documentElement.clientWidth;
+    const height = documentRoot.documentElement.clientHeight;
+    if (width <= 0 || height <= 0) return;
+    main.style.setProperty(
+      "--v7-loading-horizon",
+      `${titleSceneHorizonCssV7(width, height)}px`,
+    );
+  };
+  placeHorizon();
+  browser?.addEventListener("resize", placeHorizon);
+
+  let view: TitleSceneViewV7 | null = null;
+  /** Mounts the scene once its rasters are all in: never half-drawn. */
+  const showScene = (): void => {
+    const scene = options.scene;
+    if (scene === undefined || view !== null) return;
+    let ready: boolean;
+    try {
+      ready = scene.ready();
+    } catch {
+      // A broken check keeps the plain backdrop.
+      ready = false;
+    }
+    if (!ready) return;
+    view = new TitleSceneViewV7(documentRoot, {
+      environment: scene.environment,
+      motion,
+    });
+    main.prepend(view.root);
+    main.dataset.scene = "ready";
+    view.start();
+  };
+  showScene();
+
   let shown = 0;
   return {
     root: shell,
     update({ settled, total }) {
-      const percent =
+      showScene();
+      const value =
         total <= 0 ? 100 : Math.floor((Math.min(settled, total) / total) * 100);
       // The bar never moves backwards and is not touched for a sub-percent
-      // step, so a look of 700 files writes the DOM at most 100 times.
-      if (percent <= shown) return;
-      shown = percent;
-      bar.setAttribute("aria-valuenow", String(percent));
-      fill.style.width = `${percent}%`;
+      // step, so a look of 900 files writes the DOM at most 100 times.
+      if (value <= shown) return;
+      shown = value;
+      bar.setAttribute("aria-valuenow", String(value));
+      fill.style.width = `${value}%`;
+      percent.textContent = `${value}%`;
     },
     destroy() {
+      browser?.removeEventListener("resize", placeHorizon);
+      view?.destroy();
+      view = null;
       if (shell.parentNode === root) root.replaceChildren();
     },
   };

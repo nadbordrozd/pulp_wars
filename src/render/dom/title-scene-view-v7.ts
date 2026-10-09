@@ -17,7 +17,11 @@ import {
   galleryUnitShadowV7,
 } from "../canvas/gallery-sprite-v7";
 import { DIRECTED_GROUND_SHADOW_COLOUR_V7 } from "../canvas/visual-direction-v7";
-import { titleSceneV7, type TitleSceneV7 } from "../title-scene-v7";
+import {
+  titleSceneHorizonV7,
+  titleSceneV7,
+  type TitleSceneV7,
+} from "../title-scene-v7";
 
 /**
  * The title scene's canvas (bead pulp_wars-2yc.4): draws the layout of
@@ -52,6 +56,15 @@ export function titleSceneScaleV7(width: number, height: number): number {
       break;
   }
   return scale;
+}
+
+/**
+ * CSS pixels from the top to where the ground of a scene of this CSS size
+ * starts: the horizon of the loading screen's plain backdrop.
+ */
+export function titleSceneHorizonCssV7(width: number, height: number): number {
+  const scale = titleSceneScaleV7(width, height);
+  return titleSceneHorizonV7(height / scale) * scale;
 }
 
 /**

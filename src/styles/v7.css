@@ -81,6 +81,7 @@
   --pw-sky-high: #2f5fa8;
   --pw-sky-mid: #6fb1e3;
   --pw-sky-low: #d4eef5;
+  --pw-ground: #8ab85c;
   --pw-marker-landing: #64e6cf;
   --pw-marker-after-move: #f4c95d;
   --pw-marker-slide: #d6f0ff;
@@ -310,19 +311,59 @@
 
 /* ---------- Loading screen (asset preload) ---------- */
 
+/*
+ * The title scene with the progress bar over it (pulp_wars-502h). Until the
+ * scene's own rasters are in, a plain sky over grass in the scene's colours
+ * stands in for it, its horizon where the scene's ground will start
+ * (--v7-loading-horizon, set by the screen); the scene is then mounted
+ * whole over that backdrop.
+ */
 .v7-loading {
+  position: relative;
+  isolation: isolate;
   display: grid;
-  place-content: center;
+  align-content: start;
   justify-items: center;
-  gap: 1.5rem;
   min-height: 100dvh;
-  padding: 1.25rem;
+  padding: max(1rem, 17dvh) 1rem 1rem;
+  overflow: hidden;
+  background:
+    linear-gradient(
+      transparent var(--v7-loading-horizon, 62%),
+      var(--pw-ground) var(--v7-loading-horizon, 62%)
+    ),
+    linear-gradient(
+      var(--pw-sky-high) 0%,
+      var(--pw-sky-mid) 48%,
+      var(--pw-sky-low) 78%
+    );
+}
+
+/* The plate: the menu's cream stock, ink keyline and hard shadow. */
+.v7-loading-plate {
+  display: grid;
+  gap: 0.6em;
+  width: min(22em, 100%);
+  padding: 0.8em 1em 1em;
+  border: var(--pw-line-w) solid var(--pw-line);
+  border-radius: var(--pw-radius);
   background: var(--pw-surface);
+  box-shadow: var(--pw-shadow);
+
+  /* Like the main menu, a large screen has a larger plate. */
+  font-size: clamp(1em, calc(1.6vh + 0.2em), 1.5em);
+}
+
+.v7-loading-heading {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 0.6em;
+  align-items: center;
 }
 
 .v7-loading-icon {
-  width: 4.5rem;
-  height: 4.5rem;
+  width: 2em;
+  height: 2em;
 }
 
 .v7-loading-shield {
@@ -336,9 +377,23 @@
   fill: var(--pw-yellow);
 }
 
+.v7-loading-label {
+  font-family: var(--pw-display);
+  font-size: 1.4em;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.v7-loading-percent {
+  color: var(--pw-text-2);
+  font-size: 0.95em;
+  font-weight: var(--pw-fw-bold);
+  font-variant-numeric: tabular-nums;
+}
+
 .v7-loading-bar {
-  width: min(16rem, 70vw);
-  height: 0.9rem;
+  height: 1.1em;
   overflow: hidden;
   border: var(--pw-line-w-sm) solid var(--pw-line);
   border-radius: var(--pw-radius-pill);
@@ -353,8 +408,18 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .v7-loading-fill {
+  .v7-app-shell:not([data-motion="reduced"]) .v7-loading-fill {
     transition: width 120ms ease-out;
+  }
+
+  .v7-app-shell:not([data-motion="reduced"]) .v7-loading > .v7-title-scene {
+    animation: v7-loading-scene-in 320ms ease-out;
+  }
+}
+
+@keyframes v7-loading-scene-in {
+  from {
+    opacity: 0;
   }
 }
 

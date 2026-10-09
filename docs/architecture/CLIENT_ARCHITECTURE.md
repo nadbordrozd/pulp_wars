@@ -1968,7 +1968,8 @@ piece seen for the first time is drawn with its final art in that frame.
 - **One blocking phase.** The whole look, every faction, is preloaded at
   the start (671 files, about 1.4 MB, for `LIVE`): the Gallery and an
   eight-player match show all of them, and the set is small enough that a
-  second, background phase would add nothing.
+  second, background phase would add nothing. Within it the loading
+  screen's scene comes first (below).
 - **Preloader.** `createAssetPreloaderV7` (`src/app/asset-preloader-v7.ts`)
   loads at most 24 rasters at once through an injectable loader (the
   browser's creates an image element and awaits `decode()`), retries a
@@ -1990,12 +1991,27 @@ piece seen for the first time is drawn with its final art in that frame.
   as before, with its fallback; after the preload such a load is recorded
   (`lazyRasterLoadsV7`, exposed as `lazyAssetLoads()` on the app), and the
   browser smoke fails when a match or the Gallery recorded one.
-- **Loading screen.** `mountLoadingScreenV7`
-  (`src/render/dom/loading-screen-v7.ts`): an inline crest over a progress
-  bar (`role="progressbar"`, label "Loading"), no visible text, no raster.
-  It appears only when the preload takes longer than 150 ms, so a warm
-  cache never flashes it; the bar's width eases only without
-  `prefers-reduced-motion: reduce`.
+- **Loading screen** (bead `pulp_wars-502h`). `mountLoadingScreenV7`
+  (`src/render/dom/loading-screen-v7.ts`): the title scene
+  (`TitleSceneViewV7`) behind a plate with a crest, the visible label
+  "Loading", the percentage (`aria-hidden`) and a progress bar
+  (`role="progressbar"`, `aria-labelledby` the label). The start's one
+  preload lists the scene's files first (`startPreloadUrlsV7`:
+  `titleSceneAssetUrlsV7()`, every file of each registered raster of a
+  subject the scene draws plus the composed forest and massif pieces, about
+  a tenth of the live look, then the look's inventory, each file once; the
+  classic look gains the scene's direction rasters, which its title screen
+  draws too; LEGACY has no scene). At every progress step the screen asks
+  `preloader.covers(sceneUrls)` and mounts the scene only when all of them
+  are in, so it draws whole in its first frame from the store; before that
+  the CSS backdrop is a sky over flat grass (`--pw-ground`) whose horizon
+  (`titleSceneHorizonCssV7`, kept on resize) is where the scene's ground
+  starts. `title-scene-presentation-v7.test.ts` checks that every file the
+  scene's art chain asks for is in the list. The screen appears only when
+  the preload takes longer than 150 ms, so a warm cache never flashes it;
+  the bar's width eases and the scene fades in only with full motion (the
+  stored Motion setting, else `prefers-reduced-motion`), and with reduced
+  motion the scene is still.
 
 ### Sound (`pulp_wars-2yc.10`)
 

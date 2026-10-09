@@ -1,4 +1,7 @@
 import { FACTION_IDS_V7, type FactionIdV7 } from "../engine/index";
+import { chibiAssetUrlsV7 } from "../assets/asset-inventory-v7";
+import { CHIBI_ART_ASSETS_V7 } from "../assets/chibi-art-manifest";
+import { chibiDirectionArtAssetsV7 } from "../assets/chibi-direction-art-manifest";
 import {
   navalArtSubjectV7,
   unitArtSubjectV7,
@@ -120,6 +123,33 @@ function spread(count: number, reversed: boolean): FactionIdV7[] {
   );
 }
 
+/**
+ * The rows of a canvas `height` master px tall: four rows of cells, the
+ * nearest at the bottom edge. A short canvas overlaps them; a tall one
+ * leaves sky above the mountains.
+ */
+function sceneRows(height: number): {
+  readonly step: number;
+  readonly rows: readonly [number, number, number, number];
+} {
+  const step = clamp(Math.round((height - 210) / 3), 34, 72);
+  const front = height - 50;
+  return {
+    step,
+    rows: [front - 3 * step, front - 2 * step, front - step, front],
+  };
+}
+
+/**
+ * Where the scene's ground starts (master px from the top) on a canvas of
+ * this height: the top of the farthest row of grass, under the range. The
+ * loading screen's plain backdrop puts its horizon here (bead
+ * pulp_wars-502h), so the scene drawn over it later does not move it.
+ */
+export function titleSceneHorizonV7(height: number): number {
+  return sceneRows(Math.max(120, Math.floor(height))).rows[0] - HALF;
+}
+
 export function titleSceneV7(size: {
   readonly width: number;
   readonly height: number;
@@ -128,17 +158,8 @@ export function titleSceneV7(size: {
 }): TitleSceneV7 {
   const width = Math.max(160, Math.floor(size.width));
   const height = Math.max(120, Math.floor(size.height));
-  // Four rows of cells, the nearest at the bottom edge. A short canvas
-  // overlaps them; a tall one leaves sky above the mountains.
-  const step = clamp(Math.round((height - 210) / 3), 34, 72);
-  const front = height - 50;
-  const rows = [front - 3 * step, front - 2 * step, front - step, front];
-  const [mountainRow, forestRow, backRow, frontRow] = rows as [
-    number,
-    number,
-    number,
-    number,
-  ];
+  const { step, rows } = sceneRows(height);
+  const [mountainRow, forestRow, backRow, frontRow] = rows;
   const columns = Math.ceil(width / CELL);
   // The grid is flush with the east edge, so the sea's columns are whole
   // and the ship rides in water at any width; the edge cuts the west one.
@@ -159,7 +180,7 @@ export function titleSceneV7(size: {
 
   const items: TitleSceneItemV7[] = [];
   // Ground, far to near; one more row under the front rank fills the edge.
-  const groundRows = [...rows, front + step, front + 2 * step];
+  const groundRows = [...rows, frontRow + step, frontRow + 2 * step];
   const groundSubject = (column: number, row: number): ArtSubjectV7 =>
     column >= firstSea && row >= 2
       ? column === firstSea
@@ -397,5 +418,25 @@ export function titleSceneSubjectsV7(): ArtSubjectV7[] {
         unitArtSubjectV7({ role, form: "LAND", faction }),
       ),
     ),
+  ];
+}
+
+/**
+ * Every file the scene can draw, at any size (bead pulp_wars-502h): the
+ * composed pieces and every file (master, densities, mask, layers) of each
+ * registered raster of a subject it asks for, in the default registry and
+ * the direction's. The loading screen shows the scene, so the game's start
+ * preloads these first (src/app/v7-preload-boot.ts): about a tenth of the
+ * look, after which the scene is drawn whole while the rest loads.
+ */
+export function titleSceneAssetUrlsV7(): string[] {
+  const subjects = new Set<string>(titleSceneSubjectsV7());
+  return [
+    ...new Set([
+      ...[...CHIBI_ART_ASSETS_V7, ...chibiDirectionArtAssetsV7()]
+        .filter((asset) => subjects.has(asset.subject))
+        .flatMap(chibiAssetUrlsV7),
+      ...titleSceneRasterUrlsV7(),
+    ]),
   ];
 }
