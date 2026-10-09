@@ -66,8 +66,10 @@ import {
 } from "./schema";
 import {
   FOUNTAIN_HEAL_V7,
-  MONSTER_BOUNTY_V7,
   MONSTER_REGENERATION_V7,
+  NEUTRAL_BOUNTIES_V7,
+  WELL_COINS_V7,
+  WELL_OUTCOMES_V7,
   WRECK_COINS_V7,
 } from "./curiosities";
 
@@ -368,6 +370,10 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
     "results",
   ],
   UNIT_MOVED: ["kind", "unitId", "path"],
+  // Map curiosities round 2 (section 28.4).
+  GATE_DISPLACED: ["kind", "unitId", "from", "to"],
+  GATE_TRAVERSED: ["kind", "playerId", "unitId", "from", "to"],
+  GATE_BLOCKED: ["kind", "playerId", "unitId", "at"],
   UNIT_MOVE_INTERRUPTED: ["kind", "unitId", "at", "reason"],
   TILES_REVEALED: ["kind", "playerId", "tiles"],
   COMBAT_RESOLVED: ["kind", "preview"],
@@ -422,6 +428,16 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
   MONSTER_BOUNTY_AWARDED: ["kind", "playerId", "unitId", "coins"],
   UNIT_RECOVERED: ["kind", "unitId", "amount", "automatic"],
   UNIT_WAITED: ["kind", "playerId", "unitId"],
+  // Map curiosities round 2 (section 30.2).
+  COIN_TOSSED: [
+    "kind",
+    "playerId",
+    "unitId",
+    "at",
+    "outcome",
+    "coinsGained",
+    "hpAfter",
+  ],
   SHRINE_CLAIMED: ["kind", "playerId", "unitId", "at"],
   UNIT_PROMOTED: ["kind", "unitId", "maxHp"],
   UNIT_GREW: ["kind", "unitId", "stage", "maxHp", "hp"],
@@ -1419,6 +1435,22 @@ function validPayload(
       return surfaced(e, false);
     case "UNIT_MOVED":
       return id(e.unitId) && coords(e.path);
+    // Map curiosities round 2 (section 28.4).
+    case "GATE_DISPLACED":
+      return (
+        id(e.unitId) &&
+        parseCoordV7(e.from) !== null &&
+        parseCoordV7(e.to) !== null
+      );
+    case "GATE_TRAVERSED":
+      return (
+        id(e.playerId) &&
+        id(e.unitId) &&
+        parseCoordV7(e.from) !== null &&
+        parseCoordV7(e.to) !== null
+      );
+    case "GATE_BLOCKED":
+      return id(e.playerId) && id(e.unitId) && parseCoordV7(e.at) !== null;
     case "UNIT_MOVE_INTERRUPTED":
       return (
         id(e.unitId) &&
@@ -1574,11 +1606,27 @@ function validPayload(
       );
     // Map curiosities (section 8.7).
     case "MONSTER_BOUNTY_AWARDED":
-      return id(e.playerId) && id(e.unitId) && e.coins === MONSTER_BOUNTY_V7;
+      return (
+        id(e.playerId) &&
+        id(e.unitId) &&
+        Object.values(NEUTRAL_BOUNTIES_V7).includes(e.coins as number)
+      );
     case "UNIT_RECOVERED":
       return id(e.unitId) && pos(e.amount) && typeof e.automatic === "boolean";
     case "UNIT_WAITED":
       return id(e.playerId) && id(e.unitId);
+    // Map curiosities round 2 (section 30.2).
+    case "COIN_TOSSED":
+      return (
+        id(e.playerId) &&
+        id(e.unitId) &&
+        parseCoordV7(e.at) !== null &&
+        WELL_OUTCOMES_V7.includes(
+          e.outcome as (typeof WELL_OUTCOMES_V7)[number],
+        ) &&
+        e.coinsGained === (e.outcome === "COINS" ? WELL_COINS_V7 : 0) &&
+        pos(e.hpAfter)
+      );
     // Map curiosities (section 6).
     case "SHRINE_CLAIMED":
       return id(e.playerId) && id(e.unitId) && parseCoordV7(e.at) !== null;

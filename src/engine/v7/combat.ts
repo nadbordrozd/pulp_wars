@@ -1613,6 +1613,9 @@ export function knockbackStateV7(
     !survives ||
     defender.form === "EGG" ||
     defender.role === "JUGGERNAUT" ||
+    // Map curiosities round 2 (section 31): Knockback never moves a
+    // neutral unit.
+    isNeutralOwnerV7(defender.ownerId) ||
     unitCapacitySlotsV7(state, defender) !== 1 ||
     // The ninth unit (7r55): Rock Hard.
     unitIsImmovableV7(state, defender)

@@ -9,16 +9,17 @@ import {
 import type { DomainEventV7 } from "./events";
 import { compareCoordsV7, sameCoordV7 } from "./schema";
 import {
-  CURIOSITY_KINDS_V7,
   isAfloatFormV7,
   isNeutralOwnerV7,
   type BoardStateV7,
   type CoordV7,
   type CuriosityV7,
+  type FactionIdV7,
   type GameStateV7,
   type MapTypeV7,
   type MatchSetupV7,
   type MonsterStateV7,
+  type NeutralBreedV7,
   type TerrainIdV7,
   type UnitStateV7,
 } from "./types";
@@ -51,35 +52,66 @@ export const CURIOSITY_CAPITAL_SPREAD_V7 = 4;
 export const CURIOSITY_SPACING_V7 = 5;
 
 /**
- * Section 4.2: the kinds placement draws from, in the frozen draw order:
- * the Monster (`pulp_wars-737.3`, a unit with its own list, never a tile
- * marker) first, then the three tile markers of {@link CURIOSITY_KINDS_V7}.
+ * Section 4.2 and, round 2, section 24.1: the kinds placement draws from,
+ * in the frozen draw order. `MONSTER` (the Giant Spider's lair), the camp
+ * centres, `GATES` (a pair of `GATE` markers), and `BIGFOOT` (its home)
+ * bring neutral units; the others are plain tile markers.
  */
 export const CURIOSITY_PLACEMENT_KINDS_V7 = Object.freeze([
   "MONSTER",
-  ...CURIOSITY_KINDS_V7,
+  "FOUNTAIN",
+  "SHRINE",
+  "WRECK",
+  "DOWNED_SAUCER",
+  "GRAVEYARD",
+  "GATES",
+  "BIGFOOT",
+  "WISHING_WELL",
 ] as const);
 export type CuriosityPlacementKindV7 =
   (typeof CURIOSITY_PLACEMENT_KINDS_V7)[number];
 
-/** Section 4.2: the kind weights (Monster 3, Fountain 3, Shrine 2, Wreck 2). */
+/** Section 24.1: the kind weights. */
 export const CURIOSITY_WEIGHTS_V7: Readonly<
   Record<CuriosityPlacementKindV7, number>
-> = Object.freeze({ MONSTER: 3, FOUNTAIN: 3, SHRINE: 2, WRECK: 2 });
+> = Object.freeze({
+  MONSTER: 3,
+  FOUNTAIN: 3,
+  SHRINE: 2,
+  WRECK: 2,
+  DOWNED_SAUCER: 2,
+  GRAVEYARD: 2,
+  GATES: 2,
+  BIGFOOT: 1,
+  WISHING_WELL: 1,
+});
 
-/** The terrains a kind may stand on (section 4.4). */
+/**
+ * Section 23 pillar 6 and section 24.1: the hostile neutral groups. Once one
+ * is placed, the other two are not eligible (one danger per board).
+ */
+export const CURIOSITY_DANGER_KINDS_V7: readonly CuriosityPlacementKindV7[] =
+  Object.freeze(["MONSTER", "DOWNED_SAUCER", "GRAVEYARD"]);
+
+/** The terrains a kind may stand on (sections 4.4 and 24.1). */
 const CURIOSITY_TERRAINS_V7: Readonly<
-  Record<CuriosityPlacementKindV7, readonly TerrainIdV7[]>
+  Record<CuriosityPlacementKindV7 | "GATE", readonly TerrainIdV7[]>
 > = Object.freeze({
   MONSTER: ["GRASS", "FOREST", "MOUNTAIN"],
   FOUNTAIN: ["GRASS"],
   SHRINE: ["GRASS", "FOREST"],
   WRECK: ["SHALLOW_WATER", "DEEP_WATER"],
+  DOWNED_SAUCER: ["GRASS", "FOREST"],
+  GRAVEYARD: ["GRASS"],
+  GATES: ["GRASS", "FOREST"],
+  GATE: ["GRASS", "FOREST"],
+  BIGFOOT: ["FOREST"],
+  WISHING_WELL: ["GRASS"],
 });
 
 /** Whether a curiosity of `kind` may stand on `terrain` (section 4.4). */
 export function curiosityTerrainLegalV7(
-  kind: CuriosityPlacementKindV7,
+  kind: CuriosityPlacementKindV7 | "GATE",
   terrain: TerrainIdV7,
 ): boolean {
   return CURIOSITY_TERRAINS_V7[kind].includes(terrain);
@@ -120,6 +152,121 @@ export const MONSTER_VILLAGE_DISTANCE_V7 = 4;
  * Forest, or Mountain.
  */
 export const MONSTER_LAND_AROUND_HOME_V7 = 12;
+
+// ------------------------------------------------- Round 2 constants ---
+
+/** Section 25.1: a camp's area is every tile within 2 of its centre. */
+export const CAMP_RADIUS_V7 = 2;
+/** Section 24.1: the smallest board width with a camp (open question 1). */
+export const CAMP_MINIMUM_WIDTH_V7 = 16;
+/** Section 24.1: the smallest board width with the gates or Bigfoot. */
+export const GATES_MINIMUM_WIDTH_V7 = 20;
+export const BIGFOOT_MINIMUM_WIDTH_V7 = 20;
+/** Section 25.2: the guards' bounties. */
+export const GRUNT_BOUNTY_V7 = 3;
+export const RAY_GUNNER_BOUNTY_V7 = 4;
+export const SHIELD_PROJECTOR_BOUNTY_V7 = 4;
+export const ZOMBIE_BOUNTY_V7 = 5;
+/** Section 29.1: Bigfoot. */
+export const BIGFOOT_HP_V7 = 15;
+export const BIGFOOT_DEFENSE2_V7 = 4;
+export const BIGFOOT_HABITAT_RADIUS_V7 = 4;
+export const BIGFOOT_ALERT_RADIUS_V7 = 3;
+export const BIGFOOT_FLEE_STEPS_V7 = 3;
+export const BIGFOOT_BOUNTY_V7 = 12;
+/** Section 24.3: the smallest habitat at placement, home included. */
+export const BIGFOOT_HABITAT_MINIMUM_V7 = 12;
+/** Section 29.2: a habitat tile keeps this far from every curiosity tile. */
+export const BIGFOOT_CURIOSITY_DISTANCE_V7 = 3;
+/**
+ * Section 24.4: the largest difference between the capitals' distances to
+ * their nearer gate.
+ */
+export const GATE_FAIRNESS_V7 = 4;
+/** Section 30: the Wishing Well. */
+export const WELL_TOSS_COST_V7 = 1;
+export const WELL_COINS_V7 = 5;
+export const WELL_VISION_RADIUS_V7 = 5;
+
+/**
+ * Section 24.4: the smallest Chebyshev distance between the two gates,
+ * `ceil(2 x width / 3)` (14 on 20 x 20, 17 on 25 x 25).
+ */
+export function gateSeparationV7(width: number): number {
+  return Math.ceil((2 * width) / 3);
+}
+
+/** Sections 8.7, 25.2, and 29.4: the bounty of each breed. */
+export const NEUTRAL_BOUNTIES_V7: Readonly<Record<NeutralBreedV7, number>> =
+  Object.freeze({
+    GIANT_SPIDER: 10,
+    GRUNT: GRUNT_BOUNTY_V7,
+    RAY_GUNNER: RAY_GUNNER_BOUNTY_V7,
+    SHIELD_PROJECTOR: SHIELD_PROJECTOR_BOUNTY_V7,
+    ZOMBIE: ZOMBIE_BOUNTY_V7,
+    BIGFOOT: BIGFOOT_BOUNTY_V7,
+  });
+
+/** The guard breeds of a camp (section 25). */
+export const GUARD_BREEDS_V7: readonly NeutralBreedV7[] = Object.freeze([
+  "GRUNT",
+  "RAY_GUNNER",
+  "SHIELD_PROJECTOR",
+  "ZOMBIE",
+]);
+
+/** Whether `breed` is a camp guard (section 25). */
+export function isGuardBreedV7(breed: NeutralBreedV7): boolean {
+  return GUARD_BREEDS_V7.includes(breed);
+}
+
+/** The camp centre kind a guard breed belongs to (section 32.2). */
+export function guardCampKindV7(
+  breed: NeutralBreedV7,
+): "DOWNED_SAUCER" | "GRAVEYARD" | null {
+  if (breed === "ZOMBIE") return "GRAVEYARD";
+  if (
+    breed === "GRUNT" ||
+    breed === "RAY_GUNNER" ||
+    breed === "SHIELD_PROJECTOR"
+  )
+    return "DOWNED_SAUCER";
+  return null;
+}
+
+/**
+ * Section 26: the four compositions of a Downed Saucer camp, by the
+ * composition draw `nextBounded(4)`, each in composition order.
+ */
+export const SAUCER_COMPOSITIONS_V7: readonly (readonly NeutralBreedV7[])[] =
+  Object.freeze([
+    Object.freeze(["GRUNT"] as const),
+    Object.freeze(["GRUNT", "GRUNT"] as const),
+    Object.freeze(["GRUNT", "GRUNT", "SHIELD_PROJECTOR"] as const),
+    Object.freeze(["GRUNT", "RAY_GUNNER"] as const),
+  ]);
+/** Section 27: the Graveyard's two Zombies. */
+export const GRAVEYARD_GUARDS_V7: readonly NeutralBreedV7[] = Object.freeze([
+  "ZOMBIE",
+  "ZOMBIE",
+]);
+/**
+ * Section 24.3: the guard tiles a camp centre needs among its eight
+ * neighbours at generation.
+ */
+export const CAMP_GUARD_TILES_MINIMUM_V7 = Object.freeze({
+  DOWNED_SAUCER: 3,
+  GRAVEYARD: 2,
+});
+
+/** Section 30.2: the Wishing Well's outcomes, by the draw. */
+export const WELL_OUTCOMES_V7 = Object.freeze([
+  "SPLASH",
+  "COINS",
+  "HEAL",
+  "VISION",
+] as const);
+export type WellOutcomeV7 = (typeof WELL_OUTCOMES_V7)[number];
 
 /**
  * Section 3: whether a setup's map can carry curiosities: the option is on
@@ -174,7 +321,7 @@ export function curiosityTargetCountV7(
   return { count: 0, random };
 }
 
-/** The facts a curiosity site is checked against (section 4.3). */
+/** The facts a curiosity site is checked against (sections 4.3 and 24). */
 export interface CuriositySiteContextV7 {
   /** The accepted board after the Rifts. */
   readonly board: BoardStateV7;
@@ -182,14 +329,21 @@ export interface CuriositySiteContextV7 {
   readonly capitals: readonly CoordV7[];
   readonly villages: readonly CoordV7[];
   readonly treasureChests: readonly CoordV7[];
+  /**
+   * Section 24.1: the setup's seat factions (every seat, AI and human); a
+   * Downed Saucer needs no `MARTIAN` entry and a Graveyard no `UNDEAD`
+   * entry. Absent, no seat is excluded.
+   */
+  readonly factions?: readonly FactionIdV7[];
 }
 
 /**
  * The connectivity facts every site check shares, computed once per board:
  * the eight-connected land components (Rifts excluded), the land tiles
  * reachable from a capital without Mountains (the treasure-chest route),
- * the eight-connected water components, and (for the Monster, section 4.4)
- * the cut tiles of the land graph with and without Mountains.
+ * the eight-connected water components, and (for the lairs, camps, gates,
+ * and Bigfoot, sections 4.4 and 24.3) the cut tiles of the land graph with
+ * and without Mountains.
  */
 interface CuriosityConnectivityV7 {
   readonly land: readonly number[];
@@ -344,21 +498,28 @@ function articulationTilesV7(
   return [...cut].sort((left, right) => left - right);
 }
 
+/** The lair-like kinds: the Spider's lair and the two camp centres. */
+function lairLikeKindV7(kind: CuriosityPlacementKindV7 | "GATE"): boolean {
+  return kind === "MONSTER" || kind === "DOWNED_SAUCER" || kind === "GRAVEYARD";
+}
+
 /**
- * Sections 4.3 and 4.4: whether `at` is a legal site for a curiosity of
- * `kind`, with `placed` already on the board.
+ * Sections 4.3, 4.4, and 24.2 to 24.4: whether `at` is a legal tile for a
+ * curiosity of `kind` (for the gates, `GATE`: one gate of a pair, before
+ * the pair rule), with `placed` already on the board.
  */
 function siteLegalV7(
   context: CuriositySiteContextV7,
   connectivity: CuriosityConnectivityV7,
-  kind: CuriosityPlacementKindV7,
+  kind: CuriosityPlacementKindV7 | "GATE",
   placed: readonly PlacedCuriosityV7[],
   at: CoordV7,
 ): boolean {
   const { board } = context;
-  // Rule 1: off the edge ring. Section 4.4: the Monster's whole area is on
-  // the board.
-  const margin = kind === "MONSTER" ? MONSTER_HOME_RADIUS_V7 : 1;
+  const lairLike = lairLikeKindV7(kind);
+  // Rule 1: off the edge ring. Section 4.4: the Spider's whole area is on
+  // the board; section 24.3: so is a camp's.
+  const margin = lairLike ? MONSTER_HOME_RADIUS_V7 : 1;
   if (
     at.x < margin ||
     at.y < margin ||
@@ -368,8 +529,8 @@ function siteLegalV7(
     return false;
   const index = at.y * board.width + at.x;
   const tile = board.tiles[index];
-  // Rule 2 and section 4.4: no site, chest, resource, improvement, or Rift,
-  // and the kind's terrain.
+  // Rule 2 and the kind's terrain: no site, chest, resource, improvement,
+  // or Rift.
   if (
     tile === undefined ||
     tile.site !== null ||
@@ -380,33 +541,34 @@ function siteLegalV7(
     context.treasureChests.some((chest) => sameCoordV7(chest, at))
   )
     return false;
-  // Rule 3: 3 or more from every settlement center; section 4.4: the
-  // Monster's home 5 or more from every capital and 4 or more from every
-  // village (5 from every center before `pulp_wars-ykw.7`).
-  const monster = kind === "MONSTER";
+  // Rule 3: 3 or more from every settlement center; section 4.4: a lair (a
+  // camp centre too, section 24.3) 5 or more from every capital and 4 or
+  // more from every village.
   if (
     context.capitals.some(
       (center) =>
         chebyshevV7(center, at) <
-        (monster ? MONSTER_CENTER_DISTANCE_V7 : CURIOSITY_CENTER_DISTANCE_V7),
+        (lairLike ? MONSTER_CENTER_DISTANCE_V7 : CURIOSITY_CENTER_DISTANCE_V7),
     ) ||
     context.villages.some(
       (center) =>
         chebyshevV7(center, at) <
-        (monster ? MONSTER_VILLAGE_DISTANCE_V7 : CURIOSITY_CENTER_DISTANCE_V7),
+        (lairLike ? MONSTER_VILLAGE_DISTANCE_V7 : CURIOSITY_CENTER_DISTANCE_V7),
     )
   )
     return false;
-  // Rule 4: 5 or more from every capital, and roughly between them.
+  // Rule 4: 5 or more from every capital, and roughly between them (a gate
+  // keeps only the first half, section 24.4).
   const distances = context.capitals.map((capital) => chebyshevV7(capital, at));
   if (
     distances.length === 0 ||
     Math.min(...distances) < CURIOSITY_CAPITAL_DISTANCE_V7 ||
-    Math.max(...distances) - Math.min(...distances) >
-      CURIOSITY_CAPITAL_SPREAD_V7
+    (kind !== "GATE" &&
+      Math.max(...distances) - Math.min(...distances) >
+        CURIOSITY_CAPITAL_SPREAD_V7)
   )
     return false;
-  // Rule 5: 5 or more from every curiosity already placed.
+  // Rule 5: 5 or more from every curiosity tile already placed.
   if (placed.some((other) => chebyshevV7(other.at, at) < CURIOSITY_SPACING_V7))
     return false;
   if (kind === "WRECK") {
@@ -439,16 +601,27 @@ function siteLegalV7(
         connectivity.lowlandFromCapital.has(near),
       ));
   if (!reached) return false;
-  return kind !== "MONSTER" || monsterAreaLegalV7(board, connectivity, at);
+  // Section 24.4: a gate is never a cut tile.
+  if (kind === "GATE") return !connectivity.cutTiles.has(index);
+  if (kind === "BIGFOOT")
+    return bigfootSiteLegalV7(context, connectivity, placed, at);
+  if (!lairLike) return true;
+  if (!monsterAreaLegalV7(board, connectivity, at)) return false;
+  if (kind === "MONSTER") return true;
+  // Section 24.3: the guard tiles around a camp centre.
+  return (
+    campGuardTilesAtGenerationV7(context, at).length >=
+    CAMP_GUARD_TILES_MINIMUM_V7[kind as "DOWNED_SAUCER" | "GRAVEYARD"]
+  );
 }
 
 /**
- * Section 4.4, the Monster's area: at least
- * {@link MONSTER_LAND_AROUND_HOME_V7} of the 24 tiles around home are Grass,
- * Forest, or Mountain, and no tile within {@link MONSTER_HOME_RADIUS_V7} of
- * home is a cut tile of the land graph, with or without Mountains, so the
- * Monster can never block a corridor. (The area is on the board: the caller
- * checked the margin.)
+ * Section 4.4, the Monster's area (section 24.3, a camp's too): at least
+ * {@link MONSTER_LAND_AROUND_HOME_V7} of the 24 tiles around home are
+ * Grass, Forest, or Mountain, and no tile within
+ * {@link MONSTER_HOME_RADIUS_V7} of home is a cut tile of the land graph,
+ * with or without Mountains, so the Monster can never block a corridor.
+ * (The area is on the board: the caller checked the margin.)
  */
 function monsterAreaLegalV7(
   board: BoardStateV7,
@@ -473,47 +646,264 @@ function monsterAreaLegalV7(
 }
 
 /**
- * Sections 4.3 and 4.4: every legal site of `kind` on the board as it
- * stands (with `placed` already there), in (y, x) order. A Wreck needs a
- * map with water (never Dry Land).
+ * Sections 24.1 and 25.3: the neighbours of a camp centre, in (y, x)
+ * order, a guard may stand on at generation: Grass, Forest, or Mountain,
+ * no settlement site, 3 or more from every settlement centre, and no
+ * treasure chest (no unit or mound stands there at generation: the
+ * starting units are on the capitals).
+ */
+function campGuardTilesAtGenerationV7(
+  context: CuriositySiteContextV7,
+  centre: CoordV7,
+): readonly CoordV7[] {
+  const { board } = context;
+  const centers = [...context.capitals, ...context.villages];
+  const tiles: CoordV7[] = [];
+  for (let dy = -1; dy <= 1; dy += 1)
+    for (let dx = -1; dx <= 1; dx += 1) {
+      if (dx === 0 && dy === 0) continue;
+      const at = { x: centre.x + dx, y: centre.y + dy };
+      if (at.x < 0 || at.y < 0 || at.x >= board.width || at.y >= board.height)
+        continue;
+      const tile = board.tiles[at.y * board.width + at.x];
+      if (
+        tile === undefined ||
+        tile.site !== null ||
+        (tile.terrain !== "GRASS" &&
+          tile.terrain !== "FOREST" &&
+          tile.terrain !== "MOUNTAIN") ||
+        centers.some(
+          (center) => chebyshevV7(center, at) < CURIOSITY_CENTER_DISTANCE_V7,
+        ) ||
+        context.treasureChests.some((chest) => sameCoordV7(chest, at))
+      )
+        continue;
+      tiles.push(at);
+    }
+  return tiles;
+}
+
+/**
+ * Section 29.2: the habitat of a Bigfoot whose home is `home`: every tile
+ * on the board within {@link BIGFOOT_HABITAT_RADIUS_V7} of home that is
+ * Forest, 3 or more from every settlement centre in `centers`, and 3 or
+ * more from every tile in `curiosityTiles` (every other curiosity tile on
+ * the board: a lair, a camp centre, a gate, a Fountain, Shrine, Wreck, or
+ * Well), in (y, x) order.
+ */
+export function bigfootHabitatV7(
+  board: Pick<BoardStateV7, "width" | "height" | "tiles">,
+  home: CoordV7,
+  centers: readonly CoordV7[],
+  curiosityTiles: readonly CoordV7[],
+): readonly CoordV7[] {
+  const habitat: CoordV7[] = [];
+  for (
+    let y = home.y - BIGFOOT_HABITAT_RADIUS_V7;
+    y <= home.y + BIGFOOT_HABITAT_RADIUS_V7;
+    y += 1
+  )
+    for (
+      let x = home.x - BIGFOOT_HABITAT_RADIUS_V7;
+      x <= home.x + BIGFOOT_HABITAT_RADIUS_V7;
+      x += 1
+    ) {
+      if (x < 0 || y < 0 || x >= board.width || y >= board.height) continue;
+      const at = { x, y };
+      if (
+        board.tiles[y * board.width + x]?.terrain !== "FOREST" ||
+        centers.some(
+          (center) => chebyshevV7(center, at) < CURIOSITY_CENTER_DISTANCE_V7,
+        ) ||
+        curiosityTiles.some(
+          (tile) => chebyshevV7(tile, at) < BIGFOOT_CURIOSITY_DISTANCE_V7,
+        )
+      )
+        continue;
+      habitat.push(at);
+    }
+  return habitat;
+}
+
+/**
+ * Section 24.3, Bigfoot: its habitat at placement has at least
+ * {@link BIGFOOT_HABITAT_MINIMUM_V7} tiles, home included, and no Forest
+ * tile within 4 of home that is 3 or more from every settlement centre is
+ * a cut tile of the land graph, with or without Mountains.
+ */
+function bigfootSiteLegalV7(
+  context: CuriositySiteContextV7,
+  connectivity: CuriosityConnectivityV7,
+  placed: readonly PlacedCuriosityV7[],
+  home: CoordV7,
+): boolean {
+  const centers = [...context.capitals, ...context.villages];
+  const habitat = bigfootHabitatV7(
+    context.board,
+    home,
+    centers,
+    placed.map((entry) => entry.at),
+  );
+  if (
+    habitat.length < BIGFOOT_HABITAT_MINIMUM_V7 ||
+    !habitat.some((at) => sameCoordV7(at, home))
+  )
+    return false;
+  for (const at of bigfootHabitatV7(context.board, home, centers, []))
+    if (connectivity.cutTiles.has(at.y * context.board.width + at.x))
+      return false;
+  return true;
+}
+
+/**
+ * Section 24.1: whether the board and the seats allow a kind at all (the
+ * board width, Dry Land for the Wreck, and the faction exclusions).
+ */
+function curiosityKindAllowedV7(
+  context: CuriositySiteContextV7,
+  kind: CuriosityPlacementKindV7,
+): boolean {
+  const width = context.board.width;
+  const factions = context.factions ?? [];
+  switch (kind) {
+    case "MONSTER":
+      return width >= MONSTER_MINIMUM_WIDTH_V7;
+    case "WRECK":
+      return context.mapType !== "DRY_LAND";
+    case "DOWNED_SAUCER":
+      return width >= CAMP_MINIMUM_WIDTH_V7 && !factions.includes("MARTIAN");
+    case "GRAVEYARD":
+      return width >= CAMP_MINIMUM_WIDTH_V7 && !factions.includes("UNDEAD");
+    case "GATES":
+      return width >= GATES_MINIMUM_WIDTH_V7;
+    case "BIGFOOT":
+      return width >= BIGFOOT_MINIMUM_WIDTH_V7;
+    default:
+      return true;
+  }
+}
+
+function legalTilesV7(
+  context: CuriositySiteContextV7,
+  connectivity: CuriosityConnectivityV7,
+  kind: CuriosityPlacementKindV7 | "GATE",
+  placed: readonly PlacedCuriosityV7[],
+): readonly CoordV7[] {
+  return context.board.tiles
+    .map((tile) => tile.at)
+    .filter((at) => siteLegalV7(context, connectivity, kind, placed, at));
+}
+
+/**
+ * Section 24.4: the legal gate pairs `[A, B]`, `A` before `B` in (y, x)
+ * order, listed in lexicographic order of `(A, B)`: two gate tiles at
+ * least {@link gateSeparationV7} apart, and fair to every start (the
+ * largest capital's distance to its nearer gate minus the smallest is at
+ * most {@link GATE_FAIRNESS_V7}).
+ */
+function gatePairsV7(
+  context: CuriositySiteContextV7,
+  connectivity: CuriosityConnectivityV7,
+  placed: readonly PlacedCuriosityV7[],
+): readonly (readonly [CoordV7, CoordV7])[] {
+  const tiles = legalTilesV7(context, connectivity, "GATE", placed);
+  const separation = gateSeparationV7(context.board.width);
+  const pairs: (readonly [CoordV7, CoordV7])[] = [];
+  for (let first = 0; first < tiles.length; first += 1)
+    for (let second = first + 1; second < tiles.length; second += 1) {
+      const a = tiles[first] as CoordV7;
+      const b = tiles[second] as CoordV7;
+      if (chebyshevV7(a, b) < separation) continue;
+      const nearer = context.capitals.map((capital) =>
+        Math.min(chebyshevV7(capital, a), chebyshevV7(capital, b)),
+      );
+      if (Math.max(...nearer) - Math.min(...nearer) > GATE_FAIRNESS_V7)
+        continue;
+      pairs.push([a, b]);
+    }
+  return pairs;
+}
+
+/**
+ * Sections 4.3, 4.4, and 24: every legal site of `kind` on the board as it
+ * stands (with `placed` already there), in (y, x) order: for `GATES`, the
+ * tiles of the legal pairs (see {@link curiosityGatePairsV7}). Empty when
+ * the board or the seats rule the kind out, or it is already placed. (The
+ * one-danger rule is the placement loop's.)
  */
 export function curiositySitesV7(
   context: CuriositySiteContextV7,
   kind: CuriosityPlacementKindV7,
   placed: readonly PlacedCuriosityV7[] = [],
 ): readonly CoordV7[] {
-  if (kind === "WRECK" && context.mapType === "DRY_LAND") return [];
-  if (kind === "MONSTER" && context.board.width < MONSTER_MINIMUM_WIDTH_V7)
+  if (
+    !curiosityKindAllowedV7(context, kind) ||
+    placed.some((curiosity) => curiosity.kind === kind)
+  )
     return [];
-  if (placed.some((curiosity) => curiosity.kind === kind)) return [];
   const connectivity = connectivityV7(context);
-  return context.board.tiles
-    .map((tile) => tile.at)
-    .filter((at) => siteLegalV7(context, connectivity, kind, placed, at));
+  if (kind === "GATES") {
+    const tiles = new Map<string, CoordV7>();
+    for (const pair of gatePairsV7(context, connectivity, placed))
+      for (const at of pair) tiles.set(`${at.y},${at.x}`, at);
+    return [...tiles.values()].sort(compareCoordsV7);
+  }
+  return legalTilesV7(context, connectivity, kind, placed);
 }
 
-/** A placed curiosity of any kind, the Monster's home included. */
+/** Section 24.4: the legal gate pairs of the board as it stands. */
+export function curiosityGatePairsV7(
+  context: CuriositySiteContextV7,
+  placed: readonly PlacedCuriosityV7[] = [],
+): readonly (readonly [CoordV7, CoordV7])[] {
+  if (
+    !curiosityKindAllowedV7(context, "GATES") ||
+    placed.some((curiosity) => curiosity.kind === "GATES")
+  )
+    return [];
+  return gatePairsV7(context, connectivityV7(context), placed);
+}
+
+/**
+ * A placed curiosity tile of any kind: the Spider's lair, a camp centre,
+ * each gate of the pair (kind `GATES`), Bigfoot's home, or a marker.
+ */
 export interface PlacedCuriosityV7 {
   readonly kind: CuriosityPlacementKindV7;
   readonly at: CoordV7;
 }
 
 /**
- * The result of placement: the tile markers (sorted by (y, x)) and the
- * Monster's home, if a Monster was placed.
+ * A neutral unit placement draws (section 24.1): its breed, its home (the
+ * lair, the camp centre, or Bigfoot's home), and the tile it starts on. The
+ * initial state creates them after every other initial entity, in this
+ * order (placement order, a camp's guards in composition order).
  */
-export interface CuriosityPlacementV7 {
-  readonly curiosities: readonly CuriosityV7[];
-  readonly monsterHome: CoordV7 | null;
+export interface NeutralPlacementV7 {
+  readonly breed: NeutralBreedV7;
+  readonly home: CoordV7;
+  readonly at: CoordV7;
 }
 
 /**
- * Section 4: places the curiosities of a generated board. The target count
- * comes from {@link curiosityTargetCountV7}; each curiosity in turn draws
- * one kind by weight among the eligible kinds (not yet placed, allowed by
- * the board, with a legal site), in {@link CURIOSITY_PLACEMENT_KINDS_V7}
- * order, then one of its legal sites uniformly in (y, x) order. With no
- * eligible kind placement stops. The board is never changed or rejected.
+ * The result of placement: the tile markers (sorted by (y, x)) and the
+ * neutral units to create.
+ */
+export interface CuriosityPlacementV7 {
+  readonly curiosities: readonly CuriosityV7[];
+  readonly neutrals: readonly NeutralPlacementV7[];
+}
+
+/**
+ * Sections 4 and 24: places the curiosities of a generated board. The
+ * target count comes from {@link curiosityTargetCountV7}; each curiosity in
+ * turn draws one kind by weight among the eligible kinds (not yet placed,
+ * allowed by the board and the seats, not excluded by the one-danger rule,
+ * with a legal site or pair), in {@link CURIOSITY_PLACEMENT_KINDS_V7}
+ * order, then one of its legal sites (for the gates, pairs) uniformly in
+ * (y, x) order, then a Downed Saucer's composition draw and each guard's
+ * tile draw (a Graveyard: two tile draws). With no eligible kind placement
+ * stops. The board is never changed or rejected.
  */
 export function placeCuriositiesV7(
   seed: number,
@@ -524,10 +914,31 @@ export function placeCuriositiesV7(
     curiosityRandomStateV7(seed),
   );
   let random = target.random;
+  const draw = (bound: number): number => {
+    const result = nextBounded(random, bound);
+    random = result.random;
+    return result.value;
+  };
+  const connectivity = target.count === 0 ? null : connectivityV7(context);
   const placed: PlacedCuriosityV7[] = [];
-  while (placed.length < target.count) {
+  const kindsPlaced: CuriosityPlacementKindV7[] = [];
+  const curiosities: CuriosityV7[] = [];
+  const neutrals: NeutralPlacementV7[] = [];
+  while (connectivity !== null && kindsPlaced.length < target.count) {
+    const danger = kindsPlaced.some((kind) =>
+      CURIOSITY_DANGER_KINDS_V7.includes(kind),
+    );
     const eligible = CURIOSITY_PLACEMENT_KINDS_V7.flatMap((kind) => {
-      const sites = curiositySitesV7(context, kind, placed);
+      if (
+        kindsPlaced.includes(kind) ||
+        !curiosityKindAllowedV7(context, kind) ||
+        (danger && CURIOSITY_DANGER_KINDS_V7.includes(kind))
+      )
+        return [];
+      const sites: readonly (readonly CoordV7[])[] =
+        kind === "GATES"
+          ? gatePairsV7(context, connectivity, placed)
+          : legalTilesV7(context, connectivity, kind, placed).map((at) => [at]);
       return sites.length === 0 ? [] : [{ kind, sites }];
     });
     if (eligible.length === 0) break;
@@ -535,30 +946,61 @@ export function placeCuriositiesV7(
       (sum, entry) => sum + CURIOSITY_WEIGHTS_V7[entry.kind],
       0,
     );
-    const kindDraw = nextBounded(random, total);
-    random = kindDraw.random;
-    let remaining = kindDraw.value;
+    let remaining = draw(total);
     const chosen =
       eligible.find((entry) => {
         remaining -= CURIOSITY_WEIGHTS_V7[entry.kind];
         return remaining < 0;
       }) ?? (eligible.at(-1) as (typeof eligible)[number]);
-    const siteDraw = nextBounded(random, chosen.sites.length);
-    random = siteDraw.random;
-    placed.push({
-      kind: chosen.kind,
-      at: chosen.sites[siteDraw.value] as CoordV7,
-    });
+    const site = chosen.sites[draw(chosen.sites.length)] as readonly CoordV7[];
+    const at = site[0] as CoordV7;
+    kindsPlaced.push(chosen.kind);
+    for (const tile of site) placed.push({ kind: chosen.kind, at: tile });
+    switch (chosen.kind) {
+      case "MONSTER":
+        neutrals.push({ breed: "GIANT_SPIDER", home: at, at });
+        break;
+      case "BIGFOOT":
+        neutrals.push({ breed: "BIGFOOT", home: at, at });
+        break;
+      case "GATES": {
+        const partner = site[1] as CoordV7;
+        curiosities.push(
+          { kind: "GATE", at, partner },
+          { kind: "GATE", at: partner, partner: at },
+        );
+        break;
+      }
+      case "WISHING_WELL":
+        curiosities.push({ kind: "WISHING_WELL", at, tossedBy: [] });
+        break;
+      case "DOWNED_SAUCER":
+      case "GRAVEYARD": {
+        curiosities.push({ kind: chosen.kind, at });
+        const guards =
+          chosen.kind === "DOWNED_SAUCER"
+            ? (SAUCER_COMPOSITIONS_V7[
+                draw(SAUCER_COMPOSITIONS_V7.length)
+              ] as readonly NeutralBreedV7[])
+            : GRAVEYARD_GUARDS_V7;
+        const free = [...campGuardTilesAtGenerationV7(context, at)];
+        for (const breed of guards) {
+          const index = draw(free.length);
+          const tile = free[index] as CoordV7;
+          free.splice(index, 1);
+          neutrals.push({ breed, home: at, at: tile });
+        }
+        break;
+      }
+      default:
+        curiosities.push({ kind: chosen.kind, at });
+    }
   }
-  const curiosities: CuriosityV7[] = [];
-  for (const entry of placed)
-    if (entry.kind !== "MONSTER")
-      curiosities.push({ kind: entry.kind, at: entry.at });
   return {
     curiosities: curiosities.sort((left, right) =>
       compareCoordsV7(left.at, right.at),
     ),
-    monsterHome: placed.find((entry) => entry.kind === "MONSTER")?.at ?? null,
+    neutrals,
   };
 }
 
@@ -734,6 +1176,344 @@ export function monsterWanderV7(
     options.length,
   );
   return options[draw.value] ?? null;
+}
+
+// ------------------------------------------- Round 2: neutral units ---
+
+/**
+ * The board facts a round-2 neutral unit's movement and targeting read: the
+ * Monster's facts plus the tile markers and the `monsters` list (Bigfoot's
+ * habitat keeps clear of every curiosity tile, a Spider's lair included)
+ * and, for a guard's shot from 2, which units are submerged.
+ */
+export interface NeutralBoardFactsV7 extends MonsterBoardFactsV7 {
+  readonly curiosities: GameStateV7["curiosities"];
+  readonly monsters: GameStateV7["monsters"];
+  /** Naval branch section 5.2: a submerged unit is hit only from next to it. */
+  readonly submerged?: (unit: UnitStateV7) => boolean;
+}
+
+/**
+ * Section 29.2: every curiosity tile on the board other than Bigfoot's own
+ * home: the tile markers (camp centres, gates, Fountains, Shrines, Wrecks,
+ * the Well) and the Spider's lair.
+ */
+export function curiosityTilesV7(
+  facts: Pick<NeutralBoardFactsV7, "curiosities" | "monsters">,
+): readonly CoordV7[] {
+  return [
+    ...facts.curiosities.map((curiosity) => curiosity.at),
+    ...facts.monsters
+      .filter((entry) => entry.breed === "GIANT_SPIDER")
+      .map((entry) => entry.home),
+  ];
+}
+
+/** The settlement centres of a board (sites), in (y, x) order. */
+function settlementCentersV7(board: BoardStateV7): readonly CoordV7[] {
+  return board.tiles
+    .filter((tile) => tile.site !== null)
+    .map((tile) => tile.at);
+}
+
+/**
+ * Sections 8.3, 25.3, and 29.2: whether the neutral unit of `entry` may
+ * stand on `at` (with no unit other than `exceptUnitId`, no mound, and no
+ * treasure chest there). The Spider: its area; a guard: its camp's area,
+ * never the centre; Bigfoot: its habitat.
+ */
+export function neutralStandableV7(
+  facts: NeutralBoardFactsV7,
+  entry: Pick<MonsterStateV7, "breed" | "home">,
+  at: CoordV7,
+  exceptUnitId?: UnitStateV7["id"],
+): boolean {
+  if (entry.breed === "GIANT_SPIDER")
+    return monsterStandableV7(facts, entry.home, at, exceptUnitId);
+  if (entry.breed !== "BIGFOOT")
+    return (
+      !sameCoordV7(at, entry.home) &&
+      monsterStandableV7(facts, entry.home, at, exceptUnitId)
+    );
+  const { board } = facts;
+  if (
+    chebyshevV7(entry.home, at) > BIGFOOT_HABITAT_RADIUS_V7 ||
+    at.x < 0 ||
+    at.y < 0 ||
+    at.x >= board.width ||
+    at.y >= board.height ||
+    board.tiles[at.y * board.width + at.x]?.terrain !== "FOREST"
+  )
+    return false;
+  if (
+    settlementCentersV7(board).some(
+      (center) => chebyshevV7(center, at) < CURIOSITY_CENTER_DISTANCE_V7,
+    ) ||
+    curiosityTilesV7(facts).some(
+      (tile) => chebyshevV7(tile, at) < BIGFOOT_CURIOSITY_DISTANCE_V7,
+    )
+  )
+    return false;
+  return (
+    !tileOccupiedV7(facts, at, exceptUnitId) &&
+    !facts.treasureChests.some((chest) => sameCoordV7(chest, at))
+  );
+}
+
+/**
+ * Sections 8.3, 25.3, and 29.3: the tiles the neutral unit on `unit.at`
+ * may step to, its standable Chebyshev neighbours in (y, x) order.
+ */
+export function neutralStepsV7(
+  facts: NeutralBoardFactsV7,
+  unit: Pick<UnitStateV7, "id" | "at">,
+  entry: Pick<MonsterStateV7, "breed" | "home">,
+): readonly CoordV7[] {
+  const steps: CoordV7[] = [];
+  for (let dy = -1; dy <= 1; dy += 1)
+    for (let dx = -1; dx <= 1; dx += 1) {
+      if (dx === 0 && dy === 0) continue;
+      const at = { x: unit.at.x + dx, y: unit.at.y + dy };
+      if (neutralStandableV7(facts, entry, at, unit.id)) steps.push(at);
+    }
+  return steps;
+}
+
+/**
+ * Section 25.4: the provokers of the camp whose centre is `centre` at its
+ * neutral turn, sorted by unit ID: every unit on the board that is not
+ * neutral and, for a Downed Saucer, stands within 2 of the saucer (the
+ * perimeter), stands next to a guard of the camp, or is listed in the
+ * `provokedBy` of a guard of the camp; for a Graveyard, every such unit.
+ */
+export function campProvokersV7(
+  facts: Pick<NeutralBoardFactsV7, "units" | "monsters" | "curiosities">,
+  centre: CoordV7,
+): readonly UnitStateV7[] {
+  const kind = facts.curiosities.find((curiosity) =>
+    sameCoordV7(curiosity.at, centre),
+  )?.kind;
+  const guards = facts.monsters.filter(
+    (entry) => isGuardBreedV7(entry.breed) && sameCoordV7(entry.home, centre),
+  );
+  const guardUnits = facts.units.filter((unit) =>
+    guards.some((entry) => entry.unitId === unit.id && unit.hp > 0),
+  );
+  return facts.units.filter(
+    (unit) =>
+      unit.hp > 0 &&
+      !isNeutralOwnerV7(unit.ownerId) &&
+      (kind === "GRAVEYARD" ||
+        chebyshevV7(unit.at, centre) <= CAMP_RADIUS_V7 ||
+        guardUnits.some((guard) => chebyshevV7(guard.at, unit.at) === 1) ||
+        guards.some((entry) => entry.provokedBy.includes(unit.id))),
+  );
+}
+
+/** The reach a neutral attacker's role rule gives it. */
+export interface NeutralRangeV7 {
+  readonly range: number;
+  readonly minimumRange: number;
+}
+
+/**
+ * Whether a neutral attacker on `from` may attack `target`: within its
+ * range, and a submerged Submarine only from next to it.
+ */
+function neutralInRangeV7(
+  facts: Pick<NeutralBoardFactsV7, "submerged">,
+  from: CoordV7,
+  target: UnitStateV7,
+  reach: NeutralRangeV7,
+): boolean {
+  const distance = chebyshevV7(from, target.at);
+  return (
+    distance >= reach.minimumRange &&
+    distance <= reach.range &&
+    (distance <= 1 || facts.submerged?.(target) !== true)
+  );
+}
+
+/**
+ * Sections 8.4 and 25.4: the attack a Spider or a guard makes this turn,
+ * or null when no provoker is in reach. Candidates are the `provokers` it
+ * can attack from where it stands or from a tile it may step to; the target
+ * is the one with the lowest HP, ties broken by the lowest unit ID (a
+ * Shield does not count). With the target in range now it attacks without
+ * a step; otherwise `step` is the first step tile, in (y, x) order, from
+ * which the target is in range.
+ */
+export function neutralAttackChoiceV7(
+  facts: NeutralBoardFactsV7,
+  unit: Pick<UnitStateV7, "id" | "at">,
+  steps: readonly CoordV7[],
+  provokers: readonly UnitStateV7[],
+  reach: NeutralRangeV7,
+): { readonly target: UnitStateV7; readonly step: CoordV7 | null } | null {
+  const candidates = provokers.filter(
+    (target) =>
+      neutralInRangeV7(facts, unit.at, target, reach) ||
+      steps.some((step) => neutralInRangeV7(facts, step, target, reach)),
+  );
+  const target = [...candidates].sort(
+    (left, right) => left.hp - right.hp || left.id - right.id,
+  )[0];
+  if (target === undefined) return null;
+  if (neutralInRangeV7(facts, unit.at, target, reach))
+    return { target, step: null };
+  const step = steps.find((at) => neutralInRangeV7(facts, at, target, reach));
+  return step === undefined ? null : { target, step };
+}
+
+/**
+ * Section 29.3: Bigfoot's flight, or null when no unit that is not neutral
+ * stands within {@link BIGFOOT_ALERT_RADIUS_V7} of it. Among the tiles it
+ * can reach in 0 to {@link BIGFOOT_FLEE_STEPS_V7} steps (each to a
+ * Chebyshev neighbour of its habitat it may stand on, never passing a
+ * unit), it goes to the one with the greatest Chebyshev distance to the
+ * nearest such unit on the board; ties by fewer steps, then (y, x). `path`
+ * is the shortest step path there (empty when it stays).
+ */
+export function bigfootFleeV7(
+  facts: NeutralBoardFactsV7,
+  bigfoot: Pick<UnitStateV7, "id" | "at">,
+  entry: Pick<MonsterStateV7, "breed" | "home">,
+): { readonly path: readonly CoordV7[] } | null {
+  const others = facts.units.filter(
+    (unit) => unit.hp > 0 && !isNeutralOwnerV7(unit.ownerId),
+  );
+  if (
+    !others.some(
+      (unit) => chebyshevV7(unit.at, bigfoot.at) <= BIGFOOT_ALERT_RADIUS_V7,
+    )
+  )
+    return null;
+  const nearest = (at: CoordV7): number =>
+    Math.min(...others.map((unit) => chebyshevV7(unit.at, at)));
+  // Breadth-first over standable tiles, neighbours in (y, x) order, so the
+  // recorded path to each tile is a shortest one and deterministic.
+  const keyOf = (at: CoordV7): string => `${at.y},${at.x}`;
+  const reached = new Map<
+    string,
+    { readonly at: CoordV7; readonly path: readonly CoordV7[] }
+  >([[keyOf(bigfoot.at), { at: bigfoot.at, path: [] }]]);
+  let frontier: { readonly at: CoordV7; readonly path: readonly CoordV7[] }[] =
+    [{ at: bigfoot.at, path: [] }];
+  for (let step = 0; step < BIGFOOT_FLEE_STEPS_V7; step += 1) {
+    const next: typeof frontier = [];
+    for (const node of frontier)
+      for (const near of neutralStepsV7(
+        facts,
+        { id: bigfoot.id, at: node.at },
+        entry,
+      )) {
+        if (reached.has(keyOf(near))) continue;
+        const entryNode = { at: near, path: [...node.path, near] };
+        reached.set(keyOf(near), entryNode);
+        next.push(entryNode);
+      }
+    frontier = next;
+  }
+  const best = [...reached.values()].sort(
+    (left, right) =>
+      nearest(right.at) - nearest(left.at) ||
+      left.path.length - right.path.length ||
+      compareCoordsV7(left.at, right.at),
+  )[0];
+  return { path: best?.path ?? [] };
+}
+
+/**
+ * Sections 25.6 and 29.4: the bounty the credited killer's owner gains for
+ * a neutral unit of `breed`.
+ */
+export function neutralBountyV7(breed: NeutralBreedV7): number {
+  return NEUTRAL_BOUNTIES_V7[breed];
+}
+
+// ------------------------------------------------- Round 2: the gates ---
+
+/** Section 28: the gate on `at`, if any. */
+export function gateAtV7(
+  curiosities: readonly CuriosityV7[],
+  at: CoordV7,
+): Extract<CuriosityV7, { readonly kind: "GATE" }> | null {
+  for (const curiosity of curiosities)
+    if (curiosity.kind === "GATE" && sameCoordV7(curiosity.at, at))
+      return curiosity;
+  return null;
+}
+
+/**
+ * Section 28.3: the clockwise order around an exit gate in which an
+ * occupant is displaced: N, NE, E, SE, S, SW, W, NW.
+ */
+export const GATE_DISPLACEMENT_ORDER_V7: readonly (readonly [
+  number,
+  number,
+])[] = Object.freeze([
+  [0, -1],
+  [1, -1],
+  [1, 0],
+  [1, 1],
+  [0, 1],
+  [-1, 1],
+  [-1, 0],
+  [-1, -1],
+]);
+
+/**
+ * Section 28.3: the tile an occupant of the exit gate is displaced to: the
+ * first tile in {@link GATE_DISPLACEMENT_ORDER_V7} around `exit` that is on
+ * the board, that `mayHold` accepts (the occupant's own terrain rule), and
+ * that holds no unit, mound, treasure chest, or gate and is no settlement
+ * centre; null when there is none (the traversal is blocked).
+ */
+export function gateDisplacementTileV7(
+  facts: Pick<
+    MonsterBoardFactsV7,
+    "board" | "units" | "burrowed" | "treasureChests"
+  > & {
+    readonly curiosities: readonly CuriosityV7[];
+  },
+  exit: CoordV7,
+  occupantId: UnitStateV7["id"],
+  mayHold: (at: CoordV7) => boolean,
+): CoordV7 | null {
+  const { board } = facts;
+  for (const [dx, dy] of GATE_DISPLACEMENT_ORDER_V7) {
+    const at = { x: exit.x + dx, y: exit.y + dy };
+    if (at.x < 0 || at.y < 0 || at.x >= board.width || at.y >= board.height)
+      continue;
+    const tile = board.tiles[at.y * board.width + at.x];
+    if (
+      tile === undefined ||
+      tile.site !== null ||
+      tileOccupiedV7(facts, at, occupantId) ||
+      facts.treasureChests.some((chest) => sameCoordV7(chest, at)) ||
+      gateAtV7(facts.curiosities, at) !== null ||
+      !mayHold(at)
+    )
+      continue;
+    return at;
+  }
+  return null;
+}
+
+// -------------------------------------------- Round 2: the Wishing Well ---
+
+/**
+ * Section 30.2: the outcome of `playerId`'s toss: one `nextBounded(4)` on a
+ * stream keyed by the setup seed and the player, so it never touches the
+ * match PRNG and does not depend on when, or with which unit, the player
+ * tosses.
+ */
+export function wellOutcomeV7(seed: number, playerId: PlayerId): WellOutcomeV7 {
+  const draw = nextBounded(
+    randomState(seedFromText(`pulp-wars-well:${seed}:${playerId}`)),
+    WELL_OUTCOMES_V7.length,
+  );
+  return WELL_OUTCOMES_V7[draw.value] as WellOutcomeV7;
 }
 
 /**

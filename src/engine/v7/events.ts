@@ -988,6 +988,39 @@ export type DomainEventV7 =
       readonly path: readonly CoordV7[];
     }
   | {
+      /**
+       * Map curiosities round 2 (section 28.3): the occupant `unitId` of an
+       * exit gate was shoved from `from` (the gate) to `to` before a unit
+       * came through.
+       */
+      readonly kind: "GATE_DISPLACED";
+      readonly unitId: UnitId;
+      readonly from: CoordV7;
+      readonly to: CoordV7;
+    }
+  | {
+      /**
+       * Map curiosities round 2 (section 28.2): `unitId` of `playerId`
+       * stepped onto the gate `from` and came out of its partner `to`.
+       */
+      readonly kind: "GATE_TRAVERSED";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly from: CoordV7;
+      readonly to: CoordV7;
+    }
+  | {
+      /**
+       * Map curiosities round 2 (section 28.3): the exit of the gate `at`
+       * was occupied with no free tile around it, so `unitId` of `playerId`
+       * stays on `at` with its Move spent.
+       */
+      readonly kind: "GATE_BLOCKED";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly at: CoordV7;
+    }
+  | {
       readonly kind: "UNIT_MOVE_INTERRUPTED";
       readonly unitId: UnitId;
       readonly at: CoordV7;
@@ -1154,6 +1187,21 @@ export type DomainEventV7 =
     }
   | {
       /**
+       * Map curiosities round 2 (section 30.2): `unitId` of `playerId` on
+       * the Wishing Well at `at` tossed a Coin; `outcome` is the player's
+       * draw, `coinsGained` 5 for `COINS` (else 0), and `hpAfter` the unit's
+       * HP after the toss (full after a `HEAL`, unless a construct).
+       */
+      readonly kind: "COIN_TOSSED";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly at: CoordV7;
+      readonly outcome: "SPLASH" | "COINS" | "HEAL" | "VISION";
+      readonly coinsGained: number;
+      readonly hpAfter: number;
+    }
+  | {
+      /**
        * Map curiosities (section 8.5): the neutral turn of the wilds after
        * the last seat's turn of `round`, inside the `END_TURN` that ends the
        * round. Every Monster acts between the two events; public to every
@@ -1174,14 +1222,16 @@ export type DomainEventV7 =
     }
   | {
       /**
-       * Map curiosities (section 8.7): `playerId` was credited with the death
-       * of the Monster `unitId` and gained the bounty `coins` (10). Owner
+       * Map curiosities (section 8.7; round 2, sections 25.6 and 29.4):
+       * `playerId` was credited with the death of the neutral unit `unitId`
+       * and gained its breed's bounty `coins` (the Spider 10, a Grunt 3, a
+       * Ray Gunner or Shield Projector 4, a Zombie 5, Bigfoot 12). Owner
        * only, like Plunder.
        */
       readonly kind: "MONSTER_BOUNTY_AWARDED";
       readonly playerId: PlayerId;
       readonly unitId: UnitId;
-      readonly coins: 10;
+      readonly coins: number;
     }
   | {
       /**

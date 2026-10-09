@@ -300,6 +300,10 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     // `pulp_wars-737.3`: the Giant Spider's provokers, its pruned and
     // recorded provocation lists, and its targets are units on the board (a
     // burrowed unit is out of its reach and off its list).
+    // Map curiosities round 2 (`pulp_wars-737.14`): the camp provokers and
+    // Bigfoot's flight read the units on the board.
+    "src/engine/v7/curiosities.ts::bigfootFleeV7": "BOARD",
+    "src/engine/v7/curiosities.ts::campProvokersV7": "BOARD",
     "src/engine/v7/curiosities.ts::monsterProvokersV7": "BOARD",
     "src/engine/v7/curiosities.ts::prunedMonstersV7": "BOARD",
     "src/engine/v7/curiosities.ts::resolveCuriosityClaimV7": "BOARD",
@@ -398,6 +402,8 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/engine/v7/query.ts::previewBoardV7": "BOARD",
     "src/engine/v7/query.ts::publicBoardTargetsV7": "BOARD",
     "src/engine/v7/reducer.ts::applyBoard": "BOARD",
+    // Map curiosities round 2: the visible exit occupant of a gate.
+    "src/engine/v7/query.ts::previewGateV7": "BOARD",
     "src/engine/v7/query.ts::previewMonsterV7": "BOARD",
     "src/engine/v7/query.ts::previewTendWoundedV7": "BOARD",
     "src/engine/v7/query.ts::previewTractorBeamV7": "BOARD",
@@ -467,6 +473,11 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/engine/v7/reducer.ts::applyTrainNaval": "BOARD",
     "src/engine/v7/reducer.ts::applyWail": "BOARD",
     "src/engine/v7/reducer.ts::applyWait": "BOARD",
+    // Map curiosities round 2: the toss's actor, a gate traversal's mover
+    // and exit occupant, and a dead neutral unit's breed are on the board.
+    "src/engine/v7/reducer.ts::applyTossCoin": "BOARD",
+    "src/engine/v7/reducer.ts::neutralVictimBreedV7": "BOARD",
+    "src/engine/v7/reducer.ts::resolveGateTraversalV7": "BOARD",
     "src/engine/v7/reducer.ts::evaluateAchievementsV7": "BOARD",
     "src/engine/v7/reducer.ts::graveActionTail": "BOARD",
     "src/engine/v7/reducer.ts::recoverIdleUnits": "BOARD",

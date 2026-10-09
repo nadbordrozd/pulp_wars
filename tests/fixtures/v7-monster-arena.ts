@@ -89,7 +89,7 @@ export function monsterArenaV7(
     setup: { ...base.setup, curiosities: true },
     nextEntityId: base.nextEntityId + 1,
     units: [...base.units, monster],
-    monsters: [{ unitId: id, home, provokedBy }],
+    monsters: [{ unitId: id, breed: "GIANT_SPIDER", home, provokedBy }],
     treasureChests: base.treasureChests.filter(
       (chest) => !grass.some((where) => same(where, chest)),
     ),

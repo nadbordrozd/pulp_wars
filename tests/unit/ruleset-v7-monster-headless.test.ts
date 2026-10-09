@@ -19,7 +19,9 @@ describe("neutral-owner fuzz, headless matches (section 10.5)", () => {
   // `monsters` is the Giant Spiders the board draws: at least two of the
   // three matches play 25 rounds with one on the board. The seeds are those
   // of the village-density boards (`pulp_wars-ykw.2`, with the lair 4 from
-  // a village and the wider reserve of `pulp_wars-ykw.7`).
+  // a village and the wider reserve of `pulp_wars-ykw.7`), moved when the
+  // round-2 kinds joined the kind draw (`pulp_wars-737.14`: 149 and 11
+  // before).
   const matches: readonly {
     readonly seed: number;
     readonly mapType: MapTypeV7;
@@ -27,7 +29,7 @@ describe("neutral-owner fuzz, headless matches (section 10.5)", () => {
     readonly monsters: number;
   }[] = [
     {
-      seed: 149,
+      seed: 150,
       mapType: "PANGEA",
       factions: ["ORIGINAL", "UNDEAD", "GOBLIN"],
       monsters: 1,
@@ -39,7 +41,7 @@ describe("neutral-owner fuzz, headless matches (section 10.5)", () => {
       monsters: 1,
     },
     {
-      seed: 11,
+      seed: 7,
       mapType: "DRY_LAND",
       factions: ["MARTIAN", "ICE_FOLK", "DWARF"],
       monsters: 1,

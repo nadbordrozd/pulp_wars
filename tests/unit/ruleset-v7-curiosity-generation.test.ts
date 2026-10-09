@@ -34,7 +34,7 @@ describe("generation, option on against off (section 4)", () => {
 
   it("places every kind somewhere, usually none on a small board and at most two on a large one (section 4.2)", () => {
     // The same 150 boards, generated once each with the option on.
-    const seen = new Set<CuriosityKindV7 | "MONSTER">();
+    const seen = new Set<CuriosityKindV7 | "MONSTER" | "BIGFOOT">();
     const counts: Record<number, number[]> = {};
     for (const mapType of CURIOSITY_MAP_TYPES_V7)
       for (const [width, aiCount] of CURIOSITY_ON_OFF_SIZES_V7)
@@ -43,14 +43,36 @@ describe("generation, option on against off (section 4)", () => {
             curiosityGeneratedSetupV7(seed, mapType, width, aiCount, true),
           );
           if (!generated.ok) throw new Error("map");
-          const { curiosities, monsterHome } = generated.map;
+          const { curiosities, neutrals } = generated.map;
           for (const curiosity of curiosities) seen.add(curiosity.kind);
-          if (monsterHome !== null) seen.add("MONSTER");
+          for (const entry of neutrals)
+            if (entry.breed === "GIANT_SPIDER") seen.add("MONSTER");
+            else if (entry.breed === "BIGFOOT") seen.add("BIGFOOT");
+          // The gate pair is one curiosity; a camp's guards are not
+          // curiosities of their own.
           (counts[width] ??= []).push(
-            curiosities.length + (monsterHome === null ? 0 : 1),
+            curiosities.filter((curiosity) => curiosity.kind !== "GATE")
+              .length +
+              (curiosities.some((curiosity) => curiosity.kind === "GATE")
+                ? 1
+                : 0) +
+              neutrals.filter(
+                (entry) =>
+                  entry.breed === "GIANT_SPIDER" || entry.breed === "BIGFOOT",
+              ).length,
           );
         }
-    expect([...seen].sort()).toEqual(["MONSTER", ...CURIOSITY_KINDS_V7].sort());
+    // Every kind of both rounds but the Graveyard, which these 150 boards
+    // happen not to draw (round 2, `pulp_wars-737.14`: the nine kinds share
+    // the old counts); the round-2 generation test places one (Pangea
+    // 20 x 20 seed 1).
+    expect([...seen].sort()).toEqual(
+      [
+        "MONSTER",
+        "BIGFOOT",
+        ...CURIOSITY_KINDS_V7.filter((kind) => kind !== "GRAVEYARD"),
+      ].sort(),
+    );
     const mean = (values: readonly number[]) =>
       values.reduce((sum, value) => sum + value, 0) / values.length;
     expect(counts[11]).toHaveLength(30);

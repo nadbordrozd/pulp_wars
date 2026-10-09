@@ -390,7 +390,7 @@ describe("ruleset-7 map scale: village density (7r40, the V3 parity rules)", () 
         generated({ ...input, factions: ["CANDY", "DWARF", "MARTIAN"] }),
       ).toEqual(map);
       const on = generated({ ...input, curiosities: true });
-      expect({ ...on, curiosities: [], monsterHome: null }).toEqual(map);
+      expect({ ...on, curiosities: [], neutrals: [] }).toEqual(map);
     }
   });
 
@@ -429,10 +429,14 @@ describe("ruleset-7 map scale: village density (7r40, the V3 parity rules)", () 
       "VILLAGE_DENSITY",
     );
     if (!current.ok || !rifts.ok || !plain.ok) throw new Error("generation");
-    expect({ ...current.map, curiosities: [], monsterHome: null }).toEqual(
+    expect({ ...current.map, curiosities: [], neutrals: [] }).toEqual(
       rifts.map,
     );
-    expect(current.map.curiosities.length).toBeGreaterThan(0);
+    // Something was placed (a marker or, since round 2 of the
+    // curiosities, possibly only a neutral unit such as the Spider).
+    expect(
+      current.map.curiosities.length + current.map.neutrals.length,
+    ).toBeGreaterThan(0);
     // The Rift changes only terrain.
     expect(rifts.map.board.tiles.some((tile) => tile.terrain === "RIFT")).toBe(
       true,

@@ -85,6 +85,8 @@ export type CommandV7 =
         | "WAIT"
         | "BUILD_FIELD_DEFENSE"
         | "WAIL"
+        /** Map curiosities round 2: a unit on the Wishing Well tosses a Coin. */
+        | "TOSS_COIN"
         /** Revision 17: a goblin-crewed unit blows itself up. */
         | "KABOOM";
       readonly unitId: UnitId;
@@ -371,6 +373,7 @@ const UNIT_ONLY_KINDS = new Set<CommandKindV7>([
   "BUILD_FIELD_DEFENSE",
   "WAIL",
   "KABOOM",
+  "TOSS_COIN",
 ]);
 
 export function parseCommandEnvelopeV7(

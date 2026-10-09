@@ -725,6 +725,17 @@ function eventVisible(
       );
     case "WRECK_SALVAGED":
       return event.playerId === viewerId;
+    // Map curiosities round 2 (sections 28.4 and 30.2): a gate event and a
+    // toss reach the actor and every viewer that sees the unit (a unit on an
+    // explored gate is visible, and a gate's partner is explored with it).
+    case "GATE_TRAVERSED":
+    case "GATE_BLOCKED":
+    case "COIN_TOSSED":
+      return (
+        event.playerId === viewerId ||
+        beforeVisible.has(event.unitId) ||
+        afterVisible.has(event.unitId)
+      );
     // Revision 17: Plunder Coins are owner-private like Spoils.
     case "SPOILS_AWARDED":
     case "PLUNDER_AWARDED":

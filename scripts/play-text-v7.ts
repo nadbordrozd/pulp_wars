@@ -1038,6 +1038,8 @@ export function textPlayCommandIdV7(command: CommandV7): string {
     case "WAIL":
     case "KABOOM":
       return `u${command.unitId}.${command.kind.toLowerCase()}`;
+    case "TOSS_COIN":
+      return `u${command.unitId}.toss`;
     case "BUILD_FIELD_DEFENSE":
       return `u${command.unitId}.fortify`;
     case "LAY_EGG":
@@ -1793,6 +1795,8 @@ function describeCommandV7(
       return `promote to veteran: max hp +${PROMOTION_HP_V7} and a full heal`;
     case "WAIT":
       return "mark the unit as handled (no effect on the game)";
+    case "TOSS_COIN":
+      return "toss a Coin into the Wishing Well (1c, once per player per match): nothing, +5 Coins, a full heal, or the land around the Well revealed";
     case "DISBAND":
       // The Martian pass, correction: on a controlled unit it is Release.
       return view.mindControlled.some(

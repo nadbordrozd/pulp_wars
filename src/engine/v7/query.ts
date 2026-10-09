@@ -284,9 +284,11 @@ import {
   isAfloatFormV7,
   isNavalRoleV7,
   isNeutralOwnerV7,
+  type BoardStateV7,
   type CoordV7,
   type FactionIdV7,
   type FactionTreeIdV7,
+  type NeutralBreedV7,
   type AchievementEntitlementV7,
   type AchievementIdV7,
   type GameStateV7,
@@ -303,7 +305,15 @@ import {
   publicUnitHasTerrainCoverV7,
   tileOccupiedV7,
 } from "./units";
-import { MONSTER_HOME_RADIUS_V7, monsterAreaV7 } from "./curiosities";
+import {
+  BIGFOOT_ALERT_RADIUS_V7,
+  BIGFOOT_CURIOSITY_DISTANCE_V7,
+  BIGFOOT_HABITAT_RADIUS_V7,
+  MONSTER_HOME_RADIUS_V7,
+  gateAtV7,
+  gateDisplacementTileV7,
+  monsterAreaV7,
+} from "./curiosities";
 import {
   viewForV7,
   type PlayerTileViewV7,
@@ -1221,6 +1231,20 @@ function appendPublicUnitCommandsV7(
   )
     candidates.push({ kind: "DEVOUR", unitId: unit.id });
   if (overrun) return;
+  // Map curiosities round 2 (section 30.1): a toss at the Wishing Well,
+  // offered exactly when the reducer accepts it.
+  if (
+    primaryReady &&
+    unit.form === "LAND" &&
+    view.curiosities.some(
+      (curiosity) =>
+        curiosity.kind === "WISHING_WELL" &&
+        same(curiosity.at, unit.at) &&
+        !curiosity.tossedBy.includes(player.id),
+    ) &&
+    player.coins >= 1
+  )
+    candidates.push({ kind: "TOSS_COIN", unitId: unit.id });
   // Section 10: the predicate End Turn idle recovery uses. The Candy
   // revision: a Crashed unit recovers idle at End Turn but cannot `RECOVER`.
   if (!crashed && recoverEligibleV7(publicRecoveryFactsV7(view, unit)))
@@ -1654,6 +1678,8 @@ function publicTunnelTileV7(
     tile.biome !== null &&
     tile.terrain !== "RIFT" &&
     tile.site === null &&
+    // Map curiosities round 2 (section 28.2): never a gate.
+    gateAtV7(view.curiosities, at) === null &&
     canEnterTerrainV7({
       terrain: tile.terrain,
       movementMode: mobility.movementMode,
@@ -3826,43 +3852,54 @@ export type PublicCombatPreviewV7 = CombatPreviewV7 & {
 };
 
 /**
- * Map curiosities (docs/product/RULESET_7_MAP_CURIOSITIES.md section 10.4):
- * the public facts of a visible Monster.
+ * Map curiosities (docs/product/RULESET_7_MAP_CURIOSITIES.md section 10.4;
+ * round 2, section 32.5): the public facts of a visible neutral unit.
  */
 export interface MonsterPreviewV7 {
   readonly unitId: UnitId;
-  /** Its lair (section 8.3). */
+  /** Round 2: the unit's breed. */
+  readonly breed: NeutralBreedV7;
+  /** Its lair, its camp centre, or Bigfoot's home. */
   readonly home: CoordV7;
   /**
-   * Its area as far as the viewer has explored it: the explored tiles within
-   * 2 of home of a terrain it may stand on (Grass, Forest, or Mountain), not
-   * a settlement site, and 3 or more from every known settlement center
-   * (whoever stands there now).
+   * Where it may ever stand, as far as the viewer has explored it: the
+   * Spider's area (the explored tiles within 2 of home of a terrain it may
+   * stand on, not a settlement site, and 3 or more from every known
+   * settlement center, whoever stands there now); a guard's camp area
+   * (the same, never the centre); Bigfoot's habitat (explored Forest within
+   * 4 of home, 3 or more from every known centre and curiosity tile).
    */
   readonly area: readonly CoordV7[];
-  /** The tiles next to it now: a unit that ends there provokes it. */
+  /**
+   * The tiles where a unit provokes it: the Spider's neighbours; a saucer
+   * guard's camp perimeter (within 2 of the saucer) plus the tiles next to
+   * each visible guard of the camp; a Zombie's reach; Bigfoot's tiles within
+   * 3 (standing there makes it flee).
+   */
   readonly provokeTiles: readonly CoordV7[];
   /**
    * Every tile it could attack on its next turn after at most one step (an
-   * unexplored tile of its area counts as a possible step).
+   * unexplored tile of its area counts as a possible step); empty for
+   * Bigfoot.
    */
   readonly reachTiles: readonly CoordV7[];
-  /** The visible provokers now (next to it, or in its `provokedBy`). */
+  /** The visible provokers now (for Bigfoot: the units that make it flee). */
   readonly provokers: readonly UnitId[];
   /** The weakest visible provoker in reach (lowest HP, then ID), or null. */
   readonly likelyTarget: UnitId | null;
   /**
-   * False when an unexplored tile lies within 2 of it: a hidden provoker
-   * there could be weaker than `likelyTarget`.
+   * False when an unexplored tile lies within 1 + its range of it (2 for
+   * the Spider) or, for Bigfoot, within 3: a hidden unit there could change
+   * its choice.
    */
   readonly exact: boolean;
 }
 
 /**
- * Map curiosities (section 10.4): the preview of the visible Monster
- * `unitId`, or null when the viewer cannot see it. It reads only the public
- * view; its target choice mirrors the neutral turn (section 8.4) over the
- * visible provokers.
+ * Map curiosities (section 10.4; round 2, section 32.5): the preview of the
+ * visible neutral unit `unitId`, or null when the viewer cannot see it. It
+ * reads only the public view; its target choice mirrors the neutral turn
+ * (sections 8.4 and 25.4) over the visible provokers.
  */
 export function previewMonsterV7(
   view: PlayerViewV7,
@@ -3871,6 +3908,7 @@ export function previewMonsterV7(
   const entry = view.monsters.find((candidate) => candidate.unitId === unitId);
   const monster = view.units.find((unit) => unit.id === unitId && unit.hp > 0);
   if (entry === undefined || monster === undefined) return null;
+  const breed = entry.breed;
   const onBoard = (at: CoordV7): boolean =>
     at.x >= 0 &&
     at.y >= 0 &&
@@ -3879,11 +3917,42 @@ export function previewMonsterV7(
   const centers = view.board.tiles.filter(
     (tile) => tile.explored && tile.site !== null,
   );
+  const within = (center: CoordV7, radius: number): CoordV7[] => {
+    const result: CoordV7[] = [];
+    for (let y = center.y - radius; y <= center.y + radius; y += 1)
+      for (let x = center.x - radius; x <= center.x + radius; x += 1) {
+        const at = { x, y };
+        if (onBoard(at)) result.push(at);
+      }
+    return result;
+  };
+  const neighbours = (at: CoordV7): CoordV7[] =>
+    within(at, 1).filter((near) => !same(near, at));
+  const curiosityTiles = [
+    ...view.curiosities.map((curiosity) => curiosity.at),
+    ...view.monsters
+      .filter((other) => other.breed === "GIANT_SPIDER")
+      .map((other) => other.home),
+  ];
+  // Whether the unit may stand on `at` by terrain and position: true,
+  // false, or null when the tile is unexplored.
   const standableTerrain = (at: CoordV7): boolean | null => {
+    if (!onBoard(at)) return false;
+    if (breed === "BIGFOOT") {
+      if (chebyshev(at, entry.home) > BIGFOOT_HABITAT_RADIUS_V7) return false;
+      const tile = tileAtView(view, at);
+      if (tile?.explored !== true) return null;
+      return (
+        tile.terrain === "FOREST" &&
+        !centers.some((center) => chebyshev(center.at, at) < 3) &&
+        !curiosityTiles.some(
+          (other) => chebyshev(other, at) < BIGFOOT_CURIOSITY_DISTANCE_V7,
+        )
+      );
+    }
     if (
-      !onBoard(at) ||
-      Math.max(Math.abs(at.x - entry.home.x), Math.abs(at.y - entry.home.y)) >
-        MONSTER_HOME_RADIUS_V7
+      chebyshev(at, entry.home) > MONSTER_HOME_RADIUS_V7 ||
+      (breed !== "GIANT_SPIDER" && same(at, entry.home))
     )
       return false;
     const tile = tileAtView(view, at);
@@ -3896,19 +3965,11 @@ export function previewMonsterV7(
       !centers.some((center) => chebyshev(center.at, at) < 3)
     );
   };
-  const neighbours = (at: CoordV7): CoordV7[] => {
-    const result: CoordV7[] = [];
-    for (let dy = -1; dy <= 1; dy += 1)
-      for (let dx = -1; dx <= 1; dx += 1) {
-        const near = { x: at.x + dx, y: at.y + dy };
-        if ((dx !== 0 || dy !== 0) && onBoard(near)) result.push(near);
-      }
-    return result;
-  };
-  const area = monsterAreaV7(view.board, entry.home).filter(
-    (at) => standableTerrain(at) === true,
-  );
-  const provokeTiles = neighbours(monster.at);
+  const areaSource =
+    breed === "BIGFOOT"
+      ? within(entry.home, BIGFOOT_HABITAT_RADIUS_V7)
+      : monsterAreaV7(view.board, entry.home);
+  const area = areaSource.filter((at) => standableTerrain(at) === true);
   // A known step: standable and free of visible units, mounds, and chests.
   // An unexplored tile of the area may be a step too.
   const steps = neighbours(monster.at).filter((at) => {
@@ -3920,32 +3981,106 @@ export function previewMonsterV7(
       !view.treasureChests.some((chest) => same(chest, at))
     );
   });
+  const hostile = view.units.filter(
+    (unit) =>
+      unit.hp > 0 && unit.id !== monster.id && !isNeutralOwnerV7(unit.ownerId),
+  );
+  if (breed === "BIGFOOT") {
+    const provokeTiles = within(monster.at, BIGFOOT_ALERT_RADIUS_V7).filter(
+      (at) => !same(at, monster.at),
+    );
+    return {
+      unitId,
+      breed,
+      home: entry.home,
+      area,
+      provokeTiles,
+      reachTiles: [],
+      provokers: hostile
+        .filter(
+          (unit) => chebyshev(unit.at, monster.at) <= BIGFOOT_ALERT_RADIUS_V7,
+        )
+        .map((unit) => unit.id),
+      likelyTarget: null,
+      exact: view.board.tiles.every(
+        (tile) =>
+          tile.explored ||
+          chebyshev(tile.at, monster.at) > BIGFOOT_ALERT_RADIUS_V7,
+      ),
+    };
+  }
+  const rule = unitRoleRuleV7(view, monster);
+  const inRange = (from: CoordV7, at: CoordV7): boolean => {
+    const distance = chebyshev(from, at);
+    return distance >= rule.minimumRange && distance <= rule.range;
+  };
+  const origins = [monster.at, ...steps];
   const reach = new Map<string, CoordV7>();
-  for (const origin of [monster.at, ...steps])
-    for (const at of neighbours(origin))
-      if (!same(at, monster.at)) reach.set(`${at.y},${at.x}`, at);
+  for (const origin of origins)
+    for (const at of within(origin, rule.range))
+      if (!same(at, monster.at) && inRange(origin, at))
+        reach.set(`${at.y},${at.x}`, at);
   const reachTiles = [...reach.values()].sort(
     (left, right) => left.y - right.y || left.x - right.x,
   );
-  const provokers = view.units.filter(
-    (unit) =>
-      unit.hp > 0 &&
-      unit.id !== monster.id &&
-      !isNeutralOwnerV7(unit.ownerId) &&
-      (chebyshev(unit.at, monster.at) === 1 ||
-        entry.provokedBy.includes(unit.id)),
+  // Section 25.4: a saucer's provocation (the perimeter, next to a guard of
+  // the camp, or a hurt to one of them); a Graveyard's (every unit).
+  const campGuards =
+    breed === "GIANT_SPIDER"
+      ? []
+      : view.monsters.filter(
+          (other) =>
+            other.breed !== "GIANT_SPIDER" &&
+            other.breed !== "BIGFOOT" &&
+            same(other.home, entry.home),
+        );
+  const campGuardUnits = view.units.filter((unit) =>
+    campGuards.some((other) => other.unitId === unit.id),
   );
-  const inReach = provokers.filter((unit) =>
-    reachTiles.some((at) => same(at, unit.at)),
+  const graveyard = breed === "ZOMBIE";
+  const provokeKeys = new Map<string, CoordV7>();
+  if (breed === "GIANT_SPIDER")
+    for (const at of neighbours(monster.at))
+      provokeKeys.set(curiosityKeyV7(at), at);
+  else if (graveyard)
+    for (const at of reachTiles) provokeKeys.set(curiosityKeyV7(at), at);
+  else {
+    for (const at of within(entry.home, MONSTER_HOME_RADIUS_V7))
+      provokeKeys.set(curiosityKeyV7(at), at);
+    for (const guard of campGuardUnits)
+      for (const at of neighbours(guard.at))
+        provokeKeys.set(curiosityKeyV7(at), at);
+  }
+  const provokeTiles = [...provokeKeys.values()].sort(
+    (left, right) => left.y - right.y || left.x - right.x,
   );
-  const likely = [...inReach].sort(
-    (left, right) => left.hp - right.hp || left.id - right.id,
-  )[0];
+  const provokers = hostile.filter((unit) =>
+    breed === "GIANT_SPIDER"
+      ? chebyshev(unit.at, monster.at) === 1 ||
+        entry.provokedBy.includes(unit.id)
+      : graveyard ||
+        chebyshev(unit.at, entry.home) <= MONSTER_HOME_RADIUS_V7 ||
+        campGuardUnits.some((guard) => chebyshev(guard.at, unit.at) === 1) ||
+        campGuards.some((other) => other.provokedBy.includes(unit.id)),
+  );
+  // Naval branch section 5.2: a submerged Submarine is hit only from next
+  // to it.
+  const reachable = (unit: PublicUnitV7): boolean =>
+    origins.some(
+      (origin) =>
+        inRange(origin, unit.at) &&
+        (chebyshev(origin, unit.at) <= 1 || !unitIsSubmergedV7(view, unit)),
+    );
+  const likely = provokers
+    .filter(reachable)
+    .sort((left, right) => left.hp - right.hp || left.id - right.id)[0];
+  const exactRadius = breed === "GIANT_SPIDER" ? 2 : 1 + rule.range;
   const exact = view.board.tiles.every(
-    (tile) => tile.explored || chebyshev(tile.at, monster.at) > 2,
+    (tile) => tile.explored || chebyshev(tile.at, monster.at) > exactRadius,
   );
   return {
     unitId,
+    breed,
     home: entry.home,
     area,
     provokeTiles,
@@ -3954,6 +4089,134 @@ export function previewMonsterV7(
     likelyTarget: likely?.id ?? null,
     exact,
   };
+}
+
+/**
+ * Map curiosities round 2 (section 32.5): what stepping the own unit
+ * `unitId` onto the visible gate `gateAt` would do: `exit` (its partner),
+ * `displaces` (the visible occupant of the exit, or null), `displaceTo` (the
+ * tile that occupant is shoved to by section 28.3, or null), and `blocked`
+ * (the exit is occupied with no free tile around it). Null when `gateAt` is
+ * not a gate the viewer knows or the unit is not the viewer's. The partner
+ * is explored with its gate, so the occupant is always visible.
+ */
+export interface GatePreviewV7 {
+  readonly gate: CoordV7;
+  readonly exit: CoordV7;
+  readonly displaces: UnitId | null;
+  readonly displaceTo: CoordV7 | null;
+  readonly blocked: boolean;
+  /**
+   * False only when a foreign occupant's private Engineering could change
+   * `displaceTo` (a Mountain earlier in the clockwise order).
+   */
+  readonly exact: boolean;
+}
+
+export function previewGateV7(
+  view: PlayerViewV7,
+  unitId: UnitId,
+  gateAt: CoordV7,
+): GatePreviewV7 | null {
+  const unit = view.units.find(
+    (candidate) => candidate.id === unitId && candidate.hp > 0,
+  );
+  const gate = gateAtV7(view.curiosities, gateAt);
+  if (unit === undefined || unit.ownerId !== view.viewer.id || gate === null)
+    return null;
+  const exit = gate.partner;
+  const occupant = view.units.find(
+    (candidate) =>
+      candidate.id !== unit.id && candidate.hp > 0 && same(candidate.at, exit),
+  );
+  if (occupant === undefined)
+    return {
+      gate: gate.at,
+      exit,
+      displaces: null,
+      displaceTo: null,
+      blocked: false,
+      exact: true,
+    };
+  // The occupant's terrain rule: a foreign seat's Engineering is private,
+  // so the tile is computed with and without it (`exact` false when they
+  // differ; `displaceTo` then assumes none).
+  const own = occupant.ownerId === view.viewer.id;
+  const ownTechs = own ? view.viewer.researchedTechs : [];
+  const movementMode = unitMovementModeV7(view, occupant);
+  const mountainBorn = unitIsMountainBornV7(view, occupant);
+  const tileFor = (engineering: boolean): CoordV7 | null =>
+    gateDisplacementTileV7(
+      {
+        // The whole view, so the occupancy predicate sees every list it
+        // reads (units, mounds, and any later blocker such as a Barricade).
+        ...view,
+        board: {
+          width: view.board.width,
+          height: view.board.height,
+          tiles: view.board.tiles as unknown as BoardStateV7["tiles"],
+        },
+      },
+      exit,
+      occupant.id,
+      (at) => {
+        const tile = tileAtView(view, at);
+        return (
+          tile?.explored === true &&
+          canEnterTerrainV7({
+            terrain: tile.terrain,
+            movementMode,
+            afloat: false,
+            engineering,
+            navigation: ownTechs.includes("NAVIGATION"),
+            mountainBorn,
+            ice: isIceAtV7(view, at),
+          })
+        );
+      },
+    );
+  const displaceTo = tileFor(
+    own && unitCapabilitiesV7(view, occupant, ownTechs).mountainMovement,
+  );
+  const withEngineering = own ? displaceTo : tileFor(true);
+  return {
+    gate: gate.at,
+    exit,
+    displaces: occupant.id,
+    displaceTo,
+    blocked: displaceTo === null,
+    exact:
+      (displaceTo === null) === (withEngineering === null) &&
+      (displaceTo === null ||
+        withEngineering === null ||
+        same(displaceTo, withEngineering)),
+  };
+}
+
+/**
+ * Map curiosities round 2 (section 32.5): the movement query's gate marks:
+ * every offered `MOVE` destination of the own unit `unitId` that is a gate,
+ * with its exit and its gate preview, in (y, x) order of the gates.
+ */
+export function queryGateDestinationsV7(
+  view: PlayerViewV7,
+  unitId: UnitId,
+): readonly GatePreviewV7[] {
+  if (!view.curiosities.some((curiosity) => curiosity.kind === "GATE"))
+    return [];
+  const destinations = new Map<string, CoordV7>();
+  for (const command of queryPlayerCommandsV7(view))
+    if (command.kind === "MOVE" && command.unitId === unitId) {
+      const at = command.path.at(-1);
+      if (at !== undefined && gateAtV7(view.curiosities, at) !== null)
+        destinations.set(curiosityKeyV7(at), at);
+    }
+  return [...destinations.values()]
+    .sort((left, right) => left.y - right.y || left.x - right.x)
+    .flatMap((at) => {
+      const preview = previewGateV7(view, unitId, at);
+      return preview === null ? [] : [preview];
+    });
 }
 
 /**
@@ -4002,7 +4265,23 @@ export function queryCombatPreviewV7(
   )
     return preview;
   const attacker = view.units.find((unit) => unit.id === attackerId);
-  const reach = previewMonsterV7(view, targetUnitId)?.reachTiles ?? [];
+  // Round 2 (section 32.5): a guard answers through any guard of its camp
+  // (the attack makes the attacker a provoker of the camp); Bigfoot never.
+  const entry = view.monsters.find((other) => other.unitId === targetUnitId);
+  const answering =
+    entry === undefined || entry.breed === "BIGFOOT"
+      ? []
+      : entry.breed === "GIANT_SPIDER"
+        ? [entry]
+        : view.monsters.filter(
+            (other) =>
+              other.breed !== "GIANT_SPIDER" &&
+              other.breed !== "BIGFOOT" &&
+              same(other.home, entry.home),
+          );
+  const reach = answering.flatMap(
+    (other) => previewMonsterV7(view, other.unitId)?.reachTiles ?? [],
+  );
   return {
     ...preview,
     monsterRetaliates:
@@ -4633,8 +4912,16 @@ export function queryThreatenedTilesV7(
   // Map curiosities (section 10.4): a Monster threatens exactly its
   // provoke tiles (a unit there is attacked unless something weaker is in
   // reach); standing in its reach without provoking it is safe.
-  if (isNeutralOwnerV7(unit.ownerId))
-    return previewMonsterV7(view, unit.id)?.provokeTiles ?? [];
+  // Round 2 (section 32.5): a guard threatens its provoke tiles within its
+  // reach; Bigfoot threatens nothing.
+  if (isNeutralOwnerV7(unit.ownerId)) {
+    const preview = previewMonsterV7(view, unit.id);
+    if (preview === null || preview.breed === "BIGFOOT") return [];
+    if (preview.breed === "GIANT_SPIDER") return preview.provokeTiles;
+    return preview.provokeTiles.filter((at) =>
+      preview.reachTiles.some((tile) => same(tile, at)),
+    );
+  }
   // The frozen sea (naval branch section 8.9): an icebound unit cannot
   // move or attack, so it threatens nothing.
   if (unitIsIceboundV7(view, unit)) return [];
@@ -9536,6 +9823,8 @@ function publicKnockbackState(
     !survives ||
     defender.form === "EGG" ||
     defender.role === "JUGGERNAUT" ||
+    // Map curiosities round 2 (section 31): nor a neutral unit.
+    isNeutralOwnerV7(defender.ownerId) ||
     unitCapacitySlotsV7(view, defender) !== 1 ||
     // The ninth unit (7r55): Rock Hard.
     unitIsImmovableV7(view, defender)
@@ -9667,5 +9956,6 @@ function publicCommandTarget(view: PlayerViewV7, command: CommandV7): CoordV7 {
 
 const same = (left: CoordV7, right: CoordV7) =>
   left.x === right.x && left.y === right.y;
+const curiosityKeyV7 = (at: CoordV7): string => `${at.y},${at.x}`;
 const chebyshev = (left: CoordV7, right: CoordV7) =>
   Math.max(Math.abs(left.x - right.x), Math.abs(left.y - right.y));

@@ -100,14 +100,32 @@ export function isMonsterUnitV7(unit: Pick<PublicUnitV7, "ownerId">): boolean {
   return isNeutralOwnerV7(unit.ownerId);
 }
 
-/** The explored curiosity on a tile, if any. */
+/**
+ * The round-1 tile markers this presentation draws. The round-2 kinds
+ * (`pulp_wars-737.14`: camp centres, gates, the Well) are in the view but
+ * drawn by the round-2 UI bead (`pulp_wars-737.16`); until then they are
+ * not drawn.
+ */
+export type DrawnCuriosityKindV7 = Extract<
+  CuriosityKindV7,
+  "FOUNTAIN" | "SHRINE" | "WRECK"
+>;
+
+/** Whether this presentation draws a curiosity kind (see above). */
+export function isDrawnCuriosityKindV7(
+  kind: CuriosityKindV7,
+): kind is DrawnCuriosityKindV7 {
+  return kind === "FOUNTAIN" || kind === "SHRINE" || kind === "WRECK";
+}
+
+/** The explored curiosity this presentation draws on a tile, if any. */
 export function curiosityOnTileV7(
   view: Pick<PlayerViewV7, "curiosities">,
   at: CoordV7,
-): CuriosityKindV7 | null {
-  return (
-    view.curiosities.find((curiosity) => same(curiosity.at, at))?.kind ?? null
-  );
+): DrawnCuriosityKindV7 | null {
+  const kind =
+    view.curiosities.find((curiosity) => same(curiosity.at, at))?.kind ?? null;
+  return kind !== null && isDrawnCuriosityKindV7(kind) ? kind : null;
 }
 
 /**
@@ -118,6 +136,8 @@ export function visibleLairsV7(
   view: Pick<PlayerViewV7, "monsters" | "board">,
 ): readonly CoordV7[] {
   return view.monsters.flatMap((entry) => {
+    // Round 2: only the Spider has a web (a guard's home is its camp centre).
+    if (entry.breed !== "GIANT_SPIDER") return [];
     const tile =
       view.board.tiles[entry.home.y * view.board.width + entry.home.x];
     return tile?.explored === true ? [entry.home] : [];

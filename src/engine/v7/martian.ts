@@ -447,6 +447,10 @@ export function mindControlTargetBlockV7(
   if (
     target.form !== "LAND" ||
     target.role === "JUGGERNAUT" ||
+    // Map curiosities round 2 (section 31): Mind Control never takes a
+    // neutral unit (the Spider was immune by its role; a guard or Bigfoot
+    // is not a Juggernaut).
+    isNeutralOwnerV7(target.ownerId) ||
     unitCapacitySlotsV7(roster, target) !== 1 ||
     targetTile === undefined ||
     targetTile.site !== null ||

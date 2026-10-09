@@ -554,7 +554,7 @@ describe("ruleset-7 map scale: many seats (7r42)", () => {
         }),
       ).toEqual(map);
       const on = generated({ ...input, curiosities: true });
-      expect({ ...on, curiosities: [], monsterHome: null }).toEqual(map);
+      expect({ ...on, curiosities: [], neutrals: [] }).toEqual(map);
     }
   });
 
@@ -604,7 +604,7 @@ describe("ruleset-7 map scale: many seats (7r42)", () => {
     );
     const current = generateInitialMapV7(input);
     if (!rifts.ok || !current.ok) throw new Error("generation");
-    expect({ ...current.map, curiosities: [], monsterHome: null }).toEqual(
+    expect({ ...current.map, curiosities: [], neutrals: [] }).toEqual(
       rifts.map,
     );
     // Balance helpers.

@@ -47,6 +47,7 @@ import type {
   UnitStateV7,
 } from "./types";
 import { isNeutralOwnerV7 } from "./types";
+import { gateAtV7 } from "./curiosities";
 import { barricadeAtV7, moundAtV7, tileOccupiedV7 } from "./units";
 import type { PlayerTileViewV7, PlayerViewV7, PublicUnitV7 } from "./view";
 
@@ -99,7 +100,10 @@ export type MovementFailureReasonV7 =
   // an icebound unit.
   | "SLIDE_FORCED"
   | "ICE_STOPS_MOVE"
-  | "ICEBOUND";
+  | "ICEBOUND"
+  // Map curiosities round 2 (section 28.2): a Dimensional Gate ends every
+  // Move that enters it, so a path cannot continue past one.
+  | "GATE_STOPS_MOVE";
 
 export type MovementPathResultV7 =
   | {
@@ -510,7 +514,12 @@ function validateMovementPathWithOptionsV7(
     // The Ice Folk revision section 6.2 (3): deep snow, waived by a Road edge.
     const snowStops = snowStopped && stepSnow && !roadEdge;
     const terrainStops = groundStops || snowStops;
-    const stops = !wasExplored || terrainStops || entersZoc;
+    // Map curiosities round 2 (section 28.2): a gate stops every Move that
+    // enters it, for every movement mode.
+    const gateStops =
+      state.curiosities.length > 0 &&
+      gateAtV7(state.curiosities, step) !== null;
+    const stops = !wasExplored || terrainStops || entersZoc || gateStops;
     // Section 8.6: a step that entered ice the mover knew of continues
     // straight on while the next tile in that direction is on the board,
     // known before the command, ice, and free of units and mounds, and
@@ -601,15 +610,21 @@ function validateMovementPathWithOptionsV7(
         legal: false,
         reason: !wasExplored
           ? "UNEXPLORED_INTERMEDIATE"
-          : iceStops
-            ? "ICE_STOPS_MOVE"
-            : mode === "GROUND" && tile.terrain === "MOUNTAIN" && !mountainBorn
-              ? "MOUNTAIN_STOPS_MOVE"
-              : mode === "GROUND" && tile.terrain === "FOREST" && !ignoresForest
-                ? "FOREST_STOPS_MOVE"
-                : snowStops
-                  ? "SNOW_STOPS_MOVE"
-                  : "ZOC_STOPS_MOVE",
+          : gateStops
+            ? "GATE_STOPS_MOVE"
+            : iceStops
+              ? "ICE_STOPS_MOVE"
+              : mode === "GROUND" &&
+                  tile.terrain === "MOUNTAIN" &&
+                  !mountainBorn
+                ? "MOUNTAIN_STOPS_MOVE"
+                : mode === "GROUND" &&
+                    tile.terrain === "FOREST" &&
+                    !ignoresForest
+                  ? "FOREST_STOPS_MOVE"
+                  : snowStops
+                    ? "SNOW_STOPS_MOVE"
+                    : "ZOC_STOPS_MOVE",
       };
     }
     if (stops)
@@ -1075,7 +1090,13 @@ function validatePlayerMovementPathWithContextV7(
         iceFolk: iceFolkKind,
       }) ||
         snowStops);
-    const stops = !tile.explored || terrainStops || entersZoc;
+    // Map curiosities round 2 (section 28.2): an explored gate stops every
+    // Move that enters it.
+    const gateStops =
+      tile.explored &&
+      view.curiosities.length > 0 &&
+      gateAtV7(view.curiosities, step) !== null;
+    const stops = !tile.explored || terrainStops || entersZoc || gateStops;
     // Section 8.6: the slide (the same rule as the canonical validation;
     // every tile it reads is explored and every unit on it visible).
     if (slides && stepIce && !stops) {
@@ -1100,15 +1121,21 @@ function validatePlayerMovementPathWithContextV7(
         legal: false,
         reason: !tile.explored
           ? "UNEXPLORED_INTERMEDIATE"
-          : iceStops
-            ? "ICE_STOPS_MOVE"
-            : mode === "GROUND" && tile.terrain === "MOUNTAIN" && !mountainBorn
-              ? "MOUNTAIN_STOPS_MOVE"
-              : mode === "GROUND" && tile.terrain === "FOREST" && !ignoresForest
-                ? "FOREST_STOPS_MOVE"
-                : snowStops
-                  ? "SNOW_STOPS_MOVE"
-                  : "ZOC_STOPS_MOVE",
+          : gateStops
+            ? "GATE_STOPS_MOVE"
+            : iceStops
+              ? "ICE_STOPS_MOVE"
+              : mode === "GROUND" &&
+                  tile.terrain === "MOUNTAIN" &&
+                  !mountainBorn
+                ? "MOUNTAIN_STOPS_MOVE"
+                : mode === "GROUND" &&
+                    tile.terrain === "FOREST" &&
+                    !ignoresForest
+                  ? "FOREST_STOPS_MOVE"
+                  : snowStops
+                    ? "SNOW_STOPS_MOVE"
+                    : "ZOC_STOPS_MOVE",
       };
     if (stops)
       return {

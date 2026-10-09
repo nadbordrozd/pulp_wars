@@ -168,8 +168,9 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
     // (`pulp_wars-w49.4`) removes again (59).
     // Dwarf crowd control (`pulp_wars-w49.33`): three more commands (62).
     // The giants' signatures (`pulp_wars-w49.30`) add SWALLOW, TOSS,
-    // STOMP, and BREAK_OFF after RECOVER (66).
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(66);
+    // STOMP, and BREAK_OFF after RECOVER (66). Map curiosities round 2
+    // (`pulp_wars-737.14`) add TOSS_COIN (67).
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(67);
     const tractor = COMMAND_KIND_ORDER_V7.indexOf("TRACTOR_BEAM");
     expect(COMMAND_KIND_ORDER_V7.slice(tractor, tractor + 4)).toEqual([
       "TRACTOR_BEAM",
@@ -185,8 +186,9 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
     // The ninth unit (`pulp_wars-w49.17`, 7r55): WIGHT_RISEN (101).
     // Dwarf crowd control (`pulp_wars-w49.33`): four more events (105).
     // The giants' signatures (`pulp_wars-w49.30`) add ten event kinds in
-    // one block after UNIT_SURFACED (115).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(115);
+    // one block after UNIT_SURFACED (115). Map curiosities round 2
+    // (`pulp_wars-737.14`) add four (119).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(119);
     const after = (order: readonly string[], kind: string) =>
       order[order.indexOf(kind) + 1];
     expect(after(DOMAIN_EVENT_KIND_ORDER_V7, "UNITS_RALLIED")).toBe(

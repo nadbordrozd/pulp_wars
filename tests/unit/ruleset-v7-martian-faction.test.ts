@@ -99,7 +99,7 @@ import { at, kindsV7, movedV7 } from "../fixtures/v7-revision20";
 // (docs/product/RULESET_7_MARTIANS.md sections 2 to 4, 10.9, 10.10, and 11).
 
 /** The revision number of this identity (`pulp-wars-poc-7rNN`). */
-const REVISION = 65;
+const REVISION = 66;
 const ID = `pulp-wars-poc-7r${REVISION}`;
 const PREVIOUS_ID = `pulp-wars-poc-7r${REVISION - 1}`;
 
@@ -268,8 +268,9 @@ describe("Martian faction registration (sections 2 and 11)", () => {
     // (`pulp_wars-w49.4`) removes again (59).
     // Dwarf crowd control (`pulp_wars-w49.33`): three more commands (62).
     // The giants' signatures (`pulp_wars-w49.30`) add SWALLOW, TOSS,
-    // STOMP, and BREAK_OFF after RECOVER (66).
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(66);
+    // STOMP, and BREAK_OFF after RECOVER (66). Map curiosities round 2
+    // (`pulp_wars-737.14`) add TOSS_COIN (67).
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(67);
     const hatch = COMMAND_KIND_ORDER_V7.indexOf("HATCH");
     expect(COMMAND_KIND_ORDER_V7.slice(hatch, hatch + 4)).toEqual([
       "HATCH",
@@ -285,8 +286,9 @@ describe("Martian faction registration (sections 2 and 11)", () => {
     // The ninth unit (`pulp_wars-w49.17`, 7r55): WIGHT_RISEN (101).
     // Dwarf crowd control (`pulp_wars-w49.33`): four more events (105).
     // The giants' signatures (`pulp_wars-w49.30`) add ten event kinds in
-    // one block after UNIT_SURFACED (115).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(115);
+    // one block after UNIT_SURFACED (115). Map curiosities round 2
+    // (`pulp_wars-737.14`) add four (119).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(119);
     const after = (kind: string) =>
       DOMAIN_EVENT_KIND_ORDER_V7[
         DOMAIN_EVENT_KIND_ORDER_V7.indexOf(kind as never) + 1

@@ -45,6 +45,7 @@ import {
   withShieldDamageV7,
 } from "./martian";
 import { reachableMovementPathsV7, unitSightRadiusAtV7 } from "./movement";
+import { gateAtV7 } from "./curiosities";
 import { isUnitVisibleToPlayerV7 } from "./observation";
 import type { ApplyCommandResultV7, RuleErrorCodeV7 } from "./reducer";
 import { noRisingAtV7 } from "./rift";
@@ -144,8 +145,9 @@ type AssembleCommandV7 = Extract<CommandV7, { kind: "ASSEMBLE" }>;
  * Section 5.1: a tunnel tile for `unit`: on the board, explored by the
  * actor, land and not a Rift, enterable by the unit (a Mountain needs its
  * owner's Engineering), with no unit and no mound (the occupancy predicate)
- * and no treasure chest, not a settlement site, and not in territory allied
- * to the actor.
+ * and no treasure chest, not a settlement site, not a Dimensional Gate (map
+ * curiosities round 2, section 28.2: so a mound never lies on a gate), and
+ * not in territory allied to the actor.
  */
 export function tunnelTileLegalV7(
   state: GameStateV7,
@@ -176,7 +178,8 @@ export function tunnelTileLegalV7(
       ice: false,
     }) ||
     tileOccupiedV7(state, at) ||
-    state.treasureChests.some((chest) => same(chest, at))
+    state.treasureChests.some((chest) => same(chest, at)) ||
+    gateAtV7(state.curiosities, at) !== null
   )
     return false;
   const territoryOwner =

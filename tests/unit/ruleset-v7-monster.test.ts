@@ -490,7 +490,12 @@ describe("the view, previews, and threatened tiles (sections 8.8 and 10.4)", () 
 
   it("lists the visible Monster with its home and visible provokers", () => {
     expect(view.monsters).toEqual([
-      { unitId: spider.id, home: MONSTER_LAIR_V7, provokedBy: [] },
+      {
+        unitId: spider.id,
+        breed: "GIANT_SPIDER",
+        home: MONSTER_LAIR_V7,
+        provokedBy: [],
+      },
     ]);
     expect(view.units.some((unit) => unit.id === spider.id)).toBe(true);
     expect(view.unitStats.some((stats) => stats.unitId === spider.id)).toBe(
@@ -624,11 +629,12 @@ describe("parsing, saves, and replays (sections 10.2 and 8.9)", () => {
   });
 
   it("round-trips a generated match with a Monster through the replay and the save", () => {
-    // 16 x 16 Dry Land seed 11 with three seats draws a Monster (seed 7
-    // before the village density, `pulp_wars-ykw.2`).
+    // 16 x 16 Dry Land seed 8 with three seats draws a Monster (seed 7
+    // before the village density, `pulp_wars-ykw.2`; seed 11 until the
+    // round-2 kinds joined the kind draw, `pulp_wars-737.14`).
     const setup: MatchSetupV7 = {
       rulesetId: RULESET_7_ID,
-      seed: 11,
+      seed: 8,
       width: 16,
       height: 16,
       aiCount: 2,

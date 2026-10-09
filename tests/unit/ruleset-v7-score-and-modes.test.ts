@@ -389,9 +389,34 @@ describe("score and modes: the score query over a state", () => {
       unitScoreValueV7(state, {
         id: unitId(9999),
         ownerId: 0 as PlayerId,
-        role: "FIGHTER",
+        role: "JUGGERNAUT",
       }),
     ).toBe(10);
+    // Map curiosities round 2 (`pulp_wars-737.14`): every neutral unit is
+    // worth its breed's bounty (a neutral FIGHTER is a Grunt, 3; a neutral
+    // GUARD with 18 HP a Zombie, 5; a neutral RAIDER is Bigfoot, 12).
+    expect(
+      unitScoreValueV7(state, {
+        id: unitId(9999),
+        ownerId: 0 as PlayerId,
+        role: "FIGHTER",
+      }),
+    ).toBe(3);
+    expect(
+      unitScoreValueV7(state, {
+        id: unitId(9999),
+        ownerId: 0 as PlayerId,
+        role: "GUARD",
+        maxHp: 18,
+      }),
+    ).toBe(5);
+    expect(
+      unitScoreValueV7(state, {
+        id: unitId(9999),
+        ownerId: 0 as PlayerId,
+        role: "RAIDER",
+      }),
+    ).toBe(12);
     expect(
       unitScoreValueV7(state, {
         id: unitId(9999),

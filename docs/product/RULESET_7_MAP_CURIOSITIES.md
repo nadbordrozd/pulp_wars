@@ -34,12 +34,14 @@ with the pending [Dwarf overlay](RULESET_7_DWARVES.md) and the pending
 does not mention stays in force. Appendix A records the first draft, the
 critique, and what the critique changed.
 
-**Round 2** (`pulp_wars-737.12`, spec, not yet implemented): sections 22
-to 38 and Appendix B add five more kinds (the Downed Saucer and the
-Graveyard, two neutral camps; the Dimensional Gates; and two easter eggs,
-Bigfoot and the Wishing Well) for beads `pulp_wars-737.13` to
-`pulp_wars-737.17`. Unlike sections 1 to 21, that part is a live spec; see
-[section 22](#22-round-2-source-and-scope).
+**Round 2** (`pulp_wars-737.12`, spec): sections 22 to 38 and Appendix B
+add five more kinds (the Downed Saucer and the Graveyard, two neutral
+camps; the Dimensional Gates; and two easter eggs, Bigfoot and the Wishing
+Well) for beads `pulp_wars-737.13` to `pulp_wars-737.17`. Unlike sections 1
+to 21, that part is a live spec; see
+[section 22](#22-round-2-source-and-scope). The art (`pulp_wars-737.13`)
+and the engine (`pulp_wars-737.14`, with the notes of
+[section 39](#39-implementation-notes-pulp_wars-73714)) are implemented.
 
 **Source.** The user, 2026-10-03: "figure out some more interesting random
 things on the map. they are there to add color and occasional extra
@@ -1018,8 +1020,9 @@ this stage), with no identity change and no tuning:
 
 ## 22. Round 2: source and scope
 
-**Status:** spec (`pulp_wars-737.12`), not yet implemented. Sections 22 to
-38 and [Appendix B](#appendix-b-round-2-draft-critique-and-changes) are the
+**Status:** spec (`pulp_wars-737.12`); the engine is implemented
+(`pulp_wars-737.14`, [section 39](#39-implementation-notes-pulp_wars-73714)),
+the Normal AI and the UI are not yet. Sections 22 to 38 and [Appendix B](#appendix-b-round-2-draft-critique-and-changes) are the
 live design of round 2; they overlay
 [Ruleset 7: current rules](RULESET_7_CURRENT.md) at `pulp-wars-poc-7r59`,
 where the round-1 curiosities are folded in
@@ -1882,6 +1885,154 @@ otherwise.
    share the count._ Or raise the count on 20 x 20 and 25 x 25 by one?
 7. **One danger per board.** Never a Spider and a camp, or two camps, on
    one board. _Default: one danger._ Or allow two?
+
+## 39. Implementation notes (`pulp_wars-737.14`)
+
+Engine step 3 of section 37 is implemented: generation (section 24), the
+camps, the gates, Bigfoot, the Well and `TOSS_COIN`, the state, events,
+views, and previews, the registration by breed, the owner-reader audit and
+the fuzz, and the distribution validator. The identity bump of section
+32.1 is `pulp-wars-poc-7r66` (published after score and modes, `7r65`,
+which it rejects, with a new autosave key; it was built on `7r59` and
+rebased over the Dwarf crowd control, Goblin Berserk, the giants'
+signatures, the reward ladder, any unit can capture, and score and modes).
+Every open question of section 38 took its default. Where this
+part was silent or did not fit the code, the implementation rules as
+follows:
+
+- **The roster's breeds.** `FactionRosterV7` gains an optional `monsters`
+  list (the state's and the view's carry it). A roster without it (the
+  setup and role-level reads, and the partial rosters some chains build)
+  resolves a neutral unit's breed from its role and maximum HP
+  (`neutralBreedOfV7`), which is exact because parsing pins each breed's
+  role and maximum HP and the two `GUARD` breeds differ in maximum HP (the
+  Zombie 18, the Shield Projector 15).
+- **The registration.** Every breed has Sight 0 and `cost` null and may act
+  after its step. Bigfoot's row is `RAIDER`, Attack 0, range 0 (minimum
+  range 1, so no distance is ever in range), Move 3 (its flight), and no
+  ability; its Defense 2 and Forest cover come from the ordinary defence.
+  The mechanics are the Original faction's of each role with no advance, no
+  Field Defense, and Shield 0; the Ray Gunner's carry `heatSink`, and
+  `rayOverheatsV7` reads it for a neutral unit without the Heat Sinks
+  technology, so its full-power ray never adds a `cooling` entry.
+- **Immunities by owner, not role.** The Spider was immune to Mind Control,
+  Knockback, and the Candy Bounce through its `JUGGERNAUT` role; a guard or
+  Bigfoot is not one, so `mindControlTargetBlockV7`, Knockback (canonical
+  and public), and `attackIsBouncedV7` now also refuse a neutral unit
+  (the status immunity, Push, and the Tractor Beam already read the
+  owner).
+- **A guard's reach.** "Within its range" also applies the naval branch's
+  rule that a submerged Submarine is hit only from next to it (a Grunt or
+  Ray Gunner would otherwise shoot one from 2). The Spider's choice is the
+  same function with range 1, so its behaviour is unchanged.
+- **Bigfoot's habitat at placement** excludes the tiles within 3 of the
+  curiosities placed before it; a curiosity placed after it may shrink the
+  habitat below 12 (rule 5 still keeps its home 5 from it). Parsing checks
+  that Bigfoot stands on its current habitat. The independent checker
+  counts the habitat without the other curiosities (it cannot know the
+  order).
+- **The count.** The gate pair is one curiosity of the count table; a
+  camp's guards are not curiosities of their own.
+- **Gates.** A gate stops a Move only on an explored tile in the public
+  validator (an unexplored tile stops a Move anyway). `GATE_BLOCKED`'s `at`
+  is the entry gate. A traversal by `DISEMBARK` moves the landing's own
+  `TILES_REVEALED` up, before the gate events (otherwise it comes last, as
+  before). A `BOMB_RUN` that ends on a gate is not a traversal (section
+  28.2 names `MOVE` and `DISEMBARK` only); a Gyrocopter's `MOVE` is. The
+  tunnel-tile rule's "not a gate" also applies to an Assemble, which shares
+  it. A displaced occupant never lands on water (the land-form
+  `canEnterTerrainV7`), except on ice it may enter. Crumbs never lie on a
+  curiosity tile (the Candy rule), so the "Crumbs on the entry gate" of
+  section 28.2 cannot occur; the order (end-of-Move steps, then the
+  traversal) is implemented.
+- **Occupancy.** A neutral unit's step, Bigfoot's flight, and the gate
+  displacement ask the ordinary occupancy predicate (`tileOccupiedV7`) of
+  the whole state or view, so every blocker it knows (a unit, a mound, a
+  Dwarf Barricade of `pulp_wars-w49.33`) keeps them off a tile. A Barricade
+  never stands on a curiosity tile (a gate, the Well, a camp centre), but
+  may stand in a camp's area, in Bigfoot's habitat, or next to a gate,
+  where it closes that tile to a guard's step, Bigfoot's flight, and a
+  displacement (it may block a traversal). A neutral unit never attacks a
+  Barricade: only units provoke it.
+- **The giants' signatures** (`pulp_wars-w49.30`). No neutral breed has a
+  signature (their abilities are `ATTACK` and the Ray Gunner's
+  `HEAT_RAY`). Swallow refuses every neutral unit (`IMMUNE`), a Crushing
+  Shove never pushes one, and the Glacial Smash shards never Chill one. A
+  Goblin Toss, a Break Off, and a regurgitation never place a unit on a
+  curiosity tile, so never on a gate; an Overstride is a `MOVE`, so it
+  stops on a gate and traverses, and tramples a guard or Bigfoot it steps
+  over. Provocation also counts the Crushing Shove's crush on the target
+  and on the unit it is shoved into (`UNIT_CRUSHED`), with the Stomp, the
+  trample, the Whirl, the Wail, the bombs, and the eruptions.
+- **Score** (`pulp_wars-kaw6.2`). Every neutral unit is worth its bounty
+  (the Spider 10, a Grunt 3, a Ray Gunner or Shield Projector 4, a Zombie
+  5, Bigfoot 12): a seat's credited kill of one adds that to its kills
+  once, and a neutral unit's kill of a seat's unit is that seat's loss and
+  nobody's kill. Any unit can capture (`pulp_wars-ke95`) changes nothing
+  here: a neutral unit never captures and never stands within 2 of a
+  centre.
+- **The partner reveal** is one pass after every accepted command: for
+  each player, a newly explored gate's partner joins the command's
+  `TILES_REVEALED` of that player that lists the gate (a new
+  `TILES_REVEALED` at the end when none does, which play never produces).
+- **`previewGateV7`** adds `exact`: a foreign occupant's Engineering is
+  private, so the tile is computed with and without it and `exact` is false
+  when they differ (`displaceTo` then assumes none). The movement query's
+  gate marks are `queryGateDestinationsV7(view, unitId)`, the previews of
+  the unit's offered `MOVE` destinations that are gates.
+- **`TOSS_COIN`** settles city rewards and evaluates achievements like a
+  `MOVE` (a `VISION` may complete Explorer). A Coin outcome adds 5 after
+  the 1 paid, overflow-checked.
+- **Headless metrics.** `monsters` gains `breeds` (placed, in unit-ID order)
+  and `slain`; its `slainRound` stays the Spider's. New `gates`
+  (`traversals`, `displacements`, `blocked`) and `well` (`tosses` by
+  outcome).
+- **The distribution validator** now runs two faction mixes per setup with
+  distinct factions (no Martian or Undead seat; both), instead of the
+  duplicate Original seats, and counts kinds per mix, map type, and size.
+  The map-scale validator's "factions do not change the map" check now
+  strips the curiosities when two lineups differ in a Martian or Undead
+  seat (section 24.1 makes the curiosities depend on them).
+- **Pins.** The kind-order pins count 67 command kinds and 119 event
+  kinds, and the revision-12 ordinal fixture lists `TOSS_COIN` (inserted
+  before `RECOVER`, it shifts the ordinal of every later kind, which the
+  Normal AI's tie-break tuples carry). Tests that pinned a seed for a
+  curiosity moved to a seed that draws it under the nine-kind draw: the
+  Shrine round trip to seed 17 (from 12), the Spider round trips and the
+  browser-controller test to seed 8 (from 11), the Spider headless matches
+  to Pangea seed 150 (149) and Dry Land seed 7 (11). The tests that play
+  matches (pinned match and replay hashes, the headless and browser
+  matches) were not rerun by this bead (whole-game simulations run only
+  when the user asks).
+- **Presentation.** Until bead 5 (`pulp_wars-737.16`) the board draws only
+  the round-1 markers and the Spider's web; a guard or Bigfoot is drawn as
+  a neutral unit with its role's base art, like the Spider before its UI.
+- **Normal AI** (bead 4, `pulp_wars-737.15`) is unchanged and stayed legal
+  in a worker fuzz (not checked in: whole-game simulations run only when
+  the user asks) that played Normal five rounds beside every camp
+  composition, Bigfoot, the gates, and the Well with all eight factions,
+  and in 20-round headless matches on seeds that drew each new kind. It
+  treats every neutral unit through `previewMonsterV7`
+  like the Spider, so it avoids a saucer's perimeter and a Zombie's reach,
+  and also the tiles within 3 of Bigfoot (its provoke tiles); it never
+  plans a route through a gate and has no Well heuristic.
+- **Measured distribution** (`npm run validate:ruleset7-curiosity-maps`,
+  seeds 0–31, every map type, size, and AI count, in both faction mixes:
+  3,840 boards; PASS with every hard check of section 24.5). Totals over the
+  1,920 boards of each mix, with no Martian or Undead seat / with both:
+  Spider 201 / 260, Fountain 348 / 391, Shrine 254 / 318, Wreck 715 / 705,
+  Downed Saucer 126 / 0, Graveyard 100 / 0, gate pairs 23 / 37, Bigfoot
+  20 / 21, Wishing Well 95 / 148. Per 96 boards of a type at widths 16, 20,
+  and 25 (the mix with no Martian or Undead seat): Dry Land saucers 9, 15,
+  17, Graveyards 7, 9, 18, gates 0, 2, 10, Bigfoot 0, 0, 9; Pangea saucers
+  16, 10, 12, Graveyards 7, 12, 18, gates 0, 0, 6, Bigfoot 0, 2, 8; Lakes
+  saucers 15, 15, 17, Graveyards 11, 4, 14, gates 0, 0, 5, Bigfoot 0, 1,
+  0; Continents and Archipelago none of the four (a Well on 3 or 4 of the
+  25 x 25 boards and one 20 x 20 Archipelago board), as section 24.5
+  expected. The gates are rare below 25 x 25 (rule 6 and the fairness
+  rule leave few pairs on 20 x 20) and Bigfoot needs a 25 x 25 Forest; the
+  per-board counts of section 4.2 are unchanged (for example 16 x 16 Lakes:
+  3 boards with none, 93 with one).
 
 ## Appendix A. Draft, critique, and changes
 

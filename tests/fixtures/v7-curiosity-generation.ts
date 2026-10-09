@@ -104,28 +104,37 @@ export function checkCuriosityOnOffBoardV7(
     rifts.map,
     mapType,
     target,
+    on.factions,
   );
   if (mapType === "DRY_LAND")
     expect(placed.some((entry) => entry.kind === "WRECK")).toBe(false);
-  const markers = placed.filter((entry) => entry.kind !== "MONSTER");
-  const lair = placed.find((entry) => entry.kind === "MONSTER");
-  // The initial states differ only in the option, the lists, the
-  // Monster unit (the last initial entity), and the next entity ID.
+  const markers = mapOn.map.curiosities;
+  // The initial states differ only in the option, the lists, the neutral
+  // units (the last initial entities, in placement order), and the next
+  // entity ID.
   const stateOn = createInitialMapStateV7(on);
   const stateOff = createInitialMapStateV7(off);
   if (!stateOn.ok || !stateOff.ok) throw new Error("state");
   expect(stateOn.state.curiosities).toEqual(markers);
-  expect(stateOn.state.monsters.map((entry) => entry.home)).toEqual(
-    lair === undefined ? [] : [lair.at],
+  expect(
+    stateOn.state.monsters.map((entry) => ({
+      breed: entry.breed,
+      home: entry.home,
+    })),
+  ).toEqual(
+    mapOn.map.neutrals.map((entry) => ({
+      breed: entry.breed,
+      home: entry.home,
+    })),
   );
   const monsterIds = new Set(
     stateOn.state.monsters.map((entry) => entry.unitId),
   );
-  expect(
-    stateOn.state.monsters.every(
-      (entry) => entry.unitId === stateOff.state.nextEntityId,
+  expect(stateOn.state.monsters.map((entry) => entry.unitId)).toEqual(
+    stateOn.state.monsters.map(
+      (_, index) => stateOff.state.nextEntityId + index,
     ),
-  ).toBe(true);
+  );
   expect({
     ...stateOn.state,
     setup: { ...stateOn.state.setup, curiosities: false },
@@ -138,6 +147,6 @@ export function checkCuriosityOnOffBoardV7(
   const again = generateInitialMapV7(on);
   if (!again.ok) throw new Error("again");
   expect(again.map.curiosities).toEqual(markers);
-  expect(again.map.monsterHome).toEqual(lair?.at ?? null);
+  expect(again.map.neutrals).toEqual(mapOn.map.neutrals);
   return placed;
 }

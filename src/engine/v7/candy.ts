@@ -33,6 +33,7 @@ import type {
   UnitFormV7,
   UnitRoleIdV7,
 } from "./types";
+import { isNeutralOwnerV7 } from "./types";
 
 /**
  * The Candy revision (docs/product/RULESET_7_CANDY.md): the helpers the
@@ -339,6 +340,8 @@ export function attackIsBouncedV7(
     !facts.attackerDies &&
     !facts.defenderDies &&
     attacker.role !== "JUGGERNAUT" &&
+    // Map curiosities round 2 (section 31): nothing moves a neutral unit.
+    !isNeutralOwnerV7(attacker.ownerId) &&
     // The ninth unit (`pulp_wars-w49.17`, 7r55): Rock Hard, a Jawbreaker
     // is never bounced.
     !(

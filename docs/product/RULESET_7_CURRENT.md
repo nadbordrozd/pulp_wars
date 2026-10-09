@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r65`, for all eight registered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r66`, for all eight registered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), and Candy (`CANDY`). It
 folds in
@@ -291,6 +291,16 @@ with `decidedBy: "SCORE"` and the `ranking` on the outcome); the end of a
 match carries the human seat's star grade. The Normal AI never reads the
 mode or the score. A save, replay, or setup of `7r64` is rejected, and the
 browser autosave has a new key.
+`pulp-wars-poc-7r66` (`pulp_wars-737.14`) is **map curiosities round 2**
+([section 2.7](#27-map-curiosities)): with the Curiosities option on, a
+board may draw a Downed Saucer camp (no Martian seat) or a Graveyard camp
+(no Undead seat) guarded by neutral units, a pair of Dimensional Gates
+(20 x 20 and up; a gate ends every Move, and stepping on one carries the
+unit to the other, displacing its occupant), Bigfoot, or the Wishing Well
+and its new command `TOSS_COIN`; the state gains the neutral breeds
+(`monsters[].breed`), the gate and Well markers, and four events. The
+option off plays as at `7r65`. A save, replay, or setup of `7r65` is
+rejected, and the browser autosave has a new key.
 `pulp-wars-poc-7r58` (`pulp_wars-w49.25`) is
 [step two of the Martian pass](RULESET_7_TUNING_MARTIAN.md#14-step-two):
 **City Walls hold a unit on its own city center against a Saucer's Tractor
@@ -741,7 +751,7 @@ the build differs (its sections 20 to 24 list them);
 the values here are current. Where a document and the code disagreed, the
 code's behavior is the rule and is stated below;
 [Known discrepancies](#25-known-discrepancies) lists the open items and the
-resolved ones as of `pulp-wars-poc-7r65`.
+resolved ones as of `pulp-wars-poc-7r66`.
 
 **Terms.** "On the board" means a unit that currently exists (HP above 0).
 **Living** has the narrower revision-13 meaning used by Wail, Plague,
@@ -842,10 +852,10 @@ separate [Ruleset 6](RULESET_6.md) route.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r65`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Ruleset                                    | `pulp-wars-poc-7r66`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r65.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Browser autosave                           | `pulpWars.save.v7r66.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                                     |
@@ -2209,6 +2219,154 @@ viewer cannot see says nothing. Help has a Curiosities section whenever the
 option is on, the event log names each claim, heal, and bounty, and the
 Gallery has a Curiosities tab.
 
+#### Round 2: camps, gates, Bigfoot, and the Wishing Well
+
+**Round 2** (`pulp_wars-737.14`, the engine step of
+[map curiosities round 2](RULESET_7_MAP_CURIOSITIES.md#22-round-2-source-and-scope),
+sections 22 to 38 and the notes of
+[section 39](RULESET_7_MAP_CURIOSITIES.md#39-implementation-notes-pulp_wars-73714);
+`pulp-wars-poc-7r66`) adds five kinds: two
+neutral **camps** (the Downed Saucer and the Graveyard), a pair of
+**Dimensional Gates**, **Bigfoot**, and the **Wishing Well**. The Normal AI
+is not yet aware of them (bead `pulp_wars-737.15`; it stays legal and reads
+every neutral unit through `previewMonsterV7`), and the browser does not
+yet draw them (bead `pulp_wars-737.16`; the art of `pulp_wars-737.13` is
+registered).
+
+| Curiosity             | Where                                                       | Rule                                                                                                                                                         |
+| --------------------- | ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Downed Saucer**     | Grass or Forest, boards 16 and up, no Martian seat          | Stranded Martians guard a crashed saucer and, after every round, attack the weakest unit that came within 2 of the saucer, stood next to them, or hurt them. |
+| **Graveyard**         | Grass, boards 16 and up, no Undead seat                     | Two Zombies shamble around a graveyard and, after every round, attack the weakest unit they can reach.                                                       |
+| **Dimensional Gates** | Grass or Forest, a pair on opposite sides, boards 20 and up | A unit that steps onto a gate comes out of the other one, shoving aside any unit standing there.                                                             |
+| **Bigfoot**           | Forest, boards 20 and up                                    | A shy Bigfoot roams its forest, never fights, flees from any unit that comes within 3, and pays 12 Coins to whoever brings it down.                          |
+| **Wishing Well**      | Grass                                                       | Once per match, each player may have a unit standing on the Well toss a Coin into it for a small surprise.                                                   |
+
+**Generation.** The count table above is unchanged; the nine kinds share
+its draws, in the frozen order and weights Monster 3, Fountain 3, Shrine 2,
+Wreck 2, Downed Saucer 2, Graveyard 2, Gates 2, Bigfoot 1, Wishing Well 1.
+The eligible kinds are those not yet placed, allowed by the board (the
+Spider and the camps from width 16, the gates and Bigfoot from 20, the
+Wreck never on Dry Land) and by the seats (`setup.factions`: no Downed
+Saucer with a Martian seat, no Graveyard with an Undead seat), **one danger
+per board** (once the Spider or a camp is placed, the other two of the
+three are not eligible), and with a legal site or pair. The stream draws,
+in order: the count; per curiosity the kind, the site (for the gates, the
+pair, uniform over the legal pairs in lexicographic `(A, B)` order), then a
+saucer's composition `nextBounded(4)` (one Grunt; two Grunts; two Grunts
+and a Shield Projector; a Grunt and a Ray Gunner) and one guard-tile draw
+per guard in composition order (the Graveyard: two Zombies, two draws),
+each uniform over the centre's eight neighbours in `(y, x)` order that a
+guard may stand on and no earlier guard holds. Every new tile keeps rules 1
+to 3, 5, and 6 of the round-1 site rules, rule 5 counting every placed
+tile (a lair, a camp centre, both gates, Bigfoot's home); rule 4 holds for
+every new kind but the gates. A camp centre keeps every lair rule of the
+Spider and needs 3 (saucer) or 2 (Graveyard) guard tiles around it; a gate
+is not a cut tile of the land graph (with or without Mountains), 5 or more
+from every capital; the pair is at least `ceil(2 × width / 3)` apart (14 on
+20 x 20, 17 on 25 x 25) and fair (the capitals' distances to their nearer
+gate differ by at most 4); Bigfoot's habitat at placement has 12 or more
+tiles and no Forest tile within 4 of home, 3 or more from every centre, is
+a cut tile. The neutral units (the Spider, the guards, Bigfoot) are created
+after every other initial entity, in placement order. The option off is
+unchanged; with it on a board may draw different curiosities than before
+round 2 (and, through the exclusions, differ between faction lineups),
+never a different tile.
+
+**Neutral units by breed.** Every neutral unit is a unit of the neutral
+owner with a `monsters` entry `{ unitId, breed, home, provokedBy }`; the
+breed (`GIANT_SPIDER`, `GRUNT`, `RAY_GUNNER`, `SHIELD_PROJECTOR`, `ZOMBIE`,
+`BIGFOOT`) selects its registration. A guard has its faction role's stats
+with its Shield maximum added to its HP (no Shield) and may attack after
+its step: Grunt (`FIGHTER`) 10 HP, Attack 2, Defense 1.5, range 1–2, bounty
+3; Ray Gunner (`MARKSMAN`) 10, 3 (a heat ray, half power after a step, never
+Cooling), 1, range 1–2, bounty 4; Shield Projector (`GUARD`) 15, 1.5, 2.5,
+range 1, bounty 4; Zombie (`GUARD`) 18, 2, 2, range 1, bounty 5. Bigfoot
+(`RAIDER`) has 15 HP, Defense 2, no attack and range 0 (it never attacks or
+retaliates), bounty 12. No neutral unit has Sight, cost, technology,
+capture, Force Field, Bite, Infect, advance, or Push; only the Spider
+regenerates. The Spider's immunities hold for every breed (no status sticks,
+Mind Control, the Tractor Beam, Push, Knockback, and the Candy Bounce never
+move or take one), its death pays its breed's bounty through
+`MONSTER_BOUNTY_AWARDED`, and it never respawns.
+
+**Camps.** A camp's area is every tile within 2 of its centre, the centre
+excepted; a guard stands there on Grass, Forest, or Mountain 3 or more from
+every settlement centre, with no unit, mound, or chest, and steps at most
+one tile per neutral turn. Its provokers: for a Downed Saucer, every unit
+within 2 of the saucer, next to a guard of the camp, or in any guard's
+`provokedBy`; for a Graveyard, every unit. Each guard, in unit-ID order on
+the board the earlier ones left, attacks the weakest provoker (lowest HP,
+then unit ID) it can attack from where it stands (then without a step) or
+from a step tile (stepping to the first such tile in `(y, x)` order), a
+submerged Submarine only from next to it; otherwise it wanders by the
+Spider's stateless draw. A camp with no guard left stays as scenery.
+
+**The neutral turn** runs when `monsters` is non-empty, for every neutral
+unit in unit-ID order: the Spider and the guards attack or wander, Bigfoot
+flees or wanders; then the Spider alone regenerates and every `provokedBy`
+is cleared.
+
+**Bigfoot.** Its habitat is every tile within 4 of its home that is Forest,
+3 or more from every settlement centre, and 3 or more from every other
+curiosity tile (a lair, a camp centre, a gate, a Fountain, Shrine, Wreck,
+or Well). With a unit that is not neutral within 3 of it, it flees: among
+the tiles it reaches in 0 to 3 steps over free habitat tiles (it passes no
+unit), it takes the one farthest from the nearest such unit, ties by fewer
+steps, then `(y, x)`, with one `UNIT_MOVED` of the shortest path;
+otherwise it wanders.
+
+**Dimensional Gates.** A gate stops every Move that enters it, for every
+movement mode (`MOVEMENT_ILLEGAL { reason: "GATE_STOPS_MOVE" }` for a path
+that continues past one). A unit traverses when its own `MOVE` steps onto a
+gate or its `DISEMBARK` lands on one: after the command's end-of-Move steps
+on the entry gate, an occupant of the exit is displaced to the first tile,
+clockwise N, NE, E, SE, S, SW, W, NW around the exit, that is on the board,
+that it may enter (`canEnterTerrainV7` with its form, movement mode, and
+owner's research), and that holds no unit, mound, chest, or gate and is no
+settlement centre (`GATE_DISPLACED { unitId, from, to }`); then the unit is
+placed on the exit (`GATE_TRAVERSED { playerId, unitId, from, to }` and a
+`TILES_REVEALED` of its sight there), its activation as after the Move.
+With no such tile nothing moves (`GATE_BLOCKED { playerId, unitId, at }`).
+No forced move or placement onto a gate traverses, and a gate is never a
+tunnel, rider, or Assemble tile. Whenever a gate becomes explored for a
+player, by any reveal, its partner becomes explored in the same
+`TILES_REVEALED`.
+
+**The Wishing Well.** `TOSS_COIN { unitId }` (a primary action, placed
+before `RECOVER`): the actor's own unit, in land form on the Well
+(`TOSS_COIN_NOT_LEGAL { reason: "NOT_ON_WELL" }`), with a primary action
+left (`UNIT_CRASHED`, `UNIT_ALREADY_ACTED`), whose seat has not tossed
+(`TOSS_COIN_NOT_LEGAL { reason: "ALREADY_TOSSED" }`) and has a Coin
+(`INSUFFICIENT_COINS { cost: 1 }`). The seat pays 1 Coin and joins the
+Well's `tossedBy`; the outcome is `nextBounded(4)` on
+`randomState(seedFromText("pulp-wars-well:" + seed + ":" + playerId))`:
+nothing, 5 Coins, a full heal of the unit (HP only; a construct heals
+nothing), or every tile within 5 of the Well explored. Event
+`COIN_TOSSED { playerId, unitId, at, outcome, coinsGained, hpAfter }`.
+
+**State, views, queries.** `curiosities` entries are
+`{ kind, at }` for a Fountain, Shrine, Wreck, Downed Saucer, or Graveyard,
+`{ kind: "GATE", at, partner }`, and
+`{ kind: "WISHING_WELL", at, tossedBy }`; parsing adds the round-2 rules
+(one gate pair naming each other, on width 20 and up; the exclusions; at
+most one camp, never with a Spider; `tossedBy` seats, sorted; a guard on
+its camp's area with a home of its kind; Bigfoot on its habitat from width
+20; each neutral unit with its breed's role and maximum HP). The view lists
+the explored markers (a gate with its partner, the Well with `tossedBy`)
+and every visible neutral unit with its breed. `previewMonsterV7` covers
+every breed (with `breed`; a guard's `provokeTiles` are its saucer's
+perimeter and the tiles next to the camp's visible guards, or a Zombie's
+reach; Bigfoot's are the tiles within 3, with no reach); `previewGateV7`
+gives a gate's `exit`, `displaces`, `displaceTo`, `blocked`, and `exact`;
+`queryGateDestinationsV7` marks a unit's gate destinations;
+`monsterRetaliates` reads every guard of the target's camp (always false
+for Bigfoot); `queryThreatenedTilesV7` of a guard is its provoke tiles in
+its reach, of Bigfoot none. The headless metrics gain the placed `breeds`
+and `slain` count in `monsters` (its `slainRound` is the Spider's) and
+the `gates` and `well` blocks. The measured distribution is in
+[section 39](RULESET_7_MAP_CURIOSITIES.md#39-implementation-notes-pulp_wars-73714)
+of the spec.
+
 ## 3. Players, turns, and victory
 
 - Every seat starts with 3 Coins (`RULESET_7.startingCoins`; 5 before
@@ -2314,15 +2472,17 @@ Gallery has a Curiosities tab.
   seat's Start Turn (by Plague or a chain) emits `PORT_BLOCKADE_CHANGED` and
   `SEA_NETWORK_CHANGED` in that `END_TURN`.
 - **Neutral turn** ([section 2.7](#27-map-curiosities)): in a match with a
-  Giant Spider on the board, the `END_TURN` of the last seat of a round
-  runs the neutral turn after `TURN_ENDED` and before the next round's
-  first Start Turn: `NEUTRAL_TURN_STARTED`, each Spider's step and attack
-  (`UNIT_MOVED`, `COMBAT_RESOLVED`, deaths and their consequences),
-  `MONSTER_REGENERATED`, and `NEUTRAL_TURN_ENDED`, then the next Start
-  Turn's events; that command's blockade and sea-network events still come
-  last. The Spider is not a seat: it has no Start Turn, End Turn, income,
-  or elimination, and its turn never ends a match. A match without a Spider
-  has no neutral turn.
+  neutral unit on the board (the Giant Spider, a camp's guards, or, since
+  round 2, Bigfoot), the `END_TURN` of the last seat of a round runs the
+  neutral turn after `TURN_ENDED` and before the next round's first Start
+  Turn: `NEUTRAL_TURN_STARTED`, each neutral unit's step and attack or
+  flight in unit-ID order (`UNIT_MOVED`, `COMBAT_RESOLVED`, deaths and
+  their consequences), the Spider's `MONSTER_REGENERATED`, and
+  `NEUTRAL_TURN_ENDED`, then the next Start Turn's events; that command's
+  blockade and sea-network events still come last. No neutral unit is a
+  seat: it has no Start Turn, End Turn, income, or elimination, and its
+  turn never ends a match. A match without a neutral unit has no neutral
+  turn.
 - The first seat's first Start Turn runs when the match is created, so every
   seat's first turn includes ordinary income.
 - **Elimination:** a player owning zero cities is eliminated immediately.
@@ -5888,7 +6048,11 @@ Harbours from it.
   `NEUTRAL_TURN_STARTED` and `NEUTRAL_TURN_ENDED` reach every viewer,
   `WRECK_SALVAGED` and `MONSTER_BOUNTY_AWARDED` only the player paid, and
   `previewMonsterV7` is exact unless an unexplored tile lies within 2 of
-  the Spider (`exact: false`).
+  the Spider (`exact: false`; for a guard within 1 + its range, for
+  Bigfoot within 3). Round 2: a Dimensional Gate's partner is explored
+  with it, in the same reveal, so a player who knows one gate sees who
+  stands on the other; `GATE_TRAVERSED`, `GATE_BLOCKED`, and
+  `COIN_TOSSED` reach the actor and every viewer that sees the unit.
 - The browser UI and Normal AI read only the player's public view, public
   command queries, and public previews. Viewer-projected events never reveal
   hidden units, sources, or HP.
@@ -11664,6 +11828,7 @@ first guesses.
 | Rewards       | `pulp-wars-poc-7r63` | `pulp_wars-zypi` the reward ladder rework, engine (the user, 2026-10-09; the identity became `7r63` when it was published after the giants' signatures, `7r62`; a save, replay, or setup of `7r62` is rejected): for every faction level 2 Stockpile (+4 Coins) or Militia; level 3 Scouts (the radius-3 reveal and the faction's free `RAIDER`-role unit, now also the Dwarf Gyrocopter and the Candy Donut Racer) or Walls; level 4 Population Boom or the new Economic Miracle (`ECONOMIC_MIRACLE`, +1 Coin of the city's income every turn, kept on capture); level 5 and every later level the faction's giant or the Treasury (10 Coins, 6 before), with no once-per-city limit; Barracks and the 6-Coin level-4 Treasury no longer offered (older records keep their effect); the Showcase records and first income (20 Coins, 17 for a Goblin seat); the Normal AI kept legal and plain                                                                                                                                                                                                                                                       |
 | Capture       | `pulp-wars-poc-7r64` | `pulp_wars-ke95` any unit can capture, engine (the user, 2026-10-09; the identity became `7r64` when it was published after the reward ladder rework, `7r63`; a save, replay, or setup of `7r63` is rejected): every land role of every faction has `CAPTURE`; a flyer and the Sabretooth may end a Move, land, or advance on a village or a foreign center and so besiege and capture (only a surfaced Dwarf rider keeps off foreign centers that turn); "Can't capture" removed from cards, glossary, and Help; the Normal AI plans captures with every land unit but the flyers                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | Score         | `pulp-wars-poc-7r65` | `pulp_wars-kaw6.2` score and modes, engine ([the score and stars spec](RULESET_7_SCORE_AND_STARS.md); the identity became `7r65` when it was published after any unit can capture, `7r64`; a save, replay, or setup of `7r64` is rejected): a running battle score per player (`scoresV7`, `scoreV7`; territory 2 per tile, city levels 10, technology tiers 8, achievements 40, army 1 per Coin, kills 2 per Coin, minus losses 1 per Coin and 1 per 5 HP lost, the penalty capped at half the positive points) from the new state list `scoreLedger`; the optional setup key `gameMode` (`DOMINATION` by default, `PERFECTION`: the match ends at the round end of round 30 and the highest score wins, the outcome carrying `decidedBy` and `ranking`); the leaderboard `score`, the view's `score` block, `queryScoreV7`, `queryStarGradeV7`, and the star grade at the end; headless and `play:text` take `--mode`; the Normal AI is unchanged and never plays for score                                                                                                                                                                         |
+| Curiosities 2 | `pulp-wars-poc-7r66` | `pulp_wars-737.14` [map curiosities round 2](RULESET_7_MAP_CURIOSITIES.md#22-round-2-source-and-scope), engine (the identity became `7r66` when it was published after score and modes, `7r65`; a save, replay, or setup of `7r65` is rejected): with the Curiosities option on, five more kinds share the old per-board counts (one danger per board): the Downed Saucer camp (no Martian seat) and the Graveyard camp (no Undead seat) with neutral guards that wander within 2 and attack provokers, a pair of Dimensional Gates (a gate ends every Move; stepping on one carries the unit to the other and displaces its occupant clockwise), Bigfoot (flees, never fights, bounty 12), and the Wishing Well (`TOSS_COIN`, once per player); `monsters[].breed`, `GATE_DISPLACED`, `GATE_TRAVERSED`, `GATE_BLOCKED`, `COIN_TOSSED`; every neutral unit is worth its bounty in the score; the Normal AI is unchanged (bead `pulp_wars-737.15`)                                                                                                                                                                                                     |
 
 **Documentation parity (2026-09-28, no ruleset or identity change):** where
 older documents disagreed with the code, the code's behavior was adopted as

@@ -8,6 +8,7 @@ import {
   RESOURCE_IDS_V7,
   NEUTRAL_OWNER_ID_V7,
   RULESET_7_ID,
+  type NeutralBreedV7,
   TECHNOLOGY_IDS_V7,
   UNIT_ROLE_IDS_V7,
   isNavalRoleV7,
@@ -3894,6 +3895,138 @@ export const NEUTRAL_MONSTER_ROLE_MECHANICS_V7: RoleMechanicsV7 = deepFreeze({
   breakOffHp: 0,
 });
 
+/**
+ * Round 2 (docs/product/RULESET_7_MAP_CURIOSITIES.md sections 25.2, 29.1,
+ * and 32.3): the neutral registration by breed. A guard has its faction
+ * role's stats with its Shield maximum added to its HP (a neutral unit has
+ * no Shield) and may attack after its step; no Sight, no cost, no
+ * technology, no capture, no Force Field, Bite, or Infect. Bigfoot never
+ * attacks (Attack 0, range 0: it never retaliates either).
+ */
+export const NEUTRAL_ROLE_RULES_V7: Readonly<
+  Record<NeutralBreedV7, EffectiveRoleRuleV7>
+> = deepFreeze({
+  GIANT_SPIDER: NEUTRAL_MONSTER_ROLE_RULE_V7,
+  GRUNT: {
+    role: "FIGHTER",
+    label: "Grunt",
+    tacticalRole: "LINE",
+    cost: null,
+    maxHp: 10,
+    attack2: 4,
+    defense2: 3,
+    move: 1,
+    range: 2,
+    minimumRange: 1,
+    sightRadius: 0,
+    technology: null,
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK"],
+  },
+  RAY_GUNNER: {
+    role: "MARKSMAN",
+    label: "Ray Gunner",
+    tacticalRole: "RANGED",
+    cost: null,
+    maxHp: 10,
+    attack2: 6,
+    defense2: 2,
+    move: 1,
+    range: 2,
+    minimumRange: 1,
+    sightRadius: 0,
+    technology: null,
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "HEAT_RAY"],
+  },
+  SHIELD_PROJECTOR: {
+    role: "GUARD",
+    label: "Shield Projector",
+    tacticalRole: "DEFENDER",
+    cost: null,
+    maxHp: 15,
+    attack2: 3,
+    defense2: 5,
+    move: 1,
+    range: 1,
+    minimumRange: 1,
+    sightRadius: 0,
+    technology: null,
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK"],
+  },
+  ZOMBIE: {
+    role: "GUARD",
+    label: "Zombie",
+    tacticalRole: "DEFENDER",
+    cost: null,
+    maxHp: 18,
+    attack2: 4,
+    defense2: 4,
+    move: 1,
+    range: 1,
+    minimumRange: 1,
+    sightRadius: 0,
+    technology: null,
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK"],
+  },
+  BIGFOOT: {
+    role: "RAIDER",
+    label: "Bigfoot",
+    tacticalRole: "SKIRMISHER",
+    cost: null,
+    maxHp: 15,
+    attack2: 0,
+    defense2: 4,
+    move: 3,
+    range: 0,
+    minimumRange: 1,
+    sightRadius: 0,
+    technology: null,
+    mayUsePrimaryActionAfterMove: true,
+    abilities: [],
+  },
+});
+
+const NEUTRAL_GUARD_MECHANICS_V7 = {
+  advancesAfterKill: false,
+  buildsFieldDefense: false,
+  shield: 0,
+} as const;
+
+/**
+ * Round 2 (section 32.3): the engine mechanics by breed. No neutral unit
+ * advances after a kill, builds Field Defense, or has a Shield; the Ray
+ * Gunner's carry `heatSink`, so its ray never Cools (section 25.2).
+ */
+export const NEUTRAL_ROLE_MECHANICS_V7: Readonly<
+  Record<NeutralBreedV7, RoleMechanicsV7>
+> = deepFreeze({
+  GIANT_SPIDER: NEUTRAL_MONSTER_ROLE_MECHANICS_V7,
+  GRUNT: {
+    ...ORIGINAL_ROLE_MECHANICS_V7.FIGHTER,
+    ...NEUTRAL_GUARD_MECHANICS_V7,
+  },
+  RAY_GUNNER: {
+    ...ORIGINAL_ROLE_MECHANICS_V7.MARKSMAN,
+    ...NEUTRAL_GUARD_MECHANICS_V7,
+    heatSink: true,
+  },
+  SHIELD_PROJECTOR: {
+    ...ORIGINAL_ROLE_MECHANICS_V7.GUARD,
+    ...NEUTRAL_GUARD_MECHANICS_V7,
+  },
+  ZOMBIE: {
+    ...ORIGINAL_ROLE_MECHANICS_V7.GUARD,
+    ...NEUTRAL_GUARD_MECHANICS_V7,
+  },
+  BIGFOOT: {
+    ...ORIGINAL_ROLE_MECHANICS_V7.RAIDER,
+    ...NEUTRAL_GUARD_MECHANICS_V7,
+  },
+});
+
 /** Section 8.1: the faction-wide rules of the neutral registration. */
 export const NEUTRAL_FACTION_RULES_V7: FactionRulesV7 = deepFreeze({
   restless: false,
@@ -4060,7 +4193,7 @@ export const RULESET_7 = deepFreeze({
  * a technology of tier `t` costs `5 / 7 / 9 + (T - 1)`, `T` being the
  * technologies the researcher already owns.
  *
- * The economy rejig (`pulp_wars-w49.16`, `pulp-wars-poc-7r65`,
+ * The economy rejig (`pulp_wars-w49.16`, `pulp-wars-poc-7r66`,
  * docs/product/RULESET_7_ECONOMY_REJIG.md): the price is per city again and
  * the technologies owned no longer enter it. A technology of tier `t`
  * costs `5 / 7 / 9 + (1 / 2 / 3) * (C - 1)`, `C` being the cities the
@@ -4208,6 +4341,20 @@ export interface FactionRosterV7 {
     readonly faction: FactionIdV7;
   }[];
   readonly mindControlled: readonly MindControlKindEntryV7[];
+  /**
+   * Map curiosities round 2 (section 32.3): the breed of every neutral unit
+   * (its `monsters` entry), which the kind resolvers read. A roster without
+   * it (setup, role-level reads, and the partial rosters of chains) resolves
+   * a neutral unit's breed from its role and maximum HP, which state
+   * parsing pins per breed (`neutralBreedOfV7`).
+   */
+  readonly monsters?: readonly NeutralBreedEntryV7[];
+}
+
+/** Round 2 (section 32.3): the breed facts the kind resolvers read. */
+export interface NeutralBreedEntryV7 {
+  readonly unitId: number;
+  readonly breed: NeutralBreedV7;
 }
 
 /** The unit facts the kind resolver reads: its ID and its controller. */
@@ -4355,8 +4502,10 @@ export function unitRoleRuleV7(
   unit: UnitKindRefV7 & { readonly role: UnitRoleIdV7 },
 ): EffectiveRoleRuleV7 {
   const kind = unitFactionV7(roster, unit);
-  // Map curiosities (section 8.1): the neutral registration's only role.
-  if (kind === NEUTRAL_KIND_V7) return neutralRoleRuleV7(unit.role);
+  // Map curiosities (section 8.1; round 2, section 32.3): the neutral
+  // registration of the unit's breed.
+  if (kind === NEUTRAL_KIND_V7)
+    return NEUTRAL_ROLE_RULES_V7[neutralBreedOfV7(roster, unit)];
   const rule = effectiveRoleRuleV7(unit.role, kind);
   if (!isMindControlledV7(roster, unit.id)) return rule;
   const cached = CONTROLLED_ROLE_RULES_V7.get(rule);
@@ -4377,17 +4526,56 @@ export function unitRoleMechanicsV7(
   unit: UnitKindRefV7 & { readonly role: UnitRoleIdV7 },
 ): RoleMechanicsV7 {
   const kind = unitFactionV7(roster, unit);
-  if (kind === NEUTRAL_KIND_V7) {
-    neutralRoleRuleV7(unit.role);
-    return NEUTRAL_MONSTER_ROLE_MECHANICS_V7;
-  }
+  if (kind === NEUTRAL_KIND_V7)
+    return NEUTRAL_ROLE_MECHANICS_V7[neutralBreedOfV7(roster, unit)];
   return roleMechanicsV7(unit.role, kind);
 }
 
 /**
- * Map curiosities (section 8.1): the role rule of a neutral unit. The
- * neutral registration defines only the Giant Spider, whose mechanical role
- * is `JUGGERNAUT`; any other role is an invalid state.
+ * Map curiosities (section 8.1; round 2, section 32.3): the breed of a
+ * neutral unit, read from its `monsters` entry in the roster. A roster
+ * without the entry (a partial roster, or a unit that died earlier in the
+ * same command) falls back to the breed of the unit's mechanical role (a
+ * `GUARD` by its maximum HP: the Zombie's 18, else the Shield Projector),
+ * which is exact because state parsing pins each breed's role and maximum
+ * HP; a role no breed has is an invalid state.
+ */
+export function neutralBreedOfV7(
+  roster: Pick<FactionRosterV7, "monsters">,
+  unit: {
+    readonly id: number;
+    readonly role: UnitRoleIdV7;
+    readonly maxHp?: number;
+  },
+): NeutralBreedV7 {
+  if (roster.monsters !== undefined && roster.monsters.length > 0) {
+    const entry = roster.monsters.find(
+      (candidate) => candidate.unitId === unit.id,
+    );
+    if (entry !== undefined) return entry.breed;
+  }
+  switch (unit.role) {
+    case "JUGGERNAUT":
+      return "GIANT_SPIDER";
+    case "FIGHTER":
+      return "GRUNT";
+    case "MARKSMAN":
+      return "RAY_GUNNER";
+    case "GUARD":
+      return unit.maxHp === NEUTRAL_ROLE_RULES_V7.ZOMBIE.maxHp
+        ? "ZOMBIE"
+        : "SHIELD_PROJECTOR";
+    case "RAIDER":
+      return "BIGFOOT";
+    default:
+      throw new RangeError(`Unknown v7 neutral role: ${String(unit.role)}`);
+  }
+}
+
+/**
+ * Map curiosities (section 8.1): the role rule of the Giant Spider, whose
+ * mechanical role is `JUGGERNAUT`; any other role is an invalid state. Kept
+ * for the Spider's readers; every unit read goes through `unitRoleRuleV7`.
  */
 export function neutralRoleRuleV7(roleId: UnitRoleIdV7): EffectiveRoleRuleV7 {
   if (roleId !== NEUTRAL_MONSTER_ROLE_RULE_V7.role)
@@ -5242,6 +5430,10 @@ export function rayOverheatsV7(
   unit: UnitKindRefV7 & { readonly role: UnitRoleIdV7 },
   ownerResearchedTechs: readonly TechnologyIdV7[],
 ): boolean {
+  // Map curiosities round 2 (section 25.2): a neutral Ray Gunner's
+  // registration has `heatSink`, so it never Cools (it has no technology).
+  if (unit.ownerId === NEUTRAL_OWNER_ID_V7)
+    return !unitRoleMechanicsV7(roster, unit).heatSink;
   return !(
     unitRoleMechanicsV7(roster, unit).heatSink &&
     unitCapabilitiesV7(roster, unit, ownerResearchedTechs).heatSinks

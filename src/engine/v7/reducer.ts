@@ -8,15 +8,26 @@ import { deepFreeze } from "../model/freeze";
 import { nextBounded } from "../random/random";
 import type { JsonValue } from "../replay/canonical";
 import {
-  MONSTER_BOUNTY_V7,
   MONSTER_REGENERATION_V7,
-  monsterAttackChoiceV7,
+  WELL_COINS_V7,
+  WELL_TOSS_COST_V7,
+  WELL_VISION_RADIUS_V7,
+  bigfootFleeV7,
+  campProvokersV7,
+  gateAtV7,
+  gateDisplacementTileV7,
+  isGuardBreedV7,
   monsterEntryV7,
-  monsterStepsV7,
+  monsterProvokersV7,
   monsterWanderV7,
+  neutralAttackChoiceV7,
+  neutralBountyV7,
+  neutralStepsV7,
   prunedMonstersV7,
   resolveCuriosityClaimV7,
+  wellOutcomeV7,
   withMonsterProvocationsV7,
+  type NeutralBoardFactsV7,
 } from "./curiosities";
 import { forbiddenTechnologiesV7 } from "./forbidden-technologies";
 import {
@@ -44,6 +55,7 @@ import {
   isEggLaidRoleV7,
   isMindControlledV7,
   isRallyTargetV7,
+  neutralBreedOfV7,
   ownerResearchedTechsV7,
   technologyCapabilitiesV7,
   seatRoleMechanicsV7,
@@ -287,6 +299,7 @@ import {
 import {
   NEUTRAL_OWNER_ID_V7,
   PERFECTION_ROUNDS_V7,
+  type NeutralBreedV7,
   TECHNOLOGY_IDS_V7,
   gameModeOfV7,
   isAfloatFormV7,
@@ -295,6 +308,7 @@ import {
   type AchievementIdV7,
   type CityStateV7,
   type CoordV7,
+  type CuriosityV7,
   type GameStateV7,
   type MatchSetupV7,
   type PendingChoiceV7,
@@ -414,7 +428,10 @@ export type RuleErrorCodeV7 =
   | "SWALLOW_NOT_LEGAL"
   | "TOSS_NOT_LEGAL"
   | "STOMP_NOT_LEGAL"
-  | "BREAK_OFF_NOT_LEGAL";
+  | "BREAK_OFF_NOT_LEGAL"
+  // Map curiosities round 2 (section 30.1): an illegal toss at the Wishing
+  // Well (`NOT_ON_WELL`, `ALREADY_TOSSED`).
+  | "TOSS_COIN_NOT_LEGAL";
 export interface RuleErrorV7 {
   readonly code: RuleErrorCodeV7;
   readonly params: Readonly<Record<string, JsonValue>>;
@@ -589,12 +606,325 @@ function applyCommandUnscoredV7(
     : [];
   // Revision 14 section 3.5: a Lich that left the board cures its Plague.
   const cleared = plagueClearedEventsV7(stateInput, result.state);
+  // Map curiosities round 2 (section 28.5): a gate's partner is explored
+  // with it.
   if (!navalMayChange && cleared.length === 0)
-    return withMonsterProvocationsResultV7(result);
-  return withMonsterProvocationsResultV7({
-    ...result,
-    events: [...result.events, ...naval, ...cleared],
+    return withMonsterProvocationsResultV7(
+      withGatePartnersRevealedResultV7(result),
+    );
+  return withMonsterProvocationsResultV7(
+    withGatePartnersRevealedResultV7({
+      ...result,
+      events: [...result.events, ...naval, ...cleared],
+    }),
+  );
+}
+
+/**
+ * Map curiosities round 2 (docs/product/RULESET_7_MAP_CURIOSITIES.md
+ * sections 28.2 to 28.4): the traversal of `unitId`, which just ended its
+ * own `MOVE` (with a step onto the gate) or `DISEMBARK` on a gate, after
+ * the command's ordinary end-of-Move steps on the entry gate. An occupant
+ * of the exit gate is displaced first (clockwise from north, by its own
+ * terrain rule); with no free tile the traversal does not happen
+ * (`GATE_BLOCKED`). The unit is placed on the exit with its activation
+ * unchanged and reveals its sight there. Null when the unit is not on a
+ * gate (or left the board, or is not in land form).
+ */
+function resolveGateTraversalV7(
+  state: GameStateV7,
+  actor: PlayerId,
+  unitId: UnitId,
+): {
+  readonly state: GameStateV7;
+  readonly events: readonly DomainEventV7[];
+} | null {
+  if (state.curiosities.length === 0) return null;
+  const unit = state.units.find(
+    (candidate) => candidate.id === unitId && candidate.hp > 0,
+  );
+  if (unit === undefined || unit.form !== "LAND") return null;
+  const gate = gateAtV7(state.curiosities, unit.at);
+  if (gate === null) return null;
+  const exit = gate.partner;
+  const events: DomainEventV7[] = [];
+  let units = state.units;
+  const occupant = state.units.find(
+    (candidate) =>
+      candidate.id !== unit.id && candidate.hp > 0 && same(candidate.at, exit),
+  );
+  if (occupant !== undefined) {
+    const techs = ownerResearchedTechsV7(state, occupant.ownerId);
+    const engineering = unitCapabilitiesV7(
+      state,
+      occupant,
+      techs,
+    ).mountainMovement;
+    const movementMode = unitMovementModeV7(state, occupant);
+    const mountainBorn = unitIsMountainBornV7(state, occupant);
+    // The whole state, so the occupancy predicate sees every list it reads
+    // (units, mounds, and any later blocker such as a Barricade).
+    const to = gateDisplacementTileV7(state, exit, occupant.id, (at) => {
+      const tile = tileAtV7(state.board, at);
+      return (
+        tile !== undefined &&
+        canEnterTerrainV7({
+          terrain: tile.terrain,
+          movementMode,
+          afloat: false,
+          engineering,
+          navigation: techs.includes("NAVIGATION"),
+          mountainBorn,
+          ice: isIceAtV7(state, at),
+        })
+      );
+    });
+    if (to === null)
+      return {
+        state,
+        events: [
+          {
+            kind: "GATE_BLOCKED",
+            playerId: actor,
+            unitId: unit.id,
+            at: gate.at,
+          },
+        ],
+      };
+    units = units.map((candidate) =>
+      candidate.id === occupant.id ? { ...candidate, at: to } : candidate,
+    );
+    events.push({
+      kind: "GATE_DISPLACED",
+      unitId: occupant.id,
+      from: exit,
+      to,
+    });
+  }
+  const arrived: UnitStateV7 = { ...unit, at: exit };
+  units = units.map((candidate) =>
+    candidate.id === unit.id ? arrived : candidate,
+  );
+  events.push({
+    kind: "GATE_TRAVERSED",
+    playerId: actor,
+    unitId: unit.id,
+    from: gate.at,
+    to: exit,
   });
+  const placed: GameStateV7 = { ...state, units };
+  const sight = revealRadius(
+    placed,
+    actor,
+    exit,
+    unitSightRadiusAtV7(placed, arrived),
+  );
+  if (sight.revealed.length > 0)
+    events.push({
+      kind: "TILES_REVEALED",
+      playerId: actor,
+      tiles: sight.revealed,
+    });
+  return {
+    state: {
+      ...placed,
+      players: setExplored(placed.players, actor, sight.explored),
+    },
+    events,
+  };
+}
+
+/**
+ * Map curiosities round 2 (section 30): `TOSS_COIN`. Legality in order: the
+ * actor's own unit on the board; in land form on the Wishing Well
+ * (`NOT_ON_WELL`); a primary action left (not Crashed, not already acted,
+ * may act after its Move); the actor has not tossed (`ALREADY_TOSSED`); at
+ * least 1 Coin. The actor pays the Coin and joins the Well's `tossedBy`,
+ * the unit's primary action is spent, and the player's seeded outcome
+ * applies: nothing, 5 Coins, a full heal (HP only; a construct heals
+ * nothing), or every tile within 5 of the Well explored.
+ */
+function applyTossCoin(
+  original: GameStateV7,
+  state: GameStateV7,
+  actor: PlayerId,
+  unitId: UnitStateV7["id"],
+): ApplyCommandResultV7 {
+  if (state.commandIndex === Number.MAX_SAFE_INTEGER)
+    return rejected(original, "INTEGER_OVERFLOW");
+  const actorCheck = validateUnitActor(state, actor, unitId);
+  if (!actorCheck.ok)
+    return rejected(original, actorCheck.code, actorCheck.params);
+  const unit = actorCheck.unit;
+  const well = state.curiosities.find(
+    (curiosity) =>
+      curiosity.kind === "WISHING_WELL" && same(curiosity.at, unit.at),
+  );
+  if (unit.form !== "LAND" || well?.kind !== "WISHING_WELL")
+    return rejected(original, "TOSS_COIN_NOT_LEGAL", { reason: "NOT_ON_WELL" });
+  if (unitIsCrashedV7(state, unit.id))
+    return rejected(original, "UNIT_CRASHED", { unitId: unit.id });
+  if (
+    unit.activation.overrunActive ||
+    primaryUsed(unit) ||
+    primaryActionBlockedAfterMoveV7(state, unit)
+  )
+    return rejected(original, "UNIT_ALREADY_ACTED", { unitId: unit.id });
+  if (well.tossedBy.includes(actor))
+    return rejected(original, "TOSS_COIN_NOT_LEGAL", {
+      reason: "ALREADY_TOSSED",
+    });
+  const player = requirePlayer(state, actor);
+  if (player.coins < WELL_TOSS_COST_V7)
+    return rejected(original, "INSUFFICIENT_COINS", {
+      cost: WELL_TOSS_COST_V7,
+    });
+  try {
+    const outcome = wellOutcomeV7(state.setup.seed, actor);
+    const coinsGained = outcome === "COINS" ? WELL_COINS_V7 : 0;
+    const coins = nextSafeBy(player.coins - WELL_TOSS_COST_V7, coinsGained);
+    const hpAfter =
+      outcome === "HEAL" && !unitRoleMechanicsV7(state, unit).construct
+        ? unit.maxHp
+        : unit.hp;
+    const vision =
+      outcome === "VISION"
+        ? revealRadius(state, actor, well.at, WELL_VISION_RADIUS_V7)
+        : null;
+    const events: DomainEventV7[] = [
+      {
+        kind: "COIN_TOSSED",
+        playerId: actor,
+        unitId: unit.id,
+        at: well.at,
+        outcome,
+        coinsGained,
+        hpAfter,
+      },
+    ];
+    if (vision !== null && vision.revealed.length > 0)
+      events.push({
+        kind: "TILES_REVEALED",
+        playerId: actor,
+        tiles: vision.revealed,
+      });
+    const staged: GameStateV7 = {
+      ...state,
+      commandIndex: nextSafe(state.commandIndex),
+      players: state.players.map((candidate) =>
+        candidate.id === actor
+          ? {
+              ...candidate,
+              coins,
+              explored: vision?.explored ?? candidate.explored,
+            }
+          : candidate,
+      ),
+      units: state.units.map((candidate) =>
+        candidate.id === unit.id
+          ? {
+              ...candidate,
+              hp: hpAfter,
+              activation: {
+                ...candidate.activation,
+                specialActed: true,
+                handled: true,
+              },
+            }
+          : candidate,
+      ),
+      curiosities: state.curiosities.map((curiosity) =>
+        curiosity === well
+          ? {
+              ...well,
+              tossedBy: [...well.tossedBy, actor].sort(
+                (left, right) => left - right,
+              ),
+            }
+          : curiosity,
+      ),
+    };
+    const settlement = settleCityRewardsV7(staged, actor);
+    events.push(...settlement.events);
+    const achievements = evaluateAchievementsV7(settlement.state, actor);
+    events.push(...achievements.events);
+    return accepted(checked(achievements.state), events);
+  } catch (cause) {
+    return arithmeticFailure(original, cause);
+  }
+}
+
+/**
+ * Map curiosities round 2 (section 28.5): whenever a gate tile becomes
+ * explored for a player, by any reveal, its partner becomes explored for
+ * that player in the same reveal. Run on every accepted command: each
+ * partner newly explored joins the command's `TILES_REVEALED` of that
+ * player that lists its gate (a new `TILES_REVEALED` at the end when none
+ * does). Returns `result` itself when no partner was added.
+ */
+function withGatePartnersRevealedResultV7(
+  result: Extract<ApplyCommandResultV7, { readonly accepted: true }>,
+): Extract<ApplyCommandResultV7, { readonly accepted: true }> {
+  const gates = result.state.curiosities.filter(
+    (curiosity): curiosity is Extract<CuriosityV7, { kind: "GATE" }> =>
+      curiosity.kind === "GATE",
+  );
+  if (gates.length === 0) return result;
+  let events: DomainEventV7[] = [...result.events];
+  let changed = false;
+  const players = result.state.players.map((player) => {
+    const known = new Set(player.explored.map(key));
+    const added: { readonly gate: CoordV7; readonly partner: CoordV7 }[] = [];
+    for (const gate of gates)
+      if (known.has(key(gate.at)) && !known.has(key(gate.partner))) {
+        known.add(key(gate.partner));
+        added.push({ gate: gate.at, partner: gate.partner });
+      }
+    if (added.length === 0) return player;
+    changed = true;
+    const orphans: CoordV7[] = [];
+    for (const { gate, partner } of added) {
+      let index = -1;
+      events.forEach((event, at) => {
+        if (
+          event.kind === "TILES_REVEALED" &&
+          event.playerId === player.id &&
+          event.tiles.some((tile) => same(tile, gate))
+        )
+          index = at;
+      });
+      const event = events[index];
+      if (event?.kind !== "TILES_REVEALED") {
+        orphans.push(partner);
+        continue;
+      }
+      events = events.map((candidate, at) =>
+        at === index && candidate.kind === "TILES_REVEALED"
+          ? {
+              ...candidate,
+              tiles: [...candidate.tiles, partner].sort(compareCoords),
+            }
+          : candidate,
+      );
+    }
+    if (orphans.length > 0)
+      events.push({
+        kind: "TILES_REVEALED",
+        playerId: player.id,
+        tiles: orphans.sort(compareCoords),
+      });
+    return {
+      ...player,
+      explored: [
+        ...player.explored,
+        ...added.map((entry) => entry.partner),
+      ].sort(compareCoords),
+    };
+  });
+  if (!changed) return result;
+  const next = accepted(checked({ ...result.state, players }), events);
+  if (!next.accepted) throw new RangeError("INVALID_STATE");
+  return next;
 }
 
 /**
@@ -928,6 +1258,8 @@ function applyCommandCoreV7(
     return applyPromote(stateInput, state, actor, command.unitId);
   if (command.kind === "WAIT")
     return applyWait(stateInput, state, actor, command.unitId);
+  if (command.kind === "TOSS_COIN")
+    return applyTossCoin(stateInput, state, actor, command.unitId);
   if (command.kind === "CAPTURE")
     return applyCapture(stateInput, state, actor, command.unitId);
   if (command.kind === "PILLAGE")
@@ -2522,7 +2854,7 @@ function applyDisembark(
     // Crumbs eats them, after the landing's own events and before the
     // economy tail.
     const eatingEvents: DomainEventV7[] = [];
-    const landedState = resolveCrumbsEatingV7(
+    const eatingLanded = resolveCrumbsEatingV7(
       DWARF_KIT_V7,
       {
         ...state,
@@ -2542,6 +2874,11 @@ function applyDisembark(
       unit.id,
       eatingEvents,
     );
+    // Map curiosities round 2 (section 28.2): a landing on a gate carries
+    // the unit through it; the landing's reveal then comes before the gate
+    // events.
+    const traversal = resolveGateTraversalV7(eatingLanded, actor, unit.id);
+    const landedState = traversal?.state ?? eatingLanded;
     const economy = recomputeLiveEconomyV7(
       state,
       {
@@ -2582,10 +2919,16 @@ function applyDisembark(
         : []),
       ...(treasure === null ? [] : [treasure.event]),
       ...eatingEvents,
+      ...(traversal !== null && revealed.length > 0
+        ? ([
+            { kind: "TILES_REVEALED", playerId: actor, tiles: revealed },
+          ] as const)
+        : []),
+      ...(traversal?.events ?? []),
       ...economyAndGrowth(economy.changes),
       ...settlement.events,
       ...achievements.events,
-      ...(revealed.length > 0
+      ...(traversal === null && revealed.length > 0
         ? ([
             { kind: "TILES_REVEALED", playerId: actor, tiles: revealed },
           ] as const)
@@ -4186,6 +4529,15 @@ function applyMove(
     // right after the Move's own events and before the economy tail.
     if (validation.traversedPath.length > 0)
       staged = resolveCrumbsEatingV7(DWARF_KIT_V7, staged, unit.id, events);
+    // Map curiosities round 2 (section 28.2): a Move that stepped onto a
+    // gate carries the unit through it, after the entry gate's own steps.
+    if (validation.traversedPath.length > 0 && !embarks) {
+      const traversal = resolveGateTraversalV7(staged, actor, unit.id);
+      if (traversal !== null) {
+        staged = traversal.state;
+        events.push(...traversal.events);
+      }
+    }
     const economy = recomputeLiveEconomyV7(
       state,
       { board: staged.board, cities: staged.cities, units: staged.units },
@@ -6888,22 +7240,60 @@ function resolveNeutralTurnV7(
     // Step 2: reset its activation.
     let monster: UnitStateV7 = { ...found, activation: freshActivationV7() };
     replace(monster);
-    const facts = {
-      board: current.board,
-      units: current.units,
-      burrowed: current.burrowed,
-      barricades: barricadesOfV7(current),
-      treasureChests: current.treasureChests,
+    const snapshot = current;
+    // The whole state, so the occupancy predicate sees every list it reads
+    // (units, mounds, and any later blocker such as a Barricade).
+    const facts: NeutralBoardFactsV7 = {
+      ...current,
+      submerged: (unit) => unitIsSubmergedV7(snapshot, unit),
     };
-    const choice = monsterAttackChoiceV7(facts, monster, entry);
+    const steps = neutralStepsV7(facts, monster, entry);
+    // Round 2 (section 29.3): Bigfoot flees or wanders; it never attacks.
+    if (entry.breed === "BIGFOOT") {
+      const flight = bigfootFleeV7(facts, monster, entry);
+      const path =
+        flight === null
+          ? (() => {
+              const to = monsterWanderV7(
+                current.setup.seed,
+                round,
+                monster.id,
+                steps,
+              );
+              return to === null ? [] : [to];
+            })()
+          : flight.path;
+      monster = {
+        ...monster,
+        at: path.at(-1) ?? monster.at,
+        activation: {
+          ...monster.activation,
+          moved: path.length > 0,
+          movedPathLength: path.length,
+          handled: true,
+        },
+      };
+      replace(monster);
+      if (path.length > 0)
+        events.push({ kind: "UNIT_MOVED", unitId: monster.id, path });
+      continue;
+    }
+    // Sections 8.4 and 25.4: the Spider's provokers (next to it or in its
+    // `provokedBy`), or the camp's provokers for a guard.
+    const rule = unitRoleRuleV7(current, monster);
+    const provokers = isGuardBreedV7(entry.breed)
+      ? campProvokersV7(facts, entry.home)
+      : monsterProvokersV7(facts, monster, entry.provokedBy);
+    const choice = neutralAttackChoiceV7(
+      facts,
+      monster,
+      steps,
+      provokers,
+      rule,
+    );
     if (choice === null) {
       // Section 8.4: no reachable provoker; wander one step or stay.
-      const to = monsterWanderV7(
-        current.setup.seed,
-        round,
-        monster.id,
-        monsterStepsV7(facts, monster, entry.home),
-      );
+      const to = monsterWanderV7(current.setup.seed, round, monster.id, steps);
       monster = {
         ...monster,
         at: to ?? monster.at,
@@ -6940,16 +7330,18 @@ function resolveNeutralTurnV7(
       NEUTRAL_OWNER_ID_V7,
       monster,
       target,
-      unitRoleRuleV7(current, monster),
+      rule,
       chebyshev(monster.at, target.at),
     );
     current = exchange.state;
     events.push(...exchange.events);
   }
-  // Step 3: regeneration and the cleared provocation list.
+  // Step 3: regeneration (round 2, section 25.5: the Spider alone) and the
+  // cleared provocation list.
   const pruned = prunedMonstersV7(current);
   const regenerated = new Map<number, number>();
   for (const entry of pruned.monsters) {
+    if (entry.breed !== "GIANT_SPIDER") continue;
     const unit = requireValue(
       pruned.units.find((candidate) => candidate.id === entry.unitId),
     );
@@ -7665,15 +8057,23 @@ function plunderAwardsV7(
   // the score ledger (the same records, so Kills and Plunder agree).
   recordScoreCreditsV7(state, deaths);
   const kills = new Map<PlayerId, number>();
-  const bounties: { readonly playerId: PlayerId; readonly unitId: UnitId }[] =
-    [];
+  const bounties: {
+    readonly playerId: PlayerId;
+    readonly unitId: UnitId;
+    readonly coins: number;
+  }[] = [];
   for (const death of deaths) {
     // Map curiosities (section 8.7): kills by the neutral Monster are
     // credited to no player.
     if (isNeutralOwnerV7(death.creditedId)) continue;
     const credited = requirePlayer(state, death.creditedId);
+    // Round 2 (sections 25.6 and 29.4): the bounty of the victim's breed.
     if (isNeutralOwnerV7(death.victimOwnerId))
-      bounties.push({ playerId: death.creditedId, unitId: death.victimUnitId });
+      bounties.push({
+        playerId: death.creditedId,
+        unitId: death.victimUnitId,
+        coins: neutralBountyV7(neutralVictimBreedV7(state, death.victimUnitId)),
+      });
     if (
       technologyCapabilitiesV7(credited.researchedTechs, credited.faction)
         .plunderCoins > 0 &&
@@ -7701,17 +8101,32 @@ function plunderAwardsV7(
   for (const bounty of bounties) {
     next = next.map((item) =>
       item.id === bounty.playerId
-        ? { ...item, coins: nextSafeBy(item.coins, MONSTER_BOUNTY_V7) }
+        ? { ...item, coins: nextSafeBy(item.coins, bounty.coins) }
         : item,
     );
     events.push({
       kind: "MONSTER_BOUNTY_AWARDED",
       playerId: bounty.playerId,
       unitId: bounty.unitId,
-      coins: MONSTER_BOUNTY_V7,
+      coins: bounty.coins,
     });
   }
   return { players: next, events };
+}
+
+/**
+ * Round 2 (section 32.3): the breed of a neutral unit that died in the
+ * command: its `monsters` entry (entries are pruned only when the command's
+ * state is checked), else its unit's role and maximum HP.
+ */
+function neutralVictimBreedV7(
+  state: GameStateV7,
+  unitId: UnitId,
+): NeutralBreedV7 {
+  const entry = monsterEntryV7(state, unitId);
+  if (entry !== undefined) return entry.breed;
+  const unit = state.units.find((candidate) => candidate.id === unitId);
+  return unit === undefined ? "GIANT_SPIDER" : neutralBreedOfV7(state, unit);
 }
 
 function validateUnitActor(

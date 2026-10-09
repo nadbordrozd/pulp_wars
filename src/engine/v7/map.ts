@@ -3,7 +3,7 @@ import { allocateCityId, allocateUnitId, cityId, playerId } from "../model/ids";
 import { nextBounded, nextUint32, randomState } from "../random/random";
 import { canonicalHash } from "../replay/canonical";
 import {
-  NEUTRAL_MONSTER_ROLE_RULE_V7,
+  NEUTRAL_ROLE_RULES_V7,
   RULESET_7,
   effectiveRoleRuleV7,
   factionTreeV7,
@@ -14,8 +14,8 @@ import { withFullShieldsV7 } from "./martian";
 import {
   CURIOSITY_CAPITAL_DISTANCE_V7,
   CURIOSITY_CAPITAL_SPREAD_V7,
-  MONSTER_HP_V7,
   placeCuriositiesV7,
+  type NeutralPlacementV7,
 } from "./curiosities";
 import { placeRiftsV7 } from "./rift";
 import {
@@ -143,11 +143,13 @@ export interface GeneratedMapV7 {
    */
   readonly curiosities: readonly CuriosityV7[];
   /**
-   * Map curiosities (section 4, `pulp_wars-737.3`): the Giant Spider's home
-   * when placement drew a Monster (boards 16 and up), else null. The initial
-   * state creates the Monster there after every other initial entity.
+   * Map curiosities (section 4, `pulp_wars-737.3`; round 2, section 24.1):
+   * the neutral units placement drew (the Giant Spider, a camp's guards,
+   * Bigfoot), in placement order with a camp's guards in composition order.
+   * The initial state creates them, in this order, after every other
+   * initial entity.
    */
-  readonly monsterHome: CoordV7 | null;
+  readonly neutrals: readonly NeutralPlacementV7[];
   readonly random: RandomStateV7;
   readonly attempt: number;
   readonly attempts: readonly MapGenerationAttemptV7[];
@@ -317,7 +319,7 @@ function missionMapV7(setup: MatchSetupV7): GenerateMapResultV7 {
       treasureChests: missionTreasureChestsV7(mission),
       wildCentres: [],
       curiosities: [],
-      monsterHome: null,
+      neutrals: [],
       random: randomState(mission.seed),
       attempt: 1,
       attempts: [],
@@ -345,7 +347,7 @@ function showcaseMapV7(setup: MatchSetupV7): GenerateMapResultV7 {
       treasureChests: [],
       wildCentres: [],
       curiosities: [],
-      monsterHome: null,
+      neutrals: [],
       random: randomState(setup.seed),
       attempt: 1,
       attempts: [],
@@ -392,7 +394,7 @@ function showcaseMapV7(setup: MatchSetupV7): GenerateMapResultV7 {
  * `VILLAGE_DENSITY_RIFTS` map without a Rift is byte-identical to its
  * `VILLAGE_DENSITY` map, and a `VILLAGE_DENSITY_CURIOSITIES` map differs
  * from its `VILLAGE_DENSITY_RIFTS` map only in `curiosities` and
- * `monsterHome`.
+ * `neutrals`.
  *
  * Every other rule reproduces a generator before the village density
  * (`pulp-wars-poc-7r39` and earlier, map revision
@@ -588,10 +590,11 @@ function generateMapWithVillageCountV7(
               capitals: candidate.capitals,
               villages: candidate.villages,
               treasureChests: treasure.treasureChests,
+              factions: setup.factions,
             })
-          : { curiosities: [], monsterHome: null };
+          : { curiosities: [], neutrals: [] };
       const curiosities = placement.curiosities;
-      const monsterHome = placement.monsterHome;
+      const neutrals = placement.neutrals;
       return {
         ok: true,
         map: deepFreeze({
@@ -603,7 +606,7 @@ function generateMapWithVillageCountV7(
           treasureChests: treasure.treasureChests,
           wildCentres: candidate.wildCentres,
           curiosities,
-          monsterHome,
+          neutrals,
           random: treasure.random,
           attempt,
           attempts,
@@ -3877,13 +3880,14 @@ function initialMapStateFromV7(
     generated.map.treasureChests,
   );
   const board = assignTerritories(generated.map.board, entities.cities);
-  // Map curiosities (section 3, `pulp_wars-737.3`): the Monster is created
-  // after every other initial entity, so it takes the last initial entity
-  // ID and shifts no other ID.
-  const monster =
-    generated.map.monsterHome === null
-      ? null
-      : createMonsterUnitV7(entities.nextEntityId, generated.map.monsterHome);
+  // Map curiosities (section 3, `pulp_wars-737.3`; round 2, section 24.1):
+  // the neutral units are created after every other initial entity, in
+  // placement order, so they take the last initial entity IDs and shift no
+  // other ID.
+  const neutral = createNeutralUnitsV7(
+    entities.nextEntityId,
+    generated.map.neutrals,
+  );
   const explored = players.map((player, seat) => ({
     ...player,
     explored: coordsInRadius(
@@ -3899,7 +3903,7 @@ function initialMapStateFromV7(
     setup,
     random: generated.map.random,
     humanPlayerId: explored[0]?.id ?? playerId(1),
-    nextEntityId: monster?.nextEntityId ?? entities.nextEntityId,
+    nextEntityId: neutral.nextEntityId,
     commandIndex: 0,
     round: 1,
     activeSeatIndex: 0,
@@ -3911,12 +3915,14 @@ function initialMapStateFromV7(
     cities: entities.cities,
     populationContributions: [],
     units:
-      monster === null ? entities.units : [...entities.units, monster.unit],
+      neutral.units.length === 0
+        ? entities.units
+        : [...entities.units, ...neutral.units],
     treasureChests: generated.map.treasureChests,
     curiosities: generated.map.curiosities,
     // The frozen sea (naval branch section 8.3): no ice at the start.
     ice: [],
-    monsters: monster === null ? [] : [monster.entry],
+    monsters: neutral.entries,
     graves: [],
     plagued: [],
     bitten: [],
@@ -4145,37 +4151,49 @@ export function startingCompanionCellV7(
 }
 
 /**
- * Map curiosities (section 8, `pulp_wars-737.3`): the Giant Spider at its
- * home with the ID `nextEntityId`: owned by the neutral owner, no home city,
- * full HP, no kills, never veteran or capture-eligible, a fresh activation.
+ * Map curiosities (section 8, `pulp_wars-737.3`; round 2, section 24.1):
+ * the neutral units of a placement with IDs from `nextEntityId` in order:
+ * owned by the neutral owner, the role and maximum HP of their breed, no
+ * home city, full HP, no kills, never veteran or capture-eligible, a fresh
+ * activation, and an empty `provokedBy`.
  */
-function createMonsterUnitV7(
+function createNeutralUnitsV7(
   nextEntityId: number,
-  home: CoordV7,
+  placements: readonly NeutralPlacementV7[],
 ): {
-  readonly unit: UnitStateV7;
-  readonly entry: MonsterStateV7;
+  readonly units: readonly UnitStateV7[];
+  readonly entries: readonly MonsterStateV7[];
   readonly nextEntityId: number;
 } {
-  const allocation = allocateUnitId(nextEntityId);
-  return {
-    unit: {
+  let next = nextEntityId;
+  const units: UnitStateV7[] = [];
+  const entries: MonsterStateV7[] = [];
+  for (const placement of placements) {
+    const allocation = allocateUnitId(next);
+    next = allocation.nextEntityId;
+    const rule = NEUTRAL_ROLE_RULES_V7[placement.breed];
+    units.push({
       id: allocation.id,
       ownerId: NEUTRAL_OWNER_ID_V7,
       homeCityId: null,
-      role: NEUTRAL_MONSTER_ROLE_RULE_V7.role,
+      role: rule.role,
       form: "LAND",
-      at: home,
-      hp: MONSTER_HP_V7,
-      maxHp: MONSTER_HP_V7,
+      at: placement.at,
+      hp: rule.maxHp,
+      maxHp: rule.maxHp,
       kills: 0,
       veteran: false,
       captureEligible: false,
       activation: freshStartActivation(),
-    },
-    entry: { unitId: allocation.id, home, provokedBy: [] },
-    nextEntityId: allocation.nextEntityId,
-  };
+    });
+    entries.push({
+      unitId: allocation.id,
+      breed: placement.breed,
+      home: placement.home,
+      provokedBy: [],
+    });
+  }
+  return { units, entries, nextEntityId: next };
 }
 
 function freshStartActivation(): UnitStateV7["activation"] {

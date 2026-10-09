@@ -5,7 +5,7 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r65" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r66" as const;
 /**
  * Every earlier Ruleset 7 identity, oldest first. Readers report these as
  * incompatible (never invalid). An identity bump must append the outgoing
@@ -76,8 +76,9 @@ export const PRIOR_RULESET_7_IDS = Object.freeze([
   "pulp-wars-poc-7r62",
   "pulp-wars-poc-7r63",
   "pulp-wars-poc-7r64",
+  "pulp-wars-poc-7r65",
 ] as const);
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r65.current" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r66.current" as const;
 /**
  * The map generator a setup names (docs/product/RULESET_7_MAP_SCALE.md
  * section 8.8): `V4` is the many-seats generator of `pulp_wars-ykw.3`
@@ -254,6 +255,9 @@ export const COMMAND_KIND_ORDER_V7 = Object.freeze([
   "SUGAR_RUSH",
   "REBAKE",
   "SUGAR_TOSS",
+  // Map curiosities round 2 (section 30.1): a unit on the Wishing Well
+  // tosses a Coin.
+  "TOSS_COIN",
   "RECOVER",
   // The giants' signatures (docs/product/RULESET_7_GIANTS.md sections 6.2,
   // 6.3, 6.4, and 6.8): the Abomination's Swallow, the Troll's Goblin Toss,
@@ -430,6 +434,11 @@ export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   "SWALLOWED_UNIT_RELEASED",
   "GIANT_BROKE_OFF",
   "UNIT_MOVED",
+  // Map curiosities round 2 (section 28.4): a Dimensional Gate displaced an
+  // occupant, carried a unit to its partner, or was blocked.
+  "GATE_DISPLACED",
+  "GATE_TRAVERSED",
+  "GATE_BLOCKED",
   "UNIT_MOVE_INTERRUPTED",
   // The Candy revision: a hostile unit ended its Move on Crumbs.
   "CRUMBS_EATEN",
@@ -450,6 +459,8 @@ export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   "MONSTER_BOUNTY_AWARDED",
   "UNIT_RECOVERED",
   "UNIT_WAITED",
+  // Map curiosities round 2 (section 30.2): a Coin tossed into the Well.
+  "COIN_TOSSED",
   // Map curiosities (section 6): a Move ended on a Shrine promoted the unit.
   "SHRINE_CLAIMED",
   "UNIT_PROMOTED",
@@ -642,33 +653,64 @@ export interface ScoreRound30SnapshotV7 {
 }
 
 /**
- * The static map curiosities (docs/product/RULESET_7_MAP_CURIOSITIES.md
- * sections 5 to 7), in the frozen kind order. The roaming Monster (section
- * 8, a later revision) is a unit with its own list, not a tile marker.
+ * The map curiosities that are tile markers
+ * (docs/product/RULESET_7_MAP_CURIOSITIES.md sections 5 to 7 and, round 2,
+ * sections 26 to 30), in the frozen kind order. The neutral units (the
+ * Giant Spider, a camp's guards, Bigfoot) are units with their own list,
+ * not tile markers; a camp centre (`DOWNED_SAUCER`, `GRAVEYARD`) is a tile
+ * marker whose guards are listed in `monsters`.
  */
 export const CURIOSITY_KINDS_V7 = Object.freeze([
   "FOUNTAIN",
   "SHRINE",
   "WRECK",
+  // Round 2 (`pulp_wars-737.14`): the camp centres, a gate of a pair, and
+  // the Wishing Well.
+  "DOWNED_SAUCER",
+  "GRAVEYARD",
+  "GATE",
+  "WISHING_WELL",
 ] as const);
 export type CuriosityKindV7 = (typeof CURIOSITY_KINDS_V7)[number];
+/** The tile markers that carry nothing but their kind and tile. */
+export type PlainCuriosityKindV7 = Exclude<
+  CuriosityKindV7,
+  "GATE" | "WISHING_WELL"
+>;
 
 /**
  * A curiosity on the board: a Fountain of Youth (Grass, permanent), a
- * Shrine (Grass or Forest, gone once claimed), or a Sunken Wreck (water,
- * gone once salvaged). It never changes its tile.
+ * Shrine (Grass or Forest, gone once claimed), a Sunken Wreck (water, gone
+ * once salvaged), a camp centre (round 2: a Downed Saucer or a Graveyard,
+ * permanent scenery), a Dimensional Gate naming its `partner` (section 28),
+ * or the Wishing Well with the seats that tossed a Coin (section 30). It
+ * never changes its tile.
  */
-export interface CuriosityV7 {
-  readonly kind: CuriosityKindV7;
-  readonly at: CoordV7;
-}
+export type CuriosityV7 =
+  | {
+      readonly kind: PlainCuriosityKindV7;
+      readonly at: CoordV7;
+    }
+  | {
+      readonly kind: "GATE";
+      readonly at: CoordV7;
+      /** The other gate of the pair. */
+      readonly partner: CoordV7;
+    }
+  | {
+      readonly kind: "WISHING_WELL";
+      readonly at: CoordV7;
+      /** The seats that tossed a Coin, sorted (once per player per match). */
+      readonly tossedBy: readonly PlayerId[];
+    };
 
 /**
  * Map curiosities (docs/product/RULESET_7_MAP_CURIOSITIES.md section 8.1):
- * the reserved owner of the Giant Spider. It is never a seat (seats are 1
- * to 4), has no entry in `players`, no Coins, no technology, no cities, and
- * no exploration, is never eliminated, and is hostile to every player in
- * both AI modes. Only a unit listed in `GameStateV7.monsters` has it.
+ * the reserved owner of every neutral unit (the Giant Spider, a camp's
+ * guards, Bigfoot). It is never a seat (seats are 1 to 4), has no entry in
+ * `players`, no Coins, no technology, no cities, and no exploration, is
+ * never eliminated, and is hostile to every player in both AI modes. Only a
+ * unit listed in `GameStateV7.monsters` has it.
  */
 export const NEUTRAL_OWNER_ID_V7 = 0 as PlayerId;
 
@@ -678,12 +720,29 @@ export function isNeutralOwnerV7(ownerId: PlayerId): boolean {
 }
 
 /**
- * Map curiosities (section 10.2): a Giant Spider on the board. `home` is
- * its lair (the tile it was placed on); `provokedBy` lists, sorted, every
- * unit on the board that damaged it since its previous neutral turn.
+ * Round 2 (section 32.3): the breeds of the neutral registration, in the
+ * frozen order: the Giant Spider, the Downed Saucer's guards, the
+ * Graveyard's Zombies, and Bigfoot.
+ */
+export const NEUTRAL_BREEDS_V7 = Object.freeze([
+  "GIANT_SPIDER",
+  "GRUNT",
+  "RAY_GUNNER",
+  "SHIELD_PROJECTOR",
+  "ZOMBIE",
+  "BIGFOOT",
+] as const);
+export type NeutralBreedV7 = (typeof NEUTRAL_BREEDS_V7)[number];
+
+/**
+ * Map curiosities (section 10.2; round 2, section 32.2): a neutral unit on
+ * the board. `breed` names its registration; `home` is the Spider's lair,
+ * a guard's camp centre, or Bigfoot's home; `provokedBy` lists, sorted,
+ * every unit on the board that damaged it since its previous neutral turn.
  */
 export interface MonsterStateV7 {
   readonly unitId: UnitId;
+  readonly breed: NeutralBreedV7;
   readonly home: CoordV7;
   readonly provokedBy: readonly UnitId[];
 }
@@ -924,7 +983,7 @@ export interface GameStateV7 {
   readonly treasureChests: readonly CoordV7[];
   /**
    * Map curiosities (docs/product/RULESET_7_MAP_CURIOSITIES.md section
-   * 10.2): the Fountains, Shrines, and Wrecks on the board, sorted by
+   * 10.2; round 2, section 32.2): the tile markers on the board, sorted by
    * (y, x). Always empty when `setup.curiosities` is false and on the
    * Showcase and mission boards.
    */
@@ -937,8 +996,9 @@ export interface GameStateV7 {
    */
   readonly ice: readonly IceTileV7[];
   /**
-   * Map curiosities (section 10.2): one entry per Giant Spider on the board
-   * (a unit owned by `NEUTRAL_OWNER_ID_V7`), sorted by `unitId`. Always
+   * Map curiosities (section 10.2; round 2, section 32.2): one entry per
+   * neutral unit on the board (a unit owned by `NEUTRAL_OWNER_ID_V7`),
+   * sorted by `unitId`. Always
    * empty when `setup.curiosities` is false and on the Showcase and mission
    * boards.
    */

@@ -1,10 +1,11 @@
 import type { PlayerId, UnitId } from "../model/ids";
 import {
   factionTreeV7,
+  neutralBreedOfV7,
   unitRoleRuleV7,
   type FactionRosterV7,
 } from "../rules/ruleset-v7";
-import { MONSTER_BOUNTY_V7 } from "./curiosities";
+import { MONSTER_BOUNTY_V7, neutralBountyV7 } from "./curiosities";
 import { arePlayersHostileV7 } from "./economy";
 import type { DomainEventV7 } from "./events";
 import type { CreditedDeathV7 } from "./explosions";
@@ -148,7 +149,10 @@ export function scoreFromCountsV7(counts: ScoreCountsV7): ScoreBreakdownV7 {
  * Section 3.2: a unit's value, the printed cost of its role under the
  * registration of its kind (a mind-controlled unit keeps its kind); a role
  * with no printed cost (the reward giant of every faction) is worth
- * `SCORE_GIANT_VALUE_V7` and the neutral Giant Spider its bounty.
+ * `SCORE_GIANT_VALUE_V7` and the neutral Giant Spider its bounty. Map
+ * curiosities round 2 (`pulp_wars-737.14`): every neutral unit is worth
+ * its breed's bounty (a Grunt 3, a Ray Gunner or Shield Projector 4, a
+ * Zombie 5, Bigfoot 12).
  */
 export function unitScoreValueV7(
   roster: FactionRosterV7,
@@ -156,9 +160,11 @@ export function unitScoreValueV7(
     readonly id: UnitId;
     readonly ownerId: PlayerId;
     readonly role: UnitRoleIdV7;
+    readonly maxHp?: number;
   },
 ): number {
-  if (isNeutralOwnerV7(unit.ownerId)) return SCORE_MONSTER_VALUE_V7;
+  if (isNeutralOwnerV7(unit.ownerId))
+    return neutralBountyV7(neutralBreedOfV7(roster, unit));
   return unitRoleRuleV7(roster, unit).cost ?? SCORE_GIANT_VALUE_V7;
 }
 

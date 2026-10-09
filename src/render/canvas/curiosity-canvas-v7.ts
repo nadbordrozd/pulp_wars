@@ -2,6 +2,7 @@ import type { CoordV7, PlayerViewV7 } from "../../engine/index";
 import type { CuriosityOverlayIdV7 } from "../../assets/chibi-art-v7";
 import {
   CURIOSITY_LABELS_V7,
+  isDrawnCuriosityKindV7,
   matchHasCuriositiesV7,
   monsterPreviewsV7,
   visibleLairsV7,
@@ -81,16 +82,20 @@ export function addCuriosityEntriesV7(
       curiosity: "WEB",
       label: CURIOSITY_LABELS_V7.WEB,
     });
-  for (const curiosity of view.curiosities)
+  for (const curiosity of view.curiosities) {
+    // The round-2 kinds are drawn by the round-2 UI bead.
+    const kind = curiosity.kind;
+    if (!isDrawnCuriosityKindV7(kind)) continue;
     entries.push({
-      key: `curiosity:${curiosity.kind}:${key(curiosity.at)}`,
+      key: `curiosity:${kind}:${key(curiosity.at)}`,
       kind: "CURIOSITY",
       layer: 4,
       at: curiosity.at,
-      artSubject: `CURIOSITY:${curiosity.kind}`,
-      curiosity: curiosity.kind,
-      label: CURIOSITY_LABELS_V7[curiosity.kind],
+      artSubject: `CURIOSITY:${kind}`,
+      curiosity: kind,
+      label: CURIOSITY_LABELS_V7[kind],
     });
+  }
   // A selected Spider (or its tile, or its lair): its area outlined and
   // the tiles it could attack after one step shaded.
   if (selection === null || selection.kind === "CITY") return;

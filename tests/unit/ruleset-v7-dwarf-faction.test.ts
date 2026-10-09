@@ -158,8 +158,9 @@ describe("Dwarf faction registration (sections 2 and 14)", () => {
     // (`pulp_wars-w49.33`) adds WHIRL, BUILD_BARRICADE, and
     // ATTACK_BARRICADE after ASSEMBLE (62).
     // The giants' signatures (`pulp_wars-w49.30`) add SWALLOW, TOSS,
-    // STOMP, and BREAK_OFF after RECOVER (66).
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(66);
+    // STOMP, and BREAK_OFF after RECOVER (66). Map curiosities round 2
+    // (`pulp_wars-737.14`) add TOSS_COIN before RECOVER (67).
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(67);
     const snap = COMMAND_KIND_ORDER_V7.indexOf("FREEZE");
     expect(COMMAND_KIND_ORDER_V7.slice(snap, snap + 7)).toEqual([
       "FREEZE", // the frozen sea (pulp_wars-5ti.3), after COLD_SNAP
@@ -180,8 +181,9 @@ describe("Dwarf faction registration (sections 2 and 14)", () => {
     // BARRICADE_REPAIRED after FIELD_DEFENSE_DESTROYED, WHIRL_RESOLVED and
     // BARRICADE_ATTACKED after UNIT_BOMBED (105).
     // The giants' signatures (`pulp_wars-w49.30`) add ten event kinds in
-    // one block after UNIT_SURFACED (115).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(115);
+    // one block after UNIT_SURFACED (115). Map curiosities round 2
+    // (`pulp_wars-737.14`) add the three gate events and COIN_TOSSED (119).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(119);
     const after = (order: readonly string[], kind: string) =>
       order[order.indexOf(kind) + 1];
     for (const order of [

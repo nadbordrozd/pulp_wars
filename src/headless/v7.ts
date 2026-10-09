@@ -80,6 +80,7 @@ import {
   type AiCountV7,
   type BoardSizeV7,
   type CuriosityKindV7,
+  type NeutralBreedV7,
   type FactionIdV7,
   type GameModeV7,
   type GameStateV7,
@@ -95,6 +96,7 @@ import { viewForV7, type PlayerViewV7 } from "../engine/v7/view";
 import { scoresV7, type PlayerScoreV7 } from "../engine/v7/score";
 import { matchSummaryV7, type MatchSummaryV7 } from "../engine/v7/star-grade";
 import { allOwnedUnitsV7 } from "../engine/v7/units";
+import type { WellOutcomeV7 } from "../engine/v7/curiosities";
 import {
   createDwarfMetricsV7,
   createDwarfTelemetryStateV7,
@@ -132,7 +134,7 @@ export interface AiCommandRecordV7 {
 }
 
 export interface HeadlessMetricsV7 {
-  readonly rulesetId: "pulp-wars-poc-7r65";
+  readonly rulesetId: "pulp-wars-poc-7r66";
   readonly setupHash: string;
   readonly mapHash: string;
   readonly postGenerationPrngHash: string;
@@ -149,10 +151,31 @@ export interface HeadlessMetricsV7 {
    */
   readonly monsters: {
     readonly placed: number;
+    /**
+     * Round 2 (`pulp_wars-737.14`, section 32.5): the breed of every
+     * neutral unit placed, in unit-ID order.
+     */
+    readonly breeds: readonly NeutralBreedV7[];
     damageDealt: number;
     kills: number;
     bountyCoins: number;
+    /** The round the Giant Spider was slain (round 2: the Spider only). */
     slainRound: number | null;
+    /** Round 2: the neutral units slain. */
+    slain: number;
+  };
+  /**
+   * Round 2 (section 32.5): the Dimensional Gates' traversals,
+   * displacements, and blocked traversals, and the Wishing Well's tosses by
+   * outcome.
+   */
+  readonly gates: {
+    traversals: number;
+    displacements: number;
+    blocked: number;
+  };
+  readonly well: {
+    readonly tosses: Record<WellOutcomeV7, number>;
   };
   finalPrngHash: string;
   commandHash: string;
@@ -1071,7 +1094,7 @@ export async function runAiBatchV7(
           const factions = options.factions ?? distinctFactionsV7(aiCount + 1);
           const result = runAiMatchInternalV7(
             {
-              rulesetId: "pulp-wars-poc-7r65",
+              rulesetId: "pulp-wars-poc-7r66",
               mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
               seed,
               width: size,
@@ -1189,7 +1212,7 @@ function createMetricsV7(state: GameStateV7): HeadlessMetricsV7 {
   for (const tile of state.board.tiles)
     if (tile.resource !== null) generated[tile.resource] += 1;
   return {
-    rulesetId: "pulp-wars-poc-7r65",
+    rulesetId: "pulp-wars-poc-7r66",
     setupHash: canonicalHash(state.setup),
     mapHash: canonicalHash({
       board: state.board,
@@ -1199,11 +1222,15 @@ function createMetricsV7(state: GameStateV7): HeadlessMetricsV7 {
     curiosityKinds: state.curiosities.map((curiosity) => curiosity.kind),
     monsters: {
       placed: state.monsters.length,
+      breeds: state.monsters.map((entry) => entry.breed),
       damageDealt: 0,
       kills: 0,
       bountyCoins: 0,
       slainRound: null,
+      slain: 0,
     },
+    gates: { traversals: 0, displacements: 0, blocked: 0 },
+    well: { tosses: { SPLASH: 0, COINS: 0, HEAL: 0, VISION: 0 } },
     finalPrngHash: "",
     commandHash: "",
     eventHash: "",
@@ -1660,6 +1687,11 @@ function recordEventsV7(
     }
     if (event.kind === "MONSTER_BOUNTY_AWARDED")
       metrics.monsters.bountyCoins += event.coins;
+    // Round 2 (section 32.5): the gates and the Well.
+    if (event.kind === "GATE_TRAVERSED") metrics.gates.traversals += 1;
+    if (event.kind === "GATE_DISPLACED") metrics.gates.displacements += 1;
+    if (event.kind === "GATE_BLOCKED") metrics.gates.blocked += 1;
+    if (event.kind === "COIN_TOSSED") metrics.well.tosses[event.outcome] += 1;
     if (event.kind === "COMBAT_RESOLVED") {
       const preview = event.preview;
       const attacker = before.units.find(
@@ -1830,9 +1862,14 @@ function recordEventsV7(
       const unit = allOwnedUnitsV7(before).find(
         (item) => item.id === removedUnitId,
       );
-      if (unit !== undefined && isNeutralOwnerV7(unit.ownerId))
-        metrics.monsters.slainRound = before.round;
-      else if (unit !== undefined) {
+      if (unit !== undefined && isNeutralOwnerV7(unit.ownerId)) {
+        metrics.monsters.slain += 1;
+        if (
+          before.monsters.find((entry) => entry.unitId === unit.id)?.breed ===
+          "GIANT_SPIDER"
+        )
+          metrics.monsters.slainRound = before.round;
+      } else if (unit !== undefined) {
         metrics.roles.losses[unit.role] += 1;
         metrics.factionRoles[unitKind(before, unit)].losses[unit.role] += 1;
       }

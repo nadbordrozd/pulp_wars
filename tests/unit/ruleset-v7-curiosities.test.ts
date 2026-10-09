@@ -1396,12 +1396,13 @@ describe("public view, projection, events, and the state schema", () => {
 
 describe("saves and replays", () => {
   it("round-trips a generated match with curiosities, a Shrine claimed by Normal, through the replay and the save", () => {
-    // 16 x 16 Dry Land seed 12, Human v Goblin: one Shrine, which the
+    // 16 x 16 Dry Land seed 17, Human v Goblin: one Shrine, which the
     // Normal AI claims inside 30 rounds (seed 10 until the Monster joined
     // the kind draw at 7r36; seed 4 since, also on the village-density
     // boards of `pulp_wars-ykw.2` and `pulp_wars-ykw.7`; seed 12 on the
-    // many-seats boards of `pulp_wars-ykw.3`).
-    const setup = generatedSetup(12, "DRY_LAND", 16, 1, true, [
+    // many-seats boards of `pulp_wars-ykw.3`; seed 17 since the round-2
+    // kinds joined the kind draw, `pulp_wars-737.14`).
+    const setup = generatedSetup(17, "DRY_LAND", 16, 1, true, [
       "ORIGINAL",
       "GOBLIN",
     ]);

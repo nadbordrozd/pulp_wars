@@ -11,7 +11,7 @@ import {
   MIND_CONTROL_LIMIT_V7,
   PROMOTION_HP_V7,
   PROMOTION_KILLS_V7,
-  NEUTRAL_MONSTER_ROLE_RULE_V7,
+  NEUTRAL_ROLE_RULES_V7,
   BOOM_POPULATION_V7,
   MONUMENT_POPULATION_V7,
   cityRewardCandidatesV7,
@@ -32,6 +32,7 @@ import {
   BIOME_IDS_V7,
   CURIOSITY_KINDS_V7,
   FACTION_IDS_V7,
+  NEUTRAL_BREEDS_V7,
   IMPROVEMENT_IDS_V7,
   RESOURCE_IDS_V7,
   REWARD_IDS_V7,
@@ -43,6 +44,7 @@ import {
   isNavalRoleV7,
   isNeutralOwnerV7,
   type MonsterStateV7,
+  type NeutralBreedV7,
   isAfloatFormV7,
   type BoardStateV7,
   type AchievementEntitlementV7,
@@ -89,10 +91,16 @@ import {
 import { PLAYER_COLORS_V7 } from "./types";
 import { PLAGUE_DURATION_TURNS_V7 } from "./afflictions";
 import {
+  BIGFOOT_MINIMUM_WIDTH_V7,
   CURIOSITY_CENTER_DISTANCE_V7,
+  GATES_MINIMUM_WIDTH_V7,
   MONSTER_HOME_RADIUS_V7,
   MONSTER_MINIMUM_WIDTH_V7,
+  bigfootHabitatV7,
   curiosityTerrainLegalV7,
+  curiosityTilesV7,
+  guardCampKindV7,
+  isGuardBreedV7,
   setupHasCuriositiesV7,
 } from "./curiosities";
 import { parseMatchSetupV7 } from "./setup";
@@ -240,7 +248,7 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
           players,
           mindControlled,
           shrinePromotions,
-          new Set(monsters.map((entry) => entry.unitId)),
+          new Map(monsters.map((entry) => [entry.unitId, entry.breed])),
         );
   const treasureChests = parseSortedCoords(input.treasureChests);
   const curiosities =
@@ -932,7 +940,7 @@ function parseUnits(
   players: readonly PlayerStateV7[],
   mindControlled: readonly MindControlledStatusV7[],
   shrinePromotions: boolean,
-  neutralUnitIds: ReadonlySet<number>,
+  neutralUnitIds: ReadonlyMap<number, NeutralBreedV7>,
 ): readonly UnitStateV7[] | null {
   if (!isDenseArrayV7(input)) return null;
   const values: UnitStateV7[] = [];
@@ -957,14 +965,14 @@ function parseUnits(
  * `PROMOTION_KILLS_V7` kills (the Shrine promotes without them). Tuning 5
  * (`pulp_wars-w49.4`) removed Drill, the other promotion without kills.
  * `neutralUnitIds` (section 10.2): the units listed in `monsters`, exactly
- * the ones that have the neutral owner.
+ * the ones that have the neutral owner, with their breeds.
  */
 function parseUnit(
   input: unknown,
   players: readonly PlayerStateV7[],
   mindControlled: readonly MindControlledStatusV7[],
   shrinePromotions: boolean,
-  neutralUnitIds: ReadonlySet<number>,
+  neutralUnitIds: ReadonlyMap<number, NeutralBreedV7>,
 ): UnitStateV7 | null {
   if (
     typeof input === "object" &&
@@ -1122,15 +1130,15 @@ function parseUnit(
 }
 
 /**
- * Map curiosities (sections 8.1 and 10.2): a Giant Spider, a unit of the
- * neutral owner listed in `monsters`: the neutral registration's role
- * (`JUGGERNAUT`), land form, no home city, its full maximum HP, never
- * veteran or capture-eligible, and at most one attack and no Overrun or
- * Escape in its activation.
+ * Map curiosities (sections 8.1 and 10.2; round 2, section 32.2): a neutral
+ * unit listed in `monsters`: its breed's role and maximum HP (the neutral
+ * registration), land form, no home city, never veteran or
+ * capture-eligible, and at most one attack and no Overrun or Escape in its
+ * activation.
  */
 function parseNeutralUnit(
   input: unknown,
-  neutralUnitIds: ReadonlySet<number>,
+  neutralUnitIds: ReadonlyMap<number, NeutralBreedV7>,
 ): UnitStateV7 | null {
   if (
     !hasExactKeysV7(input, [
@@ -1148,11 +1156,10 @@ function parseNeutralUnit(
       "veteran",
     ]) ||
     input.ownerId !== NEUTRAL_OWNER_ID_V7 ||
-    input.role !== NEUTRAL_MONSTER_ROLE_RULE_V7.role ||
     input.form !== "LAND" ||
     input.homeCityId !== null ||
-    input.maxHp !== NEUTRAL_MONSTER_ROLE_RULE_V7.maxHp ||
     !isPositiveSafeIntegerV7(input.hp) ||
+    !isPositiveSafeIntegerV7(input.maxHp) ||
     input.hp > input.maxHp ||
     !isNonNegativeSafeIntegerV7(input.kills) ||
     input.veteran !== false ||
@@ -1162,9 +1169,13 @@ function parseNeutralUnit(
   const id = parseUnitIdV7(input.id);
   const at = parseCoordV7(input.at);
   const activation = parseActivation(input.activation);
+  const breed = id === null ? undefined : neutralUnitIds.get(id);
+  const rule = breed === undefined ? undefined : NEUTRAL_ROLE_RULES_V7[breed];
   if (
     id === null ||
-    !neutralUnitIds.has(id) ||
+    rule === undefined ||
+    input.role !== rule.role ||
+    input.maxHp !== rule.maxHp ||
     at === null ||
     activation === null ||
     activation.attacksUsed > 1 ||
@@ -1177,7 +1188,7 @@ function parseNeutralUnit(
     id,
     ownerId: NEUTRAL_OWNER_ID_V7,
     homeCityId: null,
-    role: NEUTRAL_MONSTER_ROLE_RULE_V7.role,
+    role: rule.role,
     form: "LAND",
     at,
     hp: input.hp,
@@ -1190,10 +1201,12 @@ function parseNeutralUnit(
 }
 
 /**
- * Map curiosities (section 10.2): the `monsters` list, strictly ascending
- * by `unitId`, each with its home and a strictly ascending `provokedBy`. It
- * is empty unless the setup's `curiosities` is true on a generated board of
- * width 16 or more; the cross references check the units.
+ * Map curiosities (section 10.2; round 2, section 32.2): the `monsters`
+ * list, strictly ascending by `unitId`, each with its breed, its home, and
+ * a strictly ascending `provokedBy`. It is empty unless the setup's
+ * `curiosities` is true on a generated board of width 16 or more; at most
+ * one Giant Spider and one Bigfoot, and no Bigfoot below width 20. The
+ * cross references check the units and the camps.
  */
 function parseMonsters(
   input: unknown,
@@ -1207,10 +1220,13 @@ function parseMonsters(
     return null;
   const values: MonsterStateV7[] = [];
   for (const candidate of input) {
-    if (!hasExactKeysV7(candidate, ["home", "provokedBy", "unitId"]))
+    if (!hasExactKeysV7(candidate, ["breed", "home", "provokedBy", "unitId"]))
       return null;
     const unitId = parseUnitIdV7(candidate.unitId);
     const home = parseCoordV7(candidate.home);
+    const breed = NEUTRAL_BREEDS_V7.includes(candidate.breed as NeutralBreedV7)
+      ? (candidate.breed as NeutralBreedV7)
+      : null;
     const provokedBy = parseStrictlyAscendingIdsV7(
       candidate.provokedBy,
       parseUnitIdV7,
@@ -1218,12 +1234,16 @@ function parseMonsters(
     if (
       unitId === null ||
       home === null ||
+      breed === null ||
       provokedBy === null ||
       provokedBy.includes(unitId) ||
+      (breed === "BIGFOOT" && setup.width < BIGFOOT_MINIMUM_WIDTH_V7) ||
+      ((breed === "GIANT_SPIDER" || breed === "BIGFOOT") &&
+        values.some((entry) => entry.breed === breed)) ||
       (values.length > 0 && (values.at(-1) as MonsterStateV7).unitId >= unitId)
     )
       return null;
-    values.push({ unitId, home, provokedBy });
+    values.push({ unitId, breed, home, provokedBy });
   }
   return values;
 }
@@ -1581,7 +1601,7 @@ function parseBurrowed(
       players,
       mindControlled,
       shrinePromotions,
-      new Set(),
+      new Map(),
     );
     const moleUnitId =
       candidate.moleUnitId === null
@@ -1891,7 +1911,7 @@ function parseGiants(
       players,
       mindControlled,
       shrinePromotions,
-      new Set(),
+      new Map(),
     );
     const prior = swallowed.at(-1);
     if (
@@ -2083,12 +2103,16 @@ function iceValid(
 }
 
 /**
- * Map curiosities (docs/product/RULESET_7_MAP_CURIOSITIES.md section 10.2):
- * the curiosity list, strictly ascending by (y, x) (so no tile holds two).
- * It is empty unless the setup's `curiosities` is true on a generated map;
- * every entry stands on its kind's terrain, on no settlement site, treasure
- * chest, resource, improvement, or Rift, 3 or more from every settlement
- * center (section 4.3 rules 2 and 3), and off the board's edge ring.
+ * Map curiosities (docs/product/RULESET_7_MAP_CURIOSITIES.md section 10.2;
+ * round 2, section 32.2): the curiosity list, strictly ascending by (y, x)
+ * (so no tile holds two). It is empty unless the setup's `curiosities` is
+ * true on a generated map; every entry stands on its kind's terrain, on no
+ * settlement site, treasure chest, resource, improvement, or Rift, 3 or
+ * more from every settlement center (section 4.3 rules 2 and 3), and off
+ * the board's edge ring. Round 2: a gate names its partner, and the gates
+ * are exactly one pair (or none) on a board of width 20 or more; the Well
+ * lists the seats that tossed, strictly ascending; no Downed Saucer with a
+ * Martian seat, no Graveyard with an Undead seat, and at most one camp.
  */
 function parseCuriosities(
   input: unknown,
@@ -2104,11 +2128,25 @@ function parseCuriosities(
   const values: CuriosityV7[] = [];
   for (const candidate of input) {
     if (
-      !hasExactKeysV7(candidate, ["at", "kind"]) ||
-      !CURIOSITY_KINDS_V7.includes(candidate.kind as CuriosityKindV7)
+      typeof candidate !== "object" ||
+      candidate === null ||
+      !CURIOSITY_KINDS_V7.includes(
+        (candidate as { readonly kind?: unknown }).kind as CuriosityKindV7,
+      )
     )
       return null;
-    const kind = candidate.kind as CuriosityKindV7;
+    const kind = (candidate as { readonly kind: CuriosityKindV7 }).kind;
+    if (
+      !hasExactKeysV7(
+        candidate,
+        kind === "GATE"
+          ? ["at", "kind", "partner"]
+          : kind === "WISHING_WELL"
+            ? ["at", "kind", "tossedBy"]
+            : ["at", "kind"],
+      )
+    )
+      return null;
     const at = parseCoordV7(candidate.at);
     if (
       at === null ||
@@ -2133,11 +2171,43 @@ function parseCuriosities(
         (center) =>
           Math.max(Math.abs(center.x - at.x), Math.abs(center.y - at.y)) <
           CURIOSITY_CENTER_DISTANCE_V7,
-      )
+      ) ||
+      (kind === "DOWNED_SAUCER" && setup.factions.includes("MARTIAN")) ||
+      (kind === "GRAVEYARD" && setup.factions.includes("UNDEAD")) ||
+      (kind === "GATE" && setup.width < GATES_MINIMUM_WIDTH_V7)
     )
       return null;
-    values.push({ kind, at });
+    if (kind === "GATE") {
+      const partner = parseCoordV7(candidate.partner);
+      if (partner === null || sameCoordV7(partner, at)) return null;
+      values.push({ kind, at, partner });
+    } else if (kind === "WISHING_WELL") {
+      const tossedBy = parseStrictlyAscendingIdsV7(
+        candidate.tossedBy,
+        parsePlayerIdV7,
+      );
+      if (tossedBy === null) return null;
+      values.push({ kind, at, tossedBy });
+    } else values.push({ kind, at });
   }
+  const gates = values.filter((value) => value.kind === "GATE");
+  if (
+    (gates.length !== 0 && gates.length !== 2) ||
+    gates.some(
+      (gate) =>
+        !gates.some(
+          (other) =>
+            other !== gate &&
+            sameCoordV7(other.at, gate.partner) &&
+            sameCoordV7(other.partner, gate.at),
+        ),
+    ) ||
+    values.filter(
+      (value) => value.kind === "DOWNED_SAUCER" || value.kind === "GRAVEYARD",
+    ).length > 1 ||
+    values.filter((value) => value.kind === "WISHING_WELL").length > 1
+  )
+    return null;
   return values;
 }
 
@@ -2263,7 +2333,13 @@ function validateCrossReferences(value: CrossInput): boolean {
         (unit.homeCityId !== null &&
           cityById.get(unit.homeCityId)?.ownerId !== unit.ownerId),
     ) ||
-    !monstersValid(board, units, value.monsters) ||
+    !monstersValid(board, units, value.monsters, value.curiosities) ||
+    // Round 2 (section 32.2): only seats toss at the Well.
+    value.curiosities.some(
+      (curiosity) =>
+        curiosity.kind === "WISHING_WELL" &&
+        curiosity.tossedBy.some((id) => !playerById.has(id)),
+    ) ||
     board.tiles.some(
       (tile) =>
         tile.territoryCityId !== null && !cityById.has(tile.territoryCityId),
@@ -2718,43 +2794,41 @@ function validateCrossReferences(value: CrossInput): boolean {
 }
 
 /**
- * Map curiosities (section 10.2): every `monsters` entry has a unit on the
- * board with the neutral owner, every neutral unit has an entry, each
- * Monster stands on a tile of its area it may stand on (Grass, Forest, or
- * Mountain, 3 or more from every settlement center, not a site; the
- * occupancy and chest tests are the ordinary unit checks), and every
- * `provokedBy` ID is a unit on the board that is not neutral.
+ * Map curiosities (section 10.2; round 2, section 32.2): every `monsters`
+ * entry has a unit on the board with the neutral owner, every neutral unit
+ * has an entry, and every `provokedBy` ID is a unit on the board that is
+ * not neutral. Each neutral unit stands where its breed may (the occupancy
+ * and chest tests are the ordinary unit checks): the Spider on a tile of
+ * its area (Grass, Forest, or Mountain, 3 or more from every settlement
+ * center, not a site); a guard on such a tile of its camp's area, never the
+ * centre, with its `home` a camp centre of its kind (a Grunt, Ray Gunner,
+ * or Shield Projector: a Downed Saucer; a Zombie: a Graveyard); Bigfoot on
+ * its habitat. A camp never shares the board with a Spider.
  */
 function monstersValid(
   board: BoardStateV7,
   units: readonly UnitStateV7[],
   monsters: readonly MonsterStateV7[],
+  curiosities: readonly CuriosityV7[],
 ): boolean {
   const neutral = units.filter((unit) => isNeutralOwnerV7(unit.ownerId));
   if (neutral.length !== monsters.length) return false;
   const centers = board.tiles.filter((tile) => tile.site !== null);
+  if (
+    monsters.some((entry) => entry.breed === "GIANT_SPIDER") &&
+    curiosities.some(
+      (curiosity) =>
+        curiosity.kind === "DOWNED_SAUCER" || curiosity.kind === "GRAVEYARD",
+    )
+  )
+    return false;
   for (const entry of monsters) {
     const unit = neutral.find((candidate) => candidate.id === entry.unitId);
     const tile = unit === undefined ? undefined : tileAt(board, unit.at);
     if (
       unit === undefined ||
       tile === undefined ||
-      tile.site !== null ||
-      (tile.terrain !== "GRASS" &&
-        tile.terrain !== "FOREST" &&
-        tile.terrain !== "MOUNTAIN") ||
-      Math.max(
-        Math.abs(unit.at.x - entry.home.x),
-        Math.abs(unit.at.y - entry.home.y),
-      ) > MONSTER_HOME_RADIUS_V7 ||
       tileAt(board, entry.home) === undefined ||
-      centers.some(
-        (center) =>
-          Math.max(
-            Math.abs(center.at.x - unit.at.x),
-            Math.abs(center.at.y - unit.at.y),
-          ) < CURIOSITY_CENTER_DISTANCE_V7,
-      ) ||
       entry.provokedBy.some(
         (id) =>
           !units.some(
@@ -2764,6 +2838,49 @@ function monstersValid(
       )
     )
       return false;
+    if (entry.breed === "BIGFOOT") {
+      if (
+        !bigfootHabitatV7(
+          board,
+          entry.home,
+          centers.map((center) => center.at),
+          curiosityTilesV7({ curiosities, monsters }),
+        ).some((at) => at.x === unit.at.x && at.y === unit.at.y)
+      )
+        return false;
+      continue;
+    }
+    if (
+      tile.site !== null ||
+      (tile.terrain !== "GRASS" &&
+        tile.terrain !== "FOREST" &&
+        tile.terrain !== "MOUNTAIN") ||
+      Math.max(
+        Math.abs(unit.at.x - entry.home.x),
+        Math.abs(unit.at.y - entry.home.y),
+      ) > MONSTER_HOME_RADIUS_V7 ||
+      centers.some(
+        (center) =>
+          Math.max(
+            Math.abs(center.at.x - unit.at.x),
+            Math.abs(center.at.y - unit.at.y),
+          ) < CURIOSITY_CENTER_DISTANCE_V7,
+      )
+    )
+      return false;
+    if (isGuardBreedV7(entry.breed)) {
+      const camp = guardCampKindV7(entry.breed);
+      if (
+        (unit.at.x === entry.home.x && unit.at.y === entry.home.y) ||
+        !curiosities.some(
+          (curiosity) =>
+            curiosity.kind === camp &&
+            curiosity.at.x === entry.home.x &&
+            curiosity.at.y === entry.home.y,
+        )
+      )
+        return false;
+    }
   }
   return true;
 }

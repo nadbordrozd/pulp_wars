@@ -141,7 +141,9 @@ games of section 3.6):
   Fighter 2, a Champion 6, a Battleship 16, an Egg the cost of its role. A
   role with no printed cost (the reward giant of every faction) is worth
   **12** (`SCORE_GIANT_VALUE_V7`), and the neutral Giant Spider **10**
-  (its bounty). Risings, reward units, chest units, and controlled units
+  (its bounty); every other neutral unit of the map curiosities is worth
+  its bounty too (a Grunt 3, a Ray Gunner or Shield Projector 4, a Zombie
+  5, Bigfoot 12; `pulp_wars-737.14`). Risings, reward units, chest units, and controlled units
   have the value of their role; nobody paid for them, but they are worth
   what the role costs.
 - **Army `V`.** The sum of the values of the units the player commands

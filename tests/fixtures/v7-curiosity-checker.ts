@@ -1,44 +1,84 @@
 import type {
   CoordV7,
+  FactionIdV7,
   GeneratedMapV7,
   MapTypeV7,
 } from "../../src/engine/index";
 
-/** A placed curiosity of any kind; the Monster's is its home. */
+/** A placed curiosity kind (section 24.1 order). */
+export type CheckedCuriosityKindV7 =
+  | "MONSTER"
+  | "FOUNTAIN"
+  | "SHRINE"
+  | "WRECK"
+  | "DOWNED_SAUCER"
+  | "GRAVEYARD"
+  | "GATES"
+  | "BIGFOOT"
+  | "WISHING_WELL";
+
+/**
+ * A placed curiosity tile of any kind: the Spider's lair (kind `MONSTER`),
+ * Bigfoot's home (`BIGFOOT`), each gate of the pair (`GATES`), or a marker.
+ */
 export interface CheckedCuriosityV7 {
-  readonly kind: "MONSTER" | "FOUNTAIN" | "SHRINE" | "WRECK";
+  readonly kind: CheckedCuriosityKindV7;
   readonly at: CoordV7;
 }
 
+const KINDS: readonly CheckedCuriosityKindV7[] = [
+  "MONSTER",
+  "FOUNTAIN",
+  "SHRINE",
+  "WRECK",
+  "DOWNED_SAUCER",
+  "GRAVEYARD",
+  "GATES",
+  "BIGFOOT",
+  "WISHING_WELL",
+];
+const DANGERS: readonly CheckedCuriosityKindV7[] = [
+  "MONSTER",
+  "DOWNED_SAUCER",
+  "GRAVEYARD",
+];
+const COMPOSITIONS: readonly string[] = [
+  "GRUNT",
+  "GRUNT,GRUNT",
+  "GRUNT,GRUNT,SHIELD_PROJECTOR",
+  "GRUNT,RAY_GUNNER",
+];
+
 /**
- * Map curiosities (`pulp_wars-737.2` and `pulp_wars-737.3`,
- * docs/product/RULESET_7_MAP_CURIOSITIES.md section 4): the placement rules
- * checked independently of the engine's placement code, against the same
- * map generated without curiosities (the `RIFTS` rules). Used by
- * `tests/unit/ruleset-v7-curiosities.test.ts` and
+ * Map curiosities (`pulp_wars-737.2`, `pulp_wars-737.3`, and round 2
+ * `pulp_wars-737.14`, docs/product/RULESET_7_MAP_CURIOSITIES.md sections 4
+ * and 24): the placement rules checked independently of the engine's
+ * placement code, against the same map generated without curiosities (the
+ * `RIFTS` rules). Used by the generation tests and
  * `scripts/validate-ruleset7-curiosity-maps.ts`. Throws on the first broken
- * rule; returns the curiosities, the Monster's home included (as kind
- * `MONSTER`), in (y, x) order. With `target` (the section 4.2 target
- * count), a board with fewer curiosities must have no legal site left for
- * any kind it lacks.
+ * rule; returns the curiosity tiles (the Spider's lair as `MONSTER`,
+ * Bigfoot's home as `BIGFOOT`, each gate as `GATES`) in (y, x) order. With
+ * `target` (the section 4.2 target count), a board with fewer curiosities
+ * must have no legal site left for any kind still eligible.
  */
 export function checkCuriosityPlacementV7(
   map: GeneratedMapV7,
   base: GeneratedMapV7,
   mapType: MapTypeV7,
   target?: number,
+  factions: readonly FactionIdV7[] = [],
 ): readonly CheckedCuriosityV7[] {
   const fail = (message: string): never => {
     throw new Error(`curiosity placement: ${message}`);
   };
   // Section 3: the curiosities change nothing else that was generated.
-  const { curiosities: markers, monsterHome, ...rest } = map;
+  const { curiosities: markers, neutrals, ...rest } = map;
   const {
     curiosities: baseCuriosities,
-    monsterHome: baseMonster,
+    neutrals: baseNeutrals,
     ...baseRest
   } = base;
-  if (baseCuriosities.length !== 0 || baseMonster !== null)
+  if (baseCuriosities.length !== 0 || baseNeutrals.length !== 0)
     fail("the base map has curiosities");
   if (JSON.stringify(rest) !== JSON.stringify(baseRest))
     fail("a generated fact other than the curiosities changed");
@@ -47,34 +87,130 @@ export function checkCuriosityPlacementV7(
   );
   if (JSON.stringify(sortedMarkers) !== JSON.stringify(markers))
     fail("not in (y, x) order");
+  const same = (a: CoordV7, b: CoordV7) => a.x === b.x && a.y === b.y;
+  const spiders = neutrals.filter((entry) => entry.breed === "GIANT_SPIDER");
+  const bigfeet = neutrals.filter((entry) => entry.breed === "BIGFOOT");
+  if (spiders.length > 1 || bigfeet.length > 1) fail("two Spiders or Bigfeet");
+  for (const entry of [...spiders, ...bigfeet])
+    if (!same(entry.at, entry.home)) fail(`${entry.breed} away from home`);
   const curiosities: readonly CheckedCuriosityV7[] = [
-    ...markers,
-    ...(monsterHome === null
-      ? []
-      : [{ kind: "MONSTER" as const, at: monsterHome }]),
+    ...markers.map((marker) => ({
+      kind: (marker.kind === "GATE"
+        ? "GATES"
+        : marker.kind) as CheckedCuriosityKindV7,
+      at: marker.at,
+    })),
+    ...spiders.map((entry) => ({ kind: "MONSTER" as const, at: entry.home })),
+    ...bigfeet.map((entry) => ({ kind: "BIGFOOT" as const, at: entry.home })),
   ].sort((a, b) => a.at.y - b.at.y || a.at.x - b.at.x);
   const width = map.board.width;
-  // Section 4.2: the counts and one of each kind.
-  const maximum = width >= 20 ? 2 : 1;
-  if (curiosities.length > maximum) fail(`${curiosities.length} on ${width}`);
-  if (target !== undefined && curiosities.length > target)
-    fail(`${curiosities.length} above the target ${target}`);
-  if (
-    new Set(curiosities.map((entry) => entry.kind)).size !== curiosities.length
-  )
+  // Section 4.2: the counts (the gate pair is one curiosity) and one of
+  // each kind.
+  const kindsPlaced = [...new Set(curiosities.map((entry) => entry.kind))];
+  const gates = markers.filter((marker) => marker.kind === "GATE");
+  if (gates.length !== 0 && gates.length !== 2) fail("not one gate pair");
+  for (const gate of gates)
+    if (
+      gate.kind !== "GATE" ||
+      !gates.some(
+        (other) =>
+          other.kind === "GATE" &&
+          other !== gate &&
+          same(other.at, gate.partner) &&
+          same(other.partner, gate.at),
+      )
+    )
+      fail("a gate without its partner");
+  if (curiosities.length !== kindsPlaced.length + (gates.length > 0 ? 1 : 0))
     fail("two curiosities of one kind");
+  const count = kindsPlaced.length;
+  const maximum = width >= 20 ? 2 : 1;
+  if (count > maximum) fail(`${count} on ${width}`);
+  if (target !== undefined && count > target)
+    fail(`${count} above the target ${target}`);
+  // Section 24.5: the hard checks.
+  if (kindsPlaced.includes("DOWNED_SAUCER") && factions.includes("MARTIAN"))
+    fail("a Downed Saucer with a Martian seat");
+  if (kindsPlaced.includes("GRAVEYARD") && factions.includes("UNDEAD"))
+    fail("a Graveyard with an Undead seat");
+  if (
+    width < 20 &&
+    (kindsPlaced.includes("GATES") || kindsPlaced.includes("BIGFOOT"))
+  )
+    fail("gates or Bigfoot below width 20");
+  if (kindsPlaced.filter((kind) => DANGERS.includes(kind)).length > 1)
+    fail("two dangers on one board");
   const site = curiositySiteCheckerV7(map, mapType);
   for (const curiosity of curiosities) {
-    const others = curiosities.filter((other) => other !== curiosity);
+    const others = curiosities.filter(
+      (other) =>
+        other !== curiosity &&
+        !(other.kind === "GATES" && curiosity.kind === "GATES"),
+    );
     const problem = site(curiosity.kind, curiosity.at, others);
     if (problem !== null)
       fail(
         `${curiosity.kind} at ${curiosity.at.x},${curiosity.at.y} ${problem}`,
       );
   }
-  if (target !== undefined && curiosities.length < target)
-    for (const kind of ["MONSTER", "FOUNTAIN", "SHRINE", "WRECK"] as const) {
-      if (curiosities.some((curiosity) => curiosity.kind === kind)) continue;
+  if (gates.length === 2) {
+    const [a, b] = gates as [(typeof gates)[number], (typeof gates)[number]];
+    const problem = gatePairProblem(map, a.at, b.at);
+    if (problem !== null) fail(`gates ${problem}`);
+  }
+  // Section 24.1: the camps' guards.
+  const guards = neutrals.filter(
+    (entry) => entry.breed !== "GIANT_SPIDER" && entry.breed !== "BIGFOOT",
+  );
+  const camps = markers.filter(
+    (marker) => marker.kind === "DOWNED_SAUCER" || marker.kind === "GRAVEYARD",
+  );
+  for (const camp of camps) {
+    const own = guards.filter((entry) => same(entry.home, camp.at));
+    const breeds = own.map((entry) => entry.breed).join(",");
+    if (
+      camp.kind === "DOWNED_SAUCER"
+        ? !COMPOSITIONS.includes(breeds)
+        : breeds !== "ZOMBIE,ZOMBIE"
+    )
+      fail(`${camp.kind} with the guards ${breeds}`);
+    const free = guardTiles(map, camp.at);
+    for (const guard of own)
+      if (!free.some((at) => same(at, guard.at)))
+        fail(`a guard on ${guard.at.x},${guard.at.y} it may not stand on`);
+    if (
+      new Set(own.map((entry) => `${entry.at.x},${entry.at.y}`)).size !==
+      own.length
+    )
+      fail("two guards on one tile");
+  }
+  if (guards.some((entry) => !camps.some((camp) => same(camp.at, entry.home))))
+    fail("a guard without its camp");
+  if (target !== undefined && count < target) {
+    const danger = kindsPlaced.some((kind) => DANGERS.includes(kind));
+    for (const kind of KINDS) {
+      if (
+        kindsPlaced.includes(kind) ||
+        (danger && DANGERS.includes(kind)) ||
+        (kind === "DOWNED_SAUCER" && factions.includes("MARTIAN")) ||
+        (kind === "GRAVEYARD" && factions.includes("UNDEAD"))
+      )
+        continue;
+      if (kind === "GATES") {
+        const tiles = map.board.tiles.filter(
+          (tile) => site("GATES", tile.at, curiosities) === null,
+        );
+        for (const a of tiles)
+          for (const b of tiles)
+            if (
+              (a.at.y < b.at.y || (a.at.y === b.at.y && a.at.x < b.at.x)) &&
+              gatePairProblem(map, a.at, b.at) === null
+            )
+              fail(
+                `placement stopped below its target with a legal gate pair at ${a.at.x},${a.at.y}`,
+              );
+        continue;
+      }
       const legal = map.board.tiles.find(
         (tile) => site(kind, tile.at, curiosities) === null,
       );
@@ -83,24 +219,80 @@ export function checkCuriosityPlacementV7(
           `placement stopped below its target with a legal ${kind} site at ${legal.at.x},${legal.at.y}`,
         );
     }
+  }
   return curiosities;
 }
 
+/** Section 24.4: why `a` and `b` are not a legal gate pair, or null. */
+function gatePairProblem(
+  map: GeneratedMapV7,
+  a: CoordV7,
+  b: CoordV7,
+): string | null {
+  const chebyshev = (p: CoordV7, q: CoordV7) =>
+    Math.max(Math.abs(p.x - q.x), Math.abs(p.y - q.y));
+  if (chebyshev(a, b) < Math.ceil((2 * map.board.width) / 3))
+    return "are too close together";
+  const nearer = map.capitals.map((capital) =>
+    Math.min(chebyshev(capital, a), chebyshev(capital, b)),
+  );
+  if (Math.max(...nearer) - Math.min(...nearer) > 4)
+    return "are unfair to the starts";
+  return null;
+}
+
 /**
- * Sections 4.3 and 4.4, written apart from the engine: why a curiosity of
- * `kind` may not stand on `at` with `placed` on the board, or null.
+ * Sections 24.3 and 25.3: the neighbours of a camp centre a guard may
+ * stand on at generation.
+ */
+function guardTiles(map: GeneratedMapV7, centre: CoordV7): readonly CoordV7[] {
+  const { board } = map;
+  const centers = [...map.capitals, ...map.villages];
+  const result: CoordV7[] = [];
+  for (let dy = -1; dy <= 1; dy += 1)
+    for (let dx = -1; dx <= 1; dx += 1) {
+      if (dx === 0 && dy === 0) continue;
+      const at = { x: centre.x + dx, y: centre.y + dy };
+      const tile = board.tiles[at.y * board.width + at.x];
+      if (
+        at.x < 0 ||
+        at.y < 0 ||
+        at.x >= board.width ||
+        at.y >= board.height ||
+        tile === undefined ||
+        tile.site !== null ||
+        !["GRASS", "FOREST", "MOUNTAIN"].includes(tile.terrain) ||
+        centers.some(
+          (center) =>
+            Math.max(Math.abs(center.x - at.x), Math.abs(center.y - at.y)) < 3,
+        ) ||
+        map.treasureChests.some((chest) => chest.x === at.x && chest.y === at.y)
+      )
+        continue;
+      result.push(at);
+    }
+  return result;
+}
+
+/**
+ * Sections 4.3, 4.4, and 24.2 to 24.4, written apart from the engine: why a
+ * curiosity of `kind` may not stand on `at` with `placed` on the board, or
+ * null (for `GATES`, one gate tile before the pair rule).
  */
 export function curiositySiteCheckerV7(
   map: GeneratedMapV7,
   mapType: MapTypeV7,
 ): (
-  kind: CheckedCuriosityV7["kind"],
+  kind: CheckedCuriosityKindV7,
   at: CoordV7,
   placed: readonly CheckedCuriosityV7[],
 ) => string | null {
   const { board } = map;
   const width = board.width;
-  const tileAt = (at: CoordV7) => board.tiles[at.y * width + at.x];
+  const tileAt = (at: CoordV7) =>
+    at.x < 0 || at.y < 0 || at.x >= width || at.y >= board.height
+      ? undefined
+      : board.tiles[at.y * width + at.x];
   const chebyshev = (a: CoordV7, b: CoordV7) =>
     Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y));
   const key = (at: CoordV7) => `${at.x},${at.y}`;
@@ -146,8 +338,8 @@ export function curiositySiteCheckerV7(
   );
   const centers = [...map.capitals, ...map.villages];
   const waterCache = new Map<string, Set<string>>();
-  // Section 4.4, the Monster: a cut tile splits its component of the land
-  // graph (Rifts excluded), with or without Mountains, when removed.
+  // Section 4.4: a cut tile splits its component of the land graph (Rifts
+  // excluded), with or without Mountains, when removed.
   const isLowland = (at: CoordV7) =>
     isLand(at) && tileAt(at)?.terrain !== "MOUNTAIN";
   const cutCache = new Map<string, boolean>();
@@ -171,21 +363,32 @@ export function curiositySiteCheckerV7(
     cutCache.set(key(at), cut);
     return cut;
   };
+  const lairLike = (kind: CheckedCuriosityKindV7) =>
+    kind === "MONSTER" || kind === "DOWNED_SAUCER" || kind === "GRAVEYARD";
   return (kind, at, placed) => {
     const tile = tileAt(at);
     if (tile === undefined) return "is off the board";
-    // Rule 1; section 4.4: the Monster's whole area is on the board.
-    const margin = kind === "MONSTER" ? 2 : 1;
+    // Rule 1; sections 4.4 and 24.3: a lair's or camp's whole area is on
+    // the board.
+    const margin = lairLike(kind) ? 2 : 1;
     if (
       at.x < margin ||
       at.y < margin ||
       at.x > width - 1 - margin ||
       at.y > width - 1 - margin
     )
-      return kind === "MONSTER"
+      return lairLike(kind)
         ? "has part of its area off the board"
         : "is on the edge ring";
-    if (kind === "MONSTER" && width < 16) return "is on a board below 16";
+    if (
+      (kind === "MONSTER" ||
+        kind === "DOWNED_SAUCER" ||
+        kind === "GRAVEYARD") &&
+      width < 16
+    )
+      return "is on a board below 16";
+    if ((kind === "GATES" || kind === "BIGFOOT") && width < 20)
+      return "is on a board below 20";
     // Rule 2.
     if (
       tile.site !== null ||
@@ -195,31 +398,34 @@ export function curiositySiteCheckerV7(
       map.treasureChests.some((chest) => key(chest) === key(at))
     )
       return "is on a site, chest, resource, improvement, or Rift";
-    // Section 4.4.
-    const terrains =
-      kind === "MONSTER"
-        ? ["GRASS", "FOREST", "MOUNTAIN"]
-        : kind === "FOUNTAIN"
-          ? ["GRASS"]
-          : kind === "SHRINE"
-            ? ["GRASS", "FOREST"]
-            : ["SHALLOW_WATER", "DEEP_WATER"];
-    if (!terrains.includes(tile.terrain)) return `is on ${tile.terrain}`;
+    // Sections 4.4 and 24.1.
+    const terrains: Record<CheckedCuriosityKindV7, readonly string[]> = {
+      MONSTER: ["GRASS", "FOREST", "MOUNTAIN"],
+      FOUNTAIN: ["GRASS"],
+      SHRINE: ["GRASS", "FOREST"],
+      WRECK: ["SHALLOW_WATER", "DEEP_WATER"],
+      DOWNED_SAUCER: ["GRASS", "FOREST"],
+      GRAVEYARD: ["GRASS"],
+      GATES: ["GRASS", "FOREST"],
+      BIGFOOT: ["FOREST"],
+      WISHING_WELL: ["GRASS"],
+    };
+    if (!terrains[kind].includes(tile.terrain)) return `is on ${tile.terrain}`;
     if (kind === "WRECK" && mapType === "DRY_LAND") return "is on Dry Land";
-    // Rule 3; section 4.4: the Monster 5 or more from every capital and
-    // (`pulp_wars-ykw.7`) 4 or more from every village.
+    // Rule 3; section 4.4: a lair (and a camp centre) 5 or more from every
+    // capital and 4 or more from every village.
     if (centers.some((center) => chebyshev(center, at) < 3))
       return "is within 2 of a settlement center";
     if (
-      kind === "MONSTER" &&
+      lairLike(kind) &&
       (map.capitals.some((center) => chebyshev(center, at) < 5) ||
         map.villages.some((center) => chebyshev(center, at) < 4))
     )
       return "is within 4 of a capital or 3 of a village center";
-    // Rule 4.
+    // Rule 4 (a gate keeps its first half only).
     const distances = map.capitals.map((capital) => chebyshev(capital, at));
     if (Math.min(...distances) < 5) return "is within 4 of a capital";
-    if (Math.max(...distances) - Math.min(...distances) > 4)
+    if (kind !== "GATES" && Math.max(...distances) - Math.min(...distances) > 4)
       return "is not between the capitals";
     // Rule 5.
     if (placed.some((other) => chebyshev(other.at, at) < 5))
@@ -263,7 +469,27 @@ export function curiositySiteCheckerV7(
         ));
     if (capitalsHere >= 2 && !reached)
       return "is not reached from a capital without Mountains";
-    if (kind !== "MONSTER") return null;
+    if (kind === "GATES") return isCut(at) ? "is a cut tile" : null;
+    if (kind === "BIGFOOT") {
+      // Section 24.3: 12 or more habitat tiles (counted without the other
+      // curiosities, which the placement order may have excluded only
+      // partly) and no cut tile among the Forest within 4 that is 3 or
+      // more from every centre.
+      let habitat = 0;
+      for (let dy = -4; dy <= 4; dy += 1)
+        for (let dx = -4; dx <= 4; dx += 1) {
+          const near = { x: at.x + dx, y: at.y + dy };
+          if (
+            tileAt(near)?.terrain !== "FOREST" ||
+            centers.some((center) => chebyshev(center, near) < 3)
+          )
+            continue;
+          if (isCut(near)) return `has the cut tile ${key(near)} in its forest`;
+          habitat += 1;
+        }
+      return habitat < 12 ? `has ${habitat} habitat tiles` : null;
+    }
+    if (!lairLike(kind)) return null;
     // Section 4.4: 12 or more of the 24 tiles around are Grass, Forest, or
     // Mountain, and no tile of its area is a cut tile.
     let land = 0;
@@ -282,6 +508,11 @@ export function curiositySiteCheckerV7(
           land += 1;
       }
     if (land < 12) return `has ${land} land tiles around its lair`;
+    // Section 24.3: the guard tiles around a camp centre.
+    if (kind === "DOWNED_SAUCER" && guardTiles(map, at).length < 3)
+      return "has fewer than 3 guard tiles";
+    if (kind === "GRAVEYARD" && guardTiles(map, at).length < 2)
+      return "has fewer than 2 guard tiles";
     return null;
   };
 }

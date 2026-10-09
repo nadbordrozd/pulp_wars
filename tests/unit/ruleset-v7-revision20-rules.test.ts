@@ -91,16 +91,16 @@ class MemoryStorage {
 // save keys are obsolete, and the scripts perform no Stampede.
 describe("ruleset-7 revision-20 identity", () => {
   it("keeps 7r19 and 7r20 as prior identities after the later bumps", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r65");
-    expect(RULESET_7.id).toBe("pulp-wars-poc-7r65");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r66");
+    expect(RULESET_7.id).toBe("pulp-wars-poc-7r66");
     expect(RULESET_7.version).toBe(7);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r65.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-46, -44)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r66.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-47, -45)).toEqual([
       "pulp-wars-poc-7r19",
       "pulp-wars-poc-7r20",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-46, -44)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-47, -45)).toEqual([
       "pulpWars.save.v7r19.current",
       "pulpWars.save.v7r20.current",
     ]);
@@ -142,7 +142,7 @@ describe("ruleset-7 revision-20 identity", () => {
       const setup = goblinSetupV7(["DINOSAUR", "ORIGINAL"]);
       const created = createPlayableGameV7(setup);
       if (!created.ok) throw new Error(created.error.code);
-      expect(created.state.rulesetId).toBe("pulp-wars-poc-7r65");
+      expect(created.state.rulesetId).toBe("pulp-wars-poc-7r66");
       const oldSetup = { ...setup, rulesetId: oldId };
       expect(parseMatchSetupV7(setup)).not.toBeNull();
       expect(parseMatchSetupV7(oldSetup)).toBeNull();
@@ -226,8 +226,9 @@ describe("ruleset-7 revision-20 Stampede removal", () => {
     // (`pulp_wars-w49.4`) removes again (59).
     // Dwarf crowd control (`pulp_wars-w49.33`): three more commands (62).
     // The giants' signatures (`pulp_wars-w49.30`) add SWALLOW, TOSS,
-    // STOMP, and BREAK_OFF after RECOVER (66).
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(66);
+    // STOMP, and BREAK_OFF after RECOVER (66). Map curiosities round 2
+    // (`pulp_wars-737.14`) add TOSS_COIN (67).
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(67);
     expect(COMMAND_KIND_ORDER_V7).not.toContain("STAMPEDE");
     const kaboom = COMMAND_KIND_ORDER_V7.indexOf("KABOOM");
     expect(COMMAND_KIND_ORDER_V7.slice(kaboom, kaboom + 8)).toEqual([
@@ -247,8 +248,9 @@ describe("ruleset-7 revision-20 Stampede removal", () => {
     // The ninth unit (7r55): WIGHT_RISEN (101).
     // Dwarf crowd control (`pulp_wars-w49.33`): four more events (105).
     // The giants' signatures (`pulp_wars-w49.30`) add ten event kinds in
-    // one block after UNIT_SURFACED (115).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(115);
+    // one block after UNIT_SURFACED (115). Map curiosities round 2
+    // (`pulp_wars-737.14`) add four (119).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(119);
   });
 
   it("fails to parse a STAMPEDE command, like any unknown kind", () => {

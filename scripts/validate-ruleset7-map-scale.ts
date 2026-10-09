@@ -534,9 +534,12 @@ for (const mapType of mapTypes)
       attempts += map.attempt;
       worst = Math.max(worst, map.attempt);
       wild += map.wildCentres.length;
-      if (map.monsterHome !== null) spider += 1;
+      const hasSpider = map.neutrals.some(
+        (entry) => entry.breed === "GIANT_SPIDER",
+      );
+      if (hasSpider) spider += 1;
       if (
-        map.monsterHome !== null ||
+        hasSpider ||
         map.curiosities.some(
           (curiosity) =>
             curiosity.kind === "FOUNTAIN" || curiosity.kind === "SHRINE",
@@ -551,7 +554,7 @@ for (const mapType of mapTypes)
       );
       assert(off.ok, `${label}: curiosities off`);
       assert.deepEqual(
-        { ...map, curiosities: [], monsterHome: null },
+        { ...map, curiosities: [], neutrals: [] },
         off.map,
         `${label}: curiosities changed the map`,
       );
@@ -559,7 +562,22 @@ for (const mapType of mapTypes)
         setupOf(mapType, width, aiCount, seed, true, OTHER_FACTIONS),
       );
       assert(others.ok, `${label}: other factions`);
-      assert.deepEqual(others.map, map, `${label}: factions changed the map`);
+      // Map curiosities round 2 (`pulp_wars-737.14`, section 24.1): the
+      // seats decide only whether a Downed Saucer (no Martian seat) or a
+      // Graveyard (no Undead seat) may be drawn, so the curiosities may
+      // differ when the two lineups differ in those seats; nothing else may.
+      const excluded = (factions: readonly FactionIdV7[]) =>
+        `${factions.includes("MARTIAN")},${factions.includes("UNDEAD")}`;
+      const sameExclusions =
+        excluded(FACTIONS.slice(0, aiCount + 1)) ===
+        excluded(OTHER_FACTIONS.slice(0, aiCount + 1));
+      assert.deepEqual(
+        sameExclusions
+          ? others.map
+          : { ...others.map, curiosities: [], neutrals: [] },
+        sameExclusions ? map : { ...map, curiosities: [], neutrals: [] },
+        `${label}: factions changed the map`,
+      );
     }
     reports.push({
       cell,

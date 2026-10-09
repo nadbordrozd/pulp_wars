@@ -319,8 +319,9 @@ export interface PlayerViewV7 {
    */
   readonly ice: readonly PublicIceTileV7[];
   /**
-   * Map curiosities (section 8.8): every visible Monster (a unit in
-   * `units` owned by the neutral owner) with its home and its `provokedBy`
+   * Map curiosities (section 8.8; round 2, section 32.5): every visible
+   * neutral unit (a unit in `units` owned by the neutral owner) with its
+   * breed, its home, and its `provokedBy`
    * filtered to the units the viewer can see, sorted by unit ID.
    */
   readonly monsters: readonly MonsterStateV7[];
@@ -907,9 +908,25 @@ export function viewForV7(
     treasureChests: state.treasureChests.filter((chest) =>
       explored.has(key(chest)),
     ),
+    // Round 2 (section 32.5): a gate with its partner, the Well with the
+    // seats that tossed (public on an explored tile).
     curiosities: state.curiosities
       .filter((curiosity) => explored.has(key(curiosity.at)))
-      .map((curiosity) => ({ kind: curiosity.kind, at: curiosity.at })),
+      .map((curiosity) =>
+        curiosity.kind === "GATE"
+          ? {
+              kind: curiosity.kind,
+              at: curiosity.at,
+              partner: curiosity.partner,
+            }
+          : curiosity.kind === "WISHING_WELL"
+            ? {
+                kind: curiosity.kind,
+                at: curiosity.at,
+                tossedBy: curiosity.tossedBy,
+              }
+            : { kind: curiosity.kind, at: curiosity.at },
+      ),
     // The frozen sea (naval branch section 8.3): ice is public on an
     // explored tile, with its owner, its countdown, and `permanent`.
     ice: state.ice
@@ -924,6 +941,7 @@ export function viewForV7(
       .filter((entry) => visibleUnitIds.has(entry.unitId))
       .map((entry) => ({
         unitId: entry.unitId,
+        breed: entry.breed,
         home: entry.home,
         provokedBy: entry.provokedBy.filter((unitId) =>
           visibleUnitIds.has(unitId),
