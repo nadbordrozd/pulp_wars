@@ -354,6 +354,11 @@ export const KIND_READER_CLASSES_V7: Readonly<
   // its seat's faction.
   "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#scoreVerdict": "SEAT",
   "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#turnStrip": "SEAT",
+  // Tribe stars (pulp_wars-kaw6.4): the setup's tribe cards and the end of
+  // a match's star award read the human seat's faction.
+  "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#tribePicker": "SEAT",
+  "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#syncStarFields": "SEAT",
+  "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#starRecordLine": "SEAT",
   "src/render/dom/app-view-v7.ts::identity": "SEAT",
   "src/render/dom/app-view-v7.ts::trainingCostForViewV7": "SEAT",
   "src/render/dom/app-view-v7.ts::incomeDescription": "SEAT",

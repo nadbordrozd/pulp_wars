@@ -790,6 +790,9 @@ try {
   const martian = await probeMartianMatch(connection);
   const iceFolk = await probeIceFolkMatch(connection);
   const dwarf = await probeDwarfMatch(connection);
+  // Bead pulp_wars-kaw6.4: a Perfection game started from the new-game
+  // screen's mode toggle and tribe grid.
+  const perfection = await probePerfectionStart(connection);
   // Bead pulp_wars-737.6: the map curiosities on their UI fixture (dev
   // server only; the Showcase probe then loads a fresh front screen).
   const curiosities = deployed
@@ -963,7 +966,7 @@ try {
       ? "bounded launch/End Turn/resume compatibility probe"
       : `natural default match ${outcome.outcome} in round ${outcome.round}/${outcome.commandIndex} commands`;
   console.log(
-    `Ruleset-7 browser functional smoke passed in ${version.product ?? "Chrome"}; timing ${timing.status} (${timingMode}, ${timing.budgetMilliseconds}ms budget): production AI ${preview.returned.commandIndex} commands/${preview.returned.policySlices} slices/max ${preview.returned.maximumSliceMilliseconds.toFixed(1)}ms; ${coldSummary}; ${outcomeSummary}; launch/resume/restart/delete, routing and four-key isolation passed; research prompt ${researchPrompt}; sound ${sound}; Campaign ${campaign}; art sets ${chibi}; Undead setup ${undead}; Goblin ${goblin}; Dinosaur ${dinosaur}; Martian ${martian}; Ice Folk ${iceFolk}; Dwarf ${dwarf}; Showcase ${showcase}; Gallery ${gallery}. Candy ${candy}. Curiosities ${curiosities}. Many players ${manySeats}; asset preload ${preload}. Evidence: ${reviewRoot}`,
+    `Ruleset-7 browser functional smoke passed in ${version.product ?? "Chrome"}; timing ${timing.status} (${timingMode}, ${timing.budgetMilliseconds}ms budget): production AI ${preview.returned.commandIndex} commands/${preview.returned.policySlices} slices/max ${preview.returned.maximumSliceMilliseconds.toFixed(1)}ms; ${coldSummary}; ${outcomeSummary}; launch/resume/restart/delete, routing and four-key isolation passed; Perfection ${perfection}; research prompt ${researchPrompt}; sound ${sound}; Campaign ${campaign}; art sets ${chibi}; Undead setup ${undead}; Goblin ${goblin}; Dinosaur ${dinosaur}; Martian ${martian}; Ice Folk ${iceFolk}; Dwarf ${dwarf}; Showcase ${showcase}; Gallery ${gallery}. Candy ${candy}. Curiosities ${curiosities}. Many players ${manySeats}; asset preload ${preload}. Evidence: ${reviewRoot}`,
   );
 } finally {
   try {
@@ -1165,22 +1168,9 @@ async function probeUndeadSetup(connection: Connection): Promise<string> {
     ))
   )
     throw new Error(`Unexpected faction fields: ${JSON.stringify(labels)}`);
-  await evaluate(connection, `document.querySelector('#v7-faction-0').focus()`);
-  // Typeahead on the focused, closed select: "U" selects Undead; the
+  // The tribe grid (pulp_wars-kaw6.4) by keyboard: Undead is picked; the
   // opponent who played Undead switches to the free Human faction.
-  await connection.send("Input.dispatchKeyEvent", {
-    type: "keyDown",
-    key: "U",
-    code: "KeyU",
-    text: "U",
-    windowsVirtualKeyCode: 85,
-  });
-  await connection.send("Input.dispatchKeyEvent", {
-    type: "keyUp",
-    key: "U",
-    code: "KeyU",
-    windowsVirtualKeyCode: 85,
-  });
+  await pickTribeV7(connection, "UNDEAD");
   await waitForExpression(
     connection,
     `document.querySelector('#v7-faction-0')?.value === 'UNDEAD' && document.querySelector('#v7-faction-1')?.value === 'ORIGINAL' && document.querySelector('#v7-faction-1 option[value="UNDEAD"]').disabled`,
@@ -1422,21 +1412,8 @@ async function probeGoblinMatch(connection: Connection): Promise<string> {
     throw new Error(
       `Goblin faction option missing: ${JSON.stringify(options)}`,
     );
-  await evaluate(connection, `document.querySelector('#v7-faction-0').focus()`);
-  // Typeahead on the focused, closed select: "G" selects Goblin.
-  await connection.send("Input.dispatchKeyEvent", {
-    type: "keyDown",
-    key: "G",
-    code: "KeyG",
-    text: "G",
-    windowsVirtualKeyCode: 71,
-  });
-  await connection.send("Input.dispatchKeyEvent", {
-    type: "keyUp",
-    key: "G",
-    code: "KeyG",
-    windowsVirtualKeyCode: 71,
-  });
+  // The tribe grid (pulp_wars-kaw6.4) by keyboard: Goblin is picked.
+  await pickTribeV7(connection, "GOBLIN");
   await waitForExpression(
     connection,
     `document.querySelector('#v7-faction-0')?.value === 'GOBLIN' && document.querySelector('#v7-faction-1')?.value === 'UNDEAD'`,
@@ -1661,11 +1638,12 @@ async function probeDinosaurMatch(connection: Connection): Promise<string> {
       `Dinosaur faction option missing: ${JSON.stringify(options)}`,
     );
   // Three opponents, the Showcase map, and a Dinosaur human seat, each
-  // chosen by keyboard on its focused, closed select.
+  // chosen by keyboard: the selects on their focused, closed fields, the
+  // tribe on the grid (pulp_wars-kaw6.4).
   await evaluate(connection, `document.querySelector('#v7-ai-count').focus()`);
   await typeSelectValue(connection, "#v7-ai-count", "3");
   await typeahead("#v7-map-type", "S");
-  await typeahead("#v7-faction-0", "D");
+  await pickTribeV7(connection, "DINOSAUR");
   await waitForExpression(
     connection,
     `document.querySelector('#v7-map-type')?.value === 'SHOWCASE' && document.querySelector('#v7-faction-0')?.value === 'DINOSAUR' && document.querySelectorAll('[data-v7-factions] select').length === 4 && document.querySelector('#v7-faction-3')?.value === 'ORIGINAL'`,
@@ -1987,11 +1965,12 @@ async function probeMartianMatch(connection: Connection): Promise<string> {
       `Martian faction option missing: ${JSON.stringify(options)}`,
     );
   // Three opponents, the Showcase map, and a Martian human seat, each
-  // chosen by keyboard on its focused, closed select.
+  // chosen by keyboard: the selects on their focused, closed fields, the
+  // tribe on the grid (pulp_wars-kaw6.4).
   await evaluate(connection, `document.querySelector('#v7-ai-count').focus()`);
   await typeSelectValue(connection, "#v7-ai-count", "3");
   await typeahead("#v7-map-type", "S");
-  await typeahead("#v7-faction-0", "M");
+  await pickTribeV7(connection, "MARTIAN");
   await waitForExpression(
     connection,
     `document.querySelector('#v7-map-type')?.value === 'SHOWCASE' && document.querySelector('#v7-faction-0')?.value === 'MARTIAN' && document.querySelectorAll('[data-v7-factions] select').length === 4 && document.querySelector('#v7-faction-3')?.value === 'DINOSAUR'`,
@@ -2375,11 +2354,12 @@ async function probeIceFolkMatch(connection: Connection): Promise<string> {
       `Ice Folk faction option missing: ${JSON.stringify(options)}`,
     );
   // Three opponents, the Showcase map, and an Ice Folk human seat, each
-  // chosen by keyboard on its focused, closed select.
+  // chosen by keyboard: the selects on their focused, closed fields, the
+  // tribe on the grid (pulp_wars-kaw6.4).
   await evaluate(connection, `document.querySelector('#v7-ai-count').focus()`);
   await typeSelectValue(connection, "#v7-ai-count", "3");
   await typeahead("#v7-map-type", "S");
-  await typeahead("#v7-faction-0", "I");
+  await pickTribeV7(connection, "ICE_FOLK");
   await waitForExpression(
     connection,
     `document.querySelector('#v7-map-type')?.value === 'SHOWCASE' && document.querySelector('#v7-faction-0')?.value === 'ICE_FOLK' && document.querySelectorAll('[data-v7-factions] select').length === 4 && document.querySelector('#v7-faction-3')?.value === 'DINOSAUR'`,
@@ -2584,17 +2564,17 @@ async function probeDwarfMatch(connection: Connection): Promise<string> {
   if (JSON.stringify(options) !== JSON.stringify(FACTION_OPTIONS_V7))
     throw new Error(`Dwarf faction option missing: ${JSON.stringify(options)}`);
   // Three opponents, the Showcase map, and a Dwarf human seat, each chosen
-  // by keyboard on its focused, closed select: "D" picks Dinosaur (whose
-  // seat moves to the freed Human), a second "D" moves on to Dwarf.
+  // by keyboard (the tribe on the grid, pulp_wars-kaw6.4): Dinosaur first
+  // (whose seat moves to the freed Human), then Dwarf.
   await evaluate(connection, `document.querySelector('#v7-ai-count').focus()`);
   await typeSelectValue(connection, "#v7-ai-count", "3");
   await typeahead("#v7-map-type", "S");
-  await typeahead("#v7-faction-0", "D");
+  await pickTribeV7(connection, "DINOSAUR");
   await waitForExpression(
     connection,
     `document.querySelector('#v7-faction-0')?.value === 'DINOSAUR'`,
   );
-  await typeahead("#v7-faction-0", "D");
+  await pickTribeV7(connection, "DWARF");
   await waitForExpression(
     connection,
     `document.querySelector('#v7-map-type')?.value === 'SHOWCASE' && document.querySelector('#v7-faction-0')?.value === 'DWARF' && document.querySelectorAll('[data-v7-factions] select').length === 4 && document.querySelector('#v7-faction-3')?.value === 'ORIGINAL'`,
@@ -3587,4 +3567,126 @@ function asRecord(value: unknown): Record<string, unknown> | null {
 
 function delay(milliseconds: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, milliseconds));
+}
+
+/**
+ * Score and modes (pulp_wars-kaw6.4, RULESET_7_SCORE_AND_STARS.md sections
+ * 4.2 and 7): the new-game screen starts in Domination; Perfection is chosen
+ * on the mode toggle and a tribe on the grid, both by keyboard, and the
+ * launched match's setup and score view are Perfection, 30 rounds. No turn
+ * is played; the save and the remembered mode are cleared after.
+ */
+async function probePerfectionStart(connection: Connection): Promise<string> {
+  const defaultUrl = (): string => {
+    const url = new URL(baseUrl);
+    url.searchParams.delete("art");
+    return url.href;
+  };
+  const saveKey = "pulpWars.save.v7r66.current";
+  const modeKey = "pulpWars.ruleset7.gameMode.v1";
+  const freshSetup = `document.querySelector('[data-v7-setup]') !== null && globalThis.__PULP_WARS_APP__?.controller.snapshot().phase === 'EMPTY'`;
+  const navigateFresh = async (): Promise<void> => {
+    await evaluate(
+      connection,
+      `globalThis.__V7_PERFECTION_PRIOR_DOCUMENT__ = true`,
+    );
+    await connection.send("Page.navigate", { url: defaultUrl() });
+    await waitForExpression(
+      connection,
+      `globalThis.__V7_PERFECTION_PRIOR_DOCUMENT__ !== true && document.readyState === 'complete' && Boolean(${freshSetup})`,
+    );
+  };
+  const clearKeys = `(() => { localStorage.removeItem(${JSON.stringify(saveKey)}); localStorage.removeItem(${JSON.stringify(modeKey)}); return true; })()`;
+  await evaluate(connection, clearKeys);
+  await navigateFresh();
+  await openNewGame(connection);
+  await waitForExpression(
+    connection,
+    `document.querySelectorAll('.v7-tribe-card').length === 8 && document.querySelector('[data-action="game-mode-domination"]')?.getAttribute('aria-pressed') === 'true'`,
+  );
+  await evaluate(
+    connection,
+    `document.querySelector('[data-action="game-mode-perfection"]').focus()`,
+  );
+  await pressSpaceV7(connection);
+  await waitForExpression(
+    connection,
+    `document.querySelector('[data-action="game-mode-perfection"]')?.getAttribute('aria-pressed') === 'true' && document.querySelector('.v7-game-mode-line')?.textContent === '30 rounds. The highest score wins.'`,
+  );
+  await pickTribeV7(connection, "MARTIAN");
+  await capture(connection, "perfection-setup-desktop.png");
+  await replaceSeedInput(connection, "6");
+  await launchWithFastForward(connection);
+  await waitForExpression(
+    connection,
+    `(() => { const s = globalThis.__PULP_WARS_APP__?.controller.snapshot(); return s?.phase === 'ACTIVE' && !s.transitioning && !s.ai.active; })()`,
+    900,
+  );
+  const started = await evaluate<{
+    readonly gameMode: string | null;
+    readonly scoreMode: string | null;
+    readonly roundLimit: number | null;
+    readonly faction: string | null;
+  }>(
+    connection,
+    `(() => { const v = globalThis.__PULP_WARS_APP__.controller.snapshot().view; return { gameMode: v?.setup.gameMode ?? null, scoreMode: v?.score.gameMode ?? null, roundLimit: v?.score.roundLimit ?? null, faction: v?.setup.factions[0] ?? null }; })()`,
+  );
+  if (
+    started.gameMode !== "PERFECTION" ||
+    started.scoreMode !== "PERFECTION" ||
+    started.roundLimit !== 30 ||
+    started.faction !== "MARTIAN"
+  )
+    throw new Error(`Perfection launch failed: ${JSON.stringify(started)}`);
+  await capture(connection, "perfection-launch-desktop.png");
+  await evaluate(connection, clearKeys);
+  await navigateFresh();
+  return "launched as Martians from the mode toggle and tribe grid, 30 rounds";
+}
+
+/**
+ * Picks the human's tribe on the new-game grid by keyboard (pulp_wars-kaw6.4,
+ * RULESET_7_SCORE_AND_STARS.md section 7): the grid's tab stop is focused,
+ * the arrow keys move to the tribe's card, and Space picks it.
+ */
+async function pickTribeV7(
+  connection: Connection,
+  faction: string,
+): Promise<void> {
+  await evaluate(
+    connection,
+    `document.querySelector('.v7-tribe-card[tabindex="0"]').focus()`,
+  );
+  for (let step = 0; step < 8; step += 1) {
+    const focused = await evaluate<string | null>(
+      connection,
+      `document.activeElement?.dataset?.faction ?? null`,
+    );
+    if (focused === faction) break;
+    await pressKey(connection, "ArrowRight", "ArrowRight");
+  }
+  await pressSpaceV7(connection);
+  await waitForExpression(
+    connection,
+    `document.querySelector('.v7-tribe-card[data-faction="${faction}"]')?.getAttribute('aria-checked') === 'true' && document.querySelector('#v7-faction-0')?.value === '${faction}'`,
+  );
+}
+
+/** A trusted Space on the focused control (a button's keyboard click). */
+async function pressSpaceV7(connection: Connection): Promise<void> {
+  await connection.send("Input.dispatchKeyEvent", {
+    type: "keyDown",
+    key: " ",
+    code: "Space",
+    text: " ",
+    windowsVirtualKeyCode: 32,
+    nativeVirtualKeyCode: 32,
+  });
+  await connection.send("Input.dispatchKeyEvent", {
+    type: "keyUp",
+    key: " ",
+    code: "Space",
+    windowsVirtualKeyCode: 32,
+    nativeVirtualKeyCode: 32,
+  });
 }

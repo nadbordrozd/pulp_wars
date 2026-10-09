@@ -34,8 +34,14 @@ import {
 import {
   BrowserPersistenceV7,
   CampaignProgressStoreV7,
+  TribeStarsStoreV7,
   emptyCampaignProgressV7,
+  emptyTribeStarsV7,
+  tribeStarResultV7,
   type BrowserSaveLoadResultV7,
+  type TribeStarRecordV7,
+  type TribeStarResultV7,
+  type TribeStarsV7,
   type PersistenceScheduler,
   type SaveEnvelopeV7,
   type StorageAdapter,
@@ -93,6 +99,34 @@ export interface Ruleset7CampaignProgressV7 {
     readonly unlocked: readonly FactionIdV7[];
   } | null;
   /** Why progress could not be read or written, for the details view. */
+  readonly diagnostic: string | null;
+}
+
+/**
+ * Tribe stars as the new-game screen and the end of a match read them
+ * (docs/product/RULESET_7_SCORE_AND_STARS.md sections 6 to 8). `records`
+ * is empty unless the status is OK.
+ */
+export interface Ruleset7TribeStarsV7 {
+  /**
+   * OK; UNREADABLE when the stored records cannot be parsed (nothing is
+   * recorded until they are reset); UNAVAILABLE when storage refuses access.
+   */
+  readonly status: "OK" | "UNREADABLE" | "UNAVAILABLE";
+  readonly records: TribeStarsV7["modes"];
+  /**
+   * The grade this controller last recorded for the current match, with the
+   * record before it; null before a recordable win and after a new match.
+   */
+  readonly lastAward: {
+    readonly result: TribeStarResultV7;
+    readonly before: TribeStarRecordV7 | null;
+    /** True when the stars, the glow, or the best rating went up. */
+    readonly improved: boolean;
+    /** False when the records could not be read or written. */
+    readonly saved: boolean;
+  } | null;
+  /** Why the records could not be read or written, for a details view. */
   readonly diagnostic: string | null;
 }
 
@@ -242,6 +276,9 @@ export class Ruleset7BrowserController {
   readonly #campaign: CampaignProgressStoreV7;
   #campaignLastWin: Ruleset7CampaignProgressV7["lastWin"] = null;
   #campaignDiagnostic: string | null = null;
+  readonly #tribeStars: TribeStarsStoreV7;
+  #tribeStarsLastAward: Ruleset7TribeStarsV7["lastAward"] = null;
+  #tribeStarsDiagnostic: string | null = null;
   #match: GameStateV7 | null = null;
   #replay: ReplayFileV7 | null = null;
   #humanViewCache: PlayerViewV7 | null = null;
@@ -300,8 +337,47 @@ export class Ruleset7BrowserController {
         ? {}
         : { now: options.persistenceNow }),
     });
+    this.#tribeStars = new TribeStarsStoreV7(options.storage ?? null, {
+      ...(options.persistenceNow === undefined
+        ? {}
+        : { now: options.persistenceNow }),
+    });
     const loaded = this.#persistence?.loadSave();
     if (loaded !== undefined) this.#loadInitialSave(loaded);
+  }
+
+  /** Tribe stars for the new-game screen and the end of a match. */
+  tribeStars(): Ruleset7TribeStarsV7 {
+    const loaded = this.#tribeStars.load();
+    return freezeBrowserValueV7({
+      status:
+        loaded.kind === "VALID"
+          ? ("OK" as const)
+          : loaded.kind === "UNREADABLE"
+            ? ("UNREADABLE" as const)
+            : ("UNAVAILABLE" as const),
+      records:
+        loaded.kind === "VALID"
+          ? loaded.stars.modes
+          : emptyTribeStarsV7().modes,
+      lastAward: this.#tribeStarsLastAward,
+      diagnostic:
+        loaded.kind === "VALID"
+          ? this.#tribeStarsDiagnostic
+          : loaded.diagnostic,
+    });
+  }
+
+  /** Erases every tribe's stars (Settings, and the unreadable recovery). */
+  resetTribeStars(): boolean {
+    if (this.#destroyed) return false;
+    const result = this.#tribeStars.reset();
+    if (!result.ok) {
+      this.#tribeStarsDiagnostic = result.diagnostic;
+      return false;
+    }
+    this.#tribeStarsDiagnostic = null;
+    return true;
   }
 
   /** Campaign progress for the campaign screens; never throws. */
@@ -698,8 +774,10 @@ export class Ruleset7BrowserController {
       this.#phase =
         loaded.save.state.outcome === null ? "RESUMABLE" : "COMPLETE";
       // A completed mission save records its win again (idempotent), so a
-      // tab closed during the Victory dialog loses nothing.
+      // tab closed during the Victory dialog loses nothing; so do the
+      // tribe stars of a completed match.
       this.#recordCampaignOutcome(loaded.save.state);
+      this.#recordTribeStars(loaded.save.state);
     } catch (error) {
       this.#phase = "RECOVERY";
       this.#recovery = {
@@ -710,6 +788,7 @@ export class Ruleset7BrowserController {
   }
 
   #installCreatedMatch(state: GameStateV7): void {
+    this.#tribeStarsLastAward = null;
     this.#match = state;
     this.#replay = createReplayV7(state.setup);
     this.#humanViewCache = viewForV7(state, state.humanPlayerId);
@@ -766,6 +845,7 @@ export class Ruleset7BrowserController {
       this.#phase = "COMPLETE";
       // Recorded before any subscriber or the Victory dialog sees it.
       this.#recordCampaignOutcome(applied.state);
+      this.#recordTribeStars(applied.state);
     }
     this.#persistCurrent(
       command.kind === "END_TURN" || applied.state.outcome !== null,
@@ -982,6 +1062,41 @@ export class Ruleset7BrowserController {
         recorded.before.completed,
         recorded.progress.completed,
       ),
+    };
+  }
+
+  /**
+   * Records the human's win in the tribe stars (section 6), never lowering
+   * a record. The Showcase, missions, mirror setups, and defeats record
+   * nothing. Idempotent, so a completed save resumed records again.
+   */
+  #recordTribeStars(state: GameStateV7): void {
+    this.#tribeStarsLastAward = null;
+    let result: TribeStarResultV7 | null;
+    try {
+      result = tribeStarResultV7(state);
+    } catch (error) {
+      this.#tribeStarsDiagnostic = `Tribe stars could not be graded: ${safeDiagnosticV7(error)}`;
+      return;
+    }
+    if (result === null) return;
+    const recorded = this.#tribeStars.record(result);
+    if (!recorded.ok) {
+      this.#tribeStarsDiagnostic = recorded.diagnostic;
+      this.#tribeStarsLastAward = {
+        result,
+        before: null,
+        improved: false,
+        saved: false,
+      };
+      return;
+    }
+    this.#tribeStarsDiagnostic = null;
+    this.#tribeStarsLastAward = {
+      result,
+      before: recorded.before,
+      improved: recorded.improved,
+      saved: true,
     };
   }
 

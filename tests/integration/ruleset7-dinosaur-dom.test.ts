@@ -59,6 +59,7 @@ import {
   slotsTextV7,
   turnsTextV7,
 } from "../../src/render/dinosaur-presentation-v7";
+import { giantRewardLabelV7 } from "../../src/render/giant-presentation-v7";
 import { goblinAttackPreviewTextV7 } from "../../src/render/goblin-presentation-v7";
 import { HELP_SECTIONS_V7 } from "../../src/render/help-text-v7";
 import { roleGlossaryV7 } from "../../src/render/unit-glossary-v7";
@@ -1182,8 +1183,10 @@ describe("Revision 19 growth, abilities and labels", () => {
       rewardStateV7("JUGGERNAUT", "DINOSAUR").state,
     );
     const next = mount(giant, new RecordingBoardHost());
+    // The giant reward reads its giant signature since the giants UI
+    // (pulp_wars-w49.32): `giantRewardLabelV7`, the reward button's label.
     expect(requiredButton("reward-juggernaut").getAttribute("aria-label")).toBe(
-      required(dinosaurRewardLabelV7("JUGGERNAUT")).join(": "),
+      giantRewardLabelV7("DINOSAUR").join(": "),
     );
     next.destroy();
   });

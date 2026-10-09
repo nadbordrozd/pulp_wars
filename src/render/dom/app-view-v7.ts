@@ -33,6 +33,7 @@ import type {
   Ruleset7BrowserController,
   Ruleset7BrowserSnapshot,
   Ruleset7CampaignProgressV7,
+  Ruleset7TribeStarsV7,
 } from "../../app/v7-controller";
 import { CHAPTER_ONE_V7 } from "../../campaign/chapter-1";
 import {
@@ -99,6 +100,7 @@ import {
   type CoordV7,
   type EconomicPreviewV7,
   type MatchSetupV7,
+  type GameModeV7,
   type MapTypeV7,
   type PlayerViewV7,
   type PublicTechnologyNodeV7,
@@ -125,6 +127,7 @@ import {
   type PlayerId,
   type ScoreBreakdownV7,
   type ScoreQueryV7,
+  type StarGradeQueryV7,
   type StarGradeV7,
 } from "../../engine/index";
 import {
@@ -182,6 +185,17 @@ import {
   loadBoardClassicLookV7,
   storeBoardClassicLookV7,
 } from "../../app/board-visual-direction-v7";
+import {
+  loadGameModePreferenceV7,
+  storeGameModePreferenceV7,
+} from "../../app/game-mode-preference-v7";
+import {
+  GAME_MODE_LABELS_V7,
+  gameModeLineV7,
+  starAwardNewBestV7,
+  starRulesV7,
+  tribeCardLabelV7,
+} from "../tribe-stars-presentation-v7";
 import {
   LIVE_DIRECTION_ART_REGISTRY_V7,
   liveBoardLookV7,
@@ -955,7 +969,18 @@ export type Ruleset7ControllerPortV7 = Pick<
       Ruleset7BrowserController,
       "campaignProgress" | "resetCampaignProgress"
     >
-  >;
+  > &
+  // Tribe stars (pulp_wars-kaw6.4); a port without them shows no stars and
+  // records nothing.
+  Partial<Pick<Ruleset7BrowserController, "tribeStars" | "resetTribeStars">>;
+
+/** Tribe stars shown when the controller keeps none (tests, fixtures). */
+const NO_TRIBE_STARS_V7: Ruleset7TribeStarsV7 = Object.freeze({
+  status: "OK",
+  records: Object.freeze({}),
+  lastAward: null,
+  diagnostic: null,
+});
 
 /** Progress shown when the controller keeps none (tests, fixtures). */
 const NO_CAMPAIGN_PROGRESS_V7: Ruleset7CampaignProgressV7 = Object.freeze({
@@ -1044,6 +1069,12 @@ interface DraftV7 {
    * default. Seats beyond the AI count keep their choice hidden.
    */
   readonly factions: readonly FactionIdV7[];
+  /**
+   * The play mode (RULESET_7_SCORE_AND_STARS.md section 7, item 1),
+   * remembered for the next game. The Showcase always launches Domination
+   * and keeps this choice for the next map.
+   */
+  readonly gameMode: GameModeV7;
 }
 
 type ScreenV7 =
@@ -1075,6 +1106,7 @@ export class Ruleset7DomAppView {
     mapType: "CONTINENTS",
     curiosities: true,
     factions: distinctFactionsV7(maxSeatCountV7()),
+    gameMode: "DOMINATION",
   };
   /**
    * What the setup last changed by itself (a size or map that stopped being
@@ -1249,6 +1281,8 @@ export class Ruleset7DomAppView {
   #briefingMissionId: string | null = null;
   #briefingFaction: FactionIdV7 | null = null;
   #confirmCampaignReset = false;
+  /** Front Settings: "Reset tribe stars" is waiting for confirmation. */
+  #confirmStarsReset = false;
   /** A front-screen control to focus after the next front render. */
   #frontFocus: string | null = null;
   #pendingFocusAction: string | null = null;
@@ -1306,6 +1340,10 @@ export class Ruleset7DomAppView {
       options.downloadDebugBundle ??
       ((source, filename) => downloadJsonFile(documentRoot, source, filename));
     this.#settingsStorage = options.settingsStorage ?? null;
+    this.#draft = {
+      ...this.#draft,
+      gameMode: loadGameModePreferenceV7(this.#settingsStorage),
+    };
     this.#randomSeed =
       options.randomSeed ?? (() => browserRandomSeedV7(documentRoot));
     this.#galleryDemoHost = options.galleryDemoHost;
@@ -1938,6 +1976,7 @@ export class Ruleset7DomAppView {
     this.#setupThemeFaction = null;
     this.#briefingMissionId = null;
     this.#confirmCampaignReset = false;
+    this.#confirmStarsReset = false;
     this.#error = "";
     this.#frontFocus =
       page !== "MENU"
@@ -2467,9 +2506,67 @@ export class Ruleset7DomAppView {
     const { main, panel } = this.#frontPanelScreen("settings", "Settings");
     const body = el(this.#document, "div", "v7-front-settings");
     body.id = "v7-front-settings";
-    body.append(this.#displaySettings());
+    body.append(this.#displaySettings(), this.#tribeStarsSettings());
     panel.append(body);
     return main;
+  }
+
+  /**
+   * RULESET_7_SCORE_AND_STARS.md section 6: "Reset tribe stars" on the
+   * front Settings, behind a confirmation.
+   */
+  #tribeStarsSettings(): HTMLElement {
+    const group = el(this.#document, "div", "v7-tribe-stars-settings");
+    group.dataset.v7Region = "tribe-stars-settings";
+    if (!this.#confirmStarsReset) {
+      const reset = button(
+        this.#document,
+        "Reset tribe stars",
+        "tribe-stars-reset",
+        "destructive",
+      );
+      reset.onclick = () => {
+        this.#confirmStarsReset = true;
+        this.#frontFocus = '[data-action="tribe-stars-reset-cancel"]';
+        this.#render();
+      };
+      group.append(reset);
+      return group;
+    }
+    group.setAttribute("role", "group");
+    group.setAttribute("aria-label", "Reset tribe stars");
+    const actions = el(this.#document, "div", "button-row");
+    const yes = button(
+      this.#document,
+      "Reset",
+      "tribe-stars-reset-confirm",
+      "destructive",
+    );
+    yes.onclick = () => {
+      const done = this.#controller.resetTribeStars?.() ?? true;
+      this.#confirmStarsReset = false;
+      if (done) this.#notice = "Tribe stars reset.";
+      else this.#error = "Tribe stars couldn't be reset.";
+      this.#frontFocus = '[data-action="tribe-stars-reset"]';
+      this.#render();
+    };
+    const no = button(this.#document, "Cancel", "tribe-stars-reset-cancel");
+    no.onclick = () => {
+      this.#confirmStarsReset = false;
+      this.#frontFocus = '[data-action="tribe-stars-reset"]';
+      this.#render();
+    };
+    actions.append(yes, no);
+    group.append(
+      text(
+        this.#document,
+        "p",
+        "Erase every tribe's stars in both modes?",
+        "v7-tribe-stars-reset-question",
+      ),
+      actions,
+    );
+    return group;
   }
 
   #setup(replace: boolean): HTMLElement {
@@ -2479,11 +2576,16 @@ export class Ruleset7DomAppView {
     return main;
   }
 
-  /** The setup form: Players, Map, Factions and Play. */
+  /**
+   * The setup form: the game mode, your tribe, Players, Map, the
+   * opponents' factions and Play (RULESET_7_SCORE_AND_STARS.md section 7).
+   */
   #setupForm(replace: boolean): HTMLFormElement {
     const form = this.#document.createElement("form");
     form.className = "v7-setup-form";
     form.append(
+      this.#gameModeChoice(form),
+      this.#tribePicker(form),
       setupHeading(this.#document, "units", "Players"),
       select(
         this.#document,
@@ -2492,9 +2594,10 @@ export class Ruleset7DomAppView {
         setupOpponentCountsV7().map(String),
         String(this.#draft.aiCount),
       ),
+      // Section 7, item 5: "Alliances", so the screen has one "mode".
       select(
         this.#document,
-        "Mode",
+        "Alliances",
         "v7-ai-mode",
         ["RIVAL", "COOPERATIVE"],
         this.#draft.aiMode,
@@ -2538,7 +2641,10 @@ export class Ruleset7DomAppView {
     form.append(launch);
     const mode = form.querySelector<HTMLSelectElement>("#v7-ai-mode");
     if (mode !== null) mode.title = AI_MODE_HINT_V7;
-    const syncShowcase = (): void => this.#syncSetupFields(form);
+    const syncShowcase = (): void => {
+      this.#syncSetupFields(form);
+      this.#syncStarFields(form);
+    };
     syncShowcase();
     form.addEventListener("change", () => {
       const own = this.#draft.factions[0];
@@ -2587,6 +2693,296 @@ export class Ruleset7DomAppView {
       void this.#launch(setup, replace);
     });
     return form;
+  }
+
+  /** Tribe stars as the controller keeps them (none without the port). */
+  #tribeStars(): Ruleset7TribeStarsV7 {
+    try {
+      return this.#controller.tribeStars?.() ?? NO_TRIBE_STARS_V7;
+    } catch {
+      return NO_TRIBE_STARS_V7;
+    }
+  }
+
+  /**
+   * Section 7, item 1: the game mode, a two-button toggle (Domination,
+   * Perfection) with one line under it. The choice is remembered for the
+   * next game; the Showcase disables Perfection and keeps the choice.
+   */
+  #gameModeChoice(form: HTMLFormElement): HTMLElement {
+    const section = el(this.#document, "div", "v7-game-mode-choice");
+    section.dataset.v7Region = "game-mode";
+    const heading = setupHeading(this.#document, "flag", "Game mode");
+    heading.id = "v7-game-mode-heading";
+    const toggle = el(this.#document, "div", "v7-game-mode-toggle");
+    toggle.setAttribute("role", "group");
+    toggle.setAttribute("aria-labelledby", heading.id);
+    const line = text(
+      this.#document,
+      "p",
+      gameModeLineV7(effectiveGameModeV7(this.#draft)),
+      "v7-game-mode-line",
+    );
+    line.id = "v7-game-mode-line";
+    for (const mode of ["DOMINATION", "PERFECTION"] as const) {
+      const option = button(
+        this.#document,
+        GAME_MODE_LABELS_V7[mode],
+        `game-mode-${mode.toLowerCase()}`,
+        "v7-game-mode-option",
+      );
+      option.dataset.mode = mode;
+      option.setAttribute("aria-describedby", line.id);
+      option.onclick = () => {
+        if (option.disabled || this.#draft.gameMode === mode) return;
+        this.#draft = { ...this.#draft, gameMode: mode };
+        storeGameModePreferenceV7(this.#settingsStorage, mode);
+        this.#syncStarFields(form);
+      };
+      toggle.append(option);
+    }
+    section.append(heading, toggle, line);
+    return section;
+  }
+
+  /**
+   * Section 7, items 2 to 4: every tribe's card (its emblem, name and
+   * three star slots for the best stars in the selected mode, the glow
+   * once earned) as a radio group, with the info button that explains the
+   * stars for the current opponent count. Picking a card sets the hidden
+   * "Your faction" select, so the form keeps one source for seat 0.
+   */
+  #tribePicker(form: HTMLFormElement): HTMLElement {
+    const section = el(this.#document, "div", "v7-tribe-picker");
+    section.dataset.v7Region = "tribe-picker";
+    const bar = el(this.#document, "div", "v7-tribe-picker-bar");
+    const heading = setupHeading(this.#document, "star", "Your tribe");
+    heading.id = "v7-tribe-heading";
+    const info = button(
+      this.#document,
+      "",
+      "star-rules",
+      "v7-icon-button v7-star-rules-button",
+    );
+    info.append(uiIconV7(this.#document, "info"));
+    info.setAttribute("aria-label", "How stars are earned");
+    info.title = "How stars are earned";
+    info.setAttribute("aria-expanded", "false");
+    info.setAttribute("aria-controls", "v7-star-rules");
+    const rules = el(this.#document, "div", "v7-star-rules");
+    rules.id = "v7-star-rules";
+    rules.hidden = true;
+    info.onclick = () => {
+      rules.hidden = !rules.hidden;
+      info.setAttribute("aria-expanded", String(!rules.hidden));
+      this.#syncStarFields(form);
+    };
+    bar.append(heading, info);
+    const note = el(this.#document, "div", "v7-tribe-records-note");
+    note.setAttribute("role", "status");
+    note.hidden = true;
+    const grid = el(this.#document, "div", "v7-tribe-grid");
+    grid.setAttribute("role", "radiogroup");
+    grid.setAttribute("aria-labelledby", heading.id);
+    for (const faction of FACTIONS) {
+      const card = this.#document.createElement("button");
+      card.type = "button";
+      card.className = "v7-tribe-card";
+      card.setAttribute("role", "radio");
+      card.dataset.action = `tribe-${faction.toLowerCase().replace("_", "-")}`;
+      card.dataset.faction = faction;
+      card.style.setProperty("--player", factionColourV7(faction));
+      // The three star slots are drawn by #syncStarFields.
+      const stars = el(this.#document, "span", "v7-tribe-stars");
+      stars.setAttribute("aria-hidden", "true");
+      card.append(
+        this.#factionEmblem(faction),
+        text(
+          this.#document,
+          "span",
+          FACTION_LABELS[faction] ?? title(faction),
+          "v7-tribe-name",
+        ),
+        stars,
+      );
+      card.onclick = () => this.#pickTribe(form, faction);
+      grid.append(card);
+    }
+    grid.addEventListener("keydown", (event) => {
+      const cards = Array.from(
+        grid.querySelectorAll<HTMLButtonElement>(".v7-tribe-card"),
+      );
+      const current = cards.findIndex(
+        (card) => card === this.#document.activeElement,
+      );
+      if (current < 0) return;
+      const step =
+        event.key === "ArrowRight" || event.key === "ArrowDown"
+          ? 1
+          : event.key === "ArrowLeft" || event.key === "ArrowUp"
+            ? -1
+            : 0;
+      const next =
+        event.key === "Home"
+          ? 0
+          : event.key === "End"
+            ? cards.length - 1
+            : step === 0
+              ? null
+              : (current + step + cards.length) % cards.length;
+      if (next === null) return;
+      event.preventDefault();
+      // Arrow keys move; Space or Enter picks (section 7, item 2).
+      for (const [index, card] of cards.entries())
+        card.tabIndex = index === next ? 0 : -1;
+      cards[next]?.focus();
+    });
+    section.append(bar, rules, note, grid);
+    return section;
+  }
+
+  /** Picks the human's tribe through the hidden "Your faction" select. */
+  #pickTribe(form: HTMLFormElement, faction: FactionIdV7): void {
+    const field = form.querySelector<HTMLSelectElement>("#v7-faction-0");
+    if (field === null || field.value === faction) {
+      this.#syncStarFields(form);
+      return;
+    }
+    field.value = faction;
+    field.dispatchEvent(new Event("change", { bubbles: true }));
+  }
+
+  /**
+   * Brings the mode toggle, the line under it, the tribe cards (stars,
+   * glow, labels, the picked card) and the records note in line with the
+   * draft and the stored records, in place (focus stays).
+   */
+  #syncStarFields(form: HTMLElement): void {
+    const draft = this.#draft;
+    const showcase = draft.mapType === "SHOWCASE";
+    const mode = effectiveGameModeV7(draft);
+    for (const option of Array.from(
+      form.querySelectorAll<HTMLButtonElement>(".v7-game-mode-option"),
+    )) {
+      option.setAttribute("aria-pressed", String(option.dataset.mode === mode));
+      option.disabled = showcase && option.dataset.mode === "PERFECTION";
+      option.title = option.disabled
+        ? "The Showcase is played in Domination only."
+        : "";
+    }
+    const line = form.querySelector<HTMLElement>(".v7-game-mode-line");
+    if (line !== null) line.textContent = gameModeLineV7(mode);
+    const stored = this.#tribeStars();
+    const records = stored.status === "OK" ? stored.records[mode] : undefined;
+    const picker = form.querySelector<HTMLElement>(".v7-tribe-picker");
+    if (picker === null) return;
+    picker.dataset.mode = mode.toLowerCase();
+    picker.dataset.records = showcase || stored.status !== "OK" ? "off" : "on";
+    const own = draft.factions[0] ?? "ORIGINAL";
+    const focused = this.#document.activeElement;
+    const cards = Array.from(
+      picker.querySelectorAll<HTMLButtonElement>(".v7-tribe-card"),
+    );
+    const focusInGrid = cards.some((card) => card === focused);
+    for (const card of cards) {
+      const faction = card.dataset.faction as FactionIdV7;
+      const record = records?.[faction];
+      const stars = record?.stars ?? 0;
+      const glow = record?.glow === true;
+      const picked = faction === own;
+      card.setAttribute("aria-checked", String(picked));
+      // Roving focus: the focused card while the grid has focus, else the
+      // picked one, is the grid's single tab stop.
+      card.tabIndex = (focusInGrid ? card === focused : picked) ? 0 : -1;
+      const slots = card.querySelector(".v7-tribe-stars");
+      // The shared star glyphs: filled for an earned star, outlined else.
+      if (slots !== null && card.dataset.stars !== String(stars))
+        slots.replaceChildren(
+          ...[0, 1, 2].map((slot) => {
+            const star = uiIconV7(
+              this.#document,
+              slot < stars ? "star" : "star-outline",
+              "v7-ui-icon v7-star",
+            );
+            star.setAttribute("data-filled", String(slot < stars));
+            return star;
+          }),
+        );
+      card.dataset.stars = String(stars);
+      card.dataset.glow = String(glow);
+      card.setAttribute(
+        "aria-label",
+        tribeCardLabelV7(faction, stars, glow, mode),
+      );
+    }
+    const note = picker.querySelector<HTMLElement>(".v7-tribe-records-note");
+    if (note !== null) this.#fillTribeRecordsNote(note, stored, showcase);
+    const rules = picker.querySelector<HTMLElement>(".v7-star-rules");
+    if (rules !== null && !rules.hidden) {
+      const lines = starRulesV7(draft.aiCount);
+      if (
+        Array.from(rules.children)
+          .map((entry) => entry.textContent)
+          .join() !== lines.join()
+      )
+        rules.replaceChildren(
+          ...lines.map((entry) =>
+            text(this.#document, "p", entry, "v7-star-rule"),
+          ),
+        );
+    }
+  }
+
+  /**
+   * Section 6 and section 7, item 6: why no stars show. Unreadable records
+   * offer Reset; blocked storage and the Showcase only say so.
+   */
+  #fillTribeRecordsNote(
+    note: HTMLElement,
+    stored: Ruleset7TribeStarsV7,
+    showcase: boolean,
+  ): void {
+    const kind =
+      stored.status === "UNREADABLE"
+        ? "unreadable"
+        : stored.status === "UNAVAILABLE"
+          ? "unavailable"
+          : showcase
+            ? "showcase"
+            : "";
+    if (note.dataset.kind === kind) return;
+    note.dataset.kind = kind;
+    note.hidden = kind === "";
+    if (kind === "unreadable") {
+      const reset = button(
+        this.#document,
+        "Reset",
+        "tribe-stars-reset-unreadable",
+        "destructive",
+      );
+      reset.onclick = () => {
+        const done = this.#controller.resetTribeStars?.() ?? true;
+        this.#error = done ? "" : "Tribe records couldn't be reset.";
+        this.#notice = done ? "Tribe stars reset." : this.#notice;
+        this.#render();
+      };
+      note.replaceChildren(
+        text(this.#document, "p", "Tribe records can't be read."),
+        reset,
+      );
+    } else if (kind === "unavailable")
+      note.replaceChildren(
+        text(
+          this.#document,
+          "p",
+          "Tribe stars can't be saved in this browser.",
+        ),
+      );
+    else if (kind === "showcase")
+      note.replaceChildren(
+        text(this.#document, "p", "The Showcase records no stars."),
+      );
+    else note.replaceChildren();
   }
 
   /**
@@ -2789,6 +3185,10 @@ export class Ruleset7DomAppView {
       const faction = this.#draft.factions[seat] ?? "ORIGINAL";
       const cell = el(this.#document, "div", "v7-setup-seat");
       cell.dataset.seat = String(seat);
+      // RULESET_7_SCORE_AND_STARS.md section 7, item 2: the tribe grid
+      // replaces "Your faction". Its select stays, hidden, as the form's
+      // one value for seat 0 (the grid sets it).
+      if (seat === 0) cell.hidden = true;
       cell.dataset.faction = faction;
       cell.style.setProperty("--player", factionColourV7(faction));
       cell.append(
@@ -7460,8 +7860,13 @@ export class Ruleset7DomAppView {
     const verdict = this.#scoreVerdict(view, score);
     if (verdict !== null) result.append(verdict);
     const grade = queryStarGradeV7(view);
-    if (grade !== null && grade.grade.conditions.victory)
-      result.append(this.#gradePanel(grade.grade));
+    if (grade !== null && grade.grade.conditions.victory) {
+      const panel = this.#gradePanel(grade.grade);
+      // The tribe record (pulp_wars-kaw6.4) folds into the grade panel.
+      const record = this.#starRecordLine(grade);
+      if (record !== null) panel.append(record);
+      result.append(panel);
+    }
     result.append(this.#resultSeats(view, score));
     const actions = el(this.#document, "div", "button-row");
     const restart = button(
@@ -7744,6 +8149,46 @@ export class Ruleset7DomAppView {
     return result;
   }
 
+  /**
+   * The tribe record of a won match (RULESET_7_SCORE_AND_STARS.md sections
+   * 6 and 8), folded into the grade panel: "New best for the Goblins in
+   * Domination" when this win improved the record, or a note when it could
+   * not be saved; null otherwise, and for a match that records no stars
+   * (the Showcase).
+   */
+  #starRecordLine(graded: StarGradeQueryV7): HTMLElement | null {
+    if (!graded.recordable) return null;
+    const last = this.#tribeStars().lastAward;
+    if (
+      last === null ||
+      last.result.faction !== graded.faction ||
+      last.result.gameMode !== graded.gameMode ||
+      last.result.stars !== graded.grade.stars
+    )
+      return null;
+    if (last.improved) {
+      const best = text(
+        this.#document,
+        "p",
+        starAwardNewBestV7(graded.faction, graded.gameMode),
+        "v7-grade-new-best",
+      );
+      best.dataset.v7Region = "star-record";
+      best.setAttribute("role", "status");
+      best.prepend(uiIconV7(this.#document, "trophy"));
+      return best;
+    }
+    if (last.saved) return null;
+    const unsaved = text(
+      this.#document,
+      "p",
+      "Stars couldn't be saved in this browser.",
+      "v7-grade-unsaved",
+    );
+    unsaved.dataset.v7Region = "star-record";
+    return unsaved;
+  }
+
   /** "Main menu" on every end dialog (bead pulp_wars-2yc.18). */
   #resultsMenuButton(): HTMLButtonElement {
     const menu = button(this.#document, "Main menu", "results-menu");
@@ -7904,6 +8349,7 @@ export class Ruleset7DomAppView {
       curiosities:
         form.querySelector<HTMLInputElement>("#v7-curiosities")?.checked ??
         this.#draft.curiosities,
+      gameMode: this.#draft.gameMode,
       // Seats keep their choice in seat order; a seat whose faction an
       // earlier seat now plays takes the first untaken faction, so the
       // seats always play different factions (RULESET_7_UNIQUE_FACTIONS.md).
@@ -11682,7 +12128,14 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
     // The Showcase never has curiosities and launches with `false`.
     curiosities: draft.mapType !== "SHOWCASE" && draft.curiosities,
+    // RULESET_7_SCORE_AND_STARS.md section 4.3: every new setup writes the
+    // mode; the Showcase is always Domination.
+    gameMode: effectiveGameModeV7(draft),
   };
+}
+/** The mode a launch uses; the draft keeps the player's own choice. */
+function effectiveGameModeV7(draft: DraftV7): GameModeV7 {
+  return draft.mapType === "SHOWCASE" ? "DOMINATION" : draft.gameMode;
 }
 export function cityIncomeForViewerV7(
   view: PlayerViewV7,

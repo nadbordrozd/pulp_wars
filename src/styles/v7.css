@@ -50,9 +50,14 @@
   --pw-accent-dark: #7d140f;
   --pw-accent-text: #fff8e6;
   --pw-yellow: #ffcf3a;
-  /* The flawless grade's halo (score and modes, pulp_wars-kaw6.3). */
+  /*
+   * The flawless glow's halo (score and modes, pulp_wars-kaw6.3 and
+   * kaw6.4): the end-of-match grade and the tribe cards.
+   */
   --pw-glow: rgb(255 190 20 / 100%);
   --pw-glow-soft: rgb(255 190 20 / 55%);
+  --pw-glow-core: rgb(255 214 90 / 95%);
+  --pw-glow-clear: rgb(255 207 58 / 0%);
   --pw-focus: #c4261c;
   --pw-coin: var(--pw-ink);
   --pw-gain: #0b6a5c;
@@ -7017,5 +7022,279 @@
   .v7-first-step {
     top: calc(max(0.6rem, env(safe-area-inset-top)) + 6.4rem);
     font-size: var(--pw-fs-sm);
+  }
+}
+
+/*
+ * Score, modes and tribe stars (pulp_wars-kaw6.4,
+ * docs/product/RULESET_7_SCORE_AND_STARS.md sections 6 to 8): the game
+ * mode toggle, the tribe grid with its stars and the hidden glow, and the
+ * star award at the end of a match.
+ */
+.v7-game-mode-choice,
+.v7-tribe-picker {
+  display: grid;
+  grid-column: 1 / -1;
+  gap: 0.6rem;
+  min-width: 0;
+}
+
+.v7-game-mode-toggle {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border: var(--pw-line-w-sm) solid var(--pw-line);
+  border-radius: var(--pw-radius-sm);
+  background: var(--pw-surface-raised);
+  overflow: hidden;
+}
+
+.v7-game-mode-option {
+  min-height: 44px;
+  padding: 0 1rem;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--pw-text-2);
+  font-weight: var(--pw-fw-bold);
+}
+
+.v7-game-mode-option + .v7-game-mode-option {
+  border-left: var(--pw-line-w-sm) solid var(--pw-line);
+}
+
+.v7-game-mode-option[aria-pressed="true"] {
+  background: var(--pw-ink);
+  color: var(--pw-text-inverse);
+}
+
+.v7-game-mode-option:disabled {
+  opacity: var(--pw-dim);
+  cursor: not-allowed;
+}
+
+.v7-game-mode-line {
+  margin: 0;
+  color: var(--pw-text-2);
+}
+
+.v7-tribe-picker-bar {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 0.4rem;
+  padding-top: 1rem;
+  border-top: var(--pw-line-w-sm) solid var(--pw-line);
+}
+
+.v7-tribe-picker-bar .v7-setup-heading {
+  flex: 1;
+}
+
+.v7-star-rules {
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.6rem 0.8rem;
+  border: var(--pw-line-w-sm) solid var(--pw-line);
+  border-radius: var(--pw-radius-sm);
+  background: var(--pw-surface-raised);
+}
+
+.v7-star-rules[hidden],
+.v7-tribe-records-note[hidden] {
+  display: none;
+}
+
+.v7-star-rule {
+  margin: 0;
+  font-size: var(--pw-fs-sm);
+}
+
+.v7-tribe-records-note {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.8rem;
+  align-items: center;
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-sm);
+}
+
+.v7-tribe-records-note p {
+  margin: 0;
+}
+
+.v7-tribe-grid {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 0.45rem;
+}
+
+.v7-tribe-card {
+  /* Set per card to the tribe colour (faction-colours-v7.ts). */
+  --player: var(--pw-line-soft);
+
+  display: grid;
+  justify-items: center;
+  gap: 0.2rem;
+  min-width: 0;
+  padding: 0.45rem 0.2rem 0.4rem;
+  border: var(--pw-line-w-sm) solid var(--pw-line);
+  border-radius: var(--pw-radius-sm);
+  background: var(--pw-surface-raised);
+  color: var(--pw-text);
+  font-weight: var(--pw-fw-bold);
+}
+
+.v7-tribe-card > .v7-faction-emblem {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  background: var(--pw-surface-2);
+  box-shadow: 0 0 0 2px var(--player);
+}
+
+.v7-tribe-card > .v7-faction-emblem img {
+  width: 100% !important;
+  height: 100% !important;
+  padding: 10%;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+.v7-tribe-card[aria-checked="true"] {
+  border-color: var(--player);
+  background: var(--pw-surface);
+  box-shadow:
+    0 0 0 3px var(--player),
+    var(--pw-shadow-sm);
+}
+
+.v7-tribe-card:focus-visible {
+  outline: 3px solid var(--pw-focus);
+  outline-offset: 3px;
+}
+
+.v7-tribe-name {
+  max-width: 100%;
+  overflow: hidden;
+  font-size: var(--pw-fs-xs);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.v7-tribe-stars {
+  display: inline-flex;
+  gap: 1px;
+  border-radius: var(--pw-radius-pill);
+}
+
+.v7-star {
+  width: 15px;
+  height: 15px;
+}
+
+.v7-star path {
+  fill: none;
+  stroke: var(--pw-line-soft);
+  stroke-width: 1.6;
+}
+
+.v7-star[data-filled="true"] path {
+  fill: var(--pw-yellow);
+  stroke: var(--pw-ink);
+}
+
+/*
+ * Section 7, item 3: the hidden glow of a flawless win, a soft gold halo
+ * round the three stars; it shimmers unless motion is reduced.
+ */
+.v7-tribe-card[data-glow="true"] .v7-tribe-stars {
+  padding: 1px 4px;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at center,
+    var(--pw-glow-core) 0%,
+    var(--pw-glow-soft) 55%,
+    var(--pw-glow-clear) 100%
+  );
+  filter: drop-shadow(0 0 4px var(--pw-glow));
+}
+
+/* Section 7, item 6: the Showcase and unusable records show no stars. */
+.v7-tribe-picker[data-records="off"] .v7-tribe-stars {
+  background: none;
+  opacity: 0.35;
+  filter: grayscale(1);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .v7-app-shell:not([data-motion="reduced"])
+    .v7-tribe-picker:not([data-records="off"])
+    .v7-tribe-card[data-glow="true"]
+    .v7-tribe-stars {
+    animation: v7-star-glow 2.4s ease-in-out infinite;
+  }
+}
+
+@keyframes v7-star-glow {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 3px var(--pw-glow-soft));
+  }
+
+  50% {
+    filter: drop-shadow(0 0 8px var(--pw-glow));
+  }
+}
+
+/* The hidden seat-0 select the grid sets (section 7, item 2). */
+.v7-setup-form .v7-setup-seat[hidden] {
+  display: none;
+}
+
+.v7-tribe-stars-settings {
+  display: grid;
+  gap: 0.6rem;
+  justify-items: start;
+  margin-top: 0.6rem;
+  padding-top: 1rem;
+  border-top: var(--pw-line-w-sm) solid var(--pw-line);
+}
+
+.v7-tribe-stars-reset-question {
+  margin: 0;
+}
+
+/*
+ * Section 8: the tribe record line in the end-of-match grade panel ("New
+ * best for the Goblins in Domination").
+ */
+.v7-grade-new-best {
+  display: inline-flex;
+  gap: 0.35rem;
+  align-items: center;
+  padding: 0.25rem 0.7rem;
+  border: var(--pw-line-w-sm) solid var(--pw-line);
+  border-radius: var(--pw-radius-pill);
+  background: var(--pw-yellow);
+  color: var(--pw-ink);
+  font-size: var(--pw-fs-sm);
+  font-weight: var(--pw-fw-heavy);
+}
+
+.v7-grade-unsaved {
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-sm);
+}
+
+/* Section 7, item 7: four cards a row on a phone (two rows of tribes). */
+@media (max-width: 599px) {
+  .v7-tribe-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .v7-tribe-card > .v7-faction-emblem {
+    width: 2.6rem;
+    height: 2.6rem;
   }
 }

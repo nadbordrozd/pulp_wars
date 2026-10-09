@@ -223,9 +223,11 @@ describe("Ruleset 7 front screen", () => {
       [...document.querySelectorAll(".v7-setup-heading")].map(
         (heading) => heading.textContent,
       ),
-    ).toEqual(["Players", "Map"]);
+    ).toEqual(["Game mode", "Your tribe", "Players", "Map"]);
     expect(required(".v7-setup-form").closest("[hidden]")).toBeNull();
-    // Reading and tab order: back, players, map, seed, factions, Play.
+    // Reading and tab order: back, the game mode and your tribe
+    // (RULESET_7_SCORE_AND_STARS.md section 7), players, map, seed, the
+    // opponents' factions, Play. The tribe grid replaces "Your faction".
     const order = [
       ...required("[data-v7-setup]").querySelectorAll<HTMLElement>(
         "button, select, input, a",
@@ -235,6 +237,17 @@ describe("Ruleset 7 front screen", () => {
       .map((node) => node.id || node.dataset.action || node.tagName);
     expect(order).toEqual([
       "front-back",
+      "game-mode-domination",
+      "game-mode-perfection",
+      "star-rules",
+      "tribe-original",
+      "tribe-undead",
+      "tribe-goblin",
+      "tribe-dinosaur",
+      "tribe-martian",
+      "tribe-ice-folk",
+      "tribe-dwarf",
+      "tribe-candy",
       "v7-ai-count",
       "v7-ai-mode",
       "v7-board-size",
@@ -242,7 +255,6 @@ describe("Ruleset 7 front screen", () => {
       "v7-curiosities",
       "seed-mode-new",
       "seed-mode-seed",
-      "v7-faction-0",
       "v7-faction-1",
       "launch",
     ]);

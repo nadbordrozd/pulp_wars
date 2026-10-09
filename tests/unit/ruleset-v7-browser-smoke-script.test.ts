@@ -91,11 +91,11 @@ describe("Ruleset 7 browser smoke script", () => {
 
   it("arms transient controls before trusted pointer launch and waits for the native select to close", () => {
     const source = readFileSync("scripts/browser-smoke-v7.ts", "utf8");
-    // Default match, its natural outcome, and the default-route Undead and
-    // Goblin matches.
+    // Default match, its natural outcome, the default-route Undead and
+    // Goblin matches, and the Perfection start (pulp_wars-kaw6.4).
     expect(
       source.match(/await launchWithFastForward\(connection\)/g),
-    ).toHaveLength(4);
+    ).toHaveLength(5);
     expect(source).toContain(
       'await typeSelectValue(connection, "#v7-ai-count", "2")',
     );
@@ -154,7 +154,7 @@ describe("Ruleset 7 browser smoke script", () => {
         /await replaceSeedInput\(connection, "6"\);\s*await launchWithFastForward\(connection\)/g,
       ),
     ];
-    expect(launches).toHaveLength(4);
+    expect(launches).toHaveLength(5);
     // The art probes launch the default and assert it is "New map".
     const probe = source.slice(
       source.indexOf("async function probeChibiArtSet("),
@@ -546,6 +546,55 @@ describe("Ruleset 7 browser smoke script", () => {
     // No fixture import: the probe also runs against a deployed bundle.
     expect(probe).not.toContain("/tests/fixtures/");
   });
+  it("picks every setup tribe on the grid by keyboard and starts a Perfection game", () => {
+    // Score and modes (pulp_wars-kaw6.4): the tribe grid replaces the
+    // human's faction select, so no probe types on it any more.
+    const source = readFileSync("scripts/browser-smoke-v7.ts", "utf8");
+    expect(source).not.toContain(`typeahead("#v7-faction-0"`);
+    expect(source).not.toContain(
+      "document.querySelector('#v7-faction-0').focus()",
+    );
+    for (const faction of [
+      "UNDEAD",
+      "GOBLIN",
+      "DINOSAUR",
+      "MARTIAN",
+      "ICE_FOLK",
+      "DWARF",
+    ])
+      expect(source).toContain(`await pickTribeV7(connection, "${faction}")`);
+    const pick = source.slice(
+      source.indexOf("async function pickTribeV7("),
+      source.indexOf("async function pressSpaceV7("),
+    );
+    expect(pick).toContain('.v7-tribe-card[tabindex="0"]');
+    expect(pick).toContain(
+      'await pressKey(connection, "ArrowRight", "ArrowRight")',
+    );
+    expect(pick).toContain("await pressSpaceV7(connection)");
+    expect(pick).toContain("getAttribute('aria-checked') === 'true'");
+    // The Perfection start: the toggle and a tribe by keyboard, then the
+    // launched setup and score view are Perfection with 30 rounds.
+    expect(source).toContain("await probePerfectionStart(connection)");
+    expect(source).toContain("Perfection ${perfection}");
+    const probe = source.slice(
+      source.indexOf("async function probePerfectionStart("),
+      source.indexOf("async function pickTribeV7("),
+    );
+    const toggle = probe.indexOf(
+      `document.querySelector('[data-action="game-mode-perfection"]').focus()`,
+    );
+    expect(toggle).toBeGreaterThan(-1);
+    expect(toggle).toBeLessThan(probe.indexOf("await launchWithFastForward("));
+    expect(probe).toContain('await pickTribeV7(connection, "MARTIAN")');
+    expect(probe).toContain('started.gameMode !== "PERFECTION"');
+    expect(probe).toContain('started.scoreMode !== "PERFECTION"');
+    expect(probe).toContain("started.roundLimit !== 30");
+    // The remembered mode is cleared, so later probes start in Domination.
+    expect(probe).toContain('"pulpWars.ruleset7.gameMode.v1"');
+    expect(probe).not.toContain("/tests/fixtures/");
+  });
+
   it("launches the Showcase from setup, checks its pieces, ends a turn and resumes", () => {
     const source = readFileSync("scripts/browser-smoke-v7.ts", "utf8");
     const probe = source.slice(
@@ -828,7 +877,7 @@ describe("Ruleset 7 browser smoke script", () => {
     expect(helper).toContain(
       `await pointerClick(connection, '[data-action="new-game"]')`,
     );
-    expect(source.split("await openNewGame(connection);").length - 1).toBe(10);
+    expect(source.split("await openNewGame(connection);").length - 1).toBe(11);
     // Save & quit shows Continue, selected, in the menu.
     expect(source).toContain(
       "resume.querySelector('.v7-menu-button-label')?.textContent === 'Continue' && document.activeElement === resume",
@@ -1070,9 +1119,10 @@ describe("Ruleset 7 browser smoke script", () => {
     // captures (pulp_wars-t6s.4) and the Mind Control fixture capture
     // (pulp_wars-b5f.3, dev server only), two Ice Folk probe captures
     // (pulp_wars-7g3.6), two Dwarf probe captures (pulp_wars-78i.6), and
-    // one revision-18 Showcase capture, and two campaign captures
-    // (pulp_wars-68k.5: the list, and the fixture win's Victory dialog).
-    expect(source.match(/await capture\(/g)).toHaveLength(24);
+    // one revision-18 Showcase capture, two campaign captures
+    // (pulp_wars-68k.5: the list, and the fixture win's Victory dialog), and
+    // two Perfection captures (pulp_wars-kaw6.4: the setup and the launch).
+    expect(source.match(/await capture\(/g)).toHaveLength(26);
     expect(source).toContain("async function probeAfflictionFixture(");
     expect(source).not.toContain("Emulation.setDeviceMetricsOverride");
     expect(source).not.toContain("mobile-ai-return-390-dpr2.png");
@@ -1084,7 +1134,7 @@ describe("Ruleset 7 browser smoke script", () => {
     const source = readFileSync("scripts/browser-smoke-v7.ts", "utf8");
     expect(
       source.match(/await replaceSeedInput\(connection, "6"\)/g),
-    ).toHaveLength(4);
+    ).toHaveLength(5);
     expect(source).toContain('commands: ["selectAll"]');
     expect(source).toContain("if (actual !== value)");
   });
