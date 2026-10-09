@@ -1,6 +1,14 @@
 # Ruleset 7: the Cult of the Ancient Ones (proposal)
 
-**Status:** proposal for the user's decision (bead `pulp_wars-2yc.25`,
+**Superseded (2026-10-09).** The user's direction of 2026-10-09 (summoned
+daemons held by a multi-cultist control upkeep, human sacrifice, one
+special economic mechanic, and deliberately high variance) replaced this
+proposal. The design is now
+[the Cultists spec](RULESET_7_CULTISTS.md) (bead `pulp_wars-mch9.1`),
+whose appendix A answers this document's fifteen decisions. This document
+stays as design history; where the two disagree, the spec is the design.
+
+**Original status:** proposal for the user's decision (bead `pulp_wars-2yc.25`,
 2026-10-06). Nothing in this document is a rule of the game, and nothing in
 it is canon until the user approves it. Every number is a first guess and
 is marked as such where it matters. No engine, AI, UI, or art work has been
