@@ -137,6 +137,39 @@ const ENTRIES = {
     "After a kill it takes the tile and may attack again, for as long as it keeps killing.",
   ],
   PUSH: ["Push", "Shoves a target that survives its attack one tile back."],
+  // The giants' signatures (`pulp_wars-w49.30`): one per faction giant.
+  CRUSH: [
+    "Crushing Shove",
+    "A target it cannot push is crushed instead, and an enemy behind it is hurt too.",
+  ],
+  SWALLOW: [
+    "Swallow",
+    "Swallows a weakened enemy next to it, digests it over the next turns, and spits it out as your Zombie.",
+  ],
+  TOSS: [
+    "Goblin Toss",
+    "Throws a Goblin next to it over whatever stands in between. The Goblin may still attack or Kaboom.",
+  ],
+  STOMP: [
+    "Thunder Stomp",
+    "If it has not moved, it hurts every enemy on the ground around it and smashes their Field Defense.",
+  ],
+  OVERSTRIDE: [
+    "Overstride",
+    "Steps over units and through enemy zones of control, trampling the enemies it steps over.",
+  ],
+  GLACIAL_SMASH: [
+    "Glacial Smash",
+    "Shatters a Chilled enemy its hit leaves badly hurt, and the shards Chill the enemies around it.",
+  ],
+  SIEGE_HAMMER: [
+    "Siege Hammer",
+    "Its blows ignore Walls and Field Defense, smash the Field Defense, and tear a city's Walls down.",
+  ],
+  BREAK_OFF: [
+    "Break Off",
+    "Spends some of its health to make 2 Gingerbread Men next to it.",
+  ],
 
   // ------------------------------------------------------------------ ships
   SHIP: ["Ship", "Built at a Port. It heals only next to your own Ports."],

@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r61`, for all eight registered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r62`, for all eight registered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), and Candy (`CANDY`). It
 folds in
@@ -237,6 +237,15 @@ view gain `berserkThisTurn`, and the Administration unlock is
 `BERSERK_SUPPORT`; no command or event is new. A save, replay, or setup of
 `7r60` is rejected, and the browser autosave has a new key. A match without
 a Goblin seat plays as at `7r60`.
+`pulp-wars-poc-7r62` (`pulp_wars-w49.30`) is **the giants' signatures**
+([section 11.1](#111-the-giants-signatures)): every faction's reward giant
+has one signature ability (Crushing Shove, Swallow, Goblin Toss, Thunder
+Stomp, Overstride, Glacial Smash, Siege Hammer, Break Off), Push stays only
+on the Human Juggernaut, the Colossus has Move 2, and the Frost Giant never
+advances. The state gains the `giants` block (held victims), a city may
+carry `wallsRazed`, and a unit may carry `variant`; the commands `SWALLOW`,
+`TOSS`, `STOMP`, and `BREAK_OFF` and ten events are new. A save, replay, or
+setup of `7r61` is rejected, and the browser autosave has a new key.
 `pulp-wars-poc-7r58` (`pulp_wars-w49.25`) is
 [step two of the Martian pass](RULESET_7_TUNING_MARTIAN.md#14-step-two):
 **City Walls hold a unit on its own city center against a Saucer's Tractor
@@ -686,7 +695,7 @@ the build differs (its sections 20 to 24 list them);
 the values here are current. Where a document and the code disagreed, the
 code's behavior is the rule and is stated below;
 [Known discrepancies](#25-known-discrepancies) lists the open items and the
-resolved ones as of `pulp-wars-poc-7r61`.
+resolved ones as of `pulp-wars-poc-7r62`.
 
 **Terms.** "On the board" means a unit that currently exists (HP above 0).
 **Living** has the narrower revision-13 meaning used by Wail, Plague,
@@ -787,10 +796,10 @@ separate [Ruleset 6](RULESET_6.md) route.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r61`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Ruleset                                    | `pulp-wars-poc-7r62`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r61.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Browser autosave                           | `pulpWars.save.v7r62.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                                     |
@@ -2578,6 +2587,16 @@ Each reached level grants exactly one reward, chosen by the owner:
 - A level reached during another player's turn waits for its owner's next
   turn.
 - Walls are stored on the city and transfer on capture.
+- **Razed Walls** (`pulp_wars-w49.30`,
+  [section 11.1](#111-the-giants-signatures)): a Brass Titan's Siege Hammer
+  tears a hostile city's Walls down. The city keeps its `WALLS` record (the
+  level-3 reward was taken and is not offered again) and gets the optional
+  field `wallsRazed: true` (absent means false); a city has Walls when it
+  holds the record and `wallsRazed` is not set. Razed Walls stay razed
+  through a capture; no rule rebuilds them. Every reader of Walls
+  (fortification, the Snow cover read from it, the unit card's City Walls
+  line, the Tractor Beam's hold, the public city, the Normal AI) reads
+  `cityHasWallsV7`.
 
 ## 5. Achievements and Monuments
 
@@ -3655,7 +3674,7 @@ numbers are first guesses ([the ninth unit](RULESET_7_NINTH_UNIT.md)):
 | Captain     | Administration    |    5 |  10 |      1 |       1 |    1 |     1 |     1 | yes               | no      | Rally; Tend Wounded                                          |
 | Catapult    | Sawmilling        |    8 |  10 |     3³ |     0.5 |    1 |   2–3 |     1 | no                | no      | —                                                            |
 | Knight      | Chivalry          |    9 | 13³ |     4⁵ |       1 |    3 |     1 |     1 | yes               | yes⁴    | Overrun                                                      |
-| Juggernaut  | reward only       |    — |  40 |      4 |       4 |    1 |     1 |     1 | yes               | yes     | Push                                                         |
+| Juggernaut  | reward only       |    — |  40 |      4 |       4 |    1 |     1 |     1 | yes               | yes     | Push; Crushing Shove                                         |
 | Patrol Boat | Shorecraft        |    5 |  10 |      2 |       2 |    2 |     1 |     2 | yes               | no      | naval; Ram (Seamanship)                                      |
 | Battleship  | Naval Engineering |   16 |  25 |      6 |       4 |    2 |   1–3 |     3 | no                | no      | naval; splash                                                |
 | Submarine   | Submersibles      |    9 |  12 |      4 |       2 |    2 |     1 |     2 | yes               | no      | naval; Submerged; Torpedo                                    |
@@ -3749,7 +3768,7 @@ parentheses):
 | Lich        | `CATAPULT`    | Sawmilling        |    8 |  10 |  3 (6) |   1 (2) |    1 |   2–3 |     1 | no                | no      | splash; Plague (Pestilence⁴); never advances      |
 | Vampire     | `KNIGHT`      | Chivalry          |    9 |  10 |  3 (6) |   1 (2) |    3 |     1 |     1 | yes               | no      | Lifesteal; Unanswered; Escape³                    |
 | Wight       | `SWORDSMAN`   | Metallurgy        |    6 |  14 |  3 (6) | 2.5 (5) |    1 |     1 |     1 | yes               | yes     | Rise Again (7 HP, once; `7r55`); no Field Defense |
-| Abomination | `JUGGERNAUT`  | reward only       |    — |  40 |  4 (8) |   4 (8) |    1 |     1 |     1 | yes               | yes     | Push; Infect³; never advances³                    |
+| Abomination | `JUGGERNAUT`  | reward only       |    — |  40 |  4 (8) |   4 (8) |    1 |     1 |     1 | yes               | yes     | Swallow; Infect³; never advances³                 |
 | Patrol Boat | `PATROL_BOAT` | Shorecraft        |    5 |  10 |  2 (4) |   2 (4) |    2 |     1 |     2 | yes               | no      | naval; Ram (Seamanship)                           |
 | Battleship  | `BATTLESHIP`  | Naval Engineering |   16 |  25 | 6 (12) |   4 (8) |    2 |   1–3 |     3 | no                | no      | naval; splash                                     |
 | Submarine   | `SUBMARINE`   | Submersibles      |    9 |  12 |  4 (8) |   2 (4) |    2 |     1 |     2 | yes               | no      | naval; Submerged; Torpedo                         |
@@ -3798,12 +3817,14 @@ tiles, and Plague behind Pestilence.
   never retaliates (`UNANSWERED`). Since `7r51` it has **Escape**
   ([section 12.2](#122-activation)): after an attack it survives it may
   make one more Move with its full Move 3.
-- **Abomination** has the Juggernaut's numbers and Push. Since `7r51` it
+- **Abomination** has the Juggernaut's numbers and, since `w49.30`,
+  Swallow instead of Push ([section 11.1](#111-the-giants-signatures)).
+  Since `7r51` it
   has **Infect** ([section 17.6](#176-infect)): a land unit it kills rises
   as a Zombie on its tile, and the Abomination never advances after a kill
   (`advancesAfterKill` false). It has no Bite.
-- **Abomination** has exact Juggernaut parity (reward only, Push, capture, no
-  Pillage or Disband). Patrol Boat, Battleship, and Submarine are the Human
+- **Abomination** has exact Juggernaut parity (reward only, capture, no
+  Pillage or Disband) but its signature (Swallow, no Push). Patrol Boat, Battleship, and Submarine are the Human
   units.
 - Undead Disband refunds: Skeleton, Ghoul, Banshee, and Zombie 1,
   Necromancer 2, Lich and Vampire 4. Arms Industry and the Shipyard discount
@@ -3825,7 +3846,7 @@ damages of [section 18.4](#184-kaboom) and [18.5](#185-death-blasts):
 | Rocket Cart  | `CATAPULT`    | Sawmilling        |    7 |   8 | 3.5 (7) | 0.5 (1) |    1 |   2–3 |     1 | no                | no      |      5 |           7 | Kaboom; never advances; Gang Up +1 at most                      |
 | Scrap Buggy  | `KNIGHT`      | Chivalry          |    8 |  10 |   3 (6) |   1 (2) |    3 |     1 |     1 | yes               | no      |      5 |           7 | Ram; Kaboom, also after attacking (Crash)                       |
 | Ogre         | `SWORDSMAN`   | Metallurgy        |    5 |  16 | 2.5 (5) |   2 (4) |    1 |     1 |     1 | yes               | yes     |      — |           — | Heavyweight (two helpers for Gang Up; `7r55`); no Field Defense |
-| Troll        | `JUGGERNAUT`  | reward only       |    — |  40 |   4 (8) |   3 (6) |    1 |     1 |     1 | yes               | yes     |      — |           — | Push; Regenerate 4                                              |
+| Troll        | `JUGGERNAUT`  | reward only       |    — |  40 |   4 (8) |   3 (6) |    1 |     1 |     1 | yes               | yes     |      — |           — | Goblin Toss; Regenerate 4                                       |
 | Patrol Boat  | `PATROL_BOAT` | Shorecraft        |    5 |  10 |   2 (4) |   2 (4) |    2 |     1 |     2 | yes               | no      |      — |           — | naval; Ram (Seamanship)                                         |
 | Battleship   | `BATTLESHIP`  | Naval Engineering |   16 |  25 |  6 (12) |   4 (8) |    2 |   1–3 |     3 | no                | no      |      — |           — | naval; splash                                                   |
 | Submarine    | `SUBMARINE`   | Submersibles      |    9 |  12 |   4 (8) |   2 (4) |    2 |     1 |     2 | yes               | no      |      — |           — | naval; Submerged; Torpedo                                       |
@@ -3855,9 +3876,10 @@ damages of [section 18.4](#184-kaboom) and [18.5](#185-death-blasts):
 - **Scrap Buggy** has Knight parity: Move 3, no capture, and Overrun,
   labelled **Ram** for Goblins (same rule and events). Since `7r50` it may
   Kaboom after attacking (**Crash**, [section 18.4](#184-kaboom)).
-- **Troll** has Juggernaut parity (reward only, Push, capture, no Pillage or
+- **Troll** has Juggernaut parity (reward only, capture, no Pillage or
   Disband) with Defense 3 instead of 4, and regenerates 4 HP at its owner's
-  Start Turn.
+  Start Turn. Its signature is Goblin Toss (no Push;
+  [section 11.1](#111-the-giants-signatures)).
 - **Patrol Boat, Battleship, and Submarine** are the Human units (names,
   stats, and hostile-only Battleship splash; drawn in the Goblin style). Goblin faction rules do not apply
   to them: no Gang Up, no Kaboom, no death blast.
@@ -3891,7 +3913,7 @@ capacity the unit, or its Egg, uses
 | Stegosaurus  | `CATAPULT`    | Sawmilling        |    7 | 2       |     1 |  12 | 2.5 (5) |   1 (2) |    1 |   2–3 |     1 | no                | no      | yes   | Thagomizer (Cracked; `7r55`); destroys Field Defense; never advances   |
 | Triceratops  | `SWORDSMAN`   | Metallurgy        |    8 | 2       |     2 |  20 |   3 (6) |   2 (4) |    2 |     1 |     1 | yes               | no      | yes   | Charge! (the heavy role since `7r55`; `CATAPULT` at Sawmilling before) |
 | T-Rex        | `KNIGHT`      | Chivalry          |   14 | 4       |     2 |  28 |   4 (8) |   2 (4) |    2 |     1 |     1 | yes               | no      | yes   | Rampage                                                                |
-| Brontosaurus | `JUGGERNAUT`  | reward only       |    — | —       |     2 |  45 | 3.5 (7) |   4 (8) |    1 |     1 |     1 | yes               | yes     | yes   | Push                                                                   |
+| Brontosaurus | `JUGGERNAUT`  | reward only       |    — | —       |     2 |  45 | 3.5 (7) |   4 (8) |    1 |     1 |     1 | yes               | yes     | yes   | Thunder Stomp                                                          |
 | Patrol Boat  | `PATROL_BOAT` | Shorecraft        |    5 | trained |     1 |  10 |   2 (4) |   2 (4) |    2 |     1 |     2 | yes               | no      | no    | naval; Ram (Seamanship)                                                |
 | Battleship   | `BATTLESHIP`  | Naval Engineering |   16 | trained |     1 |  25 |  6 (12) |   4 (8) |    2 |   1–3 |     3 | no                | no      | no    | naval; splash                                                          |
 | Submarine    | `SUBMARINE`   | Submersibles      |    9 | trained |     1 |  12 |   4 (8) |   2 (4) |    2 |     1 |     2 | yes               | no      | no    | naval; Submerged; Torpedo                                              |
@@ -3923,8 +3945,10 @@ capacity the unit, or its Egg, uses
   destroy Field Defense with reason `CATAPULT`.
 - **T-Rex** has Knight parity (no capture, Overrun, labelled **Rampage**)
   with Move 2 instead of 3. It is never a treasure unit.
-- **Brontosaurus** has Juggernaut parity (reward only, Push, capture, no
-  Pillage or Disband) with 45 HP and Attack 3.5, and uses 2 slots.
+- **Brontosaurus** has Juggernaut parity (reward only, capture, no
+  Pillage or Disband) with 45 HP and Attack 3.5, and uses 2 slots. Its
+  signature is Thunder Stomp (no Push;
+  [section 11.1](#111-the-giants-signatures)).
 - **Patrol Boat, Battleship, and Submarine** are the Human units. Dinosaur faction rules
   do not apply to them: they are trained with `TRAIN_NAVAL`, use 1 slot, do
   not grow, and keep the ordinary Promotion.
@@ -3973,7 +3997,7 @@ is its movement mode ([section 20.6](#206-movement-stride-flying-and-crossing-wa
 | Tripod           | `CATAPULT`    | Sawmilling        |    9 |     1 |  12 |      2 |   4 (8) |    1 (2) |    2 |    2⁶ |    2⁶ | stride | yes               | no      | heat ray; Pierce; never advances                                                    |
 | Mothership       | `KNIGHT`      | Chivalry          |   8⁷ |     2 |  16 |      4 | 2.5 (5) |    2 (4) |    2 |     1 |     1 | fly    | yes               | no      | Beam Down⁷; Heavy Tractor Beam⁷ (free once a turn); no Overrun, Pillage, or advance |
 | Shock Trooper    | `SWORDSMAN`   | Metallurgy        |    6 |     1 |  12 |      3 |   3 (6) |    2 (4) |    1 |     1 |     1 | ground | yes               | yes     | Shock Field 3 (`7r55`); no Field Defense                                            |
-| Colossus         | `JUGGERNAUT`  | reward only       |    — |     2 |  32 |      3 |   4 (8) | 2.5 (5)⁶ |    1 |   1–2 |     1 | stride | yes               | yes     | heat ray; Push                                                                      |
+| Colossus         | `JUGGERNAUT`  | reward only       |    — |     2 |  32 |      3 |   4 (8) | 2.5 (5)⁶ |    2 |   1–2 |     1 | stride | yes               | yes     | heat ray; Overstride                                                                |
 | Patrol Boat      | `PATROL_BOAT` | Shorecraft        |    5 |     1 |  10 |      0 |   2 (4) |    2 (4) |    2 |     1 |     2 | —      | yes               | no      | naval; Ram (Seamanship)                                                             |
 | Battleship       | `BATTLESHIP`  | Naval Engineering |   16 |     1 |  25 |      0 |  6 (12) |    4 (8) |    2 |   1–3 |     3 | —      | no                | no      | naval; splash                                                                       |
 | Submarine        | `SUBMARINE`   | Submersibles      |    9 |     1 |  12 |      0 |   4 (8) |    2 (4) |    2 |     1 |     2 | —      | yes               | no      | naval; Submerged; Torpedo                                                           |
@@ -4038,9 +4062,9 @@ applied after the Martians won about 75% of the coarse Dry Land games at
   not a primary action: it is free once a turn, before or after its Move
   and its primary action. It is never a treasure unit.
 - **Colossus** is a walker with a heat ray and Juggernaut parity otherwise:
-  reward only, capture, Push on an adjacent surviving target (never at
-  range 2), no advance since tuning 2 (`7r47`; it is a ranged unit), no
-  Pillage, no Disband.
+  reward only, capture, no advance since tuning 2 (`7r47`; it is a ranged
+  unit), no Pillage, no Disband. Since `w49.30` it has Move 2 and
+  Overstride instead of Push ([section 11.1](#111-the-giants-signatures)).
 - **Mind-controlled units** keep their own kind's statline
   ([section 20.9](#209-mind-controlled-units)); there is no Thrall (retired
   in `7r33`).
@@ -4080,7 +4104,7 @@ units cross Mountains without Engineering and without stopping
 | Ice Witch    | `CAPTAIN`    | Administration |    5 |  12 |                1 (2) |    1 (2) |    1 |     1 |     1 | yes               | no      | Blizzard; Cold Snap; no Rally; no Tend Wounded                                          |
 | Boulder Yeti | `CATAPULT`   | Sawmilling     |    8 |  12 | 2 (4); 3 (6) planted |  1.5 (3) |    2 |   1–2 |     1 | yes               | no      | Boulders (ignore fortification); Planted; Mountain-born; never advances                 |
 | Sabretooth   | `KNIGHT`     | Chivalry       |    9 |  14 |                3 (6) |    1 (2) |    3 |     1 |     1 | yes               | no      | Prowl; no Glide; never on a foreign center; no Overrun                                  |
-| Frost Giant  | `JUGGERNAUT` | reward only    |    — |  40 |                4 (8) |    4 (8) |    1 |     1 |     1 | yes               | yes     | Push; Cold Aura; Mountain-born                                                          |
+| Frost Giant  | `JUGGERNAUT` | reward only    |    — |  40 |                4 (8) |    4 (8) |    1 |     1 |     1 | yes               | yes     | Glacial Smash; Cold Aura; Mountain-born; never advances                                 |
 
 ⁷ Snow Hunter Sight becomes 2 with Fieldcraft.
 ⁸ [Ice Folk tuning record](RULESET_7_ICE_FOLK.md#165-tuning-record)
@@ -4120,10 +4144,11 @@ units cross Mountains without Engineering and without stopping
   a melee kill. It has no Overrun and no Charge; it Prowls, never Glides,
   and never ends on a settlement center it does not own
   ([section 21.12](#2112-prowl-and-the-cold-aura)).
-- **Frost Giant** has Juggernaut parity (reward only, capture, Push on an
-  adjacent surviving target, the advance, no Pillage, no Disband) and the
-  Juggernaut's numbers, plus the Cold Aura
+- **Frost Giant** has Juggernaut parity (reward only, capture, no
+  Pillage, no Disband) and the Juggernaut's numbers, plus the Cold Aura
   ([section 21.12](#2112-prowl-and-the-cold-aura)). It is Mountain-born.
+  Since `w49.30` it has Glacial Smash instead of Push and never advances
+  after a kill ([section 11.1](#111-the-giants-signatures)).
 - **No ships.** The Ice Folk tree unlocks no naval role, so an Ice Folk
   seat never has a Patrol Boat, a Battleship, or a Submarine, and a unit of
   the Ice Folk kind never embarks; its land units Freeze the sea and slide
@@ -4167,7 +4192,7 @@ The Dwarf (`DWARF`) roster, by mechanical role, with the
 | Steam Cannon     | `CATAPULT`    | Sawmilling        |    8 |  10 |   3.5 (7) | 0.5 (1) |    1 |   2–3 |     1 | living; machine    | no                   | no      | Knockback; with Blasting Charges ignores Walls and Field Defense                                                  |
 | Whirligig        | `KNIGHT`      | Chivalry          |    9 |  12 |     3 (6) | 1.5 (3) |    3 |     1 |     1 | construct; machine | yes                  | no      | Whirl (hits every adjacent enemy at once, unanswered; `w49.33`, Three Hammers before); never advances; no Overrun |
 | Steam Tank       | `SWORDSMAN`   | Metallurgy        |    9 |  16 |     3 (6) |   2 (4) |    2 |     1 |     1 | living; machine    | yes                  | no      | Plated 4; no Overrun (the heavy role since `7r55`; `KNIGHT` at Chivalry before)                                   |
-| Brass Titan      | `JUGGERNAUT`  | reward only       |    — |  36 |     4 (8) |   3 (6) |    1 |     1 |     1 | construct; machine | yes                  | yes     | Push                                                                                                              |
+| Brass Titan      | `JUGGERNAUT`  | reward only       |    — |  36 |     4 (8) |   3 (6) |    1 |     1 |     1 | construct; machine | yes                  | yes     | Siege Hammer                                                                                                      |
 | Patrol Boat      | `PATROL_BOAT` | Shorecraft        |    5 |  10 |     2 (4) |   2 (4) |    2 |     1 |     2 | —                  | yes                  | no      | naval; Ram (Seamanship)                                                                                           |
 | Battleship       | `BATTLESHIP`  | Naval Engineering |   16 |  25 |    6 (12) |   4 (8) |    2 |   1–3 |     3 | —                  | no                   | no      | naval; splash                                                                                                     |
 | Submarine        | `SUBMARINE`   | Submersibles      |    9 |  12 |     4 (8) |   2 (4) |    2 |     1 |     2 | —                  | yes                  | no      | naval; Submerged; Torpedo                                                                                         |
@@ -4211,9 +4236,10 @@ retaliates, at distance 1 ([section 22.5](#225-gyrocopters-and-the-bombing-run))
 - **Steam Tank** has Knight parity for no capture and the advance after a
   melee kill, with 16 HP, Defense 2, and Move 2. It has no Overrun and is
   **Plated** ([section 22.10](#2210-steam-tank-plated-and-the-brass-titan)).
-- **Brass Titan** has Juggernaut parity (reward only, capture, Push on an
-  adjacent surviving target, the advance, no Pillage, no Disband) with
-  36 HP, Attack 4, and Defense 3, and the construct rules.
+- **Brass Titan** has Juggernaut parity (reward only, capture, the
+  advance, no Pillage, no Disband) with 36 HP, Attack 4, and Defense 3,
+  and the construct rules. Its signature is Siege Hammer (no Push;
+  [section 11.1](#111-the-giants-signatures)).
 - **Patrol Boat, Battleship, and Submarine** are the Human units (drawn in the Dwarf
   style). Dwarf faction rules do not apply to them: no Dig In, no Repair
   (it targets land-form units only), one slot, the ordinary Promotion.
@@ -4255,7 +4281,7 @@ living, and every Candy land unit is a ground unit:
 | Pie Launcher      | `CATAPULT`    | Sawmilling        |    8 |  10 |   3 (6) | 0.5 (1) |    1 |   2–3 |     1 | no                | no      | Sugar Rush; Splat; never advances                                  |
 | Chocolate Bunny   | `KNIGHT`      | Chivalry          |    9 |  14 |   3 (6) | 1.5 (3) |    2 |     1 |     1 | yes               | no      | Sugar Rush (Rushed: Sugar Frenzy); no Overrun otherwise            |
 | Jawbreaker        | `SWORDSMAN`   | Metallurgy        |    6 |  16 |   3 (6) | 2.5 (5) |    1 |     1 |     1 | yes               | yes     | Sugar Rush; Rock Hard (`7r55`); no Field Defense                   |
-| Gingerbread Giant | `JUGGERNAUT`  | reward only       |    — |  40 |   4 (8) | 3.5 (7) |    1 |     1 |     1 | yes               | yes     | Sugar Rush; Push; Bounce                                           |
+| Gingerbread Giant | `JUGGERNAUT`  | reward only       |    — |  40 |   4 (8) | 3.5 (7) |    1 |     1 |     1 | yes               | yes     | Sugar Rush; Break Off; Bounce                                      |
 | Patrol Boat       | `PATROL_BOAT` | Shorecraft        |    5 |  10 |   2 (4) |   2 (4) |    2 |     1 |     2 | yes               | no      | naval; Ram (Seamanship)                                            |
 | Battleship        | `BATTLESHIP`  | Naval Engineering |   16 |  25 |  6 (12) |   4 (8) |    2 |   1–3 |     3 | no                | no      | naval; splash                                                      |
 | Submarine         | `SUBMARINE`   | Submersibles      |    9 |  12 |   4 (8) |   2 (4) |    2 |     1 |     2 | yes               | no      | naval; Submerged; Torpedo                                          |
@@ -4287,9 +4313,10 @@ living, and every Candy land unit is a ground unit:
 - **Chocolate Bunny** has Knight parity for no capture and the advance after a
   melee kill, with Move 2. It has Overrun only while Rushed (**Sugar
   Frenzy**, capped at two continuations).
-- **Gingerbread Giant** has Juggernaut parity (reward only, capture, Push on
-  an adjacent surviving target, the advance, no Pillage, no Disband) with
-  Defense 3.5, and it Bounces.
+- **Gingerbread Giant** has Juggernaut parity (reward only, capture, the
+  advance, no Pillage, no Disband) with Defense 3.5, and it Bounces. Its
+  signature is Break Off (no Push;
+  [section 11.1](#111-the-giants-signatures)).
 - **Patrol Boat, Battleship, and Submarine** are the Human units. Candy faction rules
   do not apply to them: no Sugar Rush, no Crumbs, one slot, the ordinary
   Promotion.
@@ -4353,6 +4380,204 @@ General roster rules:
   regeneration in its own turn, a 10-Coin bounty), owned by nobody, never
   trained, rewarded, or commanded
   ([section 2.7](#27-map-curiosities)).
+
+### 11.1 The giants' signatures
+
+Bead `pulp_wars-w49.30`, the rules of
+[the giants' signatures](RULESET_7_GIANTS.md#6-final-rules) at
+`pulp-wars-poc-7r62`. Every faction's reward giant
+(`JUGGERNAUT`) has exactly one signature ability; no other role has one.
+
+| Giant             | Faction  | Signature      | Ability literal | Number                                              |
+| ----------------- | -------- | -------------- | --------------- | --------------------------------------------------- |
+| Juggernaut        | Human    | Crushing Shove | `CRUSH`         | `CRUSH_DAMAGE_V7` 3                                 |
+| Abomination       | Undead   | Swallow        | `SWALLOW`       | `SWALLOW_MAX_HP_V7` 12; digest `DIGEST_DAMAGE_V7` 4 |
+| Troll             | Goblin   | Goblin Toss    | `TOSS`          | `TOSS_RANGE_V7` 3 (minimum 2)                       |
+| Brontosaurus      | Dinosaur | Thunder Stomp  | `STOMP`         | `STOMP_DAMAGE_V7` 4                                 |
+| Colossus          | Martian  | Overstride     | `OVERSTRIDE`    | `TRAMPLE_DAMAGE_V7` 3; Move 2                       |
+| Frost Giant       | Ice Folk | Glacial Smash  | `GLACIAL_SMASH` | `GLACIAL_SMASH_HP_V7` 8                             |
+| Brass Titan       | Dwarf    | Siege Hammer   | `SIEGE_HAMMER`  | (no number)                                         |
+| Gingerbread Giant | Candy    | Break Off      | `BREAK_OFF`     | `BREAK_OFF_HP_V7` 10; `BREAK_OFF_UNITS_V7` 2        |
+
+**Common rules.**
+
+- **Push** is the Human Juggernaut's only; the other seven giants lost it
+  (a Triceratops's Charge!, Knockback, Bounce, and the ram's shove are
+  unchanged).
+- **Land form only.** Every signature needs the giant in land form; an
+  embarked giant has none.
+- **Keyed on the kind's ability.** Each signature is gated by its ability
+  literal in the role rule under the unit's kind, and its number is a role
+  mechanic (`crushDamage`, `swallowMaxHp`, `tossRange`, `stompDamage`,
+  `trampleDamage`, `glacialSmashHp`, `siegeHammer`, `breakOffHp`; 0 or false
+  by default). The neutral Giant Spider's role rule keeps `ATTACK` only and
+  its mechanics set every new field off, so it has none of them. Every giant
+  stays immune to Mind Control.
+- **New primary actions** `SWALLOW`, `TOSS`, `STOMP`, and `BREAK_OFF` join
+  every list of primary actions: refused (`UNIT_ALREADY_ACTED`) after a
+  primary action, a landing, a waiting Ram or Sugar Frenzy continuation, or
+  a sluggish unit's Move ([section 21.3](#213-sluggish-move-or-act-not-both));
+  a Crashed Gingerbread Giant cannot Break Off; a pending choice blocks them
+  as every command; each marks the giant handled and used (`specialActed`).
+- **New death causes** `CRUSH`, `STOMP`, and `TRAMPLE` are listed wherever
+  `SPLASH` is: a Grave where the Grave rules allow, Crumbs, a death blast
+  and its chain, a Bitten rising, a Mind Control release, and kill credit to
+  the giant (kills, Promotion, growth, Slayer, Plunder, the Monster bounty).
+  `DIGESTED` leaves nothing: no Grave, no Crumbs, no death blast, no rising,
+  no Rise Again.
+- **No retaliation** for any new damage. Crushing Shove and Siege Hammer
+  modify an ordinary `ATTACK` whose own retaliation is unchanged.
+
+**Crushing Shove (Juggernaut).** When an `ATTACK` from distance 1 by a
+land-form unit with `CRUSH` leaves its target alive and the Push does not
+move it (the Push is `BLOCKED`), the target is crushed instead: after the
+whole exchange (its deaths, chains, and Plunder) it takes `crushDamage` 3
+fixed damage, and a unit hostile to the attacker's owner on the tile behind
+it (the tile it would have been pushed to; a flyer, an embarked unit, or
+an Egg there is hit, an own or allied unit and a burrowed unit never)
+takes 3 too. A fixed hit is reduced by Armoured
+(1 off a hit of 2 or more), capped by Plated, and taken from the Shield
+first. An Egg, a Rock Hard unit, and an icebound unit are never crushed.
+Event `UNIT_CRUSHED { playerId, sourceUnitId, targetUnitId, damage,
+shieldDamage, dies, blockerUnitId, blockerDamage, blockerShieldDamage,
+blockerDies }` after `COMBAT_RESOLVED`; the dead die in that order (cause
+`CRUSH`), and a crush kill is never followed by an advance. The combat
+preview carries `crush` (`NONE`, `WILL_CRUSH`, or `UNKNOWN_BEHIND_FOG`
+exactly when the Push preview is), `crushDamage`, and `collisionDamage`
+(the blocker's; 0 for a blocker the viewer cannot see). A projection hides
+a blocker the observer cannot see; an observer who sees neither unit gets
+its own units' damage as `COMBAT_SPLASH_DAMAGE`.
+
+**Swallow (Abomination).** `SWALLOW { kind, unitId, targetUnitId }`, a
+primary action. Legality in order: the ordinary unit errors;
+`UNIT_ROLE_INVALID` without `SWALLOW`; `SWALLOW_NOT_LEGAL { reason:
+"EMBARKED" }`; `UNIT_ALREADY_ACTED`; `"FULL"` when it holds a victim;
+`"TARGET"` unless the target is a visible hostile land-form unit at
+distance 1; `"IMMUNE"` for a neutral unit, a giant, a two-slot unit, a
+construct, a Rock Hard or icebound unit, or a mind-controlled unit;
+`"TOO_BIG"` above 12 HP (a Shield does not count). The victim leaves the
+board into the state block `giants.swallowed` (`{ holderUnitId, unit }`,
+sorted by holder): it keeps its ID, owner, HP, and home city (its slot
+still counts), stands on its holder's tile, has the exhausted activation,
+and is not capture-eligible. A swallowed Brain releases its controlled
+units. Event `UNIT_SWALLOWED { playerId, unitId, victimUnitId,
+victimOwnerId, role, hp }`. At the holder's owner's Start Turn, after
+regeneration and before income, the victim takes `DIGEST_DAMAGE_V7` 4
+(`UNIT_DIGESTED { playerId, unitId, victimUnitId, amount, hpAfter,
+healed }`; the holder heals what was digested, to its maximum); at 0 HP it
+dies (`UNIT_DIED` cause `DIGESTED`, kill credit to the holder) and a Zombie
+of the holder's seat with 12 HP and no home rises on the first free land
+tile around the holder in `(y, x)` order that is not territory allied to
+the Zombie's owner (`UNIT_REGURGITATED { playerId, unitId, victimUnitId,
+zombieUnitId, at }`; both null when no tile is free). The victim is let go:
+when its holder dies, leaves land form, or loses its role, on the holder's
+last tile when that tile is free ground (`SWALLOWED_UNIT_RELEASED
+{ playerId, unitId, holderUnitId, at, hp }` right after the holder's
+`UNIT_DIED`; it has the exhausted activation; a killer never advances
+onto a holder that held a victim), else it is digested (`UNIT_DIED` cause
+`DIGESTED`, no credit); when its owner is eliminated it dies with them
+(cause `ELIMINATION`, before `PLAYER_ELIMINATED`); its home city's capture
+orphans it. The public view lists the held victims of visible holders and
+the viewer's own (`giants.swallowed`, the home city only for the
+viewer's own); the holder's unit stats carry `giant.swallowed`.
+
+**Goblin Toss (Troll).** `TOSS { kind, unitId, passengerUnitId, at }`, a
+primary action that may follow the Troll's Move. Legality in order: the
+ordinary unit errors; `UNIT_ROLE_INVALID`; `TOSS_NOT_LEGAL { reason:
+"EMBARKED" }`; `UNIT_ALREADY_ACTED`; `"PASSENGER"` unless the passenger is
+another own land-form Goblin (the Goblin kind's `FIGHTER`) at distance 1,
+not mind-controlled, that has not landed this turn; `"DESTINATION"` unless
+`at` is at distance 2 or 3 from the Troll, explored, land or ice, holds no
+unit, Egg, mound, chest, or curiosity, is no settlement site, is enterable
+by a Goblin under the actor's research, is no Rift, and is not allied
+territory. The Goblin is placed on `at` (not a Move: nothing in between
+matters, it eats no Crumbs); its `moved` flag becomes true and
+`captureEligible` false, its other activation flags are kept (an unused
+Goblin may still attack or Kaboom; a sluggish one cannot act). A hostile
+Field Defense on `at` is destroyed (reason `OCCUPATION`). Events
+`GOBLIN_TOSSED { playerId, unitId, passengerUnitId, from, to }`,
+`FIELD_DEFENSE_DESTROYED`, `TILES_REVEALED`. Preview `previewTossV7`.
+
+**Thunder Stomp (Brontosaurus).** `STOMP { kind, unitId }`, a primary
+action of an unmoved Brontosaurus (`STOMP_NOT_LEGAL { reason: "MOVED" }`
+when its `moved` flag is true; `"EMBARKED"` afloat). Every unit on the
+eight tiles around it that is hostile, in land form or an Egg, and does not
+fly takes 4 fixed damage at once (results sorted by `(y, x, unitId)`);
+every Field Defense on those tiles is destroyed (reason `STOMP`); then the
+dead die in results order (cause `STOMP`) and the Brontosaurus is credited
+(growth heals it fully). Not an attack: no retaliation and no attack
+bonus. Event `THUNDER_STOMP { playerId, unitId, results, fieldDefenses }`
+(each result `{ unitId, at, damage, dies, shieldDamage }`); an observer who
+does not see the Brontosaurus gets its own units' damage as
+`COMBAT_SPLASH_DAMAGE`. Preview `previewStompV7` (exact).
+
+**Overstride (Colossus, Move 2).** The ordinary `MOVE` of a land-form unit
+with `OVERSTRIDE` passes units and Eggs of any owner (never ending on one)
+and ignores hostile zones of control; an unexplored tile still ends it.
+After the Move's own events each passed (entered and left) hostile
+land-form or Egg unit that does not fly takes `TRAMPLE_DAMAGE_V7` 3, once,
+in path order; the dead die in that order (cause `TRAMPLE`, credit to the
+Colossus). Passing takes no chest or curiosity, eats no Crumbs, and
+destroys no Field Defense. Event `UNITS_TRAMPLED { playerId, unitId,
+results }` after `UNIT_MOVED` (only when someone was hit). The heat ray
+after it is at half power. `previewTrampleV7` lists the trample of an
+offered Move (exact). An Escape Move, a Beam Down, a Push, or a pull is
+no Overstride.
+
+**Glacial Smash (Frost Giant).** An attack from distance 1 by a land-form
+unit with `GLACIAL_SMASH` uses the threshold 8 in the Shatter test of
+[section 21.4](#214-shatter) instead of its owner's 3 (4 with Brittle);
+every other condition is unchanged (never a `JUGGERNAUT` defender). The
+preview carries `glacialSmash: true` when that threshold applied. When a
+Frost Giant's attack shatters a unit, every other unit on the eight tiles
+around the shattered unit that its owner can Chill (hostile, land form, not
+an Egg; giants included) is Chilled by the ordinary rule, with one
+`UNITS_CHILLED { source: "SHARDS" }` after the death events. The Frost
+Giant never advances (`advancesAfterKill` false).
+
+**Siege Hammer (Brass Titan).** Every attack from distance 1 by a
+land-form unit with `SIEGE_HAMMER` ignores the defender's fortification
+levels (Walls, Field Defense, Dig In) for the damage, keeping cover
+(`fortificationIgnored` is the levels removed, `siegeHammer` true; the
+retaliation is unchanged); destroys a Field Defense on the target's tile
+(reason `SIEGE_HAMMER`) whether or not either unit survives; and, when the
+target stands on the center of a city hostile to the Titan's owner that has
+Walls, razes them ([section 4.8](#48-city-rewards)): event
+`WALLS_DESTROYED { cityId, byUnitId }`, public, and the preview's
+`wallsDestroyed`.
+
+**Break Off (Gingerbread Giant),** as the user changed it on 2026-10-09.
+`BREAK_OFF { kind, unitId, tiles }`, a primary action that may follow a
+Move; `tiles` is two distinct tiles in `(y, x)` order (the query offers
+every legal pair). Legality in order: the ordinary unit errors;
+`UNIT_ROLE_INVALID`; `UNIT_CRASHED`; `UNIT_ALREADY_ACTED`;
+`BREAK_OFF_NOT_LEGAL { reason: "EMBARKED" }`; `"TOO_WEAK"` at 10 HP or
+fewer; `"NO_HOME"` without a home city of its own; `"TILE"` unless each
+tile is one of the eight around it, known, land or ice, with no unit,
+mound, chest, or curiosity, enterable by a Toffee Trooper, and not allied
+territory. There is no slot rule. The Giant loses 10 HP (not damage) and
+two **Gingerbread Men** with the next two entity IDs stand on the tiles:
+each a Candy `FIGHTER` (a Toffee Trooper in every rule), the actor's,
+homed to the Giant's home city (even beyond its limit; they count against
+it afterwards, like reward units), at full HP (10), zero kills, the
+exhausted activation, not capture-eligible, with the public presentation
+field `variant: "GINGERBREAD_MAN"` (a unit key present only on them). A
+hostile Field Defense on either tile is destroyed (`OCCUPATION`) and each
+reveals its sight. It costs no Coins and no city action. Event
+`GIANT_BROKE_OFF { playerId, unitId, newUnitIds, tiles, cityId, hp }`,
+projected to its owner only. Preview `previewBreakOffV7` (`hpAfter`,
+`trooperHp`, `count`, and the tiles of the offered pairs).
+
+**Text harness.** `scripts/play-text-v7.ts` offers and prints the four
+commands (`u<id>.swallow.u<id>`, `u<id>.throw.u<id>.<x>,<y>`,
+`u<id>.stomp`, `u<id>.breakoff.<x>,<y>+<x>,<y>`), the crush, Siege Hammer, and
+Glacial Smash preview lines, and a Move's trample; `lab --giant` places the
+human seat's giant at the front of a `*_MID` lab or `LAB_BREAKTHROUGH`.
+
+**Normal AI.** The engine bead keeps it legal only: it never offers itself
+the four new commands, reads razed Walls, and values Push by the role's
+abilities (so only the Juggernaut). Using the signatures is
+`pulp_wars-w49.31`.
 
 ## 12. Movement and unit actions
 
@@ -4816,6 +5041,16 @@ damageToAttacker = roundHalfUp(retaliationForce / (attackForce + retaliationForc
   Shield absorbed), capped at its
   maximum HP: `hpAfter = min(maxHp, hp - damageTaken + damageDealt)`. The
   preview and `COMBAT_RESOLVED` carry `attackerHeal` and `defenderHeal`.
+- **The giants' signatures** (`pulp_wars-w49.30`,
+  [section 11.1](#111-the-giants-signatures)) change no number of this
+  formula. A Brass Titan's attack from distance 1 removes fortification
+  (Siege Hammer, [section 13.3](#133-fortification)); a Frost Giant's
+  attack from distance 1 shatters at up to 8 HP (Glacial Smash,
+  [section 21.4](#214-shatter)); the Juggernaut's crush is fixed damage
+  after the exchange ([section 13.4](#134-after-combat)). The preview
+  carries `crush`, `crushDamage`, `collisionDamage`, `siegeHammer`,
+  `wallsDestroyed`, and `glacialSmash`, equal to the resolution wherever the
+  viewer has the information.
 
 ### 13.3 Fortification
 
@@ -4855,6 +5090,7 @@ exchange (for the damage taken; the retaliation never uses fortification,
 | Steam Cannon whose owner has Blasting Charges                              | none                                      | kept       | `fortificationIgnored`: the levels removed (0–3)                        |
 | a land-form attack from distance 1 whose owner has Explosives (**Breach**) | none                                      | kept       | `breachApplied: true`, `fortificationIgnored`: the levels removed (1–3) |
 | any other dinosaur whose owner has Wallbreaker                             | Field Defense or Dig In only (Walls gone) | kept       | `fortificationIgnored`: 2 on a Walled center                            |
+| a land-form Brass Titan from distance 1 (**Siege Hammer**)                 | none                                      | kept       | `siegeHammer: true`, `fortificationIgnored`: the levels removed (0–4)   |
 | every other attack                                                         | full                                      | kept       | `acid: false`, `fortificationIgnored: 0`                                |
 
 **Breach** (tuning 1, `pulp-wars-poc-7r46`; the `MELEE_FIELD_DEMOLITION`
@@ -4874,6 +5110,14 @@ breaches with all of them, and the Wallbreaker row applies to nothing more;
 its `ignoresCityWalls` capability is kept. Example: a Fighter with
 Explosives deals a Guard on a Walled center with Field Defense 4 instead of
 2 (and takes 8 either way).
+
+**Siege Hammer** (`pulp_wars-w49.30`,
+[section 11.1](#111-the-giants-signatures)): besides removing the levels,
+the Brass Titan's blow from distance 1 destroys a Field Defense on the
+target's tile (reason `SIEGE_HAMMER`) and razes the Walls of a hostile city
+whose center the target stands on (`WALLS_DESTROYED`, the city's
+`wallsRazed`), whether or not either unit survives. A city with razed Walls
+gives its center no Walls level ([section 4.8](#48-city-rewards)).
 
 `fortificationLevel` in the combat preview is always the level actually
 applied. An Ice Folk defender's Snow cover is read from its own
@@ -4919,8 +5163,11 @@ Disintegrator ([section 21.5](#215-snow)).
   after an adjacent kill" describe the rule before `7r47`. The public
   combat preview carries `advances`, equal to the resolution, and the
   board and the text harness show it for a kill ("Advances", "Stays").
-- **Push:** a Juggernaut, Abomination, Troll, Brontosaurus, Colossus, Frost
-  Giant, or Brass Titan pushes a surviving adjacent target one cell directly
+- **Push:** since `pulp_wars-w49.30` only the Human Juggernaut has `PUSH`
+  (the Abomination, Troll, Brontosaurus, Colossus, Frost Giant, Brass
+  Titan, and Gingerbread Giant lost it for their signatures,
+  [section 11.1](#111-the-giants-signatures)). It pushes a surviving
+  adjacent target one cell directly
   away (never at range 2) if the cell is on the board, explored by the
   attacker, empty (no unit, no mound), not a settlement, the same land/water
   kind as the target,
@@ -4931,6 +5178,16 @@ Disintegrator ([section 21.5](#215-snow)).
   on its new tile). An ice tile is ground here: a land-form unit may be
   pushed, knocked back, or pulled onto ice and an afloat unit never, and
   nothing moves an icebound unit (the preview's `push` is `BLOCKED`).
+- **Crushing Shove** (`pulp_wars-w49.30`): when the Juggernaut's Push is
+  `BLOCKED` for a surviving target that can be pushed by its nature (not an
+  Egg, a Rock Hard unit, or an icebound unit), the target takes 3 fixed
+  damage and a hostile unit on the tile behind it takes 3 too, after the
+  whole exchange, with no retaliation (`UNIT_CRUSHED`; cause `CRUSH`; no
+  advance after a crush kill;
+  [section 11.1](#111-the-giants-signatures)).
+- **No advance onto a full belly** (`pulp_wars-w49.30`): a killer never
+  advances onto the tile of an Abomination that held a victim; the victim
+  is released there. The Frost Giant never advances.
 - **A ram's shove** ([section 14.1](#141-the-ram-bow-ram)): a target that
   survives a Ram is shoved one tile directly away from the boat when that
   tile is on the board, explored by the attacker, open water that is not
@@ -6575,6 +6832,14 @@ infect, and a Dwarf construct never rises. Event
 `UNIT_INFECTED`; the combat preview carries `attackerInfected` and
 `defenderInfected`.
 
+Since `pulp_wars-w49.30` the Abomination keeps Infect and has **Swallow**
+instead of Push ([section 11.1](#111-the-giants-signatures)): it takes an
+adjacent hostile one-slot land unit of 12 HP or fewer off the board, digests
+4 HP of it at each of its owner's Start Turns (healing that much), and spits
+out a 12-HP Zombie of its own seat when the victim dies inside. A digested
+victim (cause `DIGESTED`) leaves no Grave and never rises; Infect is a rule
+of the Abomination's kills in combat only.
+
 ### 17.7 Bitten
 
 - **Bite.** When a Zombie deals more than 0 HP damage (a hit a Martian
@@ -7081,6 +7346,12 @@ Every death is credited to at most one player:
   cures nothing. Event `UNITS_REGENERATED { playerId, results }` with
   `results: [{ unitId, amount, hpAfter }]` in unit-ID order for Trolls with
   `amount > 0`; no event when no Troll healed.
+- **Goblin Toss** (`pulp_wars-w49.30`): the Troll lost Push and throws an
+  adjacent own Goblin 2 or 3 tiles (`TOSS`, a primary action that may
+  follow its Move; [section 11.1](#111-the-giants-signatures)). The Goblin
+  lands as if it had moved: it may still attack or Kaboom unless it used
+  its primary action or is sluggish, and it eats no Crumbs. A digest of a
+  Swallow runs right after the Troll regeneration of the same Start Turn.
 
 ### 18.11 Interactions with other rules
 
@@ -7469,6 +7740,12 @@ Coins and no technology beyond the Shaman itself.
   `kills` and `maxHp` are public, so the stage is public; the public unit
   stats carry `growthStage` and `killsToNextStage`, the HP breakdown lists
   the source `GROWTH`, and the Attack breakdown the source `ALPHA`.
+- **Thunder Stomp** (`pulp_wars-w49.30`): the Brontosaurus lost Push; an
+  unmoved one may Stomp (`STOMP`), 4 fixed damage to every hostile
+  land-form unit or Egg around it that does not fly, smashing every Field
+  Defense there ([section 11.1](#111-the-giants-signatures)). Its kills
+  (cause `STOMP`) grow it as attack kills do (`UNIT_GREW` after the death
+  events, a full heal); nothing retaliates, and no attack bonus applies.
 
 ### 19.9 Acid and Armoured
 
@@ -8179,6 +8456,17 @@ foot unit never; a unit on a Rift is immune to Mind Control, a flyer
 killed there does not rise, and Beam Down never targets a Rift
 ([Rift overlay](RULESET_7_RIFT.md), implementing
 [Martian overlay section 7.4](RULESET_7_MARTIANS.md#74-rift)).
+
+**Overstride** (`pulp_wars-w49.30`,
+[section 11.1](#111-the-giants-signatures)): the Colossus has Move 2 and
+its `MOVE` passes like a flyer's: through tiles holding units or Eggs of
+any owner (never ending on one), ignoring hostile zones of control; an
+unexplored tile still ends it, and Mountains, Forests, and Shallow Water
+are as for any walker. Each hostile land-form unit or Egg that does not fly
+on a tile it passed takes 3 fixed damage once, in path order, after the
+Move's events (`UNITS_TRAMPLED`; cause `TRAMPLE`); a passed tile's chest,
+curiosity, Crumbs, and Field Defense are untouched. The Colossus lost Push;
+its heat ray after an Overstride is at half power.
 
 ### 20.7 Beam Down
 
@@ -8905,6 +9193,18 @@ Defense 1.5):
 | Goblin (6 HP)                    | any Ice Folk hit                        | dead by plain damage; Shatter never happens against Goblins at full HP |
 | a `JUGGERNAUT`-role unit at 3 HP | Yeti                                    | never shatters; the hit and the retaliation are ordinary               |
 
+**Glacial Smash** (`pulp_wars-w49.30`,
+[section 11.1](#111-the-giants-signatures)): a land-form Frost Giant's
+attack from distance 1 uses the threshold `GLACIAL_SMASH_HP_V7` 8 instead
+of its owner's 3 (4 with Brittle); a `JUGGERNAUT` defender still never
+shatters. The preview carries `glacialSmash`. When a Frost Giant's attack
+shatters a unit, its **shards** Chill every other unit around the shattered
+unit's tile that the Giant's owner can Chill (giants included): a new
+freeze makes it sluggish, a renewed Chill does not; one
+`UNITS_CHILLED { source: "SHARDS" }` follows the death events. A Chilled
+Ankylosaurus at 17 of 20 HP takes 9 from the Giant and would keep 8:
+shattered; at 18 it keeps 9.
+
 ### 21.5 Snow
 
 **Which tiles are Snow.** Snow is a derived property of a land tile, the
@@ -9186,7 +9486,9 @@ that can be Chilled on the eight tiles around it, with one `UNITS_CHILLED`
 (source `COLD_AURA`) per Giant that has at least one target. A unit that
 stays next to a Giant is sluggish once and Shatter-eligible on every Ice
 Folk turn after that. The Giant never shatters a `JUGGERNAUT`-role unit and
-cannot itself be shattered.
+cannot itself be shattered. Since `pulp_wars-w49.30` the Frost Giant has
+Glacial Smash instead of Push and never advances after a kill
+([section 21.4](#214-shatter)).
 
 ### 21.13 Attack resolution order
 
@@ -10299,10 +10601,15 @@ unitId, at, ownerId, damage, hpAfter, destroyed }`. Bombs, eruptions,
   16 HP, Attack 3, Defense 2, **Move 2**, the advance after a melee kill,
   and **no Overrun**.
 - The **Brass Titan** is the level-6 reward unit: 36 HP, Attack 4, Defense
-  3, Move 1, Push on an adjacent surviving target, capture, the advance, no
+  3, Move 1, capture, the advance, no
   Pillage, no Disband, and the construct rules (Unflinching on attack only,
   no self-repair, no Grave, not living, Mind Control-immune). It arrives on
-  the city center at full HP and exhausted, like every reward unit.
+  the city center at full HP and exhausted, like every reward unit. Since
+  `pulp_wars-w49.30` it has **Siege Hammer** instead of Push: its attacks
+  from distance 1 ignore fortification, destroy the target tile's Field
+  Defense, and raze a hostile center's Walls
+  ([section 13.3](#133-fortification),
+  [section 11.1](#111-the-giants-signatures)).
 
 ### 22.11 Resolution order
 
@@ -10609,7 +10916,7 @@ offered in every setup; the achievement that is to unlock them later
 | `CATAPULT`      | Pie Launcher      | Sugar Rush; Splat                                      |
 | `KNIGHT`        | Chocolate Bunny   | Sugar Rush (Rushed: Sugar Frenzy)                      |
 | `SWORDSMAN`     | Jawbreaker        | Sugar Rush; Rock Hard (`7r55`)                         |
-| `JUGGERNAUT`    | Gingerbread Giant | Sugar Rush; Push; Bounce; the level-6 reward           |
+| `JUGGERNAUT`    | Gingerbread Giant | Sugar Rush; Break Off; Bounce; the level-6 reward      |
 | `PATROL_BOAT`   | Patrol Boat       | the Human boat                                         |
 | `BATTLESHIP`    | Battleship        | the Human boat                                         |
 | `SUBMARINE`     | Submarine         | the Human boat                                         |
@@ -10625,6 +10932,18 @@ is needed, otherwise the chest gives 5 Coins). Faction rules: `restless`
 false, `cityCapacityBonus` 0, `gangUpMaximum` 0, `treasureUnitRole`
 `RAIDER`, `snow` false. The stats are in [section 11](#11-unit-roster) and
 the technology in [section 6.2](#62-technology-tree).
+
+**Break Off** (`pulp_wars-w49.30`, as the user changed it on 2026-10-09;
+[section 11.1](#111-the-giants-signatures)): the Gingerbread Giant lost
+Push. With 11 HP or more and a home city of its own, it may spend 10 HP
+(not damage) to make two Gingerbread Men at full HP on two free tiles
+beside it (`BREAK_OFF`, a primary action that may follow a Move; no Coins,
+no city action, no free slot needed, a siege does not block it). A Rushed
+Giant may Break Off; a Crashed one may not. A Gingerbread Man is a Toffee
+Trooper in every rule (Sugar Rush, Crumbs when it dies, every Candy rule
+of the `FIGHTER`), homed to the Giant's city; only its look differs
+(`variant: "GINGERBREAD_MAN"`). A crush, Stomp, or trample death of a
+Candy unit leaves Crumbs as a splash death does.
 
 ### 23.2 Sugar Rush and the Crash
 
@@ -11123,6 +11442,7 @@ first guesses.
 | Tuning        | `pulp-wars-poc-7r59` | `pulp_wars-w49.28` [step two of the Dwarf pass](RULESET_7_TUNING_DWARF.md) after a hand-played game as the Humans against the Dwarf AI before the change, one against a first draft, and one after it, four as the Dwarves (against the older and the army Goblin AI, against three AIs, and against the Human AI), the lab, and diagnostic matches, no rule and no identity change: a Dwarf seat of the Normal AI plays the army rules in a match without a Candy seat, researches the Steam Mole, the Clockwork Gunner, and the Gyrocopter first, trains before it researches while it is short of capturers, takes the 4 Coins at level 2, counts its units of less than 15 HP as weak links of a Knight's chain with the Mole and the Tank as escorts, and keeps its Gunners out of reach; the lab `LAB_DWARF_MID`                                                                                                                                                                                                                                                                                                                                |
 | Crowd control | `pulp-wars-poc-7r60` | `pulp_wars-w49.33` Dwarf crowd control, engine (user request of 2026-10-09): the Whirligig's **Whirl** replaces Three Hammers (one primary action that hits every visible hostile unit within 1 with its ordinary attack, unanswered, no advance; `struckThisTurn` and `ALREADY_STRUCK` removed); the Engineer's **Barricade** (3 Coins, 10 HP, Defense 2, at most 4 standing, blocks every unit's Move and every placement, attacked with `ATTACK_BARRICADE`, repaired like a machine, never regenerates, persists until destroyed; new state `barricades`); the **Bomb Run** lands up to 2 tiles from its target ([section 22.5](#225-gyrocopters-and-the-bombing-run), [section 22.8](#228-engineer-repair-and-assemble), [section 22.15](#2215-the-whirligig-whirl)). The Normal AI Whirls instead of attacking one unit and ignores Barricades as targets.                                                                                                                                                                                                                                                                                       | [Dwarf overlay section 24](RULESET_7_DWARVES.md#24-crowd-control-pulp_wars-w4933)                                                     |
 | Explosions    | `pulp-wars-poc-7r61` | `pulp_wars-w49.35` Goblin explosions and Berserk, engine (user requests of 2026-10-09): every Goblin death blast is 3 harder (Bomb Chucker 5, Rocket Cart 7, Scrap Buggy 7), the Goblin's Kaboom is 6 (the other Kabooms unchanged), and the Orc Warboss's **Berserk** replaces WAAAGH! (its `RALLY`: the own land units within 2 that have not moved get +1 Move and ignore enemy zones of control until the end of the turn; state and view list `berserkThisTurn`; unlock `BERSERK_SUPPORT`); no AI tuning                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | [Goblin tuning record, section 15](RULESET_7_TUNING_GOBLIN.md#15-goblin-explosions-and-berserk-pulp_wars-w4935)                       |
+| Giants        | `pulp-wars-poc-7r62` | `pulp_wars-w49.30` [the giants' signatures](RULESET_7_GIANTS.md#6-final-rules), engine (the identity became `7r62` when it was published after Goblin explosions and Berserk, `7r61`; a save, replay, or setup of `7r61` is rejected): every reward giant has one signature ([section 11.1](#111-the-giants-signatures)): Crushing Shove (Juggernaut), Swallow (Abomination), Goblin Toss (Troll), Thunder Stomp (Brontosaurus), Overstride and Move 2 (Colossus), Glacial Smash and no advance (Frost Giant), Siege Hammer (Brass Titan), Break Off (Gingerbread Giant: 10 HP for two Gingerbread Men, the user's change of 2026-10-09); Push only on the Juggernaut; the commands `SWALLOW`, `TOSS`, `STOMP`, `BREAK_OFF`; the state block `giants`, the city field `wallsRazed`, and the unit field `variant`; the new events and the death causes `CRUSH`, `STOMP`, `TRAMPLE`, `DIGESTED`; `lab --giant`; the Normal AI kept legal (it uses no signature yet, `pulp_wars-w49.31`)                                                                                                                                                                 |
 
 **Documentation parity (2026-09-28, no ruleset or identity change):** where
 older documents disagreed with the code, the code's behavior was adopted as

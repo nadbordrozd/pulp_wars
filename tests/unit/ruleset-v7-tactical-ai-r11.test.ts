@@ -1011,7 +1011,10 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
           // BUILD_BARRICADE, and ATTACK_BARRICADE after ASSEMBLE, moving
           // every later kind forward by three (was 641b21…3060); the
           // revision-12-ordinal value below is unchanged.
-          "8cc6189b34f3e3eebb3773ab3b2bd2d3e734749bbebb77561a1a4545f0bf40ad",
+          // The giants' signatures (`pulp_wars-w49.30`) insert SWALLOW, TOSS,
+          // STOMP, and BREAK_OFF after RECOVER, moving every later command kind
+          // forward by four (was 8cc618…40ad).
+          "4cff069eb2d8ce98cc16769ae88db43a8f4ea47d0989137bc033786e5cfd0986",
         );
         // Revision 13 shifts the command-kind ordinals in AI tie-break
         // tuples (spec section 8); this is the value with revision-12
@@ -1104,7 +1107,10 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
           // Dwarf crowd control (`pulp_wars-w49.33`) inserts WHIRL,
           // BUILD_BARRICADE, and ATTACK_BARRICADE after ASSEMBLE, moving every
           // later command kind forward by three (was a60ea1…58e2).
-          "ae238c5beb1029e79e5b79aad4d3f482735605e8c71f18fe61d3edafa079ba54",
+          // The giants' signatures (`pulp_wars-w49.30`) insert SWALLOW, TOSS,
+          // STOMP, and BREAK_OFF after RECOVER, moving every later command kind
+          // forward by four (was ae238c…ba54).
+          "1b2b60bb65b2f027e0f8f7bdf2938c43968862aef04402090d135e8fc18f8baa",
         );
         // With revision-12 ordinals (pulp_wars-9s0.1: was c56f00…73c1;
         // pulp_wars-0hi.3: was 091615…054b).

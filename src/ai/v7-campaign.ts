@@ -1,6 +1,6 @@
 import type { CityId, PlayerId, UnitId } from "../engine/model/ids";
 import { unitRoleRuleV7 } from "../engine/rules/ruleset-v7";
-import type { CoordV7 } from "../engine/v7/types";
+import { cityHasWallsV7, type CoordV7 } from "../engine/v7/types";
 import type {
   PlayerViewV7,
   PublicCityV7,
@@ -833,12 +833,7 @@ export function campaignPlanForPolicyV7(
     // defenders do not move the choice: they come and go with every step,
     // and a unit that changes its target every turn never arrives.
     const penalties = marchTargets.map(
-      (city) =>
-        Number(
-          city.rewards.some(
-            (record) => record.reachedLevel === 3 && record.reward === "WALLS",
-          ),
-        ) * CAMPAIGN_WALLS_PENALTY_V7,
+      (city) => Number(cityHasWallsV7(city)) * CAMPAIGN_WALLS_PENALTY_V7,
     );
     const costTo = (unit: PublicUnitV7, order: number): number => {
       const steps = fields[order]?.get(unit.at);
@@ -948,7 +943,7 @@ export function campaignPlanForPolicyV7(
       );
       const fortified = marchTargets.map(
         (city, order) =>
-          city.rewards.some((record) => record.reward === "WALLS") ||
+          cityHasWallsV7(city) ||
           (sized[order] ?? []).some(
             (unit) => armyFacts7.shoots?.(unit) === true,
           ),

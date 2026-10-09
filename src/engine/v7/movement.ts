@@ -50,6 +50,25 @@ import { isNeutralOwnerV7 } from "./types";
 import { barricadeAtV7, moundAtV7, tileOccupiedV7 } from "./units";
 import type { PlayerTileViewV7, PlayerViewV7, PublicUnitV7 } from "./view";
 
+/**
+ * The giants' signatures (docs/product/RULESET_7_GIANTS.md section 6.5):
+ * Overstride. A land-form unit whose role, under its kind, has
+ * `OVERSTRIDE` (the Colossus) passes units and Eggs of any owner like a
+ * flyer (never ending on one) and is never stopped by a hostile zone of
+ * control; every other walker rule stays.
+ */
+export function unitOverstridesV7(
+  roster: Parameters<typeof unitRoleRuleV7>[0],
+  unit: Parameters<typeof unitRoleRuleV7>[1] & {
+    readonly form: UnitStateV7["form"];
+  },
+): boolean {
+  return (
+    unit.form === "LAND" &&
+    unitRoleRuleV7(roster, unit).abilities.includes("OVERSTRIDE")
+  );
+}
+
 export type MovementFailureReasonV7 =
   | "EMPTY_PATH"
   | "BUDGET_EXCEEDED"
@@ -217,6 +236,8 @@ function validateMovementPathWithOptionsV7(
   // a Prowler, is not stopped by entering a hostile zone of control.
   const prowls =
     unitIgnoresZocStopsV7(state, unit) || berserkIgnoresZocV7(state, unit);
+  // The giants' signatures (section 6.5): Overstride.
+  const overstrides = unitOverstridesV7(state, unit);
   const ownSitesOnly = flies || unitAvoidsForeignSitesV7(state, unit);
   let currentSnow = snowAt(current);
   // The frozen sea (docs/product/RULESET_7_NAVAL_BRANCH.md sections 8.3,
@@ -306,7 +327,7 @@ function validateMovementPathWithOptionsV7(
     // own or not.
     const passesOwnUnit =
       occupant !== undefined &&
-      (occupant.ownerId === unit.ownerId || flies) &&
+      (occupant.ownerId === unit.ownerId || flies || overstrides) &&
       !(slides && stepIce) &&
       (passThroughProbe || index < path.length - 1);
     const occupied = occupant !== undefined && !passesOwnUnit;
@@ -462,6 +483,7 @@ function validateMovementPathWithOptionsV7(
     const entersZoc =
       !flies &&
       !prowls &&
+      !overstrides &&
       inHostileZoc(observationState, { ...unit, at: step }, step, explored);
     const newlyEncounteredZoc =
       entersZoc &&
@@ -629,6 +651,8 @@ export function reachableMovementPathsV7(
   // Revision 19 section 6.2: an Egg never moves.
   if (player === undefined || unit.form === "EGG") return [];
   const flies = unitFliesV7(state, unit);
+  // The giants' signatures (section 6.5): Overstride passes every unit.
+  const passesAll = flies || unitOverstridesV7(state, unit);
   // The Ice Folk revision section 7.7: a Sabretooth, like a flyer, never
   // ends on a settlement center it does not own.
   const ownSitesOnly = flies || unitAvoidsForeignSitesV7(state, unit);
@@ -672,7 +696,7 @@ export function reachableMovementPathsV7(
           (other) =>
             other.id !== unit.id &&
             other.hp > 0 &&
-            (flies || other.ownerId === unit.ownerId) &&
+            (passesAll || other.ownerId === unit.ownerId) &&
             same(other.at, destination),
         ) ||
         // The Dwarf revision section 5.3: a mound tile is passed, never
@@ -897,6 +921,8 @@ function validatePlayerMovementPathWithContextV7(
   );
   const prowls =
     unitIgnoresZocStopsV7(view, unit) || berserkIgnoresZocV7(view, unit);
+  // The giants' signatures (section 6.5): Overstride.
+  const overstrides = unitOverstridesV7(view, unit);
   const ownSitesOnly = flies || unitAvoidsForeignSitesV7(view, unit);
   const publicSnowAt = (at: CoordV7): boolean => {
     const tile = publicTileAt(view, at);
@@ -983,7 +1009,10 @@ function validatePlayerMovementPathWithContextV7(
         ?.some(
           (candidate) =>
             candidate.id !== unit.id &&
-            !(passesOwnUnits && (flies || candidate.ownerId === unit.ownerId)),
+            !(
+              passesOwnUnits &&
+              (flies || overstrides || candidate.ownerId === unit.ownerId)
+            ),
         )
     )
       return { legal: false, reason: "OCCUPIED" };
@@ -1026,7 +1055,10 @@ function validatePlayerMovementPathWithContextV7(
       capabilities.forestMarch ||
       capabilities.forestMovementFreedomRoles.includes(unit.role);
     const entersZoc =
-      !flies && !prowls && publicHostileZoc(view, unit, step, context);
+      !flies &&
+      !prowls &&
+      !overstrides &&
+      publicHostileZoc(view, unit, step, context);
     const stepRoadNode = isUsablePublicRoadNodeV7(view, tile, context);
     const roadEdge = currentRoadNode && stepRoadNode;
     const snowStops = snowStopped && stepSnow && !roadEdge;

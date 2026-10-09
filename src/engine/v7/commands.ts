@@ -239,6 +239,44 @@ export type CommandV7 =
       readonly targetUnitId: UnitId;
     }
   | {
+      /**
+       * The giants' signatures (docs/product/RULESET_7_GIANTS.md section
+       * 6.2): an Abomination swallows an adjacent hostile unit of 12 HP or
+       * less.
+       */
+      readonly kind: "SWALLOW";
+      readonly unitId: UnitId;
+      readonly targetUnitId: UnitId;
+    }
+  | {
+      /**
+       * Section 6.3: a Troll throws the adjacent own Goblin
+       * `passengerUnitId` onto `at`, 2 or 3 tiles from it.
+       */
+      readonly kind: "TOSS";
+      readonly unitId: UnitId;
+      readonly passengerUnitId: UnitId;
+      readonly at: CoordV7;
+    }
+  | {
+      /**
+       * Section 6.4: an unmoved Brontosaurus stamps on every hostile ground
+       * unit around it.
+       */
+      readonly kind: "STOMP";
+      readonly unitId: UnitId;
+    }
+  | {
+      /**
+       * Section 6.8 (as the user changed it on 2026-10-09): a Gingerbread
+       * Giant spends 10 HP to make two Gingerbread Men on the two adjacent
+       * tiles `tiles`, distinct and in (y, x) order.
+       */
+      readonly kind: "BREAK_OFF";
+      readonly unitId: UnitId;
+      readonly tiles: readonly [CoordV7, CoordV7];
+    }
+  | {
       /** Revision 19: a Dinosaur city lays an Egg of `role` on `at`. */
       readonly kind: "LAY_EGG";
       readonly cityId: CityId;
@@ -419,7 +457,8 @@ export function parseCommandV7(input: unknown): CommandParseResultV7 {
     kind === "MIND_CONTROL" ||
     kind === "TRACTOR_BEAM" ||
     kind === "THROW_BOLAS" ||
-    kind === "SUGAR_TOSS"
+    kind === "SUGAR_TOSS" ||
+    kind === "SWALLOW"
   ) {
     if (!hasExactKeysV7(input, ["kind", "unitId", "targetUnitId"]))
       return invalid(kind);
@@ -440,6 +479,19 @@ export function parseCommandV7(input: unknown): CommandParseResultV7 {
       : {
           ok: true,
           value: { kind, unitId: unit, passengerUnitId: passenger, to },
+        };
+  }
+  if (kind === "TOSS") {
+    if (!hasExactKeysV7(input, ["at", "kind", "passengerUnitId", "unitId"]))
+      return invalid(kind);
+    const unit = parseUnitIdV7(candidate.unitId);
+    const passenger = parseUnitIdV7(candidate.passengerUnitId);
+    const at = parseCoordV7(candidate.at);
+    return unit === null || passenger === null || at === null
+      ? invalid(kind)
+      : {
+          ok: true,
+          value: { kind, unitId: unit, passengerUnitId: passenger, at },
         };
   }
   if (kind === "TUNNEL") {
@@ -525,7 +577,8 @@ export function parseCommandV7(input: unknown): CommandParseResultV7 {
     kind === "TEND_WOUNDED" ||
     kind === "COLD_SNAP" ||
     kind === "SUGAR_RUSH" ||
-    kind === "WHIRL"
+    kind === "WHIRL" ||
+    kind === "STOMP"
   ) {
     const unit = hasExactKeysV7(input, ["kind", "unitId"])
       ? parseUnitIdV7(candidate.unitId)
@@ -595,6 +648,25 @@ export function parseCommandV7(input: unknown): CommandParseResultV7 {
             role: candidate.role as UnitRoleIdV7,
           },
         };
+  }
+  if (kind === "BREAK_OFF") {
+    const unit = hasExactKeysV7(input, ["kind", "tiles", "unitId"])
+      ? parseUnitIdV7(candidate.unitId)
+      : null;
+    const tiles =
+      unit !== null &&
+      isDenseArrayV7(candidate.tiles) &&
+      candidate.tiles.length === 2
+        ? candidate.tiles.map((tile) => parseCoordV7(tile))
+        : null;
+    const first = tiles?.[0] ?? null;
+    const second = tiles?.[1] ?? null;
+    return unit === null ||
+      first === null ||
+      second === null ||
+      compareNullableCoords(first, second) >= 0
+      ? invalid(kind)
+      : { ok: true, value: { kind, unitId: unit, tiles: [first, second] } };
   }
   if (
     kind === "DISEMBARK" ||
@@ -669,6 +741,21 @@ export function compareCommandsV7(left: CommandV7, right: CommandV7): number {
       left.unitId - right.unitId ||
       left.targetUnitId - right.targetUnitId ||
       compareNullableCoords(left.to, right.to)
+    );
+  // The giants' signatures: `TOSS` in unit-ID, passenger-ID, then landing
+  // (y, x) order.
+  if (left.kind === "TOSS" && right.kind === "TOSS")
+    return (
+      left.unitId - right.unitId ||
+      left.passengerUnitId - right.passengerUnitId ||
+      compareNullableCoords(left.at, right.at)
+    );
+  // `BREAK_OFF` in unit-ID, then first and second tile (y, x) order.
+  if (left.kind === "BREAK_OFF" && right.kind === "BREAK_OFF")
+    return (
+      left.unitId - right.unitId ||
+      compareNullableCoords(left.tiles[0], right.tiles[0]) ||
+      compareNullableCoords(left.tiles[1], right.tiles[1])
     );
   if (left.kind === "ASSEMBLE" && right.kind === "ASSEMBLE")
     return (
@@ -749,7 +836,8 @@ function referencedOrdinal(command: CommandV7): number {
     command.kind === "MIND_CONTROL" ||
     command.kind === "TRACTOR_BEAM" ||
     command.kind === "THROW_BOLAS" ||
-    command.kind === "SUGAR_TOSS"
+    command.kind === "SUGAR_TOSS" ||
+    command.kind === "SWALLOW"
   )
     return command.targetUnitId;
   if (command.kind === "HATCH") return command.eggUnitId;

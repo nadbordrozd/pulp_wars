@@ -205,8 +205,12 @@ function missionStateHash(state: GameStateV7): string {
     // Dwarf crowd control (`pulp_wars-w49.33`) added the `barricades`
     // list, empty in every initial state and left out too.
     barricades,
+    // The giants' signatures (`pulp_wars-w49.30`) added the `giants`
+    // record, empty in every initial state and left out too.
+    giants,
     ...rest
   } = state;
+  expect(giants).toEqual({ swallowed: [] });
   expect(ninthUnit).toEqual({
     wightGraves: [],
     risenWights: [],
@@ -337,8 +341,10 @@ function preCuriosityMissionStateHash(state: GameStateV7): string {
     ice,
     ninthUnit,
     barricades,
+    giants,
     ...rest
   } = state;
+  expect(giants).toEqual({ swallowed: [] });
   expect(ninthUnit).toEqual({
     wightGraves: [],
     risenWights: [],

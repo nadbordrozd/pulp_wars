@@ -5,6 +5,7 @@ import {
   BARRICADE_HP_V7,
   FORCE_FIELD_SHIELD_V7,
   GLACIER_ICE_TURNS_V7,
+  GINGERBREAD_MAN_VARIANT_V7,
   GROWTH_HP_V7,
   MIND_CONTROL_COOLDOWN_TURNS_V7,
   MIND_CONTROL_LIMIT_V7,
@@ -60,6 +61,7 @@ import {
   type EggStatusV7,
   type FactionIdV7,
   type GameStateV7,
+  type GiantsStateV7,
   type IceTileV7,
   type ImprovementIdV7,
   type MatchOutcomeV7,
@@ -132,6 +134,7 @@ const STATE_KEYS = [
   "crumbs",
   "curiosities",
   "eggs",
+  "giants",
   "graves",
   "humanPlayerId",
   "huntedThisTurn",
@@ -270,6 +273,12 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
   // Dwarf crowd control (`pulp_wars-w49.33`): the Barricades; the cross
   // references are checked below.
   const barricades = parseBarricades(input.barricades);
+  // The giants' signatures (docs/product/RULESET_7_GIANTS.md section 6.2):
+  // the held victims, parsed like units; the cross references below.
+  const giants =
+    players === null || mindControlled === null
+      ? null
+      : parseGiants(input.giants, players, mindControlled, shrinePromotions);
   const choices = parseChoices(input.pendingChoices);
   const outcome = parseOutcome(input.outcome);
   const turnOrder = parsePlayerIdSequence(input.turnOrder);
@@ -308,6 +317,7 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
     berserkThisTurn === null ||
     ninthUnit === null ||
     barricades === null ||
+    giants === null ||
     choices === null ||
     outcome === undefined ||
     turnOrder === null ||
@@ -358,6 +368,7 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
       berserkThisTurn,
       ninthUnit,
       barricades,
+      giants,
       curiosities,
       ice,
       choices,
@@ -412,6 +423,7 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
     berserkThisTurn,
     ninthUnit,
     barricades,
+    giants,
     pendingChoices: choices,
     outcome,
   };
@@ -681,6 +693,12 @@ function parseCities(input: unknown): readonly CityStateV7[] | null {
 }
 
 function parseCity(input: unknown): CityStateV7 | null {
+  // The giants' signatures (RULESET_7_GIANTS.md section 6.7): `wallsRazed`
+  // is present only as `true`, and only in a city that took the Walls.
+  const razed =
+    typeof input === "object" &&
+    input !== null &&
+    Object.hasOwn(input, "wallsRazed");
   if (
     !hasExactKeysV7(input, [
       "at",
@@ -695,7 +713,9 @@ function parseCity(input: unknown): CityStateV7 | null {
       "permanentPopulation",
       "population",
       "rewards",
+      ...(razed ? ["wallsRazed"] : []),
     ]) ||
+    (razed && input.wallsRazed !== true) ||
     !isPositiveSafeIntegerV7(input.level) ||
     !isNonNegativeSafeIntegerV7(input.permanentPopulation) ||
     !isNonNegativeSafeIntegerV7(input.economicPopulation) ||
@@ -717,6 +737,7 @@ function parseCity(input: unknown): CityStateV7 | null {
     at === null ||
     rewards === null ||
     spent === null ||
+    (razed && !rewards.some((record) => record.reward === "WALLS")) ||
     input.population !==
       input.permanentPopulation + input.economicPopulation - spent ||
     input.population >= input.level + 1
@@ -735,6 +756,7 @@ function parseCity(input: unknown): CityStateV7 | null {
     landGrantUsed: input.landGrantUsed,
     cityActionAvailable: input.cityActionAvailable,
     rewards,
+    ...(razed ? { wallsRazed: true as const } : {}),
   };
 }
 
@@ -914,6 +936,13 @@ function parseUnit(
     (input as { readonly ownerId?: unknown }).ownerId === NEUTRAL_OWNER_ID_V7
   )
     return parseNeutralUnit(input, neutralUnitIds);
+  // The giants' signatures (Break Off, the user's change of 2026-10-09): a
+  // Gingerbread Man carries `variant: "GINGERBREAD_MAN"`; no other unit has
+  // the key. It is checked below: a land or embarked Candy `FIGHTER`.
+  const variant =
+    typeof input === "object" &&
+    input !== null &&
+    Object.hasOwn(input, "variant");
   if (
     !hasExactKeysV7(input, [
       "activation",
@@ -928,7 +957,9 @@ function parseUnit(
       "role",
       "form",
       "veteran",
+      ...(variant ? ["variant"] : []),
     ]) ||
+    (variant && input.variant !== GINGERBREAD_MAN_VARIANT_V7) ||
     !UNIT_ROLE_IDS_V7.includes(input.role as UnitRoleIdV7) ||
     !isPositiveSafeIntegerV7(input.hp) ||
     !isPositiveSafeIntegerV7(input.maxHp) ||
@@ -969,6 +1000,13 @@ function parseUnit(
   // with 6 or 10 maximum HP, no kills, no Promotion, no capture eligibility,
   // and the exhausted activation at all times. Its tile, home city, and
   // countdown are checked with the cross references.
+  if (
+    variant &&
+    (role !== "FIGHTER" ||
+      faction !== "CANDY" ||
+      (input.form !== "LAND" && input.form !== "EMBARKED"))
+  )
+    return null;
   if (input.form === "EGG") {
     if (
       id === null ||
@@ -1043,6 +1081,7 @@ function parseUnit(
     veteran: input.veteran,
     captureEligible: input.captureEligible,
     activation,
+    ...(variant ? { variant: GINGERBREAD_MAN_VARIANT_V7 } : {}),
   };
 }
 
@@ -1702,6 +1741,125 @@ function ninthUnitValid(
   return true;
 }
 
+/**
+ * The giants' signatures (docs/product/RULESET_7_GIANTS.md section 6.2):
+ * the shape of `giants`: the held victims, strictly ascending by holder,
+ * each a unit that parses like a unit on the board under its owner's
+ * registration. The cross references are checked by `giantsValid`.
+ */
+function parseGiants(
+  input: unknown,
+  players: readonly PlayerStateV7[],
+  mindControlled: readonly MindControlledStatusV7[],
+  shrinePromotions: boolean,
+): GiantsStateV7 | null {
+  if (!hasExactKeysV7(input, ["swallowed"]) || !isDenseArrayV7(input.swallowed))
+    return null;
+  const swallowed: GiantsStateV7["swallowed"][number][] = [];
+  for (const candidate of input.swallowed) {
+    if (!hasExactKeysV7(candidate, ["holderUnitId", "unit"])) return null;
+    const holderUnitId = parseUnitIdV7(candidate.holderUnitId);
+    const unit = parseUnit(
+      candidate.unit,
+      players,
+      mindControlled,
+      shrinePromotions,
+      new Set(),
+    );
+    const prior = swallowed.at(-1);
+    if (
+      holderUnitId === null ||
+      unit === null ||
+      unit.id === holderUnitId ||
+      (prior !== undefined && prior.holderUnitId >= holderUnitId)
+    )
+      return null;
+    swallowed.push({ holderUnitId, unit });
+  }
+  return { swallowed };
+}
+
+/**
+ * The giants' signatures (section 6.2, Saves): the cross references of
+ * `giants.swallowed`. Every entry is in a match with an Undead seat; its
+ * holder is a living land-form unit on the board whose role, under its
+ * kind, has `SWALLOW` (and is not controlled); the victim is in no other
+ * list, is owned by an active player other than the holder's, is a
+ * one-slot land unit that the Swallow legality admits (not an Egg, not a
+ * giant, not a construct, not Rock Hard, not mind-controlled), has 1 to its
+ * maximum HP, stands on its holder's tile, has the exhausted activation, is
+ * not capture-eligible, and is homed (if at all) to a city of its owner.
+ */
+function giantsValid(
+  value: CrossInput,
+  playerById: ReadonlyMap<PlayerStateV7["id"], PlayerStateV7>,
+  kindOf: (unit: UnitStateV7) => FactionIdV7 | undefined,
+): boolean {
+  const { swallowed } = value.giants;
+  if (swallowed.length === 0) return true;
+  if (!value.setup.factions.includes("UNDEAD")) return false;
+  const unitById = new Map(value.units.map((unit) => [unit.id, unit]));
+  const cityById = new Map(value.cities.map((city) => [city.id, city]));
+  const controlled = new Set(value.mindControlled.map((entry) => entry.unitId));
+  for (const entry of swallowed) {
+    const holder = unitById.get(entry.holderUnitId);
+    const holderKind = holder === undefined ? undefined : kindOf(holder);
+    const victim = entry.unit;
+    const victimOwner = playerById.get(victim.ownerId);
+    // A held victim is never mind-controlled (checked below): its kind is
+    // its owner's faction.
+    const victimKind = kindOf(victim);
+    if (
+      holder === undefined ||
+      holderKind === undefined ||
+      holder.hp <= 0 ||
+      holder.form !== "LAND" ||
+      !effectiveRoleRuleV7(holder.role, holderKind).abilities.includes(
+        "SWALLOW",
+      ) ||
+      controlled.has(holder.id) ||
+      victimOwner === undefined ||
+      victimKind === undefined ||
+      victimOwner.status !== "ACTIVE" ||
+      victim.ownerId === holder.ownerId ||
+      victim.form !== "LAND" ||
+      victim.role === "JUGGERNAUT" ||
+      roleMechanicsV7(victim.role, victimKind).capacitySlots !== 1 ||
+      roleMechanicsV7(victim.role, victimKind).construct ||
+      roleMechanicsV7(victim.role, victimKind).immovable ||
+      controlled.has(victim.id) ||
+      unitById.has(victim.id) ||
+      value.burrowed.some((burrowed) => burrowed.unit.id === victim.id) ||
+      victim.at.x !== holder.at.x ||
+      victim.at.y !== holder.at.y ||
+      victim.captureEligible ||
+      !isExhaustedActivationV7(victim.activation) ||
+      (victim.homeCityId !== null &&
+        cityById.get(victim.homeCityId)?.ownerId !== victim.ownerId)
+    )
+      return false;
+  }
+  return true;
+}
+
+/** The exhausted activation (a held victim's, a landed unit's). */
+function isExhaustedActivationV7(activation: UnitActivationV7): boolean {
+  return (
+    activation.moved &&
+    activation.movedPathLength === 0 &&
+    activation.attacked &&
+    activation.attacksUsed === 1 &&
+    !activation.tendedThisTurn &&
+    !activation.inspired &&
+    !activation.overrunActive &&
+    !activation.escapeAvailable &&
+    activation.recovered &&
+    activation.captured &&
+    activation.handled &&
+    activation.specialActed
+  );
+}
+
 function parseSortedUnitIds(input: unknown): readonly UnitId[] | null {
   if (!isDenseArrayV7(input)) return null;
   const values: UnitId[] = [];
@@ -1899,6 +2057,7 @@ interface CrossInput {
   berserkThisTurn: readonly UnitId[];
   ninthUnit: NinthUnitStateV7;
   barricades: readonly BarricadeV7[];
+  giants: GiantsStateV7;
   curiosities: readonly CuriosityV7[];
   ice: readonly IceTileV7[];
   choices: readonly PendingChoiceV7[];
@@ -1946,12 +2105,15 @@ function validateCrossReferences(value: CrossInput): boolean {
   // The Dwarf revision section 5.2: unit IDs are unique across `units` and
   // `burrowed`, and the next entity ID is above all of them (all-units).
   const burrowedUnits = burrowed.map((entry) => entry.unit);
+  // The giants' signatures (section 6.2): a held victim keeps its ID.
+  const swallowedUnits = value.giants.swallowed.map((entry) => entry.unit);
   const iceKeys = new Set(value.ice.map((entry) => key(entry.at)));
   const entityIds = [
     ...cities.map((item) => item.id),
     ...contributions.map((item) => item.id),
     ...units.map((item) => item.id),
     ...burrowedUnits.map((item) => item.id),
+    ...swallowedUnits.map((item) => item.id),
   ];
   if (
     new Set(entityIds).size !== entityIds.length ||
@@ -1992,7 +2154,8 @@ function validateCrossReferences(value: CrossInput): boolean {
         player.status === "ELIMINATED" &&
         (cities.some((city) => city.ownerId === player.id) ||
           units.some((unit) => unit.ownerId === player.id) ||
-          burrowedUnits.some((unit) => unit.ownerId === player.id)),
+          burrowedUnits.some((unit) => unit.ownerId === player.id) ||
+          swallowedUnits.some((unit) => unit.ownerId === player.id)),
     )
   )
     return false;
@@ -2201,6 +2364,7 @@ function validateCrossReferences(value: CrossInput): boolean {
     !candyListsValid(value, playerById, kindOf) ||
     !ninthUnitValid(value, playerById, kindOf) ||
     !barricadesValid(value, playerById) ||
+    !giantsValid(value, playerById, kindOf) ||
     !iceValid(value, playerById, kindOf) ||
     // The Dinosaur pass, correction: `huntedThisTurn` is empty in a match
     // without a Dinosaur seat, and names units on the board that do not

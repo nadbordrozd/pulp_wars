@@ -58,10 +58,10 @@ const adjacentAttackers = (faction: FactionIdV7): readonly UnitRoleIdV7[] =>
 
 describe("tuning 2 identity", () => {
   it("is 7r47 with 7r46 last in the prior list", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r61");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r61.current");
-    expect(PRIOR_RULESET_7_IDS.at(-15)).toBe("pulp-wars-poc-7r46");
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(60);
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r62");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r62.current");
+    expect(PRIOR_RULESET_7_IDS.at(-16)).toBe("pulp-wars-poc-7r46");
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(61);
   });
 });
 
@@ -175,6 +175,9 @@ describe("1: who moves after a kill", () => {
       "UNDEAD Abomination",
       "MARTIAN Saucer",
       "MARTIAN Mothership",
+      // The giants' signatures (`pulp_wars-w49.30`): the Frost Giant never
+      // advances (it anchors the Ice Folk line).
+      "ICE_FOLK Frost Giant",
       // The ninth unit (`pulp_wars-w49.17`, 7r55): it never advances (its
       // Whirl, `pulp_wars-w49.33`, hits from where it stands).
       "DWARF Whirligig",

@@ -97,6 +97,18 @@ import {
 import { noRisingAtV7, riftAtV7 } from "./rift";
 import { tileAtV7 } from "./spatial-economy";
 import { tileOccupiedV7 } from "./units";
+import { grownHpV7 } from "./growth";
+import {
+  attackCrushDamageV7,
+  attackSiegeHammerV7,
+  crushBehindTileV7,
+  crushStateV7,
+  defenderCrushableV7,
+  fixedSignatureHitV7,
+  glacialSmashThresholdV7,
+  siegeHammerRazedCityV7,
+  swallowedByV7,
+} from "./giants";
 import {
   isAfloatFormV7,
   isNeutralOwnerV7,
@@ -216,8 +228,11 @@ export function fortificationPartsForUnitV7(
       candidate.id === tile.territoryCityId && same(candidate.at, unit.at),
   );
   return {
+    // The giants' signatures (RULESET_7_GIANTS.md section 6.7): razed
+    // Walls give nothing.
     walls:
       city !== undefined &&
+      city.wallsRazed !== true &&
       city.rewards.some(
         (record) => record.reachedLevel === 3 && record.reward === "WALLS",
       )
@@ -271,6 +286,11 @@ export function attackFortificationV7(
      * stays).
      */
     readonly breach?: boolean;
+    /**
+     * The giants' signatures (RULESET_7_GIANTS.md section 6.7): a Brass
+     * Titan's Siege Hammer (Walls, Field Defense, and Dig In; cover stays).
+     */
+    readonly siegeHammer?: boolean;
   },
 ): {
   readonly fortificationLevel: number;
@@ -282,7 +302,8 @@ export function attackFortificationV7(
     attack.disintegrator === true ||
     attack.boulders === true ||
     attack.blasting === true ||
-    attack.breach === true
+    attack.breach === true ||
+    attack.siegeHammer === true
       ? parts.walls + parts.fieldDefense
       : attack.ignoresCityWalls
         ? parts.walls
@@ -518,6 +539,8 @@ export function calculateCombatPreviewV7(
     distance,
     ownerResearchedTechsV7(state, attacker.ownerId),
   );
+  // The giants' signatures (RULESET_7_GIANTS.md section 6.7): Siege Hammer.
+  const siegeHammer = attackSiegeHammerV7(state, attacker, distance);
   // Revision 20: Charge! removes every fortification level and Wallbreaker
   // the City Walls levels, for the damage the defender takes.
   const fullParts = fortificationPartsForUnitV7(state, defender);
@@ -558,6 +581,7 @@ export function calculateCombatPreviewV7(
         ownerResearchedTechsV7(state, attacker.ownerId),
       ),
       breach,
+      siegeHammer,
     },
   );
   // Revision 19 section 6.2: an Egg defends with a fixed 1, like an embarked
@@ -645,6 +669,9 @@ export function calculateCombatPreviewV7(
     forceFieldHoldsV7(state, defender, defenderShield),
   );
   // The Ice Folk revision section 5.5: Shatter reads the HP the hit leaves.
+  // The giants' signatures (section 6.6): the Frost Giant's Glacial Smash
+  // threshold replaces its owner's.
+  const glacialThreshold = glacialSmashThresholdV7(state, attacker, distance);
   const shatters =
     options.ignoreShatter !== true &&
     attackShattersV7({
@@ -653,7 +680,7 @@ export function calculateCombatPreviewV7(
       defenderChilled,
       defender,
       hpAfterHit: defender.hp - defenderHit.hpDamage,
-      threshold: shatterThresholdV7(state, attacker),
+      threshold: glacialThreshold ?? shatterThresholdV7(state, attacker),
     });
   const damageToDefender = shatters ? defender.hp : defenderHit.hpDamage;
   const defenderShieldDamage = defenderHit.shieldDamage;
@@ -847,7 +874,10 @@ export function calculateCombatPreviewV7(
       attacker,
       tileAtV7(state.board, defender.at)?.site ?? null,
       state.cities.find((city) => same(city.at, defender.at))?.ownerId ?? null,
-    );
+    ) &&
+    // The giants' signatures (section 6.2): a dying Abomination's victim is
+    // released on its tile, so nothing advances onto it.
+    swallowedByV7(state.giants.swallowed, defender.id) === undefined;
   const nextAttacks = attacker.activation.attacksUsed + 1;
   // The Dwarf revision section 7.3: an unmoved Clockwork Gunner's first
   // shot leaves a second one.
@@ -982,7 +1012,83 @@ export function calculateCombatPreviewV7(
       distance,
       attackerDies,
     ),
+    ...crushPreviewV7(state, attacker, defender, distance, push, {
+      defenderDies,
+      // A Dinosaur defender that kills the attacker grows (and heals)
+      // before the Push step.
+      hpAfter: grownHpV7(
+        state,
+        defender,
+        defender.kills,
+        defender.kills + (attackerDies ? 1 : 0),
+        defender.hp - damageToDefender + undead.defenderHeal,
+      ),
+      shieldAfter: defenderShield - defenderShieldDamage,
+    }),
+    siegeHammer,
+    wallsDestroyed:
+      siegeHammer &&
+      siegeHammerRazedCityV7(
+        state.cities,
+        (ownerId) => arePlayersHostileV7(state, attacker.ownerId, ownerId),
+        defender.at,
+      ) !== undefined,
+    glacialSmash: shatters && glacialThreshold !== null,
   };
+}
+
+/**
+ * The giants' signatures (docs/product/RULESET_7_GIANTS.md section 6.1): the
+ * Crushing Shove part of a canonical preview: the crush state (from the
+ * Push preview), the crush on the target's HP after the exchange, and the
+ * collision with a hostile unit behind it on the board (it may stand on a
+ * tile the attacker has not explored; the canonical estimate knows it).
+ */
+function crushPreviewV7(
+  state: GameStateV7,
+  attacker: UnitStateV7,
+  defender: UnitStateV7,
+  distance: number,
+  push: CombatPreviewV7["push"],
+  after: {
+    readonly defenderDies: boolean;
+    readonly hpAfter: number;
+    readonly shieldAfter: number;
+  },
+): Pick<CombatPreviewV7, "crush" | "crushDamage" | "collisionDamage"> {
+  const damage = attackCrushDamageV7(state, attacker, distance);
+  const crush = crushStateV7(
+    damage,
+    defenderCrushableV7(state, defender),
+    after.defenderDies,
+    push,
+  );
+  if (crush === "NONE") return { crush, crushDamage: 0, collisionDamage: 0 };
+  const hit = fixedSignatureHitV7(
+    state,
+    { ...defender, hp: after.hpAfter },
+    Math.max(0, after.shieldAfter),
+    damage,
+  );
+  const behind = crushBehindTileV7(attacker.at, defender.at);
+  const blocker = state.units.find(
+    (unit) =>
+      unit.hp > 0 &&
+      unit.id !== defender.id &&
+      unit.id !== attacker.id &&
+      same(unit.at, behind) &&
+      arePlayersHostileV7(state, attacker.ownerId, unit.ownerId),
+  );
+  const collision =
+    blocker === undefined
+      ? 0
+      : fixedSignatureHitV7(
+          state,
+          blocker,
+          shieldOfV7(state.shields, blocker.id),
+          damage,
+        ).damage;
+  return { crush, crushDamage: hit.damage, collisionDamage: collision };
 }
 
 /**

@@ -129,13 +129,19 @@ export function cityUnitCapacityV7(
  */
 export function assignedUnitCountV7(
   state: Pick<GameStateV7, "units" | "players" | "mindControlled"> &
-    Partial<Pick<UnitListsV7<GameStateV7["units"][number]>, "burrowed">>,
+    Partial<Pick<UnitListsV7<GameStateV7["units"][number]>, "burrowed">> &
+    Partial<Pick<GameStateV7, "giants">>,
   cityId: CityId,
 ): number {
   let used = 0;
   for (const unit of allOwnedUnitsV7(state))
     if (unit.hp > 0 && unit.homeCityId === cityId)
       used += unitCapacitySlotsV7(state, unit);
+  // The giants' signatures (RULESET_7_GIANTS.md section 6.2): a held victim
+  // still counts for its home city's unit limit (and for nothing else).
+  for (const entry of state.giants?.swallowed ?? [])
+    if (entry.unit.hp > 0 && entry.unit.homeCityId === cityId)
+      used += unitCapacitySlotsV7(state, entry.unit);
   return used;
 }
 
@@ -931,6 +937,15 @@ export function startTurnEconomyV7(
     readonly state: GameStateV7;
     readonly events: readonly DomainEventV7[];
   },
+  /**
+   * The giants' signatures (docs/product/RULESET_7_GIANTS.md section 6.2):
+   * the Abomination's digest, right after Troll regeneration and before
+   * income.
+   */
+  afterRegeneration?: (state: GameStateV7) => {
+    readonly state: GameStateV7;
+    readonly events: readonly DomainEventV7[];
+  },
 ): { readonly state: GameStateV7; readonly events: readonly DomainEventV7[] } {
   const reset: GameStateV7 = {
     ...state,
@@ -975,7 +990,15 @@ export function startTurnEconomyV7(
   // Map curiosities (RULESET_7_MAP_CURIOSITIES.md section 5): the Fountain
   // of Youth heals after the Windmills and before Troll regeneration.
   const fountain = resolveFountainHealingV7(healing.state, player.id);
-  const regeneration = resolveRegenerationV7(fountain.state, player.id);
+  const regenerated = resolveRegenerationV7(fountain.state, player.id);
+  const digested =
+    afterRegeneration === undefined
+      ? { state: regenerated.state, events: [] }
+      : afterRegeneration(regenerated.state);
+  const regeneration = {
+    state: digested.state,
+    events: [...regenerated.events, ...digested.events],
+  };
   const income = playerIncomeV7(regeneration.state, player.id);
   // Revision 17: Plunder from a Start Turn chain may already have changed the
   // player's Coins, so income adds to the state's Coins, not the argument's.

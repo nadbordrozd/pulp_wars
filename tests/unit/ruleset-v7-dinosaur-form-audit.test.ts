@@ -562,7 +562,18 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // an embarked unit, and a boat must fail the state check).
     // `pulp_wars-737.3`: a Giant Spider is a land-form unit (an Egg, an
     // embarked unit, and a boat must fail its state check).
-    "src/engine/v7/state-schema.ts": 8,
+    // The giants' signatures (`pulp_wars-w49.30`): a held victim and its
+    // holder are land-form units (an Egg, an embarked unit, and a boat must
+    // fail the `giants` check), and a Gingerbread Man (`variant`) is a land
+    // or embarked unit (never an Egg or a boat).
+    "src/engine/v7/state-schema.ts": 11,
+    // The giants' signatures (`pulp_wars-w49.30`, G2): every signature
+    // needs the giant in land form (the Abomination of a Swallow, the Troll
+    // of a Toss, the Brontosaurus of a Stomp, the Gingerbread Giant of a
+    // Break Off), a Swallow target is a land-form unit, a death by a fixed
+    // hit leaves its rising only for a land-form unit (as a splash death),
+    // and an embarked holder's victim is digested, never released afloat.
+    "src/engine/v7/giants.ts": 7,
     "src/engine/v7/dwarf-reducer.ts": 5,
     // The ninth unit (`pulp_wars-w49.17`, 7r55): the attacks a unit has in
     // a turn (`attackAllowanceV7`: an Egg and an embarked unit have the one

@@ -668,7 +668,7 @@ describe("the Steam Tank's Plated (section 10.2)", () => {
 });
 
 describe("the Brass Titan (section 10.3)", () => {
-  it("pushes, attacks unflinching, and is immune to Mind Control", () => {
+  it("attacks unflinching with the Siege Hammer and no longer pushes", () => {
     const state = dwarfFieldV7([
       { seat: 0, role: "JUGGERNAUT", at: at(5, 2), hp: 20 },
       { seat: 1, role: "GUARD", at: at(5, 3) },
@@ -676,6 +676,9 @@ describe("the Brass Titan (section 10.3)", () => {
     ]);
     const hit = attackV7(state, at(5, 2), at(5, 3));
     expect(hit.combat.unflinchingApplied).toBe(true);
-    expect(kindsV7(hit.events)).toContain("UNIT_PUSHED");
+    // The giants' signatures (`pulp_wars-w49.30`): the Brass Titan has the
+    // Siege Hammer instead of Push.
+    expect(hit.combat.siegeHammer).toBe(true);
+    expect(kindsV7(hit.events)).not.toContain("UNIT_PUSHED");
   });
 });

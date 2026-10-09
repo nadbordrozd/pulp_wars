@@ -258,12 +258,29 @@ export function roleAbilityNameV7(
   const candy = candyAbilityNameV7(ability, faction);
   if (candy !== null) return candy;
   if (ability === "TEND_WOUNDED") return "Tend";
+  // The giants' signatures (`pulp_wars-w49.30`): the names of
+  // docs/product/RULESET_7_GIANTS.md section 6.
+  const giant = GIANT_SIGNATURE_NAMES_V7[ability];
+  if (giant !== undefined) return giant;
   // The naval branch interface: the boats' ram is "Bow Ram" (the Goblin
   // Scrap Buggy's Overrun is displayed as "Ram").
   const naval = navalAbilityNameV7(ability);
   if (naval !== null) return naval;
   return title(ability);
 }
+
+/** The giants' signatures: each signature ability's display name. */
+const GIANT_SIGNATURE_NAMES_V7: Readonly<Record<string, string>> =
+  Object.freeze({
+    CRUSH: "Crushing Shove",
+    SWALLOW: "Swallow",
+    TOSS: "Goblin Toss",
+    STOMP: "Thunder Stomp",
+    OVERSTRIDE: "Overstride",
+    GLACIAL_SMASH: "Glacial Smash",
+    SIEGE_HAMMER: "Siege Hammer",
+    BREAK_OFF: "Break Off",
+  });
 
 function title(value: string): string {
   return value

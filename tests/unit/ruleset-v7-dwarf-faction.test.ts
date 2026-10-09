@@ -157,7 +157,9 @@ describe("Dwarf faction registration (sections 2 and 14)", () => {
     // (`pulp_wars-w49.4`) removes again (59). Dwarf crowd control
     // (`pulp_wars-w49.33`) adds WHIRL, BUILD_BARRICADE, and
     // ATTACK_BARRICADE after ASSEMBLE (62).
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(62);
+    // The giants' signatures (`pulp_wars-w49.30`) add SWALLOW, TOSS,
+    // STOMP, and BREAK_OFF after RECOVER (66).
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(66);
     const snap = COMMAND_KIND_ORDER_V7.indexOf("FREEZE");
     expect(COMMAND_KIND_ORDER_V7.slice(snap, snap + 7)).toEqual([
       "FREEZE", // the frozen sea (pulp_wars-5ti.3), after COLD_SNAP
@@ -177,7 +179,9 @@ describe("Dwarf faction registration (sections 2 and 14)", () => {
     // crowd control (`pulp_wars-w49.33`): BARRICADE_BUILT and
     // BARRICADE_REPAIRED after FIELD_DEFENSE_DESTROYED, WHIRL_RESOLVED and
     // BARRICADE_ATTACKED after UNIT_BOMBED (105).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(105);
+    // The giants' signatures (`pulp_wars-w49.30`) add ten event kinds in
+    // one block after UNIT_SURFACED (115).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(115);
     const after = (order: readonly string[], kind: string) =>
       order[order.indexOf(kind) + 1];
     for (const order of [
@@ -647,7 +651,9 @@ const ROSTER = [
     1,
     1,
     true,
-    ["ATTACK", "CAPTURE", "PUSH", "CLOCKWORK"],
+    // The giants' signatures (`pulp_wars-w49.30`): Siege Hammer instead of
+    // Push.
+    ["ATTACK", "CAPTURE", "CLOCKWORK", "SIEGE_HAMMER"],
     true,
   ],
 ] as const;

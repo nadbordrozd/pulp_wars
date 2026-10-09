@@ -29,6 +29,12 @@ import {
   hireCostV7,
   BLAST_MOUNTAIN_DAMAGE_V7,
   BLAST_MOUNTAIN_COST_V7,
+  BREAK_OFF_UNITS_V7,
+  CRUSH_DAMAGE_V7,
+  DIGEST_DAMAGE_V7,
+  STOMP_DAMAGE_V7,
+  SWALLOW_MAX_HP_V7,
+  TRAMPLE_DAMAGE_V7,
   CITY_REWARD_COINS_V7,
   PILLAGE_COINS_V7,
   PLUNDER_COINS_V7,
@@ -418,6 +424,74 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
   UNIT_PROMOTED: ["kind", "unitId", "maxHp"],
   UNIT_GREW: ["kind", "unitId", "stage", "maxHp", "hp"],
   UNIT_DIED: ["kind", "unitId", "cause"],
+  // The giants' signatures (docs/product/RULESET_7_GIANTS.md section 8).
+  UNIT_CRUSHED: [
+    "kind",
+    "playerId",
+    "sourceUnitId",
+    "targetUnitId",
+    "damage",
+    "shieldDamage",
+    "dies",
+    "blockerUnitId",
+    "blockerDamage",
+    "blockerShieldDamage",
+    "blockerDies",
+  ],
+  UNIT_SWALLOWED: [
+    "kind",
+    "playerId",
+    "unitId",
+    "victimUnitId",
+    "victimOwnerId",
+    "role",
+    "hp",
+  ],
+  UNIT_DIGESTED: [
+    "kind",
+    "playerId",
+    "unitId",
+    "victimUnitId",
+    "amount",
+    "hpAfter",
+    "healed",
+  ],
+  UNIT_REGURGITATED: [
+    "kind",
+    "playerId",
+    "unitId",
+    "victimUnitId",
+    "zombieUnitId",
+    "at",
+  ],
+  SWALLOWED_UNIT_RELEASED: [
+    "kind",
+    "playerId",
+    "unitId",
+    "holderUnitId",
+    "at",
+    "hp",
+  ],
+  GOBLIN_TOSSED: [
+    "kind",
+    "playerId",
+    "unitId",
+    "passengerUnitId",
+    "from",
+    "to",
+  ],
+  THUNDER_STOMP: ["kind", "playerId", "unitId", "results", "fieldDefenses"],
+  UNITS_TRAMPLED: ["kind", "playerId", "unitId", "results"],
+  WALLS_DESTROYED: ["kind", "cityId", "byUnitId"],
+  GIANT_BROKE_OFF: [
+    "kind",
+    "playerId",
+    "unitId",
+    "newUnitIds",
+    "tiles",
+    "cityId",
+    "hp",
+  ],
   UNIT_INFECTED: [
     "kind",
     "playerId",
@@ -1008,6 +1082,9 @@ function validPayload(
           "TRAMPLE",
           // The Dwarf revision: a surfacing Mole's undermining.
           "UNDERMINED",
+          // The giants' signatures: a Thunder Stomp and a Siege Hammer.
+          "STOMP",
+          "SIEGE_HAMMER",
         ].includes(e.reason as string)
       );
     case "LAND_GRANTED":
@@ -1534,8 +1611,147 @@ function validPayload(
           "PEPPERMINT",
           // The frozen sea: an icebound unit crushed by the ice.
           "CRUSHED",
+          // The giants' signatures (section 6.0, G5).
+          "CRUSH",
+          "STOMP",
+          "TRAMPLE",
+          "DIGESTED",
         ].includes(e.cause as string)
       );
+    // The giants' signatures (docs/product/RULESET_7_GIANTS.md section 8).
+    case "UNIT_CRUSHED":
+      // Section 6.1: each hit is at most the crush damage, split between HP
+      // and a Shield; no blocker (or a hidden one) is all zero.
+      return (
+        id(e.playerId) &&
+        id(e.sourceUnitId) &&
+        id(e.targetUnitId) &&
+        e.sourceUnitId !== e.targetUnitId &&
+        fixedHit(e.damage, e.shieldDamage, e.dies, CRUSH_DAMAGE_V7) &&
+        (e.blockerUnitId === null
+          ? e.blockerDamage === 0 &&
+            e.blockerShieldDamage === 0 &&
+            e.blockerDies === false
+          : id(e.blockerUnitId) &&
+            e.blockerUnitId !== e.sourceUnitId &&
+            e.blockerUnitId !== e.targetUnitId &&
+            fixedHit(
+              e.blockerDamage,
+              e.blockerShieldDamage,
+              e.blockerDies,
+              CRUSH_DAMAGE_V7,
+            ))
+      );
+    case "UNIT_SWALLOWED":
+      return (
+        id(e.playerId) &&
+        id(e.unitId) &&
+        id(e.victimUnitId) &&
+        e.unitId !== e.victimUnitId &&
+        id(e.victimOwnerId) &&
+        e.victimOwnerId !== e.playerId &&
+        UNIT_ROLE_IDS_V7.includes(e.role as never) &&
+        e.role !== "JUGGERNAUT" &&
+        pos(e.hp) &&
+        (e.hp as number) <= SWALLOW_MAX_HP_V7
+      );
+    case "UNIT_DIGESTED":
+      return (
+        id(e.playerId) &&
+        id(e.unitId) &&
+        id(e.victimUnitId) &&
+        e.unitId !== e.victimUnitId &&
+        pos(e.amount) &&
+        (e.amount as number) <= DIGEST_DAMAGE_V7 &&
+        nn(e.hpAfter) &&
+        nn(e.healed) &&
+        (e.healed as number) <= (e.amount as number)
+      );
+    case "UNIT_REGURGITATED":
+      return (
+        id(e.playerId) &&
+        id(e.unitId) &&
+        id(e.victimUnitId) &&
+        e.unitId !== e.victimUnitId &&
+        (e.zombieUnitId === null
+          ? e.at === null
+          : id(e.zombieUnitId) &&
+            e.zombieUnitId !== e.unitId &&
+            e.zombieUnitId !== e.victimUnitId &&
+            parseCoordV7(e.at) !== null)
+      );
+    case "SWALLOWED_UNIT_RELEASED":
+      return (
+        id(e.playerId) &&
+        id(e.unitId) &&
+        id(e.holderUnitId) &&
+        e.unitId !== e.holderUnitId &&
+        parseCoordV7(e.at) !== null &&
+        pos(e.hp)
+      );
+    case "GOBLIN_TOSSED":
+      return (
+        id(e.playerId) &&
+        id(e.unitId) &&
+        id(e.passengerUnitId) &&
+        e.unitId !== e.passengerUnitId &&
+        parseCoordV7(e.from) !== null &&
+        parseCoordV7(e.to) !== null
+      );
+    case "THUNDER_STOMP":
+      // Section 6.4: every hit is at most the Stomp damage, never on the
+      // Brontosaurus, and lies next to no further than one tile from it.
+      return (
+        id(e.playerId) &&
+        id(e.unitId) &&
+        splashEntries(e.results, false) &&
+        (
+          e.results as readonly {
+            unitId: number;
+            damage: number;
+            shieldDamage: number;
+          }[]
+        ).every(
+          (entry) =>
+            entry.unitId !== e.unitId &&
+            entry.damage + entry.shieldDamage <= STOMP_DAMAGE_V7,
+        ) &&
+        sortedCoords(e.fieldDefenses)
+      );
+    case "UNITS_TRAMPLED":
+      // Section 6.5: the units stepped over, in path order (not sorted).
+      return id(e.playerId) && id(e.unitId) && trampleResults(e);
+    case "WALLS_DESTROYED":
+      return id(e.cityId) && id(e.byUnitId);
+    case "GIANT_BROKE_OFF": {
+      // The user's change of 2026-10-09: two Gingerbread Men, with new
+      // ascending IDs, on two distinct tiles in (y, x) order, each with a
+      // Toffee Trooper's full HP.
+      if (
+        !isDenseArrayV7(e.newUnitIds) ||
+        e.newUnitIds.length !== BREAK_OFF_UNITS_V7 ||
+        !isDenseArrayV7(e.tiles) ||
+        e.tiles.length !== BREAK_OFF_UNITS_V7
+      )
+        return false;
+      const [firstId, secondId] = e.newUnitIds;
+      const first = parseCoordV7(e.tiles[0]);
+      const second = parseCoordV7(e.tiles[1]);
+      return (
+        id(e.playerId) &&
+        id(e.unitId) &&
+        id(firstId) &&
+        id(secondId) &&
+        (firstId as number) < (secondId as number) &&
+        e.unitId !== firstId &&
+        e.unitId !== secondId &&
+        first !== null &&
+        second !== null &&
+        (first.y < second.y || (first.y === second.y && first.x < second.x)) &&
+        id(e.cityId) &&
+        isPositiveSafeIntegerV7(e.hp)
+      );
+    }
     case "UNIT_MIND_CONTROLLED":
       // The Mind Control revision (section 3): the target keeps its ID and
       // has 1 to `MIND_CONTROL_HP_V7` HP.
@@ -1694,6 +1910,12 @@ function combat(input: unknown): boolean {
       "shockDamage",
       "crackApplied",
       "frostbiteApplied",
+      "crush",
+      "crushDamage",
+      "collisionDamage",
+      "siegeHammer",
+      "wallsDestroyed",
+      "glacialSmash",
     ])
   )
     return false;
@@ -1901,11 +2123,76 @@ function combat(input: unknown): boolean {
       (input.snowCover === false &&
         input.defenseBonusNumerator === SNOW_COVER_V7.numerator &&
         input.defenseBonusDenominator === SNOW_COVER_V7.denominator &&
-        input.fortificationLevel === 0))
+        input.fortificationLevel === 0)) &&
+    // The giants' signatures (RULESET_7_GIANTS.md sections 6.1, 6.6, and
+    // 6.7): a crush needs a surviving target that is not pushed; a Glacial
+    // Smash is a Shatter.
+    ["NONE", "WILL_CRUSH", "UNKNOWN_BEHIND_FOG"].includes(
+      input.crush as string,
+    ) &&
+    nn(input.crushDamage) &&
+    nn(input.collisionDamage) &&
+    Number(input.crushDamage) <= CRUSH_DAMAGE_V7 &&
+    Number(input.collisionDamage) <= CRUSH_DAMAGE_V7 &&
+    (input.crush !== "NONE" ||
+      (input.crushDamage === 0 && input.collisionDamage === 0)) &&
+    (input.crush === "NONE" ||
+      (input.defenderDies === false && input.push !== "WILL_PUSH")) &&
+    typeof input.siegeHammer === "boolean" &&
+    typeof input.wallsDestroyed === "boolean" &&
+    typeof input.glacialSmash === "boolean" &&
+    (input.wallsDestroyed !== true || input.siegeHammer === true) &&
+    (input.glacialSmash !== true || input.shatters === true)
   );
 }
 function splash(input: unknown): boolean {
   return splashEntries(input, false);
+}
+/**
+ * The giants' signatures: one fixed hit of at most `maximum`, split between
+ * HP and a Shield, that kills only with HP damage.
+ */
+function fixedHit(
+  damage: unknown,
+  shieldDamage: unknown,
+  dies: unknown,
+  maximum: number,
+): boolean {
+  return (
+    nn(damage) &&
+    nn(shieldDamage) &&
+    typeof dies === "boolean" &&
+    Number(damage) + Number(shieldDamage) <= maximum &&
+    (!dies || Number(damage) > 0)
+  );
+}
+/**
+ * Section 6.5 `UNITS_TRAMPLED`: non-empty splash-shaped results in path
+ * order, unique units, never the Colossus, each at most the trample.
+ */
+function trampleResults(e: Record<string, unknown>): boolean {
+  const results = e.results;
+  if (!isDenseArrayV7(results) || results.length === 0) return false;
+  const seen = new Set<number>();
+  for (const entry of results) {
+    if (
+      !hasExactKeysV7(entry, [
+        "at",
+        "damage",
+        "dies",
+        "shieldDamage",
+        "unitId",
+      ]) ||
+      !id(entry.unitId) ||
+      entry.unitId === e.unitId ||
+      seen.has(entry.unitId as number) ||
+      parseCoordV7(entry.at) === null ||
+      !fixedHit(entry.damage, entry.shieldDamage, entry.dies, TRAMPLE_DAMAGE_V7)
+    )
+      return false;
+    seen.add(entry.unitId as number);
+  }
+  return true;
 }
 /**
  * The Dwarf revision (section 5.1) `UNIT_TUNNELLED`: the rider fields are
@@ -2220,7 +2507,9 @@ function chillSource(input: unknown): boolean {
     // The frozen sea (naval branch section 8.8): Black Ice.
     input === "BLACK_ICE" ||
     // The ninth unit (`pulp_wars-w49.17`, 7r55): a Musk Ox's Frostbite.
-    input === "FROSTBITE"
+    input === "FROSTBITE" ||
+    // The giants' signatures (section 6.6): a Frost Giant's shards.
+    input === "SHARDS"
   );
 }
 /**

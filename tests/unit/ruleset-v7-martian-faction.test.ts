@@ -99,7 +99,7 @@ import { at, kindsV7, movedV7 } from "../fixtures/v7-revision20";
 // (docs/product/RULESET_7_MARTIANS.md sections 2 to 4, 10.9, 10.10, and 11).
 
 /** The revision number of this identity (`pulp-wars-poc-7rNN`). */
-const REVISION = 61;
+const REVISION = 62;
 const ID = `pulp-wars-poc-7r${REVISION}`;
 const PREVIOUS_ID = `pulp-wars-poc-7r${REVISION - 1}`;
 
@@ -267,7 +267,9 @@ describe("Martian faction registration (sections 2 and 11)", () => {
     // tuning 4 DRILL_UNIT after PROMOTE (60), which tuning 5
     // (`pulp_wars-w49.4`) removes again (59).
     // Dwarf crowd control (`pulp_wars-w49.33`): three more commands (62).
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(62);
+    // The giants' signatures (`pulp_wars-w49.30`) add SWALLOW, TOSS,
+    // STOMP, and BREAK_OFF after RECOVER (66).
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(66);
     const hatch = COMMAND_KIND_ORDER_V7.indexOf("HATCH");
     expect(COMMAND_KIND_ORDER_V7.slice(hatch, hatch + 4)).toEqual([
       "HATCH",
@@ -282,7 +284,9 @@ describe("Martian faction registration (sections 2 and 11)", () => {
     // MONSTER_BOUNTY_AWARDED (89); the Candy revision seven more (96).
     // The ninth unit (`pulp_wars-w49.17`, 7r55): WIGHT_RISEN (101).
     // Dwarf crowd control (`pulp_wars-w49.33`): four more events (105).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(105);
+    // The giants' signatures (`pulp_wars-w49.30`) add ten event kinds in
+    // one block after UNIT_SURFACED (115).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(115);
     const after = (kind: string) =>
       DOMAIN_EVENT_KIND_ORDER_V7[
         DOMAIN_EVENT_KIND_ORDER_V7.indexOf(kind as never) + 1
@@ -733,12 +737,14 @@ const ROSTER = [
     8,
     // `pulp_wars-t6s.5`: Defense 2.5 (contract 3; section 16.5).
     5,
-    1,
+    // The giants' signatures (`pulp_wars-w49.30`): Move 2 and Overstride
+    // instead of Push.
+    2,
     1,
     2,
     1,
     true,
-    ["ATTACK", "CAPTURE", "PUSH", "STRIDE", "HEAT_RAY"],
+    ["ATTACK", "CAPTURE", "STRIDE", "HEAT_RAY", "OVERSTRIDE"],
     "STRIDE",
     true,
     false,
@@ -821,6 +827,8 @@ describe("Martian roster (section 3)", () => {
       "TRACTOR_BEAM",
       "FLY",
       "STRIDE",
+      // The giants' signatures (`pulp_wars-w49.30`): the Colossus.
+      "OVERSTRIDE",
     ];
     // The Dwarf revision (`pulp_wars-78i.3`): the Gyrocopter flies under
     // the Martian flyer rule (`FLY`); it is the one exception.
@@ -857,7 +865,8 @@ describe("Martian roster (section 3)", () => {
         "ATTACK",
         "CAPTURE",
         "CHARGE",
-        "PUSH",
+        // Since the giants' signatures (`pulp_wars-w49.30`) no Martian unit
+        // pushes: the Colossus has Overstride instead.
         "RALLY",
         ...martianAbilities,
         ...ORIGINAL_ROLE_RULES_V7.BATTLESHIP.abilities,

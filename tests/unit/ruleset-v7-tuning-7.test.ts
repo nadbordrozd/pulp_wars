@@ -50,7 +50,7 @@ import {
 } from "../../src/ai/v7-campaign";
 
 /**
- * Tuning 7 (`pulp_wars-w49.10`, identity unchanged at `pulp-wars-poc-7r61`;
+ * Tuning 7 (`pulp_wars-w49.10`, identity unchanged at `pulp-wars-poc-7r62`;
  * docs/product/RULESET_7_TUNING_HUMAN.md section 14, the Normal AI of a
  * Human, Undead, or Goblin seat): it commits against the enemy in front of
  * it and keeps committing after the line breaks, every faction's seat
@@ -194,7 +194,7 @@ const whereIs = (state: GameStateV7, id: UnitId): CoordV7 => {
 
 describe("tuning 7 identity", () => {
   it("is still 7r49: no rule, command, state, or event shape changed", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r61");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r62");
   });
 });
 

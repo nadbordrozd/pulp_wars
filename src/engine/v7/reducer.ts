@@ -131,7 +131,7 @@ import {
   startTurnEconomyV7,
   type CityEconomyChangeV7,
 } from "./economy";
-import type { DomainEventV7 } from "./events";
+import type { CombatSplashEntryV7, DomainEventV7 } from "./events";
 import {
   bounceStateV7,
   attackBreachesV7,
@@ -202,6 +202,7 @@ import {
   rechargeShieldsAtEndTurnV7,
   rechargeShieldsV7,
   releaseControlledV7,
+  shieldOfV7,
   tractorBeamActorReadyV7,
   tractorBeamPathV7,
   tractorBeamRuleV7,
@@ -249,6 +250,22 @@ import {
   unitIsCrashedV7,
   withUnitIdV7,
 } from "./candy";
+import {
+  applyBreakOffV7,
+  applyStompV7,
+  applySwallowV7,
+  applyTossV7,
+  attackCrushDamageV7,
+  crushBehindTileV7,
+  defenderCrushableV7,
+  fixedSignatureHitV7,
+  prunedGiantsV7,
+  resolveFixedHitsV7,
+  resolveStartTurnDigestV7,
+  siegeHammerRazedCityV7,
+  swallowedOutcomeEventsV7,
+  unitUsesSignatureV7,
+} from "./giants";
 import { unitIsConstructV7 } from "./afflictions";
 import {
   recoverEligibleV7,
@@ -376,7 +393,16 @@ export type RuleErrorCodeV7 =
   // `NO_TARGET`). An icebound unit's Attack is `ATTACK_NOT_LEGAL`, its
   // Board `BOARD_NOT_LEGAL`, and its Move `MOVEMENT_ILLEGAL`, each with the
   // reason `ICEBOUND` (section 8.9).
-  | "FREEZE_NOT_LEGAL";
+  | "FREEZE_NOT_LEGAL"
+  // The giants' signatures (docs/product/RULESET_7_GIANTS.md sections 6.2,
+  // 6.3, 6.4, and 6.8): an illegal Swallow (`EMBARKED`, `FULL`, `TARGET`,
+  // `IMMUNE`, `TOO_BIG`), Goblin Toss (`EMBARKED`, `PASSENGER`,
+  // `DESTINATION`), Thunder Stomp (`EMBARKED`, `MOVED`), or Break Off
+  // (`EMBARKED`, `TOO_WEAK`, `NO_HOME`, `TILE`).
+  | "SWALLOW_NOT_LEGAL"
+  | "TOSS_NOT_LEGAL"
+  | "STOMP_NOT_LEGAL"
+  | "BREAK_OFF_NOT_LEGAL";
 export interface RuleErrorV7 {
   readonly code: RuleErrorCodeV7;
   readonly params: Readonly<Record<string, JsonValue>>;
@@ -488,9 +514,11 @@ export function applyCommandV7(
   // The Candy revision section 6.1: the Crumbs the command's deaths left.
   // The ninth unit (`pulp_wars-w49.17`, 7r55): and the Graves its Wight
   // deaths left (Rise Again), folded from the events the same way.
+  // The giants' signatures (section 6.2): first the events of the held
+  // victims the command let go.
   const core = withWightGravesResultV7(
     stateInput,
-    withCrumbsLeftResultV7(applied),
+    withCrumbsLeftResultV7(withSwallowedOutcomesResultV7(stateInput, applied)),
   );
   const result = revealReleasedUnitsV7(core);
   // The Mind Control revision section 5.4: every command that releases a
@@ -534,6 +562,58 @@ function withMonsterProvocationsResultV7(
   );
   if (state === result.state) return result;
   const next = accepted(checked(state), result.events);
+  if (!next.accepted) throw new RangeError("INVALID_STATE");
+  return next;
+}
+
+/**
+ * The giants' signatures (docs/product/RULESET_7_GIANTS.md section 6.2):
+ * the events of the held victims an accepted command let go
+ * (`swallowedOutcomeEventsV7`; `checked` already moved them), and the sight
+ * of each victim back on the board, revealed for its owner. Returns
+ * `result` itself when no victim was let go.
+ */
+function withSwallowedOutcomesResultV7(
+  before: GameStateV7,
+  result: Extract<ApplyCommandResultV7, { readonly accepted: true }>,
+): Extract<ApplyCommandResultV7, { readonly accepted: true }> {
+  const outcome = swallowedOutcomeEventsV7(before, result.state, result.events);
+  if (outcome.events === result.events) return result;
+  let state = result.state;
+  const events: DomainEventV7[] = [...outcome.events];
+  for (const unit of outcome.released) {
+    const reveal = revealRadius(
+      state,
+      unit.ownerId,
+      unit.at,
+      unitSightRadiusAtV7(state, unit),
+    );
+    if (reveal.revealed.length === 0) continue;
+    state = {
+      ...state,
+      players: setExplored(state.players, unit.ownerId, reveal.explored),
+    };
+    events.push({
+      kind: "TILES_REVEALED",
+      playerId: unit.ownerId,
+      tiles: reveal.revealed,
+    });
+  }
+  // A victim back on a city center may lift or start a siege.
+  const economy = recomputeLiveEconomyV7(
+    state,
+    { board: state.board, cities: state.cities, units: state.units },
+    state.populationContributions,
+  );
+  events.push(...economyAndGrowth(economy.changes));
+  const next = accepted(
+    checked({
+      ...state,
+      cities: economy.cities,
+      populationContributions: economy.populationContributions,
+    }),
+    events,
+  );
   if (!next.accepted) throw new RangeError("INVALID_STATE");
   return next;
 }
@@ -853,6 +933,15 @@ function applyCommandCoreV7(
     return applyRebakeV7(DWARF_KIT_V7, stateInput, state, actor, command);
   if (command.kind === "SUGAR_TOSS")
     return applySugarTossV7(DWARF_KIT_V7, stateInput, state, actor, command);
+  // The giants' signatures (docs/product/RULESET_7_GIANTS.md section 6).
+  if (command.kind === "SWALLOW")
+    return applySwallowV7(DWARF_KIT_V7, stateInput, state, actor, command);
+  if (command.kind === "TOSS")
+    return applyTossV7(DWARF_KIT_V7, stateInput, state, actor, command);
+  if (command.kind === "STOMP")
+    return applyStompV7(DWARF_KIT_V7, stateInput, state, actor, command);
+  if (command.kind === "BREAK_OFF")
+    return applyBreakOffV7(DWARF_KIT_V7, stateInput, state, actor, command);
   return rejected(stateInput, "INVALID_COMMAND");
 }
 
@@ -3994,6 +4083,11 @@ function applyMove(
     ]);
     if (revealed.length > 0)
       events.push({ kind: "TILES_REVEALED", playerId: actor, tiles: revealed });
+    // The giants' signatures (RULESET_7_GIANTS.md section 6.5): the units
+    // a Colossus stepped over (entered and left) in its Overstride.
+    const trampled = unitUsesSignatureV7(state, unit, "OVERSTRIDE")
+      ? trampleResultsV7(state, unit, validation.traversedPath.slice(0, -1))
+      : [];
     let staged: GameStateV7 = {
       ...state,
       board,
@@ -4010,6 +4104,22 @@ function applyMove(
       treasureChests: treasure?.treasureChests ?? state.treasureChests,
       curiosities: claim?.state.curiosities ?? state.curiosities,
     };
+    if (trampled.length > 0) {
+      events.push({
+        kind: "UNITS_TRAMPLED",
+        playerId: actor,
+        unitId: unit.id,
+        results: trampled,
+      });
+      staged = resolveFixedHitsV7(
+        DWARF_KIT_V7,
+        staged,
+        unit.id,
+        trampled,
+        "TRAMPLE",
+        events,
+      );
+    }
     // The Candy revision section 6.3: a hostile ground unit that ended its
     // Move (an interrupted or an Escape Move included) on Crumbs eats them,
     // right after the Move's own events and before the economy tail.
@@ -4036,6 +4146,49 @@ function applyMove(
   } catch (cause) {
     return arithmeticFailure(original, cause);
   }
+}
+
+/**
+ * The giants' signatures (docs/product/RULESET_7_GIANTS.md section 6.5):
+ * the trample of an Overstride along the tiles `passed` (entered and left,
+ * in path order): each unit there that is hostile to the Colossus's owner,
+ * in land form or an Egg, and does not fly takes the fixed trample damage
+ * once. Passing takes nothing else (no chest, curiosity, Crumbs, or Field
+ * Defense).
+ */
+function trampleResultsV7(
+  state: GameStateV7,
+  colossus: UnitStateV7,
+  passed: readonly CoordV7[],
+): readonly CombatSplashEntryV7[] {
+  const damage = unitRoleMechanicsV7(state, colossus).trampleDamage;
+  if (damage <= 0) return [];
+  const results: CombatSplashEntryV7[] = [];
+  for (const at of passed) {
+    const victim = state.units.find(
+      (candidate) =>
+        candidate.hp > 0 &&
+        candidate.id !== colossus.id &&
+        same(candidate.at, at) &&
+        (candidate.form === "LAND" || candidate.form === "EGG") &&
+        !unitFliesV7(state, candidate) &&
+        arePlayersHostileV7(state, colossus.ownerId, candidate.ownerId),
+    );
+    if (
+      victim === undefined ||
+      results.some((entry) => entry.unitId === victim.id)
+    )
+      continue;
+    results.push(
+      fixedSignatureHitV7(
+        state,
+        victim,
+        shieldOfV7(state.shields, victim.id),
+        damage,
+      ),
+    );
+  }
+  return results;
 }
 
 interface TreasureResolutionV7 {
@@ -4328,8 +4481,18 @@ function applyAttack(
       distance,
     );
     const events = [...exchange.events];
+    // The giants' signatures (RULESET_7_GIANTS.md section 6.1): Crushing
+    // Shove, the crush of a target the Juggernaut could not push.
+    const crushed = resolveCrushV7(
+      state,
+      exchange.state,
+      attacker,
+      defender,
+      distance,
+      events,
+    );
     const settlement = settleCityRewardsV7(
-      { ...exchange.state, commandIndex: nextSafe(state.commandIndex) },
+      { ...crushed, commandIndex: nextSafe(state.commandIndex) },
       actor,
     );
     events.push(...settlement.events);
@@ -4339,6 +4502,96 @@ function applyAttack(
   } catch (cause) {
     return arithmeticFailure(original, cause);
   }
+}
+
+/**
+ * The giants' signatures (docs/product/RULESET_7_GIANTS.md section 6.1):
+ * Crushing Shove. After an `ATTACK` from distance 1 by a land-form unit
+ * whose role has `CRUSH`, a target that survived the exchange, stayed on
+ * its tile (it was not pushed), and can be crushed (not an Egg, Rock Hard,
+ * or icebound) takes the fixed crush damage, and a unit or Egg hostile to
+ * the attacker's owner on the tile it would have been pushed onto (the
+ * blocker; never a burrowed unit) takes it too; then their deaths, in that
+ * order, as `CRUSH` deaths credited to the attacker. `UNIT_CRUSHED` follows
+ * the exchange's events. A crush kill is never followed by an advance.
+ * Returns `after` itself when nothing is crushed.
+ */
+function resolveCrushV7(
+  before: GameStateV7,
+  after: GameStateV7,
+  attacker: UnitStateV7,
+  defender: UnitStateV7,
+  distance: number,
+  events: DomainEventV7[],
+): GameStateV7 {
+  const damage = attackCrushDamageV7(before, attacker, distance);
+  if (damage <= 0) return after;
+  const target = after.units.find(
+    (unit) => unit.id === defender.id && unit.hp > 0,
+  );
+  if (
+    target === undefined ||
+    target.ownerId !== defender.ownerId ||
+    !same(target.at, defender.at) ||
+    !defenderCrushableV7(after, target)
+  )
+    return after;
+  const behind = crushBehindTileV7(attacker.at, defender.at);
+  const blocker = after.units.find(
+    (unit) =>
+      unit.hp > 0 &&
+      unit.id !== target.id &&
+      unit.id !== attacker.id &&
+      same(unit.at, behind) &&
+      arePlayersHostileV7(after, attacker.ownerId, unit.ownerId),
+  );
+  const hit = fixedSignatureHitV7(
+    after,
+    target,
+    shieldOfV7(after.shields, target.id),
+    damage,
+  );
+  const collision =
+    blocker === undefined
+      ? null
+      : fixedSignatureHitV7(
+          after,
+          blocker,
+          shieldOfV7(after.shields, blocker.id),
+          damage,
+        );
+  events.push({
+    kind: "UNIT_CRUSHED",
+    playerId: attacker.ownerId,
+    sourceUnitId: attacker.id,
+    targetUnitId: target.id,
+    damage: hit.damage,
+    shieldDamage: hit.shieldDamage,
+    dies: hit.dies,
+    blockerUnitId: blocker?.id ?? null,
+    blockerDamage: collision?.damage ?? 0,
+    blockerShieldDamage: collision?.shieldDamage ?? 0,
+    blockerDies: collision?.dies ?? false,
+  });
+  const resolved = resolveFixedHitsV7(
+    DWARF_KIT_V7,
+    after,
+    attacker.id,
+    collision === null ? [hit] : [hit, collision],
+    "CRUSH",
+    events,
+  );
+  const economy = recomputeLiveEconomyV7(
+    resolved,
+    { board: resolved.board, cities: resolved.cities, units: resolved.units },
+    resolved.populationContributions,
+  );
+  events.push(...economyAndGrowth(economy.changes));
+  return {
+    ...resolved,
+    cities: economy.cities,
+    populationContributions: economy.populationContributions,
+  };
 }
 
 /**
@@ -4625,19 +4878,23 @@ function resolveAttackExchangeV7(
         attacker.form === "LAND" &&
           unitRoleMechanicsV7(state, attacker).tramplesFieldDefense
         ? "TRAMPLE"
-        : preview.inspiredApplied && distance === 1 && !preview.attackerDies
-          ? "INSPIRED"
-          : // Tuning 1 Breach (7r46): whether or not the attacker survives.
-            attackBreachesV7(
-                state,
-                attacker,
-                distance,
-                ownerResearchedTechsV7(state, actor),
-              )
-            ? "EXPLOSIVES"
-            : preview.advances
-              ? "OCCUPATION"
-              : null
+        : // The giants' signatures (section 6.7): a Siege Hammer blow,
+          // whether or not either unit survives.
+          preview.siegeHammer
+          ? "SIEGE_HAMMER"
+          : preview.inspiredApplied && distance === 1 && !preview.attackerDies
+            ? "INSPIRED"
+            : // Tuning 1 Breach (7r46): whether or not the attacker survives.
+              attackBreachesV7(
+                  state,
+                  attacker,
+                  distance,
+                  ownerResearchedTechsV7(state, actor),
+                )
+              ? "EXPLOSIVES"
+              : preview.advances
+                ? "OCCUPATION"
+                : null
     : null;
   let board =
     defenseReason === null || destinationTile === undefined
@@ -4675,6 +4932,28 @@ function resolveAttackExchangeV7(
       kind: "FIELD_DEFENSE_DESTROYED",
       at: defender.at,
       reason: defenseReason,
+    });
+  // The giants' signatures (section 6.7): the Siege Hammer tears down the
+  // Walls of a hostile city whose center the target stands on, whether or
+  // not either unit survives. The city keeps its `WALLS` record.
+  const razed = preview.wallsDestroyed
+    ? siegeHammerRazedCityV7(
+        state.cities,
+        (ownerId) => arePlayersHostileV7(state, actor, ownerId),
+        defender.at,
+      )
+    : undefined;
+  const exchangeCities =
+    razed === undefined
+      ? state.cities
+      : state.cities.map((city) =>
+          city.id === razed.id ? { ...city, wallsRazed: true as const } : city,
+        );
+  if (razed !== undefined)
+    events.push({
+      kind: "WALLS_DESTROYED",
+      cityId: razed.id,
+      byUnitId: attacker.id,
     });
   // Revision 13 section 6.8 step 7: each death in order (defender, splash
   // in (y, x, id) order, attacker) becomes an Infect rising when a Zombie
@@ -4839,6 +5118,30 @@ function resolveAttackExchangeV7(
         applied.results,
       ),
     );
+  }
+  // The giants' signatures (section 6.6): the shards of a unit a Frost
+  // Giant shattered Chill every unit around its tile that the Giant's owner
+  // can Chill, after the death events.
+  if (
+    preview.shatters &&
+    unitUsesSignatureV7(state, attacker, "GLACIAL_SMASH")
+  ) {
+    const shards = units
+      .filter(
+        (unit) =>
+          unit.id !== defender.id &&
+          unit.id !== attacker.id &&
+          chebyshev(unit.at, defender.at) === 1 &&
+          canBeChilledV7(state, attacker.ownerId, unit),
+      )
+      .map((unit) => unit.id);
+    if (shards.length > 0) {
+      const applied = withChillAppliedV7(chilled, shards);
+      chilled = applied.chilled;
+      events.push(
+        unitsChilledEventV7(actor, attacker.id, "SHARDS", applied.results),
+      );
+    }
   }
   // The Candy revision section 8: the Bounce, after the Push, the advance,
   // and the Charge! follow and before any death-blast chain. It is not a
@@ -5052,7 +5355,7 @@ function resolveAttackExchangeV7(
   }
   const economy = recomputeLiveEconomyV7(
     state,
-    { board, cities: state.cities, units },
+    { board, cities: exchangeCities, units },
     state.populationContributions,
   );
   events.push(...economyAndGrowth(economy.changes));
@@ -6340,56 +6643,72 @@ function applyEndTurn(
     // chain it started, and before Windmill healing.
     // The Martian revision section 5.2: Mind Control cooldowns, then the
     // Shield recharge, run after the reset and before Plague.
-    const started = startTurnEconomyV7(advanced, nextPlayer, false, (reset) => {
-      const recharge = rechargeShieldsV7(
-        mindControlCooldownStepV7(reset, nextPlayer.id),
-        nextPlayer.id,
-      );
-      // The Ice Folk revision section 7.8: the Cold Aura runs after the
-      // Shield recharge and before Plague.
-      const coldAura = resolveColdAuraV7(recharge.state, nextPlayer.id);
-      // The frozen sea (naval branch section 9): Black Ice, then the crush,
-      // after the Cold Aura and before Plague.
-      const frozen = resolveStartTurnIceV7(coldAura.state, nextPlayer.id);
-      const aura =
-        frozen.events.length === 0
-          ? coldAura
+    const started = startTurnEconomyV7(
+      advanced,
+      nextPlayer,
+      false,
+      (reset) => {
+        const recharge = rechargeShieldsV7(
+          mindControlCooldownStepV7(reset, nextPlayer.id),
+          nextPlayer.id,
+        );
+        // The Ice Folk revision section 7.8: the Cold Aura runs after the
+        // Shield recharge and before Plague.
+        const coldAura = resolveColdAuraV7(recharge.state, nextPlayer.id);
+        // The frozen sea (naval branch section 9): Black Ice, then the crush,
+        // after the Cold Aura and before Plague.
+        const frozen = resolveStartTurnIceV7(coldAura.state, nextPlayer.id);
+        const aura =
+          frozen.events.length === 0
+            ? coldAura
+            : {
+                state: frozen.state,
+                events: [...coldAura.events, ...frozen.events],
+              };
+        // The Dwarf revision section 5.4: the burrowed Moles surface after the
+        // Shield recharge (and the Cold Aura) and before Plague.
+        const surfacing = resolveStartTurnSurfacingV7(
+          DWARF_KIT_V7,
+          aura.state,
+          nextPlayer.id,
+        );
+        const next = surfacing.state;
+        const plague = resolveStartTurnPlagueAndChainV7(next, nextPlayer.id);
+        const hatched = resolveStartTurnHatchV7(plague.state, nextPlayer.id);
+        // The ninth unit (7r55): Rise Again, after the hatch step and before
+        // Windmill healing.
+        const risen = resolveStartTurnRiseAgainV7(hatched.state, nextPlayer.id);
+        const hatch =
+          risen.events.length === 0 && risen.state === hatched.state
+            ? hatched
+            : {
+                state: risen.state,
+                events: [...hatched.events, ...risen.events],
+              };
+        const afflicted =
+          hatch.events.length === 0 && hatch.state === plague.state
+            ? plague
+            : {
+                state: hatch.state,
+                events: [...plague.events, ...hatch.events],
+              };
+        const before = [
+          ...recharge.events,
+          ...aura.events,
+          ...surfacing.events,
+        ];
+        return before.length === 0
+          ? afflicted
           : {
-              state: frozen.state,
-              events: [...coldAura.events, ...frozen.events],
+              state: afflicted.state,
+              events: [...before, ...afflicted.events],
             };
-      // The Dwarf revision section 5.4: the burrowed Moles surface after the
-      // Shield recharge (and the Cold Aura) and before Plague.
-      const surfacing = resolveStartTurnSurfacingV7(
-        DWARF_KIT_V7,
-        aura.state,
-        nextPlayer.id,
-      );
-      const next = surfacing.state;
-      const plague = resolveStartTurnPlagueAndChainV7(next, nextPlayer.id);
-      const hatched = resolveStartTurnHatchV7(plague.state, nextPlayer.id);
-      // The ninth unit (7r55): Rise Again, after the hatch step and before
-      // Windmill healing.
-      const risen = resolveStartTurnRiseAgainV7(hatched.state, nextPlayer.id);
-      const hatch =
-        risen.events.length === 0 && risen.state === hatched.state
-          ? hatched
-          : {
-              state: risen.state,
-              events: [...hatched.events, ...risen.events],
-            };
-      const afflicted =
-        hatch.events.length === 0 && hatch.state === plague.state
-          ? plague
-          : { state: hatch.state, events: [...plague.events, ...hatch.events] };
-      const before = [...recharge.events, ...aura.events, ...surfacing.events];
-      return before.length === 0
-        ? afflicted
-        : {
-            state: afflicted.state,
-            events: [...before, ...afflicted.events],
-          };
-    });
+      },
+      // The giants' signatures (RULESET_7_GIANTS.md section 6.2): the
+      // digest, right after Troll regeneration.
+      (regenerated) =>
+        resolveStartTurnDigestV7(DWARF_KIT_V7, regenerated, nextPlayer.id),
+    );
     const turnStarted = started.events[0];
     if (turnStarted === undefined) throw new RangeError("INVALID_STATE");
     const settlement = settleCityRewardsV7(started.state, nextPlayer.id);
@@ -7928,13 +8247,18 @@ function checked(state: GameStateV7): GameStateV7 {
   // left the board and the Crumbs of a seat that left the game.
   // The ninth unit (7r55): drop the marked Graves whose Grave is gone and
   // the Cracked, struck, and risen entries of units that left the board.
+  // The giants' signatures (section 6.2): the held victims follow their
+  // holders, and a victim whose holder left is released or gone (first, so
+  // a released victim is an ordinary unit for the other prunes).
   const result = parseGameStateV7(
     prunedNinthUnitV7(
       prunedCandyV7(
         prunedMonstersV7(
           prunedDwarfV7(
             prunedIceFolkV7(
-              prunedMartianV7(prunedEggsV7(prunedAfflictionsV7(state))),
+              prunedMartianV7(
+                prunedEggsV7(prunedAfflictionsV7(prunedGiantsV7(state))),
+              ),
             ),
           ),
         ),

@@ -247,6 +247,9 @@ function normalizedInitialState(state: GameStateV7): string {
     // Dwarf crowd control (`pulp_wars-w49.33`) adds the `barricades` list,
     // empty in every initial state.
     barricades: _barricades,
+    // The giants' signatures (`pulp_wars-w49.30`) add the `giants` record,
+    // empty in every initial state.
+    giants: _giants,
     rulesetId: _rulesetId,
     setup,
     ...rest
@@ -266,6 +269,8 @@ function normalizedInitialState(state: GameStateV7): string {
     throw new Error("a hunted unit in an initial state");
   if (_berserk.length !== 0)
     throw new Error("a Berserk unit in an initial state");
+  if (_giants.swallowed.length !== 0)
+    throw new Error("a held victim in an initial state");
   if (_monsters.length !== 0) throw new Error("a Monster with the option off");
   if (_ice.length !== 0) throw new Error("ice in an initial state");
   if (_beamed.length !== 0 || _tractor.length !== 0)

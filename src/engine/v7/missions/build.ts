@@ -41,6 +41,7 @@ import {
   TECHNOLOGY_IDS_V7,
   UNIT_ROLE_IDS_V7,
   emptyNinthUnitStateV7,
+  emptyGiantsStateV7,
   type BiomeIdV7,
   type BoardStateV7,
   type CityStateV7,
@@ -601,6 +602,7 @@ export function buildMissionStateV7(
     berserkThisTurn: [],
     ninthUnit: emptyNinthUnitStateV7(),
     barricades: [],
+    giants: emptyGiantsStateV7(),
     pendingChoices: [],
     outcome: null,
   });

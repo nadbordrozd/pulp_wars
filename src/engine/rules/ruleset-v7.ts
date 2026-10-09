@@ -370,7 +370,21 @@ export type UnitRoleAbilityV7 =
   | "TORPEDO"
   // The naval branch, the frozen sea (section 8.4): every Ice Folk land
   // role Freezes.
-  | "FREEZE";
+  | "FREEZE"
+  // The giants' signatures (docs/product/RULESET_7_GIANTS.md section 6):
+  // the Human Juggernaut's Crushing Shove, the Undead Abomination's Swallow,
+  // the Goblin Troll's Goblin Toss, the Dinosaur Brontosaurus's Thunder
+  // Stomp, the Martian Colossus's Overstride, the Ice Folk Frost Giant's
+  // Glacial Smash, the Dwarf Brass Titan's Siege Hammer, and the Candy
+  // Gingerbread Giant's Break Off. The Giant Spider has none of them.
+  | "CRUSH"
+  | "SWALLOW"
+  | "TOSS"
+  | "STOMP"
+  | "OVERSTRIDE"
+  | "GLACIAL_SMASH"
+  | "SIEGE_HAMMER"
+  | "BREAK_OFF";
 
 /**
  * The Martian revision (section 7): how a land-form unit moves. `STRIDE`
@@ -684,6 +698,30 @@ export interface RoleMechanicsV7 {
    * heavy slot.
    */
   readonly demolishesFieldDefense: boolean;
+  /**
+   * The giants' signatures (docs/product/RULESET_7_GIANTS.md section 6):
+   * the numbers of the eight signature abilities, each read only when the
+   * role, under the unit's kind, has the signature's ability literal (G3).
+   * 0 (or false) for every other role and for the neutral Giant Spider.
+   *
+   * `crushDamage`: Crushing Shove, the fixed damage a defender that is not
+   * pushed (and a hostile blocker behind it) takes (`CRUSH_DAMAGE_V7`).
+   */
+  readonly crushDamage: number;
+  /** Swallow: the most HP a unit may have to be swallowed. */
+  readonly swallowMaxHp: number;
+  /** Goblin Toss: the farthest landing tile (the nearest is 2). */
+  readonly tossRange: number;
+  /** Thunder Stomp: the fixed damage to every hostile ground unit around. */
+  readonly stompDamage: number;
+  /** Overstride: the fixed damage to every hostile unit stepped over. */
+  readonly trampleDamage: number;
+  /** Glacial Smash: the Shatter threshold of the role's melee attacks. */
+  readonly glacialSmashHp: number;
+  /** Siege Hammer: melee attacks ignore fortification and raze Walls. */
+  readonly siegeHammer: boolean;
+  /** Break Off: the HP spent (the Giant needs more than this). */
+  readonly breakOffHp: number;
 }
 
 export interface FactionTechnologyTreeV7 {
@@ -1438,7 +1476,9 @@ export const ORIGINAL_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: null,
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "CAPTURE", "PUSH"],
+    // The giants' signatures (RULESET_7_GIANTS.md section 6.1): Push stays
+    // only on the Human Juggernaut, which crushes what it cannot push.
+    abilities: ["ATTACK", "CAPTURE", "PUSH", "CRUSH"],
   }),
   PATROL_BOAT: role({
     role: "PATROL_BOAT",
@@ -1581,6 +1621,14 @@ const mechanics = (
           whirl: false,
           rallyExcluded: false,
           demolishesFieldDefense: roleId === "CATAPULT",
+          crushDamage: 0,
+          swallowMaxHp: 0,
+          tossRange: 0,
+          stompDamage: 0,
+          trampleDamage: 0,
+          glacialSmashHp: 0,
+          siegeHammer: false,
+          breakOffHp: 0,
           ...overrides[roleId],
         },
       ]),
@@ -1637,6 +1685,42 @@ export const CRACKED_DEFENSE2_V7 = 2 as const;
 /** The ninth unit: the least Defense (half-points) of a Cracked unit. */
 export const CRACKED_MINIMUM_DEFENSE2_V7 = 1 as const;
 
+/*
+ * The giants' signatures (docs/product/RULESET_7_GIANTS.md sections 6.1 to
+ * 6.8; the first numbers to tune are listed in section 7).
+ */
+/** Crushing Shove: the fixed damage of a crush and of the collision. */
+export const CRUSH_DAMAGE_V7 = 3 as const;
+/** Swallow: the most HP (Shield not counted) a swallowed unit may have. */
+export const SWALLOW_MAX_HP_V7 = 12 as const;
+/** Swallow: the HP a held victim loses at its holder's owner's Start Turn. */
+export const DIGEST_DAMAGE_V7 = 4 as const;
+/** Goblin Toss: the farthest landing distance (the nearest is 2). */
+export const TOSS_RANGE_V7 = 3 as const;
+/** Goblin Toss: the nearest landing distance. */
+export const TOSS_MINIMUM_RANGE_V7 = 2 as const;
+/** Thunder Stomp: the fixed damage to every hostile ground unit around. */
+export const STOMP_DAMAGE_V7 = 4 as const;
+/** Overstride: the fixed damage to each hostile unit stepped over. */
+export const TRAMPLE_DAMAGE_V7 = 3 as const;
+/** Glacial Smash: the Frost Giant's Shatter threshold. */
+export const GLACIAL_SMASH_HP_V7 = 8 as const;
+/**
+ * Break Off (the user's change of 2026-10-09): the HP the Gingerbread Giant
+ * spends (it needs more than this, so 11 or more) to make
+ * `BREAK_OFF_UNITS_V7` Gingerbread Men, each an ordinary Toffee Trooper at
+ * full HP.
+ */
+export const BREAK_OFF_HP_V7 = 10 as const;
+/** Break Off: the Gingerbread Men one Break Off makes. */
+export const BREAK_OFF_UNITS_V7 = 2 as const;
+/**
+ * Break Off: the presentation variant a Gingerbread Man carries on its unit
+ * (`UnitStateV7.variant`); in every rule it is the Candy `FIGHTER` (a
+ * Toffee Trooper).
+ */
+export const GINGERBREAD_MAN_VARIANT_V7 = "GINGERBREAD_MAN" as const;
+
 /**
  * Tuning 5: a land-form defender's base Defense in half-points against an
  * attack from `distance` tiles: the role's `rangedDefense2` from two or
@@ -1670,6 +1754,8 @@ export const ORIGINAL_ROLE_MECHANICS_V7 = mechanics({
   // zones of control (the Sabretooth's Prowl mechanic), so it slips past a
   // screen to the units behind it.
   RAIDER: { ignoresZocStops: true },
+  // The giants' signatures (section 6.1): Crushing Shove.
+  JUGGERNAUT: { crushDamage: CRUSH_DAMAGE_V7 },
 });
 
 export const ORIGINAL_BASELINE_V5_TREE: FactionTechnologyTreeV7 = deepFreeze({
@@ -1832,7 +1918,8 @@ export const UNDEAD_ROLE_RULES_V7: Readonly<
     label: "Abomination",
     // The Undead pass (7r51): Infect. A land unit the Abomination kills
     // rises as a Zombie (it does not bite: a survivor is not Bitten).
-    abilities: ["ATTACK", "CAPTURE", "PUSH", "INFECT"],
+    // The giants' signatures (section 6.2): Swallow instead of Push.
+    abilities: ["ATTACK", "CAPTURE", "INFECT", "SWALLOW"],
   }),
   PATROL_BOAT: role({ ...ORIGINAL_ROLE_RULES_V7.PATROL_BOAT }),
   BATTLESHIP: role({ ...ORIGINAL_ROLE_RULES_V7.BATTLESHIP }),
@@ -1873,8 +1960,8 @@ export const UNDEAD_ROLE_MECHANICS_V7 = mechanics({
   CATAPULT: { advancesAfterKill: false, splash: true },
   // The Undead pass (7r51): with Infect the Abomination's victim rises on
   // its own tile, so the Abomination does not advance, as the Zombie does
-  // not.
-  JUGGERNAUT: { advancesAfterKill: false },
+  // not. The giants' signatures (section 6.2): Swallow.
+  JUGGERNAUT: { advancesAfterKill: false, swallowMaxHp: SWALLOW_MAX_HP_V7 },
   BATTLESHIP: { splash: true },
   // The ninth unit (7r55): the Wight's Rise Again.
   SWORDSMAN: { riseAgainHp: WIGHT_RISE_AGAIN_HP_V7 },
@@ -2044,7 +2131,8 @@ export const GOBLIN_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: null,
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "CAPTURE", "PUSH", "REGENERATE"],
+    // The giants' signatures (section 6.3): Goblin Toss instead of Push.
+    abilities: ["ATTACK", "CAPTURE", "REGENERATE", "TOSS"],
   }),
   PATROL_BOAT: role({ ...ORIGINAL_ROLE_RULES_V7.PATROL_BOAT }),
   BATTLESHIP: role({ ...ORIGINAL_ROLE_RULES_V7.BATTLESHIP }),
@@ -2112,7 +2200,8 @@ export const GOBLIN_ROLE_MECHANICS_V7 = mechanics({
   // The Goblin pass (7r50): Crash, a Scrap Buggy may Kaboom after attacking.
   // `pulp_wars-w49.35`: its death blast is 7 (4 before).
   KNIGHT: { kaboomDamage: 5, deathBlastDamage: 7, kaboomAfterAttack: true },
-  JUGGERNAUT: { regeneration: 4 },
+  // The giants' signatures (section 6.3): Goblin Toss.
+  JUGGERNAUT: { regeneration: 4, tossRange: TOSS_RANGE_V7 },
   BATTLESHIP: { splash: true },
   // The ninth unit (7r55): the Ogre's Heavyweight.
   SWORDSMAN: { gangUpWeight: OGRE_GANG_UP_WEIGHT_V7 },
@@ -2312,7 +2401,8 @@ export const DINOSAUR_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: null,
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "CAPTURE", "PUSH", "GROW"],
+    // The giants' signatures (section 6.4): Thunder Stomp instead of Push.
+    abilities: ["ATTACK", "CAPTURE", "GROW", "STOMP"],
   }),
   PATROL_BOAT: role({ ...ORIGINAL_ROLE_RULES_V7.PATROL_BOAT }),
   BATTLESHIP: role({ ...ORIGINAL_ROLE_RULES_V7.BATTLESHIP }),
@@ -2365,7 +2455,8 @@ export const DINOSAUR_ROLE_MECHANICS_V7 = mechanics({
   // advances, the Thagomizer).
   CATAPULT: { hatchTurns: 2, advancesAfterKill: false, cracksArmour: true },
   KNIGHT: { capacitySlots: 2, hatchTurns: 4 },
-  JUGGERNAUT: { capacitySlots: 2 },
+  // The giants' signatures (section 6.4): Thunder Stomp.
+  JUGGERNAUT: { capacitySlots: 2, stompDamage: STOMP_DAMAGE_V7 },
   BATTLESHIP: { splash: true },
   // The ninth unit (7r55): the Triceratops in the heavy slot keeps its two
   // slots, hatch time, and run-up, stays out of War Drums (`rallyExcluded`;
@@ -2566,13 +2657,15 @@ export const MARTIAN_ROLE_RULES_V7: Readonly<
     attack2: 8,
     // `pulp_wars-t6s.5`: Defense 2.5 (was 3), section 16.5.
     defense2: 5,
-    move: 1,
+    // The giants' signatures (section 6.5): Move 2 (1 before) and
+    // Overstride instead of Push.
+    move: 2,
     range: 2,
     minimumRange: 1,
     sightRadius: 1,
     technology: null,
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "CAPTURE", "PUSH", "STRIDE", "HEAT_RAY"],
+    abilities: ["ATTACK", "CAPTURE", "STRIDE", "HEAT_RAY", "OVERSTRIDE"],
   }),
   PATROL_BOAT: role({ ...ORIGINAL_ROLE_RULES_V7.PATROL_BOAT }),
   BATTLESHIP: role({ ...ORIGINAL_ROLE_RULES_V7.BATTLESHIP }),
@@ -2623,7 +2716,13 @@ export const MARTIAN_ROLE_MECHANICS_V7 = mechanics({
     capacitySlots: 2,
     heavyTractorBeam: true,
   },
-  JUGGERNAUT: { shield: 3, movementMode: "STRIDE", capacitySlots: 2 },
+  // The giants' signatures (section 6.5): Overstride.
+  JUGGERNAUT: {
+    shield: 3,
+    movementMode: "STRIDE",
+    capacitySlots: 2,
+    trampleDamage: TRAMPLE_DAMAGE_V7,
+  },
   BATTLESHIP: { splash: true },
   // The ninth unit (7r55): the Shock Trooper, Shield 3 and the Shock Field.
   SWORDSMAN: { shield: 3, shockFieldDamage: SHOCK_FIELD_DAMAGE_V7 },
@@ -2832,12 +2931,14 @@ export const ICE_FOLK_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: null,
     mayUsePrimaryActionAfterMove: true,
+    // The giants' signatures (section 6.6): Glacial Smash instead of Push
+    // (Freeze stays last, as on every Ice Folk land role).
     abilities: [
       "ATTACK",
       "CAPTURE",
-      "PUSH",
       "COLD_AURA",
       "MOUNTAIN_BORN",
+      "GLACIAL_SMASH",
       "FREEZE",
     ],
   }),
@@ -2893,7 +2994,14 @@ export const ICE_FOLK_ROLE_MECHANICS_V7 = mechanics({
     plantedBonus2: 2,
   },
   KNIGHT: { ignoresZocStops: true },
-  JUGGERNAUT: { mountainBorn: true, glides: true },
+  // The giants' signatures (section 6.6): Glacial Smash, and the Frost
+  // Giant never advances.
+  JUGGERNAUT: {
+    mountainBorn: true,
+    glides: true,
+    advancesAfterKill: false,
+    glacialSmashHp: GLACIAL_SMASH_HP_V7,
+  },
   BATTLESHIP: { splash: true },
   // The ninth unit (7r55): the Mammoth in the heavy slot keeps Glide, Sweep,
   // and Trample.
@@ -3080,7 +3188,8 @@ export const DWARF_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: null,
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "CAPTURE", "PUSH", "CLOCKWORK"],
+    // The giants' signatures (section 6.7): Siege Hammer instead of Push.
+    abilities: ["ATTACK", "CAPTURE", "CLOCKWORK", "SIEGE_HAMMER"],
   }),
   PATROL_BOAT: role({ ...ORIGINAL_ROLE_RULES_V7.PATROL_BOAT }),
   BATTLESHIP: role({ ...ORIGINAL_ROLE_RULES_V7.BATTLESHIP }),
@@ -3165,6 +3274,8 @@ export const DWARF_ROLE_MECHANICS_V7 = mechanics({
     construct: true,
     unflinchingAttack: true,
     repairsAsMachine: true,
+    // The giants' signatures (section 6.7): Siege Hammer.
+    siegeHammer: true,
   },
   BATTLESHIP: { splash: true },
   // The ninth unit (7r55): the Steam Tank in the heavy slot keeps Plated.
@@ -3346,7 +3457,8 @@ export const CANDY_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: null,
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "CAPTURE", "PUSH", "SUGAR_RUSH", "BOUNCE"],
+    // The giants' signatures (section 6.8): Break Off instead of Push.
+    abilities: ["ATTACK", "CAPTURE", "SUGAR_RUSH", "BOUNCE", "BREAK_OFF"],
   }),
   PATROL_BOAT: role({ ...ORIGINAL_ROLE_RULES_V7.PATROL_BOAT }),
   BATTLESHIP: role({ ...ORIGINAL_ROLE_RULES_V7.BATTLESHIP }),
@@ -3410,6 +3522,8 @@ export const CANDY_ROLE_MECHANICS_V7 = mechanics({
   BATTLESHIP: { splash: true },
   // The ninth unit (7r55): the Jawbreaker is Rock Hard and leaves Crumbs.
   SWORDSMAN: { leavesCrumbs: true, immovable: true },
+  // The giants' signatures (section 6.8): Break Off.
+  JUGGERNAUT: { breakOffHp: BREAK_OFF_HP_V7 },
 });
 
 export const CANDY_BASELINE_V1_TREE: FactionTechnologyTreeV7 = deepFreeze({
@@ -3746,6 +3860,16 @@ export const NEUTRAL_MONSTER_ROLE_MECHANICS_V7: RoleMechanicsV7 = deepFreeze({
   ...ORIGINAL_ROLE_MECHANICS_V7.JUGGERNAUT,
   advancesAfterKill: false,
   buildsFieldDefense: false,
+  // The giants' signatures (RULESET_7_GIANTS.md section 6.0, G3): the Giant
+  // Spider shares the role and has none of them.
+  crushDamage: 0,
+  swallowMaxHp: 0,
+  tossRange: 0,
+  stompDamage: 0,
+  trampleDamage: 0,
+  glacialSmashHp: 0,
+  siegeHammer: false,
+  breakOffHp: 0,
 });
 
 /** Section 8.1: the faction-wide rules of the neutral registration. */
@@ -3853,7 +3977,7 @@ export const RULESET_7 = deepFreeze({
  * a technology of tier `t` costs `5 / 7 / 9 + (T - 1)`, `T` being the
  * technologies the researcher already owns.
  *
- * The economy rejig (`pulp_wars-w49.16`, `pulp-wars-poc-7r61`,
+ * The economy rejig (`pulp_wars-w49.16`, `pulp-wars-poc-7r62`,
  * docs/product/RULESET_7_ECONOMY_REJIG.md): the price is per city again and
  * the technologies owned no longer enter it. A technology of tier `t`
  * costs `5 / 7 / 9 + (1 / 2 / 3) * (C - 1)`, `C` being the cities the

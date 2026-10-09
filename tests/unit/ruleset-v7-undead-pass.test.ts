@@ -190,13 +190,13 @@ describe("the Undead pass: identity", () => {
   // , the Dinosaur pass 7r53, and the economy rejig 7r54, so 7r51 is a
   // prior identity.
   it("was 7r51 after 7r50, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r61");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r61.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-11, -9)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r62");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r62.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-12, -10)).toEqual([
       "pulp-wars-poc-7r50",
       "pulp-wars-poc-7r51",
     ]);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-11, -9)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-12, -10)).toEqual([
       "pulpWars.save.v7r50.current",
       "pulpWars.save.v7r51.current",
     ]);
@@ -239,7 +239,8 @@ describe("the Undead pass: identity", () => {
       ["Necromancer", ["ATTACK", "RALLY", "RAISE_DEAD"]],
       ["Lich", ["ATTACK", "PLAGUE"]],
       ["Vampire", ["ATTACK", "LIFESTEAL", "UNANSWERED", "ESCAPE"]],
-      ["Abomination", ["ATTACK", "CAPTURE", "PUSH", "INFECT"]],
+      // The giants' signatures (`pulp_wars-w49.30`): Swallow instead of Push.
+      ["Abomination", ["ATTACK", "CAPTURE", "INFECT", "SWALLOW"]],
     ]);
     // The units whose kill rises do not advance onto its tile.
     expect(
@@ -270,11 +271,13 @@ describe("the Undead pass: identity", () => {
       [9, 10, 6, 2, 3, 1],
       [null, 40, 8, 8, 1, 1],
     ]);
-    // The Human Juggernaut and Knight are as they were.
+    // The Human Juggernaut and Knight are as they were (the giants'
+    // signatures, `pulp_wars-w49.30`, add Crushing Shove to the Juggernaut).
     expect(effectiveRoleRuleV7("JUGGERNAUT", "ORIGINAL").abilities).toEqual([
       "ATTACK",
       "CAPTURE",
       "PUSH",
+      "CRUSH",
     ]);
     expect(effectiveRoleRuleV7("KNIGHT", "ORIGINAL").abilities).toEqual([
       "ATTACK",

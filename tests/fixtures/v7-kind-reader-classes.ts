@@ -515,6 +515,10 @@ export const KIND_READER_CLASSES_V7: Readonly<
   "src/render/ninth-unit-presentation-v7.ts::<module>": "SEAT",
   "src/render/ninth-unit-presentation-v7.ts::ninthUnitMechanicsV7": "SEAT",
   "src/render/ninth-unit-presentation-v7.ts::ninthUnitHelpRulesV7": "SEAT",
+  // The giants' signatures (`pulp_wars-w49.30`). The state check reads the
+  // holder's and the victim's kinds (`kindOf`; a held victim is never
+  // mind-controlled).
+  "src/engine/v7/state-schema.ts::giantsValid": "KIND",
 };
 
 /**

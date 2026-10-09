@@ -66,6 +66,11 @@ import {
 import { unitSlidesV7 } from "./ice";
 import { tileAtV7 } from "./spatial-economy";
 import type { GameStateV7, UnitStateV7 } from "./types";
+import {
+  giantSignatureAmountV7,
+  giantSignatureV7,
+  type GiantSignatureV7,
+} from "./giants";
 
 export const UNIT_STAT_IDS_V7 = Object.freeze([
   "HP",
@@ -351,6 +356,34 @@ export interface PublicUnitStatsV7 {
   readonly tossedThisTurn?: boolean;
   /** The Candy revision: present exactly for units of the Candy kind. */
   readonly candy?: PublicCandyMechanicsV7;
+  /**
+   * The giants' signatures (docs/product/RULESET_7_GIANTS.md section 8):
+   * present exactly for a unit whose role, under its kind, has a signature
+   * (the eight faction giants; never the Giant Spider).
+   */
+  readonly giant?: PublicGiantMechanicsV7;
+}
+
+/** The giants' signatures: a giant's public signature facts. */
+export interface PublicGiantMechanicsV7 {
+  readonly signature: GiantSignatureV7;
+  /**
+   * The signature's number: the crush, Stomp, or trample damage, the
+   * Swallow HP limit, the Toss range, the Glacial Smash threshold, or the
+   * HP a Break Off tears off (0 for the Siege Hammer).
+   */
+  readonly amount: number;
+  /**
+   * Swallow (section 6.2): the victim the Abomination holds, null when it
+   * holds none (always null for the other giants).
+   */
+  readonly swallowed: {
+    readonly unitId: UnitStateV7["id"];
+    readonly ownerId: UnitStateV7["ownerId"];
+    readonly role: UnitStateV7["role"];
+    readonly hp: number;
+    readonly maxHp: number;
+  } | null;
 }
 
 /** The Snow and Blizzard a stats reader may know of (section 6.5). */
@@ -914,6 +947,7 @@ export function publicUnitStatsV7(
           },
         }
       : {}),
+    ...giantBlockV7(state, unit),
     ...(iceFolk
       ? {
           iceFolk: {
@@ -940,6 +974,37 @@ export function publicUnitStatsV7(
           },
         }
       : {}),
+  };
+}
+
+/**
+ * The giants' signatures (section 8): the `giant` block of a unit whose
+ * role has a signature, with the held victim of an Abomination.
+ */
+function giantBlockV7(
+  state: GameStateV7,
+  unit: UnitStateV7,
+): Pick<PublicUnitStatsV7, "giant"> {
+  const signature = giantSignatureV7(state, unit);
+  if (signature === null) return {};
+  const held = state.giants.swallowed.find(
+    (entry) => entry.holderUnitId === unit.id,
+  );
+  return {
+    giant: {
+      signature,
+      amount: giantSignatureAmountV7(state, unit),
+      swallowed:
+        held === undefined
+          ? null
+          : {
+              unitId: held.unit.id,
+              ownerId: held.unit.ownerId,
+              role: held.unit.role,
+              hp: held.unit.hp,
+              maxHp: held.unit.maxHp,
+            },
+    },
   };
 }
 
@@ -1087,7 +1152,11 @@ function fortificationTerms(
   );
   const terms: PublicUnitStatTermV7[] = [];
   if (
-    city?.rewards.some(
+    // The giants' signatures (RULESET_7_GIANTS.md section 6.7): razed
+    // Walls add nothing.
+    city !== undefined &&
+    city.wallsRazed !== true &&
+    city.rewards.some(
       (reward) => reward.reachedLevel === 3 && reward.reward === "WALLS",
     )
   )

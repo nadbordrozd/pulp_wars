@@ -133,7 +133,10 @@ describe("ruleset-7 late public query performance", () => {
       // BUILD_BARRICADE, and ATTACK_BARRICADE after ASSEMBLE, moving every
       // later kind forward by three (was 9b18cf…883b); the
       // revision-12-ordinal value is unchanged.
-      "56f315525a716afd3ef41115bf4a58c00d473105570daecaa0baa45c4878eaed",
+      // The giants' signatures (`pulp_wars-w49.30`) insert SWALLOW, TOSS,
+      // STOMP, and BREAK_OFF after RECOVER, moving every later command kind
+      // forward by four (was 56f315…eaed).
+      "3ce945c681a0ea15a5ad0d70375d8c5a825b547f00fd609dd7016a62c67f244d",
     );
     // Revision 13 shifts the command-kind ordinals in AI tie-break tuples
     // (spec section 8); with revision-12 ordinals the value is unchanged.

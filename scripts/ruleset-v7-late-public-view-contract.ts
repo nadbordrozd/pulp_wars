@@ -141,7 +141,10 @@ export const RULESET7_LATE_PUBLIC_VIEW_NORMAL_DECISION = Object.freeze({
     // Dwarf crowd control (`pulp_wars-w49.33`) inserts WHIRL,
     // BUILD_BARRICADE, and ATTACK_BARRICADE after ASSEMBLE, moving every
     // later command kind forward by three (was 9c715b…2a52).
-    "0549817ac83a17f75bf48972015a3f294af5d1640a8be13b3e10dacc9047efe7",
+    // The giants' signatures (`pulp_wars-w49.30`) insert SWALLOW, TOSS,
+    // STOMP, and BREAK_OFF after RECOVER, moving every later command kind
+    // forward by four (was 054981…efe7).
+    "6bcb0280a60f8adab02ba5b3490d13b17edefae19c5240bf23acd345c6862921",
   command: Object.freeze({
     kind: "TRAIN",
     cityId: 16,
@@ -230,10 +233,10 @@ export function upgradeRetainedPublicViewV7(
   });
   return {
     ...retained,
-    rulesetId: "pulp-wars-poc-7r61",
+    rulesetId: "pulp-wars-poc-7r62",
     setup: {
       ...retained.setup,
-      rulesetId: "pulp-wars-poc-7r61",
+      rulesetId: "pulp-wars-poc-7r62",
       mapType: "DRY_LAND",
       mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
       curiosities: false,
@@ -359,6 +362,8 @@ export function upgradeRetainedPublicViewV7(
     },
     // Dwarf crowd control (`pulp_wars-w49.33`): nor any Barricade.
     barricades: [],
+    // The giants' signatures (`pulp_wars-w49.30`): nor any held victim.
+    giants: { swallowed: [] },
   };
 }
 import {

@@ -1,13 +1,26 @@
 # Ruleset 7: a signature ability for every giant
 
 **Status:** design, bead `pulp_wars-w49.29` (epic `pulp_wars-w49`, point
-7 of the user's notes of 2026-10-05). Nothing here is built. The rules are
-written against `pulp-wars-poc-7r59` and against bead `pulp_wars-zypi`,
-which moves the reward giant back to city level 5. The root makes every
-call that [section 14](#14-open-questions-and-defaults) lists; each has a
-default, so the implementation beads can start from this document as it
-stands. [The current rules](RULESET_7_CURRENT.md) stay authoritative until
-the engine bead folds this in.
+7 of the user's notes of 2026-10-05). The rules are written against
+`pulp-wars-poc-7r59` and against bead `pulp_wars-zypi`, which moves the
+reward giant back to city level 5. The root accepted the defaults of
+[section 14](#14-open-questions-and-defaults) (Push only on the Juggernaut,
+the full Swallow, no new art).
+
+**Built (engine, `pulp_wars-w49.30`).** Section 6 and section 8 are in the
+engine at `pulp-wars-poc-7r62` (the identity bump section 8 names, taken at
+publication after Dwarf crowd control, `7r60`, and Goblin explosions and
+Berserk, `7r61`; a save, replay, or setup of `7r61` is rejected): the
+registry, the four commands, the `giants` block and `wallsRazed`, the
+events, the previews, the text harness and `lab --giant`, and a Normal AI
+that stays legal (it uses no signature).
+Break Off is built as the user changed it on 2026-10-09
+([section 6.8](#68-candy-gingerbread-giant-break-off): two full-HP
+Gingerbread Men for 10 HP, no slot needed); the draft, critique, balance
+reasoning, and AI notes below still describe the design's single Trooper.
+[The current rules](RULESET_7_CURRENT.md#111-the-giants-signatures) hold
+the built rules and are authoritative. Not yet built: the Normal AI's use
+of the signatures (`pulp_wars-w49.31`) and the presentation (section 10).
 
 **The user's ask.** 2026-10-08: "review the giant units of all factions and
 give them unique abilities; they are very samey now". Epic `w49` point 7:
@@ -37,7 +50,7 @@ statistics were run.
 | Martian  | Colossus          | **Overstride**: steps over units and through zones of control; tramples each hostile unit it steps over for 3                  | **Move 2** (was 1); loses Push; keeps the heat ray  |
 | Ice Folk | Frost Giant       | **Glacial Smash**: its hit shatters a Chilled unit left at 8 HP or less, and the shards Chill the units around it              | **never advances**; loses Push; keeps the Cold Aura |
 | Dwarf    | Brass Titan       | **Siege Hammer**: its blows ignore Walls, Field Defense, and Dig In, smash the Field Defense, and **tear down a city's Walls** | loses Push; keeps the construct rules               |
-| Candy    | Gingerbread Giant | **Break Off**: tears off 8 of its own HP to make an 8-HP Toffee Trooper beside it (needs a free unit slot in its home city)    | loses Push; keeps Sugar Rush and Bounce             |
+| Candy    | Gingerbread Giant | **Break Off**: spends 10 of its own HP on two full-HP Gingerbread Men (Toffee Troopers) beside it (the user's change)          | loses Push; keeps Sugar Rush and Bounce             |
 
 Eight different kinds of mechanic: a displacement combo, a delayed removal
 and conversion, a throw, an area attack, a movement rule, an execute with a
@@ -608,42 +621,57 @@ it. The Titan at 18 of 36 still attacks as if at full HP (Unflinching).
 
 ### 6.8 Candy Gingerbread Giant: Break Off
 
-**`BREAK_OFF { kind, unitId, at }`**, a primary action of a role with
-`BREAK_OFF` (the Gingerbread Giant). It may follow a Move. Legality, in
-order:
+**The user's change of 2026-10-09** (bead comment on `pulp_wars-w49.30`):
+the Gingerbread Giant spends 10 HP to make **two** mini Gingerbread Men,
+each with the stats of a regular Toffee Trooper. The root's judgements: they
+are Candy `FIGHTER`-role units (a Toffee Trooper in every rule) carrying a
+presentation variant ("Gingerbread Man", persisted with the unit); Break
+Off needs the Giant at 11 HP or more and two free legal adjacent land tiles;
+it is the Giant's primary action; both are homed to the Giant's home city
+and placed even when that city is at capacity (they count against it
+afterwards, like reward units). This replaces the single 8-HP Trooper and
+its free-slot requirement of the design; the rule below is the built one.
 
-| #   | Requirement                                                                                                                                                                                                       | Rejection                                    |
-| --- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- |
-| 1   | `unitId` is the actor's own unit on the board.                                                                                                                                                                    | the ordinary unit errors                     |
-| 2   | Its role, under its kind, has `BREAK_OFF`.                                                                                                                                                                        | `UNIT_ROLE_INVALID { role }`                 |
-| 3   | It is not Crashed.                                                                                                                                                                                                | `UNIT_CRASHED { unitId }`                    |
-| 4   | It has not used a primary action and has not landed this turn; a sluggish Giant has not moved.                                                                                                                    | `UNIT_ALREADY_ACTED`                         |
-| 5   | It is in land form.                                                                                                                                                                                               | `BREAK_OFF_NOT_LEGAL { reason: "EMBARKED" }` |
-| 6   | Its HP is more than `BREAK_OFF_HP_V7` (8), so at least 9.                                                                                                                                                         | `BREAK_OFF_NOT_LEGAL { reason: "TOO_WEAK" }` |
-| 7   | It has a home city owned by the actor.                                                                                                                                                                            | `BREAK_OFF_NOT_LEGAL { reason: "NO_HOME" }`  |
-| 8   | `at` is one of the eight tiles around it, holds no unit of any owner or form, no mound, no treasure chest, and no curiosity, is enterable by a Toffee Trooper, and is not allied territory (Re-bake's tile rule). | `BREAK_OFF_NOT_LEGAL { reason: "TILE" }`     |
-| 9   | The home city has a free slot for the `FIGHTER` role.                                                                                                                                                             | `CITY_CAPACITY_FULL`                         |
+**`BREAK_OFF { kind, unitId, tiles }`**, a primary action of a role with
+`BREAK_OFF` (the Gingerbread Giant); `tiles` is two distinct tiles in
+`(y, x)` order. It may follow a Move. Legality, in order:
 
-**Result.** The Giant loses 8 HP (it is not damage: no event of damage, no
-Shield or Armoured, never a death). A Toffee Trooper (the Candy `FIGHTER`)
-with the next entity ID stands on `at`: owned by the actor, homed to the
-Giant's home city (using a slot), at **8 of 10 HP**, zero kills, the
-exhausted activation, `captureEligible` false. Hostile Field Defense on
-`at` is destroyed (reason `OCCUPATION`), and the Trooper reveals its sight.
-It is an ordinary Toffee Trooper from then on (it may Rush next turn, and
-leaves Crumbs when it dies). Event `GIANT_BROKE_OFF { playerId, unitId,
-newUnitId, at, cityId, hp }`, then `FIELD_DEFENSE_DESTROYED`,
-`TILES_REVEALED`, and the ordinary tail. It spends no Coins and no city
-action, and a siege of the home city does not block it (as Re-bake).
+| #   | Requirement                                                                                                                                                                                                                          | Rejection                                    |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------- |
+| 1   | `unitId` is the actor's own unit on the board.                                                                                                                                                                                       | the ordinary unit errors                     |
+| 2   | Its role, under its kind, has `BREAK_OFF`.                                                                                                                                                                                           | `UNIT_ROLE_INVALID { role }`                 |
+| 3   | It is not Crashed.                                                                                                                                                                                                                   | `UNIT_CRASHED { unitId }`                    |
+| 4   | It has not used a primary action and has not landed this turn; a sluggish Giant has not moved.                                                                                                                                       | `UNIT_ALREADY_ACTED`                         |
+| 5   | It is in land form.                                                                                                                                                                                                                  | `BREAK_OFF_NOT_LEGAL { reason: "EMBARKED" }` |
+| 6   | Its HP is more than `BREAK_OFF_HP_V7` (10), so at least 11.                                                                                                                                                                          | `BREAK_OFF_NOT_LEGAL { reason: "TOO_WEAK" }` |
+| 7   | It has a home city owned by the actor.                                                                                                                                                                                               | `BREAK_OFF_NOT_LEGAL { reason: "NO_HOME" }`  |
+| 8   | Each of the two `tiles` is one of the eight tiles around it, holds no unit of any owner or form, no mound, no treasure chest, and no curiosity, is enterable by a Toffee Trooper, and is not allied territory (Re-bake's tile rule). | `BREAK_OFF_NOT_LEGAL { reason: "TILE" }`     |
+
+There is no slot rule. The command query offers every pair of legal tiles,
+in `(y, x)` order (up to 28).
+
+**Result.** The Giant loses 10 HP (it is not damage: no event of damage, no
+Shield or Armoured, never a death). Two Gingerbread Men with the next two
+entity IDs stand on the two tiles, in order: each a Candy `FIGHTER` (a
+Toffee Trooper) owned by the actor, homed to the Giant's home city (each
+using a slot, even beyond its limit), at **full HP** (10 of 10), zero kills,
+the exhausted activation, `captureEligible` false, and
+`variant: "GINGERBREAD_MAN"` (public; presentation only). Hostile Field
+Defense on either tile is destroyed (reason `OCCUPATION`), and each reveals
+its sight. They are ordinary Toffee Troopers from then on (they may Rush
+next turn, and leave Crumbs when they die). Event `GIANT_BROKE_OFF
+{ playerId, unitId, newUnitIds, tiles, cityId, hp }`, then
+`FIELD_DEFENSE_DESTROYED`, `TILES_REVEALED`, and the ordinary tail. It
+spends no Coins and no city action, and a siege of the home city does not
+block it (as Re-bake).
 
 **Kept and changed.** Sugar Rush (a Rushed Giant may Break Off; the Crash
 then blocks it on the next turn) and Bounce kept; Push lost.
 
-**Worked example.** A Giant at 40 next to the front, its home city one slot
-short of its limit: Break Off, the Giant at 32 and an 8-HP Trooper in the
-line. A Knight then attacks the Giant at 32 of 40: 11 (32 to 21), and the
-Knight takes 6 and is Bounced. Two turns of Recover in own land (4 each)
-bring the Giant back to 29.
+**Worked example.** A Giant at 40 next to the front: Break Off, the Giant
+at 30 and two 10-HP Gingerbread Men in the line. A Knight then attacks the
+Giant at 30 of 40 and is Bounced. Recover in own land brings the Giant back
+4 a turn.
 
 ## 7. Balance: scenario reasoning
 
@@ -862,8 +890,10 @@ Engine (`tests/unit/ruleset-v7-giants.test.ts`, constructed states):
   hostile center only; `wallsRazed` through capture; the level-3 reward not
   re-offered; every reader of Walls (fortification, the city panel query,
   Snow on a walled Ice Folk center).
-- **Break Off:** every legality row (Crash, HP 8 and 9, no home, full city,
-  tile rules); the Trooper's HP, home, slot, exhaustion, Crumbs on death.
+- **Break Off** (as changed on 2026-10-09): every legality row (Crash, HP
+  10 and 11, no home, the tile rules, fewer than two free tiles); the two
+  Gingerbread Men's HP, home, slots (also beyond a full city), exhaustion,
+  variant, and Toffee Trooper rules.
 - **G4 and G5:** each new primary action in the sluggish table and the
   Crash; each new death cause in the Grave, Crumbs, blast, rising, and
   kill-credit lists.

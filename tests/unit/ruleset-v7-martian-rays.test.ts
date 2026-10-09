@@ -881,7 +881,7 @@ describe("Martian heat rays: Pierce (section 6.4)", () => {
 
   // Tuning 2 (`pulp_wars-w49.3`, 7r47): a ranged unit never advances (both
   // advanced after an adjacent kill before).
-  it("a Ray Gunner and a Colossus stay after an adjacent kill; the Colossus pushes at range 1 only", () => {
+  it("a Ray Gunner and a Colossus stay after an adjacent kill; the Colossus never pushes", () => {
     for (const role of ["MARKSMAN", "JUGGERNAUT"] as const) {
       const state = martianFieldV7([
         { seat: 0, role, at: at(4, 2) },
@@ -897,12 +897,16 @@ describe("Martian heat rays: Pierce (section 6.4)", () => {
       { seat: 0, role: "JUGGERNAUT", at: at(4, 2) },
       { seat: 1, role: "JUGGERNAUT", at: at(5, 2) },
     ]);
-    // A Juggernaut-role target is never pushed; use a Guard.
+    // A Juggernaut-role target is never pushed; use a Guard. The giants'
+    // signatures (`pulp_wars-w49.30`): the Colossus lost Push (it has
+    // Overstride), so it pushes nothing at range 1 either.
     const guard = martianFieldV7([
       { seat: 0, role: "JUGGERNAUT", at: at(4, 2) },
       { seat: 1, role: "GUARD", at: at(5, 2) },
     ]);
-    expect(attackV7(guard, at(4, 2), at(5, 2)).combat.push).toBe("WILL_PUSH");
+    const nearRun = attackV7(guard, at(4, 2), at(5, 2));
+    expect(nearRun.combat.push).toBe("BLOCKED");
+    expect(kindsV7(nearRun.events)).not.toContain("UNIT_PUSHED");
     expect(near.units).toHaveLength(2);
     const far = martianFieldV7([
       { seat: 0, role: "JUGGERNAUT", at: at(3, 2) },

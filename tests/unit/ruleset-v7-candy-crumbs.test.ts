@@ -203,6 +203,10 @@ describe("Crumbs are left by a fallen Candy unit (section 6.1)", () => {
       "BOMB",
       "ERUPTION",
       "PEPPERMINT",
+      // The giants' signatures (`pulp_wars-w49.30`, G5).
+      "CRUSH",
+      "STOMP",
+      "TRAMPLE",
     ]);
     for (const cause of CRUMBS_DEATH_CAUSES_V7)
       expect(deathLeavesCrumbsV7(state, dead("FIGHTER"), cause), cause).toBe(
@@ -544,15 +548,24 @@ describe("eating Crumbs and the Peppermint Surprise (section 6.3)", () => {
     expect(passed.state.crumbs).toHaveLength(1);
     expect(eaten(passed.events)).toEqual([]);
     // A Juggernaut's Push moves a hostile unit onto the Crumbs: not eaten.
+    // Since the giants' signatures (`pulp_wars-w49.30`) only the Human
+    // Juggernaut pushes: a third seat's Human Juggernaut pushes an Undead
+    // Zombie onto the Candy Crumbs (three seats on the 14 x 14 board).
     const pushed = candyFieldV7(
       [
-        { seat: 0, role: "JUGGERNAUT", at: at(5, 5) },
-        { seat: 1, role: "GUARD", at: at(5, 4) },
+        { seat: 1, role: "JUGGERNAUT", at: at(6, 7) },
+        { seat: 2, role: "GUARD", at: at(6, 6) },
+        { seat: 0, role: "FIGHTER", at: at(2, 2) },
+        { seat: 2, role: "FIGHTER", at: at(11, 2) },
       ],
-      { crumbs: [{ at: at(5, 3), role: "KNIGHT" }] },
+      {
+        factions: ["CANDY", "ORIGINAL", "UNDEAD"],
+        activeSeat: 1,
+        crumbs: [{ at: at(6, 5), role: "KNIGHT" }],
+      },
     );
-    const push = attackV7(pushed, at(5, 5), at(5, 4));
-    expect(hasUnitAtV7(push.state, at(5, 3))).toBe(true);
+    const push = attackV7(pushed, at(6, 7), at(6, 6));
+    expect(hasUnitAtV7(push.state, at(6, 5))).toBe(true);
     expect(push.state.crumbs).toHaveLength(1);
     expect(eaten(push.events)).toEqual([]);
   });

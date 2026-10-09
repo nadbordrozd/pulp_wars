@@ -1210,7 +1210,9 @@ describe("ruleset-7 revision-20 Charge! push and follow (section 2.4)", () => {
   });
 
   it("leaves the Juggernaut-role Push without a follow", () => {
-    for (const faction of ["DINOSAUR", "ORIGINAL"] as const) {
+    // The giants' signatures (`pulp_wars-w49.30`): only the Human
+    // Juggernaut keeps Push (the Brontosaurus Stomps instead).
+    for (const faction of ["ORIGINAL"] as const) {
       const state = fieldV7(
         [
           { seat: 0, role: "JUGGERNAUT", at: at(3, 2) },

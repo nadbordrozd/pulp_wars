@@ -1804,7 +1804,7 @@ describe("ruleset-7 Dinosaur ability parities", () => {
     ).toMatchObject({ runUpBonus: 1, runUpMaximum: 2, capacitySlots: 2 });
   });
 
-  it("gives the Brontosaurus Push and the T-Rex no capture", () => {
+  it("gives the Brontosaurus no Push (Thunder Stomp instead) and the T-Rex no capture", () => {
     const state = goblinArenaV7(
       ["DINOSAUR", "ORIGINAL"],
       [
@@ -1819,18 +1819,17 @@ describe("ruleset-7 Dinosaur ability parities", () => {
       unitId: unitAtV7(state, { x: 4, y: 3 }).id,
       targetUnitId: guard.id,
     });
+    // The giants' signatures (`pulp_wars-w49.30`): only the Human
+    // Juggernaut keeps Push; the Brontosaurus Stomps instead.
     expect(combat(result.events)).toMatchObject({
       attack2: 7,
-      push: "WILL_PUSH",
+      push: "BLOCKED",
       defenderDies: false,
     });
-    expect(result.events).toContainEqual({
-      kind: "UNIT_PUSHED",
-      sourceUnitId: unitAtV7(state, { x: 4, y: 3 }).id,
-      targetUnitId: guard.id,
-      from: { x: 5, y: 3 },
-      to: { x: 6, y: 3 },
-    });
+    expect(result.events.some((event) => event.kind === "UNIT_PUSHED")).toBe(
+      false,
+    );
+    expect(unitAtV7(result.state, { x: 5, y: 3 }).id).toBe(guard.id);
     // Capture-capable Dinosaur units: Caveman, Raptor, Spitter,
     // Ankylosaurus, and Brontosaurus.
     const village = { x: 5, y: 5 };

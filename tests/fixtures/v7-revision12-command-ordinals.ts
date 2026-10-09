@@ -49,6 +49,11 @@ const LATER_COMMAND_KINDS: readonly string[] = [
   "SUGAR_RUSH",
   "REBAKE",
   "SUGAR_TOSS",
+  // The giants' signatures (`pulp_wars-w49.30`) insert four after RECOVER.
+  "SWALLOW",
+  "TOSS",
+  "STOMP",
+  "BREAK_OFF",
   "LAY_EGG",
   // Tuning 3 (`pulp_wars-w49.3`) inserts HIRE after TRAIN_NAVAL.
   "HIRE",

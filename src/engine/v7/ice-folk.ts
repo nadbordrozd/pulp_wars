@@ -222,7 +222,14 @@ export function prunedIceFolkV7(state: GameStateV7): GameStateV7 {
 export function unitsChilledEventV7(
   playerId: PlayerId,
   sourceUnitId: UnitId | null,
-  source: "BOLAS" | "COLD_SNAP" | "COLD_AURA" | "BLACK_ICE" | "FROSTBITE",
+  source:
+    | "BOLAS"
+    | "COLD_SNAP"
+    | "COLD_AURA"
+    | "BLACK_ICE"
+    | "FROSTBITE"
+    // The giants' signatures (RULESET_7_GIANTS.md section 6.6).
+    | "SHARDS",
   results: readonly ChillStatusV7[],
 ): Extract<DomainEventV7, { readonly kind: "UNITS_CHILLED" }> {
   return {

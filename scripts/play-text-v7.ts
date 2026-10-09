@@ -166,6 +166,22 @@ import {
   missionByIdV7,
   missionMatchSetupV7,
 } from "../src/engine/index";
+import {
+  DIGEST_DAMAGE_V7,
+  arePlayersAlliedV7,
+  crushBehindTileV7,
+  tileOccupiedV7,
+  unitId,
+  type UnitStateV7,
+  previewBreakOffV7,
+  previewStompV7,
+  previewSwallowV7,
+  previewTossV7,
+  previewTrampleV7,
+  unitIsMountainBornV7,
+  unitMovementModeV7,
+  withFullShieldsV7,
+} from "../src/engine/index";
 import { FOUNTAIN_HEAL_V7 } from "../src/engine/v7/curiosities";
 import {
   BLAST_MOUNTAIN_UNLOCK_TEXT_V7,
@@ -273,6 +289,12 @@ interface SessionV7 {
   readonly stateHash: string;
   readonly journal: JournalV7;
   /**
+   * The giants' signatures (`pulp_wars-w49.30`): a `lab --giant` session,
+   * whose first state has the seat's reward giant placed at the front
+   * (`withLabGiantV7`); the replay places it the same way.
+   */
+  readonly labGiant?: true;
+  /**
    * Set by a `do` that stopped at a rejected id and cleared by the next
    * `do` or `end`: a plain `end` right after it is refused (see `end`).
    */
@@ -286,8 +308,9 @@ const HELP_V7 = `Pulp Wars text play (Ruleset 7). One command per invocation; st
 
   new     --session S [--map dry-land] [--size 11] [--seed 1] [--factions original,undead[,...]]
           [--seat 0] [--curiosities on|off] [--overwrite]
-  lab     --session S <LAB> [--overwrite]
+  lab     --session S <LAB> [--giant] [--overwrite]
                                         start a staged position (you play the Humans; LAB_GOBLIN_MID: the Goblins; LAB_UNDEAD_MID: the Undead; LAB_MARTIAN_MID: the Martians; LAB_DINOSAUR_MID: the Dinosaurs; LAB_ICE_FOLK_MID: the Ice Folk; LAB_DWARF_MID: the Dwarves); lab alone lists them
+                                        --giant (a *_MID lab or LAB_BREAKTHROUGH): your faction's reward giant stands at the front, full HP
   view    --session S [--full]          public view of your seat: header, map, cities, units
   tech    --session S                   technology tree with costs and unlocks
   options --session S [--unit ID | --city ID | --tile x,y | --all]
@@ -315,6 +338,7 @@ Coordinates are x,y with 0,0 in the top-left corner; x grows to the right, y gro
 --at N refuses to act unless the session is at state #N (the number every header prints).`;
 
 const BOOLEAN_FLAGS_V7 = new Set([
+  "giant",
   "full",
   "all",
   "overwrite",
@@ -565,6 +589,9 @@ function seatNameV7(view: PlayerViewV7, playerId: number): string {
 
 function unitLabelV7(view: PlayerViewV7, unit: PublicUnitV7): string {
   const label = unitRoleRuleV7(view, unit).label;
+  // The giants' signatures (Break Off): a Gingerbread Man is a Toffee
+  // Trooper in every rule; the harness names it as it looks.
+  if (unit.variant === "GINGERBREAD_MAN") return `Gingerbread Man(${label})`;
   return unit.form === "EGG" ? `Egg(${label})` : label;
 }
 
@@ -948,6 +975,15 @@ export function textPlayCommandIdV7(command: CommandV7): string {
       return `u${command.unitId}.bolas.u${command.targetUnitId}`;
     case "SUGAR_TOSS":
       return `u${command.unitId}.toss.u${command.targetUnitId}`;
+    // The giants' signatures (`pulp_wars-w49.30`).
+    case "SWALLOW":
+      return `u${command.unitId}.swallow.u${command.targetUnitId}`;
+    case "TOSS":
+      return `u${command.unitId}.throw.u${command.passengerUnitId}.${xyV7(command.at)}`;
+    case "STOMP":
+      return `u${command.unitId}.stomp`;
+    case "BREAK_OFF":
+      return `u${command.unitId}.breakoff.${xyV7(command.tiles[0])}+${xyV7(command.tiles[1])}`;
     case "HATCH":
       return `u${command.unitId}.hatch.u${command.eggUnitId}`;
     case "BEAM_DOWN":
@@ -1313,6 +1349,13 @@ const COMBAT_BASE_KEYS_V7 = new Set([
   "inspiredConsumed",
   "push",
   "advances",
+  // The giants' signatures (`pulp_wars-w49.30`): printed by `combatTextV7`.
+  "crush",
+  "crushDamage",
+  "collisionDamage",
+  "siegeHammer",
+  "wallsDestroyed",
+  "glacialSmash",
 ]);
 
 /**
@@ -1406,6 +1449,39 @@ function combatTextV7(
   )
     parts.push("Overrun ends: it does not advance after this kill");
   if (preview.push !== "BLOCKED") parts.push(`push ${preview.push}`);
+  // The giants' signatures (`pulp_wars-w49.30`): Crushing Shove, the Siege
+  // Hammer, and the Glacial Smash.
+  if (preview.crush !== undefined && preview.crush !== "NONE") {
+    const attacker =
+      context.view.units.find((unit) => unit.id === preview.attackerId) ??
+      context.before?.units.find((unit) => unit.id === preview.attackerId);
+    const target =
+      context.view.units.find((unit) => unit.id === preview.targetUnitId) ??
+      context.before?.units.find((unit) => unit.id === preview.targetUnitId);
+    const behind =
+      attacker === undefined || target === undefined
+        ? null
+        : crushBehindTileV7(attacker.at, target.at);
+    const blocker =
+      behind === null
+        ? undefined
+        : context.view.units.find(
+            (unit) =>
+              unit.id !== preview.targetUnitId &&
+              unit.at.x === behind.x &&
+              unit.at.y === behind.y,
+          );
+    const collision = Number(preview.collisionDamage ?? 0);
+    parts.push(
+      `crushes for ${String(preview.crushDamage)}${collision > 0 && blocker !== undefined ? ` (and ${collision} to ${context.memory.tag(blocker.id)})` : preview.crush === "UNKNOWN_BEHIND_FOG" ? " (a unit behind it is unknown)" : ""}`,
+    );
+  }
+  if (preview.siegeHammer === true)
+    parts.push(
+      `SIEGE HAMMER (fortification ignored${preview.wallsDestroyed === true ? "; tears the city's Walls down for good" : ""})`,
+    );
+  if (preview.glacialSmash === true)
+    parts.push("GLACIAL SMASH (shatters at 8 hp or less)");
   // Tuning 2 (7r47): whether the attacker takes the target's tile (after a
   // kill, or following a Charge! push); a ranged unit never does.
   // A preview names the tile; a resolved exchange (no HP given) does not.
@@ -1633,7 +1709,16 @@ function describeCommandV7(
           })
           .join("")}`;
       }
-      return `${command.kind === "MOVE" ? "move" : "disembark"} to ${xyV7(to)} (${tileBriefV7(view, to)})${via}${near.length === 0 ? "" : ` | next to hostile ${near.map((other) => context.memory.tag(other.id)).join(" ")}`}${charge}`;
+      // The giants' signatures (`pulp_wars-w49.30`): an Overstride's trample.
+      const trampled =
+        command.kind === "MOVE"
+          ? (previewTrampleV7(view, command.unitId, command.path) ?? [])
+          : [];
+      const trample =
+        trampled.length === 0
+          ? ""
+          : ` | tramples ${trampled.map((entry) => `${context.memory.tag(entry.unitId)} -${entry.damage}${entry.shieldDamage > 0 ? ` (shield -${entry.shieldDamage})` : ""}${entry.dies ? " KILLS" : ""}`).join(", ")}`;
+      return `${command.kind === "MOVE" ? "move" : "disembark"} to ${xyV7(to)} (${tileBriefV7(view, to)})${via}${near.length === 0 ? "" : ` | next to hostile ${near.map((other) => context.memory.tag(other.id)).join(" ")}`}${charge}${trample}`;
     }
     case "ATTACK": {
       const target = view.units.find(
@@ -1770,6 +1855,39 @@ function describeCommandV7(
       return `re-bake at ${xyV7(command.at)}${generic(previewRebakeV7(view, command.unitId))}`;
     case "SUGAR_TOSS":
       return `sugar toss to ${context.memory.tag(command.targetUnitId)}${generic(previewSugarTossV7(view, command.unitId))}`;
+    // The giants' signatures (`pulp_wars-w49.30`).
+    case "SWALLOW": {
+      const preview = previewSwallowV7(
+        view,
+        command.unitId,
+        command.targetUnitId,
+      );
+      return `swallow ${context.memory.tag(command.targetUnitId)}${preview === null ? "" : ` (hp ${preview.hp}): it leaves the board; it loses ${DIGEST_DAMAGE_V7} hp at each of your turn starts (you heal what it loses) and comes out as your Zombie in ${preview.digestedAfterTurns} ${preview.digestedAfterTurns === 1 ? "turn" : "turns"}; if the giant dies first it comes back out where the giant stood`}`;
+    }
+    case "TOSS": {
+      const preview = previewTossV7(
+        view,
+        command.unitId,
+        command.passengerUnitId,
+        command.at,
+      );
+      return `throw ${context.memory.tag(command.passengerUnitId)} to ${xyV7(command.at)} (${tileBriefV7(view, command.at)})${preview === null ? "" : `${preview.fieldDefenseDestroyed ? " | destroys the Field Defense there" : ""} | ${preview.passengerMayAct ? "the Goblin may still attack or Kaboom" : "the Goblin cannot act this turn"}`}`;
+    }
+    case "STOMP": {
+      const preview = previewStompV7(view, command.unitId);
+      const hits =
+        preview === null
+          ? []
+          : preview.results.map(
+              (entry) =>
+                `${context.memory.tag(entry.unitId)} -${entry.damage}${entry.shieldDamage > 0 ? ` (shield -${entry.shieldDamage})` : ""}${entry.dies ? " KILLS" : ""}`,
+            );
+      return `thunder stomp: ${hits.length === 0 ? "hits no unit" : hits.join(", ")}${preview !== null && preview.fieldDefenses.length > 0 ? ` | smashes the Field Defense at ${preview.fieldDefenses.map(xyV7).join(" ")}` : ""} | no retaliation; the giant does not attack this turn`;
+    }
+    case "BREAK_OFF": {
+      const preview = previewBreakOffV7(view, command.unitId);
+      return `break off two Gingerbread Men (Toffee Troopers) at ${xyV7(command.tiles[0])} and ${xyV7(command.tiles[1])}${preview === null ? "" : ` (hp ${preview.trooperHp} each, homed to c${preview.cityId}, placed even when it is full) | the giant goes to hp ${preview.hpAfter}`}`;
+    }
     case "TRAIN": {
       const rule = effectiveRoleRuleV7(command.role, view.viewer.faction);
       const city = view.cities.find(
@@ -2403,6 +2521,11 @@ function commandLabV7(args: ArgsV7): string {
     throw new TextPlayErrorV7(
       `unknown lab "${args.positionals[0] ?? ""}"; the labs are:\n${listing.join("\n")}`,
     );
+  const giant = args.switches.has("giant");
+  if (giant && !LAB_GIANT_NAMES_V7.test(name))
+    throw new TextPlayErrorV7(
+      `--giant works with a *_MID lab or LAB_BREAKTHROUGH, not ${name}`,
+    );
   const path = sessionPathV7(args);
   if (existsSync(path) && !args.switches.has("overwrite"))
     throw new TextPlayErrorV7(
@@ -2413,6 +2536,7 @@ function commandLabV7(args: ArgsV7): string {
   if (created === null || !created.ok)
     throw new TextPlayErrorV7(`the engine refused the lab ${name}`);
   const playerId = created.state.humanPlayerId;
+  const initial = giant ? withLabGiantV7(created.state) : created.state;
   const base: SessionV7 = {
     format: TEXT_PLAY_SESSION_FORMAT_V7,
     version: TEXT_PLAY_SESSION_VERSION_V7,
@@ -2421,19 +2545,141 @@ function commandLabV7(args: ArgsV7): string {
     playerId,
     setup: created.state.setup,
     commands: [],
-    state: created.state,
-    stateHash: canonicalHash(created.state),
+    state: initial,
+    stateHash: canonicalHash(initial),
     journal: { rounds: [], notes: [], observed: [] },
+    ...(giant ? { labGiant: true as const } : {}),
   };
   const memory = new UnitMemoryV7();
   memory.remember(viewForV7(base.state, playerId));
   const played = playAiSeatsV7(base, memory);
   saveSessionV7(path, played.session);
   return [
-    `LAB ${name}: ${TEXT_PLAY_LABS_V7[name] ?? ""} | session ${path}`,
+    `LAB ${name}: ${TEXT_PLAY_LABS_V7[name] ?? ""}${giant ? ` | --giant: your ${effectiveRoleRuleV7("JUGGERNAUT", initial.players.find((player) => player.id === playerId)?.faction ?? "ORIGINAL").label} stands at the front` : ""} | session ${path}`,
     ...played.lines,
     ...viewLinesV7(played.session, false),
   ].join("\n");
+}
+
+/** The labs `--giant` works with (`pulp_wars-w49.30`). */
+const LAB_GIANT_NAMES_V7 = /^(LAB_[A-Z_]+_MID|LAB_BREAKTHROUGH)$/;
+
+/**
+ * The giants' signatures (`pulp_wars-w49.30`, RULESET_7_GIANTS.md section
+ * 8): `lab --giant` places the human seat's reward giant (its faction's
+ * `JUGGERNAUT`) at the front: on the free land tile it may stand on (no
+ * unit, mound, chest, curiosity, or settlement site; not hostile territory)
+ * that is nearest to a hostile unit without touching one (distance 2 or
+ * more), then nearest to its own capital, then first in (y, x) order. It
+ * has full HP, is homed to the capital, and is ready if the seat is active.
+ * Only the session's first state changes, never the engine; the replay
+ * places it the same way.
+ */
+function withLabGiantV7(state: GameStateV7): GameStateV7 {
+  const owner = state.players.find(
+    (player) => player.id === state.humanPlayerId,
+  );
+  if (owner === undefined) throw new TextPlayErrorV7("no human seat");
+  const capital = state.cities.find(
+    (city) => city.id === owner.originalCapitalCityId,
+  );
+  if (capital === undefined || capital.ownerId !== owner.id)
+    throw new TextPlayErrorV7("the lab seat holds no capital");
+  const rule = effectiveRoleRuleV7("JUGGERNAUT", owner.faction);
+  const probe = {
+    id: unitId(state.nextEntityId),
+    ownerId: owner.id,
+    role: "JUGGERNAUT" as const,
+    form: "LAND" as const,
+  };
+  const hostiles = state.units.filter(
+    (unit) =>
+      unit.hp > 0 &&
+      unit.ownerId !== owner.id &&
+      !arePlayersAlliedV7(state, owner.id, unit.ownerId),
+  );
+  const mode = unitMovementModeV7(state, probe);
+  const distance = (left: CoordV7, right: CoordV7): number =>
+    Math.max(Math.abs(left.x - right.x), Math.abs(left.y - right.y));
+  let best: { at: CoordV7; front: number; home: number } | null = null;
+  for (const tile of state.board.tiles) {
+    const at = tile.at;
+    const territory =
+      tile.territoryCityId === null
+        ? null
+        : (state.cities.find((city) => city.id === tile.territoryCityId)
+            ?.ownerId ?? null);
+    if (
+      tile.biome === null ||
+      tile.site !== null ||
+      tile.terrain === "RIFT" ||
+      (territory !== null && territory !== owner.id) ||
+      (tile.terrain === "MOUNTAIN" &&
+        mode === "GROUND" &&
+        !unitIsMountainBornV7(state, probe) &&
+        !owner.researchedTechs.includes("ENGINEERING")) ||
+      tileOccupiedV7(state, at) ||
+      state.treasureChests.some((chest) => sameV7(chest, at)) ||
+      state.curiosities.some((item) => sameV7(item.at, at))
+    )
+      continue;
+    const front = Math.min(
+      Number.MAX_SAFE_INTEGER,
+      ...hostiles.map((unit) => distance(unit.at, at)),
+    );
+    if (front < 2) continue;
+    const home = distance(capital.at, at);
+    if (
+      best === null ||
+      front < best.front ||
+      (front === best.front && home < best.home)
+    )
+      best = { at, front, home };
+  }
+  if (best === null) throw new TextPlayErrorV7("no free tile for the giant");
+  const active = state.turnOrder[state.activeSeatIndex] === owner.id;
+  const giant: UnitStateV7 = {
+    id: probe.id,
+    ownerId: owner.id,
+    homeCityId: capital.id,
+    role: "JUGGERNAUT",
+    form: "LAND",
+    at: best.at,
+    hp: rule.maxHp,
+    maxHp: rule.maxHp,
+    kills: 0,
+    veteran: false,
+    captureEligible: false,
+    activation: {
+      moved: !active,
+      movedPathLength: 0,
+      attacked: !active,
+      attacksUsed: active ? 0 : 1,
+      tendedThisTurn: false,
+      inspired: false,
+      overrunActive: false,
+      escapeAvailable: false,
+      recovered: !active,
+      captured: !active,
+      handled: !active,
+      specialActed: !active,
+    },
+  };
+  const placed = parseGameStateV7(
+    JSON.parse(
+      JSON.stringify({
+        ...state,
+        nextEntityId: state.nextEntityId + 1,
+        units: [...state.units, giant].sort(
+          (left, right) => left.id - right.id,
+        ),
+        shields: withFullShieldsV7(state, state.shields, [giant]),
+      }),
+    ),
+  );
+  if (placed === null)
+    throw new TextPlayErrorV7("the engine refused the lab giant");
+  return placed;
 }
 
 function commandNewV7(args: ArgsV7): string {
@@ -4202,7 +4448,9 @@ function replaySessionV7(session: SessionV7): ReplayedV7 {
   const created = createPlayableGameV7(session.setup);
   if (!created.ok)
     throw new TextPlayErrorV7("replay failed: the setup is no longer valid");
-  let state = created.state;
+  // The giants' signatures (`pulp_wars-w49.30`): a `lab --giant` session.
+  let state =
+    session.labGiant === true ? withLabGiantV7(created.state) : created.state;
   const seats: DebriefSeatV7[] = state.players.map((player) => ({
     seat: player.seat,
     playerId: player.id,

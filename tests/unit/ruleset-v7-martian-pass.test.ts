@@ -97,7 +97,7 @@ import {
   withoutTechsV7,
 } from "../fixtures/v7-revision20";
 
-// The Martian pass (`pulp_wars-w49.14`, `pulp-wars-poc-7r61`,
+// The Martian pass (`pulp_wars-w49.14`, `pulp-wars-poc-7r62`,
 // docs/product/RULESET_7_TUNING_MARTIAN.md): a unit pulled by the Tractor
 // Beam explores for its owner from the tile it lands on; Scouts for a
 // Martian city (a free Saucer); the Shield Projector's Force Field needs
@@ -205,13 +205,13 @@ describe("the Martian pass: identity", () => {
   // The Dinosaur pass (tests/unit/ruleset-v7-dinosaur-pass.test.ts) took
   // 7r53 and the economy rejig 7r54, so 7r52 is a prior identity.
   it("was 7r52 after 7r51, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r61");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r61.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-10, -8)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r62");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r62.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-11, -9)).toEqual([
       "pulp-wars-poc-7r51",
       "pulp-wars-poc-7r52",
     ]);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-10, -8)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-11, -9)).toEqual([
       "pulpWars.save.v7r51.current",
       "pulpWars.save.v7r52.current",
     ]);
@@ -292,7 +292,8 @@ describe("the Martian pass: identity", () => {
       ["Brain", 5, 8, 2, 2, 2, 1, 1, 1, "ADMINISTRATION"],
       ["Tripod", 9, 12, 2, 8, 2, 2, 2, 2, "SAWMILLING"],
       ["Mothership", 8, 16, 4, 5, 4, 2, 1, 1, "CHIVALRY"],
-      ["Colossus", null, 32, 3, 8, 5, 1, 1, 2, null],
+      // The giants' signatures (`pulp_wars-w49.30`): the Colossus has Move 2.
+      ["Colossus", null, 32, 3, 8, 5, 2, 1, 2, null],
     ]);
   });
 });
@@ -399,11 +400,13 @@ describe("the Martian pass: a pulled unit explores", () => {
   });
 
   it("is what a Push already did for the pushed unit's owner", () => {
-    // A Colossus beside a Fighter pushes it one tile; the Fighter's owner
-    // explores from there (the rule the Tractor Beam now shares).
+    // A Juggernaut beside a Martian unit pushes it one tile; the pushed
+    // unit's owner explores from there (the rule the Tractor Beam now
+    // shares). Since the giants' signatures (`pulp_wars-w49.30`) the Human
+    // Juggernaut is the only giant that pushes (the Colossus Overstrides).
     const state = unexploreV7(
-      asMartian([own("JUGGERNAUT", 4, 3), foe("GUARD", 4, 2)], {
-        techs: { 0: martianWithout(), 1: [] },
+      againstMartian([own("JUGGERNAUT", 4, 3), foe("GUARD", 4, 2)], {
+        techs: { 0: [], 1: [] },
       }),
       1,
       [at(3, 0), at(4, 0), at(5, 0)],

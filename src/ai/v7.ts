@@ -96,6 +96,7 @@ import {
   REWARD_IDS_V7,
   TECHNOLOGY_IDS_V7,
   UNIT_ROLE_IDS_V7,
+  cityHasWallsV7,
   type CoordV7,
   type ImprovementIdV7,
   type NavalRoleIdV7,
@@ -6980,10 +6981,7 @@ function armyCoverPercentV7(
   const tile = findPublicTileV7(context.view, unit.at);
   if (tile?.explored !== true) return 100;
   const city = context.lookup.citiesByKey.get(coordKey(unit.at));
-  if (
-    tile.fieldDefense ||
-    city?.rewards.some((record) => record.reward === "WALLS") === true
-  )
+  if (tile.fieldDefense || (city !== undefined && cityHasWallsV7(city)))
     return 150;
   return city !== undefined ||
     tile.terrain === "FOREST" ||
@@ -7803,7 +7801,7 @@ function armyWeakGarrisonV7(
     city.ownerId === target.ownerId &&
     isHostile(view, target.ownerId) &&
     target.hp * 2 <= target.maxHp &&
-    !city.rewards.some((record) => record.reward === "WALLS")
+    !cityHasWallsV7(city)
   ) {
     let near = 0;
     for (const unit of view.units)
@@ -9963,6 +9961,18 @@ function isPolicyCandidate(
   command: CommandV7,
 ): boolean {
   if (command.kind === "WAIT") return false;
+  // The giants' signatures engine (`pulp_wars-w49.30`,
+  // RULESET_7_GIANTS.md section 8): until the AI bead (`pulp_wars-w49.31`)
+  // the policy uses none of the four new commands; its giants keep
+  // attacking (Crushing Shove, Overstride, Glacial Smash, and the Siege
+  // Hammer act through the ordinary Move and Attack).
+  if (
+    command.kind === "SWALLOW" ||
+    command.kind === "TOSS" ||
+    command.kind === "STOMP" ||
+    command.kind === "BREAK_OFF"
+  )
+    return false;
   // The frozen sea engine (`pulp_wars-5ti.3`, RULESET_7_NAVAL_BRANCH.md
   // section 17): until the ice plan of `pulp_wars-5ti.5` the policy Freezes
   // nothing. The command is offered only to an Ice Folk seat with Rime.
@@ -20781,9 +20791,7 @@ function dwarfResearchFactsV7(
     wallsOrShields:
       view.players.some((player) => player.faction === "MARTIAN") ||
       view.cities.some(
-        (city) =>
-          isHostile(view, city.ownerId) &&
-          city.rewards.some((record) => record.reward === "WALLS"),
+        (city) => isHostile(view, city.ownerId) && cityHasWallsV7(city),
       ),
   };
 }
@@ -21072,9 +21080,7 @@ function candyResearchFactsV7(
         ),
     ),
     walledCityVisible: view.cities.some(
-      (city) =>
-        isHostile(view, city.ownerId) &&
-        city.rewards.some((record) => record.reward === "WALLS"),
+      (city) => isHostile(view, city.ownerId) && cityHasWallsV7(city),
     ),
   };
 }
@@ -21713,11 +21719,7 @@ function dinosaurBranchResearchV7(
   }
   if (tech === technologyWithUnlockV7(view, "WALLBREAKER")) {
     const walled = view.cities.filter(
-      (city) =>
-        isHostile(view, city.ownerId) &&
-        city.rewards.some(
-          (record) => record.reachedLevel === 3 && record.reward === "WALLS",
-        ),
+      (city) => isHostile(view, city.ownerId) && cityHasWallsV7(city),
     ).length;
     const dinosaurs = view.units.some(
       (unit) =>

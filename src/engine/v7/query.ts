@@ -4,6 +4,8 @@ import {
   BARRICADE_CAP_V7,
   BARRICADE_COST_V7,
   BARRICADE_HP_V7,
+  BREAK_OFF_UNITS_V7,
+  DIGEST_DAMAGE_V7,
   NEUTRAL_KIND_V7,
   BASIC_ECONOMIC_ACTIONS_V7,
   BOMB_LANDING_RANGE_V7,
@@ -232,13 +234,37 @@ import {
 } from "./dwarf-crowd-control";
 import { noRisingAtV7, riftAtV7 } from "./rift";
 import { grownHpV7 } from "./growth";
+import {
+  attackCrushDamageV7,
+  attackSiegeHammerV7,
+  breakOffActorRejectionV7,
+  breakOffTileLegalV7,
+  crushBehindTileV7,
+  crushStateV7,
+  defenderCrushableV7,
+  fixedSignatureHitV7,
+  giantSignatureV7,
+  glacialSmashThresholdV7,
+  breakOffTrooperHpV7,
+  ringTilesV7,
+  siegeHammerRazedCityV7,
+  stompRejectionV7,
+  stompResultsV7,
+  swallowRejectionV7,
+  swallowedByV7,
+  tossActorRejectionV7,
+  tossCandidateTilesV7,
+  tossDestinationLegalV7,
+  tossPassengerLegalV7,
+  type GiantTileFactsV7,
+} from "./giants";
 import { laidEggHpV7, laidEggTurnsV7, publicNestTilesV7 } from "./eggs";
 import type {
   CombatPreviewV7,
   CombatSplashEntryV7,
   DomainEventV7,
 } from "./events";
-import { reachablePlayerMovementPathsV7 } from "./movement";
+import { reachablePlayerMovementPathsV7, unitOverstridesV7 } from "./movement";
 import {
   spatialContributionAtV7,
   spatialPlacementCountV7,
@@ -608,9 +634,11 @@ function appendPublicHireCommandsV7(
       player.faction,
       cityBarracksV7(city),
     ) + HIRE_EXTRA_CAPACITY_V7;
-  const assigned = allOwnedUnitsV7(view, player.id)
-    .filter((unit) => unit.homeCityId === city.id)
-    .reduce((sum, unit) => sum + unitCapacitySlotsV7(view, unit), 0);
+  const assigned =
+    allOwnedUnitsV7(view, player.id)
+      .filter((unit) => unit.homeCityId === city.id)
+      .reduce((sum, unit) => sum + unitCapacitySlotsV7(view, unit), 0) +
+    publicSwallowedSlotsV7(view, city.id);
   for (const role of UNIT_ROLE_IDS_V7) {
     const cost = publicHireCostV7(view, city.id, role);
     if (
@@ -673,9 +701,11 @@ function appendPublicCityCommandsV7(
   // Revision 19 section 5.1: used slots are a sum (own units are always
   // visible to their owner, with their home city). The Dwarf revision: own
   // burrowed units keep their slots (every own mound is explored).
-  const assigned = allOwnedUnitsV7(view, player.id)
-    .filter((unit) => unit.homeCityId === city.id)
-    .reduce((sum, unit) => sum + unitCapacitySlotsV7(view, unit), 0);
+  const assigned =
+    allOwnedUnitsV7(view, player.id)
+      .filter((unit) => unit.homeCityId === city.id)
+      .reduce((sum, unit) => sum + unitCapacitySlotsV7(view, unit), 0) +
+    publicSwallowedSlotsV7(view, city.id);
   // A role-level read: the unit to train is the seat's own role.
   const fits = (role: UnitRoleIdV7): boolean =>
     assigned + seatRoleMechanicsV7(view, player.id, role).capacitySlots <=
@@ -961,6 +991,8 @@ function appendPublicUnitCommandsV7(
         unitId: unit.id,
         targetUnitId: target.id,
       });
+  // The giants' signatures (docs/product/RULESET_7_GIANTS.md section 6).
+  appendPublicGiantCommandsV7(view, unit, candidates);
   // The Ice Folk revision section 7.2: a Yeti on a Mountain reaches 2.
   const attackRange = publicAttackMaximumRangeV7(view, unit);
   // The naval branch (docs/product/RULESET_7_NAVAL_BRANCH.md sections 5.2
@@ -1257,6 +1289,135 @@ function appendPublicUnitCommandsV7(
     candidates.push({ kind: "BUILD_FIELD_DEFENSE", unitId: unit.id });
   if (!unit.activation.handled)
     candidates.push({ kind: "WAIT", unitId: unit.id });
+}
+
+/**
+ * The giants' signatures (docs/product/RULESET_7_GIANTS.md section 6.2): the
+ * slots the viewer's own held victims take in its city `cityId` (a victim
+ * still counts for its home city's unit limit; the viewer knows its own).
+ */
+function publicSwallowedSlotsV7(view: PlayerViewV7, cityId: CityId): number {
+  let used = 0;
+  for (const entry of view.giants.swallowed)
+    if (
+      entry.unit.ownerId === view.viewer.id &&
+      entry.unit.homeCityId === cityId
+    )
+      used += unitCapacitySlotsV7(view, entry.unit);
+  return used;
+}
+
+/**
+ * The giants' signatures (section 6): the tile facts of the viewer's
+ * placement rules (Goblin Toss and Break Off). Every unit and mound on an
+ * explored tile is visible, so the offer equals the reducer's legality.
+ */
+function publicGiantTileFactsV7(view: PlayerViewV7): GiantTileFactsV7 {
+  return {
+    tile: (at) => {
+      const tile = tileAtView(view, at);
+      return tile?.explored === true
+        ? {
+            terrain: tile.terrain,
+            biome: tile.biome,
+            site: tile.site,
+            fieldDefense: tile.fieldDefense,
+            territoryOwnerId: tile.territoryOwnerId,
+          }
+        : undefined;
+    },
+    occupied: (at) => tileOccupiedV7(view, at),
+    chest: (at) => view.treasureChests.some((chest) => same(chest, at)),
+    curiosity: (at) => view.curiosities.some((item) => same(item.at, at)),
+    ice: (at) => isIceAtV7(view, at),
+    allied: (left, right) => publicAllied(view, left, right),
+  };
+}
+
+/**
+ * The giants' signatures (section 6): Swallow, Goblin Toss, Thunder Stomp,
+ * and Break Off, each offered exactly when the reducer accepts it (the
+ * shared legality predicates of src/engine/v7/giants.ts).
+ */
+function appendPublicGiantCommandsV7(
+  view: PlayerViewV7,
+  unit: PlayerViewV7["units"][number],
+  candidates: CommandV7[],
+): void {
+  const signature = giantSignatureV7(view, unit);
+  if (signature === null || unit.ownerId !== view.viewer.id) return;
+  if (signature === "SWALLOW") {
+    for (const target of view.units)
+      if (
+        swallowRejectionV7(view, view.giants.swallowed, unit, target) === null
+      )
+        candidates.push({
+          kind: "SWALLOW",
+          unitId: unit.id,
+          targetUnitId: target.id,
+        });
+    return;
+  }
+  if (signature === "TOSS") {
+    if (tossActorRejectionV7(view, unit) !== null) return;
+    const facts = publicGiantTileFactsV7(view);
+    const tiles = tossCandidateTilesV7(
+      view.board.width,
+      view.board.height,
+      unit.at,
+      unitRoleMechanicsV7(view, unit).tossRange,
+    ).filter((at) =>
+      tossDestinationLegalV7(
+        view,
+        facts,
+        unit,
+        view.viewer.researchedTechs,
+        at,
+      ),
+    );
+    for (const passenger of view.units)
+      if (tossPassengerLegalV7(view, unit, passenger))
+        for (const at of tiles)
+          candidates.push({
+            kind: "TOSS",
+            unitId: unit.id,
+            passengerUnitId: passenger.id,
+            at,
+          });
+    return;
+  }
+  if (signature === "STOMP") {
+    if (stompRejectionV7(view, unit) === null)
+      candidates.push({ kind: "STOMP", unitId: unit.id });
+    return;
+  }
+  if (signature === "BREAK_OFF") {
+    const home = view.cities.find((city) => city.id === unit.homeCityId);
+    if (breakOffActorRejectionV7(view, unit, home?.ownerId ?? null) !== null)
+      return;
+    if (home === undefined) return;
+    // Every pair of legal tiles, in (y, x) order (the user's change of
+    // 2026-10-09: two Gingerbread Men; no slot is needed).
+    const facts = publicGiantTileFactsV7(view);
+    const tiles = ringTilesV7(
+      view.board.width,
+      view.board.height,
+      unit.at,
+    ).filter((at) =>
+      breakOffTileLegalV7(view, facts, unit, view.viewer.researchedTechs, at),
+    );
+    for (let first = 0; first < tiles.length; first += 1)
+      for (let second = first + 1; second < tiles.length; second += 1) {
+        const left = tiles[first];
+        const right = tiles[second];
+        if (left !== undefined && right !== undefined)
+          candidates.push({
+            kind: "BREAK_OFF",
+            unitId: unit.id,
+            tiles: [left, right],
+          });
+      }
+  }
 }
 
 /** A unit's movement mode and Mountain-born, through its kind. */
@@ -1674,7 +1835,8 @@ function publicAssembleFactsV7(
       ? 0
       : allOwnedUnitsV7(view, player.id)
           .filter((unit) => unit.homeCityId === home.id)
-          .reduce((sum, unit) => sum + unitCapacitySlotsV7(view, unit), 0);
+          .reduce((sum, unit) => sum + unitCapacitySlotsV7(view, unit), 0) +
+        publicSwallowedSlotsV7(view, home.id);
   const forge =
     home !== undefined &&
     view.improvementValues.some((value) => {
@@ -2256,9 +2418,11 @@ function publicRebakeFactsV7(
     player.faction,
     cityBarracksV7(home),
   );
-  const usedSlots = allOwnedUnitsV7(view, player.id)
-    .filter((unit) => unit.homeCityId === home.id)
-    .reduce((sum, unit) => sum + unitCapacitySlotsV7(view, unit), 0);
+  const usedSlots =
+    allOwnedUnitsV7(view, player.id)
+      .filter((unit) => unit.homeCityId === home.id)
+      .reduce((sum, unit) => sum + unitCapacitySlotsV7(view, unit), 0) +
+    publicSwallowedSlotsV7(view, home.id);
   const options: RebakeOptionV7[] = [];
   for (const crumbs of rebakeCrumbsV7(
     view.crumbs,
@@ -3161,6 +3325,233 @@ export function previewColdSnapV7(
   };
 }
 
+/**
+ * The giants' signatures (docs/product/RULESET_7_GIANTS.md section 8): the
+ * preview of an offered Swallow: the victim and how many of the
+ * Abomination's Start Turns digest it (`DIGEST_DAMAGE_V7` each).
+ */
+export interface SwallowPreviewV7 {
+  readonly unitId: UnitId;
+  readonly targetUnitId: UnitId;
+  readonly targetOwnerId: PlayerId;
+  readonly role: UnitRoleIdV7;
+  readonly hp: number;
+  /** The digest that kills it (it rises as a Zombie then). */
+  readonly digestedAfterTurns: number;
+}
+
+/** Section 6.2: null unless that `SWALLOW` is offered; equals the result. */
+export function previewSwallowV7(
+  view: PlayerViewV7,
+  unitId: UnitId,
+  targetUnitId: UnitId,
+): SwallowPreviewV7 | null {
+  if (
+    !queryPlayerCommandsV7(view).some(
+      (command) =>
+        command.kind === "SWALLOW" &&
+        command.unitId === unitId &&
+        command.targetUnitId === targetUnitId,
+    )
+  )
+    return null;
+  const target = view.units.find((unit) => unit.id === targetUnitId);
+  if (target === undefined) return null;
+  return {
+    unitId,
+    targetUnitId,
+    targetOwnerId: target.ownerId,
+    role: target.role,
+    hp: target.hp,
+    digestedAfterTurns: Math.ceil(target.hp / DIGEST_DAMAGE_V7),
+  };
+}
+
+/** Section 6.3: the preview of an offered Goblin Toss. */
+export interface TossPreviewV7 {
+  readonly unitId: UnitId;
+  readonly passengerUnitId: UnitId;
+  readonly from: CoordV7;
+  readonly to: CoordV7;
+  /** A hostile Field Defense on the landing tile is destroyed. */
+  readonly fieldDefenseDestroyed: boolean;
+  /** The Goblin may still Kaboom or attack after landing. */
+  readonly passengerMayAct: boolean;
+}
+
+/** Section 6.3: null unless that `TOSS` is offered; equals the result. */
+export function previewTossV7(
+  view: PlayerViewV7,
+  unitId: UnitId,
+  passengerUnitId: UnitId,
+  to: CoordV7,
+): TossPreviewV7 | null {
+  if (
+    !queryPlayerCommandsV7(view).some(
+      (command) =>
+        command.kind === "TOSS" &&
+        command.unitId === unitId &&
+        command.passengerUnitId === passengerUnitId &&
+        same(command.at, to),
+    )
+  )
+    return null;
+  const passenger = view.units.find((unit) => unit.id === passengerUnitId);
+  const tile = tileAtView(view, to);
+  if (passenger === undefined || tile?.explored !== true) return null;
+  const thrown = {
+    ...passenger,
+    at: to,
+    activation: { ...passenger.activation, moved: true },
+  };
+  return {
+    unitId,
+    passengerUnitId,
+    from: passenger.at,
+    to,
+    fieldDefenseDestroyed:
+      tile.fieldDefense &&
+      tile.territoryOwnerId !== null &&
+      tile.territoryOwnerId !== view.viewer.id &&
+      publicHostile(view, view.viewer.id, tile.territoryOwnerId),
+    passengerMayAct:
+      !unitIsCrashedV7(view, passenger.id) &&
+      !primaryUsedForQuery(thrown) &&
+      !primaryActionBlockedAfterMoveV7(view, thrown),
+  };
+}
+
+/** Section 6.4: the preview of an offered Thunder Stomp (exact). */
+export interface StompPreviewV7 {
+  readonly unitId: UnitId;
+  readonly results: readonly CombatSplashEntryV7[];
+  readonly fieldDefenses: readonly CoordV7[];
+}
+
+/** Section 6.4: null unless `STOMP` is offered for the unit. */
+export function previewStompV7(
+  view: PlayerViewV7,
+  unitId: UnitId,
+): StompPreviewV7 | null {
+  if (
+    !queryPlayerCommandsV7(view).some(
+      (command) => command.kind === "STOMP" && command.unitId === unitId,
+    )
+  )
+    return null;
+  const unit = view.units.find((candidate) => candidate.id === unitId);
+  if (unit === undefined) return null;
+  return {
+    unitId,
+    results: stompResultsV7(view, view.shields, view.units, unit),
+    fieldDefenses: ringTilesV7(
+      view.board.width,
+      view.board.height,
+      unit.at,
+    ).filter((at) => {
+      const tile = tileAtView(view, at);
+      return tile?.explored === true && tile.fieldDefense;
+    }),
+  };
+}
+
+/** Section 6.8: the preview of an offered Break Off. */
+export interface BreakOffPreviewV7 {
+  readonly unitId: UnitId;
+  readonly cityId: CityId;
+  /** The Giant's HP after it spends `BREAK_OFF_HP_V7`. */
+  readonly hpAfter: number;
+  /** Each new Gingerbread Man's HP (a Toffee Trooper's maximum). */
+  readonly trooperHp: number;
+  /** How many Gingerbread Men one Break Off makes (`BREAK_OFF_UNITS_V7`). */
+  readonly count: number;
+  /** Every tile some offered pair uses, in (y, x) order. */
+  readonly tiles: readonly CoordV7[];
+}
+
+/** Section 6.8: null unless a `BREAK_OFF` is offered for the unit. */
+export function previewBreakOffV7(
+  view: PlayerViewV7,
+  unitId: UnitId,
+): BreakOffPreviewV7 | null {
+  const used = queryPlayerCommandsV7(view).flatMap((command) =>
+    command.kind === "BREAK_OFF" && command.unitId === unitId
+      ? command.tiles
+      : [],
+  );
+  const unit = view.units.find((candidate) => candidate.id === unitId);
+  if (used.length === 0 || unit === undefined || unit.homeCityId === null)
+    return null;
+  const tiles = [
+    ...new Map(used.map((at) => [`${at.x},${at.y}`, at])).values(),
+  ].sort((left, right) => left.y - right.y || left.x - right.x);
+  return {
+    unitId,
+    cityId: unit.homeCityId,
+    hpAfter: unit.hp - unitRoleMechanicsV7(view, unit).breakOffHp,
+    trooperHp: breakOffTrooperHpV7(view, view.viewer.id),
+    count: BREAK_OFF_UNITS_V7,
+    tiles,
+  };
+}
+
+/**
+ * Section 6.5: the trample of an offered Overstride `MOVE` of the viewer's
+ * Colossus along `path`: each hostile ground unit or Egg on a tile the path
+ * passes (entered and left) takes the fixed trample damage, in path order.
+ * Exact: a Move never passes an unexplored tile, and every unit on an
+ * explored tile is visible. Null unless the `MOVE` is offered; empty for a
+ * unit without Overstride.
+ */
+export function previewTrampleV7(
+  view: PlayerViewV7,
+  unitId: UnitId,
+  path: readonly CoordV7[],
+): readonly CombatSplashEntryV7[] | null {
+  if (
+    !queryPlayerCommandsV7(view).some(
+      (command) =>
+        command.kind === "MOVE" &&
+        command.unitId === unitId &&
+        command.path.length === path.length &&
+        command.path.every((at, index) => {
+          const step = path[index];
+          return step !== undefined && same(at, step);
+        }),
+    )
+  )
+    return null;
+  const unit = view.units.find((candidate) => candidate.id === unitId);
+  if (unit === undefined || !unitOverstridesV7(view, unit)) return [];
+  const damage = unitRoleMechanicsV7(view, unit).trampleDamage;
+  const results: CombatSplashEntryV7[] = [];
+  for (const at of path.slice(0, -1)) {
+    const victim = view.units.find(
+      (candidate) =>
+        candidate.hp > 0 &&
+        candidate.id !== unit.id &&
+        same(candidate.at, at) &&
+        (candidate.form === "LAND" || candidate.form === "EGG") &&
+        !unitFliesV7(view, candidate) &&
+        publicHostile(view, unit.ownerId, candidate.ownerId),
+    );
+    if (
+      victim === undefined ||
+      results.some((entry) => entry.unitId === victim.id)
+    )
+      continue;
+    results.push(
+      fixedSignatureHitV7(
+        view,
+        victim,
+        shieldOfV7(view.shields, victim.id),
+        damage,
+      ),
+    );
+  }
+  return results;
+}
+
 function publicActiveOwnedPort(
   view: PlayerViewV7,
   tile: PlayerTileViewV7,
@@ -3968,9 +4359,11 @@ export function previewLayEggV7(
   });
   const cost = Math.max(1, rule.cost - (forgeDiscount ? 1 : 0));
   const slots = seatRoleMechanicsV7(view, player.id, role).capacitySlots;
-  const usedSlots = allOwnedUnitsV7(view, player.id)
-    .filter((unit) => unit.homeCityId === city.id)
-    .reduce((sum, unit) => sum + unitCapacitySlotsV7(view, unit), 0);
+  const usedSlots =
+    allOwnedUnitsV7(view, player.id)
+      .filter((unit) => unit.homeCityId === city.id)
+      .reduce((sum, unit) => sum + unitCapacitySlotsV7(view, unit), 0) +
+    publicSwallowedSlotsV7(view, city.id);
   const capacity = cityUnitCapacityForV7(
     city.level,
     player.researchedTechs,
@@ -4194,7 +4587,7 @@ export function queryAiReadyCommandsV7(
                 ? command.targetUnitId
                 : command.kind === "HATCH"
                   ? command.eggUnitId
-                  : command.kind === "BEAM_DOWN"
+                  : command.kind === "BEAM_DOWN" || command.kind === "TOSS"
                     ? command.passengerUnitId
                     : 0;
     return {
@@ -7852,6 +8245,8 @@ function publicCombatPreviewCore(
     distance,
     view.viewer.researchedTechs,
   );
+  // The giants' signatures (RULESET_7_GIANTS.md section 6.7): Siege Hammer.
+  const siegeHammer = attackSiegeHammerV7(view, attacker, distance);
   const { fortificationLevel, fortificationIgnored } = attackFortificationV7(
     {
       walls: tileFortification - tileFieldDefense,
@@ -7880,6 +8275,7 @@ function publicCombatPreviewCore(
       ),
       // Tuning 1 Breach: a melee attack of an owner with Explosives.
       breach,
+      siegeHammer,
     },
   );
   // Revision 19 section 6.2: an Egg defends with a fixed 1.
@@ -7964,15 +8360,19 @@ function publicCombatPreviewCore(
     forceFieldHoldsV7(view, target, defenderShield),
   );
   // The Ice Folk revision section 5.5: the viewer's own threshold (the
-  // Mind Control revision: through the attacker's kind's tree).
+  // Mind Control revision: through the attacker's kind's tree). The giants'
+  // signatures (section 6.6): the Frost Giant's Glacial Smash threshold.
+  const glacialThreshold = glacialSmashThresholdV7(view, attacker, distance);
   const shatters = attackShattersV7({
     attackerIceFolk: isIceFolkLandUnitV7(view, attacker),
     distance,
     defenderChilled: targetChilled,
     defender: target,
     hpAfterHit: target.hp - defenderHit.hpDamage,
-    threshold: unitCapabilitiesV7(view, attacker, view.viewer.researchedTechs)
-      .shatterThreshold,
+    threshold:
+      glacialThreshold ??
+      unitCapabilitiesV7(view, attacker, view.viewer.researchedTechs)
+        .shatterThreshold,
   });
   const damageToDefender = shatters ? target.hp : defenderHit.hpDamage;
   const defenderShieldDamage = defenderHit.shieldDamage;
@@ -8175,7 +8575,10 @@ function publicCombatPreviewCore(
       attacker,
       targetTile.site,
       view.cities.find((city) => same(city.at, target.at))?.ownerId ?? null,
-    );
+    ) &&
+    // The giants' signatures (section 6.2): a dying Abomination's victim is
+    // released on its tile (a visible holder's victim is public).
+    swallowedByV7(view.giants.swallowed, target.id) === undefined;
   const nextAttacks = attacker.activation.attacksUsed + 1;
   // The Candy revision section 5.4: a Rushed Chocolate Bunny's Sugar Frenzy is an
   // Overrun capped at two continuations (the shared predicates).
@@ -8308,7 +8711,111 @@ function publicCombatPreviewCore(
       distance,
       attackerDies,
     ),
+    ...publicCrushPreviewV7(view, attacker, target, distance, push, {
+      defenderDies,
+      hpAfter: grownHpV7(
+        view,
+        target,
+        target.kills,
+        target.kills + (attackerDies ? 1 : 0),
+        target.hp -
+          damageToDefender +
+          lifestealOfDefenderV7(
+            defenderRule,
+            damageToDefender,
+            damageToAttacker,
+            target,
+            defenderDies,
+          ),
+      ),
+      shieldAfter: defenderShield - defenderShieldDamage,
+    }),
+    siegeHammer,
+    wallsDestroyed:
+      siegeHammer &&
+      siegeHammerRazedCityV7(
+        view.cities,
+        (ownerId) => publicHostile(view, attacker.ownerId, ownerId),
+        target.at,
+      ) !== undefined,
+    glacialSmash: shatters && glacialThreshold !== null,
   };
+}
+
+/**
+ * The giants' signatures (docs/product/RULESET_7_GIANTS.md section 6.1): the
+ * public Crushing Shove part of an own attacker's preview. The target is
+ * crushed whatever lies behind it (a Push into fog never happens); the
+ * collision is known only when the tile behind is explored (every unit on
+ * an explored tile is visible), so it is 0 with `UNKNOWN_BEHIND_FOG`.
+ */
+function publicCrushPreviewV7(
+  view: PlayerViewV7,
+  attacker: PlayerViewV7["units"][number],
+  target: PlayerViewV7["units"][number],
+  distance: number,
+  push: CombatPreviewV7["push"],
+  after: {
+    readonly defenderDies: boolean;
+    readonly hpAfter: number;
+    readonly shieldAfter: number;
+  },
+): Pick<CombatPreviewV7, "crush" | "crushDamage" | "collisionDamage"> {
+  const damage = attackCrushDamageV7(view, attacker, distance);
+  const crush = crushStateV7(
+    damage,
+    defenderCrushableV7(view, target),
+    after.defenderDies,
+    push,
+  );
+  if (crush === "NONE") return { crush, crushDamage: 0, collisionDamage: 0 };
+  const hit = fixedSignatureHitV7(
+    view,
+    { ...target, hp: after.hpAfter },
+    Math.max(0, after.shieldAfter),
+    damage,
+  );
+  const behind = crushBehindTileV7(attacker.at, target.at);
+  const blocker =
+    tileAtView(view, behind)?.explored === true
+      ? view.units.find(
+          (unit) =>
+            unit.hp > 0 &&
+            unit.id !== target.id &&
+            unit.id !== attacker.id &&
+            same(unit.at, behind) &&
+            publicHostile(view, attacker.ownerId, unit.ownerId),
+        )
+      : undefined;
+  return {
+    crush,
+    crushDamage: hit.damage,
+    collisionDamage:
+      blocker === undefined
+        ? 0
+        : fixedSignatureHitV7(
+            view,
+            blocker,
+            shieldOfV7(view.shields, blocker.id),
+            damage,
+          ).damage,
+  };
+}
+
+/** Revision 13 Lifesteal of a surviving retaliating Vampire defender. */
+function lifestealOfDefenderV7(
+  rule: ReturnType<typeof unitRoleRuleV7>,
+  damageTaken: number,
+  damageDealt: number,
+  unit: { readonly hp: number; readonly maxHp: number },
+  dies: boolean,
+): number {
+  if (dies || damageDealt <= 0 || !rule.abilities.includes("LIFESTEAL"))
+    return 0;
+  return Math.max(
+    0,
+    Math.min(damageDealt, unit.maxHp - (unit.hp - damageTaken)),
+  );
 }
 
 /**

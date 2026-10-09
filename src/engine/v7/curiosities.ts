@@ -810,6 +810,24 @@ export function monsterDamageSourcesV7(
       for (const entry of event.results)
         if (entry.damage + entry.shieldDamage > 0)
           add(entry.unitId, event.unitId);
+    } else if (
+      // The giants' signatures (RULESET_7_GIANTS.md sections 6.4 and 6.5):
+      // a Thunder Stomp and an Overstride's trample provoke like an attack.
+      event.kind === "THUNDER_STOMP" ||
+      event.kind === "UNITS_TRAMPLED"
+    ) {
+      for (const entry of event.results)
+        if (entry.damage + entry.shieldDamage > 0)
+          add(entry.unitId, event.unitId);
+    } else if (event.kind === "UNIT_CRUSHED") {
+      // Section 6.1: the crush and the collision of a Juggernaut.
+      if (event.damage + event.shieldDamage > 0)
+        add(event.targetUnitId, event.sourceUnitId);
+      if (
+        event.blockerUnitId !== null &&
+        event.blockerDamage + event.blockerShieldDamage > 0
+      )
+        add(event.blockerUnitId, event.sourceUnitId);
     }
   }
   return sources;

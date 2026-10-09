@@ -24,7 +24,12 @@ export type GraveDeathCauseV7 =
   | "BOMB"
   | "ERUPTION"
   // The Candy revision: an eater killed by Peppermint Surprise (section 6.3).
-  | "PEPPERMINT";
+  | "PEPPERMINT"
+  // The giants' signatures (RULESET_7_GIANTS.md section 6.0, G5): a crush
+  // or collision, a Thunder Stomp, and a trample, each like a splash.
+  | "CRUSH"
+  | "STOMP"
+  | "TRAMPLE";
 
 /**
  * The canonical state a Grave decision reads. The Dwarf revision: with the

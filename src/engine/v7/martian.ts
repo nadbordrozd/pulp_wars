@@ -975,6 +975,8 @@ export function unitHeldByCityWallsV7(
       readonly reachedLevel: number;
       readonly reward: string;
     }[];
+    /** The giants' signatures (RULESET_7_GIANTS.md section 6.7). */
+    readonly wallsRazed?: true | undefined;
   }[],
   unit: {
     readonly ownerId: PlayerId;
@@ -988,6 +990,8 @@ export function unitHeldByCityWallsV7(
       city.ownerId === unit.ownerId &&
       city.at.x === unit.at.x &&
       city.at.y === unit.at.y &&
+      // The giants' signatures: razed Walls hold nothing.
+      city.wallsRazed !== true &&
       city.rewards.some(
         (record) => record.reachedLevel === 3 && record.reward === "WALLS",
       ),

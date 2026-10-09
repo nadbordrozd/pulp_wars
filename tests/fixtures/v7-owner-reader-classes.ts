@@ -160,4 +160,19 @@ export const OWNER_READER_CLASSES_V7: Readonly<
   // Dwarf crowd control (`pulp_wars-w49.33`): a Barricade's owner must be a
   // player of the match, so one of the neutral owner (no player) is refused.
   "src/engine/v7/state-schema.ts::barricadesValid": "NEUTRAL_SAFE",
+  // The giants' signatures (`pulp_wars-w49.30`). The Toss and Break Off
+  // placement rules, the Gingerbread Men's HP, and the Break Off command read the
+  // acting seat's roles; the regurgitated Zombie is the holder's seat's (an
+  // Abomination is never the neutral owner's) and the digest runs at a
+  // seat's Start Turn. A held victim's owner is always a seat (the Giant
+  // Spider is immune to Swallow): its missing record drops the victim in
+  // the prune and the fold, and refuses the state in the check.
+  "src/engine/v7/giants.ts::placementTileLegalV7": "PLAYER_ONLY",
+  "src/engine/v7/giants.ts::breakOffTrooperHpV7": "PLAYER_ONLY",
+  "src/engine/v7/giants.ts::applyBreakOffV7": "PLAYER_ONLY",
+  "src/engine/v7/giants.ts::regurgitationTileV7": "PLAYER_ONLY",
+  "src/engine/v7/giants.ts::resolveStartTurnDigestV7": "PLAYER_ONLY",
+  "src/engine/v7/giants.ts::prunedGiantsV7": "NEUTRAL_SAFE",
+  "src/engine/v7/giants.ts::swallowedOutcomeEventsV7": "NEUTRAL_SAFE",
+  "src/engine/v7/state-schema.ts::giantsValid": "NEUTRAL_SAFE",
 };

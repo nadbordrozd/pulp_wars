@@ -355,7 +355,10 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       // BUILD_BARRICADE, and ATTACK_BARRICADE after ASSEMBLE, moving every
       // later kind forward by three (was b8c717…d3e4); the
       // revision-12-ordinal value is unchanged.
-      "357b853c28313aa73398f74bbc505e901928ae9bb1e611aeb6d9aa493164644c",
+      // The giants' signatures (`pulp_wars-w49.30`) insert SWALLOW, TOSS,
+      // STOMP, and BREAK_OFF after RECOVER, moving every later command kind
+      // forward by four (was 357b85…644c).
+      "ca16d78661547b75804cc694a942b975ae62de30383eacc5e1b0255bdededd7c",
     );
     // Revision 13 shifts the command-kind ordinals in AI tie-break tuples
     // (spec section 8); this is the value with revision-12 ordinals
@@ -1149,7 +1152,10 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       // Dwarf crowd control (`pulp_wars-w49.33`) inserts WHIRL,
       // BUILD_BARRICADE, and ATTACK_BARRICADE after ASSEMBLE, moving every
       // later command kind forward by three (was 75d6c4…b1f6).
-      "2fd041ad76c4b6d3c722cf013812ecc85134b371800b7acdc4e6bcf1de761f64",
+      // The giants' signatures (`pulp_wars-w49.30`) insert SWALLOW, TOSS,
+      // STOMP, and BREAK_OFF after RECOVER, moving every later command kind
+      // forward by four (was 2fd041…1f64).
+      "a15d305974b96990eb220214e8a66398d0ca30992ce577b9f539a863ad5505b7",
     );
     expect(
       canonicalHash(withRevision12CandidateOrdinalsV7(revision4Candidates)),
@@ -1170,7 +1176,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     const source = upgradeRetainedPublicViewV7(retained);
 
     expect(canonicalJson(retained)).toBe(retainedBytes);
-    expect(source.rulesetId).toBe("pulp-wars-poc-7r61");
+    expect(source.rulesetId).toBe("pulp-wars-poc-7r62");
     expect(source.viewer.factionTreeId).toBe("ORIGINAL_BASELINE_V5");
     expect(
       source.players.every(

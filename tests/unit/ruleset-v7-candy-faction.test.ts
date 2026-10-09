@@ -188,7 +188,9 @@ const ROSTER = [
     1,
     1,
     true,
-    ["ATTACK", "CAPTURE", "PUSH", "SUGAR_RUSH", "BOUNCE"],
+    // The giants' signatures (`pulp_wars-w49.30`): Break Off instead of
+    // Push.
+    ["ATTACK", "CAPTURE", "SUGAR_RUSH", "BOUNCE", "BREAK_OFF"],
   ],
 ] as const;
 

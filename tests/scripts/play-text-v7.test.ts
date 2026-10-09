@@ -1548,6 +1548,62 @@ describe("text-mode play harness", () => {
     ]);
   });
 
+  it("places the human seat's giant at the front with lab --giant, and replays it", () => {
+    // The giants' signatures (`pulp_wars-w49.30`): the Troll for the
+    // Goblin lab, ready, full, homed to the capital, two tiles or more
+    // from every hostile unit; the replay places it the same way.
+    const session = path.join(root, "giant.json");
+    const plain = path.join(root, "giant-plain.json");
+    ok("lab", "--session", plain, "LAB_GOBLIN_MID");
+    const output = ok("lab", "--session", session, "LAB_GOBLIN_MID", "--giant");
+    const state = sessionState(session);
+    const before = sessionState(plain);
+    const owner = state.players.find(
+      (player) => player.id === state.humanPlayerId,
+    );
+    const giants = state.units.filter(
+      (unit) =>
+        unit.ownerId === state.humanPlayerId &&
+        unit.role === "JUGGERNAUT" &&
+        !before.units.some((other) => other.id === unit.id),
+    );
+    expect(giants).toHaveLength(1);
+    const giant = giants[0];
+    if (giant === undefined || owner === undefined) throw new Error("no giant");
+    expect(giant).toMatchObject({
+      hp: effectiveRoleRuleV7("JUGGERNAUT", "GOBLIN").maxHp,
+      homeCityId: owner.originalCapitalCityId,
+      form: "LAND",
+    });
+    for (const unit of state.units)
+      if (unit.ownerId !== state.humanPlayerId)
+        expect(
+          Math.max(
+            Math.abs(unit.at.x - giant.at.x),
+            Math.abs(unit.at.y - giant.at.y),
+          ),
+        ).toBeGreaterThanOrEqual(2);
+    expect(output).toContain(`u${giant.id}`);
+    // It may act at once.
+    expect(
+      queryPlayerCommandsV7(viewForV7(state, state.humanPlayerId)).some(
+        (command) => "unitId" in command && command.unitId === giant.id,
+      ),
+    ).toBe(true);
+    ok("end", "--session", session);
+    expect(ok("verify", "--session", session)).toContain("VERIFIED");
+    // Only the middle-game labs take it.
+    const refused = run(
+      "lab",
+      "--session",
+      path.join(root, "giant-late.json"),
+      "LAB_LATE",
+      "--giant",
+    );
+    expect(refused.exitCode).toBe(1);
+    expect(refused.output).toContain("--giant works with");
+  });
+
   it("rejects illegal and stale ids cleanly", () => {
     const session = newSession("reject");
     const before = JSON.parse(readFileSync(session, "utf8")) as Record<

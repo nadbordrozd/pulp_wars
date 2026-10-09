@@ -50,6 +50,8 @@ const captured = (commandIndex: 300 | 425): PlayerViewV7 => ({
   mindControlCooldowns: [],
   // The frozen sea: no ice.
   ice: [],
+  // The giants' signatures (`pulp_wars-w49.30`): no held victim.
+  giants: { swallowed: [] },
 });
 
 describe("ruleset-7 exact public-planning performance", () => {

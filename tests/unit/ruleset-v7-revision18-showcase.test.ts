@@ -247,8 +247,11 @@ describe("ruleset-7 revision-18 Showcase setup", () => {
         ninthUnit,
         // `pulp_wars-w49.33`: and the empty `barricades` list.
         barricades,
+        // `pulp_wars-w49.30`: and the empty `giants` record.
+        giants,
         ...withoutMonsters
       } = revision19State;
+      expect(giants).toEqual({ swallowed: [] });
       expect(ninthUnit).toEqual({
         wightGraves: [],
         risenWights: [],

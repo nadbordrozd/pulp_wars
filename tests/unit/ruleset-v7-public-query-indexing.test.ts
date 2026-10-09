@@ -52,6 +52,8 @@ const captured300: PlayerViewV7 = {
   mindControlCooldowns: [],
   // The frozen sea: no ice.
   ice: [],
+  // The giants' signatures (`pulp_wars-w49.30`): no held victim.
+  giants: { swallowed: [] },
 };
 
 describe("ruleset-7 exact public query indexing", () => {
@@ -82,7 +84,9 @@ describe("ruleset-7 exact public query indexing", () => {
       // Tuning 1 (`pulp_wars-w49.3`, 7r46): the captured view's level-4 Treasury
       // records carry the reward ID `TREASURY_6` (was 70a55b…16d4 with
       // `TREASURY_8`, the same view otherwise).
-      "5baf10d6fd66487bf788660d05418d3d174eaef2f82295667175742cc84111be",
+      // The giants' signatures (`pulp_wars-w49.30`) add the empty `giants`
+      // block (was 5baf10…11be, the same view otherwise).
+      "5aa9c726e2c9d90073c1efb92f8a781ec4f9b7f9f6da56017aa6e59816e23388",
     );
 
     const planned = drain(measured.view, commands, 113);

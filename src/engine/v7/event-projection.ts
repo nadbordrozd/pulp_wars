@@ -59,6 +59,40 @@ export function projectEventsV7(
     )
       visiblyCreatedUnitIds.add(event.rebakedUnitId);
     else if (
+      // The giants' signatures (RULESET_7_GIANTS.md sections 6.2 and 6.8):
+      // the Trooper of a projected Break Off, the Zombie of a projected
+      // regurgitation, and a released victim.
+      event.kind === "GIANT_BROKE_OFF" &&
+      event.playerId === viewerId
+    )
+      for (const created of event.newUnitIds)
+        visiblyCreatedUnitIds.add(created);
+    else if (
+      event.kind === "UNIT_REGURGITATED" &&
+      event.zombieUnitId !== null &&
+      giantEventVisibleV7(
+        beforeState,
+        afterState,
+        viewerId,
+        event,
+        beforeVisible,
+        afterVisible,
+      )
+    )
+      visiblyCreatedUnitIds.add(event.zombieUnitId);
+    else if (
+      event.kind === "SWALLOWED_UNIT_RELEASED" &&
+      giantEventVisibleV7(
+        beforeState,
+        afterState,
+        viewerId,
+        event,
+        beforeVisible,
+        afterVisible,
+      )
+    )
+      visiblyCreatedUnitIds.add(event.unitId);
+    else if (
       // The Dwarf revision: the Mole and rider of a projected surfacing
       // (section 13.11) return to the board in plain sight of its viewers.
       event.kind === "UNIT_SURFACED" &&
@@ -348,6 +382,19 @@ export function projectEventsV7(
           shieldDamage: null,
           dies: null,
         });
+      continue;
+    }
+    // The giants' signatures (docs/product/RULESET_7_GIANTS.md section 8).
+    const giant = projectGiantEventV7(
+      beforeState,
+      afterState,
+      viewerId,
+      event,
+      beforeVisible,
+      afterVisible,
+    );
+    if (giant !== undefined) {
+      if (giant !== null) projected.push(giant);
       continue;
     }
     const ids = unitIds(event);
@@ -856,6 +903,29 @@ function projectEventPayload(
       },
     };
   }
+  if (event.kind === "COMBAT_RESOLVED" && event.preview.crush !== "NONE") {
+    // The giants' signatures (section 6.1): a collision with a blocker the
+    // viewer cannot see is not reported.
+    const preview = event.preview;
+    const attacker = before.units.find(
+      (unit) => unit.id === preview.attackerId,
+    );
+    const defender = before.units.find(
+      (unit) => unit.id === preview.targetUnitId,
+    );
+    if (attacker !== undefined && defender !== undefined) {
+      const behind = {
+        x: defender.at.x * 2 - attacker.at.x,
+        y: defender.at.y * 2 - attacker.at.y,
+      };
+      const seenBefore = visibility(before, viewerId);
+      const blocker = before.units.find(
+        (unit) => unit.id !== defender.id && same(unit.at, behind),
+      );
+      if (blocker !== undefined && !seenBefore.has(blocker.id))
+        event = { ...event, preview: { ...preview, collisionDamage: 0 } };
+    }
+  }
   if (event.kind !== "COMBAT_RESOLVED" || event.preview.push !== "BLOCKED")
     return event;
   const attacker = before.units.find(
@@ -895,8 +965,217 @@ function projectEventPayload(
     return event;
   return {
     kind: "COMBAT_RESOLVED",
-    preview: { ...event.preview, push: "UNKNOWN_BEHIND_FOG" },
+    preview: {
+      ...event.preview,
+      push: "UNKNOWN_BEHIND_FOG",
+      // The giants' signatures (section 6.1): the crush state follows the
+      // Push preview, and an unknown blocker took nothing the viewer knows.
+      ...(event.preview.crush === "NONE"
+        ? {}
+        : { crush: "UNKNOWN_BEHIND_FOG" as const, collisionDamage: 0 }),
+    },
   };
+}
+
+/**
+ * The giants' signatures (docs/product/RULESET_7_GIANTS.md section 8): the
+ * visibility of a Swallow, a digest, a regurgitation, and a release: the
+ * actor, the victim's owner, and every viewer that sees the Abomination (or
+ * the victim, or the release tile) before or after the command.
+ */
+function giantEventVisibleV7(
+  before: GameStateV7,
+  after: GameStateV7,
+  viewerId: PlayerId,
+  event: Extract<
+    DomainEventV7,
+    {
+      kind:
+        | "UNIT_SWALLOWED"
+        | "UNIT_DIGESTED"
+        | "UNIT_REGURGITATED"
+        | "SWALLOWED_UNIT_RELEASED";
+    }
+  >,
+  beforeVisible: ReadonlySet<UnitId>,
+  afterVisible: ReadonlySet<UnitId>,
+): boolean {
+  const seen = (unitId: UnitId): boolean =>
+    beforeVisible.has(unitId) || afterVisible.has(unitId);
+  if (event.playerId === viewerId) return true;
+  switch (event.kind) {
+    case "UNIT_SWALLOWED":
+      return (
+        event.victimOwnerId === viewerId ||
+        seen(event.unitId) ||
+        seen(event.victimUnitId)
+      );
+    case "UNIT_DIGESTED":
+    case "UNIT_REGURGITATED": {
+      const victimOwner = before.giants.swallowed.find(
+        (entry) => entry.unit.id === event.victimUnitId,
+      )?.unit.ownerId;
+      return victimOwner === viewerId || seen(event.unitId);
+    }
+    case "SWALLOWED_UNIT_RELEASED": {
+      const holderOwner = before.units.find(
+        (unit) => unit.id === event.holderUnitId,
+      )?.ownerId;
+      return (
+        holderOwner === viewerId ||
+        seen(event.holderUnitId) ||
+        coordVisible(before, after, viewerId, event.at)
+      );
+    }
+  }
+}
+
+/**
+ * The giants' signatures: the projection of their events. Returns the
+ * projected event, null to drop it, or undefined for an event this does not
+ * handle. A crush, a Stomp, and a trample are projected like an attack (to
+ * a viewer that sees the giant or the target, with the hits it owns or
+ * could see; otherwise its own hits as `COMBAT_SPLASH_DAMAGE`); a Toss like
+ * a Move; a Break Off to its owner like a Re-bake; the `UNIT_DIED` of a
+ * held victim to its owner and to the viewers that see its holder.
+ */
+function projectGiantEventV7(
+  before: GameStateV7,
+  after: GameStateV7,
+  viewerId: PlayerId,
+  event: DomainEventV7,
+  beforeVisible: ReadonlySet<UnitId>,
+  afterVisible: ReadonlySet<UnitId>,
+): PlayerEventV7 | null | undefined {
+  const seen = (unitId: UnitId): boolean =>
+    beforeVisible.has(unitId) || afterVisible.has(unitId);
+  const owned = (unitId: UnitId): boolean =>
+    before.units.find((unit) => unit.id === unitId)?.ownerId === viewerId;
+  const ownSplash = (
+    entries: readonly {
+      readonly unitId: UnitId;
+      readonly at: CoordV7;
+      readonly damage: number;
+      readonly dies: boolean;
+      readonly shieldDamage: number;
+    }[],
+  ): PlayerEventV7 | null => {
+    const mine = entries
+      .filter((entry) => owned(entry.unitId))
+      .sort(
+        (left, right) =>
+          left.at.y - right.at.y ||
+          left.at.x - right.at.x ||
+          left.unitId - right.unitId,
+      );
+    return mine.length === 0
+      ? null
+      : { kind: "COMBAT_SPLASH_DAMAGE", splash: mine };
+  };
+  switch (event.kind) {
+    case "UNIT_SWALLOWED":
+    case "UNIT_DIGESTED":
+    case "UNIT_REGURGITATED":
+    case "SWALLOWED_UNIT_RELEASED":
+      return giantEventVisibleV7(
+        before,
+        after,
+        viewerId,
+        event,
+        beforeVisible,
+        afterVisible,
+      )
+        ? event
+        : null;
+    case "UNIT_DIED": {
+      const held = before.giants.swallowed.find(
+        (entry) => entry.unit.id === event.unitId,
+      );
+      if (held === undefined) return undefined;
+      return held.unit.ownerId === viewerId || seen(held.holderUnitId)
+        ? event
+        : null;
+    }
+    case "UNIT_CRUSHED": {
+      const target = before.units.find(
+        (unit) => unit.id === event.targetUnitId,
+      );
+      const blocker =
+        event.blockerUnitId === null
+          ? undefined
+          : before.units.find((unit) => unit.id === event.blockerUnitId);
+      if (
+        event.playerId === viewerId ||
+        seen(event.sourceUnitId) ||
+        seen(event.targetUnitId)
+      )
+        return event.blockerUnitId === null || seen(event.blockerUnitId)
+          ? event
+          : {
+              ...event,
+              blockerUnitId: null,
+              blockerDamage: 0,
+              blockerShieldDamage: 0,
+              blockerDies: false,
+            };
+      return ownSplash([
+        ...(target === undefined
+          ? []
+          : [
+              {
+                unitId: target.id,
+                at: target.at,
+                damage: event.damage,
+                dies: event.dies,
+                shieldDamage: event.shieldDamage,
+              },
+            ]),
+        ...(blocker === undefined
+          ? []
+          : [
+              {
+                unitId: blocker.id,
+                at: blocker.at,
+                damage: event.blockerDamage,
+                dies: event.blockerDies,
+                shieldDamage: event.blockerShieldDamage,
+              },
+            ]),
+      ]);
+    }
+    case "THUNDER_STOMP":
+    case "UNITS_TRAMPLED": {
+      if (event.playerId === viewerId || seen(event.unitId)) {
+        const results = event.results.filter(
+          (entry) => owned(entry.unitId) || beforeVisible.has(entry.unitId),
+        );
+        return event.kind === "THUNDER_STOMP"
+          ? {
+              ...event,
+              results,
+              fieldDefenses: event.fieldDefenses.filter((at) =>
+                coordVisible(before, after, viewerId, at),
+              ),
+            }
+          : results.length === 0
+            ? null
+            : { ...event, results };
+      }
+      return ownSplash(event.results);
+    }
+    case "GOBLIN_TOSSED":
+      return event.playerId === viewerId ||
+        seen(event.unitId) ||
+        seen(event.passengerUnitId) ||
+        coordVisible(before, after, viewerId, event.from) ||
+        coordVisible(before, after, viewerId, event.to)
+        ? event
+        : null;
+    case "GIANT_BROKE_OFF":
+      return event.playerId === viewerId ? event : null;
+    default:
+      return undefined;
+  }
 }
 
 function visibility(

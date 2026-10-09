@@ -378,6 +378,11 @@ export const CRUMBS_DEATH_CAUSES_V7: readonly string[] = Object.freeze([
   "BOMB",
   "ERUPTION",
   "PEPPERMINT",
+  // The giants' signatures (RULESET_7_GIANTS.md section 6.0, G5): never
+  // `DIGESTED`, which leaves nothing.
+  "CRUSH",
+  "STOMP",
+  "TRAMPLE",
 ]);
 
 /** The canonical facts a Crumbs decision reads. */

@@ -82,11 +82,11 @@ import {
 
 describe("ruleset-7 revision-17 identity", () => {
   it("keeps r16 among the prior identities after the r55 identity and cleans the r16 key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r61");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r61.current");
-    expect(PRIOR_RULESET_7_IDS.at(-45)).toBe("pulp-wars-poc-7r16");
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(60);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-45)).toBe(
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r62");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r62.current");
+    expect(PRIOR_RULESET_7_IDS.at(-46)).toBe("pulp-wars-poc-7r16");
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(61);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-46)).toBe(
       "pulpWars.save.v7r16.current",
     );
     const storage = new MemoryStorage([
@@ -451,7 +451,9 @@ describe("ruleset-7 Goblin roster", () => {
       1,
       1,
       true,
-      ["ATTACK", "CAPTURE", "PUSH", "REGENERATE"],
+      // The giants' signatures (`pulp_wars-w49.30`): Goblin Toss instead of
+      // Push.
+      ["ATTACK", "CAPTURE", "REGENERATE", "TOSS"],
       null,
       null,
     ],

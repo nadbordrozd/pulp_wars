@@ -5,7 +5,7 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r61" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r62" as const;
 /**
  * Every earlier Ruleset 7 identity, oldest first. Readers report these as
  * incompatible (never invalid). An identity bump must append the outgoing
@@ -72,8 +72,9 @@ export const PRIOR_RULESET_7_IDS = Object.freeze([
   "pulp-wars-poc-7r58",
   "pulp-wars-poc-7r59",
   "pulp-wars-poc-7r60",
+  "pulp-wars-poc-7r61",
 ] as const);
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r61.current" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r62.current" as const;
 /**
  * The map generator a setup names (docs/product/RULESET_7_MAP_SCALE.md
  * section 8.8): `V4` is the many-seats generator of `pulp_wars-ykw.3`
@@ -251,6 +252,14 @@ export const COMMAND_KIND_ORDER_V7 = Object.freeze([
   "REBAKE",
   "SUGAR_TOSS",
   "RECOVER",
+  // The giants' signatures (docs/product/RULESET_7_GIANTS.md sections 6.2,
+  // 6.3, 6.4, and 6.8): the Abomination's Swallow, the Troll's Goblin Toss,
+  // the Brontosaurus's Thunder Stomp, and the Gingerbread Giant's Break Off
+  // (after RECOVER, so no pinned neighbour of the earlier revisions moves).
+  "SWALLOW",
+  "TOSS",
+  "STOMP",
+  "BREAK_OFF",
   "CAPTURE",
   "PROMOTE",
   "PILLAGE",
@@ -397,6 +406,21 @@ export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   // The Dwarf revision: a Steam Mole tunnelled; a burrowed Mole surfaced.
   "UNIT_TUNNELLED",
   "UNIT_SURFACED",
+  // The giants' signatures (docs/product/RULESET_7_GIANTS.md section 8),
+  // in one block (no pinned neighbour moves): a Troll threw a Goblin; a
+  // Juggernaut's crush; razed Walls; a Thunder Stomp; an Overstride's
+  // trample; a Swallow, the Start Turn digest, the Zombie spat out, and a
+  // held victim back on the board; a Break Off.
+  "GOBLIN_TOSSED",
+  "UNIT_CRUSHED",
+  "WALLS_DESTROYED",
+  "THUNDER_STOMP",
+  "UNITS_TRAMPLED",
+  "UNIT_SWALLOWED",
+  "UNIT_DIGESTED",
+  "UNIT_REGURGITATED",
+  "SWALLOWED_UNIT_RELEASED",
+  "GIANT_BROKE_OFF",
   "UNIT_MOVED",
   "UNIT_MOVE_INTERRUPTED",
   // The Candy revision: a hostile unit ended its Move on Crumbs.
@@ -692,6 +716,13 @@ export interface UnitStateV7 {
   readonly veteran: boolean;
   readonly captureEligible: boolean;
   readonly activation: UnitActivationV7;
+  /**
+   * The giants' signatures (`pulp_wars-w49.30`, Break Off as the user
+   * changed it on 2026-10-09): `GINGERBREAD_MAN` on a Gingerbread Man, a
+   * Candy `FIGHTER` that a Gingerbread Giant broke off. Presentation only:
+   * in every rule it is a Toffee Trooper. Absent on every other unit.
+   */
+  readonly variant?: "GINGERBREAD_MAN";
 }
 
 export interface CityRewardRecordV7 {
@@ -712,6 +743,32 @@ export interface CityStateV7 {
   readonly landGrantUsed: boolean;
   readonly cityActionAvailable: boolean;
   readonly rewards: readonly CityRewardRecordV7[];
+  /**
+   * The giants' signatures (docs/product/RULESET_7_GIANTS.md section 6.7):
+   * present (always `true`) once a Brass Titan's Siege Hammer has torn the
+   * city's Walls down. The city keeps its `WALLS` reward record (the reward
+   * is not offered again); it has Walls exactly when it holds the record and
+   * this key is absent ({@link cityHasWallsV7}). It stays through a capture
+   * and nothing rebuilds the Walls. Absent in every other city, so a state
+   * without razed Walls is unchanged.
+   */
+  readonly wallsRazed?: true;
+}
+
+/**
+ * The giants' signatures (section 6.7): whether a city has Walls: it took
+ * the level-3 `WALLS` reward and its Walls were not razed. Every reader of
+ * "has Walls" (fortification, the Tractor Beam hold, the AI, the panel)
+ * asks this.
+ */
+export function cityHasWallsV7(city: {
+  readonly rewards: readonly { readonly reward: RewardIdV7 }[];
+  readonly wallsRazed?: true | undefined;
+}): boolean {
+  return (
+    city.wallsRazed !== true &&
+    city.rewards.some((record) => record.reward === "WALLS")
+  );
 }
 
 export type PopulationContributionSourceV7 =
@@ -943,8 +1000,39 @@ export interface GameStateV7 {
    * setup has no DWARF seat.
    */
   readonly barricades: readonly BarricadeV7[];
+  /**
+   * The giants' signatures (docs/product/RULESET_7_GIANTS.md section 8):
+   * the stored state of the giants' signatures (the Abomination's held
+   * victims).
+   */
+  readonly giants: GiantsStateV7;
   readonly pendingChoices: readonly PendingChoiceV7[];
   readonly outcome: MatchOutcomeV7 | null;
+}
+
+/**
+ * The giants' signatures (section 6.2): the stored state. `swallowed` is
+ * empty in a match without an Undead seat.
+ */
+export interface GiantsStateV7 {
+  /**
+   * Swallow: one entry per held victim, sorted by `holderUnitId`, at most
+   * one per holder. The holder is a land-form unit on the board whose role,
+   * under its kind, has `SWALLOW`. The victim is off the board: it is in no
+   * other unit list, has no status entry, keeps its HP, kills, home city,
+   * and veteran flag, has the exhausted activation, and its `at` is its
+   * holder's tile (kept in step with the holder); it counts for its home
+   * city's unit limit and for nothing else.
+   */
+  readonly swallowed: readonly SwallowedEntryV7[];
+}
+export interface SwallowedEntryV7 {
+  readonly holderUnitId: UnitId;
+  readonly unit: UnitStateV7;
+}
+/** The empty giants state (a new match, a mission, a fixture). */
+export function emptyGiantsStateV7(): GiantsStateV7 {
+  return { swallowed: [] };
 }
 
 /**

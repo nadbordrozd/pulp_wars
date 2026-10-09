@@ -66,6 +66,7 @@ import type {
 } from "./types";
 import { publicUnitStatsV7, type PublicUnitStatsV7 } from "./unit-stats";
 import { allOwnedUnitsV7, barricadesOfV7 } from "./units";
+import { cityHasWallsV7 } from "./types";
 
 export const UNKNOWN_RESOURCE_V7 = "UNKNOWN_RESOURCE" as const;
 export type PublicResourceV7 = ResourceIdV7 | null | typeof UNKNOWN_RESOURCE_V7;
@@ -149,6 +150,11 @@ export interface PublicCityV7 {
     readonly reachedLevel: number;
     readonly reward: RewardIdV7;
   }[];
+  /**
+   * The giants' signatures (docs/product/RULESET_7_GIANTS.md section 6.7):
+   * the city's Walls were torn down (public: Walls are). Present only then.
+   */
+  readonly wallsRazed?: true;
 }
 
 export interface PublicUnitV7 {
@@ -165,6 +171,11 @@ export interface PublicUnitV7 {
   readonly veteran: boolean;
   readonly captureEligible: boolean;
   readonly activation: UnitActivationV7;
+  /**
+   * The giants' signatures (Break Off): `GINGERBREAD_MAN` on a Gingerbread
+   * Man (a Toffee Trooper in every rule; public, it is how the unit looks).
+   */
+  readonly variant?: "GINGERBREAD_MAN";
 }
 
 export interface PublicLeaderboardEntryV7 {
@@ -372,8 +383,34 @@ export interface PlayerViewV7 {
    * sorted by (y, x), with its owner and HP.
    */
   readonly barricades: readonly BarricadeV7[];
+  /**
+   * The giants' signatures (docs/product/RULESET_7_GIANTS.md section 6.2):
+   * the held victims the viewer knows of: those of the visible Abominations
+   * (shown on the holder) and every victim of its own (it always knows its
+   * units), sorted by holder.
+   */
+  readonly giants: {
+    readonly swallowed: readonly PublicSwallowedV7[];
+  };
   readonly pendingChoices: readonly PendingChoiceV7[];
   readonly outcome: MatchOutcomeV7 | null;
+}
+
+/**
+ * The giants' signatures (section 6.2): a held victim in a player's view.
+ * `homeCityId` is owner-private (null for another player's victim), as for
+ * any unit.
+ */
+export interface PublicSwallowedV7 {
+  readonly holderUnitId: UnitId;
+  readonly unit: {
+    readonly id: UnitId;
+    readonly ownerId: PlayerId;
+    readonly role: UnitRoleIdV7;
+    readonly hp: number;
+    readonly maxHp: number;
+    readonly homeCityId: CityId | null;
+  };
 }
 
 /**
@@ -610,6 +647,7 @@ export function viewForV7(
         unit.ownerId === viewerId
           ? unit.activation
           : { ...unit.activation, tendedThisTurn: false },
+      ...(unit.variant === undefined ? {} : { variant: unit.variant }),
     };
   };
   const publicUnits = visibleUnits.map(publicUnit);
@@ -703,6 +741,7 @@ export function viewForV7(
       ? { cityActionAvailable: city.cityActionAvailable }
       : {}),
     rewards: city.rewards,
+    ...(city.wallsRazed === true ? { wallsRazed: true as const } : {}),
   }));
   const cityCounts = countBy(state.cities.map((city) => city.ownerId));
   // The Dwarf revision section 5.2: the leaderboard counts everything a
@@ -983,6 +1022,27 @@ export function viewForV7(
         ownerId: entry.ownerId,
         hp: entry.hp,
       })),
+    // The giants' signatures (section 6.2): see `PlayerViewV7.giants`.
+    giants: {
+      swallowed: state.giants.swallowed
+        .filter(
+          (entry) =>
+            entry.unit.ownerId === viewerId ||
+            visibleUnitIds.has(entry.holderUnitId),
+        )
+        .map((entry) => ({
+          holderUnitId: entry.holderUnitId,
+          unit: {
+            id: entry.unit.id,
+            ownerId: entry.unit.ownerId,
+            role: entry.unit.role,
+            hp: entry.unit.hp,
+            maxHp: entry.unit.maxHp,
+            homeCityId:
+              entry.unit.ownerId === viewerId ? entry.unit.homeCityId : null,
+          },
+        })),
+    },
     pendingChoices: state.pendingChoices.filter((choice) =>
       state.cities.some(
         (city) => city.id === choice.cityId && city.ownerId === viewerId,
@@ -1271,8 +1331,9 @@ function tileFortificationLevel(
   // Tuning 4: a Field Defense is two levels.
   let level = tile?.fieldDefense ? FIELD_DEFENSE_FORTIFICATION_LEVELS_V7 : 0;
   if (same(territory.at, at)) {
-    if (territory.rewards.some((reward) => reward.reward === "WALLS"))
-      level += 2;
+    // The giants' signatures (RULESET_7_GIANTS.md section 6.7): razed
+    // Walls give nothing.
+    if (cityHasWallsV7(territory)) level += 2;
   }
   return level;
 }

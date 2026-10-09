@@ -680,6 +680,37 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/engine/v7/ninth-unit.ts::prunedNinthUnitV7": "BOARD",
     "src/engine/v7/reducer.ts::resolveStartTurnRiseAgainV7": "BOARD",
     "src/engine/v7/state-schema.ts::ninthUnitValid": "BOARD",
+    // The giants' signatures (`pulp_wars-w49.30`, RULESET_7_GIANTS.md
+    // section 6). Every reader means the board: the targets of a Crush, a
+    // Stomp, a trample, a Swallow, a Toss, and a Break Off (a burrowed unit
+    // is underground and never hit, swallowed, thrown, or placed upon);
+    // the holder of a held victim (an Abomination stands on the board; it
+    // never burrows); the visibility of the new events; the previews; and
+    // the state check, whose entity IDs and capacity are counted by the
+    // all-units readers already classified (`validateCrossReferences`,
+    // `assignedUnitCountV7`). A held victim is in neither list.
+    "src/engine/v7/combat.ts::crushPreviewV7": "BOARD",
+    "src/engine/v7/event-projection.ts::giantEventVisibleV7": "BOARD",
+    "src/engine/v7/event-projection.ts::projectGiantEventV7": "BOARD",
+    "src/engine/v7/giants.ts::applySwallowV7": "BOARD",
+    "src/engine/v7/giants.ts::applyTossV7": "BOARD",
+    "src/engine/v7/giants.ts::applyStompV7": "BOARD",
+    "src/engine/v7/giants.ts::applyBreakOffV7": "BOARD",
+    "src/engine/v7/giants.ts::resolveFixedHitsV7": "BOARD",
+    "src/engine/v7/giants.ts::resolveStartTurnDigestV7": "BOARD",
+    "src/engine/v7/giants.ts::prunedGiantsV7": "BOARD",
+    "src/engine/v7/giants.ts::swallowedOutcomeEventsV7": "BOARD",
+    "src/engine/v7/query.ts::appendPublicGiantCommandsV7": "BOARD",
+    "src/engine/v7/query.ts::previewSwallowV7": "BOARD",
+    "src/engine/v7/query.ts::previewTossV7": "BOARD",
+    "src/engine/v7/query.ts::previewStompV7": "BOARD",
+    "src/engine/v7/query.ts::previewBreakOffV7": "BOARD",
+    "src/engine/v7/query.ts::previewTrampleV7": "BOARD",
+    "src/engine/v7/query.ts::publicCrushPreviewV7": "BOARD",
+    "src/engine/v7/reducer.ts::withSwallowedOutcomesResultV7": "BOARD",
+    "src/engine/v7/reducer.ts::trampleResultsV7": "BOARD",
+    "src/engine/v7/reducer.ts::resolveCrushV7": "BOARD",
+    "src/engine/v7/state-schema.ts::giantsValid": "BOARD",
   };
 
 /**

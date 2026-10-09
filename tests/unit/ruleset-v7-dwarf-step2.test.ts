@@ -161,7 +161,7 @@ const counts = (
 
 describe("step two of the Dwarf pass: no rule changed", () => {
   it("kept the identity and the Dwarf Survey (the area, no unit)", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r61");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r62");
     expect([SURVEY_RAIDERS_V7.DWARF, SURVEY_RAIDERS_V7.CANDY]).toEqual([0, 0]);
   });
 });

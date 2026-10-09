@@ -121,14 +121,19 @@ const offers = (state: GameStateV7, command: CommandV7): boolean =>
   );
 
 describe("the identity (pulp_wars-w49.35)", () => {
-  it("is 7r61 after 7r60, whose save key is obsolete", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r61");
-    expect(PRIOR_RULESET_7_IDS.at(-1)).toBe("pulp-wars-poc-7r60");
+  // The giants' signatures (`pulp_wars-w49.30`) took 7r62 after it.
+  it("was 7r61 after 7r60, whose save keys are obsolete", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r62");
+    expect(PRIOR_RULESET_7_IDS.slice(-2)).toEqual([
+      "pulp-wars-poc-7r60",
+      "pulp-wars-poc-7r61",
+    ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r61.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r62.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-2)).toEqual([
       "pulpWars.save.v7r60.current",
-    );
+      "pulpWars.save.v7r61.current",
+    ]);
   });
 });
 

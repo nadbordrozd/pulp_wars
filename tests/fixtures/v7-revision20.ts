@@ -249,9 +249,21 @@ export function attackV7(
     preview.push === "UNKNOWN_BEHIND_FOG" &&
     combat.push !== "UNKNOWN_BEHIND_FOG";
   if (hiddenTechnology) {
-    const { push: _push, advances: _advances, ...hit } = preview;
+    // The giants' signatures (RULESET_7_GIANTS.md section 6.1): the crush
+    // state follows the Push preview.
+    const {
+      push: _push,
+      advances: _advances,
+      crush: _crush,
+      crushDamage: _crushDamage,
+      collisionDamage: _collision,
+      ...hit
+    } = preview;
     void _push;
     void _advances;
+    void _crush;
+    void _crushDamage;
+    void _collision;
     expect(combat).toMatchObject(hit);
   } else expect(preview).toEqual(combat);
   if (chain !== null && !chain.touchesUnexplored && !hiddenTechnology)

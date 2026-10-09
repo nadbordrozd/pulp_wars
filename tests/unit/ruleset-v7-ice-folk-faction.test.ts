@@ -167,7 +167,9 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
     // tuning 4 DRILL_UNIT after PROMOTE (60), which tuning 5
     // (`pulp_wars-w49.4`) removes again (59).
     // Dwarf crowd control (`pulp_wars-w49.33`): three more commands (62).
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(62);
+    // The giants' signatures (`pulp_wars-w49.30`) add SWALLOW, TOSS,
+    // STOMP, and BREAK_OFF after RECOVER (66).
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(66);
     const tractor = COMMAND_KIND_ORDER_V7.indexOf("TRACTOR_BEAM");
     expect(COMMAND_KIND_ORDER_V7.slice(tractor, tractor + 4)).toEqual([
       "TRACTOR_BEAM",
@@ -182,7 +184,9 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
     // MONSTER_BOUNTY_AWARDED (89); the Candy revision seven more (96).
     // The ninth unit (`pulp_wars-w49.17`, 7r55): WIGHT_RISEN (101).
     // Dwarf crowd control (`pulp_wars-w49.33`): four more events (105).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(105);
+    // The giants' signatures (`pulp_wars-w49.30`) add ten event kinds in
+    // one block after UNIT_SURFACED (115).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(115);
     const after = (order: readonly string[], kind: string) =>
       order[order.indexOf(kind) + 1];
     expect(after(DOMAIN_EVENT_KIND_ORDER_V7, "UNITS_RALLIED")).toBe(
@@ -556,8 +560,10 @@ const ROSTER = [
     1,
     1,
     true,
-    ["ATTACK", "CAPTURE", "PUSH", "COLD_AURA", "MOUNTAIN_BORN"],
-    true,
+    // The giants' signatures (`pulp_wars-w49.30`): Glacial Smash instead of
+    // Push, and the Frost Giant never advances.
+    ["ATTACK", "CAPTURE", "COLD_AURA", "MOUNTAIN_BORN", "GLACIAL_SMASH"],
+    false,
   ],
 ] as const;
 

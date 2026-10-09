@@ -86,8 +86,8 @@ const READY: UnitStateV7["activation"] = {
 
 describe("ruleset-7 revision-13 identity and faction registration", () => {
   it("pins the current identity, frozen faction and tree orders, and bindings", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r61");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r61.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r62");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r62.current");
     expect(FACTION_IDS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",
@@ -142,11 +142,11 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
     ).toThrow(RangeError);
   });
 
-  it("cleans obsolete keys through v7r60 and preserves the r61 save", () => {
+  it("cleans obsolete keys through v7r61 and preserves the r62 save", () => {
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
-      "pulpWars.save.v7r60.current",
+      "pulpWars.save.v7r61.current",
     );
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(60);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(61);
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
     const storage = new MemoryStorage([
       ["pulpWars.save.v7r12.current", "r12"],
@@ -634,8 +634,9 @@ describe("ruleset-7 Undead roster and technology registration", () => {
         1,
         null,
         true,
-        // The Undead pass (7r51): Infect.
-        ["ATTACK", "CAPTURE", "PUSH", "INFECT"],
+        // The Undead pass (7r51): Infect. The giants' signatures
+        // (`pulp_wars-w49.30`): Swallow instead of Push.
+        ["ATTACK", "CAPTURE", "INFECT", "SWALLOW"],
       ],
       PATROL_BOAT: [
         "Patrol Boat",
@@ -771,7 +772,8 @@ describe("ruleset-7 Undead roster and technology registration", () => {
       ["Captain", 5, 10, 2, 2, 1, 1, 1, "ATTACK+RALLY+TEND_WOUNDED"],
       ["Catapult", 8, 10, 6, 1, 1, 3, 2, "ATTACK"],
       ["Knight", 9, 13, 8, 2, 3, 1, 1, "ATTACK+CAPTURE+OVERRUN"],
-      ["Juggernaut", null, 40, 8, 8, 1, 1, 1, "ATTACK+CAPTURE+PUSH"],
+      // The giants' signatures (`pulp_wars-w49.30`): Crushing Shove.
+      ["Juggernaut", null, 40, 8, 8, 1, 1, 1, "ATTACK+CAPTURE+PUSH+CRUSH"],
       ["Patrol Boat", 5, 10, 4, 4, 2, 1, 1, "ATTACK+RAM"],
       ["Battleship", 16, 25, 12, 8, 2, 3, 1, "ATTACK"],
       // The naval branch (`pulp_wars-5ti.2`).
@@ -2202,6 +2204,12 @@ describe("ruleset-7 all-Human parity digests", () => {
               item.length === 0
             )
               return undefined;
+            // The giants' signatures (`pulp_wars-w49.30`): the empty
+            // `giants` record of state and view.
+            if (key === "giants") {
+              expect(item).toEqual({ swallowed: [] });
+              return undefined;
+            }
             if (key === "snow" || key === "blizzard" || key === "chill")
               winterValues += 1;
             return item;

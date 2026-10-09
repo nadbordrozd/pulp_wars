@@ -39,7 +39,7 @@ const setup: MatchSetupV7 = {
 
 describe("ruleset-7 revision-8 deterministic foundation", () => {
   it("freezes the exact identity and registries", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r61");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r62");
     expect(FACTION_IDS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",
@@ -121,7 +121,9 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
     // (`pulp_wars-w49.4`) removes again (59). Dwarf crowd control
     // (`pulp_wars-w49.33`) adds WHIRL, BUILD_BARRICADE, and
     // ATTACK_BARRICADE (62).
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(62);
+    // The giants' signatures (`pulp_wars-w49.30`) add SWALLOW, TOSS,
+    // STOMP, and BREAK_OFF after RECOVER (66).
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(66);
     expect(COMMAND_KIND_ORDER_V7).not.toContain("STAMPEDE");
     // The Mind Control revision adds UNIT_RELEASED (82 event kinds).
     // Map curiosities (pulp_wars-737.2) add FOUNTAIN_HEALED, SHRINE_CLAIMED,
@@ -131,7 +133,9 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
     // naval branch SHIP_BOARDED (97). The ninth unit (`pulp_wars-w49.17`,
     // 7r55) adds WIGHT_RISEN (101); Dwarf crowd control (`pulp_wars-w49.33`,
     // 7r60) four Whirl and Barricade events (105).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(105);
+    // The giants' signatures (`pulp_wars-w49.30`) add ten event kinds in
+    // one block after UNIT_SURFACED (115).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(115);
     // Revision 19 inserts HATCH after KABOOM (and, until revision 20,
     // STAMPEDE between them), LAY_EGG after TRAIN_NAVAL, EGG_LAID and
     // EGG_HATCHED after NAVAL_UNIT_TRAINED, and UNIT_GREW after

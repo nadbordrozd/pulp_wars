@@ -225,6 +225,30 @@ export interface CombatPreviewV7 {
    * attacked a Musk Ox from the next tile.
    */
   readonly frostbiteApplied: boolean;
+  /**
+   * The giants' signatures (docs/product/RULESET_7_GIANTS.md section 6.1):
+   * Crushing Shove. `WILL_CRUSH` when the attacker crushes and its
+   * surviving target is not pushed, `UNKNOWN_BEHIND_FOG` when `push` is
+   * (the target is still crushed; only the blocker is unknown), otherwise
+   * `NONE`. `crushDamage` is the HP the crush takes from the target and
+   * `collisionDamage` the HP it takes from a hostile blocker behind it (0
+   * without one, or when the blocker is unknown).
+   */
+  readonly crush: "NONE" | "WILL_CRUSH" | "UNKNOWN_BEHIND_FOG";
+  readonly crushDamage: number;
+  readonly collisionDamage: number;
+  /**
+   * Section 6.7: a Brass Titan's Siege Hammer (its removed levels are in
+   * `fortificationIgnored`); `wallsDestroyed`, the target's city loses its
+   * Walls.
+   */
+  readonly siegeHammer: boolean;
+  readonly wallsDestroyed: boolean;
+  /**
+   * Section 6.6: the Frost Giant's Glacial Smash threshold (8) was the one
+   * that shattered the target (`shatters` is true).
+   */
+  readonly glacialSmash: boolean;
 }
 export interface CombatSplashEntryV7 {
   readonly unitId: UnitId;
@@ -605,7 +629,15 @@ export type DomainEventV7 =
          * The Dwarf revision (section 5.4): a surfacing Steam Mole destroys
          * Field Defense on its tile and the eight around it.
          */
-        | "UNDERMINED";
+        | "UNDERMINED"
+        /**
+         * The giants' signatures (RULESET_7_GIANTS.md sections 6.4 and
+         * 6.7): a Thunder Stomp smashes the Field Defense on the eight tiles
+         * around the Brontosaurus; a Siege Hammer blow the one on its
+         * target's tile.
+         */
+        | "STOMP"
+        | "SIEGE_HAMMER";
     }
   | {
       readonly kind: "LAND_GRANTED";
@@ -799,8 +831,15 @@ export type DomainEventV7 =
       // Turn, with no source unit.
       // The ninth unit (`pulp_wars-w49.17`, 7r55): Frostbite, a Musk Ox
       // (`sourceUnitId`, of `playerId`) chilled the unit that attacked it.
+      // The giants' signatures (RULESET_7_GIANTS.md section 6.6): the shards
+      // of a unit a Frost Giant (`sourceUnitId`) shattered.
       readonly source:
-        "BOLAS" | "COLD_SNAP" | "COLD_AURA" | "BLACK_ICE" | "FROSTBITE";
+        | "BOLAS"
+        | "COLD_SNAP"
+        | "COLD_AURA"
+        | "BLACK_ICE"
+        | "FROSTBITE"
+        | "SHARDS";
       readonly results: readonly {
         readonly unitId: UnitId;
         readonly sluggish: boolean;
@@ -1211,7 +1250,150 @@ export type DomainEventV7 =
          * The frozen sea (naval branch section 8.9): an icebound unit
          * crushed by the ice (no credit, no Grave).
          */
-        | "CRUSHED";
+        | "CRUSHED"
+        /**
+         * The giants' signatures (RULESET_7_GIANTS.md section 6.0, G5): a
+         * Juggernaut's crush or collision, a Thunder Stomp, an Overstride's
+         * trample (each like a splash death), and a swallowed unit digested
+         * (nothing is left: no Grave, Crumbs, blast, or rising).
+         */
+        | "CRUSH"
+        | "STOMP"
+        | "TRAMPLE"
+        | "DIGESTED";
+    }
+  | {
+      /**
+       * The giants' signatures (section 6.1): the Juggernaut `sourceUnitId`
+       * of `playerId` crushed its target `targetUnitId`, which it could not
+       * push, for `damage` HP (`shieldDamage` absorbed); a hostile unit on
+       * the tile behind it (`blockerUnitId`, null without one or in a
+       * projection to a viewer that cannot see it) took `blockerDamage`.
+       */
+      readonly kind: "UNIT_CRUSHED";
+      readonly playerId: PlayerId;
+      readonly sourceUnitId: UnitId;
+      readonly targetUnitId: UnitId;
+      readonly damage: number;
+      readonly shieldDamage: number;
+      readonly dies: boolean;
+      readonly blockerUnitId: UnitId | null;
+      readonly blockerDamage: number;
+      readonly blockerShieldDamage: number;
+      readonly blockerDies: boolean;
+    }
+  | {
+      /**
+       * Section 6.2: the Abomination `unitId` of `playerId` swallowed the
+       * unit `victimUnitId` of `victimOwnerId` (role `role`, `hp` HP).
+       */
+      readonly kind: "UNIT_SWALLOWED";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly victimUnitId: UnitId;
+      readonly victimOwnerId: PlayerId;
+      readonly role: UnitRoleIdV7;
+      readonly hp: number;
+    }
+  | {
+      /**
+       * Section 6.2: at `playerId`'s Start Turn its Abomination `unitId`
+       * digested `amount` HP of its victim (`hpAfter` left, 0 when it died)
+       * and healed `healed` HP.
+       */
+      readonly kind: "UNIT_DIGESTED";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly victimUnitId: UnitId;
+      readonly amount: number;
+      readonly hpAfter: number;
+      readonly healed: number;
+    }
+  | {
+      /**
+       * Section 6.2: the digested victim came back out of the Abomination
+       * as the Zombie `zombieUnitId` on `at` (both null when no tile around
+       * it was free).
+       */
+      readonly kind: "UNIT_REGURGITATED";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly victimUnitId: UnitId;
+      readonly zombieUnitId: UnitId | null;
+      readonly at: CoordV7 | null;
+    }
+  | {
+      /**
+       * Section 6.2: the unit `unitId` of `playerId` that the Abomination
+       * `holderUnitId` held stands on `at` again, with `hp` HP (its holder
+       * died there, or the holder's owner was eliminated).
+       */
+      readonly kind: "SWALLOWED_UNIT_RELEASED";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly holderUnitId: UnitId;
+      readonly at: CoordV7;
+      readonly hp: number;
+    }
+  | {
+      /**
+       * Section 6.3: the Troll `unitId` of `playerId` threw its Goblin
+       * `passengerUnitId` from `from` onto `to`.
+       */
+      readonly kind: "GOBLIN_TOSSED";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly passengerUnitId: UnitId;
+      readonly from: CoordV7;
+      readonly to: CoordV7;
+    }
+  | {
+      /**
+       * Section 6.4: the Brontosaurus `unitId` of `playerId` stamped: every
+       * hostile ground unit around it took the fixed Stomp damage
+       * (`results`, sorted by (y, x, unitId); a projection keeps the units
+       * the viewer owns or could see), and the Field Defense on
+       * `fieldDefenses` was smashed.
+       */
+      readonly kind: "THUNDER_STOMP";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly results: readonly CombatSplashEntryV7[];
+      readonly fieldDefenses: readonly CoordV7[];
+    }
+  | {
+      /**
+       * Section 6.5: the Colossus `unitId` of `playerId` trampled the
+       * hostile units it stepped over in its Move, in path order.
+       */
+      readonly kind: "UNITS_TRAMPLED";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly results: readonly CombatSplashEntryV7[];
+    }
+  | {
+      /**
+       * Section 6.7: the Brass Titan `byUnitId` tore down the Walls of the
+       * city `cityId` (public: Walls are).
+       */
+      readonly kind: "WALLS_DESTROYED";
+      readonly cityId: CityId;
+      readonly byUnitId: UnitId;
+    }
+  | {
+      /**
+       * Section 6.8 (as the user changed it on 2026-10-09): the Gingerbread
+       * Giant `unitId` of `playerId` spent `BREAK_OFF_HP_V7` HP and made
+       * the two Gingerbread Men `newUnitIds` on `tiles` (in the same order,
+       * (y, x)), homed to `cityId`, each with `hp` HP.
+       */
+      readonly kind: "GIANT_BROKE_OFF";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly newUnitIds: readonly [UnitId, UnitId];
+      readonly tiles: readonly [CoordV7, CoordV7];
+      readonly cityId: CityId;
+      readonly hp: number;
     }
   | {
       /** Revision 13: a Zombie's land-form victim rose as a Zombie. */
