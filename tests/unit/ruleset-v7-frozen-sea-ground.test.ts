@@ -18,6 +18,11 @@ import {
   type UnitRoleIdV7,
 } from "../../src/engine/index";
 import {
+  reachableMovementPathsV7,
+  reachablePlayerMovementPathsV7,
+  validateMovementPathV7,
+} from "../../src/engine/v7/movement";
+import {
   frozenArenaV7,
   patchFrozenUnitV7,
   type FrozenIceV7,
@@ -485,6 +490,143 @@ describe("Glacier (section 8.10)", () => {
       code: "MOVEMENT_ILLEGAL",
       params: { reason: "BUDGET_EXCEEDED" },
     });
+  });
+
+  it("offers the cheapest legal path to every tile: no detour over ice, no Move back to the start (`pulp_wars-mm8p`)", () => {
+    // Seat 0 is the Ice Folk: a Sabretooth (Move 3, 6 half-points; 8 with
+    // Glacier on a path over ice) on (1, 1) with its ice on (0, 3) to
+    // (3, 3). Every land step and every ice step costs a point.
+    const START: CoordV7 = { x: 1, y: 1 };
+    const ICE_ROW: readonly CoordV7[] = [0, 1, 2, 3].map((x) => ({ x, y: 3 }));
+    const build = (technologies: readonly TechnologyIdV7[]) =>
+      frozenArenaV7({
+        technologies: [technologies, ALL],
+        units: [
+          { seat: 0, role: "KNIGHT", at: START },
+          { seat: 1, role: "FIGHTER", at: { x: 9, y: 9 } },
+        ],
+        ice: ICE_ROW.map((at) => ({ at })),
+      });
+    const keyOf = (at: CoordV7): string => `${String(at.x)},${String(at.y)}`;
+    const onIce = (at: CoordV7): boolean =>
+      ICE_ROW.some((ice) => ice.x === at.x && ice.y === at.y);
+    // The cheapest legal Move to every tile, by brute force over every path
+    // of up to 4 steps (4 points: the Glacier budget) through the
+    // canonical validation.
+    const cheapest = (state: GameStateV7): Map<string, number> => {
+      const unit = navalUnitAtV7(state, START);
+      const costs = new Map<string, number>();
+      const visit = (path: readonly CoordV7[]): void => {
+        const current = path.at(-1) ?? START;
+        if (path.length === 4) return;
+        for (let dy = -1; dy <= 1; dy += 1)
+          for (let dx = -1; dx <= 1; dx += 1) {
+            const next = { x: current.x + dx, y: current.y + dy };
+            if (
+              (dx === 0 && dy === 0) ||
+              next.x < 0 ||
+              next.y < 0 ||
+              next.x >= state.board.width ||
+              next.y >= state.board.height
+            )
+              continue;
+            const candidate = [...path, next];
+            const result = validateMovementPathV7(state, unit, candidate);
+            if (
+              result.legal &&
+              result.traversedPath.length === candidate.length &&
+              keyOf(next) !== keyOf(START)
+            ) {
+              const prior = costs.get(keyOf(next));
+              if (prior === undefined || prior > result.spentPoints2)
+                costs.set(keyOf(next), result.spentPoints2);
+            }
+            visit(candidate);
+          }
+      };
+      visit([]);
+      return costs;
+    };
+    const offered = (state: GameStateV7) => {
+      const unit = navalUnitAtV7(state, START);
+      const view = viewForV7(state, seatV7(state, 0).id);
+      const publicUnit = view.units.find((other) => other.id === unit.id);
+      if (publicUnit === undefined) throw new Error("no public unit");
+      const canonical = reachableMovementPathsV7(state, unit);
+      const visible = reachablePlayerMovementPathsV7(view, publicUnit);
+      // The canonical search and the public query agree.
+      expect(visible).toEqual(canonical);
+      const moves = commandsOf(state, START).flatMap((command) =>
+        command.kind === "MOVE" ? [command.path] : [],
+      );
+      expect(new Set(moves.map((path) => JSON.stringify(path)))).toEqual(
+        new Set(visible.map((entry) => JSON.stringify(entry.path))),
+      );
+      for (const entry of visible) {
+        // Every offered path is a legal Move of the cost it reports.
+        const result = validateMovementPathV7(state, unit, entry.path);
+        expect(result.legal && result.spentPoints2).toBe(entry.spentPoints2);
+        acceptV7(state, 0, {
+          kind: "MOVE",
+          unitId: unit.id,
+          path: [...entry.path],
+        });
+      }
+      return visible;
+    };
+    const glacier = build(ALL);
+    const paths = offered(glacier);
+    // The reported detour: a tile two away is reached directly, for 2
+    // points, not over the ice and back for 4.
+    expect(
+      paths.find((entry) => keyOf(entry.destination) === "3,1"),
+    ).toMatchObject({ spentPoints2: 4 });
+    expect(
+      paths.find((entry) => keyOf(entry.destination) === "3,1")?.path,
+    ).toHaveLength(2);
+    // The start tile is never a destination.
+    expect(paths.some((entry) => keyOf(entry.destination) === "1,1")).toBe(
+      false,
+    );
+    // Every offered path is the cheapest legal one, and every tile with a
+    // legal Move is offered.
+    const costs = cheapest(glacier);
+    expect(
+      new Map(
+        paths.map((entry) => [keyOf(entry.destination), entry.spentPoints2]),
+      ),
+    ).toEqual(costs);
+    // Glacier adds reach only over ice: a path without ice keeps the 6
+    // half-points, and some tile needs the ice path's 8.
+    for (const entry of paths)
+      if (!entry.path.some(onIce))
+        expect(entry.spentPoints2).toBeLessThanOrEqual(6);
+    const beyond = paths.filter((entry) => entry.spentPoints2 === 8);
+    expect(beyond.length).toBeGreaterThan(0);
+    for (const entry of beyond) expect(entry.path.some(onIce)).toBe(true);
+    // Without Glacier those tiles are out of reach, and the rest is
+    // unchanged.
+    const bare = build(NO_GLACIER);
+    const barePaths = offered(bare);
+    expect(
+      new Map(
+        barePaths.map((entry) => [
+          keyOf(entry.destination),
+          entry.spentPoints2,
+        ]),
+      ),
+    ).toEqual(
+      new Map(
+        paths
+          .filter((entry) => entry.spentPoints2 <= 6)
+          .map((entry) => [keyOf(entry.destination), entry.spentPoints2]),
+      ),
+    );
+    expect(barePaths.map((entry) => entry.path)).toEqual(
+      paths
+        .filter((entry) => entry.spentPoints2 <= 6)
+        .map((entry) => entry.path),
+    );
   });
 });
 

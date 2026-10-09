@@ -878,13 +878,17 @@ export function reachableMovementPathsV7(
           ));
       if (ownOccupied && validation.stopped) continue;
       best.set(stateKey, validation.spentPoints2);
-      // The Candy redesign: a Bunny's destination keeps its cheapest path
-      // (a hop and a walk may reach the same tile).
-      const known = hops ? results.get(destinationKey) : undefined;
+      // Every destination keeps its cheapest path: the search states of a
+      // tile (a Bunny's hop and walk, the Candy redesign; a Glacier path
+      // over ice and one without, `pulp_wars-mm8p`) may each reach it, and
+      // a later, longer one never replaces a cheaper one. The start tile is
+      // never a destination (a Glacier path may loop back to it over ice).
+      const known = results.get(destinationKey);
       if (
         !ownOccupied &&
         pending === undefined &&
         validation.glacierPending !== true &&
+        !same(validation.destination, unit.at) &&
         (known === undefined || known.spentPoints2 > validation.spentPoints2)
       )
         results.set(destinationKey, {
@@ -983,13 +987,17 @@ export function reachablePlayerMovementPathsV7(
           !publicFlyerMayStandV7(view, unit, publicTileAt(view, destination)));
       if (ownOccupied && validation.stopped) continue;
       best.set(stateKey, validation.spentPoints2);
-      // The Candy redesign: a Bunny's destination keeps its cheapest path
-      // (a hop and a walk may reach the same tile).
-      const known = hops ? results.get(destinationKey) : undefined;
+      // Every destination keeps its cheapest path: the search states of a
+      // tile (a Bunny's hop and walk, the Candy redesign; a Glacier path
+      // over ice and one without, `pulp_wars-mm8p`) may each reach it, and
+      // a later, longer one never replaces a cheaper one. The start tile is
+      // never a destination (a Glacier path may loop back to it over ice).
+      const known = results.get(destinationKey);
       if (
         !ownOccupied &&
         pending === undefined &&
         validation.glacierPending !== true &&
+        !same(validation.destination, unit.at) &&
         (known === undefined || known.spentPoints2 > validation.spentPoints2)
       )
         results.set(destinationKey, {

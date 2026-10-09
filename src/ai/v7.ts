@@ -2206,10 +2206,12 @@ function* hasReplacementPathWorkV7(
         const passedOnly = ownOccupied.has(key);
         if (passedOnly && validation.stopped) continue;
         // The frozen sea: a prefix that ends where a slide continues is
-        // not a legal Move end.
+        // not a legal Move end; nor is one over the budget it has without
+        // ice that has not touched ice (Glacier, `pulp_wars-mm8p`).
         if (
           !passedOnly &&
           validation.slideContinues === undefined &&
+          validation.glacierPending !== true &&
           same(next, target)
         )
           return true;
