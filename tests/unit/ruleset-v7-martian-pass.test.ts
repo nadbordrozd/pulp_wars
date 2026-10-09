@@ -978,9 +978,11 @@ describe("the Martian pass: Martian seats play the army rules", () => {
       "DINOSAUR",
       // Step two of the Ice Folk pass (`pulp_wars-w49.27`).
       "ICE_FOLK",
+      // Step two of the Dwarf pass (`pulp_wars-w49.28`).
+      "DWARF",
     ]);
     expect(armyPlayFactionV7("MARTIAN")).toBe(true);
-    expect(armyPlayFactionV7("DWARF")).toBe(false);
+    expect(armyPlayFactionV7("CANDY")).toBe(false);
     // Shield Projector, Ray Gunner, Brain (third since step two of the
     // Martian pass, `pulp_wars-w49.25`; it was fifth), Shock Trooper (the
     // ninth unit, 7r55), Tripod, Saucer, Mothership.
@@ -1061,15 +1063,16 @@ describe("the Martian pass: Martian seats play the army rules", () => {
       inspectNormalArmyV7(viewOf(asMartian(pieces, {}, "DINOSAUR"))).army,
     ).toBe(true);
     // (And against an Ice Folk seat since step two of the Ice Folk pass,
-    // `pulp_wars-w49.27`.)
-    expect(
-      inspectNormalArmyV7(viewOf(asMartian(pieces, {}, "ICE_FOLK"))).army,
-    ).toBe(true);
-    for (const opponent of ["DWARF", "CANDY"] as const)
+    // `pulp_wars-w49.27`, and a Dwarf seat since step two of the Dwarf
+    // pass, `pulp_wars-w49.28`.)
+    for (const opponent of ["ICE_FOLK", "DWARF"] as const)
       expect(
         inspectNormalArmyV7(viewOf(asMartian(pieces, {}, opponent))).army,
         opponent,
-      ).toBe(false);
+      ).toBe(true);
+    expect(
+      inspectNormalArmyV7(viewOf(asMartian(pieces, {}, "CANDY"))).army,
+    ).toBe(false);
   });
 
   /** The research target of a Martian seat with these technologies. */

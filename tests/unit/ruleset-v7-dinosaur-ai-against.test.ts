@@ -53,10 +53,11 @@ const human = (
  * The Dinosaur pass (`pulp_wars-w49.15`): a Human seat against Dinosaurs
  * plays the army rules now, whose committed attacks and Moves have their
  * own scores. The scores of `pulp_wars-c87.5` are still those of a seat
- * that plays no army rules: a Dwarf one here, whose Hammerer has the
- * Fighter's numbers (12 HP, Attack 2, Defense 2).
+ * that plays no army rules: a Candy one here since step two of the Dwarf
+ * pass (`pulp_wars-w49.28`) made the Dwarf seats army seats too (a Dwarf
+ * one before it).
  */
-const DWARF_VIEWER = ["DWARF", "DINOSAUR"] as const;
+const DWARF_VIEWER = ["CANDY", "DINOSAUR"] as const;
 const older = (
   pieces: readonly GoblinPieceV7[],
   eggs: readonly EggPieceV7[] = [],

@@ -229,8 +229,9 @@ describe("Ice Folk Normal AI: Chill, then Shatter", () => {
       own("FIGHTER", 5, 0),
       foe("GUARD", 6, 0),
     ];
-    // The older policy (a match with a Dwarf seat): the chip offset.
-    const older = iceFieldV7(pieces, { factions: ["ICE_FOLK", "DWARF"] });
+    // The older policy (a match with a Candy seat; a Dwarf seat before
+    // step two of the Dwarf pass, `pulp_wars-w49.28`): the chip offset.
+    const older = iceFieldV7(pieces, { factions: ["ICE_FOLK", "CANDY"] });
     expect(unitCandidatesV7(older, at(6, 2), "ATTACK")[0]?.score.priority).toBe(
       900 + SNOW_HUNTER_CHIP_OFFSET_V7,
     );
@@ -261,8 +262,9 @@ describe("Ice Folk Normal AI: Chill, then Shatter", () => {
 
   it("throws the Boulder Yeti planted instead of moving", () => {
     const pieces = [own("CATAPULT", 6, 3), foe("FIGHTER", 6, 1)];
-    // The older policy (a match with a Dwarf seat) offers it no Move.
-    const older = iceFieldV7(pieces, { factions: ["ICE_FOLK", "DWARF"] });
+    // The older policy (a match with a Candy seat; a Dwarf seat before
+    // step two of the Dwarf pass, `pulp_wars-w49.28`) offers it no Move.
+    const older = iceFieldV7(pieces, { factions: ["ICE_FOLK", "CANDY"] });
     expect(unitCandidatesV7(older, at(6, 3), "MOVE")).toEqual([]);
     // Both policies throw before anything else (the army rules, step two
     // of the Ice Folk pass, `pulp_wars-w49.27`, rank the planted throw

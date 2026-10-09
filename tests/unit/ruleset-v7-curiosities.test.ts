@@ -551,11 +551,14 @@ describe("headless parity and the CLI flag", () => {
         // Step two of the Ice Folk pass (`pulp_wars-w49.27`, 7r59: an Ice
         // Folk seat's level-2 Survey grants a Sled, Scouts): 17 rounds,
         // recomputed (the commands and the events); the board and the
-        // final PRNG state are unchanged. Both seats play the older policy
-        // here (a Dwarf seat). The other four pins are unchanged: the
-        // Lakes one has an Ice Folk seat that takes no Survey within its
-        // 250 commands.
-        rounds: 17,
+        // final PRNG state are unchanged. The other four pins are
+        // unchanged: the Lakes one has an Ice Folk seat that takes no
+        // Survey within its 250 commands.
+        // Step two of the Dwarf pass (`pulp_wars-w49.28`: a Dwarf seat plays
+        // the army rules, so both seats here do): 21 rounds, recomputed (the
+        // commands and the events); the board and the final PRNG state are
+        // unchanged.
+        rounds: 21,
         commandHash:
           // The ninth unit (`pulp_wars-w49.17`, 7r55): recomputed (was
           // 9f171d…eba6).
@@ -563,7 +566,9 @@ describe("headless parity and the CLI flag", () => {
           // fd31d2…5e68).
           // Step two of the Ice Folk pass (`pulp_wars-w49.27`, 7r59):
           // recomputed (was 9b3f26…3d95).
-          "6ea77adb6a37f3eb0eb95fa4e216bc3ca46b317f47b15c40f428acb00fb64bfb",
+          // Step two of the Dwarf pass (`pulp_wars-w49.28`): recomputed (was
+          // 6ea77a…4bfb).
+          "5af3198e087acfc3be00a4e2faa5c302c54e82ded97a027adbf015ff3dffec2d",
         eventHash:
           // The ninth unit (`pulp_wars-w49.17`, 7r55): recomputed (was
           // b0de91…c9cf).
@@ -571,7 +576,9 @@ describe("headless parity and the CLI flag", () => {
           // 1dfe18…8d4d).
           // Step two of the Ice Folk pass (`pulp_wars-w49.27`, 7r59):
           // recomputed (was 2aee4f…2671).
-          "16a4dd2ea618e3fdcae2169ee9efa12d2d95d69ba4b8f9f6c43dc7d8f51ed1f6",
+          // Step two of the Dwarf pass (`pulp_wars-w49.28`): recomputed (was
+          // 16a4dd…d1f6).
+          "c474657bf2aeeae0450206bcc41ad74e01bcc4fd7bd8dfca74d70100d753b07f",
         mapHash:
           "2cbf36a1c5d03e70dd785be13a1ed7d5dd04fecdd54925baa1b483261d71c9be",
         finalPrngHash:
@@ -616,19 +623,26 @@ describe("headless parity and the CLI flag", () => {
         seed: 2,
         // Tuning 6: 10 rounds (11 before). The economy rejig: 11.
         // The Industry reshuffle (7r56): 10 rounds.
+        // Step two of the Dwarf pass (`pulp_wars-w49.28`: the Dwarf seat and
+        // the three beside it play the army rules): 10 rounds still,
+        // recomputed; the board and the final PRNG state are unchanged.
         rounds: 10,
         commandHash:
           // The ninth unit (`pulp_wars-w49.17`, 7r55): recomputed (was
           // 85af21…7e03).
           // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): recomputed (was
           // b331e2…17ee).
-          "1d70af9769cb3d195262cecc2963f618ab857d478560a6fa78a61085aa58254e",
+          // Step two of the Dwarf pass (`pulp_wars-w49.28`): recomputed (was
+          // 1d70af…254e).
+          "347bb6f6ebef221abb1655afe916484771a40f728591869f8425576322524c74",
         eventHash:
           // The ninth unit (`pulp_wars-w49.17`, 7r55): recomputed (was
           // 263a85…a9e5).
           // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): recomputed (was
           // 19d010…89f2).
-          "7ebf0830ed2acc37c8604a6c416c0d1d29806ea2c6a5ce6d01029954cfebad22",
+          // Step two of the Dwarf pass (`pulp_wars-w49.28`): recomputed (was
+          // 7ebf08…ad22).
+          "e6d2db9539b9981ff7ed2e2f32b77685387098684473e57e587443aa688bc613",
         mapHash:
           "70ff339440ce86f231bca6b2be56c748891436934f614f6ef66fa53933f3d5ab",
         finalPrngHash:

@@ -209,6 +209,9 @@ export const KIND_READER_CLASSES_V7: Readonly<
   // own (the attacker's abilities are read through `unitRoleMechanicsV7`).
   "src/ai/v7.ts::armyIceFolkSeatV7": "SEAT",
   "src/ai/v7.ts::iceFolkBlowV7": "SEAT",
+  // Step two of the Dwarf pass (`pulp_wars-w49.28`): the seat that decides
+  // is a Dwarf one (the viewer's faction).
+  "src/ai/v7.ts::armyDwarfSeatV7": "SEAT",
   "src/ai/v7.ts::armyMartianResearchRolesV7": "SEAT",
   "src/ai/v7.ts::armyShootsBiterFirstV7": "SEAT",
   "src/ai/v7.ts::armyCureDueV7": "SEAT",

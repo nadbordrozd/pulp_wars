@@ -247,13 +247,17 @@ describe("ruleset-7 revision-16 income previews", () => {
     // of every faction one technology later) every match of seeds 0-12
     // against Candy and against Ice Folk ends before the round cap; the
     // match is Humans against Dwarves, seed 8 (of seeds 0-12, seeds 4 and
-    // 12 also run to the cap with both facts).
+    // 12 also run to the cap with both facts). With step two of the Dwarf
+    // pass (`pulp_wars-w49.28`) a Dwarf seat plays the army rules and no
+    // match of seeds 0-12 against Dwarves has a Market at its cap; the
+    // match is Humans against Candy again, seed 8 (of seeds 0-12, seed 11
+    // also runs to the cap with both facts).
     const setup: MatchSetupV7 = {
       ...setupV7(8, 1),
       width: 11,
       height: 11,
       mapType: "PANGEA",
-      factions: ["ORIGINAL", "DWARF"],
+      factions: ["ORIGINAL", "CANDY"],
     };
     const match = runAiMatchV7(setup, { maxRounds: 30, maxCommands: 30_000 });
     expect(match.errors).toEqual([]);

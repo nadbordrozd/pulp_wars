@@ -898,6 +898,18 @@ describe("research toward the army", () => {
         "CATAPULT",
         "KNIGHT",
       ],
+      // Step two of the Dwarf pass (`pulp_wars-w49.28`): the Steam Mole
+      // (and Dig In), the Clockwork Gunner, the Gyrocopter, the Engineer,
+      // the Steam Tank, the Steam Cannon, the Whirligig.
+      DWARF: [
+        "GUARD",
+        "MARKSMAN",
+        "RAIDER",
+        "CAPTAIN",
+        "SWORDSMAN",
+        "CATAPULT",
+        "KNIGHT",
+      ],
     });
     expect(Object.keys(ARMY_RESEARCH_ROLES_V7)).toEqual([
       ...ARMY_PLAY_FACTIONS_V7,

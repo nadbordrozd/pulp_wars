@@ -650,17 +650,19 @@ describe("the Industry reshuffle: the Normal AI", () => {
   });
 
   it("a seat outside the army policy that owns the root researches Fortification when it can pay", () => {
-    // Every seat of a match with a Dwarf or a Candy seat plays the older
-    // policy (an Ice Folk seat too, there; in a match without one it plays
-    // the army rules since step two of the Ice Folk pass, `pulp_wars-w49.27`): the last step to the defender is bought ahead of
-    // an economic technology (`defenderLastStepResearchV7`). Here the seat
-    // trains a Fighter first and still pays for the technology.
+    // Every seat of a match with a Candy seat plays the older policy (an
+    // Ice Folk or a Dwarf seat too, there; in a match without one they play
+    // the army rules since step two of the Ice Folk pass,
+    // `pulp_wars-w49.27`, and of the Dwarf pass, `pulp_wars-w49.28`): the
+    // last step to the defender is bought ahead of an economic technology
+    // (`defenderLastStepResearchV7`). Here the seat trains a Fighter first
+    // and still pays for the technology.
     const cases: readonly (readonly [FactionIdV7, FactionIdV7])[] = [
-      ["ICE_FOLK", "DWARF"],
-      ["DWARF", "ORIGINAL"],
+      ["ICE_FOLK", "CANDY"],
+      ["DWARF", "CANDY"],
       ["CANDY", "ORIGINAL"],
       ["ORIGINAL", "CANDY"],
-      ["UNDEAD", "DWARF"],
+      ["UNDEAD", "CANDY"],
     ];
     for (const [faction, other] of cases) {
       const seat = (

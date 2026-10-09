@@ -238,13 +238,16 @@ describe("step two of the Ice Folk pass: who plays the army rules", () => {
       "MARTIAN",
       "DINOSAUR",
       "ICE_FOLK",
+      // Step two of the Dwarf pass (`pulp_wars-w49.28`).
+      "DWARF",
     ]);
     expect(armyPlayFactionV7("ICE_FOLK")).toBe(true);
-    for (const faction of ["DWARF", "CANDY"] as const)
-      expect(armyPlayFactionV7(faction), faction).toBe(false);
+    expect(armyPlayFactionV7("CANDY")).toBe(false);
   });
 
-  it("is on against each of the other five, and off with a Dwarf or a Candy seat", () => {
+  // Step two of the Dwarf pass (`pulp_wars-w49.28`): on against a Dwarf
+  // seat too; only a Candy seat is outside the army rules.
+  it("is on against each of the other six, and off with a Candy seat", () => {
     for (const opponent of [
       "ORIGINAL",
       "UNDEAD",
@@ -252,16 +255,15 @@ describe("step two of the Ice Folk pass: who plays the army rules", () => {
       "MARTIAN",
       "DINOSAUR",
       "ICE_FOLK",
+      "DWARF",
     ] as const)
       expect(
         inspectNormalArmyV7(viewOf(field(pieces, { opponent }))).army,
         opponent,
       ).toBe(true);
-    for (const opponent of ["DWARF", "CANDY"] as const)
-      expect(
-        inspectNormalArmyV7(viewOf(field(pieces, { opponent }))).army,
-        opponent,
-      ).toBe(false);
+    expect(
+      inspectNormalArmyV7(viewOf(field(pieces, { opponent: "CANDY" }))).army,
+    ).toBe(false);
   });
 });
 

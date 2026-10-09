@@ -156,11 +156,14 @@ describe("Dwarf Normal AI: the Mole", () => {
   });
 
   it("tunnels with a rider next to an enemy Catapult 4 tiles away", () => {
-    const state = asDwarf([
-      own("GUARD", 9, 5),
-      own("FIGHTER", 10, 5),
-      foe("CATAPULT", 6, 9),
-    ]);
+    // Against a Candy seat, the older policy (step two of the Dwarf pass,
+    // `pulp_wars-w49.28`: against a Human seat the Dwarf seat plays the
+    // army rules, and the Mole first steps onto the village beside it at
+    // the village priority; the tunnel is its second candidate).
+    const state = dwarfFieldV7(
+      [own("GUARD", 9, 5), own("FIGHTER", 10, 5), foe("CATAPULT", 6, 9)],
+      { factions: ["DWARF", "CANDY"] },
+    );
     const mole = unitCandidatesV7(state, at(9, 5));
     const tunnel = mole.find(
       (candidate) => candidate.command.kind === "TUNNEL",

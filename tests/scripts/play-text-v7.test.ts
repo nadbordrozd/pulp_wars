@@ -651,6 +651,9 @@ describe("text-mode play harness", () => {
       // Step two of the Ice Folk pass (`pulp_wars-w49.27`): the player is
       // the Ice Folk.
       LAB_ICE_FOLK_MID: ["ORIGINAL", "Human"],
+      // Step two of the Dwarf pass (`pulp_wars-w49.28`): the player is the
+      // Dwarves.
+      LAB_DWARF_MID: ["ORIGINAL", "Human"],
     };
     expect(Object.keys(TEXT_PLAY_LABS_V7)).toEqual(Object.keys(attackers));
     for (const lab of Object.keys(TEXT_PLAY_LABS_V7)) {
@@ -666,7 +669,9 @@ describe("text-mode play harness", () => {
                 ? ["DINOSAUR", "Dinosaur"]
                 : lab === "LAB_ICE_FOLK_MID"
                   ? ["ICE_FOLK", "Ice Folk"]
-                  : ["ORIGINAL", "Human"];
+                  : lab === "LAB_DWARF_MID"
+                    ? ["DWARF", "Dwarf"]
+                    : ["ORIGINAL", "Human"];
       const session = path.join(root, `${lab}.json`);
       const started = ok("lab", "--session", session, lab);
       expect(started).toContain(`LAB ${lab}:`);
@@ -702,6 +707,20 @@ describe("text-mode play harness", () => {
           ok("options", "--session", session, "--unit", `u${lone.id}`),
         ).toContain(
           `u${lone.id}.kaboom  kaboom | blast 5 at ${lone.at.x},${lone.at.y}: hits nobody | enemy 0 damage, 0 kills; yours 0 damage, 0 kills | this unit dies`,
+        );
+      }
+      if (lab === "LAB_DWARF_MID") {
+        // Step two of the Dwarf pass (`pulp_wars-w49.28`): the lab's text,
+        // and a mound on the map (the view printed nothing for one).
+        expect(started).toContain("YOU PLAY THE DWARVES");
+        expect(started).toContain("YOUR TURN | coins 35 |");
+        expect(ok("do", "--session", session, "u61.tunnel.7,2")).toContain(
+          "UNIT_TUNNELLED playerId=S0 unitId=u61(S0 Steam Mole) from=6,3 to=7,2",
+        );
+        const mound = ok("view", "--session", session);
+        expect(mound).toContain("|f---0##|");
+        expect(mound).toContain(
+          "u61 Steam Mole [GUARD] @7,2 hp 16/16 atk 2 def 3.75 mov 1 rng 1 home c7 spent options 0 | BURROWED: a mound; it surfaces at your next turn start",
         );
       }
       if (lab === "LAB_UNDEAD_MID") {
@@ -917,7 +936,10 @@ describe("text-mode play harness", () => {
     const unknown = run("lab", "--session", path.join(root, "x.json"), "NOPE");
     expect(unknown.exitCode).toBe(1);
     expect(unknown.output).toContain("LAB_SIEGE");
-  }, 120_000);
+    // Step two of the Dwarf pass (`pulp_wars-w49.28`): twelve labs, each
+    // started, played a turn each way, and replayed (about 30 seconds on an
+    // idle machine; 120 was exceeded under load).
+  }, 240_000);
 
   it("groups many offers of one kind and states the tuning-4 rules in LAB_LATE", () => {
     const session = path.join(root, "late-options.json");

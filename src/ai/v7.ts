@@ -245,6 +245,7 @@ import {
   armyIceFolkDefenderCappedV7,
   ARMY_ICE_FOLK_DEFENDER_CAP_COST_V7,
   ARMY_ICE_FOLK_STURDY_V7,
+  ARMY_DWARF_STURDY_V7,
   armyPlayFactionV7,
   armyResearchDueV7,
   armyGarrisonYieldsToRangedV7,
@@ -3795,6 +3796,10 @@ function armyResearchTargetV7(
       // seat's first is Brittle (a Shatter at 4 HP or fewer).
       if (chosen === null && faction === "ICE_FOLK")
         chosen = toward("EXPLOSIVES");
+      // Step two of the Dwarf pass (`pulp_wars-w49.28`): a Dwarf seat's
+      // first is Blasting Charges (eruptions of 3, Steam Cannons through
+      // Walls, Field Defense, and Dig In, and the melee Breach).
+      if (chosen === null && faction === "DWARF") chosen = toward("EXPLOSIVES");
       for (const technology of ARMY_LATE_RESEARCH_V7) {
         if (chosen !== null) break;
         chosen = toward(technology);
@@ -4235,7 +4240,12 @@ function armyBodiesSeatV7(context: PolicyContextV7): boolean {
     // Step two of the Ice Folk pass (`pulp_wars-w49.27`,
     // docs/product/RULESET_7_TUNING_ICE_FOLK.md): and an Ice Folk seat. Its
     // Musk Ox is two technologies away too (the root, then Deep Winter).
-    armyIceFolkSeatV7(context)
+    armyIceFolkSeatV7(context) ||
+    // Step two of the Dwarf pass (`pulp_wars-w49.28`,
+    // docs/product/RULESET_7_TUNING_DWARF.md section 5): and a Dwarf seat.
+    // Its Hammerers walk one tile a turn and take every village; its Steam
+    // Mole is a technology away (Dig In).
+    armyDwarfSeatV7(context)
   );
 }
 
@@ -4247,6 +4257,11 @@ function armyDinosaurSeatV7(context: PolicyContextV7): boolean {
 /** An Ice Folk seat of the army play (`pulp_wars-w49.27`). */
 function armyIceFolkSeatV7(context: PolicyContextV7): boolean {
   return context.army && context.view.viewer.faction === "ICE_FOLK";
+}
+
+/** A Dwarf seat of the army play (`pulp_wars-w49.28`). */
+function armyDwarfSeatV7(context: PolicyContextV7): boolean {
+  return context.army && context.view.viewer.faction === "DWARF";
 }
 
 // ---------------------------------------------------------------------------
@@ -4319,12 +4334,19 @@ function armyUndeadShortOfUnitsV7(context: PolicyContextV7): boolean {
   // capture too: an Ice Witch, a Boulder Yeti, and a Sabretooth take no
   // village and hold no center.
   const iceFolk = armyIceFolkSeatV7(context);
+  // Step two of the Dwarf pass (`pulp_wars-w49.28`): a Dwarf seat counts the
+  // units that capture too (a Gyrocopter, an Engineer, a Steam Cannon, a
+  // Steam Tank, and a Whirligig take no village), and its burrowed ones (a
+  // Mole and its rider underground keep their slots and surface next turn).
+  const dwarf = armyDwarfSeatV7(context);
   let units = 0;
-  for (const unit of view.units)
+  for (const unit of dwarf
+    ? [...view.units, ...view.burrowed.map((entry) => entry.unit)]
+    : view.units)
     if (
       unit.ownerId === view.viewer.id &&
       (unit.form === "LAND" || (dinosaur && unit.form === "EGG")) &&
-      (!(martian || dinosaur || iceFolk) ||
+      (!(martian || dinosaur || iceFolk || dwarf) ||
         unitRoleRuleV7(view, unit).abilities.includes("CAPTURE"))
     )
       units += 1;
@@ -4427,12 +4449,14 @@ function armyOpeningSeatV7(context: PolicyContextV7): boolean {
   const faction = context.view.viewer.faction;
   // The Dinosaur pass (`pulp_wars-w49.15`): and a Dinosaur seat.
   // Step two of the Ice Folk pass (`pulp_wars-w49.27`): and an Ice Folk seat.
+  // Step two of the Dwarf pass (`pulp_wars-w49.28`): and a Dwarf seat.
   return (
     context.army &&
     (faction === "UNDEAD" ||
       faction === "MARTIAN" ||
       faction === "DINOSAUR" ||
-      faction === "ICE_FOLK")
+      faction === "ICE_FOLK" ||
+      faction === "DWARF")
   );
 }
 
@@ -4463,12 +4487,14 @@ function armyCorrectionSeatV7(context: PolicyContextV7): boolean {
   // The Dinosaur pass (`pulp_wars-w49.15`): a Dinosaur seat takes the
   // latest rules too.
   // Step two of the Ice Folk pass (`pulp_wars-w49.27`): and an Ice Folk seat.
+  // Step two of the Dwarf pass (`pulp_wars-w49.28`): and a Dwarf seat.
   return (
     context.army &&
     (faction === "ORIGINAL" ||
       faction === "MARTIAN" ||
       faction === "DINOSAUR" ||
-      faction === "ICE_FOLK")
+      faction === "ICE_FOLK" ||
+      faction === "DWARF")
   );
 }
 
@@ -5963,12 +5989,20 @@ function dinosaurContactCompanyV7(
  * each of them in one attack and rides on (`armyIceFolkChainReachV7`). On
  * its own Snow that reach ends one tile inside the Snow's edge (a Knight's
  * Move ends on the first Snow tile it enters).
+ *
+ * Step two of the Dwarf pass (`pulp_wars-w49.28`,
+ * docs/product/RULESET_7_TUNING_DWARF.md section 5): a Dwarf seat's
+ * Clockwork Gunner is held the same way (10 HP, Defense 1, and it never
+ * heals by itself: only an Engineer's Repair mends it), and its Engineer as
+ * the Ice Witch is (out of a chaining unit's reach). The Steam Cannon keeps
+ * the siege rules (it does not shoot after a Move).
  */
 function armyIceFolkShooterHeldV7(
   context: PolicyContextV7,
   command: Extract<CommandV7, { kind: "MOVE" }>,
 ): boolean {
-  if (!armyIceFolkSeatV7(context)) return false;
+  const dwarf = armyDwarfSeatV7(context);
+  if (!armyIceFolkSeatV7(context) && !dwarf) return false;
   const view = context.view;
   const actor = context.lookup.unitsById.get(command.unitId);
   const to = command.path.at(-1);
@@ -5980,8 +6014,11 @@ function armyIceFolkShooterHeldV7(
   )
     return false;
   const rule = unitRoleRuleV7(view, actor);
-  const shooter = rule.range >= 2;
-  if (!shooter && !rule.abilities.includes("COLD_SNAP")) return false;
+  const shooter = dwarf
+    ? rule.abilities.includes("TWIN_SHOT")
+    : rule.range >= 2;
+  if (!shooter && !rule.abilities.includes(dwarf ? "ASSEMBLE" : "COLD_SNAP"))
+    return false;
   if (
     context.lookup.citiesByKey.has(coordKey(to)) ||
     armyVillageMoveV7(context, actor, to)
@@ -7528,11 +7565,23 @@ function armyWeakLinkV7(context: PolicyContextV7, unit: PublicUnitV7): boolean {
   // Step two of the Ice Folk pass (`pulp_wars-w49.27`): an Ice Folk unit a
   // Knight's hit kills at full HP (`ARMY_ICE_FOLK_STURDY_V7`): every one
   // but the Musk Ox, the Mammoth, and the Frost Giant.
-  return (
+  if (
     context.iceFolk &&
     unit.form === "LAND" &&
     policyUnitFactionV7(context.view, unit) === "ICE_FOLK" &&
     unit.maxHp < ARMY_ICE_FOLK_STURDY_V7
+  )
+    return true;
+  // Step two of the Dwarf pass (`pulp_wars-w49.28`): a Dwarf unit a
+  // Knight's hit kills at full HP (`ARMY_DWARF_STURDY_V7`): every one but
+  // the Steam Mole, the Steam Tank, and the Brass Titan. (In the lab one
+  // Knight killed a Hammerer, two Steam Cannons, the Engineer, and a
+  // Clockwork Gunner in one ride, and was promoted.)
+  return (
+    context.dwarf &&
+    unit.form === "LAND" &&
+    policyUnitFactionV7(context.view, unit) === "DWARF" &&
+    unit.maxHp < ARMY_DWARF_STURDY_V7
   );
 }
 
@@ -7636,9 +7685,18 @@ function armyEscortValueV7(
     view.viewer.faction === "ICE_FOLK" &&
     actor.maxHp >= ARMY_ICE_FOLK_STURDY_V7 &&
     actor.role !== "JUGGERNAUT";
+  // Step two of the Dwarf pass (`pulp_wars-w49.28`): a Dwarf seat's Steam
+  // Mole, and its Steam Tank (Plated: no hit takes more than 4), stand
+  // beside the units a Knight kills in one attack (every other Dwarf unit)
+  // and end the ride.
+  const dwarf =
+    armyDwarfSeatV7(context) &&
+    actor.maxHp >= ARMY_DWARF_STURDY_V7 &&
+    actor.role !== "JUGGERNAUT";
+  const sturdyEscort = iceFolk || dwarf;
   if (
-    (view.viewer.faction !== "GOBLIN" && !dinosaur && !iceFolk) ||
-    (!iceFolk && armyClassV7(unitRoleRuleV7(view, actor)) !== "DEFENDER")
+    (view.viewer.faction !== "GOBLIN" && !dinosaur && !sturdyEscort) ||
+    (!sturdyEscort && armyClassV7(unitRoleRuleV7(view, actor)) !== "DEFENDER")
   )
     return 0;
   let escorted = 0;
@@ -7657,7 +7715,8 @@ function armyEscortValueV7(
         unitClass === "SIEGE" ||
         unitClass === "SUPPORT" ||
         (dinosaur && unit.maxHp < ARMY_DINOSAUR_STURDY_V7) ||
-        (iceFolk && unit.maxHp < ARMY_ICE_FOLK_STURDY_V7)
+        (iceFolk && unit.maxHp < ARMY_ICE_FOLK_STURDY_V7) ||
+        (dwarf && unit.maxHp < ARMY_DWARF_STURDY_V7)
       )
         escorted += 1;
     }
@@ -10011,7 +10070,8 @@ function isPolicyCandidate(
   if (command.kind === "MOVE" && armyDinosaurContactHeldV7(context, command))
     return false;
   // Step two of the Ice Folk pass (`pulp_wars-w49.27`): a Snow Hunter or a
-  // Boulder Yeti does not walk out in front of its line.
+  // Boulder Yeti does not walk out in front of its line. Step two of the
+  // Dwarf pass (`pulp_wars-w49.28`): nor does a Clockwork Gunner.
   if (command.kind === "MOVE" && armyIceFolkShooterHeldV7(context, command))
     return false;
   // Tuning 6 (`pulp_wars-w49.6`): so does a unit on a village it will
@@ -11443,7 +11503,10 @@ function* sharedCityContextWorkV7(
       (withinFloor ||
         goblinMobSeatV7(context) ||
         armyUndeadSeatV7(context) ||
-        armyIceFolkSeatV7(context)) &&
+        armyIceFolkSeatV7(context) ||
+        // Step two of the Dwarf pass (`pulp_wars-w49.28`): and a Dwarf
+        // seat's, to a Clockwork Gunner.
+        armyDwarfSeatV7(context)) &&
       armyCounts !== null &&
       !armyAtTheGatesV7(context, cityId) &&
       armyGarrisonYieldsToRangedV7(
@@ -12196,7 +12259,13 @@ function scoreCommandWithContext(
         strategicValue = plan.strategic;
       }
     }
-    if (view.viewer.faction === "DWARF" && dwarfPlayV7(context)) {
+    // Step two of the Dwarf pass (`pulp_wars-w49.28`): an army seat
+    // researches in the army's order (`ARMY_RESEARCH_ROLES_V7.DWARF`).
+    if (
+      view.viewer.faction === "DWARF" &&
+      dwarfPlayV7(context) &&
+      !context.army
+    ) {
       // The Dwarf revision (`pulp_wars-78i.4`): research toward the roles.
       const plan = dwarfResearchV7(view, dwarfResearchFactsV7(context));
       if (
@@ -21777,6 +21846,15 @@ function preferredReward(
     offered.includes("SURVEY")
   )
     return "SURVEY";
+  // Step two of the Dwarf pass (`pulp_wars-w49.28`): a Dwarf army seat
+  // takes the 4 Coins: its Survey reveals the area and grants no unit (a
+  // Gyrocopter takes no village), and 4 Coins are two Hammerers.
+  if (
+    command.reachedLevel === 2 &&
+    armyDwarfSeatV7(context) &&
+    offered.includes("STOCKPILE")
+  )
+    return "STOCKPILE";
   // Step two of the Undead pass (`pulp_wars-w49.24`): an Undead seat short
   // of units takes the free Ghoul (`armyUndeadShortOfUnitsV7`): it moves two
   // tiles and takes the next village. (A seat with four cities and three

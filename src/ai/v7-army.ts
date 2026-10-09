@@ -56,11 +56,11 @@ import type { PlayerViewV7, PublicUnitV7 } from "../engine/v7/view";
  *
  * It applies to a Human, Undead, Goblin, (the Martian pass,
  * `pulp_wars-w49.14`) Martian, (the Dinosaur pass, `pulp_wars-w49.15`)
- * Dinosaur, or (step two of the Ice Folk pass, `pulp_wars-w49.27`) Ice Folk
- * seat in a match whose every seat is one of those six (the pairings the
- * tuning rounds play): a match with a Dwarf or a Candy seat keeps the
- * policy of that faction's own pass, on both sides. It is off while the
- * seat's naval plan is active (it
+ * Dinosaur, (step two of the Ice Folk pass, `pulp_wars-w49.27`) Ice Folk, or
+ * (step two of the Dwarf pass, `pulp_wars-w49.28`) Dwarf seat in a match
+ * whose every seat is one of those seven (the pairings the tuning rounds
+ * play): a match with a Candy seat keeps the policy of that faction's own
+ * pass, on both sides. It is off while the seat's naval plan is active (it
  * must cross water to reach anyone) and while the opening growth harvest
  * is due. Everything is read from the public view and the public previews;
  * nothing draws from the PRNG or depends on elapsed time.
@@ -76,6 +76,10 @@ export const ARMY_PLAY_FACTIONS_V7: readonly FactionIdV7[] = Object.freeze([
   // army rules too. A match with a Dwarf or a Candy seat keeps the older
   // policy for every seat.
   "ICE_FOLK",
+  // Step two of the Dwarf pass (`pulp_wars-w49.28`,
+  // docs/product/RULESET_7_TUNING_DWARF.md): a Dwarf seat too. Only a match
+  // with a Candy seat keeps the older policy for every seat.
+  "DWARF",
 ]);
 
 export function armyPlayFactionV7(faction: FactionIdV7): boolean {
@@ -415,6 +419,27 @@ export const ARMY_RESEARCH_ROLES_V7: Readonly<
     "RAIDER",
     "MARKSMAN",
     "GUARD",
+    "CAPTAIN",
+    "SWORDSMAN",
+    "CATAPULT",
+    "KNIGHT",
+  ] as const),
+  // Step two of the Dwarf pass (`pulp_wars-w49.28`,
+  // docs/product/RULESET_7_TUNING_DWARF.md section 5): the Steam Mole (the
+  // root and Dig In, one technology: the garrison and the tunnel, and Dig
+  // In is the Hammerers' Field Defense around every center), the Clockwork
+  // Gunner (Hunting and Clockwork: two shots from two tiles that never
+  // advance onto the dead unit's tile; in a hand-played game three
+  // Hammerers died on the Goblin capital their own kill had carried them
+  // to), the Gyrocopter (Gyrocopters, one technology of tier 1: the bomb
+  // that is never answered), the Engineer (Leadership, one technology
+  // behind the Gathering most seats open with: Repair is the only healing
+  // a Gunner has, and Assemble), the Steam Tank (Mining and Steam Tanks;
+  // Mining is a growth technology), the Steam Cannon, the Whirligig.
+  DWARF: Object.freeze([
+    "GUARD",
+    "MARKSMAN",
+    "RAIDER",
     "CAPTAIN",
     "SWORDSMAN",
     "CATAPULT",
@@ -867,6 +892,28 @@ export const ARMY_SHARES_V7 = Object.freeze({
     SIEGE: 20,
     BREAKTHROUGH: 10,
   }),
+  // Step two of the Dwarf pass (`pulp_wars-w49.28`): two fifths line
+  // (Hammerers, and Steam Tanks once their technology is owned: the dearer
+  // unit of a short class is bought first), 15% Steam Moles (the garrisons
+  // and the tunnels), a quarter Clockwork Gunners (two shots, no advance),
+  // a tenth Steam Cannons, a tenth Whirligigs. Against two or more hostile
+  // ranged, siege, or support units a fifth Whirligigs (three blows on
+  // three units, at full strength), which reach them. The Gyrocopters and
+  // the Engineers are counted apart (below, and `ARMY_SUPPORT_PER_UNITS_V7`).
+  dwarf: Object.freeze({
+    LINE: 40,
+    DEFENDER: 15,
+    RANGED: 25,
+    SIEGE: 10,
+    BREAKTHROUGH: 10,
+  }),
+  dwarfFragile: Object.freeze({
+    LINE: 35,
+    DEFENDER: 10,
+    RANGED: 25,
+    SIEGE: 10,
+    BREAKTHROUGH: 20,
+  }),
 });
 
 /** The shares of a faction's land army (`fragile`: see above). */
@@ -886,6 +933,8 @@ export function armySharesV7(
     return fragile ? ARMY_SHARES_V7.dinosaurFragile : ARMY_SHARES_V7.dinosaur;
   if (faction === "ICE_FOLK")
     return fragile ? ARMY_SHARES_V7.iceFolkFragile : ARMY_SHARES_V7.iceFolk;
+  if (faction === "DWARF")
+    return fragile ? ARMY_SHARES_V7.dwarfFragile : ARMY_SHARES_V7.dwarf;
   return fragile ? ARMY_SHARES_V7.fragile : ARMY_SHARES_V7.standard;
 }
 /**
@@ -932,6 +981,14 @@ export function armyMartianHeavyCappedV7(
 export const ARMY_ICE_FOLK_SKIRMISHER_PER_UNITS_V7 = 4;
 export const ARMY_ICE_FOLK_SKIRMISHER_MAXIMUM_V7 = 3;
 /**
+ * Step two of the Dwarf pass (`pulp_wars-w49.28`): a Dwarf army has one
+ * Gyrocopter per this many units, at most two (the older policy's one per
+ * five front units). It takes no village and has 8 HP: it is the bomb that
+ * finishes a unit without an answer, and the eyes.
+ */
+export const ARMY_DWARF_SKIRMISHER_PER_UNITS_V7 = 5;
+export const ARMY_DWARF_SKIRMISHER_MAXIMUM_V7 = 2;
+/**
  * Step two of the Ice Folk pass (`pulp_wars-w49.27`): an Ice Folk unit
  * whose maximum HP is below this is a weak link of a kill chain at any HP:
  * a Human Knight's hit (9 on a Yeti, 10 on a Sled, 8 on a Snow Hunter, 12
@@ -942,6 +999,16 @@ export const ARMY_ICE_FOLK_SKIRMISHER_MAXIMUM_V7 = 3;
  * in one turn: they stood side by side.)
  */
 export const ARMY_ICE_FOLK_STURDY_V7 = 15;
+/**
+ * Step two of the Dwarf pass (`pulp_wars-w49.28`): a Dwarf unit whose
+ * maximum HP is below this is a weak link of a kill chain at any HP: a
+ * Human Knight's hit kills a Hammerer (12), a Gyrocopter, a Clockwork
+ * Gunner, an Engineer, a Steam Cannon, and a Whirligig at full HP and
+ * rides on. A Steam Mole (16 HP, Defense 2.5) and a Steam Tank (16 HP,
+ * Plated 4) are not. (In the lab one Knight killed five Dwarf units in one
+ * ride and was promoted: 18 HP at the start of its next turn.)
+ */
+export const ARMY_DWARF_STURDY_V7 = 15;
 /**
  * Step two of the Ice Folk pass: an Ice Folk seat's Musk Oxen are capped.
  * The Ox does not strike after it moves: it is the garrison of a center and
@@ -1193,7 +1260,16 @@ export function armyRoleScoreV7(
                       counts.total / ARMY_ICE_FOLK_SKIRMISHER_PER_UNITS_V7,
                     ),
                   )
-                : Number(counts.total >= ARMY_SKIRMISHER_ARMY_V7)) -
+                : // Step two of the Dwarf pass: one Gyrocopter per five
+                  // units, at most two.
+                  faction === "DWARF"
+                  ? Math.min(
+                      ARMY_DWARF_SKIRMISHER_MAXIMUM_V7,
+                      Math.floor(
+                        counts.total / ARMY_DWARF_SKIRMISHER_PER_UNITS_V7,
+                      ),
+                    )
+                  : Number(counts.total >= ARMY_SKIRMISHER_ARMY_V7)) -
         have);
   else if (unitClass === "SUPPORT")
     deficit =
@@ -1397,11 +1473,14 @@ export function armyGarrisonYieldsToRangedV7(
   // center, as before: `armyHelplessGarrisonV7`.)
   // Step two of the Ice Folk pass (`pulp_wars-w49.27`): an Ice Folk seat
   // too (to a Snow Hunter; the Boulder Yeti is not trained for a garrison).
+  // Step two of the Dwarf pass (`pulp_wars-w49.28`): a Dwarf seat too (to a
+  // Clockwork Gunner, which captures and fires twice from a center).
   if (
     faction !== "ORIGINAL" &&
     faction !== "GOBLIN" &&
     faction !== "UNDEAD" &&
-    faction !== "ICE_FOLK"
+    faction !== "ICE_FOLK" &&
+    faction !== "DWARF"
   )
     return false;
   const siege = faction === "UNDEAD" && offersSiege;

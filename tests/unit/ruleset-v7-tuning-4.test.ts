@@ -251,7 +251,7 @@ describe("the reward ladder", () => {
     });
     for (const faction of ["ORIGINAL", "UNDEAD"] as const) {
       let state = fieldV7([{ seat: 1, role: "FIGHTER", at: at(1, 1) }], {
-        factions: [faction, faction === "ORIGINAL" ? "DWARF" : "ORIGINAL"],
+        factions: [faction, faction === "ORIGINAL" ? "CANDY" : "ORIGINAL"],
       });
       for (const where of [at(7, 7), at(9, 7)]) {
         state = patchTileV7(state, where, { resource: "FRUIT" });
@@ -371,7 +371,7 @@ describe("the Raider slips past and Raiding pays", () => {
             { seat: 1, role: "FIGHTER", at: at(5, 3) },
           ],
           {
-            factions: [faction, faction === "ORIGINAL" ? "DWARF" : "ORIGINAL"],
+            factions: [faction, faction === "ORIGINAL" ? "CANDY" : "ORIGINAL"],
           },
         ),
         at(5, 1),
@@ -658,6 +658,8 @@ describe("the Human labs", () => {
       "LAB_DINOSAUR_MID",
       // Step two of the Ice Folk pass: the hand player as the Ice Folk.
       "LAB_ICE_FOLK_MID",
+      // Step two of the Dwarf pass: the hand player as the Dwarves.
+      "LAB_DWARF_MID",
     ]);
     for (const mission of labs) {
       expect(mission, mission.id).toMatchObject({ hidden: true, mirror: true });

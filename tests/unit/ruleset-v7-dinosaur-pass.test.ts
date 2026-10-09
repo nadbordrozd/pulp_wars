@@ -903,10 +903,11 @@ describe("the Dinosaur pass: Dinosaur seats play the army rules", () => {
       "DINOSAUR",
       // Step two of the Ice Folk pass (`pulp_wars-w49.27`).
       "ICE_FOLK",
+      // Step two of the Dwarf pass (`pulp_wars-w49.28`).
+      "DWARF",
     ]);
     expect(armyPlayFactionV7("DINOSAUR")).toBe(true);
-    for (const faction of ["DWARF", "CANDY"] as const)
-      expect(armyPlayFactionV7(faction), faction).toBe(false);
+    expect(armyPlayFactionV7("CANDY")).toBe(false);
     // Ankylosaurus, Spitter, Raptor, Triceratops, Stegosaurus, Shaman,
     // T-Rex (the ninth unit, 7r55: the Triceratops is the heavy role and
     // the Stegosaurus the siege role; step two of the Dinosaur pass,
@@ -1013,15 +1014,16 @@ describe("the Dinosaur pass: Dinosaur seats play the army rules", () => {
       ).toBe(true);
     }
     // (Against an Ice Folk seat too since step two of the Ice Folk pass,
-    // `pulp_wars-w49.27`.)
-    expect(
-      inspectNormalArmyV7(viewOf(asDinosaur(pieces, {}, "ICE_FOLK"))).army,
-    ).toBe(true);
-    for (const opponent of ["DWARF", "CANDY"] as const)
+    // `pulp_wars-w49.27`, and a Dwarf seat since step two of the Dwarf
+    // pass, `pulp_wars-w49.28`.)
+    for (const opponent of ["ICE_FOLK", "DWARF"] as const)
       expect(
         inspectNormalArmyV7(viewOf(asDinosaur(pieces, {}, opponent))).army,
         opponent,
-      ).toBe(false);
+      ).toBe(true);
+    expect(
+      inspectNormalArmyV7(viewOf(asDinosaur(pieces, {}, "CANDY"))).army,
+    ).toBe(false);
   });
 
   /** The research target of a Dinosaur seat with these technologies. */
@@ -1280,9 +1282,11 @@ describe("the Dinosaur pass: Dinosaur seats play the army rules", () => {
       expect(choice("ORIGINAL", coins), String(coins)).toMatchObject({
         reward: "SURVEY",
       });
-    // A Dinosaur seat that plays no army rules keeps the older choice.
-    expect(choice("DWARF", 0)).toMatchObject({ reward: "STOCKPILE" });
-    expect(choice("DWARF", 20)).toMatchObject({ reward: "SURVEY" });
+    // A Dinosaur seat that plays no army rules keeps the older choice
+    // (against a Candy seat since step two of the Dwarf pass,
+    // `pulp_wars-w49.28`).
+    expect(choice("CANDY", 0)).toMatchObject({ reward: "STOCKPILE" });
+    expect(choice("CANDY", 20)).toMatchObject({ reward: "SURVEY" });
   });
 
   it("buys one growth technology after the Ankylosaurus's and before the Triceratops's (economy first)", () => {
@@ -1610,8 +1614,9 @@ describe("the Dinosaur pass: the Normal AI's units", () => {
           candidate.command.kind === "RESEARCH" &&
           candidate.command.tech === "EXPLOSIVES",
       );
-    // Against a Dwarf seat: the Industry rule, now also for a Triceratops.
-    expect(wallbreaker("DWARF")?.score).toMatchObject({
+    // Against a Candy seat (a Dwarf one before step two of the Dwarf pass,
+    // `pulp_wars-w49.28`): the Industry rule, now also for a Triceratops.
+    expect(wallbreaker("CANDY")?.score).toMatchObject({
       priority: 1061,
       strategicValue: WALLBREAKER_CHARGER_VALUE_V7,
     });
@@ -2213,7 +2218,8 @@ describe("the Dinosaur pass, correction: the Dinosaur seat of the Normal AI", ()
         foe("FIGHTER", 2, 8),
       ],
       {},
-      "DWARF",
+      // (A Dwarf seat before step two of the Dwarf pass, `pulp_wars-w49.28`.)
+      "CANDY",
     );
     expect(inspectNormalArmyV7(viewOf(older)).army).toBe(false);
   });

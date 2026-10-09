@@ -1,5 +1,91 @@
 # Greedy Normal AI
 
+## Step two of the Dwarf pass (`pulp_wars-w49.28`)
+
+[Step two of the Dwarf pass](../product/RULESET_7_TUNING_DWARF.md)
+changed no rule (the identity stays `pulp-wars-poc-7r59`) and brought the
+Dwarf seat under the army rules (`armyDwarfSeatV7`: `context.army` and a
+Dwarf viewer). In a match whose every seat is Human, Undead, Goblin,
+Martian, Dinosaur, Ice Folk, or Dwarf every seat plays them; only a match
+with a Candy seat keeps the older policy for every seat, a Dwarf one too
+(`dwarfResearchV7` and the production adjustment of
+[the Dwarf policy](#dwarf-play-pulp_wars-78i4) apply there only). The
+Dwarf rules of the older policy that are not about research or production
+(the Mole's tunnels with a rider, the bombing runs, Assemble and Repair,
+the Gunner that fires twice instead of moving, the Dig In hold, the
+Cannon's Knockback, and every seat's estimates of Dwarf units and mounds)
+stay under both. Everything reads the viewer's `PlayerViewV7` and the
+public previews.
+
+**What was seen** (a hand-played game as the Humans on seed 9 against the
+older policy, two as the Dwarves, and diagnostic matches on that seed).
+The older policy's seat held four cities of level 2 for fifteen rounds
+with an income of 9, bought Gyrocopters in round 6 and trained none, and
+made ten attacks in nineteen rounds from a ring of dug-in Hammerers and
+Moles around one city. A match with a Dwarf seat also kept the other seat
+on the older policy: the Goblin seat of a hand-played game had an income
+of 5 for ten rounds.
+
+**1. The gate and the order** (`ARMY_PLAY_FACTIONS_V7`,
+`ARMY_RESEARCH_ROLES_V7.DWARF`). The Steam Mole, the Clockwork Gunner, the
+Gyrocopter, the Engineer, the Steam Tank, the Steam Cannon, the
+Whirligig: from a Gathering opener Crafting, Dig In, Hunting, Clockwork,
+Gyrocopters, Leadership, Mining, Steam Tanks, Forestry, Steam Cannons,
+Dive Bombing, and Whirligigs. Blasting Charges is the first of the late
+technologies.
+
+**2. The army** (`armySharesV7`, `armyRoleScoreV7`). 40% line (Hammerers
+and Steam Tanks), 15% Steam Moles, 25% Gunners, 10% Steam Cannons, 10%
+Whirligigs (35, 10, 25, 10, 20 against two or more visible hostile
+ranged, siege, or support units); one Gyrocopter for `ARMY_DWARF_SKIRMISHER_PER_UNITS_V7` (5)
+units, `ARMY_DWARF_SKIRMISHER_MAXIMUM_V7` (2) at most.
+
+**3. Bodies first, and the 4 Coins** (`armyBodiesSeatV7`,
+`preferredReward`). The rule of step two of the Undead pass holds for a
+Dwarf seat, which counts its units that capture (a Gyrocopter, an
+Engineer, a Steam Cannon, a Steam Tank, and a Whirligig take no village)
+and its burrowed Mole and rider; it takes Stockpile at level 2 (the
+Dwarf Survey grants no unit; the older rule took the Survey with 4 Coins
+or more), and the opening and correction rules of the other army seats
+(`armyOpeningSeatV7`, `armyCorrectionSeatV7`). The garrison of a
+threatened city yields to a Gunner as a Human seat's does to a Marksman
+(`armyGarrisonYieldsToRangedV7`).
+
+**4. Weak links and escorts** (`armyWeakLinkV7`, `armyEscortValueV7`,
+`ARMY_DWARF_STURDY_V7`). A Dwarf unit of less than 15 HP at its maximum
+is a weak link of a kill chain at any HP (a Knight kills a Hammerer, a
+Gyrocopter, a Gunner, the Engineer, a Cannon, and a Whirligig at full HP);
+the Steam Mole and the Steam Tank are not, and their Move beside weak
+units has an escort's value. In the lab, AI against AI, the Human AI's
+Knights killed ten Dwarf units in its fourth turn without this rule and
+four with it.
+
+**5. The Gunner out of reach** (`armyIceFolkShooterHeldV7`, widened). A
+Clockwork Gunner makes no Move, whatever offers it, into a visible
+hostile melee unit's reach with no own line, defender, or breakthrough
+unit nearer to the enemy, nor onto a tile where the visible blows add up
+to its HP (it never heals by itself); it and the Engineer make no Move
+into the reach of a unit with Overrun from outside it. Exempt as for the
+Ice Folk shooters: the Move from which its shot kills, and the Move onto
+a center or a village.
+
+**Before and after.** Not a balance measurement.
+
+| Where                                     | Before                                              | After                                                          |
+| ----------------------------------------- | --------------------------------------------------- | -------------------------------------------------------------- |
+| Against the Human AI, seed 9, round 25    | 4 cities of level 2, income 10, 9 units; 47 attacks | 6 cities, income 21, 24 units; 10 tunnels, a bomb, an Assemble |
+| The hand-played Human, seed 9, round 12   | 4 cities of level 2, income 9, 10 units (`a`)       | 4 cities, income 12, 14 units; 3 kills for 3 lost (`a3`)       |
+| The lab, both seats the AI, twelve rounds | (no older lab)                                      | 29 kills for 32 lost                                           |
+
+No error and no stall in any of the diagnostic matches.
+
+**Not done.** The Gyrocopter bombs once or twice in 25 rounds (its
+landing threat is high beside every target in a front), the Engineer
+Assembles once or twice (the home city's slots are full), and the Brass
+Titan, the Whirligig, and the Steam Tank have no rule of their own.
+
+Tests: `tests/unit/ruleset-v7-dwarf-step2.test.ts`.
+
 ## Step two of the Ice Folk pass (`pulp_wars-w49.27`)
 
 [Step two of the Ice Folk pass](../product/RULESET_7_TUNING_ICE_FOLK.md)
@@ -7,8 +93,9 @@ changed one rule (an Ice Folk Survey grants a Sled; the identity is
 `pulp-wars-poc-7r59`) and brought the Ice Folk seat under the army rules
 (`armyIceFolkSeatV7`: `context.army` and an Ice Folk viewer). In a match
 whose every seat is Human, Undead, Goblin, Martian, Dinosaur, or Ice Folk
-every seat plays them; a match with a Dwarf or a Candy seat keeps the
-older policy for every seat, an Ice Folk one too (`iceFolkResearchV7` and
+every seat plays them; a match with a Dwarf or a Candy seat kept the
+older policy for every seat (since step two of the Dwarf pass only a match
+with a Candy seat does), an Ice Folk one too (`iceFolkResearchV7` and
 the production adjustment of the first Ice Folk policy apply there only).
 The Ice Folk rules of the older policy that are not about research or
 production (the Witch's Cold Snap and escort, the Shatter setup and

@@ -279,7 +279,7 @@ const HELP_V7 = `Pulp Wars text play (Ruleset 7). One command per invocation; st
   new     --session S [--map dry-land] [--size 11] [--seed 1] [--factions original,undead[,...]]
           [--seat 0] [--curiosities on|off] [--overwrite]
   lab     --session S <LAB> [--overwrite]
-                                        start a staged position (you play the Humans; LAB_GOBLIN_MID: the Goblins; LAB_UNDEAD_MID: the Undead; LAB_MARTIAN_MID: the Martians; LAB_DINOSAUR_MID: the Dinosaurs; LAB_ICE_FOLK_MID: the Ice Folk); lab alone lists them
+                                        start a staged position (you play the Humans; LAB_GOBLIN_MID: the Goblins; LAB_UNDEAD_MID: the Undead; LAB_MARTIAN_MID: the Martians; LAB_DINOSAUR_MID: the Dinosaurs; LAB_ICE_FOLK_MID: the Ice Folk; LAB_DWARF_MID: the Dwarves); lab alone lists them
   view    --session S [--full]          public view of your seat: header, map, cities, units
   tech    --session S                   technology tree with costs and unlocks
   options --session S [--unit ID | --city ID | --tile x,y | --all]
@@ -2346,6 +2346,10 @@ export const TEXT_PLAY_LABS_V7: Readonly<Record<string, string>> = {
   // as the Ice Folk, on the same land.
   LAB_ICE_FOLK_MID:
     "YOU PLAY THE ICE FOLK in an even middle game against the Human AI: five cities a side (a level-4 capital, two level-3, two level-2 at the front, 15c a turn each), every city with Forest and Fertile Ground in its land and the three larger ones with Ore and a Lumber Camp or two; you can train every Ice Folk unit (thirteen technologies) and hold 5 Yetis, 2 Sleds, 2 Snow Hunters, 2 Musk Oxen, an Ice Witch, 2 Mammoths, a Boulder Yeti and a Sabretooth (16 units), 35c in hand on the first turn and three free unit slots (two in the capital, one in the northern level-3 city); the Humans hold 3 Champions, 3 Marksmen, 2 Catapults, 2 Knights, 2 Guards and 5 Fighters (17 units) at the start (and 30c on their first turn, which buys more), a walled capital and a walled level-3 city, and Forest cover; you own Deep Winter, where the Musk Ox is (your Snow reaches two tiles beyond your cities' land, and Recover heals 6 in your land), and not Brittle (a Shatter at 4 HP or fewer)",
+  // Step two of the Dwarf pass (`pulp_wars-w49.28`): the one lab played as
+  // the Dwarves, on the same land.
+  LAB_DWARF_MID:
+    "YOU PLAY THE DWARVES in an even middle game against the Human AI: five cities a side (a level-4 capital, two level-3, two level-2 at the front, 15c a turn each), every city with Forest and Fertile Ground in its land and the three larger ones with Ore and a Lumber Camp or two; you can train every Dwarf unit (thirteen technologies) and hold 5 Hammerers, 2 Gyrocopters, 2 Clockwork Gunners, 2 Steam Moles, an Engineer, 2 Steam Tanks, a Steam Cannon and a Whirligig (16 units), 35c in hand on the first turn and three free unit slots (two in the capital, one in the northern level-3 city); the Humans hold 3 Champions, 3 Marksmen, 2 Catapults, 2 Knights, 2 Guards and 5 Fighters (17 units) at the start (and 30c on their first turn, which buys more), a walled capital and a walled level-3 city, and Forest cover; you own Dig In, where the Steam Mole is (a Hammerer or a Mole that stands still beside one of your centers has Field Defense), Dive Bombing (bombs of 6) and Clockwork (an Engineer Assembles a Gunner), and not Blasting Charges",
 };
 
 function commandLabV7(args: ArgsV7): string {
@@ -2611,6 +2615,16 @@ const LEGEND_V7 = [
   "  unit: seat digit (N = neutral monster) + role code Fi fighter Ra raider Mk marksman Gd guard Cp captain Ct catapult Kn knight Ch champion (the heavy) Jg juggernaut Pb patrol boat Bs battleship Sb submarine, lowercase e- = egg, --- none",
 ];
 
+/**
+ * Step two of the Dwarf pass (`pulp_wars-w49.28`): what a mound's Mole
+ * erupts for, from the public stats of its record (the owner's Blasting
+ * Charges is public).
+ */
+function moundEruptionDamageV7(view: PlayerViewV7, unit: PublicUnitV7): string {
+  const dwarf = view.unitStats.find((entry) => entry.unitId === unit.id)?.dwarf;
+  return dwarf === undefined ? "?" : String(dwarf.eruptionDamage);
+}
+
 function mapLinesV7(view: PlayerViewV7): readonly string[] {
   const { width, height } = view.board;
   const unitAt = new Map<string, PublicUnitV7>();
@@ -2664,9 +2678,15 @@ function mapLinesV7(view: PlayerViewV7): readonly string[] {
           ? "-"
           : seatLabelV7(view, tile.territoryOwnerId).slice(1);
       const unit = unitAt.get(xyV7(at));
+      // Step two of the Dwarf pass (`pulp_wars-w49.28`): a mound (a
+      // burrowed Steam Mole or its rider) is public and reserves its tile;
+      // the map printed nothing there.
+      const mound = view.burrowed.find((entry) => sameV7(entry.unit.at, at));
       const code =
         unit === undefined
-          ? "---"
+          ? mound === undefined
+            ? "---"
+            : `${seatLabelV7(view, mound.unit.ownerId).replace("S", "")}##`
           : `${seatLabelV7(view, unit.ownerId).replace("S", "")}${unit.form === "EGG" ? "e-" : roleCodeV7(view, unit)}`;
       row += `${TERRAIN_GLYPH_V7[tile.terrain] ?? "?"}${feature}${mark}${owner}${code}|`;
     }
@@ -3063,6 +3083,10 @@ function unitLineV7(
     );
     parts.push(activationTextV7(unit));
     parts.push(`options ${count}`);
+    // Step two of the Dwarf pass (`pulp_wars-w49.28`): a burrowed unit
+    // (the map prints its mound as `##`).
+    if (view.burrowed.some((entry) => entry.unit.id === unit.id))
+      parts.push("| BURROWED: a mound; it surfaces at your next turn start");
   }
   if (status !== "") parts.push(`| ${status}`);
   // Tuning 4: role rules the numbers do not show.
@@ -3322,6 +3346,22 @@ function viewLinesV7(session: SessionV7, full: boolean): string[] {
   for (const unit of others)
     lines.push(unitLineV7(view, unit, false, offered, full));
   if (others.length === 0) lines.push("(none)");
+  // Step two of the Dwarf pass (`pulp_wars-w49.28`): another seat's mounds,
+  // which are public (the hand player could not see a tunnel's eruption
+  // coming).
+  const mounds = view.burrowed.filter(
+    (entry) => entry.unit.ownerId !== view.viewer.id,
+  );
+  if (mounds.length > 0) {
+    lines.push(
+      "",
+      "MOUNDS (burrowed; each surfaces at its owner's next turn start, and a Steam Mole's eruption hits every ground unit of another seat next to it)",
+    );
+    for (const entry of mounds)
+      lines.push(
+        `${unitTagV7(view, entry.unit)} @${xyV7(entry.unit.at)} hp ${entry.unit.hp}/${entry.unit.maxHp}${entry.moleUnitId === null ? ` | erupts for ${moundEruptionDamageV7(view, entry.unit)} on the 8 tiles around it` : ` | rider of u${entry.moleUnitId}`}`,
+      );
+  }
 
   const otherCities = view.cities.filter(
     (city) => city.ownerId !== view.viewer.id,

@@ -211,6 +211,11 @@ stages the Ice Folk for a hand player ([section 2.6](#26-mission-setup)).
 No command, event, state, or view shape changed. A save, replay, or setup
 of `7r58` is rejected, and the browser autosave has a new key. A match
 without an Ice Folk seat plays as at `7r58`.
+[Step two of the Dwarf pass](RULESET_7_TUNING_DWARF.md) (`pulp_wars-w49.28`)
+changed no rule and kept the identity `7r59`: a Dwarf seat of the Normal
+AI plays the army rules in a match without a Candy seat
+([section 16](#16-normal-ai-summary)), and the lab `LAB_DWARF_MID` stages
+the Dwarves for a hand player ([section 2.6](#26-mission-setup)).
 `pulp-wars-poc-7r58` (`pulp_wars-w49.25`) is
 [step two of the Martian pass](RULESET_7_TUNING_MARTIAN.md#14-step-two):
 **City Walls hold a unit on its own city center against a Saucer's Tractor
@@ -1682,8 +1687,9 @@ fixtures, `LAB_GOBLIN_MID` (the Goblin pass: the hand player is the
 Goblins), `LAB_UNDEAD_MID` (the Undead pass: the hand player is the
 Undead), `LAB_MARTIAN_MID` (the Martian pass: the hand player is the
 Martians), `LAB_DINOSAUR_MID` (the Dinosaur pass: the hand player is the
-Dinosaurs), and `LAB_ICE_FOLK_MID` (step two of the Ice Folk pass: the
-hand player is the Ice Folk). A mission unit may carry `kills` (a dinosaur that has
+Dinosaurs), `LAB_ICE_FOLK_MID` (step two of the Ice Folk pass: the hand
+player is the Ice Folk), and `LAB_DWARF_MID` (step two of the Dwarf pass:
+the hand player is the Dwarves). A mission unit may carry `kills` (a dinosaur that has
 grown: it starts at the HP of its stage) and `egg` (an Egg with its
 turns to hatch); the builder refuses `kills` on a role that does not grow
 and `egg` on a role that is not egg-laid. Adding a mission is content: it
@@ -5695,8 +5701,9 @@ Harbours from it.
 - **Step two of the Ice Folk pass** (`pulp_wars-w49.27`, `7r59`). An Ice
   Folk seat plays the army rules in a match whose every seat is Human,
   Undead, Goblin, Martian, Dinosaur, or Ice Folk, and so do the other
-  seats of that match; a match with a Dwarf or a Candy seat keeps the
-  older policy for every seat. Its order of units is the Sled, the Snow
+  seats of that match; a match with a Dwarf or a Candy seat kept the
+  older policy for every seat (since step two of the Dwarf pass only one
+  with a Candy seat does). Its order of units is the Sled, the Snow
   Hunter, the Musk Ox (with Deep Winter), the Ice Witch, the Mammoth, the
   Boulder Yeti, the Sabretooth, with Brittle first of the late
   technologies. It fields two fifths line units, 15% Musk Oxen, a fifth
@@ -5720,6 +5727,30 @@ Harbours from it.
   value. A Yeti or a Sled does not step beside an enemy where it would die
   without a unit of its side there or coming. The seat never Freezes
   ([Normal AI](../architecture/NORMAL_AI.md#step-two-of-the-ice-folk-pass-pulp_wars-w4927)).
+- **Step two of the Dwarf pass** (`pulp_wars-w49.28`, `7r59`, no rule and
+  no identity change). A Dwarf seat plays the army rules in a match whose
+  every seat is Human, Undead, Goblin, Martian, Dinosaur, Ice Folk, or
+  Dwarf, and so do the other seats of that match; only a match with a
+  Candy seat keeps the older policy for every seat. Its order of units is
+  the Steam Mole (with Dig In), the Clockwork Gunner, the Gyrocopter, the
+  Engineer, the Steam Tank, the Steam Cannon, the Whirligig, with Blasting
+  Charges first of the late technologies. It fields two fifths line units
+  (Hammerers and Steam Tanks), 15% Steam Moles, a quarter Gunners, a tenth
+  Steam Cannons, a tenth Whirligigs (a fifth against two or more hostile
+  ranged, siege, or support units), and one Gyrocopter for five units (two
+  at most). Like the other army seats it trains before it researches while
+  it fields fewer units that capture than its cities and two more (a
+  burrowed Mole and its rider count), and it takes the 4 Coins at level 2
+  (its Survey grants no unit); the garrison of a threatened city yields to
+  a Gunner. Its units of less than 15 HP at their maximum do not stand side
+  by side in a Knight's reach, and a Steam Mole's or a Steam Tank's Move
+  beside them has an escort's value; a Gunner makes no Move into the reach
+  of a melee unit with no unit of its own nearer to the enemy, nor onto a
+  tile it dies on, unless its shot kills, and it and the Engineer stay out
+  of the reach of a unit with Overrun. The Dwarf rules of the older policy
+  for the tunnels, the bombs, Assemble, Repair, the Gunner's two shots, Dig
+  In, and Knockback apply under both
+  ([Normal AI](../architecture/NORMAL_AI.md#step-two-of-the-dwarf-pass-pulp_wars-w4928)).
 - **Campaign** (`pulp_wars-9s0.1`): every land unit has one job and walks
   the land route to it: the nearest unclaimed village, an invader next to an
   own city, the unexplored frontier (two scouts and the group behind the
@@ -6015,7 +6046,8 @@ Harbours from it.
   Human, Goblin, Undead, Martian, or Dinosaur (and so do the other seats
   of that match; a match with an Ice Folk, Dwarf, or Candy seat keeps the
   older policies; since step two of the Ice Folk pass, `7r59`, only one
-  with a Dwarf or a Candy seat does). It researches the Ankylosaurus, one economy technology
+  with a Dwarf or a Candy seat does, and since step two of the Dwarf pass
+  only one with a Candy seat). It researches the Ankylosaurus, one economy technology
   its land can use, the Triceratops, the Raptor, the Spitter, the Shaman,
   Planning, and the T-Rex, with Nesting before the Triceratops once it
   fields an Ankylosaurus and Wallbreaker before the T-Rex once it fields
@@ -10890,6 +10922,7 @@ first guesses.
 | Tuning        | `pulp-wars-poc-7r58` | `pulp_wars-w49.25` [step two of the Martian pass](RULESET_7_TUNING_MARTIAN.md#14-step-two) after a hand-played game as the Humans against the Martian AI before the change and one after it, two as the Martians (against the Undead AI, replayed after the change, and against three AIs), the lab, and six diagnostic matches: City Walls hold a unit on its own city center against a Saucer's Tractor Beam (a Mothership's Heavy Tractor Beam pulls it; a free Saucer pulled the garrison of a walled, fortified capital into two shots every turn); a Martian seat of the Normal AI trains before it researches while it is short of units, takes the free Saucer, researches the Brain third, the Tripod before the Shock Trooper unless the enemy fights hand to hand, Heat Sinks after its second Ray Gunner and the Disintegrator against Walls, keeps one Shock Trooper for two Grunts, and no longer walks its Tripods out in front of its line for a shot at half power                                                                                                                                                                   |
 | Tuning        | `pulp-wars-poc-7r58` | `pulp_wars-w49.26` [step two of the Dinosaur pass](RULESET_7_TUNING_DINOSAUR.md#14-step-two) after a hand-played game as the Humans against the Dinosaur AI before the change and one after it, two as the Dinosaurs (against the Goblin AI and against three AIs), the lab, and six diagnostic matches, no rule and no identity change: a Dinosaur seat of the Normal AI researches the Spitter and the Raptor before the Triceratops, trains before it researches while it is short of units, keeps the price of a due technology it can pay, sends no Caveman or Raptor into contact alone to die, counts a Triceratops's run-up before its Move and the Crack of a Stegosaurus's shot, and strikes with the Stegosaurus first, then its dinosaurs, then its Cavemen                                                                                                                                                                                                                                                                                                                                                                               |
 | Tuning        | `pulp-wars-poc-7r59` | `pulp_wars-w49.27` [step two of the Ice Folk pass](RULESET_7_TUNING_ICE_FOLK.md) after a hand-played game as the Humans against the Ice Folk AI before the change and one after it, three as the Ice Folk (twice against the Goblin AI, once against three AIs), the lab, two labs on water, and eight diagnostic matches: an Ice Folk city's level-2 Survey grants a free Sled (Scouts); an Ice Folk seat of the Normal AI plays the army rules in a match without a Dwarf or a Candy seat, researches the Sled, the Snow Hunter, and the Musk Ox first, caps its Musk Oxen, counts Cold Blood, Planted, Rockfall, and Shatter, throws the Bolas before the blow that shatters, and keeps its shooters out of reach; the lab `LAB_ICE_FOLK_MID`                                                                                                                                                                                                                                                                                                                                                                                                      |
+| Tuning        | `pulp-wars-poc-7r59` | `pulp_wars-w49.28` [step two of the Dwarf pass](RULESET_7_TUNING_DWARF.md) after a hand-played game as the Humans against the Dwarf AI before the change, one against a first draft, and one after it, four as the Dwarves (against the older and the army Goblin AI, against three AIs, and against the Human AI), the lab, and diagnostic matches, no rule and no identity change: a Dwarf seat of the Normal AI plays the army rules in a match without a Candy seat, researches the Steam Mole, the Clockwork Gunner, and the Gyrocopter first, trains before it researches while it is short of capturers, takes the 4 Coins at level 2, counts its units of less than 15 HP as weak links of a Knight's chain with the Mole and the Tank as escorts, and keeps its Gunners out of reach; the lab `LAB_DWARF_MID`                                                                                                                                                                                                                                                                                                                                |
 
 **Documentation parity (2026-09-28, no ruleset or identity change):** where
 older documents disagreed with the code, the code's behavior was adopted as

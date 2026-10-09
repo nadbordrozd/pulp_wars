@@ -57,10 +57,11 @@ const dino = (
  * plays the army rules now (tests/unit/ruleset-v7-dinosaur-pass.test.ts),
  * whose Moves and research have their own priorities. The priorities of
  * `pulp_wars-c87.5` are still those of a Dinosaur seat in a match with a
- * faction that plays no army rules: a Dwarf seat here, whose Hammerer has
- * the Fighter's numbers (12 HP, Attack 2, Defense 2).
+ * faction that plays no army rules: a Candy seat here since step two of
+ * the Dwarf pass (`pulp_wars-w49.28`) made the Dwarf seats army seats too
+ * (a Dwarf seat before it).
  */
-const DW = ["DINOSAUR", "DWARF"] as const;
+const DW = ["DINOSAUR", "CANDY"] as const;
 const older = (
   pieces: readonly GoblinPieceV7[],
   options: Parameters<typeof dinosaurFieldV7>[2] = {},
@@ -529,7 +530,7 @@ describe("ruleset-7 revision-19 Normal AI as Dinosaurs: signature research", () 
   const without = (
     factions: readonly [
       "DINOSAUR" | "ORIGINAL",
-      "DINOSAUR" | "ORIGINAL" | "DWARF",
+      "DINOSAUR" | "ORIGINAL" | "CANDY",
     ],
     ...techs: Parameters<typeof dinosaurTechsWithoutV7>
   ): GameStateV7 =>

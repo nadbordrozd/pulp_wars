@@ -66,14 +66,14 @@ const view = (state: GameStateV7) => viewForV7(state, activeIdV7(state));
  * plays the army rules now (tests/unit/ruleset-v7-dinosaur-pass.test.ts),
  * whose committed Moves, attacks, and research have priorities of their
  * own. The priorities of `pulp_wars-0hi.2` are still those of a Dinosaur
- * seat in a match with a faction that plays no army rules: a Dwarf seat
- * here (its Hammerer has the Fighter's numbers; its Steam Mole stands in
- * for the Guard).
+ * seat in a match with a faction that plays no army rules: a Candy seat
+ * here since step two of the Dwarf pass (`pulp_wars-w49.28`) made the
+ * Dwarf seats army seats too (a Dwarf seat before it).
  */
 const olderFieldV7: typeof fieldV7 = (pieces, options = {}) =>
   fieldV7(pieces, {
     ...options,
-    factions: options.factions ?? ["DINOSAUR", "DWARF"],
+    factions: options.factions ?? ["DINOSAUR", "CANDY"],
   });
 
 /** The scored candidates of the active seat's unit on `where`, best first. */
@@ -523,8 +523,8 @@ describe("ruleset-7 revision-20 Normal AI: research and production", () => {
   it("values Wallbreaker when a visible hostile city has Walls and it owns a dinosaur to use it", () => {
     const walled = (attacker: "KNIGHT" | "SWORDSMAN" | "FIGHTER") =>
       walledV7({
-        // (The older policy, against a Dwarf seat: see `olderFieldV7`.)
-        defenderFaction: "DWARF",
+        // (The older policy, against a Candy seat: see `olderFieldV7`.)
+        defenderFaction: "CANDY",
         attackers: [{ role: attacker, at: at(4, 4) }],
         attackerTechs: withoutTechsV7("DINOSAUR", "EXPLOSIVES"),
       });

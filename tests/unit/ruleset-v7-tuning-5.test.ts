@@ -602,6 +602,8 @@ describe("Normal AI army play: who plays it", () => {
       "DINOSAUR",
       // Step two of the Ice Folk pass (`pulp_wars-w49.27`).
       "ICE_FOLK",
+      // Step two of the Dwarf pass (`pulp_wars-w49.28`).
+      "DWARF",
     ]);
   });
 });
