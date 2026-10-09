@@ -234,6 +234,7 @@ the viewer's.
 | Neutral village captured by the viewer            | after the animations | `village.capture`      |
 | City lost by the viewer                           | after the animations | `city.lost`            |
 | Own city levels up                                | after the animations | `city.levelup`         |
+| Own city linked to the capital by Road            | as its icon lands    | `special.sparkle`      |
 | Own unit promoted                                 | after the animations | `unit.levelup`         |
 | Own treasure                                      | after the animations | `economy.treasure`     |
 | Own spoils, plunder, automatic reward, income     | after the animations | `economy.coin`         |
@@ -244,6 +245,10 @@ the viewer's.
 
 Several sounds of one phase are played 140 ms apart, each once. The end of the
 match plays its tune alone.
+
+A new Road link (bead `pulp_wars-v56v`) plays its `special.sparkle` at half
+level, once however many cities link, when the first population icon lands on
+the pips (at once in reduced motion); a lost link is silent.
 
 ### Interface
 

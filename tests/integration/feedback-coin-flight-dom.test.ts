@@ -269,6 +269,28 @@ describe("feedback sounds", () => {
       { id: "unit.levelup", delayMs: 280 },
     ]);
   });
+
+  it("delays a Road link's soft sparkle to the first Road icon's landing", () => {
+    // Bead pulp_wars-v56v.
+    const cues = [
+      { id: "city.levelup", delayMs: 0 },
+      { id: "special.sparkle", delayMs: 0, gain: 0.5 },
+    ] as const;
+    expect(
+      feedbackSoundCuesV7(cues, { coinMs: null, levelUpMs: null, roadMs: 630 }),
+    ).toEqual([
+      { id: "city.levelup", delayMs: 0 },
+      { id: "special.sparkle", delayMs: 630, gain: 0.5 },
+    ]);
+    // Reduced motion: no icon flies, the sound plays with the glow.
+    expect(
+      feedbackSoundCuesV7(cues, {
+        coinMs: null,
+        levelUpMs: null,
+        roadMs: null,
+      }),
+    ).toBe(cues);
+  });
 });
 
 class FeedbackHost extends RecordingBoardHost {

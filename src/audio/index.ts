@@ -77,6 +77,8 @@ export {
 } from "./playable-sound";
 export {
   OTHER_PLAYER_BUILD_GAIN_V7,
+  ROAD_LINK_SOUND_GAIN_V7,
+  ROAD_LINK_SOUND_V7,
   soundCuesForBoundaryV7,
   soundCuesForStepV7,
   type BoundarySoundCuesV7,

@@ -11,6 +11,7 @@ import type {
   SupportEffectV7,
 } from "../render/canvas/presentation-plan-v7";
 import type { SoundIdV1 } from "./sound-manifest";
+import { roadLinkChangesV7 } from "../render/feedback-plan-v7";
 import {
   GIANT_EFFECT_BEAT_V7,
   GIANT_EFFECT_DURATIONS_V7,
@@ -539,12 +540,32 @@ export function soundCuesForBoundaryV7(
       end: [{ id: matchEnd, delayMs: 0 }],
       essential: [{ id: matchEnd, delayMs: 0 }],
     };
+  const roadLinked = roadLinkChangesV7(before, after).linked.length > 0;
   return {
     start: sequence(start),
-    end: sequence([...end, ...essential]),
+    end: [
+      ...sequence([...end, ...essential]),
+      ...(roadLinked
+        ? [
+            {
+              id: ROAD_LINK_SOUND_V7,
+              delayMs: 0,
+              gain: ROAD_LINK_SOUND_GAIN_V7,
+            },
+          ]
+        : []),
+    ],
     essential: sequence(essential),
   };
 }
+
+/**
+ * Bead pulp_wars-v56v: a new Road link's soft sparkle as its population
+ * icons land (the DOM shell moves it to the first landing). One per
+ * boundary however many cities link; a lost link is silent.
+ */
+export const ROAD_LINK_SOUND_V7: SoundIdV1 = "special.sparkle";
+export const ROAD_LINK_SOUND_GAIN_V7 = 0.5;
 
 /** Distinct sounds of one phase, a short beat apart so each is heard. */
 function sequence(ids: readonly SoundIdV1[]): readonly SoundCueV1[] {

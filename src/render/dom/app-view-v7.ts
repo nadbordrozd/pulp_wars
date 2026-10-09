@@ -702,6 +702,7 @@ import {
   createBrowserGameAudioV1,
   themeForSceneV1,
   type MusicSceneV1,
+  ROAD_LINK_SOUND_V7,
   soundCuesForBoundaryV7,
   soundCuesForStepV7,
   type GameAudioV1,
@@ -1117,6 +1118,8 @@ interface FeedbackTicketsV7 {
 interface FeedbackSoundLeadsV7 {
   readonly coinMs: number | null;
   readonly levelUpMs: number | null;
+  /** Bead pulp_wars-v56v: the first Road icon lands on its city's pips. */
+  readonly roadMs?: number | null;
 }
 
 /**
@@ -1128,14 +1131,18 @@ export function feedbackSoundCuesV7(
   cues: readonly SoundCueV1[],
   leads: FeedbackSoundLeadsV7,
 ): readonly SoundCueV1[] {
-  if (leads.coinMs === null && leads.levelUpMs === null) return cues;
+  const roadMs = leads.roadMs ?? null;
+  if (leads.coinMs === null && leads.levelUpMs === null && roadMs === null)
+    return cues;
   return cues.map((cue) => {
     const lead =
       cue.id === "economy.coin" || cue.id === "economy.treasure"
         ? leads.coinMs
         : cue.id === "city.levelup"
           ? leads.levelUpMs
-          : null;
+          : cue.id === ROAD_LINK_SOUND_V7
+            ? roadMs
+            : null;
     return lead === null ? cue : { ...cue, delayMs: cue.delayMs + lead };
   });
 }
@@ -9060,7 +9067,7 @@ export class Ruleset7DomAppView {
           levelUpMs === null ? 0 : levelUpMs + REWARD_AFTER_LEVEL_UP_MS_V7,
         ),
       );
-    return { coinMs, levelUpMs };
+    return { coinMs, levelUpMs, roadMs: board?.roadArrivalMs ?? null };
   }
 
   /** Ends every feedback animation: the true state shows at once. */

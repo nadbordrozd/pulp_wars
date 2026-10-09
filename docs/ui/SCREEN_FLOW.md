@@ -442,6 +442,25 @@ Roads, that text now describes the **Classic look** developer option
     source tile to the city; on arrival the city hops and its meter fills. A
     level-up then shows a gold ring, and its reward dialog opens after it
     (never more than 2.5 s after the command).
+  - **Road link (bead `pulp_wars-v56v`).** Road population
+    ([section 9.3](../product/RULESET_7_CURRENT.md#93-road-population-and-land-trade))
+    has no event, so the feedback plan compares the viewer's capital-rooted
+    Road network (`naval.networkCityIds`, `naval.networkRoads`) before and
+    after every boundary, in the viewer's turn and in watched AI turns
+    (`roadLinkChangesV7` in `feedback-plan-v7.ts`). When a city of the
+    viewer joins the original capital's network (a Road built, a city
+    captured onto the Roads, the capital won back), one population icon
+    leaves the top pip of each city and hops to the other along the Road,
+    one small arc per Road tile (210 ms a tile, 0.48 to 1.6 s in all), and
+    lands on the pip of the other city that fills next: that city's meter
+    ticks up, the city hops and the pip sparkles. Several links of one
+    command go nearest first, 160 ms apart; 12 Road icons at most. A lost
+    link (a Road cut, a linked city or the capital lost) is quiet: the
+    emptied pip rises a little and fades (700 ms), with no sound. The
+    landing point is the chibi pip column.
+  - **Road link, reduced motion.** No icon flies: the meters show at once
+    and both cities' pips have a still gold glow for 1.4 s; a lost link
+    shows nothing.
   - **Territory click.** A click or tap on a tile inside a city's territory
     hops that city (any player's visible city); a click that gives an order
     does not.
@@ -456,8 +475,10 @@ Roads, that text now describes the **Classic look** developer option
     flight and no hop; the counter, the meter and the marker show at once.
     Fast animation speed halves every duration; Fast Forward and a cancelled
     presentation finish everything at once.
-  - **Sound.** No new sound: the coin sound waits for the first coin to
-    land and the level-up sound for the ring.
+  - **Sound.** The coin sound waits for the first coin to land and the
+    level-up sound for the ring. A new Road link plays a soft
+    `special.sparkle` (half level) once, when its first icon lands (at once
+    in reduced motion).
 - **Cities** fly no pennant (bead `pulp_wars-b5f.4`, [section 21 of the
   visual direction](../art/VISUAL_DIRECTION_2026-10.md#21-faction-colours-and-the-pennants-retired)):
   every faction's city is its own art, so the city and the faction-coloured

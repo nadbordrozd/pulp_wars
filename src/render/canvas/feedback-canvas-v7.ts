@@ -365,6 +365,50 @@ export function drawSparkleBurstV7(
   context.restore();
 }
 
+/**
+ * Bead pulp_wars-v56v, reduced motion: a still gold glow around a city's
+ * population pips (a new Road link). `bottom` is the centre of the bottom
+ * pip, `pips` the meter's length; pips are 7 nominal px every 9. The fill
+ * is light so the pips stay readable through it.
+ */
+export function drawRoadPipGlowV7(
+  context: CanvasRenderingContext2D,
+  bottom: { readonly x: number; readonly y: number },
+  zoom: number,
+  pips: number,
+): void {
+  // At least a few screen pixels: the pips are small at a far zoom.
+  const pad = Math.max(3, 4 * zoom);
+  const left = bottom.x - 3.5 * zoom - pad;
+  const right = bottom.x + 3.5 * zoom + pad;
+  const top = bottom.y - 9 * zoom * (Math.max(1, pips) - 1) - 3.5 * zoom - pad;
+  const end = bottom.y + 3.5 * zoom + pad;
+  const radius = Math.min(Math.max(3, 4 * zoom), (right - left) / 2);
+  const outline = (): void => {
+    context.beginPath();
+    context.moveTo(left + radius, top);
+    context.arcTo(right, top, right, end, radius);
+    context.arcTo(right, end, left, end, radius);
+    context.arcTo(left, end, left, top, radius);
+    context.arcTo(left, top, right, top, radius);
+    context.closePath();
+  };
+  context.save();
+  outline();
+  context.shadowColor = GOLD;
+  context.shadowBlur = Math.max(10, 16 * zoom);
+  context.fillStyle = "rgba(255, 200, 61, 0.3)";
+  context.fill();
+  context.shadowBlur = 0;
+  context.strokeStyle = INK;
+  context.lineWidth = Math.max(3, 3.4 * zoom);
+  context.stroke();
+  context.strokeStyle = GOLD;
+  context.lineWidth = Math.max(1.75, 2 * zoom);
+  context.stroke();
+  context.restore();
+}
+
 /** A flat ring on the ground that widens and fades: a city's level-up. */
 export function drawGroundRingV7(
   context: CanvasRenderingContext2D,

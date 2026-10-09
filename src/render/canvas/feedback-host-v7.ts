@@ -1,5 +1,6 @@
 import type { CommandV7, CoordV7, PlayerViewV7 } from "../../engine/index";
 import {
+  EMPTY_FEEDBACK_PLAN_V7,
   promotionReadyUnitIdsV7,
   type FeedbackPlanV7,
 } from "../feedback-plan-v7";
@@ -9,6 +10,7 @@ import {
   drawGroundRingV7,
   drawPopulationIconV7,
   drawPromotionMarkerV7,
+  drawRoadPipGlowV7,
   drawSparkleBurstV7,
   promotionMarkerSizeCssPxV7,
   type BoardFeedbackFrameV7,
@@ -25,6 +27,12 @@ import {
   PROMOTION_HOP_AMPLITUDE_CSS_PX_V7,
   PROMOTION_HOP_MS_V7,
   PROMOTION_MARKER_POP_MS_V7,
+  ROAD_GLOW_MS_V7,
+  ROAD_ICON_CAP_V7,
+  ROAD_LANDING_MS_V7,
+  ROAD_LINK_STAGGER_MS_V7,
+  ROAD_UNLINK_MS_V7,
+  cityPipCentreV7,
   easeOutBackV7,
   feedbackPulseV7,
   firstStepHopCssPxV7,
@@ -35,6 +43,8 @@ import {
   populationIconPlanV7,
   promotionMarkerBobCssPxV7,
   readyChevronBounceCssPxV7,
+  roadHopFrameV7,
+  roadHopMsV7,
 } from "./feedback-motion-v7";
 import {
   TILE_WIDTH,
@@ -95,6 +105,11 @@ export interface FeedbackLaunchV7 {
   readonly populationArrivalMs: number | null;
   /** The level-up ring starts, or null for no level-up. */
   readonly levelUpMs: number | null;
+  /**
+   * Bead pulp_wars-v56v: the first Road icon lands on its city's pips.
+   * Present only when a Road link sends icons.
+   */
+  readonly roadArrivalMs?: number;
 }
 
 const NO_LAUNCH: FeedbackLaunchV7 = Object.freeze({
@@ -152,6 +167,38 @@ interface PopulationFlight {
   readonly levelUp: boolean;
 }
 
+/**
+ * Bead pulp_wars-v56v: a population icon hopping along a new Road link
+ * from one city's pips to the other's.
+ */
+interface RoadFlight {
+  readonly fromCityId: number;
+  readonly toCityId: number;
+  /** The Road tiles from the source city to the destination, both included. */
+  readonly path: readonly CoordV7[];
+  readonly startAt: number;
+  readonly durationMs: number;
+  readonly value: number;
+  /** The points count toward the destination's held meter. */
+  readonly holds: boolean;
+  /** The last icon of a gain that levelled its city up. */
+  readonly levelUp: boolean;
+}
+
+/**
+ * Bead pulp_wars-v56v: a cue on a city's pip column: the sparkle where a
+ * Road icon landed, the still glow of reduced motion, and the pip that
+ * fades away when a link is lost.
+ */
+interface PipCue {
+  readonly kind: "LANDING" | "GLOW" | "UNLINK";
+  readonly cityId: number;
+  readonly at: CoordV7;
+  readonly slot: number;
+  readonly startAt: number;
+  readonly durationMs: number;
+}
+
 interface Burst {
   readonly kind: "PROMOTION_EARNED" | "PROMOTED" | "LEVEL_UP";
   readonly at: CoordV7;
@@ -181,6 +228,8 @@ export class BoardFeedbackV7 implements BoardFeedbackPortV7 {
   /** Markers kept back for a celebration; `showAt` is set at the launch. */
   readonly #markerPops = new Map<number, { showAt: number | null }>();
   #flights: PopulationFlight[] = [];
+  #roadFlights: RoadFlight[] = [];
+  #pipCues: PipCue[] = [];
   #bursts: Burst[] = [];
   #frame: number | null = null;
   #listener: ((timeMs: number) => boolean) | null = null;
@@ -214,7 +263,7 @@ export class BoardFeedbackV7 implements BoardFeedbackPortV7 {
     // units keep the states they had instead of all turning spent.
     if (!viewersTurn || model.offeredCommands.length > 0)
       this.#turnStates = unitTurnStatesV7(model.view, model.offeredCommands);
-    if (model.motion === "REDUCED" && this.#busy()) this.finish();
+    if (model.motion === "REDUCED" && this.#moving()) this.finish();
     this.#schedule();
   }
 
@@ -238,7 +287,15 @@ export class BoardFeedbackV7 implements BoardFeedbackPortV7 {
   hold(plan: FeedbackPlanV7): number {
     const ticket = this.#nextTicket;
     this.#nextTicket += 1;
-    if (!this.animated()) return ticket;
+    if (!this.animated()) {
+      // Reduced motion: a Road link still glows on both cities' pips.
+      if (plan.roadLinks.length > 0)
+        this.#tickets.set(ticket, {
+          ...EMPTY_FEEDBACK_PLAN_V7,
+          roadLinks: plan.roadLinks,
+        });
+      return ticket;
+    }
     this.#tickets.set(ticket, plan);
     for (const gain of plan.population) {
       const held = this.#meterHolds.get(gain.cityId);
@@ -261,45 +318,139 @@ export class BoardFeedbackV7 implements BoardFeedbackPortV7 {
     this.#tickets.delete(ticket);
     if (!this.animated()) {
       this.#release(plan);
+      this.#glowRoadLinks(plan);
       return NO_LAUNCH;
     }
     const now = this.timeMs();
     const scale = this.durationScale();
     let firstArrival: number | null = null;
     let levelUp: number | null = null;
+    let roadArrival: number | null = null;
+    // Bead pulp_wars-v56v: the links of one command start nearest first.
+    const linkStart = (fromCityId: number, toCityId: number): number => {
+      const index = plan.roadLinks.findIndex(
+        (link) =>
+          (link.capitalId === fromCityId && link.cityId === toCityId) ||
+          (link.cityId === fromCityId && link.capitalId === toCityId),
+      );
+      return now + Math.max(0, index) * ROAD_LINK_STAGGER_MS_V7 * scale;
+    };
+    const flown = new Set<string>();
+    const flyRoad = (
+      fromCityId: number,
+      toCityId: number,
+      path: readonly CoordV7[],
+      value: number,
+      holds: boolean,
+    ): RoadFlight | null => {
+      if (path.length < 2 || this.#roadFlights.length >= ROAD_ICON_CAP_V7)
+        return null;
+      const flight: RoadFlight = {
+        fromCityId,
+        toCityId,
+        path,
+        startAt: linkStart(fromCityId, toCityId),
+        durationMs: roadHopMsV7(path.length - 1) * scale,
+        value,
+        holds,
+        levelUp: false,
+      };
+      this.#roadFlights.push(flight);
+      flown.add(`${fromCityId}>${toCityId}`);
+      const lands = flight.startAt + flight.durationMs - now;
+      roadArrival = roadArrival === null ? lands : Math.min(roadArrival, lands);
+      return flight;
+    };
     for (const gain of plan.population) {
+      // Bead pulp_wars-v56v: Road points hop along the Road.
+      const roadFlights: RoadFlight[] = [];
+      for (const source of gain.sources) {
+        if (source.road === undefined) continue;
+        const flight = flyRoad(
+          source.road.fromCityId,
+          gain.cityId,
+          source.road.path,
+          source.amount,
+          true,
+        );
+        if (flight !== null) roadFlights.push(flight);
+      }
+      const roadCarried = roadFlights.reduce(
+        (sum, flight) => sum + flight.value,
+        0,
+      );
       const room = POPULATION_ICON_CAP_V7 - this.#flights.length;
       const flying = gain.sources.filter(
-        (source) => coordKey(source.at) !== coordKey(gain.cityAt),
+        (source) =>
+          source.road === undefined &&
+          coordKey(source.at) !== coordKey(gain.cityAt),
       );
       const icons = populationIconPlanV7(
         flying.map((source) => source.amount),
         room,
       );
-      const carried = icons.reduce((sum, icon) => sum + icon.value, 0);
+      const carried =
+        icons.reduce((sum, icon) => sum + icon.value, 0) + roadCarried;
       // Points with no tile to come from (or no icon left) arrive at once.
       const instant = gain.amount - carried;
       let lastArrival = now;
+      for (const flight of roadFlights)
+        lastArrival = Math.max(lastArrival, flight.startAt + flight.durationMs);
+      const roadLast = lastArrival;
+      const regular: PopulationFlight[] = [];
       icons.forEach((icon, index) => {
         const source = flying[icon.source];
         if (source === undefined) return;
         const startAt = now + index * POPULATION_STAGGER_MS_V7 * scale;
-        lastArrival = startAt + POPULATION_HOP_MS_V7 * scale;
-        this.#flights.push({
+        lastArrival = Math.max(
+          lastArrival,
+          startAt + POPULATION_HOP_MS_V7 * scale,
+        );
+        regular.push({
           cityId: gain.cityId,
           from: source.at,
           to: gain.cityAt,
           startAt,
           value: icon.value,
-          levelUp: gain.leveledUp && index === icons.length - 1,
+          levelUp: false,
         });
       });
-      if (instant > 0 || icons.length === 0) {
+      // The icon that lands last brings the level-up.
+      if (gain.leveledUp) {
+        const lastRegular = regular.at(-1);
+        const lastRoad = roadFlights.reduce<RoadFlight | null>(
+          (latest, flight) =>
+            latest === null ||
+            flight.startAt + flight.durationMs >
+              latest.startAt + latest.durationMs
+              ? flight
+              : latest,
+          null,
+        );
+        if (lastRoad !== null && roadLast >= lastArrival) {
+          const index = this.#roadFlights.indexOf(lastRoad);
+          if (index !== -1)
+            this.#roadFlights[index] = { ...lastRoad, levelUp: true };
+        } else if (lastRegular !== undefined)
+          regular[regular.length - 1] = { ...lastRegular, levelUp: true };
+      }
+      this.#flights.push(...regular);
+      const sent = icons.length + roadFlights.length;
+      if (instant > 0 || sent === 0) {
         this.#arrive(gain.cityId, gain.amount - carried, now);
-        if (gain.leveledUp && icons.length === 0)
+        if (gain.leveledUp && sent === 0)
           this.#levelUp(gain.cityAt, now + CITY_HOP_MS_V7 * scale);
       }
-      const arrival = icons.length === 0 ? 0 : POPULATION_HOP_MS_V7 * scale;
+      const arrival =
+        icons.length > 0
+          ? POPULATION_HOP_MS_V7 * scale
+          : roadFlights.length > 0
+            ? Math.min(
+                ...roadFlights.map(
+                  (flight) => flight.startAt + flight.durationMs - now,
+                ),
+              )
+            : 0;
       firstArrival =
         firstArrival === null ? arrival : Math.min(firstArrival, arrival);
       if (gain.leveledUp) {
@@ -307,6 +458,31 @@ export class BoardFeedbackV7 implements BoardFeedbackPortV7 {
         levelUp = levelUp === null ? ring : Math.min(levelUp, ring);
       }
     }
+    // A link whose city shows no gain of its own (a city just captured, or
+    // a capital whose other Road population fell at the same time) still
+    // sends its icon; it changes no meter.
+    for (const link of plan.roadLinks) {
+      if (!flown.has(`${link.capitalId}>${link.cityId}`))
+        flyRoad(link.capitalId, link.cityId, link.path, 1, false);
+      if (!flown.has(`${link.cityId}>${link.capitalId}`))
+        flyRoad(
+          link.cityId,
+          link.capitalId,
+          [...link.path].reverse(),
+          1,
+          false,
+        );
+    }
+    // A lost link is quiet: the pip that goes rises a little and fades.
+    for (const unlink of plan.roadUnlinks)
+      this.#pipCues.push({
+        kind: "UNLINK",
+        cityId: unlink.cityId,
+        at: unlink.at,
+        slot: this.#pipSlot(unlink.cityId, "NEXT"),
+        startAt: now,
+        durationMs: ROAD_UNLINK_MS_V7 * scale,
+      });
     for (const cue of plan.promotionsEarned) {
       this.#unitHops.set(cue.unitId, {
         startAt: now,
@@ -333,7 +509,13 @@ export class BoardFeedbackV7 implements BoardFeedbackPortV7 {
         own: cue.own,
       });
     this.#schedule();
-    return { populationArrivalMs: firstArrival, levelUpMs: levelUp };
+    return roadArrival === null
+      ? { populationArrivalMs: firstArrival, levelUpMs: levelUp }
+      : {
+          populationArrivalMs: firstArrival,
+          levelUpMs: levelUp,
+          roadArrivalMs: roadArrival,
+        };
   }
 
   finish(): void {
@@ -344,6 +526,8 @@ export class BoardFeedbackV7 implements BoardFeedbackPortV7 {
     this.#unitHops.clear();
     this.#markerPops.clear();
     this.#flights = [];
+    this.#roadFlights = [];
+    this.#pipCues = [];
     this.#bursts = [];
     if (busy) this.#env.draw();
   }
@@ -499,6 +683,7 @@ export class BoardFeedbackV7 implements BoardFeedbackPortV7 {
     const tile = TILE_WIDTH * camera.zoom;
     const centre = (at: CoordV7) => worldToScreen(projectGrid(at), camera);
     this.#drawFirstStepMarker(context, camera, now);
+    this.#drawRoadCues(context, camera, now, icon("POPULATION"));
     if (this.#flights.length === 0 && this.#bursts.length === 0) return;
     const scale = this.durationScale();
     for (const burst of this.#bursts) {
@@ -574,6 +759,136 @@ export class BoardFeedbackV7 implements BoardFeedbackPortV7 {
   }
 
   /**
+   * Bead pulp_wars-v56v: the Road icons on their way (each from the top
+   * pip of its source city, hopping over every Road tile, onto the pip of
+   * its destination that fills next), the sparkle where one landed, the
+   * pip that fades from a lost link, and the still glow of reduced motion.
+   */
+  #drawRoadCues(
+    context: CanvasRenderingContext2D,
+    camera: CameraState,
+    now: number,
+    populationIcon: CanvasImageSource | null,
+  ): void {
+    if (this.#roadFlights.length === 0 && this.#pipCues.length === 0) return;
+    const tile = TILE_WIDTH * camera.zoom;
+    const centre = (at: CoordV7) => worldToScreen(projectGrid(at), camera);
+    const pip = (at: CoordV7, slot: number) =>
+      cityPipCentreV7(centre(at), camera.zoom, slot);
+    // The size of the other population icons in flight.
+    const iconSize = Math.max(16, tile * 0.36);
+    for (const cue of this.#pipCues) {
+      const progress = (now - cue.startAt) / cue.durationMs;
+      if (progress < 0 || progress >= 1) continue;
+      if (cue.kind === "GLOW") {
+        drawRoadPipGlowV7(
+          context,
+          cityPipCentreV7(centre(cue.at), camera.zoom, 0),
+          camera.zoom,
+          this.#pipWidth(cue.cityId),
+        );
+        continue;
+      }
+      const point = pip(cue.at, cue.slot);
+      if (cue.kind === "LANDING")
+        drawSparkleBurstV7(context, point.x, point.y, tile * 0.2, progress, {
+          sparkles: 5,
+        });
+      else {
+        context.save();
+        context.globalAlpha *= 0.55 * (1 - progress);
+        drawPopulationIconV7(
+          context,
+          point.x,
+          point.y - tile * 0.22 * progress,
+          iconSize * 0.8,
+          { icon: populationIcon, value: 1 },
+        );
+        context.restore();
+      }
+    }
+    for (const flight of this.#roadFlights) {
+      const progress = (now - flight.startAt) / flight.durationMs;
+      if (progress < 0 || progress >= 1) continue;
+      const from = flight.path[0];
+      const to = flight.path.at(-1);
+      if (from === undefined || to === undefined) continue;
+      const points = [
+        pip(from, this.#pipSlot(flight.fromCityId, "TOP")),
+        ...flight.path.slice(1, -1).map(centre),
+        pip(to, this.#pipSlot(flight.toCityId, "NEXT")),
+      ];
+      const frame = roadHopFrameV7(points, progress, tile);
+      drawPopulationIconV7(context, frame.x, frame.y, iconSize * frame.scale, {
+        icon: populationIcon,
+        value: flight.value,
+      });
+    }
+  }
+
+  /** The pips of a city's meter (its level plus one), as now drawn. */
+  #pipWidth(cityId: number): number {
+    return Math.max(1, this.#shownMeter(cityId).level + 1);
+  }
+
+  /** The level and meter the city shows now (held or true). */
+  #shownMeter(cityId: number): {
+    readonly level: number;
+    readonly population: number;
+  } {
+    const held = this.#meterHolds.get(cityId);
+    if (held !== undefined) return heldCityMeterV7(held.before, held.arrived);
+    const city = this.#model?.view.cities.find((item) => item.id === cityId);
+    return { level: city?.level ?? 1, population: city?.population ?? 0 };
+  }
+
+  /**
+   * A pip of the meter the city shows now: its top filled pip (`TOP`, where
+   * an icon leaves from or has just landed) or the pip that fills next
+   * (`NEXT`, where an icon lands), never outside the meter.
+   */
+  #pipSlot(cityId: number, which: "TOP" | "NEXT"): number {
+    const meter = this.#shownMeter(cityId);
+    const slot = which === "TOP" ? meter.population - 1 : meter.population;
+    return Math.max(0, Math.min(Math.max(1, meter.level + 1) - 1, slot));
+  }
+
+  /** Reduced motion: both cities of each new link glow, still, a moment. */
+  #glowRoadLinks(plan: FeedbackPlanV7): void {
+    const browser = this.#env.browser();
+    if (
+      plan.roadLinks.length === 0 ||
+      this.#model?.motion !== "REDUCED" ||
+      browser === null ||
+      typeof browser.requestAnimationFrame !== "function"
+    )
+      return;
+    const now = this.timeMs();
+    const glowing = new Set<number>();
+    for (const link of plan.roadLinks)
+      for (const [cityId, at] of [
+        [link.capitalId, link.capitalAt],
+        [link.cityId, link.cityAt],
+      ] as const) {
+        if (glowing.has(cityId)) continue;
+        glowing.add(cityId);
+        this.#pipCues = this.#pipCues.filter(
+          (cue) => cue.kind !== "GLOW" || cue.cityId !== cityId,
+        );
+        this.#pipCues.push({
+          kind: "GLOW",
+          cityId,
+          at,
+          slot: 0,
+          startAt: now,
+          durationMs: ROAD_GLOW_MS_V7,
+        });
+      }
+    this.#env.draw();
+    this.#schedule();
+  }
+
+  /**
    * First steps: the marker over the city, tile or unit the coach points
    * at. It hops while the player may act (full motion) and stands still in
    * reduced motion; nothing is drawn while the board takes no input.
@@ -620,6 +935,8 @@ export class BoardFeedbackV7 implements BoardFeedbackPortV7 {
   /** Review tooling and tests: what is in the air right now. */
   snapshot(): {
     readonly flights: number;
+    readonly roadFlights: number;
+    readonly pipCues: readonly PipCue["kind"][];
     readonly bursts: number;
     readonly cityHops: readonly number[];
     readonly unitHops: readonly number[];
@@ -628,6 +945,8 @@ export class BoardFeedbackV7 implements BoardFeedbackPortV7 {
   } {
     return {
       flights: this.#flights.length,
+      roadFlights: this.#roadFlights.length,
+      pipCues: this.#pipCues.map((cue) => cue.kind),
       bursts: this.#bursts.length,
       cityHops: [...this.#cityHops.keys()],
       unitHops: [...this.#unitHops.keys()],
@@ -684,8 +1003,15 @@ export class BoardFeedbackV7 implements BoardFeedbackPortV7 {
   }
 
   #busy(): boolean {
+    return this.#moving() || this.#pipCues.length > 0;
+  }
+
+  /** Busy with anything but the still glow of reduced motion. */
+  #moving(): boolean {
     return (
       this.#flights.length > 0 ||
+      this.#roadFlights.length > 0 ||
+      this.#pipCues.some((cue) => cue.kind !== "GLOW") ||
       this.#bursts.length > 0 ||
       this.#cityHops.size > 0 ||
       this.#unitHops.size > 0 ||
@@ -710,6 +1036,38 @@ export class BoardFeedbackV7 implements BoardFeedbackPortV7 {
         changed = true;
       }
       this.#flights = flying;
+    }
+    if (this.#roadFlights.length > 0) {
+      const travelling: RoadFlight[] = [];
+      for (const flight of this.#roadFlights) {
+        if (now < flight.startAt + flight.durationMs) {
+          travelling.push(flight);
+          continue;
+        }
+        const to = flight.path.at(-1);
+        if (flight.holds) this.#arrive(flight.toCityId, flight.value, now);
+        else this.#hopCity(flight.toCityId, now);
+        if (to !== undefined) {
+          this.#pipCues.push({
+            kind: "LANDING",
+            cityId: flight.toCityId,
+            at: to,
+            slot: this.#pipSlot(flight.toCityId, "TOP"),
+            startAt: now,
+            durationMs: ROAD_LANDING_MS_V7 * scale,
+          });
+          if (flight.levelUp) this.#levelUp(to, now + CITY_HOP_MS_V7 * scale);
+        }
+        changed = true;
+      }
+      this.#roadFlights = travelling;
+    }
+    if (this.#pipCues.length > 0) {
+      const live = this.#pipCues.filter(
+        (cue) => now < cue.startAt + cue.durationMs,
+      );
+      if (live.length !== this.#pipCues.length) changed = true;
+      this.#pipCues = live;
     }
     for (const hops of [this.#cityHops, this.#unitHops])
       for (const [id, hop] of hops)
@@ -760,7 +1118,8 @@ export class BoardFeedbackV7 implements BoardFeedbackPortV7 {
       return;
     }
     const now = this.timeMs();
-    const animating = this.#busy();
+    // The still glow of reduced motion needs no redraw until it ends.
+    const animating = this.#moving();
     const changed = this.#advance(now);
     if (this.#listenerBusy) {
       try {

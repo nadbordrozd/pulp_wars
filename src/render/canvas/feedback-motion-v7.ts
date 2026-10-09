@@ -529,6 +529,88 @@ export function populationHopHeightV7(
   return Math.max(tileCssPx * 0.42, Math.min(tileCssPx * 1.2, distance * 0.3));
 }
 
+// --- Road links ----------------------------------------------------------
+
+/**
+ * Bead pulp_wars-v56v: a new Road link sends a population icon from each
+ * city to the other, hopping tile to tile along the Road. One hop per
+ * tile, the whole way between the shortest and the longest time.
+ */
+export const ROAD_HOP_TILE_MS_V7 = 210;
+export const ROAD_HOP_MIN_MS_V7 = 480;
+export const ROAD_HOP_MAX_MS_V7 = 1_600;
+/** Several links of one command start this far apart, nearest first. */
+export const ROAD_LINK_STAGGER_MS_V7 = 160;
+/** Road icons on the board at once; the rest arrive at once. */
+export const ROAD_ICON_CAP_V7 = 12;
+/** The sparkle on the pip an icon lands on. */
+export const ROAD_LANDING_MS_V7 = 460;
+/** Reduced motion: how long both cities' pips glow, still. */
+export const ROAD_GLOW_MS_V7 = 1_400;
+/** A lost link: the pip that leaves rises a little and fades. */
+export const ROAD_UNLINK_MS_V7 = 700;
+
+/** The whole way of a Road icon over `segments` tile-to-tile hops. */
+export function roadHopMsV7(segments: number): number {
+  return Math.min(
+    ROAD_HOP_MAX_MS_V7,
+    Math.max(ROAD_HOP_MIN_MS_V7, Math.max(1, segments) * ROAD_HOP_TILE_MS_V7),
+  );
+}
+
+/**
+ * A Road icon `progress` (0 to 1) along its way: through `points` (the
+ * source city's pip, the centre of each Road tile, the destination city's
+ * pip), one small arc per step, each eased so the icon settles on every
+ * tile before the next hop. Each arc's top is a third of its step, between
+ * a fifth and half of `tileCssPx`. The icon grows in on the first hop and
+ * shrinks a little onto the pip at the end.
+ */
+export function roadHopFrameV7(
+  points: readonly FeedbackPointV7[],
+  progress: number,
+  tileCssPx: number,
+): { readonly x: number; readonly y: number; readonly scale: number } {
+  const first = points[0] ?? { x: 0, y: 0 };
+  if (points.length < 2) return { x: first.x, y: first.y, scale: 1 };
+  const t = Math.min(1, Math.max(0, progress));
+  const segments = points.length - 1;
+  const index = Math.min(segments - 1, Math.floor(t * segments));
+  const local = t * segments - index;
+  const from = points[index] ?? first;
+  const to = points[index + 1] ?? from;
+  const s = local * local * (3 - 2 * local);
+  const height = Math.max(
+    tileCssPx * 0.2,
+    Math.min(tileCssPx * 0.5, Math.hypot(to.x - from.x, to.y - from.y) / 3),
+  );
+  const growIn = Math.min(1, t * segments * 2.5);
+  const landing =
+    index === segments - 1 && local > 0.75 ? (local - 0.75) / 0.25 : 0;
+  return {
+    x: from.x + (to.x - from.x) * s,
+    y: from.y + (to.y - from.y) * s - height * 4 * local * (1 - local),
+    scale: (0.45 + 0.55 * growIn) * (1 - 0.3 * landing),
+  };
+}
+
+/**
+ * The centre of a city's population pip `slot` (0 is the bottom one) for
+ * the city centred on `centre`, in CSS px: the chibi piece's pip column in
+ * the right strip of its cell (`CHIBI_OVERLAY_FRAME_V7.populationColumn`,
+ * left 46 and bottom 62 world units; pips of 7 every 9).
+ */
+export function cityPipCentreV7(
+  centre: FeedbackPointV7,
+  zoom: number,
+  slot: number,
+): FeedbackPointV7 {
+  return {
+    x: centre.x + (46 + 3.5) * zoom,
+    y: centre.y + (62 - 3.5 - 9 * Math.max(0, slot)) * zoom,
+  };
+}
+
 // --- Hops ----------------------------------------------------------------
 
 /** The city's small hop: up 14 nominal CSS px, then a slight rebound. */
