@@ -409,6 +409,17 @@ npm run headless -- match --ruleset pulp-wars-poc-7r47 --map-type dry-land --siz
 npm run headless -- batch --ruleset pulp-wars-poc-7r47 --ai-counts 1 --seeds 0,1,2 --curiosities off --max-rounds 200
 ```
 
+Score and modes (`pulp_wars-kaw6.2`,
+[score and stars spec](../product/RULESET_7_SCORE_AND_STARS.md) section
+9.4): the CLI's `match` and `batch` modes take `--mode domination` (the
+default) or `--mode perfection` and write the mode into every setup
+(`runAiBatchV7` takes an optional `gameMode`; without it the setups have no
+`gameMode` key and are Domination). `--mode` is refused with
+`--map-type mission`, and `perfection` with the Showcase. A match result
+(and the `match` summary) carries `score`: the mode, every player's score
+at the end of each completed round, the final breakdowns, and the
+end-of-match summary with the human seat's star grade.
+
 Every existing parity, balance, and validation tool passes
 `curiosities: false` explicitly, so its measurements stay comparable:
 with the option off, generation and every match are those of `7r34` (the

@@ -1,7 +1,10 @@
 # Ruleset 7: score, play modes, and tribe stars
 
-**Status:** design spec (`pulp_wars-kaw6.1`, epic `pulp_wars-kaw6`). Nothing
-here is implemented yet. It is an overlay over
+**Status:** design spec (`pulp_wars-kaw6.1`, epic `pulp_wars-kaw6`). The
+engine (sections 3, 4, 5, and 9) is implemented by `pulp_wars-kaw6.2` and
+stated in [current rules section 3.1](RULESET_7_CURRENT.md#31-score-play-modes-and-stars)
+at `pulp-wars-poc-7r65`;
+the UI (sections 6 to 8) is not yet. It is an overlay over
 [Ruleset 7: current rules](RULESET_7_CURRENT.md) at `pulp-wars-poc-7r59`;
 every rule this document does not mention stays in force. Section 12 lists
 the implementation beads. Appendix A records the first draft, the
@@ -37,8 +40,8 @@ be simple, readable, and testable, and calibrated by hand-played text games
 and arithmetic only (the user's rule: no AI-versus-AI statistics, no long
 simulations).
 
-**Ruleset ID:** the engine bead (`pulp_wars-kaw6.2`) takes the next free
-`pulp-wars-poc-7rNN`.
+**Ruleset ID:** the engine bead (`pulp_wars-kaw6.2`) took
+`pulp-wars-poc-7r65`.
 
 **Words.** A _turn_ in the user's words is a _round_ here: every seat plays
 once per round, and "30 turns" means rounds 1 to 30. _Tribe_ is the
@@ -316,11 +319,12 @@ the mode of every save made before this spec.
   before round 30 (the remaining rounds are not played).
 - **Ties for first** with the human therefore go by cities, territory, and
   turn order like every tie; there is no draw.
-- **AI.** The Normal AI plays exactly as in Domination; it does not read
-  the mode or the score (no identity change in the AI). It still scores by
-  expanding and fighting. A score-aware AI (for example, avoiding losing
-  attacks in the last rounds) is a possible follow-up, not part of this
-  epic.
+- **AI.** The AI never plays for score, and there is no Perfection AI (the
+  user, 2026-10-09). In every mode the Normal AI builds its economy and
+  conquers exactly as it does in Domination; it does not read the mode or
+  the score (no identity change in the AI). It still scores by expanding
+  and fighting. It stays legal in Perfection: when an AI seat is last in
+  turn order, its round-30 `END_TURN` ends the match like any other seat's.
 - **What the player sees.** The leaderboard and the top bar show "Round
   23 of 30"; the leaderboard's lede reads "Highest score after round 30
   wins." instead of "Capture every enemy city to win."
@@ -409,8 +413,9 @@ elimination is yours.
 A player is **flawless** while none of these has happened to it in the
 match: a unit it commanded died (`UNIT_DIED`, any cause, Kaboom and
 Plague included), was disbanded (`UNIT_DISBANDED`, Abandon Egg included),
-or came under another player's control (Mind Control, boarding); a city it
-owned was captured. Hatching, growth, Promotion, and Assemble are not
+or came under another player's control (Mind Control, boarding), or was
+swallowed by an Abomination (`UNIT_SWALLOWED`, added at `7r65` with the
+giants' signatures); a city it owned was captured. Hatching, growth, Promotion, and Assemble are not
 losses. Damage is allowed: "lost nothing" means no unit and no city. The
 state keeps it as the `flawless` flag (section 3.3); an engine audit test
 lists every event that removes a unit or a city from a player and checks
@@ -624,7 +629,7 @@ becomes, top to bottom:
 One identity bump (section 4.3). Pinned matches of the previous identity
 replay unchanged apart from the identity, the setup key, and the new
 counters; no rule outside this spec changes, and the Normal AI does not
-change.
+change (it never optimises for score in any mode, section 4.2).
 
 ### 9.2 State
 

@@ -15,9 +15,9 @@
   },
   "state": {
     "schemaVersion": 7,
-    "rulesetId": "pulp-wars-poc-7r64",
+    "rulesetId": "pulp-wars-poc-7r65",
     "setup": {
-      "rulesetId": "pulp-wars-poc-7r64",
+      "rulesetId": "pulp-wars-poc-7r65",
       "seed": 1,
       "width": 16,
       "height": 16,

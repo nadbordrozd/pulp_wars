@@ -6,6 +6,7 @@ import {
   type AiCountV7,
   type BoardSizeV7,
   type FactionIdV7,
+  type GameModeV7,
   type MatchSetupV7,
   type PlayerColorV7,
 } from "./types";
@@ -35,6 +36,31 @@ const MIRROR_SETUP_KEYS_V7 = [
 ] as const;
 /** The keys of a `MISSION` setup (docs/product/CAMPAIGN.md section 2.4). */
 const MISSION_SETUP_KEYS_V7 = [...SETUP_KEYS_V7, "mission"] as const;
+/**
+ * Score and modes (docs/product/RULESET_7_SCORE_AND_STARS.md section 4.3):
+ * the optional `gameMode` key. A setup without it is a Domination setup made
+ * before the modes and keeps that exact shape.
+ */
+const GAME_MODE_KEY_V7 = "gameMode";
+
+/** The setup's keys without `gameMode`, and its mode (null when invalid). */
+function splitGameModeV7(input: unknown): {
+  readonly rest: unknown;
+  readonly gameMode: GameModeV7 | undefined | null;
+} {
+  if (
+    typeof input !== "object" ||
+    input === null ||
+    !Object.prototype.hasOwnProperty.call(input, GAME_MODE_KEY_V7)
+  )
+    return { rest: input, gameMode: undefined };
+  const { gameMode, ...rest } = input as { readonly gameMode?: unknown };
+  return {
+    rest,
+    gameMode:
+      gameMode === "DOMINATION" || gameMode === "PERFECTION" ? gameMode : null,
+  };
+}
 
 /**
  * Why a Ruleset 7 setup was refused. `DUPLICATE_FACTION`
@@ -139,9 +165,28 @@ export function allowDuplicateFactionsV7(setup: MatchSetupV7): MatchSetupV7 {
  * match the definition (docs/product/CAMPAIGN.md section 2.4). The required
  * `curiosities` boolean (docs/product/RULESET_7_MAP_CURIOSITIES.md section
  * 3) is free on a generated map and the Showcase (which never has any) and
- * always `false` on a mission.
+ * always `false` on a mission. The optional `gameMode`
+ * (docs/product/RULESET_7_SCORE_AND_STARS.md section 4.3) is `DOMINATION`
+ * or `PERFECTION`, and never `PERFECTION` on the Showcase or a mission; a
+ * setup without it is a Domination setup and is returned without the key.
  */
 export function validateMatchSetupV7(input: unknown): MatchSetupValidationV7 {
+  // Score and modes (section 4.3): `gameMode` is optional; a `SHOWCASE` or
+  // `MISSION` setup is never `PERFECTION`.
+  const { rest, gameMode } = splitGameModeV7(input);
+  if (gameMode === null)
+    return { ok: false, error: { code: "INVALID_SETUP", params: {} } };
+  const result = validateSetupWithoutModeV7(rest);
+  if (!result.ok || gameMode === undefined) return result;
+  if (
+    gameMode === "PERFECTION" &&
+    (result.setup.mapType === "SHOWCASE" || result.setup.mapType === "MISSION")
+  )
+    return { ok: false, error: { code: "INVALID_SETUP", params: {} } };
+  return { ok: true, setup: { ...result.setup, gameMode } };
+}
+
+function validateSetupWithoutModeV7(input: unknown): MatchSetupValidationV7 {
   const invalid = {
     ok: false,
     error: { code: "INVALID_SETUP", params: {} },

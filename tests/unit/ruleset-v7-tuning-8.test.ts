@@ -65,7 +65,7 @@ import {
 } from "../fixtures/v7-revision20";
 
 /**
- * Tuning 8 (`pulp_wars-w49.11`, identity unchanged at `pulp-wars-poc-7r64`;
+ * Tuning 8 (`pulp_wars-w49.11`, identity unchanged at `pulp-wars-poc-7r65`;
  * docs/product/RULESET_7_TUNING_HUMAN.md section 15, the Normal AI of a
  * Human, Undead, or Goblin seat). Round 7 was played by hand four times
  * (`r7a` to `r7d`); every position below is one of those games, or the
@@ -383,7 +383,7 @@ function scene(options: SceneV7): GameStateV7 {
 
 describe("tuning 8 identity", () => {
   it("is still 7r49: no rule, command, state, or event shape changed", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r64");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r65");
   });
 });
 

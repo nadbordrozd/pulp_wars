@@ -45,6 +45,7 @@ import {
   createSaveEnvelopeV7,
   parseSaveV7,
 } from "../../src/persistence/v7";
+import { expectInitialScoreLedgerV7 } from "../fixtures/v7-score-ledger";
 import { browserSetupV7 } from "../fixtures/v7-builders";
 
 // Mission setups (`pulp_wars-68k.2`, docs/product/CAMPAIGN.md sections 2 and
@@ -208,9 +209,13 @@ function missionStateHash(state: GameStateV7): string {
     // The giants' signatures (`pulp_wars-w49.30`) added the `giants`
     // record, empty in every initial state and left out too.
     giants,
+    // Score and modes (`pulp_wars-kaw6.2`) added the `scoreLedger`, the
+    // initial ledger in every initial state, left out too.
+    scoreLedger,
     ...rest
   } = state;
   expect(giants).toEqual({ swallowed: [] });
+  expectInitialScoreLedgerV7(state, scoreLedger);
   expect(ninthUnit).toEqual({
     wightGraves: [],
     risenWights: [],
@@ -342,9 +347,11 @@ function preCuriosityMissionStateHash(state: GameStateV7): string {
     ninthUnit,
     barricades,
     giants,
+    scoreLedger,
     ...rest
   } = state;
   expect(giants).toEqual({ swallowed: [] });
+  expectInitialScoreLedgerV7(state, scoreLedger);
   expect(ninthUnit).toEqual({
     wightGraves: [],
     risenWights: [],

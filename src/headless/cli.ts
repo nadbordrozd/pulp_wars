@@ -14,6 +14,7 @@ import {
   FACTION_IDS_V7,
   type BoardSizeV7,
   type FactionIdV7,
+  type GameModeV7,
   type MapTypeV7,
   type MatchSetupV7,
 } from "../engine/v7/types";
@@ -58,12 +59,12 @@ if (mode === "replay") {
         : await headless.run(replay as ReplayFile);
   process.stdout.write(`${canonicalJson(result)}\n`);
 } else if (mode === "match") {
-  if (ruleset === "pulp-wars-poc-7r64") await runV7Match();
+  if (ruleset === "pulp-wars-poc-7r65") await runV7Match();
   else if (ruleset === "pulp-wars-poc-6") await runV6Match();
   else if (ruleset === "pulp-wars-poc-5") await runV5Match();
   else invalidRuleset();
 } else if (mode === "batch") {
-  if (ruleset === "pulp-wars-poc-7r64") await runV7Batch();
+  if (ruleset === "pulp-wars-poc-7r65") await runV7Batch();
   else if (ruleset === "pulp-wars-poc-6") await runV6Batch();
   else if (ruleset === "pulp-wars-poc-5") await runV5Batch();
   else invalidRuleset();
@@ -84,7 +85,7 @@ async function runV7Match(): Promise<void> {
   const aiCount = aiCountArgV7();
   const size = boardSizeArgV7(aiCount, mapType);
   const setup: MatchSetupV7 = {
-    rulesetId: "pulp-wars-poc-7r64",
+    rulesetId: "pulp-wars-poc-7r65",
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
     seed: numberArg("--seed", 0),
     width: size,
@@ -97,6 +98,7 @@ async function runV7Match(): Promise<void> {
     mapType,
     curiosities: curiositiesArgV7(),
     ...(allowDuplicateFactionsArgV7() ? { allowDuplicateFactions: true } : {}),
+    gameMode: gameModeArgV7(mapType),
   };
   const result = await headlessV7.runAiMatch(setup, {
     maxCommands: numberArg("--max-commands", V7_MATCH_MAX_COMMANDS_DEFAULT),
@@ -120,6 +122,7 @@ async function runV7MissionMatch(): Promise<void> {
     "--cooperative",
     "--allow-duplicate-factions",
     "--curiosities",
+    "--mode",
   ])
     if (args.includes(flag))
       throw new Error(
@@ -164,6 +167,7 @@ async function runV7Batch(): Promise<void> {
     ...v7BatchBoardSize(mapTypes),
     mapTypes,
     curiosities: curiositiesArgV7(),
+    gameMode: gameModeArgV7(mapTypes.includes("SHOWCASE") ? "SHOWCASE" : null),
     ...(factions === null ? {} : { factions }),
     ...(allowDuplicateFactionsArgV7() ? { allowDuplicateFactions: true } : {}),
   });
@@ -260,6 +264,7 @@ async function runV5Batch(): Promise<void> {
 }
 
 function writeMatchSummary(result: {
+  readonly score?: unknown;
   readonly acceptedCommands: number;
   readonly errors: readonly unknown[];
   readonly outcome: unknown;
@@ -276,6 +281,8 @@ function writeMatchSummary(result: {
       outcome: result.outcome,
       metrics: result.metrics,
       rounds: result.rounds,
+      // Score and modes (section 9.4): ruleset 7 only.
+      ...(result.score === undefined ? {} : { score: result.score }),
       stalls: result.stalls,
       stateHash: result.stateHash,
       termination: result.termination,
@@ -472,6 +479,22 @@ function allowDuplicateFactionsArgV7(): boolean {
 }
 
 /**
+ * Score and modes (docs/product/RULESET_7_SCORE_AND_STARS.md section 4.3):
+ * `--mode domination` (the default) or `--mode perfection`. The Showcase is
+ * Domination only.
+ */
+function gameModeArgV7(mapType: MapTypeV7 | null): GameModeV7 {
+  const value = stringArg("--mode", "domination").toLowerCase();
+  if (value !== "domination" && value !== "perfection")
+    throw new Error("--mode must be domination or perfection");
+  if (value === "perfection" && mapType === "SHOWCASE")
+    throw new Error(
+      "--mode perfection does not apply to the showcase map type",
+    );
+  return value === "perfection" ? "PERFECTION" : "DOMINATION";
+}
+
+/**
  * Map curiosities (docs/product/RULESET_7_MAP_CURIOSITIES.md section 3):
  * `--curiosities on` or `--curiosities off`; on by default, as on the setup
  * screen. The Showcase never has curiosities, whatever the value.
@@ -579,6 +602,6 @@ function parseFactionValues(
 
 function invalidRuleset(): never {
   throw new Error(
-    "--ruleset must be pulp-wars-poc-7r64, pulp-wars-poc-6, or pulp-wars-poc-5",
+    "--ruleset must be pulp-wars-poc-7r65, pulp-wars-poc-6, or pulp-wars-poc-5",
   );
 }

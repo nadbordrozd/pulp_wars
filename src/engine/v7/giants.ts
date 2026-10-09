@@ -1,3 +1,4 @@
+import { recordScoreCreditsV7 } from "./score";
 import { allocateUnitId, type PlayerId, type UnitId } from "../model/ids";
 import {
   GINGERBREAD_MAN_VARIANT_V7,
@@ -1543,6 +1544,16 @@ export function resolveStartTurnDigestV7(
       unitId: entry.unit.id,
       cause: "DIGESTED",
     });
+    // Score and modes (docs/product/RULESET_7_SCORE_AND_STARS.md section
+    // 3.2): the digestion is a death credited to the holder's owner, so it
+    // is a Kill; it never reaches Plunder, so it is recorded here.
+    recordScoreCreditsV7(current, [
+      {
+        creditedId: playerId,
+        victimOwnerId: entry.unit.ownerId,
+        victimUnitId: entry.unit.id,
+      },
+    ]);
     const kills = healedHolder.kills + 1;
     if (!Number.isSafeInteger(kills)) throw new RangeError("INTEGER_OVERFLOW");
     healedHolder = { ...healedHolder, kills };

@@ -46,6 +46,7 @@ import {
   showcaseBoardV7,
   showcaseCapitalsV7,
 } from "./showcase";
+import { initialScoreLedgerV7 } from "./score";
 import { parseGameStateV7 } from "./state-schema";
 import {
   BIOME_IDS_V7,
@@ -3892,7 +3893,7 @@ function initialMapStateFromV7(
       2,
     ),
   }));
-  const state = deepFreeze<GameStateV7>({
+  const draft: Omit<GameStateV7, "scoreLedger"> = {
     schemaVersion: 7,
     rulesetId: RULESET_7_ID,
     setup,
@@ -3947,6 +3948,12 @@ function initialMapStateFromV7(
     giants: emptyGiantsStateV7(),
     pendingChoices: [],
     outcome: null,
+  };
+  // Score and modes (docs/product/RULESET_7_SCORE_AND_STARS.md section
+  // 3.3): the ledger starts at 0 with the starting score as the peak.
+  const state = deepFreeze<GameStateV7>({
+    ...draft,
+    scoreLedger: initialScoreLedgerV7(draft),
   });
   if (parseGameStateV7(state) === null)
     throw new Error("Internal v7 initial-state invariant failure");
@@ -3965,7 +3972,7 @@ function showcaseInitialStateV7(
     createPlayers(setup),
     freshStartActivation,
   );
-  const state = deepFreeze<GameStateV7>({
+  const draft: Omit<GameStateV7, "scoreLedger"> = {
     schemaVersion: 7,
     rulesetId: RULESET_7_ID,
     setup,
@@ -4017,6 +4024,11 @@ function showcaseInitialStateV7(
     giants: emptyGiantsStateV7(),
     pendingChoices: [],
     outcome: null,
+  };
+  // Score and modes (section 3.3): the Showcase's starting score is its peak.
+  const state = deepFreeze<GameStateV7>({
+    ...draft,
+    scoreLedger: initialScoreLedgerV7(draft),
   });
   if (parseGameStateV7(state) === null)
     throw new Error("Internal v7 Showcase initial-state invariant failure");

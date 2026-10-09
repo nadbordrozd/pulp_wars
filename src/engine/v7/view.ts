@@ -67,6 +67,9 @@ import type {
 import { publicUnitStatsV7, type PublicUnitStatsV7 } from "./unit-stats";
 import { allOwnedUnitsV7, barricadesOfV7 } from "./units";
 import { cityHasWallsV7 } from "./types";
+import { scoresV7, type PlayerScoreV7 } from "./score";
+import { matchSummaryV7, type MatchSummaryV7 } from "./star-grade";
+import { PERFECTION_ROUNDS_V7, gameModeOfV7, type GameModeV7 } from "./types";
 
 export const UNKNOWN_RESOURCE_V7 = "UNKNOWN_RESOURCE" as const;
 export type PublicResourceV7 = ResourceIdV7 | null | typeof UNKNOWN_RESOURCE_V7;
@@ -188,6 +191,33 @@ export interface PublicLeaderboardEntryV7 {
   readonly isViewer: boolean;
   readonly cityCount: number;
   readonly livingUnitCount: number;
+  /**
+   * Score and modes (docs/product/RULESET_7_SCORE_AND_STARS.md section
+   * 3.4): every player's score total is public, like its city and unit
+   * counts; it reveals no tile, unit, or technology.
+   */
+  readonly score: number;
+}
+
+/**
+ * Score and modes (section 3.4 and 9.3): what a viewer knows of the score.
+ * `breakdowns` holds the viewer's own breakdown while the match runs and
+ * every player's once it is over (in `players` order); `peaks` are every
+ * player's `peakScore` (past totals, public); `summary` is the end of match
+ * with the human seat's grade, null while the match runs.
+ */
+export interface PlayerScoreViewV7 {
+  readonly gameMode: GameModeV7;
+  /** `PERFECTION_ROUNDS_V7` in Perfection, null in Domination. */
+  readonly roundLimit: number | null;
+  /** In Perfection, the rounds after the current one (0 in round 30). */
+  readonly roundsLeft: number | null;
+  readonly breakdowns: readonly PlayerScoreV7[];
+  readonly peaks: readonly {
+    readonly playerId: PlayerId;
+    readonly peakScore: number;
+  }[];
+  readonly summary: MatchSummaryV7 | null;
 }
 
 export type PublicImprovementValueV7 = {
@@ -392,6 +422,8 @@ export interface PlayerViewV7 {
   readonly giants: {
     readonly swallowed: readonly PublicSwallowedV7[];
   };
+  /** Score and modes (section 3.4): the score the viewer may know. */
+  readonly score: PlayerScoreViewV7;
   readonly pendingChoices: readonly PendingChoiceV7[];
   readonly outcome: MatchOutcomeV7 | null;
 }
@@ -754,6 +786,12 @@ export function viewForV7(
   const playersById = new Map(
     state.players.map((player) => [player.id, player] as const),
   );
+  // Score and modes (section 3.4): every total is computed from the full
+  // state, like `cityCount`.
+  const scores = scoresV7(state);
+  const scoreById = new Map(
+    scores.map((entry) => [entry.playerId, entry] as const),
+  );
   const leaderboard = state.turnOrder.map(
     (playerId): PublicLeaderboardEntryV7 => {
       const player = playersById.get(playerId);
@@ -771,6 +809,7 @@ export function viewForV7(
           player.status === "ELIMINATED" ? 0 : (cityCounts.get(playerId) ?? 0),
         livingUnitCount:
           player.status === "ELIMINATED" ? 0 : (unitCounts.get(playerId) ?? 0),
+        score: scoreById.get(playerId)?.total ?? 0,
       };
     },
   );
@@ -1043,6 +1082,7 @@ export function viewForV7(
           },
         })),
     },
+    score: scoreViewV7(state, viewerId, scores),
     pendingChoices: state.pendingChoices.filter((choice) =>
       state.cities.some(
         (city) => city.id === choice.cityId && city.ownerId === viewerId,
@@ -1050,6 +1090,32 @@ export function viewForV7(
     ),
     outcome: state.outcome,
   });
+}
+
+/** Section 3.4: the viewer's part of the score (`PlayerViewV7.score`). */
+function scoreViewV7(
+  state: GameStateV7,
+  viewerId: PlayerId,
+  scores: readonly PlayerScoreV7[],
+): PlayerScoreViewV7 {
+  const gameMode = gameModeOfV7(state.setup);
+  const perfection = gameMode === "PERFECTION";
+  return {
+    gameMode,
+    roundLimit: perfection ? PERFECTION_ROUNDS_V7 : null,
+    roundsLeft: perfection
+      ? Math.max(0, PERFECTION_ROUNDS_V7 - state.round)
+      : null,
+    breakdowns:
+      state.outcome === null
+        ? scores.filter((entry) => entry.playerId === viewerId)
+        : scores,
+    peaks: state.scoreLedger.map((entry) => ({
+      playerId: entry.playerId,
+      peakScore: entry.peakScore,
+    })),
+    summary: matchSummaryV7(state),
+  };
 }
 
 function publicSeaRoutes(

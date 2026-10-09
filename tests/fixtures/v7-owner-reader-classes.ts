@@ -124,7 +124,7 @@ export const OWNER_READER_CLASSES_V7: Readonly<
   "src/engine/v7/reducer.ts::unitSightRadius": "PLAYER_ONLY",
   "src/engine/v7/reducer.ts::validateTileContext": "PLAYER_ONLY",
   // Setup checks of the mode (no alliance test).
-  "src/engine/v7/setup.ts::validateMatchSetupV7": "PLAYER_ONLY",
+  "src/engine/v7/setup.ts::validateSetupWithoutModeV7": "PLAYER_ONLY",
   "src/engine/v7/setup.ts::validateMissionSetupV7": "PLAYER_ONLY",
   // State parsing: a burrowed unit is never neutral; a unit and the cross
   // references accept exactly the listed Monsters.

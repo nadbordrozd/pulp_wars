@@ -45,6 +45,7 @@ import {
 } from "../../src/engine/index";
 import { runAiMatchV7 } from "../../src/headless/v7";
 import { createSaveEnvelopeV7, parseSaveV7 } from "../../src/persistence/v7";
+import { expectInitialScoreLedgerV7 } from "../fixtures/v7-score-ledger";
 import { mirrorOptionV7 } from "../fixtures/v7-builders";
 import { revision39PlayableGameV7 } from "../fixtures/v7-revision13-map";
 
@@ -249,9 +250,12 @@ describe("ruleset-7 revision-18 Showcase setup", () => {
         barricades,
         // `pulp_wars-w49.30`: and the empty `giants` record.
         giants,
+        // `pulp_wars-kaw6.2`: and the new match's score ledger.
+        scoreLedger,
         ...withoutMonsters
       } = revision19State;
       expect(giants).toEqual({ swallowed: [] });
+      expectInitialScoreLedgerV7(created.state, scoreLedger, false);
       expect(ninthUnit).toEqual({
         wightGraves: [],
         risenWights: [],

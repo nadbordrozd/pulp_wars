@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r64`, for all eight registered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r65`, for all eight registered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), and Candy (`CANDY`). It
 folds in
@@ -278,6 +278,18 @@ centers. "Can't capture" is gone from every recruit card and glossary.
 The Normal AI plans captures with every land unit but the flyers
 ([section 16](#16-normal-ai-summary)). No state, view, command, or event
 key changed. A save, replay, or setup of `7r63` is rejected, and the
+browser autosave has a new key.
+`pulp-wars-poc-7r65` (`pulp_wars-kaw6.2`) is **score and modes**
+([section 3.1](#31-score-play-modes-and-stars)): every player has a running
+battle score (territory, city levels, technology tiers, achievements, army,
+and kills, minus losses and damage taken, the penalty capped at half), kept
+in the new state list `scoreLedger` and shown as a public total in every
+leaderboard entry and as the viewer's breakdown in the view's `score`
+block; the optional setup key `gameMode` chooses Domination (the default,
+today's game) or the new Perfection (30 rounds, the highest score wins,
+with `decidedBy: "SCORE"` and the `ranking` on the outcome); the end of a
+match carries the human seat's star grade. The Normal AI never reads the
+mode or the score. A save, replay, or setup of `7r64` is rejected, and the
 browser autosave has a new key.
 `pulp-wars-poc-7r58` (`pulp_wars-w49.25`) is
 [step two of the Martian pass](RULESET_7_TUNING_MARTIAN.md#14-step-two):
@@ -729,7 +741,7 @@ the build differs (its sections 20 to 24 list them);
 the values here are current. Where a document and the code disagreed, the
 code's behavior is the rule and is stated below;
 [Known discrepancies](#25-known-discrepancies) lists the open items and the
-resolved ones as of `pulp-wars-poc-7r64`.
+resolved ones as of `pulp-wars-poc-7r65`.
 
 **Terms.** "On the board" means a unit that currently exists (HP above 0).
 **Living** has the narrower revision-13 meaning used by Wail, Plague,
@@ -830,10 +842,10 @@ separate [Ruleset 6](RULESET_6.md) route.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r64`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Ruleset                                    | `pulp-wars-poc-7r65`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r64.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Browser autosave                           | `pulpWars.save.v7r65.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                                     |
@@ -1092,7 +1104,11 @@ separate [Ruleset 6](RULESET_6.md) route.
   ([section 2.7](#27-map-curiosities)). The naval branch stores one list,
   `ice`, the ice tiles `{ at, ownerId, turnsLeft }` sorted by `(y, x)`
   ([section 21.16](#2116-the-frozen-sea)); the Ram, Submerged, Torpedo, a
-  boarded prize, Harbours, icebound, and the slide store nothing.
+  boarded prize, Harbours, icebound, and the slide store nothing. Score and
+  modes (`pulp_wars-kaw6.2`) added the optional setup key `gameMode`, the
+  `scoreLedger` state list, the leaderboard `score` and the view's `score`
+  block, and the optional outcome keys `decidedBy` and `ranking`
+  ([section 3.1](#31-score-play-modes-and-stars)).
 
 ## 2. Setup and map generation
 
@@ -1115,6 +1131,7 @@ registered factions (`FACTION_IDS_V7.length`, 8 today), so a match has 2 to
 | Factions    | one per seat (`aiCount + 1`, seat 0 is the human): `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, or `CANDY`; no two seats alike                                                                            |
 | Seed        | uint32; equal setups and seeds generate byte-identical maps, turn order, and treasures                                                                                                                                                   |
 | Curiosities | `true` (the setup screen's and the headless default) or `false`; `false` on a mission ([section 2.7](#27-map-curiosities))                                                                                                               |
+| Game mode   | `gameMode`: `DOMINATION` or `PERFECTION`, optional; a setup without it is Domination; never `PERFECTION` on the Showcase or a mission ([section 3.1](#31-score-play-modes-and-stars))                                                    |
 
 - **Seats a width holds.** A generated board holds
   `P(w, type) = min(floor((w − 2) / 3)², floor(L / 9))` players (a 3 x 3
@@ -2321,10 +2338,109 @@ Gallery has a Curiosities tab.
   from its removed Liches and the bites it inflicted end
   ([section 17](#17-undead-faction-rules)).
 - **Outcome:** the human wins when every other player is eliminated and loses
-  immediately when eliminated. There is no draw, score, or turn-limit victory.
-  The rule is the same with 2 or 8 players: an eliminated AI seat's turns
-  are skipped and the match goes on until the human is the last player or
-  is eliminated.
+  immediately when eliminated. There is no draw. In Domination there is no
+  score or turn-limit victory; in Perfection the match also ends after
+  round 30 and the highest score wins
+  ([section 3.1](#31-score-play-modes-and-stars)). The rule is the same with
+  2 or 8 players: an eliminated AI seat's turns are skipped and the match
+  goes on until the human is the last player or is eliminated.
+
+### 3.1 Score, play modes, and stars
+
+Score and modes (`pulp_wars-kaw6.2`, the engine of
+[the score and stars spec](RULESET_7_SCORE_AND_STARS.md) sections 3, 4, 5,
+and 9). The leaderboard, end-of-match, records, and new-game screens are
+the UI beads `pulp_wars-kaw6.3` and `kaw6.4`.
+
+- **Score** (`scoresV7(state)`, `scoreV7(state, playerId)`, pure):
+
+  ```text
+  positive = 2 × T + 10 × L + 8 × R + 40 × A + V + 2 × K
+  penalty  = X + floor(H / 5)
+  score    = positive − min(penalty, floor(positive / 2))
+  ```
+
+  `T` the tiles whose territory city the player owns; `L` the sum of its
+  city levels; `R` the sum of the tiers of its researched technologies (its
+  tree); `A` its unlocked achievements, spent or not; `V` the value of every
+  unit it commands now (board and burrowed, Eggs included, controlled units
+  for their controller); `K` the value of the hostile units whose death is
+  credited to it ([section 18.9](#189-kill-credit-plunder-and-friendly-fire),
+  every cause there including a Wail's, the Monster counting as hostile and
+  crediting nobody); `X` the value of its units that died (any cause but the
+  removals `ELIMINATION` and `BRAIN_LOST`); `H` the HP its units lost: after
+  every accepted command, `max(0, hp before − hp after)` for every unit it
+  commanded before (0 after for a death; removals and units that left its
+  control alive are skipped; Shield is not HP; a heal in the same command
+  is netted). A unit an Abomination swallowed
+  ([section 11.1](#111-the-giants-signatures)) is no Army, but it is still
+  its owner's: its digest damage is the owner's `H`, and its digestion is
+  a death (`X` for its owner, `K` for the holder's owner, recorded although
+  it never reaches Plunder); the kills of Whirl, Thunder Stomp, Crushing
+  Shove, Overstride, eruptions, and death blasts are the credited deaths of
+  section 18.9, and a Barricade is no unit (no kill, loss, or Army). A
+  unit's value is its role's printed cost under its kind, 12
+  (`SCORE_GIANT_VALUE_V7`) for a role without one, and 10 for the Giant
+  Spider. An eliminated player keeps `R`, `A`, `K`, `X`, and `H`; its `T`,
+  `L`, and `V` are 0. The score is a whole number and never negative.
+
+- **Ledger.** `GameStateV7.scoreLedger` holds one entry per player in
+  `players` order: `killValue`, `lossValue`, `hpLost`, `flawless`,
+  `eliminatedBy` (the captor of its last city) with `eliminatedAt` (the
+  command index of that capture; it orders eliminations), `peakScore`, and
+  `round30` (`{ score, peakScore }` or null). A new match starts at 0,
+  `flawless`, null, the starting score, and null. A stored state without the
+  key loads with zero counters, `flawless` false, and the current score as
+  the peak. `flawless` is cleared by `UNIT_DIED`, `UNIT_DISBANDED`,
+  `UNIT_MIND_CONTROLLED` (the target's owner), `SHIP_BOARDED` (the previous
+  owner), `UNIT_RELEASED` (the controller), `UNIT_SWALLOWED` (the
+  victim's owner), and `CITY_CAPTURED` (the previous owner) (`FLAWLESS_BREAKING_EVENT_KINDS_V7`); damage does not
+  clear it.
+- **Round end.** When the last seat in turn order ends its turn (after
+  `TURN_ENDED`, before the neutral turn and the next round's first Start
+  Turn), every `peakScore` is raised to the current score, and at the end of
+  round 30 every player's `round30` snapshot is stored (both modes).
+- **Modes.** `MatchSetupV7.gameMode` is `DOMINATION` (the default: a setup
+  without the key) or `PERFECTION`; the Showcase and missions are Domination
+  only. A Perfection match ends at the round end of round 30
+  (`PERFECTION_ROUNDS_V7`): the last seat's `END_TURN` emits its End Turn
+  events, `TURN_ENDED`, and `MATCH_ENDED`, with no neutral turn and nothing
+  of round 31 (the round stays 30). Players still in the match rank by
+  score, then more cities, then more territory tiles, then the earlier
+  place in the turn order; eliminated players rank below them, the later
+  eliminated (`eliminatedAt`) above the earlier (`scoreRankingV7`). The
+  human first is `VICTORY`, otherwise `DEFEAT` with the first-ranked player
+  as `defeatedByPlayerId`; either carries `decidedBy: "SCORE"` and the
+  `ranking`. Elimination ends a Perfection match early exactly as in
+  Domination (no `decidedBy`). The Normal AI plays the same in both modes:
+  it never reads the mode or the score and there is no Perfection AI.
+- **Views and queries.** Every leaderboard entry has the player's `score`
+  (public, like its city count). `PlayerViewV7.score` holds the mode, the
+  round limit and the rounds left in Perfection, the viewer's own breakdown
+  (every player's once the match is over), every player's `peakScore`, and,
+  at the end, the summary (`matchSummaryV7`): every player's final
+  breakdown in rank order, `round30`, `eliminatedBy`, `flawless`, the human
+  seat's grade inputs and grade, and whether the setup may record stars (a
+  generated map without the mirror option). `queryScoreV7(view)` and
+  `queryStarGradeV7(view)` read only the view.
+- **Grade** (`starGradeV7`, pure; inputs `starGradeInputsV7`). The rating is
+  the human's score over the highest rival peak at the rating moment: the
+  end of the match if it ends at or before the round end of round 30 (a
+  rival's final score counts when above its peak), otherwise the `round30`
+  snapshots. Thresholds by `aiCount`: 2 stars at `1.5 + 0.25 × max(0, 3 −
+rivals)`, 3 stars at `2.0 + 0.5 × max(0, 3 − rivals)`, compared as exact
+  fractions; the display is rounded down to two decimals. 0 stars for a
+  defeat, 1 for a victory, 2 with the 2-star rating, 3 with the 3-star
+  rating on the hardest difficulty (`HARDEST_AI_DIFFICULTY_V7`, `NORMAL`)
+  and, in Domination, every rival eliminated by the human's capture; 3 and
+  the glow for a flawless victory with at least the 2-star rating.
+- **Headless and text play.** The headless CLI (`match` and `batch`) and
+  `play:text new` take `--mode domination|perfection` (default domination);
+  a headless match result carries `score` (the mode, every player's score
+  per completed round, the final breakdowns, and the summary with the
+  grade); `play:text` prints the mode, "Round N of 30", the score in its
+  header and leaderboard, the viewer's breakdown, the grade at the end, and
+  a score column and final breakdowns in `debrief`.
 
 ## 4. Cities
 
@@ -11547,6 +11663,7 @@ first guesses.
 | Giants        | `pulp-wars-poc-7r62` | `pulp_wars-w49.30` [the giants' signatures](RULESET_7_GIANTS.md#6-final-rules), engine (the identity became `7r62` when it was published after Goblin explosions and Berserk, `7r61`; a save, replay, or setup of `7r61` is rejected): every reward giant has one signature ([section 11.1](#111-the-giants-signatures)): Crushing Shove (Juggernaut), Swallow (Abomination), Goblin Toss (Troll), Thunder Stomp (Brontosaurus), Overstride and Move 2 (Colossus), Glacial Smash and no advance (Frost Giant), Siege Hammer (Brass Titan), Break Off (Gingerbread Giant: 10 HP for two Gingerbread Men, the user's change of 2026-10-09); Push only on the Juggernaut; the commands `SWALLOW`, `TOSS`, `STOMP`, `BREAK_OFF`; the state block `giants`, the city field `wallsRazed`, and the unit field `variant`; the new events and the death causes `CRUSH`, `STOMP`, `TRAMPLE`, `DIGESTED`; `lab --giant`; the Normal AI kept legal (it uses no signature yet, `pulp_wars-w49.31`)                                                                                                                                                                 |
 | Rewards       | `pulp-wars-poc-7r63` | `pulp_wars-zypi` the reward ladder rework, engine (the user, 2026-10-09; the identity became `7r63` when it was published after the giants' signatures, `7r62`; a save, replay, or setup of `7r62` is rejected): for every faction level 2 Stockpile (+4 Coins) or Militia; level 3 Scouts (the radius-3 reveal and the faction's free `RAIDER`-role unit, now also the Dwarf Gyrocopter and the Candy Donut Racer) or Walls; level 4 Population Boom or the new Economic Miracle (`ECONOMIC_MIRACLE`, +1 Coin of the city's income every turn, kept on capture); level 5 and every later level the faction's giant or the Treasury (10 Coins, 6 before), with no once-per-city limit; Barracks and the 6-Coin level-4 Treasury no longer offered (older records keep their effect); the Showcase records and first income (20 Coins, 17 for a Goblin seat); the Normal AI kept legal and plain                                                                                                                                                                                                                                                       |
 | Capture       | `pulp-wars-poc-7r64` | `pulp_wars-ke95` any unit can capture, engine (the user, 2026-10-09; the identity became `7r64` when it was published after the reward ladder rework, `7r63`; a save, replay, or setup of `7r63` is rejected): every land role of every faction has `CAPTURE`; a flyer and the Sabretooth may end a Move, land, or advance on a village or a foreign center and so besiege and capture (only a surfaced Dwarf rider keeps off foreign centers that turn); "Can't capture" removed from cards, glossary, and Help; the Normal AI plans captures with every land unit but the flyers                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Score         | `pulp-wars-poc-7r65` | `pulp_wars-kaw6.2` score and modes, engine ([the score and stars spec](RULESET_7_SCORE_AND_STARS.md); the identity became `7r65` when it was published after any unit can capture, `7r64`; a save, replay, or setup of `7r64` is rejected): a running battle score per player (`scoresV7`, `scoreV7`; territory 2 per tile, city levels 10, technology tiers 8, achievements 40, army 1 per Coin, kills 2 per Coin, minus losses 1 per Coin and 1 per 5 HP lost, the penalty capped at half the positive points) from the new state list `scoreLedger`; the optional setup key `gameMode` (`DOMINATION` by default, `PERFECTION`: the match ends at the round end of round 30 and the highest score wins, the outcome carrying `decidedBy` and `ranking`); the leaderboard `score`, the view's `score` block, `queryScoreV7`, `queryStarGradeV7`, and the star grade at the end; headless and `play:text` take `--mode`; the Normal AI is unchanged and never plays for score                                                                                                                                                                         |
 
 **Documentation parity (2026-09-28, no ruleset or identity change):** where
 older documents disagreed with the code, the code's behavior was adopted as

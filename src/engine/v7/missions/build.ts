@@ -32,6 +32,7 @@ import {
 } from "../economy";
 import { withFullShieldsV7 } from "../martian";
 import { spatialContributionAtV7 } from "../spatial-economy";
+import { initialScoreLedgerV7 } from "../score";
 import { parseGameStateV7 } from "../state-schema";
 import {
   IMPROVEMENT_IDS_V7,
@@ -556,7 +557,7 @@ export function buildMissionStateV7(
           });
       }
 
-  const state = deepFreeze<GameStateV7>({
+  const draft: Omit<GameStateV7, "scoreLedger"> = {
     schemaVersion: 7,
     rulesetId: RULESET_7_ID,
     setup,
@@ -605,6 +606,13 @@ export function buildMissionStateV7(
     giants: emptyGiantsStateV7(),
     pendingChoices: [],
     outcome: null,
+  };
+  // Score and modes (docs/product/RULESET_7_SCORE_AND_STARS.md section
+  // 3.3): a mission's starting technologies count, but missions record no
+  // stars.
+  const state = deepFreeze<GameStateV7>({
+    ...draft,
+    scoreLedger: initialScoreLedgerV7(draft),
   });
   if (parseGameStateV7(state) === null)
     fail("the built state does not pass the state schema");

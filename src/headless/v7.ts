@@ -74,12 +74,14 @@ import {
   REWARD_IDS_V7,
   TECHNOLOGY_IDS_V7,
   UNIT_ROLE_IDS_V7,
+  gameModeOfV7,
   isNeutralOwnerV7,
   type AchievementIdV7,
   type AiCountV7,
   type BoardSizeV7,
   type CuriosityKindV7,
   type FactionIdV7,
+  type GameModeV7,
   type GameStateV7,
   type ImprovementIdV7,
   type MatchOutcomeV7,
@@ -90,6 +92,8 @@ import {
   type UnitRoleIdV7,
 } from "../engine/v7/types";
 import { viewForV7, type PlayerViewV7 } from "../engine/v7/view";
+import { scoresV7, type PlayerScoreV7 } from "../engine/v7/score";
+import { matchSummaryV7, type MatchSummaryV7 } from "../engine/v7/star-grade";
 import { allOwnedUnitsV7 } from "../engine/v7/units";
 import {
   createDwarfMetricsV7,
@@ -128,7 +132,7 @@ export interface AiCommandRecordV7 {
 }
 
 export interface HeadlessMetricsV7 {
-  readonly rulesetId: "pulp-wars-poc-7r64";
+  readonly rulesetId: "pulp-wars-poc-7r65";
   readonly setupHash: string;
   readonly mapHash: string;
   readonly postGenerationPrngHash: string;
@@ -481,9 +485,33 @@ export interface AiMatchProgressV7 {
   readonly activePlayerId: PlayerId;
 }
 
+/**
+ * Score and modes (docs/product/RULESET_7_SCORE_AND_STARS.md section 9.4):
+ * the score of a headless match. `perRound` lists, for every completed
+ * round, each player's score at the end of the round's last turn (the
+ * state before the `END_TURN` that ended the round; the Perfection end is
+ * the final state itself). `final` holds every player's final breakdown and
+ * `summary` the end of match with the human seat's grade (null when the
+ * match did not end).
+ */
+export interface HeadlessScoreV7 {
+  readonly gameMode: GameModeV7;
+  readonly perRound: readonly {
+    readonly round: number;
+    readonly scores: readonly {
+      readonly playerId: PlayerId;
+      readonly score: number;
+    }[];
+  }[];
+  readonly final: readonly PlayerScoreV7[];
+  readonly summary: MatchSummaryV7 | null;
+}
+
 export interface AiMatchResultV7 {
   readonly outcome: MatchOutcomeV7 | null;
   readonly termination: AiMatchTerminationV7;
+  /** Score and modes (section 9.4): the scores and the grade. */
+  readonly score: HeadlessScoreV7;
   readonly acceptedCommands: number;
   readonly rounds: number;
   readonly state: GameStateV7;
@@ -513,6 +541,12 @@ export interface AiBatchOptionsV7 {
    * `allowDuplicateFactions: true` (docs/architecture/HEADLESS_SIMULATION.md).
    */
   readonly allowDuplicateFactions?: boolean;
+  /**
+   * Score and modes (docs/product/RULESET_7_SCORE_AND_STARS.md section
+   * 4.3): every setup of the batch carries this mode when it is given;
+   * without it the setups have no `gameMode` key (Domination).
+   */
+  readonly gameMode?: GameModeV7;
   /**
    * Map curiosities (docs/product/RULESET_7_MAP_CURIOSITIES.md section 3):
    * every setup of the batch carries this value. Required, so a caller
@@ -708,6 +742,17 @@ function runAiMatchInternalV7(
   let termination: AiMatchTerminationV7 = "COMMAND_CAP";
   let turnPlayerId = activePlayerIdV7(state);
   let commandsThisTurn = 0;
+  const perRound: HeadlessScoreV7["perRound"][number][] = [];
+  const roundScores = (
+    round: number,
+    scored: GameStateV7,
+  ): HeadlessScoreV7["perRound"][number] => ({
+    round,
+    scores: scoresV7(scored).map((entry) => ({
+      playerId: entry.playerId,
+      score: entry.total,
+    })),
+  });
 
   while (state.outcome === null) {
     if (state.commandIndex >= maxCommands) {
@@ -817,6 +862,15 @@ function runAiMatchInternalV7(
       break;
     }
     state = applied.state;
+    // Section 9.4: the scores of every completed round.
+    if (
+      state.outcome !== null &&
+      state.outcome.kind !== "HEADLESS_VICTORY" &&
+      state.outcome.decidedBy === "SCORE"
+    )
+      perRound.push(roundScores(before.round, state));
+    else if (state.round !== before.round)
+      perRound.push(roundScores(before.round, before));
     commands.push(command);
     events.push(...applied.events);
     const checkpoint = canonicalHash(state);
@@ -876,6 +930,12 @@ function runAiMatchInternalV7(
   return {
     outcome: state.outcome,
     termination,
+    score: {
+      gameMode: gameModeOfV7(state.setup),
+      perRound,
+      final: scoresV7(state),
+      summary: matchSummaryV7(state),
+    },
     acceptedCommands: state.commandIndex,
     rounds: state.round,
     state,
@@ -1011,7 +1071,7 @@ export async function runAiBatchV7(
           const factions = options.factions ?? distinctFactionsV7(aiCount + 1);
           const result = runAiMatchInternalV7(
             {
-              rulesetId: "pulp-wars-poc-7r64",
+              rulesetId: "pulp-wars-poc-7r65",
               mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
               seed,
               width: size,
@@ -1026,6 +1086,9 @@ export async function runAiBatchV7(
               ...(options.allowDuplicateFactions === true
                 ? { allowDuplicateFactions: true as const }
                 : {}),
+              ...(options.gameMode === undefined
+                ? {}
+                : { gameMode: options.gameMode }),
             },
             {
               ...(options.maxCommands === undefined
@@ -1126,7 +1189,7 @@ function createMetricsV7(state: GameStateV7): HeadlessMetricsV7 {
   for (const tile of state.board.tiles)
     if (tile.resource !== null) generated[tile.resource] += 1;
   return {
-    rulesetId: "pulp-wars-poc-7r64",
+    rulesetId: "pulp-wars-poc-7r65",
     setupHash: canonicalHash(state.setup),
     mapHash: canonicalHash({
       board: state.board,

@@ -275,8 +275,20 @@ import {
 } from "./recovery";
 import { spatialContributionAtV7, tileAtV7 } from "./spatial-economy";
 import {
+  collectScoreCreditsV7,
+  foldScoreLedgerV7,
+  recordScoreCreditsV7,
+  roundEndScoreLedgerV7,
+  scoreCreditsSoFarV7,
+  scoreLedgerShapeValidV7,
+  scoreRankingV7,
+  type ScoreCreditRecordV7,
+} from "./score";
+import {
   NEUTRAL_OWNER_ID_V7,
+  PERFECTION_ROUNDS_V7,
   TECHNOLOGY_IDS_V7,
+  gameModeOfV7,
   isAfloatFormV7,
   isNavalRoleV7,
   isNeutralOwnerV7,
@@ -505,6 +517,51 @@ export function createPlayableGameFromMapStateV7(
 }
 
 export function applyCommandV7(
+  stateInput: GameStateV7,
+  actor: PlayerId,
+  input: CommandV7,
+): ApplyCommandResultV7 {
+  // Score and modes (docs/product/RULESET_7_SCORE_AND_STARS.md section
+  // 3.3): the command's credited deaths are collected for the score ledger,
+  // which is updated after every other step of the command.
+  const collected = collectScoreCreditsV7(() =>
+    applyCommandUnscoredV7(stateInput, actor, input),
+  );
+  return withScoreLedgerResultV7(
+    stateInput,
+    collected.result,
+    collected.credits,
+  );
+}
+
+/**
+ * Score and modes (section 3.2): folds the command's deaths, credits,
+ * damage, control changes, captures, and eliminations into the score
+ * ledger (`foldScoreLedgerV7`). Only `scoreLedger` changes, so the result is
+ * the checked state with the ledger replaced after its own structural check
+ * (`scoreLedgerShapeValidV7`), not a second full parse. Returns `result`
+ * itself when the ledger did not change or the command was rejected.
+ */
+function withScoreLedgerResultV7(
+  before: GameStateV7,
+  result: ApplyCommandResultV7,
+  credits: readonly ScoreCreditRecordV7[],
+): ApplyCommandResultV7 {
+  if (!result.accepted) return result;
+  const ledger = foldScoreLedgerV7(
+    before,
+    result.state,
+    result.events,
+    credits,
+    result.state.scoreLedger,
+  );
+  if (ledger === result.state.scoreLedger) return result;
+  if (!scoreLedgerShapeValidV7(ledger, result.state.players))
+    throw new RangeError("INVALID_STATE");
+  return accepted({ ...result.state, scoreLedger: ledger }, result.events);
+}
+
+function applyCommandUnscoredV7(
   stateInput: GameStateV7,
   actor: PlayerId,
   input: CommandV7,
@@ -6626,18 +6683,76 @@ function applyEndTurn(
       (item) => item.id === state.turnOrder[nextIndex],
     );
     if (nextPlayer === undefined) return rejected(original, "INVALID_STATE");
-    const round =
-      nextIndex <= state.activeSeatIndex ? nextSafe(state.round) : state.round;
+    const roundEnds = nextIndex <= state.activeSeatIndex;
+    const round = roundEnds ? nextSafe(state.round) : state.round;
+    const endEvents: DomainEventV7[] = [
+      ...recovery.events,
+      ...fields.events,
+      ...thaw.events,
+      ...candy.events,
+      {
+        kind: "INCOME_PREVIEWED",
+        playerId: actor,
+        totalCoins: preview.totalCoins,
+        cities: preview.cities,
+      },
+      { kind: "TURN_ENDED", playerId: actor },
+    ];
+    // Score and modes (docs/product/RULESET_7_SCORE_AND_STARS.md section
+    // 3.3): at the round end (after `TURN_ENDED`, before the neutral turn
+    // and the next round's first Start Turn) every peak is raised to the
+    // current score, and at the end of round 30 the snapshot is stored.
+    const roundEnd = roundEnds
+      ? roundEndScoreLedgerV7(state, expired, endEvents, scoreCreditsSoFarV7())
+      : null;
+    const scored =
+      roundEnd === null
+        ? expired
+        : { ...expired, scoreLedger: roundEnd.ledger };
+    // Section 4.2: a Perfection match ends at the round end of round 30;
+    // nothing of round 31 happens. The ranking decides the result.
+    if (
+      roundEnd !== null &&
+      state.round === PERFECTION_ROUNDS_V7 &&
+      gameModeOfV7(state.setup) === "PERFECTION"
+    ) {
+      const ranking = scoreRankingV7(scored, roundEnd.scores);
+      const first = ranking[0];
+      if (first === undefined) throw new RangeError("INVALID_STATE");
+      const outcome: GameStateV7["outcome"] =
+        first === state.humanPlayerId
+          ? {
+              kind: "VICTORY",
+              winnerId: first,
+              decidedBy: "SCORE",
+              ranking,
+            }
+          : {
+              kind: "DEFEAT",
+              humanId: state.humanPlayerId,
+              defeatedByPlayerId: first,
+              decidedBy: "SCORE",
+              ranking,
+            };
+      return accepted(
+        checked({
+          ...scored,
+          commandIndex: nextSafe(state.commandIndex),
+          outcome,
+        }),
+        [...endEvents, { kind: "MATCH_ENDED", outcome }],
+      );
+    }
     // Map curiosities (section 8.5): the neutral turn follows the last
     // seat's turn of the round, before the next round's first Start Turn.
     // A match without a Monster has none.
     const neutral =
-      nextIndex <= state.activeSeatIndex && expired.monsters.length > 0
-        ? resolveNeutralTurnV7(expired, state.round)
+      roundEnds && scored.monsters.length > 0
+        ? resolveNeutralTurnV7(scored, state.round)
         : null;
     const advanced = resetTurnUnits(
       {
-        ...(neutral?.state ?? expired),
+        ...(neutral?.state ?? scored),
         activeSeatIndex: nextIndex,
         round,
       },
@@ -6726,17 +6841,7 @@ function applyEndTurn(
         commandIndex: nextSafe(state.commandIndex),
       }),
       [
-        ...recovery.events,
-        ...fields.events,
-        ...thaw.events,
-        ...candy.events,
-        {
-          kind: "INCOME_PREVIEWED",
-          playerId: actor,
-          totalCoins: preview.totalCoins,
-          cities: preview.cities,
-        },
-        { kind: "TURN_ENDED", playerId: actor },
+        ...endEvents,
         ...(neutral?.events ?? []),
         turnStarted,
         ...started.events.slice(1),
@@ -7160,9 +7265,30 @@ function applyWail(
     graves = chain.graves;
     nextEntityId = chain.nextEntityId;
     risings.push(...chain.risings);
+    // Score and modes (docs/product/RULESET_7_SCORE_AND_STARS.md section
+    // 3.2): every Wail death is credited to the Banshee's owner (current
+    // rules section 18.9), so the other Wail kills count as Kills; they are
+    // recorded here because they never reach Plunder.
+    recordScoreCreditsV7(
+      state,
+      targets.flatMap((entry) => {
+        const victim = requireValue(
+          state.units.find((unit) => unit.id === entry.unitId),
+        );
+        return entry.dies && !isNeutralOwnerV7(victim.ownerId)
+          ? [
+              {
+                creditedId: actor,
+                victimOwnerId: victim.ownerId,
+                victimUnitId: victim.id,
+              },
+            ]
+          : [];
+      }),
+    );
     // Map curiosities (section 8.7): the Banshee's owner is credited with a
     // Monster the Wail kills (its bounty). Other Wail kills stay uncredited
-    // (an Undead seat never has Plunder).
+    // for Plunder (an Undead seat never has Plunder).
     const plunder = plunderAwardsV7(state, state.players, [
       ...targets.flatMap((entry) => {
         const victim = requireValue(
@@ -7535,6 +7661,9 @@ function plunderAwardsV7(
   readonly players: readonly PlayerStateV7[];
   readonly events: readonly DomainEventV7[];
 } {
+  // Score and modes (section 3.2): every credited death is also a Kill for
+  // the score ledger (the same records, so Kills and Plunder agree).
+  recordScoreCreditsV7(state, deaths);
   const kills = new Map<PlayerId, number>();
   const bounties: { readonly playerId: PlayerId; readonly unitId: UnitId }[] =
     [];

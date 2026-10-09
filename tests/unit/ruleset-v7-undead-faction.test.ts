@@ -86,8 +86,8 @@ const READY: UnitStateV7["activation"] = {
 
 describe("ruleset-7 revision-13 identity and faction registration", () => {
   it("pins the current identity, frozen faction and tree orders, and bindings", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r64");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r64.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r65");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r65.current");
     expect(FACTION_IDS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",
@@ -142,11 +142,11 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
     ).toThrow(RangeError);
   });
 
-  it("cleans obsolete keys through v7r63 and preserves the r64 save", () => {
+  it("cleans obsolete keys through v7r64 and preserves the r65 save", () => {
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
-      "pulpWars.save.v7r63.current",
+      "pulpWars.save.v7r64.current",
     );
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(63);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(64);
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
     const storage = new MemoryStorage([
       ["pulpWars.save.v7r12.current", "r12"],
@@ -2208,6 +2208,11 @@ describe("ruleset-7 all-Human parity digests", () => {
               expect(item).toEqual({ swallowed: [] });
               return undefined;
             }
+            // Score and modes (`pulp_wars-kaw6.2`): the state's score
+            // ledger and the view's score (its `score` block and every
+            // leaderboard entry's total) are new facts that change no play;
+            // the commands and events above are unchanged.
+            if (key === "scoreLedger" || key === "score") return undefined;
             if (key === "snow" || key === "blizzard" || key === "chill")
               winterValues += 1;
             return item;

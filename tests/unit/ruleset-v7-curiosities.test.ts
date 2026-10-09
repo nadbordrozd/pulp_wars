@@ -36,6 +36,7 @@ import {
 } from "../../src/engine/index";
 import { runAiBatchV7, runAiMatchV7 } from "../../src/headless/v7";
 import { createSaveEnvelopeV7, parseSaveV7 } from "../../src/persistence/index";
+import { expectInitialScoreLedgerV7 } from "../fixtures/v7-score-ledger";
 import { checkedV7 } from "../fixtures/v7-builders";
 import { createRevision39MapStateV7 } from "../fixtures/v7-revision13-map";
 import {
@@ -250,10 +251,14 @@ function normalizedInitialState(state: GameStateV7): string {
     // The giants' signatures (`pulp_wars-w49.30`) add the `giants` record,
     // empty in every initial state.
     giants: _giants,
+    // Score and modes (`pulp_wars-kaw6.2`) adds the `scoreLedger` (the
+    // initial ledger in an initial state, checked by the callers).
+    scoreLedger: _scoreLedger,
     rulesetId: _rulesetId,
     setup,
     ...rest
   } = state;
+  void _scoreLedger;
   if (
     _ninthUnit.wightGraves.length +
       _ninthUnit.risenWights.length +
@@ -333,6 +338,7 @@ describe("generation (section 4)", () => {
           );
           if (!created.ok) throw new Error(created.error.code);
           expect(created.state.curiosities).toEqual([]);
+          expectInitialScoreLedgerV7(created.state);
           table[`state/${mapType}/${width}/${aiCount}/${seed}`] =
             normalizedInitialState(created.state);
         }
@@ -758,6 +764,8 @@ describe("headless parity and the CLI flag", () => {
     expect(normalizedInitialState(withOption.state)).toBe(
       normalizedInitialState(without.state),
     );
+    // Score and modes (`pulp_wars-kaw6.2`): the same score ledger too.
+    expect(withOption.state.scoreLedger).toEqual(without.state.scoreLedger);
   }, 600_000);
 
   it("records the option in every batch entry and the placed kinds in its metrics", async () => {

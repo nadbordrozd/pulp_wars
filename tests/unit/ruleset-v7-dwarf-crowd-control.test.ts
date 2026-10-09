@@ -1065,11 +1065,18 @@ describe("the Bomb Run lands up to two tiles from its target (section 6.2 rule 1
       )
       .map((command) => (command.kind === "BOMB_RUN" ? command.to : null));
     // Distance 2 from the start (row 4 and columns 3 and 7), within 2 of
-    // (5, 3); and distance 3 (row 5 and beyond) within 2 of (5, 3), except
-    // the village (5, 5).
-    for (const to of [at(5, 4), at(3, 4), at(7, 4), at(4, 5), at(6, 5)])
+    // (5, 3); and distance 3 (row 5 and beyond) within 2 of (5, 3). The
+    // village (5, 5) is a landing too since any unit can capture
+    // (`pulp_wars-ke95`: a flyer may end on a village center).
+    for (const to of [
+      at(5, 4),
+      at(3, 4),
+      at(7, 4),
+      at(4, 5),
+      at(5, 5),
+      at(6, 5),
+    ])
       expect(landings, `${to.x},${to.y}`).toContainEqual(to);
-    expect(landings).not.toContainEqual(at(5, 5));
     for (const to of landings) {
       if (to === null) throw new Error("no landing");
       expect(
@@ -1112,7 +1119,16 @@ describe("the Bomb Run lands up to two tiles from its target (section 6.2 rule 1
     expect(
       refusalV7(longRange, bombV7(longRange, GYRO, at(5, 4), at(5, 6))),
     ).toEqual(landing);
-    // A village center.
-    expect(refusal(at(5, 5))).toEqual(landing);
+    // An occupied tile within 2 and farther (the village (5, 5) was the
+    // example here before `pulp_wars-ke95`; a flyer may now land on it).
+    const occupied = dwarfFieldV7([
+      { seat: 0, role: "RAIDER", at: GYRO },
+      { seat: 1, role: "FIGHTER", at: at(5, 3) },
+      { seat: 1, role: "FIGHTER", at: at(1, 1) },
+      { seat: 0, role: "FIGHTER", at: at(6, 5) },
+    ]);
+    expect(
+      refusalV7(occupied, bombV7(occupied, GYRO, at(5, 3), at(6, 5))),
+    ).toEqual(landing);
   });
 });

@@ -124,6 +124,11 @@ import {
   unitFactionV7,
   unitRoleRuleV7,
   viewForV7,
+  queryScoreV7,
+  queryStarGradeV7,
+  scoresV7,
+  type PlayerScoreV7,
+  type ScoreBreakdownV7,
   type BoardSizeV7,
   type CityId,
   type CommandV7,
@@ -309,7 +314,7 @@ interface SessionV7 {
 const HELP_V7 = `Pulp Wars text play (Ruleset 7). One command per invocation; state lives in the session file.
 
   new     --session S [--map dry-land] [--size 11] [--seed 1] [--factions original,undead[,...]]
-          [--seat 0] [--curiosities on|off] [--overwrite]
+          [--seat 0] [--curiosities on|off] [--mode domination|perfection] [--overwrite]
   lab     --session S <LAB> [--giant] [--overwrite]
                                         start a staged position (you play the Humans; LAB_GOBLIN_MID: the Goblins; LAB_UNDEAD_MID: the Undead; LAB_MARTIAN_MID: the Martians; LAB_DINOSAUR_MID: the Dinosaurs; LAB_ICE_FOLK_MID: the Ice Folk; LAB_DWARF_MID: the Dwarves); lab alone lists them
                                         --giant (a *_MID lab or LAB_BREAKTHROUGH): your faction's reward giant stands at the front, full HP
@@ -356,6 +361,7 @@ const VALUE_FLAGS_V7 = new Set([
   "factions",
   "seat",
   "curiosities",
+  "mode",
   "unit",
   "city",
   "tile",
@@ -2717,6 +2723,11 @@ function commandNewV7(args: ArgsV7): string {
   const curiositiesRaw = (args.flags.get("curiosities") ?? "on").toLowerCase();
   if (curiositiesRaw !== "on" && curiositiesRaw !== "off")
     throw new TextPlayErrorV7("--curiosities must be on or off");
+  // Score and modes (docs/product/RULESET_7_SCORE_AND_STARS.md section
+  // 4.3): Domination by default, or the 30-round Perfection.
+  const modeRaw = (args.flags.get("mode") ?? "domination").toLowerCase();
+  if (modeRaw !== "domination" && modeRaw !== "perfection")
+    throw new TextPlayErrorV7("--mode must be domination or perfection");
   const setup: MatchSetupV7 = {
     rulesetId: RULESET_7_ID,
     mapGenerationRevision: MAP_GENERATION_REVISION_V7,
@@ -2730,6 +2741,7 @@ function commandNewV7(args: ArgsV7): string {
     factions,
     mapType,
     curiosities: curiositiesRaw === "on",
+    gameMode: modeRaw === "perfection" ? "PERFECTION" : "DOMINATION",
     // A mirror match (Human against the Human AI, say): the engine's
     // tool-only path for repeated factions (`allowDuplicateFactionsV7`).
     ...(duplicateFactionV7(factions) === null
@@ -3410,9 +3422,12 @@ function unitLineV7(
 function headerLinesV7(session: SessionV7, view: PlayerViewV7): string[] {
   const state = session.state;
   const active = view.turnOrder[view.activeSeatIndex];
+  // Score and modes (docs/product/RULESET_7_SCORE_AND_STARS.md section
+  // 4.3): the mode, "Round N of 30" in Perfection, and the score.
+  const score = queryScoreV7(view);
   const lines = [
-    `== state #${state.commandIndex} | ${RULESET_7_ID} | ${view.setup.mapType.toLowerCase()} ${view.board.width}x${view.board.height} seed ${view.setup.seed} ==`,
-    `ROUND ${view.round} | you are ${seatNameV7(view, view.viewer.id)} | ${view.outcome !== null ? "MATCH OVER" : active === view.viewer.id ? "YOUR TURN" : `waiting for ${seatLabelV7(view, active ?? 0)}`} | coins ${view.viewer.coins} | income +${totalIncomeV7(view)}/turn | cities ${ownCitiesV7(view).length} | units ${allOwnedUnitsV7(view, view.viewer.id).length}`,
+    `== state #${state.commandIndex} | ${RULESET_7_ID} | ${view.setup.mapType.toLowerCase()} ${view.board.width}x${view.board.height} seed ${view.setup.seed} | ${score.gameMode.toLowerCase()} ==`,
+    `ROUND ${view.round}${score.roundLimit === null ? "" : ` of ${score.roundLimit}`} | you are ${seatNameV7(view, view.viewer.id)} | ${view.outcome !== null ? "MATCH OVER" : active === view.viewer.id ? "YOUR TURN" : `waiting for ${seatLabelV7(view, active ?? 0)}`} | coins ${view.viewer.coins} | income +${totalIncomeV7(view)}/turn | cities ${ownCitiesV7(view).length} | units ${allOwnedUnitsV7(view, view.viewer.id).length} | score ${score.own?.total ?? 0}`,
     `PLAYERS in turn order: ${[
       ...view.turnOrder.flatMap((playerId) =>
         view.leaderboard.filter((entry) => entry.playerId === playerId),
@@ -3423,11 +3438,13 @@ function headerLinesV7(session: SessionV7, view: PlayerViewV7): string[] {
     ]
       .map(
         (entry) =>
-          `S${entry.seat} ${FACTION_DISPLAY_NAMES_V7[entry.faction]}${entry.isViewer ? " (you)" : " (AI)"} ${entry.status.toLowerCase()} cities ${entry.cityCount} units ${entry.livingUnitCount}`,
+          `S${entry.seat} ${FACTION_DISPLAY_NAMES_V7[entry.faction]}${entry.isViewer ? " (you)" : " (AI)"} ${entry.status.toLowerCase()} score ${entry.score} cities ${entry.cityCount} units ${entry.livingUnitCount}`,
       )
       .join(" > ")}`,
   ];
-  if (view.outcome !== null) lines.push(outcomeLineV7(view));
+  if (score.own !== null)
+    lines.push(`SCORE (yours): ${scoreBreakdownTextV7(score.own)}`);
+  if (view.outcome !== null) lines.push(...outcomeLinesV7(view));
   for (const choice of view.pendingChoices)
     lines.push(
       `PENDING CHOICE: city ${cityTagV7(view, choice.cityId)} reached level ${choice.reachedLevel}; choose one with do: ${rewardChoicesTextV7(view, choice)} (nothing else is offered until you choose)`,
@@ -3438,9 +3455,40 @@ function headerLinesV7(session: SessionV7, view: PlayerViewV7): string[] {
 function outcomeLineV7(view: PlayerViewV7): string {
   const outcome = view.outcome;
   if (outcome === null) return "OUTCOME: none yet";
+  // Score and modes (section 4.2): a Perfection result decided by the score.
+  if (outcome.kind !== "HEADLESS_VICTORY" && outcome.decidedBy === "SCORE") {
+    const ranking = (outcome.ranking ?? [])
+      .map(
+        (playerId, index) =>
+          `${index + 1}. ${seatNameV7(view, playerId)} ${view.leaderboard.find((entry) => entry.playerId === playerId)?.score ?? 0}`,
+      )
+      .join(", ");
+    return outcome.kind === "VICTORY"
+      ? `OUTCOME: VICTORY after round ${view.round}: you have the highest score (${ranking})`
+      : `OUTCOME: DEFEAT after round ${view.round}: ${seatNameV7(view, outcome.defeatedByPlayerId)} has the highest score (${ranking})`;
+  }
   if (outcome.kind === "DEFEAT")
     return `OUTCOME: DEFEAT in round ${view.round}: you were eliminated by ${seatNameV7(view, outcome.defeatedByPlayerId)}`;
   return `OUTCOME: ${outcome.winnerId === view.viewer.id ? "VICTORY" : "DEFEAT"} in round ${view.round}: ${seatNameV7(view, outcome.winnerId)} won`;
+}
+
+/** Section 5: the outcome and, for the human seat, the star grade. */
+function outcomeLinesV7(view: PlayerViewV7): string[] {
+  const lines = [outcomeLineV7(view)];
+  const graded = queryStarGradeV7(view);
+  if (graded === null || view.viewer.id !== view.humanPlayerId) return lines;
+  const { grade, inputs } = graded;
+  const met = (value: boolean | null): string =>
+    value === null ? "n/a" : value ? "yes" : "no";
+  lines.push(
+    `GRADE: ${grade.stars} star${grade.stars === 1 ? "" : "s"}${grade.glow ? " and the glow (flawless)" : ""} | rating ${grade.rating.display} (${grade.rating.numerator}/${grade.rating.denominator} at round ${grade.ratingRound}; 2 stars ${(grade.thresholds.twoStarsHundredths / 100).toFixed(2)}, 3 stars ${(grade.thresholds.threeStarsHundredths / 100).toFixed(2)} with ${inputs.rivals} rival${inputs.rivals === 1 ? "" : "s"}) | victory ${met(grade.conditions.victory)}, hardest difficulty ${met(grade.conditions.hardestDifficulty)}, every rival eliminated by you ${met(grade.conditions.everyRivalEliminatedByYou)}, flawless ${met(grade.conditions.flawless)}${graded.recordable ? "" : " | not recorded (Showcase, mission, or mirror setup)"}`,
+  );
+  return lines;
+}
+
+/** Section 3.1: one breakdown as text (counts and points). */
+function scoreBreakdownTextV7(score: ScoreBreakdownV7): string {
+  return `${score.total} = territory ${score.territory.count} tiles ${score.territory.points} + cities ${score.cities.count} levels ${score.cities.points} + technology ${score.technology.count} tiers ${score.technology.points} + achievements ${score.achievements.count} ${score.achievements.points} + army ${score.army.count} coins ${score.army.points} + kills ${score.kills.count} coins ${score.kills.points} (positive ${score.positive}); losses ${score.losses.count} coins ${score.losses.points}, damage ${score.damage.count} HP ${score.damage.points}${score.capReturned > 0 ? `, capped at half (${score.capReturned} given back)` : ""}`;
 }
 
 function viewLinesV7(session: SessionV7, full: boolean): string[] {
@@ -4425,6 +4473,11 @@ function commandLogV7(args: ArgsV7): string {
 
 interface DebriefRowV7 {
   readonly round: number;
+  /**
+   * Score and modes (section 9.4): the seat's score breakdown at the end of
+   * its turn of the round (before its End Turn).
+   */
+  readonly score: PlayerScoreV7;
   readonly coins: number;
   readonly income: number;
   readonly cityLevels: readonly number[];
@@ -4511,6 +4564,9 @@ function replaySessionV7(session: SessionV7): ReplayedV7 {
         }
         seat.rows.push({
           round: before.round,
+          score: scoresV7(before).find(
+            (entry) => entry.playerId === actor,
+          ) as PlayerScoreV7,
           coins: player.coins,
           income: playerIncomeV7(before, actor).totalCoins,
           cityLevels: before.cities
@@ -4589,6 +4645,7 @@ function commandDebriefV7(args: ArgsV7): string {
   const replayed = replaySessionV7(session);
   const verified = canonicalHash(replayed.state) === session.stateHash;
   const view = viewForV7(session.state, session.playerId);
+  const finalScores = scoresV7(session.state);
   const seatName = (seat: DebriefSeatV7): string =>
     `S${seat.seat} ${FACTION_DISPLAY_NAMES_V7[seat.faction]} (${seat.controller})`;
   const lines = [
@@ -4596,9 +4653,9 @@ function commandDebriefV7(args: ArgsV7): string {
     "WARNING: this file reveals hidden information of every seat. Read it only after the game.",
     `ruleset ${RULESET_7_ID} | ${session.setup.mapType.toLowerCase()} ${session.setup.width}x${session.setup.height} seed ${session.setup.seed} curiosities ${session.setup.curiosities ? "on" : "off"} | factions ${session.setup.factions.join(",")}`,
     `commands ${session.commands.length} | last round ${session.state.round} | replay ${verified ? "verified (state hash matches)" : "MISMATCH"}`,
-    session.state.outcome === null
-      ? "OUTCOME: the match was not finished"
-      : outcomeLineV7(view),
+    ...(session.state.outcome === null
+      ? ["OUTCOME: the match was not finished"]
+      : outcomeLinesV7(view)),
   ];
   for (const seat of replayed.seats) {
     const final = session.state.players.find(
@@ -4607,7 +4664,7 @@ function commandDebriefV7(args: ArgsV7): string {
     lines.push(
       "",
       `SEAT ${seatName(seat)} | final status ${final?.status ?? "?"} | techs ${final?.researchedTechs.map((tech) => techNameV7(seat.faction, tech)).join(",") || "-"}`,
-      "round | coins at end of turn | income | cities (levels) | units | techs | actions this turn",
+      "round | coins at end of turn | income | cities (levels) | units | techs | actions this turn | score",
     );
     // The Dinosaur pass, correction: the faction's own names (Nesting
     // read as FORTIFICATION and a Triceratops as CATAPULT).
@@ -4635,7 +4692,9 @@ function commandDebriefV7(args: ArgsV7): string {
           row.units,
         )
           .map(([label, count]) => `${label} ${count}`)
-          .join(", ")}} | ${row.techCount} | ${actions.join("; ") || "-"}`,
+          .join(
+            ", ",
+          )}} | ${row.techCount} | ${actions.join("; ") || "-"} | ${row.score.total} (T${row.score.territory.points} L${row.score.cities.points} R${row.score.technology.points} A${row.score.achievements.points} V${row.score.army.points} K${row.score.kills.points} X${row.score.losses.points} H${row.score.damage.points}${row.score.capReturned > 0 ? ` cap+${row.score.capReturned}` : ""})`,
       );
     }
     const techOrder = seat.rows.flatMap((row) =>
@@ -4649,6 +4708,7 @@ function commandDebriefV7(args: ArgsV7): string {
       `TECH ORDER ${techOrder.join(" | ") || "-"}`,
       `TRAINED ${[...trained.entries()].map(([role, count]) => `${roleName(role)} ${count}`).join(", ") || "-"}`,
       `COMBAT attacks made ${seat.totals.attacks} | kills on own turns ${seat.totals.kills} | units lost ${seat.totals.losses} (a row lists a loss in the seat's next own turn when it fell during another seat's turn)`,
+      `FINAL SCORE ${scoreBreakdownTextV7(finalScores.find((entry) => entry.playerId === seat.playerId) as PlayerScoreV7)} | peak ${session.state.scoreLedger.find((entry) => entry.playerId === seat.playerId)?.peakScore ?? 0}`,
     );
   }
   lines.push(
@@ -4666,6 +4726,9 @@ function commandDebriefV7(args: ArgsV7): string {
             rulesetId: RULESET_7_ID,
             setup: session.setup,
             outcome: session.state.outcome,
+            // Score and modes (section 9.4): the final scores and the grade.
+            score: queryScoreV7(view),
+            grade: queryStarGradeV7(view),
             lastRound: session.state.round,
             replayVerified: verified,
             seats: replayed.seats,

@@ -123,16 +123,17 @@ const offers = (state: GameStateV7, command: CommandV7): boolean =>
 describe("the identity (pulp_wars-w49.35)", () => {
   // The giants' signatures (`pulp_wars-w49.30`) took 7r62 after it, and
   // the reward ladder rework (`pulp_wars-zypi`) 7r63, and any unit can
-  // capture (`pulp_wars-ke95`) 7r64.
+  // capture (`pulp_wars-ke95`) 7r64, and score and modes (`pulp_wars-kaw6.2`)
+  // 7r65.
   it("was 7r61 after 7r60, whose save keys are obsolete", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r64");
-    expect(PRIOR_RULESET_7_IDS.slice(-4, -2)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r65");
+    expect(PRIOR_RULESET_7_IDS.slice(-5, -3)).toEqual([
       "pulp-wars-poc-7r60",
       "pulp-wars-poc-7r61",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r64.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-4, -2)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r65.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-5, -3)).toEqual([
       "pulpWars.save.v7r60.current",
       "pulpWars.save.v7r61.current",
     ]);

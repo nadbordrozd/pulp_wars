@@ -77,6 +77,7 @@ import {
   type RandomStateV7,
   type ResourceIdV7,
   type RewardIdV7,
+  type ScoreLedgerEntryV7,
   type ShieldStatusV7,
   type TechnologyIdV7,
   type MindControlledStatusV7,
@@ -95,6 +96,7 @@ import {
   setupHasCuriositiesV7,
 } from "./curiosities";
 import { parseMatchSetupV7 } from "./setup";
+import { legacyScoreLedgerV7, scoreLedgerShapeValidV7 } from "./score";
 import { spatialContributionAtV7 } from "./spatial-economy";
 import {
   cooperativeAlliesV7,
@@ -153,6 +155,8 @@ const STATE_KEYS = [
   "round",
   "rulesetId",
   "schemaVersion",
+  // Score and modes (docs/product/RULESET_7_SCORE_AND_STARS.md section 3.3).
+  "scoreLedger",
   "setup",
   "shields",
   "splattedThisTurn",
@@ -165,6 +169,13 @@ const STATE_KEYS = [
   "turnOrder",
   "units",
 ] as const;
+/**
+ * Score and modes (section 3.3): a state stored before the score has no
+ * `scoreLedger`; it loads with the legacy ledger (`legacyScoreLedgerV7`).
+ */
+const STATE_KEYS_WITHOUT_LEDGER = STATE_KEYS.filter(
+  (key) => key !== "scoreLedger",
+);
 
 const PREREQUISITE: Readonly<Partial<Record<TechnologyIdV7, TechnologyIdV7>>> =
   {
@@ -192,8 +203,15 @@ const PREREQUISITE: Readonly<Partial<Record<TechnologyIdV7, TechnologyIdV7>>> =
   };
 
 export function parseGameStateV7(input: unknown): GameStateV7 | null {
+  const storedLedger =
+    typeof input === "object" &&
+    input !== null &&
+    Object.prototype.hasOwnProperty.call(input, "scoreLedger");
   if (
-    !hasExactKeysV7(input, STATE_KEYS) ||
+    !hasExactKeysV7(
+      input,
+      storedLedger ? STATE_KEYS : STATE_KEYS_WITHOUT_LEDGER,
+    ) ||
     input.schemaVersion !== 7 ||
     input.rulesetId !== RULESET_7_ID
   )
@@ -280,6 +298,10 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
     players === null || mindControlled === null
       ? null
       : parseGiants(input.giants, players, mindControlled, shrinePromotions);
+  // Score and modes (section 3.3): the score ledger; checked below.
+  const storedScoreLedger = storedLedger
+    ? parseScoreLedger(input.scoreLedger)
+    : undefined;
   const choices = parseChoices(input.pendingChoices);
   const outcome = parseOutcome(input.outcome);
   const turnOrder = parsePlayerIdSequence(input.turnOrder);
@@ -319,6 +341,7 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
     ninthUnit === null ||
     barricades === null ||
     giants === null ||
+    storedScoreLedger === null ||
     choices === null ||
     outcome === undefined ||
     turnOrder === null ||
@@ -329,8 +352,19 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
     input.activeSeatIndex >= turnOrder.length
   )
     return null;
+  const scoreLedger =
+    storedScoreLedger ??
+    legacyScoreLedgerV7({
+      players,
+      cities,
+      board,
+      units,
+      burrowed,
+      mindControlled,
+    });
   if (
     canonicalJson(setup) !== canonicalJson(input.setup) ||
+    !scoreLedgerShapeValidV7(scoreLedger, players) ||
     players[0]?.controller !== "HUMAN" ||
     players[0]?.id !== humanPlayerId ||
     players[0]?.color !== setup.humanColor ||
@@ -425,6 +459,7 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
     ninthUnit,
     barricades,
     giants,
+    scoreLedger,
     pendingChoices: choices,
     outcome,
   };
@@ -1277,6 +1312,28 @@ function parseChoices(input: unknown): readonly PendingChoiceV7[] | null {
 
 function parseOutcome(input: unknown): MatchOutcomeV7 | null | undefined {
   if (input === null) return null;
+  // Score and modes (section 4.2): a Perfection result decided by the score
+  // carries `decidedBy: "SCORE"` and the final ranking.
+  if (
+    typeof input === "object" &&
+    Object.prototype.hasOwnProperty.call(input, "decidedBy")
+  ) {
+    const { decidedBy, ranking, ...rest } = input as {
+      readonly decidedBy?: unknown;
+      readonly ranking?: unknown;
+    };
+    const base = parseOutcome(rest);
+    const order = parsePlayerIdSequence(ranking);
+    if (
+      decidedBy !== "SCORE" ||
+      order === null ||
+      base === null ||
+      base === undefined ||
+      base.kind === "HEADLESS_VICTORY"
+    )
+      return undefined;
+    return { ...base, decidedBy: "SCORE", ranking: order };
+  }
   if (
     hasExactKeysV7(input, ["kind", "winnerId"]) &&
     (input.kind === "VICTORY" || input.kind === "HEADLESS_VICTORY")
@@ -1597,6 +1654,75 @@ function parseCrumbs(input: unknown): readonly CrumbsV7[] | null {
     });
   }
   return values;
+}
+
+/**
+ * Score and modes (section 3.3): the shape of `scoreLedger`; the order and
+ * the cross references are `scoreLedgerShapeValidV7`.
+ */
+function parseScoreLedger(
+  input: unknown,
+): readonly ScoreLedgerEntryV7[] | null {
+  if (!isDenseArrayV7(input)) return null;
+  const entries: ScoreLedgerEntryV7[] = [];
+  for (const candidate of input) {
+    if (
+      !hasExactKeysV7(candidate, [
+        "eliminatedAt",
+        "eliminatedBy",
+        "flawless",
+        "hpLost",
+        "killValue",
+        "lossValue",
+        "peakScore",
+        "playerId",
+        "round30",
+      ]) ||
+      !isNonNegativeSafeIntegerV7(candidate.killValue) ||
+      !isNonNegativeSafeIntegerV7(candidate.lossValue) ||
+      !isNonNegativeSafeIntegerV7(candidate.hpLost) ||
+      !isNonNegativeSafeIntegerV7(candidate.peakScore) ||
+      typeof candidate.flawless !== "boolean" ||
+      (candidate.eliminatedAt !== null &&
+        !isNonNegativeSafeIntegerV7(candidate.eliminatedAt))
+    )
+      return null;
+    const playerId = parsePlayerIdV7(candidate.playerId);
+    const eliminatedBy =
+      candidate.eliminatedBy === null
+        ? null
+        : parsePlayerIdV7(candidate.eliminatedBy);
+    if (
+      playerId === null ||
+      (candidate.eliminatedBy !== null && eliminatedBy === null)
+    )
+      return null;
+    let round30: ScoreLedgerEntryV7["round30"] = null;
+    if (candidate.round30 !== null) {
+      if (
+        !hasExactKeysV7(candidate.round30, ["peakScore", "score"]) ||
+        !isNonNegativeSafeIntegerV7(candidate.round30.score) ||
+        !isNonNegativeSafeIntegerV7(candidate.round30.peakScore)
+      )
+        return null;
+      round30 = {
+        score: candidate.round30.score,
+        peakScore: candidate.round30.peakScore,
+      };
+    }
+    entries.push({
+      playerId,
+      killValue: candidate.killValue,
+      lossValue: candidate.lossValue,
+      hpLost: candidate.hpLost,
+      flawless: candidate.flawless,
+      eliminatedBy,
+      eliminatedAt: candidate.eliminatedAt as number | null,
+      peakScore: candidate.peakScore,
+      round30,
+    });
+  }
+  return entries;
 }
 
 /**
@@ -2570,6 +2696,23 @@ function validateCrossReferences(value: CrossInput): boolean {
       )
         return false;
     } else if (!playerById.has(outcome.winnerId)) return false;
+    // Score and modes (section 4.2): the ranking names every player once,
+    // the winner (or the human's defeater) first.
+    if (outcome.kind !== "HEADLESS_VICTORY" && outcome.ranking !== undefined) {
+      const first =
+        outcome.kind === "VICTORY"
+          ? outcome.winnerId
+          : outcome.defeatedByPlayerId;
+      if (
+        outcome.ranking[0] !== first ||
+        (outcome.kind === "VICTORY") !== (first === value.humanPlayerId) ||
+        !sameSet(
+          outcome.ranking,
+          players.map((player) => player.id),
+        )
+      )
+        return false;
+    }
   }
   return true;
 }

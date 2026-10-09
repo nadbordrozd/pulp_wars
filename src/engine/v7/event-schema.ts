@@ -2349,6 +2349,27 @@ function treasure(e: Record<string, unknown>): boolean {
   );
 }
 function outcome(input: unknown): boolean {
+  // Score and modes (docs/product/RULESET_7_SCORE_AND_STARS.md section
+  // 4.2): a result decided by the score adds `decidedBy` and the ranking.
+  if (
+    typeof input === "object" &&
+    input !== null &&
+    Object.prototype.hasOwnProperty.call(input, "decidedBy")
+  ) {
+    const { decidedBy, ranking, ...rest } = input as {
+      readonly decidedBy?: unknown;
+      readonly ranking?: unknown;
+    };
+    return (
+      decidedBy === "SCORE" &&
+      isDenseArrayV7(ranking) &&
+      ranking.length > 0 &&
+      ranking.every(id) &&
+      new Set(ranking).size === ranking.length &&
+      (rest as { readonly kind?: unknown }).kind !== "HEADLESS_VICTORY" &&
+      outcome(rest)
+    );
+  }
   return (
     (hasExactKeysV7(input, ["kind", "winnerId"]) &&
       (input.kind === "VICTORY" || input.kind === "HEADLESS_VICTORY") &&

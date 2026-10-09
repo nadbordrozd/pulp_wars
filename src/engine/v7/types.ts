@@ -5,7 +5,7 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r64" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r65" as const;
 /**
  * Every earlier Ruleset 7 identity, oldest first. Readers report these as
  * incompatible (never invalid). An identity bump must append the outgoing
@@ -75,8 +75,9 @@ export const PRIOR_RULESET_7_IDS = Object.freeze([
   "pulp-wars-poc-7r61",
   "pulp-wars-poc-7r62",
   "pulp-wars-poc-7r63",
+  "pulp-wars-poc-7r64",
 ] as const);
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r64.current" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r65.current" as const;
 /**
  * The map generator a setup names (docs/product/RULESET_7_MAP_SCALE.md
  * section 8.8): `V4` is the many-seats generator of `pulp_wars-ykw.3`
@@ -583,6 +584,61 @@ export interface MatchSetupV7 {
    * setup always carries `false`.
    */
   readonly curiosities: boolean;
+  /**
+   * Score and modes (docs/product/RULESET_7_SCORE_AND_STARS.md section 4.3):
+   * `DOMINATION` (play until every rival is eliminated) or `PERFECTION`
+   * (`PERFECTION_ROUNDS_V7` rounds, the highest score wins). Every new
+   * setup the headless CLI and text play make writes it; a setup without
+   * the key (a save, replay, mission, or fixture made before the modes) is
+   * a `DOMINATION` setup and keeps its exact shape. A `SHOWCASE` or
+   * `MISSION` setup is never `PERFECTION`. Read it with
+   * {@link gameModeOfV7}.
+   */
+  readonly gameMode?: GameModeV7;
+}
+
+/** Score and modes (section 4): the two play modes, in display order. */
+export const GAME_MODES_V7 = Object.freeze([
+  "DOMINATION",
+  "PERFECTION",
+] as const);
+export type GameModeV7 = (typeof GAME_MODES_V7)[number];
+/** Score and modes (section 4.2): the rounds a Perfection match lasts. */
+export const PERFECTION_ROUNDS_V7 = 30;
+/** The play mode of a setup; a setup without the key is Domination. */
+export function gameModeOfV7(
+  setup: Pick<MatchSetupV7, "gameMode">,
+): GameModeV7 {
+  return setup.gameMode ?? "DOMINATION";
+}
+
+/**
+ * Score and modes (docs/product/RULESET_7_SCORE_AND_STARS.md section 3.3):
+ * the counters a player's score needs that the rest of the state does not
+ * hold. `killValue` (K), `lossValue` (X), and `hpLost` (H) are the
+ * accumulated Coins of unit value and Hit Points of section 3.2;
+ * `flawless` is true until the player lost a unit or a city (section 5.4);
+ * `eliminatedBy` is the player whose capture took its last city and
+ * `eliminatedAt` the command index of that capture (both null while it is
+ * in the match; the command index orders eliminations for the Perfection
+ * ranking, section 4.2); `peakScore` is the highest score at any round end
+ * (the starting score at first); `round30` is the snapshot taken at the
+ * round end of round 30 (section 5.1).
+ */
+export interface ScoreLedgerEntryV7 {
+  readonly playerId: PlayerId;
+  readonly killValue: number;
+  readonly lossValue: number;
+  readonly hpLost: number;
+  readonly flawless: boolean;
+  readonly eliminatedBy: PlayerId | null;
+  readonly eliminatedAt: number | null;
+  readonly peakScore: number;
+  readonly round30: ScoreRound30SnapshotV7 | null;
+}
+export interface ScoreRound30SnapshotV7 {
+  readonly score: number;
+  readonly peakScore: number;
 }
 
 /**
@@ -827,12 +883,25 @@ export interface PendingChoiceV7 {
   readonly candidates: readonly RewardIdV7[];
 }
 
+/**
+ * Score and modes (section 4.2): a Perfection match decided at the round
+ * end of round 30 carries `decidedBy: "SCORE"` and the final `ranking`
+ * (every player, first to last); an elimination result has neither key, so
+ * older outcomes parse unchanged.
+ */
 export type MatchOutcomeV7 =
-  | { readonly kind: "VICTORY"; readonly winnerId: PlayerId }
+  | {
+      readonly kind: "VICTORY";
+      readonly winnerId: PlayerId;
+      readonly decidedBy?: "SCORE";
+      readonly ranking?: readonly PlayerId[];
+    }
   | {
       readonly kind: "DEFEAT";
       readonly humanId: PlayerId;
       readonly defeatedByPlayerId: PlayerId;
+      readonly decidedBy?: "SCORE";
+      readonly ranking?: readonly PlayerId[];
     }
   | { readonly kind: "HEADLESS_VICTORY"; readonly winnerId: PlayerId };
 
@@ -1013,6 +1082,14 @@ export interface GameStateV7 {
    * victims).
    */
   readonly giants: GiantsStateV7;
+  /**
+   * Score and modes (docs/product/RULESET_7_SCORE_AND_STARS.md section
+   * 3.3): one score ledger entry per player, in `players` order. A stored
+   * state without the key (made before the score) loads with
+   * {@link ScoreLedgerEntryV7} counters of 0, `flawless` false (its history
+   * is unknown), and the current score as the peak.
+   */
+  readonly scoreLedger: readonly ScoreLedgerEntryV7[];
   readonly pendingChoices: readonly PendingChoiceV7[];
   readonly outcome: MatchOutcomeV7 | null;
 }

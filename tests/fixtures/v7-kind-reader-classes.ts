@@ -96,7 +96,12 @@ export const KIND_READER_CLASSES_V7: Readonly<
   "src/engine/v7/reducer.ts::resolveTreasure": "SEAT",
   "src/engine/v7/reducer.ts::applyRaiseDead": "SEAT",
   "src/engine/v7/reducer.ts::plunderAwardsV7": "SEAT",
-  "src/engine/v7/setup.ts::validateMatchSetupV7": "SEAT",
+  "src/engine/v7/setup.ts::validateSetupWithoutModeV7": "SEAT",
+  // Score and modes (`pulp_wars-kaw6.2`): Technology counts the tiers of
+  // the seat's own tree; the grade names the human seat's tribe. A unit's
+  // value resolves its kind through `unitRoleRuleV7` (no raw read).
+  "src/engine/v7/score.ts::techTiersV7": "SEAT",
+  "src/engine/v7/score-query.ts::queryStarGradeV7": "SEAT",
   // `pulp_wars-68k.2`: mission registry, setup, and builder read seat
   // factions; no unit is mind-controlled at setup, so a seat's faction is
   // the kind of every unit it starts with (as in the Showcase).
