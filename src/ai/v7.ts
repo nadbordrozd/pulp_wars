@@ -77,6 +77,7 @@ import {
   previewAssembleV7,
   previewBombRunV7,
   previewEconomicV7,
+  previewWhirlV7,
   previewKaboomV7,
   previewBlastMountainV7,
   previewMonumentV7,
@@ -12736,6 +12737,46 @@ function scoreCommandWithContext(
         context.curiosities?.monsterById.has(command.targetUnitId) === true
       )
         strategicValue += MONSTER_BOUNTY_FOR_POLICY_V7;
+    }
+  }
+
+  // Dwarf crowd control (`pulp_wars-w49.33`): a Whirligig Whirls instead of
+  // attacking one unit (its Whirl hits every adjacent enemy, unanswered, and
+  // is offered whenever such an attack is). Scored like an attack on the
+  // sum of its hits; not tuned.
+  if (
+    command.kind === "ATTACK" &&
+    actor !== undefined &&
+    actor.form === "LAND" &&
+    unitRoleMechanicsV7(view, actor).whirl
+  )
+    priority = -1;
+  if (command.kind === "WHIRL") {
+    const whirl = previewWhirlV7(view, command.unitId);
+    if (whirl !== null && whirl.targets.length > 0) {
+      const threatening = whirl.targets.some((target) =>
+        context.threats.some((item) => item.unitId === target.unitId),
+      );
+      priority =
+        whirl.kills > 0
+          ? threatening
+            ? 1280
+            : 1180
+          : threatening
+            ? 1240
+            : 900;
+      immediateValue = whirl.targets.reduce(
+        (value, target) =>
+          value + 10 * target.damage + 20 * Number(target.dies),
+        0,
+      );
+      strategicValue = whirl.targets.reduce(
+        (value, target) =>
+          target.dies
+            ? value + targetStrategicValue(view, target.unitId, context.lookup)
+            : value,
+        0,
+      );
     }
   }
 

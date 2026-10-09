@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r59`, for all eight registered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r60`, for all eight registered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), and Candy (`CANDY`). It
 folds in
@@ -216,6 +216,16 @@ changed no rule and kept the identity `7r59`: a Dwarf seat of the Normal
 AI plays the army rules in a match without a Candy seat
 ([section 16](#16-normal-ai-summary)), and the lab `LAB_DWARF_MID` stages
 the Dwarves for a hand player ([section 2.6](#26-mission-setup)).
+`pulp-wars-poc-7r60` (`pulp_wars-w49.33`) is **Dwarf crowd control**: the
+Whirligig's **Whirl** replaces Three Hammers
+([section 22.15](#2215-the-whirligig-whirl)), the Engineer builds
+**Barricades** ([section 22.8](#228-engineer-repair-and-assemble)), and a
+**bombing run lands up to 2 tiles** from its target
+([section 22.5](#225-gyrocopters-and-the-bombing-run)). The state gains
+`barricades` and loses `ninthUnit.struckThisTurn`; the commands `WHIRL`,
+`BUILD_BARRICADE`, and `ATTACK_BARRICADE` and four events are new. A save,
+replay, or setup of `7r59` is rejected, and the browser autosave has a new
+key. A match without a Dwarf seat plays as at `7r59`.
 `pulp-wars-poc-7r58` (`pulp_wars-w49.25`) is
 [step two of the Martian pass](RULESET_7_TUNING_MARTIAN.md#14-step-two):
 **City Walls hold a unit on its own city center against a Saucer's Tractor
@@ -272,7 +282,7 @@ Dinosaur Triceratops is the `SWORDSMAN` role and the **Stegosaurus** the
 Mammoth is the `SWORDSMAN` role and the **Musk Ox** the `GUARD` role
 ([section 21.17](#2117-the-musk-ox-frostbite)); the Dwarf Steam Tank is the
 `SWORDSMAN` role and the **Whirligig** the `KNIGHT` role
-([section 22.15](#2215-the-whirligig-three-hammers)). **Eight technologies
+([section 22.15](#2215-the-whirligig-whirl)). **Eight technologies
 have new display names** (Drill is shown as Garrison) and a faction names
 several nodes after its own building or unit
 ([section 6.2](#62-technology-tree)); no technology ID changed. State and
@@ -665,7 +675,7 @@ the build differs (its sections 20 to 24 list them);
 the values here are current. Where a document and the code disagreed, the
 code's behavior is the rule and is stated below;
 [Known discrepancies](#25-known-discrepancies) lists the open items and the
-resolved ones as of `pulp-wars-poc-7r59`.
+resolved ones as of `pulp-wars-poc-7r60`.
 
 **Terms.** "On the board" means a unit that currently exists (HP above 0).
 **Living** has the narrower revision-13 meaning used by Wail, Plague,
@@ -766,10 +776,10 @@ separate [Ruleset 6](RULESET_6.md) route.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r59`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Ruleset                                    | `pulp-wars-poc-7r60`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r59.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Browser autosave                           | `pulpWars.save.v7r60.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                                     |
@@ -3053,18 +3063,18 @@ also lowers the Assemble cost, and every technology still has a live
 unlock for a Dwarf seat. The Dwarf unlocks that read differently from the
 Human table are:
 
-| Technology     | Dwarf name       | Dwarf unlocks                                                                                                |
-| -------------- | ---------------- | ------------------------------------------------------------------------------------------------------------ |
-| Administration | same             | Engineer (Repair); Market; Disband                                                                           |
-| Sawmilling     | same             | Sawmill; Steam Cannon (Knockback)                                                                            |
-| Marksmanship   | same             | Clockwork Gunner (two shots standing still); Engineers Assemble Gunners                                      |
-| Fieldcraft     | same             | Replant Forest; Gunners ignore Forest movement stops; Gunner Sight 2                                         |
-| Scouting       | same             | Gyrocopter (Bomb Run); Gyrocopter Sight 2                                                                    |
-| Raiding        | same             | Pillage; Dive: bombs deal 6                                                                                  |
-| Chivalry       | same             | Whirligig (Three Hammers; `7r55`, the Steam Tank before, now at Metallurgy); Cultivate Forest                |
-| Drill          | same             | reveal Ore; Workshop; first-hostile-capture Spoils (2 Coins)                                                 |
-| Fortification  | Dig In           | Steam Mole (Tunnel; `7r56`); Hammerers and Moles that stand still on or next to your city centers are dug in |
-| Explosives     | Blasting Charges | Blast Mountain; Breach; eruptions deal 3; Cannons ignore Walls                                               |
+| Technology     | Dwarf name       | Dwarf unlocks                                                                                                    |
+| -------------- | ---------------- | ---------------------------------------------------------------------------------------------------------------- |
+| Administration | same             | Engineer (Repair); Market; Disband                                                                               |
+| Sawmilling     | same             | Sawmill; Steam Cannon (Knockback)                                                                                |
+| Marksmanship   | same             | Clockwork Gunner (two shots standing still); Engineers Assemble Gunners                                          |
+| Fieldcraft     | same             | Replant Forest; Gunners ignore Forest movement stops; Gunner Sight 2                                             |
+| Scouting       | same             | Gyrocopter (Bomb Run); Gyrocopter Sight 2                                                                        |
+| Raiding        | same             | Pillage; Dive: bombs deal 6                                                                                      |
+| Chivalry       | same             | Whirligig (Whirl, `w49.33`; Three Hammers at `7r55`; the Steam Tank before, now at Metallurgy); Cultivate Forest |
+| Drill          | same             | reveal Ore; Workshop; first-hostile-capture Spoils (2 Coins)                                                     |
+| Fortification  | Dig In           | Steam Mole (Tunnel; `7r56`); Hammerers and Moles that stand still on or next to your city centers are dug in     |
+| Explosives     | Blasting Charges | Blast Mountain; Breach; eruptions deal 3; Cannons ignore Walls                                                   |
 
 The Candy tree (`CANDY_BASELINE_V1`) has the same graph, tiers,
 prerequisites, costs, free opener, Dry Land Naval rule, and technology IDs as
@@ -4126,20 +4136,20 @@ The Dwarf (`DWARF`) roster, by mechanical role, with the
 **constructs** and the **machines** Repair heals by 4
 ([section 22.1](#221-roles-constructs-machines-and-labels)):
 
-| Unit             | Role          | Tech              | Cost |  HP |    Attack | Defense | Move | Range | Sight | Kind               | Attack after Move    | Capture | Abilities                                                                                   |
-| ---------------- | ------------- | ----------------- | ---: | --: | --------: | ------: | ---: | ----: | ----: | ------------------ | -------------------- | ------- | ------------------------------------------------------------------------------------------- |
-| Hammerer         | `FIGHTER`     | start             |    2 |  12 |     2 (4) |   2 (4) |    1 |     1 |     1 | living             | yes                  | yes     | rides the tunnel; Dig In; no Field Defense                                                  |
-| Gyrocopter       | `RAIDER`      | Scouting          |    4 |   8 | 1.5 (3)¹¹ |   1 (2) |    3 |  bomb |     2 | living; machine    | the bomb is its Move | no      | flies; Bomb Run (5, Dive 6¹²), once per target per turn                                     |
-| Clockwork Gunner | `MARKSMAN`    | Marksmanship      |    3 |  10 |   1.5 (3) |   1 (2) |    1 |   1–2 |   1¹⁰ | construct; machine | yes, one shot        | yes     | two shots if it has not moved; never moves after firing                                     |
-| Steam Mole       | `GUARD`       | Fortification     |    5 |  16 |     2 (4) | 2.5 (5) |    1 |     1 |     1 | living; machine    | yes                  | yes     | Tunnel 3 with a rider; Eruption 2 (3); Dig In; no Field Defense                             |
-| Engineer         | `CAPTAIN`     | Administration    |    5 |  10 |     1 (2) |   1 (2) |    1 |     1 |     1 | living             | yes                  | no      | Repair; Assemble; no Rally                                                                  |
-| Steam Cannon     | `CATAPULT`    | Sawmilling        |    8 |  10 |   3.5 (7) | 0.5 (1) |    1 |   2–3 |     1 | living; machine    | no                   | no      | Knockback; with Blasting Charges ignores Walls and Field Defense                            |
-| Whirligig        | `KNIGHT`      | Chivalry          |    9 |  12 |     3 (6) | 1.5 (3) |    3 |     1 |     1 | construct; machine | yes                  | no      | Three Hammers (three attacks a turn on different units; `7r55`); never advances; no Overrun |
-| Steam Tank       | `SWORDSMAN`   | Metallurgy        |    9 |  16 |     3 (6) |   2 (4) |    2 |     1 |     1 | living; machine    | yes                  | no      | Plated 4; no Overrun (the heavy role since `7r55`; `KNIGHT` at Chivalry before)             |
-| Brass Titan      | `JUGGERNAUT`  | reward only       |    — |  36 |     4 (8) |   3 (6) |    1 |     1 |     1 | construct; machine | yes                  | yes     | Push                                                                                        |
-| Patrol Boat      | `PATROL_BOAT` | Shorecraft        |    5 |  10 |     2 (4) |   2 (4) |    2 |     1 |     2 | —                  | yes                  | no      | naval; Ram (Seamanship)                                                                     |
-| Battleship       | `BATTLESHIP`  | Naval Engineering |   16 |  25 |    6 (12) |   4 (8) |    2 |   1–3 |     3 | —                  | no                   | no      | naval; splash                                                                               |
-| Submarine        | `SUBMARINE`   | Submersibles      |    9 |  12 |     4 (8) |   2 (4) |    2 |     1 |     2 | —                  | yes                  | no      | naval; Submerged; Torpedo                                                                   |
+| Unit             | Role          | Tech              | Cost |  HP |    Attack | Defense | Move | Range | Sight | Kind               | Attack after Move    | Capture | Abilities                                                                                                         |
+| ---------------- | ------------- | ----------------- | ---: | --: | --------: | ------: | ---: | ----: | ----: | ------------------ | -------------------- | ------- | ----------------------------------------------------------------------------------------------------------------- |
+| Hammerer         | `FIGHTER`     | start             |    2 |  12 |     2 (4) |   2 (4) |    1 |     1 |     1 | living             | yes                  | yes     | rides the tunnel; Dig In; no Field Defense                                                                        |
+| Gyrocopter       | `RAIDER`      | Scouting          |    4 |   8 | 1.5 (3)¹¹ |   1 (2) |    3 |  bomb |     2 | living; machine    | the bomb is its Move | no      | flies; Bomb Run (5, Dive 6¹²), once per target per turn                                                           |
+| Clockwork Gunner | `MARKSMAN`    | Marksmanship      |    3 |  10 |   1.5 (3) |   1 (2) |    1 |   1–2 |   1¹⁰ | construct; machine | yes, one shot        | yes     | two shots if it has not moved; never moves after firing                                                           |
+| Steam Mole       | `GUARD`       | Fortification     |    5 |  16 |     2 (4) | 2.5 (5) |    1 |     1 |     1 | living; machine    | yes                  | yes     | Tunnel 3 with a rider; Eruption 2 (3); Dig In; no Field Defense                                                   |
+| Engineer         | `CAPTAIN`     | Administration    |    5 |  10 |     1 (2) |   1 (2) |    1 |     1 |     1 | living             | yes                  | no      | Repair; Assemble; no Rally                                                                                        |
+| Steam Cannon     | `CATAPULT`    | Sawmilling        |    8 |  10 |   3.5 (7) | 0.5 (1) |    1 |   2–3 |     1 | living; machine    | no                   | no      | Knockback; with Blasting Charges ignores Walls and Field Defense                                                  |
+| Whirligig        | `KNIGHT`      | Chivalry          |    9 |  12 |     3 (6) | 1.5 (3) |    3 |     1 |     1 | construct; machine | yes                  | no      | Whirl (hits every adjacent enemy at once, unanswered; `w49.33`, Three Hammers before); never advances; no Overrun |
+| Steam Tank       | `SWORDSMAN`   | Metallurgy        |    9 |  16 |     3 (6) |   2 (4) |    2 |     1 |     1 | living; machine    | yes                  | no      | Plated 4; no Overrun (the heavy role since `7r55`; `KNIGHT` at Chivalry before)                                   |
+| Brass Titan      | `JUGGERNAUT`  | reward only       |    — |  36 |     4 (8) |   3 (6) |    1 |     1 |     1 | construct; machine | yes                  | yes     | Push                                                                                                              |
+| Patrol Boat      | `PATROL_BOAT` | Shorecraft        |    5 |  10 |     2 (4) |   2 (4) |    2 |     1 |     2 | —                  | yes                  | no      | naval; Ram (Seamanship)                                                                                           |
+| Battleship       | `BATTLESHIP`  | Naval Engineering |   16 |  25 |    6 (12) |   4 (8) |    2 |   1–3 |     3 | —                  | no                   | no      | naval; splash                                                                                                     |
+| Submarine        | `SUBMARINE`   | Submersibles      |    9 |  12 |     4 (8) |   2 (4) |    2 |     1 |     2 | —                  | yes                  | no      | naval; Submerged; Torpedo                                                                                         |
 
 ¹⁰ Clockwork Gunner Sight becomes 2 with Fieldcraft.
 ¹¹ The Gyrocopter has no `ATTACK` ability: its Attack is used only when it
@@ -9642,9 +9652,10 @@ after every surfacing, and they lose their clockwork for good if the
 Engineers die. Every rule in this section applies only to units of a
 `DWARF` seat, except where a rule names its target (an eruption and a bomb
 hit other players' units, and a mound reserves its tile for everyone); in a
-match without one the lists `burrowed`, `surfacedThisTurn`, and
-`bombedThisTurn` are empty, no tile holds a mound, no `TUNNEL`, `BOMB_RUN`,
-or `ASSEMBLE` is offered or accepted, every role has `construct` false, the
+match without one the lists `burrowed`, `surfacedThisTurn`,
+`bombedThisTurn`, and `barricades` are empty, no tile holds a mound or a
+Barricade, no `TUNNEL`, `BOMB_RUN`, `ASSEMBLE`, `WHIRL`, `BUILD_BARRICADE`,
+or `ATTACK_BARRICADE` is offered or accepted, every role has `construct` false, the
 per-unit living test returns what the per-owner test returned, the two
 per-unit stat flags and the `dwarf` stat block are absent, and the three
 Dwarf combat-preview fields are false. Each rule resolves through the
@@ -9668,9 +9679,9 @@ coarse pass on Dry Land).
 | `RAIDER`        | Gyrocopter       | machine; flies; Bomb Run; no `ATTACK`                           |
 | `MARKSMAN`      | Clockwork Gunner | construct; machine; two shots standing still                    |
 | `GUARD`         | Steam Mole       | machine; Tunnel and eruption; Dig In                            |
-| `CAPTAIN`       | Engineer         | Repair; Assemble; no Rally                                      |
+| `CAPTAIN`       | Engineer         | Repair; Assemble; Barricade (`w49.33`); no Rally                |
 | `CATAPULT`      | Steam Cannon     | machine; Knockback; with Blasting Charges ignores fortification |
-| `KNIGHT`        | Whirligig        | construct; machine; Three Hammers (`7r55`)                      |
+| `KNIGHT`        | Whirligig        | construct; machine; Whirl (`w49.33`; Three Hammers at `7r55`)   |
 | `SWORDSMAN`     | Steam Tank       | machine; Plated 4; no Overrun (`KNIGHT` before `7r55`)          |
 | `JUGGERNAUT`    | Brass Titan      | construct; machine; Push                                        |
 
@@ -9792,7 +9803,9 @@ Legality, in this order (all rejections atomic):
   never blocks training, capture, or Land Grant. Every command naming it is
   rejected with `UNIT_ALREADY_HANDLED` and never offered.
 - **Reserved.** The one occupancy predicate `tileOccupiedV7(state | view,
-at)` is true when a unit stands on the tile **or a mound is on it**, and
+at)` is true when a unit stands on the tile **or a mound is on it** (or,
+  since `pulp_wars-w49.33`, a Barricade stands there,
+  [section 22.8](#228-engineer-repair-and-assemble)), and
   every rule that places a unit or ends a unit's step asks it
   ([section 12.1](#121-movement)). A Move may pass over a mound tile. A
   mound on a tile the mover has not explored can be met only on the last
@@ -9899,23 +9912,27 @@ its units (`UNIT_DIED` cause `ELIMINATION`, no Grave, no blast).
 its primary action at once. It is not an `ATTACK` and costs no Coins.
 Legality, in this order (all rejections atomic):
 
-| #   | Requirement                                                                                                                                                                                                                                                                                                                                       | Rejection                                         |
-| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
-| 1   | `unitId` is the actor's own unit on the board.                                                                                                                                                                                                                                                                                                    | the ordinary unit errors                          |
-| 2   | Its role has `BOMB_RUN`.                                                                                                                                                                                                                                                                                                                          | `UNIT_ROLE_INVALID { role }`                      |
-| 3   | It has not moved, has not used a primary action, and has not landed this turn.                                                                                                                                                                                                                                                                    | `UNIT_ALREADY_ACTED`                              |
-| 4   | It is in land form.                                                                                                                                                                                                                                                                                                                               | `BOMB_RUN_NOT_LEGAL { reason: "EMBARKED" }`       |
-| 5   | It is not sluggish.                                                                                                                                                                                                                                                                                                                               | `BOMB_RUN_NOT_LEGAL { reason: "SLUGGISH" }`       |
-| 6   | `targetUnitId` is a unit on the board the actor can see.                                                                                                                                                                                                                                                                                          | `TARGET_NOT_FOUND`                                |
-| 7   | It is hostile to the actor.                                                                                                                                                                                                                                                                                                                       | `TARGET_ALLIED`                                   |
-| 8   | It is within Chebyshev distance `BOMB_RANGE_V7` (2) of the Gyrocopter; distance 1 is legal.                                                                                                                                                                                                                                                       | `BOMB_RUN_NOT_LEGAL { reason: "OUT_OF_RANGE" }`   |
-| 9   | It is not in `bombedThisTurn`.                                                                                                                                                                                                                                                                                                                    | `BOMB_RUN_NOT_LEGAL { reason: "ALREADY_BOMBED" }` |
-| 10  | `to` is Chebyshev-adjacent to the target, strictly farther (Chebyshev) from the Gyrocopter's tile than the target is, explored, holds no treasure chest, and is a tile on which an ordinary `MOVE` of this Gyrocopter could end this turn (within Move 3 under the flyer rules: no unit, no mound, not a forbidden center, not allied territory). | `BOMB_RUN_NOT_LEGAL { reason: "LANDING" }`        |
+| #   | Requirement                                                                                                                                                                                                                                                                                                                                                                                        | Rejection                                         |
+| --- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
+| 1   | `unitId` is the actor's own unit on the board.                                                                                                                                                                                                                                                                                                                                                     | the ordinary unit errors                          |
+| 2   | Its role has `BOMB_RUN`.                                                                                                                                                                                                                                                                                                                                                                           | `UNIT_ROLE_INVALID { role }`                      |
+| 3   | It has not moved, has not used a primary action, and has not landed this turn.                                                                                                                                                                                                                                                                                                                     | `UNIT_ALREADY_ACTED`                              |
+| 4   | It is in land form.                                                                                                                                                                                                                                                                                                                                                                                | `BOMB_RUN_NOT_LEGAL { reason: "EMBARKED" }`       |
+| 5   | It is not sluggish.                                                                                                                                                                                                                                                                                                                                                                                | `BOMB_RUN_NOT_LEGAL { reason: "SLUGGISH" }`       |
+| 6   | `targetUnitId` is a unit on the board the actor can see.                                                                                                                                                                                                                                                                                                                                           | `TARGET_NOT_FOUND`                                |
+| 7   | It is hostile to the actor.                                                                                                                                                                                                                                                                                                                                                                        | `TARGET_ALLIED`                                   |
+| 8   | It is within Chebyshev distance `BOMB_RANGE_V7` (2) of the Gyrocopter; distance 1 is legal.                                                                                                                                                                                                                                                                                                        | `BOMB_RUN_NOT_LEGAL { reason: "OUT_OF_RANGE" }`   |
+| 9   | It is not in `bombedThisTurn`.                                                                                                                                                                                                                                                                                                                                                                     | `BOMB_RUN_NOT_LEGAL { reason: "ALREADY_BOMBED" }` |
+| 10  | `to` is within Chebyshev distance `BOMB_LANDING_RANGE_V7` (2) of the target, strictly farther (Chebyshev) from the Gyrocopter's tile than the target is, explored, holds no treasure chest, and is a tile on which an ordinary `MOVE` of this Gyrocopter could end this turn (within Move 3 under the flyer rules: no unit, no mound, no Barricade, not a forbidden center, not allied territory). | `BOMB_RUN_NOT_LEGAL { reason: "LANDING" }`        |
 
 The target may be in any form (a land unit, a flyer, an Egg, an embarked
 unit, or a boat). "Beyond the target" is the whole geometry rule: the
-landing is next to the target and farther from the start; no flight path is
-fixed. **Result,** in order:
+landing is within 2 of the target and farther from the start; no flight
+path is fixed. Dwarf crowd control (`pulp_wars-w49.33`) widened the landing
+from the eight tiles next to the target to every tile within 2 of it, so a
+Gyrocopter can bomb and land out of the target's reach; a landing still
+needs Move 3, so a target 2 away is bombed from at most 1 tile past it on
+the far side. **Result,** in order:
 
 1. **The flight.** The Gyrocopter stands on `to`. It is not a `MOVE`: the
    event carries `from` and `to` and no path, nothing about the way
@@ -9933,7 +9950,8 @@ fixed. **Result,** in order:
    under the ordinary rules, and a dead Brain's controlled unit is released. There is no
    advance.
 5. **A death blast** of an exploding target resolves as a chain: the
-   Gyrocopter, standing next to it, is in the blast.
+   Gyrocopter is in the blast when it landed next to the target (a landing
+   2 away is outside the 3 × 3 blast area).
 6. **Water.** If `to` is water and the Gyrocopter survived, it self-launches
    there (form `EMBARKED`, `UNIT_EMBARKED`).
 7. The Gyrocopter has used its Move and its primary action and is handled.
@@ -10102,6 +10120,73 @@ order (all rejections atomic):
   Move. Every tile around the Engineer is explored by its owner, so the
   command is exact.
 
+**Barricade** (Dwarf crowd control, `pulp_wars-w49.33`; ability
+`BARRICADE`, after `ASSEMBLE`). `BUILD_BARRICADE { kind, unitId, to }` is a
+primary action of the Engineer that may follow a Move: for
+`BARRICADE_COST_V7` **3** Coins it puts a Barricade on a free tile next to
+it. Legality, in this order (all rejections atomic):
+
+| #   | Requirement                                                                                                                                                                                 | Rejection                                    |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- |
+| 1   | `unitId` is the actor's own unit on the board.                                                                                                                                              | the ordinary unit errors                     |
+| 2   | Its role has `BARRICADE`.                                                                                                                                                                   | `UNIT_ROLE_INVALID { role }`                 |
+| 3   | It has not used a primary action; a sluggish Engineer has not moved.                                                                                                                        | `UNIT_ALREADY_ACTED`                         |
+| 4   | It is in land form.                                                                                                                                                                         | `BARRICADE_NOT_LEGAL { reason: "EMBARKED" }` |
+| 5   | The actor has fewer than `BARRICADE_CAP_V7` (**4**) Barricades standing.                                                                                                                    | `BARRICADE_NOT_LEGAL { reason: "CAP" }`      |
+| 6   | The actor has at least 3 Coins.                                                                                                                                                             | `INSUFFICIENT_COINS { cost }`                |
+| 7   | `to` is one of the eight tiles around the Engineer, explored by the actor, land and not a Rift, not a settlement site, with no unit, mound, Barricade, treasure chest, curiosity, or Grave. | `INVALID_TILE { action: "BUILD_BARRICADE" }` |
+
+- **Result.** The Coins are spent; a Barricade of the actor with
+  `BARRICADE_HP_V7` **10** HP stands on `to`; the Engineer is handled.
+  Event `BARRICADE_BUILT { playerId, unitId, at, cost }`, then the economy,
+  reward, and achievement tail. The territory does not matter (any owner's,
+  or none); the command is not offered at the cap or below 3 Coins.
+- **It blocks every unit.** No Move of any unit of any owner (flyers
+  included, and the owner's own) passes through or ends on a Barricade's
+  tile; a known one rejects the Move with `MOVEMENT_ILLEGAL` reason
+  `BARRICADE`, and one on a tile the mover had not explored before the
+  command interrupts the Move there (`UNIT_MOVE_INTERRUPTED` reason
+  `BARRICADE`), the mover staying on the last tile it entered. Through the
+  occupancy predicate nothing is placed on it either (a Push, a Knockback, a
+  Tractor Beam, Beam Down, an Assemble, a landing, a reward, a Re-bake, a
+  tunnel destination or rider tile, a bombing-run landing, a Monster's
+  step, a rising). It exerts no zone of control, gives no cover, and blocks
+  no sight.
+- **It is attacked.** `ATTACK_BARRICADE { kind, unitId, at }` is an attack
+  by a unit of any player hostile to the Barricade's owner. The attacker
+  rows are those of an `ATTACK`: the role has `ATTACK` and an Attack above
+  0 (`UNIT_ROLE_INVALID`; a Gyrocopter has none), it is not embarked,
+  icebound, or a torpedo (`ATTACK_NOT_LEGAL` with `EMBARKED`, `ICEBOUND`, or
+  `NOT_AFLOAT`), it has not used a primary action (an unmoved Gunner's
+  second shot is allowed) and may act after its Move
+  (`UNIT_ALREADY_ACTED`); then a Barricade on `at` on a tile the actor has
+  explored (`TARGET_NOT_FOUND`), hostile (`TARGET_ALLIED`), within the
+  attacker's range (`TARGET_OUT_OF_RANGE`). The damage is the ordinary
+  formula with the attacker's role Attack (no situational bonus) at its HP
+  ratio (an Unflinching construct at full) against **Defense 2**
+  (`BARRICADE_DEFENSE2_V7`) at the Barricade's HP ratio, no cover or
+  fortification, capped at its HP: a fresh Fighter deals a fresh Barricade 5. Nothing strikes back, nobody advances, no kill is credited, and the
+  Barricade is destroyed at 0 HP. Event `BARRICADE_ATTACKED { playerId,
+unitId, at, ownerId, damage, hpAfter, destroyed }`. Bombs, eruptions,
+  blasts, splash, Wail, and the Whirl never touch a Barricade.
+- **Repair, no regeneration.** It never heals by itself. An Engineer's
+  Repair (`TEND_WOUNDED`) also mends every damaged own Barricade within 1
+  by `min(4, 10 − hp)`, like a machine, with no once-a-turn limit (one
+  `BARRICADE_REPAIRED { playerId, unitId, at, amount, hpAfter }` each,
+  after `WOUNDED_TENDED`, which is left out when no unit was tended); Repair
+  is offered when only a Barricade needs it.
+- **It persists** until destroyed: it stays when its Engineer dies, keeps
+  its owner when the territory changes hands, and stays (an obstacle
+  nobody can repair) when its owner is eliminated.
+- **State and fog.** `GameStateV7.barricades` lists `{ at, ownerId, hp }`
+  sorted by (y, x); state parsing rejects an unsorted or duplicate entry,
+  HP outside 1 to 10, an owner that is no player, more than 4 of one owner,
+  a tile that is off the board, water, a Rift, a settlement site, or holds
+  a unit, a mound, a chest, or a curiosity, and any entry in a match
+  without a Dwarf seat. `PlayerViewV7.barricades` lists every Barricade on
+  a tile the viewer has explored (a structure, public like a Grave), with
+  its owner and HP.
+
 ### 22.9 Steam Cannon: Knockback
 
 - **Knockback** (role mechanic `knockback`). After an `ATTACK` by a
@@ -10236,15 +10321,19 @@ empty surfacedThisTurn and bombedThisTurn → income preview → next seat's Sta
 - **Commands:** `TUNNEL { kind, unitId, to, rider: null | { unitId, to } }`,
   `BOMB_RUN { kind, unitId, targetUnitId, to }`, and
   `ASSEMBLE { kind, unitId, to }`, in that order right after `COLD_SNAP` in
-  `COMMAND_KIND_ORDER_V7`. `MOVE` refuses mound tiles, the rider's foreign
+  `COMMAND_KIND_ORDER_V7` (the frozen sea's `FREEZE` came between them),
+  then (Dwarf crowd control, `pulp_wars-w49.33`) `WHIRL { kind, unitId }`,
+  `BUILD_BARRICADE { kind, unitId, to }`, and
+  `ATTACK_BARRICADE { kind, unitId, at }`. `MOVE` refuses mound tiles, the rider's foreign
   centers on its surfacing turn, and a Gunner after a shot; `ATTACK` allows
   the Gunner's second shot and is refused for a Gyrocopter; `TEND_WOUNDED`
   heals machines 4 for an Engineer; `RECOVER` is refused for constructs. A
   pending city reward blocks the three commands like every command.
-- **State:** `burrowed`, `surfacedThisTurn`, and `bombedThisTurn`, hashed,
-  saved, and replayed like `chilled`; `PlayerViewV7` carries the same three,
-  filtered by visibility ([section 15](#15-fog-and-observation)). Dig In
-  stores nothing.
+- **State:** `burrowed`, `surfacedThisTurn`, `bombedThisTurn`, and
+  (`pulp_wars-w49.33`) `barricades`, hashed, saved, and replayed like
+  `chilled`; `PlayerViewV7` carries the same four, filtered by visibility
+  ([section 15](#15-fog-and-observation); a Barricade on an explored tile).
+  Dig In and the Whirl store nothing.
 - **Events** (`DOMAIN_EVENT_KIND_ORDER_V7`):
 
   ```text
@@ -10254,12 +10343,20 @@ empty surfacedThisTurn and bombedThisTurn → income preview → next seat's Sta
                    results: [{ unitId, at, damage, dies, shieldDamage }] }        // after UNIT_TUNNELLED
   UNIT_BOMBED    { playerId, unitId, from, to, targetUnitId, at, damage,
                    shieldDamage, killed }                                         // after COMBAT_RESOLVED
+  WHIRL_RESOLVED { playerId, unitId, at,
+                   results: [{ unitId, at, damage, dies, shieldDamage }] }        // after UNIT_BOMBED
+  BARRICADE_ATTACKED { playerId, unitId, at, ownerId, damage, hpAfter,
+                   destroyed }                                                    // after WHIRL_RESOLVED
+  BARRICADE_BUILT { playerId, unitId, at, cost }                                  // after FIELD_DEFENSE_DESTROYED
+  BARRICADE_REPAIRED { playerId, unitId, at, amount, hpAfter }                    // after BARRICADE_BUILT
   ```
 
-  `UNIT_DIED.cause` gains `BOMB` and `ERUPTION`;
-  `FIELD_DEFENSE_DESTROYED.reason` gains `UNDERMINED`;
+  `UNIT_DIED.cause` gains `BOMB` and `ERUPTION` (a Whirl's kill is
+  `ATTACK`); `FIELD_DEFENSE_DESTROYED.reason` gains `UNDERMINED`;
   `UNIT_MOVE_INTERRUPTED.reason` and the movement failure reasons gain
-  `MOUND`. Knockback reuses `UNIT_PUSHED` and Repair `WOUNDED_TENDED`. There
+  `MOUND` and `BARRICADE`. A Whirl is projected like a Wail; the three
+  Barricade events reach the actor and every viewer that explored the tile
+  and sees the unit. Knockback reuses `UNIT_PUSHED` and Repair `WOUNDED_TENDED`. There
   is no event for Dig In, which is derived.
 
 - **Combat preview** (`CombatPreviewV7`, so also `COMBAT_RESOLVED`), three
@@ -10272,8 +10369,10 @@ empty surfacedThisTurn and bombedThisTurn → income preview → next seat's Sta
   reports the Gunner's second shot.
 - **Errors:** `TUNNEL_NOT_LEGAL` (reasons `EMBARKED`, `SURFACED`,
   `DESTINATION`, `RIDER`, `RIDER_DESTINATION`), `BOMB_RUN_NOT_LEGAL`
-  (`EMBARKED`, `SLUGGISH`, `OUT_OF_RANGE`, `ALREADY_BOMBED`, `LANDING`), and
-  `ASSEMBLE_NOT_LEGAL` (`EMBARKED`, `NO_HOME`); `RECOVER_NOT_LEGAL` gains
+  (`EMBARKED`, `SLUGGISH`, `OUT_OF_RANGE`, `ALREADY_BOMBED`, `LANDING`),
+  `ASSEMBLE_NOT_LEGAL` (`EMBARKED`, `NO_HOME`), and (`pulp_wars-w49.33`)
+  `WHIRL_NOT_LEGAL` (`EMBARKED`, `NO_TARGET`) and `BARRICADE_NOT_LEGAL`
+  (`EMBARKED`, `CAP`); `RECOVER_NOT_LEGAL` gains
   `CONSTRUCT`. A command naming a burrowed unit is `UNIT_ALREADY_HANDLED`;
   the rider's forbidden center is `MOVEMENT_ILLEGAL` reason
   `SETTLEMENT_FORBIDDEN`.
@@ -10282,26 +10381,33 @@ empty surfacedThisTurn and bombedThisTurn → income preview → next seat's Sta
   `BLASTING_CHARGES`; capabilities `digIn`, `assemble`, `bombDamage`,
   `eruptionDamage`, and `cannonIgnoresFortification`; abilities
   `RIDES_TUNNEL`, `DIG_IN`, `BOMB_RUN`, `CLOCKWORK`, `TWIN_SHOT`, `TUNNEL`,
-  `ERUPTION`, `ASSEMBLE`, `KNOCKBACK`, and `PLATED` (Repair keeps the
-  `TEND_WOUNDED` literal); role mechanics `construct`, `unflinchingAttack`,
-  `repairsAsMachine`, `repairMachineHeal`, `digsIn`, `tunnelRange`,
-  `ridesTunnel`, `bombs`, `unmovedShots`, `knockback`, and `plated`, with
+  `ERUPTION`, `ASSEMBLE`, `KNOCKBACK`, `PLATED`, `WHIRL`, and `BARRICADE`
+  (Repair keeps the `TEND_WOUNDED` literal); role mechanics `construct`,
+  `unflinchingAttack`, `repairsAsMachine`, `repairMachineHeal`, `digsIn`,
+  `tunnelRange`, `ridesTunnel`, `bombs`, `unmovedShots`, `knockback`,
+  `plated`, and `whirl`, with
   `buildsFieldDefense` false for the Hammerer and the Mole and
   `advancesAfterKill` false for the Gyrocopter, the Gunner, and the Cannon;
   faction rules `snow` false and `treasureUnitRole` `RAIDER`; constants
   `TUNNEL_RANGE_V7` 3, `ERUPTION_DAMAGE_V7` 2, `BLASTING_ERUPTION_DAMAGE_V7`
-  3, `BOMB_RANGE_V7` 2, `BOMB_DAMAGE_V7` 5, `DIVE_BOMB_DAMAGE_V7` 6,
-  `GUNNER_UNMOVED_SHOTS_V7` 2, `DIG_IN_RADIUS_V7` 1, `REPAIR_MACHINE_V7` 4,
-  `ASSEMBLE_COST_V7` 4, and `PLATED_CAP_V7` 4.
+  3, `BOMB_RANGE_V7` 2, `BOMB_LANDING_RANGE_V7` 2, `BOMB_DAMAGE_V7` 5,
+  `DIVE_BOMB_DAMAGE_V7` 6, `GUNNER_UNMOVED_SHOTS_V7` 2, `DIG_IN_RADIUS_V7`
+  1, `REPAIR_MACHINE_V7` 4, `ASSEMBLE_COST_V7` 4, `PLATED_CAP_V7` 4,
+  `BARRICADE_COST_V7` 3, `BARRICADE_HP_V7` 10, `BARRICADE_DEFENSE2_V7` 4
+  (Defense 2), and `BARRICADE_CAP_V7` 4.
 - **Derived queries** for a state and a view: `boardUnitsV7`,
-  `allOwnedUnitsV7`, and `tileOccupiedV7`; `isLivingUnitV7`;
+  `allOwnedUnitsV7`, `tileOccupiedV7`, and `barricadeAtV7`;
+  `isLivingUnitV7`;
   `unitIsDugInV7` (canonical) and `publicUnitIsDugInV7` (from the public
   stats).
 - **`queryPlayerCommandsV7`** offers, for a Dwarf seat, `TUNNEL` for every
   legal `(Mole, to, rider)` (one entry per destination and per rider tile,
   plus the rider-less entry), `BOMB_RUN` for every legal
   `(Gyrocopter, target, to)`, `ASSEMBLE` for every legal `(Engineer, to)`,
-  the Gunner's second shot, and Repair. It never offers `ATTACK` for a
+  `WHIRL` for a ready Whirligig with a target, `BUILD_BARRICADE` for every
+  legal `(Engineer, to)`, `ATTACK_BARRICADE` for every unit that could
+  attack now and every hostile Barricade in its range on an explored tile,
+  the Gunner's second shot, and Repair (also of a Barricade alone). It never offers `ATTACK` for a
   Gyrocopter, `RECOVER` for a construct, `MOVE` for a Gunner that fired, a
   Move onto a mound, a rider's foreign center on its surfacing turn, any
   command for a burrowed unit, or Field Defense or Rally to a Dwarf seat.
@@ -10321,7 +10427,18 @@ empty surfacedThisTurn and bombedThisTurn → income preview → next seat's Sta
   `previewAssembleV7(view, unitId)` →
   `{ unitId, cost, cityId, usedSlots, capacity, tiles }`.
   `queryAssembleUnavailableReasonV7` tells the UI why an own Engineer cannot
-  Assemble.
+  Assemble. Dwarf crowd control (`pulp_wars-w49.33`):
+  `previewWhirlV7(view, unitId)` →
+  `{ unitId, at, targets: [{ unitId, at, damage, dies, shieldDamage }], kills, exact }`
+  (each target's ordinary attack from the public combat preview; `exact`
+  is false only where a hidden Blizzard could change a target's cover);
+  `previewBuildBarricadeV7(view, unitId)` →
+  `{ unitId, cost, hp, standing, cap, tiles }`;
+  `previewAttackBarricadeV7(view, command)` →
+  `{ unitId, at, ownerId, damage, hpAfter, destroys }`;
+  `previewTendWoundedV7` adds `barricades: [{ at, amount, hpAfter }]`; and
+  `queryBarricadeUnavailableReasonV7` (`ALREADY_ACTED`, `EMBARKED`, `CAP`,
+  `INSUFFICIENT_COINS`, `INVALID_TILE`, or null).
 - `queryCombatPreviewV7` and `estimateCombatV7` include Dig In (from the
   defender's current `moved` flag and the public `dugIn`), Unflinching,
   Plated, Blasting Charges, the Gunner's allowance, and Knockback.
@@ -10340,7 +10457,7 @@ empty surfacedThisTurn and bombedThisTurn → income preview → next seat's Sta
 - `PublicPlayerV7` and the leaderboard carry `DWARF` and `DWARF_BASELINE_V1`;
   the leaderboard counts all owned units, burrowed ones included.
 
-### 22.15 The Whirligig: Three Hammers
+### 22.15 The Whirligig: Whirl
 
 `pulp-wars-poc-7r55` (`pulp_wars-w49.17`). The **Steam Tank is the Dwarf
 heavy line unit** (role `SWORDSMAN`, tactical label `LINE`, Metallurgy):
@@ -10357,17 +10474,31 @@ HP, never recovers by itself, is repaired by an Engineer, leaves no Grave,
 and is immune to Plague, bites, Wail, and Mind Control. Its numbers are
 first guesses.
 
-- **Three Hammers** (`attacksPerTurn` 3, `WHIRLIGIG_ATTACKS_V7`). A
-  Whirligig may attack three times in its turn, whether or not it moved
-  first, each time a **different unit**: a unit it has attacked this turn
-  is no target for the same Whirligig again that turn
-  (`ninthUnit.struckThisTurn`; the error is `ATTACK_NOT_LEGAL` with the
-  reason `ALREADY_STRUCK`, and the command is not offered).
-- It never advances after a kill and cannot move after its first attack,
-  so all three attacks are made from one tile. Each is a full exchange:
-  every target that survives strikes back.
-- After its first attack it waits for orders until its third or the End
-  Turn; its public stats say how many attacks remain.
+- **Whirl** (Dwarf crowd control, `pulp_wars-w49.33`; ability `WHIRL`, role
+  mechanic `whirl`; it replaced the `7r55` Three Hammers, whose
+  `attacksPerTurn`, `WHIRLIGIG_ATTACKS_V7`, `ninthUnit.struckThisTurn`, and
+  `ALREADY_STRUCK` are gone). `WHIRL { kind, unitId }` is the Whirligig's
+  primary action and may follow a Move. It hits **every unit within
+  Chebyshev 1 that is hostile to its owner and visible to it, at once**: a
+  land unit, a flyer, an Egg, an embarked unit, or a boat, each for the
+  damage of the Whirligig's ordinary attack on it (section 13.2 with every
+  Defense, cover, fortification, Dig In, Armoured, Plated, and Shield rule
+  of that defender; the Whirligig's force is Unflinching), all computed
+  from the board before the Whirl. **Nothing answers it**: no retaliation,
+  Shock Field, or Frostbite. Kills have cause `ATTACK` and are credited to
+  the Whirligig (Promotion, Slayer, Plunder, a Monster's bounty), in
+  (y, x, id) order, each with its Grave or Bitten rising; a dead Brain's
+  units are released; death blasts chain (one next to the Whirligig hits
+  it); risings reveal. There is **no advance**. Legality: the ordinary unit
+  errors; the role (`UNIT_ROLE_INVALID`); no primary action used, no attack
+  made, and the role's act-after-Move rule (`UNIT_ALREADY_ACTED`); land
+  form (`WHIRL_NOT_LEGAL { reason: "EMBARKED" }`); at least one target
+  (`WHIRL_NOT_LEGAL { reason: "NO_TARGET" }`). Event `WHIRL_RESOLVED`
+  (shape in [section 22.14](#2214-commands-events-errors-and-queries)).
+  It destroys no Field Defense and never touches a Barricade.
+- Its ordinary `ATTACK` stays (one a turn, a full exchange, never an
+  advance): it is the Whirligig's way to hit a Barricade. A Whirl or an
+  attack is its one primary action of the turn.
 
 ## 23. Candy faction rules
 
@@ -10923,6 +11054,7 @@ first guesses.
 | Tuning        | `pulp-wars-poc-7r58` | `pulp_wars-w49.26` [step two of the Dinosaur pass](RULESET_7_TUNING_DINOSAUR.md#14-step-two) after a hand-played game as the Humans against the Dinosaur AI before the change and one after it, two as the Dinosaurs (against the Goblin AI and against three AIs), the lab, and six diagnostic matches, no rule and no identity change: a Dinosaur seat of the Normal AI researches the Spitter and the Raptor before the Triceratops, trains before it researches while it is short of units, keeps the price of a due technology it can pay, sends no Caveman or Raptor into contact alone to die, counts a Triceratops's run-up before its Move and the Crack of a Stegosaurus's shot, and strikes with the Stegosaurus first, then its dinosaurs, then its Cavemen                                                                                                                                                                                                                                                                                                                                                                               |
 | Tuning        | `pulp-wars-poc-7r59` | `pulp_wars-w49.27` [step two of the Ice Folk pass](RULESET_7_TUNING_ICE_FOLK.md) after a hand-played game as the Humans against the Ice Folk AI before the change and one after it, three as the Ice Folk (twice against the Goblin AI, once against three AIs), the lab, two labs on water, and eight diagnostic matches: an Ice Folk city's level-2 Survey grants a free Sled (Scouts); an Ice Folk seat of the Normal AI plays the army rules in a match without a Dwarf or a Candy seat, researches the Sled, the Snow Hunter, and the Musk Ox first, caps its Musk Oxen, counts Cold Blood, Planted, Rockfall, and Shatter, throws the Bolas before the blow that shatters, and keeps its shooters out of reach; the lab `LAB_ICE_FOLK_MID`                                                                                                                                                                                                                                                                                                                                                                                                      |
 | Tuning        | `pulp-wars-poc-7r59` | `pulp_wars-w49.28` [step two of the Dwarf pass](RULESET_7_TUNING_DWARF.md) after a hand-played game as the Humans against the Dwarf AI before the change, one against a first draft, and one after it, four as the Dwarves (against the older and the army Goblin AI, against three AIs, and against the Human AI), the lab, and diagnostic matches, no rule and no identity change: a Dwarf seat of the Normal AI plays the army rules in a match without a Candy seat, researches the Steam Mole, the Clockwork Gunner, and the Gyrocopter first, trains before it researches while it is short of capturers, takes the 4 Coins at level 2, counts its units of less than 15 HP as weak links of a Knight's chain with the Mole and the Tank as escorts, and keeps its Gunners out of reach; the lab `LAB_DWARF_MID`                                                                                                                                                                                                                                                                                                                                |
+| Crowd control | `pulp-wars-poc-7r60` | `pulp_wars-w49.33` Dwarf crowd control, engine (user request of 2026-10-09): the Whirligig's **Whirl** replaces Three Hammers (one primary action that hits every visible hostile unit within 1 with its ordinary attack, unanswered, no advance; `struckThisTurn` and `ALREADY_STRUCK` removed); the Engineer's **Barricade** (3 Coins, 10 HP, Defense 2, at most 4 standing, blocks every unit's Move and every placement, attacked with `ATTACK_BARRICADE`, repaired like a machine, never regenerates, persists until destroyed; new state `barricades`); the **Bomb Run** lands up to 2 tiles from its target ([section 22.5](#225-gyrocopters-and-the-bombing-run), [section 22.8](#228-engineer-repair-and-assemble), [section 22.15](#2215-the-whirligig-whirl)). The Normal AI Whirls instead of attacking one unit and ignores Barricades as targets.                                                                                                                                                                                                                                                                                       | [Dwarf overlay section 24](RULESET_7_DWARVES.md#24-crowd-control-pulp_wars-w4933)                                                     |
 
 **Documentation parity (2026-09-28, no ruleset or identity change):** where
 older documents disagreed with the code, the code's behavior was adopted as

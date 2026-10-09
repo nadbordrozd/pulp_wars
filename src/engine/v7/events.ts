@@ -567,6 +567,29 @@ export type DomainEventV7 =
       readonly cost: 3;
     }
   | {
+      /**
+       * Dwarf crowd control (`pulp_wars-w49.33`): the Engineer `unitId` of
+       * `playerId` built a Barricade on `at` for `cost` Coins.
+       */
+      readonly kind: "BARRICADE_BUILT";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly at: CoordV7;
+      readonly cost: number;
+    }
+  | {
+      /**
+       * Dwarf crowd control: the Engineer `unitId` of `playerId` repaired its
+       * Barricade on `at` by `amount` to `hpAfter` (with a Repair).
+       */
+      readonly kind: "BARRICADE_REPAIRED";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly at: CoordV7;
+      readonly amount: number;
+      readonly hpAfter: number;
+    }
+  | {
       readonly kind: "FIELD_DEFENSE_DESTROYED";
       readonly at: CoordV7;
       readonly reason:
@@ -949,6 +972,11 @@ export type DomainEventV7 =
          */
         | "MOUND"
         /**
+         * Dwarf crowd control (`pulp_wars-w49.33`): the unit met a
+         * Barricade on a tile it had not known before the command.
+         */
+        | "BARRICADE"
+        /**
          * The frozen sea (naval branch section 8.7): a ground unit that
          * slips entered ice it had not known before the command and stopped
          * there.
@@ -977,6 +1005,34 @@ export type DomainEventV7 =
       readonly damage: number;
       readonly shieldDamage: number;
       readonly killed: boolean;
+    }
+  | {
+      /**
+       * Dwarf crowd control (`pulp_wars-w49.33`): the Whirligig `unitId` on
+       * `at` hit every target, in (y, x, id) order, with its ordinary attack
+       * (`damage` is HP damage). Nothing struck back. Deaths follow as
+       * `UNIT_DIED` cause `ATTACK`.
+       */
+      readonly kind: "WHIRL_RESOLVED";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly at: CoordV7;
+      readonly results: readonly CombatSplashEntryV7[];
+    }
+  | {
+      /**
+       * Dwarf crowd control: the unit `unitId` of `playerId` attacked the
+       * Barricade of `ownerId` on `at` for `damage`, leaving `hpAfter`;
+       * `destroyed` when that is 0 (the Barricade is gone).
+       */
+      readonly kind: "BARRICADE_ATTACKED";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly at: CoordV7;
+      readonly ownerId: PlayerId;
+      readonly damage: number;
+      readonly hpAfter: number;
+      readonly destroyed: boolean;
     }
   | {
       /**

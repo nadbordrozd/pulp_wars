@@ -1,8 +1,8 @@
 {
   "schemaVersion": 7,
-  "rulesetId": "pulp-wars-poc-7r59",
+  "rulesetId": "pulp-wars-poc-7r60",
   "setup": {
-    "rulesetId": "pulp-wars-poc-7r59",
+    "rulesetId": "pulp-wars-poc-7r60",
     "seed": 9,
     "width": 14,
     "height": 14,
@@ -2963,9 +2963,9 @@
   "ninthUnit": {
     "wightGraves": [],
     "risenWights": [],
-    "crackedThisTurn": [],
-    "struckThisTurn": []
+    "crackedThisTurn": []
   },
+  "barricades": [],
   "pendingChoices": [],
   "outcome": null
 }

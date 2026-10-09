@@ -102,9 +102,9 @@ interface ArenaOptions {
 
 describe("ruleset-7 revision-14 identity and roster", () => {
   it("keeps rejecting r13 after the r54 identity and cleans the r13 through r53 save keys", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r59");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r59.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-46, -4)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r60");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r60.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-47, -5)).toEqual([
       "pulpWars.save.v7r13.current",
       "pulpWars.save.v7r14.current",
       "pulpWars.save.v7r15.current",
@@ -811,7 +811,9 @@ describe("ruleset-7 revision-14 Tend Wounded cures", () => {
         curedChill: false,
       },
     ].sort((left, right) => left.unitId - right.unitId);
-    expect(preview).toEqual({ results: expected });
+    // Dwarf crowd control (`pulp_wars-w49.33`): the preview also lists an
+    // Engineer's Barricade repairs, none for a Captain.
+    expect(preview).toEqual({ results: expected, barricades: [] });
     const tended = apply(state, state.humanPlayerId, {
       kind: "TEND_WOUNDED",
       unitId: captain.id,

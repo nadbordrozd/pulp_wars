@@ -49,6 +49,8 @@ import {
   unitShieldMaximumV7,
 } from "../src/engine/v7/martian";
 import {
+  BARRICADE_COST_V7,
+  BARRICADE_HP_V7,
   BASIC_ECONOMIC_ACTIONS_V7,
   FACTION_DISPLAY_NAMES_V7,
   FACTION_IDS_V7,
@@ -78,11 +80,13 @@ import {
   parseGameStateV7,
   playerIncomeV7,
   previewAssembleV7,
+  previewAttackBarricadeV7,
   previewAttackExplosionsV7,
   previewBeamDownV7,
   previewBoardV7,
   previewBolasV7,
   previewBombRunV7,
+  previewBuildBarricadeV7,
   previewColdSnapV7,
   previewDevourV7,
   previewEconomicV7,
@@ -100,6 +104,7 @@ import {
   previewTractorBeamV7,
   previewTunnelV7,
   previewWailV7,
+  previewWhirlV7,
   projectEventsV7,
   queryCombatPreviewV7,
   queryIdleRecoveryV7,
@@ -956,6 +961,13 @@ export function textPlayCommandIdV7(command: CommandV7): string {
       return `u${command.unitId}.land.${xyV7(command.at)}`;
     case "ASSEMBLE":
       return `u${command.unitId}.assemble.${xyV7(command.to)}`;
+    // Dwarf crowd control (`pulp_wars-w49.33`).
+    case "WHIRL":
+      return `u${command.unitId}.whirl`;
+    case "BUILD_BARRICADE":
+      return `u${command.unitId}.barricade.${xyV7(command.to)}`;
+    case "ATTACK_BARRICADE":
+      return `u${command.unitId}.a.${xyV7(command.at)}`;
     case "RALLY":
       return `u${command.unitId}.rally`;
     case "TEND_WOUNDED":
@@ -1163,6 +1175,7 @@ function commandGroupV7(command: CommandV7): CommandGroupV7 | "end" {
     case "DISEMBARK":
       return "move";
     case "ATTACK":
+    case "ATTACK_BARRICADE":
       return "attack";
     default:
       return "unitId" in command ? "unit" : "tile";
@@ -1729,6 +1742,13 @@ function describeCommandV7(
       return `bomb ${context.memory.tag(command.targetUnitId)} and land on ${xyV7(command.to)}${generic(previewBombRunV7(view, command))}`;
     case "ASSEMBLE":
       return `assemble on ${xyV7(command.to)}${generic(previewAssembleV7(view, command.unitId))}`;
+    // Dwarf crowd control (`pulp_wars-w49.33`).
+    case "WHIRL":
+      return `whirl: hit every enemy next to it at once, nobody hits back${generic(previewWhirlV7(view, command.unitId))}`;
+    case "BUILD_BARRICADE":
+      return `build a barricade on ${xyV7(command.to)} (${BARRICADE_COST_V7}c, ${BARRICADE_HP_V7} HP, blocks every unit until destroyed)${generic(previewBuildBarricadeV7(view, command.unitId))}`;
+    case "ATTACK_BARRICADE":
+      return `attack the barricade on ${xyV7(command.at)}${generic(previewAttackBarricadeV7(view, command))}`;
     case "SUGAR_RUSH":
       return `sugar rush${generic(previewSugarRushV7(view, command.unitId))}`;
     case "REBAKE":
@@ -2611,7 +2631,7 @@ const LEGEND_V7 = [
   "LEGEND cell = terrain feature mark owner unit (7 chars), ??????? = unexplored. There is no re-fog: an explored tile shows everything on it.",
   "  terrain: . grass  f forest  ^ mountain  ~ shallow water  = deep water  # rift",
   "  feature: C capital  c city  v neutral village | F farm L lumber camp M mine W windmill S sawmill G forge K workshop $ market O monument P port Y shipyard | r fruit g fertile ground a game o ore h fish p pearls * hidden resource  - none",
-  "  mark: ! treasure chest  & curiosity  d field defense  + road  x grave  w Wight's marked Grave  i ice  m crumbs  - none | owner: seat digit of the territory, - neutral",
+  "  mark: ! treasure chest  & curiosity  B barricade  d field defense  + road  x grave  w Wight's marked Grave  i ice  m crumbs  - none | owner: seat digit of the territory, - neutral",
   "  unit: seat digit (N = neutral monster) + role code Fi fighter Ra raider Mk marksman Gd guard Cp captain Ct catapult Kn knight Ch champion (the heavy) Jg juggernaut Pb patrol boat Bs battleship Sb submarine, lowercase e- = egg, --- none",
 ];
 
@@ -2660,19 +2680,21 @@ function mapLinesV7(view: PlayerViewV7): readonly string[] {
         ? "!"
         : view.curiosities.some((entry) => sameV7(entry.at, at))
           ? "&"
-          : tile.fieldDefense
-            ? "d"
-            : tile.road
-              ? "+"
-              : wightGraveAtV7(view, at) !== null
-                ? "w"
-                : has(view.graves, at)
-                  ? "x"
-                  : view.ice.some((entry) => sameV7(entry.at, at))
-                    ? "i"
-                    : view.crumbs.some((entry) => sameV7(entry.at, at))
-                      ? "m"
-                      : "-";
+          : view.barricades.some((entry) => sameV7(entry.at, at))
+            ? "B"
+            : tile.fieldDefense
+              ? "d"
+              : tile.road
+                ? "+"
+                : wightGraveAtV7(view, at) !== null
+                  ? "w"
+                  : has(view.graves, at)
+                    ? "x"
+                    : view.ice.some((entry) => sameV7(entry.at, at))
+                      ? "i"
+                      : view.crumbs.some((entry) => sameV7(entry.at, at))
+                        ? "m"
+                        : "-";
       const owner =
         tile.territoryOwnerId === null
           ? "-"
@@ -3215,6 +3237,12 @@ function viewLinesV7(session: SessionV7, full: boolean): string[] {
   if (view.crumbs.length > 0)
     specials.push(
       `crumbs: ${view.crumbs.map((entry) => `${xyV7(entry.at)}(${seatLabelV7(view, entry.ownerId)})`).join(" ")}`,
+    );
+  // Dwarf crowd control (`pulp_wars-w49.33`): every Barricade on an
+  // explored tile, with its owner and HP.
+  if (view.barricades.length > 0)
+    specials.push(
+      `barricades (block every unit until destroyed): ${view.barricades.map((entry) => `${xyV7(entry.at)}(${seatLabelV7(view, entry.ownerId)} ${String(entry.hp)}/${String(BARRICADE_HP_V7)} HP)`).join(" ")}`,
     );
   if (view.ice.length > 0)
     specials.push(`ice: ${view.ice.map((entry) => xyV7(entry.at)).join(" ")}`);

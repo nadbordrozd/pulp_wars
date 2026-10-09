@@ -6,6 +6,8 @@ import type {
 } from "./events";
 import {
   ASSEMBLE_COST_V7,
+  BARRICADE_COST_V7,
+  BARRICADE_HP_V7,
   BLASTING_ERUPTION_DAMAGE_V7,
   DIVE_BOMB_DAMAGE_V7,
   HEAVY_TRACTOR_PULL_V7,
@@ -183,6 +185,9 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
   ROAD_BUILT: ["kind", "playerId", "cityId", "at", "cost"],
   FIELD_DEFENSE_BUILT: ["kind", "playerId", "unitId", "at", "cost"],
   FIELD_DEFENSE_DESTROYED: ["kind", "at", "reason"],
+  // Dwarf crowd control (`pulp_wars-w49.33`).
+  BARRICADE_BUILT: ["kind", "playerId", "unitId", "at", "cost"],
+  BARRICADE_REPAIRED: ["kind", "playerId", "unitId", "at", "amount", "hpAfter"],
   LAND_GRANTED: ["kind", "playerId", "cityId", "cost", "tiles"],
   CITY_ECONOMY_CHANGED: [
     "kind",
@@ -371,6 +376,17 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
     "killed",
   ],
   WAIL_RESOLVED: ["kind", "playerId", "unitId", "at", "results"],
+  WHIRL_RESOLVED: ["kind", "playerId", "unitId", "at", "results"],
+  BARRICADE_ATTACKED: [
+    "kind",
+    "playerId",
+    "unitId",
+    "at",
+    "ownerId",
+    "damage",
+    "hpAfter",
+    "destroyed",
+  ],
   EXPLOSION_RESOLVED: [
     "kind",
     "playerId",
@@ -962,6 +978,24 @@ function validPayload(
         parseCoordV7(e.at) !== null &&
         e.cost === 3
       );
+    case "BARRICADE_BUILT":
+      return (
+        id(e.playerId) &&
+        id(e.unitId) &&
+        parseCoordV7(e.at) !== null &&
+        e.cost === BARRICADE_COST_V7
+      );
+    case "BARRICADE_REPAIRED":
+      return (
+        id(e.playerId) &&
+        id(e.unitId) &&
+        parseCoordV7(e.at) !== null &&
+        pos(e.amount) &&
+        Number(e.amount) <= REPAIR_MACHINE_V7 &&
+        pos(e.hpAfter) &&
+        Number(e.hpAfter) <= BARRICADE_HP_V7 &&
+        Number(e.amount) < Number(e.hpAfter)
+      );
     case "FIELD_DEFENSE_DESTROYED":
       return (
         parseCoordV7(e.at) !== null &&
@@ -1317,6 +1351,8 @@ function validPayload(
           "SNOW",
           // The Dwarf revision: a hidden mound on the last tile of a Move.
           "MOUND",
+          // Dwarf crowd control: a Barricade the mover did not know of.
+          "BARRICADE",
           // The frozen sea: ice a slipping unit had not known before.
           "ICE",
         ].includes(e.reason as string)
@@ -1349,6 +1385,49 @@ function validPayload(
         id(e.unitId) &&
         parseCoordV7(e.at) !== null &&
         splashEntries(e.results, true)
+      );
+    // Dwarf crowd control (`pulp_wars-w49.33`): a Whirl hits at least one
+    // unit next to the Whirligig, never itself.
+    case "WHIRL_RESOLVED": {
+      const at = parseCoordV7(e.at);
+      return (
+        id(e.playerId) &&
+        id(e.unitId) &&
+        at !== null &&
+        splashEntries(e.results, true) &&
+        (
+          e.results as readonly {
+            unitId: number;
+            at: { x: number; y: number };
+          }[]
+        ).length > 0 &&
+        (
+          e.results as readonly {
+            unitId: number;
+            at: { x: number; y: number };
+          }[]
+        ).every(
+          (entry) =>
+            entry.unitId !== e.unitId &&
+            Math.max(
+              Math.abs(entry.at.x - at.x),
+              Math.abs(entry.at.y - at.y),
+            ) <= 1,
+        )
+      );
+    }
+    case "BARRICADE_ATTACKED":
+      return (
+        id(e.playerId) &&
+        id(e.unitId) &&
+        id(e.ownerId) &&
+        e.playerId !== e.ownerId &&
+        parseCoordV7(e.at) !== null &&
+        nn(e.damage) &&
+        Number(e.damage) <= BARRICADE_HP_V7 &&
+        nn(e.hpAfter) &&
+        Number(e.hpAfter) + Number(e.damage) <= BARRICADE_HP_V7 &&
+        e.destroyed === (e.hpAfter === 0)
       );
     case "EXPLOSION_RESOLVED":
       // Revision 17: the results never name the exploder and lie in its

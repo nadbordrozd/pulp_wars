@@ -18,7 +18,6 @@ import {
   type CoordV7,
   type GameStateV7,
   type NinthUnitStateV7,
-  type StruckEntryV7,
   type UnitFormV7,
   type UnitRoleIdV7,
   type UnitStateV7,
@@ -31,8 +30,9 @@ import {
  * queries, and the stats share for the mechanics of the units added to (or
  * moved inside) every roster: the Ogre's Heavyweight (in `gangUpBonusV7`),
  * the Wight's Rise Again, the Shock Trooper's Shock Field, the Jawbreaker's
- * Rock Hard, the Stegosaurus's Thagomizer, the Musk Ox's Frostbite, and the
- * Whirligig's Three Hammers. Every helper returns the neutral answer for a
+ * Rock Hard, the Stegosaurus's Thagomizer, and the Musk Ox's Frostbite (the
+ * Whirligig's Three Hammers became Whirl, `pulp_wars-w49.33`, in
+ * `dwarf-crowd-control.ts`). Every helper returns the neutral answer for a
  * unit without the mechanic.
  */
 
@@ -46,10 +46,7 @@ export interface NinthUnitFactsV7 {
 
 /** Anything that carries the stored ninth-unit lists (state or view). */
 export interface NinthUnitLookupV7 {
-  readonly ninthUnit?: Pick<
-    NinthUnitStateV7,
-    "crackedThisTurn" | "struckThisTurn"
-  >;
+  readonly ninthUnit?: Pick<NinthUnitStateV7, "crackedThisTurn">;
 }
 
 // ---------------------------------------------------------- Rock Hard ---
@@ -189,65 +186,6 @@ export function attackIsFrostbittenV7(
   );
 }
 
-// ------------------------------------------------------ Three Hammers ---
-
-/**
- * Three Hammers (the Dwarf Whirligig): the attacks a land-form unit may make
- * in a turn whether or not it moved (`attacksPerTurn`; 1 for every other
- * role).
- */
-export function unitAttacksPerTurnV7(
-  roster: FactionRosterV7,
-  unit: NinthUnitFactsV7,
-): number {
-  return unit.form === "LAND"
-    ? unitRoleMechanicsV7(roster, unit).attacksPerTurn
-    : 1;
-}
-
-/**
- * Three Hammers: whether `attacker`, a unit that may attack more than once
- * a turn, has already attacked `targetUnitId` this turn (each of its
- * attacks is on a different unit).
- */
-export function targetAlreadyStruckV7(
-  lookup: NinthUnitLookupV7,
-  attackerId: UnitId,
-  targetUnitId: UnitId,
-): boolean {
-  const list = lookup.ninthUnit?.struckThisTurn;
-  return (
-    list !== undefined &&
-    list.length > 0 &&
-    list.some(
-      (entry) =>
-        entry.unitId === attackerId && entry.targetUnitId === targetUnitId,
-    )
-  );
-}
-
-/** `list` with the pair inserted, sorted by attacker then target. */
-export function withStruckV7(
-  list: readonly StruckEntryV7[],
-  entry: StruckEntryV7,
-): readonly StruckEntryV7[] {
-  if (
-    list.some(
-      (item) =>
-        item.unitId === entry.unitId &&
-        item.targetUnitId === entry.targetUnitId,
-    )
-  )
-    return list;
-  return [
-    ...list,
-    { unitId: entry.unitId, targetUnitId: entry.targetUnitId },
-  ].sort(
-    (left, right) =>
-      left.unitId - right.unitId || left.targetUnitId - right.targetUnitId,
-  );
-}
-
 // ---------------------------------------------------------- Rise Again ---
 
 /**
@@ -322,8 +260,7 @@ export function prunedNinthUnitV7(state: GameStateV7): GameStateV7 {
   if (
     current.wightGraves.length === 0 &&
     current.risenWights.length === 0 &&
-    current.crackedThisTurn.length === 0 &&
-    current.struckThisTurn.length === 0
+    current.crackedThisTurn.length === 0
   )
     return state;
   const onBoard = new Set(
@@ -345,13 +282,9 @@ export function prunedNinthUnitV7(state: GameStateV7): GameStateV7 {
   const crackedThisTurn = current.crackedThisTurn.filter((unitId) =>
     onBoard.has(unitId),
   );
-  const struckThisTurn = current.struckThisTurn.filter((entry) =>
-    onBoard.has(entry.unitId),
-  );
   return wightGraves.length === current.wightGraves.length &&
     risenWights.length === current.risenWights.length &&
-    crackedThisTurn.length === current.crackedThisTurn.length &&
-    struckThisTurn.length === current.struckThisTurn.length
+    crackedThisTurn.length === current.crackedThisTurn.length
     ? state
     : {
         ...state,
@@ -359,21 +292,16 @@ export function prunedNinthUnitV7(state: GameStateV7): GameStateV7 {
           wightGraves,
           risenWights,
           crackedThisTurn,
-          struckThisTurn,
         },
       };
 }
 
-/** The per-turn lists emptied at an End Turn (Cracked, struck). */
+/** The per-turn list emptied at an End Turn (Cracked). */
 export function withNinthUnitTurnEndedV7(state: GameStateV7): GameStateV7 {
   const current = state.ninthUnit;
-  return current.crackedThisTurn.length === 0 &&
-    current.struckThisTurn.length === 0
+  return current.crackedThisTurn.length === 0
     ? state
-    : {
-        ...state,
-        ninthUnit: { ...current, crackedThisTurn: [], struckThisTurn: [] },
-      };
+    : { ...state, ninthUnit: { ...current, crackedThisTurn: [] } };
 }
 
 /**

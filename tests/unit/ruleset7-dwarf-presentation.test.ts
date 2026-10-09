@@ -153,8 +153,9 @@ describe("Dwarf texts (RULESET_7_DWARVES.md section 16)", () => {
       "Knockback",
       "Plated",
       "Blasting Charges",
-      // The ninth unit (`pulp_wars-w49.17`, 7r55): the Whirligig.
-      "Three Hammers",
+      // The ninth unit (`pulp_wars-w49.17`, 7r55): the Whirligig's Whirl
+      // (`pulp_wars-w49.33`, which replaced Three Hammers).
+      "Whirl",
     ]);
     const rules = new Map(DWARF_HELP_RULES_V7);
     expect(rules.get("Tunnel")).toBe(

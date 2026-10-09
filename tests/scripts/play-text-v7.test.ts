@@ -1437,6 +1437,116 @@ describe("text-mode play harness", () => {
     }
   });
 
+  // Dwarf crowd control (`pulp_wars-w49.33`): the harness shows the
+  // Barricades and offers the Whirl, the Barricade, and an attack on one.
+  it("shows Barricades on the map and in the view, and offers Whirl, Barricade, and an attack on a Barricade", () => {
+    const dwarfSession = (name: string): string => {
+      const session = path.join(root, `${name}.json`);
+      ok(
+        "new",
+        "--session",
+        session,
+        "--map",
+        "dry-land",
+        "--size",
+        "11",
+        "--seed",
+        SEED,
+        "--factions",
+        "dwarf,original",
+        "--seat",
+        "0",
+      );
+      return session;
+    };
+    const session = dwarfSession("crowd-control");
+    const start = sessionState(session);
+    const me = start.turnOrder[start.activeSeatIndex];
+    if (me === undefined) throw new Error("no active seat");
+    const mine = start.units.find((unit) => unit.ownerId === me);
+    const theirs = start.units.find((unit) => unit.ownerId !== me);
+    if (mine === undefined || theirs === undefined)
+      throw new Error("the arena is not as expected");
+    const free = viewForV7(start, me).board.tiles.filter(
+      (tile) =>
+        tile.explored &&
+        tile.site === null &&
+        tile.terrain === "GRASS" &&
+        !start.units.some(
+          (unit) => unit.at.x === tile.at.x && unit.at.y === tile.at.y,
+        ) &&
+        Math.max(
+          Math.abs(tile.at.x - mine.at.x),
+          Math.abs(tile.at.y - mine.at.y),
+        ) === 1,
+    );
+    const [enemyAt, barricadeAt] = free.map((tile) => tile.at);
+    if (enemyAt === undefined || barricadeAt === undefined)
+      throw new Error("no two open tiles beside the unit");
+    const whirligig = effectiveRoleRuleV7("KNIGHT", "DWARF");
+    patchState(session, (state) => ({
+      ...state,
+      units: state.units.map((unit) =>
+        unit.id === mine.id
+          ? {
+              ...unit,
+              role: "KNIGHT",
+              hp: whirligig.maxHp,
+              maxHp: whirligig.maxHp,
+              captureEligible: false,
+            }
+          : unit.id === theirs.id
+            ? { ...unit, at: enemyAt, captureEligible: false }
+            : unit,
+      ),
+      barricades: [{ at: barricadeAt, ownerId: theirs.ownerId, hp: 10 }],
+    }));
+    const xy = `${barricadeAt.x},${barricadeAt.y}`;
+    const view = ok("view", "--session", session, "--full");
+    expect(view).toContain(
+      `barricades (block every unit until destroyed): ${xy}(S1 10/10 HP)`,
+    );
+    expect(view).toContain("B barricade");
+    const row = view
+      .split("\n")
+      .find((line) => line.startsWith(`y${String(barricadeAt.y).padEnd(3)} |`));
+    expect(row?.split("|")[barricadeAt.x + 1]?.[2]).toBe("B");
+    const ids = offeredIds(session);
+    expect(ids).toContain(`u${mine.id}.whirl`);
+    expect(ids).toContain(`u${mine.id}.a.${xy}`);
+    expect(
+      ok("options", "--session", session, "--unit", `u${mine.id}`),
+    ).toContain("whirl: hit every enemy next to it at once, nobody hits back");
+    ok("do", "--session", session, `u${mine.id}.whirl`);
+    expect(
+      sessionState(session).units.find((unit) => unit.id === mine.id),
+    ).toMatchObject({ activation: { attacked: true, handled: true } });
+
+    // An Engineer builds one.
+    const build = dwarfSession("crowd-control-engineer");
+    const engineer = effectiveRoleRuleV7("CAPTAIN", "DWARF");
+    patchState(build, (state) => ({
+      ...state,
+      units: state.units.map((unit) =>
+        unit.id === mine.id
+          ? {
+              ...unit,
+              role: "CAPTAIN",
+              hp: engineer.maxHp,
+              maxHp: engineer.maxHp,
+              captureEligible: false,
+            }
+          : unit,
+      ),
+    }));
+    const barricade = `u${mine.id}.barricade.${xy}`;
+    expect(offeredIds(build)).toContain(barricade);
+    ok("do", "--session", build, barricade);
+    expect(sessionState(build).barricades).toEqual([
+      { at: barricadeAt, ownerId: me, hp: 10 },
+    ]);
+  });
+
   it("rejects illegal and stale ids cleanly", () => {
     const session = newSession("reject");
     const before = JSON.parse(readFileSync(session, "utf8")) as Record<

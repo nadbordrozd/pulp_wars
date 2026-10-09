@@ -541,7 +541,10 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // `pulp_wars-v3w`: the public Restless test moved to the shared Recover
     // predicate (recovery.ts, which asks for the land form and excludes an
     // Egg and an embarked unit by name).
-    "src/engine/v7/query.ts": 2,
+    // Dwarf crowd control (`pulp_wars-w49.33`): the public Barricade tiles
+    // and the unavailable reason are an Engineer's in land form (an
+    // embarked Engineer builds nothing; an Egg is not an Engineer).
+    "src/engine/v7/query.ts": 4,
     // `pulp_wars-b5f.6`: the Mind Control target gate moved from the
     // reducer into the shared `mindControlTargetBlockV7` (martian.ts), which
     // the reducer and the public query both call; the Brain gate stays in
@@ -563,8 +566,15 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     "src/engine/v7/dwarf-reducer.ts": 5,
     // The ninth unit (`pulp_wars-w49.17`, 7r55): the attacks a unit has in
     // a turn (`attackAllowanceV7`: an Egg and an embarked unit have the one
-    // attack of their transport, never a Whirligig's three).
+    // attack of their transport, never a Gunner's two).
     "src/engine/v7/dwarf.ts": 2,
+    // Dwarf crowd control (`pulp_wars-w49.33`): a Whirl and a Barricade
+    // need a land-form actor (an embarked unit is refused `EMBARKED`, and
+    // an Egg never reaches them), Repair mends Barricades only from land
+    // form, a Whirl victim rises as a Zombie only in land form (the Bitten
+    // rule), and a Barricade is attacked from land or a ship (an embarked
+    // unit has no attack).
+    "src/engine/v7/dwarf-crowd-control.ts": 5,
     // The ninth unit: the Shock Field is a land-form defender's (no Martian
     // unit is an Egg, and an embarked Shock Trooper has no field), and a
     // Wight marks its Grave only when it dies in land form (an embarked

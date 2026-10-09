@@ -18,10 +18,32 @@ export interface BurrowedEntryLikeV7<U> {
   readonly moleUnitId: UnitId | null;
 }
 
-/** Anything with a board unit list and, optionally, a burrowed list. */
+/**
+ * Anything with a board unit list and, optionally, a burrowed list and the
+ * Barricades (Dwarf crowd control, `pulp_wars-w49.33`).
+ */
 export interface UnitListsV7<U> {
   readonly units: readonly U[];
   readonly burrowed?: readonly BurrowedEntryLikeV7<U>[];
+  readonly barricades?: readonly BarricadeLikeV7[];
+}
+
+/** A Barricade's tile (canonical state or a view). */
+export interface BarricadeLikeV7 {
+  readonly at: CoordV7;
+}
+
+/**
+ * Dwarf crowd control (`pulp_wars-w49.33`): the Barricade on `at`, if any
+ * (in a view, every Barricade on a tile the viewer has explored).
+ */
+export function barricadeAtV7<B extends BarricadeLikeV7>(
+  input: { readonly barricades?: readonly B[] },
+  at: CoordV7,
+): B | undefined {
+  const barricades = input.barricades;
+  if (barricades === undefined || barricades.length === 0) return undefined;
+  return barricades.find((entry) => entry.at.x === at.x && entry.at.y === at.y);
 }
 
 /** What stands on the board (canonical state or a view). */
@@ -63,11 +85,13 @@ export function moundAtV7<U extends { readonly at: CoordV7 }>(
 
 /**
  * THE occupancy predicate (section 5.3): a unit stands on `at` or a mound
- * is on it. Every rule that places a unit on a tile, or ends a unit's step
- * there, asks it (the end of a Move, an advance, Push, the Charge! push,
- * the Tractor Beam, Knockback, Beam Down, landing, rewards and displacement,
- * treasure units, Raise Dead, Eggs, Assemble, and the tunnel and bombing-run
- * destinations). `exceptUnitId` ignores one unit (the unit being moved).
+ * is on it, or (Dwarf crowd control, `pulp_wars-w49.33`) a Barricade
+ * stands there. Every rule that places a unit on a tile, or ends a unit's
+ * step there, asks it (the end of a Move, an advance, Push, the Charge!
+ * push, the Tractor Beam, Knockback, Beam Down, landing, rewards and
+ * displacement, treasure units, Raise Dead, Eggs, Assemble, and the tunnel
+ * and bombing-run destinations). `exceptUnitId` ignores one unit (the unit
+ * being moved).
  */
 export function tileOccupiedV7<
   U extends {
@@ -83,7 +107,9 @@ export function tileOccupiedV7<
         unit.hp > 0 &&
         unit.at.x === at.x &&
         unit.at.y === at.y,
-    ) || moundAtV7(input, at) !== undefined
+    ) ||
+    moundAtV7(input, at) !== undefined ||
+    barricadeAtV7(input, at) !== undefined
   );
 }
 

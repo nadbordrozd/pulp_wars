@@ -164,13 +164,9 @@ export function attackAllowanceV7(
   },
 ): number {
   if (unit.form !== "LAND") return 1;
-  const mechanics = unitRoleMechanicsV7(roster, unit);
-  // The ninth unit (`pulp_wars-w49.17`, 7r55): Three Hammers, a Whirligig's
-  // three attacks, moved or not.
-  return Math.max(
-    unit.activation.moved ? 1 : mechanics.unmovedShots,
-    mechanics.attacksPerTurn,
-  );
+  return unit.activation.moved
+    ? 1
+    : unitRoleMechanicsV7(roster, unit).unmovedShots;
 }
 
 /**

@@ -3,7 +3,6 @@ import {
   factionRulesV7,
   unitFactionV7,
   unitRoleMechanicsV7,
-  unitRoleRuleV7,
 } from "../engine/rules/ruleset-v7";
 import type { CoordV7 } from "../engine/v7/types";
 import type { PlayerViewV7, PublicUnitV7 } from "../engine/v7/view";
@@ -32,12 +31,11 @@ export const NINTH_HEAVYWEIGHT_SUPPORT_RADIUS_V7 = 2;
 export const NINTH_SHOCK_SCREEN_VALUE_V7 = 5;
 /** The own units one Shock Trooper is counted as screening. */
 export const NINTH_SHOCK_SCREEN_UNITS_V7 = 2;
-/** Each weak target beyond the first next to a Whirligig's tile. */
-export const NINTH_HAMMERS_TARGET_VALUE_V7 = 8;
-/** A hostile unit at or below this HP is a weak target for a Whirligig. */
-export const NINTH_HAMMERS_WEAK_HP_V7 = 8;
-/** A healthy hostile melee unit next to a Whirligig's tile. */
-export const NINTH_HAMMERS_HEALTHY_COST_V7 = 4;
+/**
+ * Each target beyond the first next to a Whirligig's tile (Dwarf crowd
+ * control, `pulp_wars-w49.33`: its Whirl hits them all, unanswered).
+ */
+export const NINTH_WHIRL_TARGET_VALUE_V7 = 8;
 /** Standing on the Grave a hostile Wight would climb out of. */
 export const NINTH_GRAVE_DENIAL_VALUE_V7 = 12;
 /** Standing on the Grave an own Wight would climb out of. */
@@ -139,39 +137,25 @@ export function shockScreenMoveValueV7(
 }
 
 /**
- * Three Hammers: a Whirligig goes where several targets stand next to one
- * tile, and not into a healthy line. Each weak visible hostile land unit
- * next to `to` beyond the first counts (weak: at most
- * `NINTH_HAMMERS_WEAK_HP_V7` HP, or a ranged, siege, or support unit), up
- * to the unit's attacks; each healthy hostile melee unit next to `to`
- * costs `NINTH_HAMMERS_HEALTHY_COST_V7` (it strikes back).
+ * Whirl (Dwarf crowd control, `pulp_wars-w49.33`, which replaced Three
+ * Hammers): a Whirligig goes where several targets stand next to one tile.
+ * Each visible hostile land unit next to `to` beyond the first counts
+ * `NINTH_WHIRL_TARGET_VALUE_V7`; nothing strikes back at a Whirl, so a
+ * healthy unit costs nothing here (the ordinary safety terms weigh the
+ * enemy's next turn). Not tuned.
  */
-export function threeHammersMoveValueV7(
+export function whirlMoveValueV7(
   view: PlayerViewV7,
   actor: PublicUnitV7,
   to: CoordV7,
   isHostile: NinthUnitHostileV7,
 ): number {
-  if (actor.form !== "LAND") return 0;
-  const attacks = unitRoleMechanicsV7(view, actor).attacksPerTurn;
-  if (attacks <= 1) return 0;
-  let weak = 0;
-  let healthy = 0;
-  for (const unit of hostileLandUnitsV7(view, isHostile)) {
-    if (chebyshev(unit.at, to) !== 1) continue;
-    const rule = unitRoleRuleV7(view, unit);
-    const fragile =
-      rule.tacticalRole === "RANGED" ||
-      rule.tacticalRole === "SIEGE" ||
-      rule.tacticalRole === "SUPPORT";
-    if (fragile || unit.hp <= NINTH_HAMMERS_WEAK_HP_V7) weak += 1;
-    else if (rule.abilities.includes("ATTACK") && rule.minimumRange <= 1)
-      healthy += 1;
-  }
-  return (
-    Math.max(0, Math.min(attacks, weak) - 1) * NINTH_HAMMERS_TARGET_VALUE_V7 -
-    healthy * NINTH_HAMMERS_HEALTHY_COST_V7
-  );
+  if (actor.form !== "LAND" || !unitRoleMechanicsV7(view, actor).whirl)
+    return 0;
+  const targets = hostileLandUnitsV7(view, isHostile).filter(
+    (unit) => chebyshev(unit.at, to) === 1,
+  ).length;
+  return Math.max(0, targets - 1) * NINTH_WHIRL_TARGET_VALUE_V7;
 }
 
 /**
@@ -210,7 +194,7 @@ export function ninthUnitMoveValueV7(
   return (
     heavyweightMoveValueV7(view, actor, to, isHostile) +
     shockScreenMoveValueV7(view, actor, to, isHostile) +
-    threeHammersMoveValueV7(view, actor, to, isHostile) +
+    whirlMoveValueV7(view, actor, to, isHostile) +
     wightGraveMoveValueV7(view, actor, to, isHostile)
   );
 }

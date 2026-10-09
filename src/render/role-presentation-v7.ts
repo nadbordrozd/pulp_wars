@@ -134,7 +134,7 @@ export function recruitmentRolePresentationV7(
   // restriction from the Candy registration.
   restrictions.push(...candyRecruitNotesV7(roleId, faction));
   // The ninth unit (`pulp_wars-w49.17`, 7r55): Heavyweight, Rise Again,
-  // Shock Field, Rock Hard, Thagomizer, Frostbite, and Three Hammers.
+  // Shock Field, Rock Hard, Thagomizer, Frostbite, and Whirl.
   restrictions.push(...ninthUnitRecruitNotesV7(roleId, faction));
   return {
     label: role.label,

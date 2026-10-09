@@ -243,14 +243,16 @@ describe("ruleset-7 revision-18 Showcase setup", () => {
         ice,
         // `pulp_wars-w49.17`: and the empty `ninthUnit` record.
         ninthUnit,
+        // `pulp_wars-w49.33`: and the empty `barricades` list.
+        barricades,
         ...withoutMonsters
       } = revision19State;
       expect(ninthUnit).toEqual({
         wightGraves: [],
         risenWights: [],
         crackedThisTurn: [],
-        struckThisTurn: [],
       });
+      expect(barricades).toEqual([]);
       expect(huntedThisTurn).toEqual([]);
       expect(monsters).toEqual([]);
       // `pulp_wars-5ti.3`: and the empty ice list.

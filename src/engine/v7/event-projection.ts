@@ -362,7 +362,13 @@ export function projectEventsV7(
           reveal(projected, revealed, unit, revealReason());
       }
     }
-    if (event.kind === "WAIL_RESOLVED" || event.kind === "EXPLOSION_RESOLVED") {
+    // Dwarf crowd control (`pulp_wars-w49.33`): a Whirl follows the Wail
+    // rule.
+    if (
+      event.kind === "WAIL_RESOLVED" ||
+      event.kind === "WHIRL_RESOLVED" ||
+      event.kind === "EXPLOSION_RESOLVED"
+    ) {
       // Revision 13 section 6.6, following the Battleship splash precedent:
       // a viewer who sees the Banshee gets the results it owns or could see
       // before; otherwise only its own entries as COMBAT_SPLASH_DAMAGE.
@@ -568,6 +574,20 @@ function eventVisible(
   // whether or not the owner saw the Monster die.
   if (event.kind === "MONSTER_BOUNTY_AWARDED")
     return event.playerId === viewerId;
+  // Dwarf crowd control (`pulp_wars-w49.33`): a Barricade is public on an
+  // explored tile, so its building, repair, and the attacks on it reach
+  // the actor and every viewer that explored its tile and sees the unit
+  // (before or after the command).
+  if (
+    event.kind === "BARRICADE_BUILT" ||
+    event.kind === "BARRICADE_REPAIRED" ||
+    event.kind === "BARRICADE_ATTACKED"
+  )
+    return (
+      event.playerId === viewerId ||
+      (coordVisible(before, after, viewerId, event.at) &&
+        (beforeVisible.has(event.unitId) || afterVisible.has(event.unitId)))
+    );
   if (
     ids.length > 0 &&
     ids.some((id) => !beforeVisible.has(id) && !afterVisible.has(id))

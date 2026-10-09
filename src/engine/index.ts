@@ -53,6 +53,7 @@ export * from "./v7/artifacts";
 export * from "./v7/candy";
 export * from "./v7/combat";
 export * from "./v7/dwarf";
+export * from "./v7/dwarf-crowd-control";
 export * from "./v7/economy";
 export * from "./v7/eggs";
 export * from "./v7/events";

@@ -1,8 +1,12 @@
 import type { CityId, PlayerId, UnitId } from "../model/ids";
 import {
   ASSEMBLE_COST_V7,
+  BARRICADE_CAP_V7,
+  BARRICADE_COST_V7,
+  BARRICADE_HP_V7,
   NEUTRAL_KIND_V7,
   BASIC_ECONOMIC_ACTIONS_V7,
+  BOMB_LANDING_RANGE_V7,
   BOMB_RANGE_V7,
   SPATIAL_ECONOMIC_ACTIONS_V7,
   TECHNOLOGY_BRANCH_IDS_V7,
@@ -213,11 +217,19 @@ import {
   attackIsFrostbittenV7,
   crackedDefense2V7,
   shockFieldDamageV7,
-  targetAlreadyStruckV7,
   unitDefense2AtDistanceV7,
   unitIsCrackedV7,
   unitIsImmovableV7,
 } from "./ninth-unit";
+import {
+  barricadeAttackerRejectionV7,
+  barricadeCapReachedV7,
+  barricadeDamageV7,
+  barricadeRepairsV7,
+  barricadeTileFactsLegalV7,
+  standingBarricadesV7,
+  unitWhirlsV7,
+} from "./dwarf-crowd-control";
 import { noRisingAtV7, riftAtV7 } from "./rift";
 import { grownHpV7 } from "./growth";
 import { laidEggHpV7, laidEggTurnsV7, publicNestTilesV7 } from "./eggs";
@@ -259,6 +271,7 @@ import {
 import { publicUnitStatsV7, type PublicUnitStatsV7 } from "./unit-stats";
 import {
   allOwnedUnitsV7,
+  barricadeAtV7,
   publicUnitHasTerrainCoverV7,
   tileOccupiedV7,
 } from "./units";
@@ -962,10 +975,7 @@ function appendPublicUnitCommandsV7(
       distance >= rule.minimumRange &&
       distance <= attackRange &&
       (!torpedo || isAfloatFormV7(target.form)) &&
-      (distance <= 1 || !unitIsSubmergedV7(view, target)) &&
-      // The ninth unit (`pulp_wars-w49.17`, 7r55): Three Hammers, never
-      // the same unit twice in a turn.
-      !targetAlreadyStruckV7(view, unit.id, target.id)
+      (distance <= 1 || !unitIsSubmergedV7(view, target))
     )
       candidates.push({
         kind: "ATTACK",
@@ -1070,7 +1080,39 @@ function appendPublicUnitCommandsV7(
     if (rule.abilities.includes("ASSEMBLE") && primaryReady)
       for (const to of publicAssembleTilesV7(view, unit))
         candidates.push({ kind: "ASSEMBLE", unitId: unit.id, to });
+    // Dwarf crowd control (`pulp_wars-w49.33`): the Whirligig's Whirl (with
+    // a target) and the Engineer's Barricade (below the cap, with the
+    // Coins), each offered exactly when legal.
+    if (
+      primaryReady &&
+      unit.activation.attacksUsed === 0 &&
+      unitWhirlsV7(view, unit) &&
+      publicWhirlTargetsV7(view, unit).length > 0
+    )
+      candidates.push({ kind: "WHIRL", unitId: unit.id });
+    if (rule.abilities.includes("BARRICADE") && primaryReady)
+      for (const to of publicBarricadeTilesV7(view, unit))
+        candidates.push({ kind: "BUILD_BARRICADE", unitId: unit.id, to });
   }
+  // Dwarf crowd control: an attack on every hostile Barricade in range on
+  // an explored tile, by any unit that could make an ordinary attack now.
+  if (
+    view.barricades.length > 0 &&
+    barricadeAttackerRejectionV7(view, unit, primaryUsedForQuery(unit)) === null
+  )
+    for (const barricade of view.barricades) {
+      const distance = chebyshev(unit.at, barricade.at);
+      if (
+        publicHostile(view, player.id, barricade.ownerId) &&
+        distance >= rule.minimumRange &&
+        distance <= attackRange
+      )
+        candidates.push({
+          kind: "ATTACK_BARRICADE",
+          unitId: unit.id,
+          at: { x: barricade.at.x, y: barricade.at.y },
+        });
+    }
   // Revision 19 Hatch: every adjacent own Egg laid on an earlier turn.
   if (
     !overrun &&
@@ -1120,7 +1162,9 @@ function appendPublicUnitCommandsV7(
     primaryReady &&
     unit.form === "LAND" &&
     rule.abilities.includes("TEND_WOUNDED") &&
-    publicTendTargetsV7(view, unit).length > 0
+    (publicTendTargetsV7(view, unit).length > 0 ||
+      // Dwarf crowd control: an Engineer's Repair of an own Barricade.
+      barricadeRepairsV7(view, view.barricades, unit).length > 0)
   )
     candidates.push({ kind: "TEND_WOUNDED", unitId: unit.id });
   // Revision 13 Grave actions (sections 6.2 and 6.3), offered exactly when
@@ -1543,7 +1587,8 @@ function publicBombTargetsV7(
 
 /**
  * The Dwarf revision section 6.2 row 10: the landings of a bombing run on
- * `target`, in (y, x) order: next to the target, strictly farther from the
+ * `target`, in (y, x) order: within `BOMB_LANDING_RANGE_V7` (2; Dwarf crowd
+ * control, `pulp_wars-w49.33`) of the target, strictly farther from the
  * Gyrocopter, explored, no treasure chest, and an offered Move destination
  * of the Gyrocopter.
  */
@@ -1552,18 +1597,17 @@ function publicBombLandingsV7(
   gyro: PublicUnitV7,
   target: PublicUnitV7,
 ): readonly CoordV7[] {
-  const destinations = reachablePlayerMovementPathsV7(view, gyro).map(
-    (path) => path.destination,
-  );
-  return adjacentPublicTiles(view, target.at)
-    .filter(
-      (tile) =>
-        tile.explored &&
-        chebyshev(tile.at, gyro.at) > chebyshev(target.at, gyro.at) &&
-        !view.treasureChests.some((chest) => same(chest, tile.at)) &&
-        destinations.some((at) => same(at, tile.at)),
-    )
-    .map((tile) => tile.at)
+  return reachablePlayerMovementPathsV7(view, gyro)
+    .map((path) => path.destination)
+    .filter((at) => {
+      const tile = tileAtView(view, at);
+      return (
+        tile?.explored === true &&
+        chebyshev(at, target.at) <= BOMB_LANDING_RANGE_V7 &&
+        chebyshev(at, gyro.at) > chebyshev(target.at, gyro.at) &&
+        !view.treasureChests.some((chest) => same(chest, at))
+      );
+    })
     .sort((left, right) => left.y - right.y || left.x - right.x);
 }
 
@@ -1925,6 +1969,250 @@ export function queryAssembleUnavailableReasonV7(
   )
     return null;
   return publicAssembleFactsV7(view, engineer)?.unavailableReason ?? null;
+}
+
+// ------------------------------------------- Dwarf crowd control ---
+
+/**
+ * Dwarf crowd control (`pulp_wars-w49.33`): the units an own Whirligig's
+ * Whirl hits, in (y, x, id) order: every visible unit within 1 that is
+ * hostile to the viewer (exactly the reducer's targets: each must be
+ * visible to the Whirligig's owner).
+ */
+function publicWhirlTargetsV7(
+  view: PlayerViewV7,
+  whirligig: PublicUnitV7,
+): readonly PublicUnitV7[] {
+  return view.units
+    .filter(
+      (unit) =>
+        unit.hp > 0 &&
+        unit.id !== whirligig.id &&
+        chebyshev(unit.at, whirligig.at) <= 1 &&
+        publicHostile(view, whirligig.ownerId, unit.ownerId),
+    )
+    .sort(
+      (left, right) =>
+        left.at.y - right.at.y || left.at.x - right.at.x || left.id - right.id,
+    );
+}
+
+/** Dwarf crowd control: the preview of an offered Whirl. */
+export interface WhirlPreviewV7 {
+  readonly unitId: UnitId;
+  readonly at: CoordV7;
+  /**
+   * Every target in (y, x, id) order with the ordinary attack's damage on
+   * it (`damage` is HP damage, `shieldDamage` what its Shield absorbs).
+   */
+  readonly targets: readonly CombatSplashEntryV7[];
+  readonly kills: number;
+  /**
+   * False only when the public combat preview of a target is not exact (a
+   * hidden Witch's Blizzard may change its cover), as for an `ATTACK`.
+   */
+  readonly exact: boolean;
+}
+
+/**
+ * Dwarf crowd control: null unless `WHIRL` is offered for `unitId`;
+ * otherwise each target's ordinary attack from the public combat preview,
+ * so the preview equals the resolution (nothing strikes back).
+ */
+export function previewWhirlV7(
+  view: PlayerViewV7,
+  unitId: UnitId,
+): WhirlPreviewV7 | null {
+  if (
+    !queryPlayerCommandsV7(view).some(
+      (command) => command.kind === "WHIRL" && command.unitId === unitId,
+    )
+  )
+    return null;
+  const whirligig = view.units.find((unit) => unit.id === unitId);
+  if (whirligig === undefined) return null;
+  let exact = true;
+  const targets: CombatSplashEntryV7[] = [];
+  for (const target of publicWhirlTargetsV7(view, whirligig)) {
+    const hit = publicCombatPreview(view, whirligig.id, target.id, {
+      ignoreShatter: true,
+    });
+    if (hit === null) {
+      exact = false;
+      continue;
+    }
+    if (hit.hiddenBlizzardPossible) exact = false;
+    targets.push({
+      unitId: target.id,
+      at: { x: target.at.x, y: target.at.y },
+      damage: hit.damageToDefender,
+      dies: hit.damageToDefender >= target.hp,
+      shieldDamage: hit.defenderShieldDamage,
+    });
+  }
+  return {
+    unitId,
+    at: { x: whirligig.at.x, y: whirligig.at.y },
+    targets,
+    kills: targets.filter((entry) => entry.dies).length,
+    exact,
+  };
+}
+
+/**
+ * Dwarf crowd control: the legal Barricade tiles of an own ready Engineer
+ * in (y, x) order (empty below the Coins or at the cap). Every tile around
+ * an own unit is explored, and every unit, mound, and Barricade on an
+ * explored tile is in the view, so the tiles are the reducer's.
+ */
+function publicBarricadeTilesV7(
+  view: PlayerViewV7,
+  engineer: PublicUnitV7,
+): readonly CoordV7[] {
+  if (
+    engineer.ownerId !== view.viewer.id ||
+    engineer.form !== "LAND" ||
+    barricadeCapReachedV7(view, view.viewer.id) ||
+    view.viewer.coins < BARRICADE_COST_V7
+  )
+    return [];
+  return adjacentPublicTiles(view, engineer.at)
+    .filter((tile) =>
+      barricadeTileFactsLegalV7(
+        {
+          explored: tile.explored,
+          land: tile.explored && tile.biome !== null,
+          rift: tile.explored && tile.terrain === "RIFT",
+          site: tile.explored && tile.site !== null,
+          occupied: tileOccupiedV7(view, tile.at),
+          chest: view.treasureChests.some((chest) => same(chest, tile.at)),
+          curiosity: view.curiosities.some((entry) => same(entry.at, tile.at)),
+          grave: view.graves.some((grave) => same(grave, tile.at)),
+        },
+        chebyshev(engineer.at, tile.at),
+      ),
+    )
+    .map((tile) => tile.at)
+    .sort((left, right) => left.y - right.y || left.x - right.x);
+}
+
+/** Dwarf crowd control: the preview of an Engineer's Barricade. */
+export interface BuildBarricadePreviewV7 {
+  readonly unitId: UnitId;
+  readonly cost: number;
+  readonly hp: number;
+  /** The viewer's standing Barricades and the cap. */
+  readonly standing: number;
+  readonly cap: number;
+  /** The offered tiles in (y, x) order. */
+  readonly tiles: readonly CoordV7[];
+}
+
+/** Dwarf crowd control: null unless `BUILD_BARRICADE` is offered. */
+export function previewBuildBarricadeV7(
+  view: PlayerViewV7,
+  unitId: UnitId,
+): BuildBarricadePreviewV7 | null {
+  const tiles = queryPlayerCommandsV7(view).flatMap((command) =>
+    command.kind === "BUILD_BARRICADE" && command.unitId === unitId
+      ? [command.to]
+      : [],
+  );
+  if (tiles.length === 0) return null;
+  return {
+    unitId,
+    cost: BARRICADE_COST_V7,
+    hp: BARRICADE_HP_V7,
+    standing: standingBarricadesV7(view, view.viewer.id),
+    cap: BARRICADE_CAP_V7,
+    tiles,
+  };
+}
+
+/**
+ * Dwarf crowd control: why an own Engineer cannot build a Barricade now
+ * (for the UI's disabled reason), or null when it can; null for any other
+ * unit.
+ */
+export function queryBarricadeUnavailableReasonV7(
+  view: PlayerViewV7,
+  unitId: UnitId,
+):
+  | "ALREADY_ACTED"
+  | "EMBARKED"
+  | "CAP"
+  | "INSUFFICIENT_COINS"
+  | "INVALID_TILE"
+  | null {
+  const engineer = view.units.find((unit) => unit.id === unitId);
+  if (
+    engineer === undefined ||
+    engineer.ownerId !== view.viewer.id ||
+    !unitRoleRuleV7(view, engineer).abilities.includes("BARRICADE")
+  )
+    return null;
+  if (
+    engineer.activation.overrunActive ||
+    primaryUsedForQuery(engineer) ||
+    primaryActionBlockedAfterMoveV7(view, engineer)
+  )
+    return "ALREADY_ACTED";
+  if (engineer.form !== "LAND") return "EMBARKED";
+  if (barricadeCapReachedV7(view, view.viewer.id)) return "CAP";
+  if (view.viewer.coins < BARRICADE_COST_V7) return "INSUFFICIENT_COINS";
+  return publicBarricadeTilesV7(view, engineer).length === 0
+    ? "INVALID_TILE"
+    : null;
+}
+
+/** Dwarf crowd control: the preview of an attack on a Barricade. */
+export interface AttackBarricadePreviewV7 {
+  readonly unitId: UnitId;
+  readonly at: CoordV7;
+  readonly ownerId: PlayerId;
+  readonly damage: number;
+  readonly hpAfter: number;
+  readonly destroys: boolean;
+}
+
+/**
+ * Dwarf crowd control: null unless that `ATTACK_BARRICADE` is offered; the
+ * exact damage (the attacker's public HP and role Attack, the Barricade's
+ * public HP).
+ */
+export function previewAttackBarricadeV7(
+  view: PlayerViewV7,
+  command: Extract<CommandV7, { kind: "ATTACK_BARRICADE" }>,
+): AttackBarricadePreviewV7 | null {
+  if (
+    !queryPlayerCommandsV7(view).some(
+      (candidate) =>
+        candidate.kind === "ATTACK_BARRICADE" &&
+        candidate.unitId === command.unitId &&
+        same(candidate.at, command.at),
+    )
+  )
+    return null;
+  const attacker = view.units.find((unit) => unit.id === command.unitId);
+  const barricade = barricadeAtV7(view, command.at);
+  if (attacker === undefined || barricade === undefined) return null;
+  const damage = barricadeDamageV7({
+    attack2: unitRoleRuleV7(view, attacker).attack2,
+    attackerHp: attacker.hp,
+    attackerMaxHp: attacker.maxHp,
+    unflinching:
+      attacker.form === "LAND" &&
+      unitRoleMechanicsV7(view, attacker).unflinchingAttack,
+    barricadeHp: barricade.hp,
+  });
+  return {
+    unitId: attacker.id,
+    at: { x: barricade.at.x, y: barricade.at.y },
+    ownerId: barricade.ownerId,
+    damage,
+    hpAfter: barricade.hp - damage,
+    destroys: damage >= barricade.hp,
+  };
 }
 
 // ------------------------------------------------- The Candy revision ---
@@ -2697,6 +2985,15 @@ export interface TendWoundedPreviewV7 {
     /** The Ice Folk revision: the target was Chilled and becomes thawing. */
     readonly curedChill: boolean;
   }[];
+  /**
+   * Dwarf crowd control (`pulp_wars-w49.33`): an Engineer's Repair of the
+   * damaged own Barricades next to it, in (y, x) order (empty otherwise).
+   */
+  readonly barricades: readonly {
+    readonly at: CoordV7;
+    readonly amount: number;
+    readonly hpAfter: number;
+  }[];
 }
 
 /**
@@ -2757,6 +3054,7 @@ export function previewTendWoundedV7(
         curedChill: isChilledV7(view.chilled, target.id),
       };
     }),
+    barricades: barricadeRepairsV7(view, view.barricades, captain),
   };
 }
 
@@ -7420,10 +7718,7 @@ function publicCombatPreviewCore(
     distance > publicAttackMaximumRangeV7(view, attacker) ||
     // The frozen sea (naval branch section 8.9): an icebound ship cannot
     // attack.
-    unitIsIceboundV7(view, attacker) ||
-    // The ninth unit (`pulp_wars-w49.17`, 7r55): Three Hammers, each attack
-    // of a Whirligig's turn is on a different unit.
-    targetAlreadyStruckV7(view, attacker.id, target.id)
+    unitIsIceboundV7(view, attacker)
   )
     return null;
   // The naval branch (docs/product/RULESET_7_NAVAL_BRANCH.md sections 5.2
@@ -8836,7 +9131,8 @@ function publicCommandTarget(view: PlayerViewV7, command: CommandV7): CoordV7 {
     command.kind === "BEAM_DOWN" ||
     command.kind === "TUNNEL" ||
     command.kind === "BOMB_RUN" ||
-    command.kind === "ASSEMBLE"
+    command.kind === "ASSEMBLE" ||
+    command.kind === "BUILD_BARRICADE"
   )
     return command.to;
   if ("path" in command) return command.path.at(-1) ?? { x: -1, y: -1 };

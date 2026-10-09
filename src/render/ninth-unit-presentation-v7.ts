@@ -22,7 +22,7 @@ export const SHOCK_FIELD_LABEL_V7 = "Shock Field";
 export const ROCK_HARD_LABEL_V7 = "Rock Hard";
 export const THAGOMIZER_LABEL_V7 = "Thagomizer";
 export const FROSTBITE_LABEL_V7 = "Frostbite";
-export const THREE_HAMMERS_LABEL_V7 = "Three Hammers";
+export const WHIRL_LABEL_V7 = "Whirl";
 export const CRACKED_LABEL_V7 = "Cracked";
 /** The Human heavy line unit (the role `SWORDSMAN`): the Champion. */
 export const CHAMPION_LABEL_V7 = effectiveRoleRuleV7(
@@ -107,10 +107,11 @@ export function ninthUnitMechanicsV7(
       name: FROSTBITE_LABEL_V7,
       rule: "a unit that attacks it from the next tile and survives is Chilled",
     });
-  if (mechanics.attacksPerTurn > 1)
+  // Dwarf crowd control (`pulp_wars-w49.33`): Whirl replaced Three Hammers.
+  if (mechanics.whirl)
     result.push({
-      name: THREE_HAMMERS_LABEL_V7,
-      rule: `attacks up to ${numberWord(mechanics.attacksPerTurn)} times a turn, each time a different unit, all from the tile of its first attack`,
+      name: WHIRL_LABEL_V7,
+      rule: "hits every enemy next to it at once with its attack, and nobody hits back",
     });
   return result;
 }

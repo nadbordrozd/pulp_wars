@@ -88,12 +88,14 @@ describe("the Bomb Run command (section 6.2)", () => {
       (command) =>
         command.kind === "BOMB_RUN" && command.targetUnitId === target.id,
     );
-    // Next to (5, 4) and at distance 3 from (5, 2); (5, 5) is a village.
+    // Within 2 of (5, 4) (Dwarf crowd control, `pulp_wars-w49.33`: was
+    // next to it) and at distance 3 from (5, 2), the Move's reach; (5, 5)
+    // is a village.
     expect(
       offered.map((command) =>
         command.kind === "BOMB_RUN" ? command.to : null,
       ),
-    ).toEqual([at(4, 5), at(6, 5)]);
+    ).toEqual([at(3, 5), at(4, 5), at(6, 5), at(7, 5)]);
     const result = bombRun(state, bombV7(state, at(5, 2), at(5, 4), at(4, 5)));
     expect(bombed(result.events)).toEqual({
       kind: "UNIT_BOMBED",

@@ -3941,6 +3941,7 @@ function initialMapStateFromV7(
     tossedThisTurn: [],
     huntedThisTurn: [],
     ninthUnit: emptyNinthUnitStateV7(),
+    barricades: [],
     pendingChoices: [],
     outcome: null,
   });
@@ -4008,6 +4009,7 @@ function showcaseInitialStateV7(
     tossedThisTurn: [],
     huntedThisTurn: [],
     ninthUnit: emptyNinthUnitStateV7(),
+    barricades: [],
     pendingChoices: [],
     outcome: null,
   });

@@ -129,7 +129,11 @@ describe("ruleset-7 late public query performance", () => {
       // 9ed334…056e).
       // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): recomputed (was
       // 849b04…a5b9).
-      "9b18cff2d308423cb07e17d8908aa2cdd21b971fbff0d179fde7e72e141e883b",
+      // Dwarf crowd control (`pulp_wars-w49.33`) inserts WHIRL,
+      // BUILD_BARRICADE, and ATTACK_BARRICADE after ASSEMBLE, moving every
+      // later kind forward by three (was 9b18cf…883b); the
+      // revision-12-ordinal value is unchanged.
+      "56f315525a716afd3ef41115bf4a58c00d473105570daecaa0baa45c4878eaed",
     );
     // Revision 13 shifts the command-kind ordinals in AI tie-break tuples
     // (spec section 8); with revision-12 ordinals the value is unchanged.

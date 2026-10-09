@@ -241,6 +241,9 @@ function normalizedInitialState(state: GameStateV7): string {
     // The ninth unit (`pulp_wars-w49.17`, 7r55) adds the `ninthUnit`
     // record, empty in every initial state.
     ninthUnit: _ninthUnit,
+    // Dwarf crowd control (`pulp_wars-w49.33`) adds the `barricades` list,
+    // empty in every initial state.
+    barricades: _barricades,
     rulesetId: _rulesetId,
     setup,
     ...rest
@@ -248,11 +251,12 @@ function normalizedInitialState(state: GameStateV7): string {
   if (
     _ninthUnit.wightGraves.length +
       _ninthUnit.risenWights.length +
-      _ninthUnit.crackedThisTurn.length +
-      _ninthUnit.struckThisTurn.length !==
+      _ninthUnit.crackedThisTurn.length !==
     0
   )
     throw new Error("a ninth-unit fact in an initial state");
+  if (_barricades.length !== 0)
+    throw new Error("a Barricade in an initial state");
   if (_rush.length + _crumbs.length + _splatted.length + _tossed.length !== 0)
     throw new Error("a Candy fact in an initial state");
   if (_hunted.length !== 0)

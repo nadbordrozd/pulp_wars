@@ -199,14 +199,17 @@ function missionStateHash(state: GameStateV7): string {
     // The ninth unit (`pulp_wars-w49.17`, 7r55) added the `ninthUnit`
     // record, empty in every initial state and left out too.
     ninthUnit,
+    // Dwarf crowd control (`pulp_wars-w49.33`) added the `barricades`
+    // list, empty in every initial state and left out too.
+    barricades,
     ...rest
   } = state;
   expect(ninthUnit).toEqual({
     wightGraves: [],
     risenWights: [],
     crackedThisTurn: [],
-    struckThisTurn: [],
   });
+  expect(barricades).toEqual([]);
   expect(huntedThisTurn).toEqual([]);
   expect([monsters, beamedThisTurn, tractorUsedThisTurn]).toEqual([[], [], []]);
   // The frozen sea (`pulp_wars-5ti.3`) added the `ice` list, empty in every
@@ -326,14 +329,15 @@ function preCuriosityMissionStateHash(state: GameStateV7): string {
     huntedThisTurn,
     ice,
     ninthUnit,
+    barricades,
     ...rest
   } = state;
   expect(ninthUnit).toEqual({
     wightGraves: [],
     risenWights: [],
     crackedThisTurn: [],
-    struckThisTurn: [],
   });
+  expect(barricades).toEqual([]);
   expect(huntedThisTurn).toEqual([]);
   const { curiosities: option, ...setup } = state.setup;
   expect([curiosities, monsters, option]).toEqual([[], [], false]);

@@ -157,4 +157,7 @@ export const OWNER_READER_CLASSES_V7: Readonly<
   // and requires a marked Grave's owner to be a player.
   "src/engine/v7/ninth-unit.ts::wightRisingRuleV7": "PLAYER_ONLY",
   "src/engine/v7/state-schema.ts::ninthUnitValid": "NEUTRAL_AWARE",
+  // Dwarf crowd control (`pulp_wars-w49.33`): a Barricade's owner must be a
+  // player of the match, so one of the neutral owner (no player) is refused.
+  "src/engine/v7/state-schema.ts::barricadesValid": "NEUTRAL_SAFE",
 };

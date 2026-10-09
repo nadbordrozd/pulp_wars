@@ -351,7 +351,11 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       // candidates again (was 62b18a…9811).
       // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
       // 8e542b…840c).
-      "b8c7177ac499263a24f0165281ff4e65fae00ade39470cd7bd57c89267d5d3e4",
+      // Dwarf crowd control (`pulp_wars-w49.33`) inserts WHIRL,
+      // BUILD_BARRICADE, and ATTACK_BARRICADE after ASSEMBLE, moving every
+      // later kind forward by three (was b8c717…d3e4); the
+      // revision-12-ordinal value is unchanged.
+      "357b853c28313aa73398f74bbc505e901928ae9bb1e611aeb6d9aa493164644c",
     );
     // Revision 13 shifts the command-kind ordinals in AI tie-break tuples
     // (spec section 8); this is the value with revision-12 ordinals
@@ -1142,7 +1146,10 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       // ordinals.
       // The Martian pass's correction (`pulp_wars-w49.14`): the Human seat's
       // new rules score this subset (was abe516…c405).
-      "75d6c4a6aaee9901cab3ce93ee83263e768dc2f63999331cda9e35c0d65db1f6",
+      // Dwarf crowd control (`pulp_wars-w49.33`) inserts WHIRL,
+      // BUILD_BARRICADE, and ATTACK_BARRICADE after ASSEMBLE, moving every
+      // later command kind forward by three (was 75d6c4…b1f6).
+      "2fd041ad76c4b6d3c722cf013812ecc85134b371800b7acdc4e6bcf1de761f64",
     );
     expect(
       canonicalHash(withRevision12CandidateOrdinalsV7(revision4Candidates)),
@@ -1163,7 +1170,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     const source = upgradeRetainedPublicViewV7(retained);
 
     expect(canonicalJson(retained)).toBe(retainedBytes);
-    expect(source.rulesetId).toBe("pulp-wars-poc-7r59");
+    expect(source.rulesetId).toBe("pulp-wars-poc-7r60");
     expect(source.viewer.factionTreeId).toBe("ORIGINAL_BASELINE_V5");
     expect(
       source.players.every(

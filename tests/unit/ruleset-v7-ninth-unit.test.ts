@@ -11,7 +11,6 @@ import { dwarfProductionAdjustmentV7 } from "../../src/ai/v7-dwarf";
 import { iceFolkProductionAdjustmentV7 } from "../../src/ai/v7-ice-folk";
 import {
   NINTH_GRAVE_DENIAL_VALUE_V7,
-  NINTH_HAMMERS_TARGET_VALUE_V7,
   NINTH_HEAVYWEIGHT_VALUE_V7,
   NINTH_OWN_GRAVE_COST_V7,
   NINTH_SHOCK_SCREEN_VALUE_V7,
@@ -19,8 +18,9 @@ import {
   ninthUnitMoveValueV7,
   ownWightGraveHeldV7,
   shockScreenMoveValueV7,
-  threeHammersMoveValueV7,
   wightGraveMoveValueV7,
+  whirlMoveValueV7,
+  NINTH_WHIRL_TARGET_VALUE_V7,
 } from "../../src/ai/v7-ninth-unit";
 import {
   chooseNormalCommandV7,
@@ -373,11 +373,11 @@ const productionOf = (
 
 describe("the ninth unit: identity", () => {
   it("was 7r55 after 7r54, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r59");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r59.current");
-    expect(PRIOR_RULESET_7_IDS.at(-5)).toBe("pulp-wars-poc-7r54");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r60");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r60.current");
+    expect(PRIOR_RULESET_7_IDS.at(-6)).toBe("pulp-wars-poc-7r54");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-5)).toBe(
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-6)).toBe(
       "pulpWars.save.v7r54.current",
     );
     const state = field([]);
@@ -392,16 +392,19 @@ describe("the ninth unit: identity", () => {
     const { ninthUnit: _ninthUnit, ...older } = state;
     void _ninthUnit;
     expect(parseGameStateV7(older)).toBeNull();
+    // Dwarf crowd control (`pulp_wars-w49.33`): Three Hammers and its struck
+    // pairs are gone (the Whirl replaced them).
     expect(state.ninthUnit).toEqual({
       wightGraves: [],
       risenWights: [],
       crackedThisTurn: [],
-      struckThisTurn: [],
     });
     expect(() => assertRuleset7Registry()).not.toThrow();
-    // One event kind is new: a Wight climbing out of its Grave.
+    // One event kind is new: a Wight climbing out of its Grave. Dwarf crowd
+    // control (`pulp_wars-w49.33`) added four more (a Whirl and the three
+    // Barricade events).
     expect(DOMAIN_EVENT_KIND_ORDER_V7).toContain("WIGHT_RISEN");
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(101);
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(105);
   });
 });
 
@@ -524,7 +527,7 @@ describe("the ninth unit: nine land units and nine jobs for every faction", () =
         value.immovable ? "ROCK_HARD" : null,
         value.cracksArmour ? "THAGOMIZER" : null,
         value.frostbite ? "FROSTBITE" : null,
-        value.attacksPerTurn > 1 ? "THREE_HAMMERS" : null,
+        value.whirl ? "WHIRL" : null,
       ].filter((item) => item !== null);
     };
     const expected: Readonly<Record<string, readonly string[]>> = {
@@ -534,7 +537,7 @@ describe("the ninth unit: nine land units and nine jobs for every faction", () =
       "CANDY SWORDSMAN": ["ROCK_HARD"],
       "DINOSAUR CATAPULT": ["THAGOMIZER"],
       "ICE_FOLK GUARD": ["FROSTBITE"],
-      "DWARF KNIGHT": ["THREE_HAMMERS"],
+      "DWARF KNIGHT": ["WHIRL"],
     };
     for (const faction of FACTION_IDS_V7)
       for (const role of UNIT_ROLE_IDS_V7)
@@ -549,7 +552,7 @@ describe("the ninth unit: nine land units and nine jobs for every faction", () =
     expect(roleMechanicsV7("SWORDSMAN", "MARTIAN").shockFieldDamage).toBe(3);
     expect(SHOCK_FIELD_DAMAGE_V7).toBe(3);
     expect(roleMechanicsV7("SWORDSMAN", "MARTIAN").shield).toBe(3);
-    expect(roleMechanicsV7("KNIGHT", "DWARF").attacksPerTurn).toBe(3);
+    expect(roleMechanicsV7("KNIGHT", "DWARF").whirl).toBe(true);
   });
 
   it("keeps the rules of the three moved units with the unit, under the heavy role", () => {
@@ -620,10 +623,12 @@ describe("the ninth unit: nine land units and nine jobs for every faction", () =
       repairsAsMachine: true,
       construct: false,
     });
-    // The Whirligig: a construct and a machine, never advances, not Plated.
+    // The Whirligig: a construct and a machine, never advances, not Plated;
+    // Dwarf crowd control (`pulp_wars-w49.33`): it Whirls.
     expect(effectiveRoleRuleV7("KNIGHT", "DWARF").abilities).toEqual([
       "ATTACK",
       "CLOCKWORK",
+      "WHIRL",
     ]);
     expect(roleMechanicsV7("KNIGHT", "DWARF")).toMatchObject({
       plated: null,
@@ -906,7 +911,7 @@ describe("the ninth unit: technology display names", () => {
       "CANDY SWORDSMAN": /^Rock Hard: Nothing moves it/,
       "DINOSAUR CATAPULT": /^Thagomizer: .* 1 less Defense/,
       "ICE_FOLK GUARD": /^Frostbite: .* is Chilled/,
-      "DWARF KNIGHT": /^Three Hammers: Attacks up to three times a turn/,
+      "DWARF KNIGHT": /^Whirl: Hits every enemy next to it at once/,
     };
     for (const [key, pattern] of Object.entries(lines)) {
       const [faction, role] = key.split(" ") as [FactionIdV7, UnitRoleIdV7];
@@ -1934,117 +1939,9 @@ describe("the Musk Ox: Frostbite", () => {
   });
 });
 
-describe("the Whirligig: Three Hammers", () => {
-  const TOP = at(5, 3);
-  const dwarves = (pieces: readonly CandyPieceV7[]) =>
-    candyFieldV7(pieces, { factions: ["DWARF", "ORIGINAL"] });
-  const crowd = (hp?: number) =>
-    dwarves([
-      { seat: 0, role: "KNIGHT", at: TOP },
-      { seat: 1, role: "FIGHTER", at: at(4, 2), ...(hp ? { hp } : {}) },
-      { seat: 1, role: "FIGHTER", at: at(5, 2), ...(hp ? { hp } : {}) },
-      { seat: 1, role: "FIGHTER", at: at(6, 2), ...(hp ? { hp } : {}) },
-      { seat: 1, role: "FIGHTER", at: at(6, 3), ...(hp ? { hp } : {}) },
-    ]);
-
-  it("attacks three different units from one tile, and no fourth", () => {
-    const start = crowd(2);
-    const top = unitAtV7(start, TOP);
-    const first = attackV7(start, TOP, at(4, 2));
-    expect(first.combat).toMatchObject({
-      defenderDies: true,
-      advances: false,
-      attacksUsed: 1,
-      attacksRemaining: 1,
-    });
-    // It stays where it is and still awaits orders.
-    expect(first.attacker?.at).toEqual(TOP);
-    expect(first.attacker?.activation.handled).toBe(false);
-    expect(first.state.ninthUnit.struckThisTurn).toEqual([
-      { unitId: top.id, targetUnitId: unitAtV7(start, at(4, 2)).id },
-    ]);
-    // After its first attack it cannot move.
-    expect(commandFor(first.state, "MOVE", TOP)).toBeUndefined();
-    const second = attackV7(first.state, TOP, at(5, 2));
-    expect(second.combat).toMatchObject({
-      attacksUsed: 2,
-      attacksRemaining: 1,
-    });
-    const third = attackV7(second.state, TOP, at(6, 2));
-    expect(third.combat).toMatchObject({ attacksUsed: 3, attacksRemaining: 0 });
-    expect(third.attacker?.activation.handled).toBe(true);
-    // A fourth unit stands beside it; there is no fourth attack.
-    expect(commandFor(third.state, "ATTACK", TOP)).toBeUndefined();
-    expect(
-      applyCommandV7(third.state, seatIdV7(start, 0), {
-        kind: "ATTACK",
-        unitId: top.id,
-        targetUnitId: unitAtV7(start, at(6, 3)).id,
-      }),
-    ).toMatchObject({ accepted: false, error: { code: "UNIT_ALREADY_ACTED" } });
-    expect(third.state.ninthUnit.struckThisTurn).toHaveLength(3);
-    // The End Turn empties the list.
-    const ended = applyOkV7(third.state, seatIdV7(start, 0), {
-      kind: "END_TURN",
-    });
-    expect(ended.state.ninthUnit.struckThisTurn).toEqual([]);
-  });
-
-  it("never attacks the same unit twice in a turn", () => {
-    const start = crowd();
-    const top = unitAtV7(start, TOP);
-    const target = unitAtV7(start, at(4, 2));
-    const first = attackV7(start, TOP, at(4, 2));
-    expect(first.combat.defenderDies).toBe(false);
-    const again: CommandV7 = {
-      kind: "ATTACK",
-      unitId: top.id,
-      targetUnitId: target.id,
-    };
-    expect(offered(first.state)).not.toContainEqual(again);
-    expect(
-      queryCombatPreviewV7(
-        viewForV7(first.state, seatIdV7(start, 0)),
-        top.id,
-        target.id,
-      ),
-    ).toBeNull();
-    expect(
-      applyCommandV7(first.state, seatIdV7(start, 0), again),
-    ).toMatchObject({
-      accepted: false,
-      error: { code: "ATTACK_NOT_LEGAL", params: { reason: "ALREADY_STRUCK" } },
-    });
-    // Another unit is still offered.
-    expect(offered(first.state)).toContainEqual({
-      kind: "ATTACK",
-      unitId: top.id,
-      targetUnitId: unitAtV7(start, at(5, 2)).id,
-    });
-  });
-
-  it("needs no standing still, and strikes at full strength however damaged", () => {
-    const start = dwarves([
-      { seat: 0, role: "KNIGHT", at: at(5, 5), hp: 4 },
-      { seat: 1, role: "FIGHTER", at: at(4, 2), hp: 2 },
-      { seat: 1, role: "FIGHTER", at: at(6, 2), hp: 2 },
-    ]);
-    const moved = moveV7(start, at(5, 5), [at(5, 4), TOP]);
-    const first = attackV7(moved.state, TOP, at(4, 2));
-    expect(first.combat).toMatchObject({
-      unflinchingApplied: true,
-      attacksRemaining: 1,
-    });
-    const second = attackV7(first.state, TOP, at(6, 2));
-    expect(second.combat.attacksUsed).toBe(2);
-    // The public stats count the attacks left.
-    expect(
-      viewForV7(second.state, seatIdV7(start, 0)).unitStats.find(
-        (stats) => stats.unitId === unitAtV7(second.state, TOP).id,
-      )?.statuses,
-    ).toContain("Three Hammers: 1 more attack");
-  });
-
+// Dwarf crowd control (`pulp_wars-w49.33`): the Whirligig's Whirl replaced
+// Three Hammers; its tests are in ruleset-v7-dwarf-crowd-control.test.ts.
+describe("the Whirligig's heavy-slot neighbour", () => {
   it("leaves the Steam Tank Plated in the heavy slot", () => {
     const state = candyFieldV7(
       [
@@ -2418,7 +2315,7 @@ describe("the ninth unit: the Normal AI", () => {
     expect(shockScreenMoveValueV7(down, trooper, at(5, 3), hostile)).toBe(0);
   });
 
-  it("sends a Whirligig where weak targets stand together, not into a healthy line", () => {
+  it("sends a Whirligig where several targets stand together (Whirl)", () => {
     const state = candyFieldV7(
       [
         { seat: 0, role: "KNIGHT", at: at(8, 4) },
@@ -2434,15 +2331,16 @@ describe("the ninth unit: the Normal AI", () => {
     const top = view.units.find((unit) => unit.role === "KNIGHT");
     if (top === undefined) throw new Error("no Whirligig");
     const hostile = (owner: number): boolean => owner !== view.viewer.id;
-    // Three weak targets next to (5, 3): two beyond the first.
-    expect(threeHammersMoveValueV7(view, top, at(5, 3), hostile)).toBe(
-      2 * NINTH_HAMMERS_TARGET_VALUE_V7,
+    // Three targets next to (5, 3): two beyond the first. Dwarf crowd
+    // control (`pulp_wars-w49.33`): the Whirl hits them all unanswered, so
+    // healthy units count too (two Guards next to (5, 5): one beyond).
+    expect(whirlMoveValueV7(view, top, at(5, 3), hostile)).toBe(
+      2 * NINTH_WHIRL_TARGET_VALUE_V7,
     );
-    // Two healthy Guards next to (5, 5): a cost.
-    expect(threeHammersMoveValueV7(view, top, at(5, 5), hostile)).toBeLessThan(
-      0,
+    expect(whirlMoveValueV7(view, top, at(5, 5), hostile)).toBe(
+      NINTH_WHIRL_TARGET_VALUE_V7,
     );
-    expect(threeHammersMoveValueV7(view, top, at(8, 4), hostile)).toBe(0);
+    expect(whirlMoveValueV7(view, top, at(8, 4), hostile)).toBe(0);
   });
 
   it("stands on a hostile Wight's Grave, keeps off its own, and does not raise it while it is safe", () => {

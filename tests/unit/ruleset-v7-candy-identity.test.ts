@@ -42,7 +42,7 @@ import { goblinSetupV7 } from "../fixtures/v7-goblin-arena";
 // tier 3 technology base cost 9) 7r41.
 
 /** The revision number of the current identity (`pulp-wars-poc-7rNN`). */
-const REVISION = 59;
+const REVISION = 60;
 const ID = `pulp-wars-poc-7r${REVISION}`;
 const PREVIOUS_ID = `pulp-wars-poc-7r${REVISION - 1}`;
 
@@ -192,8 +192,13 @@ describe("the Candy revision identity (section 2.2)", () => {
   it("inserts the three commands after ASSEMBLE and the seven events at their positions", () => {
     const commands: readonly string[] = COMMAND_KIND_ORDER_V7;
     const assemble = commands.indexOf("ASSEMBLE");
-    expect(commands.slice(assemble, assemble + 5)).toEqual([
+    // Dwarf crowd control (`pulp_wars-w49.33`) puts its three commands in
+    // between.
+    expect(commands.slice(assemble, assemble + 8)).toEqual([
       "ASSEMBLE",
+      "WHIRL",
+      "BUILD_BARRICADE",
+      "ATTACK_BARRICADE",
       "SUGAR_RUSH",
       "REBAKE",
       "SUGAR_TOSS",

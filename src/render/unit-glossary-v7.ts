@@ -400,9 +400,11 @@ const ENTRIES = {
   ],
   PLATED: ["Plated", "Thick plating: one hit never takes much of its health."],
   MACHINE: ["Machine", "An Engineer's Repair heals it more than other units."],
-  THREE_HAMMERS: [
-    "Three Hammers",
-    "Attacks up to 3 times a turn, each time a different enemy.",
+  // Dwarf crowd control (`pulp_wars-w49.33`): Whirl replaced Three Hammers.
+  WHIRL: ["Whirl", "Hits every enemy next to it at once. Nobody hits back."],
+  BARRICADE: [
+    "Barricade",
+    "Builds a barricade on a free tile next to it, for Coins. It blocks every unit until it is destroyed.",
   ],
 
   // ------------------------------------------------------------------ Candy
@@ -590,7 +592,6 @@ const ENTRIES = {
   STATUS_ATTACK_AGAIN: ["Attack again", "It just killed: it may attack again."],
   STATUS_ESCAPE: ["Escape", "It may move once more this turn."],
   STATUS_CRACKED: ["Cracked", "Easier to hurt for the rest of this turn."],
-  STATUS_HAMMERS: ["Three Hammers", "The attacks it has left this turn."],
   STATUS_RISEN: [
     "Risen",
     "It has climbed out of its Grave once. It will not rise again.",
@@ -774,7 +775,6 @@ export function roleTraitGlossaryIdsV7(
   if (mechanics.frostbite) traits.push("FROSTBITE");
   if (mechanics.repairsAsMachine && !mechanics.construct)
     traits.push("MACHINE");
-  if (mechanics.attacksPerTurn > 1) traits.push("THREE_HAMMERS");
   if (mechanics.rushPerk === "ESCAPE") traits.push("RUSH_AND_RUN");
   if (mechanics.rushPerk === "SUGAR_FRENZY") traits.push("SUGAR_FRENZY");
   if (mechanics.leavesCrumbs) traits.push("CRUMBS");
@@ -870,7 +870,6 @@ const STATUS_IDS: Readonly<Record<string, GlossaryIdV7>> = {
   "sugar-frenzy": "STATUS_ATTACK_AGAIN",
   escape: "STATUS_ESCAPE",
   cracked: "STATUS_CRACKED",
-  "three-hammers": "STATUS_HAMMERS",
   risen: "STATUS_RISEN",
 };
 

@@ -189,6 +189,31 @@ export type CommandV7 =
     }
   | {
       /**
+       * Dwarf crowd control (`pulp_wars-w49.33`): a Whirligig hits every
+       * visible hostile unit next to it at once, unanswered.
+       */
+      readonly kind: "WHIRL";
+      readonly unitId: UnitId;
+    }
+  | {
+      /**
+       * Dwarf crowd control: an Engineer builds a Barricade on the adjacent
+       * tile `to`.
+       */
+      readonly kind: "BUILD_BARRICADE";
+      readonly unitId: UnitId;
+      readonly to: CoordV7;
+    }
+  | {
+      /**
+       * Dwarf crowd control: a unit attacks the hostile Barricade on `at`.
+       */
+      readonly kind: "ATTACK_BARRICADE";
+      readonly unitId: UnitId;
+      readonly at: CoordV7;
+    }
+  | {
+      /**
        * The Candy revision (docs/product/RULESET_7_CANDY.md section 5.1): a
        * Candy land unit that has not moved or acted goes on a Sugar Rush.
        */
@@ -459,7 +484,7 @@ export function parseCommandV7(input: unknown): CommandParseResultV7 {
       ? invalid(kind)
       : { ok: true, value: { kind, unitId: unit, at } };
   }
-  if (kind === "ASSEMBLE") {
+  if (kind === "ASSEMBLE" || kind === "BUILD_BARRICADE") {
     if (!hasExactKeysV7(input, ["kind", "to", "unitId"])) return invalid(kind);
     const unit = parseUnitIdV7(candidate.unitId);
     const to = parseCoordV7(candidate.to);
@@ -499,7 +524,8 @@ export function parseCommandV7(input: unknown): CommandParseResultV7 {
     kind === "RALLY" ||
     kind === "TEND_WOUNDED" ||
     kind === "COLD_SNAP" ||
-    kind === "SUGAR_RUSH"
+    kind === "SUGAR_RUSH" ||
+    kind === "WHIRL"
   ) {
     const unit = hasExactKeysV7(input, ["kind", "unitId"])
       ? parseUnitIdV7(candidate.unitId)
@@ -570,7 +596,11 @@ export function parseCommandV7(input: unknown): CommandParseResultV7 {
           },
         };
   }
-  if (kind === "DISEMBARK" || kind === "REBAKE") {
+  if (
+    kind === "DISEMBARK" ||
+    kind === "REBAKE" ||
+    kind === "ATTACK_BARRICADE"
+  ) {
     const unit = hasExactKeysV7(input, ["at", "kind", "unitId"])
       ? parseUnitIdV7(candidate.unitId)
       : null;
@@ -643,6 +673,16 @@ export function compareCommandsV7(left: CommandV7, right: CommandV7): number {
   if (left.kind === "ASSEMBLE" && right.kind === "ASSEMBLE")
     return (
       left.unitId - right.unitId || compareNullableCoords(left.to, right.to)
+    );
+  // Dwarf crowd control (`pulp_wars-w49.33`): `BUILD_BARRICADE` and
+  // `ATTACK_BARRICADE` in unit-ID then (y, x) order.
+  if (left.kind === "BUILD_BARRICADE" && right.kind === "BUILD_BARRICADE")
+    return (
+      left.unitId - right.unitId || compareNullableCoords(left.to, right.to)
+    );
+  if (left.kind === "ATTACK_BARRICADE" && right.kind === "ATTACK_BARRICADE")
+    return (
+      left.unitId - right.unitId || compareNullableCoords(left.at, right.at)
     );
   const leftAt = targetCoord(left);
   const rightAt = targetCoord(right);

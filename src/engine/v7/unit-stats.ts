@@ -503,23 +503,6 @@ export function publicUnitStatsV7(
     ? 1
     : Math.max(role.sightRadius, capabilities.roleSightRadius[unit.role] ?? 0);
   const labelText = embarked ? "Embarked transport" : role.label;
-  // The ninth unit (7r55): Three Hammers, the attacks a Whirligig that has
-  // attacked this turn may still make (null before its first attack and
-  // for every other unit).
-  const hammersLeft =
-    unit.form === "LAND" &&
-    mechanics.attacksPerTurn > 1 &&
-    state.turnOrder[state.activeSeatIndex] === unit.ownerId &&
-    unit.activation.attacksUsed >= 1
-      ? unit.activation.recovered ||
-        unit.activation.captured ||
-        unit.activation.specialActed
-        ? 0
-        : Math.max(
-            0,
-            attackAllowanceV7(state, unit) - unit.activation.attacksUsed,
-          )
-      : null;
   const halfPower2 =
     rayPower === "HALF" ? role.attack2 - halfPowerAttack2V7(role.attack2) : 0;
   return {
@@ -777,16 +760,8 @@ export function publicUnitStatsV7(
           ]
         : []),
       ...(unit.activation.escapeAvailable ? ["Escape: may move again"] : []),
-      // The ninth unit (7r55): Cracked, a Whirligig's attacks left, and a
-      // Wight that has risen once.
+      // The ninth unit (7r55): Cracked, and a Wight that has risen once.
       ...(cracked2 < 0 ? ["Cracked: -1 Defense this turn"] : []),
-      ...(hammersLeft === null
-        ? []
-        : [
-            hammersLeft === 0
-              ? "Three Hammers: no attack left"
-              : `Three Hammers: ${String(hammersLeft)} more ${hammersLeft === 1 ? "attack" : "attacks"}`,
-          ]),
       ...(state.ninthUnit.risenWights.includes(unit.id)
         ? ["Risen: will not rise again"]
         : []),

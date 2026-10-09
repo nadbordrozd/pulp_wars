@@ -599,6 +599,7 @@ export function buildMissionStateV7(
     tossedThisTurn: [],
     huntedThisTurn: [],
     ninthUnit: emptyNinthUnitStateV7(),
+    barricades: [],
     pendingChoices: [],
     outcome: null,
   });

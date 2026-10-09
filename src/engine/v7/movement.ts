@@ -46,7 +46,7 @@ import type {
   UnitStateV7,
 } from "./types";
 import { isNeutralOwnerV7 } from "./types";
-import { moundAtV7, tileOccupiedV7 } from "./units";
+import { barricadeAtV7, moundAtV7, tileOccupiedV7 } from "./units";
 import type { PlayerTileViewV7, PlayerViewV7, PublicUnitV7 } from "./view";
 
 export type MovementFailureReasonV7 =
@@ -70,6 +70,8 @@ export type MovementFailureReasonV7 =
   | "SNOW_STOPS_MOVE"
   // The Dwarf revision section 5.3: no Move ends on a mound tile.
   | "MOUND"
+  // Dwarf crowd control (`pulp_wars-w49.33`): no Move enters a Barricade.
+  | "BARRICADE"
   // The frozen sea (docs/product/RULESET_7_NAVAL_BRANCH.md sections 8.6,
   // 8.7, and 8.9): a path that stops or turns where a slide continues; a
   // path that continues past an ice tile a slipping unit entered; a Move of
@@ -109,6 +111,8 @@ export type MovementPathResultV7 =
           // The Dwarf revision: a mound on a tile the mover had not
           // explored, met on the last tile of the Move.
           | "MOUND"
+          // Dwarf crowd control: a Barricade the mover did not know of.
+          | "BARRICADE"
           // The frozen sea: ice a slipping unit had not known before.
           | "ICE";
       } | null;
@@ -257,6 +261,33 @@ function validateMovementPathWithOptionsV7(
     const owner = tileOwner(state, tile);
     if (owner !== null && arePlayersAlliedV7(state, player.id, owner))
       return { legal: false, reason: "ALLY_TERRITORY_FORBIDDEN" };
+    // Dwarf crowd control (`pulp_wars-w49.33`): a Barricade blocks every
+    // unit's Move through and onto its tile, a flyer's too. One the mover
+    // knew of (on a tile it had explored) rejects the Move; one it met on a
+    // tile it had not explored interrupts it there (reason `BARRICADE`). An
+    // unexplored tile in the middle of a path is refused as ever below.
+    if (
+      barricadeAtV7(state, step) !== undefined &&
+      (wasExplored || index === path.length - 1)
+    ) {
+      if (wasKnownBeforeCommand) return { legal: false, reason: "BARRICADE" };
+      const entered = lastFreeEnteredPath(
+        state,
+        unit,
+        traversedPath,
+        ownSitesOnly,
+      );
+      return {
+        legal: true,
+        destination: entered.at(-1) ?? unit.at,
+        traversedPath: entered,
+        spentPoints2,
+        stopped: true,
+        explored,
+        revealed: unique(revealed),
+        interruption: { at: step, reason: "BARRICADE" },
+      };
+    }
     const occupant = state.units.find(
       (candidate) =>
         candidate.id !== unit.id &&
@@ -951,6 +982,10 @@ function validatePlayerMovementPathWithContextV7(
       publicAllied(view, unit.ownerId, tile.territoryOwnerId)
     )
       return { legal: false, reason: "ALLY_TERRITORY_FORBIDDEN" };
+    // Dwarf crowd control (`pulp_wars-w49.33`): no Move enters a Barricade
+    // (every Barricade on an explored tile is in the view).
+    if (barricadeAtV7(view, step) !== undefined)
+      return { legal: false, reason: "BARRICADE" };
     // The Dwarf revision section 5.3: no Move ends on a mound tile.
     if (!passesOwnUnits && moundAtV7(view, step) !== undefined)
       return { legal: false, reason: "MOUND" };

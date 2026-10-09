@@ -281,7 +281,7 @@ Every Dwarf role uses one slot.
 | Gyrocopter       | `RAIDER`      | Scouting          |    4 |     1 |   8 | 1.5 (3)²           |                1 (2) |    3 |  bomb |     2 | the bomb is its Move | no      | flies; Bomb Run (5, Dive 6), once per target per turn              |
 | Clockwork Gunner | `MARKSMAN`    | Marksmanship      |    3 |     1 |  10 | 1.5 (3)            |                1 (2) |    1 |   1–2 |    1¹ | yes, one shot        | yes     | construct; two shots if it has not moved; never moves after firing |
 | Steam Mole       | `GUARD`       | Drill             |    5 |     1 |  16 | 2 (4)              |              2.5 (5) |    1 |     1 |     1 | yes                  | yes     | Tunnel 3 with a rider; Eruption 2 (3); Dig In                      |
-| Engineer         | `CAPTAIN`     | Administration    |    5 |     1 |  10 | 1 (2)              |                1 (2) |    1 |     1 |     1 | yes                  | no      | Repair; Assemble; no Rally                                         |
+| Engineer         | `CAPTAIN`     | Administration    |    5 |     1 |  10 | 1 (2)              |                1 (2) |    1 |     1 |     1 | yes                  | no      | Repair; Assemble; Barricade (section 24); no Rally                 |
 | Steam Cannon     | `CATAPULT`    | Sawmilling        |    8 |     1 |  10 | 3.5 (7)            |              0.5 (1) |    1 |   2–3 |     1 | no                   | no      | Knockback; with Blasting Charges ignores Walls and Field Defense   |
 | Steam Tank       | `KNIGHT`      | Chivalry          |    9 |     1 |  16 | 3 (6)              |                2 (4) |    2 |     1 |     1 | yes                  | no      | Plated 4; no Overrun                                               |
 | Brass Titan      | `JUGGERNAUT`  | reward only       |    — |     1 |  36 | 4 (8)              |                3 (6) |    1 |     1 |     1 | yes                  | yes     | construct; Push                                                    |
@@ -354,7 +354,8 @@ own numbers were computed with the decided bomb and were not re-run.
   `CAPTURE`, `RIDES_TUNNEL`, `DIG_IN`; Gyrocopter `FLY`, `BOMB_RUN`;
   Clockwork Gunner `ATTACK`, `CAPTURE`, `CLOCKWORK`, `TWIN_SHOT`; Steam Mole
   `ATTACK`, `CAPTURE`, `TUNNEL`, `ERUPTION`, `DIG_IN`; Engineer `ATTACK`,
-  `TEND_WOUNDED` (labelled Repair), `ASSEMBLE`; Steam Cannon `ATTACK`,
+  `TEND_WOUNDED` (labelled Repair), `ASSEMBLE`, `BARRICADE` (section 24);
+  Steam Cannon `ATTACK`,
   `KNOCKBACK`; Steam Tank `ATTACK`, `PLATED`; Brass Titan `ATTACK`, `CAPTURE`,
   `PUSH`, `CLOCKWORK`; boats `ATTACK`.
 
@@ -754,8 +755,9 @@ Mole loss next turn unless the Dwarf line follows up.
 ## 6. Gyrocopters and the bombing run
 
 **One sentence:** a Gyrocopter flies over an enemy and drops a bomb on it,
-5 damage (6 with Dive), landing beyond it; nothing can hit back at the bomb,
-and no unit is bombed twice in a turn.
+5 damage (6 with Dive), landing beyond it (up to 2 tiles past it since
+`pulp_wars-w49.33`); nothing can hit back at the bomb, and no unit is bombed
+twice in a turn.
 
 ### 6.1 Flight and no ordinary attack
 
@@ -784,23 +786,25 @@ its primary action at once. It is not an `ATTACK` and costs no Coins.
 
 Legality, in this order (all rejections are atomic):
 
-| #   | Requirement                                                                                                                                                                                                                                                                                                                                                  | Rejection                                         |
-| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------- |
-| 1   | `unitId` is the actor's own living unit on the board.                                                                                                                                                                                                                                                                                                        | the ordinary unit errors                          |
-| 2   | Its role has `BOMB_RUN`.                                                                                                                                                                                                                                                                                                                                     | `UNIT_ROLE_INVALID { role }`                      |
-| 3   | It has not moved, has not used a primary action, and has not landed this turn.                                                                                                                                                                                                                                                                               | `UNIT_ALREADY_ACTED`                              |
-| 4   | It is in land form.                                                                                                                                                                                                                                                                                                                                          | `BOMB_RUN_NOT_LEGAL { reason: "EMBARKED" }`       |
-| 5   | It is not sluggish (a bombing run is a Move and an action).                                                                                                                                                                                                                                                                                                  | `BOMB_RUN_NOT_LEGAL { reason: "SLUGGISH" }`       |
-| 6   | `targetUnitId` is a living unit on the board the actor can see.                                                                                                                                                                                                                                                                                              | `TARGET_NOT_FOUND`                                |
-| 7   | It is hostile to the actor.                                                                                                                                                                                                                                                                                                                                  | `TARGET_ALLIED`                                   |
-| 8   | It is within Chebyshev distance `BOMB_RANGE_V7` (2) of the Gyrocopter; distance 1 is legal.                                                                                                                                                                                                                                                                  | `BOMB_RUN_NOT_LEGAL { reason: "OUT_OF_RANGE" }`   |
-| 9   | It is not in `bombedThisTurn`.                                                                                                                                                                                                                                                                                                                               | `BOMB_RUN_NOT_LEGAL { reason: "ALREADY_BOMBED" }` |
-| 10  | `to` is Chebyshev-adjacent to the target, strictly farther (Chebyshev) from the Gyrocopter's tile than the target is, holds no treasure chest, and is a tile on which an ordinary `MOVE` of this Gyrocopter could end this turn (within Move 3 under the flyer rules, over explored tiles, no unit, no mound, not a forbidden center, not allied territory). | `BOMB_RUN_NOT_LEGAL { reason: "LANDING" }`        |
+| #   | Requirement                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Rejection                                         |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------- |
+| 1   | `unitId` is the actor's own living unit on the board.                                                                                                                                                                                                                                                                                                                                                                                                                    | the ordinary unit errors                          |
+| 2   | Its role has `BOMB_RUN`.                                                                                                                                                                                                                                                                                                                                                                                                                                                 | `UNIT_ROLE_INVALID { role }`                      |
+| 3   | It has not moved, has not used a primary action, and has not landed this turn.                                                                                                                                                                                                                                                                                                                                                                                           | `UNIT_ALREADY_ACTED`                              |
+| 4   | It is in land form.                                                                                                                                                                                                                                                                                                                                                                                                                                                      | `BOMB_RUN_NOT_LEGAL { reason: "EMBARKED" }`       |
+| 5   | It is not sluggish (a bombing run is a Move and an action).                                                                                                                                                                                                                                                                                                                                                                                                              | `BOMB_RUN_NOT_LEGAL { reason: "SLUGGISH" }`       |
+| 6   | `targetUnitId` is a living unit on the board the actor can see.                                                                                                                                                                                                                                                                                                                                                                                                          | `TARGET_NOT_FOUND`                                |
+| 7   | It is hostile to the actor.                                                                                                                                                                                                                                                                                                                                                                                                                                              | `TARGET_ALLIED`                                   |
+| 8   | It is within Chebyshev distance `BOMB_RANGE_V7` (2) of the Gyrocopter; distance 1 is legal.                                                                                                                                                                                                                                                                                                                                                                              | `BOMB_RUN_NOT_LEGAL { reason: "OUT_OF_RANGE" }`   |
+| 9   | It is not in `bombedThisTurn`.                                                                                                                                                                                                                                                                                                                                                                                                                                           | `BOMB_RUN_NOT_LEGAL { reason: "ALREADY_BOMBED" }` |
+| 10  | `to` is within Chebyshev distance `BOMB_LANDING_RANGE_V7` (2) of the target (Dwarf crowd control, `pulp_wars-w49.33`; adjacent before), strictly farther (Chebyshev) from the Gyrocopter's tile than the target is, holds no treasure chest, and is a tile on which an ordinary `MOVE` of this Gyrocopter could end this turn (within Move 3 under the flyer rules, over explored tiles, no unit, no mound, no Barricade, not a forbidden center, not allied territory). | `BOMB_RUN_NOT_LEGAL { reason: "LANDING" }`        |
 
 - The **target** may be in any form: a land unit, a flyer, an Egg, an
   embarked unit, or a boat.
-- **Beyond the target** is the whole geometry rule: the landing is next to
-  the target and farther from the start. It does not fix the flight path.
+- **Beyond the target** is the whole geometry rule: the landing is within 2
+  of the target and farther from the start. It does not fix the flight
+  path. A landing still needs Move 3: a target 1 away is passed by up to 2
+  tiles, a target 2 away by 1.
 
 ### 6.3 The bomb
 
@@ -822,7 +826,8 @@ Legality, in this order (all rejections are atomic):
    Slayer; a destroyed Egg counts), then the death's Grave or rising under
    the ordinary rules, and a Brain's Thralls collapse. There is no advance.
 5. **A death blast** of an exploding target resolves as a chain: the
-   Gyrocopter, standing next to it, is in the blast.
+   Gyrocopter is in the blast when it landed next to the target (a landing
+   2 away is outside the 3 × 3 blast area).
 6. **Water.** If `to` is water and the Gyrocopter survived, it self-launches
    there (form `EMBARKED`, `UNIT_EMBARKED`).
 7. The Gyrocopter has used its Move and its primary action and is handled.
@@ -3039,3 +3044,57 @@ Precise readings:
    the mound. The rest of the section 18 list (an eruption, a bomb, an
    Assemble, a Repair, a dug-in unit, a Knockback) is exercised by the DOM
    tests and the UI review (`npm run review:ruleset7-dwarf-ui`).
+
+## 24. Crowd control (`pulp_wars-w49.33`)
+
+The user's request of 2026-10-09 gave the Dwarves three pieces of crowd
+control: the Whirligig attacks every adjacent unit at once, the Engineer
+builds a Barricade that stands until it is destroyed, and the bombing run
+lands up to 2 tiles away. The rules, with the root's judgements, are in
+the current rules:
+[section 22.15](RULESET_7_CURRENT.md#2215-the-whirligig-whirl) (Whirl),
+[section 22.8](RULESET_7_CURRENT.md#228-engineer-repair-and-assemble)
+(Barricade), and
+[section 22.5](RULESET_7_CURRENT.md#225-gyrocopters-and-the-bombing-run)
+(the landing, row 10 of section 6.2 above).
+
+- **Whirl** replaces Three Hammers: one primary action, after a Move too,
+  that hits every visible hostile unit within 1 with the Whirligig's
+  ordinary attack on it, all from the board before the Whirl, unanswered
+  (no retaliation, Shock Field, or Frostbite), with no advance and the
+  kills credited. The Whirligig keeps its single ordinary `ATTACK` (its way
+  to hit a Barricade); a Whirl and an attack exclude each other.
+- **Barricade:** `BUILD_BARRICADE` (3 Coins, an Engineer primary action) on
+  a free, explored land tile next to the Engineer; 10 HP, Defense 2; it
+  blocks every Move through or onto its tile (flyers and its owner's units
+  too) and every placement through the occupancy predicate, including a
+  tunnel's surfacing; it is attacked with `ATTACK_BARRICADE` (no retaliation,
+  no advance, no kill), repaired by an Engineer's Repair like a machine,
+  never regenerates, and stands until destroyed (at most 4 per player).
+
+### 24.1 Readings made in the implementation
+
+- **Who a Whirl hits:** the units the Whirligig's owner can see, as for an
+  `ATTACK` (a hidden adjacent unit is not hit), so the preview is exact.
+- **Shatter** never applies (a Dwarf unit never shatters anything), and
+  the Whirl reads the defender's Dig In, Walls, Field Defense, cover, and
+  Blizzard as an attack from 1 would; it destroys no Field Defense.
+- **Barricade tiles** also exclude a Grave (so no Raise Dead, Wight, or
+  rising ever needs one), and the build ignores territory. A blast, a bomb,
+  an eruption, splash, Wail, and the Whirl never hit a Barricade; only
+  `ATTACK_BARRICADE` does.
+- **Barricade damage** uses the attacker's role Attack at its HP ratio
+  (full for an Unflinching construct) with no situational bonus (no
+  Inspired, Charge, Gang Up, Rush, Ram, or ray halving), so the preview is
+  exact from public facts; a Raider's Escape is not granted by it.
+- **Repair** of a Barricade has no once-a-turn limit (a Barricade stores no
+  tended flag), and Repair is offered when only a Barricade is damaged.
+- **An eliminated owner's Barricades stay** as obstacles nobody repairs.
+- **A mind-controlled Engineer** may build for its controller (the
+  Barricade is the controller's); `BARRICADE` is not on the lost-ability
+  list, since it creates no unit.
+- **The Normal AI** scores a Whirl like an attack on the sum of its hits and
+  never makes a single attack with a Whirligig while it can Whirl; its
+  positional value counts every adjacent target (nothing strikes back). It
+  never builds or attacks a Barricade and routes around them through the
+  public movement queries. These are follow-ups for the AI pass.

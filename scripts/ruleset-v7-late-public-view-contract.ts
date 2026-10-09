@@ -138,7 +138,10 @@ export const RULESET7_LATE_PUBLIC_VIEW_NORMAL_DECISION = Object.freeze({
     // 3b4bad…d678).
     // The ninth unit (`pulp_wars-w49.17`, 7r55): see the comment above
     // (was d572ee…1c7e).
-    "9c715be0ff401925ac6f3059ef8e0e19e7967bae30262b437762bf49a1892a52",
+    // Dwarf crowd control (`pulp_wars-w49.33`) inserts WHIRL,
+    // BUILD_BARRICADE, and ATTACK_BARRICADE after ASSEMBLE, moving every
+    // later command kind forward by three (was 9c715b…2a52).
+    "0549817ac83a17f75bf48972015a3f294af5d1640a8be13b3e10dacc9047efe7",
   command: Object.freeze({
     kind: "TRAIN",
     cityId: 16,
@@ -227,10 +230,10 @@ export function upgradeRetainedPublicViewV7(
   });
   return {
     ...retained,
-    rulesetId: "pulp-wars-poc-7r59",
+    rulesetId: "pulp-wars-poc-7r60",
     setup: {
       ...retained.setup,
-      rulesetId: "pulp-wars-poc-7r59",
+      rulesetId: "pulp-wars-poc-7r60",
       mapType: "DRY_LAND",
       mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
       curiosities: false,
@@ -346,13 +349,14 @@ export function upgradeRetainedPublicViewV7(
     tossedThisTurn: [],
     huntedThisTurn: [],
     // The ninth unit (`pulp_wars-w49.17`): nor any Wight's Grave, risen
-    // Wight, Cracked unit, or Whirligig attack.
+    // Wight, or Cracked unit.
     ninthUnit: {
       wightGraves: [],
       risenWights: [],
       crackedThisTurn: [],
-      struckThisTurn: [],
     },
+    // Dwarf crowd control (`pulp_wars-w49.33`): nor any Barricade.
+    barricades: [],
   };
 }
 import {

@@ -46,7 +46,7 @@ import { iceFieldV7, type IcePieceV7 } from "../fixtures/v7-ice-folk";
 // Humans against the Ice Folk AI and as the Ice Folk. One rule changed (an
 // Ice Folk city's Survey grants a free Sled, Scouts, as the other five
 // factions of the army policy have), so the identity is
-// `pulp-wars-poc-7r59`. An Ice Folk seat of the Normal AI plays the army
+// `pulp-wars-poc-7r60`. An Ice Folk seat of the Normal AI plays the army
 // rules in a match of Humans, Undead, Goblins, Martians, Dinosaurs, and Ice
 // Folk: it researches toward its own units in its own order, trains before
 // it researches while it is short of capturers, caps its Musk Oxen, counts
@@ -155,14 +155,19 @@ const research = (state: GameStateV7) =>
   inspectNormalArmyV7(viewOf(state)).research;
 
 describe("step two of the Ice Folk pass: the identity", () => {
-  it("is 7r59, with 7r58 the last prior identity and an obsolete save key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r59");
-    expect(PRIOR_RULESET_7_IDS.at(-1)).toBe("pulp-wars-poc-7r58");
+  it("was 7r59 after 7r58, with both save keys obsolete now", () => {
+    // (Dwarf crowd control, `pulp_wars-w49.33`, took 7r60.)
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r60");
+    expect(PRIOR_RULESET_7_IDS.slice(-2)).toEqual([
+      "pulp-wars-poc-7r58",
+      "pulp-wars-poc-7r59",
+    ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r59.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r60.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-2)).toEqual([
       "pulpWars.save.v7r58.current",
-    );
+      "pulpWars.save.v7r59.current",
+    ]);
   });
 });
 

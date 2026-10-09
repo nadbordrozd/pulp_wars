@@ -410,7 +410,7 @@ export function dwarfHelpRulesV7(): readonly (readonly [string, string])[] {
       "Blasting Charges",
       `eruptions deal ${BLASTING_ERUPTION_DAMAGE_V7}, and ${CANNON()} shots ignore Walls and Field Defense.`,
     ],
-    // The ninth unit (7r55): the Whirligig's Three Hammers.
+    // The ninth unit (7r55): the Whirligig's Whirl (`pulp_wars-w49.33`).
     ...ninthUnitHelpRulesV7("DWARF"),
   ];
 }

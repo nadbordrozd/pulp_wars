@@ -166,7 +166,8 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
     // Tuning 3 (`pulp_wars-w49.3`) adds HIRE after TRAIN_NAVAL (59), and
     // tuning 4 DRILL_UNIT after PROMOTE (60), which tuning 5
     // (`pulp_wars-w49.4`) removes again (59).
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(59);
+    // Dwarf crowd control (`pulp_wars-w49.33`): three more commands (62).
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(62);
     const tractor = COMMAND_KIND_ORDER_V7.indexOf("TRACTOR_BEAM");
     expect(COMMAND_KIND_ORDER_V7.slice(tractor, tractor + 4)).toEqual([
       "TRACTOR_BEAM",
@@ -180,7 +181,8 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
     // MONSTER_REGENERATED, NEUTRAL_TURN_STARTED, NEUTRAL_TURN_ENDED, and
     // MONSTER_BOUNTY_AWARDED (89); the Candy revision seven more (96).
     // The ninth unit (`pulp_wars-w49.17`, 7r55): WIGHT_RISEN (101).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(101);
+    // Dwarf crowd control (`pulp_wars-w49.33`): four more events (105).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(105);
     const after = (order: readonly string[], kind: string) =>
       order[order.indexOf(kind) + 1];
     expect(after(DOMAIN_EVENT_KIND_ORDER_V7, "UNITS_RALLIED")).toBe(

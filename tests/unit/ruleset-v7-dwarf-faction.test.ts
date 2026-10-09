@@ -154,22 +154,30 @@ describe("Dwarf faction registration (sections 2 and 14)", () => {
   it("has 53 command kinds and 81 event kinds, with the new kinds at the stated positions", () => {
     // Tuning 3 (`pulp_wars-w49.3`) adds HIRE after TRAIN_NAVAL (59), and
     // tuning 4 DRILL_UNIT after PROMOTE (60), which tuning 5
-    // (`pulp_wars-w49.4`) removes again (59).
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(59);
+    // (`pulp_wars-w49.4`) removes again (59). Dwarf crowd control
+    // (`pulp_wars-w49.33`) adds WHIRL, BUILD_BARRICADE, and
+    // ATTACK_BARRICADE after ASSEMBLE (62).
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(62);
     const snap = COMMAND_KIND_ORDER_V7.indexOf("FREEZE");
-    expect(COMMAND_KIND_ORDER_V7.slice(snap, snap + 4)).toEqual([
+    expect(COMMAND_KIND_ORDER_V7.slice(snap, snap + 7)).toEqual([
       "FREEZE", // the frozen sea (pulp_wars-5ti.3), after COLD_SNAP
       "TUNNEL",
       "BOMB_RUN",
       "ASSEMBLE",
+      "WHIRL",
+      "BUILD_BARRICADE",
+      "ATTACK_BARRICADE",
     ]);
     // The Mind Control revision adds UNIT_RELEASED (82 event kinds).
     // Map curiosities (pulp_wars-737.2) add FOUNTAIN_HEALED, SHRINE_CLAIMED,
     // and WRECK_SALVAGED (85 event kinds); the Giant Spider (pulp_wars-737.3)
     // MONSTER_REGENERATED, NEUTRAL_TURN_STARTED, NEUTRAL_TURN_ENDED, and
     // MONSTER_BOUNTY_AWARDED (89); the Candy revision seven more (96).
-    // The ninth unit (`pulp_wars-w49.17`, 7r55): WIGHT_RISEN (101).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(101);
+    // The ninth unit (`pulp_wars-w49.17`, 7r55): WIGHT_RISEN (101). Dwarf
+    // crowd control (`pulp_wars-w49.33`): BARRICADE_BUILT and
+    // BARRICADE_REPAIRED after FIELD_DEFENSE_DESTROYED, WHIRL_RESOLVED and
+    // BARRICADE_ATTACKED after UNIT_BOMBED (105).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(105);
     const after = (order: readonly string[], kind: string) =>
       order[order.indexOf(kind) + 1];
     for (const order of [
@@ -180,6 +188,10 @@ describe("Dwarf faction registration (sections 2 and 14)", () => {
       expect(after(order, "UNIT_PULLED")).toBe("UNIT_TUNNELLED");
       expect(after(order, "UNIT_TUNNELLED")).toBe("UNIT_SURFACED");
       expect(after(order, "COMBAT_RESOLVED")).toBe("UNIT_BOMBED");
+      expect(after(order, "UNIT_BOMBED")).toBe("WHIRL_RESOLVED");
+      expect(after(order, "WHIRL_RESOLVED")).toBe("BARRICADE_ATTACKED");
+      expect(after(order, "FIELD_DEFENSE_DESTROYED")).toBe("BARRICADE_BUILT");
+      expect(after(order, "BARRICADE_BUILT")).toBe("BARRICADE_REPAIRED");
     }
   });
 
@@ -582,7 +594,7 @@ const ROSTER = [
     1,
     1,
     true,
-    ["ATTACK", "TEND_WOUNDED", "ASSEMBLE"],
+    ["ATTACK", "TEND_WOUNDED", "ASSEMBLE", "BARRICADE"],
     true,
   ],
   [
@@ -618,7 +630,8 @@ const ROSTER = [
     1,
     1,
     true,
-    ["ATTACK", "CLOCKWORK"],
+    // Dwarf crowd control (`pulp_wars-w49.33`): the Whirl.
+    ["ATTACK", "CLOCKWORK", "WHIRL"],
     false,
   ],
   [
@@ -727,7 +740,8 @@ describe("Dwarf roster (section 3)", () => {
       "JUGGERNAUT",
       "SWORDSMAN",
     ]);
-    expect(mechanics("KNIGHT").attacksPerTurn).toBe(3);
+    // Dwarf crowd control (`pulp_wars-w49.33`): the Whirligig Whirls.
+    expect(roles((role) => mechanics(role).whirl)).toEqual(["KNIGHT"]);
     expect(roles((role) => mechanics(role).digsIn)).toEqual([
       "FIGHTER",
       "GUARD",

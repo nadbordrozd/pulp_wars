@@ -50,6 +50,7 @@ import type {
   MatchSetupV7,
   MindControlCooldownV7,
   NinthUnitStateV7,
+  BarricadeV7,
   PendingChoiceV7,
   PlayerColorV7,
   PlayerStateV7,
@@ -356,10 +357,16 @@ export interface PlayerViewV7 {
   /**
    * The ninth unit (`pulp_wars-w49.17`, 7r55): the marked Graves on tiles
    * the viewer has explored (public like Graves, with the seat the Wight
-   * returns for), the risen Wights and Cracked units among the visible
-   * units, and the struck pairs of visible attackers.
+   * returns for), and the risen Wights and Cracked units among the visible
+   * units.
    */
   readonly ninthUnit: NinthUnitStateV7;
+  /**
+   * Dwarf crowd control (`pulp_wars-w49.33`): every Barricade on a tile the
+   * viewer has explored (a structure, public like a Grave or a mound),
+   * sorted by (y, x), with its owner and HP.
+   */
+  readonly barricades: readonly BarricadeV7[];
   readonly pendingChoices: readonly PendingChoiceV7[];
   readonly outcome: MatchOutcomeV7 | null;
 }
@@ -958,13 +965,16 @@ export function viewForV7(
       crackedThisTurn: state.ninthUnit.crackedThisTurn.filter((unitId) =>
         visibleUnitIds.has(unitId),
       ),
-      struckThisTurn: state.ninthUnit.struckThisTurn
-        .filter((entry) => visibleUnitIds.has(entry.unitId))
-        .map((entry) => ({
-          unitId: entry.unitId,
-          targetUnitId: entry.targetUnitId,
-        })),
     },
+    // Dwarf crowd control (`pulp_wars-w49.33`): see
+    // `PlayerViewV7.barricades`.
+    barricades: state.barricades
+      .filter((entry) => explored.has(key(entry.at)))
+      .map((entry) => ({
+        at: { x: entry.at.x, y: entry.at.y },
+        ownerId: entry.ownerId,
+        hp: entry.hp,
+      })),
     pendingChoices: state.pendingChoices.filter((choice) =>
       state.cities.some(
         (city) => city.id === choice.cityId && city.ownerId === viewerId,

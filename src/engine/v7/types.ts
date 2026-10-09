@@ -5,7 +5,7 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r59" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r60" as const;
 /**
  * Every earlier Ruleset 7 identity, oldest first. Readers report these as
  * incompatible (never invalid). An identity bump must append the outgoing
@@ -70,8 +70,9 @@ export const PRIOR_RULESET_7_IDS = Object.freeze([
   "pulp-wars-poc-7r56",
   "pulp-wars-poc-7r57",
   "pulp-wars-poc-7r58",
+  "pulp-wars-poc-7r59",
 ] as const);
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r59.current" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r60.current" as const;
 /**
  * The map generator a setup names (docs/product/RULESET_7_MAP_SCALE.md
  * section 8.8): `V4` is the many-seats generator of `pulp_wars-ykw.3`
@@ -238,6 +239,11 @@ export const COMMAND_KIND_ORDER_V7 = Object.freeze([
   "TUNNEL",
   "BOMB_RUN",
   "ASSEMBLE",
+  // Dwarf crowd control (`pulp_wars-w49.33`): the Whirligig's Whirl, the
+  // Engineer's Barricade, and an attack on a Barricade (any faction).
+  "WHIRL",
+  "BUILD_BARRICADE",
+  "ATTACK_BARRICADE",
   // The Candy revision: Sugar Rush, the Confectioner's Re-bake, and the
   // Gumball Gunner's Sugar Toss.
   "SUGAR_RUSH",
@@ -344,6 +350,10 @@ export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   "ROAD_BUILT",
   "FIELD_DEFENSE_BUILT",
   "FIELD_DEFENSE_DESTROYED",
+  // Dwarf crowd control (`pulp_wars-w49.33`): an Engineer built or repaired
+  // a Barricade.
+  "BARRICADE_BUILT",
+  "BARRICADE_REPAIRED",
   "LAND_GRANTED",
   "CITY_ECONOMY_CHANGED",
   "CITY_LEVELED_UP",
@@ -394,6 +404,9 @@ export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   "COMBAT_RESOLVED",
   // The Dwarf revision: a Gyrocopter's bombing run.
   "UNIT_BOMBED",
+  // Dwarf crowd control: a Whirligig's Whirl; an attack on a Barricade.
+  "WHIRL_RESOLVED",
+  "BARRICADE_ATTACKED",
   "WAIL_RESOLVED",
   "EXPLOSION_RESOLVED",
   "IMPROVEMENT_PILLAGED",
@@ -912,9 +925,15 @@ export interface GameStateV7 {
   /**
    * The ninth unit (`pulp_wars-w49.17`, 7r55,
    * docs/product/RULESET_7_NINTH_UNIT.md): the stored state of the new
-   * units' mechanics (Rise Again, the Thagomizer, Three Hammers).
+   * units' mechanics (Rise Again, the Thagomizer).
    */
   readonly ninthUnit: NinthUnitStateV7;
+  /**
+   * Dwarf crowd control (`pulp_wars-w49.33`): the standing Barricades,
+   * sorted by (y, x), at most one per tile. Always empty in a match whose
+   * setup has no DWARF seat.
+   */
+  readonly barricades: readonly BarricadeV7[];
   readonly pendingChoices: readonly PendingChoiceV7[];
   readonly outcome: MatchOutcomeV7 | null;
 }
@@ -941,20 +960,10 @@ export interface NinthUnitStateV7 {
    * sorted. Emptied at its End Turn.
    */
   readonly crackedThisTurn: readonly UnitId[];
-  /**
-   * Three Hammers: the (attacker, target) pairs of the attacks made this
-   * turn by units that may attack more than once (the Whirligig), sorted by
-   * `unitId` then `targetUnitId`. Emptied at the End Turn.
-   */
-  readonly struckThisTurn: readonly StruckEntryV7[];
 }
 export interface WightGraveV7 {
   readonly at: CoordV7;
   readonly ownerId: PlayerId;
-}
-export interface StruckEntryV7 {
-  readonly unitId: UnitId;
-  readonly targetUnitId: UnitId;
 }
 /** The empty ninth-unit state (a new match, a mission, a fixture). */
 export function emptyNinthUnitStateV7(): NinthUnitStateV7 {
@@ -962,8 +971,20 @@ export function emptyNinthUnitStateV7(): NinthUnitStateV7 {
     wightGraves: [],
     risenWights: [],
     crackedThisTurn: [],
-    struckThisTurn: [],
   };
+}
+
+/**
+ * Dwarf crowd control (`pulp_wars-w49.33`): a Barricade an Engineer of
+ * `ownerId` built on the land tile `at`. It has `hp` of
+ * `BARRICADE_HP_V7` (1 to 10), blocks every unit's Move through and onto
+ * its tile, and stands until it is destroyed; it keeps its owner when the
+ * territory changes hands.
+ */
+export interface BarricadeV7 {
+  readonly at: CoordV7;
+  readonly ownerId: PlayerId;
+  readonly hp: number;
 }
 
 /**

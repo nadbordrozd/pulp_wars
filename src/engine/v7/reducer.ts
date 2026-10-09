@@ -160,12 +160,9 @@ import { grownUnitV7 } from "./growth";
 import { recordInfectionV7 } from "./infect";
 import {
   prunedNinthUnitV7,
-  targetAlreadyStruckV7,
-  unitAttacksPerTurnV7,
   wightRisingRuleV7,
   withNinthUnitTurnEndedV7,
   withSortedUnitIdV7,
-  withStruckV7,
   withWightGravesV7,
 } from "./ninth-unit";
 import {
@@ -229,6 +226,13 @@ import {
   resolveStartTurnSurfacingV7,
   type DwarfReducerKitV7,
 } from "./dwarf-reducer";
+import {
+  applyAttackBarricadeV7,
+  applyBuildBarricadeV7,
+  applyWhirlV7,
+  barricadeRepairsV7,
+  withBarricadesRepairedV7,
+} from "./dwarf-crowd-control";
 import { twinShotReadyV7, unitIsMachineV7 } from "./dwarf";
 import {
   applyRebakeV7,
@@ -351,6 +355,10 @@ export type RuleErrorCodeV7 =
   | "TUNNEL_NOT_LEGAL"
   | "BOMB_RUN_NOT_LEGAL"
   | "ASSEMBLE_NOT_LEGAL"
+  // Dwarf crowd control (`pulp_wars-w49.33`): an illegal Whirl
+  // (`EMBARKED`, `NO_TARGET`) or Barricade (`EMBARKED`, `CAP`).
+  | "WHIRL_NOT_LEGAL"
+  | "BARRICADE_NOT_LEGAL"
   // The Candy revision: a primary action or a Sugar Rush of a Crashed unit
   // (`UNIT_CRASHED { unitId }`), an illegal Sugar Rush (`EMBARKED`,
   // `RUSHED`), Re-bake (`EMBARKED`, `NO_HOME`, `NO_CRUMBS`, `TILE`), or
@@ -652,6 +660,9 @@ function navalFactsMayChangeV7(
     "MOVE",
     "REDEVELOP",
     "WAIL",
+    // Dwarf crowd control (`pulp_wars-w49.33`): a Whirl can kill an
+    // embarked blockader, like a Wail.
+    "WHIRL",
     // Revision 17 section 6.7: an exploding blockader lifts its blockade, and
     // END_TURN reports blockades lifted by Start Turn Plague and chains.
     "KABOOM",
@@ -818,6 +829,24 @@ function applyCommandCoreV7(
     return applyBombRunV7(DWARF_KIT_V7, stateInput, state, actor, command);
   if (command.kind === "ASSEMBLE")
     return applyAssembleV7(DWARF_KIT_V7, stateInput, state, actor, command);
+  if (command.kind === "WHIRL")
+    return applyWhirlV7(DWARF_KIT_V7, stateInput, state, actor, command);
+  if (command.kind === "BUILD_BARRICADE")
+    return applyBuildBarricadeV7(
+      DWARF_KIT_V7,
+      stateInput,
+      state,
+      actor,
+      command,
+    );
+  if (command.kind === "ATTACK_BARRICADE")
+    return applyAttackBarricadeV7(
+      DWARF_KIT_V7,
+      stateInput,
+      state,
+      actor,
+      command,
+    );
   if (command.kind === "SUGAR_RUSH")
     return applySugarRushV7(DWARF_KIT_V7, stateInput, state, actor, command);
   if (command.kind === "REBAKE")
@@ -4274,10 +4303,6 @@ function applyAttack(
   // a torpedo targets only units afloat.
   if (attackIsTorpedoV7(state, attacker) && !isAfloatFormV7(defender.form))
     return rejected(original, "ATTACK_NOT_LEGAL", { reason: "NOT_AFLOAT" });
-  // The ninth unit (`pulp_wars-w49.17`, 7r55): Three Hammers, each attack
-  // of a Whirligig's turn is on a different unit.
-  if (targetAlreadyStruckV7(state, attacker.id, defender.id))
-    return rejected(original, "ATTACK_NOT_LEGAL", { reason: "ALREADY_STRUCK" });
   const distance = chebyshev(attacker.at, defender.at);
   // The Ice Folk revision section 7.2: a Yeti on a Mountain reaches 2. The
   // naval branch section 5.2: a submerged Submarine is attacked only from
@@ -4791,25 +4816,17 @@ function resolveAttackExchangeV7(
     ? withUnitIdV7(state.splattedThisTurn, defender.id)
     : state.splattedThisTurn;
   // The ninth unit (7r55): the Thagomizer Cracks a surviving target for the
-  // rest of the active seat's turn; Three Hammers records the pair of an
-  // attack by a unit that may attack more than once; Frostbite Chills a
-  // surviving attacker of a Musk Ox.
-  const ninthUnit =
-    preview.crackApplied || unitAttacksPerTurnV7(state, attacker) > 1
-      ? {
-          ...state.ninthUnit,
-          crackedThisTurn: preview.crackApplied
-            ? withSortedUnitIdV7(state.ninthUnit.crackedThisTurn, defender.id)
-            : state.ninthUnit.crackedThisTurn,
-          struckThisTurn:
-            unitAttacksPerTurnV7(state, attacker) > 1
-              ? withStruckV7(state.ninthUnit.struckThisTurn, {
-                  unitId: attacker.id,
-                  targetUnitId: defender.id,
-                })
-              : state.ninthUnit.struckThisTurn,
-        }
-      : state.ninthUnit;
+  // rest of the active seat's turn; Frostbite Chills a surviving attacker of
+  // a Musk Ox.
+  const ninthUnit = preview.crackApplied
+    ? {
+        ...state.ninthUnit,
+        crackedThisTurn: withSortedUnitIdV7(
+          state.ninthUnit.crackedThisTurn,
+          defender.id,
+        ),
+      }
+    : state.ninthUnit;
   let chilled = state.chilled;
   if (preview.frostbiteApplied) {
     const applied = withChillAppliedV7(state.chilled, [attacker.id]);
@@ -5169,7 +5186,11 @@ function applyTendWounded(
         chebyshev(result.captain.at, unit.at) === 1,
     )
     .sort((a, b) => a.id - b.id);
-  if (targets.length === 0) return rejected(original, "HEAL_TARGET_NOT_FOUND");
+  // Dwarf crowd control (`pulp_wars-w49.33`): an Engineer's Repair also
+  // mends the damaged own Barricades next to it, like a machine.
+  const repairs = barricadeRepairsV7(state, state.barricades, result.captain);
+  if (targets.length === 0 && repairs.length === 0)
+    return rejected(original, "HEAL_TARGET_NOT_FOUND");
   // The Dwarf revision section 9.1: an Engineer's Repair heals a machine 4.
   const machineHeal = unitRoleMechanicsV7(
     state,
@@ -5224,20 +5245,33 @@ function applyTendWounded(
               }
             : unit,
       ),
+      barricades: withBarricadesRepairedV7(state.barricades, repairs),
     }),
     [
-      {
-        kind: "WOUNDED_TENDED",
-        captainId: result.captain.id,
-        results: targets.map((unit) => ({
-          unitId: unit.id,
-          amount: amounts.get(unit.id) ?? 0,
-          hpAfter: unit.hp + (amounts.get(unit.id) ?? 0),
-          curedPlague: plaguedIds.has(unit.id),
-          curedBitten: bittenIds.has(unit.id),
-          curedChill: isChilledV7(state.chilled, unit.id),
-        })),
-      },
+      ...(targets.length === 0
+        ? []
+        : [
+            {
+              kind: "WOUNDED_TENDED" as const,
+              captainId: result.captain.id,
+              results: targets.map((unit) => ({
+                unitId: unit.id,
+                amount: amounts.get(unit.id) ?? 0,
+                hpAfter: unit.hp + (amounts.get(unit.id) ?? 0),
+                curedPlague: plaguedIds.has(unit.id),
+                curedBitten: bittenIds.has(unit.id),
+                curedChill: isChilledV7(state.chilled, unit.id),
+              })),
+            },
+          ]),
+      ...repairs.map((repair) => ({
+        kind: "BARRICADE_REPAIRED" as const,
+        playerId: actor,
+        unitId: result.captain.id,
+        at: repair.at,
+        amount: repair.amount,
+        hpAfter: repair.hpAfter,
+      })),
     ],
   );
 }
@@ -6416,6 +6450,7 @@ function resolveNeutralTurnV7(
       board: current.board,
       units: current.units,
       burrowed: current.burrowed,
+      barricades: current.barricades,
       treasureChests: current.treasureChests,
     };
     const choice = monsterAttackChoiceV7(facts, monster, entry);

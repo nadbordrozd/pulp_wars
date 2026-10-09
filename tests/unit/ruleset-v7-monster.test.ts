@@ -253,6 +253,7 @@ describe("the neutral turn (sections 8.3 to 8.5)", () => {
         board: state.board,
         units: state.units,
         burrowed: state.burrowed,
+        barricades: state.barricades,
         treasureChests: state.treasureChests,
       },
       spider,

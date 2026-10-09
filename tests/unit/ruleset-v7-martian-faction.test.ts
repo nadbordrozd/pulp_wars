@@ -99,7 +99,7 @@ import { at, kindsV7, movedV7 } from "../fixtures/v7-revision20";
 // (docs/product/RULESET_7_MARTIANS.md sections 2 to 4, 10.9, 10.10, and 11).
 
 /** The revision number of this identity (`pulp-wars-poc-7rNN`). */
-const REVISION = 59;
+const REVISION = 60;
 const ID = `pulp-wars-poc-7r${REVISION}`;
 const PREVIOUS_ID = `pulp-wars-poc-7r${REVISION - 1}`;
 
@@ -266,7 +266,8 @@ describe("Martian faction registration (sections 2 and 11)", () => {
     // Tuning 3 (`pulp_wars-w49.3`) adds HIRE after TRAIN_NAVAL (59), and
     // tuning 4 DRILL_UNIT after PROMOTE (60), which tuning 5
     // (`pulp_wars-w49.4`) removes again (59).
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(59);
+    // Dwarf crowd control (`pulp_wars-w49.33`): three more commands (62).
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(62);
     const hatch = COMMAND_KIND_ORDER_V7.indexOf("HATCH");
     expect(COMMAND_KIND_ORDER_V7.slice(hatch, hatch + 4)).toEqual([
       "HATCH",
@@ -280,7 +281,8 @@ describe("Martian faction registration (sections 2 and 11)", () => {
     // MONSTER_REGENERATED, NEUTRAL_TURN_STARTED, NEUTRAL_TURN_ENDED, and
     // MONSTER_BOUNTY_AWARDED (89); the Candy revision seven more (96).
     // The ninth unit (`pulp_wars-w49.17`, 7r55): WIGHT_RISEN (101).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(101);
+    // Dwarf crowd control (`pulp_wars-w49.33`): four more events (105).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(105);
     const after = (kind: string) =>
       DOMAIN_EVENT_KIND_ORDER_V7[
         DOMAIN_EVENT_KIND_ORDER_V7.indexOf(kind as never) + 1

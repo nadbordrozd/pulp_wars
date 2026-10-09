@@ -307,6 +307,21 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/engine/v7/dwarf-reducer.ts::applyTunnelV7": "BOARD",
     "src/engine/v7/dwarf-reducer.ts::prunedDwarfV7": "BOARD",
     "src/engine/v7/dwarf-reducer.ts::resolveStartTurnSurfacingV7": "BOARD",
+    // Dwarf crowd control (`pulp_wars-w49.33`): a Whirl hits, a Barricade
+    // is built and attacked next to, and the previews read, what stands on
+    // the board (a mound is never hit and blocks a Barricade through the
+    // occupancy predicate); the state check reads every owned unit (no
+    // Barricade on a unit's tile or a mound).
+    "src/engine/v7/dwarf-crowd-control.ts::whirlTargetsV7": "BOARD",
+    "src/engine/v7/dwarf-crowd-control.ts::applyWhirlV7": "BOARD",
+    "src/engine/v7/dwarf-crowd-control.ts::applyBuildBarricadeV7": "BOARD",
+    "src/engine/v7/dwarf-crowd-control.ts::applyAttackBarricadeV7": "BOARD",
+    "src/engine/v7/dwarf-crowd-control.ts::requireUnit": "BOARD",
+    "src/engine/v7/query.ts::publicWhirlTargetsV7": "BOARD",
+    "src/engine/v7/query.ts::previewWhirlV7": "BOARD",
+    "src/engine/v7/query.ts::queryBarricadeUnavailableReasonV7": "BOARD",
+    "src/engine/v7/query.ts::previewAttackBarricadeV7": "BOARD",
+    "src/engine/v7/state-schema.ts::barricadesValid": "ALL",
     "src/engine/v7/economy.ts::isActivePortV7": "BOARD",
     "src/engine/v7/economy.ts::isCityBesiegedV7": "BOARD",
     "src/engine/v7/economy.ts::networkFactsSignatureV7": "BOARD",

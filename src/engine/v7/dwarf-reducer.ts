@@ -2,6 +2,7 @@ import { allocateUnitId, type PlayerId, type UnitId } from "../model/ids";
 import type { JsonValue } from "../replay/canonical";
 import {
   ASSEMBLE_COST_V7,
+  BOMB_LANDING_RANGE_V7,
   BOMB_RANGE_V7,
   armouredDamageV7,
   canEnterTerrainV7,
@@ -738,9 +739,10 @@ export function resolveStartTurnSurfacingV7(
 
 /**
  * Section 6.2 row 10: whether `to` is a legal landing of `gyro`'s bombing
- * run on `target`: next to the target, strictly farther from the
- * Gyrocopter than the target, explored, no treasure chest, and a tile on
- * which an ordinary `MOVE` of the Gyrocopter could end this turn.
+ * run on `target`: within `BOMB_LANDING_RANGE_V7` (2; Dwarf crowd control,
+ * `pulp_wars-w49.33`, was next to it) of the target, strictly farther from
+ * the Gyrocopter than the target, explored, no treasure chest, and a tile
+ * on which an ordinary `MOVE` of the Gyrocopter could end this turn.
  */
 export function bombLandingLegalV7(
   state: GameStateV7,
@@ -750,7 +752,7 @@ export function bombLandingLegalV7(
   to: CoordV7,
 ): boolean {
   if (
-    chebyshev(to, target.at) !== 1 ||
+    chebyshev(to, target.at) > BOMB_LANDING_RANGE_V7 ||
     chebyshev(to, gyro.at) <= chebyshev(target.at, gyro.at) ||
     !isExploredBy(state, actor, to) ||
     state.treasureChests.some((chest) => same(chest, to))

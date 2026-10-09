@@ -232,13 +232,6 @@ describe("Ruleset 7 unit glossary", () => {
         "FROSTBITE",
       ],
       [
-        "three attacks",
-        (role, faction) =>
-          !isNavalRoleV7(role) &&
-          roleMechanicsV7(role, faction).attacksPerTurn > 1,
-        "THREE_HAMMERS",
-      ],
-      [
         "leaves Crumbs",
         (role, faction) =>
           !isNavalRoleV7(role) && roleMechanicsV7(role, faction).leavesCrumbs,
@@ -321,7 +314,7 @@ describe("Ruleset 7 unit glossary", () => {
     ).toEqual(["Capture", "Force Field", "Slow to strike", "Shield"]);
     expect(
       roleGlossaryV7("KNIGHT", "DWARF").map((entry) => entry.name),
-    ).toEqual(["Clockwork", "Can't capture", "Three Hammers"]);
+    ).toEqual(["Clockwork", "Whirl", "Can't capture"]);
     // A Mothership's Tractor Beam is the free heavy one.
     expect(
       roleGlossaryV7("KNIGHT", "MARTIAN").map((entry) => entry.id),
@@ -422,7 +415,6 @@ describe("Ruleset 7 unit glossary", () => {
       "sugar-frenzy",
       "escape",
       "cracked",
-      "three-hammers",
       "risen",
     ])
       expect(statusGlossaryV7(status), status).not.toBeNull();

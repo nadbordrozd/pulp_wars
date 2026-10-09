@@ -346,6 +346,10 @@ export type UnitRoleAbilityV7 =
   | "ASSEMBLE"
   | "KNOCKBACK"
   | "PLATED"
+  // Dwarf crowd control (`pulp_wars-w49.33`): the Whirligig's Whirl and the
+  // Engineer's Barricade.
+  | "WHIRL"
+  | "BARRICADE"
   // The Candy revision (section 3): every Candy land role's Sugar Rush, the
   // Marshmallow's and the Golem's Bounce, the Pie Launcher's Splat, the
   // Confectioner's Re-bake, and the Gumball Gunner's Sugar Toss. Frosting
@@ -650,11 +654,12 @@ export interface RoleMechanicsV7 {
    */
   readonly frostbite: boolean;
   /**
-   * The ninth unit: Three Hammers. The attacks the role may make in a turn,
-   * each on a different unit, moved or not (the Dwarf Whirligig 3), or 1.
-   * Apart from `unmovedShots` (the Gunner's, which needs standing still).
+   * Dwarf crowd control (`pulp_wars-w49.33`): Whirl, which replaced the
+   * ninth unit's Three Hammers. The role's `WHIRL` primary action hits
+   * every visible hostile unit within 1 at once with its ordinary attack,
+   * unanswered (the Dwarf Whirligig).
    */
-  readonly attacksPerTurn: 1 | 3;
+  readonly whirl: boolean;
   /**
    * The ninth unit: the role never gains Inspired from a Rally, whatever
    * its tactical label (the Dinosaur Triceratops: it was excluded from War
@@ -1557,7 +1562,7 @@ const mechanics = (
           immovable: false,
           cracksArmour: false,
           frostbite: false,
-          attacksPerTurn: 1,
+          whirl: false,
           rallyExcluded: false,
           demolishesFieldDefense: roleId === "CATAPULT",
           ...overrides[roleId],
@@ -1615,8 +1620,6 @@ export const SHOCK_FIELD_DAMAGE_V7 = 3 as const;
 export const CRACKED_DEFENSE2_V7 = 2 as const;
 /** The ninth unit: the least Defense (half-points) of a Cracked unit. */
 export const CRACKED_MINIMUM_DEFENSE2_V7 = 1 as const;
-/** The ninth unit: the attacks a Whirligig may make in a turn. */
-export const WHIRLIGIG_ATTACKS_V7 = 3 as const;
 
 /**
  * Tuning 5: a land-form defender's base Defense in half-points against an
@@ -3000,7 +3003,7 @@ export const DWARF_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: "ADMINISTRATION",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "TEND_WOUNDED", "ASSEMBLE"],
+    abilities: ["ATTACK", "TEND_WOUNDED", "ASSEMBLE", "BARRICADE"],
   }),
   CATAPULT: role({
     role: "CATAPULT",
@@ -3020,9 +3023,9 @@ export const DWARF_ROLE_RULES_V7: Readonly<
   }),
   // The ninth unit (`pulp_wars-w49.17`, 7r55): the Whirligig, a clockwork
   // crowd-fighter at Chivalry (the Steam Tank held this role until 7r54 and
-  // is the `SWORDSMAN` role now). A construct and a machine; Three Hammers
-  // is the role mechanic `attacksPerTurn`; it never advances and does not
-  // capture.
+  // is the `SWORDSMAN` role now). A construct and a machine; it never
+  // advances and does not capture. Dwarf crowd control (`pulp_wars-w49.33`):
+  // its Whirl (the role mechanic `whirl`) replaced Three Hammers.
   KNIGHT: role({
     role: "KNIGHT",
     label: "Whirligig",
@@ -3037,7 +3040,7 @@ export const DWARF_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: "CHIVALRY",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "CLOCKWORK"],
+    abilities: ["ATTACK", "CLOCKWORK", "WHIRL"],
   }),
   JUGGERNAUT: role({
     role: "JUGGERNAUT",
@@ -3125,14 +3128,14 @@ export const DWARF_ROLE_MECHANICS_V7 = mechanics({
     knockback: true,
     repairsAsMachine: true,
   },
-  // The ninth unit (7r55): the Whirligig (a construct with Three Hammers
-  // that never advances).
+  // The ninth unit (7r55): the Whirligig (a construct that never
+  // advances); Dwarf crowd control (`pulp_wars-w49.33`): its Whirl.
   KNIGHT: {
     construct: true,
     unflinchingAttack: true,
     repairsAsMachine: true,
     advancesAfterKill: false,
-    attacksPerTurn: WHIRLIGIG_ATTACKS_V7,
+    whirl: true,
   },
   JUGGERNAUT: {
     construct: true,
@@ -3826,7 +3829,7 @@ export const RULESET_7 = deepFreeze({
  * a technology of tier `t` costs `5 / 7 / 9 + (T - 1)`, `T` being the
  * technologies the researcher already owns.
  *
- * The economy rejig (`pulp_wars-w49.16`, `pulp-wars-poc-7r59`,
+ * The economy rejig (`pulp_wars-w49.16`, `pulp-wars-poc-7r60`,
  * docs/product/RULESET_7_ECONOMY_REJIG.md): the price is per city again and
  * the technologies owned no longer enter it. A technology of tier `t`
  * costs `5 / 7 / 9 + (1 / 2 / 3) * (C - 1)`, `C` being the cities the
@@ -4724,6 +4727,11 @@ export const ERUPTION_DAMAGE_V7 = 2;
 export const BLASTING_ERUPTION_DAMAGE_V7 = 3;
 /** The Dwarf revision (section 6.2): the bombing-run reach (Chebyshev). */
 export const BOMB_RANGE_V7 = 2;
+/**
+ * Dwarf crowd control (`pulp_wars-w49.33`): the farthest (Chebyshev) a
+ * bombing run lands from its target (1 before).
+ */
+export const BOMB_LANDING_RANGE_V7 = 2;
 /** The Dwarf revision (section 6.3): the fixed bomb. */
 export const BOMB_DAMAGE_V7 = 5;
 /** The Dwarf revision (section 6.3): the bomb with Dive. */
@@ -4732,6 +4740,14 @@ export const DIVE_BOMB_DAMAGE_V7 = 6;
 export const DIG_IN_RADIUS_V7 = 1;
 /** The Dwarf revision (section 9.2): the Coins an Assemble costs. */
 export const ASSEMBLE_COST_V7 = 4;
+/** Dwarf crowd control (`pulp_wars-w49.33`): the Coins a Barricade costs. */
+export const BARRICADE_COST_V7 = 3;
+/** Dwarf crowd control: a Barricade's HP (and maximum HP). */
+export const BARRICADE_HP_V7 = 10;
+/** Dwarf crowd control: a Barricade's Defense in half-points (Defense 2). */
+export const BARRICADE_DEFENSE2_V7 = 4;
+/** Dwarf crowd control: the standing Barricades a player may have. */
+export const BARRICADE_CAP_V7 = 4;
 
 /**
  * The naval branch (docs/product/RULESET_7_NAVAL_BRANCH.md section 4.1): the

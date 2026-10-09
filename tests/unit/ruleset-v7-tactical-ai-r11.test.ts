@@ -1007,7 +1007,11 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
           // and one candidate's score differs, Train with the price term
           // of a class the army lacks in its strategic value (was
           // ced531…34f8).
-          "641b21351bc4291259373c90c132734187c2489346608aeb4312d48eb6593060",
+          // Dwarf crowd control (`pulp_wars-w49.33`) inserts WHIRL,
+          // BUILD_BARRICADE, and ATTACK_BARRICADE after ASSEMBLE, moving
+          // every later kind forward by three (was 641b21…3060); the
+          // revision-12-ordinal value below is unchanged.
+          "8cc6189b34f3e3eebb3773ab3b2bd2d3e734749bbebb77561a1a4545f0bf40ad",
         );
         // Revision 13 shifts the command-kind ordinals in AI tie-break
         // tuples (spec section 8); this is the value with revision-12
@@ -1097,7 +1101,10 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
           // of a Human seat (was a58d37…99ed).
           // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
           // 35a604…8208).
-          "a60ea156f7e7bbe201778c7f85c7ee7cb735338a5315a99f0c01c771385c58e2",
+          // Dwarf crowd control (`pulp_wars-w49.33`) inserts WHIRL,
+          // BUILD_BARRICADE, and ATTACK_BARRICADE after ASSEMBLE, moving every
+          // later command kind forward by three (was a60ea1…58e2).
+          "ae238c5beb1029e79e5b79aad4d3f482735605e8c71f18fe61d3edafa079ba54",
         );
         // With revision-12 ordinals (pulp_wars-9s0.1: was c56f00…73c1;
         // pulp_wars-0hi.3: was 091615…054b).

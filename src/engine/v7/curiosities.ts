@@ -569,6 +569,8 @@ export interface MonsterBoardFactsV7 {
   readonly board: BoardStateV7;
   readonly units: readonly UnitStateV7[];
   readonly burrowed: GameStateV7["burrowed"];
+  /** Dwarf crowd control (`pulp_wars-w49.33`): a Monster never steps on one. */
+  readonly barricades: GameStateV7["barricades"];
   readonly treasureChests: readonly CoordV7[];
 }
 
@@ -766,8 +768,8 @@ export function prunedMonstersV7(state: GameStateV7): GameStateV7 {
 /**
  * Section 8.4: the units that dealt a Monster damage in `events`: the
  * attacker of an `ATTACK` that hit it (as the target, by splash, Pierce, or
- * Sweep), a Banshee whose Wail hit it, a Gyrocopter whose bomb hit it, and
- * a Mole whose eruption hit it. Kabooms and death blasts are made by units
+ * Sweep), a Banshee whose Wail or a Whirligig whose Whirl hit it, a
+ * Gyrocopter whose bomb hit it, and a Mole whose eruption hit it. Kabooms and death blasts are made by units
  * that are dead by then, and Plague never reaches it, so they record
  * nobody. Keyed by the Monster's unit ID.
  */
@@ -793,7 +795,11 @@ export function monsterDamageSourcesV7(
       for (const entry of preview.splash)
         if (entry.damage + entry.shieldDamage > 0)
           add(entry.unitId, preview.attackerId);
-    } else if (event.kind === "WAIL_RESOLVED") {
+    } else if (
+      event.kind === "WAIL_RESOLVED" ||
+      // Dwarf crowd control (`pulp_wars-w49.33`): a Whirl hits like a Wail.
+      event.kind === "WHIRL_RESOLVED"
+    ) {
       for (const entry of event.results)
         if (entry.damage + entry.shieldDamage > 0)
           add(entry.unitId, event.unitId);

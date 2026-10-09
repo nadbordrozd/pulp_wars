@@ -41,6 +41,11 @@ const LATER_COMMAND_KINDS: readonly string[] = [
   "TUNNEL",
   "BOMB_RUN",
   "ASSEMBLE",
+  // Dwarf crowd control (`pulp_wars-w49.33`) inserts WHIRL, BUILD_BARRICADE,
+  // and ATTACK_BARRICADE after ASSEMBLE.
+  "WHIRL",
+  "BUILD_BARRICADE",
+  "ATTACK_BARRICADE",
   "SUGAR_RUSH",
   "REBAKE",
   "SUGAR_TOSS",
