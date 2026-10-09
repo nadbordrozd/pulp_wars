@@ -14,78 +14,76 @@ import {
 import { runAiMatchV7 } from "../../src/headless/v7";
 import { goblinSetupV7 } from "../fixtures/v7-goblin-arena";
 
-// The Ice Folk revision (`pulp_wars-7g3.3`), step 3: the existing Normal AI
-// stays safe with Ice Folk seats. It plays an Ice Folk seat with the generic
-// policy (the Ice Folk policy is `pulp_wars-7g3.4`), and every other faction
-// plays against Ice Folk units, Snow, and Chill without an illegal command,
-// a crash, or a stall (docs/product/RULESET_7_ICE_FOLK.md section 12). The
-// Showcase match with an Ice Folk seat runs beside this file in
-// ruleset-v7-ice-folk-showcase-headless.test.ts (`pulp_wars-9s0.13`).
+// The Dwarf revision (`pulp_wars-78i.3`): the Normal AI stays safe with
+// Dwarf seats. It plays a Dwarf seat with the Dwarf policy of
+// `pulp_wars-78i.4` (tunnels, bombs, Assemble), and every other faction
+// plays against Dwarf units, mounds, bombs, and Dig In without an illegal
+// command, a crash, or a stall (docs/product/RULESET_7_DWARVES.md sections
+// 15 and 19). The Showcase match with a Dwarf seat runs beside this file in
+// ruleset-v7-dwarf-showcase-headless.sim.test.ts (`pulp_wars-9s0.13`).
 
 const MATCHES: readonly (readonly [
   readonly FactionIdV7[],
   MatchSetupV7["mapType"],
   number,
 ])[] = [
-  [["ICE_FOLK", "ORIGINAL"], "DRY_LAND", 1],
-  [["ORIGINAL", "ICE_FOLK"], "PANGEA", 2],
-  [["ICE_FOLK", "UNDEAD"], "DRY_LAND", 3],
-  [["UNDEAD", "ICE_FOLK"], "CONTINENTS", 1],
-  [["ICE_FOLK", "GOBLIN"], "DRY_LAND", 4],
-  [["GOBLIN", "ICE_FOLK"], "LAKES", 1],
-  [["ICE_FOLK", "DINOSAUR"], "DRY_LAND", 5],
-  [["DINOSAUR", "ICE_FOLK"], "PANGEA", 1],
-  [["ICE_FOLK", "MARTIAN"], "DRY_LAND", 6],
-  [["MARTIAN", "ICE_FOLK"], "ARCHIPELAGO", 1],
-  [["ICE_FOLK", "ICE_FOLK"], "DRY_LAND", 7],
-  [["ICE_FOLK", "ICE_FOLK"], "PANGEA", 1],
+  [["DWARF", "ORIGINAL"], "DRY_LAND", 1],
+  [["UNDEAD", "DWARF"], "DRY_LAND", 2],
+  [["DWARF", "GOBLIN"], "DRY_LAND", 3],
+  [["DINOSAUR", "DWARF"], "DRY_LAND", 4],
+  [["DWARF", "MARTIAN"], "DRY_LAND", 5],
+  [["ICE_FOLK", "DWARF"], "DRY_LAND", 6],
+  [["DWARF", "ORIGINAL"], "PANGEA", 1],
+  [["MARTIAN", "DWARF"], "LAKES", 2],
 ];
 
-describe("headless Normal matches with Ice Folk seats", () => {
-  it("finish without errors or stalls against every faction and in the mirror", () => {
+describe("headless Normal matches with Dwarf seats", () => {
+  it("finish without errors or stalls against every faction", () => {
     const kinds = new Set<string>();
-    let glides = 0;
-    let snowCover = 0;
+    let gunnerShots = 0;
     for (const [factions, mapType, seed] of MATCHES) {
       const label = `${factions.join("-")} ${mapType} ${seed}`;
       const setup: MatchSetupV7 = { ...goblinSetupV7(factions, seed), mapType };
-      const match = runAiMatchV7(setup, { maxRounds: 40 });
+      const match = runAiMatchV7(setup, { maxRounds: 30 });
       expect(match.errors, label).toEqual([]);
       expect(match.stalls, label).toEqual([]);
       expect(["OUTCOME", "ROUND_CAP"], label).toContain(match.termination);
       expect(parseGameStateV7(match.state), label).not.toBeNull();
       for (const record of match.commandLog) kinds.add(record.command.kind);
-      glides += match.metrics.iceFolk.glideMoves;
-      snowCover += match.metrics.iceFolk.snowCoverAttacks;
-      expect(
-        match.metrics.iceFolk.snowTilesAtEndTurnMaximum,
-        label,
-      ).toBeGreaterThan(0);
+      gunnerShots +=
+        match.metrics.dwarf.gunnerShotsUnmoved +
+        match.metrics.dwarf.gunnerShotsMoved;
     }
     for (const kind of ["TRAIN", "MOVE", "ATTACK", "RESEARCH", "CAPTURE"])
       expect(kinds.has(kind), kind).toBe(true);
-    // Snow is real in these matches: Ice Folk units Glide and have cover.
-    expect(glides).toBeGreaterThan(0);
-    expect(snowCover).toBeGreaterThan(0);
-  }, 600_000);
+    expect(gunnerShots).toBeGreaterThanOrEqual(0);
+  }, 900_000);
 
-  it("leaves the metrics of a match without an Ice Folk seat at zero", () => {
+  it("leaves the Dwarf metrics of a match without a Dwarf seat at zero", () => {
     const setup: MatchSetupV7 = {
       ...goblinSetupV7(["ORIGINAL", "UNDEAD"], 2),
       mapType: "DRY_LAND",
     };
     const match = runAiMatchV7(setup, { maxRounds: 15 });
-    const metrics = match.metrics.iceFolk;
     expect(
-      metrics.shatters + metrics.glideMoves + metrics.snowTilesAtEndTurnTotal,
+      Object.values(match.metrics.dwarf)
+        .filter((value): value is number => typeof value === "number")
+        .reduce((sum, value) => sum + value, 0),
     ).toBe(0);
-    expect(match.metrics.commandsByKind.THROW_BOLAS).toBe(0);
-    expect(match.metrics.eventsByKind.UNITS_FROZEN).toBe(0);
+    for (const kind of ["TUNNEL", "BOMB_RUN", "ASSEMBLE"] as const)
+      expect(match.metrics.commandsByKind[kind], kind).toBe(0);
+    for (const kind of [
+      "UNIT_TUNNELLED",
+      "UNIT_SURFACED",
+      "UNIT_BOMBED",
+      "UNIT_ASSEMBLED",
+    ] as const)
+      expect(match.metrics.eventsByKind[kind], kind).toBe(0);
   }, 120_000);
 
   it("is deterministic and replays command by command with valid events", () => {
     const setup: MatchSetupV7 = {
-      ...goblinSetupV7(["ICE_FOLK", "DINOSAUR"], 8),
+      ...goblinSetupV7(["DWARF", "DINOSAUR"], 8),
       mapType: "DRY_LAND",
     };
     const match = runAiMatchV7(setup, { maxRounds: 25 });
@@ -108,7 +106,7 @@ describe("headless Normal matches with Ice Folk seats", () => {
 });
 
 describe("headless CLI", () => {
-  it("accepts ice in --factions", () => {
+  it("accepts dwarf in --factions", () => {
     const output = execFileSync(
       process.execPath,
       [
@@ -118,7 +116,7 @@ describe("headless CLI", () => {
         "--ruleset",
         RULESET_7_ID,
         "--factions",
-        "ice,human",
+        "dwarf,human",
         "--max-commands",
         "40",
         "--max-rounds",
@@ -131,12 +129,12 @@ describe("headless CLI", () => {
       readonly metrics: {
         readonly rulesetId: string;
         readonly factionsBySeat: readonly string[];
-        readonly iceFolk: { readonly shatters: number };
+        readonly dwarf: { readonly tunnels: number };
       };
     };
     expect(result.acceptedCommands).toBeGreaterThan(0);
     expect(result.metrics.rulesetId).toBe(RULESET_7_ID);
-    expect(result.metrics.factionsBySeat).toEqual(["ICE_FOLK", "ORIGINAL"]);
-    expect(result.metrics.iceFolk).toBeDefined();
+    expect(result.metrics.factionsBySeat).toEqual(["DWARF", "ORIGINAL"]);
+    expect(result.metrics.dwarf).toBeDefined();
   }, 120_000);
 });

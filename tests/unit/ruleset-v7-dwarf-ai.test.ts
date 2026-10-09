@@ -29,7 +29,6 @@ import {
   type CoordV7,
   type GameStateV7,
 } from "../../src/engine/index";
-import { runAiMatchV7 } from "../../src/headless/v7";
 import {
   candidatesV7,
   publicUnitAtV7,
@@ -39,7 +38,6 @@ import {
   viewerViewV7,
 } from "../fixtures/v7-dinosaur-ai";
 import { dwarfFieldV7, withBurrowedV7 } from "../fixtures/v7-dwarf";
-import { goblinSetupV7 } from "../fixtures/v7-goblin-arena";
 import { type IcePieceV7 } from "../fixtures/v7-ice-folk";
 import { fieldV7 } from "../fixtures/v7-revision20";
 
@@ -439,50 +437,4 @@ describe("Dwarf Normal AI: production and research", () => {
         priority: DWARF_EARLY_RESEARCH_PRIORITY_V7,
       });
   });
-});
-
-describe("Dwarf Normal AI: headless", () => {
-  it("finishes short matches against every faction in both seat orders", () => {
-    const others = [
-      "ORIGINAL",
-      "UNDEAD",
-      "GOBLIN",
-      "DINOSAUR",
-      "MARTIAN",
-      "ICE_FOLK",
-    ] as const;
-    let dwarfCommands = 0;
-    for (const [index, other] of others.entries())
-      for (const factions of [
-        ["DWARF", other],
-        [other, "DWARF"],
-      ] as const) {
-        const match = runAiMatchV7(goblinSetupV7(factions, index + 11), {
-          maxRounds: 18,
-        });
-        const label = factions.join("-");
-        expect(match.errors, label).toEqual([]);
-        expect(match.stalls, label).toEqual([]);
-        expect(["OUTCOME", "ROUND_CAP"], label).toContain(match.termination);
-        for (const record of match.commandLog)
-          if (
-            record.command.kind === "TUNNEL" ||
-            record.command.kind === "BOMB_RUN" ||
-            record.command.kind === "ASSEMBLE"
-          )
-            dwarfCommands += 1;
-      }
-    // The Dwarf policy plays the new commands (the generic one never did).
-    expect(dwarfCommands).toBeGreaterThan(0);
-  }, 900_000);
-
-  it("is deterministic and bounded in a Dwarf match", () => {
-    const setup = goblinSetupV7(["DWARF", "ORIGINAL"], 3);
-    const first = runAiMatchV7(setup, { maxRounds: 25 });
-    expect(first.errors).toEqual([]);
-    expect(first.stalls).toEqual([]);
-    expect(runAiMatchV7(setup, { maxRounds: 25 }).stateHash).toBe(
-      first.stateHash,
-    );
-  }, 300_000);
 });

@@ -15,7 +15,6 @@ import {
   type MatchSetupV7,
 } from "../../src/engine/index";
 import { cooperativeAlliesV7 } from "../../src/engine/v7/economy";
-import { runAiMatchV7 } from "../../src/headless/v7";
 import { createSaveEnvelopeV7, parseSaveV7 } from "../../src/persistence/v7";
 
 // Many seats in play (`pulp_wars-ykw.3`, `pulp-wars-poc-7r42`,
@@ -279,27 +278,4 @@ describe("ruleset-7 many seats in play (7r42)", () => {
       expect(loaded.save.state.players).toHaveLength(SEATS);
     }
   });
-
-  // Short capped matches only: they show that the Normal AI issues legal
-  // commands for every one of eight seats without an error or a stall. They
-  // measure neither strength nor time (`pulp_wars-ykw.4`).
-  it.each([
-    ["DRY_LAND", 11],
-    ["ARCHIPELAGO", 14],
-  ] as const)(
-    "plays eight Normal seats on %s %i for a few rounds without an error or a stall",
-    (mapType, width) => {
-      const result = runAiMatchV7(setup({ mapType, width, seed: 2 }), {
-        maxRounds: 4,
-        maxCommands: 4000,
-      });
-      expect(result.errors).toEqual([]);
-      expect(result.stalls).toEqual([]);
-      expect(["ROUND_CAP", "OUTCOME"]).toContain(result.termination);
-      // Every seat that was still in play acted.
-      const actors = new Set(result.commandLog.map((entry) => entry.playerId));
-      expect(actors.size).toBeGreaterThanOrEqual(SEATS - 1);
-    },
-    600_000,
-  );
 });

@@ -23,7 +23,6 @@ import {
   type GameState,
   type MatchSetup,
 } from "../../src/engine/index";
-import { headless, runAiMatch } from "../../src/headless/index";
 import {
   SAVE_STORAGE_KEY,
   createSaveEnvelope,
@@ -358,26 +357,6 @@ describe("demo replay, save, headless, and controller boundaries", () => {
         }),
       ).kind,
     ).toBe("CORRUPT");
-  });
-
-  it("exposes a direct headless launch and deterministic Normal-policy advance", async () => {
-    const created = await headless.createDemo();
-    if (!created.ok) throw new Error(created.error.code);
-    expect(canonicalHash(created.state)).toBe(DEMO_INITIAL_HASH);
-    expect(demoScenarioIssues(created.state)).toEqual([]);
-    const first = runAiMatch(DEMO_MATCH_SETUP, {
-      maxCommands: 1,
-      maxRounds: 5,
-    });
-    const second = runAiMatch(DEMO_MATCH_SETUP, {
-      maxCommands: 1,
-      maxRounds: 5,
-    });
-    expect(first.commandLog).toEqual(second.commandLog);
-    expect(first.stateHash).toBe(second.stateHash);
-    expect(first.acceptedCommands).toBe(1);
-    expect(first.errors).toEqual([]);
-    expect(first.stalls).toEqual([]);
   });
 
   it("launches, autosaves, resumes, and restarts demo through the controller", () => {

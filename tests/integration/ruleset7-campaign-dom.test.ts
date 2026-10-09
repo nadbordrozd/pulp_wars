@@ -16,46 +16,25 @@ import {
   type MatchOutcomeV7,
   type PlayerViewV7,
 } from "../../src/engine/index";
-import {
-  CAMPAIGN_PROGRESS_STORAGE_KEY_V7,
-  SAVE_STORAGE_KEY_V7,
-} from "../../src/persistence/index";
+import { CAMPAIGN_PROGRESS_STORAGE_KEY_V7 } from "../../src/persistence/index";
 import type { BoardHostV7 } from "../../src/render/canvas/board-host-v7";
 import {
   Ruleset7DomAppView,
   type Ruleset7ControllerPortV7,
 } from "../../src/render/dom/app-view-v7";
 import {
-  missionLostSaveV7,
-  missionWonSaveV7,
-  missionWinFixtureV7,
-} from "../fixtures/v7-campaign-ui";
-
-/**
- * The campaign screens (`pulp_wars-68k.5`, docs/product/CAMPAIGN.md
- * sections 4 and 5): the Skirmish / Campaign switch, the mission list, the
- * briefing with its filtered faction choice, the mission label in Settings
- * and on the resume screen, the mission Victory and Defeat dialogs, the
- * unlock notice, and Reset progress.
- */
-const AT = "2026-10-03T12:00:00.000Z";
-const won = (bestRounds = 12) => ({ firstWonAt: AT, bestRounds });
+  won,
+  seedProgress,
+  settle,
+  waitUntil,
+  requiredButton,
+  required,
+} from "./ruleset7-campaign-dom.shared";
 
 beforeEach(() => {
   document.body.innerHTML = '<div id="app"></div>';
   window.localStorage.clear();
 });
-
-function seedProgress(completed: Record<string, unknown>): void {
-  window.localStorage.setItem(
-    CAMPAIGN_PROGRESS_STORAGE_KEY_V7,
-    JSON.stringify({
-      format: "pulp-wars-campaign-progress",
-      version: 1,
-      completed,
-    }),
-  );
-}
 
 async function openCampaign(): Promise<void> {
   requiredButton('[data-action="campaign"]').click();
@@ -330,119 +309,6 @@ describe("Ruleset 7 campaign front screen", () => {
 });
 
 describe("Ruleset 7 mission dialogs", () => {
-  it("records a win before the dialog, announces the unlock, and Next mission opens its briefing", async () => {
-    seedProgress({ FRONTIER_1: won(20) });
-    window.localStorage.setItem(
-      SAVE_STORAGE_KEY_V7,
-      missionWonSaveV7(AT, "FRONTIER_2"),
-    );
-    const app = bootstrapRuleset7App(document);
-    expect(app.controller.snapshot().phase).toBe("COMPLETE");
-    await settle();
-    const dialog = required(
-      document.querySelector<HTMLElement>("[data-v7-region='results']"),
-    );
-    expect(dialog.dataset.outcome).toBe("victory");
-    expect(dialog.querySelector("h2")?.textContent).toBe("Mission complete");
-    expect(dialog.querySelector(".v7-campaign-story")?.textContent).toBe(
-      CHAPTER_ONE_V7.missions[1]?.closing,
-    );
-    const notice = required(
-      dialog.querySelector<HTMLElement>("[data-v7-region='unlock-notice']"),
-    );
-    expect(notice.dataset.faction).toBe("GOBLIN");
-    expect(notice.textContent).toBe("New faction: Goblin");
-    expect(
-      [...dialog.querySelectorAll("button")].map((node) => node.textContent),
-    ).toEqual(["Next mission", "Campaign", "Main menu"]);
-    expect(
-      JSON.parse(
-        window.localStorage.getItem(CAMPAIGN_PROGRESS_STORAGE_KEY_V7) ?? "",
-      ).completed,
-    ).toMatchObject({ FRONTIER_1: won(20), FRONTIER_2: {} });
-    requiredButton('[data-action="campaign-next"]').click();
-    await waitUntil(() => app.controller.snapshot().phase === "EMPTY");
-    await settle();
-    expect(window.localStorage.getItem(SAVE_STORAGE_KEY_V7)).toBeNull();
-    const briefing = required(
-      document.querySelector<HTMLElement>("[data-v7-region='briefing']"),
-    );
-    expect(briefing.dataset.missionId).toBe("FRONTIER_3");
-    expect(briefing.querySelector("h2")?.textContent).toBe("Green Tide");
-    expect(document.activeElement?.id).toBe("v7-briefing-title");
-    expect(document.querySelector(".v7-briefing-lead-text")?.textContent).toBe(
-      "You leadGoblin",
-    );
-    // The campaign list now shows the Goblin unlocked.
-    requiredButton('[data-action="campaign-back"]').click();
-    await settle();
-    expect(
-      [...document.querySelectorAll<HTMLElement>(".v7-campaign-faction")]
-        .filter((entry) => entry.dataset.unlocked === "true")
-        .map((entry) => entry.dataset.faction),
-    ).toEqual(["ORIGINAL", "GOBLIN"]);
-    app.destroy();
-  }, 60_000);
-
-  it("Campaign from a Victory without an unlock returns to the updated list", async () => {
-    const fixture = missionWinFixtureV7("FRONTIER_1");
-    window.localStorage.setItem(
-      SAVE_STORAGE_KEY_V7,
-      missionWonSaveV7(AT, "FRONTIER_1"),
-    );
-    const next = bootstrapRuleset7App(document);
-    await settle();
-    const dialog = required(
-      document.querySelector<HTMLElement>("[data-v7-region='results']"),
-    );
-    expect(dialog.querySelector("[data-v7-region='unlock-notice']")).toBeNull();
-    expect(
-      JSON.parse(
-        window.localStorage.getItem(CAMPAIGN_PROGRESS_STORAGE_KEY_V7) ?? "",
-      ).completed.FRONTIER_1.bestRounds,
-    ).toBe(fixture.after.state.round);
-    requiredButton('[data-action="campaign-menu"]').click();
-    await waitUntil(() => next.controller.snapshot().phase === "EMPTY");
-    await settle();
-    expect(document.querySelector("[data-v7-campaign]")).not.toBeNull();
-    expect(
-      [...document.querySelectorAll<HTMLElement>(".v7-mission-card")].map(
-        (card) => card.dataset.status,
-      ),
-    ).toEqual(["done", "open", "locked", "locked"]);
-    next.destroy();
-  }, 60_000);
-
-  it("a lost mission records nothing, and Retry restarts the same mission", async () => {
-    window.localStorage.setItem(
-      SAVE_STORAGE_KEY_V7,
-      missionLostSaveV7(AT, "FRONTIER_1"),
-    );
-    const app = bootstrapRuleset7App(document);
-    expect(app.controller.snapshot().phase).toBe("COMPLETE");
-    await settle();
-    const dialog = required(
-      document.querySelector<HTMLElement>("[data-v7-region='results']"),
-    );
-    expect(dialog.dataset.outcome).toBe("defeat");
-    expect(dialog.querySelector("h2")?.textContent).toBe("Mission failed");
-    expect(dialog.querySelector("[data-v7-region='unlock-notice']")).toBeNull();
-    expect(
-      window.localStorage.getItem(CAMPAIGN_PROGRESS_STORAGE_KEY_V7),
-    ).toBeNull();
-    requiredButton('[data-action="mission-retry"]').click();
-    await waitUntil(
-      () =>
-        app.controller.snapshot().phase === "ACTIVE" &&
-        !app.controller.snapshot().transitioning,
-    );
-    expect(app.controller.snapshot().view).toMatchObject({
-      commandIndex: 0,
-      setup: { mapType: "MISSION", mission: { id: "FRONTIER_1" } },
-    });
-    app.destroy();
-  });
-
   it("Defeat: Mission failed, Retry restarts the same setup, Campaign returns to the list", async () => {
     const fake = new FakeController(
       completeView("FRONTIER_1", "ORIGINAL", (view) => ({
@@ -835,33 +701,8 @@ function focusables(): HTMLElement[] {
   });
 }
 
-async function settle(): Promise<void> {
-  for (let index = 0; index < 5; index += 1)
-    await new Promise((resolve) => setTimeout(resolve, 0));
-}
-
-async function waitUntil(predicate: () => boolean): Promise<void> {
-  for (let index = 0; index < 400; index += 1) {
-    if (predicate()) return;
-    await new Promise((resolve) => setTimeout(resolve, 0));
-  }
-  throw new Error("Condition not reached");
-}
-
-function requiredButton(selector: string): HTMLButtonElement {
-  const node = document.querySelector<HTMLButtonElement>(selector);
-  if (node === null) throw new Error(`Missing ${selector}`);
-  return node;
-}
-
 function requiredSelect(id: string): HTMLSelectElement {
   const node = document.querySelector<HTMLSelectElement>(`#${id}`);
   if (node === null) throw new Error(`Missing #${id}`);
   return node;
-}
-
-function required<T>(value: T | null | undefined): T {
-  if (value === null || value === undefined)
-    throw new Error("Required value missing");
-  return value;
 }

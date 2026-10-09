@@ -139,7 +139,10 @@ git diff --check
 ```
 
 The full gate covers formatting, ESLint, all strict TypeScript targets, 849
-Vitest tests, production build, and the frozen headless golden replay. The
+Vitest tests, production build, and the frozen headless golden replay. (Since
+the test tiers of `pulp_wars-bwry`, `npm run check` runs only the routine
+`npm run test:unit` tier; a release run uses `npm run check:full`, which adds
+the whole-match simulations of `npm run test:sim`.) The
 legacy browser smoke proves the retained v5 compatibility surface still loads;
 v1-v5 saves/replays remain incompatible and byte-preserved under v6 as designed.
 

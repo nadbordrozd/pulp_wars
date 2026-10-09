@@ -1,16 +1,13 @@
 import { describe, expect, it } from "vitest";
 import {
-  RULESET_7_ID,
   applyCommandV7,
   queryPlayerCommandsV7,
   unitRoleRuleV7,
   type CommandV7,
   type CoordV7,
   type GameStateV7,
-  type MatchSetupV7,
   type UnitId,
 } from "../../src/engine/index";
-import { runMartianMobilityProbeMatchV7 } from "../../src/headless/martian-mobility-probe-match-v7";
 import {
   chebyshevV7,
   chooseMartianMobilityProbeCommandV7,
@@ -559,46 +556,4 @@ describe("Martian mobility probe: Mind Control", () => {
       targetUnitId: unitIdAtV7(state, at(3, 3)),
     });
   });
-});
-
-describe("Martian mobility probe: headless match", () => {
-  const setup = (factions: MatchSetupV7["factions"]): MatchSetupV7 => ({
-    rulesetId: RULESET_7_ID,
-    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
-    curiosities: false,
-    seed: 3,
-    width: 11,
-    height: 11,
-    aiCount: 1,
-    aiDifficulty: "NORMAL",
-    aiMode: "RIVAL",
-    humanColor: "CORAL",
-    factions,
-    mapType: "DRY_LAND",
-  });
-
-  it("plays both seat orders without an error, a stall, or a rejection, deterministically", () => {
-    for (const factions of [
-      ["MARTIAN", "ORIGINAL"],
-      ["ORIGINAL", "MARTIAN"],
-    ] as const) {
-      const options = { probe: true, maxRounds: 12 };
-      const first = runMartianMobilityProbeMatchV7(setup(factions), options);
-      expect(first.error).toBeNull();
-      expect(first.termination).not.toBe("ERROR");
-      expect(first.usage.turns).toBeGreaterThan(0);
-      expect(runMartianMobilityProbeMatchV7(setup(factions), options)).toEqual(
-        first,
-      );
-    }
-  }, 120_000);
-
-  it("the comparison run is the plain Normal AI: no probe command", () => {
-    const game = runMartianMobilityProbeMatchV7(
-      setup(["MARTIAN", "ORIGINAL"]),
-      { probe: false, maxRounds: 8 },
-    );
-    expect(game.error).toBeNull();
-    expect(Object.values(game.tools).every((count) => count === 0)).toBe(true);
-  }, 120_000);
 });

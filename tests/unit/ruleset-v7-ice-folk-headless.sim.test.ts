@@ -14,37 +14,38 @@ import {
 import { runAiMatchV7 } from "../../src/headless/v7";
 import { goblinSetupV7 } from "../fixtures/v7-goblin-arena";
 
-// The Martian revision (`pulp_wars-t6s.2`), step 2: the existing Normal AI
-// stays safe with Martian seats. It plays a Martian seat with the generic
-// policy (it never uses Beam Down, Mind Control, or the Tractor Beam; the
-// Martian policy is `pulp_wars-t6s.3`), and every other faction plays
-// against Martian units without an illegal command, a crash, or a stall.
-// The Showcase match with a Martian seat runs beside this file in
-// ruleset-v7-martian-showcase-headless.test.ts (`pulp_wars-9s0.13`).
+// The Ice Folk revision (`pulp_wars-7g3.3`), step 3: the existing Normal AI
+// stays safe with Ice Folk seats. It plays an Ice Folk seat with the generic
+// policy (the Ice Folk policy is `pulp_wars-7g3.4`), and every other faction
+// plays against Ice Folk units, Snow, and Chill without an illegal command,
+// a crash, or a stall (docs/product/RULESET_7_ICE_FOLK.md section 12). The
+// Showcase match with an Ice Folk seat runs beside this file in
+// ruleset-v7-ice-folk-showcase-headless.sim.test.ts (`pulp_wars-9s0.13`).
 
 const MATCHES: readonly (readonly [
   readonly FactionIdV7[],
   MatchSetupV7["mapType"],
   number,
 ])[] = [
-  [["MARTIAN", "ORIGINAL"], "PANGEA", 1],
-  [["ORIGINAL", "MARTIAN"], "DRY_LAND", 2],
-  [["MARTIAN", "UNDEAD"], "CONTINENTS", 1],
-  [["UNDEAD", "MARTIAN"], "LAKES", 3],
-  [["MARTIAN", "GOBLIN"], "LAKES", 1],
-  [["GOBLIN", "MARTIAN"], "PANGEA", 4],
-  [["MARTIAN", "DINOSAUR"], "DRY_LAND", 1],
-  [["DINOSAUR", "MARTIAN"], "ARCHIPELAGO", 5],
-  [["MARTIAN", "MARTIAN"], "PANGEA", 1],
-  [["MARTIAN", "MARTIAN"], "ARCHIPELAGO", 2],
+  [["ICE_FOLK", "ORIGINAL"], "DRY_LAND", 1],
+  [["ORIGINAL", "ICE_FOLK"], "PANGEA", 2],
+  [["ICE_FOLK", "UNDEAD"], "DRY_LAND", 3],
+  [["UNDEAD", "ICE_FOLK"], "CONTINENTS", 1],
+  [["ICE_FOLK", "GOBLIN"], "DRY_LAND", 4],
+  [["GOBLIN", "ICE_FOLK"], "LAKES", 1],
+  [["ICE_FOLK", "DINOSAUR"], "DRY_LAND", 5],
+  [["DINOSAUR", "ICE_FOLK"], "PANGEA", 1],
+  [["ICE_FOLK", "MARTIAN"], "DRY_LAND", 6],
+  [["MARTIAN", "ICE_FOLK"], "ARCHIPELAGO", 1],
+  [["ICE_FOLK", "ICE_FOLK"], "DRY_LAND", 7],
+  [["ICE_FOLK", "ICE_FOLK"], "PANGEA", 1],
 ];
 
-describe("headless Normal matches with Martian seats", () => {
+describe("headless Normal matches with Ice Folk seats", () => {
   it("finish without errors or stalls against every faction and in the mirror", () => {
     const kinds = new Set<string>();
-    let rays = 0;
-    let absorbed = 0;
-    let recharges = 0;
+    let glides = 0;
+    let snowCover = 0;
     for (const [factions, mapType, seed] of MATCHES) {
       const label = `${factions.join("-")} ${mapType} ${seed}`;
       const setup: MatchSetupV7 = { ...goblinSetupV7(factions, seed), mapType };
@@ -54,36 +55,38 @@ describe("headless Normal matches with Martian seats", () => {
       expect(["OUTCOME", "ROUND_CAP"], label).toContain(match.termination);
       expect(parseGameStateV7(match.state), label).not.toBeNull();
       for (const record of match.commandLog) kinds.add(record.command.kind);
-      const martian = match.metrics.martian;
-      rays += martian.raysFull + martian.raysHalf;
-      absorbed +=
-        martian.shieldAbsorbed.attack +
-        martian.shieldAbsorbed.retaliation +
-        martian.shieldAbsorbed.splash +
-        martian.shieldAbsorbed.wail +
-        martian.shieldAbsorbed.blast;
-      recharges += martian.rechargeEvents;
-      // Rays are full or half, and a half ray has exactly one reason.
-      expect(martian.raysHalf, label).toBe(
-        martian.raysHalfMoved + martian.raysHalfCooling,
-      );
+      glides += match.metrics.iceFolk.glideMoves;
+      snowCover += match.metrics.iceFolk.snowCoverAttacks;
+      expect(
+        match.metrics.iceFolk.snowTilesAtEndTurnMaximum,
+        label,
+      ).toBeGreaterThan(0);
     }
-    // The generic policy trains, moves, attacks, and researches for a
-    // Martian seat ...
     for (const kind of ["TRAIN", "MOVE", "ATTACK", "RESEARCH", "CAPTURE"])
       expect(kinds.has(kind), kind).toBe(true);
-    // ... Shields absorb damage and recharge in real matches ...
-    expect(absorbed).toBeGreaterThan(0);
-    expect(recharges).toBeGreaterThan(0);
-    expect(rays).toBeGreaterThanOrEqual(0);
-    // ... and it never issues a Field Defense or Tend Wounded command for
-    // a Martian seat (they would be rejected and reported as errors).
+    // Snow is real in these matches: Ice Folk units Glide and have cover.
+    expect(glides).toBeGreaterThan(0);
+    expect(snowCover).toBeGreaterThan(0);
   }, 600_000);
+
+  it("leaves the metrics of a match without an Ice Folk seat at zero", () => {
+    const setup: MatchSetupV7 = {
+      ...goblinSetupV7(["ORIGINAL", "UNDEAD"], 2),
+      mapType: "DRY_LAND",
+    };
+    const match = runAiMatchV7(setup, { maxRounds: 15 });
+    const metrics = match.metrics.iceFolk;
+    expect(
+      metrics.shatters + metrics.glideMoves + metrics.snowTilesAtEndTurnTotal,
+    ).toBe(0);
+    expect(match.metrics.commandsByKind.THROW_BOLAS).toBe(0);
+    expect(match.metrics.eventsByKind.UNITS_FROZEN).toBe(0);
+  }, 120_000);
 
   it("is deterministic and replays command by command with valid events", () => {
     const setup: MatchSetupV7 = {
-      ...goblinSetupV7(["MARTIAN", "GOBLIN"], 7),
-      mapType: "CONTINENTS",
+      ...goblinSetupV7(["ICE_FOLK", "DINOSAUR"], 8),
+      mapType: "DRY_LAND",
     };
     const match = runAiMatchV7(setup, { maxRounds: 25 });
     expect(match.errors).toEqual([]);
@@ -105,7 +108,7 @@ describe("headless Normal matches with Martian seats", () => {
 });
 
 describe("headless CLI", () => {
-  it("accepts martian in --factions", () => {
+  it("accepts ice in --factions", () => {
     const output = execFileSync(
       process.execPath,
       [
@@ -115,7 +118,7 @@ describe("headless CLI", () => {
         "--ruleset",
         RULESET_7_ID,
         "--factions",
-        "martian,human",
+        "ice,human",
         "--max-commands",
         "40",
         "--max-rounds",
@@ -127,11 +130,13 @@ describe("headless CLI", () => {
       readonly acceptedCommands: number;
       readonly metrics: {
         readonly rulesetId: string;
-        readonly martian: { readonly rechargeEvents: number };
+        readonly factionsBySeat: readonly string[];
+        readonly iceFolk: { readonly shatters: number };
       };
     };
     expect(result.acceptedCommands).toBeGreaterThan(0);
     expect(result.metrics.rulesetId).toBe(RULESET_7_ID);
-    expect(result.metrics.martian).toBeDefined();
+    expect(result.metrics.factionsBySeat).toEqual(["ICE_FOLK", "ORIGINAL"]);
+    expect(result.metrics.iceFolk).toBeDefined();
   }, 120_000);
 });

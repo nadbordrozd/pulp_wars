@@ -56,6 +56,20 @@ or other `src/headless` match runners. Do not add new whole-match simulation
 tests; prove behaviour with small hand-built states. Where the table below
 names one of those gates, skip it and record the skip in the bead.
 
+The tests come in two tiers (`pulp_wars-bwry`, configured in `vite.config.ts`).
+Every test that plays AI matches (through `runAiMatchV7` or another
+`src/headless` match runner, the headless CLI, the mission and lab runners, or
+the Normal AI over many turns of a match) lives in a `*.sim.test.ts` file beside
+the file it came from. `npm run test:unit` is the routine test gate: it runs
+every other test file and never collects a `*.sim.test.ts` file, and the same
+default tier applies to `npm test` and to `npx vitest run <files>`, even when a
+simulation file is named. `npm run test:sim` runs only the simulations and
+`npm run check:full` runs `npm run check` and then `npm run test:sim`; both are
+user-authorised only, like the release validators. `npm run check` is the
+static checks, `npm run test:unit`, and `npm run build`. A new test that plays
+a match goes in a `*.sim.test.ts` file; `tests/unit/test-tiers.test.ts` fails
+when a match runner appears in any other test file.
+
 Assign one profile in the bead before delegation. Record the exact focused
 tests expected from the worker and any conditional gates that apply. The
 profiles below are ordered from lower to higher risk; mixed-scope work uses the
@@ -83,9 +97,9 @@ is involved. These reviews are never delegated away.
 | `docs/tracker`          | Beads-only changes and prose, decision, or workflow documentation with no runtime effect                                                                                          | For changed Markdown, JSON, or YAML files, `npx prettier --check <changed-files>`; verify changed local links and command examples; `git diff --check`. A Beads-only change omits the file-format command.                                                                                                                                                                                                                                                                                                                                                                       |
 | `asset-only`            | Raster assets, asset manifests, generation recipes, and review evidence with no runtime behavior change                                                                           | `npm run format:check`, `npm run lint`, `npm run typecheck`, `npm run art:validate`, and `npm test -- tests/unit/*assets*.test.ts tests/unit/unit-scale-contract.test.ts`. Run the applicable checked-in review command and inspect its evidence: `npm run art:ruleset6-terrain-review`, `npm run art:ruleset6-building-road-review`, `npm run art:ruleset6-original-unit-review`, `npm run art:ruleset6-candy-unit-review`, or `npm run art:ruleset6-tech-economy-ui-review`; use the corresponding named `art:*review` script in `package.json` for another established class. |
 | `ui/presentation`       | DOM, Canvas, layout, input, accessibility, animation, or presentation behavior                                                                                                    | `npm run format:check`, `npm run lint`, `npm run typecheck`, `npm test -- tests/unit/*presentation*.test.ts tests/unit/*render*.test.ts tests/unit/*ui*.test.ts tests/unit/*geometry*.test.ts tests/unit/technology-tree-layout-v6.test.ts tests/integration/*canvas*.test.ts tests/integration/*dom*.test.ts tests/integration/ruleset6-browser-controller.test.ts`, and `npm run build`. Add `npm run smoke:browser` under the browser threshold below.                                                                                                                        |
-| `engine/rules`          | Commands, combat, economy, technology, turn logic, public queries, or other deterministic rules                                                                                   | `npm run check`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| `ai/map/persistence`    | AI policy or scheduling, map generation, PRNG use, headless simulation, save/replay/schema, or compatibility                                                                      | `npm run check` and `npm run validate:ruleset6-release`. Add browser or legacy smoke under the thresholds below.                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| `cross-cutting/release` | Changes spanning multiple high-risk domains; dependency, lockfile, toolchain, build/deployment, CI, or security-boundary changes; release candidates; and final integration epics | Run the release commands in `docs/validation/RULESET_6_RELEASE.md`: `npm run validate:ruleset6-release`, `npm run art:validate`, all nine listed Ruleset 6 `art:*review` commands, `npm run smoke:browser`, `npm run smoke:browser:legacy-v5`, and `npm run check`; also run `npm audit --audit-level=high` and `git diff --check`.                                                                                                                                                                                                                                              |
+| `engine/rules`          | Commands, combat, economy, technology, turn logic, public queries, or other deterministic rules                                                                                   | `npm run format:check`, `npm run lint`, `npm run typecheck`, `npm run test:unit`, and `npm run build`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| `ai/map/persistence`    | AI policy or scheduling, map generation, PRNG use, headless simulation, save/replay/schema, or compatibility                                                                      | `npm run format:check`, `npm run lint`, `npm run typecheck`, `npm run test:unit`, and `npm run build`; only when the user authorises simulations, `npm run test:sim` and `npm run validate:ruleset6-release`. Add browser or legacy smoke under the thresholds below.                                                                                                                                                                                                                                                                                                            |
+| `cross-cutting/release` | Changes spanning multiple high-risk domains; dependency, lockfile, toolchain, build/deployment, CI, or security-boundary changes; release candidates; and final integration epics | Run the release commands in `docs/validation/RULESET_6_RELEASE.md`: `npm run validate:ruleset6-release`, `npm run art:validate`, all nine listed Ruleset 6 `art:*review` commands, `npm run smoke:browser`, `npm run smoke:browser:legacy-v5`, and `npm run check:full` (its `npm run test:sim` part only when the user authorises simulations; otherwise `npm run check`); also run `npm audit --audit-level=high` and `git diff --check`.                                                                                                                                      |
 
 For `asset-only`, the bead must name its applicable `art:*review` command
 before delegation. The complete Ruleset 6 art-review set required by
@@ -120,12 +134,12 @@ Browser and audit gates are risk-triggered, not routine extras:
 
 The worker owns focused implementation checks while iterating and reports their
 exact commands and results. The root owns the independent review and final
-profile gates. Do not ask a worker to repeat `npm run check`, a release corpus,
-the complete browser smoke, or an audit unless the bead explicitly delegates
-that gate for a concrete reason. After a correction, the worker reruns the
-affected focused tests; once review is clean, the root runs one clean final
-profile gate. A failed final gate followed by a correction does not justify
-stacking unrelated broad reruns.
+profile gates. Do not ask a worker to repeat `npm run check`,
+`npm run test:sim`, a release corpus, the complete browser smoke, or an audit
+unless the bead explicitly delegates that gate for a concrete reason. After a
+correction, the worker reruns the affected focused tests; once review is clean,
+the root runs one clean final profile gate. A failed final gate followed by a
+correction does not justify stacking unrelated broad reruns.
 
 Size beads as coherent, independently reviewable and releasable outcomes. Keep
 their implementation, tests, and directly supporting documentation together;

@@ -36,15 +36,9 @@ import {
   type FactionIdV7,
   type GameStateV7,
 } from "../../src/engine/index";
-import { runAiMatchV7 } from "../../src/headless/v7";
 import { checkedV7 } from "../fixtures/v7-builders";
 import { withKillsV7 } from "../fixtures/v7-dinosaur-arena";
-import {
-  goblinSetupV7,
-  sameV7,
-  seatIdV7,
-  unitAtV7,
-} from "../fixtures/v7-goblin-arena";
+import { sameV7, seatIdV7, unitAtV7 } from "../fixtures/v7-goblin-arena";
 import {
   activeIdV7,
   at,
@@ -734,38 +728,4 @@ describe("ruleset-7 revision-20 Normal AI: determinism and bounds", () => {
       ).toBe(true);
     expect(NORMAL_AI_MAX_ACCEPTED_COMMANDS_PER_TURN_V7).toBe(128);
   });
-
-  const PAIRINGS = FACTION_IDS_V7.flatMap((left) =>
-    FACTION_IDS_V7.map((right) => [left, right] as const),
-  );
-
-  it.each(PAIRINGS)(
-    "plays %s against %s without a stall, a policy error, or an over-long turn",
-    (left, right) => {
-      const setup = {
-        ...goblinSetupV7([left, right], 4),
-        mapType: "PANGEA" as const,
-      };
-      const match = runAiMatchV7(setup, {
-        maxRounds: 30,
-        recordCheckpointHashes: false,
-      });
-      expect(match.errors).toEqual([]);
-      expect(match.stalls).toEqual([]);
-      expect(
-        match.commandLog.some(
-          (record) => (record.command.kind as string) === "STAMPEDE",
-        ),
-      ).toBe(false);
-      // At most 128 commands in one owner turn.
-      let run = 0;
-      for (const record of match.commandLog) {
-        run = record.command.kind === "END_TURN" ? 0 : run + 1;
-        expect(run).toBeLessThanOrEqual(
-          NORMAL_AI_MAX_ACCEPTED_COMMANDS_PER_TURN_V7,
-        );
-      }
-    },
-    600_000,
-  );
 });

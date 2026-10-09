@@ -140,10 +140,13 @@
     "play:text": "tsx scripts/play-text-v7.ts",
     "validate:ruleset7-archive-r2": "tsx scripts/validate-ruleset7-release.ts",
     "test": "vitest run",
+    "test:unit": "vitest run",
+    "test:sim": "PULP_WARS_TEST_TIER=sim vitest run",
     "test:watch": "vitest",
     "headless": "tsx src/headless/cli.ts",
     "headless:golden": "vitest run tests/replay/golden-replay.test.ts",
-    "check": "npm run format:check && npm run lint && npm run typecheck && npm test && npm run build && npm run headless:golden"
+    "check": "npm run format:check && npm run lint && npm run typecheck && npm run test:unit && npm run build && npm run headless:golden",
+    "check:full": "npm run check && npm run test:sim"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

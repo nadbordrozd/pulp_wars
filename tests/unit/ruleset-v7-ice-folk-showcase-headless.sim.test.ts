@@ -5,7 +5,7 @@ import {
 } from "../fixtures/v7-showcase-headless";
 
 // The Ice Folk revision (`pulp_wars-7g3.3`): the Normal AI plays a Showcase
-// with an Ice Folk seat. Split out of ruleset-v7-ice-folk-headless.test.ts
+// with an Ice Folk seat. Split out of ruleset-v7-ice-folk-headless.sim.test.ts
 // and shortened from 20 rounds (`pulp_wars-9s0.13`) so it runs in parallel
 // with that file's long matches and stays far from its timeout under load.
 

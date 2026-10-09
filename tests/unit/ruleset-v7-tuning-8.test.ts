@@ -23,8 +23,6 @@ import {
 import {
   RULESET_7_ID,
   TECHNOLOGY_IDS_V7,
-  applyCommandV7,
-  createPlayableGameV7,
   effectiveRoleRuleV7,
   queryCombatPreviewV7,
   queryPlayerCommandsV7,
@@ -43,7 +41,6 @@ import {
   breakthroughLabV7,
   breakthroughPolicyTurnV7,
   breakthroughRetreatTurnV7,
-  runBreakthroughLabV7,
 } from "../fixtures/v7-breakthrough-lab";
 import { checkedV7 } from "../fixtures/v7-builders";
 import {
@@ -1342,84 +1339,6 @@ describe("2. research while at war", () => {
     expect(research[0]).toBe("MARKSMANSHIP");
     expect(trained).toBeGreaterThan(0);
   });
-
-  // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): by round 15 (round 14
-  // before). The Zombie costs the seat one technology more (the root, then
-  // Fortification), and Marksmanship comes a round later.
-  // Step two of the Human pass (`pulp_wars-w49.22`): by round 16. The Human
-  // seat of this match fields four Marksmen in round 11 (three before) and
-  // the Undead seat buys Forestry in round 15 and Marksmanship in round 16
-  // (rounds 14 and 15 before); nothing in an Undead seat's policy changed.
-  // Step two of the Undead pass (`pulp_wars-w49.24`): by round 18, with
-  // seventeen units trained by round 16 where it trained fewer than ten.
-  // The Undead seat trains before it researches while it is short of
-  // units: Hunting in round 3, Crafting 7, Fortification 11, Forestry 14,
-  // Marksmanship 18.
-  it("an Undead seat on the map of the hand-played game buys a ranged-unit technology by round 18, and keeps training", () => {
-    // `r7d`: dry land 14 x 14, seed 4, Humans against the Undead Normal
-    // AI. There the Undead seat bought Gathering, Drill, and Engineering in
-    // twenty-one rounds, never Hunting or Marksmanship, and its capital
-    // stood at level 2 with 0 of 3 population for twelve rounds. Here both
-    // seats play the Normal policy; nothing is read but what the Undead
-    // seat bought and how its capital grew.
-    const created = createPlayableGameV7({
-      rulesetId: RULESET_7_ID,
-      seed: 4,
-      width: 14,
-      height: 14,
-      aiCount: 1,
-      aiDifficulty: "NORMAL",
-      aiMode: "RIVAL",
-      humanColor: "CORAL",
-      factions: ["ORIGINAL", "UNDEAD"],
-      mapType: "DRY_LAND",
-      mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
-      curiosities: true,
-    });
-    if (!created.ok) throw new Error(created.error.code);
-    let state = created.state;
-    const undead = state.players.find((player) => player.faction === "UNDEAD");
-    if (undead === undefined) throw new Error("no Undead seat");
-    const researched: string[] = [];
-    let trained = 0;
-    let idleTurns = 0;
-    while (state.outcome === null && state.round <= 18) {
-      const actor = state.turnOrder[state.activeSeatIndex];
-      if (actor === undefined) throw new Error("no actor");
-      let bought = 0;
-      for (let accepted = 0; accepted < 128; accepted += 1) {
-        const view = viewForV7(state, actor);
-        const command = chooseNormalTurnCommandV7(
-          view,
-          accepted,
-          128,
-          chooseNormalCommandV7(view),
-        );
-        if (command === null) throw new Error("no command");
-        if (actor === undead.id) {
-          if (command.kind === "RESEARCH") researched.push(command.tech);
-          if (command.kind === "TRAIN") trained += 1;
-          if (command.kind === "RESEARCH" || command.kind === "TRAIN")
-            bought += 1;
-        }
-        const result = applyCommandV7(state, actor, command);
-        if (!result.accepted) throw new Error(result.error.code);
-        state = result.state;
-        if (command.kind === "END_TURN" || state.outcome !== null) break;
-      }
-      if (actor === undead.id && bought === 0) idleTurns += 1;
-    }
-    expect(researched).toContain("HUNTING");
-    expect(researched).toContain("MARKSMANSHIP");
-    expect(researched.length).toBeGreaterThanOrEqual(5);
-    expect(trained).toBeGreaterThanOrEqual(15);
-    // It bought a unit or a technology in all but a few of its turns (five
-    // of sixteen since step two of the Human pass: rounds 4 and 5, and
-    // rounds 12 to 14, in which it keeps its Coins for Forestry; four of
-    // fifteen before; three of eighteen at most since step two of the
-    // Undead pass, which keeps no Coins while the seat is short of units).
-    expect(idleTurns).toBeLessThanOrEqual(3);
-  }, 120_000);
 });
 // APPEND-MARKER
 
@@ -2148,38 +2067,6 @@ describe("the defects of round 7", () => {
       ),
     ).toMatchObject({ fortificationLevel: 2, defense2: 6 + 2 * 2 });
   });
-});
-
-describe("the bounded lab runs", () => {
-  // The third script of tests/fixtures/v7-breakthrough-lab.ts, `STANDOFF`:
-  // the defender gives ground, its Catapults end up behind the capital,
-  // and the capital retrains a cheap garrison on its center every turn
-  // (what the hand player of `r7a` did). Against it the round-7 policy took
-  // the capital in rounds 6, 7, and 8 with 4, 11, and 8 units lost
-  // (docs/product/RULESET_7_TUNING_HUMAN.md section 15.2), round 8 as
-  // first written in rounds 6, 8, and 8, and after its correction pass in
-  // rounds 6, 7, and 8 (the Goblin attacker's bombs are thrown from the
-  // first step into range); the hand
-  // player's four turns with an empty center are the position of
-  // "r7a round 9" above, not this script. The Undead pass
-  // (`pulp_wars-w49.13`, 7r51): the Undead attacker in round 7 (8
-  // before; its Vampires reach the Catapults behind the capital and
-  // come back). The reward ladder rework (`pulp_wars-zypi`): the Goblin
-  // attacker in round 6 (7 before: the level rewards on offer, and so the
-  // seats' choices, changed).
-  it.each([
-    ["LAB_BREAKTHROUGH", 6],
-    ["LAB_BREAKTHROUGH_GOBLIN", 6],
-    ["LAB_BREAKTHROUGH_UNDEAD", 7],
-  ] as const)(
-    "%s: against a defender that stands off with Catapults and retrains its garrison, the capital falls in round %i and no turn passes without an attack",
-    (id, capital) => {
-      const result = runBreakthroughLabV7(id, 14, "STANDOFF");
-      expect(result.capitalFellInRound, id).toBe(capital);
-      expect(result.turnsWithoutAttack, id).toBe(0);
-    },
-    120_000,
-  );
 });
 
 // ---------------------------------------------------------------------------

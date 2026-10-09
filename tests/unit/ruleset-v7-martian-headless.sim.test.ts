@@ -14,77 +14,76 @@ import {
 import { runAiMatchV7 } from "../../src/headless/v7";
 import { goblinSetupV7 } from "../fixtures/v7-goblin-arena";
 
-// The Dwarf revision (`pulp_wars-78i.3`): the Normal AI stays safe with
-// Dwarf seats. It plays a Dwarf seat with the Dwarf policy of
-// `pulp_wars-78i.4` (tunnels, bombs, Assemble), and every other faction
-// plays against Dwarf units, mounds, bombs, and Dig In without an illegal
-// command, a crash, or a stall (docs/product/RULESET_7_DWARVES.md sections
-// 15 and 19). The Showcase match with a Dwarf seat runs beside this file in
-// ruleset-v7-dwarf-showcase-headless.test.ts (`pulp_wars-9s0.13`).
+// The Martian revision (`pulp_wars-t6s.2`), step 2: the existing Normal AI
+// stays safe with Martian seats. It plays a Martian seat with the generic
+// policy (it never uses Beam Down, Mind Control, or the Tractor Beam; the
+// Martian policy is `pulp_wars-t6s.3`), and every other faction plays
+// against Martian units without an illegal command, a crash, or a stall.
+// The Showcase match with a Martian seat runs beside this file in
+// ruleset-v7-martian-showcase-headless.sim.test.ts (`pulp_wars-9s0.13`).
 
 const MATCHES: readonly (readonly [
   readonly FactionIdV7[],
   MatchSetupV7["mapType"],
   number,
 ])[] = [
-  [["DWARF", "ORIGINAL"], "DRY_LAND", 1],
-  [["UNDEAD", "DWARF"], "DRY_LAND", 2],
-  [["DWARF", "GOBLIN"], "DRY_LAND", 3],
-  [["DINOSAUR", "DWARF"], "DRY_LAND", 4],
-  [["DWARF", "MARTIAN"], "DRY_LAND", 5],
-  [["ICE_FOLK", "DWARF"], "DRY_LAND", 6],
-  [["DWARF", "ORIGINAL"], "PANGEA", 1],
-  [["MARTIAN", "DWARF"], "LAKES", 2],
+  [["MARTIAN", "ORIGINAL"], "PANGEA", 1],
+  [["ORIGINAL", "MARTIAN"], "DRY_LAND", 2],
+  [["MARTIAN", "UNDEAD"], "CONTINENTS", 1],
+  [["UNDEAD", "MARTIAN"], "LAKES", 3],
+  [["MARTIAN", "GOBLIN"], "LAKES", 1],
+  [["GOBLIN", "MARTIAN"], "PANGEA", 4],
+  [["MARTIAN", "DINOSAUR"], "DRY_LAND", 1],
+  [["DINOSAUR", "MARTIAN"], "ARCHIPELAGO", 5],
+  [["MARTIAN", "MARTIAN"], "PANGEA", 1],
+  [["MARTIAN", "MARTIAN"], "ARCHIPELAGO", 2],
 ];
 
-describe("headless Normal matches with Dwarf seats", () => {
-  it("finish without errors or stalls against every faction", () => {
+describe("headless Normal matches with Martian seats", () => {
+  it("finish without errors or stalls against every faction and in the mirror", () => {
     const kinds = new Set<string>();
-    let gunnerShots = 0;
+    let rays = 0;
+    let absorbed = 0;
+    let recharges = 0;
     for (const [factions, mapType, seed] of MATCHES) {
       const label = `${factions.join("-")} ${mapType} ${seed}`;
       const setup: MatchSetupV7 = { ...goblinSetupV7(factions, seed), mapType };
-      const match = runAiMatchV7(setup, { maxRounds: 30 });
+      const match = runAiMatchV7(setup, { maxRounds: 40 });
       expect(match.errors, label).toEqual([]);
       expect(match.stalls, label).toEqual([]);
       expect(["OUTCOME", "ROUND_CAP"], label).toContain(match.termination);
       expect(parseGameStateV7(match.state), label).not.toBeNull();
       for (const record of match.commandLog) kinds.add(record.command.kind);
-      gunnerShots +=
-        match.metrics.dwarf.gunnerShotsUnmoved +
-        match.metrics.dwarf.gunnerShotsMoved;
+      const martian = match.metrics.martian;
+      rays += martian.raysFull + martian.raysHalf;
+      absorbed +=
+        martian.shieldAbsorbed.attack +
+        martian.shieldAbsorbed.retaliation +
+        martian.shieldAbsorbed.splash +
+        martian.shieldAbsorbed.wail +
+        martian.shieldAbsorbed.blast;
+      recharges += martian.rechargeEvents;
+      // Rays are full or half, and a half ray has exactly one reason.
+      expect(martian.raysHalf, label).toBe(
+        martian.raysHalfMoved + martian.raysHalfCooling,
+      );
     }
+    // The generic policy trains, moves, attacks, and researches for a
+    // Martian seat ...
     for (const kind of ["TRAIN", "MOVE", "ATTACK", "RESEARCH", "CAPTURE"])
       expect(kinds.has(kind), kind).toBe(true);
-    expect(gunnerShots).toBeGreaterThanOrEqual(0);
-  }, 900_000);
-
-  it("leaves the Dwarf metrics of a match without a Dwarf seat at zero", () => {
-    const setup: MatchSetupV7 = {
-      ...goblinSetupV7(["ORIGINAL", "UNDEAD"], 2),
-      mapType: "DRY_LAND",
-    };
-    const match = runAiMatchV7(setup, { maxRounds: 15 });
-    expect(
-      Object.values(match.metrics.dwarf)
-        .filter((value): value is number => typeof value === "number")
-        .reduce((sum, value) => sum + value, 0),
-    ).toBe(0);
-    for (const kind of ["TUNNEL", "BOMB_RUN", "ASSEMBLE"] as const)
-      expect(match.metrics.commandsByKind[kind], kind).toBe(0);
-    for (const kind of [
-      "UNIT_TUNNELLED",
-      "UNIT_SURFACED",
-      "UNIT_BOMBED",
-      "UNIT_ASSEMBLED",
-    ] as const)
-      expect(match.metrics.eventsByKind[kind], kind).toBe(0);
-  }, 120_000);
+    // ... Shields absorb damage and recharge in real matches ...
+    expect(absorbed).toBeGreaterThan(0);
+    expect(recharges).toBeGreaterThan(0);
+    expect(rays).toBeGreaterThanOrEqual(0);
+    // ... and it never issues a Field Defense or Tend Wounded command for
+    // a Martian seat (they would be rejected and reported as errors).
+  }, 600_000);
 
   it("is deterministic and replays command by command with valid events", () => {
     const setup: MatchSetupV7 = {
-      ...goblinSetupV7(["DWARF", "DINOSAUR"], 8),
-      mapType: "DRY_LAND",
+      ...goblinSetupV7(["MARTIAN", "GOBLIN"], 7),
+      mapType: "CONTINENTS",
     };
     const match = runAiMatchV7(setup, { maxRounds: 25 });
     expect(match.errors).toEqual([]);
@@ -106,7 +105,7 @@ describe("headless Normal matches with Dwarf seats", () => {
 });
 
 describe("headless CLI", () => {
-  it("accepts dwarf in --factions", () => {
+  it("accepts martian in --factions", () => {
     const output = execFileSync(
       process.execPath,
       [
@@ -116,7 +115,7 @@ describe("headless CLI", () => {
         "--ruleset",
         RULESET_7_ID,
         "--factions",
-        "dwarf,human",
+        "martian,human",
         "--max-commands",
         "40",
         "--max-rounds",
@@ -128,13 +127,11 @@ describe("headless CLI", () => {
       readonly acceptedCommands: number;
       readonly metrics: {
         readonly rulesetId: string;
-        readonly factionsBySeat: readonly string[];
-        readonly dwarf: { readonly tunnels: number };
+        readonly martian: { readonly rechargeEvents: number };
       };
     };
     expect(result.acceptedCommands).toBeGreaterThan(0);
     expect(result.metrics.rulesetId).toBe(RULESET_7_ID);
-    expect(result.metrics.factionsBySeat).toEqual(["DWARF", "ORIGINAL"]);
-    expect(result.metrics.dwarf).toBeDefined();
+    expect(result.metrics.martian).toBeDefined();
   }, 120_000);
 });

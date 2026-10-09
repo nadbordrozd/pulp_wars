@@ -14,14 +14,9 @@ import {
   type CommandV7,
   type GameStateV7,
 } from "../../src/engine/index";
-import { runAiMatchV7 } from "../../src/headless/v7";
 import { checkedV7 } from "../fixtures/v7-builders";
 import { cityOfV7, withEggsV7 } from "../fixtures/v7-dinosaur-arena";
-import {
-  goblinArenaV7,
-  goblinSetupV7,
-  unitAtV7,
-} from "../fixtures/v7-goblin-arena";
+import { goblinArenaV7, unitAtV7 } from "../fixtures/v7-goblin-arena";
 import { fieldV7 } from "../fixtures/v7-revision20";
 
 // Revision 19 (`pulp_wars-c87.3`): the Normal AI support that lets a
@@ -267,44 +262,6 @@ describe("ruleset-7 revision-20 Normal AI: Charge! benchmark", () => {
       targetUnitId: unitAtV7(safe, { x: 4, y: 3 }).id,
     });
   });
-});
-
-describe("ruleset-7 revision-19 Normal AI: legal play with Eggs", () => {
-  it("plays Dinosaur seats to completion with Eggs laid and hatched and no rejected command", () => {
-    for (const factions of [
-      ["DINOSAUR", "ORIGINAL"],
-      ["GOBLIN", "DINOSAUR"],
-    ] as const) {
-      // Seed 4 (was 3): since pulp_wars-c87.8 the 12-HP Cavemen of seed 3
-      // win in ten rounds, before any Egg is laid.
-      const setup = {
-        ...goblinSetupV7(factions, 4),
-        mapType: "PANGEA" as const,
-      };
-      const match = runAiMatchV7(setup, { maxRounds: 60 });
-      expect(match.errors, factions.join()).toEqual([]);
-      expect(match.stalls, factions.join()).toEqual([]);
-      const kinds = new Set(
-        match.commandLog.map((record) => record.command.kind),
-      );
-      expect(kinds.has("LAY_EGG"), factions.join()).toBe(true);
-      // A Dinosaur seat never trains an egg-laid role.
-      const dinosaurIds = new Set(
-        match.state.players
-          .filter((player) => player.faction === "DINOSAUR")
-          .map((player) => player.id),
-      );
-      expect(
-        match.commandLog.filter(
-          (record) =>
-            record.command.kind === "TRAIN" &&
-            dinosaurIds.has(record.playerId) &&
-            record.command.role !== "FIGHTER" &&
-            record.command.role !== "CAPTAIN",
-        ),
-      ).toEqual([]);
-    }
-  }, 240_000);
 });
 
 /** The Dinosaur seat sees only its own territory (no visible enemy). */

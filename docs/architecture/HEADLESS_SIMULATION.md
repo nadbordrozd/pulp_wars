@@ -532,7 +532,7 @@ pinned command hashes, rounds, maps, and PRNG ends, and their event hashes
 once the four neutral Candy combat-preview fields are removed
 (`tests/unit/ruleset-v7-curiosities.test.ts`,
 `tests/unit/ruleset-v7-undead-faction.test.ts`). The contract tests
-(`tests/unit/ruleset-v7-candy-headless.test.ts`) play Normal matches with a
+(`tests/unit/ruleset-v7-candy-headless.sim.test.ts`) play Normal matches with a
 Candy seat against every faction in both seat orders, a four-seat mix, and
 a Showcase without errors or stalls.
 
@@ -564,8 +564,8 @@ npm run headless -- match --ruleset pulp-wars-poc-7r47 --map-type continents --f
   ships frozen in, crush damage) is not implemented; it belongs to the
   coarse balance bead `pulp_wars-5ti.8`, which waits for the naval Normal
   AI.
-- **Tests.** `tests/unit/ruleset-v7-naval-branch-headless.test.ts` and
-  `tests/unit/ruleset-v7-frozen-sea-headless.test.ts` run bounded water
+- **Tests.** `tests/unit/ruleset-v7-naval-branch-headless.sim.test.ts` and
+  `tests/unit/ruleset-v7-frozen-sea-headless.sim.test.ts` run bounded water
   matches of every faction, and of the Ice Folk against every faction, and
   a Showcase each, and require no error, stall, or rejected command (and,
   for an Ice Folk seat, no ship).

@@ -18,8 +18,9 @@ import { monsterArenaV7 } from "../fixtures/v7-monster-arena";
 // fuzz in the Monster arena. Split out of `ruleset-v7-monster.test.ts`
 // (`pulp_wars-737.8`) so its four six-round Normal games run beside that
 // file's tests and its headless matches
-// (`ruleset-v7-monster-headless.test.ts`), each far from its timeout when
-// `npm run check` runs on a busy machine.
+// (`ruleset-v7-monster-headless.sim.test.ts`), each far from its timeout when
+// `npm run check` runs on a busy machine. Both are whole-game simulations
+// and run only in `npm run test:sim` (`pulp_wars-bwry`).
 
 const at = (x: number, y: number): CoordV7 => ({ x, y });
 

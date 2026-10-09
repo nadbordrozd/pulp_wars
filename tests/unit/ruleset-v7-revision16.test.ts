@@ -31,40 +31,25 @@ import {
   type BoardStateV7,
   type CommandV7,
   type CoordV7,
-  type FactionIdV7,
   type GameStateV7,
-  type MapTypeV7,
-  type MatchSetupV7,
   type PlayerViewV7,
   type ResourceIdV7,
   type TerrainIdV7,
   type TileStateV7,
 } from "../../src/engine/index";
-import { runAiMatchV7 } from "../../src/headless/v7";
 import {
   OBSOLETE_SAVE_STORAGE_KEYS_V7,
   createSaveEnvelopeV7,
   parseSaveV7,
 } from "../../src/persistence/index";
-import {
-  checkedV7,
-  exploredAllV7,
-  initialV7,
-  mirrorOptionV7,
-} from "../fixtures/v7-builders";
+import { checkedV7, exploredAllV7, initialV7 } from "../fixtures/v7-builders";
+import { MAP_TYPES, setupFor } from "./ruleset-v7-revision16.shared";
 
 // Revision 16a (`pulp_wars-wwc`): identity `pulp-wars-poc-7r16`, orthogonal
 // Shallow Water with a 25% Shallow minimum, the capital growth floor and the
 // `CAPITAL_GROWTH` invariant, and the Normal AI growth-first opening
 // (docs/product/RULESET_7_REVISION_16.md sections 2-4 and 10.1).
 
-const MAP_TYPES: readonly MapTypeV7[] = [
-  "DRY_LAND",
-  "PANGEA",
-  "CONTINENTS",
-  "ARCHIPELAGO",
-  "LAKES",
-];
 const CELLS = [
   [11, 1],
   [14, 1],
@@ -683,38 +668,6 @@ describe("ruleset-7 revision-16 Normal AI opening", () => {
       }).priority,
     ).toBe(1218);
   });
-
-  it.each([
-    ["ORIGINAL", "ORIGINAL"],
-    ["ORIGINAL", "UNDEAD"],
-    ["UNDEAD", "ORIGINAL"],
-  ] as const)(
-    "brings every capital to level 2 by its owner's second turn (%s vs %s, seeds 0-19, 11 and 14)",
-    (first, second) => {
-      for (const mapType of MAP_TYPES)
-        for (const size of [11, 14] as const)
-          for (let seed = 0; seed < 20; seed += 1) {
-            const setup = setupFor(mapType, size, 1, seed, [first, second]);
-            const match = runAiMatchV7(setup, {
-              maxRounds: 2,
-              recordCheckpointHashes: false,
-            });
-            expect(match.errors).toEqual([]);
-            for (const player of match.state.players) {
-              const capital = match.state.cities.find(
-                (city) => city.id === player.originalCapitalCityId,
-              );
-              expect(
-                capital !== undefined &&
-                  capital.ownerId === player.id &&
-                  capital.level >= 2,
-                `${mapType}/${size}/${seed} seat ${player.seat}`,
-              ).toBe(true);
-            }
-          }
-    },
-    600_000,
-  );
 });
 
 type RingPatch = readonly [
@@ -722,34 +675,6 @@ type RingPatch = readonly [
   terrain: TerrainIdV7,
   resource: ResourceIdV7 | null,
 ];
-
-function setupFor(
-  mapType: MapTypeV7,
-  size: 11 | 14 | 16 | 20 | 25,
-  aiCount: 1 | 2 | 3,
-  seed: number,
-  factions?: readonly FactionIdV7[],
-): MatchSetupV7 {
-  return {
-    rulesetId: RULESET_7_ID,
-    seed,
-    width: size,
-    height: size,
-    aiCount,
-    aiDifficulty: "NORMAL",
-    aiMode: "RIVAL",
-    humanColor: "CORAL",
-    factions: [
-      ...(factions ??
-        Array.from({ length: aiCount + 1 }, () => "ORIGINAL" as const)),
-    ],
-    mapType,
-    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
-    curiosities: false,
-    // pulp_wars-w5j.1: the test only mirror option for the all-Human cells.
-    ...mirrorOptionV7(factions ?? ["ORIGINAL", "ORIGINAL"]),
-  };
-}
 
 /** An 11 x 11 Grass board with a capital at (5, 5) and patched ring cells. */
 function ringBoard(

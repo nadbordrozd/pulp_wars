@@ -5,7 +5,7 @@ import {
 } from "../fixtures/v7-showcase-headless";
 
 // The Martian revision (`pulp_wars-t6s.2`): the Normal AI plays a Showcase
-// with a Martian seat. Split out of ruleset-v7-martian-headless.test.ts and
+// with a Martian seat. Split out of ruleset-v7-martian-headless.sim.test.ts and
 // shortened from 20 rounds (`pulp_wars-9s0.13`) so it runs in parallel with
 // that file's long matches and stays far from its timeout under load.
 

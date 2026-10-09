@@ -423,8 +423,9 @@ The naval branch has no balance evidence yet: its water-map matrix is
   Goblin, Dinosaur, Martian, Ice Folk, and Dwarf matches (every pairing of
   the seven factions, and four-seat mixes; the Martian, Ice Folk, and Dwarf
   pairings on Dry Land) were played headlessly by the balance matrices, and
-  `npm run check` runs bounded headless Goblin, Dinosaur, Martian, Ice
-  Folk, and Dwarf matches and replays. Mind Control and the Tractor Beam
+  `npm run test:sim` (part of `npm run check:full` since `pulp_wars-bwry`)
+  runs bounded headless Goblin, Dinosaur, Martian, Ice Folk, and Dwarf
+  matches and replays. Mind Control and the Tractor Beam
   are covered by the engine, AI, and UI tests and the
   `review:ruleset7-martian-ui` captures, Cold Snap, Shatter, Sweep, and a
   Frozen unit refused an attack after moving by the engine, AI, and UI
@@ -438,9 +439,9 @@ The naval branch has no balance evidence yet: its water-map matrix is
   tab are covered by the UI tests and the `review:ruleset7-curiosities-ui`
   captures. Complete Candy matches against each of the other seven factions
   were played headlessly by the Normal AI bead's small sample, and
-  `npm run check` runs bounded headless matches with a Candy seat against
+  `npm run test:sim` runs bounded headless matches with a Candy seat against
   every faction in both seat orders, a four-seat mix, and a Showcase
-  (`tests/unit/ruleset-v7-candy-headless.test.ts`). A Rushed attack, the
+  (`tests/unit/ruleset-v7-candy-headless.sim.test.ts`). A Rushed attack, the
   Crash, Splat, Bounce, Frosting, eaten Crumbs, and the Peppermint Surprise
   are covered by the engine, AI, and UI tests and the
   `review:ruleset7-candy-ui` captures, not by the smoke. The naval branch
@@ -524,11 +525,11 @@ The naval branch has no balance evidence yet: its water-map matrix is
   under `art/pixellab/reviews/naval-branch-ice/` (it uses no browser and
   no PixelLab call). Both exit cleanly at `7r44`; the first rewrites four
   tracked scene captures on macOS Chrome, like the other reviews.
-- **Gate order.** Run `npm run check` **before** the art review commands,
-  then restore the checked-in review evidence with `git checkout -- art/`
-  after them: on macOS Chrome the reviews rewrite tracked review evidence,
-  which breaks the deterministic-evidence test (`board-renderer-v6`) if
-  `npm run check` runs afterwards. Never commit the rewritten evidence as
+- **Gate order.** Run `npm run check:full` **before** the art review
+  commands, then restore the checked-in review evidence with
+  `git checkout -- art/` after them: on macOS Chrome the reviews rewrite
+  tracked review evidence, which breaks the deterministic-evidence test
+  (`board-renderer-v6`) if `npm run check` runs afterwards. Never commit the rewritten evidence as
   part of a release.
 - The revision-2 sections below, `RULESET_7_RELEASE_CORPUS.json`, and the
   archived browser evidence in `art/integration/reviews/ruleset7-preview/`
@@ -545,17 +546,15 @@ The current release gates, in the order they are run from the reviewed
 release revision (the `cross-cutting/release` profile plus the Ruleset 7,
 Goblin, Dinosaur, Martian, Ice Folk, Dwarf, map-curiosity, Candy, and
 naval-branch additions).
-`npm run check`
-runs
-before the art
-reviews, and `git checkout -- art/` restores the evidence they rewrite
+`npm run check:full` (`npm run check` and then the whole-match simulations of
+`npm run test:sim`, `pulp_wars-bwry`) runs before the art reviews, and `git checkout -- art/` restores the evidence they rewrite
 before the browser smokes (see the gate-order note above):
 
 ```bash
 npm run validate:ruleset7-release
 npm run validate:ruleset7-curiosity-maps
 npm run validate:ruleset6-release
-npm run check
+npm run check:full
 npm run art:validate
 npm run art:ruleset6-terrain-review
 npm run art:ruleset6-building-road-review

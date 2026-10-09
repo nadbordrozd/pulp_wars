@@ -61,7 +61,7 @@ describe("GitHub Pages deployment", () => {
     );
 
     expect(workflow).toContain("branches: [main]");
-    expect(workflow).toContain("run: npm run check");
+    expect(workflow).toContain("run: npm run check:full");
     expect(workflow).toMatch(/actions\/upload-pages-artifact@v\d+/);
     expect(workflow).toContain("path: ./dist");
     expect(workflow).toMatch(/actions\/deploy-pages@v\d+/);

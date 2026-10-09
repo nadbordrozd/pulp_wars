@@ -36,47 +36,22 @@ import {
   revision14VillageCountV7,
   spatialContributionAtV7,
   viewForV7,
-  type AiCountV7,
   type CoordV7,
   type FactionIdV7,
   type GameStateV7,
   type MatchSetupV7,
   type TileStateV7,
 } from "../../src/engine/index";
-import { runAiMatchV7 } from "../../src/headless/v7";
 import { createSaveEnvelopeV7, parseSaveV7 } from "../../src/persistence/v7";
 import { expectInitialScoreLedgerV7 } from "../fixtures/v7-score-ledger";
-import { mirrorOptionV7 } from "../fixtures/v7-builders";
 import { revision39PlayableGameV7 } from "../fixtures/v7-revision13-map";
+import { showcaseSetup } from "./ruleset-v7-revision18-showcase.shared";
 
 /**
  * Revision 18 section 5 (`pulp_wars-6gd.3`): the fixed `SHOWCASE` setup.
  * Every number of the section 5.3 ledger and income is recomputed here from
  * the engine's own ledger rules, not only compared with the built state.
  */
-
-function showcaseSetup(
-  factions: readonly FactionIdV7[],
-  overrides: Partial<MatchSetupV7> = {},
-): MatchSetupV7 {
-  return {
-    rulesetId: RULESET_7_ID,
-    seed: 618,
-    width: 16,
-    height: 16,
-    aiCount: (factions.length - 1) as AiCountV7,
-    aiDifficulty: "NORMAL",
-    aiMode: "RIVAL",
-    humanColor: "CORAL",
-    factions,
-    mapType: "SHOWCASE",
-    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
-    curiosities: false,
-    // pulp_wars-w5j.1: the test only mirror option for repeated factions.
-    ...mirrorOptionV7(factions),
-    ...overrides,
-  };
-}
 
 function rawShowcase(
   factions: readonly FactionIdV7[],
@@ -1093,25 +1068,4 @@ describe("ruleset-7 revision-18 Showcase play", () => {
     expect(loaded.save.stateHash).toBe(canonicalHash(state));
     expect(canonicalHash(loaded.save.state)).toBe(canonicalHash(state));
   });
-
-  // Every faction plays as a Normal seat in a two-seat and a four-seat match.
-  it.each<readonly [readonly FactionIdV7[]]>([
-    [["ORIGINAL", "UNDEAD"]],
-    [["GOBLIN", "GOBLIN"]],
-    [["UNDEAD", "GOBLIN", "ORIGINAL", "GOBLIN"]],
-  ])(
-    "plays Normal against Normal %j for 20 rounds with no policy error",
-    { timeout: 600_000 },
-    (factions) => {
-      const result = runAiMatchV7(showcaseSetup(factions), { maxRounds: 20 });
-      expect(result.errors).toEqual([]);
-      expect(result.stalls).toEqual([]);
-      expect(["OUTCOME", "ROUND_CAP"]).toContain(result.termination);
-      expect(
-        result.termination === "ROUND_CAP" ? result.rounds : 20,
-      ).toBeGreaterThanOrEqual(20);
-      expect(result.acceptedCommands).toBeGreaterThan(40);
-      expect(parseGameStateV7(result.state)).not.toBeNull();
-    },
-  );
 });

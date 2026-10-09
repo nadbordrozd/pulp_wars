@@ -4956,9 +4956,9 @@ What the policy does today (`src/ai/v7.ts`):
   unit walks the ice in the estimate), so its reach on ice is understated.
 - **Dry Land is unchanged:** nothing of the branch is offered there.
 
-Checks: `tests/unit/ruleset-v7-naval-branch-headless.test.ts` (short water
+Checks: `tests/unit/ruleset-v7-naval-branch-headless.sim.test.ts` (short water
 matches of every faction and a Showcase finish without an error, a stall,
-or a rejected command) and `tests/unit/ruleset-v7-frozen-sea-headless.test.ts`
+or a rejected command) and `tests/unit/ruleset-v7-frozen-sea-headless.sim.test.ts`
 (the same for the Ice Folk against every faction, with no ship).
 
 Open:

@@ -4,16 +4,12 @@ import {
   MONSTER_HP_V7,
   NEUTRAL_KIND_V7,
   NEUTRAL_OWNER_ID_V7,
-  RULESET_7_ID,
-  appendReplayCommandV7,
   applyCommandV7,
   arePlayersAlliedV7,
   arePlayersHostileV7,
   calculateCombatPreviewV7,
   canBeFrozenV7,
   canonicalHash,
-  createPlayableGameV7,
-  createReplayV7,
   mindControlTargetBlockV7,
   monsterStepsV7,
   monsterWanderV7,
@@ -21,14 +17,12 @@ import {
   ownerResearchedTechsV7,
   parseEventV7,
   parseGameStateV7,
-  parseReplayJsonV7,
   playerFactionV7,
   previewMonsterV7,
   projectEventsV7,
   queryCombatPreviewV7,
   queryPlayerCommandsV7,
   queryThreatenedTilesV7,
-  runReplayV7,
   unitCapabilitiesV7,
   unitFactionV7,
   unitRoleMechanicsV7,
@@ -37,12 +31,9 @@ import {
   type CoordV7,
   type DomainEventV7,
   type GameStateV7,
-  type MatchSetupV7,
   type PlayerId,
 } from "../../src/engine/index";
 import { buildBoardRenderPlanV7 } from "../../src/render/canvas/board-renderer-v7";
-import { runAiMatchV7 } from "../../src/headless/v7";
-import { createSaveEnvelopeV7, parseSaveV7 } from "../../src/persistence/index";
 import {
   applyOkV7,
   endTurnUntilV7,
@@ -627,55 +618,4 @@ describe("parsing, saves, and replays (sections 10.2 and 8.9)", () => {
     for (const variant of variants)
       expect(parseGameStateV7(variant)).toBeNull();
   });
-
-  it("round-trips a generated match with a Monster through the replay and the save", () => {
-    // 16 x 16 Dry Land seed 8 with three seats draws a Monster (seed 7
-    // before the village density, `pulp_wars-ykw.2`; seed 11 until the
-    // round-2 kinds joined the kind draw, `pulp_wars-737.14`).
-    const setup: MatchSetupV7 = {
-      rulesetId: RULESET_7_ID,
-      seed: 8,
-      width: 16,
-      height: 16,
-      aiCount: 2,
-      aiDifficulty: "NORMAL",
-      aiMode: "RIVAL",
-      humanColor: "CORAL",
-      factions: ["ORIGINAL", "UNDEAD", "GOBLIN"],
-      mapType: "DRY_LAND",
-      mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
-      curiosities: true,
-    };
-    const created = createPlayableGameV7(setup);
-    if (!created.ok) throw new Error(created.error.code);
-    expect(created.state.monsters).toHaveLength(1);
-    const match = runAiMatchV7(setup, { maxRounds: 12 });
-    expect(match.errors).toEqual([]);
-    expect(match.stalls).toEqual([]);
-    expect(match.metrics.monsters.placed).toBe(1);
-    let state = created.state;
-    let replay = createReplayV7(setup);
-    let neutralTurns = 0;
-    for (const record of match.commandLog) {
-      const result = applyCommandV7(state, record.playerId, record.command);
-      if (!result.accepted) throw new Error(result.error.code);
-      for (const event of result.events) {
-        expect(parseEventV7(event).ok).toBe(true);
-        if (event.kind === "NEUTRAL_TURN_STARTED") neutralTurns += 1;
-      }
-      state = result.state;
-      replay = appendReplayCommandV7(replay, record.command, state);
-    }
-    expect(neutralTurns).toBeGreaterThanOrEqual(10);
-    expect(canonicalHash(state)).toBe(match.stateHash);
-    expect(parseGameStateV7(JSON.parse(JSON.stringify(state)))).toEqual(state);
-    const parsedReplay = parseReplayJsonV7(JSON.stringify(replay));
-    if (parsedReplay.kind !== "VALID") throw new Error(parsedReplay.kind);
-    expect(runReplayV7(parsedReplay.replay).stateHash).toBe(match.stateHash);
-    const save = createSaveEnvelopeV7(
-      { state, replay },
-      "2026-10-03T12:00:00.000Z",
-    );
-    expect(parseSaveV7(JSON.stringify(save))).toEqual({ kind: "VALID", save });
-  }, 600_000);
 });

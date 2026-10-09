@@ -2,9 +2,7 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import {
   applyCommandV7,
-  canonicalJson,
   COMMAND_KIND_ORDER_V7,
-  createPlayableGameV7,
   DOMAIN_EVENT_KIND_ORDER_V7,
   effectiveRoleRuleV7,
   IMPROVEMENT_IDS_V7,
@@ -28,7 +26,6 @@ import {
   V7_MATCH_MAX_ROUNDS_DEFAULT,
   V7_PUBLIC_EQUALITY_COMMAND_LIMIT,
   collectAcceptedTelemetryV7,
-  runAiMatchV7,
   type AcceptedTelemetryTransitionV7,
 } from "../../src/headless/v7";
 import {
@@ -37,7 +34,6 @@ import {
   exploredAllV7,
   initialV7,
   richV7,
-  setupV7,
 } from "../fixtures/v7-builders";
 
 const READY: UnitStateV7["activation"] = {
@@ -106,74 +102,6 @@ describe("ruleset-7 revision-4 AI headless runner", () => {
     ])
       expect(Object.keys(inventory)).toEqual(RESOURCE_IDS_V7);
     expect(Object.keys(metrics.rewards)).toEqual(REWARD_IDS_V7);
-  });
-
-  it("records a deterministic structured cap without rejection or stall", () => {
-    const setup = setupV7(0);
-    const created = createPlayableGameV7(setup);
-    if (!created.ok) throw new Error(created.error.code);
-    const initialActivePlayerId =
-      created.state.turnOrder[created.state.activeSeatIndex];
-    if (initialActivePlayerId === undefined)
-      throw new Error("Initial active player missing");
-    const progress: unknown[] = [];
-    const first = runAiMatchV7(setup, {
-      maxCommands: 3,
-      maxRounds: 5,
-      progressEveryCommands: 2,
-      onProgress: (item) => progress.push(item),
-    });
-    const second = runAiMatchV7(setup, {
-      maxCommands: 3,
-      maxRounds: 5,
-    });
-    expect(first).toMatchObject({
-      termination: "COMMAND_CAP",
-      acceptedCommands: 3,
-      errors: [],
-      stalls: [],
-      metrics: {
-        rulesetId: "pulp-wars-poc-7r69",
-        commandCapHits: 1,
-      },
-    });
-    expect(first.metrics.observation.hiddenInformationViolations).toBe(0);
-    expect(progress).toEqual([
-      {
-        acceptedCommands: 2,
-        round: 1,
-        activePlayerId: initialActivePlayerId,
-      },
-    ]);
-    // Revision 12: the free opening research comes first. Revision 16: it is
-    // the growth technology (Hunting here) and both growth harvests follow.
-    expect(first.commandLog.map((entry) => entry.command)).toMatchObject([
-      { kind: "RESEARCH", tech: "HUNTING" },
-      { kind: "HUNT_GAME" },
-      { kind: "HUNT_GAME" },
-    ]);
-    expect(
-      canonicalJson({
-        commandHash: first.metrics.commandHash,
-        eventHash: first.metrics.eventHash,
-        checkpointHash: first.metrics.checkpointHash,
-        finalHash: first.metrics.finalHash,
-      }),
-    ).toBe(
-      canonicalJson({
-        commandHash: second.metrics.commandHash,
-        eventHash: second.metrics.eventHash,
-        checkpointHash: second.metrics.checkpointHash,
-        finalHash: second.metrics.finalHash,
-      }),
-    );
-    expect(canonicalJson(first)).toBe(canonicalJson(second));
-    expect(() =>
-      runAiMatchV7(setupV7(0), {
-        maxCommands: 1,
-        progressEveryCommands: 0,
-      }),
-    ).toThrow(/progressEveryCommands must be a positive safe integer/);
   });
 
   it("counts restoration and only the subsequent same-site build as rebuild", () => {
