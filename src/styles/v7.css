@@ -50,6 +50,9 @@
   --pw-accent-dark: #7d140f;
   --pw-accent-text: #fff8e6;
   --pw-yellow: #ffcf3a;
+  /* The flawless grade's halo (score and modes, pulp_wars-kaw6.3). */
+  --pw-glow: rgb(255 190 20 / 100%);
+  --pw-glow-soft: rgb(255 190 20 / 55%);
   --pw-focus: #c4261c;
   --pw-coin: var(--pw-ink);
   --pw-gain: #0b6a5c;
@@ -5653,6 +5656,419 @@
 .v7-result-winner {
   display: inline-flex;
   color: var(--pw-coin);
+}
+
+/* Score and modes (bead pulp_wars-kaw6.3, RULESET_7_SCORE_AND_STARS.md
+   section 8): the score column of the leaderboard and the end of match, the
+   breakdown that opens below a row, Perfection's rounds, and the grade. */
+.v7-leaderboard-row,
+.v7-result-seat {
+  flex-wrap: wrap;
+}
+
+/* A zero basis: a long name shrinks rather than pushing the score to a new
+   line; only the breakdown (a full-width item) wraps. */
+.v7-leaderboard-name,
+.v7-result-seat-who {
+  flex: 1 1 0;
+}
+
+/* On a wide screen the counts sit in the row like before. */
+.v7-leaderboard-stats {
+  display: contents;
+}
+
+.v7-hud-round-short {
+  display: none;
+}
+
+@media (max-width: 599px) {
+  /* A phone sets the counts under the name and keeps the score on the
+     right: one row per player, the breakdown below it. */
+  .v7-leaderboard .v7-leaderboard-row {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 0.15rem 0.6rem;
+    padding: 0.35rem 0.55rem;
+  }
+
+  .v7-leaderboard-row::before {
+    grid-row: 1 / span 2;
+  }
+
+  .v7-leaderboard-row .v7-leaderboard-name {
+    flex-wrap: wrap;
+    grid-column: 2;
+    row-gap: 0.15rem;
+  }
+
+  .v7-leaderboard-row .v7-leaderboard-stats {
+    display: flex;
+    grid-column: 2;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.2rem 0.75rem;
+    font-size: var(--pw-fs-sm);
+  }
+
+  .v7-leaderboard-row .v7-leaderboard-stats .v7-art-frame {
+    width: 1.35rem;
+    height: 1.35rem;
+  }
+
+  .v7-leaderboard-row > .v7-score-cell {
+    grid-row: 1 / span 2;
+    grid-column: 3;
+  }
+
+  .v7-leaderboard-row > .v7-score-breakdown {
+    grid-column: 1 / -1;
+  }
+
+  /* Perfection's round stays in the top bar, short. */
+  .v7-hud-round[data-mode="perfection"] {
+    display: inline-flex;
+    padding-inline: 0.6rem;
+  }
+
+  .v7-hud-round-long {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .v7-hud-round-short {
+    display: inline;
+  }
+}
+
+.v7-result-seat-who {
+  display: grid;
+  gap: 0.05rem;
+  min-width: 0;
+  text-align: left;
+}
+
+.v7-result-seat-details {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.2rem 0.45rem;
+  min-height: 1.6rem;
+  font-size: var(--pw-fs-sm);
+}
+
+.v7-result-seat-details .v7-leaderboard-stat .v7-art-frame {
+  width: 1.35rem;
+  height: 1.35rem;
+}
+
+.v7-result-seat-details .v7-chip {
+  padding-block: 0;
+}
+
+.v7-score-cell {
+  display: inline-flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 0.1rem;
+  min-width: 4.4rem;
+  padding: 0.1rem 0.45rem 0.1rem 0.3rem;
+  border: var(--pw-line-w-sm) solid transparent;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.v7-score-value {
+  font-size: var(--pw-fs-lg);
+  font-weight: var(--pw-fw-heavy);
+}
+
+.v7-score-unit {
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-xs);
+  font-weight: var(--pw-fw-bold);
+}
+
+.v7-app-shell .v7-score-toggle {
+  align-items: center;
+  min-height: 2.75rem;
+  margin-block: -0.2rem;
+  border: var(--pw-line-w-sm) solid var(--pw-line);
+  border-radius: var(--pw-radius-sm);
+  background: var(--pw-surface);
+  box-shadow: var(--pw-shadow-sm);
+  color: var(--pw-text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.v7-app-shell .v7-score-toggle[aria-expanded="true"] {
+  background: var(--pw-amber-fill);
+  box-shadow: none;
+  transform: translate(2px, 2px);
+}
+
+.v7-score-toggle .v7-ui-icon {
+  align-self: center;
+  width: 1rem;
+  height: 1rem;
+  margin-right: 0.25rem;
+  color: var(--pw-text-2);
+}
+
+.v7-score-breakdown {
+  display: grid;
+  flex: 1 0 100%;
+  gap: 0.1rem;
+  margin: 0.15rem 0 0.35rem;
+  padding: 0.45rem 0.65rem;
+  border: 1px solid var(--pw-line-soft);
+  border-radius: var(--pw-radius-sm);
+  background: var(--pw-surface-raised);
+  color: var(--pw-text);
+  font-weight: var(--pw-fw-body);
+  text-align: left;
+}
+
+.v7-score-line {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding-block: 0.12rem;
+}
+
+.v7-score-line[data-zero="true"] {
+  color: var(--pw-text-2);
+}
+
+.v7-score-term {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 0.45rem;
+  min-width: 0;
+}
+
+.v7-score-label {
+  font-weight: var(--pw-fw-bold);
+}
+
+.v7-score-detail {
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-sm);
+}
+
+.v7-score-detail .v7-economy-value {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+}
+
+.v7-score-points {
+  margin: 0;
+  font-weight: var(--pw-fw-heavy);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.v7-score-line[data-line="losses"]:not([data-zero="true"]) .v7-score-points,
+.v7-score-line[data-line="damage"]:not([data-zero="true"]) .v7-score-points {
+  color: var(--pw-loss);
+}
+
+.v7-score-line[data-line="cap"] .v7-score-points {
+  color: var(--pw-gain);
+}
+
+.v7-score-line[data-line="total"] {
+  margin-top: 0.2rem;
+  padding-top: 0.3rem;
+  border-top: var(--pw-line-w-sm) solid var(--pw-line);
+  font-size: var(--pw-fs-lg);
+}
+
+.v7-score-rounds {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.2rem 0.6rem;
+  margin: -0.4rem 0 0;
+  font-size: var(--pw-fs-lg);
+}
+
+.v7-score-rounds-left {
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-md);
+  font-weight: var(--pw-fw-bold);
+}
+
+/* The end of match: the list, the verdict, and the grade span the dialog. */
+.v7-results .v7-result-seats,
+.v7-results .v7-grade {
+  justify-self: stretch;
+}
+
+/* Rows keep their full height when a breakdown opens; the list scrolls. */
+.v7-result-seats {
+  grid-auto-rows: max-content;
+}
+
+.v7-result-seat-who .v7-result-seat-name {
+  overflow: visible;
+  white-space: normal;
+}
+
+.v7-result-seats[data-ranked="true"] {
+  counter-reset: v7-result-rank;
+}
+
+.v7-result-seats[data-ranked="true"] .v7-result-seat {
+  counter-increment: v7-result-rank;
+}
+
+.v7-result-seats[data-ranked="true"] .v7-result-seat::before {
+  min-width: 1rem;
+  color: var(--pw-text-2);
+  font-weight: var(--pw-fw-heavy);
+  content: counter(v7-result-rank);
+}
+
+.v7-result-seat .v7-score-breakdown {
+  margin-bottom: 0.45rem;
+}
+
+/* An open breakdown reads at full strength, a player who is out too. */
+.v7-result-seat[data-status="eliminated"][data-breakdown="open"] {
+  opacity: 1;
+}
+
+.v7-score-verdict {
+  margin: -0.4rem 0 0;
+  font-size: var(--pw-fs-lg);
+  font-weight: var(--pw-fw-bold);
+}
+
+.v7-grade {
+  display: grid;
+  justify-items: center;
+  gap: 0.35rem;
+  padding: 0.6rem 0.75rem 0.7rem;
+  border: var(--pw-line-w-sm) solid var(--pw-line);
+  border-radius: var(--pw-radius-sm);
+  background: var(--pw-surface-raised);
+}
+
+.v7-grade-stars {
+  display: flex;
+  gap: 0.35rem;
+  margin: 0;
+}
+
+.v7-grade-stars .v7-ui-icon {
+  width: 2.6rem;
+  height: 2.6rem;
+  color: var(--pw-line-soft);
+}
+
+.v7-grade-stars .v7-ui-icon path {
+  stroke-width: 1.6;
+}
+
+.v7-grade-star.is-earned path {
+  fill: var(--pw-yellow);
+  stroke: var(--pw-ink);
+}
+
+/* The hidden glow (section 5.4): a soft gold halo, shimmering where motion
+   is welcome and still under reduced motion. */
+.v7-grade[data-glow="true"] {
+  background:
+    radial-gradient(
+      ellipse 60% 3.2rem at 50% 2.2rem,
+      var(--pw-glow-soft),
+      transparent 100%
+    ),
+    var(--pw-surface-raised);
+}
+
+.v7-grade[data-glow="true"] .v7-grade-stars {
+  filter: drop-shadow(0 0 0.45rem var(--pw-glow));
+}
+
+.v7-grade-rating {
+  margin: 0;
+  font-size: var(--pw-fs-lg);
+  font-weight: var(--pw-fw-heavy);
+}
+
+.v7-grade-conditions {
+  display: grid;
+  gap: 0.15rem;
+  margin: 0;
+  padding: 0;
+  font-size: var(--pw-fs-sm);
+  list-style: none;
+  text-align: left;
+}
+
+.v7-grade-condition {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.v7-grade-condition[data-met="false"] {
+  color: var(--pw-text-2);
+}
+
+.v7-grade-mark {
+  min-width: 1rem;
+  font-weight: var(--pw-fw-heavy);
+  text-align: center;
+}
+
+.v7-grade-condition[data-met="true"] .v7-grade-mark {
+  color: var(--pw-gain);
+}
+
+.v7-grade-text {
+  flex: 1;
+  font-weight: var(--pw-fw-bold);
+}
+
+.v7-grade-tier {
+  display: inline-flex;
+  gap: 0.05rem;
+}
+
+.v7-grade-tier .v7-ui-icon {
+  width: 0.8rem;
+  height: 0.8rem;
+  color: var(--pw-text-2);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .v7-app-shell:not([data-motion="reduced"])
+    .v7-grade[data-glow="true"]
+    .v7-grade-stars {
+    animation: v7-grade-glow 2.4s ease-in-out infinite;
+  }
+}
+
+@keyframes v7-grade-glow {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 0.3rem var(--pw-glow-soft));
+  }
+
+  50% {
+    filter: drop-shadow(0 0 0.8rem var(--pw-glow));
+  }
 }
 
 @media (max-width: 599px) {

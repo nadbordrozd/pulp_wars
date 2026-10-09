@@ -120,6 +120,12 @@ import {
   publicLandGrantPriceV7,
   FIELD_DEFENSE_FORTIFICATION_LEVELS_V7,
   isMindControlledV7,
+  queryScoreV7,
+  queryStarGradeV7,
+  type PlayerId,
+  type ScoreBreakdownV7,
+  type ScoreQueryV7,
+  type StarGradeV7,
 } from "../../engine/index";
 import {
   CROWDED_HINT_V7,
@@ -137,6 +143,18 @@ import {
   aiTurnPlaceV7,
   playerCountLabelV7,
 } from "../turn-order-presentation-v7";
+import {
+  gradeConditionLinesV7,
+  leaderboardOrderV7,
+  pointsLabelV7,
+  ratingTextV7,
+  roundsLeftLabelV7,
+  scoreBreakdownLinesV7,
+  scoreLedeV7,
+  scoreRoundLabelV7,
+  signedPointsV7,
+  starsLabelV7,
+} from "../score-presentation-v7";
 import { presentedUnitFactionV7 } from "../neutral-presentation-v7";
 import { curiosityGlyphV7, spiderFigureV7 } from "./curiosity-dom-v7";
 import {
@@ -1234,6 +1252,12 @@ export class Ruleset7DomAppView {
   /** A front-screen control to focus after the next front render. */
   #frontFocus: string | null = null;
   #pendingFocusAction: string | null = null;
+  /**
+   * Score and modes (bead pulp_wars-kaw6.3): the player whose score
+   * breakdown is open, in the leaderboard or on the end screen (one at a
+   * time), or null.
+   */
+  #scoreBreakdownFor: PlayerId | null = null;
   /**
    * Which control of `#pendingFocusAction` takes the focus when several
    * share the action (the train cards of a city): its place among them.
@@ -2981,12 +3005,34 @@ export class Ruleset7DomAppView {
       `${view.viewer.coins} Coins. ${incomeDescription(view)}`,
     );
     economy.title = `Coins (+${projectedIncome} next turn)`;
+    // Score and modes (section 4.2): Perfection counts its 30 rounds in the
+    // top bar ("Round 12 of 30"); Domination keeps "Turn 12".
+    const scoreRound = scoreRoundLabelV7({
+      round: view.round,
+      roundLimit: view.score.roundLimit,
+    });
     const round = text(
       this.#document,
       "p",
-      `Turn ${view.round}`,
+      scoreRound ?? `Turn ${view.round}`,
       "v7-hud-round",
     );
+    if (scoreRound !== null && view.score.roundLimit !== null) {
+      // A phone has room for "Round 12/30" only; the long form stays for
+      // screen readers.
+      round.dataset.mode = "perfection";
+      round.title = roundsLeftLabelV7(view.score) ?? "";
+      round.replaceChildren(
+        text(this.#document, "span", scoreRound, "v7-hud-round-long"),
+        text(
+          this.#document,
+          "span",
+          `Round ${Math.min(view.round, view.score.roundLimit)}/${view.score.roundLimit}`,
+          "v7-hud-round-short",
+        ),
+      );
+      round.lastElementChild?.setAttribute("aria-hidden", "true");
+    }
     const status = el(this.#document, "p", "v7-turn-status");
     if (this.#snapshot.phase === "COMPLETE") status.textContent = "Game over";
     else if (humanTurn) status.textContent = "Your turn";
@@ -6597,24 +6643,37 @@ export class Ruleset7DomAppView {
   }
 
   #leaderboard(view: PlayerViewV7): HTMLElement {
+    const score = queryScoreV7(view);
     const section = el(this.#document, "div", "v7-info-screen");
     section.append(
       text(this.#document, "h2", "Leaderboard"),
-      text(
-        this.#document,
-        "p",
-        "Capture every enemy city to win.",
-        "v7-screen-lede",
-      ),
+      text(this.#document, "p", scoreLedeV7(score.gameMode), "v7-screen-lede"),
     );
+    // Perfection (section 4.2): the round of the 30 and what is left.
+    const round = scoreRoundLabelV7(score);
+    if (round !== null) {
+      const rounds = el(this.#document, "p", "v7-score-rounds");
+      rounds.dataset.v7Region = "score-rounds";
+      rounds.append(
+        text(this.#document, "strong", round),
+        text(
+          this.#document,
+          "span",
+          roundsLeftLabelV7(score) ?? "",
+          "v7-score-rounds-left",
+        ),
+      );
+      section.append(rounds);
+    }
     const list = this.#document.createElement("ol");
     list.className = "v7-leaderboard";
     list.dataset.players = String(view.leaderboard.length);
+    list.dataset.mode = score.gameMode.toLowerCase();
     const playingId =
       this.#snapshot.phase === "COMPLETE"
         ? null
         : view.turnOrder[view.activeSeatIndex];
-    for (const entry of view.leaderboard) {
+    for (const entry of leaderboardOrderV7(score.gameMode, view.leaderboard)) {
       const row = el(this.#document, "li", "v7-leaderboard-row");
       // The player whose turn it is carries a mark (map scale 8.5).
       if (entry.playerId === playingId) {
@@ -6662,13 +6721,122 @@ export class Ruleset7DomAppView {
         String(entry.livingUnitCount),
         text(this.#document, "span", " units", "v7-sr-only"),
       );
-      row.append(name, cities, units);
+      // The counts are grouped so a phone can set them under the name.
+      const stats = el(this.#document, "span", "v7-leaderboard-stats");
+      stats.append(cities, units);
       if (entry.status === "ELIMINATED")
-        row.append(text(this.#document, "span", "Out", "v7-chip is-idle"));
+        stats.append(text(this.#document, "span", "Out", "v7-chip is-idle"));
+      row.append(name, stats);
+      this.#appendScoreCell(
+        row,
+        score,
+        entry.playerId,
+        entry.seat,
+        entry.score,
+      );
       list.append(row);
     }
     section.append(list);
     return section;
+  }
+
+  /**
+   * Score and modes (section 8): a row's score, and when the viewer may see
+   * that player's breakdown (its own during the match, everyone's once it
+   * is over) a toggle that opens the breakdown below the row.
+   */
+  #appendScoreCell(
+    row: HTMLElement,
+    score: ScoreQueryV7,
+    playerId: PlayerId,
+    seat: number,
+    total: number,
+  ): void {
+    const breakdown =
+      score.breakdowns.find((entry) => entry.playerId === playerId) ?? null;
+    const value = [
+      text(this.#document, "span", String(total), "v7-score-value"),
+      text(this.#document, "span", " pts", "v7-score-unit"),
+    ];
+    row.dataset.score = String(total);
+    if (breakdown === null) {
+      const cell = el(this.#document, "span", "v7-score-cell");
+      cell.title = "Score";
+      cell.setAttribute("aria-label", `Score ${pointsLabelV7(total)}`);
+      cell.append(...value);
+      row.append(cell);
+      return;
+    }
+    const open = this.#scoreBreakdownFor === playerId;
+    const action = `score-breakdown-${seat}`;
+    const toggle = this.#document.createElement("button");
+    toggle.type = "button";
+    toggle.className = "v7-score-cell v7-score-toggle";
+    toggle.dataset.action = action;
+    toggle.title = open ? "Hide the score breakdown" : "How this score adds up";
+    toggle.setAttribute(
+      "aria-label",
+      `Score ${pointsLabelV7(total)}. ${open ? "Hide" : "Show"} the breakdown`,
+    );
+    toggle.setAttribute("aria-expanded", String(open));
+    const panelId = `v7-score-breakdown-${seat}`;
+    toggle.setAttribute("aria-controls", panelId);
+    toggle.append(uiIconV7(this.#document, "info"), ...value);
+    toggle.onclick = (event) => {
+      event.stopPropagation();
+      this.#scoreBreakdownFor = open ? null : playerId;
+      this.#pendingFocusAction = action;
+      this.#render();
+      // The redrawn list starts at the top: bring the row back into view,
+      // with its breakdown when it opened.
+      queueMicrotask(() => {
+        if (this.#destroyed) return;
+        this.#root
+          .querySelector<HTMLElement>(`[data-action="${action}"]`)
+          ?.closest("li")
+          ?.scrollIntoView?.({ block: "nearest" });
+      });
+    };
+    row.append(toggle);
+    if (open) {
+      const panel = this.#scoreBreakdown(breakdown);
+      panel.id = panelId;
+      row.dataset.breakdown = "open";
+      row.append(panel);
+    }
+  }
+
+  /**
+   * Section 8: the breakdown, one line per factor with its count and
+   * points, the cap when it acts, and the score.
+   */
+  #scoreBreakdown(score: ScoreBreakdownV7): HTMLElement {
+    const list = el(this.#document, "dl", "v7-score-breakdown");
+    list.dataset.v7Region = "score-breakdown";
+    for (const line of scoreBreakdownLinesV7(score)) {
+      const item = el(this.#document, "div", "v7-score-line");
+      item.dataset.line = line.key;
+      if (line.points === 0 && line.key !== "total") item.dataset.zero = "true";
+      const term = el(this.#document, "dt", "v7-score-term");
+      term.append(text(this.#document, "span", line.label, "v7-score-label"));
+      if (line.detail !== "")
+        term.append(
+          text(this.#document, "span", line.detail, "v7-score-detail"),
+        );
+      item.append(
+        term,
+        text(
+          this.#document,
+          "dd",
+          line.key === "total"
+            ? String(line.points)
+            : signedPointsV7(line.points),
+          "v7-score-points",
+        ),
+      );
+      list.append(item);
+    }
+    return list;
   }
 
   #achievements(view: PlayerViewV7): HTMLElement {
@@ -7268,10 +7436,12 @@ export class Ruleset7DomAppView {
         ? null
         : campaignMissionV7(view.setup.mission.id);
     if (mission !== null) return this.#missionResults(view, mission.entry);
+    const score = queryScoreV7(view);
     const result = el(this.#document, "section", "v7-results");
     result.dataset.v7Region = "results";
     result.dataset.outcome =
       view.outcome?.kind === "VICTORY" ? "victory" : "defeat";
+    result.dataset.mode = score.gameMode.toLowerCase();
     result.setAttribute("role", "dialog");
     result.setAttribute("aria-modal", "true");
     result.append(
@@ -7283,11 +7453,16 @@ export class Ruleset7DomAppView {
       text(
         this.#document,
         "p",
-        `Turn ${view.round} · ${MAP_TYPE_LABELS[view.setup.mapType] ?? title(view.setup.mapType)} ${view.setup.width} × ${view.setup.height}`,
+        `${scoreRoundLabelV7(score) ?? `Turn ${view.round}`} · ${MAP_TYPE_LABELS[view.setup.mapType] ?? title(view.setup.mapType)} ${view.setup.width} × ${view.setup.height}`,
         "v7-screen-lede",
       ),
-      this.#resultSeats(view),
     );
+    const verdict = this.#scoreVerdict(view, score);
+    if (verdict !== null) result.append(verdict);
+    const grade = queryStarGradeV7(view);
+    if (grade !== null && grade.grade.conditions.victory)
+      result.append(this.#gradePanel(grade.grade));
+    result.append(this.#resultSeats(view, score));
     const actions = el(this.#document, "div", "button-row");
     const restart = button(
       this.#document,
@@ -7296,29 +7471,135 @@ export class Ruleset7DomAppView {
       "primary-action",
     );
     restart.onclick = () => void this.#restart();
+    // The dialog opens on Play again, as before the players' list held the
+    // score toggles (pulp_wars-kaw6.3).
+    restart.dataset.v7InitialFocus = "true";
     actions.append(restart, this.#resultsMenuButton());
     result.append(actions, this.#ruleset6Link());
     return result;
   }
 
   /**
-   * The end-of-game list (map scale section 10.3): every player once, in
-   * leaderboard order, as an emblem with the faction's name, the winner's
-   * trophy, "Out" for players who lost every city, and the city count. It
-   * scrolls inside the dialog when eight players do not fit a phone.
+   * Score and modes (section 8): a Perfection match decided by the score
+   * names its winner by score; null for every other result.
    */
-  #resultSeats(view: PlayerViewV7): HTMLElement {
+  #scoreVerdict(view: PlayerViewV7, score: ScoreQueryV7): HTMLElement | null {
+    const summary = score.summary;
+    if (summary === null || summary.decidedBy !== "SCORE") return null;
+    const winnerId = summary.ranking[0];
+    const winner = view.leaderboard.find(
+      (entry) => entry.playerId === winnerId,
+    );
+    const total = summary.players.find((entry) => entry.playerId === winnerId)
+      ?.score.total;
+    if (winner === undefined || total === undefined) return null;
+    const who = winner.isViewer
+      ? "You win"
+      : `${playerName(winner.seat)} · ${factionNameV7(winner.faction)} wins`;
+    const verdict = text(
+      this.#document,
+      "p",
+      `${who} with ${pointsLabelV7(total)}, the highest score after round ${summary.endRound}.`,
+      "v7-score-verdict",
+    );
+    verdict.dataset.v7Region = "score-verdict";
+    return verdict;
+  }
+
+  /**
+   * Section 8: the grade of a win: the stars (the glow only when earned),
+   * the rating against the best rival, and each condition met or missed.
+   */
+  #gradePanel(grade: StarGradeV7): HTMLElement {
+    const panel = el(this.#document, "section", "v7-grade");
+    panel.dataset.v7Region = "grade";
+    panel.dataset.stars = String(grade.stars);
+    if (grade.glow) panel.dataset.glow = "true";
+    const stars = el(this.#document, "p", "v7-grade-stars");
+    stars.setAttribute("role", "img");
+    stars.setAttribute("aria-label", starsLabelV7(grade));
+    for (let index = 1; index <= 3; index += 1)
+      stars.append(
+        uiIconV7(
+          this.#document,
+          index <= grade.stars ? "star" : "star-outline",
+          `v7-ui-icon v7-grade-star${index <= grade.stars ? " is-earned" : ""}`,
+        ),
+      );
+    const rating = text(
+      this.#document,
+      "p",
+      ratingTextV7(grade),
+      "v7-grade-rating",
+    );
+    if (grade.ratingRound > 0)
+      rating.title = `Your score against the best rival's highest score, at round ${grade.ratingRound}`;
+    const conditions = el(this.#document, "ul", "v7-grade-conditions");
+    for (const line of gradeConditionLinesV7(grade)) {
+      const item = el(this.#document, "li", "v7-grade-condition");
+      item.dataset.condition = line.key;
+      item.dataset.met = String(line.met);
+      const mark = text(
+        this.#document,
+        "span",
+        line.met ? "✓" : "○",
+        "v7-grade-mark",
+      );
+      mark.setAttribute("aria-hidden", "true");
+      const tier = el(this.#document, "span", "v7-grade-tier");
+      tier.setAttribute("aria-hidden", "true");
+      for (let index = 0; index < line.stars; index += 1)
+        tier.append(uiIconV7(this.#document, "star"));
+      item.append(
+        mark,
+        text(
+          this.#document,
+          "span",
+          `${line.met ? "Met" : "Missed"}, ${line.stars === 1 ? "1 star" : `${line.stars} stars`}: `,
+          "v7-sr-only",
+        ),
+        text(this.#document, "span", line.text, "v7-grade-text"),
+        tier,
+      );
+      conditions.append(item);
+    }
+    panel.append(stars, rating, conditions);
+    return panel;
+  }
+
+  /**
+   * The end-of-game list (map scale section 10.3): every player once, as an
+   * emblem with the faction's name, the winner's trophy, "Out" for players
+   * who lost every city, the city count, and (score and modes, section 8)
+   * the final score, in rank order, each opening its breakdown. It scrolls
+   * inside the dialog when eight players do not fit a phone.
+   */
+  #resultSeats(view: PlayerViewV7, score: ScoreQueryV7): HTMLElement {
     const list = this.#document.createElement("ol");
     list.className = "v7-result-seats";
     list.dataset.players = String(view.leaderboard.length);
     list.setAttribute("aria-label", "Players");
     // A defeat ends the match with the other players still in it: nobody
-    // has won, so only a victory shows a trophy.
+    // has won, so only a victory shows a trophy; a Perfection defeat by
+    // score names the player ranked first, the winner by score.
     const winnerId =
-      view.outcome === null || view.outcome.kind === "DEFEAT"
+      view.outcome === null
         ? null
-        : view.outcome.winnerId;
-    for (const entry of view.leaderboard) {
+        : view.outcome.kind === "DEFEAT"
+          ? score.summary?.decidedBy === "SCORE"
+            ? (score.summary.ranking[0] ?? null)
+            : null
+          : view.outcome.winnerId;
+    const ranking = score.summary?.ranking ?? null;
+    const entries =
+      ranking === null
+        ? view.leaderboard
+        : [...view.leaderboard].sort(
+            (left, right) =>
+              ranking.indexOf(left.playerId) - ranking.indexOf(right.playerId),
+          );
+    if (ranking !== null) list.dataset.ranked = "true";
+    for (const entry of entries) {
       const row = el(this.#document, "li", "v7-result-seat");
       row.dataset.seat = String(entry.seat);
       row.dataset.status = entry.status.toLowerCase();
@@ -7341,7 +7622,12 @@ export class Ruleset7DomAppView {
         String(entry.cityCount),
         text(this.#document, "span", " cities", "v7-sr-only"),
       );
-      row.append(this.#factionEmblem(entry.faction, "small"), name);
+      // The name over its details (the trophy, "Out", the cities), so the
+      // score keeps its column on a phone.
+      const who = el(this.#document, "span", "v7-result-seat-who");
+      const details = el(this.#document, "span", "v7-result-seat-details");
+      who.append(name, details);
+      row.append(this.#factionEmblem(entry.faction, "small"), who);
       if (entry.playerId === winnerId) {
         row.dataset.winner = "true";
         const won = el(this.#document, "span", "v7-result-winner");
@@ -7350,11 +7636,18 @@ export class Ruleset7DomAppView {
           uiIconV7(this.#document, "trophy"),
           text(this.#document, "span", "Winner", "v7-sr-only"),
         );
-        row.append(won);
+        details.append(won);
       }
       if (entry.status === "ELIMINATED")
-        row.append(text(this.#document, "span", "Out", "v7-chip is-idle"));
-      row.append(cities);
+        details.append(text(this.#document, "span", "Out", "v7-chip is-idle"));
+      details.append(cities);
+      this.#appendScoreCell(
+        row,
+        score,
+        entry.playerId,
+        entry.seat,
+        entry.score,
+      );
       list.append(row);
     }
     return list;
@@ -7465,6 +7758,7 @@ export class Ruleset7DomAppView {
    */
   async #leaveFinishedMatch(): Promise<void> {
     this.#cancelPresentations();
+    this.#scoreBreakdownFor = null;
     this.#frontPage = "MENU";
     this.#confirmCampaignReset = false;
     this.#briefingMissionId = null;
@@ -7548,6 +7842,7 @@ export class Ruleset7DomAppView {
     if (this.#snapshot.view?.pendingChoices.length) return;
     this.#modalReturnAction = returnAction;
     if (screen === "TECH") this.#selectedTech = null;
+    if (screen === "LEADERBOARD") this.#scoreBreakdownFor = null;
     this.#techGoal = null;
     this.#screen = screen;
     this.#render();
@@ -7628,6 +7923,7 @@ export class Ruleset7DomAppView {
   }
   async #launch(setup: MatchSetupV7, replace: boolean): Promise<void> {
     this.#cancelPresentations();
+    this.#scoreBreakdownFor = null;
     this.#achievementNotices = [];
     this.#error = "";
     const result = await this.#controller.launch(setup, {
@@ -7654,6 +7950,7 @@ export class Ruleset7DomAppView {
   }
   async #resumeMatch(): Promise<void> {
     this.#achievementNotices = [];
+    this.#scoreBreakdownFor = null;
     const resumed = await this.#controller.resume();
     if (this.#destroyed) return;
     if (!resumed) this.#error = "The saved game couldn't be loaded.";
@@ -7823,6 +8120,7 @@ export class Ruleset7DomAppView {
   }
   async #restart(): Promise<void> {
     this.#cancelPresentations();
+    this.#scoreBreakdownFor = null;
     const result = await this.#controller.restart();
     if (this.#destroyed) return;
     if (!result.ok) this.#error = result.diagnostic;
@@ -8319,11 +8617,12 @@ export class Ruleset7DomAppView {
     if (modal !== null && !modal.contains(this.#document.activeElement))
       queueMicrotask(() => {
         if (this.#destroyed) return;
-        modal
-          .querySelector<HTMLElement>(
+        (
+          modal.querySelector<HTMLElement>('[data-v7-initial-focus="true"]') ??
+          modal.querySelector<HTMLElement>(
             'button:not(:disabled), input:not(:disabled), select:not(:disabled), [tabindex]:not([tabindex="-1"])',
           )
-          ?.focus();
+        )?.focus();
       });
   }
 

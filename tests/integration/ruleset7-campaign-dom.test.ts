@@ -592,12 +592,19 @@ describe("Ruleset 7 mission dialogs", () => {
       expect(dialog.querySelector("h2")?.textContent).toBe(
         outcome.kind === "VICTORY" ? "Victory" : "Defeat",
       );
+      // The score toggles of the players' list (pulp_wars-kaw6.3) come
+      // first; then the dialog's own buttons.
+      const ownButtons = (selector: string) =>
+        [...dialog.querySelectorAll<HTMLElement>(selector)].filter(
+          (node) => node.closest(".v7-result-seats") === null,
+        );
+      expect(ownButtons("button").map((node) => node.textContent)).toEqual([
+        "Play again",
+        "Main menu",
+      ]);
+      // Tab order after the list: Play again, Main menu, Classic rules.
       expect(
-        [...dialog.querySelectorAll("button")].map((node) => node.textContent),
-      ).toEqual(["Play again", "Main menu"]);
-      // Tab order inside the dialog: Play again, Main menu, Classic rules.
-      expect(
-        [...dialog.querySelectorAll<HTMLElement>("button, a")].map(
+        ownButtons("button, a").map(
           (node) => node.dataset.action ?? node.tagName,
         ),
       ).toEqual(["restart", "results-menu", "A"]);

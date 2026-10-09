@@ -70,13 +70,24 @@ export type UiIconIdV7 =
   // The main menu (bead pulp_wars-2yc.18): a pennant for the campaign and
   // a chevron for the way back.
   | "flag"
-  | "back";
+  | "back"
+  // Score and modes (bead pulp_wars-kaw6.3, RULESET_7_SCORE_AND_STARS.md
+  // section 7 item 8): a five-pointed star, filled for an earned star and
+  // outlined for one still to earn.
+  | "star"
+  | "star-outline";
+
+/** The star of the grade (shared by its filled and outlined forms). */
+const STAR =
+  "M12 2.8l2.75 5.9 6.45.75-4.78 4.4 1.28 6.37L12 17.02l-5.7 3.2 1.28-6.37L2.8 9.45l6.45-.75Z";
 
 /** The Mind Control brain's two lobes (shared by its outline and parts). */
 const BRAIN_LOBES =
   "M8.7 5.4a5.3 6.6 0 1 0 0 13.2 5.3 6.6 0 1 0 0-13.2ZM15.3 5.4a5.3 6.6 0 1 0 0 13.2 5.3 6.6 0 1 0 0-13.2Z";
 
 const PATHS: Readonly<Record<UiIconIdV7, string>> = {
+  star: STAR,
+  "star-outline": STAR,
   hp: "M12 20.5 4.2 12.8a4.6 4.6 0 0 1 6.5-6.5L12 7.6l1.3-1.3a4.6 4.6 0 0 1 6.5 6.5Z",
   attack: "M20 4 9.5 14.5M20 4h-4.5M20 4v4.5M6.5 11.5l6 6M9.5 14.5 4 20",
   defense: "M12 3 4.5 6v5.5c0 4.4 3.1 8.2 7.5 9.5 4.4-1.3 7.5-5.1 7.5-9.5V6Z",
@@ -266,6 +277,7 @@ const PARTS: Partial<Record<UiIconIdV7, readonly IconPartV7[]>> = {
 };
 
 const FILLED: ReadonlySet<UiIconIdV7> = new Set([
+  "star",
   "hp",
   "defense",
   "skip",
