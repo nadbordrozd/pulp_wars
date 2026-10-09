@@ -621,6 +621,16 @@ const ENTRIES = {
     "Worn out after a Sugar Rush: it can move, but not attack or use abilities.",
   ],
   STATUS_SPLATTED: ["Splatted", "Hit by a pie: it cannot hit back this turn."],
+  // The Candy redesign (`pulp_wars-jdb.14`): what a Toffee Trooper and a
+  // Jawbreaker leave on the units that fight them.
+  STATUS_STUCK: [
+    "Stuck",
+    "Gummed up with toffee: it can move only one tile until the end of its next turn.",
+  ],
+  STATUS_TOOTHACHE: [
+    "Toothache",
+    "It bit a Jawbreaker: its next attack is 1 weaker.",
+  ],
   STATUS_BOMBED: [
     "Bombed",
     "Bombed this turn already: it cannot be bombed again.",
@@ -905,6 +915,8 @@ const STATUS_IDS: Readonly<Record<string, GlossaryIdV7>> = {
   "home-sweet-home": "STATUS_HOME_SWEET_HOME",
   crashed: "STATUS_CRASHED",
   splatted: "STATUS_SPLATTED",
+  stuck: "STATUS_STUCK",
+  toothache: "STATUS_TOOTHACHE",
   bombed: "STATUS_BOMBED",
   "dug-in": "STATUS_DUG_IN",
   "not-dug-in": "STATUS_NOT_DUG_IN",

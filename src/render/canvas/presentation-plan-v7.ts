@@ -134,8 +134,12 @@ export type CorePresentationStepV7 =
       readonly effect: CandyFeedbackEffectV7;
       readonly cells: readonly CoordV7[];
       readonly from?: CoordV7;
-      /** SUGAR_TOSS: the HP healed; PEPPERMINT: the damage. */
+      /** SUGAR_TOSS and TOP_UP: the HP healed; PEPPERMINT: the damage. */
       readonly amount?: number;
+      /** THUMP (the Candy redesign): each thumped cell's damage. */
+      readonly amounts?: readonly number[];
+      /** REBAKE (the Candy redesign): the Crumbs tile it scooped from. */
+      readonly source?: CoordV7;
       readonly durationMs: number;
       /** Another player's cue: the camera frames it, like enemy moves. */
       readonly followCamera?: true;
@@ -195,6 +199,12 @@ export type CorePresentationStepV7 =
        */
       readonly shell?: BroadsideShellV7;
       readonly splash?: readonly CoordV7[];
+      /**
+       * The Candy redesign (bead pulp_wars-jdb.14): a Gumball Gunner's
+       * GUMBALL_SHOT bounces on to the unit on this cell (its Ricochet; the
+       * DAMAGE step that follows shakes it).
+       */
+      readonly ricochet?: CoordV7;
       /**
        * The Ice Folk revision: the target shatters, so the hit keeps it on
        * the board (no impact) for the Shatter step that follows.
@@ -819,7 +829,76 @@ export function corePresentationPlanV7(
           effect: "REBAKE",
           cells: [event.at],
           ...(confectioner === undefined ? {} : { from: confectioner.at }),
+          // The Candy redesign: the crumbs fly from the scooped pile.
+          ...(isExplored(event.from) ? { source: event.from } : {}),
         });
+    } else if (event.kind === "UNIT_TOPPED_UP") {
+      // The Candy redesign: sugar shaken over the unit, and its "+n".
+      const confectioner = unitAnywhere(event.unitId);
+      const target = unitAnywhere(event.targetUnitId);
+      if (target !== undefined && isExplored(target.at))
+        pushCandy({
+          effect: "TOP_UP",
+          cells: [target.at],
+          ...(confectioner === undefined ? {} : { from: confectioner.at }),
+          amount: event.amount,
+        });
+    } else if (event.kind === "RICOCHETED") {
+      // The Candy redesign: the Gunner's gumball bounces on from its target
+      // (its shot's cue carries the bounce), and the next unit shakes.
+      const victim = unitAnywhere(event.targetUnitId);
+      if (victim !== undefined && isExplored(victim.at)) {
+        for (let index = steps.length - 1; index >= 0; index -= 1) {
+          const step = steps[index];
+          if (
+            step?.kind === "RANGED" &&
+            step.unitId === event.unitId &&
+            step.attackEffect === "GUMBALL_SHOT"
+          ) {
+            steps[index] = { ...step, ricochet: victim.at };
+            break;
+          }
+        }
+        steps.push({
+          kind: "DAMAGE",
+          unitId: victim.id,
+          at: victim.at,
+          damage: event.damage,
+          lethal: event.dies,
+          durationMs: 100,
+        });
+      }
+    } else if (event.kind === "THUMPED") {
+      // The Candy redesign: the Bunny's cocoa shock ring, a "−2" on each
+      // enemy it hits, then each one shakes.
+      const bunny =
+        after.units.find((unit) => unit.id === event.unitId) ??
+        before.units.find((unit) => unit.id === event.unitId);
+      const hits = event.hits.flatMap((hit) => {
+        const unit = unitAnywhere(hit.unitId);
+        return unit === undefined || !isExplored(unit.at)
+          ? []
+          : [{ hit, at: unit.at }];
+      });
+      if (bunny !== undefined && hits.length > 0) {
+        pushCandy({
+          effect: "THUMP",
+          from: bunny.at,
+          cells: hits.map((entry) => entry.at),
+          amounts: hits.map(
+            (entry) => entry.hit.damage + entry.hit.shieldDamage,
+          ),
+        });
+        for (const entry of hits)
+          steps.push({
+            kind: "DAMAGE",
+            unitId: entry.hit.unitId,
+            at: entry.at,
+            damage: entry.hit.damage,
+            lethal: entry.hit.dies,
+            durationMs: 100,
+          });
+      }
     } else if (event.kind === "SUGAR_TOSSED") {
       // A sweet thrown in an arc from the Gunner, and a rising "+n".
       const gunner = unitAnywhere(event.unitId);

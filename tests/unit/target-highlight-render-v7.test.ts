@@ -81,6 +81,9 @@ const EVERY_FAMILY: Readonly<
   ASSEMBLE: "PLACE",
   BARRICADE: "PLACE",
   REBAKE: "PLACE",
+  // The Candy redesign (`pulp_wars-jdb.14`).
+  REBAKE_CRUMBS: "PLACE",
+  TOP_UP: "SUPPORT",
   FREEZE: "PLACE",
   // The giants' signatures (`pulp_wars-w49.32`).
   SWALLOW: "ATTACK",
@@ -274,13 +277,25 @@ describe("target plans per action family", () => {
         expect(entry.targetEdges).toEqual([]);
   });
 
-  it("Candy: Re-bake places, Sugar Toss helps, an armed Rush moves and attacks", () => {
+  it("Candy: Re-bake places, Sugar Toss and Top-Up help, an armed Rush moves and attacks", () => {
     const state = candyUiFixtureV7();
+    // The Candy redesign (`pulp_wars-jdb.14`): the Crumbs first, then the
+    // tile, both places.
     expect(
       stylesOf(state, CANDY_UI_V7.confectioner, (unitId) => ({
         candyPick: { kind: "REBAKE", unitId },
       })),
+    ).toEqual({ REBAKE_CRUMBS: "PLACE" });
+    expect(
+      stylesOf(state, CANDY_UI_V7.confectioner, (unitId) => ({
+        candyPick: { kind: "REBAKE", unitId, from: CANDY_UI_V7.crumbsBear },
+      })),
     ).toEqual({ REBAKE: "PLACE" });
+    expect(
+      stylesOf(state, CANDY_UI_V7.confectioner, (unitId) => ({
+        candyPick: { kind: "TOP_UP", unitId },
+      })),
+    ).toEqual({ TOP_UP: "SUPPORT" });
     expect(
       stylesOf(state, CANDY_UI_V7.gunner, (unitId) => ({
         candyPick: { kind: "SUGAR_TOSS", unitId },

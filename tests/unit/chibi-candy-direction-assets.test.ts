@@ -95,6 +95,10 @@ const ICONS = [
   ["ICON:TECH:CANDY:FORTIFICATION", "icon-tech-home-sweet-home"],
   ["ICON:TECH:CANDY:EXPLOSIVES", "icon-tech-peppermint-surprise"],
   ["ICON:HUD:CANDY:EMBLEM", "icon-candy-emblem"],
+  // The Candy redesign (bead pulp_wars-jdb.14): Top-Up, Stuck, Toothache.
+  ["ICON:ACTION:TOP_UP", "icon-action-top-up"],
+  ["ICON:STATUS:STUCK", "icon-status-stuck"],
+  ["ICON:STATUS:TOOTHACHE", "icon-status-toothache"],
 ] as const;
 const EFFECTS = [
   ["EFFECT:GUMBALL_SHOT", "gumball-shot"],
@@ -194,7 +198,7 @@ describe("Candy production art (pulp_wars-jdb.5)", () => {
     CHIBI_DIRECTION_CANDY_ART_ASSETS_V7.map((asset) => [asset.id, asset]),
   );
 
-  it("lists the nine units, the portraits, City 1-3, the Crumbs, twelve icons and seven effects", () => {
+  it("lists the nine units, the portraits, City 1-3, the Crumbs, fifteen icons and seven effects", () => {
     const expected: [string, string][] = [
       ...UNITS.map(
         ([role, name]) =>
@@ -332,6 +336,9 @@ describe("Candy production art (pulp_wars-jdb.5)", () => {
       "render/canvas/attack-effects-v7.ts",
       "render/canvas/candy-canvas-v7.ts",
       "render/canvas/candy-effects-v7.ts",
+      // The giants' signatures (`pulp_wars-w49.32`): the Gingerbread
+      // Giant's Break Off cue reads the palette.
+      "render/canvas/giant-effects-v7.ts",
     ]);
     // It does not import the other factions' naval manifest either.
     const own = await readFile(

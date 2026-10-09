@@ -7,6 +7,7 @@ import {
   previewRebakeV7,
   previewSugarRushV7,
   previewSugarTossV7,
+  previewTopUpV7,
   projectEventsV7,
   queryPlayerCommandsV7,
   viewForV7,
@@ -36,11 +37,15 @@ import {
   CANDY_FIELD_DEFENSE_EXPLANATION_V7,
   CANDY_HELP_RULES_V7,
   CRASHED_NOW_STATUS_V7,
+  TOP_UP_LABEL_V7,
+  TOP_UP_PICK_V7,
   TOP_UP_TOOLTIP_V7,
   HOME_SWEET_HOME_STATUS_V7,
   HOME_SWEET_HOME_UNLOCK_TEXT_V7,
   PEPPERMINT_SURPRISE_UNLOCK_TEXT_V7,
   REBAKE_NO_COINS_V7,
+  REBAKE_PICK_CRUMBS_V7,
+  REBAKE_PICK_TILE_V7,
   REBAKE_TOOLTIP_V7,
   RUSH_PREVIEW_V7,
   SPLATTED_STATUS_V7,
@@ -54,6 +59,7 @@ import {
   crumbsTileLinesV7,
   rebakeTargetNameV7,
   sugarTossTargetNameV7,
+  topUpBoardLabelV7,
 } from "../../src/render/candy-presentation-v7";
 import {
   CANDY_UI_V7,
@@ -290,46 +296,85 @@ describe("Candy abilities through the dock and the board", () => {
     app.destroy();
   });
 
-  it("re-bakes from a picked Crumbs tile or from the unit's button", async () => {
+  it("re-bakes in two steps: the Crumbs, then the tile beside the Confectioner", async () => {
     const controller = new FixtureController(candyUiFixtureV7());
     const host = new RecordingBoardHost();
     const app = mount(controller, host);
     const confectioner = selectUnitAt(controller, host, AT.confectioner);
-    // The Candy redesign (`pulp_wars-jdb.12`): Top-Up replaced Frosting.
+    // The Candy redesign: Top-Up replaced Frosting, and it is aimed from
+    // its own button like Re-bake (no button per target).
     expect(document.querySelector('[data-action="command-tend_wounded"]')).toBe(
       null,
     );
-    const topUp = requiredButton("command-top_up");
-    expect(topUp.textContent).toContain("Top-Up");
-    expect(topUp.title).toBe(TOP_UP_TOOLTIP_V7);
+    expect(document.querySelector('[data-action="command-top_up"]')).toBe(null);
+    expect(requiredButton("candy-top-up").title).toBe(TOP_UP_TOOLTIP_V7);
     const rebake = requiredButton("candy-rebake");
     expect(rebake.title).toBe(REBAKE_TOOLTIP_V7);
     rebake.click();
     const preview = required(
       previewRebakeV7(required(controller.snapshot().view), confectioner.id),
     );
-    // Bead pulp_wars-9im: no button per unit in the dock; each Crumbs
-    // tile is a Place target on the board, named by price and HP.
+    // Bead pulp_wars-9im: no button per unit in the dock. The first step:
+    // each pile in reach is a Place target, named by what it bakes back.
     expect(document.querySelector('[data-action^="rebake-"]')).toBe(null);
     expect(document.querySelector(".v7-candy-choice")).toBe(null);
+    const panel = (): HTMLElement =>
+      requiredElement<HTMLElement>("[data-v7-candy-pick]");
+    expect(panel().dataset.rebakeStep).toBe("crumbs");
+    expect(panel().textContent).toContain(REBAKE_PICK_CRUMBS_V7);
+    const piles = [
+      ...new Map(
+        preview.options.map((option) => [
+          `${option.from.x},${option.from.y}`,
+          option,
+        ]),
+      ).values(),
+    ];
     expect(
       boardPlan(host).targets.map((target) => [
         target.family,
         targetHighlightStyleV7(target.family),
-        target.semanticLabel,
+        target.at,
       ]),
-    ).toEqual(
-      rebakeTargetsByTile(preview.options).map((option) => [
-        "REBAKE",
-        "PLACE",
-        rebakeTargetNameV7(option.role, option.cost, option.hp),
-      ]),
+    ).toEqual(piles.map((option) => ["REBAKE_CRUMBS", "PLACE", option.from]));
+    expect(panel().textContent).not.toMatch(COORDINATE);
+    // Choosing a pile sends nothing and moves on to the tiles.
+    host.callbacks?.onCommand(
+      required(
+        boardPlan(host).targets.find((target) =>
+          same(target.at, AT.crumbsBear),
+        ),
+      ),
+    );
+    expect(controller.accepted).toEqual([]);
+    expect(panel().dataset.rebakeStep).toBe("tile");
+    expect(panel().textContent).toContain(REBAKE_PICK_TILE_V7);
+    const tiles = preview.options.filter((option) =>
+      same(option.from, AT.crumbsBear),
     );
     expect(
-      requiredElement<HTMLElement>("[data-v7-candy-pick]").textContent,
-    ).not.toMatch(COORDINATE);
-    expect(boardPlan(host).targets.map((target) => target.at)).toEqual(
-      rebakeTargetsByTile(preview.options).map((option) => option.at),
+      boardPlan(host).targets.map((target) => [
+        target.family,
+        target.semanticLabel,
+        target.at,
+      ]),
+    ).toEqual(
+      tiles.map((option) => [
+        "REBAKE",
+        rebakeTargetNameV7(option.role, option.cost, option.hp),
+        option.at,
+      ]),
+    );
+    // Back returns to the piles; choosing the pile again, then a tile,
+    // bakes.
+    requiredButton("candy-pick-cancel").click();
+    expect(panel().dataset.rebakeStep).toBe("crumbs");
+    host.callbacks?.onCommand(
+      required(
+        boardPlan(host).targets.find((target) =>
+          same(target.at, AT.crumbsBear),
+        ),
+      ),
     );
     host.callbacks?.onCommand(
       required(
@@ -349,6 +394,56 @@ describe("Candy abilities through the dock and the board", () => {
       live().includes(`Your ${label("CAPTAIN")} re-baked a ${label("KNIGHT")}`),
     );
     expect(unitAt(controller, AT.crumbsBear).role).toBe("KNIGHT");
+    app.destroy();
+  });
+
+  it("tops up the unit picked on the board, each target with what it gets", async () => {
+    const controller = new FixtureController(candyUiFixtureV7());
+    const host = new RecordingBoardHost();
+    const app = mount(controller, host);
+    const confectioner = selectUnitAt(controller, host, AT.confectioner);
+    const view = required(controller.snapshot().view);
+    const preview = required(previewTopUpV7(view, confectioner.id));
+    const button = requiredButton("candy-top-up");
+    expect(button.getAttribute("aria-label")).toBe(
+      `${TOP_UP_LABEL_V7}. ${TOP_UP_TOOLTIP_V7}`,
+    );
+    button.click();
+    expect(host.lastModel?.interaction.candyPick).toEqual({
+      kind: "TOP_UP",
+      unitId: confectioner.id,
+    });
+    expect(
+      requiredElement<HTMLElement>("[data-v7-candy-pick]").textContent,
+    ).toContain(TOP_UP_PICK_V7);
+    const targets = boardPlan(host).targets;
+    expect(
+      targets.map((target) => [
+        target.family,
+        targetHighlightStyleV7(target.family),
+        target.previewLabel,
+      ]),
+    ).toEqual(
+      preview.targets.map((entry) => [
+        "TOP_UP",
+        "SUPPORT",
+        topUpBoardLabelV7(entry),
+      ]),
+    );
+    host.callbacks?.onCommand(
+      required(targets.find((target) => same(target.at, AT.topUpTarget))),
+    );
+    await waitUntil(() => controller.accepted.length === 1);
+    expect(controller.accepted[0]).toEqual({
+      kind: "TOP_UP",
+      unitId: confectioner.id,
+      targetUnitId: unitAt(controller, AT.topUpTarget).id,
+    });
+    await waitUntil(() =>
+      live().includes(
+        `Your ${label("CAPTAIN")} topped up a ${label("FIGHTER")}`,
+      ),
+    );
     app.destroy();
   });
 
@@ -777,21 +872,6 @@ function boardPlan(
  * The Candy redesign (`pulp_wars-jdb.12`): the Re-bake targets the board
  * plan shows, one per placement tile (the dearest offered Crumbs).
  */
-function rebakeTargetsByTile<
-  T extends {
-    readonly at: { readonly x: number; readonly y: number };
-    readonly cost: number;
-  },
->(options: readonly T[]): readonly T[] {
-  const best = new Map<string, T>();
-  for (const option of options) {
-    const key = `${option.at.x},${option.at.y}`;
-    const known = best.get(key);
-    if (known === undefined || option.cost > known.cost) best.set(key, option);
-  }
-  return [...best.values()];
-}
-
 function requiredButton(action: string): HTMLButtonElement {
   return requiredElement<HTMLButtonElement>(`[data-action="${action}"]`);
 }

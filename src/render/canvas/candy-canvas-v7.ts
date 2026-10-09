@@ -1,4 +1,4 @@
-import { CRUMBS_TURNS_V7 } from "../../engine/index";
+import { CRUMBS_TURNS_V7, type CoordV7 } from "../../engine/index";
 import {
   CANDY_MARKERS_V7,
   CANDY_PALETTE_V7,
@@ -12,12 +12,14 @@ import { BOARD_LABEL_FONT_FAMILY_V7 } from "./board-label-font-v7";
 /**
  * The Candy board markers (bead pulp_wars-jdb.6, docs/art/factions/CANDY.md
  * "Markers"): the Crumbs pile of a tile with its pips and the unit it would
- * bake back, and a unit's Rushed chip, Crashed swirl, Splatted pie, Home
- * Sweet Home house and Sugar Frenzy pips. Each marker draws its raster of
- * the Candy art at the size and place of `CANDY_MARKERS_V7`; without a
- * loaded raster (LEGACY, the classic look, high contrast, still loading) it
- * is code-drawn alone. Every marker is still: nothing here moves, so
- * reduced motion draws the same frame.
+ * bake back, and a unit's Rushed chip, Crashed swirl, Splatted pie and Home
+ * Sweet Home house; the Candy redesign's (bead pulp_wars-jdb.14) Stuck
+ * toffee round the feet, Toothache tooth, Glaze streak of a tile and a
+ * Move's hop arc. Each marker draws its raster of the Candy art at the size
+ * and place of `CANDY_MARKERS_V7`; without a loaded raster (LEGACY, the
+ * classic look, high contrast, still loading) it is code-drawn alone. Every
+ * marker is still: nothing here moves, so reduced motion draws the same
+ * frame.
  */
 
 /** World units per master pixel (a 128-unit cell is an 80 px master tile). */
@@ -34,6 +36,8 @@ const {
   chocolate,
   mint,
   outline,
+  caramelShade,
+  faction: cottonCandy,
 } = CANDY_PALETTE_V7;
 
 /** The percent of its colour a Crashed unit's sprite keeps (droopy tint). */
@@ -337,6 +341,8 @@ export function candyMarkerPlacesV7(
   readonly rushed: { readonly x: number; readonly y: number };
   readonly splatted: { readonly x: number; readonly y: number };
   readonly home: { readonly x: number; readonly y: number };
+  readonly toothache: { readonly x: number; readonly y: number };
+  readonly stuck: { readonly x: number; readonly y: number };
 } {
   const px = (value: number): number => value * MASTER * zoom;
   const rushedX = anchor.x + px(CANDY_MARKERS_V7.rushed.shift);
@@ -349,6 +355,13 @@ export function candyMarkerPlacesV7(
       y: anchor.top + (anchor.bottom - anchor.top) / 3,
     },
     home: { x: rushedX, y: rushedY + px(15) },
+    toothache: {
+      x: anchor.x + px(CANDY_MARKERS_V7.toothache.shift),
+      y: rushedY,
+    },
+    // The toffee puddle sits on the feet, a little above the sprite's
+    // bottom row.
+    stuck: { x: anchor.x, y: anchor.bottom - px(7) },
   };
 }
 
@@ -373,8 +386,9 @@ function token(
 /**
  * The Candy markers of one unit (section 15.1), over its sprite: the
  * Crashed swirl over its head, the Rushed chip beside its head (with the
- * Home Sweet Home house or the Sugar Frenzy pips under it) and the
- * Splatted pie on its face.
+ * Home Sweet Home house under it) and the Splatted pie on its face; the
+ * Candy redesign's Toothache tooth beside the head, opposite the Rushed
+ * chip, and Stuck toffee round the feet.
  */
 export function drawCandyUnitMarkersV7(
   context: CanvasRenderingContext2D,
@@ -386,6 +400,7 @@ export function drawCandyUnitMarkersV7(
     readonly crashed?: CanvasImageSource | null;
     readonly splatted?: CanvasImageSource | null;
     readonly home?: CanvasImageSource | null;
+    readonly toothache?: CanvasImageSource | null;
   } = {},
 ): void {
   const px = (value: number): number => value * MASTER * zoom;
@@ -397,6 +412,16 @@ export function drawCandyUnitMarkersV7(
   context.save();
   context.lineCap = "round";
   context.lineJoin = "round";
+  // The Candy redesign: Stuck, toffee strands round the feet (drawn first,
+  // so the other markers stay on top).
+  if (markers.stuck)
+    drawCandyStuckToffeeV7(
+      context,
+      places.stuck.x,
+      places.stuck.y,
+      zoom,
+      highContrast,
+    );
   if (markers.splatted) {
     const size = px(CANDY_MARKERS_V7.splatted.size);
     const { x, y } = places.splatted;
@@ -456,6 +481,15 @@ export function drawCandyUnitMarkersV7(
       spiral(Math.max(1, px(2.2)), highContrast ? "#ffffff" : caramel);
     }
   }
+  if (markers.toothache) {
+    const size = px(CANDY_MARKERS_V7.toothache.size);
+    const { x, y } = places.toothache;
+    token(context, x, y, size * 0.62, highContrast, cream);
+    const tooth = image(options.toothache);
+    if (tooth !== null)
+      raster(context, tooth, x, y, size, options.devicePixelRatio);
+    else drawCandyToothGlyphV7(context, x, y, size, highContrast);
+  }
   if (markers.rushed) {
     const size = px(CANDY_MARKERS_V7.rushed.size);
     const { x, y } = places.rushed;
@@ -501,6 +535,385 @@ export function drawCandyUnitMarkersV7(
       }
     }
   }
+  context.restore();
+}
+
+/**
+ * The Candy redesign's Stuck marker: a puddle of caramel toffee round the
+ * unit's feet with strands pulled up from it. `cx`, `cy` is the puddle's
+ * centre (on the feet), in CSS pixels.
+ */
+export function drawCandyStuckToffeeV7(
+  context: CanvasRenderingContext2D,
+  cx: number,
+  cy: number,
+  zoom: number,
+  highContrast = false,
+): void {
+  const px = (value: number): number => value * MASTER * zoom;
+  const rx = px(21);
+  const ry = px(7);
+  const casing = highContrast ? "#000000" : outline;
+  const toffee = highContrast ? "#ffffff" : caramel;
+  context.save();
+  context.lineCap = "round";
+  context.lineJoin = "round";
+  // Strands pulled up from the puddle round the feet, sagging in the
+  // middle: a dark casing, then the caramel.
+  const strands = [
+    [-17, -9, 19, 5],
+    [-6, 4, 23, 6],
+    [9, 18, 18, 4],
+  ] as const;
+  const strand = (width: number, colour: string): void => {
+    context.lineWidth = width;
+    context.strokeStyle = colour;
+    for (const [from, to, rise, sag] of strands) {
+      context.beginPath();
+      context.moveTo(cx + px(from), cy - px(1));
+      context.quadraticCurveTo(
+        cx + px((from + to) / 2),
+        cy - px(rise) + px(sag),
+        cx + px(to),
+        cy - px(rise),
+      );
+      context.stroke();
+    }
+  };
+  strand(Math.max(4, px(6.4)), casing);
+  // The puddle: a dark rim and the caramel, over the strands' feet.
+  context.beginPath();
+  context.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+  context.fillStyle = toffee;
+  context.fill();
+  context.lineWidth = Math.max(1.5, px(2));
+  context.strokeStyle = casing;
+  context.stroke();
+  strand(Math.max(2, px(3.8)), toffee);
+  if (!highContrast) {
+    // The toffee's shine and its darker underside.
+    context.beginPath();
+    context.ellipse(cx, cy + ry * 0.25, rx * 0.8, ry * 0.45, 0, 0, Math.PI);
+    context.lineWidth = Math.max(1, px(1.6));
+    context.strokeStyle = caramelShade;
+    context.stroke();
+    context.beginPath();
+    context.ellipse(
+      cx - px(4),
+      cy - ry * 0.3,
+      rx * 0.5,
+      ry * 0.28,
+      0,
+      Math.PI * 1.1,
+      Math.PI * 1.9,
+    );
+    context.lineWidth = Math.max(1, px(1.4));
+    context.strokeStyle = white;
+    context.stroke();
+  }
+  // A drop hanging from each strand's top.
+  for (const [, to, rise] of strands) {
+    context.beginPath();
+    context.arc(cx + px(to), cy - px(rise) + px(2), px(3.2), 0, Math.PI * 2);
+    context.fillStyle = toffee;
+    context.fill();
+    context.lineWidth = Math.max(1, px(1.2));
+    context.strokeStyle = casing;
+    context.stroke();
+  }
+  context.restore();
+}
+
+/**
+ * A cracked tooth with a sparkle, the code-drawn Toothache glyph (and the
+ * marker's fallback): a white molar with two roots, a dark crack down its
+ * crown, and a small cream star at its top right.
+ */
+export function drawCandyToothGlyphV7(
+  context: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  size: number,
+  highContrast = false,
+): void {
+  const u = size / 16;
+  context.save();
+  context.lineJoin = "round";
+  context.lineCap = "round";
+  context.beginPath();
+  context.moveTo(x - 5.5 * u, y - 4 * u);
+  context.quadraticCurveTo(x - 5.5 * u, y - 7 * u, x - 2.5 * u, y - 6.5 * u);
+  context.quadraticCurveTo(x, y - 5.5 * u, x + 2.5 * u, y - 6.5 * u);
+  context.quadraticCurveTo(x + 5.5 * u, y - 7 * u, x + 5.5 * u, y - 4 * u);
+  context.lineTo(x + 4.5 * u, y + 1 * u);
+  context.lineTo(x + 3.5 * u, y + 6.5 * u);
+  context.lineTo(x + 1.5 * u, y + 6.5 * u);
+  context.lineTo(x + 0.5 * u, y + 2 * u);
+  context.lineTo(x - 0.5 * u, y + 2 * u);
+  context.lineTo(x - 1.5 * u, y + 6.5 * u);
+  context.lineTo(x - 3.5 * u, y + 6.5 * u);
+  context.lineTo(x - 4.5 * u, y + 1 * u);
+  context.closePath();
+  context.fillStyle = highContrast ? "#ffffff" : white;
+  context.fill();
+  context.lineWidth = Math.max(1, 1.1 * u);
+  context.strokeStyle = highContrast ? "#000000" : milkChocolate;
+  context.stroke();
+  // The crack.
+  context.beginPath();
+  context.moveTo(x + 0.5 * u, y - 5.8 * u);
+  context.lineTo(x - 1 * u, y - 3 * u);
+  context.lineTo(x + 1 * u, y - 1.5 * u);
+  context.lineTo(x - 0.5 * u, y + 0.8 * u);
+  context.lineWidth = Math.max(1, 1.2 * u);
+  context.strokeStyle = highContrast ? "#000000" : chocolate;
+  context.stroke();
+  // The sparkle.
+  const sx = x + 6 * u;
+  const sy = y - 6.5 * u;
+  context.beginPath();
+  for (let point = 0; point < 8; point += 1) {
+    const angle = (point * Math.PI) / 4;
+    const reach = point % 2 === 0 ? 2.6 * u : 0.9 * u;
+    const px = sx + Math.cos(angle) * reach;
+    const py = sy + Math.sin(angle) * reach;
+    if (point === 0) context.moveTo(px, py);
+    else context.lineTo(px, py);
+  }
+  context.closePath();
+  context.fillStyle = highContrast ? "#ffffff" : cream;
+  context.fill();
+  context.restore();
+}
+
+/** The Glaze's warm milk-chocolate smear and its gloss (section 7.2). */
+export const GLAZE_COLOURS_V7 = {
+  smear: "#8a4c28",
+  smearAlpha: 0.86,
+  body: "#b26c3c",
+  bodyAlpha: 0.55,
+  gloss: "#ffdcae",
+  glossAlpha: 0.8,
+  shine: "#fff8ee",
+  shineAlpha: 0.9,
+} as const;
+
+/**
+ * The Candy redesign (section 7.2): the Glaze a Donut Racer left on a cell
+ * for the rest of the turn, as a thin, slightly translucent smear of warm
+ * milk-chocolate glaze lying flat on the ground at the units' feet, with a
+ * soft glossy highlight and a few sprinkles. No outline and no drips: it
+ * must not read as a raised log, a Barricade's stakes or a matte, edged
+ * dirt Road. Its ends sit at the same height on both edges of the cell, so
+ * a row of Glazed cells reads as one trail. (The Racer's own glaze is
+ * chocolate; the Chocolatier look keeps pink to the territory border, so
+ * the sprinkles carry the faction's pink.) `cell` is the cell's rectangle
+ * in CSS pixels; the smear's wobble is fixed per cell, so the frame never
+ * moves.
+ */
+export function drawCandyGlazeCellV7(
+  context: CanvasRenderingContext2D,
+  cell: {
+    readonly x: number;
+    readonly y: number;
+    readonly width: number;
+    readonly height: number;
+  },
+  at: CoordV7,
+  options: {
+    readonly sceneAlpha?: number;
+    readonly zoom: number;
+    readonly highContrast?: boolean;
+  },
+): void {
+  const highContrast = options.highContrast ?? false;
+  const w = cell.width;
+  const h = cell.height;
+  const colours = GLAZE_COLOURS_V7;
+  // A fixed per-cell wobble, so two Glazed neighbours do not look stamped.
+  const seed = ((at.x * 73856093) ^ (at.y * 19349663)) >>> 0;
+  const wobble = ((seed % 7) - 3) / 3;
+  const mid = cell.y + h * 0.68;
+  const half = h * 0.095;
+  // The smear's two edges, soft waves that meet the cell's sides at the
+  // same height (shares of the cell across, and offsets from the middle).
+  // Poured, not cut: the upper edge waves gently, the lower one bulges in
+  // soft lobes where the glaze pooled.
+  const top = [
+    [0, -1],
+    [0.2, -1.3 - 0.2 * wobble],
+    [0.45, -0.8 + 0.25 * wobble],
+    [0.75, -1.3],
+    [1, -1],
+  ] as const;
+  const bottom = [
+    [1, 1],
+    [0.82, 1.6 + 0.2 * wobble],
+    [0.62, 0.9],
+    [0.4, 1.7 - 0.25 * wobble],
+    [0.18, 1.0],
+    [0, 1],
+  ] as const;
+  const edge = (points: readonly (readonly [number, number])[]): void => {
+    for (let index = 1; index < points.length; index += 1) {
+      const previous = points[index - 1];
+      const point = points[index];
+      if (previous === undefined || point === undefined) continue;
+      const x0 = cell.x + w * previous[0];
+      const y0 = mid + half * previous[1];
+      const x1 = cell.x + w * point[0];
+      const y1 = mid + half * point[1];
+      context.quadraticCurveTo(x0, y0, (x0 + x1) / 2, (y0 + y1) / 2);
+      if (index === points.length - 1) context.lineTo(x1, y1);
+    }
+  };
+  context.save();
+  context.globalAlpha *= options.sceneAlpha ?? 1;
+  context.lineCap = "round";
+  context.lineJoin = "round";
+  // The smear: one flat, translucent fill, no outline.
+  context.beginPath();
+  context.moveTo(cell.x, mid - half);
+  edge(top);
+  context.lineTo(cell.x + w, mid + half);
+  edge(bottom);
+  context.closePath();
+  context.save();
+  context.globalAlpha *= highContrast ? 1 : colours.smearAlpha;
+  context.fillStyle = highContrast ? "#ffffff" : colours.smear;
+  context.fill();
+  context.restore();
+  if (!highContrast) {
+    // The gloss: a soft warm streak along the smear's upper half, and a
+    // short bright shine on it.
+    const streak = (
+      from: number,
+      to: number,
+      lift: number,
+      width: number,
+      colour: string,
+      alpha: number,
+      cap: CanvasLineCap = "round",
+    ): void => {
+      context.save();
+      context.globalAlpha *= alpha;
+      context.lineCap = cap;
+      context.strokeStyle = colour;
+      context.lineWidth = Math.max(1, width);
+      context.beginPath();
+      context.moveTo(cell.x + w * from, mid - half * lift);
+      context.quadraticCurveTo(
+        cell.x + w * ((from + to) / 2),
+        mid - half * (lift + 0.25 * wobble),
+        cell.x + w * to,
+        mid - half * lift,
+      );
+      context.stroke();
+      context.restore();
+    };
+    // The glaze's lighter body, then its gloss and two bright shines.
+    // (Flush with the cell's sides, so neighbours show no seam.)
+    streak(0, 1, 0.1, h * 0.09, colours.body, colours.bodyAlpha, "butt");
+    streak(0.08, 0.66, 0.45, h * 0.035, colours.gloss, colours.glossAlpha);
+    streak(0.18, 0.32, 0.55, h * 0.02, colours.shine, colours.shineAlpha);
+    streak(0.74, 0.88, 0.4, h * 0.018, colours.shine, colours.shineAlpha * 0.7);
+    // A few sprinkles lying on the glaze.
+    const sprinkles = [cottonCandy, mint, cottonCandy, white];
+    for (let index = 0; index < sprinkles.length; index += 1) {
+      const t = (index + 0.5) / sprinkles.length;
+      const sx = cell.x + w * (0.06 + 0.88 * t);
+      const sy = mid + half * (index % 2 === 0 ? 0.4 : -0.1);
+      const angle = ((seed >> index) % 5) * 0.6 - 1.2;
+      context.save();
+      context.translate(sx, sy);
+      context.rotate(angle);
+      context.fillStyle = sprinkles[index] ?? white;
+      context.fillRect(-h * 0.022, -h * 0.008, h * 0.044, h * 0.016);
+      context.restore();
+    }
+  }
+  context.restore();
+}
+
+/**
+ * The Candy redesign (section 14): a hop in a Move preview, an arc from the
+ * take-off tile's centre over the jumped tile to the landing, with an
+ * arrowhead and a small chocolate paw print where the Bunny lands. Points
+ * are cell centres in CSS pixels.
+ */
+export function drawCandyHopArcV7(
+  context: CanvasRenderingContext2D,
+  from: { readonly x: number; readonly y: number },
+  over: { readonly x: number; readonly y: number },
+  to: { readonly x: number; readonly y: number },
+  zoom: number,
+  highContrast = false,
+): void {
+  // The arc peaks well above the jumped tile's centre (over any unit
+  // standing there).
+  const lift = 96 * zoom;
+  const control = {
+    x: over.x * 2 - (from.x + to.x) / 2,
+    y: over.y * 2 - (from.y + to.y) / 2 - lift * 2,
+  };
+  const point = (t: number): { readonly x: number; readonly y: number } => ({
+    x: (1 - t) * (1 - t) * from.x + 2 * (1 - t) * t * control.x + t * t * to.x,
+    y: (1 - t) * (1 - t) * from.y + 2 * (1 - t) * t * control.y + t * t * to.y,
+  });
+  const start = 0.14;
+  const end = 0.9;
+  const head = point(end);
+  const before = point(end - 0.04);
+  const angle = Math.atan2(head.y - before.y, head.x - before.x);
+  const stroke = (
+    width: number,
+    colour: string,
+    dash: readonly number[],
+  ): void => {
+    context.lineWidth = width;
+    context.strokeStyle = colour;
+    context.setLineDash([...dash]);
+    context.beginPath();
+    for (let step = 0; step <= 24; step += 1) {
+      const at = point(start + ((end - start) * step) / 24);
+      if (step === 0) context.moveTo(at.x, at.y);
+      else context.lineTo(at.x, at.y);
+    }
+    context.stroke();
+    context.setLineDash([]);
+    context.beginPath();
+    const reach = 22 * zoom;
+    context.moveTo(
+      head.x - Math.cos(angle - 0.55) * reach,
+      head.y - Math.sin(angle - 0.55) * reach,
+    );
+    context.lineTo(head.x, head.y);
+    context.lineTo(
+      head.x - Math.cos(angle + 0.55) * reach,
+      head.y - Math.sin(angle + 0.55) * reach,
+    );
+    context.stroke();
+  };
+  context.save();
+  context.lineCap = "round";
+  context.lineJoin = "round";
+  stroke(11 * zoom, highContrast ? "#000000" : outline, []);
+  stroke(6 * zoom, highContrast ? "#ffffff" : cream, [16 * zoom, 9 * zoom]);
+  // A paw print on the landing.
+  const paw = { x: to.x, y: to.y + 10 * zoom };
+  const pad = (dx: number, dy: number, r: number): void => {
+    context.beginPath();
+    context.arc(paw.x + dx * zoom, paw.y + dy * zoom, r * zoom, 0, Math.PI * 2);
+    context.fill();
+    context.stroke();
+  };
+  context.fillStyle = highContrast ? "#ffffff" : milkChocolate;
+  context.strokeStyle = highContrast ? "#000000" : outline;
+  context.lineWidth = Math.max(1, 2 * zoom);
+  pad(0, 6, 10);
+  pad(-12, -8, 5);
+  pad(0, -13, 5);
+  pad(12, -8, 5);
   context.restore();
 }
 

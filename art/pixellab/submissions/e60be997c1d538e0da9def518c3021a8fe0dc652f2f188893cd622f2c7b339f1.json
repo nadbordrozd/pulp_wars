@@ -1,0 +1,36 @@
+{
+  "id": "icon-toothache-c-edit",
+  "jobId": "1421aa1c-6418-4ccb-8f77-5d5eadf133f1",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-candy",
+    "asset": "chibi-direction-icon-status-toothache",
+    "subject": "ICON:STATUS:TOOTHACHE",
+    "faction": "CANDY",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 414305,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only two things: erase the four tiny coloured dots in the corners of the image so the corners are empty and transparent; and recolour the stitched crack down the tooth into one plain dark chocolate brown #4a2412 zigzag crack line. Keep the white tooth, its two roots, its grey shading, the white sparkle star, the thick black outline and art style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only two things: erase the four tiny coloured dots in the corners of the image so the corners are empty and transparent; and recolour the stitched crack down the tooth into one plain dark chocolate brown #4a2412 zigzag crack line. Keep the white tooth, its two roots, its grey shading, the white sparkle star, the thick black outline and art style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only two things: erase the four tiny coloured dots in the corners of the image so the corners are empty and transparent; and recolour the stitched crack down the tooth into one plain dark chocolate brown #4a2412 zigzag crack line. Keep the white tooth, its two roots, its grey shading, the white sparkle star, the thick black outline and art style the same, on a transparent background.",
+    "editInstruction": "Change only two things: erase the four tiny coloured dots in the corners of the image so the corners are empty and transparent; and recolour the stitched crack down the tooth into one plain dark chocolate brown #4a2412 zigzag crack line. Keep the white tooth, its two roots, its grey shading, the white sparkle star, the thick black outline and art style the same, on a transparent background.",
+    "source": {
+      "recipe": "icon-toothache-c",
+      "candidate": 0,
+      "sha256": "8345a5804919d1b4311a5c0a061cf2fe96f2883958fb9defc9d235b38d22c8c6"
+    }
+  }
+}

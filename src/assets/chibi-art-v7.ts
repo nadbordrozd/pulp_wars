@@ -311,7 +311,9 @@ export type DwarfArtRoleV7 = UndeadArtRoleV7;
  * Candy art subjects (bead pulp_wars-jdb.5, CANDY.md): the eight units,
  * their portraits, the cake-castle City 1-3, the Crumbs marker of a tile,
  * the command, ability, status and technology icons
- * (`ICON:ACTION:CANDY:TEND_WOUNDED` is Frosting; `ICON:TECH:CANDY:*` are
+ * (`ICON:ACTION:CANDY:TEND_WOUNDED` was Frosting, which the Candy redesign
+ * replaced with Top-Up, `ICON:ACTION:TOP_UP`, bead pulp_wars-jdb.14, beside
+ * the Stuck and Toothache status icons; `ICON:TECH:CANDY:*` are
  * Home Sweet Home and Peppermint Surprise, the Candy names of
  * Fortification and Explosives; `ICON:HUD:CANDY:EMBLEM` is the faction's
  * wrapped sweet) and the effect sprites. The units, portraits
@@ -326,10 +328,10 @@ export type CandyArtSubjectV7 =
   | `PORTRAIT:CANDY:${CandyArtRoleV7}`
   | `CITY:CANDY:${1 | 2 | 3}`
   | "CRUMBS"
-  | `ICON:ACTION:${"SUGAR_RUSH" | "REBAKE" | "SUGAR_TOSS" | "SPLAT" | "BOUNCE"}`
+  | `ICON:ACTION:${"SUGAR_RUSH" | "REBAKE" | "SUGAR_TOSS" | "SPLAT" | "BOUNCE" | "TOP_UP"}`
   | "ICON:ACTION:CANDY:TEND_WOUNDED"
   | `ICON:TECH:CANDY:${"FORTIFICATION" | "EXPLOSIVES"}`
-  | `ICON:STATUS:${"RUSHED" | "CRASHED" | "SPLATTED"}`
+  | `ICON:STATUS:${"RUSHED" | "CRASHED" | "SPLATTED" | "STUCK" | "TOOTHACHE"}`
   | "ICON:HUD:CANDY:EMBLEM"
   | `EFFECT:${CandyEffectIdV7}`;
 
@@ -890,7 +892,7 @@ export function chibiFallbackSubjectV7(
     subject === "ICON:TECH:ICE_FOLK:EXPLOSIVES" ||
     subject === "ICON:TECH:DWARF:EXPLOSIVES" ||
     // The Candy Peppermint Surprise (bead pulp_wars-jdb.6); Home Sweet Home
-    // and Frosting fall back by the faction rule below.
+    // (and the retired Frosting) fall back by the faction rule below.
     subject === "ICON:TECH:CANDY:EXPLOSIVES"
   )
     return "ICON:ACTION:BLAST_MOUNTAIN";

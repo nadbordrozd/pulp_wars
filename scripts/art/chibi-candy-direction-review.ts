@@ -135,7 +135,11 @@ const ICONS = [
   ["icon-action-sugar-rush", "Sugar Rush"],
   ["icon-action-rebake", "Re-bake"],
   ["icon-action-sugar-toss", "Sugar Toss"],
-  ["icon-action-frosting", "Frosting"],
+  ["icon-action-frosting", "Frosting (retired)"],
+  // The Candy redesign (bead pulp_wars-jdb.14).
+  ["icon-action-top-up", "Top-Up"],
+  ["icon-status-stuck", "Stuck"],
+  ["icon-status-toothache", "Toothache"],
   ["icon-action-splat", "Splat"],
   ["icon-action-bounce", "Bounce"],
   ["icon-status-rushed", "Rushed"],

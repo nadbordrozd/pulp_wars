@@ -5,9 +5,13 @@ import { ruleset7FixtureMountExpressionV7 } from "./browser-undead-fixture-v7";
  * server only, because it imports `tests/fixtures`). It replaces the
  * running app with a `Ruleset7DomAppView` over a local fixture controller
  * and exposes `globalThis.__CANDY_REVIEW__` ({ boardHost, traces, view,
- * snapshotView, at, victim }). Used by the Candy review script.
+ * snapshotView, at, victim, redesign }). Used by the Candy review script.
  */
-export type CandyUiFixtureNameV7 = "candyUiFixtureV7" | "candyVictimFixtureV7";
+export type CandyUiFixtureNameV7 =
+  | "candyUiFixtureV7"
+  | "candyVictimFixtureV7"
+  // The Candy redesign (bead pulp_wars-jdb.14).
+  | "candyRedesignFixtureV7";
 
 export function candyFixtureMountExpressionV7(
   fixture: CandyUiFixtureNameV7,
@@ -18,6 +22,7 @@ export function candyFixtureMountExpressionV7(
     fixture,
     artSet,
     global: "__CANDY_REVIEW__",
-    extras: "at: fixtures.CANDY_UI_V7, victim: fixtures.CANDY_VICTIM_V7",
+    extras:
+      "at: fixtures.CANDY_UI_V7, victim: fixtures.CANDY_VICTIM_V7, redesign: fixtures.CANDY_REDESIGN_V7",
   });
 }

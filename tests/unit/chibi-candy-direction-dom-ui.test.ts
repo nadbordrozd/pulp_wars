@@ -117,6 +117,10 @@ describe("Candy interface art (pulp_wars-jdb.6, CANDY.md wiring)", () => {
       ["ICON:STATUS:SPLATTED", "icon-status-splatted"],
       ["ICON:TECH:CANDY:FORTIFICATION", "icon-tech-home-sweet-home"],
       ["ICON:TECH:CANDY:EXPLOSIVES", "icon-tech-peppermint-surprise"],
+      // The Candy redesign (bead pulp_wars-jdb.14).
+      ["ICON:ACTION:TOP_UP", "icon-action-top-up"],
+      ["ICON:STATUS:STUCK", "icon-status-stuck"],
+      ["ICON:STATUS:TOOTHACHE", "icon-status-toothache"],
       ["CRUMBS", "candy-crumbs"],
     ] as const)
       expect(resolve(subject), subject).toMatchObject({
@@ -155,6 +159,7 @@ describe("Candy interface art (pulp_wars-jdb.6, CANDY.md wiring)", () => {
       "MISSING",
     );
     expect(resolve("ICON:STATUS:CRASHED", { classic: true })).toBe("MISSING");
+    expect(resolve("ICON:STATUS:TOOTHACHE", { classic: true })).toBe("MISSING");
     expect(resolve("CRUMBS", { classic: true })).toBe("MISSING");
   });
 });

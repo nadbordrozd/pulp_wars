@@ -17,7 +17,8 @@ import { chibiArtUrl } from "./chibi-art-manifest";
  * **Registered** in the live direction registry and the naval list by the
  * Candy engine bead (pulp_wars-jdb.3), which draws the units, portraits,
  * cities and ships; the Candy UI bead (pulp_wars-jdb.6) draws the rest
- * (CANDY.md, "Wiring list").
+ * (CANDY.md, "Wiring list"). The Candy redesign's UI (bead
+ * pulp_wars-jdb.14) adds the Top-Up, Stuck and Toothache icons.
  */
 export const CHIBI_DIRECTION_CANDY_ART_ASSETS_V7: readonly ChibiArtAssetV7[] = [
   {
@@ -342,6 +343,39 @@ export const CHIBI_DIRECTION_CANDY_ART_ASSETS_V7: readonly ChibiArtAssetV7[] = [
     height: 48,
     url: chibiArtUrl(
       "assets/chibi/icons/chibi-direction-icon-status-splatted.png",
+    ),
+  },
+  // The Candy redesign (bead pulp_wars-jdb.14): the Top-Up command (a
+  // sugar jar, replacing Frosting's piping bag, which stays registered for
+  // the retired subject) and the Stuck and Toothache status chips.
+  {
+    id: "chibi-direction-icon-action-top-up",
+    subject: "ICON:ACTION:TOP_UP",
+    assetClass: "ICON",
+    width: 48,
+    height: 48,
+    url: chibiArtUrl(
+      "assets/chibi/icons/chibi-direction-icon-action-top-up.png",
+    ),
+  },
+  {
+    id: "chibi-direction-icon-status-stuck",
+    subject: "ICON:STATUS:STUCK",
+    assetClass: "ICON",
+    width: 48,
+    height: 48,
+    url: chibiArtUrl(
+      "assets/chibi/icons/chibi-direction-icon-status-stuck.png",
+    ),
+  },
+  {
+    id: "chibi-direction-icon-status-toothache",
+    subject: "ICON:STATUS:TOOTHACHE",
+    assetClass: "ICON",
+    width: 48,
+    height: 48,
+    url: chibiArtUrl(
+      "assets/chibi/icons/chibi-direction-icon-status-toothache.png",
     ),
   },
   {

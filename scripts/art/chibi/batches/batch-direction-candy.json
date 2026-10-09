@@ -548,6 +548,39 @@
       "ownerColour": false,
       "accent": "candy-pink",
       "subjectKey": "PORTRAIT:CANDY:SWORDSMAN/CHOCOLATIER"
+    },
+    {
+      "id": "chibi-direction-icon-action-top-up",
+      "subject": "ICON:ACTION:TOP_UP",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "candy-pink"
+    },
+    {
+      "id": "chibi-direction-icon-status-stuck",
+      "subject": "ICON:STATUS:STUCK",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "candy-pink"
+    },
+    {
+      "id": "chibi-direction-icon-status-toothache",
+      "subject": "ICON:STATUS:TOOTHACHE",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "candy-pink"
     }
   ],
   "recipes": [
@@ -2322,6 +2355,189 @@
       "promptAddendum": "A close-up: the round striped ball with its face fills the whole square; no legs and no body under it.",
       "negativeAddendum": "human, person, skin, hair, moustache, beard, turban, helmet, armour, gumball machine, glass globe, planet, legs, feet, full body",
       "notes": "Bead pulp_wars-2yc.34: the Jawbreaker's portrait, a fresh creation with the portrait class: the striped ball with its scowl and the head of the rock-candy mace, to match the accepted map sprite (jawbreaker-a)."
+    },
+    {
+      "id": "icon-top-up-a",
+      "asset": "chibi-direction-icon-action-top-up",
+      "endpoint": "create-image-pixen",
+      "seed": 414101,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, face, eyes, checkerboard, dark background, metal, steel, pepper, spoon, hand",
+      "notes": "Bead pulp_wars-jdb.14 (the Candy redesign): the Top-Up command icon, a sugar shaker replacing Frosting's piping bag; a fresh creation with the icon class and the Chocolatier fragment."
+    },
+    {
+      "id": "icon-stuck-a",
+      "asset": "chibi-direction-icon-status-stuck",
+      "endpoint": "create-image-pixen",
+      "seed": 414201,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, face, eyes, checkerboard, dark background, foot, shoe, boot, honey, bee, slime",
+      "notes": "Bead pulp_wars-jdb.14: the Stuck status chip, a toffee splat with strands; a fresh creation with the icon class."
+    },
+    {
+      "id": "icon-toothache-a",
+      "asset": "chibi-direction-icon-status-toothache",
+      "endpoint": "create-image-pixen",
+      "seed": 414301,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, face, eyes, checkerboard, dark background, mouth, lips, gums, blood, red, toothbrush, dentist",
+      "notes": "Bead pulp_wars-jdb.14: the Toothache status chip and board marker, a cracked tooth with a sparkle; a fresh creation with the icon class."
+    },
+    {
+      "id": "icon-top-up-b",
+      "asset": "chibi-direction-icon-action-top-up",
+      "endpoint": "create-image-pixen",
+      "seed": 414102,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The shaker is tall and narrow like a sugar dredger: a cream white body with a rounded milk chocolate cap screwed on top, the cap stays on, and the sugar pours out of the holes in the cap.",
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, face, eyes, checkerboard, dark background, metal, steel, pepper, spoon, hand, jar, open lid, gems",
+      "notes": "icon-top-up-a drew an open jar with its lid flying off: a second creation that keeps the cap on and makes it a tall shaker."
+    },
+    {
+      "id": "icon-stuck-b",
+      "asset": "chibi-direction-icon-status-stuck",
+      "endpoint": "create-image-pixen",
+      "seed": 414202,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, face, eyes, checkerboard, dark background, foot, shoe, boot, honey, bee, slime, figure, warrior, robot, armour, clothes, purple, pink",
+      "notes": "icon-stuck-a drew an armoured figure: a second creation from a subject line that names only a toffee puddle and its strings."
+    },
+    {
+      "id": "icon-toothache-b",
+      "asset": "chibi-direction-icon-status-toothache",
+      "endpoint": "create-image-pixen",
+      "seed": 414302,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, face, eyes, checkerboard, dark background, mouth, lips, gums, blood, red, toothbrush, dentist, legs, feet, shoes, socks, arms, hands, gems, jewels, character",
+      "notes": "icon-toothache-a gave the tooth legs and shoes: a second creation that draws a plain dental icon with stubby roots."
+    },
+    {
+      "id": "icon-top-up-c",
+      "asset": "chibi-direction-icon-action-top-up",
+      "endpoint": "create-image-pixen",
+      "seed": 414103,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "It is a plain object, not a living sweet: it has no face, no eyes, no arms, no legs and no clothes. The shaker is tall and narrow like a sugar dredger: a cream white body with a rounded milk chocolate cap that stays on, and the sugar pours out of the holes in the cap.",
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, figure, creature, head, body, arms, legs, feet, hands, face, eyes, crown, hair, clothes, checkerboard, dark background, badge, halo, frame, metal, steel, pepper, spoon, jar, open lid, gems",
+      "notes": "Two creations drew a jar or a character: a third that says the shaker is a plain object."
+    },
+    {
+      "id": "icon-top-up-d",
+      "asset": "chibi-direction-icon-action-top-up",
+      "endpoint": "create-image-pixen",
+      "seed": 414104,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "It is a plain object, not a living sweet: it has no face, no eyes, no arms, no legs and no clothes. The shaker is tall and narrow like a sugar dredger: a cream white body with a rounded milk chocolate cap that stays on, and the sugar pours out of the holes in the cap.",
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, figure, creature, head, body, arms, legs, feet, hands, face, eyes, crown, hair, clothes, checkerboard, dark background, badge, halo, frame, metal, steel, pepper, spoon, jar, open lid, gems",
+      "notes": "A second seed of icon-top-up-c."
+    },
+    {
+      "id": "icon-stuck-c",
+      "asset": "chibi-direction-icon-status-stuck",
+      "endpoint": "create-image-pixen",
+      "seed": 414203,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "It is a plain object, not a living sweet: it has no face, no eyes, no arms, no legs and no clothes.",
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, figure, creature, head, body, arms, legs, feet, hands, face, eyes, crown, hair, clothes, checkerboard, dark background, badge, halo, frame, foot, shoe, boot, honey, bee, slime, warrior, robot, armour, purple, pink, red, stand, statue",
+      "notes": "Two creations drew figures: a third that says the toffee is a plain object."
+    },
+    {
+      "id": "icon-stuck-d",
+      "asset": "chibi-direction-icon-status-stuck",
+      "endpoint": "create-image-pixen",
+      "seed": 414204,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "It is a plain object, not a living sweet: it has no face, no eyes, no arms, no legs and no clothes.",
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, figure, creature, head, body, arms, legs, feet, hands, face, eyes, crown, hair, clothes, checkerboard, dark background, badge, halo, frame, foot, shoe, boot, honey, bee, slime, warrior, robot, armour, purple, pink, red, stand, statue",
+      "notes": "A second seed of icon-stuck-c."
+    },
+    {
+      "id": "icon-toothache-c",
+      "asset": "chibi-direction-icon-status-toothache",
+      "endpoint": "create-image-pixen",
+      "seed": 414303,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "It is a plain object, not a living sweet: it has no face, no eyes, no arms, no legs and no clothes.",
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, figure, creature, head, body, arms, legs, feet, hands, face, eyes, crown, hair, clothes, checkerboard, dark background, badge, halo, frame, mouth, lips, gums, blood, red, pink, toothbrush, dentist, shoes, socks, gems, jewels",
+      "notes": "Two creations drew a walking tooth and a haloed tooth: a third that says the tooth is a plain object."
+    },
+    {
+      "id": "icon-toothache-d",
+      "asset": "chibi-direction-icon-status-toothache",
+      "endpoint": "create-image-pixen",
+      "seed": 414304,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "It is a plain object, not a living sweet: it has no face, no eyes, no arms, no legs and no clothes.",
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, figure, creature, head, body, arms, legs, feet, hands, face, eyes, crown, hair, clothes, checkerboard, dark background, badge, halo, frame, mouth, lips, gums, blood, red, pink, toothbrush, dentist, shoes, socks, gems, jewels",
+      "notes": "A second seed of icon-toothache-c."
+    },
+    {
+      "id": "icon-stuck-c-edit",
+      "asset": "chibi-direction-icon-status-stuck",
+      "endpoint": "edit-image-pixen",
+      "seed": 414205,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-stuck-c",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the three upright sticks: each becomes a stretchy string of the same glossy caramel toffee pulled up out of the puddle, thick at the puddle, thin and sagging in the middle and ending in a small rounded drip at its top, with no sprinkles on them. Keep the round glossy caramel puddle, its highlight, the colours, thick black outline and art style the same, on a transparent background.",
+      "notes": "icon-stuck-c drew sticks standing in a toffee puddle: an edit that turns them into stretched toffee strings."
+    },
+    {
+      "id": "icon-toothache-c-edit",
+      "asset": "chibi-direction-icon-status-toothache",
+      "endpoint": "edit-image-pixen",
+      "seed": 414305,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-toothache-c",
+        "candidate": 0
+      },
+      "editInstruction": "Change only two things: erase the four tiny coloured dots in the corners of the image so the corners are empty and transparent; and recolour the stitched crack down the tooth into one plain dark chocolate brown #4a2412 zigzag crack line. Keep the white tooth, its two roots, its grey shading, the white sparkle star, the thick black outline and art style the same, on a transparent background.",
+      "notes": "icon-toothache-c is the clearest tooth but has four stray dots in its corners and a stitched crack: an edit that cleans both."
     }
   ]
 }

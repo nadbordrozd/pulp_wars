@@ -347,7 +347,9 @@ export function commandSubjectV7(
     case "TOSS_COIN":
       return "ICON:CURIOSITY:WISHING_WELL";
     case "TEND_WOUNDED":
-      // The Candy Tend Wounded is Frosting (bead pulp_wars-jdb.6).
+      // The Candy Tend Wounded was Frosting (bead pulp_wars-jdb.6); the
+      // Candy redesign never offers it (Top-Up has its own aimed button,
+      // `ICON:ACTION:TOP_UP`), so this icon stays only for old subjects.
       return faction === "DWARF"
         ? "ICON:ACTION:DWARF:TEND_WOUNDED"
         : faction === "CANDY"

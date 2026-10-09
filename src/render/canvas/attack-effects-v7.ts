@@ -11,6 +11,7 @@ import {
   type CameraState,
 } from "./geometry";
 import type { SupportEffectArtV7 } from "./support-presentation-v7";
+import { BOARD_LABEL_FONT_FAMILY_V7 } from "./board-label-font-v7";
 
 /**
  * Attack cues on the board's effects overlay (bead pulp_wars-b5f.5,
@@ -29,6 +30,13 @@ import type { SupportEffectArtV7 } from "./support-presentation-v7";
  * and the classic pale blue elsewhere, as the other Undead cues do. The
  * two Candy cues (bead pulp_wars-jdb.6) draw the pie, splat and gumball
  * sprites of the Candy art where the look has them, and code elsewhere.
+ *
+ * The Candy redesign (bead pulp_wars-jdb.14, RULESET_7_CANDY_REDESIGN.md
+ * section 14): a Gumball Gunner's Ricochet extends GUMBALL_SHOT (the
+ * gumball bounces on from its target to the unit it ricochets onto, with a
+ * second, smaller pop), and a Chocolate Bunny's Thump is a cue of its own
+ * here, not a shot: a cocoa-dust shock ring round the Bunny and a "−2" over
+ * each enemy it hits (`drawThumpFeedbackV7`, played as a Candy step).
  *
  * The Battleship's broadside (bead pulp_wars-eu3r.4) is one cue for every
  * faction, flavoured by its shell (`BroadsideShellV7`): three guns flash
@@ -127,12 +135,27 @@ export interface AttackFeedbackV7 {
    */
   readonly splash?: readonly CoordV7[];
   /**
+   * GUMBALL_SHOT, the Candy redesign: the cell of the unit the gumball
+   * ricochets onto after the hit.
+   */
+  readonly ricochet?: CoordV7;
+  /**
    * Drawn size per world unit, over the camera zoom: the CHIBI board's
    * ATTACK_EFFECT_SCALE_V7 when omitted; LEGACY, whose stand-in units are
    * drawn at a larger zoom, passes 1.
    */
   readonly scale?: number;
 }
+
+/**
+ * GUMBALL_SHOT with a Ricochet (the Candy redesign): the gumball leaves its
+ * target this long after the hit, and lands on the next unit at
+ * `RICOCHET_LANDS_V7` (shares of the cue); then its pop.
+ */
+export const RICOCHET_LEAVES_V7 = 0.58;
+export const RICOCHET_LANDS_V7 = 0.82;
+/** The height of the gumball's bounce, in world units. */
+const RICOCHET_ARC = 44;
 
 /** The duration of each cue in ms (the old shot plus impact was 380). */
 export const ATTACK_EFFECT_DURATIONS_V7: Readonly<
@@ -217,7 +240,14 @@ const ARC: Readonly<Record<AttackEffectIdV7, number>> = {
  */
 export function attackReducedMotionProgressV7(
   effect: AttackEffectIdV7,
+  /**
+   * A gumball that ricochets holds its bounce instead: the gumball between
+   * the two units, the first pop fading behind it.
+   */
+  options: { readonly ricochet?: boolean } = {},
 ): number {
+  if (effect === "GUMBALL_SHOT" && options.ricochet === true)
+    return (RICOCHET_LEAVES_V7 + RICOCHET_LANDS_V7) / 2;
   return effect === "GATLING_BURST"
     ? 0.45
     : effect === "HARPOON"
@@ -267,6 +297,8 @@ export interface AttackShotPlanV7 {
   readonly trail: readonly Point[];
   /** 0 to 1 along the flight. */
   readonly flight: number;
+  /** GUMBALL_SHOT: the gumball bouncing on to the ricochet's victim. */
+  readonly ricochet?: true;
 }
 
 /** One impact burst: where, and 0 to 1 through its fade. */
@@ -275,6 +307,8 @@ export interface AttackImpactPlanV7 {
   readonly local: number;
   /** BROADSIDE: a splashed unit's smaller burst. */
   readonly splash?: true;
+  /** GUMBALL_SHOT: the ricochet's smaller pop on the second unit. */
+  readonly ricochet?: true;
 }
 
 /** BROADSIDE: one gun along the hull, and 0 to 1 through its flash. */
@@ -478,6 +512,42 @@ export function attackEffectPlanV7(
     const impact = phase(progress, window.to, 1);
     if (impact !== null && progress > window.to)
       impacts.push({ at: target, local: impact });
+    // The Candy redesign: the gumball bounces on to the ricochet's victim.
+    if (effect === "GUMBALL_SHOT" && feedback.ricochet !== undefined) {
+      const victimCentre = cellCentre(feedback.ricochet);
+      const victim = {
+        x: victimCentre.x,
+        y: victimCentre.y - BODY_LIFT * zoom,
+      };
+      const bounce = (t: number): Point => ({
+        x: target.x + (victim.x - target.x) * t,
+        y:
+          target.y +
+          (victim.y - target.y) * t -
+          Math.sin(Math.PI * t) * RICOCHET_ARC * zoom,
+      });
+      const flight = phase(progress, RICOCHET_LEAVES_V7, RICOCHET_LANDS_V7);
+      if (flight !== null) {
+        const ahead = bounce(Math.min(1, flight + 0.03));
+        const behind = bounce(Math.max(0, flight - 0.03));
+        const trail: Point[] = [];
+        for (let index = 1; index <= 4; index += 1) {
+          const earlier = flight - index * 0.08;
+          if (earlier < 0) break;
+          trail.push(bounce(earlier));
+        }
+        shots.push({
+          at: bounce(flight),
+          angle: Math.atan2(ahead.y - behind.y, ahead.x - behind.x),
+          trail,
+          flight,
+          ricochet: true,
+        });
+      }
+      const pop = phase(progress, RICOCHET_LANDS_V7, 1);
+      if (pop !== null && progress > RICOCHET_LANDS_V7)
+        impacts.push({ at: victim, local: pop, ricochet: true });
+    }
     // The broadside's splash: each splashed unit bursts as the ring
     // reaches it.
     if (effect === "BROADSIDE") {
@@ -1557,8 +1627,18 @@ function drawGumballShot(
   for (const impact of plan.impacts) {
     const local = impact.local;
     const { x, y } = impact.at;
+    // The ricochet's pop is the smaller one.
+    const size = impact.ricochet === true ? 0.9 : 1;
     context.globalAlpha = 1 - local;
-    starPath(context, x, y, (14 - 5 * local) * zoom, 5 * zoom, 6, local);
+    starPath(
+      context,
+      x,
+      y,
+      (14 - 5 * local) * zoom * size,
+      5 * zoom * size,
+      6,
+      local,
+    );
     context.fillStyle = CANDY.white;
     context.fill();
     context.strokeStyle = CANDY.milkChocolate;
@@ -2330,4 +2410,202 @@ function drawBroadside(
     broadsideShell(context, look, shot.flight, shot.angle, zoom);
     context.restore();
   }
+}
+
+// ------------------------------------------------- The Candy Thump ---
+
+/**
+ * The Candy redesign (bead pulp_wars-jdb.14, RULESET_7_CANDY_REDESIGN.md
+ * section 14): a Chocolate Bunny's Thump, after its attack. The Bunny's
+ * feet strike its tile, a cocoa-dust shock ring spreads over the eight
+ * tiles round it, and each enemy it hits gets a puff of cocoa and a "−2"
+ * as the ring reaches it (`THUMP_HIT_V7`). It is no shot, so it is no
+ * `AttackEffectIdV7`; the plan's Candy step plays it (candy-effects-v7).
+ */
+export interface ThumpFeedbackV7 {
+  /** The Bunny's cell (after its advance or Bounce). */
+  readonly at: CoordV7;
+  /** Each thumped unit's cell and the HP (and Shield) it loses. */
+  readonly hits: readonly { readonly at: CoordV7; readonly damage: number }[];
+  readonly progress: number;
+  /** Drawn size per world unit over the zoom (ATTACK_EFFECT_SCALE_V7). */
+  readonly scale?: number;
+}
+
+/** The Thump's duration in ms. */
+export const THUMP_DURATION_MS_V7 = 440;
+/** The share of the cue at which the ring reaches the thumped units. */
+export const THUMP_HIT_V7 = 0.42;
+
+/**
+ * The frame reduced motion holds: the ring over the eight tiles with every
+ * "−2" up.
+ */
+export function thumpReducedMotionProgressV7(): number {
+  return 0.6;
+}
+
+/** The cocoa of the Thump: the Chocolatier's chocolate and its dust. */
+export const THUMP_COLOURS_V7 = {
+  dust: "#a0683f",
+  dustLight: "#d9ae86",
+  ring: CANDY_PALETTE_V7.milkChocolate,
+  ringDark: CANDY_PALETTE_V7.chocolate,
+  number: "#fff1d0",
+} as const;
+
+/** One frame of a Thump, in screen pixels. Pure, so tests can check it. */
+export interface ThumpPlanV7 {
+  /** The Bunny's tile centre. */
+  readonly centre: Point;
+  /**
+   * The ring: a rounded square round the Bunny's tile growing to the edge
+   * of the eight tiles round it (half its side), and 0 to 1 through it.
+   */
+  readonly ring: { readonly halfSize: number; readonly local: number } | null;
+  /** The stomp's dust under the Bunny's feet, 0 to 1, or null. */
+  readonly stomp: number | null;
+  /** The puff and the floating number of each hit unit. */
+  readonly hits: readonly {
+    readonly at: Point;
+    readonly local: number;
+    readonly text: string;
+  }[];
+}
+
+export function thumpEffectPlanV7(
+  feedback: ThumpFeedbackV7,
+  camera: CameraState,
+): ThumpPlanV7 {
+  const zoom = camera.zoom;
+  const progress = clamp01(feedback.progress);
+  const cellCentre = (at: CoordV7): Point =>
+    worldToScreen(projectGrid(at), camera);
+  const centre = cellCentre(feedback.at);
+  const ringLocal = phase(progress, 0.08, 0.9);
+  // The ring reaches the thumped units' tiles with the hit.
+  const reach = easeOut(Math.min(1, (ringLocal ?? 0) / 0.42));
+  return {
+    centre,
+    ring:
+      ringLocal === null
+        ? null
+        : {
+            halfSize: TILE_WIDTH * zoom * (0.4 + 1.02 * reach),
+            local: ringLocal,
+          },
+    stomp: phase(progress, 0, 0.4),
+    hits:
+      progress < THUMP_HIT_V7
+        ? []
+        : feedback.hits.map((hit) => {
+            const point = cellCentre(hit.at);
+            return {
+              at: { x: point.x, y: point.y },
+              local: (progress - THUMP_HIT_V7) / (1 - THUMP_HIT_V7),
+              text: `−${hit.damage}`,
+            };
+          }),
+  };
+}
+
+/** Draws one frame of a Thump on the effects overlay (code only). */
+export function drawThumpFeedbackV7(
+  context: CanvasRenderingContext2D,
+  camera: CameraState,
+  feedback: ThumpFeedbackV7,
+): void {
+  const plan = thumpEffectPlanV7(feedback, camera);
+  const zoom = camera.zoom * (feedback.scale ?? ATTACK_EFFECT_SCALE_V7);
+  const colours = THUMP_COLOURS_V7;
+  context.save();
+  context.lineJoin = "round";
+  context.lineCap = "round";
+  const feet = plan.centre.y + 26 * camera.zoom;
+  // The stomp: two cocoa puffs at the Bunny's feet.
+  if (plan.stomp !== null) {
+    const local = plan.stomp;
+    context.globalAlpha = 1 - local;
+    for (const side of [-1, 1])
+      puff(
+        context,
+        plan.centre.x + side * (8 + 14 * easeOut(local)) * zoom,
+        feet,
+        (6 + 3 * local) * zoom,
+        colours.dust,
+        colours.dustLight,
+        colours.ringDark,
+        zoom,
+      );
+    context.globalAlpha = 1;
+  }
+  // The shock ring: a rounded square of cocoa dust over the eight tiles.
+  if (plan.ring !== null) {
+    const { halfSize, local } = plan.ring;
+    const alpha = local < 0.6 ? 1 : (1 - local) / 0.4;
+    context.globalAlpha = alpha;
+    roundedSquare(
+      context,
+      plan.centre.x,
+      plan.centre.y,
+      halfSize,
+      halfSize * 0.38,
+    );
+    context.lineWidth = 7 * zoom;
+    context.strokeStyle = colours.ringDark;
+    context.stroke();
+    context.lineWidth = 3.6 * zoom;
+    context.strokeStyle = colours.ring;
+    context.stroke();
+    context.setLineDash([3 * zoom, 9 * zoom]);
+    context.lineWidth = 1.6 * zoom;
+    context.strokeStyle = colours.dustLight;
+    context.stroke();
+    context.setLineDash([]);
+    // Dust kicked off the ring's rim.
+    for (let mote = 0; mote < 12; mote += 1) {
+      const angle = (mote / 12) * Math.PI * 2 + 0.2;
+      const rim =
+        halfSize *
+        (Math.abs(Math.cos(angle)) > 0.7 || Math.abs(Math.sin(angle)) > 0.7
+          ? 0.98
+          : 0.86);
+      circle(
+        context,
+        plan.centre.x + Math.cos(angle) * rim,
+        plan.centre.y + Math.sin(angle) * rim - 4 * zoom * local,
+        (2.4 - 1.2 * local) * zoom,
+      );
+      context.fillStyle = mote % 2 === 0 ? colours.dust : colours.dustLight;
+      context.fill();
+    }
+    context.globalAlpha = 1;
+  }
+  // Each hit enemy: a cocoa puff at its feet and a rising "−2".
+  for (const hit of plan.hits) {
+    const local = hit.local;
+    const fade = local < 0.7 ? 1 : (1 - local) / 0.3;
+    context.globalAlpha = fade;
+    puff(
+      context,
+      hit.at.x,
+      hit.at.y + 30 * camera.zoom,
+      (5 + 3 * easeOut(Math.min(1, local / 0.4))) * zoom,
+      colours.dust,
+      colours.dustLight,
+      colours.ringDark,
+      zoom,
+    );
+    const textY = hit.at.y - (52 + 18 * easeOut(local)) * camera.zoom;
+    context.font = `800 ${Math.max(14, 30 * camera.zoom)}px ${BOARD_LABEL_FONT_FAMILY_V7}`;
+    context.textAlign = "center";
+    context.textBaseline = "middle";
+    context.lineWidth = Math.max(3, 6 * camera.zoom);
+    context.strokeStyle = colours.ringDark;
+    context.strokeText(hit.text, hit.at.x, textY);
+    context.fillStyle = colours.number;
+    context.fillText(hit.text, hit.at.x, textY);
+    context.globalAlpha = 1;
+  }
+  context.restore();
 }

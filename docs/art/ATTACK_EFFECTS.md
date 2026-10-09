@@ -143,6 +143,34 @@ Unlike the six cues above they draw the Candy art's own sprites where the
 look has them (`EFFECT:PIE`, `EFFECT:SPLAT`, `EFFECT:GUMBALL_SHOT`), and the
 same shapes in code in the Classic look and LEGACY.
 
+### The Candy redesign: Ricochet and Thump (bead `pulp_wars-jdb.14`)
+
+[RULESET_7_CANDY_REDESIGN.md section 14](../product/RULESET_7_CANDY_REDESIGN.md#14-art-ui-and-effects)
+asks for two more Candy cues, both code-drawn:
+
+- **Ricochet** extends `GUMBALL_SHOT` (no new id): a shot step whose
+  public preview had a ricochet carries `ricochet` (the next unit's cell).
+  After the hit the gumball leaves its target at `RICOCHET_LEAVES_V7`
+  (0.58), bounces in a 44-unit arc and lands at `RICOCHET_LANDS_V7` (0.82)
+  with a slightly smaller pop; the next unit's DAMAGE step then shakes it.
+  The cue keeps its 380 ms and its hit share, so the board shows the main
+  result at the same moment as before. Reduced motion holds the gumball
+  mid-bounce (0.70) instead of before the hit. Sound: the gumball's impact,
+  a `special.boing` just after it, and a second impact as it lands.
+- **Thump** is no shot, so it is no `AttackEffectIdV7`: `drawThumpFeedbackV7`
+  and `thumpEffectPlanV7` live in `attack-effects-v7.ts` and a Candy step
+  (`THUMP`, after the Bunny's own attack) plays them. 440 ms: two cocoa
+  puffs at the Bunny's feet, a rounded-square ring of milk and dark
+  chocolate with cocoa dust spreading over the eight tiles round it (as the
+  broadside's ring does over its splash), and from `THUMP_HIT_V7` (0.42) a
+  cocoa puff and a rising "−2" over each enemy it hits; DAMAGE steps
+  follow. Reduced motion holds 0.6 (the ring over the tiles, every number
+  up). Sound: `impact.heavy` at the stomp, `special.puff` at the hit.
+
+Both are checked in `tests/unit/candy-redesign-ui-v7.test.ts`; their frames
+are captured by `scripts/browser-candy-review-v7.ts --only=cues2` on a
+hand-built board (the attack effects review's cases are unchanged).
+
 ## The Battleship broadside (bead `pulp_wars-eu3r.4`)
 
 Every faction's Battleship has splash (`combat.ts`: the hostile units within

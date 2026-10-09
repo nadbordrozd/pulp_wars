@@ -734,7 +734,6 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/engine/v7/reducer.ts::resolveStartTurnIceV7": "BOARD",
     "src/engine/v7/state-schema.ts::iceValid": "ALL",
     "src/headless/candy-telemetry-v7.ts::recordCandyV7": "BOARD",
-    "src/render/dom/app-view-v7.ts::candyCommandLabelV7": "BOARD",
     // The Candy UI (`pulp_wars-jdb.6`): the dock, the board plan and the
     // log read the view's units (what stands on the board); a Re-bake's
     // "city is full" reason counts slots through `allOwnedUnitsV7`.
@@ -743,6 +742,9 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/render/canvas/candy-board-plan-v7.ts::candyAttackTargetExtrasV7":
       "BOARD",
     "src/render/canvas/candy-board-plan-v7.ts::candyPickTargetsV7": "BOARD",
+    // The Candy redesign UI (`pulp_wars-jdb.14`): a Move's hop starts from
+    // the mover's tile on the board.
+    "src/render/canvas/candy-board-plan-v7.ts::moveHopV7": "BOARD",
     // The ninth unit (`pulp_wars-w49.17`, 7r55): all board readers. The
     // Normal AI's positional values read the view's units (a mound is
     // neither a helper nor a target). A Wight that dies was on the board

@@ -142,6 +142,10 @@ const FAMILY_STYLES_V7: Readonly<Record<string, TargetHighlightStyleV7>> = {
   // Dwarf crowd control: a tile an Engineer may put a Barricade on.
   BARRICADE: "PLACE",
   REBAKE: "PLACE",
+  // The Candy redesign: the Crumbs a Re-bake scoops (its first step) are a
+  // place too; a unit to Top Up is helped.
+  REBAKE_CRUMBS: "PLACE",
+  TOP_UP: "SUPPORT",
   // The frozen sea: the tile a line role's Freeze starts on.
   FREEZE: "PLACE",
   // The giants' signatures (`pulp_wars-w49.32`): a victim to swallow and an

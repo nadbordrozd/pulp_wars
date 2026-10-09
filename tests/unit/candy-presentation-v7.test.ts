@@ -31,6 +31,7 @@ import {
   SPLATTED_PREVIEW_V7,
   SPLATTED_STATUS_V7,
   SPLAT_PREVIEW_V7,
+  STUCK_TARGET_PREVIEW_V7,
   SUGAR_RUSH_CRASHED_V7,
   SUGAR_RUSH_MOVED_V7,
   SUGAR_RUSH_RUSHED_V7,
@@ -459,15 +460,20 @@ describe("Candy attack previews (section 15.1)", () => {
       if (result === null) throw new Error("no preview");
       return candyCombatLinesV7(result);
     };
-    expect(preview(AT.gumdrop, AT.rushTarget).notes).toEqual([]);
+    // The Candy redesign: a Toffee Trooper's target is Stuck.
+    expect(preview(AT.gumdrop, AT.rushTarget).notes).toEqual([
+      STUCK_TARGET_PREVIEW_V7,
+    ]);
     expect(preview(AT.gumdrop, AT.rushTarget, true).notes).toEqual([
       RUSH_PREVIEW_V7,
+      STUCK_TARGET_PREVIEW_V7,
     ]);
     expect(preview(AT.pieLauncher, AT.splatted).notes).toContain(
       SPLAT_PREVIEW_V7,
     );
     expect(preview(AT.splatAttacker, AT.splatted).notes).toEqual([
       SPLATTED_PREVIEW_V7,
+      STUCK_TARGET_PREVIEW_V7,
     ]);
   });
 

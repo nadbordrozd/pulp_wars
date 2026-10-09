@@ -19,6 +19,7 @@ import { CANDY_MARKERS_V7 } from "../../src/assets/chibi-direction-candy-present
 import {
   BOUNCES_PREVIEW_V7,
   BOUNCE_BLOCKED_PREVIEW_V7,
+  REBAKE_PICK_TILE_V7,
   RUSH_PREVIEW_V7,
   SPLATTED_PREVIEW_V7,
   rebakeBoardLabelV7,
@@ -62,6 +63,7 @@ import {
 import {
   CANDY_UI_V7,
   CANDY_VICTIM_V7,
+  candyUiFieldV7,
   candyUiFixtureV7,
   candyVictimFixtureV7,
 } from "../fixtures/v7-candy-ui";
@@ -171,18 +173,24 @@ describe("Candy markers in the board plan (section 15.1)", () => {
       crashed: false,
       splatted: false,
       home: true,
+      stuck: false,
+      toothache: false,
     });
     expect(markersAt(AT.crashed)).toEqual({
       rushed: false,
       crashed: true,
       splatted: false,
       home: false,
+      stuck: false,
+      toothache: false,
     });
     expect(markersAt(AT.splatted)).toEqual({
       rushed: false,
       crashed: false,
       splatted: true,
       home: false,
+      stuck: false,
+      toothache: false,
     });
     expect(markersAt(AT.gumdrop)).toBeUndefined();
   });
@@ -193,6 +201,8 @@ describe("Candy markers in the board plan (section 15.1)", () => {
       crashed: false,
       splatted: false,
       home: false,
+      stuck: false,
+      toothache: false,
     });
   });
 
@@ -284,57 +294,123 @@ describe("Candy targets on the board (section 15.1)", () => {
       expect(target.semanticLabel ?? "").not.toMatch(/\d+, ?\d+/);
   });
 
-  it("aims a Re-bake at the offered Crumbs: a ghost, its price and its HP", () => {
+  it("aims a Re-bake in two steps: the Crumbs within reach, then the tiles beside the Confectioner with a ghost, its price and its HP", () => {
     const confectioner = unitAt(view, AT.confectioner);
     const preview = previewRebakeV7(view, confectioner.id);
     if (preview === null) throw new Error("no Re-bake preview");
-    const plan = planFor(view, AT.confectioner, "REBAKE");
-    // The Candy redesign (`pulp_wars-jdb.12`): the copy appears next to the
-    // Confectioner; until the two-step pick of `pulp_wars-jdb.14` each
-    // placement tile bakes the dearest offered Crumbs.
-    const best = new Map<string, (typeof preview.options)[number]>();
-    for (const option of preview.options) {
-      const key = `${option.at.x},${option.at.y}`;
-      const known = best.get(key);
-      if (known === undefined || option.cost > known.cost)
-        best.set(key, option);
-    }
-    expect(plan.targets.map((target) => target.family)).toEqual(
-      [...best.values()].map(() => "REBAKE"),
-    );
+    // The Candy redesign (`pulp_wars-jdb.14`): the first step marks each
+    // pile once, with what it bakes back; nothing carries a ghost yet.
+    const piles = planFor(view, AT.confectioner, "REBAKE");
+    const sources = [
+      ...new Map(
+        preview.options.map((option) => [
+          `${option.from.x},${option.from.y}`,
+          option,
+        ]),
+      ).values(),
+    ];
+    expect(sources.length).toBe(2);
     expect(
-      plan.targets.map((target) => [
+      piles.targets.map((target) => [
+        target.family,
         target.at,
         target.previewLabel,
-        target.rebake?.role,
-        target.rebake?.artSubject,
+        target.rebake,
       ]),
     ).toEqual(
-      [...best.values()].map((option) => [
-        option.at,
+      sources.map((option) => [
+        "REBAKE_CRUMBS",
+        option.from,
         rebakeBoardLabelV7(option.cost, option.hp),
-        option.role,
-        `UNIT:CANDY:${option.role}`,
+        undefined,
       ]),
     );
-    for (const target of plan.targets)
+    for (const target of piles.targets)
+      expect(target.semanticLabel).toContain(REBAKE_PICK_TILE_V7.slice(1));
+    // The second step: the chosen pile's placements, each a ghost.
+    for (const pile of sources) {
+      const plan = planFor(view, AT.confectioner, null, {
+        candyPick: {
+          kind: "REBAKE",
+          unitId: confectioner.id,
+          from: pile.from,
+        },
+      });
+      const options = preview.options.filter(
+        (option) =>
+          option.from.x === pile.from.x && option.from.y === pile.from.y,
+      );
       expect(
-        Math.max(
-          Math.abs(target.at.x - AT.confectioner.x),
-          Math.abs(target.at.y - AT.confectioner.y),
-        ),
-      ).toBe(1);
+        plan.targets.map((target) => [
+          target.family,
+          target.at,
+          target.previewLabel,
+          target.rebake?.role,
+          target.rebake?.artSubject,
+          target.command.kind === "REBAKE" ? target.command.from : null,
+        ]),
+      ).toEqual(
+        options.map((option) => [
+          "REBAKE",
+          option.at,
+          rebakeBoardLabelV7(option.cost, option.hp),
+          option.role,
+          `UNIT:CANDY:${option.role}`,
+          pile.from,
+        ]),
+      );
+      for (const target of plan.targets)
+        expect(
+          Math.max(
+            Math.abs(target.at.x - AT.confectioner.x),
+            Math.abs(target.at.y - AT.confectioner.y),
+          ),
+        ).toBe(1);
+      // The chosen pile is marked on its tile.
+      expect(
+        plan.entries.filter((entry) => entry.kind === "ABILITY_TARGET"),
+      ).toEqual([
+        expect.objectContaining({
+          at: pile.from,
+          abilityStyle: "NEST",
+          label: `${effectiveRoleRuleV7(pile.role, "CANDY").label} Crumbs`,
+        }),
+      ]);
+    }
     expect(new Set(preview.options.map((option) => option.role))).toEqual(
       new Set(["KNIGHT", "FIGHTER"]),
     );
-    // The Frosting targets step aside while the Re-bake is aimed.
-    expect(plan.entries.some((entry) => entry.kind === "ABILITY_TARGET")).toBe(
-      false,
+  });
+
+  it("goes straight to the tiles when one pile is in reach", () => {
+    const one = humanView(
+      candyUiFieldV7(
+        [
+          { seat: 0, role: "CAPTAIN", at: AT.confectioner },
+          { seat: 1, role: "FIGHTER", at: { x: 0, y: 0 } },
+        ],
+        {
+          homed: [AT.confectioner],
+          crumbs: [{ at: AT.crumbsBear, role: "KNIGHT", seat: 0 }],
+        },
+      ),
+    );
+    const plan = planFor(one, AT.confectioner, "REBAKE");
+    expect(plan.targets.length).toBeGreaterThan(0);
+    expect(plan.targets.every((target) => target.family === "REBAKE")).toBe(
+      true,
     );
   });
 
   it("draws the Re-bake ghost at the ghost strength", () => {
-    const plan = planFor(view, AT.confectioner, "REBAKE");
+    const confectioner = unitAt(view, AT.confectioner);
+    const plan = planFor(view, AT.confectioner, null, {
+      candyPick: {
+        kind: "REBAKE",
+        unitId: confectioner.id,
+        from: AT.crumbsBear,
+      },
+    });
     const log = draw(plan);
     const alphas = log.filter(
       (call) =>
@@ -342,6 +418,7 @@ describe("Candy targets on the board (section 15.1)", () => {
         call[1] === "globalAlpha" &&
         call[2] === TUNNEL_GHOST_ALPHA_V7,
     );
+    expect(plan.targets.length).toBeGreaterThan(0);
     expect(alphas).toHaveLength(plan.targets.length);
   });
 
@@ -459,6 +536,8 @@ describe("Candy marker drawing (CANDY.md markers)", () => {
       crashed: true,
       splatted: true,
       home: true,
+      stuck: true,
+      toothache: true,
     };
     const withArt = recordingContext();
     drawCandyUnitMarkersV7(withArt.context, all, anchor, 1, {
@@ -466,12 +545,15 @@ describe("Candy marker drawing (CANDY.md markers)", () => {
       crashed: image("crashed"),
       splatted: image("splatted"),
       home: image("home"),
+      toothache: image("toothache"),
     });
+    // The Candy redesign: the Stuck toffee is code only; the Toothache
+    // tooth is its raster.
     expect(
       calls(withArt.log, "drawImage").map(
         (call) => (call[1] as { name: string }).name,
       ),
-    ).toEqual(["splatted", "crashed", "rushed", "home"]);
+    ).toEqual(["splatted", "crashed", "toothache", "rushed", "home"]);
     const code = recordingContext();
     drawCandyUnitMarkersV7(code.context, all, anchor, 1);
     expect(calls(code.log, "drawImage")).toHaveLength(0);
@@ -495,6 +577,8 @@ describe("Candy marker drawing (CANDY.md markers)", () => {
         crashed: false,
         splatted: false,
         home: true,
+        stuck: false,
+        toothache: false,
       },
       anchor,
       1,
@@ -652,6 +736,8 @@ describe("Candy cues (CANDY.md effects)", () => {
       effect: "REBAKE",
       cells: [AT.crumbsBear],
       from: AT.confectioner,
+      // The Candy redesign: the pile it scooped (here the same tile).
+      source: AT.crumbsBear,
       durationMs: CANDY_EFFECT_DURATIONS_V7.REBAKE,
     });
     expect(

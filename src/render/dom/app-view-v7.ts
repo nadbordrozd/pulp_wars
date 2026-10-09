@@ -617,10 +617,15 @@ import {
   candyFieldDefenseBlockedV7,
   candyRoleUnlockTextV7,
   crumbsTileLinesV7,
+  glazeTileLinesV7,
   matchHasCandySeatV7,
+  REBAKE_PICK_CRUMBS_V7,
+  REBAKE_PICK_TILE_V7,
+  TOP_UP_PICK_V7,
   rebakeUnavailableTextV7,
   sugarRushUnavailableTextV7,
   sugarTossUnavailableTextV7,
+  topUpUnavailableTextV7,
 } from "../candy-presentation-v7";
 import { HELP_KEYS_V7, HELP_SECTIONS_V7 } from "../help-text-v7";
 import {
@@ -649,7 +654,10 @@ import {
   glossaryTermsV7,
   type GlossaryLineV7,
 } from "./unit-glossary-dom-v7";
-import type { CandyPickV7 } from "../canvas/candy-board-plan-v7";
+import {
+  rebakePickSourceV7,
+  type CandyPickV7,
+} from "../canvas/candy-board-plan-v7";
 import {
   breakOffSecondTilesV7,
   tossPassengersV7,
@@ -872,6 +880,9 @@ const NON_BUTTON_COMMANDS = new Set<CommandV7["kind"]>([
   "SUGAR_RUSH",
   "REBAKE",
   "SUGAR_TOSS",
+  // The Candy redesign (`pulp_wars-jdb.14`): Top-Up likewise, its unit
+  // picked on the board.
+  "TOP_UP",
   // The giants' signatures (`pulp_wars-w49.32`): one button per giant aims
   // its signature; the victim, the Goblin and its landing (up to dozens of
   // commands), the Stomp and the two Break Off tiles (up to 28 pairs) are
@@ -1219,7 +1230,7 @@ export class Ruleset7DomAppView {
   #kaboomHoverUnitId: number | null = null;
   /**
    * Bead pulp_wars-621: the own unit whose area support button (Tend
-   * Wounded, Repair, Frosting; Rally) is hovered or focused; the board
+   * Wounded, Repair; Rally) is hovered or focused; the board
    * draws that button's recipients prominent.
    */
   #areaSupportHover: AreaSupportFocusV7 | null = null;
@@ -4536,10 +4547,10 @@ export class Ruleset7DomAppView {
             );
         }
       }
-      // The Candy revision (section 15.2): Rushed (by its perk, a Gummy
-      // Bear's Sugar Frenzy with its continuations as pips), Home Sweet
-      // Home, Crashed and Splatted on a unit of any owner, each an icon and
-      // a name with its one sentence as the tooltip.
+      // The Candy revision (section 15.2): Rushed, Home Sweet Home, Crashed
+      // and Splatted on a unit of any owner, and the Candy redesign's Stuck
+      // and Toothache, each an icon and a name with its one sentence as the
+      // tooltip.
       if (matchHasCandySeatV7(view))
         for (const chip of candyChipsV7(view, unit)) {
           const cue = el(this.#document, "span", "v7-chip v7-candy-chip");
@@ -5679,6 +5690,18 @@ export class Ruleset7DomAppView {
           crumbs.setAttribute("aria-label", crumbsLines.join(". "));
           details.append(crumbs);
         }
+        // The Candy redesign (section 7.2): the tile's Glaze this turn.
+        for (const line of glazeTileLinesV7(view, tile.at)) {
+          const glaze = text(
+            this.#document,
+            "p",
+            line,
+            "v7-chip v7-candy-chip",
+          );
+          glaze.dataset.glazed = "true";
+          glaze.title = line;
+          details.append(glaze);
+        }
         // The Dwarf revision (section 16.1): a mound is selectable for
         // information only: its unit, HP, when it surfaces, and its
         // eruption. It has no actions and is never in the orders cycle.
@@ -5978,9 +6001,6 @@ export class Ruleset7DomAppView {
               (unit) => unit.id === command.unitId && unit.form === "EGG",
             )
           : undefined;
-      // The Candy redesign (`pulp_wars-jdb.12`): a Confectioner's Top-Up
-      // names its target (one button per target until `pulp_wars-jdb.14`).
-      const candyLabel = candyCommandLabelV7(this.#snapshot.view, command);
       // The Martian pass, correction: Disband on a controlled unit is
       // Release.
       const released =
@@ -5997,7 +6017,6 @@ export class Ruleset7DomAppView {
         rallyIsBerserkV7(this.#snapshot.view, command.unitId);
       const label =
         (released ? RELEASE_LABEL_V7 : null) ??
-        candyLabel ??
         (berserk ? BERSERK_LABEL_V7 : null) ??
         (abandonedEgg === undefined
           ? commandLabel(command, this.#viewerFaction())
@@ -6039,13 +6058,6 @@ export class Ruleset7DomAppView {
         action.append(
           text(this.#document, "span", REPAIR_CHIP_V7, "v7-dwarf-repair-chip"),
         );
-      }
-      // The Candy redesign (`pulp_wars-jdb.12`): the Top-Up tooltip (its
-      // own button and target pick are `pulp_wars-jdb.14`'s).
-      if (command.kind === "TOP_UP") {
-        action.title = TOP_UP_TOOLTIP_V7;
-        action.setAttribute("aria-description", `${TOP_UP_TOOLTIP_V7}.`);
-        action.dataset.candyTopUp = "true";
       }
       // Map curiosities round 2 (section 34.1): the Wishing Well's toss,
       // with its one Coin and what it may bring.
@@ -6653,6 +6665,19 @@ export class Ruleset7DomAppView {
         first: target.at,
       };
       this.#notice = `${BREAK_OFF_PICK_SECOND_V7}.`;
+      this.#render();
+      this.#queueBoardFocus();
+      return;
+    }
+    // The Candy redesign (section 14): choosing the Crumbs of a Re-bake
+    // moves on to the tiles next to the Confectioner; nothing is sent.
+    if (target.family === "REBAKE_CRUMBS" && command.kind === "REBAKE") {
+      this.#candyPick = {
+        kind: "REBAKE",
+        unitId: command.unitId,
+        from: command.from,
+      };
+      this.#notice = `${target.semanticLabel ?? REBAKE_LABEL_V7}. ${REBAKE_PICK_TILE_V7}.`;
       this.#render();
       this.#queueBoardFocus();
       return;
@@ -10838,10 +10863,12 @@ export class Ruleset7DomAppView {
   /**
    * The Candy revision (section 15.1): the Sugar Rush button of an own
    * Candy land unit, the Re-bake button of an own Confectioner and the
-   * Sugar Toss button of an own Gunner. With a legal choice it arms the
-   * Rush or aims the ability on the board (pressed while armed); without
-   * one it is disabled and names the reason ("Crashed", "Already moved",
-   * "No Crumbs next to it", "Not enough Coins", ...).
+   * Sugar Toss button of an own Gunner; the Candy redesign's (bead
+   * pulp_wars-jdb.14) Top-Up button of an own Confectioner. With a legal
+   * choice it arms the Rush or aims the ability on the board (pressed while
+   * armed); without one it is disabled and names the reason ("Crashed",
+   * "Already moved", "No Crumbs within two tiles", "Not enough Coins", "No
+   * unit next to it needs a Top-Up", ...).
    */
   #candyActionButtons(
     view: PlayerViewV7,
@@ -10876,6 +10903,12 @@ export class Ruleset7DomAppView {
         icon: "units",
       },
       {
+        kind: "TOP_UP",
+        label: TOP_UP_LABEL_V7,
+        tooltip: TOP_UP_TOOLTIP_V7,
+        icon: "hp",
+      },
+      {
         kind: "SUGAR_TOSS",
         label: SUGAR_TOSS_LABEL_V7,
         tooltip: SUGAR_TOSS_TOOLTIP_V7,
@@ -10895,7 +10928,9 @@ export class Ruleset7DomAppView {
             ? rebakeUnavailableTextV7(view, unit, offered, (cityId) =>
                 dwarfCityNameV7(view, cityId),
               )
-            : sugarTossUnavailableTextV7(view, unit, offered);
+            : entry.kind === "TOP_UP"
+              ? topUpUnavailableTextV7(view, unit, offered)
+              : sugarTossUnavailableTextV7(view, unit, offered);
       if (!offered && reason === null) continue;
       const slug = entry.kind.toLowerCase().replaceAll("_", "-");
       const action = button(
@@ -10942,17 +10977,12 @@ export class Ruleset7DomAppView {
     return buttons;
   }
 
-  /** Arms the Sugar Rush, or aims a Re-bake or a Sugar Toss. */
+  /** Arms the Sugar Rush, or aims a Re-bake, a Sugar Toss or a Top-Up. */
   #startCandyPick(kind: CandyPickV7["kind"], unitId: UnitId): void {
     if (this.#localBusy()) return;
-    this.#candyPick = { kind, unitId };
-    this.#notice = `${
-      kind === "SUGAR_RUSH"
-        ? SUGAR_RUSH_TOOLTIP_V7
-        : kind === "REBAKE"
-          ? REBAKE_TOOLTIP_V7
-          : SUGAR_TOSS_TOOLTIP_V7
-    }.`;
+    this.#candyPick =
+      kind === "REBAKE" ? { kind, unitId, from: null } : { kind, unitId };
+    this.#notice = `${CANDY_PICK_TEXT_V7[kind].tooltip}.`;
     this.#pendingFocusAction = null;
     this.#render();
     // The board takes the keyboard, so the arrow keys and Enter pick.
@@ -10973,14 +11003,19 @@ export class Ruleset7DomAppView {
   /**
    * The Candy aiming panel in the dock (section 15.1, under the
    * no-coordinates rule; bead pulp_wars-9im): the ability's icon and name
-   * with its "?", and Back. The Crumbs a Re-bake would bake back and the
-   * units a Sugar Toss would heal are highlighted and picked on the board,
-   * each with its numbers; the dock lists none. Null (and the aiming ends)
+   * with its "?", and Back. The Crumbs a Re-bake would bake back, the units
+   * a Sugar Toss would heal and the units a Top-Up would help are
+   * highlighted and picked on the board, each with its numbers; the dock
+   * lists none. The Candy redesign (bead pulp_wars-jdb.14): a Re-bake says
+   * which of its two steps it is on ("Choose the Crumbs to scoop", then
+   * "Choose where it comes out"), and Back in the second step returns to
+   * the first when there is more than one pile. Null (and the aiming ends)
    * when nothing is offered any more.
    */
   #candyPickPanel(unitId: UnitId): HTMLElement | null {
     const pick = this.#candyPick;
-    if (pick === null || pick.unitId !== unitId) return null;
+    const view = this.#snapshot.view;
+    if (pick === null || pick.unitId !== unitId || view === null) return null;
     const commands = this.#snapshot.offeredCommands.filter(
       (command) => command.kind === pick.kind && command.unitId === unitId,
     );
@@ -10994,37 +11029,61 @@ export class Ruleset7DomAppView {
       "v7-kaboom-preview v7-martian-pick v7-candy-pick v7-board-pick",
     );
     panel.dataset.v7CandyPick = pick.kind.toLowerCase();
-    const title =
-      pick.kind === "SUGAR_RUSH"
-        ? SUGAR_RUSH_LABEL_V7
-        : pick.kind === "REBAKE"
-          ? REBAKE_LABEL_V7
-          : SUGAR_TOSS_LABEL_V7;
-    const info =
-      pick.kind === "SUGAR_RUSH"
-        ? SUGAR_RUSH_TOOLTIP_V7
-        : pick.kind === "REBAKE"
-          ? REBAKE_TOOLTIP_V7
-          : SUGAR_TOSS_TOOLTIP_V7;
+    const text0 = CANDY_PICK_TEXT_V7[pick.kind];
+    const from = rebakePickSourceV7(view, pick);
+    const piles = new Set(
+      commands.flatMap((command) =>
+        command.kind === "REBAKE"
+          ? [`${command.from.x},${command.from.y}`]
+          : [],
+      ),
+    ).size;
+    // The Re-bake's step: its Crumbs first, then the tile for the copy.
+    const step =
+      pick.kind === "REBAKE"
+        ? from === null
+          ? REBAKE_PICK_CRUMBS_V7
+          : REBAKE_PICK_TILE_V7
+        : pick.kind === "TOP_UP"
+          ? TOP_UP_PICK_V7
+          : null;
+    if (pick.kind === "REBAKE")
+      panel.dataset.rebakeStep = from === null ? "crumbs" : "tile";
     if (pick.kind !== "SUGAR_RUSH")
-      panel.dataset.boardTargets = String(commands.length);
-    panel.setAttribute("aria-label", info);
+      panel.dataset.boardTargets = String(
+        pick.kind === "REBAKE"
+          ? from === null
+            ? piles
+            : commands.filter(
+                (command) =>
+                  command.kind === "REBAKE" &&
+                  command.from.x === from.x &&
+                  command.from.y === from.y,
+              ).length
+          : commands.length,
+      );
+    panel.setAttribute(
+      "aria-label",
+      step === null ? text0.tooltip : `${step}. ${text0.tooltip}`,
+    );
     panel.append(
       this.#pickHead(
-        pick.kind === "SUGAR_RUSH"
-          ? "ICON:ACTION:SUGAR_RUSH"
-          : pick.kind === "REBAKE"
-            ? "ICON:ACTION:REBAKE"
-            : "ICON:ACTION:SUGAR_TOSS",
-        pick.kind === "SUGAR_RUSH"
-          ? "move"
-          : pick.kind === "REBAKE"
-            ? "units"
-            : "hp",
-        title,
-        info,
+        `ICON:ACTION:${pick.kind}`,
+        text0.icon,
+        text0.label,
+        text0.tooltip,
       ),
     );
+    if (step !== null) {
+      const prompt = text(
+        this.#document,
+        "p",
+        `${step}.`,
+        "v7-candy-pick-step",
+      );
+      prompt.dataset.candyPickStep = "true";
+      panel.append(prompt);
+    }
     const buttons = el(this.#document, "div", "button-row v7-kaboom-actions");
     const back = button(
       this.#document,
@@ -11032,10 +11091,26 @@ export class Ruleset7DomAppView {
       "candy-pick-cancel",
       "v7-kaboom-cancel",
     );
-    back.onclick = () => this.#cancelCandyPick();
+    back.onclick = () =>
+      pick.kind === "REBAKE" &&
+      pick.from !== null &&
+      pick.from !== undefined &&
+      piles > 1
+        ? this.#rebakeBackToCrumbs()
+        : this.#cancelCandyPick();
     buttons.append(back);
     panel.append(buttons);
     return panel;
+  }
+
+  /** The Candy redesign: from a Re-bake's second step back to its first. */
+  #rebakeBackToCrumbs(): void {
+    const pick = this.#candyPick;
+    if (pick === null || pick.kind !== "REBAKE") return;
+    this.#candyPick = { ...pick, from: null };
+    this.#notice = `${REBAKE_PICK_CRUMBS_V7}.`;
+    this.#render();
+    this.#queueBoardFocus();
   }
 
   /**
@@ -12708,7 +12783,8 @@ function technologyRoleDescriptionsV7(
   if (faction === "ICE_FOLK") return [iceFolkRoleUnlockTextV7(roleId)];
   // The Dwarf revision (section 4): "Steam Cannon (Knockback)".
   if (faction === "DWARF") return [dwarfRoleUnlockTextV7(roleId)];
-  // The Candy revision (section 4): "Confectioner (Frosting, Re-bake)".
+  // The Candy revision (section 4), as the Candy redesign changed it:
+  // "Confectioner (Re-bake, Top-Up)".
   if (faction === "CANDY") return [candyRoleUnlockTextV7(roleId)];
   // Revision 19 (section 4): a Dinosaur egg-laid role is laid, not trained:
   // "Raptor Egg", "Triceratops Egg (Charge!)" (revision 20).
@@ -13050,21 +13126,32 @@ const COMMAND_LABELS: Partial<Record<CommandV7["kind"], string>> = {
   BUILD_FIELD_DEFENSE: "Fortify",
 };
 /**
- * The Candy redesign (docs/product/RULESET_7_CANDY_REDESIGN.md section
- * 8.2, `pulp_wars-jdb.12`): the label of a Top-Up button, "Top-Up {unit}",
- * or null for any other command (Sugar Rush, Re-bake and Sugar Toss are
- * aimed from their own buttons; Frosting is gone).
+ * The Candy aimed abilities' names, one-sentence tooltips and fallback
+ * icons (bead pulp_wars-jdb.6; Top-Up, the Candy redesign).
  */
-function candyCommandLabelV7(
-  view: PlayerViewV7 | null,
-  command: CommandV7,
-): string | null {
-  if (view === null || command.kind !== "TOP_UP") return null;
-  const target = view.units.find((entry) => entry.id === command.targetUnitId);
-  return target === undefined
-    ? TOP_UP_LABEL_V7
-    : `${TOP_UP_LABEL_V7} ${unitRoleRuleV7(view, target).label}`;
-}
+const CANDY_PICK_TEXT_V7: Readonly<
+  Record<
+    CandyPickV7["kind"],
+    {
+      readonly label: string;
+      readonly tooltip: string;
+      readonly icon: UiIconIdV7;
+    }
+  >
+> = {
+  SUGAR_RUSH: {
+    label: SUGAR_RUSH_LABEL_V7,
+    tooltip: SUGAR_RUSH_TOOLTIP_V7,
+    icon: "move",
+  },
+  REBAKE: { label: REBAKE_LABEL_V7, tooltip: REBAKE_TOOLTIP_V7, icon: "units" },
+  SUGAR_TOSS: {
+    label: SUGAR_TOSS_LABEL_V7,
+    tooltip: SUGAR_TOSS_TOOLTIP_V7,
+    icon: "hp",
+  },
+  TOP_UP: { label: TOP_UP_LABEL_V7, tooltip: TOP_UP_TOOLTIP_V7, icon: "hp" },
+};
 /** "A", "A and B", "A, B and C". */
 function listV7(items: readonly string[]): string {
   return items.length <= 2

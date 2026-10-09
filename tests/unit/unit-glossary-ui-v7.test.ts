@@ -403,6 +403,9 @@ describe("Ruleset 7 unit glossary", () => {
       "home-sweet-home",
       "crashed",
       "splatted",
+      // The Candy redesign (`pulp_wars-jdb.14`).
+      "stuck",
+      "toothache",
       "beamed",
       "tractor-used",
       "frozen",

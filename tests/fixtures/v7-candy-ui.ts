@@ -26,6 +26,10 @@ export interface CandyUiPieceV7 extends MartianUiPieceV7 {
   readonly splatted?: boolean;
   /** The unit is in `tossedThisTurn`. */
   readonly tossed?: boolean;
+  /** The Candy redesign: a `stuck` entry with this `endsLeft`. */
+  readonly stuck?: 1 | 2;
+  /** The Candy redesign: a `toothache` entry with this `endsLeft`. */
+  readonly toothache?: 1 | 2;
 }
 
 export interface CandyUiOptionsV7 {
@@ -41,6 +45,10 @@ export interface CandyUiOptionsV7 {
     readonly seat: number;
     readonly turnsLeft?: CrumbsV7["turnsLeft"];
   }[];
+  /** The Candy redesign: the Glazed tiles of the active seat's turn. */
+  readonly glazed?: readonly CoordV7[];
+  /** Tiles with a Road (the arena has none). */
+  readonly roads?: readonly CoordV7[];
 }
 
 export function candyUiFieldV7(
@@ -63,8 +71,36 @@ export function candyUiFieldV7(
     if (player === undefined) throw new Error("seat missing");
     return player.id;
   };
+  const statusEntries = (
+    endsLeft: (piece: CandyUiPieceV7) => 1 | 2 | undefined,
+  ) =>
+    pieces
+      .flatMap((piece) => {
+        const value = endsLeft(piece);
+        return value === undefined
+          ? []
+          : [{ unitId: unitAtV7(state, piece.at).id, endsLeft: value }];
+      })
+      .sort((left, right) => left.unitId - right.unitId);
+  const roads = options.roads ?? [];
   return checkedV7({
     ...state,
+    board:
+      roads.length === 0
+        ? state.board
+        : {
+            ...state.board,
+            tiles: state.board.tiles.map((tile) =>
+              roads.some((at) => at.x === tile.at.x && at.y === tile.at.y)
+                ? { ...tile, road: true }
+                : tile,
+            ),
+          },
+    stuck: statusEntries((piece) => piece.stuck),
+    toothache: statusEntries((piece) => piece.toothache),
+    glazedThisTurn: [...(options.glazed ?? [])].sort(
+      (left, right) => left.y - right.y || left.x - right.x,
+    ),
     sugarRush: pieces
       .filter((piece) => piece.rush !== undefined)
       .map((piece) => ({
@@ -232,4 +268,105 @@ export function candyHealerFixtureV7(): GameStateV7 {
     { seat: 1, role: "FIGHTER", at: at.enemyNear },
     { seat: 1, role: "GUARD", at: at.enemyFar },
   ]);
+}
+
+/** Where everything stands in `candyRedesignFixtureV7`. */
+export const CANDY_REDESIGN_V7 = {
+  /**
+   * A Donut Racer that rolled east, and the tiles Glazed this turn: three on
+   * Grass after a Road, and one on Candy ground beside a Road.
+   */
+  racer: { x: 7, y: 1 },
+  glazed: [
+    { x: 4, y: 1 },
+    { x: 5, y: 1 },
+    { x: 6, y: 1 },
+    { x: 7, y: 9 },
+  ],
+  roads: [
+    { x: 2, y: 1 },
+    { x: 3, y: 1 },
+    { x: 8, y: 9 },
+  ],
+  /** A Toffee Trooper beside two enemies: one Stuck, one with Toothache. */
+  trooper: { x: 3, y: 3 },
+  stuckEnemy: { x: 2, y: 2 },
+  toothacheEnemy: { x: 2, y: 3 },
+  /** A Chocolate Bunny, an own Trooper to hop over, and the landing. */
+  hopBunny: { x: 1, y: 5 },
+  hopOver: { x: 2, y: 5 },
+  hopLanding: { x: 3, y: 5 },
+  /** A Chocolate Bunny beside an enemy, two more enemies around it. */
+  thumpBunny: { x: 9, y: 2 },
+  thumpTarget: { x: 10, y: 2 },
+  thumpNeighbours: [
+    { x: 8, y: 1 },
+    { x: 10, y: 3 },
+  ],
+  /** A Gumball Gunner two tiles from an enemy, a weaker one beside it. */
+  gunner: { x: 6, y: 6 },
+  gunnerTarget: { x: 6, y: 4 },
+  ricochetVictim: { x: 5, y: 4 },
+  /**
+   * A homed Confectioner with two Crumbs in reach (one beside it, one two
+   * tiles away) and a Crashed, wounded, Stuck Trooper beside it.
+   */
+  confectioner: { x: 8, y: 6 },
+  crumbsNear: { x: 9, y: 5 },
+  crumbsFar: { x: 7, y: 4 },
+  topUpTarget: { x: 9, y: 7 },
+  /** A homed Confectioner with no Crumbs in reach (its why-not). */
+  idleConfectioner: { x: 5, y: 9 },
+} as const;
+
+/**
+ * The Candy redesign (bead pulp_wars-jdb.14), seat 0 (Candy) to act: the
+ * Glaze a Racer left this turn, a Stuck and a Toothache enemy, a Bunny that
+ * may hop and one that would Thump, a Gunner whose shot would ricochet, a
+ * Confectioner with two piles of Crumbs and a unit to Top Up, and one with
+ * nothing in reach.
+ */
+export function candyRedesignFixtureV7(): GameStateV7 {
+  const at = CANDY_REDESIGN_V7;
+  return candyUiFieldV7(
+    [
+      {
+        seat: 0,
+        role: "RAIDER",
+        at: at.racer,
+        activation: { moved: true, movedPathLength: 3 },
+      },
+      { seat: 0, role: "FIGHTER", at: at.trooper },
+      { seat: 1, role: "FIGHTER", at: at.stuckEnemy, stuck: 1 },
+      { seat: 1, role: "GUARD", at: at.toothacheEnemy, toothache: 1 },
+      { seat: 0, role: "KNIGHT", at: at.hopBunny },
+      { seat: 0, role: "FIGHTER", at: at.hopOver },
+      { seat: 0, role: "KNIGHT", at: at.thumpBunny },
+      { seat: 1, role: "FIGHTER", at: at.thumpTarget },
+      { seat: 1, role: "FIGHTER", at: at.thumpNeighbours[0] },
+      { seat: 1, role: "GUARD", at: at.thumpNeighbours[1] },
+      { seat: 0, role: "MARKSMAN", at: at.gunner },
+      { seat: 1, role: "GUARD", at: at.gunnerTarget },
+      { seat: 1, role: "FIGHTER", at: at.ricochetVictim, hp: 4 },
+      { seat: 0, role: "CAPTAIN", at: at.confectioner },
+      {
+        seat: 0,
+        role: "FIGHTER",
+        at: at.topUpTarget,
+        hp: 5,
+        rush: "CRASHED",
+        stuck: 2,
+      },
+      { seat: 0, role: "CAPTAIN", at: at.idleConfectioner },
+    ],
+    {
+      homed: [at.confectioner, at.idleConfectioner],
+      glazed: at.glazed,
+      roads: at.roads,
+      crumbs: [
+        { at: at.crumbsNear, role: "KNIGHT", seat: 0 },
+        { at: at.crumbsFar, role: "FIGHTER", seat: 0, turnsLeft: 2 },
+      ],
+    },
+  );
 }

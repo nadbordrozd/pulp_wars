@@ -5,10 +5,17 @@ import { chibiMasterScale, isWholeScale } from "./chibi-geometry-v7";
 import { projectGrid, worldToScreen, type CameraState } from "./geometry";
 import type { SupportEffectArtV7 } from "./support-presentation-v7";
 import { BOARD_LABEL_FONT_FAMILY_V7 } from "./board-label-font-v7";
+import {
+  THUMP_DURATION_MS_V7,
+  drawThumpFeedbackV7,
+  thumpReducedMotionProgressV7,
+} from "./attack-effects-v7";
 
 /**
  * Candy cues on the board's effects overlay (bead pulp_wars-jdb.6,
- * docs/art/factions/CANDY.md "Effects"). The effect sprites of the Candy
+ * docs/art/factions/CANDY.md "Effects"); the Candy redesign (bead
+ * pulp_wars-jdb.14) adds the Thump's shock ring, the Top-Up's sugar and the
+ * Re-bake's crumb trail from the scooped pile. The effect sprites of the Candy
  * art (EFFECT:SPLAT, EFFECT:SUGAR_TOSS, EFFECT:REBAKE_PUFF,
  * EFFECT:PEPPERMINT_POP, EFFECT:BOUNCE) are drawn where they read well;
  * without a loaded sprite (LEGACY, the classic look, still loading) each
@@ -34,7 +41,14 @@ export type CandyFeedbackEffectV7 =
   /** Peppermint Surprise: a pop under the unit that ate the Crumbs. */
   | "PEPPERMINT"
   /** Crumbs eaten without the Surprise: the pile scatters. */
-  | "CRUMBS_EATEN";
+  | "CRUMBS_EATEN"
+  /**
+   * The Candy redesign (bead pulp_wars-jdb.14): a Chocolate Bunny's Thump,
+   * the cocoa shock ring of attack-effects-v7 (`drawThumpFeedbackV7`).
+   */
+  | "THUMP"
+  /** The Candy redesign: a Top-Up, sugar shaken over the unit and "+n". */
+  | "TOP_UP";
 
 export const CANDY_FEEDBACK_EFFECTS_V7: readonly CandyFeedbackEffectV7[] = [
   "RUSH",
@@ -46,20 +60,33 @@ export const CANDY_FEEDBACK_EFFECTS_V7: readonly CandyFeedbackEffectV7[] = [
   "BOUNCE",
   "PEPPERMINT",
   "CRUMBS_EATEN",
+  "THUMP",
+  "TOP_UP",
 ];
 
 export interface CandyFeedbackV7 {
   readonly effect: CandyFeedbackEffectV7;
   /**
    * The cue's cells: RUSH the unit, CRASH and WAKE each unit, REBAKE the
-   * Crumbs tile, SUGAR_TOSS the healed unit, SPLAT the target, BOUNCE the
-   * landing tile, PEPPERMINT and CRUMBS_EATEN the Crumbs tile.
+   * tile the copy appears on, SUGAR_TOSS the healed unit, SPLAT the target,
+   * BOUNCE the landing tile, PEPPERMINT and CRUMBS_EATEN the Crumbs tile,
+   * THUMP each thumped unit, TOP_UP the topped-up unit.
    */
   readonly cells: readonly CoordV7[];
-  /** The source: the Confectioner (REBAKE), the Gunner (SUGAR_TOSS). */
+  /**
+   * The source: the Confectioner (REBAKE, TOP_UP), the Gunner
+   * (SUGAR_TOSS), the Chocolate Bunny (THUMP).
+   */
   readonly from?: CoordV7;
-  /** SUGAR_TOSS: the HP healed; PEPPERMINT: the damage. */
+  /** SUGAR_TOSS and TOP_UP: the HP healed; PEPPERMINT: the damage. */
   readonly amount?: number;
+  /** THUMP: each cell's damage, in the order of `cells`. */
+  readonly amounts?: readonly number[];
+  /**
+   * REBAKE, the Candy redesign: the Crumbs tile the Confectioner scooped
+   * from; its crumbs fly to the oven puff on the cell.
+   */
+  readonly source?: CoordV7;
   readonly progress: number;
 }
 
@@ -76,19 +103,24 @@ export const CANDY_EFFECT_DURATIONS_V7: Readonly<
   BOUNCE: 340,
   PEPPERMINT: 460,
   CRUMBS_EATEN: 300,
+  THUMP: THUMP_DURATION_MS_V7,
+  TOP_UP: 520,
 };
 
 /** The progress a reduced-motion hold shows: each cue at its fullest. */
 export function candyReducedMotionProgressV7(
   effect: CandyFeedbackEffectV7,
 ): number {
+  if (effect === "THUMP") return thumpReducedMotionProgressV7();
   return effect === "SUGAR_TOSS"
     ? 0.72
     : effect === "REBAKE"
       ? 0.6
       : effect === "BOUNCE"
         ? 0.35
-        : 0.5;
+        : effect === "TOP_UP"
+          ? 0.55
+          : 0.5;
 }
 
 /** The Candy effect sprites the host loads before the first cue. */
@@ -346,6 +378,36 @@ export function drawCandyFeedbackV7(
     const at = feedback.cells[0];
     if (at !== undefined) {
       const point = body(at);
+      // The Candy redesign: the scooped Crumbs fly from their pile to the
+      // oven, a little trail of biscuit and cream bits in an arc.
+      if (
+        feedback.source !== undefined &&
+        !(feedback.source.x === at.x && feedback.source.y === at.y) &&
+        progress < 0.5
+      ) {
+        const pile = ground(feedback.source);
+        const local = progress / 0.5;
+        context.save();
+        context.strokeStyle = outline;
+        context.lineWidth = Math.max(0.8, 1 * zoom);
+        for (let bit = 0; bit < 5; bit += 1) {
+          const t = clamp01(local * 1.25 - bit * 0.07);
+          if (t <= 0 || t >= 1) continue;
+          context.globalAlpha = t < 0.85 ? 1 : (1 - t) / 0.15;
+          context.fillStyle = bit % 2 === 0 ? biscuit : cream;
+          context.beginPath();
+          context.arc(
+            pile.x + (point.x - pile.x) * t,
+            pile.y + (point.y - pile.y) * t - Math.sin(Math.PI * t) * 34 * zoom,
+            Math.max(1.5, (3.4 - bit * 0.3) * zoom),
+            0,
+            Math.PI * 2,
+          );
+          context.fill();
+          context.stroke();
+        }
+        context.restore();
+      }
       // The whisk: a line of sugar from the Confectioner, then the oven puff.
       if (feedback.from !== undefined && progress < 0.45) {
         const from = body(feedback.from);
@@ -505,6 +567,61 @@ export function drawCandyFeedbackV7(
           "#fff1d0",
           alpha,
         );
+    }
+  } else if (feedback.effect === "THUMP") {
+    // The Candy redesign: the cocoa shock ring (attack-effects-v7).
+    if (feedback.from !== undefined)
+      drawThumpFeedbackV7(context, camera, {
+        at: feedback.from,
+        hits: feedback.cells.map((at, index) => ({
+          at,
+          damage: feedback.amounts?.[index] ?? feedback.amount ?? 0,
+        })),
+        progress,
+      });
+  } else if (feedback.effect === "TOP_UP") {
+    // The Candy redesign: sugar shaken over the unit, sparkles, "+n".
+    const at = feedback.cells[0];
+    if (at !== undefined) {
+      const point = body(at);
+      const fall = clamp01(progress / 0.6);
+      context.save();
+      context.globalAlpha *= progress < 0.75 ? 1 : (1 - progress) / 0.25;
+      context.strokeStyle = outline;
+      context.lineWidth = Math.max(0.8, 1 * zoom);
+      for (let grain = 0; grain < 18; grain += 1) {
+        const column = (grain % 6) - 2.5;
+        const row = Math.floor(grain / 6);
+        const drop = (fall * 56 - row * 14 - (grain % 3) * 6) * zoom;
+        if (drop < 0) continue;
+        const size = Math.max(2, 4.2 * zoom);
+        const x = point.x + column * 9 * zoom + (row % 2) * 4 * zoom;
+        const y = point.y - 58 * zoom + Math.min(drop, 62 * zoom);
+        context.fillStyle = grain % 4 === 0 ? caramel : white;
+        context.fillRect(x, y, size, size);
+        context.strokeRect(x, y, size, size);
+      }
+      context.restore();
+      if (progress >= 0.35) {
+        const local = (progress - 0.35) / 0.65;
+        for (const side of [-1, 1])
+          sparkle(
+            {
+              x: point.x + side * (14 + 10 * local) * zoom,
+              y: point.y - 10 * zoom * local,
+            },
+            7 * zoom,
+            swell(local),
+            side < 0 ? caramel : white,
+          );
+        if (feedback.amount !== undefined && feedback.amount > 0)
+          float(
+            { x: point.x, y: point.y - (28 + 18 * local) * zoom },
+            `+${feedback.amount}`,
+            "#b6f5c8",
+            local < 0.75 ? 1 : (1 - local) / 0.25,
+          );
+      }
     }
   } else {
     // CRUMBS_EATEN: the pile scatters.

@@ -5944,6 +5944,424 @@
         "reviewedAt": "2026-10-04T09:28:23.598Z"
       }
     },
+    "icon-stuck-a": {
+      "id": "icon-stuck-a",
+      "asset": "chibi-direction-icon-status-stuck",
+      "jobId": "sync-4af7a127-efa2-4c33-8192-ef8fdc6f5a29",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "direction-candy",
+        "asset": "chibi-direction-icon-status-stuck",
+        "subject": "ICON:STATUS:STUCK",
+        "faction": "CANDY",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 414201,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/CANDY.md#prompt-fragment + docs/art/factions/CANDY.md#negative-fragment",
+            "text": "Faction: a cheerful chocolatier's kingdom of living sweets, rich, glossy and silly. Its fixed colours: glossy dark chocolate, colour #4a2412, and milk chocolate, colour #7a4526, as the dark anchor on every piece (a dipped half, a shield, a glaze, boots, a roof); golden caramel and toffee, colour #e0a040; vanilla cream and marshmallow white, colour #fff1d0; pale biscuit wafer; a few small jewel-candy accents in amber, mint green and cherry pink; one hard pure white highlight on every glossy surface.",
+            "negative": "crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, pastel pink frosting everywhere, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+            "text": "Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/CANDY.json",
+            "text": "Subject: Stuck: one sticky splat of golden caramel toffee seen from the front, a thick round puddle with three stretchy toffee strands pulled up from it and two fat drips running down, one hard white highlight on it; flat and simple; nothing else in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "",
+            "negative": "grass, ground tile, slab, platform, person, character, face, eyes, checkerboard, dark background, foot, shoe, boot, honey, bee, slime"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: a cheerful chocolatier's kingdom of living sweets, rich, glossy and silly. Its fixed colours: glossy dark chocolate, colour #4a2412, and milk chocolate, colour #7a4526, as the dark anchor on every piece (a dipped half, a shield, a glaze, boots, a roof); golden caramel and toffee, colour #e0a040; vanilla cream and marshmallow white, colour #fff1d0; pale biscuit wafer; a few small jewel-candy accents in amber, mint green and cherry pink; one hard pure white highlight on every glossy surface. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Stuck: one sticky splat of golden caramel toffee seen from the front, a thick round puddle with three stretchy toffee strands pulled up from it and two fat drips running down, one hard white highlight on it; flat and simple; nothing else in the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, pastel pink frosting everywhere, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, grass, slab, platform, person, character, face, eyes, checkerboard, dark background, foot, shoe, boot, honey, bee, slime",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: a cheerful chocolatier's kingdom of living sweets, rich, glossy and silly. Its fixed colours: glossy dark chocolate, colour #4a2412, and milk chocolate, colour #7a4526, as the dark anchor on every piece (a dipped half, a shield, a glaze, boots, a roof); golden caramel and toffee, colour #e0a040; vanilla cream and marshmallow white, colour #fff1d0; pale biscuit wafer; a few small jewel-candy accents in amber, mint green and cherry pink; one hard pure white highlight on every glossy surface. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Stuck: one sticky splat of golden caramel toffee seen from the front, a thick round puddle with three stretchy toffee strands pulled up from it and two fat drips running down, one hard white highlight on it; flat and simple; nothing else in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, pastel pink frosting everywhere, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, grass, slab, platform, person, character, face, eyes, checkerboard, dark background, foot, shoe, boot, honey, bee, slime."
+      },
+      "submittedAt": "2026-10-09T20:12:30.516Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-candy/icon-stuck-a.png",
+      "rawSheetSha256": "0191c7deff38773031ab0d81692f68d341e44d97a31d05a01e032bc628f33e51",
+      "plateHints": [
+        {
+          "bandRows": 8,
+          "groundShare": 0.2747,
+          "footprintWidthShare": 1,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-09T20:13:25.259Z",
+      "usageUsd": 0.009317150804731581,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Drew a purple and pink armoured figure standing on a caramel disc, not a toffee splat: off subject and off palette.",
+        "reviewedAt": "2026-10-09T20:14:33.259Z"
+      }
+    },
+    "icon-stuck-b": {
+      "id": "icon-stuck-b",
+      "asset": "chibi-direction-icon-status-stuck",
+      "jobId": "sync-c0f87efd-5fe7-413d-a042-091685d6c97b",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "direction-candy",
+        "asset": "chibi-direction-icon-status-stuck",
+        "subject": "ICON:STATUS:STUCK",
+        "faction": "CANDY",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 414202,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/CANDY.md#prompt-fragment + docs/art/factions/CANDY.md#negative-fragment",
+            "text": "Faction: a cheerful chocolatier's kingdom of living sweets, rich, glossy and silly. Its fixed colours: glossy dark chocolate, colour #4a2412, and milk chocolate, colour #7a4526, as the dark anchor on every piece (a dipped half, a shield, a glaze, boots, a roof); golden caramel and toffee, colour #e0a040; vanilla cream and marshmallow white, colour #fff1d0; pale biscuit wafer; a few small jewel-candy accents in amber, mint green and cherry pink; one hard pure white highlight on every glossy surface.",
+            "negative": "crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, pastel pink frosting everywhere, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+            "text": "Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/CANDY.json",
+            "text": "Subject: Stuck: one glossy puddle of golden caramel toffee seen from slightly above, a flat round blob with three thick sticky toffee strings stretching straight up out of it and sagging, one hard white highlight on the puddle; only toffee, no object stands in it; flat and simple; nothing else in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "",
+            "negative": "grass, ground tile, slab, platform, person, character, face, eyes, checkerboard, dark background, foot, shoe, boot, honey, bee, slime, figure, warrior, robot, armour, clothes, purple, pink"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: a cheerful chocolatier's kingdom of living sweets, rich, glossy and silly. Its fixed colours: glossy dark chocolate, colour #4a2412, and milk chocolate, colour #7a4526, as the dark anchor on every piece (a dipped half, a shield, a glaze, boots, a roof); golden caramel and toffee, colour #e0a040; vanilla cream and marshmallow white, colour #fff1d0; pale biscuit wafer; a few small jewel-candy accents in amber, mint green and cherry pink; one hard pure white highlight on every glossy surface. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Stuck: one glossy puddle of golden caramel toffee seen from slightly above, a flat round blob with three thick sticky toffee strings stretching straight up out of it and sagging, one hard white highlight on the puddle; only toffee, no object stands in it; flat and simple; nothing else in the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, pastel pink frosting everywhere, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, grass, slab, platform, person, character, face, eyes, checkerboard, dark background, foot, shoe, boot, honey, bee, slime, figure, warrior, robot, armour, clothes, pink",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: a cheerful chocolatier's kingdom of living sweets, rich, glossy and silly. Its fixed colours: glossy dark chocolate, colour #4a2412, and milk chocolate, colour #7a4526, as the dark anchor on every piece (a dipped half, a shield, a glaze, boots, a roof); golden caramel and toffee, colour #e0a040; vanilla cream and marshmallow white, colour #fff1d0; pale biscuit wafer; a few small jewel-candy accents in amber, mint green and cherry pink; one hard pure white highlight on every glossy surface. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Stuck: one glossy puddle of golden caramel toffee seen from slightly above, a flat round blob with three thick sticky toffee strings stretching straight up out of it and sagging, one hard white highlight on the puddle; only toffee, no object stands in it; flat and simple; nothing else in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, pastel pink frosting everywhere, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, grass, slab, platform, person, character, face, eyes, checkerboard, dark background, foot, shoe, boot, honey, bee, slime, figure, warrior, robot, armour, clothes, pink."
+      },
+      "submittedAt": "2026-10-09T20:15:33.452Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-candy/icon-stuck-b.png",
+      "rawSheetSha256": "2908113f8be272780ee539745db1044918935fb1fc157bc6b73a68ecac94b72b",
+      "plateHints": [
+        {
+          "bandRows": 7,
+          "groundShare": 0.2857,
+          "footprintWidthShare": 0.8286,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-09T20:16:16.631Z",
+      "usageUsd": 0.008041480832629734,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Drew a crowned red-haired figure on a toffee stand (close to the IP guard list): rejected.",
+        "reviewedAt": "2026-10-09T20:17:41.611Z"
+      }
+    },
+    "icon-stuck-c": {
+      "id": "icon-stuck-c",
+      "asset": "chibi-direction-icon-status-stuck",
+      "jobId": "sync-5fd84da1-8966-4866-956e-a2ed44f12a52",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "direction-candy",
+        "asset": "chibi-direction-icon-status-stuck",
+        "subject": "ICON:STATUS:STUCK",
+        "faction": "CANDY",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 414203,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/CANDY.md#prompt-fragment + docs/art/factions/CANDY.md#negative-fragment",
+            "text": "Faction: a cheerful chocolatier's kingdom of living sweets, rich, glossy and silly. Its fixed colours: glossy dark chocolate, colour #4a2412, and milk chocolate, colour #7a4526, as the dark anchor on every piece (a dipped half, a shield, a glaze, boots, a roof); golden caramel and toffee, colour #e0a040; vanilla cream and marshmallow white, colour #fff1d0; pale biscuit wafer; a few small jewel-candy accents in amber, mint green and cherry pink; one hard pure white highlight on every glossy surface.",
+            "negative": "crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, pastel pink frosting everywhere, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+            "text": "Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/CANDY.json",
+            "text": "Subject: Stuck: one glossy puddle of golden caramel toffee seen from slightly above, a flat round blob with three thick sticky toffee strings stretching straight up out of it and sagging, one hard white highlight on the puddle; only toffee, no object stands in it; flat and simple; nothing else in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "It is a plain object, not a living sweet: it has no face, no eyes, no arms, no legs and no clothes.",
+            "negative": "grass, ground tile, slab, platform, person, character, figure, creature, head, body, arms, legs, feet, hands, face, eyes, crown, hair, clothes, checkerboard, dark background, badge, halo, frame, foot, shoe, boot, honey, bee, slime, warrior, robot, armour, purple, pink, red, stand, statue"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: a cheerful chocolatier's kingdom of living sweets, rich, glossy and silly. Its fixed colours: glossy dark chocolate, colour #4a2412, and milk chocolate, colour #7a4526, as the dark anchor on every piece (a dipped half, a shield, a glaze, boots, a roof); golden caramel and toffee, colour #e0a040; vanilla cream and marshmallow white, colour #fff1d0; pale biscuit wafer; a few small jewel-candy accents in amber, mint green and cherry pink; one hard pure white highlight on every glossy surface. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Stuck: one glossy puddle of golden caramel toffee seen from slightly above, a flat round blob with three thick sticky toffee strings stretching straight up out of it and sagging, one hard white highlight on the puddle; only toffee, no object stands in it; flat and simple; nothing else in the image. It is a plain object, not a living sweet: it has no face, no eyes, no arms, no legs and no clothes.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, pastel pink frosting everywhere, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, grass, slab, platform, person, character, figure, creature, head, body, arms, legs, feet, hands, face, eyes, crown, hair, clothes, checkerboard, dark background, badge, halo, foot, shoe, boot, honey, bee, slime, warrior, robot, armour, pink, stand, statue",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: a cheerful chocolatier's kingdom of living sweets, rich, glossy and silly. Its fixed colours: glossy dark chocolate, colour #4a2412, and milk chocolate, colour #7a4526, as the dark anchor on every piece (a dipped half, a shield, a glaze, boots, a roof); golden caramel and toffee, colour #e0a040; vanilla cream and marshmallow white, colour #fff1d0; pale biscuit wafer; a few small jewel-candy accents in amber, mint green and cherry pink; one hard pure white highlight on every glossy surface. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Stuck: one glossy puddle of golden caramel toffee seen from slightly above, a flat round blob with three thick sticky toffee strings stretching straight up out of it and sagging, one hard white highlight on the puddle; only toffee, no object stands in it; flat and simple; nothing else in the image. It is a plain object, not a living sweet: it has no face, no eyes, no arms, no legs and no clothes. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, pastel pink frosting everywhere, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, grass, slab, platform, person, character, figure, creature, head, body, arms, legs, feet, hands, face, eyes, crown, hair, clothes, checkerboard, dark background, badge, halo, foot, shoe, boot, honey, bee, slime, warrior, robot, armour, pink, stand, statue."
+      },
+      "submittedAt": "2026-10-09T20:18:52.866Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-candy/icon-stuck-c.png",
+      "rawSheetSha256": "1d241cf634fb21d50b39a93c5ebadbf8d11d0a09b849cf308f22ec17ea18532a",
+      "plateHints": [
+        {
+          "bandRows": 7,
+          "groundShare": 0.2396,
+          "footprintWidthShare": 1,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-09T20:19:28.190Z",
+      "usageUsd": 0.008299375348620946,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Sticks standing in a toffee puddle; kept as the source of icon-stuck-c-edit.",
+        "reviewedAt": "2026-10-09T20:24:03.303Z"
+      }
+    },
+    "icon-stuck-c-edit": {
+      "id": "icon-stuck-c-edit",
+      "asset": "chibi-direction-icon-status-stuck",
+      "jobId": "cada02a4-208b-4abf-a6e1-97a4d2a3de9b",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-candy",
+        "asset": "chibi-direction-icon-status-stuck",
+        "subject": "ICON:STATUS:STUCK",
+        "faction": "CANDY",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 414205,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only the three upright sticks: each becomes a stretchy string of the same glossy caramel toffee pulled up out of the puddle, thick at the puddle, thin and sagging in the middle and ending in a small rounded drip at its top, with no sprinkles on them. Keep the round glossy caramel puddle, its highlight, the colours, thick black outline and art style the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change only the three upright sticks: each becomes a stretchy string of the same glossy caramel toffee pulled up out of the puddle, thick at the puddle, thin and sagging in the middle and ending in a small rounded drip at its top, with no sprinkles on them. Keep the round glossy caramel puddle, its highlight, the colours, thick black outline and art style the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change only the three upright sticks: each becomes a stretchy string of the same glossy caramel toffee pulled up out of the puddle, thick at the puddle, thin and sagging in the middle and ending in a small rounded drip at its top, with no sprinkles on them. Keep the round glossy caramel puddle, its highlight, the colours, thick black outline and art style the same, on a transparent background.",
+        "editInstruction": "Change only the three upright sticks: each becomes a stretchy string of the same glossy caramel toffee pulled up out of the puddle, thick at the puddle, thin and sagging in the middle and ending in a small rounded drip at its top, with no sprinkles on them. Keep the round glossy caramel puddle, its highlight, the colours, thick black outline and art style the same, on a transparent background.",
+        "source": {
+          "recipe": "icon-stuck-c",
+          "candidate": 0,
+          "sha256": "1d241cf634fb21d50b39a93c5ebadbf8d11d0a09b849cf308f22ec17ea18532a"
+        }
+      },
+      "submittedAt": "2026-10-09T20:22:14.259Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-candy/icon-stuck-c-edit.png",
+      "rawSheetSha256": "86d89a5e521d1340a6e1000a8e20e5fd164f2bb116e30691714c5e63862f0f2f",
+      "plateHints": [
+        {
+          "bandRows": 7,
+          "groundShare": 0.2396,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 7,
+          "groundShare": 0.2396,
+          "footprintWidthShare": 1,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-09T20:23:02.224Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Stuck: a glossy caramel toffee puddle with three toffee strings pulled up out of it, each ending in a drip. A sticky toffee mess at 48 px and a toffee blob with strings at 24 px; caramel and chocolate only; thick black outline; transparent, no plate.",
+        "reviewedAt": "2026-10-09T20:24:06.645Z"
+      }
+    },
+    "icon-stuck-d": {
+      "id": "icon-stuck-d",
+      "asset": "chibi-direction-icon-status-stuck",
+      "jobId": "sync-3700fd24-1738-41fe-90c1-0ebfd2476210",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "direction-candy",
+        "asset": "chibi-direction-icon-status-stuck",
+        "subject": "ICON:STATUS:STUCK",
+        "faction": "CANDY",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 414204,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/CANDY.md#prompt-fragment + docs/art/factions/CANDY.md#negative-fragment",
+            "text": "Faction: a cheerful chocolatier's kingdom of living sweets, rich, glossy and silly. Its fixed colours: glossy dark chocolate, colour #4a2412, and milk chocolate, colour #7a4526, as the dark anchor on every piece (a dipped half, a shield, a glaze, boots, a roof); golden caramel and toffee, colour #e0a040; vanilla cream and marshmallow white, colour #fff1d0; pale biscuit wafer; a few small jewel-candy accents in amber, mint green and cherry pink; one hard pure white highlight on every glossy surface.",
+            "negative": "crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, pastel pink frosting everywhere, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+            "text": "Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/CANDY.json",
+            "text": "Subject: Stuck: one glossy puddle of golden caramel toffee seen from slightly above, a flat round blob with three thick sticky toffee strings stretching straight up out of it and sagging, one hard white highlight on the puddle; only toffee, no object stands in it; flat and simple; nothing else in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "It is a plain object, not a living sweet: it has no face, no eyes, no arms, no legs and no clothes.",
+            "negative": "grass, ground tile, slab, platform, person, character, figure, creature, head, body, arms, legs, feet, hands, face, eyes, crown, hair, clothes, checkerboard, dark background, badge, halo, frame, foot, shoe, boot, honey, bee, slime, warrior, robot, armour, purple, pink, red, stand, statue"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: a cheerful chocolatier's kingdom of living sweets, rich, glossy and silly. Its fixed colours: glossy dark chocolate, colour #4a2412, and milk chocolate, colour #7a4526, as the dark anchor on every piece (a dipped half, a shield, a glaze, boots, a roof); golden caramel and toffee, colour #e0a040; vanilla cream and marshmallow white, colour #fff1d0; pale biscuit wafer; a few small jewel-candy accents in amber, mint green and cherry pink; one hard pure white highlight on every glossy surface. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Stuck: one glossy puddle of golden caramel toffee seen from slightly above, a flat round blob with three thick sticky toffee strings stretching straight up out of it and sagging, one hard white highlight on the puddle; only toffee, no object stands in it; flat and simple; nothing else in the image. It is a plain object, not a living sweet: it has no face, no eyes, no arms, no legs and no clothes.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, pastel pink frosting everywhere, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, grass, slab, platform, person, character, figure, creature, head, body, arms, legs, feet, hands, face, eyes, crown, hair, clothes, checkerboard, dark background, badge, halo, foot, shoe, boot, honey, bee, slime, warrior, robot, armour, pink, stand, statue",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: a cheerful chocolatier's kingdom of living sweets, rich, glossy and silly. Its fixed colours: glossy dark chocolate, colour #4a2412, and milk chocolate, colour #7a4526, as the dark anchor on every piece (a dipped half, a shield, a glaze, boots, a roof); golden caramel and toffee, colour #e0a040; vanilla cream and marshmallow white, colour #fff1d0; pale biscuit wafer; a few small jewel-candy accents in amber, mint green and cherry pink; one hard pure white highlight on every glossy surface. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Stuck: one glossy puddle of golden caramel toffee seen from slightly above, a flat round blob with three thick sticky toffee strings stretching straight up out of it and sagging, one hard white highlight on the puddle; only toffee, no object stands in it; flat and simple; nothing else in the image. It is a plain object, not a living sweet: it has no face, no eyes, no arms, no legs and no clothes. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, pastel pink frosting everywhere, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, grass, slab, platform, person, character, figure, creature, head, body, arms, legs, feet, hands, face, eyes, crown, hair, clothes, checkerboard, dark background, badge, halo, foot, shoe, boot, honey, bee, slime, warrior, robot, armour, pink, stand, statue."
+      },
+      "submittedAt": "2026-10-09T20:19:28.233Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-candy/icon-stuck-d.png",
+      "rawSheetSha256": "70ddacfea0d36a6f0f0bdc07eaf55475b5730a3b8589aebb6ff08f3ea47227f9",
+      "plateHints": [
+        {
+          "bandRows": 7,
+          "groundShare": 0.1389,
+          "footprintWidthShare": 0.8947,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-09T20:20:22.918Z",
+      "usageUsd": 0.008831474039289687,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "A biscuit plate with three sticks and sprinkles: reads as a cake with candles.",
+        "reviewedAt": "2026-10-09T20:24:02.509Z"
+      }
+    },
     "icon-sugar-rush-a": {
       "id": "icon-sugar-rush-a",
       "asset": "chibi-direction-icon-action-sugar-rush",
@@ -6316,6 +6734,776 @@
         "candidate": 0,
         "notes": "Chocolatier look (pulp_wars-jdb.10): the Sugar Toss icon: a golden toffee in a cream wrapper over its arrow.",
         "reviewedAt": "2026-10-05T16:47:33.053Z"
+      }
+    },
+    "icon-toothache-a": {
+      "id": "icon-toothache-a",
+      "asset": "chibi-direction-icon-status-toothache",
+      "jobId": "sync-3f85adf7-5c8e-46d9-bc66-83aaf7ba467e",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "direction-candy",
+        "asset": "chibi-direction-icon-status-toothache",
+        "subject": "ICON:STATUS:TOOTHACHE",
+        "faction": "CANDY",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 414301,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/CANDY.md#prompt-fragment + docs/art/factions/CANDY.md#negative-fragment",
+            "text": "Faction: a cheerful chocolatier's kingdom of living sweets, rich, glossy and silly. Its fixed colours: glossy dark chocolate, colour #4a2412, and milk chocolate, colour #7a4526, as the dark anchor on every piece (a dipped half, a shield, a glaze, boots, a roof); golden caramel and toffee, colour #e0a040; vanilla cream and marshmallow white, colour #fff1d0; pale biscuit wafer; a few small jewel-candy accents in amber, mint green and cherry pink; one hard pure white highlight on every glossy surface.",
+            "negative": "crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, pastel pink frosting everywhere, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+            "text": "Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/CANDY.json",
+            "text": "Subject: Toothache: one big white tooth, a molar with two short roots, with a dark chocolate zigzag crack down its crown and one small white sparkle star at its top right; white with pale cream shading; flat and simple; nothing else in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "",
+            "negative": "grass, ground tile, slab, platform, person, character, face, eyes, checkerboard, dark background, mouth, lips, gums, blood, red, toothbrush, dentist"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: a cheerful chocolatier's kingdom of living sweets, rich, glossy and silly. Its fixed colours: glossy dark chocolate, colour #4a2412, and milk chocolate, colour #7a4526, as the dark anchor on every piece (a dipped half, a shield, a glaze, boots, a roof); golden caramel and toffee, colour #e0a040; vanilla cream and marshmallow white, colour #fff1d0; pale biscuit wafer; a few small jewel-candy accents in amber, mint green and cherry pink; one hard pure white highlight on every glossy surface. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Toothache: one big white tooth, a molar with two short roots, with a dark chocolate zigzag crack down its crown and one small white sparkle star at its top right; white with pale cream shading; flat and simple; nothing else in the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, pastel pink frosting everywhere, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, grass, slab, platform, person, character, face, eyes, checkerboard, dark background, mouth, lips, gums, blood, toothbrush, dentist",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: a cheerful chocolatier's kingdom of living sweets, rich, glossy and silly. Its fixed colours: glossy dark chocolate, colour #4a2412, and milk chocolate, colour #7a4526, as the dark anchor on every piece (a dipped half, a shield, a glaze, boots, a roof); golden caramel and toffee, colour #e0a040; vanilla cream and marshmallow white, colour #fff1d0; pale biscuit wafer; a few small jewel-candy accents in amber, mint green and cherry pink; one hard pure white highlight on every glossy surface. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Toothache: one big white tooth, a molar with two short roots, with a dark chocolate zigzag crack down its crown and one small white sparkle star at its top right; white with pale cream shading; flat and simple; nothing else in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, pastel pink frosting everywhere, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, grass, slab, platform, person, character, face, eyes, checkerboard, dark background, mouth, lips, gums, blood, toothbrush, dentist."
+      },
+      "submittedAt": "2026-10-09T20:13:25.282Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-candy/icon-toothache-a.png",
+      "rawSheetSha256": "bb5b96d80ec0976ae193785f083dea028ae69e420e83e19796432d4a6680cd80",
+      "plateHints": [
+        {
+          "bandRows": 7,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6774,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-09T20:14:01.130Z",
+      "usageUsd": 0.007930399841732449,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The tooth's roots became two legs in shoes with jewel trim: a walking tooth character, not a status glyph.",
+        "reviewedAt": "2026-10-09T20:14:34.403Z"
+      }
+    },
+    "icon-toothache-b": {
+      "id": "icon-toothache-b",
+      "asset": "chibi-direction-icon-status-toothache",
+      "jobId": "sync-3de1970b-c502-4bd2-878a-041d9b3429dc",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "direction-candy",
+        "asset": "chibi-direction-icon-status-toothache",
+        "subject": "ICON:STATUS:TOOTHACHE",
+        "faction": "CANDY",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 414302,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/CANDY.md#prompt-fragment + docs/art/factions/CANDY.md#negative-fragment",
+            "text": "Faction: a cheerful chocolatier's kingdom of living sweets, rich, glossy and silly. Its fixed colours: glossy dark chocolate, colour #4a2412, and milk chocolate, colour #7a4526, as the dark anchor on every piece (a dipped half, a shield, a glaze, boots, a roof); golden caramel and toffee, colour #e0a040; vanilla cream and marshmallow white, colour #fff1d0; pale biscuit wafer; a few small jewel-candy accents in amber, mint green and cherry pink; one hard pure white highlight on every glossy surface.",
+            "negative": "crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, pastel pink frosting everywhere, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+            "text": "Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/CANDY.json",
+            "text": "Subject: Toothache: one big white back tooth drawn like a simple dental icon, a rounded square crown with two short stubby rounded roots under it, a dark chocolate zigzag crack down the middle of the crown and one small white four-pointed sparkle star at its top right; white with pale grey-cream shading; flat and simple; nothing else in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "",
+            "negative": "grass, ground tile, slab, platform, person, character, face, eyes, checkerboard, dark background, mouth, lips, gums, blood, red, toothbrush, dentist, legs, feet, shoes, socks, arms, hands, gems, jewels, character"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: a cheerful chocolatier's kingdom of living sweets, rich, glossy and silly. Its fixed colours: glossy dark chocolate, colour #4a2412, and milk chocolate, colour #7a4526, as the dark anchor on every piece (a dipped half, a shield, a glaze, boots, a roof); golden caramel and toffee, colour #e0a040; vanilla cream and marshmallow white, colour #fff1d0; pale biscuit wafer; a few small jewel-candy accents in amber, mint green and cherry pink; one hard pure white highlight on every glossy surface. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Toothache: one big white back tooth drawn like a simple dental icon, a rounded square crown with two short stubby rounded roots under it, a dark chocolate zigzag crack down the middle of the crown and one small white four-pointed sparkle star at its top right; white with pale grey-cream shading; flat and simple; nothing else in the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, pastel pink frosting everywhere, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, grass, slab, platform, person, character, face, eyes, checkerboard, dark background, mouth, lips, gums, blood, toothbrush, dentist, legs, feet, shoes, socks, arms, hands, gems, jewels",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: a cheerful chocolatier's kingdom of living sweets, rich, glossy and silly. Its fixed colours: glossy dark chocolate, colour #4a2412, and milk chocolate, colour #7a4526, as the dark anchor on every piece (a dipped half, a shield, a glaze, boots, a roof); golden caramel and toffee, colour #e0a040; vanilla cream and marshmallow white, colour #fff1d0; pale biscuit wafer; a few small jewel-candy accents in amber, mint green and cherry pink; one hard pure white highlight on every glossy surface. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Toothache: one big white back tooth drawn like a simple dental icon, a rounded square crown with two short stubby rounded roots under it, a dark chocolate zigzag crack down the middle of the crown and one small white four-pointed sparkle star at its top right; white with pale grey-cream shading; flat and simple; nothing else in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, pastel pink frosting everywhere, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, grass, slab, platform, person, character, face, eyes, checkerboard, dark background, mouth, lips, gums, blood, toothbrush, dentist, legs, feet, shoes, socks, arms, hands, gems, jewels."
+      },
+      "submittedAt": "2026-10-09T20:16:16.681Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-candy/icon-toothache-b.png",
+      "rawSheetSha256": "b42e3d6612b92f8e573c1e6a8719820cb5bb96a0d95fbf98b5b1dcc231546933",
+      "plateHints": [
+        {
+          "bandRows": 6,
+          "groundShare": 0.3976,
+          "footprintWidthShare": 0.5938,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-09T20:16:52.152Z",
+      "usageUsd": 0.007990823056962755,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "A tooth in a pink frilly halo with orange root stubs: the halo reads as a badge and is pink-dominated.",
+        "reviewedAt": "2026-10-09T20:17:42.677Z"
+      }
+    },
+    "icon-toothache-c": {
+      "id": "icon-toothache-c",
+      "asset": "chibi-direction-icon-status-toothache",
+      "jobId": "sync-5749cbcf-ce22-4722-bf25-3c57c6423af3",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "direction-candy",
+        "asset": "chibi-direction-icon-status-toothache",
+        "subject": "ICON:STATUS:TOOTHACHE",
+        "faction": "CANDY",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 414303,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/CANDY.md#prompt-fragment + docs/art/factions/CANDY.md#negative-fragment",
+            "text": "Faction: a cheerful chocolatier's kingdom of living sweets, rich, glossy and silly. Its fixed colours: glossy dark chocolate, colour #4a2412, and milk chocolate, colour #7a4526, as the dark anchor on every piece (a dipped half, a shield, a glaze, boots, a roof); golden caramel and toffee, colour #e0a040; vanilla cream and marshmallow white, colour #fff1d0; pale biscuit wafer; a few small jewel-candy accents in amber, mint green and cherry pink; one hard pure white highlight on every glossy surface.",
+            "negative": "crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, pastel pink frosting everywhere, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+            "text": "Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/CANDY.json",
+            "text": "Subject: Toothache: one big white back tooth drawn like a simple dental icon, a rounded square crown with two short stubby rounded roots under it, a dark chocolate zigzag crack down the middle of the crown and one small white four-pointed sparkle star at its top right; white with pale grey-cream shading; flat and simple; nothing else in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "It is a plain object, not a living sweet: it has no face, no eyes, no arms, no legs and no clothes.",
+            "negative": "grass, ground tile, slab, platform, person, character, figure, creature, head, body, arms, legs, feet, hands, face, eyes, crown, hair, clothes, checkerboard, dark background, badge, halo, frame, mouth, lips, gums, blood, red, pink, toothbrush, dentist, shoes, socks, gems, jewels"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: a cheerful chocolatier's kingdom of living sweets, rich, glossy and silly. Its fixed colours: glossy dark chocolate, colour #4a2412, and milk chocolate, colour #7a4526, as the dark anchor on every piece (a dipped half, a shield, a glaze, boots, a roof); golden caramel and toffee, colour #e0a040; vanilla cream and marshmallow white, colour #fff1d0; pale biscuit wafer; a few small jewel-candy accents in amber, mint green and cherry pink; one hard pure white highlight on every glossy surface. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Toothache: one big white back tooth drawn like a simple dental icon, a rounded square crown with two short stubby rounded roots under it, a dark chocolate zigzag crack down the middle of the crown and one small white four-pointed sparkle star at its top right; white with pale grey-cream shading; flat and simple; nothing else in the image. It is a plain object, not a living sweet: it has no face, no eyes, no arms, no legs and no clothes.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, pastel pink frosting everywhere, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, grass, slab, platform, person, character, figure, creature, head, body, arms, legs, feet, hands, face, eyes, crown, hair, clothes, checkerboard, dark background, badge, halo, mouth, lips, gums, blood, pink, toothbrush, dentist, shoes, socks, gems, jewels",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: a cheerful chocolatier's kingdom of living sweets, rich, glossy and silly. Its fixed colours: glossy dark chocolate, colour #4a2412, and milk chocolate, colour #7a4526, as the dark anchor on every piece (a dipped half, a shield, a glaze, boots, a roof); golden caramel and toffee, colour #e0a040; vanilla cream and marshmallow white, colour #fff1d0; pale biscuit wafer; a few small jewel-candy accents in amber, mint green and cherry pink; one hard pure white highlight on every glossy surface. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Toothache: one big white back tooth drawn like a simple dental icon, a rounded square crown with two short stubby rounded roots under it, a dark chocolate zigzag crack down the middle of the crown and one small white four-pointed sparkle star at its top right; white with pale grey-cream shading; flat and simple; nothing else in the image. It is a plain object, not a living sweet: it has no face, no eyes, no arms, no legs and no clothes. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, pastel pink frosting everywhere, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, grass, slab, platform, person, character, figure, creature, head, body, arms, legs, feet, hands, face, eyes, crown, hair, clothes, checkerboard, dark background, badge, halo, mouth, lips, gums, blood, pink, toothbrush, dentist, shoes, socks, gems, jewels."
+      },
+      "submittedAt": "2026-10-09T20:20:23.103Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-candy/icon-toothache-c.png",
+      "rawSheetSha256": "8345a5804919d1b4311a5c0a061cf2fe96f2883958fb9defc9d235b38d22c8c6",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0,
+          "footprintWidthShare": 0.1739,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-09T20:21:11.682Z",
+      "usageUsd": 0.009603362772199843,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The clearest tooth, with four stray dots in its corners and a stitched crack; kept as the source of icon-toothache-c-edit.",
+        "reviewedAt": "2026-10-09T20:24:05.042Z"
+      }
+    },
+    "icon-toothache-c-edit": {
+      "id": "icon-toothache-c-edit",
+      "asset": "chibi-direction-icon-status-toothache",
+      "jobId": "1421aa1c-6418-4ccb-8f77-5d5eadf133f1",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-candy",
+        "asset": "chibi-direction-icon-status-toothache",
+        "subject": "ICON:STATUS:TOOTHACHE",
+        "faction": "CANDY",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 414305,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only two things: erase the four tiny coloured dots in the corners of the image so the corners are empty and transparent; and recolour the stitched crack down the tooth into one plain dark chocolate brown #4a2412 zigzag crack line. Keep the white tooth, its two roots, its grey shading, the white sparkle star, the thick black outline and art style the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change only two things: erase the four tiny coloured dots in the corners of the image so the corners are empty and transparent; and recolour the stitched crack down the tooth into one plain dark chocolate brown #4a2412 zigzag crack line. Keep the white tooth, its two roots, its grey shading, the white sparkle star, the thick black outline and art style the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change only two things: erase the four tiny coloured dots in the corners of the image so the corners are empty and transparent; and recolour the stitched crack down the tooth into one plain dark chocolate brown #4a2412 zigzag crack line. Keep the white tooth, its two roots, its grey shading, the white sparkle star, the thick black outline and art style the same, on a transparent background.",
+        "editInstruction": "Change only two things: erase the four tiny coloured dots in the corners of the image so the corners are empty and transparent; and recolour the stitched crack down the tooth into one plain dark chocolate brown #4a2412 zigzag crack line. Keep the white tooth, its two roots, its grey shading, the white sparkle star, the thick black outline and art style the same, on a transparent background.",
+        "source": {
+          "recipe": "icon-toothache-c",
+          "candidate": 0,
+          "sha256": "8345a5804919d1b4311a5c0a061cf2fe96f2883958fb9defc9d235b38d22c8c6"
+        }
+      },
+      "submittedAt": "2026-10-09T20:23:02.265Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-candy/icon-toothache-c-edit.png",
+      "rawSheetSha256": "504a5d2ca1a69ed7dae47fd7e6e1a6c2a308dbb32b7241de81c59af715d2c5c6",
+      "plateHints": [
+        {
+          "bandRows": 7,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6429,
+          "suspect": false
+        },
+        {
+          "bandRows": 7,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6429,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-09T20:23:37.524Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Toothache: a white molar with two roots, a dark chocolate zigzag crack and a white sparkle; the source's corner dots erased. Clear at 48 and 24 px, reads on the dark marker token; white, grey-cream and chocolate; thick black outline; transparent, no plate.",
+        "reviewedAt": "2026-10-09T20:24:07.536Z"
+      }
+    },
+    "icon-toothache-d": {
+      "id": "icon-toothache-d",
+      "asset": "chibi-direction-icon-status-toothache",
+      "jobId": "sync-6ef2f148-2b56-4c87-b82c-bb60b60ed5b0",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "direction-candy",
+        "asset": "chibi-direction-icon-status-toothache",
+        "subject": "ICON:STATUS:TOOTHACHE",
+        "faction": "CANDY",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 414304,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/CANDY.md#prompt-fragment + docs/art/factions/CANDY.md#negative-fragment",
+            "text": "Faction: a cheerful chocolatier's kingdom of living sweets, rich, glossy and silly. Its fixed colours: glossy dark chocolate, colour #4a2412, and milk chocolate, colour #7a4526, as the dark anchor on every piece (a dipped half, a shield, a glaze, boots, a roof); golden caramel and toffee, colour #e0a040; vanilla cream and marshmallow white, colour #fff1d0; pale biscuit wafer; a few small jewel-candy accents in amber, mint green and cherry pink; one hard pure white highlight on every glossy surface.",
+            "negative": "crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, pastel pink frosting everywhere, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+            "text": "Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/CANDY.json",
+            "text": "Subject: Toothache: one big white back tooth drawn like a simple dental icon, a rounded square crown with two short stubby rounded roots under it, a dark chocolate zigzag crack down the middle of the crown and one small white four-pointed sparkle star at its top right; white with pale grey-cream shading; flat and simple; nothing else in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "It is a plain object, not a living sweet: it has no face, no eyes, no arms, no legs and no clothes.",
+            "negative": "grass, ground tile, slab, platform, person, character, figure, creature, head, body, arms, legs, feet, hands, face, eyes, crown, hair, clothes, checkerboard, dark background, badge, halo, frame, mouth, lips, gums, blood, red, pink, toothbrush, dentist, shoes, socks, gems, jewels"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: a cheerful chocolatier's kingdom of living sweets, rich, glossy and silly. Its fixed colours: glossy dark chocolate, colour #4a2412, and milk chocolate, colour #7a4526, as the dark anchor on every piece (a dipped half, a shield, a glaze, boots, a roof); golden caramel and toffee, colour #e0a040; vanilla cream and marshmallow white, colour #fff1d0; pale biscuit wafer; a few small jewel-candy accents in amber, mint green and cherry pink; one hard pure white highlight on every glossy surface. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Toothache: one big white back tooth drawn like a simple dental icon, a rounded square crown with two short stubby rounded roots under it, a dark chocolate zigzag crack down the middle of the crown and one small white four-pointed sparkle star at its top right; white with pale grey-cream shading; flat and simple; nothing else in the image. It is a plain object, not a living sweet: it has no face, no eyes, no arms, no legs and no clothes.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, pastel pink frosting everywhere, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, grass, slab, platform, person, character, figure, creature, head, body, arms, legs, feet, hands, face, eyes, crown, hair, clothes, checkerboard, dark background, badge, halo, mouth, lips, gums, blood, pink, toothbrush, dentist, shoes, socks, gems, jewels",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: a cheerful chocolatier's kingdom of living sweets, rich, glossy and silly. Its fixed colours: glossy dark chocolate, colour #4a2412, and milk chocolate, colour #7a4526, as the dark anchor on every piece (a dipped half, a shield, a glaze, boots, a roof); golden caramel and toffee, colour #e0a040; vanilla cream and marshmallow white, colour #fff1d0; pale biscuit wafer; a few small jewel-candy accents in amber, mint green and cherry pink; one hard pure white highlight on every glossy surface. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Toothache: one big white back tooth drawn like a simple dental icon, a rounded square crown with two short stubby rounded roots under it, a dark chocolate zigzag crack down the middle of the crown and one small white four-pointed sparkle star at its top right; white with pale grey-cream shading; flat and simple; nothing else in the image. It is a plain object, not a living sweet: it has no face, no eyes, no arms, no legs and no clothes. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, pastel pink frosting everywhere, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, grass, slab, platform, person, character, figure, creature, head, body, arms, legs, feet, hands, face, eyes, crown, hair, clothes, checkerboard, dark background, badge, halo, mouth, lips, gums, blood, pink, toothbrush, dentist, shoes, socks, gems, jewels."
+      },
+      "submittedAt": "2026-10-09T20:21:11.705Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-candy/icon-toothache-d.png",
+      "rawSheetSha256": "e49a586bba5b0f7cdd2aa31cac3416c5e00a4ddf77d4e8a2db321c798bcb83f8",
+      "plateHints": [
+        {
+          "bandRows": 7,
+          "groundShare": 0.2701,
+          "footprintWidthShare": 0.871,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-09T20:21:43.189Z",
+      "usageUsd": 0.007690358877182007,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "A chocolate-cracked tooth with gem trim and a lumpy silhouette: busier and less tooth-like than icon-toothache-c.",
+        "reviewedAt": "2026-10-09T20:24:04.163Z"
+      }
+    },
+    "icon-top-up-a": {
+      "id": "icon-top-up-a",
+      "asset": "chibi-direction-icon-action-top-up",
+      "jobId": "sync-eb3f9c45-d6f6-476f-875e-6fd1e2af97ee",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "direction-candy",
+        "asset": "chibi-direction-icon-action-top-up",
+        "subject": "ICON:ACTION:TOP_UP",
+        "faction": "CANDY",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 414101,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/CANDY.md#prompt-fragment + docs/art/factions/CANDY.md#negative-fragment",
+            "text": "Faction: a cheerful chocolatier's kingdom of living sweets, rich, glossy and silly. Its fixed colours: glossy dark chocolate, colour #4a2412, and milk chocolate, colour #7a4526, as the dark anchor on every piece (a dipped half, a shield, a glaze, boots, a roof); golden caramel and toffee, colour #e0a040; vanilla cream and marshmallow white, colour #fff1d0; pale biscuit wafer; a few small jewel-candy accents in amber, mint green and cherry pink; one hard pure white highlight on every glossy surface.",
+            "negative": "crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, pastel pink frosting everywhere, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+            "text": "Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/CANDY.json",
+            "text": "Subject: Top-Up: one fat sugar shaker, a round cream white jar with a domed milk chocolate lid dotted with holes, tilted to the upper right and shaking a shower of white sugar grains and two small white sparkle stars out of its lid; drawn large, filling the square; nothing else in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "",
+            "negative": "grass, ground tile, slab, platform, person, character, face, eyes, checkerboard, dark background, metal, steel, pepper, spoon, hand"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: a cheerful chocolatier's kingdom of living sweets, rich, glossy and silly. Its fixed colours: glossy dark chocolate, colour #4a2412, and milk chocolate, colour #7a4526, as the dark anchor on every piece (a dipped half, a shield, a glaze, boots, a roof); golden caramel and toffee, colour #e0a040; vanilla cream and marshmallow white, colour #fff1d0; pale biscuit wafer; a few small jewel-candy accents in amber, mint green and cherry pink; one hard pure white highlight on every glossy surface. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Top-Up: one fat sugar shaker, a round cream white jar with a domed milk chocolate lid dotted with holes, tilted to the upper right and shaking a shower of white sugar grains and two small white sparkle stars out of its lid; drawn large, filling the square; nothing else in the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, pastel pink frosting everywhere, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, grass, slab, platform, person, character, face, eyes, checkerboard, dark background, metal, pepper, spoon, hand",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: a cheerful chocolatier's kingdom of living sweets, rich, glossy and silly. Its fixed colours: glossy dark chocolate, colour #4a2412, and milk chocolate, colour #7a4526, as the dark anchor on every piece (a dipped half, a shield, a glaze, boots, a roof); golden caramel and toffee, colour #e0a040; vanilla cream and marshmallow white, colour #fff1d0; pale biscuit wafer; a few small jewel-candy accents in amber, mint green and cherry pink; one hard pure white highlight on every glossy surface. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Top-Up: one fat sugar shaker, a round cream white jar with a domed milk chocolate lid dotted with holes, tilted to the upper right and shaking a shower of white sugar grains and two small white sparkle stars out of its lid; drawn large, filling the square; nothing else in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, pastel pink frosting everywhere, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, grass, slab, platform, person, character, face, eyes, checkerboard, dark background, metal, pepper, spoon, hand."
+      },
+      "submittedAt": "2026-10-09T20:11:55.850Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-candy/icon-top-up-a.png",
+      "rawSheetSha256": "a9171a8c20fb0394ed5fa2fd97dcb20ee3ee7a07389977457666aa969e6a9018",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0.1326,
+          "footprintWidthShare": 0.7353,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-09T20:12:30.480Z",
+      "usageUsd": 0.00790883919927809,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Top-Up (replaces Frosting's piping bag): a cream sugar jar tipping a stream of white sugar and a sparkle out from under its lifted chocolate-biscuit lid, jewel-candy trim at its foot. Reads as adding sugar at 48 px and at the dock's 24 px; on palette (cream, milk chocolate, caramel, small jewel accents); thick black outline; transparent, no plate.",
+        "reviewedAt": "2026-10-09T20:24:05.856Z"
+      }
+    },
+    "icon-top-up-b": {
+      "id": "icon-top-up-b",
+      "asset": "chibi-direction-icon-action-top-up",
+      "jobId": "sync-32f7830e-564f-4161-84db-1602e71259cf",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "direction-candy",
+        "asset": "chibi-direction-icon-action-top-up",
+        "subject": "ICON:ACTION:TOP_UP",
+        "faction": "CANDY",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 414102,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/CANDY.md#prompt-fragment + docs/art/factions/CANDY.md#negative-fragment",
+            "text": "Faction: a cheerful chocolatier's kingdom of living sweets, rich, glossy and silly. Its fixed colours: glossy dark chocolate, colour #4a2412, and milk chocolate, colour #7a4526, as the dark anchor on every piece (a dipped half, a shield, a glaze, boots, a roof); golden caramel and toffee, colour #e0a040; vanilla cream and marshmallow white, colour #fff1d0; pale biscuit wafer; a few small jewel-candy accents in amber, mint green and cherry pink; one hard pure white highlight on every glossy surface.",
+            "negative": "crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, pastel pink frosting everywhere, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+            "text": "Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/CANDY.json",
+            "text": "Subject: Top-Up: one fat sugar shaker, a round cream white jar with a domed milk chocolate lid dotted with holes, tilted to the upper right and shaking a shower of white sugar grains and two small white sparkle stars out of its lid; drawn large, filling the square; nothing else in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The shaker is tall and narrow like a sugar dredger: a cream white body with a rounded milk chocolate cap screwed on top, the cap stays on, and the sugar pours out of the holes in the cap.",
+            "negative": "grass, ground tile, slab, platform, person, character, face, eyes, checkerboard, dark background, metal, steel, pepper, spoon, hand, jar, open lid, gems"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: a cheerful chocolatier's kingdom of living sweets, rich, glossy and silly. Its fixed colours: glossy dark chocolate, colour #4a2412, and milk chocolate, colour #7a4526, as the dark anchor on every piece (a dipped half, a shield, a glaze, boots, a roof); golden caramel and toffee, colour #e0a040; vanilla cream and marshmallow white, colour #fff1d0; pale biscuit wafer; a few small jewel-candy accents in amber, mint green and cherry pink; one hard pure white highlight on every glossy surface. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Top-Up: one fat sugar shaker, a round cream white jar with a domed milk chocolate lid dotted with holes, tilted to the upper right and shaking a shower of white sugar grains and two small white sparkle stars out of its lid; drawn large, filling the square; nothing else in the image. The shaker is tall and narrow like a sugar dredger: a cream white body with a rounded milk chocolate cap screwed on top, the cap stays on, and the sugar pours out of the holes in the cap.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, pastel pink frosting everywhere, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, grass, slab, platform, person, character, face, eyes, checkerboard, dark background, metal, pepper, spoon, hand, jar, open lid, gems",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: a cheerful chocolatier's kingdom of living sweets, rich, glossy and silly. Its fixed colours: glossy dark chocolate, colour #4a2412, and milk chocolate, colour #7a4526, as the dark anchor on every piece (a dipped half, a shield, a glaze, boots, a roof); golden caramel and toffee, colour #e0a040; vanilla cream and marshmallow white, colour #fff1d0; pale biscuit wafer; a few small jewel-candy accents in amber, mint green and cherry pink; one hard pure white highlight on every glossy surface. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Top-Up: one fat sugar shaker, a round cream white jar with a domed milk chocolate lid dotted with holes, tilted to the upper right and shaking a shower of white sugar grains and two small white sparkle stars out of its lid; drawn large, filling the square; nothing else in the image. The shaker is tall and narrow like a sugar dredger: a cream white body with a rounded milk chocolate cap screwed on top, the cap stays on, and the sugar pours out of the holes in the cap. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, pastel pink frosting everywhere, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, grass, slab, platform, person, character, face, eyes, checkerboard, dark background, metal, pepper, spoon, hand, jar, open lid, gems."
+      },
+      "submittedAt": "2026-10-09T20:14:48.627Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-candy/icon-top-up-b.png",
+      "rawSheetSha256": "5e6fca11c2545cebccc6cb7d585c0cfc54d2f775583354a2c7b9aeb60b472247",
+      "plateHints": [
+        {
+          "bandRows": 7,
+          "groundShare": 0.0523,
+          "footprintWidthShare": 0.9063,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-09T20:15:33.411Z",
+      "usageUsd": 0.00881935445467631,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Drew a pot-bellied character with a cap flying off and jewel trim, not a shaker.",
+        "reviewedAt": "2026-10-09T20:17:40.648Z"
+      }
+    },
+    "icon-top-up-c": {
+      "id": "icon-top-up-c",
+      "asset": "chibi-direction-icon-action-top-up",
+      "jobId": "sync-05c789b2-4a49-4f8b-93ef-9b4fd61aa3d9",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "direction-candy",
+        "asset": "chibi-direction-icon-action-top-up",
+        "subject": "ICON:ACTION:TOP_UP",
+        "faction": "CANDY",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 414103,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/CANDY.md#prompt-fragment + docs/art/factions/CANDY.md#negative-fragment",
+            "text": "Faction: a cheerful chocolatier's kingdom of living sweets, rich, glossy and silly. Its fixed colours: glossy dark chocolate, colour #4a2412, and milk chocolate, colour #7a4526, as the dark anchor on every piece (a dipped half, a shield, a glaze, boots, a roof); golden caramel and toffee, colour #e0a040; vanilla cream and marshmallow white, colour #fff1d0; pale biscuit wafer; a few small jewel-candy accents in amber, mint green and cherry pink; one hard pure white highlight on every glossy surface.",
+            "negative": "crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, pastel pink frosting everywhere, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+            "text": "Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/CANDY.json",
+            "text": "Subject: Top-Up: one fat sugar shaker, a round cream white jar with a domed milk chocolate lid dotted with holes, tilted to the upper right and shaking a shower of white sugar grains and two small white sparkle stars out of its lid; drawn large, filling the square; nothing else in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "It is a plain object, not a living sweet: it has no face, no eyes, no arms, no legs and no clothes. The shaker is tall and narrow like a sugar dredger: a cream white body with a rounded milk chocolate cap that stays on, and the sugar pours out of the holes in the cap.",
+            "negative": "grass, ground tile, slab, platform, person, character, figure, creature, head, body, arms, legs, feet, hands, face, eyes, crown, hair, clothes, checkerboard, dark background, badge, halo, frame, metal, steel, pepper, spoon, jar, open lid, gems"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: a cheerful chocolatier's kingdom of living sweets, rich, glossy and silly. Its fixed colours: glossy dark chocolate, colour #4a2412, and milk chocolate, colour #7a4526, as the dark anchor on every piece (a dipped half, a shield, a glaze, boots, a roof); golden caramel and toffee, colour #e0a040; vanilla cream and marshmallow white, colour #fff1d0; pale biscuit wafer; a few small jewel-candy accents in amber, mint green and cherry pink; one hard pure white highlight on every glossy surface. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Top-Up: one fat sugar shaker, a round cream white jar with a domed milk chocolate lid dotted with holes, tilted to the upper right and shaking a shower of white sugar grains and two small white sparkle stars out of its lid; drawn large, filling the square; nothing else in the image. It is a plain object, not a living sweet: it has no face, no eyes, no arms, no legs and no clothes. The shaker is tall and narrow like a sugar dredger: a cream white body with a rounded milk chocolate cap that stays on, and the sugar pours out of the holes in the cap.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, pastel pink frosting everywhere, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, grass, slab, platform, person, character, figure, creature, head, body, arms, legs, feet, hands, face, eyes, crown, hair, clothes, checkerboard, dark background, badge, halo, metal, pepper, spoon, jar, open lid, gems",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: a cheerful chocolatier's kingdom of living sweets, rich, glossy and silly. Its fixed colours: glossy dark chocolate, colour #4a2412, and milk chocolate, colour #7a4526, as the dark anchor on every piece (a dipped half, a shield, a glaze, boots, a roof); golden caramel and toffee, colour #e0a040; vanilla cream and marshmallow white, colour #fff1d0; pale biscuit wafer; a few small jewel-candy accents in amber, mint green and cherry pink; one hard pure white highlight on every glossy surface. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Top-Up: one fat sugar shaker, a round cream white jar with a domed milk chocolate lid dotted with holes, tilted to the upper right and shaking a shower of white sugar grains and two small white sparkle stars out of its lid; drawn large, filling the square; nothing else in the image. It is a plain object, not a living sweet: it has no face, no eyes, no arms, no legs and no clothes. The shaker is tall and narrow like a sugar dredger: a cream white body with a rounded milk chocolate cap that stays on, and the sugar pours out of the holes in the cap. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, pastel pink frosting everywhere, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, grass, slab, platform, person, character, figure, creature, head, body, arms, legs, feet, hands, face, eyes, crown, hair, clothes, checkerboard, dark background, badge, halo, metal, pepper, spoon, jar, open lid, gems."
+      },
+      "submittedAt": "2026-10-09T20:17:44.620Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-candy/icon-top-up-c.png",
+      "rawSheetSha256": "3574afe5a1e9d1f7fea61caba54b164ee4a128424b51b5a65379012b310c3b1a",
+      "plateHints": [
+        {
+          "bandRows": 8,
+          "groundShare": 0.3878,
+          "footprintWidthShare": 0.7097,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-09T20:18:28.542Z",
+      "usageUsd": 0.008503692309061686,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "A dark brown jar pouring sugar: reads, but darker and muddier than icon-top-up-a at 48 px.",
+        "reviewedAt": "2026-10-09T20:24:00.905Z"
+      }
+    },
+    "icon-top-up-d": {
+      "id": "icon-top-up-d",
+      "asset": "chibi-direction-icon-action-top-up",
+      "jobId": "sync-ee79e6d8-febf-4dbe-b14f-adfafacecdb5",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "direction-candy",
+        "asset": "chibi-direction-icon-action-top-up",
+        "subject": "ICON:ACTION:TOP_UP",
+        "faction": "CANDY",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 414104,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/CANDY.md#prompt-fragment + docs/art/factions/CANDY.md#negative-fragment",
+            "text": "Faction: a cheerful chocolatier's kingdom of living sweets, rich, glossy and silly. Its fixed colours: glossy dark chocolate, colour #4a2412, and milk chocolate, colour #7a4526, as the dark anchor on every piece (a dipped half, a shield, a glaze, boots, a roof); golden caramel and toffee, colour #e0a040; vanilla cream and marshmallow white, colour #fff1d0; pale biscuit wafer; a few small jewel-candy accents in amber, mint green and cherry pink; one hard pure white highlight on every glossy surface.",
+            "negative": "crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, pastel pink frosting everywhere, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+            "text": "Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/CANDY.json",
+            "text": "Subject: Top-Up: one fat sugar shaker, a round cream white jar with a domed milk chocolate lid dotted with holes, tilted to the upper right and shaking a shower of white sugar grains and two small white sparkle stars out of its lid; drawn large, filling the square; nothing else in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "It is a plain object, not a living sweet: it has no face, no eyes, no arms, no legs and no clothes. The shaker is tall and narrow like a sugar dredger: a cream white body with a rounded milk chocolate cap that stays on, and the sugar pours out of the holes in the cap.",
+            "negative": "grass, ground tile, slab, platform, person, character, figure, creature, head, body, arms, legs, feet, hands, face, eyes, crown, hair, clothes, checkerboard, dark background, badge, halo, frame, metal, steel, pepper, spoon, jar, open lid, gems"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: a cheerful chocolatier's kingdom of living sweets, rich, glossy and silly. Its fixed colours: glossy dark chocolate, colour #4a2412, and milk chocolate, colour #7a4526, as the dark anchor on every piece (a dipped half, a shield, a glaze, boots, a roof); golden caramel and toffee, colour #e0a040; vanilla cream and marshmallow white, colour #fff1d0; pale biscuit wafer; a few small jewel-candy accents in amber, mint green and cherry pink; one hard pure white highlight on every glossy surface. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Top-Up: one fat sugar shaker, a round cream white jar with a domed milk chocolate lid dotted with holes, tilted to the upper right and shaking a shower of white sugar grains and two small white sparkle stars out of its lid; drawn large, filling the square; nothing else in the image. It is a plain object, not a living sweet: it has no face, no eyes, no arms, no legs and no clothes. The shaker is tall and narrow like a sugar dredger: a cream white body with a rounded milk chocolate cap that stays on, and the sugar pours out of the holes in the cap.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, pastel pink frosting everywhere, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, grass, slab, platform, person, character, figure, creature, head, body, arms, legs, feet, hands, face, eyes, crown, hair, clothes, checkerboard, dark background, badge, halo, metal, pepper, spoon, jar, open lid, gems",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: a cheerful chocolatier's kingdom of living sweets, rich, glossy and silly. Its fixed colours: glossy dark chocolate, colour #4a2412, and milk chocolate, colour #7a4526, as the dark anchor on every piece (a dipped half, a shield, a glaze, boots, a roof); golden caramel and toffee, colour #e0a040; vanilla cream and marshmallow white, colour #fff1d0; pale biscuit wafer; a few small jewel-candy accents in amber, mint green and cherry pink; one hard pure white highlight on every glossy surface. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Top-Up: one fat sugar shaker, a round cream white jar with a domed milk chocolate lid dotted with holes, tilted to the upper right and shaking a shower of white sugar grains and two small white sparkle stars out of its lid; drawn large, filling the square; nothing else in the image. It is a plain object, not a living sweet: it has no face, no eyes, no arms, no legs and no clothes. The shaker is tall and narrow like a sugar dredger: a cream white body with a rounded milk chocolate cap that stays on, and the sugar pours out of the holes in the cap. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, pastel pink frosting everywhere, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, grass, slab, platform, person, character, figure, creature, head, body, arms, legs, feet, hands, face, eyes, crown, hair, clothes, checkerboard, dark background, badge, halo, metal, pepper, spoon, jar, open lid, gems."
+      },
+      "submittedAt": "2026-10-09T20:18:28.576Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-candy/icon-top-up-d.png",
+      "rawSheetSha256": "314b0184983b2d1e925034ea404761f7b2a026f67ba30943f967f9c916237a53",
+      "plateHints": [
+        {
+          "bandRows": 8,
+          "groundShare": 0.3355,
+          "footprintWidthShare": 0.8621,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-09T20:18:52.846Z",
+      "usageUsd": 0.007280437654919095,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "A cream jar with its lid floating above it and no sugar falling: does not say shaking sugar.",
+        "reviewedAt": "2026-10-09T20:24:01.724Z"
       }
     },
     "jawbreaker-a": {
@@ -11216,6 +12404,75 @@
       "notes": "Chocolatier look (pulp_wars-jdb.10): the Sugar Toss icon: a golden toffee in a cream wrapper over its arrow.",
       "acceptedAt": "2026-10-05T16:47:33.053Z"
     },
+    "chibi-direction-icon-action-top-up": {
+      "id": "chibi-direction-icon-action-top-up",
+      "subject": "ICON:ACTION:TOP_UP",
+      "assetClass": "ICON",
+      "status": "ACCEPTED",
+      "recipe": "icon-top-up-a",
+      "candidate": 0,
+      "candidateSha256": "a9171a8c20fb0394ed5fa2fd97dcb20ee3ee7a07389977457666aa969e6a9018",
+      "master": {
+        "path": "public/assets/chibi/icons/chibi-direction-icon-action-top-up.png",
+        "sha256": "09133ac5b3b942923fcbaa8e74f9f3afc0a7419bcded088ce6ddbbd49e341c04",
+        "pixelSha256": "7ce60db989e3afa8bc38a974ef264474f0e3cdc670a901dfbc633f0b5f33c555",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is",
+        "accent": {
+          "preset": "candy-pink",
+          "spec": {
+            "band": {
+              "hueFrom": 310,
+              "hueTo": 356,
+              "saturationMin": 0.3,
+              "valueMin": 0.3,
+              "hueCentre": 340
+            },
+            "hue": 334,
+            "hueSpread": 0.25,
+            "saturation": {
+              "scale": 0.55,
+              "add": 0.08,
+              "max": 0.5
+            },
+            "value": {
+              "scale": 0.6,
+              "add": 0.42
+            }
+          },
+          "accentPixels": 81,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 9,
+        "groundShare": 0.1326,
+        "footprintWidthShare": 0.7353,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Top-Up (replaces Frosting's piping bag): a cream sugar jar tipping a stream of white sugar and a sparkle out from under its lifted chocolate-biscuit lid, jewel-candy trim at its foot. Reads as adding sugar at 48 px and at the dock's 24 px; on palette (cream, milk chocolate, caramel, small jewel accents); thick black outline; transparent, no plate.",
+      "acceptedAt": "2026-10-09T20:24:05.856Z"
+    },
     "chibi-direction-icon-candy-emblem": {
       "id": "chibi-direction-icon-candy-emblem",
       "subject": "ICON:HUD:CANDY:EMBLEM",
@@ -11491,6 +12748,144 @@
       },
       "notes": "A white splat of cream with round splashes and drips, no face.",
       "acceptedAt": "2026-10-04T09:28:23.598Z"
+    },
+    "chibi-direction-icon-status-stuck": {
+      "id": "chibi-direction-icon-status-stuck",
+      "subject": "ICON:STATUS:STUCK",
+      "assetClass": "ICON",
+      "status": "ACCEPTED",
+      "recipe": "icon-stuck-c-edit",
+      "candidate": 0,
+      "candidateSha256": "14ff7d61f204cf27a857b734556b51689feea8157c98ccc22861ac3d7bdb56ad",
+      "master": {
+        "path": "public/assets/chibi/icons/chibi-direction-icon-status-stuck.png",
+        "sha256": "14ff7d61f204cf27a857b734556b51689feea8157c98ccc22861ac3d7bdb56ad",
+        "pixelSha256": "62cc700b00c58eec293eda734bebb6c68f81d044f8ddb8c97b0fe06a9569c2f9",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is",
+        "accent": {
+          "preset": "candy-pink",
+          "spec": {
+            "band": {
+              "hueFrom": 310,
+              "hueTo": 356,
+              "saturationMin": 0.3,
+              "valueMin": 0.3,
+              "hueCentre": 340
+            },
+            "hue": 334,
+            "hueSpread": 0.25,
+            "saturation": {
+              "scale": 0.55,
+              "add": 0.08,
+              "max": 0.5
+            },
+            "value": {
+              "scale": 0.6,
+              "add": 0.42
+            }
+          },
+          "accentPixels": 0,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 7,
+        "groundShare": 0.2396,
+        "footprintWidthShare": 1,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Stuck: a glossy caramel toffee puddle with three toffee strings pulled up out of it, each ending in a drip. A sticky toffee mess at 48 px and a toffee blob with strings at 24 px; caramel and chocolate only; thick black outline; transparent, no plate.",
+      "acceptedAt": "2026-10-09T20:24:06.645Z"
+    },
+    "chibi-direction-icon-status-toothache": {
+      "id": "chibi-direction-icon-status-toothache",
+      "subject": "ICON:STATUS:TOOTHACHE",
+      "assetClass": "ICON",
+      "status": "ACCEPTED",
+      "recipe": "icon-toothache-c-edit",
+      "candidate": 0,
+      "candidateSha256": "733728efc122fad6456730216ef4ffeaa2920737be2bd6d04f5e4d1eb2d2cab6",
+      "master": {
+        "path": "public/assets/chibi/icons/chibi-direction-icon-status-toothache.png",
+        "sha256": "733728efc122fad6456730216ef4ffeaa2920737be2bd6d04f5e4d1eb2d2cab6",
+        "pixelSha256": "9a9956cad4c0d5371faa15ea88de773dff0f5490f1965d5d66358af5e5134207",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is",
+        "accent": {
+          "preset": "candy-pink",
+          "spec": {
+            "band": {
+              "hueFrom": 310,
+              "hueTo": 356,
+              "saturationMin": 0.3,
+              "valueMin": 0.3,
+              "hueCentre": 340
+            },
+            "hue": 334,
+            "hueSpread": 0.25,
+            "saturation": {
+              "scale": 0.55,
+              "add": 0.08,
+              "max": 0.5
+            },
+            "value": {
+              "scale": 0.6,
+              "add": 0.42
+            }
+          },
+          "accentPixels": 0,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 7,
+        "groundShare": 0,
+        "footprintWidthShare": 0.6429,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Toothache: a white molar with two roots, a dark chocolate zigzag crack and a white sparkle; the source's corner dots erased. Clear at 48 and 24 px, reads on the dark marker token; white, grey-cream and chocolate; thick black outline; transparent, no plate.",
+      "acceptedAt": "2026-10-09T20:24:07.536Z"
     },
     "chibi-direction-icon-tech-home-sweet-home": {
       "id": "chibi-direction-icon-tech-home-sweet-home",

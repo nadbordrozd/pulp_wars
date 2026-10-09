@@ -2,6 +2,8 @@ import type { PlayerEventEnvelopeV7, PlayerViewV7 } from "../engine/index";
 import {
   ATTACK_EFFECT_DURATIONS_V7,
   ATTACK_EFFECT_HIT_V7,
+  RICOCHET_LANDS_V7,
+  THUMP_HIT_V7,
   type AttackEffectIdV7,
 } from "../render/canvas/attack-effects-v7";
 import type {
@@ -161,6 +163,21 @@ export function soundCuesForStepV7(
             ? []
             : [
                 { id: sounds.impact, delayMs: hitMs },
+                // The Candy redesign: a ricochet pops again on the next unit.
+                ...(step.ricochet === undefined
+                  ? []
+                  : [
+                      {
+                        id: "special.boing" as const,
+                        delayMs: hitMs + 40,
+                      },
+                      {
+                        id: sounds.impact,
+                        delayMs:
+                          ATTACK_EFFECT_DURATIONS_V7[step.attackEffect] *
+                          RICOCHET_LANDS_V7,
+                      },
+                    ]),
                 ...(kills
                   ? [
                       {
@@ -342,6 +359,17 @@ export function soundCuesForStepV7(
           ];
         case "CRUMBS_EATEN":
           return [{ id: "economy.harvest", delayMs: 0 }];
+        // The Candy redesign: the Bunny's stomp, then the ring's hits.
+        case "THUMP":
+          return [
+            { id: "impact.heavy", delayMs: 0 },
+            { id: "special.puff", delayMs: step.durationMs * THUMP_HIT_V7 },
+          ];
+        case "TOP_UP":
+          return [
+            { id: "special.sparkle", delayMs: 0 },
+            { id: "support.heal", delayMs: step.durationMs * 0.4 },
+          ];
       }
       return [];
     case "GIANT": {

@@ -91,6 +91,7 @@ import {
 import { candyCursorCueV7 } from "./candy-board-plan-v7";
 import {
   crumbsTileLinesV7,
+  glazeTileLinesV7,
   matchHasCandySeatV7,
 } from "../candy-presentation-v7";
 import {
@@ -1139,7 +1140,9 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
             effect,
             step.from,
             step.to,
-            attackReducedMotionProgressV7(effect),
+            attackReducedMotionProgressV7(effect, {
+              ricochet: step.ricochet !== undefined,
+            }),
             broadsideOf(step),
           );
           this.#drawSupportOverlay();
@@ -2432,6 +2435,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         {
           ...(entry.shell === undefined ? {} : { shell: entry.shell }),
           ...(entry.splash === undefined ? {} : { splash: entry.splash }),
+          ...(entry.ricochet === undefined ? {} : { ricochet: entry.ricochet }),
         },
       ),
     );
@@ -2713,6 +2717,8 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       model.view.graves.some((grave) => same(grave, at)) ? "Grave" : "",
       // The Candy revision: the tile's Crumbs, their turns and their bite.
       ...crumbsTileLinesV7(model.view, at),
+      // The Candy redesign: the tile's Glaze this turn.
+      ...glazeTileLinesV7(model.view, at),
       // Map curiosities: the tile's curiosity and its one sentence.
       ...(() => {
         const curiosity = curiosityOverlayOnTileV7(model.view, at);
@@ -3219,11 +3225,17 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       const to = path[index + 1];
       if (from === undefined || to === undefined) return;
       const local = scaled - index;
+      // The Candy redesign (section 14): a Chocolate Bunny's hop (two
+      // tiles in one step of the path) arcs up over the jumped tile.
+      const hop =
+        Math.max(Math.abs(to.x - from.x), Math.abs(to.y - from.y)) === 2
+          ? Math.sin(Math.PI * local) * HOP_LIFT_TILES_V7
+          : 0;
       this.#animatedUnit = {
         id: unitId,
         at: {
           x: from.x + (to.x - from.x) * local,
-          y: from.y + (to.y - from.y) * local,
+          y: from.y + (to.y - from.y) * local - hop,
         },
       };
       if (followCamera) this.#followCamera(this.#animatedUnit.at);
@@ -3493,15 +3505,28 @@ type ShotStepV7 = Extract<
   { readonly kind: "MELEE" | "RANGED" | "CATAPULT" }
 >;
 
-/** A broadside's shell and splash cells (bead pulp_wars-eu3r.4). */
-type BroadsideFeedbackV7 = Pick<AttackFeedbackV7, "shell" | "splash">;
+/**
+ * A broadside's shell and splash cells (bead pulp_wars-eu3r.4), and a
+ * gumball's ricochet (the Candy redesign, bead pulp_wars-jdb.14).
+ */
+type BroadsideFeedbackV7 = Pick<
+  AttackFeedbackV7,
+  "shell" | "splash" | "ricochet"
+>;
 
 function broadsideOf(step: ShotStepV7): BroadsideFeedbackV7 {
   return {
     ...(step.shell === undefined ? {} : { shell: step.shell }),
     ...(step.splash === undefined ? {} : { splash: step.splash }),
+    ...(step.ricochet === undefined ? {} : { ricochet: step.ricochet }),
   };
 }
+
+/**
+ * The Candy redesign (section 14): how high a hopping Chocolate Bunny rises
+ * over the jumped tile, in tiles.
+ */
+export const HOP_LIFT_TILES_V7 = 0.55;
 
 /** The attack cue of a shot step (bead pulp_wars-b5f.5), or null. */
 function attackEffectOf(step: CorePresentationStepV7): AttackEffectIdV7 | null {
@@ -3521,6 +3546,8 @@ function candyFeedbackOf(
     cells: step.cells,
     ...(step.from === undefined ? {} : { from: step.from }),
     ...(step.amount === undefined ? {} : { amount: step.amount }),
+    ...(step.amounts === undefined ? {} : { amounts: step.amounts }),
+    ...(step.source === undefined ? {} : { source: step.source }),
     progress,
   };
 }

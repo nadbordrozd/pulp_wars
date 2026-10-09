@@ -8,6 +8,7 @@ import {
   SUGAR_RUSH_MOVE_BONUS_V7,
   SUGAR_TOSS_HEAL_V7,
   SUGAR_TOSS_RANGE_V7,
+  STUCK_MAX_STEPS_V7,
   THUMP_DAMAGE_V7,
   TOOTHACHE_ATTACK2_V7,
   TOP_UP_HEAL_V7,
@@ -152,12 +153,100 @@ export const BUNNY_HOP_LABEL_V7 = "Bunny Hop";
 export const THUMP_LABEL_V7 = "Thump";
 export const TOOTHACHE_LABEL_V7 = "Toothache";
 
+// ------------------------------------- The redesign's UI (jdb.14) ---
+
+/**
+ * The Candy redesign's markers, chips, previews and pickers
+ * (docs/product/RULESET_7_CANDY_REDESIGN.md section 14, bead
+ * `pulp_wars-jdb.14`). Every number comes from the engine constants.
+ */
+export const STUCK_LABEL_V7 = "Stuck";
+/** The Stuck chip: "Stuck: one step". */
+export const STUCK_STATUS_V7 = `${STUCK_LABEL_V7}: ${numberWord(STUCK_MAX_STEPS_V7)} step`;
+/** The Toothache chip: "Toothache: next attack −1". */
+export const TOOTHACHE_STATUS_V7 = `${TOOTHACHE_LABEL_V7}: next attack −${half(TOOTHACHE_ATTACK2_V7)}`;
+export const GLAZED_LABEL_V7 = "Glazed";
+/** The Glaze of a tile, for the viewer's own turn. */
+export const GLAZED_OWN_TILE_V7 =
+  "Glazed: your units step onto it at half cost this turn";
+/** "Glazed: Player N's units step onto it at half cost this turn". */
+export function glazedTileTextV7(view: PlayerViewV7): string {
+  const active = view.turnOrder[view.activeSeatIndex];
+  if (active === view.viewer.id) return GLAZED_OWN_TILE_V7;
+  const player = view.players.find((candidate) => candidate.id === active);
+  return `${GLAZED_LABEL_V7}: ${player === undefined ? "the active player's" : `Player ${player.seat + 1}'s`} units step onto it at half cost this turn`;
+}
+/** The Glaze line of a tile, or an empty list (no text names a tile). */
+export function glazeTileLinesV7(
+  view: PlayerViewV7,
+  at: CoordV7,
+): readonly string[] {
+  return view.glazedThisTurn.some((tile) => tile.x === at.x && tile.y === at.y)
+    ? [glazedTileTextV7(view)]
+    : [];
+}
+/** A Bunny's Move that hops over a tile (the cursor and the dock). */
+export const HOP_MOVE_TEXT_V7 = `${BUNNY_HOP_LABEL_V7}: jumps over one tile`;
+/** "Top-Up: no unit next to it needs one". */
+export const TOP_UP_NO_TARGET_V7 = "No unit next to it needs a Top-Up";
+/** The first step of the Re-bake pick: which Crumbs. */
+export const REBAKE_PICK_CRUMBS_V7 = `Choose the Crumbs to scoop, within ${numberWord(REBAKE_REACH_V7)} tiles`;
+/** The second step: where the copy comes out. */
+export const REBAKE_PICK_TILE_V7 = `Choose where it comes out, next to the ${candyLabelV7("CAPTAIN")}`;
+/** The Top-Up pick. */
+export const TOP_UP_PICK_V7 = "Choose a unit next to it";
+
+/** "+2 · Crash ends · Cures": what a Top-Up target gets. */
+export function topUpBoardLabelV7(entry: {
+  readonly amount: number;
+  readonly crashEnded: boolean;
+  readonly cured: boolean;
+}): string {
+  return [
+    ...(entry.amount > 0 ? [`+${entry.amount}`] : []),
+    ...(entry.crashEnded ? ["Crash ends"] : []),
+    ...(entry.cured ? ["Cures"] : []),
+  ].join(" · ");
+}
+/** "Top-Up {unit}: +2 · Crash ends · Cures". */
+export function topUpTargetNameV7(
+  unit: string,
+  entry: Parameters<typeof topUpBoardLabelV7>[0],
+): string {
+  return `${TOP_UP_LABEL_V7} ${unit}: ${topUpBoardLabelV7(entry)}`;
+}
+/** "Scoop {unit} Crumbs: {n} Coins, {n} HP" (the first Re-bake step). */
+export function rebakeCrumbsNameV7(
+  role: UnitRoleIdV7,
+  cost: number,
+  hp: number,
+): string {
+  return `Scoop ${candyLabelV7(role)} Crumbs: ${plural(cost, "Coin")}, ${hp} HP`;
+}
+
 export const RUSH_PREVIEW_V7 = `Sugar Rush +${half(SUGAR_RUSH_ATTACK2_V7)}`;
 export const SPLAT_PREVIEW_V7 = "Splat: no strike-back this turn";
 export const SPLATTED_PREVIEW_V7 = "No strike-back: Splatted";
 export const BOUNCES_PREVIEW_V7 = "Bounces back";
 export const BOUNCE_BLOCKED_PREVIEW_V7 = "Bounce blocked";
 export const BOUNCE_UNKNOWN_PREVIEW_V7 = "May bounce back";
+/** The Candy redesign's preview lines (section 14). */
+export const STUCK_TARGET_PREVIEW_V7 = `${STICKY_TOFFEE_LABEL_V7}: target Stuck`;
+export const STUCK_ATTACKER_PREVIEW_V7 = `${STICKY_TOFFEE_LABEL_V7}: attacker Stuck`;
+export const TOOTHACHE_GIVEN_PREVIEW_V7 = `${TOOTHACHE_LABEL_V7}: attacker's next attack −${half(TOOTHACHE_ATTACK2_V7)}`;
+export const TOOTHACHE_ATTACK_PREVIEW_V7 = `${TOOTHACHE_LABEL_V7} −${half(TOOTHACHE_ATTACK2_V7)}`;
+export const THUMP_UNCERTAIN_PREVIEW_V7 = `${THUMP_LABEL_V7} may hit unseen units`;
+/** "Ricochet −2", the gumball's fixed hit on the unit it bounces to. */
+export function ricochetPreviewV7(damage: number): string {
+  return `${RICOCHET_LABEL_V7} −${damage}`;
+}
+/** "Thump −2 to 3": the fixed hits of a Chocolate Bunny's Thump. */
+export function thumpPreviewV7(
+  hits: readonly { readonly damage: number }[],
+): string {
+  const amounts = [...new Set(hits.map((hit) => hit.damage))];
+  return `${THUMP_LABEL_V7} −${amounts.length === 1 ? String(amounts[0]) : amounts.join("/")} to ${hits.length}`;
+}
 export const EATS_CRUMBS_V7 = "Eats Crumbs";
 /** "Eats Crumbs" or "Eats Crumbs: −{n}". */
 export function eatsCrumbsTextV7(damage: number): string {
@@ -233,7 +322,13 @@ export function homeSweetHomeChipV7(
 
 /** One Candy chip of a unit's dock. */
 export interface CandyChipV7 {
-  readonly id: "rushed" | "home-sweet-home" | "crashed" | "splatted";
+  readonly id:
+    | "rushed"
+    | "home-sweet-home"
+    | "crashed"
+    | "splatted"
+    | "stuck"
+    | "toothache";
   readonly label: string;
   /** The one sentence of section 15.2: the tooltip and accessible name. */
   readonly status: string;
@@ -242,14 +337,17 @@ export interface CandyChipV7 {
     | "ICON:STATUS:RUSHED"
     | "ICON:STATUS:CRASHED"
     | "ICON:STATUS:SPLATTED"
+    | "ICON:STATUS:STUCK"
+    | "ICON:STATUS:TOOTHACHE"
     | "ICON:TECH:CANDY:FORTIFICATION";
 }
 
 /**
  * The Candy chips of a visible unit of any owner (section 15.2): Rushed,
- * Home Sweet Home, Crashed (by whose turn it is) and Splatted. Empty in a
- * match without a Candy seat. (The Candy redesign removed the Rush perks'
- * chips; the Stuck and Toothache markers are `pulp_wars-jdb.14`'s.)
+ * Home Sweet Home, Crashed (by whose turn it is) and Splatted; and the
+ * Candy redesign's Stuck ("Stuck: one step") and Toothache ("Toothache:
+ * next attack −1", RULESET_7_CANDY_REDESIGN.md section 14). Empty in a
+ * match without a Candy seat.
  */
 export function candyChipsV7(
   view: PlayerViewV7,
@@ -289,6 +387,20 @@ export function candyChipsV7(
       status: SPLATTED_STATUS_V7,
       icon: "ICON:STATUS:SPLATTED",
     });
+  if (stats.stuck === true)
+    chips.push({
+      id: "stuck",
+      label: STUCK_LABEL_V7,
+      status: STUCK_STATUS_V7,
+      icon: "ICON:STATUS:STUCK",
+    });
+  if (stats.toothache === true)
+    chips.push({
+      id: "toothache",
+      label: TOOTHACHE_LABEL_V7,
+      status: TOOTHACHE_STATUS_V7,
+      icon: "ICON:STATUS:TOOTHACHE",
+    });
   return chips;
 }
 
@@ -311,7 +423,10 @@ export function candyUnitInfoLinesV7(
   const lines: CandyUnitInfoLineV7[] = candyChipsV7(view, unit).map((chip) => ({
     id: chip.id,
     name: chip.label,
-    description: `${chip.status.replace(/^[^:]+: /, "").replace(/^./, (letter) => letter.toUpperCase())}.`,
+    description:
+      chip.id === "stuck" || chip.id === "toothache"
+        ? candyStatusDescriptionV7(view, unit, chip.id)
+        : `${chip.status.replace(/^[^:]+: /, "").replace(/^./, (letter) => letter.toUpperCase())}.`,
   }));
   const mechanics: PublicCandyMechanicsV7 | undefined = candyStatsV7(
     view,
@@ -325,6 +440,33 @@ export function candyUnitInfoLinesV7(
       description: `When it falls it leaves Crumbs for ${numberWord(CRUMBS_TURNS_V7)} turns; a ${candyLabelV7("CAPTAIN")} within ${numberWord(REBAKE_REACH_V7)} tiles bakes it back for ${plural(mechanics.rebake.cost, "Coin")} at ${mechanics.rebake.hp} HP.${mechanics.crumbsBite > 0 ? ` An enemy that eats them takes ${mechanics.crumbsBite}.` : ""}`,
     });
   return lines;
+}
+
+/**
+ * When a Stuck or Toothache entry of a visible unit wears off, from its
+ * public `endsLeft`: "this turn" on its owner's turn with one End Turn
+ * left, otherwise "its next turn".
+ */
+export function candyStatusWearsOffV7(
+  view: PlayerViewV7,
+  unit: Pick<PublicUnitV7, "id" | "ownerId">,
+  status: "stuck" | "toothache",
+): string {
+  const entry = view[status].find((candidate) => candidate.unitId === unit.id);
+  const ownersTurn = view.turnOrder[view.activeSeatIndex] === unit.ownerId;
+  return ownersTurn && entry?.endsLeft === 1 ? "this turn" : "its next turn";
+}
+
+/** The unit information sentence of a Stuck or Toothache unit. */
+function candyStatusDescriptionV7(
+  view: PlayerViewV7,
+  unit: PublicUnitV7,
+  status: "stuck" | "toothache",
+): string {
+  const until = candyStatusWearsOffV7(view, unit, status);
+  return status === "stuck"
+    ? `It can move only ${numberWord(STUCK_MAX_STEPS_V7)} tile until the end of ${until}.`
+    : `Its next attack is ${half(TOOTHACHE_ATTACK2_V7)} weaker; unused, it wears off at the end of ${until}.`;
 }
 
 // --------------------------------------------- Unavailable reasons ---
@@ -409,6 +551,23 @@ export function sugarTossUnavailableTextV7(
   if (rejection === "CRASHED") return SUGAR_RUSH_CRASHED_V7;
   if (rejection !== null || unit.activation.handled) return null;
   return SUGAR_TOSS_NO_TARGET_V7;
+}
+
+/**
+ * The Candy redesign (section 8.2): why an own Confectioner that could
+ * still act has no Top-Up ("Crashed", "No unit next to it needs a
+ * Top-Up"); null when it has one or cannot act at all.
+ */
+export function topUpUnavailableTextV7(
+  view: PlayerViewV7,
+  unit: PublicUnitV7,
+  offered: boolean,
+): string | null {
+  if (offered || unit.ownerId !== view.viewer.id) return null;
+  const rejection = candyActionRejectionV7(view, unit, "TOP_UP");
+  if (rejection === "CRASHED") return SUGAR_RUSH_CRASHED_V7;
+  if (rejection !== null || unit.activation.handled) return null;
+  return TOP_UP_NO_TARGET_V7;
 }
 
 const FIELD_DEFENSE_BLOCK_CACHE = new WeakMap<PlayerViewV7, Set<number>>();
@@ -683,20 +842,44 @@ export function candyRecruitNotesV7(
 
 // ------------------------------------------------- Attack previews ---
 
+/** One unit an attack's Ricochet or Thump also hits, by its unit ID. */
+export interface CandyCombatHitV7 {
+  readonly unitId: number;
+  readonly kind: "RICOCHET" | "THUMP";
+  /** "−2" (with what a Shield takes: "−1 +1 sh"). */
+  readonly label: string;
+  readonly lethal: boolean;
+}
+
 /** The Candy lines of one attack preview (section 15.1). */
 export interface CandyCombatLinesV7 {
-  /** "Sugar Rush +1", "Splat: ...", "No strike-back: Splatted", the Bounce. */
+  /**
+   * "Sugar Rush +1", "Splat: ...", "No strike-back: Splatted", the Bounce;
+   * the Candy redesign's Sticky Toffee, Toothache, Ricochet and Thump.
+   */
   readonly notes: readonly string[];
   /** The attacker's tile after the Bounce, or that the Bounce is blocked. */
   readonly bounce: {
     readonly to: CoordV7 | null;
     readonly blocked: boolean;
   } | null;
+  /** The Candy redesign: the other units the Ricochet or Thump hits. */
+  readonly hits: readonly CandyCombatHitV7[];
+}
+
+function hitLabel(entry: {
+  readonly damage: number;
+  readonly shieldDamage: number;
+}): string {
+  return `−${entry.damage}${entry.shieldDamage > 0 ? ` +${entry.shieldDamage} sh` : ""}`;
 }
 
 /**
  * Section 15.1 "previews", from the public combat preview only. Empty for
- * an exchange without any of them.
+ * an exchange without any of them. The Candy redesign (section 14) adds
+ * "Sticky Toffee: target Stuck" (or the attacker), the Toothache the
+ * attacker gets or uses, "Ricochet −n" and "Thump −2 to n", each hit unit
+ * named in `hits`.
  */
 export function candyCombatLinesV7(
   preview: Pick<
@@ -706,18 +889,63 @@ export function candyCombatLinesV7(
     | "noRetaliationReason"
     | "bounce"
     | "bounceTo"
-  >,
+  > &
+    Partial<
+      Pick<
+        CombatPreviewV7,
+        | "stuckApplied"
+        | "toothacheApplied"
+        | "toothacheAttack"
+        | "ricochet"
+        | "thump"
+        | "thumpUncertain"
+      >
+    >,
 ): CandyCombatLinesV7 {
   const notes: string[] = [];
   if (preview.sugarRushApplied) notes.push(RUSH_PREVIEW_V7);
+  if (preview.toothacheAttack === true) notes.push(TOOTHACHE_ATTACK_PREVIEW_V7);
   if (preview.splatApplied) notes.push(SPLAT_PREVIEW_V7);
   if (preview.noRetaliationReason === "SPLATTED")
     notes.push(SPLATTED_PREVIEW_V7);
+  if (preview.stuckApplied === "TARGET" || preview.stuckApplied === "BOTH")
+    notes.push(STUCK_TARGET_PREVIEW_V7);
+  if (preview.stuckApplied === "ATTACKER" || preview.stuckApplied === "BOTH")
+    notes.push(STUCK_ATTACKER_PREVIEW_V7);
+  if (preview.toothacheApplied === true) notes.push(TOOTHACHE_GIVEN_PREVIEW_V7);
   if (preview.bounce === "WILL_BOUNCE") notes.push(BOUNCES_PREVIEW_V7);
   else if (preview.bounce === "BLOCKED") notes.push(BOUNCE_BLOCKED_PREVIEW_V7);
   else if (preview.bounce === "UNKNOWN_BEHIND_FOG")
     notes.push(BOUNCE_UNKNOWN_PREVIEW_V7);
+  const hits: CandyCombatHitV7[] = [];
+  const ricochet = preview.ricochet ?? null;
+  if (ricochet !== null) {
+    notes.push(ricochetPreviewV7(ricochet.damage + ricochet.shieldDamage));
+    hits.push({
+      unitId: ricochet.unitId,
+      kind: "RICOCHET",
+      label: hitLabel(ricochet),
+      lethal: ricochet.dies,
+    });
+  }
+  const thump = preview.thump ?? [];
+  if (thump.length > 0) {
+    notes.push(
+      thumpPreviewV7(
+        thump.map((hit) => ({ damage: hit.damage + hit.shieldDamage })),
+      ),
+    );
+    for (const hit of thump)
+      hits.push({
+        unitId: hit.unitId,
+        kind: "THUMP",
+        label: hitLabel(hit),
+        lethal: hit.dies,
+      });
+  }
+  if (preview.thumpUncertain === true) notes.push(THUMP_UNCERTAIN_PREVIEW_V7);
   return {
+    hits,
     notes,
     bounce:
       preview.bounce === "WILL_BOUNCE"
@@ -747,8 +975,11 @@ function subject(view: PlayerViewV7, playerId: number): string {
 /**
  * Section 15.2 log lines of one projected boundary: a Rush, the Crash (a
  * count), a Re-bake, Crumbs eaten (with the Peppermint damage), Crumbs gone
- * stale, a Sugar Toss, a Splat and a Bounce. A match without a Candy seat
- * never emits these, so its notices are unchanged.
+ * stale, a Sugar Toss, a Splat and a Bounce; the Candy redesign's (section
+ * 14) "{unit} is stuck in toffee", "{unit} has a toothache", "{unit}
+ * ricocheted onto {unit} (−n)", "{unit} thumped n units" and "{owner}
+ * Confectioner topped up a {unit}". A match without a Candy seat never
+ * emits these, so its notices are unchanged.
  */
 export function candyBoundaryNoticeV7(
   events: readonly PlayerEventV7[],
@@ -795,6 +1026,24 @@ export function candyBoundaryNoticeV7(
       const name = nameOf(event.targetUnitId);
       parts.push(
         `${owner(event.playerId)} ${candyLabelV7("MARKSMAN")} tossed sugar to ${article(name)} ${name} (+${event.amount})`,
+      );
+    } else if (event.kind === "UNIT_STUCK") {
+      parts.push(`${capitalized(nameOf(event.unitId))} is stuck in toffee`);
+    } else if (event.kind === "TOOTHACHE_GIVEN") {
+      parts.push(`${capitalized(nameOf(event.unitId))} has a toothache`);
+    } else if (event.kind === "RICOCHETED") {
+      parts.push(
+        `${capitalized(nameOf(event.unitId))} ricocheted onto ${nameOf(event.targetUnitId)} (−${event.damage + event.shieldDamage})`,
+      );
+    } else if (event.kind === "THUMPED") {
+      if (event.hits.length > 0)
+        parts.push(
+          `${capitalized(nameOf(event.unitId))} thumped ${plural(event.hits.length, "unit")}`,
+        );
+    } else if (event.kind === "UNIT_TOPPED_UP") {
+      const name = nameOf(event.targetUnitId);
+      parts.push(
+        `${owner(event.playerId)} ${candyLabelV7("CAPTAIN")} topped up ${article(name)} ${name}`,
       );
     } else if (event.kind === "COMBAT_RESOLVED") {
       if (event.preview.splatApplied)

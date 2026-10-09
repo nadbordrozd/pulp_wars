@@ -253,11 +253,14 @@ import {
   type TargetHighlightStyleV7,
 } from "./target-highlight-v7";
 import {
+  HOP_MOVE_SEMANTIC_V7,
+  addCandyPickEntriesV7,
   candyAttackTargetExtrasV7,
   candyCrumbsEntriesV7,
   candyPickTargetsV7,
   candyUnitMarkersV7,
   crumbsEatLabelV7,
+  moveHopV7,
   type CandyCrumbsMarkerV7,
   type CandyPickV7,
   type CandyUnitMarkersV7,
@@ -266,6 +269,8 @@ import {
   CRASHED_SPRITE_ALPHA_V7,
   drawCandyBounceArrowV7,
   drawCandyCrumbsV7,
+  drawCandyGlazeCellV7,
+  drawCandyHopArcV7,
   drawCandyRushSparklesV7,
   drawCandyUnitMarkersV7,
   type CandyUnitAnchorV7,
@@ -476,7 +481,7 @@ export interface BoardRenderInteractionV7 {
   readonly kaboomPreviewUnitId?: number | null;
   /**
    * Bead pulp_wars-621: the own unit whose area support button is hovered
-   * or focused, and which one: Tend Wounded (Repair, Frosting) draws its
+   * or focused, and which one: Tend Wounded (Repair) draws its
    * recipients' marks prominent; Rally (Frenzy, Berserk, War Drums) shows
    * its recipients, which have no mark otherwise. Null or omitted leaves
    * the heal marks quiet.
@@ -615,6 +620,14 @@ export interface MapCommandTargetV7 {
     | "SUGAR_RUSH"
     | "REBAKE"
     | "SUGAR_TOSS"
+    /**
+     * The Candy redesign (RULESET_7_CANDY_REDESIGN.md section 14): the
+     * Crumbs a Re-bake scoops (choosing a pile moves on to the tiles next
+     * to the Confectioner; nothing is dispatched), and a unit a
+     * Confectioner may Top Up.
+     */
+    | "REBAKE_CRUMBS"
+    | "TOP_UP"
     /**
      * The giants' signatures (`pulp_wars-w49.32`): a unit an Abomination
      * may swallow, a Goblin a Troll may throw (choosing it moves on to the
@@ -848,6 +861,16 @@ export interface MapCommandTargetV7 {
     readonly to: CoordV7 | null;
     readonly blocked: boolean;
   };
+  /**
+   * The Candy redesign (section 7.7): a Chocolate Bunny's Move that hops
+   * over a tile: the take-off tile, the jumped tile and the landing. The
+   * focused destination draws the arc over the jumped tile.
+   */
+  readonly hop?: {
+    readonly from: CoordV7;
+    readonly over: CoordV7;
+    readonly to: CoordV7;
+  };
   /** The frozen sea: every tile an aimed Freeze turns to ice. */
   readonly freeze?: { readonly tiles: readonly CoordV7[] };
   /**
@@ -1022,6 +1045,11 @@ export interface BoardRenderPlanEntryV7 {
   /** TERRAIN only, the Ice Folk revision: the cell is in a known Blizzard. */
   readonly blizzard?: true;
   /**
+   * TERRAIN only, the Candy redesign (section 7.2): a Donut Racer of the
+   * active seat Glazed the cell this turn (a pink frosting streak).
+   */
+  readonly glazed?: true;
+  /**
    * TERRAIN only, the Rift (bead pulp_wars-9s0.5): the piece of the crack
    * this cell shows. LEGACY draws it in code over the cell's Grass.
    */
@@ -1045,7 +1073,8 @@ export interface BoardRenderPlanEntryV7 {
   readonly dwarfMound?: DwarfMoundMarkerV7;
   /**
    * UNIT only, the Candy revision: the Rushed, Crashed, Splatted and Home
-   * Sweet Home markers and the Sugar Frenzy pips of a visible unit.
+   * Sweet Home markers of a visible unit, and the Candy redesign's Stuck
+   * and Toothache.
    */
   readonly candy?: CandyUnitMarkersV7;
   /**
@@ -1133,6 +1162,8 @@ export function buildBoardRenderPlanV7(
   // (a match without an Ice Folk seat has neither).
   const iceFolkMatch = matchHasIceFolkSeatV7(view);
   const winter = iceFolkMatch ? iceFolkTerrainCellsV7(view) : null;
+  // The Candy redesign (section 7.2): the Glaze of the active seat's turn.
+  const glazed = new Set(view.glazedThisTurn.map(coordKey));
   // The frozen sea: the ice over each water cell, from the view's ice list.
   const seaIce = seaIceCellsV7(view);
   // The Rift (bead pulp_wars-9s0.5): the piece of the crack a cell shows.
@@ -1236,6 +1267,7 @@ export function buildBoardRenderPlanV7(
               ? { blizzard: true as const }
               : {}),
           }),
+      ...(glazed.has(coordKey(tile.at)) ? { glazed: true as const } : {}),
     });
     const joins: (readonly [CoordV7, CoordV7])[] = [];
     for (const dx of [-1, 1])
@@ -1787,6 +1819,11 @@ export function buildBoardRenderPlanV7(
     (command): command is Extract<CommandV7, { kind: "SUGAR_TOSS" }> =>
       command.kind === "SUGAR_TOSS" && command.unitId === selectedUnitId,
   );
+  // The Candy redesign: likewise a selected Confectioner's Top-Up targets.
+  const unarmedTopUp = commands.find(
+    (command): command is Extract<CommandV7, { kind: "TOP_UP" }> =>
+      command.kind === "TOP_UP" && command.unitId === selectedUnitId,
+  );
   const targets = kaboomPreview
     ? []
     : layEgg !== null
@@ -1847,12 +1884,22 @@ export function buildBoardRenderPlanV7(
                               [],
                               candyGhost,
                             )),
+                        ...(unarmedTopUp === undefined
+                          ? []
+                          : candyPickTargetsV7(
+                              view,
+                              commands,
+                              { kind: "TOP_UP", unitId: unarmedTopUp.unitId },
+                              [],
+                              candyGhost,
+                            )),
                       ]);
   if (martianPick !== null)
     addMartianPickEntriesV7(entries, view, targets, martianPick);
   if (iceFolkPick !== null) addIceFolkPickEntriesV7(entries, view, iceFolkPick);
   if (dwarfPick !== null)
     addDwarfPickEntriesV7(entries, view, commands, dwarfPick);
+  if (candyPick !== null) addCandyPickEntriesV7(entries, view, candyPick);
   if (giantPick !== null)
     addGiantPickEntriesV7(
       entries,
@@ -2753,7 +2800,38 @@ export function drawBoardV7(input: {
       : tileHopLiftsV7(input.tileHops, camera, devicePixelRatio);
   let lifted = false;
   const terrainFrame = { camera, devicePixelRatio, sceneAlpha, fogAt };
+  // The Candy redesign (section 7.2): the Glaze streak of each Glazed cell,
+  // over its ground and its Road, under trees, rocks and pieces.
+  const glazedCells = input.plan.entries.filter(
+    (entry) => entry.kind === "TERRAIN" && entry.glazed === true,
+  );
   for (const pass of passes) {
+    if (
+      glazedCells.length > 0 &&
+      pass === (chibiArt === undefined ? "FOREGROUND" : "TALL_BODY")
+    )
+      for (const entry of glazedCells)
+        drawCandyGlazeCellV7(
+          context,
+          {
+            x:
+              camera.offsetX +
+              entry.at.x * TILE_WIDTH * camera.zoom -
+              (TILE_WIDTH * camera.zoom) / 2,
+            y:
+              camera.offsetY +
+              entry.at.y * TILE_HEIGHT * camera.zoom -
+              (TILE_HEIGHT * camera.zoom) / 2,
+            width: TILE_WIDTH * camera.zoom,
+            height: TILE_HEIGHT * camera.zoom,
+          },
+          entry.at,
+          {
+            sceneAlpha,
+            zoom: camera.zoom,
+            highContrast: input.highContrast ?? false,
+          },
+        );
     if (pass === "FOREGROUND")
       for (const entry of fogEdgeAgain)
         drawFogEdgeV7(context, fogFrame, fogArt, entry, fogCells);
@@ -4144,8 +4222,9 @@ export function drawBoardV7(input: {
             });
           }
         // The Candy revision (section 15.1): the Crashed swirl over the
-        // head, the Rushed chip beside it (with the Home Sweet Home house
-        // or the Sugar Frenzy pips) and the Splatted pie on the face.
+        // head, the Rushed chip beside it (with the Home Sweet Home house)
+        // and the Splatted pie on the face; the Candy redesign's Toothache
+        // tooth beside the head and Stuck toffee round the feet.
         if (entry.kind === "UNIT" && entry.candy !== undefined) {
           const candyRaster = (
             subject: ArtSubjectV7,
@@ -4181,6 +4260,9 @@ export function drawBoardV7(input: {
                 : null,
               home: entry.candy.home
                 ? candyRaster("ICON:TECH:CANDY:FORTIFICATION")
+                : null,
+              toothache: entry.candy.toothache
+                ? candyRaster("ICON:STATUS:TOOTHACHE")
                 : null,
               highContrast: input.highContrast ?? false,
               devicePixelRatio,
@@ -4920,6 +5002,13 @@ export function drawBoardV7(input: {
       input.highContrast ?? false,
     );
     drawSlidePreviewV7(
+      context,
+      camera,
+      input.plan,
+      input.previewFocus ?? null,
+      input.highContrast ?? false,
+    );
+    drawHopPreviewV7(
       context,
       camera,
       input.plan,
@@ -5931,6 +6020,41 @@ function drawCandyFocusPreviewV7(
 }
 
 /**
+ * The Candy redesign (section 14): the hop of the focused Move (or of the
+ * only hopping one), an arc from the take-off tile over the jumped tile to
+ * the landing.
+ */
+function drawHopPreviewV7(
+  context: CanvasRenderingContext2D,
+  camera: CameraState,
+  plan: BoardRenderPlanV7,
+  focus: CoordV7 | null,
+  highContrast: boolean,
+): void {
+  const hopping = plan.targets.filter((target) => target.hop !== undefined);
+  if (hopping.length === 0) return;
+  const target =
+    (focus === null
+      ? undefined
+      : hopping.find((candidate) => same(candidate.at, focus))) ??
+    (hopping.length === 1 ? hopping[0] : undefined);
+  const hop = target?.hop;
+  if (hop === undefined) return;
+  const point = (at: CoordV7): { readonly x: number; readonly y: number } => ({
+    x: camera.offsetX + at.x * TILE_WIDTH * camera.zoom,
+    y: camera.offsetY + at.y * TILE_HEIGHT * camera.zoom,
+  });
+  drawCandyHopArcV7(
+    context,
+    point(hop.from),
+    point(hop.over),
+    point(hop.to),
+    camera.zoom,
+    highContrast,
+  );
+}
+
+/**
  * The frozen sea: the slide of every Move that crosses ice, as an arrow
  * from the tile the unit steps from to the tile it stops on (a slide two
  * destinations share is drawn once); the focused destination's slides are
@@ -6546,8 +6670,8 @@ function addAbilityPreviews(
   }
   // Bead pulp_wars-621: an area support marks every unit it would affect
   // with the Help ring, in every match (docs/ui/BOARD_TARGETING.md section
-  // 2.1). Tend Wounded (a Dwarf Engineer's Repair, +4 on machines; a Candy
-  // Confectioner's Frosting) carries the exact heal or cure of the public
+  // 2.1). Tend Wounded (a Dwarf Engineer's Repair, +4 on machines)
+  // carries the exact heal or cure of the public
   // preview: quiet while the healer is selected, prominent while its
   // button is hovered or focused. They step aside for a hovered Rally.
   if (offered("TEND_WOUNDED") && areaSupportFocus !== "RALLY") {
@@ -6704,7 +6828,10 @@ function mapTargets(
 ): MapCommandTargetV7[] {
   return [
     ...commandMapTargets(view, commands, selectedUnitId).map((target) =>
-      withBerserkReachV7(view, withMoveOnIceV7(view, target)),
+      withMoveHopV7(
+        view,
+        withBerserkReachV7(view, withMoveOnIceV7(view, target)),
+      ),
     ),
     ...landingAfterMoveTargets(view, commands, selectedUnitId),
     // Dwarf crowd control (`pulp_wars-w49.34`): an attack on a hostile
@@ -6736,6 +6863,28 @@ function withBerserkReachV7(
       target.semanticLabel === undefined
         ? BERSERK_REACH_LABEL_V7
         : `${target.semanticLabel}. ${BERSERK_REACH_LABEL_V7}`,
+  };
+}
+
+/**
+ * The Candy redesign (section 7.7): a Chocolate Bunny's Move that hops
+ * carries the hop (the focused destination draws its arc) and says so.
+ * Every other target is returned as it is.
+ */
+function withMoveHopV7(
+  view: PlayerViewV7,
+  target: MapCommandTargetV7,
+): MapCommandTargetV7 {
+  if (target.family !== "MOVE" || target.command.kind !== "MOVE") return target;
+  const hop = moveHopV7(view, target.command);
+  if (hop === null) return target;
+  return {
+    ...target,
+    hop,
+    semanticLabel:
+      target.semanticLabel === undefined
+        ? HOP_MOVE_SEMANTIC_V7
+        : `${target.semanticLabel}. ${HOP_MOVE_SEMANTIC_V7}`,
   };
 }
 
@@ -7166,7 +7315,11 @@ function commandMapTargets(
           ...(iceFolk?.sweep === undefined ? {} : { sweep: iceFolk.sweep }),
           // The giants' signatures: the hostile unit behind a crushed
           // defender, with the collision's damage.
-          ...(crushBlocker === null ? {} : { giantHits: [crushBlocker] }),
+          ...(crushBlocker === null
+            ? (candy?.hits.length ?? 0) === 0
+              ? {}
+              : { giantHits: candy?.hits ?? [] }
+            : { giantHits: [crushBlocker, ...(candy?.hits ?? [])] }),
           ...(dwarf?.knockback === undefined
             ? naval?.knockback === undefined
               ? {}

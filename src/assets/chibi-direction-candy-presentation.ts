@@ -2,7 +2,7 @@
  * Presentation data of the Candy production art (bead pulp_wars-jdb.5,
  * docs/art/factions/CANDY.md): the palette for code-drawn markers and the
  * proposed size and place of the board markers the spec lists (Crumbs,
- * Crashed, Rushed, Splatted).
+ * Crashed, Rushed, Splatted; the Candy redesign's Toothache).
  *
  * It imports nothing, so the review script and the tests run it in Node and
  * the game can run it in the browser. The Candy UI (bead pulp_wars-jdb.6)
@@ -72,5 +72,16 @@ export const CANDY_MARKERS_V7 = {
     subject: "ICON:STATUS:SPLATTED",
     size: 24,
     place: "FACE",
+  },
+  /**
+   * The Candy redesign (bead pulp_wars-jdb.14): Toothache, a cracked tooth
+   * in a dark token beside the head, on the side away from the Rushed chip.
+   * Stuck is code-drawn round the feet (toffee strands; no raster).
+   */
+  toothache: {
+    subject: "ICON:STATUS:TOOTHACHE",
+    size: 16,
+    place: "BESIDE_HEAD",
+    shift: -18,
   },
 } as const;

@@ -778,3 +778,43 @@ Record: [faction buildings, section 14](../FACTION_BUILDINGS.md#14-a-market-per-
 The seven achievement Monuments and the faction obelisk in Candy materials. Milk chocolate (`#7a4526`), vanilla cream, golden caramel (`#e0a040`) and pale pink (`#f6c9d2`), never red (`chibi-candy-monument-<achievement>`): the Explorer a frosted chocolate obelisk with a caramel compass rose and a wafer spyglass; the Engineer a chocolate pillar under a peppermint cogwheel; the Muster a pillar hung with cookie and wafer shields under a waffle cone horn; the Conqueror a chocolate arch with a caramel wreath; the Land Baron a chocolate block with a cupcake shield, a caramel crown and a wafer signpost; the Sea Dog a chocolate column with a caramel anchor and rope (no wheel); the Slayer a sugar-glass sword in fudge with a mint wreath. **Obelisk** (`chibi-candy-monument`): a stepped chocolate obelisk with pink sprinkles and a pink star, candidate 2 of the Explorer sheet reused (no new PixelLab job). Art only: the board still draws the Human (achievement) Monument or the shared obelisk until bead `pulp_wars-eu3r.3` wires the skin rule.
 
 Record: [faction buildings, section 15](../FACTION_BUILDINGS.md#15-faction-monuments-bead-pulp_wars-eu3r2).
+
+## The Candy redesign's icons and markers (bead `pulp_wars-jdb.14`)
+
+[RULESET_7_CANDY_REDESIGN.md section 14](../../product/RULESET_7_CANDY_REDESIGN.md#14-art-ui-and-effects).
+Three icons in batch `direction-candy`, fresh Pixen creations with the
+Chocolatier fragment and the icon class (seeds 414101 to 414305, about
+US$0.12 in all, records in `scripts/art/chibi/records/batch-direction-candy.json`):
+
+- **Top-Up** (`chibi-direction-icon-action-top-up`, `icon-top-up-a`
+  candidate 0): a cream sugar jar tipping white sugar and a sparkle from
+  under its lifted biscuit lid. It replaces Frosting's piping bag on the
+  Confectioner's button; the piping bag stays registered for the retired
+  `ICON:ACTION:CANDY:TEND_WOUNDED`. Rejected: an open jar with no sugar
+  falling, a dark jar, and a pot-bellied character.
+- **Stuck** (`chibi-direction-icon-status-stuck`, `icon-stuck-c-edit`
+  candidate 0): a glossy caramel toffee puddle with three toffee strings
+  pulled up out of it. Two creations drew armoured figures (one too close
+  to the IP guard list) and were rejected; `icon-stuck-c` drew sticks in
+  the puddle and an edit turned them into strings.
+- **Toothache** (`chibi-direction-icon-status-toothache`,
+  `icon-toothache-c-edit` candidate 0): a white molar with a dark chocolate
+  zigzag crack and a sparkle. Rejected: a tooth on legs, a tooth in a pink
+  frilly halo, a gem-trimmed lumpy tooth; an edit cleaned four stray corner
+  dots from `icon-toothache-c`.
+
+The faction fragment's "kingdom of living sweets" pulls Pixen towards
+figures: an icon subject needs "a plain object, not a living sweet: no
+face, no eyes, no arms, no legs and no clothes" in its addendum.
+
+**Code-drawn**, as the spec allows: the **Stuck** board marker (a caramel
+toffee puddle round the feet with three strings pulled up from it; the
+icon is the dock chip), the **Toothache** board marker is the icon in a
+dark token beside the head opposite the Rushed chip (`CANDY_MARKERS_V7.toothache`,
+with a code-drawn tooth without the raster), the **Glaze** (a chocolate
+glaze streak with drips, a shine and sprinkles across each Glazed cell at
+the units' feet, so a row of Glazed cells reads as one trail), and the
+**hop arc** of a Move preview. The Glaze is chocolate, not the spec's
+"pink frosting": the Chocolatier look keeps pink to the territory border,
+and the Donut Racer's own glaze is chocolate; its sprinkles carry the
+faction pink.

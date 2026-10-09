@@ -1,0 +1,63 @@
+{
+  "id": "icon-top-up-d",
+  "jobId": "sync-ee79e6d8-febf-4dbe-b14f-adfafacecdb5",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "direction-candy",
+    "asset": "chibi-direction-icon-action-top-up",
+    "subject": "ICON:ACTION:TOP_UP",
+    "faction": "CANDY",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 414104,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "low top-down"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-icon.txt",
+        "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+      },
+      {
+        "layer": "faction",
+        "source": "docs/art/factions/CANDY.md#prompt-fragment + docs/art/factions/CANDY.md#negative-fragment",
+        "text": "Faction: a cheerful chocolatier's kingdom of living sweets, rich, glossy and silly. Its fixed colours: glossy dark chocolate, colour #4a2412, and milk chocolate, colour #7a4526, as the dark anchor on every piece (a dipped half, a shield, a glaze, boots, a roof); golden caramel and toffee, colour #e0a040; vanilla cream and marshmallow white, colour #fff1d0; pale biscuit wafer; a few small jewel-candy accents in amber, mint green and cherry pink; one hard pure white highlight on every glossy surface.",
+        "negative": "crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, pastel pink frosting everywhere, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character"
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+        "text": "Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+        "negative": "icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+      },
+      {
+        "layer": "subject",
+        "source": "scripts/art/chibi/subjects/CANDY.json",
+        "text": "Subject: Top-Up: one fat sugar shaker, a round cream white jar with a domed milk chocolate lid dotted with holes, tilted to the upper right and shaking a shower of white sugar grains and two small white sparkle stars out of its lid; drawn large, filling the square; nothing else in the image."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "It is a plain object, not a living sweet: it has no face, no eyes, no arms, no legs and no clothes. The shaker is tall and narrow like a sugar dredger: a cream white body with a rounded milk chocolate cap that stays on, and the sugar pours out of the holes in the cap.",
+        "negative": "grass, ground tile, slab, platform, person, character, figure, creature, head, body, arms, legs, feet, hands, face, eyes, crown, hair, clothes, checkerboard, dark background, badge, halo, frame, metal, steel, pepper, spoon, jar, open lid, gems"
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: a cheerful chocolatier's kingdom of living sweets, rich, glossy and silly. Its fixed colours: glossy dark chocolate, colour #4a2412, and milk chocolate, colour #7a4526, as the dark anchor on every piece (a dipped half, a shield, a glaze, boots, a roof); golden caramel and toffee, colour #e0a040; vanilla cream and marshmallow white, colour #fff1d0; pale biscuit wafer; a few small jewel-candy accents in amber, mint green and cherry pink; one hard pure white highlight on every glossy surface. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Top-Up: one fat sugar shaker, a round cream white jar with a domed milk chocolate lid dotted with holes, tilted to the upper right and shaking a shower of white sugar grains and two small white sparkle stars out of its lid; drawn large, filling the square; nothing else in the image. It is a plain object, not a living sweet: it has no face, no eyes, no arms, no legs and no clothes. The shaker is tall and narrow like a sugar dredger: a cream white body with a rounded milk chocolate cap that stays on, and the sugar pours out of the holes in the cap.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, pastel pink frosting everywhere, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, grass, slab, platform, person, character, figure, creature, head, body, arms, legs, feet, hands, face, eyes, crown, hair, clothes, checkerboard, dark background, badge, halo, metal, pepper, spoon, jar, open lid, gems",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: a cheerful chocolatier's kingdom of living sweets, rich, glossy and silly. Its fixed colours: glossy dark chocolate, colour #4a2412, and milk chocolate, colour #7a4526, as the dark anchor on every piece (a dipped half, a shield, a glaze, boots, a roof); golden caramel and toffee, colour #e0a040; vanilla cream and marshmallow white, colour #fff1d0; pale biscuit wafer; a few small jewel-candy accents in amber, mint green and cherry pink; one hard pure white highlight on every glossy surface. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Top-Up: one fat sugar shaker, a round cream white jar with a domed milk chocolate lid dotted with holes, tilted to the upper right and shaking a shower of white sugar grains and two small white sparkle stars out of its lid; drawn large, filling the square; nothing else in the image. It is a plain object, not a living sweet: it has no face, no eyes, no arms, no legs and no clothes. The shaker is tall and narrow like a sugar dredger: a cream white body with a rounded milk chocolate cap that stays on, and the sugar pours out of the holes in the cap. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, pastel pink frosting everywhere, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, grass, slab, platform, person, character, figure, creature, head, body, arms, legs, feet, hands, face, eyes, crown, hair, clothes, checkerboard, dark background, badge, halo, metal, pepper, spoon, jar, open lid, gems."
+  }
+}

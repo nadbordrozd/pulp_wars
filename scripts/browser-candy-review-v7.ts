@@ -11,17 +11,23 @@ import {
 
 /**
  * Candy UI visual review (bead pulp_wars-jdb.6). On the Candy UI fixtures
- * it captures the board markers (Rushed with Home Sweet Home, the Sugar
- * Frenzy pips, Crashed, Splatted, the Crumbs), the armed Sugar Rush with
- * its sparkling reach, the Re-bake ghosts, the Sugar Toss targets, the
- * dock chips, the Bounce arrow and "Eats Crumbs" for the other side, the
- * Candy cues frozen mid-animation, Help and the technology tree, in the
- * CHIBI art set (the default look) at desktop and phone widths, and the
- * board once in LEGACY (the code-drawn markers). It needs the Vite dev
- * server, because the fixtures are imported from `tests/fixtures`.
+ * it captures the board markers (Rushed with Home Sweet Home, Crashed,
+ * Splatted, the Crumbs), the armed Sugar Rush with its sparkling reach,
+ * the Re-bake ghosts, the Sugar Toss targets, the dock chips, the Bounce
+ * arrow and "Eats Crumbs" for the other side, the Candy cues frozen
+ * mid-animation, Help and the technology tree, in the CHIBI art set (the
+ * default look) at desktop and phone widths, and the board once in LEGACY
+ * (the code-drawn markers). The Candy redesign (bead pulp_wars-jdb.14)
+ * adds `redesign` (the Stuck and Toothache markers and chips, the Glaze,
+ * the hop arc, the Ricochet and Thump previews, the two-step Re-bake and
+ * its why-not, the Top-Up aim, and the unit glossary) and `cues2` (the
+ * Thump, Ricochet, Top-Up and crumb-trail cues at their reduced-motion
+ * frames), on a hand-built board: no match is played. It needs the Vite
+ * dev server, because the fixtures are imported from `tests/fixtures`.
  *
  * Usage: tsx scripts/browser-candy-review-v7.ts http://localhost:6173/
- *   [--output-dir=<new-dir>] [--only=board,abilities,victim,cues,menus,legacy]
+ *   [--output-dir=<new-dir>]
+ *   [--only=board,abilities,victim,cues,menus,legacy,redesign,cues2]
  */
 
 interface DebugTarget {
@@ -106,6 +112,8 @@ try {
     if (want("abilities")) await abilityTour(connection, size);
     if (want("victim")) await victimTour(connection, size);
     if (want("menus")) await menuTour(connection, size);
+    if (want("redesign")) await redesignTour(connection, size);
+    if (want("cues2")) await redesignCueTour(connection, size);
   }
   await viewport(connection, "desktop");
   if (want("cues")) await cueTour(connection);
@@ -152,10 +160,206 @@ async function boardTour(
     await capture(connection, `marker-${name}-${suffix}.png`);
     await deselect(connection);
   }
+  // The Candy redesign: a Rushed Chocolate Bunny has the plain Rushed chip.
   await activate(connection, at.rushedBear as Coord);
-  evidence[`${suffix}-frenzy-dock`] = await dockText(connection);
-  await capture(connection, `marker-frenzy-pips-${suffix}.png`);
+  evidence[`${suffix}-rushed-bunny-dock`] = await dockText(connection);
+  await capture(connection, `marker-rushed-bunny-${suffix}.png`);
   await deselect(connection);
+}
+
+/**
+ * The Candy redesign (bead pulp_wars-jdb.14): every new board marker,
+ * preview and pick on `candyRedesignFixtureV7`, and the unit glossary.
+ */
+async function redesignTour(
+  connection: Connection,
+  size: ScreenSize,
+): Promise<void> {
+  await mount(connection, "chibi", "candyRedesignFixtureV7");
+  const at = await coords("redesign", connection);
+  const glazed = (at.glazed as unknown as readonly Coord[])[1] as Coord;
+  // The whole board: Stuck and Toothache markers and the Glaze.
+  await focusCell(connection, at.trooper as Coord);
+  await capture(connection, `redesign-board-${size}.png`);
+  // The Stuck and the Toothache enemy: their markers and dock chips.
+  for (const [name, cell] of [
+    ["stuck", at.stuckEnemy],
+    ["toothache", at.toothacheEnemy],
+  ] as const) {
+    await activate(connection, cell as Coord);
+    evidence[`${size}-${name}-dock`] = await dockText(connection);
+    await capture(connection, `marker-${name}-${size}.png`);
+    await deselect(connection);
+  }
+  // A Glazed tile and its line.
+  await activate(connection, glazed);
+  evidence[`${size}-glaze-tile`] = await evaluate(
+    connection,
+    `document.querySelector('[data-glazed]')?.textContent ?? null`,
+  );
+  await capture(connection, `glaze-${size}.png`);
+  await deselect(connection);
+  // The hop arc: the Bunny's Move over its own Trooper.
+  await activate(connection, at.hopBunny as Coord);
+  await keys(connection, ["ArrowRight", "ArrowRight"]);
+  evidence[`${size}-hop-cursor`] = await cursorText(connection);
+  await capture(connection, `hop-arc-${size}.png`);
+  await deselect(connection);
+  // The Ricochet and the Thump in their attack previews.
+  for (const [name, cell, toward] of [
+    ["ricochet", at.gunner, ["ArrowUp", "ArrowUp"]],
+    ["thump", at.thumpBunny, ["ArrowRight"]],
+    ["sticky", at.trooper, ["ArrowLeft"]],
+  ] as const) {
+    await activate(connection, cell as Coord);
+    await keys(connection, toward);
+    evidence[`${size}-${name}-cursor`] = await cursorText(connection);
+    await capture(connection, `preview-${name}-${size}.png`);
+    await deselect(connection);
+  }
+  // The two-step Re-bake: the piles, then the tiles beside the
+  // Confectioner (the near pile chosen with the keyboard).
+  await activate(connection, at.confectioner as Coord);
+  evidence[`${size}-confectioner-dock`] = await dockText(connection);
+  await evaluate(
+    connection,
+    `document.querySelector('[data-action="candy-rebake"]')?.click()`,
+  );
+  await delay(600);
+  evidence[`${size}-rebake-step1`] = await evaluate(
+    connection,
+    `document.querySelector('[data-v7-candy-pick]')?.textContent ?? null`,
+  );
+  await keys(connection, ["ArrowUp", "ArrowRight"]);
+  evidence[`${size}-rebake-pile-cursor`] = await cursorText(connection);
+  await capture(connection, `rebake-step1-crumbs-${size}.png`);
+  await keys(connection, ["Enter"]);
+  await delay(400);
+  evidence[`${size}-rebake-step2`] = await evaluate(
+    connection,
+    `document.querySelector('[data-v7-candy-pick]')?.textContent ?? null`,
+  );
+  await keys(connection, ["ArrowLeft"]);
+  evidence[`${size}-rebake-tile-cursor`] = await cursorText(connection);
+  await capture(connection, `rebake-step2-tile-${size}.png`);
+  await deselect(connection);
+  // The why-not: a Confectioner with no Crumbs in reach.
+  await activate(connection, at.idleConfectioner as Coord);
+  evidence[`${size}-idle-dock`] = await dockText(connection);
+  await evaluate(
+    connection,
+    `document.querySelector('[data-action="candy-rebake"]')?.click()`,
+  );
+  await delay(300);
+  await capture(connection, `rebake-blocked-${size}.png`);
+  await deselect(connection);
+  // Top-Up aimed: its one target with what it gets.
+  await activate(connection, at.confectioner as Coord);
+  await evaluate(
+    connection,
+    `document.querySelector('[data-action="candy-top-up"]')?.click()`,
+  );
+  await delay(600);
+  await keys(connection, ["ArrowDown", "ArrowRight"]);
+  evidence[`${size}-top-up-cursor`] = await cursorText(connection);
+  await capture(connection, `top-up-aim-${size}.png`);
+  await deselect(connection);
+  // The unit glossary: a Stuck enemy, a Chocolate Bunny, a Confectioner.
+  for (const [name, cell] of [
+    ["stuck", at.stuckEnemy],
+    ["bunny", at.thumpBunny],
+    ["confectioner", at.confectioner],
+  ] as const) {
+    await activate(connection, cell as Coord);
+    await evaluate(
+      connection,
+      `document.querySelector('[data-action="unit-help"]')?.click()`,
+    );
+    await delay(500);
+    evidence[`${size}-glossary-${name}`] = await evaluate(
+      connection,
+      `Array.from(document.querySelectorAll('.v7-unit-help-dialog .v7-unit-ability, .v7-unit-help-dialog .v7-tactical-state')).map((node) => node.textContent)`,
+    );
+    await capture(connection, `glossary-${name}-${size}.png`);
+    await evaluate(
+      connection,
+      `document.querySelector('[data-action="close-unit-help"]')?.click()`,
+    );
+    await delay(200);
+    await deselect(connection);
+  }
+}
+
+/**
+ * The Candy redesign's cues at the frame reduced motion holds (and the
+ * Ricochet's flight at two more points): the Thump's cocoa ring, the
+ * gumball's bounce, the Top-Up's sugar and the Re-bake's crumb trail.
+ */
+async function redesignCueTour(
+  connection: Connection,
+  size: ScreenSize,
+): Promise<void> {
+  await mount(connection, "chibi", "candyRedesignFixtureV7");
+  const at = await coords("redesign", connection);
+  await focusCell(connection, at.gunnerTarget as Coord);
+  await evaluate(
+    connection,
+    `(async () => {
+      const effects = await import('/src/render/canvas/candy-effects-v7.ts');
+      const at = ${REVIEW}.redesign;
+      const held = (effect) => effects.candyReducedMotionProgressV7(effect);
+      ${REVIEW}.boardHost.pinCandyFeedback([
+        { effect: 'THUMP', from: at.thumpBunny, cells: at.thumpNeighbours, amounts: [2, 2], progress: held('THUMP') },
+        { effect: 'TOP_UP', cells: [at.topUpTarget], from: at.confectioner, amount: 2, progress: held('TOP_UP') },
+        { effect: 'REBAKE', cells: [{ x: 7, y: 5 }], from: at.confectioner, source: at.crumbsFar, progress: 0.25 },
+      ]);
+    })()`,
+    true,
+  );
+  await delay(800);
+  await capture(connection, `cues-thump-topup-rebake-${size}.png`);
+  for (const [name, progress] of [
+    [
+      "reduced",
+      "attacks.attackReducedMotionProgressV7('GUMBALL_SHOT', { ricochet: true })",
+    ],
+    ["leaving", "attacks.RICOCHET_LEAVES_V7 + 0.04"],
+    ["pop", "0.9"],
+  ] as const) {
+    await evaluate(
+      connection,
+      `(async () => {
+        const attacks = await import('/src/render/canvas/attack-effects-v7.ts');
+        const at = ${REVIEW}.redesign;
+        ${REVIEW}.boardHost.pinCandyFeedback([]);
+        ${REVIEW}.boardHost.pinAttackFeedback([
+          { effect: 'GUMBALL_SHOT', from: at.gunner, to: at.gunnerTarget, ricochet: at.ricochetVictim, progress: ${progress} },
+        ]);
+      })()`,
+      true,
+    );
+    await delay(600);
+    await capture(connection, `cue-ricochet-${name}-${size}.png`);
+  }
+  await evaluate(connection, `${REVIEW}.boardHost.pinAttackFeedback([])`);
+  // The Thump through its timeline.
+  for (const progress of [0.2, 0.45, 0.85]) {
+    await evaluate(
+      connection,
+      `(() => {
+        const at = ${REVIEW}.redesign;
+        ${REVIEW}.boardHost.pinCandyFeedback([
+          { effect: 'THUMP', from: at.thumpBunny, cells: at.thumpNeighbours, amounts: [2, 2], progress: ${progress} },
+        ]);
+      })()`,
+    );
+    await delay(400);
+    await focusCell(connection, at.thumpBunny as Coord);
+    await capture(
+      connection,
+      `cue-thump-p${Math.round(progress * 100)}-${size}.png`,
+    );
+  }
 }
 
 /** Sugar Rush armed, Re-bake and Sugar Toss aimed. */
@@ -294,7 +498,7 @@ async function cueTour(connection: Connection): Promise<void> {
 }
 
 async function coords(
-  key: "at" | "victim",
+  key: "at" | "victim" | "redesign",
   connection: Connection,
 ): Promise<Record<string, Coord>> {
   return (await evaluate(connection, `${REVIEW}.${key}`)) as Record<
