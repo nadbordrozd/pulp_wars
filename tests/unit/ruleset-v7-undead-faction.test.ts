@@ -86,8 +86,8 @@ const READY: UnitStateV7["activation"] = {
 
 describe("ruleset-7 revision-13 identity and faction registration", () => {
   it("pins the current identity, frozen faction and tree orders, and bindings", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r60");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r60.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r61");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r61.current");
     expect(FACTION_IDS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",
@@ -142,11 +142,11 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
     ).toThrow(RangeError);
   });
 
-  it("cleans obsolete keys through v7r59 and preserves the r60 save", () => {
+  it("cleans obsolete keys through v7r60 and preserves the r61 save", () => {
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
-      "pulpWars.save.v7r59.current",
+      "pulpWars.save.v7r60.current",
     );
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(59);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(60);
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
     const storage = new MemoryStorage([
       ["pulpWars.save.v7r12.current", "r12"],
@@ -2176,7 +2176,9 @@ describe("ruleset-7 all-Human parity digests", () => {
                 key === "splattedThisTurn" ||
                 key === "tossedThisTurn" ||
                 // pulp_wars-w49.15: the empty hunted list (Pack Hunt).
-                key === "huntedThisTurn") &&
+                key === "huntedThisTurn" ||
+                // pulp_wars-w49.35: the empty Berserk list.
+                key === "berserkThisTurn") &&
               Array.isArray(item) &&
               item.length === 0
             )

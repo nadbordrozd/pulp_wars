@@ -50,7 +50,7 @@ import {
 } from "../../src/ai/v7-campaign";
 
 /**
- * Tuning 7 (`pulp_wars-w49.10`, identity unchanged at `pulp-wars-poc-7r60`;
+ * Tuning 7 (`pulp_wars-w49.10`, identity unchanged at `pulp-wars-poc-7r61`;
  * docs/product/RULESET_7_TUNING_HUMAN.md section 14, the Normal AI of a
  * Human, Undead, or Goblin seat): it commits against the enemy in front of
  * it and keeps committing after the line breaks, every faction's seat
@@ -194,7 +194,7 @@ const whereIs = (state: GameStateV7, id: UnitId): CoordV7 => {
 
 describe("tuning 7 identity", () => {
   it("is still 7r49: no rule, command, state, or event shape changed", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r60");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r61");
   });
 });
 
@@ -1146,7 +1146,11 @@ describe("5. wartime spending", () => {
 });
 
 describe("6. abilities", () => {
-  it("Goblins: the Warboss steps up and calls WAAAGH! before the attacks it strengthens", () => {
+  // `pulp_wars-w49.35`: Berserk (+1 Move, no zone-of-control stops)
+  // replaced WAAAGH! (+1 Attack); the Normal AI calls it where it called
+  // WAAAGH! (no AI tuning in that bead), so the order is unchanged and the
+  // attackers are Berserk instead of Inspired.
+  it("Goblins: the Warboss steps up and calls Berserk before the attacks it strengthens", () => {
     const state = bare(
       field(
         [
@@ -1167,19 +1171,16 @@ describe("6. abilities", () => {
     const turn = policyTurn(state);
     const kinds = kindsOf(turn.commands);
     // It was three tiles behind: its first command is the Move into the
-    // radius (2) of the units that will attack, its second the WAAAGH!.
+    // radius (2) of the units that will attack, its second the Berserk.
     expect(turn.commands[0]).toMatchObject({ kind: "MOVE", unitId: warboss });
     expect(turn.commands[1]).toEqual({ kind: "RALLY", unitId: warboss });
     const attacks = attacksOf(turn.commands);
     expect(attacks.length).toBeGreaterThanOrEqual(2);
     expect(kinds.indexOf("RALLY")).toBeLessThan(kinds.indexOf("ATTACK"));
-    // Every attacker of the turn was inspired when it struck.
+    // Every attacker of the turn was Berserk when it struck.
     for (const [index, command] of turn.commands.entries())
       if (command.kind === "ATTACK")
-        expect(
-          turn.before[index]?.units.find((unit) => unit.id === command.unitId)
-            ?.activation.inspired,
-        ).toBe(true);
+        expect(turn.before[index]?.berserkThisTurn).toContain(command.unitId);
   });
 
   it("Goblins: a Goblin walks into three units standing together and blows itself up, without a kill", () => {

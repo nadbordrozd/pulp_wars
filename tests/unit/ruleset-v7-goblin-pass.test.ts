@@ -139,13 +139,13 @@ describe("the Goblin pass: identity", () => {
   // pass 7r53 (tests/unit/ruleset-v7-dinosaur-pass.test.ts), and the
   // economy rejig 7r54, so 7r50 is a prior identity.
   it("was 7r50 after 7r49, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r60");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r60.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-11, -9)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r61");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r61.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-12, -10)).toEqual([
       "pulp-wars-poc-7r49",
       "pulp-wars-poc-7r50",
     ]);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-11, -9)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-12, -10)).toEqual([
       "pulpWars.save.v7r49.current",
       "pulpWars.save.v7r50.current",
     ]);
@@ -345,9 +345,10 @@ describe("the Goblin pass: the Orc Brute is Blast-proof", () => {
     expect(
       preview?.explosions[0]?.results.map((entry) => entry.unitId),
     ).not.toContain(brute);
+    // `pulp_wars-w49.35`: the Goblin's Kaboom is 6 (5 before).
     expect(preview?.totals).toMatchObject({
-      hostileDamage: 10,
-      friendlyDamage: 5,
+      hostileDamage: 12,
+      friendlyDamage: 6,
     });
     const result = applyOkV7(state, seatIdV7(state, 0), {
       kind: "KABOOM",
@@ -355,8 +356,8 @@ describe("the Goblin pass: the Orc Brute is Blast-proof", () => {
     });
     expect(unitAtV7(result.state, at(4, 2)).hp).toBe(15);
     // The Wolf Rider on the other side is hit like anyone.
-    expect(unitAtV7(result.state, at(6, 2)).hp).toBe(5);
-    expect(unitAtV7(result.state, at(4, 1)).hp).toBe(7);
+    expect(unitAtV7(result.state, at(6, 2)).hp).toBe(4);
+    expect(unitAtV7(result.state, at(4, 1)).hp).toBe(6);
     const explosion = result.events.find(
       (event) => event.kind === "EXPLOSION_RESOLVED",
     );
@@ -366,7 +367,8 @@ describe("the Goblin pass: the Orc Brute is Blast-proof", () => {
 
   it("is not hit by a death blast, also an enemy's, and keeps its tile's Field Defense rule", () => {
     // A Human Fighter kills a wounded Bomb Chucker beside an Orc Brute: the
-    // blast (2) hits the Fighter that advanced and not the Brute.
+    // blast (5 since `pulp_wars-w49.35`, 2 before) hits the Fighter that
+    // advanced and not the Brute.
     const { state } = arena(
       ["ORIGINAL", "GOBLIN"],
       [
@@ -382,8 +384,8 @@ describe("the Goblin pass: the Orc Brute is Blast-proof", () => {
       targetUnitId: unitAtV7(state, at(5, 2)).id,
     });
     expect(unitAtV7(result.state, at(4, 2)).hp).toBe(15);
-    expect(unitAtV7(result.state, at(6, 2)).hp).toBe(4);
-    expect(unitAtV7(result.state, at(5, 2)).hp).toBe(10);
+    expect(unitAtV7(result.state, at(6, 2)).hp).toBe(1);
+    expect(unitAtV7(result.state, at(5, 2)).hp).toBe(7);
   });
 
   it("is not in the splash of a bomb, its own side's or an enemy's", () => {
@@ -447,7 +449,7 @@ describe("the Goblin pass: the Orc Brute is Blast-proof", () => {
       kind: "KABOOM",
       unitId: unitAtV7(afloat.state, at(5, 2)).id,
     });
-    expect(unitAtV7(result.state, at(5, 3)).hp).toBe(10);
+    expect(unitAtV7(result.state, at(5, 3)).hp).toBe(9);
   });
 
   it("is left out of the AI's blast estimate", () => {

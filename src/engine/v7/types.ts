@@ -5,7 +5,7 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r60" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r61" as const;
 /**
  * Every earlier Ruleset 7 identity, oldest first. Readers report these as
  * incompatible (never invalid). An identity bump must append the outgoing
@@ -71,8 +71,9 @@ export const PRIOR_RULESET_7_IDS = Object.freeze([
   "pulp-wars-poc-7r57",
   "pulp-wars-poc-7r58",
   "pulp-wars-poc-7r59",
+  "pulp-wars-poc-7r60",
 ] as const);
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r60.current" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r61.current" as const;
 /**
  * The map generator a setup names (docs/product/RULESET_7_MAP_SCALE.md
  * section 8.8): `V4` is the many-seats generator of `pulp_wars-ykw.3`
@@ -922,6 +923,14 @@ export interface GameStateV7 {
    * setup has no DINOSAUR seat.
    */
   readonly huntedThisTurn: readonly UnitId[];
+  /**
+   * Goblin explosions and Berserk (`pulp_wars-w49.35`): the units of the
+   * active seat that an Orc Warboss's Berserk (`RALLY`) made Berserk this
+   * turn, sorted: +1 Move and no stop in hostile zones of control. Emptied
+   * at its End Turn; a unit that leaves the board leaves the list. Always
+   * empty in a match whose setup has no GOBLIN seat.
+   */
+  readonly berserkThisTurn: readonly UnitId[];
   /**
    * The ninth unit (`pulp_wars-w49.17`, 7r55,
    * docs/product/RULESET_7_NINTH_UNIT.md): the stored state of the new

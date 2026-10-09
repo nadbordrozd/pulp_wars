@@ -451,12 +451,13 @@ function cell(attacker: KindV7, defender: KindV7, terrain: TerrainV7): string {
   if (plain === null) return "—";
   const frenzied = previewOf(attacker, defender, terrain, { inspired: true });
   const heal = plain.attackerHeal > 0 ? ` +${plain.attackerHeal}` : "";
-  // Frenzy and Rally do not reach support and siege units (WAAAGH! does),
-  // and no bonus reaches a reward unit's row here.
+  // Frenzy and Rally do not reach support and siege units, Berserk
+  // (`pulp_wars-w49.35`, which replaced WAAAGH!) inspires nobody, and no
+  // bonus reaches a reward unit's row here.
   const unreached =
-    (rule(attacker).tacticalRole === "SUPPORT" ||
-      rule(attacker).tacticalRole === "SIEGE") &&
-    !roleMechanicsV7("CAPTAIN", attacker.faction).rallyReachesSupportAndSiege;
+    rule(attacker).tacticalRole === "SUPPORT" ||
+    rule(attacker).tacticalRole === "SIEGE" ||
+    roleMechanicsV7("CAPTAIN", attacker.faction).rallyEffect !== "INSPIRE";
   return `${dealt(plain)}/${plain.damageToAttacker}${heal} ×${attacksToKill(attacker, defender, terrain)}${unreached || rule(attacker).tacticalRole === "SUPPORT" || frenzied === null || !frenzied.inspiredApplied ? "" : `; f ${dealt(frenzied)}`}`;
 }
 

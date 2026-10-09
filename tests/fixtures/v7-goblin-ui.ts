@@ -11,6 +11,10 @@ import { checkedV7 } from "./v7-builders";
 export const GOBLIN_SHOWCASE_V7 = {
   /** The Kaboom Goblin: its blast hits two own and two enemy units. */
   kaboom: { x: 2, y: 2 },
+  /**
+   * An own Wolf Rider (a Goblin before `pulp_wars-w49.35`, whose Kaboom of
+   * 6 now kills a Goblin's 6 HP): hit by the Kaboom and survives.
+   */
   ownGoblin: { x: 1, y: 1 },
   /** Own Rocket Cart at 3 HP: the Kaboom kills it, wave 2 blast. */
   rocketCart: { x: 1, y: 3 },
@@ -30,7 +34,8 @@ export const GOBLIN_SHOWCASE_V7 = {
 } as const satisfies Readonly<Record<string, CoordV7>>;
 
 /**
- * Goblin (human) vs Human: Kaboom chain, bomb splash, WAAAGH!, Troll.
+ * Goblin (human) vs Human: Kaboom chain, bomb splash, Berserk (WAAAGH!
+ * before `pulp_wars-w49.35`), Troll.
  * Achievements are unlocked in advance so that command tails emit no
  * achievement notice over the board.
  */
@@ -41,7 +46,7 @@ export function goblinShowcaseFixtureV7(): GameStateV7 {
       ["GOBLIN", "ORIGINAL"],
       [
         { seat: 0, role: "FIGHTER", at: at.kaboom },
-        { seat: 0, role: "FIGHTER", at: at.ownGoblin },
+        { seat: 0, role: "RAIDER", at: at.ownGoblin },
         { seat: 0, role: "CATAPULT", at: at.rocketCart, hp: 3 },
         { seat: 1, role: "FIGHTER", at: at.enemyFighter },
         { seat: 1, role: "RAIDER", at: at.enemyRaider, hp: 3 },
@@ -71,7 +76,11 @@ function withAchievementsUnlockedV7(state: GameStateV7): GameStateV7 {
 }
 
 export const GOBLIN_ATTACK_CHAIN_V7 = {
-  /** Human Fighter that kills the Bomb Chucker and advances onto it. */
+  /**
+   * Human Champion that kills the Bomb Chucker and advances onto it (a
+   * Fighter before `pulp_wars-w49.35`: its 12 HP would not survive both
+   * blasts, 5 and 7, on the Bomb Chucker's tile).
+   */
   attacker: { x: 4, y: 3 },
   /** Enemy Goblin Bomb Chucker at 2 HP: its death blast hits the Guard. */
   bombChucker: { x: 5, y: 3 },
@@ -91,7 +100,7 @@ export function goblinAttackChainFixtureV7(): GameStateV7 {
     goblinArenaV7(
       ["ORIGINAL", "GOBLIN"],
       [
-        { seat: 0, role: "FIGHTER", at: at.attacker },
+        { seat: 0, role: "SWORDSMAN", at: at.attacker },
         { seat: 1, role: "MARKSMAN", at: at.bombChucker, hp: 2 },
         { seat: 0, role: "GUARD", at: at.ownGuard },
         { seat: 1, role: "CATAPULT", at: at.rocketCart, hp: 2 },

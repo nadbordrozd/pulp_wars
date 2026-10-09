@@ -240,6 +240,8 @@ describe("ruleset-7 revision-18 Showcase setup", () => {
         tossedThisTurn,
         // `pulp_wars-w49.15`: and the empty hunted list (Pack Hunt).
         huntedThisTurn,
+        // `pulp_wars-w49.35`: and the empty Berserk list.
+        berserkThisTurn,
         ice,
         // `pulp_wars-w49.17`: and the empty `ninthUnit` record.
         ninthUnit,
@@ -254,6 +256,7 @@ describe("ruleset-7 revision-18 Showcase setup", () => {
       });
       expect(barricades).toEqual([]);
       expect(huntedThisTurn).toEqual([]);
+      expect(berserkThisTurn).toEqual([]);
       expect(monsters).toEqual([]);
       // `pulp_wars-5ti.3`: and the empty ice list.
       expect(ice).toEqual([]);

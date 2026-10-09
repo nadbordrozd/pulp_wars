@@ -82,9 +82,9 @@ const CELLS = [
 
 describe("ruleset-7 revision-16 identity", () => {
   it("keeps rejecting r15 after the r54 identity and cleans the r15 through r53 save keys", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r60");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r60.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-45, -5)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r61");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r61.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-46, -6)).toEqual([
       "pulpWars.save.v7r15.current",
       "pulpWars.save.v7r16.current",
       "pulpWars.save.v7r17.current",

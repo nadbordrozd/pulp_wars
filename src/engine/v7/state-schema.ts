@@ -120,6 +120,7 @@ const STATE_KEYS = [
   "activeSeatIndex",
   "barricades",
   "beamedThisTurn",
+  "berserkThisTurn",
   "bitten",
   "board",
   "bombedThisTurn",
@@ -261,6 +262,8 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
   const tossedThisTurn = parseSortedUnitIds(input.tossedThisTurn);
   // The Dinosaur pass, correction: the units hunted this turn (Pack Hunt).
   const huntedThisTurn = parseSortedUnitIds(input.huntedThisTurn);
+  // Goblin explosions and Berserk (`pulp_wars-w49.35`): the Berserk units.
+  const berserkThisTurn = parseSortedUnitIds(input.berserkThisTurn);
   // The ninth unit (`pulp_wars-w49.17`, 7r55): the stored state of the new
   // units' mechanics; the cross references are checked below.
   const ninthUnit = parseNinthUnit(input.ninthUnit);
@@ -302,6 +305,7 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
     splattedThisTurn === null ||
     tossedThisTurn === null ||
     huntedThisTurn === null ||
+    berserkThisTurn === null ||
     ninthUnit === null ||
     barricades === null ||
     choices === null ||
@@ -351,6 +355,7 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
       splattedThisTurn,
       tossedThisTurn,
       huntedThisTurn,
+      berserkThisTurn,
       ninthUnit,
       barricades,
       curiosities,
@@ -404,6 +409,7 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
     splattedThisTurn,
     tossedThisTurn,
     huntedThisTurn,
+    berserkThisTurn,
     ninthUnit,
     barricades,
     pendingChoices: choices,
@@ -1890,6 +1896,7 @@ interface CrossInput {
   splattedThisTurn: readonly UnitId[];
   tossedThisTurn: readonly UnitId[];
   huntedThisTurn: readonly UnitId[];
+  berserkThisTurn: readonly UnitId[];
   ninthUnit: NinthUnitStateV7;
   barricades: readonly BarricadeV7[];
   curiosities: readonly CuriosityV7[];
@@ -2206,6 +2213,19 @@ function validateCrossReferences(value: CrossInput): boolean {
             unit === undefined ||
             unit.hp <= 0 ||
             unit.ownerId === value.activePlayerId
+          );
+        }))) ||
+    // Goblin explosions and Berserk (`pulp_wars-w49.35`): `berserkThisTurn`
+    // is empty in a match without a Goblin seat, and names units on the
+    // board that belong to the active seat.
+    (value.berserkThisTurn.length > 0 &&
+      (!value.setup.factions.includes("GOBLIN") ||
+        value.berserkThisTurn.some((unitId) => {
+          const unit = units.find((item) => item.id === unitId);
+          return (
+            unit === undefined ||
+            unit.hp <= 0 ||
+            unit.ownerId !== value.activePlayerId
           );
         })))
   )

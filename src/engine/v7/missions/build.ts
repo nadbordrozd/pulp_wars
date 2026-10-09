@@ -598,6 +598,7 @@ export function buildMissionStateV7(
     splattedThisTurn: [],
     tossedThisTurn: [],
     huntedThisTurn: [],
+    berserkThisTurn: [],
     ninthUnit: emptyNinthUnitStateV7(),
     barricades: [],
     pendingChoices: [],

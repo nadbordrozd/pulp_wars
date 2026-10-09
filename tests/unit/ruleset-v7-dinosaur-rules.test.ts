@@ -702,11 +702,12 @@ describe("ruleset-7 Dinosaur Grow", () => {
       [{ kind: "UNIT_GREW", unitId: raptor.id, stage: 1, maxHp: 16, hp: 16 }],
     );
     expect(result.state.units).toHaveLength(1);
-    // The death blast (2) hits the grown Raptor on the tile it advanced to.
+    // The death blast (5 since `pulp_wars-w49.35`, 2 before) hits the
+    // grown Raptor on the tile it advanced to.
     expect(unitAtV7(result.state, { x: 5, y: 3 })).toMatchObject({
       id: raptor.id,
       kills: 1,
-      hp: 14,
+      hp: 11,
       maxHp: 16,
     });
   });
@@ -1425,7 +1426,9 @@ describe("ruleset-7 Dinosaur Armoured", () => {
     expect(unitAtV7(result.state, { x: 5, y: 3 }).hp).toBe(3);
   });
 
-  it("reduces a Kaboom hit to 4 and a death-blast hit to 1", () => {
+  // `pulp_wars-w49.35`: the Goblin's Kaboom is 6 (5 before) and the Bomb
+  // Chucker's death blast 5 (2 before), so the Armoured hits are 5 and 4.
+  it("reduces a Kaboom hit to 5 and a death-blast hit to 4", () => {
     const kaboom = goblinArenaV7(
       ["GOBLIN", "DINOSAUR"],
       [
@@ -1444,17 +1447,17 @@ describe("ruleset-7 Dinosaur Armoured", () => {
       (event) => event.kind === "EXPLOSION_RESOLVED",
     );
     if (explosion?.kind !== "EXPLOSION_RESOLVED") throw new Error("no blast");
-    expect(explosion.damage).toBe(5);
+    expect(explosion.damage).toBe(6);
     expect(explosion.results.map((entry) => [entry.at, entry.damage])).toEqual([
-      [{ x: 5, y: 3 }, 4],
-      [{ x: 5, y: 4 }, 5],
+      [{ x: 5, y: 3 }, 5],
+      [{ x: 5, y: 4 }, 6],
     ]);
     expect(parseEventV7(explosion).ok).toBe(true);
     expect(
       preview?.explosions[0]?.results.map((entry) => entry.damage),
-    ).toEqual([4, 5]);
-    expect(unitAtV7(boom.state, { x: 5, y: 3 }).hp).toBe(16);
-    // Death blast: a Bomb Chucker killed next to an Ankylosaurus (2 -> 1).
+    ).toEqual([5, 6]);
+    expect(unitAtV7(boom.state, { x: 5, y: 3 }).hp).toBe(15);
+    // Death blast: a Bomb Chucker killed next to an Ankylosaurus (5 -> 4).
     const blast = goblinArenaV7(
       ["DINOSAUR", "GOBLIN"],
       [
@@ -1473,10 +1476,10 @@ describe("ruleset-7 Dinosaur Armoured", () => {
       (event) => event.kind === "EXPLOSION_RESOLVED",
     );
     if (death?.kind !== "EXPLOSION_RESOLVED") throw new Error("no blast");
-    expect(death).toMatchObject({ cause: "DEATH", damage: 2 });
+    expect(death).toMatchObject({ cause: "DEATH", damage: 5 });
     expect(death.results.map((entry) => [entry.at, entry.damage])).toEqual([
-      [{ x: 6, y: 3 }, 1],
-      [{ x: 5, y: 4 }, 2],
+      [{ x: 6, y: 3 }, 4],
+      [{ x: 5, y: 4 }, 5],
     ]);
   });
 

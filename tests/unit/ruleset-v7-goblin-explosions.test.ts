@@ -63,7 +63,9 @@ import {
 // (Bomb Chucker 3 -> 2, Rocket Cart and Scrap Buggy 5 -> 4), and the Goblin
 // seat's starting Goblins (two -> one); the scenarios below use victim HP
 // that keeps each scenario's outcome (who dies, who survives) under the
-// tuned damages.
+// tuned damages. `pulp_wars-w49.35` raised the Goblin's Kaboom to 6 and
+// every death blast by 3 (Bomb Chucker 5, Rocket Cart and Scrap Buggy 7);
+// again a few victims changed (role or HP) to keep each outcome.
 //
 // Two-seat arena: seat 0 capital (8, 8), seat 1 capital (2, 8), villages
 // (5, 5), (8, 5), (5, 8). Three-seat arena: capitals (2, 2), (11, 11),
@@ -121,7 +123,8 @@ describe("ruleset-7 Goblin Kaboom legality", () => {
         at: at(4, 2),
         cause: "KABOOM",
         wave: 1,
-        damage: 5,
+        // `pulp_wars-w49.35`: the Goblin's Kaboom is 6 (5 before).
+        damage: 6,
         results: [],
       },
     ]);
@@ -294,7 +297,9 @@ describe("ruleset-7 Goblin blast resolution", () => {
       ["GOBLIN", "ORIGINAL"],
       [
         { seat: 0, role: "FIGHTER", at: at(0, 0) },
-        { seat: 0, role: "FIGHTER", at: at(1, 1) },
+        // `pulp_wars-w49.35`: a Wolf Rider (a Goblin's 6 HP would not live
+        // through the Kaboom of 6).
+        { seat: 0, role: "RAIDER", at: at(1, 1) },
         { seat: 1, role: "FIGHTER", at: at(0, 1) },
         { seat: 1, role: "FIGHTER", at: at(1, 0) },
         { seat: 1, role: "FIGHTER", at: at(2, 0) },
@@ -306,7 +311,7 @@ describe("ruleset-7 Goblin blast resolution", () => {
       [at(1, 0), at(0, 1), at(1, 1)].map((where) => ({
         unitId: unitAtV7(state, where).id,
         at: where,
-        damage: 5,
+        damage: 6,
         dies: false,
         shieldDamage: 0,
       })),
@@ -385,7 +390,7 @@ describe("ruleset-7 Goblin blast resolution", () => {
     expect(explosion?.results.map((entry) => entry.unitId)).toEqual(
       victims.map((unit) => unit.id),
     );
-    expect(explosion?.results.every((entry) => entry.damage === 5)).toBe(true);
+    expect(explosion?.results.every((entry) => entry.damage === 6)).toBe(true);
     expect(explosion?.results.map((entry) => entry.unitId)).not.toContain(
       exploder.id,
     );
@@ -394,9 +399,9 @@ describe("ruleset-7 Goblin blast resolution", () => {
       preview?.explosions[0]?.results.map((entry) => entry.friendly),
     ).toEqual([true, true, false, false, false, true]);
     expect(preview?.totals).toEqual({
-      hostileDamage: 15,
+      hostileDamage: 18,
       hostileKills: 0,
-      friendlyDamage: 15,
+      friendlyDamage: 18,
       friendlyKills: 0,
       plunderCoins: 0,
     });
@@ -492,7 +497,8 @@ describe("ruleset-7 Goblin death blasts", () => {
         at: at(5, 2),
         cause: "DEATH",
         wave: 1,
-        damage: 2,
+        // `pulp_wars-w49.35`: the Bomb Chucker's death blast is 5 (2 before).
+        damage: 5,
         results: [
           {
             unitId: fighter.id,
@@ -504,7 +510,7 @@ describe("ruleset-7 Goblin death blasts", () => {
           {
             unitId: unitAtV7(state, at(6, 2)).id,
             at: at(6, 2),
-            damage: 2,
+            damage: 5,
             dies: false,
             shieldDamage: 0,
           },
@@ -539,8 +545,9 @@ describe("ruleset-7 Goblin death blasts", () => {
         unitId: buggy.id,
         at: at(4, 2),
         cause: "DEATH",
-        damage: 4,
-        results: [{ unitId: unitAtV7(state, at(5, 2)).id, damage: 4 }],
+        // `pulp_wars-w49.35`: the Scrap Buggy's death blast is 7 (4 before).
+        damage: 7,
+        results: [{ unitId: unitAtV7(state, at(5, 2)).id, damage: 7 }],
       },
     ]);
   });
@@ -590,7 +597,8 @@ describe("ruleset-7 Goblin death blasts", () => {
         cause: "SPLASH",
       });
       expect(explosionsOf(result.events)).toMatchObject([
-        { unitId: cart.id, cause: "DEATH", damage: 4, wave: 1 },
+        // `pulp_wars-w49.35`: the Rocket Cart's death blast is 7 (4 before).
+        { unitId: cart.id, cause: "DEATH", damage: 7, wave: 1 },
       ]);
     }
   });
@@ -620,8 +628,8 @@ describe("ruleset-7 Goblin death blasts", () => {
       {
         unitId: chucker.id,
         cause: "DEATH",
-        damage: 2,
-        results: [{ unitId: banshee.id, damage: 2, dies: false }],
+        damage: 5,
+        results: [{ unitId: banshee.id, damage: 5, dies: false }],
       },
     ]);
   });
@@ -730,7 +738,9 @@ describe("ruleset-7 Goblin chain reactions", () => {
         { seat: 1, role: "MARKSMAN", at: at(6, 4), hp: 4 },
         { seat: 1, role: "MARKSMAN", at: at(4, 4), hp: 4 },
         // A Warboss (`brute` below; an Orc Brute is Blast-proof since 7r50).
-        { seat: 1, role: "CAPTAIN", at: at(5, 4), hp: 9 },
+        // `pulp_wars-w49.35`: 12 HP (9 before) for the Kaboom of 6 and the
+        // death blasts of 5.
+        { seat: 1, role: "CAPTAIN", at: at(5, 4), hp: 12 },
         { seat: 1, role: "FIGHTER", at: at(5, 5), hp: 2 },
       ],
     );
@@ -758,7 +768,7 @@ describe("ruleset-7 Goblin chain reactions", () => {
         wave: 1,
         results: [
           [chuckerA, 4, true],
-          [brute, 5, false],
+          [brute, 6, false],
           [chuckerB, 4, true],
         ],
       },
@@ -768,11 +778,11 @@ describe("ruleset-7 Goblin chain reactions", () => {
         unitId: chuckerB,
         wave: 2,
         results: [
-          [brute, 2, false],
+          [brute, 5, false],
           [goblin, 2, true],
         ],
       },
-      { unitId: chuckerA, wave: 2, results: [[brute, 2, true]] },
+      { unitId: chuckerA, wave: 2, results: [[brute, 1, true]] },
     ]);
     // Deaths follow each explosion's event in its results order.
     expect(
@@ -857,7 +867,8 @@ describe("ruleset-7 Goblin chains and attacks", () => {
       const after = result.state.units.find((unit) => unit.id === knight.id);
       expect(after).toMatchObject({
         at: at(4, 2),
-        hp: knight.hp - 2,
+        // `pulp_wars-w49.35`: the Bomb Chucker's death blast is 5.
+        hp: knight.hp - 5,
         activation: { overrunActive: continues },
       });
     }
@@ -890,8 +901,8 @@ describe("ruleset-7 Goblin chains and attacks", () => {
         event.damage,
       ]),
     ).toEqual([
-      [chucker.id, 1, at(4, 2), 2],
-      [buggy.id, 2, at(4, 2), 4],
+      [chucker.id, 1, at(4, 2), 5],
+      [buggy.id, 2, at(4, 2), 7],
     ]);
   });
 
@@ -914,16 +925,16 @@ describe("ruleset-7 Goblin chains and attacks", () => {
     expect(explosionsOf(result.events)).toMatchObject([
       {
         results: [
-          { unitId: zombie.id, at: at(3, 2), damage: 2 },
-          { unitId: rising.unitId, at: at(4, 2), damage: 2 },
+          { unitId: zombie.id, at: at(3, 2), damage: 5 },
+          { unitId: rising.unitId, at: at(4, 2), damage: 5 },
         ],
       },
     ]);
     // (A rising has 12 HP since step two of the Undead pass, 7r57; 10 and
-    // 8 here before.)
+    // 8 here before. The blast is 5 since `pulp_wars-w49.35`, 2 before.)
     expect(
       result.state.units.find((unit) => unit.id === rising.unitId)?.hp,
-    ).toBe(10);
+    ).toBe(7);
   });
 });
 
@@ -1155,12 +1166,12 @@ describe("ruleset-7 Goblin explosions and Undead rules", () => {
         at: at(4, 2),
         cause: "KABOOM",
         wave: 1,
-        damage: 5,
+        damage: 6,
         results: [
           {
             unitId: firstRising,
             at: at(4, 2),
-            damage: 5,
+            damage: 6,
             dies: false,
             shieldDamage: 0,
           },
@@ -1189,7 +1200,7 @@ describe("ruleset-7 Goblin explosions and Undead rules", () => {
         unitId: null,
         ownerId: undeadId,
         at: at(4, 2),
-        damage: 5,
+        damage: 6,
         dies: false,
         friendly: false,
         shieldDamage: 0,
@@ -1300,12 +1311,12 @@ describe("ruleset-7 Goblin explosions and Undead rules", () => {
         at: at(4, 2),
         cause: "DEATH",
         wave: 1,
-        damage: 2,
+        damage: 5,
         results: [
           {
             unitId: troll.id,
             at: at(3, 2),
-            damage: 2,
+            damage: 5,
             dies: false,
             shieldDamage: 0,
           },
@@ -1322,7 +1333,8 @@ describe("ruleset-7 Goblin explosions and Undead rules", () => {
     expect(result.events).toContainEqual({
       kind: "UNITS_REGENERATED",
       playerId: goblinId,
-      results: [{ unitId: troll.id, amount: 4, hpAfter: 32 }],
+      // `pulp_wars-w49.35`: 30 - 5 + 4 (the death blast was 2).
+      results: [{ unitId: troll.id, amount: 4, hpAfter: 29 }],
     });
     const income = result.events.find(
       (event) => event.kind === "INCOME_AWARDED",
@@ -1376,7 +1388,9 @@ describe("ruleset-7 Goblin explosion events and projection", () => {
       [
         { seat: 0, role: "FIGHTER", at: at(3, 2) },
         { seat: 0, role: "CATAPULT", at: at(4, 2), hp: 4 },
-        { seat: 1, role: "FIGHTER", at: at(5, 2) },
+        // `pulp_wars-w49.35`: a Wolf Rider, which lives through the Rocket
+        // Cart's death blast of 7 (a Goblin's 6 HP would not).
+        { seat: 1, role: "RAIDER", at: at(5, 2) },
       ],
     );
     const goblinId = seatIdV7(base, 0);
@@ -1418,7 +1432,7 @@ describe("ruleset-7 Goblin explosion events and projection", () => {
       {
         unitId: fighter.id,
         at: at(5, 2),
-        damage: 4,
+        damage: 7,
         dies: false,
         shieldDamage: 0,
       },
@@ -1456,7 +1470,7 @@ describe("ruleset-7 Goblin explosion events and projection", () => {
           {
             unitId: fighter.id,
             at: at(5, 2),
-            damage: 4,
+            damage: 7,
             dies: false,
             shieldDamage: 0,
           },

@@ -31,6 +31,8 @@ each city beyond the first), every city offers its giant once from level
 6, a Monument gives 3, and the achievements are harder and need no
 technology. The passages are kept as history.
 
+**Superseded in part by [Goblin explosions and Berserk](#15-goblin-explosions-and-berserk-pulp_wars-w4935) (`pulp_wars-w49.35`).** Every death blast is 3 harder (Bomb Chucker 5, Rocket Cart 7, Scrap Buggy 7), the Goblin's Kaboom is 6, and the Orc Warboss's WAAAGH! (+1 Attack) is gone: its command is **Berserk** (+1 Move and no stop in enemy zones of control for the unmoved units within 2). Where this record gives the old blasts or WAAAGH!, it records the rules it was written under.
+
 **What the user asked for** (2026-10-06): carry the Human tech tree
 improvements over to the next faction and make sure it works. Fine balance
 is not the goal. The faction must not be far too strong or far too weak,
@@ -1501,3 +1503,84 @@ of the Normal AI plays differently (no map and no PRNG digest moved):
   in `src/ai/v7-goblin.ts` (`ruleset-v7-dinosaur-form-audit`), and the
   six new readers classified (`tests/fixtures/v7-unit-reader-classes.ts`,
   `tests/fixtures/v7-kind-reader-classes.ts`).
+
+## 15. Goblin explosions and Berserk (`pulp_wars-w49.35`)
+
+The user, 2026-10-09: the explosions can be the Goblins' crowd control,
+but they need more damage, so the blasts on death get +3; and the Orc
+Warboss gets a buff that speeds units up instead of WAAAGH!: a Goblin that
+can travel an extra tile is far more dangerous and better against crowds,
+and a berserked Goblin ignores the tiles the enemy controls (it may move
+past an enemy unit), gets into position, and explodes. A later addition
+the same day: the Goblin's Kaboom +1. The rules are
+[sections 18.4, 18.5, and 18.10 of the current rules](RULESET_7_CURRENT.md#1810-berserk-ram-and-troll-regeneration).
+This was an engine bead under the mechanics-first policy (no AI tuning, no
+balance games); the identity became `pulp-wars-poc-7r61` when it was
+published after Dwarf crowd control (`7r60`).
+
+### 15.1 The changes
+
+| Rule                        | Before            | Now                                                                   |
+| --------------------------- | ----------------- | --------------------------------------------------------------------- |
+| Bomb Chucker death blast    | 2                 | 5                                                                     |
+| Rocket Cart death blast     | 4                 | 7                                                                     |
+| Scrap Buggy death blast     | 4                 | 7                                                                     |
+| Goblin Kaboom               | 5                 | 6                                                                     |
+| Other Kabooms               | 4 / 4 / 5 / 5     | unchanged (Wolf Rider, Bomb Chucker, Rocket Cart, Scrap Buggy)        |
+| Orc Warboss command (RALLY) | WAAAGH! +1 Attack | Berserk: +1 Move, ignores enemy zones of control, until the turn ends |
+| Administration unlock       | `WAAAGH_SUPPORT`  | `BERSERK_SUPPORT`                                                     |
+
+Blasts still hit every unit in the 3 × 3 square, own units included, and
+the Orc Brute stays Blast-proof.
+
+### 15.2 Decisions made in the engine
+
+- **One command, a new effect.** Berserk is the Warboss's `RALLY` (the
+  command WAAAGH! was), with the event `UNITS_RALLIED`; the role mechanic
+  `rallyEffect` (`INSPIRE` or `BERSERK`) replaced
+  `rallyReachesSupportAndSiege`, which only WAAAGH! used. The UI keeps one
+  button, relabelled by its bead (`pulp_wars-w49.36`).
+- **Who is a target.** Every other own land-form unit within Chebyshev 2
+  that has not moved this turn and is not Berserk yet, of any role (the
+  rule names no `ATTACK` requirement); never an embarked unit, a boat, or
+  an Egg. A unit that attacked or Recovered without moving still counts
+  (it may have an Escape Move or nothing left; the rule reads only
+  "has not moved"). With no target the command is not offered and is
+  rejected with `HEAL_TARGET_NOT_FOUND`, like WAAAGH!.
+- **Where it is stored.** A per-turn state and view list,
+  `berserkThisTurn`, like `huntedThisTurn`: it survives a save mid-turn,
+  is emptied at the owner's End Turn, and drops a unit that leaves the
+  board or the active seat.
+- **+1 Move** applies to the ordinary Move and not to an Escape Move, like
+  Sugar Rush, and only in land form.
+- **Zones of control** are waived exactly as Prowl waives them: entering
+  hostile ZOC does not end the Move. Occupied tiles, terrain stops, and
+  unexplored cells are unchanged.
+
+### 15.3 The Normal AI
+
+Legal and untuned. It scores Berserk where it scored WAAAGH! (the units in
+reach that can reach an enemy this turn), so it calls it before its
+attackers move; its own reach estimate does not add the extra Move or the
+waived zones of control yet. With death blasts of 5 the Human AI no
+longer takes a melee kill of a 1-HP Bomb Chucker whose blast would chip
+the attacker and its neighbours (the test now shows a clean ranged kill
+taken). Both are follow-ups for an AI pass.
+
+### 15.4 Tests
+
+`tests/unit/ruleset-v7-goblin-berserk.test.ts`: the three death blasts
+and the Kabooms, Berserk targets (radius, unmoved, own land units, not
+embarked or boats, a second Warboss), +1 Move, zones of control ignored
+between two enemies (reducer, public validation, and the offered Moves),
+occupied tiles still blocked, expiry at End Turn, the state round trip and
+its validation, WAAAGH! gone, and a Normal AI turn that stays legal. The
+explosion, Goblin pass, presentation, and lab tests that state blast
+numbers were updated, and so were the Dinosaur (Armoured, Eggs, Grow),
+Martian (Shields, Tractor Beam, chains), and revision-20 growth tests that
+do; where a victim would now die a few fixtures changed role or HP to keep
+each scenario's outcome (the UI showcase's own Goblin beside the Kaboom is
+a Wolf Rider, the attack-chain fixture's attacker a Champion, the second
+Kaboom on a shielded Grunt a Wolf Rider's). The Berserk lookups read a
+missing `berserkThisTurn` as empty, as the Candy `sugarRush` lookup does,
+so a public view captured before the list existed still plans.

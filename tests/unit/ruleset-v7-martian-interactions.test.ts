@@ -141,7 +141,8 @@ describe("Goblin rules (section 10.2)", () => {
   // Tuning 2 (`pulp_wars-w49.3`, 7r47): the Grunt has range 2, so it is a
   // ranged unit and stays (it advanced onto the exploder's tile before).
   it("chains: a Grunt and a flyer stay next to the blast and are hit, a ray at range 2 is outside", () => {
-    // A Bomb Chucker at 1 HP (death blast 2 around its tile).
+    // A Bomb Chucker at 1 HP (death blast 5 around its tile since
+    // `pulp_wars-w49.35`, 2 before: a Shield of 2 absorbs 2 and 3 reach HP).
     const build = (role: "FIGHTER" | "RAIDER" | "MARKSMAN", from: CoordV7) =>
       martianFieldV7(
         [
@@ -156,12 +157,12 @@ describe("Goblin rules (section 10.2)", () => {
     expect(grunt.attacker?.at).toEqual(at(4, 3));
     expect(kindsV7(grunt.events)).toContain("EXPLOSION_RESOLVED");
     expect(shieldAtV7(grunt.state, at(4, 3))).toBe(0);
-    expect(grunt.attacker?.hp).toBe(8);
+    expect(grunt.attacker?.hp).toBe(5);
     // The Saucer does not advance and is still in the blast area.
     const saucer = attackV7(build("RAIDER", at(4, 3)), at(4, 3), at(5, 3));
     expect(saucer.attacker?.at).toEqual(at(4, 3));
     expect(shieldAtV7(saucer.state, at(4, 3))).toBe(0);
-    expect(saucer.attacker?.hp).toBe(8);
+    expect(saucer.attacker?.hp).toBe(5);
     // The Ray Gunner at range 2 is outside it.
     const gunner = attackV7(build("MARKSMAN", at(3, 3)), at(3, 3), at(5, 3));
     expect(gunner.combat.advances).toBe(false);

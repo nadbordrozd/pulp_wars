@@ -272,6 +272,7 @@ import { publicUnitStatsV7, type PublicUnitStatsV7 } from "./unit-stats";
 import {
   allOwnedUnitsV7,
   barricadeAtV7,
+  barricadesOfV7,
   publicUnitHasTerrainCoverV7,
   tileOccupiedV7,
 } from "./units";
@@ -1096,11 +1097,12 @@ function appendPublicUnitCommandsV7(
   }
   // Dwarf crowd control: an attack on every hostile Barricade in range on
   // an explored tile, by any unit that could make an ordinary attack now.
+  const barricades = barricadesOfV7(view);
   if (
-    view.barricades.length > 0 &&
+    barricades.length > 0 &&
     barricadeAttackerRejectionV7(view, unit, primaryUsedForQuery(unit)) === null
   )
-    for (const barricade of view.barricades) {
+    for (const barricade of barricades) {
       const distance = chebyshev(unit.at, barricade.at);
       if (
         publicHostile(view, player.id, barricade.ownerId) &&
@@ -1164,7 +1166,7 @@ function appendPublicUnitCommandsV7(
     rule.abilities.includes("TEND_WOUNDED") &&
     (publicTendTargetsV7(view, unit).length > 0 ||
       // Dwarf crowd control: an Engineer's Repair of an own Barricade.
-      barricadeRepairsV7(view, view.barricades, unit).length > 0)
+      barricadeRepairsV7(view, barricadesOfV7(view), unit).length > 0)
   )
     candidates.push({ kind: "TEND_WOUNDED", unitId: unit.id });
   // Revision 13 Grave actions (sections 6.2 and 6.3), offered exactly when
@@ -3054,7 +3056,7 @@ export function previewTendWoundedV7(
         curedChill: isChilledV7(view.chilled, target.id),
       };
     }),
-    barricades: barricadeRepairsV7(view, view.barricades, captain),
+    barricades: barricadeRepairsV7(view, barricadesOfV7(view), captain),
   };
 }
 

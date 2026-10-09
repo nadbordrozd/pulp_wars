@@ -2288,7 +2288,8 @@ describe("ruleset-7 revision-19 Egg destruction", () => {
     expect(coins(splashed.state)).toBe(12);
     expect(unitAtV7(splashed.state, { x: 4, y: 7 }).kills).toBe(1);
     expect(splashed.state.eggs).toEqual([]);
-    // Kaboom: a Goblin (5 fixed damage) next to a 5-HP Egg.
+    // Kaboom: a Goblin (6 fixed damage since `pulp_wars-w49.35`, 5 before)
+    // next to a 5-HP Egg.
     const kaboom = dino(
       [{ seat: 1, role: "FIGHTER", at: { x: 6, y: 7 } }],
       [
@@ -2312,10 +2313,10 @@ describe("ruleset-7 revision-19 Egg destruction", () => {
       kills: 1,
       coins: 2,
     });
-    // The Nesting Egg takes the same fixed 5 and survives.
+    // The Nesting Egg takes the same fixed 6 and survives.
     expect(unitAtV7(blown.state, { x: 7, y: 8 })).toMatchObject({
       form: "EGG",
-      hp: 5,
+      hp: 4,
     });
     expect(blown.state.eggs.map((entry) => entry.unitId)).toEqual([
       unitAtV7(kaboom, { x: 7, y: 8 }).id,

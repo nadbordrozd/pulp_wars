@@ -10664,7 +10664,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffff_ffff)
     return null;
   return {
-    rulesetId: "pulp-wars-poc-7r60",
+    rulesetId: "pulp-wars-poc-7r61",
     seed,
     width: effectiveBoardSize(draft),
     height: effectiveBoardSize(draft),
@@ -10853,8 +10853,8 @@ function effectDescription(
         : "Captains Rally or Tend nearby troops";
     case "NECROMANCER_SUPPORT":
       return "Necromancers Frenzy nearby troops or Raise Dead";
-    case "WAAAGH_SUPPORT":
-      return "Orc Warbosses WAAAGH! troops within 2 tiles";
+    case "BERSERK_SUPPORT":
+      return "Orc Warbosses send troops within 2 tiles Berserk: +1 Move, ignore zones of control";
     case "PLUNDER":
       return `+${effect.coins} Coins for each enemy unit your units or blasts kill`;
     case "NESTING":
@@ -11087,7 +11087,7 @@ function technologyEffectGroupIdV7(
     case "SEA_TRADE_INCOME":
     case "CAPTAIN_SUPPORT":
     case "NECROMANCER_SUPPORT":
-    case "WAAAGH_SUPPORT":
+    case "BERSERK_SUPPORT":
     case "PLUNDER":
     case "NESTING":
     case "WALLBREAKER":

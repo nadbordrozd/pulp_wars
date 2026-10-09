@@ -12929,8 +12929,9 @@ function scoreCommandWithContext(
   }
 
   if (command.kind === "RALLY" && actor !== undefined) {
-    // Revision 17: the owner's Rally reach (WAAAGH! radius 2 including
-    // support and siege roles); Human and Undead Rally are unchanged.
+    // Revision 17: the owner's Rally reach; `pulp_wars-w49.35`: the Orc
+    // Warboss's Berserk (radius 2, unmoved units of any role) is scored by
+    // `waaaghValueV7` as WAAAGH! was (no AI tuning in that bead).
     const targets = view.units.filter((unit) =>
       isRallyTargetV7(view, actor, unit),
     );

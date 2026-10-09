@@ -42,7 +42,7 @@ import { goblinSetupV7 } from "../fixtures/v7-goblin-arena";
 // pins follow the current identity.
 
 /** The revision number of the current identity (`pulp-wars-poc-7rNN`). */
-const REVISION = 60;
+const REVISION = 61;
 const ID = `pulp-wars-poc-7r${REVISION}`;
 const PREVIOUS_ID = `pulp-wars-poc-7r${REVISION - 1}`;
 

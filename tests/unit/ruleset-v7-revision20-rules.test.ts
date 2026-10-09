@@ -91,16 +91,16 @@ class MemoryStorage {
 // save keys are obsolete, and the scripts perform no Stampede.
 describe("ruleset-7 revision-20 identity", () => {
   it("keeps 7r19 and 7r20 as prior identities after the later bumps", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r60");
-    expect(RULESET_7.id).toBe("pulp-wars-poc-7r60");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r61");
+    expect(RULESET_7.id).toBe("pulp-wars-poc-7r61");
     expect(RULESET_7.version).toBe(7);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r60.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-41, -39)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r61.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-42, -40)).toEqual([
       "pulp-wars-poc-7r19",
       "pulp-wars-poc-7r20",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-41, -39)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-42, -40)).toEqual([
       "pulpWars.save.v7r19.current",
       "pulpWars.save.v7r20.current",
     ]);
@@ -142,7 +142,7 @@ describe("ruleset-7 revision-20 identity", () => {
       const setup = goblinSetupV7(["DINOSAUR", "ORIGINAL"]);
       const created = createPlayableGameV7(setup);
       if (!created.ok) throw new Error(created.error.code);
-      expect(created.state.rulesetId).toBe("pulp-wars-poc-7r60");
+      expect(created.state.rulesetId).toBe("pulp-wars-poc-7r61");
       const oldSetup = { ...setup, rulesetId: oldId };
       expect(parseMatchSetupV7(setup)).not.toBeNull();
       expect(parseMatchSetupV7(oldSetup)).toBeNull();
@@ -871,10 +871,11 @@ describe("ruleset-7 revision-20 growth fully heals", () => {
   });
 
   it("previews a death-blast chain with the healed HP", () => {
-    // A Raptor at 1 HP kills a Scrap Buggy; its blast (4) kills a Rocket
-    // Cart, whose blast (4) hits the Raptor again. Healed to 16 by its
-    // growth, the Raptor survives both (5 HP, as before revision 20, would
-    // not). `attackV7` checks that the chain preview equals the resolution.
+    // A Raptor at 1 HP kills a Scrap Buggy; its blast (7 since
+    // `pulp_wars-w49.35`, 4 before) kills a Rocket Cart, whose blast (7)
+    // hits the Raptor again. Healed to 16 by its growth, the Raptor
+    // survives both (5 HP, as before revision 20, would not). `attackV7`
+    // checks that the chain preview equals the resolution.
     const state = fieldV7(
       [
         { seat: 0, role: "RAIDER", at: at(3, 2), hp: 1 },
@@ -891,7 +892,7 @@ describe("ruleset-7 revision-20 growth fully heals", () => {
     expect(run.attacker).toMatchObject({
       at: at(4, 2),
       maxHp: 16,
-      hp: 16 - 4 - 4,
+      hp: 16 - 7 - 7,
     });
   });
 });

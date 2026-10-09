@@ -65,7 +65,7 @@ import type {
   UnitRoleIdV7,
 } from "./types";
 import { publicUnitStatsV7, type PublicUnitStatsV7 } from "./unit-stats";
-import { allOwnedUnitsV7 } from "./units";
+import { allOwnedUnitsV7, barricadesOfV7 } from "./units";
 
 export const UNKNOWN_RESOURCE_V7 = "UNKNOWN_RESOURCE" as const;
 export type PublicResourceV7 = ResourceIdV7 | null | typeof UNKNOWN_RESOURCE_V7;
@@ -354,6 +354,11 @@ export interface PlayerViewV7 {
    * targets a Caveman of the active seat has Pack Hunt against).
    */
   readonly huntedThisTurn: readonly UnitId[];
+  /**
+   * Goblin explosions and Berserk (`pulp_wars-w49.35`): `berserkThisTurn`
+   * of visible units (+1 Move, no stop in hostile zones of control).
+   */
+  readonly berserkThisTurn: readonly UnitId[];
   /**
    * The ninth unit (`pulp_wars-w49.17`, 7r55): the marked Graves on tiles
    * the viewer has explored (public like Graves, with the seat the Wight
@@ -954,6 +959,9 @@ export function viewForV7(
     huntedThisTurn: state.huntedThisTurn.filter((unitId) =>
       visibleUnitIds.has(unitId),
     ),
+    berserkThisTurn: state.berserkThisTurn.filter((unitId) =>
+      visibleUnitIds.has(unitId),
+    ),
     // The ninth unit (7r55): see `PlayerViewV7.ninthUnit`.
     ninthUnit: {
       wightGraves: state.ninthUnit.wightGraves
@@ -968,7 +976,7 @@ export function viewForV7(
     },
     // Dwarf crowd control (`pulp_wars-w49.33`): see
     // `PlayerViewV7.barricades`.
-    barricades: state.barricades
+    barricades: barricadesOfV7(state)
       .filter((entry) => explored.has(key(entry.at)))
       .map((entry) => ({
         at: { x: entry.at.x, y: entry.at.y },

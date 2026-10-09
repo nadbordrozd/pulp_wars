@@ -217,7 +217,7 @@ import { isUnitVisibleToPlayerV7 } from "./observation";
 import { parseGameStateV7 } from "./state-schema";
 import { wailResultEntriesV7, wailTargetsV7 } from "./wail";
 import { isRiftTerrainV7, noRisingAtV7 } from "./rift";
-import { allOwnedUnitsV7, tileOccupiedV7 } from "./units";
+import { allOwnedUnitsV7, barricadesOfV7, tileOccupiedV7 } from "./units";
 import {
   applyAssembleV7,
   applyBombRunV7,
@@ -5117,17 +5117,23 @@ function applyRally(
   if (rallyCools && isCoolingV7(state.cooling, result.captain.id))
     return rejected(original, "UNIT_ALREADY_ACTED", { unitId });
   // Revision 13 Frenzy eligibility: Rally targets also need ATTACK, which
-  // every Human non-support, non-siege land role has. Revision 17 WAAAGH!
-  // reaches radius 2 and includes support and siege roles.
+  // every Human non-support, non-siege land role has. Goblin explosions and
+  // Berserk (`pulp_wars-w49.35`): the Orc Warboss's Berserk reaches radius 2
+  // and every own land-form unit that has not moved and is not Berserk yet.
   const targets = state.units
     .filter((unit) => isRallyTargetV7(state, result.captain, unit))
     .sort((a, b) => a.id - b.id);
   if (targets.length === 0) return rejected(original, "HEAL_TARGET_NOT_FOUND");
   const ids = new Set(targets.map((unit) => unit.id));
+  const berserk =
+    unitRoleMechanicsV7(state, result.captain).rallyEffect === "BERSERK";
   return accepted(
     checked({
       ...state,
       commandIndex: nextSafe(state.commandIndex),
+      berserkThisTurn: berserk
+        ? [...state.berserkThisTurn, ...ids].sort((a, b) => a - b)
+        : state.berserkThisTurn,
       cooling: rallyCools
         ? withFiredRayV7(state.cooling, result.captain.id)
         : state.cooling,
@@ -5141,7 +5147,7 @@ function applyRally(
                 handled: true,
               },
             }
-          : ids.has(unit.id)
+          : ids.has(unit.id) && !berserk
             ? { ...unit, activation: { ...unit.activation, inspired: true } }
             : unit,
       ),
@@ -5188,7 +5194,11 @@ function applyTendWounded(
     .sort((a, b) => a.id - b.id);
   // Dwarf crowd control (`pulp_wars-w49.33`): an Engineer's Repair also
   // mends the damaged own Barricades next to it, like a machine.
-  const repairs = barricadeRepairsV7(state, state.barricades, result.captain);
+  const repairs = barricadeRepairsV7(
+    state,
+    barricadesOfV7(state),
+    result.captain,
+  );
   if (targets.length === 0 && repairs.length === 0)
     return rejected(original, "HEAL_TARGET_NOT_FOUND");
   // The Dwarf revision section 9.1: an Engineer's Repair heals a machine 4.
@@ -5245,7 +5255,7 @@ function applyTendWounded(
               }
             : unit,
       ),
-      barricades: withBarricadesRepairedV7(state.barricades, repairs),
+      barricades: withBarricadesRepairedV7(barricadesOfV7(state), repairs),
     }),
     [
       ...(targets.length === 0
@@ -6280,7 +6290,8 @@ function applyEndTurn(
       counted.bombedThisTurn.length === 0 &&
       counted.beamedThisTurn.length === 0 &&
       counted.tractorUsedThisTurn.length === 0 &&
-      counted.huntedThisTurn.length === 0
+      counted.huntedThisTurn.length === 0 &&
+      counted.berserkThisTurn.length === 0
         ? counted
         : {
             ...counted,
@@ -6290,6 +6301,9 @@ function applyEndTurn(
             tractorUsedThisTurn: [],
             // The Dinosaur pass, correction: the hunted units (Pack Hunt).
             huntedThisTurn: [],
+            // Goblin explosions and Berserk (`pulp_wars-w49.35`): Berserk
+            // lasts until the end of the turn.
+            berserkThisTurn: [],
           };
     // The Candy revision section 10: the Crash, the Crumbs countdown, and
     // the emptied Splat and Toss lists, after the Dwarf per-turn lists and
@@ -6450,7 +6464,7 @@ function resolveNeutralTurnV7(
       board: current.board,
       units: current.units,
       burrowed: current.burrowed,
-      barricades: current.barricades,
+      barricades: barricadesOfV7(current),
       treasureChests: current.treasureChests,
     };
     const choice = monsterAttackChoiceV7(facts, monster, entry);

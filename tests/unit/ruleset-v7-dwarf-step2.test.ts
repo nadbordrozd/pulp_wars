@@ -39,7 +39,8 @@ import type { IcePieceV7 } from "../fixtures/v7-ice-folk";
 // docs/product/RULESET_7_TUNING_DWARF.md): hand-played games as the Humans
 // against the Dwarf AI and as the Dwarves. No rule changed, so the identity
 // stayed `pulp-wars-poc-7r59` (7r60 since Dwarf crowd control,
-// `pulp_wars-w49.33`). A Dwarf seat of the Normal AI plays the army
+// `pulp_wars-w49.33`, and 7r61 since Goblin explosions and Berserk,
+// `pulp_wars-w49.35`). A Dwarf seat of the Normal AI plays the army
 // rules in a match whose every seat is Human, Undead, Goblin, Martian,
 // Dinosaur, Ice Folk, or Dwarf (a Candy seat keeps the older policy for
 // every seat): it researches toward its own units in its own order, trains
@@ -160,7 +161,7 @@ const counts = (
 
 describe("step two of the Dwarf pass: no rule changed", () => {
   it("kept the identity and the Dwarf Survey (the area, no unit)", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r60");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r61");
     expect([SURVEY_RAIDERS_V7.DWARF, SURVEY_RAIDERS_V7.CANDY]).toEqual([0, 0]);
   });
 });

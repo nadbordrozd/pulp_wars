@@ -236,7 +236,7 @@ export function hatchedUnitV7(
  */
 export function prunedEggsV7(input: GameStateV7): GameStateV7 {
   // The Dinosaur pass, correction: the hunted units that left the board.
-  const state =
+  const hunted =
     input.huntedThisTurn.length === 0
       ? input
       : ((): GameStateV7 => {
@@ -249,6 +249,25 @@ export function prunedEggsV7(input: GameStateV7): GameStateV7 {
           return huntedThisTurn.length === input.huntedThisTurn.length
             ? input
             : { ...input, huntedThisTurn };
+        })();
+  // Goblin explosions and Berserk (`pulp_wars-w49.35`): the Berserk units
+  // that left the board or the active seat (a released controlled unit).
+  const state =
+    hunted.berserkThisTurn.length === 0
+      ? hunted
+      : ((): GameStateV7 => {
+          const activePlayerId = hunted.turnOrder[hunted.activeSeatIndex];
+          const kept = new Set(
+            hunted.units
+              .filter((unit) => unit.hp > 0 && unit.ownerId === activePlayerId)
+              .map((unit) => unit.id),
+          );
+          const berserkThisTurn = hunted.berserkThisTurn.filter((unitId) =>
+            kept.has(unitId),
+          );
+          return berserkThisTurn.length === hunted.berserkThisTurn.length
+            ? hunted
+            : { ...hunted, berserkThisTurn };
         })();
   if (state.eggs.length === 0) return state;
   const eggIds = new Set(

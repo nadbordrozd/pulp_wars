@@ -706,7 +706,8 @@ describe("text-mode play harness", () => {
         expect(
           ok("options", "--session", session, "--unit", `u${lone.id}`),
         ).toContain(
-          `u${lone.id}.kaboom  kaboom | blast 5 at ${lone.at.x},${lone.at.y}: hits nobody | enemy 0 damage, 0 kills; yours 0 damage, 0 kills | this unit dies`,
+          // `pulp_wars-w49.35`: the Goblin's Kaboom is 6 (5 before).
+          `u${lone.id}.kaboom  kaboom | blast 6 at ${lone.at.x},${lone.at.y}: hits nobody | enemy 0 damage, 0 kills; yours 0 damage, 0 kills | this unit dies`,
         );
       }
       if (lab === "LAB_DWARF_MID") {

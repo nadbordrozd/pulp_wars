@@ -160,6 +160,9 @@ import {
   LAND_GRANT_MINIMUM_COST_V7,
   publicLandGrantPriceV7,
   unitIgnoresZocStopsV7,
+  isRallyTargetV7,
+  BERSERK_MOVE_BONUS_V7,
+  barricadesOfV7,
   missionByIdV7,
   missionMatchSetupV7,
 } from "../src/engine/index";
@@ -1706,10 +1709,22 @@ function describeCommandV7(
         : `pillage (${tileBriefV7(view, unit.at)}): destroys the improvement, +${PILLAGE_COINS_V7} Coins${unitRoleRuleV7(view, unit).abilities.includes("ESCAPE") ? "; this unit may still move afterwards (Escape)" : ""}`;
     case "BUILD_FIELD_DEFENSE":
       return `build a Field Defense on this tile (3c): +${FIELD_DEFENSE_FORTIFICATION_LEVELS_V7} Defense for the unit standing here (a siege shot is made against it and then destroys it; a Breach ignores and destroys it; it never raises what the defender hits back with) | the unit keeps its move and its action`;
-    case "RALLY":
+    case "RALLY": {
+      // Goblin explosions and Berserk (`pulp_wars-w49.35`): the Orc
+      // Warboss's Berserk replaced WAAAGH!.
+      if (
+        unit !== undefined &&
+        unitRoleMechanicsV7(view, unit).rallyEffect === "BERSERK"
+      ) {
+        const count = view.units.filter((target) =>
+          isRallyTargetV7(view, unit, target),
+        ).length;
+        return `berserk: ${count} own ${count === 1 ? "unit" : "units"} within ${unitRoleMechanicsV7(view, unit).rallyRadius} that ${count === 1 ? "has" : "have"} not moved get +${BERSERK_MOVE_BONUS_V7} move and ignore enemy zones of control until the end of the turn (still never through a unit)`;
+      }
       return unit !== undefined && unitRoleMechanicsV7(view, unit).rallyCools
         ? "psychic command: inspires own units beside it (+1 Attack on their next attack); the Brain is then Cooling and cannot command next turn"
         : "rally: inspires own units in reach (bonus on their next attack)";
+    }
     case "TEND_WOUNDED":
       return `tend wounded${generic(previewTendWoundedV7(view, command.unitId))}`;
     case "WAIL":
@@ -2680,7 +2695,7 @@ function mapLinesV7(view: PlayerViewV7): readonly string[] {
         ? "!"
         : view.curiosities.some((entry) => sameV7(entry.at, at))
           ? "&"
-          : view.barricades.some((entry) => sameV7(entry.at, at))
+          : barricadesOfV7(view).some((entry) => sameV7(entry.at, at))
             ? "B"
             : tile.fieldDefense
               ? "d"
@@ -3240,9 +3255,14 @@ function viewLinesV7(session: SessionV7, full: boolean): string[] {
     );
   // Dwarf crowd control (`pulp_wars-w49.33`): every Barricade on an
   // explored tile, with its owner and HP.
-  if (view.barricades.length > 0)
+  if (barricadesOfV7(view).length > 0)
     specials.push(
-      `barricades (block every unit until destroyed): ${view.barricades.map((entry) => `${xyV7(entry.at)}(${seatLabelV7(view, entry.ownerId)} ${String(entry.hp)}/${String(BARRICADE_HP_V7)} HP)`).join(" ")}`,
+      `barricades (block every unit until destroyed): ${barricadesOfV7(view)
+        .map(
+          (entry) =>
+            `${xyV7(entry.at)}(${seatLabelV7(view, entry.ownerId)} ${String(entry.hp)}/${String(BARRICADE_HP_V7)} HP)`,
+        )
+        .join(" ")}`,
     );
   if (view.ice.length > 0)
     specials.push(`ice: ${view.ice.map((entry) => xyV7(entry.at)).join(" ")}`);

@@ -82,11 +82,11 @@ import {
 
 describe("ruleset-7 revision-17 identity", () => {
   it("keeps r16 among the prior identities after the r55 identity and cleans the r16 key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r60");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r60.current");
-    expect(PRIOR_RULESET_7_IDS.at(-44)).toBe("pulp-wars-poc-7r16");
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(59);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-44)).toBe(
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r61");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r61.current");
+    expect(PRIOR_RULESET_7_IDS.at(-45)).toBe("pulp-wars-poc-7r16");
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(60);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-45)).toBe(
       "pulpWars.save.v7r16.current",
     );
     const storage = new MemoryStorage([
@@ -316,7 +316,8 @@ describe("ruleset-7 Goblin roster", () => {
   // abilities, Kaboom damage, death-blast damage. `pulp_wars-0ao.7` tuned
   // the Goblin's attack2 (4 -> 3), defense2 (2 -> 1), and Kaboom (4 -> 5),
   // and the death blasts (Bomb Chucker 3 -> 2, Rocket Cart and Scrap Buggy
-  // 5 -> 4).
+  // 5 -> 4). `pulp_wars-w49.35`: the Goblin's Kaboom 5 -> 6 and every death
+  // blast +3 (Bomb Chucker 5, Rocket Cart and Scrap Buggy 7).
   const ROSTER: Readonly<Record<UnitRoleIdV7, Row>> = {
     FIGHTER: [
       "Goblin",
@@ -332,7 +333,7 @@ describe("ruleset-7 Goblin roster", () => {
       1,
       true,
       ["ATTACK", "CAPTURE", "KABOOM"],
-      5,
+      6,
       null,
     ],
     RAIDER: [
@@ -367,7 +368,7 @@ describe("ruleset-7 Goblin roster", () => {
       true,
       ["ATTACK", "CAPTURE", "KABOOM"],
       4,
-      2,
+      5,
     ],
     GUARD: [
       "Orc Brute",
@@ -418,7 +419,7 @@ describe("ruleset-7 Goblin roster", () => {
       false,
       ["ATTACK", "KABOOM"],
       5,
-      4,
+      7,
     ],
     KNIGHT: [
       "Scrap Buggy",
@@ -435,7 +436,7 @@ describe("ruleset-7 Goblin roster", () => {
       true,
       ["ATTACK", "OVERRUN", "KABOOM"],
       5,
-      4,
+      7,
     ],
     JUGGERNAUT: [
       "Troll",
@@ -595,24 +596,26 @@ describe("ruleset-7 Goblin roster", () => {
           mechanics.splashTargets,
           mechanics.buildsFieldDefense,
           mechanics.rallyRadius,
-          mechanics.rallyReachesSupportAndSiege,
+          // `pulp_wars-w49.35`: Berserk replaced WAAAGH! (and its
+          // `rallyReachesSupportAndSiege`).
+          mechanics.rallyEffect,
           mechanics.regeneration,
         ];
       }),
     ).toEqual([
-      ["FIGHTER", true, false, "HOSTILE", false, 1, false, 0],
-      ["RAIDER", true, false, "HOSTILE", false, 1, false, 0],
+      ["FIGHTER", true, false, "HOSTILE", false, 1, "INSPIRE", 0],
+      ["RAIDER", true, false, "HOSTILE", false, 1, "INSPIRE", 0],
       // Revision 17: the Bomb Chucker's bomb splashes every unit.
-      ["MARKSMAN", true, true, "ALL", false, 1, false, 0],
-      ["GUARD", true, false, "HOSTILE", true, 1, false, 0],
-      ["CAPTAIN", true, false, "HOSTILE", false, 2, true, 0],
-      ["CATAPULT", false, false, "HOSTILE", false, 1, false, 0],
-      ["KNIGHT", true, false, "HOSTILE", false, 1, false, 0],
-      ["JUGGERNAUT", true, false, "HOSTILE", false, 1, false, 4],
-      ["PATROL_BOAT", true, false, "HOSTILE", false, 1, false, 0],
-      ["BATTLESHIP", true, true, "HOSTILE", false, 1, false, 0],
-      ["SUBMARINE", true, false, "HOSTILE", false, 1, false, 0],
-      ["SWORDSMAN", true, false, "HOSTILE", false, 1, false, 0],
+      ["MARKSMAN", true, true, "ALL", false, 1, "INSPIRE", 0],
+      ["GUARD", true, false, "HOSTILE", true, 1, "INSPIRE", 0],
+      ["CAPTAIN", true, false, "HOSTILE", false, 2, "BERSERK", 0],
+      ["CATAPULT", false, false, "HOSTILE", false, 1, "INSPIRE", 0],
+      ["KNIGHT", true, false, "HOSTILE", false, 1, "INSPIRE", 0],
+      ["JUGGERNAUT", true, false, "HOSTILE", false, 1, "INSPIRE", 4],
+      ["PATROL_BOAT", true, false, "HOSTILE", false, 1, "INSPIRE", 0],
+      ["BATTLESHIP", true, true, "HOSTILE", false, 1, "INSPIRE", 0],
+      ["SUBMARINE", true, false, "HOSTILE", false, 1, "INSPIRE", 0],
+      ["SWORDSMAN", true, false, "HOSTILE", false, 1, "INSPIRE", 0],
     ]);
     for (const table of [ORIGINAL_ROLE_MECHANICS_V7, UNDEAD_ROLE_MECHANICS_V7])
       for (const role of UNIT_ROLE_IDS_V7)
@@ -620,7 +623,7 @@ describe("ruleset-7 Goblin roster", () => {
           table[role].splashTargets,
           table[role].buildsFieldDefense,
           table[role].rallyRadius,
-          table[role].rallyReachesSupportAndSiege,
+          table[role].rallyEffect,
           table[role].kaboomDamage,
           table[role].deathBlastDamage,
           table[role].regeneration,
@@ -628,7 +631,7 @@ describe("ruleset-7 Goblin roster", () => {
           "HOSTILE",
           role === "FIGHTER" || role === "GUARD",
           1,
-          false,
+          "INSPIRE",
           null,
           null,
           0,
@@ -722,7 +725,7 @@ describe("ruleset-7 Goblin technology", () => {
         expect(goblin.unlocks).toEqual(
           human.unlocks.map((unlock) =>
             unlock.kind === "CAPTAIN_SUPPORT"
-              ? { kind: "WAAAGH_SUPPORT" }
+              ? { kind: "BERSERK_SUPPORT" }
               : unlock,
           ),
         );
@@ -876,7 +879,7 @@ describe("ruleset-7 Goblin technology", () => {
       "Train Orc Warboss",
       "Disband",
       "Build market",
-      "Orc Warbosses WAAAGH! troops within 2 tiles",
+      "Orc Warbosses send troops within 2 tiles Berserk: +1 Move, ignore zones of control",
     ]);
     expect(text(0, "SAWMILLING")).toContain("Train Rocket Cart");
     expect(text(0, "MARKSMANSHIP")).toEqual(["Train Bomb Chucker"]);

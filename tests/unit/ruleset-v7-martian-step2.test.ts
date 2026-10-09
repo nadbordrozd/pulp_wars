@@ -47,7 +47,7 @@ import {
 import { checkedV7 } from "../fixtures/v7-builders";
 import { martianFieldV7, offeredV7 } from "../fixtures/v7-martian";
 
-// Step two of the Martian pass (`pulp_wars-w49.25`, `pulp-wars-poc-7r60`,
+// Step two of the Martian pass (`pulp_wars-w49.25`, `pulp-wars-poc-7r61`,
 // docs/product/RULESET_7_TUNING_MARTIAN.md section 14): hand-played games as
 // the Humans against the Martian AI and as the Martians. One rule changed:
 // City Walls hold a unit on its own city center against a Saucer's Tractor
@@ -254,16 +254,17 @@ const MARTIAN: readonly FactionIdV7[] = ["MARTIAN", "ORIGINAL"];
 
 describe("step two of the Martian pass: the identity", () => {
   it("was 7r58 after 7r57, with both save keys obsolete now", () => {
-    // (Step two of the Ice Folk pass, `pulp_wars-w49.27`, took 7r59, and
-    // Dwarf crowd control, `pulp_wars-w49.33`, 7r60.)
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r60");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r60.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-3, -1)).toEqual([
+    // (Step two of the Ice Folk pass, `pulp_wars-w49.27`, took 7r59,
+    // Dwarf crowd control, `pulp_wars-w49.33`, 7r60, and Goblin explosions
+    // and Berserk, `pulp_wars-w49.35`, 7r61.)
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r61");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r61.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-4, -2)).toEqual([
       "pulp-wars-poc-7r57",
       "pulp-wars-poc-7r58",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-3, -1)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-4, -2)).toEqual([
       "pulpWars.save.v7r57.current",
       "pulpWars.save.v7r58.current",
     ]);

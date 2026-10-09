@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r60`, for all eight registered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r61`, for all eight registered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), and Candy (`CANDY`). It
 folds in
@@ -226,6 +226,17 @@ Whirligig's **Whirl** replaces Three Hammers
 `BUILD_BARRICADE`, and `ATTACK_BARRICADE` and four events are new. A save,
 replay, or setup of `7r59` is rejected, and the browser autosave has a new
 key. A match without a Dwarf seat plays as at `7r59`.
+`pulp-wars-poc-7r61` (`pulp_wars-w49.35`) is **Goblin explosions and
+Berserk**: every Goblin death blast is 3 harder (Bomb Chucker 5, Rocket Cart
+7, Scrap Buggy 7; [section 18.5](#185-death-blasts)), the Goblin's Kaboom is
+6 ([section 18.4](#184-kaboom)), and the Orc Warboss's **Berserk** replaces
+WAAAGH!: its `RALLY` gives the own unmoved land units within 2 +1 Move and
+no stop in enemy zones of control until the end of the turn
+([section 18.10](#1810-berserk-ram-and-troll-regeneration)). The state and
+view gain `berserkThisTurn`, and the Administration unlock is
+`BERSERK_SUPPORT`; no command or event is new. A save, replay, or setup of
+`7r60` is rejected, and the browser autosave has a new key. A match without
+a Goblin seat plays as at `7r60`.
 `pulp-wars-poc-7r58` (`pulp_wars-w49.25`) is
 [step two of the Martian pass](RULESET_7_TUNING_MARTIAN.md#14-step-two):
 **City Walls hold a unit on its own city center against a Saucer's Tractor
@@ -675,7 +686,7 @@ the build differs (its sections 20 to 24 list them);
 the values here are current. Where a document and the code disagreed, the
 code's behavior is the rule and is stated below;
 [Known discrepancies](#25-known-discrepancies) lists the open items and the
-resolved ones as of `pulp-wars-poc-7r60`.
+resolved ones as of `pulp-wars-poc-7r61`.
 
 **Terms.** "On the board" means a unit that currently exists (HP above 0).
 **Living** has the narrower revision-13 meaning used by Wail, Plague,
@@ -776,10 +787,10 @@ separate [Ruleset 6](RULESET_6.md) route.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r60`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Ruleset                                    | `pulp-wars-poc-7r61`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r60.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Browser autosave                           | `pulpWars.save.v7r61.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                                     |
@@ -1027,7 +1038,13 @@ separate [Ruleset 6](RULESET_6.md) route.
   list, `huntedThisTurn` (after `tossedThisTurn`): the sorted IDs of the
   units a hatched dinosaur of the active seat attacked this turn and that
   survived ([section 19.14](#1914-pack-hunt)); always empty in a match
-  without a Dinosaur seat, and with a view copy of the visible units. Its only map-curiosity field is `curiosities`, the
+  without a Dinosaur seat, and with a view copy of the visible units.
+  Goblin explosions and Berserk (`pulp_wars-w49.35`) added one list,
+  `berserkThisTurn` (after `huntedThisTurn`): the sorted IDs of the active
+  seat's units an Orc Warboss sent Berserk this turn
+  ([section 18.10](#1810-berserk-ram-and-troll-regeneration)); always empty
+  in a match without a Goblin seat, emptied at End Turn, and with a view
+  copy of the visible units. Its only map-curiosity field is `curiosities`, the
   Fountains, Shrines, and Wrecks sorted by `(y, x)`
   ([section 2.7](#27-map-curiosities)). The naval branch stores one list,
   `ice`, the ice tiles `{ at, ownerId, turnsLeft }` sorted by `(y, x)`
@@ -2176,7 +2193,7 @@ Gallery has a Curiosities tab.
   hatch the seat's Eggs ([section 19.5](#195-hatching)); resolve Windmill
   healing; heal the seat's unit on each Fountain of Youth
   ([section 2.7](#27-map-curiosities)); regenerate Trolls
-  ([section 18.10](#1810-waaagh-ram-and-troll-regeneration)); award income;
+  ([section 18.10](#1810-berserk-ram-and-troll-regeneration)); award income;
   settle pending city rewards; evaluate achievements. Events:
   `TURN_STARTED`, then `SHIELDS_RECHARGED`, then one `UNITS_CHILLED` per
   Frost Giant that chilled a unit, then one `UNITS_CHILLED` with source
@@ -2218,8 +2235,9 @@ Gallery has a Curiosities tab.
   ([section 22](#22-dwarf-faction-rules), no event); run the Crash step,
   count down the player's Crumbs, and empty `splattedThisTurn` and
   `tossedThisTurn` ([section 23.8](#238-resolution-order)); `huntedThisTurn`
-  is emptied with the Dwarf and Martian per-turn lists
-  ([section 19.14](#1914-pack-hunt)); preview next income;
+  and `berserkThisTurn` are emptied with the Dwarf and Martian per-turn
+  lists ([sections 19.14](#1914-pack-hunt) and
+  [18.10](#1810-berserk-ram-and-troll-regeneration)); preview next income;
   advance to
   the next active seat and run its Start Turn. Events: the recovery events,
   `SHIELDS_RECHARGED` (Force Fields), `ICE_MELTED`, `UNITS_CRASHED`, `CRUMBS_STALE`,
@@ -2876,8 +2894,9 @@ the table above are:
 
 The Goblin tree (`GOBLIN_BASELINE_V1`) has the same graph, tiers,
 prerequisites, costs, free opener, Dry Land Naval rule, and technology IDs as
-the Human one, with two unlock differences: Administration grants WAAAGH!
-support (`WAAAGH_SUPPORT`) instead of Captain support, and Commerce grants
+the Human one, with two unlock differences: Administration grants Berserk
+support (`BERSERK_SUPPORT`; WAAAGH! support, `WAAAGH_SUPPORT`, before
+`pulp_wars-w49.35`) instead of Captain support, and Commerce grants
 **Plunder** (`PLUNDER { coins: 2 }`, [section 18.9](#189-kill-credit-plunder-and-friendly-fire))
 instead of land trade, so Goblins never earn land trade (Roads movement and
 Road population are unchanged). Chivalry keeps Overrun, labelled Ram.
@@ -2891,7 +2910,7 @@ differently from the Human table are:
 
 | Technology     | Goblin name | Goblin unlocks                                                                                 |
 | -------------- | ----------- | ---------------------------------------------------------------------------------------------- |
-| Administration | same        | Orc Warboss (WAAAGH!); Market; Disband                                                         |
+| Administration | same        | Orc Warboss (Berserk); Market; Disband                                                         |
 | Sawmilling     | same        | Sawmill; Rocket Cart                                                                           |
 | Marksmanship   | same        | Bomb Chucker                                                                                   |
 | Fieldcraft     | same        | Replant Forest; Wolf Rider and Bomb Chucker ignore Forest movement stops; Bomb Chucker Sight 2 |
@@ -3515,8 +3534,8 @@ market income = min(3, 1 + distinct adjacent families)
   (Rally labelled **War Drums**) plus Hatch
   ([section 19.6](#196-shaman-hatch)). The Undead Necromancer instead has
   Attack, Frenzy, and Raise Dead ([section 17](#17-undead-faction-rules)),
-  the Goblin Orc Warboss has Attack and WAAAGH!
-  ([section 18.10](#1810-waaagh-ram-and-troll-regeneration)), and the
+  the Goblin Orc Warboss has Attack and Berserk
+  ([section 18.10](#1810-berserk-ram-and-troll-regeneration)), and the
   Martian Brain has Attack, Psychic Command, and Mind Control
   ([section 20.8](#208-mind-control)), and the Ice Folk Ice Witch has
   Attack and Cold Snap and no Rally
@@ -3529,7 +3548,7 @@ market income = min(3, 1 + distinct adjacent families)
   Confectioner has Attack, **Frosting** (its Tend Wounded), and Re-bake,
   and no Rally either
   ([sections 23.3](#233-crumbs) and [23.7](#237-frosting-and-sugar-toss)).
-- **Rally** (Undead: **Frenzy**, labelled "Frenzied"; Goblin: **WAAAGH!**;
+- **Rally** (Undead: **Frenzy**, labelled "Frenzied";
   Dinosaur: **War Drums**; Martian: **Psychic Command**; all with the same
   command `RALLY`, flag `inspired`, and event `UNITS_RALLIED`): every
   adjacent own land-form unit that is not `SUPPORT` or `SIEGE` (not a
@@ -3537,10 +3556,11 @@ market income = min(3, 1 + distinct adjacent families)
   Tripod), has the `ATTACK` ability (so not a
   Banshee), and is not already Inspired becomes Inspired: +1 Attack on its
   next attack this turn. An Egg is never a target (it is not in land form).
-  WAAAGH! reaches every
-  other own land-form unit within Chebyshev distance 2 and includes `SUPPORT`
-  and `SIEGE` roles (Rocket Carts, other Warbosses); it keeps the `ATTACK`
-  and not-already-Inspired requirements. Inspired expires at End Turn, does
+  The Goblin Orc Warboss's `RALLY` is not a Rally but **Berserk**
+  (`pulp_wars-w49.35`, role mechanic `rallyEffect: "BERSERK"`; it replaced
+  WAAAGH!, which inspired every own unit within 2): it inspires nobody
+  ([section 18.10](#1810-berserk-ram-and-troll-regeneration)). Inspired
+  expires at End Turn, does
   not stack, and never affects Wail, Kaboom, or blasts. With no eligible
   target the command rejects with `HEAL_TARGET_NOT_FOUND`.
 - **Tend Wounded** (Human Captain, Dinosaur Shaman, Dwarf Engineer as
@@ -3790,19 +3810,20 @@ tiles, and Plague behind Pestilence.
   apply to every faction.
 
 The Goblin (`GOBLIN`) roster, by mechanical role, with the
-`pulp_wars-0ao.7` tuned values (`GOBLIN_ROLE_RULES_V7` and
+`pulp_wars-0ao.7` tuned values and the `pulp_wars-w49.35` blasts (the
+Goblin's Kaboom 6, every death blast 3 harder; `GOBLIN_ROLE_RULES_V7` and
 `GOBLIN_ROLE_MECHANICS_V7`). "Kaboom" and "Death blast" are the fixed blast
 damages of [section 18.4](#184-kaboom) and [18.5](#185-death-blasts):
 
 | Unit         | Role          | Tech              | Cost |  HP |  Attack | Defense | Move | Range | Sight | Attack after Move | Capture | Kaboom | Death blast | Abilities                                                       |
 | ------------ | ------------- | ----------------- | ---: | --: | ------: | ------: | ---: | ----: | ----: | ----------------- | ------- | -----: | ----------: | --------------------------------------------------------------- |
-| Goblin       | `FIGHTER`     | start             |    1 |   6 | 1.5 (3) | 0.5 (1) |    1 |     1 |     1 | yes               | yes     |      5 |           — | Kaboom; no Field Defense                                        |
+| Goblin       | `FIGHTER`     | start             |    1 |   6 | 1.5 (3) | 0.5 (1) |    1 |     1 |     1 | yes               | yes     |      6 |           — | Kaboom; no Field Defense                                        |
 | Wolf Rider   | `RAIDER`      | Scouting          |    3 |  10 |   2 (4) |   1 (2) |    2 |     1 |     2 | yes               | yes     |      4 |           — | Charge (Raiding); Kaboom; no Escape                             |
-| Bomb Chucker | `MARKSMAN`    | Marksmanship      |    3 |   8 |   2 (4) |   1 (2) |    1 |     2 |    1³ | yes               | yes     |      4 |           2 | bombs (friendly-fire splash, no Gang Up); Kaboom                |
+| Bomb Chucker | `MARKSMAN`    | Marksmanship      |    3 |   8 |   2 (4) |   1 (2) |    1 |     2 |    1³ | yes               | yes     |      4 |           5 | bombs (friendly-fire splash, no Gang Up); Kaboom                |
 | Orc Brute    | `GUARD`       | Fortification     |    3 |  15 |   2 (4) | 2.5 (5) |    1 |     1 |     1 | no                | yes     |      — |           — | Field Defense; Blast-proof                                      |
-| Orc Warboss  | `CAPTAIN`     | Administration    |    5 |  12 |   2 (4) |   1 (2) |    1 |     1 |     1 | yes               | no      |      — |           — | WAAAGH!; no Tend Wounded                                        |
-| Rocket Cart  | `CATAPULT`    | Sawmilling        |    7 |   8 | 3.5 (7) | 0.5 (1) |    1 |   2–3 |     1 | no                | no      |      5 |           4 | Kaboom; never advances; Gang Up +1 at most                      |
-| Scrap Buggy  | `KNIGHT`      | Chivalry          |    8 |  10 |   3 (6) |   1 (2) |    3 |     1 |     1 | yes               | no      |      5 |           4 | Ram; Kaboom, also after attacking (Crash)                       |
+| Orc Warboss  | `CAPTAIN`     | Administration    |    5 |  12 |   2 (4) |   1 (2) |    1 |     1 |     1 | yes               | no      |      — |           — | Berserk; no Tend Wounded                                        |
+| Rocket Cart  | `CATAPULT`    | Sawmilling        |    7 |   8 | 3.5 (7) | 0.5 (1) |    1 |   2–3 |     1 | no                | no      |      5 |           7 | Kaboom; never advances; Gang Up +1 at most                      |
+| Scrap Buggy  | `KNIGHT`      | Chivalry          |    8 |  10 |   3 (6) |   1 (2) |    3 |     1 |     1 | yes               | no      |      5 |           7 | Ram; Kaboom, also after attacking (Crash)                       |
 | Ogre         | `SWORDSMAN`   | Metallurgy        |    5 |  16 | 2.5 (5) |   2 (4) |    1 |     1 |     1 | yes               | yes     |      — |           — | Heavyweight (two helpers for Gang Up; `7r55`); no Field Defense |
 | Troll        | `JUGGERNAUT`  | reward only       |    — |  40 |   4 (8) |   3 (6) |    1 |     1 |     1 | yes               | yes     |      — |           — | Push; Regenerate 4                                              |
 | Patrol Boat  | `PATROL_BOAT` | Shorecraft        |    5 |  10 |   2 (4) |   2 (4) |    2 |     1 |     2 | yes               | no      |      — |           — | naval; Ram (Seamanship)                                         |
@@ -3825,7 +3846,7 @@ damages of [section 18.4](#184-kaboom) and [18.5](#185-death-blasts):
   Defense with Fortification) and is the only Goblin unit that builds Field
   Defense. Since `7r50` it is **Blast-proof**: no explosion and no splash
   hits it ([section 18.6](#186-blast-resolution)).
-- **Orc Warboss** cannot capture; its primary actions are Attack and WAAAGH!
+- **Orc Warboss** cannot capture; its primary actions are Attack and Berserk
   (no Tend Wounded).
 - **Rocket Cart** has Catapult parity: range 2–3, minimum range 2, cannot
   attack after moving (Kaboom is still allowed after a Move), no capture,
@@ -3847,7 +3868,7 @@ damages of [section 18.4](#184-kaboom) and [18.5](#185-death-blasts):
   Bomb Chucker `ATTACK`, `CAPTURE`, `KABOOM`; Orc Brute `ATTACK`, `CAPTURE`;
   Orc Warboss `ATTACK`, `RALLY`; Rocket Cart `ATTACK`, `KABOOM`; Scrap Buggy
   `ATTACK`, `OVERRUN`, `KABOOM`; Troll `ATTACK`, `CAPTURE`, `PUSH`,
-  `REGENERATE`. Blast damages, the bomb's splash target mode, the WAAAGH!
+  `REGENERATE`. Blast damages, the bomb's splash target mode, the Berserk
   radius, the Field Defense restriction, and the regeneration amount are role
   mechanics, exposed to every viewer of a Goblin unit through the `goblin`
   block of its public unit stats (`kaboomDamage`, `deathBlastDamage`,
@@ -4364,7 +4385,9 @@ General roster rules:
   land-form ground unit of any kind but the Ice Folk (the slip; nothing
   waives it), or a cell in hostile ZOC
   (never for a Sabretooth, which Prowls, nor, since round 4 of the Human
-  tuning, for a Human Raider: `ignoresZocStops`). **Forest march** (round
+  tuning, for a Human Raider: `ignoresZocStops`; nor, since
+  `pulp_wars-w49.35`, for a Berserk unit in land form, which also has +1
+  Move: [section 18.10](#1810-berserk-ram-and-troll-regeneration)). **Forest march** (round
   4): with Fieldcraft no ground unit of the owner stops on entering Forest,
   whatever its role (`forestMarch`); the Snow stop still reads the two
   Fieldcraft roles. A path that continues past such a
@@ -4485,8 +4508,9 @@ General roster rules:
   An ice tile takes ZOC like land: from land units, never from naval units.
   An icebound unit projects none.
   Embarked units, Eggs, Martian flyers, the Dwarf Gyrocopter, and mounds
-  project none, and a flyer ignores hostile ZOC; a Sabretooth projects it
-  but is never stopped by it, and a Chilled unit projects it as usual. A
+  project none, and a flyer ignores hostile ZOC; a Sabretooth or a Berserk
+  unit projects it but is never stopped by it, and a Chilled unit projects
+  it as usual. A
   tunnel ignores ZOC. Leaving ZOC is free.
 
 ### 12.2 Activation
@@ -4497,7 +4521,7 @@ General roster rules:
   its Move and its primary action at once
   ([section 22](#22-dwarf-faction-rules)).
 - Primary actions are Attack, Recover, Capture, and specials
-  (Rally/Frenzy/WAAAGH!/War Drums/Psychic Command, Tend and Repair, Field
+  (Rally/Frenzy/Berserk/War Drums/Psychic Command, Tend and Repair, Field
   Defense, Pillage, Raise Dead, Devour, Wail, Kaboom, Hatch, Beam Down, Mind
   Control, Tractor Beam, Bolas, Cold Snap, Freeze, Board, Bomb Run,
   Assemble). Guard,
@@ -4658,7 +4682,7 @@ General roster rules:
 ```text
 attack  = base Attack (a half-power heat ray: half, rounded down;
                        a Rockfall: 1.5)
-        + 1 (Charge/Pounce/Strafe) + 1 (Inspired/Frenzied/WAAAGH!/War Drums/Psychic Command)
+        + 1 (Charge/Pounce/Strafe) + 1 (Inspired/Frenzied/War Drums/Psychic Command)
         + Gang Up (0–2) + 1 (Alpha) + run-up (Charge!: 0–1; 0–2 with Wallbreaker)
         + 1 (Pack Hunt)
         + 1 (Planted) + 0.5 (Cold Blood) + 1 (Ram)
@@ -4739,10 +4763,10 @@ damageToAttacker = roundHalfUp(retaliationForce / (attackForce + retaliationForc
   Glacier and whose own fortification level is 0, has the Snow cover,
   × 1.25. The preview carries `iceCover`, and `icebound` when the defender
   is icebound.
-- **Inspired** (Frenzied for Undead, WAAAGH! for Goblins, War Drums for
-  Dinosaurs, Psychic Command for Martians): +1 Attack on the unit's first
-  accepted attack after Rally, Frenzy, WAAAGH!, War Drums, or Psychic
-  Command.
+- **Inspired** (Frenzied for Undead, War Drums for Dinosaurs, Psychic
+  Command for Martians): +1 Attack on the unit's first accepted attack after
+  Rally, Frenzy, War Drums, or Psychic Command. (Goblin WAAAGH! was one
+  until `pulp_wars-w49.35`; its replacement, Berserk, adds Move instead.)
 - **Heat ray** (a land-form Ray Gunner, Tripod, or Colossus,
   [section 20.4](#204-heat-rays-and-cooling)): full power only from a unit
   that has not moved this turn and is not Cooling, otherwise the role's
@@ -4981,7 +5005,7 @@ Disintegrator ([section 21.5](#215-snow)).
   (reason `CATAPULT`, whether or not either unit survives); a land-form
   Mammoth attacked (reason `TRAMPLE`, whether or not either unit survives;
   the Field Defense still counted for the exchange); a surviving Inspired
-  (Frenzied, WAAAGH!) unit
+  (Frenzied, War Drums, Psychic Command) unit
   attacked at range 1; a land-form attacker whose owner has Explosives
   attacked at range 1 (a Breach, reason `EXPLOSIVES`, whether or not the
   attacker survives since tuning 1, `7r46`); or the attacker advanced into
@@ -5855,7 +5879,7 @@ Harbours from it.
   is within four tiles of an own center or five of an own unit off its
   center, units come first, then growth, then research (but for the
   technology of a unit class the army lacks). The Warboss steps up and
-  calls WAAAGH! before the attacks, a Goblin walks into three enemies for
+  calls Berserk (WAAAGH! before `pulp_wars-w49.35`) before the attacks, a Goblin walks into three enemies for
   its Kaboom, a committed Banshee moves into range and Wails before the
   melee. The free army marches on one hostile city, the cheapest by its reach,
   by the visible units that hold it, and by whether the army already
@@ -5901,7 +5925,7 @@ Harbours from it.
   throws its bombs before its units close in and whenever one step
   brings a target into range, trains no Bomb Chucker onto a center with
   an enemy melee unit within two tiles while another unit can be, blows a
-  Goblin up in three enemies, calls WAAAGH! only with attacks to follow, and pulls a spent
+  Goblin up in three enemies, calls Berserk only with attacks to follow, and pulls a spent
   Scrap Buggy back. Growth goes to the capital first, the best defender
   stays on a threatened center, and a unit that is lost anyway attacks.
   Details:
@@ -6004,7 +6028,9 @@ Harbours from it.
   routine Move where an own bomb thrown now would kill them; keeps its exploding units away from own units
   while any visible enemy can damage them; trains a cheap Goblin horde into
   Warrens capacity plus Bomb Chuckers; researches Plunder when hostile units
-  are near; uses WAAAGH! like Rally; and lets Trolls keep fighting. Since
+  are near; uses Berserk like Rally (where it used WAAAGH!: on unmoved units
+  in reach that can reach an enemy this turn; no tuning for the extra Move
+  yet); and lets Trolls keep fighting. Since
   `7r50` its Gang Up estimate gives a bomb none, its blast estimates leave
   an Orc Brute out (a Kaboom or a bomb beside an own Brute is not friendly
   fire), and a Scrap Buggy that has rammed is offered its Kaboom and takes
@@ -6777,18 +6803,18 @@ decisions, and the tuning record:
   never count. Own units are always visible to their owner, so the public
   preview is exact.
 - Gang Up never applies to retaliation, Kaboom, blasts, Wail, or Goblin
-  boats, and adds to Charge and Inspired/WAAAGH!.
+  boats, and adds to Charge and Inspired.
 - **The Goblin pass** (`7r50`,
   [the Goblin pass](RULESET_7_TUNING_GOBLIN.md#61-a-bomb-gets-no-gang-up)):
   **a Bomb Chucker's bomb gets no Gang Up** (the role mechanic
   `gangUpLimit: 0`; every other Goblin land role but the Rocket Cart has
-  2). Its `gangUp` is 0 whatever stands beside the target; WAAAGH! still
+  2). Its `gangUp` is 0 whatever stands beside the target; Inspired still
   adds +1, and the splash derives from that hit. **A Rocket Cart's rocket
   gets +1 at most** (`gangUpLimit: 1`, the correction of the pass): its
   `gangUp` is 1 with one or more helpers. An attack's Gang Up is the
   smallest of the faction's maximum, the role's limit, and the helpers.
   From three tiles at a full-HP unit a rocket deals a Guard 12 alone and 17
-  (a kill) with one helper or with WAAAGH!, and on a walled center or a
+  (a kill) with one helper (or with WAAAGH! before `pulp_wars-w49.35`), and on a walled center or a
   Field Defense 8, 12, and 16 with both; a Swordsman 9, 13, and 15 (a kill)
   in the open and 7, 10, and 14 on a fortified tile.
 
@@ -6812,8 +6838,8 @@ is not an Attack and needs no technology.
   (own, allied, hostile), any faction, any form (land, embarked, naval),
   visible or hidden. Each hit deals `min(blast damage, current HP)` (a
   Martian unit's Shield absorbs it first, so its cap is Shield plus HP); blast
-  damage is fixed per role (Kaboom: Goblin 5, Wolf Rider 4, Bomb Chucker 4,
-  Rocket Cart 5, Scrap Buggy 5) and ignores Attack, Defense, HP ratio, cover,
+  damage is fixed per role (Kaboom: Goblin 6 since `pulp_wars-w49.35`, 5
+  before; Wolf Rider 4, Bomb Chucker 4, Rocket Cart 5, Scrap Buggy 5) and ignores Attack, Defense, HP ratio, cover,
   fortification, Walls, Field Defense, the embarked Defense, Charge, Gang Up,
   and Inspired.
 - **Legality.** The unit is the actor's own, on the board, in land form, has
@@ -6846,8 +6872,9 @@ is not an Attack and needs no technology.
 
 A Bomb Chucker, Rocket Cart, or Scrap Buggy **explodes when it is killed**,
 whatever killed it and wherever it stands (land, a city or village center,
-embarked on water), with its death-blast damage (Bomb Chucker 2, Rocket Cart
-4, Scrap Buggy 4): killed as a defender (`ATTACK`), while attacking
+embarked on water), with its death-blast damage (Bomb Chucker 5, Rocket Cart
+7, Scrap Buggy 7; each 3 more since `pulp_wars-w49.35`, the user's "make
+explosions on death harder": the blasts are the Goblins' crowd control): killed as a defender (`ATTACK`), while attacking
 (`RETALIATION`), by splash (`SPLASH`), by Wail (`WAIL`), by Plague (`PLAGUE`,
 at its owner's Start Turn), by another blast (`EXPLOSION`), or by a Dwarf
 bomb (`BOMB`) or eruption (`ERUPTION`). A unit
@@ -7004,17 +7031,45 @@ Every death is credited to at most one player:
   counts). A friendly-fire death earns no Plunder and no promotion credit.
   Previews report friendly damage and deaths separately.
 
-### 18.10 WAAAGH!, Ram, and Troll regeneration
+### 18.10 Berserk, Ram, and Troll regeneration
 
-- **WAAAGH!** is the Goblin Rally (command `RALLY`, flag `inspired` labelled
-  "WAAAGH!", event `UNITS_RALLIED`; unlock `WAAAGH_SUPPORT`). An Orc Warboss
-  in land form that has not used a primary action (it may have moved) makes
-  every other own land-form unit within Chebyshev distance 2 that has the
-  `ATTACK` ability and is not already Inspired gain +1 Attack on its first
-  accepted attack this turn; `SUPPORT` and `SIEGE` roles qualify. Everything
-  else is the Inspired rule ([section 10](#10-recovery-and-support)),
-  including `INSPIRED` Field Defense destruction. With no eligible target it
-  rejects with `HEAL_TARGET_NOT_FOUND`.
+- **Berserk** (`pulp_wars-w49.35`; it replaced **WAAAGH!**, the Goblin
+  Rally that gave every own unit within 2 +1 Attack on its next attack) is
+  the Orc Warboss's `RALLY` (role mechanic `rallyEffect: "BERSERK"`, radius
+  `rallyRadius` 2; event `UNITS_RALLIED { captainId, unitIds }`; unlock
+  `BERSERK_SUPPORT` at Administration). The user's direction: a Goblin that
+  can travel an extra tile is far more dangerous and better against crowds;
+  a berserked Goblin ignores the tiles the enemy controls, gets into
+  position, and explodes.
+  - **Legality.** The Warboss's ordinary primary-action rules: its owner's,
+    on the board, in land form, has not used a primary action (it may have
+    moved first; Attack after Move is allowed for it). With no target it
+    rejects with `HEAL_TARGET_NOT_FOUND` and is not offered.
+  - **Targets.** Every other unit of the Warboss's owner in **land form**
+    (never an embarked unit, a boat, or an Egg) within Chebyshev distance 2
+    of the Warboss that **has not moved this turn** (`activation.moved`
+    false; one that attacked, Recovered, or was marked handled without
+    moving qualifies) and is not Berserk yet, of **any role** (support,
+    siege, the Troll, another Warboss). A Warboss never targets itself; it
+    becomes Berserk only from another Warboss.
+  - **Result.** The targets join `berserkThisTurn` (sorted unit IDs of the
+    active seat, a state and view list; the view lists visible units); the
+    Warboss has acted (`specialActed`, handled). Nobody becomes Inspired.
+  - **Effect, until the end of the turn.** A Berserk unit in land form has
+    **+1 Move** on its ordinary Move (`BERSERK_MOVE_BONUS_V7`; not on an
+    Escape Move, like Sugar Rush) and **ignores hostile zones of control**:
+    entering a cell in hostile ZOC does not end its Move (Prowl's rule,
+    [section 12.1](#121-movement)), so it may pass beside and between
+    enemies. It still never enters a tile held by a hostile unit and never
+    ends on any unit; terrain stops (Forest, Mountain, Snow, ice, an
+    unexplored cell) are unchanged. Attacks, Kaboom, and everything else
+    after the Move follow the ordinary rules.
+  - **Expiry.** `berserkThisTurn` is emptied at its owner's End Turn
+    ([section 3](#3-players-turns-and-victory)); a unit that leaves the
+    board (or the active seat, a released controlled unit) leaves it at
+    once. It is saved with the state, so a match saved mid-turn keeps it.
+    The list is always empty in a match without a Goblin seat. A
+    mind-controlled Warboss sends its controller's units Berserk.
 - **Ram** is Overrun under a Goblin label for the Scrap Buggy
   ([section 13.4](#134-after-combat)); its continuation is evaluated after
   any chain its attack set off. A Scrap Buggy may end a Ram with its
@@ -7040,7 +7095,7 @@ Every death is credited to at most one player:
 | Capacity                | A Kaboom or blast death frees its home city's slot at once; the city trains again only with its city action still available.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | Achievements, Promotion | Explosions credit no unit kill ([section 18.9](#189-kill-credit-plunder-and-friendly-fire)), so they never advance Promotion, growth, or Slayer; Plunder counts them.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | Dinosaurs               | Blasts hit Dinosaur units and Eggs with fixed damage (an Ankylosaurus takes 1 less; an Egg killed by a blast dies with cause `EXPLOSION`); a destroyed Egg is a credited hostile kill for Plunder. Eggs never help Gang Up. No Dinosaur attack has Gang Up.                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| Martians                | A Martian Shield absorbs blast and bomb-splash damage first (a Kaboom of 5 costs a Grunt 3 HP and a Grunt in a Force Field or a Mothership 1; a death blast of 2 costs a unit with a full Shield nothing). A Brain killed by a blast releases its controlled unit (a `BRAIN_LOST` removal earns no Plunder). A mind-controlled Goblin unit keeps Kaboom and its death blast, which hit its old side like any hostile units; the controller gets no Plunder (a seat rule). No Martian attack has Gang Up.                                                                                                                                                                                                                       |
+| Martians                | A Martian Shield absorbs blast and bomb-splash damage first (a Kaboom of 5 costs a Grunt 3 HP and a Grunt in a Force Field or a Mothership 1; the Goblin's Kaboom of 6 costs them 4 and 2, and a Bomb Chucker's death blast of 5 costs them 3 and 1, since `pulp_wars-w49.35`). A Brain killed by a blast releases its controlled unit (a `BRAIN_LOST` removal earns no Plunder). A mind-controlled Goblin unit keeps Kaboom and its death blast, which hit its old side like any hostile units; the controller gets no Plunder (a seat rule). No Martian attack has Gang Up.                                                                                                                                                  |
 | Ice Folk                | Blasts and bomb splash ignore Snow cover and the Blizzard (fixed damage); a Bomb Chucker or Rocket Cart shot from distance 2 on an Ice Folk unit in its own Witch's Blizzard is halved, and the bomb splash derives from the halved hit. A shattered exploding unit does not explode (one Yeti hit shatters a Chilled full-HP Bomb Chucker or Rocket Cart); killed any other way it explodes as usual. A sluggish goblin-crewed unit that moved cannot Kaboom. Wolf Riders and Scrap Buggies end a Move on entering Snow (Fieldcraft waives it for the Wolf Rider and the Bomb Chucker). A Troll is Chilled but never shattered. Plunder counts Ice Folk kills; a Shatter is an Ice Folk kill. No Ice Folk attack has Gang Up. |
 | Dwarves                 | A blast and a Kaboom are fixed damage: they ignore Dig In and Walls, and a Steam Tank takes at most 4 of one (Plated). No Kaboom or blast ever finds a mound, but a blast destroys Field Defense on a mound tile like on any tile. An exploding unit killed by a bomb or an eruption explodes as usual: its blast hits the Gyrocopter on its landing tile, or the surfaced Mole and its rider. A Goblin seat earns Plunder for every Dwarf unit its units or blasts kill, constructs included. Gang Up does not ignore Dig In. A Dwarf construct leaves no Grave when a blast kills it. No Dwarf attack has Gang Up.                                                                                                           |
 
@@ -7064,15 +7119,27 @@ Every death is credited to at most one player:
 - **Error:** `KABOOM_NOT_LEGAL` (reason `EMBARKED`); other Kaboom rejections
   reuse existing codes ([section 18.4](#184-kaboom)).
 - **Registration:** faction `GOBLIN`, tree `GOBLIN_BASELINE_V1`, display name
-  "Goblin"; unlock kinds `WAAAGH_SUPPORT` and `PLUNDER { coins: 2 }`;
+  "Goblin"; unlock kinds `BERSERK_SUPPORT` (`WAAAGH_SUPPORT` before
+  `pulp_wars-w49.35`) and `PLUNDER { coins: 2 }`;
   capability `plunderCoins`; abilities `KABOOM` and `REGENERATE`; faction
   rules `cityCapacityBonus` and `gangUpMaximum`; role mechanics
   `kaboomDamage`, `deathBlastDamage`, `splashTargets`, `buildsFieldDefense`,
-  `rallyRadius`, `rallyReachesSupportAndSiege`, and `regeneration`, and
-  since `7r50` `gangUpLimit`, `blastProof`, and `kaboomAfterAttack`.
+  `rallyRadius`, and `regeneration`, since `7r50` `gangUpLimit`,
+  `blastProof`, and `kaboomAfterAttack`, and since `pulp_wars-w49.35`
+  `rallyEffect` (`INSPIRE` for every Rally, `BERSERK` for the Orc Warboss;
+  it replaced `rallyReachesSupportAndSiege`). State and view list
+  `berserkThisTurn`; helpers `unitIsBerserkV7`, `berserkMoveBonusV7`,
+  `berserkIgnoresZocV7` (`src/engine/v7/berserk.ts`) and
+  `BERSERK_MOVE_BONUS_V7`.
 - **`queryPlayerCommandsV7`** offers `KABOOM` exactly when legal (also with
   no unit in the blast area, and to a Scrap Buggy that has attacked), never offers Goblin Field Defense or Warboss
-  Tend Wounded, and offers WAAAGH! (`RALLY`) only with an eligible target.
+  Tend Wounded, and offers Berserk (`RALLY`) only with an eligible target.
+  Its `MOVE` offers, `validatePlayerMovementPathV7`, and
+  `reachablePlayerMovementPathsV7` read the public `berserkThisTurn` (the
+  extra Move and the waived zone-of-control stops), so they match the
+  reducer exactly. Public unit stats of a Berserk unit carry a `MOVE`
+  modifier (source `BERSERK`, +1, not on an embarked unit) and the status
+  "Berserk: +1 Move, ignores zones of control this turn".
 - **`previewKaboomV7(view, unitId)`** returns null unless `KABOOM` is
   offered; otherwise `unitId`, `at`, `explosions`, `totals`, `friendlyFire`,
   and `touchesUnexplored`. `explosions` lists the previewed chain in
@@ -7863,7 +7930,7 @@ Examples (engine formula, full HP, open Grass):
 | A second Fighter attacks the same Grunt         |   5 |              0 |       5 | the Grunt is dead (two Fighter hits kill it)      |
 | Guard attacks a Grunt                           |   3 |              2 |       1 |                                                   |
 | Banshee Wail on a Grunt                         |   2 |              2 |       0 | the Wail strips every Shield in its radius        |
-| Goblin Kaboom (5) on a Grunt                    |   5 |              2 |       3 | a second Kaboom deals 5 and kills                 |
+| Goblin Kaboom (6) on a Grunt                    |   6 |              2 |       4 | a second blast of 4 or more kills (`w49.35`)      |
 | Zombie attacks a Grunt                          |   5 |              2 |       3 | HP was lost, so the Grunt is Bitten               |
 | Zombie attacks a Grunt in a Force Field         |   5 |              4 |       1 | still Bitten                                      |
 | Fighter attacks a Mothership (16 HP, Shield 4)  |   5 |              4 |       1 |                                                   |
@@ -8277,7 +8344,7 @@ Rider with no Charge. Three rulings decide the rest:
 | Psychic Command, Beam Down        | a target and a passenger like an own unit of its role                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | Kill credit, Slayer, Muster       | its kills keep counting and are its controller's; Muster counts its role for the controller                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | Sight and fog                     | reveals for the controller; the original owner sees it as a hostile unit                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| Per faction                       | Human: all (Field Defense, Rally, Tend Wounded on the controller's units, Charge, Escape, Overrun). Undead: all but Raise Dead, Infect, Bite. Goblin: all (Kaboom, blasts, Ram, WAAAGH!, Gang Up with the controller's helpers). Dinosaur: all but Hatch. Martian: all but Mind Control. Ice Folk: all (her Blizzard halves ranged hits only for Ice Folk units of her controller and stops the controller's ground units). Dwarf: all but Assemble and tunnel riding (a controlled Mole tunnels alone; a controlled Engineer repairs) |
+| Per faction                       | Human: all (Field Defense, Rally, Tend Wounded on the controller's units, Charge, Escape, Overrun). Undead: all but Raise Dead, Infect, Bite. Goblin: all (Kaboom, blasts, Ram, Berserk, Gang Up with the controller's helpers). Dinosaur: all but Hatch. Martian: all but Mind Control. Ice Folk: all (her Blizzard halves ranged hits only for Ice Folk units of her controller and stops the controller's ground units). Dwarf: all but Assemble and tunnel riding (a controlled Mole tunnels alone; a controlled Engineer repairs) |
 
 - **Limit.** A Brain controls at most `MIND_CONTROL_LIMIT_V7` (1) unit.
 - **Release by the controller** (the Martian pass's correction, `7r52`).
@@ -11055,6 +11122,7 @@ first guesses.
 | Tuning        | `pulp-wars-poc-7r59` | `pulp_wars-w49.27` [step two of the Ice Folk pass](RULESET_7_TUNING_ICE_FOLK.md) after a hand-played game as the Humans against the Ice Folk AI before the change and one after it, three as the Ice Folk (twice against the Goblin AI, once against three AIs), the lab, two labs on water, and eight diagnostic matches: an Ice Folk city's level-2 Survey grants a free Sled (Scouts); an Ice Folk seat of the Normal AI plays the army rules in a match without a Dwarf or a Candy seat, researches the Sled, the Snow Hunter, and the Musk Ox first, caps its Musk Oxen, counts Cold Blood, Planted, Rockfall, and Shatter, throws the Bolas before the blow that shatters, and keeps its shooters out of reach; the lab `LAB_ICE_FOLK_MID`                                                                                                                                                                                                                                                                                                                                                                                                      |
 | Tuning        | `pulp-wars-poc-7r59` | `pulp_wars-w49.28` [step two of the Dwarf pass](RULESET_7_TUNING_DWARF.md) after a hand-played game as the Humans against the Dwarf AI before the change, one against a first draft, and one after it, four as the Dwarves (against the older and the army Goblin AI, against three AIs, and against the Human AI), the lab, and diagnostic matches, no rule and no identity change: a Dwarf seat of the Normal AI plays the army rules in a match without a Candy seat, researches the Steam Mole, the Clockwork Gunner, and the Gyrocopter first, trains before it researches while it is short of capturers, takes the 4 Coins at level 2, counts its units of less than 15 HP as weak links of a Knight's chain with the Mole and the Tank as escorts, and keeps its Gunners out of reach; the lab `LAB_DWARF_MID`                                                                                                                                                                                                                                                                                                                                |
 | Crowd control | `pulp-wars-poc-7r60` | `pulp_wars-w49.33` Dwarf crowd control, engine (user request of 2026-10-09): the Whirligig's **Whirl** replaces Three Hammers (one primary action that hits every visible hostile unit within 1 with its ordinary attack, unanswered, no advance; `struckThisTurn` and `ALREADY_STRUCK` removed); the Engineer's **Barricade** (3 Coins, 10 HP, Defense 2, at most 4 standing, blocks every unit's Move and every placement, attacked with `ATTACK_BARRICADE`, repaired like a machine, never regenerates, persists until destroyed; new state `barricades`); the **Bomb Run** lands up to 2 tiles from its target ([section 22.5](#225-gyrocopters-and-the-bombing-run), [section 22.8](#228-engineer-repair-and-assemble), [section 22.15](#2215-the-whirligig-whirl)). The Normal AI Whirls instead of attacking one unit and ignores Barricades as targets.                                                                                                                                                                                                                                                                                       | [Dwarf overlay section 24](RULESET_7_DWARVES.md#24-crowd-control-pulp_wars-w4933)                                                     |
+| Explosions    | `pulp-wars-poc-7r61` | `pulp_wars-w49.35` Goblin explosions and Berserk, engine (user requests of 2026-10-09): every Goblin death blast is 3 harder (Bomb Chucker 5, Rocket Cart 7, Scrap Buggy 7), the Goblin's Kaboom is 6 (the other Kabooms unchanged), and the Orc Warboss's **Berserk** replaces WAAAGH! (its `RALLY`: the own land units within 2 that have not moved get +1 Move and ignore enemy zones of control until the end of the turn; state and view list `berserkThisTurn`; unlock `BERSERK_SUPPORT`); no AI tuning                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | [Goblin tuning record, section 15](RULESET_7_TUNING_GOBLIN.md#15-goblin-explosions-and-berserk-pulp_wars-w4935)                       |
 
 **Documentation parity (2026-09-28, no ruleset or identity change):** where
 older documents disagreed with the code, the code's behavior was adopted as

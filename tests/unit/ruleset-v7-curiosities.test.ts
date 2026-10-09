@@ -235,6 +235,9 @@ function normalizedInitialState(state: GameStateV7): string {
     // The Dinosaur pass, correction (`pulp_wars-w49.15`) adds the
     // `huntedThisTurn` list, empty in every initial state.
     huntedThisTurn: _hunted,
+    // Goblin explosions and Berserk (`pulp_wars-w49.35`) adds the
+    // `berserkThisTurn` list, empty in every initial state.
+    berserkThisTurn: _berserk,
     // The frozen sea (`pulp_wars-5ti.3`) adds the `ice` list, empty in every
     // generated initial state.
     ice: _ice,
@@ -261,6 +264,8 @@ function normalizedInitialState(state: GameStateV7): string {
     throw new Error("a Candy fact in an initial state");
   if (_hunted.length !== 0)
     throw new Error("a hunted unit in an initial state");
+  if (_berserk.length !== 0)
+    throw new Error("a Berserk unit in an initial state");
   if (_monsters.length !== 0) throw new Error("a Monster with the option off");
   if (_ice.length !== 0) throw new Error("ice in an initial state");
   if (_beamed.length !== 0 || _tractor.length !== 0)

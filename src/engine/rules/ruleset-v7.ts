@@ -107,8 +107,11 @@ export type TechnologyUnlockV7 =
   | { readonly kind: "CAPTAIN_SUPPORT" }
   /** Revision 13 Undead: Necromancer Frenzy (Rally) and Raise Dead. */
   | { readonly kind: "NECROMANCER_SUPPORT" }
-  /** Revision 17 Goblins: the Orc Warboss's WAAAGH! (Rally, radius 2). */
-  | { readonly kind: "WAAAGH_SUPPORT" }
+  /**
+   * Goblin explosions and Berserk (`pulp_wars-w49.35`): the Orc Warboss's
+   * Berserk (the `RALLY` command, radius 2), which replaced WAAAGH!.
+   */
+  | { readonly kind: "BERSERK_SUPPORT" }
   /**
    * Revision 19 Dinosaurs: Nesting (the Dinosaur `FORTIFICATION`): Eggs laid
    * by the owner have `eggHp` more HP and hatch `hatchTurns` sooner.
@@ -426,10 +429,18 @@ export interface RoleMechanicsV7 {
    * the Fighter and Guard roles of every faction except the Goblin Goblin.
    */
   readonly buildsFieldDefense: boolean;
-  /** Revision 17: Rally (Frenzy, WAAAGH!) reach in Chebyshev distance. */
+  /** Revision 17: Rally (Frenzy, Berserk) reach in Chebyshev distance. */
   readonly rallyRadius: 1 | 2;
-  /** Revision 17: Rally also reaches `SUPPORT` and `SIEGE` roles (WAAAGH!). */
-  readonly rallyReachesSupportAndSiege: boolean;
+  /**
+   * Goblin explosions and Berserk (`pulp_wars-w49.35`): what the role's
+   * `RALLY` does. `INSPIRE` (Rally, Frenzy, War Drums, Psychic Command)
+   * makes its targets Inspired; `BERSERK` (the Orc Warboss, which replaced
+   * WAAAGH! and its `rallyReachesSupportAndSiege`) makes every own
+   * land-form unit in reach that has not moved this turn Berserk
+   * (`berserkThisTurn`): +1 Move and no stop in hostile zones of control
+   * until the end of the turn.
+   */
+  readonly rallyEffect: "INSPIRE" | "BERSERK";
   /** Revision 17: fixed Kaboom damage, or null without Kaboom. */
   readonly kaboomDamage: number | null;
   /** Revision 17: fixed death-blast damage, or null for a non-exploder. */
@@ -889,6 +900,11 @@ export function landGrantCostV7(exploredClaimableTiles: number): number {
  * player 37 Coins and returned 8 in four rounds.
  */
 export const PLUNDER_COINS_V7 = 2 as const;
+/**
+ * Goblin explosions and Berserk (`pulp_wars-w49.35`): a Berserk unit's
+ * extra Move until the end of the turn.
+ */
+export const BERSERK_MOVE_BONUS_V7 = 1 as const;
 /** Blast Mountain: permanent population for the tile's city (0 before). */
 export const BLAST_MOUNTAIN_POPULATION_V7 = 1 as const;
 /** Blast Mountain: its price in Coins. */
@@ -1514,7 +1530,7 @@ const mechanics = (
           splashTargets: "HOSTILE",
           buildsFieldDefense: roleId === "FIGHTER" || roleId === "GUARD",
           rallyRadius: 1,
-          rallyReachesSupportAndSiege: false,
+          rallyEffect: "INSPIRE",
           kaboomDamage: null,
           deathBlastDamage: null,
           regeneration: 0,
@@ -1875,7 +1891,8 @@ export const UNDEAD_BASELINE_V1_TREE: FactionTechnologyTreeV7 = deepFreeze({
 
 /**
  * Revision 17 Goblin technology graph: identical to ORIGINAL_BASELINE_V5
- * except that Administration grants WAAAGH! support instead of Captain
+ * except that Administration grants Berserk support (`pulp_wars-w49.35`;
+ * WAAAGH! support before) instead of Captain
  * support and Commerce (displayed as Plunder) grants Plunder instead of land
  * trade. Chivalry keeps Overrun (displayed as Ram).
  */
@@ -1888,7 +1905,7 @@ export const GOBLIN_BASELINE_V1_NODES: readonly TechnologyNodeV7[] = deepFreeze(
       original.prerequisites,
       original.unlocks.map((unlock): TechnologyUnlockV7 =>
         unlock.kind === "CAPTAIN_SUPPORT"
-          ? { kind: "WAAAGH_SUPPORT" }
+          ? { kind: "BERSERK_SUPPORT" }
           : unlock.kind === "LAND_TRADE_INCOME"
             ? { kind: "PLUNDER", coins: PLUNDER_COINS_V7 }
             : unlock,
@@ -2057,37 +2074,44 @@ export const GOBLIN_ROLE_RULES_V7: Readonly<
  * Revision 17 Goblin engine mechanics (as amended by the Goblin pass,
  * `pulp_wars-w49.12`, docs/product/RULESET_7_TUNING_GOBLIN.md): only the
  * Orc Brute builds Field Defense, and it is Blast-proof; a Bomb Chucker's
- * bomb gets no Gang Up; a Scrap Buggy may Kaboom after attacking; the Orc Warboss's WAAAGH! reaches radius 2 including support and
- * siege roles; goblin-crewed roles carry Kaboom damage and the Bomb Chucker,
+ * bomb gets no Gang Up; a Scrap Buggy may Kaboom after attacking; the Orc
+ * Warboss's `RALLY` is Berserk (`pulp_wars-w49.35`, radius 2; it replaced
+ * WAAAGH!); goblin-crewed roles carry Kaboom damage and the Bomb Chucker,
  * Rocket Cart, and Scrap Buggy death-blast damage (resolved by
  * `explosions.ts`); the Bomb Chucker's bomb splashes every other unit
  * next to its target (splash target mode `ALL`, friendly fire); the Troll
  * regenerates 4 HP. Boats are Human boats.
  */
 export const GOBLIN_ROLE_MECHANICS_V7 = mechanics({
-  FIGHTER: { buildsFieldDefense: false, kaboomDamage: 5 },
+  // Goblin explosions and Berserk (`pulp_wars-w49.35`): the Goblin's
+  // Kaboom is 6 (5 before); the other roles keep theirs.
+  FIGHTER: { buildsFieldDefense: false, kaboomDamage: 6 },
   RAIDER: { kaboomDamage: 4 },
   // The Goblin pass (7r50): a bomb gets no Gang Up.
   MARKSMAN: {
     splash: true,
     splashTargets: "ALL",
     kaboomDamage: 4,
-    deathBlastDamage: 2,
+    // `pulp_wars-w49.35`: every death blast is 3 harder (2 before).
+    deathBlastDamage: 5,
     gangUpLimit: 0,
   },
   // The Goblin pass (7r50): the Orc Brute is Blast-proof.
   GUARD: { blastProof: true },
-  CAPTAIN: { rallyRadius: 2, rallyReachesSupportAndSiege: true },
+  // `pulp_wars-w49.35`: Berserk (radius 2) replaced WAAAGH!.
+  CAPTAIN: { rallyRadius: 2, rallyEffect: "BERSERK" },
   // The Goblin pass, correction: a rocket's Gang Up is at most +1 (with
   // +2 one Cart and two Goblins killed any unit but the Juggernaut).
   CATAPULT: {
     advancesAfterKill: false,
     kaboomDamage: 5,
-    deathBlastDamage: 4,
+    // `pulp_wars-w49.35`: 4 before.
+    deathBlastDamage: 7,
     gangUpLimit: 1,
   },
   // The Goblin pass (7r50): Crash, a Scrap Buggy may Kaboom after attacking.
-  KNIGHT: { kaboomDamage: 5, deathBlastDamage: 4, kaboomAfterAttack: true },
+  // `pulp_wars-w49.35`: its death blast is 7 (4 before).
+  KNIGHT: { kaboomDamage: 5, deathBlastDamage: 7, kaboomAfterAttack: true },
   JUGGERNAUT: { regeneration: 4 },
   BATTLESHIP: { splash: true },
   // The ninth unit (7r55): the Ogre's Heavyweight.
@@ -3829,7 +3853,7 @@ export const RULESET_7 = deepFreeze({
  * a technology of tier `t` costs `5 / 7 / 9 + (T - 1)`, `T` being the
  * technologies the researcher already owns.
  *
- * The economy rejig (`pulp_wars-w49.16`, `pulp-wars-poc-7r60`,
+ * The economy rejig (`pulp_wars-w49.16`, `pulp-wars-poc-7r61`,
  * docs/product/RULESET_7_ECONOMY_REJIG.md): the price is per city again and
  * the technologies owned no longer enter it. A technology of tier `t`
  * costs `5 / 7 / 9 + (1 / 2 / 3) * (C - 1)`, `C` being the cities the
@@ -5201,18 +5225,34 @@ export interface RallyUnitV7 {
   readonly form: UnitFormV7;
   readonly at: { readonly x: number; readonly y: number };
   readonly hp: number;
-  readonly activation: { readonly inspired: boolean };
+  readonly activation: { readonly inspired: boolean; readonly moved: boolean };
 }
 
 /**
- * Whether `target` gains Inspired from `captain`'s Rally (Human Rally, Undead
- * Frenzy, Goblin WAAAGH!): another own land-form unit with `ATTACK`, not
- * already Inspired, within the captain's rally radius, and (except for
- * WAAAGH!) not a `SUPPORT` or `SIEGE` role. Resolved through the owners'
- * registrations.
+ * The roster plus the Berserk units of the turn (`pulp_wars-w49.35`): a
+ * state, or a player's view (whose list names visible units only). The
+ * list is optional, like `BerserkLookupV7`'s: a view captured before it
+ * existed has no Berserk unit.
+ */
+export interface RallyLookupV7 extends FactionRosterV7 {
+  readonly berserkThisTurn?: readonly number[];
+}
+
+/**
+ * Whether `target` is affected by `captain`'s `RALLY` (Human Rally, Undead
+ * Frenzy, Dinosaur War Drums, Martian Psychic Command, Goblin Berserk).
+ * Resolved through the owners' registrations.
+ *
+ * - `INSPIRE` (`rallyEffect`): another own land-form unit with `ATTACK`,
+ *   not already Inspired, within the captain's rally radius, and not a
+ *   `SUPPORT` or `SIEGE` role (nor `rallyExcluded`).
+ * - `BERSERK` (`pulp_wars-w49.35`, the Orc Warboss; it replaced WAAAGH!):
+ *   another own land-form unit of any role (so never an embarked unit, a
+ *   boat, or an Egg) within the radius that has not moved this turn and is
+ *   not already Berserk.
  */
 export function isRallyTargetV7(
-  roster: FactionRosterV7,
+  roster: RallyLookupV7,
   captain: RallyUnitV7,
   target: RallyUnitV7,
 ): boolean {
@@ -5220,24 +5260,31 @@ export function isRallyTargetV7(
     target.hp <= 0 ||
     target.ownerId !== captain.ownerId ||
     target.form !== "LAND" ||
-    target.id === captain.id ||
-    target.activation.inspired
+    target.id === captain.id
   )
     return false;
   const mechanics = unitRoleMechanicsV7(roster, captain);
-  const targetRule = unitRoleRuleV7(roster, target);
-  const tactical = targetRule.tacticalRole;
-  return (
-    (mechanics.rallyReachesSupportAndSiege ||
-      (tactical !== "SUPPORT" &&
-        tactical !== "SIEGE" &&
-        // The ninth unit (7r55): the Triceratops, a `LINE` role now.
-        !unitRoleMechanicsV7(roster, target).rallyExcluded)) &&
-    targetRule.abilities.includes("ATTACK") &&
+  const inReach =
     Math.max(
       Math.abs(captain.at.x - target.at.x),
       Math.abs(captain.at.y - target.at.y),
-    ) <= mechanics.rallyRadius
+    ) <= mechanics.rallyRadius;
+  if (mechanics.rallyEffect === "BERSERK")
+    return (
+      inReach &&
+      !target.activation.moved &&
+      !(roster.berserkThisTurn ?? []).includes(target.id)
+    );
+  if (target.activation.inspired) return false;
+  const targetRule = unitRoleRuleV7(roster, target);
+  const tactical = targetRule.tacticalRole;
+  return (
+    tactical !== "SUPPORT" &&
+    tactical !== "SIEGE" &&
+    // The ninth unit (7r55): the Triceratops, a `LINE` role now.
+    !unitRoleMechanicsV7(roster, target).rallyExcluded &&
+    targetRule.abilities.includes("ATTACK") &&
+    inReach
   );
 }
 
@@ -5615,7 +5662,7 @@ export function technologyCapabilitiesV7(
       case "BRAIN_SUPPORT":
       case "CAPTAIN_SUPPORT":
       case "NECROMANCER_SUPPORT":
-      case "WAAAGH_SUPPORT":
+      case "BERSERK_SUPPORT":
       case "OVERRUN":
       case "CHARGE_BONUS":
       case "NAVAL_TRAINING_DISCOUNT":

@@ -17,6 +17,7 @@ import {
   unitRoleRuleV7,
   type MovementModeV7,
 } from "../rules/ruleset-v7";
+import { berserkIgnoresZocV7, berserkMoveBonusV7 } from "./berserk";
 import { sugarRushMoveBonusV7 } from "./candy";
 import {
   arePlayersAlliedV7,
@@ -162,11 +163,14 @@ function validateMovementPathWithOptionsV7(
   // (the controller's research through the unit's kind's tree).
   const capabilities = unitCapabilitiesV7(state, unit, player.researchedTechs);
   // The Candy revision section 5.2: a Rushed unit's ordinary Move has one
-  // more point (never its Escape Move, and never afloat).
+  // more point (never its Escape Move, and never afloat). Goblin explosions
+  // and Berserk (`pulp_wars-w49.35`): so has a Berserk unit's.
   const budget2 =
     (unit.form === "EMBARKED"
       ? EMBARKED_MOVE_V7
-      : rule.move + sugarRushMoveBonusV7(state, unit)) * 2;
+      : rule.move +
+        sugarRushMoveBonusV7(state, unit) +
+        berserkMoveBonusV7(state, unit)) * 2;
   // An embarked machine is an ordinary embarked unit (section 7.3).
   const mode: MovementModeV7 =
     unit.form === "LAND" ? unitMovementModeV7(state, unit) : "GROUND";
@@ -209,7 +213,10 @@ function validateMovementPathWithOptionsV7(
     : winter.snow;
   const snowAt = (at: CoordV7): boolean =>
     winter.snow.size > 0 && winter.snow.has(at.y * state.board.width + at.x);
-  const prowls = unitIgnoresZocStopsV7(state, unit);
+  // Goblin explosions and Berserk (`pulp_wars-w49.35`): a Berserk unit, like
+  // a Prowler, is not stopped by entering a hostile zone of control.
+  const prowls =
+    unitIgnoresZocStopsV7(state, unit) || berserkIgnoresZocV7(state, unit);
   const ownSitesOnly = flies || unitAvoidsForeignSitesV7(state, unit);
   let currentSnow = snowAt(current);
   // The frozen sea (docs/product/RULESET_7_NAVAL_BRANCH.md sections 8.3,
@@ -858,10 +865,13 @@ function validatePlayerMovementPathWithContextV7(
     : context.capabilities;
   // The Candy revision section 5.2: the Rushed budget (the public
   // `sugarRush` list; the same helper as the canonical validation).
+  // `pulp_wars-w49.35`: the Berserk budget (the public `berserkThisTurn`).
   const budget2 =
     (unit.form === "EMBARKED"
       ? EMBARKED_MOVE_V7
-      : role.move + sugarRushMoveBonusV7(view, unit)) * 2;
+      : role.move +
+        sugarRushMoveBonusV7(view, unit) +
+        berserkMoveBonusV7(view, unit)) * 2;
   // The Martian revision section 7: the unit's own movement mode. The
   // technologies are the viewer's (exact for the viewer's own units).
   const mode: MovementModeV7 =
@@ -885,7 +895,8 @@ function validatePlayerMovementPathWithContextV7(
     unit,
     capabilities.forestMovementFreedomRoles.includes(unit.role),
   );
-  const prowls = unitIgnoresZocStopsV7(view, unit);
+  const prowls =
+    unitIgnoresZocStopsV7(view, unit) || berserkIgnoresZocV7(view, unit);
   const ownSitesOnly = flies || unitAvoidsForeignSitesV7(view, unit);
   const publicSnowAt = (at: CoordV7): boolean => {
     const tile = publicTileAt(view, at);

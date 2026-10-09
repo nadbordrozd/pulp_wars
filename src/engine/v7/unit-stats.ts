@@ -1,3 +1,4 @@
+import { berserkMoveBonusV7, unitIsBerserkV7 } from "./berserk";
 import {
   ALPHA_ATTACK2_V7,
   EGG_DEFENSE2_V7,
@@ -111,7 +112,10 @@ export type UnitStatModifierSourceV7 =
   | "SUGAR_RUSH"
   // The ninth unit (`pulp_wars-w49.17`, 7r55): a unit Cracked by a
   // Stegosaurus this turn has 1 less Defense (never below 0.5).
-  | "CRACKED";
+  | "CRACKED"
+  // Goblin explosions and Berserk (`pulp_wars-w49.35`): a Berserk unit's
+  // extra Move (on its ordinary Move, not an Escape Move).
+  | "BERSERK";
 export interface PublicUnitStatValueV7 {
   readonly numerator: number;
   readonly denominator: number;
@@ -134,8 +138,8 @@ export interface PublicUnitStatBreakdownV7 {
 }
 /**
  * Revision 17 Goblin role mechanics from the owner's registration: Kaboom
- * and death-blast damage (null when the role has none), the WAAAGH! radius
- * (0 without Rally), Start Turn regeneration, and whether the role may build
+ * and death-blast damage (null when the role has none), the Berserk radius
+ * (0 without Rally; `pulp_wars-w49.35`, WAAAGH! before), Start Turn regeneration, and whether the role may build
  * Field Defense.
  */
 export interface PublicGoblinMechanicsV7 {
@@ -390,7 +394,8 @@ export function publicUnitStatsV7(
   const capabilities = unitCapabilitiesV7(state, unit, research);
   // Revision 13: Undead support labels Rally as Frenzy and Inspired as Frenzied.
   const frenzied = kind === "UNDEAD";
-  // Revision 17: Goblins label Rally as WAAAGH! and Overrun as Ram.
+  // Revision 17: Goblins label Overrun as Ram (and Rally as Berserk, which
+  // makes no unit Inspired: `pulp_wars-w49.35`).
   const goblin = kind === "GOBLIN";
   // Revision 19: Dinosaurs label Rally as War Drums, Overrun as Rampage, and
   // Charge as Pounce.
@@ -434,6 +439,8 @@ export function publicUnitStatsV7(
       : 0;
   // The Candy revision section 5.2: the Rush bonus of a Rushed unit's first
   // attack; it never adds to Charge or Inspired.
+  // Goblin explosions and Berserk (`pulp_wars-w49.35`): the extra Move.
+  const berserkMove = berserkMoveBonusV7(state, unit);
   const sugarRush2 = sugarRushAttack2V7(state, unit, {
     chargeApplied: charge > 0,
     inspiredApplied: inspired > 0,
@@ -630,22 +637,18 @@ export function publicUnitStatsV7(
                   "INSPIRED",
                   frenzied
                     ? "Frenzied"
-                    : goblin
-                      ? "WAAAGH!"
-                      : dinosaur
-                        ? "War Drums"
-                        : martian
-                          ? "Psychic Command"
-                          : "Inspired",
+                    : dinosaur
+                      ? "War Drums"
+                      : martian
+                        ? "Psychic Command"
+                        : "Inspired",
                   frenzied
                     ? "Necromancer Frenzy adds 1 Attack to the next attack this turn."
-                    : goblin
-                      ? "Orc Warboss WAAAGH! adds 1 Attack to the next attack this turn."
-                      : dinosaur
-                        ? "Shaman War Drums add 1 Attack to the next attack this turn."
-                        : martian
-                          ? "Brain Psychic Command adds 1 Attack to the next attack this turn."
-                          : "Captain Rally adds 1 Attack to the next attack this turn.",
+                    : dinosaur
+                      ? "Shaman War Drums add 1 Attack to the next attack this turn."
+                      : martian
+                        ? "Brain Psychic Command adds 1 Attack to the next attack this turn."
+                        : "Captain Rally adds 1 Attack to the next attack this turn.",
                   2,
                 ),
               ]
@@ -703,7 +706,16 @@ export function publicUnitStatsV7(
         "Move",
         null,
         base(labelText, "Move", embarked ? EMBARKED_MOVE_V7 : role.move),
-        [],
+        berserkMove > 0
+          ? [
+              modifier(
+                berserkMove,
+                "BERSERK",
+                "Berserk",
+                "Orc Warboss Berserk adds 1 Move until the end of the turn.",
+              ),
+            ]
+          : [],
       ),
       stat(
         "RANGE",
@@ -737,13 +749,11 @@ export function publicUnitStatsV7(
         ? [
             frenzied
               ? "Frenzied: +1 next Attack"
-              : goblin
-                ? "WAAAGH!: +1 Attack on the next attack"
-                : dinosaur
-                  ? "War Drums: +1 Attack on the next attack"
-                  : martian
-                    ? "Psychic Command: +1 Attack on the next attack"
-                    : "Inspired: +1 next Attack",
+              : dinosaur
+                ? "War Drums: +1 Attack on the next attack"
+                : martian
+                  ? "Psychic Command: +1 Attack on the next attack"
+                  : "Inspired: +1 next Attack",
           ]
         : []),
       ...(runUp > 0 ? [`Charge! +${formatHalf(runUp)} Attack`] : []),
@@ -760,6 +770,10 @@ export function publicUnitStatsV7(
           ]
         : []),
       ...(unit.activation.escapeAvailable ? ["Escape: may move again"] : []),
+      // Goblin explosions and Berserk (`pulp_wars-w49.35`).
+      ...(unitIsBerserkV7(state, unit.id)
+        ? ["Berserk: +1 Move, ignores zones of control this turn"]
+        : []),
       // The ninth unit (7r55): Cracked, and a Wight that has risen once.
       ...(cracked2 < 0 ? ["Cracked: -1 Defense this turn"] : []),
       ...(state.ninthUnit.risenWights.includes(unit.id)

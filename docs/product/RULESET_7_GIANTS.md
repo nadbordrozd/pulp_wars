@@ -369,7 +369,7 @@ the holder: the public unit stats of a visible Abomination carry
 knows it, as for any unit of its own).
 
 **Digesting.** At the Abomination's owner's Start Turn, right after Troll
-regeneration ([section 18.10](RULESET_7_CURRENT.md#1810-waaagh-ram-and-troll-regeneration)),
+regeneration ([section 18.10](RULESET_7_CURRENT.md#1810-berserk-ram-and-troll-regeneration)),
 each held victim loses `DIGEST_DAMAGE_V7` **4** HP (no Shield, Armoured, or
 Plated: it is inside) and the holder heals the HP the victim lost (capped
 at its maximum). Event `UNIT_DIGESTED { playerId, unitId, victimUnitId,

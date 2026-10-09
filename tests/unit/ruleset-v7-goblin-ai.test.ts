@@ -681,7 +681,8 @@ describe("ruleset-7 revision-17 Normal AI: against Goblins", () => {
           { seat: 1, role: "MARKSMAN", at: at(4, 2), hp: 1 },
         ],
       );
-    // The Bomb Chucker's death blast is 2 (`pulp_wars-0ao.7`; was 3).
+    // The Bomb Chucker's death blast is 5 (`pulp_wars-w49.35`; 2 since
+    // `pulp_wars-0ao.7`, 3 before).
     const weak = blast(2);
     const attacker = unitAtV7(weak.state, at(4, 3)).id;
     const chucker = unitAtV7(weak.state, at(4, 2)).id;
@@ -698,11 +699,26 @@ describe("ruleset-7 revision-17 Normal AI: against Goblins", () => {
           candidate.command.targetUnitId === chucker,
       ),
     ).toBe(false);
-    // With healthy neighbours the blast only chips them: the kill is taken.
-    const healthy = blast(10);
+    // With no own unit in the blast (an Archer shoots from two tiles and
+    // does not advance) the kill is taken. Before `pulp_wars-w49.35` a
+    // melee kill beside healthy neighbours was taken too; a blast of 5 on
+    // the advancing attacker and its neighbours now outweighs a 1-HP Bomb
+    // Chucker in the Normal AI's trade (no AI tuning in that bead).
+    const clear = arena(
+      ["ORIGINAL", "GOBLIN"],
+      [
+        { seat: 0, role: "MARKSMAN", at: at(4, 4) },
+        { seat: 1, role: "MARKSMAN", at: at(4, 2), hp: 1 },
+      ],
+    );
+    const archer = unitAtV7(clear.state, at(4, 4)).id;
     expect(
-      unitCandidates(chooseNormalCommandV7(healthy.view), attacker),
-    ).toContainEqual(kill);
+      unitCandidates(chooseNormalCommandV7(clear.view), archer),
+    ).toContainEqual({
+      kind: "ATTACK",
+      unitId: archer,
+      targetUnitId: unitAtV7(clear.state, at(4, 2)).id,
+    });
   });
 
   it("gives an embarked Goblin no landing-then-Kaboom reach (pulp_wars-0ao.15)", () => {

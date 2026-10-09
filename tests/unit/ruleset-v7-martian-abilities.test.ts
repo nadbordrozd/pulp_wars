@@ -918,12 +918,13 @@ describe("Tractor Beam (section 8.4)", () => {
     const run = playV7(state, pull(state, SHIP, at(6, 2)));
     expect(kindsV7(run.events)).not.toContain("EXPLOSION_RESOLVED");
     expect(unitAtV7(run.state, at(5, 2)).hp).toBe(1);
-    // The Ray Gunner then kills it at range 2: the blast (2) reaches the
-    // Mothership next to it, whose Shield absorbs it.
+    // The Ray Gunner then kills it at range 2: the blast (5 since
+    // `pulp_wars-w49.35`, 2 before) reaches the Mothership next to it, whose
+    // Shield (4) absorbs all but 1 of it.
     const shot = attackV7(run.state, at(7, 3), at(5, 2));
     expect(shot.combat.defenderDies).toBe(true);
-    expect(shieldAtV7(shot.state, SHIP)).toBe(2);
-    expect(unitAtV7(shot.state, SHIP).hp).toBe(16);
+    expect(shieldAtV7(shot.state, SHIP)).toBe(0);
+    expect(unitAtV7(shot.state, SHIP).hp).toBe(15);
   });
 
   it("is projected to the target's owner", () => {

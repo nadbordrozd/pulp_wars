@@ -224,13 +224,16 @@ describe("Martian Shields: other factions' damage (sections 5.3 and 10)", () => 
   });
 
   // 8 HP since `pulp_wars-1wy.6`: the second Kaboom kills (at 9 HP it left
-  // 1 for a third).
-  it("Goblin Kaboom (5) on a Grunt (8 HP): Shield 2, HP 3; a second deals 5 and kills", () => {
+  // 1 for a third). The Goblin's Kaboom is 6 since `pulp_wars-w49.35` (5
+  // before: Shield 2, HP 3, then a second Goblin's 5); the second blast is
+  // now a Wolf Rider's (Kaboom 4), which lives through the first (a
+  // Goblin's 6 HP would not).
+  it("Goblin Kaboom (6) on a Grunt (8 HP): Shield 2, HP 4; a Wolf Rider's Kaboom (4) then kills", () => {
     const state = martianFieldV7(
       [
         { seat: 0, role: "FIGHTER", at: at(5, 2) },
         { seat: 1, role: "FIGHTER", at: at(5, 3) },
-        { seat: 1, role: "FIGHTER", at: at(4, 3) },
+        { seat: 1, role: "RAIDER", at: at(4, 3) },
       ],
       { factions: ["MARTIAN", "GOBLIN"], activeSeat: 1 },
     );
@@ -253,17 +256,19 @@ describe("Martian Shields: other factions' damage (sections 5.3 and 10)", () => 
       return { state: result.state, grunt };
     };
     const first = kaboom(state, at(5, 3));
-    expect(first.grunt).toMatchObject({ damage: 3, shieldDamage: 2 });
+    expect(first.grunt).toMatchObject({ damage: 4, shieldDamage: 2 });
     const second = kaboom(first.state, at(4, 3));
     expect(second.grunt).toMatchObject({
-      damage: 5,
+      damage: 4,
       shieldDamage: 0,
       dies: true,
     });
   });
 
-  it("a death blast of 2 is absorbed by a full Shield, and a chain strips a Shield once", () => {
-    // A Grunt kills a Bomb Chucker (death blast 2) next to another Grunt.
+  // `pulp_wars-w49.35`: the Bomb Chucker's death blast is 5 (2 before, which
+  // a full Shield of 2 absorbed whole): the Shield absorbs 2 and 3 reach HP.
+  it("a death blast of 5 strips a full Shield and deals the rest, once per unit", () => {
+    // A Grunt kills a Bomb Chucker (death blast 5) next to another Grunt.
     const state = martianFieldV7(
       [
         { seat: 0, role: "FIGHTER", at: at(5, 2) },
@@ -284,20 +289,27 @@ describe("Martian Shields: other factions' damage (sections 5.3 and 10)", () => 
       {
         unitId: unitAtV7(state, at(5, 2)).id,
         at: at(5, 2),
-        damage: 0,
+        damage: 3,
         dies: false,
         shieldDamage: 2,
       },
       {
         unitId: unitAtV7(state, at(6, 2)).id,
         at: at(6, 2),
-        damage: 0,
+        damage: 3,
         dies: false,
         shieldDamage: 2,
       },
     ]);
     expect(run.state.shields).toEqual([]);
-    expect(run.state.units.every((unit) => unit.hp === unit.maxHp)).toBe(true);
+    expect(
+      run.state.units
+        .filter((unit) => unit.hp !== unit.maxHp)
+        .map((unit) => [unit.id, unit.maxHp - unit.hp]),
+    ).toEqual([
+      [unitAtV7(state, at(5, 2)).id, 3],
+      [unitAtV7(state, at(6, 2)).id, 3],
+    ]);
   });
 
   it("Zombie attacks a Grunt: HP was lost, so it is Bitten, in a Force Field too", () => {

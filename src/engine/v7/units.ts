@@ -34,6 +34,17 @@ export interface BarricadeLikeV7 {
 }
 
 /**
+ * Dwarf crowd control (`pulp_wars-w49.33`): the Barricades of a state or a
+ * view, a missing list read as empty (a public view captured before the
+ * list existed has none), as `barricadeAtV7` reads it.
+ */
+export function barricadesOfV7<B>(input: {
+  readonly barricades?: readonly B[];
+}): readonly B[] {
+  return input.barricades ?? [];
+}
+
+/**
  * Dwarf crowd control (`pulp_wars-w49.33`): the Barricade on `at`, if any
  * (in a view, every Barricade on a tile the viewer has explored).
  */

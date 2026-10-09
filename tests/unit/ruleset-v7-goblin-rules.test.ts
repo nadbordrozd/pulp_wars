@@ -30,7 +30,8 @@ import {
 } from "../fixtures/v7-goblin-arena";
 
 // Revision 17 (`pulp_wars-0ao.2`) Goblin faction rules: Gang Up, the Bomb
-// Chucker's minimum range, Plunder, Commerce without land trade, WAAAGH!,
+// Chucker's minimum range, Plunder, Commerce without land trade, Berserk
+// (WAAAGH! before `pulp_wars-w49.35`; more in ruleset-v7-goblin-berserk),
 // Troll regeneration, and the Field Defense restriction
 // (docs/product/RULESET_7_REVISION_17_GOBLINS.md sections 3-5, 7, and 13).
 
@@ -164,7 +165,7 @@ describe("ruleset-7 Goblin Gang Up", () => {
     });
   });
 
-  it("applies to ranged attacks and stacks with Charge and WAAAGH!", () => {
+  it("applies to ranged attacks and stacks with Charge and Inspired", () => {
     const ranged = goblinArenaV7(
       ["GOBLIN", "ORIGINAL"],
       [
@@ -487,9 +488,9 @@ describe("ruleset-7 Goblin Commerce without land trade", () => {
   });
 });
 
-describe("ruleset-7 Goblin WAAAGH!", () => {
+describe("ruleset-7 Goblin Berserk (WAAAGH! before `pulp_wars-w49.35`)", () => {
   const warboss = { x: 5, y: 3 };
-  it("inspires every other own land unit with ATTACK within 2, including support and siege roles", () => {
+  it("makes every other own unmoved land unit within 2 Berserk, of any role, and inspires nobody", () => {
     const state = goblinArenaV7(
       ["GOBLIN", "ORIGINAL"],
       [
@@ -498,11 +499,12 @@ describe("ruleset-7 Goblin WAAAGH!", () => {
         { seat: 0, role: "CATAPULT", at: { x: 7, y: 3 } },
         { seat: 0, role: "CAPTAIN", at: { x: 3, y: 4 } },
         { seat: 0, role: "JUGGERNAUT", at: { x: 4, y: 2 } },
+        // Moved this turn: not a target.
         {
           seat: 0,
           role: "FIGHTER",
           at: { x: 6, y: 4 },
-          activation: { inspired: true },
+          activation: { moved: true, movedPathLength: 1 },
         },
         { seat: 0, role: "FIGHTER", at: { x: 8, y: 3 } },
         { seat: 0, role: "FIGHTER", at: { x: 5, y: 1 }, form: "EMBARKED" },
@@ -527,14 +529,20 @@ describe("ruleset-7 Goblin WAAAGH!", () => {
     expect(result.events).toEqual([
       { kind: "UNITS_RALLIED", captainId: boss.id, unitIds: expected },
     ]);
+    expect(result.state.berserkThisTurn).toEqual(expected);
+    expect(
+      result.state.units.filter((unit) => unit.activation.inspired),
+    ).toEqual([]);
     const stats = publicUnitStatsV7(
       result.state,
       unitAtV7(result.state, { x: 5, y: 5 }),
     );
-    expect(stats.statuses).toContain("WAAAGH!: +1 Attack on the next attack");
+    expect(stats.statuses).toContain(
+      "Berserk: +1 Move, ignores zones of control this turn",
+    );
     expect(stats.goblin).toEqual({
-      // The Goblin's Kaboom is 5 since `pulp_wars-0ao.7` (was 4).
-      kaboomDamage: 5,
+      // The Goblin's Kaboom is 6 since `pulp_wars-w49.35` (5 before).
+      kaboomDamage: 6,
       deathBlastDamage: null,
       rallyRadius: 0,
       regeneration: 0,
@@ -543,7 +551,7 @@ describe("ruleset-7 Goblin WAAAGH!", () => {
     expect(publicUnitStatsV7(state, boss).goblin?.rallyRadius).toBe(2);
   });
 
-  it("rejects WAAAGH! without a target and never offers or accepts Tend Wounded", () => {
+  it("rejects Berserk without a target and never offers or accepts Tend Wounded", () => {
     const state = goblinArenaV7(
       ["GOBLIN", "ORIGINAL"],
       [
@@ -553,7 +561,7 @@ describe("ruleset-7 Goblin WAAAGH!", () => {
           seat: 0,
           role: "FIGHTER",
           at: { x: 6, y: 4 },
-          activation: { inspired: true },
+          activation: { moved: true, movedPathLength: 1 },
         },
         { seat: 0, role: "FIGHTER", at: { x: 5, y: 6 } },
         { seat: 1, role: "FIGHTER", at: { x: 1, y: 1 } },
@@ -580,7 +588,7 @@ describe("ruleset-7 Goblin WAAAGH!", () => {
         (unit) =>
           unit.ownerId !== state.humanPlayerId ||
           unit.id === boss.id ||
-          unit.activation.inspired ||
+          unit.activation.moved ||
           unit.at.y === 6,
       ),
     });

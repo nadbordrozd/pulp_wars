@@ -36,7 +36,7 @@ import {
   type UnitRoleIdV7,
   type UnitStateV7,
 } from "./types";
-import { barricadeAtV7, tileOccupiedV7 } from "./units";
+import { barricadeAtV7, barricadesOfV7, tileOccupiedV7 } from "./units";
 import type { PlayerViewV7 } from "./view";
 import { wailDamageV7 } from "./wail";
 
@@ -339,15 +339,16 @@ export function applyWhirlV7(
 
 /** The Barricades `ownerId` has standing. */
 export function standingBarricadesV7(
-  lookup: { readonly barricades: readonly Pick<BarricadeV7, "ownerId">[] },
+  lookup: { readonly barricades?: readonly Pick<BarricadeV7, "ownerId">[] },
   ownerId: PlayerId,
 ): number {
-  return lookup.barricades.filter((entry) => entry.ownerId === ownerId).length;
+  return barricadesOfV7(lookup).filter((entry) => entry.ownerId === ownerId)
+    .length;
 }
 
 /** Whether `ownerId` may build another Barricade (`BARRICADE_CAP_V7`). */
 export function barricadeCapReachedV7(
-  lookup: { readonly barricades: readonly Pick<BarricadeV7, "ownerId">[] },
+  lookup: { readonly barricades?: readonly Pick<BarricadeV7, "ownerId">[] },
   ownerId: PlayerId,
 ): boolean {
   return standingBarricadesV7(lookup, ownerId) >= BARRICADE_CAP_V7;
@@ -497,7 +498,7 @@ export function applyBuildBarricadeV7(
             : unit,
         ),
         barricades: [
-          ...state.barricades,
+          ...barricadesOfV7(state),
           { at, ownerId: actor, hp: BARRICADE_HP_V7 },
         ].sort(
           (left, right) => left.at.y - right.at.y || left.at.x - right.at.x,
@@ -682,8 +683,8 @@ export function applyAttackBarricadeV7(
         ),
         barricades:
           hpAfter <= 0
-            ? state.barricades.filter((entry) => entry !== barricade)
-            : state.barricades.map((entry) =>
+            ? barricadesOfV7(state).filter((entry) => entry !== barricade)
+            : barricadesOfV7(state).map((entry) =>
                 entry === barricade ? { ...entry, hp: hpAfter } : entry,
               ),
       },
