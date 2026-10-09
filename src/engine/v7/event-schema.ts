@@ -419,7 +419,7 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
     "shieldDamage",
     "killed",
   ],
-  WAIL_RESOLVED: ["kind", "playerId", "unitId", "at", "results"],
+  WAIL_RESOLVED: ["kind", "playerId", "unitId", "at", "results", "terrified"],
   WHIRL_RESOLVED: ["kind", "playerId", "unitId", "at", "results"],
   BARRICADE_ATTACKED: [
     "kind",
@@ -1593,7 +1593,24 @@ function validPayload(
         id(e.playerId) &&
         id(e.unitId) &&
         parseCoordV7(e.at) !== null &&
-        splashEntries(e.results, true)
+        splashEntries(e.results, true) &&
+        // The Vampire and Banshee rework (`pulp_wars-ty6i`): the terrified
+        // units are results that took HP damage and survived.
+        ascendingIds(e.terrified) &&
+        (e.terrified as readonly unknown[]).every((unitId) =>
+          (
+            e.results as readonly {
+              readonly unitId: unknown;
+              readonly damage: unknown;
+              readonly dies: unknown;
+            }[]
+          ).some(
+            (entry) =>
+              entry.unitId === unitId &&
+              Number(entry.damage) > 0 &&
+              entry.dies === false,
+          ),
+        )
       );
     // Dwarf crowd control (`pulp_wars-w49.33`): a Whirl hits at least one
     // unit next to the Whirligig, never itself.
@@ -2034,6 +2051,7 @@ function combat(input: unknown): boolean {
       "defenderDies",
       "defenderHeal",
       "defenderInfected",
+      "feast",
       "attacksRemaining",
       "attacksUsed",
       "maximumRange",
@@ -2195,6 +2213,11 @@ function combat(input: unknown): boolean {
     nn(input.defenderHeal) &&
     (input.attackerHeal === 0 || input.attackerDies === false) &&
     (input.defenderHeal === 0 || input.defenderDies === false) &&
+    // The Vampire and Banshee rework (`pulp_wars-ty6i`): Feast follows a
+    // kill the attacker survives.
+    typeof input.feast === "boolean" &&
+    (input.feast !== true ||
+      (input.defenderDies === true && input.attackerDies === false)) &&
     typeof input.attackerInfected === "boolean" &&
     typeof input.defenderInfected === "boolean" &&
     (!input.attackerInfected || input.attackerDies === true) &&
@@ -2247,8 +2270,12 @@ function combat(input: unknown): boolean {
         "ICEBOUND",
         // Ice Folk Freeze (`pulp_wars-w49.37`): a Frozen defender.
         "FROZEN",
+        // The Vampire and Banshee rework (`pulp_wars-ty6i`): Terror.
+        "TERROR",
       ].includes(input.noRetaliationReason as string)) &&
     (input.noRetaliationReason !== "FROZEN" ||
+      (input.retaliation === false && input.defenderDies === false)) &&
+    (input.noRetaliationReason !== "TERROR" ||
       (input.retaliation === false && input.defenderDies === false)) &&
     // The Candy revision (section 13): a Splatted defender survives and
     // does not retaliate; the Rush bonus is on a first attack and never
@@ -2284,7 +2311,8 @@ function combat(input: unknown): boolean {
         input.noRetaliationReason !== "OUT_OF_RANGE" &&
         input.noRetaliationReason !== "SPLATTED" &&
         input.noRetaliationReason !== "ICEBOUND" &&
-        input.noRetaliationReason !== "FROZEN")) &&
+        input.noRetaliationReason !== "FROZEN" &&
+        input.noRetaliationReason !== "TERROR")) &&
     // The frozen sea (naval branch sections 8.9 and 8.10): an icebound
     // defender never retaliates and is never rammed or pushed; ice cover is
     // a cover, so the defense bonus is not 1.

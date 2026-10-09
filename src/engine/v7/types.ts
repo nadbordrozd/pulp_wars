@@ -5,7 +5,7 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r69" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r70" as const;
 /**
  * Every earlier Ruleset 7 identity, oldest first. Readers report these as
  * incompatible (never invalid). An identity bump must append the outgoing
@@ -80,8 +80,9 @@ export const PRIOR_RULESET_7_IDS = Object.freeze([
   "pulp-wars-poc-7r66",
   "pulp-wars-poc-7r67",
   "pulp-wars-poc-7r68",
+  "pulp-wars-poc-7r69",
 ] as const);
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r69.current" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r70.current" as const;
 /**
  * The map generator a setup names (docs/product/RULESET_7_MAP_SCALE.md
  * section 8.8): `V4` is the many-seats generator of `pulp_wars-ykw.3`
@@ -1179,6 +1180,25 @@ export interface GameStateV7 {
    * empty in a match whose setup has no GOBLIN seat.
    */
   readonly berserkThisTurn: readonly UnitId[];
+  /**
+   * The Vampire and Banshee rework (`pulp_wars-ty6i`): Terror. The units on
+   * the board that a Banshee's Wail of the active seat damaged this turn
+   * (HP damage above 0) and that survived, sorted: they do not strike back
+   * (`noRetaliationReason` `TERROR`). Never a unit of the active seat or a
+   * neutral unit. Emptied at its End Turn; a unit that leaves the board or
+   * comes to the active seat leaves the list. Always empty in a match whose
+   * setup has no UNDEAD seat.
+   */
+  readonly terrorThisTurn: readonly UnitId[];
+  /**
+   * The Vampire and Banshee rework (`pulp_wars-ty6i`): Feast. The units of
+   * the active seat whose attack killed this turn with Feast (a Vampire),
+   * sorted: one that has attacked once and is not handled may attack once
+   * more. Emptied at its End Turn; a unit that leaves the board or the
+   * active seat leaves the list. Always empty in a match whose setup has
+   * no UNDEAD seat.
+   */
+  readonly feastedThisTurn: readonly UnitId[];
   /**
    * The ninth unit (`pulp_wars-w49.17`, 7r55,
    * docs/product/RULESET_7_NINTH_UNIT.md): the stored state of the new

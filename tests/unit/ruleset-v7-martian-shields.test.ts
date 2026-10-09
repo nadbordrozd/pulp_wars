@@ -184,7 +184,9 @@ describe("Martian Shields: absorption (section 5.3)", () => {
 });
 
 describe("Martian Shields: other factions' damage (sections 5.3 and 10)", () => {
-  it("Banshee Wail on a Grunt: 2 absorbed, 0 HP; the Wail strips every Shield in its radius", () => {
+  // The Vampire and Banshee rework (`pulp_wars-ty6i`): at Attack 1.5 the
+  // Grunt loses 1 HP too (it was 2 absorbed, 0 HP, at Attack 1).
+  it("Banshee Wail on a Grunt: 2 absorbed, 1 HP; the Wail strips every Shield in its radius", () => {
     const state = martianFieldV7(
       [
         { seat: 0, role: "FIGHTER", at: at(5, 2) },
@@ -202,7 +204,7 @@ describe("Martian Shields: other factions' damage (sections 5.3 and 10)", () => 
       {
         unitId: unitAtV7(state, at(5, 2)).id,
         at: at(5, 2),
-        damage: 0,
+        damage: 1,
         dies: false,
         shieldDamage: 2,
       },
@@ -211,16 +213,16 @@ describe("Martian Shields: other factions' damage (sections 5.3 and 10)", () => 
         at: at(6, 3),
         damage: 0,
         dies: false,
-        shieldDamage: 2,
+        shieldDamage: 3,
       },
     ]);
     expect(preview?.targets.map((target) => target.shieldDamage)).toEqual([
-      2, 2,
+      2, 3,
     ]);
-    expect(preview?.targets.map((target) => target.damage)).toEqual([0, 0]);
+    expect(preview?.targets.map((target) => target.damage)).toEqual([1, 0]);
     expect(shieldAtV7(result.state, at(5, 2))).toBe(0);
-    expect(shieldAtV7(result.state, at(6, 3))).toBe(2);
-    expect(unitAtV7(result.state, at(5, 2)).hp).toBe(8);
+    expect(shieldAtV7(result.state, at(6, 3))).toBe(1);
+    expect(unitAtV7(result.state, at(5, 2)).hp).toBe(7);
   });
 
   // 8 HP since `pulp_wars-1wy.6`: the second Kaboom kills (at 9 HP it left
@@ -379,7 +381,9 @@ describe("Martian Shields: other factions' damage (sections 5.3 and 10)", () => 
     expect(run.state.shields).toEqual([]);
   });
 
-  it("Vampire at 4 of 10 HP attacks a Grunt: hit 6, HP 4, and it heals 4, not 6", () => {
+  // The Vampire and Banshee rework (`pulp_wars-ty6i`): of 13 HP (at 4 of 10
+  // it hit for 6, 4 HP, and healed 4).
+  it("Vampire at 4 of 13 HP attacks a Grunt: hit 5, HP 3, and it heals 3, not 5", () => {
     const state = martianFieldV7(
       [
         { seat: 0, role: "FIGHTER", at: at(5, 2) },
@@ -389,12 +393,12 @@ describe("Martian Shields: other factions' damage (sections 5.3 and 10)", () => 
     );
     const run = attackV7(state, at(5, 3), at(5, 2));
     expect(run.combat).toMatchObject({
-      damageToDefender: 4,
+      damageToDefender: 3,
       defenderShieldDamage: 2,
-      attackerHeal: 4,
+      attackerHeal: 3,
       retaliation: false,
     });
-    expect(run.attacker?.hp).toBe(8);
+    expect(run.attacker?.hp).toBe(7);
   });
 
   it("Lich attacks a Grunt next to another Grunt: 9 on the target, splash 5 from the whole hit, Plague on both", () => {

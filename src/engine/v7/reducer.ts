@@ -255,6 +255,11 @@ import {
 } from "./dwarf-crowd-control";
 import { twinShotReadyV7, unitIsMachineV7 } from "./dwarf";
 import {
+  feastReadyV7,
+  wailTerrifiedIdsV7,
+  withUnitIdsSortedV7,
+} from "./vampire-banshee";
+import {
   applyRebakeV7,
   applySugarRushV7,
   applySugarTossV7,
@@ -4972,7 +4977,10 @@ function applyAttack(
     return rejected(original, "UNIT_CRASHED", { unitId: attacker.id });
   // The Dwarf revision section 7.3: an unmoved Clockwork Gunner's second
   // shot.
-  const twinShot = twinShotReadyV7(state, attacker);
+  // The Vampire and Banshee rework (`pulp_wars-ty6i`): a Vampire's Feast
+  // attack after a kill.
+  const twinShot =
+    twinShotReadyV7(state, attacker) || feastReadyV7(state, attacker);
   if (
     (!attacker.activation.overrunActive &&
       !twinShot &&
@@ -6091,6 +6099,11 @@ function resolveAttackExchangeV7(
       toothache,
       ninthUnit,
       frozen,
+      // The Vampire and Banshee rework (`pulp_wars-ty6i`): a Feast lets the
+      // attacker attack once more this turn (after its first attack).
+      feastedThisTurn: preview.feast
+        ? withUnitIdsSortedV7(state.feastedThisTurn, [attacker.id])
+        : state.feastedThisTurn,
       populationContributions: economy.populationContributions,
     },
     events,
@@ -7309,7 +7322,9 @@ function applyEndTurn(
       counted.beamedThisTurn.length === 0 &&
       counted.tractorUsedThisTurn.length === 0 &&
       counted.huntedThisTurn.length === 0 &&
-      counted.berserkThisTurn.length === 0
+      counted.berserkThisTurn.length === 0 &&
+      counted.terrorThisTurn.length === 0 &&
+      counted.feastedThisTurn.length === 0
         ? counted
         : {
             ...counted,
@@ -7322,6 +7337,10 @@ function applyEndTurn(
             // Goblin explosions and Berserk (`pulp_wars-w49.35`): Berserk
             // lasts until the end of the turn.
             berserkThisTurn: [],
+            // The Vampire and Banshee rework (`pulp_wars-ty6i`): Terror and
+            // Feast last until the end of the turn.
+            terrorThisTurn: [],
+            feastedThisTurn: [],
           };
     // The Candy revision section 10: the Crash, the Crumbs countdown, and
     // the emptied Splat and Toss lists, after the Dwarf per-turn lists and
@@ -7865,6 +7884,16 @@ function applyWail(
             : unit,
       )
       .filter((unit) => unit.hp > 0);
+    // The Vampire and Banshee rework (`pulp_wars-ty6i`): Terror. Every
+    // surviving target the Wail wounded does not strike back this turn.
+    const terrified = [
+      ...wailTerrifiedIdsV7(
+        state,
+        banshee,
+        targets,
+        (targetId) => state.units.find((unit) => unit.id === targetId)?.ownerId,
+      ),
+    ].sort((left, right) => left - right);
     const events: DomainEventV7[] = [
       {
         kind: "WAIL_RESOLVED",
@@ -7872,6 +7901,7 @@ function applyWail(
         unitId: banshee.id,
         at: { x: banshee.at.x, y: banshee.at.y },
         results: wailResultEntriesV7(targets),
+        terrified,
       },
     ];
     let graves = state.graves;
@@ -8033,6 +8063,7 @@ function applyWail(
         graves,
         shields: chain.shields,
         populationContributions: economy.populationContributions,
+        terrorThisTurn: withUnitIdsSortedV7(state.terrorThisTurn, terrified),
       },
       actor,
     );

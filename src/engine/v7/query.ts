@@ -164,6 +164,13 @@ import {
   type ExplosionCauseV7,
 } from "./explosions";
 import { INFECT_RISING_HP_V7 } from "./infect";
+import {
+  attackFeastsV7,
+  feastHealV7,
+  feastReadyV7,
+  unitIsTerrifiedV7,
+  wailTerrifiedIdsV7,
+} from "./vampire-banshee";
 import { boardTargetBlockV7 } from "./naval-branch";
 import {
   advanceSiteAllowedV7,
@@ -1034,7 +1041,9 @@ function appendPublicUnitCommandsV7(
     !unitIsIceboundV7(view, unit) &&
     (primaryReady ||
       unit.activation.overrunActive ||
-      twinShotReadyV7(view, unit));
+      twinShotReadyV7(view, unit) ||
+      // The Vampire and Banshee rework (`pulp_wars-ty6i`): the Feast attack.
+      feastReadyV7(view, unit));
   // The Candy revision: Sugar Rush, Re-bake, and Sugar Toss, each offered
   // exactly when the reducer accepts it (the shared legality predicates).
   if (sugarRushRejectionV7(view, unit) === null)
@@ -4202,11 +4211,18 @@ export function previewWailV7(
     return null;
   const banshee = view.units.find((unit) => unit.id === unitId);
   if (banshee === undefined) return null;
+  const targets = publicWailTargetsV7(view, banshee);
+  const terrified = wailTerrifiedIdsV7(
+    view,
+    banshee,
+    targets,
+    (targetId) => view.units.find((unit) => unit.id === targetId)?.ownerId,
+  );
   return {
     unitId,
     at: banshee.at,
     attack2: unitRoleRuleV7(view, banshee).attack2,
-    targets: publicWailTargetsV7(view, banshee).map((target) => {
+    targets: targets.map((target) => {
       const unit = view.units.find(
         (candidate) => candidate.id === target.unitId,
       );
@@ -4226,6 +4242,8 @@ export function previewWailV7(
           unit !== undefined &&
           publicWailLeavesGraveV7(view, unit),
         bittenRises,
+        // The Vampire and Banshee rework (`pulp_wars-ty6i`): Terror.
+        terror: terrified.includes(target.unitId),
       };
     }),
   };
@@ -8769,7 +8787,9 @@ function publicCombatPreviewCore(
   const distance = chebyshev(attacker.at, target.at);
   // The Dwarf revision section 7.3: an unmoved Clockwork Gunner's second
   // shot.
-  const twinShot = twinShotReadyV7(view, attacker);
+  // The Vampire and Banshee rework (`pulp_wars-ty6i`): the Feast attack.
+  const twinShot =
+    twinShotReadyV7(view, attacker) || feastReadyV7(view, attacker);
   const attackReady =
     !primaryUsedForQuery(attacker) ||
     attacker.activation.overrunActive ||
@@ -9085,7 +9105,10 @@ function publicCombatPreviewCore(
   // The Candy revision section 7: a Splatted unit does not strike back (the
   // public `splattedThisTurn` of a visible unit).
   const splatted = unitIsSplattedV7(view, target.id);
-  const retaliation = wouldRetaliate && !splatted;
+  // The Vampire and Banshee rework (`pulp_wars-ty6i`): Terror (the public
+  // `terrorThisTurn` of a visible unit).
+  const terrified = unitIsTerrifiedV7(view, target.id);
+  const retaliation = wouldRetaliate && !splatted && !terrified;
   // Section 13.2 (tuning 1, 7r46): the retaliation uses the defender's base
   // Defense, without fortification and cover, exactly as canonical
   // resolution does (the shared `retaliationDamageV7`).
@@ -9287,6 +9310,37 @@ function publicCombatPreviewCore(
         publicHostile(view, attacker.ownerId, unit.ownerId) &&
         chebyshev(target.at, unit.at) === 1,
     );
+  // Revision 13 Lifesteal and Infect from the visible attacker and target.
+  // Map curiosities (section 8.6): a neutral Monster never rises either.
+  const undead = undeadCombatEffectsV7({
+    attacker: { ...attacker, construct: unitIsConstructV7(view, attacker) },
+    defender: {
+      ...target,
+      construct: unitIsConstructV7(view, target) || !unitTakesStatusV7(target),
+    },
+    attackerRule,
+    defenderRule,
+    damageToDefender,
+    damageToAttacker,
+    attackerDies,
+    defenderDies,
+    attackerOnRift: noRisingAtV7(view.board, attacker.at),
+    defenderOnRift: noRisingAtV7(view.board, target.at),
+  });
+  const frostbitten = attackIsFrostbittenV7(
+    view,
+    attacker,
+    target,
+    distance,
+    attackerDies,
+  );
+  // The Vampire and Banshee rework (`pulp_wars-ty6i`): Feast, from the
+  // visible attacker and target, as the canonical preview computes it.
+  const feast = attackFeastsV7(view, attacker, {
+    defenderDies,
+    attackerDies,
+    frostbitten,
+  });
   return {
     attackerId,
     targetUnitId,
@@ -9314,14 +9368,17 @@ function publicCombatPreviewCore(
       icebound: defenderIcebound,
       frozen: targetFrozen,
       splatted: wouldRetaliate && splatted,
+      terrified: wouldRetaliate && !splatted && terrified,
     }),
     advances,
     push,
     attacksUsed: nextAttacks,
-    // The Dwarf revision section 7.3: an unmoved Gunner's first shot.
+    // The Dwarf revision section 7.3: an unmoved Gunner's first shot. The
+    // Vampire and Banshee rework: a first attack that Feasts.
     attacksRemaining:
       overrunContinues ||
-      (!attackerDies && attackAllowanceV7(view, attacker) > nextAttacks)
+      (!attackerDies && attackAllowanceV7(view, attacker) > nextAttacks) ||
+      (feast && nextAttacks === 1)
         ? 1
         : 0,
     overrunAdvance: overrunKind !== null && advances,
@@ -9331,26 +9388,14 @@ function publicCombatPreviewCore(
     escapeAvailable:
       attackGrantsEscapeV7(attacker, attackerRule) &&
       !attackerDies &&
-      !attackIsFrostbittenV7(view, attacker, target, distance, attackerDies),
+      !frostbitten,
     splash,
-    // Revision 13 Lifesteal and Infect from the visible attacker and target.
-    // Map curiosities (section 8.6): a neutral Monster never rises either.
-    ...undeadCombatEffectsV7({
-      attacker: { ...attacker, construct: unitIsConstructV7(view, attacker) },
-      defender: {
-        ...target,
-        construct:
-          unitIsConstructV7(view, target) || !unitTakesStatusV7(target),
-      },
-      attackerRule,
-      defenderRule,
-      damageToDefender,
-      damageToAttacker,
-      attackerDies,
-      defenderDies,
-      attackerOnRift: noRisingAtV7(view.board, attacker.at),
-      defenderOnRift: noRisingAtV7(view.board, target.at),
-    }),
+    ...undead,
+    // The Vampire and Banshee rework: Feast heals to the maximum HP.
+    attackerHeal: feast
+      ? feastHealV7(attacker, damageToAttacker)
+      : undead.attackerHeal,
+    feast,
     ...afflictions,
     runUp: runUpAttack2 / 2,
     fortificationIgnored,
@@ -9391,13 +9436,7 @@ function publicCombatPreviewCore(
     icebound: defenderIcebound,
     shockDamage,
     crackApplied: attackCracksV7(view, attacker, target, defenderDies),
-    frostbiteApplied: attackIsFrostbittenV7(
-      view,
-      attacker,
-      target,
-      distance,
-      attackerDies,
-    ),
+    frostbiteApplied: frostbitten,
     ...publicCrushPreviewV7(view, attacker, target, distance, push, {
       defenderDies,
       hpAfter: grownHpV7(

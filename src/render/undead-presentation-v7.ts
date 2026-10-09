@@ -143,6 +143,15 @@ export function undeadAbilityNameV7(
       return "Bite";
     case "UNANSWERED":
       return "Unanswered";
+    // The Vampire and Banshee rework (`pulp_wars-ty6i`).
+    case "ESCAPE":
+      return "Bat Escape";
+    case "FEAST":
+      return "Feast";
+    case "TERROR":
+      return "Terror";
+    case "ETHEREAL":
+      return "Ethereal";
     default:
       return null;
   }
@@ -180,6 +189,15 @@ export function undeadAbilityDescriptionV7(
       return "Living land units it damages are bitten and rise as your Zombies when they die.";
     case "UNANSWERED":
       return "Units it attacks never strike back.";
+    // The Vampire and Banshee rework (`pulp_wars-ty6i`).
+    case "ESCAPE":
+      return "After attacking, if it survives, it may fly up to 2 tiles over units and past enemies to an empty land tile; then it is done for the turn.";
+    case "FEAST":
+      return "When its attack kills, it heals to full HP and may attack once more this turn (two attacks at most).";
+    case "TERROR":
+      return "Enemies its Wail damages can't strike back until the end of your turn.";
+    case "ETHEREAL":
+      return "Enemy zones of control don't stop its Move.";
     default:
       return null;
   }

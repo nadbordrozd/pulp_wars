@@ -463,14 +463,24 @@ export function projectEventsV7(
         blastSeen ||
         beforeVisible.has(event.unitId) ||
         afterVisible.has(event.unitId)
-      )
-        projected.push({
-          ...event,
-          results: event.results.filter(
-            (entry) => owned(entry) || beforeVisible.has(entry.unitId),
-          ),
-        });
-      else {
+      ) {
+        const results = event.results.filter(
+          (entry) => owned(entry) || beforeVisible.has(entry.unitId),
+        );
+        // The Vampire and Banshee rework (`pulp_wars-ty6i`): the terrified
+        // units among the projected results.
+        projected.push(
+          event.kind === "WAIL_RESOLVED"
+            ? {
+                ...event,
+                results,
+                terrified: event.terrified.filter((unitId) =>
+                  results.some((entry) => entry.unitId === unitId),
+                ),
+              }
+            : { ...event, results },
+        );
+      } else {
         const ownedResults = event.results.filter(owned);
         if (ownedResults.length > 0)
           projected.push({

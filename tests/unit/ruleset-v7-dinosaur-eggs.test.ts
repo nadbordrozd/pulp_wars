@@ -2239,7 +2239,8 @@ describe("ruleset-7 revision-19 Egg destruction", () => {
     expect(result.state.graves).toEqual([]);
     expect(result.state.eggs).toEqual([]);
     expect(unitAtV7(result.state, { x: 5, y: 7 }).kills).toBe(1);
-    // A full-HP Egg defends with 1: the Banshee (Attack 1) deals 2.
+    // A full-HP Egg defends with 1: the Banshee (Attack 1.5 since the
+    // Vampire and Banshee rework, `pulp_wars-ty6i`; 2 at Attack 1) deals 4.
     const full = dino(
       [{ seat: 1, role: "MARKSMAN", at: { x: 5, y: 7 } }],
       [{ seat: 0, role: "GUARD", at: NEST }],
@@ -2251,7 +2252,7 @@ describe("ruleset-7 revision-19 Egg destruction", () => {
     });
     expect(wail.events[0]).toMatchObject({
       kind: "WAIL_RESOLVED",
-      results: [{ damage: 2, dies: false }],
+      results: [{ damage: 4, dies: false }],
     });
   });
 

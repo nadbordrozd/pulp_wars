@@ -188,11 +188,13 @@ describe("vkq.21 Normal AI: Vampires attack only when they survive", () => {
   });
 
   it("never walks into lethal reach and leaves it when standing in it", () => {
-    // Catapult (5, 1) covers x 2..4 of row 1 (range 2-3), not (1, 1).
+    // Catapult (5, 1) covers x 2..4 of row 1 (range 2-3), not (1, 1). The
+    // Vampire and Banshee rework (`pulp_wars-ty6i`): a full 13-HP Vampire
+    // survives the shot, so these Vampires have the 10 HP a full one had.
     const inside = arena(
       ["UNDEAD", "ORIGINAL"],
       [
-        { seat: 0, role: "KNIGHT", at: { x: 2, y: 1 } },
+        { seat: 0, role: "KNIGHT", at: { x: 2, y: 1 }, hp: 10 },
         { seat: 1, role: "CATAPULT", at: { x: 5, y: 1 } },
       ],
     );
@@ -206,7 +208,7 @@ describe("vkq.21 Normal AI: Vampires attack only when they survive", () => {
     const outside = arena(
       ["UNDEAD", "ORIGINAL"],
       [
-        { seat: 0, role: "KNIGHT", at: { x: 1, y: 1 } },
+        { seat: 0, role: "KNIGHT", at: { x: 1, y: 1 }, hp: 10 },
         { seat: 1, role: "CATAPULT", at: { x: 5, y: 1 } },
       ],
     );

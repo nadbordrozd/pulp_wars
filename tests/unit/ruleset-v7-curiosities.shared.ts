@@ -36,6 +36,11 @@ export function normalizedInitialState(state: GameStateV7): string {
     // Goblin explosions and Berserk (`pulp_wars-w49.35`) adds the
     // `berserkThisTurn` list, empty in every initial state.
     berserkThisTurn: _berserk,
+    // The Vampire and Banshee rework (`pulp_wars-ty6i`) adds the
+    // `terrorThisTurn` and `feastedThisTurn` lists, empty in every initial
+    // state.
+    terrorThisTurn: _terror,
+    feastedThisTurn: _feasted,
     // The frozen sea (`pulp_wars-5ti.3`) adds the `ice` list, empty in every
     // generated initial state.
     ice: _ice,
@@ -83,6 +88,8 @@ export function normalizedInitialState(state: GameStateV7): string {
     throw new Error("a hunted unit in an initial state");
   if (_berserk.length !== 0)
     throw new Error("a Berserk unit in an initial state");
+  if (_terror.length + _feasted.length !== 0)
+    throw new Error("a terrified or Feasting unit in an initial state");
   if (_giants.swallowed.length !== 0)
     throw new Error("a held victim in an initial state");
   if (_monsters.length !== 0) throw new Error("a Monster with the option off");

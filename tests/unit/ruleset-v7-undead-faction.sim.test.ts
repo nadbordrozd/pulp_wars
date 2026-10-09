@@ -652,7 +652,10 @@ describe("ruleset-7 all-Human parity digests", () => {
                 // pulp_wars-w49.15: the empty hunted list (Pack Hunt).
                 key === "huntedThisTurn" ||
                 // pulp_wars-w49.35: the empty Berserk list.
-                key === "berserkThisTurn") &&
+                key === "berserkThisTurn" ||
+                // pulp_wars-ty6i: the empty Terror and Feast lists.
+                key === "terrorThisTurn" ||
+                key === "feastedThisTurn") &&
               Array.isArray(item) &&
               item.length === 0
             )

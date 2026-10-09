@@ -71,12 +71,15 @@ function offeredAndActual(state: GameStateV7, bansheeAt: CoordV7) {
 describe("the public Wail preview equals the Wail (pulp_wars-7g3.9)", () => {
   // `pulp_wars-1wy.3`: Snow cover is x 1.25, which a Yeti does not feel
   // against a Wail (2 either way), so the targets are Mammoths (Defense 2).
-  it("counts an Ice Folk target's Snow cover: 1 on a Mammoth on Snow, 2 in the open", () => {
+  // The Vampire and Banshee rework (`pulp_wars-ty6i`): at Attack 1.5 a
+  // full Banshee deals a Mammoth 3 either way, so the Banshees here have 7
+  // of 8 HP (3 in the open, 2 on Snow; it was 2 and 1 at Attack 1).
+  it("counts an Ice Folk target's Snow cover: 2 on a Mammoth on Snow, 3 in the open", () => {
     // Undead seat 1's Banshee; Ice Folk seat 0's Mammoths on its territory
     // Snow (7, 7) and on open Grass (6, 5).
     const state = iceFieldV7(
       [
-        { seat: 1, role: "MARKSMAN", at: at(6, 6) },
+        { seat: 1, role: "MARKSMAN", at: at(6, 6), hp: 7 },
         { seat: 0, role: "SWORDSMAN", at: at(7, 7) },
         { seat: 0, role: "SWORDSMAN", at: at(6, 5) },
       ],
@@ -86,11 +89,13 @@ describe("the public Wail preview equals the Wail (pulp_wars-7g3.9)", () => {
     expect(isSnowV7(state, at(6, 5))).toBe(false);
     const { offered, actual } = offeredAndActual(state, at(6, 6));
     expect(offered).toEqual(actual);
-    expect(offered["7,7"]?.damage).toBe(1);
-    expect(offered["6,5"]?.damage).toBe(2);
+    expect(offered["7,7"]?.damage).toBe(2);
+    expect(offered["6,5"]?.damage).toBe(3);
   });
 
-  it("counts a Dwarf target's Dig In: 1 on a dug-in Hammerer, 2 in the open", () => {
+  // The Vampire and Banshee rework (`pulp_wars-ty6i`): at Attack 1.5 (1
+  // and 2 at Attack 1).
+  it("counts a Dwarf target's Dig In: 2 on a dug-in Hammerer, 3 in the open", () => {
     // Dwarf seat 0's Hammerers: one beside its capital (8, 8), dug in, one
     // away from every Dwarf city.
     const state = dwarfFieldV7(
@@ -108,8 +113,8 @@ describe("the public Wail preview equals the Wail (pulp_wars-7g3.9)", () => {
     expect(publicUnitIsDugInV7(view, unitAtV7(state, at(7, 7)).id)).toBe(true);
     expect(publicUnitIsDugInV7(view, unitAtV7(state, at(5, 6)).id)).toBe(false);
     expect(offered).toEqual(actual);
-    expect(offered["7,7"]?.damage).toBe(1);
-    expect(offered["5,6"]?.damage).toBe(2);
+    expect(offered["7,7"]?.damage).toBe(2);
+    expect(offered["5,6"]?.damage).toBe(3);
     expect(
       preview.targets.find((target) => target.at.x === 7)?.fortificationLevel,
     ).toBe(1);
@@ -142,7 +147,9 @@ describe("the public Wail preview equals the Wail (pulp_wars-7g3.9)", () => {
         { seat: 0, role: "SWORDSMAN", at: at(6, 3) },
         { seat: 0, role: "FIGHTER", at: at(4, 4) },
         { seat: 0, role: "FIGHTER", at: at(7, 7) },
-        { seat: 1, role: "MARKSMAN", at: at(6, 5) },
+        // The Vampire and Banshee rework (`pulp_wars-ty6i`): 7 of 8 HP, so
+        // Snow cover still saves the Mammoth a point at Attack 1.5.
+        { seat: 1, role: "MARKSMAN", at: at(6, 5), hp: 7 },
       ],
       { factions: ["ICE_FOLK", "UNDEAD"], activeSeat: 1, techs: { 0: [] } },
     );
@@ -158,13 +165,13 @@ describe("the public Wail preview equals the Wail (pulp_wars-7g3.9)", () => {
       at(6, 5),
     );
     // The Mammoth at (6, 3) beside the hidden Witch: the preview reads open
-    // ground (2) and is flagged; the Wail deals 1 (Snow cover).
+    // ground (3) and is flagged; the Wail deals 2 (Snow cover).
     expect(offered["6,3"]).toEqual({
       ...actual["6,3"],
-      damage: 2,
+      damage: 3,
       flagged: true,
     });
-    expect(actual["6,3"]?.damage).toBe(1);
+    expect(actual["6,3"]?.damage).toBe(2);
     // A Yeti with every neighbour explored is exact and unflagged, and so
     // is one on known Snow beside an unexplored tile (a Blizzard cannot
     // change its cover).
@@ -173,7 +180,7 @@ describe("the public Wail preview equals the Wail (pulp_wars-7g3.9)", () => {
     // The UI shows the combat preview's caveat for it.
     const flagged = preview.targets.find((target) => target.at.x === 6);
     if (flagged === undefined) throw new Error("no flagged target");
-    expect(wailTargetLabelV7(flagged)).toBe("−2?");
+    expect(wailTargetLabelV7(flagged)).toBe("−3?");
     expect(wailPreviewDescriptionV7(view, preview)).toContain(
       HIDDEN_BLIZZARD_PREVIEW_V7,
     );

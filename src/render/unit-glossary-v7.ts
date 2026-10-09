@@ -239,6 +239,20 @@ const ENTRIES = {
   ],
   LIFESTEAL: ["Lifesteal", "Heals itself by the damage it deals."],
   UNANSWERED: ["Unanswered", "Units it attacks cannot hit back."],
+  // The Vampire and Banshee rework (`pulp_wars-ty6i`).
+  FEAST: [
+    "Feast",
+    "When its attack kills, it heals fully and may attack once more this turn.",
+  ],
+  BAT_ESCAPE: [
+    "Bat Escape",
+    "After attacking it may fly up to 2 tiles, over units and past enemies, to an empty land tile.",
+  ],
+  TERROR: [
+    "Terror",
+    "Enemies its Wail hurts cannot hit back until the end of your turn.",
+  ],
+  ETHEREAL: ["Ethereal", "Enemies next to its path do not stop it."],
   RISE_AGAIN: [
     "Rise Again",
     "Once, after it falls, it climbs back out of its Grave on your next turn, unless a unit stands on the Grave.",
@@ -657,6 +671,15 @@ const ENTRIES = {
   STATUS_TENDED: ["Tended", "A healer has already tended it this turn."],
   STATUS_ATTACK_AGAIN: ["Attack again", "It just killed: it may attack again."],
   STATUS_ESCAPE: ["Escape", "It may move once more this turn."],
+  // The Vampire and Banshee rework (`pulp_wars-ty6i`).
+  STATUS_FEAST: [
+    "Feast",
+    "It just killed and healed: it may attack once more.",
+  ],
+  STATUS_TERROR: [
+    "Terror",
+    "A Banshee's wail terrified it: it cannot hit back until the end of this turn.",
+  ],
   STATUS_CRACKED: ["Cracked", "Easier to hurt for the rest of this turn."],
   STATUS_RISEN: [
     "Risen",
@@ -787,6 +810,10 @@ export function abilityGlossaryIdV7(
       return mechanics.heavyTractorBeam ? "TRACTOR_BEAM_HEAVY" : "TRACTOR_BEAM";
     case "BOUNCE":
       return "BOUNCY";
+    // The Vampire and Banshee rework (`pulp_wars-ty6i`): the Vampire's
+    // Escape flies.
+    case "ESCAPE":
+      return mechanics.batEscapeTiles > 0 ? "BAT_ESCAPE" : "ESCAPE";
     default:
       return ability in ENTRIES ? (ability as GlossaryIdV7) : null;
   }
@@ -816,7 +843,11 @@ export function roleTraitGlossaryIdsV7(
     if (mechanics.splash) traits.push("SPLASH");
     return traits;
   }
-  if (mechanics.ignoresZocStops && !rule.abilities.includes("PROWL"))
+  if (
+    mechanics.ignoresZocStops &&
+    !rule.abilities.includes("PROWL") &&
+    !rule.abilities.includes("ETHEREAL")
+  )
     traits.push("SLIPS_PAST");
   if (mechanics.rangedDefense2 !== null)
     traits.push(
@@ -936,6 +967,8 @@ const STATUS_IDS: Readonly<Record<string, GlossaryIdV7>> = {
   ram: "STATUS_ATTACK_AGAIN",
   rampage: "STATUS_ATTACK_AGAIN",
   escape: "STATUS_ESCAPE",
+  feast: "STATUS_FEAST",
+  terror: "STATUS_TERROR",
   cracked: "STATUS_CRACKED",
   risen: "STATUS_RISEN",
   // The giants' signatures (`pulp_wars-w49.32`): an Abomination's held

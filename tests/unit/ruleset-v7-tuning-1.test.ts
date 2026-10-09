@@ -113,13 +113,13 @@ describe("tuning 1 identity", () => {
   // Tuning 1 took 7r46; tuning 2 (tests/unit/ruleset-v7-tuning-2.test.ts)
   // took 7r47, so 7r46 is the last prior identity.
   it("was 7r46, after 7r45 in the prior list", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r69");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r69.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-24, -22)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r70");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r70.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-25, -23)).toEqual([
       "pulp-wars-poc-7r45",
       "pulp-wars-poc-7r46",
     ]);
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(68);
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(69);
   });
 });
 
@@ -412,7 +412,8 @@ describe("D: the Marksman", () => {
     );
     expect(rule("MARKSMAN", "UNDEAD").cost).toBe(3);
     expect(rule("CATAPULT", "GOBLIN").attack2).toBe(7);
-    expect(rule("KNIGHT", "UNDEAD").maxHp).toBe(10);
+    // The Vampire and Banshee rework: 13 (was 10: pulp_wars-ty6i).
+    expect(rule("KNIGHT", "UNDEAD").maxHp).toBe(13);
   });
 });
 

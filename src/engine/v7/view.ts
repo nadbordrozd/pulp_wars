@@ -424,6 +424,14 @@ export interface PlayerViewV7 {
    */
   readonly berserkThisTurn: readonly UnitId[];
   /**
+   * The Vampire and Banshee rework (`pulp_wars-ty6i`): `terrorThisTurn`
+   * (the units a Banshee's Wail terrified: they do not strike back this
+   * turn) and `feastedThisTurn` (the Vampires whose kill allows one more
+   * attack), each of visible units.
+   */
+  readonly terrorThisTurn: readonly UnitId[];
+  readonly feastedThisTurn: readonly UnitId[];
+  /**
    * The ninth unit (`pulp_wars-w49.17`, 7r55): the marked Graves on tiles
    * the viewer has explored (public like Graves, with the seat the Wight
    * returns for), and the risen Wights and Cracked units among the visible
@@ -1091,6 +1099,12 @@ export function viewForV7(
       visibleUnitIds.has(unitId),
     ),
     berserkThisTurn: state.berserkThisTurn.filter((unitId) =>
+      visibleUnitIds.has(unitId),
+    ),
+    terrorThisTurn: state.terrorThisTurn.filter((unitId) =>
+      visibleUnitIds.has(unitId),
+    ),
+    feastedThisTurn: state.feastedThisTurn.filter((unitId) =>
       visibleUnitIds.has(unitId),
     ),
     // The ninth unit (7r55): see `PlayerViewV7.ninthUnit`.

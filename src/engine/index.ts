@@ -99,3 +99,4 @@ export * from "./v7/unit-stats";
 export * from "./v7/units";
 export * from "./v7/view";
 export * from "./v7/wail";
+export * from "./v7/vampire-banshee";

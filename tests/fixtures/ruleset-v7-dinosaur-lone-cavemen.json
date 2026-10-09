@@ -1,8 +1,8 @@
 {
   "schemaVersion": 7,
-  "rulesetId": "pulp-wars-poc-7r69",
+  "rulesetId": "pulp-wars-poc-7r70",
   "setup": {
-    "rulesetId": "pulp-wars-poc-7r69",
+    "rulesetId": "pulp-wars-poc-7r70",
     "seed": 9,
     "width": 14,
     "height": 14,
@@ -3669,6 +3669,8 @@
   "glazedThisTurn": [],
   "huntedThisTurn": [],
   "berserkThisTurn": [],
+  "terrorThisTurn": [],
+  "feastedThisTurn": [],
   "ninthUnit": {
     "wightGraves": [],
     "risenWights": [],

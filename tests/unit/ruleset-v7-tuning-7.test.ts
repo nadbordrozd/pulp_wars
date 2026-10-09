@@ -45,7 +45,7 @@ import {
 } from "../../src/ai/v7-campaign";
 
 /**
- * Tuning 7 (`pulp_wars-w49.10`, identity unchanged at `pulp-wars-poc-7r69`;
+ * Tuning 7 (`pulp_wars-w49.10`, identity unchanged at `pulp-wars-poc-7r70`;
  * docs/product/RULESET_7_TUNING_HUMAN.md section 14, the Normal AI of a
  * Human, Undead, or Goblin seat): it commits against the enemy in front of
  * it and keeps committing after the line breaks, every faction's seat
@@ -189,7 +189,7 @@ const whereIs = (state: GameStateV7, id: UnitId): CoordV7 => {
 
 describe("tuning 7 identity", () => {
   it("is still 7r49: no rule, command, state, or event shape changed", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r69");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r70");
   });
 });
 
@@ -1168,7 +1168,11 @@ describe("6. abilities", () => {
     );
     expect(wails.length).toBeGreaterThanOrEqual(1);
     for (const id of wails) expect(banshees).toContain(id);
-    expect(kinds.lastIndexOf("WAIL")).toBeLessThan(kinds.indexOf("ATTACK"));
+    // The Vampire and Banshee rework (`pulp_wars-ty6i`): with the Wail at
+    // Attack 1.5 the second Banshee also Wails, after the Skeletons strike
+    // (was: every Wail before the first attack); the first Wail still
+    // comes first.
+    expect(kinds.indexOf("WAIL")).toBeLessThan(kinds.indexOf("ATTACK"));
     expect(attacksOf(turn.commands).length).toBeGreaterThanOrEqual(2);
   });
 

@@ -16,7 +16,7 @@ import {
 import { runBreakthroughLabV7 } from "../fixtures/v7-breakthrough-lab";
 
 /**
- * Tuning 8 (`pulp_wars-w49.11`, identity unchanged at `pulp-wars-poc-7r69`;
+ * Tuning 8 (`pulp_wars-w49.11`, identity unchanged at `pulp-wars-poc-7r70`;
  * docs/product/RULESET_7_TUNING_HUMAN.md section 15, the Normal AI of a
  * Human, Undead, or Goblin seat). Round 7 was played by hand four times
  * (`r7a` to `r7d`); every position below is one of those games, or the

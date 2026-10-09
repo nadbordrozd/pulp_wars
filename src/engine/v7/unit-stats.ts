@@ -74,6 +74,11 @@ import {
   unitShieldMaximumV7,
 } from "./martian";
 import { unitSlidesV7 } from "./ice";
+import {
+  batEscapeTilesV7,
+  feastReadyV7,
+  unitIsTerrifiedV7,
+} from "./vampire-banshee";
 import { tileAtV7 } from "./spatial-economy";
 import type { GameStateV7, UnitStateV7 } from "./types";
 import {
@@ -823,7 +828,20 @@ export function publicUnitStatsV7(
                 : "Overrun: attack again",
           ]
         : []),
-      ...(unit.activation.escapeAvailable ? ["Escape: may move again"] : []),
+      ...(unit.activation.escapeAvailable
+        ? [
+            // The Vampire and Banshee rework (`pulp_wars-ty6i`): Bat Escape.
+            batEscapeTilesV7(state, unit) > 0
+              ? `Escape: may fly up to ${batEscapeTilesV7(state, unit)} tiles`
+              : "Escape: may move again",
+          ]
+        : []),
+      ...(frozen === null && feastReadyV7(state, unit)
+        ? ["Feast: may attack again"]
+        : []),
+      ...(unitIsTerrifiedV7(state, unit.id)
+        ? ["Terror: will not strike back this turn"]
+        : []),
       // Goblin explosions and Berserk (`pulp_wars-w49.35`).
       ...(unitIsBerserkV7(state, unit.id)
         ? ["Berserk: +1 Move, ignores zones of control this turn"]

@@ -226,7 +226,9 @@ describe("Revision 13 Undead DOM", () => {
     const wail = requiredButton("command-wail");
     expect(wail.querySelector(".v7-action-label")?.textContent).toBe("Wail");
     expect(wail.getAttribute("aria-label")).toBe(
-      "Wail · Hits 2 enemies within 2 tiles, 1 dies: Guard −1, Fighter −1 (dies)",
+      // The Vampire and Banshee rework (`pulp_wars-ty6i`): Attack 1.5 (the
+      // Guard took 1).
+      "Wail · Hits 2 enemies within 2 tiles, 1 dies: Guard −2, Fighter −1 (dies)",
     );
     expect(wail.querySelector(".v7-undead-preview-chip")?.textContent).toBe(
       "2 hit · 1 ✕",
@@ -333,6 +335,9 @@ describe("Revision 13 Undead DOM", () => {
     ).toEqual([
       "CaptureTakes a village or an enemy city when it starts your turn standing on its centre.",
       "WailHurts every living enemy within 2 tiles at once. It has no ordinary attack.",
+      // The Vampire and Banshee rework (`pulp_wars-ty6i`).
+      "TerrorEnemies its Wail hurts cannot hit back until the end of your turn.",
+      "EtherealEnemies next to its path do not stop it.",
       "RestlessHeals only inside your own borders.",
     ]);
     requiredButton("close-recruit-help").click();

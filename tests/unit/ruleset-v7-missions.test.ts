@@ -121,8 +121,10 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
     "cb4655d4334cbb87d2e52015870aa0fe5c9c133324b449158af0dba84acb2336",
   // The ninth unit (`pulp_wars-w49.17`, 7r55): revision 3.
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 4.
+  // The Vampire and Banshee rework: its Vampires have 13 HP (was
+  // ca37f19f26f491a4…: pulp_wars-ty6i).
   "LAB_BREAKTHROUGH_UNDEAD@4:ORIGINAL":
-    "ca37f19f26f491a4c11cbeb92586d647d51e54c8d4de1213420bf5b8fe0e7929",
+    "8bb2d7954234e6ffb0cb5bf4e07ca8fbec03cdecde89ff5dbd2a95347f7f0d99",
   // The Goblin pass (`pulp_wars-w49.12`): the Goblins for the hand player.
   // The ninth unit (`pulp_wars-w49.17`, 7r55): revision 2.
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 3.
@@ -131,8 +133,10 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
   // The Undead pass (`pulp_wars-w49.13`): the Undead for the hand player.
   // The ninth unit (`pulp_wars-w49.17`, 7r55): revision 2.
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 3.
+  // The Vampire and Banshee rework: its Vampires have 13 HP (was
+  // 098b26f0cb6f516b…: pulp_wars-ty6i).
   "LAB_UNDEAD_MID@3:UNDEAD":
-    "098b26f0cb6f516bb482e5d91133bd539fe21555570392006e30d245fcbd3f20",
+    "0cc3269f4c231bad3cdbe381d050a4892335074683edfd7fad9c71a81208f364",
   // The Martian pass (`pulp_wars-w49.14`): the Martians for the hand player.
   // The ninth unit (`pulp_wars-w49.17`, 7r55): revision 2.
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 3.
@@ -193,6 +197,11 @@ function missionStateHash(state: GameStateV7): string {
     // Goblin explosions and Berserk (`pulp_wars-w49.35`) added the
     // `berserkThisTurn` list, empty in every initial state and left out too.
     berserkThisTurn,
+    // The Vampire and Banshee rework (`pulp_wars-ty6i`) added the
+    // `terrorThisTurn` and `feastedThisTurn` lists, empty in every initial
+    // state and left out too.
+    terrorThisTurn,
+    feastedThisTurn,
     ice,
     // The ninth unit (`pulp_wars-w49.17`, 7r55) added the `ninthUnit`
     // record, empty in every initial state and left out too.
@@ -222,6 +231,7 @@ function missionStateHash(state: GameStateV7): string {
   expect(barricades).toEqual([]);
   expect(huntedThisTurn).toEqual([]);
   expect(berserkThisTurn).toEqual([]);
+  expect([terrorThisTurn, feastedThisTurn]).toEqual([[], []]);
   expect([monsters, beamedThisTurn, tractorUsedThisTurn]).toEqual([[], [], []]);
   // The frozen sea (`pulp_wars-5ti.3`) added the `ice` list, empty in every
   // initial mission state and left out too.
@@ -305,16 +315,20 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
     "74002b11f11790087a1c9d132355d7d8f8f4f2f7d314f160a0e3f5af7606dd61",
   // The ninth unit (`pulp_wars-w49.17`, 7r55): revision 3.
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 4.
+  // The Vampire and Banshee rework: its Vampires have 13 HP (was
+  // 731044b6e8f55c50…: pulp_wars-ty6i).
   "LAB_BREAKTHROUGH_UNDEAD@4:ORIGINAL":
-    "731044b6e8f55c506316d5764b47fa743c5364ed7f8998abe840f3b0935f9d47",
+    "510aec8639761dd793a9c226199c564d45a78f3d05f67561aa70b234093f2937",
   // The ninth unit (`pulp_wars-w49.17`, 7r55): revision 2.
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 3.
   "LAB_GOBLIN_MID@3:GOBLIN":
     "a907422d4ffc1a0338434192745e07d952c6c68134f124ba0e1ab8c5f1ab762f",
   // The ninth unit (`pulp_wars-w49.17`, 7r55): revision 2.
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 3.
+  // The Vampire and Banshee rework: its Vampires have 13 HP (was
+  // f60ce2ac800381c7…: pulp_wars-ty6i).
   "LAB_UNDEAD_MID@3:UNDEAD":
-    "f60ce2ac800381c76d37330a7430917862693d256b80565920e289d7398eddb5",
+    "76e692fd8f50352caeec152d8fcb57a271903212142add89c955ecf39aaa7f3f",
   // The ninth unit (`pulp_wars-w49.17`, 7r55): revision 2.
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 3.
   "LAB_MARTIAN_MID@3:MARTIAN":
@@ -348,6 +362,11 @@ function preCuriosityMissionStateHash(state: GameStateV7): string {
     // Goblin explosions and Berserk (`pulp_wars-w49.35`) added the
     // `berserkThisTurn` list, empty in every initial state and left out too.
     berserkThisTurn,
+    // The Vampire and Banshee rework (`pulp_wars-ty6i`) added the
+    // `terrorThisTurn` and `feastedThisTurn` lists, empty in every initial
+    // state and left out too.
+    terrorThisTurn,
+    feastedThisTurn,
     ice,
     ninthUnit,
     barricades,
@@ -367,6 +386,7 @@ function preCuriosityMissionStateHash(state: GameStateV7): string {
   expect(barricades).toEqual([]);
   expect(huntedThisTurn).toEqual([]);
   expect(berserkThisTurn).toEqual([]);
+  expect([terrorThisTurn, feastedThisTurn]).toEqual([[], []]);
   const { curiosities: option, ...setup } = state.setup;
   expect([curiosities, monsters, option]).toEqual([[], [], false]);
   expect([beamedThisTurn, tractorUsedThisTurn]).toEqual([[], []]);

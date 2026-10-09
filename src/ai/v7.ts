@@ -21442,6 +21442,11 @@ function projectKnightOverrunAttack(
   preview: CombatPreviewV7,
 ): PlayerViewV7 {
   const nextAttacks = preview.attacksUsed;
+  // The Vampire and Banshee rework (`pulp_wars-ty6i`): a first attack that
+  // Feasts heals the Vampire fully and leaves it one more attack, so the
+  // sequence also weighs the Feast attack (basic scoring, no tuning).
+  const feastContinues =
+    preview.feast && preview.attacksRemaining === 1 && !preview.attackerDies;
   const units = view.units.flatMap((unit): readonly PublicUnitV7[] => {
     if (unit.id === target.id)
       return preview.defenderDies
@@ -21453,19 +21458,30 @@ function projectKnightOverrunAttack(
       {
         ...unit,
         at: preview.advances ? target.at : unit.at,
-        hp: unit.hp - preview.damageToAttacker,
+        hp:
+          unit.hp -
+          preview.damageToAttacker +
+          (preview.feast ? preview.attackerHeal : 0),
         activation: {
           ...unit.activation,
           attacked: true,
           attacksUsed: nextAttacks,
           inspired: false,
           overrunActive: preview.overrunContinues,
-          handled: !preview.overrunContinues,
+          handled: !preview.overrunContinues && !feastContinues,
         },
       },
     ];
   });
-  return projectPublicUnits(view, units, [actor.id, target.id]);
+  const projected = projectPublicUnits(view, units, [actor.id, target.id]);
+  return feastContinues
+    ? {
+        ...projected,
+        feastedThisTurn: [...(view.feastedThisTurn ?? []), actor.id].sort(
+          (left, right) => left - right,
+        ),
+      }
+    : projected;
 }
 
 function combatImmediateValue(

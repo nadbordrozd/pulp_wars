@@ -1410,10 +1410,11 @@ describe("ruleset-7 Dinosaur Armoured", () => {
     });
     const wail = result.events.find((event) => event.kind === "WAIL_RESOLVED");
     if (wail?.kind !== "WAIL_RESOLVED") throw new Error("no wail");
-    // Wounded Ankylosaurus: 3 becomes 2; full-HP one: 1 stays 1; the
-    // Caveman's 3 is not reduced.
+    // The Vampire and Banshee rework (`pulp_wars-ty6i`): at Attack 1.5.
+    // Wounded Ankylosaurus: 5 becomes 4; full-HP one: 2 becomes 1; the
+    // Caveman's 3 is not reduced (at Attack 1: 3 to 2, 1, and 3).
     expect(wail.results.map((entry) => [entry.at, entry.damage])).toEqual([
-      [{ x: 5, y: 3 }, 2],
+      [{ x: 5, y: 3 }, 4],
       [{ x: 6, y: 3 }, 1],
       [{ x: 4, y: 4 }, 3],
     ]);
@@ -1423,7 +1424,7 @@ describe("ruleset-7 Dinosaur Armoured", () => {
       wail.results.map((entry) => [entry.at, entry.damage, entry.dies]),
     );
     expect(parseEventV7(wail).ok).toBe(true);
-    expect(unitAtV7(result.state, { x: 5, y: 3 }).hp).toBe(3);
+    expect(unitAtV7(result.state, { x: 5, y: 3 }).hp).toBe(1);
   });
 
   // `pulp_wars-w49.35`: the Goblin's Kaboom is 6 (5 before) and the Bomb
@@ -1565,12 +1566,14 @@ describe("ruleset-7 Dinosaur Armoured", () => {
       ],
     );
     const drained = attack(vampire, { x: 4, y: 3 }, { x: 5, y: 3 });
+    // The Vampire and Banshee rework (`pulp_wars-ty6i`): 5 of 13 HP hits
+    // for 3 after Armoured (5 of 10 HP hit for 4) and heals 3.
     expect(combat(drained.events)).toMatchObject({
-      damageToDefender: 4,
+      damageToDefender: 3,
       defenderArmoured: true,
-      attackerHeal: 4,
+      attackerHeal: 3,
     });
-    expect(unitAtV7(drained.state, { x: 4, y: 3 }).hp).toBe(9);
+    expect(unitAtV7(drained.state, { x: 4, y: 3 }).hp).toBe(8);
     const zombie = goblinArenaV7(
       ["UNDEAD", "DINOSAUR"],
       [

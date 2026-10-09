@@ -31,6 +31,7 @@ import {
   SKELETON_RANGED_DEFENSE2_V7,
   SURVEY_RAIDERS_V7,
   TECHNOLOGY_IDS_V7,
+  applyCommandV7,
   assignedUnitCountV7,
   createPlayableGameV7,
   effectiveRoleRuleV7,
@@ -190,13 +191,13 @@ describe("the Undead pass: identity", () => {
   // , the Dinosaur pass 7r53, and the economy rejig 7r54, so 7r51 is a
   // prior identity.
   it("was 7r51 after 7r50, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r69");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r69.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-19, -17)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r70");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r70.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-20, -18)).toEqual([
       "pulp-wars-poc-7r50",
       "pulp-wars-poc-7r51",
     ]);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-19, -17)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-20, -18)).toEqual([
       "pulpWars.save.v7r50.current",
       "pulpWars.save.v7r51.current",
     ]);
@@ -234,12 +235,17 @@ describe("the Undead pass: identity", () => {
     ).toEqual([
       ["Skeleton", ["ATTACK", "CAPTURE"]],
       ["Ghoul", ["ATTACK", "CAPTURE", "CHARGE", "DEVOUR"]],
-      ["Banshee", ["CAPTURE", "WAIL"]],
+      // The Vampire and Banshee rework (`pulp_wars-ty6i`): Terror and
+      // Ethereal for the Banshee, Feast for the Vampire.
+      ["Banshee", ["CAPTURE", "WAIL", "TERROR", "ETHEREAL"]],
       ["Zombie", ["ATTACK", "CAPTURE", "INFECT", "BITE"]],
       ["Necromancer", ["ATTACK", "CAPTURE", "RALLY", "RAISE_DEAD"]],
       ["Lich", ["ATTACK", "CAPTURE", "PLAGUE"]],
       // Any unit can capture since `pulp_wars-ke95`.
-      ["Vampire", ["ATTACK", "CAPTURE", "LIFESTEAL", "UNANSWERED", "ESCAPE"]],
+      [
+        "Vampire",
+        ["ATTACK", "CAPTURE", "LIFESTEAL", "UNANSWERED", "ESCAPE", "FEAST"],
+      ],
       // The giants' signatures (`pulp_wars-w49.30`): Swallow instead of Push.
       ["Abomination", ["ATTACK", "CAPTURE", "INFECT", "SWALLOW"]],
     ]);
@@ -249,7 +255,9 @@ describe("the Undead pass: identity", () => {
         (role) => !roleMechanicsV7(role, "UNDEAD").advancesAfterKill,
       ),
     ).toEqual(["GUARD", "CATAPULT", "JUGGERNAUT"]);
-    // No number of the roster moved.
+    // No number of the roster moved in the Undead pass. The Vampire and
+    // Banshee rework (`pulp_wars-ty6i`) moved two since: the Banshee's
+    // Attack 1.5 (attack2 3, was 2) and the Vampire's 13 HP (was 10).
     expect(
       ROSTER.map((role) => {
         const rule = effectiveRoleRuleV7(role, "UNDEAD");
@@ -265,11 +273,11 @@ describe("the Undead pass: identity", () => {
     ).toEqual([
       [2, 10, 4, 4, 1, 1],
       [3, 10, 4, 2, 2, 1],
-      [3, 8, 2, 2, 1, 0],
+      [3, 8, 3, 2, 1, 0],
       [3, 18, 4, 4, 1, 1],
       [5, 10, 2, 2, 1, 1],
       [8, 10, 6, 2, 1, 3],
-      [9, 10, 6, 2, 3, 1],
+      [9, 13, 6, 2, 3, 1],
       [null, 40, 8, 8, 1, 1],
     ]);
     // The Human Juggernaut and Knight are as they were (the giants'
@@ -444,14 +452,28 @@ describe("the Undead pass: the Vampire's Escape", () => {
     expect(
       attacked.state.units.find((unit) => unit.id === vampire)?.activation,
     ).toMatchObject({ attacked: true, escapeAvailable: true, handled: false });
-    // Three tiles back: its whole Move.
+    // The Vampire and Banshee rework (`pulp_wars-ty6i`): a Bat Escape flies
+    // two tiles at most (it was three, its whole Move).
+    expect(
+      applyCommandV7(attacked.state, actor, {
+        kind: "MOVE",
+        unitId: vampire,
+        path: [at(6, 4), at(7, 4), at(8, 3)],
+      }),
+    ).toMatchObject({
+      accepted: false,
+      error: {
+        code: "MOVEMENT_ILLEGAL",
+        params: { reason: "BUDGET_EXCEEDED" },
+      },
+    });
     const flown = applyOkV7(attacked.state, actor, {
       kind: "MOVE",
       unitId: vampire,
-      path: [at(6, 4), at(7, 4), at(8, 3)],
+      path: [at(6, 4), at(7, 4)],
     });
     const after = flown.state.units.find((unit) => unit.id === vampire);
-    expect(after?.at).toEqual(at(8, 3));
+    expect(after?.at).toEqual(at(7, 4));
     expect(after?.activation).toMatchObject({
       escapeAvailable: false,
       handled: true,
@@ -513,10 +535,11 @@ describe("the Undead pass: the Vampire's Escape", () => {
   });
 
   it("names it on the unit", () => {
+    // The Vampire and Banshee rework (`pulp_wars-ty6i`): a Bat Escape.
     expect(
       recruitmentRolePresentationV7("KNIGHT", "UNDEAD").abilities,
     ).toContain(
-      "Escape: May move again after attacking: a fresh full Move if it survives, then it is done for the turn.",
+      "Bat Escape: After attacking, if it survives, it may fly up to 2 tiles over units and past enemies to an empty land tile; then it is done for the turn.",
     );
   });
 });
@@ -722,7 +745,7 @@ describe("the Undead pass: the matrix numbers the document reasons from", () => 
     expect(on("KNIGHT", "CATAPULT").defenderDies).toBe(true);
   });
 
-  it("splashes and plagues a line, and a Wail deals 2 to most units in the open", () => {
+  it("splashes and plagues a line, and a Wail deals 3 to most units in the open", () => {
     const state = goblinArenaV7(
       ["UNDEAD", "ORIGINAL"],
       [
@@ -740,9 +763,11 @@ describe("the Undead pass: the matrix numbers the document reasons from", () => 
     expect(shot.splash.map((entry) => entry.damage)).toEqual([4, 4, 4, 4]);
     expect(shot.plagued).toHaveLength(5);
     const wail = previewWailV7(viewOf(state), unitAtV7(state, at(3, 4)).id);
+    // The Vampire and Banshee rework (`pulp_wars-ty6i`): at Attack 1.5 (was
+    // 1, 2, and 2 at Attack 1).
     expect(
       wail?.targets.map((target) => target.damage).sort((a, b) => a - b),
-    ).toEqual([1, 2, 2]);
+    ).toEqual([3, 3, 4]);
   });
 
   it("stops a Human Knight on a full Zombie, which bites it", () => {

@@ -3952,6 +3952,9 @@ function initialMapStateFromV7(
     glazedThisTurn: [],
     huntedThisTurn: [],
     berserkThisTurn: [],
+    // The Vampire and Banshee rework (`pulp_wars-ty6i`): Terror and Feast.
+    terrorThisTurn: [],
+    feastedThisTurn: [],
     ninthUnit: emptyNinthUnitStateV7(),
     barricades: [],
     giants: emptyGiantsStateV7(),
@@ -4031,6 +4034,9 @@ function showcaseInitialStateV7(
     glazedThisTurn: [],
     huntedThisTurn: [],
     berserkThisTurn: [],
+    // The Vampire and Banshee rework (`pulp_wars-ty6i`): Terror and Feast.
+    terrorThisTurn: [],
+    feastedThisTurn: [],
     ninthUnit: emptyNinthUnitStateV7(),
     barricades: [],
     giants: emptyGiantsStateV7(),

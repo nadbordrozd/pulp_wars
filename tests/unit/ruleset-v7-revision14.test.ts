@@ -95,9 +95,9 @@ interface ArenaOptions {
 
 describe("ruleset-7 revision-14 identity and roster", () => {
   it("keeps rejecting r13 after the r54 identity and cleans the r13 through r53 save keys", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r69");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r69.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-56, -14)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r70");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r70.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-57, -15)).toEqual([
       "pulpWars.save.v7r13.current",
       "pulpWars.save.v7r14.current",
       "pulpWars.save.v7r15.current",
@@ -160,13 +160,15 @@ describe("ruleset-7 revision-14 identity and roster", () => {
       "INFECT",
       "BITE",
     ]);
-    // The Undead pass (`pulp_wars-w49.13`, 7r51): and Escape.
+    // The Undead pass (`pulp_wars-w49.13`, 7r51): and Escape; the Vampire
+    // and Banshee rework (`pulp_wars-ty6i`): and Feast.
     expect(effectiveRoleRuleV7("KNIGHT", "UNDEAD").abilities).toEqual([
       "ATTACK",
       "CAPTURE",
       "LIFESTEAL",
       "UNANSWERED",
       "ESCAPE",
+      "FEAST",
     ]);
     for (const role of [
       "FIGHTER",

@@ -520,17 +520,19 @@ describe("ruleset-7 revision-13 Lifesteal", () => {
     const result = attack(state, { x: 2, y: 3 }, { x: 3, y: 3 });
     const preview = combatPreview(result.events);
     // Revision 14 (V1): 6 HP deals 6 and draws no retaliation, then heals
-    // up to its maximum (4 of the 6).
+    // by all of it. The Vampire and Banshee rework (`pulp_wars-ty6i`): of
+    // 13 HP (10 before, when it healed 4 of the 6 up to its maximum).
     expect(preview).toMatchObject({
       retaliation: false,
       noRetaliationReason: "UNANSWERED",
       damageToDefender: 6,
       damageToAttacker: 0,
       attackerDies: false,
-      attackerHeal: 4,
+      attackerHeal: 6,
       defenderHeal: 0,
+      feast: false,
     });
-    expect(unitById(result.state, vampire.id).hp).toBe(10);
+    expect(unitById(result.state, vampire.id).hp).toBe(12);
     // The Human Fighter has 12 HP (revision 20 section 6.3).
     expect(unitById(result.state, target.id).hp).toBe(6);
     // There is no separate heal event.
@@ -566,11 +568,14 @@ describe("ruleset-7 revision-13 Lifesteal", () => {
   });
 
   it("caps the heal at maximum HP, including a promoted maximum", () => {
+    // The Vampire and Banshee rework (`pulp_wars-ty6i`): a kill is a Feast
+    // now (a full heal), so the cap is shown on a target that survives
+    // (it used to be a 4-HP Fighter the Vampire killed).
     const state = arena(
       ["UNDEAD", "ORIGINAL"],
       [
-        { seat: 0, role: "KNIGHT", at: { x: 2, y: 3 }, hp: 9 },
-        { seat: 1, role: "FIGHTER", at: { x: 3, y: 3 }, hp: 4 },
+        { seat: 0, role: "KNIGHT", at: { x: 2, y: 3 }, hp: 12 },
+        { seat: 1, role: "FIGHTER", at: { x: 3, y: 3 } },
       ],
     );
     const vampire = unitAt(state, { x: 2, y: 3 });
@@ -578,13 +583,14 @@ describe("ruleset-7 revision-13 Lifesteal", () => {
     const result = attack(state, { x: 2, y: 3 }, { x: 3, y: 3 });
     const preview = combatPreview(result.events);
     expect(preview).toMatchObject({
-      defenderDies: true,
-      damageToDefender: 4,
+      defenderDies: false,
+      damageToDefender: 8,
       attackerHeal: 1,
+      feast: false,
     });
     expect(unitById(result.state, vampire.id)).toMatchObject({
-      hp: 10,
-      kills: 1,
+      hp: 13,
+      kills: 0,
     });
     expectPublicPreviewMatches(state, vampire.id, target.id, preview);
 
@@ -592,18 +598,18 @@ describe("ruleset-7 revision-13 Lifesteal", () => {
     const veteran = withUnit(state, vampire.id, {
       kills: 3,
       veteran: true,
-      maxHp: 15,
-      hp: 9,
+      maxHp: 18,
+      hp: 12,
     });
     const promoted = attack(veteran, { x: 2, y: 3 }, { x: 3, y: 3 });
     expect(combatPreview(promoted.events)).toMatchObject({
-      damageToDefender: 4,
-      attackerHeal: 4,
+      damageToDefender: 7,
+      attackerHeal: 6,
     });
     expect(unitById(promoted.state, vampire.id)).toMatchObject({
-      hp: 13,
-      maxHp: 15,
-      kills: 4,
+      hp: 18,
+      maxHp: 18,
+      kills: 3,
     });
   });
 
@@ -661,23 +667,25 @@ describe("ruleset-7 revision-13 Lifesteal", () => {
     });
     const plainResult = attack(plain, { x: 2, y: 3 }, { x: 3, y: 3 });
     const frenziedResult = attack(frenzied, { x: 2, y: 3 }, { x: 3, y: 3 });
-    // Revision 14 (V1): no retaliation. From 4 HP, plain deals 5 and heals
-    // 5; Frenzied deals 8 and heals 6 (capped at the maximum).
+    // Revision 14 (V1): no retaliation. The Vampire and Banshee rework
+    // (`pulp_wars-ty6i`): from 4 of 13 HP, plain deals 4 and heals 4;
+    // Frenzied deals 7 and heals 7 (from 4 of 10 HP it was 5 and 5, and 8
+    // and 6 capped at the maximum).
     expect(combatPreview(plainResult.events)).toMatchObject({
       inspiredApplied: false,
-      damageToDefender: 5,
+      damageToDefender: 4,
       damageToAttacker: 0,
-      attackerHeal: 5,
+      attackerHeal: 4,
     });
     const frenziedPreview = combatPreview(frenziedResult.events);
     expect(frenziedPreview).toMatchObject({
       inspiredApplied: true,
-      damageToDefender: 8,
+      damageToDefender: 7,
       damageToAttacker: 0,
-      attackerHeal: 6,
+      attackerHeal: 7,
     });
-    expect(unitById(plainResult.state, vampire.id).hp).toBe(9);
-    expect(unitById(frenziedResult.state, vampire.id).hp).toBe(10);
+    expect(unitById(plainResult.state, vampire.id).hp).toBe(8);
+    expect(unitById(frenziedResult.state, vampire.id).hp).toBe(11);
     expectPublicPreviewMatches(
       frenzied,
       vampire.id,

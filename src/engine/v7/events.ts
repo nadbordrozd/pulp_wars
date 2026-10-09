@@ -54,6 +54,9 @@ export interface CombatPreviewV7 {
     | "ICEBOUND"
     // Ice Folk Freeze (`pulp_wars-w49.37`): a Frozen defender.
     | "FROZEN"
+    // The Vampire and Banshee rework (`pulp_wars-ty6i`): a defender a
+    // Banshee's Wail terrified this turn.
+    | "TERROR"
     | null;
   readonly advances: boolean;
   readonly push: "WILL_PUSH" | "BLOCKED" | "UNKNOWN_BEHIND_FOG";
@@ -70,6 +73,13 @@ export interface CombatPreviewV7 {
    */
   readonly attackerHeal: number;
   readonly defenderHeal: number;
+  /**
+   * The Vampire and Banshee rework (`pulp_wars-ty6i`): Feast. The attack
+   * kills, the attacker survives, and its role has `FEAST`: it heals to its
+   * maximum HP (`attackerHeal`) and, after a first attack, may attack once
+   * more (`attacksRemaining` 1).
+   */
+  readonly feast: boolean;
   /**
    * Revision 13 Infect: the corresponding land-form death is converted into a
    * Zombie rising by the killing Zombie (false when not applicable).
@@ -1257,6 +1267,13 @@ export type DomainEventV7 =
       readonly unitId: UnitId;
       readonly at: CoordV7;
       readonly results: readonly CombatSplashEntryV7[];
+      /**
+       * The Vampire and Banshee rework (`pulp_wars-ty6i`): Terror. The
+       * results' units the Wail terrified (HP damage above 0, survived,
+       * not neutral), sorted by unit ID; they do not strike back until the
+       * end of the turn.
+       */
+      readonly terrified: readonly UnitId[];
     }
   | {
       /**

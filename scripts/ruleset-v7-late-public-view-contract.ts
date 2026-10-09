@@ -240,10 +240,10 @@ export function upgradeRetainedPublicViewV7(
   });
   return {
     ...retained,
-    rulesetId: "pulp-wars-poc-7r69",
+    rulesetId: "pulp-wars-poc-7r70",
     setup: {
       ...retained.setup,
-      rulesetId: "pulp-wars-poc-7r69",
+      rulesetId: "pulp-wars-poc-7r70",
       mapType: "DRY_LAND",
       mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
       curiosities: false,
@@ -360,6 +360,10 @@ export function upgradeRetainedPublicViewV7(
     huntedThisTurn: [],
     // Goblin explosions and Berserk (`pulp_wars-w49.35`): nor any Berserk unit.
     berserkThisTurn: [],
+    // The Vampire and Banshee rework (`pulp_wars-ty6i`): nor any terrified
+    // or Feasting unit.
+    terrorThisTurn: [],
+    feastedThisTurn: [],
     // The ninth unit (`pulp_wars-w49.17`): nor any Wight's Grave, risen
     // Wight, or Cracked unit.
     ninthUnit: {

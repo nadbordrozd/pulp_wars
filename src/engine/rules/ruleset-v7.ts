@@ -295,6 +295,13 @@ export type UnitRoleAbilityV7 =
   | "PLAGUE"
   | "BITE"
   | "UNANSWERED"
+  // The Vampire and Banshee rework (`pulp_wars-ty6i`): the Vampire's Feast
+  // (a kill heals it fully and allows one more attack this turn), the
+  // Banshee's Terror (enemies its Wail wounds cannot strike back until the
+  // end of the turn) and Ethereal (enemy zones of control do not stop it).
+  | "FEAST"
+  | "TERROR"
+  | "ETHEREAL"
   // Revision 17 Goblins: goblin-crewed units may blow themselves up (the
   // KABOOM command); the Troll regenerates.
   | "KABOOM"
@@ -766,6 +773,14 @@ export interface RoleMechanicsV7 {
   readonly siegeHammer: boolean;
   /** Break Off: the HP spent (the Giant needs more than this). */
   readonly breakOffHp: number;
+  /**
+   * The Vampire and Banshee rework (`pulp_wars-ty6i`): Bat Escape. The
+   * role's Escape Move flies (it passes over every unit, ignores hostile
+   * zones of control and terrain stops) for at most this many tiles and
+   * ends on a free land tile it may stand on (the Undead Vampire 2), or 0
+   * for an ordinary Escape (a fresh full Move).
+   */
+  readonly batEscapeTiles: number;
 }
 
 export interface FactionTechnologyTreeV7 {
@@ -1691,6 +1706,7 @@ const mechanics = (
           glacialSmashHp: 0,
           siegeHammer: false,
           breakOffHp: 0,
+          batEscapeTiles: 0,
           ...overrides[roleId],
         },
       ]),
@@ -1732,6 +1748,12 @@ export const GHOUL_CARRION_BONUS2_V7 = 2 as const;
  * Necromancer's Raise Dead reaches a Grave (1 before).
  */
 export const RAISE_DEAD_RADIUS_V7 = 2 as const;
+
+/**
+ * The Vampire and Banshee rework (`pulp_wars-ty6i`): Bat Escape. The most
+ * tiles the Vampire's Escape Move flies.
+ */
+export const BAT_ESCAPE_TILES_V7 = 2 as const;
 
 /**
  * The ninth unit (`pulp_wars-w49.17`, 7r55): the HP at which a Wight
@@ -1896,7 +1918,9 @@ export const UNDEAD_ROLE_RULES_V7: Readonly<
     tacticalRole: "RANGED",
     cost: 3,
     maxHp: 8,
-    attack2: 2,
+    // The Vampire and Banshee rework (`pulp_wars-ty6i`): Wail at Attack 1.5
+    // (1 before), Terror, and Ethereal (the `ignoresZocStops` mechanic).
+    attack2: 3,
     defense2: 2,
     move: 1,
     range: 0,
@@ -1904,7 +1928,7 @@ export const UNDEAD_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: "MARKSMANSHIP",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["CAPTURE", "WAIL"],
+    abilities: ["CAPTURE", "WAIL", "TERROR", "ETHEREAL"],
   }),
   GUARD: role({
     role: "GUARD",
@@ -1962,7 +1986,9 @@ export const UNDEAD_ROLE_RULES_V7: Readonly<
     label: "Vampire",
     tacticalRole: "BREAKTHROUGH",
     cost: 9,
-    maxHp: 10,
+    // The Vampire and Banshee rework (`pulp_wars-ty6i`): 13 HP (10 before)
+    // and Feast; its Escape is a Bat Escape (`batEscapeTiles`).
+    maxHp: 13,
     attack2: 6,
     defense2: 2,
     move: 3,
@@ -1973,7 +1999,14 @@ export const UNDEAD_ROLE_RULES_V7: Readonly<
     mayUsePrimaryActionAfterMove: true,
     // The Undead pass (`pulp_wars-w49.13`, 7r51): Escape. A Vampire that
     // survives its attack may move again (it strikes and flies back).
-    abilities: ["ATTACK", "CAPTURE", "LIFESTEAL", "UNANSWERED", "ESCAPE"],
+    abilities: [
+      "ATTACK",
+      "CAPTURE",
+      "LIFESTEAL",
+      "UNANSWERED",
+      "ESCAPE",
+      "FEAST",
+    ],
   }),
   JUGGERNAUT: role({
     ...ORIGINAL_ROLE_RULES_V7.JUGGERNAUT,
@@ -2018,6 +2051,11 @@ export const UNDEAD_ROLE_MECHANICS_V7 = mechanics({
   FIGHTER: { rangedDefense2: SKELETON_RANGED_DEFENSE2_V7 },
   // The Undead pass, correction: Carrion.
   RAIDER: { carrionBonus2: GHOUL_CARRION_BONUS2_V7 },
+  // The Vampire and Banshee rework (`pulp_wars-ty6i`): the Banshee is
+  // Ethereal (the Prowl mechanic: entering a hostile zone of control does
+  // not end its Move), and the Vampire's Escape is a Bat Escape.
+  MARKSMAN: { ignoresZocStops: true },
+  KNIGHT: { batEscapeTiles: BAT_ESCAPE_TILES_V7 },
   GUARD: { advancesAfterKill: false },
   CATAPULT: { advancesAfterKill: false, splash: true },
   // The Undead pass (7r51): with Infect the Abomination's victim rises on
@@ -4284,7 +4322,7 @@ export const RULESET_7 = deepFreeze({
  * a technology of tier `t` costs `5 / 7 / 9 + (T - 1)`, `T` being the
  * technologies the researcher already owns.
  *
- * The economy rejig (`pulp_wars-w49.16`, `pulp-wars-poc-7r69`,
+ * The economy rejig (`pulp_wars-w49.16`, `pulp-wars-poc-7r70`,
  * docs/product/RULESET_7_ECONOMY_REJIG.md): the price is per city again and
  * the technologies owned no longer enter it. A technology of tier `t`
  * costs `5 / 7 / 9 + (1 / 2 / 3) * (C - 1)`, `C` being the cities the

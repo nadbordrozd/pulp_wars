@@ -71,6 +71,12 @@ export interface WailPreviewV7 {
     readonly leavesGrave: boolean;
     /** Revision 14: the death rises as the biter's Zombie (no Grave). */
     readonly bittenRises: boolean;
+    /**
+     * The Vampire and Banshee rework (`pulp_wars-ty6i`): Terror. The target
+     * survives with HP damage above 0, so it will not strike back until
+     * the end of the turn.
+     */
+    readonly terror: boolean;
   })[];
 }
 

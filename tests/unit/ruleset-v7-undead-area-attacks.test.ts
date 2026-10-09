@@ -4,7 +4,6 @@ import {
   DOMAIN_EVENT_KIND_ORDER_V7,
   TECHNOLOGY_IDS_V7,
   applyCommandV7,
-  calculateCombatPreviewV7,
   effectiveRoleRuleV7,
   parseCommandV7,
   parseEventV7,
@@ -140,7 +139,9 @@ describe("ruleset-7 revision-13 Wail: targets and damage", () => {
     ).toEqual([unitAt(state, { x: 5, y: 6 }).id]);
   });
 
-  it("applies the ordinary damage formula at Attack 1 against each target's defense", () => {
+  it("applies the ordinary damage formula at Attack 1.5 against each target's defense", () => {
+    // The Vampire and Banshee rework (`pulp_wars-ty6i`): Attack 1.5 (1
+    // before). Was 2, 1, 2, and 1 at Attack 1; now 3, 2, 4, and 2.
     const banshee = { x: 2, y: 5 };
     const pieces: Piece[] = [
       { seat: 0, role: "MARKSMAN", at: banshee },
@@ -161,6 +162,7 @@ describe("ruleset-7 revision-13 Wail: targets and damage", () => {
       fieldDefense: [ENEMY_CAPITAL_TERRITORY],
     };
     const state = arena(["UNDEAD", "ORIGINAL"], pieces, options);
+    expect(effectiveRoleRuleV7("MARKSMAN", "UNDEAD").attack2).toBe(3);
     const targets = wailTargetsV7(state, unitAt(state, banshee));
     const byAt = (at: CoordV7) =>
       required(targets.find((target) => same(target.at, at)));
@@ -169,7 +171,7 @@ describe("ruleset-7 revision-13 Wail: targets and damage", () => {
       defenseBonusNumerator: 1,
       defenseBonusDenominator: 1,
       fortificationLevel: 0,
-      damage: 2,
+      damage: 3,
       dies: false,
       shieldDamage: 0,
     });
@@ -177,21 +179,22 @@ describe("ruleset-7 revision-13 Wail: targets and damage", () => {
       defense2: 4,
       defenseBonusNumerator: 3,
       defenseBonusDenominator: 2,
-      damage: 1,
+      damage: 2,
     });
     expect(byAt({ x: 0, y: 5 })).toMatchObject({
       defense2: 2,
       defenseBonusNumerator: 1,
-      damage: 2,
+      damage: 4,
     });
     expect(byAt(ENEMY_CAPITAL_TERRITORY)).toMatchObject({
       defense2: 8,
       fortificationLevel: 2,
-      damage: 1,
+      damage: 2,
     });
-    // The exact formula agrees with an ordinary attack at attack2 = 2 by a
-    // full-HP Necromancer standing where the full-HP Banshee stands, and at
-    // half HP likewise.
+    // The exact formula of section 13.2 (attack force a = attack2 x hp /
+    // (2 x maxHp), defense force d likewise with the cover; damage
+    // roundHalfUp(a x attack2 x 9 / (4 x (a + d)))), at full and half HP.
+    // (No other Undead role attacks at 1.5 to compare an attack with.)
     for (const hp of [8, 4]) {
       const wailState = checkedV7({
         ...state,
@@ -199,23 +202,34 @@ describe("ruleset-7 revision-13 Wail: targets and damage", () => {
           same(unit.at, banshee) ? { ...unit, hp } : unit,
         ),
       });
-      const necromancerState = checkedV7({
-        ...wailState,
-        units: wailState.units.map((unit) =>
-          same(unit.at, banshee)
-            ? { ...unit, role: "CAPTAIN" as const, hp: hp + hp / 4, maxHp: 10 }
-            : unit,
-        ),
-      });
-      const necromancer = unitAt(necromancerState, banshee);
-      for (const target of wailTargetsV7(wailState, unitAt(wailState, banshee)))
-        expect(target.damage).toBe(
-          calculateCombatPreviewV7(
-            necromancerState,
-            necromancer.id,
-            target.unitId,
-          ).damageToDefender,
+      for (const target of wailTargetsV7(
+        wailState,
+        unitAt(wailState, banshee),
+      )) {
+        const defender = required(
+          wailState.units.find((unit) => unit.id === target.unitId),
         );
+        const attackOnCommon =
+          3n *
+          BigInt(hp) *
+          2n *
+          BigInt(defender.maxHp) *
+          BigInt(target.defenseBonusDenominator);
+        const defenseOnCommon =
+          BigInt(target.defense2) *
+          BigInt(defender.hp) *
+          BigInt(target.defenseBonusNumerator) *
+          2n *
+          8n;
+        const numerator = attackOnCommon * 3n * 9n;
+        const denominator = (attackOnCommon + defenseOnCommon) * 4n;
+        const expected = Number(
+          (2n * numerator + denominator) / (2n * denominator),
+        );
+        expect(target.damage, `${hp} HP: ${target.unitId}`).toBe(
+          Math.min(defender.hp, expected),
+        );
+      }
     }
   });
 
@@ -236,7 +250,8 @@ describe("ruleset-7 revision-13 Wail: targets and damage", () => {
     expect(previewWailV7(state, state.humanPlayerId, banshee.id)).toEqual({
       unitId: banshee.id,
       at: banshee.at,
-      attack2: 2,
+      // The Vampire and Banshee rework (`pulp_wars-ty6i`): Attack 1.5.
+      attack2: 3,
       targets: [
         {
           unitId: juggernaut.id,
@@ -251,6 +266,8 @@ describe("ruleset-7 revision-13 Wail: targets and damage", () => {
           hiddenBlizzardPossible: false,
           leavesGrave: false,
           bittenRises: false,
+          // No HP damage: no Terror.
+          terror: false,
         },
       ],
     });
@@ -272,7 +289,9 @@ describe("ruleset-7 revision-13 Wail: targets and damage", () => {
           shieldDamage: 0,
         },
       ],
+      terrified: [],
     });
+    expect(result.state.terrorThisTurn).toEqual([]);
     expect(unitAt(result.state, { x: 3, y: 3 }).hp).toBe(juggernaut.hp);
     expect(unitAt(result.state, { x: 2, y: 2 }).activation).toMatchObject({
       specialActed: true,
@@ -702,9 +721,13 @@ describe("ruleset-7 revision-13 Wail: events, projection, and persistence", () =
           shieldDamage: 0,
         },
       ],
+      // The Vampire and Banshee rework (`pulp_wars-ty6i`): Terror.
+      terrified: [6],
     };
     expect(parseEventV7(valid)).toEqual({ ok: true, value: valid });
-    expect(parseEventV7({ ...valid, results: [] }).ok).toBe(true);
+    expect(parseEventV7({ ...valid, results: [], terrified: [] }).ok).toBe(
+      true,
+    );
     expect(
       parseEventV7({ kind: "UNIT_DIED", unitId: 4, cause: "WAIL" }).ok,
     ).toBe(true);
@@ -737,6 +760,18 @@ describe("ruleset-7 revision-13 Wail: events, projection, and persistence", () =
         ],
       },
       { kind: "UNIT_DIED", unitId: 4, cause: "SCREAM" },
+      // Terror names only results that took HP damage and survived, in
+      // unit-ID order, and the list is required.
+      { ...valid, terrified: [5] },
+      { ...valid, terrified: [4] },
+      { ...valid, terrified: [6, 6] },
+      {
+        kind: valid.kind,
+        playerId: valid.playerId,
+        unitId: valid.unitId,
+        at: valid.at,
+        results: valid.results,
+      },
     ])
       expect(parseEventV7(invalid).ok).toBe(false);
   });

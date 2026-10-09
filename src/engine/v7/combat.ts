@@ -107,6 +107,11 @@ import { tileAtV7 } from "./spatial-economy";
 import { tileOccupiedV7 } from "./units";
 import { grownHpV7 } from "./growth";
 import {
+  attackFeastsV7,
+  feastHealV7,
+  unitIsTerrifiedV7,
+} from "./vampire-banshee";
+import {
   attackCrushDamageV7,
   attackSiegeHammerV7,
   crushBehindTileV7,
@@ -730,7 +735,10 @@ export function calculateCombatPreviewV7(
     distance <= defenderRule.range;
   // The Candy revision section 7: a Splatted unit does not strike back.
   const splatted = unitIsSplattedV7(state, defender.id);
-  const retaliates = wouldRetaliate && !splatted;
+  // The Vampire and Banshee rework (`pulp_wars-ty6i`): a unit a Banshee's
+  // Wail terrified this turn does not strike back.
+  const terrified = unitIsTerrifiedV7(state, defender.id);
+  const retaliates = wouldRetaliate && !splatted && !terrified;
   const attackerShield = shieldOfV7(state.shields, attacker.id);
   const attackerHit = retaliates
     ? absorbHitV7(
@@ -904,6 +912,20 @@ export function calculateCombatPreviewV7(
   // shot leaves a second one.
   const twinShotLeft =
     !attackerDies && attackAllowanceV7(state, attacker) > nextAttacks;
+  // The Vampire and Banshee rework (`pulp_wars-ty6i`): Feast. A kill heals
+  // a surviving Vampire fully and, on its first attack, leaves one more.
+  const frostbitten = attackIsFrostbittenV7(
+    state,
+    attacker,
+    defender,
+    distance,
+    attackerDies,
+  );
+  const feast = attackFeastsV7(state, attacker, {
+    defenderDies,
+    attackerDies,
+    frostbitten,
+  });
   // The Candy revision section 8: the Bounce, read after the Push, the
   // advance, and the Charge! follow.
   const bounced = bounceStateV7(state, attacker, defender, {
@@ -968,11 +990,12 @@ export function calculateCombatPreviewV7(
       icebound: defenderIcebound,
       frozen: defenderFrozen,
       splatted: wouldRetaliate && splatted,
+      terrified: wouldRetaliate && !splatted && terrified,
     }),
     advances,
     push,
     attacksUsed: nextAttacks,
-    attacksRemaining: twinShotLeft ? 1 : 0,
+    attacksRemaining: twinShotLeft || (feast && nextAttacks === 1) ? 1 : 0,
     // The Candy redesign (section 6.1): no Candy unit has Overrun.
     overrunAdvance: overrunKindV7(attackerRule) !== null && advances,
     overrunContinues: false,
@@ -981,9 +1004,14 @@ export function calculateCombatPreviewV7(
     escapeAvailable:
       attackGrantsEscapeV7(attacker, attackerRule) &&
       !attackerDies &&
-      !attackIsFrostbittenV7(state, attacker, defender, distance, attackerDies),
+      !frostbitten,
     splash,
     ...undead,
+    // Feast heals to the maximum HP (its Lifesteal included).
+    attackerHeal: feast
+      ? feastHealV7(attacker, damageToAttacker)
+      : undead.attackerHeal,
+    feast,
     ...afflictions,
     runUp: runUpAttack2 / 2,
     fortificationIgnored,
@@ -1024,13 +1052,7 @@ export function calculateCombatPreviewV7(
     icebound: defenderIcebound,
     shockDamage,
     crackApplied: attackCracksV7(state, attacker, defender, defenderDies),
-    frostbiteApplied: attackIsFrostbittenV7(
-      state,
-      attacker,
-      defender,
-      distance,
-      attackerDies,
-    ),
+    frostbiteApplied: frostbitten,
     ...crushPreviewV7(state, attacker, defender, distance, push, {
       defenderDies,
       // A Dinosaur defender that kills the attacker grows (and heals)
@@ -1334,6 +1356,11 @@ export function noRetaliationReasonV7(facts: {
   /** Ice Folk Freeze (`pulp_wars-w49.37`): the defender is Frozen. */
   readonly frozen: boolean;
   readonly splatted: boolean;
+  /**
+   * The Vampire and Banshee rework (`pulp_wars-ty6i`): the defender would
+   * have retaliated but was terrified by a Wail this turn (Terror).
+   */
+  readonly terrified?: boolean;
 }): CombatPreviewV7["noRetaliationReason"] {
   return facts.defenderDies
     ? "DEFENDER_DIED"
@@ -1347,7 +1374,9 @@ export function noRetaliationReasonV7(facts: {
             ? "FROZEN"
             : facts.splatted
               ? "SPLATTED"
-              : "OUT_OF_RANGE";
+              : facts.terrified === true
+                ? "TERROR"
+                : "OUT_OF_RANGE";
 }
 
 /**

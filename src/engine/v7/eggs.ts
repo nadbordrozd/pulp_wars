@@ -252,7 +252,7 @@ export function prunedEggsV7(input: GameStateV7): GameStateV7 {
         })();
   // Goblin explosions and Berserk (`pulp_wars-w49.35`): the Berserk units
   // that left the board or the active seat (a released controlled unit).
-  const state =
+  const berserked =
     hunted.berserkThisTurn.length === 0
       ? hunted
       : ((): GameStateV7 => {
@@ -268,6 +268,37 @@ export function prunedEggsV7(input: GameStateV7): GameStateV7 {
           return berserkThisTurn.length === hunted.berserkThisTurn.length
             ? hunted
             : { ...hunted, berserkThisTurn };
+        })();
+  // The Vampire and Banshee rework (`pulp_wars-ty6i`): the terrified units
+  // that left the board or came to the active seat, and the Feasting units
+  // that left the board or the active seat (a released controlled unit).
+  const state =
+    berserked.terrorThisTurn.length === 0 &&
+    berserked.feastedThisTurn.length === 0
+      ? berserked
+      : ((): GameStateV7 => {
+          const activePlayerId = berserked.turnOrder[berserked.activeSeatIndex];
+          const alive = berserked.units.filter((unit) => unit.hp > 0);
+          const terrorKept = new Set(
+            alive
+              .filter((unit) => unit.ownerId !== activePlayerId)
+              .map((unit) => unit.id),
+          );
+          const feastKept = new Set(
+            alive
+              .filter((unit) => unit.ownerId === activePlayerId)
+              .map((unit) => unit.id),
+          );
+          const terrorThisTurn = berserked.terrorThisTurn.filter((unitId) =>
+            terrorKept.has(unitId),
+          );
+          const feastedThisTurn = berserked.feastedThisTurn.filter((unitId) =>
+            feastKept.has(unitId),
+          );
+          return terrorThisTurn.length === berserked.terrorThisTurn.length &&
+            feastedThisTurn.length === berserked.feastedThisTurn.length
+            ? berserked
+            : { ...berserked, terrorThisTurn, feastedThisTurn };
         })();
   if (state.eggs.length === 0) return state;
   const eggIds = new Set(

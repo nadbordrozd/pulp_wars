@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r69`, for all eight registered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r70`, for all eight registered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), and Candy (`CANDY`). It
 folds in
@@ -336,6 +336,15 @@ Monument's population contribution gains the optional `builderFaction`, set
 by every `BUILD_MONUMENT` and published to every viewer; no rule, price,
 population, command, or event changed. A save, replay, or setup of `7r68`
 is rejected, and the browser autosave has a new key.
+`pulp-wars-poc-7r70` (`pulp_wars-ty6i`) is **the Vampire and Banshee
+rework** ([section 17.12](#1712-the-vampire-and-banshee-rework)): the
+Vampire has 13 HP, Feast, and Bat Escape; the Banshee's Wail hits at
+Attack 1.5, with Terror, and the Banshee is Ethereal. The state and view
+gain `terrorThisTurn` and `feastedThisTurn`, the combat preview `feast`
+and the no-retaliation reason `TERROR`, `WAIL_RESOLVED` its `terrified`
+list, and `MOVEMENT_ILLEGAL` the reason `BAT_ESCAPE_LANDING`. A save,
+replay, or setup of `7r69` is rejected, and the browser autosave has a new
+key.
 `pulp-wars-poc-7r58` (`pulp_wars-w49.25`) is
 [step two of the Martian pass](RULESET_7_TUNING_MARTIAN.md#14-step-two):
 **City Walls hold a unit on its own city center against a Saucer's Tractor
@@ -786,7 +795,7 @@ the build differs (its sections 20 to 24 list them);
 the values here are current. Where a document and the code disagreed, the
 code's behavior is the rule and is stated below;
 [Known discrepancies](#25-known-discrepancies) lists the open items and the
-resolved ones as of `pulp-wars-poc-7r69`.
+resolved ones as of `pulp-wars-poc-7r70`.
 
 **Terms.** "On the board" means a unit that currently exists (HP above 0).
 **Living** has the narrower revision-13 meaning used by Wail, Plague,
@@ -887,10 +896,10 @@ separate [Ruleset 6](RULESET_6.md) route.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r69`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Ruleset                                    | `pulp-wars-poc-7r70`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r69.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Browser autosave                           | `pulpWars.save.v7r70.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                                     |
@@ -1159,7 +1168,10 @@ separate [Ruleset 6](RULESET_6.md) route.
   ([section 3.1](#31-score-play-modes-and-stars)). The Monument skin rule
   (`pulp_wars-eu3r.3`, `7r69`) added the optional `builderFaction` to a
   Monument's population-contribution source, and to its view copy
-  ([section 5](#5-achievements-and-monuments)).
+  ([section 5](#5-achievements-and-monuments)). The Vampire and Banshee
+  rework (`pulp_wars-ty6i`, `7r70`) added the state and view lists
+  `terrorThisTurn` and `feastedThisTurn`
+  ([section 17.12](#1712-the-vampire-and-banshee-rework)).
 
 ## 2. Setup and map generation
 
@@ -4166,20 +4178,20 @@ The table above is the Human (`ORIGINAL`) roster. The Undead (`UNDEAD`)
 roster, by mechanical role (half-unit values `attack2`/`defense2` in
 parentheses):
 
-| Unit        | Role          | Tech              | Cost |  HP | Attack | Defense | Move | Range | Sight | Attack after Move | Capture | Abilities                                         |
-| ----------- | ------------- | ----------------- | ---: | --: | -----: | ------: | ---: | ----: | ----: | ----------------- | ------- | ------------------------------------------------- |
-| Skeleton    | `FIGHTER`     | start             |    2 |  10 |  2 (4) |  2 (4)³ |    1 |     1 |     1 | yes               | yes     | Field Defense; Bones³                             |
-| Ghoul       | `RAIDER`      | Scouting          |    3 |  10 |  2 (4) |   1 (2) |    2 |     1 |     2 | yes               | yes     | Charge (Raiding); Devour; Carrion⁴                |
-| Banshee     | `MARKSMAN`    | Marksmanship      |    3 |   8 |  1 (2) |   1 (2) |    1 |     — |    1² | Wail: yes         | yes     | Wail; no targeted Attack                          |
-| Zombie      | `GUARD`       | Fortification     |    3 |  18 |  2 (4) |   2 (4) |    1 |     1 |     1 | no                | yes     | Field Defense; Infect; Bite; never advances       |
-| Necromancer | `CAPTAIN`     | Administration    |    5 |  10 |  1 (2) |   1 (2) |    1 |     1 |     1 | yes               | yes     | Frenzy; Raise Dead (2 tiles⁴)                     |
-| Lich        | `CATAPULT`    | Sawmilling        |    8 |  10 |  3 (6) |   1 (2) |    1 |   2–3 |     1 | no                | yes     | splash; Plague (Pestilence⁴); never advances      |
-| Vampire     | `KNIGHT`      | Chivalry          |    9 |  10 |  3 (6) |   1 (2) |    3 |     1 |     1 | yes               | yes     | Lifesteal; Unanswered; Escape³                    |
-| Wight       | `SWORDSMAN`   | Metallurgy        |    6 |  14 |  3 (6) | 2.5 (5) |    1 |     1 |     1 | yes               | yes     | Rise Again (7 HP, once; `7r55`); no Field Defense |
-| Abomination | `JUGGERNAUT`  | reward only       |    — |  40 |  4 (8) |   4 (8) |    1 |     1 |     1 | yes               | yes     | Swallow; Infect³; never advances³                 |
-| Patrol Boat | `PATROL_BOAT` | Shorecraft        |    5 |  10 |  2 (4) |   2 (4) |    2 |     1 |     2 | yes               | no      | naval; Ram (Seamanship)                           |
-| Battleship  | `BATTLESHIP`  | Naval Engineering |   16 |  25 | 6 (12) |   4 (8) |    2 |   1–3 |     3 | no                | no      | naval; splash                                     |
-| Submarine   | `SUBMARINE`   | Submersibles      |    9 |  12 |  4 (8) |   2 (4) |    2 |     1 |     2 | yes               | no      | naval; Submerged; Torpedo                         |
+| Unit        | Role          | Tech              | Cost |  HP |   Attack | Defense | Move | Range | Sight | Attack after Move | Capture | Abilities                                         |
+| ----------- | ------------- | ----------------- | ---: | --: | -------: | ------: | ---: | ----: | ----: | ----------------- | ------- | ------------------------------------------------- |
+| Skeleton    | `FIGHTER`     | start             |    2 |  10 |    2 (4) |  2 (4)³ |    1 |     1 |     1 | yes               | yes     | Field Defense; Bones³                             |
+| Ghoul       | `RAIDER`      | Scouting          |    3 |  10 |    2 (4) |   1 (2) |    2 |     1 |     2 | yes               | yes     | Charge (Raiding); Devour; Carrion⁴                |
+| Banshee     | `MARKSMAN`    | Marksmanship      |    3 |   8 | 1.5 (3)⁵ |   1 (2) |    1 |     — |    1² | Wail: yes         | yes     | Wail; Terror⁵; Ethereal⁵; no targeted Attack      |
+| Zombie      | `GUARD`       | Fortification     |    3 |  18 |    2 (4) |   2 (4) |    1 |     1 |     1 | no                | yes     | Field Defense; Infect; Bite; never advances       |
+| Necromancer | `CAPTAIN`     | Administration    |    5 |  10 |    1 (2) |   1 (2) |    1 |     1 |     1 | yes               | yes     | Frenzy; Raise Dead (2 tiles⁴)                     |
+| Lich        | `CATAPULT`    | Sawmilling        |    8 |  10 |    3 (6) |   1 (2) |    1 |   2–3 |     1 | no                | yes     | splash; Plague (Pestilence⁴); never advances      |
+| Vampire     | `KNIGHT`      | Chivalry          |    9 | 13⁵ |    3 (6) |   1 (2) |    3 |     1 |     1 | yes               | yes     | Lifesteal; Unanswered; Bat Escape⁵; Feast⁵        |
+| Wight       | `SWORDSMAN`   | Metallurgy        |    6 |  14 |    3 (6) | 2.5 (5) |    1 |     1 |     1 | yes               | yes     | Rise Again (7 HP, once; `7r55`); no Field Defense |
+| Abomination | `JUGGERNAUT`  | reward only       |    — |  40 |    4 (8) |   4 (8) |    1 |     1 |     1 | yes               | yes     | Swallow; Infect³; never advances³                 |
+| Patrol Boat | `PATROL_BOAT` | Shorecraft        |    5 |  10 |    2 (4) |   2 (4) |    2 |     1 |     2 | yes               | no      | naval; Ram (Seamanship)                           |
+| Battleship  | `BATTLESHIP`  | Naval Engineering |   16 |  25 |   6 (12) |   4 (8) |    2 |   1–3 |     3 | no                | no      | naval; splash                                     |
+| Submarine   | `SUBMARINE`   | Submersibles      |    9 |  12 |    4 (8) |   2 (4) |    2 |     1 |     2 | yes               | no      | naval; Submerged; Torpedo                         |
 
 ² Banshee Sight becomes 2 with Fieldcraft.
 
@@ -4189,6 +4201,11 @@ number of the roster changed.
 
 ⁴ Its correction (the same bead and identity): Carrion, Raise Dead at two
 tiles, and Plague behind Pestilence.
+
+⁵ The Vampire and Banshee rework (`pulp_wars-ty6i`,
+[section 17.12](#1712-the-vampire-and-banshee-rework)): the Vampire's 13 HP
+(10 before), Bat Escape (its Escape), and Feast; the Banshee's Wail at
+Attack 1.5 (1 before), Terror, and Ethereal.
 
 - **Skeleton** has Fighter parity for Field Defense with Fortification,
   capture, Pillage, and Disband; Raise Dead also creates Skeletons. Since
@@ -4209,8 +4226,12 @@ tiles, and Plague behind Pestilence.
   with a Charge it kills it.
 - **Banshee** has no `ATTACK` ability: it cannot issue `ATTACK`, never
   retaliates, and its role stores range 0 and minimum range 0. Its Attack
-  exists only for Wail. It keeps capture, Pillage, Disband, Fieldcraft Forest
-  freedom, and ordinary land ZOC (none onto water).
+  (1.5 since the rework) exists only for Wail. It keeps capture, Pillage,
+  Disband, Fieldcraft Forest freedom, and ordinary land ZOC (none onto
+  water). Since the Vampire and Banshee rework it has **Terror** (an enemy
+  its Wail wounds does not strike back until the end of the turn) and
+  **Ethereal** (hostile zones of control do not stop its Move;
+  [section 17.12](#1712-the-vampire-and-banshee-rework)).
 - **Zombie** has Guard parity for movement, capture, Field Defense, and "cannot
   attack after moving"; it never advances after a kill.
 - **Necromancer** captures (`pulp_wars-ke95`); its primary actions are Attack, Frenzy, and
@@ -4224,7 +4245,11 @@ tiles, and Plague behind Pestilence.
 - **Vampire** captures and has no Overrun; the defender of its attacks
   never retaliates (`UNANSWERED`). Since `7r51` it has **Escape**
   ([section 12.2](#122-activation)): after an attack it survives it may
-  make one more Move with its full Move 3.
+  make one more Move. Since the Vampire and Banshee rework it has 13 HP,
+  its Escape is a **Bat Escape** (a flight of at most 2 tiles instead of
+  its full Move 3), and it has **Feast** (a kill heals it fully and allows
+  one more attack that turn;
+  [section 17.12](#1712-the-vampire-and-banshee-rework)).
 - **Abomination** has the Juggernaut's numbers and, since `w49.30`,
   Swallow instead of Push ([section 11.1](#111-the-giants-signatures)).
   Since `7r51` it
@@ -5041,7 +5066,10 @@ abilities (so only the Juggernaut). Using the signatures is
   (never for a Sabretooth, which Prowls, nor, since round 4 of the Human
   tuning, for a Human Raider: `ignoresZocStops`; nor, since
   `pulp_wars-w49.35`, for a Berserk unit in land form, which also has +1
-  Move: [section 18.10](#1810-berserk-ram-and-troll-regeneration)). **Forest march** (round
+  Move: [section 18.10](#1810-berserk-ram-and-troll-regeneration); nor,
+  since the Vampire and Banshee rework, for an Ethereal Banshee or a
+  Vampire's Bat Escape:
+  [section 17.12](#1712-the-vampire-and-banshee-rework)). **Forest march** (round
   4): with Fieldcraft no ground unit of the owner stops on entering Forest,
   whatever its role (`forestMarch`); the Snow stop still reads the two
   Fieldcraft roles. A path that continues past such a
@@ -5223,7 +5251,10 @@ abilities (so only the Juggernaut). Using the signatures is
   [section 19.7](#197-egg-destruction-capture-and-abandon-egg)).
 - `WAIT` only marks the unit handled (it also declines an available Escape).
 - **Escape** (Human Raider, innate, and since `7r51` the Undead Vampire,
-  with its Move 3 where the text below says Raider and Move 2; the Ghoul,
+  with its Move 3 where the text below says Raider and Move 2; since the
+  Vampire and Banshee rework the Vampire's Escape is a **Bat Escape**, a
+  flight of at most 2 tiles,
+  [section 17.12](#1712-the-vampire-and-banshee-rework); the Ghoul,
   Wolf Rider, Raptor, Saucer,
   Sled, and Gyrocopter have none; never granted for an attack that Frostbite freezes):
   after an accepted
@@ -5400,7 +5431,9 @@ damageToAttacker = roundHalfUp(retaliationForce / (attackForce + retaliationForc
   within its own range, and the attacker is not `UNANSWERED` (a Vampire)
   and its attack is not a torpedo (a Submarine's). The preview then
   reports `noRetaliationReason` `DEFENDER_DIED`, `UNANSWERED` (a torpedo
-  too), `ICEBOUND`, or
+  too), `ICEBOUND`, `FROZEN`, `SPLATTED`, `TERROR` (a defender a Banshee's
+  Wail terrified this turn,
+  [section 17.12](#1712-the-vampire-and-banshee-rework)), or
   `OUT_OF_RANGE` (the last also for an embarked defender, an Egg, or a
   defender without Attack), in that order of precedence.
 - **Charge:** with Raiding, a Raider, Ghoul, Wolf Rider, Raptor (where it
@@ -5470,6 +5503,10 @@ damageToAttacker = roundHalfUp(retaliationForce / (attackForce + retaliationForc
   Shield absorbed), capped at its
   maximum HP: `hpAfter = min(maxHp, hp - damageTaken + damageDealt)`. The
   preview and `COMBAT_RESOLVED` carry `attackerHeal` and `defenderHeal`.
+  A Vampire's attack that kills is a **Feast** (the preview's `feast`): it
+  heals to its maximum HP instead (`attackerHeal`), and after a first
+  attack it may attack once more
+  ([section 17.12](#1712-the-vampire-and-banshee-rework)).
 - **The giants' signatures** (`pulp_wars-w49.30`,
   [section 11.1](#111-the-giants-signatures)) change no number of this
   formula. A Brass Titan's attack from distance 1 removes fortification
@@ -7402,8 +7439,8 @@ of the Abomination's kills in combat only.
   allies never (nor a Dwarf construct, which is not living, nor a mound,
   which is off the board).
 - **Damage.** Per target, the ordinary damage formula
-  ([section 13.2](#132-damage)) with the Banshee attacking at Attack 1 at its
-  current HP (no Charge or Inspired/Frenzied bonus) against the target's own
+  ([section 13.2](#132-damage)) with the Banshee attacking at Attack 1.5
+  (1 before the Vampire and Banshee rework) at its current HP (no Charge or Inspired/Frenzied bonus) against the target's own
   Defense, fortification (a dug-in Dwarf unit's Dig In level included),
   embarked Defense 1, and cover (an Ice Folk unit's Snow cover included).
   Damage may be 0; such
@@ -7414,7 +7451,9 @@ of the Abomination's kills in combat only.
   destruction. Kills count for the Banshee's promotion and leave Graves or
   Bitten risings, Goblin exploding units it kills explode, and a Brain it
   kills releases its controlled unit; the Banshee
-  is handled. Event `WAIL_RESOLVED` (then
+  is handled. Every surviving target that took HP damage above 0 is
+  terrified (**Terror**, [section 17.12](#1712-the-vampire-and-banshee-rework)).
+  Event `WAIL_RESOLVED` (with `terrified`, then
   `UNIT_DIED` with cause `WAIL` per death). The preview `previewWailV7`
   lists exactly the resolution's targets (only visible units are targets)
   and computes each with the reducer's own per-target function
@@ -7430,7 +7469,8 @@ of the Abomination's kills in combat only.
 ### 17.10 Commands, events, and queries
 
 - Commands `RAISE_DEAD`, `DEVOUR`, and `WAIL` (each `{ kind, unitId }`).
-- Events `DEAD_RAISED`, `GRAVE_DEVOURED`, `WAIL_RESOLVED`, `UNIT_INFECTED`,
+- Events `DEAD_RAISED`, `GRAVE_DEVOURED`, `WAIL_RESOLVED` (its
+  `terrified` list since the Vampire and Banshee rework), `UNIT_INFECTED`,
   `GRAVE_CREATED`, `BITTEN_UNIT_RISEN`, `PLAGUE_DAMAGED`, `PLAGUE_SPREAD`,
   `PLAGUE_EXPIRED`, and `PLAGUE_CLEARED`; `UNIT_DIED.cause` includes `WAIL`
   and `PLAGUE`; `WOUNDED_TENDED` results carry `curedPlague` and
@@ -7487,6 +7527,61 @@ numbers are first guesses.
 - **Visibility.** A mark is public where its tile is explored: the view's
   `ninthUnit.wightGraves` lists it, the board draws the Grave as a pale
   blue stone in a ring, and the tile's text names it "Wight's Grave".
+
+### 17.12 The Vampire and Banshee rework
+
+`pulp-wars-poc-7r70` (`pulp_wars-ty6i`, user-approved 2026-10-09: the
+Vampire was not worth its price and the Banshee was weak). Numbers: the Vampire has **13 HP** (10
+before; cost 9 unchanged) and the Banshee's Wail **Attack 1.5** (attack2
+3; 1 before; cost 3 and 8 HP unchanged). Every rule below resolves through
+the unit's kind, so a mind-controlled Vampire or Banshee keeps it, and
+needs an `UNDEAD` seat; without one both lists stay empty.
+
+- **Feast** (Vampire, ability `FEAST`). When the Vampire's `ATTACK` kills
+  its target (a target that rises still counts), the Vampire survives,
+  and Frostbite does not freeze it, it heals to its maximum HP (the
+  preview's and `COMBAT_RESOLVED`'s `feast` true, `attackerHeal` the whole
+  heal, Lifesteal included). After its first attack of the turn a Feast
+  leaves one more attack (`attacksRemaining` 1, the unit not handled, its
+  ID in `GameStateV7.feastedThisTurn`): it may `ATTACK` once more this turn
+  if it has not used its Bat Escape, waited, or taken another primary
+  action. At most two attacks a turn: a kill on the second attack heals
+  again but allows no third. Each attack stays Unanswered with Lifesteal,
+  and the Bat Escape stays available after the last attack (an escape Move
+  ends the turn's attacks). A Frozen Vampire neither Feasts nor Escapes
+  (every command naming it is refused with `UNIT_FROZEN`). The command
+  query offers the Feast attack exactly when it is legal, the public
+  combat preview equals the resolution, and the unit's status reads
+  "Feast: may attack again". Each Feast kill is one kill for the score
+  ledger, credited once; the heal reduces no counter.
+- **Bat Escape** (Vampire, role mechanic `batEscapeTiles` 2,
+  `BAT_ESCAPE_TILES_V7`). The Vampire's Escape Move
+  ([section 12.2](#122-activation)) flies at most 2 tiles, each a whole
+  step whatever the Roads: it passes over any unit (own, allied, hostile)
+  and over water (Deep Water with Navigation), ignores hostile zones of
+  control and terrain stops (Forest, Mountain, Snow, ice), and must end on
+  a free land tile its owner had explored before the Move that the Vampire
+  could stand on as a ground unit (a Mountain needs Engineering; never
+  water, a Rift, a unit, a mound, a Barricade, or a curiosity tile; ice is
+  ground). A Barricade also blocks the flight over its tile, and a
+  Dimensional Gate still ends the Move. A landing that breaks these rules
+  is rejected with `MOVEMENT_ILLEGAL` reason `BAT_ESCAPE_LANDING` (a unit
+  or Barricade keeps `OCCUPIED` or `BARRICADE`) and is never offered. The
+  status reads "Escape: may fly up to 2 tiles". An ordinary Move of the
+  Vampire is unchanged.
+- **Terror** (Banshee, ability `TERROR`). Every unit a Wail deals HP
+  damage above 0 to and that survives (never a neutral unit) cannot strike
+  back until the end of the active seat's turn: its ID is in
+  `GameStateV7.terrorThisTurn` (the view lists the visible ones), the
+  `WAIL_RESOLVED` event lists it in `terrified` (sorted by unit ID), each
+  `previewWailV7` target carries `terror`, and a combat preview against it
+  reports `noRetaliationReason` `TERROR`. The list is emptied at that
+  End Turn; a unit that leaves the board or comes to the active seat
+  leaves it. The status reads "Terror: will not strike back this turn".
+- **Ethereal** (Banshee, ability `ETHEREAL`, the role mechanic
+  `ignoresZocStops`): entering a hostile zone of control does not end its
+  Move (the Prowl rule); it still never passes or ends on another
+  player's unit.
 
 ## 18. Goblin faction rules
 
@@ -12197,6 +12292,7 @@ first guesses.
 | Ice Folk Freeze | `pulp-wars-poc-7r67` | `pulp_wars-w49.37` Ice Folk Freeze, engine (user requests of 2026-10-09; the identity became `7r67` when it was published after map curiosities round 2, `7r66`; a save, replay, or setup of `7r66` is rejected): **Frozen** replaces Chill and Sluggish (state and view `frozen`, event `UNITS_FROZEN`; a Frozen unit cannot move or act on its owner's next turn, does not retaliate, and thaws at the end of that turn; no thaw immunity; [sections 21.2](#212-frozen) and [21.3](#213-what-a-frozen-unit-cannot-do)); Cold Snap freezes the eight tiles around the Witch and the new **Frost Bolt** one unit within 2 (one of the two a turn); the Frost Giant's Cold Aura follows its own Move or landing; Bolas, Frostbite, Black Ice, and the shards of Glacial Smash freeze (never a neutral unit); Glacier gives +1 Move across ice; the Mammoth's **Stampede** (`STAMPEDE`, `MAMMOTH_STAMPEDED`, death cause `STAMPEDE`, kills scored like the giants' fixed hits; [section 21.18](#2118-the-mammoths-stampede)); Sled 4 Coins, Musk Ox Defense 2, Ice Witch 6 Coins and 10 HP, Boulder Yeti 9 Coins and 10 HP, Mammoth 7 Coins, Frost Giant 36 HP; `LAB_ICE_FOLK_MID` revision 2; the Normal AI kept legal (basic scores for the new commands, untuned)                                                                                                                                                                                                                                                                                                      |
 | Candy redesign  | `pulp-wars-poc-7r68` | `pulp_wars-jdb.12` [the Candy redesign](RULESET_7_CANDY_REDESIGN.md), engine (the user's direction of 2026-10-09: the mechanics as specified, no stat changes; the identity became `7r68` when it was published after Ice Folk Freeze, `7r67`; a save, replay, or setup of `7r67` is rejected): Sticky Toffee (a Toffee Trooper's hit, either way, makes its surviving victim Stuck: one step per Move), Glaze Trail (a Donut Racer's start and passed tiles cost its side a Road step this turn), Ricochet (a Gumball Gunner's shot from two tiles bounces half its hit onto the weakest visible neighbour of the target), Bunny Hop and Thump (a Chocolate Bunny hops one tile in a Move, and every attack it makes deals 2 to every other hostile unit around it), Toothache (a surviving distance-1 attacker of a Jawbreaker has −1 Attack on its next attack), and the Confectioner's Top-Up (one adjacent own unit: its Crash ends, it heals 2 and is cured) in place of Frosting; no Rush perks (Sugar Frenzy and the Rushed Racer's Escape removed); Crumbs on settlement sites and from Ricochet and Thump deaths; Re-bake reworked (`from` within 2, scooped from under any unit, the copy beside the Confectioner, one unit over capacity) with the public "why not" query of `pulp_wars-jdb.9`; three state lists (`stuck`, `toothache`, `glazedThisTurn`), one command (`TOP_UP`), six events, ten combat-preview fields; the Normal AI kept legal with a basic Top-Up; matches without a Candy seat decide as before apart from the command-kind ordinals | [section 23](#23-candy-faction-rules), [the Candy redesign](RULESET_7_CANDY_REDESIGN.md)                                              |
 | Monument skin   | `pulp-wars-poc-7r69` | `pulp_wars-eu3r.3` the Monument skin rule, engine and art choice (the user, 2026-10-08: unlike every other building, a Monument keeps its builder's look when another faction captures its city, so each Monument and look appears at most once on the map; the identity became `7r69` when it was published after the Candy redesign, `7r68`; a save, replay, or setup of `7r68` is rejected): `BUILD_MONUMENT` records the builder's faction as `builderFaction` on the Monument's population-contribution source, a capture never changes it, the view publishes it to every viewer (the achievement stays the owner's), and the board, the dock, the build button, and the Achievements screen draw the faction Monuments of `pulp_wars-eu3r.2`; a state without the field draws the Human or shared Monument; no rule, price, population, command, or event changed                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | [section 5](#5-achievements-and-monuments)                                                                                            |
+| Vampire/Banshee | `pulp-wars-poc-7r70` | `pulp_wars-ty6i` the Vampire and Banshee rework, engine (the user, 2026-10-09: the Vampire was not worth its price and the Banshee was weak; the identity became `7r70` when it was published after the Monument skin rule, `7r69`; a save, replay, or setup of `7r69` is rejected): the Vampire has 13 HP (10 before), Feast (a kill heals it fully and allows one more attack that turn, two at most) and Bat Escape (its Escape flies up to 2 tiles over units and zones of control to a free land tile); the Banshee's Wail hits at Attack 1.5 (1 before), Terror (enemies it wounds cannot strike back until the end of the turn), and Ethereal (enemy zones of control do not stop its Move) ([section 17.12](#1712-the-vampire-and-banshee-rework)).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 
 **Documentation parity (2026-09-28, no ruleset or identity change):** where
 older documents disagreed with the code, the code's behavior was adopted as

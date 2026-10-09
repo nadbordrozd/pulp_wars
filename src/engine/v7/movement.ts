@@ -56,6 +56,7 @@ import type {
 } from "./types";
 import { isNeutralOwnerV7 } from "./types";
 import { gateAtV7 } from "./curiosities";
+import { batEscapeLandingAllowedV7, batEscapeTilesV7 } from "./vampire-banshee";
 import { barricadeAtV7, moundAtV7, tileOccupiedV7 } from "./units";
 import type { PlayerTileViewV7, PlayerViewV7, PublicUnitV7 } from "./view";
 
@@ -102,6 +103,10 @@ export type MovementFailureReasonV7 =
   | "MOUND"
   // Dwarf crowd control (`pulp_wars-w49.33`): no Move enters a Barricade.
   | "BARRICADE"
+  // The Vampire and Banshee rework (`pulp_wars-ty6i`): a Bat Escape ends
+  // only on an explored land tile the Vampire may stand on, with no
+  // curiosity.
+  | "BAT_ESCAPE_LANDING"
   // The frozen sea (docs/product/RULESET_7_NAVAL_BRANCH.md sections 8.6,
   // 8.7, and 8.9): a path that stops or turns where a slide continues; a
   // path that continues past an ice tile a slipping unit entered; a Move of
@@ -203,6 +208,10 @@ function baseMoveBudget2V7(
   lookup: GameStateV7 | PlayerViewV7,
   unit: UnitStateV7 | PublicUnitV7,
 ): number {
+  // The Vampire and Banshee rework (`pulp_wars-ty6i`): a Bat Escape flies
+  // at most `batEscapeTiles` tiles, each a whole step.
+  const batTiles = batEscapeTilesV7(lookup, unit);
+  if (batTiles > 0) return batTiles * 2;
   return (
     (unit.form === "EMBARKED"
       ? EMBARKED_MOVE_V7
@@ -297,9 +306,15 @@ function validateMovementPathCoreV7(
   budget2: number,
 ): MovementPathResultV7 {
   const player = requirePlayer(state, unit.ownerId);
+  // The Vampire and Banshee rework (`pulp_wars-ty6i`): a Bat Escape flies.
+  const batEscape = batEscapeTilesV7(state, unit) > 0;
   // An embarked machine is an ordinary embarked unit (section 7.3).
   const mode: MovementModeV7 =
-    unit.form === "LAND" ? unitMovementModeV7(state, unit) : "GROUND";
+    unit.form === "LAND"
+      ? batEscape
+        ? "FLY"
+        : unitMovementModeV7(state, unit)
+      : "GROUND";
   const flies = mode === "FLY";
   // The Ice Folk revision section 7.1: Mountain-born (land form only).
   const mountainBorn = unitIsMountainBornV7(state, unit);
@@ -321,6 +336,7 @@ function validateMovementPathCoreV7(
   const winter = winterV7(state);
   const glides = unitGlidesV7(state, unit);
   const snowStopped =
+    !batEscape &&
     winter.snow.size > 0 &&
     deepSnowStopsUnitV7(
       state,
@@ -415,9 +431,10 @@ function validateMovementPathCoreV7(
     // The Candy redesign (section 7.2): a step onto a Glazed tile costs a
     // Road step's 1 for the active seat's land-form units; a hop always
     // costs one ordinary step.
+    // A Bat Escape step is always a whole step.
     spentPoints2 += sliding
       ? 0
-      : jumped !== null
+      : jumped !== null || batEscape
         ? 2
         : currentRoadNode ||
             (glides && currentSnow && stepSnow) ||
@@ -506,6 +523,7 @@ function validateMovementPathCoreV7(
     const autoEmbark =
       unit.form === "LAND" &&
       !iceFolkKind &&
+      !batEscape &&
       index === path.length - 1 &&
       (tile.improvement === "PORT" || tile.improvement === "SHIPYARD") &&
       tile.territoryCityId !== null &&
@@ -546,6 +564,23 @@ function validateMovementPathCoreV7(
             mountainBorn: false,
             ice: stepIce,
           });
+    // The Vampire and Banshee rework (`pulp_wars-ty6i`): a Bat Escape lands
+    // only on a land tile it knew before the command, may stand on, and
+    // that holds no curiosity.
+    if (
+      batEscape &&
+      !passThroughProbe &&
+      index === path.length - 1 &&
+      !batEscapeLandingAllowedV7({
+        explored: wasKnownBeforeCommand,
+        terrain: tile.terrain,
+        ice: stepIce,
+        engineering: capabilities.mountainMovement,
+        mountainBorn,
+        curiosity: state.curiosities.some((entry) => same(entry.at, step)),
+      })
+    )
+      return { legal: false, reason: "BAT_ESCAPE_LANDING" };
     // The Dwarf revision section 5.4: a surfaced rider may pass over a
     // settlement center it does not own but never ends a Move there.
     const forbiddenSite =
@@ -801,7 +836,9 @@ export function reachableMovementPathsV7(
   );
   // Revision 19 section 6.2: an Egg never moves.
   if (player === undefined || unit.form === "EGG") return [];
-  const flies = unitFliesV7(state, unit);
+  // The Vampire and Banshee rework (`pulp_wars-ty6i`): a Bat Escape flies.
+  const batEscape = batEscapeTilesV7(state, unit) > 0;
+  const flies = unitFliesV7(state, unit) || batEscape;
   // The giants' signatures (section 6.5): Overstride passes every unit.
   const passesAll = flies || unitOverstridesV7(state, unit);
   // The Dwarf revision section 5.4: a surfaced rider never ends on a
@@ -875,7 +912,9 @@ export function reachableMovementPathsV7(
             state.cities.find((city) => same(city.at, destination))?.ownerId ??
               null,
             unit.ownerId,
-          ));
+          )) ||
+        // A Bat Escape never ends where it may not land.
+        (batEscape && !canonicalBatLandingV7(state, unit, destination));
       if (ownOccupied && validation.stopped) continue;
       best.set(stateKey, validation.spentPoints2);
       // Every destination keeps its cheapest path: the search states of a
@@ -930,6 +969,8 @@ export function reachablePlayerMovementPathsV7(
   const ownSitesOnly = unitAvoidsForeignSitesV7(view, unit);
   // The Candy redesign (section 7.7): a Bunny's paths may hop once.
   const hops = unitHopsV7(view, unit);
+  // The Vampire and Banshee rework (`pulp_wars-ty6i`): a Bat Escape.
+  const batEscape = batEscapeTilesV7(view, unit) > 0;
   const queue: CoordV7[][] = [[]];
   const best = new Map<string, number>([[key(unit.at), 0]]);
   const results = new Map<string, ReachablePathV7>();
@@ -984,7 +1025,13 @@ export function reachablePlayerMovementPathsV7(
         // ended on (every mound on an explored tile is in the view).
         moundAtV7(view, destination) !== undefined ||
         (ownSitesOnly &&
-          !publicFlyerMayStandV7(view, unit, publicTileAt(view, destination)));
+          !publicFlyerMayStandV7(
+            view,
+            unit,
+            publicTileAt(view, destination),
+          )) ||
+        // A Bat Escape never ends where it may not land.
+        (batEscape && !publicBatLandingV7(view, unit, destination));
       if (ownOccupied && validation.stopped) continue;
       best.set(stateKey, validation.spentPoints2);
       // Every destination keeps its cheapest path: the search states of a
@@ -1136,10 +1183,16 @@ function validatePlayerMovementPathCoreV7(
   capabilities: PublicMovementContextV7["capabilities"],
   budget2: number,
 ): MovementPathResultV7 {
+  // The Vampire and Banshee rework (`pulp_wars-ty6i`): a Bat Escape flies.
+  const batEscape = batEscapeTilesV7(view, unit) > 0;
   // The Martian revision section 7: the unit's own movement mode. The
   // technologies are the viewer's (exact for the viewer's own units).
   const mode: MovementModeV7 =
-    unit.form === "LAND" ? unitMovementModeV7(view, unit) : "GROUND";
+    unit.form === "LAND"
+      ? batEscape
+        ? "FLY"
+        : unitMovementModeV7(view, unit)
+      : "GROUND";
   const flies = mode === "FLY";
   // The Ice Folk revision section 7.1: Mountain-born (land form only).
   const mountainBorn = unitIsMountainBornV7(view, unit);
@@ -1154,11 +1207,13 @@ function validatePlayerMovementPathCoreV7(
   // The Ice Folk revision (section 6.2): Glide and deep snow from the
   // public Snow flags; Prowl; a Sabretooth's settlement restriction.
   const glides = unitGlidesV7(view, unit);
-  const snowStopped = deepSnowStopsUnitV7(
-    view,
-    unit,
-    capabilities.forestMovementFreedomRoles.includes(unit.role),
-  );
+  const snowStopped =
+    !batEscape &&
+    deepSnowStopsUnitV7(
+      view,
+      unit,
+      capabilities.forestMovementFreedomRoles.includes(unit.role),
+    );
   const prowls =
     unitIgnoresZocStopsV7(view, unit) || berserkIgnoresZocV7(view, unit);
   // The giants' signatures (section 6.5): Overstride.
@@ -1227,6 +1282,7 @@ function validatePlayerMovementPathCoreV7(
       const autoEmbark =
         unit.form === "LAND" &&
         !iceFolkKind &&
+        !batEscape &&
         index === path.length - 1 &&
         tile.explored &&
         (tile.improvement === "PORT" || tile.improvement === "SHIPYARD") &&
@@ -1257,7 +1313,7 @@ function validatePlayerMovementPathCoreV7(
     // tiles); a hop costs one ordinary step.
     spentPoints2 += sliding
       ? 0
-      : jumped !== null
+      : jumped !== null || batEscape
         ? 2
         : currentRoadNode ||
             (glides && currentSnow && stepSnow) ||
@@ -1321,6 +1377,15 @@ function validatePlayerMovementPathCoreV7(
       !publicFlyerMayStandV7(view, unit, tile)
     )
       return { legal: false, reason: "SETTLEMENT_FORBIDDEN" };
+    // The Vampire and Banshee rework (`pulp_wars-ty6i`): the Bat Escape
+    // landing, as the canonical validation reads it.
+    if (
+      batEscape &&
+      !passThroughProbe &&
+      index === path.length - 1 &&
+      !publicBatLandingV7(view, unit, step, capabilities)
+    )
+      return { legal: false, reason: "BAT_ESCAPE_LANDING" };
     const ignoresForest =
       capabilities.forestMarch ||
       capabilities.forestMovementFreedomRoles.includes(unit.role);
@@ -1701,6 +1766,59 @@ function publicProjectsZocV7(
  * A surfaced rider is also never left on a settlement center it cannot
  * stand on.
  */
+/**
+ * The Vampire and Banshee rework (`pulp_wars-ty6i`): whether a Bat Escape
+ * of `unit` may end on `at`, from the canonical state (the tile known to
+ * its owner before the Move, its terrain and ice, a curiosity).
+ */
+function canonicalBatLandingV7(
+  state: GameStateV7,
+  unit: UnitStateV7,
+  at: CoordV7,
+): boolean {
+  const tile = tileAtV7(state.board, at);
+  if (tile === undefined) return false;
+  const player = requirePlayer(state, unit.ownerId);
+  return batEscapeLandingAllowedV7({
+    explored: contains(player.explored, at),
+    terrain: tile.terrain,
+    ice: isIceAtV7(state, at),
+    engineering: unitCapabilitiesV7(state, unit, player.researchedTechs)
+      .mountainMovement,
+    mountainBorn: unitIsMountainBornV7(state, unit),
+    curiosity: state.curiosities.some((entry) => same(entry.at, at)),
+  });
+}
+
+/**
+ * The public twin of {@link canonicalBatLandingV7}: the explored tile, the
+ * public ice and curiosities (both public on explored tiles), and the
+ * viewer's technologies through the unit's kind.
+ */
+function publicBatLandingV7(
+  view: PlayerViewV7,
+  unit: PublicUnitV7,
+  at: CoordV7,
+  capabilities?: PublicMovementContextV7["capabilities"],
+): boolean {
+  const tile = publicTileAt(view, at);
+  if (tile === undefined || !tile.explored) return false;
+  const engineering = (
+    capabilities ??
+    (isMindControlledV7(view, unit.id)
+      ? unitCapabilitiesV7(view, unit, view.viewer.researchedTechs)
+      : publicMovementContextV7(view).capabilities)
+  ).mountainMovement;
+  return batEscapeLandingAllowedV7({
+    explored: true,
+    terrain: tile.terrain,
+    ice: isIceAtV7(view, at),
+    engineering,
+    mountainBorn: unitIsMountainBornV7(view, unit),
+    curiosity: view.curiosities.some((entry) => same(entry.at, at)),
+  });
+}
+
 function lastFreeEnteredPath(
   state: Pick<GameStateV7, "units" | "board" | "cities">,
   unit: UnitStateV7,

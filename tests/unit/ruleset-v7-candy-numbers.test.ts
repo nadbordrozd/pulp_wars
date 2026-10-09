@@ -404,7 +404,6 @@ describe("Candy battle analysis, re-run by the engine (section 11)", () => {
       "Captain",
       "Lich",
       "Necromancer",
-      "Vampire",
       "Ghoul",
       "Banshee",
       "Shaman",
@@ -429,6 +428,9 @@ describe("Candy battle analysis, re-run by the engine (section 11)", () => {
       expect(candyHits("KNIGHT", name), name).toMatch(/, kill$/);
     // The Human Knight has 13 HP since tuning 1: the continuation stops.
     expect(candyHits("KNIGHT", "Knight")).toBe("10 / 1");
+    // So does the Vampire since the Vampire and Banshee rework
+    // (`pulp_wars-ty6i`, 13 HP; it was killed at 10).
+    expect(candyHits("KNIGHT", "Vampire")).toBe("10 / 1");
     // A Re-baked Bear (7 of 14 HP) on a Fighter.
     expect(
       candyHits("KNIGHT", "Fighter", { attackerExtra: { ...RUSH, hp: 7 } }),

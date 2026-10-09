@@ -78,8 +78,8 @@ const READY: UnitStateV7["activation"] = {
 
 describe("ruleset-7 revision-13 identity and faction registration", () => {
   it("pins the current identity, frozen faction and tree orders, and bindings", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r69");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r69.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r70");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r70.current");
     expect(FACTION_IDS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",
@@ -135,10 +135,10 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
   });
 
   it("cleans obsolete keys through v7r65 and preserves the r66 save", () => {
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-4)).toBe(
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-5)).toBe(
       "pulpWars.save.v7r65.current",
     );
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(68);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(69);
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
     const storage = new MemoryStorage([
       ["pulpWars.save.v7r12.current", "r12"],
@@ -490,11 +490,13 @@ describe("ruleset-7 Undead roster and technology registration", () => {
         true,
         ["ATTACK", "CAPTURE", "CHARGE", "DEVOUR"],
       ],
+      // The Vampire and Banshee rework (`pulp_wars-ty6i`): Wail at Attack
+      // 1.5 (1 before), Terror, and Ethereal.
       MARKSMAN: [
         "Banshee",
         3,
         8,
-        2,
+        3,
         2,
         1,
         0,
@@ -502,7 +504,7 @@ describe("ruleset-7 Undead roster and technology registration", () => {
         1,
         "MARKSMANSHIP",
         true,
-        ["CAPTURE", "WAIL"],
+        ["CAPTURE", "WAIL", "TERROR", "ETHEREAL"],
       ],
       GUARD: [
         "Zombie",
@@ -548,10 +550,12 @@ describe("ruleset-7 Undead roster and technology registration", () => {
         false,
         ["ATTACK", "CAPTURE", "PLAGUE"],
       ],
+      // The Vampire and Banshee rework (`pulp_wars-ty6i`): 13 HP (10
+      // before) and Feast; its Escape is a Bat Escape.
       KNIGHT: [
         "Vampire",
         9,
-        10,
+        13,
         6,
         2,
         3,
@@ -561,7 +565,7 @@ describe("ruleset-7 Undead roster and technology registration", () => {
         "CHIVALRY",
         true,
         // The Undead pass (`pulp_wars-w49.13`, 7r51): Escape.
-        ["ATTACK", "CAPTURE", "LIFESTEAL", "UNANSWERED", "ESCAPE"],
+        ["ATTACK", "CAPTURE", "LIFESTEAL", "UNANSWERED", "ESCAPE", "FEAST"],
       ],
       JUGGERNAUT: [
         "Abomination",
@@ -1103,13 +1107,16 @@ describe("ruleset-7 role rules resolve through the owner's faction", () => {
         targetUnitId: target.id,
       });
       if (!result.accepted) throw new Error(result.error.code);
+      // The Vampire and Banshee rework (`pulp_wars-ty6i`): the Vampire's
+      // kill is a Feast, which also leaves one more attack (it was none).
       expect(result.events[0]).toMatchObject({
         kind: "COMBAT_RESOLVED",
         preview: {
           advances: true,
           overrunAdvance: overrun,
           overrunContinues: overrun,
-          attacksRemaining: overrun ? 1 : 0,
+          attacksRemaining: 1,
+          feast: !overrun,
         },
       });
       const after = result.state.units.find((unit) => unit.id === knight.id);
@@ -1122,7 +1129,7 @@ describe("ruleset-7 role rules resolve through the owner's faction", () => {
           unitId: knight.id,
           targetUnitId: guard.id,
         }).accepted,
-      ).toBe(overrun);
+      ).toBe(true);
     }
   });
 
@@ -1242,7 +1249,8 @@ describe("ruleset-7 role rules resolve through the owner's faction", () => {
     expect(publicUnitStatsV7(own, banshee)).toMatchObject({
       minimumRange: 0,
       maximumRange: 0,
-      abilities: ["CAPTURE", "WAIL"],
+      // The Vampire and Banshee rework (`pulp_wars-ty6i`).
+      abilities: ["CAPTURE", "WAIL", "TERROR", "ETHEREAL"],
     });
 
     for (const faction of ["UNDEAD", "ORIGINAL"] as const) {

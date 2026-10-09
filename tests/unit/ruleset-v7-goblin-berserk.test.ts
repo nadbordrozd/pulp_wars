@@ -127,16 +127,17 @@ describe("the identity (pulp_wars-w49.35)", () => {
   // 7r65, and map curiosities round 2 (`pulp_wars-737.14`) 7r66, and Ice
   // Folk Freeze (`pulp_wars-w49.37`) 7r67, and the Candy redesign
   // (`pulp_wars-jdb.12`) 7r68, and the Monument skin rule
-  // (`pulp_wars-eu3r.3`) 7r69.
+  // (`pulp_wars-eu3r.3`) 7r69, and the Vampire and Banshee rework
+  // (`pulp_wars-ty6i`) 7r70.
   it("was 7r61 after 7r60, whose save keys are obsolete", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r69");
-    expect(PRIOR_RULESET_7_IDS.slice(-9, -7)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r70");
+    expect(PRIOR_RULESET_7_IDS.slice(-10, -8)).toEqual([
       "pulp-wars-poc-7r60",
       "pulp-wars-poc-7r61",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r69.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-9, -7)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r70.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-10, -8)).toEqual([
       "pulpWars.save.v7r60.current",
       "pulpWars.save.v7r61.current",
     ]);

@@ -145,6 +145,7 @@ const STATE_KEYS = [
   "crumbs",
   "curiosities",
   "eggs",
+  "feastedThisTurn",
   "frozen",
   "giants",
   "glazedThisTurn",
@@ -174,6 +175,7 @@ const STATE_KEYS = [
   "sugarRush",
   "surfacedThisTurn",
   "mindControlled",
+  "terrorThisTurn",
   "toothache",
   "tossedThisTurn",
   "tractorUsedThisTurn",
@@ -304,6 +306,9 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
   const huntedThisTurn = parseSortedUnitIds(input.huntedThisTurn);
   // Goblin explosions and Berserk (`pulp_wars-w49.35`): the Berserk units.
   const berserkThisTurn = parseSortedUnitIds(input.berserkThisTurn);
+  // The Vampire and Banshee rework (`pulp_wars-ty6i`): Terror and Feast.
+  const terrorThisTurn = parseSortedUnitIds(input.terrorThisTurn);
+  const feastedThisTurn = parseSortedUnitIds(input.feastedThisTurn);
   // The ninth unit (`pulp_wars-w49.17`, 7r55): the stored state of the new
   // units' mechanics; the cross references are checked below.
   const ninthUnit = parseNinthUnit(input.ninthUnit);
@@ -359,6 +364,8 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
     glazedThisTurn === null ||
     huntedThisTurn === null ||
     berserkThisTurn === null ||
+    terrorThisTurn === null ||
+    feastedThisTurn === null ||
     ninthUnit === null ||
     barricades === null ||
     giants === null ||
@@ -425,6 +432,8 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
       glazedThisTurn,
       huntedThisTurn,
       berserkThisTurn,
+      terrorThisTurn,
+      feastedThisTurn,
       ninthUnit,
       barricades,
       giants,
@@ -483,6 +492,8 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
     glazedThisTurn,
     huntedThisTurn,
     berserkThisTurn,
+    terrorThisTurn,
+    feastedThisTurn,
     ninthUnit,
     barricades,
     giants,
@@ -1129,9 +1140,14 @@ function parseUnit(
     (input.veteran && !shrinePromotions && input.kills < PROMOTION_KILLS_V7) ||
     (input.captureEligible && !rule.abilities.includes("CAPTURE")) ||
     // The Dwarf revision section 7.3: an unmoved Clockwork Gunner fires
-    // twice.
+    // twice. The Vampire and Banshee rework (`pulp_wars-ty6i`): a Feast
+    // allows a second attack.
     (!overrun &&
-      activation.attacksUsed > roleMechanicsV7(role, faction).unmovedShots) ||
+      activation.attacksUsed >
+        Math.max(
+          roleMechanicsV7(role, faction).unmovedShots,
+          rule.abilities.includes("FEAST") ? 2 : 1,
+        )) ||
     (activation.overrunActive &&
       (!overrun || !activation.attacked || activation.handled)) ||
     (activation.escapeAvailable &&
@@ -2310,6 +2326,8 @@ interface CrossInput {
   glazedThisTurn: readonly CoordV7[];
   huntedThisTurn: readonly UnitId[];
   berserkThisTurn: readonly UnitId[];
+  terrorThisTurn: readonly UnitId[];
+  feastedThisTurn: readonly UnitId[];
   ninthUnit: NinthUnitStateV7;
   barricades: readonly BarricadeV7[];
   giants: GiantsStateV7;
@@ -2668,7 +2686,36 @@ function validateCrossReferences(value: CrossInput): boolean {
             unit.hp <= 0 ||
             unit.ownerId !== value.activePlayerId
           );
-        })))
+        }))) ||
+    // The Vampire and Banshee rework (`pulp_wars-ty6i`): `terrorThisTurn`
+    // and `feastedThisTurn` are empty in a match without an Undead seat.
+    // Terror names units on the board that are neither the active seat's
+    // nor neutral; Feast names land-form units of the active seat whose
+    // role (under their kind) has Feast and that have attacked.
+    ((value.terrorThisTurn.length > 0 || value.feastedThisTurn.length > 0) &&
+      !value.setup.factions.includes("UNDEAD")) ||
+    value.terrorThisTurn.some((unitId) => {
+      const unit = units.find((item) => item.id === unitId);
+      return (
+        unit === undefined ||
+        unit.hp <= 0 ||
+        unit.ownerId === value.activePlayerId ||
+        isNeutralOwnerV7(unit.ownerId)
+      );
+    }) ||
+    value.feastedThisTurn.some((unitId) => {
+      const unit = units.find((item) => item.id === unitId);
+      const kind = unit === undefined ? undefined : kindOf(unit);
+      return (
+        unit === undefined ||
+        kind === undefined ||
+        unit.hp <= 0 ||
+        unit.ownerId !== value.activePlayerId ||
+        unit.form !== "LAND" ||
+        !unit.activation.attacked ||
+        !effectiveRoleRuleV7(unit.role, kind).abilities.includes("FEAST")
+      );
+    })
   )
     return false;
   // Revision 19: an Egg takes no status, so it is never plagued or bitten.
