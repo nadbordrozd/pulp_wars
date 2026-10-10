@@ -1148,6 +1148,44 @@ is not forbidden.
   next to that center (permanent ice keeps ships off it).
 - **Never** a Freeze that only refreshes ice no crossing or wall needs.
 
+**As built (`pulp_wars-5ti.5`).** The rules are in
+`src/ai/v7-frozen-sea.ts`, tabulated in
+[Normal AI, the frozen sea](../architecture/NORMAL_AI.md#the-frozen-sea-pulp_wars-5ti5),
+and proven on hand-built positions in
+`tests/unit/ruleset-v7-frozen-sea-ai.test.ts`. What differs from the plan
+above:
+
+- **No head-to-head or win-tendency test was run**, by the user's standing
+  rule that no match is played without being asked for. No rule was
+  dropped or tuned on results; the coarse balance (`5ti.8`) is where they
+  are measured.
+- **Crossing.** Home is the land the seat's cities stand on (a unit that
+  has crossed does not make the far shore home, so the plan lasts until
+  the objective is taken). The chain is the cheapest by the tiles left to
+  freeze: ice that is there already counts as almost free, so a crossing
+  continues a bridge. A head on a settlement center is avoided (its
+  garrison would stand in the way of the wave). On a sea shortcut only the
+  units whose objective is the target take the ice.
+- **Research.** "Has stood on own ice" is read as "stands on it now" (the
+  policy keeps no memory between decisions). Glacier is also asked for
+  when the crossing outlasts the ice. A technology on the way to the
+  wanted one is asked for in its place.
+- **Builders.** The Witch builds only when her one tile a turn finishes
+  before the first tile thaws (the tiles left are no more than the turns
+  the seat's ice lasts); otherwise one line unit builds, and a second only
+  when two tiles a turn do not finish in time. "Within 6 route steps" is 6
+  tiles. Any unit that stands right may make the Freeze that extends the
+  crossing or keeps a tile; the builder is the unit that walks for it.
+- **The wave** is every other land unit of the seat on the home side;
+  "one slide from it" is "one Freeze short" (two tiles or fewer left, at
+  the far end).
+- **Icebound.** Each ship counts four times its role's cost plus three for
+  every other own unit whose Move and range reach it. A unit whose own
+  attack sinks the one ship it would bind attacks instead.
+- **Home ice** is new ice in own territory next to the pressed center, and
+  never over a Port site of a city that has no dock (a Port cannot be
+  built on ice, and that ice never melts).
+
 ### 13.3 Against the frozen sea (bead `5ti.5`)
 
 - Land routes treat ice as passable with a stop on entering (slip); water
@@ -1162,6 +1200,30 @@ is not forbidden.
 - Frozen own ships are written off in the threat map (they cannot move);
   their crews land if they are transports and a landing is offered.
 
+**As built (`pulp_wars-5ti.5`).** What differs from the plan above:
+
+- **Routes.** The threat estimate treats ice as ground with the slip, and
+  now follows an Ice Folk unit's slide. The campaign's land routes do not
+  run over ice: no seat plans a walk over a hostile bridge.
+- **Added: land units stay off hostile ice.** A Move that ends on the ice
+  of a hostile Ice Folk seat is refused
+  ([section 11.8](#118-black-ice-against-landings), "do not stand on their
+  ice"); a unit already on such ice may move along it.
+- **Ships.** The Freeze reach is the tiles the unit can stand on this turn
+  (its Move, the slide on known ice included) and from each of them the
+  tile beside it or two tiles off in a straight line over water (a Freeze
+  line is two tiles; the Witch's ring one). A seat "has been seen to
+  Freeze" when it owns ice the viewer knows of. The rule is for ships
+  only: a transport's crew climbs out of the ice. Glacier's extra Move is
+  not assumed.
+- **Battleships.** Nothing new was needed for the shelling from two or
+  three tiles (the firing station and the splash value of `5ti.4`). Added
+  for every attacker: a unit on ice is worth 3 more as a target, and the
+  kill of a unit that holds ice of a hostile seat with one turn or less
+  left is worth 10 more (the tile melts and the bridge breaks).
+- **Frozen own ships** are left out of the fleet facts (they escort,
+  screen, and counter nothing) as well as out of the threat map.
+
 ### 13.4 Tests
 
 Headless matches of every faction pair on Continents and Archipelago finish
@@ -1173,6 +1235,13 @@ Ice Folk builders that bridge a four-tile strait and a wave that slides
 across; a Witch that freezes two ships in; a Black Ice landing avoided; a
 ship kept out of Freeze reach. Pinned decision hashes of Dry Land matches are
 unchanged.
+
+**As built.** The scenario tests exist, each on a hand-built position of
+one decision (`tests/unit/ruleset-v7-naval-branch-ai.test.ts`,
+`tests/unit/ruleset-v7-frozen-sea-ai.test.ts`); the strait of the fixture
+is five tiles, three of them Deep Water. The headless matches of every
+faction pair were not run for the AI beads (no match is played without
+being asked for).
 
 ## 14. UI requirements and art needs
 
@@ -1791,8 +1860,10 @@ differently:
     does nothing for it. The three ship roles stay registered for the Ice
     Folk with their numbers and no unlock. A mission that gives an Ice Folk
     seat a ship is refused by the mission builder.
-11. **Normal AI: legal, not clever.** An Ice Folk seat makes no naval plan
-    and never picks `FREEZE`, so it does not cross water on purpose; its
+11. **Normal AI: legal, not clever** (until `pulp_wars-5ti.5`, recorded in
+    [section 13.2](#132-the-ice-folk-bead-5ti5)). An Ice Folk seat made no
+    naval plan and never picked `FREEZE`, so it did not cross water on
+    purpose; its
     units may walk onto ice as any Move allows. Other seats' threat estimates
     treat ice as ground and ignore the slide. The rules of
     [sections 13.2 and 13.3](#132-the-ice-folk-bead-5ti5) are
@@ -1853,8 +1924,9 @@ this differs from [section 14.1](#141-surfaces-bead-5ti7) or
    as stand-ins (`ICE_FOLK_NAVAL_TECH_SUBJECTS_V7`); dedicated icons are
    art work. Freeze has no registered action icon and shows the snowflake
    glyph.
-10. **Normal AI.** Unchanged: an Ice Folk seat still never Freezes
-    ([section 22](#22-engine-step-ii-as-built-pulp_wars-5ti3) item 11).
+10. **Normal AI.** Unchanged by the interface bead; the ice plan came
+    with `pulp_wars-5ti.5`
+    ([section 13.2](#132-the-ice-folk-bead-5ti5)).
 
 ## 24. Fold notes (`pulp_wars-5ti.9`)
 

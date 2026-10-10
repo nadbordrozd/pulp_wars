@@ -124,7 +124,7 @@ export interface NavalFleetFactsV7 {
   readonly ownSubmarines: readonly PublicUnitV7[];
   /** The viewer's Ports and Shipyards, blockaded ones included. */
   readonly ownDocks: number;
-  /** Visible hostile ships that are not icebound, by role. */
+  /** Visible hostile ships that are not icebound, by role (nor are the own ships above). */
   readonly hostilePatrolBoats: readonly PublicUnitV7[];
   readonly hostileBattleships: readonly PublicUnitV7[];
   readonly hostileSubmarines: readonly PublicUnitV7[];
@@ -152,7 +152,10 @@ export function navalFleetFactsV7(
         unit.hp > 0 &&
         unit.form === "NAVAL" &&
         unit.role === role &&
-        unit.ownerId === view.viewer.id,
+        unit.ownerId === view.viewer.id &&
+        // The frozen sea (`pulp_wars-5ti.5`): an own ship frozen in is
+        // written off: it escorts, screens, and counters nothing.
+        !unitIsIceboundV7(view, unit),
     );
   const hostile = (role: NavalRoleIdV7): PublicUnitV7[] =>
     view.units.filter(

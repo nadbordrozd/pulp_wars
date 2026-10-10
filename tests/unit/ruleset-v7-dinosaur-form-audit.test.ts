@@ -741,6 +741,14 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // a land-form mover (an Egg makes no Move, and an embarked unit keeps
     // the naval rules).
     "src/ai/v7-ninth-unit.ts": 5,
+    // The frozen sea (`pulp_wars-5ti.5`): the unit a crossing Move is
+    // valued for and the unit kept off hostile ice are land-form movers (an
+    // Egg makes no Move, and an embarked unit keeps the naval rules); the
+    // own units counted as able to strike an icebound ship are land-form
+    // units (an Egg and an embarked unit strike nobody); and the unit that
+    // holds thawing ice is a land-form unit (an Egg is never on ice, and a
+    // unit afloat on ice is icebound and holds nothing).
+    "src/ai/v7-frozen-sea.ts": 4,
   };
 
   it("has no unaudited not-LAND form test in the engine or the Normal AI", () => {

@@ -27,6 +27,9 @@ export const OWNER_READER_CLASSES_V7: Readonly<
 > = {
   // The Normal AI: the viewer seat's own role, the kind resolver of the
   // per-unit policies, and the public Undead faction reads.
+  // `pulp_wars-5ti.5`: the owner of an ice tile; an owner that is no
+  // player has no Black Ice (the missing record answers false).
+  "src/ai/v7-frozen-sea.ts::blackIceSeat": "NEUTRAL_SAFE",
   "src/ai/v7-martian.ts::factionShieldV7": "PLAYER_ONLY",
   "src/ai/v7-martian.ts::policyUnitFactionV7": "NEUTRAL_AWARE",
   "src/ai/v7-undead.ts::ownerIsRestlessV7": "NEUTRAL_SAFE",

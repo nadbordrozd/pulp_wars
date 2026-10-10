@@ -601,7 +601,9 @@ Yeti or a Sled does not step beside an enemy unit where it would die
 unless a unit of its side stands beside that enemy or can still come; the
 Sabretooth's Prowl is left out of the rule.
 
-**Not done.** The seat never Freezes and has no plan across water; the
+**Not done.** The seat's Freeze and its plan across water are not part of
+this pass (they came with `pulp_wars-5ti.5`,
+[the frozen sea](#the-frozen-sea-pulp_wars-5ti5)); the
 Mammoth's Sweep and the Sabretooth have no rule of their own; a Bolas with
 no blow behind it is still thrown (it costs nothing and the target is
 sluggish for a turn).
@@ -2958,7 +2960,8 @@ value of the pinned decisions (their revision-12-ordinal hashes are
 unchanged).
 The naval branch (`pulp_wars-5ti.2` and `pulp_wars-5ti.3`,
 `pulp-wars-poc-7r43` and `7r44`) is played by the seafaring seats
-(`pulp_wars-5ti.4`, `src/ai/v7-naval.ts`); the Ice Folk side is open
+(`pulp_wars-5ti.4`, `src/ai/v7-naval.ts`) and, on the frozen sea, by the
+Ice Folk and against them (`pulp_wars-5ti.5`, `src/ai/v7-frozen-sea.ts`)
 ([summarized below](#the-naval-branch-pulp_wars-5ti2-and-5ti3)).
 The campaign plan (`pulp_wars-9s0.1`, `src/ai/v7-campaign.ts`) is
 [summarized below](#campaign-expansion-exploration-and-standing-pressure-pulp_wars-9s01):
@@ -3194,14 +3197,14 @@ units the seat trains only the naval role its plan asks for, in every match
 plan never asks for one, and the policy does not yet use the Ram, Board, or
 Submarines on purpose
 ([naval branch overlay, section 13.1](../product/RULESET_7_NAVAL_BRANCH.md#131-seafaring-seats-bead-5ti4),
-`pulp_wars-5ti.4`). Since the frozen sea (`pulp_wars-5ti.3`, `7r44`) an Ice
-Folk seat has no ships: it makes no naval plan, `FREEZE` is never a policy
-candidate, and its units reach only what they can walk to (ice that exists
-included). Every seat's threat estimate treats ice as ground for land units,
-gives a slipping unit one tile of ice, and gives an icebound unit no threat;
-it does not follow a slide
-([naval branch overlay, sections 13.2 and 13.3](../product/RULESET_7_NAVAL_BRANCH.md#132-the-ice-folk-bead-5ti5),
-`pulp_wars-5ti.5`). The plan still becomes active
+`pulp_wars-5ti.4`; the seafaring seats play them since that bead,
+[below](#the-seafaring-seats-pulp_wars-5ti4)). Since the frozen sea
+(`pulp_wars-5ti.3`, `7r44`) an Ice Folk seat has no ships and makes no
+naval plan; since `pulp_wars-5ti.5` it crosses water by its ice plan, and
+every seat's threat estimate treats ice as ground for land units, gives a
+slipping unit one tile of ice and an icebound unit no threat, and follows
+an Ice Folk unit's slide
+([the frozen sea](#the-frozen-sea-pulp_wars-5ti5)). The plan still becomes active
 only as before, so a seat with objectives on its own land does not start an
 invasion across the water; see the limits below.
 
@@ -5340,8 +5343,8 @@ the 3 starting Coins and tier 3 base cost of 9 of `7r41`.
 
 ## The naval branch (`pulp_wars-5ti.2` and `5ti.3`)
 
-**Status: the seven seafaring factions play the branch; the Ice Folk side
-is open.** The two engine steps of the
+**Status: every faction plays the branch; none of it is measured in
+matches.** The two engine steps of the
 [naval branch](../product/RULESET_7_NAVAL_BRANCH.md) (folded into
 [current rules section 14](../product/RULESET_7_CURRENT.md#14-naval-rules)
 and [section 21.16](../product/RULESET_7_CURRENT.md#2116-the-frozen-sea) by
@@ -5394,37 +5397,86 @@ The numbers above are reasoned from the worked examples of rules section
 not touched: nothing here changes when a unit boards or lands, except that
 it no longer boards or sails into a Battleship's or Submarine's reach.
 
+### The frozen sea (`pulp_wars-5ti.5`)
+
+[Overlay sections 13.2 and 13.3](../product/RULESET_7_NAVAL_BRANCH.md#132-the-ice-folk-bead-5ti5).
+The rules live in `src/ai/v7-frozen-sea.ts`; `src/ai/v7.ts` calls them at
+the candidate filter, the scores of `FREEZE`, `MOVE`, `RESEARCH`,
+`ATTACK`, and `DISEMBARK`, and the reach estimate. An Ice Folk seat has no
+ship and so no naval plan (`navalPlanWorkV7` returns the empty plan for
+it); its way over the water is the **ice plan**, computed once per
+decision from the public view (`iceSeaPlanV7`) and null for every other
+seat, where Rime is forbidden, and on a board with no known water.
+
+**The Ice Folk seat.**
+
+| Rule         | What the seat does                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Where               |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
+| Activation   | As the naval plan of a seafaring seat: every known objective (a hostile city, else a neutral village) lies off the land its cities stand on, or the nearest one can be walked to and the way over the water is more than three steps shorter (a shortcut: then only the units whose objective it is take the ice).                                                                                                                                                                                                              | `iceSeaPlanV7`      |
+| The crossing | The cheapest 8-way chain of explored water tiles from a tile next to home land to a tile next to the objective's land: 1000 a tile to freeze, 1 a tile that is ice already, 3000 more within 3 of a visible hostile Battleship, 10 a change of direction (a straight run slides), 20 for a head on a settlement center (its garrison stands in the way), 1 a step of walk at either end. Never a dock. Shallow Water only without Pack Ice; when only Deep Water leads across, that crossing is planned and Pack Ice asked for. | `findCrossing`      |
+| Builders     | The Witch when she is within 6 tiles and the tiles left are no more than the turns the seat's ice lasts (her ring advances one tile a turn, three wide); otherwise the cheapest line unit that may act after a Move (a Yeti first), and a second one when the builder's two tiles a turn do not finish before the first tile thaws (`thawSafe` false: the thaw is accepted and the second builder refreezes). The builder's Move to the tile it Freezes from scores 1112 and it makes no other Move.                            | `iceCrossingMoveV7` |
+| Freeze       | Only with a reason, read from `previewFreezeV7`: it locks a hostile ship in (1297; not when the same unit's attack sinks it), it freezes the next tile of the crossing (1110), it refreshes a crossing tile at one turn or less that an own unit still has to pass (1109), or it makes new ice in own territory next to a center a hostile ship is within 3 of (712; never over a Port site of a city with no dock). Every other offered Freeze is no candidate.                                                                | `iceFreezeScoreV7`  |
+| The wave     | Every other own land unit on the home side walks toward the head (720), stays off the crossing and off the builder's tile until the crossing is complete or one Freeze short, then crosses by the offered Moves (1108), whose ends are the slides' ends. No Move of the plan goes into lethal reach the unit is not already in. A unit that has crossed has the ordinary policy again.                                                                                                                                          | `iceCrossingMoveV7` |
+| Research     | Rime (1280) when a crossing exists or a hostile ship is within 3 of an own center; Pack Ice (1280) when the crossing needs Deep Water; Icebound (1170) with a hostile Battleship or Submarine within 4 of an own unit; Black Ice (1170) with a hostile land unit on own ice or a hostile transport within 3 of own territory; Glacier (1075) last, or when the crossing outlasts the ice. A technology on the way is asked for in its place. Rime and Pack Ice for a crossing are not held back by the army's research order.   | `iceSeaResearchV7`  |
+
+**Every seat, against the ice.**
+
+| Rule             | What the seat does                                                                                                                                                                                                                                                                                                 | Where                             |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------- |
+| Reach estimate   | A visible Ice Folk unit that steps onto known ice slides to the end of the ice, a unit, or a zone of control, at no cost, and strikes from there (it used to walk the ice). Glacier's extra Move is its owner's private research and is left out.                                                                  | `iceSlideEndV7`                   |
+| Ships            | No Move of a ship onto a tile where a visible unit of a seat that has been seen to Freeze (it owns ice the viewer knows of) can lock it in this turn: beside a tile that unit can stand on, or two tiles from it in a straight line over water. A ship already in such reach may go anywhere. Icebound is assumed. | `iceShipMoveRejectedV7`           |
+| Land units       | No Move that ends on the ice of a hostile Ice Folk seat (Black Ice is assumed: the unit would be Frozen at every Start Turn of that seat). A unit already on such ice may move along it.                                                                                                                           | `iceMoveOntoHostileIceRejectedV7` |
+| Landings         | No landing on such ice when the same unit is offered a landing within 2 of it that is not.                                                                                                                                                                                                                         | `iceLandingRejectedV7`            |
+| Frozen own ships | An own icebound ship is no ship of the fleet (it escorts, screens, and counters nothing) and threatens nothing; the crew of an own icebound transport lands (1336), on land before hostile ice.                                                                                                                    | `iceboundCrewLandingV7`           |
+| Targets          | An attack on a land unit that stands on ice is worth 3 more (no cover, no fortification), and 10 more when it kills a unit on ice of a hostile seat that is outside its territory with one turn or less left: the tile melts at its owner's End Turn and the bridge behind it breaks.                              | `iceTargetBonusV7`                |
+
+**Projections are the engine's.** A Freeze is scored from
+`previewFreezeV7` and the tests compare it field by field with the
+`WATER_FROZEN` event; a crossing Move is an offered `MOVE`, whose end the
+engine has already slid; the Freeze reach is checked by handing the Ice
+Folk seat the position and reading the Freeze it is offered; the Black
+Ice and the melt the rules assume are read from the `UNITS_FROZEN` and
+`ICE_MELTED` events of the engine.
+
+**Not measured.** By the user's standing rule no match was played for
+this bead: no head-to-head, no win-tendency test, no headless match, no
+validator, no benchmark. The numbers are reasoned from the worked examples
+of rules section 21.16, not tuned. Each rule is proven on the hand-built
+strait in `tests/unit/ruleset-v7-frozen-sea-ai.test.ts`.
+
+**Left alone.** The Ice Witch's Cold Snap, Frost Bolt, and Blizzard on
+land keep the rules of the Ice Folk passes (the overlay asks nothing of
+them here). The campaign's land routes still do not run over ice: a unit
+of another seat does not plan a walk over an Ice Folk bridge (it would
+stand on hostile ice), and an Ice Folk unit reaches the far shore by the
+ice plan, not by the campaign. A Battleship's shelling of a bridge column
+is the splash value its attack always had, with the station rule of the
+seafaring seats.
+
 ### What the policy still does not do
 
-- **An Ice Folk seat makes no naval plan** (it has no ships and cannot
-  embark) and **`FREEZE` is never a policy candidate**, so it does not
-  cross water on purpose. Its units reach what they can walk to, ice that
-  exists included: an offered Move onto ice is an ordinary candidate, and
-  its slide is the engine's.
-- **Estimates.** Every seat's threat estimate treats known ice as ground
-  for a land-form unit and closed to a unit afloat, ends a slipping unit's
-  reach on the first ice tile, and gives an icebound unit no threat (it
-  cannot move or attack). It does not follow an Ice Folk unit's slide (the
-  unit walks the ice in the estimate), so its reach on ice is understated.
+- **The thaw of a long crossing is accepted, not solved.** A crossing of
+  more than six tiles (ten with Glacier) outlasts its first ice; the plan
+  adds a second builder that refreezes and asks for Glacier, and does not
+  march the wave as a column on the ice it holds.
+- **Glacier of a hostile seat** (its extra Move on ice) is not assumed in
+  the reach estimate.
 - **Dry Land is unchanged:** nothing of the branch is offered there.
 
-Checks: `tests/unit/ruleset-v7-naval-branch-ai.test.ts` (the rules above),
+Checks: `tests/unit/ruleset-v7-naval-branch-ai.test.ts` and
+`tests/unit/ruleset-v7-frozen-sea-ai.test.ts` (the rules above),
 `tests/unit/ruleset-v7-naval-branch-headless.sim.test.ts` (short water
 matches of every faction and a Showcase finish without an error, a stall,
 or a rejected command) and `tests/unit/ruleset-v7-frozen-sea-headless.sim.test.ts`
-(the same for the Ice Folk against every faction, with no ship).
+(the same for the Ice Folk against every faction, with no ship). The two
+simulation suites were not run for `pulp_wars-5ti.5`; their pins of
+matches with an Ice Folk seat on a water map are expected to move
+(`pulp_wars-b5pd`).
 
 Open:
 
-- **`pulp_wars-5ti.5`, the frozen sea**
-  ([overlay sections 13.2 and 13.3](../product/RULESET_7_NAVAL_BRANCH.md#132-the-ice-folk-bead-5ti5)):
-  the Ice Folk ice plan (crossings, builders, the wave, Icebound, home
-  ice) and every seat's play against the ice (landings off enemy ice,
-  ships out of Freeze reach, slide reach in the threat map). Until it
-  lands an Ice Folk seat stays on its own landmass on Continents and
-  Archipelago.
-- The coarse balance on water maps (`pulp_wars-5ti.8`) waits for both, and
-  is where the numbers of the table above are measured.
+- The coarse balance on water maps (`pulp_wars-5ti.8`) is where the
+  numbers of the tables above are measured.
 
 ## The Rift (`pulp_wars-9s0.5`)
 

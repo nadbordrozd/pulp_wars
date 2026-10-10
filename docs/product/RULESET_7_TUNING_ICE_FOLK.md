@@ -325,7 +325,9 @@ Coins) against the Humans' 17 (80 Coins).
 - **The Normal AI never Freezes.** An Ice Folk seat has no ships and no
   ice-bridge plan: on a water map it stays on its landmass. It needs a
   plan of its own (a target across Shallow Water, the Yetis that freeze a
-  lane, the units that follow), which this bead did not start.
+  lane, the units that follow), which this bead did not start. (Done
+  since by `pulp_wars-5ti.5`: the ice plan of
+  [Normal AI, the frozen sea](../architecture/NORMAL_AI.md#the-frozen-sea-pulp_wars-5ti5).)
 - **The Mammoth is not reached** before round 22 by the AI in a generated
   match, so its Sweep and the Sabretooth's Prowl are played by the general
   army rules only (no rule of their own was written or tested in play).

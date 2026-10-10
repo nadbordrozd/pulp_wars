@@ -115,6 +115,10 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       // pulp_wars-w49.17: the ninth unit's positional values (public view
       // only).
       "./v7-ninth-unit",
+      // pulp_wars-5ti.5: the frozen sea, the ice plan of an Ice Folk seat
+      // and every seat's play against the ice (public view and previews
+      // only).
+      "./v7-frozen-sea",
       // pulp_wars-5ti.4: the naval branch of the seafaring seats (public
       // view and previews only).
       "./v7-naval",

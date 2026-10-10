@@ -119,6 +119,18 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/ai/v7-naval.ts::navalRamHoldsAttackV7": "BOARD",
     "src/ai/v7-naval.ts::navalRamShoveValueV7": "BOARD",
     "src/ai/v7-naval.ts::navalSubmarineMoveRejectedV7": "BOARD",
+    // `pulp_wars-5ti.5`: the frozen sea reads the board: the units that
+    // walk to a crossing and Freeze it, the ships a Freeze locks in and the
+    // units that can strike them, the units on ice, and the unit that
+    // blocks a Freeze line (a burrowed unit stands on no ice, Freezes
+    // nothing, is no ship, and a mound is never on water).
+    "src/ai/v7-frozen-sea.ts::computeIcePlan": "BOARD",
+    "src/ai/v7-frozen-sea.ts::freezeTakes": "BOARD",
+    "src/ai/v7-frozen-sea.ts::iceFreezeScoreV7": "BOARD",
+    "src/ai/v7-frozen-sea.ts::iceHostileFreezersV7": "BOARD",
+    "src/ai/v7-frozen-sea.ts::iceSeaResearchV7": "BOARD",
+    "src/ai/v7-frozen-sea.ts::iceboundCrewLandingV7": "BOARD",
+    "src/ai/v7-frozen-sea.ts::waveBehind": "BOARD",
     // The exploration plan (`pulp_wars-nc6`): the reach of the hostile units
     // on the board (a burrowed unit threatens nobody).
     "src/ai/v7-exploration.ts::explorationSurveyV7": "BOARD",

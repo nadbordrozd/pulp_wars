@@ -556,6 +556,24 @@ import {
 } from "./v7-dwarf";
 import { ninthUnitMoveValueV7, ownWightGraveHeldV7 } from "./v7-ninth-unit";
 import {
+  ICE_CREW_LANDING_PRIORITY_V7,
+  iceCrossingMoveV7,
+  iceFreezeScoreV7,
+  iceLandingRejectedV7,
+  iceMoveOntoHostileIceRejectedV7,
+  iceSeaCrossingTechV7,
+  iceSeaPlanV7,
+  iceSeaResearchV7,
+  iceSeaSeatV7,
+  iceShipMoveRejectedV7,
+  iceSlideEndV7,
+  iceSliderV7,
+  iceTargetBonusV7,
+  iceboundCrewLandingV7,
+  type FrozenSeaToolsV7,
+  type IcePlanV7,
+} from "./v7-frozen-sea";
+import {
   NAVAL_COUNTER_TRAINING_PRIORITY_V7,
   NAVAL_RAM_APPROACH_PRIORITY_V7,
   NAVAL_SCREEN_PRIORITY_V7,
@@ -2535,8 +2553,8 @@ function* navalPlanWorkV7(
   // The frozen sea engine (`pulp_wars-5ti.3`, RULESET_7_NAVAL_BRANCH.md
   // section 17): a seat whose tree unlocks no ship (the Ice Folk) has no
   // ship and cannot embark, so it has no naval plan: no Port for embarking,
-  // no transport, no escort. It plays on its own landmass until the ice
-  // plan of `pulp_wars-5ti.5`.
+  // no transport, no escort. Its way over the water is the ice plan
+  // (`iceSeaPlanV7`, `pulp_wars-5ti.5`).
   if (
     !NAVAL_ROLE_IDS_V7.some((role) =>
       factionUnlocksRoleV7(view.viewer.faction, role),
@@ -3238,6 +3256,40 @@ export function publicThreatenedTilesForPolicyV7(
   };
   drain(publicThreatLookupWorkV7(view, lookup));
   return drain(publicThreatenedTilesWorkV7(view, unit, lookup));
+}
+
+/**
+ * The frozen sea (`pulp_wars-5ti.5`), for tests and harnesses: the tiles the
+ * policy's reach estimate lets a visible unit stand on and still use its
+ * primary action this turn (its own tile first; the slide is followed).
+ */
+export function publicStandTilesForPolicyV7(
+  view: PlayerViewV7,
+  unit: PublicUnitV7,
+): readonly CoordV7[] {
+  const lookup: PublicThreatLookupV7 = {
+    occupantsByKey: new Map(),
+    cityOwnersByKey: new Map(),
+    engineeringOwnerIds: new Set(
+      view.viewer.researchedTechs.includes("ENGINEERING")
+        ? [view.viewer.id]
+        : [],
+    ),
+  };
+  drain(publicThreatLookupWorkV7(view, lookup));
+  const tiles: CoordV7[] = [];
+  drain(
+    publicThreatenedTilesWorkV7(
+      view,
+      unit,
+      lookup,
+      undefined,
+      undefined,
+      true,
+      tiles,
+    ),
+  );
+  return tiles;
 }
 
 /**
@@ -9924,6 +9976,11 @@ function* publicThreatenedTilesWorkV7(
   pathWork?: MutablePolicyPathDiagnosticsV7,
   policyLookup?: PolicyLookupV7,
   withGlide = true,
+  /**
+   * The frozen sea (`pulp_wars-5ti.5`): filled with the tiles the unit can
+   * stand on and still act (its own tile first), for the Freeze reach.
+   */
+  standTilesOut?: CoordV7[],
 ): Generator<void, readonly CoordV7[]> {
   const rule = unitRoleRuleV7(view, unit);
   const facts = publicCombatFacts(view, unit, policyLookup);
@@ -9932,7 +9989,11 @@ function* publicThreatenedTilesWorkV7(
   // Revision 13: a hostile Banshee's Wail threatens a living viewer within
   // Chebyshev 2 of every tile it can reach (it may Wail after moving).
   const wail = publicWailThreatV7(view, unit);
-  if (!wail && (!facts.abilities.includes("ATTACK") || facts.attack2 <= 0))
+  if (
+    standTilesOut === undefined &&
+    !wail &&
+    (!facts.abilities.includes("ATTACK") || facts.attack2 <= 0)
+  )
     return [];
   // The frozen sea (`pulp_wars-5ti.3`): an icebound unit cannot move or
   // attack, so it threatens nothing.
@@ -9977,6 +10038,29 @@ function* publicThreatenedTilesWorkV7(
   // ending on one) and ignores hostile zones of control, so a screen does
   // not keep it from the units behind. Only the Colossus has the ability.
   const overstrides = unitOverstridesV7(view, unit);
+  // The frozen sea (`pulp_wars-5ti.5`, section 8.6): an Ice Folk unit that
+  // steps onto known ice slides straight on, at no cost, to the end of the
+  // ice, a unit, or a zone of control (`iceSlideEndV7`). False in a view
+  // without ice. Glacier's extra Move on ice is its owner's private
+  // research and is left out.
+  const slides = iceSliderV7(view, unit);
+  const zocAt = (target: PlayerViewV7["board"]["tiles"][number]): boolean =>
+    mode !== "FLY" &&
+    !prowls &&
+    !overstrides &&
+    neighbors8V7(view, target.at).some((adjacent) =>
+      (lookup.occupantsByKey.get(coordKey(adjacent)) ?? []).some(
+        (occupant) =>
+          occupant.id !== unit.id &&
+          occupant.hp > 0 &&
+          occupant.form !== "EMBARKED" &&
+          // Revision 19: an Egg projects no zone of control.
+          occupant.form !== "EGG" &&
+          occupant.ownerId !== unit.ownerId &&
+          !publicPlayersAllied(view, unit.ownerId, occupant.ownerId) &&
+          publicProjectsZocForThreatV7(view, occupant, unit, target),
+      ),
+    );
   const origins = new Map([[coordKey(unit.at), unit.at]]);
   // Section 6.3: a Goblin beside its seat's Troll (or one step from it) may
   // be thrown two or three tiles and still attack or Kaboom, so every
@@ -10015,7 +10099,7 @@ function* publicThreatenedTilesWorkV7(
         priorTile !== undefined &&
         publicRoadNodeForOwner(priorTile, unit.ownerId, lookup);
       for (const next of neighbors8V7(view, current.at)) {
-        const tile = tileAtPublicV7(view, next);
+        let tile = tileAtPublicV7(view, next);
         if (!publicMovementTilePossible(view, unit, tile, lookup)) continue;
         // Revision 18: a unit passes through the visible units of its own
         // owner, never another seat's, and cannot end on any unit.
@@ -10039,6 +10123,25 @@ function* publicThreatenedTilesWorkV7(
             !view.cities.some(
               (city) => same(city.at, tile.at) && city.ownerId === unit.ownerId,
             ));
+        // The frozen sea: the step onto ice is the slide; the unit never
+        // stops short of its end and never passes a unit on the ice.
+        if (slides && isIceAtV7(view, tile.at)) {
+          if (occupants.length > 0) continue;
+          tile = tileAtPublicV7(
+            view,
+            iceSlideEndV7(
+              view,
+              tile.at,
+              tile.at.x - current.at.x,
+              tile.at.y - current.at.y,
+              (at) =>
+                (lookup.occupantsByKey.get(coordKey(at)) ?? []).some(
+                  (occupant) => occupant.id !== unit.id && occupant.hp > 0,
+                ),
+              (at) => zocAt(tileAtPublicV7(view, at)),
+            ),
+          );
+        }
         // Revision 18: leaving a usable Road node costs half; the Forest and
         // Mountain stop is still waived only when both ends are Road nodes.
         const roadCost = unit.form === "LAND" && priorRoadNode;
@@ -10068,33 +10171,15 @@ function* publicThreatenedTilesWorkV7(
             mountainBorn: unitIsMountainBornV7(view, unit),
             ignoresForest: false,
             roadEdge,
-            // The frozen sea (`pulp_wars-5ti.3`, correctness only): known
-            // ice is ground on which another faction's ground unit slips.
-            // An Ice Folk unit's slide is left out of this estimate (it
-            // walks the ice here); the ice rules of the policy are
-            // `pulp_wars-5ti.5`.
+            // The frozen sea (`pulp_wars-5ti.3`): known ice is ground on
+            // which another faction's ground unit slips (an Ice Folk unit
+            // slides instead, above).
             ice: isIceAtV7(view, tile.at),
             iceFolk: unitOwnerIsIceFolkV7(view, unit),
           });
         const snowStop =
           deepSnow && !roadEdge && tile.explored && tile.snow === true;
-        const hostileZoc =
-          mode !== "FLY" &&
-          !prowls &&
-          !overstrides &&
-          neighbors8V7(view, tile.at).some((adjacent) =>
-            (lookup.occupantsByKey.get(coordKey(adjacent)) ?? []).some(
-              (occupant) =>
-                occupant.id !== unit.id &&
-                occupant.hp > 0 &&
-                occupant.form !== "EMBARKED" &&
-                // Revision 19: an Egg projects no zone of control.
-                occupant.form !== "EGG" &&
-                occupant.ownerId !== unit.ownerId &&
-                !publicPlayersAllied(view, unit.ownerId, occupant.ownerId) &&
-                publicProjectsZocForThreatV7(view, occupant, unit, tile),
-            ),
-          );
+        const hostileZoc = zocAt(tile);
         const stops = terrainStop || hostileZoc || snowStop;
         if (passedOnly && stops) continue;
         best.set(key, spent2);
@@ -10103,6 +10188,10 @@ function* publicThreatenedTilesWorkV7(
       }
       yield;
     }
+  }
+  if (standTilesOut !== undefined) {
+    standTilesOut.push(...origins.values());
+    return [];
   }
   const direct: CoordV7[] = [];
   for (const origin of origins.values()) {
@@ -10302,12 +10391,95 @@ function navalRejectsV7(context: PolicyContextV7, command: CommandV7): boolean {
   );
 }
 
+// ---------------------------------------------------------------------------
+// The frozen sea (`pulp_wars-5ti.5`, `src/ai/v7-frozen-sea.ts`): the ice plan
+// of an Ice Folk seat, and every seat's play against the ice.
+// ---------------------------------------------------------------------------
+
+const FROZEN_SEA_TOOLS_CACHE_V7 = new WeakMap<
+  PolicyContextV7,
+  FrozenSeaToolsV7
+>();
+
+/** What the frozen-sea rules borrow from the policy (cached per decision). */
+function frozenSeaToolsV7(context: PolicyContextV7): FrozenSeaToolsV7 {
+  const cached = FROZEN_SEA_TOOLS_CACHE_V7.get(context);
+  if (cached !== undefined) return cached;
+  const view = context.view;
+  const stands = new Map<UnitId, readonly CoordV7[]>();
+  const tools: FrozenSeaToolsV7 = {
+    isHostile: (ownerId) => isHostile(view, ownerId),
+    isAllied: (ownerId) =>
+      ownerId !== view.viewer.id &&
+      publicPlayersAllied(view, view.viewer.id, ownerId),
+    danger: (inView, unit, at) =>
+      visibleImmediateDamage(inView, unit, at, context),
+    standTiles: (hostile) => {
+      const known = stands.get(hostile.id);
+      if (known !== undefined) return known;
+      const tiles: CoordV7[] = [];
+      drain(
+        publicThreatenedTilesWorkV7(
+          view,
+          hostile,
+          context.threatLookup,
+          undefined,
+          context.lookup,
+          true,
+          tiles,
+        ),
+      );
+      stands.set(hostile.id, tiles);
+      return tiles;
+    },
+    objective: (unitId) => context.tactical.objectiveByUnitId.get(unitId),
+    commands: context.commands,
+  };
+  FROZEN_SEA_TOOLS_CACHE_V7.set(context, tools);
+  return tools;
+}
+
+/** The ice plan of the decision (`iceSeaPlanV7`): null for every seat but an Ice Folk one. */
+function icePlanV7(context: PolicyContextV7): IcePlanV7 | null {
+  if (!iceSeaSeatV7(context.view)) return null;
+  return iceSeaPlanV7(context.view, frozenSeaToolsV7(context));
+}
+
+/**
+ * What every seat refuses against the ice (false at once in a view without
+ * ice): a ship's Move into the Freeze reach of a seat that has been seen to
+ * Freeze, a land unit's Move that ends on the ice of a hostile Ice Folk
+ * seat, and a landing on such ice with a landing beside it on offer.
+ */
+function frozenSeaRejectsV7(
+  context: PolicyContextV7,
+  command: CommandV7,
+): boolean {
+  if (context.view.ice.length === 0) return false;
+  if (command.kind === "DISEMBARK")
+    return iceLandingRejectedV7(
+      context.view,
+      frozenSeaToolsV7(context),
+      command,
+    );
+  if (command.kind !== "MOVE") return false;
+  const actor = context.lookup.unitsById.get(command.unitId);
+  const to = command.path.at(-1);
+  if (actor === undefined || to === undefined) return false;
+  const tools = frozenSeaToolsV7(context);
+  return (
+    iceShipMoveRejectedV7(context.view, tools, actor, to) ||
+    iceMoveOntoHostileIceRejectedV7(context.view, tools, actor, to)
+  );
+}
+
 function isPolicyCandidate(
   context: PolicyContextV7,
   command: CommandV7,
 ): boolean {
   if (command.kind === "WAIT") return false;
   if (navalRejectsV7(context, command)) return false;
+  if (frozenSeaRejectsV7(context, command)) return false;
   // The giants' signatures (`pulp_wars-w49.31`, RULESET_7_GIANTS.md
   // section 9): the four commands by their plans (`giantTossPlanV7`...).
   // A Swallow is scored by its preview; the large Toss and Break Off offer
@@ -10347,10 +10519,19 @@ function isPolicyCandidate(
     command.kind === "OFFERING"
   )
     return false;
-  // The frozen sea engine (`pulp_wars-5ti.3`, RULESET_7_NAVAL_BRANCH.md
-  // section 17): until the ice plan of `pulp_wars-5ti.5` the policy Freezes
-  // nothing. The command is offered only to an Ice Folk seat with Rime.
-  if (command.kind === "FREEZE") return false;
+  // The frozen sea (`pulp_wars-5ti.5`, RULESET_7_NAVAL_BRANCH.md section
+  // 13.2): a Freeze only with a reason (a ship to lock in, the next tile of
+  // the crossing, a crossing tile to keep, home ice): `iceFreezeScoreV7`.
+  // The command is offered only to a seat with an Ice Folk unit and Rime.
+  if (command.kind === "FREEZE")
+    return (
+      iceFreezeScoreV7(
+        context.view,
+        frozenSeaToolsV7(context),
+        icePlanV7(context),
+        command,
+      ) !== null
+    );
   // The Candy revision (`pulp_wars-jdb.4`, RULESET_7_CANDY.md section 14):
   // a Rush only with a plan, and the one Re-bake and the one Toss per unit
   // the Candy rules chose (their scores reject the others). With a group
@@ -10609,6 +10790,12 @@ function isPolicyCandidate(
   if (command.kind === "DISEMBARK" && context.naval.active)
     return (
       context.naval.landing.some((at) => same(at, command.at)) ||
+      // The frozen sea: the crew of an icebound transport climbs out.
+      iceboundCrewLandingV7(
+        context.view,
+        frozenSeaToolsV7(context),
+        command,
+      ) !== null ||
       endgameLandingValueV7(context, command) > 0 ||
       (strandedTransportV7(context, command.unitId) &&
         campaignHasWorkAtV7(context.tactical.campaign, command.at))
@@ -10649,7 +10836,10 @@ function isPolicyCandidate(
   if (
     command.kind === "RESEARCH" &&
     !normalOpeningResearchPendingV7(context.view) &&
-    armyResearchHoldsV7(context, command.tech)
+    armyResearchHoldsV7(context, command.tech) &&
+    // The frozen sea: Rime (or Pack Ice) for a crossing is not held back:
+    // without it the seat has no objective it can reach.
+    !iceSeaCrossingTechV7(context.view, icePlanV7(context), command.tech)
   )
     return false;
   // Tuning 6 (`pulp_wars-w49.6`): no research with an enemy at the gates
@@ -12808,6 +12998,27 @@ function scoreCommandWithContext(
         strategicValue = Math.max(strategicValue, branch.strategic);
       }
     }
+    // The frozen sea (`pulp_wars-5ti.5`): an Ice Folk seat's five ice
+    // technologies, each when the board asks for it (`iceSeaResearchV7`).
+    if (iceSeaSeatV7(view)) {
+      const ice = iceSeaResearchV7(
+        view,
+        frozenSeaToolsV7(context),
+        icePlanV7(context),
+        (tech) =>
+          context.commands.some(
+            (offered) => offered.kind === "RESEARCH" && offered.tech === tech,
+          ),
+      );
+      if (
+        ice !== null &&
+        ice.tech === command.tech &&
+        ice.priority > priority
+      ) {
+        priority = ice.priority;
+        strategicValue = Math.max(strategicValue, ice.strategic);
+      }
+    }
   }
 
   // Tuning 5 (`pulp_wars-w49.4`): the army's next fighting role.
@@ -12975,6 +13186,17 @@ function scoreCommandWithContext(
       priority = Math.max(priority, ENDGAME_APPROACH_PRIORITY_V7);
       strategicValue += landing;
     }
+    // The frozen sea (`pulp_wars-5ti.5`): the crew of an icebound
+    // transport climbs out, onto land before ice.
+    const crew = iceboundCrewLandingV7(
+      view,
+      frozenSeaToolsV7(context),
+      command,
+    );
+    if (crew !== null) {
+      priority = Math.max(priority, ICE_CREW_LANDING_PRIORITY_V7);
+      strategicValue += crew;
+    }
     if (context.undead && fragileLandingExposedV7(context, actor, command.at))
       priority = -1;
   }
@@ -13069,6 +13291,14 @@ function scoreCommandWithContext(
         strategicValue += navalRamShoveValueV7(
           view,
           actor,
+          targetUnit,
+          preview,
+        );
+        // The frozen sea (`pulp_wars-5ti.5`): a unit on ice has no cover,
+        // and the kill of the unit that holds thawing ice breaks a bridge.
+        strategicValue += iceTargetBonusV7(
+          view,
+          frozenSeaToolsV7(context),
           targetUnit,
           preview,
         );
@@ -13334,6 +13564,21 @@ function scoreCommandWithContext(
       priority = breakOff.priority;
       strategicValue = breakOff.strategic;
       immediateValue = breakOff.immediate;
+    }
+  }
+
+  // The frozen sea (`pulp_wars-5ti.5`): a Freeze by its reason.
+  if (command.kind === "FREEZE") {
+    const freeze = iceFreezeScoreV7(
+      view,
+      frozenSeaToolsV7(context),
+      icePlanV7(context),
+      command,
+    );
+    if (freeze !== null) {
+      priority = freeze.priority;
+      strategicValue = freeze.strategic;
+      immediateValue = freeze.immediate;
     }
   }
 
@@ -14076,6 +14321,29 @@ function scoreCommandWithContext(
       priority = giant.priority;
       strategicValue += giant.strategic;
       immediateValue += giant.immediate;
+    }
+    // The frozen sea (`pulp_wars-5ti.5`): the ice plan of an Ice Folk
+    // seat. A builder goes to the tile it Freezes from, the wave walks to
+    // the head, holds off the crossing until it is ready, and then crosses.
+    if (resultAt !== null && !autoembark) {
+      const plan = icePlanV7(context);
+      const ice =
+        plan === null
+          ? null
+          : iceCrossingMoveV7(
+              view,
+              frozenSeaToolsV7(context),
+              plan,
+              actor,
+              resultAt,
+            );
+      if (ice !== null) {
+        if (ice.kind === "HOLD") priority = -1;
+        else {
+          priority = Math.max(priority, ice.priority);
+          strategicValue += ice.strategic;
+        }
+      }
     }
   }
 

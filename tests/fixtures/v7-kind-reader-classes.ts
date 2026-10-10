@@ -159,6 +159,14 @@ export const KIND_READER_CLASSES_V7: Readonly<
   // the Ram: a seafaring seat); a ship's Ram is read by its kind
   // (`navalRammerV7`, through `unitCapabilitiesV7`).
   "src/ai/v7-naval.ts::navalBranchResearchV7": "SEAT",
+  // `pulp_wars-5ti.5`: the ice plan is a seat's plan: the seat's own tree
+  // (whether its Shorecraft is Rime) and its own research (Pack Ice, the
+  // turns its ice lasts). Black Ice is a seat rule in the engine too
+  // (`resolveBlackIceV7`): the ice of a Martian controller never freezes
+  // units, so the owner of ice is read by its own faction.
+  "src/ai/v7-frozen-sea.ts::iceSeaSeatV7": "SEAT",
+  "src/ai/v7-frozen-sea.ts::computeIcePlan": "SEAT",
+  "src/ai/v7-frozen-sea.ts::blackIceSeat": "SEAT",
   "src/ai/v7-martian.ts::martianMatchForPolicyV7": "SEAT",
   "src/ai/v7-martian.ts::martianFactsV7": "SEAT",
   "src/ai/v7-martian.ts::martianProductionAdjustmentV7": "SEAT",

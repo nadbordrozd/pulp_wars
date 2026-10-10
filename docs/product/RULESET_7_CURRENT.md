@@ -197,9 +197,8 @@ sections changed where a shared rule reads differently
 [12](#12-movement-and-unit-actions), [13](#13-combat-and-fortification),
 [15](#15-fog-and-observation), and [16](#16-normal-ai-summary)). A match on
 Dry Land plays as before (the whole branch is forbidden there), and a match
-without an Ice Folk seat has no ice. What is still open (the Normal AI
-for and against the frozen sea, `pulp_wars-5ti.5`; the coarse
-balance on water maps, `pulp_wars-5ti.8`; and the polish items of
+without an Ice Folk seat has no ice. What is still open (the coarse
+balance on water maps, `pulp_wars-5ti.8`, and the polish items of
 `pulp_wars-5ti.10`) is in [section 25](#25-known-discrepancies).
 `pulp-wars-poc-7r45` (`pulp_wars-5ti.11`) fixes one rule of the frozen sea:
 a unit on ice has no fortification, so a Dwarf Hammerer or Steam Mole is
@@ -6751,7 +6750,8 @@ Harbours from it.
   units of less than 15 HP at their maximum do not stand side by side
   there, and a Musk Ox's or a Mammoth's Move beside them has an escort's
   value. A Yeti or a Sled does not step beside an enemy where it would die
-  without a unit of its side there or coming. The seat never Freezes
+  without a unit of its side there or coming. Its Freeze and its way
+  over water are the frozen sea's, below
   ([Normal AI](../architecture/NORMAL_AI.md#step-two-of-the-ice-folk-pass-pulp_wars-w4927)).
 - **Step two of the Dwarf pass** (`pulp_wars-w49.28`, `7r59`, no rule and
   no identity change). A Dwarf seat plays the army rules in a match whose
@@ -7039,16 +7039,38 @@ Harbours from it.
   beside it. Its threat estimate gives a Submarine water tiles and afloat
   targets only, threatens a submerged Submarine only from the next tile,
   and assumes a hostile Patrol Boat rams. Every planned attack is read
-  from the public preview. None of it is measured in matches yet. An Ice
-  Folk seat makes no naval plan and never picks `FREEZE` (the command is
-  not a policy candidate), so it does not cross water on purpose; its units
-  walk and slide onto ice that exists when an offered Move does. Every
-  seat's threat estimate treats ice as ground for land units, gives a
-  slipping unit one tile of ice and an icebound unit no threat, and does
-  not follow a slide. Dry Land decisions are unchanged. The Ice Folk ice
-  plan with the play against the ice (`pulp_wars-5ti.5`) is open
-  ([section 25](#25-known-discrepancies);
-  [Normal AI, naval plan](../architecture/NORMAL_AI.md#the-naval-branch-pulp_wars-5ti2-and-5ti3)).
+  from the public preview. None of it is measured in matches yet.
+- **The frozen sea** (`pulp_wars-5ti.5`, `src/ai/v7-frozen-sea.ts`). An
+  Ice Folk seat has no ship and no naval plan; it has an **ice plan**
+  where a seafaring seat's naval plan would activate (every known
+  objective is overseas, or the way over the water is more than three
+  steps shorter than the walk). The plan picks a **crossing**: the
+  shortest chain of water tiles from its shore to the objective's,
+  straight where it can be, out of a visible Battleship's reach, over
+  Deep Water only with Pack Ice. A **builder** (the Witch when she is
+  near and the crossing short, otherwise a Yeti) walks to its head,
+  Freezes two tiles, steps onto the newest ice, and Freezes again; **the
+  wave** waits at the head until the crossing is complete or one Freeze
+  short and then crosses by the offered Moves, sliding. The seat Freezes
+  only with a reason: the next tile of the crossing, a crossing tile about
+  to thaw that a unit still has to pass, a hostile ship to lock in
+  (Icebound, before the attacks on it, which are then unanswered), or its
+  own waters beside a center a hostile ship has come within 3 of. It
+  researches Rime for a crossing or against a ship near a center, Pack Ice
+  for a Deep Water crossing, Icebound against a Battleship or Submarine
+  within 4 of a unit, Black Ice once an enemy stands on its ice or a
+  transport nears its land, and Glacier last. **Every seat** plays against
+  the ice: its threat estimate follows a slide; a ship does not end a Move
+  where a unit of a seat that has been seen to Freeze can lock it in this
+  turn; a land unit does not end a Move on the ice of a hostile Ice Folk
+  seat (Black Ice is assumed, research being private) and a transport
+  lands beside such ice; an own icebound ship is written off and the crew
+  of an icebound transport lands; and the kill of a unit that holds
+  thawing ice is valued, since the tile then melts. An icebound unit
+  threatens nothing, a slipping unit's reach ends on the first ice tile,
+  and Dry Land decisions are unchanged. None of it is measured in matches
+  yet ([section 25](#25-known-discrepancies);
+  [Normal AI, the frozen sea](../architecture/NORMAL_AI.md#the-frozen-sea-pulp_wars-5ti5)).
 - **Undead play.** In a match with an Undead seat (and only there, so
   decisions elsewhere are unchanged), Normal plays as and against the Undead
   from public information: Raise Dead on Graves whose Skeletons would survive,
@@ -10857,7 +10879,7 @@ own, and a ship frozen there stays until crushed.
   with an Ice Folk seat) and, in the `iceFolk` block, `onIce`, `slides`,
   and `iceCover`.
 - **Normal AI, presentation, and balance:** an Ice Folk seat's Normal AI
-  never Freezes and makes no naval plan
+  crosses water by an ice plan and every seat plays against the ice
   ([section 16](#16-normal-ai-summary)); the interface is described in
   [board targeting section 3.5](../ui/BOARD_TARGETING.md#35-the-frozen-sea-freeze-the-slide-icebound-bead-pulp_wars-5ti7)
   and the art in
@@ -13118,13 +13140,18 @@ items left after the fold, and the pending balance steps below.
     ([section 16](#16-normal-ai-summary)). The head-to-head test the
     overlay asks of each rule was not run (no match is played without the
     user's word); the numbers are checked with the balance below.
-  - **Normal AI for and against the frozen sea, `pulp_wars-5ti.5`.** An Ice
-    Folk seat never Freezes and makes no naval plan, so on Continents and
-    Archipelago it stays on the land it can walk to; other seats do not
-    avoid landing on ice, keep ships out of Freeze reach, or follow a slide
-    in their threat estimates (the overlay's
-    [sections 13.2 and 13.3](RULESET_7_NAVAL_BRANCH.md#132-the-ice-folk-bead-5ti5)).
-    A player's Ice Folk can do all of it.
+  - **Normal AI for and against the frozen sea, `pulp_wars-5ti.5`: done,
+    not measured.** The ice plan of an Ice Folk seat and every seat's play
+    against the ice (the overlay's
+    [sections 13.2 and 13.3](RULESET_7_NAVAL_BRANCH.md#132-the-ice-folk-bead-5ti5))
+    are in the policy and proven on hand-built positions
+    ([section 16](#16-normal-ai-summary)). No head-to-head or
+    win-tendency test was run and no match was played. Known limits: a
+    crossing longer than its ice lasts (more than six tiles, ten with
+    Glacier) is built with a second builder that refreezes, not marched as
+    a column; a hostile seat's Glacier Move is not assumed in the threat
+    estimate; and a seat is taken to have Icebound only once it owns ice
+    the viewer knows of.
   - **Balance, `pulp_wars-5ti.8`.** The branch has had no balance check:
     the Continents and Archipelago matrix, the telemetry, and the
     acceptance list of the overlay's
@@ -13132,8 +13159,7 @@ items left after the fold, and the pending balance steps below.
     were not run, no number was tuned, and the headless tools count `BOARD`
     and `FREEZE` in `commandsByKind` and the Black Ice freezes in the
     `iceFolk` block but have none of the naval telemetry of its section
-    15.2. The check waits for the two AI beads, since without them the
-    Ice Folk do not cross water and no seat plays Submarines. The numbers
+    15.2. Both AI beads are done, so the check can run. The numbers
     here are the overlay's decided ones (with the Snow cover of `7r37`).
   - **Polish, `pulp_wars-5ti.10`.** (1) Freeze has no registered action
     icon (the button shows a snowflake glyph), and the five Ice Folk Naval
