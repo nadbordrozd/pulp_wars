@@ -236,6 +236,18 @@ import {
   turnsTextV7,
 } from "../src/render/dinosaur-presentation-v7";
 import {
+  FAVOUR_SOURCE_LABELS_V7,
+  OFFERING_UNLOCK_TEXT_V7,
+  SUMMONER_SUPPORT_UNLOCK_TEXT_V7,
+} from "../src/render/cult-presentation-v7";
+import {
+  factionHasFavourV7,
+  favourOfV7,
+  previewOfferingV7,
+  previewSacrificeV7,
+  previewSeizeV7,
+} from "../src/engine/index";
+import {
   BRAIN_SUPPORT_UNLOCK_TEXT_V7,
   DISINTEGRATOR_UNLOCK_TEXT_V7,
   FORCE_FIELDS_UNLOCK_TEXT_V7,
@@ -1005,6 +1017,13 @@ export function textPlayCommandIdV7(command: CommandV7): string {
       return `u${command.unitId}.stomp`;
     case "BREAK_OFF":
       return `u${command.unitId}.breakoff.${xyV7(command.tiles[0])}+${xyV7(command.tiles[1])}`;
+    // The Cultists (`pulp_wars-mch9.4`).
+    case "SACRIFICE":
+      return `u${command.unitId}.sacrifice.u${command.victimUnitId}`;
+    case "SEIZE":
+      return `u${command.unitId}.seize.u${command.victimUnitId}`;
+    case "OFFERING":
+      return `c${command.cityId}.offering`;
     case "HATCH":
       return `u${command.unitId}.hatch.u${command.eggUnitId}`;
     case "BEAM_DOWN":
@@ -1631,6 +1650,11 @@ function unlockTextV7(
       return `${nestingUnlockTextV7()} [${unlock.kind}]`;
     case "WALLBREAKER":
       return `${WALLBREAKER_UNLOCK_TEXT_V7} [${unlock.kind}]`;
+    // The Cultists (`pulp_wars-mch9.4`).
+    case "SUMMONER_SUPPORT":
+      return `${SUMMONER_SUPPORT_UNLOCK_TEXT_V7} [${unlock.kind}]`;
+    case "OFFERING":
+      return `${OFFERING_UNLOCK_TEXT_V7} [${unlock.kind}]`;
     default: {
       if (unlock.kind === "FOREST_COVER")
         return `${FOREST_COVER_UNLOCK_TEXT_V7} [${unlock.kind}]`;
@@ -1909,6 +1933,30 @@ function describeCommandV7(
       );
       return `top up ${context.memory.tag(command.targetUnitId)}${target === undefined ? "" : `: ${target.crashEnded ? "ends its Crash, " : ""}+${target.amount} hp to ${target.hpAfter}${target.cured ? ", cures it" : ""}`}`;
     }
+    // The Cultists (`pulp_wars-mch9.4`, RULESET_7_CULTISTS.md section 5).
+    case "SACRIFICE": {
+      const preview = previewSacrificeV7(
+        view,
+        command.unitId,
+        command.victimUnitId,
+      );
+      return `SACRIFICE your ${context.memory.tag(command.victimUnitId)}: it is removed for good (no kill for anyone, no Grave; its city slot frees)${preview === null ? "" : ` | +${preview.favour} Favour, its value (favour ${preview.favourAfter - preview.favour}->${preview.favourAfter})`} | not a Loss in the score, but it ends a flawless game`;
+    }
+    case "SEIZE": {
+      const preview = previewSeizeV7(
+        view,
+        command.unitId,
+        command.victimUnitId,
+      );
+      return `SEIZE ${context.memory.tag(command.victimUnitId)}: it dies, a kill for this unit (no Grave, no blast, no rising)${preview === null ? "" : ` | held down by ${context.memory.tag(preview.holderUnitId)} | +${preview.favour} Favour, twice its value (favour ${preview.favourAfter - preview.favour}->${preview.favourAfter})`}`;
+    }
+    case "OFFERING": {
+      const preview = previewOfferingV7(view, command.cityId);
+      const city = view.cities.find(
+        (candidate) => candidate.id === command.cityId,
+      );
+      return `OFFERING${preview === null ? "" : `: the city gives up ${preview.population} population for good${city === undefined ? "" : ` (pop ${city.population}/${city.level + 1} -> ${preview.populationAfter}/${city.level + 1})`} | +${preview.favour} Favour (favour ${preview.favourAfter - preview.favour}->${preview.favourAfter})`} | uses the city action`;
+    }
     // The giants' signatures (`pulp_wars-w49.30`).
     case "SWALLOW": {
       const preview = previewSwallowV7(
@@ -2153,6 +2201,31 @@ function eventTextV7(
       );
       break;
     }
+    // The Cultists (`pulp_wars-mch9.4`): the offerings and the Favour.
+    case "UNIT_SACRIFICED":
+      lines.push(
+        `SACRIFICED ${context.memory.tag(event.victimUnitId)} @${xyV7(event.at)} by ${context.memory.tag(event.unitId)}: it left the board (no grave, no kill) for +${event.favour} Favour`,
+      );
+      if (event.playerId !== me)
+        notes.push(`SAW SACRIFICE ${context.memory.tag(event.victimUnitId)}`);
+      break;
+    case "UNIT_SEIZED":
+      lines.push(
+        `SEIZED ${context.memory.tag(event.victimUnitId)} @${xyV7(event.at)} by ${context.memory.tag(event.unitId)} (held by ${context.memory.tag(event.holderUnitId)}) for +${event.favour} Favour`,
+      );
+      break;
+    case "OFFERING_MADE":
+      lines.push(
+        `OFFERING ${cityTagV7(context.view, event.cityId)} @${xyV7(event.at)} of ${seatLabelV7(context.view, event.playerId)}: -${event.population} population for +${event.favour} Favour`,
+      );
+      break;
+    case "FAVOUR_GAINED":
+      lines.push(
+        `FAVOUR ${seatLabelV7(context.view, event.playerId)} +${event.amount} from ${FAVOUR_SOURCE_LABELS_V7[event.source]} (now ${event.favour})`,
+      );
+      if (event.playerId === me && event.source === "MARTYR")
+        notes.push(`MARTYR +${event.amount} Favour (now ${event.favour})`);
+      break;
     case "UNIT_DISBANDED": {
       // Tuning 7 (`pulp_wars-w49.10`): a unit another seat disbands in
       // your sight is reported (it used to vanish without a line).
@@ -3471,7 +3544,7 @@ function headerLinesV7(session: SessionV7, view: PlayerViewV7): string[] {
   const score = queryScoreV7(view);
   const lines = [
     `== state #${state.commandIndex} | ${RULESET_7_ID} | ${view.setup.mapType.toLowerCase()} ${view.board.width}x${view.board.height} seed ${view.setup.seed} | ${score.gameMode.toLowerCase()} ==`,
-    `ROUND ${view.round}${score.roundLimit === null ? "" : ` of ${score.roundLimit}`} | you are ${seatNameV7(view, view.viewer.id)} | ${view.outcome !== null ? "MATCH OVER" : active === view.viewer.id ? "YOUR TURN" : `waiting for ${seatLabelV7(view, active ?? 0)}`} | coins ${view.viewer.coins} | income +${totalIncomeV7(view)}/turn | cities ${ownCitiesV7(view).length} | units ${allOwnedUnitsV7(view, view.viewer.id).length} | score ${score.own?.total ?? 0}`,
+    `ROUND ${view.round}${score.roundLimit === null ? "" : ` of ${score.roundLimit}`} | you are ${seatNameV7(view, view.viewer.id)} | ${view.outcome !== null ? "MATCH OVER" : active === view.viewer.id ? "YOUR TURN" : `waiting for ${seatLabelV7(view, active ?? 0)}`} | coins ${view.viewer.coins}${factionHasFavourV7(view.viewer.faction) ? ` | favour ${favourOfV7(view, view.viewer.id)}` : ""} | income +${totalIncomeV7(view)}/turn | cities ${ownCitiesV7(view).length} | units ${allOwnedUnitsV7(view, view.viewer.id).length} | score ${score.own?.total ?? 0}`,
     `PLAYERS in turn order: ${[
       ...view.turnOrder.flatMap((playerId) =>
         view.leaderboard.filter((entry) => entry.playerId === playerId),
@@ -3482,7 +3555,7 @@ function headerLinesV7(session: SessionV7, view: PlayerViewV7): string[] {
     ]
       .map(
         (entry) =>
-          `S${entry.seat} ${FACTION_DISPLAY_NAMES_V7[entry.faction]}${entry.isViewer ? " (you)" : " (AI)"} ${entry.status.toLowerCase()} score ${entry.score} cities ${entry.cityCount} units ${entry.livingUnitCount}`,
+          `S${entry.seat} ${FACTION_DISPLAY_NAMES_V7[entry.faction]}${entry.isViewer ? " (you)" : " (AI)"} ${entry.status.toLowerCase()} score ${entry.score} cities ${entry.cityCount} units ${entry.livingUnitCount}${factionHasFavourV7(entry.faction) && entry.status === "ACTIVE" ? ` favour ${favourOfV7(view, entry.playerId)}` : ""}`,
       )
       .join(" > ")}`,
   ];

@@ -823,6 +823,19 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/engine/v7/reducer.ts::trampleResultsV7": "BOARD",
     "src/engine/v7/reducer.ts::resolveCrushV7": "BOARD",
     "src/engine/v7/state-schema.ts::giantsValid": "BOARD",
+    // The Cult's Favour (`pulp_wars-mch9.4`, RULESET_7_CULTISTS.md section
+    // 5). Every reader means the board: the victim of a Sacrifice or a
+    // Seizure and the cultist that holds it down stand on one of the eight
+    // tiles around the Summoner or the victim (a burrowed unit is
+    // underground: never offered, never a holder), and the previews and the
+    // dock's stand-in buttons name the same units. (Martyr reads every unit
+    // a seat owned before the command through `allOwnedUnitsV7`.)
+    "src/engine/v7/cult.ts::applySacrificeV7": "BOARD",
+    "src/engine/v7/cult.ts::applySeizeV7": "BOARD",
+    "src/engine/v7/query.ts::appendPublicCultCommandsV7": "BOARD",
+    "src/engine/v7/query.ts::previewSacrificeV7": "BOARD",
+    "src/engine/v7/query.ts::previewSeizeV7": "BOARD",
+    "src/render/cult-presentation-v7.ts::cultCommandPresentationV7": "BOARD",
   };
 
 /**

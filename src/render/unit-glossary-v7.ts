@@ -168,6 +168,20 @@ const ENTRIES = {
     "Break Off",
     "Spends some of its health to make two Gingerbread Men beside it. Each fights as a Toffee Trooper at full health.",
   ],
+  // The Cultists (`pulp_wars-mch9.4`, docs/product/RULESET_7_CULTISTS.md
+  // sections 5 and 8.2): what pays Favour.
+  SACRIFICE: [
+    "Sacrifice",
+    "Offers one of your own units next to it to the Ancient Ones. The unit is gone for good, and you gain Favour for it.",
+  ],
+  SEIZE: [
+    "Seize",
+    "Offers a badly hurt enemy next to it, while another of your robed cultists stands beside that enemy. It pays double Favour.",
+  ],
+  MARTYR: [
+    "Martyr",
+    "When it dies, the Ancient Ones pay you Favour. Sacrificing it pays nothing extra.",
+  ],
 
   // ------------------------------------------------------------------ ships
   SHIP: ["Ship", "Built at a Port. It heals only next to your own Ports."],

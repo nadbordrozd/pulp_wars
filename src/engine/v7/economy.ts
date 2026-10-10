@@ -17,6 +17,7 @@ import type { DomainEventV7 } from "./events";
 import { spatialContributionAtV7 } from "./spatial-economy";
 import { allOwnedUnitsV7, type UnitListsV7 } from "./units";
 import {
+  cityOfferedPopulationV7,
   isAfloatFormV7,
   isNeutralOwnerV7,
   type MatchSetupV7,
@@ -180,7 +181,10 @@ export function resolveCityGrowthV7(
     economicPopulation < 0
   )
     throw new RangeError("INTEGER_OVERFLOW");
-  const total = permanentPopulation + economicPopulation;
+  // The Cultists (docs/product/RULESET_7_CULTISTS.md section 5.3): what
+  // the city gave up in Offerings is gone from its population for good.
+  const total =
+    permanentPopulation + economicPopulation - cityOfferedPopulationV7(city);
   if (!Number.isSafeInteger(total)) throw new RangeError("INTEGER_OVERFLOW");
   let level = city.level;
   let spent = growthSpentV7(level);

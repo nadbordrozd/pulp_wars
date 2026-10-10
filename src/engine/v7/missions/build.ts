@@ -42,6 +42,7 @@ import {
   TECHNOLOGY_IDS_V7,
   UNIT_ROLE_IDS_V7,
   emptyNinthUnitStateV7,
+  emptyCultStateV7,
   emptyGiantsStateV7,
   type BiomeIdV7,
   type BoardStateV7,
@@ -610,6 +611,7 @@ export function buildMissionStateV7(
     ninthUnit: emptyNinthUnitStateV7(),
     barricades: [],
     giants: emptyGiantsStateV7(),
+    cult: emptyCultStateV7(),
     pendingChoices: [],
     outcome: null,
   };

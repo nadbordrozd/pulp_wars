@@ -19,6 +19,7 @@ import {
   runTextPlayV7,
   textPlayCommandIdV7,
 } from "../../scripts/play-text-v7";
+import { cultFieldV7, withFarmsV7, withFavourV7 } from "../fixtures/v7-cult";
 
 /**
  * The text-mode play harness (`pulp_wars-w49.1`,
@@ -1605,6 +1606,98 @@ describe("text-mode play harness", () => {
     );
     expect(refused.exitCode).toBe(1);
     expect(refused.output).toContain("--giant works with");
+  });
+
+  // The Cult's Favour (`pulp_wars-mch9.4`): the harness prints the Favour
+  // and offers the Sacrifice, the Seizure, and the Offering with what they
+  // pay. A constructed position on the seat's own turn; no turn is ended.
+  it("prints the Cult's Favour, and offers a Sacrifice, a Seizure, and an Offering", () => {
+    // A Summoner with the Thing beside it, a broken Human Knight held by an
+    // Initiate, a level-2 capital with 2 population, and 7 Favour. The
+    // session is written by hand, at command 0 of the seat's own turn.
+    const field = withFavourV7(
+      withFarmsV7(
+        cultFieldV7([
+          { seat: 0, role: "CAPTAIN", at: { x: 5, y: 2 } },
+          { seat: 0, role: "FIGHTER", at: { x: 6, y: 4 } },
+          { seat: 0, role: "JUGGERNAUT", at: { x: 4, y: 1 } },
+          { seat: 1, role: "KNIGHT", at: { x: 5, y: 3 }, hp: 5 },
+        ]),
+        0,
+        2,
+      ),
+      0,
+      7,
+    );
+    const session = path.join(root, "cult-favour.json");
+    writeFileSync(
+      session,
+      JSON.stringify({
+        format: "pulp-wars-text-play-session",
+        version: 1,
+        rulesetId: RULESET_7_ID,
+        seat: 0,
+        playerId: field.humanPlayerId,
+        setup: field.setup,
+        commands: [],
+        state: field,
+        stateHash: canonicalHash(field),
+        journal: { rounds: [], notes: [], observed: [] },
+      }),
+    );
+    const tech = ok("tech", "--session", session);
+    expect(tech).toContain(
+      "Offering: a city gives up 2 population for 3 Favour [OFFERING]",
+    );
+    expect(tech).toContain(
+      "Summoners Sacrifice your own units and Seize badly hurt enemies for Favour [SUMMONER_SUPPORT]",
+    );
+    const state = sessionState(session);
+    const view = ok("view", "--session", session);
+    expect(view).toContain("| favour 7 |");
+    expect(view).toMatch(/S0 Cultists \(you\) active [^>]* favour 7/);
+    expect(view).not.toMatch(/S1 Human[^>\n]* favour/);
+    const unit = (role: string) => {
+      const found = state.units.find((candidate) => candidate.role === role);
+      if (found === undefined) throw new Error(`no ${role}`);
+      return found.id;
+    };
+    const city = state.cities.find(
+      (candidate) => candidate.ownerId === state.humanPlayerId,
+    );
+    if (city === undefined) throw new Error("no Cult city");
+    const sacrifice = `u${unit("CAPTAIN")}.sacrifice.u${unit("JUGGERNAUT")}`;
+    const seize = `u${unit("CAPTAIN")}.seize.u${unit("KNIGHT")}`;
+    const offering = `c${city.id}.offering`;
+    expect(offeredIds(session)).toEqual(
+      expect.arrayContaining([sacrifice, seize, offering]),
+    );
+    for (const command of queryPlayerCommandsV7(
+      viewForV7(state, state.humanPlayerId),
+    ))
+      if (
+        command.kind === "SACRIFICE" ||
+        command.kind === "SEIZE" ||
+        command.kind === "OFFERING"
+      )
+        expect([sacrifice, seize, offering]).toContain(
+          textPlayCommandIdV7(command),
+        );
+    const options = ok("options", "--session", session, "--all");
+    expect(options).toContain("+12 Favour, its value (favour 7->19)");
+    expect(options).toContain("+18 Favour, twice its value (favour 7->25)");
+    expect(options).toContain(
+      "OFFERING: the city gives up 2 population for good (pop 2/3 -> 0/3) | +3 Favour (favour 7->10) | uses the city action",
+    );
+    const seized = ok("do", "--session", session, seize);
+    expect(seized).toMatch(/SEIZED .* for \+18 Favour/);
+    expect(seized).toContain("+18 from a Seizure (now 25)");
+    const offered = ok("do", "--session", session, offering);
+    expect(offered).toContain("-2 population for +3 Favour");
+    expect(offered).toContain("+3 from an Offering (now 28)");
+    expect(ok("view", "--session", session)).toContain("| favour 28 |");
+    // The Summoner has acted: no Sacrifice is left on offer.
+    expect(offeredIds(session)).not.toContain(sacrifice);
   });
 
   it("rejects illegal and stale ids cleanly", () => {

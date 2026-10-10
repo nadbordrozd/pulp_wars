@@ -624,6 +624,14 @@ import {
 } from "../dwarf-tunnel-v7";
 import type { DwarfPickV7 } from "../canvas/dwarf-board-plan-v7";
 import {
+  OFFERING_LABEL_V7,
+  OFFERING_UNLOCK_TEXT_V7,
+  SACRIFICE_LABEL_V7,
+  SEIZE_LABEL_V7,
+  SUMMONER_SUPPORT_UNLOCK_TEXT_V7,
+  cultCommandPresentationV7,
+} from "../cult-presentation-v7";
+import {
   CANDY_FIELD_DEFENSE_EXPLANATION_V7,
   CONFECTIONER_SUPPORT_UNLOCK_TEXT_V7,
   TOP_UP_LABEL_V7,
@@ -5679,9 +5687,13 @@ export class Ruleset7DomAppView {
           dock.dataset.hasActions = "true";
           dock.append(picking);
         } else {
+          // The Cultists (`pulp_wars-mch9.4`): a Cult city's Offering
+          // is a city action too.
           const actions = this.#commandButtons(
             (command) =>
-              (command.kind === "TRAIN" || command.kind === "LAND_GRANT") &&
+              (command.kind === "TRAIN" ||
+                command.kind === "LAND_GRANT" ||
+                command.kind === "OFFERING") &&
               command.cityId === city.id,
           );
           // Revision 19: the Lay Egg cards stand right after the train
@@ -6223,9 +6235,18 @@ export class Ruleset7DomAppView {
         this.#snapshot.view !== null &&
         this.#snapshot.view !== undefined &&
         rallyIsBerserkV7(this.#snapshot.view, command.unitId);
+      // The Cultists (`pulp_wars-mch9.4`): a Sacrifice, a Seizure, and an
+      // Offering use these generic buttons for now, one per victim, named
+      // by the victim's unit. The interface bead (`pulp_wars-mch9.17`)
+      // replaces them with one button and a victim picked on the board.
+      const cult =
+        this.#snapshot.view === null || this.#snapshot.view === undefined
+          ? null
+          : cultCommandPresentationV7(this.#snapshot.view, command);
       const label =
         (released ? RELEASE_LABEL_V7 : null) ??
         (berserk ? BERSERK_LABEL_V7 : null) ??
+        cult?.label ??
         (abandonedEgg === undefined
           ? commandLabel(command, this.#viewerFaction())
           : ABANDON_EGG_LABEL_V7);
@@ -6448,6 +6469,17 @@ export class Ruleset7DomAppView {
               ),
             );
         }
+      } else if (cult !== null) {
+        // The Cultists: the card text, and what the offering pays.
+        action.title = cult.tooltip;
+        action.setAttribute("aria-label", `${cult.label} · ${cult.chip}`);
+        action.setAttribute("aria-description", `${cult.tooltip}.`);
+        action.dataset.cult = command.kind.toLowerCase();
+        const chip = el(this.#document, "span", "v7-command-economy");
+        chip.append(
+          text(this.#document, "span", cult.chip, "v7-economy-chip is-gain"),
+        );
+        action.append(chip);
       } else if (command.kind === "RALLY" && berserk) {
         // Goblin explosions and Berserk (`pulp_wars-w49.36`): what it does,
         // and how many units it reaches; hover and focus mark them.
@@ -12698,7 +12730,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffff_ffff)
     return null;
   return {
-    rulesetId: "pulp-wars-poc-7r71",
+    rulesetId: "pulp-wars-poc-7r72",
     seed,
     width: effectiveBoardSize(draft),
     height: effectiveBoardSize(draft),
@@ -12941,6 +12973,11 @@ function effectDescription(
       return HOME_SWEET_HOME_UNLOCK_TEXT_V7;
     case "PEPPERMINT_SURPRISE":
       return PEPPERMINT_SURPRISE_UNLOCK_TEXT_V7;
+    // The Cultists (docs/product/RULESET_7_CULTISTS.md section 11).
+    case "SUMMONER_SUPPORT":
+      return SUMMONER_SUPPORT_UNLOCK_TEXT_V7;
+    case "OFFERING":
+      return OFFERING_UNLOCK_TEXT_V7;
     case "OVERRUN":
       // Revision 17: the Goblin Overrun is Ram; revision 19: the Dinosaur
       // Overrun is Rampage.
@@ -13100,7 +13137,9 @@ function technologyEffectGroupIdV7(
     case "UNIT_ROLE":
       return "UNITS";
     // The frozen sea: Freeze is an action of the units.
+    // The Cultists: an Offering is an action of a city.
     case "FREEZE":
+    case "OFFERING":
       return "ACTIONS";
     case "COMMAND":
       return effect.command.startsWith("BUILD_") &&
@@ -13151,6 +13190,7 @@ function technologyEffectGroupIdV7(
     case "CONFECTIONER_SUPPORT":
     case "HOME_SWEET_HOME":
     case "PEPPERMINT_SURPRISE":
+    case "SUMMONER_SUPPORT":
     case "RAM":
     case "HARBOURS":
     case "ICEBOUND":
@@ -13404,6 +13444,10 @@ const TECH_BRANCH_LABELS: Readonly<Record<string, string>> = {
 };
 const COMMAND_LABELS: Partial<Record<CommandV7["kind"], string>> = {
   TOSS_COIN: TOSS_COIN_LABEL_V7,
+  // The Cultists (`pulp_wars-mch9.4`).
+  SACRIFICE: SACRIFICE_LABEL_V7,
+  SEIZE: SEIZE_LABEL_V7,
+  OFFERING: OFFERING_LABEL_V7,
   HARVEST_FRUIT: "Harvest",
   HUNT_GAME: "Hunt",
   HARVEST_FISH: "Fish",

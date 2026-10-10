@@ -3,8 +3,10 @@
 **Status:** final design spec for the ninth faction, validated on paper
 (bead `pulp_wars-mch9.2`, epic `pulp_wars-mch9`, 2026-10-09; the first
 draft was bead `pulp_wars-mch9.1`). No game was played or simulated to
-write it. **Implemented so far:** the registration, bead E1
-([section 21](#21-implementation-notes)); none of the faction's own rules. It replaces
+write it. **Implemented so far:** the registration, bead E1, and Favour
+with Sacrifice, Seize, Offering, and Martyr, bead E2
+([section 21](#21-implementation-notes)); no daemon, ritual, or hex yet. It
+replaces
 [the Cult proposal](RULESET_7_CULT_PROPOSAL.md) of 2026-10-06 (bead
 `pulp_wars-2yc.25`), which stays as design history; where the two
 disagree, this document is the design. It is an overlay over
@@ -1853,6 +1855,69 @@ The choices E1 made where this spec left room:
    test (every pair at least 45 apart in CIE76 and 20 under deuteranopia
    and protanopia, readable on every ground); the capture beside the Dwarf
    jade is still ART1's.
+
+### 21.2 E2, Favour (`pulp_wars-mch9.4`, `pulp-wars-poc-7r72`)
+
+What the engine holds after E2 is listed in
+[the current rules, section 1](RULESET_7_CURRENT.md#1-identity-and-compatibility):
+Favour ([section 3](#3-favour-the-cults-one-economic-mechanic)), Sacrifice,
+Seize, and Offering ([section 5](#5-sacrifice)), and Martyr
+([section 8.2](#82-pick-me-and-martyr-the-chosen)). The choices E2 made where
+this spec left room:
+
+1. **The stored pool.** `cult.favour` holds one entry per Cult seat that has
+   any Favour (a seat without one has 0), and an eliminated seat's entry is
+   dropped. A view lists every Cult seat in the match, 0 included. The
+   `cult` block is where the later beads put the strands, the grips, the
+   rituals, and the hexes.
+2. **Events.** A Sacrifice is `UNIT_SACRIFICED`, a Seizure `UNIT_SEIZED`
+   (with the holder), each followed by the victim's `UNIT_DIED` (cause
+   `SACRIFICED`); an Offering is `OFFERING_MADE`, followed by the city's
+   `CITY_ECONOMY_CHANGED`. Every gain is a `FAVOUR_GAINED` with its source
+   (`SACRIFICE`, `SEIZE`, `OFFERING`, `MARTYR`) and the seat's Favour
+   afterwards, shown to every player (Favour is public); it names no unit
+   and no tile. The later beads add the sources of a bound daemon's kill and
+   a consumption, and an event for spending.
+3. **"Needs a Cult seat"** is one rule: a mind-controlled unit has no
+   `SACRIFICE`, `SEIZE`, or `MARTYR` (`MIND_CONTROLLED_LOST_ABILITIES_V7`).
+   So a mind-controlled Chosen's death pays nobody.
+4. **Robed cultists** are a role mechanic (`robed`) of the seven roles of
+   [section 4](#4-roster), in land form. A holder is any such own unit next
+   to the victim other than the Summoner, whatever it did this turn and
+   however hurt; with several, the event names the one with the lowest ID.
+5. **A Sacrifice's victim** is in land form: an embarked unit is not offered
+   from the shore. A Frozen, hurt, or exhausted own unit is a victim like
+   any other, and so is another Summoner. "Never a daemon" is for the bead
+   that makes daemons units (E3).
+6. **Broken** is 5 HP or less, read from the Hit Points alone (a Shield does
+   not count). The frog's half-HP rule joins the same test with Ribbit (E6).
+7. **Offering.** The floor reads the city's stored population (the same
+   number its panel shows). The city must have its city action and no
+   pending reward; Cowed arrives with Proclaim (E5). What a city gave up
+   stays with the city through a capture. A city's income does not change
+   by an Offering (its population is never taken below 0).
+8. **Martyr** is folded from a command's deaths, so every way a Chosen dies
+   pays, on any seat's turn. It pays its own seat when another Cult seat
+   Seizes it (a death; only its own Sacrifice does not pay on top), and
+   when the Giant Spider, a camp guard, or Bigfoot kills it (they are no
+   failure of the Cult's). The two exceptions still to come are the
+   consumption (E5) and an attack by an Unbound daemon or a Tentacle (E4,
+   E6). A seat eliminated in the same command gets nothing.
+9. **Score.** A Sacrifice is no Loss and no Damage taken (like Disband),
+   lowers the Army, and ends a flawless game. A Seizure is a credited kill:
+   Kills for the Cult seat, and for the victim's seat a Loss and its
+   remaining HP as Damage taken.
+10. **The Normal AI** never picks one of the three commands until bead A2
+    (`pulp_wars-mch9.10`); a hand-built position holds it to that.
+11. **The interface stand-in.** Until bead U1 (`pulp_wars-mch9.17`) the dock
+    shows these commands with its generic action buttons: one button per
+    victim, named by the victim's unit ("Sacrifice Initiate"), with what it
+    pays, and an "Offering" button in the city panel. U1 replaces them with
+    one button per Summoner and a victim picked on the board (the help mark
+    on own units, the attack mark on enemies, each with its Favour), and
+    adds Favour to the HUD and the leaderboard.
+12. **Nothing spends Favour yet.** Summon (E3) and the Great Summoning (E5)
+    do.
 
 ## Appendix A. The proposal's fifteen decisions, answered
 

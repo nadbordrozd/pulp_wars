@@ -187,12 +187,17 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
     // (`pulp_wars-w49.37`) adds FROST_BOLT and STAMPEDE after BREAK_OFF (69).
     // The Candy redesign (`pulp_wars-jdb.12`) adds TOP_UP after
     // TOSS_COIN (70).
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(70);
+    // The Cult's Favour (`pulp_wars-mch9.4`) adds SACRIFICE and SEIZE
+    // after STAMPEDE and OFFERING after LAY_EGG (73).
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(73);
     const breakOff = COMMAND_KIND_ORDER_V7.indexOf("BREAK_OFF");
-    expect(COMMAND_KIND_ORDER_V7.slice(breakOff, breakOff + 4)).toEqual([
+    expect(COMMAND_KIND_ORDER_V7.slice(breakOff, breakOff + 6)).toEqual([
       "BREAK_OFF",
       "FROST_BOLT",
       "STAMPEDE",
+      // The Cult's Favour (`pulp_wars-mch9.4`), after the Freeze block.
+      "SACRIFICE",
+      "SEIZE",
       "CAPTURE",
     ]);
     const tractor = COMMAND_KIND_ORDER_V7.indexOf("TRACTOR_BEAM");
@@ -217,7 +222,9 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
     // The Candy redesign (`pulp_wars-jdb.12`) adds UNIT_TOPPED_UP,
     // TILES_GLAZED, UNIT_STUCK, TOOTHACHE_GIVEN, RICOCHETED, and THUMPED
     // (126).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(126);
+    // The Cult's Favour (`pulp_wars-mch9.4`) adds UNIT_SACRIFICED,
+    // UNIT_SEIZED, OFFERING_MADE, and FAVOUR_GAINED (130).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(130);
     const after = (order: readonly string[], kind: string) =>
       order[order.indexOf(kind) + 1];
     expect(after(DOMAIN_EVENT_KIND_ORDER_V7, "UNITS_RALLIED")).toBe(

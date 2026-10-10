@@ -233,11 +233,14 @@ describe("ruleset-7 revision-18 Showcase setup", () => {
         barricades,
         // `pulp_wars-w49.30`: and the empty `giants` record.
         giants,
+        // `pulp_wars-mch9.4`: and the empty `cult` record.
+        cult,
         // `pulp_wars-kaw6.2`: and the new match's score ledger.
         scoreLedger,
         ...withoutMonsters
       } = revision19State;
       expect(giants).toEqual({ swallowed: [] });
+      expect(cult).toEqual({ favour: [] });
       expectInitialScoreLedgerV7(created.state, scoreLedger, false);
       expect(ninthUnit).toEqual({
         wightGraves: [],

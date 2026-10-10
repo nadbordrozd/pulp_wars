@@ -212,6 +212,9 @@ function missionStateHash(state: GameStateV7): string {
     // The giants' signatures (`pulp_wars-w49.30`) added the `giants`
     // record, empty in every initial state and left out too.
     giants,
+    // The Cult's Favour (`pulp_wars-mch9.4`) added the `cult` record,
+    // empty in every initial state and left out too.
+    cult,
     // Score and modes (`pulp_wars-kaw6.2`) added the `scoreLedger`, the
     // initial ledger in every initial state, left out too.
     scoreLedger,
@@ -222,6 +225,7 @@ function missionStateHash(state: GameStateV7): string {
   } = state;
   expect(frozen).toEqual([]);
   expect(giants).toEqual({ swallowed: [] });
+  expect(cult).toEqual({ favour: [] });
   expectInitialScoreLedgerV7(state, scoreLedger);
   expect(ninthUnit).toEqual({
     wightGraves: [],
@@ -371,12 +375,14 @@ function preCuriosityMissionStateHash(state: GameStateV7): string {
     ninthUnit,
     barricades,
     giants,
+    cult,
     scoreLedger,
     frozen,
     ...rest
   } = state;
   expect(frozen).toEqual([]);
   expect(giants).toEqual({ swallowed: [] });
+  expect(cult).toEqual({ favour: [] });
   expectInitialScoreLedgerV7(state, scoreLedger);
   expect(ninthUnit).toEqual({
     wightGraves: [],

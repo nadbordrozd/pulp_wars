@@ -53,6 +53,9 @@ export function normalizedInitialState(state: GameStateV7): string {
     // The giants' signatures (`pulp_wars-w49.30`) add the `giants` record,
     // empty in every initial state.
     giants: _giants,
+    // The Cult's Favour (`pulp_wars-mch9.4`) adds the `cult` record, empty
+    // in every initial state.
+    cult: _cult,
     // Score and modes (`pulp_wars-kaw6.2`) adds the `scoreLedger` (the
     // initial ledger in an initial state, checked by the callers).
     scoreLedger: _scoreLedger,
@@ -64,6 +67,7 @@ export function normalizedInitialState(state: GameStateV7): string {
     ...rest
   } = state;
   void _scoreLedger;
+  if (_cult.favour.length !== 0) throw new Error("Favour in an initial state");
   if (
     _ninthUnit.wightGraves.length +
       _ninthUnit.risenWights.length +

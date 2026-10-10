@@ -389,11 +389,11 @@ const productionOf = (
 
 describe("the ninth unit: identity", () => {
   it("was 7r55 after 7r54, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r71");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r71.current");
-    expect(PRIOR_RULESET_7_IDS.at(-17)).toBe("pulp-wars-poc-7r54");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r72");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r72.current");
+    expect(PRIOR_RULESET_7_IDS.at(-18)).toBe("pulp-wars-poc-7r54");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-17)).toBe(
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-18)).toBe(
       "pulpWars.save.v7r54.current",
     );
     const state = field([]);
@@ -428,7 +428,9 @@ describe("the ninth unit: identity", () => {
     // The Candy redesign (`pulp_wars-jdb.12`) adds UNIT_TOPPED_UP,
     // TILES_GLAZED, UNIT_STUCK, TOOTHACHE_GIVEN, RICOCHETED, and THUMPED
     // (126).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(126);
+    // The Cult's Favour (`pulp_wars-mch9.4`) adds UNIT_SACRIFICED,
+    // UNIT_SEIZED, OFFERING_MADE, and FAVOUR_GAINED (130).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(130);
   });
 });
 

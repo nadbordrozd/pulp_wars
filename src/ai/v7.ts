@@ -115,6 +115,7 @@ import {
   TECHNOLOGY_IDS_V7,
   UNIT_ROLE_IDS_V7,
   cityHasWallsV7,
+  cityOfferedPopulationV7,
   type CoordV7,
   type ImprovementIdV7,
   type NavalRoleIdV7,
@@ -1802,7 +1803,13 @@ function mandatoryWorkDeltaV7(view: PlayerViewV7, command: CommandV7): number {
 }
 
 function boomLevelsReached(city: PlayerViewV7["cities"][number]): number {
-  const total = city.permanentPopulation + city.economicPopulation + 3;
+  // The Cultists (`pulp_wars-mch9.4`): less what the city gave up in
+  // Offerings (0 for a city that never made one).
+  const total =
+    city.permanentPopulation +
+    city.economicPopulation +
+    3 -
+    cityOfferedPopulationV7(city);
   if (!Number.isSafeInteger(total)) return Number.POSITIVE_INFINITY;
   let level = city.level;
   let reached = 0;
@@ -10176,6 +10183,18 @@ function isPolicyCandidate(
       giantBreakOffPlanV7(context, giant)?.command === command
     );
   }
+  // The Cultists' Favour engine (`pulp_wars-mch9.4`,
+  // RULESET_7_CULTISTS.md section 19): until the Cult AI bead
+  // (`pulp_wars-mch9.10`) the policy uses none of the three commands. A
+  // Sacrifice removes an own unit and an Offering gives up population, so
+  // neither may be picked by a general rule; a Seizure waits for the same
+  // bead. They are offered only to a Cult seat.
+  if (
+    command.kind === "SACRIFICE" ||
+    command.kind === "SEIZE" ||
+    command.kind === "OFFERING"
+  )
+    return false;
   // The frozen sea engine (`pulp_wars-5ti.3`, RULESET_7_NAVAL_BRANCH.md
   // section 17): until the ice plan of `pulp_wars-5ti.5` the policy Freezes
   // nothing. The command is offered only to an Ice Folk seat with Rime.

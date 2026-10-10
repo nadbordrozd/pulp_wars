@@ -1,8 +1,10 @@
-import type {
-  DomainEventV7,
-  EventEnvelopeV7,
-  PlayerEventEnvelopeV7,
-  PlayerEventV7,
+import {
+  FAVOUR_SOURCES_V7,
+  type DomainEventV7,
+  type EventEnvelopeV7,
+  type FavourSourceV7,
+  type PlayerEventEnvelopeV7,
+  type PlayerEventV7,
 } from "./events";
 import {
   ASSEMBLE_COST_V7,
@@ -45,6 +47,9 @@ import {
   CITY_REWARD_COINS_V7,
   PILLAGE_COINS_V7,
   PLUNDER_COINS_V7,
+  OFFERING_FAVOUR_V7,
+  OFFERING_POPULATION_V7,
+  SEIZE_FAVOUR_MULTIPLIER_V7,
 } from "../rules/ruleset-v7";
 import {
   ACHIEVEMENT_IDS_V7,
@@ -453,6 +458,29 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
     "coinDelta",
   ],
   UNIT_DISBANDED: ["kind", "playerId", "unitId", "role", "coinDelta"],
+  // The Cultists (docs/product/RULESET_7_CULTISTS.md sections 3 and 5).
+  UNIT_SACRIFICED: [
+    "kind",
+    "playerId",
+    "unitId",
+    "victimUnitId",
+    "role",
+    "at",
+    "favour",
+  ],
+  UNIT_SEIZED: [
+    "kind",
+    "playerId",
+    "unitId",
+    "holderUnitId",
+    "victimUnitId",
+    "victimOwnerId",
+    "role",
+    "at",
+    "favour",
+  ],
+  OFFERING_MADE: ["kind", "playerId", "cityId", "at", "population", "favour"],
+  FAVOUR_GAINED: ["kind", "playerId", "source", "amount", "favour"],
   SPOILS_AWARDED: ["kind", "playerId", "cityId", "coins"],
   PLUNDER_AWARDED: ["kind", "playerId", "kills", "coins"],
   MONSTER_BOUNTY_AWARDED: ["kind", "playerId", "unitId", "coins"],
@@ -1709,6 +1737,53 @@ function validPayload(
           (cost) => e.coinDelta === Math.floor(cost / 2),
         )
       );
+    // The Cultists (sections 5.1 and 5.2): a Sacrifice pays the victim's
+    // value (every role has one: a printed cost, or 12 for a reward giant);
+    // a Seizure twice the value of a victim that is not a reward giant, of
+    // another player, held by a third unit.
+    case "UNIT_SACRIFICED":
+      return (
+        id(e.playerId) &&
+        id(e.unitId) &&
+        id(e.victimUnitId) &&
+        e.unitId !== e.victimUnitId &&
+        UNIT_ROLE_IDS_V7.includes(e.role as never) &&
+        parseCoordV7(e.at) !== null &&
+        pos(e.favour)
+      );
+    case "UNIT_SEIZED":
+      return (
+        id(e.playerId) &&
+        id(e.unitId) &&
+        id(e.holderUnitId) &&
+        id(e.victimUnitId) &&
+        new Set([e.unitId, e.holderUnitId, e.victimUnitId]).size === 3 &&
+        id(e.victimOwnerId) &&
+        e.victimOwnerId !== e.playerId &&
+        UNIT_ROLE_IDS_V7.includes(e.role as never) &&
+        e.role !== "JUGGERNAUT" &&
+        parseCoordV7(e.at) !== null &&
+        pos(e.favour) &&
+        (e.favour as number) % SEIZE_FAVOUR_MULTIPLIER_V7 === 0
+      );
+    // Section 5.3.
+    case "OFFERING_MADE":
+      return (
+        id(e.playerId) &&
+        id(e.cityId) &&
+        parseCoordV7(e.at) !== null &&
+        e.population === OFFERING_POPULATION_V7 &&
+        e.favour === OFFERING_FAVOUR_V7
+      );
+    // Section 3: the seat has at least what it just gained.
+    case "FAVOUR_GAINED":
+      return (
+        id(e.playerId) &&
+        FAVOUR_SOURCES_V7.includes(e.source as FavourSourceV7) &&
+        pos(e.amount) &&
+        pos(e.favour) &&
+        (e.favour as number) >= (e.amount as number)
+      );
     case "SPOILS_AWARDED":
       return id(e.playerId) && id(e.cityId) && e.coins === 2;
     case "PLUNDER_AWARDED":
@@ -1786,6 +1861,8 @@ function validPayload(
           // The Candy redesign: a Ricochet and a Thump.
           "RICOCHET",
           "THUMP",
+          // The Cultists: a Sacrifice or a Seizure.
+          "SACRIFICED",
         ].includes(e.cause as string)
       );
     // The giants' signatures (docs/product/RULESET_7_GIANTS.md section 8).

@@ -141,14 +141,20 @@ function generatedSetup(
 }
 
 describe("the Cult registration: identity", () => {
-  it("is 7r71 after 7r70, whose save key is obsolete", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r71");
-    expect(PRIOR_RULESET_7_IDS.at(-1)).toBe("pulp-wars-poc-7r70");
+  // The identity is 7r72 now: the Cult's Favour (`pulp_wars-mch9.4`) took
+  // it, so 7r71 is a prior identity.
+  it("was 7r71 after 7r70, with both save keys obsolete now", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r72");
+    expect(PRIOR_RULESET_7_IDS.slice(-2)).toEqual([
+      "pulp-wars-poc-7r70",
+      "pulp-wars-poc-7r71",
+    ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r71.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r72.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-2)).toEqual([
       "pulpWars.save.v7r70.current",
-    );
+      "pulpWars.save.v7r71.current",
+    ]);
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
   });
 
@@ -306,6 +312,8 @@ describe("the Cult registration: the nine land roles (section 4.1)", () => {
     expect(roleMechanicsV7("BATTLESHIP", "CULT").splash).toBe(true);
   });
 
+  // The Summoner's Sacrifice and Seize and the Chosen's Martyr arrived
+  // with the Favour bead (`pulp_wars-mch9.4`).
   it("registers only the abilities that work today: no Cult rule is named before its bead", () => {
     const abilities = Object.fromEntries(
       LAND_ROLES.map((role) => [
@@ -319,13 +327,13 @@ describe("the Cult registration: the nine land roles (section 4.1)", () => {
       RAIDER: ["ATTACK", "CAPTURE", "CHARGE"],
       MARKSMAN: ["ATTACK", "CAPTURE"],
       GUARD: ["ATTACK", "CAPTURE"],
-      // No Rally and no Tend Wounded.
-      CAPTAIN: ["ATTACK", "CAPTURE"],
+      // No Rally and no Tend Wounded; Sacrifice and Seize.
+      CAPTAIN: ["ATTACK", "CAPTURE", "SACRIFICE", "SEIZE"],
       // No attack of its own.
       CATAPULT: ["CAPTURE"],
       // No Overrun.
       KNIGHT: ["ATTACK", "CAPTURE"],
-      SWORDSMAN: ["ATTACK", "CAPTURE"],
+      SWORDSMAN: ["ATTACK", "CAPTURE", "MARTYR"],
       // No Push, and no signature until Anchor's bead.
       JUGGERNAUT: ["ATTACK", "CAPTURE"],
     });
@@ -349,6 +357,8 @@ describe("the Cult registration: the nine land roles (section 4.1)", () => {
       expect(mechanics.crushDamage, role).toBe(0);
       // The Stargazer has no attack, so it wrecks no Field Defense by one.
       expect(mechanics.demolishesFieldDefense, role).toBe(false);
+      // The Cult's own mechanics so far (`pulp_wars-mch9.4`): the robed
+      // cultists and the Chosen's Martyr.
       expect(mechanics, role).toEqual({
         ...human[role],
         buildsFieldDefense: false,
@@ -356,6 +366,8 @@ describe("the Cult registration: the nine land roles (section 4.1)", () => {
         ignoresZocStops: false,
         crushDamage: 0,
         demolishesFieldDefense: false,
+        robed: !["RAIDER", "JUGGERNAUT", ...NAVAL_ROLE_IDS_V7].includes(role),
+        martyrFavour: role === "SWORDSMAN" ? 6 : 0,
       });
       expect(mechanics.capacitySlots, role).toBe(1);
       expect(mechanics.movementMode, role).toBe("GROUND");
@@ -473,24 +485,34 @@ describe("the Cult registration: the tree and its names (section 11)", () => {
         shared?.branch,
         shared?.prerequisites,
       ]);
-      expect(node.unlocks, node.id).toEqual(
-        shared?.unlocks.filter(
-          (unlock) =>
-            unlock.kind !== "CAPTAIN_SUPPORT" &&
-            unlock.kind !== "OVERRUN" &&
-            !(
-              unlock.kind === "COMMAND" &&
-              unlock.command === "BUILD_FIELD_DEFENSE"
-            ),
+      // `pulp_wars-mch9.4`: the Summoner's support stands where the
+      // Captain's did, and Harvest Rites adds the Offering.
+      expect(node.unlocks, node.id).toEqual([
+        ...(shared?.unlocks ?? []).flatMap((unlock) =>
+          unlock.kind === "CAPTAIN_SUPPORT"
+            ? [{ kind: "SUMMONER_SUPPORT" }]
+            : unlock.kind === "OVERRUN" ||
+                (unlock.kind === "COMMAND" &&
+                  unlock.command === "BUILD_FIELD_DEFENSE")
+              ? []
+              : [unlock],
         ),
-      );
+        ...(node.id === "FARMING" ? [{ kind: "OFFERING" }] : []),
+      ]);
     }
-    // Leadership: the Summoner, the Market, and Disband.
-    expect(unlocksOf("ADMINISTRATION")).toEqual([
-      "UNIT:CAPTAIN",
-      "BUILD_MARKET",
-      "DISBAND",
-    ]);
+    // Leadership: the Summoner with its Sacrifice and Seize, the Market,
+    // and Disband.
+    expect(unlocksOf("ADMINISTRATION")).toEqual(
+      expect.arrayContaining([
+        "UNIT:CAPTAIN",
+        "SUMMONER_SUPPORT",
+        "BUILD_MARKET",
+        "DISBAND",
+      ]),
+    );
+    expect(unlocksOf("ADMINISTRATION")).toHaveLength(4);
+    // Harvest Rites: the Farm and the Offering.
+    expect(unlocksOf("FARMING")).toContain("OFFERING");
     // Callers: the Caller and Cultivate Forest; no Overrun.
     expect(unlocksOf("CHIVALRY")).toEqual(["UNIT:KNIGHT", "CULTIVATE_FOREST"]);
     // Warding Circles: the Idol Bearer; no Field Defense.
@@ -529,7 +551,7 @@ describe("the Cult registration: the tree and its names (section 11)", () => {
     expect(technologyDisplayNameV7("FIELDCRAFT", "CULT")).toBe("Pathfinding");
   });
 
-  it("reads the same capabilities as the Humans, less Field Defense", () => {
+  it("reads the same capabilities as the Humans, less Field Defense, with the Offering", () => {
     const all = [...TECHNOLOGY_IDS_V7];
     const cult = technologyCapabilitiesV7(all, "CULT");
     const human = technologyCapabilitiesV7(all, "ORIGINAL");
@@ -540,6 +562,8 @@ describe("the Cult registration: the tree and its names (section 11)", () => {
         (command) => command !== "BUILD_FIELD_DEFENSE",
       ),
       roleBindings: CULT_ROLE_RULES_V7,
+      // Harvest Rites (`pulp_wars-mch9.4`).
+      offering: true,
     });
     expect(cult.trainableRoles).toEqual(
       UNIT_ROLE_IDS_V7.filter((role) => role !== "JUGGERNAUT"),

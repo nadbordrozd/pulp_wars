@@ -214,6 +214,18 @@ export type TechnologyUnlockV7 =
    * enemy that eats the owner's Crumbs takes `PEPPERMINT_DAMAGE_V7`.
    */
   | { readonly kind: "PEPPERMINT_SURPRISE" }
+  /**
+   * The Cultists (docs/product/RULESET_7_CULTISTS.md section 11): the
+   * Summoner's Sacrifice and Seize (the Cult `ADMINISTRATION`, no Rally and
+   * no Tend Wounded). The abilities are the Summoner's own, so this unlock
+   * is what the technology shows; it gates nothing by itself.
+   */
+  | { readonly kind: "SUMMONER_SUPPORT" }
+  /**
+   * The Cultists (section 5.3): Offering (the Cult `FARMING`, shown as
+   * Harvest Rites): an own city gives up population for Favour.
+   */
+  | { readonly kind: "OFFERING" }
   | { readonly kind: "OVERRUN" }
   | {
       readonly kind: "CHARGE_BONUS";
@@ -408,7 +420,14 @@ export type UnitRoleAbilityV7 =
   | "OVERSTRIDE"
   | "GLACIAL_SMASH"
   | "SIEGE_HAMMER"
-  | "BREAK_OFF";
+  | "BREAK_OFF"
+  // The Cultists (`pulp_wars-mch9.4`, docs/product/RULESET_7_CULTISTS.md
+  // sections 5.1, 5.2, and 8.2): the Summoner's Sacrifice and Seize, and
+  // the Chosen's Martyr. The other Cult literals of section 11 arrive with
+  // their rules.
+  | "SACRIFICE"
+  | "SEIZE"
+  | "MARTYR";
 
 /**
  * The Martian revision (section 7): how a land-form unit moves. `STRIDE`
@@ -782,6 +801,21 @@ export interface RoleMechanicsV7 {
    * for an ordinary Escape (a fresh full Move).
    */
   readonly batEscapeTiles: number;
+  /**
+   * The Cultists (docs/product/RULESET_7_CULTISTS.md section 4): a robed
+   * cultist (the Initiate, Idol Bearer, Hexer, Summoner, Stargazer, Caller,
+   * and Chosen). Only a robed cultist holds down a Seizure (and, from the
+   * later Cult beads, channels and chants). False for the Familiar, the
+   * Thing in the Cellar, the ships, and every role of every other faction.
+   */
+  readonly robed: boolean;
+  /**
+   * The Cultists (section 8.2): Martyr, the Favour the role's death pays
+   * its Cult seat (the Chosen 6, its value), read only when the role, under
+   * the unit's kind, has the `MARTYR` ability literal. 0 for every other
+   * role.
+   */
+  readonly martyrFavour: number;
 }
 
 export interface FactionTechnologyTreeV7 {
@@ -1708,6 +1742,8 @@ const mechanics = (
           siegeHammer: false,
           breakOffHp: 0,
           batEscapeTiles: 0,
+          robed: false,
+          martyrFavour: 0,
           ...overrides[roleId],
         },
       ]),
@@ -3718,29 +3754,31 @@ export function rebakeHpV7(role: UnitRoleIdV7): number {
  * The Stars Are Right) keeps Blast Mountain and Breach.
  *
  * The registration is the first of the six Cult engine beads: it carries
- * the roster, its numbers, and the names. The Cult's own unlocks (Offering
- * at Farming, Switcheroo at Scouting, the Great Summoning at Explosives) and
- * every ability literal of section 11 arrive with the bead that implements
- * the rule (`pulp_wars-mch9.4` to `.8`), so that no surface names an ability
- * that does nothing.
+ * the roster, its numbers, and the names. The Cult's own unlocks and every
+ * ability literal of section 11 arrive with the bead that implements the
+ * rule (`pulp_wars-mch9.4` to `.8`), so that no surface names an ability
+ * that does nothing. So far (`pulp_wars-mch9.4`): Administration grants
+ * `SUMMONER_SUPPORT` (the Summoner's Sacrifice and Seize) and Farming
+ * (displayed as Harvest Rites) grants `OFFERING`; Switcheroo at Scouting and
+ * the Great Summoning at Explosives are still to come.
  */
 export const CULT_BASELINE_V1_NODES: readonly TechnologyNodeV7[] = deepFreeze(
   SHARED_BASELINE_NODES_V7.map((original) =>
-    node(
-      original.id,
-      original.branch,
-      original.tier,
-      original.prerequisites,
-      original.unlocks.filter(
-        (unlock) =>
-          unlock.kind !== "CAPTAIN_SUPPORT" &&
-          unlock.kind !== "OVERRUN" &&
-          !(
-            unlock.kind === "COMMAND" &&
-            unlock.command === "BUILD_FIELD_DEFENSE"
-          ),
+    node(original.id, original.branch, original.tier, original.prerequisites, [
+      ...original.unlocks.flatMap((unlock): TechnologyUnlockV7[] =>
+        // `pulp_wars-mch9.4`: the Summoner's Sacrifice and Seize take the
+        // place of the Captain's support at Administration.
+        unlock.kind === "CAPTAIN_SUPPORT"
+          ? [{ kind: "SUMMONER_SUPPORT" }]
+          : unlock.kind === "OVERRUN" ||
+              (unlock.kind === "COMMAND" &&
+                unlock.command === "BUILD_FIELD_DEFENSE")
+            ? []
+            : [unlock],
       ),
-    ),
+      // `pulp_wars-mch9.4` (section 5.3): Harvest Rites, the Offering.
+      ...(original.id === "FARMING" ? [{ kind: "OFFERING" } as const] : []),
+    ]),
   ),
 );
 
@@ -3826,7 +3864,9 @@ export const CULT_ROLE_RULES_V7: Readonly<
     mayUsePrimaryActionAfterMove: false,
     abilities: ["ATTACK", "CAPTURE"],
   }),
-  // The Summoner: a Captain's body with no Rally and no Tend Wounded.
+  // The Summoner: a Captain's body with no Rally and no Tend Wounded. It
+  // Sacrifices an own unit and Seizes a broken enemy (`pulp_wars-mch9.4`);
+  // Summon arrives with the Horror (`pulp_wars-mch9.5`).
   CAPTAIN: role({
     role: "CAPTAIN",
     label: "Summoner",
@@ -3841,7 +3881,7 @@ export const CULT_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: "ADMINISTRATION",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "CAPTURE"],
+    abilities: ["ATTACK", "CAPTURE", "SACRIFICE", "SEIZE"],
   }),
   // The Stargazer has no attack of its own: no `ATTACK`, Attack 0, and no
   // reach, so it never strikes back either (the neutral Bigfoot's shape).
@@ -3901,7 +3941,9 @@ export const CULT_ROLE_RULES_V7: Readonly<
   PATROL_BOAT: role({ ...ORIGINAL_ROLE_RULES_V7.PATROL_BOAT }),
   BATTLESHIP: role({ ...ORIGINAL_ROLE_RULES_V7.BATTLESHIP }),
   SUBMARINE: role({ ...ORIGINAL_ROLE_RULES_V7.SUBMARINE }),
-  // The Chosen: the Champion with half a Defense less.
+  // The Chosen: the Champion with half a Defense less. Martyr: its death
+  // pays its seat Favour (`pulp_wars-mch9.4`); Pick Me! arrives with the
+  // tricks (`pulp_wars-mch9.8`).
   SWORDSMAN: role({
     role: "SWORDSMAN",
     label: "Chosen",
@@ -3916,22 +3958,53 @@ export const CULT_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: "METALLURGY",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "CAPTURE"],
+    abilities: ["ATTACK", "CAPTURE", "MARTYR"],
   }),
 });
+
+/**
+ * The Cultists (docs/product/RULESET_7_CULTISTS.md section 3): whether a
+ * seat of `faction` has Favour: the Cult only. Every "is this a Cult seat"
+ * read of the Favour rules (the stored entries, the public view) asks this.
+ */
+export function factionHasFavourV7(faction: FactionIdV7): boolean {
+  return faction === "CULT";
+}
+
+/** The Cultists (section 5.2): a hostile unit at this HP or less is broken. */
+export const SEIZE_BROKEN_HP_V7 = 5 as const;
+/** The Cultists (section 5.2): a Seizure pays this many times the value. */
+export const SEIZE_FAVOUR_MULTIPLIER_V7 = 2 as const;
+/** The Cultists (section 5.3): the population an Offering gives up. */
+export const OFFERING_POPULATION_V7 = 2 as const;
+/** The Cultists (section 5.3): the Favour an Offering pays. */
+export const OFFERING_FAVOUR_V7 = 3 as const;
+/** The Cultists (section 5.3): the lowest city level that may Offer. */
+export const OFFERING_MINIMUM_LEVEL_V7 = 2 as const;
+/** The Cultists (section 8.2): the Favour a Chosen's death pays (its value). */
+export const MARTYR_FAVOUR_V7 = 6 as const;
 
 /**
  * The Cult engine mechanics (section 4.1): no role builds Field Defense; the
  * Hexer and the Stargazer never advance; the Stargazer, which has no attack,
  * destroys no Field Defense by one (Star-fall's own rule is its ritual's,
  * `pulp_wars-mch9.7`). Every role uses one slot and moves on the ground.
- * Boats are Human boats.
+ * Boats are Human boats. `pulp_wars-mch9.4`: the seven robed cultists (every
+ * trained land role but the Familiar; the Thing in the Cellar is not one),
+ * and the Chosen's Martyr.
  */
 export const CULT_ROLE_MECHANICS_V7 = mechanics({
-  FIGHTER: { buildsFieldDefense: false },
-  GUARD: { buildsFieldDefense: false },
-  MARKSMAN: { advancesAfterKill: false },
-  CATAPULT: { advancesAfterKill: false, demolishesFieldDefense: false },
+  FIGHTER: { buildsFieldDefense: false, robed: true },
+  GUARD: { buildsFieldDefense: false, robed: true },
+  MARKSMAN: { advancesAfterKill: false, robed: true },
+  CAPTAIN: { robed: true },
+  CATAPULT: {
+    advancesAfterKill: false,
+    demolishesFieldDefense: false,
+    robed: true,
+  },
+  KNIGHT: { robed: true },
+  SWORDSMAN: { robed: true, martyrFavour: MARTYR_FAVOUR_V7 },
   BATTLESHIP: { splash: true },
 });
 
@@ -4690,7 +4763,7 @@ export const RULESET_7 = deepFreeze({
  * a technology of tier `t` costs `5 / 7 / 9 + (T - 1)`, `T` being the
  * technologies the researcher already owns.
  *
- * The economy rejig (`pulp_wars-w49.16`, `pulp-wars-poc-7r71`,
+ * The economy rejig (`pulp_wars-w49.16`, `pulp-wars-poc-7r72`,
  * docs/product/RULESET_7_ECONOMY_REJIG.md): the price is per city again and
  * the technologies owned no longer enter it. A technology of tier `t`
  * costs `5 / 7 / 9 + (1 / 2 / 3) * (C - 1)`, `C` being the cities the
@@ -4968,7 +5041,9 @@ export function ownerResearchedTechsV7(
  * result is a new unit (or a controlled unit), which a mind-controlled unit
  * never has: Raise Dead, Infect, Bite, Hatch, Assemble, Mind Control, and
  * tunnel riding. The Steam Mole's `TUNNEL` stays (it tunnels alone). The
- * Candy revision (section 12.5): Re-bake.
+ * Candy revision (section 12.5): Re-bake. The Cultists (`pulp_wars-mch9.4`):
+ * and the abilities that pay Favour (Sacrifice, Seize, and Martyr), which
+ * need a Cult seat.
  */
 export const MIND_CONTROLLED_LOST_ABILITIES_V7: readonly UnitRoleAbilityV7[] =
   deepFreeze([
@@ -4980,6 +5055,13 @@ export const MIND_CONTROLLED_LOST_ABILITIES_V7: readonly UnitRoleAbilityV7[] =
     "MIND_CONTROL",
     "RIDES_TUNNEL",
     "REBAKE",
+    // The Cultists (docs/product/RULESET_7_CULTISTS.md section 13.1):
+    // Favour needs a Cult seat. A mind-controlled Summoner neither
+    // Sacrifices nor Seizes, and a mind-controlled Chosen's death pays
+    // nobody.
+    "SACRIFICE",
+    "SEIZE",
+    "MARTYR",
   ]);
 
 const CONTROLLED_ROLE_RULES_V7 = new WeakMap<
@@ -6376,6 +6458,11 @@ export interface TechnologyCapabilitiesV7 {
   readonly iceTurns: number;
   /** The frozen sea (section 8.10): Glacier's Snow cover on ice. */
   readonly iceCover: boolean;
+  /**
+   * The Cultists (docs/product/RULESET_7_CULTISTS.md section 5.3): Harvest
+   * Rites, the player's cities may make an Offering.
+   */
+  readonly offering: boolean;
 }
 
 export function technologyCapabilitiesV7(
@@ -6444,6 +6531,7 @@ export function technologyCapabilitiesV7(
   let blackIce = false;
   let iceTurns: number = ICE_TURNS_V7;
   let iceCover = false;
+  let offering = false;
   for (const unlock of unlocks)
     switch (unlock.kind) {
       case "COMMAND":
@@ -6574,6 +6662,10 @@ export function technologyCapabilitiesV7(
         iceTurns = unlock.iceTurns;
         iceCover = true;
         break;
+      case "OFFERING":
+        offering = true;
+        break;
+      case "SUMMONER_SUPPORT":
       case "CONFECTIONER_SUPPORT":
       case "ENGINEER_SUPPORT":
       case "WITCH_SUPPORT":
@@ -6656,6 +6748,7 @@ export function technologyCapabilitiesV7(
     blackIce,
     iceTurns,
     iceCover,
+    offering,
   });
   TECHNOLOGY_CAPABILITIES_CACHE_V7.set(cacheKey, result);
   if (TECHNOLOGY_CAPABILITIES_CACHE_V7.size > 32) {

@@ -411,6 +411,21 @@ export function projectEventsV7(
         });
       continue;
     }
+    // The Cultists (docs/product/RULESET_7_CULTISTS.md sections 5.1 and
+    // 5.2): a Sacrifice and a Seizure reach the actor, the victim's owner,
+    // and every viewer that saw the victim before it was offered (the
+    // victim's `UNIT_DIED` follows the ordinary rule, which gives the same
+    // viewers). The Summoner stands next to the victim, so such a viewer
+    // learns nothing it could not see.
+    if (event.kind === "UNIT_SACRIFICED" || event.kind === "UNIT_SEIZED") {
+      if (
+        event.playerId === viewerId ||
+        (event.kind === "UNIT_SEIZED" && event.victimOwnerId === viewerId) ||
+        beforeVisible.has(event.victimUnitId)
+      )
+        projected.push(event);
+      continue;
+    }
     // The giants' signatures (docs/product/RULESET_7_GIANTS.md section 8).
     const giant = projectGiantEventV7(
       beforeState,
@@ -799,6 +814,11 @@ function eventVisible(
     case "PLAYER_ELIMINATED":
     case "MATCH_ENDED":
     case "CITY_CAPTURED":
+      return true;
+    // The Cultists (section 3): Favour is public, like the score. The
+    // event names no unit and no tile. (An Offering follows the city rule
+    // below: the owner and every viewer that has explored the center.)
+    case "FAVOUR_GAINED":
       return true;
     default:
       if ("cityId" in event)

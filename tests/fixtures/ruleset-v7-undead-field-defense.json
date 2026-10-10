@@ -1,8 +1,8 @@
 {
   "schemaVersion": 7,
-  "rulesetId": "pulp-wars-poc-7r71",
+  "rulesetId": "pulp-wars-poc-7r72",
   "setup": {
-    "rulesetId": "pulp-wars-poc-7r71",
+    "rulesetId": "pulp-wars-poc-7r72",
     "seed": 5,
     "width": 16,
     "height": 16,
@@ -4323,6 +4323,9 @@
   "barricades": [],
   "giants": {
     "swallowed": []
+  },
+  "cult": {
+    "favour": []
   },
   "pendingChoices": [],
   "outcome": null

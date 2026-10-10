@@ -444,6 +444,10 @@ export const FLAWLESS_BREAKING_EVENT_KINDS_V7 = Object.freeze([
   // The giants' signatures (section 6.2): a unit an Abomination swallows
   // is taken off the board (its owner lost it, at least for now).
   "UNIT_SWALLOWED",
+  // The Cultists (RULESET_7_CULTISTS.md section 5.1): a Sacrifice takes a
+  // unit away from its own seat (its `UNIT_DIED` follows; a Seizure is the
+  // victim's `UNIT_DIED`).
+  "UNIT_SACRIFICED",
 ] as const);
 
 const REMOVAL_CAUSES_V7: ReadonlySet<string> = new Set([
@@ -535,6 +539,15 @@ export function foldScoreLedgerV7(
       case "UNIT_SWALLOWED":
         broken.add(event.victimOwnerId);
         break;
+      // The Cultists (docs/product/RULESET_7_CULTISTS.md section 5.1): a
+      // Sacrifice is not a Loss (like Disband) and ends the flawless game.
+      // Its `UNIT_DIED` (cause `SACRIFICED`) follows and is a removal. A
+      // Seizure has the same cause and is an ordinary credited death: Kills
+      // for the Cult seat, a Loss for the victim's owner.
+      case "UNIT_SACRIFICED":
+        broken.add(event.playerId);
+        removed.add(event.victimUnitId);
+        break;
       case "CITY_CAPTURED":
         if (event.from !== null) {
           broken.add(event.from);
@@ -551,7 +564,7 @@ export function foldScoreLedgerV7(
         const at = owner.get(event.unitId) ?? credit?.victimOwnerId;
         if (at === undefined || isNeutralOwnerV7(at)) break;
         broken.add(at);
-        if (REMOVAL_CAUSES_V7.has(event.cause)) {
+        if (REMOVAL_CAUSES_V7.has(event.cause) || removed.has(event.unitId)) {
           removed.add(event.unitId);
           break;
         }

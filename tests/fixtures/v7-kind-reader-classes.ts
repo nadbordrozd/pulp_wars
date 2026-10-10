@@ -575,6 +575,13 @@ export const KIND_READER_CLASSES_V7: Readonly<
   // holder's and the victim's kinds (`kindOf`; a held victim is never
   // mind-controlled).
   "src/engine/v7/state-schema.ts::giantsValid": "KIND",
+  // The Cult's Favour (`pulp_wars-mch9.4`). Both reads are a seat's: the
+  // Offering is a city action of the seat that owns the city (its own
+  // tree's Harvest Rites), and a Favour entry belongs to a Cult seat. The
+  // unit rules (Sacrifice, Seize, Martyr, the robed cultists) read the
+  // unit's kind through `unitRoleRuleV7` and `unitRoleMechanicsV7`.
+  "src/engine/v7/cult.ts::offeringRejectionV7": "SEAT",
+  "src/engine/v7/state-schema.ts::cultValid": "SEAT",
 };
 
 /**

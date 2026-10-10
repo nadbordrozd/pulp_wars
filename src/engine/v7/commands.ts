@@ -312,6 +312,26 @@ export type CommandV7 =
       readonly at: CoordV7;
     }
   | {
+      /**
+       * The Cultists (docs/product/RULESET_7_CULTISTS.md sections 5.1 and
+       * 5.2): a Summoner offers a unit on one of the eight tiles around it
+       * to the Ancient Ones. `SACRIFICE`: an own unit, for its value in
+       * Favour. `SEIZE`: a broken hostile unit that another robed cultist
+       * of the actor holds down, for twice its value.
+       */
+      readonly kind: "SACRIFICE" | "SEIZE";
+      readonly unitId: UnitId;
+      readonly victimUnitId: UnitId;
+    }
+  | {
+      /**
+       * The Cultists (section 5.3): the own city `cityId` gives up 2
+       * population for 3 Favour, as its city action.
+       */
+      readonly kind: "OFFERING";
+      readonly cityId: CityId;
+    }
+  | {
       /** Revision 19: a Dinosaur city lays an Egg of `role` on `at`. */
       readonly kind: "LAY_EGG";
       readonly cityId: CityId;
@@ -506,6 +526,15 @@ export function parseCommandV7(input: unknown): CommandParseResultV7 {
       ? invalid(kind)
       : { ok: true, value: { kind, unitId: unit, targetUnitId: target } };
   }
+  if (kind === "SACRIFICE" || kind === "SEIZE") {
+    if (!hasExactKeysV7(input, ["kind", "unitId", "victimUnitId"]))
+      return invalid(kind);
+    const unit = parseUnitIdV7(candidate.unitId);
+    const victim = parseUnitIdV7(candidate.victimUnitId);
+    return unit === null || victim === null || unit === victim
+      ? invalid(kind)
+      : { ok: true, value: { kind, unitId: unit, victimUnitId: victim } };
+  }
   if (kind === "BEAM_DOWN") {
     if (!hasExactKeysV7(input, ["kind", "unitId", "passengerUnitId", "to"]))
       return invalid(kind);
@@ -625,7 +654,7 @@ export function parseCommandV7(input: unknown): CommandParseResultV7 {
       ? invalid(kind)
       : { ok: true, value: { kind, unitId: unit } };
   }
-  if (kind === "LAND_GRANT") {
+  if (kind === "LAND_GRANT" || kind === "OFFERING") {
     const cityId = hasExactKeysV7(input, ["cityId", "kind"])
       ? parseCityIdV7(candidate.cityId)
       : null;
@@ -894,6 +923,9 @@ function referencedOrdinal(command: CommandV7): number {
     command.kind === "SWALLOW"
   )
     return command.targetUnitId;
+  // The Cultists: `SACRIFICE` and `SEIZE` in unit-ID, then victim-ID order.
+  if (command.kind === "SACRIFICE" || command.kind === "SEIZE")
+    return command.victimUnitId;
   if (command.kind === "HATCH") return command.eggUnitId;
   return 0;
 }

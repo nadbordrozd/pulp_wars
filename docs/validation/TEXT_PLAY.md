@@ -318,6 +318,9 @@ Other factions add `.raise`, `.devour`, `.wail`, `.kaboom`, `.coldsnap`,
 `.a.4,5` (an attack on the Barricade on `4,5`), and `c1.egg.ROLE.4,5`;
 `options` prints them when they are offered. The view lists the
 Barricades on explored tiles (owner and HP) and marks their cells `B`.
+The Cultists (`pulp_wars-mch9.4`) add `.sacrifice.u9` and `.seize.u31`
+(the Summoner offers that unit) and `c1.offering`; a Cult seat's header and
+every Cult seat in the player list show its Favour.
 
 A unit keeps its id for its whole life; a city keeps its id across captures.
 Roles and technologies use the engine's identifiers (`FIGHTER`, `FARMING`).

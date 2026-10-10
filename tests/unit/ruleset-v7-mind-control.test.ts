@@ -235,6 +235,10 @@ describe("Mind Control revision: legality (section 3)", () => {
       "RIDES_TUNNEL",
       // The Candy revision: no Re-bake under control.
       "REBAKE",
+      // The Cult's Favour (`pulp_wars-mch9.4`): Favour needs a Cult seat.
+      "SACRIFICE",
+      "SEIZE",
+      "MARTYR",
     ]);
   });
 

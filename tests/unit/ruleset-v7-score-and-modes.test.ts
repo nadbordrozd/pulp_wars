@@ -776,6 +776,8 @@ describe("score and modes: the ledger fold", () => {
         "UNIT_DISBANDED",
         "UNIT_MIND_CONTROLLED",
         "UNIT_RELEASED",
+        // The Cultists (`pulp_wars-mch9.4`): a Sacrifice of an own unit.
+        "UNIT_SACRIFICED",
         "UNIT_SWALLOWED",
       ].sort(),
     );
@@ -834,6 +836,15 @@ describe("score and modes: the ledger fold", () => {
         victimOwnerId: loser,
         role: "FIGHTER",
         hp: victim.hp,
+      },
+      UNIT_SACRIFICED: {
+        kind: "UNIT_SACRIFICED",
+        playerId: loser,
+        unitId: unit(4, 4).id,
+        victimUnitId: victim.id,
+        role: "FIGHTER",
+        at: victim.at,
+        favour: 2,
       },
     };
     for (const kind of FLAWLESS_BREAKING_EVENT_KINDS_V7) {

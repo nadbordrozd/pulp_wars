@@ -20,10 +20,12 @@ import {
 } from "./economy";
 import {
   MONUMENT_POPULATION_V7,
+  factionHasFavourV7,
   isResourceRevealedV7,
   unitRoleRuleV7,
   FIELD_DEFENSE_FORTIFICATION_LEVELS_V7,
 } from "../rules/ruleset-v7";
+import { favourOfV7 } from "./cult";
 import { isUnitVisibleToPlayerV7 } from "./observation";
 import { spatialContributionAtV7 } from "./spatial-economy";
 import { knownWinterV7 } from "./ice-folk";
@@ -44,6 +46,7 @@ import type {
   EggStatusV7,
   FactionIdV7,
   FactionTreeIdV7,
+  FavourEntryV7,
   GameStateV7,
   IceTileV7,
   ImprovementIdV7,
@@ -67,7 +70,7 @@ import type {
 } from "./types";
 import { publicUnitStatsV7, type PublicUnitStatsV7 } from "./unit-stats";
 import { allOwnedUnitsV7, barricadesOfV7 } from "./units";
-import { cityHasWallsV7 } from "./types";
+import { cityHasWallsV7, cityOfferedPopulationV7 } from "./types";
 import { scoresV7, type PlayerScoreV7 } from "./score";
 import { matchSummaryV7, type MatchSummaryV7 } from "./star-grade";
 import { PERFECTION_ROUNDS_V7, gameModeOfV7, type GameModeV7 } from "./types";
@@ -159,6 +162,12 @@ export interface PublicCityV7 {
    * the city's Walls were torn down (public: Walls are). Present only then.
    */
   readonly wallsRazed?: true;
+  /**
+   * The Cultists (docs/product/RULESET_7_CULTISTS.md section 5.3): the
+   * population the city gave up in Offerings (public, as its population
+   * is). Present only when it is above 0.
+   */
+  readonly offeredPopulation?: number;
 }
 
 export interface PublicUnitV7 {
@@ -452,6 +461,16 @@ export interface PlayerViewV7 {
    */
   readonly giants: {
     readonly swallowed: readonly PublicSwallowedV7[];
+  };
+  /**
+   * The Cultists (docs/product/RULESET_7_CULTISTS.md section 3): Favour is
+   * public. One entry per Cult seat still in the match, in `players` order,
+   * with its Favour (0 for a seat that has none); empty in a match without
+   * a Cult seat. A view captured before the Cultists has no `cult` key;
+   * read a seat's Favour with `favourOfV7`.
+   */
+  readonly cult: {
+    readonly favour: readonly FavourEntryV7[];
   };
   /** Score and modes (section 3.4): the score the viewer may know. */
   readonly score: PlayerScoreViewV7;
@@ -808,6 +827,9 @@ export function viewForV7(
       : {}),
     rewards: city.rewards,
     ...(city.wallsRazed === true ? { wallsRazed: true as const } : {}),
+    ...(cityOfferedPopulationV7(city) > 0
+      ? { offeredPopulation: cityOfferedPopulationV7(city) }
+      : {}),
   }));
   const cityCounts = countBy(state.cities.map((city) => city.ownerId));
   // The Dwarf revision section 5.2: the leaderboard counts everything a
@@ -1147,6 +1169,18 @@ export function viewForV7(
             homeCityId:
               entry.unit.ownerId === viewerId ? entry.unit.homeCityId : null,
           },
+        })),
+    },
+    // The Cultists (section 3): see `PlayerViewV7.cult`.
+    cult: {
+      favour: state.players
+        .filter(
+          (player) =>
+            player.status === "ACTIVE" && factionHasFavourV7(player.faction),
+        )
+        .map((player) => ({
+          playerId: player.id,
+          favour: favourOfV7(state, player.id),
         })),
     },
     score: scoreViewV7(state, viewerId, scores),

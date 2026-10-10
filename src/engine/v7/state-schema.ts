@@ -14,11 +14,14 @@ import {
   NEUTRAL_ROLE_RULES_V7,
   BOOM_POPULATION_V7,
   MONUMENT_POPULATION_V7,
+  OFFERING_MINIMUM_LEVEL_V7,
+  OFFERING_POPULATION_V7,
   cityRewardCandidatesV7,
   cityRewardRecordMatchesLevelV7,
   dockPopulationV7,
   effectiveRoleRuleV7,
   eggMaxHpOptionsV7,
+  factionHasFavourV7,
   factionTreeIdV7,
   gravesEnabledV7,
   growthStageForKillsV7,
@@ -59,6 +62,7 @@ import {
   type CoolingStatusV7,
   type CoordV7,
   type CrumbsV7,
+  type CultStateV7,
   type CuriosityKindV7,
   type CuriosityV7,
   type SugarRushStatusV7,
@@ -143,6 +147,8 @@ const STATE_KEYS = [
   "commandIndex",
   "cooling",
   "crumbs",
+  // The Cultists (docs/product/RULESET_7_CULTISTS.md section 3).
+  "cult",
   "curiosities",
   "eggs",
   "feastedThisTurn",
@@ -321,6 +327,9 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
     players === null || mindControlled === null
       ? null
       : parseGiants(input.giants, players, mindControlled, shrinePromotions);
+  // The Cultists (docs/product/RULESET_7_CULTISTS.md section 3): Favour;
+  // the cross references are checked below.
+  const cult = parseCult(input.cult);
   // Score and modes (section 3.3): the score ledger; checked below.
   const storedScoreLedger = storedLedger
     ? parseScoreLedger(input.scoreLedger)
@@ -369,6 +378,7 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
     ninthUnit === null ||
     barricades === null ||
     giants === null ||
+    cult === null ||
     storedScoreLedger === null ||
     choices === null ||
     outcome === undefined ||
@@ -437,6 +447,7 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
       ninthUnit,
       barricades,
       giants,
+      cult,
       curiosities,
       ice,
       choices,
@@ -497,6 +508,7 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
     ninthUnit,
     barricades,
     giants,
+    cult,
     scoreLedger,
     pendingChoices: choices,
     outcome,
@@ -773,6 +785,13 @@ function parseCity(input: unknown): CityStateV7 | null {
     typeof input === "object" &&
     input !== null &&
     Object.hasOwn(input, "wallsRazed");
+  // The Cultists (RULESET_7_CULTISTS.md section 5.3): `offeredPopulation` is
+  // present only as a positive multiple of an Offering's population, and
+  // only in a city of the level that may make one.
+  const offered =
+    typeof input === "object" &&
+    input !== null &&
+    Object.hasOwn(input, "offeredPopulation");
   if (
     !hasExactKeysV7(input, [
       "at",
@@ -788,8 +807,14 @@ function parseCity(input: unknown): CityStateV7 | null {
       "population",
       "rewards",
       ...(razed ? ["wallsRazed"] : []),
+      ...(offered ? ["offeredPopulation"] : []),
     ]) ||
     (razed && input.wallsRazed !== true) ||
+    (offered &&
+      (!isPositiveSafeIntegerV7(input.offeredPopulation) ||
+        input.offeredPopulation % OFFERING_POPULATION_V7 !== 0 ||
+        !isPositiveSafeIntegerV7(input.level) ||
+        input.level < OFFERING_MINIMUM_LEVEL_V7)) ||
     !isPositiveSafeIntegerV7(input.level) ||
     !isNonNegativeSafeIntegerV7(input.permanentPopulation) ||
     !isNonNegativeSafeIntegerV7(input.economicPopulation) ||
@@ -805,6 +830,7 @@ function parseCity(input: unknown): CityStateV7 | null {
   const at = parseCoordV7(input.at);
   const rewards = parseRewards(input.rewards);
   const spent = growthSpent(input.level);
+  const offeredPopulation = offered ? (input.offeredPopulation as number) : 0;
   if (
     id === null ||
     owner === null ||
@@ -813,7 +839,10 @@ function parseCity(input: unknown): CityStateV7 | null {
     spent === null ||
     (razed && !rewards.some((record) => record.reward === "WALLS")) ||
     input.population !==
-      input.permanentPopulation + input.economicPopulation - spent ||
+      input.permanentPopulation +
+        input.economicPopulation -
+        spent -
+        offeredPopulation ||
     input.population >= input.level + 1
   )
     return null;
@@ -831,6 +860,7 @@ function parseCity(input: unknown): CityStateV7 | null {
     cityActionAvailable: input.cityActionAvailable,
     rewards,
     ...(razed ? { wallsRazed: true as const } : {}),
+    ...(offered ? { offeredPopulation } : {}),
   };
 }
 
@@ -1960,6 +1990,49 @@ function ninthUnitValid(
 }
 
 /**
+ * The Cultists (docs/product/RULESET_7_CULTISTS.md section 3): the shape of
+ * `cult`: the Favour entries, strictly ascending by player, each a positive
+ * whole number. The cross references are checked by `cultValid`.
+ */
+function parseCult(input: unknown): CultStateV7 | null {
+  if (!hasExactKeysV7(input, ["favour"]) || !isDenseArrayV7(input.favour))
+    return null;
+  const favour: CultStateV7["favour"][number][] = [];
+  for (const candidate of input.favour) {
+    if (!hasExactKeysV7(candidate, ["favour", "playerId"])) return null;
+    const playerId = parsePlayerIdV7(candidate.playerId);
+    const prior = favour.at(-1);
+    if (
+      playerId === null ||
+      !isPositiveSafeIntegerV7(candidate.favour) ||
+      (prior !== undefined && prior.playerId >= playerId)
+    )
+      return null;
+    favour.push({ playerId, favour: candidate.favour });
+  }
+  return { favour };
+}
+
+/**
+ * The Cultists (section 3): the cross references of `cult.favour`: every
+ * entry is of a Cult seat that is still in the match (an eliminated seat's
+ * Favour is gone).
+ */
+function cultValid(
+  value: CrossInput,
+  playerById: ReadonlyMap<PlayerStateV7["id"], PlayerStateV7>,
+): boolean {
+  return value.cult.favour.every((entry) => {
+    const player = playerById.get(entry.playerId);
+    return (
+      player !== undefined &&
+      player.status === "ACTIVE" &&
+      factionHasFavourV7(player.faction)
+    );
+  });
+}
+
+/**
  * The giants' signatures (docs/product/RULESET_7_GIANTS.md section 6.2):
  * the shape of `giants`: the held victims, strictly ascending by holder,
  * each a unit that parses like a unit on the board under its owner's
@@ -2331,6 +2404,7 @@ interface CrossInput {
   ninthUnit: NinthUnitStateV7;
   barricades: readonly BarricadeV7[];
   giants: GiantsStateV7;
+  cult: CultStateV7;
   curiosities: readonly CuriosityV7[];
   ice: readonly IceTileV7[];
   choices: readonly PendingChoiceV7[];
@@ -2660,6 +2734,7 @@ function validateCrossReferences(value: CrossInput): boolean {
     !ninthUnitValid(value, playerById, kindOf) ||
     !barricadesValid(value, playerById) ||
     !giantsValid(value, playerById, kindOf) ||
+    !cultValid(value, playerById) ||
     !iceValid(value, playerById, kindOf) ||
     // The Dinosaur pass, correction: `huntedThisTurn` is empty in a match
     // without a Dinosaur seat, and names units on the board that do not

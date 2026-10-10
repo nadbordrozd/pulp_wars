@@ -1,6 +1,8 @@
 import type { CityId, PlayerId, UnitId } from "../model/ids";
 import {
   ASSEMBLE_COST_V7,
+  OFFERING_FAVOUR_V7,
+  OFFERING_POPULATION_V7,
   BARRICADE_CAP_V7,
   BARRICADE_COST_V7,
   BARRICADE_HP_V7,
@@ -281,6 +283,15 @@ import {
   tossPassengerLegalV7,
   type GiantTileFactsV7,
 } from "./giants";
+import {
+  favourOfV7,
+  offeringRejectionV7,
+  sacrificeFavourV7,
+  sacrificeRejectionV7,
+  seizeFavourV7,
+  seizeHolderV7,
+  seizeRejectionV7,
+} from "./cult";
 import { laidEggHpV7, laidEggTurnsV7, publicNestTilesV7 } from "./eggs";
 import {
   stampedeActorRejectionV7,
@@ -310,6 +321,7 @@ import {
   REWARD_IDS_V7,
   TECHNOLOGY_IDS_V7,
   UNIT_ROLE_IDS_V7,
+  cityOfferedPopulationV7,
   isAfloatFormV7,
   isNavalRoleV7,
   isNeutralOwnerV7,
@@ -732,6 +744,18 @@ function appendPublicCityCommandsV7(
   if (city.ownerId !== player.id || publicCityBesieged(view, city.at)) return;
   appendPublicHireCommandsV7(view, city, candidates);
   if (city.cityActionAvailable !== true) return;
+  // The Cultists (docs/product/RULESET_7_CULTISTS.md section 5.3): the
+  // Offering, offered exactly when the reducer accepts it (the shared
+  // legality predicate; the city is the viewer's and not besieged here).
+  if (
+    offeringRejectionV7(
+      player,
+      city,
+      false,
+      view.pendingChoices.some((choice) => choice.cityId === city.id),
+    ) === null
+  )
+    candidates.push({ kind: "OFFERING", cityId: city.id });
   const centerBlocked = view.units.some((unit) => same(unit.at, city.at));
   const capacity = cityUnitCapacityForV7(
     city.level,
@@ -1073,6 +1097,8 @@ function appendPublicUnitCommandsV7(
       });
   // The giants' signatures (docs/product/RULESET_7_GIANTS.md section 6).
   appendPublicGiantCommandsV7(view, unit, candidates);
+  // The Cultists (docs/product/RULESET_7_CULTISTS.md section 5).
+  appendPublicCultCommandsV7(view, unit, candidates);
   // The Ice Folk revision section 7.2: a Yeti on a Mountain reaches 2.
   const attackRange = publicAttackMaximumRangeV7(view, unit);
   // The naval branch (docs/product/RULESET_7_NAVAL_BRANCH.md sections 5.2
@@ -1403,6 +1429,38 @@ function appendPublicUnitCommandsV7(
     candidates.push({ kind: "BUILD_FIELD_DEFENSE", unitId: unit.id });
   if (!unit.activation.handled)
     candidates.push({ kind: "WAIT", unitId: unit.id });
+}
+
+/**
+ * The Cultists (docs/product/RULESET_7_CULTISTS.md sections 5.1 and 5.2): a
+ * Summoner's Sacrifice and Seize, each offered for every victim the reducer
+ * accepts (the shared legality predicates of src/engine/v7/cult.ts). Every
+ * unit on an explored tile is visible, HP and afflictions are public, and
+ * the holder is an own unit, so the offer is exact.
+ */
+function appendPublicCultCommandsV7(
+  view: PlayerViewV7,
+  unit: PlayerViewV7["units"][number],
+  candidates: CommandV7[],
+): void {
+  if (unit.ownerId !== view.viewer.id) return;
+  const abilities = unitRoleRuleV7(view, unit).abilities;
+  if (abilities.includes("SACRIFICE"))
+    for (const victim of view.units)
+      if (sacrificeRejectionV7(view, unit, victim) === null)
+        candidates.push({
+          kind: "SACRIFICE",
+          unitId: unit.id,
+          victimUnitId: victim.id,
+        });
+  if (abilities.includes("SEIZE"))
+    for (const victim of view.units)
+      if (seizeRejectionV7(view, view.units, unit, victim) === null)
+        candidates.push({
+          kind: "SEIZE",
+          unitId: unit.id,
+          victimUnitId: victim.id,
+        });
 }
 
 /**
@@ -3794,6 +3852,127 @@ export function previewSwallowV7(
   };
 }
 
+/**
+ * The Cultists (docs/product/RULESET_7_CULTISTS.md sections 5.1 and 5.2):
+ * the preview of an offered Sacrifice or Seizure: the victim, what it pays,
+ * and the Favour the viewer has afterwards. A Seizure is a kill credited to
+ * the Summoner and names the robed cultist that holds the victim down.
+ */
+export interface SacrificePreviewV7 {
+  readonly unitId: UnitId;
+  readonly victimUnitId: UnitId;
+  readonly victimOwnerId: PlayerId;
+  readonly role: UnitRoleIdV7;
+  readonly at: CoordV7;
+  /** The Favour gained: the victim's value. */
+  readonly favour: number;
+  readonly favourAfter: number;
+}
+export interface SeizePreviewV7 extends SacrificePreviewV7 {
+  /** The own robed cultist next to the victim that holds it down. */
+  readonly holderUnitId: UnitId;
+}
+
+/** Section 5.1: null unless that `SACRIFICE` is offered; equals the result. */
+export function previewSacrificeV7(
+  view: PlayerViewV7,
+  unitId: UnitId,
+  victimUnitId: UnitId,
+): SacrificePreviewV7 | null {
+  if (
+    !queryPlayerCommandsV7(view).some(
+      (command) =>
+        command.kind === "SACRIFICE" &&
+        command.unitId === unitId &&
+        command.victimUnitId === victimUnitId,
+    )
+  )
+    return null;
+  const victim = view.units.find((unit) => unit.id === victimUnitId);
+  if (victim === undefined) return null;
+  const favour = sacrificeFavourV7(view, victim);
+  return {
+    unitId,
+    victimUnitId,
+    victimOwnerId: victim.ownerId,
+    role: victim.role,
+    at: { x: victim.at.x, y: victim.at.y },
+    favour,
+    favourAfter: favourOfV7(view, view.viewer.id) + favour,
+  };
+}
+
+/** Section 5.2: null unless that `SEIZE` is offered; equals the result. */
+export function previewSeizeV7(
+  view: PlayerViewV7,
+  unitId: UnitId,
+  victimUnitId: UnitId,
+): SeizePreviewV7 | null {
+  if (
+    !queryPlayerCommandsV7(view).some(
+      (command) =>
+        command.kind === "SEIZE" &&
+        command.unitId === unitId &&
+        command.victimUnitId === victimUnitId,
+    )
+  )
+    return null;
+  const summoner = view.units.find((unit) => unit.id === unitId);
+  const victim = view.units.find((unit) => unit.id === victimUnitId);
+  const holder =
+    summoner === undefined || victim === undefined
+      ? undefined
+      : seizeHolderV7(view, view.units, summoner, victim);
+  if (victim === undefined || holder === undefined) return null;
+  const favour = seizeFavourV7(view, victim);
+  return {
+    unitId,
+    victimUnitId,
+    victimOwnerId: victim.ownerId,
+    role: victim.role,
+    at: { x: victim.at.x, y: victim.at.y },
+    favour,
+    favourAfter: favourOfV7(view, view.viewer.id) + favour,
+    holderUnitId: holder.id,
+  };
+}
+
+/**
+ * The Cultists (section 5.3): the preview of an offered Offering: the
+ * population the city gives up and has afterwards, and the Favour.
+ */
+export interface OfferingPreviewV7 {
+  readonly cityId: CityId;
+  /** `OFFERING_POPULATION_V7`. */
+  readonly population: number;
+  readonly populationAfter: number;
+  /** `OFFERING_FAVOUR_V7`. */
+  readonly favour: number;
+  readonly favourAfter: number;
+}
+
+/** Section 5.3: null unless that `OFFERING` is offered; equals the result. */
+export function previewOfferingV7(
+  view: PlayerViewV7,
+  cityId: CityId,
+): OfferingPreviewV7 | null {
+  if (
+    !queryPlayerCommandsV7(view).some(
+      (command) => command.kind === "OFFERING" && command.cityId === cityId,
+    )
+  )
+    return null;
+  const city = view.cities.find((candidate) => candidate.id === cityId);
+  if (city === undefined) return null;
+  return {
+    cityId,
+    population: OFFERING_POPULATION_V7,
+    populationAfter: city.population - OFFERING_POPULATION_V7,
+    favour: OFFERING_FAVOUR_V7,
+    favourAfter: favourOfV7(view, view.viewer.id) + OFFERING_FAVOUR_V7,
+  };
+}
+
 /** Section 6.3: the preview of an offered Goblin Toss. */
 export interface TossPreviewV7 {
   readonly unitId: UnitId;
@@ -4134,8 +4313,12 @@ export function previewMonumentV7(
   );
   if (city === undefined) return { ok: false, error: "NOT_OFFERED" };
   const levelsReached: number[] = [];
+  // The Cultists: what the city gave up in Offerings does not come back.
   const total =
-    city.permanentPopulation + city.economicPopulation + MONUMENT_POPULATION_V7;
+    city.permanentPopulation +
+    city.economicPopulation +
+    MONUMENT_POPULATION_V7 -
+    cityOfferedPopulationV7(city);
   if (!Number.isSafeInteger(total)) return { ok: false, error: "NOT_OFFERED" };
   let level = city.level;
   while (total - growthSpentForPreview(level) >= level + 1) {
@@ -6522,7 +6705,11 @@ function resolvePublicCityGrowthV7(
   permanentPopulation: number,
   economicPopulation: number,
 ) {
-  const total = permanentPopulation + economicPopulation;
+  // The Cultists (RULESET_7_CULTISTS.md section 5.3): what the city gave
+  // up in Offerings (public) is gone from its population, as in
+  // `resolveCityGrowthV7`.
+  const total =
+    permanentPopulation + economicPopulation - cityOfferedPopulationV7(city);
   if (
     !Number.isSafeInteger(permanentPopulation) ||
     permanentPopulation < 0 ||

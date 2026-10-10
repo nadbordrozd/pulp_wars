@@ -685,6 +685,12 @@ describe("ruleset-7 all-Human parity digests", () => {
               expect(item).toEqual({ swallowed: [] });
               return undefined;
             }
+            // The Cult's Favour (`pulp_wars-mch9.4`): the empty `cult`
+            // record of state and view.
+            if (key === "cult") {
+              expect(item).toEqual({ favour: [] });
+              return undefined;
+            }
             // Score and modes (`pulp_wars-kaw6.2`): the state's score
             // ledger and the view's score (its `score` block and every
             // leaderboard entry's total) are new facts that change no play;

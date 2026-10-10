@@ -167,7 +167,9 @@ describe("Dwarf faction registration (sections 2 and 14)", () => {
     // after BREAK_OFF (69).
     // The Candy redesign (`pulp_wars-jdb.12`) adds TOP_UP after
     // TOSS_COIN (70).
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(70);
+    // The Cult's Favour (`pulp_wars-mch9.4`) adds SACRIFICE and SEIZE
+    // after STAMPEDE and OFFERING after LAY_EGG (73).
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(73);
     const snap = COMMAND_KIND_ORDER_V7.indexOf("FREEZE");
     expect(COMMAND_KIND_ORDER_V7.slice(snap, snap + 7)).toEqual([
       "FREEZE", // the frozen sea (pulp_wars-5ti.3), after COLD_SNAP
@@ -195,7 +197,9 @@ describe("Dwarf faction registration (sections 2 and 14)", () => {
     // The Candy redesign (`pulp_wars-jdb.12`) adds UNIT_TOPPED_UP,
     // TILES_GLAZED, UNIT_STUCK, TOOTHACHE_GIVEN, RICOCHETED, and THUMPED
     // (126).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(126);
+    // The Cult's Favour (`pulp_wars-mch9.4`) adds UNIT_SACRIFICED,
+    // UNIT_SEIZED, OFFERING_MADE, and FAVOUR_GAINED (130).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(130);
     const after = (order: readonly string[], kind: string) =>
       order[order.indexOf(kind) + 1];
     for (const order of [

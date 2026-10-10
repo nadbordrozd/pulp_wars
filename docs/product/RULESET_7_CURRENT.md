@@ -1,13 +1,15 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r71`, for all eight offered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r72`, for all eight offered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), and Candy (`CANDY`). A
 ninth faction, the Cultists (`CULT`), is **registered and not offered**: its
-roster, tree, start, and rewards are in the engine
-([section 1](#1-identity-and-compatibility)), its own rules are not, and
-[its spec](RULESET_7_CULTISTS.md) is folded in here only when they are. It
+roster, tree, start, and rewards are in the engine, and so is its Favour
+(Sacrifice, Seize, Offering, and Martyr;
+[section 1](#1-identity-and-compatibility)); its daemons, rituals, and
+hexes are not, and [its spec](RULESET_7_CULTISTS.md) is folded in here only
+when they are. It
 folds in
 revision 12 (free opening technology, Fruit visible from the start, Fertile
 Ground revealed by Gathering, resources kept under improvements, Normal AI
@@ -359,6 +361,19 @@ seats 2 to 9 players ([section 2.1](#21-match-setup)). The browser offers
 neither the Cult nor a ninth seat. No rule of the eight offered factions
 changed, and none of the Cult's own rules (Favour, Sacrifice, the channel,
 the rituals, the hexes) exists yet. A save, replay, or setup of `7r70` is
+rejected, and the browser autosave has a new key.
+`pulp-wars-poc-7r72` (`pulp_wars-mch9.4`) is **the Cult's Favour**
+([section 1](#1-identity-and-compatibility)), the second engine step of the
+Cultists: every Cult seat has a public pool of Favour; a Summoner
+**Sacrifices** an own unit beside it for its value or **Seizes** a broken
+enemy (5 HP or less) that a second robed cultist holds down, for twice its
+value; a Cult city with Harvest Rites makes an **Offering** of 2 population
+for 3 Favour; a Chosen's death pays 6 (**Martyr**). Nothing spends Favour
+yet. The state gains the `cult` block and a city the optional
+`offeredPopulation`; the commands `SACRIFICE`, `SEIZE`, and `OFFERING`, the
+events `UNIT_SACRIFICED`, `UNIT_SEIZED`, `OFFERING_MADE`, and
+`FAVOUR_GAINED`, and the death cause `SACRIFICED` are new. No rule of the
+eight offered factions changed. A save, replay, or setup of `7r71` is
 rejected, and the browser autosave has a new key.
 `pulp-wars-poc-7r58` (`pulp_wars-w49.25`) is
 [step two of the Martian pass](RULESET_7_TUNING_MARTIAN.md#14-step-two):
@@ -810,7 +825,7 @@ the build differs (its sections 20 to 24 list them);
 the values here are current. Where a document and the code disagreed, the
 code's behavior is the rule and is stated below;
 [Known discrepancies](#25-known-discrepancies) lists the open items and the
-resolved ones as of `pulp-wars-poc-7r71`.
+resolved ones as of `pulp-wars-poc-7r72`.
 
 **Terms.** "On the board" means a unit that currently exists (HP above 0).
 **Living** has the narrower revision-13 meaning used by Wail, Plague,
@@ -911,10 +926,10 @@ separate [Ruleset 6](RULESET_6.md) route.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r71`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Ruleset                                    | `pulp-wars-poc-7r72`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r71.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Browser autosave                           | `pulpWars.save.v7r72.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, `CULT`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`, `CULT_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -1190,7 +1205,12 @@ separate [Ruleset 6](RULESET_6.md) route.
   registration (`pulp_wars-mch9.3`, `7r71`) added the faction ID `CULT` and
   the tree ID `CULT_BASELINE_V1` to the value sets of `factions`, a player's
   `faction`, and a player's `factionTreeId`, and no key, list, command, or
-  event.
+  event. The Cult's Favour (`pulp_wars-mch9.4`, `7r72`) added the required
+  state block `cult` (`{ favour }`, empty without a Cult seat) and its view
+  copy, the optional city key `offeredPopulation` (state and view), the
+  commands `SACRIFICE`, `SEIZE`, and `OFFERING`, the events
+  `UNIT_SACRIFICED`, `UNIT_SEIZED`, `OFFERING_MADE`, and `FAVOUR_GAINED`,
+  and the `UNIT_DIED` cause `SACRIFICED` (the notes below).
 - **The Cult registration** (`pulp_wars-mch9.3`, `7r71`, bead E1 of
   [the Cultists spec](RULESET_7_CULTISTS.md#19-implementation-beads)). What
   is in the engine today, and nothing more:
@@ -1230,12 +1250,13 @@ separate [Ruleset 6](RULESET_6.md) route.
     Defense 2, Move 2, value 6; Herald 20 Favour, Control 3, 60 HP, Attack
     7, Defense 4, Move 2, value 24; Tentacle 8 HP, Attack 3, Defense 1, Move
     0, value 0. Nothing reads them yet.
-  - **Not there yet:** Favour, Sacrifice, Seize, Offering, Summon, Channel
-    and Unbound, the rituals, Behold!, Anchor, Boo!, Proclaim, Ribbit,
-    Switcheroo, the Tentacle, Pamphlets, Pick Me!, and Martyr. Their ability
-    literals, commands, events, and technology unlocks arrive with the bead
-    that implements each, so that no card names an ability that does
-    nothing. Until then a Cult seat is a plain army of the units above.
+  - **Not there yet:** Summon, Channel and Unbound, the rituals, Behold!,
+    Anchor, Boo!, Proclaim, Ribbit, Switcheroo, the Tentacle, Pamphlets, and
+    Pick Me!. Their ability literals, commands, events, and technology
+    unlocks arrive with the bead that implements each, so that no card names
+    an ability that does nothing. Until then a Cult seat is an army of the
+    units above that can gather Favour (the next note) and spend it on
+    nothing.
   - **Hidden.** `HIDDEN_FACTION_IDS_V7` is `CULT` and
     `OFFERED_FACTION_IDS_V7` the other eight. The setup screen (its selects,
     its tribe grid, its opponent counts, which stay 1 to 7), the campaign
@@ -1255,6 +1276,93 @@ separate [Ruleset 6](RULESET_6.md) route.
     (`ARMY_PLAY_FACTIONS_V7`): a match with a Cult seat keeps the older
     policy for every seat until the Cult's first AI bead
     (`pulp_wars-mch9.9`).
+- **The Cult's Favour** (`pulp_wars-mch9.4`, `7r72`, bead E2 of
+  [the Cultists spec](RULESET_7_CULTISTS.md#19-implementation-beads); its
+  sections 3, 5, and 8.2 are the design, and
+  [its section 21.2](RULESET_7_CULTISTS.md#212-e2-favour-pulp_wars-mch94-pulp-wars-poc-7r72)
+  the choices made). What is in the engine today:
+  - **Favour.** Every Cult seat has a whole number of Favour, 0 at the
+    start, with no maximum, **public** to every player. State:
+    `cult.favour`, one `{ playerId, favour }` entry per Cult seat still in
+    the match that has any, sorted by player; a seat without an entry has
+    0, and an eliminated seat's Favour is gone. A view lists every Cult
+    seat in the match with its Favour (`cult.favour`, 0 included). Favour
+    is not a Score factor, and nothing spends it yet (Summon and the Great
+    Summoning will).
+  - **Value.** A unit's value is the Score's
+    ([section 3.1](#31-score-play-modes-and-stars)): the printed cost of
+    its role under its kind, 12 for a reward giant.
+  - **Sacrifice** (`SACRIFICE { unitId, victimUnitId }`): a primary action
+    of a land-form Summoner (the Cult `CAPTAIN`), also after its Move. The
+    victim is an own land-form unit on one of the eight tiles around it,
+    of any role (the Thing in the Cellar pays 12), not mind-controlled,
+    and not Plagued or Bitten. It is removed (`UNIT_SACRIFICED`, then
+    `UNIT_DIED` cause `SACRIFICED`): no kill for anyone, no Grave, rising,
+    blast, Crumbs, Plunder, or growth; its slot frees. The seat gains its
+    value in Favour. In the Score it is not a Loss and no Damage taken
+    (like Disband), it lowers the Army, and it ends a flawless game.
+    Illegal: `SACRIFICE_NOT_LEGAL` with `EMBARKED`, `VICTIM`, `CONTROLLED`,
+    `PLAGUED`, or `BITTEN`.
+  - **Seize** (`SEIZE { unitId, victimUnitId }`): a primary action of a
+    land-form Summoner, also after its Move. The victim is a hostile
+    land-form unit on one of the eight tiles around it that the actor
+    sees, **living** (not of the Undead kind, not a construct), not a
+    reward giant, not a two-slot unit, not neutral, and **broken** (5 HP
+    or less; a Shield does not count), with **another robed cultist** of
+    the actor in land form on one of the eight tiles around the victim
+    (the holder, which spends nothing; the event names the one with the
+    lowest unit ID). The robed cultists are the Initiate, Idol Bearer,
+    Hexer, Summoner, Stargazer, Caller, and Chosen. The victim dies
+    (`UNIT_SEIZED`, then `UNIT_DIED` cause `SACRIFICED`): a kill credited
+    to the Summoner (its kills, Promotion, Slayer; the Score's Kills, and
+    the victim's seat's Loss and Damage taken), with no Grave, rising,
+    blast, Crumbs, or Plunder; a Seized Brain releases its controlled
+    unit. The seat gains **twice** the victim's value. Illegal:
+    `SEIZE_NOT_LEGAL` with `EMBARKED`, `VICTIM`, `IMMUNE`, `HEALTHY`, or
+    `NO_HOLDER`.
+  - **Offering** (`OFFERING { cityId }`): the city action of an own Cult
+    city, with Harvest Rites (the Cult's Farming; the `offering`
+    capability, which no other tree has). The city is level 2 or more,
+    not besieged, has no pending reward, and has **2 population or more**
+    (the floor). It gives up 2 population for good: the city's
+    `offeredPopulation` grows by 2 and is subtracted in the population
+    formula ([section 4.2](#42-population-growth-and-levels)), so the city is 2
+    further from its next level; a level is never lost. The seat gains 3
+    Favour. `OFFERING_MADE`, the city's `CITY_ECONOMY_CHANGED`, then
+    `FAVOUR_GAINED`. Illegal: `TECH_REQUIRED` (Farming), `CITY_BESIEGED`,
+    `CITY_REWARD_PENDING`, `CITY_ACTION_SPENT`, or `OFFERING_NOT_LEGAL`
+    with `LEVEL` or `POPULATION`. What a city gave up stays through a
+    capture.
+  - **Martyr.** When a Chosen (the Cult `SWORDSMAN`) of a Cult seat dies,
+    the seat gains 6 Favour (`FAVOUR_GAINED`, source `MARTYR`, right after
+    the death), whatever killed it and on whoever's turn. Not for a
+    Sacrifice (it pays the value), not for a seat that is eliminated in
+    the same command, and not for a mind-controlled Chosen.
+  - **Mind Control.** Favour needs a Cult seat: a mind-controlled Summoner
+    has neither Sacrifice nor Seize and a mind-controlled Chosen no Martyr
+    (`MIND_CONTROLLED_LOST_ABILITIES_V7`).
+  - **Events and who sees them.** `FAVOUR_GAINED` (the seat, the source
+    `SACRIFICE`, `SEIZE`, `OFFERING`, or `MARTYR`, the amount, and the
+    seat's Favour afterwards) reaches every player: Favour is public, and
+    the event names no unit and no tile. `UNIT_SACRIFICED` and `UNIT_SEIZED` reach the actor, the
+    victim's seat, and every player who saw the victim before; an
+    Offering the owner and every player who has explored the city's
+    center.
+  - **Previews.** `previewSacrificeV7`, `previewSeizeV7`, and
+    `previewOfferingV7` give the victim or the city, the Favour gained,
+    and the seat's Favour afterwards, and are null unless the command is
+    offered; the public command query offers exactly the commands the
+    reducer accepts.
+  - **Technology cards.** Leadership shows the Summoner's support
+    (`SUMMONER_SUPPORT`) and Harvest Rites the Offering (`OFFERING`).
+  - **Interface, for now.** The dock shows a Sacrifice, a Seizure, and an
+    Offering with its generic action buttons, one per victim, named by
+    the victim's unit and what it pays ("Sacrifice Initiate", "+2
+    Favour"). The Favour in the HUD and the leaderboard and the victim
+    picked on the board are the interface bead's (`pulp_wars-mch9.17`).
+    The text harness prints the Favour in its header and player list.
+  - **Normal AI.** The older policy never picks one of the three commands
+    (`pulp_wars-mch9.10` gives the Cult seat its use of them).
 
 ## 2. Setup and map generation
 
@@ -2793,6 +2901,12 @@ level rises while population >= level + 1
   Ports, and connected Roads and is recomputed after every change.
 - Live population loss can make displayed population negative but never lowers
   level or repeats a reward.
+- **The Cult's Offering** (`pulp_wars-mch9.4`, `7r72`;
+  [section 1](#1-identity-and-compatibility)): what a city gave up in
+  Offerings (`offeredPopulation`, 2 for each) is subtracted from
+  `population` as well, after `growthSpent(level)`. It never lowers a level
+  or repeats a reward, and the city needs that much more population for its
+  next level. It is 0 in every city that never made an Offering.
 
 ### 4.3 Income
 
@@ -12437,6 +12551,7 @@ first guesses.
 | Monument skin   | `pulp-wars-poc-7r69` | `pulp_wars-eu3r.3` the Monument skin rule, engine and art choice (the user, 2026-10-08: unlike every other building, a Monument keeps its builder's look when another faction captures its city, so each Monument and look appears at most once on the map; the identity became `7r69` when it was published after the Candy redesign, `7r68`; a save, replay, or setup of `7r68` is rejected): `BUILD_MONUMENT` records the builder's faction as `builderFaction` on the Monument's population-contribution source, a capture never changes it, the view publishes it to every viewer (the achievement stays the owner's), and the board, the dock, the build button, and the Achievements screen draw the faction Monuments of `pulp_wars-eu3r.2`; a state without the field draws the Human or shared Monument; no rule, price, population, command, or event changed                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | [section 5](#5-achievements-and-monuments)                                                                                            |
 | Vampire/Banshee | `pulp-wars-poc-7r70` | `pulp_wars-ty6i` the Vampire and Banshee rework, engine (the user, 2026-10-09: the Vampire was not worth its price and the Banshee was weak; the identity became `7r70` when it was published after the Monument skin rule, `7r69`; a save, replay, or setup of `7r69` is rejected): the Vampire has 13 HP (10 before), Feast (a kill heals it fully and allows one more attack that turn, two at most) and Bat Escape (its Escape flies up to 2 tiles over units and zones of control to a free land tile); the Banshee's Wail hits at Attack 1.5 (1 before), Terror (enemies it wounds cannot strike back until the end of the turn), and Ethereal (enemy zones of control do not stop its Move) ([section 17.12](#1712-the-vampire-and-banshee-rework)).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Cult, E1        | `pulp-wars-poc-7r71` | `pulp_wars-mch9.3` the Cult registration, the first engine step of the Cultists of the Ancient Ones (the user, 2026-10-09; a save, replay, or setup of `7r70` is rejected): the ninth faction `CULT` ("Cultists") and its tree `CULT_BASELINE_V1`, its nine land units with the spec's numbers, the registered numbers of the Horror, the Herald, and the Tentacle (`SUMMONED_ROLE_IDS_V7`, on no board yet), its technology names, its start, its Militia of two Initiates, its Familiar from Scouts and chests, and its giant, the Thing in the Cellar; `F` is 9, so the engine and the headless tools seat 2 to 9 players; the browser offers neither the Cult nor a ninth seat (`HIDDEN_FACTION_IDS_V7`), and draws a Cult seat with the shared art under a lettered stand-in badge; none of the Cult's own rules exists yet, and no rule of another faction changed ([section 1](#1-identity-and-compatibility)).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| Cult, E2        | `pulp-wars-poc-7r72` | `pulp_wars-mch9.4` the Cult's Favour, the second engine step of the Cultists (a save, replay, or setup of `7r71` is rejected): a public pool of Favour for every Cult seat; the Summoner's Sacrifice (an own unit beside it, for its value) and Seize (a broken enemy held by a second robed cultist, for twice its value); a city's Offering (2 population for 3 Favour, with Harvest Rites); the Chosen's Martyr (6 Favour); the state block `cult`, the city key `offeredPopulation`, three commands, four events, and the death cause `SACRIFICED`; nothing spends Favour yet, and no rule of another faction changed ([section 1](#1-identity-and-compatibility)).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 
 **Documentation parity (2026-09-28, no ruleset or identity change):** where
 older documents disagreed with the code, the code's behavior was adopted as

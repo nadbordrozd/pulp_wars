@@ -39,7 +39,7 @@ const setup: MatchSetupV7 = {
 
 describe("ruleset-7 revision-8 deterministic foundation", () => {
   it("freezes the exact identity and registries", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r71");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r72");
     expect(FACTION_IDS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",
@@ -130,7 +130,9 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
     // after BREAK_OFF (69).
     // The Candy redesign (`pulp_wars-jdb.12`) adds TOP_UP after
     // TOSS_COIN (70).
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(70);
+    // The Cult's Favour (`pulp_wars-mch9.4`) adds SACRIFICE and SEIZE
+    // after STAMPEDE and OFFERING after LAY_EGG (73).
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(73);
     // The revision-19 Dinosaur STAMPEDE stays gone; Ice Folk Freeze's
     // Mammoth STAMPEDE is a new command after BREAK_OFF.
     expect(COMMAND_KIND_ORDER_V7.indexOf("STAMPEDE")).toBe(
@@ -152,7 +154,9 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
     // The Candy redesign (`pulp_wars-jdb.12`) adds UNIT_TOPPED_UP,
     // TILES_GLAZED, UNIT_STUCK, TOOTHACHE_GIVEN, RICOCHETED, and THUMPED
     // (126).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(126);
+    // The Cult's Favour (`pulp_wars-mch9.4`) adds UNIT_SACRIFICED,
+    // UNIT_SEIZED, OFFERING_MADE, and FAVOUR_GAINED (130).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(130);
     // Revision 19 inserts HATCH after KABOOM (and, until revision 20,
     // STAMPEDE between them), LAY_EGG after TRAIN_NAVAL, EGG_LAID and
     // EGG_HATCHED after NAVAL_UNIT_TRAINED, and UNIT_GREW after
@@ -177,10 +181,17 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
     expect(
       COMMAND_KIND_ORDER_V7.slice(
         COMMAND_KIND_ORDER_V7.indexOf("TRAIN_NAVAL"),
-        COMMAND_KIND_ORDER_V7.indexOf("TRAIN_NAVAL") + 4,
+        COMMAND_KIND_ORDER_V7.indexOf("TRAIN_NAVAL") + 5,
       ),
-      // Tuning 3 (`pulp_wars-w49.3`) adds HIRE after TRAIN_NAVAL.
-    ).toEqual(["TRAIN_NAVAL", "HIRE", "LAY_EGG", "BUILD_FIELD_DEFENSE"]);
+      // Tuning 3 (`pulp_wars-w49.3`) adds HIRE after TRAIN_NAVAL. The
+      // Cult's Favour (`pulp_wars-mch9.4`) adds OFFERING after LAY_EGG.
+    ).toEqual([
+      "TRAIN_NAVAL",
+      "HIRE",
+      "LAY_EGG",
+      "OFFERING",
+      "BUILD_FIELD_DEFENSE",
+    ]);
     expect(
       DOMAIN_EVENT_KIND_ORDER_V7.slice(
         DOMAIN_EVENT_KIND_ORDER_V7.indexOf("NAVAL_UNIT_TRAINED"),

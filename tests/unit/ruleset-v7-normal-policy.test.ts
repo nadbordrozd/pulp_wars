@@ -381,7 +381,11 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       // The Candy redesign (`pulp_wars-jdb.12`) inserts TOP_UP after
       // TOSS_COIN, moving the later command kinds forward by one (was
       // 858e9f…54c2); the revision-12-ordinal value is unchanged.
-      "a7f36eb1426036083795fe8cf45e55dc99ce57f8097831136cdeec684313592f",
+      // The Cult's Favour (`pulp_wars-mch9.4`) inserts SACRIFICE and SEIZE
+      // after STAMPEDE and OFFERING after LAY_EGG, moving the later command
+      // kinds forward (was a7f36e…592f); the revision-12-ordinal value is
+      // unchanged.
+      "8cc9168d367a546816f4bf0085ac2d4894e7e97e0355884b105c755ff142cd81",
     );
     // Revision 13 shifts the command-kind ordinals in AI tie-break tuples
     // (spec section 8); this is the value with revision-12 ordinals
@@ -1191,7 +1195,11 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       // The Candy redesign (`pulp_wars-jdb.12`) inserts TOP_UP after
       // TOSS_COIN, moving the later command kinds forward by one (was
       // 888e38…34b5); the revision-12-ordinal value is unchanged.
-      "c50e0f51ea94cc5154491920e132d07e1576b951d14f91aa094a9f31542c4f61",
+      // The Cult's Favour (`pulp_wars-mch9.4`) inserts SACRIFICE and SEIZE
+      // after STAMPEDE and OFFERING after LAY_EGG, moving the later command
+      // kinds forward (was c50e0f…4f61); the revision-12-ordinal value is
+      // unchanged.
+      "563e200557834f44deee6fae74c2b4b162d66598e3d0d1dad0f8e4f53b70870f",
     );
     expect(
       canonicalHash(withRevision12CandidateOrdinalsV7(revision4Candidates)),
@@ -1212,7 +1220,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     const source = upgradeRetainedPublicViewV7(retained);
 
     expect(canonicalJson(retained)).toBe(retainedBytes);
-    expect(source.rulesetId).toBe("pulp-wars-poc-7r71");
+    expect(source.rulesetId).toBe("pulp-wars-poc-7r72");
     expect(source.viewer.factionTreeId).toBe("ORIGINAL_BASELINE_V5");
     expect(
       source.players.every(

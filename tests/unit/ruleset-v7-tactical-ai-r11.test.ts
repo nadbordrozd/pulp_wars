@@ -1029,7 +1029,11 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
           // The Candy redesign (`pulp_wars-jdb.12`) inserts TOP_UP after
           // TOSS_COIN, moving the later command kinds forward by one (was
           // 81c68a…dd4e); the revision-12-ordinal value is unchanged.
-          "f9a9ead2710aca3deb315ae32f62b15cdd8a8122fffac362a574b28ec398c16a",
+          // The Cult's Favour (`pulp_wars-mch9.4`) inserts SACRIFICE and SEIZE
+          // after STAMPEDE and OFFERING after LAY_EGG, moving the later command
+          // kinds forward (was f9a9ea…c16a); the revision-12-ordinal value is
+          // unchanged.
+          "8014206ebd14b24638de5d45c78119107d3e236bdcba6bea73740f3aa8fa4766",
         );
         // Revision 13 shifts the command-kind ordinals in AI tie-break
         // tuples (spec section 8); this is the value with revision-12
@@ -1133,7 +1137,11 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
           // The Candy redesign (`pulp_wars-jdb.12`) inserts TOP_UP after
           // TOSS_COIN, moving the later command kinds forward by one (was
           // 6d1139…067b); the revision-12-ordinal value is unchanged.
-          "8ed359672c1ad9c5ac79ff713f822069a9e883180b9fe6135a8f84a3163e3718",
+          // The Cult's Favour (`pulp_wars-mch9.4`) inserts SACRIFICE and SEIZE
+          // after STAMPEDE and OFFERING after LAY_EGG, moving the later command
+          // kinds forward (was 8ed359…3718); the revision-12-ordinal value is
+          // unchanged.
+          "faf32cbe95ee829021f21b1367355b6595bb277fee8998cd053bf14e906ea68e",
         );
         // With revision-12 ordinals (pulp_wars-9s0.1: was c56f00…73c1;
         // pulp_wars-0hi.3: was 091615…054b).

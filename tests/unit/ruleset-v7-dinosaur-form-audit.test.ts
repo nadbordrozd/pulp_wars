@@ -592,6 +592,12 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // hit leaves its rising only for a land-form unit (as a splash death),
     // and an embarked holder's victim is digested, never released afloat.
     "src/engine/v7/giants.ts": 7,
+    // The Cult's Favour (`pulp_wars-mch9.4`): a Sacrifice and a Seizure
+    // need the Summoner in land form (an embarked one is refused
+    // `EMBARKED`; an Egg never reaches them), and the victim of each is a
+    // land-form unit (an Egg, an embarked unit, and a boat are refused
+    // `VICTIM`).
+    "src/engine/v7/cult.ts": 4,
     // Ice Folk Freeze (`pulp_wars-w49.37`): the Frost Giant's Cold Aura
     // freezes only when the Giant ends its Move in land form (an embarked
     // Giant, an Egg, and a boat freeze nothing), and a Stampede needs the

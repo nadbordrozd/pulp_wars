@@ -10,6 +10,20 @@ import type {
   UnitRoleIdV7,
 } from "./types";
 
+/**
+ * The Cultists (`pulp_wars-mch9.4`, docs/product/RULESET_7_CULTISTS.md
+ * section 3): what paid a Cult seat Favour, in the frozen order: a
+ * Sacrifice, a Seizure, an Offering, and a Chosen's Martyr. The later Cult
+ * beads add a bound daemon's kill and a consumption.
+ */
+export const FAVOUR_SOURCES_V7 = Object.freeze([
+  "SACRIFICE",
+  "SEIZE",
+  "OFFERING",
+  "MARTYR",
+] as const);
+export type FavourSourceV7 = (typeof FAVOUR_SOURCES_V7)[number];
+
 export interface CityIncomeEntryV7 {
   readonly cityId: CityId;
   readonly coins: number;
@@ -1317,6 +1331,67 @@ export type DomainEventV7 =
       readonly coinDelta: number;
     }
   | {
+      /**
+       * The Cultists (docs/product/RULESET_7_CULTISTS.md section 5.1): the
+       * Summoner `unitId` of `playerId` sacrificed its own unit
+       * `victimUnitId` (role `role`, on `at`) for `favour` Favour. The
+       * victim's `UNIT_DIED` (cause `SACRIFICED`) and the seat's
+       * `FAVOUR_GAINED` follow.
+       */
+      readonly kind: "UNIT_SACRIFICED";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly victimUnitId: UnitId;
+      readonly role: UnitRoleIdV7;
+      readonly at: CoordV7;
+      readonly favour: number;
+    }
+  | {
+      /**
+       * The Cultists (section 5.2): the Summoner `unitId` of `playerId`
+       * seized the broken unit `victimUnitId` of `victimOwnerId` (role
+       * `role`, on `at`), which its robed cultist `holderUnitId` held down,
+       * for `favour` Favour (twice the victim's value). The victim's
+       * `UNIT_DIED` (cause `SACRIFICED`) and the seat's `FAVOUR_GAINED`
+       * follow.
+       */
+      readonly kind: "UNIT_SEIZED";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly holderUnitId: UnitId;
+      readonly victimUnitId: UnitId;
+      readonly victimOwnerId: PlayerId;
+      readonly role: UnitRoleIdV7;
+      readonly at: CoordV7;
+      readonly favour: number;
+    }
+  | {
+      /**
+       * The Cultists (section 5.3): the city `cityId` of `playerId` (its
+       * center on `at`) gave up `population` population for `favour`
+       * Favour. The city's `CITY_ECONOMY_CHANGED` and the seat's
+       * `FAVOUR_GAINED` follow.
+       */
+      readonly kind: "OFFERING_MADE";
+      readonly playerId: PlayerId;
+      readonly cityId: CityId;
+      readonly at: CoordV7;
+      readonly population: 2;
+      readonly favour: 3;
+    }
+  | {
+      /**
+       * The Cultists (section 3): the Cult seat `playerId` gained `amount`
+       * Favour from `source` and has `favour` now. Favour is public, so the
+       * event reaches every player; it names no unit and no tile.
+       */
+      readonly kind: "FAVOUR_GAINED";
+      readonly playerId: PlayerId;
+      readonly source: FavourSourceV7;
+      readonly amount: number;
+      readonly favour: number;
+    }
+  | {
       readonly kind: "SPOILS_AWARDED";
       readonly playerId: PlayerId;
       readonly cityId: CityId;
@@ -1477,7 +1552,15 @@ export type DomainEventV7 =
          */
         | "STAMPEDE"
         | "RICOCHET"
-        | "THUMP";
+        | "THUMP"
+        /**
+         * The Cultists (docs/product/RULESET_7_CULTISTS.md sections 5.1 and
+         * 5.2): a unit a Summoner offered to the Ancient Ones, its own
+         * (after `UNIT_SACRIFICED`: a removal, no kill) or a broken enemy
+         * (after `UNIT_SEIZED`: a kill credited to the Summoner). Nothing
+         * is left: no Grave, Crumbs, blast, or rising.
+         */
+        | "SACRIFICED";
     }
   | {
       /**

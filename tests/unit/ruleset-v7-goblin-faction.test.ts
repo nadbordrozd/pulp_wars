@@ -77,11 +77,11 @@ import {
 
 describe("ruleset-7 revision-17 identity", () => {
   it("keeps r16 among the prior identities after the r55 identity and cleans the r16 key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r71");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r71.current");
-    expect(PRIOR_RULESET_7_IDS.at(-55)).toBe("pulp-wars-poc-7r16");
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(70);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-55)).toBe(
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r72");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r72.current");
+    expect(PRIOR_RULESET_7_IDS.at(-56)).toBe("pulp-wars-poc-7r16");
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(71);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-56)).toBe(
       "pulpWars.save.v7r16.current",
     );
     const storage = new MemoryStorage([

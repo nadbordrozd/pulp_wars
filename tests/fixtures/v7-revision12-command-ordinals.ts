@@ -63,7 +63,12 @@ const LATER_COMMAND_KINDS: readonly string[] = [
   // after BREAK_OFF.
   "FROST_BOLT",
   "STAMPEDE",
+  // The Cult's Favour (`pulp_wars-mch9.4`) inserts SACRIFICE and SEIZE
+  // after STAMPEDE, and OFFERING after LAY_EGG.
+  "SACRIFICE",
+  "SEIZE",
   "LAY_EGG",
+  "OFFERING",
   // Tuning 3 (`pulp_wars-w49.3`) inserts HIRE after TRAIN_NAVAL.
   "HIRE",
   // Tuning 4 inserted DRILL_UNIT after PROMOTE; tuning 5

@@ -297,6 +297,13 @@ import {
   unitUsesSignatureV7,
 } from "./giants";
 import { applyStampedeV7 } from "./stampede";
+import {
+  applyOfferingV7,
+  applySacrificeV7,
+  applySeizeV7,
+  prunedCultV7,
+  withMartyrFavourV7,
+} from "./cult";
 import { unitIsConstructV7 } from "./afflictions";
 import {
   recoverEligibleV7,
@@ -459,7 +466,14 @@ export type RuleErrorCodeV7 =
   | "BREAK_OFF_NOT_LEGAL"
   // Map curiosities round 2 (section 30.1): an illegal toss at the Wishing
   // Well (`NOT_ON_WELL`, `ALREADY_TOSSED`).
-  | "TOSS_COIN_NOT_LEGAL";
+  | "TOSS_COIN_NOT_LEGAL"
+  // The Cultists (docs/product/RULESET_7_CULTISTS.md section 5): an illegal
+  // Sacrifice (`EMBARKED`, `VICTIM`, `CONTROLLED`, `PLAGUED`, `BITTEN`),
+  // Seizure (`EMBARKED`, `VICTIM`, `IMMUNE`, `HEALTHY`, `NO_HOLDER`), or
+  // Offering (`LEVEL`, `POPULATION`).
+  | "SACRIFICE_NOT_LEGAL"
+  | "SEIZE_NOT_LEGAL"
+  | "OFFERING_NOT_LEGAL";
 export interface RuleErrorV7 {
   readonly code: RuleErrorCodeV7;
   readonly params: Readonly<Record<string, JsonValue>>;
@@ -618,9 +632,16 @@ function applyCommandUnscoredV7(
   // deaths left (Rise Again), folded from the events the same way.
   // The giants' signatures (section 6.2): first the events of the held
   // victims the command let go.
-  const core = withWightGravesResultV7(
+  // The Cultists (RULESET_7_CULTISTS.md section 8.2): then the Favour the
+  // command's Chosen deaths paid (Martyr), folded from the events too.
+  const core = withMartyrFavourResultV7(
     stateInput,
-    withCrumbsLeftResultV7(withSwallowedOutcomesResultV7(stateInput, applied)),
+    withWightGravesResultV7(
+      stateInput,
+      withCrumbsLeftResultV7(
+        withSwallowedOutcomesResultV7(stateInput, applied),
+      ),
+    ),
   );
   const result = revealReleasedUnitsV7(core);
   // The Mind Control revision section 5.4: every command that releases a
@@ -1073,6 +1094,23 @@ function withWightGravesResultV7(
 }
 
 /**
+ * The Cultists (docs/product/RULESET_7_CULTISTS.md section 8.2): Martyr.
+ * Folds the command's deaths of Chosen into their seats' Favour
+ * (`withMartyrFavourV7`). Only `cult.favour` changes. Returns `result`
+ * itself when the command paid no Martyr.
+ */
+function withMartyrFavourResultV7(
+  before: GameStateV7,
+  result: Extract<ApplyCommandResultV7, { readonly accepted: true }>,
+): Extract<ApplyCommandResultV7, { readonly accepted: true }> {
+  const martyr = withMartyrFavourV7(before, result.state, result.events);
+  if (martyr.state === result.state) return result;
+  const next = accepted(checked(martyr.state), martyr.events);
+  if (!next.accepted) throw new RangeError("INVALID_STATE");
+  return next;
+}
+
+/**
  * The Mind Control revision (section 4.2): each released unit reveals its
  * sight for its (original) owner where it stands at the end of the command;
  * the `TILES_REVEALED` follows its `UNIT_RELEASED`. A unit that left the
@@ -1182,6 +1220,10 @@ function navalFactsMayChangeV7(
     // END_TURN reports blockades lifted by Start Turn Plague and chains.
     "KABOOM",
     "END_TURN",
+    // The Cultists: a Sacrifice or a Seizure takes a unit off the board,
+    // like a kill.
+    "SACRIFICE",
+    "SEIZE",
   ].includes(command.kind);
 }
 
@@ -1403,6 +1445,13 @@ function applyCommandCoreV7(
     return applyStompV7(DWARF_KIT_V7, stateInput, state, actor, command);
   if (command.kind === "BREAK_OFF")
     return applyBreakOffV7(DWARF_KIT_V7, stateInput, state, actor, command);
+  // The Cultists (docs/product/RULESET_7_CULTISTS.md section 5).
+  if (command.kind === "SACRIFICE")
+    return applySacrificeV7(DWARF_KIT_V7, stateInput, state, actor, command);
+  if (command.kind === "SEIZE")
+    return applySeizeV7(DWARF_KIT_V7, stateInput, state, actor, command);
+  if (command.kind === "OFFERING")
+    return applyOfferingV7(DWARF_KIT_V7, stateInput, state, actor, command);
   return rejected(stateInput, "INVALID_COMMAND");
 }
 
@@ -9123,14 +9172,17 @@ function checked(state: GameStateV7): GameStateV7 {
   // The giants' signatures (section 6.2): the held victims follow their
   // holders, and a victim whose holder left is released or gone (first, so
   // a released victim is an ordinary unit for the other prunes).
+  // The Cultists: drop the Favour of a seat that left the game.
   const result = parseGameStateV7(
-    prunedNinthUnitV7(
-      prunedCandyV7(
-        prunedMonstersV7(
-          prunedDwarfV7(
-            prunedIceFolkV7(
-              prunedMartianV7(
-                prunedEggsV7(prunedAfflictionsV7(prunedGiantsV7(state))),
+    prunedCultV7(
+      prunedNinthUnitV7(
+        prunedCandyV7(
+          prunedMonstersV7(
+            prunedDwarfV7(
+              prunedIceFolkV7(
+                prunedMartianV7(
+                  prunedEggsV7(prunedAfflictionsV7(prunedGiantsV7(state))),
+                ),
               ),
             ),
           ),

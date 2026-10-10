@@ -5,7 +5,7 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r71" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r72" as const;
 /**
  * Every earlier Ruleset 7 identity, oldest first. Readers report these as
  * incompatible (never invalid). An identity bump must append the outgoing
@@ -82,8 +82,9 @@ export const PRIOR_RULESET_7_IDS = Object.freeze([
   "pulp-wars-poc-7r68",
   "pulp-wars-poc-7r69",
   "pulp-wars-poc-7r70",
+  "pulp-wars-poc-7r71",
 ] as const);
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r71.current" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r72.current" as const;
 /**
  * The map generator a setup names (docs/product/RULESET_7_MAP_SCALE.md
  * section 8.8): `V4` is the many-seats generator of `pulp_wars-ykw.3`
@@ -326,6 +327,11 @@ export const COMMAND_KIND_ORDER_V7 = Object.freeze([
   // the earlier revisions moves).
   "FROST_BOLT",
   "STAMPEDE",
+  // The Cultists (`pulp_wars-mch9.4`, docs/product/RULESET_7_CULTISTS.md
+  // sections 5.1 and 5.2): the Summoner's Sacrifice and Seize (after the
+  // Ice Folk Freeze block, so no earlier kind moves).
+  "SACRIFICE",
+  "SEIZE",
   "CAPTURE",
   "PROMOTE",
   "PILLAGE",
@@ -359,6 +365,9 @@ export const COMMAND_KIND_ORDER_V7 = Object.freeze([
   // Tuning 3 (`pulp_wars-w49.3`): Commerce, hiring at a Market.
   "HIRE",
   "LAY_EGG",
+  // The Cultists (section 5.3): a Cult city's Offering, with the other city
+  // actions.
+  "OFFERING",
   "BUILD_FIELD_DEFENSE",
   "DISEMBARK",
   "CHOOSE_CITY_REWARD",
@@ -526,6 +535,14 @@ export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   "EXPLOSION_RESOLVED",
   "IMPROVEMENT_PILLAGED",
   "UNIT_DISBANDED",
+  // The Cultists (`pulp_wars-mch9.4`, RULESET_7_CULTISTS.md sections 3 and
+  // 5): a Summoner sacrificed an own unit or seized a broken enemy (its
+  // `UNIT_DIED` cause `SACRIFICED` follows); a city made an Offering; a
+  // seat gained Favour.
+  "UNIT_SACRIFICED",
+  "UNIT_SEIZED",
+  "OFFERING_MADE",
+  "FAVOUR_GAINED",
   "SPOILS_AWARDED",
   "PLUNDER_AWARDED",
   // Map curiosities (section 8.7): the bounty for killing a Monster.
@@ -948,6 +965,23 @@ export interface CityStateV7 {
    * without razed Walls is unchanged.
    */
   readonly wallsRazed?: true;
+  /**
+   * The Cultists (`pulp_wars-mch9.4`, docs/product/RULESET_7_CULTISTS.md
+   * section 5.3): the population the city gave up in Offerings, for good:
+   * `population = permanentPopulation + economicPopulation -
+   * growthSpent(level) - offeredPopulation`. Present only when it is above
+   * 0 (a positive multiple of `OFFERING_POPULATION_V7`), so a city that
+   * never made an Offering is unchanged. It stays through a capture, and a
+   * level is never lost by it. Read it with {@link cityOfferedPopulationV7}.
+   */
+  readonly offeredPopulation?: number;
+}
+
+/** The Cultists (section 5.3): what the city gave up in Offerings (0 or more). */
+export function cityOfferedPopulationV7(city: {
+  readonly offeredPopulation?: number | undefined;
+}): number {
+  return city.offeredPopulation ?? 0;
 }
 
 /**
@@ -1265,6 +1299,12 @@ export interface GameStateV7 {
    */
   readonly giants: GiantsStateV7;
   /**
+   * The Cultists (`pulp_wars-mch9.4`, docs/product/RULESET_7_CULTISTS.md
+   * section 3): the stored state of the Cult's own rules (Favour; the later
+   * Cult beads add the channel, the rituals, and the hexes here).
+   */
+  readonly cult: CultStateV7;
+  /**
    * Score and modes (docs/product/RULESET_7_SCORE_AND_STARS.md section
    * 3.3): one score ledger entry per player, in `players` order. A stored
    * state without the key (made before the score) loads with
@@ -1299,6 +1339,30 @@ export interface SwallowedEntryV7 {
 /** The empty giants state (a new match, a mission, a fixture). */
 export function emptyGiantsStateV7(): GiantsStateV7 {
   return { swallowed: [] };
+}
+
+/**
+ * The Cultists (`pulp_wars-mch9.4`, docs/product/RULESET_7_CULTISTS.md
+ * section 3): the stored state of the Cult's own rules. Every list is empty
+ * in a match without a Cult seat.
+ */
+export interface CultStateV7 {
+  /**
+   * Favour: one entry per Cult seat still in the match that has any, sorted
+   * by `playerId`, each a positive whole number with no maximum. A Cult
+   * seat without an entry has 0. An eliminated seat's Favour is gone. Read
+   * a seat's Favour with `favourOfV7` (src/engine/v7/cult.ts).
+   */
+  readonly favour: readonly FavourEntryV7[];
+}
+/** The Cultists (section 3): the Favour of the Cult seat `playerId`. */
+export interface FavourEntryV7 {
+  readonly playerId: PlayerId;
+  readonly favour: number;
+}
+/** The empty Cult state (a new match, a mission, a fixture). */
+export function emptyCultStateV7(): CultStateV7 {
+  return { favour: [] };
 }
 
 /**

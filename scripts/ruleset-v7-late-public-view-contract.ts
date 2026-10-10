@@ -151,7 +151,11 @@ export const RULESET7_LATE_PUBLIC_VIEW_NORMAL_DECISION = Object.freeze({
     // The Candy redesign (`pulp_wars-jdb.12`) inserts TOP_UP after
     // TOSS_COIN, moving the later command kinds forward by one (was
     // ec779f…fb5d); the revision-12-ordinal value is unchanged.
-    "9cad8701a8dc74c0fccb5dbd26fab41969e5d795ea810428f3a13f7e6dae0bcc",
+    // The Cult's Favour (`pulp_wars-mch9.4`) inserts SACRIFICE and SEIZE
+    // after STAMPEDE and OFFERING after LAY_EGG, moving the later command
+    // kinds forward (was 9cad87…0bcc); the revision-12-ordinal value is
+    // unchanged.
+    "425276475bdc37c06b1be5e3885dce9a800516888b8a5ac0567e3989e7b6bae5",
   command: Object.freeze({
     kind: "TRAIN",
     cityId: 16,
@@ -240,10 +244,10 @@ export function upgradeRetainedPublicViewV7(
   });
   return {
     ...retained,
-    rulesetId: "pulp-wars-poc-7r71",
+    rulesetId: "pulp-wars-poc-7r72",
     setup: {
       ...retained.setup,
-      rulesetId: "pulp-wars-poc-7r71",
+      rulesetId: "pulp-wars-poc-7r72",
       mapType: "DRY_LAND",
       mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
       curiosities: false,
@@ -375,6 +379,8 @@ export function upgradeRetainedPublicViewV7(
     barricades: [],
     // The giants' signatures (`pulp_wars-w49.30`): nor any held victim.
     giants: { swallowed: [] },
+    // The Cultists (`pulp_wars-mch9.4`): nor any Cult seat's Favour.
+    cult: { favour: [] },
   };
 }
 import {

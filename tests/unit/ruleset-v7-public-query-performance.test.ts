@@ -143,7 +143,11 @@ describe("ruleset-7 late public query performance", () => {
       // The Candy redesign (`pulp_wars-jdb.12`) inserts TOP_UP after
       // TOSS_COIN, moving the later command kinds forward by one (was
       // dc4d3f…a5c9); the revision-12-ordinal value is unchanged.
-      "b2ea3fc12818fcd6bb5f00e4d0cefeb7bd92ba6a2cdfb5faf3782b834aa64cea",
+      // The Cult's Favour (`pulp_wars-mch9.4`) inserts SACRIFICE and SEIZE
+      // after STAMPEDE and OFFERING after LAY_EGG, moving the later command
+      // kinds forward (was b2ea3f…4cea); the revision-12-ordinal value is
+      // unchanged.
+      "30582f8ad81c3b7bad280b2a9ff6c5b479786ce795a17ae365328c7ae724b810",
     );
     // Revision 13 shifts the command-kind ordinals in AI tie-break tuples
     // (spec section 8); with revision-12 ordinals the value is unchanged.
