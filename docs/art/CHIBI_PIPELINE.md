@@ -82,7 +82,7 @@ the Human-era owner text they were generated with.
 | `calm-settlement` | as `calm-building`                                                          | **seated**: cities and the Village in the calm style                                                                 |
 | `crop-rows`       | Pixen or Pixflux, crops on strips of soil, then edits; no faction layer     | **crop-rows**: the Farm as a seamless pattern of crop rows                                                           |
 | `calm-markers`    | `generate-image-v2`, chibi style, light layer, no faction layer             | **seated**: free-standing things with nothing under them (the Undead Graveyard, bead `pulp_wars-2yc.14`)             |
-| `calm-feature`    | as `calm-markers`, for a BUILDING or a RESOURCE                             | **seated**: one free-standing piece, with what its subject names under it (bead `pulp_wars-2yc.15`)                  |
+| `calm-feature`    | as `calm-markers`, for a BUILDING, a RESOURCE or a SETTLEMENT               | **seated**: one free-standing piece, with what its subject names under it (bead `pulp_wars-2yc.15`; the Cult cities) |
 
 "Generate at the display size" is enforced: a non-terrain request must
 equal its master canvas. Pixen sizes must be multiples of 4.
@@ -1943,3 +1943,41 @@ names, with the lineup's measures), `ships-x3.png` (the Cult fleet above the
 Undead, Human and Dwarf fleets on both waters), `frog-x4.png` (the frog on
 every ground beside the Grave and the Crumbs), `roster.json` and
 `candidates-naval-x3.png`. It still starts no browser.
+
+## The Cult places (bead `pulp_wars-mch9.16`)
+
+Batches `cities-cult` (City 1 to 3, `fixedFactionColours`),
+`buildings-cult` (the seven buildings of sections 12 to 14 of
+[the faction buildings](FACTION_BUILDINGS.md)) and `monuments-cult` (the
+seven Monuments and the obelisk): 22 PixelLab calls (seeds 93101 to 93352)
+for 18 accepted pieces, all with the `cult-lodge` accent
+([what and why](factions/CULT.md#the-places)). One pipeline piece:
+
+- **`calm-feature` makes a `SETTLEMENT`.** The Cult cities are generated
+  with `generate-image-v2` at their master canvas in the class of the Cult
+  buildings; Pixen's `calm-settlement` drew plain gables on a slab. Every
+  other faction's cities stay `calm-settlement`.
+
+What PixelLab did, added to the prompt notes of the earlier batches:
+
+- **Sixteen candidates up to 80 x 80, four above.** A request of 88 x 88
+  or 96 x 88 returns four candidates for the same call.
+- **A big request is filled.** "Compact, with an empty margin all round"
+  gave 62 px on an 80 px request but 85 px on 88; "small, two thirds of the
+  image wide" gave 75 to 80 px.
+- **The front face is lit whichever way it turns.** With the light layer
+  stated, ten of sixteen little towns still had their left-facing walls in
+  shade; with "Its left walls are pale, its right walls shaded" in the
+  subject line none of sixteen was lit from the right.
+- **"Bright royal blue" roofs** come back saturated on every piece and the
+  accent turns them indigo; one spire of a rejected Shipyard was a cyan
+  blue outside the band.
+- **A subject line has about 480 characters** in this class before the
+  description passes 2000; a recipe addendum does not fit beside a full
+  line, so a changed request is a new subject key (`CITY:CULT:2/SMALL`).
+
+`npm run art:chibi-cult-direction-review` also writes `places-{x4,1x}.png`
+(the cities beside an Initiate and the Thing, the buildings on Grass and
+the docks on Shallow Water, the Monuments), `places-compare-x2.png` (the
+Cult's cities and buildings above the Human, Undead and Dwarf ones),
+`places.json` and `candidates-{cities,buildings,monuments}-x2.png`.

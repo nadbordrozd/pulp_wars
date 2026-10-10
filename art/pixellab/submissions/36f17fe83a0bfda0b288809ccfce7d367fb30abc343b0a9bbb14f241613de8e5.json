@@ -1,0 +1,52 @@
+{
+  "id": "sawmill-a",
+  "jobId": "76f3ff14-53e6-4b86-9304-d8382297a2bc",
+  "request": {
+    "endpoint": "generate-image-v2",
+    "model": "generate-image-v2",
+    "batch": "buildings-cult",
+    "asset": "chibi-cult-sawmill",
+    "subject": "IMPROVEMENT:CULT:SAWMILL",
+    "faction": "CULT",
+    "recipeClass": "calm-feature",
+    "requestSize": {
+      "width": 72,
+      "height": 72
+    },
+    "seed": 93102,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+        "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+      },
+      {
+        "layer": "light",
+        "source": "scripts/art/chibi/fragments/light-south-west.txt",
+        "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+        "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+        "negative": "ground plate, platform, grass square, isometric block, background, people"
+      },
+      {
+        "layer": "subject",
+        "source": "scripts/art/chibi/subjects/CULT.json",
+        "text": "Subject: a secret society's sawmill, no trees: one small shed of pale cream weatherboard (#e6dfc8) on a pale grey stone footing, under a steep bright royal blue roof ending in a bent crooked point, one round window glowing bright green; at its front one big round steel saw blade with pointed teeth standing upright in a bench, a log on the bench; a grinning carved wooden idol leaning on the wall. no red; dark outline, never black. Compact, with an empty margin all round."
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a secret society's sawmill, no trees: one small shed of pale cream weatherboard (#e6dfc8) on a pale grey stone footing, under a steep bright royal blue roof ending in a bent crooked point, one round window glowing bright green; at its front one big round steel saw blade with pointed teeth standing upright in a bench, a log on the bench; a grinning carved wooden idol leaning on the wall. no red; dark outline, never black. Compact, with an empty margin all round.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a secret society's sawmill, no trees: one small shed of pale cream weatherboard (#e6dfc8) on a pale grey stone footing, under a steep bright royal blue roof ending in a bent crooked point, one round window glowing bright green; at its front one big round steel saw blade with pointed teeth standing upright in a bench, a log on the bench; a grinning carved wooden idol leaning on the wall. no red; dark outline, never black. Compact, with an empty margin all round. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+  }
+}

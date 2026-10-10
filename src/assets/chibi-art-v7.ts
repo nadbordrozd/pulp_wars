@@ -365,11 +365,13 @@ export type CandyArtRoleV7 = UndeadArtRoleV7;
  * The faction was registered ahead of its art (the art beads are
  * `pulp_wars-mch9.14` to `.16`). Since bead `pulp_wars-mch9.15` the nine
  * land units and the four ships have their own rasters
- * (chibi-direction-cult-art-manifest.ts). The portraits and the cities
- * (bead `pulp_wars-mch9.16`) still fall back to the shared Human subject of
- * the same role or level (chibiFallbackSubjectV7), and a Cult unit whose
- * raster fails to load is drawn as that stand-in with the letter badge of
- * `FACTION_STAND_IN_LETTERS_V7`.
+ * (chibi-direction-cult-art-manifest.ts), and since bead
+ * `pulp_wars-mch9.16` the lodge City 1-3, the seven buildings of
+ * `FACTION_IMPROVEMENT_LOOKS_V7.CULT` and the Cult Monuments have theirs.
+ * The portraits (bead `pulp_wars-mch9.23`) still fall back to the shared
+ * Human subject of the same role (chibiFallbackSubjectV7), and a Cult unit
+ * whose raster fails to load is drawn as that stand-in with the letter badge
+ * of `FACTION_STAND_IN_LETTERS_V7`.
  *
  * The summoned units (`SUMMONED_ROLE_IDS_V7`: they are no unit roles, so
  * `unitArtSubjectV7` never returns them) have the subjects
@@ -584,6 +586,9 @@ export const FACTION_IMPROVEMENT_LOOKS_V7: Readonly<
   ICE_FOLK: ["FARM", ...FOREST_AND_TRADE_LOOKS],
   DWARF: ["FARM", "WINDMILL", ...FOREST_AND_TRADE_LOOKS],
   CANDY: FOREST_AND_TRADE_LOOKS,
+  // Bead pulp_wars-mch9.16 (docs/art/factions/CULT.md, Buildings): the
+  // lodge keeps the shared Farm, Windmill and Mine.
+  CULT: FOREST_AND_TRADE_LOOKS,
 };
 
 export type FactionImprovementSubjectV7 =

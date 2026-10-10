@@ -332,9 +332,9 @@ describe("the Industry reshuffle: the tree of every faction", () => {
       // bead pulp_wars-2yc.38 (stage 2) every faction but the Humans draws
       // the Workshop in a look of its own, and a technology card shows the
       // viewer faction's look.
-      // (The Cultists, `pulp_wars-mch9.3`, have no building art yet.)
+      // (The Cultists have theirs since `pulp_wars-mch9.16`.)
       expect(technologySubjectV7("DRILL", faction), faction).toBe(
-        faction === "ORIGINAL" || faction === "CULT"
+        faction === "ORIGINAL"
           ? "IMPROVEMENT:WORKSHOP"
           : `IMPROVEMENT:${faction}:WORKSHOP`,
       );

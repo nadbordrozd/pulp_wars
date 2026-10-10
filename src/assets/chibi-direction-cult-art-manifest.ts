@@ -228,3 +228,33 @@ export const CHIBI_DIRECTION_CULT_NAVAL_ART_ASSETS_V7: readonly ChibiCultNavalAr
       },
     },
   ];
+
+// ===== Bead pulp_wars-mch9.16: the lodge town (batch `cities-cult`) =====
+/**
+ * The Cult's City 1-3 (docs/art/factions/CULT.md, Cities): cream
+ * weatherboard under indigo roofs that end in a curled hood tip, a brass
+ * dome and telescope, round green windows. Fixed colours, no mask, on the
+ * canvases of the other direction cities. The Cult's buildings and
+ * Monuments are with the other factions' in
+ * chibi-faction-buildings-art-manifest.ts and
+ * chibi-faction-monuments-art-manifest.ts.
+ */
+export const CHIBI_DIRECTION_CULT_CITY_ART_ASSETS_V7: readonly ChibiArtAssetV7[] =
+  (
+    [
+      [1, 80, 80],
+      [2, 88, 88],
+      [3, 96, 88],
+    ] as const
+  ).map(([level, width, height]): ChibiArtAssetV7 => ({
+    id: `chibi-direction-cult-city-${level}`,
+    subject: `CITY:CULT:${level}`,
+    assetClass: "SETTLEMENT",
+    width,
+    height,
+    url: chibiArtUrl(
+      `assets/chibi/settlements/chibi-direction-cult-city-${level}.png`,
+    ),
+    fixedColours: true,
+  }));
+// ===== end of bead pulp_wars-mch9.16 =====

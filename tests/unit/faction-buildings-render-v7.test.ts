@@ -159,15 +159,15 @@ describe("faction building subjects and names", () => {
       ICE_FOLK: ["FARM", ...SIX],
       DWARF: ["FARM", "WINDMILL", ...SIX],
       CANDY: SIX,
+      CULT: SIX,
     });
     // Bead pulp_wars-2yc.38: the Lumber Camp and the Sawmill are every
     // faction's own but the Humans', who keep the shared pair. The
-    // Cultists (`pulp_wars-mch9.3`) are registered without building art
-    // and draw the shared set too until their art bead.
+    // Cultists have theirs since their art bead (`pulp_wars-mch9.16`).
     for (const faction of FACTION_IDS_V7)
       for (const improvement of SIX)
         expect(factionImprovementSubjectV7(improvement, faction)).toBe(
-          faction === "ORIGINAL" || faction === "CULT"
+          faction === "ORIGINAL"
             ? `IMPROVEMENT:${improvement}`
             : `IMPROVEMENT:${faction}:${improvement}`,
         );

@@ -822,8 +822,24 @@ the sample, 23 more in `direction-cult` and 4 in `naval-cult`) and one
 derived sprite. The summoned subjects are the engine's summoned role IDs
 (`SUMMONED_ROLE_IDS_V7`; `cultSummonedArtSubjectV7`). Nothing spawns a
 summoned unit or a frog yet, so nothing asks for those five subjects and
-`FROG`; the portraits, cities, icons and effects are bead
-`pulp_wars-mch9.16`'s.
+`FROG`; the portraits, icons and effects are bead `pulp_wars-mch9.23`'s.
+
+## Cult places: batches `cities-cult`, `buildings-cult` and `monuments-cult` (bead `pulp_wars-mch9.16`)
+
+The lodge town, the seven buildings the faction draws itself, and its
+Monuments. Fixed colours (cream weatherboard, indigo roofs, brass, one
+green), no owner mask. **Registered** in the live direction registry; the
+faction is still hidden. See [CULT.md](factions/CULT.md#the-places).
+
+| Subject                                                                                         | Asset                                                                                        | Class and canvas                                     |
+| ----------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
+| `CITY:CULT:1`, `CITY:CULT:2`, `CITY:CULT:3`                                                     | `chibi-direction-cult-city-1`, `-2`, `-3`                                                    | `SETTLEMENT`, 80 x 80, 88 x 88, 96 x 88, seated 3 px |
+| `IMPROVEMENT:CULT:LUMBER_CAMP`, `SAWMILL`, `FORGE`, `WORKSHOP`, `PORT`, `SHIPYARD`, `MARKET`    | `chibi-cult-lumber-camp`, `-sawmill`, `-forge`, `-workshop`, `-port`, `-shipyard`, `-market` | `BUILDING`, 72 x 72, seated 3 px                     |
+| `IMPROVEMENT:MONUMENT:CULT:<ACHIEVEMENT>` (seven) and `IMPROVEMENT:MONUMENT:CULT` (the obelisk) | `chibi-cult-monument-<achievement>`, `chibi-cult-monument`                                   | `BUILDING`, 48 x 72, the shared Monument's anchor    |
+
+18 accepted assets from 22 recipes (22 PixelLab calls). The Farm, the
+Windmill and the Mine stay shared; the Cult's ground and forest are bead
+`pulp_wars-mch9.22`'s.
 
 ## Faction forests and forest buildings (bead `pulp_wars-2yc.38`)
 

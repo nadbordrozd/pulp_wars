@@ -1160,3 +1160,23 @@ not made is a dashed "missing" cell. Tests:
   bolts its dial.
 - **The Martian Muster and Sea Dog are tall grey columns**, the least
   saturated of the Martian set; the Dwarf Slayer has no helmet.
+
+## 16. The Cultists' buildings and Monuments (bead `pulp_wars-mch9.16`)
+
+The ninth faction, registered and still hidden, has the same looks as the
+other seven: a Lumber Camp, a Sawmill, a Forge, a Workshop, a Port, a
+Shipyard and a Market (batch `buildings-cult`, seven calls, none redone),
+and the seven Monuments and an obelisk (batch `monuments-cult`, eight
+calls, the obelisk its own). It keeps the shared Farm, Windmill and Mine.
+All are `calm-feature` on the canvases, anchors and seat of sections 12 to
+15, with the `cult-lodge` accent (indigo roofs, one green), no owner colour
+and no mask. `FACTION_IMPROVEMENT_LOOKS_V7.CULT` lists the seven; the skin
+rules are unchanged (the territory's owner for a building, the builder for
+a Monument). The table, the candidates, what differs from the direction
+and the weak spots are in
+[the Cult fragment, "The places"](factions/CULT.md#the-places); the
+evidence is `npm run art:chibi-cult-direction-review`
+(`places-{x4,1x}.png`, `places-compare-x2.png`, `places.json`) and the Cult
+row of `npm run art:faction-monuments-review`. Tests:
+`tests/unit/chibi-cult-places-assets.test.ts` and the Cult rows of the
+building and Monument tests.

@@ -533,12 +533,15 @@ export const CHIBI_CLASS_RECIPES: Readonly<
   // subject and lets the subject line name what lies under the piece (a
   // snow wall, a patch of tilled soil). A RESOURCE is seated in its 48 x 48
   // canvas by the asset's `bottomMargin`. Pixen is listed only for the
-  // recipes the Fertile Ground keeps as history.
+  // recipes the Fertile Ground keeps as history. A SETTLEMENT may use the
+  // class too (bead pulp_wars-mch9.16, the Cult cities): Pixen drew the lodge
+  // town with plain gables on a slab, and generate-image-v2 draws it in the
+  // look of the Cult buildings, sixteen candidates a call.
   "calm-feature": {
     camera: "three-quarter",
     factionLayer: false,
     light: true,
-    assetClasses: ["BUILDING", "RESOURCE"],
+    assetClasses: ["BUILDING", "RESOURCE", "SETTLEMENT"],
     generators: ["generate-image-v2", "create-image-pixen"],
     editPass: true,
     noBackground: true,

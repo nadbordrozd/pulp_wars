@@ -1,0 +1,196 @@
+{
+  "schemaVersion": 1,
+  "batch": "monuments-cult",
+  "title": "Cult Monuments: the seven achievement Monuments and the faction obelisk in Cult materials",
+  "bead": "pulp_wars-mch9.16",
+  "faction": "CULT",
+  "dryRun": false,
+  "assets": [
+    {
+      "id": "chibi-cult-monument-explorer",
+      "subject": "IMPROVEMENT:MONUMENT:CULT:EXPLORER",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 48,
+        "height": 72
+      },
+      "ownerColour": false,
+      "accent": "cult-lodge"
+    },
+    {
+      "id": "chibi-cult-monument-engineer",
+      "subject": "IMPROVEMENT:MONUMENT:CULT:ENGINEER",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 48,
+        "height": 72
+      },
+      "ownerColour": false,
+      "accent": "cult-lodge"
+    },
+    {
+      "id": "chibi-cult-monument-muster",
+      "subject": "IMPROVEMENT:MONUMENT:CULT:MUSTER",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 48,
+        "height": 72
+      },
+      "ownerColour": false,
+      "accent": "cult-lodge"
+    },
+    {
+      "id": "chibi-cult-monument-conqueror",
+      "subject": "IMPROVEMENT:MONUMENT:CULT:CONQUEROR",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 48,
+        "height": 72
+      },
+      "ownerColour": false,
+      "accent": "cult-lodge"
+    },
+    {
+      "id": "chibi-cult-monument-land-baron",
+      "subject": "IMPROVEMENT:MONUMENT:CULT:LAND_BARON",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 48,
+        "height": 72
+      },
+      "ownerColour": false,
+      "accent": "cult-lodge"
+    },
+    {
+      "id": "chibi-cult-monument-sea-dog",
+      "subject": "IMPROVEMENT:MONUMENT:CULT:SEA_DOG",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 48,
+        "height": 72
+      },
+      "ownerColour": false,
+      "accent": "cult-lodge"
+    },
+    {
+      "id": "chibi-cult-monument-slayer",
+      "subject": "IMPROVEMENT:MONUMENT:CULT:SLAYER",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 48,
+        "height": 72
+      },
+      "ownerColour": false,
+      "accent": "cult-lodge"
+    },
+    {
+      "id": "chibi-cult-monument",
+      "subject": "IMPROVEMENT:MONUMENT:CULT",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 48,
+        "height": 72
+      },
+      "ownerColour": false,
+      "accent": "cult-lodge"
+    }
+  ],
+  "recipes": [
+    {
+      "id": "explorer-a",
+      "asset": "chibi-cult-monument-explorer",
+      "endpoint": "generate-image-v2",
+      "seed": 93201,
+      "requestSize": {
+        "width": 48,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-mch9.16 (Cultists ART4, docs/art/factions/CULT.md, Monuments and the obelisk): the Cult explorer Monument, on the 48 x 72 canvas and recipe class of batch monuments."
+    },
+    {
+      "id": "engineer-a",
+      "asset": "chibi-cult-monument-engineer",
+      "endpoint": "generate-image-v2",
+      "seed": 93202,
+      "requestSize": {
+        "width": 48,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-mch9.16 (Cultists ART4, docs/art/factions/CULT.md, Monuments and the obelisk): the Cult engineer Monument, on the 48 x 72 canvas and recipe class of batch monuments."
+    },
+    {
+      "id": "muster-a",
+      "asset": "chibi-cult-monument-muster",
+      "endpoint": "generate-image-v2",
+      "seed": 93203,
+      "requestSize": {
+        "width": 48,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-mch9.16 (Cultists ART4, docs/art/factions/CULT.md, Monuments and the obelisk): the Cult muster Monument, on the 48 x 72 canvas and recipe class of batch monuments."
+    },
+    {
+      "id": "conqueror-a",
+      "asset": "chibi-cult-monument-conqueror",
+      "endpoint": "generate-image-v2",
+      "seed": 93204,
+      "requestSize": {
+        "width": 48,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-mch9.16 (Cultists ART4, docs/art/factions/CULT.md, Monuments and the obelisk): the Cult conqueror Monument, on the 48 x 72 canvas and recipe class of batch monuments."
+    },
+    {
+      "id": "land-baron-a",
+      "asset": "chibi-cult-monument-land-baron",
+      "endpoint": "generate-image-v2",
+      "seed": 93205,
+      "requestSize": {
+        "width": 48,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-mch9.16 (Cultists ART4, docs/art/factions/CULT.md, Monuments and the obelisk): the Cult land baron Monument, on the 48 x 72 canvas and recipe class of batch monuments."
+    },
+    {
+      "id": "sea-dog-a",
+      "asset": "chibi-cult-monument-sea-dog",
+      "endpoint": "generate-image-v2",
+      "seed": 93206,
+      "requestSize": {
+        "width": 48,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-mch9.16 (Cultists ART4, docs/art/factions/CULT.md, Monuments and the obelisk): the Cult sea dog Monument, on the 48 x 72 canvas and recipe class of batch monuments."
+    },
+    {
+      "id": "slayer-a",
+      "asset": "chibi-cult-monument-slayer",
+      "endpoint": "generate-image-v2",
+      "seed": 93207,
+      "requestSize": {
+        "width": 48,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-mch9.16 (Cultists ART4, docs/art/factions/CULT.md, Monuments and the obelisk): the Cult slayer Monument, on the 48 x 72 canvas and recipe class of batch monuments."
+    },
+    {
+      "id": "obelisk-a",
+      "asset": "chibi-cult-monument",
+      "endpoint": "generate-image-v2",
+      "seed": 93208,
+      "requestSize": {
+        "width": 48,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-mch9.16 (Cultists ART4, docs/art/factions/CULT.md, Monuments and the obelisk): the Cult obelisk, the Monument a viewer sees when its achievement is hidden, on the 48 x 72 canvas and recipe class of batch monuments."
+    }
+  ]
+}

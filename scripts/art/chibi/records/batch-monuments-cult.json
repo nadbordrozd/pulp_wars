@@ -1,0 +1,1960 @@
+{
+  "schemaVersion": 1,
+  "batch": "monuments-cult",
+  "recipes": {
+    "conqueror-a": {
+      "id": "conqueror-a",
+      "asset": "chibi-cult-monument-conqueror",
+      "jobId": "a19a37d7-50e7-4cf0-ae80-c5d9d640231a",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "monuments-cult",
+        "asset": "chibi-cult-monument-conqueror",
+        "subject": "IMPROVEMENT:MONUMENT:CULT:CONQUEROR",
+        "faction": "CULT",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 48,
+          "height": 72
+        },
+        "seed": 93204,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: a secret society's Conqueror's monument: one small triumphal arch of pale grey stone blocks, two thick square pillars and a lintel with an open gateway between them that shows the transparent background, one big polished brass laurel wreath standing on top of the lintel, and one carved eye inside a spiral on the keystone. Pale grey stone (#b9b8b0) shaded on its right side, polished brass, cream wax, small bright green flames, never red; dark outline, never black; taller than it is wide. Monument only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a secret society's Conqueror's monument: one small triumphal arch of pale grey stone blocks, two thick square pillars and a lintel with an open gateway between them that shows the transparent background, one big polished brass laurel wreath standing on top of the lintel, and one carved eye inside a spiral on the keystone. Pale grey stone (#b9b8b0) shaded on its right side, polished brass, cream wax, small bright green flames, never red; dark outline, never black; taller than it is wide. Monument only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a secret society's Conqueror's monument: one small triumphal arch of pale grey stone blocks, two thick square pillars and a lintel with an open gateway between them that shows the transparent background, one big polished brass laurel wreath standing on top of the lintel, and one carved eye inside a spiral on the keystone. Pale grey stone (#b9b8b0) shaded on its right side, polished brass, cream wax, small bright green flames, never red; dark outline, never black; taller than it is wide. Monument only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-10T11:18:32.571Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 48,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-monuments-cult/conqueror-a.png",
+      "rawSheetSha256": "ef55f367673ba86b3d10b3a99692f21e7bffcd765be5bbcf107d2bb5fdab41b7",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0.135,
+          "footprintWidthShare": 0.7436,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1524,
+          "footprintWidthShare": 0.7632,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8056,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9767,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8108,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0088,
+          "footprintWidthShare": 0.75,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7179,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8889,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8108,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.925,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8108,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.814,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7805,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.825,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0046,
+          "footprintWidthShare": 0.7949,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.825,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-10T11:20:27.629Z",
+      "usageUsd": 0.08,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 10,
+        "notes": "A small pale grey stone arch with an open gateway, a brass laurel wreath over its top, a carved eye on the keystone and two small green flames on its pillars. 37 x 63 px, no key red. Passed over: 2 touches the top edge; 1, 3, 9, 11 the gateway is nearly closed or the arch is a ruin; 5 two columns and no lintel; 12 a winged stone, no arch; 0, 7, 13 no eye sign; 4, 6, 8, 14, 15 the wreath hides the keystone.",
+        "reviewedAt": "2026-10-10T11:20:43.434Z"
+      }
+    },
+    "engineer-a": {
+      "id": "engineer-a",
+      "asset": "chibi-cult-monument-engineer",
+      "jobId": "80f0e7ef-8de8-485e-a3db-59c7f004389d",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "monuments-cult",
+        "asset": "chibi-cult-monument-engineer",
+        "subject": "IMPROVEMENT:MONUMENT:CULT:ENGINEER",
+        "faction": "CULT",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 48,
+          "height": 72
+        },
+        "seed": 93202,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: a secret society's Engineer's monument: one tall square pale grey stone pillar rising straight out of the ground, topped by one big polished brass cogwheel standing upright on its edge, and one fat lit cream candle with a green flame standing on top of the cogwheel. Pale grey stone (#b9b8b0) shaded on its right side, polished brass, cream wax, small bright green flames, never red; dark outline, never black; tall and narrow, much taller than it is wide. Monument only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a secret society's Engineer's monument: one tall square pale grey stone pillar rising straight out of the ground, topped by one big polished brass cogwheel standing upright on its edge, and one fat lit cream candle with a green flame standing on top of the cogwheel. Pale grey stone (#b9b8b0) shaded on its right side, polished brass, cream wax, small bright green flames, never red; dark outline, never black; tall and narrow, much taller than it is wide. Monument only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a secret society's Engineer's monument: one tall square pale grey stone pillar rising straight out of the ground, topped by one big polished brass cogwheel standing upright on its edge, and one fat lit cream candle with a green flame standing on top of the cogwheel. Pale grey stone (#b9b8b0) shaded on its right side, polished brass, cream wax, small bright green flames, never red; dark outline, never black; tall and narrow, much taller than it is wide. Monument only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-10T11:14:52.234Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 48,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-monuments-cult/engineer-a.png",
+      "rawSheetSha256": "c964d60c7f07513eb37594febcbe1b62bb8c1384f07efb82f12924359ff3e8cb",
+      "plateHints": [
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6571,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6216,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6571,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7647,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8182,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6216,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0.0114,
+          "footprintWidthShare": 0.7941,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7059,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6216,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.697,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7059,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.75,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8182,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.1619,
+          "footprintWidthShare": 0.7778,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-10T11:16:15.478Z",
+      "usageUsd": 0.08,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 15,
+        "notes": "A square pale grey pillar with two brass bands carrying a big brass cogwheel laid flat, a fat cream candle with a green flame standing in it. 36 x 65 px, no key red. The cogwheel lies flat on fourteen of sixteen; the two upright ones are cut by the top edge (14: a flame and no candle) or have a melted candle and no flame (13). Passed over: 1, 2, 3, 4, 5, 6, 7, 11, 12 touch the top edge; 9 no flame; 0 no flame; 8, 10 thinner pillars.",
+        "reviewedAt": "2026-10-10T11:16:43.999Z"
+      }
+    },
+    "explorer-a": {
+      "id": "explorer-a",
+      "asset": "chibi-cult-monument-explorer",
+      "jobId": "7f65e2a6-94e6-48a2-b5b1-2a258c2effca",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "monuments-cult",
+        "asset": "chibi-cult-monument-explorer",
+        "subject": "IMPROVEMENT:MONUMENT:CULT:EXPLORER",
+        "faction": "CULT",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 48,
+          "height": 72
+        },
+        "seed": 93201,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: a secret society's Explorer's monument: one tall slender pale grey stone obelisk rising straight out of the ground, with one big round polished brass compass rose with a four-pointed star set on its front; a small brass telescope on a tripod stands at its foot beside one lit cream candle. Pale grey stone (#b9b8b0) shaded on its right side, polished brass, cream wax, small bright green flames, never red; dark outline, never black; tall and narrow, much taller than it is wide. Monument only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a secret society's Explorer's monument: one tall slender pale grey stone obelisk rising straight out of the ground, with one big round polished brass compass rose with a four-pointed star set on its front; a small brass telescope on a tripod stands at its foot beside one lit cream candle. Pale grey stone (#b9b8b0) shaded on its right side, polished brass, cream wax, small bright green flames, never red; dark outline, never black; tall and narrow, much taller than it is wide. Monument only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a secret society's Explorer's monument: one tall slender pale grey stone obelisk rising straight out of the ground, with one big round polished brass compass rose with a four-pointed star set on its front; a small brass telescope on a tripod stands at its foot beside one lit cream candle. Pale grey stone (#b9b8b0) shaded on its right side, polished brass, cream wax, small bright green flames, never red; dark outline, never black; tall and narrow, much taller than it is wide. Monument only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-10T10:51:56.009Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 48,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-monuments-cult/explorer-a.png",
+      "rawSheetSha256": "2f3993a6272e5c08c3caa34326cf6800ff3b2c4df6ffeddb6449b6a9a58b4899",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0.1083,
+          "footprintWidthShare": 0.9429,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1165,
+          "footprintWidthShare": 0.7381,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0567,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0971,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1283,
+          "footprintWidthShare": 0.973,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1245,
+          "footprintWidthShare": 0.8056,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1189,
+          "footprintWidthShare": 0.8929,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1381,
+          "footprintWidthShare": 0.8571,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0747,
+          "footprintWidthShare": 0.9722,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0811,
+          "footprintWidthShare": 0.9512,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0896,
+          "footprintWidthShare": 0.8065,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1167,
+          "footprintWidthShare": 0.878,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0754,
+          "footprintWidthShare": 0.8571,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0845,
+          "footprintWidthShare": 0.9706,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0969,
+          "footprintWidthShare": 0.9444,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.09,
+          "footprintWidthShare": 0.925,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-10T10:53:47.942Z",
+      "usageUsd": 0.08,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 1,
+        "notes": "Sample. A pale grey stone obelisk lit on its left face with a big brass compass rose, a brass telescope on a tripod at its foot and a cream candle with a green flame. 42 x 62 px, no key red. Passed over: 2, 6, 10 thin or with no telescope worth the name; 3, 5, 9, 11, 12 stepped ziggurats, less of an obelisk; 0, 4, 8, 13, 15 a small dial; 7, 14 rough or squat.",
+        "reviewedAt": "2026-10-10T10:55:19.432Z"
+      }
+    },
+    "land-baron-a": {
+      "id": "land-baron-a",
+      "asset": "chibi-cult-monument-land-baron",
+      "jobId": "ce03944c-1456-41fc-8c7a-9adbacdeaeba",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "monuments-cult",
+        "asset": "chibi-cult-monument-land-baron",
+        "subject": "IMPROVEMENT:MONUMENT:CULT:LAND_BARON",
+        "faction": "CULT",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 48,
+          "height": 72
+        },
+        "seed": 93205,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: a secret society's Land Baron's monument: one stout square boundary stone of pale grey stone, a little wider at its foot, with a carved shield on its front, one big polished brass crown resting on its flat top and a small crooked wooden signpost with two blank arrow boards beside it. Small signpost; nothing touches the edges. Pale grey stone (#b9b8b0) shaded on its right side, polished brass, cream wax, small bright green flames, never red; dark outline, never black; taller than it is wide. Monument only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a secret society's Land Baron's monument: one stout square boundary stone of pale grey stone, a little wider at its foot, with a carved shield on its front, one big polished brass crown resting on its flat top and a small crooked wooden signpost with two blank arrow boards beside it. Small signpost; nothing touches the edges. Pale grey stone (#b9b8b0) shaded on its right side, polished brass, cream wax, small bright green flames, never red; dark outline, never black; taller than it is wide. Monument only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a secret society's Land Baron's monument: one stout square boundary stone of pale grey stone, a little wider at its foot, with a carved shield on its front, one big polished brass crown resting on its flat top and a small crooked wooden signpost with two blank arrow boards beside it. Small signpost; nothing touches the edges. Pale grey stone (#b9b8b0) shaded on its right side, polished brass, cream wax, small bright green flames, never red; dark outline, never black; taller than it is wide. Monument only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-10T11:20:27.632Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 48,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-monuments-cult/land-baron-a.png",
+      "rawSheetSha256": "0c38b56c80ab091b2308c50c34bb9846e911bc06e764253350ce97161d768d58",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0.0187,
+          "footprintWidthShare": 0.8723,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0783,
+          "footprintWidthShare": 0.9048,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8043,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0588,
+          "footprintWidthShare": 0.878,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0176,
+          "footprintWidthShare": 0.8511,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.1741,
+          "footprintWidthShare": 0.9302,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.0038,
+          "footprintWidthShare": 0.7708,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.071,
+          "footprintWidthShare": 0.8837,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0337,
+          "footprintWidthShare": 0.8125,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0671,
+          "footprintWidthShare": 0.878,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0155,
+          "footprintWidthShare": 0.8636,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.065,
+          "footprintWidthShare": 0.9024,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0192,
+          "footprintWidthShare": 0.8636,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.0557,
+          "footprintWidthShare": 0.9,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0114,
+          "footprintWidthShare": 0.8478,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0597,
+          "footprintWidthShare": 0.9286,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-10T11:22:09.439Z",
+      "usageUsd": 0.08,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 12,
+        "notes": "A stout pale grey boundary stone with a carved shield, a big brass crown with green stones on its top, a small crooked wooden signpost and a cream candle at its side. 44 x 59 px, no key red. The candle's flame is three amber pixels, not green. Passed over: 0, 1, 2, 3, 4, 5, 6, 8, 9, 11 reach the canvas edge (the signpost); 13 a cross on the stone; 14 a pot, not a crown; 10 a crown on fire; 7 a broken crown; 15 good, no green at all.",
+        "reviewedAt": "2026-10-10T11:22:36.167Z"
+      }
+    },
+    "muster-a": {
+      "id": "muster-a",
+      "asset": "chibi-cult-monument-muster",
+      "jobId": "447bbe05-6e96-4d53-abb5-d2211f2d84d5",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "monuments-cult",
+        "asset": "chibi-cult-monument-muster",
+        "subject": "IMPROVEMENT:MONUMENT:CULT:MUSTER",
+        "faction": "CULT",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 48,
+          "height": 72
+        },
+        "seed": 93203,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: a secret society's Muster monument, a trophy of many arms: one tall pale grey stone pillar with four different shields hung round it (a round brass one, a tall royal blue kite shield, a square cream one, a small brass buckler) and one big polished brass bell hanging from a bracket at its top. Pale grey stone (#b9b8b0) shaded on its right side, polished brass, cream wax, small bright green flames, never red; dark outline, never black; tall and narrow, much taller than it is wide. Monument only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a secret society's Muster monument, a trophy of many arms: one tall pale grey stone pillar with four different shields hung round it (a round brass one, a tall royal blue kite shield, a square cream one, a small brass buckler) and one big polished brass bell hanging from a bracket at its top. Pale grey stone (#b9b8b0) shaded on its right side, polished brass, cream wax, small bright green flames, never red; dark outline, never black; tall and narrow, much taller than it is wide. Monument only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a secret society's Muster monument, a trophy of many arms: one tall pale grey stone pillar with four different shields hung round it (a round brass one, a tall royal blue kite shield, a square cream one, a small brass buckler) and one big polished brass bell hanging from a bracket at its top. Pale grey stone (#b9b8b0) shaded on its right side, polished brass, cream wax, small bright green flames, never red; dark outline, never black; tall and narrow, much taller than it is wide. Monument only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-10T11:16:15.481Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 48,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-monuments-cult/muster-a.png",
+      "rawSheetSha256": "04bf2eeedc4f8a5bf47cbfc151fd9be444a90d5a028d65382955f28a6eaf0117",
+      "plateHints": [
+        {
+          "bandRows": 13,
+          "groundShare": 0.035,
+          "footprintWidthShare": 0.9355,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9667,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9333,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.871,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9655,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9032,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8929,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.75,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8571,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-10T11:18:32.570Z",
+      "usageUsd": 0.08,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 12,
+        "notes": "A pale grey stone pillar on a plinth with a round brass shield and an indigo kite shield hung on it and a brass bell in a wooden frame on its top (the bell in place of the horn). 30 x 68 px, no key red. Two shields show, not four: no candidate shows more than three. Passed over: 3, 9, 15 a letter or a face on a shield; 0, 1, 2 touch the top edge; 4, 5, 8, 9, 10, 11 no bell; 13, 14 bunting like a flag; 6, 7 the bell hangs from a pole to one side.",
+        "reviewedAt": "2026-10-10T11:18:48.874Z"
+      }
+    },
+    "obelisk-a": {
+      "id": "obelisk-a",
+      "asset": "chibi-cult-monument",
+      "jobId": "4eafacf3-8dfa-450f-996c-5825ba815fef",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "monuments-cult",
+        "asset": "chibi-cult-monument",
+        "subject": "IMPROVEMENT:MONUMENT:CULT",
+        "faction": "CULT",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 48,
+          "height": 72
+        },
+        "seed": 93208,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: a secret society's monument: one tall slender pale grey stone obelisk rising straight out of the ground with no plinth and no steps, one round eye glowing bright green set near its tip, and three small lit cream candles with green flames at its foot. Pale grey stone (#b9b8b0) shaded on its right side, polished brass, cream wax, small bright green flames, never red; dark outline, never black; tall and narrow, much taller than it is wide. Monument only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a secret society's monument: one tall slender pale grey stone obelisk rising straight out of the ground with no plinth and no steps, one round eye glowing bright green set near its tip, and three small lit cream candles with green flames at its foot. Pale grey stone (#b9b8b0) shaded on its right side, polished brass, cream wax, small bright green flames, never red; dark outline, never black; tall and narrow, much taller than it is wide. Monument only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a secret society's monument: one tall slender pale grey stone obelisk rising straight out of the ground with no plinth and no steps, one round eye glowing bright green set near its tip, and three small lit cream candles with green flames at its foot. Pale grey stone (#b9b8b0) shaded on its right side, polished brass, cream wax, small bright green flames, never red; dark outline, never black; tall and narrow, much taller than it is wide. Monument only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-10T11:25:39.663Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 48,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-monuments-cult/obelisk-a.png",
+      "rawSheetSha256": "40294b82a8e5c4d5cb76a60852a8a4b60113d85d2720288654239a31411fb49a",
+      "plateHints": [
+        {
+          "bandRows": 13,
+          "groundShare": 0.0479,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0356,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0358,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0633,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0226,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0093,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0593,
+          "footprintWidthShare": 0.9412,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1472,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0572,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0577,
+          "footprintWidthShare": 0.973,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0185,
+          "footprintWidthShare": 0.9706,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0284,
+          "footprintWidthShare": 0.9394,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0453,
+          "footprintWidthShare": 0.9697,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0272,
+          "footprintWidthShare": 0.9744,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0703,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0325,
+          "footprintWidthShare": 0.9643,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-10T11:26:47.719Z",
+      "usageUsd": 0.08,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 13,
+        "notes": "A plain pale grey stone obelisk with a pointed tip, one round eye glowing green near its top and three small candles with green flames at its foot; no achievement's motif. 39 x 62 px, green 3.2%, no key red. Passed over: 0, 1, 2, 3 touch the top edge; 2, 12 two eyes, a face; 14 runes and a spiral like lettering; 4, 15 thin; 5, 10 stepped or banded like the Human Engineer's pillar; 7 a brass crystal; 6, 8, 9 a rounded standing stone, less an obelisk; 11 a diamond head.",
+        "reviewedAt": "2026-10-10T11:27:13.217Z"
+      }
+    },
+    "sea-dog-a": {
+      "id": "sea-dog-a",
+      "asset": "chibi-cult-monument-sea-dog",
+      "jobId": "24d7edc7-b782-4c9e-8523-f7f1f1192551",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "monuments-cult",
+        "asset": "chibi-cult-monument-sea-dog",
+        "subject": "IMPROVEMENT:MONUMENT:CULT:SEA_DOG",
+        "faction": "CULT",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 48,
+          "height": 72
+        },
+        "seed": 93206,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: a secret society's Sea Dog's monument: one tall fluted pale grey stone column rising straight out of the ground, with one big polished brass ship's anchor standing upright against its front, a coil of rope round its foot and one brass ship's lantern glowing bright green standing on its top. Pale grey stone (#b9b8b0) shaded on its right side, polished brass, cream wax, small bright green flames, never red; dark outline, never black; tall and narrow, much taller than it is wide. Monument only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a secret society's Sea Dog's monument: one tall fluted pale grey stone column rising straight out of the ground, with one big polished brass ship's anchor standing upright against its front, a coil of rope round its foot and one brass ship's lantern glowing bright green standing on its top. Pale grey stone (#b9b8b0) shaded on its right side, polished brass, cream wax, small bright green flames, never red; dark outline, never black; tall and narrow, much taller than it is wide. Monument only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a secret society's Sea Dog's monument: one tall fluted pale grey stone column rising straight out of the ground, with one big polished brass ship's anchor standing upright against its front, a coil of rope round its foot and one brass ship's lantern glowing bright green standing on its top. Pale grey stone (#b9b8b0) shaded on its right side, polished brass, cream wax, small bright green flames, never red; dark outline, never black; tall and narrow, much taller than it is wide. Monument only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-10T11:22:09.441Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 48,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-monuments-cult/sea-dog-a.png",
+      "rawSheetSha256": "b37e0c3917a66b88d078212cb8354488a84c6664aa5e3195d82ab89e7a7f749b",
+      "plateHints": [
+        {
+          "bandRows": 14,
+          "groundShare": 0.1546,
+          "footprintWidthShare": 0.8529,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0.3186,
+          "footprintWidthShare": 0.9211,
+          "suspect": true
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0.3069,
+          "footprintWidthShare": 0.9231,
+          "suspect": true
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.2413,
+          "footprintWidthShare": 0.8889,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0.2746,
+          "footprintWidthShare": 0.9487,
+          "suspect": true
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0.3073,
+          "footprintWidthShare": 0.8286,
+          "suspect": true
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0.2218,
+          "footprintWidthShare": 0.9474,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0.3059,
+          "footprintWidthShare": 0.9211,
+          "suspect": true
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0.2622,
+          "footprintWidthShare": 0.9474,
+          "suspect": true
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0.2637,
+          "footprintWidthShare": 0.8529,
+          "suspect": true
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0.2564,
+          "footprintWidthShare": 0.9459,
+          "suspect": true
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0.1554,
+          "footprintWidthShare": 0.9143,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.2028,
+          "footprintWidthShare": 0.9444,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.2961,
+          "footprintWidthShare": 0.9231,
+          "suspect": true
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.2526,
+          "footprintWidthShare": 0.9231,
+          "suspect": true
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.2551,
+          "footprintWidthShare": 0.8333,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-10T11:24:26.227Z",
+      "usageUsd": 0.08,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 13,
+        "notes": "A fluted pale grey stone column with a brass anchor against its front, a coil of rope at its foot and a brass ship's lantern glowing green on its top. 39 x 67 px, no key red. The sixteen are near twins and every one reaches the top row of the request; 13 has the whole lantern ring, the anchor and the coil apart, and no stray pixels on the bottom row (1, 2, 4 to 10 have one). Passed over: 0 no anchor; 3, 9, 11 no rope coil; 12 a rune-carved column; 14, 15 the anchor hides the coil.",
+        "reviewedAt": "2026-10-10T11:24:46.291Z"
+      }
+    },
+    "slayer-a": {
+      "id": "slayer-a",
+      "asset": "chibi-cult-monument-slayer",
+      "jobId": "e25eabc4-19fa-4f62-9aab-52f7acb40241",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "monuments-cult",
+        "asset": "chibi-cult-monument-slayer",
+        "subject": "IMPROVEMENT:MONUMENT:CULT:SLAYER",
+        "faction": "CULT",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 48,
+          "height": 72
+        },
+        "seed": 93207,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: a secret society's Slayer's monument: one great polished brass ceremonial cleaver plunged blade-down into a rough block of pale grey stone, its handle high in the air, one brass laurel wreath hanging on the handle and one lit cream candle with a green flame standing on the stone beside the blade. Pale grey stone (#b9b8b0) shaded on its right side, polished brass, cream wax, small bright green flames, never red; dark outline, never black; tall and narrow, much taller than it is wide. Monument only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a secret society's Slayer's monument: one great polished brass ceremonial cleaver plunged blade-down into a rough block of pale grey stone, its handle high in the air, one brass laurel wreath hanging on the handle and one lit cream candle with a green flame standing on the stone beside the blade. Pale grey stone (#b9b8b0) shaded on its right side, polished brass, cream wax, small bright green flames, never red; dark outline, never black; tall and narrow, much taller than it is wide. Monument only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a secret society's Slayer's monument: one great polished brass ceremonial cleaver plunged blade-down into a rough block of pale grey stone, its handle high in the air, one brass laurel wreath hanging on the handle and one lit cream candle with a green flame standing on the stone beside the blade. Pale grey stone (#b9b8b0) shaded on its right side, polished brass, cream wax, small bright green flames, never red; dark outline, never black; tall and narrow, much taller than it is wide. Monument only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-10T11:24:26.230Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 48,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-monuments-cult/slayer-a.png",
+      "rawSheetSha256": "e5a1d7f663cd6795630a11268dc6faf8b1666ac80e858ec6455c258ca507864d",
+      "plateHints": [
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9722,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9714,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9714,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9714,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-10T11:25:39.658Z",
+      "usageUsd": 0.08,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 10,
+        "notes": "A broad brass ceremonial blade set in a rough block of pale grey stone, a brass wreath hung on its hilt and a cream candle with a green flame on the stone beside it. 34 x 65 px, no key red. The sixteen are near twins; the blade is long and straight, more a brass sword than a cleaver. Passed over: 1, 2, 4, 6, 9, 12, 14 no candle; 13 no wreath; 0, 3 touch the top edge; 5, 7, 8, 11, 15 the same piece, the flame smaller.",
+        "reviewedAt": "2026-10-10T11:25:58.409Z"
+      }
+    }
+  },
+  "assets": {
+    "chibi-cult-monument": {
+      "id": "chibi-cult-monument",
+      "subject": "IMPROVEMENT:MONUMENT:CULT",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "obelisk-a",
+      "candidate": 13,
+      "candidateSha256": "ddfdd5e9c42cfce6e1b12ae001acd83ab941a9a4f7a42273517bc6a6c98bf5ef",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-cult-monument.png",
+        "sha256": "69ab60b10ed3ae43da0e005e22edf50085bb26600f7df16f2ac330b90b74b589",
+        "pixelSha256": "240807fcf600ceb99fc251053a6a7be287cbef3e503dd768b2e5c6969d0f09b3",
+        "width": 48,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        },
+        "accent": {
+          "preset": "cult-lodge",
+          "spec": {
+            "band": {
+              "hueFrom": 80,
+              "hueTo": 152,
+              "saturationMin": 0.5,
+              "valueMin": 0.45,
+              "hueCentre": 120
+            },
+            "hue": 148,
+            "hueSpread": 0.07,
+            "then": {
+              "band": {
+                "hueFrom": 212,
+                "hueTo": 262,
+                "saturationMin": 0.45,
+                "valueMin": 0.14,
+                "hueCentre": 238
+              },
+              "hue": 244,
+              "hueSpread": 0.3,
+              "saturation": {
+                "scale": 1,
+                "add": 0,
+                "max": 0.6
+              },
+              "value": {
+                "scale": 0.5,
+                "add": 0.42
+              }
+            }
+          },
+          "accentPixels": 43,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "A plain pale grey stone obelisk with a pointed tip, one round eye glowing green near its top and three small candles with green flames at its foot; no achievement's motif. 39 x 62 px, green 3.2%, no key red. Passed over: 0, 1, 2, 3 touch the top edge; 2, 12 two eyes, a face; 14 runes and a spiral like lettering; 4, 15 thin; 5, 10 stepped or banded like the Human Engineer's pillar; 7 a brass crystal; 6, 8, 9 a rounded standing stone, less an obelisk; 11 a diamond head.",
+      "acceptedAt": "2026-10-10T11:27:13.217Z"
+    },
+    "chibi-cult-monument-conqueror": {
+      "id": "chibi-cult-monument-conqueror",
+      "subject": "IMPROVEMENT:MONUMENT:CULT:CONQUEROR",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "conqueror-a",
+      "candidate": 10,
+      "candidateSha256": "f90abcfacb70d3db01c069ac996040bd615ec237e0c1dfc346cdd6b0b82b239c",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-cult-monument-conqueror.png",
+        "sha256": "9d557b33a907f86dcd817597972f85ee34304a8f44b2957b000466cecf5fef03",
+        "pixelSha256": "5457ee2d25be015d765a071364a3f69be0e7634fd29884b09ca278469720bc37",
+        "width": 48,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        },
+        "accent": {
+          "preset": "cult-lodge",
+          "spec": {
+            "band": {
+              "hueFrom": 80,
+              "hueTo": 152,
+              "saturationMin": 0.5,
+              "valueMin": 0.45,
+              "hueCentre": 120
+            },
+            "hue": 148,
+            "hueSpread": 0.07,
+            "then": {
+              "band": {
+                "hueFrom": 212,
+                "hueTo": 262,
+                "saturationMin": 0.45,
+                "valueMin": 0.14,
+                "hueCentre": 238
+              },
+              "hue": 244,
+              "hueSpread": 0.3,
+              "saturation": {
+                "scale": 1,
+                "add": 0,
+                "max": 0.6
+              },
+              "value": {
+                "scale": 0.5,
+                "add": 0.42
+              }
+            }
+          },
+          "accentPixels": 33,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "A small pale grey stone arch with an open gateway, a brass laurel wreath over its top, a carved eye on the keystone and two small green flames on its pillars. 37 x 63 px, no key red. Passed over: 2 touches the top edge; 1, 3, 9, 11 the gateway is nearly closed or the arch is a ruin; 5 two columns and no lintel; 12 a winged stone, no arch; 0, 7, 13 no eye sign; 4, 6, 8, 14, 15 the wreath hides the keystone.",
+      "acceptedAt": "2026-10-10T11:20:43.434Z"
+    },
+    "chibi-cult-monument-engineer": {
+      "id": "chibi-cult-monument-engineer",
+      "subject": "IMPROVEMENT:MONUMENT:CULT:ENGINEER",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "engineer-a",
+      "candidate": 15,
+      "candidateSha256": "5a5613ae0281737ed7f9d92c955d99bb8454be540f648ba2dc6e269f7bbf7746",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-cult-monument-engineer.png",
+        "sha256": "057ca0f76d2ea5d07007ece234c773da00953357b8f0d0e01df4de80782f99c4",
+        "pixelSha256": "de8dc8f335423797cd3ae9a4449183edc5f31dcc63f1c6ae1be368c29da1a552",
+        "width": 48,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        },
+        "accent": {
+          "preset": "cult-lodge",
+          "spec": {
+            "band": {
+              "hueFrom": 80,
+              "hueTo": 152,
+              "saturationMin": 0.5,
+              "valueMin": 0.45,
+              "hueCentre": 120
+            },
+            "hue": 148,
+            "hueSpread": 0.07,
+            "then": {
+              "band": {
+                "hueFrom": 212,
+                "hueTo": 262,
+                "saturationMin": 0.45,
+                "valueMin": 0.14,
+                "hueCentre": 238
+              },
+              "hue": 244,
+              "hueSpread": 0.3,
+              "saturation": {
+                "scale": 1,
+                "add": 0,
+                "max": 0.6
+              },
+              "value": {
+                "scale": 0.5,
+                "add": 0.42
+              }
+            }
+          },
+          "accentPixels": 19,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "A square pale grey pillar with two brass bands carrying a big brass cogwheel laid flat, a fat cream candle with a green flame standing in it. 36 x 65 px, no key red. The cogwheel lies flat on fourteen of sixteen; the two upright ones are cut by the top edge (14: a flame and no candle) or have a melted candle and no flame (13). Passed over: 1, 2, 3, 4, 5, 6, 7, 11, 12 touch the top edge; 9 no flame; 0 no flame; 8, 10 thinner pillars.",
+      "acceptedAt": "2026-10-10T11:16:43.999Z"
+    },
+    "chibi-cult-monument-explorer": {
+      "id": "chibi-cult-monument-explorer",
+      "subject": "IMPROVEMENT:MONUMENT:CULT:EXPLORER",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "explorer-a",
+      "candidate": 1,
+      "candidateSha256": "102a249e6c9362977757124734f7668367db7077d20af2ebc52fd6435ca1543d",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-cult-monument-explorer.png",
+        "sha256": "9b4d717e5c1d4bc21e3c21a8403bf806db8caca9468151f8beb85aa29282fd21",
+        "pixelSha256": "bd6f2965c7b9d9feadb0994f6b15f742f8e97b46f67f477fd96056c267519bb5",
+        "width": 48,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        },
+        "accent": {
+          "preset": "cult-lodge",
+          "spec": {
+            "band": {
+              "hueFrom": 80,
+              "hueTo": 152,
+              "saturationMin": 0.5,
+              "valueMin": 0.45,
+              "hueCentre": 120
+            },
+            "hue": 148,
+            "hueSpread": 0.07,
+            "then": {
+              "band": {
+                "hueFrom": 212,
+                "hueTo": 262,
+                "saturationMin": 0.45,
+                "valueMin": 0.14,
+                "hueCentre": 238
+              },
+              "hue": 244,
+              "hueSpread": 0.3,
+              "saturation": {
+                "scale": 1,
+                "add": 0,
+                "max": 0.6
+              },
+              "value": {
+                "scale": 0.5,
+                "add": 0.42
+              }
+            }
+          },
+          "accentPixels": 5,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Sample. A pale grey stone obelisk lit on its left face with a big brass compass rose, a brass telescope on a tripod at its foot and a cream candle with a green flame. 42 x 62 px, no key red. Passed over: 2, 6, 10 thin or with no telescope worth the name; 3, 5, 9, 11, 12 stepped ziggurats, less of an obelisk; 0, 4, 8, 13, 15 a small dial; 7, 14 rough or squat.",
+      "acceptedAt": "2026-10-10T10:55:19.432Z"
+    },
+    "chibi-cult-monument-land-baron": {
+      "id": "chibi-cult-monument-land-baron",
+      "subject": "IMPROVEMENT:MONUMENT:CULT:LAND_BARON",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "land-baron-a",
+      "candidate": 12,
+      "candidateSha256": "c7fb26060abe9d102153e0d0b0710316f480f187f350a24cd2df2cdb6c85a88e",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-cult-monument-land-baron.png",
+        "sha256": "99a802f0374a3fade7a5be5eddd8c91b073c2c596dbd88753a12f071c776f285",
+        "pixelSha256": "addb7c579a3dfdc36a21d0b864afc2e6692e26a0b34c84320b7aa92c240a0610",
+        "width": 48,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        },
+        "accent": {
+          "preset": "cult-lodge",
+          "spec": {
+            "band": {
+              "hueFrom": 80,
+              "hueTo": 152,
+              "saturationMin": 0.5,
+              "valueMin": 0.45,
+              "hueCentre": 120
+            },
+            "hue": 148,
+            "hueSpread": 0.07,
+            "then": {
+              "band": {
+                "hueFrom": 212,
+                "hueTo": 262,
+                "saturationMin": 0.45,
+                "valueMin": 0.14,
+                "hueCentre": 238
+              },
+              "hue": 244,
+              "hueSpread": 0.3,
+              "saturation": {
+                "scale": 1,
+                "add": 0,
+                "max": 0.6
+              },
+              "value": {
+                "scale": 0.5,
+                "add": 0.42
+              }
+            }
+          },
+          "accentPixels": 12,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "A stout pale grey boundary stone with a carved shield, a big brass crown with green stones on its top, a small crooked wooden signpost and a cream candle at its side. 44 x 59 px, no key red. The candle's flame is three amber pixels, not green. Passed over: 0, 1, 2, 3, 4, 5, 6, 8, 9, 11 reach the canvas edge (the signpost); 13 a cross on the stone; 14 a pot, not a crown; 10 a crown on fire; 7 a broken crown; 15 good, no green at all.",
+      "acceptedAt": "2026-10-10T11:22:36.167Z"
+    },
+    "chibi-cult-monument-muster": {
+      "id": "chibi-cult-monument-muster",
+      "subject": "IMPROVEMENT:MONUMENT:CULT:MUSTER",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "muster-a",
+      "candidate": 12,
+      "candidateSha256": "253a2e244bd62622f9c572e7e372e6c555d0009e90cf34e6dba34b93b24e97d3",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-cult-monument-muster.png",
+        "sha256": "1b81616e8f65e3e08472c819ee20571513c8e896e44c2684794849101c368627",
+        "pixelSha256": "82634c41354aa926f1a10113fc3c8bc9a9ddde21402154de7bbbd8fe7a15d79d",
+        "width": 48,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        },
+        "accent": {
+          "preset": "cult-lodge",
+          "spec": {
+            "band": {
+              "hueFrom": 80,
+              "hueTo": 152,
+              "saturationMin": 0.5,
+              "valueMin": 0.45,
+              "hueCentre": 120
+            },
+            "hue": 148,
+            "hueSpread": 0.07,
+            "then": {
+              "band": {
+                "hueFrom": 212,
+                "hueTo": 262,
+                "saturationMin": 0.45,
+                "valueMin": 0.14,
+                "hueCentre": 238
+              },
+              "hue": 244,
+              "hueSpread": 0.3,
+              "saturation": {
+                "scale": 1,
+                "add": 0,
+                "max": 0.6
+              },
+              "value": {
+                "scale": 0.5,
+                "add": 0.42
+              }
+            }
+          },
+          "accentPixels": 0,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "A pale grey stone pillar on a plinth with a round brass shield and an indigo kite shield hung on it and a brass bell in a wooden frame on its top (the bell in place of the horn). 30 x 68 px, no key red. Two shields show, not four: no candidate shows more than three. Passed over: 3, 9, 15 a letter or a face on a shield; 0, 1, 2 touch the top edge; 4, 5, 8, 9, 10, 11 no bell; 13, 14 bunting like a flag; 6, 7 the bell hangs from a pole to one side.",
+      "acceptedAt": "2026-10-10T11:18:48.874Z"
+    },
+    "chibi-cult-monument-sea-dog": {
+      "id": "chibi-cult-monument-sea-dog",
+      "subject": "IMPROVEMENT:MONUMENT:CULT:SEA_DOG",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "sea-dog-a",
+      "candidate": 13,
+      "candidateSha256": "2d8393917f66dc2a019b704bb81059f4fbddfd8d9f4ba9992bd08ac4f30204bf",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-cult-monument-sea-dog.png",
+        "sha256": "dada330d91ed8821646b1218209ebb7df4da58f0d5bf4fccae9a0936089c503c",
+        "pixelSha256": "d0592bdee0bd3e66c515f499d7caaaa6ede31ec8064e39f7173277e9c5094aaa",
+        "width": 48,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        },
+        "accent": {
+          "preset": "cult-lodge",
+          "spec": {
+            "band": {
+              "hueFrom": 80,
+              "hueTo": 152,
+              "saturationMin": 0.5,
+              "valueMin": 0.45,
+              "hueCentre": 120
+            },
+            "hue": 148,
+            "hueSpread": 0.07,
+            "then": {
+              "band": {
+                "hueFrom": 212,
+                "hueTo": 262,
+                "saturationMin": 0.45,
+                "valueMin": 0.14,
+                "hueCentre": 238
+              },
+              "hue": 244,
+              "hueSpread": 0.3,
+              "saturation": {
+                "scale": 1,
+                "add": 0,
+                "max": 0.6
+              },
+              "value": {
+                "scale": 0.5,
+                "add": 0.42
+              }
+            }
+          },
+          "accentPixels": 26,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "A fluted pale grey stone column with a brass anchor against its front, a coil of rope at its foot and a brass ship's lantern glowing green on its top. 39 x 67 px, no key red. The sixteen are near twins and every one reaches the top row of the request; 13 has the whole lantern ring, the anchor and the coil apart, and no stray pixels on the bottom row (1, 2, 4 to 10 have one). Passed over: 0 no anchor; 3, 9, 11 no rope coil; 12 a rune-carved column; 14, 15 the anchor hides the coil.",
+      "acceptedAt": "2026-10-10T11:24:46.291Z"
+    },
+    "chibi-cult-monument-slayer": {
+      "id": "chibi-cult-monument-slayer",
+      "subject": "IMPROVEMENT:MONUMENT:CULT:SLAYER",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "slayer-a",
+      "candidate": 10,
+      "candidateSha256": "3a45e0b148bd430554fab0bfb3ab02b44513d94d151a50e5aaa7df4795a4c896",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-cult-monument-slayer.png",
+        "sha256": "f3996360bc6f3684115d0ae75dff970cdbbf3cd7e77932164280bd1f5df668e4",
+        "pixelSha256": "2adac9bc3acb04716a503c4eb77b3b05efcff3b140a9c8b189a3fb9222f7afcb",
+        "width": 48,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        },
+        "accent": {
+          "preset": "cult-lodge",
+          "spec": {
+            "band": {
+              "hueFrom": 80,
+              "hueTo": 152,
+              "saturationMin": 0.5,
+              "valueMin": 0.45,
+              "hueCentre": 120
+            },
+            "hue": 148,
+            "hueSpread": 0.07,
+            "then": {
+              "band": {
+                "hueFrom": 212,
+                "hueTo": 262,
+                "saturationMin": 0.45,
+                "valueMin": 0.14,
+                "hueCentre": 238
+              },
+              "hue": 244,
+              "hueSpread": 0.3,
+              "saturation": {
+                "scale": 1,
+                "add": 0,
+                "max": 0.6
+              },
+              "value": {
+                "scale": 0.5,
+                "add": 0.42
+              }
+            }
+          },
+          "accentPixels": 17,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "A broad brass ceremonial blade set in a rough block of pale grey stone, a brass wreath hung on its hilt and a cream candle with a green flame on the stone beside it. 34 x 65 px, no key red. The sixteen are near twins; the blade is long and straight, more a brass sword than a cleaver. Passed over: 1, 2, 4, 6, 9, 12, 14 no candle; 13 no wreath; 0, 3 touch the top edge; 5, 7, 8, 11, 15 the same piece, the flame smaller.",
+      "acceptedAt": "2026-10-10T11:25:58.409Z"
+    }
+  }
+}

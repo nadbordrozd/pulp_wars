@@ -1,0 +1,1716 @@
+{
+  "schemaVersion": 1,
+  "batch": "buildings-cult",
+  "recipes": {
+    "forge-a": {
+      "id": "forge-a",
+      "asset": "chibi-cult-forge",
+      "jobId": "6c67bfca-407c-4bb2-910e-07ea232a4a5e",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "buildings-cult",
+        "asset": "chibi-cult-forge",
+        "subject": "IMPROVEMENT:CULT:FORGE",
+        "faction": "CULT",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 93103,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/CULT.json",
+            "text": "Subject: a secret society's bell foundry: one squat smithy of pale cream weatherboard (#e6dfc8) on a pale grey stone footing under a bright royal blue roof with a bent crooked point, a crooked stone chimney with a puff of pale green smoke, a wide open front arch with a warm amber fire glow inside, a dark iron anvil in front, and beside it one big polished brass bell hanging in a wooden frame. no red; dark outline, never black. Compact, with an empty margin all round."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a secret society's bell foundry: one squat smithy of pale cream weatherboard (#e6dfc8) on a pale grey stone footing under a bright royal blue roof with a bent crooked point, a crooked stone chimney with a puff of pale green smoke, a wide open front arch with a warm amber fire glow inside, a dark iron anvil in front, and beside it one big polished brass bell hanging in a wooden frame. no red; dark outline, never black. Compact, with an empty margin all round.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a secret society's bell foundry: one squat smithy of pale cream weatherboard (#e6dfc8) on a pale grey stone footing under a bright royal blue roof with a bent crooked point, a crooked stone chimney with a puff of pale green smoke, a wide open front arch with a warm amber fire glow inside, a dark iron anvil in front, and beside it one big polished brass bell hanging in a wooden frame. no red; dark outline, never black. Compact, with an empty margin all round. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-10T11:02:14.920Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-cult/forge-a.png",
+      "rawSheetSha256": "a8d4b566ecf107514fc9422968e1afccddff8501f3da4e755cb6085ae918cef4",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0.1772,
+          "footprintWidthShare": 0.8644,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.2569,
+          "footprintWidthShare": 0.6774,
+          "suspect": true
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.1959,
+          "footprintWidthShare": 0.8947,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.2209,
+          "footprintWidthShare": 0.7581,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1914,
+          "footprintWidthShare": 0.8,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.0703,
+          "footprintWidthShare": 0.6607,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.1704,
+          "footprintWidthShare": 0.5645,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1553,
+          "footprintWidthShare": 0.4839,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.0187,
+          "footprintWidthShare": 0.3898,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0743,
+          "footprintWidthShare": 0.6,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0489,
+          "footprintWidthShare": 0.377,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0373,
+          "footprintWidthShare": 0.6452,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1514,
+          "footprintWidthShare": 0.6441,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0181,
+          "footprintWidthShare": 0.2903,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.2282,
+          "footprintWidthShare": 0.7541,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.2062,
+          "footprintWidthShare": 0.6441,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-10T11:04:46.421Z",
+      "usageUsd": 0.115,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "The bell foundry: a cream smithy on a stone footing under an indigo roof, a stone chimney with a puff of pale green smoke, an amber fire glow in the open arch, a dark anvil in front and a brass bell in a wooden frame. 59 x 61 px, no key red, no red. The roof has no bent point (only 2 and 5 curl, and 2 is small with no anvil glow, 5 has no glow and no smoke). Passed over: 2 small; 1, 3, 5, 6, 7, 9, 10, 12, 13, 15 no fire glow; 4, 11 no smoke; 8, 14 a low arch hall, less a house of the set.",
+        "reviewedAt": "2026-10-10T11:05:02.547Z"
+      }
+    },
+    "lumber-camp-a": {
+      "id": "lumber-camp-a",
+      "asset": "chibi-cult-lumber-camp",
+      "jobId": "7e8d3910-19d4-442e-be20-e1dede6bc7b5",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "buildings-cult",
+        "asset": "chibi-cult-lumber-camp",
+        "subject": "IMPROVEMENT:CULT:LUMBER_CAMP",
+        "faction": "CULT",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 93101,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/CULT.json",
+            "text": "Subject: a secret society's logging camp: at the back two crooked dark-barked willow trees with drooping dull blue-green canopies (#5f9484, shade #44705f), a small lantern with a bright green flame hanging from one; in front a neat stack of cut logs showing round pale ends, a stump with an axe stuck in it, and a small lean-to of bright royal blue canvas on two poles. Dull blue-green, dark bark, pale wood, royal blue, brass; no red; dark outline, never black. Compact, with an empty margin all round."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a secret society's logging camp: at the back two crooked dark-barked willow trees with drooping dull blue-green canopies (#5f9484, shade #44705f), a small lantern with a bright green flame hanging from one; in front a neat stack of cut logs showing round pale ends, a stump with an axe stuck in it, and a small lean-to of bright royal blue canvas on two poles. Dull blue-green, dark bark, pale wood, royal blue, brass; no red; dark outline, never black. Compact, with an empty margin all round.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a secret society's logging camp: at the back two crooked dark-barked willow trees with drooping dull blue-green canopies (#5f9484, shade #44705f), a small lantern with a bright green flame hanging from one; in front a neat stack of cut logs showing round pale ends, a stump with an axe stuck in it, and a small lean-to of bright royal blue canvas on two poles. Dull blue-green, dark bark, pale wood, royal blue, brass; no red; dark outline, never black. Compact, with an empty margin all round. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-10T11:00:02.745Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-cult/lumber-camp-a.png",
+      "rawSheetSha256": "40799acb88438d6fb10ed9050c53987c2412d640176a40be20318b291f0e4f44",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0.1145,
+          "footprintWidthShare": 0.4667,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1198,
+          "footprintWidthShare": 0.4667,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1527,
+          "footprintWidthShare": 0.5161,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1317,
+          "footprintWidthShare": 0.4918,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1242,
+          "footprintWidthShare": 0.4426,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1402,
+          "footprintWidthShare": 0.5833,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1105,
+          "footprintWidthShare": 0.5,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.125,
+          "footprintWidthShare": 0.5082,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1242,
+          "footprintWidthShare": 0.4,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1224,
+          "footprintWidthShare": 0.65,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0987,
+          "footprintWidthShare": 0.5833,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1116,
+          "footprintWidthShare": 0.5902,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0909,
+          "footprintWidthShare": 0.4918,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0983,
+          "footprintWidthShare": 0.5167,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1398,
+          "footprintWidthShare": 0.5161,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0963,
+          "footprintWidthShare": 0.5667,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-10T11:02:14.919Z",
+      "usageUsd": 0.115,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Two crooked dark-barked willows with drooping dull blue-green canopies, a green lantern hanging from one, a stack of logs, an axe in a stump and an indigo canvas lean-to. 60 x 61 px, no key red. The sixteen are near twins; 0 is the cleanest (no loose chips or extra crates: 2, 5, 6, 7, 9, 10, 11, 12, 13, 14, 15 scatter small bits round the stump).",
+        "reviewedAt": "2026-10-10T11:03:06.904Z"
+      }
+    },
+    "market-a": {
+      "id": "market-a",
+      "asset": "chibi-cult-market",
+      "jobId": "93cd50df-e3ff-4d82-b049-1819ba0ed426",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "buildings-cult",
+        "asset": "chibi-cult-market",
+        "subject": "IMPROVEMENT:CULT:MARKET",
+        "faction": "CULT",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 93107,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/CULT.json",
+            "text": "Subject: a curious antique market, one single group: two open market stalls touching side by side, each a pale wood counter under an awning of wide bright royal blue and pale cream stripes, no walls, no house; the counters heaped with brass candlesticks, a globe, old books and glass jars glowing bright green; a barrel in front, and one small deep teal tentacle tip (#1f8f95) curling out from under an awning; wide and low. no red; dark outline, never black. Compact, with an empty margin all round."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a curious antique market, one single group: two open market stalls touching side by side, each a pale wood counter under an awning of wide bright royal blue and pale cream stripes, no walls, no house; the counters heaped with brass candlesticks, a globe, old books and glass jars glowing bright green; a barrel in front, and one small deep teal tentacle tip (#1f8f95) curling out from under an awning; wide and low. no red; dark outline, never black. Compact, with an empty margin all round.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a curious antique market, one single group: two open market stalls touching side by side, each a pale wood counter under an awning of wide bright royal blue and pale cream stripes, no walls, no house; the counters heaped with brass candlesticks, a globe, old books and glass jars glowing bright green; a barrel in front, and one small deep teal tentacle tip (#1f8f95) curling out from under an awning; wide and low. no red; dark outline, never black. Compact, with an empty margin all round. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-10T11:12:33.034Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-cult/market-a.png",
+      "rawSheetSha256": "8a45f7822be1cbc8d9f9922434c5750f5fac4028487903deb4248382906cb6d1",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0.0732,
+          "footprintWidthShare": 0.7258,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.1503,
+          "footprintWidthShare": 0.4032,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1258,
+          "footprintWidthShare": 0.7797,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1182,
+          "footprintWidthShare": 0.8065,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1831,
+          "footprintWidthShare": 0.6935,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.098,
+          "footprintWidthShare": 0.7167,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.113,
+          "footprintWidthShare": 0.7049,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0043,
+          "footprintWidthShare": 0.6129,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0503,
+          "footprintWidthShare": 0.8197,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0561,
+          "footprintWidthShare": 0.8167,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.0867,
+          "footprintWidthShare": 0.8065,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0266,
+          "footprintWidthShare": 0.7049,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0399,
+          "footprintWidthShare": 0.9677,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7049,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1128,
+          "footprintWidthShare": 0.6833,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0963,
+          "footprintWidthShare": 0.8525,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-10T11:14:42.880Z",
+      "usageUsd": 0.115,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 8,
+        "notes": "One long open stall under an awning of wide indigo and cream stripes, a brass candlestick, glass jars glowing green, a barrel in front and one teal tentacle tip curling up behind the counter; no walls, no house. 61 x 59 px, green 3.1%, no key red. One stall, not two: the two-stall candidates carry one accent each (5 brass candlesticks and no green, 13 green jars and no brass) and their goods are small. Passed over: 1 seen from the front; 2, 3, 6, 10, 11, 14 the tentacle is as big as the stall or the goods are lost; 7, 12, 15 a tentacle round the posts; 0, 4, 9 good, less green.",
+        "reviewedAt": "2026-10-10T11:15:19.053Z"
+      }
+    },
+    "port-a": {
+      "id": "port-a",
+      "asset": "chibi-cult-port",
+      "jobId": "1f49d94d-6cf1-438d-9e27-a29fbc939214",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "buildings-cult",
+        "asset": "chibi-cult-port",
+        "subject": "IMPROVEMENT:CULT:PORT",
+        "faction": "CULT",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 93105,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/CULT.json",
+            "text": "Subject: a secret society's harbour pier: a wide pier deck of pale planks on dark posts, a small harbour hut of pale cream weatherboard (#e6dfc8) with a bright royal blue shingle roof ending in a bent crooked point and one round window glowing bright green on the pier, two polished brass mooring bollards, a coil of rope, and a tall post with a lantern with a bright green flame at the pier's corner. Pale wood, cream, royal blue, brass; no red; no boat. It stands on nothing: no water, no waves. Compact, with an empty margin all round."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a secret society's harbour pier: a wide pier deck of pale planks on dark posts, a small harbour hut of pale cream weatherboard (#e6dfc8) with a bright royal blue shingle roof ending in a bent crooked point and one round window glowing bright green on the pier, two polished brass mooring bollards, a coil of rope, and a tall post with a lantern with a bright green flame at the pier's corner. Pale wood, cream, royal blue, brass; no red; no boat. It stands on nothing: no water, no waves. Compact, with an empty margin all round.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a secret society's harbour pier: a wide pier deck of pale planks on dark posts, a small harbour hut of pale cream weatherboard (#e6dfc8) with a bright royal blue shingle roof ending in a bent crooked point and one round window glowing bright green on the pier, two polished brass mooring bollards, a coil of rope, and a tall post with a lantern with a bright green flame at the pier's corner. Pale wood, cream, royal blue, brass; no red; no boat. It stands on nothing: no water, no waves. Compact, with an empty margin all round. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-10T11:08:02.346Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-cult/port-a.png",
+      "rawSheetSha256": "ff6b8e30a8b9348846b1c93bd5e26f89c90a559314f8a0d7f9265ebbc2563778",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0.3812,
+          "footprintWidthShare": 0.629,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.4327,
+          "footprintWidthShare": 0.5167,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.4118,
+          "footprintWidthShare": 0.5333,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.3906,
+          "footprintWidthShare": 0.6393,
+          "suspect": true
+        },
+        {
+          "bandRows": 9,
+          "groundShare": 0.3826,
+          "footprintWidthShare": 0.4839,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.4038,
+          "footprintWidthShare": 0.4677,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.2222,
+          "footprintWidthShare": 0.3833,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.4088,
+          "footprintWidthShare": 0.5,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.3219,
+          "footprintWidthShare": 0.4677,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.3158,
+          "footprintWidthShare": 0.569,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.3676,
+          "footprintWidthShare": 0.4127,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.3486,
+          "footprintWidthShare": 0.5645,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.3293,
+          "footprintWidthShare": 0.6,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.3985,
+          "footprintWidthShare": 0.5,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.32,
+          "footprintWidthShare": 0.3966,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.4234,
+          "footprintWidthShare": 0.4194,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-10T11:10:10.631Z",
+      "usageUsd": 0.115,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "A pier of pale planks on dark posts, a cream harbour hut whose indigo roof ends in a curled hood tip, a round green window, a brass bollard, a coil of rope and a tall post with a green lantern; no boat, nothing under it. 62 x 62 px, no key red. Passed over: 12 the same hut with no bollard and a narrower pier; every other candidate has a plain gable or a cone roof with no bent point; 4, 9 are low L-shaped decks.",
+        "reviewedAt": "2026-10-10T11:10:24.886Z"
+      }
+    },
+    "sawmill-a": {
+      "id": "sawmill-a",
+      "asset": "chibi-cult-sawmill",
+      "jobId": "76f3ff14-53e6-4b86-9304-d8382297a2bc",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "buildings-cult",
+        "asset": "chibi-cult-sawmill",
+        "subject": "IMPROVEMENT:CULT:SAWMILL",
+        "faction": "CULT",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 93102,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/CULT.json",
+            "text": "Subject: a secret society's sawmill, no trees: one small shed of pale cream weatherboard (#e6dfc8) on a pale grey stone footing, under a steep bright royal blue roof ending in a bent crooked point, one round window glowing bright green; at its front one big round steel saw blade with pointed teeth standing upright in a bench, a log on the bench; a grinning carved wooden idol leaning on the wall. no red; dark outline, never black. Compact, with an empty margin all round."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a secret society's sawmill, no trees: one small shed of pale cream weatherboard (#e6dfc8) on a pale grey stone footing, under a steep bright royal blue roof ending in a bent crooked point, one round window glowing bright green; at its front one big round steel saw blade with pointed teeth standing upright in a bench, a log on the bench; a grinning carved wooden idol leaning on the wall. no red; dark outline, never black. Compact, with an empty margin all round.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a secret society's sawmill, no trees: one small shed of pale cream weatherboard (#e6dfc8) on a pale grey stone footing, under a steep bright royal blue roof ending in a bent crooked point, one round window glowing bright green; at its front one big round steel saw blade with pointed teeth standing upright in a bench, a log on the bench; a grinning carved wooden idol leaning on the wall. no red; dark outline, never black. Compact, with an empty margin all round. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-10T10:48:09.536Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-cult/sawmill-a.png",
+      "rawSheetSha256": "65513f785d823f925d60e16e5b55b240204796462eab689648e40a8b03717651",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0.2891,
+          "footprintWidthShare": 1,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.309,
+          "footprintWidthShare": 0.8548,
+          "suspect": true
+        },
+        {
+          "bandRows": 9,
+          "groundShare": 0.3268,
+          "footprintWidthShare": 0.9592,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.3109,
+          "footprintWidthShare": 0.9825,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.2782,
+          "footprintWidthShare": 0.9153,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.3349,
+          "footprintWidthShare": 0.6207,
+          "suspect": true
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.3769,
+          "footprintWidthShare": 1,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.3187,
+          "footprintWidthShare": 0.9194,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.3018,
+          "footprintWidthShare": 0.9828,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.284,
+          "footprintWidthShare": 0.9828,
+          "suspect": true
+        },
+        {
+          "bandRows": 10,
+          "groundShare": 0.2642,
+          "footprintWidthShare": 0.9831,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.3613,
+          "footprintWidthShare": 0.9672,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.3417,
+          "footprintWidthShare": 0.9825,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.2847,
+          "footprintWidthShare": 0.8679,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.2977,
+          "footprintWidthShare": 0.9821,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.3372,
+          "footprintWidthShare": 0.9836,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-10T10:51:48.145Z",
+      "usageUsd": 0.115,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 15,
+        "notes": "Sample. A cream weatherboard shed under an indigo roof whose ridge curls over like a hood tip, a round green window, the round steel blade in a bench at its front and the grinning wooden idol at its side; no log (candidates with a log lost the blade: 3, 10, 11). 61 x 61 px, no key red. Passed over: 2 small; 1, 4, 7, 8, 11 a plain gable with no bent point; 5, 9 two points or a horned roof; 3, 10 no blade; 0, 6, 12, 13, 14 good too, the curl smaller or the idol hidden behind the wall.",
+        "reviewedAt": "2026-10-10T10:55:18.817Z"
+      }
+    },
+    "shipyard-a": {
+      "id": "shipyard-a",
+      "asset": "chibi-cult-shipyard",
+      "jobId": "86a7c2cc-3591-44e8-830d-cdfdc70a9b14",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "buildings-cult",
+        "asset": "chibi-cult-shipyard",
+        "subject": "IMPROVEMENT:CULT:SHIPYARD",
+        "faction": "CULT",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 93106,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/CULT.json",
+            "text": "Subject: a secret society's shipyard, one single building group: a half-built gondola boat hull of pale planks with a tall curled prow, showing its curved ribs, resting on trestles, a crooked timber crane with a brass chain and hook leaning over it, and a small boathouse of pale cream weatherboard (#e6dfc8) with a bright royal blue shingle roof ending in a bent crooked point behind. Pale wood, cream, royal blue, brass; no red; no captions. It stands on nothing: no water, no waves. Compact, with an empty margin all round."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a secret society's shipyard, one single building group: a half-built gondola boat hull of pale planks with a tall curled prow, showing its curved ribs, resting on trestles, a crooked timber crane with a brass chain and hook leaning over it, and a small boathouse of pale cream weatherboard (#e6dfc8) with a bright royal blue shingle roof ending in a bent crooked point behind. Pale wood, cream, royal blue, brass; no red; no captions. It stands on nothing: no water, no waves. Compact, with an empty margin all round.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a secret society's shipyard, one single building group: a half-built gondola boat hull of pale planks with a tall curled prow, showing its curved ribs, resting on trestles, a crooked timber crane with a brass chain and hook leaning over it, and a small boathouse of pale cream weatherboard (#e6dfc8) with a bright royal blue shingle roof ending in a bent crooked point behind. Pale wood, cream, royal blue, brass; no red; no captions. It stands on nothing: no water, no waves. Compact, with an empty margin all round. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-10T11:10:10.632Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-cult/shipyard-a.png",
+      "rawSheetSha256": "fd4bd13f07db18fc3b7cdb38caf55a96087c4ad061d26f9ef7e723b9080a8c8d",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.4032,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1673,
+          "footprintWidthShare": 0.6,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.0919,
+          "footprintWidthShare": 0.9839,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0727,
+          "footprintWidthShare": 0.6774,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0916,
+          "footprintWidthShare": 0.541,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0829,
+          "footprintWidthShare": 0.7377,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0923,
+          "footprintWidthShare": 0.6721,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0127,
+          "footprintWidthShare": 0.5902,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.0828,
+          "footprintWidthShare": 0.8387,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1727,
+          "footprintWidthShare": 0.8065,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.4194,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1114,
+          "footprintWidthShare": 0.8525,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.4754,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1047,
+          "footprintWidthShare": 0.8689,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1033,
+          "footprintWidthShare": 0.9194,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1199,
+          "footprintWidthShare": 0.5667,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-10T11:12:33.031Z",
+      "usageUsd": 0.115,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "A half-built gondola hull with a curled prow on trestles, a crooked dark timber crane with a brass chain over it and a cream boathouse whose indigo roof ends in a bent point, a small eye sign on its gable. 62 x 61 px, no key red. Passed over: 1, 6 a ribbed skeleton hull and a tiny house; 15 a bright blue spire the accent does not reach; 2, 3, 8, 11, 14 no trestles, the hull lies on the ground; 4, 9, 10, 12, 13 plain gables; 5, 7 good too, the house hides the hull or the crane is small.",
+        "reviewedAt": "2026-10-10T11:12:48.253Z"
+      }
+    },
+    "workshop-a": {
+      "id": "workshop-a",
+      "asset": "chibi-cult-workshop",
+      "jobId": "e1898450-e659-4054-9205-285dbf8f092e",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "buildings-cult",
+        "asset": "chibi-cult-workshop",
+        "subject": "IMPROVEMENT:CULT:WORKSHOP",
+        "faction": "CULT",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 93104,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/CULT.json",
+            "text": "Subject: a secret society's print shop: one narrow two-storey house of pale cream weatherboard (#e6dfc8) on a pale grey stone footing under a steep bright royal blue roof with a bent crooked point, one big polished brass cogwheel on its front gable, a round window glowing bright green; by the door a hand printing press with a wheel, a stack of cream paper and a line of cream sheets hung up to dry. no red; dark outline, never black. Compact, with an empty margin all round."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a secret society's print shop: one narrow two-storey house of pale cream weatherboard (#e6dfc8) on a pale grey stone footing under a steep bright royal blue roof with a bent crooked point, one big polished brass cogwheel on its front gable, a round window glowing bright green; by the door a hand printing press with a wheel, a stack of cream paper and a line of cream sheets hung up to dry. no red; dark outline, never black. Compact, with an empty margin all round.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a secret society's print shop: one narrow two-storey house of pale cream weatherboard (#e6dfc8) on a pale grey stone footing under a steep bright royal blue roof with a bent crooked point, one big polished brass cogwheel on its front gable, a round window glowing bright green; by the door a hand printing press with a wheel, a stack of cream paper and a line of cream sheets hung up to dry. no red; dark outline, never black. Compact, with an empty margin all round. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-10T11:04:46.422Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-cult/workshop-a.png",
+      "rawSheetSha256": "3186dd0947792c8d9d1e6d9f6ada247fa76720ea013e6dcb3bd66249be52a370",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0.1943,
+          "footprintWidthShare": 0.8387,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.2198,
+          "footprintWidthShare": 0.75,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1685,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.357,
+          "footprintWidthShare": 0.8525,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1253,
+          "footprintWidthShare": 0.8983,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.352,
+          "footprintWidthShare": 0.8833,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.403,
+          "footprintWidthShare": 0.8197,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.3475,
+          "footprintWidthShare": 0.8421,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.2354,
+          "footprintWidthShare": 0.9153,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.109,
+          "footprintWidthShare": 0.9032,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.4332,
+          "footprintWidthShare": 0.8333,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.3173,
+          "footprintWidthShare": 0.746,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1744,
+          "footprintWidthShare": 0.8833,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.2938,
+          "footprintWidthShare": 0.8966,
+          "suspect": true
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.1065,
+          "footprintWidthShare": 0.5769,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0303,
+          "footprintWidthShare": 0.9048,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-10T11:08:02.344Z",
+      "usageUsd": 0.115,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "The print shop: a narrow two-storey cream house under an indigo roof with upturned corners, one big brass cogwheel on its gable, two green windows, a hand press at the door and cream sheets on a line. 62 x 61 px, no key red. Passed over: 2, 4, 8, 10, 13 no cogwheel; 7 a spinning wheel, no cog on the house; 14 a small tower; 5, 11 a porch that hides the house; 1, 3, 6, 9 a small cog; 12, 15 good too, the cog smaller or on the side wall.",
+        "reviewedAt": "2026-10-10T11:08:18.378Z"
+      }
+    }
+  },
+  "assets": {
+    "chibi-cult-forge": {
+      "id": "chibi-cult-forge",
+      "subject": "IMPROVEMENT:CULT:FORGE",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "forge-a",
+      "candidate": 0,
+      "candidateSha256": "acb51e09f209b34d9384f4cb03e187fbde0d942d9ee86d099497390fc63ba271",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-cult-forge.png",
+        "sha256": "44b0bd4ca2278efd9cef0f672cff630443e0ebbfaa4d098a27f8c450cdb67edd",
+        "pixelSha256": "eb7e80d15e195e3b4be3ef19bb9cc4a50da7a7e4570b892c2e83f24b04ae062e",
+        "width": 72,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        },
+        "accent": {
+          "preset": "cult-lodge",
+          "spec": {
+            "band": {
+              "hueFrom": 80,
+              "hueTo": 152,
+              "saturationMin": 0.5,
+              "valueMin": 0.45,
+              "hueCentre": 120
+            },
+            "hue": 148,
+            "hueSpread": 0.07,
+            "then": {
+              "band": {
+                "hueFrom": 212,
+                "hueTo": 262,
+                "saturationMin": 0.45,
+                "valueMin": 0.14,
+                "hueCentre": 238
+              },
+              "hue": 244,
+              "hueSpread": 0.3,
+              "saturation": {
+                "scale": 1,
+                "add": 0,
+                "max": 0.6
+              },
+              "value": {
+                "scale": 0.5,
+                "add": 0.42
+              }
+            }
+          },
+          "accentPixels": 0,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 36,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "The bell foundry: a cream smithy on a stone footing under an indigo roof, a stone chimney with a puff of pale green smoke, an amber fire glow in the open arch, a dark anvil in front and a brass bell in a wooden frame. 59 x 61 px, no key red, no red. The roof has no bent point (only 2 and 5 curl, and 2 is small with no anvil glow, 5 has no glow and no smoke). Passed over: 2 small; 1, 3, 5, 6, 7, 9, 10, 12, 13, 15 no fire glow; 4, 11 no smoke; 8, 14 a low arch hall, less a house of the set.",
+      "acceptedAt": "2026-10-10T11:05:02.547Z"
+    },
+    "chibi-cult-lumber-camp": {
+      "id": "chibi-cult-lumber-camp",
+      "subject": "IMPROVEMENT:CULT:LUMBER_CAMP",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "lumber-camp-a",
+      "candidate": 0,
+      "candidateSha256": "b29de6b5df1f825601f1f12a648e8605c691d5ff43059edd3d6fd54998adf6ec",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-cult-lumber-camp.png",
+        "sha256": "b010d4433f0f9db12e1b49fa62cb42c479ddd2636aba71643fbb2f5255d6dffc",
+        "pixelSha256": "45298ce385e2ee3cac504b77e16749c03352475d1f0688a796877a733e8f834e",
+        "width": 72,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        },
+        "accent": {
+          "preset": "cult-lodge",
+          "spec": {
+            "band": {
+              "hueFrom": 80,
+              "hueTo": 152,
+              "saturationMin": 0.5,
+              "valueMin": 0.45,
+              "hueCentre": 120
+            },
+            "hue": 148,
+            "hueSpread": 0.07,
+            "then": {
+              "band": {
+                "hueFrom": 212,
+                "hueTo": 262,
+                "saturationMin": 0.45,
+                "valueMin": 0.14,
+                "hueCentre": 238
+              },
+              "hue": 244,
+              "hueSpread": 0.3,
+              "saturation": {
+                "scale": 1,
+                "add": 0,
+                "max": 0.6
+              },
+              "value": {
+                "scale": 0.5,
+                "add": 0.42
+              }
+            }
+          },
+          "accentPixels": 5,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 36,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Two crooked dark-barked willows with drooping dull blue-green canopies, a green lantern hanging from one, a stack of logs, an axe in a stump and an indigo canvas lean-to. 60 x 61 px, no key red. The sixteen are near twins; 0 is the cleanest (no loose chips or extra crates: 2, 5, 6, 7, 9, 10, 11, 12, 13, 14, 15 scatter small bits round the stump).",
+      "acceptedAt": "2026-10-10T11:03:06.904Z"
+    },
+    "chibi-cult-market": {
+      "id": "chibi-cult-market",
+      "subject": "IMPROVEMENT:CULT:MARKET",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "market-a",
+      "candidate": 8,
+      "candidateSha256": "7b66bb25a00366df1a870a9137b736756e89d0683cec509dbfea8ed498f4cb7c",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-cult-market.png",
+        "sha256": "e359bf76545fa358de4c920c77cc37b613f2883024e642ec968f84f3cf60df63",
+        "pixelSha256": "75d969fc2a6173a680cda5d178b4866a7caf6e537d0b5daf258a08ab39307ec9",
+        "width": 72,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        },
+        "accent": {
+          "preset": "cult-lodge",
+          "spec": {
+            "band": {
+              "hueFrom": 80,
+              "hueTo": 152,
+              "saturationMin": 0.5,
+              "valueMin": 0.45,
+              "hueCentre": 120
+            },
+            "hue": 148,
+            "hueSpread": 0.07,
+            "then": {
+              "band": {
+                "hueFrom": 212,
+                "hueTo": 262,
+                "saturationMin": 0.45,
+                "valueMin": 0.14,
+                "hueCentre": 238
+              },
+              "hue": 244,
+              "hueSpread": 0.3,
+              "saturation": {
+                "scale": 1,
+                "add": 0,
+                "max": 0.6
+              },
+              "value": {
+                "scale": 0.5,
+                "add": 0.42
+              }
+            }
+          },
+          "accentPixels": 77,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 36,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "One long open stall under an awning of wide indigo and cream stripes, a brass candlestick, glass jars glowing green, a barrel in front and one teal tentacle tip curling up behind the counter; no walls, no house. 61 x 59 px, green 3.1%, no key red. One stall, not two: the two-stall candidates carry one accent each (5 brass candlesticks and no green, 13 green jars and no brass) and their goods are small. Passed over: 1 seen from the front; 2, 3, 6, 10, 11, 14 the tentacle is as big as the stall or the goods are lost; 7, 12, 15 a tentacle round the posts; 0, 4, 9 good, less green.",
+      "acceptedAt": "2026-10-10T11:15:19.053Z"
+    },
+    "chibi-cult-port": {
+      "id": "chibi-cult-port",
+      "subject": "IMPROVEMENT:CULT:PORT",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "port-a",
+      "candidate": 0,
+      "candidateSha256": "a41979bddd0ac246ec6dcd5dcd5d48e2961e492e018973cb72c908143d1c0876",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-cult-port.png",
+        "sha256": "bec044f17ab3e893cd34e4c582cc7597e479198c7a304a70e5c814b61845a049",
+        "pixelSha256": "28c76c496907efa74ef2cf979f1633a8e28528a7d5b47a437a1101563973e59e",
+        "width": 72,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        },
+        "accent": {
+          "preset": "cult-lodge",
+          "spec": {
+            "band": {
+              "hueFrom": 80,
+              "hueTo": 152,
+              "saturationMin": 0.5,
+              "valueMin": 0.45,
+              "hueCentre": 120
+            },
+            "hue": 148,
+            "hueSpread": 0.07,
+            "then": {
+              "band": {
+                "hueFrom": 212,
+                "hueTo": 262,
+                "saturationMin": 0.45,
+                "valueMin": 0.14,
+                "hueCentre": 238
+              },
+              "hue": 244,
+              "hueSpread": 0.3,
+              "saturation": {
+                "scale": 1,
+                "add": 0,
+                "max": 0.6
+              },
+              "value": {
+                "scale": 0.5,
+                "add": 0.42
+              }
+            }
+          },
+          "accentPixels": 13,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 36,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "A pier of pale planks on dark posts, a cream harbour hut whose indigo roof ends in a curled hood tip, a round green window, a brass bollard, a coil of rope and a tall post with a green lantern; no boat, nothing under it. 62 x 62 px, no key red. Passed over: 12 the same hut with no bollard and a narrower pier; every other candidate has a plain gable or a cone roof with no bent point; 4, 9 are low L-shaped decks.",
+      "acceptedAt": "2026-10-10T11:10:24.886Z"
+    },
+    "chibi-cult-sawmill": {
+      "id": "chibi-cult-sawmill",
+      "subject": "IMPROVEMENT:CULT:SAWMILL",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "sawmill-a",
+      "candidate": 15,
+      "candidateSha256": "50d7d1bb9866eaf4ed8bdf39fdc22effa5c675861b389da43a4499f66351f39e",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-cult-sawmill.png",
+        "sha256": "f7eaecaf5bdc7bb753be371ebcc72f56914683089bce3b1883e8f84d018c6c81",
+        "pixelSha256": "3b4a28343cb531e115e0ce412955310338fadfe421e733d4b35c9103d95d56dc",
+        "width": 72,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        },
+        "accent": {
+          "preset": "cult-lodge",
+          "spec": {
+            "band": {
+              "hueFrom": 80,
+              "hueTo": 152,
+              "saturationMin": 0.5,
+              "valueMin": 0.45,
+              "hueCentre": 120
+            },
+            "hue": 148,
+            "hueSpread": 0.07,
+            "then": {
+              "band": {
+                "hueFrom": 212,
+                "hueTo": 262,
+                "saturationMin": 0.45,
+                "valueMin": 0.14,
+                "hueCentre": 238
+              },
+              "hue": 244,
+              "hueSpread": 0.3,
+              "saturation": {
+                "scale": 1,
+                "add": 0,
+                "max": 0.6
+              },
+              "value": {
+                "scale": 0.5,
+                "add": 0.42
+              }
+            }
+          },
+          "accentPixels": 32,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 36,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Sample. A cream weatherboard shed under an indigo roof whose ridge curls over like a hood tip, a round green window, the round steel blade in a bench at its front and the grinning wooden idol at its side; no log (candidates with a log lost the blade: 3, 10, 11). 61 x 61 px, no key red. Passed over: 2 small; 1, 4, 7, 8, 11 a plain gable with no bent point; 5, 9 two points or a horned roof; 3, 10 no blade; 0, 6, 12, 13, 14 good too, the curl smaller or the idol hidden behind the wall.",
+      "acceptedAt": "2026-10-10T10:55:18.817Z"
+    },
+    "chibi-cult-shipyard": {
+      "id": "chibi-cult-shipyard",
+      "subject": "IMPROVEMENT:CULT:SHIPYARD",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "shipyard-a",
+      "candidate": 0,
+      "candidateSha256": "2eae2d181294391fd8cc4f63e8c3ff885bb03bcec455977f9076de417897a135",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-cult-shipyard.png",
+        "sha256": "cede44c39ddca31f7dbb9e5e7971d0f014a29caf1bb22ab0fad64c27ea7437b5",
+        "pixelSha256": "142ab67e904ec6886d7e7f0fef46860f98101078bdd66015780cfcfee5957bce",
+        "width": 72,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        },
+        "accent": {
+          "preset": "cult-lodge",
+          "spec": {
+            "band": {
+              "hueFrom": 80,
+              "hueTo": 152,
+              "saturationMin": 0.5,
+              "valueMin": 0.45,
+              "hueCentre": 120
+            },
+            "hue": 148,
+            "hueSpread": 0.07,
+            "then": {
+              "band": {
+                "hueFrom": 212,
+                "hueTo": 262,
+                "saturationMin": 0.45,
+                "valueMin": 0.14,
+                "hueCentre": 238
+              },
+              "hue": 244,
+              "hueSpread": 0.3,
+              "saturation": {
+                "scale": 1,
+                "add": 0,
+                "max": 0.6
+              },
+              "value": {
+                "scale": 0.5,
+                "add": 0.42
+              }
+            }
+          },
+          "accentPixels": 0,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 36,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "A half-built gondola hull with a curled prow on trestles, a crooked dark timber crane with a brass chain over it and a cream boathouse whose indigo roof ends in a bent point, a small eye sign on its gable. 62 x 61 px, no key red. Passed over: 1, 6 a ribbed skeleton hull and a tiny house; 15 a bright blue spire the accent does not reach; 2, 3, 8, 11, 14 no trestles, the hull lies on the ground; 4, 9, 10, 12, 13 plain gables; 5, 7 good too, the house hides the hull or the crane is small.",
+      "acceptedAt": "2026-10-10T11:12:48.253Z"
+    },
+    "chibi-cult-workshop": {
+      "id": "chibi-cult-workshop",
+      "subject": "IMPROVEMENT:CULT:WORKSHOP",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "workshop-a",
+      "candidate": 0,
+      "candidateSha256": "1dc7c7b909fecd4022adf5406b1ee82567e41f0a22ec6e01d20ca54a91487e97",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-cult-workshop.png",
+        "sha256": "d6135c2ab3cdf945b78475cd7285de2d1ea52de568997045fbfa25cd80b14b4b",
+        "pixelSha256": "f3b7ec4a793b7278593636b669e0d48e9c263339a742164ac191c92a37512181",
+        "width": 72,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        },
+        "accent": {
+          "preset": "cult-lodge",
+          "spec": {
+            "band": {
+              "hueFrom": 80,
+              "hueTo": 152,
+              "saturationMin": 0.5,
+              "valueMin": 0.45,
+              "hueCentre": 120
+            },
+            "hue": 148,
+            "hueSpread": 0.07,
+            "then": {
+              "band": {
+                "hueFrom": 212,
+                "hueTo": 262,
+                "saturationMin": 0.45,
+                "valueMin": 0.14,
+                "hueCentre": 238
+              },
+              "hue": 244,
+              "hueSpread": 0.3,
+              "saturation": {
+                "scale": 1,
+                "add": 0,
+                "max": 0.6
+              },
+              "value": {
+                "scale": 0.5,
+                "add": 0.42
+              }
+            }
+          },
+          "accentPixels": 21,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 36,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "The print shop: a narrow two-storey cream house under an indigo roof with upturned corners, one big brass cogwheel on its gable, two green windows, a hand press at the door and cream sheets on a line. 62 x 61 px, no key red. Passed over: 2, 4, 8, 10, 13 no cogwheel; 7 a spinning wheel, no cog on the house; 14 a small tower; 5, 11 a porch that hides the house; 1, 3, 6, 9 a small cog; 12, 15 good too, the cog smaller or on the side wall.",
+      "acceptedAt": "2026-10-10T11:08:18.378Z"
+    }
+  }
+}

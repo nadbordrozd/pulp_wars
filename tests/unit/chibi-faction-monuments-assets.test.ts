@@ -54,6 +54,8 @@ const FACTIONS = [
   "ICE_FOLK",
   "DWARF",
   "CANDY",
+  // Bead pulp_wars-mch9.16 (docs/art/factions/CULT.md, Monuments).
+  "CULT",
 ] as const;
 type Faction = (typeof FACTIONS)[number];
 
@@ -145,7 +147,7 @@ describe("the faction Monuments", () => {
         registered.delete(asset.id);
       }
     }
-    // Nothing registered outside the seven batches.
+    // Nothing registered outside the eight batches.
     expect([...registered.keys()]).toEqual([]);
   });
 
@@ -158,6 +160,8 @@ describe("the faction Monuments", () => {
     const own = new Map<Faction, { recipe: string; candidate: number }>([
       ["DINOSAUR", { recipe: "obelisk-b", candidate: 5 }],
       ["MARTIAN", { recipe: "obelisk-a", candidate: 12 }],
+      // The Cult obelisk has its own call (bead pulp_wars-mch9.16).
+      ["CULT", { recipe: "obelisk-a", candidate: 13 }],
     ]);
     const reused = new Map<Faction, number>([
       ["UNDEAD", 13],
@@ -214,7 +218,7 @@ describe("the faction Monuments", () => {
       "monuments-dinosaur",
     );
     expect(dinosaur.recipes["obelisk-a"]?.review?.verdict).toBe("REJECTED");
-    expect(CHIBI_FACTION_MONUMENT_ART_ASSETS_V7).toHaveLength(56);
+    expect(CHIBI_FACTION_MONUMENT_ART_ASSETS_V7).toHaveLength(64);
   });
 
   it("stand on the shared Monument's footprint, in no owner colour, each one different", async () => {

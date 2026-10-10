@@ -1,10 +1,13 @@
 /**
- * Review evidence of the Cultists' unit art (batches `direction-cult` and
- * `naval-cult`, docs/art/factions/CULT.md): the first sample (bead
+ * Review evidence of the Cultists' art (batches `direction-cult`,
+ * `naval-cult`, `cities-cult`, `buildings-cult` and `monuments-cult`,
+ * docs/art/factions/CULT.md): the first sample (bead
  * pulp_wars-mch9.14: the Initiate, the Horror and the Herald, measured
- * against the five gates the direction sets before the roster is batched)
- * and the whole roster (bead pulp_wars-mch9.15: the nine trained units, the
- * summoned and their Unbound looks, the ships and the frog).
+ * against the five gates the direction sets before the roster is batched),
+ * the whole roster (bead pulp_wars-mch9.15: the nine trained units, the
+ * summoned and their Unbound looks, the ships and the frog) and the places
+ * (bead pulp_wars-mch9.16: City 1 to 3, the seven buildings, the seven
+ * Monuments and the obelisk).
  *
  *   npm run art:chibi-cult-direction-review
  *   npm run art:chibi-cult-direction-review -- --copy-to DIR
@@ -42,6 +45,15 @@
  * - `frog-x4.png`: the frog on every ground, beside the Grave and the Crumbs;
  * - `roster.json`: sizes, foot lines and colour shares of every piece;
  * - `candidates-naval-x3.png`: every recorded candidate of `naval-cult`;
+ * - `places-{x4,1x}.png`: City 1 to 3 beside the Initiate, the seven
+ *   buildings (the Port and the Shipyard on Shallow Water too) and the
+ *   eight Monuments, on the default Grass (the Cult has no ground of its
+ *   own yet);
+ * - `places-compare-x2.png`: the Cult's cities and buildings above the
+ *   Human, Undead and Dwarf ones;
+ * - `places.json`: sizes, seats and colour shares of every place;
+ * - `candidates-{cities,buildings,monuments}-x2.png`: every recorded
+ *   candidate of those three batches, with its verdict;
  * - `index.json`.
  */
 import { copyFile, mkdir, writeFile } from "node:fs/promises";
@@ -520,8 +532,9 @@ async function candidatesSheet(
   records: BatchRecords,
   batch: string = BATCH,
   name = "candidates-x3.png",
+  scale = 3,
+  columns = 6,
 ): Promise<void> {
-  const scale = 3;
   const grass = await terrain("chibi-grass-1");
   const manifest = await loadBatchManifest(ROOT, batch);
   const cells: { label: string; verdict: string; raster: RgbaRaster }[] = [];
@@ -542,7 +555,6 @@ async function candidatesSheet(
         raster: await candidateOfRecipe(ROOT, records, recipe.id, k),
       });
   }
-  const columns = 6;
   const cellW = 96;
   const cellH = 112;
   const rowH = cellH * scale + 44;
@@ -1219,6 +1231,207 @@ async function rosterEvidence(): Promise<void> {
   );
 }
 
+// ------------------------------------------------------------ places
+
+const PLACES_BEAD = "pulp_wars-mch9.16";
+const PLACE_BATCHES = ["cities", "buildings", "monuments"] as const;
+const settlementMaster = (id: string): Promise<RgbaRaster> =>
+  readRaster(path.join(ROOT, "public/assets/chibi/settlements", `${id}.png`));
+const buildingMaster = (id: string): Promise<RgbaRaster> =>
+  readRaster(path.join(ROOT, "public/assets/chibi/buildings", `${id}.png`));
+
+const CULT_BUILDINGS: readonly Named[] = [
+  ["Lumber Camp", "lumber-camp"],
+  ["Sawmill", "sawmill"],
+  ["Forge", "forge"],
+  ["Workshop", "workshop"],
+  ["Port", "port"],
+  ["Shipyard", "shipyard"],
+  ["Market", "market"],
+];
+const CULT_MONUMENTS: readonly Named[] = [
+  ["Explorer", "monument-explorer"],
+  ["Engineer", "monument-engineer"],
+  ["Muster", "monument-muster"],
+  ["Conqueror", "monument-conqueror"],
+  ["Land Baron", "monument-land-baron"],
+  ["Sea Dog", "monument-sea-dog"],
+  ["Slayer", "monument-slayer"],
+  ["Obelisk", "monument"],
+];
+
+type PlaceCell = readonly [
+  title: string,
+  ground: RgbaRaster,
+  piece: RgbaRaster,
+];
+
+/** Rows of board cells: each piece bottom-centred on its ground tile. */
+async function placesSheet(
+  name: string,
+  rows: readonly (readonly [title: string, cells: readonly PlaceCell[]])[],
+  scale: number,
+): Promise<void> {
+  const columns = Math.max(...rows.map(([, cells]) => cells.length));
+  const header = 22;
+  const rowH = header + CELL_H * scale + 18 + GAP;
+  const canvas = blank(
+    columns * (CELL_W * scale + GAP) + GAP,
+    rows.length * rowH + GAP,
+    PAPER,
+  );
+  const labels: Label[] = [];
+  for (const [rowIndex, [title, cells]] of rows.entries()) {
+    const top = GAP + rowIndex * rowH;
+    labels.push({ text: title, left: GAP, top: top + 2, size: 14 });
+    for (const [column, [label, ground, piece]] of cells.entries()) {
+      const left = GAP + column * (CELL_W * scale + GAP);
+      blit(canvas, boardCell(ground, piece, scale), left, top + header);
+      labels.push({
+        text: label,
+        left,
+        top: top + header + CELL_H * scale + 2,
+        size: 12,
+      });
+    }
+  }
+  await sheet(name, canvas, labels);
+}
+
+/**
+ * The evidence of the places (bead pulp_wars-mch9.16): the lodge town, the
+ * seven buildings and the Monuments on the default Grass, which is what
+ * Cult territory draws until its heather moor exists (bead
+ * pulp_wars-mch9.22), and beside the same pieces of three other factions.
+ */
+async function placesEvidence(): Promise<void> {
+  const grass = await terrain("chibi-grass-1");
+  const water = await terrain("chibi-shallow-water-1");
+  const cities = await Promise.all(
+    [1, 2, 3].map(
+      async (level) =>
+        [
+          `City ${level}`,
+          await settlementMaster(`chibi-direction-cult-city-${level}`),
+        ] as const,
+    ),
+  );
+  const buildings = await Promise.all(
+    CULT_BUILDINGS.map(
+      async ([title, slug]) =>
+        [title, await buildingMaster(`chibi-cult-${slug}`)] as const,
+    ),
+  );
+  const monuments = await Promise.all(
+    CULT_MONUMENTS.map(
+      async ([title, slug]) =>
+        [title, await buildingMaster(`chibi-cult-${slug}`)] as const,
+    ),
+  );
+  const onGrass = (
+    pieces: readonly (readonly [string, RgbaRaster])[],
+  ): PlaceCell[] => pieces.map(([title, piece]) => [title, grass, piece]);
+  const docks = buildings.filter(
+    ([title]) => title === "Port" || title === "Shipyard",
+  );
+  const rows = [
+    [
+      "The lodge town, with an Initiate and a Thing in the Cellar for scale",
+      [
+        ...onGrass(cities),
+        ["Initiate", grass, await unitMaster("chibi-direction-cult-initiate")],
+        ["Thing", grass, await unitMaster("chibi-direction-cult-thing")],
+      ],
+    ],
+    [
+      "The seven buildings on Grass; the docks on Shallow Water",
+      [
+        ...onGrass(buildings),
+        ...docks.map(([title, piece]): PlaceCell => [
+          `${title}, on water`,
+          water,
+          piece,
+        ]),
+      ],
+    ],
+    ["The seven Monuments and the obelisk", onGrass(monuments)],
+  ] as const;
+  await placesSheet("places-x4.png", rows, 4);
+  await placesSheet("places-1x.png", rows, 1);
+
+  // The same pieces of the Humans, the Undead (the near neighbour: a dark
+  // town with pointed roofs) and the Dwarves.
+  const compare: (readonly [string, PlaceCell[]])[] = [
+    ["Cult", onGrass([...cities, ...buildings])],
+  ];
+  for (const [title, city, building] of [
+    ["Human", "chibi-direction-city-", "chibi-direction-"],
+    ["Undead", "chibi-direction-undead-city-", "chibi-undead-"],
+    ["Dwarf", "chibi-direction-dwarf-city-", "chibi-dwarf-"],
+  ] as const)
+    compare.push([
+      title,
+      onGrass([
+        ...(await Promise.all(
+          [1, 2, 3].map(
+            async (level) =>
+              [
+                `City ${level}`,
+                await settlementMaster(`${city}${level}`),
+              ] as const,
+          ),
+        )),
+        ...(await Promise.all(
+          CULT_BUILDINGS.map(
+            async ([name, slug]) =>
+              [name, await buildingMaster(`${building}${slug}`)] as const,
+          ),
+        )),
+      ]),
+    ]);
+  await placesSheet("places-compare-x2.png", compare, 2);
+
+  const measured = (title: string, asset: string, piece: RgbaRaster) => {
+    const bounds = opaqueBounds(piece);
+    return {
+      title,
+      asset,
+      canvas: `${piece.width} x ${piece.height}`,
+      size: `${bounds.width} x ${bounds.height}`,
+      seat: piece.height - 1 - bounds.bottom,
+      greenShare: percent(share(piece, isGreen)),
+      indigoShare: percent(share(piece, isCloth)),
+      tealShare: percent(share(piece, BANDS[5]?.test ?? isInk)),
+      redPixels: pixelsWhere([piece], isRed).count,
+      violetOrMagentaPixels: pixelsWhere([piece], isViolet).count,
+      fromGrass: round1(deltaE(meanColour(piece), meanColour(grass))),
+    };
+  };
+  await json("places.json", {
+    bead: PLACES_BEAD,
+    note: "Measured on the accepted masters. Green is the accent band (hue 80 to 152, pinned to hue 148 by the cult-lodge accent); indigo is the roofs and awnings; teal is the summoned colour (the Market's tentacle tip and the lit tones of a brass lantern's glass). `seat` is the transparent rows under the piece; `fromGrass` is CIE76 between the piece's mean colour and the default Grass tile's.",
+    cities: cities.map(([title, piece], index) =>
+      measured(title, `chibi-direction-cult-city-${index + 1}`, piece),
+    ),
+    buildings: buildings.map(([title, piece], index) =>
+      measured(title, `chibi-cult-${CULT_BUILDINGS[index]?.[1]}`, piece),
+    ),
+    monuments: monuments.map(([title, piece], index) =>
+      measured(title, `chibi-cult-${CULT_MONUMENTS[index]?.[1]}`, piece),
+    ),
+  });
+  for (const kind of PLACE_BATCHES) {
+    const batch = `${kind}-cult`;
+    await candidatesSheet(
+      await loadRecords(productionLayout(ROOT, batch), batch),
+      batch,
+      `candidates-${kind}-x2.png`,
+      2,
+      8,
+    );
+  }
+}
+
 // ------------------------------------------------------------ main
 
 async function loadSprites(records: BatchRecords): Promise<{
@@ -1330,6 +1543,7 @@ async function main(): Promise<void> {
   });
 
   if (!study) await rosterEvidence();
+  if (!study) await placesEvidence();
 
   const giantHeights = await giantsSheet(sprites.herald);
   await paletteFiles(sprites);

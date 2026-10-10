@@ -78,6 +78,8 @@ const FOREST_BUILDINGS: readonly (readonly [
   ["ice-folk", "ICE_FOLK"],
   ["dwarf", "DWARF"],
   ["candy", "CANDY"],
+  // Bead pulp_wars-mch9.16, batch `buildings-cult` (docs/art/factions/CULT.md).
+  ["cult", "CULT"],
 ];
 
 const FOREST_BUILDING_ASSETS: readonly ChibiArtAssetV7[] =

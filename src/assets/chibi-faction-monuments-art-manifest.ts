@@ -574,4 +574,79 @@ export const CHIBI_FACTION_MONUMENT_ART_ASSETS_V7: readonly ChibiArtAssetV7[] =
       height: 72,
       url: chibiArtUrl("assets/chibi/buildings/chibi-candy-monument.png"),
     },
+    // --- CULT (batch monuments-cult, bead pulp_wars-mch9.16) ---
+    {
+      id: "chibi-cult-monument-explorer",
+      subject: "IMPROVEMENT:MONUMENT:CULT:EXPLORER",
+      assetClass: "BUILDING",
+      width: 48,
+      height: 72,
+      url: chibiArtUrl(
+        "assets/chibi/buildings/chibi-cult-monument-explorer.png",
+      ),
+    },
+    {
+      id: "chibi-cult-monument-engineer",
+      subject: "IMPROVEMENT:MONUMENT:CULT:ENGINEER",
+      assetClass: "BUILDING",
+      width: 48,
+      height: 72,
+      url: chibiArtUrl(
+        "assets/chibi/buildings/chibi-cult-monument-engineer.png",
+      ),
+    },
+    {
+      id: "chibi-cult-monument-muster",
+      subject: "IMPROVEMENT:MONUMENT:CULT:MUSTER",
+      assetClass: "BUILDING",
+      width: 48,
+      height: 72,
+      url: chibiArtUrl("assets/chibi/buildings/chibi-cult-monument-muster.png"),
+    },
+    {
+      id: "chibi-cult-monument-conqueror",
+      subject: "IMPROVEMENT:MONUMENT:CULT:CONQUEROR",
+      assetClass: "BUILDING",
+      width: 48,
+      height: 72,
+      url: chibiArtUrl(
+        "assets/chibi/buildings/chibi-cult-monument-conqueror.png",
+      ),
+    },
+    {
+      id: "chibi-cult-monument-land-baron",
+      subject: "IMPROVEMENT:MONUMENT:CULT:LAND_BARON",
+      assetClass: "BUILDING",
+      width: 48,
+      height: 72,
+      url: chibiArtUrl(
+        "assets/chibi/buildings/chibi-cult-monument-land-baron.png",
+      ),
+    },
+    {
+      id: "chibi-cult-monument-sea-dog",
+      subject: "IMPROVEMENT:MONUMENT:CULT:SEA_DOG",
+      assetClass: "BUILDING",
+      width: 48,
+      height: 72,
+      url: chibiArtUrl(
+        "assets/chibi/buildings/chibi-cult-monument-sea-dog.png",
+      ),
+    },
+    {
+      id: "chibi-cult-monument-slayer",
+      subject: "IMPROVEMENT:MONUMENT:CULT:SLAYER",
+      assetClass: "BUILDING",
+      width: 48,
+      height: 72,
+      url: chibiArtUrl("assets/chibi/buildings/chibi-cult-monument-slayer.png"),
+    },
+    {
+      id: "chibi-cult-monument",
+      subject: "IMPROVEMENT:MONUMENT:CULT",
+      assetClass: "BUILDING",
+      width: 48,
+      height: 72,
+      url: chibiArtUrl("assets/chibi/buildings/chibi-cult-monument.png"),
+    },
   ];

@@ -62,6 +62,7 @@ const FACTIONS = [
   "ICE_FOLK",
   "DWARF",
   "CANDY",
+  "CULT",
 ] as const;
 type Faction = (typeof FACTIONS)[number];
 
@@ -74,6 +75,7 @@ const NAMES: Record<Faction | "ORIGINAL", string> = {
   ICE_FOLK: "Ice Folk",
   DWARF: "Dwarf",
   CANDY: "Candy",
+  CULT: "Cult",
 };
 
 /** The ground tile each faction's territory shows (Ice Folk: the Snow wash). */
@@ -88,6 +90,8 @@ const GROUNDS: Record<Faction | "ORIGINAL", string> = {
   ICE_FOLK: "art/pixellab/faction-forests/ground/ice-folk-snow.png",
   DWARF: "public/assets/chibi/terrain/faction-grass/chibi-dwarf-grass-1.png",
   CANDY: "public/assets/chibi/terrain/faction-grass/chibi-candy-grass-1.png",
+  // The Cult has no ground of its own yet (bead pulp_wars-mch9.22).
+  CULT: "public/assets/chibi/terrain/chibi-grass-1.png",
 };
 
 const COLUMNS = [...ACHIEVEMENTS, null] as const;

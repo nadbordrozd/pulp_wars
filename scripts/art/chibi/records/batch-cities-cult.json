@@ -1,0 +1,1024 @@
+{
+  "schemaVersion": 1,
+  "batch": "cities-cult",
+  "recipes": {
+    "cult-city-1-a": {
+      "id": "cult-city-1-a",
+      "asset": "chibi-direction-cult-city-1",
+      "jobId": "sync-9817d97c-ce21-4e3c-8737-9df1a58daccd",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "cities-cult",
+        "asset": "chibi-direction-cult-city-1",
+        "subject": "CITY:CULT:1",
+        "faction": "CULT",
+        "recipeClass": "calm-settlement",
+        "requestSize": {
+          "width": 96,
+          "height": 96
+        },
+        "seed": 93311,
+        "noBackground": true,
+        "options": {
+          "outline": "selective outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style-calm.txt + scripts/art/chibi/fragments/style-calm.negative.txt",
+            "text": "Style: flat-shaded minimalist pixel art for a turn-based strategy board game map, like a tiny simple board-game building token: very simple blocky shapes, large areas of one flat muted colour, at most one slightly darker shadow tone per material, no texture and no small details, calm low contrast, a pale desaturated palette; it must stay quiet behind the game's units.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thick black outline, black outline, individual bricks, individual roof tiles, shingles, wood grain, cracks, highlights, glossy, low-poly 3D, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-settlement.txt + scripts/art/chibi/fragments/class-calm-settlement.negative.txt",
+            "text": "Class: one settlement map piece, a compact cluster of simple little buildings, flat colours and a thin outline in a darker tone of each colour (never black), big simple shapes, no decoration. The walls and houses stand directly on the empty transparent background with no ground, soil, grass or platform under them; the bottom of the buildings is the lowest thing in the image. Every colour is muted and a little pale, each material shaded with one slightly darker tone of its own colour. No flag, no banner and nothing painted in a team colour.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd, flag, banner, pennant, heraldry, bright red, neon, saturated colours, soldier, person, character"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/CULT.json",
+            "text": "Subject: a small level-1 town, the first of three sizes of one settlement: one fat little meeting hall with pale cream weatherboard walls on a low pale grey stone footing, a steep bright saturated royal blue shingle roof ending in a bent crooked point like a hood, a small polished brass dome with a little brass telescope poking out of the roof ridge, one round window glowing bright green and a small green lamp over the door, and two tall narrow houses with the same cream walls and bent pointed royal blue roofs pressed against its sides; wide and chunky, filling the whole width of the image; no wall, no flag. Buildings only."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "",
+            "negative": "hooded figure, monk, wizard, monster, tentacle, figure, face, eyes, red, orange roof, terracotta, thatch, skull, gravestone, dead tree, black roof"
+          }
+        ],
+        "prompt": "Style: flat-shaded minimalist pixel art for a turn-based strategy board game map, like a tiny simple board-game building token: very simple blocky shapes, large areas of one flat muted colour, at most one slightly darker shadow tone per material, no texture and no small details, calm low contrast, a pale desaturated palette; it must stay quiet behind the game's units. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one settlement map piece, a compact cluster of simple little buildings, flat colours and a thin outline in a darker tone of each colour (never black), big simple shapes, no decoration. The walls and houses stand directly on the empty transparent background with no ground, soil, grass or platform under them; the bottom of the buildings is the lowest thing in the image. Every colour is muted and a little pale, each material shaded with one slightly darker tone of its own colour. No flag, no banner and nothing painted in a team colour. Subject: a small level-1 town, the first of three sizes of one settlement: one fat little meeting hall with pale cream weatherboard walls on a low pale grey stone footing, a steep bright saturated royal blue shingle roof ending in a bent crooked point like a hood, a small polished brass dome with a little brass telescope poking out of the roof ridge, one round window glowing bright green and a small green lamp over the door, and two tall narrow houses with the same cream walls and bent pointed royal blue roofs pressed against its sides; wide and chunky, filling the whole width of the image; no wall, no flag. Buildings only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thick black outline, black outline, individual bricks, individual roof tiles, shingles, wood grain, cracks, highlights, glossy, low-poly 3D, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd, flag, banner, pennant, heraldry, bright red, neon, saturated colours, soldier, person, character, hooded figure, monk, wizard, monster, tentacle, figure, face, eyes, red, orange roof, terracotta, thatch, skull, gravestone, dead tree, black roof",
+        "description": "Style: flat-shaded minimalist pixel art for a turn-based strategy board game map, like a tiny simple board-game building token: very simple blocky shapes, large areas of one flat muted colour, at most one slightly darker shadow tone per material, no texture and no small details, calm low contrast, a pale desaturated palette; it must stay quiet behind the game's units. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one settlement map piece, a compact cluster of simple little buildings, flat colours and a thin outline in a darker tone of each colour (never black), big simple shapes, no decoration. The walls and houses stand directly on the empty transparent background with no ground, soil, grass or platform under them; the bottom of the buildings is the lowest thing in the image. Every colour is muted and a little pale, each material shaded with one slightly darker tone of its own colour. No flag, no banner and nothing painted in a team colour. Subject: a small level-1 town, the first of three sizes of one settlement: one fat little meeting hall with pale cream weatherboard walls on a low pale grey stone footing, a steep bright saturated royal blue shingle roof ending in a bent crooked point like a hood, a small polished brass dome with a little brass telescope poking out of the roof ridge, one round window glowing bright green and a small green lamp over the door, and two tall narrow houses with the same cream walls and bent pointed royal blue roofs pressed against its sides; wide and chunky, filling the whole width of the image; no wall, no flag. Buildings only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thick black outline, black outline, individual bricks, individual roof tiles, shingles, wood grain, cracks, highlights, glossy, low-poly 3D, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd, flag, banner, pennant, heraldry, bright red, neon, saturated colours, soldier, person, character, hooded figure, monk, wizard, monster, tentacle, figure, face, eyes, red, orange roof, terracotta, thatch, skull, gravestone, dead tree, black roof."
+      },
+      "submittedAt": "2026-10-10T10:47:35.090Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 96,
+        "height": 96
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-cities-cult/cult-city-1-a.png",
+      "rawSheetSha256": "229fc30b3daae80d2a279a7638dacf718f193f44dc50babd327dc2f9bc17b986",
+      "plateHints": [
+        {
+          "bandRows": 16,
+          "groundShare": 0.0402,
+          "footprintWidthShare": 0.8611,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-10T10:48:03.057Z",
+      "usageUsd": 0.007431666559643215,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Pixen, calm-settlement: the right materials (cream walls, a blue roof, the brass dome and telescope, a green window and lamp) but one brick house with three plain gables, none of the bent hood points of the faction's building language, on a stone slab.",
+        "reviewedAt": "2026-10-10T10:59:53.860Z"
+      }
+    },
+    "cult-city-1-b": {
+      "id": "cult-city-1-b",
+      "asset": "chibi-direction-cult-city-1",
+      "jobId": "sync-cf5c43b3-1103-42cf-aef9-39aa17a2a98a",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "cities-cult",
+        "asset": "chibi-direction-cult-city-1",
+        "subject": "CITY:CULT:1",
+        "faction": "CULT",
+        "recipeClass": "calm-settlement",
+        "requestSize": {
+          "width": 96,
+          "height": 96
+        },
+        "seed": 93312,
+        "noBackground": true,
+        "options": {
+          "outline": "selective outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style-calm.txt + scripts/art/chibi/fragments/style-calm.negative.txt",
+            "text": "Style: flat-shaded minimalist pixel art for a turn-based strategy board game map, like a tiny simple board-game building token: very simple blocky shapes, large areas of one flat muted colour, at most one slightly darker shadow tone per material, no texture and no small details, calm low contrast, a pale desaturated palette; it must stay quiet behind the game's units.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thick black outline, black outline, individual bricks, individual roof tiles, shingles, wood grain, cracks, highlights, glossy, low-poly 3D, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-settlement.txt + scripts/art/chibi/fragments/class-calm-settlement.negative.txt",
+            "text": "Class: one settlement map piece, a compact cluster of simple little buildings, flat colours and a thin outline in a darker tone of each colour (never black), big simple shapes, no decoration. The walls and houses stand directly on the empty transparent background with no ground, soil, grass or platform under them; the bottom of the buildings is the lowest thing in the image. Every colour is muted and a little pale, each material shaded with one slightly darker tone of its own colour. No flag, no banner and nothing painted in a team colour.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd, flag, banner, pennant, heraldry, bright red, neon, saturated colours, soldier, person, character"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/CULT.json",
+            "text": "Subject: a small level-1 town, the first of three sizes of one settlement: one fat little meeting hall with pale cream weatherboard walls on a low pale grey stone footing, a steep bright saturated royal blue shingle roof ending in a bent crooked point like a hood, a small polished brass dome with a little brass telescope poking out of the roof ridge, one round window glowing bright green and a small green lamp over the door, and two tall narrow houses with the same cream walls and bent pointed royal blue roofs pressed against its sides; wide and chunky, filling the whole width of the image; no wall, no flag. Buildings only."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Every roof ends in a tall point that curls over like the tip of a wizard hat. No base and no slab under the walls.",
+            "negative": "hooded figure, monk, wizard, monster, tentacle, figure, face, eyes, red, orange roof, terracotta, thatch, skull, gravestone, dead tree, black roof"
+          }
+        ],
+        "prompt": "Style: flat-shaded minimalist pixel art for a turn-based strategy board game map, like a tiny simple board-game building token: very simple blocky shapes, large areas of one flat muted colour, at most one slightly darker shadow tone per material, no texture and no small details, calm low contrast, a pale desaturated palette; it must stay quiet behind the game's units. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one settlement map piece, a compact cluster of simple little buildings, flat colours and a thin outline in a darker tone of each colour (never black), big simple shapes, no decoration. The walls and houses stand directly on the empty transparent background with no ground, soil, grass or platform under them; the bottom of the buildings is the lowest thing in the image. Every colour is muted and a little pale, each material shaded with one slightly darker tone of its own colour. No flag, no banner and nothing painted in a team colour. Subject: a small level-1 town, the first of three sizes of one settlement: one fat little meeting hall with pale cream weatherboard walls on a low pale grey stone footing, a steep bright saturated royal blue shingle roof ending in a bent crooked point like a hood, a small polished brass dome with a little brass telescope poking out of the roof ridge, one round window glowing bright green and a small green lamp over the door, and two tall narrow houses with the same cream walls and bent pointed royal blue roofs pressed against its sides; wide and chunky, filling the whole width of the image; no wall, no flag. Buildings only. Every roof ends in a tall point that curls over like the tip of a wizard hat. No base and no slab under the walls.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thick black outline, black outline, individual bricks, individual roof tiles, shingles, wood grain, cracks, highlights, glossy, low-poly 3D, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd, flag, banner, pennant, heraldry, bright red, neon, saturated colours, soldier, person, character, hooded figure, monk, wizard, monster, tentacle, figure, face, eyes, red, orange roof, terracotta, thatch, skull, gravestone, dead tree, black roof",
+        "description": "Style: flat-shaded minimalist pixel art for a turn-based strategy board game map, like a tiny simple board-game building token: very simple blocky shapes, large areas of one flat muted colour, at most one slightly darker shadow tone per material, no texture and no small details, calm low contrast, a pale desaturated palette; it must stay quiet behind the game's units. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one settlement map piece, a compact cluster of simple little buildings, flat colours and a thin outline in a darker tone of each colour (never black), big simple shapes, no decoration. The walls and houses stand directly on the empty transparent background with no ground, soil, grass or platform under them; the bottom of the buildings is the lowest thing in the image. Every colour is muted and a little pale, each material shaded with one slightly darker tone of its own colour. No flag, no banner and nothing painted in a team colour. Subject: a small level-1 town, the first of three sizes of one settlement: one fat little meeting hall with pale cream weatherboard walls on a low pale grey stone footing, a steep bright saturated royal blue shingle roof ending in a bent crooked point like a hood, a small polished brass dome with a little brass telescope poking out of the roof ridge, one round window glowing bright green and a small green lamp over the door, and two tall narrow houses with the same cream walls and bent pointed royal blue roofs pressed against its sides; wide and chunky, filling the whole width of the image; no wall, no flag. Buildings only. Every roof ends in a tall point that curls over like the tip of a wizard hat. No base and no slab under the walls. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thick black outline, black outline, individual bricks, individual roof tiles, shingles, wood grain, cracks, highlights, glossy, low-poly 3D, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd, flag, banner, pennant, heraldry, bright red, neon, saturated colours, soldier, person, character, hooded figure, monk, wizard, monster, tentacle, figure, face, eyes, red, orange roof, terracotta, thatch, skull, gravestone, dead tree, black roof."
+      },
+      "submittedAt": "2026-10-10T10:55:30.692Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 96,
+        "height": 96
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-cities-cult/cult-city-1-b.png",
+      "rawSheetSha256": "14d817cfd2434e7ea5e386731557d790797ca01c5081b8132bcb93008426e4b2",
+      "plateHints": [
+        {
+          "bandRows": 18,
+          "groundShare": 0.0278,
+          "footprintWidthShare": 0.8333,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-10T10:55:51.910Z",
+      "usageUsd": 0.006901592969894409,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Pixen, calm-settlement: a hall between two spire towers with the dome, telescope, green window and lamp, but 84 x 91 px (too big for the 80 x 80 canvas), dark timber frames (the Humans' look), straight spires with no curl and a noisy dithered roof.",
+        "reviewedAt": "2026-10-10T10:59:54.152Z"
+      }
+    },
+    "cult-city-1-v": {
+      "id": "cult-city-1-v",
+      "asset": "chibi-direction-cult-city-1",
+      "jobId": "12fb0b0e-33f3-4d97-b6b7-53b165ec0187",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "cities-cult",
+        "asset": "chibi-direction-cult-city-1",
+        "subject": "CITY:CULT:1",
+        "faction": "CULT",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 80,
+          "height": 80
+        },
+        "seed": 93341,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/CULT.json",
+            "text": "Subject: a small level-1 town, one single group: one fat meeting hall of pale cream weatherboard (#e6dfc8) under a steep bright royal blue roof ending in a curled point like a hood tip, a small brass dome with a brass telescope on its ridge, a round window glowing bright green, and two tall narrow cream houses with curled royal blue roofs pressed against its sides. Grey stone footings; no red, no timber frame; dark outline, never black. Compact, with an empty margin all round. Buildings only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a small level-1 town, one single group: one fat meeting hall of pale cream weatherboard (#e6dfc8) under a steep bright royal blue roof ending in a curled point like a hood tip, a small brass dome with a brass telescope on its ridge, a round window glowing bright green, and two tall narrow cream houses with curled royal blue roofs pressed against its sides. Grey stone footings; no red, no timber frame; dark outline, never black. Compact, with an empty margin all round. Buildings only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a small level-1 town, one single group: one fat meeting hall of pale cream weatherboard (#e6dfc8) under a steep bright royal blue roof ending in a curled point like a hood tip, a small brass dome with a brass telescope on its ridge, a round window glowing bright green, and two tall narrow cream houses with curled royal blue roofs pressed against its sides. Grey stone footings; no red, no timber frame; dark outline, never black. Compact, with an empty margin all round. Buildings only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-10T10:57:00.327Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 80,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-cities-cult/cult-city-1-v.png",
+      "rawSheetSha256": "4557e6379515ca4e9541b51c81d92806d59adaefb240b9af13e9c3ae48c01548",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0.0588,
+          "footprintWidthShare": 0.8852,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9833,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.0307,
+          "footprintWidthShare": 0.9032,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.007,
+          "footprintWidthShare": 0.9833,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0197,
+          "footprintWidthShare": 0.9032,
+          "suspect": false
+        },
+        {
+          "bandRows": 10,
+          "groundShare": 0.0028,
+          "footprintWidthShare": 0.9667,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0743,
+          "footprintWidthShare": 0.9032,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9677,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.0863,
+          "footprintWidthShare": 0.9516,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.0363,
+          "footprintWidthShare": 0.9123,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0854,
+          "footprintWidthShare": 0.9107,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0634,
+          "footprintWidthShare": 0.9167,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0911,
+          "footprintWidthShare": 0.8667,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0758,
+          "footprintWidthShare": 0.9333,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0075,
+          "footprintWidthShare": 0.8167,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0327,
+          "footprintWidthShare": 0.9516,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-10T10:59:27.085Z",
+      "usageUsd": 0.115,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Candidate 4 was accepted as the sample (the hall between two houses, three curled roofs, the dome and telescope, a green window) and then replaced: its left-facing walls are the shaded ones, so it is lit from the right (lighting-qa: thirds -10.5, faces -4.3), as are ten of the sixteen; the six lit from the left (8, 9, 11, 12, 14, 15) have the curl or the dome, never both. Redone as cult-city-1-w with the lit walls stated.",
+        "reviewedAt": "2026-10-10T11:39:55.859Z"
+      }
+    },
+    "cult-city-1-w": {
+      "id": "cult-city-1-w",
+      "asset": "chibi-direction-cult-city-1",
+      "jobId": "55582eff-ba19-4d7c-b4fd-86be50181262",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "cities-cult",
+        "asset": "chibi-direction-cult-city-1",
+        "subject": "CITY:CULT:1",
+        "faction": "CULT",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 80,
+          "height": 80
+        },
+        "seed": 93351,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/CULT.json",
+            "text": "Subject: a small town, one single group: one fat meeting hall of cream weatherboard (#e6dfc8) under a steep bright royal blue roof ending in a curled point like a hood tip, a small brass dome with a brass telescope on its ridge, a round window glowing bright green, and two tall narrow cream houses with curled royal blue roofs at its sides. Its left walls are pale, its right walls shaded. No red, no timber frame; dark outline, never black. Compact, with an empty margin all round. Buildings only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a small town, one single group: one fat meeting hall of cream weatherboard (#e6dfc8) under a steep bright royal blue roof ending in a curled point like a hood tip, a small brass dome with a brass telescope on its ridge, a round window glowing bright green, and two tall narrow cream houses with curled royal blue roofs at its sides. Its left walls are pale, its right walls shaded. No red, no timber frame; dark outline, never black. Compact, with an empty margin all round. Buildings only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a small town, one single group: one fat meeting hall of cream weatherboard (#e6dfc8) under a steep bright royal blue roof ending in a curled point like a hood tip, a small brass dome with a brass telescope on its ridge, a round window glowing bright green, and two tall narrow cream houses with curled royal blue roofs at its sides. Its left walls are pale, its right walls shaded. No red, no timber frame; dark outline, never black. Compact, with an empty margin all round. Buildings only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-10T11:36:28.487Z",
+      "candidateCount": 16,
+      "candidateSize": {
+        "width": 80,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-cities-cult/cult-city-1-w.png",
+      "rawSheetSha256": "0e320ac059bf679cd2c722530e7a8585079e09f98c26c8e281356ae675449993",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0.2519,
+          "footprintWidthShare": 0.623,
+          "suspect": true
+        },
+        {
+          "bandRows": 9,
+          "groundShare": 0.2509,
+          "footprintWidthShare": 0.7903,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.2814,
+          "footprintWidthShare": 0.6667,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1993,
+          "footprintWidthShare": 0.86,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.2191,
+          "footprintWidthShare": 0.717,
+          "suspect": false
+        },
+        {
+          "bandRows": 10,
+          "groundShare": 0.2007,
+          "footprintWidthShare": 0.6833,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.2195,
+          "footprintWidthShare": 0.5,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.2158,
+          "footprintWidthShare": 0.8214,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.2227,
+          "footprintWidthShare": 0.4655,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.2107,
+          "footprintWidthShare": 0.7414,
+          "suspect": false
+        },
+        {
+          "bandRows": 10,
+          "groundShare": 0.2835,
+          "footprintWidthShare": 0.6167,
+          "suspect": true
+        },
+        {
+          "bandRows": 6,
+          "groundShare": 0.1228,
+          "footprintWidthShare": 0.5,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.2194,
+          "footprintWidthShare": 0.8226,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1848,
+          "footprintWidthShare": 0.75,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.2091,
+          "footprintWidthShare": 0.6167,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.1993,
+          "footprintWidthShare": 0.7627,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-10T11:39:23.095Z",
+      "usageUsd": 0.115,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "The lodge hall of cream weatherboard between two tall narrow houses, three indigo roofs ending in curled hood tips, a brass dome with a brass telescope on the ridge, a round green window; its left-facing walls are the lit ones. 61 x 58 px, no key red; the roofs are 55% of it. Passed over: 11 tiny; 6, 8 two separate houses; 15 three onion domes; 7, 13 no telescope; 10, 12, 14 the roofs hide the walls; 2 a roof with four horns; 1, 5 low, the houses small; 3, 4, 9 good too, narrower (50 to 58 px).",
+        "reviewedAt": "2026-10-10T11:39:47.372Z"
+      }
+    },
+    "cult-city-2-v": {
+      "id": "cult-city-2-v",
+      "asset": "chibi-direction-cult-city-2",
+      "jobId": "ab6c0484-88ea-4089-9466-77c12e60e6bd",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "cities-cult",
+        "asset": "chibi-direction-cult-city-2",
+        "subject": "CITY:CULT:2",
+        "faction": "CULT",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 88,
+          "height": 88
+        },
+        "seed": 93342,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/CULT.json",
+            "text": "Subject: a level-2 town, one single group: a big hall of pale cream weatherboard (#e6dfc8) under a steep bright royal blue roof with a curled point, a crooked tower under a brass dome with a brass telescope, four tall narrow cream houses with curled royal blue roofs pressed round them, round windows glowing bright green, a low grey stone wall with an arched gate in front. Grey stone footings; no red, no timber frame; dark outline, never black. Compact, with an empty margin all round. Buildings only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a level-2 town, one single group: a big hall of pale cream weatherboard (#e6dfc8) under a steep bright royal blue roof with a curled point, a crooked tower under a brass dome with a brass telescope, four tall narrow cream houses with curled royal blue roofs pressed round them, round windows glowing bright green, a low grey stone wall with an arched gate in front. Grey stone footings; no red, no timber frame; dark outline, never black. Compact, with an empty margin all round. Buildings only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a level-2 town, one single group: a big hall of pale cream weatherboard (#e6dfc8) under a steep bright royal blue roof with a curled point, a crooked tower under a brass dome with a brass telescope, four tall narrow cream houses with curled royal blue roofs pressed round them, round windows glowing bright green, a low grey stone wall with an arched gate in front. Grey stone footings; no red, no timber frame; dark outline, never black. Compact, with an empty margin all round. Buildings only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-10T11:26:58.499Z",
+      "candidateCount": 4,
+      "candidateSize": {
+        "width": 88,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-cities-cult/cult-city-2-v.png",
+      "rawSheetSha256": "af3f5989ac00a8e8c42f82227d1b24708c170f272b6e43c4c3033c86ccd4cab7",
+      "plateHints": [
+        {
+          "bandRows": 17,
+          "groundShare": 0.0388,
+          "footprintWidthShare": 0.3882,
+          "suspect": false
+        },
+        {
+          "bandRows": 17,
+          "groundShare": 0.0251,
+          "footprintWidthShare": 0.6265,
+          "suspect": false
+        },
+        {
+          "bandRows": 16,
+          "groundShare": 0.0027,
+          "footprintWidthShare": 0.747,
+          "suspect": false
+        },
+        {
+          "bandRows": 16,
+          "groundShare": 0.0078,
+          "footprintWidthShare": 0.4253,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-10T11:28:16.418Z",
+      "usageUsd": 0.08,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The right town (candidate 0: the observatory tower, a hall with a curled roof, houses, a wall and gate) but all four candidates are 83 to 87 px wide on the 88 px canvas: as wide as City 3 (86 px), far from City 1 (62 px) and wider than every other faction's City 2 (72 to 74 px). Redone smaller as cult-city-2-w.",
+        "reviewedAt": "2026-10-10T11:33:50.674Z"
+      }
+    },
+    "cult-city-2-w": {
+      "id": "cult-city-2-w",
+      "asset": "chibi-direction-cult-city-2",
+      "jobId": "924d6297-c3b6-4e0f-b04d-2c56c545b3c8",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "cities-cult",
+        "asset": "chibi-direction-cult-city-2",
+        "subject": "CITY:CULT:2",
+        "faction": "CULT",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 88,
+          "height": 88
+        },
+        "seed": 93352,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/CULT.json",
+            "text": "Subject: a small level-2 town, one single group, two thirds of the image wide: a hall of cream weatherboard (#e6dfc8) under a steep bright royal blue roof with a curled point, a crooked tower under a brass dome with a brass telescope, three narrow cream houses with curled royal blue roofs pressed round them, round green glowing windows, a low grey stone wall with a gate. Grey stone footings; no red, no timber frame; dark outline, never black. Small, with a wide empty margin all round. Buildings only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a small level-2 town, one single group, two thirds of the image wide: a hall of cream weatherboard (#e6dfc8) under a steep bright royal blue roof with a curled point, a crooked tower under a brass dome with a brass telescope, three narrow cream houses with curled royal blue roofs pressed round them, round green glowing windows, a low grey stone wall with a gate. Grey stone footings; no red, no timber frame; dark outline, never black. Small, with a wide empty margin all round. Buildings only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a small level-2 town, one single group, two thirds of the image wide: a hall of cream weatherboard (#e6dfc8) under a steep bright royal blue roof with a curled point, a crooked tower under a brass dome with a brass telescope, three narrow cream houses with curled royal blue roofs pressed round them, round green glowing windows, a low grey stone wall with a gate. Grey stone footings; no red, no timber frame; dark outline, never black. Small, with a wide empty margin all round. Buildings only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-10T11:31:50.718Z",
+      "candidateCount": 4,
+      "candidateSize": {
+        "width": 88,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-cities-cult/cult-city-2-w.png",
+      "rawSheetSha256": "ba160accb117b23a650e9b48de83b57054b2e00af0a0fc9c00ef7fc7772e98de",
+      "plateHints": [
+        {
+          "bandRows": 15,
+          "groundShare": 0.0071,
+          "footprintWidthShare": 0.6494,
+          "suspect": false
+        },
+        {
+          "bandRows": 15,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6533,
+          "suspect": false
+        },
+        {
+          "bandRows": 15,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5867,
+          "suspect": false
+        },
+        {
+          "bandRows": 16,
+          "groundShare": 0.0037,
+          "footprintWidthShare": 0.5625,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-10T11:33:25.189Z",
+      "usageUsd": 0.08,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "The lodge town: a tall cream hall whose indigo roof ends in a curled hood tip, narrow houses with small curled roofs pressed against it, a round observatory tower under a brass dome with a brass telescope, round green windows and a low slate-grey stone wall with a gate. 77 x 74 px, between City 1 (62 px) and City 3 (86 px), no key red. Four candidates at 88 x 88. Passed over: 2 the same town with nearly no curl; 1, 3 two separate buildings in a wide walled yard.",
+        "reviewedAt": "2026-10-10T11:33:49.372Z"
+      }
+    },
+    "cult-city-3-v": {
+      "id": "cult-city-3-v",
+      "asset": "chibi-direction-cult-city-3",
+      "jobId": "0315809e-ad6b-4a76-a9ad-bd04c07c6361",
+      "request": {
+        "endpoint": "generate-image-v2",
+        "model": "generate-image-v2",
+        "batch": "cities-cult",
+        "asset": "chibi-direction-cult-city-3",
+        "subject": "CITY:CULT:3",
+        "faction": "CULT",
+        "recipeClass": "calm-feature",
+        "requestSize": {
+          "width": 96,
+          "height": 88
+        },
+        "seed": 93343,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-feature.txt + scripts/art/chibi/fragments/class-calm-feature.negative.txt",
+            "text": "Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block.",
+            "negative": "ground plate, platform, grass square, isometric block, background, people"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/CULT.json",
+            "text": "Subject: a large level-3 city, one single group, crowded: a great hall of pale cream weatherboard (#e6dfc8) under a big brass dome with a brass telescope, three crooked towers with tall curled bright royal blue roofs, small cream houses with royal blue roofs between them, round windows glowing bright green, inside a grey stone ring wall with open cellar doors glowing green at the front. Grey stone footings; no red, no timber frame; dark outline, never black. Compact, with an empty margin all round. Buildings only."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a large level-3 city, one single group, crowded: a great hall of pale cream weatherboard (#e6dfc8) under a big brass dome with a brass telescope, three crooked towers with tall curled bright royal blue roofs, small cream houses with royal blue roofs between them, round windows glowing bright green, inside a grey stone ring wall with open cellar doors glowing green at the front. Grey stone footings; no red, no timber frame; dark outline, never black. Compact, with an empty margin all round. Buildings only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small free-standing map piece for one square tile of a strategy map: big simple chunky shapes, calmer and less saturated than units, no face, no people, outlined in a darker tone of each colour, never pure black. Nothing is drawn under or around it except what the subject names: no ground plate, no grass, no isometric block. Subject: a large level-3 city, one single group, crowded: a great hall of pale cream weatherboard (#e6dfc8) under a big brass dome with a brass telescope, three crooked towers with tall curled bright royal blue roofs, small cream houses with royal blue roofs between them, round windows glowing bright green, inside a grey stone ring wall with open cellar doors glowing green at the front. Grey stone footings; no red, no timber frame; dark outline, never black. Compact, with an empty margin all round. Buildings only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, isometric block, background, people."
+      },
+      "submittedAt": "2026-10-10T11:28:16.422Z",
+      "candidateCount": 4,
+      "candidateSize": {
+        "width": 96,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-cities-cult/cult-city-3-v.png",
+      "rawSheetSha256": "f214e71cc32688bf023772f24d1fd04bfa47f40980e78ed9685410911179f64f",
+      "plateHints": [
+        {
+          "bandRows": 16,
+          "groundShare": 0.097,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 17,
+          "groundShare": 0.1298,
+          "footprintWidthShare": 0.9302,
+          "suspect": false
+        },
+        {
+          "bandRows": 16,
+          "groundShare": 0.1105,
+          "footprintWidthShare": 0.9765,
+          "suspect": false
+        },
+        {
+          "bandRows": 17,
+          "groundShare": 0.0772,
+          "footprintWidthShare": 1,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-10T11:30:01.594Z",
+      "usageUsd": 0.08,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 1,
+        "notes": "The lodge city: a great cream hall under a big brass dome with a brass telescope, three crooked towers whose indigo roofs end in curled hood tips, small indigo-roofed houses packed between them, round green windows, a slate-grey ring wall and a pair of open cellar doors glowing green at the front. 86 x 83 px, no key red. At 96 x 88 the generator returns four candidates, not sixteen. Passed over: 2, 3 the ring wall runs off the bottom edge; 0 good, one tower roof has no curl and the houses are few.",
+        "reviewedAt": "2026-10-10T11:30:58.509Z"
+      }
+    }
+  },
+  "assets": {
+    "chibi-direction-cult-city-1": {
+      "id": "chibi-direction-cult-city-1",
+      "subject": "CITY:CULT:1",
+      "assetClass": "SETTLEMENT",
+      "status": "ACCEPTED",
+      "recipe": "cult-city-1-w",
+      "candidate": 0,
+      "candidateSha256": "28db21dc0c651fe50cbb53377d8a5e54ad43799bc9a0bc5a677f545c0eef0124",
+      "master": {
+        "path": "public/assets/chibi/settlements/chibi-direction-cult-city-1.png",
+        "sha256": "9edba4c6ba93e244142e399e9350e129df9bc3010cab1d083513a74f6e976f49",
+        "pixelSha256": "ec546c255c704299df121325418177773f8464cba6a726c6e0df69434efd030f",
+        "width": 80,
+        "height": 80
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        },
+        "accent": {
+          "preset": "cult-lodge",
+          "spec": {
+            "band": {
+              "hueFrom": 80,
+              "hueTo": 152,
+              "saturationMin": 0.5,
+              "valueMin": 0.45,
+              "hueCentre": 120
+            },
+            "hue": 148,
+            "hueSpread": 0.07,
+            "then": {
+              "band": {
+                "hueFrom": 212,
+                "hueTo": 262,
+                "saturationMin": 0.45,
+                "valueMin": 0.14,
+                "hueCentre": 238
+              },
+              "hue": 244,
+              "hueSpread": 0.3,
+              "saturation": {
+                "scale": 1,
+                "add": 0,
+                "max": 0.6
+              },
+              "value": {
+                "scale": 0.5,
+                "add": 0.42
+              }
+            }
+          },
+          "accentPixels": 31,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 40,
+        "y": 40
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "The lodge hall of cream weatherboard between two tall narrow houses, three indigo roofs ending in curled hood tips, a brass dome with a brass telescope on the ridge, a round green window; its left-facing walls are the lit ones. 61 x 58 px, no key red; the roofs are 55% of it. Passed over: 11 tiny; 6, 8 two separate houses; 15 three onion domes; 7, 13 no telescope; 10, 12, 14 the roofs hide the walls; 2 a roof with four horns; 1, 5 low, the houses small; 3, 4, 9 good too, narrower (50 to 58 px).",
+      "acceptedAt": "2026-10-10T11:39:47.372Z"
+    },
+    "chibi-direction-cult-city-2": {
+      "id": "chibi-direction-cult-city-2",
+      "subject": "CITY:CULT:2",
+      "assetClass": "SETTLEMENT",
+      "status": "ACCEPTED",
+      "recipe": "cult-city-2-w",
+      "candidate": 0,
+      "candidateSha256": "b696e143e9e162a3e7d5ed47cdb54165c10e0a1fff60df0be8929d7ec24de657",
+      "master": {
+        "path": "public/assets/chibi/settlements/chibi-direction-cult-city-2.png",
+        "sha256": "f7fb2a782f1c75e85d62267f4affafd05d6abd3c58aab58f4d5953a3266f454a",
+        "pixelSha256": "ffcc9148d797e1cb4b3a16a8791e6797e431e6bf4279764c2db1da0d90cf4e9d",
+        "width": 88,
+        "height": 88
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        },
+        "accent": {
+          "preset": "cult-lodge",
+          "spec": {
+            "band": {
+              "hueFrom": 80,
+              "hueTo": 152,
+              "saturationMin": 0.5,
+              "valueMin": 0.45,
+              "hueCentre": 120
+            },
+            "hue": 148,
+            "hueSpread": 0.07,
+            "then": {
+              "band": {
+                "hueFrom": 212,
+                "hueTo": 262,
+                "saturationMin": 0.45,
+                "valueMin": 0.14,
+                "hueCentre": 238
+              },
+              "hue": 244,
+              "hueSpread": 0.3,
+              "saturation": {
+                "scale": 1,
+                "add": 0,
+                "max": 0.6
+              },
+              "value": {
+                "scale": 0.5,
+                "add": 0.42
+              }
+            }
+          },
+          "accentPixels": 22,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 44,
+        "y": 48
+      },
+      "overflow": {
+        "left": 4,
+        "right": 4,
+        "up": 8,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "The lodge town: a tall cream hall whose indigo roof ends in a curled hood tip, narrow houses with small curled roofs pressed against it, a round observatory tower under a brass dome with a brass telescope, round green windows and a low slate-grey stone wall with a gate. 77 x 74 px, between City 1 (62 px) and City 3 (86 px), no key red. Four candidates at 88 x 88. Passed over: 2 the same town with nearly no curl; 1, 3 two separate buildings in a wide walled yard.",
+      "acceptedAt": "2026-10-10T11:33:49.372Z"
+    },
+    "chibi-direction-cult-city-3": {
+      "id": "chibi-direction-cult-city-3",
+      "subject": "CITY:CULT:3",
+      "assetClass": "SETTLEMENT",
+      "status": "ACCEPTED",
+      "recipe": "cult-city-3-v",
+      "candidate": 1,
+      "candidateSha256": "f501c342e2e1f7b4d4f84a8b80bc006af912f4a618ee9c3119ca8dc70dfb5d63",
+      "master": {
+        "path": "public/assets/chibi/settlements/chibi-direction-cult-city-3.png",
+        "sha256": "f80c69677fc2d7be35d48dbd00915210ec50f882ca0b5f85f02586b01ed4d50d",
+        "pixelSha256": "3ef33cd84681f21d3a743a7416ba47fc41f3080580f2e3e6e122620610a3bcc3",
+        "width": 96,
+        "height": 88
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        },
+        "accent": {
+          "preset": "cult-lodge",
+          "spec": {
+            "band": {
+              "hueFrom": 80,
+              "hueTo": 152,
+              "saturationMin": 0.5,
+              "valueMin": 0.45,
+              "hueCentre": 120
+            },
+            "hue": 148,
+            "hueSpread": 0.07,
+            "then": {
+              "band": {
+                "hueFrom": 212,
+                "hueTo": 262,
+                "saturationMin": 0.45,
+                "valueMin": 0.14,
+                "hueCentre": 238
+              },
+              "hue": 244,
+              "hueSpread": 0.3,
+              "saturation": {
+                "scale": 1,
+                "add": 0,
+                "max": 0.6
+              },
+              "value": {
+                "scale": 0.5,
+                "add": 0.42
+              }
+            }
+          },
+          "accentPixels": 103,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 48,
+        "y": 48
+      },
+      "overflow": {
+        "left": 8,
+        "right": 8,
+        "up": 8,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "The lodge city: a great cream hall under a big brass dome with a brass telescope, three crooked towers whose indigo roofs end in curled hood tips, small indigo-roofed houses packed between them, round green windows, a slate-grey ring wall and a pair of open cellar doors glowing green at the front. 86 x 83 px, no key red. At 96 x 88 the generator returns four candidates, not sixteen. Passed over: 2, 3 the ring wall runs off the bottom edge; 0 good, one tower roof has no curl and the houses are few.",
+      "acceptedAt": "2026-10-10T11:30:58.509Z"
+    }
+  }
+}

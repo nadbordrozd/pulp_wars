@@ -10,8 +10,10 @@ in batch `direction-cult`. What it measured and what it changed is under
 [The first sample](#the-first-sample). **The unit art is complete and wired**
 (bead `pulp_wars-mch9.15`, ART3): the other eight trained units, the
 Tentacle, the two Unbound looks, the four ships and the frog, under
-[The batches](#the-batches). The cities, buildings, portraits, icons and
-effects below are still targets.
+[The batches](#the-batches). **The cities, the seven buildings, the
+Monuments and the obelisk are complete and wired** (bead
+`pulp_wars-mch9.16`, ART4), under [The places](#the-places). The portraits,
+icons and effects below are still targets (bead `pulp_wars-mch9.23`).
 
 The art pipeline reads the two `text` blocks under **Prompt fragment** and
 **Negative fragment** below as layer 3 of every Cult prompt, so edit them
@@ -394,7 +396,8 @@ direction's calm building style (`calm-settlement`, subject keys
 `SETTLEMENT` class, bottom-centred, side overflow at most 8 px, generated at
 96 x 96 with one ground-removal edit, as every faction city was. Pennants
 are retired, so there is no pole and no anchor. The neutral village is the
-shared one.
+shared one. (As made: class `calm-feature` at the master canvas, see
+[The places](#the-places).)
 
 **Building language** (cities and buildings alike): pale cream-grey
 weatherboard walls on a low footing of pale grey stone; **steep indigo
@@ -639,12 +642,13 @@ What each art bead of
 generates from this document. Counts are accepted rasters, not PixelLab
 calls.
 
-| Bead            | Assets                                                                                                                                                                                                                                            | Count |
-| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----: |
-| **ART2**        | the sample: Initiate, Horror, Herald; `subjects/CULT.json`; batch `direction-cult`; the `cult-green` accent preset; the review command `art:chibi-cult-direction-review`                                                                          |     3 |
-| **ART3** (done) | the other eight trained units (Idol Bearer, Familiar, Hexer, Summoner, Stargazer, Caller, Chosen, Thing); the Tentacle; the two Unbound looks; the four ships and the derived submerged one; the frog                                             |    17 |
-| **ART4**        | City 1 to 3; the seven buildings; the seven Monuments and the obelisk; twelve unit portraits and three ship portraits; three technology icons; eighteen ability icons; ten HUD and status icons (the Favour candle at two sizes); fifteen effects |    80 |
-| (none)          | the heather-moor Grass (three tiles) and the lantern-wood Forest set: see [Follow-ups](#follow-ups)                                                                                                                                               |     — |
+| Bead            | Assets                                                                                                                                                                                                | Count |
+| --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----: |
+| **ART2**        | the sample: Initiate, Horror, Herald; `subjects/CULT.json`; batch `direction-cult`; the `cult-green` accent preset; the review command `art:chibi-cult-direction-review`                              |     3 |
+| **ART3** (done) | the other eight trained units (Idol Bearer, Familiar, Hexer, Summoner, Stargazer, Caller, Chosen, Thing); the Tentacle; the two Unbound looks; the four ships and the derived submerged one; the frog |    17 |
+| **ART4** (done) | City 1 to 3; the seven buildings; the seven Monuments and the obelisk (bead `pulp_wars-mch9.16`, narrowed by the root)                                                                                |    18 |
+| `mch9.23`       | twelve unit portraits and three ship portraits; three technology icons; eighteen ability icons; ten HUD and status icons (the Favour candle at two sizes); fifteen effects                            |    62 |
+| (none)          | the heather-moor Grass (three tiles) and the lantern-wood Forest set: see [Follow-ups](#follow-ups)                                                                                                   |     — |
 
 **Gates the sample must pass before ART3 batches** (the faction layer's
 step 4, with the Cult's own risks):
@@ -864,6 +868,120 @@ factions, so the pieces are told apart by outline, as the
 are also close in greyscale are the Initiate against the Hexer and the
 Chosen, the Idol Bearer against the Chosen, and the Caller against the
 Horror.
+
+## The places
+
+Bead `pulp_wars-mch9.16` (ART4, narrowed by the root to the places; the
+portraits, icons and effects are bead `pulp_wars-mch9.23`): City 1 to 3,
+the seven buildings, the seven Monuments and the obelisk. **22 PixelLab
+calls** for 18 accepted pieces: 7 in the new batch `cities-cult` (two Pixen
+samples and five `generate-image-v2` sheets), 7 in `buildings-cult` and 8
+in `monuments-cult` (one call a piece, none redone).
+`npm run art:chibi-cult-direction-review` now also writes
+`places-{x4,1x}.png`, `places-compare-x2.png`, `places.json` and
+`candidates-{cities,buildings,monuments}-x2.png`; the Cult row of
+`npm run art:faction-monuments-review` is new.
+
+![The Cult's cities, buildings and Monuments on the default Grass](../../../art/pixellab/reviews/chibi-batch-direction-cult/places-x4.png)
+
+| Asset                            | Accepted recipe, candidate | Sprite     | What it shows                                                                                                                              |
+| -------------------------------- | -------------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `chibi-direction-cult-city-1`    | `cult-city-1-w`, 0         | 61 x 58 px | the hall between two tall narrow houses, three curled roofs, the brass dome and telescope, a green window                                  |
+| `chibi-direction-cult-city-2`    | `cult-city-2-w`, 0         | 77 x 74 px | a tall hall with a curled roof, narrow houses, a round observatory tower under a brass dome with a telescope, a low wall with a gate       |
+| `chibi-direction-cult-city-3`    | `cult-city-3-v`, 1         | 86 x 83 px | a great hall under a big brass dome with a telescope, three towers with curled roofs, small houses, a ring wall, green-lit cellar doors    |
+| `chibi-cult-lumber-camp`         | `lumber-camp-a`, 0         | 60 x 61 px | two crooked willows with dull blue-green canopies, a green lantern, a stack of logs, an axe in a stump, an indigo lean-to                  |
+| `chibi-cult-sawmill`             | `sawmill-a`, 15            | 61 x 61 px | a cream shed under a curled indigo roof, a green window, the round steel blade in a bench, a grinning wooden idol                          |
+| `chibi-cult-forge`               | `forge-a`, 0               | 59 x 61 px | a cream smithy, a stone chimney with pale green smoke, an amber fire glow, an anvil, a brass bell in a frame                               |
+| `chibi-cult-workshop`            | `workshop-a`, 0            | 62 x 61 px | a two-storey cream house with a big brass cogwheel on its gable, green windows, a hand press and cream sheets on a line                    |
+| `chibi-cult-port`                | `port-a`, 0                | 62 x 62 px | a pier of pale planks, a cream hut under a curled indigo roof, a brass bollard, a rope coil, a post with a green lantern                   |
+| `chibi-cult-shipyard`            | `shipyard-a`, 0            | 62 x 61 px | a half-built gondola hull with a curled prow on trestles, a timber crane with a brass chain, a boathouse with a bent roof and an eye sign  |
+| `chibi-cult-market`              | `market-a`, 8              | 61 x 59 px | one long stall under an indigo and cream striped awning, a brass candlestick, green jars, a barrel, a teal tentacle tip behind the counter |
+| `chibi-cult-monument-explorer`   | `explorer-a`, 1            | 42 x 62 px | an obelisk with a brass compass rose, a brass telescope on a tripod, a candle with a green flame                                           |
+| `chibi-cult-monument-engineer`   | `engineer-a`, 15           | 36 x 65 px | a brass-banded pillar carrying a brass cogwheel laid flat, a fat candle with a green flame in it                                           |
+| `chibi-cult-monument-muster`     | `muster-a`, 12             | 30 x 68 px | a pillar with a round brass shield and an indigo kite shield under a brass bell in a wooden frame                                          |
+| `chibi-cult-monument-conqueror`  | `conqueror-a`, 10          | 37 x 63 px | a small stone arch with a brass wreath, a carved eye on its keystone and two green flames                                                  |
+| `chibi-cult-monument-land-baron` | `land-baron-a`, 12         | 44 x 59 px | a boundary stone with a carved shield, a brass crown with green stones, a crooked signpost, a candle                                       |
+| `chibi-cult-monument-sea-dog`    | `sea-dog-a`, 13            | 39 x 67 px | a fluted column with a brass anchor, a coil of rope and a brass ship's lantern glowing green                                               |
+| `chibi-cult-monument-slayer`     | `slayer-a`, 10             | 34 x 65 px | a broad brass blade in a block of stone, a brass wreath on its hilt, a candle with a green flame                                           |
+| `chibi-cult-monument`            | `obelisk-a`, 13            | 39 x 62 px | a plain pointed obelisk with one green glowing eye near its tip and three candles at its foot                                              |
+
+Every piece is `calm-feature` (`generate-image-v2`, the light stated, no
+faction layer, seated 3 px above the bottom edge) with the `cult-lodge`
+accent, has no owner colour and no mask, and has no pixel of the owner key
+red, of red, or of violet or magenta (`places.json`). Why each other
+candidate was passed over is in the records.
+
+### What the places changed
+
+- **The cities are `calm-feature`, not `calm-settlement`.** The two Pixen
+  samples of City 1 (`cult-city-1-a`, `cult-city-1-b`) drew a brick house
+  with plain gables on a stone slab, and a hall with dark timber frames and
+  straight spires 84 x 91 px. `generate-image-v2` in the class of the Cult
+  buildings draws the curled hood-tip roof on most candidates, so the class
+  now also makes a `SETTLEMENT` (the one pipeline change of the bead), and
+  the three cities are in the look of the seven buildings. At 80 x 80 the
+  generator returns sixteen candidates, at 88 x 88 and 96 x 88 four.
+- **A city fills its request.** The first City 2 sheet was 83 to 87 px wide
+  on the 88 px canvas, as wide as City 3; `cult-city-2-w` asks for "a small
+  town, two thirds of the image wide" and came back 75 to 80 px.
+- **Say which walls are lit.** The first accepted City 1 (`cult-city-1-v`,
+  candidate 4) had its left-facing walls in shade, as ten of its sixteen;
+  `cult-city-1-w` adds "Its left walls are pale, its right walls shaded" and
+  none of its sixteen is lit from the right (thirteen from the left, three
+  flat, by the light measure).
+- **The subject lines.** The cities' are `CITY:CULT:1/LIT`,
+  `CITY:CULT:2/SMALL` and `CITY:CULT:3/LODGE` (the direction's
+  `CITY:CULT:1/CALM` line above was not generated: it says "midnight
+  indigo"); the buildings' `IMPROVEMENT:CULT:<ID>`; the Monuments'
+  `IMPROVEMENT:MONUMENT:CULT[:<ACHIEVEMENT>]` in `SHARED.json`. Every line
+  asks for "bright royal blue" roofs, which `cult-lodge` turns into the
+  lodge's indigo (hue 236 to 250, value 0.49 and more). A description is at
+  most 2000 characters, which leaves a subject about 480.
+- **In the game.** `FACTION_IMPROVEMENT_LOOKS_V7.CULT` lists the seven, so a
+  building follows the owner of its territory as for every faction; a
+  Monument keeps its builder's look after a capture, and a viewer who may
+  not see the achievement sees the obelisk; the cities are
+  `CITY:CULT:<level>` with their own fitted ground shadow
+  (`npm run art:settlement-shadows-measure`). The Classic look and the LEGACY
+  art set draw the shared pieces. The faction stays hidden
+  (`HIDDEN_FACTION_IDS_V7`). No building is renamed.
+
+### Differences from the direction, accepted
+
+- **City 1** has no green lamp over its door; **City 2** has three or four
+  houses and no eye sign over its gate; the **walls** of City 2 and City 3
+  are a slate grey, darker than the pale idol stone.
+- The **Sawmill** has no log; its idol is whole, not half carved.
+- The **Forge**'s roof has no bent point.
+- The **Workshop** has timber bands on its upper floor and no stack of
+  pamphlets beside the press.
+- The **Port** has one brass bollard, not several.
+- The **Market** is one long stall, not two; it has no globe and no books.
+- The **Engineer**'s cogwheel lies flat; the **Muster** shows two shields,
+  not four; the **Slayer**'s blade is a broad brass sword more than a
+  cleaver, and the wreath hangs on its hilt; the **Land Baron**'s candle
+  flame is three amber pixels.
+
+### Weak spots of the places
+
+- **The willow canopies are in the summoned's teal band** (23% of the
+  Lumber Camp; a dull blue-green, `#5f9484` asked). It is the lantern wood
+  of this document's forest, which no bead has made yet; when the forest
+  exists the camp should be checked beside it.
+- **Roofs are large on City 1 and the Shipyard** (55% and 53% indigo). The
+  accent keeps the indigo no darker than value 0.49, so neither is a dark
+  blob, but they are the bluest pieces.
+- **The light measure misreads roofed pieces.** `scripts/art/lighting-qa.ts`
+  calls City 2, the Port, the Forge, the Sawmill and the Shipyard lit from
+  the right: an indigo roof over the left half of a pale house is darker
+  than the walls to its right. By eye on `places-x4.png` their left-facing
+  and front walls are the pale ones (the Dwarf and Undead City 2 measure
+  the same way). The bare stone Monuments all measure lit from the left.
+- **Reviewed on the default Grass only**, 43 to 54 (Monuments) and 58 to 77
+  (cities and buildings) from it; the heather moor of bead
+  `pulp_wars-mch9.22` is a lilac grey, close to the Monuments' stone.
+- **City 1 is 61 px wide**, the size of a building (the other factions'
+  City 1 is 66 to 68 px); its three roofs and the telescope carry it.
 
 ## Decisions
 

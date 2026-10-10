@@ -101,10 +101,11 @@ import { at, fieldV7 } from "../fixtures/v7-revision20";
 /**
  * The Cultists were registered before their art (`pulp_wars-mch9.3`; the art
  * beads are `pulp_wars-mch9.14` to `.16`). Since `pulp_wars-mch9.15` the
- * live look has the Cult's unit and ship sprites; every other Cult subject
- * (portraits, cities, Monuments), and every Cult subject in the looks without
- * its art, stands in with the shared Human art of the same role or level, in
- * the Cult's colour. A Cult unit drawn as a stand-in wears a lettered badge,
+ * live look has the Cult's unit and ship sprites, and since
+ * `pulp_wars-mch9.16` its City 1-3, its seven buildings and its Monuments;
+ * every other Cult subject (the portraits), and every Cult subject in the
+ * looks without its art, stands in with the shared Human art of the same
+ * role or level, in the Cult's colour. A Cult unit drawn as a stand-in wears a lettered badge,
  * and no player-facing faction list (setup, Gallery, title scene) offers the
  * faction. Nothing here crashes for want of a Cult raster, sound, or theme.
  */
@@ -260,12 +261,30 @@ describe("Cult art subjects stand in with the shared art", () => {
     }
   });
 
-  it("draws the shared buildings, ground, forest and Monuments' fallbacks", () => {
-    expect(FACTION_IMPROVEMENT_LOOKS_V7.CULT).toBeUndefined();
+  it("draws its own seven buildings under the shared names, the shared Farm, Windmill and Mine, and the shared ground and forest", () => {
+    // Bead pulp_wars-mch9.16 (CULT.md, Buildings): the looks every faction
+    // but the Humans has; the Farm, the Windmill and the Mine stay shared.
+    expect(FACTION_IMPROVEMENT_LOOKS_V7.CULT).toEqual([
+      "LUMBER_CAMP",
+      "SAWMILL",
+      "FORGE",
+      "WORKSHOP",
+      "PORT",
+      "SHIPYARD",
+      "MARKET",
+    ]);
     for (const improvement of IMPROVEMENT_IDS_V7) {
-      expect(factionImprovementSubjectV7(improvement, "CULT")).toBe(
-        factionImprovementSubjectV7(improvement, "ORIGINAL"),
+      const own =
+        FACTION_IMPROVEMENT_LOOKS_V7.CULT?.includes(improvement) ?? false;
+      expect(
+        factionImprovementSubjectV7(improvement, "CULT"),
+        improvement,
+      ).toBe(
+        own
+          ? `IMPROVEMENT:CULT:${improvement}`
+          : factionImprovementSubjectV7(improvement, "ORIGINAL"),
       );
+      // No building is renamed: there is no flavour line and no Help line.
       expect(factionBuildingV7(improvement, "CULT")).toBeNull();
     }
     expect(territoryGroundV7("CULT")).toBeNull();
@@ -317,9 +336,15 @@ describe("Cult art subjects stand in with the shared art", () => {
       const found = standIn(live, subject) ?? standIn(classic, subject);
       expect(found, subject).not.toBeNull();
       // Since the unit art (`pulp_wars-mch9.15`) a Cult unit and a Cult ship
-      // are their own raster in the live look; a portrait, a city, a
-      // Monument is still never the Cult's own subject (bead mch9.16).
-      if (subject.startsWith("UNIT:CULT:")) {
+      // are their own raster in the live look, and since `pulp_wars-mch9.16`
+      // a Cult city, building and Monument; a portrait is still never the
+      // Cult's own subject (bead mch9.23).
+      if (
+        subject.startsWith("UNIT:CULT:") ||
+        subject.startsWith("CITY:CULT:") ||
+        subject.startsWith("IMPROVEMENT:CULT:") ||
+        subject.startsWith("IMPROVEMENT:MONUMENT:CULT")
+      ) {
         expect(standIn(live, subject)?.steps, subject).toBe(0);
         expect(classic.variants(subject), subject).toEqual([]);
       } else
@@ -329,7 +354,7 @@ describe("Cult art subjects stand in with the shared art", () => {
     }
   });
 
-  it("registers the Cult's units, summoned units, ships and frog in the live look only (pulp_wars-mch9.15)", () => {
+  it("registers the Cult's units, summoned units, ships, frog, cities, buildings and Monuments in the live look only (pulp_wars-mch9.15, pulp_wars-mch9.16)", () => {
     const cult = (assets: readonly ChibiArtAssetV7[]): string[] =>
       assets
         .filter(
@@ -356,15 +381,30 @@ describe("Cult art subjects stand in with the shared art", () => {
       cultSummonedArtSubjectV7("HORROR", true),
       cultSummonedArtSubjectV7("HERALD", true),
       "FROG",
+      // Bead pulp_wars-mch9.16: the lodge town, the seven buildings, the
+      // seven Monuments and the obelisk.
+      ...([1, 2, 3] as const).map((artLevel) =>
+        cityArtSubjectV7({ artLevel, faction: "CULT" }),
+      ),
+      ...(FACTION_IMPROVEMENT_LOOKS_V7.CULT ?? []).map((improvement) =>
+        factionImprovementSubjectV7(improvement, "CULT"),
+      ),
+      ...ACHIEVEMENT_IDS_V7.map((achievement) =>
+        monumentArtSubjectV7(achievement, "CULT"),
+      ),
+      monumentArtSubjectV7(null, "CULT"),
     ];
     expect(cult(chibiDirectionArtAssetsV7())).toEqual([...expected].sort());
     for (const subject of expected) {
       const [asset, ...more] = live.variants(subject);
       expect(more, subject).toEqual([]);
       expect(asset?.ownerMaskUrl, subject).toBeUndefined();
-      // The frog is a marker; every unit and ship wears fixed colours.
+      // The frog is a marker and a building has no owner to show; every
+      // unit, ship and city wears fixed colours.
       expect(asset?.fixedColours, subject).toBe(
-        subject === "FROG" ? undefined : true,
+        subject === "FROG" || subject.startsWith("IMPROVEMENT:")
+          ? undefined
+          : true,
       );
     }
     expect(
@@ -445,7 +485,8 @@ describe("a Cult match on the board", () => {
     const human = unitEntry(scene, at(5, 3));
     expect(human.faction).toBeUndefined();
     expect(human.artSubject).toBe("UNIT:FIGHTER");
-    // The Cult's capital asks for the Cult city and gets the shared one.
+    // The Cult's capital asks for the Cult city (its own raster in the live
+    // look since pulp_wars-mch9.16, the shared one elsewhere).
     const capital = scene.plan.entries.find(
       (entry) =>
         entry.kind === "CITY" && entry.ownerId === scene.view.viewer.id,

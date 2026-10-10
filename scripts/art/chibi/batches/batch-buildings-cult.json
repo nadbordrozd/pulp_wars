@@ -1,0 +1,173 @@
+{
+  "schemaVersion": 1,
+  "batch": "buildings-cult",
+  "title": "Cult building looks: the Lumber Camp, the Sawmill, the Forge, the Workshop, the Port, the Shipyard and the Market",
+  "bead": "pulp_wars-mch9.16",
+  "faction": "CULT",
+  "dryRun": false,
+  "assets": [
+    {
+      "id": "chibi-cult-lumber-camp",
+      "subject": "IMPROVEMENT:CULT:LUMBER_CAMP",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      },
+      "ownerColour": false,
+      "accent": "cult-lodge"
+    },
+    {
+      "id": "chibi-cult-sawmill",
+      "subject": "IMPROVEMENT:CULT:SAWMILL",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      },
+      "ownerColour": false,
+      "accent": "cult-lodge"
+    },
+    {
+      "id": "chibi-cult-forge",
+      "subject": "IMPROVEMENT:CULT:FORGE",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      },
+      "ownerColour": false,
+      "accent": "cult-lodge"
+    },
+    {
+      "id": "chibi-cult-workshop",
+      "subject": "IMPROVEMENT:CULT:WORKSHOP",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      },
+      "ownerColour": false,
+      "accent": "cult-lodge"
+    },
+    {
+      "id": "chibi-cult-port",
+      "subject": "IMPROVEMENT:CULT:PORT",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      },
+      "ownerColour": false,
+      "accent": "cult-lodge"
+    },
+    {
+      "id": "chibi-cult-shipyard",
+      "subject": "IMPROVEMENT:CULT:SHIPYARD",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      },
+      "ownerColour": false,
+      "accent": "cult-lodge"
+    },
+    {
+      "id": "chibi-cult-market",
+      "subject": "IMPROVEMENT:CULT:MARKET",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-feature",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      },
+      "ownerColour": false,
+      "accent": "cult-lodge"
+    }
+  ],
+  "recipes": [
+    {
+      "id": "lumber-camp-a",
+      "asset": "chibi-cult-lumber-camp",
+      "endpoint": "generate-image-v2",
+      "seed": 93101,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-mch9.16 (Cultists ART4, docs/art/factions/CULT.md, Buildings): the Cult lumber camp, class calm-feature at the 72 x 72 canvas of the shared building, as the other factions' (FACTION_BUILDINGS.md, sections 12 to 14). The roof is asked for as bright royal blue, which the cult-lodge accent turns into the lodge's indigo."
+    },
+    {
+      "id": "sawmill-a",
+      "asset": "chibi-cult-sawmill",
+      "endpoint": "generate-image-v2",
+      "seed": 93102,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-mch9.16 (Cultists ART4, docs/art/factions/CULT.md, Buildings): the Cult sawmill, class calm-feature at the 72 x 72 canvas of the shared building, as the other factions' (FACTION_BUILDINGS.md, sections 12 to 14). The roof is asked for as bright royal blue, which the cult-lodge accent turns into the lodge's indigo."
+    },
+    {
+      "id": "forge-a",
+      "asset": "chibi-cult-forge",
+      "endpoint": "generate-image-v2",
+      "seed": 93103,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-mch9.16 (Cultists ART4, docs/art/factions/CULT.md, Buildings): the Cult forge, class calm-feature at the 72 x 72 canvas of the shared building, as the other factions' (FACTION_BUILDINGS.md, sections 12 to 14). The roof is asked for as bright royal blue, which the cult-lodge accent turns into the lodge's indigo."
+    },
+    {
+      "id": "workshop-a",
+      "asset": "chibi-cult-workshop",
+      "endpoint": "generate-image-v2",
+      "seed": 93104,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-mch9.16 (Cultists ART4, docs/art/factions/CULT.md, Buildings): the Cult workshop, class calm-feature at the 72 x 72 canvas of the shared building, as the other factions' (FACTION_BUILDINGS.md, sections 12 to 14). The roof is asked for as bright royal blue, which the cult-lodge accent turns into the lodge's indigo."
+    },
+    {
+      "id": "port-a",
+      "asset": "chibi-cult-port",
+      "endpoint": "generate-image-v2",
+      "seed": 93105,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-mch9.16 (Cultists ART4, docs/art/factions/CULT.md, Buildings): the Cult port, class calm-feature at the 72 x 72 canvas of the shared building, as the other factions' (FACTION_BUILDINGS.md, sections 12 to 14). The roof is asked for as bright royal blue, which the cult-lodge accent turns into the lodge's indigo."
+    },
+    {
+      "id": "shipyard-a",
+      "asset": "chibi-cult-shipyard",
+      "endpoint": "generate-image-v2",
+      "seed": 93106,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-mch9.16 (Cultists ART4, docs/art/factions/CULT.md, Buildings): the Cult shipyard, class calm-feature at the 72 x 72 canvas of the shared building, as the other factions' (FACTION_BUILDINGS.md, sections 12 to 14). The roof is asked for as bright royal blue, which the cult-lodge accent turns into the lodge's indigo."
+    },
+    {
+      "id": "market-a",
+      "asset": "chibi-cult-market",
+      "endpoint": "generate-image-v2",
+      "seed": 93107,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "notes": "Bead pulp_wars-mch9.16 (Cultists ART4, docs/art/factions/CULT.md, Buildings): the Cult market, class calm-feature at the 72 x 72 canvas of the shared building, as the other factions' (FACTION_BUILDINGS.md, sections 12 to 14). The roof is asked for as bright royal blue, which the cult-lodge accent turns into the lodge's indigo."
+    }
+  ]
+}

@@ -52,10 +52,12 @@ const BATCHES = {
   // and a Sawmill of its own, so the Goblins and the Candy have a batch too.
   GOBLIN: "buildings-goblin",
   CANDY: "buildings-candy",
+  // Bead pulp_wars-mch9.16: the Cult's seven (docs/art/factions/CULT.md).
+  CULT: "buildings-cult",
 } as const;
 
 describe("faction building batches", () => {
-  it("registers exactly the accepted masters of the seven batches", async () => {
+  it("registers exactly the accepted masters of the eight batches", async () => {
     const byId = new Map(
       CHIBI_FACTION_BUILDING_ART_ASSETS_V7.map((entry) => [entry.id, entry]),
     );
