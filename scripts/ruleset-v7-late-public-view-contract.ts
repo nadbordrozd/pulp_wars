@@ -109,6 +109,14 @@ export const RULESET7_LATE_PUBLIC_VIEW_COMMAND_INDEX = 150;
  * the Guard); neither offer was a candidate. The digests of that surface
  * are pinned in `tests/unit/ruleset-v7-public-query-performance.test.ts`
  * and the three tests beside it.
+ *
+ * The exploration plan (`pulp_wars-nc6`): `policyDecisionHash` was
+ * 425276…bae5. The command and the candidate count are unchanged. The
+ * seat's one scout was unit 20, which stands inside the reach of a visible
+ * enemy; a unit in a fight scouts last now, so unit 31 scouts (a frontier
+ * tile at (9, 3), by a route outside every enemy's reach) and unit 20
+ * marches on city 1. Unit 31's three Moves keep their endgame priority and
+ * make no progress toward its new job (objective value 0, was 1).
  */
 export const RULESET7_LATE_PUBLIC_VIEW_NORMAL_DECISION = Object.freeze({
   /** `canonicalHash` of the retained fixture as read from disk. */
@@ -155,7 +163,9 @@ export const RULESET7_LATE_PUBLIC_VIEW_NORMAL_DECISION = Object.freeze({
     // after STAMPEDE and OFFERING after LAY_EGG, moving the later command
     // kinds forward (was 9cad87…0bcc); the revision-12-ordinal value is
     // unchanged.
-    "425276475bdc37c06b1be5e3885dce9a800516888b8a5ac0567e3989e7b6bae5",
+    // The exploration plan (`pulp_wars-nc6`): see the comment above (was
+    // 425276…bae5).
+    "2b64e38bdff8f52b96a59a03acdae0cb14fafb7bb84846f3ebdeafbef83c7b6e",
   command: Object.freeze({
     kind: "TRAIN",
     cityId: 16,

@@ -1,5 +1,159 @@
 # Greedy Normal AI
 
+## The exploration plan (`pulp_wars-nc6`)
+
+The [campaign plan](#campaign-expansion-exploration-and-standing-pressure-pulp_wars-9s01)
+sent a scout to the nearest explored land tile next to an unexplored one
+and kept one scout once an enemy city was known (two while the seat had
+fewer than three cities). In hand-played games AI seats stopped exploring
+once they met an enemy: seats with three cities had unexplored land beside
+them, and a scout turned back whenever an enemy came in sight, because its
+nearest frontier lay behind that enemy. This bead gives the army seats
+(every offered faction) an exploration plan. No rule changed and the
+identity did not move. The code is `src/ai/v7-exploration.ts` (the plan,
+pure functions of the seat's view), the `sendScouts` step of
+`src/ai/v7-campaign.ts` (which asks it), and `explorationHoldsMoveV7` in
+`src/ai/v7.ts` (the Move rule). A seat that does not play the army rules
+plans as before.
+
+**How it was made.** Under the rule of no simulations: no match and no
+head-to-head run (the bead asked for a few dozen games of the new plan
+against the old one; they were not played). Each rule is shown on a small
+hand-built state with fog in `tests/unit/ruleset-v7-exploration-ai.test.ts`.
+Nothing is tuned by play; read the numbers as first values.
+
+### Which frontier
+
+A frontier tile is an explored tile the scout can stand on with an
+unexplored tile next to it. A scout takes the tile with the highest value:
+
+| Term                                                                                                | Value                                |
+| --------------------------------------------------------------------------------------------------- | ------------------------------------ |
+| Every unexplored tile inside the scout's Sight from the tile                                        | 2 (`EXPLORATION_REVEAL_WEIGHT_V7`)   |
+| Every unexplored tile within three tiles of it (`EXPLORATION_POCKET_RADIUS_V7`): the land behind it | 1                                    |
+| The tile is within four tiles of an own city center (`CAMPAIGN_HOME_FRONTIER_RADIUS_V7`)            | 6 (`EXPLORATION_HOME_VALUE_V7`)      |
+| Every turn the scout needs to get there                                                             | minus 6 (`EXPLORATION_TURN_COST_V7`) |
+
+Ties go to the shorter way, then to the lower tile index. A single
+unexplored tile in a corner is worth less than a dark side of the map three
+turns farther away, and the land beside an own city comes first among equal
+stretches. The tiers of the campaign plan stay in front of the value: the
+frontier within four tiles of an own center while the seat is in its first
+ten rounds or has fewer than three cities, then the frontier within three
+tiles of enemy territory whose city has not been seen (or, while no enemy
+city is known, of a visible enemy unit), then any frontier.
+
+The scout's own Sight and movement are used:
+
+- **Sight** is the unit's Sight with its owner's technologies (a Raider,
+  Wolf Rider, or Ghoul sees two tiles), one more from a Mountain when the
+  seat has Engineering.
+- **Terrain.** A unit on foot crosses Grass and Forest, and Mountains with
+  Engineering. A walker (the Tripod) and a Mountain-born unit (the Yeti)
+  cross every Mountain. A flyer crosses Mountains and Rifts. No route ends
+  on water.
+- **Turns** are the steps of the way divided by the unit's Move, a step
+  from Snow onto Snow counting half for a unit that Glides. Roads and the
+  stops at Forests and Mountains are not counted.
+
+### Safe routes
+
+A tile is inside an enemy's reach when a visible hostile unit with an
+attack stands within its Move plus its range of it, as the crow flies (a
+ship or an embarked unit: its range). That is never less than the unit's
+real reach.
+
+- No such tile is a goal, and the route to a goal crosses none (the tile
+  the scout stands on excepted). The job is marked `safe`.
+- A scout with no safe goal gets no exploration job once an enemy city is
+  known: it marches with the army. While no enemy city is known it takes
+  the nearest frontier whatever stands near it, as before (the first scout
+  still goes).
+- **The Move rule.** A scout's routine Move (exploring, approaching, or
+  regrouping; a capture, a kill, a village, and a retreat have higher
+  priorities and are not touched) does not end on a tile where the visible
+  enemies can hit it harder than where it stands, unless an own fighting
+  land unit stands within three tiles of that tile (`ARMY_ALONE_RADIUS_V7`:
+  it is not alone there, so the group that follows the first scout still
+  meets the enemy together).
+- A scout on a safe route that stands outside every reach is not called
+  back by the "alone among enemies" rule (priority 705) any more: it goes
+  on around the enemy. One that stands inside a reach still goes back.
+
+### How many scouts
+
+Once an enemy city is known the seat keeps the larger of what the campaign
+plan gave it (one; two or three while it has fewer than three cities or
+plays its first ten rounds with unexplored land at home) and the smallest
+of:
+
+- the stretches of frontier it can explore: ground frontier tiles outside
+  every enemy's reach that an own unit or center can walk to, with at
+  least three unexplored tiles within three tiles
+  (`EXPLORATION_STRETCH_TILES_V7`), no two of them nearer than four tiles;
+- three while half of the map is unexplored
+  (`EXPLORATION_SHARE_THREE_SCOUTS_V7`), two while a fifth is
+  (`EXPLORATION_SHARE_TWO_SCOUTS_V7`), one below that;
+- one for every three free capturers, at least one
+  (`EXPLORATION_CAPTURERS_PER_SCOUT_V7`).
+
+Before an enemy city is known the same number replaces the two scouts of
+the campaign plan when it is larger. A seat whose naval plan sails, or that
+owns Shorecraft, keeps the numbers it had (its free units are for the
+Port).
+
+Each scout takes its own stretch, at least four tiles from the others
+(`CAMPAIGN_EXPLORER_SPACING_V7`). The fastest capturer scouts, then the
+oldest; once an enemy city is known, a unit that stands inside an enemy's
+reach is in a fight and scouts last. A Gyrocopter scouts too (the policy
+plans no capture with a flyer, so it was never a scout); it never leads the
+group that follows the first scout, because that group walks. Before an
+enemy city is known a unit follows the first scout that moves as it does (a
+Yeti follows the first Yeti over the Mountains, a unit on foot the first
+scout on foot), or the other one as far as that scout's route goes.
+
+### Villages
+
+Every explored free village still gets the nearest capturer. New: a village
+that no other capturer can walk to goes to the scout that can. (The first
+scout is chosen before the villages are handed out, so a seat with one unit
+explored past the village it had just revealed.)
+
+### When it stops
+
+- Nothing unexplored can be reached safely: no scout has a goal.
+- **The bodies are needed at home** (`explorationHomeDangerV7`): at some own
+  center the hostile land units within three tiles weigh at least as much
+  as the own land units within three tiles (by the army rules' unit
+  strength; a seat that takes villages first counts only the enemies on
+  its own land). No scout is sent then, except the first scout while no
+  enemy city is known, and a seat that still expands does not spread its
+  capturers over the frontier.
+
+### What it does not do
+
+It does not explore by sea, does not train a unit for scouting, and does
+not count Roads or the stops at Forests and Mountains in a scout's turns.
+A Saucer and a Mothership do not scout (the Martian seat's own rules place
+them). The reach of an enemy is measured without terrain, so a scout keeps
+farther from an enemy behind a lake than it must.
+
+### Information
+
+The plan reads the viewer's explored tiles, the units on them, and the
+viewer's own technologies. An unexplored tile is counted and never read:
+the view carries no terrain, site, or unit for it. "Plans the same whatever
+the unexplored tiles hide" in the tests compares the jobs and the Moves of
+two states that differ only on unexplored tiles (a village, Mountains, and
+a hostile army). Nothing draws from the PRNG or depends on elapsed time.
+
+### Cost
+
+One pass over the board for the survey, one breadth-first search for the
+stretches, and for each scout two searches from its tile and one from its
+goal at most: the searches the campaign plan made for a scout before, plus
+one.
+
 ## The giants' signatures (`pulp_wars-w49.31`)
 
 Every faction's giant has a signature ability since `pulp_wars-w49.30`
@@ -2211,17 +2365,17 @@ useful unit as before.
 
 ### Discipline
 
-| Rule                                                                                                                                                                                                                                            | Where                                           |
-| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------- |
-| An attack on an enemy unit standing on an own center is made whatever the exchange (not one that kills the attacker without a kill).                                                                                                            | priority 1345, exempt from the low-value filter |
-| The unit on an own center does not make an attack that does not kill while it can still step aside for its city to train: it steps aside, the city trains, and it attacks from the new tile if it can.                                          | `armyGarrisonHoldsV7`                           |
-| A city does not train onto a center that two or more hostile ranged or siege units can hit next turn while another city can train, unless a hostile capturer can walk onto that center next turn.                                               | `armyTrainsElsewhereV7`                         |
-| A Move that ends next to own units, on a tile a hostile unit whose attack splashes (a Bomb Chucker, a Lich) can hit or next to one, costs 6 strategic value per neighbour, so another tile of the same priority is taken.                       | `armySplashSpacingV7`                           |
-| A Guard open to ranged attacks (the Human Guard) makes no routine Move, and no step aside, into the open inside the reach of a hostile ranged or siege unit; a center, a Field Defense, a Mountain, or a Forest that covers it is not the open. | `armyGuardExposedV7`                            |
-| A unit near (within 4 tiles of) an own center with an enemy within 3 tiles of it does not walk away from that center, and a Move that brings it nearer is taken.                                                                                | priority 725                                    |
-| A fighting unit outside the own territory with a hostile unit within 5 tiles and no own fighting unit within 3 goes back toward the nearest own unit when it has nothing to attack (also the scout).                                            | priority 705                                    |
-| With Raiding, a unit moves onto a hostile improvement to Pillage it in the same turn.                                                                                                                                                           | priority 955                                    |
-| A Kaboom is used only for a kill or on two or more enemies.                                                                                                                                                                                     | `kaboomScoreV7`                                 |
+| Rule                                                                                                                                                                                                                                                                                    | Where                                           |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------- |
+| An attack on an enemy unit standing on an own center is made whatever the exchange (not one that kills the attacker without a kill).                                                                                                                                                    | priority 1345, exempt from the low-value filter |
+| The unit on an own center does not make an attack that does not kill while it can still step aside for its city to train: it steps aside, the city trains, and it attacks from the new tile if it can.                                                                                  | `armyGarrisonHoldsV7`                           |
+| A city does not train onto a center that two or more hostile ranged or siege units can hit next turn while another city can train, unless a hostile capturer can walk onto that center next turn.                                                                                       | `armyTrainsElsewhereV7`                         |
+| A Move that ends next to own units, on a tile a hostile unit whose attack splashes (a Bomb Chucker, a Lich) can hit or next to one, costs 6 strategic value per neighbour, so another tile of the same priority is taken.                                                               | `armySplashSpacingV7`                           |
+| A Guard open to ranged attacks (the Human Guard) makes no routine Move, and no step aside, into the open inside the reach of a hostile ranged or siege unit; a center, a Field Defense, a Mountain, or a Forest that covers it is not the open.                                         | `armyGuardExposedV7`                            |
+| A unit near (within 4 tiles of) an own center with an enemy within 3 tiles of it does not walk away from that center, and a Move that brings it nearer is taken.                                                                                                                        | priority 725                                    |
+| A fighting unit outside the own territory with a hostile unit within 5 tiles and no own fighting unit within 3 goes back toward the nearest own unit when it has nothing to attack (also the scout; since `pulp_wars-nc6` not a scout on a safe route that stands outside every reach). | priority 705                                    |
+| With Raiding, a unit moves onto a hostile improvement to Pillage it in the same turn.                                                                                                                                                                                                   | priority 955                                    |
+| A Kaboom is used only for a kill or on two or more enemies.                                                                                                                                                                                                                             | `kaboomScoreV7`                                 |
 
 ### Cost
 
@@ -2996,7 +3150,9 @@ takes the first job that applies:
    frontier at least four tiles from the first, and the other capturers
    follow the first scout, so what it finds meets a group. After contact
    one scout keeps exploring. A scout is the fastest capturer, then the
-   oldest.
+   oldest. (An army seat chooses the frontier, the number of scouts, and
+   the moment to stop by
+   [the exploration plan](#the-exploration-plan-pulp_wars-nc6).)
 5. **Pressure.** Every other unit marches on its nearest known enemy city by
    route (City Walls count as two extra steps). With several hostile seats
    in reach, each seat gets at least a pair of units, as far as the army

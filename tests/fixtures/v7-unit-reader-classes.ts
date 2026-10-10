@@ -119,6 +119,9 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/ai/v7-naval.ts::navalRamHoldsAttackV7": "BOARD",
     "src/ai/v7-naval.ts::navalRamShoveValueV7": "BOARD",
     "src/ai/v7-naval.ts::navalSubmarineMoveRejectedV7": "BOARD",
+    // The exploration plan (`pulp_wars-nc6`): the reach of the hostile units
+    // on the board (a burrowed unit threatens nobody).
+    "src/ai/v7-exploration.ts::explorationSurveyV7": "BOARD",
     "src/ai/v7-endgame.ts::endgamePlanForPolicyV7": "BOARD",
     "src/ai/v7-endgame.ts::routeDistances": "BOARD",
     "src/ai/v7-goblin.ts::explosionChainValueV7": "BOARD",
@@ -217,6 +220,8 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     // position, the own units near a lone unit, and the friend it walks back
     // to are what stands on the board in the public view.
     "src/ai/v7.ts::armyAssaultV7": "BOARD",
+    // The exploration plan (`pulp_wars-nc6`): the company a scout has.
+    "src/ai/v7.ts::explorationHoldsMoveV7": "BOARD",
     "src/ai/v7.ts::armyAloneV7": "BOARD",
     "src/ai/v7.ts::armyNearestFriendV7": "BOARD",
     "src/ai/v7.ts::iceFolkAttackAdjustmentV7": "BOARD",

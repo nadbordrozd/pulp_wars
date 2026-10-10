@@ -17,6 +17,15 @@ import type {
   PublicCityV7,
   PublicUnitV7,
 } from "../engine/v7/view";
+import {
+  explorationGoalV7,
+  explorationHomeDangerV7,
+  explorationProfileV7,
+  explorationScoutsWantedV7,
+  explorationStretchesV7,
+  explorationSurveyV7,
+  type ExplorationTerrainV7,
+} from "./v7-exploration";
 
 /**
  * The units the Normal AI plans captures with. Any unit can capture since
@@ -105,6 +114,13 @@ export function policyRoleCapturesV7(
  * A mission directive (`pulp_wars-68k.3`, `src/ai/v7-directives.ts`)
  * adjusts the jobs through `CampaignFactsV7.directive` and adds the
  * `RETURN` job; without one the plan is exactly as described above.
+ *
+ * The exploration plan (`pulp_wars-nc6`, `src/ai/v7-exploration.ts`): an
+ * army seat's scouts choose their frontier by what it reveals and by a
+ * route outside every visible enemy's reach, their number follows the
+ * unexplored share of the map, a scout takes a village nobody else can
+ * walk to, and exploration stops when nothing can be reached safely or the
+ * seat needs its bodies at home. Summarized at `sendScouts` below.
  */
 
 /** A visible hostile land unit this close to an own center is an invader. */
@@ -176,6 +192,12 @@ export interface CampaignAssignmentV7 {
    * city no unit defends.
    */
   readonly raid?: boolean;
+  /**
+   * `pulp_wars-nc6`: an `EXPLORE` job whose frontier tile and route lie
+   * outside the reach of every visible enemy. Absent on a scout that goes
+   * to the nearest frontier whatever stands near it.
+   */
+  readonly safe?: boolean;
 }
 
 export interface CampaignTargetV7 {
@@ -280,6 +302,12 @@ export interface CampaignArmyFactsV7 {
    * Shorecraft. Its scouting is not changed by the rule for the opening.
    */
   readonly naval?: boolean;
+  /**
+   * `pulp_wars-nc6`: a unit that scouts although the policy does not plan
+   * captures with it (a cheap flyer: the Gyrocopter). It never leads the
+   * group that follows the first scout.
+   */
+  readonly scouts?: (unit: PublicUnitV7) => boolean;
 }
 
 /** A raider is a capturer with at least this much Move. */
@@ -558,28 +586,139 @@ export function campaignPlanForPolicyV7(
       })
     : [];
   const frontierSteps = frontier.length > 0 ? search(frontier) : null;
+  // `pulp_wars-nc6`: an army seat's scouts plan with the exploration survey
+  // (`src/ai/v7-exploration.ts`); every other seat keeps the nearest
+  // frontier.
+  const survey =
+    facts.army === undefined
+      ? null
+      : explorationSurveyV7(view, {
+          isHostile: facts.isHostile,
+          isAllied: facts.isAllied,
+          confine,
+        });
+  const extraScout = (unit: PublicUnitV7): boolean =>
+    survey !== null && facts.army?.scouts?.(unit) === true;
   // Scouts can capture, so they take the villages they find; siege and
   // support units wait for a target instead. The fastest unit scouts, then
   // the oldest: the choice does not depend on where the units stand, so the
-  // scout stays the scout.
+  // scout stays the scout. (`pulp_wars-nc6`: once an enemy city is known, a
+  // unit that stands inside a visible enemy's reach is in a fight, and
+  // scouts last.)
+  const inReach = (unit: PublicUnitV7): number =>
+    survey !== null && targets.length > 0
+      ? (survey.threat[indexOf(unit.at)] as number)
+      : 0;
+  // A unit that walks needs a way to the frontier; one that crosses
+  // Mountains or flies has its own frontier (`pulp_wars-nc6`).
+  const terrainByUnitId = new Map<UnitId, ExplorationTerrainV7>();
+  const terrainOf = (unit: PublicUnitV7): ExplorationTerrainV7 => {
+    let terrain = terrainByUnitId.get(unit.id);
+    if (terrain === undefined) {
+      terrain = explorationProfileV7(view, unit).terrain;
+      terrainByUnitId.set(unit.id, terrain);
+    }
+    return terrain;
+  };
+  const hasFrontier = (unit: PublicUnitV7): boolean => {
+    const terrain = survey === null ? "GROUND" : terrainOf(unit);
+    return terrain === "GROUND" || survey === null
+      ? frontierSteps !== null &&
+          (frontierSteps[indexOf(unit.at)] as number) >= 0
+      : survey.frontier(terrain).length > 0;
+  };
   const scoutCandidates = (): PublicUnitV7[] =>
-    frontierSteps === null
-      ? []
-      : unassigned()
-          .filter(
-            (unit) =>
-              captures(unit) &&
-              (frontierSteps[indexOf(unit.at)] as number) >= 0,
-          )
-          .sort(
-            (left, right) =>
-              unitRoleRuleV7(view, right).move -
-                unitRoleRuleV7(view, left).move || left.id - right.id,
-          );
+    unassigned()
+      .filter(
+        (unit) => (extraScout(unit) || captures(unit)) && hasFrontier(unit),
+      )
+      .sort(
+        (left, right) =>
+          inReach(left) - inReach(right) ||
+          unitRoleRuleV7(view, right).move - unitRoleRuleV7(view, left).move ||
+          left.id - right.id,
+      );
   const taken = new Uint8Array(size);
   let main: CampaignAssignmentV7 | null = null;
-  /** Gives the next `count` scouts their own stretch of frontier. */
+  // `pulp_wars-nc6`: the first scout that crosses Mountains (a walker or a
+  // Mountain-born unit): the units that cross them too follow it, the
+  // others follow the first scout on foot (`main`).
+  let mountainMain: CampaignAssignmentV7 | null = null;
+  let scouted = false;
+  const nearCenter = (index: number, radius: number): boolean => {
+    const at = coordOf(index);
+    return ownCenters.some((center) => chebyshev(center, at) <= radius);
+  };
+  const nearLead = (index: number): boolean => {
+    const at = coordOf(index);
+    return leads.some((lead) => chebyshev(lead, at) <= CAMPAIGN_LEAD_RADIUS_V7);
+  };
+  /**
+   * Gives the next `count` scouts their own stretch of frontier.
+   *
+   * An army seat (`pulp_wars-nc6`): each scout takes the frontier tile the
+   * exploration plan values most for it (what it reveals with the scout's
+   * Sight, the unexplored land behind it, an own city beside it, less the
+   * turns of the way with the scout's own movement), by a route outside
+   * every visible enemy's reach; the tiers are as before (the frontier at
+   * home, then toward an enemy whose city is unseen, then any). A scout
+   * with no safe frontier takes the nearest one while no enemy city is
+   * known (the first scout still goes), and gets no exploration job once
+   * one is.
+   */
   function sendScouts(count: number): void {
+    if (survey !== null) {
+      let sent = 0;
+      for (const unit of scoutCandidates()) {
+        if (sent >= count) break;
+        const tiers = [
+          ...(early
+            ? [
+                (index: number): boolean =>
+                  nearCenter(index, CAMPAIGN_HOME_FRONTIER_RADIUS_V7),
+              ]
+            : []),
+          nearLead,
+        ];
+        const home = (index: number): boolean =>
+          nearCenter(index, CAMPAIGN_HOME_FRONTIER_RADIUS_V7);
+        const allowUnsafe = targets.length === 0;
+        let goal = explorationGoalV7(view, survey, unit, {
+          taken,
+          tiers,
+          home,
+          allowUnsafe,
+        });
+        if (goal === null) {
+          // Every reachable stretch is taken: share the best one.
+          goal = explorationGoalV7(view, survey, unit, {
+            taken: new Uint8Array(size),
+            tiers: [nearLead],
+            home,
+            allowUnsafe,
+          });
+        }
+        if (goal === null) continue;
+        const terrain = terrainOf(unit);
+        for (const index of survey.frontier(terrain))
+          if (chebyshev(coordOf(index), goal.at) < CAMPAIGN_EXPLORER_SPACING_V7)
+            taken[index] = 1;
+        const assignment: CampaignAssignmentV7 = {
+          job: "EXPLORE",
+          at: goal.at,
+          field: new RouteFieldV7(width, height, goal.steps),
+          targetCityId: null,
+          ...(goal.safe ? { safe: true } : {}),
+        };
+        // The group follows a scout that moves as it does: never a flyer.
+        if (terrain === "GROUND") main ??= assignment;
+        else if (terrain === "MOUNTAIN") mountainMain ??= assignment;
+        scouted = true;
+        assignmentByUnitId.set(unit.id, assignment);
+        sent += 1;
+      }
+      return;
+    }
     for (const unit of scoutCandidates().slice(0, count)) {
       const fromUnit = search([indexOf(unit.at)]);
       const nearest = (candidates: readonly number[]): number | null => {
@@ -612,6 +751,7 @@ export function campaignPlanForPolicyV7(
         targetCityId: null,
       };
       main ??= assignment;
+      scouted = true;
       assignmentByUnitId.set(unit.id, assignment);
     }
   }
@@ -713,6 +853,35 @@ export function campaignPlanForPolicyV7(
       targetCityId: null,
     });
   }
+  // `pulp_wars-nc6`: a free village no other capturer can walk to goes to
+  // the scout that can (the first scout is chosen before the errands, and a
+  // seat with one unit explored past the village it had just revealed).
+  if (survey !== null)
+    errands.forEach((errand, order) => {
+      if (errand.job !== "VILLAGE" || takenErrands.has(order)) return;
+      let scout: PublicUnitV7 | null = null;
+      let scoutSteps = Number.POSITIVE_INFINITY;
+      for (const unit of free) {
+        if (
+          assignmentByUnitId.get(unit.id)?.job !== "EXPLORE" ||
+          !captures(unit)
+        )
+          continue;
+        const steps = errand.field.get(unit.at);
+        if (steps !== undefined && steps < scoutSteps) {
+          scout = unit;
+          scoutSteps = steps;
+        }
+      }
+      if (scout === null) return;
+      takenErrands.add(order);
+      assignmentByUnitId.set(scout.id, {
+        job: "VILLAGE",
+        at: coordOf(errand.index),
+        field: errand.field,
+        targetCityId: null,
+      });
+    });
 
   // Defence: engage the hostile land units next to an own city: all
   // hands while no enemy city is known, one unit each once there is a city
@@ -788,35 +957,96 @@ export function campaignPlanForPolicyV7(
   }
 
   // Exploration: the second scout before contact, the only one after.
-  if (!rush)
+  // `pulp_wars-nc6`: an army seat keeps as many scouts as the exploration
+  // plan asks for when that is more (by the unexplored share of the map,
+  // the stretches of frontier it can reach, and its free capturers), and
+  // sends none past the first while the enemy at an own center outweighs
+  // the units there. Not a seat whose naval plan sails or that owns
+  // Shorecraft: its free units are for the Port.
+  let scoutsWanted = 0;
+  let homeDanger = false;
+  if (survey !== null && facts.army !== undefined) {
+    const armyFacts6 = facts.army;
+    if (armyFacts6.naval !== true && facts.seaTarget === null) {
+      const reach = search([
+        ...ownCenters.map(indexOf),
+        ...free.map((unit) => indexOf(unit.at)),
+      ]);
+      scoutsWanted = explorationScoutsWantedV7(
+        survey,
+        explorationStretchesV7(
+          survey,
+          (index) => (reach[index] as number) >= 0,
+          CAMPAIGN_EXPLORER_SPACING_V7,
+        ),
+        free.filter((unit) => captures(unit)).length,
+      );
+    }
+    homeDanger = explorationHomeDangerV7({
+      ownCenters,
+      // The Undead pass, correction (villages first): a hostile unit
+      // outside the seat's own land is no danger at home either.
+      hostiles: hostileLand.filter(
+        (unit) => armyFacts6.villagesFirst !== true || ownLand(unit.at),
+      ),
+      own: view.units.filter(
+        (unit) =>
+          unit.ownerId === view.viewer.id &&
+          unit.hp > 0 &&
+          unit.form === "LAND",
+      ),
+      strength: armyFacts6.strength,
+    });
+  }
+  if (!rush && !homeDanger)
     sendScouts(
       targets.length === 0
-        ? CAMPAIGN_SCOUTS_BEFORE_CONTACT_V7 - 1
-        : facts.army?.expanding === true && facts.seaTarget === null
-          ? Math.max(
-              CAMPAIGN_SCOUTS_EXPANDING_V7,
-              // One scout for every stretch of unexplored land at home.
-              Math.min(CAMPAIGN_SCOUTS_HOME_V7, homeFrontier.length),
-            )
-          : early && facts.seaTarget === null && homeFrontier.length > 0
-            ? CAMPAIGN_SCOUTS_EXPANDING_V7
-            : 1,
+        ? Math.max(CAMPAIGN_SCOUTS_BEFORE_CONTACT_V7, scoutsWanted) - 1
+        : Math.max(
+            scoutsWanted,
+            facts.army?.expanding === true && facts.seaTarget === null
+              ? Math.max(
+                  CAMPAIGN_SCOUTS_EXPANDING_V7,
+                  // One scout for every stretch of unexplored land at home.
+                  Math.min(CAMPAIGN_SCOUTS_HOME_V7, homeFrontier.length),
+                )
+              : early && facts.seaTarget === null && homeFrontier.length > 0
+                ? CAMPAIGN_SCOUTS_EXPANDING_V7
+                : 1,
+          ),
     );
   // Before contact the rest of the army follows the first scout, so the
   // enemy it finds meets a group and not one unit.
-  if (targets.length === 0 && main !== null) {
+  if (targets.length === 0 && scouted) {
     // Tuning 8 (`pulp_wars-w49.11`): an army seat that still expands
     // spreads out instead: every free capturer takes its own stretch of
     // frontier. (A Goblin seat followed its first scout into a pocket of
     // Mountains for ten rounds and never saw the village three tiles south
     // of its capital.)
     // Not a seat whose naval plan sails: its second unit goes to the Port.
-    if (facts.army?.expanding === true && facts.seaTarget === null)
+    if (
+      facts.army?.expanding === true &&
+      facts.seaTarget === null &&
+      !homeDanger
+    )
       sendScouts(Number.POSITIVE_INFINITY);
-    const lead: CampaignAssignmentV7 = main;
-    for (const unit of scoutCandidates())
-      if (lead.field.get(unit.at) !== undefined)
+    for (const unit of scoutCandidates()) {
+      // A unit follows the first scout that moves as it does, or else the
+      // other one as far as its route goes (an Ice Folk seat's first
+      // scouts are Yetis, and its Witch still follows them).
+      const onFoot = main as CampaignAssignmentV7 | null;
+      const overMountains = mountainMain as CampaignAssignmentV7 | null;
+      const lead =
+        survey !== null && terrainOf(unit) !== "GROUND"
+          ? (overMountains ?? onFoot)
+          : (onFoot ?? overMountains);
+      if (
+        lead !== null &&
+        captures(unit) &&
+        lead.field.get(unit.at) !== undefined
+      )
         assignmentByUnitId.set(unit.id, lead);
+    }
   }
 
   // Pressure: every other unit marches on its nearest known enemy city.

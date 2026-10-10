@@ -2248,6 +2248,12 @@ function* tacticalPlanWorkV7(
             naval:
               context.naval.active ||
               view.viewer.researchedTechs.includes("SHORECRAFT"),
+            // `pulp_wars-nc6`: the Gyrocopter scouts (a cheap flyer the
+            // policy plans no capture with).
+            scouts: (unit: PublicUnitV7) =>
+              unit.form === "LAND" &&
+              unitMovementModeV7(view, unit) === "FLY" &&
+              unitRoleRuleV7(view, unit).abilities.includes("BOMB_RUN"),
           },
         }
       : {}),
@@ -3354,6 +3360,8 @@ export function inspectNormalTacticalFactsV7(view: PlayerViewV7): {
       readonly at: CoordV7;
       readonly targetCityId: CityId | null;
       readonly raid?: true;
+      /** `pulp_wars-nc6`: a scout on a route outside every enemy's reach. */
+      readonly safe?: true;
     }[];
     readonly targets: readonly {
       readonly cityId: CityId;
@@ -3402,6 +3410,7 @@ export function inspectNormalTacticalFactsV7(view: PlayerViewV7): {
         targetCityId: assignment.targetCityId,
         // Tuning 7: a raid on an undefended city is marked.
         ...(assignment.raid === true ? { raid: true as const } : {}),
+        ...(assignment.safe === true ? { safe: true as const } : {}),
       })),
       targets: [...(context.tactical.campaign?.targetByCityId ?? [])].map(
         ([cityId, target]) => ({
@@ -6367,6 +6376,48 @@ function armyMoveValueV7(
 }
 
 /**
+ * The exploration plan (`pulp_wars-nc6`, `src/ai/v7-exploration.ts`): a
+ * scout's routine Move (one that explores, approaches, or regroups; a
+ * capture, a kill, a village, and a retreat come in above
+ * `ARMY_ROUTINE_MOVE_MAXIMUM_V7`) does not end on a tile where a visible
+ * enemy can hit it harder than where it stands, unless an own fighting
+ * land unit stands within `ARMY_ALONE_RADIUS_V7` of that tile (it is not
+ * alone there: before an enemy city is known the group follows the first
+ * scout, and meets what it finds together).
+ */
+function explorationHoldsMoveV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+  to: CoordV7,
+  priority: number,
+): boolean {
+  // (Only a land-form unit has an exploration job.)
+  if (
+    !context.army ||
+    priority < 0 ||
+    priority > ARMY_ROUTINE_MOVE_MAXIMUM_V7 ||
+    same(actor.at, to) ||
+    context.tactical.campaign?.assignmentByUnitId.get(actor.id)?.job !==
+      "EXPLORE"
+  )
+    return false;
+  const view = context.view;
+  const danger = visibleImmediateDamage(view, actor, to, context);
+  return (
+    danger > 0 &&
+    danger > visibleImmediateDamage(view, actor, actor.at, context) &&
+    !view.units.some(
+      (unit) =>
+        unit.id !== actor.id &&
+        unit.ownerId === view.viewer.id &&
+        unit.form === "LAND" &&
+        distance(unit.at, to) <= ARMY_ALONE_RADIUS_V7 &&
+        armyFightsV7(context, unit),
+    )
+  );
+}
+
+/**
  * Step two of the Undead pass (`pulp_wars-w49.24`,
  * docs/product/RULESET_7_TUNING_UNDEAD.md section 15), for every army seat:
  * `actor` has not moved, stands on a Field Defense in its own land where a
@@ -6883,10 +6934,17 @@ function armyPlainMoveValueV7(
   }
   // Alone among enemies and with nothing to attack: back to the others.
   // (A scout too: its frontier lies behind the enemy.)
+  // `pulp_wars-nc6`: not a scout whose route keeps out of every visible
+  // enemy's reach and that stands outside it: it goes on exploring.
   const alone =
     ownMode === "NONE" &&
     fights &&
     (!roaming || job === "EXPLORE") &&
+    !(
+      job === "EXPLORE" &&
+      assignment?.safe === true &&
+      visibleImmediateDamage(view, actor, actor.at, context) <= 0
+    ) &&
     armyAloneV7(context, actor);
   if (alone && approach === 0) {
     const friend = armyNearestFriendV7(context, actor);
@@ -13793,6 +13851,12 @@ function scoreCommandWithContext(
       const army = armyMoveValueV7(context, actor, resultAt, priority);
       priority = army.priority;
       strategicValue += army.strategic;
+      // `pulp_wars-nc6`: a scout does not step into a visible enemy's
+      // reach on its own.
+      if (explorationHoldsMoveV7(context, actor, resultAt, priority)) {
+        priority = -1;
+        strategicValue = 0;
+      }
     }
     if (autoembark) {
       priority = Math.max(priority, 1300);

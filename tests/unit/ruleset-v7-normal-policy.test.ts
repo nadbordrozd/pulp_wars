@@ -1125,7 +1125,9 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       // f0fd0a…63a9).
       // The ninth unit (`pulp_wars-w49.17`, 7r55): the command is
       // unchanged; the cause is in the pin's comment (was ea7230…0f77).
-      "908c1bc49a669815701d6463ca7567f4239e1dd7c195ace5bd904590720853ba",
+      // The exploration plan (`pulp_wars-nc6`): the command is unchanged;
+      // the cause is in the pin's comment (was 908c1b…53ba).
+      "a5c9181a7e782c48c9d9835f7f928e73bedebb58e9313e494f2a55ddc56ac937",
     );
     const revision4Commands = new Set([
       '{"kind":"ATTACK","unitId":19,"targetUnitId":34}',

@@ -58,6 +58,10 @@ export const KIND_READER_CLASSES_V7: Readonly<
   // trains captures (the Normal AI's endgame training bias).
   "src/engine/rules/ruleset-v7.ts::roleCanEverCaptureV7": "SEAT",
   "src/ai/v7-campaign.ts::policyRoleCapturesV7": "SEAT",
+  // The exploration plan (`pulp_wars-nc6`): a scout's Sight bonus is its
+  // owner's technology (the seat's Scouting), as the reveal estimate reads
+  // it; its Move, movement mode, and Glide go through the kind helpers.
+  "src/ai/v7-exploration.ts::explorationProfileV7": "SEAT",
   "src/engine/v7/query.ts::appendPublicHireCommandsV7": "SEAT",
   "src/engine/v7/query.ts::publicHireCostV7": "SEAT",
   "src/engine/v7/reducer.ts::applyHire": "SEAT",
