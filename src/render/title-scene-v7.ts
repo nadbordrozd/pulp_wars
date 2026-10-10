@@ -1,6 +1,9 @@
 import { OFFERED_FACTION_IDS_V7, type FactionIdV7 } from "../engine/index";
 
-import { chibiAssetUrlsV7 } from "../assets/asset-inventory-v7";
+import {
+  chibiAssetUrlsV7,
+  liveFallbackOnlyAssetV7,
+} from "../assets/asset-inventory-v7";
 import { CHIBI_ART_ASSETS_V7 } from "../assets/chibi-art-manifest";
 import { chibiDirectionArtAssetsV7 } from "../assets/chibi-direction-art-manifest";
 import {
@@ -433,15 +436,22 @@ export function titleSceneSubjectsV7(): ArtSubjectV7[] {
  * Every file the scene can draw, at any size (bead pulp_wars-502h): the
  * composed pieces and every file (master, densities, mask, layers) of each
  * registered raster of a subject it asks for, in the default registry and
- * the direction's. The loading screen shows the scene, so the game's start
- * preloads these first (src/app/v7-preload-boot.ts): about a tenth of the
- * look, after which the scene is drawn whole while the rest loads.
+ * the direction's, less the default rasters that only stand in for a failed
+ * direction raster (`liveFallbackOnlyAssetV7`: the scene is the live look's
+ * art in every look). The loading screen shows the scene, so the game's
+ * start preloads these first (src/app/v7-preload-boot.ts): about a tenth of
+ * the look, after which the scene is drawn whole while the rest loads.
  */
 export function titleSceneAssetUrlsV7(): string[] {
   const subjects = new Set<string>(titleSceneSubjectsV7());
   return [
     ...new Set([
-      ...[...CHIBI_ART_ASSETS_V7, ...chibiDirectionArtAssetsV7()]
+      ...[
+        ...CHIBI_ART_ASSETS_V7.filter(
+          (asset) => !liveFallbackOnlyAssetV7(asset),
+        ),
+        ...chibiDirectionArtAssetsV7(),
+      ]
         .filter((asset) => subjects.has(asset.subject))
         .flatMap(chibiAssetUrlsV7),
       ...titleSceneRasterUrlsV7(),

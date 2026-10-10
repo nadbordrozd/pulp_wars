@@ -8,6 +8,7 @@ import {
   assetLookV7,
   assetPreloadUrlsV7,
   chibiAssetUrlsV7,
+  liveFallbackOnlyAssetV7,
 } from "../../src/assets/asset-inventory-v7";
 import { CHIBI_ART_ASSETS_V7 } from "../../src/assets/chibi-art-manifest";
 import { chibiDirectionArtAssetsV7 } from "../../src/assets/chibi-direction-art-manifest";
@@ -50,7 +51,8 @@ describe("Ruleset 7 asset inventory", () => {
     const manifests = await manifestRasterUrls();
     // The scan sees the manifests: the CHIBI set and the PixelLab set.
     expect(manifests.size).toBeGreaterThan(900);
-    const chibi = urlsOf("LIVE");
+    // The CHIBI set: the live look and the classic look's own rasters.
+    const chibi = new Set([...urlsOf("LIVE"), ...urlsOf("CLASSIC")]);
     const legacy = urlsOf("LEGACY");
     const uncovered: string[] = [];
     for (const [url, file] of manifests) {
@@ -100,22 +102,63 @@ describe("Ruleset 7 asset inventory", () => {
       "/ground.png",
     ]);
     const live = urlsOf("LIVE");
-    for (const asset of [
-      ...CHIBI_ART_ASSETS_V7,
-      ...chibiDirectionArtAssetsV7(),
-    ])
+    const classic = urlsOf("CLASSIC");
+    for (const asset of chibiDirectionArtAssetsV7())
       for (const url of chibiAssetUrlsV7(asset))
         expect(live.has(url), url).toBe(true);
+    for (const asset of CHIBI_ART_ASSETS_V7)
+      for (const url of chibiAssetUrlsV7(asset)) {
+        expect(classic.has(url), url).toBe(true);
+        if (!liveFallbackOnlyAssetV7(asset))
+          expect(live.has(url), url).toBe(true);
+      }
     expect(
       CHIBI_ART_ASSETS_V7.some((asset) => asset.ownerMaskUrl !== undefined),
     ).toBe(true);
   });
 
-  it("keeps the looks apart: the live look contains the classic look, LEGACY is the PixelLab set", () => {
+  it("keeps the looks apart: the live look holds the classic art it draws, LEGACY is the PixelLab set", () => {
     const live = urlsOf("LIVE");
     const classic = urlsOf("CLASSIC");
     const legacy = urlsOf("LEGACY");
-    for (const url of classic) expect(live.has(url), url).toBe(true);
+    // What the live look leaves to the classic look (pulp_wars-2yc.42):
+    // the default raster of a unit, city or improvement whose subject
+    // the direction draws. Nothing else of the classic look.
+    const fallbackOnly = new Set(
+      CHIBI_ART_ASSETS_V7.filter(liveFallbackOnlyAssetV7).flatMap(
+        chibiAssetUrlsV7,
+      ),
+    );
+    expect(fallbackOnly.size).toBeGreaterThan(80);
+    for (const url of classic)
+      expect(live.has(url), url).toBe(!fallbackOnly.has(url));
+    const directed = new Set(
+      chibiDirectionArtAssetsV7().map((asset) => asset.subject),
+    );
+    for (const asset of CHIBI_ART_ASSETS_V7) {
+      if (!liveFallbackOnlyAssetV7(asset)) continue;
+      expect(directed.has(asset.subject), asset.subject).toBe(true);
+      expect(asset.subject, asset.subject).toMatch(
+        /^(UNIT|CITY|IMPROVEMENT):|^SITE:VILLAGE$/,
+      );
+    }
+    // The shared ships stand in for a faction without ships of its own,
+    // and terrain, icons, effects and portraits are drawn from the
+    // default art by the board.
+    const kept = (subject: string): boolean =>
+      CHIBI_ART_ASSETS_V7.filter((asset) => asset.subject === subject).every(
+        (asset) => !liveFallbackOnlyAssetV7(asset),
+      );
+    for (const subject of [
+      "UNIT:PATROL_BOAT",
+      "UNIT:BATTLESHIP",
+      "PORTRAIT:SUBMARINE",
+      "PORTRAIT:FIGHTER",
+      "TERRAIN:MINED_MOUNTAIN",
+      "TERRAIN:GRASS",
+      "ICON:HUD:COIN",
+    ])
+      expect(kept(subject), subject).toBe(true);
     expect(live.size).toBeGreaterThan(classic.size);
     // The direction's own art is what the classic look leaves out.
     const direction = chibiDirectionArtAssetsV7().map((asset) => asset.url);

@@ -64,21 +64,19 @@ function crest(documentRoot: Document): SVGElement {
   return svg;
 }
 
-export function mountLoadingScreenV7(
-  documentRoot: Document,
-  root: HTMLElement,
-  options: LoadingScreenOptionsV7 = {},
-): LoadingScreenV7 {
-  const motion = options.motion ?? "FULL";
-  const shell = documentRoot.createElement("div");
-  shell.className = "v7-app-shell";
-  shell.dataset.phase = "loading";
-  shell.dataset.motion = motion.toLowerCase();
-  const main = documentRoot.createElement("main");
-  main.className = "v7-loading";
-  main.dataset.v7Loading = "true";
-  main.dataset.scene = options.scene === undefined ? "none" : "waiting";
+/** The plate of the loading screen: the crest, "Loading" and the bar. */
+export interface LoadingPlateV7 {
+  readonly root: HTMLElement;
+  /** `settled` of `total` files are done; the bar never moves backwards. */
+  update(progress: { readonly settled: number; readonly total: number }): void;
+}
 
+/**
+ * The plate alone. The loading screen holds it over the title scene; a
+ * board that waits for its factions' art (bead pulp_wars-2yc.42) holds
+ * the same plate over the screen that asked for the board.
+ */
+export function createLoadingPlateV7(documentRoot: Document): LoadingPlateV7 {
   const plate = documentRoot.createElement("div");
   plate.className = "v7-loading-plate";
   const heading = documentRoot.createElement("div");
@@ -105,7 +103,40 @@ export function mountLoadingScreenV7(
   fill.style.width = "0%";
   bar.append(fill);
   plate.append(heading, bar);
-  main.append(plate);
+  let shown = 0;
+  return {
+    root: plate,
+    update({ settled, total }) {
+      const value =
+        total <= 0 ? 100 : Math.floor((Math.min(settled, total) / total) * 100);
+      // The bar never moves backwards and is not touched for a sub-percent
+      // step, so a look of 900 files writes the DOM at most 100 times.
+      if (value <= shown) return;
+      shown = value;
+      bar.setAttribute("aria-valuenow", String(value));
+      fill.style.width = `${value}%`;
+      percent.textContent = `${value}%`;
+    },
+  };
+}
+
+export function mountLoadingScreenV7(
+  documentRoot: Document,
+  root: HTMLElement,
+  options: LoadingScreenOptionsV7 = {},
+): LoadingScreenV7 {
+  const motion = options.motion ?? "FULL";
+  const shell = documentRoot.createElement("div");
+  shell.className = "v7-app-shell";
+  shell.dataset.phase = "loading";
+  shell.dataset.motion = motion.toLowerCase();
+  const main = documentRoot.createElement("main");
+  main.className = "v7-loading";
+  main.dataset.v7Loading = "true";
+  main.dataset.scene = options.scene === undefined ? "none" : "waiting";
+
+  const plate = createLoadingPlateV7(documentRoot);
+  main.append(plate.root);
   shell.append(main);
   root.replaceChildren(shell);
 
@@ -147,20 +178,11 @@ export function mountLoadingScreenV7(
   };
   showScene();
 
-  let shown = 0;
   return {
     root: shell,
-    update({ settled, total }) {
+    update(progress) {
       showScene();
-      const value =
-        total <= 0 ? 100 : Math.floor((Math.min(settled, total) / total) * 100);
-      // The bar never moves backwards and is not touched for a sub-percent
-      // step, so a look of 900 files writes the DOM at most 100 times.
-      if (value <= shown) return;
-      shown = value;
-      bar.setAttribute("aria-valuenow", String(value));
-      fill.style.width = `${value}%`;
-      percent.textContent = `${value}%`;
+      plate.update(progress);
     },
     destroy() {
       browser?.removeEventListener("resize", placeHorizon);

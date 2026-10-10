@@ -807,12 +807,16 @@ hears as louder. It is a starting point, not a mix.
 
 ### How a clip is played
 
-- **Start of the game.** The start asks for one clip a sound, beside the
-  art (`soundAssetUrlsV7` in `src/assets/asset-inventory-v7.ts`,
+- **Start of the game.** The start asks for one clip a sound
+  (`soundAssetUrlsV7` in `src/assets/asset-inventory-v7.ts`,
   `src/app/v7-preload-boot.ts`): the sound's default recording, or the one
-  this browser picked. It does not wait for any of them: the loading screen
-  and the first screen do not depend on sound. No alternative is fetched
-  at the start: 28 files of the 78.
+  this browser picked. It asks when the title screen is up, not before
+  (`pulp_wars-2yc.42`): asked for beside the title's art, the clips made
+  the title 1.8 s later on a slow link. It does not wait for any of them:
+  no screen depends on sound, and a click in the two seconds the clips
+  need on such a link plays the synthesised sound. The factions' art
+  loads after the clips. No alternative is fetched at the start: 28 files
+  of the 78.
 - **First gesture.** The audio device opens and decodes the clips that have
   arrived (`web-audio-output.ts`). A browser cannot decode sound before the
   gesture.

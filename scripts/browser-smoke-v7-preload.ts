@@ -1,9 +1,11 @@
 /**
  * The asset-preload check of the Ruleset 7 browser smoke (bead
- * pulp_wars-2yc.6). The game preloads the art of its look behind the
- * loading screen; after that, a piece seen for the first time (a new unit
- * type, another faction's city, a Gallery sprite) must find its raster
- * already decoded. The app records every raster a loader had to fetch on
+ * pulp_wars-2yc.6). The game preloads the art its first screens draw
+ * behind the loading screen, and a board waits for the art of its own
+ * factions (bead pulp_wars-2yc.42; `total` below counts the first of the
+ * two); after that, a piece seen for the first time (a new unit type,
+ * another faction's city, a Gallery sprite) must find its raster already
+ * decoded. The app records every raster a loader had to fetch on
  * demand after the preload (`lazyAssetLoads`), which is the stand-in-then-
  * swap path: this check fails when the page it runs on recorded one, or
  * when the preload itself failed. It imports nothing from the source tree,

@@ -6,10 +6,15 @@ import {
 import { stockSoundCandidateV1, stockSoundUrlV1 } from "../audio/stock-sounds";
 import { FACTION_IDS_V7, type FactionIdV7 } from "../engine/index";
 import { CHIBI_ART_ASSETS_V7 } from "./chibi-art-manifest";
-import type { ArtSetV7, ChibiArtAssetV7 } from "./chibi-art-v7";
+import {
+  navalArtRoleOfSubjectV7,
+  type ArtSetV7,
+  type ChibiArtAssetV7,
+} from "./chibi-art-v7";
 import { chibiDirectionArtAssetsV7 } from "./chibi-direction-art-manifest";
 import { CHIBI_FOREST_ART_SET_V7 } from "./chibi-forest-pieces-manifest";
 import { CHIBI_MOUNTAIN_ART_SET_V7 } from "./chibi-mountain-ranges-manifest";
+import { portraitSubjectV7 } from "./chibi-ui-art-v7";
 import { FACTION_FOREST_ART_SETS_V7 } from "./faction-forest-pieces-manifest";
 import { FACTION_GRASS_TILES_V7 } from "./faction-grass-manifest";
 import { ACCEPTED_ART_URLS } from "./generated-art-manifest";
@@ -25,6 +30,10 @@ import { ACCEPTED_ART_URLS } from "./generated-art-manifest";
  * Nothing here names a file: a raster added to a manifest is in the
  * inventory, and tests/unit/asset-inventory-v7.test.ts fails when a manifest
  * module under src/assets exports a raster URL the inventory does not cover.
+ *
+ * A look loads in tiers (bead pulp_wars-2yc.42, `assetTiersV7`): the FRONT
+ * tier before the title is shown, each faction's tier in the background
+ * after it, and before a board that shows the faction is drawn.
  */
 
 /**
@@ -40,6 +49,33 @@ export type AssetGroupV7 = "SHARED" | Exclude<FactionIdV7, "ORIGINAL">;
 export interface AssetInventoryEntryV7 {
   readonly url: string;
   readonly group: AssetGroupV7;
+  /**
+   * True for a faction's file that is asked for whoever plays
+   * (`frontTierSubjectV7`): it loads with the shared art. Absent otherwise.
+   */
+  readonly front?: true;
+}
+
+/**
+ * A faction's emblem on the tribe picker, the seats, the campaign and the
+ * leaderboard: its Fighter portrait (`#factionEmblem` in
+ * src/render/dom/app-view-v7.ts).
+ */
+const EMBLEM_SUBJECTS: ReadonlySet<string> = new Set(
+  FACTION_IDS_V7.map((faction) => portraitSubjectV7("FIGHTER", faction)),
+);
+
+/**
+ * True for a faction's art subject that is asked for whoever plays, so it
+ * belongs to the FRONT tier: the emblems, which the screens before a match
+ * draw. The factions' territory ground is front too (`classicEntries`).
+ * The effect sprites a board asks for when it mounts, the Martian, Ice
+ * Folk and Dwarf cues in every match (`#requestEffectArt` in
+ * src/render/canvas/board-host-v7.ts), need no rule: an effect subject
+ * names no faction, so it is shared art.
+ */
+export function frontTierSubjectV7(subject: string): boolean {
+  return EMBLEM_SUBJECTS.has(subject);
 }
 
 const FACTION_GROUPS: ReadonlySet<string> = new Set(
@@ -75,29 +111,87 @@ function registered(
 ): AssetInventoryEntryV7[] {
   return assets.flatMap((asset) => {
     const group = assetGroupOfSubjectV7(asset.subject);
-    return chibiAssetUrlsV7(asset).map((url) => ({ url, group }));
+    const front = group !== "SHARED" && frontTierSubjectV7(asset.subject);
+    return chibiAssetUrlsV7(asset).map((url) =>
+      front ? { url, group, front } : { url, group },
+    );
   });
 }
 
-/** A URL is listed once; a file shared with SHARED art is SHARED. */
+/**
+ * A URL is listed once; a file shared with SHARED art is SHARED, and a
+ * file one of whose uses is in the FRONT tier loads with it.
+ */
 function unique(
   entries: readonly AssetInventoryEntryV7[],
 ): readonly AssetInventoryEntryV7[] {
   const groups = new Map<string, AssetGroupV7>();
+  const front = new Set<string>();
   for (const entry of entries) {
     const known = groups.get(entry.url);
     groups.set(
       entry.url,
       known === undefined || known === entry.group ? entry.group : "SHARED",
     );
+    if (entry.front === true) front.add(entry.url);
   }
-  return [...groups].map(([url, group]) => ({ url, group }));
+  return [...groups].map(([url, group]) =>
+    group !== "SHARED" && front.has(url)
+      ? { url, group, front: true as const }
+      : { url, group },
+  );
 }
 
-/** The CHIBI set without the visual direction: what the classic look draws. */
-function classicEntries(): AssetInventoryEntryV7[] {
+const DIRECTION_FIRST_CLASSES: ReadonlySet<string> = new Set([
+  "UNIT",
+  "CITY",
+  "IMPROVEMENT",
+]);
+let directionSubjects: ReadonlySet<string> | null = null;
+
+/**
+ * True for a raster of the default CHIBI art that the live look draws only
+ * when the direction's raster of the same subject failed to load (bead
+ * pulp_wars-2yc.42): the live look does not preload it, and the classic
+ * look, which draws it, does.
+ *
+ * The live resolvers ask the direction's registry first for a unit, a
+ * city, the Village and an improvement (`createDirectedChibiArtV7`,
+ * `createChibiDomArtV7` with `preferred`), so the default raster of such a
+ * subject is a stand-in once the direction registers the subject. Not the
+ * shared ships: a faction's ship without a raster of its own is drawn as
+ * the classic shared ship in the owner's colour, never the Human direction
+ * ship (`navalSharedSubjectV7`). Every other class is left in the live
+ * look whole, because the board resolves it from the default registry
+ * whatever the direction registers: terrain, resources, icons, effects,
+ * statuses, and the portraits (the belly badge of an Abomination that has
+ * swallowed a unit draws the victim's default portrait).
+ * tests/unit/asset-tiers-ui-v7.test.ts resolves every subject through the
+ * live resolvers and fails when one of them asks for a file this names.
+ */
+export function liveFallbackOnlyAssetV7(asset: ChibiArtAssetV7): boolean {
+  const { subject } = asset;
+  const kind = subject.split(":")[0] ?? "";
+  if (!DIRECTION_FIRST_CLASSES.has(kind) && subject !== "SITE:VILLAGE")
+    return false;
+  if (navalArtRoleOfSubjectV7(subject) !== null) return false;
+  directionSubjects ??= new Set(
+    chibiDirectionArtAssetsV7().map((entry) => entry.subject),
+  );
+  return directionSubjects.has(subject);
+}
+
+/**
+ * The CHIBI set without the visual direction: what the classic look draws.
+ * With `live`, only the part of it the live look draws too.
+ */
+function classicEntries(live = false): AssetInventoryEntryV7[] {
   return [
-    ...registered(CHIBI_ART_ASSETS_V7),
+    ...registered(
+      live
+        ? CHIBI_ART_ASSETS_V7.filter((asset) => !liveFallbackOnlyAssetV7(asset))
+        : CHIBI_ART_ASSETS_V7,
+    ),
     // Composed terrain: forest pieces and clumps, massifs, mined mountains.
     ...[
       ...CHIBI_FOREST_ART_SET_V7.pieces,
@@ -105,10 +199,12 @@ function classicEntries(): AssetInventoryEntryV7[] {
       ...CHIBI_MOUNTAIN_ART_SET_V7.pieces,
       ...CHIBI_MOUNTAIN_ART_SET_V7.mined,
     ].map(({ url }) => ({ url, group: "SHARED" as const })),
-    // Territory ground of each faction (the board loads the set whole).
+    // Territory ground of each faction. The board loads the set whole,
+    // whoever plays (15 files of 0.6 kB), so it loads with the shared art.
     ...FACTION_GRASS_TILES_V7.map((tile) => ({
       url: tile.url,
       group: tile.id satisfies AssetGroupV7,
+      front: true as const,
     })),
     // The forest of each faction (pulp_wars-2yc.2), loaded with its faction.
     ...Object.entries(FACTION_FOREST_ART_SETS_V7).flatMap(([id, set]) =>
@@ -123,9 +219,11 @@ function classicEntries(): AssetInventoryEntryV7[] {
 /**
  * The inventory of a look. The live look resolves the direction's art
  * first and the default CHIBI art for every other subject (shared terrain,
- * icons, effects) and as the stand-in of a direction raster that failed to
- * load, so it contains the whole classic look: switching to the classic
- * look needs no further file.
+ * icons, effects), so it contains that part of the classic look. The
+ * default rasters it would draw only in place of a direction raster that
+ * failed to load (`liveFallbackOnlyAssetV7`, about 110 files) are the
+ * classic look's alone: they load when the player switches to it, and on
+ * demand should a direction raster ever fail.
  */
 export function assetInventoryV7(
   look: AssetLookV7,
@@ -140,7 +238,7 @@ export function assetInventoryV7(
   return unique(
     look === "CLASSIC"
       ? classicEntries()
-      : [...classicEntries(), ...registered(chibiDirectionArtAssetsV7())],
+      : [...classicEntries(true), ...registered(chibiDirectionArtAssetsV7())],
   );
 }
 
@@ -164,6 +262,65 @@ export function assetInventoryForFactionsV7(
   return assetInventoryV7(look).filter(
     (entry) => entry.group === "SHARED" || playing.has(entry.group),
   );
+}
+
+/** The faction tiers of a look. */
+export type AssetFactionTierV7 = Exclude<AssetGroupV7, "SHARED">;
+
+export interface AssetTiersV7 {
+  /**
+   * What the title waits for: `first` (the loading screen's scene) in its
+   * order, then the shared art and the factions' files asked for whoever
+   * plays (`frontTierSubjectV7`).
+   */
+  readonly front: readonly string[];
+  /** Each faction's own files, none of them in `front`. */
+  readonly factions: Readonly<
+    Partial<Record<AssetFactionTierV7, readonly string[]>>
+  >;
+}
+
+/**
+ * The tiers of a look (bead pulp_wars-2yc.42): every file of its inventory
+ * is in exactly one. FRONT is everything the screens before a match draw
+ * and every match asks for (the shared art, which is also the Humans', the
+ * emblems and the territory grounds); a faction's tier is what only a
+ * board with that faction on it shows. The
+ * start blocks on FRONT alone; the faction tiers load in the background,
+ * and a board waits for those of its factions (`factionAssetUrlsV7`).
+ *
+ * `first` names files to put at the head of FRONT whatever their group
+ * (the title scene draws a few faction units); files of `first` that the
+ * inventory does not list (the scene's direction rasters, for the classic
+ * look) are added. LEGACY has no faction tier.
+ */
+export function assetTiersV7(
+  look: AssetLookV7,
+  first: readonly string[] = [],
+): AssetTiersV7 {
+  const ahead = new Set(first);
+  const front: string[] = [...ahead];
+  const factions: Partial<Record<AssetFactionTierV7, string[]>> = {};
+  for (const entry of assetInventoryV7(look)) {
+    if (ahead.has(entry.url)) continue;
+    if (entry.group === "SHARED" || entry.front === true) front.push(entry.url);
+    else (factions[entry.group] ??= []).push(entry.url);
+  }
+  return { front, factions };
+}
+
+/**
+ * The faction-tier files a board between `factions` waits for. The Humans
+ * (`ORIGINAL`) have none: they draw the shared art.
+ */
+export function factionAssetUrlsV7(
+  tiers: AssetTiersV7,
+  factions: readonly FactionIdV7[],
+): readonly string[] {
+  const urls: string[] = [];
+  for (const faction of new Set(factions))
+    if (faction !== "ORIGINAL") urls.push(...(tiers.factions[faction] ?? []));
+  return urls;
 }
 
 /**

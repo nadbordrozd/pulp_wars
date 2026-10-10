@@ -1943,10 +1943,12 @@ CHIBI follows [chibi direction](../art/CHIBI_ART_DIRECTION.md) sections 3–4:
 ### Asset preloading (`pulp_wars-2yc.6`)
 
 The Ruleset 7 route starts through `bootstrapPreloadedRuleset7App`
-(`src/app/v7-preload-boot.ts`), which fetches and decodes the art of the
-look in use before it mounts the app. Every screen (title and setup, Resume,
-the campaign, a match, the Showcase, the Gallery) is drawn by that app, so a
-piece seen for the first time is drawn with its final art in that frame.
+(`src/app/v7-preload-boot.ts`), which fetches and decodes art before a
+screen draws it. Every screen (title and setup, Resume, the campaign, a
+match, the Showcase, the Gallery) is drawn by the app it mounts, so a piece
+seen for the first time is drawn with its final art in that frame. The look
+loads in tiers (`pulp_wars-2yc.42`): the start waits for what the screens
+before a match draw, and a board waits for the art of its own factions.
 
 - **Inventory.** `assetInventoryV7(look)` in
   `src/assets/asset-inventory-v7.ts` derives the files of a look from the
@@ -1958,27 +1960,71 @@ piece seen for the first time is drawn with its final art in that frame.
   fails when a manifest module under `src/assets` exports a raster the
   inventory does not cover. Each entry carries a group (`SHARED` or a
   faction); `assetInventoryForFactionsV7` gives the part a match can show.
-- **Looks.** `LIVE` (the CHIBI set with the visual direction) contains
-  `CLASSIC` (the developer option "Classic look"), because the live look
-  draws the default art for shared terrain, icons and effects and as the
-  stand-in of a failed direction raster. `LEGACY` is preloaded only when
-  `?art=legacy` selects it. The Classic look option asks
+- **Looks.** `LIVE` is the CHIBI set with the visual direction, `CLASSIC`
+  the CHIBI set as it was before it (the developer option "Classic look").
+  The live look draws the default art for shared terrain, resources,
+  icons, effects and portraits, and the shared ships as the stand-in of a
+  faction without ships of its own, so `LIVE` contains that part of
+  `CLASSIC`. It leaves out the default rasters it would draw only in place
+  of a direction raster that failed to load: those of a unit, a city, the
+  Village or an improvement whose subject the direction registers
+  (`liveFallbackOnlyAssetV7`, 110 files and 0.2 MB in October 2026). They
+  are the classic look's own. The Classic look option asks
   `MountRuleset7AppOptions.ensureLookAssets` before it switches and waits
-  for a preload when the other look is not loaded yet (a page started in
-  the classic look switching to the live one).
-- **One blocking phase.** The whole look, every faction, is preloaded at
-  the start (983 files, about 2.5 MB, for `LIVE` in October 2026): the
-  Gallery and an eight-player match show all of them. Within it the loading
-  screen's scene comes first (below). A return visit reads them from the
-  service worker's cache
-  ([Asset delivery](#asset-delivery-pulp_wars-2yc11)).
+  for a preload of what the other look still lacks (from the live look,
+  those 110 files; from a page started in the classic look, the
+  direction's art). Should a direction raster ever fail, its default
+  raster loads on demand, as any failed preload does.
+  `asset-tiers-ui-v7.test.ts` resolves every subject through the live
+  board's and the live interface's art chains and fails when one of them
+  asks for a file the live look left out. `LEGACY` is preloaded only when
+  `?art=legacy` selects it, whole (it has no faction tier); the art set is
+  chosen by the address and does not change on a page.
+- **Tiers** (`pulp_wars-2yc.42`). `assetTiersV7(look, first)` puts every
+  file of a look in exactly one tier.
+  - `FRONT` is what the start waits for (about 400 files, 0.8 MB, for
+    `LIVE` in October 2026): the loading screen's scene first, the `SHARED` group
+    (which is also the Humans' art), and the faction files that are asked
+    for whoever plays: each faction's emblem (its Fighter portrait, which
+    the tribe picker, the seats, the campaign and the leaderboard draw)
+    and the territory grounds (the board loads that set whole).
+  - A tier for each faction (85 files and 0.28 MB at most, about 560
+    files and 1.6 MB together): what only a board with that faction on it
+    shows.
+  - Once the app is mounted the start asks for the sound clips, then
+    loads every faction tier in the background (`background` and
+    `assetsSettled()` on the app). The faction art waits for the clips,
+    4 s at most (`SOUND_PREFETCH_HOLD_MS_V7`), so the first click has its
+    recording.
+- **A board waits for its factions.** The rule is unchanged: no art is
+  loaded on demand after a match starts, so a board never draws a stand-in
+  because its faction's art is still downloading. The view asks
+  `MountRuleset7AppOptions.ensureFactionAssets(look, factions, onProgress)`
+  before it draws a board: in `#render`, for the factions of the match's
+  players, which covers a new game, Resume, a campaign mission, the
+  Showcase, Restart and a look switched in a match, and before the Gallery
+  opens, for every faction. The answer is null when the art is in (always
+  on a return visit, and for the legacy art set). Otherwise the view keeps
+  the screen that asked for the board exactly as it is, made inert, and
+  after 150 ms puts the loading plate over it on a scrim (`.v7-art-wait`,
+  the plate of the loading screen, `createLoadingPlateV7`), whose bar
+  follows the files of that wait. Nothing of the match starts behind it:
+  no AI turn, no music, no key. When the files are in (or have failed, or
+  the 30 s budget is over) the plate goes and the board is drawn whole.
+  The files a board waits for are `urgent`: they take the next free lanes
+  ahead of the background's.
 - **Preloader.** `createAssetPreloaderV7` (`src/app/asset-preloader-v7.ts`)
   loads at most 64 rasters at once through an injectable loader (the
   browser's creates an image element and awaits `decode()`), retries a
   failure once, and gives each raster 15 s and the whole preload 30 s. The
   files average 2.6 kB, so a lane mostly waits for a round trip: 64 lanes
   keep a slow link busy where 24 left it two thirds idle, and stay under
-  the 100 streams of one HTTP/2 connection. A preload may name a `front`:
+  the 100 streams of one HTTP/2 connection. Every preload of the page
+  shares those lanes (the start's, the background's, a board's wait): a
+  file asked for twice is fetched once, and an `urgent` preload is started
+  ahead of everything still waiting for a lane. `settled(urls)` is true
+  when nothing of a list is left to wait for (each file is in, or failed
+  after its retry). A preload may name a `front`:
   its first files load alone, and the rest starts when they have settled
   (or after 12 s, so one stuck file cannot hold the preload). The start
   passes the scene's files as the front; many files in flight share the
@@ -1989,6 +2035,10 @@ piece seen for the first time is drawn with its final art in that frame.
   out reach the store when they arrive.
 - **Store.** Decoded rasters go to the page's store
   (`src/render/canvas/preloaded-rasters-v7.ts`).
+  The store is filled tier by tier, so "the preload" below ends when
+  the `FRONT` tier is in: a load on demand is recorded from then on, which
+  makes a faction's file drawn before its tier arrived show up in
+  `lazyAssetLoads()`.
   `browserChibiRasterEnvironmentV7().loadImage` (the board, the interface,
   the Gallery, the composed forests, massifs and faction grass, the effect
   sprites) and `createBoardImageResolverV7` (legacy assets) ask it first
@@ -2008,10 +2058,10 @@ piece seen for the first time is drawn with its final art in that frame.
   (`role="progressbar"`, `aria-labelledby` the label). The start's one
   preload lists the scene's files first (`startPreloadUrlsV7`:
   `titleSceneAssetUrlsV7()`, every file of each registered raster of a
-  subject the scene draws plus the composed forest and massif pieces, about
-  a tenth of the live look, then the look's inventory, each file once; the
-  classic look gains the scene's direction rasters, which its title screen
-  draws too; LEGACY has no scene). At every progress step the screen asks
+  subject the scene draws plus the composed forest and massif pieces, a
+  quarter of the `FRONT` tier, then the rest of that tier, each file once;
+  the classic look gains the scene's direction rasters, which its title
+  screen draws too; LEGACY has no scene). At every progress step the screen asks
   `preloader.covers(sceneUrls)` and mounts the scene only when all of them
   are in, so it draws whole in its first frame from the store; before that
   the CSS backdrop is a sky over flat grass (`--pw-ground`) whose horizon
@@ -2132,6 +2182,40 @@ as long as the first visit. A service worker now keeps the files.
   one after a deploy of ten sprites 12 requests and 35 kB. A new-game board
   needs no further art request.
 
+- **Measured with the tiers** (`pulp_wars-2yc.42`, October 2026, the same
+  method; "before" is the build without the tiers measured in the same
+  session, so the two columns compare). The board and the Gallery are
+  opened the moment the title is up, which is the longest they can wait: a
+  player who spends fifteen seconds on the menu and the new-game screen
+  waits less or not at all.
+
+  | Loading only, no match played                        | Fast 3G before | Fast 3G after | Fast 4G before | Fast 4G after |
+  | ---------------------------------------------------- | -------------- | ------------- | -------------- | ------------- |
+  | First visit: title                                   | 28.6 s         | 13.5 s        | 5.9 s          | 3.0 to 3.3 s  |
+  | Then a board, Humans against the Undead (one tier)   | + 0.7 s        | + 4.2 s       | + 0.2 s        | + 1.3 s       |
+  | Then a board, Goblins against the Undead (two tiers) | + 0.7 s        | + 6.8 s       | + 0.4 s        | + 1.5 s       |
+  | Then the Gallery (every tier)                        | + 0.2 s        | + 14.1 s      | + 0.1 s        | + 2.7 s       |
+  | First visit: everything loaded, nothing opened       | 29.3 s         | 28.1 s        | 6.4 to 6.7 s   | 5.8 s         |
+  | Return visit: title                                  | 2.2 s          | 1.2 s         | 0.6 s          | 0.6 s         |
+
+  The first visit asks for 368 requests and 1.67 MB before the title (it
+  was 1,063 and 3.86 MB) and 954 requests and 3.64 MB in all (1,064 and
+  3.86 MB). Of the 13.5 s, 6.4 s pass before the loading screen can be
+  drawn: the page's script, 0.75 MB compressed, which no tier changes. A
+  return visit is still 2 requests and needs no wait at a board; where its
+  title is faster, it is because the start decodes 354 rasters instead of
+  1,021. Each part was also measured by itself, on "Fast 3G", by undoing
+  it in the build: with the clips asked for at the start again the title
+  takes 15.4 s (1.8 s more), and with the live look preloading the whole
+  classic set again 14.6 s (1.1 s more, 110 requests and 0.22 MB).
+  Repeated runs differ by less than 0.1 s. A new game of each of the
+  eight tribes, with its technology tree opened and the tier of every
+  faction not in the game blocked, recorded no load on demand, and
+  neither did the Gallery's five tabs. The figures are of the revision
+  before the Cultists' portraits, icons and effect sprites, which add 45
+  files and 0.05 MB to the title's tier (their command, status and effect
+  subjects name no faction, like every faction's).
+
 ### Sound (`pulp_wars-2yc.10`)
 
 Sound effects live in `src/audio/` and are described in
@@ -2157,9 +2241,10 @@ and replays do not import the module or see its preference.
   sound may have several candidates, one of them (or the synthesised sound)
   its default. `soundAssetUrlsV7` in `src/assets/asset-inventory-v7.ts`
   lists one clip a sound for the start of the game (the default, or the one
-  this browser picked), which fetches them beside the art without waiting
-  for them (`src/app/v7-preload-boot.ts`); the audio device decodes them
-  after the first gesture. Another candidate is fetched when the Gallery
+  this browser picked), which fetches them once the app is mounted, without
+  waiting for them (`src/app/v7-preload-boot.ts`; `pulp_wars-2yc.42`: they
+  no longer share the link with the title's art); the audio device decodes
+  them after the first gesture. Another candidate is fetched when the Gallery
   plays it or a pick selects it. A clip that is missing or late is replaced
   by its synthesised sound. `?stock-sounds=0` plays every sound from the
   synthesiser.

@@ -374,6 +374,10 @@ export const KIND_READER_CLASSES_V7: Readonly<
   "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#campaignList": "SEAT",
   "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#briefing": "SEAT",
   "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#factionEmblem": "SEAT",
+  // Asset tiers (`pulp_wars-2yc.42`): the factions seated in the match,
+  // whose art a board waits for. A mind-controlled unit's kind is the
+  // faction of another seat of the same match, so the seats cover it.
+  "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#render": "SEAT",
   "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#missionResults": "SEAT",
   // Many players (pulp_wars-ykw.5): seats and their factions in the setup
   // grid, the turn-order strip and the end-of-game list.

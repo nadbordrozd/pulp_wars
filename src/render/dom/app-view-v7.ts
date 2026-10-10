@@ -133,6 +133,7 @@ import {
   type StarGradeQueryV7,
   type StarGradeV7,
   WELL_TOSS_COST_V7,
+  FACTION_IDS_V7,
 } from "../../engine/index";
 import {
   CROWDED_HINT_V7,
@@ -266,6 +267,7 @@ import {
   type UiIconIdV7,
 } from "./ui-icons-v7";
 import { TitleSceneViewV7 } from "./title-scene-view-v7";
+import { createLoadingPlateV7 } from "./loading-screen-v7";
 import {
   cityArtSubjectV7,
   monumentArtSubjectV7,
@@ -1142,6 +1144,20 @@ export interface MountRuleset7AppOptions {
     look: "LIVE" | "CLASSIC",
   ) => Promise<unknown> | null;
   /**
+   * Asset tiers (bead pulp_wars-2yc.42): asked before a board that shows
+   * `factions` is drawn in a look (a match, the Gallery). Null when their
+   * art is loaded; otherwise the board waits for the promise behind the
+   * loading plate, which `onProgress` moves. Absent (tests): no wait.
+   */
+  readonly ensureFactionAssets?: (
+    look: "LIVE" | "CLASSIC",
+    factions: readonly FactionIdV7[],
+    onProgress: (progress: {
+      readonly settled: number;
+      readonly total: number;
+    }) => void,
+  ) => Promise<unknown> | null;
+  /**
    * The game's sound (bead pulp_wars-2yc.10); tests inject one. By default
    * the browser's, which stays silent until the first user gesture and
    * wherever there is no WebAudio. An injected one is the caller's to
@@ -1217,6 +1233,20 @@ const STATUS_COVERED_BY_ABILITY_V7: Readonly<Record<string, string>> = {
   slots: "BIG_BODY",
   blizzard: "BLIZZARD",
 };
+/**
+ * A board's wait for its factions' art shows the loading plate only after
+ * this long (bead pulp_wars-2yc.42), like the loading screen's own delay:
+ * a wait of a frame or two never flashes it.
+ */
+export const ART_WAIT_PLATE_DELAY_MS_V7 = 150;
+interface BoardArtWaitV7 {
+  /** The look and the factions asked for. */
+  readonly key: string;
+  /** Settles when the wait has ended and the view was drawn again. */
+  readonly done: Promise<void>;
+  overlay: HTMLElement | null;
+  timer: ReturnType<typeof setTimeout> | null;
+}
 /** First steps: how long the "out of moves" line stays up by itself. */
 const FIRST_STEP_OUT_OF_MOVES_MS_V7 = 6_000;
 /** The longest a level-up's reward dialog waits for its animation. */
@@ -1560,6 +1590,15 @@ export class Ruleset7DomAppView {
   #galleryOpen = false;
   readonly #galleryDemoHost: (() => BoardHostV7) | undefined;
   readonly #ensureLookAssets: MountRuleset7AppOptions["ensureLookAssets"];
+  readonly #ensureFactionAssets: MountRuleset7AppOptions["ensureFactionAssets"];
+  /**
+   * A board waiting for its factions' art (bead pulp_wars-2yc.42): the
+   * look and factions asked for, the promise that ends the wait, and the
+   * plate over the screen that asked (shown after a short delay).
+   */
+  #artWait: BoardArtWaitV7 | null = null;
+  /** Looks and faction sets whose art is known to be loaded. */
+  readonly #artReady = new Set<string>();
   /** Sound effects (bead pulp_wars-2yc.10, docs/ui/SOUND.md). */
   readonly #audio: GameAudioV1;
   readonly #ownsAudio: boolean;
@@ -1597,6 +1636,7 @@ export class Ruleset7DomAppView {
       options.randomSeed ?? (() => browserRandomSeedV7(documentRoot));
     this.#galleryDemoHost = options.galleryDemoHost;
     this.#ensureLookAssets = options.ensureLookAssets;
+    this.#ensureFactionAssets = options.ensureFactionAssets;
     this.#ownsAudio = options.audio === undefined;
     this.#audio =
       options.audio ??
@@ -1726,6 +1766,7 @@ export class Ruleset7DomAppView {
     this.#unsubscribeAcceptedBoundary?.();
     this.#unsubscribeAcceptedBoundary = null;
     this.#cancelPresentations();
+    this.#endArtWait();
     this.#gallery?.destroy();
     this.#titleScene?.destroy();
     this.#boardHost.destroy();
@@ -1785,6 +1826,8 @@ export class Ruleset7DomAppView {
       this.#releaseVictoryHold(true);
       return;
     }
+    // A board is waiting for its art: the screen under the plate is inert.
+    if (this.#artWait !== null) return;
     // The Gallery handles its own keys (grid, dialog, Escape).
     if (this.#galleryOpen) return;
     // The front screens have keys of their own, and none of a match's.
@@ -2114,6 +2157,20 @@ export class Ruleset7DomAppView {
 
   #render(): void {
     if (this.#destroyed) return;
+    // A match's board is drawn only with its factions' art loaded (bead
+    // pulp_wars-2yc.42). Until then the screen that asked stays up as it
+    // is, and nothing of the match starts: not its music, whose file
+    // would share the link with the art.
+    if (
+      this.#snapshot.view !== null &&
+      (this.#snapshot.phase === "ACTIVE" ||
+        this.#snapshot.phase === "COMPLETE" ||
+        this.#snapshot.phase === "ERROR") &&
+      this.#boardArtPending(
+        this.#snapshot.view.players.map((player) => player.faction),
+      ) !== null
+    )
+      return;
     // A wait for another match's victory wave ends with that match.
     if (
       this.#victoryHold !== null &&
@@ -3633,7 +3690,94 @@ export class Ruleset7DomAppView {
     return main;
   }
 
+  /**
+   * The wait of a board for its factions' art (bead pulp_wars-2yc.42), or
+   * null when the art is loaded (always, without the CHIBI set or the
+   * page's preloader). The first call of a wait makes the screen inert and,
+   * when the wait is noticeable, puts the loading plate over it; when the
+   * art is in, the plate goes and the view is drawn again.
+   */
+  #boardArtPending(factions: readonly FactionIdV7[]): Promise<void> | null {
+    const ensure = this.#ensureFactionAssets;
+    if (ensure === undefined || this.#artSet !== "CHIBI") return null;
+    const look = this.#classicLook ? "CLASSIC" : "LIVE";
+    const key = `${look}:${[...new Set(factions)].sort().join(",")}`;
+    if (this.#artReady.has(key)) return null;
+    if (this.#artWait?.key === key) return this.#artWait.done;
+    this.#endArtWait();
+    const plate = createLoadingPlateV7(this.#document);
+    let pending: Promise<unknown> | null;
+    try {
+      pending = ensure(look, factions, (progress) => plate.update(progress));
+    } catch {
+      // A broken preloader never keeps a board back: it loads on demand.
+      pending = null;
+    }
+    if (pending === null) {
+      this.#artReady.add(key);
+      return null;
+    }
+    const finish = (): void => {
+      // Loaded, failed or out of time: the board is drawn either way.
+      this.#artReady.add(key);
+      if (this.#artWait !== wait) return;
+      this.#endArtWait();
+      if (!this.#destroyed) this.#render();
+    };
+    const wait: BoardArtWaitV7 = {
+      key,
+      done: pending.then(finish, finish),
+      overlay: null,
+      timer: null,
+    };
+    this.#artWait = wait;
+    // The screen that asked stays as it is, out of reach, so nothing
+    // jumps; the plate appears only when the wait is long enough to see.
+    const shell = this.#root.querySelector<HTMLElement>(".v7-app-shell");
+    for (const child of Array.from(shell?.children ?? []))
+      child.setAttribute("inert", "");
+    const show = (): void => {
+      wait.timer = null;
+      if (this.#artWait !== wait || this.#destroyed) return;
+      const overlay = el(this.#document, "div", "v7-art-wait");
+      overlay.dataset.v7ArtWait = "true";
+      overlay.append(plate.root);
+      const host =
+        this.#root.querySelector<HTMLElement>(".v7-app-shell") ??
+        el(this.#document, "div", "v7-app-shell");
+      if (!host.isConnected) {
+        host.dataset.motion = this.#motion.toLowerCase();
+        this.#root.replaceChildren(host);
+      }
+      host.append(overlay);
+      wait.overlay = overlay;
+    };
+    wait.timer = globalThis.setTimeout(show, ART_WAIT_PLATE_DELAY_MS_V7);
+    return wait.done;
+  }
+
+  /** Takes the wait's plate away and gives the screen under it back. */
+  #endArtWait(): void {
+    const wait = this.#artWait;
+    if (wait === null) return;
+    this.#artWait = null;
+    if (wait.timer !== null) globalThis.clearTimeout(wait.timer);
+    wait.overlay?.remove();
+    for (const child of Array.from(
+      this.#root.querySelector(".v7-app-shell")?.children ?? [],
+    ))
+      child.removeAttribute("inert");
+  }
+
   #openGallery(): void {
+    // The Gallery shows every faction: it opens when their art is in.
+    const pending = this.#boardArtPending(FACTION_IDS_V7);
+    if (pending !== null) {
+      void pending.then(() => {
+        if (!this.#destroyed) this.#openGallery();
+      });
+      return;
+    }
     this.#galleryOpen = true;
     this.#gallery ??= new GalleryViewV7(this.#document, {
       storage: this.#settingsStorage,
@@ -9296,6 +9440,8 @@ export class Ruleset7DomAppView {
     return true;
   }
   async #progressAi(): Promise<void> {
+    // No turn is played behind the loading plate (bead pulp_wars-2yc.42).
+    while (this.#artWait !== null) await this.#artWait.done;
     if (this.#destroyed) return;
     const view = this.#controller.snapshot().view;
     if (

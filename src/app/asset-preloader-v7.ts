@@ -14,6 +14,11 @@ import {
  * that needs it loads it on demand with its usual fallback. The whole
  * preload also has a time budget; rasters still in flight when it runs out
  * keep loading and reach the store when they arrive.
+ *
+ * Every preload of one preloader shares its lanes (bead pulp_wars-2yc.42):
+ * the start's, the background's (the faction tiers) and a board's wait for
+ * its factions. A file asked for twice is fetched once, and an `urgent`
+ * preload is started ahead of everything still waiting for a lane.
  */
 
 export interface AssetPreloadProgressV7 {
@@ -67,6 +72,12 @@ export interface AssetPreloadCallOptionsV7 {
    * backdrop) would finish among the last.
    */
   readonly front?: number;
+  /**
+   * Something on screen waits for these files (a board about to be drawn):
+   * they take the next free lanes, ahead of files a background preload
+   * has queued.
+   */
+  readonly urgent?: boolean;
 }
 
 export interface AssetPreloaderV7 {
@@ -77,6 +88,12 @@ export interface AssetPreloaderV7 {
   ): Promise<AssetPreloadResultV7>;
   /** True when every URL is in the store: nothing to wait for. */
   covers(urls: readonly string[]): boolean;
+  /**
+   * True when no URL is left to wait for: each is in the store or has
+   * failed (after its retry; it then loads on demand). A preloader without
+   * it (a test's) is asked `covers`.
+   */
+  settled?(urls: readonly string[]): boolean;
 }
 
 /**
@@ -151,9 +168,66 @@ export function createAssetPreloaderV7<Raster>(
     return false;
   };
 
+  // One queue for every preload of this preloader. A file is in `jobs`
+  // from the moment it is asked for until it has settled; `waiting` holds
+  // those without a lane yet, the urgent ones first.
+  const jobs = new Map<string, Promise<boolean>>();
+  const starters = new Map<string, () => void>();
+  const waiting: string[] = [];
+  const failures = new Set<string>();
+  let urgentWaiting = 0;
+  let flying = 0;
+  /** Starts files until the lanes are full or nothing waits. */
+  const pump = (): void => {
+    while (flying < concurrency) {
+      const url = waiting.shift();
+      if (url === undefined) return;
+      if (urgentWaiting > 0) urgentWaiting -= 1;
+      const start = starters.get(url);
+      starters.delete(url);
+      flying += 1;
+      start?.();
+    }
+  };
+  /** The one fetch of a file, shared by every preload that names it. */
+  const request = (url: string, urgent: boolean): Promise<boolean> => {
+    const known = jobs.get(url);
+    if (known !== undefined) {
+      // Still waiting for a lane: an urgent caller moves it forward.
+      const index = urgent && starters.has(url) ? waiting.indexOf(url) : -1;
+      if (index >= urgentWaiting) {
+        waiting.splice(index, 1);
+        waiting.splice(urgentWaiting, 0, url);
+        urgentWaiting += 1;
+      }
+      return known;
+    }
+    const job = new Promise<boolean>((resolve) => {
+      starters.set(url, () => {
+        void fetchOne(url).then((ok) => {
+          flying -= 1;
+          jobs.delete(url);
+          if (ok) failures.delete(url);
+          else failures.add(url);
+          resolve(ok);
+          pump();
+        });
+      });
+    });
+    jobs.set(url, job);
+    if (urgent) {
+      waiting.splice(urgentWaiting, 0, url);
+      urgentWaiting += 1;
+    } else waiting.push(url);
+    return job;
+  };
+
   return {
     covers(urls) {
       return urls.every((url) => store.has(url));
+    },
+    settled(urls) {
+      return urls.every((url) => store.has(url) || failures.has(url));
     },
     preload(urls, onProgress, call = {}) {
       const distinct = [...new Set(urls)];
@@ -162,15 +236,14 @@ export function createAssetPreloaderV7<Raster>(
       );
       const queue = distinct.filter((url) => !store.has(url));
       const total = queue.length;
-      // The queue keeps the order, so the front is its first files.
-      const front = queue.filter((url) => ahead.has(url)).length;
+      const front = queue.filter((url) => ahead.has(url));
+      const rest = queue.filter((url) => !ahead.has(url));
+      const urgent = call.urgent === true;
       const failed: string[] = [];
       let settled = 0;
-      let next = 0;
-      let flying = 0;
       let resolved = false;
       // The rest waits for the front, when there is one and a rest.
-      let held = front > 0 && front < total;
+      let held = front.length > 0 && rest.length > 0;
       return new Promise<AssetPreloadResultV7>((resolve) => {
         const finish = (): void => {
           if (resolved) return;
@@ -189,37 +262,31 @@ export function createAssetPreloaderV7<Raster>(
           });
         };
         const budget = setTimer(finish, budgetMs);
-        /** Starts files until the lanes are full or the queue is held. */
-        const pump = (): void => {
-          while (flying < concurrency) {
-            const url = queue[next];
-            if (url === undefined || (held && next >= front)) return;
-            next += 1;
-            flying += 1;
-            void fetchOne(url).then((ok) => {
+        /** Asks for files; each reports here when it has settled. */
+        const ask = (list: readonly string[]): void => {
+          for (const url of list)
+            void request(url, urgent).then((ok) => {
               if (!ok) failed.push(url);
               settled += 1;
-              flying -= 1;
               if (!resolved) onProgress?.({ settled, total });
               if (settled === total) {
                 finish();
                 return;
               }
-              // Only the front was in flight while it held the rest.
-              if (held && settled >= front) held = false;
-              pump();
+              // Only the front was asked for while it held the rest.
+              if (held && settled >= front.length) release();
             });
-          }
+          pump();
         };
-        const hold = held
-          ? setTimer(() => {
-              held = false;
-              pump();
-            }, frontHoldMs)
-          : undefined;
+        const release = (): void => {
+          if (!held) return;
+          held = false;
+          ask(rest);
+        };
+        const hold = held ? setTimer(release, frontHoldMs) : undefined;
         onProgress?.({ settled, total });
         if (total === 0) finish();
-        pump();
+        ask(held ? front : queue);
       });
     },
   };

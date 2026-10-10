@@ -434,6 +434,21 @@
   }
 }
 
+/*
+ * A board waiting for its factions' art (pulp_wars-2yc.42): the loading
+ * plate over the screen that asked for the board, which stays as it was
+ * under a scrim, so nothing moves when the plate comes and goes.
+ */
+.v7-art-wait {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: var(--pw-scrim);
+}
+
 /* ---------- Front screens ---------- */
 
 /*

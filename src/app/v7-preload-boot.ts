@@ -1,10 +1,13 @@
 import {
   assetLookV7,
   assetPreloadUrlsV7,
+  assetTiersV7,
+  factionAssetUrlsV7,
   soundAssetUrlsV7,
   type AssetLookV7,
+  type AssetTiersV7,
 } from "../assets/asset-inventory-v7";
-import { prefetchSoundFilesV1 } from "../audio/sound-file-store";
+import { soundFileBytesV1 } from "../audio/sound-file-store";
 import { loadStockSoundPicksV1 } from "../audio/stock-sound-picks";
 import { stockSoundsEnabledV1 } from "../audio/stock-sounds";
 import { SETTINGS_STORAGE_KEY, parseSettings } from "../persistence/index";
@@ -32,22 +35,32 @@ import {
 } from "./v7-bootstrap";
 
 /**
- * The game's start (bead pulp_wars-2yc.6): preload the art of the look in
- * use behind the loading screen, then mount the app. Every screen is drawn
- * by the app mounted here (title and setup, Resume, the campaign, a match,
- * the Showcase, the Gallery), so each of them finds its art already loaded
- * and decoded.
+ * The game's start (bead pulp_wars-2yc.6): preload art behind the loading
+ * screen, then mount the app. Every screen is drawn by the app mounted
+ * here (title and setup, Resume, the campaign, a match, the Showcase, the
+ * Gallery), so each of them finds its art already loaded and decoded.
  *
- * One blocking phase, the whole look (every faction: the Gallery and an
- * eight-player match show them all). The LEGACY set is loaded only when
- * `?art=legacy` selects it; the classic look is part of the live look's
- * inventory. A failed raster never stops the start: the app mounts when
- * the preload settles or its time budget runs out.
+ * The look loads in tiers (bead pulp_wars-2yc.42, `assetTiersV7`). The
+ * start blocks on the FRONT tier only: the loading screen's scene, the
+ * shared art and the factions' emblems, which is everything the screens
+ * before a match draw. Once the app is mounted the sound clips are asked
+ * for, and after them each faction's own art, in the background. A board
+ * is drawn only when the art of its factions is in: the app asks
+ * `ensureFactionAssets` before it shows a match or the Gallery and waits
+ * behind the loading plate for whatever is still on its way, which then
+ * takes the next free lanes. So a board still never draws a stand-in for
+ * art that is downloading.
+ *
+ * The LEGACY set is loaded only when `?art=legacy` selects it (it has no
+ * faction tier); the classic look's own rasters load when the player
+ * switches to it (`ensureLookAssets`). A failed raster never stops the
+ * start: the app mounts when the preload settles or its time budget runs
+ * out.
  *
  * The loading screen is the title scene with the progress bar over it
  * (bead pulp_wars-502h): of a CHIBI look the scene's own files come first
- * in the one preload, so the scene is drawn after about a tenth of it while
- * the bar shows the rest. The legacy art set has no scene.
+ * in the one preload, so the scene is drawn after about a quarter of it
+ * while the bar shows the rest. The legacy art set has no scene.
  */
 export interface PreloadedBootOptionsV7 extends BootstrapRuleset7Options {
   /** The preloader; the browser's (image elements, decoded) by default. */
@@ -61,8 +74,12 @@ export interface PreloadedBootOptionsV7 extends BootstrapRuleset7Options {
   /**
    * Starts fetching the sound files and returns at once; the browser's
    * `fetch` into the sound file store by default (a test passes its own).
+   * Called once the app is mounted. A promise it returns is waited for,
+   * no longer than `soundHoldMs`, before the factions' art starts.
    */
-  readonly prefetchSounds?: (urls: readonly string[]) => void;
+  readonly prefetchSounds?: (urls: readonly string[]) => unknown;
+  /** The longest the factions' art waits for the sound clips. */
+  readonly soundHoldMs?: number;
 }
 
 export interface PreloadedRuleset7App extends BootstrappedRuleset7App {
@@ -75,18 +92,43 @@ export interface PreloadedRuleset7App extends BootstrappedRuleset7App {
    * piece found its art preloaded (the browser smoke asserts it).
    */
   lazyAssetLoads(): readonly string[];
+  /**
+   * True when the background has finished too: every file of the look the
+   * page started in is loaded (or has failed and loads on demand).
+   */
+  assetsSettled(): boolean;
+  /** Settles when the background load of the factions' art has ended. */
+  readonly background: Promise<void>;
 }
 
 export const LOADING_SCREEN_DELAY_MS_V7 = 150;
+/**
+ * The clips are 0.3 MB, two seconds of a "Fast 3G" link: the factions' art
+ * leaves them the link that long, so the first click after the title has
+ * its recording, and no longer when they are slow.
+ */
+export const SOUND_PREFETCH_HOLD_MS_V7 = 4_000;
 
 /**
- * The files the start preloads, in order: the loading screen's scene first
- * (a CHIBI look; the classic look gains the scene's direction rasters, which
- * its title screen draws too), then the look's inventory, each file once.
+ * The tiers the start loads a look in: the loading screen's scene heads
+ * the FRONT tier (a CHIBI look; the classic look gains the scene's
+ * direction rasters, which its title screen draws too).
+ */
+export function startAssetTiersV7(look: AssetLookV7): AssetTiersV7 {
+  return assetTiersV7(look, look === "LEGACY" ? [] : titleSceneAssetUrlsV7());
+}
+
+/**
+ * The files the start waits for, in order: the FRONT tier, the scene
+ * first, each file once.
  */
 export function startPreloadUrlsV7(look: AssetLookV7): readonly string[] {
-  const scene = look === "LEGACY" ? [] : titleSceneAssetUrlsV7();
-  return [...new Set([...scene, ...assetPreloadUrlsV7(look)])];
+  return startAssetTiersV7(look).front;
+}
+
+/** The files the background loads after the title: each faction's tier. */
+export function backgroundPreloadUrlsV7(look: AssetLookV7): readonly string[] {
+  return Object.values(startAssetTiersV7(look).factions).flat();
 }
 
 /** Motion as the app will mount it: the stored setting, else the system's. */
@@ -129,28 +171,21 @@ export async function bootstrapPreloadedRuleset7App(
   const preloader = options.preloader ?? browserAssetPreloaderV7(documentRoot);
   const now = options.now ?? ((): number => performance.now());
 
-  // The sound clips are asked for beside the art and never waited for: the
-  // first screen does not depend on them, and a sound whose clip has not
-  // arrived plays its synthesised fallback.
-  try {
-    // Of a sound with several recordings, the one this browser picked.
-    const sounds = soundAssetUrlsV7(
-      stockSoundsEnabledV1(browser?.location.search ?? ""),
-      loadStockSoundPicksV1(settingsStorage),
-    );
-    if (options.prefetchSounds !== undefined) options.prefetchSounds(sounds);
-    else if (browser !== null && typeof browser.fetch === "function")
-      prefetchSoundFilesV1(sounds, (url) => browser.fetch(url));
-  } catch {
-    // Sound files are optional; the game starts without them.
-  }
-
   const started = now();
   // The interface faces load beside the art: board labels need them drawn.
   const fonts = loadInterfaceFontsV7(documentRoot);
   let screen: ReturnType<typeof mountLoadingScreenV7> | null = null;
   let progress: AssetPreloadProgressV7 | null = null;
-  const urls = startPreloadUrlsV7(look);
+  const tiersByLook = new Map<AssetLookV7, AssetTiersV7>();
+  const tiersOf = (wanted: AssetLookV7): AssetTiersV7 => {
+    let tiers = tiersByLook.get(wanted);
+    if (tiers === undefined) {
+      tiers = startAssetTiersV7(wanted);
+      tiersByLook.set(wanted, tiers);
+    }
+    return tiers;
+  };
+  const urls = tiersOf(look).front;
   const sceneUrls = look === "LEGACY" ? null : titleSceneAssetUrlsV7();
   const show = (): void => {
     screen = mountLoadingScreenV7(documentRoot, root, {
@@ -192,18 +227,78 @@ export async function bootstrapPreloadedRuleset7App(
     markRasterPreloadCompleteV7();
   }
 
+  /** Null when nothing of `wanted` is left to wait for. */
+  const settled = (wanted: readonly string[]): boolean =>
+    preloader.settled?.(wanted) ?? preloader.covers(wanted);
+  const waitFor = (
+    wanted: readonly string[],
+    onProgress?: (progress: AssetPreloadProgressV7) => void,
+  ): Promise<unknown> | null =>
+    settled(wanted)
+      ? null
+      : // Something on screen waits: ahead of the background's files.
+        preloader.preload(wanted, onProgress, { urgent: true });
+
   const app = bootstrapRuleset7App(documentRoot, {
     ...options,
     artSet,
     settingsStorage,
-    ensureLookAssets: (next) => {
-      const urls = assetPreloadUrlsV7(next);
-      return preloader.covers(urls) ? null : preloader.preload(urls);
-    },
+    ensureLookAssets: (next) => waitFor(assetPreloadUrlsV7(next)),
+    ensureFactionAssets: (next, factions, onProgress) =>
+      waitFor(
+        factionAssetUrlsV7(
+          tiersOf(look === "LEGACY" ? "LEGACY" : next),
+          factions,
+        ),
+        onProgress,
+      ),
   });
+
+  // The app is on screen. Now the sound clips (never waited for by a
+  // screen: a sound whose clip has not arrived plays its synthesised
+  // fallback), which no longer share the link with the title's art, and
+  // after them each faction's art.
+  let sounds: unknown = undefined;
+  try {
+    // Of a sound with several recordings, the one this browser picked.
+    const clips = soundAssetUrlsV7(
+      stockSoundsEnabledV1(browser?.location.search ?? ""),
+      loadStockSoundPicksV1(settingsStorage),
+    );
+    if (options.prefetchSounds !== undefined)
+      sounds = options.prefetchSounds(clips);
+    else if (browser !== null && typeof browser.fetch === "function")
+      sounds = Promise.allSettled(
+        clips.map((url) =>
+          soundFileBytesV1(url, (file) => browser.fetch(file)),
+        ),
+      );
+  } catch {
+    // Sound files are optional; the game starts without them.
+  }
+  const rest = Object.values(tiersOf(look).factions).flat();
+  const background = (async (): Promise<void> => {
+    try {
+      if (sounds instanceof Promise)
+        await Promise.race([
+          sounds.catch(() => undefined),
+          new Promise((resolve) =>
+            globalThis.setTimeout(
+              resolve,
+              options.soundHoldMs ?? SOUND_PREFETCH_HOLD_MS_V7,
+            ),
+          ),
+        ]);
+      if (!settled(rest)) await preloader.preload(rest);
+    } catch {
+      // A board then waits for its factions itself, or loads on demand.
+    }
+  })();
   return {
     ...app,
     preload: { ...result, look, milliseconds: Math.round(now() - started) },
     lazyAssetLoads: lazyRasterLoadsV7,
+    assetsSettled: () => settled(rest),
+    background,
   };
 }
