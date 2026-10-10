@@ -191,9 +191,11 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
     // after STAMPEDE and OFFERING after LAY_EGG (73).
     // The Cult's channel (`pulp_wars-mch9.5`) adds SUMMON, CHANNEL, BEHOLD,
     // ANCHOR, and BOO after SEIZE (78).
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(78);
+    // The Cult's rituals (`pulp_wars-mch9.7`) add BEGIN_RITUAL and PROCLAIM
+    // after BOO (80).
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(80);
     const breakOff = COMMAND_KIND_ORDER_V7.indexOf("BREAK_OFF");
-    expect(COMMAND_KIND_ORDER_V7.slice(breakOff, breakOff + 11)).toEqual([
+    expect(COMMAND_KIND_ORDER_V7.slice(breakOff, breakOff + 13)).toEqual([
       "BREAK_OFF",
       "FROST_BOLT",
       "STAMPEDE",
@@ -206,6 +208,9 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
       "BEHOLD",
       "ANCHOR",
       "BOO",
+      // The Cult's rituals (`pulp_wars-mch9.7`).
+      "BEGIN_RITUAL",
+      "PROCLAIM",
       "CAPTURE",
     ]);
     const tractor = COMMAND_KIND_ORDER_V7.indexOf("TRACTOR_BEAM");
@@ -236,7 +241,9 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
     // FAVOUR_GAINED, from FAVOUR_SPENT to DAEMON_UNBOUND (140).
     // The Cult's Unbound (`pulp_wars-mch9.6`) adds DAEMON_BOUND after
     // DAEMON_UNBOUND (141).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(141);
+    // The Cult's rituals (`pulp_wars-mch9.7`) add seven kinds after
+    // DAEMON_BOUND, from RITUAL_BEGUN to CITY_COWED (148).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(148);
     const after = (order: readonly string[], kind: string) =>
       order[order.indexOf(kind) + 1];
     expect(after(DOMAIN_EVENT_KIND_ORDER_V7, "UNITS_RALLIED")).toBe(

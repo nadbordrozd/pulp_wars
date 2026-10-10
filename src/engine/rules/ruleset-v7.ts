@@ -20,6 +20,7 @@ import {
   type FactionTreeIdV7,
   type ImprovementIdV7,
   type ResourceIdV7,
+  type RitualKindV7,
   type TechnologyIdV7,
   type TerrainIdV7,
   type UnitFormV7,
@@ -233,6 +234,12 @@ export type TechnologyUnlockV7 =
    * Harvest Rites): an own city gives up population for Favour.
    */
   | { readonly kind: "OFFERING" }
+  /**
+   * The Cultists (section 7.3): the Great Summoning (the Cult `EXPLOSIVES`,
+   * shown as The Stars Are Right): a Summoner and three chanters call the
+   * Herald for 20 Favour.
+   */
+  | { readonly kind: "GREAT_SUMMONING" }
   | { readonly kind: "OVERRUN" }
   | {
       readonly kind: "CHARGE_BONUS";
@@ -443,7 +450,15 @@ export type UnitRoleAbilityV7 =
   | "CHANNEL"
   | "BEHOLD"
   | "ANCHOR"
-  | "BOO";
+  | "BOO"
+  // The Cultists (`pulp_wars-mch9.7`, sections 7.4, 4.2, and 8.6): the
+  // Stargazer's Star-fall, and the Herald's Ravage, Unstoppable, and
+  // Proclaim. (The Great Summoning is the Summoner's, by the capability
+  // `greatSummoning`.)
+  | "STARFALL"
+  | "RAVAGE"
+  | "UNSTOPPABLE"
+  | "PROCLAIM";
 
 /**
  * The Martian revision (section 7): how a land-form unit moves. `STRIDE`
@@ -839,6 +854,14 @@ export interface RoleMechanicsV7 {
    * kind, has the `ANCHOR` ability literal. 0 for every other role.
    */
   readonly anchorStrands: number;
+  /**
+   * The Cultists (`pulp_wars-mch9.7`, section 4.2): Ravage, the attacks a
+   * land-form unit of the role may make in each of its owner's turns, after
+   * its Move or without one (the Herald 2; a Proclaim takes the place of
+   * one). 1 for every other role (the Clockwork Gunner's second shot is
+   * `unmovedShots`, which a Move forfeits).
+   */
+  readonly ravageAttacks: 1 | 2;
 }
 
 export interface FactionTechnologyTreeV7 {
@@ -1766,6 +1789,7 @@ const mechanics = (
           robed: false,
           martyrFavour: 0,
           anchorStrands: 0,
+          ravageAttacks: 1,
           ...overrides[roleId],
         },
       ]),
@@ -3781,8 +3805,9 @@ export function rebakeHpV7(role: UnitRoleIdV7): number {
  * rule (`pulp_wars-mch9.4` to `.8`), so that no surface names an ability
  * that does nothing. So far (`pulp_wars-mch9.4`): Administration grants
  * `SUMMONER_SUPPORT` (the Summoner's Sacrifice and Seize) and Farming
- * (displayed as Harvest Rites) grants `OFFERING`; Switcheroo at Scouting and
- * the Great Summoning at Explosives are still to come.
+ * (displayed as Harvest Rites) grants `OFFERING`; `pulp_wars-mch9.7`:
+ * Explosives (The Stars Are Right) grants `GREAT_SUMMONING`. Switcheroo at
+ * Scouting is still to come.
  */
 export const CULT_BASELINE_V1_NODES: readonly TechnologyNodeV7[] = deepFreeze(
   SHARED_BASELINE_NODES_V7.map((original) =>
@@ -3800,6 +3825,11 @@ export const CULT_BASELINE_V1_NODES: readonly TechnologyNodeV7[] = deepFreeze(
       ),
       // `pulp_wars-mch9.4` (section 5.3): Harvest Rites, the Offering.
       ...(original.id === "FARMING" ? [{ kind: "OFFERING" } as const] : []),
+      // `pulp_wars-mch9.7` (section 7.3): The Stars Are Right, the Great
+      // Summoning.
+      ...(original.id === "EXPLOSIVES"
+        ? [{ kind: "GREAT_SUMMONING" } as const]
+        : []),
     ]),
   ),
 );
@@ -3908,7 +3938,8 @@ export const CULT_ROLE_RULES_V7: Readonly<
   }),
   // The Stargazer has no attack of its own: no `ATTACK`, Attack 0, and no
   // reach, so it never strikes back either (the neutral Bigfoot's shape).
-  // Star-fall is its ritual (`pulp_wars-mch9.7`).
+  // Star-fall is its ritual (`pulp_wars-mch9.7`, section 7.4): the
+  // `STARFALL` ability, which it leads only when it has not moved.
   CATAPULT: role({
     role: "CATAPULT",
     label: "Stargazer",
@@ -3923,7 +3954,7 @@ export const CULT_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: "SAWMILLING",
     mayUsePrimaryActionAfterMove: false,
-    abilities: ["CAPTURE", "CHANNEL"],
+    abilities: ["CAPTURE", "CHANNEL", "STARFALL"],
   }),
   // The Caller: much weaker than a Knight in its own fight, no Overrun.
   KNIGHT: role({
@@ -4016,6 +4047,31 @@ export const CHANNEL_RANGE_V7 = 3 as const;
  * the channeller it holds (so the strand counts three).
  */
 export const ANCHOR_STRANDS_V7 = 2 as const;
+/**
+ * The Cultists (`pulp_wars-mch9.7`, section 7.4): Star-fall. The fixed
+ * damage of a star with no chanter left, what each chanter still in the
+ * ritual adds, and the nearest and farthest (Chebyshev) the marked tile may
+ * be from the Stargazer.
+ */
+export const STARFALL_BASE_DAMAGE_V7 = 5 as const;
+export const STARFALL_CHANTER_DAMAGE_V7 = 1 as const;
+export const STARFALL_MINIMUM_RANGE_V7 = 2 as const;
+export const STARFALL_MAXIMUM_RANGE_V7 = 4 as const;
+/** The Cultists (section 7.2): the chanters each rite needs to go on. */
+export const RITUAL_MINIMUM_CHANTERS_V7: Readonly<
+  Record<RitualKindV7, number>
+> = deepFreeze({ STARFALL: 1, GREAT_SUMMONING: 3 });
+/** The Cultists (section 8.6): the farthest (Chebyshev) a Proclaim reaches. */
+export const PROCLAIM_RANGE_V7 = 3 as const;
+/** The Cultists (section 4.2): Ravage, the Herald's attacks in a turn. */
+export const RAVAGE_ATTACKS_V7 = 2 as const;
+/**
+ * The Cultists (section 7.4): the damage of a star that `chanters` chanters
+ * still chant for: 5, plus 1 for each.
+ */
+export function starfallDamageV7(chanters: number): number {
+  return STARFALL_BASE_DAMAGE_V7 + STARFALL_CHANTER_DAMAGE_V7 * chanters;
+}
 
 /**
  * The Cult engine mechanics (section 4.1): no role builds Field Defense; the
@@ -4093,6 +4149,12 @@ export interface SummonedRoleRuleV7 {
   readonly value: number;
   /** A daemon moves like a Martian walker; the Tentacle is rooted. */
   readonly movementMode: MovementModeV7;
+  /**
+   * Unstoppable (`pulp_wars-mch9.7`, section 4.2): no status sticks to the
+   * unit and nothing shoves it (the Herald). Read with
+   * {@link unitIsUnstoppableV7}.
+   */
+  readonly unstoppable: boolean;
 }
 
 /**
@@ -4118,6 +4180,7 @@ export const CULT_SUMMONED_ROLE_RULES_V7: Readonly<
     control: HORROR_CONTROL_V7,
     value: 6,
     movementMode: "STRIDE",
+    unstoppable: false,
   },
   HERALD: {
     id: "HERALD",
@@ -4132,6 +4195,7 @@ export const CULT_SUMMONED_ROLE_RULES_V7: Readonly<
     control: HERALD_CONTROL_V7,
     value: 24,
     movementMode: "STRIDE",
+    unstoppable: true,
   },
   TENTACLE: {
     id: "TENTACLE",
@@ -4146,6 +4210,7 @@ export const CULT_SUMMONED_ROLE_RULES_V7: Readonly<
     control: null,
     value: 0,
     movementMode: "GROUND",
+    unstoppable: false,
   },
 });
 
@@ -4167,13 +4232,15 @@ export function summonedRoleRuleV7(id: SummonedRoleIdV7): SummonedRoleRuleV7 {
  * (the Giant Spider's `JUGGERNAUT` is the precedent). Every rule read goes
  * through `unitRoleRuleV7` and `unitRoleMechanicsV7`, which return the
  * registrations below for a unit that carries the field, whatever roster
- * they are given. Only the Horror is on the board so far; the Herald
- * (`pulp_wars-mch9.7`) and the Tentacle (`pulp_wars-mch9.8`) get their
- * mechanical roles with their beads.
+ * they are given. The Horror's is `KNIGHT`; the Herald's
+ * (`pulp_wars-mch9.7`) is `JUGGERNAUT`, the big body's, the same as its
+ * Unbound breed's (`NEUTRAL_ROLE_RULES_V7.HERALD.role`): no Mind Control,
+ * Swallow, Tractor Beam, Knockback, Bounce, or Seizure takes that role. The
+ * Tentacle (`pulp_wars-mch9.8`) gets its mechanical role with its bead.
  */
 export const SUMMONED_MECHANICAL_ROLES_V7: Readonly<
   Partial<Record<SummonedRoleIdV7, UnitRoleIdV7>>
-> = deepFreeze({ HORROR: "KNIGHT" });
+> = deepFreeze({ HORROR: "KNIGHT", HERALD: "JUGGERNAUT" });
 
 /** The summoned roles a unit on the board may carry (in the frozen order). */
 export const BOARD_SUMMONED_ROLE_IDS_V7: readonly SummonedRoleIdV7[] =
@@ -4191,6 +4258,23 @@ export interface SummonedUnitRefV7 {
 /** Whether the unit is a summoned unit (a daemon; later, a Tentacle). */
 export function unitIsSummonedV7(unit: SummonedUnitRefV7): boolean {
   return unit.summoned !== undefined;
+}
+
+/**
+ * The Cultists (`pulp_wars-mch9.7`, section 4.2): whether the unit is
+ * Unstoppable (the Herald, bound or Unbound). No status sticks to it:
+ * Frozen (a Frost Bolt, a Cold Snap, Black Ice, Frostbite), Stuck,
+ * Toothache, Splatted, Cracked. Nothing shoves it: no Push, Charge! push,
+ * Knockback, Tractor Beam, Bounce, Boo!, or gate shove moves it (its
+ * registration is `immovable`), and a Crushing Shove it does not yield to
+ * crushes it, as damage. Plague, a bite, Infect, Mind Control, and Swallow
+ * never take a daemon. Damage of every kind hurts it.
+ */
+export function unitIsUnstoppableV7(unit: SummonedUnitRefV7): boolean {
+  return (
+    unit.summoned !== undefined &&
+    CULT_SUMMONED_ROLE_RULES_V7[unit.summoned].unstoppable
+  );
 }
 
 /**
@@ -4217,6 +4301,55 @@ const SUMMONED_UNIT_ROLE_RULES_V7: Readonly<
     mayUsePrimaryActionAfterMove: true,
     abilities: ["ATTACK", "CAPTURE", "BOO", "STRIDE"],
   },
+  // The Herald (`pulp_wars-mch9.7`): it attacks twice a turn (Ravage),
+  // captures while bound, ignores fortification and every status and shove
+  // (Unstoppable), and Proclaims.
+  HERALD: {
+    role: "JUGGERNAUT",
+    label: CULT_SUMMONED_ROLE_RULES_V7.HERALD.label,
+    tacticalRole: "MYTHIC",
+    cost: null,
+    maxHp: CULT_SUMMONED_ROLE_RULES_V7.HERALD.maxHp,
+    attack2: CULT_SUMMONED_ROLE_RULES_V7.HERALD.attack2,
+    defense2: CULT_SUMMONED_ROLE_RULES_V7.HERALD.defense2,
+    move: CULT_SUMMONED_ROLE_RULES_V7.HERALD.move,
+    range: CULT_SUMMONED_ROLE_RULES_V7.HERALD.range,
+    minimumRange: CULT_SUMMONED_ROLE_RULES_V7.HERALD.minimumRange,
+    sightRadius: 1,
+    technology: null,
+    mayUsePrimaryActionAfterMove: true,
+    abilities: [
+      "ATTACK",
+      "CAPTURE",
+      "RAVAGE",
+      "UNSTOPPABLE",
+      "PROCLAIM",
+      "STRIDE",
+    ],
+  },
+});
+
+/**
+ * The Cultists (`pulp_wars-mch9.7`, section 4.2): the Herald's mechanics, a
+ * seat's or nobody's: Ravage and Unstoppable are the body's rules.
+ */
+const HERALD_ROLE_MECHANICS_V7: RoleMechanicsV7 = deepFreeze({
+  ...ORIGINAL_ROLE_MECHANICS_V7.JUGGERNAUT,
+  advancesAfterKill: false,
+  buildsFieldDefense: false,
+  construct: true,
+  movementMode: CULT_SUMMONED_ROLE_RULES_V7.HERALD.movementMode,
+  ignoresFortification: true,
+  immovable: true,
+  ravageAttacks: RAVAGE_ATTACKS_V7,
+  crushDamage: 0,
+  swallowMaxHp: 0,
+  tossRange: 0,
+  stompDamage: 0,
+  trampleDamage: 0,
+  glacialSmashHp: 0,
+  siegeHammer: false,
+  breakOffHp: 0,
 });
 
 /**
@@ -4234,6 +4367,12 @@ const SUMMONED_UNIT_ROLE_MECHANICS_V7: Readonly<
     construct: true,
     movementMode: CULT_SUMMONED_ROLE_RULES_V7.HORROR.movementMode,
   },
+  // The Herald (`pulp_wars-mch9.7`, section 4.2). Ravage: two attacks a
+  // turn and never an advance. Unstoppable: its attacks ignore the
+  // defender's fortification (cover stays) and destroy a Field Defense on
+  // the target's tile, and nothing moves it. It has none of the giants'
+  // signatures (it shares their mechanical role only).
+  HERALD: HERALD_ROLE_MECHANICS_V7,
 });
 
 /** The role rule of a summoned unit on the board; `RangeError` otherwise. */
@@ -4714,12 +4853,12 @@ export const NEUTRAL_ROLE_RULES_V7: Readonly<
     mayUsePrimaryActionAfterMove: true,
     abilities: ["ATTACK", "STRIDE"],
   },
-  // The Herald is summoned from `pulp_wars-mch9.7`, which names its
-  // mechanical role in `SUMMONED_MECHANICAL_ROLES_V7` and must keep this
-  // `role` equal to it. Until then the neutral registration holds the big
-  // body's role (`JUGGERNAUT`, the Giant Spider's: no Push, Swallow, or
-  // Shatter takes it). Ravage's two attacks are `RAMPAGE_ATTACKS_V7`;
-  // Unstoppable arrives with the Herald itself.
+  // The Herald (`pulp_wars-mch9.7`): this `role` is its mechanical role
+  // (`SUMMONED_MECHANICAL_ROLES_V7.HERALD`, the big body's `JUGGERNAUT`, the
+  // Giant Spider's: no Push, Swallow, or Shatter takes it). An Unbound
+  // Herald's two attacks are `RAMPAGE_ATTACKS_V7`, and its attacks still
+  // ignore fortification (Unstoppable is the body's rule); it does not
+  // capture or Proclaim.
   HERALD: {
     role: "JUGGERNAUT",
     label: `Unbound ${CULT_SUMMONED_ROLE_RULES_V7.HERALD.label}`,
@@ -4734,7 +4873,7 @@ export const NEUTRAL_ROLE_RULES_V7: Readonly<
     sightRadius: 0,
     technology: null,
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "STRIDE"],
+    abilities: ["ATTACK", "UNSTOPPABLE", "STRIDE"],
   },
 });
 
@@ -4791,11 +4930,9 @@ export const NEUTRAL_ROLE_MECHANICS_V7: Readonly<
     construct: true,
     movementMode: CULT_SUMMONED_ROLE_RULES_V7.HORROR.movementMode,
   },
-  HERALD: {
-    ...NEUTRAL_MONSTER_ROLE_MECHANICS_V7,
-    construct: true,
-    movementMode: CULT_SUMMONED_ROLE_RULES_V7.HERALD.movementMode,
-  },
+  // `pulp_wars-mch9.7`: the Herald's own mechanics (it never advances and
+  // has no Shield as it is); the rampage counts its attacks itself.
+  HERALD: HERALD_ROLE_MECHANICS_V7,
 });
 
 /** Section 8.1: the faction-wide rules of the neutral registration. */
@@ -4964,7 +5101,7 @@ export const RULESET_7 = deepFreeze({
  * a technology of tier `t` costs `5 / 7 / 9 + (T - 1)`, `T` being the
  * technologies the researcher already owns.
  *
- * The economy rejig (`pulp_wars-w49.16`, `pulp-wars-poc-7r76`,
+ * The economy rejig (`pulp_wars-w49.16`, `pulp-wars-poc-7r77`,
  * docs/product/RULESET_7_ECONOMY_REJIG.md): the price is per city again and
  * the technologies owned no longer enter it. A technology of tier `t`
  * costs `5 / 7 / 9 + (1 / 2 / 3) * (C - 1)`, `C` being the cities the
@@ -5268,6 +5405,9 @@ export const MIND_CONTROLLED_LOST_ABILITIES_V7: readonly UnitRoleAbilityV7[] =
     "SUMMON",
     "CHANNEL",
     "ANCHOR",
+    // `pulp_wars-mch9.7` (section 7.1): rituals need a Cult seat. (The
+    // Great Summoning is led by `SUMMON`, lost above.)
+    "STARFALL",
   ]);
 
 const CONTROLLED_ROLE_RULES_V7 = new WeakMap<
@@ -6684,6 +6824,11 @@ export interface TechnologyCapabilitiesV7 {
    * Rites, the player's cities may make an Offering.
    */
   readonly offering: boolean;
+  /**
+   * The Cultists (section 7.3): The Stars Are Right, the player's Summoners
+   * may lead the Great Summoning.
+   */
+  readonly greatSummoning: boolean;
 }
 
 export function technologyCapabilitiesV7(
@@ -6753,6 +6898,7 @@ export function technologyCapabilitiesV7(
   let iceTurns: number = ICE_TURNS_V7;
   let iceCover = false;
   let offering = false;
+  let greatSummoning = false;
   for (const unlock of unlocks)
     switch (unlock.kind) {
       case "COMMAND":
@@ -6886,6 +7032,9 @@ export function technologyCapabilitiesV7(
       case "OFFERING":
         offering = true;
         break;
+      case "GREAT_SUMMONING":
+        greatSummoning = true;
+        break;
       case "SUMMONER_SUPPORT":
       case "CONFECTIONER_SUPPORT":
       case "ENGINEER_SUPPORT":
@@ -6970,6 +7119,7 @@ export function technologyCapabilitiesV7(
     iceTurns,
     iceCover,
     offering,
+    greatSummoning,
   });
   TECHNOLOGY_CAPABILITIES_CACHE_V7.set(cacheKey, result);
   if (TECHNOLOGY_CAPABILITIES_CACHE_V7.size > 32) {

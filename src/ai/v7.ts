@@ -10804,6 +10804,12 @@ function isPolicyCandidate(
     command.kind === "BOO"
   )
     return false;
+  // Rituals and Proclaim (`pulp_wars-mch9.7`): likewise until the Cult AI
+  // beads (`pulp_wars-mch9.11`: the Great Summoning, Star-fall, the Herald
+  // and Proclaim). A Great Summoning spends 20 Favour and a star hurts
+  // friend and foe, so neither may be picked by a general rule.
+  if (command.kind === "BEGIN_RITUAL" || command.kind === "PROCLAIM")
+    return false;
   // The frozen sea (`pulp_wars-5ti.5`, RULESET_7_NAVAL_BRANCH.md section
   // 13.2): a Freeze only with a reason (a ship to lock in, the next tile of
   // the crossing, a crossing tile to keep, home ice): `iceFreezeScoreV7`.

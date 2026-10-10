@@ -3,6 +3,7 @@ import {
   ACHIEVEMENT_IDS_V7,
   COMMAND_KIND_ORDER_V7,
   REWARD_IDS_V7,
+  RITUAL_KINDS_V7,
   TECHNOLOGY_IDS_V7,
   UNIT_ROLE_IDS_V7,
   isNavalRoleV7,
@@ -11,6 +12,7 @@ import {
   type AchievementIdV7,
   type CoordV7,
   type RewardIdV7,
+  type RitualKindV7,
   type TechnologyIdV7,
   type UnitRoleIdV7,
 } from "./types";
@@ -364,6 +366,29 @@ export type CommandV7 =
     }
   | {
       /**
+       * The Cultists (sections 7.3 and 7.4): the leader `unitId` and every
+       * own robed cultist beside it that has not used a primary action begin
+       * the ritual `ritual`, which completes at the seat's next Start Turn.
+       * `STARFALL`: a Stargazer that has not moved marks the tile `at`, 2 to
+       * 4 tiles away. `GREAT_SUMMONING`: a Summoner with three chanters
+       * marks the tile `at` next to it, for 20 Favour.
+       */
+      readonly kind: "BEGIN_RITUAL";
+      readonly ritual: RitualKindV7;
+      readonly unitId: UnitId;
+      readonly at: CoordV7;
+    }
+  | {
+      /**
+       * The Cultists (section 8.6): the bound Herald `unitId` spends one of
+       * its attacks to Cow the hostile city `cityId` within 3 tiles.
+       */
+      readonly kind: "PROCLAIM";
+      readonly unitId: UnitId;
+      readonly cityId: CityId;
+    }
+  | {
+      /**
        * The Cultists (section 5.3): the own city `cityId` gives up 2
        * population for 3 Favour, as its city action.
        */
@@ -605,6 +630,35 @@ export function parseCommandV7(input: unknown): CommandParseResultV7 {
     return unit === null || cultist === null || unit === cultist
       ? invalid(kind)
       : { ok: true, value: { kind, unitId: unit, cultistUnitId: cultist } };
+  }
+  // The Cultists (`pulp_wars-mch9.7`).
+  if (kind === "BEGIN_RITUAL") {
+    if (!hasExactKeysV7(input, ["at", "kind", "ritual", "unitId"]))
+      return invalid(kind);
+    const unit = parseUnitIdV7(candidate.unitId);
+    const at = parseCoordV7(candidate.at);
+    return unit === null ||
+      at === null ||
+      !RITUAL_KINDS_V7.includes(candidate.ritual as RitualKindV7)
+      ? invalid(kind)
+      : {
+          ok: true,
+          value: {
+            kind,
+            ritual: candidate.ritual as RitualKindV7,
+            unitId: unit,
+            at,
+          },
+        };
+  }
+  if (kind === "PROCLAIM") {
+    if (!hasExactKeysV7(input, ["cityId", "kind", "unitId"]))
+      return invalid(kind);
+    const unit = parseUnitIdV7(candidate.unitId);
+    const cityId = parseCityIdV7(candidate.cityId);
+    return unit === null || cityId === null
+      ? invalid(kind)
+      : { ok: true, value: { kind, unitId: unit, cityId } };
   }
   if (kind === "BEAM_DOWN") {
     if (!hasExactKeysV7(input, ["kind", "unitId", "passengerUnitId", "to"]))
@@ -1002,6 +1056,11 @@ function referencedOrdinal(command: CommandV7): number {
   if (command.kind === "SUMMON") return command.helperUnitId;
   if (command.kind === "CHANNEL") return command.daemonUnitId;
   if (command.kind === "ANCHOR") return command.cultistUnitId;
+  // `BEGIN_RITUAL` by marked tile, leader, then rite; `PROCLAIM` by Herald,
+  // then city.
+  if (command.kind === "BEGIN_RITUAL")
+    return RITUAL_KINDS_V7.indexOf(command.ritual);
+  if (command.kind === "PROCLAIM") return command.cityId;
   if (command.kind === "HATCH") return command.eggUnitId;
   return 0;
 }

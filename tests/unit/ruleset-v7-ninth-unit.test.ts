@@ -389,11 +389,11 @@ const productionOf = (
 
 describe("the ninth unit: identity", () => {
   it("was 7r55 after 7r54, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r76");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r76.current");
-    expect(PRIOR_RULESET_7_IDS.at(-22)).toBe("pulp-wars-poc-7r54");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r77");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r77.current");
+    expect(PRIOR_RULESET_7_IDS.at(-23)).toBe("pulp-wars-poc-7r54");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-22)).toBe(
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-23)).toBe(
       "pulpWars.save.v7r54.current",
     );
     const state = field([]);
@@ -434,7 +434,9 @@ describe("the ninth unit: identity", () => {
     // FAVOUR_GAINED, from FAVOUR_SPENT to DAEMON_UNBOUND (140).
     // The Cult's Unbound (`pulp_wars-mch9.6`) adds DAEMON_BOUND after
     // DAEMON_UNBOUND (141).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(141);
+    // The Cult's rituals (`pulp_wars-mch9.7`) add seven kinds after
+    // DAEMON_BOUND, from RITUAL_BEGUN to CITY_COWED (148).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(148);
   });
 });
 

@@ -396,7 +396,10 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       // BEHOLD, ANCHOR, and BOO after SEIZE, moving the later command kinds
       // forward by five (was 8cc916…cd81); the revision-12-ordinal value is
       // unchanged.
-      "1ae9a8acc2d6555af6ead8da17c1840a4100ac9f8b4b77379f56c536c46c4ed7",
+      // The Cult's rituals (`pulp_wars-mch9.7`) insert BEGIN_RITUAL and
+      // PROCLAIM after BOO, moving the later command kinds forward by two
+      // (was 1ae9a8…4ed7); the revision-12-ordinal value is unchanged.
+      "a53eaf4253bd0c3009354d61b5d53b2c33ac73e5c1bac88efea30661bc8a2d94",
     );
     // Revision 13 shifts the command-kind ordinals in AI tie-break tuples
     // (spec section 8); this is the value with revision-12 ordinals
@@ -1216,7 +1219,10 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       // BEHOLD, ANCHOR, and BOO after SEIZE, moving the later command kinds
       // forward by five (was 563e20…870f); the revision-12-ordinal value is
       // unchanged.
-      "b284350a693488b642da01d4aaea4fa1362133376e8b06b5ccf300dec4a29659",
+      // The Cult's rituals (`pulp_wars-mch9.7`) insert BEGIN_RITUAL and
+      // PROCLAIM after BOO, moving the later command kinds forward by two
+      // (was b28435…9659); the revision-12-ordinal value is unchanged.
+      "7fa088ac91fc7bfa9275ca4b2cab669bfd157873ce9637d70f9e5c5a2b061bd4",
     );
     expect(
       canonicalHash(withRevision12CandidateOrdinalsV7(revision4Candidates)),
@@ -1237,7 +1243,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     const source = upgradeRetainedPublicViewV7(retained);
 
     expect(canonicalJson(retained)).toBe(retainedBytes);
-    expect(source.rulesetId).toBe("pulp-wars-poc-7r76");
+    expect(source.rulesetId).toBe("pulp-wars-poc-7r77");
     expect(source.viewer.factionTreeId).toBe("ORIGINAL_BASELINE_V5");
     expect(
       source.players.every(

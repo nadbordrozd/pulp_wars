@@ -169,7 +169,10 @@ export const RULESET7_LATE_PUBLIC_VIEW_NORMAL_DECISION = Object.freeze({
     // BEHOLD, ANCHOR, and BOO after SEIZE, moving the later command kinds
     // forward by five (was 2b64e3…7b6e); the revision-12-ordinal value is
     // unchanged.
-    "b23def3b11a4b0dce4b75a524dc99b9deb2b187ca9b117a398b0b501365c0b7e",
+    // The Cult's rituals (`pulp_wars-mch9.7`) insert BEGIN_RITUAL and
+    // PROCLAIM after BOO, moving the later command kinds forward by two
+    // (was b23def…0b7e); the revision-12-ordinal value is unchanged.
+    "68445a812766ad559b53e38d58c8ba018d7af4b051df7a8dd8f0132051ed5827",
   command: Object.freeze({
     kind: "TRAIN",
     cityId: 16,
@@ -258,10 +261,10 @@ export function upgradeRetainedPublicViewV7(
   });
   return {
     ...retained,
-    rulesetId: "pulp-wars-poc-7r76",
+    rulesetId: "pulp-wars-poc-7r77",
     setup: {
       ...retained.setup,
-      rulesetId: "pulp-wars-poc-7r76",
+      rulesetId: "pulp-wars-poc-7r77",
       mapType: "DRY_LAND",
       mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
       curiosities: false,
@@ -394,7 +397,15 @@ export function upgradeRetainedPublicViewV7(
     // The giants' signatures (`pulp_wars-w49.30`): nor any held victim.
     giants: { swallowed: [] },
     // The Cultists (`pulp_wars-mch9.4`): nor any Cult seat's Favour.
-    cult: { favour: [], strands: [], grips: [], idols: [], daemons: [] },
+    cult: {
+      favour: [],
+      strands: [],
+      grips: [],
+      idols: [],
+      daemons: [],
+      rituals: [],
+      cowed: [],
+    },
   };
 }
 import {

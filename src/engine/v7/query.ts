@@ -68,7 +68,10 @@ import {
   kaboomReadyV7,
   unitMovementModeV7,
   unitIsSummonedV7,
+  unitIsUnstoppableV7,
   CULT_SUMMONED_ROLE_RULES_V7,
+  STARFALL_MAXIMUM_RANGE_V7,
+  starfallDamageV7,
   unitRoleMechanicsV7,
   isRangedRoleRuleV7,
   unitRoleRuleV7,
@@ -135,6 +138,7 @@ import {
   arePlayersAlliedV7,
   arePlayersHostileV7,
   assignedUnitCountV7,
+  cityIsCowedV7,
   cityLevelIncomeV7,
   cityUnitCapacityV7,
   cooperativeAlliesV7,
@@ -319,6 +323,18 @@ import {
   unitIsUnboundV7,
   type RampageBoardV7,
 } from "./cult-unbound";
+import {
+  attacksLeftV7,
+  beginRitualRejectionV7,
+  proclaimRejectionV7,
+  ritualChantersV7,
+  ritualFavourCostV7,
+  ritualLeaderAbilityV7,
+  starfallAreaV7,
+  starfallResultsV7,
+  summoningMarkOutcomeV7,
+  type RitualTileFactsV7,
+} from "./cult-rituals";
 import { laidEggHpV7, laidEggTurnsV7, publicNestTilesV7 } from "./eggs";
 import {
   stampedeActorRejectionV7,
@@ -346,6 +362,7 @@ import {
   ACHIEVEMENT_IDS_V7,
   NAVAL_ROLE_IDS_V7,
   REWARD_IDS_V7,
+  RITUAL_KINDS_V7,
   TECHNOLOGY_IDS_V7,
   UNIT_ROLE_IDS_V7,
   cityOfferedPopulationV7,
@@ -362,6 +379,7 @@ import {
   type AchievementIdV7,
   type GameStateV7,
   type ImprovementIdV7,
+  type RitualKindV7,
   type TechnologyIdV7,
   type SummonedRoleIdV7,
   type UnitRoleIdV7,
@@ -389,6 +407,7 @@ import {
   viewForV7,
   type PlayerTileViewV7,
   type PlayerViewV7,
+  type PublicRitualV7,
   type PublicUnitV7,
 } from "./view";
 import {
@@ -1548,6 +1567,79 @@ function appendPublicCultCommandsV7(
     booRejectionV7(view, view.units, unit) === null
   )
     candidates.push({ kind: "BOO", unitId: unit.id });
+  // Rituals and the Herald (`pulp_wars-mch9.7`, sections 7 and 8.6), each
+  // offered exactly when the reducer accepts it (the shared legality
+  // predicates of src/engine/v7/cult-rituals.ts): the chanters are own
+  // units, Favour and the technologies are the viewer's, and a mark is a
+  // tile the viewer has explored.
+  for (const ritual of RITUAL_KINDS_V7) {
+    if (!abilities.includes(ritualLeaderAbilityV7(ritual))) continue;
+    const seat = publicRitualSeatV7(view);
+    const facts = publicRitualTileFactsV7(view);
+    const reach = ritual === "STARFALL" ? STARFALL_MAXIMUM_RANGE_V7 : 1;
+    marks: for (let y = unit.at.y - reach; y <= unit.at.y + reach; y += 1)
+      for (let x = unit.at.x - reach; x <= unit.at.x + reach; x += 1) {
+        if (x < 0 || y < 0 || x >= view.board.width || y >= view.board.height)
+          continue;
+        const rejection = beginRitualRejectionV7(
+          view,
+          facts,
+          seat,
+          view.units,
+          unit,
+          ritual,
+          { x, y },
+        );
+        if (rejection === null)
+          candidates.push({
+            kind: "BEGIN_RITUAL",
+            ritual,
+            unitId: unit.id,
+            at: { x, y },
+          });
+        // Every other reason holds for every tile.
+        else if (
+          rejection.code !== "RITUAL_NOT_LEGAL" ||
+          rejection.reason !== "TILE"
+        )
+          break marks;
+      }
+  }
+  if (abilities.includes("PROCLAIM"))
+    for (const city of view.cities)
+      if (proclaimRejectionV7(view, unit, city) === null)
+        candidates.push({
+          kind: "PROCLAIM",
+          unitId: unit.id,
+          cityId: city.id,
+        });
+}
+
+/** The Cultists (section 7): the viewer's Favour and The Stars Are Right. */
+function publicRitualSeatV7(view: PlayerViewV7): {
+  readonly favour: number;
+  readonly greatSummoning: boolean;
+} {
+  return {
+    favour: favourOfV7(view, view.viewer.id),
+    greatSummoning: technologyCapabilitiesV7(
+      view.viewer.researchedTechs,
+      view.viewer.faction,
+    ).greatSummoning,
+  };
+}
+
+/**
+ * The Cultists (section 7): the tile facts of a ritual in a view (every
+ * unit, mound, and Barricade on an explored tile is visible).
+ */
+function publicRitualTileFactsV7(view: PlayerViewV7): RitualTileFactsV7 {
+  return {
+    ...publicGiantTileFactsV7(view),
+    obstacle: (at) =>
+      moundAtV7(view, at) !== undefined ||
+      barricadeAtV7(view, at) !== undefined,
+  };
 }
 
 /**
@@ -4384,6 +4476,256 @@ export function previewRampageV7(
 }
 
 /**
+ * The Cultists (`pulp_wars-mch9.7`, section 7.4): what a star on `at` does
+ * as the viewer's board stands: its damage (5, plus 1 for each chanter), its
+ * area (the marked tile and the eight around it), the hit on every unit the
+ * viewer sees there (friend and foe; fixed damage, after Armoured, Plated,
+ * and a Shield), and the Field Defense and Barricades it destroys. `exact`
+ * is false when a tile of the area is unexplored (a unit the viewer does
+ * not see may stand there). The units may move before it lands.
+ */
+export interface StarfallForecastV7 {
+  readonly at: CoordV7;
+  readonly chanters: number;
+  readonly damage: number;
+  readonly area: readonly CoordV7[];
+  readonly results: readonly (CombatSplashEntryV7 & {
+    readonly ownerId: PlayerId;
+  })[];
+  readonly fieldDefenses: readonly CoordV7[];
+  readonly barricades: readonly CoordV7[];
+  readonly exact: boolean;
+}
+
+/**
+ * The Cultists (section 7.3): what the Great Summoning does on its mark as
+ * the viewer's board stands: the Herald `ARRIVES` on a free mark; the unit
+ * on it is consumed (`CONSUMES`, for `favour`; `hostile` for a broken
+ * enemy) and the Herald arrives; or the arrival is `BLOCKED` (by `unitId`,
+ * or, with `unitId` null, because the Herald cannot stand there any more).
+ * `strands` are the strands the Herald starts with (the leader's and every
+ * chanter's, less a chanter that is consumed) against its `control`.
+ */
+export interface SummoningForecastV7 {
+  readonly at: CoordV7;
+  readonly outcome: "ARRIVES" | "CONSUMES" | "BLOCKED";
+  readonly unitId: UnitId | null;
+  readonly hostile: boolean;
+  readonly favour: number;
+  readonly control: number;
+  readonly strands: number;
+}
+
+/**
+ * The Cultists (section 7.1): the preview of an offered `BEGIN_RITUAL`: the
+ * chanters that join (every own robed cultist beside the leader that has
+ * not used a primary action), the Favour it costs, and the forecast of its
+ * rite as the board stands.
+ */
+export interface BeginRitualPreviewV7 {
+  readonly ritual: RitualKindV7;
+  readonly unitId: UnitId;
+  readonly at: CoordV7;
+  readonly chanterUnitIds: readonly UnitId[];
+  /** The Favour spent now (the Great Summoning's 20; a star's 0). */
+  readonly favour: number;
+  readonly favourAfter: number;
+  readonly starfall: StarfallForecastV7 | null;
+  readonly summoning: SummoningForecastV7 | null;
+}
+
+function publicStarfallForecastV7(
+  view: PlayerViewV7,
+  at: CoordV7,
+  chanters: number,
+): StarfallForecastV7 {
+  const damage = starfallDamageV7(chanters);
+  const area = starfallAreaV7(view.board.width, view.board.height, at);
+  return {
+    at: { x: at.x, y: at.y },
+    chanters,
+    damage,
+    area,
+    results: starfallResultsV7(view, view.shields, view.units, at, damage).map(
+      (entry) => ({
+        ...entry,
+        ownerId:
+          view.units.find((unit) => unit.id === entry.unitId)?.ownerId ??
+          view.viewer.id,
+      }),
+    ),
+    fieldDefenses: area.filter((tile) => {
+      const known = tileAtView(view, tile);
+      return known?.explored === true && known.fieldDefense;
+    }),
+    barricades: area.filter((tile) => barricadeAtV7(view, tile) !== undefined),
+    exact: area.every((tile) => tileAtView(view, tile)?.explored === true),
+  };
+}
+
+function publicSummoningForecastV7(
+  view: PlayerViewV7,
+  playerId: PlayerId,
+  at: CoordV7,
+  chanterUnitIds: readonly UnitId[],
+): SummoningForecastV7 {
+  const outcome = summoningMarkOutcomeV7(
+    view,
+    publicRitualTileFactsV7(view),
+    view.units,
+    playerId,
+    at,
+  );
+  const control = CULT_SUMMONED_ROLE_RULES_V7.HERALD.control ?? 0;
+  const base = { at: { x: at.x, y: at.y }, control };
+  if (outcome.kind === "BLOCKED")
+    return {
+      ...base,
+      outcome: "BLOCKED",
+      unitId: outcome.unit?.id ?? null,
+      hostile: false,
+      favour: 0,
+      strands: 0,
+    };
+  if (outcome.kind === "FREE")
+    return {
+      ...base,
+      outcome: "ARRIVES",
+      unitId: null,
+      hostile: false,
+      favour: 0,
+      strands: 1 + chanterUnitIds.length,
+    };
+  return {
+    ...base,
+    outcome: "CONSUMES",
+    unitId: outcome.victim.id,
+    hostile: outcome.hostile,
+    favour: outcome.favour,
+    strands:
+      1 +
+      chanterUnitIds.filter((unitId) => unitId !== outcome.victim.id).length,
+  };
+}
+
+/** Section 7.1: null unless that `BEGIN_RITUAL` is offered. */
+export function previewBeginRitualV7(
+  view: PlayerViewV7,
+  unitId: UnitId,
+  ritual: RitualKindV7,
+  at: CoordV7,
+): BeginRitualPreviewV7 | null {
+  if (
+    !queryPlayerCommandsV7(view).some(
+      (command) =>
+        command.kind === "BEGIN_RITUAL" &&
+        command.ritual === ritual &&
+        command.unitId === unitId &&
+        same(command.at, at),
+    )
+  )
+    return null;
+  const leader = view.units.find((unit) => unit.id === unitId);
+  if (leader === undefined) return null;
+  const chanterUnitIds = ritualChantersV7(view, view.units, leader).map(
+    (unit) => unit.id,
+  );
+  const favour = ritualFavourCostV7(ritual);
+  return {
+    ritual,
+    unitId,
+    at: { x: at.x, y: at.y },
+    chanterUnitIds,
+    favour,
+    favourAfter: favourOfV7(view, view.viewer.id) - favour,
+    starfall:
+      ritual === "STARFALL"
+        ? publicStarfallForecastV7(view, at, chanterUnitIds.length)
+        : null,
+    summoning:
+      ritual === "GREAT_SUMMONING"
+        ? publicSummoningForecastV7(view, view.viewer.id, at, chanterUnitIds)
+        : null,
+  };
+}
+
+/**
+ * The Cultists (section 7.1, "Public"): the forecast of a ritual under way
+ * (an entry of `view.cult.rituals`) as the viewer's board stands: where the
+ * star lands and whom it hits, or what the Great Summoning does on its
+ * mark. Both forecasts are null when the viewer has not explored the mark.
+ * For a Great Summoning the strands count the chanters the viewer sees.
+ */
+export interface RitualPreviewV7 {
+  readonly ritual: PublicRitualV7;
+  readonly starfall: StarfallForecastV7 | null;
+  readonly summoning: SummoningForecastV7 | null;
+}
+
+/** Section 7.1: the forecast of the ritual `ritual` of `view.cult.rituals`. */
+export function previewRitualV7(
+  view: PlayerViewV7,
+  ritual: PublicRitualV7,
+): RitualPreviewV7 {
+  return {
+    ritual,
+    starfall:
+      ritual.kind === "STARFALL" && ritual.at !== null
+        ? publicStarfallForecastV7(view, ritual.at, ritual.chanters)
+        : null,
+    summoning:
+      ritual.kind === "GREAT_SUMMONING" && ritual.at !== null
+        ? publicSummoningForecastV7(
+            view,
+            ritual.playerId,
+            ritual.at,
+            ritual.chanterUnitIds,
+          )
+        : null,
+  };
+}
+
+/**
+ * The Cultists (section 8.6): the preview of an offered Proclaim: the city
+ * it Cows (no income at its owner's next Start Turn and no city action
+ * until that turn ends) and the attacks the Herald has left afterwards.
+ */
+export interface ProclaimPreviewV7 {
+  readonly unitId: UnitId;
+  readonly cityId: CityId;
+  readonly cityOwnerId: PlayerId;
+  readonly at: CoordV7;
+  readonly attacksLeftAfter: number;
+}
+
+/** Section 8.6: null unless that `PROCLAIM` is offered. */
+export function previewProclaimV7(
+  view: PlayerViewV7,
+  unitId: UnitId,
+  cityId: CityId,
+): ProclaimPreviewV7 | null {
+  if (
+    !queryPlayerCommandsV7(view).some(
+      (command) =>
+        command.kind === "PROCLAIM" &&
+        command.unitId === unitId &&
+        command.cityId === cityId,
+    )
+  )
+    return null;
+  const herald = view.units.find((unit) => unit.id === unitId);
+  const city = view.cities.find((candidate) => candidate.id === cityId);
+  if (herald === undefined || city === undefined) return null;
+  return {
+    unitId,
+    cityId,
+    cityOwnerId: city.ownerId,
+    at: { x: city.at.x, y: city.at.y },
+    attacksLeftAfter: attacksLeftV7(view, herald) - 1,
+  };
+}
+
+/**
  * The Cultists (section 8.1): the preview of an offered Behold!: the own
  * robed cultists on the eight tiles around the Idol Bearer now, which keep
  * their strands when they lose Hit Points while the idol is raised.
@@ -5334,6 +5676,17 @@ export function previewGateV7(
       displaces: null,
       displaceTo: null,
       blocked: false,
+      exact: true,
+    };
+  // The Cultists (`pulp_wars-mch9.7`, RULESET_7_CULTISTS.md section 4.2):
+  // no gate shoves the Herald (Unstoppable); the traversal is blocked.
+  if (unitIsUnstoppableV7(occupant))
+    return {
+      gate: gate.at,
+      exit,
+      displaces: occupant.id,
+      displaceTo: null,
+      blocked: true,
       exact: true,
     };
   // The occupant's terrain rule: a foreign seat's Engineering is private,
@@ -7403,7 +7756,9 @@ function publicCityIncomeV7(
   tradeBonuses = Number(view.naval.landTradeCityIds.includes(city.id)) *
     LAND_TRADE_INCOME_COINS_V7,
 ): number {
-  if (publicCityBesieged(view, city.at)) return 0;
+  // The Cultists (RULESET_7_CULTISTS.md section 8.6): nor does a Cowed city.
+  if (publicCityBesieged(view, city.at) || cityIsCowedV7(view, city.id))
+    return 0;
   const result = Math.max(
     1,
     cityLevelIncomeV7(city.level) +
@@ -11034,6 +11389,8 @@ function publicAttackChainV7(
     // The ninth unit (7r55): the role mechanic (the `CATAPULT` role of
     // every faction, and the Triceratops in the heavy slot).
     (unitRoleMechanicsV7(view, attackerUnit).demolishesFieldDefense ||
+      // The Cultists (`pulp_wars-mch9.7`): Unstoppable, the Herald.
+      (attackerUnit.form === "LAND" && unitIsUnstoppableV7(attackerUnit)) ||
       // The Ice Folk revision section 7.5: Trample.
       preview.sweep ||
       (preview.inspiredApplied && distance === 1 && !preview.attackerDies) ||

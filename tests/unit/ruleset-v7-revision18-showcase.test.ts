@@ -240,7 +240,14 @@ describe("ruleset-7 revision-18 Showcase setup", () => {
         ...withoutMonsters
       } = revision19State;
       expect(giants).toEqual({ swallowed: [] });
-      expect(cult).toEqual({ favour: [], strands: [], grips: [], idols: [] });
+      expect(cult).toEqual({
+        favour: [],
+        strands: [],
+        grips: [],
+        idols: [],
+        rituals: [],
+        cowed: [],
+      });
       expectInitialScoreLedgerV7(created.state, scoreLedger, false);
       expect(ninthUnit).toEqual({
         wightGraves: [],

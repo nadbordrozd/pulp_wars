@@ -50,6 +50,7 @@ import {
   unitIsMountainBornV7,
   unitMovementModeV7,
   unitIsSummonedV7,
+  unitIsUnstoppableV7,
   EMBARKED_LANDING_MAX_SPENT_V7,
   embarkedMovementSpentV7,
   factionRulesV7,
@@ -325,6 +326,15 @@ import {
   unboundEntryV7,
   withFuriousEndedV7,
 } from "./cult-unbound";
+import {
+  applyBeginRitualV7,
+  applyProclaimV7,
+  cowedAfterCapturesV7,
+  prunedRitualsV7,
+  resolveStartTurnRitualsV7,
+  ritualDisruptionsV7,
+  withCowedTurnEndedV7,
+} from "./cult-rituals";
 import { unitIsConstructV7 } from "./afflictions";
 import {
   recoverEligibleV7,
@@ -506,7 +516,12 @@ export type RuleErrorCodeV7 =
   | "BEHOLD_NOT_LEGAL"
   | "ANCHOR_NOT_LEGAL"
   | "BOO_NOT_LEGAL"
-  | "INSUFFICIENT_FAVOUR";
+  | "INSUFFICIENT_FAVOUR"
+  // The Cultists (`pulp_wars-mch9.7`, sections 7 and 8.6): a ritual that
+  // cannot begin (`EMBARKED`, `MOVED`: a Stargazer that moved, `CHANTERS`,
+  // `TILE`), and a Proclaim with no legal city (`CITY`, `RANGE`, `COWED`).
+  | "RITUAL_NOT_LEGAL"
+  | "PROCLAIM_NOT_LEGAL";
 export interface RuleErrorV7 {
   readonly code: RuleErrorCodeV7;
   readonly params: Readonly<Record<string, JsonValue>>;
@@ -683,13 +698,17 @@ function applyCommandUnscoredV7(
       ),
     ),
   );
-  const result = revealReleasedUnitsV7(core);
+  // The Cultists (section 7.1, `pulp_wars-mch9.7`): and the participants
+  // the command took out of a ritual, by the same rule; a Cowed city that
+  // changed hands is Cowed no more (section 8.6).
+  const circles = withRitualDisruptionsResultV7(stateInput, input, core);
+  const result = revealReleasedUnitsV7(circles);
   // The Mind Control revision section 5.4: every command that releases a
   // unit joins the blockade and sea-network recompute list.
   const navalMayChange =
-    navalFactsMayChangeV7(stateInput, input) || result !== core;
-  // (`result !== core` only when a unit was released; the Crumbs fold above
-  // changes no unit, city, or tile.)
+    navalFactsMayChangeV7(stateInput, input) || result !== circles;
+  // (`result !== circles` only when a unit was released; the Crumbs fold
+  // above changes no unit, city, or tile.)
   const naval = navalMayChange
     ? navalTransitionEventsV7(stateInput, result.state)
     : [];
@@ -742,6 +761,15 @@ function resolveGateTraversalV7(
     (candidate) =>
       candidate.id !== unit.id && candidate.hp > 0 && same(candidate.at, exit),
   );
+  // The Cultists (`pulp_wars-mch9.7`, RULESET_7_CULTISTS.md section 4.2):
+  // no gate shoves the Herald (Unstoppable); the traversal does not happen.
+  if (occupant !== undefined && unitIsUnstoppableV7(occupant))
+    return {
+      state,
+      events: [
+        { kind: "GATE_BLOCKED", playerId: actor, unitId: unit.id, at: gate.at },
+      ],
+    };
   if (occupant !== undefined) {
     const techs = ownerResearchedTechsV7(state, occupant.ownerId);
     const engineering = unitCapabilitiesV7(
@@ -1201,6 +1229,49 @@ function withDisruptionsResultV7(
 }
 
 /**
+ * The Cultists (docs/product/RULESET_7_CULTISTS.md section 7.1,
+ * `pulp_wars-mch9.7`): the one disruption rule, applied to the rituals of
+ * every accepted command (`ritualDisruptionsV7`): a participant that lost
+ * Hit Points, was moved by anything but its own command, got a status,
+ * changed owner, or left the board leaves its ritual (`RITUAL_DISRUPTED`),
+ * and a ritual without its leader or its chanters fizzles
+ * (`RITUAL_FIZZLED`). In an `END_TURN` the seat that began its turn was
+ * judged in its ritual step (`resolveStartTurnRitualsV7`) and is not judged
+ * again. Section 8.6: a Cowed city that changed hands in the command is no
+ * longer Cowed. Only `cult` changes. Returns `result` itself when nothing
+ * was under way or broke.
+ */
+function withRitualDisruptionsResultV7(
+  before: GameStateV7,
+  command: CommandV7,
+  result: Extract<ApplyCommandResultV7, { readonly accepted: true }>,
+): Extract<ApplyCommandResultV7, { readonly accepted: true }> {
+  if (before.cult.rituals.length === 0 && result.state.cult.cowed.length === 0)
+    return result;
+  let started: PlayerId | null = null;
+  for (const event of result.events)
+    if (event.kind === "TURN_STARTED") started = event.playerId;
+  const disrupted = ritualDisruptionsV7(
+    before,
+    result.state,
+    "unitId" in command ? command.unitId : null,
+    { skipSeat: started },
+  );
+  const cult = cowedAfterCapturesV7(before, {
+    cities: result.state.cities,
+    cult: disrupted.cult,
+  });
+  if (disrupted.events.length === 0 && cult === result.state.cult)
+    return result;
+  const next = accepted(checked({ ...result.state, cult }), [
+    ...result.events,
+    ...disrupted.events,
+  ]);
+  if (!next.accepted) throw new RangeError("INVALID_STATE");
+  return next;
+}
+
+/**
  * The Cultists (sections 6.2 and 13.3): the channel step of a Start Turn
  * (`resolveStartTurnChannelV7`: the disruptions of the `END_TURN` so far,
  * the check of each bound daemon and the rampage of each one that broke
@@ -1357,6 +1428,7 @@ function navalFactsMayChangeV7(
     // A Boo! moves units of any seat.
     "BOO",
   ].includes(command.kind);
+  // (A star and the Great Summoning land inside an `END_TURN`.)
 }
 
 function applyCommandCoreV7(
@@ -1595,6 +1667,11 @@ function applyCommandCoreV7(
     return applyAnchorV7(DWARF_KIT_V7, stateInput, state, actor, command);
   if (command.kind === "BOO")
     return applyBooV7(DWARF_KIT_V7, stateInput, state, actor, command);
+  // The Cultists, rituals and the Herald (sections 7 and 8.6).
+  if (command.kind === "BEGIN_RITUAL")
+    return applyBeginRitualV7(DWARF_KIT_V7, stateInput, state, actor, command);
+  if (command.kind === "PROCLAIM")
+    return applyProclaimV7(DWARF_KIT_V7, stateInput, state, actor, command);
   return rejected(stateInput, "INVALID_COMMAND");
 }
 
@@ -5751,27 +5828,31 @@ function resolveAttackExchangeV7(
   const defenseReason = destinationTile?.fieldDefense
     ? unitRoleMechanicsV7(state, attacker).demolishesFieldDefense
       ? "CATAPULT"
-      : // The Ice Folk revision section 7.5: Trample, whatever survives.
-        attacker.form === "LAND" &&
-          unitRoleMechanicsV7(state, attacker).tramplesFieldDefense
-        ? "TRAMPLE"
-        : // The giants' signatures (section 6.7): a Siege Hammer blow,
-          // whether or not either unit survives.
-          preview.siegeHammer
-          ? "SIEGE_HAMMER"
-          : preview.inspiredApplied && distance === 1 && !preview.attackerDies
-            ? "INSPIRED"
-            : // Tuning 1 Breach (7r46): whether or not the attacker survives.
-              attackBreachesV7(
-                  state,
-                  attacker,
-                  distance,
-                  ownerResearchedTechsV7(state, actor),
-                )
-              ? "EXPLOSIVES"
-              : preview.advances
-                ? "OCCUPATION"
-                : null
+      : // The Cultists (`pulp_wars-mch9.7`, section 4.2): Unstoppable, every
+        // attack of the Herald, whatever survives.
+        attacker.form === "LAND" && unitIsUnstoppableV7(attacker)
+        ? "UNSTOPPABLE"
+        : // The Ice Folk revision section 7.5: Trample, whatever survives.
+          attacker.form === "LAND" &&
+            unitRoleMechanicsV7(state, attacker).tramplesFieldDefense
+          ? "TRAMPLE"
+          : // The giants' signatures (section 6.7): a Siege Hammer blow,
+            // whether or not either unit survives.
+            preview.siegeHammer
+            ? "SIEGE_HAMMER"
+            : preview.inspiredApplied && distance === 1 && !preview.attackerDies
+              ? "INSPIRED"
+              : // Tuning 1 Breach (7r46): whether or not the attacker survives.
+                attackBreachesV7(
+                    state,
+                    attacker,
+                    distance,
+                    ownerResearchedTechsV7(state, actor),
+                  )
+                ? "EXPLOSIVES"
+                : preview.advances
+                  ? "OCCUPATION"
+                  : null
     : null;
   let board =
     defenseReason === null || destinationTile === undefined
@@ -7527,8 +7608,10 @@ function applyEndTurn(
     const current = requirePlayer(state, actor);
     // The Cultists (RULESET_7_CULTISTS.md section 6.5): Furious ends with
     // the turn of the seat in whose Start Turn the daemon broke loose.
+    // Section 8.6 (`pulp_wars-mch9.7`): so does Cowed, for the actor's
+    // cities (before its income preview).
     const recovery = recoverIdleUnits(
-      withFuriousEndedV7(state, actor),
+      withCowedTurnEndedV7(withFuriousEndedV7(state, actor), actor),
       current,
     );
     const expiredUnits: GameStateV7 = {
@@ -7713,12 +7796,26 @@ function applyEndTurn(
           plagued.state,
           nextPlayer.id,
         );
+        // Section 13.3 (`pulp_wars-mch9.7`): then the rituals, each
+        // completing or fizzling in leader unit-ID order.
+        const rituals = resolveStartTurnRitualsV7(
+          DWARF_KIT_V7,
+          original,
+          channel.state,
+          nextPlayer.id,
+        );
         const plague =
-          channel.events.length === 0 && channel.state === plagued.state
+          channel.events.length === 0 &&
+          rituals.events.length === 0 &&
+          rituals.state === plagued.state
             ? plagued
             : {
-                state: channel.state,
-                events: [...plagued.events, ...channel.events],
+                state: rituals.state,
+                events: [
+                  ...plagued.events,
+                  ...channel.events,
+                  ...rituals.events,
+                ],
               };
         const hatched = resolveStartTurnHatchV7(plague.state, nextPlayer.id);
         // The ninth unit (7r55): Rise Again, after the hatch step and before
@@ -9503,17 +9600,21 @@ function checked(state: GameStateV7): GameStateV7 {
   // The giants' signatures (section 6.2): the held victims follow their
   // holders, and a victim whose holder left is released or gone (first, so
   // a released victim is an ordinary unit for the other prunes).
-  // The Cultists: drop the Favour of a seat that left the game.
+  // The Cultists: drop the Favour of a seat that left the game, and the
+  // strands, grips, idols, ritual places, and Cowed entries whose units or
+  // cities left the board.
   const result = parseGameStateV7(
     prunedCultV7(
-      prunedChannelV7(
-        prunedNinthUnitV7(
-          prunedCandyV7(
-            prunedMonstersV7(
-              prunedDwarfV7(
-                prunedIceFolkV7(
-                  prunedMartianV7(
-                    prunedEggsV7(prunedAfflictionsV7(prunedGiantsV7(state))),
+      prunedRitualsV7(
+        prunedChannelV7(
+          prunedNinthUnitV7(
+            prunedCandyV7(
+              prunedMonstersV7(
+                prunedDwarfV7(
+                  prunedIceFolkV7(
+                    prunedMartianV7(
+                      prunedEggsV7(prunedAfflictionsV7(prunedGiantsV7(state))),
+                    ),
                   ),
                 ),
               ),

@@ -608,6 +608,12 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // form (it embarked) has left the board: its strand, grip, or idol is
     // gone.
     "src/engine/v7/cult-channel.ts": 5,
+    // The Cult's rituals (`pulp_wars-mch9.7`): a Proclaim needs the Herald
+    // in land form (a daemon never embarks and is never an Egg, so the gate
+    // only ever refuses a unit that is no Herald). A ritual's leader and
+    // its chanters are land-form robed cultists (`isRobedCultistV7`), and a
+    // star hits every form in its area by design.
+    "src/engine/v7/cult-rituals.ts": 1,
     // Ice Folk Freeze (`pulp_wars-w49.37`): the Frost Giant's Cold Aura
     // freezes only when the Giant ends its Move in land form (an embarked
     // Giant, an Egg, and a boat freeze nothing), and a Stampede needs the

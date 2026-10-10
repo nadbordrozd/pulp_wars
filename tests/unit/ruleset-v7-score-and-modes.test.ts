@@ -774,6 +774,9 @@ describe("score and modes: the ledger fold", () => {
         // The Cultists (`pulp_wars-mch9.6`): a daemon left its seat.
         "DAEMON_UNBOUND",
         "SHIP_BOARDED",
+        // The Cultists (`pulp_wars-mch9.7`): an own unit the Great
+        // Summoning consumed.
+        "UNIT_CONSUMED",
         "UNIT_DIED",
         "UNIT_DISBANDED",
         "UNIT_MIND_CONTROLLED",
@@ -855,6 +858,16 @@ describe("score and modes: the ledger fold", () => {
         strands: 0,
         control: 1,
       },
+      UNIT_CONSUMED: {
+        kind: "UNIT_CONSUMED",
+        playerId: loser,
+        unitId: unit(4, 4).id,
+        victimUnitId: victim.id,
+        victimOwnerId: loser,
+        role: "FIGHTER",
+        at: victim.at,
+        favour: 2,
+      },
     };
     for (const kind of FLAWLESS_BREAKING_EVENT_KINDS_V7) {
       const ledger = fold([events[kind]]);
@@ -863,6 +876,16 @@ describe("score and modes: the ledger fold", () => {
     }
     // Disbanding is not a loss (section 3.2).
     expect(entry(fold([events.UNIT_DISBANDED]), 1).lossValue).toBe(0);
+    // Nor is an own unit the Great Summoning consumed (a Sacrifice).
+    expect(
+      entry(
+        fold([
+          events.UNIT_CONSUMED,
+          { kind: "UNIT_DIED", unitId: victim.id, cause: "CONSUMED" },
+        ]),
+        1,
+      ).lossValue,
+    ).toBe(0);
     // Nor is a daemon that broke loose, also when it dies later in the same
     // command (it was nobody's by then).
     expect(

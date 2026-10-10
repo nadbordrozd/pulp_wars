@@ -467,6 +467,9 @@ export const FLAWLESS_BREAKING_EVENT_KINDS_V7 = Object.freeze([
   // unit away from its own seat (its `UNIT_DIED` follows; a Seizure is the
   // victim's `UNIT_DIED`).
   "UNIT_SACRIFICED",
+  // `pulp_wars-mch9.7` (section 7.3): so does the Great Summoning when it
+  // consumes an own unit on its mark (its `UNIT_DIED` follows).
+  "UNIT_CONSUMED",
   // The Cultists (section 13.1): a daemon whose channel failed left its
   // seat's control (not a Loss; it stays on the board as a neutral unit).
   "DAEMON_UNBOUND",
@@ -570,6 +573,15 @@ export function foldScoreLedgerV7(
       case "UNIT_SACRIFICED":
         broken.add(event.playerId);
         removed.add(event.victimUnitId);
+        break;
+      // `pulp_wars-mch9.7` (section 7.3): an own unit the Great Summoning
+      // consumed is a Sacrifice (no Loss; the seat is no longer flawless);
+      // a consumed enemy is an ordinary credited death, like a Seizure.
+      case "UNIT_CONSUMED":
+        if (event.victimOwnerId === event.playerId) {
+          broken.add(event.playerId);
+          removed.add(event.victimUnitId);
+        }
         break;
       // The Cultists (sections 6.4 and 13.1): an Unbound daemon left its
       // seat's Army without dying: no Loss, no Damage taken from then on

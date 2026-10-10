@@ -29,6 +29,7 @@ import {
   unitAlphaAttack2V7,
   unitCapacitySlotsV7,
   unitIsMountainBornV7,
+  unitIsUnstoppableV7,
   unitMovementModeV7,
   unitRoleMechanicsV7,
   isRangedRoleRuleV7,
@@ -36,6 +37,7 @@ import {
   unitTakesCoverV7,
   type EffectiveRoleRuleV7,
   type FactionRosterV7,
+  type SummonedUnitRefV7,
   FIELD_DEFENSE_FORTIFICATION_LEVELS_V7,
 } from "../rules/ruleset-v7";
 import {
@@ -1382,17 +1384,19 @@ export function noRetaliationReasonV7(facts: {
 /**
  * The Candy revision (section 7): whether an `ATTACK` Splats its target: a
  * land-form attacker whose role has `SPLAT`, a target that survives the
- * attack, and never the neutral Monster (no status sticks to it).
+ * attack, and never the neutral Monster (no status sticks to it) or the
+ * Herald (Unstoppable: `pulp_wars-mch9.7`).
  */
 export function attackSplatAppliesV7(
   roster: FactionRosterV7,
   attacker: Pick<UnitStateV7, "id" | "ownerId" | "role" | "form">,
-  defender: Pick<UnitStateV7, "ownerId">,
+  defender: Pick<UnitStateV7, "ownerId"> & SummonedUnitRefV7,
   defenderDies: boolean,
 ): boolean {
   return (
     !defenderDies &&
     !isNeutralOwnerV7(defender.ownerId) &&
+    !unitIsUnstoppableV7(defender) &&
     attackSplatsV7(roster, attacker)
   );
 }

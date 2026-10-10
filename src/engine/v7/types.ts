@@ -5,7 +5,7 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r76" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r77" as const;
 /**
  * Every earlier Ruleset 7 identity, oldest first. Readers report these as
  * incompatible (never invalid). An identity bump must append the outgoing
@@ -87,8 +87,9 @@ export const PRIOR_RULESET_7_IDS = Object.freeze([
   "pulp-wars-poc-7r73",
   "pulp-wars-poc-7r74",
   "pulp-wars-poc-7r75",
+  "pulp-wars-poc-7r76",
 ] as const);
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r76.current" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r77.current" as const;
 /**
  * The map generator a setup names (docs/product/RULESET_7_MAP_SCALE.md
  * section 8.8): `V4` is the many-seats generator of `pulp_wars-ykw.3`
@@ -246,6 +247,17 @@ export const SUMMONED_ROLE_IDS_V7 = Object.freeze([
   "TENTACLE",
 ] as const);
 export type SummonedRoleIdV7 = (typeof SUMMONED_ROLE_IDS_V7)[number];
+/**
+ * The Cultists (`pulp_wars-mch9.7`, docs/product/RULESET_7_CULTISTS.md
+ * section 7.2): the rites that take a turn, in the frozen order: Star-fall
+ * (a Stargazer leads it) and the Great Summoning (a Summoner leads it).
+ * Summon a Horror is instant and is its own command (`SUMMON`).
+ */
+export const RITUAL_KINDS_V7 = Object.freeze([
+  "STARFALL",
+  "GREAT_SUMMONING",
+] as const);
+export type RitualKindV7 = (typeof RITUAL_KINDS_V7)[number];
 export const TECHNOLOGY_IDS_V7 = Object.freeze([
   "GATHERING",
   "FARMING",
@@ -343,6 +355,10 @@ export const COMMAND_KIND_ORDER_V7 = Object.freeze([
   "BEHOLD",
   "ANCHOR",
   "BOO",
+  // The Cultists (`pulp_wars-mch9.7`, sections 7 and 8.6): a ritual begun
+  // (Star-fall, the Great Summoning) and the Herald's Proclaim.
+  "BEGIN_RITUAL",
+  "PROCLAIM",
   "CAPTURE",
   "PROMOTE",
   "PILLAGE",
@@ -571,6 +587,17 @@ export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   // The Cultists (`pulp_wars-mch9.6`, section 6.5): an Unbound daemon was
   // bound again by a Cult seat.
   "DAEMON_BOUND",
+  // The Cultists (`pulp_wars-mch9.7`, sections 7 and 8.6): a ritual begun,
+  // a participant that left it, a ritual that fizzled, a star that fell, a
+  // unit the Great Summoning consumed, the Herald's arrival, and a city
+  // Cowed by a Proclaim.
+  "RITUAL_BEGUN",
+  "RITUAL_DISRUPTED",
+  "RITUAL_FIZZLED",
+  "STAR_FELL",
+  "UNIT_CONSUMED",
+  "HERALD_ARRIVED",
+  "CITY_COWED",
   "SPOILS_AWARDED",
   "PLUNDER_AWARDED",
   // Map curiosities (section 8.7): the bounty for killing a Monster.
@@ -1472,6 +1499,44 @@ export interface CultStateV7 {
    * check of its owner's next Start Turn.
    */
   readonly idols: readonly UnitId[];
+  /**
+   * Rituals (`pulp_wars-mch9.7`, section 7): the rituals under way, sorted
+   * by `leaderUnitId` (one ritual per leader). A ritual is begun by
+   * `BEGIN_RITUAL`, loses a participant the moment it is disrupted, fizzles
+   * when its leader leaves or too few chanters remain, and completes or
+   * fizzles at its seat's next Start Turn, after the channel check; so a
+   * seat's rituals never outlive its next Start Turn.
+   */
+  readonly rituals: readonly RitualV7[];
+  /**
+   * Proclaim (section 8.6): the Cowed cities, sorted by `cityId` (one entry
+   * per city): no income at their owner's Start Turn and no city action,
+   * until their owner's turn ends or the city changes hands.
+   */
+  readonly cowed: readonly CowedCityV7[];
+}
+/**
+ * The Cultists (section 7.1): a ritual under way. `leaderUnitId` leads it
+ * and `chanterUnitIds` (sorted, never the leader) chant; every one of them
+ * is a land-form robed cultist of `playerId` on the board. `at` is the
+ * marked tile: where the star lands, or where the Herald arrives.
+ */
+export interface RitualV7 {
+  readonly kind: RitualKindV7;
+  readonly playerId: PlayerId;
+  readonly leaderUnitId: UnitId;
+  readonly chanterUnitIds: readonly UnitId[];
+  readonly at: CoordV7;
+}
+/**
+ * The Cultists (section 8.6): the city `cityId` is Cowed for `endsLeft`
+ * more End Turns of its owner (always 1: a Proclaim is made in another
+ * seat's turn, and the city comes out of its cellars when its owner's next
+ * turn ends).
+ */
+export interface CowedCityV7 {
+  readonly cityId: CityId;
+  readonly endsLeft: number;
 }
 /** The Cultists (section 6.2): the strand `cultistUnitId` holds to a daemon. */
 export interface StrandV7 {
@@ -1490,7 +1555,14 @@ export interface FavourEntryV7 {
 }
 /** The empty Cult state (a new match, a mission, a fixture). */
 export function emptyCultStateV7(): CultStateV7 {
-  return { favour: [], strands: [], grips: [], idols: [] };
+  return {
+    favour: [],
+    strands: [],
+    grips: [],
+    idols: [],
+    rituals: [],
+    cowed: [],
+  };
 }
 
 /**

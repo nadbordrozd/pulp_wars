@@ -6,10 +6,12 @@ import {
   roleDefense2AtDistanceV7,
   seatRoleMechanicsV7,
   seatRoleRuleV7,
+  unitIsUnstoppableV7,
   unitRoleMechanicsV7,
   type EffectiveRoleRuleV7,
   type FactionRosterV7,
   type RoleMechanicsV7,
+  type SummonedUnitRefV7,
 } from "../rules/ruleset-v7";
 import type { DomainEventV7 } from "./events";
 import { compareCoordsV7, sameCoordV7 } from "./schema";
@@ -133,12 +135,13 @@ export function unitDefense2AtDistanceV7(
  * The Thagomizer (the Dinosaur Stegosaurus): whether an `ATTACK` Cracks its
  * target: a land-form attacker whose role cracks armour, a target that
  * survives, is not an Egg, and is not the neutral Monster (no status sticks
- * to it). It does not stack: a Cracked target stays Cracked.
+ * to it) or the Herald (Unstoppable: `pulp_wars-mch9.7`). It does not
+ * stack: a Cracked target stays Cracked.
  */
 export function attackCracksV7(
   roster: FactionRosterV7,
   attacker: NinthUnitFactsV7,
-  defender: Pick<UnitStateV7, "ownerId" | "form">,
+  defender: Pick<UnitStateV7, "ownerId" | "form"> & SummonedUnitRefV7,
   defenderDies: boolean,
 ): boolean {
   return (
@@ -146,6 +149,7 @@ export function attackCracksV7(
     attacker.form === "LAND" &&
     defender.form !== "EGG" &&
     !isNeutralOwnerV7(defender.ownerId) &&
+    !unitIsUnstoppableV7(defender) &&
     unitRoleMechanicsV7(roster, attacker).cracksArmour
   );
 }
@@ -167,11 +171,12 @@ export function withSortedUnitIdV7(
  * attacker: made from the next tile on a land-form unit whose role has
  * Frostbite, by a land-form attacker that survives the exchange, is hostile
  * to the Ox by construction (it attacked it), and is not the neutral
- * Monster. It applies whether or not the Ox survives.
+ * Monster or the Herald (Unstoppable: `pulp_wars-mch9.7`). It applies
+ * whether or not the Ox survives.
  */
 export function attackIsFrostbittenV7(
   roster: FactionRosterV7,
-  attacker: Pick<UnitStateV7, "ownerId" | "form">,
+  attacker: Pick<UnitStateV7, "ownerId" | "form"> & SummonedUnitRefV7,
   defender: NinthUnitFactsV7,
   distance: number,
   attackerDies: boolean,
@@ -182,6 +187,7 @@ export function attackIsFrostbittenV7(
     attacker.form === "LAND" &&
     defender.form === "LAND" &&
     !isNeutralOwnerV7(attacker.ownerId) &&
+    !unitIsUnstoppableV7(attacker) &&
     unitRoleMechanicsV7(roster, defender).frostbite
   );
 }

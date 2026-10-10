@@ -19,8 +19,11 @@ import {
   OFFERING_POPULATION_V7,
   BOARD_SUMMONED_ROLE_IDS_V7,
   CULT_SUMMONED_ROLE_RULES_V7,
+  RITUAL_MINIMUM_CHANTERS_V7,
   SUMMONED_MECHANICAL_ROLES_V7,
+  summonedUnitRoleMechanicsV7,
   summonedUnitRoleRuleV7,
+  unitRoleMechanicsV7,
   unitRoleRuleV7,
   cityRewardCandidatesV7,
   cityRewardRecordMatchesLevelV7,
@@ -45,7 +48,9 @@ import {
   IMPROVEMENT_IDS_V7,
   RESOURCE_IDS_V7,
   REWARD_IDS_V7,
+  RITUAL_KINDS_V7,
   RULESET_7_ID,
+  type RitualKindV7,
   TECHNOLOGY_IDS_V7,
   TERRAIN_IDS_V7,
   UNIT_ROLE_IDS_V7,
@@ -1211,10 +1216,14 @@ function parseUnit(
     // The Dwarf revision section 7.3: an unmoved Clockwork Gunner fires
     // twice. The Vampire and Banshee rework (`pulp_wars-ty6i`): a Feast
     // allows a second attack.
+    // The Cultists (`pulp_wars-mch9.7`): the Herald's Ravage (a summoned
+    // unit's mechanics are its own registration's).
     (!overrun &&
       activation.attacksUsed >
         Math.max(
-          roleMechanicsV7(role, faction).unmovedShots,
+          summonedRole === undefined
+            ? roleMechanicsV7(role, faction).unmovedShots
+            : summonedUnitRoleMechanicsV7(summonedRole).ravageAttacks,
           rule.abilities.includes("FEAST") ? 2 : 1,
         )) ||
     (activation.overrunActive &&
@@ -2083,11 +2092,20 @@ function ninthUnitValid(
  */
 function parseCult(input: unknown): CultStateV7 | null {
   if (
-    !hasExactKeysV7(input, ["favour", "grips", "idols", "strands"]) ||
+    !hasExactKeysV7(input, [
+      "cowed",
+      "favour",
+      "grips",
+      "idols",
+      "rituals",
+      "strands",
+    ]) ||
     !isDenseArrayV7(input.favour) ||
     !isDenseArrayV7(input.strands) ||
     !isDenseArrayV7(input.grips) ||
-    !isDenseArrayV7(input.idols)
+    !isDenseArrayV7(input.idols) ||
+    !isDenseArrayV7(input.rituals) ||
+    !isDenseArrayV7(input.cowed)
   )
     return null;
   const favour: CultStateV7["favour"][number][] = [];
@@ -2144,7 +2162,74 @@ function parseCult(input: unknown): CultStateV7 | null {
       return null;
     idols.push(unitId);
   }
-  return { favour, strands, grips, idols };
+  // `pulp_wars-mch9.7` (section 7.1): the rituals, strictly ascending by
+  // leader; the chanters strictly ascending, never the leader, at most the
+  // eight around it; no unit in two rituals.
+  const rituals: CultStateV7["rituals"][number][] = [];
+  const participants = new Set<UnitId>();
+  for (const candidate of input.rituals) {
+    if (
+      !hasExactKeysV7(candidate, [
+        "at",
+        "chanterUnitIds",
+        "kind",
+        "leaderUnitId",
+        "playerId",
+      ]) ||
+      !RITUAL_KINDS_V7.includes(candidate.kind as RitualKindV7) ||
+      !isDenseArrayV7(candidate.chanterUnitIds) ||
+      candidate.chanterUnitIds.length > 8
+    )
+      return null;
+    const playerId = parsePlayerIdV7(candidate.playerId);
+    const leaderUnitId = parseUnitIdV7(candidate.leaderUnitId);
+    const at = parseCoordV7(candidate.at);
+    const prior = rituals.at(-1);
+    if (
+      playerId === null ||
+      leaderUnitId === null ||
+      at === null ||
+      participants.has(leaderUnitId) ||
+      (prior !== undefined && prior.leaderUnitId >= leaderUnitId)
+    )
+      return null;
+    participants.add(leaderUnitId);
+    const chanterUnitIds: UnitId[] = [];
+    for (const chanter of candidate.chanterUnitIds) {
+      const unitId = parseUnitIdV7(chanter);
+      const before = chanterUnitIds.at(-1);
+      if (
+        unitId === null ||
+        participants.has(unitId) ||
+        (before !== undefined && before >= unitId)
+      )
+        return null;
+      participants.add(unitId);
+      chanterUnitIds.push(unitId);
+    }
+    rituals.push({
+      kind: candidate.kind as RitualKindV7,
+      playerId,
+      leaderUnitId,
+      chanterUnitIds,
+      at,
+    });
+  }
+  // Section 8.6: the Cowed cities, strictly ascending by city.
+  const cowed: CultStateV7["cowed"][number][] = [];
+  for (const candidate of input.cowed) {
+    if (!hasExactKeysV7(candidate, ["cityId", "endsLeft"])) return null;
+    const cityId = parseCityIdV7(candidate.cityId);
+    const prior = cowed.at(-1);
+    if (
+      cityId === null ||
+      candidate.endsLeft !== 1 ||
+      (prior !== undefined && prior.cityId >= cityId)
+    )
+      return null;
+    cowed.push({ cityId, endsLeft: candidate.endsLeft });
+  }
+  return { favour, strands, grips, idols, rituals, cowed };
 }
 
 /**
@@ -2156,7 +2241,14 @@ function parseCult(input: unknown): CultStateV7 | null {
  * 6.5, the daemon is Unbound: a strand toward binding it). Section 8.4:
  * every grip is of a land-form unit with Anchor on a cultist that holds a
  * strand, of the same seat, next to it. Section 8.1: every raised idol is
- * of a land-form unit with Behold! on the board.
+ * of a land-form unit with Behold! on the board. Section 7.1
+ * (`pulp_wars-mch9.7`): every ritual is of an active Cult seat, its leader
+ * and chanters are land-form robed cultists of that seat on the board, the
+ * chanters next to the leader and at least as many as the rite needs; a
+ * Star-fall is led by a unit with Star-fall and marks a tile on the board,
+ * a Great Summoning by a unit with Summon and marks a tile next to it;
+ * and no participant holds a strand (both spend the primary action).
+ * Section 8.6: every Cowed city is a city on the board.
  */
 function cultValid(
   value: CrossInput,
@@ -2174,9 +2266,16 @@ function cultValid(
   )
     return false;
   if (
+    !value.cult.cowed.every((entry) =>
+      value.cities.some((city) => city.id === entry.cityId),
+    )
+  )
+    return false;
+  if (
     value.cult.strands.length === 0 &&
     value.cult.grips.length === 0 &&
-    value.cult.idols.length === 0
+    value.cult.idols.length === 0 &&
+    value.cult.rituals.length === 0
   )
     return true;
   const roster = {
@@ -2184,6 +2283,46 @@ function cultValid(
     mindControlled: value.mindControlled,
   };
   const unitById = new Map(value.units.map((unit) => [unit.id, unit]));
+  for (const ritual of value.cult.rituals) {
+    const seat = playerById.get(ritual.playerId);
+    const leader = unitById.get(ritual.leaderUnitId);
+    const robed = (unit: UnitStateV7 | undefined): unit is UnitStateV7 =>
+      unit !== undefined &&
+      unit.hp > 0 &&
+      unit.ownerId === ritual.playerId &&
+      unit.form === "LAND" &&
+      unitRoleMechanicsV7(roster, unit).robed &&
+      !value.cult.strands.some((strand) => strand.cultistUnitId === unit.id);
+    if (
+      seat === undefined ||
+      seat.status !== "ACTIVE" ||
+      !factionHasFavourV7(seat.faction) ||
+      !robed(leader) ||
+      !unitRoleRuleV7(roster, leader).abilities.includes(
+        ritual.kind === "STARFALL" ? "STARFALL" : "SUMMON",
+      ) ||
+      ritual.chanterUnitIds.length < RITUAL_MINIMUM_CHANTERS_V7[ritual.kind] ||
+      ritual.at.x >= value.board.width ||
+      ritual.at.y >= value.board.height ||
+      (ritual.kind === "GREAT_SUMMONING" &&
+        Math.max(
+          Math.abs(ritual.at.x - leader.at.x),
+          Math.abs(ritual.at.y - leader.at.y),
+        ) !== 1)
+    )
+      return false;
+    for (const unitId of ritual.chanterUnitIds) {
+      const chanter = unitById.get(unitId);
+      if (
+        !robed(chanter) ||
+        Math.max(
+          Math.abs(chanter.at.x - leader.at.x),
+          Math.abs(chanter.at.y - leader.at.y),
+        ) !== 1
+      )
+        return false;
+    }
+  }
   const cultSeat = (ownerId: PlayerStateV7["id"]): boolean => {
     const player = playerById.get(ownerId);
     return player !== undefined && factionHasFavourV7(player.faction);

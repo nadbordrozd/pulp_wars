@@ -1,4 +1,5 @@
 import {
+  HERALD_FAVOUR_COST_V7,
   OFFERING_FAVOUR_V7,
   OFFERING_POPULATION_V7,
   SEIZE_BROKEN_HP_V7,
@@ -56,6 +57,8 @@ export const OFFERING_TOOLTIP_V7 = `The city gives up ${OFFERING_POPULATION_V7} 
 /** Administration (shown as Leadership), `SUMMONER_SUPPORT`. */
 export const SUMMONER_SUPPORT_UNLOCK_TEXT_V7 =
   "Summoners Sacrifice your own units and Seize badly hurt enemies for Favour, and Summon Horrors with it";
+/** Explosives (shown as The Stars Are Right), `GREAT_SUMMONING`. */
+export const GREAT_SUMMONING_UNLOCK_TEXT_V7 = `The Great Summoning: a Summoner and three cultists beside it call the Herald for ${HERALD_FAVOUR_COST_V7} Favour. It arrives next turn`;
 /** Farming (shown as Harvest Rites), `OFFERING`. */
 export const OFFERING_UNLOCK_TEXT_V7 = `Offering: a city gives up ${OFFERING_POPULATION_V7} population for ${OFFERING_FAVOUR_V7} Favour`;
 
@@ -72,6 +75,7 @@ export const FAVOUR_SOURCE_LABELS_V7: Readonly<Record<FavourSourceV7, string>> =
     OFFERING: "an Offering",
     MARTYR: "a Martyr",
     DAEMON_KILL: "a daemon's kill",
+    CONSUMPTION: "the Great Summoning's meal",
   };
 
 /** The Favour of a seat as a viewer knows it (Favour is public). */

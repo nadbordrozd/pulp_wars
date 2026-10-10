@@ -61,6 +61,20 @@ export function projectEventsV7(
     )
       visiblyCreatedUnitIds.add(event.daemonUnitId);
     else if (
+      // The Cultists (`pulp_wars-mch9.7`): the Herald of a projected
+      // arrival.
+      event.kind === "HERALD_ARRIVED" &&
+      eventVisible(
+        beforeState,
+        afterState,
+        viewerId,
+        event,
+        beforeVisible,
+        afterVisible,
+      )
+    )
+      visiblyCreatedUnitIds.add(event.daemonUnitId);
+    else if (
       // The Dwarf revision: the Gunner of a projected Assemble.
       event.kind === "UNIT_ASSEMBLED" &&
       event.playerId === viewerId
@@ -431,10 +445,17 @@ export function projectEventsV7(
     // victim's `UNIT_DIED` follows the ordinary rule, which gives the same
     // viewers). The Summoner stands next to the victim, so such a viewer
     // learns nothing it could not see.
-    if (event.kind === "UNIT_SACRIFICED" || event.kind === "UNIT_SEIZED") {
+    // A consumption by the Great Summoning (`pulp_wars-mch9.7`, section
+    // 7.3) follows the same rule.
+    if (
+      event.kind === "UNIT_SACRIFICED" ||
+      event.kind === "UNIT_SEIZED" ||
+      event.kind === "UNIT_CONSUMED"
+    ) {
       if (
         event.playerId === viewerId ||
-        (event.kind === "UNIT_SEIZED" && event.victimOwnerId === viewerId) ||
+        (event.kind !== "UNIT_SACRIFICED" &&
+          event.victimOwnerId === viewerId) ||
         beforeVisible.has(event.victimUnitId)
       )
         projected.push(event);
@@ -638,6 +659,21 @@ function eventVisible(
       event.fromPlayerId === viewerId ||
       coordVisible(before, after, viewerId, event.at)
     );
+  // The Cultists (`pulp_wars-mch9.7`, RULESET_7_CULTISTS.md section 7.1,
+  // "Public"): a ritual's ring and its mark are seen on every tile the
+  // viewer has explored: a ritual begun or fizzled is projected to its
+  // seat, to every viewer that sees its leader, and to every viewer that
+  // has explored its marked tile. The Herald's arrival is projected to its
+  // seat and to every viewer that sees the Herald afterwards.
+  if (event.kind === "RITUAL_BEGUN" || event.kind === "RITUAL_FIZZLED")
+    return (
+      event.playerId === viewerId ||
+      beforeVisible.has(event.unitId) ||
+      afterVisible.has(event.unitId) ||
+      coordVisible(before, after, viewerId, event.at)
+    );
+  if (event.kind === "HERALD_ARRIVED")
+    return event.playerId === viewerId || afterVisible.has(event.daemonUnitId);
   // The Martian revision section 10.8: a Beam Down, a Mind Control, and a
   // pull are projected to the actor and to every viewer that can see a unit
   // or tile involved before or after the command.
@@ -893,6 +929,15 @@ function unitIds(event: DomainEventV7): readonly UnitId[] {
     case "ANCHOR_GRIPPED":
     case "ANCHOR_BROKEN":
       return [event.unitId, event.cultistUnitId];
+    // `pulp_wars-mch9.7` (section 7.1): a participant that left its ritual
+    // follows that participant (its candle goes out on it); a Proclaim
+    // follows the city (the default rule of an event with a `cityId`).
+    case "RITUAL_DISRUPTED":
+      return [event.participantUnitId];
+    case "HERALD_ARRIVED":
+      return [event.daemonUnitId];
+    case "CITY_COWED":
+      return [];
     default:
       return "unitId" in event ? [event.unitId] : [];
   }
@@ -967,6 +1012,19 @@ function projectEventPayload(
         (result) =>
           (result.curedPlague || result.curedBitten) &&
           (seenBefore.has(result.unitId) || seenAfter.has(result.unitId)),
+      ),
+    };
+  }
+  if (event.kind === "RITUAL_BEGUN" || event.kind === "HERALD_ARRIVED") {
+    // The Cultists (section 7.1): another viewer's copy lists only the
+    // chanters it sees.
+    if (event.playerId === viewerId) return event;
+    const seenBefore = visibility(before, viewerId);
+    const seenAfter = visibility(after, viewerId);
+    return {
+      ...event,
+      chanterUnitIds: event.chanterUnitIds.filter(
+        (unitId) => seenBefore.has(unitId) || seenAfter.has(unitId),
       ),
     };
   }
@@ -1288,6 +1346,32 @@ function projectGiantEventV7(
         : null;
     case "GIANT_BROKE_OFF":
       return event.playerId === viewerId ? event : null;
+    // The Cultists (`pulp_wars-mch9.7`, RULESET_7_CULTISTS.md section 7.4):
+    // a star is projected like a Stomp, to its seat and to every viewer
+    // that sees the Stargazer or has explored the marked tile, with the
+    // hits it owns or could see and the destroyed Field Defense and
+    // Barricades on tiles it has explored; otherwise its own hits as
+    // `COMBAT_SPLASH_DAMAGE`.
+    case "STAR_FELL": {
+      if (
+        event.playerId === viewerId ||
+        seen(event.unitId) ||
+        coordVisible(before, after, viewerId, event.at)
+      )
+        return {
+          ...event,
+          results: event.results.filter(
+            (entry) => owned(entry.unitId) || beforeVisible.has(entry.unitId),
+          ),
+          fieldDefenses: event.fieldDefenses.filter((at) =>
+            coordVisible(before, after, viewerId, at),
+          ),
+          barricades: event.barricades.filter((at) =>
+            coordVisible(before, after, viewerId, at),
+          ),
+        };
+      return ownSplash(event.results);
+    }
     // Ice Folk Freeze (`pulp_wars-w49.37`): a Stampede is projected like a
     // Stomp, to a viewer that owns or sees the Mammoth, with the hits it
     // owns or could see and the path tiles it has explored; otherwise its

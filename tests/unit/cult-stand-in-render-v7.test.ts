@@ -645,7 +645,8 @@ describe("the Cult in the interface's words and lists", () => {
     expect(stargazer.stats).toContainEqual({ label: "Range", value: "—" });
     // (It channels, like every robed cultist: `pulp_wars-mch9.5`.)
     expect(roleGlossaryV7("CATAPULT", "CULT").map((entry) => entry.id)).toEqual(
-      ["CAPTURE", "CHANNEL"],
+      // Star-fall is its ritual (`pulp_wars-mch9.7`).
+      ["CAPTURE", "CHANNEL", "STARFALL"],
     );
     for (const role of [
       "FIGHTER",

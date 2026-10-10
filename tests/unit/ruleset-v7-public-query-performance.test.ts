@@ -151,7 +151,10 @@ describe("ruleset-7 late public query performance", () => {
       // BEHOLD, ANCHOR, and BOO after SEIZE, moving the later command kinds
       // forward by five (was 30582f…b810); the revision-12-ordinal value is
       // unchanged.
-      "d49d92441e091c3d109b67ac8b1d132bdbd9b476b70a107cf74aecb46cb7ea29",
+      // The Cult's rituals (`pulp_wars-mch9.7`) insert BEGIN_RITUAL and
+      // PROCLAIM after BOO, moving the later command kinds forward by two
+      // (was d49d92…ea29); the revision-12-ordinal value is unchanged.
+      "b5d92f9dc15fa528601bac71da5eabe6c865648f1608faf9ffdb859cd6b81a5a",
     );
     // Revision 13 shifts the command-kind ordinals in AI tie-break tuples
     // (spec section 8); with revision-12 ordinals the value is unchanged.

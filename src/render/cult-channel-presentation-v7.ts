@@ -86,7 +86,10 @@ export const BOO_TOOLTIP_V7 =
 /** What a seat spent Favour on, in plain words (the event log). */
 export const FAVOUR_PURPOSE_LABELS_V7: Readonly<
   Record<FavourPurposeV7, string>
-> = { SUMMON_HORROR: "summoning a Horror" };
+> = {
+  SUMMON_HORROR: "summoning a Horror",
+  GREAT_SUMMONING: "the Great Summoning",
+};
 
 /** How a cultist was disrupted, in plain words (the event log). */
 export const DISRUPTION_CAUSE_LABELS_V7: Readonly<

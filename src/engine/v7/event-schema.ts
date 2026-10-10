@@ -2,6 +2,7 @@ import {
   DISRUPTION_CAUSES_V7,
   FAVOUR_PURPOSES_V7,
   FAVOUR_SOURCES_V7,
+  RITUAL_FIZZLE_REASONS_V7,
   type DomainEventV7,
   type EventEnvelopeV7,
   type FavourSourceV7,
@@ -53,7 +54,10 @@ import {
   OFFERING_POPULATION_V7,
   SEIZE_FAVOUR_MULTIPLIER_V7,
   CULT_SUMMONED_ROLE_RULES_V7,
+  HERALD_FAVOUR_COST_V7,
   HORROR_FAVOUR_COST_V7,
+  RITUAL_MINIMUM_CHANTERS_V7,
+  starfallDamageV7,
 } from "../rules/ruleset-v7";
 import {
   ACHIEVEMENT_IDS_V7,
@@ -61,6 +65,7 @@ import {
   FACTION_IDS_V7,
   IMPROVEMENT_IDS_V7,
   REWARD_IDS_V7,
+  RITUAL_KINDS_V7,
   TECHNOLOGY_IDS_V7,
   UNIT_ROLE_IDS_V7,
   isNavalRoleV7,
@@ -506,6 +511,55 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
   UNITS_SCARED: ["kind", "playerId", "unitId", "at", "results"],
   DAEMON_UNBOUND: ["kind", "unitId", "summonerPlayerId", "strands", "control"],
   DAEMON_BOUND: ["kind", "playerId", "unitId", "strands", "control"],
+  // The Cultists (`pulp_wars-mch9.7`, sections 7 and 8.6).
+  RITUAL_BEGUN: [
+    "kind",
+    "playerId",
+    "ritual",
+    "unitId",
+    "chanterUnitIds",
+    "at",
+  ],
+  RITUAL_DISRUPTED: [
+    "kind",
+    "playerId",
+    "ritual",
+    "unitId",
+    "participantUnitId",
+    "cause",
+  ],
+  RITUAL_FIZZLED: ["kind", "playerId", "ritual", "unitId", "at", "reason"],
+  STAR_FELL: [
+    "kind",
+    "playerId",
+    "unitId",
+    "at",
+    "chanters",
+    "damage",
+    "results",
+    "fieldDefenses",
+    "barricades",
+  ],
+  UNIT_CONSUMED: [
+    "kind",
+    "playerId",
+    "unitId",
+    "victimUnitId",
+    "victimOwnerId",
+    "role",
+    "at",
+    "favour",
+  ],
+  HERALD_ARRIVED: [
+    "kind",
+    "playerId",
+    "unitId",
+    "chanterUnitIds",
+    "daemonUnitId",
+    "at",
+    "hp",
+  ],
+  CITY_COWED: ["kind", "playerId", "unitId", "cityId", "cityOwnerId", "at"],
   SPOILS_AWARDED: ["kind", "playerId", "cityId", "coins"],
   PLUNDER_AWARDED: ["kind", "playerId", "kills", "coins"],
   MONSTER_BOUNTY_AWARDED: ["kind", "playerId", "unitId", "coins"],
@@ -1195,6 +1249,9 @@ function validPayload(
           // The giants' signatures: a Thunder Stomp and a Siege Hammer.
           "STOMP",
           "SIEGE_HAMMER",
+          // The Cultists: the Herald's attack and a star.
+          "UNSTOPPABLE",
+          "STARFALL",
         ].includes(e.reason as string)
       );
     case "LAND_GRANTED":
@@ -1810,13 +1867,16 @@ function validPayload(
         (e.favour as number) >= (e.amount as number)
       );
     // The Cultists (`pulp_wars-mch9.5`). Section 3: the price of a summoning
-    // (the seat may have nothing left).
+    // (the seat may have nothing left): a Horror's, or (`pulp_wars-mch9.7`)
+    // the Great Summoning's.
     case "FAVOUR_SPENT":
       return (
         id(e.playerId) &&
-        e.purpose === "SUMMON_HORROR" &&
-        FAVOUR_PURPOSES_V7.includes(e.purpose) &&
-        e.amount === HORROR_FAVOUR_COST_V7 &&
+        FAVOUR_PURPOSES_V7.includes(e.purpose as never) &&
+        e.amount ===
+          (e.purpose === "SUMMON_HORROR"
+            ? HORROR_FAVOUR_COST_V7
+            : HERALD_FAVOUR_COST_V7) &&
         isNonNegativeSafeIntegerV7(e.favour)
       );
     // Section 6.1: a Horror at full HP, next to nobody it names twice.
@@ -1926,6 +1986,100 @@ function validPayload(
         pos(e.control) &&
         (e.strands as number) >= (e.control as number)
       );
+    // The Cultists (`pulp_wars-mch9.7`). Section 7.1: a leader and its
+    // chanters, each named once, at most the eight around it, at least as
+    // many as the rite needs.
+    case "RITUAL_BEGUN":
+      return (
+        id(e.playerId) &&
+        ritualKind(e.ritual) &&
+        id(e.unitId) &&
+        ascendingIds(e.chanterUnitIds) &&
+        (e.chanterUnitIds as readonly number[]).length <= 8 &&
+        !(e.chanterUnitIds as readonly number[]).includes(e.unitId as number) &&
+        parseCoordV7(e.at) !== null
+      );
+    case "RITUAL_DISRUPTED":
+      return (
+        id(e.playerId) &&
+        ritualKind(e.ritual) &&
+        id(e.unitId) &&
+        id(e.participantUnitId) &&
+        DISRUPTION_CAUSES_V7.includes(e.cause as never)
+      );
+    case "RITUAL_FIZZLED":
+      return (
+        id(e.playerId) &&
+        ritualKind(e.ritual) &&
+        id(e.unitId) &&
+        parseCoordV7(e.at) !== null &&
+        RITUAL_FIZZLE_REASONS_V7.includes(e.reason as never) &&
+        // Only the Great Summoning has a mark that can be blocked.
+        (e.reason !== "BLOCKED" || e.ritual === "GREAT_SUMMONING")
+      );
+    // Section 7.4: at least one chanter still chants, the damage is the
+    // star's, and no hit is more than it.
+    case "STAR_FELL":
+      return (
+        id(e.playerId) &&
+        id(e.unitId) &&
+        parseCoordV7(e.at) !== null &&
+        isSafeIntegerV7(e.chanters) &&
+        (e.chanters as number) >= RITUAL_MINIMUM_CHANTERS_V7.STARFALL &&
+        (e.chanters as number) <= 8 &&
+        e.damage === starfallDamageV7(e.chanters as number) &&
+        splashEntries(e.results, false) &&
+        (
+          e.results as readonly { damage: number; shieldDamage: number }[]
+        ).every(
+          (entry) => entry.damage + entry.shieldDamage <= (e.damage as number),
+        ) &&
+        sortedCoords(e.fieldDefenses) &&
+        sortedCoords(e.barricades)
+      );
+    // Section 7.3: an own unit for its value, or a broken enemy (never a
+    // reward giant) for twice its value.
+    case "UNIT_CONSUMED":
+      return (
+        id(e.playerId) &&
+        id(e.unitId) &&
+        id(e.victimUnitId) &&
+        e.unitId !== e.victimUnitId &&
+        id(e.victimOwnerId) &&
+        UNIT_ROLE_IDS_V7.includes(e.role as never) &&
+        parseCoordV7(e.at) !== null &&
+        pos(e.favour) &&
+        (e.victimOwnerId === e.playerId ||
+          (e.role !== "JUGGERNAUT" &&
+            (e.favour as number) % SEIZE_FAVOUR_MULTIPLIER_V7 === 0))
+      );
+    // Section 7.3: the Herald at full HP, with the leader and three or more
+    // chanters.
+    case "HERALD_ARRIVED":
+      return (
+        id(e.playerId) &&
+        id(e.unitId) &&
+        id(e.daemonUnitId) &&
+        e.unitId !== e.daemonUnitId &&
+        ascendingIds(e.chanterUnitIds) &&
+        (e.chanterUnitIds as readonly number[]).length <= 8 &&
+        !(e.chanterUnitIds as readonly number[]).includes(e.unitId as number) &&
+        !(e.chanterUnitIds as readonly number[]).includes(
+          e.daemonUnitId as number,
+        ) &&
+        parseCoordV7(e.at) !== null &&
+        e.hp === CULT_SUMMONED_ROLE_RULES_V7.HERALD.maxHp
+      );
+    // Section 8.6: a city of another seat.
+    case "CITY_COWED":
+      return (
+        id(e.playerId) &&
+        id(e.unitId) &&
+        id(e.cityId) &&
+        id(e.cityOwnerId) &&
+        e.cityOwnerId !== e.playerId &&
+        parseCoordV7(e.at) !== null
+      );
     case "SPOILS_AWARDED":
       return id(e.playerId) && id(e.cityId) && e.coins === 2;
     case "PLUNDER_AWARDED":
@@ -2006,6 +2160,9 @@ function validPayload(
           "THUMP",
           // The Cultists: a Sacrifice or a Seizure.
           "SACRIFICED",
+          // A star, and a consumption by the Great Summoning.
+          "STARFALL",
+          "CONSUMED",
         ].includes(e.cause as string)
       );
     // The giants' signatures (docs/product/RULESET_7_GIANTS.md section 8).
@@ -2960,6 +3117,10 @@ function sortedCoords(input: unknown): boolean {
     prior = at;
     return true;
   });
+}
+/** The Cultists (section 7.2): a rite that takes a turn. */
+function ritualKind(input: unknown): boolean {
+  return RITUAL_KINDS_V7.includes(input as never);
 }
 /** Distinct unit IDs in any order; may be empty. */
 function uniqueIds(input: unknown): boolean {

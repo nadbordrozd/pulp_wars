@@ -8,8 +8,9 @@ Sacrifice, Seize, Offering, and Martyr, bead E2; the channel, bead E3:
 Summon and the Horror, Channel and the strands, the disruption rule, the
 Start Turn check, Behold!, Anchor, and Boo!; and Unbound, bead E4: a daemon
 that fails its check belongs to nobody and rampages, Furious, Bind again, a
-bound daemon's kills as Favour
-([section 21](#21-implementation-notes)). No ritual, Herald, or hex yet. It
+bound daemon's kills as Favour; and rituals and the Herald, bead E5:
+Star-fall, the Great Summoning, Ravage, Unstoppable, Proclaim and the Cowed
+city ([section 21](#21-implementation-notes)). No hex yet. It
 replaces
 [the Cult proposal](RULESET_7_CULT_PROPOSAL.md) of 2026-10-06 (bead
 `pulp_wars-2yc.25`), which stays as design history; where the two
@@ -684,7 +685,7 @@ countdown. Disrupt the circle and nothing happens."**
 
 ### 7.3 The Great Summoning and the Herald
 
-- **Begin:** `BEGIN_RITUAL { kind: "GREAT_SUMMONING", unitId, at }`: the
+- **Begin:** `BEGIN_RITUAL { ritual: "GREAT_SUMMONING", unitId, at }`: the
   leader is a Summoner with at least three chanters; `at` is a land tile
   next to the leader that a Herald could stand on (it may hold a unit);
   20 Favour is paid now. The tile is marked for everyone.
@@ -710,7 +711,7 @@ countdown. Disrupt the circle and nothing happens."**
 
 ### 7.4 Star-fall
 
-- **Begin:** `BEGIN_RITUAL { kind: "STARFALL", unitId, at }`: the leader is
+- **Begin:** `BEGIN_RITUAL { ritual: "STARFALL", unitId, at }`: the leader is
   a Stargazer that has not moved this turn; `at` is a tile 2 to 4 tiles
   away (Chebyshev) that its owner has explored; at least one chanter.
 - **Complete:** every unit on the board on `at` and the eight tiles around
@@ -2243,8 +2244,9 @@ where this spec left room:
     Unbound Herald is a valid state. Its mechanical role there is
     `JUGGERNAUT` (the big body's); E5, which summons the Herald, names it in
     `SUMMONED_MECHANICAL_ROLES_V7` and keeps the two equal. Until then no
-    seat can command a Herald, so a Channel on an Unbound one is refused.
-    Unstoppable is E5's.
+    seat could command a Herald, so a Channel on an Unbound one was refused.
+    E5 did all three
+    ([section 21.5](#215-e5-rituals-and-the-herald-pulp_wars-mch97-pulp-wars-poc-7r77)).
 16. **The Normal AI** still never picks a Channel (bead A2), so it never
     binds. Every seat reads a visible Unbound daemon as a monster: it is
     hunted only by a kill this turn, and a routine Move does not end in its
@@ -2257,6 +2259,146 @@ where this spec left room:
     come from `previewRampageV7`, and the board draws the pips of a binding,
     the Furious steam, and the broken collar. The text-mode harness still
     prints "Bind Horror".
+
+### 21.5 E5, rituals and the Herald (`pulp_wars-mch9.7`, `pulp-wars-poc-7r77`)
+
+What the engine holds after E5 is listed in
+[the current rules, section 1](RULESET_7_CURRENT.md#1-identity-and-compatibility):
+the ritual frame ([section 7.1](#71-taking-part)), Star-fall
+([section 7.4](#74-star-fall)), the Great Summoning and the Herald's arrival
+([section 7.3](#73-the-great-summoning-and-the-herald)), the Herald's Ravage
+and Unstoppable ([section 4.2](#42-summoned-units)), and Proclaim and the
+Cowed city ([section 8.6](#86-proclaim-the-herald)). The choices E5 made
+where this spec left room:
+
+1. **The command.** One command begins both rites:
+   `BEGIN_RITUAL { ritual, unitId, at }` with `ritual` `STARFALL` or
+   `GREAT_SUMMONING` (the engine's `kind` names the command). Star-fall is
+   the Stargazer's ability `STARFALL`; the Great Summoning is the Summoner's
+   `SUMMON` with its seat's capability `greatSummoning` (the unlock
+   `GREAT_SUMMONING` of the Cult's Explosives). A mind-controlled Stargazer
+   or Summoner has neither ability.
+2. **Who chants.** Every own robed cultist on the eight tiles around the
+   leader that has Channel, has not used a primary action (it may have
+   moved), and is not Frozen. The Summoner may lead after its Move; the
+   Stargazer only when it has not moved. A participant has spent its
+   action, so it does not move afterwards.
+3. **The marks.** A Star-fall mark is any tile its seat has explored, 2 to 4
+   tiles away, of any terrain. A Great Summoning mark is a tile next to the
+   Summoner under the Horror's placement rule, a unit on it aside: land its
+   seat has explored, never water, ice, or a settlement center, with no
+   mound, Barricade, chest, or curiosity, and not in allied territory. A
+   chanter may stand on the mark; it is then consumed like any own unit,
+   and the Herald arrives with the strands of the others.
+4. **Disruption is the channel's rule**
+   ([section 21.3](#213-e3-the-channel-pulp_wars-mch95-pulp-wars-poc-7r74),
+   choice 5): after every accepted command, and at the start of the ritual
+   step of a Start Turn, each participant is compared with what it was when
+   the command began. One that lost Hit Points, stands elsewhere, has a new
+   status, changed owner, or is off the board leaves the ritual
+   (`RITUAL_DISRUPTED`, with the first cause). Without its leader, or with
+   fewer chanters than it needs (Star-fall 1, the Great Summoning 3), the
+   ritual fizzles at once (`RITUAL_FIZZLED` reason `LEADER` or `CHANTERS`).
+   Behold! wards no chanter. A star with fewer chanters left is weaker by 1
+   for each.
+5. **The ritual step** of a Cult seat's Start Turn runs after the channel
+   check (and the rampage of a daemon that just broke loose, which may
+   disrupt a circle) and before Egg hatching. Its rituals complete in leader
+   unit-ID order. What one completion hurts is disrupted before the next
+   ritual completes: a star takes chanters out of the seat's own second
+   circle, and breaks, for the next check, the strand of a channeller of a
+   Herald that arrived just before it.
+6. **Star-fall.** Every unit on the marked tile and the eight around it, of
+   any seat and form (a ship, an embarked unit, an Egg, a daemon, a neutral
+   unit), takes `5 + chanters` as a fixed hit: Armoured, Plated, and a
+   Shield apply; nothing else does. Every Field Defense in the area is
+   destroyed (reason `STARFALL`) and every Barricade removed. The deaths
+   are `STARFALL` deaths resolved like a Thunder Stomp's: Graves, risings,
+   Crumbs, and death blasts as for a splash death; the Stargazer's kill
+   count grows for hostile victims only; the Score's Kills, Plunder, and a
+   monster's bounty go to its seat. An own unit it kills is a Loss, and an
+   own Chosen pays its Martyr. A star provokes the Giant Spider for its
+   Stargazer.
+7. **The Great Summoning.** At completion the mark is tested again (a
+   Barricade or a mound put there blocks it). The unit on it is consumed
+   (`UNIT_CONSUMED`, `UNIT_DIED` cause `CONSUMED`, `FAVOUR_GAINED` source
+   `CONSUMPTION`) when it is an own land-form unit that is not summoned,
+   mind-controlled, Plagued, or Bitten (its value), or a hostile land-form
+   unit that is living, one-slot, not a reward giant, not neutral, and at
+   5 HP or less (twice its value, a kill for the leader: its kill count and
+   the Score, no Plunder). Nothing is left of it: no Grave, Crumbs, blast,
+   or rising, and no Martyr. Every other unit blocks the arrival
+   (`RITUAL_FIZZLED` reason `BLOCKED`): a healthy or allied unit, a giant,
+   an Egg, a daemon, a neutral, Undead, or construct unit. A consumed own
+   unit is no Loss and ends a flawless game, as a Sacrifice does. Note
+   that an enemy at 5 HP that stands still rests 2 HP at its own End Turn,
+   so only one that walked onto the mark is still broken.
+8. **The Herald's arrival** (`HERALD_ARRIVED`): full HP, exhausted for the
+   turn, no home city. The leader and every remaining chanter hold a strand
+   to it (`STRAND_FORMED`, in unit-ID order) and are exhausted for the turn.
+   Its first check is the seat's next Start Turn.
+9. **How the Herald is a unit.** Its mechanical role is `JUGGERNAUT`, bound
+   and Unbound, so no Mind Control, Swallow, Tractor Beam, Knockback,
+   Bounce, Shatter, or Seizure takes it by the rules those have for the big
+   body; it has none of the giants' signatures. Its registration has Attack,
+   Capture, Ravage, Unstoppable, Proclaim, and the walker's Stride; Sight 1.
+   It is a construct in the engine's sense, like the Horror.
+10. **Ravage** is a role mechanic (`ravageAttacks` 2): two `ATTACK`s a turn,
+    moved or not, read by the one attack-allowance rule (the Clockwork
+    Gunner's second shot is the precedent). It cannot move after an attack.
+    It never advances after a kill. An Unbound Herald's two attacks are the
+    rampage's own.
+11. **Unstoppable.** Its attacks ignore the defender's fortification for
+    the whole exchange (the Boulder Yeti's mechanic; cover stays) and
+    destroy a Field Defense on the target's tile whatever survives (reason
+    `UNSTOPPABLE`). **This is the body's rule: an Unbound Herald's attacks
+    do the same.** No status sticks to a bound Herald: it is not Frozen (a
+    Frost Bolt, Bolas, a Cold Snap, Black Ice, a Cold Aura, and Frostbite
+    all skip it), Stuck, given Toothache, Splatted, or Cracked. Nothing
+    moves it (the Jawbreaker's mechanic: no Push, Charge! push, Knockback,
+    Tractor Beam, Bounce, or Stampede shove), and a unit that would traverse
+    a Dimensional Gate onto it is blocked (`GATE_BLOCKED`) instead of
+    shoving it. A Crushing Shove it does not yield to crushes it, as
+    damage. Plague, a bite, Infect, Wail, Boo!, Mind Control, and Swallow
+    never take a daemon. Ribbit and Switcheroo arrive with E6 and must read
+    `unitIsUnstoppableV7`.
+12. **Proclaim** (`PROCLAIM { unitId, cityId }`) takes one of the two
+    attacks and may come before or after the other, also after the Move.
+    The city is a player's city hostile to the Herald's seat whose center
+    that seat has explored, within 3 tiles, and not Cowed already
+    (`PROCLAIM_NOT_LEGAL` reason `CITY`, `RANGE`, or `COWED`).
+13. **Cowed** is stored as `cult.cowed`, `{ cityId, endsLeft: 1 }` per city.
+    A Cowed city pays no income (every income read gives 0, like a besieged
+    city) and begins its owner's turn with its city action spent, so
+    training, laying, hiring with the action, Land Grant, and Offering are
+    refused as `CITY_ACTION_SPENT`. Harvests and buildings in its territory
+    are not city actions and stay. It ends when its owner's turn ends, and
+    at once when the city changes hands. There is no event for the end.
+14. **Public data for the board.** A view lists every ritual its viewer
+    knows of (`cult.rituals`: it sees a participant or has explored the
+    mark), with the leader and the chanters it sees, how many chant, and the
+    mark when explored; and the Cowed cities it sees (`cult.cowed`).
+    `previewBeginRitualV7`, `previewRitualV7`, and `previewProclaimV7` give
+    the forecasts ([the current rules](RULESET_7_CURRENT.md#1-identity-and-compatibility)).
+    An Unbound Herald is channelled like an Unbound Horror; with its Control
+    of 3 a binding under way is a real state: `previewRampageV7(...).strands`
+    is 1 or 2 while it still belongs to nobody.
+15. **The Herald's numbers of [section 4.2](#42-summoned-units) were re-run
+    through the engine's combat preview** and all match: it kills a full-HP
+    Fighter, Guard, Knight, Champion, and Captain in one attack and takes
+    nothing; it deals a Juggernaut 20 and takes 7, and 20 again; a Knight
+    deals it 9 and takes 9, a Champion 7 and takes 10, a Juggernaut 9 and
+    takes 9, a Catapult 6, a Marksman 3.
+16. **The Normal AI** never picks `BEGIN_RITUAL` or `PROCLAIM` until bead A3
+    (`pulp_wars-mch9.11`).
+17. **The interface.** The browser offers no button for a ritual or a
+    Proclaim yet (a Star-fall alone is one command per tile in reach):
+    rings, countdowns, marks, and the buttons are bead U3
+    (`pulp_wars-mch9.19`). The technology card of The Stars Are Right names
+    the Great Summoning, and the glossary has Star-fall, Ravage,
+    Unstoppable, and Proclaim. The text-mode harness prints a line per
+    command (`.starfall.x,y`, `.summoning.x,y`, `.proclaim.cN`), the circles
+    under way, a Cowed city, and a Herald's attacks left.
 
 ## Appendix A. The proposal's fifteen decisions, answered
 

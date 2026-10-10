@@ -36,7 +36,10 @@ export type GraveDeathCauseV7 =
   // a Gumball Gunner's Ricochet and a Chocolate Bunny's Thump, each like a
   // splash.
   | "RICOCHET"
-  | "THUMP";
+  | "THUMP"
+  // The Cultists (`pulp_wars-mch9.7`, RULESET_7_CULTISTS.md section 7.4): a
+  // star, like a splash.
+  | "STARFALL";
 
 /**
  * The canonical state a Grave decision reads. The Dwarf revision: with the

@@ -47,8 +47,9 @@ import { allOwnedUnitsV7 } from "./units";
  * Summoner's Sacrifice and Seize (sections 5.1 and 5.2), a city's Offering
  * (section 5.3), the Chosen's Martyr (section 8.2), and a bound daemon's
  * kills (section 8.3, `pulp_wars-mch9.6`). Summoning a Horror spends it
- * (`pulp_wars-mch9.5`, src/engine/v7/cult-channel.ts); the Great Summoning
- * (`pulp_wars-mch9.7`) will, and a consumption joins the sources with it.
+ * (`pulp_wars-mch9.5`, src/engine/v7/cult-channel.ts), and so does the
+ * Great Summoning, whose consumption is a source too (`pulp_wars-mch9.7`,
+ * src/engine/v7/cult-rituals.ts).
  *
  * The legality helpers read only facts that canonical state and a player's
  * view share, so the public command query and the reducer agree exactly.
@@ -127,7 +128,7 @@ export function withFavourSpentV7(
 }
 
 /** The `FAVOUR_GAINED` event of a gain that left the seat at `favour`. */
-function favourGainedEventV7(
+export function favourGainedEventV7(
   cult: CultStateV7,
   playerId: PlayerId,
   source: FavourSourceV7,
@@ -801,10 +802,11 @@ export function applyOfferingV7(
  * attacker is wild when it was wild before the command or a
  * `DAEMON_UNBOUND` earlier in the events let it loose (and no
  * `DAEMON_BOUND` since took it back). A Chosen that attacks a wild unit and
- * dies of its retaliation is a Martyr like any other. The exception still
- * to come is a consumption (the Great Summoning, `pulp_wars-mch9.7`). A
+ * dies of its retaliation is a Martyr like any other. **No Martyr for a
+ * consumption** (`pulp_wars-mch9.7`, section 8.2): a Chosen the Great
+ * Summoning consumed on its marked tile (`UNIT_DIED` cause `CONSUMED`). A
  * kill by the Giant Spider, a camp guard, or Bigfoot pays: they are no
- * failure of the Cult's.
+ * failure of the Cult's, and so does a death under a star.
  *
  * Returns the state and events unchanged (the same `events` array) when no
  * Martyr was paid.
@@ -856,6 +858,7 @@ export function withMartyrFavourV7(
       event.kind !== "UNIT_DIED" ||
       event.cause === "ELIMINATION" ||
       event.cause === "BRAIN_LOST" ||
+      event.cause === "CONSUMED" ||
       sacrificed.has(event.unitId) ||
       wildVictims.has(event.unitId)
     )

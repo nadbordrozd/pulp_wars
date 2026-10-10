@@ -10,9 +10,11 @@ import {
   technologyCapabilitiesV7,
   unitCapabilitiesV7,
   unitFactionV7,
+  unitIsUnstoppableV7,
   unitRoleMechanicsV7,
   unitRoleRuleV7,
   type FactionRosterV7,
+  type SummonedUnitRefV7,
 } from "../rules/ruleset-v7";
 import { surfacedRiderV7 } from "./dwarf";
 import { arePlayersHostileV7 } from "./economy";
@@ -98,7 +100,8 @@ export function isFrozenV7(
  * Section 21.2: whether `target` can be Frozen by a source owned by
  * `sourceOwnerId`: a living land-form unit hostile to the source's owner
  * (never embarked, naval, an Egg, own, or allied). Map curiosities: the
- * neutral Monster is immune too.
+ * neutral Monster is immune too. The Cultists (`pulp_wars-mch9.7`,
+ * RULESET_7_CULTISTS.md section 4.2): so is the Herald (Unstoppable).
  */
 export function canBeFrozenV7(
   state: {
@@ -106,13 +109,14 @@ export function canBeFrozenV7(
     readonly humanPlayerId: PlayerId;
   },
   sourceOwnerId: PlayerId,
-  target: Pick<UnitStateV7, "ownerId" | "form" | "hp">,
+  target: Pick<UnitStateV7, "ownerId" | "form" | "hp"> & SummonedUnitRefV7,
 ): boolean {
   return (
     target.hp > 0 &&
     target.form === "LAND" &&
     // Map curiosities (section 8.6): the Monster is immune to Frozen.
     !isNeutralOwnerV7(target.ownerId) &&
+    !unitIsUnstoppableV7(target) &&
     arePlayersHostileV7(state, sourceOwnerId, target.ownerId)
   );
 }

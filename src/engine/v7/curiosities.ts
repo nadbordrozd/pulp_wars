@@ -1606,7 +1606,10 @@ export function monsterDamageSourcesV7(
       // so does the Mammoth's Stampede (Ice Folk Freeze, `pulp_wars-w49.37`).
       event.kind === "THUNDER_STOMP" ||
       event.kind === "UNITS_TRAMPLED" ||
-      event.kind === "MAMMOTH_STAMPEDED"
+      event.kind === "MAMMOTH_STAMPEDED" ||
+      // The Cultists (`pulp_wars-mch9.7`): a star provokes for its
+      // Stargazer.
+      event.kind === "STAR_FELL"
     ) {
       for (const entry of event.results)
         if (entry.damage + entry.shieldDamage > 0)

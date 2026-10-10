@@ -605,6 +605,12 @@ export const KIND_READER_CLASSES_V7: Readonly<
   // unit's kind through `unitRoleRuleV7` and `unitRoleMechanicsV7`.
   "src/engine/v7/cult.ts::offeringRejectionV7": "SEAT",
   "src/engine/v7/state-schema.ts::cultValid": "SEAT",
+  // The Cult's rituals (`pulp_wars-mch9.7`): The Stars Are Right is a
+  // seat's technology (the Great Summoning's capability, read from the
+  // acting seat's own tree; a mind-controlled Summoner has no `SUMMON`, so
+  // it never reaches the read).
+  "src/engine/v7/cult-rituals.ts::applyBeginRitualV7": "SEAT",
+  "src/engine/v7/query.ts::publicRitualSeatV7": "SEAT",
   // The Cult's Unbound (`pulp_wars-mch9.6`): the seat that summoned an
   // Unbound daemon is a Cult seat (a seat's own faction; a daemon is never
   // mind-controlled).

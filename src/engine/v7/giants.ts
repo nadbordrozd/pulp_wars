@@ -15,10 +15,12 @@ import {
   unitFactionV7,
   unitFliesV7,
   unitIsIceboundV7,
+  unitIsUnstoppableV7,
   unitRoleMechanicsV7,
   unitRoleRuleV7,
   type FactionRosterV7,
   type FrozenLookupV7,
+  type SummonedUnitRefV7,
   type UnitRoleAbilityV7,
 } from "../rules/ruleset-v7";
 import {
@@ -234,17 +236,21 @@ export function attackCrushDamageV7(
 
 /**
  * Section 6.1: a defender the Push rule never moves by its nature is never
- * crushed: an Egg, a Rock Hard unit, and an icebound unit.
+ * crushed: an Egg, a Rock Hard unit, and an icebound unit. The Cultists
+ * (`pulp_wars-mch9.7`, RULESET_7_CULTISTS.md section 4.2): the Herald is
+ * the exception: nothing pushes it (Unstoppable), so a Crushing Shove
+ * crushes it, as damage.
  */
 export function defenderCrushableV7(
   lookup: FactionRosterV7 & {
     readonly ice: readonly { readonly at: CoordV7 }[];
   },
-  defender: Pick<GiantUnitFactsV7, "id" | "ownerId" | "role" | "form" | "at">,
+  defender: Pick<GiantUnitFactsV7, "id" | "ownerId" | "role" | "form" | "at"> &
+    SummonedUnitRefV7,
 ): boolean {
   return (
     defender.form !== "EGG" &&
-    !unitIsImmovableV7(lookup, defender) &&
+    (!unitIsImmovableV7(lookup, defender) || unitIsUnstoppableV7(defender)) &&
     !unitIsIceboundV7(lookup, defender)
   );
 }
@@ -1277,7 +1283,16 @@ export function resolveFixedHitsV7(
   state: GameStateV7,
   creditUnitId: UnitId,
   results: readonly CombatSplashEntryV7[],
-  cause: "CRUSH" | "STOMP" | "TRAMPLE" | "STAMPEDE" | "RICOCHET" | "THUMP",
+  cause:
+    | "CRUSH"
+    | "STOMP"
+    | "TRAMPLE"
+    | "STAMPEDE"
+    | "RICOCHET"
+    | "THUMP"
+    // The Cultists (`pulp_wars-mch9.7`): a star (RULESET_7_CULTISTS.md
+    // section 7.4), which also hits the units of its own seat.
+    | "STARFALL",
   events: DomainEventV7[],
 ): GameStateV7 {
   if (results.length === 0) return state;

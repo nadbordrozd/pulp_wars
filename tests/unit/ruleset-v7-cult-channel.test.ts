@@ -239,7 +239,8 @@ describe("the Cult's channel: the registration", () => {
       "UNITS_SCARED",
       "DAEMON_UNBOUND",
     ]);
-    expect(FAVOUR_PURPOSES_V7).toEqual(["SUMMON_HORROR"]);
+    // The Great Summoning joined with `pulp_wars-mch9.7`.
+    expect(FAVOUR_PURPOSES_V7).toEqual(["SUMMON_HORROR", "GREAT_SUMMONING"]);
     expect(DISRUPTION_CAUSES_V7).toEqual([
       "HP_LOSS",
       "MOVED",
@@ -576,7 +577,8 @@ describe("the Cult's channel: the Horror is a unit of its own (section 4.2)", ()
   it("has the Horror's numbers, whatever its mechanical role says", () => {
     const state = horrorField([SUMMONER]);
     const horror = unitAtV7(state, at(5, 4));
-    expect(BOARD_SUMMONED_ROLE_IDS_V7).toEqual(["HORROR"]);
+    // The Herald joined with `pulp_wars-mch9.7`.
+    expect(BOARD_SUMMONED_ROLE_IDS_V7).toEqual(["HORROR", "HERALD"]);
     expect(horror.role).toBe("KNIGHT");
     const rule = unitRoleRuleV7(state, horror);
     expect(rule).toMatchObject({
@@ -1712,6 +1714,8 @@ describe("the Cult's channel: the public view and Candlelit (section 6.2)", () =
       strands: [],
       grips: [],
       idols: [],
+      rituals: [],
+      cowed: [],
     });
     expect(
       queryPlayerCommandsV7(viewForV7(state, seatIdV7(state, 0))).filter(

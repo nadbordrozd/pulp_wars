@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r76`, for all eight offered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r77`, for all eight offered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), and Candy (`CANDY`). A
 ninth faction, the Cultists (`CULT`), is **registered and not offered**: its
@@ -9,8 +9,9 @@ roster, tree, start, and rewards are in the engine, and so are its Favour
 (Sacrifice, Seize, Offering, and Martyr), its channel (Summon and the
 Horror, Channel, the disruption rule, Behold!, Anchor, and Boo!), and
 Unbound (a daemon that fails its check belongs to nobody and rampages;
-Furious; Bind again; [section 1](#1-identity-and-compatibility)); its
-rituals and Herald and its hexes are not, and
+Furious; Bind again), and its rituals and the Herald (Star-fall, the Great
+Summoning, Ravage, Unstoppable, Proclaim and the Cowed city;
+[section 1](#1-identity-and-compatibility)); its hexes are not, and
 [its spec](RULESET_7_CULTISTS.md) is folded in here only when they are. It
 folds in
 revision 12 (free opening technology, Fruit visible from the start, Fertile
@@ -431,6 +432,25 @@ links to another, by Road or by Port. A sea link needs only **Shorecraft**
 the Roads technology, and unexplored water no longer breaks a link. A save,
 replay, or setup of `7r75` is rejected, and the browser autosave has a new
 key.
+`pulp-wars-poc-7r77` (`pulp_wars-mch9.7`) is **the Cult's rituals and the
+Herald** ([section 1](#1-identity-and-compatibility)), the fifth engine step
+of the Cultists: a leader and the robed cultists beside it begin a
+**ritual** that completes at their seat's next Start Turn unless the circle
+is disrupted. A Stargazer's **Star-fall** drops 5, plus 1 for each chanter,
+on every unit on a marked tile 2 to 4 tiles away and the eight around it,
+friend and foe, and destroys the Field Defense and Barricades there. A
+Summoner's **Great Summoning** costs 20 Favour and brings **the Herald**
+onto a marked tile beside it: a unit on the mark is consumed for Favour or
+blocks the arrival. The Herald attacks twice a turn (**Ravage**), ignores
+fortification and every status and shove (**Unstoppable**), and may spend
+an attack to **Proclaim**: a hostile city within 3 tiles is **Cowed**, with
+no income and no city action until its owner's turn ends. The `cult` block
+gains the lists `rituals` and `cowed`; the commands `BEGIN_RITUAL` and
+`PROCLAIM`, seven events, the death causes `STARFALL` and `CONSUMED`, the
+Favour source `CONSUMPTION`, and the Field Defense reasons `STARFALL` and
+`UNSTOPPABLE` are new. No rule of the eight offered factions changed. A
+save, replay, or setup of `7r76` is rejected, and the browser autosave has
+a new key.
 `pulp-wars-poc-7r58` (`pulp_wars-w49.25`) is
 [step two of the Martian pass](RULESET_7_TUNING_MARTIAN.md#14-step-two):
 **City Walls hold a unit on its own city center against a Saucer's Tractor
@@ -881,7 +901,7 @@ the build differs (its sections 20 to 24 list them);
 the values here are current. Where a document and the code disagreed, the
 code's behavior is the rule and is stated below;
 [Known discrepancies](#25-known-discrepancies) lists the open items and the
-resolved ones as of `pulp-wars-poc-7r76`.
+resolved ones as of `pulp-wars-poc-7r77`.
 
 **Terms.** "On the board" means a unit that currently exists (HP above 0).
 **Living** has the narrower revision-13 meaning used by Wail, Plague,
@@ -982,10 +1002,10 @@ separate [Ruleset 6](RULESET_6.md) route.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r76`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Ruleset                                    | `pulp-wars-poc-7r77`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r76.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Browser autosave                           | `pulpWars.save.v7r77.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, `CULT`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`, `CULT_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -1283,7 +1303,16 @@ separate [Ruleset 6](RULESET_6.md) route.
   the key `summoned` on a neutral unit of those breeds, the event
   `DAEMON_BOUND`, the Favour source `DAEMON_KILL`, and the
   `CHANNEL_NOT_LEGAL` reason `FURIOUS`, and removed the `UNIT_DIED` cause
-  `UNBOUND` (the notes below).
+  `UNBOUND` (the notes below). The Cult's rituals and the Herald
+  (`pulp_wars-mch9.7`, `7r77`) added the required lists `rituals` and
+  `cowed` of the `cult` block (state and view), the summoned unit `HERALD`
+  on the board, the commands `BEGIN_RITUAL` and `PROCLAIM`, the events
+  `RITUAL_BEGUN`, `RITUAL_DISRUPTED`, `RITUAL_FIZZLED`, `STAR_FELL`,
+  `UNIT_CONSUMED`, `HERALD_ARRIVED`, and `CITY_COWED`, the `UNIT_DIED`
+  causes `STARFALL` and `CONSUMED`, the Favour source `CONSUMPTION` and
+  purpose `GREAT_SUMMONING`, the `FIELD_DEFENSE_DESTROYED` reasons
+  `STARFALL` and `UNSTOPPABLE`, and the errors `RITUAL_NOT_LEGAL` and
+  `PROCLAIM_NOT_LEGAL` (the notes below).
 - **The Cult registration** (`pulp_wars-mch9.3`, `7r71`, bead E1 of
   [the Cultists spec](RULESET_7_CULTISTS.md#19-implementation-beads)). What
   is in the engine today, and nothing more:
@@ -1635,6 +1664,93 @@ separate [Ruleset 6](RULESET_6.md) route.
   - **Normal AI.** The older policy never binds (`pulp_wars-mch9.10`).
     Every seat reads a visible Unbound daemon as a monster: hunted only by
     a kill this turn, and no routine Move ends in its reach.
+- **The Cult's rituals and the Herald** (`pulp_wars-mch9.7`, `7r77`, bead
+  E5 of [the Cultists spec](RULESET_7_CULTISTS.md#19-implementation-beads);
+  its sections 7, 4.2, and 8.6 are the design, and
+  [its section 21.5](RULESET_7_CULTISTS.md#215-e5-rituals-and-the-herald-pulp_wars-mch97-pulp-wars-poc-7r77)
+  the choices made). What is in the engine today:
+  - **A ritual** (`BEGIN_RITUAL { ritual, unitId, at }`) has a leader and
+    chanters: every own robed cultist on the eight tiles around the leader
+    that has not used a primary action and is not Frozen. It spends the
+    primary action of them all (`RITUAL_BEGUN`), marks the tile `at`, and
+    completes at its seat's next Start Turn, after the channel check and
+    before Egg hatching, in leader unit-ID order. State: `cult.rituals`,
+    `{ kind, playerId, leaderUnitId, chanterUnitIds, at }` sorted by
+    leader.
+  - **Breaking it.** A participant that loses Hit Points, is moved by
+    anything but its own command, gets a status, changes owner, or leaves
+    the board leaves the ritual (`RITUAL_DISRUPTED`; the channel's
+    disruption rule, without Behold!). Without its leader, or with fewer
+    chanters than it needs, the ritual fizzles at once (`RITUAL_FIZZLED`
+    reason `LEADER` or `CHANTERS`); nothing is refunded.
+  - **Star-fall** (`ritual: "STARFALL"`): the leader is a Stargazer (the
+    Cult `CATAPULT`, ability `STARFALL`) that has not moved this turn, with
+    one chanter or more; the mark is a tile its seat has explored, 2 to 4
+    tiles away. When it completes (`STAR_FELL`), every unit on the marked
+    tile and the eight around it, of every seat and form, takes **5 + 1 for
+    each chanter still in it** as a fixed hit (Armoured, Plated, and a
+    Shield apply; Defense, fortification, cover, Snow, and the Blizzard do
+    not); every Field Defense in the area is destroyed (reason `STARFALL`)
+    and every Barricade removed. The deaths are `STARFALL` deaths credited
+    to the Stargazer. No retaliation.
+  - **The Great Summoning** (`ritual: "GREAT_SUMMONING"`): the leader is a
+    Summoner of a seat with The Stars Are Right (the Cult's Explosives; the
+    `greatSummoning` capability), with three chanters or more; the mark is
+    a land tile next to it that the Herald could stand on (it may hold a
+    unit); the seat pays **20 Favour** at once (`FAVOUR_SPENT` purpose
+    `GREAT_SUMMONING`). When it completes, the unit on the mark decides it.
+    A legal victim is **consumed** (`UNIT_CONSUMED`, `UNIT_DIED` cause
+    `CONSUMED`, `FAVOUR_GAINED` source `CONSUMPTION`): an own unit a
+    Sacrifice could take, for its value; or a hostile, living, one-slot
+    unit that is no reward giant at 5 HP or less, for twice its value (a
+    kill for the leader). Any other unit, or a Barricade or mound put on
+    the mark, **blocks** the arrival (`RITUAL_FIZZLED` reason `BLOCKED`).
+    Otherwise the Herald stands on the mark (`HERALD_ARRIVED`) at full HP,
+    exhausted for the turn, and the leader and every remaining chanter
+    hold a strand to it and are exhausted too.
+  - **The Herald** is a summoned unit (`summoned: "HERALD"`, mechanical
+    role `JUGGERNAUT`): 60 HP, Attack 7, Defense 4, Move 2, Control 3,
+    value 24. **Ravage:** two attacks a turn, moved or not, at one target or
+    two; it never advances. **Unstoppable:** its attacks ignore the
+    defender's fortification (cover stays) and destroy a Field Defense on
+    the target's tile (reason `UNSTOPPABLE`), bound or Unbound; a bound
+    Herald is never Frozen, Stuck, Splatted, Cracked, or given Toothache,
+    is moved by no Push, Charge! push, Knockback, Tractor Beam, Bounce, or
+    gate (a unit traversing onto it is blocked), and is crushed by a
+    Crushing Shove it does not yield to. It captures while bound.
+  - **Proclaim** (`PROCLAIM { unitId, cityId }`): one of the bound Herald's
+    two attacks; the city is a hostile player's city whose center its seat
+    has explored, within 3 tiles, not Cowed already (`CITY_COWED`).
+  - **Cowed** (`cult.cowed`, `{ cityId, endsLeft }`): the city pays no
+    income and begins its owner's turn with its city action spent
+    (`CITY_ACTION_SPENT`), until that turn ends or the city changes hands.
+    Its rewards still settle.
+  - **Views and previews.** A view lists the rituals its viewer knows of
+    (`cult.rituals`: the kind, the seat, the leader when it sees it, the
+    chanters it sees, how many chant, and the mark when it has explored
+    it) and the Cowed cities it sees (`cult.cowed`). `previewBeginRitualV7(view, unitId, ritual, at)` gives
+    the chanters, the Favour, and the forecast of an offered ritual;
+    `previewRitualV7(view, ritual)` the forecast of one under way: for a
+    star its damage, area, and the hit on every visible unit there
+    (`exact` false when a tile of the area is unexplored), for a Great
+    Summoning whether the Herald `ARRIVES`, `CONSUMES` the unit on the mark
+    (and for what), or is `BLOCKED`. `previewProclaimV7` names the city and
+    the attacks left. `attacksLeftV7(view, unit)` is a Herald's attacks
+    left this turn.
+  - **Events and who sees them.** `RITUAL_BEGUN` and `RITUAL_FIZZLED` reach
+    the seat, every player who sees the leader, and every player who has
+    explored the mark; `RITUAL_DISRUPTED` whoever sees the participant;
+    `STAR_FELL` the seat and whoever sees the Stargazer or has explored the
+    mark, with the hits on the units they own or see (another player gets
+    its own hits as `COMBAT_SPLASH_DAMAGE`); `UNIT_CONSUMED` the seat, the
+    victim's owner, and whoever saw the victim; `HERALD_ARRIVED` whoever
+    sees the Herald; `CITY_COWED` whoever sees the city.
+  - **Interface, for now.** The browser offers no ritual or Proclaim yet
+    (`pulp_wars-mch9.19`); the technology card and the glossary name them.
+    The text harness offers `.starfall.x,y`, `.summoning.x,y`, and
+    `.proclaim.cN` and prints the circles, a Cowed city, and a Herald's
+    attacks left.
+  - **Normal AI.** It picks neither command (`pulp_wars-mch9.11`).
 
 ## 2. Setup and map generation
 
@@ -12963,6 +13079,7 @@ first guesses.
 | Cult, E3        | `pulp-wars-poc-7r74` | `pulp_wars-mch9.5` the Cult's channel, the third engine step of the Cultists (a save, replay, or setup of `7r73` is rejected): Summon a Horror for 5 Favour (a summoned unit names itself in `summoned`); Channel and the strands; the disruption rule (any Hit Point lost, any move not its own, any status, a new owner, or leaving the board breaks a strand, read from what happened to the unit after every command); the Start Turn check (a daemon short of its Control is Unbound and, until the Unbound rules, leaves the board); Behold!, Anchor, and Boo!; the `cult` lists `strands`, `grips`, and `idols`, five commands, ten events, and the death cause `UNBOUND`; no rule of another faction changed ([section 1](#1-identity-and-compatibility)).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | Cult, E4        | `pulp-wars-poc-7r75` | `pulp_wars-mch9.6` the Cult's Unbound, the fourth engine step of the Cultists (a save, replay, or setup of `7r74` is rejected): a daemon that fails its check belongs to nobody as a neutral unit of its own breed (`HORROR`, `HERALD`), rampages at once and after every round (it walks to the nearest unit of any player and attacks it), is Furious for that turn, and is bound again by the Cult seat whose strands on it reach its Control in one turn; a bound daemon's kills pay Favour; no Martyr for a Chosen a wild unit attacks and kills; an eliminated Cult seat's daemons are Unbound and stay; the `monsters` key `unbound`, the event `DAEMON_BOUND`, the Favour source `DAEMON_KILL`, no death cause `UNBOUND`; a neutral unit on a center besieges nothing ([section 1](#1-identity-and-compatibility)).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Port links      | `pulp-wars-poc-7r76` | `pulp_wars-5ti.12` Ports join the Road network (the user, 2026-10-10; a save, replay, or setup of `7r75` is rejected): one connection network of Road tiles, own city centers, own active Ports and Shipyards, and sea links between active docks of two own cities at most five water steps apart; a city joined to the original capital by any mix of them gets +1 population once, and the capital +1 for each; sea trade (Navigation's +1 Coin) is removed and Commerce's trade Coin goes to every city linked to another by Road or Port; the sea link needs Shorecraft only (Navigation adds Deep Water crossings), city centers and docks count without Roads, and exploration is no longer a condition; the technology effect `SEA_TRADE_INCOME` and the capability `seaTradeIncomeCoins` are replaced by `SEA_LINK` (on Shorecraft) and `seaLink`; `naval.ownedPorts` entries gain `joinsCity`, `naval.seaRoutes` lists exactly the links that count (one for each pair of cities), and `naval.seaTradeCityIds` and `tradeCityIds` are always empty; the board draws a Road onto docks and city centers where they join                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| Cult, E5        | `pulp-wars-poc-7r77` | `pulp_wars-mch9.7` the Cult's rituals and the Herald, the fifth engine step of the Cultists (a save, replay, or setup of `7r76` is rejected): the ritual frame (a leader and its chanters begin a ritual with `BEGIN_RITUAL`, a disrupted participant leaves it, and it completes or fizzles at the seat's next Start Turn after the channel check); Star-fall (a Stargazer that has not moved, one chanter or more, a mark 2 to 4 tiles away: 5 + 1 for each chanter as a fixed hit to every unit on the mark and the eight tiles around it, friend and foe, with every Field Defense and Barricade there destroyed); the Great Summoning (a Summoner with The Stars Are Right and three chanters or more, 20 Favour: the unit on the mark is consumed or blocks the arrival, then the Herald arrives and the circle channels it); the Herald (60 HP, Attack 7, Defense 4, Move 2, Control 3; Ravage, two attacks a turn and never an advance; Unstoppable, its attacks ignore fortification and destroy Field Defense, and no status or shove takes it; Proclaim, one attack spent to Cow a hostile city within 3 tiles: no income and no city action until its owner's turn ends); the commands `BEGIN_RITUAL` and `PROCLAIM`, seven events, the `cult` lists `rituals` and `cowed`, the death causes `STARFALL` and `CONSUMED`, the Favour source `CONSUMPTION` and purpose `GREAT_SUMMONING`, and the Field Defense reasons `STARFALL` and `UNSTOPPABLE`. An Unbound Herald can be bound again. No rule of the eight offered factions changed                      |
 
 **Documentation parity (2026-09-28, no ruleset or identity change):** where
 older documents disagreed with the code, the code's behavior was adopted as

@@ -417,8 +417,32 @@ export function recomputeLiveEconomyV7(
   return { cities, populationContributions, changes };
 }
 
+/**
+ * The Cultists (`pulp_wars-mch9.7`, docs/product/RULESET_7_CULTISTS.md
+ * section 8.6): whether a Herald's Proclaim has Cowed the city: it pays no
+ * income at its owner's Start Turn (like a besieged city) and has no city
+ * action, until its owner's turn ends.
+ */
+export function cityIsCowedV7(
+  state: {
+    readonly cult?: {
+      readonly cowed?: readonly { readonly cityId: CityId }[];
+    };
+  },
+  cityId: CityId,
+): boolean {
+  const cowed = state.cult?.cowed;
+  return (
+    cowed !== undefined &&
+    cowed.length > 0 &&
+    cowed.some((entry) => entry.cityId === cityId)
+  );
+}
+
 export function cityIncomeV7(state: GameStateV7, city: CityStateV7): number {
   if (isCityBesiegedV7(state, city)) return 0;
+  // The Cultists (section 8.6): a Cowed city hides in its cellars.
+  if (cityIsCowedV7(state, city.id)) return 0;
   const base =
     cityLevelIncomeV7(city.level) +
     (city.isCapital ? 1 : 0) +
@@ -1056,9 +1080,11 @@ export function startTurnEconomyV7(
 ): { readonly state: GameStateV7; readonly events: readonly DomainEventV7[] } {
   const reset: GameStateV7 = {
     ...state,
+    // The Cultists (section 8.6): a Cowed city has no city action this
+    // turn (no training, laying, Land Grant, or Offering).
     cities: state.cities.map((city) =>
       city.ownerId === player.id
-        ? { ...city, cityActionAvailable: true }
+        ? { ...city, cityActionAvailable: !cityIsCowedV7(state, city.id) }
         : city,
     ),
     // Revision 19 section 6.2: Start Turn leaves an Egg's activation

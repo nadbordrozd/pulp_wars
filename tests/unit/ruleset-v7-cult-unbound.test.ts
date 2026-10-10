@@ -212,7 +212,12 @@ describe("Unbound: the registration (sections 6.4 and 13.1)", () => {
         summoned.move,
         summoned.range,
       ]);
-      expect(rule.abilities).toEqual(["ATTACK", "STRIDE"]);
+      // (Unstoppable is the Herald's body rule: `pulp_wars-mch9.7`.)
+      expect(rule.abilities).toEqual(
+        breed === "HERALD"
+          ? ["ATTACK", "UNSTOPPABLE", "STRIDE"]
+          : ["ATTACK", "STRIDE"],
+      );
       expect(rule.sightRadius).toBe(0);
       const mechanics = NEUTRAL_ROLE_MECHANICS_V7[breed];
       expect(mechanics.construct).toBe(true);
@@ -254,7 +259,8 @@ describe("Unbound: the registration (sections 6.4 and 13.1)", () => {
       "DAEMON_UNBOUND",
       "DAEMON_BOUND",
     ]);
-    expect(FAVOUR_SOURCES_V7.at(-1)).toBe("DAEMON_KILL");
+    // (A consumption joined after it with `pulp_wars-mch9.7`.)
+    expect(FAVOUR_SOURCES_V7.slice(-2)).toEqual(["DAEMON_KILL", "CONSUMPTION"]);
     expect(
       parseEventV7({
         kind: "DAEMON_BOUND",
@@ -824,16 +830,22 @@ describe("Unbound: the neutral turn (sections 6.4 and 13.3)", () => {
     expect(parseGameStateV7(JSON.parse(JSON.stringify(round.state)))).toEqual(
       round.state,
     );
-    // No seat can command a Herald until the Great Summoning (E5): it is
-    // no target of a Channel yet.
+    // A seat can command a Herald (`pulp_wars-mch9.7`), so a cultist within
+    // 3 tiles may channel the Unbound one. One strand of the three it
+    // needs binds nothing: the Herald stays nobody's.
     const cultist = unitAtV7(round.state, at(5, 5));
+    const strand = playV7(round.state, {
+      kind: "CHANNEL",
+      unitId: cultist.id,
+      daemonUnitId: herald.id,
+    });
+    expect(kindsV7(strand.events)).toEqual(["STRAND_FORMED"]);
+    expect(strand.state.cult.strands).toEqual([
+      { cultistUnitId: cultist.id, daemonUnitId: herald.id },
+    ]);
     expect(
-      rejectedV7(round.state, {
-        kind: "CHANNEL",
-        unitId: cultist.id,
-        daemonUnitId: herald.id,
-      }),
-    ).toEqual({ code: "CHANNEL_NOT_LEGAL", params: { reason: "DAEMON" } });
+      need(strand.state.units.find((unit) => unit.id === herald.id)).ownerId,
+    ).toBe(NEUTRAL_OWNER_ID_V7);
   });
 
   it("is immune to Freeze, Mind Control's taking, and a Push, like every neutral unit", () => {
@@ -1221,6 +1233,8 @@ describe("Unbound: elimination (section 13.1)", () => {
       strands: [],
       grips: [],
       idols: [],
+      rituals: [],
+      cowed: [],
     });
     expect(parseGameStateV7(JSON.parse(JSON.stringify(result.state)))).toEqual(
       result.state,

@@ -226,6 +226,23 @@ const ENTRIES = {
     "Bind again",
     "Channel it with enough robed cultists in one turn and it is yours again. It cannot be bound in the turn it broke loose.",
   ],
+  // Rituals and the Herald (`pulp_wars-mch9.7`, sections 7, 4.2, and 8.6).
+  STARFALL: [
+    "Star-fall",
+    "If it has not moved, it and the cultists beside it call a star onto a tile nearby. Next turn it hurts everything there and around it.",
+  ],
+  RAVAGE: [
+    "Ravage",
+    "Attacks twice each turn, at one target or two, even after moving. It never advances after a kill.",
+  ],
+  UNSTOPPABLE: [
+    "Unstoppable",
+    "Its blows ignore Walls, Field Defense and Dig In. Nothing freezes, hexes or shoves it: only damage hurts it.",
+  ],
+  PROCLAIM: [
+    "Proclaim",
+    "Instead of one attack, it cows an enemy city nearby: the city earns nothing and trains nothing until its owner's turn ends.",
+  ],
 
   // ------------------------------------------------------------------ ships
   SHIP: ["Ship", "Built at a Port. It heals only next to your own Ports."],

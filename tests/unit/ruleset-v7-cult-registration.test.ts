@@ -146,14 +146,14 @@ describe("the Cult registration: identity", () => {
   // 7r74, and the Cult's Unbound (`pulp_wars-mch9.6`) 7r75, so 7r71 is a
   // prior identity.
   it("was 7r71 after 7r70, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r76");
-    expect(PRIOR_RULESET_7_IDS.slice(-6, -4)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r77");
+    expect(PRIOR_RULESET_7_IDS.slice(-7, -5)).toEqual([
       "pulp-wars-poc-7r70",
       "pulp-wars-poc-7r71",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r76.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-6, -4)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r77.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-7, -5)).toEqual([
       "pulpWars.save.v7r70.current",
       "pulpWars.save.v7r71.current",
     ]);
@@ -332,8 +332,8 @@ describe("the Cult registration: the nine land roles (section 4.1)", () => {
       GUARD: ["ATTACK", "CAPTURE", "CHANNEL", "BEHOLD"],
       // No Rally and no Tend Wounded; Sacrifice, Seize, and Summon.
       CAPTAIN: ["ATTACK", "CAPTURE", "SACRIFICE", "SEIZE", "SUMMON", "CHANNEL"],
-      // No attack of its own.
-      CATAPULT: ["CAPTURE", "CHANNEL"],
+      // No attack of its own; Star-fall is its ritual (`pulp_wars-mch9.7`).
+      CATAPULT: ["CAPTURE", "CHANNEL", "STARFALL"],
       // No Overrun.
       KNIGHT: ["ATTACK", "CAPTURE", "CHANNEL"],
       SWORDSMAN: ["ATTACK", "CAPTURE", "MARTYR", "CHANNEL"],
@@ -503,6 +503,8 @@ describe("the Cult registration: the tree and its names (section 11)", () => {
               : [unlock],
         ),
         ...(node.id === "FARMING" ? [{ kind: "OFFERING" }] : []),
+        // `pulp_wars-mch9.7`: The Stars Are Right adds the Great Summoning.
+        ...(node.id === "EXPLOSIVES" ? [{ kind: "GREAT_SUMMONING" }] : []),
       ]);
     }
     // Leadership: the Summoner with its Sacrifice and Seize, the Market,
@@ -524,10 +526,12 @@ describe("the Cult registration: the tree and its names (section 11)", () => {
     expect(unlocksOf("FORTIFICATION")).toEqual(["UNIT:GUARD"]);
     // Raiding keeps Pillage and the Familiar's Charge.
     expect(unlocksOf("RAIDING")).toEqual(["PILLAGE", "CHARGE_BONUS"]);
-    // The Stars Are Right keeps Blast Mountain and Breach.
+    // The Stars Are Right keeps Blast Mountain and Breach, and adds the
+    // Great Summoning (`pulp_wars-mch9.7`).
     expect(unlocksOf("EXPLOSIVES")).toEqual([
       "BLAST_MOUNTAIN",
       "MELEE_FIELD_DEMOLITION",
+      "GREAT_SUMMONING",
     ]);
     // Pathfinding: the Hexer sees its own range.
     expect(unlocksOf("FIELDCRAFT")).toContain("ROLE_SIGHT");
@@ -569,6 +573,8 @@ describe("the Cult registration: the tree and its names (section 11)", () => {
       roleBindings: CULT_ROLE_RULES_V7,
       // Harvest Rites (`pulp_wars-mch9.4`).
       offering: true,
+      // The Stars Are Right (`pulp_wars-mch9.7`).
+      greatSummoning: true,
     });
     expect(cult.trainableRoles).toEqual(
       UNIT_ROLE_IDS_V7.filter((role) => role !== "JUGGERNAUT"),

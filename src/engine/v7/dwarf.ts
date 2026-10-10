@@ -151,7 +151,9 @@ export function roleRetaliatesV7(rule: {
  * Section 7.3: the shots a unit may fire this turn: its role's unmoved
  * allowance when it has not moved (the Clockwork Gunner's 2), otherwise 1.
  * A Gunner that has fired cannot move, so its `moved` flag at its first shot
- * is the flag now.
+ * is the flag now. The Cultists (`pulp_wars-mch9.7`, RULESET_7_CULTISTS.md
+ * section 4.2): Ravage, the attacks of a role that makes more than one a
+ * turn, moved or not (the Herald's 2).
  */
 export function attackAllowanceV7(
   roster: FactionRosterV7,
@@ -164,9 +166,11 @@ export function attackAllowanceV7(
   },
 ): number {
   if (unit.form !== "LAND") return 1;
-  return unit.activation.moved
-    ? 1
-    : unitRoleMechanicsV7(roster, unit).unmovedShots;
+  const mechanics = unitRoleMechanicsV7(roster, unit);
+  return Math.max(
+    mechanics.ravageAttacks,
+    unit.activation.moved ? 1 : mechanics.unmovedShots,
+  );
 }
 
 /**

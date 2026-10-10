@@ -6,6 +6,7 @@ import type {
   MatchOutcomeV7,
   NavalRoleIdV7,
   RewardIdV7,
+  RitualKindV7,
   SummonedRoleIdV7,
   TechnologyIdV7,
   UnitRoleIdV7,
@@ -14,9 +15,9 @@ import type {
 /**
  * The Cultists (`pulp_wars-mch9.4`, docs/product/RULESET_7_CULTISTS.md
  * section 3): what paid a Cult seat Favour, in the frozen order: a
- * Sacrifice, a Seizure, an Offering, a Chosen's Martyr, and (section 8.3,
- * `pulp_wars-mch9.6`) a bound daemon's kill. A consumption joins with the
- * Great Summoning (`pulp_wars-mch9.7`).
+ * Sacrifice, a Seizure, an Offering, a Chosen's Martyr, (section 8.3,
+ * `pulp_wars-mch9.6`) a bound daemon's kill, and (section 7.3,
+ * `pulp_wars-mch9.7`) a unit the Great Summoning consumed.
  */
 export const FAVOUR_SOURCES_V7 = Object.freeze([
   "SACRIFICE",
@@ -24,15 +25,19 @@ export const FAVOUR_SOURCES_V7 = Object.freeze([
   "OFFERING",
   "MARTYR",
   "DAEMON_KILL",
+  "CONSUMPTION",
 ] as const);
 export type FavourSourceV7 = (typeof FAVOUR_SOURCES_V7)[number];
 
 /**
  * The Cultists (`pulp_wars-mch9.5`, section 3): what a Cult seat spent
- * Favour on, in the frozen order: summoning a Horror. The Great Summoning
- * joins with the Herald (`pulp_wars-mch9.7`).
+ * Favour on, in the frozen order: summoning a Horror, and (section 7.3,
+ * `pulp_wars-mch9.7`) the Great Summoning.
  */
-export const FAVOUR_PURPOSES_V7 = Object.freeze(["SUMMON_HORROR"] as const);
+export const FAVOUR_PURPOSES_V7 = Object.freeze([
+  "SUMMON_HORROR",
+  "GREAT_SUMMONING",
+] as const);
 export type FavourPurposeV7 = (typeof FAVOUR_PURPOSES_V7)[number];
 
 /**
@@ -50,6 +55,20 @@ export const DISRUPTION_CAUSES_V7 = Object.freeze([
   "GONE",
 ] as const);
 export type DisruptionCauseV7 = (typeof DISRUPTION_CAUSES_V7)[number];
+
+/**
+ * The Cultists (`pulp_wars-mch9.7`, section 7.1): why a ritual fizzled, in
+ * the frozen order: its leader left it; fewer chanters remained than it
+ * needs; or (the Great Summoning, at its completion) the marked tile was
+ * blocked: a unit that cannot be consumed stood on it, or the Herald could
+ * not stand there any more.
+ */
+export const RITUAL_FIZZLE_REASONS_V7 = Object.freeze([
+  "LEADER",
+  "CHANTERS",
+  "BLOCKED",
+] as const);
+export type RitualFizzleReasonV7 = (typeof RITUAL_FIZZLE_REASONS_V7)[number];
 
 /** One unit a Horror's Boo! reached (section 8.5). */
 export interface ScaredUnitV7 {
@@ -840,7 +859,14 @@ export type DomainEventV7 =
          * target's tile.
          */
         | "STOMP"
-        | "SIEGE_HAMMER";
+        | "SIEGE_HAMMER"
+        /**
+         * The Cultists (`pulp_wars-mch9.7`, sections 4.2 and 7.4): an
+         * attack of the Herald (Unstoppable) destroys the Field Defense on
+         * its target's tile; a star destroys every one in its area.
+         */
+        | "UNSTOPPABLE"
+        | "STARFALL";
     }
   | {
       readonly kind: "LAND_GRANTED";
@@ -1557,6 +1583,118 @@ export type DomainEventV7 =
       readonly control: number;
     }
   | {
+      /**
+       * The Cultists (`pulp_wars-mch9.7`, section 7.1): the leader `unitId`
+       * of `playerId` began the ritual `ritual` with the chanters
+       * `chanterUnitIds` (sorted), marking the tile `at`. A Great
+       * Summoning's `FAVOUR_SPENT` comes first. A projection to another
+       * seat lists the chanters it sees.
+       */
+      readonly kind: "RITUAL_BEGUN";
+      readonly playerId: PlayerId;
+      readonly ritual: RitualKindV7;
+      readonly unitId: UnitId;
+      readonly chanterUnitIds: readonly UnitId[];
+      readonly at: CoordV7;
+    }
+  | {
+      /**
+       * The Cultists (section 7.1): the participant `participantUnitId` of
+       * the ritual `ritual` led by `unitId` (of `playerId`) was disrupted
+       * (`cause`) and left it. When that ends the ritual, its
+       * `RITUAL_FIZZLED` follows.
+       */
+      readonly kind: "RITUAL_DISRUPTED";
+      readonly playerId: PlayerId;
+      readonly ritual: RitualKindV7;
+      readonly unitId: UnitId;
+      readonly participantUnitId: UnitId;
+      readonly cause: DisruptionCauseV7;
+    }
+  | {
+      /**
+       * The Cultists (section 7.1): the ritual `ritual` of `playerId`, led
+       * by `unitId` with the mark on `at`, fizzled (`reason`): the ring
+       * goes dark and nothing is refunded.
+       */
+      readonly kind: "RITUAL_FIZZLED";
+      readonly playerId: PlayerId;
+      readonly ritual: RitualKindV7;
+      readonly unitId: UnitId;
+      readonly at: CoordV7;
+      readonly reason: RitualFizzleReasonV7;
+    }
+  | {
+      /**
+       * The Cultists (section 7.4): the star of the Stargazer `unitId` of
+       * `playerId` landed on `at`: every unit on that tile and the eight
+       * around it took `damage` (5, plus 1 for each of the `chanters`
+       * still chanting) as fixed damage (`results`, sorted by (y, x,
+       * unitId); a projection keeps the units the viewer owns or could
+       * see), and the Field Defense on `fieldDefenses` and the Barricades
+       * on `barricades` were destroyed. The deaths follow as `UNIT_DIED`
+       * cause `STARFALL`.
+       */
+      readonly kind: "STAR_FELL";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly at: CoordV7;
+      readonly chanters: number;
+      readonly damage: number;
+      readonly results: readonly CombatSplashEntryV7[];
+      readonly fieldDefenses: readonly CoordV7[];
+      readonly barricades: readonly CoordV7[];
+    }
+  | {
+      /**
+       * The Cultists (section 7.3): the Great Summoning led by `unitId` of
+       * `playerId` consumed the unit `victimUnitId` of `victimOwnerId`
+       * (role `role`) that stood on the marked tile `at`, for `favour`
+       * Favour: its value for an own unit (as a Sacrifice), twice its
+       * value for a broken enemy (as a Seizure, credited to the leader).
+       * The victim's `UNIT_DIED` (cause `CONSUMED`) and the seat's
+       * `FAVOUR_GAINED` follow.
+       */
+      readonly kind: "UNIT_CONSUMED";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly victimUnitId: UnitId;
+      readonly victimOwnerId: PlayerId;
+      readonly role: UnitRoleIdV7;
+      readonly at: CoordV7;
+      readonly favour: number;
+    }
+  | {
+      /**
+       * The Cultists (section 7.3): the Great Summoning led by `unitId` of
+       * `playerId` is complete: the Herald `daemonUnitId` stands on `at`
+       * with `hp` Hit Points, exhausted for the turn. The leader and the
+       * chanters `chanterUnitIds` (sorted) channel it at once: their
+       * `STRAND_FORMED` follow, in unit-ID order. A projection to another
+       * seat lists the chanters it sees.
+       */
+      readonly kind: "HERALD_ARRIVED";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly chanterUnitIds: readonly UnitId[];
+      readonly daemonUnitId: UnitId;
+      readonly at: CoordV7;
+      readonly hp: number;
+    }
+  | {
+      /**
+       * The Cultists (section 8.6): the Herald `unitId` of `playerId`
+       * Proclaimed: the city `cityId` of `cityOwnerId` (its center on `at`)
+       * is Cowed until the end of its owner's next turn.
+       */
+      readonly kind: "CITY_COWED";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly cityId: CityId;
+      readonly cityOwnerId: PlayerId;
+      readonly at: CoordV7;
+    }
+  | {
       readonly kind: "SPOILS_AWARDED";
       readonly playerId: PlayerId;
       readonly cityId: CityId;
@@ -1725,7 +1863,16 @@ export type DomainEventV7 =
          * (after `UNIT_SEIZED`: a kill credited to the Summoner). Nothing
          * is left: no Grave, Crumbs, blast, or rising.
          */
-        | "SACRIFICED";
+        | "SACRIFICED"
+        /**
+         * The Cultists (`pulp_wars-mch9.7`, sections 7.3 and 7.4): a unit
+         * killed by a star (like a splash death, credited to the
+         * Stargazer), and a unit the Great Summoning consumed on its marked
+         * tile (after `UNIT_CONSUMED`; nothing is left, as for a
+         * Sacrifice).
+         */
+        | "STARFALL"
+        | "CONSUMED";
     }
   | {
       /**

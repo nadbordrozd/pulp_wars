@@ -47,6 +47,7 @@ import type {
   FrozenStatusV7,
   CoolingStatusV7,
   CoordV7,
+  CowedCityV7,
   CrumbsV7,
   CuriosityV7,
   SugarRushStatusV7,
@@ -71,6 +72,7 @@ import type {
   PopulationContributionV7,
   ResourceIdV7,
   RewardIdV7,
+  RitualKindV7,
   RulesetIdV7,
   ShieldStatusV7,
   TerrainIdV7,
@@ -229,6 +231,26 @@ export interface PublicDaemonV7 {
   readonly role: SummonedRoleIdV7;
   readonly control: number;
   readonly strands: number;
+}
+
+/**
+ * The Cultists (`pulp_wars-mch9.7`, section 7.1, "Public"): a ritual under
+ * way that the viewer knows of: it sees a participant, or it has explored
+ * the marked tile. `leaderUnitId` is null when the viewer does not see the
+ * leader; `chanterUnitIds` are the chanters it sees (each a candle on the
+ * board; a participant on an explored tile is always visible), sorted;
+ * `chanters` is how many still chant (public, like the countdown: it is the
+ * star's damage); `at` is the marked tile, null when the viewer has not
+ * explored it. Every ritual completes at the start of its seat's next turn
+ * (`playerId`), so the countdown is one turn of that seat.
+ */
+export interface PublicRitualV7 {
+  readonly kind: RitualKindV7;
+  readonly playerId: PlayerId;
+  readonly leaderUnitId: UnitId | null;
+  readonly chanterUnitIds: readonly UnitId[];
+  readonly chanters: number;
+  readonly at: CoordV7 | null;
 }
 
 export interface PublicLeaderboardEntryV7 {
@@ -524,6 +546,17 @@ export interface PlayerViewV7 {
     readonly grips: readonly GripV7[];
     readonly idols: readonly UnitId[];
     readonly daemons: readonly PublicDaemonV7[];
+    /**
+     * Rituals (`pulp_wars-mch9.7`, section 7.1): the rituals under way that
+     * the viewer knows of, in leader unit-ID order (see
+     * {@link PublicRitualV7}). Empty in a match without a Cult seat.
+     */
+    readonly rituals: readonly PublicRitualV7[];
+    /**
+     * Proclaim (section 8.6): the Cowed cities among the cities the viewer
+     * sees (public: `cowed`), sorted by city.
+     */
+    readonly cowed: readonly CowedCityV7[];
   };
   /** Score and modes (section 3.4): the score the viewer may know. */
   readonly score: PlayerScoreViewV7;
@@ -1282,6 +1315,30 @@ export function viewForV7(
               },
             ];
       }),
+      // `pulp_wars-mch9.7` (section 7.1): a ritual the viewer knows of.
+      rituals: state.cult.rituals.flatMap((ritual): PublicRitualV7[] => {
+        const leaderVisible = visibleUnitIds.has(ritual.leaderUnitId);
+        const chanterUnitIds = ritual.chanterUnitIds.filter((unitId) =>
+          visibleUnitIds.has(unitId),
+        );
+        const markExplored = explored.has(key(ritual.at));
+        return leaderVisible || chanterUnitIds.length > 0 || markExplored
+          ? [
+              {
+                kind: ritual.kind,
+                playerId: ritual.playerId,
+                leaderUnitId: leaderVisible ? ritual.leaderUnitId : null,
+                chanterUnitIds,
+                chanters: ritual.chanterUnitIds.length,
+                at: markExplored ? ritual.at : null,
+              },
+            ]
+          : [];
+      }),
+      // Section 8.6: the Cowed cities the viewer sees.
+      cowed: state.cult.cowed.filter((entry) =>
+        publicCities.some((city) => city.id === entry.cityId),
+      ),
     },
     score: scoreViewV7(state, viewerId, scores),
     pendingChoices: state.pendingChoices.filter((choice) =>

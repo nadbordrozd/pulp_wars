@@ -91,16 +91,16 @@ class MemoryStorage {
 // save keys are obsolete, and the scripts perform no Stampede.
 describe("ruleset-7 revision-20 identity", () => {
   it("keeps 7r19 and 7r20 as prior identities after the later bumps", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r76");
-    expect(RULESET_7.id).toBe("pulp-wars-poc-7r76");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r77");
+    expect(RULESET_7.id).toBe("pulp-wars-poc-7r77");
     expect(RULESET_7.version).toBe(7);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r76.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-57, -55)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r77.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-58, -56)).toEqual([
       "pulp-wars-poc-7r19",
       "pulp-wars-poc-7r20",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-57, -55)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-58, -56)).toEqual([
       "pulpWars.save.v7r19.current",
       "pulpWars.save.v7r20.current",
     ]);
@@ -142,7 +142,7 @@ describe("ruleset-7 revision-20 identity", () => {
       const setup = goblinSetupV7(["DINOSAUR", "ORIGINAL"]);
       const created = createPlayableGameV7(setup);
       if (!created.ok) throw new Error(created.error.code);
-      expect(created.state.rulesetId).toBe("pulp-wars-poc-7r76");
+      expect(created.state.rulesetId).toBe("pulp-wars-poc-7r77");
       const oldSetup = { ...setup, rulesetId: oldId };
       expect(parseMatchSetupV7(setup)).not.toBeNull();
       expect(parseMatchSetupV7(oldSetup)).toBeNull();
@@ -236,7 +236,9 @@ describe("ruleset-7 revision-20 Stampede removal", () => {
     // after STAMPEDE and OFFERING after LAY_EGG (73).
     // The Cult's channel (`pulp_wars-mch9.5`) adds SUMMON, CHANNEL, BEHOLD,
     // ANCHOR, and BOO after SEIZE (78).
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(78);
+    // The Cult's rituals (`pulp_wars-mch9.7`) add BEGIN_RITUAL and PROCLAIM
+    // after BOO (80).
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(80);
     // The Mammoth's Stampede of Ice Folk Freeze is a new command with the
     // old name, after BREAK_OFF; the Dinosaur's revision-19 slot is gone.
     expect(COMMAND_KIND_ORDER_V7.indexOf("STAMPEDE")).toBe(
@@ -273,7 +275,9 @@ describe("ruleset-7 revision-20 Stampede removal", () => {
     // FAVOUR_GAINED, from FAVOUR_SPENT to DAEMON_UNBOUND (140).
     // The Cult's Unbound (`pulp_wars-mch9.6`) adds DAEMON_BOUND after
     // DAEMON_UNBOUND (141).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(141);
+    // The Cult's rituals (`pulp_wars-mch9.7`) add seven kinds after
+    // DAEMON_BOUND, from RITUAL_BEGUN to CITY_COWED (148).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(148);
   });
 
   it("fails to parse a revision-19 STAMPEDE command", () => {

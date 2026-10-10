@@ -243,6 +243,8 @@ describe("Mind Control revision: legality (section 3)", () => {
       "SUMMON",
       "CHANNEL",
       "ANCHOR",
+      // The Cult's rituals (`pulp_wars-mch9.7`): so does a Star-fall.
+      "STARFALL",
     ]);
   });
 

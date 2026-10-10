@@ -535,6 +535,11 @@ const PATH_CASES: readonly PathCaseV7[] = [
  */
 const OTHER_PROVEN_PATHS: readonly DomainEventV7["kind"][] = [
   "TOOTHACHE_GIVEN",
+  // `pulp_wars-mch9.7`: a star lands in its seat's Start Turn, after that
+  // seat's strands were cleared; it breaks the strand of a channeller of
+  // the Herald that arrived just before it, and takes a chanter out of a
+  // circle (tests/unit/ruleset-v7-cult-rituals.test.ts).
+  "STAR_FELL",
 ];
 
 describe("the disruption rule: the audit (section 6.2)", () => {

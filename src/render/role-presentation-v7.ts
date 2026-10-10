@@ -292,6 +292,8 @@ export function roleAbilityNameV7(
   // The Cultists (`pulp_wars-mch9.5`): the abilities that are shouted.
   if (ability === "BEHOLD") return BEHOLD_LABEL_V7;
   if (ability === "BOO") return BOO_LABEL_V7;
+  // Rituals (`pulp_wars-mch9.7`): the rite's name has a hyphen.
+  if (ability === "STARFALL") return "Star-fall";
   return title(ability);
 }
 

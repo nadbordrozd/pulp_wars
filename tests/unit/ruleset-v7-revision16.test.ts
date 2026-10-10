@@ -67,9 +67,9 @@ const CELLS = [
 
 describe("ruleset-7 revision-16 identity", () => {
   it("keeps rejecting r15 after the r54 identity and cleans the r15 through r53 save keys", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r76");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r76.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-61, -21)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r77");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r77.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-62, -22)).toEqual([
       "pulpWars.save.v7r15.current",
       "pulpWars.save.v7r16.current",
       "pulpWars.save.v7r17.current",
@@ -174,8 +174,9 @@ describe("ruleset-7 prior identities", () => {
     // (`pulp_wars-mch9.3`): 7r71. The Cult's Favour (`pulp_wars-mch9.4`):
     // 7r72. The AI head start (`pulp_wars-w49.39`): 7r73. The Cult's channel
     // (`pulp_wars-mch9.5`): 7r74. The Cult's Unbound (`pulp_wars-mch9.6`):
-    // 7r75. Ports join the Road network (`pulp_wars-5ti.12`): 7r76.
-    expect(revision).toBe(76);
+    // 7r75. Ports join the Road network (`pulp_wars-5ti.12`): 7r76. The
+    // Cult's rituals and the Herald (`pulp_wars-mch9.7`): 7r77.
+    expect(revision).toBe(77);
     expect([...PRIOR_RULESET_7_IDS]).toEqual(expectedPrior);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
   });
@@ -210,7 +211,7 @@ describe("ruleset-7 prior identities", () => {
 
   it("still reports an unknown Ruleset 7 identity as INVALID_REPLAY", () => {
     // The next identity after the current one is still unknown.
-    for (const id of ["pulp-wars-poc-7r1", "pulp-wars-poc-7r77", "other"])
+    for (const id of ["pulp-wars-poc-7r1", "pulp-wars-poc-7r78", "other"])
       expect(
         parseReplayFileV7({
           format: "pulp-wars-replay",

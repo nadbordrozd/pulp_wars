@@ -74,6 +74,10 @@ const LATER_COMMAND_KINDS: readonly string[] = [
   "BEHOLD",
   "ANCHOR",
   "BOO",
+  // The Cult's rituals (`pulp_wars-mch9.7`) insert BEGIN_RITUAL and PROCLAIM
+  // after BOO.
+  "BEGIN_RITUAL",
+  "PROCLAIM",
   "LAY_EGG",
   "OFFERING",
   // Tuning 3 (`pulp_wars-w49.3`) inserts HIRE after TRAIN_NAVAL.

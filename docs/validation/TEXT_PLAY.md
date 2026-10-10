@@ -333,6 +333,16 @@ Unbound daemon is a neutral unit (seat digit `N`); its line shows
 `UNBOUND daemon of S1: goes for u9 and can attack it after this round`, then
 `FURIOUS` or how many strands bind it. A bound daemon short of its Control
 shows whom it would go for. The log prints `UNBOUND` and `BOUND AGAIN`.
+Rituals and the Herald (`pulp_wars-mch9.7`) add `.starfall.4,5` and
+`.summoning.4,5` (the leader begins the rite with that mark) and
+`.proclaim.c3` (the Herald Cows that city). `options` says what a star hits
+as the board stands and whether the unit on a Great Summoning's mark is
+consumed or blocks it. A Herald prints as `Herald [HERALD]` with the map
+code `He` and, on its seat's turn, `attacks left 2`; a participant's line
+shows `leads Star-fall: 7 on 8,6 and around it, due at S0's next turn start
+(2 chanting)` or `chants in ...`; a Cowed city's line ends in `COWED`. The
+log prints `RITUAL BEGUN`, `RITUAL FIZZLED`, `STAR FELL`, `CONSUMED`,
+`THE HERALD ... arrived`, and `COWED`.
 
 A unit keeps its id for its whole life; a city keeps its id across captures.
 Roles and technologies use the engine's identifiers (`FIGHTER`, `FARMING`).

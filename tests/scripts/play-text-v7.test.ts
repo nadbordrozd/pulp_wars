@@ -1760,7 +1760,7 @@ describe("text-mode play harness", () => {
     expect(view).toContain(
       `daemon: strands 0/1 (UNBOUND at its turn start; it would go for u${at(3, 2)} and can attack it)`,
     );
-    expect(view).toContain("Cult summoned: Ho horror");
+    expect(view).toContain("Cult summoned: Ho horror He herald");
     expect(view).not.toContain("[KNIGHT]");
     const summon = `u${at(5, 2)}.summon.u${at(6, 2)}.5,3`;
     const channel = `u${at(2, 4)}.channel.u${horror}`;
@@ -1874,6 +1874,122 @@ describe("text-mode play harness", () => {
     const after = ok("view", "--session", session, "--full");
     expect(after).toContain("daemon: strands 1/1");
     expect(after).not.toContain("UNBOUND daemon");
+  });
+
+  // Rituals and the Herald (`pulp_wars-mch9.7`): the harness offers a
+  // Star-fall, the Great Summoning, and a Proclaim with what each does, and
+  // prints a circle under way, a Cowed city, and a Herald's attacks. A
+  // constructed position on the seat's own turn; no turn is ended.
+  it("prints rituals and the Herald, and offers Star-fall, the Great Summoning, and Proclaim", () => {
+    // A Summoner with three Initiates and 20 Favour; a Stargazer with two;
+    // a bound Herald two tiles from the Human capital, a Fighter beside it.
+    const field = withHorrorV7(
+      withFavourV7(
+        cultFieldV7([
+          { seat: 0, role: "CAPTAIN", at: { x: 5, y: 2 } },
+          { seat: 0, role: "FIGHTER", at: { x: 4, y: 1 } },
+          { seat: 0, role: "FIGHTER", at: { x: 5, y: 1 } },
+          { seat: 0, role: "FIGHTER", at: { x: 6, y: 1 } },
+          { seat: 0, role: "CATAPULT", at: { x: 8, y: 2 } },
+          { seat: 0, role: "FIGHTER", at: { x: 9, y: 2 } },
+          { seat: 0, role: "FIGHTER", at: { x: 9, y: 3 } },
+          { seat: 1, role: "FIGHTER", at: { x: 4, y: 7 } },
+        ]),
+        0,
+        20,
+      ),
+      0,
+      { x: 4, y: 6 },
+      { role: "HERALD" },
+    );
+    const session = path.join(root, "cult-rituals.json");
+    writeFileSync(
+      session,
+      JSON.stringify({
+        format: "pulp-wars-text-play-session",
+        version: 1,
+        rulesetId: RULESET_7_ID,
+        seat: 0,
+        playerId: field.humanPlayerId,
+        setup: field.setup,
+        commands: [],
+        state: field,
+        stateHash: canonicalHash(field),
+        journal: { rounds: [], notes: [], observed: [] },
+      }),
+    );
+    const state = sessionState(session);
+    const at = (x: number, y: number) => {
+      const found = state.units.find(
+        (candidate) => candidate.at.x === x && candidate.at.y === y,
+      );
+      if (found === undefined) throw new Error(`no unit at ${x},${y}`);
+      return found.id;
+    };
+    const herald = at(4, 6);
+    const capital = state.cities.find(
+      (city) => city.at.x === 2 && city.at.y === 8,
+    );
+    if (capital === undefined) throw new Error("no Human capital");
+    const view = ok("view", "--session", session, "--full");
+    // The Herald is named for what it is, with its code and its attacks.
+    expect(view).toContain(`u${herald} Herald [HERALD] @4,6 hp 60/60`);
+    expect(view).toContain("daemon: strands 0/3");
+    expect(view).toContain("attacks left 2");
+    expect(view).not.toContain("[JUGGERNAUT]");
+    const star = `u${at(8, 2)}.starfall.8,6`;
+    const summoning = `u${at(5, 2)}.summoning.5,3`;
+    const proclaim = `u${herald}.proclaim.c${capital.id}`;
+    expect(offeredIds(session)).toEqual(
+      expect.arrayContaining([star, summoning, proclaim]),
+    );
+    // Every offered ritual and Proclaim has an id of its own.
+    const ids = queryPlayerCommandsV7(viewForV7(state, state.humanPlayerId))
+      .filter((command) => ["BEGIN_RITUAL", "PROCLAIM"].includes(command.kind))
+      .map(textPlayCommandIdV7);
+    expect(new Set(ids).size).toBe(ids.length);
+    for (const id of ids)
+      expect(id).toMatch(
+        /^u\d+\.(starfall\.\d+,\d+|summoning\.\d+,\d+|proclaim\.c\d+)$/,
+      );
+    const options = ok("options", "--session", session, "--all");
+    expect(options).toContain("STAR-FALL on 8,6 with");
+    expect(options).toContain(
+      "7 fixed damage (5 +1 for each chanter still chanting) to EVERY unit on that tile and the eight around it, friend and foe",
+    );
+    expect(options).toContain("THE GREAT SUMMONING, the Herald on 5,3 with");
+    expect(options).toContain(
+      "-20 Favour now (favour 20->0), never refunded | the mark is free",
+    );
+    expect(options).toContain("(strands 4/3)");
+    expect(options).toContain(
+      "the city is COWED until its owner's next turn ends (no income at that turn start, no city action)",
+    );
+    expect(options).toContain(
+      "takes the place of one of its two attacks (1 left after it)",
+    );
+    // Begin both rituals.
+    const starred = ok("do", "--session", session, star);
+    expect(starred).toMatch(
+      /RITUAL BEGUN Star-fall by .* of S0, mark @8,6, chanters .*; it completes at that seat's next turn start/,
+    );
+    const summoned = ok("do", "--session", session, summoning);
+    expect(summoned).toContain("-20 for the Great Summoning (now 0)");
+    expect(summoned).toMatch(/RITUAL BEGUN the Great Summoning by /);
+    const circles = ok("view", "--session", session, "--full");
+    expect(circles).toContain(
+      "leads Star-fall: 7 on 8,6 and around it, due at S0's next turn start (2 chanting)",
+    );
+    expect(circles).toContain(
+      "chants in the Great Summoning: the Herald on 5,3, due at S0's next turn start (3 chanting)",
+    );
+    // Proclaim: the city is Cowed, and the Herald has one attack left.
+    const cowed = ok("do", "--session", session, proclaim);
+    expect(cowed).toMatch(/COWED .* @2,8 of S1 by the Herald /);
+    const after = ok("view", "--session", session, "--full");
+    expect(after).toContain("attacks left 1");
+    expect(offeredIds(session)).not.toContain(proclaim);
+    expect(offeredIds(session)).toContain(`u${herald}.a.u${at(4, 7)}`);
   });
 
   it("rejects illegal and stale ids cleanly", () => {

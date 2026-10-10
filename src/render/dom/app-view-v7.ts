@@ -92,6 +92,7 @@ import {
   ACHIEVEMENT_IDS_V7,
   ACHIEVEMENT_REQUIRED_TECH_V7,
   CITY_LEVEL_INCOME_CAP_V7,
+  cityIsCowedV7,
   cityLevelIncomeV7,
   CITY_REWARD_COINS_V7,
   LAND_GRANT_MINIMUM_COST_V7,
@@ -686,6 +687,7 @@ import {
 import {
   FAVOUR_LABEL_V7,
   FAVOUR_TOOLTIP_V7,
+  GREAT_SUMMONING_UNLOCK_TEXT_V7,
   OFFERING_LABEL_V7,
   OFFERING_TOOLTIP_V7,
   OFFERING_UNLOCK_TEXT_V7,
@@ -1027,6 +1029,11 @@ const NON_BUTTON_COMMANDS = new Set<CommandV7["kind"]>([
   "BEHOLD",
   "ANCHOR",
   "BOO",
+  // Rituals and Proclaim (engine bead pulp_wars-mch9.7): a Star-fall alone
+  // is one command per tile in reach, so neither is ever a generic button.
+  // Their buttons, marks, and board targeting are bead pulp_wars-mch9.19.
+  "BEGIN_RITUAL",
+  "PROCLAIM",
 ]);
 /**
  * The Cultists' channel (bead pulp_wars-mch9.18): each action's button
@@ -13919,7 +13926,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffff_ffff)
     return null;
   return {
-    rulesetId: "pulp-wars-poc-7r76",
+    rulesetId: "pulp-wars-poc-7r77",
     seed,
     width: effectiveBoardSize(draft),
     height: effectiveBoardSize(draft),
@@ -13962,7 +13969,9 @@ export function cityIncomeForViewerV7(
     (unit) =>
       hostile(view, city.ownerId, unit.ownerId) && same(unit.at, city.at),
   );
-  if (besieged) return 0;
+  // The Cultists (RULESET_7_CULTISTS.md section 8.6): a Cowed city pays
+  // nothing either.
+  if (besieged || cityIsCowedV7(view, city.id)) return 0;
   const market =
     view.improvementValues.find(
       (value) =>
@@ -14171,6 +14180,8 @@ function effectDescription(
       return SUMMONER_SUPPORT_UNLOCK_TEXT_V7;
     case "OFFERING":
       return OFFERING_UNLOCK_TEXT_V7;
+    case "GREAT_SUMMONING":
+      return GREAT_SUMMONING_UNLOCK_TEXT_V7;
     case "OVERRUN":
       // Revision 17: the Goblin Overrun is Ram; revision 19: the Dinosaur
       // Overrun is Rampage.
@@ -14327,9 +14338,11 @@ function technologyEffectGroupIdV7(
     case "UNIT_ROLE":
       return "UNITS";
     // The frozen sea: Freeze is an action of the units.
-    // The Cultists: an Offering is an action of a city.
+    // The Cultists: an Offering is an action of a city, and the Great
+    // Summoning a ritual of the Summoner.
     case "FREEZE":
     case "OFFERING":
+    case "GREAT_SUMMONING":
       return "ACTIONS";
     case "COMMAND":
       return effect.command.startsWith("BUILD_") &&

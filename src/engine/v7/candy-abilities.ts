@@ -7,10 +7,12 @@ import {
   TOP_UP_HEAL_V7,
   armouredDamageV7,
   unitIsSubmergedV7,
+  unitIsUnstoppableV7,
   unitRoleMechanicsV7,
   unitRoleRuleV7,
   type FactionRosterV7,
   type IceLookupV7,
+  type SummonedUnitRefV7,
 } from "../rules/ruleset-v7";
 import { unitIsCrashedV7, type SugarRushLookupV7 } from "./candy";
 import type { CombatSplashEntryV7 } from "./events";
@@ -82,14 +84,22 @@ export function unitHasToothacheV7(
  * Section 6.2: whether a Candy status (Stuck, Toothache) can be put on the
  * unit: a unit on the board in any form except an Egg, and never the Giant
  * Spider (the neutral owner). A burrowed unit is off the board, so the
- * caller never offers one.
+ * caller never offers one. The Cultists (`pulp_wars-mch9.7`,
+ * RULESET_7_CULTISTS.md section 4.2): never the Herald (Unstoppable).
  */
-export function unitTakesCandyStatusV7(unit: {
-  readonly ownerId: PlayerId;
-  readonly form: UnitFormV7;
-  readonly hp: number;
-}): boolean {
-  return unit.hp > 0 && unit.form !== "EGG" && !isNeutralOwnerV7(unit.ownerId);
+export function unitTakesCandyStatusV7(
+  unit: {
+    readonly ownerId: PlayerId;
+    readonly form: UnitFormV7;
+    readonly hp: number;
+  } & SummonedUnitRefV7,
+): boolean {
+  return (
+    unit.hp > 0 &&
+    unit.form !== "EGG" &&
+    !isNeutralOwnerV7(unit.ownerId) &&
+    !unitIsUnstoppableV7(unit)
+  );
 }
 
 /**

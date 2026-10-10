@@ -85,6 +85,14 @@ export const DISRUPTION_EVENT_PATHS_V7: Readonly<
   OFFERING_MADE: NONE,
   FAVOUR_GAINED: NONE,
   FAVOUR_SPENT: NONE,
+  // Rituals (`pulp_wars-mch9.7`): a ritual begun, a participant that left
+  // one, and a ritual that fizzled report the circle, not a new hurt (the
+  // disruption that made a participant leave has its own event). A Cowed
+  // city is no unit.
+  RITUAL_BEGUN: NONE,
+  RITUAL_DISRUPTED: NONE,
+  RITUAL_FIZZLED: NONE,
+  CITY_COWED: NONE,
   SPOILS_AWARDED: NONE,
   PLUNDER_AWARDED: NONE,
   MONSTER_BOUNTY_AWARDED: NONE,
@@ -119,6 +127,9 @@ export const DISRUPTION_EVENT_PATHS_V7: Readonly<
   UNIT_INFECTED: NONE,
   GIANT_BROKE_OFF: NONE,
   DAEMON_SUMMONED: NONE,
+  // The Herald arrives on a free tile (a unit on its mark is consumed
+  // first: `UNIT_CONSUMED`).
+  HERALD_ARRIVED: NONE,
   // A unit's own Move, advance, or traversal (the acting unit's change of
   // tile is its own; a strand holder has spent its action and cannot Move).
   UNIT_MOVED: NONE,
@@ -184,6 +195,8 @@ export const DISRUPTION_EVENT_PATHS_V7: Readonly<
   // The crush of the ice (units afloat) and a surfacing eruption.
   UNITS_CRUSHED: ["HP_LOSS"],
   UNIT_SURFACED: ["HP_LOSS"],
+  // A star (`pulp_wars-mch9.7`): fixed damage to everything in its area.
+  STAR_FELL: ["HP_LOSS"],
   // Peppermint Surprise, on a unit that lands on Crumbs.
   CRUMBS_EATEN: ["HP_LOSS"],
 
@@ -215,6 +228,8 @@ export const DISRUPTION_EVENT_PATHS_V7: Readonly<
   UNIT_SWALLOWED: ["GONE"],
   UNIT_SACRIFICED: ["GONE"],
   UNIT_SEIZED: ["GONE"],
+  // The Great Summoning's meal (`pulp_wars-mch9.7`).
+  UNIT_CONSUMED: ["GONE"],
   UNIT_DISBANDED: ["GONE"],
   UNIT_EMBARKED: ["GONE"],
   // A Mole and its rider go underground.
@@ -252,6 +267,8 @@ export const UNPROVEN_DISRUPTION_PATHS_V7: Readonly<
     "a surfacing eruption needs a burrowed Mole from an earlier turn; it is fixed damage like a Stomp",
   UNIT_BOMBED:
     "a bombing run needs a flight path; it is fixed damage like a Stomp",
+  UNIT_CONSUMED:
+    "a consumption happens in its seat's Start Turn after that seat's strands were cleared, so only a broken channeller of another Cult seat on the mark could lose a strand to it (two Cult seats, which only headless tools allow); a chanter consumed on the mark leaves its ritual in tests/unit/ruleset-v7-cult-rituals.test.ts",
 };
 
 /** How a key of the game state bears on the disruption rule. */

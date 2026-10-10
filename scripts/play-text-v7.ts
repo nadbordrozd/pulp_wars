@@ -70,6 +70,8 @@ import {
   autoBoardSizeV7,
   canonicalHash,
   canonicalJson,
+  CULT_SUMMONED_ROLE_RULES_V7,
+  cityIsCowedV7,
   cityLevelIncomeV7,
   LAND_TRADE_INCOME_COINS_V7,
   cityUnitCapacityForV7,
@@ -243,6 +245,7 @@ import {
 } from "../src/render/cult-channel-presentation-v7";
 import {
   FAVOUR_SOURCE_LABELS_V7,
+  GREAT_SUMMONING_UNLOCK_TEXT_V7,
   OFFERING_UNLOCK_TEXT_V7,
   SUMMONER_SUPPORT_UNLOCK_TEXT_V7,
 } from "../src/render/cult-presentation-v7";
@@ -250,10 +253,14 @@ import {
   factionHasFavourV7,
   favourOfV7,
   previewAnchorV7,
+  previewBeginRitualV7,
   previewBeholdV7,
   previewBooV7,
   previewChannelV7,
+  previewProclaimV7,
   previewRampageV7,
+  previewRitualV7,
+  attacksLeftV7,
   previewOfferingV7,
   previewSacrificeV7,
   previewSeizeV7,
@@ -749,9 +756,16 @@ function compactFieldsV7(
 // Derived public facts (the same derivations the browser shows)
 // ---------------------------------------------------------------------------
 
+/** The Cultists (`pulp_wars-mch9.7`): a rite's name in the harness. */
+function ritualNameV7(ritual: "STARFALL" | "GREAT_SUMMONING"): string {
+  return ritual === "STARFALL" ? "Star-fall" : "the Great Summoning";
+}
+
 /** Mirrors `cityIncomeForViewerV7` of the browser view: view facts only. */
 function cityIncomeV7(view: PlayerViewV7, city: PublicCityV7): number {
-  if (cityBesiegedV7(view, city)) return 0;
+  // The Cultists (section 8.6): a Cowed city pays nothing, like a besieged
+  // one.
+  if (cityBesiegedV7(view, city) || cityIsCowedV7(view, city.id)) return 0;
   const market =
     view.improvementValues.find(
       (value) =>
@@ -1048,6 +1062,11 @@ export function textPlayCommandIdV7(command: CommandV7): string {
       return `u${command.unitId}.anchor.u${command.cultistUnitId}`;
     case "BOO":
       return `u${command.unitId}.boo`;
+    // Rituals and the Herald (`pulp_wars-mch9.7`).
+    case "BEGIN_RITUAL":
+      return `u${command.unitId}.${command.ritual === "STARFALL" ? "starfall" : "summoning"}.${xyV7(command.at)}`;
+    case "PROCLAIM":
+      return `u${command.unitId}.proclaim.c${command.cityId}`;
     case "HATCH":
       return `u${command.unitId}.hatch.u${command.eggUnitId}`;
     case "BEAM_DOWN":
@@ -1679,6 +1698,8 @@ function unlockTextV7(
       return `${SUMMONER_SUPPORT_UNLOCK_TEXT_V7} [${unlock.kind}]`;
     case "OFFERING":
       return `${OFFERING_UNLOCK_TEXT_V7} [${unlock.kind}]`;
+    case "GREAT_SUMMONING":
+      return `${GREAT_SUMMONING_UNLOCK_TEXT_V7} [${unlock.kind}]`;
     default: {
       if (unlock.kind === "FOREST_COVER")
         return `${FOREST_COVER_UNLOCK_TEXT_V7} [${unlock.kind}]`;
@@ -2024,6 +2045,40 @@ function describeCommandV7(
       const preview = previewBooV7(view, command.unitId);
       return `BOO: every living unit beside it jumps one tile away, friend or foe${preview === null ? "" : ` | ${preview.results.map((entry) => `${context.memory.tag(entry.unitId)} ${entry.outcome === "JUMPS" ? `-> ${xyV7(entry.to)}` : entry.outcome === "STAYS" ? "stays (blocked)" : `-> ${xyV7(entry.to)}?`}${entry.holdsStrand && entry.outcome !== "STAYS" ? " (its strand BREAKS)" : ""}`).join(", ")}`} | no damage | in place of its attack`;
     }
+    // Rituals and the Herald (`pulp_wars-mch9.7`, RULESET_7_CULTISTS.md
+    // sections 7 and 8.6).
+    case "BEGIN_RITUAL": {
+      const preview = previewBeginRitualV7(
+        view,
+        command.unitId,
+        command.ritual,
+        command.at,
+      );
+      const chanters =
+        preview === null
+          ? ""
+          : ` with ${preview.chanterUnitIds.map((unitId) => context.memory.tag(unitId)).join(", ")} chanting`;
+      const frame =
+        "it completes at your next turn start | a participant that is hurt, moved, given a status, or taken leaves the circle";
+      if (command.ritual === "STARFALL") {
+        const star = preview?.starfall ?? null;
+        return `STAR-FALL on ${xyV7(command.at)}${chanters}${star === null ? "" : `: ${star.damage} fixed damage (5 +1 for each chanter still chanting) to EVERY unit on that tile and the eight around it, friend and foe; fortification, cover, and Defense do not count${star.results.length === 0 ? " | nobody is there now" : ` | there now: ${star.results.map((entry) => `${context.memory.tag(entry.unitId)} -${entry.damage}${entry.dies ? " DIES" : ""}${entry.ownerId === view.viewer.id ? " (YOURS)" : ""}`).join(", ")}`}${star.exact ? "" : " (part of the area is unexplored)"}${star.fieldDefenses.length + star.barricades.length === 0 ? "" : ` | destroys ${star.fieldDefenses.length} Field Defense and ${star.barricades.length} Barricade(s)`}`} | ${frame}; it fizzles without its Stargazer or a chanter | uses the action of every participant`;
+      }
+      const summoning = preview?.summoning ?? null;
+      const mark =
+        summoning === null
+          ? ""
+          : summoning.outcome === "ARRIVES"
+            ? "the mark is free"
+            : summoning.outcome === "CONSUMES"
+              ? `as the board stands ${context.memory.tag(summoning.unitId ?? command.unitId)} on the mark is CONSUMED for +${summoning.favour} Favour`
+              : "as the board stands the unit on the mark BLOCKS the arrival (the Favour would be lost)";
+      return `THE GREAT SUMMONING, the Herald on ${xyV7(command.at)}${chanters}${preview === null ? "" : `: -${preview.favour} Favour now (favour ${preview.favourAfter + preview.favour}->${preview.favourAfter}), never refunded | ${mark} | the Herald (hp ${CULT_SUMMONED_ROLE_RULES_V7.HERALD.maxHp}, Control ${summoning?.control ?? 3}) arrives next turn and every participant channels it at once (strands ${summoning?.strands ?? 0}/${summoning?.control ?? 3}), which spends their whole turn`} | ${frame}; it fizzles without its Summoner or with fewer than three chanters, and a healthy enemy that stands on the mark blocks it | uses the action of every participant`;
+    }
+    case "PROCLAIM": {
+      const preview = previewProclaimV7(view, command.unitId, command.cityId);
+      return `PROCLAIM at ${cityTagV7(view, command.cityId)}: the city is COWED until its owner's next turn ends (no income at that turn start, no city action) | it touches no unit${preview === null ? "" : ` | takes the place of one of its two attacks (${preview.attacksLeftAfter} left after it)`}`;
+    }
     // The giants' signatures (`pulp_wars-w49.30`).
     case "SWALLOW": {
       const preview = previewSwallowV7(
@@ -2360,6 +2415,49 @@ function eventTextV7(
       if (event.playerId !== me)
         notes.push(`SAW BINDING ${context.memory.tag(event.unitId)}`);
       break;
+    // Rituals and the Herald (`pulp_wars-mch9.7`).
+    case "RITUAL_BEGUN": {
+      const text = `RITUAL BEGUN ${ritualNameV7(event.ritual)} by ${context.memory.tag(event.unitId)} of ${seatLabelV7(context.view, event.playerId)}, mark @${xyV7(event.at)}, ${event.chanterUnitIds.length === 0 ? "its chanters out of your sight" : `chanters ${event.chanterUnitIds.map((unitId) => context.memory.tag(unitId)).join(", ")}`}; it completes at that seat's next turn start`;
+      lines.push(text);
+      if (event.playerId !== me) notes.push(text);
+      break;
+    }
+    case "RITUAL_DISRUPTED":
+      lines.push(
+        `RITUAL ${ritualNameV7(event.ritual)}: ${context.memory.tag(event.participantUnitId)} left the circle: ${DISRUPTION_CAUSE_LABELS_V7[event.cause]}`,
+      );
+      break;
+    case "RITUAL_FIZZLED": {
+      const text = `RITUAL FIZZLED ${ritualNameV7(event.ritual)} of ${seatLabelV7(context.view, event.playerId)} (mark @${xyV7(event.at)}): ${event.reason === "LEADER" ? "its leader left it" : event.reason === "CHANTERS" ? "too few chanters remained" : "the mark was blocked"}; nothing is refunded`;
+      lines.push(text);
+      notes.push(text);
+      break;
+    }
+    case "STAR_FELL": {
+      const text = `STAR FELL @${xyV7(event.at)} (${context.memory.tag(event.unitId)} of ${seatLabelV7(context.view, event.playerId)}, ${event.chanters} chanting): ${event.damage} to everything around it: ${event.results.length === 0 ? "nobody you see" : event.results.map((entry) => `${context.memory.tag(entry.unitId)} -${entry.damage}${entry.shieldDamage > 0 ? ` (shield -${entry.shieldDamage})` : ""}${entry.dies ? " DIES" : ""}`).join(", ")}${event.fieldDefenses.length + event.barricades.length === 0 ? "" : ` | destroyed ${event.fieldDefenses.length} Field Defense and ${event.barricades.length} Barricade(s)`}`;
+      lines.push(text);
+      notes.push(text);
+      break;
+    }
+    case "UNIT_CONSUMED":
+      lines.push(
+        `CONSUMED ${context.memory.tag(event.victimUnitId)} @${xyV7(event.at)} by the Great Summoning of ${seatLabelV7(context.view, event.playerId)} for ${event.favour} Favour (it is gone: no Grave, no blast)`,
+      );
+      if (event.victimOwnerId === me && event.playerId !== me)
+        notes.push(`CONSUMED your ${context.memory.tag(event.victimUnitId)}`);
+      break;
+    case "HERALD_ARRIVED": {
+      const text = `THE HERALD ${context.memory.tag(event.daemonUnitId)} of ${seatLabelV7(context.view, event.playerId)} arrived @${xyV7(event.at)} hp ${event.hp}; it cannot act this turn and needs 3 unbroken strands at that seat's next turn start`;
+      lines.push(text);
+      if (event.playerId !== me) notes.push(text);
+      break;
+    }
+    case "CITY_COWED": {
+      const text = `COWED ${cityTagV7(context.view, event.cityId)} @${xyV7(event.at)} of ${seatLabelV7(context.view, event.cityOwnerId)} by the Herald ${context.memory.tag(event.unitId)}: no income at its owner's next turn start and no city action until that turn ends`;
+      lines.push(text);
+      if (event.cityOwnerId === me) notes.push(text);
+      break;
+    }
     case "UNIT_DISBANDED": {
       // Tuning 7 (`pulp_wars-w49.10`): a unit another seat disbands in
       // your sight is reported (it used to vanish without a line).
@@ -3157,12 +3255,14 @@ const NINTH_UNIT_LEGEND_V7: Readonly<Partial<Record<FactionIdV7, string>>> = {
   ICE_FOLK: "  Ice Folk: Mm mammoth (the heavy) Ox musk ox (the defender)",
   DWARF: "  Dwarf: Tk steam tank (the heavy) Wh whirligig",
   CANDY: "  Candy heavy: Jb jawbreaker",
-  // The Cultists (`pulp_wars-mch9.5`): the summoned Horror.
-  CULT: "  Cult summoned: Ho horror (a daemon: its line shows strands/Control)",
+  // The Cultists (`pulp_wars-mch9.5`): the summoned Horror; and
+  // (`pulp_wars-mch9.7`) the Herald.
+  CULT: "  Cult summoned: Ho horror He herald (a daemon: its line shows strands/Control)",
 };
 function roleCodeV7(view: PlayerViewV7, unit: PublicUnitV7): string {
   // The Cultists (`pulp_wars-mch9.5`): a summoned unit has its own code.
   if (unit.summoned === "HORROR") return "Ho";
+  if (unit.summoned === "HERALD") return "He";
   const faction = unitFactionV7(view, unit);
   return (
     (faction === "MARTIAN"
@@ -3338,6 +3438,28 @@ function unitStatusV7(view: PlayerViewV7, unit: PublicUnitV7): string {
         : `gripped by u${grip.thingUnitId} (strand counts three)`,
     );
   if (view.cult.idols.includes(unit.id)) parts.push("idol raised");
+  // Rituals (`pulp_wars-mch9.7`): a participant's place in its circle, and
+  // a Herald's attacks (Ravage: two a turn; a Proclaim takes one).
+  for (const ritual of view.cult.rituals) {
+    const leads = ritual.leaderUnitId === unit.id;
+    if (!leads && !ritual.chanterUnitIds.includes(unit.id)) continue;
+    const forecast = previewRitualV7(view, ritual);
+    const what =
+      forecast.starfall !== null
+        ? `: ${forecast.starfall.damage} on ${xyV7(forecast.starfall.at)} and around it`
+        : forecast.summoning !== null
+          ? `: the Herald on ${xyV7(forecast.summoning.at)}${forecast.summoning.outcome === "BLOCKED" ? " (BLOCKED as the board stands)" : forecast.summoning.outcome === "CONSUMES" ? " (consumes the unit on it)" : ""}`
+          : "";
+    parts.push(
+      `${leads ? "leads" : "chants in"} ${ritualNameV7(ritual.kind)}${what}, due at ${seatLabelV7(view, ritual.playerId)}'s next turn start (${ritual.chanters} chanting)`,
+    );
+  }
+  if (
+    unit.summoned === "HERALD" &&
+    unit.ownerId === view.viewer.id &&
+    view.turnOrder[view.activeSeatIndex] === unit.ownerId
+  )
+    parts.push(`attacks left ${attacksLeftV7(view, unit)}`);
   if (view.mindControlled.some((entry) => entry.unitId === unit.id))
     parts.push("mind-controlled");
   const rush = view.sugarRush.find((entry) => entry.unitId === unit.id);
@@ -3934,7 +4056,7 @@ function viewLinesV7(session: SessionV7, full: boolean): string[] {
       return `${rule.label} ${cost}c${id === undefined ? ` (${why})` : ` [${id.startsWith(`c${city.id}.egg`) ? `c${city.id}.egg.${role}.x,y` : id}]`}`;
     });
     lines.push(
-      `${cityTagV7(view, city.id)} ${city.isCapital ? "CAPITAL" : "city"} @${xyV7(city.at)} L${city.level} pop ${city.population}/${city.level + 1} income +${cityIncomeV7(view, city)} slots ${slots.used}/${slots.capacity} action ${city.cityActionAvailable === true ? "ready" : "used"}${cityBesiegedV7(view, city) ? " BESIEGED" : ""}${city.landGrantUsed ? " land-grant-used" : ""}${city.rewards.length === 0 ? "" : ` rewards ${city.rewards.map((entry) => rewardNameV7(view.viewer.faction, entry.reward)).join(",")}`}`,
+      `${cityTagV7(view, city.id)} ${city.isCapital ? "CAPITAL" : "city"} @${xyV7(city.at)} L${city.level} pop ${city.population}/${city.level + 1} income +${cityIncomeV7(view, city)} slots ${slots.used}/${slots.capacity} action ${city.cityActionAvailable === true ? "ready" : "used"}${cityBesiegedV7(view, city) ? " BESIEGED" : ""}${cityIsCowedV7(view, city.id) ? " COWED (no income and no city action until this turn ends)" : ""}${city.landGrantUsed ? " land-grant-used" : ""}${city.rewards.length === 0 ? "" : ` rewards ${city.rewards.map((entry) => rewardNameV7(view.viewer.faction, entry.reward)).join(",")}`}`,
     );
     // The Martian pass, correction: where the giant unit comes from (a
     // tester reached level 5 in another city and never found it). The

@@ -115,7 +115,7 @@ const idolsOf = (lookup: ChannelListsV7) => lookup.cult?.idols ?? [];
 
 /**
  * Section 4.2: the summoned role of a daemon (a summoned unit with a
- * Control: the Horror; the Herald from `pulp_wars-mch9.7`), or null.
+ * Control: the Horror and the Herald), or null.
  */
 export function daemonRoleV7(unit: SummonedUnitRefV7): SummonedRoleIdV7 | null {
   return unit.summoned !== undefined &&
@@ -369,8 +369,9 @@ export type ChannelRejectionV7 =
  * channel needs a Cult seat) that has not used a primary action; the daemon
  * is an own bound daemon, or an Unbound one that is not Furious ("Bind
  * again": `FURIOUS` in the turn it broke loose), within `CHANNEL_RANGE_V7`
- * tiles. An Unbound daemon no seat can command yet (the Herald before
- * `pulp_wars-mch9.7` registers it) is no target.
+ * tiles. An Unbound daemon of a breed no seat can command (none today: the
+ * Horror and, from `pulp_wars-mch9.7`, the Herald both can be) is no
+ * target.
  */
 export function channelRejectionV7(
   lookup: ChannelTargetLookupV7,
@@ -603,7 +604,8 @@ const STATUS_PREFIXES_V7 = Object.freeze([
   "cracked",
 ]);
 
-type DisruptionStateV7 = Pick<
+/** What the one disruption rule reads of a state (before and after). */
+export type DisruptionStateV7 = Pick<
   GameStateV7,
   | "units"
   | "players"

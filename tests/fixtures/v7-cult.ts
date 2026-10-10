@@ -8,6 +8,7 @@ import {
   withDaemonUnboundV7,
   type CoordV7,
   type GameStateV7,
+  type RitualKindV7,
   type SummonedRoleIdV7,
   type UnitStateV7,
 } from "../../src/engine/index";
@@ -219,6 +220,69 @@ export function withIdolsV7(
         ...state.cult.idols,
         ...bearers.map((where) => unitAtV7(state, where).id),
       ].sort((left, right) => left - right),
+    },
+  });
+}
+
+/**
+ * The ritual fixtures (`pulp_wars-mch9.7`, section 7). A ritual of `kind`
+ * under way: the unit on `leader` leads it, the units on `chanters` chant,
+ * and `mark` is its marked tile. Every participant has used its primary
+ * action, as after a `BEGIN_RITUAL`.
+ */
+export function withRitualV7(
+  state: GameStateV7,
+  kind: RitualKindV7,
+  leader: CoordV7,
+  chanters: readonly CoordV7[],
+  mark: CoordV7,
+): GameStateV7 {
+  const leaderUnit = unitAtV7(state, leader);
+  const chanterUnitIds = chanters
+    .map((where) => unitAtV7(state, where).id)
+    .sort((left, right) => left - right);
+  const participants = new Set([leaderUnit.id, ...chanterUnitIds]);
+  return checkedV7({
+    ...state,
+    units: state.units.map((unit) =>
+      participants.has(unit.id)
+        ? {
+            ...unit,
+            activation: {
+              ...unit.activation,
+              specialActed: true,
+              handled: true,
+            },
+          }
+        : unit,
+    ),
+    cult: {
+      ...state.cult,
+      rituals: [
+        ...state.cult.rituals,
+        {
+          kind,
+          playerId: leaderUnit.ownerId,
+          leaderUnitId: leaderUnit.id,
+          chanterUnitIds,
+          at: mark,
+        },
+      ].sort((left, right) => left.leaderUnitId - right.leaderUnitId),
+    },
+  });
+}
+
+/** The city whose center is on `center` is Cowed (section 8.6). */
+export function withCowedV7(state: GameStateV7, center: CoordV7): GameStateV7 {
+  const city = state.cities.find((candidate) => sameV7(candidate.at, center));
+  if (city === undefined) throw new Error("no city there");
+  return checkedV7({
+    ...state,
+    cult: {
+      ...state.cult,
+      cowed: [...state.cult.cowed, { cityId: city.id, endsLeft: 1 }].sort(
+        (left, right) => left.cityId - right.cityId,
+      ),
     },
   });
 }

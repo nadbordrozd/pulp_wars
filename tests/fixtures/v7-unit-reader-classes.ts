@@ -942,6 +942,24 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/engine/v7/query.ts::publicDaemonStrandsV7": "BOARD",
     "src/engine/v7/query.ts::previewRampageV7": "BOARD",
     "src/engine/v7/reducer.ts::resolveRampageV7": "BOARD",
+    // The Cult's rituals and the Herald (`pulp_wars-mch9.7`, sections 7,
+    // 4.2, and 8.6). Every reader means the board: a ritual's leader and
+    // chanters are land-form cultists on it (a participant that leaves it
+    // is disrupted because it is no longer in `units`), a star hits what
+    // stands in its area ("a burrowed unit is not on the board": section
+    // 7.4), the unit on the Great Summoning's mark stands on it (a mound
+    // there blocks the mark as an obstacle), the Herald arrives on the
+    // board, and the previews name the same units.
+    "src/engine/v7/cult-rituals.ts::prunedRitualsV7": "BOARD",
+    "src/engine/v7/cult-rituals.ts::applyBeginRitualV7": "BOARD",
+    "src/engine/v7/cult-rituals.ts::applyProclaimV7": "BOARD",
+    "src/engine/v7/cult-rituals.ts::completeStarfallV7": "BOARD",
+    "src/engine/v7/cult-rituals.ts::completeGreatSummoningV7": "BOARD",
+    "src/engine/v7/cult-rituals.ts::resolveStartTurnRitualsV7": "BOARD",
+    "src/engine/v7/query.ts::publicStarfallForecastV7": "BOARD",
+    "src/engine/v7/query.ts::publicSummoningForecastV7": "BOARD",
+    "src/engine/v7/query.ts::previewBeginRitualV7": "BOARD",
+    "src/engine/v7/query.ts::previewProclaimV7": "BOARD",
     "src/render/curiosity-presentation-v7.ts::daemonInfoLinesV7": "BOARD",
   };
 
