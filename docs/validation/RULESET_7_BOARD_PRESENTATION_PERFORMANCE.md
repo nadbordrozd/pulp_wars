@@ -141,3 +141,47 @@ allocation reduction and exact rendering, not a guaranteed tail-latency
 improvement. The browser's coarse `performance.memory` readings did not expose
 Canvas backing memory or isolate garbage-collection pauses; no GC-specific
 causal claim is made.
+
+## Byte-limit comparison (`pulp_wars-9s0.15`)
+
+The probe once failed its forced-reuse check with about 260,000 differing
+pixels at 800 and 801 ms and none at 802–804 ms. The glow cache was not the
+cause. Chrome moves a Canvas to a different backing after it has been read
+back with `getImageData` a few times, and the two backings blend a few
+channels differently. The check compared a new Canvas with one that had
+already been read back five times, so the first two comparisons differed with
+or without a cache: two uncached draws compared the same way differ by the
+same pixels. Every comparison in the probe is now between two Canvases of the
+same age and read-back count.
+
+The check's premise was also stale. Ready outlines are two phase-free layers
+(halo and core) since `0d2f772`, so a cache limited to one frame's surfaces
+only ever hits and never repaints. The probe now checks two things instead:
+
+- **Limited board draws.** The mixed fixture is drawn at 800–804 ms under
+  cache limits of 0 bytes, one byte below and exactly the smallest surface,
+  one byte below and exactly the largest surface, one byte below one frame's
+  surfaces, and exactly one frame. Below one frame the cache evicts and
+  recreates surfaces every frame, or draws a layer without caching when it
+  alone exceeds the limit. Every limit must match the uncached draw with zero
+  differing pixels, and the cache must never hold more than its limit.
+- **Forced reuse.** A cache limited to exactly one surface is asked for five
+  outlined rasters of one sprite at one size. It may create two Canvases in
+  all (the surface and the shared outline mask), so it repaints the surface
+  four times; each result must be non-empty and match the uncached glow.
+
+`tests/unit/glow-cache-limits-presentation-v7.test.ts` covers the same limits
+without a browser, on a model of Canvas content: under every limit the cache
+paints what the uncached path paints, holds no more than its limit, and holds
+nothing uncounted except its one shared outline mask. That mask is at most the
+size of one cached surface.
+
+The glow instrumentation reports what happens. In the click captures it shows
+calls with no created Canvas because the two phase-free layers already exist
+when the capture starts, and its per-call times are mostly 0 because a cache
+hit is one `drawImage` and Chrome reports `performance.now()` in 0.1 ms steps.
+Canvas creation appears in the direct-draw observation
+(`raw.graphics.glow`), whose first frame creates the surfaces.
+
+The natural Move is clicked at `cellCentreCssPx` of the host, because the
+opening view is no longer centred on the capital.

@@ -318,14 +318,9 @@ EventTarget.prototype.addEventListener=function(type,fn,options){
   })()`);
   await delay(2500);
   const naturalPoint = await evaluate<{ x: number; y: number }>(`(async()=>{
-    const geometry=await import('/src/render/canvas/geometry.ts');
-    const canvas=document.querySelector('canvas');
-    const rect=canvas.getBoundingClientRect();
-    const size={width:rect.width,height:rect.height};
-    const capital=__model.view.cities.find(c=>c.ownerId===__model.view.viewer.id&&c.isCapital);
-    const camera=geometry.centerCameraOn(geometry.fitCamera(__model.view.board,size),geometry.projectGrid(capital.at),size);
     globalThis.__unit=__model.view.units.find(u=>u.ownerId===__model.view.viewer.id);
-    globalThis.__point=at=>{const p=geometry.worldToScreen(geometry.projectGrid(at),camera);return {x:rect.left+p.x,y:rect.top+p.y}};
+    // The host's own camera: the opening view is not centred on the capital.
+    globalThis.__point=at=>{const rect=document.querySelector('canvas').getBoundingClientRect();const p=__host.cellCentreCssPx(at);return {x:rect.left+p.x,y:rect.top+p.y}};
     return __point(__unit.at);
   })()`);
   await screenshot("natural-opening.png");
@@ -406,11 +401,23 @@ EventTarget.prototype.addEventListener=function(type,fn,options){
           readonly changedPixels: number;
           readonly maximumChannelDelta: number;
         }[];
+        readonly limited: readonly {
+          readonly cacheLimitBytes: number;
+          readonly createdCanvases: number;
+          readonly maximumCacheBytes: number;
+          readonly phases: readonly {
+            readonly elapsedMs: number;
+            readonly changedPixels: number;
+            readonly maximumChannelDelta: number;
+          }[];
+        }[];
         readonly forcedReuse: {
           readonly cacheLimitBytes: number;
           readonly createdCanvases: number;
-          readonly phases: readonly {
-            readonly elapsedMs: number;
+          readonly repaints: readonly {
+            readonly alpha: number;
+            readonly drawn: boolean;
+            readonly cacheBytes: number;
             readonly changedPixels: number;
             readonly maximumChannelDelta: number;
           }[];
@@ -474,28 +481,12 @@ EventTarget.prototype.addEventListener=function(type,fn,options){
       }
       phaseComparisons.push({elapsedMs,changedPixels,maximumChannelDelta});
     }
-    const sizingCache=new glow.BoardGlowCacheV7(document);
-    renderer.drawBoardV7({...shared,context:cached.getContext('2d'),glowCache:sizingCache,readinessElapsedMs:800});
-    const cacheLimitBytes=sizingCache.byteLength;
-    sizingCache.clear();
-    if(cacheLimitBytes===0)throw Error('No glow surface for forced reuse');
-    const reuseCache=new glow.BoardGlowCacheV7(document,cacheLimitBytes);
-    const reused=make();
-    let createdCanvases=0;
-    const reusePhases=[];
-    for(const elapsedMs of [800,801,802,803,804]){
-      const originalCreate=document.createElement;
-      document.createElement=function(name,...rest){
-        const element=originalCreate.call(this,name,...rest);
-        if(name==='canvas')createdCanvases++;
-        return element;
-      };
-      try{
-        renderer.drawBoardV7({...shared,context:reused.getContext('2d'),glowCache:reuseCache,readinessElapsedMs:elapsedMs});
-      }finally{document.createElement=originalCreate}
-      renderer.drawBoardV7({...shared,context:uncached.getContext('2d'),readinessElapsedMs:elapsedMs});
-      const a=reused.getContext('2d').getImageData(0,0,reused.width,reused.height).data;
-      const b=uncached.getContext('2d').getImageData(0,0,uncached.width,uncached.height).data;
+    // Chrome moves a Canvas to another backing after repeated read-backs and
+    // the two backings blend a few channels differently, so every comparison
+    // below is between two Canvases of the same age and read-back count.
+    const compare=(x,y)=>{
+      const a=x.getContext('2d').getImageData(0,0,x.width,x.height).data;
+      const b=y.getContext('2d').getImageData(0,0,y.width,y.height).data;
       let changedPixels=0,maximumChannelDelta=0;
       for(let i=0;i<a.length;i+=4){
         let changed=false;
@@ -506,11 +497,79 @@ EventTarget.prototype.addEventListener=function(type,fn,options){
         }
         if(changed)changedPixels++;
       }
-      reusePhases.push({elapsedMs,changedPixels,maximumChannelDelta});
+      return {changedPixels,maximumChannelDelta};
+    };
+    const countingCanvases=work=>{
+      const originalCreate=document.createElement;
+      let created=0;
+      document.createElement=function(name,...rest){
+        const element=originalCreate.call(this,name,...rest);
+        if(name==='canvas')created++;
+        return element;
+      };
+      try{work()}finally{document.createElement=originalCreate}
+      return created;
+    };
+    // One frame's surfaces: the halo and the core layer of each sprite size.
+    const frameSurfaceBytes=[];
+    const sizingCache=new glow.BoardGlowCacheV7(document);
+    const originalGlowDraw=sizingCache.draw.bind(sizingCache);
+    sizingCache.draw=(...args)=>{
+      const before=sizingCache.byteLength;
+      originalGlowDraw(...args);
+      if(sizingCache.byteLength>before)frameSurfaceBytes.push(sizingCache.byteLength-before);
+    };
+    renderer.drawBoardV7({...shared,context:make().getContext('2d'),glowCache:sizingCache,readinessElapsedMs:800});
+    const frameBytes=sizingCache.byteLength;
+    sizingCache.clear();
+    if(frameBytes===0)throw Error('No glow surface for the byte-limit comparison');
+    const smallestSurface=Math.min(...frameSurfaceBytes);
+    const largestSurface=Math.max(...frameSurfaceBytes);
+    // The board under byte limits from none to one whole frame. Below one
+    // frame the cache evicts and recreates, or draws without caching.
+    const limited=[];
+    for(const cacheLimitBytes of [...new Set([0,smallestSurface-1,smallestSurface,largestSurface-1,largestSurface,frameBytes-1,frameBytes])]){
+      const limitedCache=new glow.BoardGlowCacheV7(document,cacheLimitBytes);
+      const withCache=make(),direct=make();
+      let createdCanvases=0,maximumCacheBytes=0;
+      const phases=[];
+      for(const elapsedMs of [800,801,802,803,804]){
+        createdCanvases+=countingCanvases(()=>renderer.drawBoardV7({...shared,context:withCache.getContext('2d'),glowCache:limitedCache,readinessElapsedMs:elapsedMs}));
+        maximumCacheBytes=Math.max(maximumCacheBytes,limitedCache.byteLength);
+        renderer.drawBoardV7({...shared,context:direct.getContext('2d'),readinessElapsedMs:elapsedMs});
+        phases.push({elapsedMs,...compare(withCache,direct)});
+      }
+      limited.push({cacheLimitBytes,createdCanvases,maximumCacheBytes,phases});
+      limitedCache.clear();
     }
+    // Forced reuse: a cache limited to one surface is asked for five rasters
+    // of one size, so it must repaint its only Canvas four times.
+    const readyEntry=plan.entries.find(entry=>entry.kind==='UNIT'&&entry.ready&&images.has(entry.assetId));
+    if(!readyEntry)throw Error('No ready unit art for forced reuse');
+    const sprite=images.get(readyEntry.assetId);
+    const spriteRect={x:24.5,y:24.25,width:sprite.naturalWidth*0.75,height:sprite.naturalHeight*0.75};
+    const repaintGlow=alpha=>({color:'#ffc83d',alpha,blur:6,outline:{width:4,rim:1.5,rimColor:'#2b1a00'}});
+    const repaintSizing=new glow.BoardGlowCacheV7(document);
+    const repaintMake=()=>{const canvas=document.createElement('canvas');canvas.width=Math.round(160*dpr);canvas.height=Math.round(160*dpr);const context=canvas.getContext('2d');context.setTransform(dpr,0,0,dpr,0,0);return {canvas,context}};
+    repaintSizing.draw(repaintMake().context,sprite,readyEntry.assetId,spriteRect,repaintGlow(1));
+    const cacheLimitBytes=repaintSizing.byteLength;
+    repaintSizing.clear();
+    if(cacheLimitBytes===0)throw Error('No glow surface for forced reuse');
+    const reuseCache=new glow.BoardGlowCacheV7(document,cacheLimitBytes);
+    const reused=repaintMake(),direct=repaintMake();
+    let createdCanvases=0;
+    const repaints=[];
+    for(const alpha of [0.5,0.6,0.7,0.8,0.9]){
+      for(const target of [reused,direct])target.context.clearRect(0,0,160,160);
+      createdCanvases+=countingCanvases(()=>reuseCache.draw(reused.context,sprite,readyEntry.assetId,spriteRect,repaintGlow(alpha)));
+      glow.drawUncachedGlowV7(direct.context,sprite,spriteRect,repaintGlow(alpha));
+      const drawn=reused.context.getImageData(0,0,reused.canvas.width,reused.canvas.height).data.some(value=>value!==0);
+      repaints.push({alpha,drawn,cacheBytes:reuseCache.byteLength,...compare(reused.canvas,direct.canvas)});
+    }
+    reuseCache.clear();
     return {
       drawMs,cacheBytes:cache.byteLength,phaseComparisons,glow:glowObservation,
-      forcedReuse:{cacheLimitBytes,createdCanvases,phases:reusePhases},
+      limited,forcedReuse:{cacheLimitBytes,createdCanvases,repaints},
       readyUnits:plan.entries.filter(entry=>entry.kind==='UNIT'&&entry.ready).length,
       loadedImages:images.size,image:cached.toDataURL('image/png')
     };
@@ -530,6 +589,7 @@ EventTarget.prototype.addEventListener=function(type,fn,options){
           drawMs: graphics.drawMs,
           cacheBytes: graphics.cacheBytes,
           phaseComparisons: graphics.phaseComparisons,
+          limited: graphics.limited,
           forcedReuse: graphics.forcedReuse,
           glow: graphics.glow,
           readyUnits: graphics.readyUnits,
@@ -579,6 +639,7 @@ EventTarget.prototype.addEventListener=function(type,fn,options){
           ? null
           : {
               phases: graphics.phaseComparisons,
+              limited: graphics.limited,
               forcedReuse: graphics.forcedReuse,
               readyUnits: graphics.readyUnits,
               loadedImages: graphics.loadedImages,
@@ -652,11 +713,30 @@ EventTarget.prototype.addEventListener=function(type,fn,options){
       )
     )
       failures.push("fixed-time cached/uncached pixel comparison differs");
+    for (const limit of graphics.limited) {
+      if (
+        limit.phases.some(
+          (phase) =>
+            phase.changedPixels !== 0 || phase.maximumChannelDelta !== 0,
+        )
+      )
+        failures.push(
+          `cached/uncached pixel comparison differs at a ${limit.cacheLimitBytes}-byte cache limit`,
+        );
+      if (limit.maximumCacheBytes > limit.cacheLimitBytes)
+        failures.push(
+          `glow cache held ${limit.maximumCacheBytes} bytes over its ${limit.cacheLimitBytes}-byte limit`,
+        );
+    }
+    // One surface and the shared outline mask serve all five rasters.
     if (
-      graphics.forcedReuse.createdCanvases >=
-        graphics.forcedReuse.phases.length ||
-      graphics.forcedReuse.phases.some(
-        (phase) => phase.changedPixels !== 0 || phase.maximumChannelDelta !== 0,
+      graphics.forcedReuse.createdCanvases > 2 ||
+      graphics.forcedReuse.repaints.some(
+        (repaint) =>
+          !repaint.drawn ||
+          repaint.cacheBytes !== graphics.forcedReuse.cacheLimitBytes ||
+          repaint.changedPixels !== 0 ||
+          repaint.maximumChannelDelta !== 0,
       )
     )
       failures.push(
