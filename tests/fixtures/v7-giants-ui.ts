@@ -252,7 +252,7 @@ export function giantsSiegeFixtureV7(): GameStateV7 {
  * free territory tiles) and gives it the level-2 Stockpile and the level-3
  * Walls (as tests/fixtures/v7-dinosaur-arena.ts grows a reward city).
  */
-function walledCityV7(state: GameStateV7, centre: CoordV7): GameStateV7 {
+export function walledCityV7(state: GameStateV7, centre: CoordV7): GameStateV7 {
   const city = state.cities.find(
     (candidate) => candidate.at.x === centre.x && candidate.at.y === centre.y,
   );

@@ -387,6 +387,13 @@ export function hostileKaboomExposureV7(
   unitsNear: (center: CoordV7) => readonly PublicUnitV7[],
   ownValue: (unit: PublicUnitV7, damage: number, dies: boolean) => number,
   enemyValue: (unit: PublicUnitV7, damage: number, dies: boolean) => number,
+  /**
+   * The giants' signatures (`pulp_wars-w49.31`): the tiles a Troll of the
+   * hostile unit's seat could throw it onto (`hostileTossLandingsV7`); a
+   * thrown Goblin sets its blast off where it lands. Empty for every unit
+   * without such a Troll.
+   */
+  tossLandings: (hostile: PublicUnitV7) => readonly CoordV7[] = () => [],
 ): KaboomExposureV7 {
   let best = NO_KABOOM_EXPOSURE_V7;
   for (const hostile of hostiles) {
@@ -396,7 +403,10 @@ export function hostileKaboomExposureV7(
     const damage = kaboomDamageV7(view, hostile);
     if (damage <= 0) continue;
     const reach = unitRoleRuleV7(view, hostile).move;
-    if (chebyshev(hostile.at, at) > reach + 1) continue;
+    const thrown = tossLandings(hostile).filter(
+      (landing) => chebyshev(landing, at) === 1,
+    );
+    if (chebyshev(hostile.at, at) > reach + 1 && thrown.length === 0) continue;
     for (let y = at.y - 1; y <= at.y + 1; y += 1)
       for (let x = at.x - 1; x <= at.x + 1; x += 1) {
         const center = { x, y };
@@ -406,6 +416,7 @@ export function hostileKaboomExposureV7(
         const standing = same(hostile.at, center);
         if (
           !standing &&
+          !thrown.some((landing) => same(landing, center)) &&
           (chebyshev(hostile.at, center) > reach || !cellOpen(center))
         )
           continue;

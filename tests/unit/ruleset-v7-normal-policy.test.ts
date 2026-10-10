@@ -93,6 +93,10 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       "../engine/v7/events",
       "../engine/v7/ice-folk",
       "../engine/v7/movement",
+      // The giants' signatures (`pulp_wars-w49.31`): whether a blow is a
+      // Siege Hammer's, and the Glacial Smash threshold (two pure rule
+      // helpers over the registry).
+      "../engine/v7/giants",
       "../engine/v7/query",
       "../engine/v7/types",
       "../engine/v7/spatial-economy",
@@ -111,6 +115,9 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       // pulp_wars-w49.17: the ninth unit's positional values (public view
       // only).
       "./v7-ninth-unit",
+      // pulp_wars-w49.31: the giants' signatures (public view, previews,
+      // and the engine's public legality helpers only).
+      "./v7-giants",
       // pulp_wars-jdb.4: the Candy policy (public view and previews only).
       "./v7-candy",
       // pulp_wars-737.4: map curiosities (public view and previews only).

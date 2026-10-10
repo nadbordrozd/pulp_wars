@@ -798,6 +798,27 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/engine/v7/query.ts::previewBreakOffV7": "BOARD",
     "src/engine/v7/query.ts::previewTrampleV7": "BOARD",
     "src/engine/v7/query.ts::publicCrushPreviewV7": "BOARD",
+    // The giants' signatures, Normal AI (`pulp_wars-w49.31`). Every reader
+    // means the board, read from the viewer's public view: the visible
+    // giants; the unit behind a crushed one, the units that block a Push,
+    // the tiles a Juggernaut strikes from, and the units a Move lines up
+    // for it; the units beside a Brontosaurus; the Trolls beside a Goblin;
+    // the units a Cold Aura and the shards freeze; the capturer beside a
+    // center a Shove empties; and the Goblins beside an own Troll. A mound
+    // blocks a Push and is read from the view's `burrowed` list; a
+    // burrowed unit is underground and is never crushed, stomped, thrown,
+    // swallowed, or Frozen.
+    "src/ai/v7-giants.ts::giantFactsV7": "BOARD",
+    "src/ai/v7-giants.ts::crushOutcomeV7": "BOARD",
+    "src/ai/v7-giants.ts::pushBlockedForPolicyV7": "BOARD",
+    "src/ai/v7-giants.ts::crushStrikeTilesV7": "BOARD",
+    "src/ai/v7-giants.ts::crushColumnV7": "BOARD",
+    "src/ai/v7-giants.ts::stompCrowdV7": "BOARD",
+    "src/ai/v7-giants.ts::hostileTossLandingsV7": "BOARD",
+    "src/ai/v7-giants.ts::glacialShardsV7": "BOARD",
+    "src/ai/v7-giants.ts::coldAuraTargetsV7": "BOARD",
+    "src/ai/v7.ts::giantAttackValueV7": "BOARD",
+    "src/ai/v7.ts::giantMoveValueV7": "BOARD",
     "src/engine/v7/reducer.ts::withSwallowedOutcomesResultV7": "BOARD",
     "src/engine/v7/reducer.ts::trampleResultsV7": "BOARD",
     "src/engine/v7/reducer.ts::resolveCrushV7": "BOARD",

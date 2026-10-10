@@ -73,7 +73,14 @@ import {
   unitIgnoresZocStopsV7,
   unitOwnerIsIceFolkV7,
 } from "../engine/v7/ice-folk";
-import { validatePlayerMovementPassagePathV7 } from "../engine/v7/movement";
+import {
+  unitOverstridesV7,
+  validatePlayerMovementPassagePathV7,
+} from "../engine/v7/movement";
+import {
+  attackSiegeHammerV7,
+  glacialSmashThresholdV7,
+} from "../engine/v7/giants";
 import {
   createPublicCommandWorkV7,
   createPublicPlanningWorkV7,
@@ -84,6 +91,11 @@ import {
   previewEconomicV7,
   previewWhirlV7,
   previewStampedeV7,
+  previewSwallowV7,
+  previewTossV7,
+  previewStompV7,
+  previewBreakOffV7,
+  previewTrampleV7,
   previewKaboomV7,
   previewBlastMountainV7,
   previewMonumentV7,
@@ -542,6 +554,42 @@ import {
 } from "./v7-dwarf";
 import { ninthUnitMoveValueV7, ownWightGraveHeldV7 } from "./v7-ninth-unit";
 import {
+  BREAK_OFF_FRONT_RADIUS_V7,
+  BREAK_OFF_MINIMUM_HP_V7,
+  BREAK_OFF_PRIORITY_V7,
+  CRUSH_BACKSTOP_VALUE_V7,
+  GIANT_FIELD_DEFENSE_VALUE_V7,
+  GIANT_ROUTINE_MOVE_PRIORITY_V7,
+  GLACIAL_AURA_MOVE_PRIORITY_V7,
+  GLACIAL_FREEZE_VALUE_V7,
+  OVERSTRIDE_BREAKTHROUGH_VALUE_V7,
+  SIEGE_HAMMER_APPROACH_VALUE_V7,
+  SIEGE_HAMMER_FIRST_PRIORITY_V7,
+  SIEGE_HAMMER_LEVEL_VALUE_V7,
+  SIEGE_HAMMER_WALLS_VALUE_V7,
+  SWALLOW_ESCAPE_PRIORITY_V7,
+  SWALLOW_MINIMUM_HP_V7,
+  SWALLOW_ZOMBIE_VALUE_V7,
+  TOSS_ESCORT_GOBLINS_V7,
+  TOSS_ESCORT_RADIUS_V7,
+  TOSS_ESCORT_VALUE_V7,
+  TOSS_MINIMUM_NET_DAMAGE_V7,
+  TOSS_VERIFIED_TILES_V7,
+  coldAuraTargetsV7,
+  crushColumnV7,
+  crushDangerV7,
+  crushOutcomeV7,
+  giantFactsV7,
+  glacialShardsV7,
+  glacialSmashLethalV7,
+  hostileTossLandingsV7,
+  stompCrowdV7,
+  swallowDangerV7,
+  tossPassengerKindV7,
+  tossedGoblinV7,
+  type GiantFactsV7,
+} from "./v7-giants";
+import {
   BOUNCE_COST_V7,
   CANDY_ROUTINE_MOVE_PRIORITY_V7,
   CRASHED_TARGET_VALUE_V7,
@@ -760,6 +808,18 @@ interface PolicyContextV7 {
   readonly candy: boolean;
   /** Candy matches: per-decision public Candy plans. */
   candyCache: CandyContextCacheV7 | null;
+  /**
+   * The giants' signatures (`pulp_wars-w49.31`, `src/ai/v7-giants.ts`): the
+   * visible land-form giants that have a signature, or null without one;
+   * every signature rule is gated on it.
+   */
+  readonly giants: GiantFactsV7 | null;
+  /** The signature plans of the own giants (cached per unit). */
+  readonly giantPlans: {
+    readonly toss: Map<UnitId, GiantTossPlanV7 | null>;
+    readonly stomp: Map<UnitId, GiantStompPlanV7 | null>;
+    readonly breakOff: Map<UnitId, GiantBreakOffPlanV7 | null>;
+  };
   /** `pulp_wars-1mc`: public endgame siege targets, or null outside it. */
   readonly endgame: EndgamePlanV7 | null;
   /**
@@ -1806,6 +1866,8 @@ function bareContext(
     dwarfCache: null,
     candy: candyMatchForPolicyV7(view),
     candyCache: null,
+    giants: giantFactsForViewV7(view),
+    giantPlans: { toss: new Map(), stomp: new Map(), breakOff: new Map() },
     endgame: endgamePlanForPolicyV7(view, (owner) => isHostile(view, owner)),
     chokepoint: chokepointPlanForPolicyV7(view, {
       isHostile: (owner) => isHostile(view, owner),
@@ -9814,7 +9876,23 @@ function* publicThreatenedTilesWorkV7(
   // entry lasts to the end of its owner's next turn). The list is empty in
   // a match without a Candy seat.
   const stuck = unitIsStuckV7(view, unit.id);
+  // The giants' signatures (`pulp_wars-w49.31`, RULESET_7_GIANTS.md section
+  // 6.5): a Colossus's Overstride passes units and Eggs of any owner (never
+  // ending on one) and ignores hostile zones of control, so a screen does
+  // not keep it from the units behind. Only the Colossus has the ability.
+  const overstrides = unitOverstridesV7(view, unit);
   const origins = new Map([[coordKey(unit.at), unit.at]]);
+  // Section 6.3: a Goblin beside its seat's Troll (or one step from it) may
+  // be thrown two or three tiles and still attack or Kaboom, so every
+  // landing tile is a tile it strikes from. Empty without such a Troll.
+  if (kaboom)
+    for (const landing of hostileTossLandingsV7(
+      view,
+      unit,
+      facts.move,
+      (at) => (lookup.occupantsByKey.get(coordKey(at)) ?? []).length > 0,
+    ))
+      origins.set(coordKey(landing), landing);
   if (
     unit.form !== "EMBARKED" &&
     (unitMayActAfterMoveV7(view, unit) || kaboom)
@@ -9852,6 +9930,7 @@ function* publicThreatenedTilesWorkV7(
         );
         if (
           mode !== "FLY" &&
+          !overstrides &&
           occupants.some((occupant) => occupant.ownerId !== unit.ownerId)
         )
           continue;
@@ -9906,6 +9985,7 @@ function* publicThreatenedTilesWorkV7(
         const hostileZoc =
           mode !== "FLY" &&
           !prowls &&
+          !overstrides &&
           neighbors8V7(view, tile.at).some((adjacent) =>
             (lookup.occupantsByKey.get(coordKey(adjacent)) ?? []).some(
               (occupant) =>
@@ -10069,18 +10149,33 @@ function isPolicyCandidate(
   command: CommandV7,
 ): boolean {
   if (command.kind === "WAIT") return false;
-  // The giants' signatures engine (`pulp_wars-w49.30`,
-  // RULESET_7_GIANTS.md section 8): until the AI bead (`pulp_wars-w49.31`)
-  // the policy uses none of the four new commands; its giants keep
-  // attacking (Crushing Shove, Overstride, Glacial Smash, and the Siege
-  // Hammer act through the ordinary Move and Attack).
-  if (
-    command.kind === "SWALLOW" ||
-    command.kind === "TOSS" ||
-    command.kind === "STOMP" ||
-    command.kind === "BREAK_OFF"
-  )
-    return false;
+  // The giants' signatures (`pulp_wars-w49.31`, RULESET_7_GIANTS.md
+  // section 9): the four commands by their plans (`giantTossPlanV7`...).
+  // A Swallow is scored by its preview; the large Toss and Break Off offer
+  // lists are pruned to the one command per giant its plan chose, and a
+  // Stomp is a candidate only when its plan prefers it to the attack.
+  // (Crushing Shove, Overstride, Glacial Smash, and the Siege Hammer act
+  // through the ordinary Move and Attack.)
+  if (command.kind === "SWALLOW")
+    return giantSwallowScoreV7(context, command) !== null;
+  if (command.kind === "TOSS") {
+    const troll = context.lookup.unitsById.get(command.unitId);
+    return (
+      troll !== undefined &&
+      giantTossPlanV7(context, troll)?.command === command
+    );
+  }
+  if (command.kind === "STOMP") {
+    const giant = context.lookup.unitsById.get(command.unitId);
+    return giant !== undefined && giantStompPlanV7(context, giant) !== null;
+  }
+  if (command.kind === "BREAK_OFF") {
+    const giant = context.lookup.unitsById.get(command.unitId);
+    return (
+      giant !== undefined &&
+      giantBreakOffPlanV7(context, giant)?.command === command
+    );
+  }
   // The frozen sea engine (`pulp_wars-5ti.3`, RULESET_7_NAVAL_BRANCH.md
   // section 17): until the ice plan of `pulp_wars-5ti.5` the policy Freezes
   // nothing. The command is offered only to an Ice Folk seat with Rime.
@@ -10739,9 +10834,17 @@ function isLowValueAttackV7(
   const actor = context.lookup.unitsById.get(command.unitId);
   if (preview === null || actor === undefined) return true;
   if (attackFactionRejectedV7(context, command, actor, preview)) return true;
+  // The giants' signatures (`pulp_wars-w49.31`): the crush and the
+  // collision of an own Juggernaut's blow are part of what it deals.
+  const target = context.lookup.unitsById.get(command.targetUnitId);
+  const giant =
+    context.giants?.own.has(actor.id) === true && target !== undefined
+      ? giantAttackValueV7(context, actor, target, preview, 0)
+      : null;
   const immediate =
     combatImmediateValue(preview, context.view) +
-    (context.undead ? biteHarmAdjustmentV7(context, actor, preview) : 0);
+    (context.undead ? biteHarmAdjustmentV7(context, actor, preview) : 0) +
+    (giant?.immediate ?? 0);
   const harmful =
     (!preview.defenderDies && preview.attackerDies) ||
     (!preview.defenderDies && immediate <= 0);
@@ -12860,6 +12963,27 @@ function scoreCommandWithContext(
         priority = candy.priority;
         strategicValue += candy.strategic;
       }
+      // The giants' signatures (`pulp_wars-w49.31`): the crush and the
+      // collision of a Juggernaut's blow, its Push off a hostile center,
+      // the Walls and the Field Defense a Brass Titan's blow breaks, and
+      // the shards of a Frost Giant's.
+      if (
+        context.giants !== null &&
+        actor !== undefined &&
+        targetUnit !== undefined &&
+        context.giants.own.has(actor.id)
+      ) {
+        const giant = giantAttackValueV7(
+          context,
+          actor,
+          targetUnit,
+          preview,
+          priority,
+        );
+        priority = giant.priority;
+        strategicValue += giant.strategic;
+        immediateValue += giant.immediate;
+      }
       // pulp_wars-9s0.8: the hunters' attacks on a hunted high-value unit.
       priority = huntAttackPriorityV7(context, command, preview, priority);
       // Tuning 6 (`pulp_wars-w49.6`): the assault and the retaken center.
@@ -12928,6 +13052,48 @@ function scoreCommandWithContext(
             : value,
         0,
       );
+    }
+  }
+
+  // The giants' signatures (`pulp_wars-w49.31`): a giant whose plan is a
+  // Stomp, a Toss, or a Break Off keeps its one action for it.
+  if (
+    command.kind === "ATTACK" &&
+    actor !== undefined &&
+    context.giants?.own.has(actor.id) === true &&
+    giantHoldsAttackV7(context, command, actor)
+  )
+    priority = -1;
+  if (command.kind === "SWALLOW") {
+    const swallow = giantSwallowScoreV7(context, command);
+    if (swallow !== null) {
+      priority = swallow.priority;
+      strategicValue = swallow.strategic;
+      immediateValue = swallow.immediate;
+    }
+  }
+  if (command.kind === "TOSS" && actor !== undefined) {
+    const toss = giantTossPlanV7(context, actor);
+    if (toss !== null && toss.command === command) {
+      priority = toss.priority;
+      strategicValue = toss.strategic;
+      immediateValue = toss.immediate;
+    }
+  }
+  if (command.kind === "STOMP" && actor !== undefined) {
+    const stomp = giantStompPlanV7(context, actor);
+    if (stomp !== null) {
+      priority = stomp.priority;
+      strategicValue = stomp.strategic;
+      immediateValue = stomp.immediate;
+    }
+  }
+  if (command.kind === "BREAK_OFF" && actor !== undefined) {
+    const breakOff = giantBreakOffPlanV7(context, actor);
+    if (breakOff !== null && breakOff.command === command) {
+      priority = breakOff.priority;
+      strategicValue = breakOff.strategic;
+      immediateValue = breakOff.immediate;
     }
   }
 
@@ -13587,6 +13753,21 @@ function scoreCommandWithContext(
       priority = curiosity.priority;
       strategicValue += curiosity.strategic;
     }
+    // The giants' signatures (`pulp_wars-w49.31`): the own giant's Move
+    // (the trample, the Cold Aura, the walk to a walled city, the escort
+    // of a Troll), and every seat's Move around a hostile giant.
+    if (context.giants !== null && resultAt !== null && !autoembark) {
+      const giant = giantMoveValueV7(
+        context,
+        command,
+        actor,
+        resultAt,
+        priority,
+      );
+      priority = giant.priority;
+      strategicValue += giant.strategic;
+      immediateValue += giant.immediate;
+    }
   }
 
   if (command.kind === "PILLAGE" && actor !== undefined) {
@@ -13637,6 +13818,11 @@ function scoreCommandWithContext(
     priority = kaboom.priority;
     strategicValue = kaboom.strategic;
     immediateValue = kaboom.immediate;
+    // The giants' signatures (`pulp_wars-w49.31`): a Goblin its Troll
+    // threw for the blast sets it off before its own blow that does not
+    // kill (a blast into two units ranks as a chip otherwise, 895).
+    if (priority >= 0 && tossedGoblinV7(view, actor))
+      priority = Math.max(priority, KABOOM_KILL_PRIORITY_V7);
   }
 
   if (command.kind === "END_TURN") priority = 0;
@@ -17461,6 +17647,20 @@ function kaboomExposureV7(
     },
     (other, hit, dies) => friendlyLossValueV7(view, other, hit, dies),
     (other, hit, dies) => hostileLossValueV7(context, other, hit, dies),
+    // The giants' signatures (`pulp_wars-w49.31`): and the tiles its
+    // seat's Troll can throw it onto.
+    context.giants === null
+      ? undefined
+      : (hostile) =>
+          hostileTossLandingsV7(
+            view,
+            hostile,
+            unitRoleRuleV7(view, hostile).move,
+            (center) =>
+              (
+                context.threatLookup.occupantsByKey.get(coordKey(center)) ?? []
+              ).some((occupant) => occupant.id !== unit.id) || same(center, at),
+          ),
   );
 }
 
@@ -21446,6 +21646,751 @@ function candyMoveValueV7(
   return { priority: next, strategic, objective: bonus };
 }
 
+// --- The giants' signatures (`pulp_wars-w49.31`) ---------------------------
+
+interface GiantCommandScoreV7 {
+  readonly priority: number;
+  readonly strategic: number;
+  readonly immediate: number;
+}
+
+interface GiantTossPlanV7 extends GiantCommandScoreV7 {
+  readonly command: Extract<CommandV7, { kind: "TOSS" }>;
+}
+
+type GiantStompPlanV7 = GiantCommandScoreV7;
+
+interface GiantBreakOffPlanV7 extends GiantCommandScoreV7 {
+  readonly command: Extract<CommandV7, { kind: "BREAK_OFF" }>;
+}
+
+/** The value of two Coins of unit, as `retainedUnitValue` counts a cost. */
+const BREAK_OFF_TROOPER_COST_VALUE_V7 = 8;
+
+/** A kill's tier: 1280 for a unit that threatens an own city, else 1180. */
+function giantKillTierV7(context: PolicyContextV7, unitId: UnitId): number {
+  return context.threats.some((item) => item.unitId === unitId) ? 1280 : 1180;
+}
+
+/**
+ * What the ordinary attack scoring does not see of an own giant's blow
+ * (RULESET_7_GIANTS.md section 9), read from its public preview:
+ *
+ * - **Crushing Shove** (the Juggernaut): the crush on the target and the
+ *   collision on the hostile unit behind it, 10 a point and 20 a kill as
+ *   every hit, and their share of each unit's value; a crush that kills
+ *   has a kill's tier (1350 with the 50 of a cleared hostile center). A
+ *   Push that moves a garrison off a hostile center is worth what a
+ *   Charge!'s is (`CHARGE_PUSH_CENTER_VALUE_V7`, and the capturer's tier
+ *   with an own capturer within two tiles).
+ * - **Siege Hammer** (the Brass Titan): `SIEGE_HAMMER_LEVEL_VALUE_V7` for
+ *   each fortification level ignored, `GIANT_FIELD_DEFENSE_VALUE_V7` for a
+ *   Field Defense smashed, `SIEGE_HAMMER_WALLS_VALUE_V7` for razed Walls;
+ *   the blow that breaks either goes first (1178).
+ * - **Glacial Smash** (the Frost Giant): the shatter is the preview's kill
+ *   already; each unit its shards newly freeze adds
+ *   `GLACIAL_FREEZE_VALUE_V7`.
+ */
+function giantAttackValueV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+  target: PublicUnitV7,
+  preview: CombatPreviewV7,
+  priority: number,
+): GiantCommandScoreV7 {
+  const view = context.view;
+  let next = priority;
+  let strategic = 0;
+  let immediate = 0;
+  if (preview.attackerDies) return { priority, strategic, immediate };
+  const center = context.lookup.citiesByKey.get(coordKey(target.at));
+  const hostileCenter = center !== undefined && isHostile(view, center.ownerId);
+  const crush = crushOutcomeV7(view, actor, target, preview, (owner) =>
+    isHostile(view, owner),
+  );
+  if (crush !== null) {
+    immediate += 10 * crush.damage + 20 * Number(crush.dies);
+    const value = targetStrategicValue(view, target.id, context.lookup);
+    const share = (damage: number): number =>
+      target.hp <= 0 ? 0 : Math.floor((value * damage) / target.hp);
+    strategic += crush.dies
+      ? Math.max(0, value - share(preview.damageToDefender))
+      : share(crush.damage);
+    if (crush.dies) {
+      next = Math.max(next, giantKillTierV7(context, target.id));
+      if (hostileCenter) {
+        next = Math.max(next, 1350);
+        strategic += 50;
+      }
+    }
+    if (crush.blocker !== null) {
+      immediate += 10 * crush.blocker.damage + 20 * Number(crush.blocker.dies);
+      strategic += hostileLossValueV7(
+        context,
+        crush.blocker.unit,
+        crush.blocker.damage,
+        crush.blocker.dies,
+      );
+      if (crush.blocker.dies)
+        next = Math.max(next, giantKillTierV7(context, crush.blocker.unit.id));
+    }
+  }
+  if (
+    hostileCenter &&
+    !preview.defenderDies &&
+    target.form === "LAND" &&
+    unitRoleRuleV7(view, actor).abilities.includes("CRUSH") &&
+    // (The Push preview does not know a tile no own unit detects; the view
+    // lists every unit on an explored tile, so it is read as the Push
+    // conditions read it.)
+    (preview.push === "WILL_PUSH" ||
+      (preview.push === "UNKNOWN_BEHIND_FOG" && crush === null))
+  ) {
+    const capturer = view.units.some(
+      (unit) =>
+        unit.ownerId === view.viewer.id &&
+        unit.id !== actor.id &&
+        distance(unit.at, target.at) <= 2 &&
+        canCaptureV7(view, unit),
+    );
+    strategic +=
+      CHARGE_PUSH_CENTER_VALUE_V7 +
+      (capturer ? CHARGE_CAPTURER_NEAR_VALUE_V7 : 0);
+    if (capturer) next = Math.max(next, CHARGE_PUSH_CENTER_PRIORITY_V7);
+  }
+  if (preview.siegeHammer) {
+    const tile = findPublicTileV7(view, target.at);
+    const fieldDefense = tile?.explored === true && tile.fieldDefense;
+    strategic +=
+      SIEGE_HAMMER_LEVEL_VALUE_V7 * preview.fortificationIgnored +
+      (fieldDefense ? GIANT_FIELD_DEFENSE_VALUE_V7 : 0) +
+      (preview.wallsDestroyed ? SIEGE_HAMMER_WALLS_VALUE_V7 : 0);
+    if (fieldDefense || preview.wallsDestroyed)
+      next = Math.max(next, SIEGE_HAMMER_FIRST_PRIORITY_V7);
+  }
+  if (preview.shatters && context.giants?.own.get(actor.id) === "GLACIAL_SMASH")
+    strategic +=
+      GLACIAL_FREEZE_VALUE_V7 * glacialShardsV7(view, actor, target).length;
+  return { priority: next, strategic, immediate };
+}
+
+/**
+ * Swallow (section 9): an own Abomination gulps a unit its attack would
+ * not kill this turn, never below `SWALLOW_MINIMUM_HP_V7` of its own HP (a
+ * victim freed next to a dying Abomination is wasted). The victim is off
+ * the board, so the Swallow has a kill's tier and the victim's whole value
+ * (the dearest first), `SWALLOW_ZOMBIE_VALUE_V7` for the Zombie it is spat
+ * out as, and the tiers of a cleared hostile center and of an enemy taken
+ * off an own one. `immediate` is the preview's HP as damage, a kill, and
+ * the HP the digest heals. Null when the policy does not Swallow.
+ */
+function giantSwallowScoreV7(
+  context: PolicyContextV7,
+  command: Extract<CommandV7, { kind: "SWALLOW" }>,
+): GiantCommandScoreV7 | null {
+  const view = context.view;
+  const actor = context.lookup.unitsById.get(command.unitId);
+  const target = context.lookup.unitsById.get(command.targetUnitId);
+  if (
+    actor === undefined ||
+    target === undefined ||
+    actor.hp < SWALLOW_MINIMUM_HP_V7
+  )
+    return null;
+  const preview = previewSwallowV7(view, command.unitId, command.targetUnitId);
+  if (preview === null) return null;
+  if (
+    context.commands.some(
+      (offered) =>
+        offered.kind === "ATTACK" &&
+        offered.unitId === actor.id &&
+        offered.targetUnitId === target.id,
+    )
+  ) {
+    const blow = queryCombatPreviewV7(view, actor.id, target.id);
+    if (blow !== null && blow.defenderDies && !blow.attackerDies) return null;
+  }
+  let priority = giantKillTierV7(context, target.id);
+  let strategic =
+    targetStrategicValue(view, target.id, context.lookup) +
+    SWALLOW_ZOMBIE_VALUE_V7;
+  const center = context.lookup.citiesByKey.get(coordKey(target.at));
+  if (center !== undefined && isHostile(view, center.ownerId)) {
+    priority = Math.max(priority, 1350);
+    strategic += 50;
+  }
+  if (context.army && armyOnOwnCenterV7(context, target)) {
+    priority = Math.max(priority, ARMY_RETAKE_CENTER_PRIORITY_V7);
+    strategic += 40;
+  }
+  return {
+    priority,
+    strategic,
+    immediate:
+      10 * preview.hp + 20 + 8 * Math.min(preview.hp, actor.maxHp - actor.hp),
+  };
+}
+
+/**
+ * Goblin Toss (section 9): the one throw of an own Troll, or null. Of the
+ * offered throws of a Goblin that can still act, the landing tiles are
+ * ranked by a one-wave blast there (`hypotheticalBlastV7`); for the best
+ * `TOSS_VERIFIED_TILES_V7` the Kaboom is previewed exactly on the view
+ * with the Goblin on the tile (`previewKaboomV7`), and the throw is made
+ * when that blast kills or deals `TOSS_MINIMUM_NET_DAMAGE_V7` to hostile
+ * units net of own, and the policy would set it off there (the Kaboom's own
+ * score on that view). The throw has the Kaboom's score, at a kill's tier
+ * at least (1178), so the Goblin is thrown before it does anything else;
+ * `tossedGoblinV7` then lifts its Kaboom to that tier. Not when the Goblin
+ * has as good a blast where it stands.
+ */
+function giantTossPlanV7(
+  context: PolicyContextV7,
+  troll: PublicUnitV7,
+): GiantTossPlanV7 | null {
+  const cached = context.giantPlans.toss.get(troll.id);
+  if (cached !== undefined) return cached;
+  const plan = computeGiantTossPlanV7(context, troll);
+  context.giantPlans.toss.set(troll.id, plan);
+  return plan;
+}
+
+function computeGiantTossPlanV7(
+  context: PolicyContextV7,
+  troll: PublicUnitV7,
+): GiantTossPlanV7 | null {
+  const view = context.view;
+  if (context.giants?.own.get(troll.id) !== "TOSS") return null;
+  const candidates: {
+    readonly command: Extract<CommandV7, { kind: "TOSS" }>;
+    readonly passenger: PublicUnitV7;
+    readonly kills: number;
+    readonly net: number;
+  }[] = [];
+  for (const command of context.commands) {
+    if (command.kind !== "TOSS" || command.unitId !== troll.id) continue;
+    const passenger = context.lookup.unitsById.get(command.passengerUnitId);
+    if (passenger === undefined || !primaryReadyForPolicyV7(passenger))
+      continue;
+    const damage = kaboomDamageV7(view, passenger);
+    if (damage <= 0) continue;
+    if (
+      !context.lookup.visibleHostiles.some(
+        (unit) => distance(unit.at, command.at) <= 1,
+      )
+    )
+      continue;
+    const blast = hypotheticalBlastV7(
+      view,
+      command.at,
+      damage,
+      passenger.id,
+      (owner) => isHostile(view, owner),
+      (owner) => friendlyOwnerV7(view, owner),
+      (unit, hit, dies) => hostileLossValueV7(context, unit, hit, dies),
+      (unit, hit, dies) => friendlyLossValueV7(view, unit, hit, dies),
+    );
+    const net =
+      blast.hostileValue - FRIENDLY_FIRE_TRADE_FACTOR_V7 * blast.friendlyValue;
+    if (blast.hostileHits === 0 || net <= 0) continue;
+    candidates.push({ command, passenger, kills: blast.hostileKills, net });
+  }
+  candidates.sort(
+    (left, right) =>
+      right.kills - left.kills ||
+      right.net - left.net ||
+      left.command.at.y - right.command.at.y ||
+      left.command.at.x - right.command.at.x ||
+      left.passenger.id - right.passenger.id,
+  );
+  let best: GiantTossPlanV7 | null = null;
+  for (const candidate of candidates.slice(0, TOSS_VERIFIED_TILES_V7)) {
+    const { command, passenger } = candidate;
+    const toss = previewTossV7(view, troll.id, passenger.id, command.at);
+    if (toss === null || !toss.passengerMayAct) continue;
+    const landed = projectPublicUnitForPolicyV7(view, passenger.id, {
+      at: command.at,
+      captureEligible: false,
+      activation: { ...passenger.activation, moved: true },
+    });
+    const kaboom = previewKaboomV7(landed, passenger.id);
+    if (kaboom === null) continue;
+    const chain = explosionChainValueV7(
+      view,
+      kaboom,
+      (owner) => isHostile(view, owner),
+      (unit, hit, dies) => hostileLossValueV7(context, unit, hit, dies),
+      (unit, hit, dies) => friendlyLossValueV7(view, unit, hit, dies),
+    );
+    if (
+      chain.hostileKills === 0 &&
+      chain.hostileDamage - chain.friendlyDamage < TOSS_MINIMUM_NET_DAMAGE_V7
+    )
+      continue;
+    const blast = scoreCommandV7(landed, {
+      kind: "KABOOM",
+      unitId: passenger.id,
+    });
+    if (blast.priority < 0) continue;
+    const here = kaboomScoreV7(context, passenger);
+    if (
+      here.priority >= blast.priority &&
+      here.strategic >= blast.strategicValue
+    )
+      continue;
+    const plan: GiantTossPlanV7 = {
+      command,
+      priority: Math.max(blast.priority, KABOOM_KILL_PRIORITY_V7),
+      strategic: blast.strategicValue,
+      immediate: blast.immediateValue,
+    };
+    if (
+      best === null ||
+      plan.priority > best.priority ||
+      (plan.priority === best.priority && plan.strategic > best.strategic)
+    )
+      best = plan;
+  }
+  return best;
+}
+
+/**
+ * Thunder Stomp (section 9): the Stomp of an own Brontosaurus that has not
+ * moved, or null when it attacks instead. The Stomp's hits are the engine's
+ * preview (`previewStompV7`), 10 a point and 20 a kill as every hit; it is
+ * made when that is at least the immediate value of the best attack on
+ * offer (its damage less the retaliation, `combatImmediateValue`). An
+ * attack that kills (and grows the Brontosaurus) is preferred unless the
+ * Stomp kills two units or more. A Stomp that kills has a kill's tier, one
+ * that hits a unit threatening an own city 1240, and otherwise the tier of
+ * a committed blow (1174) or a chip (900). Field Defense it smashes is
+ * worth `GIANT_FIELD_DEFENSE_VALUE_V7` on hostile land and costs as much on
+ * own or allied land.
+ */
+function giantStompPlanV7(
+  context: PolicyContextV7,
+  giant: PublicUnitV7,
+): GiantStompPlanV7 | null {
+  const cached = context.giantPlans.stomp.get(giant.id);
+  if (cached !== undefined) return cached;
+  const plan = computeGiantStompPlanV7(context, giant);
+  context.giantPlans.stomp.set(giant.id, plan);
+  return plan;
+}
+
+function computeGiantStompPlanV7(
+  context: PolicyContextV7,
+  giant: PublicUnitV7,
+): GiantStompPlanV7 | null {
+  const view = context.view;
+  if (context.giants?.own.get(giant.id) !== "STOMP") return null;
+  const preview = previewStompV7(view, giant.id);
+  if (preview === null || preview.results.length === 0) return null;
+  let immediate = 0;
+  let strategic = 0;
+  let kills = 0;
+  let priority =
+    armyModeV7(context, giant) === "COMMIT"
+      ? ARMY_COMMIT_MELEE_PRIORITY_V7
+      : 900;
+  for (const result of preview.results) {
+    const unit = context.lookup.unitsById.get(result.unitId);
+    if (unit === undefined) continue;
+    immediate += 10 * result.damage + 20 * Number(result.dies);
+    strategic += hostileLossValueV7(context, unit, result.damage, result.dies);
+    const threatens = context.threats.some((item) => item.unitId === unit.id);
+    if (result.dies) {
+      kills += 1;
+      priority = Math.max(priority, threatens ? 1280 : 1180);
+    } else if (threatens && result.damage > 0)
+      priority = Math.max(priority, 1240);
+  }
+  if (immediate <= 0) return null;
+  for (const at of preview.fieldDefenses) {
+    const owner = findPublicTileV7(view, at);
+    if (owner?.explored !== true || owner.territoryOwnerId === null) continue;
+    strategic += isHostile(view, owner.territoryOwnerId)
+      ? GIANT_FIELD_DEFENSE_VALUE_V7
+      : -GIANT_FIELD_DEFENSE_VALUE_V7;
+  }
+  let bestAttack = Number.NEGATIVE_INFINITY;
+  let attackKills = false;
+  for (const command of context.commands) {
+    if (command.kind !== "ATTACK" || command.unitId !== giant.id) continue;
+    const blow = queryCombatPreviewV7(view, giant.id, command.targetUnitId);
+    if (blow === null || (blow.attackerDies && !blow.defenderDies)) continue;
+    bestAttack = Math.max(bestAttack, combatImmediateValue(blow, view));
+    if (blow.defenderDies) attackKills = true;
+  }
+  if (attackKills && kills < 2) return null;
+  if (immediate < bestAttack) return null;
+  return { priority, strategic, immediate };
+}
+
+/**
+ * Break Off (section 9, with the built rule of section 6.8: two full-HP
+ * Gingerbread Men for 10 HP, no slot rule): the one Break Off of an own
+ * Gingerbread Giant, or null. It breaks off at the front only (a visible
+ * hostile land unit within `BREAK_OFF_FRONT_RADIUS_V7`), with at least
+ * `BREAK_OFF_MINIMUM_HP_V7` HP, and not instead of a blow that kills. Of
+ * the offered pairs it takes the two tiles nearest the enemy (the first in
+ * the offered order at equal distance), so the pieces stand between the
+ * Giant and the enemy. `BREAK_OFF_PRIORITY_V7` puts it below every kill and
+ * below a Re-bake (the two pieces put the home city over its limit, so the
+ * Re-bake into that city is made first).
+ */
+function giantBreakOffPlanV7(
+  context: PolicyContextV7,
+  giant: PublicUnitV7,
+): GiantBreakOffPlanV7 | null {
+  const cached = context.giantPlans.breakOff.get(giant.id);
+  if (cached !== undefined) return cached;
+  const plan = computeGiantBreakOffPlanV7(context, giant);
+  context.giantPlans.breakOff.set(giant.id, plan);
+  return plan;
+}
+
+function computeGiantBreakOffPlanV7(
+  context: PolicyContextV7,
+  giant: PublicUnitV7,
+): GiantBreakOffPlanV7 | null {
+  const view = context.view;
+  if (
+    context.giants?.own.get(giant.id) !== "BREAK_OFF" ||
+    giant.hp < BREAK_OFF_MINIMUM_HP_V7
+  )
+    return null;
+  const preview = previewBreakOffV7(view, giant.id);
+  if (preview === null) return null;
+  const front = context.lookup.visibleHostiles
+    .filter((unit) => unit.form === "LAND" && unit.hp > 0)
+    .map((unit) => unit.at);
+  if (
+    front.length === 0 ||
+    nearestDistance(giant.at, front) > BREAK_OFF_FRONT_RADIUS_V7
+  )
+    return null;
+  for (const command of context.commands) {
+    if (command.kind !== "ATTACK" || command.unitId !== giant.id) continue;
+    const blow = queryCombatPreviewV7(view, giant.id, command.targetUnitId);
+    if (blow !== null && blow.defenderDies && !blow.attackerDies) return null;
+  }
+  let best: Extract<CommandV7, { kind: "BREAK_OFF" }> | null = null;
+  let bestGap = Number.POSITIVE_INFINITY;
+  for (const command of context.commands) {
+    if (command.kind !== "BREAK_OFF" || command.unitId !== giant.id) continue;
+    const gap = sum(command.tiles.map((at) => nearestDistance(at, front)));
+    if (gap < bestGap) {
+      best = command;
+      bestGap = gap;
+    }
+  }
+  if (best === null) return null;
+  const spent = giant.hp - preview.hpAfter;
+  return {
+    command: best,
+    priority: BREAK_OFF_PRIORITY_V7,
+    strategic:
+      preview.count * (preview.trooperHp + BREAK_OFF_TROOPER_COST_VALUE_V7) -
+      friendlyLossValueV7(view, giant, spent, false),
+    immediate: 8 * (preview.count * preview.trooperHp - spent),
+  };
+}
+
+/**
+ * Whether an own giant keeps its one action for its signature: a
+ * Brontosaurus whose plan is a Stomp makes no attack, and a Troll with a
+ * throw or a Gingerbread Giant with a Break Off makes none that does not
+ * kill.
+ */
+function giantHoldsAttackV7(
+  context: PolicyContextV7,
+  command: AttackCommandV7,
+  actor: PublicUnitV7,
+): boolean {
+  const signature = context.giants?.own.get(actor.id);
+  if (signature === "STOMP") return giantStompPlanV7(context, actor) !== null;
+  if (signature !== "TOSS" && signature !== "BREAK_OFF") return false;
+  const plan =
+    signature === "TOSS"
+      ? giantTossPlanV7(context, actor)
+      : giantBreakOffPlanV7(context, actor);
+  if (plan === null) return false;
+  const blow = queryCombatPreviewV7(
+    context.view,
+    command.unitId,
+    command.targetUnitId,
+  );
+  return blow === null || !blow.defenderDies;
+}
+
+/**
+ * Whether a visible hostile giant's signature, and nothing else, kills
+ * `actor` at `at` next turn: an Abomination that swallows it (`swallow`),
+ * or a Frost Giant whose Glacial Smash the visible damage sets up.
+ */
+function giantLethalAtV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+  at: CoordV7,
+): { readonly lethal: boolean; readonly swallow: boolean } {
+  const giants = context.giants;
+  const none = { lethal: false, swallow: false };
+  if (
+    giants === null ||
+    !giants.hostile.some(
+      (entry) =>
+        (entry.signature === "SWALLOW" ||
+          entry.signature === "GLACIAL_SMASH") &&
+        distance(entry.unit.at, at) <= 4,
+    )
+  )
+    return none;
+  const view = context.view;
+  const base = visibleImmediateDamage(
+    view,
+    actor,
+    at,
+    context,
+    context.lookup,
+    false,
+  );
+  if (base >= actor.hp) return none;
+  const reaches = (giant: PublicUnitV7): boolean =>
+    context.threatenedTiles.get(giant.id)?.has(coordKey(at)) ?? false;
+  const swallow = swallowDangerV7(view, giants, actor, at, reaches);
+  return {
+    swallow,
+    lethal:
+      swallow || glacialSmashLethalV7(view, giants, actor, at, base, reaches),
+  };
+}
+
+/**
+ * The giants' signatures in a Move (RULESET_7_GIANTS.md section 9).
+ *
+ * **The own giant.** A Brontosaurus whose plan is a Stomp does not walk
+ * away from it (the Stomp needs it unmoved). A Colossus's Overstride: the
+ * trample of the offered path (`previewTrampleV7`) is 10 a point and 20 a
+ * kill and its share of each unit's value, a trample that kills has a
+ * kill's tier, and a Cooling Colossus (its ray is at half power whatever
+ * it does) strides over a unit to a tile with a ranged, siege, or support
+ * unit in its range, when none is in range now, at the army's breakthrough
+ * tier. A Frost Giant that has not moved: `GLACIAL_FREEZE_VALUE_V7` for
+ * each unit the Cold Aura of the tile newly freezes, at 1177 (before its
+ * own blow: a Frozen unit does not strike back), and at a Shatter setup's
+ * tier with the value of the unit when its Glacial Smash from there kills
+ * one; never onto a tile where the visible enemies kill it. A Brass Titan:
+ * `SIEGE_HAMMER_APPROACH_VALUE_V7` a tile nearer the nearest hostile city
+ * with Walls. A Goblin's routine Move beside (or away from) an own Troll
+ * with fewer than `TOSS_ESCORT_GOBLINS_V7` Goblins beside it and an enemy
+ * within `TOSS_ESCORT_RADIUS_V7`: `TOSS_ESCORT_VALUE_V7`.
+ *
+ * **Against a hostile giant** (an own land unit). The Move that makes a
+ * second unit beside an unmoved Brontosaurus costs the Stomp's hit on the
+ * mover; the Move that lines two units up for a Juggernaut costs the crush
+ * and the collision on them (and is worth `CRUSH_BACKSTOP_VALUE_V7` behind
+ * the garrison of an own center, which a Push would empty); a routine Move
+ * (below 1100) where either hit kills is not made. A Move into the reach
+ * of an Abomination that would swallow the unit, or of a Frost Giant whose
+ * Glacial Smash would kill it, costs half the unit's value and is not made
+ * as a routine Move; a unit an Abomination would swallow where it stands
+ * steps out of that reach (935) to a tile where the visible enemies do not
+ * kill it.
+ */
+function giantMoveValueV7(
+  context: PolicyContextV7,
+  command: Extract<CommandV7, { kind: "MOVE" }>,
+  actor: PublicUnitV7,
+  to: CoordV7,
+  priority: number,
+): GiantCommandScoreV7 {
+  const view = context.view;
+  const giants = context.giants;
+  const unchanged = { priority, strategic: 0, immediate: 0 };
+  if (
+    giants === null ||
+    actor.ownerId !== view.viewer.id ||
+    actor.form !== "LAND" ||
+    same(actor.at, to)
+  )
+    return unchanged;
+  let next = priority;
+  let strategic = 0;
+  let immediate = 0;
+  const routine = priority < GIANT_ROUTINE_MOVE_PRIORITY_V7;
+  const signature = giants.own.get(actor.id);
+  if (
+    signature === "STOMP" &&
+    priority < 1180 &&
+    giantStompPlanV7(context, actor) !== null
+  )
+    return { priority: -1, strategic: 0, immediate: 0 };
+  if (signature === "OVERSTRIDE" && command.path.length >= 2) {
+    const passes = command.path
+      .slice(0, -1)
+      .some((at) =>
+        (context.threatLookup.occupantsByKey.get(coordKey(at)) ?? []).some(
+          (unit) => isHostile(view, unit.ownerId),
+        ),
+      );
+    const trample = passes
+      ? (previewTrampleV7(view, actor.id, command.path) ?? [])
+      : [];
+    for (const hit of trample) {
+      const unit = context.lookup.unitsById.get(hit.unitId);
+      if (unit === undefined) continue;
+      immediate += 10 * hit.damage + 20 * Number(hit.dies);
+      strategic += hostileLossValueV7(context, unit, hit.damage, hit.dies);
+      if (hit.dies) next = Math.max(next, giantKillTierV7(context, unit.id));
+    }
+    if (
+      trample.length > 0 &&
+      context.martian &&
+      !actor.activation.moved &&
+      primaryReadyForPolicyV7(actor) &&
+      martianCacheV7(context).facts.coolingNow.has(actor.id) &&
+      visibleImmediateDamage(view, actor, to, context) < actor.hp
+    ) {
+      const facts = publicCombatFacts(view, actor, context.lookup);
+      const fragileFrom = (from: CoordV7): boolean =>
+        context.lookup.visibleHostiles.some((unit) => {
+          const gap = distance(from, unit.at);
+          return (
+            unit.form === "LAND" &&
+            gap >= facts.minimumRange &&
+            gap <= facts.maximumRange &&
+            armyFragileClassV7(view, unit)
+          );
+        });
+      if (fragileFrom(to) && !fragileFrom(actor.at)) {
+        next = Math.max(next, ARMY_BREAKTHROUGH_MOVE_PRIORITY_V7);
+        strategic += OVERSTRIDE_BREAKTHROUGH_VALUE_V7;
+      }
+    }
+  }
+  if (
+    signature === "GLACIAL_SMASH" &&
+    !actor.activation.moved &&
+    primaryReadyForPolicyV7(actor) &&
+    unitMayActAfterMoveV7(view, actor) &&
+    unitRoleRuleV7(view, actor).abilities.includes("COLD_AURA") &&
+    !armyGatedV7(context, actor)
+  ) {
+    const aura = coldAuraTargetsV7(view, actor, to);
+    if (
+      aura.all.length > 0 &&
+      visibleImmediateDamage(view, actor, to, context) < actor.hp
+    ) {
+      strategic += GLACIAL_FREEZE_VALUE_V7 * aura.fresh.length;
+      let kill = 0;
+      for (const hostile of aura.all) {
+        if (hostile.role === "JUGGERNAUT") continue;
+        const damage = publicProjectedDamageWithLookupV7(
+          view,
+          { ...actor, at: to },
+          hostile,
+          hostile.at,
+          { chilled: true },
+          context.lookup,
+        );
+        if (damage >= hostile.hp)
+          kill = Math.max(
+            kill,
+            targetStrategicValue(view, hostile.id, context.lookup),
+          );
+      }
+      if (kill > 0) {
+        next = Math.max(next, SHATTER_SETUP_PRIORITY_V7);
+        strategic += kill;
+      } else if (aura.fresh.length > 0)
+        next = Math.max(next, GLACIAL_AURA_MOVE_PRIORITY_V7);
+    }
+  }
+  if (signature === "SIEGE_HAMMER" && next >= 0) {
+    const walled = view.cities
+      .filter((city) => isHostile(view, city.ownerId) && cityHasWallsV7(city))
+      .map((city) => city.at);
+    if (walled.length > 0) {
+      const gain =
+        nearestDistance(actor.at, walled) - nearestDistance(to, walled);
+      if (gain > 0) strategic += SIEGE_HAMMER_APPROACH_VALUE_V7 * gain;
+    }
+  }
+  if (routine && next >= 0 && tossPassengerKindV7(view, actor))
+    for (const [trollId, own] of giants.own) {
+      if (own !== "TOSS") continue;
+      const troll = context.lookup.unitsById.get(trollId);
+      if (troll === undefined) continue;
+      const there = distance(to, troll.at) === 1;
+      const here = distance(actor.at, troll.at) === 1;
+      if (there === here) continue;
+      if (
+        !context.lookup.visibleHostiles.some(
+          (unit) =>
+            unit.form === "LAND" &&
+            distance(unit.at, troll.at) <= TOSS_ESCORT_RADIUS_V7,
+        )
+      )
+        continue;
+      const escorts = view.units.filter(
+        (unit) =>
+          unit.id !== actor.id &&
+          unit.ownerId === view.viewer.id &&
+          distance(unit.at, troll.at) === 1 &&
+          tossPassengerKindV7(view, unit),
+      ).length;
+      if (escorts >= TOSS_ESCORT_GOBLINS_V7) continue;
+      strategic += there ? TOSS_ESCORT_VALUE_V7 : -TOSS_ESCORT_VALUE_V7;
+    }
+  if (giants.hostile.length === 0)
+    return { priority: next, strategic, immediate };
+  // Against a hostile giant.
+  const friendly = (owner: PlayerId): boolean => friendlyOwnerV7(view, owner);
+  let cost = 0;
+  let killed = false;
+  for (const hit of stompCrowdV7(view, giants, actor, to, friendly)) {
+    cost += friendlyLossValueV7(view, actor, hit.damage, hit.dies);
+    killed ||= hit.dies;
+  }
+  const column = crushColumnV7(view, giants, actor, to, friendly, (at) => {
+    const center = context.lookup.citiesByKey.get(coordKey(at));
+    return center !== undefined && friendly(center.ownerId);
+  });
+  if (column.backstop) strategic += CRUSH_BACKSTOP_VALUE_V7;
+  else
+    for (const hit of column.hits) {
+      cost += friendlyLossValueV7(view, hit.unit, hit.damage, hit.dies);
+      killed ||= hit.dies;
+    }
+  strategic -= cost;
+  if (killed && routine && next >= 0)
+    return { priority: -1, strategic, immediate };
+  const there = giantLethalAtV7(context, actor, to);
+  const here = giantLethalAtV7(context, actor, actor.at);
+  if (there.lethal && !here.lethal) {
+    strategic -= Math.floor(retainedUnitValue(view, actor) / 2);
+    if (routine && next >= 0) return { priority: -1, strategic, immediate };
+  } else if (
+    here.swallow &&
+    !there.lethal &&
+    routine &&
+    visibleImmediateDamage(view, actor, to, context) < actor.hp
+  ) {
+    next = Math.max(next, SWALLOW_ESCAPE_PRIORITY_V7);
+    strategic += actor.hp;
+  }
+  return { priority: next, strategic, immediate };
+}
+
+/** A ranged, siege, or support unit: what a breakthrough reaches for. */
+function armyFragileClassV7(view: PlayerViewV7, unit: PublicUnitV7): boolean {
+  const unitClass = armyClassV7(unitRoleRuleV7(view, unit));
+  return (
+    unitClass === "RANGED" || unitClass === "SIEGE" || unitClass === "SUPPORT"
+  );
+}
+
 function bestSweepFlankV7(context: PolicyContextV7, from: CoordV7): number {
   const hostiles = context.lookup.visibleHostiles;
   const hostileAt = (at: CoordV7): boolean =>
@@ -22643,6 +23588,21 @@ function computeVisibleImmediateDamage(
   // `dwarf` stats exist only in a match with a Dwarf seat.
   if ((actor.form === "LAND" || actor.form === "EGG") && dwarfEstimatesV7(view))
     total += dwarfDangerV7(view, actor, at);
+  // The giants' signatures (`pulp_wars-w49.31`, RULESET_7_GIANTS.md section
+  // 9, "against giants"): the crush a visible hostile Juggernaut adds to
+  // its blow on a unit that would not be pushed. Null without a visible
+  // giant that has a signature.
+  const giants =
+    context !== undefined && context.view === view
+      ? context.giants
+      : giantFactsForViewV7(view);
+  const giantReaches = (hostile: PublicUnitV7): boolean =>
+    context !== undefined && context.view === view
+      ? (context.threatenedTiles.get(hostile.id)?.has(coordKey(at)) ?? false)
+      : distance(hostile.at, at) <=
+        publicCombatFacts(view, hostile, effectiveLookup).move + 1;
+  if (giants !== null && giants.hostile.length > 0 && actor.form === "LAND")
+    total += crushDangerV7(view, giants, actor, at);
   // The Martian revision: the Shield absorbs the first hits of the enemy
   // turn (0 for every unit without one).
   if (martian !== null && total > 0)
@@ -22665,7 +23625,31 @@ function computeVisibleImmediateDamage(
     )
       total = actor.hp;
   }
+  // The giants' signatures, against (`pulp_wars-w49.31`): a unit a visible
+  // hostile Frost Giant's Glacial Smash kills (its Cold Aura freezes the
+  // unit, and its blow leaves it at 8 HP or less), and one a visible
+  // hostile Abomination swallows whole, is in lethal reach.
+  if (
+    giants !== null &&
+    giants.hostile.length > 0 &&
+    total < actor.hp &&
+    countShatter &&
+    (glacialSmashLethalV7(view, giants, actor, at, total, giantReaches) ||
+      swallowDangerV7(view, giants, actor, at, giantReaches))
+  )
+    total = actor.hp;
   return total;
+}
+
+const giantFactsByViewV7 = new WeakMap<PlayerViewV7, GiantFactsV7 | null>();
+
+/** `giantFactsV7` of the view, computed once (null without a giant). */
+function giantFactsForViewV7(view: PlayerViewV7): GiantFactsV7 | null {
+  const cached = giantFactsByViewV7.get(view);
+  if (cached !== undefined) return cached;
+  const facts = giantFactsV7(view, (owner) => isHostile(view, owner));
+  giantFactsByViewV7.set(view, facts);
+  return facts;
 }
 
 /**
@@ -22955,15 +23939,23 @@ function publicProjectedDamageWithLookupV7(
       : attacker.form === "LAND" &&
           attackFacts.abilities.includes("LINEBREAKER")
         ? 0
-        : ignoresWallsForPolicyV7(view, attacker)
-          ? Math.min(
-              tileFortification,
-              (defenderTile?.explored === true && defenderTile.fieldDefense) ||
-                dugInLevel > 0
-                ? 1
-                : 0,
-            )
-          : tileFortification;
+        : // The giants' signatures (`pulp_wars-w49.31`, RULESET_7_GIANTS.md
+          // section 6.7): a Brass Titan's Siege Hammer ignores every
+          // fortification level (Walls, Field Defense, Dig In); cover
+          // stays. It strikes from the next tile only.
+          attackFacts.maximumRange <= 1 &&
+            attackSiegeHammerV7(view, attacker, 1)
+          ? 0
+          : ignoresWallsForPolicyV7(view, attacker)
+            ? Math.min(
+                tileFortification,
+                (defenderTile?.explored === true &&
+                  defenderTile.fieldDefense) ||
+                  dugInLevel > 0
+                  ? 1
+                  : 0,
+              )
+            : tileFortification;
   // Step two of the Dinosaur pass (`pulp_wars-w49.26`): a Cracked unit (a
   // Stegosaurus's shot this turn, public in `ninthUnit.crackedThisTurn`; or
   // one an own Stegosaurus strikes earlier in the same combined kill,
@@ -23126,7 +24118,10 @@ function iceFolkBlowV7(
     rockfall2,
     shatter:
       chilled && gap === 1 && defender.role !== "JUGGERNAUT"
-        ? shatterThresholdForPolicyV7(facts, view.viewer.id)
+        ? // The giants' signatures (`pulp_wars-w49.31`, section 6.6): a
+          // Frost Giant's Glacial Smash has its own threshold (8).
+          (glacialSmashThresholdV7(view, attacker, gap) ??
+          shatterThresholdForPolicyV7(facts, view.viewer.id))
         : 0,
   };
 }

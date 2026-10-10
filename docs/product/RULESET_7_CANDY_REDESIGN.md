@@ -277,7 +277,10 @@ and what the redraft does.
     real slot (the giants spec's own "unit factory" critique); Re-bake
     pays Coins to bring back a unit that already had a slot until it died.
     Both read the same tile rule (around the maker, free, enterable, not
-    allied territory), so the player learns one placement.
+    allied territory), so the player learns one placement. (**As built**,
+    by the user's change of 2026-10-09: Break Off makes two Gingerbread Men
+    with no slot rule, so the capacity rules are Re-bake's "one over" and
+    none for Break Off; [section 7.9](#79-gingerbread-giant-break-off-from-the-giants-spec).)
 
 ## 5. Redraft
 
@@ -537,13 +540,20 @@ attack is 1 weaker.
 
 The [giants spec](RULESET_7_GIANTS.md#68-candy-gingerbread-giant-break-off)
 (`pulp_wars-w49.29`, built by `pulp_wars-w49.30` to `w49.32`) is the rule
-for the Giant: **Break Off** (`BREAK_OFF { kind, unitId, at }`) tears 8 HP
-off a Giant of at least 9 HP to make an 8-of-10-HP Toffee Trooper on a free
-tile around it, into a free slot of its home city, for no Coins; the Giant
-loses Push and keeps Sugar Rush and Bounce. This document changes none of
-that. How the two documents meet:
+for the Giant, **as the user changed it on 2026-10-09 and as it is built**:
+**Break Off** (`BREAK_OFF { kind, unitId, tiles }`) tears 10 HP off a Giant
+of at least 11 HP to make **two** full-HP (10 of 10) Gingerbread Men, each
+a Toffee Trooper in every rule, on two free tiles around it, homed to its
+home city **with no slot rule** (they are placed even when that city is
+full, and count against it afterwards, like reward units), for no Coins;
+the Giant loses Push and keeps Sugar Rush and Bounce. This document changes
+none of that. (This section and
+[section 13](#13-normal-ai-notes) first described the design's single
+8-HP Trooper into a free slot; they were corrected to the built rule by
+`pulp_wars-w49.31`. [The current rules](RULESET_7_CURRENT.md#111-the-giants-signatures)
+are authoritative.) How the two documents meet:
 
-- **The broken-off Trooper is an ordinary Toffee Trooper**, so under this
+- **Each Gingerbread Man is an ordinary Toffee Trooper**, so under this
   redesign it has **Sticky Toffee** with no extra rule, and when it dies it
   leaves Crumbs that a Confectioner may Re-bake (a 1-Coin, 5-HP copy).
 - **The Giant itself** still leaves no Crumbs (`leavesCrumbs` false) and is
@@ -554,15 +564,23 @@ that. How the two documents meet:
   Recover (with Windmills), Top-Up (2), and Sugar Toss (2), slower than the giants spec's
   critique assumed (its point 9 counted Frosting), so Break Off is, if
   anything, more bounded.
-- **Capacity.** Break Off needs a free slot; a Re-bake that put the shared
-  home city one over capacity blocks Break Off there until a death brings it
-  back ([critique item 16](#4-critique)).
+- **Capacity.** Break Off has no slot rule: it is legal in a full home city
+  and puts it two further over its limit. Re-bake keeps its own rule (it
+  may put its home city one over capacity, and is refused in a city that is
+  over already). So a Break Off into the shared home city blocks a Re-bake
+  there until deaths bring it back, never the other way round. (The design
+  had it the other way: Break Off into a free slot only,
+  [critique item 16](#4-critique).)
 - **Bounce** stays on the Giant (giants spec open question 9, default keep),
   so the Marshmallow and the Giant are the Bouncy units, as now.
 - **Order on the Candy turn.** When the Giant and a Confectioner share a
-  home city with one free slot, Break Off first and then Re-bake gets both
-  units (the Re-bake goes one over); the other order gets only the Re-bake.
-  The step two AI orders them so ([section 13](#13-normal-ai-notes)).
+  home city, **Re-bake first and then Break Off** gets all three units (the
+  Re-bake goes one over, the Break Off two more); the other order gets only
+  the two Gingerbread Men, because the Re-bake is then refused. The Normal
+  AI orders them so: a Re-bake goes before every other command of the turn
+  (1265) and a Break Off below every kill (1175)
+  ([section 13](#13-normal-ai-notes),
+  [Normal AI](../architecture/NORMAL_AI.md#the-giants-signatures-pulp_wars-w4931)).
 
 ## 8. Final rules: Crumbs, Re-bake, and Top-Up
 
@@ -1078,8 +1096,9 @@ settlement sites), `ruleset-v7-candy-faction.test.ts`,
 
 (Step two is built, without matches or hand play:
 [the Candy army seat](../architecture/NORMAL_AI.md#the-candy-army-seat-pulp_wars-jdb13).
-Break Off was built as two Troopers with no slot rule, so its order against
-a Re-bake is the reverse of the one below.)
+Break Off was built as two Troopers with no slot rule, and its policy by
+the giants AI bead:
+[the giants' signatures](../architecture/NORMAL_AI.md#the-giants-signatures-pulp_wars-w4931).)
 
 The Candy keep the older policy (`src/ai/v7-candy.ts`) until step two; the
 engine bead only keeps it legal. Step two (`pulp_wars-jdb.13`) brings the
@@ -1105,9 +1124,13 @@ against-the-Candy groups keep their switches.
 - **Top-Up** a Crashed unit that has an offered kill next to it, else the
   Crashed unit in the most danger; never instead of an offered Re-bake.
 - **The Gingerbread Giant:** Break Off is the giants AI bead's
-  (`pulp_wars-w49.31`); step two only orders it before a Re-bake into the
-  same home city ([section 7.9](#79-gingerbread-giant-break-off-from-the-giants-spec))
-  and may Top-Up a Crashed Giant that has a Break Off or a kill waiting.
+  (`pulp_wars-w49.31`). Under the built rule (two Gingerbread Men, no slot
+  rule) it comes **after** a Re-bake into the same home city
+  ([section 7.9](#79-gingerbread-giant-break-off-from-the-giants-spec)):
+  the Re-bake has the first priority of the turn and the Break Off a
+  priority below every kill. A Confectioner may Top-Up a Crashed Giant that
+  has a kill waiting (the Top-Up rule of step two; a Break Off waiting is
+  not a reason of its own).
 - **Order the wave:** the Racer moves first (its Glaze), then the slow units
   along it; Pies before the melee (as now); Gunners pick shots whose
   ricochet kills; the Bunny looks for a hop that reaches a `SIEGE`,
@@ -1204,8 +1227,9 @@ New and changed tests live in `tests/unit/ruleset-v7-candy-*.test.ts`.
 - **With the giant signatures** (when `pulp_wars-w49.30` has landed; else
   in that bead): a broken-off Trooper Sticks what it strikes back at and
   leaves re-bakeable Crumbs; Top-Up ends a Crashed Giant's Crash and it
-  may Break Off the same turn; Break Off then Re-bake into one home city
-  with one free slot (both legal) and the other order (Break Off refused);
+  may Break Off the same turn; (as built, with no slot rule for Break Off)
+  Re-bake then Break Off into one home city (both legal) and the other
+  order (the Re-bake refused, the city being over its limit);
   a swallowed unit's Stuck and Toothache entries removed and no Crumbs on
   `DIGESTED`; Crumbs on `CRUSH`, `STOMP`, and `TRAMPLE` deaths; a Stuck
   Colossus refused an Overstride path.
@@ -1332,4 +1356,6 @@ The root decides; the default is what this document specifies.
 13. **Re-bake's two-capacity reading** ([critique item 16](#4-critique)).
     Default: Re-bake one over capacity, Break Off only into a free slot.
     Alternative: both one over (more Troopers) or both a free slot (Re-bake
-    then fails in a full home, today's main blocker).
+    then fails in a full home, today's main blocker). **Decided otherwise
+    for Break Off** by the user's change of 2026-10-09: no slot rule at all
+    ([section 7.9](#79-gingerbread-giant-break-off-from-the-giants-spec)).

@@ -19,8 +19,16 @@ Break Off is built as the user changed it on 2026-10-09
 Gingerbread Men for 10 HP, no slot needed); the draft, critique, balance
 reasoning, and AI notes below still describe the design's single Trooper.
 [The current rules](RULESET_7_CURRENT.md#111-the-giants-signatures) hold
-the built rules and are authoritative. Not yet built: the Normal AI's use
-of the signatures (`pulp_wars-w49.31`).
+the built rules and are authoritative.
+
+**Built (Normal AI, `pulp_wars-w49.31`).** [Section 9](#9-normal-ai): each
+seat uses its own giant's signature and every seat reads a hostile
+giant's, each rule shown on a hand-built state
+([Normal AI](../architecture/NORMAL_AI.md#the-giants-signatures-pulp_wars-w4931)).
+No rule and no identity changed. The hand play with `lab --giant` of
+[section 11](#11-test-plan) was **not made** (the standing rule of no
+simulations and no hand-played games), so this document has no hand-play
+notes for the AI and the policy's numbers are untuned first values.
 
 **Built (presentation, `pulp_wars-w49.32`).** Section 10: the four
 commands' buttons and board targeting
@@ -813,6 +821,30 @@ the two Shatter tests that skip the role, the Knight-ride escort), `src/ai/v7-ca
 `event-schema.ts`, `event-projection.ts`.
 
 ## 9. Normal AI
+
+**As built** (`pulp_wars-w49.31`,
+[Normal AI](../architecture/NORMAL_AI.md#the-giants-signatures-pulp_wars-w4931)),
+the notes below are followed with these differences:
+
+- **Brontosaurus:** the Stomp is compared with the best attack in the
+  policy's own measure of a blow (its damage less the retaliation it
+  draws), not with the damage plus the retaliation: a Stomp that draws no
+  answer is preferred to a blow whose answer costs more than it gains. An
+  attack that kills is still preferred, unless the Stomp kills two units.
+- **Gingerbread Giant:** the built Break Off (two Gingerbread Men for 10
+  HP, no slot rule) is made with at least 26 HP (16 are left, as the 24 of
+  the single 8-HP piece left), at the front (an enemy within four tiles),
+  onto the two tiles nearest the enemy, and after any Re-bake (it puts the
+  home city over its limit, and a Re-bake is refused there). There is no
+  slot test.
+- **Brass Titan:** its Move toward the nearest walled hostile city is a
+  value on the Moves the campaign allows; no rule sends it out alone.
+- **Abomination:** "do not walk it next to an enemy giant" has no rule of
+  its own.
+- **Against giants,** also: the Shove off an own center (a unit behind the
+  garrison), a second unit beside a Brontosaurus, the landing tiles of a
+  thrown Goblin, a Colossus's reach past a screen, and a Titan's blow
+  without the fortification.
 
 The AI keeps taking every giant it is offered. Per signature, the minimum
 use (the AI bead):

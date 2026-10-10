@@ -5117,10 +5117,12 @@ commands (`u<id>.swallow.u<id>`, `u<id>.throw.u<id>.<x>,<y>`,
 Glacial Smash preview lines, and a Move's trample; `lab --giant` places the
 human seat's giant at the front of a `*_MID` lab or `LAB_BREAKTHROUGH`.
 
-**Normal AI.** The engine bead keeps it legal only: it never offers itself
-the four new commands, reads razed Walls, and values Push by the role's
-abilities (so only the Juggernaut). Using the signatures is
-`pulp_wars-w49.31`.
+**Normal AI.** The engine bead kept it legal only (it never offered itself
+the four new commands, read razed Walls, and valued Push by the role's
+abilities, so only the Juggernaut). Since `pulp_wars-w49.31` each seat
+uses its own giant's signature and every seat reads a hostile giant's
+([section 16](#16-normal-ai-summary),
+[Normal AI](../architecture/NORMAL_AI.md#the-giants-signatures-pulp_wars-w4931)).
 
 ## 12. Movement and unit actions
 
@@ -6645,6 +6647,32 @@ Harbours from it.
   little off a melee attack that leaves its attacker Stuck or with
   Toothache
   ([Normal AI](../architecture/NORMAL_AI.md#the-candy-army-seat-pulp_wars-jdb13)).
+- **The giants' signatures** (`pulp_wars-w49.31`, no rule and no identity
+  change; made without matches or hand play, so its numbers are first
+  values). Each seat uses its own giant's signature
+  ([section 11.1](#111-the-giants-signatures)). A Juggernaut strikes the
+  unit with a unit behind it (the crush and the collision are in the blow's
+  value, and a crush that kills is a kill) and shoves a garrison off a
+  hostile center for a capturer beside it. An Abomination with 16 HP or
+  more swallows a unit its attack would not kill, the dearest first. A
+  Troll throws a Goblin where its Kaboom kills or deals 8 net, and the
+  Goblin sets it off; a Goblin keeps beside a Troll that has an enemy near.
+  A Brontosaurus Stomps when the Stomp's hits are worth more than its best
+  attack, unless the attack kills. A Cooling Colossus strides over a screen
+  to a ranged, siege, or support unit, and a trample that kills is a kill.
+  A Frost Giant steps where its Cold Aura freezes a unit and then smashes
+  it. A Brass Titan strikes the garrison of a walled center before the
+  other units do, and walks toward the nearest hostile city with Walls. A
+  Gingerbread Giant with 26 HP or more breaks off its two Gingerbread Men
+  toward an enemy within four tiles, after any Re-bake. Every seat reads a
+  hostile giant's signature: it does not line two units up for a
+  Juggernaut (but stands behind the garrison of an own center it would
+  shove off), keeps a unit an Abomination would swallow or a Frost Giant
+  would smash out of that giant's reach, does not put a second unit beside
+  a Brontosaurus for nothing, counts a thrown Goblin's landing tiles in its
+  reach and does not bunch up there, reads a Colossus's reach past a
+  screen, and projects a Titan's blow without the fortification
+  ([Normal AI](../architecture/NORMAL_AI.md#the-giants-signatures-pulp_wars-w4931)).
 - **Campaign** (`pulp_wars-9s0.1`): every land unit has one job and walks
   the land route to it: the nearest unclaimed village, an invader next to an
   own city, the unexplored frontier (two scouts and the group behind the

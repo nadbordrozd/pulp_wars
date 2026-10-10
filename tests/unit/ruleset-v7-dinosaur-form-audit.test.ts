@@ -712,7 +712,18 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // reach, and the attacker whose Cold Blood, Planted, Rockfall and
     // Shatter are projected are land-form units (an Egg and an embarked
     // unit throw nothing, are never Chilled, and strike nobody).
-    "src/ai/v7.ts": 54,
+    // The giants' signatures (`pulp_wars-w49.31`): the unit a signature
+    // Move rule is for is a land-form mover (an Egg makes no Move, and an
+    // embarked unit keeps the naval rules).
+    "src/ai/v7.ts": 55,
+    // The giants' signatures (`pulp_wars-w49.31`): a giant has its
+    // signature in land form only (section 6.0, G2), and so has a Troll
+    // that throws; the unit a crush is added to, the unit lined up behind
+    // or in front of another, the unit an Abomination swallows, and the
+    // unit a Glacial Smash shatters are land-form units (an Egg is never
+    // pushed, crushed, swallowed, or Frozen, and an embarked unit is none
+    // of them either).
+    "src/ai/v7-giants.ts": 6,
     // Tuning 5: the army count takes land-form units only (an Egg and an
     // embarked unit are in no fighting class).
     "src/ai/v7-army.ts": 1,

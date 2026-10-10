@@ -1,5 +1,119 @@
 # Greedy Normal AI
 
+## The giants' signatures (`pulp_wars-w49.31`)
+
+Every faction's giant has a signature ability since `pulp_wars-w49.30`
+([the giants spec](../product/RULESET_7_GIANTS.md#6-final-rules),
+[current rules section 11.1](../product/RULESET_7_CURRENT.md#111-the-giants-signatures)).
+The engine bead kept the policy legal and no more: it never asked for the
+four new commands. This bead makes each seat use its own giant's signature
+on purpose, and makes every seat read a hostile giant's
+([section 9 of the giants spec](../product/RULESET_7_GIANTS.md#9-normal-ai)).
+No rule changed and the identity did not move. The code is
+`src/ai/v7-giants.ts` (the pure helpers and the numbers) and the `giant…`
+functions of `src/ai/v7.ts`; every rule is gated on `giantFactsV7`, which
+is null in a view with no visible land-form giant that has a signature (the
+neutral Giant Spider has the role and none), so such a view decides as
+before.
+
+**How it was made.** Under the rule of no simulations: no match, no
+diagnostic run, and no hand play with `lab --giant` (the bead asked for
+about five hand-played turns for each faction; they were not played). The
+rules and the numbers are reasoned from the giants spec and the engine's
+previews, each rule is shown on a small hand-built state in
+`tests/unit/ruleset-v7-giants-ai.test.ts`, and every projection is compared
+there with the engine's own preview or event. Nothing is tuned by play;
+read the numbers as first values.
+
+### The giant's own seat
+
+| Signature                     | What the seat does                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | Where                                    |
+| ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------- |
+| Crushing Shove (Juggernaut)   | The crush on the target and the collision on the hostile unit behind it are in the blow's value (10 a point and 20 a kill, and their share of each unit's value), so of two targets it strikes the one with a unit behind it. A crush that kills has a kill's tier (1180, 1280, and 1350 with 50 on a hostile center). A Push that moves a garrison off a hostile center is worth what a Charge!'s is, and goes at 1345 with an own capturer within two tiles.                                                                                                                                                                               | `giantAttackValueV7`, `crushOutcomeV7`   |
+| Swallow (Abomination)         | It swallows a unit its attack would not kill this turn, never below `SWALLOW_MINIMUM_HP_V7` (16) of its own HP. The victim leaves the board, so the Swallow has a kill's tier and the victim's whole value (the dearest unit first), `SWALLOW_ZOMBIE_VALUE_V7` (12) for the Zombie, and the tiers of a cleared hostile center and of an enemy taken off an own one.                                                                                                                                                                                                                                                                          | `giantSwallowScoreV7`                    |
+| Goblin Toss (Troll)           | One throw for each Troll, of the forty or so the engine offers: the landing tiles are ranked by a one-wave blast, and for the best two the Kaboom is previewed exactly on the view with the Goblin on the tile. The throw is made when that blast kills or deals `TOSS_MINIMUM_NET_DAMAGE_V7` (8) to hostile units net of own, and the policy would set it off there. The thrown Goblin's Kaboom then has a kill's tier at least (1178). A Troll with a throw keeps a blow that does not kill for it. A Goblin's routine Move beside a Troll with fewer than two Goblins and an enemy within five tiles is worth `TOSS_ESCORT_VALUE_V7` (6). | `giantTossPlanV7`, `tossedGoblinV7`      |
+| Thunder Stomp (Brontosaurus)  | It Stomps when the Stomp's hits (10 a point, 20 a kill) are worth at least its best attack's immediate value (the damage less the retaliation). An attack that kills, and grows it, is preferred unless the Stomp kills two units. A Brontosaurus with a Stomp neither attacks nor walks away (the Stomp needs it unmoved). A Field Defense it smashes is worth 8 on hostile land and costs 8 on own.                                                                                                                                                                                                                                        | `giantStompPlanV7`                       |
+| Overstride (Colossus)         | The trample of an offered Move is in its value, and a trample that kills has a kill's tier. A Cooling Colossus (its ray is at half power whatever it does) strides over a unit to a tile with a ranged, siege, or support unit in its range, when none is in range now, at the breakthrough tier (1177). Not Cooling, it stands and fires its full ray as before.                                                                                                                                                                                                                                                                            | `giantMoveValueV7`                       |
+| Glacial Smash (Frost Giant)   | The projection of its blow reads its own threshold (8), so its combined kills count the smash. A Giant that has not moved steps where its Cold Aura freezes a unit before it strikes (a Frozen unit does not strike back): at 1177, and at a Shatter setup's tier (1179) with the unit's value when its smash from there kills one; never onto a tile where the visible enemies kill it. Each unit the aura or the shards newly freeze is worth `GLACIAL_FREEZE_VALUE_V7` (6).                                                                                                                                                               | `giantMoveValueV7`, `iceFolkBlowV7`      |
+| Siege Hammer (Brass Titan)    | The projection of its blow leaves out the fortification, as the engine does. The blow that razes Walls (`SIEGE_HAMMER_WALLS_VALUE_V7`, 30) or smashes a Field Defense (8) goes before the other blows on that unit (1178), with 3 for each level ignored. Its Move is worth `SIEGE_HAMMER_APPROACH_VALUE_V7` (6) a tile nearer the nearest hostile city with Walls.                                                                                                                                                                                                                                                                          | `giantAttackValueV7`, `giantMoveValueV7` |
+| Break Off (Gingerbread Giant) | One Break Off of the twenty-eight pairs: the two tiles nearest the enemy. Only with `BREAK_OFF_MINIMUM_HP_V7` (26) HP, a hostile land unit within four tiles, and no blow of its own that kills; a Giant that breaks off keeps a blow that does not kill for it. `BREAK_OFF_PRIORITY_V7` (1175) is below every kill and below a Re-bake (1265).                                                                                                                                                                                                                                                                                              | `giantBreakOffPlanV7`                    |
+
+**Break Off and the Re-bake.** The built rule is two full-HP Gingerbread
+Men for 10 HP with no slot rule (the user's change of 2026-10-09): a Break
+Off puts the home city two over its limit, and a Re-bake is refused in a
+city that is over. So the Re-bake into that city comes first, the reverse
+of the order the Candy redesign gave for the design's single Trooper; its
+[section 7.9](../product/RULESET_7_CANDY_REDESIGN.md#79-gingerbread-giant-break-off-from-the-giants-spec)
+and section 13 were corrected to the built rule. The 26 HP are the
+design's 24 for a piece of 8 (16 are left either way).
+
+### Against a hostile giant
+
+| Signature      | What every seat does                                                                                                                                                                                                                                                                                                                                                                                                                                                        | Where                                              |
+| -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| Crushing Shove | The danger of a tile includes the crush when the unit would not be pushed there (a blocked tile behind it, for a strike from where the Juggernaut stands or from a free tile beside it). A Move that lines two own units up for it costs the crush and the collision on them, and is not made as a routine Move when either hit kills. Behind the garrison of an own center the same Move is worth `CRUSH_BACKSTOP_VALUE_V7` (10) instead: the Push would empty the center. | `crushDangerV7`, `crushColumnV7`                   |
+| Swallow        | A unit an Abomination with an empty belly would swallow on a tile is in lethal reach there (the engine's own `swallowRejectionV7`). A Move into that reach costs half the unit's value and is not made as a routine Move; a unit that stands in it steps out (935) to a tile where the visible enemies do not kill it.                                                                                                                                                      | `swallowDangerV7`, `giantLethalAtV7`               |
+| Goblin Toss    | A Goblin beside its seat's Troll, or one step from it, strikes from every landing tile: its reach, and so the danger of the tiles around them, and the rule against bunching up where a Kaboom would profit.                                                                                                                                                                                                                                                                | `hostileTossLandingsV7`, `hostileKaboomExposureV7` |
+| Thunder Stomp  | The Move that makes a second own or allied unit beside a Brontosaurus costs the Stomp's hit on the mover, and is not made as a routine Move when that hit kills it. (One unit beside it is attacked, which the danger of the tile already counts.)                                                                                                                                                                                                                          | `stompCrowdV7`                                     |
+| Overstride     | The Colossus's reach passes units and zones of control, so a screen does not hide the units behind it.                                                                                                                                                                                                                                                                                                                                                                      | `publicThreatenedTilesWorkV7`                      |
+| Glacial Smash  | A unit the visible damage leaves alive at 8 HP or less, in the reach of a Frost Giant that is not Frozen, is in lethal reach (its Cold Aura freezes the unit, its blow shatters it). A Move into that reach costs half the unit's value and is not made as a routine Move. Another giant is never shattered.                                                                                                                                                                | `glacialSmashLethalV7`, `giantLethalAtV7`          |
+| Siege Hammer   | The projected blow of a hostile Titan ignores the Walls, the Field Defense, and Dig In of the unit it strikes.                                                                                                                                                                                                                                                                                                                                                              | `publicProjectedDamageWithLookupV7`                |
+
+A routine Move is one below 1100 (`GIANT_ROUTINE_MOVE_PRIORITY_V7`): a
+committed unit, a kill, a capture, and the step onto a threatened center
+are not held back, they only weigh the cost. Break Off has nothing to play
+against (the Gingerbread Men are Toffee Troopers).
+
+### What each projection equals
+
+- The crush and the collision are `crushDamage` and `collisionDamage` of
+  `queryCombatPreviewV7` and equal `UNIT_CRUSHED`. The Push preview is
+  `UNKNOWN_BEHIND_FOG` whenever no own unit detects the tile behind,
+  whatever stands there; the view still lists every unit on an explored
+  tile, so a collision in the preview proves the crush, and without one the
+  tile is read as the Push conditions read it (`pushBlockedForPolicyV7`).
+- A Swallow's HP is `previewSwallowV7` and equals `UNIT_SWALLOWED`; the
+  danger of a Swallow is true exactly when the engine offers the
+  Abomination that `SWALLOW` from a tile beside the unit.
+- A throw's score is the Kaboom's score on the view with the Goblin on the
+  landing tile, and equals the Kaboom's score and `previewKaboomV7` after
+  the real `TOSS`.
+- A Stomp's hits are `previewStompV7` and equal `THUNDER_STOMP`; a trample
+  is `previewTrampleV7` and equals `UNITS_TRAMPLED`; a hostile Colossus's
+  threatened tiles equal `queryThreatenedTilesV7`.
+- The units a Cold Aura and the shards freeze equal the two `UNITS_FROZEN`
+  events, and the projected Glacial Smash is the preview's `shatters` and
+  `glacialSmash` after the Move.
+- A Titan's projected blow equals the preview's `damageToDefender` for an
+  own and for a hostile Titan; `wallsDestroyed` equals `WALLS_DESTROYED`.
+- A Break Off's HP, count, and tiles are `previewBreakOffV7` and equal
+  `GIANT_BROKE_OFF`.
+
+### What it does not do
+
+- **Estimates, not rules.** The crush in a danger, the column, the Stomp
+  crowd, and a hostile Goblin's landing tiles read public tiles and the
+  units the view lists; they know no hidden unit and no private research
+  of another seat (a Mountain behind a hostile unit counts as blocked).
+- **A Goblin that walked before it was thrown** is not told apart from one
+  that only walked (`tossedGoblinV7` reads `moved` with no path), so its
+  Kaboom keeps the ordinary tier.
+- **The Titan's walk** only weighs the Moves the campaign already allows;
+  it does not send a Titan out on its own.
+- **The Abomination beside an enemy giant** (a note of the spec) has no
+  rule of its own; the ordinary danger of the tile is all it reads.
+- **Breach.** A seat with Explosives ignores fortification with every
+  melee blow, an own Titan's or not. The projection does not read the
+  viewer's own Breach (it did not before this bead either); the Titan's
+  projection is exact with and without it, because its own signature
+  already leaves the levels out.
+- **Giants are valued as before** (`retainedUnitValue`,
+  `targetStrategicValue`: one formula for every giant, 8 more with Push),
+  and the reward giant is taken as before.
+- No hand play, no lab run, and no tuning (see above).
+
+Tests: `tests/unit/ruleset-v7-giants-ai.test.ts`.
+
 ## The Candy army seat (`pulp_wars-jdb.13`)
 
 The Candy seat plays the army rules (`armyCandySeatV7`: `context.army` and
@@ -125,11 +239,13 @@ through the switch); `pulp_wars-737.18` found the cause and took the tests
 off the switch (see
 [the Spider and the army rules](#the-spider-and-the-army-rules-pulp_wars-73718)).
 
-**Not done.** Break Off has no policy yet (`pulp_wars-w49.31`); under the
-built rule (two Troopers for 10 HP, no slot needed) it puts the home city
-over its limit, so it must come **after** a Re-bake into the same city, the
-reverse of the order the redesign's section 7.9 gives for the earlier
-single-Trooper draft. The policy's own threat search does not count a
+**Not done.** Break Off had no policy in this bead; it has one since
+`pulp_wars-w49.31`
+([the giants' signatures](#the-giants-signatures-pulp_wars-w4931)): under
+the built rule (two Troopers for 10 HP, no slot needed) it puts the home
+city over its limit, so it comes **after** a Re-bake into the same city
+(the redesign's section 7.9, which gave the reverse order for the earlier
+single-Trooper draft, was corrected). The policy's own threat search does not count a
 hostile Bunny's hop. The lab `LAB_CANDY_MID`, the hand-played games, the
 Crumbs count, and the tuning record of the bead were not made (no
 simulations, no hand play).
