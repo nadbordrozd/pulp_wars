@@ -585,6 +585,7 @@ import {
   curiosityErrandMoveV7,
   curiosityFactsV7,
   monsterProvokedAtV7,
+  monsterThreatensV7,
   monstersThreateningV7,
   planCuriosityErrandsV7,
   soleCityDefenderV7,
@@ -4634,7 +4635,12 @@ function armyVillagesFirstHoldsV7(
     armyVillageMoveV7(context, actor, to)
   )
     return false;
-  const danger = visibleImmediateDamage(view, actor, to, context);
+  // `pulp_wars-737.18`: the hit of a Monster this turn's combined kill takes
+  // is no enemy's reach (the hunter's Move to the tile the plan counted for
+  // it); the reach of every other visible enemy counts as before.
+  const danger =
+    visibleImmediateDamage(view, actor, to, context) -
+    monsterHuntDangerV7(context, actor, to);
   return (
     danger > 0 &&
     danger > visibleImmediateDamage(view, actor, actor.at, context)
@@ -15653,6 +15659,44 @@ function monsterHunterV7(
   return huntPlansV7(context)
     .find((plan) => plan.target.id === monsterId)
     ?.hunters.get(unitId);
+}
+
+/**
+ * `pulp_wars-737.18`: the part of the danger on `to` that comes from a
+ * Monster this turn's combined kill takes, for the hunter `actor` and the
+ * tile the plan counted for it (0 for every other unit, tile, and Monster).
+ * The army rules that hold a unit back from a visible enemy's reach
+ * (`armyVillagesFirstHoldsV7`) take it off: the plan kills that Monster
+ * this turn, so the hunter does not stand in its reach afterwards. The sum
+ * is the one `visibleImmediateDamage` adds for the same Monsters.
+ */
+function monsterHuntDangerV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+  to: CoordV7,
+): number {
+  const facts = context.curiosities;
+  if (facts === null || facts.monsters.length === 0) return 0;
+  const where = coordKey(to);
+  let total = 0;
+  for (const plan of huntPlansV7(context)) {
+    const monster = facts.monsterById.get(plan.target.id);
+    if (
+      monster === undefined ||
+      plan.tiles.get(actor.id) !== where ||
+      !monsterThreatensV7(monster, actor.id, to)
+    )
+      continue;
+    total += publicProjectedDamageWithLookupV7(
+      context.view,
+      monster.unit,
+      actor,
+      to,
+      {},
+      context.lookup,
+    );
+  }
+  return total;
 }
 
 /** The own units with an offered attack on a unit that is not a Monster. */

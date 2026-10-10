@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it } from "vitest";
 import { chooseNormalCommandV7, scoreCommandV7 } from "../../src/ai/v7";
+import { ARMY_PLAY_FACTIONS_V7, armyPlayFactionV7 } from "../../src/ai/v7-army";
 import {
   CURIOSITY_APPROACH_PRIORITY_V7,
   CURIOSITY_CLAIM_PRIORITY_V7,
@@ -20,6 +21,7 @@ import {
   MONSTER_BOUNTY_V7,
   MONSTER_REGENERATION_V7,
   applyCommandV7,
+  effectiveRoleRuleV7,
   previewMonsterV7,
   queryCombatPreviewV7,
   queryPlayerCommandsV7,
@@ -48,20 +50,18 @@ import {
   type GoblinPieceV7,
 } from "../fixtures/v7-goblin-arena";
 import {
+  MONSTER_FACTIONS_V7,
   MONSTER_LAIR_V7,
   monsterArenaV7,
   monsterOfV7,
 } from "../fixtures/v7-monster-arena";
-import { candySeatKeepsOlderPolicyV7 } from "../fixtures/v7-older-policy";
-
-// The Candy army seat (`pulp_wars-jdb.13`): this file pins the older
-// policy on matches with a Candy seat, as it was written. No match
-// reaches that policy through its factions any more, so the file takes
-// the Candy out of the army factions (tests/fixtures/v7-older-policy.ts).
-candySeatKeepsOlderPolicyV7();
 
 // Map curiosities, the Normal AI (`pulp_wars-737.4`,
 // docs/product/RULESET_7_MAP_CURIOSITIES.md sections 11 and 13.3).
+//
+// Every seat of both arenas plays the army rules (`pulp_wars-737.18`): the
+// file ran on the older policy until then, through the Candy seat of the
+// Spider arena, and three hunts of the Spider failed on the army rules.
 //
 // The Spider tests use the four-seat 16 x 16 arena of `monsterArenaV7`: the
 // viewer (seat 0, player 1) has its capital on (4, 4); the Spider stands on
@@ -152,8 +152,9 @@ function curiosityArena(
 function spiderArena(
   pieces: readonly GoblinPieceV7[],
   options: Parameters<typeof monsterArenaV7>[1] = {},
+  factions: readonly FactionIdV7[] = MONSTER_FACTIONS_V7,
 ): GameStateV7 {
-  const base = monsterArenaV7(pieces, options);
+  const base = monsterArenaV7(pieces, options, factions);
   return checkedV7({
     ...base,
     treasureChests: [],
@@ -502,6 +503,78 @@ describe("the Giant Spider: attacks (section 11 (a) and (b))", () => {
   });
 });
 
+describe("the Giant Spider and the army rules (`pulp_wars-737.18`)", () => {
+  const nextToLair = (state: GameStateV7, from: CoordV7) =>
+    unitCandidatesV7(state, from, "MOVE").filter((candidate) => {
+      const end = endOf(candidate.command);
+      return end !== undefined && chebyshev(end, MONSTER_LAIR_V7) === 1;
+    });
+  const inRound = (state: GameStateV7, round: number): GameStateV7 =>
+    checkedV7({ ...state, round });
+
+  it("runs this file with every seat on the army rules", () => {
+    expect(MONSTER_FACTIONS_V7.every(armyPlayFactionV7)).toBe(true);
+    expect(armyPlayFactionV7("ORIGINAL") && armyPlayFactionV7("UNDEAD")).toBe(
+      true,
+    );
+  });
+
+  it.each(ARMY_PLAY_FACTIONS_V7)(
+    "moves a %s seat's melee unit in for the kill, and never next to a healthy Spider",
+    (faction) => {
+      const others = ARMY_PLAY_FACTIONS_V7.filter(
+        (other) => other !== faction,
+      ).slice(0, 3);
+      const factions = [faction, ...others];
+      // (A Martian Grunt shoots: the seat's melee unit is its Swordsman role.)
+      const melee = faction === "MARTIAN" ? "SWORDSMAN" : "FIGHTER";
+      // Round 1, a free village (7, 4) next to the unit: the first rounds
+      // of an army seat, when the villages come first.
+      const hunt = spiderArena([own(melee, 7, 5)], { monsterHp: 1 }, factions);
+      expect(nextToLair(hunt, at(7, 5))).toHaveLength(1);
+      const best = unitCandidatesV7(hunt, at(7, 5))[0];
+      expect(best?.command.kind).toBe("MOVE");
+      const end = best === undefined ? undefined : endOf(best.command);
+      expect(end !== undefined && chebyshev(end, MONSTER_LAIR_V7) === 1).toBe(
+        true,
+      );
+      const healthy = spiderArena([own(melee, 7, 5)], {}, factions);
+      expect(nextToLair(healthy, at(7, 5))).toEqual([]);
+      // Next to a healthy Spider with no attack to make: it steps away.
+      const beside = spiderArena([own(melee, 7, 6)], {}, factions);
+      const away = unitCandidatesV7(beside, at(7, 6))[0];
+      expect(away?.command.kind).toBe("MOVE");
+      expect(away?.score.priority).toBe(MONSTER_STEP_AWAY_PRIORITY_V7);
+      expect(
+        unitCandidatesV7(beside, at(7, 6)).some(
+          (candidate) => candidate.command.kind === "ATTACK",
+        ),
+      ).toBe(false);
+    },
+  );
+
+  it("takes only the hunted Spider's hit off the villages-first hold", () => {
+    // The plan gives the Fighter the tile (6, 6). A hostile Fighter on
+    // (5, 8) can strike a unit there next turn, and cannot reach (7, 5):
+    // in its first rounds the seat does not walk into that reach (villages
+    // first), Spider or no Spider. Later the hold is off and it goes.
+    const pieces = [own("FIGHTER", 7, 5), foe("FIGHTER", 5, 8)];
+    const early = spiderArena(pieces, { monsterHp: 1 });
+    expect(nextToLair(early, at(7, 5))).toEqual([]);
+    const late = inRound(early, 15);
+    expect(
+      nextToLair(late, at(7, 5)).map((candidate) => endOf(candidate.command)),
+    ).toEqual([at(6, 6)]);
+    // Without the enemy the same Move is made in round 1.
+    expect(
+      nextToLair(
+        spiderArena([own("FIGHTER", 7, 5)], { monsterHp: 1 }),
+        at(7, 5),
+      ).map((candidate) => endOf(candidate.command)),
+    ).toEqual([at(6, 6)]);
+  });
+});
+
 describe("the Giant Spider: the threat estimate (section 11, Threat)", () => {
   const safety = (state: GameStateV7, from: CoordV7, to: CoordV7): number => {
     const command = queryPlayerCommandsV7(viewerViewV7(state)).find(
@@ -735,4 +808,105 @@ describe("the Shrine and the Wreck (section 11)", () => {
     expect(claim?.score.priority).toBe(CURIOSITY_CLAIM_PRIORITY_V7);
     expect(candidatesV7(state)[0]?.command).toEqual(claim?.command);
   });
+});
+
+describe("the errands and the army rules (`pulp_wars-737.18`)", () => {
+  const pair = (faction: FactionIdV7): readonly FactionIdV7[] => [
+    faction,
+    faction === "ORIGINAL" ? "UNDEAD" : "ORIGINAL",
+  ];
+
+  it.each(ARMY_PLAY_FACTIONS_V7)(
+    "walks a %s seat's wounded Fighter to the Fountain",
+    (faction) => {
+      const fountain: readonly CuriosityV7[] = [
+        { kind: "FOUNTAIN", at: FOUNTAIN },
+      ];
+      const hp = Math.floor(effectiveRoleRuleV7("FIGHTER", faction).maxHp / 2);
+      const near = curiosityArena(
+        [own("FIGHTER", 3, 3, { hp })],
+        fountain,
+        {},
+        pair(faction),
+      );
+      const arrive = unitCandidatesV7(near, at(3, 3))[0];
+      expect(arrive === undefined ? undefined : endOf(arrive.command)).toEqual(
+        FOUNTAIN,
+      );
+      expect(arrive?.score.priority).toBe(FOUNTAIN_ARRIVE_PRIORITY_V7);
+      const on = curiosityArena(
+        [own("FIGHTER", 2, 3, { hp })],
+        fountain,
+        {},
+        pair(faction),
+      );
+      expect(unitCandidatesV7(on, FOUNTAIN, "MOVE")).toEqual([]);
+    },
+  );
+
+  it.each(ARMY_PLAY_FACTIONS_V7)(
+    "claims a Shrine with a %s seat's Fighter",
+    (faction) => {
+      const shrine: readonly CuriosityV7[] = [{ kind: "SHRINE", at: SHRINE }];
+      const next = curiosityArena(
+        [own("FIGHTER", 6, 2)],
+        shrine,
+        {},
+        pair(faction),
+      );
+      const claim = moveCandidateV7(next, at(6, 2), SHRINE);
+      expect(claim?.score.priority).toBe(CURIOSITY_CLAIM_PRIORITY_V7);
+      expect(candidatesV7(next)[0]?.command).toEqual(claim?.command);
+      const far = curiosityArena(
+        [own("FIGHTER", 4, 2)],
+        shrine,
+        {},
+        pair(faction),
+      );
+      expect(unitCandidatesV7(far, at(4, 2), "MOVE")[0]?.score.priority).toBe(
+        CURIOSITY_APPROACH_PRIORITY_V7,
+      );
+    },
+  );
+
+  it("sends no growing dinosaur of an army seat to a Shrine", () => {
+    // A dinosaur grows and is never Promoted (section 17): the Dinosaur
+    // seat's Raider role beside the Shrine has no errand.
+    const state = curiosityArena(
+      [own("RAIDER", 6, 2)],
+      [{ kind: "SHRINE", at: SHRINE }],
+      {},
+      pair("DINOSAUR"),
+    );
+    expect(moveCandidateV7(state, at(6, 2), SHRINE)?.score.priority).not.toBe(
+      CURIOSITY_CLAIM_PRIORITY_V7,
+    );
+  });
+
+  // (The arena's boat fixture is not a valid state for an Ice Folk seat.)
+  it.each(ARMY_PLAY_FACTIONS_V7.filter((faction) => faction !== "ICE_FOLK"))(
+    "salvages a Wreck with a %s seat's Patrol Boat, and sails for one",
+    (faction) => {
+      const wreck: readonly CuriosityV7[] = [{ kind: "WRECK", at: WRECK }];
+      const next = curiosityArena(
+        [own("PATROL_BOAT", 3, 1, { form: "NAVAL" })],
+        wreck,
+        { water: WATER },
+        pair(faction),
+      );
+      const claim = moveCandidateV7(next, at(3, 1), WRECK);
+      expect(claim?.score.priority).toBe(CURIOSITY_CLAIM_PRIORITY_V7);
+      expect(candidatesV7(next)[0]?.command).toEqual(claim?.command);
+      // Four water steps away: the Move that comes closer.
+      const far = curiosityArena(
+        [own("PATROL_BOAT", 2, 1, { form: "NAVAL" })],
+        [{ kind: "WRECK", at: at(6, 1) }],
+        { water: WATER },
+        pair(faction),
+      );
+      expect(unitCandidatesV7(far, at(2, 1), "MOVE")[0]?.score.priority).toBe(
+        CURIOSITY_APPROACH_PRIORITY_V7,
+      );
+    },
+  );
 });

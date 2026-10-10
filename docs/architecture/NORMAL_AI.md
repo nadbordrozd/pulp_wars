@@ -102,8 +102,8 @@ still read it: a faction registered outside the list (the ninth faction is
 outside it until its own bead adds it, and a match with a seat of it would
 run the older policy for every seat, as a Candy seat did), and the tests
 that pin it, which take the Candy out of the list (`setArmyPlayFactionsV7`,
-`tests/fixtures/v7-older-policy.ts`: eleven test files whole, and single
-checks in three more).
+`tests/fixtures/v7-older-policy.ts`: ten test files whole since
+`pulp_wars-737.18`, and single checks in three more).
 
 What is unreachable in a match of the eight factions, and could be deleted
 with its tests once no faction is outside the list and the user agrees: the
@@ -118,10 +118,12 @@ production values while a seat is not alert, and every faction rule that is
 not about research (the Rush plans, the Crash retreat, Crumbs, the Witch,
 the Mole's tunnels, and so on). The curiosity rules (the Giant Spider's
 hunt among them) were written against the older policy and their tests
-have always run on an arena with a seat outside the army rules; three of
-the Spider's attack tests fail when every seat of that arena plays the army
-rules. This bead left that as it was (the tests keep their arena through
-the switch).
+had always run on an arena with a seat outside the army rules; three of
+the Spider's attack tests failed when every seat of that arena played the
+army rules. This bead left that as it was (the tests kept their arena
+through the switch); `pulp_wars-737.18` found the cause and took the tests
+off the switch (see
+[the Spider and the army rules](#the-spider-and-the-army-rules-pulp_wars-73718)).
 
 **Not done.** Break Off has no policy yet (`pulp_wars-w49.31`); under the
 built rule (two Troopers for 10 HP, no slot needed) it puts the home city
@@ -1652,7 +1654,9 @@ seat whose own faction is Undead):
     Ghoul) to a tile outside its own land where the visible enemies'
     projected damage is above 0 and above what it is where the unit
     stands is no candidate (a Move onto a free village keeps its own
-    rule);
+    rule; the hit of a Monster that this turn's combined kill takes is
+    not counted for the hunter's Move to its tile of the plan,
+    `pulp_wars-737.18`);
   - an attack of such a unit that has already moved this turn, on a unit
     outside the seat's land, that does not kill, is no candidate;
   - the campaign plan (`CampaignArmyFactsV7.villagesFirst`) counts a
@@ -5566,6 +5570,66 @@ lower unit ID):
 A **sole city defender** is an own land unit on the center of one of its
 owner's cities with no other land unit of that owner within 2 of the
 center. It takes no errand and is never a moving hunter.
+
+### The Spider and the army rules (`pulp_wars-737.18`)
+
+Since the Candy army seat every match of the eight factions runs the army
+rules, and the curiosity rules above are part of that policy: the candidate
+filter, the Move values, the kill plan, and the threat estimate do not ask
+whether the seat is an army seat. One army rule stood in the way of the
+combined kill. **Villages first** (`armyVillagesFirstHoldsV7`: a Human,
+Undead, Martian, Dinosaur, Ice Folk, Dwarf, or Candy seat through round
+10 with a free village in reach of an own center) allows no Move of a unit
+that captures and attacks into a visible enemy's reach outside its own
+land, and the threat estimate counts the Spider on its provoke tiles. So in
+the rounds in which a seat meets the Spider near its start, the hunter's
+Move next to it was no candidate, while the plan that counted on that Move
+kept the other hunters to their tiles: the kill was never made. (The three
+failing tests were all this one rule: a lone Fighter beside a 1-HP Spider,
+two Fighters on an 8-HP Spider, and the Raider that leaves a guarded
+capital for the kill.)
+
+The hold now takes the hunted Monster's own hit off the danger of the tile
+(`monsterHuntDangerV7`: only for the hunter and the tile the plan counted
+for it, only a Monster the plan kills this turn). Every other visible
+enemy's reach holds the unit as before, and a healthy Spider is avoided as
+before. No other army rule reads the Spider as an enemy: `armyHostilesV7`
+(the assault, the contact rules, the garrison radius, the front gate) never
+counts a Monster, and the hunt Move's priority (1177) is above the village
+Move (1170).
+
+Checked on hand-built states for the melee unit of each of the eight army
+factions (`tests/unit/ruleset-v7-curiosities-ai.test.ts`): it moves in for
+the kill in round 1 beside a free village, ends no Move next to a healthy
+Spider, and steps away from one. Two army preferences differ from the
+older policy and are kept: a ranged unit that could chip the Spider from
+outside its reach takes a free village first (the village Move ranks above
+a chip), and a Martian Saucer joins no combined kill it does not finish
+itself (its own rule, `pulp_wars-w49.14`).
+
+**The errands** were not behind the gap: their arena has two army seats
+and their tests already ran on the army rules. The same file now checks
+them for each army faction: a Fighter at half HP walks onto a Fountain
+beside it and stands there, a Fighter claims a Shrine beside it and walks
+toward one three steps away (a growing dinosaur never), and a Patrol Boat
+salvages a Wreck beside it and sails for one four water steps away. Two
+things an army seat does differently, by its own ranking: a wounded fast
+unit that can step onto a free village this turn takes the village (1170
+while the seat expands) before the Fountain (946), and with an enemy in
+sight the army's Moves from the firing position upward (740 and above)
+outrank the walk toward a Shrine or a Wreck (725); the claim itself (1330)
+outranks them all. The Wreck errand of `pulp_wars-737.9` is a different
+matter and stays open: the errand fires for a unit that is already afloat
+within its bound, and a seat seldom has one near a Wreck; no rule sends a
+unit to sea for it. Widening it, or the Fountain and Shrine bounds, needs
+matches to measure.
+
+The same facts cover the round-2 neutrals without any rule of their own:
+a camp guard and Bigfoot are entries of the view's `monsters`, so no
+routine Move ends on a camp's area (a guard's `provokeTiles`) or on
+Bigfoot's, and each is attacked only for a kill this turn or from outside
+its reach. The policy has no rule for a Dimensional Gate or the Wishing
+Well (`pulp_wars-737.15`).
 
 ### Curiosity measurements
 

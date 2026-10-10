@@ -42,10 +42,12 @@ export interface MonsterArenaOptionsV7 extends GoblinArenaOptionsV7 {
 }
 
 /**
- * The fourth seat is one that plays no army rules, so the arena keeps the
- * policy the curiosity rules were written against: a Candy seat since the
- * Dinosaur pass (`pulp_wars-w49.15`) made the Dinosaur seats army seats
- * (it was a Dinosaur seat).
+ * The fourth seat is a Candy seat. Until the Candy army seat
+ * (`pulp_wars-jdb.13`) that kept the arena on the older policy, which the
+ * curiosity rules were written against; every seat plays the army rules
+ * now, and the curiosity tests run on them (`pulp_wars-737.18`). A file
+ * that still pins the older policy takes the Candy out of the army
+ * factions (`tests/fixtures/v7-older-policy.ts`).
  */
 export const MONSTER_FACTIONS_V7: readonly FactionIdV7[] = [
   "ORIGINAL",
