@@ -231,10 +231,11 @@ describe("PixelLab interrupted CLI recovery", () => {
     const generated = JSON.parse(await readFile(generatedPath, "utf8")) as {
       records: Record<string, JobSnapshot<typeof request>>;
     };
-    const recipe = source.recipes.find(
-      ({ id }) => id === "ui-action-defection",
-    );
-    if (recipe === undefined) throw new Error("Defection fixture missing");
+    // The Survey reward icon: a recipe with a live style reference that
+    // no generation-order gate ties to another (Defection, used here
+    // before, is frozen on a retired reference; bead pulp_wars-67q.15).
+    const recipe = source.recipes.find(({ id }) => id === "ui-reward-survey");
+    if (recipe === undefined) throw new Error("Recipe fixture missing");
     const reference = source.recipes.find(
       ({ id }) => id === recipe.styleReference,
     );
@@ -297,15 +298,9 @@ await import(${JSON.stringify(pathToFileURL(path.join(root, "scripts/art/pixella
     expect(await readFile(path.join(directory, generatedPath), "utf8")).toBe(
       untouchedManifest,
     );
-    expect(
-      run(
-        "generate",
-        "--stage",
-        "batch",
-        "--ids",
-        `${recipe.id},ui-action-blackout`,
-      ),
-    ).toContain("submitted job fixture-job");
+    expect(run("generate", "--stage", "batch", "--ids", recipe.id)).toContain(
+      "submitted job fixture-job",
+    );
     const receipt = await loadSubmissionReceipt<typeof request>(
       path.join(directory, "art/pixellab/submissions"),
       "fixture-job",
@@ -328,5 +323,39 @@ await import(${JSON.stringify(pathToFileURL(path.join(root, "scripts/art/pixella
     expect(recovered.request).toEqual(receipt?.request);
     expect(recovered.request.styleReference.sha256).toBe(originalReferenceHash);
     expect(recovered.status).toBe("CANDIDATE");
+  });
+
+  it("refuses to generate or resume a recipe frozen on a retired style reference", () => {
+    // The real manifest: Defection's reference icon is retired.
+    const run = (...args: string[]): string =>
+      execFileSync(
+        process.execPath,
+        [
+          "--import",
+          pathToFileURL(
+            path.join(process.cwd(), "node_modules/tsx/dist/loader.mjs"),
+          ).href,
+          "scripts/art/pixellab.ts",
+          ...args,
+        ],
+        {
+          // No credential: the refusal comes before any provider call.
+          env: { ...process.env, PIXELLAB_API_KEY: "" },
+          encoding: "utf8",
+          stdio: "pipe",
+        },
+      );
+    expect(() =>
+      run(
+        "generate",
+        "--stage",
+        "batch",
+        "--ids",
+        "ui-action-defection,ui-action-blackout",
+      ),
+    ).toThrow("ui-action-defection is frozen");
+    expect(() =>
+      run("resume-job", "--id", "ui-action-blackout", "--job-id", "none"),
+    ).toThrow("ui-action-blackout is frozen");
   });
 });

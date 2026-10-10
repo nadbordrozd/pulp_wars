@@ -45,7 +45,7 @@ function terrain(x: number, y: number, subject: ArtSubjectV7): Entry {
     kind: "TERRAIN",
     layer: 1,
     at: { x, y },
-    assetId: "terrain-ruleset7-revision3-mountain-1",
+    assetId: "v7-terrain-mountain-1",
     artSubject: subject,
   };
 }

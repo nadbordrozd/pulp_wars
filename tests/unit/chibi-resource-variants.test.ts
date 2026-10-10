@@ -6,10 +6,10 @@ import {
 } from "../../src/assets/chibi-art-v7";
 import { CHIBI_ART_ASSETS_V7 } from "../../src/assets/chibi-art-manifest";
 import {
-  RULESET7_FRUIT_MAP_ART_IDS,
-  RULESET7_GAME_MAP_ART_IDS,
-  resourceMapArtIdV7,
-} from "../../src/assets/ruleset7-ui-art";
+  FRUIT_MAP_ART_KEYS_V7,
+  GAME_MAP_ART_KEYS_V7,
+  resourceMapArtKeyV7,
+} from "../../src/assets/art-keys-v7";
 import {
   createChibiArtResolverV7,
   type ChibiRasterEnvironmentV7,
@@ -97,18 +97,16 @@ describe("CHIBI Game and Fruit variants", () => {
   it("varies on the same tiles as the LEGACY resource art, which is unchanged", () => {
     for (const at of board) {
       const index = (at.x * 31 + at.y * 17) % 3;
-      expect(resourceMapArtIdV7("GAME", at)).toBe(
-        RULESET7_GAME_MAP_ART_IDS[index],
-      );
-      expect(resourceMapArtIdV7("FRUIT", at)).toBe(
-        RULESET7_FRUIT_MAP_ART_IDS[index],
+      expect(resourceMapArtKeyV7("GAME", at)).toBe(GAME_MAP_ART_KEYS_V7[index]);
+      expect(resourceMapArtKeyV7("FRUIT", at)).toBe(
+        FRUIT_MAP_ART_KEYS_V7[index],
       );
       expect(chibiVariantV7(registry.variants("RESOURCE:GAME"), at)?.id).toBe(
         GAME[index],
       );
     }
-    expect(resourceMapArtIdV7("FISH", { x: 1, y: 0 })).toBe(
-      resourceMapArtIdV7("FISH", { x: 0, y: 0 }),
+    expect(resourceMapArtKeyV7("FISH", { x: 1, y: 0 })).toBe(
+      resourceMapArtKeyV7("FISH", { x: 0, y: 0 }),
     );
   });
 
@@ -215,8 +213,8 @@ describe("CHIBI Fish variants", () => {
   });
 
   it("leaves the LEGACY Fish art on its one raster", () => {
-    expect(resourceMapArtIdV7("FISH", { x: 1, y: 0 })).toBe(
-      resourceMapArtIdV7("FISH", { x: 0, y: 0 }),
+    expect(resourceMapArtKeyV7("FISH", { x: 1, y: 0 })).toBe(
+      resourceMapArtKeyV7("FISH", { x: 0, y: 0 }),
     );
   });
 });

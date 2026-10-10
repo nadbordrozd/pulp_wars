@@ -73,7 +73,7 @@ try {
       const originalSnapshot = source.snapshot();
       const same = (a, b) => a.x === b.x && a.y === b.y;
       const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-      const requiredWorldAssets = ['building-ruleset7-port-v7r11', 'terrain-ruleset7-resource-fish-v7r11', 'building-city-1', 'unit-original-fighter', 'unit-original-patrol-boat'];
+      const requiredWorldAssets = ['v7-improvement-port', 'v7-resource-fish', 'building-city-1', 'unit-original-fighter', 'unit-original-patrol-boat'];
       const worldAssetByUrl = new Map(requiredWorldAssets.map((id) => [new URL(ACCEPTED_ART_URLS[id], location.href).href, id]));
       const worldRenderHits = Object.fromEntries(requiredWorldAssets.map((id) => [id, 0]));
       const nativeDrawImage = CanvasRenderingContext2D.prototype.drawImage;
@@ -217,14 +217,8 @@ try {
     "spent reason missing",
   );
   const assetIds = setup.assetIds as readonly string[];
-  assert(
-    assetIds.includes("building-ruleset7-port-v7r11"),
-    "current Port art missing",
-  );
-  assert(
-    assetIds.includes("terrain-ruleset7-resource-fish-v7r11"),
-    "current Fish art missing",
-  );
+  assert(assetIds.includes("v7-improvement-port"), "current Port art missing");
+  assert(assetIds.includes("v7-resource-fish"), "current Fish art missing");
   assert(
     Object.values(setup.worldRenderHits as Record<string, number>).every(
       (hits) => hits > 0,

@@ -7,7 +7,6 @@ import {
 } from "../../src/assets/generated-art-manifest";
 import {
   assertRuleset7BuildingEconomyOrder,
-  RULESET7_BUILDING_ECONOMY_ACTION_IDS,
   RULESET7_BUILDING_ECONOMY_WORLD_IDS,
 } from "../../scripts/art/ruleset7-building-economy-order";
 
@@ -67,10 +66,10 @@ interface GeneratedRecord {
   }[];
 }
 
-const ALL_IDS = [
-  ...RULESET7_BUILDING_ECONOMY_WORLD_IDS,
-  ...RULESET7_BUILDING_ECONOMY_ACTION_IDS,
-] as const;
+// The Pillage and Disband icons of this family are retired (bead
+// pulp_wars-67q.15): the two world buildings stay.
+const ALL_IDS = RULESET7_BUILDING_ECONOMY_WORLD_IDS;
+const RETIRED_ACTION_IDS = ["ui-action-pillage", "ui-action-disband"] as const;
 
 async function manifests() {
   const [sourceText, generatedText] = await Promise.all([
@@ -84,6 +83,7 @@ async function manifests() {
         readonly source: string;
         readonly semanticRole: string;
       }[];
+      readonly retired: readonly { readonly id: string }[];
       readonly recipes: readonly Recipe[];
     },
     generated: JSON.parse(generatedText) as {
@@ -92,48 +92,13 @@ async function manifests() {
   };
 }
 
-describe("Ruleset 7 Barracks, Monument, Pillage and Disband art", () => {
-  it("enforces two serial world requests before the exact action pair", () => {
+describe("Ruleset 7 Barracks and Monument art", () => {
+  it("enforces two serial world requests", () => {
     expect(() =>
       assertRuleset7BuildingEconomyOrder([{ id: "building-square-barracks" }], {
         records: {},
       }),
     ).not.toThrow();
-    const recordedActions = Object.fromEntries(
-      RULESET7_BUILDING_ECONOMY_ACTION_IDS.map((id) => [
-        id,
-        { status: "CANDIDATE" },
-      ]),
-    );
-    expect(() =>
-      assertRuleset7BuildingEconomyOrder([{ id: "ui-action-pillage" }], {
-        records: {
-          ...Object.fromEntries(
-            RULESET7_BUILDING_ECONOMY_WORLD_IDS.map((id) => [
-              id,
-              { status: "ACCEPTED" },
-            ]),
-          ),
-          ...recordedActions,
-        },
-      }),
-    ).not.toThrow();
-    expect(() =>
-      assertRuleset7BuildingEconomyOrder(
-        [{ id: "ui-action-pillage" }, { id: "ui-action-heal" }],
-        {
-          records: {
-            ...Object.fromEntries(
-              RULESET7_BUILDING_ECONOMY_WORLD_IDS.map((id) => [
-                id,
-                { status: "ACCEPTED" },
-              ]),
-            ),
-            ...recordedActions,
-          },
-        },
-      ),
-    ).toThrow("unrelated generation families");
     expect(() =>
       assertRuleset7BuildingEconomyOrder([{ id: "building-square-monument" }], {
         records: {},
@@ -148,37 +113,25 @@ describe("Ruleset 7 Barracks, Monument, Pillage and Disband art", () => {
         { records: {} },
       ),
     ).toThrow("exactly one");
-    const barracksRecorded = {
-      records: { "building-square-barracks": { status: "CANDIDATE" } },
-    };
     expect(() =>
       assertRuleset7BuildingEconomyOrder(
-        [{ id: "building-square-monument" }],
-        barracksRecorded,
+        [{ id: "building-square-barracks" }, { id: "ui-action-heal" }],
+        { records: {} },
       ),
+    ).toThrow("exactly one");
+    expect(() =>
+      assertRuleset7BuildingEconomyOrder([{ id: "building-square-monument" }], {
+        records: { "building-square-barracks": { status: "CANDIDATE" } },
+      }),
     ).not.toThrow();
     expect(() =>
-      assertRuleset7BuildingEconomyOrder(
-        RULESET7_BUILDING_ECONOMY_ACTION_IDS.map((id) => ({ id })),
-        barracksRecorded,
-      ),
-    ).toThrow("Accept both");
-    expect(() =>
-      assertRuleset7BuildingEconomyOrder(
-        RULESET7_BUILDING_ECONOMY_ACTION_IDS.map((id) => ({ id })),
-        {
-          records: Object.fromEntries(
-            RULESET7_BUILDING_ECONOMY_WORLD_IDS.map((id) => [
-              id,
-              { status: "ACCEPTED" },
-            ]),
-          ),
-        },
-      ),
+      assertRuleset7BuildingEconomyOrder([{ id: "ui-action-heal" }], {
+        records: {},
+      }),
     ).not.toThrow();
   });
 
-  it("defines exactly four new assets with strict geometry and no Spoils raster", async () => {
+  it("defines the two world assets with strict geometry and no Spoils raster", async () => {
     const { source } = await manifests();
     const recipes = source.recipes.filter(({ id }) =>
       ALL_IDS.includes(id as never),
@@ -205,16 +158,16 @@ describe("Ruleset 7 Barracks, Monument, Pillage and Disband art", () => {
       expect(recipe?.prompt.toLowerCase()).toContain("no ground");
       expect(recipe?.styleReferenceUsage).toContain("Match only");
     }
-    for (const id of RULESET7_BUILDING_ECONOMY_ACTION_IDS) {
-      expect(recipes.find((candidate) => candidate.id === id)).toMatchObject({
-        class: "ui",
-        stage: "batch",
-        endpoint: "generate-ui-v2",
-        requestSize: { width: 384, height: 384 },
-        outputSize: { width: 128, height: 128 },
-        hardBounds: { left: 10, top: 10, right: 118, bottom: 118 },
-        postprocess: "lanczos3-resize",
-      });
+    for (const id of RETIRED_ACTION_IDS) {
+      expect(
+        source.recipes.some((candidate) => candidate.id === id),
+        id,
+      ).toBe(false);
+      expect(
+        source.retired.some((entry) => entry.id === id),
+        id,
+      ).toBe(true);
+      expect(ACCEPTED_ART_URLS[id], id).toBeUndefined();
     }
   });
 
@@ -312,52 +265,5 @@ describe("Ruleset 7 Barracks, Monument, Pillage and Disband art", () => {
     expect(createHash("sha256").update(quarantinedBytes).digest("hex")).toBe(
       record.rejectedAttempts[0].candidateSha256,
     );
-  });
-
-  it("pins complete actual-scale evidence and review order", async () => {
-    const evidence = JSON.parse(
-      await readFile(
-        "art/pixellab/reviews/ruleset7-building-economy/review-evidence.json",
-        "utf8",
-      ),
-    ) as {
-      readonly status: string;
-      readonly generationOrder: readonly string[];
-      readonly worldApprovalGate: boolean;
-      readonly reviewCoverage: readonly string[];
-      readonly assets: Readonly<
-        Record<string, { readonly alphaBounds: Bounds }>
-      >;
-      readonly artifacts: readonly {
-        readonly filename: string;
-        readonly sha256: string;
-        readonly bytes: number;
-      }[];
-    };
-    expect(evidence.status).toBe("COMPLETE");
-    expect(evidence.generationOrder).toEqual(ALL_IDS);
-    expect(evidence.worldApprovalGate).toBe(true);
-    expect(evidence.reviewCoverage.join(" ")).toContain("0.625/1/1.75");
-    expect(evidence.reviewCoverage.join(" ")).toContain("DPR1/2");
-    expect(evidence.reviewCoverage.join(" ")).toContain("112x130");
-    expect(evidence.reviewCoverage.join(" ")).toContain(
-      "unchanged units/status",
-    );
-    for (const id of RULESET7_BUILDING_ECONOMY_WORLD_IDS) {
-      const bounds = evidence.assets[id]?.alphaBounds;
-      expect(bounds?.left, id).toBeGreaterThanOrEqual(8);
-      expect(bounds?.right, id).toBeLessThanOrEqual(376);
-      expect(bounds?.bottom, id).toBeLessThanOrEqual(326);
-    }
-    for (const artifact of evidence.artifacts) {
-      const bytes = await readFile(
-        `art/pixellab/reviews/ruleset7-building-economy/${artifact.filename}`,
-      );
-      expect(bytes.byteLength).toBe(artifact.bytes);
-      expect(createHash("sha256").update(bytes).digest("hex")).toBe(
-        artifact.sha256,
-      );
-      expect(artifact.bytes).toBeGreaterThan(1_000);
-    }
   });
 });

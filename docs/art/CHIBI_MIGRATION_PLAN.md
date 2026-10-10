@@ -16,23 +16,9 @@ for a unit, city, building or resource on the board
 interface (`.v7-art-missing`). The tests that drew LEGACY by default draw
 the chibi art, or the stand-in where they are about missing art.
 
-**What is left** is deleting files nothing reaches any more, and it is
-follow-up work to `pulp_wars-67q.15`: the 42 rasters only the removed path
-could name (1.27 MB under `public/assets/pixellab/`: all of
-`terrain-ruleset7/` and `buildings-ruleset7/`, five
-`terrain-square/ruleset7-*` files and ten interface files), with their
-PixelLab recipes and records, their `ruleset7-*` art scripts and order
-checks, asset tests and review evidence, the Ruleset 7 art id tables
-(`src/assets/ruleset7-*-art.ts`, whose ids are now only keys of the board
-plan and names of interface stand-ins) and the two review scripts of the
-removed path (`scripts/browser-playtest-review-v7.ts`,
-`scripts/browser-city-buff-review-v7.ts`). The PixelLab records are
-hash-chained to their recipes, and two recipes that stay
-(`ui-action-defection`, `ui-action-blackout`) take a removed raster as
-their style reference, so the removal needs a checked-in retire step in
-`scripts/art/pixellab.ts` that rewrites the manifest and the records
-without calling PixelLab. Ruleset 6 and the older screens draw the other
-218 files of that folder and stay untouched.
+**Nothing is left.** The files only the removed path could reach are
+deleted (see
+[Retired: the earlier Ruleset 7 rasters](#retired-the-earlier-ruleset-7-rasters)).
 
 The Beads IDs below are the source of truth for progress; this document
 records the plan in git, so it survives a move to a new machine.
@@ -58,7 +44,8 @@ will be named by the user.
     -> 67q.14 chibi becomes the default (?art=legacy opt-out)
     -> 67q.13 the ?art=legacy switch retired, art docs folded
     -> 67q.15 CHIBI the only render path, tests moved off LEGACY
-    -> follow-up: the legacy-only rasters and their records deleted
+       (and, in the same bead, the legacy-only rasters and their
+        PixelLab recipes and records retired)
 
 tt3.1 faction-layer dry run  (after 67q.2 and batch-1 approval 67q.4;
                               runs in parallel with batches 2–5)
@@ -83,6 +70,86 @@ tt3.1 faction-layer dry run  (after 67q.2 and batch-1 approval 67q.4;
 
 The design field of each bead holds the full scope, the worker checks and
 the final gates.
+
+## Retired: the earlier Ruleset 7 rasters
+
+The last stage of `pulp_wars-67q.15` deleted the 42 rasters only the removed
+render path could name (1,270,954 bytes under `public/assets/pixellab/`):
+all of `terrain-ruleset7/` (19) and `buildings-ruleset7/` (8), the five
+`terrain-square/ruleset7-*` resources, and ten interface files (the gold
+coin, the Catapult, Captain and Knight portraits, and the Pillage, Disband,
+Rally, Cultivate Forest and Blast Mountain icons). Each was checked first:
+no Ruleset 6, legacy or Ruleset 7 source names its id or path, including
+the ids those sources build from a template and the Ruleset 6 asset
+coverage table. The other files of that folder are the frozen Ruleset 6 art
+and stay.
+
+**The retire command.** `npm run art:retire -- --ids a,b --reason "…"` (or
+`--ids-file <file>`, one id per line; `--dry-run` lists what would go) is
+the `retire` command of
+[`scripts/art/pixellab.ts`](../../scripts/art/pixellab.ts), with its logic
+in [`pixellab-retire.ts`](../../scripts/art/pixellab-retire.ts). It makes no
+PixelLab call and needs no credential. For each recipe it deletes the
+raster, the candidate, the quarantined rejected attempts, the reframe
+sources no staying recipe uses and the submission receipts; it drops the
+generation record; and it moves the recipe out of `recipes` in
+[`pixellab-manifest.json`](../../scripts/art/pixellab-manifest.json) into a
+`retired` list that keeps the id, the class, the output path, the hash of
+the accepted raster and the reason. The manifest is edited as text, so the
+recipes that stay keep their exact bytes. `pixellab-generated.json` is then
+rewritten: its `sourceManifestSha256` is the hash of the new manifest text,
+which is the only link in the chain between the two files (each record's
+own hashes are of its raster and its provider output and do not change).
+The runtime table `src/assets/generated-art-manifest.ts` is regenerated
+from what is left. The new manifest is validated before anything is
+written, so a refused retirement changes nothing.
+
+**What a retirement refuses.** An alias that points at the recipe; a
+staying recipe that composes it as its ground; a staying recipe whose
+postprocess reads its raster again (a derived portrait, a rotated or
+edge-restored diamond).
+
+**A style reference that outlives its raster.** Two recipes that stay,
+`ui-action-defection` and `ui-action-blackout`, were drawn with a retired
+icon as their style reference (`ui-action-disband` and `ui-action-pillage`).
+The reference stays in the recipe as history: `styleReference` still names
+the retired id, the accepted record still holds the exact hash of the image
+PixelLab was shown, and that hash equals the `outputSha256` of the retired
+entry. Such a recipe is **frozen**: `generate`, `repair`, `archive-job` and
+`resume-job` refuse it, because the reference image no longer exists; to
+redraw it, give it a live style reference first. `npm run art:validate`
+checks the `retired` list (no id or output in use again, no record left, no
+raster left on disk) and every frozen recipe (an accepted record holding
+the reference's hash, and a postprocess that does not read the reference).
+
+**What went with the rasters.**
+
+- The Ruleset 7 art id tables `src/assets/ruleset7-ui-art.ts`,
+  `ruleset7-logistics-art.ts`, `ruleset7-playtest-art.ts` and
+  `ruleset7-revision9-art.ts`. The board plan and the interface stand-ins
+  are keyed by [`src/assets/art-keys-v7.ts`](../../src/assets/art-keys-v7.ts):
+  a key that named a retired raster now starts with `v7-` and ends in the
+  same word, so every lettered stand-in keeps its letter; the other keys
+  still spell a Ruleset 6 raster id and are not looked up either.
+- The unused painted-bounds layouts `src/render/dom/selection-identity-v7.ts`.
+- The generation-order checks of the logistics, playtest and Catapult
+  families. The building-economy, revision-3 and revision-9 checks keep the
+  order of the recipes that stay (Barracks before Monument, the Horse Archer
+  before its portrait, the Captain before the Knight).
+- Ten review scripts `scripts/art/ruleset7-<family>-review.ts` (the
+  families building-economy, catapult, economy-icons, farm, logistics,
+  naval, playtest, resource-refresh, revision9 and tactical-ui), the
+  Ruleset 7 modes of `square-original-terrain-review.ts`,
+  `style-exploration-review.ts` (it drew its boards on the retired terrain),
+  the two review scripts of the removed path
+  (`scripts/browser-playtest-review-v7.ts`,
+  `scripts/browser-city-buff-review-v7.ts`) and their `package.json` entries.
+- Eight review evidence folders `art/pixellab/reviews/ruleset7-<family>/`
+  (building-economy, catapult, farms, logistics, naval, playtest, revision9
+  and tactical-ui). The `ruleset7-original-units` evidence names no retired
+  raster and stays, with its script.
+- The asset tests of the retired art; the tests of families with a recipe
+  that stays keep that recipe's checks and assert the retirement.
 
 ## Why this shape
 

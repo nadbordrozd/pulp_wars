@@ -31,7 +31,7 @@ import {
  * CHIBI art subjects of the Ruleset 7 interface (bead pulp_wars-67q.11).
  * The DOM asks for these through src/render/dom/chibi-dom-art-v7.ts; any
  * subject without a registered raster shows a code-drawn figure or the
- * lettered stand-in (named by the IDs in ruleset7-ui-art.ts; bead
+ * lettered stand-in (named by the keys in art-keys-v7.ts; bead
  * pulp_wars-67q.15), as the canvas does per subject.
  *
  * Portraits (`PORTRAIT:*`) are head-and-shoulders busts for the 48 px

@@ -2,8 +2,11 @@ import { createHash } from "node:crypto";
 import {
   copyFile,
   mkdir,
+  readdir,
   readFile,
   rename,
+  rm,
+  rmdir,
   stat,
   writeFile,
 } from "node:fs/promises";
@@ -12,16 +15,21 @@ import process from "node:process";
 import { format } from "prettier";
 import sharp, { type OverlayOptions } from "sharp";
 import { assertRuleset7BuildingEconomyOrder } from "./ruleset7-building-economy-order";
-import { assertRuleset7CatapultOrder } from "./ruleset7-catapult-order";
 import { assertRuleset7OriginalUnitOrder } from "./ruleset7-original-unit-order";
 import {
   assertRuleset7Revision3ArtOrder,
   resolveRepairStyleReferenceHash,
 } from "./ruleset7-revision3-art-order";
 import { assertRuleset7Revision9ArtOrder } from "./ruleset7-revision9-art-order";
-import { assertRuleset7LogisticsArtOrder } from "./ruleset7-logistics-art-order";
-import { assertRuleset7PlaytestArtOrder } from "./ruleset7-playtest-art-order";
 import { assertRuleset7TacticalUiOrder } from "./ruleset7-tactical-ui-order";
+import {
+  frozenByRetirement,
+  planRetirement,
+  retireFromManifestText,
+  retirementProblems,
+  submissionReceiptName,
+  type RetiredRecipe,
+} from "./pixellab-retire";
 import {
   assertRecoveryReference,
   loadSubmissionReceipt,
@@ -179,6 +187,12 @@ interface SourceManifest {
     readonly semanticRole: string;
     readonly notes: string;
   }[];
+  /**
+   * Recipes removed by `retire`: the id, the output path and the accepted
+   * raster's hash stay on record; the raster itself is gone. A recipe that
+   * stays may still name one as its style reference, as history only.
+   */
+  readonly retired?: readonly RetiredRecipe[];
   readonly recipes: readonly Recipe[];
 }
 
@@ -285,13 +299,11 @@ async function main(): Promise<void> {
         (ids === undefined || ids.includes(recipe.id)),
     );
     if (recipes.length === 0) throw new Error("No recipes selected");
-    assertRuleset7CatapultOrder(recipes, generated);
+    for (const recipe of recipes) assertNotFrozen(source, recipe);
     assertRuleset7BuildingEconomyOrder(recipes, generated);
     assertRuleset7OriginalUnitOrder(recipes, generated);
     assertRuleset7Revision3ArtOrder(recipes, generated);
     assertRuleset7Revision9ArtOrder(recipes, generated);
-    assertRuleset7LogisticsArtOrder(recipes, generated);
-    assertRuleset7PlaytestArtOrder(recipes, generated);
     assertRuleset7TacticalUiOrder(recipes, generated);
     assertRuleset7NavalOrder(recipes, generated);
     assertOriginalUnitOrder(recipes, generated);
@@ -300,7 +312,6 @@ async function main(): Promise<void> {
     assertSquareTerrainOrder(recipes, generated);
     assertSquareResourceRoadOrder(recipes, generated);
     assertSquareImprovementSampleGate(recipes);
-    assertRuleset7FarmSampleOrder(recipes, generated);
     assertSquareImprovementExpansionOrder(recipes, generated);
     assertSquareCivicCommerceOrder(recipes, generated);
     if (stage === "batch") assertBuildingBatchOrder(recipes, generated);
@@ -323,6 +334,7 @@ async function main(): Promise<void> {
     for (const id of ids) {
       const recipe = source.recipes.find((candidate) => candidate.id === id);
       if (recipe === undefined) throw new Error(`Unknown recipe ${id}`);
+      assertNotFrozen(source, recipe);
       const candidate = path.join(CANDIDATE_ROOT, `${id}.png`);
       if (
         (recipe.postprocess === "square-mountain-ground-reference" ||
@@ -501,6 +513,7 @@ async function main(): Promise<void> {
     const notes = requiredOption("--notes");
     const recipe = source.recipes.find((candidate) => candidate.id === id);
     if (recipe === undefined) throw new Error(`Unknown recipe ${id}`);
+    assertNotFrozen(source, recipe);
     const apiKey = process.env[source.provider.credentialEnvironmentVariable];
     if (apiKey === undefined || apiKey.length === 0)
       throw new Error(
@@ -573,6 +586,7 @@ async function main(): Promise<void> {
     const jobId = requiredOption("--job-id");
     const recipe = source.recipes.find((candidate) => candidate.id === id);
     if (recipe === undefined) throw new Error(`Unknown recipe ${id}`);
+    assertNotFrozen(source, recipe);
     const previous = generated.records[id];
     const submission = await loadSubmissionReceipt<RequestSnapshot>(
       SUBMISSION_ROOT,
@@ -684,6 +698,10 @@ async function main(): Promise<void> {
     );
     return;
   }
+  if (command === "retire") {
+    await retireRecipes(source, sourceText, generated);
+    return;
+  }
   if (command === "validate") {
     await validateOutputs(source, generated);
     await syncRuntime(source, generated);
@@ -717,7 +735,117 @@ async function main(): Promise<void> {
     return;
   }
   console.log(
-    "Usage: pixellab.ts credentials | snapshot | snapshot-reframe-sources --ids a,b | generate --stage sample|batch [--ids a,b] [--concurrency 3] | archive-job --id ID --job-id JOB --notes TEXT | resume-job --id ID --job-id JOB | archive-historical-style-reference --id ID --job-id JOB | repair --ids a,b | derive --id ID | review --id ID --accept|--reject --notes TEXT [--source-pass --native-pass --enlarged-pass --minimum-pass --composition-pass] [--skip-overview-sheets] | review-sheets | validate",
+    "Usage: pixellab.ts credentials | snapshot | snapshot-reframe-sources --ids a,b | generate --stage sample|batch [--ids a,b] [--concurrency 3] | archive-job --id ID --job-id JOB --notes TEXT | resume-job --id ID --job-id JOB | archive-historical-style-reference --id ID --job-id JOB | repair --ids a,b | derive --id ID | review --id ID --accept|--reject --notes TEXT [--source-pass --native-pass --enlarged-pass --minimum-pass --composition-pass] [--skip-overview-sheets] | review-sheets | retire --ids a,b | --ids-file FILE --reason TEXT [--dry-run] | validate",
+  );
+}
+
+/**
+ * A recipe whose style reference is retired stays on record but cannot be
+ * drawn again: the reference image the provider was shown no longer exists.
+ */
+function assertNotFrozen(source: SourceManifest, recipe: Recipe): void {
+  if (frozenByRetirement(source, recipe))
+    throw new Error(
+      `${recipe.id} is frozen: its style reference ${recipe.styleReference} is retired, so it cannot be generated, repaired or resumed again. Give it a live style reference first.`,
+    );
+}
+
+/**
+ * `retire`: removes recipes whose art the game no longer draws (bead
+ * pulp_wars-67q.15). It deletes each one's raster, candidates, quarantined
+ * attempts, private reframe sources and submission receipts, drops its
+ * record, moves the recipe to the manifest's `retired` list and rewrites
+ * the generated manifest (whose `sourceManifestSha256` follows the new
+ * source text) and the runtime table. It never calls PixelLab and reads no
+ * credential. The new source manifest is validated before anything is
+ * written, so a refused retirement changes nothing.
+ */
+async function retireRecipes(
+  source: SourceManifest,
+  sourceText: string,
+  generated: GeneratedManifest,
+): Promise<void> {
+  const idsFile = optionalOption("--ids-file");
+  const ids = (
+    idsFile === undefined
+      ? requiredOption("--ids").split(",")
+      : (await readFile(path.resolve(ROOT, idsFile), "utf8")).split(/\s+/)
+  ).filter(Boolean);
+  const reason = requiredOption("--reason");
+  const plan = planRetirement(source, generated, ids, reason);
+  const nextSourceText = await format(
+    retireFromManifestText(sourceText, plan.retired),
+    { parser: "json" },
+  );
+  const nextSource = JSON.parse(nextSourceText) as SourceManifest;
+  validateSourceManifest(nextSource, nextSourceText);
+  const leaving = new Set(ids);
+  const nextGenerated: GeneratedManifest = {
+    schemaVersion: 1,
+    sourceManifestSha256: sha256(Buffer.from(nextSourceText)),
+    records: Object.fromEntries(
+      Object.entries(generated.records).filter(([id]) => !leaving.has(id)),
+    ),
+  };
+  const problems = retirementProblems(nextSource, nextGenerated);
+  if (problems.length > 0)
+    throw new Error(`Retirement refused:\n${problems.join("\n")}`);
+  const receipts = new Set(plan.jobIds.map(submissionReceiptName));
+  // A receipt of a job no record names (a duplicate submission) is found by
+  // the recipe id it stores.
+  for (const name of await readdir(SUBMISSION_ROOT).catch(() => [])) {
+    if (receipts.has(name) || !name.endsWith(".json")) continue;
+    const receipt = JSON.parse(
+      await readFile(path.join(SUBMISSION_ROOT, name), "utf8"),
+    ) as { readonly id?: string };
+    if (receipt.id !== undefined && leaving.has(receipt.id)) receipts.add(name);
+  }
+  const files = [
+    ...plan.files,
+    ...[...receipts]
+      .sort()
+      .map((name) =>
+        path
+          .relative(ROOT, path.join(SUBMISSION_ROOT, name))
+          .replaceAll("\\", "/"),
+      ),
+  ];
+  for (const file of files)
+    if (
+      !/^(public\/assets\/pixellab|art\/pixellab\/(candidates|quarantine|reframe-sources|submissions))\//.test(
+        file,
+      ) ||
+      file.includes("..")
+    )
+      throw new Error(`Retirement refused: ${file} is outside the art store`);
+  if (process.argv.includes("--dry-run")) {
+    console.log(
+      `Would retire ${ids.length} recipes and delete ${files.length} files:\n${files.join("\n")}`,
+    );
+    return;
+  }
+  let deleted = 0;
+  for (const file of files) {
+    try {
+      await rm(path.join(ROOT, file));
+      deleted += 1;
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+    }
+  }
+  // A folder the retirement emptied goes too; one that still holds a file
+  // is left alone.
+  for (const folder of new Set(files.map((file) => path.dirname(file))))
+    await rmdir(path.join(ROOT, folder)).catch(() => undefined);
+  await writeFile(SOURCE_PATH, nextSourceText, "utf8");
+  await saveGenerated(nextGenerated);
+  await syncRuntime(nextSource, nextGenerated);
+  console.log(
+    `Retired ${ids.length} recipes (${deleted} files deleted).${
+      plan.frozen.length === 0
+        ? ""
+        : ` Frozen, keeping a retired style reference as history: ${plan.frozen.join(", ")}.`
+    }`,
   );
 }
 
@@ -874,7 +1002,10 @@ function validateSourceManifest(
       recipe.styleReference !== undefined &&
       !source.recipes.some(
         (candidate) => candidate.id === recipe.styleReference,
-      )
+      ) &&
+      // A retired reference is history: `retirementProblems` checks that
+      // the recipe's accepted record holds the reference's hash.
+      !frozenByRetirement(source, recipe)
     )
       throw new Error(
         `Unknown style reference ${recipe.styleReference} for ${recipe.id}`,
@@ -1080,52 +1211,6 @@ function validateSourceManifest(
     )
       throw new Error(`Square terrain geometry mismatch: ${contract.id}`);
   }
-  const ruleset7Readability = [
-    ...([1, 2, 3] as const).map((variant) => ({
-      id: `terrain-ruleset7-original-grass-${variant}`,
-      postprocess: "square-grass-texture-v7" as const,
-      size: { width: 256, height: 256 },
-      anchor: { x: 128, y: 128 },
-    })),
-    ...([1, 2, 3, 4] as const).map((variant) => ({
-      id: `terrain-ruleset7-original-forest-${variant}`,
-      postprocess: "square-tall-reframe-ground-reference" as const,
-      size: { width: 256, height: 384 },
-      anchor: { x: 128, y: 256 },
-    })),
-  ];
-  for (const contract of ruleset7Readability) {
-    const recipe = source.recipes.find(({ id }) => id === contract.id);
-    if (
-      recipe?.class !== "terrain" ||
-      recipe.stage !== "batch" ||
-      JSON.stringify(recipe.requestSize) !== JSON.stringify(contract.size) ||
-      JSON.stringify(recipe.outputSize) !== JSON.stringify(contract.size) ||
-      JSON.stringify(recipe.anchor) !== JSON.stringify(contract.anchor) ||
-      recipe.postprocess !== contract.postprocess ||
-      JSON.stringify(recipe.squareFootprint) !==
-        JSON.stringify({
-          left: 0,
-          top: contract.size.height === 384 ? 128 : 0,
-          right: 256,
-          bottom: contract.size.height,
-        })
-    )
-      throw new Error(
-        `Ruleset 7 readability geometry mismatch: ${contract.id}`,
-      );
-    if (
-      contract.size.height === 384 &&
-      (recipe.groundReference !== "terrain-ruleset7-original-grass-1" ||
-        recipe.reframeGroundReference !== "terrain-square-original-grass-1" ||
-        recipe.reframeSource === undefined ||
-        recipe.reframeSourceSha256 === undefined ||
-        recipe.bodyOffsetY === undefined)
-    )
-      throw new Error(
-        `Ruleset 7 Forest reframe contract mismatch: ${contract.id}`,
-      );
-  }
   const revision3HorseArcher = source.recipes.find(
     ({ id }) => id === "unit-original-horse-archer",
   );
@@ -1154,51 +1239,6 @@ function validateSourceManifest(
       JSON.stringify({ width: 256, height: 256 })
   )
     throw new Error("Ruleset 7 revision-3 Horse Archer portrait mismatch");
-  const revision3Gravel = source.recipes.find(
-    ({ id }) => id === "terrain-ruleset7-revision3-gravel",
-  );
-  if (
-    revision3Gravel?.class !== "terrain" ||
-    revision3Gravel.postprocess !== "square-gravel-ground-v7r3" ||
-    JSON.stringify(revision3Gravel.outputSize) !==
-      JSON.stringify({ width: 256, height: 256 }) ||
-    JSON.stringify(revision3Gravel.squareFootprint) !==
-      JSON.stringify({ left: 0, top: 0, right: 256, bottom: 256 })
-  )
-    throw new Error("Ruleset 7 revision-3 gravel geometry mismatch");
-  for (const variant of [1, 2, 3] as const) {
-    const mountainId = `terrain-ruleset7-revision3-mountain-${variant}`;
-    const minedId = `terrain-ruleset7-revision3-mined-mountain-${variant}`;
-    const mountain = source.recipes.find(({ id }) => id === mountainId);
-    const mined = source.recipes.find(({ id }) => id === minedId);
-    const tallGeometryValid = (recipe: Recipe | undefined): boolean =>
-      recipe?.class === "terrain" &&
-      recipe.stage === "batch" &&
-      JSON.stringify(recipe.outputSize) ===
-        JSON.stringify({ width: 256, height: 384 }) &&
-      JSON.stringify(recipe.anchor) === JSON.stringify({ x: 128, y: 256 }) &&
-      JSON.stringify(recipe.squareFootprint) ===
-        JSON.stringify({ left: 0, top: 128, right: 256, bottom: 384 });
-    if (
-      !tallGeometryValid(mountain) ||
-      mountain?.postprocess !== "square-mountain-reframe-gravel-v7r3" ||
-      mountain.styleReference !==
-        `terrain-square-original-mountain-${variant}` ||
-      mountain.groundReference !== "terrain-ruleset7-revision3-gravel" ||
-      mountain.reframeGroundReference !== "terrain-square-original-grass-1" ||
-      mountain.reframeSource === undefined ||
-      mountain.reframeSourceSha256 === undefined ||
-      mountain.bodyOffsetY !== 40
-    )
-      throw new Error(`Revision-3 Mountain derivation mismatch: ${mountainId}`);
-    if (
-      !tallGeometryValid(mined) ||
-      mined?.postprocess !== "square-tall-ground-reference" ||
-      mined.styleReference !== mountainId ||
-      mined.groundReference !== "terrain-ruleset7-revision3-gravel"
-    )
-      throw new Error(`Revision-3 mined Mountain mismatch: ${minedId}`);
-  }
   const squareResources = [
     "terrain-square-original-fruit",
     "terrain-square-candy-fruit",
@@ -1291,54 +1331,6 @@ function validateSourceManifest(
     JSON.stringify({ left: 0, top: 0, right: 256, bottom: 256 })
   )
     throw new Error("Square Farm needs one complete opaque owning footprint");
-  const ruleset7Farms = [
-    {
-      id: "building-ruleset7-farm-single",
-      size: { width: 256, height: 256 },
-      styleReference: "terrain-square-original-forest-1",
-    },
-    {
-      id: "building-ruleset7-farm-pair-horizontal",
-      size: { width: 512, height: 256 },
-      styleReference: "building-ruleset7-farm-single",
-    },
-    {
-      id: "building-ruleset7-farm-pair-vertical",
-      size: { width: 256, height: 512 },
-      styleReference: "building-ruleset7-farm-single",
-    },
-  ] as const;
-  for (const contract of ruleset7Farms) {
-    const recipe = source.recipes.find(({ id }) => id === contract.id);
-    if (
-      recipe?.class !== "buildings" ||
-      recipe.stage !== "sample" ||
-      recipe.endpoint !== "generate-image-v2" ||
-      JSON.stringify(recipe.requestSize) !== JSON.stringify(contract.size) ||
-      JSON.stringify(recipe.outputSize) !== JSON.stringify(contract.size) ||
-      JSON.stringify(recipe.squareFootprint) !==
-        JSON.stringify({
-          left: 0,
-          top: 0,
-          right: contract.size.width,
-          bottom: contract.size.height,
-        }) ||
-      JSON.stringify(recipe.hardBounds) !==
-        JSON.stringify({
-          left: 0,
-          top: 0,
-          right: contract.size.width,
-          bottom: contract.size.height,
-        }) ||
-      recipe.anchor?.x !== contract.size.width / 2 ||
-      recipe.anchor.y !== contract.size.height / 2 ||
-      recipe.postprocess !== "farm-full-rectangle" ||
-      recipe.requestNoBackground !== false ||
-      recipe.styleReference !== contract.styleReference ||
-      recipe.styleReferenceUsage === undefined
-    )
-      throw new Error(`Ruleset 7 Farm geometry mismatch: ${contract.id}`);
-  }
   const squareImprovementExpansion = [
     {
       id: "building-square-lumber-camp",
@@ -1384,26 +1376,6 @@ function validateSourceManifest(
         `Square extraction/processor geometry mismatch: ${contract.id}`,
       );
   }
-  const ruleset7Camp = source.recipes.find(
-    ({ id }) => id === "building-ruleset7-lumber-camp",
-  );
-  if (
-    ruleset7Camp?.class !== "buildings" ||
-    ruleset7Camp.stage !== "batch" ||
-    JSON.stringify(ruleset7Camp.requestSize) !==
-      JSON.stringify({ width: 384, height: 384 }) ||
-    JSON.stringify(ruleset7Camp.outputSize) !==
-      JSON.stringify({ width: 384, height: 384 }) ||
-    JSON.stringify(ruleset7Camp.anchor) !==
-      JSON.stringify({ x: 192, y: 288 }) ||
-    ruleset7Camp.postprocess !== "compact-building-fit" ||
-    ruleset7Camp.styleReference === undefined ||
-    ruleset7Camp.styleReferenceUsage === undefined ||
-    ruleset7Camp.preferredBounds === undefined ||
-    ruleset7Camp.fitBounds === undefined ||
-    ruleset7Camp.groundContactY === undefined
-  )
-    throw new Error("Ruleset 7 Lumber Camp geometry mismatch");
   const squareCivicCommerce = [
     "building-square-workshop",
     "building-square-grand-works",
@@ -1455,12 +1427,7 @@ function validateSourceManifest(
     )
       throw new Error(`Ruleset 7 building geometry mismatch: ${id}`);
   }
-  for (const id of [
-    "ui-action-pillage",
-    "ui-action-disband",
-    "ui-action-defection",
-    "ui-action-blackout",
-  ] as const) {
+  for (const id of ["ui-action-defection", "ui-action-blackout"] as const) {
     const recipe = source.recipes.find((candidate) => candidate.id === id);
     if (
       recipe?.class !== "ui" ||
@@ -1740,7 +1707,6 @@ function validateSourceManifest(
     ["envoy", "unit-original-envoy"],
     ["lancer", "unit-original-lancer"],
     ["saboteur", "unit-original-saboteur"],
-    ["catapult", "unit-original-catapult"],
   ]);
   for (const [role, portraitSource] of portraitSources) {
     const id = `portrait-original-${role}`;
@@ -2183,38 +2149,6 @@ function assertSquareImprovementSampleGate(recipes: readonly Recipe[]): void {
   )
     throw new Error(
       "Square improvement sample gate must generate exactly Farm, Quarry, and Windmill together in manifest order",
-    );
-}
-
-function assertRuleset7FarmSampleOrder(
-  recipes: readonly Recipe[],
-  generated: GeneratedManifest,
-): void {
-  const ids = [
-    "building-ruleset7-farm-single",
-    "building-ruleset7-farm-pair-horizontal",
-    "building-ruleset7-farm-pair-vertical",
-  ] as const;
-  const selected = recipes
-    .map(({ id }) => id)
-    .filter((id) => ids.includes(id as (typeof ids)[number]));
-  if (selected.length === 0) return;
-  if (selected.length !== 1)
-    throw new Error(
-      "Ruleset 7 Farm samples must be generated one independent request at a time",
-    );
-  const selectedIndex = ids.indexOf(selected[0] as (typeof ids)[number]);
-  const missingBefore = ids
-    .slice(0, selectedIndex)
-    .filter(
-      (id) =>
-        !["CANDIDATE", "ACCEPTED"].includes(
-          generated.records[id]?.status ?? "",
-        ),
-    );
-  if (missingBefore.length > 0)
-    throw new Error(
-      `Ruleset 7 Farm sample order requires a reviewed candidate first: ${missingBefore.join(", ")}`,
     );
 }
 
@@ -3836,11 +3770,9 @@ async function normalizeToHardBounds(
   const navalContactIsInteriorAnchor =
     !legacyNavalBottomAlignment &&
     [
-      "building-ruleset7-port",
       "unit-shared-embarked-transport",
       "unit-original-patrol-boat",
       "unit-original-battleship",
-      "building-ruleset7-shipyard",
     ].includes(recipe.id);
   const targetBounds =
     recipe.postprocess === "preferred-low-marker-fit"
@@ -4208,6 +4140,17 @@ async function validateOutputs(
         throw error;
     }
   }
+  const retiredProblems = retirementProblems(source, generated);
+  for (const entry of source.retired ?? []) {
+    try {
+      await stat(path.join(ROOT, entry.output));
+      retiredProblems.push(`Retired raster is still present: ${entry.output}`);
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+    }
+  }
+  if (retiredProblems.length > 0)
+    throw new Error(`Retired recipes:\n${retiredProblems.join("\n")}`);
   if (generated.records["terrain-road-material"]?.status === "ACCEPTED")
     await validateRoadMasks(generated.records["terrain-road-material"]);
   if (generated.records["terrain-square-road-material"]?.status === "ACCEPTED")

@@ -189,7 +189,7 @@ const OVERFLOW = [0, 0, 80, 24, 80, 80, 80, 24] as const;
 describe("CHIBI Roads under tall terrain", () => {
   it("draws ground, then Roads, then the body, then pieces and the overflow", () => {
     const built = plan([
-      terrain(1, 1, "TERRAIN:FOREST", "terrain-ruleset7-original-forest-1"),
+      terrain(1, 1, "TERRAIN:FOREST", "v7-terrain-forest-1"),
       road(1, 1, [{ x: 2, y: 1 }]),
       {
         key: "unit:1,1",
@@ -216,20 +216,10 @@ describe("CHIBI Roads under tall terrain", () => {
 
   it("routes Roads under Forest, Mountain and Mine bodies, and under a corner join", () => {
     const built = plan([
-      terrain(0, 1, "TERRAIN:FOREST", "terrain-ruleset7-original-forest-1"),
-      terrain(
-        1,
-        1,
-        "TERRAIN:MOUNTAIN",
-        "terrain-ruleset7-revision3-mountain-1",
-      ),
-      terrain(
-        2,
-        1,
-        "TERRAIN:MINED_MOUNTAIN",
-        "terrain-ruleset7-revision3-mined-mountain-1",
-      ),
-      terrain(3, 1, "TERRAIN:FOREST", "terrain-ruleset7-original-forest-2"),
+      terrain(0, 1, "TERRAIN:FOREST", "v7-terrain-forest-1"),
+      terrain(1, 1, "TERRAIN:MOUNTAIN", "v7-terrain-mountain-1"),
+      terrain(2, 1, "TERRAIN:MINED_MOUNTAIN", "v7-terrain-mined-mountain-1"),
+      terrain(3, 1, "TERRAIN:FOREST", "v7-terrain-forest-2"),
       {
         key: "road-join:3,1",
         kind: "ROAD_JOIN",
@@ -277,13 +267,8 @@ describe("CHIBI Roads under tall terrain", () => {
 
   it("leaves tall terrain without a Road exactly as before", () => {
     const built = plan([
-      terrain(1, 1, "TERRAIN:FOREST", "terrain-ruleset7-original-forest-1"),
-      terrain(
-        2,
-        1,
-        "TERRAIN:MOUNTAIN",
-        "terrain-ruleset7-revision3-mountain-1",
-      ),
+      terrain(1, 1, "TERRAIN:FOREST", "v7-terrain-forest-1"),
+      terrain(2, 1, "TERRAIN:MOUNTAIN", "v7-terrain-mountain-1"),
       road(3, 1, []),
     ]);
     const withLayers = draw(built, fakeChibi([forest, mountain]));
@@ -303,7 +288,7 @@ describe("CHIBI Roads under tall terrain", () => {
 
   it("draws the whole master under a Road while its layers are not loaded", () => {
     const built = plan([
-      terrain(1, 1, "TERRAIN:FOREST", "terrain-ruleset7-original-forest-1"),
+      terrain(1, 1, "TERRAIN:FOREST", "v7-terrain-forest-1"),
       road(1, 1, [{ x: 2, y: 1 }]),
     ]);
     expect(events(draw(built, fakeChibi([forest], { bare: true })))).toEqual([

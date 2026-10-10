@@ -11,7 +11,7 @@ export const BROWSER_RELEASE_SOURCE_PATHS_V7 = Object.freeze([
   "src/app/browser-routing.ts",
   "src/app/v7-controller.ts",
   "src/assets/generated-art-manifest.ts",
-  "src/assets/ruleset7-ui-art.ts",
+  "src/assets/art-keys-v7.ts",
   "src/engine/v7/reducer.ts",
   "src/engine/v7/replay.ts",
   "src/persistence/v7.ts",

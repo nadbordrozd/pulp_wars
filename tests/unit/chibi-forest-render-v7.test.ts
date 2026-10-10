@@ -177,8 +177,8 @@ function terrain(x: number, y: number, subject: ArtSubjectV7): Entry {
     at: { x, y },
     assetId:
       subject === "TERRAIN:FOREST"
-        ? "terrain-ruleset7-original-forest-1"
-        : "terrain-ruleset7-original-grass-1",
+        ? "v7-terrain-forest-1"
+        : "v7-terrain-grass-1",
     artSubject: subject,
   };
 }

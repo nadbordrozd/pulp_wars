@@ -217,7 +217,7 @@ try {
   };
   assert(
     evidence.rulesetId === RULESET_7_ID &&
-      terrain.assetId === "ui-action-cultivate-forest-v7r9" &&
+      terrain.assetId === "v7-action-cultivate-forest" &&
       terrain.blastOffered === true,
     `terrain evidence failed: ${JSON.stringify(evidence)}`,
   );

@@ -16,9 +16,9 @@ import {
   technologySubjectV7,
 } from "../../src/assets/chibi-ui-art-v7";
 import {
-  RULESET7_TECH_ART_IDS,
-  commandArtIdV7,
-} from "../../src/assets/ruleset7-ui-art";
+  TECH_ART_KEYS_V7,
+  commandArtKeyV7,
+} from "../../src/assets/art-keys-v7";
 import {
   TECHNOLOGY_IDS_V7,
   type CommandV7,
@@ -118,7 +118,7 @@ describe("CHIBI interface subjects", () => {
       [...TECHNOLOGY_IDS_V7].sort(),
     );
     // Legacy map sprites become chibi map subjects.
-    expect(RULESET7_TECH_ART_IDS.GATHERING).toMatch(/fruit/);
+    expect(TECH_ART_KEYS_V7.GATHERING).toMatch(/fruit/);
     expect(CHIBI_TECH_ART_SUBJECTS_V7.GATHERING).toBe("RESOURCE:FRUIT");
     expect(CHIBI_TECH_ART_SUBJECTS_V7.CHIVALRY).toBe("UNIT:KNIGHT");
     expect(CHIBI_TECH_ART_SUBJECTS_V7.NAVAL_ENGINEERING).toBe(
@@ -287,7 +287,7 @@ describe("CHIBI interface subjects", () => {
         ),
       ).toBeNull();
     for (const command of commands)
-      if (commandArtIdV7(command) !== null)
+      if (commandArtKeyV7(command) !== null)
         expect(commandSubjectV7(command, "ORIGINAL")).not.toBeNull();
   });
 

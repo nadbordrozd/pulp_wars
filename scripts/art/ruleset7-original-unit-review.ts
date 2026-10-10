@@ -1255,8 +1255,8 @@ async function createRevision3HorseArcherReview(
   );
 
   const terrainIds = [
-    "terrain-ruleset7-original-grass-1",
-    "terrain-ruleset7-original-forest-1",
+    "terrain-square-original-grass-1",
+    "terrain-square-original-forest-1",
     "terrain-square-original-mountain-1",
   ] as const;
   const contextOverlays: OverlayOptions[] = [];

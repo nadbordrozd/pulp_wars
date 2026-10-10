@@ -1,29 +1,14 @@
 import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
-import sharp from "sharp";
 import { describe, expect, it } from "vitest";
 import {
-  RULESET7_REVISION3_GRAVEL_ID,
   RULESET7_REVISION3_HORSE_ARCHER_GEOMETRY,
   RULESET7_REVISION3_HORSE_ARCHER_ID,
   RULESET7_REVISION3_HORSE_ARCHER_PORTRAIT_ID,
-  RULESET7_REVISION3_MINED_MOUNTAIN_IDS,
-  RULESET7_REVISION3_MOUNTAIN_IDS,
-  RULESET7_REVISION3_MOUNTAIN_RESTORATION,
   assertRuleset7Revision3ArtOrder,
   resolveRepairStyleReferenceHash,
 } from "../../scripts/art/ruleset7-revision3-art-order";
 import { ACCEPTED_ART_URLS } from "../../src/assets/generated-art-manifest";
-import {
-  RULESET7_REVISION9_PORTRAIT_ART_IDS,
-  RULESET7_REVISION9_UNIT_ART_IDS,
-} from "../../src/assets/ruleset7-revision9-art";
-import {
-  RULESET7_IMPROVEMENT_ART_IDS,
-  RULESET7_PORTRAIT_ART_IDS,
-  RULESET7_TERRAIN_ART_IDS,
-  RULESET7_UNIT_ART_IDS,
-} from "../../src/assets/ruleset7-ui-art";
 
 interface Bounds {
   readonly left: number;
@@ -105,14 +90,8 @@ async function manifests(): Promise<{
   };
 }
 
-function acceptedRecords(
-  ids: readonly string[],
-): Record<string, { status: string }> {
-  return Object.fromEntries(ids.map((id) => [id, { status: "ACCEPTED" }]));
-}
-
 describe("Ruleset 7 revision-3 art assets", () => {
-  it("enforces individual generation, deterministic derivation, and the guarded final Mine pair", () => {
+  it("enforces individual generation and the world sprite before its portrait", () => {
     expect(() =>
       assertRuleset7Revision3ArtOrder(
         [{ id: RULESET7_REVISION3_HORSE_ARCHER_ID }],
@@ -127,42 +106,29 @@ describe("Ruleset 7 revision-3 art assets", () => {
     ).toThrow("before deriving its portrait");
     expect(() =>
       assertRuleset7Revision3ArtOrder(
-        [{ id: RULESET7_REVISION3_MOUNTAIN_IDS[0] as string }],
-        { records: {} },
+        [{ id: RULESET7_REVISION3_HORSE_ARCHER_PORTRAIT_ID }],
+        {
+          records: {
+            [RULESET7_REVISION3_HORSE_ARCHER_ID]: { status: "ACCEPTED" },
+          },
+        },
       ),
-    ).toThrow("use pixellab repair");
+    ).not.toThrow();
     expect(() =>
       assertRuleset7Revision3ArtOrder(
         [
-          { id: RULESET7_REVISION3_GRAVEL_ID },
-          { id: "terrain-ruleset7-original-grass-1" },
+          { id: RULESET7_REVISION3_HORSE_ARCHER_ID },
+          { id: RULESET7_REVISION3_HORSE_ARCHER_PORTRAIT_ID },
         ],
         { records: {} },
       ),
+    ).toThrow("one revision-3 asset per call");
+    expect(() =>
+      assertRuleset7Revision3ArtOrder(
+        [{ id: RULESET7_REVISION3_HORSE_ARCHER_ID }, { id: "unit-warrior" }],
+        { records: {} },
+      ),
     ).toThrow("unrelated generation families");
-
-    const dependencies = {
-      ...acceptedRecords([
-        RULESET7_REVISION3_GRAVEL_ID,
-        ...RULESET7_REVISION3_MOUNTAIN_IDS,
-      ]),
-    };
-    const finalPair = RULESET7_REVISION3_MINED_MOUNTAIN_IDS.slice(1).map(
-      (id) => ({ id }),
-    );
-    expect(() =>
-      assertRuleset7Revision3ArtOrder(finalPair, { records: dependencies }),
-    ).toThrow("guarded Mine 2 + Mine 3 pair");
-    expect(() =>
-      assertRuleset7Revision3ArtOrder(finalPair, {
-        records: {
-          ...dependencies,
-          [RULESET7_REVISION3_MINED_MOUNTAIN_IDS[0] as string]: {
-            status: "ACCEPTED",
-          },
-        },
-      }),
-    ).not.toThrow();
   });
 
   it("does not retain a stale reference hash when a repair recipe changes reference ID", () => {
@@ -237,170 +203,12 @@ describe("Ruleset 7 revision-3 art assets", () => {
     ).toBe(record?.outputSha256);
   });
 
-  it("registers one quiet gravel source and exact three-to-three Mountain restoration", async () => {
+  it("keeps the Horse Archer accepted and retires the gravel and the Mountains", async () => {
     const { recipes, records } = await manifests();
-    expect(RULESET7_REVISION3_MOUNTAIN_RESTORATION).toEqual(
-      Object.fromEntries(
-        RULESET7_REVISION3_MOUNTAIN_IDS.map((id, index) => [
-          id,
-          RULESET7_REVISION3_MINED_MOUNTAIN_IDS[index],
-        ]),
-      ),
-    );
-    const gravel = recipes.find(
-      ({ id }) => id === RULESET7_REVISION3_GRAVEL_ID,
-    );
-    expect(gravel).toMatchObject({
-      seed: 110512,
-      requestSize: { width: 256, height: 256 },
-      outputSize: { width: 256, height: 256 },
-      anchor: { x: 128, y: 128 },
-      squareFootprint: { left: 0, top: 0, right: 256, bottom: 256 },
-      postprocess: "square-gravel-ground-v7r3",
-    });
-    expect(gravel?.prompt).toContain("angular scree fragments");
-    expect(records[RULESET7_REVISION3_GRAVEL_ID]?.rejectedAttempts).toEqual([
-      expect.objectContaining({
-        candidateSha256:
-          "f1d808a483bd7505c6485e472cdee59c9c4ed46599d47c83a93de1c6e236e383",
-        jobId: "0324683a-11e7-49e9-ba52-3d83444022de",
-        disposition: "REJECTED",
-      }),
-    ]);
-
-    for (const [
-      index,
-      mountainId,
-    ] of RULESET7_REVISION3_MOUNTAIN_IDS.entries()) {
-      const ordinal = index + 1;
-      const mountain = recipes.find(({ id }) => id === mountainId);
-      expect(mountain).toMatchObject({
-        outputSize: { width: 256, height: 384 },
-        anchor: { x: 128, y: 256 },
-        squareFootprint: { left: 0, top: 128, right: 256, bottom: 384 },
-        postprocess: "square-mountain-reframe-gravel-v7r3",
-        styleReference: `terrain-square-original-mountain-${ordinal}`,
-        groundReference: RULESET7_REVISION3_GRAVEL_ID,
-        reframeGroundReference: "terrain-square-original-grass-1",
-        bodyOffsetY: 40,
-      });
-      expect(mountain?.reframeSourceSha256).toMatch(/^[a-f0-9]{64}$/);
-      expect(records[mountainId]?.request?.reframeSource).toEqual({
-        path: mountain?.reframeSource,
-        sha256: mountain?.reframeSourceSha256,
-        usageDescription: expect.any(String),
-      });
-
-      const minedId = RULESET7_REVISION3_MINED_MOUNTAIN_IDS[index] as string;
-      const mined = recipes.find(({ id }) => id === minedId);
-      expect(mined).toMatchObject({
-        outputSize: { width: 256, height: 384 },
-        anchor: { x: 128, y: 256 },
-        squareFootprint: { left: 0, top: 128, right: 256, bottom: 384 },
-        postprocess: "square-tall-ground-reference",
-        styleReference: mountainId,
-        groundReference: RULESET7_REVISION3_GRAVEL_ID,
-      });
-      expect(mined?.prompt.toLowerCase()).toMatch(/entrance|tunnel/);
-      expect(mined?.prompt.toLowerCase()).toContain("braces");
-      expect(mined?.prompt.toLowerCase()).toContain("spoil");
-      expect(records[minedId]?.request?.styleReference).toMatchObject({
-        id: mountainId,
-        sha256: records[mountainId]?.outputSha256,
-      });
-      expect(records[minedId]?.request?.groundReference).toMatchObject({
-        id: RULESET7_REVISION3_GRAVEL_ID,
-        sha256: records[RULESET7_REVISION3_GRAVEL_ID]?.outputSha256,
-      });
-    }
-  });
-
-  it("keeps every accepted owning square opaque, gravel seam-safe, and Mountain rock pixels intact", async () => {
-    const { recipes, records } = await manifests();
-    const gravel = recipes.find(
-      ({ id }) => id === RULESET7_REVISION3_GRAVEL_ID,
-    );
-    if (gravel === undefined) throw new Error("revision-3 gravel missing");
-    const { data: gravelData, info: gravelInfo } = await sharp(gravel.output)
-      .ensureAlpha()
-      .raw()
-      .toBuffer({ resolveWithObject: true });
-    expect({ width: gravelInfo.width, height: gravelInfo.height }).toEqual({
-      width: 256,
-      height: 256,
-    });
-    const colors = new Set<string>();
-    let transparentGravelPixels = 0;
-    for (let offset = 0; offset < gravelData.length; offset += 4) {
-      if (gravelData[offset + 3] !== 255) transparentGravelPixels += 1;
-      colors.add(
-        `${gravelData[offset]},${gravelData[offset + 1]},${gravelData[offset + 2]}`,
-      );
-    }
-    expect(transparentGravelPixels).toBe(0);
-    expect(colors.size).toBeGreaterThan(40);
-    for (let index = 0; index < 256; index += 1)
-      for (const [x, y] of [
-        [index, 0],
-        [index, 255],
-        [0, index],
-        [255, index],
-      ] as const) {
-        const offset = (y * 256 + x) * 4;
-        expect([...gravelData.subarray(offset, offset + 4)]).toEqual([
-          0x71, 0x83, 0x91, 0xff,
-        ]);
-      }
-
-    for (const [
-      index,
-      mountainId,
-    ] of RULESET7_REVISION3_MOUNTAIN_IDS.entries()) {
-      const recipe = recipes.find(({ id }) => id === mountainId);
-      if (recipe === undefined) throw new Error(`missing ${mountainId}`);
-      const oldFile = `public/assets/pixellab/terrain-square/original-mountain-${index + 1}.png`;
-      const [oldPixels, revised] = await Promise.all([
-        sharp(oldFile).ensureAlpha().raw().toBuffer(),
-        sharp(recipe.output).ensureAlpha().raw().toBuffer(),
-      ]);
-      let exactRockPixels = 0;
-      let transparentOwningPixels = 0;
-      for (let offset = 0; offset < revised.length; offset += 4) {
-        const y = Math.floor(offset / 4 / 256);
-        if (y >= 128 && revised[offset + 3] !== 255)
-          transparentOwningPixels += 1;
-        const oldIsGround =
-          oldPixels[offset] === 135 &&
-          oldPixels[offset + 1] === 135 &&
-          oldPixels[offset + 2] === 135 &&
-          oldPixels[offset + 3] === 255;
-        if (
-          !oldIsGround &&
-          oldPixels[offset + 3] !== 0 &&
-          oldPixels
-            .subarray(offset, offset + 4)
-            .equals(revised.subarray(offset, offset + 4))
-        )
-          exactRockPixels += 1;
-      }
-      expect(transparentOwningPixels, mountainId).toBe(0);
-      expect(exactRockPixels, mountainId).toBeGreaterThan(20_000);
-      expect(hash(await readFile(recipe.output))).toBe(
-        records[mountainId]?.outputSha256,
-      );
-    }
-  });
-
-  it("preserves revision-3 assets while registering current live mappings", async () => {
-    const { recipes, records } = await manifests();
-    const ids = [
+    for (const id of [
       RULESET7_REVISION3_HORSE_ARCHER_ID,
       RULESET7_REVISION3_HORSE_ARCHER_PORTRAIT_ID,
-      RULESET7_REVISION3_GRAVEL_ID,
-      ...RULESET7_REVISION3_MOUNTAIN_IDS,
-      ...RULESET7_REVISION3_MINED_MOUNTAIN_IDS,
-    ];
-    for (const id of ids) {
+    ]) {
       const recipe = recipes.find((candidate) => candidate.id === id);
       expect(records[id]?.status, id).toBe("ACCEPTED");
       expect(Object.values(records[id]?.reviewChecks ?? {}), id).not.toContain(
@@ -412,40 +220,30 @@ describe("Ruleset 7 revision-3 art assets", () => {
         records[id]?.outputSha256,
       );
     }
-    expect(RULESET7_UNIT_ART_IDS.KNIGHT).toBe(
-      RULESET7_REVISION9_UNIT_ART_IDS.KNIGHT,
-    );
-    expect(RULESET7_UNIT_ART_IDS.KNIGHT).not.toBe(
-      RULESET7_REVISION3_HORSE_ARCHER_ID,
-    );
-    expect(RULESET7_PORTRAIT_ART_IDS.KNIGHT).toBe(
-      RULESET7_REVISION9_PORTRAIT_ART_IDS.KNIGHT,
-    );
-    expect(RULESET7_PORTRAIT_ART_IDS.KNIGHT).not.toBe(
-      RULESET7_REVISION3_HORSE_ARCHER_PORTRAIT_ID,
-    );
-    expect(RULESET7_TERRAIN_ART_IDS.MOUNTAIN).toBe(
-      RULESET7_REVISION3_MOUNTAIN_IDS[0],
-    );
-    expect(RULESET7_IMPROVEMENT_ART_IDS.MINE).toBe(
-      RULESET7_REVISION3_MINED_MOUNTAIN_IDS[0],
-    );
-    const renderer = await readFile(
-      "src/render/canvas/board-renderer-v7.ts",
-      "utf8",
-    );
-    expect(renderer).toContain("terrain-ruleset7-revision3-");
-    expect(renderer).toContain('tile.improvement === "MINE" ? "mined-"');
+    // Bead pulp_wars-67q.15.
+    const retired = (
+      JSON.parse(
+        await readFile("scripts/art/pixellab-manifest.json", "utf8"),
+      ) as { readonly retired: readonly { readonly id: string }[] }
+    ).retired.map(({ id }) => id);
+    for (const id of [
+      "terrain-ruleset7-revision3-gravel",
+      ...[1, 2, 3].flatMap((variant) => [
+        `terrain-ruleset7-revision3-mountain-${variant}`,
+        `terrain-ruleset7-revision3-mined-mountain-${variant}`,
+      ]),
+    ]) {
+      expect(retired, id).toContain(id);
+      expect(records[id], id).toBeUndefined();
+      expect(ACCEPTED_ART_URLS[id], id).toBeUndefined();
+    }
   });
 
   it("leaves all prior accepted generated outputs byte-identical to their recorded hashes", async () => {
     const { recipes, records } = await manifests();
-    const revision3 = new Set([
+    const revision3 = new Set<string>([
       RULESET7_REVISION3_HORSE_ARCHER_ID,
       RULESET7_REVISION3_HORSE_ARCHER_PORTRAIT_ID,
-      RULESET7_REVISION3_GRAVEL_ID,
-      ...RULESET7_REVISION3_MOUNTAIN_IDS,
-      ...RULESET7_REVISION3_MINED_MOUNTAIN_IDS,
     ]);
     const priorAccepted = recipes.filter(
       ({ id }) => !revision3.has(id) && records[id]?.status === "ACCEPTED",

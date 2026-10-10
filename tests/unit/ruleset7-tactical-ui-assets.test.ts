@@ -88,35 +88,19 @@ const EXPECTED_SYMBOL_IDS = [
   "ui-status-achievement-source-current-owner",
 ] as const;
 
-const ARCHIVED_R2_REVIEW_SYMBOL_IDS = [
-  "ui-action-pursue",
-  "ui-action-end-pursuit",
-  "ui-status-concealed",
-  "ui-status-detected",
-  "ui-status-exposed",
-  "ui-status-defection-waiting",
-  "ui-status-defection-armed",
-  "ui-status-defection-reservation",
-  "ui-status-spoils",
-  "ui-status-blackout-cooldown",
-  "ui-status-blackout-pending",
-  "ui-status-blackout-active",
-  "ui-status-blackout-recovery",
-  "ui-status-capacity-reservation",
-  "ui-status-achievement-progress",
-  "ui-status-achievement-entitlement-locked",
-  "ui-status-achievement-entitlement-unlocked",
-  "ui-status-achievement-entitlement-spent",
-  "ui-status-achievement-source-current-owner",
-] as const;
-
 async function manifests() {
   const [sourceText, generatedText] = await Promise.all([
     readFile("scripts/art/pixellab-manifest.json", "utf8"),
     readFile("scripts/art/pixellab-generated.json", "utf8"),
   ]);
   return {
-    source: JSON.parse(sourceText) as { readonly recipes: readonly Recipe[] },
+    source: JSON.parse(sourceText) as {
+      readonly recipes: readonly Recipe[];
+      readonly retired: readonly {
+        readonly id: string;
+        readonly outputSha256?: string;
+      }[];
+    },
     generated: JSON.parse(generatedText) as {
       readonly records: Readonly<Record<string, GeneratedRecord>>;
     },
@@ -185,6 +169,29 @@ describe("Ruleset 7 tactical action and status assets", () => {
     }
     expect(recipes[0]?.styleReference).toBe("ui-action-disband");
     expect(recipes[1]?.styleReference).toBe("ui-action-pillage");
+  });
+
+  it("keeps the retired Disband and Pillage style references as recorded hashes", async () => {
+    // Bead pulp_wars-67q.15: the two reference icons are retired. Their
+    // rasters are gone; the hash each kept record holds is the hash the
+    // manifest's retired list records.
+    const { source, generated } = await manifests();
+    for (const id of RULESET7_TACTICAL_UI_ACTION_IDS) {
+      const recipe = source.recipes.find((candidate) => candidate.id === id);
+      const reference = recipe?.styleReference ?? "";
+      expect(
+        source.recipes.some((candidate) => candidate.id === reference),
+        id,
+      ).toBe(false);
+      const retired = source.retired.find((entry) => entry.id === reference);
+      expect(retired?.outputSha256, id).toMatch(/^[a-f0-9]{64}$/);
+      expect(generated.records[reference], id).toBeUndefined();
+      expect(generated.records[id]?.request?.styleReference, id).toMatchObject({
+        id: reference,
+        sha256: retired?.outputSha256,
+      });
+      expect(ACCEPTED_ART_URLS[reference], id).toBeUndefined();
+    }
   });
 
   it("preserves complete accepted provider and output provenance", async () => {
@@ -381,49 +388,5 @@ describe("Ruleset 7 tactical action and status assets", () => {
         "ui-status-achievement-source-current-owner"
       ],
     ).toMatchObject({ visibility: "OWNER_ONLY" });
-  });
-
-  it("pins complete actual-size dedicated review evidence", async () => {
-    const evidence = JSON.parse(
-      await readFile(
-        "art/pixellab/reviews/ruleset7-tactical-ui/review-evidence.json",
-        "utf8",
-      ),
-    ) as {
-      readonly status: string;
-      readonly generationOrder: readonly string[];
-      readonly rasterInventory: readonly string[];
-      readonly codeNativeInventory: readonly string[];
-      readonly reviewCoverage: readonly string[];
-      readonly projectionSafety: string;
-      readonly artifacts: readonly {
-        readonly filename: string;
-        readonly sha256: string;
-        readonly bytes: number;
-      }[];
-    };
-    expect(evidence.status).toBe("COMPLETE");
-    expect(evidence.generationOrder).toEqual(RULESET7_TACTICAL_UI_ACTION_IDS);
-    expect(evidence.rasterInventory).toEqual(RULESET7_TACTICAL_UI_ACTION_IDS);
-    expect(evidence.codeNativeInventory).toEqual(ARCHIVED_R2_REVIEW_SYMBOL_IDS);
-    expect(evidence.reviewCoverage.join(" ")).toContain("112x130");
-    expect(evidence.reviewCoverage.join(" ")).toContain("176px");
-    expect(evidence.reviewCoverage.join(" ")).toContain("DPR1/2");
-    expect(evidence.reviewCoverage.join(" ")).toContain("protanopia");
-    expect(evidence.reviewCoverage.join(" ")).toContain(
-      "without color or motion",
-    );
-    expect(evidence.projectionSafety).toContain("do not derive concealed");
-    expect(evidence.artifacts).toHaveLength(5);
-    for (const artifact of evidence.artifacts) {
-      const bytes = await readFile(
-        `art/pixellab/reviews/ruleset7-tactical-ui/${artifact.filename}`,
-      );
-      expect(bytes.byteLength).toBe(artifact.bytes);
-      expect(createHash("sha256").update(bytes).digest("hex")).toBe(
-        artifact.sha256,
-      );
-      expect(artifact.bytes).toBeGreaterThan(1_000);
-    }
   });
 });

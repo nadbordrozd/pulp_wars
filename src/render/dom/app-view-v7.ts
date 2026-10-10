@@ -21,14 +21,15 @@ import {
   pillageUnlockTextV7,
 } from "../technology-unlock-text-v7";
 import {
-  RULESET7_IMPROVEMENT_ART_IDS,
-  resourceMapArtIdV7,
-  RULESET7_TECH_ART_IDS,
-  RULESET7_TERRAIN_ART_IDS,
-  RULESET7_UNIT_ART_IDS,
-  commandArtIdV7,
-  rewardArtIdV7,
-} from "../../assets/ruleset7-ui-art";
+  ACTION_ART_KEYS_V7,
+  IMPROVEMENT_ART_KEYS_V7,
+  resourceMapArtKeyV7,
+  TECH_ART_KEYS_V7,
+  TERRAIN_ART_KEYS_V7,
+  UNIT_ART_KEYS_V7,
+  commandArtKeyV7,
+  rewardArtKeyV7,
+} from "../../assets/art-keys-v7";
 import type {
   Ruleset7AcceptedBoundary,
   Ruleset7BrowserController,
@@ -2977,8 +2978,7 @@ export class Ruleset7DomAppView {
     frame.append(
       factionBadgeArt(
         this.#document,
-        chibi?.element ??
-          art(this.#document, RULESET7_UNIT_ART_IDS.FIGHTER, ""),
+        chibi?.element ?? art(this.#document, UNIT_ART_KEYS_V7.FIGHTER, ""),
         chibi?.factionArt === true ? null : factionBadgeV7(faction),
       ),
     );
@@ -4696,7 +4696,7 @@ export class Ruleset7DomAppView {
           this.#document,
           transportArt
             ? "unit-shared-embarked-transport"
-            : RULESET7_UNIT_ART_IDS[unit.role],
+            : UNIT_ART_KEYS_V7[unit.role],
           unit.form === "EMBARKED"
             ? `${roleLabel} (${machine ? "afloat" : "at sea"})`
             : roleLabel,
@@ -5677,7 +5677,7 @@ export class Ruleset7DomAppView {
         );
         disband.append(
           this.#chibiArt("ICON:ACTION:DISBAND", CHIBI_DOM_BOXES_V7.action)
-            ?.element ?? art(this.#document, "ui-action-disband", ""),
+            ?.element ?? art(this.#document, ACTION_ART_KEYS_V7.DISBAND, ""),
           text(this.#document, "span", "Disband", "v7-action-label"),
         );
         // aria-disabled keeps the explanation reachable by keyboard.
@@ -5745,7 +5745,7 @@ export class Ruleset7DomAppView {
                     this.#document,
                     transportArt
                       ? "unit-shared-embarked-transport"
-                      : RULESET7_UNIT_ART_IDS[unit.role],
+                      : UNIT_ART_KEYS_V7[unit.role],
                     "",
                   ))),
             helpArt?.factionArt === true || egg ? null : unitBadge,
@@ -6185,9 +6185,9 @@ export class Ruleset7DomAppView {
         const asset =
           tile.improvement === null
             ? tile.resource !== null && tile.resource !== "UNKNOWN_RESOURCE"
-              ? resourceMapArtIdV7(tile.resource, tile.at)
-              : RULESET7_TERRAIN_ART_IDS[tile.terrain]
-            : RULESET7_IMPROVEMENT_ART_IDS[tile.improvement];
+              ? resourceMapArtKeyV7(tile.resource, tile.at)
+              : TERRAIN_ART_KEYS_V7[tile.terrain]
+            : IMPROVEMENT_ART_KEYS_V7[tile.improvement];
         // Faction building looks (epic pulp_wars-xdh): the improvement is
         // named and drawn as the faction that owns its territory has it.
         const tileFaction = territoryFactionV7(view, tile.territoryOwnerId);
@@ -6775,7 +6775,7 @@ export class Ruleset7DomAppView {
           "Removes Forest and creates Fertile Ground.",
         );
       }
-      const artId = commandArtIdV7(command);
+      const artId = commandArtKeyV7(command);
       const commandArt = this.#chibiArt(
         commandSubjectV7(command, this.#viewerFaction()),
         CHIBI_DOM_BOXES_V7.action,
@@ -7243,7 +7243,7 @@ export class Ruleset7DomAppView {
         technologySubjectV7(prompt.tech, faction),
         CHIBI_DOM_BOXES_V7.action,
         this.#viewerColour(),
-      )?.element ?? art(this.#document, RULESET7_TECH_ART_IDS[prompt.tech], "");
+      )?.element ?? art(this.#document, TECH_ART_KEYS_V7[prompt.tech], "");
     action.append(
       image,
       text(this.#document, "span", `Research ${name}`, "v7-research-label"),
@@ -7844,7 +7844,7 @@ export class Ruleset7DomAppView {
       close,
       identity(
         this.#document,
-        RULESET7_TECH_ART_IDS[node.id],
+        TECH_ART_KEYS_V7[node.id],
         name,
         null,
         this.#technologyChibiArt(node.id)?.element,
@@ -7959,8 +7959,7 @@ export class Ruleset7DomAppView {
     header.append(
       factionBadgeArt(
         this.#document,
-        recruitArt?.element ??
-          art(this.#document, RULESET7_UNIT_ART_IDS[role], ""),
+        recruitArt?.element ?? art(this.#document, UNIT_ART_KEYS_V7[role], ""),
         recruitArt?.factionArt === true ? null : factionBadgeV7(faction),
       ),
       text(this.#document, "h2", presentation.label),
@@ -8767,7 +8766,7 @@ export class Ruleset7DomAppView {
       action.append(
         factionBadgeArt(
           this.#document,
-          rewardArt?.element ?? art(this.#document, rewardArtIdV7(reward), ""),
+          rewardArt?.element ?? art(this.#document, rewardArtKeyV7(reward), ""),
           (reward === "MILITIA" || reward === "JUGGERNAUT") &&
             rewardArt?.factionArt !== true
             ? factionBadgeV7(view.viewer.faction)
@@ -10496,8 +10495,7 @@ export class Ruleset7DomAppView {
       frame.append(
         factionBadgeArt(
           this.#document,
-          portrait?.element ??
-            art(this.#document, RULESET7_UNIT_ART_IDS[role], ""),
+          portrait?.element ?? art(this.#document, UNIT_ART_KEYS_V7[role], ""),
           portrait?.factionArt === true ? null : "DINOSAUR",
         ),
         uiIconV7(this.#document, "egg", "v7-egg-cue"),
@@ -13708,7 +13706,7 @@ function appendTechNode(
   if (layout.node.id === goal && layout.node.state !== "OWNED")
     card.dataset.goal = "true";
   const artFrame = el(documentRoot, "span", "v7-tech-art");
-  const assetId = RULESET7_TECH_ART_IDS[layout.node.id];
+  const assetId = TECH_ART_KEYS_V7[layout.node.id];
   const chibiImage = chibiArt(layout.node.id);
   if (chibiImage !== null) artFrame.dataset.artSet = "chibi";
   artFrame.append(chibiImage ?? art(documentRoot, assetId, ""));

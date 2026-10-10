@@ -109,8 +109,8 @@ function entry(
 
 const CORAL = "#f06762";
 const ENTRIES: readonly BoardRenderPlanEntryV7[] = [
-  entry("TERRAIN", 0, 0, "terrain-ruleset7-original-grass-1", "TERRAIN:GRASS"),
-  entry("TERRAIN", 1, 0, "terrain-ruleset7-original-grass-1", "TERRAIN:GRASS"),
+  entry("TERRAIN", 0, 0, "v7-terrain-grass-1", "TERRAIN:GRASS"),
+  entry("TERRAIN", 1, 0, "v7-terrain-grass-1", "TERRAIN:GRASS"),
   { key: "road:1,0", kind: "ROAD", layer: 2, at: { x: 1, y: 0 } },
   entry("IMPROVEMENT", 0, 1, "building-windmill", "IMPROVEMENT:WINDMILL", {
     ownerColor: CORAL,

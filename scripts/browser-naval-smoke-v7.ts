@@ -442,7 +442,7 @@ async function captureMountedUiEvidence(
       return {
         text: dock.textContent,
         populationIcons: dock.querySelectorAll('[data-asset-id="ui-hud-population"]').length,
-        coinIcons: train.querySelectorAll('[data-asset-id="ui-hud-gold-coin-v7"]').length,
+        coinIcons: train.querySelectorAll('[data-asset-id="v7-hud-gold-coin"]').length,
         ariaLabel: train.getAttribute('aria-label'),
       };
     })()`,
@@ -512,7 +512,7 @@ async function captureMountedUiEvidence(
       return {
         branchCards: branch.querySelectorAll('.v7-tech-card').length,
         waterRuleBullets: detail.querySelectorAll('.v7-tech-water-rules li').length,
-        coinIcons: detail.querySelectorAll('[data-asset-id="ui-hud-gold-coin-v7"]').length,
+        coinIcons: detail.querySelectorAll('[data-asset-id="v7-hud-gold-coin"]').length,
         populationIcons: detail.querySelectorAll('[data-asset-id="ui-hud-population"]').length,
         text: detail.textContent,
       };

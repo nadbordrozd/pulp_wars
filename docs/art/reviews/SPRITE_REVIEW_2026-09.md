@@ -39,8 +39,11 @@ important problems are:
 
 ## Inventory reviewed
 
-The runtime mapping is in
-[`src/assets/ruleset7-ui-art.ts`](../../../src/assets/ruleset7-ui-art.ts) and
+(The legacy Ruleset 7 rasters this review covers were deleted in
+`pulp_wars-67q.15` once the chibi art replaced them, with the mapping file
+named below; the review stays as the record of why.)
+
+The runtime mapping was in `src/assets/ruleset7-ui-art.ts` and
 [`src/render/canvas/board-renderer-v7.ts`](../../../src/render/canvas/board-renderer-v7.ts).
 Files are resolved through
 [`src/assets/generated-art-manifest.ts`](../../../src/assets/generated-art-manifest.ts).

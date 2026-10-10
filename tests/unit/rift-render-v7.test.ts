@@ -94,7 +94,7 @@ describe("the board plan", () => {
     ]);
     for (const entry of plan.entries)
       if (entry.riftPiece !== undefined)
-        expect(entry.assetId).toMatch(/^terrain-ruleset7-original-grass-\d$/);
+        expect(entry.assetId).toMatch(/^v7-terrain-grass-\d$/);
     // A flyer stands on the Rift and is planned like any unit.
     expect(
       plan.entries.some(

@@ -417,6 +417,302 @@
       "notes": "Candy Recovery explicitly aliases the accepted shared abstract Recovery icon."
     }
   ],
+  "retired": [
+    {
+      "id": "portrait-original-catapult",
+      "class": "ui",
+      "output": "public/assets/pixellab/ui/portrait-original-catapult.png",
+      "outputSha256": "18e928c5584fc31bd9e451601c55f7fc5b5d08a264f562b77c556c394e00dd4c",
+      "reason": "Ruleset 7 legacy art: the chibi set is the only Ruleset 7 render path and nothing in Ruleset 6 or the legacy screens draws it (bead pulp_wars-67q.15)"
+    },
+    {
+      "id": "ui-hud-gold-coin-v7",
+      "class": "ui",
+      "output": "public/assets/pixellab/ui/hud-gold-coin-v7.png",
+      "outputSha256": "2b69cf215244ce88b1bb0d1f702f9475f3079697a15631322a823bf20743ad25",
+      "reason": "Ruleset 7 legacy art: the chibi set is the only Ruleset 7 render path and nothing in Ruleset 6 or the legacy screens draws it (bead pulp_wars-67q.15)"
+    },
+    {
+      "id": "terrain-ruleset7-original-grass-1",
+      "class": "terrain",
+      "output": "public/assets/pixellab/terrain-ruleset7/original-grass-1.png",
+      "outputSha256": "51143c23f5e61781c74861a3167557651e189b5104dcabfac1b17daaf55ea466",
+      "reason": "Ruleset 7 legacy art: the chibi set is the only Ruleset 7 render path and nothing in Ruleset 6 or the legacy screens draws it (bead pulp_wars-67q.15)"
+    },
+    {
+      "id": "terrain-ruleset7-original-grass-2",
+      "class": "terrain",
+      "output": "public/assets/pixellab/terrain-ruleset7/original-grass-2.png",
+      "outputSha256": "405930da92c596d07c41991848c2eb3aee730b5d180752408b038214fc6cb7af",
+      "reason": "Ruleset 7 legacy art: the chibi set is the only Ruleset 7 render path and nothing in Ruleset 6 or the legacy screens draws it (bead pulp_wars-67q.15)"
+    },
+    {
+      "id": "terrain-ruleset7-original-grass-3",
+      "class": "terrain",
+      "output": "public/assets/pixellab/terrain-ruleset7/original-grass-3.png",
+      "outputSha256": "ba32bf23507c4edf3a79bc55c2b9f05e39f6b4fa9431d0dd59819b6f72a987ec",
+      "reason": "Ruleset 7 legacy art: the chibi set is the only Ruleset 7 render path and nothing in Ruleset 6 or the legacy screens draws it (bead pulp_wars-67q.15)"
+    },
+    {
+      "id": "terrain-ruleset7-original-forest-1",
+      "class": "terrain",
+      "output": "public/assets/pixellab/terrain-ruleset7/original-forest-1.png",
+      "outputSha256": "d8ddf3b19b3b16248da9d67580d8f77fb6ca6342f9831477e03437a7ca1f1e87",
+      "reason": "Ruleset 7 legacy art: the chibi set is the only Ruleset 7 render path and nothing in Ruleset 6 or the legacy screens draws it (bead pulp_wars-67q.15)"
+    },
+    {
+      "id": "terrain-ruleset7-original-forest-2",
+      "class": "terrain",
+      "output": "public/assets/pixellab/terrain-ruleset7/original-forest-2.png",
+      "outputSha256": "88dd6238e449dd5dfff000827f069077e84c2295d63696a703cb7a4687c94d29",
+      "reason": "Ruleset 7 legacy art: the chibi set is the only Ruleset 7 render path and nothing in Ruleset 6 or the legacy screens draws it (bead pulp_wars-67q.15)"
+    },
+    {
+      "id": "terrain-ruleset7-original-forest-3",
+      "class": "terrain",
+      "output": "public/assets/pixellab/terrain-ruleset7/original-forest-3.png",
+      "outputSha256": "f67c649898d53a9094efbbb6ed06b98dd2b0b1c1e5d32213947d8b6992ccffa8",
+      "reason": "Ruleset 7 legacy art: the chibi set is the only Ruleset 7 render path and nothing in Ruleset 6 or the legacy screens draws it (bead pulp_wars-67q.15)"
+    },
+    {
+      "id": "terrain-ruleset7-original-forest-4",
+      "class": "terrain",
+      "output": "public/assets/pixellab/terrain-ruleset7/original-forest-4.png",
+      "outputSha256": "00027dd0144a3a445868111f6130ca7a0b5552d561b97b9feb8fb2be936658d7",
+      "reason": "Ruleset 7 legacy art: the chibi set is the only Ruleset 7 render path and nothing in Ruleset 6 or the legacy screens draws it (bead pulp_wars-67q.15)"
+    },
+    {
+      "id": "building-ruleset7-farm-single",
+      "class": "buildings",
+      "output": "public/assets/pixellab/buildings-ruleset7/farm-single.png",
+      "outputSha256": "211ff46d8e091dc11fea9ee48ac2b0b5fd9953f4506542314772cd98a5bc28ea",
+      "reason": "Ruleset 7 legacy art: the chibi set is the only Ruleset 7 render path and nothing in Ruleset 6 or the legacy screens draws it (bead pulp_wars-67q.15)"
+    },
+    {
+      "id": "building-ruleset7-farm-pair-horizontal",
+      "class": "buildings",
+      "output": "public/assets/pixellab/buildings-ruleset7/farm-pair-horizontal.png",
+      "outputSha256": "3f031732b63f8d50bb4cbb06896e751dc593f110ee8dea09868f2595b621aeeb",
+      "reason": "Ruleset 7 legacy art: the chibi set is the only Ruleset 7 render path and nothing in Ruleset 6 or the legacy screens draws it (bead pulp_wars-67q.15)"
+    },
+    {
+      "id": "building-ruleset7-farm-pair-vertical",
+      "class": "buildings",
+      "output": "public/assets/pixellab/buildings-ruleset7/farm-pair-vertical.png",
+      "outputSha256": "96df40cad6ec0a6bf8d8cd95623abd7ada30f6f91f95c4b07a7da06a93187bb9",
+      "reason": "Ruleset 7 legacy art: the chibi set is the only Ruleset 7 render path and nothing in Ruleset 6 or the legacy screens draws it (bead pulp_wars-67q.15)"
+    },
+    {
+      "id": "building-ruleset7-lumber-camp",
+      "class": "buildings",
+      "output": "public/assets/pixellab/buildings-ruleset7/lumber-camp.png",
+      "outputSha256": "c8e817f34cb267cf2327dbf64effce3aded23310e3ff6068bfd5a4ac61acea22",
+      "reason": "Ruleset 7 legacy art: the chibi set is the only Ruleset 7 render path and nothing in Ruleset 6 or the legacy screens draws it (bead pulp_wars-67q.15)"
+    },
+    {
+      "id": "ui-action-pillage",
+      "class": "ui",
+      "output": "public/assets/pixellab/ui/action-pillage.png",
+      "outputSha256": "34c33e31dc1694e9e7147bcb0d2f7c99f3501788a71091bdc4d64ce255773336",
+      "reason": "Ruleset 7 legacy art: the chibi set is the only Ruleset 7 render path and nothing in Ruleset 6 or the legacy screens draws it (bead pulp_wars-67q.15)"
+    },
+    {
+      "id": "ui-action-disband",
+      "class": "ui",
+      "output": "public/assets/pixellab/ui/action-disband.png",
+      "outputSha256": "e6d7bc99de393c63a1c7e9aa51169fef87ec52f7841f1b0d43cdaf94d9d57548",
+      "reason": "Ruleset 7 legacy art: the chibi set is the only Ruleset 7 render path and nothing in Ruleset 6 or the legacy screens draws it (bead pulp_wars-67q.15)"
+    },
+    {
+      "id": "terrain-ruleset7-revision3-gravel",
+      "class": "terrain",
+      "output": "public/assets/pixellab/terrain-ruleset7/revision3-gravel.png",
+      "outputSha256": "b4eb8208932a2a335574658c68187d87568476614c55b6b0df5b56acf54b8d36",
+      "reason": "Ruleset 7 legacy art: the chibi set is the only Ruleset 7 render path and nothing in Ruleset 6 or the legacy screens draws it (bead pulp_wars-67q.15)"
+    },
+    {
+      "id": "terrain-ruleset7-revision3-mountain-1",
+      "class": "terrain",
+      "output": "public/assets/pixellab/terrain-ruleset7/revision3-mountain-1.png",
+      "outputSha256": "7eb691a64cd95f0fbfc7eff659c2b612e952840c3847dc463748bcfd16eb7028",
+      "reason": "Ruleset 7 legacy art: the chibi set is the only Ruleset 7 render path and nothing in Ruleset 6 or the legacy screens draws it (bead pulp_wars-67q.15)"
+    },
+    {
+      "id": "terrain-ruleset7-revision3-mountain-2",
+      "class": "terrain",
+      "output": "public/assets/pixellab/terrain-ruleset7/revision3-mountain-2.png",
+      "outputSha256": "432ddce4829d270587ee220c2627462d7e53433b1bda35a79a695cfd40c91476",
+      "reason": "Ruleset 7 legacy art: the chibi set is the only Ruleset 7 render path and nothing in Ruleset 6 or the legacy screens draws it (bead pulp_wars-67q.15)"
+    },
+    {
+      "id": "terrain-ruleset7-revision3-mountain-3",
+      "class": "terrain",
+      "output": "public/assets/pixellab/terrain-ruleset7/revision3-mountain-3.png",
+      "outputSha256": "6662168f7c6896898ce37a4a5376693a53b9744ad62bc7eaa751023c400c5cf0",
+      "reason": "Ruleset 7 legacy art: the chibi set is the only Ruleset 7 render path and nothing in Ruleset 6 or the legacy screens draws it (bead pulp_wars-67q.15)"
+    },
+    {
+      "id": "terrain-ruleset7-revision3-mined-mountain-1",
+      "class": "terrain",
+      "output": "public/assets/pixellab/terrain-ruleset7/revision3-mined-mountain-1.png",
+      "outputSha256": "d90e6331854c93dbbb7736ea84add540cc1b12bc39d366d3cf1c8bab9580b1c2",
+      "reason": "Ruleset 7 legacy art: the chibi set is the only Ruleset 7 render path and nothing in Ruleset 6 or the legacy screens draws it (bead pulp_wars-67q.15)"
+    },
+    {
+      "id": "terrain-ruleset7-revision3-mined-mountain-2",
+      "class": "terrain",
+      "output": "public/assets/pixellab/terrain-ruleset7/revision3-mined-mountain-2.png",
+      "outputSha256": "b536a203392d042013c407b657d817c990495b98306292ef901e8aee8ef185d8",
+      "reason": "Ruleset 7 legacy art: the chibi set is the only Ruleset 7 render path and nothing in Ruleset 6 or the legacy screens draws it (bead pulp_wars-67q.15)"
+    },
+    {
+      "id": "terrain-ruleset7-revision3-mined-mountain-3",
+      "class": "terrain",
+      "output": "public/assets/pixellab/terrain-ruleset7/revision3-mined-mountain-3.png",
+      "outputSha256": "6cd1070cd5cec243a712581f343eee58352f92eec510aef210a221c7ed96e5ff",
+      "reason": "Ruleset 7 legacy art: the chibi set is the only Ruleset 7 render path and nothing in Ruleset 6 or the legacy screens draws it (bead pulp_wars-67q.15)"
+    },
+    {
+      "id": "building-ruleset7-resource-lumber-camp",
+      "class": "buildings",
+      "output": "public/assets/pixellab/buildings-ruleset7/resource-lumber-camp.png",
+      "outputSha256": "b0c5b545975026e06570a256218a54c5df9faca3c12a91096e687f5f012a3e71",
+      "reason": "Ruleset 7 legacy art: the chibi set is the only Ruleset 7 render path and nothing in Ruleset 6 or the legacy screens draws it (bead pulp_wars-67q.15)"
+    },
+    {
+      "id": "terrain-ruleset7-resource-fertile-ground",
+      "class": "terrain",
+      "output": "public/assets/pixellab/terrain-square/ruleset7-resource-fertile-ground.png",
+      "outputSha256": "3fcbee99e1624139a110969aabe82d13551b9b0b08d3cc8bb2f3d96b393c5a5f",
+      "reason": "Ruleset 7 legacy art: the chibi set is the only Ruleset 7 render path and nothing in Ruleset 6 or the legacy screens draws it (bead pulp_wars-67q.15)"
+    },
+    {
+      "id": "terrain-ruleset7-original-fruit-pear",
+      "class": "terrain",
+      "output": "public/assets/pixellab/terrain-square/ruleset7-original-fruit-pear.png",
+      "outputSha256": "662e1db20cfc52421ad253798d807d142cacbb5efdb9caf9babb9ca42eac6f94",
+      "reason": "Ruleset 7 legacy art: the chibi set is the only Ruleset 7 render path and nothing in Ruleset 6 or the legacy screens draws it (bead pulp_wars-67q.15)"
+    },
+    {
+      "id": "terrain-ruleset7-original-fruit-plum",
+      "class": "terrain",
+      "output": "public/assets/pixellab/terrain-square/ruleset7-original-fruit-plum.png",
+      "outputSha256": "25fed4c91d78a1756c3bcd2635684cb5cb66eba8d480c753f1e22a9adc8f6f81",
+      "reason": "Ruleset 7 legacy art: the chibi set is the only Ruleset 7 render path and nothing in Ruleset 6 or the legacy screens draws it (bead pulp_wars-67q.15)"
+    },
+    {
+      "id": "terrain-ruleset7-original-game-deer",
+      "class": "terrain",
+      "output": "public/assets/pixellab/terrain-square/ruleset7-original-game-deer.png",
+      "outputSha256": "ff0692f3540f9d3d6cab0fa7508e741a4f2edd2ba717b1db18d47bcb36c63be2",
+      "reason": "Ruleset 7 legacy art: the chibi set is the only Ruleset 7 render path and nothing in Ruleset 6 or the legacy screens draws it (bead pulp_wars-67q.15)"
+    },
+    {
+      "id": "terrain-ruleset7-original-game-fox",
+      "class": "terrain",
+      "output": "public/assets/pixellab/terrain-square/ruleset7-original-game-fox.png",
+      "outputSha256": "dbdcdfe4fc1730471c2d6f96b03b4d505d18d63c77a3e30e8c24f903b399a2e2",
+      "reason": "Ruleset 7 legacy art: the chibi set is the only Ruleset 7 render path and nothing in Ruleset 6 or the legacy screens draws it (bead pulp_wars-67q.15)"
+    },
+    {
+      "id": "terrain-ruleset7-water-shallow",
+      "class": "terrain",
+      "output": "public/assets/pixellab/terrain-ruleset7/water-shallow.png",
+      "outputSha256": "05c442359ee2d5645b1ddeb287f58586ac1d6570ad64695d0b1e78f75351b514",
+      "reason": "Ruleset 7 legacy art: the chibi set is the only Ruleset 7 render path and nothing in Ruleset 6 or the legacy screens draws it (bead pulp_wars-67q.15)"
+    },
+    {
+      "id": "terrain-ruleset7-water-deep",
+      "class": "terrain",
+      "output": "public/assets/pixellab/terrain-ruleset7/water-deep.png",
+      "outputSha256": "5dcb3cf07358ac0e1fdda3010094a6d372e2e877e1d77b5722f79595f1954d36",
+      "reason": "Ruleset 7 legacy art: the chibi set is the only Ruleset 7 render path and nothing in Ruleset 6 or the legacy screens draws it (bead pulp_wars-67q.15)"
+    },
+    {
+      "id": "terrain-ruleset7-resource-fish",
+      "class": "terrain",
+      "output": "public/assets/pixellab/terrain-ruleset7/resource-fish.png",
+      "outputSha256": "fc8dc00ed5e03ed3de518e1ccd66c7b1bd9805cd4353c2f7f3392f38a3851806",
+      "reason": "Ruleset 7 legacy art: the chibi set is the only Ruleset 7 render path and nothing in Ruleset 6 or the legacy screens draws it (bead pulp_wars-67q.15)"
+    },
+    {
+      "id": "terrain-ruleset7-resource-pearls",
+      "class": "terrain",
+      "output": "public/assets/pixellab/terrain-ruleset7/resource-pearls.png",
+      "outputSha256": "cb02006adb3ac2e41713376626bf4676d0ea8334145e1a6230fc64a654cd659b",
+      "reason": "Ruleset 7 legacy art: the chibi set is the only Ruleset 7 render path and nothing in Ruleset 6 or the legacy screens draws it (bead pulp_wars-67q.15)"
+    },
+    {
+      "id": "building-ruleset7-port",
+      "class": "buildings",
+      "output": "public/assets/pixellab/buildings-ruleset7/port.png",
+      "outputSha256": "70d2385d53f7dd466c44bacfa6f265645de7dbda1e94f9bad6732e246250aea9",
+      "reason": "Ruleset 7 legacy art: the chibi set is the only Ruleset 7 render path and nothing in Ruleset 6 or the legacy screens draws it (bead pulp_wars-67q.15)"
+    },
+    {
+      "id": "portrait-original-captain",
+      "class": "ui",
+      "output": "public/assets/pixellab/ui/portrait-original-captain-v7r9.png",
+      "outputSha256": "0186989e0d71b0a4e836507916b5ad2c72cd02edc6ace46cf538ef137282c344",
+      "reason": "Ruleset 7 legacy art: the chibi set is the only Ruleset 7 render path and nothing in Ruleset 6 or the legacy screens draws it (bead pulp_wars-67q.15)"
+    },
+    {
+      "id": "portrait-original-knight",
+      "class": "ui",
+      "output": "public/assets/pixellab/ui/portrait-original-knight-v7r9.png",
+      "outputSha256": "5fadd86ca5f25bcf4860cad1456dc216001ca3812ed668cc3409c51874a06c1d",
+      "reason": "Ruleset 7 legacy art: the chibi set is the only Ruleset 7 render path and nothing in Ruleset 6 or the legacy screens draws it (bead pulp_wars-67q.15)"
+    },
+    {
+      "id": "building-ruleset7-shipyard",
+      "class": "buildings",
+      "output": "public/assets/pixellab/buildings-ruleset7/shipyard-v7r9.png",
+      "outputSha256": "3c882512919a9f69fd578617de66a7729ff9eda1c509c775bfeaa2f610a80f8c",
+      "reason": "Ruleset 7 legacy art: the chibi set is the only Ruleset 7 render path and nothing in Ruleset 6 or the legacy screens draws it (bead pulp_wars-67q.15)"
+    },
+    {
+      "id": "ui-action-rally-v7r9",
+      "class": "ui",
+      "output": "public/assets/pixellab/ui/action-rally-v7r9.png",
+      "outputSha256": "eedc8ffb1478b3b3ac3273f8e654675e6a0418455a8887636bacaa3438cc1e8c",
+      "reason": "Ruleset 7 legacy art: the chibi set is the only Ruleset 7 render path and nothing in Ruleset 6 or the legacy screens draws it (bead pulp_wars-67q.15)"
+    },
+    {
+      "id": "ui-action-cultivate-forest-v7r9",
+      "class": "ui",
+      "output": "public/assets/pixellab/ui/action-cultivate-forest-v7r9.png",
+      "outputSha256": "299a38a8c6731436e096a469410ac7759ff5c8a8cf67dd6f241c1c4f4c25e349",
+      "reason": "Ruleset 7 legacy art: the chibi set is the only Ruleset 7 render path and nothing in Ruleset 6 or the legacy screens draws it (bead pulp_wars-67q.15)"
+    },
+    {
+      "id": "ui-action-blast-mountain-v7r9",
+      "class": "ui",
+      "output": "public/assets/pixellab/ui/action-blast-mountain-v7r9.png",
+      "outputSha256": "55c8aed2470ea71a5ff42f76ce38e67e8c955a89a9e07b392fb12d2163877960",
+      "reason": "Ruleset 7 legacy art: the chibi set is the only Ruleset 7 render path and nothing in Ruleset 6 or the legacy screens draws it (bead pulp_wars-67q.15)"
+    },
+    {
+      "id": "portrait-original-captain-v7r10",
+      "class": "ui",
+      "output": "public/assets/pixellab/ui/portrait-original-captain-v7r10.png",
+      "outputSha256": "4c601b32a38936780c7a0b2952f7ebd33bac100e50c177ab2ce88614c6866b6f",
+      "reason": "Ruleset 7 legacy art: the chibi set is the only Ruleset 7 render path and nothing in Ruleset 6 or the legacy screens draws it (bead pulp_wars-67q.15)"
+    },
+    {
+      "id": "building-ruleset7-port-v7r11",
+      "class": "buildings",
+      "output": "public/assets/pixellab/buildings-ruleset7/port-v7r11.png",
+      "outputSha256": "dd2c93571e717e1b88d09ebde7efdf11a1ea72f66e9ad1f02d4fcda81a38f458",
+      "reason": "Ruleset 7 legacy art: the chibi set is the only Ruleset 7 render path and nothing in Ruleset 6 or the legacy screens draws it (bead pulp_wars-67q.15)"
+    },
+    {
+      "id": "terrain-ruleset7-resource-fish-v7r11",
+      "class": "terrain",
+      "output": "public/assets/pixellab/terrain-ruleset7/resource-fish-v7r11.png",
+      "outputSha256": "17dc3c14eb3617d7703b1e97e0fa2c845be60558581630addb027aa227ea4088",
+      "reason": "Ruleset 7 legacy art: the chibi set is the only Ruleset 7 render path and nothing in Ruleset 6 or the legacy screens draws it (bead pulp_wars-67q.15)"
+    }
+  ],
   "recipes": [
     {
       "id": "unit-warrior",
@@ -947,22 +1243,6 @@
       "hardBounds": { "left": 20, "top": 20, "right": 236, "bottom": 236 }
     },
     {
-      "id": "portrait-original-catapult",
-      "class": "ui",
-      "stage": "batch",
-      "endpoint": "generate-ui-v2",
-      "seed": 97302,
-      "requestSize": { "width": 256, "height": 256 },
-      "outputSize": { "width": 256, "height": 256 },
-      "transparent": true,
-      "postprocess": "sprite-derived-portrait",
-      "styleReference": "unit-original-catapult",
-      "prompt": "Deterministic 256 by 256 role portrait derived from the accepted Original Catapult world sprite, preserving its complete silhouette and palette with a 20 pixel transparent safe area.",
-      "negativePrompt": "No newly generated content; deterministic accepted-sprite fit only.",
-      "output": "public/assets/pixellab/ui/portrait-original-catapult.png",
-      "hardBounds": { "left": 20, "top": 20, "right": 236, "bottom": 236 }
-    },
-    {
       "id": "unit-candy-scout",
       "class": "units",
       "stage": "sample",
@@ -1212,7 +1492,6 @@
       "output": "public/assets/pixellab/ui/portrait-candy-juggernaut.png",
       "hardBounds": { "left": 20, "top": 20, "right": 236, "bottom": 236 }
     },
-
     {
       "id": "terrain-grass-1",
       "class": "terrain",
@@ -1567,7 +1846,6 @@
       "anchor": { "x": 128, "y": 74 },
       "hardBounds": { "left": 0, "top": 0, "right": 256, "bottom": 148 }
     },
-
     {
       "id": "terrain-candy-grass-1",
       "class": "terrain",
@@ -1826,7 +2104,6 @@
       "groundContactY": 222,
       "hardBounds": { "left": 24, "top": 84, "right": 232, "bottom": 252 }
     },
-
     {
       "id": "building-farm",
       "class": "buildings",
@@ -2217,7 +2494,6 @@
       "groundContactY": 222,
       "hardBounds": { "left": 20, "top": 84, "right": 236, "bottom": 252 }
     },
-
     {
       "id": "ui-star",
       "class": "ui",
@@ -2268,7 +2544,6 @@
       "hardBounds": { "left": 20, "top": 20, "right": 236, "bottom": 236 },
       "palette": "slate blue, warm bronze, parchment highlight, charcoal teal outline"
     },
-
     {
       "id": "ui-tech-riding",
       "class": "ui",
@@ -2606,25 +2881,6 @@
       "palette": "warm bronze, parchment highlight, dark teal-charcoal outline"
     },
     {
-      "id": "ui-hud-gold-coin-v7",
-      "class": "ui",
-      "stage": "batch",
-      "endpoint": "generate-ui-v2",
-      "seed": 97623,
-      "requestSize": { "width": 384, "height": 384 },
-      "outputSize": { "width": 96, "height": 96 },
-      "transparent": true,
-      "includeFactionLanguage": false,
-      "postprocess": "lanczos3-resize",
-      "styleReference": "ui-hud-coin",
-      "styleReferenceUsage": "Match accepted compact HUD icon outline, flat shading, single-token silhouette, transparent safe area, and 24px readability; make the current Ruleset 7 currency unmistakably gold without changing the legacy coin.",
-      "prompt": "Exactly one isolated chunky GOLD coin for the current strategy-game HUD, facing front-on. The complete broad circular FACE is solid rich golden yellow, with a lighter pale-gold raised diamond embossed on top and a narrow amber side edge. Golden face must fill most of the token; dark charcoal-teal is used only for a thick outside outline and short internal engraving lines. One connected coin silhouette with one small edge notch, two-level flat cel shading, playful illustrated board-game sticker, centered about eighty-four percent occupancy with transparent safe area. Readable immediately as a bright gold coin at 24 CSS pixels and in grayscale. No other object or text.",
-      "negativePrompt": "black or dark center, black face, dark inset field, dark inner disk, hollow coin, gold ring around black center, bronze or copper primary fill, brown-only coin, second object, separate diamond, multiple coins, stack, star, dollar sign, currency letter, number, text, logo, treasure chest, scene, panel, button, reflection object, cast shadow, realistic engraving, metallic gradient, photorealism, painterly brushwork, faux 3D, thin outline, glow, halo, blur, matte",
-      "output": "public/assets/pixellab/ui/hud-gold-coin-v7.png",
-      "hardBounds": { "left": 7, "top": 7, "right": 89, "bottom": 89 },
-      "palette": "rich golden yellow, pale gold highlight, amber shadow, dark teal-charcoal outline"
-    },
-    {
       "id": "ui-action-redevelop",
       "class": "ui",
       "stage": "sample",
@@ -2927,176 +3183,6 @@
       "output": "public/assets/pixellab/ui/tech-recovery.png",
       "hardBounds": { "left": 20, "top": 20, "right": 236, "bottom": 236 },
       "palette": "cream bandage, slate helmet, warm bronze spiral, parchment highlight, dark teal-charcoal outline"
-    },
-    {
-      "id": "terrain-ruleset7-original-grass-1",
-      "class": "terrain",
-      "stage": "batch",
-      "endpoint": "generate-image-v2",
-      "seed": 107801,
-      "requestSize": { "width": 256, "height": 256 },
-      "outputSize": { "width": 256, "height": 256 },
-      "transparent": true,
-      "requestNoBackground": false,
-      "includeFactionLanguage": false,
-      "postprocess": "square-grass-texture-v7",
-      "styleReference": "terrain-square-original-grass-1",
-      "styleReferenceUsage": "Match only the approved quiet leaf-green palette, flat illustrated terrain treatment, northwest lighting and low contrast. Author a new subtly textured turf surface; do not copy the reference's near-flat finish or any composition.",
-      "palette": "quiet leaf green #6f9255 base, muted moss-green mottling, restrained pale yellow-green northwest highlights, deep desaturated green shallow recesses",
-      "prompt": "Ruleset 7 Original Grass variant 1: one axis-aligned 256 by 256 full-square turf material with subtle hand-drawn texture. Use sparse very short rounded grass nubs and broad irregular mossy color mottling spread evenly across the field, all low contrast and lying flat in the ground plane. The marks must remain visible at 128 pixels but stay much quieter than units, resources and improvements. Soft northwest light, darker southeast micro-planes, two-to-three flat cel-shaded tones. Every edge and corner is uninterrupted mid-green material with no perimeter. Deterministic processing crops the provider inset, retains restrained authored texture over #6f9255, converges the outer 32 pixels to the shared base and forces opaque alpha.",
-      "negativePrompt": "savanna, prairie, wheat, dry grass, tall grass, long blades, giant blades, reed, stalk, lawn stripes, mowing lines, path, band, grid, large stamped tuft, repeated symbol, flower, fruit, animal, resource, tree, rock, road, ownership, selection, building, unit, diamond, transparent corner, border, bevel, raised slab, cast shadow, lower-right light, noisy microtexture, realistic turf, painterly, 3D, text, UI",
-      "output": "public/assets/pixellab/terrain-ruleset7/original-grass-1.png",
-      "anchor": { "x": 128, "y": 128 },
-      "squareFootprint": { "left": 0, "top": 0, "right": 256, "bottom": 256 },
-      "hardBounds": { "left": 0, "top": 0, "right": 256, "bottom": 256 }
-    },
-    {
-      "id": "terrain-ruleset7-original-grass-2",
-      "class": "terrain",
-      "stage": "batch",
-      "endpoint": "generate-image-v2",
-      "seed": 107802,
-      "requestSize": { "width": 256, "height": 256 },
-      "outputSize": { "width": 256, "height": 256 },
-      "transparent": true,
-      "requestNoBackground": false,
-      "includeFactionLanguage": false,
-      "postprocess": "square-grass-texture-v7",
-      "styleReference": "terrain-ruleset7-original-grass-1",
-      "styleReferenceUsage": "Match Grass 1's fine scattered nub scale, broad soft mottling, low contrast, palette and northwest light. Change only the random distribution; create no large motif.",
-      "palette": "quiet leaf green #6f9255 base, muted moss-green mottling, restrained pale yellow-green northwest highlights, deep desaturated green shallow recesses",
-      "prompt": "Ruleset 7 Original Grass variant 2: full-square 256 turf material. Match reference Grass 1's subtle fine scattered short rounded nubs and broad soft mottling at the same scale and contrast, but use a different even random distribution. No center, radial form, focal cluster or recognizable motif. Flat ground plane, northwest light, quiet cel shading, uninterrupted green edges. Processing converges the outer band to #6f9255 and forces opaque alpha.",
-      "negativePrompt": "savanna, prairie, wheat, dry grass, tall grass, long blades, giant blades, reed, stalk, lawn stripes, mowing lines, path, band, grid, large stamped tuft, repeated symbol, flower, fruit, animal, resource, tree, rock, road, ownership, selection, building, unit, diamond, transparent corner, border, bevel, raised slab, cast shadow, lower-right light, noisy microtexture, realistic turf, painterly, 3D, text, UI",
-      "output": "public/assets/pixellab/terrain-ruleset7/original-grass-2.png",
-      "anchor": { "x": 128, "y": 128 },
-      "squareFootprint": { "left": 0, "top": 0, "right": 256, "bottom": 256 },
-      "hardBounds": { "left": 0, "top": 0, "right": 256, "bottom": 256 }
-    },
-    {
-      "id": "terrain-ruleset7-original-grass-3",
-      "class": "terrain",
-      "stage": "batch",
-      "endpoint": "generate-image-v2",
-      "seed": 107803,
-      "requestSize": { "width": 256, "height": 256 },
-      "outputSize": { "width": 256, "height": 256 },
-      "transparent": true,
-      "requestNoBackground": false,
-      "includeFactionLanguage": false,
-      "postprocess": "square-grass-texture-v7",
-      "styleReference": "terrain-ruleset7-original-grass-1",
-      "styleReferenceUsage": "Match Grass 1's fine scattered nub scale, broad soft mottling, low contrast, palette and northwest light. Change only the random distribution; create no large motif.",
-      "palette": "quiet leaf green #6f9255 base, muted moss-green mottling, restrained pale yellow-green northwest highlights, deep desaturated green shallow recesses",
-      "prompt": "Ruleset 7 Original Grass variant 3: full-square 256 turf material. Match reference Grass 1's subtle fine scattered short rounded nubs and broad soft mottling at the same scale and contrast, but use another even random distribution. No center, ring, swirl, radial form, focal cluster or recognizable motif. Flat ground plane, northwest light, quiet cel shading, uninterrupted green edges. Processing converges the outer band to #6f9255 and forces opaque alpha.",
-      "negativePrompt": "savanna, prairie, wheat, dry grass, tall grass, long blades, giant blades, reed, stalk, lawn stripes, mowing lines, path, band, grid, large stamped tuft, repeated symbol, flower, fruit, animal, resource, tree, rock, road, ownership, selection, building, unit, diamond, transparent corner, border, bevel, raised slab, cast shadow, lower-right light, noisy microtexture, realistic turf, painterly, 3D, text, UI",
-      "output": "public/assets/pixellab/terrain-ruleset7/original-grass-3.png",
-      "anchor": { "x": 128, "y": 128 },
-      "squareFootprint": { "left": 0, "top": 0, "right": 256, "bottom": 256 },
-      "hardBounds": { "left": 0, "top": 0, "right": 256, "bottom": 256 }
-    },
-    {
-      "id": "terrain-ruleset7-original-forest-1",
-      "class": "terrain",
-      "stage": "batch",
-      "endpoint": "generate-image-v2",
-      "seed": 104102,
-      "requestSize": { "width": 256, "height": 384 },
-      "outputSize": { "width": 256, "height": 384 },
-      "transparent": true,
-      "includeFactionLanguage": false,
-      "postprocess": "square-tall-reframe-ground-reference",
-      "styleReference": "terrain-square-original-forest-1",
-      "styleReferenceUsage": "Immutable accepted PixelLab source. Deterministically isolate its tree body from the old ground, translate only that body 64 source pixels downward, and composite the accepted Ruleset 7 Grass ground without redrawing.",
-      "groundReference": "terrain-ruleset7-original-grass-1",
-      "reframeGroundReference": "terrain-square-original-grass-1",
-      "bodyOffsetY": 64,
-      "reframeSource": "art/pixellab/reframe-sources/terrain-ruleset7-original-forest-1.png",
-      "reframeSourceSha256": "ada147cc84e3b3dbd70cd0aa3e5f39a1a41dfe74be63833ad3c375fae316571f",
-      "palette": "preserve accepted Original Forest source exactly; accepted Ruleset 7 Grass ground",
-      "prompt": "Deterministic body-only reframe of the immutable accepted PixelLab Original Forest 1 source. Preserve its exact three-tree silhouette, pixels, northwest light and lateral placement. Keep the owning square and anchor fixed; translate only tree-body pixels down 64 source pixels and restore the accepted Ruleset 7 Grass 1 ground.",
-      "negativePrompt": "provider redraw, ground translation, lateral translation, scale change, crop, new tree, removed tree, canopy repaint, bottom overflow",
-      "output": "public/assets/pixellab/terrain-ruleset7/original-forest-1.png",
-      "anchor": { "x": 128, "y": 256 },
-      "squareFootprint": { "left": 0, "top": 128, "right": 256, "bottom": 384 },
-      "hardBounds": { "left": 0, "top": 0, "right": 256, "bottom": 384 }
-    },
-    {
-      "id": "terrain-ruleset7-original-forest-2",
-      "class": "terrain",
-      "stage": "batch",
-      "endpoint": "generate-image-v2",
-      "seed": 104182,
-      "requestSize": { "width": 256, "height": 384 },
-      "outputSize": { "width": 256, "height": 384 },
-      "transparent": true,
-      "includeFactionLanguage": false,
-      "postprocess": "square-tall-reframe-ground-reference",
-      "styleReference": "terrain-square-original-forest-2",
-      "styleReferenceUsage": "Immutable accepted PixelLab source. Deterministically isolate its tree body from the old ground, translate only that body 44 source pixels downward, and composite the accepted Ruleset 7 Grass ground without redrawing.",
-      "groundReference": "terrain-ruleset7-original-grass-1",
-      "reframeGroundReference": "terrain-square-original-grass-1",
-      "bodyOffsetY": 44,
-      "reframeSource": "art/pixellab/reframe-sources/terrain-ruleset7-original-forest-2.png",
-      "reframeSourceSha256": "93a942c0a5828271bf478b03dea35673ccb2f456fe4da8e460909c75c5568b61",
-      "palette": "preserve accepted Original Forest source exactly; accepted Ruleset 7 Grass ground",
-      "prompt": "Deterministic body-only reframe of the immutable accepted PixelLab Original Forest 2 source. Preserve its exact four-tree silhouette, pixels, northwest light and lateral placement. Keep the owning square and anchor fixed; translate only tree-body pixels down 44 source pixels and restore the accepted Ruleset 7 Grass 1 ground.",
-      "negativePrompt": "provider redraw, ground translation, lateral translation, scale change, crop, new tree, removed tree, canopy repaint, bottom overflow",
-      "output": "public/assets/pixellab/terrain-ruleset7/original-forest-2.png",
-      "anchor": { "x": 128, "y": 256 },
-      "squareFootprint": { "left": 0, "top": 128, "right": 256, "bottom": 384 },
-      "hardBounds": { "left": 0, "top": 0, "right": 256, "bottom": 384 }
-    },
-    {
-      "id": "terrain-ruleset7-original-forest-3",
-      "class": "terrain",
-      "stage": "batch",
-      "endpoint": "generate-image-v2",
-      "seed": 104203,
-      "requestSize": { "width": 256, "height": 384 },
-      "outputSize": { "width": 256, "height": 384 },
-      "transparent": true,
-      "includeFactionLanguage": false,
-      "postprocess": "square-tall-reframe-ground-reference",
-      "styleReference": "terrain-square-original-forest-3",
-      "styleReferenceUsage": "Immutable accepted PixelLab source. Deterministically isolate and preserve its already well-grounded tree body at offset zero, then composite the accepted Ruleset 7 Grass ground without redrawing.",
-      "groundReference": "terrain-ruleset7-original-grass-1",
-      "reframeGroundReference": "terrain-square-original-grass-1",
-      "bodyOffsetY": 0,
-      "reframeSource": "art/pixellab/reframe-sources/terrain-ruleset7-original-forest-3.png",
-      "reframeSourceSha256": "33700d975ac040df56cf355bb0330c6e3a04402f39d5bbe3117f65dde8386fa8",
-      "palette": "preserve accepted Original Forest source exactly; accepted Ruleset 7 Grass ground",
-      "prompt": "Deterministic ground-only derivation of the immutable accepted PixelLab Original Forest 3 source. Preserve its exact already-grounded three-tree body, pixels, northwest light and placement at offset zero. Keep the owning square and anchor fixed and restore the accepted Ruleset 7 Grass 1 ground.",
-      "negativePrompt": "provider redraw, ground translation, body translation, lateral translation, scale change, crop, new tree, removed tree, canopy repaint",
-      "output": "public/assets/pixellab/terrain-ruleset7/original-forest-3.png",
-      "anchor": { "x": 128, "y": 256 },
-      "squareFootprint": { "left": 0, "top": 128, "right": 256, "bottom": 384 },
-      "hardBounds": { "left": 0, "top": 0, "right": 256, "bottom": 384 }
-    },
-    {
-      "id": "terrain-ruleset7-original-forest-4",
-      "class": "terrain",
-      "stage": "batch",
-      "endpoint": "generate-image-v2",
-      "seed": 104224,
-      "requestSize": { "width": 256, "height": 384 },
-      "outputSize": { "width": 256, "height": 384 },
-      "transparent": true,
-      "includeFactionLanguage": false,
-      "postprocess": "square-tall-reframe-ground-reference",
-      "styleReference": "terrain-square-original-forest-4",
-      "styleReferenceUsage": "Immutable accepted PixelLab source. Deterministically isolate its tree body from the old ground, translate only that body 44 source pixels downward, and composite the accepted Ruleset 7 Grass ground without redrawing.",
-      "groundReference": "terrain-ruleset7-original-grass-1",
-      "reframeGroundReference": "terrain-square-original-grass-1",
-      "bodyOffsetY": 44,
-      "reframeSource": "art/pixellab/reframe-sources/terrain-ruleset7-original-forest-4.png",
-      "reframeSourceSha256": "405262746d5b95e5507dfad353938393ed4b809d77ffbe1b2832a4e3361de0c3",
-      "palette": "preserve accepted Original Forest source exactly; accepted Ruleset 7 Grass ground",
-      "prompt": "Deterministic body-only reframe of the immutable accepted PixelLab Original Forest 4 source. Preserve its exact four-tree silhouette, pixels, northwest light and lateral placement. Keep the owning square and anchor fixed; translate only tree-body pixels down 44 source pixels and restore the accepted Ruleset 7 Grass 1 ground.",
-      "negativePrompt": "provider redraw, ground translation, lateral translation, scale change, crop, new tree, removed tree, canopy repaint, bottom overflow",
-      "output": "public/assets/pixellab/terrain-ruleset7/original-forest-4.png",
-      "anchor": { "x": 128, "y": 256 },
-      "squareFootprint": { "left": 0, "top": 128, "right": 256, "bottom": 384 },
-      "hardBounds": { "left": 0, "top": 0, "right": 256, "bottom": 384 }
     },
     {
       "id": "terrain-square-original-grass-1",
@@ -3840,75 +3926,6 @@
       "hardBounds": { "left": 0, "top": 0, "right": 256, "bottom": 256 }
     },
     {
-      "id": "building-ruleset7-farm-single",
-      "class": "buildings",
-      "stage": "sample",
-      "endpoint": "generate-image-v2",
-      "seed": 117701,
-      "requestSize": { "width": 256, "height": 256 },
-      "outputSize": { "width": 256, "height": 256 },
-      "transparent": true,
-      "requestNoBackground": false,
-      "includeFactionLanguage": false,
-      "postprocess": "farm-full-rectangle",
-      "styleReference": "terrain-square-original-forest-1",
-      "styleReferenceUsage": "Copy the outline weight, broad organic flat shapes, restrained contrast and northwest lighting only; draw ground, not trees.",
-      "palette": "muted warm umber soil, broad golden-parchment crop bands, restrained moss-green leaves, deep charcoal-teal outlines and southeast planes",
-      "prompt": "Ruleset 7 single-cell Farm, one continuous 256 by 256 warm-soil field filling every pixel. Four broad shallow furrow grooves are carved directly into the soil, with a few large moss-green crop leaves growing from them. Use chunky charcoal-teal outlines only around the leaves and along the recessed soil grooves; all rows remain part of one flat ground plane. Three-quarter downward strategy-board view, soft northwest light, darker southeast groove faces, broad flat two-to-three-tone cel shading, readable at 80 pixels. Keep one consistent crop scale. No perimeter border, separate crop beds, floating strips or raised slab. This is one isolated farm identity with no neighbor state.",
-      "negativePrompt": "beige planks, timber rows, separate raised beds, floating strips, raised slab, platform, blurred timber, procedural furrow texture, thin repeated stripes, tiny crop noise, photoreal dirt, painterly field, 3D render, perimeter fence, border, frame, diamond, rounded tile, transparent gap, barn, house, silo, windmill, haystack, scarecrow, road, fruit, resource marker, ownership, selection, UI, text, person, animal, unit, cast shadow, lower-right light",
-      "output": "public/assets/pixellab/buildings-ruleset7/farm-single.png",
-      "anchor": { "x": 128, "y": 128 },
-      "squareFootprint": { "left": 0, "top": 0, "right": 256, "bottom": 256 },
-      "preferredBounds": { "left": 0, "top": 0, "right": 256, "bottom": 256 },
-      "hardBounds": { "left": 0, "top": 0, "right": 256, "bottom": 256 }
-    },
-    {
-      "id": "building-ruleset7-farm-pair-horizontal",
-      "class": "buildings",
-      "stage": "sample",
-      "endpoint": "generate-image-v2",
-      "seed": 117702,
-      "requestSize": { "width": 512, "height": 256 },
-      "outputSize": { "width": 512, "height": 256 },
-      "transparent": true,
-      "requestNoBackground": false,
-      "includeFactionLanguage": false,
-      "postprocess": "farm-full-rectangle",
-      "styleReference": "building-ruleset7-farm-single",
-      "styleReferenceUsage": "Extend the accepted single horizontally without changing its colors or form sizes: uniform medium-brown soil, dark charcoal-teal grooves, five isolated two-leaf sprouts per 256 pixels, flat shading and northwest highlights.",
-      "palette": "muted warm umber soil, broad golden-parchment crop bands, restrained moss-green leaves, deep charcoal-teal outlines and southeast planes",
-      "prompt": "Horizontal two-cell Farm pair, one flat 512 by 256 rectangle. Copy the accepted reference's exact look: one uniform medium warm-brown soil background; six broad diagonal charcoal-teal recessed grooves continuing across the center; exactly ten isolated simple two-leaf green sprouts total, each the same size as a reference sprout. Keep large empty soil areas between grooves. Flat two-tone cel shading and tiny northwest leaf highlights only. Add field area, never enlarge or repeat densely. The center is invisible: no divider, gap or change. Absolutely no tan, cream, yellow or bright soil bands; no separate beds, floating strips, raised forms, perimeter border or tile outline.",
-      "negativePrompt": "golden row, yellow ridge, cream highlight on soil, many leaves, dense crops, oversized plant, two tiles, center seam, gap, planks, timber rows, separate beds, floating strips, raised slab, platform, fence, border, frame, diamond, transparent gap, blur, thin stripes, tiny texture, realistic dirt, painterly, 3D, building, road, resource, ownership, selection, UI, text, person, animal, shadow, lower-right light",
-      "output": "public/assets/pixellab/buildings-ruleset7/farm-pair-horizontal.png",
-      "anchor": { "x": 256, "y": 128 },
-      "squareFootprint": { "left": 0, "top": 0, "right": 512, "bottom": 256 },
-      "preferredBounds": { "left": 0, "top": 0, "right": 512, "bottom": 256 },
-      "hardBounds": { "left": 0, "top": 0, "right": 512, "bottom": 256 }
-    },
-    {
-      "id": "building-ruleset7-farm-pair-vertical",
-      "class": "buildings",
-      "stage": "sample",
-      "endpoint": "generate-image-v2",
-      "seed": 117703,
-      "requestSize": { "width": 256, "height": 512 },
-      "outputSize": { "width": 256, "height": 512 },
-      "transparent": true,
-      "requestNoBackground": false,
-      "includeFactionLanguage": false,
-      "postprocess": "farm-full-rectangle",
-      "styleReference": "building-ruleset7-farm-single",
-      "styleReferenceUsage": "Extend the accepted single vertically without changing its colors or form sizes: uniform medium-brown soil, dark charcoal-teal grooves, five isolated two-leaf sprouts per 256 pixels, flat shading and northwest highlights.",
-      "palette": "muted warm umber soil, broad golden-parchment crop bands, restrained moss-green leaves, deep charcoal-teal outlines and southeast planes",
-      "prompt": "Vertical two-cell Farm pair, one flat 256 by 512 rectangle. Copy the accepted reference's exact look: one uniform medium warm-brown soil background; six broad diagonal charcoal-teal recessed grooves continuing across the center; exactly ten isolated simple two-leaf green sprouts total, each the same size as a reference sprout. Keep large empty soil areas between grooves. Flat two-tone cel shading and tiny northwest leaf highlights only. Add field area, never enlarge or repeat densely. The center is invisible: no divider, gap or change. Absolutely no tan, cream, yellow or bright soil bands; no separate beds, floating strips, raised forms, perimeter border or tile outline. Draw vertically with northwest light; never rotate another image.",
-      "negativePrompt": "rotated art, rotated lighting, golden row, yellow ridge, cream highlight on soil, many leaves, dense crops, oversized plant, two tiles, center seam, gap, planks, timber rows, separate beds, floating strips, raised slab, platform, fence, border, frame, diamond, transparent gap, blur, thin stripes, tiny texture, realistic dirt, painterly, 3D, building, road, resource, ownership, selection, UI, text, person, animal, shadow, lower-right light",
-      "output": "public/assets/pixellab/buildings-ruleset7/farm-pair-vertical.png",
-      "anchor": { "x": 128, "y": 256 },
-      "squareFootprint": { "left": 0, "top": 0, "right": 256, "bottom": 512 },
-      "preferredBounds": { "left": 0, "top": 0, "right": 256, "bottom": 512 },
-      "hardBounds": { "left": 0, "top": 0, "right": 256, "bottom": 512 }
-    },
-    {
       "id": "building-square-quarry",
       "class": "buildings",
       "stage": "sample",
@@ -3957,29 +3974,6 @@
       "groundContactY": 322,
       "preferredBounds": { "left": 76, "top": 38, "right": 308, "bottom": 322 },
       "fitBounds": { "left": 76, "top": 38, "right": 308, "bottom": 322 },
-      "hardBounds": { "left": 8, "top": 8, "right": 376, "bottom": 344 }
-    },
-    {
-      "id": "building-ruleset7-lumber-camp",
-      "class": "buildings",
-      "stage": "batch",
-      "endpoint": "generate-image-v2",
-      "seed": 107811,
-      "requestSize": { "width": 384, "height": 384 },
-      "outputSize": { "width": 384, "height": 384 },
-      "transparent": true,
-      "includeFactionLanguage": false,
-      "styleReference": "building-square-sawmill",
-      "styleReferenceUsage": "Match the approved timber palette, chunky outline, flat planes, three-quarter camera and northwest light; create an outdoor Camp, not the Sawmill shed.",
-      "palette": "warm muted bronze timber, parchment canvas and cut wood faces, cool slate-blue saw metal, restrained moss-green foliage, dark teal-charcoal outline and southeast shadow",
-      "prompt": "Ruleset 7 shared Lumber Camp, transparent 384 by 384, anchor 192,288. One coherent medium-large outdoor camp: exactly two sturdy intact trees with compact crowns frame one broad cutting bench, one oversized upright slate-blue hand saw and exactly three large cut logs in one low stack. Trees are integral to the camp silhouette, not separate scenery. Keep lower-center/right open for a unit. Southeast three-quarter view, northwest light, charcoal-teal outline, broad flat cel shading. Fit x52..332,y54..326, contact y326; upward overflow only, no ground or shadow.",
-      "negativePrompt": "tiny camp, disconnected props, loose trees, dense forest, stumps, many logs, more than two trees, factory, enclosed sawmill, circular saw, person, unit, mine, city, ground, tile, shadow, side or bottom overflow, lower-right light, ownership, selection, pip, number, text, UI, realistic, painterly, 3D",
-      "output": "public/assets/pixellab/buildings-ruleset7/lumber-camp.png",
-      "anchor": { "x": 192, "y": 288 },
-      "groundContactY": 326,
-      "preferredBounds": { "left": 52, "top": 54, "right": 332, "bottom": 326 },
-      "fitBounds": { "left": 52, "top": 54, "right": 332, "bottom": 326 },
-      "postprocess": "compact-building-fit",
       "hardBounds": { "left": 8, "top": 8, "right": 376, "bottom": 344 }
     },
     {
@@ -4251,44 +4245,6 @@
       "hardBounds": { "left": 8, "top": 8, "right": 376, "bottom": 344 }
     },
     {
-      "id": "ui-action-pillage",
-      "class": "ui",
-      "stage": "batch",
-      "endpoint": "generate-ui-v2",
-      "seed": 107403,
-      "requestSize": { "width": 384, "height": 384 },
-      "outputSize": { "width": 128, "height": 128 },
-      "transparent": true,
-      "includeFactionLanguage": false,
-      "postprocess": "lanczos3-resize",
-      "styleReference": "ui-action-redevelop",
-      "styleReferenceUsage": "Match only the accepted action family's centered transparent safe area, heavy charcoal-teal outline, flat two-level shading and small-size readability. Create a distinct destructive-economy symbol, not a replacement or construction command.",
-      "palette": "warm bronze mallet, parchment splintered plank, restrained coral break accent, dark teal-charcoal outline",
-      "prompt": "Exactly one standard action icon for Pillage only: one enormous diagonal warm-bronze war mallet cracking one broad parchment timber plank into exactly two large pieces. One compact connected destructive silhouette, centered with at least eight percent transparent safe area, readable without text at 32 CSS pixels and in the 112 by 130 contextual viewport. Soft northwest highlight, darker southeast planes, strong charcoal-teal outline and two-level flat cel shading. No loot or reward amount.",
-      "negativePrompt": "coin, spoils, treasure, money bag, number, plus one, fire, flames, explosion, blood, person, unit, sword, axe, construction, repair, recycle arrow, disband, waving hand, running figure, ground, scene, panel, button, state badge, ownership color, text, letters, thin lines, tiny fragments, glow, gradient, cast shadow",
-      "output": "public/assets/pixellab/ui/action-pillage.png",
-      "hardBounds": { "left": 10, "top": 10, "right": 118, "bottom": 118 }
-    },
-    {
-      "id": "ui-action-disband",
-      "class": "ui",
-      "stage": "batch",
-      "endpoint": "generate-ui-v2",
-      "seed": 107404,
-      "requestSize": { "width": 384, "height": 384 },
-      "outputSize": { "width": 128, "height": 128 },
-      "transparent": true,
-      "includeFactionLanguage": false,
-      "postprocess": "lanczos3-resize",
-      "styleReference": "ui-action-wait",
-      "styleReferenceUsage": "Match only the accepted action family's centered transparent safe area, heavy charcoal-teal outline, flat two-level shading and small-size readability. Create a peaceful remove-unit command that cannot read as Wait or Pillage.",
-      "palette": "parchment glove, muted slate-blue empty helmet, warm bronze strap, dark teal-charcoal outline",
-      "prompt": "Exactly one standard action icon for Disband only: one large open parchment gloved hand setting down one empty slate-blue helmet with a loose warm-bronze chin strap. One compact connected peaceful farewell silhouette, centered with at least eight percent transparent safe area, readable without text at 32 CSS pixels and in the 112 by 130 contextual viewport. Soft northwest highlight, darker southeast planes, strong charcoal-teal outline and two-level flat cel shading. No person, injury or coin refund.",
-      "negativePrompt": "person, face, soldier, dead body, blood, injury, surrender flag, white flag, coin, refund, number, plus sign, pillage, broken building, mallet, weapon, hourglass, wait, clock, running figure, arrow, ground, scene, panel, button, state badge, ownership color, text, letters, thin lines, tiny detail, glow, gradient, cast shadow",
-      "output": "public/assets/pixellab/ui/action-disband.png",
-      "hardBounds": { "left": 10, "top": 10, "right": 118, "bottom": 118 }
-    },
-    {
       "id": "ui-action-defection",
       "class": "ui",
       "stage": "batch",
@@ -4364,672 +4320,6 @@
       "negativePrompt": "No newly generated content; deterministic accepted-sprite fit only.",
       "output": "public/assets/pixellab/ui/portrait-original-horse-archer-v7r3.png",
       "hardBounds": { "left": 20, "top": 20, "right": 236, "bottom": 236 }
-    },
-    {
-      "id": "terrain-ruleset7-revision3-gravel",
-      "class": "terrain",
-      "stage": "batch",
-      "endpoint": "generate-image-v2",
-      "seed": 110512,
-      "requestSize": { "width": 256, "height": 256 },
-      "outputSize": { "width": 256, "height": 256 },
-      "transparent": true,
-      "requestNoBackground": false,
-      "includeFactionLanguage": false,
-      "postprocess": "square-gravel-ground-v7r3",
-      "palette": "quiet blue-slate gravel #718391 base, muted parchment-gray angular scree faces, deep desaturated slate shallow seams",
-      "prompt": "Edge-to-edge 256 by 256 quiet illustrated gravel beneath Original Mountains. Scatter many irregular angular scree fragments and broken flat patches, mostly 16 to 32 source pixels across (8 to 16 CSS pixels at half scale), with generous blue-slate ground between them. Non-interlocking, non-rounded, varied shapes; low-contrast two-to-three flat tones, thin restrained marks, northwest light. Texture stays subordinate to crisp Mountains. Every edge and corner is uninterrupted material.",
-      "negativePrompt": "large or rounded boulders, interlocking stones, cobblestone, paving, masonry, road, path, seams, regular repeat, blank gray, microscopic noise, stipple, sand, dirt, photo texture, busy dots, grid, border, transparency, mountain, ore, resource pile, mine, building, unit, text, UI, southeast key light",
-      "output": "public/assets/pixellab/terrain-ruleset7/revision3-gravel.png",
-      "anchor": { "x": 128, "y": 128 },
-      "squareFootprint": { "left": 0, "top": 0, "right": 256, "bottom": 256 },
-      "hardBounds": { "left": 0, "top": 0, "right": 256, "bottom": 256 }
-    },
-    {
-      "id": "terrain-ruleset7-revision3-mountain-1",
-      "class": "terrain",
-      "stage": "batch",
-      "endpoint": "generate-image-v2",
-      "seed": 110521,
-      "requestSize": { "width": 256, "height": 384 },
-      "outputSize": { "width": 256, "height": 384 },
-      "transparent": true,
-      "includeFactionLanguage": false,
-      "postprocess": "square-mountain-reframe-gravel-v7r3",
-      "styleReference": "terrain-square-original-mountain-1",
-      "styleReferenceUsage": "Immutable accepted Original Mountain 1 reference. Preserve the exact approved asymmetric main-peak silhouette and painted rock planes; change only the owning-square ground to the accepted revision-3 gravel.",
-      "groundReference": "terrain-ruleset7-revision3-gravel",
-      "reframeGroundReference": "terrain-square-original-grass-1",
-      "palette": "preserve accepted Original Mountain 1 rock exactly; accepted revision-3 gravel ground",
-      "prompt": "Deterministic body derivation of immutable accepted Original Mountain 1. Preserve its exact asymmetric main peak, smaller shoulder, wide foothills, rock pixels, northwest light and lateral placement. Keep the already approved 40-source-pixel body lowering and fixed anchor. Replace only the former flat slate owning-square ground with accepted revision-3 illustrated gravel.",
-      "negativePrompt": "provider redraw, silhouette change, scale change, lateral shift, new peak, removed shoulder, rock repaint, internal-color stripping, mine, entrance, braces, spoil pile, resource, ore, building, unit, left right or bottom overflow",
-      "output": "public/assets/pixellab/terrain-ruleset7/revision3-mountain-1.png",
-      "anchor": { "x": 128, "y": 256 },
-      "bodyOffsetY": 40,
-      "reframeSource": "art/pixellab/reframe-sources/terrain-square-original-mountain-1.png",
-      "reframeSourceSha256": "b1c0435641bc80bc6f2814de3e49d45aeed88c875c3c87259bb307e8e92282b2",
-      "squareFootprint": { "left": 0, "top": 128, "right": 256, "bottom": 384 },
-      "hardBounds": { "left": 0, "top": 0, "right": 256, "bottom": 384 }
-    },
-    {
-      "id": "terrain-ruleset7-revision3-mountain-2",
-      "class": "terrain",
-      "stage": "batch",
-      "endpoint": "generate-image-v2",
-      "seed": 110522,
-      "requestSize": { "width": 256, "height": 384 },
-      "outputSize": { "width": 256, "height": 384 },
-      "transparent": true,
-      "includeFactionLanguage": false,
-      "postprocess": "square-mountain-reframe-gravel-v7r3",
-      "styleReference": "terrain-square-original-mountain-2",
-      "styleReferenceUsage": "Immutable accepted Original Mountain 2 reference. Preserve the exact approved blunt twin-peak silhouette and painted rock planes; change only the owning-square ground to the accepted revision-3 gravel.",
-      "groundReference": "terrain-ruleset7-revision3-gravel",
-      "reframeGroundReference": "terrain-square-original-grass-1",
-      "palette": "preserve accepted Original Mountain 2 rock exactly; accepted revision-3 gravel ground",
-      "prompt": "Deterministic body derivation of immutable accepted Original Mountain 2. Preserve its exact taller blunt left peak, lower angular right peak, connecting shoulder, rock pixels, northwest light and lateral placement. Keep the already approved 40-source-pixel body lowering and fixed anchor. Replace only the former flat slate owning-square ground with accepted revision-3 illustrated gravel.",
-      "negativePrompt": "provider redraw, silhouette change, scale change, lateral shift, peak change, rock repaint, internal-color stripping, mine, entrance, braces, spoil pile, resource, ore, building, unit, left right or bottom overflow",
-      "output": "public/assets/pixellab/terrain-ruleset7/revision3-mountain-2.png",
-      "anchor": { "x": 128, "y": 256 },
-      "bodyOffsetY": 40,
-      "reframeSource": "art/pixellab/reframe-sources/terrain-square-original-mountain-2.png",
-      "reframeSourceSha256": "6211a416eeabb65da06bebfbb6a530e50f44291cb37cd80610e38f7fa388c457",
-      "squareFootprint": { "left": 0, "top": 128, "right": 256, "bottom": 384 },
-      "hardBounds": { "left": 0, "top": 0, "right": 256, "bottom": 384 }
-    },
-    {
-      "id": "terrain-ruleset7-revision3-mountain-3",
-      "class": "terrain",
-      "stage": "batch",
-      "endpoint": "generate-image-v2",
-      "seed": 110523,
-      "requestSize": { "width": 256, "height": 384 },
-      "outputSize": { "width": 256, "height": 384 },
-      "transparent": true,
-      "includeFactionLanguage": false,
-      "postprocess": "square-mountain-reframe-gravel-v7r3",
-      "styleReference": "terrain-square-original-mountain-3",
-      "styleReferenceUsage": "Immutable accepted Original Mountain 3 reference. Preserve the exact approved low ridge and flat mesa silhouette and painted rock planes; change only the owning-square ground to the accepted revision-3 gravel.",
-      "groundReference": "terrain-ruleset7-revision3-gravel",
-      "reframeGroundReference": "terrain-square-original-grass-1",
-      "palette": "preserve accepted Original Mountain 3 rock exactly; accepted revision-3 gravel ground",
-      "prompt": "Deterministic body derivation of immutable accepted Original Mountain 3. Preserve its exact long shallow left ridge, flat-topped right mesa shoulder, squat foreground shelf, rock pixels, northwest light and lateral placement. Keep the already approved 40-source-pixel body lowering and fixed anchor. Replace only the former flat slate owning-square ground with accepted revision-3 illustrated gravel.",
-      "negativePrompt": "provider redraw, silhouette change, scale change, lateral shift, tall new apex, rock repaint, internal-color stripping, mine, entrance, braces, spoil pile, resource, ore, building, unit, left right or bottom overflow",
-      "output": "public/assets/pixellab/terrain-ruleset7/revision3-mountain-3.png",
-      "anchor": { "x": 128, "y": 256 },
-      "bodyOffsetY": 40,
-      "reframeSource": "art/pixellab/reframe-sources/terrain-square-original-mountain-3.png",
-      "reframeSourceSha256": "ed0b45b628f764570a06b32cc16b48254307e5061c39a5ef19e552329925e31f",
-      "squareFootprint": { "left": 0, "top": 128, "right": 256, "bottom": 384 },
-      "hardBounds": { "left": 0, "top": 0, "right": 256, "bottom": 384 }
-    },
-    {
-      "id": "terrain-ruleset7-revision3-mined-mountain-1",
-      "class": "terrain",
-      "stage": "batch",
-      "endpoint": "generate-image-v2",
-      "seed": 110531,
-      "requestSize": { "width": 256, "height": 384 },
-      "outputSize": { "width": 256, "height": 384 },
-      "transparent": true,
-      "includeFactionLanguage": false,
-      "postprocess": "square-tall-ground-reference",
-      "styleReference": "terrain-ruleset7-revision3-mountain-1",
-      "styleReferenceUsage": "Use the accepted revision-3 Mountain 1 as the exact composition and silhouette reference. Preserve its asymmetric main peak, smaller shoulder, lowered footprint, rock palette and gravel field while building one coherent entrance, braces and spoil structure into its lower rock face.",
-      "groundReference": "terrain-ruleset7-revision3-gravel",
-      "palette": "accepted slate and parchment Mountain 1 rock, dark recessed entrance, broad warm-bronze timber braces, two restrained slate spoil shelves, revision-3 gravel ground",
-      "prompt": "Integrated mined version of referenced Mountain 1 on transparent 256 by 384, anchor 128,256. Preserve its asymmetric main peak, smaller shoulder, outer silhouette, scale and northwest-lit planes. Cut one large dark arched tunnel into the lower center-right rock face, with exactly three thick connected timber braces, one short integral hoist beam and two broad low spoil shelves. Tunnel occludes rock; braces join rock; spoil meets gravel. This is one combined Mountain-plus-Mine illustration, never a separate icon. The accepted gravel keeps x0..255,y128..383 opaque; overflow is upward only. Strong quiet outline, two-to-three flat tones.",
-      "negativePrompt": "loose Mine icon, detached building, pasted sticker, floating door, freestanding shack, isolated tool, ore, crystal, cart, person, changed peak, new or shrunk mountain, platform, diamond, side or bottom overflow, noisy rock",
-      "output": "public/assets/pixellab/terrain-ruleset7/revision3-mined-mountain-1.png",
-      "anchor": { "x": 128, "y": 256 },
-      "squareFootprint": { "left": 0, "top": 128, "right": 256, "bottom": 384 },
-      "hardBounds": { "left": 0, "top": 0, "right": 256, "bottom": 384 }
-    },
-    {
-      "id": "terrain-ruleset7-revision3-mined-mountain-2",
-      "class": "terrain",
-      "stage": "batch",
-      "endpoint": "generate-image-v2",
-      "seed": 110532,
-      "requestSize": { "width": 256, "height": 384 },
-      "outputSize": { "width": 256, "height": 384 },
-      "transparent": true,
-      "includeFactionLanguage": false,
-      "postprocess": "square-tall-ground-reference",
-      "styleReference": "terrain-ruleset7-revision3-mountain-2",
-      "styleReferenceUsage": "Use the accepted revision-3 Mountain 2 as the exact composition and silhouette reference. Preserve its blunt twin peaks, connecting shoulder, lowered footprint, rock palette and gravel field while building one coherent entrance, braces and spoil structure into its lower rock face.",
-      "groundReference": "terrain-ruleset7-revision3-gravel",
-      "palette": "accepted slate and parchment Mountain 2 rock, dark recessed entrance, broad warm-bronze timber braces, two restrained slate spoil shelves, revision-3 gravel ground",
-      "prompt": "Integrated mined version of referenced Mountain 2 on transparent 256 by 384, anchor 128,256. Preserve its blunt left peak, angular right peak, connecting shoulder, outer silhouette, scale and northwest-lit planes. Cut one large dark arched tunnel into the lower left-center rock face, with exactly three thick connected timber braces, one short integral hoist beam and two broad low spoil shelves. Tunnel occludes rock; braces join rock; spoil meets gravel. This is one combined Mountain-plus-Mine illustration, never a separate icon. The accepted gravel keeps x0..255,y128..383 opaque; overflow is upward only. Strong quiet outline, two-to-three flat tones.",
-      "negativePrompt": "loose Mine icon, detached building, pasted sticker, floating door, freestanding shack, isolated tool, ore, crystal, cart, person, changed peaks, new or shrunk mountain, platform, diamond, side or bottom overflow, noisy rock",
-      "output": "public/assets/pixellab/terrain-ruleset7/revision3-mined-mountain-2.png",
-      "anchor": { "x": 128, "y": 256 },
-      "squareFootprint": { "left": 0, "top": 128, "right": 256, "bottom": 384 },
-      "hardBounds": { "left": 0, "top": 0, "right": 256, "bottom": 384 }
-    },
-    {
-      "id": "terrain-ruleset7-revision3-mined-mountain-3",
-      "class": "terrain",
-      "stage": "batch",
-      "endpoint": "generate-image-v2",
-      "seed": 110533,
-      "requestSize": { "width": 256, "height": 384 },
-      "outputSize": { "width": 256, "height": 384 },
-      "transparent": true,
-      "includeFactionLanguage": false,
-      "postprocess": "square-tall-ground-reference",
-      "styleReference": "terrain-ruleset7-revision3-mountain-3",
-      "styleReferenceUsage": "Use the accepted revision-3 Mountain 3 as the exact composition and silhouette reference. Preserve its low ridge, flat mesa shoulder, foreground shelf, lowered footprint, rock palette and gravel field while building one coherent entrance, braces and spoil structure into its lower rock face.",
-      "groundReference": "terrain-ruleset7-revision3-gravel",
-      "palette": "accepted slate and parchment Mountain 3 rock, dark recessed entrance, broad warm-bronze timber braces, two restrained slate spoil shelves, revision-3 gravel ground",
-      "prompt": "Integrated mined version of referenced Mountain 3 on transparent 256 by 384, anchor 128,256. Preserve its shallow left ridge, flat right mesa, foreground shelf, low outer silhouette, scale and northwest-lit planes. Cut one large dark arched tunnel into the foreground shelf, with exactly three thick connected timber braces, one short integral hoist beam and two broad low spoil shelves. Tunnel occludes rock; braces join rock; spoil meets gravel. This is one combined Mountain-plus-Mine illustration, never a separate icon. The accepted gravel keeps x0..255,y128..383 opaque; overflow is upward only. Strong quiet outline, two-to-three flat tones.",
-      "negativePrompt": "loose Mine icon, detached building, pasted sticker, floating door, freestanding shack, isolated tool, ore, crystal, cart, person, tall new peak, changed mesa, shrunk mountain, platform, diamond, side or bottom overflow, noisy rock",
-      "output": "public/assets/pixellab/terrain-ruleset7/revision3-mined-mountain-3.png",
-      "anchor": { "x": 128, "y": 256 },
-      "squareFootprint": { "left": 0, "top": 128, "right": 256, "bottom": 384 },
-      "hardBounds": { "left": 0, "top": 0, "right": 256, "bottom": 384 }
-    },
-    {
-      "id": "building-ruleset7-resource-lumber-camp",
-      "class": "buildings",
-      "stage": "batch",
-      "endpoint": "generate-image-v2",
-      "seed": 107911,
-      "requestSize": {
-        "width": 384,
-        "height": 384
-      },
-      "outputSize": {
-        "width": 384,
-        "height": 384
-      },
-      "transparent": true,
-      "includeFactionLanguage": false,
-      "postprocess": "compact-building-fit",
-      "palette": "muted honey-brown timber, warm parchment cut wood, slate blue hand saw, restrained sage foliage, deep charcoal-teal contour",
-      "prompt": "Smooth clean 2D vector-like illustration for a strategy-game map, transparent 384 by 384. Draw a compact outdoor lumber camp as one joined composition: two sturdy trees with broad rounded leafy crowns behind a low open cutting bench, one upright hand saw leaning on the bench, three cut logs in a tidy front-right stack. Use broad continuous curved ink lines, tapered drawn strokes, smooth diagonals, large flat color planes and only 2 to 3 levels of cel shading. Southeast three-quarter view, soft northwest key light. It must look like a polished illustrated board-game sticker, not a pixel sprite. Keep a clear lower-center space for a unit. No ground, shadow or border. Source anchor 192,288, fit x52..332 y54..326, contact y326.",
-      "negativePrompt": "pixel art, pixelated, stair-step edges, jagged bitmap edges, 8-bit, 16-bit, pixel grid, blocky leaves, dither, mosaic, blurry pixels, retro sprite, tiny detail, disconnected props, more than two trees, dense forest, enclosed sawmill, circular saw, people, unit, ground, tile, platform, shadow, text, UI, photorealism, painterly, 3D",
-      "output": "public/assets/pixellab/buildings-ruleset7/resource-lumber-camp.png",
-      "anchor": {
-        "x": 192,
-        "y": 288
-      },
-      "groundContactY": 326,
-      "preferredBounds": {
-        "left": 52,
-        "top": 54,
-        "right": 332,
-        "bottom": 326
-      },
-      "fitBounds": {
-        "left": 52,
-        "top": 54,
-        "right": 332,
-        "bottom": 326
-      },
-      "hardBounds": {
-        "left": 8,
-        "top": 8,
-        "right": 376,
-        "bottom": 344
-      },
-      "styleReference": "building-square-monument",
-      "styleReferenceUsage": "Use only the accepted Monument smooth continuous contour, deliberate antialiasing, and broad hand-drawn cel planes; retain the requested timber-camp objects and palette."
-    },
-    {
-      "id": "terrain-ruleset7-resource-fertile-ground",
-      "class": "terrain",
-      "stage": "batch",
-      "endpoint": "generate-image-v2",
-      "seed": 107922,
-      "requestSize": {
-        "width": 400,
-        "height": 600
-      },
-      "outputSize": {
-        "width": 256,
-        "height": 384
-      },
-      "transparent": true,
-      "includeFactionLanguage": false,
-      "postprocess": "preferred-low-marker-fit",
-      "palette": "broad earthy umber patch with restrained lighter brown broken areas, two clearly legible sage-green leaf shoots, charcoal-teal sketch contour",
-      "prompt": "Smooth hand-drawn 2D terrain resource on transparent 400 by 600 canvas. Draw one FLAT irregular dark-brown soil patch spread horizontally into three fused asymmetric lobes with an uneven broken perimeter. It lies flush with terrain; no raised edge or side wall. Broad flat northwest-lit planes, no tiny texture. Exactly TWO legible green leaf shoots near center, each with two large leaves. Keep soil much wider than tall and neither circular nor symmetric. Isolated mark only. Final processing fits x44..212,y250..324 in 256 by 384 output.",
-      "negativePrompt": "perfect circle or oval, pancake, raised platform, thick rim, extruded side wall, shadow, roots, stump, hole, tiny seedlings, crop rows, farm, rectangular field, fruit, flowers, road, selection ring, tile, pixel art, jagged edges, 3D",
-      "output": "public/assets/pixellab/terrain-square/ruleset7-resource-fertile-ground.png",
-      "anchor": {
-        "x": 128,
-        "y": 256
-      },
-      "groundContactY": 324,
-      "squareFootprint": {
-        "left": 0,
-        "top": 128,
-        "right": 256,
-        "bottom": 384
-      },
-      "preferredBounds": {
-        "left": 44,
-        "top": 250,
-        "right": 212,
-        "bottom": 324
-      },
-      "hardBounds": {
-        "left": 32,
-        "top": 208,
-        "right": 224,
-        "bottom": 352
-      }
-    },
-    {
-      "id": "terrain-ruleset7-original-fruit-pear",
-      "class": "terrain",
-      "stage": "batch",
-      "endpoint": "generate-image-v2",
-      "seed": 107903,
-      "requestSize": {
-        "width": 256,
-        "height": 384
-      },
-      "outputSize": {
-        "width": 256,
-        "height": 384
-      },
-      "transparent": true,
-      "includeFactionLanguage": false,
-      "postprocess": "preferred-low-marker-fit",
-      "styleReference": "terrain-square-original-fruit",
-      "styleReferenceUsage": "Preserve the accepted Original Fruit clean thick outline, flat shading and broad three-form cluster; change to golden pears with distinct pear silhouettes.",
-      "palette": "warm golden-yellow pears, pale parchment northwest highlights, sage leaf, dark teal outline and southeast shadow",
-      "prompt": "Clean illustrated Original Fruit resource: three oversized golden pears in one low triangular harvest cluster with a single broad sage leaf and one short joined twig. Transparent untrimmed 256 by 384 canvas; broad smooth cartoon shapes, dark charcoal-teal outline, flat two-tone northwest-lit shading, no visible pixels. Match the existing Original Fruit family size and anchor, but use unmistakable pear silhouettes. Fit x76..180 y232..320, bottom y320; no ground.",
-      "negativePrompt": "pixel art, jagged pixel stair steps, tiny dots, apples, berries, more than three fruit, basket, tree, farm, candy, faces, limbs, ground, shadow, platform, text, UI, 3D, realism",
-      "output": "public/assets/pixellab/terrain-square/ruleset7-original-fruit-pear.png",
-      "anchor": {
-        "x": 128,
-        "y": 256
-      },
-      "groundContactY": 320,
-      "squareFootprint": {
-        "left": 0,
-        "top": 128,
-        "right": 256,
-        "bottom": 384
-      },
-      "preferredBounds": {
-        "left": 76,
-        "top": 232,
-        "right": 180,
-        "bottom": 320
-      },
-      "hardBounds": {
-        "left": 48,
-        "top": 176,
-        "right": 208,
-        "bottom": 352
-      }
-    },
-    {
-      "id": "terrain-ruleset7-original-fruit-plum",
-      "class": "terrain",
-      "stage": "batch",
-      "endpoint": "generate-image-v2",
-      "seed": 107904,
-      "requestSize": {
-        "width": 256,
-        "height": 384
-      },
-      "outputSize": {
-        "width": 256,
-        "height": 384
-      },
-      "transparent": true,
-      "includeFactionLanguage": false,
-      "postprocess": "preferred-low-marker-fit",
-      "styleReference": "terrain-square-original-fruit",
-      "styleReferenceUsage": "Preserve the accepted Original Fruit clean contour, three-form cluster, northwest light and size; change the forms and palette to plums.",
-      "palette": "three deep purple-violet plums, mauve northwest highlight, sage leaf, dark teal outline and southeast shadow",
-      "prompt": "Clean illustrated Original Fruit resource: three large deep violet plums in one broad low triangular harvest cluster, with one short dark twig and a single chunky green leaf. Distinct round plum forms, each simple and readable at minimum zoom. Transparent untrimmed 256 by 384 canvas, smooth hand-drawn contour and flat two-level cel shading with northwest light. Match existing Original Fruit scale, source anchor 128,256 and preferred x76..180 y232..320, bottom y320. No ground.",
-      "negativePrompt": "pixel art, jagged pixel stair steps, tiny berries, apples, grapes, many small dots, more than three fruit, basket, tree, farm, candy, faces, limbs, ground, shadow, platform, text, UI, 3D, realism",
-      "output": "public/assets/pixellab/terrain-square/ruleset7-original-fruit-plum.png",
-      "anchor": {
-        "x": 128,
-        "y": 256
-      },
-      "groundContactY": 320,
-      "squareFootprint": {
-        "left": 0,
-        "top": 128,
-        "right": 256,
-        "bottom": 384
-      },
-      "preferredBounds": {
-        "left": 76,
-        "top": 232,
-        "right": 180,
-        "bottom": 320
-      },
-      "hardBounds": {
-        "left": 48,
-        "top": 176,
-        "right": 208,
-        "bottom": 352
-      }
-    },
-    {
-      "id": "terrain-ruleset7-original-game-deer",
-      "class": "terrain",
-      "stage": "batch",
-      "endpoint": "generate-image-v2",
-      "seed": 107915,
-      "requestSize": {
-        "width": 256,
-        "height": 384
-      },
-      "outputSize": {
-        "width": 256,
-        "height": 384
-      },
-      "transparent": true,
-      "includeFactionLanguage": false,
-      "postprocess": "preferred-low-marker-fit",
-      "styleReference": "terrain-square-original-animal",
-      "styleReferenceUsage": "Match the accepted boar low horizontal width-to-height ratio, clear four grounded legs, southeast-facing wildlife pose, outline and flat palette; replace species with small-antlered deer.",
-      "palette": "warm golden tan, cream chest and northwest highlights, muted moss antlers, charcoal-teal outline and southeast shadow",
-      "prompt": "Clean illustrated low Game wildlife sprite: one compact FOUR-LEGGED deer in three-quarter side profile, facing down-right/southeast. Its back and horizontal torso are longer than its legs and neck; all four hooves touch one baseline. Head extends forward from a short sloping neck; show two small simple antlers and ears without increasing total height. Use warm tan body, cream chest, dark charcoal-teal smooth outline, broad flat northwest-lit cel shading. It is a natural forest deer on transparent 256 by 384, not a character. Broad low silhouette like the referenced boar, fit x68..188,y196..324, bottom y324, no ground.",
-      "negativePrompt": "front-facing portrait, upright humanoid, standing on hind legs, tall narrow silhouette, vertical neck, long legs, giant antlers, cute mascot, human pose, weapon, clothing, saddle, detailed fur, realistic anatomy, multiple animals, tree, ground, shadow, tile, text, UI, pixel art, 3D",
-      "output": "public/assets/pixellab/terrain-square/ruleset7-original-game-deer.png",
-      "anchor": {
-        "x": 128,
-        "y": 256
-      },
-      "groundContactY": 324,
-      "squareFootprint": {
-        "left": 0,
-        "top": 128,
-        "right": 256,
-        "bottom": 384
-      },
-      "preferredBounds": {
-        "left": 68,
-        "top": 196,
-        "right": 188,
-        "bottom": 324
-      },
-      "hardBounds": {
-        "left": 40,
-        "top": 160,
-        "right": 216,
-        "bottom": 352
-      }
-    },
-    {
-      "id": "terrain-ruleset7-original-game-fox",
-      "class": "terrain",
-      "stage": "batch",
-      "endpoint": "generate-image-v2",
-      "seed": 107906,
-      "requestSize": {
-        "width": 256,
-        "height": 384
-      },
-      "outputSize": {
-        "width": 256,
-        "height": 384
-      },
-      "transparent": true,
-      "includeFactionLanguage": false,
-      "postprocess": "preferred-low-marker-fit",
-      "styleReference": "terrain-square-original-animal",
-      "styleReferenceUsage": "Preserve the Original Game resource scale, broad clean outline and low southeast-facing wildlife stance; make a distinct fox species.",
-      "palette": "rust orange body and tail, cream chest and tail tip, dark teal outline and southeast shadow",
-      "prompt": "Clean illustrated Game wildlife resource: one chunky low fox with a large flowing rust-orange tail and cream tail tip, pointy ears, short legs, facing southeast. Cute wild woodland animal, not a unit or pet. Transparent untrimmed 256 by 384 canvas, isolated and centered in front of Forest canopy. Smooth bold charcoal-teal contour, flat two-level cel shading, northwest light. Match existing boar resource scale, fit x68..188 y196..324, bottom y324.",
-      "negativePrompt": "pixel art, jagged pixel edges, detailed fur, realistic anatomy, wolf, dog collar, upright person, armor, saddle, weapon, other animals, tree, grass, ground patch, shadow, tile, text, UI, 3D",
-      "output": "public/assets/pixellab/terrain-square/ruleset7-original-game-fox.png",
-      "anchor": {
-        "x": 128,
-        "y": 256
-      },
-      "groundContactY": 324,
-      "squareFootprint": {
-        "left": 0,
-        "top": 128,
-        "right": 256,
-        "bottom": 384
-      },
-      "preferredBounds": {
-        "left": 68,
-        "top": 196,
-        "right": 188,
-        "bottom": 324
-      },
-      "hardBounds": {
-        "left": 40,
-        "top": 160,
-        "right": 216,
-        "bottom": 352
-      }
-    },
-    {
-      "id": "terrain-ruleset7-water-shallow",
-      "class": "terrain",
-      "stage": "sample",
-      "endpoint": "generate-image-v2",
-      "seed": 126606,
-      "requestSize": {
-        "width": 256,
-        "height": 256
-      },
-      "outputSize": {
-        "width": 256,
-        "height": 256
-      },
-      "transparent": false,
-      "requestNoBackground": false,
-      "includeFactionLanguage": false,
-      "postprocess": "naval-water-fill",
-      "styleReference": "terrain-ruleset7-original-grass-1",
-      "styleReferenceUsage": "Copy only the accepted quiet full-square material scale, restrained broad illustrated marks and northwest light; replace all turf language with shallow water.",
-      "palette": "muted blue-green #589198, pale desaturated aqua highlights, dark teal low-contrast troughs",
-      "prompt": "Square-grid terrain material: an exact 256 by 256 full square of calm shallow blue-green WATER viewed straight downward. Fill the complete canvas with continuous water. Show exactly three broad, low-contrast, gently curved horizontal ripple bands: one crossing the upper-left edge, one crossing through the middle, and one crossing the lower-right edge. The bands are part of the water surface, not separate objects. Quiet flat two-tone illustrated shading with northwest light, no focal subject and no centered pattern. Deterministic processing smooths minor quantization and converges the outer 32 pixels to the shared shallow edge field.",
-      "negativePrompt": "character, astronaut, robot, person, flag, landscape, field, ground, moon, pixel-art scene, dark outline around ripple, bean shape, crescent object, isolated motif, centered radial pattern, land, coast, beach, foam border, route, current arrow, grid, selection, ownership, fog, bubbles, whitecaps, tiny noise, photoreal reflection, horizon, fish, pearls, boat, port, text, UI, directional gradient, frame, bevel, transparent corner",
-      "output": "public/assets/pixellab/terrain-ruleset7/water-shallow.png",
-      "anchor": {
-        "x": 128,
-        "y": 128
-      },
-      "displayScale": 0.5,
-      "squareFootprint": {
-        "left": 0,
-        "top": 0,
-        "right": 256,
-        "bottom": 256
-      },
-      "hardBounds": {
-        "left": 0,
-        "top": 0,
-        "right": 256,
-        "bottom": 256
-      }
-    },
-    {
-      "id": "terrain-ruleset7-water-deep",
-      "class": "terrain",
-      "stage": "sample",
-      "endpoint": "generate-image-v2",
-      "seed": 126602,
-      "requestSize": {
-        "width": 256,
-        "height": 256
-      },
-      "outputSize": {
-        "width": 256,
-        "height": 256
-      },
-      "transparent": false,
-      "requestNoBackground": false,
-      "includeFactionLanguage": false,
-      "postprocess": "naval-water-fill",
-      "styleReference": "terrain-ruleset7-water-shallow",
-      "styleReferenceUsage": "Preserve the accepted quiet square water treatment, clean broad cel shading and restrained contrast; change to darker cooler water with visibly longer, larger swell spacing.",
-      "palette": "dark cool ocean blue #35677d, muted slate-blue highlight, deep teal trough",
-      "prompt": "Ruleset 7 Deep Water: one exact axis-aligned 256 by 256 square of darker cooler ocean water. Fill every pixel. Use two or three broad long low-contrast swell bands, visibly larger and more widely spaced than Shallow Water, with flat two-to-three-tone cel shading and restrained northwest highlight. The value band and swell language must distinguish deep water in grayscale while staying quiet. Outer 32 pixels will converge to its shared deep edge field.",
-      "negativePrompt": "shallow short ripples, land, coast, beach, foam border, route, current arrow, grid, selection, ownership, fog, bubbles, many whitecaps, tiny noise, photoreal reflection, horizon, object, fish, pearls, boat, port, text, UI, directional gradient, frame, bevel, transparent corner",
-      "output": "public/assets/pixellab/terrain-ruleset7/water-deep.png",
-      "anchor": {
-        "x": 128,
-        "y": 128
-      },
-      "displayScale": 0.5,
-      "squareFootprint": {
-        "left": 0,
-        "top": 0,
-        "right": 256,
-        "bottom": 256
-      },
-      "hardBounds": {
-        "left": 0,
-        "top": 0,
-        "right": 256,
-        "bottom": 256
-      }
-    },
-    {
-      "id": "terrain-ruleset7-resource-fish",
-      "class": "terrain",
-      "stage": "sample",
-      "endpoint": "generate-image-v2",
-      "seed": 126613,
-      "requestSize": {
-        "width": 256,
-        "height": 384
-      },
-      "outputSize": {
-        "width": 256,
-        "height": 384
-      },
-      "transparent": true,
-      "includeFactionLanguage": false,
-      "postprocess": "preferred-low-marker-fit",
-      "styleReference": "terrain-ruleset7-original-fruit-pear",
-      "styleReferenceUsage": "Match the accepted refreshed Pear resource's smooth nonpixel contour, compact exact three-form cluster, broad clean dark outline, simple highlights and minimum-zoom detail budget; replace the three fruit forms with three fish.",
-      "palette": "three silver-teal fish, pale aqua highlights, charcoal-teal outline, muted navy shadows",
-      "prompt": "Ruleset 7 Fish resource with a hard count of EXACTLY THREE fish total. Arrange one chunky silver-teal fish at upper center, one at lower left and one at lower right, overlapping slightly into one compact triangular group. Each fish has one obvious oval body and one tail; smooth continuous nonpixel contour, broad simple highlight, strong clean dark outline and two flat cel-shaded tones. Transparent untrimmed 256 by 384 canvas, owning square y128..383, target bounds x60..196 y176..320 and bottom contact y320. Isolated resource only.",
-      "negativePrompt": "fourth fish, more than three fish, fish school, tiny fish, duplicated fish, bubbles, water tile, waves, foam, fishing boat, net, hook, person, food plate, currency, coin, text, price, action arrow, sparkle, shadow, ground, platform, UI, selection, pixel art, jagged pixel edge, realistic scales, painterly detail, 3D",
-      "output": "public/assets/pixellab/terrain-ruleset7/resource-fish.png",
-      "anchor": {
-        "x": 128,
-        "y": 256
-      },
-      "groundContactY": 320,
-      "displayScale": 0.5,
-      "squareFootprint": {
-        "left": 0,
-        "top": 128,
-        "right": 256,
-        "bottom": 384
-      },
-      "preferredBounds": {
-        "left": 60,
-        "top": 176,
-        "right": 196,
-        "bottom": 320
-      },
-      "hardBounds": {
-        "left": 40,
-        "top": 148,
-        "right": 216,
-        "bottom": 336
-      }
-    },
-    {
-      "id": "terrain-ruleset7-resource-pearls",
-      "class": "terrain",
-      "stage": "sample",
-      "endpoint": "generate-image-v2",
-      "seed": 126612,
-      "requestSize": {
-        "width": 256,
-        "height": 384
-      },
-      "outputSize": {
-        "width": 256,
-        "height": 384
-      },
-      "transparent": true,
-      "includeFactionLanguage": false,
-      "postprocess": "preferred-low-marker-fit",
-      "styleReference": "terrain-square-original-fruit",
-      "styleReferenceUsage": "Match the accepted square resource's compact scale, broad clean dark outline, simple highlights and minimum-zoom detail budget; replace fruit with one shell and two pearls.",
-      "palette": "warm coral-cream shell, exactly two ivory pearls, pale aqua highlights, charcoal-teal outline",
-      "prompt": "Ruleset 7 Pearls resource: one oversized open chunky shell holding exactly two large bright round pearls. The open shell supplies a wide unmistakable silhouette so the pearls never resemble Coins, population pips or foam. Strong smooth charcoal-teal outline, broad simple highlights, two flat cel-shaded tones. Transparent untrimmed 256 by 384 canvas, owning square y128..383, target bounds x60..196 y176..320 and bottom contact y320. Isolated resource only.",
-      "negativePrompt": "single pearl, more than two pearls, loose pearl pile, coin, gold, currency, population pips, bubbles, foam, sparkle field, water tile, boat, port, text, price, action arrow, shadow, ground, platform, UI, selection, pixel art, realistic nacre, painterly detail, 3D",
-      "output": "public/assets/pixellab/terrain-ruleset7/resource-pearls.png",
-      "anchor": {
-        "x": 128,
-        "y": 256
-      },
-      "groundContactY": 320,
-      "displayScale": 0.5,
-      "squareFootprint": {
-        "left": 0,
-        "top": 128,
-        "right": 256,
-        "bottom": 384
-      },
-      "preferredBounds": {
-        "left": 60,
-        "top": 176,
-        "right": 196,
-        "bottom": 320
-      },
-      "hardBounds": {
-        "left": 40,
-        "top": 148,
-        "right": 216,
-        "bottom": 336
-      }
-    },
-    {
-      "id": "building-ruleset7-port",
-      "class": "buildings",
-      "stage": "sample",
-      "endpoint": "generate-image-v2",
-      "seed": 126623,
-      "requestSize": {
-        "width": 384,
-        "height": 384
-      },
-      "outputSize": {
-        "width": 384,
-        "height": 384
-      },
-      "transparent": true,
-      "includeFactionLanguage": false,
-      "postprocess": "compact-building-fit",
-      "styleReference": "building-ruleset7-resource-lumber-camp",
-      "styleReferenceUsage": "Copy only the accepted smooth nonpixel timber contour, strong clean outline, broad flat cel shading, southeast three-quarter camera and simple functional readability; create a new water-service pier without trees or logging equipment.",
-      "palette": "warm tan timber, muted bronze crane, cream canvas roof, charcoal-teal outline and southeast planes, one blank coral pennant",
-      "prompt": "Ruleset 7 shared Port improvement, southeast-facing three-quarter downward strategy view. A small L-shaped chunky timber PIER is the primary silhouette, with a visibly empty water opening in its center and lower half. Add one tiny short warehouse box at the back-left, one bold mooring post and one simple short crane arm at the back-right. No large roof or canopy spans the pier. Keep x90..294,y170..330 visually open so Fish or Pearls remains identifiable when layered over it. Include EXACTLY ONE contiguous blank coral ownership rectangle on the warehouse side covering about ten percent; every other part is neutral timber, cream or bronze. Smooth nonpixel contours. Transparent untrimmed 384 by 384, anchor 192,288, preferred x52..332 y82..320.",
-      "negativePrompt": "flag, pennant, banner, second coral patch, multiple ownership patches, sawmill, market stall, tent, large canopy, roof over center, city, full harbor scene, ship, boat, battleship, bridge, generic hut, logs, saw, tree, fish, pearls, coin, route, owner emblem, text, selection, glow, blockade, damage, shadow, water, shoreline, ground tile, platform, scenery, pixel art, jagged pixel edge, painterly, photoreal, 3D, cropped edge",
-      "output": "public/assets/pixellab/buildings-ruleset7/port.png",
-      "anchor": {
-        "x": 192,
-        "y": 288
-      },
-      "groundContactY": 288,
-      "displayScale": 0.3,
-      "preferredBounds": {
-        "left": 52,
-        "top": 82,
-        "right": 332,
-        "bottom": 320
-      },
-      "hardBounds": {
-        "left": 24,
-        "top": 48,
-        "right": 360,
-        "bottom": 336
-      }
     },
     {
       "id": "unit-shared-embarked-transport",
@@ -5187,22 +4477,6 @@
       "hardBounds": { "left": 16, "top": 4, "right": 240, "bottom": 252 }
     },
     {
-      "id": "portrait-original-captain",
-      "class": "ui",
-      "stage": "batch",
-      "endpoint": "generate-ui-v2",
-      "seed": 129902,
-      "requestSize": { "width": 256, "height": 256 },
-      "outputSize": { "width": 256, "height": 256 },
-      "transparent": true,
-      "postprocess": "sprite-derived-portrait",
-      "styleReference": "unit-original-captain",
-      "prompt": "Deterministic 256 by 256 role portrait derived from the accepted revision-9 Original Captain sprite, preserving the complete silhouette and palette with a 20 pixel transparent safe area.",
-      "negativePrompt": "No newly generated content; deterministic accepted-sprite fit only.",
-      "output": "public/assets/pixellab/ui/portrait-original-captain-v7r9.png",
-      "hardBounds": { "left": 20, "top": 20, "right": 236, "bottom": 236 }
-    },
-    {
       "id": "unit-original-knight",
       "class": "units",
       "stage": "batch",
@@ -5226,102 +4500,6 @@
       "hardBounds": { "left": 12, "top": 4, "right": 372, "bottom": 320 }
     },
     {
-      "id": "portrait-original-knight",
-      "class": "ui",
-      "stage": "batch",
-      "endpoint": "generate-ui-v2",
-      "seed": 129904,
-      "requestSize": { "width": 256, "height": 256 },
-      "outputSize": { "width": 256, "height": 256 },
-      "transparent": true,
-      "postprocess": "sprite-derived-portrait",
-      "styleReference": "unit-original-knight",
-      "prompt": "Deterministic 256 by 256 role portrait derived from the accepted revision-9 Original Knight sprite, preserving the complete mounted silhouette and palette with a 20 pixel transparent safe area.",
-      "negativePrompt": "No newly generated content; deterministic accepted-sprite fit only.",
-      "output": "public/assets/pixellab/ui/portrait-original-knight-v7r9.png",
-      "hardBounds": { "left": 20, "top": 20, "right": 236, "bottom": 236 }
-    },
-    {
-      "id": "building-ruleset7-shipyard",
-      "class": "buildings",
-      "stage": "batch",
-      "endpoint": "generate-image-v2",
-      "seed": 129905,
-      "requestSize": { "width": 384, "height": 384 },
-      "outputSize": { "width": 384, "height": 384 },
-      "transparent": true,
-      "includeFactionLanguage": false,
-      "postprocess": "compact-building-fit",
-      "styleReference": "building-ruleset7-port",
-      "styleReferenceUsage": "Match the accepted Port's smooth nonpixel timber contour, strong clean outline, broad flat cel shading, southeast three-quarter camera, blank ownership patch and open-water composition. Upgrade the function with a clearly larger crane, compact drydock frame and service shed.",
-      "palette": "warm tan timber, muted bronze crane and drydock braces, cream service-shed roof, charcoal-teal outline and southeast planes, one blank coral ownership rectangle",
-      "prompt": "Exactly one Ruleset 7 shared Shipyard water improvement, southeast-facing three-quarter downward strategy view on a transparent untrimmed 384 by 384 canvas, anchor 192,288. A visibly upgraded L-shaped timber Port with one LARGE tall bronze crane at the back-left, one compact U-shaped DRYDOCK frame along the side, and one small capable cream-roof service shed at the back-right. Preserve a clearly OPEN central and lower water window x118..266,y198..326 so Fish or Pearls stays identifiable and a colocated ship remains primary. Include exactly one contiguous blank coral ownership rectangle on the shed side covering about eight percent. Chunky functional silhouette; preferred alpha x40..344,y58..326.",
-      "negativePrompt": "city, village, castle, full harbor scene, ship, boat, vessel, fish, pearls, route, water, shoreline, bridge, giant warehouse, roof over center, closed central basin, multiple cranes, crane clutter, flag, pennant, emblem, text, coin, number, population, recovery, discount, active state, blockade, smoke, damage, selection, cast shadow, ground tile, scenery, pixel art, painterly, photoreal, 3D, cropped edge",
-      "output": "public/assets/pixellab/buildings-ruleset7/shipyard-v7r9.png",
-      "anchor": { "x": 192, "y": 288 },
-      "groundContactY": 288,
-      "displayScale": 0.3,
-      "preferredBounds": { "left": 40, "top": 58, "right": 344, "bottom": 326 },
-      "hardBounds": { "left": 20, "top": 36, "right": 364, "bottom": 340 }
-    },
-    {
-      "id": "ui-action-rally-v7r9",
-      "class": "ui",
-      "stage": "batch",
-      "endpoint": "generate-ui-v2",
-      "seed": 129909,
-      "requestSize": { "width": 384, "height": 384 },
-      "outputSize": { "width": 192, "height": 192 },
-      "transparent": true,
-      "includeFactionLanguage": false,
-      "postprocess": "lanczos3-resize",
-      "styleReference": "ui-action-disband",
-      "styleReferenceUsage": "Match only the accepted action icon's isolated transparent composition, heavy charcoal-teal outline, northwest light, flat two-level shading and 32-pixel readability. Replace every object with one blank pennant and three broad rays.",
-      "palette": "dark-teal command pennant, warm bronze short staff, restrained parchment burst, charcoal-teal outline",
-      "prompt": "One isolated Rally icon only: one huge blank dark-teal swallowtail PENNANT on one short diagonal bronze staff, plus exactly three broad parchment rays behind the cloth. No other objects. Compact connected silhouette centered on transparency with eight percent safe area, readable at 32 pixels and in grayscale. Strong charcoal outline, northwest highlight, flat two-level shading.",
-      "negativePrompt": "board, map, strategy table, frame, border, card, panel, cannon, chest, book, chart, scene, person, portrait, unit, national flag, emblem, symbol, text, letters, numbers, multiple flags, trumpet, musical notes, explosion, status badge, button, thin lines, tiny detail, glow, gradient, cast shadow",
-      "output": "public/assets/pixellab/ui/action-rally-v7r9.png",
-      "hardBounds": { "left": 15, "top": 15, "right": 177, "bottom": 177 }
-    },
-    {
-      "id": "ui-action-cultivate-forest-v7r9",
-      "class": "ui",
-      "stage": "batch",
-      "endpoint": "generate-image-v2",
-      "seed": 129912,
-      "requestSize": { "width": 384, "height": 384 },
-      "outputSize": { "width": 192, "height": 192 },
-      "transparent": true,
-      "includeFactionLanguage": false,
-      "postprocess": "lanczos3-resize",
-      "styleReference": "ui-action-replant-forest",
-      "styleReferenceUsage": "Match only the accepted Replant symbol's chunky tree shape, strong charcoal outline, broad flat shading, transparent isolation and small-size visual weight. Do not copy a panel or planting gesture.",
-      "palette": "quiet leaf-green tree crown, warm cultivated soil, parchment furrow highlights, muted bronze hoe, charcoal-teal outline",
-      "prompt": "Isolated transparent game-art symbol with exactly three separate parts: one full mature chunky three-lobed tree at upper-left; exactly ONE broad bronze arrow pointing only downward-right; exactly three bold parallel soil furrows at lower-right. Keep visible empty space between all three parts. No second arrow and no enclosure. Center within eight percent empty safe area. Strong charcoal outline, northwest light, flat two-level shading, readable at 32 pixels and in grayscale.",
-      "negativePrompt": "title, label, caption, word, text, letters, frame, border, panel, card, button, menu, interface, second arrow, opposing arrow, circular arrows, recycle loop, reversible cycle, axe, saw, stump, sapling, trowel, full landscape, farm building, person, coin, number, tiny leaves, thin furrows, gradient, cast shadow",
-      "output": "public/assets/pixellab/ui/action-cultivate-forest-v7r9.png",
-      "hardBounds": { "left": 15, "top": 15, "right": 177, "bottom": 177 }
-    },
-    {
-      "id": "ui-action-blast-mountain-v7r9",
-      "class": "ui",
-      "stage": "batch",
-      "endpoint": "generate-ui-v2",
-      "seed": 129908,
-      "requestSize": { "width": 384, "height": 384 },
-      "outputSize": { "width": 192, "height": 192 },
-      "transparent": true,
-      "includeFactionLanguage": false,
-      "postprocess": "lanczos3-resize",
-      "styleReference": "ui-action-pillage",
-      "styleReferenceUsage": "Match the accepted destructive-action family's centered transparent safe area, heavy charcoal-teal outline, northwest light, broad flat shading and small-size visual weight. Create terrain clearing rather than combat damage.",
-      "palette": "slate-blue rounded mountain, warm bronze charge, restrained coral and parchment blast cloud, charcoal-teal outline",
-      "prompt": "Exactly one Blast Mountain action icon: one broad rounded slate-blue mountain peak visibly splitting into exactly two large halves around one playful warm-bronze starburst charge, with one small parchment dust puff. One compact centered terrain-clearing silhouette with eight percent transparent safe area, readable at 32 CSS pixels and in grayscale. Strong charcoal-teal outline, northwest highlight, darker southeast planes and flat two-level cel shading. Toy-like and non-gory.",
-      "negativePrompt": "person, unit, enemy, blood, injury, combat hit, sword, cannon, projectile, mushroom cloud, realistic explosion, fire scene, pillaged building, mallet, loot, coin, ore, road, city, text, letters, numbers, panel, button, focus, disabled state, ownership, tiny rubble, thin cracks, glow, gradient, cast shadow",
-      "output": "public/assets/pixellab/ui/action-blast-mountain-v7r9.png",
-      "hardBounds": { "left": 15, "top": 15, "right": 177, "bottom": 177 }
-    },
-    {
       "id": "unit-original-captain-v7r10",
       "class": "units",
       "stage": "batch",
@@ -5343,75 +4521,6 @@
       "cosmeticOffsetY": 18,
       "preferredBounds": { "left": 28, "top": 8, "right": 228, "bottom": 222 },
       "hardBounds": { "left": 16, "top": 4, "right": 240, "bottom": 240 }
-    },
-    {
-      "id": "portrait-original-captain-v7r10",
-      "class": "ui",
-      "stage": "batch",
-      "endpoint": "generate-ui-v2",
-      "seed": 130002,
-      "requestSize": { "width": 256, "height": 256 },
-      "outputSize": { "width": 256, "height": 256 },
-      "transparent": true,
-      "postprocess": "sprite-derived-portrait",
-      "styleReference": "unit-original-captain-v7r10",
-      "prompt": "Deterministic 256 by 256 role portrait derived from the accepted revision-10 Original Captain sprite, preserving the complete officer silhouette and palette with a 20 pixel transparent safe area.",
-      "negativePrompt": "No newly generated content; deterministic accepted-sprite fit only.",
-      "output": "public/assets/pixellab/ui/portrait-original-captain-v7r10.png",
-      "hardBounds": { "left": 20, "top": 20, "right": 236, "bottom": 236 }
-    },
-    {
-      "id": "building-ruleset7-port-v7r11",
-      "class": "buildings",
-      "stage": "sample",
-      "endpoint": "generate-image-v2",
-      "seed": 131121,
-      "requestSize": { "width": 384, "height": 384 },
-      "outputSize": { "width": 384, "height": 384 },
-      "transparent": true,
-      "includeFactionLanguage": false,
-      "postprocess": "compact-building-fit",
-      "styleReference": "building-ruleset7-shipyard",
-      "styleReferenceUsage": "Copy only the accepted transparent harbor edge quality, timber-and-stone palette, dark outline, broad flat cel shading and southeast camera. Exclude its industrial crane, drydock frame, tall silhouette and exact layout.",
-      "palette": "warm tan timber piers, pale stone quay, cream warehouse roof, bold bronze cargo and mooring gear, charcoal-teal outline, one blank coral ownership panel",
-      "prompt": "Revision-11 WORKING HARBOR, southeast three-quarter view. A broad stone-and-timber public quay spans the back edge; two thick separated working piers project southeast around a LARGE basin. A compact wide warehouse anchors the back-left. One bold cargo group of large crates and barrels, thick mooring posts and coiled rope fills the back quay. The entire center/lower x80..304,y168..330 basin is EMPTY TRANSPARENCY: draw no water or floor there. Low, wide, substantial one-tile silhouette. Exactly one connected blank coral warehouse panel covers 8-15 percent. Transparent untrimmed 384 square; target x12..372,y44..336; anchor 192,288.",
-      "negativePrompt": "blue basin, water plane, water, opaque floor, ground, tiny U dock, narrow U outline, single narrow pier, thin rails, miniature hut, full city, coastline, bridge, industrial shipyard, drydock, large crane, tall hoist, ship, boat, fish, pearls, route, coin, number, emblem, flag, state overlay, selection, blockade, damage, smoke, text, terrain square, cast shadow, roof or cargo over basin, clutter, pixel art, jagged edge, photoreal, painterly, faux 3D, cropped edge",
-      "output": "public/assets/pixellab/buildings-ruleset7/port-v7r11.png",
-      "anchor": { "x": 192, "y": 288 },
-      "groundContactY": 288,
-      "displayScale": 0.3,
-      "preferredBounds": { "left": 24, "top": 62, "right": 360, "bottom": 328 },
-      "fitBounds": { "left": 12, "top": 44, "right": 372, "bottom": 336 },
-      "hardBounds": { "left": 12, "top": 36, "right": 372, "bottom": 340 }
-    },
-    {
-      "id": "terrain-ruleset7-resource-fish-v7r11",
-      "class": "terrain",
-      "stage": "sample",
-      "endpoint": "generate-image-v2",
-      "seed": 131112,
-      "requestSize": { "width": 256, "height": 384 },
-      "outputSize": { "width": 256, "height": 384 },
-      "transparent": true,
-      "includeFactionLanguage": false,
-      "postprocess": "preferred-low-marker-fit",
-      "styleReference": "terrain-ruleset7-original-game-fox",
-      "styleReferenceUsage": "Copy only the accepted resource's clean nonpixel contour, broad dark outline, flat two-level highlight and minimum-zoom detail budget. Do not copy the animal subject, pose or composition.",
-      "palette": "five to seven silver-teal fish, pale aqua broad highlights, charcoal-teal outline, muted navy southeast planes",
-      "prompt": "Revision-11 Fish resource: exactly SIX equally small silver-teal fish swimming southeast in one loose staggered diagonal shoal. Arrange two fish in each of three offset rows, forming a broad wedge from upper-left to lower-right. Every fish is a separate disconnected silhouette with clear transparency on every side; NONE touch or overlap. Each has one oval body, one tail, strong smooth dark outline, broad pale highlight and two flat cel shades. No fish dominates. Transparent untrimmed 256 by 384; target x48..208,y180..320; bottom near y320.",
-      "negativePrompt": "three fish, fewer than five fish, more than seven fish, large fish, dominant fish, touching fish, overlapping fish, radial clump, vertical pile, circular school, blob, skeleton, dead or caught pose, bubbles, foam, waves, water, boat, hook, net, sparkle, arrow, text, price, terrain, port, shadow, UI, pixel art, jagged edge, realistic scales, painterly detail, faux 3D, cropped edge",
-      "output": "public/assets/pixellab/terrain-ruleset7/resource-fish-v7r11.png",
-      "anchor": { "x": 128, "y": 256 },
-      "groundContactY": 320,
-      "displayScale": 0.5,
-      "squareFootprint": { "left": 0, "top": 128, "right": 256, "bottom": 384 },
-      "preferredBounds": {
-        "left": 48,
-        "top": 180,
-        "right": 208,
-        "bottom": 320
-      },
-      "hardBounds": { "left": 40, "top": 148, "right": 216, "bottom": 336 }
     }
   ]
 }

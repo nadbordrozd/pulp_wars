@@ -540,7 +540,15 @@ The naval branch has no balance evidence yet: its water-map matrix is
   because it would overwrite that revision-2 evidence with current
   (`7r41`) captures. The revision-2 validator described below as
   `validate:ruleset7-release` is now `npm run validate:ruleset7-archive-r2`,
-  and its `:refresh` variant no longer exists.
+  and its `:refresh` variant no longer exists. That archive validator
+  refuses every runtime but `pulp-wars-poc-7r2`, so it does not run today.
+  Four PixelLab evidence folders its corpus names
+  (`art/pixellab/reviews/ruleset7-catapult`, `-building-economy`,
+  `-tactical-ui` and `-farms`) were deleted in `pulp_wars-67q.15` with the
+  legacy Ruleset 7 rasters they reviewed, and the review commands
+  `art:ruleset7-catapult-review`, `-building-economy-review`,
+  `-tactical-ui-review` and `-farm-review` with them; the corpus file and
+  the contract keep the paths as the record of what revision 2 shipped.
 
 The current release gates, in the order they are run from the reviewed
 release revision (the `cross-cutting/release` profile plus the Ruleset 7,
@@ -569,10 +577,6 @@ npm run art:ruleset6-host-review
 npm run art:ruleset6-combat-review
 npm run art:ruleset6-shell-review
 npm run art:ruleset7-original-unit-review
-npm run art:ruleset7-catapult-review
-npm run art:ruleset7-building-economy-review
-npm run art:ruleset7-tactical-ui-review
-npm run art:ruleset7-farm-review
 npm run art:chibi-goblin-review
 npm run art:chibi-dinosaur-review
 npm run art:chibi-martian-direction-review
@@ -777,10 +781,6 @@ npm run art:ruleset6-host-review
 npm run art:ruleset6-combat-review
 npm run art:ruleset6-shell-review
 npm run art:ruleset7-original-unit-review
-npm run art:ruleset7-catapult-review
-npm run art:ruleset7-building-economy-review
-npm run art:ruleset7-tactical-ui-review
-npm run art:ruleset7-farm-review
 npm run smoke:browser -- --performance
 npm run smoke:browser:ruleset6
 npm run smoke:browser:legacy-v5

@@ -78,7 +78,7 @@ try {
       .displayed ===
       `${(hud as { balance: number }).balance} (+${(hud as { expected: number }).expected}/turn)` &&
       JSON.stringify((hud as { iconIds: string[] }).iconIds) ===
-        JSON.stringify(["ui-hud-gold-coin-v7"]) &&
+        JSON.stringify(["v7-hud-gold-coin"]) &&
       (hud as { accessible: string }).accessible.includes("Coins"),
     `HUD format or single coin icon mismatch: ${JSON.stringify(hud)}`,
   );
@@ -247,14 +247,14 @@ try {
       (hud1440 as { displayed: string }).displayed ===
         (hud as { displayed: string }).displayed &&
       JSON.stringify((hud1440 as { iconIds: string[] }).iconIds) ===
-        JSON.stringify(["ui-hud-gold-coin-v7"]),
+        JSON.stringify(["v7-hud-gold-coin"]),
     `1440 city geometry or HUD failed: ${JSON.stringify({ city1440, hud1440 })}`,
   );
   await capture(connection, "compact-1440-city-dpr2.png");
   await click(connection, '[data-action="tech"]');
   await waitFor(
     connection,
-    `document.querySelector('.v7-tech-cost img[data-asset-id="ui-hud-gold-coin-v7"]') !== null`,
+    `document.querySelector('.v7-tech-cost img[data-asset-id="v7-hud-gold-coin"]') !== null`,
   );
   await capture(connection, "compact-1440-tech-costs-dpr2.png");
   await click(connection, '[data-action="close-overlay"]');
@@ -276,7 +276,7 @@ try {
   );
   assert(
     (rewardIcons as string[]).length >= 2 &&
-      (rewardIcons as string[]).includes("ui-hud-gold-coin-v7"),
+      (rewardIcons as string[]).includes("v7-hud-gold-coin"),
     `Reward gold coin missing: ${JSON.stringify(rewardIcons)}`,
   );
   await capture(connection, "compact-1440-reward-dpr2.png");

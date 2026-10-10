@@ -143,10 +143,10 @@ function terrain(
     // Tall terrain is recognised by its legacy asset id.
     assetId:
       subject === "TERRAIN:FOREST"
-        ? "terrain-ruleset7-original-forest-1"
+        ? "v7-terrain-forest-1"
         : subject === "TERRAIN:MOUNTAIN"
-          ? "terrain-ruleset7-revision3-mountain-1"
-          : "terrain-ruleset7-original-grass-1",
+          ? "v7-terrain-mountain-1"
+          : "v7-terrain-grass-1",
     artSubject: subject,
   };
 }

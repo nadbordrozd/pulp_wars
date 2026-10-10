@@ -171,7 +171,7 @@ describe("CHIBI board rendering", () => {
       artSubject: "TERRAIN:MINED_MOUNTAIN",
     });
     expect(byKey("terrain:1,0")).toMatchObject({
-      assetId: "terrain-ruleset7-original-grass-1",
+      assetId: "v7-terrain-grass-1",
       artSubject: "TERRAIN:GRASS",
     });
     expect(byKey("improvement:1,0")).toMatchObject({
@@ -514,13 +514,7 @@ describe("CHIBI board rendering", () => {
         devicePixelRatio: 1,
         camera: { offsetX: 0, offsetY: 0, zoom: chibiCameraZoom(step) },
         plan: plan([
-          entry(
-            "TERRAIN",
-            1,
-            1,
-            "terrain-ruleset7-original-grass-1",
-            "TERRAIN:GRASS",
-          ),
+          entry("TERRAIN", 1, 1, "v7-terrain-grass-1", "TERRAIN:GRASS"),
         ]),
         chibiArt: fakeChibi([grass]),
       });
@@ -546,13 +540,7 @@ describe("CHIBI board rendering", () => {
       plan: plan([
         entry("UNIT", 1, 0, "unit-original-fighter", "UNIT:FIGHTER"),
         entry("UNIT", 2, 0, "unit-original-marksman", "UNIT:MARKSMAN"),
-        entry(
-          "TERRAIN",
-          1,
-          1,
-          "terrain-ruleset7-original-forest-1",
-          "TERRAIN:FOREST",
-        ),
+        entry("TERRAIN", 1, 1, "v7-terrain-forest-1", "TERRAIN:FOREST"),
         entry("CITY", 2, 1, "building-city-1", "CITY:1", { value: 1 }),
       ]),
       chibiArt: fakeChibi([forest, city, fighter]),

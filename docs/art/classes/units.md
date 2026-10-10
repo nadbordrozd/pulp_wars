@@ -6,6 +6,17 @@
 > Ruleset 6 art and of the earlier Ruleset 7 art, whose render path was
 > removed in `pulp_wars-67q.15`. They are provenance for those files, not a target
 > for new art.
+>
+> **Retired rasters (`pulp_wars-67q.15`).** The earlier Ruleset 7 rasters
+> this document names (ids starting `terrain-ruleset7-` or
+> `building-ruleset7-`, the `terrain-square/ruleset7-*` resources,
+> `ui-hud-gold-coin-v7`, the Catapult, Captain and Knight portraits and the
+> Pillage, Disband, Rally, Cultivate Forest and Blast Mountain icons) are
+> deleted. Their recipes are listed under `retired` in
+> [`pixellab-manifest.json`](../../../scripts/art/pixellab-manifest.json);
+> their review scripts and evidence went with them (see the
+> [migration plan](../CHIBI_MIGRATION_PLAN.md#retired-the-earlier-ruleset-7-rasters)).
+> What is written about them below is a record.
 
 ## Ruleset-7 revision-9 Human roles
 

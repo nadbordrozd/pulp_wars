@@ -50,10 +50,10 @@ const SUBJECTS: Readonly<Record<string, ArtSubjectV7>> = {
   s: "TERRAIN:SHALLOW_WATER",
 };
 const ASSET_IDS: Readonly<Record<string, string>> = {
-  M: "terrain-ruleset7-revision3-mountain-1",
-  F: "terrain-ruleset7-original-forest-1",
-  g: "terrain-ruleset7-original-grass-1",
-  s: "terrain-ruleset7-water-shallow",
+  M: "v7-terrain-mountain-1",
+  F: "v7-terrain-forest-1",
+  g: "v7-terrain-grass-1",
+  s: "v7-terrain-water-shallow",
 };
 
 /**

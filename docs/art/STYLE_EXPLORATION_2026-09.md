@@ -144,10 +144,13 @@ pixel-art model.
 
 ### Review evidence
 
-Run `npm run art:style-exploration-review`. It uses headless Chrome from
-`CHROME_PATH` and needs no credentials. It rebuilds
-[`review/`](../../art/explorations/style-study-2026-09/review/) from the
-accepted files:
+The boards in
+[`review/`](../../art/explorations/style-study-2026-09/review/) are a frozen
+record. They were built by `npm run art:style-exploration-review`, which was
+removed in `pulp_wars-67q.15` with the Ruleset 7 terrain it drew the boards
+on (`terrain-ruleset7/`), so they can no longer be rebuilt. The command used
+headless Chrome from `CHROME_PATH`, needed no credentials, and built the
+boards from the accepted files:
 
 - **Drawing rules:**
   - Study sprites are drawn 1:1 at integer device pixels.

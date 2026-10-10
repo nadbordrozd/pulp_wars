@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { RULESET7_UNIT_ART_IDS } from "../../src/assets/ruleset7-ui-art";
+import { UNIT_ART_KEYS_V7 } from "../../src/assets/art-keys-v7";
 import {
   applyCommandV7,
   previewBeamDownV7,
@@ -352,7 +352,7 @@ describe("Martian board plan", () => {
     const tripod = unitEntry(plan, view, AT.tripodAfloat);
     expect(tripod).toMatchObject({
       artSubject: "UNIT:MARTIAN:CATAPULT",
-      assetId: RULESET7_UNIT_ART_IDS.CATAPULT,
+      assetId: UNIT_ART_KEYS_V7.CATAPULT,
       label: "Tripod afloat",
     });
     expect(tripod.martian).toMatchObject({ afloat: true, flyer: false });

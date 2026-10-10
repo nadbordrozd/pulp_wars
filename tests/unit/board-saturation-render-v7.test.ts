@@ -224,21 +224,15 @@ function entry(
 }
 
 const ENTRIES: readonly BoardRenderPlanEntryV7[] = [
-  entry("TERRAIN", 0, 0, "terrain-ruleset7-original-grass-1", "TERRAIN:GRASS"),
+  entry("TERRAIN", 0, 0, "v7-terrain-grass-1", "TERRAIN:GRASS"),
   entry(
     "TERRAIN",
     1,
     0,
-    "terrain-ruleset7-revision3-mined-mountain-1",
+    "v7-terrain-mined-mountain-1",
     "TERRAIN:MINED_MOUNTAIN",
   ),
-  entry(
-    "TERRAIN",
-    2,
-    0,
-    "terrain-ruleset7-revision3-mountain-1",
-    "TERRAIN:MOUNTAIN",
-  ),
+  entry("TERRAIN", 2, 0, "v7-terrain-mountain-1", "TERRAIN:MOUNTAIN"),
   entry("RESOURCE", 0, 0, "resource-fruit", "RESOURCE:FRUIT", { layer: 3 }),
   entry("IMPROVEMENT", 0, 1, "building-windmill", "IMPROVEMENT:WINDMILL"),
   entry("IMPROVEMENT", 1, 1, "building-market", "IMPROVEMENT:MARKET"),

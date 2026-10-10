@@ -1,5 +1,18 @@
 # Naval Asset Contract
 
+> **Retired rasters (`pulp_wars-67q.15`).** The earlier Ruleset 7 rasters
+> this document names (ids starting `terrain-ruleset7-` or
+> `building-ruleset7-`, the `terrain-square/ruleset7-*` resources,
+> `ui-hud-gold-coin-v7`, the Catapult, Captain and Knight portraits and the
+> Pillage, Disband, Rally, Cultivate Forest and Blast Mountain icons) are
+> deleted. Their recipes are listed under `retired` in
+> [`pixellab-manifest.json`](../../../scripts/art/pixellab-manifest.json);
+> their review scripts and evidence went with them (see the
+> [migration plan](../CHIBI_MIGRATION_PLAN.md#retired-the-earlier-ruleset-7-rasters)).
+> What is written about them below is a record.
+> The three ship sprites (`unit-shared-embarked-transport`,
+> `unit-original-patrol-boat`, `unit-original-battleship`) stay on disk.
+
 ## Naval branch overlay: the Submarine and the Icebound pack ice
 
 The [naval branch](../../product/RULESET_7_NAVAL_BRANCH.md#143-what-the-art-bead-must-draw-bead-5ti6)
@@ -294,7 +307,8 @@ prompts reject pixel art, faux-3D, photorealism, painterly rendering, isometric
 model renders, scenery, text, UI, baked shadows, extra subjects, excessive
 foam/sparkles, cinematic lighting, gradients, and cropped or trimmed edges.
 
-The asset package adds `npm run art:ruleset7-naval-review`. Its checked-in
+The asset package added `npm run art:ruleset7-naval-review` (removed with
+the retired water, resource and Port rasters, `pulp_wars-67q.15`). Its checked-in
 review manifest and deterministic contact sheets verify exact inventory and
 hashes; dimensions/anchors/scales/bounds; native and enlarged samples; water
 seams/repetition/borders; resource/Port coexistence; retained historical

@@ -1881,14 +1881,17 @@ module resolves `ACCEPTED_ART_URLS` (the PixelLab set under
   sheet from `data-letter`, so it is in no text or accessible name. A coin
   or population icon whose raster is not ready is a plain disc.
 
-The board plan still carries an `assetId` per entry (the ids of
-`src/assets/ruleset7-*-art.ts`). Since `pulp_wars-67q.15` they are keys
-only: the renderer reads them to tell tall terrain from flat and for the
-plain overlay geometry, and the interface names its stand-ins with them;
-none is looked up as a file. The 42 rasters only the removed path could
-name are still on disk and unreachable from Ruleset 7; deleting them with
-their PixelLab records is follow-up work (see the
-[migration plan](../art/CHIBI_MIGRATION_PLAN.md)). Where this document and
+The board plan still carries an `assetId` per entry: a key from
+`src/assets/art-keys-v7.ts`. Since `pulp_wars-67q.15` they are keys only:
+the renderer reads them to tell tall terrain from flat and for the plain
+overlay geometry, and the interface names its stand-ins with them; none is
+looked up as a file. A key that named one of the 42 rasters only the
+removed path could reach starts with `v7-` (`v7-terrain-grass-1`,
+`v7-improvement-port`) and ends in the word its old id ended in, so a
+stand-in keeps its letter; the others still spell a Ruleset 6 raster id.
+Those 42 rasters, their PixelLab recipes and records and the Ruleset 7 art
+id tables are deleted (see the
+[migration plan](../art/CHIBI_MIGRATION_PLAN.md#retired-the-earlier-ruleset-7-rasters)). Where this document and
 the art and interface documents still say what "LEGACY" draws, they
 describe the removed path. Ruleset 6, rules, commands, saves, replay and
 hashes never saw the art set.

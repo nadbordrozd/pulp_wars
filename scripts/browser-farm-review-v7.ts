@@ -194,7 +194,7 @@ async function assertSelectedFarmIdentity(
     readonly src: string;
   }>(
     connection,
-    `(() => { const image = document.querySelector('.v7-selection-dock img[data-asset-id="building-ruleset7-farm-single"]'); if (!(image instanceof HTMLImageElement)) throw new Error('v7 Farm identity image missing'); const rect = image.closest('.v7-art-frame')?.getBoundingClientRect(); if (!rect) throw new Error('Farm identity frame missing'); return { width: rect.width, height: rect.height, src: image.currentSrc }; })()`,
+    `(() => { const image = document.querySelector('.v7-selection-dock img[data-asset-id="v7-farm-single"]'); if (!(image instanceof HTMLImageElement)) throw new Error('v7 Farm identity image missing'); const rect = image.closest('.v7-art-frame')?.getBoundingClientRect(); if (!rect) throw new Error('Farm identity frame missing'); return { width: rect.width, height: rect.height, src: image.currentSrc }; })()`,
   );
   assert(
     result.width === 112 && result.height === 130,
@@ -206,7 +206,7 @@ async function assertSelectedFarmIdentity(
   );
   await waitFor(
     connection,
-    `(() => { const image = document.querySelector('.v7-selection-dock img[data-asset-id="building-ruleset7-farm-single"]'); return image instanceof HTMLImageElement && image.complete && image.naturalWidth > 0; })()`,
+    `(() => { const image = document.querySelector('.v7-selection-dock img[data-asset-id="v7-farm-single"]'); return image instanceof HTMLImageElement && image.complete && image.naturalWidth > 0; })()`,
   );
 }
 

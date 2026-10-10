@@ -1,11 +1,15 @@
 import { advanceCombatNotesV7 } from "../technology-unlock-text-v7";
 import {
-  RULESET7_IMPROVEMENT_ART_IDS,
-  RULESET7_FARM_ART_IDS,
-  RULESET7_RESOURCE_ART_IDS,
-  resourceMapArtIdV7,
-  RULESET7_UNIT_ART_IDS,
-} from "../../assets/ruleset7-ui-art";
+  EMBARKED_UNIT_ART_KEY_V7,
+  FOREST_TERRAIN_KEY_PREFIX_V7,
+  IMPROVEMENT_ART_KEYS_V7,
+  FARM_ART_KEYS_V7,
+  RESOURCE_ART_KEYS_V7,
+  resourceMapArtKeyV7,
+  TERRAIN_ART_KEYS_V7,
+  terrainMapArtKeyV7,
+  UNIT_ART_KEYS_V7,
+} from "../../assets/art-keys-v7";
 import type {
   CombatPreviewV7,
   CommandV7,
@@ -1352,17 +1356,13 @@ export function buildBoardRenderPlanV7(
       layer: 1,
       at: tile.at,
       assetId:
-        tile.terrain === "GRASS" || tile.terrain === "RIFT"
-          ? `terrain-ruleset7-original-grass-${variant(tile.at, 3)}`
-          : tile.terrain === "FOREST"
-            ? suppressesForestCanopyV7(tile.improvement)
-              ? "terrain-ruleset7-original-grass-1"
-              : `terrain-ruleset7-original-forest-${variant(tile.at, 4)}`
-            : tile.terrain === "MOUNTAIN"
-              ? `terrain-ruleset7-revision3-${tile.improvement === "MINE" ? "mined-" : ""}mountain-${variant(tile.at, 3)}`
-              : tile.terrain === "SHALLOW_WATER"
-                ? "terrain-ruleset7-water-shallow"
-                : "terrain-ruleset7-water-deep",
+        tile.terrain === "FOREST" && suppressesForestCanopyV7(tile.improvement)
+          ? TERRAIN_ART_KEYS_V7.GRASS
+          : terrainMapArtKeyV7(
+              tile.terrain,
+              variant(tile.at, tile.terrain === "FOREST" ? 4 : 3),
+              tile.improvement === "MINE",
+            ),
       artSubject:
         riftPiece !== undefined
           ? `TERRAIN:RIFT_${riftPiece}`
@@ -1437,7 +1437,7 @@ export function buildBoardRenderPlanV7(
         kind: "RESOURCE",
         layer: tile.improvement === "PORT" ? 4 : 3,
         at: tile.at,
-        assetId: resourceMapArtIdV7(tile.resource, tile.at),
+        assetId: resourceMapArtKeyV7(tile.resource, tile.at),
         artSubject: `RESOURCE:${tile.resource}`,
         ...((tile.resource === "ORE" && tile.improvement === "MINE") ||
         (tile.resource === "FERTILE_GROUND" && tile.improvement === "FARM")
@@ -1454,8 +1454,7 @@ export function buildBoardRenderPlanV7(
         kind: "IMPROVEMENT",
         layer: tile.improvement === "PORT" ? 3 : 4,
         at: tile.at,
-        assetId:
-          farm?.assetId ?? RULESET7_IMPROVEMENT_ART_IDS[tile.improvement],
+        assetId: farm?.assetId ?? IMPROVEMENT_ART_KEYS_V7[tile.improvement],
         // The look of the faction that owns the territory (epic
         // pulp_wars-xdh): it changes when the city changes hands. A faction
         // subject without a raster falls back to the shared building. The
@@ -1654,7 +1653,7 @@ export function buildBoardRenderPlanV7(
               ? EGG_CODE_ART_ID_V7
               : unit.form === "EMBARKED" && !machine
                 ? "unit-shared-embarked-transport"
-                : RULESET7_UNIT_ART_IDS[unit.role],
+                : UNIT_ART_KEYS_V7[unit.role],
       // Undead and Goblin land units ask for their own art first
       // (UNIT:<FACTION>:<ROLE>); without it the renderer falls back to the
       // Human sprite plus the faction badge.
@@ -1964,7 +1963,7 @@ export function buildBoardRenderPlanV7(
     role: UnitRoleIdV7,
   ): NonNullable<MapCommandTargetV7["rebake"]> => ({
     role,
-    assetId: RULESET7_UNIT_ART_IDS[role],
+    assetId: UNIT_ART_KEYS_V7[role],
     artSubject: unitArtSubjectV7({
       role,
       form: "LAND",
@@ -7651,7 +7650,7 @@ function isTallTerrainEntry(entry: BoardRenderPlanEntryV7): boolean {
   return (
     entry.kind === "TERRAIN" &&
     entry.assetId !== undefined &&
-    (entry.assetId.startsWith("terrain-ruleset7-original-forest-") ||
+    (entry.assetId.startsWith(FOREST_TERRAIN_KEY_PREFIX_V7) ||
       entry.assetId.includes("mountain"))
   );
 }
@@ -7784,7 +7783,7 @@ function geometryFor(entry: BoardRenderPlanEntryV7): SourceGeometry {
       ? SQUARE_ART_GEOMETRY.ground
       : SQUARE_ART_GEOMETRY.tallTerrain;
   if (entry.kind === "RESOURCE")
-    return entry.assetId === RULESET7_RESOURCE_ART_IDS.FISH
+    return entry.assetId === RESOURCE_ART_KEYS_V7.FISH
       ? RULESET7_LOGISTICS_ART_GEOMETRY.fish
       : SQUARE_ART_GEOMETRY.resource;
   if (entry.kind === "ROAD") return SQUARE_ART_GEOMETRY.ground;
@@ -7793,44 +7792,42 @@ function geometryFor(entry: BoardRenderPlanEntryV7): SourceGeometry {
   if (entry.kind === "CITY")
     return SETTLEMENT_ART_GEOMETRY.cities[cityArtLevel(entry.value ?? 1)];
   if (entry.kind === "UNIT") {
-    if (entry.assetId === "unit-shared-embarked-transport")
+    if (entry.assetId === EMBARKED_UNIT_ART_KEY_V7)
       return RULESET7_NAVAL_ART_GEOMETRY.transport;
-    if (entry.assetId === RULESET7_UNIT_ART_IDS.PATROL_BOAT)
+    if (entry.assetId === UNIT_ART_KEYS_V7.PATROL_BOAT)
       return RULESET7_NAVAL_ART_GEOMETRY.patrolBoat;
-    if (entry.assetId === RULESET7_UNIT_ART_IDS.BATTLESHIP)
+    if (entry.assetId === UNIT_ART_KEYS_V7.BATTLESHIP)
       return RULESET7_NAVAL_ART_GEOMETRY.battleship;
-    if (entry.assetId === RULESET7_UNIT_ART_IDS.CATAPULT)
+    if (entry.assetId === UNIT_ART_KEYS_V7.CATAPULT)
       return RULESET6_UNIT_ART_GEOMETRY.siege;
-    if (entry.assetId === RULESET7_UNIT_ART_IDS.JUGGERNAUT)
+    if (entry.assetId === UNIT_ART_KEYS_V7.JUGGERNAUT)
       return RULESET6_UNIT_ART_GEOMETRY.giant;
-    if (entry.assetId === RULESET7_UNIT_ART_IDS.KNIGHT)
+    if (entry.assetId === UNIT_ART_KEYS_V7.KNIGHT)
       return RULESET7_KNIGHT_ART_GEOMETRY;
-    if (entry.assetId === RULESET7_UNIT_ART_IDS.CAPTAIN)
+    if (entry.assetId === UNIT_ART_KEYS_V7.CAPTAIN)
       return RULESET7_CAPTAIN_ART_GEOMETRY;
     return RULESET6_UNIT_ART_GEOMETRY.standard;
   }
   if (entry.kind === "IMPROVEMENT") {
     if (
-      entry.assetId === RULESET7_FARM_ART_IDS.SINGLE ||
-      entry.assetId === RULESET7_FARM_ART_IDS.HORIZONTAL_PAIR ||
-      entry.assetId === RULESET7_FARM_ART_IDS.VERTICAL_PAIR
+      entry.assetId === FARM_ART_KEYS_V7.SINGLE ||
+      entry.assetId === FARM_ART_KEYS_V7.HORIZONTAL_PAIR ||
+      entry.assetId === FARM_ART_KEYS_V7.VERTICAL_PAIR
     )
       return SQUARE_ART_GEOMETRY.ground;
-    if (entry.assetId === RULESET7_IMPROVEMENT_ART_IDS.LUMBER_CAMP)
+    if (entry.assetId === IMPROVEMENT_ART_KEYS_V7.LUMBER_CAMP)
       return SQUARE_ART_GEOMETRY.ruleset7LumberCamp;
-    if (entry.assetId === RULESET7_IMPROVEMENT_ART_IDS.SAWMILL)
+    if (entry.assetId === IMPROVEMENT_ART_KEYS_V7.SAWMILL)
       return SQUARE_ART_GEOMETRY.sawmill;
-    if (entry.assetId === RULESET7_IMPROVEMENT_ART_IDS.PORT)
+    if (entry.assetId === IMPROVEMENT_ART_KEYS_V7.PORT)
       return RULESET7_LOGISTICS_ART_GEOMETRY.port;
-    if (entry.assetId === RULESET7_IMPROVEMENT_ART_IDS.SHIPYARD)
+    if (entry.assetId === IMPROVEMENT_ART_KEYS_V7.SHIPYARD)
       return SQUARE_ART_GEOMETRY.processor;
     if (
       ["WINDMILL", "FORGE", "WORKSHOP", "MARKET", "MONUMENT"].some(
         (name) =>
           entry.assetId ===
-          RULESET7_IMPROVEMENT_ART_IDS[
-            name as keyof typeof RULESET7_IMPROVEMENT_ART_IDS
-          ],
+          IMPROVEMENT_ART_KEYS_V7[name as keyof typeof IMPROVEMENT_ART_KEYS_V7],
       )
     )
       return SQUARE_ART_GEOMETRY.processor;
@@ -7840,7 +7837,7 @@ function geometryFor(entry: BoardRenderPlanEntryV7): SourceGeometry {
 }
 
 export interface FarmPresentationV7 {
-  readonly assetId: (typeof RULESET7_FARM_ART_IDS)[keyof typeof RULESET7_FARM_ART_IDS];
+  readonly assetId: (typeof FARM_ART_KEYS_V7)[keyof typeof FARM_ART_KEYS_V7];
   readonly sourceCrop?: {
     readonly x: number;
     readonly y: number;
@@ -7894,7 +7891,7 @@ export function farmPresentationV7(
           !paired.has(coordKey(candidate.at)),
       );
     if (neighbor === undefined) {
-      result.set(key, { assetId: RULESET7_FARM_ART_IDS.SINGLE });
+      result.set(key, { assetId: FARM_ART_KEYS_V7.SINGLE });
       continue;
     }
     const neighborKey = coordKey(neighbor.at);
@@ -7904,12 +7901,12 @@ export function farmPresentationV7(
       const left = tile.at.x < neighbor.at.x ? tile : neighbor;
       const right = left === tile ? neighbor : tile;
       result.set(coordKey(left.at), {
-        assetId: RULESET7_FARM_ART_IDS.HORIZONTAL_PAIR,
+        assetId: FARM_ART_KEYS_V7.HORIZONTAL_PAIR,
         sourceCrop: { x: 0, y: 0, width: 256, height: 256 },
         partner: right.at,
       });
       result.set(coordKey(right.at), {
-        assetId: RULESET7_FARM_ART_IDS.HORIZONTAL_PAIR,
+        assetId: FARM_ART_KEYS_V7.HORIZONTAL_PAIR,
         sourceCrop: { x: 256, y: 0, width: 256, height: 256 },
         partner: left.at,
       });
@@ -7917,12 +7914,12 @@ export function farmPresentationV7(
       const top = tile.at.y < neighbor.at.y ? tile : neighbor;
       const bottom = top === tile ? neighbor : tile;
       result.set(coordKey(top.at), {
-        assetId: RULESET7_FARM_ART_IDS.VERTICAL_PAIR,
+        assetId: FARM_ART_KEYS_V7.VERTICAL_PAIR,
         sourceCrop: { x: 0, y: 0, width: 256, height: 256 },
         partner: bottom.at,
       });
       result.set(coordKey(bottom.at), {
-        assetId: RULESET7_FARM_ART_IDS.VERTICAL_PAIR,
+        assetId: FARM_ART_KEYS_V7.VERTICAL_PAIR,
         sourceCrop: { x: 0, y: 256, width: 256, height: 256 },
         partner: top.at,
       });

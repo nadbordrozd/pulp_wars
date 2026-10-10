@@ -50,7 +50,7 @@ const entries: readonly BoardRenderPlanEntryV7[] = [
     kind: "TERRAIN",
     layer: 1,
     at: { x: 0, y: 0 },
-    assetId: "terrain-ruleset7-water-deep",
+    assetId: "v7-terrain-water-deep",
     artSubject: "TERRAIN:DEEP_WATER",
   },
   {
@@ -58,7 +58,7 @@ const entries: readonly BoardRenderPlanEntryV7[] = [
     kind: "TERRAIN",
     layer: 1,
     at: { x: 1, y: 0 },
-    assetId: "terrain-ruleset7-original-forest-1",
+    assetId: "v7-terrain-forest-1",
     artSubject: "TERRAIN:FOREST",
   },
   {

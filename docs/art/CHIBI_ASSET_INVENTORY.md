@@ -16,7 +16,10 @@ about what LEGACY draws are history. A subject whose chibi raster cannot be
 drawn is drawn in code (a flat wash for ground, a lettered marker or plate
 for a piece), and the code-drawn figures this inventory names (the Egg, the
 mound, the Spider, the curiosity markers, the vector glyphs) are what a
-subject without a raster shows, in the Classic look too.
+subject without a raster shows, in the Classic look too. The legacy rasters
+of Ruleset 7 named in those columns are deleted and their recipes retired
+(see the
+[migration plan](CHIBI_MIGRATION_PLAN.md#retired-the-earlier-ruleset-7-rasters)).
 
 ## How it was built
 
@@ -25,9 +28,9 @@ The list comes from the Ruleset 7 runtime, not from the asset folders:
 - the board plan in
   [`board-renderer-v7.ts`](../../src/render/canvas/board-renderer-v7.ts)
   (terrain, resources, improvements, sites, cities, treasure, units);
-- the ID tables in [`ruleset7-ui-art.ts`](../../src/assets/ruleset7-ui-art.ts)
-  and its revision files (units, portraits, technologies, commands,
-  rewards);
+- the ID tables in `src/assets/ruleset7-ui-art.ts` and its revision files
+  (units, portraits, technologies, commands, rewards), which are now the
+  key tables of [`art-keys-v7.ts`](../../src/assets/art-keys-v7.ts);
 - the DOM in [`app-view-v7.ts`](../../src/render/dom/app-view-v7.ts) and the
   display sizes in [`v7.css`](../../src/styles/v7.css);
 - the art-set subjects in [`chibi-art-v7.ts`](../../src/assets/chibi-art-v7.ts).
@@ -312,8 +315,8 @@ text, so it has no icon.
 
 ## Legacy IDs not reachable in Ruleset 7
 
-These appear only in the painted-bounds table of
-[`selection-identity-v7.ts`](../../src/render/dom/selection-identity-v7.ts)
+These appeared only in the painted-bounds table of
+`src/render/dom/selection-identity-v7.ts` (removed in `pulp_wars-67q.15`)
 or in superseded revision tables. Nothing in Ruleset 7 draws them, so no
 batch replaces them: `unit-original-scout`, `-medic`, `-breacher`, `-heavy`,
 `-saboteur`, `-horse-archer`, `unit-original-captain` (revision 9),

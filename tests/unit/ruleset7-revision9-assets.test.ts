@@ -4,25 +4,10 @@ import path from "node:path";
 import sharp from "sharp";
 import { describe, expect, it } from "vitest";
 import {
-  RULESET7_REVISION9_PORTRAIT_IDS,
   RULESET7_REVISION9_SOURCE_IDS,
-  RULESET7_REVISION9_UI_SAMPLE_IDS,
   assertRuleset7Revision9ArtOrder,
 } from "../../scripts/art/ruleset7-revision9-art-order";
 import { ACCEPTED_ART_URLS } from "../../src/assets/generated-art-manifest";
-import {
-  RULESET7_REVISION9_ACTION_ART_IDS,
-  RULESET7_REVISION9_IMPROVEMENT_ART_IDS,
-  RULESET7_REVISION9_PORTRAIT_ART_IDS,
-  RULESET7_REVISION9_UNIT_ART_IDS,
-} from "../../src/assets/ruleset7-revision9-art";
-
-interface Bounds {
-  readonly left: number;
-  readonly top: number;
-  readonly right: number;
-  readonly bottom: number;
-}
 
 interface Recipe {
   readonly id: string;
@@ -31,27 +16,17 @@ interface Recipe {
   readonly requestSize: { readonly width: number; readonly height: number };
   readonly outputSize: { readonly width: number; readonly height: number };
   readonly anchor?: { readonly x: number; readonly y: number };
-  readonly groundContactY?: number;
   readonly displayScale?: number;
   readonly cosmeticOffsetY?: number;
   readonly postprocess?: string;
-  readonly styleReference?: string;
-  readonly hardBounds: Bounds;
-  readonly prompt: string;
-  readonly negativePrompt: string;
 }
 
 interface RecordEntry {
   readonly status: string;
   readonly jobId?: string;
-  readonly candidateSha256?: string;
   readonly outputSha256?: string;
   readonly providerOutputSha256?: string;
-  readonly alphaBounds?: Bounds;
   readonly reviewChecks?: Readonly<Record<string, boolean>>;
-  readonly request?: {
-    readonly styleReference?: { readonly id: string; readonly sha256?: string };
-  };
 }
 
 async function manifests() {
@@ -60,7 +35,10 @@ async function manifests() {
     readFile("scripts/art/pixellab-generated.json", "utf8"),
   ]);
   return {
-    recipes: (JSON.parse(sourceText) as { recipes: readonly Recipe[] }).recipes,
+    source: JSON.parse(sourceText) as {
+      readonly recipes: readonly Recipe[];
+      readonly retired: readonly { readonly id: string }[];
+    },
     records: (
       JSON.parse(generatedText) as {
         records: Readonly<Record<string, RecordEntry>>;
@@ -69,8 +47,10 @@ async function manifests() {
   };
 }
 
+// The Shipyard, the three action icons and the two portraits of this family
+// are retired (bead pulp_wars-67q.15); the Captain and Knight sprites stay.
 describe("Ruleset 7 revision-9 art assets", () => {
-  it("enforces the approved serial source, bounded UI, and portrait gates", () => {
+  it("enforces the serial Captain-then-Knight source gates", () => {
     const accepted = (ids: readonly string[]) => ({
       records: Object.fromEntries(
         ids.map((id) => [id, { status: "ACCEPTED" }]),
@@ -90,32 +70,27 @@ describe("Ruleset 7 revision-9 art assets", () => {
     ).not.toThrow();
     expect(() =>
       assertRuleset7Revision9ArtOrder(
-        RULESET7_REVISION9_SOURCE_IDS.slice(3).map((id) => ({ id })),
-        accepted(RULESET7_REVISION9_UI_SAMPLE_IDS),
-      ),
-    ).not.toThrow();
-    expect(() =>
-      assertRuleset7Revision9ArtOrder(
-        [{ id: "ui-action-rally-v7r9" }],
-        accepted(RULESET7_REVISION9_UI_SAMPLE_IDS),
-      ),
-    ).toThrow("complete Rally");
-    expect(() =>
-      assertRuleset7Revision9ArtOrder(
-        [{ id: "portrait-original-captain" }],
+        RULESET7_REVISION9_SOURCE_IDS.map((id) => ({ id })),
         accepted([]),
       ),
-    ).toThrow("before deriving");
+    ).toThrow("separate individual gates");
+    expect(() =>
+      assertRuleset7Revision9ArtOrder(
+        [{ id: "unit-original-captain" }, { id: "unit-warrior" }],
+        accepted([]),
+      ),
+    ).toThrow("Do not mix");
+    expect(() =>
+      assertRuleset7Revision9ArtOrder([{ id: "unit-warrior" }], accepted([])),
+    ).not.toThrow();
   });
 
-  it("records the exact six sources and two deterministic portrait derivatives", async () => {
-    const { recipes } = await manifests();
-    const selected = [
-      ...RULESET7_REVISION9_SOURCE_IDS,
-      ...RULESET7_REVISION9_PORTRAIT_IDS,
-    ].map((id) => recipes.find((recipe) => recipe.id === id));
-    expect(selected.every(Boolean)).toBe(true);
-    expect(selected[0]).toMatchObject({
+  it("records the two world sprites and retires the rest of the family", async () => {
+    const { source } = await manifests();
+    const [captain, knight] = RULESET7_REVISION9_SOURCE_IDS.map((id) =>
+      source.recipes.find((recipe) => recipe.id === id),
+    );
+    expect(captain).toMatchObject({
       class: "units",
       requestSize: { width: 256, height: 296 },
       anchor: { x: 128, y: 222 },
@@ -123,7 +98,7 @@ describe("Ruleset 7 revision-9 art assets", () => {
       cosmeticOffsetY: 18,
       postprocess: "unit-fit",
     });
-    expect(selected[1]).toMatchObject({
+    expect(knight).toMatchObject({
       class: "units",
       requestSize: { width: 384, height: 384 },
       anchor: { x: 192, y: 288 },
@@ -131,51 +106,28 @@ describe("Ruleset 7 revision-9 art assets", () => {
       cosmeticOffsetY: 18,
       postprocess: "unit-fit",
     });
-    expect(selected[2]).toMatchObject({
-      class: "buildings",
-      requestSize: { width: 384, height: 384 },
-      anchor: { x: 192, y: 288 },
-      displayScale: 0.3,
-      postprocess: "compact-building-fit",
-    });
-    for (const action of selected.slice(3, 6))
-      expect(action).toMatchObject({
-        class: "ui",
-        requestSize: { width: 384, height: 384 },
-        outputSize: { width: 192, height: 192 },
-        postprocess: "lanczos3-resize",
-      });
-    expect(selected[6]).toMatchObject({
-      postprocess: "sprite-derived-portrait",
-      styleReference: "unit-original-captain",
-    });
-    expect(selected[7]).toMatchObject({
-      postprocess: "sprite-derived-portrait",
-      styleReference: "unit-original-knight",
-    });
+    for (const id of [
+      "building-ruleset7-shipyard",
+      "ui-action-rally-v7r9",
+      "ui-action-cultivate-forest-v7r9",
+      "ui-action-blast-mountain-v7r9",
+      "portrait-original-captain",
+      "portrait-original-knight",
+    ]) {
+      expect(
+        source.recipes.some((recipe) => recipe.id === id),
+        id,
+      ).toBe(false);
+      expect(
+        source.retired.some((entry) => entry.id === id),
+        id,
+      ).toBe(true);
+      expect(ACCEPTED_ART_URLS[id], id).toBeUndefined();
+    }
   });
 
-  it("publishes explicit revision-9 semantic mappings without runtime wiring", () => {
-    expect(RULESET7_REVISION9_UNIT_ART_IDS).toEqual({
-      CAPTAIN: "unit-original-captain",
-      KNIGHT: "unit-original-knight",
-    });
-    expect(RULESET7_REVISION9_PORTRAIT_ART_IDS).toEqual({
-      CAPTAIN: "portrait-original-captain",
-      KNIGHT: "portrait-original-knight",
-    });
-    expect(RULESET7_REVISION9_IMPROVEMENT_ART_IDS).toEqual({
-      SHIPYARD: "building-ruleset7-shipyard",
-    });
-    expect(RULESET7_REVISION9_ACTION_ART_IDS).toEqual({
-      RALLY: "ui-action-rally-v7r9",
-      CULTIVATE_FOREST: "ui-action-cultivate-forest-v7r9",
-      BLAST_MOUNTAIN: "ui-action-blast-mountain-v7r9",
-    });
-  });
-
-  it("publishes accepted hash-locked outputs, receipts, and explicit registry mappings", async () => {
-    const { recipes, records } = await manifests();
+  it("publishes accepted hash-locked outputs and receipts", async () => {
+    const { source, records } = await manifests();
     const receiptNames = await readdir("art/pixellab/submissions");
     const receipts = await Promise.all(
       receiptNames.map(
@@ -185,11 +137,8 @@ describe("Ruleset 7 revision-9 art assets", () => {
           ) as { readonly id?: string; readonly jobId?: string },
       ),
     );
-    for (const id of [
-      ...RULESET7_REVISION9_SOURCE_IDS,
-      ...RULESET7_REVISION9_PORTRAIT_IDS,
-    ]) {
-      const recipe = recipes.find((candidate) => candidate.id === id);
+    for (const id of RULESET7_REVISION9_SOURCE_IDS) {
+      const recipe = source.recipes.find((candidate) => candidate.id === id);
       const record = records[id];
       expect(recipe, id).toBeDefined();
       expect(record, id).toMatchObject({
@@ -211,22 +160,14 @@ describe("Ruleset 7 revision-9 art assets", () => {
       expect(ACCEPTED_ART_URLS[id], id).toContain(
         (recipe?.output ?? "").replace(/^public\//, ""),
       );
-      if (RULESET7_REVISION9_SOURCE_IDS.includes(id as never)) {
-        expect(record?.jobId, id).toBeTruthy();
-        expect(record?.providerOutputSha256, id).toBeTruthy();
-        expect(
-          receipts.some(
-            (receipt) => receipt.id === id && receipt.jobId === record?.jobId,
-          ),
-          id,
-        ).toBe(true);
-      } else {
-        const sourceId = recipe?.styleReference ?? "";
-        expect(record?.request?.styleReference).toMatchObject({
-          id: sourceId,
-          sha256: records[sourceId]?.outputSha256,
-        });
-      }
+      expect(record?.jobId, id).toBeTruthy();
+      expect(record?.providerOutputSha256, id).toBeTruthy();
+      expect(
+        receipts.some(
+          (receipt) => receipt.id === id && receipt.jobId === record?.jobId,
+        ),
+        id,
+      ).toBe(true);
     }
   });
 });

@@ -1,72 +1,40 @@
 import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
-import sharp from "sharp";
 import { describe, expect, it } from "vitest";
 import {
   viewForV7,
   type CityId,
   type PlayerViewV7,
 } from "../../src/engine/index";
-import { RULESET7_FARM_ART_IDS } from "../../src/assets/ruleset7-ui-art";
+import { FARM_ART_KEYS_V7 } from "../../src/assets/art-keys-v7";
 import { farmPresentationV7 } from "../../src/render/canvas/board-renderer-v7";
 import { exploredAllV7, initialV7 } from "../fixtures/v7-builders";
 
 const root = process.cwd();
 
-describe("Ruleset 7 Farm assets", () => {
-  it("records three accepted independent PixelLab recipes with opaque exact footprints", async () => {
+describe("Ruleset 7 Farm presentation", () => {
+  it("retires the three legacy Farm rasters and keeps their keys apart", async () => {
+    // Bead pulp_wars-67q.15: the board keys a Farm as single or paired; the
+    // picture is the chibi Farm.
     const manifest = JSON.parse(
       await readFile(
         path.join(root, "scripts/art/pixellab-manifest.json"),
         "utf8",
       ),
-    ) as { recipes: Array<Record<string, unknown>> };
-    const generated = JSON.parse(
-      await readFile(
-        path.join(root, "scripts/art/pixellab-generated.json"),
-        "utf8",
-      ),
     ) as {
-      records: Record<string, { status?: string; outputSha256?: string }>;
+      recipes: Array<{ id: string }>;
+      retired: Array<{ id: string }>;
     };
-    const expected = new Map([
-      [RULESET7_FARM_ART_IDS.SINGLE, [256, 256]],
-      [RULESET7_FARM_ART_IDS.HORIZONTAL_PAIR, [512, 256]],
-      [RULESET7_FARM_ART_IDS.VERTICAL_PAIR, [256, 512]],
-    ]);
-    for (const [id, [width, height]] of expected) {
-      const recipe = manifest.recipes.find((candidate) => candidate.id === id);
-      expect(recipe).toMatchObject({
-        id,
-        stage: "sample",
-        class: "buildings",
-        postprocess: "farm-full-rectangle",
-        outputSize: { width, height },
-        hardBounds: { left: 0, top: 0, right: width, bottom: height },
-        squareFootprint: { left: 0, top: 0, right: width, bottom: height },
-      });
-      expect(generated.records[id]).toMatchObject({ status: "ACCEPTED" });
-      const output = path.join(root, String(recipe?.output));
-      const image = sharp(output);
-      expect(await image.metadata()).toMatchObject({ width, height });
-      const { channels } = await image.stats();
-      expect(channels[3]?.min).toBe(255);
-      const bytes = await readFile(output);
-      expect(createHash("sha256").update(bytes).digest("hex")).toBe(
-        generated.records[id]?.outputSha256,
-      );
+    for (const id of [
+      "building-ruleset7-farm-single",
+      "building-ruleset7-farm-pair-horizontal",
+      "building-ruleset7-farm-pair-vertical",
+    ]) {
+      expect(manifest.recipes.some((recipe) => recipe.id === id)).toBe(false);
+      expect(manifest.retired.some((entry) => entry.id === id)).toBe(true);
     }
-    expect(
-      manifest.recipes.find(
-        (candidate) => candidate.id === RULESET7_FARM_ART_IDS.HORIZONTAL_PAIR,
-      ),
-    ).toMatchObject({ styleReference: RULESET7_FARM_ART_IDS.SINGLE });
-    expect(
-      manifest.recipes.find(
-        (candidate) => candidate.id === RULESET7_FARM_ART_IDS.VERTICAL_PAIR,
-      ),
-    ).toMatchObject({ styleReference: RULESET7_FARM_ART_IDS.SINGLE });
+    expect(new Set(Object.values(FARM_ART_KEYS_V7)).size).toBe(3);
   });
 
   it("preserves the accepted v6 processed Farm unchanged", async () => {
@@ -239,7 +207,7 @@ function layout(
     ...farmPresentationV7(farmView(coords, cityIds, hidden, reverseBoard)),
   ]
     .map(([key, value]) => {
-      const name = Object.entries(RULESET7_FARM_ART_IDS).find(
+      const name = Object.entries(FARM_ART_KEYS_V7).find(
         ([, id]) => id === value.assetId,
       )?.[0];
       return `${key}:${name}${

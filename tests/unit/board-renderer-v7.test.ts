@@ -12,10 +12,10 @@ import {
 import { type TileEdge } from "../../src/render/canvas/geometry";
 import { exploredAllV7, initialV7 } from "../fixtures/v7-builders";
 import {
-  RULESET7_FRUIT_MAP_ART_IDS,
-  RULESET7_GAME_MAP_ART_IDS,
-  resourceMapArtIdV7,
-} from "../../src/assets/ruleset7-ui-art";
+  FRUIT_MAP_ART_KEYS_V7,
+  GAME_MAP_ART_KEYS_V7,
+  resourceMapArtKeyV7,
+} from "../../src/assets/art-keys-v7";
 
 describe("Ruleset 7 board renderer", () => {
   it("renders all cosmetic resource variants from coordinates without changing the view", () => {
@@ -53,12 +53,12 @@ describe("Ruleset 7 board renderer", () => {
     for (let x = 0; x < 3; x += 1) {
       expect(
         plan.entries.find((entry) => entry.key === `resource:${x},0`)?.assetId,
-      ).toBe(RULESET7_FRUIT_MAP_ART_IDS[x]);
+      ).toBe(FRUIT_MAP_ART_KEYS_V7[x]);
       expect(
         plan.entries.find((entry) => entry.key === `resource:${x},3`)?.assetId,
-      ).toBe(RULESET7_GAME_MAP_ART_IDS[x]);
-      expect(resourceMapArtIdV7("FRUIT", { x, y: 0 })).toBe(
-        RULESET7_FRUIT_MAP_ART_IDS[x],
+      ).toBe(GAME_MAP_ART_KEYS_V7[x]);
+      expect(resourceMapArtKeyV7("FRUIT", { x, y: 0 })).toBe(
+        FRUIT_MAP_ART_KEYS_V7[x],
       );
     }
     expect(JSON.stringify(view.board.tiles)).toBe(before);
@@ -228,7 +228,7 @@ describe("Ruleset 7 board renderer", () => {
       overlap.findIndex((entry) => entry.kind === "IMPROVEMENT"),
     ).toBeGreaterThan(overlap.findIndex((entry) => entry.kind === "ROAD"));
     const forestIndex = plan.entries.findIndex(
-      (entry) => entry.assetId === "terrain-ruleset7-original-forest-1",
+      (entry) => entry.assetId === "v7-terrain-forest-1",
     );
     const gameIndex = plan.entries.findIndex(
       (entry) =>
@@ -238,7 +238,7 @@ describe("Ruleset 7 board renderer", () => {
     );
     const fertileIndex = plan.entries.findIndex(
       (entry) =>
-        entry.assetId === "terrain-ruleset7-resource-fertile-ground" &&
+        entry.assetId === "v7-resource-fertile-ground" &&
         entry.at.x === 0 &&
         entry.at.y === 1,
     );
@@ -292,13 +292,13 @@ describe("Ruleset 7 board renderer", () => {
           (entry) =>
             entry.kind === "TERRAIN" && entry.at.x === x && entry.at.y === 0,
         )?.assetId,
-      ).toBe("terrain-ruleset7-original-grass-1");
+      ).toBe("v7-terrain-grass-1");
     expect(
       plan.entries.find(
         (entry) =>
           entry.kind === "TERRAIN" && entry.at.x === 4 && entry.at.y === 0,
       )?.assetId,
-    ).toMatch(/^terrain-ruleset7-original-forest-/);
+    ).toMatch(/^v7-terrain-forest-/);
     expect(
       view.board.tiles
         .filter((tile) => tile.explored && tile.at.y === 0 && tile.at.x < 5)
@@ -325,7 +325,7 @@ describe("Ruleset 7 board renderer", () => {
         (entry) =>
           entry.kind === "TERRAIN" && entry.at.x === 3 && entry.at.y === 0,
       )?.assetId,
-    ).toMatch(/^terrain-ruleset7-original-forest-/);
+    ).toMatch(/^v7-terrain-forest-/);
     expect(
       removedView.board.tiles.find(
         (tile) => tile.at.x === 3 && tile.at.y === 0,

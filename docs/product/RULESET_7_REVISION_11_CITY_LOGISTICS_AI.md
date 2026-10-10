@@ -619,10 +619,12 @@ Implementation evidence must cover these bounded groups:
 Revision-11 release evidence adds focused engine, presentation, asset, AI,
 headless, save/replay, and browser checks to the inherited release profile. It
 must not refresh frozen historical corpora to imply revision-11 behavior.
-The current isolated visual checks are:
+The isolated visual checks of this revision were
+`npm run art:ruleset7-logistics-review` (removed in `pulp_wars-67q.15` with
+the legacy Port and Fish rasters it reviewed, which the chibi art replaced)
+and:
 
 ```bash
-npm run art:ruleset7-logistics-review -- --output <isolated-art-output>
 npm run review:ruleset7-logistics -- --output <isolated-browser-output>
 ```
 

@@ -82,9 +82,6 @@ export const ACCEPTED_ART_URLS: Readonly<Record<string, string>> = {
   "portrait-original-saboteur": publicArtUrl(
     "assets/pixellab/ui/portrait-original-saboteur.png",
   ),
-  "portrait-original-catapult": publicArtUrl(
-    "assets/pixellab/ui/portrait-original-catapult.png",
-  ),
   "unit-candy-scout": publicArtUrl(
     "assets/pixellab/units/candy-jelly-scout.png",
   ),
@@ -261,9 +258,6 @@ export const ACCEPTED_ART_URLS: Readonly<Record<string, string>> = {
   ),
   "ui-faction-hero": publicArtUrl("assets/pixellab/ui/faction-hero.png"),
   "ui-hud-coin": publicArtUrl("assets/pixellab/ui/hud-coin.png"),
-  "ui-hud-gold-coin-v7": publicArtUrl(
-    "assets/pixellab/ui/hud-gold-coin-v7.png",
-  ),
   "ui-action-redevelop": publicArtUrl(
     "assets/pixellab/ui/action-redevelop.png",
   ),
@@ -290,27 +284,6 @@ export const ACCEPTED_ART_URLS: Readonly<Record<string, string>> = {
     "assets/pixellab/ui/tech-fortification.png",
   ),
   "ui-tech-recovery": publicArtUrl("assets/pixellab/ui/tech-recovery.png"),
-  "terrain-ruleset7-original-grass-1": publicArtUrl(
-    "assets/pixellab/terrain-ruleset7/original-grass-1.png",
-  ),
-  "terrain-ruleset7-original-grass-2": publicArtUrl(
-    "assets/pixellab/terrain-ruleset7/original-grass-2.png",
-  ),
-  "terrain-ruleset7-original-grass-3": publicArtUrl(
-    "assets/pixellab/terrain-ruleset7/original-grass-3.png",
-  ),
-  "terrain-ruleset7-original-forest-1": publicArtUrl(
-    "assets/pixellab/terrain-ruleset7/original-forest-1.png",
-  ),
-  "terrain-ruleset7-original-forest-2": publicArtUrl(
-    "assets/pixellab/terrain-ruleset7/original-forest-2.png",
-  ),
-  "terrain-ruleset7-original-forest-3": publicArtUrl(
-    "assets/pixellab/terrain-ruleset7/original-forest-3.png",
-  ),
-  "terrain-ruleset7-original-forest-4": publicArtUrl(
-    "assets/pixellab/terrain-ruleset7/original-forest-4.png",
-  ),
   "terrain-square-original-grass-1": publicArtUrl(
     "assets/pixellab/terrain-square/original-grass-1.png",
   ),
@@ -402,23 +375,11 @@ export const ACCEPTED_ART_URLS: Readonly<Record<string, string>> = {
   "building-square-farm": publicArtUrl(
     "assets/pixellab/buildings-square/farm.png",
   ),
-  "building-ruleset7-farm-single": publicArtUrl(
-    "assets/pixellab/buildings-ruleset7/farm-single.png",
-  ),
-  "building-ruleset7-farm-pair-horizontal": publicArtUrl(
-    "assets/pixellab/buildings-ruleset7/farm-pair-horizontal.png",
-  ),
-  "building-ruleset7-farm-pair-vertical": publicArtUrl(
-    "assets/pixellab/buildings-ruleset7/farm-pair-vertical.png",
-  ),
   "building-square-quarry": publicArtUrl(
     "assets/pixellab/buildings-square/quarry.png",
   ),
   "building-square-windmill": publicArtUrl(
     "assets/pixellab/buildings-square/windmill.png",
-  ),
-  "building-ruleset7-lumber-camp": publicArtUrl(
-    "assets/pixellab/buildings-ruleset7/lumber-camp.png",
   ),
   "building-square-lumber-camp": publicArtUrl(
     "assets/pixellab/buildings-square/lumber-camp.png",
@@ -453,8 +414,6 @@ export const ACCEPTED_ART_URLS: Readonly<Record<string, string>> = {
   "building-square-monument": publicArtUrl(
     "assets/pixellab/buildings-square/monument.png",
   ),
-  "ui-action-pillage": publicArtUrl("assets/pixellab/ui/action-pillage.png"),
-  "ui-action-disband": publicArtUrl("assets/pixellab/ui/action-disband.png"),
   "ui-action-defection": publicArtUrl(
     "assets/pixellab/ui/action-defection.png",
   ),
@@ -464,60 +423,6 @@ export const ACCEPTED_ART_URLS: Readonly<Record<string, string>> = {
   ),
   "portrait-original-horse-archer": publicArtUrl(
     "assets/pixellab/ui/portrait-original-horse-archer-v7r3.png",
-  ),
-  "terrain-ruleset7-revision3-gravel": publicArtUrl(
-    "assets/pixellab/terrain-ruleset7/revision3-gravel.png",
-  ),
-  "terrain-ruleset7-revision3-mountain-1": publicArtUrl(
-    "assets/pixellab/terrain-ruleset7/revision3-mountain-1.png",
-  ),
-  "terrain-ruleset7-revision3-mountain-2": publicArtUrl(
-    "assets/pixellab/terrain-ruleset7/revision3-mountain-2.png",
-  ),
-  "terrain-ruleset7-revision3-mountain-3": publicArtUrl(
-    "assets/pixellab/terrain-ruleset7/revision3-mountain-3.png",
-  ),
-  "terrain-ruleset7-revision3-mined-mountain-1": publicArtUrl(
-    "assets/pixellab/terrain-ruleset7/revision3-mined-mountain-1.png",
-  ),
-  "terrain-ruleset7-revision3-mined-mountain-2": publicArtUrl(
-    "assets/pixellab/terrain-ruleset7/revision3-mined-mountain-2.png",
-  ),
-  "terrain-ruleset7-revision3-mined-mountain-3": publicArtUrl(
-    "assets/pixellab/terrain-ruleset7/revision3-mined-mountain-3.png",
-  ),
-  "building-ruleset7-resource-lumber-camp": publicArtUrl(
-    "assets/pixellab/buildings-ruleset7/resource-lumber-camp.png",
-  ),
-  "terrain-ruleset7-resource-fertile-ground": publicArtUrl(
-    "assets/pixellab/terrain-square/ruleset7-resource-fertile-ground.png",
-  ),
-  "terrain-ruleset7-original-fruit-pear": publicArtUrl(
-    "assets/pixellab/terrain-square/ruleset7-original-fruit-pear.png",
-  ),
-  "terrain-ruleset7-original-fruit-plum": publicArtUrl(
-    "assets/pixellab/terrain-square/ruleset7-original-fruit-plum.png",
-  ),
-  "terrain-ruleset7-original-game-deer": publicArtUrl(
-    "assets/pixellab/terrain-square/ruleset7-original-game-deer.png",
-  ),
-  "terrain-ruleset7-original-game-fox": publicArtUrl(
-    "assets/pixellab/terrain-square/ruleset7-original-game-fox.png",
-  ),
-  "terrain-ruleset7-water-shallow": publicArtUrl(
-    "assets/pixellab/terrain-ruleset7/water-shallow.png",
-  ),
-  "terrain-ruleset7-water-deep": publicArtUrl(
-    "assets/pixellab/terrain-ruleset7/water-deep.png",
-  ),
-  "terrain-ruleset7-resource-fish": publicArtUrl(
-    "assets/pixellab/terrain-ruleset7/resource-fish.png",
-  ),
-  "terrain-ruleset7-resource-pearls": publicArtUrl(
-    "assets/pixellab/terrain-ruleset7/resource-pearls.png",
-  ),
-  "building-ruleset7-port": publicArtUrl(
-    "assets/pixellab/buildings-ruleset7/port.png",
   ),
   "unit-shared-embarked-transport": publicArtUrl(
     "assets/pixellab/units/shared-embarked-transport.png",
@@ -531,38 +436,11 @@ export const ACCEPTED_ART_URLS: Readonly<Record<string, string>> = {
   "unit-original-captain": publicArtUrl(
     "assets/pixellab/units/original-captain-v7r9.png",
   ),
-  "portrait-original-captain": publicArtUrl(
-    "assets/pixellab/ui/portrait-original-captain-v7r9.png",
-  ),
   "unit-original-knight": publicArtUrl(
     "assets/pixellab/units/original-knight-v7r9.png",
   ),
-  "portrait-original-knight": publicArtUrl(
-    "assets/pixellab/ui/portrait-original-knight-v7r9.png",
-  ),
-  "building-ruleset7-shipyard": publicArtUrl(
-    "assets/pixellab/buildings-ruleset7/shipyard-v7r9.png",
-  ),
-  "ui-action-rally-v7r9": publicArtUrl(
-    "assets/pixellab/ui/action-rally-v7r9.png",
-  ),
-  "ui-action-cultivate-forest-v7r9": publicArtUrl(
-    "assets/pixellab/ui/action-cultivate-forest-v7r9.png",
-  ),
-  "ui-action-blast-mountain-v7r9": publicArtUrl(
-    "assets/pixellab/ui/action-blast-mountain-v7r9.png",
-  ),
   "unit-original-captain-v7r10": publicArtUrl(
     "assets/pixellab/units/original-captain-v7r10.png",
-  ),
-  "portrait-original-captain-v7r10": publicArtUrl(
-    "assets/pixellab/ui/portrait-original-captain-v7r10.png",
-  ),
-  "building-ruleset7-port-v7r11": publicArtUrl(
-    "assets/pixellab/buildings-ruleset7/port-v7r11.png",
-  ),
-  "terrain-ruleset7-resource-fish-v7r11": publicArtUrl(
-    "assets/pixellab/terrain-ruleset7/resource-fish-v7r11.png",
   ),
   "terrain-game": publicArtUrl("assets/pixellab/terrain/animal.png"),
   "building-ruleset6-mine": publicArtUrl("assets/pixellab/buildings/mine.png"),

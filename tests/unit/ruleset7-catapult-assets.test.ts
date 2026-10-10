@@ -2,12 +2,12 @@ import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import { describe, expect, it } from "vitest";
 import { ACCEPTED_ART_URLS } from "../../src/assets/generated-art-manifest";
-import {
-  assertRuleset7CatapultOrder,
-  RULESET7_CATAPULT_PORTRAIT_ID,
-  RULESET7_CATAPULT_WORLD_ID,
-} from "../../scripts/art/ruleset7-catapult-order";
 import { resolveUnitFitOffset } from "../../scripts/art/unit-fit-offset";
+
+// The Catapult's portrait is retired (bead pulp_wars-67q.15): the world
+// sprite stays.
+const RULESET7_CATAPULT_WORLD_ID = "unit-original-catapult";
+const RULESET7_CATAPULT_PORTRAIT_ID = "portrait-original-catapult";
 
 interface Bounds {
   readonly left: number;
@@ -82,41 +82,6 @@ async function manifests(): Promise<{
 }
 
 describe("Ruleset 7 Original Catapult production art", () => {
-  it("enforces one world-or-portrait asset per call and world-first derivation", () => {
-    expect(() =>
-      assertRuleset7CatapultOrder([{ id: RULESET7_CATAPULT_WORLD_ID }], {
-        records: {},
-      }),
-    ).not.toThrow();
-    expect(() =>
-      assertRuleset7CatapultOrder(
-        [
-          { id: RULESET7_CATAPULT_WORLD_ID },
-          { id: RULESET7_CATAPULT_PORTRAIT_ID },
-        ],
-        { records: {} },
-      ),
-    ).toThrow("exactly one Ruleset 7 Catapult asset");
-    expect(() =>
-      assertRuleset7CatapultOrder(
-        [{ id: RULESET7_CATAPULT_WORLD_ID }, { id: "unit-warrior" }],
-        { records: {} },
-      ),
-    ).toThrow("unrelated generation families");
-    expect(() =>
-      assertRuleset7CatapultOrder([{ id: RULESET7_CATAPULT_PORTRAIT_ID }], {
-        records: {},
-      }),
-    ).toThrow("before deriving its portrait");
-    expect(() =>
-      assertRuleset7CatapultOrder([{ id: RULESET7_CATAPULT_PORTRAIT_ID }], {
-        records: {
-          [RULESET7_CATAPULT_WORLD_ID]: { status: "ACCEPTED" },
-        },
-      }),
-    ).not.toThrow();
-  });
-
   it("applies bounded integer fit offsets and preserves the no-offset default", () => {
     const bounds = { left: 72, top: 64, right: 311, bottom: 288 };
     const hard = { left: 16, top: 8, right: 368, bottom: 336 };
@@ -212,134 +177,27 @@ describe("Ruleset 7 Original Catapult production art", () => {
     }
   });
 
-  it("publishes a deterministic safe-area portrait from the accepted world hash", async () => {
-    const { recipes, records } = await manifests();
-    const recipe = recipes.find(
-      ({ id }) => id === RULESET7_CATAPULT_PORTRAIT_ID,
-    );
-    const portrait = records[RULESET7_CATAPULT_PORTRAIT_ID];
-    const worldHash = records[RULESET7_CATAPULT_WORLD_ID]?.outputSha256;
-    expect(recipe).toMatchObject({
-      class: "ui",
-      stage: "batch",
-      outputSize: { width: 256, height: 256 },
-      output: "public/assets/pixellab/ui/portrait-original-catapult.png",
-      postprocess: "sprite-derived-portrait",
-      styleReference: RULESET7_CATAPULT_WORLD_ID,
-      hardBounds: { left: 20, top: 20, right: 236, bottom: 236 },
-    });
-    expect(portrait).toMatchObject({
-      status: "ACCEPTED",
-      outputSha256:
-        "18e928c5584fc31bd9e451601c55f7fc5b5d08a264f562b77c556c394e00dd4c",
-      providerOutputSha256: worldHash,
-      alphaBounds: { left: 20, top: 27, right: 236, bottom: 229 },
-      request: {
-        postprocess: "sprite-derived-portrait",
-        styleReference: {
-          id: RULESET7_CATAPULT_WORLD_ID,
-          sha256: worldHash,
-        },
-      },
-    });
-    expect(portrait?.jobId).toBeUndefined();
-    expect(portrait?.request?.styleReference?.usageDescription).toContain(
-      "no provider request",
-    );
-    expect(ACCEPTED_ART_URLS[RULESET7_CATAPULT_PORTRAIT_ID]).toContain(
-      "assets/pixellab/ui/portrait-original-catapult.png",
-    );
-  });
-
-  it("checks in hash-locked world and portrait review evidence", async () => {
-    const reviewRoot = "art/pixellab/reviews/ruleset7-catapult";
-    const evidence = JSON.parse(
-      await readFile(`${reviewRoot}/review-evidence.json`, "utf8"),
+  it("retires the portrait with its hash on record", async () => {
+    const source = JSON.parse(
+      await readFile("scripts/art/pixellab-manifest.json", "utf8"),
     ) as {
-      readonly phase: string;
-      readonly world: { readonly sourceSha256: string };
-      readonly portraitProvenance: {
-        readonly sourceSha256: string;
-        readonly postprocess: string;
-        readonly providerRequestMade: boolean;
-      };
-      readonly measurement: {
-        readonly wheelContacts: {
-          readonly points: readonly {
-            readonly x: number;
-            readonly y: number;
-          }[];
-          readonly midpoint: { readonly x: number; readonly y: number };
-          readonly xDeltaFromAnchor: number;
-          readonly yDeltaFromAnchor: number;
-        };
-        readonly historicalDiamondWithoutBaselineOffset: {
-          readonly visibleWidthRatio: number;
-          readonly visibleHeightRatio: number;
-          readonly opaqueAreaRatio: number;
-          readonly maximumRearOcclusionRatio: number;
-          readonly meetsPreferredWidth: boolean;
-          readonly meetsPreferredHeight: boolean;
-        };
-        readonly activeSquareWithBaselineOffset: {
-          readonly noLeftOverflow: boolean;
-          readonly noRightOverflow: boolean;
-          readonly noBottomOverflow: boolean;
-          readonly adjacentOcclusionRatio: Readonly<Record<string, number>>;
-        };
-      };
-      readonly reviewCoverage: readonly string[];
-      readonly artifacts: readonly {
-        readonly filename: string;
-        readonly sha256: string;
-        readonly bytes: number;
+      readonly recipes: readonly Recipe[];
+      readonly retired: readonly {
+        readonly id: string;
+        readonly output: string;
+        readonly outputSha256?: string;
       }[];
     };
-    expect(evidence.phase).toBe("COMPLETE_WITH_PORTRAIT");
-    expect(evidence.world.sourceSha256).toBe(
-      "67e7f8cb6fc9a36b385eed9aecc2a12fb2884701cb7661d5503f8dbcf373c360",
-    );
-    expect(evidence.measurement.wheelContacts).toMatchObject({
-      points: [
-        { x: 142, y: 267 },
-        { x: 240, y: 309 },
-      ],
-      midpoint: { x: 191, y: 288 },
-      xDeltaFromAnchor: -1,
-      yDeltaFromAnchor: 0,
-    });
     expect(
-      evidence.measurement.historicalDiamondWithoutBaselineOffset,
+      source.recipes.some(({ id }) => id === RULESET7_CATAPULT_PORTRAIT_ID),
+    ).toBe(false);
+    expect(
+      source.retired.find(({ id }) => id === RULESET7_CATAPULT_PORTRAIT_ID),
     ).toMatchObject({
-      visibleWidthRatio: 0.4481,
-      visibleHeightRatio: 0.7265,
-      opaqueAreaRatio: 0.3089,
-      maximumRearOcclusionRatio: 0.034,
-      meetsPreferredWidth: false,
-      meetsPreferredHeight: false,
+      output: "public/assets/pixellab/ui/portrait-original-catapult.png",
+      outputSha256:
+        "18e928c5584fc31bd9e451601c55f7fc5b5d08a264f562b77c556c394e00dd4c",
     });
-    expect(evidence.measurement.activeSquareWithBaselineOffset).toMatchObject({
-      noLeftOverflow: true,
-      noRightOverflow: true,
-      noBottomOverflow: true,
-      adjacentOcclusionRatio: { NORTH: 0, EAST: 0, SOUTH: 0, WEST: 0 },
-    });
-    expect(evidence.portraitProvenance).toMatchObject({
-      sourceSha256: evidence.world.sourceSha256,
-      postprocess: "sprite-derived-portrait",
-      providerRequestMade: false,
-    });
-    expect(evidence.reviewCoverage.join(" ")).toContain(
-      "current-geometry city",
-    );
-    expect(evidence.reviewCoverage.join(" ")).toContain("112x130");
-    for (const artifact of evidence.artifacts) {
-      const bytes = await readFile(`${reviewRoot}/${artifact.filename}`);
-      expect(bytes.byteLength).toBe(artifact.bytes);
-      expect(createHash("sha256").update(bytes).digest("hex")).toBe(
-        artifact.sha256,
-      );
-      expect(artifact.bytes).toBeGreaterThan(1_000);
-    }
+    expect(ACCEPTED_ART_URLS[RULESET7_CATAPULT_PORTRAIT_ID]).toBeUndefined();
   });
 });

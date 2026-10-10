@@ -5,19 +5,16 @@ import sharp from "sharp";
 import { describe, expect, it } from "vitest";
 
 const root = process.cwd();
+// The water, Fish, Pearls and Port rasters of this family are retired
+// (bead pulp_wars-67q.15); the three unit sources stay.
 const contracts = new Map([
-  ["terrain-ruleset7-water-shallow", [256, 256, 128, 128, 0.5]],
-  ["terrain-ruleset7-water-deep", [256, 256, 128, 128, 0.5]],
-  ["terrain-ruleset7-resource-fish", [256, 384, 128, 256, 0.5]],
-  ["terrain-ruleset7-resource-pearls", [256, 384, 128, 256, 0.5]],
-  ["building-ruleset7-port", [384, 384, 192, 288, 0.3]],
   ["unit-shared-embarked-transport", [384, 384, 192, 288, 0.24]],
   ["unit-original-patrol-boat", [384, 384, 192, 288, 0.24]],
   ["unit-original-battleship", [384, 384, 192, 288, 0.27]],
 ]);
 
 describe("Ruleset 7 naval assets", () => {
-  it("records the exact eight-source PixelLab inventory and geometry", async () => {
+  it("records the three unit sources of the PixelLab inventory and their geometry", async () => {
     const manifest = JSON.parse(
       await readFile(
         path.join(root, "scripts/art/pixellab-manifest.json"),
@@ -65,7 +62,7 @@ describe("Ruleset 7 naval assets", () => {
     ).toBe(false);
   });
 
-  it("keeps water opaque and all transparent sources inside hard bounds", async () => {
+  it("keeps all transparent sources inside hard bounds", async () => {
     const manifest = JSON.parse(
       await readFile(
         path.join(root, "scripts/art/pixellab-manifest.json"),
@@ -92,10 +89,6 @@ describe("Ruleset 7 naval assets", () => {
       expect(bounds.top).toBeGreaterThanOrEqual(recipe.hardBounds.top);
       expect(bounds.right).toBeLessThanOrEqual(recipe.hardBounds.right);
       expect(bounds.bottom).toBeLessThanOrEqual(recipe.hardBounds.bottom);
-      if (id.includes("water-")) {
-        const { channels } = await image.stats();
-        expect(channels[3]?.min).toBe(255);
-      }
     }
   });
 
@@ -167,29 +160,6 @@ describe("Ruleset 7 naval assets", () => {
         ),
       ),
     ).toBe(false);
-  });
-
-  it("checks complete deterministic visual evidence", async () => {
-    const reviewRoot = path.join(root, "art/pixellab/reviews/ruleset7-naval");
-    const evidence = JSON.parse(
-      await readFile(path.join(reviewRoot, "review-evidence.json"), "utf8"),
-    ) as {
-      inventory: Array<{ id: string }>;
-      conditionalNavigationSymbol: string;
-      checks: Record<string, boolean>;
-      artifacts: Record<string, string>;
-    };
-    expect(evidence.inventory.map(({ id }) => id)).toEqual([
-      ...contracts.keys(),
-    ]);
-    expect(evidence.conditionalNavigationSymbol).toBe(
-      "not-generated-deep-water-readable",
-    );
-    expect(Object.values(evidence.checks).every(Boolean)).toBe(true);
-    for (const [artifact, expectedHash] of Object.entries(evidence.artifacts))
-      expect(hash(await readFile(path.join(reviewRoot, artifact)))).toBe(
-        expectedHash,
-      );
   });
 });
 

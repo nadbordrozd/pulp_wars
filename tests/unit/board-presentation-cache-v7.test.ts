@@ -53,7 +53,7 @@ describe("Ruleset 7 presentation caches", () => {
       kind: "TERRAIN" as const,
       at: { x: 0, y: 0 },
       layer: 1,
-      assetId: "terrain-ruleset7-original-forest-1",
+      assetId: "v7-terrain-forest-1",
       artSubject: "TERRAIN:FOREST" as const,
     };
     const common = {
