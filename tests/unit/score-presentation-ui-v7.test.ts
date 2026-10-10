@@ -6,6 +6,10 @@ import {
   type StarGradeInputsV7,
 } from "../../src/engine/index";
 import {
+  ALLIANCE_LABELS_V7,
+  ALLIANCES_LABEL_V7,
+  allianceLabelV7,
+  alliedTeamV7,
   gradeConditionLinesV7,
   leaderboardOrderV7,
   pointsLabelV7,
@@ -182,6 +186,49 @@ describe("leaderboard order", () => {
     expect(
       leaderboardOrderV7("PERFECTION", entries).map((item) => item.playerId),
     ).toEqual([1, 2, 3, 4, 6, 7, 5]);
+  });
+});
+
+describe("the match's alliance setting", () => {
+  const seats = (ais: number) =>
+    Array.from({ length: ais + 1 }, (_, index) => ({
+      playerId: (index + 1) as PlayerId,
+      controller: index === 1 ? ("HUMAN" as const) : ("AI" as const),
+      status: index === 0 ? ("ELIMINATED" as const) : ("ACTIVE" as const),
+    }));
+
+  it("uses the new-game screen's words", () => {
+    expect(ALLIANCES_LABEL_V7).toBe("Alliances");
+    expect(ALLIANCE_LABELS_V7).toEqual({
+      RIVAL: "Free-for-all",
+      COOPERATIVE: "AIs allied",
+    });
+    expect(allianceLabelV7("RIVAL")).toBe("Free-for-all");
+    expect(allianceLabelV7("COOPERATIVE")).toBe("AIs allied");
+  });
+
+  it("marks no row in a free-for-all, with 2 to 8 seats", () => {
+    for (let ais = 1; ais <= 7; ais += 1)
+      expect(alliedTeamV7("RIVAL", seats(ais)).size).toBe(0);
+  });
+
+  it("marks every AI seat when the AIs are allied, the eliminated too, never the human", () => {
+    for (let ais = 2; ais <= 7; ais += 1) {
+      const entries = seats(ais);
+      const team = alliedTeamV7("COOPERATIVE", entries);
+      expect([...team]).toEqual(
+        entries
+          .filter((entry) => entry.controller === "AI")
+          .map((entry) => entry.playerId),
+      );
+      expect(team.size).toBe(ais);
+      expect(team.has(1 as PlayerId)).toBe(true);
+      expect(team.has(2 as PlayerId)).toBe(false);
+    }
+  });
+
+  it("marks nothing with one opponent: one AI is no team", () => {
+    expect(alliedTeamV7("COOPERATIVE", seats(1)).size).toBe(0);
   });
 });
 

@@ -11,6 +11,7 @@ import {
   queryScoreV7,
   viewForV7,
   type GameStateV7,
+  type PlayerViewV7,
 } from "../../src/engine/index";
 import type {
   BoardHostCallbacksV7,
@@ -138,6 +139,92 @@ describe("Ruleset 7 score in the leaderboard", () => {
       "true",
     );
     app.destroy();
+  });
+
+  it("states a free-for-all in the setup's words and marks no row", () => {
+    for (const gameMode of ["DOMINATION", "PERFECTION"] as const) {
+      const app = mount(scoreUiStateV7(gameMode, 12));
+      openLeaderboard();
+      const line = required('[data-v7-region="leaderboard-alliances"]');
+      expect(line.dataset.alliances).toBe("rival");
+      expect(line.textContent).toBe("Alliances: Free-for-all");
+      expect(line.querySelector(".v7-chip")?.textContent).toBe("Free-for-all");
+      expect(line.querySelector("svg")).toBeNull();
+      // Under the heading, before the lede: where the eye lands.
+      expect(line.previousElementSibling?.tagName).toBe("H2");
+      expect(line.nextElementSibling?.className).toBe("v7-screen-lede");
+      expect(document.querySelector(".v7-leaderboard-team")).toBeNull();
+      expect(document.querySelector("[data-team]")).toBeNull();
+      app.destroy();
+      document.body.innerHTML = '<div id="app"></div>';
+    }
+  });
+
+  it("states AIs allied and marks every AI row, also one that is out, never the viewer's", () => {
+    for (const gameMode of ["DOMINATION", "PERFECTION"] as const) {
+      const state = scoreUiStateV7(gameMode, 12, "COOPERATIVE");
+      const outId = state.players.find(
+        (player) => player.controller === "AI",
+      )?.id;
+      const app = mount(state, (view) => ({
+        ...view,
+        leaderboard: view.leaderboard.map((entry) =>
+          entry.playerId === outId
+            ? { ...entry, status: "ELIMINATED" as const }
+            : entry,
+        ),
+      }));
+      openLeaderboard();
+      const line = required('[data-v7-region="leaderboard-alliances"]');
+      expect(line.dataset.alliances).toBe("cooperative");
+      expect(line.textContent).toBe("Alliances: AIs allied");
+      expect(line.querySelector<SVGElement>("svg")?.dataset.icon).toBe(
+        "allied",
+      );
+      const rows = [
+        ...document.querySelectorAll<HTMLElement>(".v7-leaderboard-row"),
+      ];
+      expect(rows).toHaveLength(4);
+      for (const row of rows) {
+        const mark = row.querySelector<HTMLElement>(".v7-leaderboard-team");
+        if (row.dataset.viewer === "true") {
+          expect(row.dataset.team).toBeUndefined();
+          expect(mark).toBeNull();
+          continue;
+        }
+        expect(row.dataset.team).toBe("ai");
+        expect(mark?.title).toBe("Allied");
+        expect(mark?.textContent).toBe("Allied");
+        expect(mark?.querySelector<SVGElement>("svg")?.dataset.icon).toBe(
+          "allied",
+        );
+        expect(
+          mark?.closest(".v7-leaderboard-name")?.contains(mark) ?? false,
+        ).toBe(true);
+      }
+      const out = rows.filter((row) => row.dataset.status === "eliminated");
+      expect(out).toHaveLength(1);
+      expect(out[0]?.dataset.team).toBe("ai");
+      app.destroy();
+      document.body.innerHTML = '<div id="app"></div>';
+    }
+  });
+
+  it("says in the match's Settings what alliances the game was started with", () => {
+    for (const [aiMode, words] of [
+      ["RIVAL", "Free-for-all"],
+      ["COOPERATIVE", "AIs allied"],
+    ] as const) {
+      const app = mount(scoreUiStateV7("DOMINATION", 12, aiMode));
+      required<HTMLButtonElement>('[data-action="compact-menu"]').click();
+      required<HTMLButtonElement>('[data-action="settings"]').click();
+      const line = required(".v7-match-alliances");
+      expect(line.dataset.v7Alliances).toBe(aiMode.toLowerCase());
+      expect(line.textContent).toBe(`Alliances: ${words}`);
+      expect(line.previousElementSibling?.className).toBe("v7-map-seed");
+      app.destroy();
+      document.body.innerHTML = '<div id="app"></div>';
+    }
   });
 
   it("keeps Domination's top bar on turns", () => {
@@ -289,8 +376,11 @@ function openLeaderboard(): void {
   required<HTMLButtonElement>('[data-action="leaderboard"]').click();
 }
 
-function mount(state: GameStateV7): Ruleset7DomAppView {
-  const view = viewForV7(state, state.humanPlayerId);
+function mount(
+  state: GameStateV7,
+  adjust: (view: PlayerViewV7) => PlayerViewV7 = (view) => view,
+): Ruleset7DomAppView {
+  const view = adjust(viewForV7(state, state.humanPlayerId));
   const snapshot: Ruleset7BrowserSnapshot = {
     phase: state.outcome === null ? "ACTIVE" : "COMPLETE",
     view,

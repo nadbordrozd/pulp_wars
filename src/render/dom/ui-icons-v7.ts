@@ -83,7 +83,10 @@ export type UiIconIdV7 =
   // HUD and the leaderboard and the Sacrifice and Offering buttons: the
   // LEGACY and stand-in glyph until the art registers `ICON:HUD:CULT:FAVOUR`
   // and the action icons.
-  | "candle";
+  | "candle"
+  // The leaderboard's alliance setting (bead pulp_wars-2yc.45): two linked
+  // rings, the mark of "AIs allied" and of every allied AI row.
+  | "allied";
 
 /** The star of the grade (shared by its filled and outlined forms). */
 const STAR =
@@ -200,6 +203,8 @@ const PATHS: Readonly<Record<UiIconIdV7, string>> = {
   play: "M8 5.5v13l10.5-6.5Z",
   flag: "M6 21V3.5M6 4.5h12.5l-3 4 3 4H6",
   back: "M14.5 5 7.5 12l7 7",
+  allied:
+    "M3.5 12a5 5 0 1 0 10 0 5 5 0 1 0-10 0M10.5 12a5 5 0 1 0 10 0 5 5 0 1 0-10 0",
   // A fat candle on a dish, a short wick and a teardrop flame.
   candle:
     "M8.5 11.5h7V20h-7ZM5.5 20.5h13M12 11.5V9.8M12 2.6c1.9 2 2.7 3.3 2.7 4.5a2.7 2.7 0 0 1-5.4 0c0-1.2.8-2.5 2.7-4.5Z",

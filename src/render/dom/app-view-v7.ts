@@ -155,6 +155,11 @@ import {
 } from "../turn-order-presentation-v7";
 import {
   gradeConditionLinesV7,
+  ALLIANCE_LABELS_V7,
+  ALLIANCES_LABEL_V7,
+  ALLIED_MARK_LABEL_V7,
+  allianceLabelV7,
+  alliedTeamV7,
   leaderboardOrderV7,
   pointsLabelV7,
   ratingTextV7,
@@ -812,10 +817,7 @@ const MAP_TYPES = SETUP_MAP_TYPES_V7;
 const SHOWCASE_BOARD_SIZE = 16;
 /** The Showcase board ignores the seed; its setup carries this valid one. */
 const SHOWCASE_SEED = 0;
-const AI_MODE_LABELS: Readonly<Record<string, string>> = {
-  RIVAL: "Free-for-all",
-  COOPERATIVE: "AIs allied",
-};
+const AI_MODE_LABELS: Readonly<Record<string, string>> = ALLIANCE_LABELS_V7;
 /** Map scale section 6.4: what "AIs allied" means, as the Mode tooltip. */
 const AI_MODE_HINT_V7 = "AIs allied: every opponent is allied against you.";
 const MAP_TYPE_LABELS: Readonly<Record<string, string>> = {
@@ -3026,7 +3028,7 @@ export class Ruleset7DomAppView {
       // Section 7, item 5: "Alliances", so the screen has one "mode".
       select(
         this.#document,
-        "Alliances",
+        ALLIANCES_LABEL_V7,
         "v7-ai-mode",
         ["RIVAL", "COOPERATIVE"],
         this.#draft.aiMode,
@@ -7906,8 +7908,10 @@ export class Ruleset7DomAppView {
     const section = el(this.#document, "div", "v7-info-screen");
     section.append(
       text(this.#document, "h2", "Leaderboard"),
+      this.#allianceChip(view),
       text(this.#document, "p", scoreLedeV7(score.gameMode), "v7-screen-lede"),
     );
+    const team = alliedTeamV7(view.setup.aiMode, view.leaderboard);
     // Perfection (section 4.2): the round of the 30 and what is left.
     const round = scoreRoundLabelV7(score);
     if (round !== null) {
@@ -7962,6 +7966,19 @@ export class Ruleset7DomAppView {
         faction.dataset.faction = entry.faction.toLowerCase();
         name.append(faction);
       }
+      // AIs allied (`pulp_wars-2yc.45`): every AI row carries the mark of
+      // the chip above the list, so the sides read at a glance in any
+      // order; a row that is out keeps it.
+      if (team.has(entry.playerId)) {
+        row.dataset.team = "ai";
+        const mark = el(this.#document, "span", "v7-leaderboard-team");
+        mark.title = ALLIED_MARK_LABEL_V7;
+        mark.append(
+          uiIconV7(this.#document, "allied"),
+          text(this.#document, "span", ALLIED_MARK_LABEL_V7, "v7-sr-only"),
+        );
+        name.append(mark);
+      }
       const cities = el(this.#document, "span", "v7-leaderboard-stat");
       cities.title = "Cities";
       cities.append(
@@ -8015,6 +8032,26 @@ export class Ruleset7DomAppView {
     }
     section.append(list);
     return section;
+  }
+
+  /**
+   * The alliance setting of this match (`pulp_wars-2yc.45`), in the words
+   * of the new-game screen: "Free-for-all" or, with the team mark the
+   * allied rows carry, "AIs allied".
+   */
+  #allianceChip(view: PlayerViewV7): HTMLElement {
+    const line = el(this.#document, "p", "v7-leaderboard-alliances");
+    line.dataset.v7Region = "leaderboard-alliances";
+    line.dataset.alliances = view.setup.aiMode.toLowerCase();
+    const chip = el(this.#document, "span", "v7-chip");
+    if (view.setup.aiMode === "COOPERATIVE")
+      chip.append(uiIconV7(this.#document, "allied"));
+    chip.append(allianceLabelV7(view.setup.aiMode));
+    line.append(
+      text(this.#document, "span", `${ALLIANCES_LABEL_V7}: `, "v7-sr-only"),
+      chip,
+    );
+    return line;
   }
 
   /**
@@ -8394,6 +8431,16 @@ export class Ruleset7DomAppView {
     const mission =
       setup?.mission === undefined ? null : campaignMissionV7(setup.mission.id);
     const matchInfo: HTMLElement[] = [seed];
+    // Alliances (`pulp_wars-2yc.45`): what this game was started with.
+    if (setup !== undefined) {
+      const line = el(this.#document, "p", "v7-match-alliances");
+      line.dataset.v7Alliances = setup.aiMode.toLowerCase();
+      line.append(
+        `${ALLIANCES_LABEL_V7}: `,
+        text(this.#document, "strong", allianceLabelV7(setup.aiMode)),
+      );
+      matchInfo.push(line);
+    }
     // AI head start (`pulp_wars-w49.39`): what this game was started with.
     const headStart = setup === undefined ? null : aiHeadStartOfMatchV7(setup);
     if (headStart !== null) {

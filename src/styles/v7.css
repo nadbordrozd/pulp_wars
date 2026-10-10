@@ -2812,6 +2812,27 @@
   color: var(--pw-emerald);
 }
 
+/* The match's alliance setting (bead pulp_wars-2yc.45): a chip under the
+   heading in the setup's words, and the same linked rings on every allied
+   AI row. */
+.v7-leaderboard-alliances {
+  display: flex;
+  margin: -0.4rem 0 0;
+}
+
+.v7-leaderboard-alliances .v7-ui-icon,
+.v7-leaderboard-team .v7-ui-icon {
+  width: 1.1rem;
+  height: 1.1rem;
+  color: var(--pw-accent);
+}
+
+.v7-leaderboard-team {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+}
+
 .v7-achievement {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);

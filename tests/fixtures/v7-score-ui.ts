@@ -96,10 +96,12 @@ function researchableTechsV7(
 export function scoreUiStateV7(
   gameMode: GameModeV7 = "DOMINATION",
   round = 12,
+  aiMode: "RIVAL" | "COOPERATIVE" = "RIVAL",
 ): GameStateV7 {
   const created = createPlayableGameV7({
     ...browserSetupV7(SCORE_UI_SEED_V7, 3),
     gameMode,
+    aiMode,
   });
   if (!created.ok) throw new Error("score UI fixture setup failed");
   const base = created.state;
@@ -278,6 +280,11 @@ export const scoreFlawlessVictoryFixtureV7 = (): GameStateV7 =>
   scoreDominationVictoryV7(true);
 export const scorePerfectionLiveFixtureV7 = (): GameStateV7 =>
   scoreUiStateV7("PERFECTION", 12);
+/** The same scenes with the AIs allied (`pulp_wars-2yc.45`). */
+export const scoreDominationAlliedFixtureV7 = (): GameStateV7 =>
+  scoreUiStateV7("DOMINATION", 12, "COOPERATIVE");
+export const scorePerfectionAlliedFixtureV7 = (): GameStateV7 =>
+  scoreUiStateV7("PERFECTION", 12, "COOPERATIVE");
 export const scorePerfectionVictoryFixtureV7 = (): GameStateV7 =>
   scorePerfectionEndV7(true);
 export const scorePerfectionDefeatFixtureV7 = (): GameStateV7 =>

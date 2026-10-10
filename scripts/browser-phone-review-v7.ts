@@ -398,6 +398,23 @@ const SCENES: readonly Scene[] = [
       await delay(500);
     },
   },
+  // The alliance setting (bead pulp_wars-2yc.45): "AIs allied" with the
+  // team mark on every AI row, in turn order and in Perfection's ranking.
+  ...(
+    [
+      ["leaderboard-allied", "scoreDominationAlliedFixtureV7()"],
+      ["leaderboard-allied-perfection", "scorePerfectionAlliedFixtureV7()"],
+    ] as const
+  ).map(([name, fixture]): Scene => ({
+    name,
+    match: true,
+    run: async (c) => {
+      await mount(c, "/tests/fixtures/v7-score-ui.ts", fixture);
+      await click(c, "compact-menu");
+      await click(c, "leaderboard");
+      await delay(500);
+    },
+  })),
   {
     name: "hud-perfection",
     match: true,

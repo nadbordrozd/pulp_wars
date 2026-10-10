@@ -171,6 +171,46 @@ export function scoreLedeV7(gameMode: GameModeV7): string {
     : "Capture every enemy city to win. The score sums up how each side is doing.";
 }
 
+/** The setup field "Alliances" and its two choices (`aiMode`). */
+export type AllianceModeV7 = "RIVAL" | "COOPERATIVE";
+export const ALLIANCES_LABEL_V7 = "Alliances";
+/**
+ * The setup's own words for the two choices: the new-game select, the
+ * leaderboard chip and the match's Settings line all read them from here,
+ * so the screens agree (`pulp_wars-2yc.45`).
+ */
+export const ALLIANCE_LABELS_V7: Readonly<Record<AllianceModeV7, string>> = {
+  RIVAL: "Free-for-all",
+  COOPERATIVE: "AIs allied",
+};
+/** The mark on an allied AI's leaderboard row, in a word. */
+export const ALLIED_MARK_LABEL_V7 = "Allied";
+
+/** The alliance setting this match was started with, in the setup's words. */
+export function allianceLabelV7(aiMode: AllianceModeV7): string {
+  return ALLIANCE_LABELS_V7[aiMode];
+}
+
+/**
+ * The players whose leaderboard rows carry the shared team mark: every AI
+ * seat when the AIs are allied, eliminated ones included, and nobody in a
+ * free-for-all. One AI alone is no team, so its row stays plain. A human
+ * seat is never in the AI team.
+ */
+export function alliedTeamV7(
+  aiMode: AllianceModeV7,
+  entries: readonly {
+    readonly playerId: PlayerId;
+    readonly controller: "HUMAN" | "AI";
+  }[],
+): ReadonlySet<PlayerId> {
+  if (aiMode !== "COOPERATIVE") return new Set();
+  const team = entries
+    .filter((entry) => entry.controller === "AI")
+    .map((entry) => entry.playerId);
+  return new Set(team.length < 2 ? [] : team);
+}
+
 /**
  * The leaderboard order. Domination keeps the turn order of the view;
  * Perfection ranks by score as section 4.2 does (players still in the

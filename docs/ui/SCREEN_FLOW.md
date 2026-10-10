@@ -2338,6 +2338,20 @@ both art sets. Where an older section below disagrees, this overlay wins.
   seed, "AI head start: None" or "AI head start: +10 Coins", so a resumed
   game says what it was started with; a Showcase or mission match has no
   such line.
+- **Leaderboard: the alliance setting** (`pulp_wars-2yc.45`). Under the
+  Leaderboard heading, before the lede, one chip states the Alliances
+  choice this match was started with, in the new-game screen's own words:
+  **Free-for-all** or, with a linked-rings mark, **AIs allied**. When the
+  AIs are allied, every AI row carries the same linked rings after its
+  name (title and accessible name "Allied"), so the sides read at a glance
+  in Domination's turn order and in Perfection's ranking, where the
+  viewer's row may sit between them; a row that is out keeps its mark, the
+  viewer's row never has one, and with a single opponent no row is marked.
+  In a match, Settings show the read-only line "Alliances: Free-for-all"
+  or "Alliances: AIs allied" under the map seed, before the AI head start
+  line, in every match. The words live in
+  `src/render/score-presentation-v7.ts` (`ALLIANCE_LABELS_V7`), which the
+  new-game select reads too.
 - **Setup: Curiosities** (`pulp_wars-737.2`,
   [map curiosities](../product/RULESET_7_CURRENT.md#27-map-curiosities)).
   Right under the Map description, one checkbox labelled **Curiosities**,

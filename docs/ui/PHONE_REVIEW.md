@@ -45,7 +45,8 @@ their rules, eight seats, a seed); the campaign and a briefing; settings;
 every Gallery tab, the filters, the Monument rows (both ends of the table)
 and a Monument, a unit and a curiosity; the loading screen;
 the HUD with the coach line; the match menu; the leaderboard with a score
-breakdown; Perfection's round counter; the technology tree and a
+breakdown, and with the AIs allied in both modes; Perfection's round
+counter; the technology tree and a
 technology; Help, settings and achievements in a match; a city with its
 training cards and a recruit's details; the unit docks of the seven giants
 with their signature buttons, Candy, Ice Folk (Freeze, Frozen, Icebound),
