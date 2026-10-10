@@ -100,4 +100,6 @@ CHROME_PATH=... npx tsx scripts/art/look-switch-review.ts scripts/art/city-shado
   corners reach past the contact shadow, and the shadow shows as thin
   slivers along its lower walls.
 - A unit garrisoned in a city stands on the city's shadow and its own.
-- The title screen's city has no ground shadow.
+- The title screen's city stands on the same fitted shadow (bead
+  `pulp_wars-2yc.41`), drawn by the title scene's view with the board's
+  `drawSettlementShadowV7` and the same switch.

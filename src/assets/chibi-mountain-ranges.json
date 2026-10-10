@@ -730,11 +730,11 @@
         }
       ],
       "light": {
-        "thirds": 37.7,
-        "faces": 25.9
+        "thirds": 34.4,
+        "faces": 27.5
       },
-      "sha256": "eb85abb21092541d5bdba4838e2e7d1f62311dfe5565e1996ce61b36306e7cb4",
-      "pixelSha256": "d03c250611f841361e0447dc47c220da77d1200e59492598d7143cd1d1269560"
+      "sha256": "385474a38fb3a1ab8f06d0a355051218f56c2b002d755b0220dc2462e657052c",
+      "pixelSha256": "c9e2e09d6fae281c7eff98be0f37e0479a1fe5b3efe53336d94448564f72bd94"
     }
   ]
 }

@@ -38,7 +38,12 @@ export function galleryTerrainBoxV7(swatch: GalleryTerrainSwatchV7): {
 } {
   return swatch.box.kind === "TILE"
     ? { width: GALLERY_TILE_BOX_V7.width, height: GALLERY_TILE_BOX_V7.height }
-    : { width: swatch.box.width, height: swatch.box.height };
+    : swatch.box.kind === "CELL"
+      ? {
+          width: GALLERY_TILE_BOX_V7.cell,
+          height: GALLERY_TILE_BOX_V7.cell + swatch.box.rise,
+        }
+      : { width: swatch.box.width, height: swatch.box.height };
 }
 
 /** Every side of a floe meets open water. */
@@ -164,6 +169,14 @@ export function createGalleryTerrainArtV7(input: {
       context.setTransform(1, 0, 0, 1, 0, 0);
       context.clearRect(0, 0, width, height);
       context.setTransform(deviceScale, 0, 0, deviceScale, 0, 0);
+      // A `CELL` box is the tile box without its margins.
+      if (swatch.box.kind === "CELL")
+        context.translate(
+          GALLERY_TILE_BOX_V7.cell / 2 - GALLERY_TILE_BOX_V7.cellCentreX,
+          GALLERY_TILE_BOX_V7.cell / 2 +
+            swatch.box.rise -
+            GALLERY_TILE_BOX_V7.cellCentreY,
+        );
       context.imageSmoothingEnabled = !Number.isInteger(deviceScale);
       for (const layer of layers)
         if (typeof layer !== "string")

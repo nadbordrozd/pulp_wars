@@ -448,3 +448,12 @@ export function titleSceneAssetUrlsV7(): string[] {
     ]),
   ];
 }
+
+/**
+ * True for the scene's settlements (its city): they stand on the board's
+ * settlement shadow (settlement-shadow-v7.ts), as the units stand on
+ * theirs.
+ */
+export function titleSceneSettlementV7(item: TitleSceneItemV7): boolean {
+  return item.kind === "SUBJECT" && item.subject.startsWith("CITY:");
+}

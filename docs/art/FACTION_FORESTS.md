@@ -189,6 +189,17 @@ The Gallery's Terrain tab shows each faction's forest in the Forest row: a
 single piece on the faction's ground, then every piece and seam clump of
 its set. The title scene keeps the default Forest.
 
+**The tile dock** (bead `pulp_wars-2yc.41`). A selected Forest cell inside
+a faction's territory shows a single piece of that faction's set on the
+faction's ground, as a clearing draws it, whatever stands on the cell (a
+Treasure, a Grave, a Field Defense, a curiosity). Until that bead the dock
+showed the default green clump on default Grass for every Forest: the last
+place the default clump stood in for a faction's wood. The board itself has
+drawn such cells in the faction's trees since bead `pulp_wars-2yc.28`
+(`scripts/art/terrain-leftovers/review-scenes.ts` shows every faction's
+wood with every kind of occupant). The classic look and the LEGACY art set
+keep the default Forest in the dock, as on their boards.
+
 ## Review
 
 ```sh

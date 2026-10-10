@@ -174,9 +174,15 @@ The raster is trimmed to its opaque box, centred in the piece and stood
      the bottom 30 rows, the lowest 5 to 11 px (a slow wave) become clear.
      What shows there on the board is the cell's own ground.
 
-   The mined mountain keeps its foot (its entrance and its cart stand
-   there), its dark tunnel, and the colours of its timber and ore; only its
-   rock, its snow and its outer outline are restyled.
+   The mined mountain keeps its dark tunnel and the colours of its timber
+   and ore; only its rock, its snow and its outer outline are restyled.
+   Its foot is cut away like every mountain's (bead `pulp_wars-2yc.41`:
+   it had a whole, outlined foot where its neighbours grow out of the
+   ground), but only the rock: in each column the cut stops under the
+   timber, the ore cart and the tunnel (`mineKept`: every pixel that is
+   not grey, two pixels round it, and the dark pixels that reach it from
+   inside the rock), so the entrance and the cart stand whole on the
+   ground. `tests/unit/chibi-mined-mountain-foot-assets.test.ts` holds it.
 
 Nothing is resampled. The bake fails if paint lies outside the footprint,
 more than 13 px above it (low) or more than 48 px above it (tall), if a
@@ -240,12 +246,15 @@ are in `art/explorations/mountain-styles-2026-10/`.
   to 48), so an area rises towards the viewer.
 - **A unit on a Mountain is drawn over the peaks of the row in front of
   it**, where strict depth would put the peaks first.
-- **The mined mountain has a whole, outlined foot** where its neighbours
-  grow out of the ground.
 - **Mountains on Snow** stand on the Snow overlay; their rock is not
   snowier than elsewhere beyond the caps.
 - **Two ridge families.** The rounded `s24` and `s31` massifs are softer in
   shape than the pointed `s08` and `s32` ones.
-- The interface (tile dock, Help) still shows the old single mountain for a
-  plain Mountain; the Gallery's Terrain tab shows a piece of the set on
-  Grass.
+- **The tile dock shows the cell as the board draws it** (bead
+  `pulp_wars-2yc.41`): a low single mountain of the set, or the mined
+  mountain, on the ground of the cell's territory (a faction's grass, Snow).
+  It showed the old single mountain on its rocky ground. The picture is one
+  lone cell (`src/render/dock-terrain-presentation-v7.ts`), not the piece
+  the cell is part of in its range. Help has no picture of terrain. The
+  Gallery's Terrain tab shows a piece of the set on Grass. The LEGACY art
+  set keeps the old mountain everywhere.

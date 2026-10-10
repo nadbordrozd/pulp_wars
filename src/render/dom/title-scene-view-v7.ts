@@ -16,9 +16,15 @@ import {
   createGalleryArtV7,
   galleryUnitShadowV7,
 } from "../canvas/gallery-sprite-v7";
+import {
+  drawSettlementShadowV7,
+  settlementShadowEnabledV7,
+  settlementShadowPlainV7,
+} from "../canvas/settlement-shadow-v7";
 import { DIRECTED_GROUND_SHADOW_COLOUR_V7 } from "../canvas/visual-direction-v7";
 import {
   titleSceneHorizonV7,
+  titleSceneSettlementV7,
   titleSceneV7,
   type TitleSceneV7,
 } from "../title-scene-v7";
@@ -318,6 +324,16 @@ export class TitleSceneViewV7 {
           context.fill();
         }
       }
+      // The city stands on the board's settlement shadow, fitted to its
+      // own raster, the sun at the bottom left (bead pulp_wars-2yc.41).
+      if (titleSceneSettlementV7(item) && settlementShadowEnabledV7())
+        drawSettlementShadowV7(
+          context,
+          { kind: "CITY" },
+          { x, y, width: entry.asset.width, height: entry.asset.height },
+          1,
+          settlementShadowPlainV7() ? undefined : entry.asset.id,
+        );
       context.drawImage(
         entry.image,
         x,

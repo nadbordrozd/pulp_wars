@@ -49,6 +49,11 @@ export interface LookSwitchShot {
   readonly zoom?: readonly [number, number, number, number];
   /** The page size (default 1440 x 900); a whole large map needs more. */
   readonly size?: readonly [number, number];
+  /**
+   * A click on the page after the camera is set, in CSS px: a board cell
+   * to select, so the shot shows its dock.
+   */
+  readonly click?: readonly [number, number];
 }
 
 const delay = (ms: number): Promise<void> =>
@@ -235,6 +240,18 @@ async function capture(
         from.y + (shot.drag[1] * step) / 10,
       );
     await mouse("mouseReleased", from.x + shot.drag[0], from.y + shot.drag[1]);
+  }
+  if (shot.click !== undefined) {
+    await delay(600);
+    for (const type of ["mousePressed", "mouseReleased"])
+      await connection.send("Input.dispatchMouseEvent", {
+        type,
+        x: shot.click[0],
+        y: shot.click[1],
+        button: "left",
+        buttons: type === "mouseReleased" ? 0 : 1,
+        clickCount: 1,
+      });
   }
   // Art loads asynchronously and redraws the board.
   await delay(2500);

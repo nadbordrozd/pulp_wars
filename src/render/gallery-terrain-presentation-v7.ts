@@ -134,12 +134,15 @@ export type GalleryTerrainLayerV7 =
 
 /**
  * A picture of terrain. `TILE` is one board cell with the art's overflow
- * (the Gallery's tile box); `PIECE` is a composed piece at its own size.
+ * (the Gallery's tile box); `PIECE` is a composed piece at its own size;
+ * `CELL` is one board cell and the `rise` px its art stands above it, with
+ * no margin (the tile dock, dock-terrain-presentation-v7.ts).
  */
 export interface GalleryTerrainSwatchV7 {
   readonly id: string;
   readonly box:
     | { readonly kind: "TILE" }
+    | { readonly kind: "CELL"; readonly rise: number }
     | {
         readonly kind: "PIECE";
         readonly width: number;

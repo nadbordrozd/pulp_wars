@@ -427,6 +427,11 @@ export const KIND_READER_CLASSES_V7: Readonly<
   // reads it for the owner colour of a masked raster). There is no match
   // and no live unit behind the scene, hence no controller and no kind.
   "src/render/dom/title-scene-view-v7.ts::TitleSceneViewV7.#draw": "SEAT",
+  // Bead pulp_wars-2yc.41: the tile dock's Forest and Mountain picture
+  // reads the faction that owns the selected cell's territory (its ground
+  // and its trees): a seat's faction, never a unit's kind.
+  "src/render/dock-terrain-presentation-v7.ts::dockTerrainGroundV7": "SEAT",
+  "src/render/dock-terrain-presentation-v7.ts::dockTerrainSwatchV7": "SEAT",
   "src/render/dom/app-view-v7.ts::commandLabel": "SEAT",
   "src/render/dom/app-view-v7.ts::playerTitle": "SEAT",
   "src/render/dom/app-view-v7.ts::factionBadgeArt": "SEAT",

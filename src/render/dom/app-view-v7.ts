@@ -272,11 +272,23 @@ import {
   CHIBI_DOM_BOXES_V7,
   browserChibiDomEnvironmentV7,
   chibiDomImageV7,
+  chibiDomScaleV7,
   createChibiDomArtV7,
   type ChibiDomArtV7,
   type ChibiDomBoxV7,
   type ChibiDomEnvironmentV7,
 } from "./chibi-dom-art-v7";
+import { createChibiArtResolverV7 } from "../canvas/chibi-art-resolver-v7";
+import { createGalleryArtV7 } from "../canvas/gallery-sprite-v7";
+import {
+  createGalleryTerrainArtV7,
+  galleryTerrainBoxV7,
+  type GalleryTerrainArtV7,
+} from "../canvas/gallery-terrain-v7";
+import {
+  dockTerrainSwatchV7,
+  type DockTerrainRequestV7,
+} from "../dock-terrain-presentation-v7";
 import {
   factionColourV7,
   playerFactionColourV7,
@@ -1387,6 +1399,14 @@ export class Ruleset7DomAppView {
    */
   #classicChibiDom: ChibiDomArtV7 | null = null;
   readonly #chibiDomEnvironment: ChibiDomEnvironmentV7 | null;
+  /**
+   * The tile dock's Forest and Mountain pictures (bead pulp_wars-2yc.41),
+   * drawn like the Gallery's terrain swatches; one per look, on first use.
+   */
+  #dockTerrainArt: {
+    live: GalleryTerrainArtV7 | null;
+    classic: GalleryTerrainArtV7 | null;
+  } = { live: null, classic: null };
   #developerToolsOpen = false;
   /**
    * The front screen shown (pulp_wars-2yc.18), and the campaign screens
@@ -1815,6 +1835,53 @@ export class Ruleset7DomAppView {
       element: chibiDomImageV7(this.#document, resolution, box, subject),
       factionArt: resolution.factionArt,
     };
+  }
+
+  /**
+   * The tile dock's picture of a Forest or Mountain cell as the board
+   * draws it (dock-terrain-presentation-v7.ts): the massif's mountain, the
+   * mined mountain, a faction's own trees, each on its territory's ground.
+   * Null keeps the registered master: every other cell, the LEGACY set, and
+   * a swatch that cannot be drawn.
+   */
+  #dockTerrainArtwork(
+    request: DockTerrainRequestV7,
+    subject: ArtSubjectV7,
+  ): HTMLCanvasElement | null {
+    const environment = this.#chibiDomEnvironment;
+    if (environment === null) return null;
+    const swatch = dockTerrainSwatchV7(request);
+    if (swatch === null) return null;
+    const look = request.live ? "live" : "classic";
+    const redraw = (): void => this.#queueChibiRender();
+    const art = (this.#dockTerrainArt[look] ??= createGalleryTerrainArtV7({
+      environment,
+      art: request.live
+        ? createGalleryArtV7(environment, redraw)
+        : createChibiArtResolverV7({ environment, redraw }),
+      redraw,
+    }));
+    const canvas = this.#document.createElement("canvas");
+    const box = galleryTerrainBoxV7(swatch);
+    const scale = chibiDomScaleV7(box, CHIBI_DOM_BOXES_V7.dock);
+    const state = art.draw(
+      canvas,
+      swatch,
+      scale,
+      this.#document.defaultView?.devicePixelRatio ?? 1,
+    );
+    if (state === "MISSING") return null;
+    canvas.className = "v7-art-frame v7-chibi-art";
+    canvas.setAttribute("aria-hidden", "true");
+    canvas.dataset.artSet = "chibi";
+    canvas.dataset.chibiSubject = subject;
+    canvas.dataset.dockTerrain = swatch.id;
+    if (state === "LOADING") canvas.dataset.chibiState = "loading";
+    if (scale < 1) canvas.dataset.chibiSmooth = "true";
+    const rem = (px: number): string => `${Number((px / 16).toFixed(4))}rem`;
+    canvas.style.width = rem(box.width * scale);
+    canvas.style.height = rem(box.height * scale);
+    return canvas;
   }
 
   /**
@@ -5684,14 +5751,31 @@ export class Ruleset7DomAppView {
             name,
             true,
             null,
-            this.#chibiArt(
-              tileSubject,
-              CHIBI_DOM_BOXES_V7.dock,
-              tile.improvement === null
-                ? undefined
-                : this.#playerColour(view, tile.territoryOwnerId),
-              tile.at,
-            )?.element,
+            // A Forest, a Mountain or a Mine as the board draws the cell
+            // (bead pulp_wars-2yc.41); every other tile its master.
+            (tile.improvement === null || tile.improvement === "MINE"
+              ? this.#dockTerrainArtwork(
+                  {
+                    terrain:
+                      tile.resource !== null && tile.improvement === null
+                        ? ""
+                        : tile.terrain,
+                    mined: tile.improvement === "MINE",
+                    faction: tileFaction,
+                    snow: tile.snow === true,
+                    live: !this.#classicLook,
+                  },
+                  tileSubject,
+                )
+              : null) ??
+              this.#chibiArt(
+                tileSubject,
+                CHIBI_DOM_BOXES_V7.dock,
+                tile.improvement === null
+                  ? undefined
+                  : this.#playerColour(view, tile.territoryOwnerId),
+                tile.at,
+              )?.element,
           ),
         );
         const details = el(this.#document, "div", "v7-selection-details");

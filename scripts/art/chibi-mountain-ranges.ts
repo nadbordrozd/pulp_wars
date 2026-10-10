@@ -112,8 +112,9 @@ const DERIVE = {
    * snow `snowBlend` of the way toward cream, and the foot of the rock is
    * cut away in a ragged line `footRows` px high, so the cell's own ground
    * (Grass of any faction, Snow, the sand of a coast) shows at the foot
-   * and the mountain grows out of it. A Mine keeps its foot (its entrance
-   * and its cart stand there) and its dark tunnel.
+   * and the mountain grows out of it. A Mine's foot is cut the same way
+   * (bead pulp_wars-2yc.41), but never its entrance, its cart or its dark
+   * tunnel, which stand there.
    */
   restyle: {
     outline: [78, 68, 70],
@@ -692,8 +693,11 @@ const lumaOf = (r: number, g: number, b: number): number =>
  * black line.
  */
 /**
- * The restyle of a derived piece (DERIVE.restyle). `mine` keeps the foot,
- * recolours only the outer outline and warms only grey pixels.
+ * The restyle of a derived piece (DERIVE.restyle). `mine` recolours only
+ * the outer outline and warms only grey pixels. Its foot is cut away like
+ * any mountain's (bead pulp_wars-2yc.41), but only the rock: a column's cut
+ * stops under the timber, the ore cart and the tunnel (`mineKept`), so the
+ * entrance and the cart stand whole on the ground.
  */
 export function restyled(source: Raster, mine: boolean): Raster {
   const spec = DERIVE.restyle;
@@ -705,6 +709,7 @@ export function restyled(source: Raster, mine: boolean): Raster {
     x >= width ||
     y >= height ||
     (source.data[(y * width + x) * 4 + 3] ?? 0) === 0;
+  const kept = mine ? mineKept(source) : null;
   for (let x = 0; x < width; x += 1) {
     let bottom = -1;
     for (let y = height - 1; y >= 0; y -= 1)
@@ -712,6 +717,14 @@ export function restyled(source: Raster, mine: boolean): Raster {
         bottom = y;
         break;
       }
+    // A Mine: the lowest row of this column the cut must leave alone.
+    let keptFrom = -1;
+    if (kept !== null)
+      for (let y = bottom; y >= 0; y -= 1)
+        if (kept[y * width + x] === 1) {
+          keptFrom = y;
+          break;
+        }
     const footLow = spec.footRows[0] ?? 0;
     const footHigh = spec.footRows[1] ?? footLow;
     const rows = Math.round(
@@ -725,7 +738,11 @@ export function restyled(source: Raster, mine: boolean): Raster {
       const r = source.data[offset] ?? 0;
       const g = source.data[offset + 1] ?? 0;
       const b = source.data[offset + 2] ?? 0;
-      if (!mine && bottom - y < rows && bottom >= height - spec.footBand) {
+      if (
+        bottom - y < rows &&
+        bottom >= height - spec.footBand &&
+        y > keptFrom
+      ) {
         data[offset + 3] = 0;
         continue;
       }
@@ -758,6 +775,75 @@ export function restyled(source: Raster, mine: boolean): Raster {
     }
   }
   return { width, height, data };
+}
+
+/**
+ * The pixels of a mined mountain its foot cut must not touch, as a mask
+ * (1 kept): the timber and the ore (every pixel `mineRockChroma` or more
+ * from grey), their outline (two pixels round them) and the tunnel (the
+ * dark pixels that reach them without touching the silhouette).
+ */
+export function mineKept(source: Raster): Uint8Array {
+  const { width, height } = source;
+  const kept = new Uint8Array(width * height);
+  const at = (x: number, y: number): number => (y * width + x) * 4;
+  const opaque = (x: number, y: number): boolean =>
+    x >= 0 &&
+    y >= 0 &&
+    x < width &&
+    y < height &&
+    (source.data[at(x, y) + 3] ?? 0) > 0;
+  const dark = (x: number, y: number): boolean =>
+    opaque(x, y) &&
+    Math.max(
+      source.data[at(x, y)] ?? 0,
+      source.data[at(x, y) + 1] ?? 0,
+      source.data[at(x, y) + 2] ?? 0,
+    ) <= 62;
+  const queue: number[] = [];
+  for (let y = 0; y < height; y += 1)
+    for (let x = 0; x < width; x += 1) {
+      if (!opaque(x, y)) continue;
+      const r = source.data[at(x, y)] ?? 0;
+      const g = source.data[at(x, y) + 1] ?? 0;
+      const b = source.data[at(x, y) + 2] ?? 0;
+      if (
+        Math.max(r, g, b) <= 62 ||
+        Math.max(r, g, b) - Math.min(r, g, b) < DERIVE.restyle.mineRockChroma
+      )
+        continue;
+      for (let dy = -2; dy <= 2; dy += 1)
+        for (let dx = -2; dx <= 2; dx += 1)
+          if (opaque(x + dx, y + dy) && kept[(y + dy) * width + x + dx] === 0) {
+            kept[(y + dy) * width + x + dx] = 1;
+            queue.push((y + dy) * width + x + dx);
+          }
+    }
+  // The tunnel: dark pixels inside the rock, from the timber inward.
+  const inside = (x: number, y: number): boolean =>
+    opaque(x - 1, y) &&
+    opaque(x + 1, y) &&
+    opaque(x, y - 1) &&
+    opaque(x, y + 1);
+  while (queue.length > 0) {
+    const index = queue.pop() as number;
+    const x = index % width;
+    const y = Math.floor(index / width);
+    for (const [dx, dy] of [
+      [1, 0],
+      [-1, 0],
+      [0, 1],
+      [0, -1],
+    ] as const) {
+      const nx = x + dx;
+      const ny = y + dy;
+      if (!dark(nx, ny) || !inside(nx, ny) || kept[ny * width + nx] === 1)
+        continue;
+      kept[ny * width + nx] = 1;
+      queue.push(ny * width + nx);
+    }
+  }
+  return kept;
 }
 
 function softened(source: Raster): Raster {

@@ -20,10 +20,15 @@ import {
   titleSceneScaleV7,
 } from "../../src/render/dom/title-scene-view-v7";
 import {
+  SETTLEMENT_SHADOW_TABLE_V7,
+  settlementShadowEllipsesV7,
+} from "../../src/render/canvas/settlement-shadow-v7";
+import {
   CITY_CLEARING_V7,
   titleSceneAssetUrlsV7,
   titleSceneHorizonV7,
   titleSceneRasterUrlsV7,
+  titleSceneSettlementV7,
   titleSceneSubjectsV7,
   titleSceneV7,
 } from "../../src/render/title-scene-v7";
@@ -443,6 +448,59 @@ describe("title scene", () => {
     }
     expect(asked.size).toBeGreaterThan(20);
     for (const url of asked) expect(listed.has(url), url).toBe(true);
+  });
+
+  it("stands the city, and nothing else, on the board's fitted settlement shadow", () => {
+    // Bead pulp_wars-2yc.41: the units had a ground shadow, the city none.
+    const scene = titleSceneV7({ width: 900, height: 420 });
+    const settlements = scene.items.filter(titleSceneSettlementV7);
+    expect(settlements).toHaveLength(1);
+    const city = settlements[0];
+    if (city?.kind !== "SUBJECT") throw new Error("no city");
+    expect(city.subject).toBe("CITY:3");
+    // The raster the live look draws for it was measured: the shadow is
+    // fitted to this city, not the one generic shape.
+    const art = createGalleryArtV7(
+      {
+        loadImage(url, settle) {
+          settle(true);
+          return { url } as unknown as CanvasImageSource;
+        },
+        readPixels: (_image, width, height) =>
+          new Uint8ClampedArray(width * height * 4).fill(255),
+        createSurface: (pixels, width, height) =>
+          ({ pixels, width, height }) as unknown as CanvasImageSource,
+      },
+      () => undefined,
+    );
+    const { resolution } = resolveChibiWithFallbackV7(art, {
+      subject: city.subject,
+      at: city.at,
+      deviceScale: 1,
+    });
+    if (resolution.kind !== "READY") throw new Error("no city raster");
+    const anchor = SETTLEMENT_SHADOW_TABLE_V7[resolution.asset.id];
+    expect(anchor, resolution.asset.id).toBeDefined();
+    const sprite = {
+      x: 100,
+      y: 50,
+      width: resolution.asset.width,
+      height: resolution.asset.height,
+    };
+    const [cast, contact] = settlementShadowEllipsesV7(
+      sprite,
+      resolution.asset.id,
+    );
+    if (cast === undefined || contact === undefined)
+      throw new Error("no shadow");
+    // Under the sprite's lower part, and cast up and to the right: the
+    // sun is at the bottom left, as on the board.
+    expect(contact.centreY).toBeGreaterThan(sprite.y + sprite.height / 2);
+    expect(contact.centreX).toBeGreaterThan(sprite.x);
+    expect(contact.centreX).toBeLessThan(sprite.x + sprite.width);
+    expect(cast.centreX).toBeGreaterThan(contact.centreX);
+    expect(cast.centreY).toBeLessThan(contact.centreY);
+    expect(settlementShadowEllipsesV7(sprite)).not.toEqual([cast, contact]);
   });
 
   it("puts the horizon at the top of its farthest row of ground", () => {
