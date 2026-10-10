@@ -92,6 +92,9 @@ const EVERY_FAMILY: Readonly<
   TOSS: "PLACE",
   BREAK_OFF_FIRST: "PLACE",
   BREAK_OFF: "PLACE",
+  // The Cultists (`pulp_wars-mch9.17`).
+  SACRIFICE: "SUPPORT",
+  SEIZE: "ATTACK",
 };
 
 describe("target highlight vocabulary", () => {

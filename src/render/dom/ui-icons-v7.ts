@@ -78,7 +78,12 @@ export type UiIconIdV7 =
   // section 7 item 8): a five-pointed star, filled for an earned star and
   // outlined for one still to earn.
   | "star"
-  | "star-outline";
+  | "star-outline"
+  // The Cultists (bead pulp_wars-mch9.17): a lit candle, the Favour of the
+  // HUD and the leaderboard and the Sacrifice and Offering buttons: the
+  // LEGACY and stand-in glyph until the art registers `ICON:HUD:CULT:FAVOUR`
+  // and the action icons.
+  | "candle";
 
 /** The star of the grade (shared by its filled and outlined forms). */
 const STAR =
@@ -195,7 +200,24 @@ const PATHS: Readonly<Record<UiIconIdV7, string>> = {
   play: "M8 5.5v13l10.5-6.5Z",
   flag: "M6 21V3.5M6 4.5h12.5l-3 4 3 4H6",
   back: "M14.5 5 7.5 12l7 7",
+  // A fat candle on a dish, a short wick and a teardrop flame.
+  candle:
+    "M8.5 11.5h7V20h-7ZM5.5 20.5h13M12 11.5V9.8M12 2.6c1.9 2 2.7 3.3 2.7 4.5a2.7 2.7 0 0 1-5.4 0c0-1.2.8-2.5 2.7-4.5Z",
 };
+
+/**
+ * The Cultists (bead pulp_wars-mch9.17): the Favour candle as a sprite that
+ * flies to the Favour counter, in the Cult's fixed colours (cream wax, the
+ * green flame; docs/art/factions/CULT.md): the stand-in until the art
+ * registers `ICON:HUD:CULT:FAVOUR`, and the candle of the LEGACY set.
+ */
+export const FAVOUR_CANDLE_SPRITE_URL_V7 = `data:image/svg+xml,${encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">' +
+    '<path d="M8.5 11.5h7V20h-7Z" fill="#f3e7c4" stroke="#1a1410" stroke-width="1.6"/>' +
+    '<path d="M5.5 20.5h13M12 11.5V9.8" fill="none" stroke="#1a1410" stroke-width="1.8"/>' +
+    '<path d="M12 2.6c1.9 2 2.7 3.3 2.7 4.5a2.7 2.7 0 0 1-5.4 0c0-1.2.8-2.5 2.7-4.5Z" fill="#00d868" stroke="#0a6638" stroke-width="1.4"/>' +
+    "</svg>",
+)}`;
 
 /** One shape of a multi-part icon; `fill` may be a fixed colour. */
 interface IconPartV7 {

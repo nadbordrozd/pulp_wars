@@ -835,6 +835,18 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/engine/v7/reducer.ts::trampleResultsV7": "BOARD",
     "src/engine/v7/reducer.ts::resolveCrushV7": "BOARD",
     "src/engine/v7/state-schema.ts::giantsValid": "BOARD",
+    // The Cult's interface (`pulp_wars-mch9.17`, BOARD_TARGETING.md section
+    // 3.7): the Sacrifice and Seize picking modes, their grey reasons, the
+    // buttons' reasons and the notice read the units on the board (the
+    // victims and holders of the engine's own rules, which never name a
+    // burrowed unit).
+    "src/render/canvas/cult-board-plan-v7.ts::cultPickTargetsV7": "BOARD",
+    "src/render/canvas/cult-board-plan-v7.ts::addCultPickEntriesV7": "BOARD",
+    "src/render/cult-presentation-v7.ts::ownNeighboursV7": "BOARD",
+    "src/render/cult-presentation-v7.ts::hostileNeighboursV7": "BOARD",
+    "src/render/cult-presentation-v7.ts::seizeBlockTextV7": "BOARD",
+    "src/render/cult-presentation-v7.ts::seizeUnavailableTextV7": "BOARD",
+    "src/render/cult-presentation-v7.ts::victimNameV7": "BOARD",
     // The Cult's Favour (`pulp_wars-mch9.4`, RULESET_7_CULTISTS.md section
     // 5). Every reader means the board: the victim of a Sacrifice or a
     // Seizure and the cultist that holds it down stand on one of the eight

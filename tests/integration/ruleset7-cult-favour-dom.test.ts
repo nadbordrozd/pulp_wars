@@ -6,42 +6,45 @@ import {
   type CoordV7,
   type GameStateV7,
 } from "../../src/engine/index";
-import { cultFieldV7, withFarmsV7 } from "../fixtures/v7-cult";
-import { requiredElement, rig, waitUntil } from "../fixtures/v7-dom-rig";
+import {
+  BOARD_PICK_PANEL_MAX_BUTTONS_V7,
+  targetHighlightStyleV7,
+} from "../../src/render/canvas/target-highlight-v7";
+import {
+  SEIZE_HEALTHY_V7,
+  SEIZE_NO_HOLDER_V7,
+  SUMMONER_ALREADY_ACTED_V7,
+} from "../../src/render/cult-presentation-v7";
+import { cultFieldV7 } from "../fixtures/v7-cult";
+import {
+  CULT_UI_V7,
+  cultFavourUiFixtureV7,
+  cultRivalUiFixtureV7,
+} from "../fixtures/v7-cult-ui";
+import {
+  boardPlan,
+  required,
+  requiredButton,
+  requiredElement,
+  rig,
+  waitUntil,
+} from "../fixtures/v7-dom-rig";
 import { at } from "../fixtures/v7-revision20";
 
 /**
- * The Cult's Favour in the DOM (`pulp_wars-mch9.4`): the engine offers a
- * Sacrifice, a Seizure, and an Offering, and the dock shows them with its
- * generic action buttons until the interface bead (`pulp_wars-mch9.17`)
- * gives them their own targeting and the Favour its place in the HUD. This
- * holds the stand-in to three things: nothing throws, a button is named by
- * its victim's unit and what it pays (never a raw command, ID, or tile), and
- * pressing it plays the command and its new events through the app.
+ * The Cult's Favour in the DOM (bead `pulp_wars-mch9.17`,
+ * docs/ui/BOARD_TARGETING.md section 3.7): a Summoner has one Sacrifice and
+ * one Seize button, each arms its aiming and the victim is picked on the
+ * board (the Help ring on own units, the Attack mark on enemies, each with
+ * the Favour it pays); a Cult player's Favour stands beside the Coins and
+ * every Cult seat's in the leaderboard; a city's Offering shows what it pays
+ * and costs.
  */
 
 beforeEach(() => {
   document.body.innerHTML = '<div id="app"></div>';
   window.localStorage.clear();
 });
-
-/**
- * A Cult player (seat 0, the human): a Summoner with an Initiate and the
- * Thing beside it and a broken Human Knight between the Summoner and the
- * Initiate; its capital is level 2 with 2 population.
- */
-function favourMatch(): GameStateV7 {
-  return withFarmsV7(
-    cultFieldV7([
-      { seat: 0, role: "CAPTAIN", at: at(5, 2) },
-      { seat: 0, role: "FIGHTER", at: at(6, 4) },
-      { seat: 0, role: "JUGGERNAUT", at: at(4, 1) },
-      { seat: 1, role: "KNIGHT", at: at(5, 3), hp: 5 },
-    ]),
-    0,
-    2,
-  );
-}
 
 function select(scene: ReturnType<typeof rig>, where: CoordV7): void {
   scene.host.callbacks?.onSelection({
@@ -52,6 +55,9 @@ function select(scene: ReturnType<typeof rig>, where: CoordV7): void {
 
 const dock = (): HTMLElement =>
   requiredElement<HTMLElement>(".v7-selection-dock");
+
+const live = (): string =>
+  document.querySelector("#v7-live")?.textContent ?? "";
 
 /** What a player reads or hears of a button: no raw ID, command, or tile. */
 function expectPlainWords(button: HTMLElement): void {
@@ -65,98 +71,296 @@ function expectPlainWords(button: HTMLElement): void {
   expect(words).not.toMatch(/SACRIFICE|SEIZE|OFFERING|undefined|null|NaN/);
 }
 
-describe("the dock's stand-in for the Cult's offerings", () => {
-  it("names a Sacrifice and a Seizure by the victim's unit and its Favour", () => {
-    const scene = rig(favourMatch());
-    select(scene, at(5, 2));
-    const sacrifice = [
-      ...dock().querySelectorAll<HTMLButtonElement>(
-        '[data-action="command-sacrifice"]',
-      ),
-    ];
-    // One button for the Thing beside it (the Initiate is two tiles away).
-    expect(
-      sacrifice.map((button) => [
-        button.querySelector(".v7-action-label")?.textContent,
-        button.querySelector(".v7-economy-chip")?.textContent,
-      ]),
-    ).toEqual([["Sacrifice Thing in the Cellar", "+12 Favour"]]);
-    const seize = [
-      ...dock().querySelectorAll<HTMLButtonElement>(
-        '[data-action="command-seize"]',
-      ),
-    ];
-    expect(
-      seize.map((button) => [
-        button.querySelector(".v7-action-label")?.textContent,
-        button.querySelector(".v7-economy-chip")?.textContent,
-      ]),
-    ).toEqual([["Seize Knight", "+18 Favour"]]);
-    for (const button of [...sacrifice, ...seize]) {
-      expect(button.disabled).toBe(false);
-      expect(button.title.length).toBeGreaterThan(20);
-      expectPlainWords(button);
-    }
-    expect(sacrifice[0]?.getAttribute("aria-label")).toBe(
-      "Sacrifice Thing in the Cellar · +12 Favour",
-    );
-    scene.app.destroy();
-  });
+function escape(): void {
+  document.dispatchEvent(
+    new KeyboardEvent("keydown", { key: "Escape", bubbles: true }),
+  );
+}
 
-  it("plays a Seizure from its button, and the events through the app", async () => {
-    const scene = rig(favourMatch());
-    select(scene, at(5, 2));
-    requiredElement<HTMLButtonElement>('[data-action="command-seize"]').click();
-    await waitUntil(() => scene.controller.accepted.length === 1);
-    expect(scene.controller.accepted[0]).toMatchObject({ kind: "SEIZE" });
-    const view = scene.controller.snapshot().view;
-    if (view === null) throw new Error("no view");
-    expect(favourOfV7(view, view.viewer.id)).toBe(18);
-    expect(view.units.some((unit) => unit.role === "KNIGHT")).toBe(false);
-    // Nothing on the page names a raw event or cause.
-    expect(document.body.textContent ?? "").not.toMatch(
-      /UNIT_SEIZED|FAVOUR_GAINED|UNIT_DIED|SACRIFICED|Unit seized|Favour gained/,
-    );
-    // The Summoner has acted: no second offering.
-    select(scene, at(5, 2));
+describe("Sacrifice is picked on the board", () => {
+  it("arms with one button, marks each own unit with its Favour, and offers the picked one", async () => {
+    const scene = rig(cultFavourUiFixtureV7());
+    const { controller, host } = scene;
+    const summoner = scene.unitAt(CULT_UI_V7.summoner);
+    select(scene, CULT_UI_V7.summoner);
+    // One Sacrifice and one Seize button, whatever the number of victims.
+    const sacrifice = requiredButton("cult-sacrifice");
+    expect(
+      dock().querySelectorAll("[data-cult-ability]").length,
+      "one button per ability",
+    ).toBe(2);
     expect(
       dock().querySelector(
-        '[data-action="command-seize"], [data-action="command-sacrifice"]',
+        '[data-action^="command-sacrifice"], [data-action^="command-seize"]',
       ),
     ).toBeNull();
+    expect(sacrifice.textContent).toBe("Sacrifice");
+    expect(sacrifice.getAttribute("aria-pressed")).toBe("false");
+    expect(sacrifice.title.length).toBeGreaterThan(20);
+    expectPlainWords(sacrifice);
+    // Unarmed, no own unit is a target: a click on one selects it.
+    expect(
+      boardPlan(host).targets.filter(
+        (target) => target.family === "SACRIFICE" || target.family === "SEIZE",
+      ),
+    ).toEqual([]);
+
+    sacrifice.click();
+    expect(host.lastModel?.interaction.cultPick).toEqual({
+      kind: "SACRIFICE",
+      unitId: summoner.id,
+    });
+    const panel = requiredElement<HTMLElement>("[data-v7-cult-pick]");
+    expect(panel.dataset.v7CultPick).toBe("sacrifice");
+    expect(panel.classList.contains("v7-board-pick")).toBe(true);
+    expect(panel.dataset.boardTargets).toBe("2");
+    const controls = [...panel.querySelectorAll("button")].map(
+      (control) => control.dataset.action,
+    );
+    expect(controls).toEqual(["pick-info", "cult-pick-cancel"]);
+    expect(controls.length).toBeLessThanOrEqual(
+      BOARD_PICK_PANEL_MAX_BUTTONS_V7,
+    );
+    // The dock names no victim.
+    expect(dock().textContent ?? "").not.toMatch(/Thing|Initiate/);
+    const targets = boardPlan(host).targets;
+    expect(
+      targets
+        .map((target) => [target.family, target.at, target.previewLabel])
+        .sort((left, right) => String(left[2]).localeCompare(String(right[2]))),
+    ).toEqual([
+      ["SACRIFICE", CULT_UI_V7.thing, "+12 Favour"],
+      ["SACRIFICE", CULT_UI_V7.initiate, "+2 Favour"],
+    ]);
+    for (const target of targets) {
+      expect(targetHighlightStyleV7(target.family)).toBe("SUPPORT");
+      expect(target.semanticLabel).toMatch(/^Sacrifice this /);
+      expect(target.semanticLabel).not.toMatch(/\d, ?\d/);
+    }
+
+    // Escape disarms and returns to the button; nothing was sent.
+    escape();
+    expect(host.lastModel?.interaction.cultPick ?? null).toBeNull();
+    expect(document.querySelector("[data-v7-cult-pick]")).toBeNull();
+    expect(controller.accepted).toEqual([]);
+    // Cancel does the same.
+    requiredButton("cult-sacrifice").click();
+    requiredButton("cult-pick-cancel").click();
+    expect(host.lastModel?.interaction.cultPick ?? null).toBeNull();
+
+    // Pick the Thing on the board.
+    requiredButton("cult-sacrifice").click();
+    const thing = scene.unitAt(CULT_UI_V7.thing);
+    host.callbacks?.onCommand(
+      required(
+        boardPlan(host).targets.find(
+          (target) =>
+            target.at.x === CULT_UI_V7.thing.x &&
+            target.at.y === CULT_UI_V7.thing.y,
+        ),
+      ),
+    );
+    await waitUntil(() => controller.accepted.length === 1);
+    expect(controller.accepted[0]).toEqual({
+      kind: "SACRIFICE",
+      unitId: summoner.id,
+      victimUnitId: thing.id,
+    });
+    const view = required(controller.snapshot().view);
+    expect(favourOfV7(view, view.viewer.id)).toBe(19);
+    expect(view.units.some((unit) => unit.id === thing.id)).toBe(false);
+    await waitUntil(() =>
+      live().includes("Thing in the Cellar Sacrificed: +12 Favour"),
+    );
+    expect(host.lastModel?.interaction.cultPick ?? null).toBeNull();
+    // Nothing on the page names a raw event or cause.
+    expect(document.body.textContent ?? "").not.toMatch(
+      /UNIT_SACRIFICED|FAVOUR_GAINED|UNIT_DIED|SACRIFICED\b/,
+    );
+    // The Summoner has acted: both buttons say so.
+    select(scene, CULT_UI_V7.summoner);
+    for (const action of ["cult-sacrifice", "cult-seize"]) {
+      const spent = requiredButton(action);
+      expect(spent.getAttribute("aria-disabled")).toBe("true");
+      expect(spent.dataset.disabledReason).toBe(SUMMONER_ALREADY_ACTED_V7);
+    }
+    scene.app.destroy();
+  });
+});
+
+describe("Seize is picked on the board", () => {
+  it("marks the broken enemy with twice its value, greys the healthy one, and seizes the picked one", async () => {
+    const scene = rig(cultFavourUiFixtureV7());
+    const { controller, host } = scene;
+    const summoner = scene.unitAt(CULT_UI_V7.summoner);
+    const knight = scene.unitAt(CULT_UI_V7.knight);
+    select(scene, CULT_UI_V7.summoner);
+    const seize = requiredButton("cult-seize");
+    expect(seize.textContent).toBe("Seize");
+    expectPlainWords(seize);
+    seize.click();
+    expect(host.lastModel?.interaction.cultPick).toEqual({
+      kind: "SEIZE",
+      unitId: summoner.id,
+    });
+    expect(
+      requiredElement<HTMLElement>("[data-v7-cult-pick]").dataset.boardTargets,
+    ).toBe("1");
+    const plan = boardPlan(host);
+    // While it is armed its victim is the only target: no Move, no Attack.
+    expect(
+      plan.targets.map((target) => [
+        target.family,
+        target.at,
+        target.previewLabel,
+      ]),
+    ).toEqual([["SEIZE", CULT_UI_V7.knight, "+18 Favour"]]);
+    expect(targetHighlightStyleV7("SEIZE")).toBe("ATTACK");
+    expect(plan.targets[0]?.semanticLabel).toBe(
+      "Seize this Knight: +18 Favour. Your Initiate holds it down. Choose a broken enemy next to it",
+    );
+    // The healthy Fighter beside it keeps the engine's reason, in grey.
+    expect(
+      plan.entries
+        .filter((entry) => entry.kind === "ABILITY_TARGET")
+        .map((entry) => [entry.at, entry.label]),
+    ).toEqual([[CULT_UI_V7.fighter, "Above 5 HP"]]);
+
+    host.callbacks?.onCommand(required(plan.targets[0]));
+    await waitUntil(() => controller.accepted.length === 1);
+    expect(controller.accepted[0]).toEqual({
+      kind: "SEIZE",
+      unitId: summoner.id,
+      victimUnitId: knight.id,
+    });
+    const view = required(controller.snapshot().view);
+    expect(favourOfV7(view, view.viewer.id)).toBe(25);
+    await waitUntil(() => live().includes("Knight Seized: +18 Favour"));
+    expect(document.body.textContent ?? "").not.toMatch(
+      /UNIT_SEIZED|FAVOUR_GAINED|Unit seized|Favour gained/,
+    );
     scene.app.destroy();
   });
 
-  it("plays a Sacrifice from its button", async () => {
-    const scene = rig(favourMatch());
+  it("is disabled with the engine's reason, and absent with no enemy beside the Summoner", () => {
+    // A broken Knight nobody holds, and a healthy Fighter.
+    const lonely = (pieces: Parameters<typeof cultFieldV7>[0]): GameStateV7 =>
+      cultFieldV7([{ seat: 0, role: "CAPTAIN", at: at(5, 2) }, ...pieces]);
+    let scene = rig(
+      lonely([
+        { seat: 1, role: "KNIGHT", at: at(5, 3), hp: 5 },
+        { seat: 1, role: "FIGHTER", at: at(4, 3) },
+      ]),
+    );
     select(scene, at(5, 2));
-    requiredElement<HTMLButtonElement>(
-      '[data-action="command-sacrifice"]',
-    ).click();
-    await waitUntil(() => scene.controller.accepted.length === 1);
-    expect(scene.controller.accepted[0]).toMatchObject({ kind: "SACRIFICE" });
-    const view = scene.controller.snapshot().view;
-    if (view === null) throw new Error("no view");
-    expect(favourOfV7(view, view.viewer.id)).toBe(12);
-    expect(view.units.some((unit) => unit.role === "JUGGERNAUT")).toBe(false);
+    let seize = requiredButton("cult-seize");
+    expect(seize.getAttribute("aria-disabled")).toBe("true");
+    expect(seize.dataset.disabledReason).toBe(SEIZE_NO_HOLDER_V7);
+    expect(seize.getAttribute("aria-label")).toBe(
+      `Seize unavailable. ${SEIZE_NO_HOLDER_V7}`,
+    );
+    seize.click();
+    expect(scene.host.lastModel?.interaction.cultPick ?? null).toBeNull();
+    expect(live()).toContain(SEIZE_NO_HOLDER_V7);
+    // No own unit beside it: no Sacrifice button at all.
+    expect(document.querySelector('[data-action="cult-sacrifice"]')).toBeNull();
+    scene.app.destroy();
+
+    document.body.innerHTML = '<div id="app"></div>';
+    scene = rig(lonely([{ seat: 1, role: "FIGHTER", at: at(4, 3) }]));
+    select(scene, at(5, 2));
+    seize = requiredButton("cult-seize");
+    expect(seize.dataset.disabledReason).toBe(SEIZE_HEALTHY_V7);
+    scene.app.destroy();
+
+    document.body.innerHTML = '<div id="app"></div>';
+    scene = rig(lonely([]));
+    select(scene, at(5, 2));
+    expect(dock().querySelector("[data-cult-ability]")).toBeNull();
     scene.app.destroy();
   });
 
-  it("offers the Offering in the city panel, with what it pays and costs", async () => {
-    const scene = rig(favourMatch());
-    const capital = scene.view.cities.find(
-      (city) => city.ownerId === scene.view.viewer.id,
+  it("shows no button on a unit that is not the viewer's Summoner", () => {
+    const scene = rig(cultFavourUiFixtureV7());
+    for (const where of [CULT_UI_V7.initiate, CULT_UI_V7.knight]) {
+      select(scene, where);
+      expect(dock().querySelector("[data-cult-ability]")).toBeNull();
+    }
+    scene.app.destroy();
+  });
+});
+
+describe("Favour in the HUD and the leaderboard", () => {
+  it("shows a Cult player's Favour beside the Coins, and none to another faction", () => {
+    let scene = rig(cultFavourUiFixtureV7());
+    const chip = requiredElement<HTMLElement>(".v7-match-hud .v7-favour");
+    expect(chip.previousElementSibling?.classList.contains("v7-coins")).toBe(
+      true,
     );
-    if (capital === undefined) throw new Error("no Cult capital");
+    expect(chip.querySelector(".v7-favour-balance")?.textContent).toBe("7");
+    expect(chip.getAttribute("aria-label")).toBe("7 Favour");
+    expect(chip.querySelector(".v7-favour-icon")).not.toBeNull();
+    expect(chip.title).toMatch(/^Favour: /);
+    scene.app.destroy();
+
+    document.body.innerHTML = '<div id="app"></div>';
+    scene = rig(cultRivalUiFixtureV7());
+    expect(document.querySelector(".v7-favour")).toBeNull();
+    scene.app.destroy();
+  });
+
+  it("shows every Cult seat's Favour in the leaderboard, to every player", () => {
+    for (const [fixture, favour] of [
+      [cultFavourUiFixtureV7, "7"],
+      [cultRivalUiFixtureV7, "11"],
+    ] as const) {
+      document.body.innerHTML = '<div id="app"></div>';
+      const scene = rig(fixture());
+      document.dispatchEvent(
+        new KeyboardEvent("keydown", { key: "g", bubbles: true }),
+      );
+      const rows = [
+        ...document.querySelectorAll<HTMLElement>(".v7-leaderboard-row"),
+      ];
+      expect(rows.length).toBe(2);
+      expect(
+        rows.map(
+          (row) =>
+            row.querySelector<HTMLElement>(".v7-leaderboard-favour")?.dataset
+              .favour ?? null,
+        ),
+        "only the Cult seat has a Favour stat",
+      ).toEqual(
+        rows.map((row) => (row.dataset.faction === "cult" ? favour : null)),
+      );
+      const stat = requiredElement<HTMLElement>(".v7-leaderboard-favour");
+      expect(stat.textContent).toBe(`${favour} Favour`);
+      expect(stat.querySelector(".v7-favour-icon")).not.toBeNull();
+      scene.app.destroy();
+    }
+  });
+});
+
+describe("the Offering in the city panel", () => {
+  it("shows what it pays and costs, plays it, and says what happened", async () => {
+    const scene = rig(cultFavourUiFixtureV7());
+    const capital = required(
+      scene.view.cities.find((city) => city.ownerId === scene.view.viewer.id),
+    );
     scene.host.callbacks?.onSelection({ kind: "CITY", cityId: capital.id });
-    const offering = requiredElement<HTMLButtonElement>(
-      '[data-action="command-offering"]',
-    );
+    const offering = requiredButton("command-offering");
     expect(offering.querySelector(".v7-action-label")?.textContent).toBe(
       "Offering",
     );
-    expect(offering.querySelector(".v7-economy-chip")?.textContent).toBe(
-      "+3 Favour · −2 population",
+    const chips = [
+      ...offering.querySelectorAll<HTMLElement>(".v7-economy-chip"),
+    ];
+    expect(chips.map((chip) => chip.textContent)).toEqual(["+3", "-2"]);
+    expect(chips[0]?.classList.contains("v7-favour-chip")).toBe(true);
+    expect(chips[0]?.querySelector(".v7-favour-icon")).not.toBeNull();
+    expect(chips[1]?.classList.contains("is-loss")).toBe(true);
+    expect(offering.getAttribute("aria-label")).toBe(
+      "Offering · +3 Favour · −2 population",
     );
     expectPlainWords(offering);
     offering.click();
@@ -165,22 +369,30 @@ describe("the dock's stand-in for the Cult's offerings", () => {
       kind: "OFFERING",
       cityId: capital.id,
     });
-    const view = scene.controller.snapshot().view;
-    if (view === null) throw new Error("no view");
-    expect(favourOfV7(view, view.viewer.id)).toBe(3);
+    const view = required(scene.controller.snapshot().view);
+    expect(favourOfV7(view, view.viewer.id)).toBe(10);
     expect(view.cities.find((city) => city.id === capital.id)).toMatchObject({
       population: 0,
       offeredPopulation: 2,
     });
-    // The city action is spent: no second Offering, and no training.
+    // The notice (and its toast) carries both numbers, with or without
+    // motion.
+    await waitUntil(() => live().includes("Offering: +3 Favour"));
+    expect(live()).toMatch(/Offering: \+3 Favour, −2\s*population/);
+    await waitUntil(
+      () => document.querySelector(".v7-favour-balance")?.textContent === "10",
+    );
+    // The city action is spent: no second Offering.
     scene.host.callbacks?.onSelection({ kind: "CITY", cityId: capital.id });
     expect(
       document.querySelector('[data-action="command-offering"]'),
     ).toBeNull();
     scene.app.destroy();
   });
+});
 
-  it("shows the Summoner's and the Chosen's new abilities in plain words", () => {
+describe("the Summoner's and the Chosen's abilities", () => {
+  it("are shown in plain words", () => {
     const scene = rig(
       cultFieldV7([
         { seat: 0, role: "CAPTAIN", at: at(5, 2) },

@@ -84,6 +84,10 @@ import {
   giantsSwallowedFixtureV7,
   giantsTossFixtureV7,
 } from "../fixtures/v7-giants-ui";
+import {
+  cultFavourUiFixtureV7,
+  cultRivalUiFixtureV7,
+} from "../fixtures/v7-cult-ui";
 import { undeadShowcaseFixtureV7 } from "../fixtures/v7-undead-ui";
 
 /**
@@ -110,7 +114,7 @@ const STAGE_FAMILIES = new Set([
 /** These toggle or adjust an aimed ability without finishing it. */
 const ADJUST_FAMILIES = new Set(["TUNNEL_PASSENGER", "TUNNEL_RIDER"]);
 const ABILITY_BUTTONS =
-  ".v7-selection-dock [data-dwarf-ability]:not([aria-disabled='true']), .v7-selection-dock [data-martian-ability]:not([aria-disabled='true']), .v7-selection-dock [data-ice-folk-ability]:not([aria-disabled='true']), .v7-selection-dock [data-candy-ability]:not([aria-disabled='true']), .v7-selection-dock [data-naval-ability]:not([aria-disabled='true']), .v7-selection-dock [data-freeze-ability]:not([aria-disabled='true']), .v7-selection-dock [data-giant-ability]:not([aria-disabled='true'])";
+  ".v7-selection-dock [data-dwarf-ability]:not([aria-disabled='true']), .v7-selection-dock [data-martian-ability]:not([aria-disabled='true']), .v7-selection-dock [data-ice-folk-ability]:not([aria-disabled='true']), .v7-selection-dock [data-candy-ability]:not([aria-disabled='true']), .v7-selection-dock [data-naval-ability]:not([aria-disabled='true']), .v7-selection-dock [data-freeze-ability]:not([aria-disabled='true']), .v7-selection-dock [data-giant-ability]:not([aria-disabled='true']), .v7-selection-dock [data-cult-ability]:not([aria-disabled='true'])";
 
 /**
  * The fixtures, and steps each sweep must reach (so a fixture that stops
@@ -238,6 +242,20 @@ const FIXTURES: readonly (readonly [
     ["giant-break-off aimed", "giant-break-off stage 1"],
   ],
   ["Giants: Gingerbread Men", giantsGingerbreadFixtureV7, []],
+  // The Cultists (`pulp_wars-mch9.17`): a Summoner's Sacrifice and Seize,
+  // each armed and its victim picked on the board; the Favour chip, the
+  // Offering in the city panel.
+  [
+    "Cult: Sacrifice and Seize",
+    cultFavourUiFixtureV7,
+    [
+      "cult-sacrifice aimed",
+      "cult-sacrifice performed",
+      "cult-seize aimed",
+      "cult-seize performed",
+    ],
+  ],
+  ["Cult: a rival's Favour", cultRivalUiFixtureV7, []],
   [
     "Frozen sea: icebound victim",
     () => frozenIceboundUiFixtureV7({ victim: true }),
@@ -715,7 +733,7 @@ function targetListOffences(
   const dock = document.querySelector<HTMLElement>(".v7-selection-dock");
   if (dock === null || host.lastModel === null) return offences;
   for (const panel of dock.querySelectorAll<HTMLElement>(
-    "[data-v7-martian-pick], [data-v7-ice-folk-pick], [data-v7-dwarf-pick], [data-v7-candy-pick], [data-v7-naval-pick], [data-v7-freeze-pick]",
+    "[data-v7-martian-pick], [data-v7-ice-folk-pick], [data-v7-dwarf-pick], [data-v7-candy-pick], [data-v7-naval-pick], [data-v7-freeze-pick], [data-v7-cult-pick]",
   )) {
     if (!panel.classList.contains("v7-board-pick"))
       offences.push("an aiming panel is not a board pick");

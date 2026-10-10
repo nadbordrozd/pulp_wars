@@ -146,6 +146,17 @@ beads that own the files; nothing is changed by this bead):
   not enough in U1's capture, the fallback is the robe's hue, a token
   `--pw-indigo` of `#2e3382` on `#dcdff7` (contrast 8.3), which is clear of
   the greens but 16 from `--pw-blue`.
+- **U1's capture: emerald is kept** (bead `pulp_wars-mch9.17`,
+  `scripts/browser-cult-review-v7.ts`, capture `colour-compare`). Beside the
+  Plague chip and the owned-technology tint the three inks are indeed alike,
+  but the bright mint fill is unlike the Plague chip's yellow-green and the
+  teal's grey-green, and it is the candle flame's own colour. Indigo is clear
+  of the greens but sits between the naval blue and the violet of the
+  command glyphs, and says "robe", not "Favour". So the rule of the token is
+  the one above, made strict: **emerald ink always stands on its mint fill**
+  (the Favour chip of the HUD, the Favour of a leaderboard row, the "+3" of
+  an Offering) or is an icon; it is never text on a plain plate, where it
+  would read as a gain (`--pw-gain` is the teal).
 - **The capture.** The spec asked for the colour to be looked at in a capture
   beside the Dwarf jade and the board's help mark. A capture of the real
   board needs `CULT` in `FACTION_COLOURS_V7`, which this docs bead does not

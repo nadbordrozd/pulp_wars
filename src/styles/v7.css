@@ -80,6 +80,9 @@
   --pw-pink-fill: #f8d6ea;
   --pw-brown: #6b4423;
   --pw-brown-fill: #ecd9bf;
+  /* The Cultists' hue (docs/art/factions/CULT.md): Favour and Cult chips. */
+  --pw-emerald: #0a6638;
+  --pw-emerald-fill: #b9f7d0;
 
   /*
    * ---- the board's own colours, shown in the interface ----
@@ -1456,6 +1459,65 @@
   font-weight: var(--pw-fw-bold);
 }
 
+/*
+ * The Cultists (bead pulp_wars-mch9.17): a Cult player's Favour, a candle
+ * and a number beside the Coins, in the Cult's hue. Favour gained flies to
+ * it as candles in the coins' layer and it pulses as each lands.
+ */
+.v7-favour {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  min-height: 2.5rem;
+  padding: 0.2rem 0.75rem 0.2rem 0.4rem;
+  border: var(--pw-line-w-sm) solid var(--pw-line);
+  border-radius: var(--pw-radius-sm);
+  background: var(--pw-emerald-fill);
+  color: var(--pw-emerald);
+  white-space: nowrap;
+  box-shadow: var(--pw-shadow-sm);
+  font-weight: var(--pw-fw-heavy);
+}
+
+.v7-favour-icon {
+  flex: none;
+  color: var(--pw-emerald);
+}
+
+.v7-favour .v7-favour-icon {
+  width: 1.7rem;
+  height: 1.7rem;
+}
+
+.v7-favour-balance {
+  display: inline-block;
+  font-size: var(--pw-fs-xl);
+  line-height: 1;
+  /* The number ticks up as candles land: its width must not jitter. */
+  font-variant-numeric: tabular-nums;
+}
+
+@keyframes v7-favour-count {
+  35% {
+    color: var(--pw-text);
+    scale: 1.14;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .v7-app-shell:not([data-motion="reduced"])
+    .v7-favour.is-favour-landing
+    .v7-favour-icon {
+    animation: v7-coin-land 280ms ease-out;
+  }
+
+  .v7-app-shell:not([data-motion="reduced"])
+    .v7-favour.is-favour-landing
+    .v7-favour-balance {
+    animation: v7-favour-count 280ms ease-out;
+  }
+}
+
 .v7-hud-round {
   color: var(--pw-text-2);
   font-size: var(--pw-fs-md);
@@ -1732,6 +1794,17 @@
 
 .v7-economy-chip.is-loss {
   color: var(--pw-loss);
+}
+
+/* The Cultists: the Favour an Offering pays, with its candle. */
+.v7-economy-chip.v7-favour-chip {
+  background: var(--pw-emerald-fill);
+  color: var(--pw-emerald);
+}
+
+.v7-economy-chip .v7-favour-icon {
+  width: 1.05rem;
+  height: 1.05rem;
 }
 
 .v7-chip {
@@ -2703,6 +2776,20 @@
   width: 1.1rem;
   height: 1.1rem;
   color: var(--pw-text-2);
+}
+
+/* The Cultists: a Cult seat's public Favour, a candle and a number. */
+.v7-leaderboard-favour {
+  padding: 0 0.45rem 0 0.3rem;
+  border-radius: var(--pw-radius-pill);
+  background: var(--pw-emerald-fill);
+  color: var(--pw-emerald);
+}
+
+.v7-leaderboard-favour .v7-favour-icon {
+  width: 1.1rem;
+  height: 1.1rem;
+  color: var(--pw-emerald);
 }
 
 .v7-achievement {
@@ -4484,6 +4571,26 @@
 
 .v7-context-action[data-naval-ability][aria-pressed="true"] {
   border-color: var(--pw-blue);
+}
+
+/* The Cultists (bead pulp_wars-mch9.17): Sacrifice and Seize. */
+.v7-cult-pick {
+  border-color: var(--pw-emerald);
+}
+
+.v7-command-icon[data-icon="candle"],
+.v7-context-action[data-cult-ability] .v7-command-icon,
+.v7-cult-pick .v7-command-icon {
+  color: var(--pw-emerald);
+}
+
+.v7-context-action[data-cult-ability][aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: var(--pw-dim);
+}
+
+.v7-context-action[data-cult-ability][aria-pressed="true"] {
+  border-color: var(--pw-emerald);
 }
 
 .v7-dwarf-chip {

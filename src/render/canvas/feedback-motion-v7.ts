@@ -549,6 +549,11 @@ export const ROAD_LANDING_MS_V7 = 460;
 export const ROAD_GLOW_MS_V7 = 1_400;
 /** A lost link: the pip that leaves rises a little and fades. */
 export const ROAD_UNLINK_MS_V7 = 700;
+/**
+ * The Cultists (bead pulp_wars-mch9.17): the pips a city gives up in an
+ * Offering leave like a lost link's, this far apart.
+ */
+export const OFFERING_PIP_STAGGER_MS_V7 = 180;
 
 /** The whole way of a Road icon over `segments` tile-to-tile hops. */
 export function roadHopMsV7(segments: number): number {

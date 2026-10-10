@@ -41,23 +41,28 @@ game's own origin. Nothing is requested from a font service or a CDN.
 All of them are declared once, on `.v7-app-shell` at the top of
 `src/styles/v7.css`. No rule below that block names a colour.
 
-| Group       | Tokens                                                                                                 |
-| ----------- | ------------------------------------------------------------------------------------------------------ |
-| Type        | `--pw-display`, `--pw-ui`, `--pw-fw-body/semi/bold/heavy`, `--pw-fs-xs` to `--pw-fs-4xl`               |
-| Ink, paper  | `--pw-ink`, `--pw-surface`, `--pw-surface-2`, `--pw-surface-raised`, `--pw-dock`                       |
-| Text        | `--pw-text`, `--pw-text-2`, `--pw-text-inverse`                                                        |
-| Rules       | `--pw-line`, `--pw-line-soft`, `--pw-line-w`, `--pw-line-w-sm`                                         |
-| Tone        | `--pw-tint-1/2/3`, `--pw-shade`, `--pw-scrim`, `--pw-dim`, `--pw-board-bg`                             |
-| Spot colour | `--pw-accent`, `--pw-accent-dark`, `--pw-accent-text`, `--pw-yellow`, `--pw-focus`                     |
-| Meaning     | `--pw-coin`, `--pw-gain`, `--pw-loss`                                                                  |
-| Hues        | `--pw-red`, `-amber`, `-green`, `-teal`, `-blue`, `-violet`, `-pink`, `-brown`, each with a `-fill`    |
-| Board       | `--pw-sky-high/mid/low`, `--pw-marker-landing/after-move/slide/launch`                                 |
-| Shape       | `--pw-radius`, `--pw-radius-sm`, `--pw-radius-xs`, `--pw-radius-pill`, `--pw-shadow`, `--pw-shadow-sm` |
+| Group       | Tokens                                                                                                          |
+| ----------- | --------------------------------------------------------------------------------------------------------------- |
+| Type        | `--pw-display`, `--pw-ui`, `--pw-fw-body/semi/bold/heavy`, `--pw-fs-xs` to `--pw-fs-4xl`                        |
+| Ink, paper  | `--pw-ink`, `--pw-surface`, `--pw-surface-2`, `--pw-surface-raised`, `--pw-dock`                                |
+| Text        | `--pw-text`, `--pw-text-2`, `--pw-text-inverse`                                                                 |
+| Rules       | `--pw-line`, `--pw-line-soft`, `--pw-line-w`, `--pw-line-w-sm`                                                  |
+| Tone        | `--pw-tint-1/2/3`, `--pw-shade`, `--pw-scrim`, `--pw-dim`, `--pw-board-bg`                                      |
+| Spot colour | `--pw-accent`, `--pw-accent-dark`, `--pw-accent-text`, `--pw-yellow`, `--pw-focus`                              |
+| Meaning     | `--pw-coin`, `--pw-gain`, `--pw-loss`                                                                           |
+| Hues        | `--pw-red`, `-amber`, `-green`, `-teal`, `-blue`, `-violet`, `-pink`, `-brown`, `-emerald`, each with a `-fill` |
+| Board       | `--pw-sky-high/mid/low`, `--pw-marker-landing/after-move/slide/launch`                                          |
+| Shape       | `--pw-radius`, `--pw-radius-sm`, `--pw-radius-xs`, `--pw-radius-pill`, `--pw-shadow`, `--pw-shadow-sm`          |
 
 A hue is two tokens: an ink dark enough to be text or a rule on any plate, and
 a pale fill for the plate of a status chip. `tests/unit/interface-style-ui-v7.test.ts`
 holds every text pairing of the tokens at 4.5:1 or better and fails on a
 colour written outside the token block.
+
+`--pw-emerald` is the Cultists' hue (bead `pulp_wars-mch9.17`,
+[the Cult's direction](../art/factions/CULT.md)): Favour and the Cult's
+chips. Its ink is close to `--pw-green` and `--pw-teal`, so it always stands
+on its own mint fill or is an icon, never text on a plain plate.
 
 ## Recipes
 

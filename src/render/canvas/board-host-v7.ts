@@ -842,10 +842,13 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     // The giants' signatures (`pulp_wars-w49.32`): an aimed Swallow, Toss,
     // Stomp or Break Off likewise, once per stage.
     const giantPick = model.interaction.giantPick ?? null;
-    // The naval branch interface: an aimed Board likewise, and (the
-    // frozen sea) an aimed Freeze.
+    // The naval branch interface: an aimed Board likewise, (the frozen
+    // sea) an aimed Freeze, and (the Cultists) an aimed Sacrifice or Seize.
     const navalPick =
-      model.interaction.navalPick ?? model.interaction.freezePick ?? null;
+      model.interaction.navalPick ??
+      model.interaction.freezePick ??
+      model.interaction.cultPick ??
+      null;
     const subject =
       unitId !== null
         ? String(unitId)
@@ -2830,6 +2833,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         (interaction.iceFolkPick ?? null) !== null ||
         (interaction.navalPick ?? null) !== null ||
         (interaction.freezePick ?? null) !== null ||
+        (interaction.cultPick ?? null) !== null ||
         (interaction.layEgg ?? null) !== null);
     this.#description.textContent = [
       aimed ? actions.join(", ") : "",
@@ -3117,6 +3121,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       (interaction.iceFolkPick ?? null) !== null ||
       (interaction.navalPick ?? null) !== null ||
       (interaction.freezePick ?? null) !== null ||
+      (interaction.cultPick ?? null) !== null ||
       (interaction.layEgg ?? null) !== null;
     if (!aimed && !model.interactive) return [];
     const cells = new Map<string, CoordV7>();
@@ -3926,6 +3931,9 @@ function unitName(
   const faction = unitFactionV7(view, unit);
   if (faction === "MARTIAN" || faction === "ICE_FOLK" || faction === "DWARF")
     return `${faction === "MARTIAN" ? "Martian" : faction === "ICE_FOLK" ? "Ice Folk" : "Dwarf"} ${unitRoleRuleV7(view, unit).label}`;
+  // The Cultists (bead pulp_wars-mch9.17): likewise (a Summoner, not a
+  // Captain, is what a Sacrifice or a Seizure is aimed from).
+  if (faction === "CULT") return `Cult ${unitRoleRuleV7(view, unit).label}`;
   // The ninth unit (`pulp_wars-w49.17`, 7r55): the heavy line role by its
   // unit's name (the Human Champion, the Candy Jawbreaker), not its role ID.
   return unit.role === "SWORDSMAN"

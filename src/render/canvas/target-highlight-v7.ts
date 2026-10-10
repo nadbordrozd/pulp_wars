@@ -157,6 +157,11 @@ const FAMILY_STYLES_V7: Readonly<Record<string, TargetHighlightStyleV7>> = {
   TOSS: "PLACE",
   BREAK_OFF_FIRST: "PLACE",
   BREAK_OFF: "PLACE",
+  // The Cultists (`pulp_wars-mch9.17`): an own unit a Summoner offers wears
+  // the Help ring (it is the Cult's own, and it pays), a broken enemy it
+  // Seizes the Attack mark.
+  SACRIFICE: "SUPPORT",
+  SEIZE: "ATTACK",
 };
 
 /** Every family the vocabulary knows, for the audit and its tests. */

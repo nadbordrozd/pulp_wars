@@ -19,6 +19,7 @@ import {
   CITY_HOP_AMPLITUDE_CSS_PX_V7,
   CITY_HOP_MS_V7,
   LEVEL_UP_RING_MS_V7,
+  OFFERING_PIP_STAGGER_MS_V7,
   POPULATION_HOP_MS_V7,
   POPULATION_ICON_CAP_V7,
   POPULATION_STAGGER_MS_V7,
@@ -483,6 +484,22 @@ export class BoardFeedbackV7 implements BoardFeedbackPortV7 {
         startAt: now,
         durationMs: ROAD_UNLINK_MS_V7 * scale,
       });
+    // The Cultists (bead pulp_wars-mch9.17): the population a city gave up
+    // in an Offering leaves the same way, one pip after the other from the
+    // top of what it had.
+    for (const loss of plan.populationLosses) {
+      const next = this.#pipSlot(loss.cityId, "NEXT");
+      const top = Math.max(1, this.#pipWidth(loss.cityId)) - 1;
+      for (let index = 0; index < loss.amount; index += 1)
+        this.#pipCues.push({
+          kind: "UNLINK",
+          cityId: loss.cityId,
+          at: loss.at,
+          slot: Math.min(top, next + (loss.amount - 1 - index)),
+          startAt: now + index * OFFERING_PIP_STAGGER_MS_V7 * scale,
+          durationMs: ROAD_UNLINK_MS_V7 * scale,
+        });
+    }
     for (const cue of plan.promotionsEarned) {
       this.#unitHops.set(cue.unitId, {
         startAt: now,

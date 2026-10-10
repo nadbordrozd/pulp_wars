@@ -86,6 +86,8 @@ const HUES = [
   "violet",
   "pink",
   "brown",
+  // The Cultists' hue (bead pulp_wars-mch9.17, docs/art/factions/CULT.md).
+  "emerald",
 ] as const;
 
 describe("Ruleset 7 interface style tokens", () => {

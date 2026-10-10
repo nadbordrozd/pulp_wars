@@ -1159,6 +1159,31 @@ Bearer is one figure, and the gondola is indigo.
 
 Each has a one-sentence tooltip (the card texts above) and a Help entry.
 
+**As built by U1** (`pulp_wars-mch9.17`; it replaces the stand-in of
+[section 21.2](#212-e2-favour-pulp_wars-mch94-pulp-wars-poc-7r72), item 11).
+The details are in
+[Board targeting, section 3.7](../ui/BOARD_TARGETING.md#37-the-cultists-sacrifice-seize-offering-bead-pulp_wars-mch917)
+and [the screen flow](../ui/SCREEN_FLOW.md):
+
+- **Favour** is one candle and a number, not a row of candles (a pool has
+  no maximum): a chip beside the Coins for a Cult player, and a candle and
+  number in the leaderboard row of every Cult seat, for every player. Favour
+  the viewer gains flies to the chip as candles from the tile that paid it.
+- **Sacrifice and Seize** have one button each on the Summoner; each arms
+  its aiming, and the victim is picked on the board: the help mark on own
+  units, the attack mark on enemies, each labelled "+N Favour". A unit next
+  to the Summoner that cannot be offered keeps the reason in grey.
+- **The Offering** is the city panel's button, with the chips "+3" (a
+  candle) and "-2" (the population icon) in place of the words "+3 Favour,
+  −2 people"; its accessible name says "Offering · +3 Favour · −2
+  population". When it is made, the city's two pips rise and fade and the
+  notice reads "Offering: +3 Favour, −2 population".
+- **Pamphlets** has no cue yet: the rule arrives with E6
+  ([section 8.7](#87-pamphlets-the-initiate)), and its capture cue with it or
+  after it. Nothing in the interface claims it today.
+- **Colour:** Cult chips use the hue token `--pw-emerald` on its mint fill
+  ([the Cult's direction](../art/factions/CULT.md)).
+
 ## 15. Normal AI
 
 The Normal AI is deterministic, reads only the public view and previews,

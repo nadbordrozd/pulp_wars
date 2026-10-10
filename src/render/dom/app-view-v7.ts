@@ -56,6 +56,8 @@ import {
   seatRoleMechanicsV7,
   unitFactionV7,
   previewKaboomV7,
+  previewOfferingV7,
+  favourOfV7,
   unitRoleRuleV7,
   unitRoleMechanicsV7,
   tractorBeamRuleV7,
@@ -245,7 +247,11 @@ import {
   selectionIdentityArtworkLayoutV7,
   technologyArtworkLayoutV7,
 } from "./selection-identity-v7";
-import { uiIconV7, type UiIconIdV7 } from "./ui-icons-v7";
+import {
+  FAVOUR_CANDLE_SPRITE_URL_V7,
+  uiIconV7,
+  type UiIconIdV7,
+} from "./ui-icons-v7";
 import { TitleSceneViewV7 } from "./title-scene-view-v7";
 import {
   cityArtSubjectV7,
@@ -624,13 +630,26 @@ import {
 } from "../dwarf-tunnel-v7";
 import type { DwarfPickV7 } from "../canvas/dwarf-board-plan-v7";
 import {
+  FAVOUR_LABEL_V7,
+  FAVOUR_TOOLTIP_V7,
   OFFERING_LABEL_V7,
+  OFFERING_TOOLTIP_V7,
   OFFERING_UNLOCK_TEXT_V7,
   SACRIFICE_LABEL_V7,
+  SACRIFICE_PICK_V7,
+  SACRIFICE_TOOLTIP_V7,
   SEIZE_LABEL_V7,
+  SEIZE_PICK_V7,
+  SEIZE_TOOLTIP_V7,
   SUMMONER_SUPPORT_UNLOCK_TEXT_V7,
-  cultCommandPresentationV7,
+  cultBoundaryNoticeV7,
+  favourCountTextV7,
+  favourGainTextV7,
+  sacrificeUnavailableTextV7,
+  seatHasFavourV7,
+  seizeUnavailableTextV7,
 } from "../cult-presentation-v7";
+import type { CultPickV7 } from "../canvas/cult-board-plan-v7";
 import {
   CANDY_FIELD_DEFENSE_EXPLANATION_V7,
   CONFECTIONER_SUPPORT_UNLOCK_TEXT_V7,
@@ -939,7 +958,42 @@ const NON_BUTTON_COMMANDS = new Set<CommandV7["kind"]>([
   // unit; a line role's arms it and the tile is picked on the board, the
   // Ice Witch's casts her ring (BOARD_TARGETING.md section 3.5).
   "FREEZE",
+  // The Cultists (bead pulp_wars-mch9.17): a Summoner has one Sacrifice and
+  // one Seize button; each arms it and the victim is picked on the board
+  // (BOARD_TARGETING.md section 3.7).
+  "SACRIFICE",
+  "SEIZE",
 ]);
+/**
+ * The Cultists: the Summoner's two aimed offerings, each with its button's
+ * name, card text, instruction, and the glyph shown until (and, in the
+ * LEGACY set and the classic look, instead of) its `ICON:ACTION:<KIND>`
+ * raster.
+ */
+const CULT_PICK_TEXT_V7: Readonly<
+  Record<
+    CultPickV7["kind"],
+    {
+      readonly label: string;
+      readonly tooltip: string;
+      readonly pick: string;
+      readonly icon: UiIconIdV7;
+    }
+  >
+> = {
+  SACRIFICE: {
+    label: SACRIFICE_LABEL_V7,
+    tooltip: SACRIFICE_TOOLTIP_V7,
+    pick: SACRIFICE_PICK_V7,
+    icon: "candle",
+  },
+  SEIZE: {
+    label: SEIZE_LABEL_V7,
+    tooltip: SEIZE_TOOLTIP_V7,
+    pick: SEIZE_PICK_V7,
+    icon: "grapple",
+  },
+};
 /**
  * The giants' signatures (`pulp_wars-w49.32`): the four aimed signature
  * commands, each with its button's name and icon.
@@ -1333,6 +1387,12 @@ export class Ruleset7DomAppView {
    */
   #freezePick: FreezePickV7 | null = null;
   #freezeHoverUnitId: number | null = null;
+  /**
+   * The Cultists (bead pulp_wars-mch9.17): the Sacrifice or the Seize the
+   * selected Summoner is aiming on the board (Escape, Cancel or another
+   * selection leaves it and sends nothing).
+   */
+  #cultPick: CultPickV7 | null = null;
   #unitHelpModal: HTMLElement | null = null;
   #modalReturnAction: string | null = null;
   /**
@@ -1521,6 +1581,13 @@ export class Ruleset7DomAppView {
         null,
       counterIcon: () => this.#root.querySelector(".v7-coins .v7-economy-icon"),
       onBalance: (landed) => this.#showCoinBalance(landed),
+      // The Cultists (bead pulp_wars-mch9.17): Favour flies to its chip.
+      favour: {
+        url: () => this.#favourIconUrl() ?? FAVOUR_CANDLE_SPRITE_URL_V7,
+        counterIcon: () =>
+          this.#root.querySelector(".v7-favour .v7-favour-icon"),
+        onBalance: (landed) => this.#showFavourBalance(landed),
+      },
     });
     this.#coinFlight.attach(this.#boardHost.feedback ?? null);
     this.#artSet = options.artSet ?? "LEGACY";
@@ -1764,6 +1831,10 @@ export class Ruleset7DomAppView {
         // The frozen sea: Escape first disarms Freeze.
         this.#cancelFreezePick();
         return;
+      } else if (this.#cultPick !== null) {
+        // The Cultists: Escape first disarms the Sacrifice or the Seize.
+        this.#cancelCultPick();
+        return;
       } else this.#selection = null;
       this.#render();
       this.#queueBoardFocus();
@@ -1941,6 +2012,33 @@ export class Ruleset7DomAppView {
       ? { url: resolution.url, assetId: resolution.asset.id }
       : null;
   };
+
+  /**
+   * The Cultists (bead pulp_wars-mch9.17): the Favour candle's raster in
+   * the current look, or null until the art registers
+   * `ICON:HUD:CULT:FAVOUR` (and in the LEGACY set).
+   */
+  #favourIconUrl(): string | null {
+    if (this.#chibiDom === null) return null;
+    const resolution = this.#interfaceArt().resolve({
+      subject: "ICON:HUD:CULT:FAVOUR",
+    });
+    return resolution.kind === "READY" ? resolution.url : null;
+  }
+
+  /** The Favour candle: its raster, or the code-drawn candle. */
+  #favourIcon(): HTMLElement | SVGElement {
+    const url = this.#favourIconUrl();
+    if (url === null)
+      return uiIconV7(this.#document, "candle", "v7-ui-icon v7-favour-icon");
+    const icon = this.#document.createElement("img");
+    icon.className = "v7-economy-icon v7-favour-icon";
+    icon.src = url;
+    icon.alt = "";
+    icon.setAttribute("aria-hidden", "true");
+    icon.dataset.artSet = "chibi";
+    return icon;
+  }
 
   #technologyChibiArt(tech: TechnologyIdV7) {
     return this.#chibiArt(
@@ -3579,6 +3677,7 @@ export class Ruleset7DomAppView {
           this.#navalPick = null;
           this.#freezePick = null;
           this.#freezeHoverUnitId = null;
+          this.#cultPick = null;
           this.#selectedRecruitHelp = null;
           this.#selectedUnitHelpId = null;
           this.#selectedModifier = null;
@@ -3677,7 +3776,28 @@ export class Ruleset7DomAppView {
         : humanTurn
           ? "human"
           : "other";
-    stats.append(economy, round, status);
+    stats.append(economy);
+    // The Cultists (bead pulp_wars-mch9.17, RULESET_7_CULTISTS.md section
+    // 14.3): a Cult player's Favour, a candle and a number beside the Coins.
+    if (seatHasFavourV7(view, view.viewer.id)) {
+      const favour = favourOfV7(view, view.viewer.id);
+      const chip = el(this.#document, "p", "v7-favour");
+      chip.dataset.v7Region = "favour";
+      chip.append(
+        this.#favourIcon(),
+        text(
+          this.#document,
+          "span",
+          // Favour still flying to the chip is counted as it lands.
+          String(this.#coinFlight.displayed(favour, "FAVOUR")),
+          "v7-favour-balance",
+        ),
+      );
+      chip.setAttribute("aria-label", favourCountTextV7(favour));
+      chip.title = FAVOUR_TOOLTIP_V7;
+      stats.append(chip);
+    }
+    stats.append(round, status);
     const strip = this.#turnStrip(view);
     if (strip !== null) stats.append(strip);
     const nav = el(this.#document, "nav", "v7-hud-nav");
@@ -4034,7 +4154,8 @@ export class Ruleset7DomAppView {
       this.#candyPick !== null ||
       this.#giantPick !== null ||
       this.#navalPick !== null ||
-      this.#freezePick !== null
+      this.#freezePick !== null ||
+      this.#cultPick !== null
     );
   }
 
@@ -4164,6 +4285,10 @@ export class Ruleset7DomAppView {
         this.#freezeHoverUnitId === selectedUnitId
           ? { freezeRingFocusUnitId: this.#freezeHoverUnitId }
           : {}),
+        // The Cultists: the Sacrifice or the Seize being aimed.
+        ...(this.#cultPick !== null && this.#cultPick.unitId === selectedUnitId
+          ? { cultPick: this.#cultPick }
+          : {}),
       },
     };
   }
@@ -4188,6 +4313,7 @@ export class Ruleset7DomAppView {
       this.#navalPick = null;
       this.#freezePick = null;
       this.#freezeHoverUnitId = null;
+      this.#cultPick = null;
       this.#render();
       this.#queueBoardFocus();
     };
@@ -5123,6 +5249,8 @@ export class Ruleset7DomAppView {
         ...this.#navalActionButtons(view, unit.id),
         // The frozen sea: Freeze likewise.
         ...this.#freezeActionButtons(view, unit.id),
+        // The Cultists: Sacrifice and Seize likewise.
+        ...this.#cultActionButtons(view, unit.id),
       ].reverse())
         actions.prepend(button);
       if (goblinFieldDefenseBlockedV7(view, unit.id)) {
@@ -5235,7 +5363,8 @@ export class Ruleset7DomAppView {
         this.#candyPickPanel(unit.id) ??
         this.#giantPickPanel(view, unit.id) ??
         this.#navalPickPanel(unit.id) ??
-        this.#freezePickPanel(unit.id);
+        this.#freezePickPanel(unit.id) ??
+        this.#cultPickPanel(unit.id);
       if (martianPanel !== null) {
         dock.dataset.hasActions = "true";
         // The giants' signatures: while an ability is aimed the signature's
@@ -6235,18 +6364,18 @@ export class Ruleset7DomAppView {
         this.#snapshot.view !== null &&
         this.#snapshot.view !== undefined &&
         rallyIsBerserkV7(this.#snapshot.view, command.unitId);
-      // The Cultists (`pulp_wars-mch9.4`): a Sacrifice, a Seizure, and an
-      // Offering use these generic buttons for now, one per victim, named
-      // by the victim's unit. The interface bead (`pulp_wars-mch9.17`)
-      // replaces them with one button and a victim picked on the board.
-      const cult =
-        this.#snapshot.view === null || this.#snapshot.view === undefined
+      // The Cultists (`pulp_wars-mch9.17`): a city's Offering is a button
+      // of its panel, with what it pays and costs (a Sacrifice and a
+      // Seizure are aimed on the board, `#cultActionButtons`).
+      const offering =
+        command.kind !== "OFFERING" ||
+        this.#snapshot.view === null ||
+        this.#snapshot.view === undefined
           ? null
-          : cultCommandPresentationV7(this.#snapshot.view, command);
+          : previewOfferingV7(this.#snapshot.view, command.cityId);
       const label =
         (released ? RELEASE_LABEL_V7 : null) ??
         (berserk ? BERSERK_LABEL_V7 : null) ??
-        cult?.label ??
         (abandonedEgg === undefined
           ? commandLabel(command, this.#viewerFaction())
           : ABANDON_EGG_LABEL_V7);
@@ -6469,17 +6598,27 @@ export class Ruleset7DomAppView {
               ),
             );
         }
-      } else if (cult !== null) {
-        // The Cultists: the card text, and what the offering pays.
-        action.title = cult.tooltip;
-        action.setAttribute("aria-label", `${cult.label} · ${cult.chip}`);
-        action.setAttribute("aria-description", `${cult.tooltip}.`);
-        action.dataset.cult = command.kind.toLowerCase();
-        const chip = el(this.#document, "span", "v7-command-economy");
-        chip.append(
-          text(this.#document, "span", cult.chip, "v7-economy-chip is-gain"),
+      } else if (offering !== null) {
+        // The Cultists: the card text, the Favour it pays (a candle) and
+        // the population it costs, as a build's chips show its price.
+        action.title = OFFERING_TOOLTIP_V7;
+        action.setAttribute(
+          "aria-label",
+          `${OFFERING_LABEL_V7} · ${favourGainTextV7(offering.favour)} · −${offering.population} population`,
         );
-        action.append(chip);
+        action.setAttribute("aria-description", `${OFFERING_TOOLTIP_V7}.`);
+        action.dataset.cult = "offering";
+        const chips = economyChips(this.#document, {
+          population: -offering.population,
+        });
+        const favour = el(
+          this.#document,
+          "span",
+          "v7-economy-chip v7-favour-chip",
+        );
+        favour.append(`+${offering.favour}`, this.#favourIcon());
+        chips.prepend(favour);
+        action.append(chips);
       } else if (command.kind === "RALLY" && berserk) {
         // Goblin explosions and Berserk (`pulp_wars-w49.36`): what it does,
         // and how many units it reaches; hover and focus mark them.
@@ -7590,6 +7729,24 @@ export class Ruleset7DomAppView {
       // The counts are grouped so a phone can set them under the name.
       const stats = el(this.#document, "span", "v7-leaderboard-stats");
       stats.append(cities, units);
+      // The Cultists (bead pulp_wars-mch9.17, section 3): Favour is public,
+      // so every Cult seat still in the match shows its candle and number
+      // to every player.
+      if (seatHasFavourV7(view, entry.playerId)) {
+        const favour = el(
+          this.#document,
+          "span",
+          "v7-leaderboard-stat v7-leaderboard-favour",
+        );
+        favour.title = FAVOUR_LABEL_V7;
+        favour.dataset.favour = String(favourOfV7(view, entry.playerId));
+        favour.append(
+          this.#favourIcon(),
+          String(favourOfV7(view, entry.playerId)),
+          text(this.#document, "span", ` ${FAVOUR_LABEL_V7}`, "v7-sr-only"),
+        );
+        stats.append(favour);
+      }
       if (entry.status === "ELIMINATED")
         stats.append(text(this.#document, "span", "Out", "v7-chip is-idle"));
       row.append(name, stats);
@@ -8912,6 +9069,7 @@ export class Ruleset7DomAppView {
     this.#navalPick = null;
     this.#freezePick = null;
     this.#freezeHoverUnitId = null;
+    this.#cultPick = null;
     let restoreAction =
       command.kind === "RESEARCH" ? `tech-${command.tech.toLowerCase()}` : null;
     // First steps: a unit that could still move before this command is
@@ -9283,7 +9441,8 @@ export class Ruleset7DomAppView {
     );
     const feedback = this.#boardHost.feedback;
     const tickets = {
-      coins: this.#coinFlight.hold(plan.coins),
+      // The Cultists: the viewer's Favour flies with the Coins' ticket.
+      coins: this.#coinFlight.hold(plan.coins, plan.favour),
       board: feedback?.hold(plan) ?? null,
     };
     if (
@@ -9412,6 +9571,26 @@ export class Ruleset7DomAppView {
     pill.classList.remove("is-coin-landing");
     void pill.offsetWidth;
     pill.classList.add("is-coin-landing");
+  }
+
+  /**
+   * The Cultists (bead pulp_wars-mch9.17): the Favour chip's number, and
+   * its pulse when a candle has landed.
+   */
+  #showFavourBalance(landed: boolean): void {
+    const view = this.#snapshot.view;
+    const balance = this.#root.querySelector<HTMLElement>(".v7-favour-balance");
+    if (view === null || balance === null) return;
+    const shown = String(
+      this.#coinFlight.displayed(favourOfV7(view, view.viewer.id), "FAVOUR"),
+    );
+    if (balance.textContent !== shown) balance.textContent = shown;
+    const pill = balance.closest<HTMLElement>(".v7-favour");
+    if (!landed || pill === null) return;
+    // Restart the pulse for each candle that lands.
+    pill.classList.remove("is-favour-landing");
+    void pill.offsetWidth;
+    pill.classList.add("is-favour-landing");
   }
   #persistSettings(): void {
     try {
@@ -11181,6 +11360,142 @@ export class Ruleset7DomAppView {
       "v7-kaboom-cancel",
     );
     cancel.onclick = () => this.#cancelNavalPick();
+    buttons.append(cancel);
+    panel.append(buttons);
+    return panel;
+  }
+
+  /**
+   * The Cultists (bead pulp_wars-mch9.17; BOARD_TARGETING.md section 3.7):
+   * the one Sacrifice button and the one Seize button of an own Summoner,
+   * whatever the number of victims. A victim of either could be claimed by
+   * another click (an own unit is selected by one, an enemy attacked), and
+   * neither can be taken back, so each button arms its aiming (pressed
+   * while aiming) and the victim is picked on the board. Without an offered
+   * command, a Summoner with a candidate next to it shows the button
+   * disabled with the engine's reason; every other unit shows none.
+   */
+  #cultActionButtons(
+    view: PlayerViewV7,
+    unitId: UnitId,
+  ): readonly HTMLButtonElement[] {
+    const unit = view.units.find((candidate) => candidate.id === unitId);
+    if (
+      unit === undefined ||
+      unit.ownerId !== view.viewer.id ||
+      this.#snapshot.offeredCommands.length === 0
+    )
+      return [];
+    const buttons: HTMLButtonElement[] = [];
+    for (const kind of ["SACRIFICE", "SEIZE"] as const) {
+      const entry = CULT_PICK_TEXT_V7[kind];
+      const offered = this.#snapshot.offeredCommands.some(
+        (command) => command.kind === kind && command.unitId === unit.id,
+      );
+      const reason =
+        kind === "SACRIFICE"
+          ? sacrificeUnavailableTextV7(view, unit, offered)
+          : seizeUnavailableTextV7(view, unit, offered);
+      if (!offered && reason === null) continue;
+      const slug = `cult-${kind.toLowerCase()}`;
+      const action = button(this.#document, "", slug, "v7-context-action");
+      action.append(
+        this.#chibiArt(`ICON:ACTION:${kind}`, CHIBI_DOM_BOXES_V7.action)
+          ?.element ??
+          uiIconV7(this.#document, entry.icon, "v7-ui-icon v7-command-icon"),
+        text(this.#document, "span", entry.label, "v7-action-label"),
+      );
+      action.dataset.cultAbility = kind.toLowerCase();
+      if (reason === null) {
+        const aiming = this.#cultPick?.kind === kind;
+        action.title = entry.tooltip;
+        action.setAttribute("aria-label", `${entry.label}. ${entry.tooltip}`);
+        action.setAttribute("aria-pressed", String(aiming));
+        action.disabled = this.#localBusy();
+        action.onclick = () =>
+          aiming ? this.#cancelCultPick() : this.#startCultPick(kind, unit.id);
+      } else {
+        // aria-disabled keeps the reason reachable by keyboard and touch.
+        action.setAttribute("aria-disabled", "true");
+        action.dataset.disabledReason = reason;
+        action.title = reason;
+        action.setAttribute(
+          "aria-label",
+          `${entry.label} unavailable. ${reason}`,
+        );
+        action.onclick = () => {
+          this.#notice = `${reason}.`;
+          this.#showToast(`${reason}.`);
+          this.#pendingFocusAction = slug;
+          this.#render();
+        };
+      }
+      buttons.push(action);
+    }
+    return buttons;
+  }
+
+  /** Starts aiming the selected Summoner's Sacrifice or Seize. */
+  #startCultPick(kind: CultPickV7["kind"], unitId: UnitId): void {
+    if (this.#localBusy()) return;
+    this.#cultPick = { kind, unitId };
+    this.#notice = `${CULT_PICK_TEXT_V7[kind].pick}.`;
+    this.#pendingFocusAction = null;
+    this.#render();
+    // The board takes the keyboard, so Tab and Enter pick.
+    this.#queueBoardFocus();
+  }
+
+  /** Leaves the aiming (nothing is sent); focus returns to its button. */
+  #cancelCultPick(): void {
+    const pick = this.#cultPick;
+    this.#cultPick = null;
+    this.#pendingFocusAction =
+      pick === null ? null : `cult-${pick.kind.toLowerCase()}`;
+    this.#render();
+  }
+
+  /**
+   * The Sacrifice or Seize aiming panel in the dock: the action's icon and
+   * name, its "?" and Cancel. The victims are highlighted and picked on the
+   * board, each with the Favour it pays; the dock lists none. Null (and the
+   * aiming ends) when nothing is offered any more.
+   */
+  #cultPickPanel(unitId: UnitId): HTMLElement | null {
+    const pick = this.#cultPick;
+    if (pick === null || pick.unitId !== unitId) return null;
+    const commands = this.#snapshot.offeredCommands.filter(
+      (command) => command.kind === pick.kind && command.unitId === unitId,
+    );
+    if (commands.length === 0) {
+      this.#cultPick = null;
+      return null;
+    }
+    const entry = CULT_PICK_TEXT_V7[pick.kind];
+    const panel = el(
+      this.#document,
+      "section",
+      "v7-kaboom-preview v7-martian-pick v7-cult-pick v7-board-pick",
+    );
+    panel.dataset.v7CultPick = pick.kind.toLowerCase();
+    panel.dataset.boardTargets = String(commands.length);
+    panel.setAttribute("aria-label", entry.pick);
+    panel.append(
+      this.#pickHead(
+        `ICON:ACTION:${pick.kind}`,
+        entry.icon,
+        entry.label,
+        `${entry.pick}. ${entry.tooltip}`,
+      ),
+    );
+    const buttons = el(this.#document, "div", "button-row v7-kaboom-actions");
+    const cancel = button(
+      this.#document,
+      "Cancel",
+      "cult-pick-cancel",
+      "v7-kaboom-cancel",
+    );
+    cancel.onclick = () => this.#cancelCultPick();
     buttons.append(cancel);
     panel.append(buttons);
     return panel;
@@ -13297,8 +13612,12 @@ function boundaryNoticeV7(
   const frozenSea = frozenSeaBoundaryNoticeV7(events, before, after);
   // City names: a village or a city taken, an own city grown.
   const city = cityBoundaryNoticeV7(events, before, after);
+  // The Cultists: what a Sacrifice, a Seizure, an Offering or a Martyr paid
+  // the viewer, and a Seizure of one of the viewer's units.
+  const cult = cultBoundaryNoticeV7(events, before, after);
   const parts = [
     city?.text ?? null,
+    cult?.text ?? null,
     curiosity?.text ?? null,
     naval?.text ?? null,
     frozenSea?.text ?? null,
@@ -13322,7 +13641,8 @@ function boundaryNoticeV7(
     curiosity === null &&
     naval === null &&
     frozenSea === null &&
-    city === null
+    city === null &&
+    cult === null
   )
     return { text: special, toast: special !== null };
   return {
@@ -13339,6 +13659,7 @@ function boundaryNoticeV7(
       curiosity?.toast === true ||
       naval?.toast === true ||
       frozenSea?.toast === true ||
+      cult?.toast === true ||
       city?.toast === true,
   };
 }
@@ -13916,6 +14237,8 @@ const FACTION_COMMAND_ICONS: Partial<Record<CommandV7["kind"], UiIconIdV7>> = {
   ASSEMBLE: "key",
   WHIRL: "whirl",
   BUILD_BARRICADE: "barricade",
+  // The Cultists: the Offering's glyph until its CHIBI icon is registered.
+  OFFERING: "candle",
 };
 
 function undeadCommandPreview(

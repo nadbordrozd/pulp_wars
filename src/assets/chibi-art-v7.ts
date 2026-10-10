@@ -379,13 +379,21 @@ export type CandyArtRoleV7 = UndeadArtRoleV7;
  * collar cracked). They have no Human counterpart and no fallback. `FROG` is
  * the marker drawn over a unit turned into a frog by Ribbit, a tile marker
  * like `CRUMBS`.
+ *
+ * `ICON:HUD:CULT:FAVOUR` is the Favour candle of the HUD, the leaderboard
+ * and the Offering's chip (bead `pulp_wars-mch9.17`; docs/art/factions/
+ * CULT.md). The interface asks for it and draws its code glyph (the `candle`
+ * of ui-icons-v7.ts) until the art bead `pulp_wars-mch9.23` registers the
+ * raster. The Sacrifice, Seize and Offering icons need no type here: they
+ * are `ICON:ACTION:<KIND>` of their command kinds.
  */
 export type CultArtSubjectV7 =
   | `UNIT:CULT:${CultArtRoleV7}`
   | `PORTRAIT:CULT:${CultArtRoleV7}`
   | `CITY:CULT:${1 | 2 | 3}`
   | CultSummonedArtSubjectV7
-  | "FROG";
+  | "FROG"
+  | "ICON:HUD:CULT:FAVOUR";
 
 /** The sprites of the Cult's summoned units, bound and Unbound. */
 export type CultSummonedArtSubjectV7 =

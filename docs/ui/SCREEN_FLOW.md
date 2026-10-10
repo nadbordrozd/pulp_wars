@@ -468,6 +468,25 @@ Roads, that text now describes the **Classic look** developer option
   - **Road link, reduced motion.** No icon flies: the meters show at once
     and both cities' pips have a still gold glow for 1.4 s; a lost link
     shows nothing.
+  - **Favour (bead `pulp_wars-mch9.17`,
+    [the Cultists](../product/RULESET_7_CULTISTS.md#143-how-it-reads-on-the-board-without-text)).**
+    A Cult player's HUD has a Favour chip beside the Coins: a candle and
+    the number, in the Cult's hue (`--pw-emerald` on its mint fill), at
+    every width. Favour the viewer gains flies to it as candles in the
+    coins' layer and by the coins' rules (the same hop, toss, stagger, cap
+    and count: the chip shows the true Favour less what is still on its way
+    and pulses as each candle lands): from the victim's tile for a Sacrifice
+    or a Seizure, from the city for an Offering, from the tile a Chosen died
+    on for a Martyr (`FAVOUR_GAINED` names no tile, so the plan takes the
+    tile of what earned it, the event before it). An Offering's two pips
+    rise and fade from the city's column one after the other, as a lost Road
+    link's pip does. Another seat's Favour flies nowhere: it is public in
+    the leaderboard, where every Cult seat's row shows its candle and
+    number. With reduced motion the chip shows the number at once and
+    nothing flies or fades; the toast carries the numbers either way
+    ("Offering: +3 Favour, −2 population", "Knight Seized: +18 Favour",
+    "Initiate Sacrificed: +2 Favour", "Martyr: +6 Favour", and to the victim's
+    owner "Player 1 Seized your Knight").
   - **Territory click.** A click or tap on a tile inside a city's territory
     hops that city (any player's visible city); a click that gives an order
     does not.

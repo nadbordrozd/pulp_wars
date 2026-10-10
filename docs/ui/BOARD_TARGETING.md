@@ -37,6 +37,10 @@ The dock never lists one button, portrait or chip per target.
   Cancel, Escape or choosing something else disarms it. The choice between
   two actions on one target is therefore made with the armed button, never
   with a menu on the target.
+- **Arming what cannot be taken back.** A Sacrifice removes an own unit for
+  good, so it is armed too, although nothing else of the Summoner claims an
+  own unit: unarmed, a click on an own unit must go on selecting it
+  (section 3.7).
 - **Previews at the target.** The exact numbers (damage, heal, cost, HP,
   "Freeze", "Stays Frozen", "Take · 5 HP") come from the engine's public previews and stand
   in the label at the target, as an attack's "Deal 4 · take 2" does. The
@@ -201,6 +205,9 @@ area fixed by the rules, or it opens a screen).
 | Candy    | Re-bake              | (b)   | A portrait button per Crumbs tile, and board targets         | The Crumbs tiles on the board only, each with the unit's ghost, price and HP                                                                                                                       | Place                        |
 | Candy    | Sugar Toss           | (b)   | A portrait button per healable unit, and board targets       | The healable units are highlighted unarmed beside the Gunner's Moves and Attacks; the button narrows to them                                                                                       | Help                         |
 | Candy    | Frosting             | (c)   | The Confectioner's Tend Wounded button                       | The button is unchanged; the Frosting recipients are marked (2.1)                                                                                                                                  | Help, broken ring            |
+| Cult     | Sacrifice            | (b)   | A generic button per victim (`pulp_wars-mch9.4`)             | One Sacrifice button arms it; each own unit it may offer is a board target labelled with its Favour (section 3.7)                                                                                  | Help                         |
+| Cult     | Seize                | (b)   | A generic button per victim (`pulp_wars-mch9.4`)             | One Seize button arms it; each broken, held enemy is a board target labelled with its Favour; the others beside the Summoner keep a grey reason (section 3.7)                                      | Attack                       |
+| Cult     | Offering (city)      | (c)   | A generic button in the city panel                           | The selected city's button, with the Favour it pays and the population it costs; nothing on the map is targeted                                                                                    | none                         |
 
 ### 3.3 Cities, tiles, ships and curiosities
 
@@ -365,6 +372,56 @@ is full", "No enemy of 12 HP or less next to it", "No Goblin next to it",
 like. While a panel is open the unit card hides its signature line, so
 the panel fits a phone.
 
+### 3.7 The Cultists: Sacrifice, Seize, Offering (bead `pulp_wars-mch9.17`)
+
+The Summoner's two offerings
+([rules](../product/RULESET_7_CULTISTS.md#5-sacrifice)) each have **one
+button** whatever the number of victims. Code:
+`src/render/cult-presentation-v7.ts` (the words) and
+`src/render/canvas/cult-board-plan-v7.ts` (the targets and the grey
+reasons).
+
+- **Both are armed.** A broken enemy next to the Summoner may also be
+  attacked, so Seize follows the arming rule. A Sacrifice's victims are own
+  units, which nothing else of the Summoner claims, but a Sacrifice cannot
+  be taken back and a click on an own unit must go on selecting it, so it
+  is armed as well. Unarmed, the Summoner shows its Moves and Attacks as
+  always.
+- **Sacrifice** (a candle): armed, each own unit the engine offers a
+  `SACRIFICE` on wears the **Help** ring, labelled with the Favour it pays,
+  the unit's value: **"+12 Favour"**. The cursor reads "Sacrifice this Thing
+  in the Cellar: +12 Favour. It is gone for good."
+- **Seize** (a hook): armed, each enemy the engine offers a `SEIZE` on wears
+  the **Attack** mark, labelled with twice its value: **"+18 Favour"**. The
+  cursor names the cultist that holds it down ("Your Initiate holds it
+  down").
+- **A click, a tap or Enter** on a victim sends the command; Escape, Cancel
+  or another selection disarms and sends nothing; Tab steps through the
+  victims. The aiming panel holds the "?" and Cancel only.
+- **Reasons on the board.** While Seize is armed, a hostile unit next to
+  the Summoner that cannot be taken keeps a grey mark with the engine's
+  rejection (`seizeRejectionV7`): "Above 5 HP", "Nobody holds it" or
+  "Cannot be Seized" (a giant, a two-slot unit, a neutral, an Undead or a
+  construct). While Sacrifice is armed, an own unit next to it that may not
+  be offered reads "Plagued", "Bitten" or "Mind-controlled"
+  (`sacrificeRejectionV7`).
+- **Reasons on the button.** With nothing offered, a Summoner that has a
+  candidate next to it shows the button disabled with one reason: "Already
+  acted this turn", "A second cultist must stand next to the enemy", "No
+  enemy next to it is at 5 HP or less", "This enemy cannot be Seized", "A
+  Plagued or Bitten unit cannot be Sacrificed", "A mind-controlled unit
+  cannot be Sacrificed", "It must be on land". With no own unit (for
+  Sacrifice) or no enemy (for Seize) next to it, the button is not shown.
+- **The Offering** is not targeted: it is a button of the selected city's
+  panel, with two chips, the Favour it pays (a candle, "+3", on the Cult's
+  mint) and the population it costs ("-2" with the population icon, in the
+  loss colour), as a building's button shows its price.
+- **Icons.** The buttons ask for `ICON:ACTION:SACRIFICE`, `ICON:ACTION:SEIZE`
+  and `ICON:ACTION:OFFERING`, and the Favour chips for
+  `ICON:HUD:CULT:FAVOUR`. Until the art registers them (and in the LEGACY set
+  and the classic look) they show code glyphs: a candle for Sacrifice, the
+  Offering and Favour, the grappling hook for Seize.
+
 ## 4. The aiming panel
 
 While an ability is armed the dock shows its aiming panel in place of the
@@ -438,6 +495,17 @@ for tools; it is never read out.
   `scripts/browser-giants-review-v7.ts` (dev server only) captures each
   signature's button, aiming panel and preview at desktop and phone
   widths.
+- `tests/unit/cult-interface-presentation-v7.test.ts`,
+  `tests/integration/ruleset7-cult-favour-dom.test.ts` and
+  `tests/integration/ruleset7-cult-favour-flight-dom.test.ts` (section 3.7,
+  scenes in `tests/fixtures/v7-cult-ui.ts`): one button per offering, the
+  exact "+N Favour" at each victim, the Help and Attack styles, the grey
+  reasons and the buttons' reasons, a board pick sends the offered command,
+  Escape and Cancel disarm, the Favour chip, the leaderboard, the
+  Offering's chips, the candles' flight and the notices. The guard test
+  sweeps the two Cult scenes. `scripts/browser-cult-review-v7.ts` (dev
+  server only) captures them at 1440, 390 and 320 px wide and records that
+  nothing overflows.
 - `scripts/browser-board-targeting-review-v7.ts` (dev server only)
   captures every style on the faction fixtures, on Grass, Snow, a Forest,
   Mountains and the Undead ground, at desktop and phone widths, the area

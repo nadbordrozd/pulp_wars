@@ -202,6 +202,11 @@ import {
 } from "./naval-board-plan-v7";
 import { drawNavalUnitMarkersV7 } from "./naval-canvas-v7";
 import {
+  addCultPickEntriesV7,
+  cultPickTargetsV7,
+  type CultPickV7,
+} from "./cult-board-plan-v7";
+import {
   addFreezePickEntriesV7,
   addFreezeRingEntriesV7,
   freezePickTargetsV7,
@@ -564,6 +569,12 @@ export interface BoardRenderInteractionV7 {
    */
   readonly freezePick?: FreezePickV7 | null;
   /**
+   * The Cultists (bead `pulp_wars-mch9.17`): the Sacrifice or the Seize the
+   * selected Summoner is aiming. Its victims become the only map targets;
+   * null or omitted aims none.
+   */
+  readonly cultPick?: CultPickV7 | null;
+  /**
    * The frozen sea: the Ice Witch whose Freeze button is hovered or
    * focused; her ring is then drawn prominent with its outcome. Null or
    * omitted leaves the ring quiet.
@@ -675,7 +686,13 @@ export interface MapCommandTargetV7 {
      * The frozen sea: the tile next to the unit that an aimed Freeze starts
      * on (its line runs on from there).
      */
-    | "FREEZE";
+    | "FREEZE"
+    /**
+     * The Cultists (bead `pulp_wars-mch9.17`): an own unit an aiming
+     * Summoner may Sacrifice, and a broken enemy it may Seize.
+     */
+    | "SACRIFICE"
+    | "SEIZE";
   /**
    * Revision 16: a two-command landing. `command` is the one-cell Move to
    * the intermediate water cell; the UI sends this `DISEMBARK` only when that
@@ -1766,7 +1783,11 @@ export function buildBoardRenderPlanV7(
         interaction.candyPick.unitId !== selectedUnitId) &&
       (interaction.giantPick === undefined ||
         interaction.giantPick === null ||
-        interaction.giantPick.unitId !== selectedUnitId)
+        interaction.giantPick.unitId !== selectedUnitId) &&
+      // The Cultists: likewise while a Sacrifice or a Seize is aimed.
+      (interaction.cultPick === undefined ||
+        interaction.cultPick === null ||
+        interaction.cultPick.unitId !== selectedUnitId)
     )
       addAbilityPreviews(
         entries,
@@ -1853,6 +1874,13 @@ export function buildBoardRenderPlanV7(
     interaction.freezePick.unitId === interaction.selectedUnitId
       ? interaction.freezePick
       : null;
+  // The Cultists: likewise while a Sacrifice or a Seize is aimed.
+  const cultPick =
+    interaction.cultPick !== undefined &&
+    interaction.cultPick !== null &&
+    interaction.cultPick.unitId === interaction.selectedUnitId
+      ? interaction.cultPick
+      : null;
   /** The Candy revision: the art of a role the viewer would bake back. */
   const candyGhost = (
     role: UnitRoleIdV7,
@@ -1888,64 +1916,66 @@ export function buildBoardRenderPlanV7(
             ? dwarfPickTargetsV7(view, commands, dwarfPick)
             : navalPick !== null
               ? navalPickTargetsV7(view, commands, navalPick)
-              : freezePick !== null
-                ? freezePickTargetsV7(view, commands, freezePick)
-                : giantPick !== null
-                  ? giantPickTargetsV7(
-                      view,
-                      commands,
-                      giantPick,
-                      interaction.cursor ?? null,
-                    )
-                  : candyPick !== null
-                    ? candyPickTargetsV7(
+              : cultPick !== null
+                ? cultPickTargetsV7(view, commands, cultPick)
+                : freezePick !== null
+                  ? freezePickTargetsV7(view, commands, freezePick)
+                  : giantPick !== null
+                    ? giantPickTargetsV7(
                         view,
                         commands,
-                        candyPick,
-                        // An armed Rush shows the unit's attacks with the bonus.
-                        candyPick.kind === "SUGAR_RUSH"
-                          ? commandMapTargets(
-                              view,
-                              commands.filter(
-                                (command) => command.kind === "ATTACK",
-                              ),
-                              candyPick.unitId,
-                              { assumeSugarRush: true },
-                            )
-                          : [],
-                        candyGhost,
+                        giantPick,
+                        interaction.cursor ?? null,
                       )
-                    : dedupeMapTargets([
-                        ...mapTargets(
+                    : candyPick !== null
+                      ? candyPickTargetsV7(
                           view,
                           commands,
-                          interaction.selectedUnitId,
-                        ),
-                        // Bead pulp_wars-9im: a selected Gunner shows the units
-                        // it may heal beside its Moves and Attacks, unarmed: an
-                        // own unit is never a Move or an Attack target.
-                        ...(unarmedToss === undefined
-                          ? []
-                          : candyPickTargetsV7(
-                              view,
-                              commands,
-                              {
-                                kind: "SUGAR_TOSS",
-                                unitId: unarmedToss.unitId,
-                              },
-                              [],
-                              candyGhost,
-                            )),
-                        ...(unarmedTopUp === undefined
-                          ? []
-                          : candyPickTargetsV7(
-                              view,
-                              commands,
-                              { kind: "TOP_UP", unitId: unarmedTopUp.unitId },
-                              [],
-                              candyGhost,
-                            )),
-                      ]);
+                          candyPick,
+                          // An armed Rush shows the unit's attacks with the bonus.
+                          candyPick.kind === "SUGAR_RUSH"
+                            ? commandMapTargets(
+                                view,
+                                commands.filter(
+                                  (command) => command.kind === "ATTACK",
+                                ),
+                                candyPick.unitId,
+                                { assumeSugarRush: true },
+                              )
+                            : [],
+                          candyGhost,
+                        )
+                      : dedupeMapTargets([
+                          ...mapTargets(
+                            view,
+                            commands,
+                            interaction.selectedUnitId,
+                          ),
+                          // Bead pulp_wars-9im: a selected Gunner shows the units
+                          // it may heal beside its Moves and Attacks, unarmed: an
+                          // own unit is never a Move or an Attack target.
+                          ...(unarmedToss === undefined
+                            ? []
+                            : candyPickTargetsV7(
+                                view,
+                                commands,
+                                {
+                                  kind: "SUGAR_TOSS",
+                                  unitId: unarmedToss.unitId,
+                                },
+                                [],
+                                candyGhost,
+                              )),
+                          ...(unarmedTopUp === undefined
+                            ? []
+                            : candyPickTargetsV7(
+                                view,
+                                commands,
+                                { kind: "TOP_UP", unitId: unarmedTopUp.unitId },
+                                [],
+                                candyGhost,
+                              )),
+                        ]);
   if (martianPick !== null)
     addMartianPickEntriesV7(entries, view, targets, martianPick);
   if (iceFolkPick !== null) addIceFolkPickEntriesV7(entries, view, iceFolkPick);
@@ -1973,7 +2003,8 @@ export function buildBoardRenderPlanV7(
     dwarfPick === null &&
     candyPick === null &&
     giantPick === null &&
-    navalPick === null
+    navalPick === null &&
+    cultPick === null
   ) {
     // The Ice Witch's ring: quiet while she is selected, prominent while
     // her Freeze button is hovered or focused.
@@ -1994,10 +2025,13 @@ export function buildBoardRenderPlanV7(
     dwarfPick === null &&
     candyPick === null &&
     giantPick === null &&
-    freezePick === null
+    freezePick === null &&
+    cultPick === null
   )
     // A Submarine the selected unit cannot attack from where it stands.
     addSubmergedReasonEntriesV7(entries, view, commands, selectedUnitId);
+  // The Cultists: the grey reasons of an aimed Sacrifice or Seize.
+  if (cultPick !== null) addCultPickEntriesV7(entries, view, targets, cultPick);
   for (const target of targets) {
     if (target.family === "LAY_EGG")
       entries.push({

@@ -4,6 +4,7 @@ import {
   unitGrowsV7,
   type CityId,
   type CoordV7,
+  type FavourSourceV7,
   type PlayerEventEnvelopeV7,
   type PlayerViewV7,
   type PublicUnitV7,
@@ -86,6 +87,33 @@ export interface PopulationGainV7 {
   readonly meterBefore: { readonly level: number; readonly population: number };
 }
 
+/**
+ * The Cultists (bead pulp_wars-mch9.17, RULESET_7_CULTISTS.md section 3):
+ * Favour the viewer's seat gained, from the tile that paid it (the victim's
+ * of a Sacrifice or a Seizure, the city's of an Offering, the tile a Chosen
+ * died on). Another seat's Favour is public but flies nowhere: it is read
+ * off the leaderboard.
+ */
+export interface FavourGainV7 {
+  readonly source: FavourSourceV7;
+  /** The tile the Favour comes from. */
+  readonly at: CoordV7;
+  /** Whole Favour, at least 1. */
+  readonly amount: number;
+}
+
+/**
+ * The Cultists (section 5.3): population a visible city gave up in an
+ * Offering. The city's meter drops at once; the pips that went rise and
+ * fade from it.
+ */
+export interface PopulationLossV7 {
+  readonly cityId: number;
+  readonly at: CoordV7;
+  /** Whole population, at least 1. */
+  readonly amount: number;
+}
+
 export interface PromotionCueV7 {
   readonly unitId: number;
   readonly at: CoordV7;
@@ -106,6 +134,10 @@ export interface FeedbackPlanV7 {
   readonly roadLinks: readonly RoadLinkV7[];
   /** Bead pulp_wars-v56v: the viewer's cities that lost Road population. */
   readonly roadUnlinks: readonly RoadUnlinkV7[];
+  /** The Cultists: the Favour the viewer's seat gained, by tile. */
+  readonly favour: readonly FavourGainV7[];
+  /** The Cultists: the population visible cities gave up in Offerings. */
+  readonly populationLosses: readonly PopulationLossV7[];
 }
 
 export const EMPTY_FEEDBACK_PLAN_V7: FeedbackPlanV7 = Object.freeze({
@@ -116,6 +148,8 @@ export const EMPTY_FEEDBACK_PLAN_V7: FeedbackPlanV7 = Object.freeze({
   promoted: [],
   roadLinks: [],
   roadUnlinks: [],
+  favour: [],
+  populationLosses: [],
 });
 
 /**
@@ -329,11 +363,47 @@ export function feedbackPlanV7(
   };
   // Hostile deaths so far, newest last: a Plunder comes from its kills.
   const fallen: CoordV7[] = [];
+  // The Cultists: Favour is paid right after what earned it (a victim
+  // offered, a city's Offering, a death), so each gain comes from the tile
+  // of the latest of those; `FAVOUR_GAINED` itself names no tile.
+  const favour: FavourGainV7[] = [];
+  const populationLosses: PopulationLossV7[] = [];
+  let favourAt: CoordV7 | null = null;
   for (const event of envelope.events) {
     switch (event.kind) {
       case "UNIT_DIED": {
         const unit = before.units.find((item) => item.id === event.unitId);
         if (unit !== undefined && unit.ownerId !== viewer) fallen.push(unit.at);
+        if (unit !== undefined) favourAt = unit.at;
+        break;
+      }
+      case "UNIT_SACRIFICED":
+      case "UNIT_SEIZED":
+        favourAt = event.at;
+        break;
+      case "OFFERING_MADE": {
+        favourAt = event.at;
+        if (
+          event.population > 0 &&
+          after.cities.some((city) => city.id === event.cityId)
+        )
+          populationLosses.push({
+            cityId: event.cityId,
+            at: event.at,
+            amount: event.population,
+          });
+        break;
+      }
+      case "FAVOUR_GAINED": {
+        const source = favourAt ?? home;
+        if (
+          event.playerId !== viewer ||
+          source === null ||
+          !Number.isSafeInteger(event.amount) ||
+          event.amount <= 0
+        )
+          break;
+        favour.push({ source: event.source, at: source, amount: event.amount });
         break;
       }
       case "INCOME_AWARDED": {
@@ -555,5 +625,7 @@ export function feedbackPlanV7(
     promoted,
     roadLinks: roads.linked,
     roadUnlinks: roads.unlinked,
+    favour,
+    populationLosses,
   };
 }
