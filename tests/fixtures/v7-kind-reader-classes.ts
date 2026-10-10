@@ -615,6 +615,11 @@ export const KIND_READER_CLASSES_V7: Readonly<
   // it never reaches the read).
   "src/engine/v7/cult-rituals.ts::applyBeginRitualV7": "SEAT",
   "src/engine/v7/query.ts::publicRitualSeatV7": "SEAT",
+  // The interface's reason for a ritual that is not offered
+  // (`pulp_wars-mch9.19`) reads the same seat's technology, as the public
+  // query above does.
+  "src/render/cult-ritual-presentation-v7.ts::cultTrickUnavailableTextV7":
+    "SEAT",
   // The Cult's Unbound (`pulp_wars-mch9.6`): the seat that summoned an
   // Unbound daemon is a Cult seat (a seat's own faction; a daemon is never
   // mind-controlled).

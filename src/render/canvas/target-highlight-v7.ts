@@ -169,6 +169,16 @@ const FAMILY_STYLES_V7: Readonly<Record<string, TargetHighlightStyleV7>> = {
   SUMMON: "PLACE",
   CHANNEL: "SUPPORT",
   ANCHOR: "SUPPORT",
+  // Rituals, hexes and tricks (`pulp_wars-mch9.19`): a rite's mark, and a
+  // Tentacle, are put on a tile (Place); a Proclaim and a Ribbit harm what
+  // they pick (Attack). A Switcheroo says its own style for each target: an
+  // own unit is helped, an enemy harmed.
+  STARFALL: "PLACE",
+  GREAT_SUMMONING: "PLACE",
+  TENTACLE: "PLACE",
+  PROCLAIM: "ATTACK",
+  RIBBIT: "ATTACK",
+  SWITCHEROO: "ATTACK",
 };
 
 /** Every family the vocabulary knows, for the audit and its tests. */

@@ -1,4 +1,5 @@
 import {
+  previewRitualV7,
   unitFactionV7,
   unitRoleRuleV7,
   type CoordV7,
@@ -35,6 +36,7 @@ import {
   type CultFeedbackV7,
 } from "./cult-effects-v7";
 import { favourEntriesV7 } from "../cult-presentation-v7";
+import { cultTrickTileLinesV7 } from "../cult-ritual-presentation-v7";
 import {
   MARTIAN_EFFECT_SUBJECTS_V7,
   drawMartianFeedbackV7,
@@ -2881,6 +2883,11 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       ...crumbsTileLinesV7(model.view, at),
       // The Candy redesign: the tile's Glaze this turn.
       ...glazeTileLinesV7(model.view, at),
+      // The Cultists (bead pulp_wars-mch9.19): a ritual's mark and what
+      // it will do, a star's path, a Cowed city, and the tile's hexes.
+      ...cultTrickTileLinesV7(model.view, at, (ritual) =>
+        previewRitualV7(model.view, ritual),
+      ),
       // Map curiosities: the tile's curiosity and its one sentence.
       ...(() => {
         const curiosity = curiosityOverlayOnTileV7(model.view, at);

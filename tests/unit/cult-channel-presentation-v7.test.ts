@@ -1184,7 +1184,9 @@ describe("what each event plays", () => {
     const effects = Object.keys(
       CULT_EFFECT_DURATIONS_V7,
     ) as CultFeedbackEffectV7[];
-    expect(effects).toHaveLength(6);
+    // The channel's six and the twelve of rituals, hexes and tricks (bead
+    // pulp_wars-mch9.19).
+    expect(effects).toHaveLength(18);
     const state = cultChannelUiFixtureV7();
     const view = viewOf(state);
     for (const effect of effects) {

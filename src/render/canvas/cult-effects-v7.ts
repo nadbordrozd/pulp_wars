@@ -2,6 +2,15 @@ import type { CultEffectIdV7 } from "../../assets/chibi-art-v7";
 import type { CoordV7 } from "../../engine/index";
 import { chibiMasterScale } from "./chibi-geometry-v7";
 import { CULT_PALETTE_V7, drawCultStrandV7 } from "./cult-channel-canvas-v7";
+import {
+  CULT_STARFALL_STAR_SPRITE_V7,
+  CULT_TRICK_EFFECT_DURATIONS_V7,
+  CULT_TRICK_EFFECT_SPRITES_V7,
+  CULT_TRICK_STILL_PROGRESS_V7,
+  drawCultTrickFeedbackV7,
+  isCultTrickEffectV7,
+  type CultTrickEffectV7,
+} from "./cult-trick-effects-v7";
 import { projectGrid, worldToScreen, type CameraState } from "./geometry";
 import type { SupportEffectArtV7 } from "./support-presentation-v7";
 
@@ -25,14 +34,22 @@ import type { SupportEffectArtV7 } from "./support-presentation-v7";
  * for its `EFFECT:*` sprite and draws it over the code-drawn shape when the
  * art has registered one.
  */
-export type CultFeedbackEffectV7 =
+export type CultChannelEffectV7 =
   "SUMMON" | "STRAND_FORMED" | "STRAND_SNAP" | "IDOL" | "BOO" | "UNBOUND";
+/**
+ * Every Cult cue: the channel's, and those of rituals, hexes and tricks
+ * (bead `pulp_wars-mch9.19`, cult-trick-effects-v7.ts).
+ */
+export type CultFeedbackEffectV7 = CultChannelEffectV7 | CultTrickEffectV7;
 
 export interface CultFeedbackV7 {
   readonly effect: CultFeedbackEffectV7;
   /** The cue's cells: the daemon's tile, the Horror's, the Idol Bearer's. */
   readonly cells: readonly CoordV7[];
-  /** STRAND_FORMED and STRAND_SNAP: the channeller's cell. */
+  /**
+   * STRAND_FORMED and STRAND_SNAP: the channeller's cell. RIBBIT: the
+   * Hexer's.
+   */
   readonly from?: CoordV7;
   readonly progress: number;
 }
@@ -46,12 +63,14 @@ export const CULT_EFFECT_DURATIONS_V7: Readonly<
   IDOL: 320,
   BOO: 360,
   UNBOUND: 620,
+  ...CULT_TRICK_EFFECT_DURATIONS_V7,
 };
 
 /** The still frame of each cue under reduced motion. */
 export function cultReducedMotionProgressV7(
   effect: CultFeedbackEffectV7,
 ): number {
+  if (isCultTrickEffectV7(effect)) return CULT_TRICK_STILL_PROGRESS_V7[effect];
   return effect === "STRAND_SNAP"
     ? 0.3
     : effect === "STRAND_FORMED"
@@ -67,11 +86,16 @@ export const CULT_EFFECT_SPRITES_V7: Readonly<
   STRAND_SNAP: "EFFECT:STRAND_SNAP",
   BOO: "EFFECT:BOO",
   UNBOUND: "EFFECT:UNBOUND",
+  ...CULT_TRICK_EFFECT_SPRITES_V7,
 };
 
-/** The channel cues' sprites, loaded only in a match with a Cult seat. */
-export const CULT_EFFECT_SUBJECTS_V7: readonly `EFFECT:${CultEffectIdV7}`[] =
-  Object.values(CULT_EFFECT_SPRITES_V7);
+/** The Cult cues' sprites, loaded only in a match with a Cult seat. */
+export const CULT_EFFECT_SUBJECTS_V7: readonly `EFFECT:${CultEffectIdV7}`[] = [
+  ...new Set([
+    ...Object.values(CULT_EFFECT_SPRITES_V7),
+    CULT_STARFALL_STAR_SPRITE_V7,
+  ]),
+];
 
 function clamp01(value: number): number {
   return Math.max(0, Math.min(1, value));
@@ -178,6 +202,11 @@ export function drawCultFeedbackV7(
   feedback: CultFeedbackV7,
   art: SupportEffectArtV7 | null = null,
 ): void {
+  const { effect } = feedback;
+  if (isCultTrickEffectV7(effect)) {
+    drawCultTrickFeedbackV7(context, camera, { ...feedback, effect }, art);
+    return;
+  }
   // Cue sizes are tuned on a 128-unit cell and drawn 1.35x, so each cue
   // reads at the smallest zoom; a strand keeps the board's own scale.
   const boardZoom = camera.zoom;

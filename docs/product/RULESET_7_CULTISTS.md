@@ -1187,9 +1187,7 @@ and [the screen flow](../ui/SCREEN_FLOW.md):
   −2 people"; its accessible name says "Offering · +3 Favour · −2
   population". When it is made, the city's two pips rise and fade and the
   notice reads "Offering: +3 Favour, −2 population".
-- **Pamphlets** has no cue yet: the rule arrives with E6
-  ([section 8.7](#87-pamphlets-the-initiate)), and its capture cue with it or
-  after it. Nothing in the interface claims it today.
+- **Pamphlets** had no cue in U1; U3 added it (below).
 - **Colour:** Cult chips use the hue token `--pw-emerald` on its mint fill
   ([the Cult's direction](../art/factions/CULT.md)).
 
@@ -1247,6 +1245,123 @@ item 13). The details are in
   the daemon is picked on the board (coordinator's decision, 2026-10-10).
 - **Sounds** use the game's existing ones (a sparkle, a pop, the rally
   horn, a boing, the dark chord) until the Cult's own are recorded.
+
+**As built by U3** (`pulp_wars-mch9.19`; it closes item 17 of
+[section 21.5](#215-e5-rituals-and-the-herald-pulp_wars-mch97-pulp-wars-poc-7r77)
+and item 16 of
+[section 21.6](#216-e6-hexes-and-tricks-pulp_wars-mch98-pulp-wars-poc-7r78)).
+The details are in
+[Board targeting, section 3.9](../ui/BOARD_TARGETING.md#39-the-cultists-rituals-hexes-and-tricks-bead-pulp_wars-mch919).
+The decisions U3 took where this table left room:
+
+- **A rite's mark is chosen, then begun.** Star-fall (the Stargazer) and
+  the Great Summoning (the Summoner, with its price "−20" and the candle)
+  have one button each. Armed, every legal mark is a Place tile and the
+  cultists that would chant are labelled "Chants". The first pick of a
+  tile only previews it: a star's nine tiles with what each unit there
+  takes (the warning stripes on the player's own), or what the Herald does
+  on its tile ("+18 Favour" on a unit it consumes, "Blocks" on one that
+  stops it), with one line in the dock ("2 chanters · 7 damage · 3 units ·
+  1 of yours") and one confirmation, **Begin**. Picking the same tile
+  again begins it too; another tile moves the mark; Escape steps back to
+  choosing (the panel holds Begin and Cancel only, so it fits a 320 px
+  phone). A rite cannot be taken back, a star hurts friends, and
+  a touch has no hover: so it is the Stampede's and the Tunnel's
+  choose-then-confirm, not a single click.
+- **A ritual under way**, for every viewer who knows of it: a chalk ring
+  on the ground under the leader (a double ring) and under each chanter, a
+  candle over each of them, the rite's badge on the leader (a star, or the
+  lodge's eye), a chalk sign on the marked tile (an eight-pointed star in a
+  circle, or the eye in a circle) and the **countdown**, a dark dial with
+  its ring and the number of turns left. Every rite completes at the start
+  of its seat's next turn, so the number is always 1. A star's nine tiles
+  are outlined on a warning tint and every unit there carries what it
+  takes ("−7", red when it dies); the unit on a Great Summoning's mark
+  carries "Blocks" or the Favour it is consumed for. The cursor says the
+  rest in one sentence ("Star-fall lands here at the start of Player 2's
+  next turn: 7 damage to every unit on the nine tiles ... Disrupt its
+  circle and nothing happens"). The chalk is drawn under trees, rocks and
+  pieces; everything else over them.
+- **The Great Summoning's button is not shown without a circle.** A
+  Summoner with fewer than three robed cultists beside it has no Great
+  Summoning button at all (its dock already holds Sacrifice, Seize, Summon
+  and Channel); with a circle that cannot chant it shows the reason
+  ("Needs 3 cultists beside it that have not acted", "Needs 20 Favour").
+  A Stargazer always shows Star-fall, with its reason ("It must not have
+  moved this turn", "A cultist that has not acted must stand next to it"):
+  it has no other action.
+- **Proclaim, Ribbit, Switcheroo and Tentacle are always armed** and sent
+  by the pick, even with one target: each is hostile or cannot be taken
+  back, and its target may also be attacked or selected by a plain click
+  (the arming rule). A Proclaim's cities and a Ribbit's units wear the
+  Attack mark ("Kneel!", "Frog"); a Switcheroo's units wear "Swap" on the
+  Help ring (own) or the Attack mark (enemy); a Tentacle's tiles are Place
+  marks. A unit in reach that no hex takes, and a city that kneels
+  already, keep a grey reason ("Cannot be hexed", "A frog", "Cowed").
+- **Switcheroo's ghosts** are shown for the focused target (the pointer
+  over it, or the keyboard on it; the only target has them at once): each
+  of the two units drawn faintly up and to the right of the other's tile,
+  and two bowed arrows between the tiles. A touch has no hover, so a tap
+  swaps at once; the cursor's sentence names the unit and what the swap
+  breaks. A Tentacle's focused tile marks the unit it slaps at once
+  ("Slapped", with the warning stripes on the player's own).
+- **Pick Me! is cast by its button** (it has no target). While the Chosen
+  is selected and the shout is offered, each enemy it would bind is
+  labelled "Bound" with a pale tether. A Chosen that shouted has a "ME!"
+  bubble over it and a red tether from each unit it binds, for every
+  viewer. The raised hand is the Chosen's own sprite.
+- **A frog** is the unit's own sprite with a small frog on the lower left
+  of its base (the art's `FROG`, teal so it reads on Grass) and one pip
+  for the turn it has left. Its card shows the frog's real numbers:
+  Defense 0.5, Move 1 and no Attack ("—"), with no modifier, beside the
+  chip "Frog". The chips of harm done to a unit (Frog, Grabbed, Taunted)
+  take the loss colour; a Hexer or Familiar that used its trick has the
+  chip "Spent" and the reason "Spent: ready again next turn" on its
+  button; a frogged cultist's tricks read "A frog can only hop".
+- **Grab** is a teal arm from the Tentacle that coils once round the unit
+  it holds. A Tentacle has three pips under it, lit for the neutral turns
+  it has left. (Its dock lines are E6's.)
+- **Cowed** is a small indigo banner over the city with closed shutters
+  and "KNEEL!", and the line "Status: Cowed" in the city's panel, for
+  every player who sees the city.
+- **The Herald's two attacks** (Ravage) are a chip on its owner's card,
+  "Attacks" with two pips, lit for an attack it has left; a Proclaim
+  spends one. A unit that attacks nobody (the Stargazer) shows "—" for its
+  Range.
+- **The Unbound Herald's binding** needs three strands, so it is the first
+  daemon whose binding is seen half done: its pips are U2's (lit for the
+  strands held this turn, hollow in cream for those still needed, no red
+  rim) and its card reads "2 / 3"; the third cultist's button reads "Bind"
+  with "3 / 3".
+- **Cues and notices.** Each event plays one cue, 320 to 700 ms, held as a
+  still frame under reduced motion: the chalk running round a new circle,
+  grey smoke over a fizzled one, the star falling and its burst over the
+  nine tiles (then each hit), the Herald's pillar of green light, a green
+  puff for a consumed unit, rings and "KNEEL!" over a Cowed city, a spark
+  from the Hexer that pops on the frog, a swirl on both tiles of a swap, a
+  teal splash where a Tentacle rises or sinks, its coil closing on a Grab,
+  "ME!" bursting over the Chosen, and **Pamphlets**: leaflets fluttering up
+  from a village an Initiate takes in the turn it walked onto it. The
+  toast says what the board might not: "Star-fall begun: it completes at
+  the start of your next turn", "Player 1 begins Star-fall: break its
+  circle before their next turn", "Your Great Summoning fizzled: the mark
+  was blocked", "The star fell: 7 damage", "The Herald arrives", "KNEEL!
+  Your city is Cowed: no income and no city action this turn", "Your
+  Knight is a frog until your next turn ends", "Switcheroo! Your Knight
+  was swapped away", "A Tentacle grabs your Fighter", "Pick Me! Your units
+  beside the Chosen can attack only it".
+- **Help.** The game's Help has no faction sections; each chip has its
+  sentence in the unit's "?" through the glossary (a chanter's "Chanting"
+  is new; a Herald's attacks read Ravage's).
+- **Sounds and music.** The cues use the game's existing sounds (the dark
+  chord for a rite and the Herald, a magic shot and an explosion for the
+  star, a pop for Ribbit, a splash for the Tentacle, the rally horn for
+  Proclaim and Pick Me!). The Cult's own sounds of
+  [section 14.2](#142-colour-looks-sound-music) (the croak, the
+  paper-rustle, the booming "KNEEL!") and its theme are **not made here**:
+  the theme music is encoded from masters recorded outside the repository
+  (`scripts/audio/encode-themes.ts`), so a Cult match plays the title
+  theme until one is delivered.
 
 ## 15. Normal AI
 
@@ -2900,10 +3015,11 @@ where this spec left room:
     both by its plan,
     [section 15.8](#158-as-built-a3-the-cult-seats-rituals-and-tricks-pulp_wars-mch911);
     the older policy still picks neither.)
-17. **The interface.** The browser offers no button for a ritual or a
-    Proclaim yet (a Star-fall alone is one command per tile in reach):
-    rings, countdowns, marks, and the buttons are bead U3
-    (`pulp_wars-mch9.19`). The technology card of The Stars Are Right names
+17. **The interface.** E5 left the browser without a button for a ritual
+    or a Proclaim (a Star-fall alone is one command per tile in reach); the
+    buttons, rings, countdowns, and marks are bead U3's
+    (`pulp_wars-mch9.19`, [section 14.3](#143-how-it-reads-on-the-board-without-text),
+    "As built by U3"). The technology card of The Stars Are Right names
     the Great Summoning, and the glossary has Star-fall, Ravage,
     Unstoppable, and Proclaim. The text-mode harness prints a line per
     command (`.starfall.x,y`, `.summoning.x,y`, `.proclaim.cN`), the circles
@@ -3046,9 +3162,11 @@ is in the engine. The choices E6 made where this spec left room:
     for a kill this turn. (Bead A4 adds the blow of the unit it holds, and
     every seat's play against a frog and a taunt:
     [section 15.9](#159-as-built-a4-every-seat-against-the-cult-pulp_wars-mch912).)
-16. **The interface.** The browser offers no button for the four commands
-    yet, draws no frog, taunt, or Grab mark, and a frog's unit card still
-    shows its ordinary Defense and Move (bead U3, `pulp_wars-mch9.19`). The
+16. **The interface.** E6 left the browser without a button for the four
+    commands, without a frog, taunt, or Grab mark, and with a frog's
+    ordinary Defense and Move on its card; all of it is bead U3's
+    (`pulp_wars-mch9.19`, [section 14.3](#143-how-it-reads-on-the-board-without-text),
+    "As built by U3"). The
     technology card of Familiars names Switcheroo; the glossary has
     Pamphlets, Switcheroo, Ribbit, Tentacle, Pick Me!, Grab, the wild
     Tentacle, and the statuses Frog, Grabbed, Taunted, and Spent; a

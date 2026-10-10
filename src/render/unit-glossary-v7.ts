@@ -288,6 +288,11 @@ const ENTRIES = {
     "Spent",
     "It used its trick. It cannot use it again on its next turn.",
   ],
+  // The chip of a ritual's leader and chanters (`pulp_wars-mch9.19`).
+  STATUS_CHANTING: [
+    "Chanting",
+    "It takes part in a ritual that completes when its owner's next turn starts. Hurt, move or hex it and it leaves the circle.",
+  ],
 
   // ------------------------------------------------------------------ ships
   SHIP: ["Ship", "Built at a Port. It heals only next to your own Ports."],
@@ -1161,6 +1166,9 @@ const STATUS_IDS: Readonly<Record<string, GlossaryIdV7>> = {
   taunted: "STATUS_TAUNTED",
   "pick-me": "PICK_ME",
   "hex-spent": "STATUS_HEX_SPENT",
+  // A chanter, and a Herald's attacks left (`pulp_wars-mch9.19`).
+  chanting: "STATUS_CHANTING",
+  attacks: "RAVAGE",
 };
 
 /** Every status ID the unit dock can put on a chip (`data-unit-status`). */

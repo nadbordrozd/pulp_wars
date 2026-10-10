@@ -60,6 +60,8 @@ import {
   previewKaboomV7,
   previewOfferingV7,
   previewBooV7,
+  previewBeginRitualV7,
+  HERALD_FAVOUR_COST_V7,
   previewChannelV7,
   HORROR_FAVOUR_COST_V7,
   favourOfV7,
@@ -682,6 +684,27 @@ import {
   type CultChannelKindV7,
 } from "../cult-channel-presentation-v7";
 import {
+  COWED_LABEL_V7,
+  COWED_TOOLTIP_V7,
+  CULT_TRICK_KINDS_V7,
+  CULT_TRICK_LABELS_V7,
+  CULT_TRICK_PICKS_V7,
+  CULT_TRICK_TOOLTIPS_V7,
+  RITUAL_BEGIN_V7,
+  RITUAL_CONFIRM_HINT_V7,
+  beginRitualSummaryV7,
+  cityCowedV7,
+  cultTrickChipsV7,
+  cultTrickCommandsV7,
+  cultTrickUnavailableTextV7,
+  frogCardStatsV7,
+  type CultTrickKindV7,
+} from "../cult-ritual-presentation-v7";
+import {
+  isCultTrickPickV7,
+  type CultTrickPickV7,
+} from "../canvas/cult-ritual-board-plan-v7";
+import {
   summonHelpersV7,
   type CultChannelPickV7,
 } from "../canvas/cult-channel-board-plan-v7";
@@ -1078,6 +1101,24 @@ const CULT_CHANNEL_TEXT_V7: Readonly<
   },
   BOO: { label: BOO_LABEL_V7, tooltip: BOO_TOOLTIP_V7, icon: "boo" },
 };
+/**
+ * Rituals, hexes and tricks (bead pulp_wars-mch9.19): the glyph of each
+ * action, shown until (and, in the classic look, instead of) its
+ * `ICON:ACTION:<KIND>` raster.
+ */
+const CULT_TRICK_ICONS_V7: Readonly<Record<CultTrickKindV7, UiIconIdV7>> = {
+  STARFALL: "comet",
+  GREAT_SUMMONING: "eye",
+  PROCLAIM: "megaphone",
+  RIBBIT: "frog",
+  SWITCHEROO: "swap",
+  TENTACLE: "tentacle",
+  PICK_ME: "shout",
+};
+/** "cult-great-summoning": the action and the focus name of a trick. */
+function cultTrickSlugV7(kind: string): string {
+  return `cult-${kind.toLowerCase().replaceAll("_", "-")}`;
+}
 /** The instruction of an aimed channel action. */
 function cultChannelPickPromptV7(pick: CultChannelPickV7): string {
   switch (pick.kind) {
@@ -5221,6 +5262,38 @@ export class Ruleset7DomAppView {
         cue.setAttribute("aria-label", `${chip.label}. ${chip.status}`);
         identityColumn?.append(cue);
       }
+      // Rituals, hexes and tricks (bead pulp_wars-mch9.19), likewise on a
+      // unit of any owner: a chanter, a frog, a unit a Tentacle holds or a
+      // Chosen binds, a Chosen that shouted, a spent trick, and the
+      // attacks an own Herald has left as pips.
+      for (const chip of cultTrickChipsV7(view, unit)) {
+        const cue = el(this.#document, "span", "v7-chip v7-cult-chip");
+        const glyph =
+          chip.icon === null
+            ? undefined
+            : this.#chibiArt(chip.icon, CHIBI_DOM_BOXES_V7.leaderboard)
+                ?.element;
+        if (glyph !== undefined) {
+          glyph.classList.add("v7-cult-chip-icon");
+          cue.append(glyph);
+        }
+        cue.append(text(this.#document, "span", chip.label));
+        if (chip.pips !== undefined) {
+          const pips = el(this.#document, "span", "v7-cult-pips");
+          pips.setAttribute("aria-hidden", "true");
+          for (let index = 0; index < chip.pips.of; index += 1) {
+            const pip = el(this.#document, "span", "v7-cult-pip");
+            pip.dataset.lit = String(index < chip.pips.lit);
+            pips.append(pip);
+          }
+          cue.append(pips);
+        }
+        cue.dataset.unitStatus = chip.id;
+        if (chip.harm === true) cue.dataset.harm = "true";
+        cue.title = chip.status;
+        cue.setAttribute("aria-label", `${chip.label}. ${chip.status}`);
+        identityColumn?.append(cue);
+      }
       // The Dwarf revision (section 16.1): Dig In, the clockwork status, the
       // Gunner's shots, Plated, the rider's surfacing brake and "bombed this
       // turn", from `stats.dwarf` and the per-turn flags.
@@ -5307,7 +5380,21 @@ export class Ruleset7DomAppView {
           identityColumn?.append(cues);
         }
         const rows = el(this.#document, "dl", "v7-unit-stats");
+        // A frog's real numbers (bead pulp_wars-mch9.19, section 9.1): its
+        // flat Defense, its one Move and no Attack, with no modifier (no
+        // fortification and no cover reach a frog).
+        const frogStats = frogCardStatsV7(view, unit);
         for (const stat of stats.stats) {
+          const frogValue =
+            frogStats === null
+              ? null
+              : stat.id === "DEFENSE"
+                ? frogStats.defense
+                : stat.id === "MOVE"
+                  ? frogStats.move
+                  : stat.id === "ATTACK"
+                    ? frogStats.attack
+                    : null;
           // An Egg cannot move or fight: only its HP and Defense matter.
           if (egg && stat.id !== "HP" && stat.id !== "DEFENSE") continue;
           // The Giant Spider explores nothing: it has no Sight. Bigfoot
@@ -5324,24 +5411,31 @@ export class Ruleset7DomAppView {
             text(
               this.#document,
               "span",
-              stat.id === "HP"
-                ? `${unit.hp}/${unit.maxHp}`
-                : // The Martian revision: "Shield 2 / 4" (current / maximum,
-                  // the Force Field's raise included).
-                  stat.id === "SHIELD"
-                  ? `${stat.current ?? 0}/${formatValue(stat.total)}`
-                  : stat.id === "RANGE" &&
-                      stats.minimumRange !== stats.maximumRange
-                    ? `${stats.minimumRange}–${stats.maximumRange}`
-                    : stat.id === "RANGE" &&
-                        undeadUnit &&
-                        unit.form === "LAND" &&
-                        stats.maximumRange === 0
+              frogValue !== null
+                ? frogValue
+                : stat.id === "HP"
+                  ? `${unit.hp}/${unit.maxHp}`
+                  : // The Martian revision: "Shield 2 / 4" (current / maximum,
+                    // the Force Field's raise included).
+                    stat.id === "SHIELD"
+                    ? `${stat.current ?? 0}/${formatValue(stat.total)}`
+                    : // A unit that attacks nobody (the Cult's Stargazer)
+                      // has no Range.
+                      stat.id === "RANGE" &&
+                        stats.maximumRange < stats.minimumRange
                       ? "—"
-                      : formatValue(stat.base.value),
+                      : stat.id === "RANGE" &&
+                          stats.minimumRange !== stats.maximumRange
+                        ? `${stats.minimumRange}–${stats.maximumRange}`
+                        : stat.id === "RANGE" &&
+                            undeadUnit &&
+                            unit.form === "LAND" &&
+                            stats.maximumRange === 0
+                          ? "—"
+                          : formatValue(stat.base.value),
             ),
           );
-          for (const [index, modifier] of (exact
+          for (const [index, modifier] of (exact && frogValue === null
             ? stat.modifiers
             : []
           ).entries()) {
@@ -5379,7 +5473,7 @@ export class Ruleset7DomAppView {
             };
             value.append(term);
           }
-          if (!exact)
+          if (!exact && frogValue === null)
             value.append(text(this.#document, "span", "+?", "v7-stat-unknown"));
           const term = el(this.#document, "dt", "v7-stat-term");
           term.title = stat.label;
@@ -5390,6 +5484,7 @@ export class Ruleset7DomAppView {
           const row = el(this.#document, "div", "v7-stat");
           row.dataset.stat = stat.id.toLowerCase();
           row.title = stat.label;
+          if (frogValue !== null) row.dataset.frog = "true";
           row.append(term, value);
           rows.append(row);
         }
@@ -5596,6 +5691,9 @@ export class Ruleset7DomAppView {
         // Summon, Channel, Behold!, Anchor and Boo!.
         ...this.#cultActionButtons(view, unit.id),
         ...this.#cultChannelActionButtons(view, unit.id),
+        // Rituals, hexes and tricks: Star-fall, the Great Summoning,
+        // Proclaim, Ribbit, Switcheroo, Tentacle and Pick Me!.
+        ...this.#cultTrickActionButtons(view, unit.id),
       ].reverse())
         actions.prepend(button);
       if (goblinFieldDefenseBlockedV7(view, unit.id)) {
@@ -6145,6 +6243,22 @@ export class Ruleset7DomAppView {
           text(this.#document, "dd", "Besieged"),
         );
         details.append(siege);
+      }
+      // Proclaim (bead pulp_wars-mch9.19, section 8.6): a Cowed city, for
+      // every player who sees it.
+      if (cityCowedV7(view, city.id)) {
+        const cowed = el(this.#document, "div", "v7-city-stat is-warning");
+        cowed.dataset.stat = "cowed";
+        cowed.title = COWED_TOOLTIP_V7;
+        cowed.setAttribute(
+          "aria-label",
+          `${COWED_LABEL_V7}. ${COWED_TOOLTIP_V7}`,
+        );
+        cowed.append(
+          text(this.#document, "dt", "Status"),
+          text(this.#document, "dd", COWED_LABEL_V7),
+        );
+        details.append(cowed);
       }
       dock.append(details);
       if (owned) {
@@ -7383,6 +7497,40 @@ export class Ruleset7DomAppView {
       this.#render();
       this.#queueBoardFocus();
       return;
+    }
+    // Rituals (bead pulp_wars-mch9.19): the first choice of a rite's mark
+    // previews it (the star's nine tiles and its hits, or what the Herald
+    // does there); choosing the same tile again begins the ritual.
+    if (
+      (target.family === "STARFALL" || target.family === "GREAT_SUMMONING") &&
+      command.kind === "BEGIN_RITUAL"
+    ) {
+      const pick = this.#cultPick;
+      if (
+        pick !== null &&
+        (pick.kind === "STARFALL" || pick.kind === "GREAT_SUMMONING") &&
+        pick.unitId === command.unitId &&
+        !(pick.chosen !== null && same(pick.chosen, command.at))
+      ) {
+        this.#cultPick = { ...pick, chosen: command.at };
+        const view = this.#snapshot.view;
+        const preview =
+          view === null || view === undefined
+            ? null
+            : previewBeginRitualV7(
+                view,
+                command.unitId,
+                command.ritual,
+                command.at,
+              );
+        this.#notice =
+          preview === null || view === null || view === undefined
+            ? `${RITUAL_CONFIRM_HINT_V7}.`
+            : `${beginRitualSummaryV7(view, preview)}. ${RITUAL_CONFIRM_HINT_V7}.`;
+        this.#render();
+        this.#queueBoardFocus();
+        return;
+      }
     }
     // The giants' signatures (`pulp_wars-w49.32`): choosing the Goblin to
     // throw moves on to its landing tiles, and the first Gingerbread Man's
@@ -11989,9 +12137,22 @@ export class Ruleset7DomAppView {
       this.#queueBoardFocus();
       return;
     }
+    // A rite's chosen mark first steps back to choosing it.
+    if (
+      stepBack &&
+      pick !== null &&
+      (pick.kind === "STARFALL" || pick.kind === "GREAT_SUMMONING") &&
+      pick.chosen !== null
+    ) {
+      this.#cultPick = { ...pick, chosen: null };
+      this.#notice = `${CULT_TRICK_PICKS_V7[pick.kind]}.`;
+      this.#render();
+      this.#queueBoardFocus();
+      return;
+    }
     this.#cultPick = null;
     this.#pendingFocusAction =
-      pick === null ? null : `cult-${pick.kind.toLowerCase()}`;
+      pick === null ? null : cultTrickSlugV7(pick.kind);
     this.#render();
   }
 
@@ -12004,6 +12165,7 @@ export class Ruleset7DomAppView {
   #cultPickPanel(unitId: UnitId): HTMLElement | null {
     const pick = this.#cultPick;
     if (pick === null || pick.unitId !== unitId) return null;
+    if (isCultTrickPickV7(pick)) return this.#cultTrickPickPanel(pick, unitId);
     if (!isCultOfferingPickV7(pick))
       return this.#cultChannelPickPanel(pick, unitId);
     const commands = this.#snapshot.offeredCommands.filter(
@@ -12295,6 +12457,205 @@ export class Ruleset7DomAppView {
       back.onclick = () => this.#cancelCultPick(true);
       buttons.append(back);
     }
+    const cancel = button(
+      this.#document,
+      "Cancel",
+      "cult-pick-cancel",
+      "v7-kaboom-cancel",
+    );
+    cancel.onclick = () => this.#cancelCultPick();
+    buttons.append(cancel);
+    panel.append(buttons);
+    return panel;
+  }
+
+  /**
+   * Rituals, hexes and tricks (bead pulp_wars-mch9.19; BOARD_TARGETING.md
+   * section 3.9): one button per action of the selected own unit, whatever
+   * the number of tiles, cities or units: Star-fall, the Great Summoning,
+   * Proclaim, Ribbit, Switcheroo and Tentacle arm their aiming (pressed
+   * while aiming) and are picked on the board; Pick Me! targets nothing
+   * and is cast by its button, the enemies it would bind being marked
+   * while the Chosen is selected. Without an offered command a button is
+   * shown disabled with the engine's reason, or not at all when the unit
+   * lacks the technology.
+   */
+  #cultTrickActionButtons(
+    view: PlayerViewV7,
+    unitId: UnitId,
+  ): readonly HTMLButtonElement[] {
+    const unit = view.units.find((candidate) => candidate.id === unitId);
+    if (
+      unit === undefined ||
+      unit.ownerId !== view.viewer.id ||
+      this.#snapshot.offeredCommands.length === 0
+    )
+      return [];
+    const buttons: HTMLButtonElement[] = [];
+    for (const kind of CULT_TRICK_KINDS_V7) {
+      const commands = cultTrickCommandsV7(
+        this.#snapshot.offeredCommands,
+        kind,
+        unit.id,
+      );
+      const offered = commands.length > 0;
+      const reason = cultTrickUnavailableTextV7(view, unit, kind, offered);
+      if (!offered && reason === null) continue;
+      const label = CULT_TRICK_LABELS_V7[kind];
+      const tooltip = CULT_TRICK_TOOLTIPS_V7[kind];
+      const slug = cultTrickSlugV7(kind);
+      const action = button(this.#document, "", slug, "v7-context-action");
+      action.append(
+        this.#chibiArt(`ICON:ACTION:${kind}`, CHIBI_DOM_BOXES_V7.action)
+          ?.element ??
+          uiIconV7(
+            this.#document,
+            CULT_TRICK_ICONS_V7[kind],
+            "v7-ui-icon v7-command-icon",
+          ),
+        text(this.#document, "span", label, "v7-action-label"),
+      );
+      action.dataset.cultAbility = slug.slice("cult-".length);
+      // The Great Summoning shows its price in Favour, as a Summon does.
+      let price = "";
+      if (kind === "GREAT_SUMMONING") {
+        const chips = el(this.#document, "span", "v7-command-economy");
+        const favour = el(
+          this.#document,
+          "span",
+          "v7-economy-chip v7-favour-chip",
+        );
+        favour.append(`−${HERALD_FAVOUR_COST_V7}`, this.#favourIcon());
+        chips.append(favour);
+        action.append(chips);
+        price = ` · −${HERALD_FAVOUR_COST_V7} Favour`;
+      }
+      if (reason === null) {
+        const aiming = this.#cultPick?.kind === kind;
+        const [only] = commands;
+        action.title = tooltip;
+        action.setAttribute("aria-label", `${label}${price}. ${tooltip}`);
+        action.disabled = this.#localBusy();
+        if (kind === "PICK_ME") {
+          if (only !== undefined)
+            action.onclick = () => void this.#dispatch(only);
+        } else {
+          action.setAttribute("aria-pressed", String(aiming));
+          action.onclick = () =>
+            aiming
+              ? this.#cancelCultPick()
+              : this.#startCultTrickPick(kind, unit.id);
+        }
+      } else {
+        // aria-disabled keeps the reason reachable by keyboard and touch.
+        action.setAttribute("aria-disabled", "true");
+        action.dataset.disabledReason = reason;
+        action.title = reason;
+        action.setAttribute("aria-label", `${label} unavailable. ${reason}`);
+        action.onclick = () => {
+          this.#notice = `${reason}.`;
+          this.#showToast(`${reason}.`);
+          this.#pendingFocusAction = slug;
+          this.#render();
+        };
+      }
+      buttons.push(action);
+    }
+    return buttons;
+  }
+
+  /** Starts aiming a rite, a Proclaim, a hex or a trick on the board. */
+  #startCultTrickPick(kind: CultTrickPickV7["kind"], unitId: UnitId): void {
+    if (this.#localBusy()) return;
+    this.#cultPick =
+      kind === "STARFALL" || kind === "GREAT_SUMMONING"
+        ? { kind, unitId, chosen: null }
+        : { kind, unitId };
+    this.#notice = `${CULT_TRICK_PICKS_V7[kind]}.`;
+    this.#pendingFocusAction = null;
+    this.#render();
+    // The board takes the keyboard, so Tab, the arrows and Enter pick.
+    this.#queueBoardFocus();
+  }
+
+  /**
+   * The aiming panel of a rite, a Proclaim, a hex or a trick in the dock:
+   * the action's icon and name with its "?", and Cancel. A rite whose mark
+   * is chosen adds its summary ("2 chanters · 7 damage · 3 units · 1 of
+   * yours") and its one confirmation. The tiles, the cities and the
+   * units are highlighted and picked on the board; the dock lists none.
+   * Null (and the aiming ends) when nothing is offered any more.
+   */
+  #cultTrickPickPanel(
+    pick: CultTrickPickV7,
+    unitId: UnitId,
+  ): HTMLElement | null {
+    const view = this.#snapshot.view;
+    const commands = cultTrickCommandsV7(
+      this.#snapshot.offeredCommands,
+      pick.kind,
+      unitId,
+    );
+    if (commands.length === 0 || view === null || view === undefined) {
+      this.#cultPick = null;
+      return null;
+    }
+    const label = CULT_TRICK_LABELS_V7[pick.kind];
+    const prompt = CULT_TRICK_PICKS_V7[pick.kind];
+    const panel = el(
+      this.#document,
+      "section",
+      "v7-kaboom-preview v7-martian-pick v7-cult-pick v7-board-pick",
+    );
+    panel.dataset.v7CultPick = cultTrickSlugV7(pick.kind).slice("cult-".length);
+    panel.dataset.boardTargets = String(commands.length);
+    let summary: string | null = null;
+    let begin: HTMLButtonElement | null = null;
+    if (
+      (pick.kind === "STARFALL" || pick.kind === "GREAT_SUMMONING") &&
+      pick.chosen !== null
+    ) {
+      const chosen = pick.chosen;
+      const command = commands.find(
+        (candidate) =>
+          candidate.kind === "BEGIN_RITUAL" && same(candidate.at, chosen),
+      );
+      const preview = previewBeginRitualV7(view, unitId, pick.kind, chosen);
+      if (command === undefined || preview === null)
+        // The mark is not offered any more: back to choosing one.
+        this.#cultPick = { ...pick, chosen: null };
+      else {
+        summary = beginRitualSummaryV7(view, preview);
+        begin = button(
+          this.#document,
+          RITUAL_BEGIN_V7,
+          "cult-ritual-begin",
+          "primary-action v7-cult-confirm",
+        );
+        begin.setAttribute(
+          "aria-label",
+          `${RITUAL_BEGIN_V7} ${label}. ${summary}.`,
+        );
+        begin.title = summary;
+        begin.disabled = this.#localBusy();
+        begin.onclick = () => void this.#dispatch(command);
+      }
+    }
+    panel.setAttribute("aria-label", summary ?? prompt);
+    panel.append(
+      this.#pickHead(
+        `ICON:ACTION:${pick.kind}`,
+        CULT_TRICK_ICONS_V7[pick.kind],
+        label,
+        `${summary === null ? prompt : RITUAL_CONFIRM_HINT_V7}. ${CULT_TRICK_TOOLTIPS_V7[pick.kind]}`,
+      ),
+    );
+    if (summary !== null)
+      panel.append(text(this.#document, "p", summary, "v7-martian-detail"));
+    const buttons = el(this.#document, "div", "button-row v7-kaboom-actions");
+    // Two buttons at most, so the row fits a 320 px phone: another tile
+    // moves the mark and Escape steps back to choosing, so no Back.
+    if (begin !== null) buttons.append(begin);
     const cancel = button(
       this.#document,
       "Cancel",

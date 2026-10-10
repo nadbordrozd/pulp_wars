@@ -1056,6 +1056,103 @@ export function corePresentationPlanV7(
       const at = cultUnitAt(event.unitId, before, after);
       if (at !== undefined && isExplored(at))
         pushCult({ effect: "UNBOUND", cells: [at] });
+    } else if (event.kind === "RITUAL_BEGUN") {
+      // Rituals, hexes and tricks (bead pulp_wars-mch9.19): the chalk runs
+      // round the leader and the mark lights.
+      const leader = cultUnitAt(event.unitId, after, before);
+      const cells = [
+        ...(leader === undefined ? [] : [leader]),
+        ...(isExplored(event.at) ? [event.at] : []),
+      ];
+      if (leader !== undefined && isExplored(leader))
+        pushCult({ effect: "RITUAL_BEGUN", cells });
+    } else if (event.kind === "RITUAL_FIZZLED") {
+      const leader = cultUnitAt(event.unitId, before, after);
+      const cells = [
+        ...(leader !== undefined && isExplored(leader) ? [leader] : []),
+        ...(isExplored(event.at) ? [event.at] : []),
+      ];
+      if (cells.length > 0) pushCult({ effect: "RITUAL_FIZZLE", cells });
+    } else if (event.kind === "STAR_FELL") {
+      // The star, its burst over the nine tiles, then each hit.
+      if (isExplored(event.at))
+        pushCult({ effect: "STARFALL", cells: [event.at] });
+      pushGiantHits(
+        event.results.flatMap((result) =>
+          isExplored(result.at)
+            ? [
+                {
+                  unitId: result.unitId,
+                  at: result.at,
+                  damage: result.damage + result.shieldDamage,
+                  lethal: result.dies,
+                },
+              ]
+            : [],
+        ),
+      );
+    } else if (event.kind === "UNIT_CONSUMED") {
+      if (isExplored(event.at))
+        pushCult({ effect: "CONSUMED", cells: [event.at] });
+    } else if (event.kind === "HERALD_ARRIVED") {
+      if (isExplored(event.at))
+        pushCult({ effect: "HERALD", cells: [event.at] });
+    } else if (event.kind === "CITY_COWED") {
+      if (isExplored(event.at))
+        pushCult({ effect: "PROCLAIM", cells: [event.at] });
+    } else if (event.kind === "UNIT_FROGGED") {
+      const from = cultUnitAt(event.unitId, after, before);
+      if (isExplored(event.at))
+        pushCult({
+          effect: "RIBBIT",
+          cells: [event.at],
+          ...(from === undefined ? {} : { from }),
+        });
+    } else if (event.kind === "UNITS_SWAPPED") {
+      // The swap is shown over the result: each unit stands where the
+      // other stood.
+      const cells = [event.from, event.to].filter(
+        (at): at is CoordV7 => at !== null && isExplored(at),
+      );
+      if (cells.length > 0) pushCult({ effect: "SWITCHEROO", cells });
+      if (event.to !== null) origins.set(event.unitId, event.to);
+      if (event.from !== null) origins.set(event.targetUnitId, event.from);
+    } else if (event.kind === "TENTACLE_ROSE") {
+      if (isExplored(event.at))
+        pushCult({ effect: "TENTACLE", cells: [event.at] });
+    } else if (event.kind === "UNIT_GRABBED") {
+      const held = cultUnitAt(event.targetUnitId, after, before);
+      if (held !== undefined && isExplored(held))
+        pushCult({ effect: "GRAB", cells: [held] });
+    } else if (event.kind === "TENTACLE_SANK") {
+      if (isExplored(event.at))
+        pushCult({ effect: "TENTACLE", cells: [event.at] });
+    } else if (event.kind === "PICK_ME_SHOUTED") {
+      if (isExplored(event.at))
+        pushCult({ effect: "PICK_ME", cells: [event.at] });
+    } else if (event.kind === "CITY_CAPTURED" && event.from === null) {
+      // Pamphlets (section 8.7): an Initiate takes a village in the turn
+      // it walked onto it: its leaflets flutter up.
+      const village = after.cities.find((city) => city.id === event.cityId);
+      const preacher =
+        village === undefined
+          ? undefined
+          : before.units.find(
+              (unit) =>
+                unit.ownerId === event.to &&
+                unit.at.x === village.at.x &&
+                unit.at.y === village.at.y,
+            );
+      if (
+        village !== undefined &&
+        preacher !== undefined &&
+        preacher.activation.moved &&
+        isExplored(village.at) &&
+        (
+          unitRoleRuleV7(before, preacher).abilities as readonly string[]
+        ).includes("PAMPHLETS")
+      )
+        pushCult({ effect: "PAMPHLETS", cells: [village.at] });
     } else if (event.kind === "EGG_LAID") {
       if (isExplored(event.at))
         pushDinosaur("EGG_LAID", event.at, event.unitId, 150);

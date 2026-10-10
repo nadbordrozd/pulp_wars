@@ -63,7 +63,9 @@ colour written outside the token block.
 [the Cult's direction](../art/factions/CULT.md)): Favour and the Cult's
 chips (the channel's too, bead `pulp_wars-mch9.18`: Candlelit, a daemon's
 "2 / 3"; a daemon short of its Control, Unbound and Furious take
-`--pw-loss` on `--pw-red-fill`). Its ink is close to `--pw-green` and `--pw-teal`, so it always stands
+`--pw-loss` on `--pw-red-fill`, and so do the chips of a harm done to a
+unit, bead `pulp_wars-mch9.19`: Frog, Grabbed, Taunted; a Herald's attacks
+are pips with an emerald rim, filled for an attack it has left). Its ink is close to `--pw-green` and `--pw-teal`, so it always stands
 on its own mint fill or is an icon, never text on a plain plate.
 
 ## Recipes

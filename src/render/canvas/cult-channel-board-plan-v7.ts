@@ -74,6 +74,18 @@ export interface CultUnitMarkersV7 {
   readonly furious?: true;
   /** The unit a loose daemon (or one that would break now) goes for. */
   readonly eye?: true;
+  /**
+   * Rituals, hexes and tricks (bead `pulp_wars-mch9.19`,
+   * cult-ritual-board-plan-v7.ts). The leader of a ritual under way: the
+   * rite's badge over it.
+   */
+  readonly ritual?: "STARFALL" | "GREAT_SUMMONING";
+  /** A frog (Ribbit): the small frog on the unit's base and its pip. */
+  readonly frog?: true;
+  /** A Chosen that shouted Pick Me!: its "ME!" bubble. */
+  readonly taunt?: true;
+  /** A Tentacle: the neutral turns it has left, as pips under it. */
+  readonly sinks?: 1 | 2 | 3;
 }
 
 /** LINK only: a line of the channel between two tiles. */
@@ -92,6 +104,19 @@ export type CultLinkV7 =
       /** An aimed Boo!: from a scared unit to the tile behind it. */
       readonly kind: "BOO_JUMP";
       readonly outcome: "JUMPS" | "STAYS" | "UNKNOWN";
+    }
+  /**
+   * Bead `pulp_wars-mch9.19`: a Tentacle's Grab, from the Tentacle to the
+   * unit it holds.
+   */
+  | { readonly kind: "GRAB" }
+  | {
+      /**
+       * Pick Me!: from a bound unit to the Chosen it may only attack.
+       * `preview`: the shout is only offered (the Chosen is selected).
+       */
+      readonly kind: "TAUNT";
+      readonly preview: boolean;
     };
 
 /** A channel action being aimed on the board. */
@@ -194,11 +219,11 @@ export function cultUnitMarkersV7(
 }
 
 /** The outline of a block of cells: each cell with its outer edges. */
-function outlineEntries(
+export function outlineEntries(
   entries: BoardRenderPlanEntryV7[],
   view: PlayerViewV7,
   cells: readonly CoordV7[],
-  style: "IDOL_RING" | "CHANNEL_RANGE" | "WARD_PREVIEW",
+  style: "IDOL_RING" | "CHANNEL_RANGE" | "WARD_PREVIEW" | "STARFALL" | "TAUNT",
   prefix: string,
 ): void {
   const inside = cells.filter(

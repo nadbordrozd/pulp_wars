@@ -22,6 +22,7 @@ import type {
   MapCommandTargetV7,
 } from "./board-renderer-v7";
 import type { CultChannelPickV7 } from "./cult-channel-board-plan-v7";
+import type { CultTrickPickV7 } from "./cult-ritual-board-plan-v7";
 
 /**
  * The Cult part of the board plan (bead `pulp_wars-mch9.17`,
@@ -43,7 +44,8 @@ export interface CultOfferingPickV7 {
  * What a Cult unit is aiming on the board: an offering (this module) or a
  * channel action (bead `pulp_wars-mch9.18`, cult-channel-board-plan-v7.ts).
  */
-export type CultPickV7 = CultOfferingPickV7 | CultChannelPickV7;
+export type CultPickV7 =
+  CultOfferingPickV7 | CultChannelPickV7 | CultTrickPickV7;
 
 /** Whether the pick is a Sacrifice or a Seize. */
 export function isCultOfferingPickV7(

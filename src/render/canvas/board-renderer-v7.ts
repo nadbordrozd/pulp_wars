@@ -224,6 +224,28 @@ import {
   drawCultUnitMarkersV7,
 } from "./cult-channel-canvas-v7";
 import {
+  addCultTrickEntriesV7,
+  addCultTrickPickEntriesV7,
+  addCultTrickPreviewsV7,
+  cultTrickPickTargetsV7,
+  cultTrickUnitMarkersV7,
+  isCultTrickPickV7,
+  type CultFocusPreviewV7,
+  type CultMarkV7,
+} from "./cult-ritual-board-plan-v7";
+import {
+  drawCultGrabV7,
+  drawCultGroundMarkV7,
+  drawCultOverMarkV7,
+  drawCultSwapArrowsV7,
+  drawCultTauntTetherV7,
+  drawCultTrickUnitMarkersV7,
+} from "./cult-ritual-canvas-v7";
+import {
+  COWED_BANNER_V7,
+  PICK_ME_BUBBLE_V7,
+} from "../cult-ritual-presentation-v7";
+import {
   addFreezePickEntriesV7,
   addFreezeRingEntriesV7,
   freezePickTargetsV7,
@@ -723,7 +745,25 @@ export interface MapCommandTargetV7 {
     | "SUMMON_HELPER"
     | "SUMMON"
     | "CHANNEL"
-    | "ANCHOR";
+    | "ANCHOR"
+    /**
+     * The Cultists (bead `pulp_wars-mch9.19`): the tile an aimed Star-fall
+     * or Great Summoning marks (chosen first, begun when chosen again),
+     * the city of an aimed Proclaim, the unit of an aimed Ribbit or
+     * Switcheroo, and the tile an aimed Tentacle rises on.
+     */
+    | "STARFALL"
+    | "GREAT_SUMMONING"
+    | "PROCLAIM"
+    | "RIBBIT"
+    | "SWITCHEROO"
+    | "TENTACLE";
+  /**
+   * The Cultists (bead `pulp_wars-mch9.19`): what this target also shows
+   * while it is focused (or is the only one): the ghosts and arrows of a
+   * Switcheroo, the unit a Tentacle slaps at once.
+   */
+  readonly cultFocus?: CultFocusPreviewV7;
   /**
    * Revision 16: a two-command landing. `command` is the one-cell Move to
    * the intermediate water cell; the UI sends this `DISEMBARK` only when that
@@ -1013,6 +1053,12 @@ export interface BoardRenderPlanEntryV7 {
     | "CRUMBS"
     /** Dwarf crowd control (`pulp_wars-w49.34`): a standing Barricade. */
     | "BARRICADE"
+    /**
+     * The Cultists (bead `pulp_wars-mch9.19`): a ritual's chalk ring and
+     * marked tile (on the ground), its countdown, and a Cowed city's
+     * banner (over the pieces); see `cultMark`.
+     */
+    | "CULT_MARK"
     | "ABILITY_AREA"
     | "ABILITY_TARGET";
   /**
@@ -1219,6 +1265,8 @@ export interface BoardRenderPlanEntryV7 {
    * aimed Boo! (`label` is `CULT_LINK_LABEL_V7`).
    */
   readonly cultLink?: CultLinkV7;
+  /** CULT_MARK only: which mark of a ritual or a Cowed city this is. */
+  readonly cultMark?: CultMarkV7;
 }
 
 export interface BoardRenderPlanV7 {
@@ -1580,7 +1628,8 @@ export function buildBoardRenderPlanV7(
     ? selectedWitchV7(view, interaction.selectedUnitId)
     : undefined;
   // The Cultists (bead pulp_wars-mch9.18): the channel marks, by unit.
-  const cultMarkers = cultUnitMarkersV7(view);
+  // Bead pulp_wars-mch9.19: and those of rituals, hexes and tricks.
+  const cultMarkers = cultTrickUnitMarkersV7(view, cultUnitMarkersV7(view));
   for (const unit of view.units) {
     // The Mind Control revision (section 9): the sprite, label, and faction
     // cue follow the unit's kind; the owner colour stays the controller's.
@@ -1719,6 +1768,8 @@ export function buildBoardRenderPlanV7(
   // The Cultists (bead pulp_wars-mch9.18): every strand and grip the
   // viewer sees, and the chalk ring of each raised idol.
   addCultChannelEntriesV7(entries, view);
+  // Bead pulp_wars-mch9.19: every ritual, Cowed city, Grab and taunt.
+  addCultTrickEntriesV7(entries, view);
   // The Dwarf revision (section 5.3): every visible mound, where its unit
   // would stand, with its HP bar; a selected mound tile outlines its ring.
   if (dwarfMatch)
@@ -1874,6 +1925,8 @@ export function buildBoardRenderPlanV7(
       );
       // The Cultists: the ring an offered Behold! would raise.
       addCultChannelPreviewsV7(entries, view, commands, selectedUnitId);
+      // Whom an offered Pick Me! would bind (bead pulp_wars-mch9.19).
+      addCultTrickPreviewsV7(entries, view, commands, selectedUnitId);
     }
     // The Martian revision: the Force Field of a selected Shield Projector
     // and the control link between a controlled unit and its Brain.
@@ -1996,7 +2049,9 @@ export function buildBoardRenderPlanV7(
               : cultPick !== null
                 ? isCultOfferingPickV7(cultPick)
                   ? cultPickTargetsV7(view, commands, cultPick)
-                  : cultChannelPickTargetsV7(view, commands, cultPick)
+                  : isCultTrickPickV7(cultPick)
+                    ? cultTrickPickTargetsV7(view, commands, cultPick)
+                    : cultChannelPickTargetsV7(view, commands, cultPick)
                 : freezePick !== null
                   ? freezePickTargetsV7(view, commands, freezePick)
                   : giantPick !== null
@@ -2113,6 +2168,10 @@ export function buildBoardRenderPlanV7(
   if (cultPick !== null) {
     if (isCultOfferingPickV7(cultPick))
       addCultPickEntriesV7(entries, view, targets, cultPick);
+    // Bead pulp_wars-mch9.19: a rite's chanters and its chosen mark, the
+    // grey reasons of a Ribbit and a Proclaim.
+    else if (isCultTrickPickV7(cultPick))
+      addCultTrickPickEntriesV7(entries, view, targets, cultPick);
     // Bead pulp_wars-mch9.18: a Channel's reach, a Summon's helper, a
     // Boo!'s jumps.
     else addCultChannelPickEntriesV7(entries, view, cultPick);
@@ -2653,6 +2712,91 @@ export function drawBoardV7(input: {
     }
   };
   /**
+   * The Cultists (bead pulp_wars-mch9.19): what the focused (or only)
+   * target of an aimed trick also shows: a Switcheroo's two units, each
+   * drawn faintly on the other's tile, with the arrows between them, and
+   * the unit a Tentacle would slap at once.
+   */
+  const drawCultFocus = (
+    placer: PreviewLabelPlacerV7,
+    defer: (draw: () => void) => void,
+  ): void => {
+    const focus = input.previewFocus ?? null;
+    const candidates = input.plan.targets.filter(
+      (target) => target.cultFocus !== undefined,
+    );
+    if (candidates.length === 0) return;
+    const shown =
+      (focus === null
+        ? undefined
+        : candidates.find((target) => same(target.at, focus))) ??
+      (input.plan.targets.length === 1 ? candidates[0] : undefined);
+    const preview = shown?.cultFocus;
+    if (preview === undefined) return;
+    const centre = (at: CoordV7) => ({
+      x: camera.offsetX + at.x * TILE_WIDTH * camera.zoom,
+      y: camera.offsetY + at.y * TILE_HEIGHT * camera.zoom,
+    });
+    if (preview.swap !== undefined) {
+      context.save();
+      context.globalAlpha = sceneAlpha;
+      drawCultSwapArrowsV7(
+        context,
+        centre(preview.swap.from),
+        centre(preview.swap.to),
+        camera.zoom,
+        { highContrast: input.highContrast ?? false },
+      );
+      context.restore();
+    }
+    for (const ghost of preview.ghosts ?? []) {
+      const source = input.plan.entries.find(
+        (entry) =>
+          entry.kind === "UNIT" && entry.key === `unit:${ghost.unitId}`,
+      );
+      if (source === undefined || source.assetId === undefined) continue;
+      const chibi =
+        resolveChibiEntry({ ...source, at: ghost.at })?.resolution ?? null;
+      // A ghost whose sprite is loading or has no raster is not drawn.
+      const ready = chibi?.kind === "READY" ? chibi : null;
+      if (ready === null) continue;
+      const rect = chibiDestinationRect(
+        centre(ghost.at),
+        camera,
+        ready.asset,
+        devicePixelRatio,
+      );
+      // Up and to the right of the unit that stands there now, so the
+      // ghost reads as a second figure and not as a smear over the first.
+      const shift = CULT_SWAP_GHOST_SHIFT_V7 * camera.zoom;
+      context.save();
+      context.globalAlpha = CULT_SWAP_GHOST_ALPHA_V7 * sceneAlpha;
+      context.imageSmoothingEnabled = ready.smoothing;
+      context.drawImage(
+        ready.image,
+        rect.x + shift,
+        rect.y - shift,
+        rect.width,
+        rect.height,
+      );
+      context.restore();
+    }
+    for (const mark of preview.marks ?? []) {
+      const { x, y } = centre(mark.at);
+      drawAbilityTargetV7(
+        context,
+        x,
+        y,
+        camera.zoom,
+        mark.friendly ? "BLAST_FRIENDLY" : "BLAST",
+        mark.label,
+        false,
+        placer,
+        defer,
+      );
+    }
+  };
+  /**
    * The Candy revision (section 15.1): the ghost of the unit each offered
    * Re-bake tile would bake back, drawn from that role's own art.
    */
@@ -2941,7 +3085,31 @@ export function drawBoardV7(input: {
   const glazedCells = input.plan.entries.filter(
     (entry) => entry.kind === "TERRAIN" && entry.glazed === true,
   );
+  // The Cultists (bead pulp_wars-mch9.19): the chalk of a ritual (the ring
+  // under each participant, the sign of the marked tile), over the ground
+  // and its Road, under trees, rocks and pieces.
+  const cultGround = input.plan.entries.filter(
+    (entry) =>
+      entry.kind === "CULT_MARK" &&
+      (entry.cultMark?.kind === "RITUAL_RING" ||
+        entry.cultMark?.kind === "RITUAL_MARK"),
+  );
   for (const pass of passes) {
+    if (cultGround.length > 0 && pass === "TALL_BODY") {
+      context.save();
+      context.globalAlpha = sceneAlpha;
+      for (const entry of cultGround)
+        if (entry.cultMark !== undefined)
+          drawCultGroundMarkV7(
+            context,
+            entry.cultMark,
+            camera.offsetX + entry.at.x * TILE_WIDTH * camera.zoom,
+            camera.offsetY + entry.at.y * TILE_HEIGHT * camera.zoom,
+            camera.zoom,
+            { highContrast: input.highContrast ?? false },
+          );
+      context.restore();
+    }
     if (glazedCells.length > 0 && pass === "TALL_BODY")
       for (const entry of glazedCells)
         drawCandyGlazeCellV7(
@@ -3061,6 +3229,7 @@ export function drawBoardV7(input: {
         entry.kind === "REACH" ||
         entry.kind === "SELECTION" ||
         entry.kind === "CURSOR" ||
+        entry.kind === "CULT_MARK" ||
         entry.kind === "ABILITY_AREA" ||
         entry.kind === "ABILITY_TARGET"
       )
@@ -5246,6 +5415,7 @@ export function drawBoardV7(input: {
     );
   }
   drawTunnelGhosts(placer, defer);
+  drawCultFocus(placer, defer);
   drawRebakeGhosts();
   for (const drawHp of deferredBarricadeHp) drawHp();
   for (const draw of labels) draw();
@@ -5432,6 +5602,10 @@ function targetPriority(target: MapCommandTargetV7): number {
 
 /** Bead pulp_wars-78i.9: the strength of a Tunnel destination's ghosts. */
 export const TUNNEL_GHOST_ALPHA_V7 = 0.62;
+/** How strongly a Switcheroo's two ghosts are drawn (bead pulp_wars-mch9.19). */
+export const CULT_SWAP_GHOST_ALPHA_V7 = 0.62;
+/** How far (world units) a ghost stands up and right of its tile's unit. */
+export const CULT_SWAP_GHOST_SHIFT_V7 = 22;
 
 /** The Martian revision: the outline of a machine's Launch tile. */
 export const LAUNCH_TARGET_STROKE_V7 = "#c7e7f5";
@@ -5674,14 +5848,33 @@ function drawCultChannelV7(
       entry.linkTo !== undefined
     ) {
       begin();
-      drawCultLinkV7(
-        context,
-        entry.cultLink,
-        centre(entry.at),
-        centre(entry.linkTo),
-        camera.zoom,
-        { highContrast },
-      );
+      // Bead pulp_wars-mch9.19: a Tentacle's Grab and a taunt's tether.
+      if (entry.cultLink.kind === "GRAB")
+        drawCultGrabV7(
+          context,
+          centre(entry.at),
+          centre(entry.linkTo),
+          camera.zoom,
+          { highContrast },
+        );
+      else if (entry.cultLink.kind === "TAUNT")
+        drawCultTauntTetherV7(
+          context,
+          centre(entry.at),
+          centre(entry.linkTo),
+          camera.zoom,
+          entry.cultLink.preview,
+          { highContrast },
+        );
+      else
+        drawCultLinkV7(
+          context,
+          entry.cultLink,
+          centre(entry.at),
+          centre(entry.linkTo),
+          camera.zoom,
+          { highContrast },
+        );
     }
   for (const entry of entries)
     if (entry.kind === "UNIT" && entry.cult !== undefined) {
@@ -5697,6 +5890,51 @@ function drawCultChannelV7(
           candlelit: entry.cult.candle === true ? icon("CANDLELIT") : null,
           unbound: entry.cult.unbound === true ? icon("UNBOUND") : null,
           furious: entry.cult.furious === true ? icon("FURIOUS") : null,
+        },
+      });
+      // Bead pulp_wars-mch9.19: the rite's badge, the frog, the "ME!"
+      // bubble and a Tentacle's turns.
+      if (
+        entry.cult.ritual !== undefined ||
+        entry.cult.frog === true ||
+        entry.cult.taunt === true ||
+        entry.cult.sinks !== undefined
+      )
+        drawCultTrickUnitMarkersV7(context, entry.cult, x, y, camera.zoom, {
+          highContrast,
+          bubble: PICK_ME_BUBBLE_V7,
+          art: {
+            frog:
+              entry.cult.frog === true && raster !== null
+                ? raster("FROG")
+                : null,
+            starfall:
+              entry.cult.ritual === "STARFALL" && raster !== null
+                ? raster("ICON:ACTION:STARFALL")
+                : null,
+            summoning:
+              entry.cult.ritual === "GREAT_SUMMONING" && raster !== null
+                ? raster("ICON:ACTION:GREAT_SUMMONING")
+                : null,
+          },
+        });
+    }
+  // The countdown of each ritual and the banner of each Cowed city.
+  for (const entry of entries)
+    if (
+      entry.kind === "CULT_MARK" &&
+      (entry.cultMark?.kind === "COUNTDOWN" || entry.cultMark?.kind === "COWED")
+    ) {
+      begin();
+      const { x, y } = centre(entry.at);
+      drawCultOverMarkV7(context, entry.cultMark, x, y, camera.zoom, {
+        highContrast,
+        banner: COWED_BANNER_V7,
+        art: {
+          cowed:
+            entry.cultMark.kind === "COWED" && raster !== null
+              ? raster("ICON:STATUS:COWED")
+              : null,
         },
       });
     }

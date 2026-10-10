@@ -23,7 +23,15 @@ import { ruleset7FixtureMountExpressionV7 } from "./browser-undead-fixture-v7";
  * aimed action, the End Turn question, a rival's view, the strands on
  * Grass, Snow and water, the Unbound and Furious marks on a hand-changed
  * view, the cues held at their midpoint, and the cost of a still frame with
- * a dozen strands against the same board without them. `evidence.json` records
+ * a dozen strands against the same board without them. Rituals, hexes and
+ * tricks (bead `pulp_wars-mch9.19`, section 3.9; scenes `ritual`,
+ * `summoning`, `proclaim`, `tricks`, `hexed`, `herald`, `trickmarks`,
+ * `trickcues`): Star-fall aimed, chosen and under way, the Great Summoning
+ * likewise with a blocked mark, a rival's view of a star and of its Cowed
+ * capital, Proclaim aimed and done, each hex and trick aimed with its
+ * focused target, the frog's card, the Grab, the taunt, an Unbound Herald
+ * being bound, every mark on four grounds, and the cues held at their
+ * midpoint. `evidence.json` records
  * each capture's texts and whether anything overflows the viewport. It needs
  * the Vite dev server, because the fixtures are imported from
  * `tests/fixtures`.
@@ -138,11 +146,19 @@ try {
     if (wanted("boo")) await boo(connection, size);
     if (wanted("endturn")) await endTurn(connection, size);
     if (wanted("rival")) await rival(connection, size);
+    if (wanted("ritual")) await starfall(connection, size);
+    if (wanted("summoning")) await summoning(connection, size);
+    if (wanted("proclaim")) await proclaim(connection, size);
+    if (wanted("tricks")) await tricks(connection, size);
+    if (wanted("hexed")) await hexed(connection, size);
+    if (wanted("herald")) await heraldBind(connection, size);
   }
   await viewport(connection, "desktop");
   if (wanted("grounds")) await grounds(connection);
   if (wanted("wild")) await wild(connection);
   if (wanted("cues")) await cues(connection);
+  if (wanted("trickmarks")) await trickMarks(connection);
+  if (wanted("trickcues")) await trickCues(connection);
   if (wanted("cost")) await cost(connection);
   if (wanted("colour")) {
     await viewport(connection, "desktop");
@@ -196,6 +212,9 @@ async function record(connection: Connection, key: string): Promise<void> {
         notice: document.querySelector('#v7-live')?.textContent ?? null,
         cultButtons: Array.from(document.querySelectorAll('.v7-selection-dock [data-cult-ability]')).map((node) => [node.dataset.cultAbility, node.getAttribute('aria-disabled') === 'true' ? node.dataset.disabledReason : node.getAttribute('aria-pressed')]),
         cultChips: Array.from(document.querySelectorAll('.v7-selection-dock .v7-cult-chip')).map((node) => node.textContent),
+        stats: Array.from(document.querySelectorAll('.v7-selection-dock .v7-stat')).map((node) => [node.dataset.stat, node.querySelector('.v7-stat-value')?.textContent ?? null, node.dataset.frog ?? null]),
+        cityStatus: Array.from(document.querySelectorAll('.v7-selection-dock .v7-city-stat.is-warning')).map((node) => node.textContent),
+        panelButtons: Array.from(document.querySelectorAll('.v7-cult-pick button')).map((node) => node.dataset.action),
         question: document.querySelector('.v7-end-turn-confirm')?.textContent ?? null,
         questionRect: rect('.v7-end-turn-confirm'),
         questionButtons: Array.from(document.querySelectorAll('.v7-end-turn-confirm button')).map((node) => { const box = node.getBoundingClientRect(); return [node.textContent, Math.round(box.left), Math.round(box.right), Math.round(box.height)]; }),
@@ -463,6 +482,297 @@ async function rival(connection: Connection, size: Size): Promise<void> {
   await capture(connection, `channel-rival-${size}.png`);
 }
 
+// ------------------------- Rituals, hexes and tricks (U3) ---
+
+/** The named tiles of the ritual and the trick scenes. */
+async function trickTiles(
+  connection: Connection,
+): Promise<Record<string, Coord>> {
+  return (await evaluate(
+    connection,
+    `({ ...${REVIEW}.ritualAt, ...${REVIEW}.trickAt })`,
+  )) as Record<string, Coord>;
+}
+
+/** Picks a tile of the board as a click, a tap or Enter would. */
+async function pick(connection: Connection, at: Coord): Promise<void> {
+  await evaluate(
+    connection,
+    `${REVIEW}.boardHost.activate(${JSON.stringify(at)})`,
+  );
+  await delay(700);
+}
+
+/** Steps the keyboard's focus through the aimed targets. */
+async function tab(connection: Connection, times: number): Promise<void> {
+  await evaluate(
+    connection,
+    `(() => { const canvas = document.querySelector('canvas.board-canvas-v7'); canvas?.focus(); for (let step = 0; step < ${times}; step += 1) canvas?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Tab', bubbles: true, cancelable: true })); })()`,
+  );
+  await delay(500);
+}
+
+async function deselect(connection: Connection): Promise<void> {
+  await evaluate(
+    connection,
+    `document.querySelector('[data-action="close-dock"]')?.click()`,
+  );
+  await delay(400);
+}
+
+/** Star-fall: the button, the tiles, the chosen mark, the star under way. */
+async function starfall(connection: Connection, size: Size): Promise<void> {
+  await mount(connection, "cultStarfallUiFixtureV7");
+  const at = await trickTiles(connection);
+  await activate(connection, at.stargazer as Coord);
+  await record(connection, `${size}StargazerButtons`);
+  await click(connection, "cult-starfall");
+  await record(connection, `${size}StarfallAim`);
+  await capture(connection, `starfall-aim-${size}.png`);
+  await pick(connection, at.star as Coord);
+  await record(connection, `${size}StarfallChosen`);
+  await capture(connection, `starfall-chosen-${size}.png`);
+  if (size === "desktop") {
+    await zoomIn(connection);
+    await capture(connection, `starfall-chosen-zoom-${size}.png`);
+  }
+  await click(connection, "cult-ritual-begin");
+  await delay(1_600);
+  await record(connection, `${size}StarfallBegun`);
+  await capture(connection, `starfall-begun-${size}.png`);
+  await mount(connection, "cultStarfallBegunUiFixtureV7");
+  await capture(connection, `starfall-under-way-${size}.png`);
+  await activate(connection, at.stargazer as Coord);
+  await record(connection, `${size}StarfallLeaderCard`);
+  await capture(connection, `starfall-leader-card-${size}.png`);
+  if (size === "desktop") {
+    await deselect(connection);
+    await zoomIn(connection);
+    await capture(connection, `starfall-under-way-zoom-${size}.png`);
+  }
+  // The victim's side: the star over its units, and its Cowed capital.
+  await mount(connection, "cultRitualRivalUiFixtureV7");
+  await capture(connection, `ritual-rival-${size}.png`);
+  await activate(connection, { x: 5, y: 4 });
+  await record(connection, `${size}RitualRivalUnit`);
+  await selectCity(connection);
+  await record(connection, `${size}RitualRivalCity`);
+  await capture(connection, `ritual-rival-city-${size}.png`);
+}
+
+/** The Great Summoning: aimed, chosen, under way, and blocked. */
+async function summoning(connection: Connection, size: Size): Promise<void> {
+  await mount(connection, "cultSummoningUiFixtureV7");
+  const at = await trickTiles(connection);
+  await activate(connection, at.summoner as Coord);
+  await record(connection, `${size}SummonerRitualButtons`);
+  await capture(connection, `summoning-buttons-${size}.png`);
+  await click(connection, "cult-great-summoning");
+  await record(connection, `${size}SummoningAim`);
+  await capture(connection, `summoning-aim-${size}.png`);
+  await pick(connection, at.broken as Coord);
+  await record(connection, `${size}SummoningChosen`);
+  await capture(connection, `summoning-chosen-${size}.png`);
+  await mount(connection, "cultSummoningBegunUiFixtureV7");
+  await capture(connection, `summoning-under-way-${size}.png`);
+  await mount(connection, "cultSummoningBlockedUiFixtureV7");
+  await capture(connection, `summoning-blocked-${size}.png`);
+  if (size === "desktop") {
+    await zoomIn(connection);
+    await capture(connection, `summoning-blocked-zoom-${size}.png`);
+  }
+}
+
+/** Proclaim: the Herald's card, the city aimed, the city Cowed. */
+async function proclaim(connection: Connection, size: Size): Promise<void> {
+  await mount(connection, "cultProclaimUiFixtureV7");
+  const at = await trickTiles(connection);
+  await activate(connection, at.herald as Coord);
+  await record(connection, `${size}HeraldCard`);
+  await capture(connection, `herald-card-${size}.png`);
+  await click(connection, "cult-proclaim");
+  await tab(connection, 1);
+  await record(connection, `${size}ProclaimAim`);
+  await capture(connection, `proclaim-aim-${size}.png`);
+  await pick(connection, at.enemyCapital as Coord);
+  await delay(1_400);
+  await record(connection, `${size}ProclaimDone`);
+  await capture(connection, `proclaim-done-${size}.png`);
+  await mount(connection, "cultCowedUiFixtureV7");
+  if (size === "desktop") await zoomIn(connection);
+  await capture(connection, `cowed-city-${size}.png`);
+}
+
+/** Each hex and trick aimed, with its focused target. */
+async function tricks(connection: Connection, size: Size): Promise<void> {
+  await mount(connection, "cultTricksUiFixtureV7");
+  const at = await trickTiles(connection);
+  await activate(connection, at.hexer as Coord);
+  await click(connection, "cult-ribbit");
+  await tab(connection, 1);
+  await record(connection, `${size}RibbitAim`);
+  await capture(connection, `ribbit-aim-${size}.png`);
+  await pick(connection, at.knight as Coord);
+  await delay(1_200);
+  await activate(connection, at.knight as Coord);
+  await record(connection, `${size}FrogCard`);
+  await capture(connection, `frog-card-${size}.png`);
+
+  await mount(connection, "cultTricksUiFixtureV7");
+  await activate(connection, at.familiar as Coord);
+  await click(connection, "cult-switcheroo");
+  // The Knight is the last target in reading order.
+  await tab(connection, 3);
+  await record(connection, `${size}SwitcherooAim`);
+  await capture(connection, `switcheroo-aim-${size}.png`);
+  if (size === "desktop") {
+    await zoomIn(connection);
+    await capture(connection, `switcheroo-aim-zoom-${size}.png`);
+  }
+
+  await mount(connection, "cultTricksUiFixtureV7");
+  await activate(connection, at.caller as Coord);
+  await click(connection, "cult-tentacle");
+  // The tile south of the Human giant, in reading order.
+  await tab(connection, 34);
+  await record(connection, `${size}TentacleAim`);
+  await capture(connection, `tentacle-aim-${size}.png`);
+  await pick(connection, { x: 9, y: 4 });
+  await delay(1_400);
+  await record(connection, `${size}TentacleDone`);
+  await capture(connection, `tentacle-done-${size}.png`);
+
+  await mount(connection, "cultTricksUiFixtureV7");
+  await activate(connection, at.chosen as Coord);
+  await record(connection, `${size}PickMeOffered`);
+  await capture(connection, `pick-me-offered-${size}.png`);
+  await click(connection, "cult-pick-me");
+  await delay(1_400);
+  await record(connection, `${size}PickMeDone`);
+  await capture(connection, `pick-me-done-${size}.png`);
+}
+
+/** The hexes at rest, for the Cult player and for their victim. */
+async function hexed(connection: Connection, size: Size): Promise<void> {
+  await mount(connection, "cultTricksDoneUiFixtureV7");
+  const at = await trickTiles(connection);
+  await capture(connection, `hexed-board-${size}.png`);
+  await activate(connection, at.hexer as Coord);
+  await record(connection, `${size}HexerSpent`);
+  await capture(connection, `hexer-spent-${size}.png`);
+  if (size === "desktop") {
+    await deselect(connection);
+    await zoomIn(connection);
+    await capture(connection, `hexed-board-zoom-${size}.png`);
+  }
+  await mount(connection, "cultTricksRivalUiFixtureV7");
+  await activate(connection, at.knight as Coord);
+  await record(connection, `${size}HexedRivalFrog`);
+  await capture(connection, `hexed-rival-frog-${size}.png`);
+  await activate(connection, at.tentacle as Coord);
+  await record(connection, `${size}HexedRivalTentacle`);
+  await capture(connection, `hexed-rival-tentacle-${size}.png`);
+}
+
+/** An Unbound Herald being bound again: two of its three pips. */
+async function heraldBind(connection: Connection, size: Size): Promise<void> {
+  await mount(connection, "cultHeraldBindUiFixtureV7");
+  await activate(connection, { x: 5, y: 2 });
+  await record(connection, `${size}HeraldBind`);
+  await capture(connection, `herald-bind-${size}.png`);
+  if (size === "desktop") {
+    await deselect(connection);
+    await zoomIn(connection);
+    await capture(connection, `herald-bind-zoom-${size}.png`);
+  }
+}
+
+/** Every mark of rituals, hexes and tricks on four grounds, at two zooms. */
+async function trickMarks(connection: Connection): Promise<void> {
+  await mount(connection, "cultTricksDoneUiFixtureV7");
+  await evaluate(
+    connection,
+    `(async () => {
+      const draw = await import('/src/render/canvas/cult-ritual-canvas-v7.ts');
+      const channel = await import('/src/render/canvas/cult-channel-canvas-v7.ts');
+      const sheet = document.createElement('canvas');
+      sheet.width = 1320; sheet.height = 820;
+      sheet.style.cssText = 'position:fixed;z-index:999;left:60px;top:90px;border:3px solid #000';
+      const context = sheet.getContext('2d');
+      const grounds = [['Grass', '#7fb35a'], ['Snow', '#eef2f5'], ['Moor', '#9d94ab'], ['Water', '#8fd0dc']];
+      grounds.forEach(([name, colour], column) => {
+        context.fillStyle = colour;
+        context.fillRect(column * 330, 0, 330, 820);
+        context.fillStyle = '#10131c';
+        context.font = '700 16px sans-serif';
+        context.textAlign = 'left';
+        context.textBaseline = 'alphabetic';
+        context.fillText(name, column * 330 + 10, 22);
+        const left = column * 330;
+        for (const [zoom, top] of [[1, 50], [0.5, 600]]) {
+          const x = left + 80; const y = top + 70 * zoom;
+          draw.drawCultGroundMarkV7(context, { kind: 'RITUAL_RING', leader: true }, x, y, zoom);
+          draw.drawCultGroundMarkV7(context, { kind: 'RITUAL_RING', leader: false }, x + 150 * zoom, y, zoom);
+          draw.drawCultTrickUnitMarkersV7(context, { ritual: 'STARFALL' }, x, y, zoom);
+          draw.drawCultTrickUnitMarkersV7(context, { ritual: 'GREAT_SUMMONING' }, x + 150 * zoom, y, zoom);
+          channel.drawCultUnitMarkersV7(context, { candle: true }, x, y, zoom);
+          draw.drawCultGroundMarkV7(context, { kind: 'RITUAL_MARK', ritual: 'STARFALL', preview: false }, x, y + 150 * zoom, zoom);
+          draw.drawCultOverMarkV7(context, { kind: 'COUNTDOWN', ritual: 'STARFALL', turns: 1, damage: 7 }, x, y + 150 * zoom, zoom);
+          draw.drawCultGroundMarkV7(context, { kind: 'RITUAL_MARK', ritual: 'GREAT_SUMMONING', preview: false }, x + 150 * zoom, y + 150 * zoom, zoom);
+          draw.drawCultOverMarkV7(context, { kind: 'COUNTDOWN', ritual: 'GREAT_SUMMONING', turns: 1, damage: null }, x + 150 * zoom, y + 150 * zoom, zoom);
+          draw.drawCultGroundMarkV7(context, { kind: 'RITUAL_MARK', ritual: 'STARFALL', preview: true }, x + 20 * zoom, y + 280 * zoom, zoom);
+          draw.drawCultOverMarkV7(context, { kind: 'COWED' }, x + 170 * zoom, y + 320 * zoom, zoom);
+          draw.drawCultTrickUnitMarkersV7(context, { frog: true }, x + 20 * zoom, y + 390 * zoom, zoom);
+          draw.drawCultTrickUnitMarkersV7(context, { taunt: true }, x + 100 * zoom, y + 430 * zoom, zoom);
+          draw.drawCultTrickUnitMarkersV7(context, { sinks: 2 }, x + 190 * zoom, y + 340 * zoom, zoom);
+          draw.drawCultGrabV7(context, { x: x - 40 * zoom, y: y + 470 * zoom }, { x: x + 80 * zoom, y: y + 470 * zoom }, zoom);
+          draw.drawCultTauntTetherV7(context, { x: x + 110 * zoom, y: y + 460 * zoom }, { x: x + 240 * zoom, y: y + 460 * zoom }, zoom, false);
+          draw.drawCultTauntTetherV7(context, { x: x + 110 * zoom, y: y + 490 * zoom }, { x: x + 240 * zoom, y: y + 490 * zoom }, zoom, true);
+          draw.drawCultSwapArrowsV7(context, { x: x + 110 * zoom, y: y + 280 * zoom }, { x: x + 240 * zoom, y: y + 240 * zoom }, zoom);
+        }
+      });
+      document.body.append(sheet);
+    })()`,
+    true,
+  );
+  await delay(300);
+  await capture(connection, `trick-marks-sheet-desktop.png`);
+}
+
+/** The cues of rituals, hexes and tricks, each held where it reads. */
+async function trickCues(connection: Connection): Promise<void> {
+  for (const [name, cues] of [
+    [
+      "a",
+      `[
+        { effect: 'RITUAL_BEGUN', cells: [{ x: 2, y: 2 }, { x: 2, y: 4 }], progress: 0.6 },
+        { effect: 'RITUAL_FIZZLE', cells: [{ x: 4, y: 2 }], progress: 0.4 },
+        { effect: 'STARFALL', cells: [{ x: 8, y: 3 }], progress: 0.25 },
+        { effect: 'HERALD', cells: [{ x: 1, y: 6 }], progress: 0.45 },
+        { effect: 'CONSUMED', cells: [{ x: 6, y: 6 }], progress: 0.4 },
+        { effect: 'PROCLAIM', cells: [{ x: 8, y: 6 }], progress: 0.45 },
+      ]`,
+    ],
+    [
+      "b",
+      `[
+        { effect: 'STARFALL', cells: [{ x: 8, y: 3 }], progress: 0.66 },
+        { effect: 'RIBBIT', cells: [{ x: 2, y: 2 }], from: { x: 1, y: 4 }, progress: 0.7 },
+        { effect: 'SWITCHEROO', cells: [{ x: 4, y: 1 }, { x: 6, y: 2 }], progress: 0.4 },
+        { effect: 'TENTACLE', cells: [{ x: 1, y: 6 }], progress: 0.45 },
+        { effect: 'GRAB', cells: [{ x: 3, y: 6 }], progress: 0.5 },
+        { effect: 'PICK_ME', cells: [{ x: 6, y: 6 }], progress: 0.4 },
+        { effect: 'PAMPHLETS', cells: [{ x: 8, y: 6 }], progress: 0.45 },
+      ]`,
+    ],
+  ] as const) {
+    await mount(connection, "cultRivalUiFixtureV7");
+    await evaluate(connection, `${REVIEW}.boardHost.pinCultFeedback(${cues})`);
+    await delay(700);
+    await capture(connection, `trick-cues-${name}-desktop.png`);
+  }
+}
+
 /**
  * Wraps the board host's `update` so the board draws a changed copy of each
  * view (`transform` is the body of a function of `view` and `engine`).
@@ -712,7 +1022,8 @@ async function mount(
       fixture,
       artSet: "CHIBI",
       global: "__CULT_REVIEW__",
-      extras: "at: fixtures.CULT_UI_V7, channelAt: fixtures.CULT_CHANNEL_UI_V7",
+      extras:
+        "at: fixtures.CULT_UI_V7, channelAt: fixtures.CULT_CHANNEL_UI_V7, ritualAt: fixtures.CULT_RITUAL_UI_V7, trickAt: fixtures.CULT_TRICK_UI_V7",
     }),
     true,
   );

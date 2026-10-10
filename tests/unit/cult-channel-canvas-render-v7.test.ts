@@ -266,6 +266,16 @@ describe("the cues' sprites", () => {
       "EFFECT:STRAND_SNAP",
       "EFFECT:BOO",
       "EFFECT:UNBOUND",
+      // Rituals, hexes and tricks (bead pulp_wars-mch9.19).
+      "EFFECT:RITUAL_FIZZLE",
+      "EFFECT:STARFALL_BURST",
+      "EFFECT:SACRIFICE_PUFF",
+      "EFFECT:PROCLAIM",
+      "EFFECT:RIBBIT",
+      "EFFECT:SWITCHEROO",
+      "EFFECT:TENTACLE_SLAP",
+      "EFFECT:PAMPHLETS",
+      "EFFECT:STARFALL_STAR",
     ]);
     for (const subject of CULT_EFFECT_SUBJECTS_V7)
       expect(

@@ -507,6 +507,20 @@ Roads, that text now describes the **Classic look** developer option
     reduced motion each holds one still frame and nothing travels. The
     toast names what the board might not explain: "Strand broken: it was
     hurt", "2 strands broken", "Your Horror is Unbound", "Horror bound again".
+  - **Rituals, hexes and tricks (bead `pulp_wars-mch9.19`,
+    [board targeting, section 3.9](BOARD_TARGETING.md#39-the-cultists-rituals-hexes-and-tricks-bead-pulp_wars-mch919)).**
+    A rite's mark is chosen on the board, which previews it, and begun by
+    choosing it again or by the dock's Begin. The chalk runs round a new
+    circle; a fizzled one gives off grey smoke; the star falls and bursts
+    over its nine tiles before each hit is shown; the Herald arrives in a
+    pillar of green light; a Cowed city gets rings and "KNEEL!"; a Ribbit's
+    spark flies from the Hexer and pops; a swap swirls on both tiles; a
+    Tentacle rises and sinks in a teal splash and its coil closes on the
+    unit it grabs; "ME!" bursts over a Chosen; leaflets flutter up from a
+    village taken with Pamphlets. Each plays once, 320 to 700 ms, with one
+    still frame under reduced motion, and the toast names what the board
+    might not ("Star-fall begun: it completes at the start of your next
+    turn", "Your Knight is a frog until your next turn ends").
   - **End Turn's question.** With a daemon of the player's short of its
     Control, End Turn opens a small dialog over a scrim before anything is
     sent: "The Horror will be Unbound.", the count ("0 / 1"), Back and End

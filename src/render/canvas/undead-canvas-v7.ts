@@ -109,7 +109,14 @@ export type AbilityPreviewStyleV7 =
    */
   | "IDOL_RING"
   | "WARD_PREVIEW"
-  | "CHANNEL_RANGE";
+  | "CHANNEL_RANGE"
+  /**
+   * The Cultists (bead pulp_wars-mch9.19): the nine tiles of a star (the
+   * chalk cream on a warning red), and an enemy a Pick Me! binds (the red
+   * of a tether).
+   */
+  | "STARFALL"
+  | "TAUNT";
 
 /** Legacy and CHIBI Undead badge frames, relative to the cell centre. */
 export const UNDEAD_BADGE_FRAME_V7 = {
@@ -628,6 +635,8 @@ const STYLE_COLORS: Readonly<
   IDOL_RING: { fill: "rgba(243, 231, 196, 0.1)", stroke: "#f3e7c4" },
   WARD_PREVIEW: { fill: "rgba(243, 231, 196, 0)", stroke: "#f3e7c4" },
   CHANNEL_RANGE: { fill: "rgba(128, 255, 188, 0.1)", stroke: "#80ffbc" },
+  STARFALL: { fill: "rgba(255, 101, 95, 0.24)", stroke: "#f3e7c4" },
+  TAUNT: { fill: "rgba(255, 101, 95, 0)", stroke: "#ff655f" },
 };
 
 /** Dark stripes that turn the friendly-fire outline into a hazard band. */

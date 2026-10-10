@@ -916,7 +916,14 @@ export function createDirectedChibiArtV7(input: {
             request.subject === "STATUS:PROVOKED" ||
             request.subject === "ICON:STATUS:CANDLELIT" ||
             request.subject === "ICON:STATUS:UNBOUND" ||
-            request.subject === "ICON:STATUS:FURIOUS")
+            request.subject === "ICON:STATUS:FURIOUS" ||
+            // Rituals, hexes and tricks (bead pulp_wars-mch9.19): the
+            // frog on a hexed unit, a Cowed city's shutters and the
+            // badge of a rite on its leader.
+            request.subject === "FROG" ||
+            request.subject === "ICON:STATUS:COWED" ||
+            request.subject === "ICON:ACTION:STARFALL" ||
+            request.subject === "ICON:ACTION:GREAT_SUMMONING")
         ) {
           const sample = input.samples.resolve(request);
           if (sample.kind !== "MISSING") return sample;

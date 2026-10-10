@@ -93,6 +93,16 @@ export type UiIconIdV7 =
   | "idol"
   | "tentacle"
   | "boo"
+  // Rituals, hexes and tricks (bead pulp_wars-mch9.19): the glyphs of
+  // Star-fall (a falling star), the Great Summoning (the lodge's eye),
+  // Proclaim (a megaphone), Ribbit (a frog), Switcheroo (two arrows) and
+  // Pick Me! (a shout), until the art registers their rasters.
+  | "comet"
+  | "eye"
+  | "megaphone"
+  | "frog"
+  | "swap"
+  | "shout"
   // The leaderboard's alliance setting (bead pulp_wars-2yc.45): two linked
   // rings, the mark of "AIs allied" and of every allied AI row.
   | "allied";
@@ -230,6 +240,20 @@ const PATHS: Readonly<Record<UiIconIdV7, string>> = {
     "M4.5 20.5c.6-7.3 3.6-11.6 8.3-11.6a4.5 4.5 0 1 1-4.5 4.5 2.3 2.3 0 1 1 2.3 2.3",
   // A wide toothy grin under two eyes of different sizes.
   boo: "M4.5 12.5c1.6 6.4 13.4 6.4 15 0ZM9 14.2v2.6M12 14.4v3M15 14.2v2.6M8.4 6.2a1.5 1.5 0 1 0 .1 0M15.4 4.8a2.2 2.2 0 1 0 .1 0",
+  // A four-pointed star falling to the lower left, three streaks behind it.
+  comet:
+    "M8.5 9.5l1.6 4.4 4.4 1.6-4.4 1.6-1.6 4.4-1.6-4.4-4.4-1.6 4.4-1.6ZM13.5 10.5l6-6M16.5 13l4-4M11 8l3.5-3.5",
+  // An almond eye and its round pupil.
+  eye: "M2.5 12c3.2-5 6.3-7 9.5-7s6.3 2 9.5 7c-3.2 5-6.3 7-9.5 7s-6.3-2-9.5-7ZM12 9a3 3 0 1 0 .1 0",
+  // A megaphone with its handle and one sound wave.
+  megaphone:
+    "M4 10v4h3l8 4.5v-13L7 10ZM18 9.5c1 1.5 1 3.5 0 5M7 14l1.2 5h2.6l-1-4.6",
+  // A squat frog: its body, two eye bumps and a wide mouth.
+  frog: "M4.5 15.5c0-4 3.3-6.5 7.5-6.5s7.5 2.5 7.5 6.5c0 2.2-2.6 3.5-7.5 3.5s-7.5-1.3-7.5-3.5ZM7 9.6a2.3 2.3 0 1 1 3.4-2M17 9.6a2.3 2.3 0 1 0-3.4-2M9 15.5c2 1.2 4 1.2 6 0",
+  // Two arrows, one each way.
+  swap: "M4 8.5h13.5M14 5l3.5 3.5L14 12M20 15.5H6.5M10 12l-3.5 3.5L10 19",
+  // A speech bubble with an exclamation mark.
+  shout: "M4 5.5h16v10H11l-4.5 4v-4H4ZM12 8v3.6M12 13.4v.2",
 };
 
 /**

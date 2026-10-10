@@ -293,10 +293,13 @@ export function drawCultBooJumpV7(
   context.restore();
 }
 
-/** Draws one Cult link of the plan between two tile centres. */
+/**
+ * Draws one channel link of the plan between two tile centres. (A Grab and
+ * a taunt's tether are cult-ritual-canvas-v7.ts's.)
+ */
 export function drawCultLinkV7(
   context: CanvasRenderingContext2D,
-  link: CultLinkV7,
+  link: Exclude<CultLinkV7, { readonly kind: "GRAB" | "TAUNT" }>,
   from: Point,
   to: Point,
   zoom: number,

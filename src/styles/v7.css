@@ -4696,6 +4696,34 @@
   color: var(--pw-loss);
 }
 
+/*
+ * Rituals, hexes and tricks (bead pulp_wars-mch9.19): a harm done to the
+ * unit (a frog, a Grab, a taunt) takes the loss colour, and a Herald's
+ * attacks are pips: lit for an attack it has left.
+ */
+.v7-cult-chip[data-harm="true"] {
+  border-color: var(--pw-loss);
+  background: var(--pw-red-fill);
+  color: var(--pw-loss);
+}
+
+.v7-cult-pips {
+  display: inline-flex;
+  gap: 3px;
+  align-items: center;
+}
+
+.v7-cult-pip {
+  width: 9px;
+  height: 9px;
+  border: var(--pw-line-w-sm) solid var(--pw-emerald);
+  border-radius: var(--pw-radius-pill);
+}
+
+.v7-cult-pip[data-lit="true"] {
+  background: var(--pw-emerald);
+}
+
 .v7-end-turn-confirm {
   position: absolute;
   z-index: 30;

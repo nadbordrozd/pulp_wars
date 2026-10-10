@@ -25,6 +25,7 @@ import {
   cultChannelCommandPresentationV7,
   cultChannelNoticePartsV7,
 } from "./cult-channel-presentation-v7";
+import { cultTrickNoticePartsV7 } from "./cult-ritual-presentation-v7";
 
 /**
  * The Cultists of the Ancient Ones (docs/product/RULESET_7_CULTISTS.md;
@@ -420,5 +421,7 @@ export function cultBoundaryNoticeV7(
   // The channel (bead pulp_wars-mch9.18): the viewer's strands broken and a
   // daemon Unbound.
   parts.push(...cultChannelNoticePartsV7(events, before, after));
+  // Rituals, hexes and tricks (bead pulp_wars-mch9.19).
+  parts.push(...cultTrickNoticePartsV7(events, before, after));
   return parts.length === 0 ? null : { text: parts.join(" · "), toast: true };
 }

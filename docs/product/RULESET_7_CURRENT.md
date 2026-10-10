@@ -1789,8 +1789,11 @@ separate [Ruleset 6](RULESET_6.md) route.
     its own hits as `COMBAT_SPLASH_DAMAGE`); `UNIT_CONSUMED` the seat, the
     victim's owner, and whoever saw the victim; `HERALD_ARRIVED` whoever
     sees the Herald; `CITY_COWED` whoever sees the city.
-  - **Interface, for now.** The browser offers no ritual or Proclaim yet
-    (`pulp_wars-mch9.19`); the technology card and the glossary name them.
+  - **Interface.** The browser has one button for each rite and for
+    Proclaim, with the mark and the city picked on the board, and draws the
+    circles, the countdown, the star's forecast, and a Cowed city for every
+    player (`pulp_wars-mch9.19`,
+    [the Cultists, section 14.3](RULESET_7_CULTISTS.md#143-how-it-reads-on-the-board-without-text)).
     The text harness offers `.starfall.x,y`, `.summoning.x,y`, and
     `.proclaim.cN` and prints the circles, a Cowed city, and a Herald's
     attacks left.
@@ -1868,9 +1871,12 @@ separate [Ruleset 6](RULESET_6.md) route.
     owner and whoever sees either unit; `TENTACLE_SANK` whoever saw it;
     `PICK_ME_SHOUTED` its seat and whoever sees the Chosen. A Tend that
     cured a frog reaches every player who sees the Captain and the frog.
-  - **Interface, for now.** The browser offers none of the four commands
-    and draws no frog, taunt, or Grab yet (`pulp_wars-mch9.19`); the
-    technology card of Familiars and the glossary name them. The text
+  - **Interface.** The browser has one button for each of the four
+    commands (the unit and the tile are picked on the board; Pick Me! is
+    cast by its button) and draws the frog, the taunt, and the Grab; a
+    frog's card shows its real Defense and Move (`pulp_wars-mch9.19`,
+    [the Cultists, section 14.3](RULESET_7_CULTISTS.md#143-how-it-reads-on-the-board-without-text)).
+    The text
     harness offers `.ribbit.uN`, `.switch.uN`, `.tentacle.x,y`, and
     `.pickme`.
   - **Normal AI.** Only a Cult seat of the army play picks one of the four

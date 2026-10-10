@@ -953,6 +953,28 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
       "BOARD",
     "src/render/cult-channel-presentation-v7.ts::cultChannelNoticePartsV7":
       "BOARD",
+    // Rituals, hexes and tricks in the interface (`pulp_wars-mch9.19`): a
+    // chanter, a frog, a taunting Chosen, a Tentacle and the unit it holds
+    // are units on the board (a ritual's participant is in land form; a
+    // burrowed unit is hexed, swapped and slapped by nothing), read from
+    // the public view.
+    "src/render/canvas/cult-ritual-board-plan-v7.ts::cultTrickUnitMarkersV7":
+      "BOARD",
+    "src/render/canvas/cult-ritual-board-plan-v7.ts::addCultTrickEntriesV7":
+      "BOARD",
+    "src/render/canvas/cult-ritual-board-plan-v7.ts::addCultTrickPreviewsV7":
+      "BOARD",
+    "src/render/canvas/cult-ritual-board-plan-v7.ts::cultTrickPickTargetsV7":
+      "BOARD",
+    "src/render/canvas/cult-ritual-board-plan-v7.ts::addCultTrickPickEntriesV7":
+      "BOARD",
+    "src/render/cult-ritual-presentation-v7.ts::cultTrickUnavailableTextV7":
+      "BOARD",
+    "src/render/cult-ritual-presentation-v7.ts::cultTrickChipsV7": "BOARD",
+    "src/render/cult-ritual-presentation-v7.ts::unitLabel": "BOARD",
+    "src/render/cult-ritual-presentation-v7.ts::cultTrickNoticePartsV7":
+      "BOARD",
+    "src/render/cult-ritual-presentation-v7.ts::cultTrickTileLinesV7": "BOARD",
     // The Cult's Unbound (`pulp_wars-mch9.6`, sections 6.4 and 6.5). Every
     // reader means the board: an Unbound daemon is a neutral unit on the
     // board, a rampage goes for the units on it (a burrowed unit is never a

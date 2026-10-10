@@ -366,6 +366,36 @@ export function soundCuesForStepV7(
           return [{ id: "support.dark", delayMs: 0 }];
         case "STRAND_FORMED":
           return [];
+        // Rituals, hexes and tricks (bead pulp_wars-mch9.19), likewise
+        // with the sounds the game has (the croak, the paper-rustle and
+        // the booming "KNEEL!" of section 14.2 are still to be recorded).
+        case "RITUAL_BEGUN":
+          return [{ id: "support.dark", delayMs: 0 }];
+        case "RITUAL_FIZZLE":
+          return [{ id: "special.puff", delayMs: 0 }];
+        case "STARFALL":
+          return [
+            { id: "attack.magic", delayMs: 0 },
+            { id: "impact.explosion", delayMs: step.durationMs * 0.42 },
+          ];
+        case "HERALD":
+          return [{ id: "support.dark", delayMs: 0 }];
+        case "CONSUMED":
+          return [{ id: "special.puff", delayMs: 0 }];
+        case "PROCLAIM":
+          return [{ id: "support.rally", delayMs: 0 }];
+        case "RIBBIT":
+          return [{ id: "special.pop", delayMs: step.durationMs * 0.35 }];
+        case "SWITCHEROO":
+          return [{ id: "special.sparkle", delayMs: 0 }];
+        case "TENTACLE":
+          return [{ id: "impact.splash", delayMs: 0 }];
+        case "GRAB":
+          return [{ id: "special.boing", delayMs: 0 }];
+        case "PICK_ME":
+          return [{ id: "support.rally", delayMs: 0 }];
+        case "PAMPHLETS":
+          return [{ id: "special.sparkle", delayMs: 0 }];
       }
       return [];
     case "CANDY":

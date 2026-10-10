@@ -495,6 +495,76 @@ Horror will be Unbound." (or "2 daemons will be Unbound."), the count the
 pips show ("0 / 1"), and two answers, **Back** (the default, also Escape)
 and **End turn**. It is a confirmation, not a protection.
 
+### 3.9 The Cultists: rituals, hexes and tricks (bead `pulp_wars-mch9.19`)
+
+The two rites, the Herald's Proclaim and the four tricks
+([rules](../product/RULESET_7_CULTISTS.md#7-rituals), sections 7, 8.2, 8.6
+and 9) each have **one button** on their unit, whatever the number of
+tiles, cities or units. Code: `src/render/cult-ritual-presentation-v7.ts`
+(the words), `src/render/canvas/cult-ritual-board-plan-v7.ts` (the targets
+and what is always drawn), `src/render/canvas/cult-ritual-canvas-v7.ts`
+(the drawing) and `src/render/canvas/cult-trick-effects-v7.ts` (the cues).
+
+| Action          | Unit      | Class | How it is chosen                                                                                                                                                                                                                                                                                                                                                                                                               | Style                                       |
+| --------------- | --------- | ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------- |
+| Star-fall       | Stargazer | (b)   | One button. Armed, every tile the star may fall on is a Place mark and the cultists that would chant are labelled "Chants". The first pick of a tile previews it: its nine tiles on a warning tint, each unit there with what it takes ("−7", red when it dies, the warning stripes on the player's own), and in the dock "2 chanters · 7 damage · 3 units · 1 of yours" with **Begin**. Picking the same tile again begins it | Place, then one confirmation                |
+| Great Summoning | Summoner  | (b)   | One button with its price ("−20" and the Favour candle). Armed, the tiles next to the Summoner are Place marks; a tile whose unit would be consumed is labelled with the Favour ("+18 Favour"), one whose unit would stop the Herald "Blocks". The first pick previews it ("4 chanters · 5 / 3 · consumes +18 Favour") with **Begin**                                                                                          | Place, then one confirmation                |
+| Proclaim        | Herald    | (b)   | One button. Armed, each enemy city within 3 wears the Attack mark on its center, labelled "Kneel!". A city that kneels already keeps "Cowed" in grey                                                                                                                                                                                                                                                                           | Attack                                      |
+| Ribbit          | Hexer     | (b)   | One button. Armed, each enemy within 2 that a hex takes wears the Attack mark labelled "Frog"; one it does not take keeps "Cannot be hexed" or "A frog" in grey                                                                                                                                                                                                                                                                | Attack                                      |
+| Switcheroo      | Familiar  | (b)   | One button. Armed, each unit within 2 it may swap with is labelled "Swap": the Help ring on an own unit, the Attack mark on an enemy. The focused target shows both units faintly beside each other's tile and two bowed arrows between the tiles                                                                                                                                                                              | Help or Attack, by the target (`highlight`) |
+| Tentacle        | Caller    | (b)   | One button. Armed, each free tile within 3 is a Place mark; the focused tile marks the unit the Tentacle slaps at once ("Slapped", the warning stripes on the player's own)                                                                                                                                                                                                                                                    | Place                                       |
+| Pick Me!        | Chosen    | (c)   | One button casts it. While the Chosen is selected and the shout is offered, each enemy it would bind is labelled "Bound" with a pale tether to the Chosen (marked, not picked: section 2.1)                                                                                                                                                                                                                                    | An area preview                             |
+
+- **All but Pick Me! are armed, even with one target.** A rite cannot be
+  taken back and a star hurts friends; a Proclaim, a Ribbit and a Tentacle
+  are hostile; a Switcheroo's own unit is selected by a click and its
+  enemy attacked. Escape, Cancel or another selection disarms and sends
+  nothing; Tab steps through the targets, the arrow keys walk a star's
+  tiles, Enter picks.
+- **A rite is chosen, then begun** (the Stampede's and the Tunnel's
+  rule): the first pick moves the mark and previews it, the same tile
+  again or the dock's **Begin** sends `BEGIN_RITUAL`; another tile moves
+  the mark and Escape returns to choosing (the panel holds Begin and
+  Cancel only, so its row fits a 320 px phone). On a touch screen, where nothing hovers, this is
+  where the player reads whom the star hits before it is called.
+- **Reasons on the button.** "Already acted this turn", "It must be on
+  land", "It must not have moved this turn", "A cultist that has not acted
+  must stand next to it", "Needs 3 cultists beside it that have not acted",
+  "Needs 20 Favour", "No tile next to it for the Herald", "No attack left
+  this turn", "No enemy city within 3 tiles", "The city is Cowed already",
+  "Spent: ready again next turn", "No enemy within 2 tiles it can hex",
+  "Nobody within 2 tiles to swap with", "Its Tentacle is still up", "No
+  free tile within 3 tiles", "It shouted already", and, for a frogged
+  cultist, "A frog can only hop". A Summoner with fewer than three robed
+  cultists beside it has no Great Summoning button, and a Familiar without
+  the technology no Switcheroo.
+- **Icons.** The buttons draw `ICON:ACTION:STARFALL`, `GREAT_SUMMONING`,
+  `PROCLAIM`, `RIBBIT`, `SWITCHEROO`, `TENTACLE` and `PICK_ME`, the chips
+  `ICON:STATUS:CANDLELIT`, `FROG`, `GRABBED` and `PICK_ME`, the board the
+  `FROG` marker, the shutters of `ICON:STATUS:COWED` and the two rites'
+  icons on their leaders, and the cues their `EFFECT:*` sprites
+  ([the Cult's art](../art/factions/CULT.md)). In the classic look, and
+  while a raster loads, each is drawn in code.
+
+**Always on the board, for every player** (none of it is a target):
+
+| What            | Drawn as                                                                                                                                                                               |
+| --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| A ritual        | A chalk ring on the ground under the leader (double) and under each chanter, a candle over each, and the rite's badge on the leader (a star, or the lodge's eye)                       |
+| Its marked tile | A chalk sign on the ground (an eight-pointed star, or the eye, in a circle) and, at the tile's upper right, the countdown: a dark dial with its ring and the turns left (always 1)     |
+| A star's path   | Its nine tiles outlined on a warning tint, and each unit there labelled with what it takes as the board stands ("−7", red when it dies; the warning stripes on the viewer's own units) |
+| The Herald's    | The unit on the mark labelled with the Favour it is consumed for, or "Blocks" in grey                                                                                                  |
+| Cowed           | An indigo banner over the city: closed shutters and "KNEEL!"; the city's panel adds "Status: Cowed"                                                                                    |
+| A frog          | A small frog on the lower left of the unit's base with one pip for the turn left; its card shows Defense 0.5, Move 1 and no Attack                                                     |
+| Pick Me!        | A "ME!" bubble over the Chosen and a red dashed tether from each unit it binds                                                                                                         |
+| A Tentacle      | Three pips under it, lit for the neutral turns it has left, and a teal arm that coils once round the unit it holds                                                                     |
+
+The cursor reads each in one sentence: the mark ("Star-fall lands here at
+the start of Player 2's next turn: 7 damage to every unit on the nine
+tiles: 3 units there now, 1 would die. Disrupt its circle and nothing
+happens"), a tile beside it ("In a star's path: 7 damage ..."), a Cowed
+city and each chip of the unit on the tile.
+
 ## 4. The aiming panel
 
 While an ability is armed the dock shows its aiming panel in place of the
@@ -592,6 +662,20 @@ for tools; it is never read out.
   `scripts/browser-cult-review-v7.ts` captures them at 1440, 390 and 320 px
   wide, the strands on Grass, water and Snow, every mark on four grounds,
   the cues, and the cost of a frame.
+- `tests/unit/cult-ritual-presentation-v7.test.ts` and
+  `tests/integration/ruleset7-cult-ritual-dom.test.ts` (section 3.9, scenes
+  in `tests/fixtures/v7-cult-ui.ts`): each rite chosen, previewed, stepped
+  back and begun (on the board and from the dock), its marks under way for
+  its seat and for a rival, the Great Summoning's labels and price, every
+  reason, Proclaim and the Cowed city's banner and panel line, the Herald's
+  attack pips, Ribbit with its grey reasons and the frog's real numbers,
+  Switcheroo's styles and ghosts, the Tentacle's tiles and slap, Pick Me!'s
+  preview, bubble and tethers, the victim's chips, an Unbound Herald's
+  binding pips, the notices of both seats, the cue each event plays (a
+  star falls after two turns ended by hand), and the drawing of each mark.
+  The guard test sweeps ten scenes of rituals, hexes and tricks.
+  `scripts/browser-cult-review-v7.ts` captures them at 1440, 390 and 320 px
+  wide, every mark on four grounds, and the cues.
 - `scripts/browser-board-targeting-review-v7.ts` (dev server only)
   captures every style on the faction fixtures, on Grass, Snow, a Forest,
   Mountains and the Undead ground, at desktop and phone widths, the area

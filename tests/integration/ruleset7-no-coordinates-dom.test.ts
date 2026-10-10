@@ -93,7 +93,17 @@ import {
   cultChannelShortUiFixtureV7,
   cultChannelUiFixtureV7,
   cultFavourUiFixtureV7,
+  cultHeraldBindUiFixtureV7,
+  cultProclaimUiFixtureV7,
+  cultRitualRivalUiFixtureV7,
   cultRivalUiFixtureV7,
+  cultStarfallBegunUiFixtureV7,
+  cultStarfallUiFixtureV7,
+  cultSummoningBlockedUiFixtureV7,
+  cultSummoningUiFixtureV7,
+  cultTricksDoneUiFixtureV7,
+  cultTricksRivalUiFixtureV7,
+  cultTricksUiFixtureV7,
 } from "../fixtures/v7-cult-ui";
 import { undeadShowcaseFixtureV7 } from "../fixtures/v7-undead-ui";
 
@@ -292,6 +302,54 @@ const FIXTURES: readonly (readonly [
   ["Cult: an Unbound daemon", () => cultChannelUnboundUiFixtureV7(), []],
   ["Cult: a Furious daemon", cultChannelFuriousUiFixtureV7, []],
   ["Cult: Bind again", cultChannelBindUiFixtureV7, ["cult-channel performed"]],
+  // Rituals, hexes and tricks (`pulp_wars-mch9.19`): the mark of a rite is
+  // chosen on the board (its forecast in the dock) and begun when chosen
+  // again; a Proclaim's city, a Ribbit's or a Switcheroo's unit and a
+  // Tentacle's tile are picked on the board; Pick Me! is cast by its
+  // button. The scenes under way and the rival's views carry the rings,
+  // the countdown, the Cowed city, the frog, the Grab and the taunt.
+  [
+    "Cult: Star-fall",
+    cultStarfallUiFixtureV7,
+    ["cult-starfall aimed", "cult-starfall step 1", "cult-starfall performed"],
+  ],
+  ["Cult: a star under way", cultStarfallBegunUiFixtureV7, []],
+  [
+    "Cult: the Great Summoning",
+    cultSummoningUiFixtureV7,
+    [
+      "cult-great-summoning aimed",
+      "cult-great-summoning step 1",
+      "cult-great-summoning performed",
+    ],
+  ],
+  ["Cult: a blocked Summoning", cultSummoningBlockedUiFixtureV7, []],
+  [
+    "Cult: Proclaim",
+    cultProclaimUiFixtureV7,
+    ["cult-proclaim aimed", "cult-proclaim performed"],
+  ],
+  ["Cult: a rival under a star", cultRitualRivalUiFixtureV7, []],
+  [
+    "Cult: hexes and tricks",
+    cultTricksUiFixtureV7,
+    [
+      "cult-ribbit aimed",
+      "cult-ribbit performed",
+      "cult-switcheroo aimed",
+      "cult-switcheroo performed",
+      "cult-tentacle aimed",
+      "cult-tentacle performed",
+      "cult-pick-me performed",
+    ],
+  ],
+  ["Cult: hexed", cultTricksDoneUiFixtureV7, []],
+  ["Cult: a hexed rival", cultTricksRivalUiFixtureV7, []],
+  [
+    "Cult: binding a Herald",
+    cultHeraldBindUiFixtureV7,
+    ["cult-channel performed"],
+  ],
   [
     "Frozen sea: icebound victim",
     () => frozenIceboundUiFixtureV7({ victim: true }),
@@ -753,7 +811,7 @@ async function sweep(fixture: () => GameStateV7): Promise<{
 
 /** The only controls an aiming panel may hold (bead pulp_wars-9im). */
 const PICK_PANEL_CONTROLS =
-  /^(pick-info|[a-z-]+-pick-cancel|[a-z-]+-pick-back|tunnel-confirm|tunnel-passenger-none|cold-snap-cast|stampede-charge|cult-boo-cast)$/;
+  /^(pick-info|[a-z-]+-pick-cancel|[a-z-]+-pick-back|tunnel-confirm|tunnel-passenger-none|cold-snap-cast|stampede-charge|cult-boo-cast|cult-ritual-begin)$/;
 
 /**
  * Bead pulp_wars-9im, the generic guard: targets are picked on the board,

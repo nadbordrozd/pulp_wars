@@ -100,6 +100,14 @@ const EVERY_FAMILY: Readonly<
   SUMMON: "PLACE",
   CHANNEL: "SUPPORT",
   ANCHOR: "SUPPORT",
+  // Rituals, hexes and tricks (`pulp_wars-mch9.19`): a Switcheroo's own
+  // unit says Help for itself (`highlight`).
+  STARFALL: "PLACE",
+  GREAT_SUMMONING: "PLACE",
+  TENTACLE: "PLACE",
+  PROCLAIM: "ATTACK",
+  RIBBIT: "ATTACK",
+  SWITCHEROO: "ATTACK",
 };
 
 describe("target highlight vocabulary", () => {
