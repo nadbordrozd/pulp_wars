@@ -456,9 +456,28 @@ describe("The Great Summoning", () => {
       /blocks the Herald, and the Favour is lost/,
     );
     expect(entries(scene, "ability-target:CHANT:")).toHaveLength(4);
+    // Bead pulp_wars-mch9.24: the player's own chanters read "Chants" and
+    // nothing else while a mark is sought ("+2 Favour" on each was noise).
+    for (const where of R.circle) {
+      expect(targetAt(scene, where).previewLabel, JSON.stringify(where)).toBe(
+        undefined,
+      );
+      expect(targetAt(scene, where).semanticLabel).toMatch(
+        /the unit on it is consumed for 2 Favour/,
+      );
+    }
+    // Chosen as the mark, a chanter's tile says what the Herald does to it.
+    const chanter = R.circle[1];
+    host.callbacks?.onCommand(targetAt(scene, chanter));
+    expect(controller.accepted).toEqual([]);
+    expect(marks(scene)).toEqual([["RITUAL_MARK", chanter]]);
+    expect(targetAt(scene, chanter).previewLabel).toBe("+2 Favour");
+    expect(targetAt(scene, R.circle[0]).previewLabel).toBeUndefined();
 
+    // Another tile moves the mark, and the chanter is quiet again.
     host.callbacks?.onCommand(targetAt(scene, R.free));
     expect(controller.accepted).toEqual([]);
+    expect(targetAt(scene, chanter).previewLabel).toBeUndefined();
     const panel = requiredElement<HTMLElement>("[data-v7-cult-pick]");
     expect(panel.dataset.v7CultPick).toBe("great-summoning");
     expect(panel.getAttribute("aria-label")).toBe("4 chanters · 5 / 3");
@@ -802,7 +821,8 @@ describe("Pick Me!", () => {
 describe("The hexes on the board and on the card, for their victim", () => {
   it("draws the frog, the Grab, the taunt and the Tentacle's turns", () => {
     const scene = rig(cultTricksRivalUiFixtureV7());
-    expect(unitMarks(scene, T.knight)).toEqual({ frog: true });
+    // The eye: the Tentacle beside it slaps it next (pulp_wars-mch9.24).
+    expect(unitMarks(scene, T.knight)).toEqual({ frog: true, eye: true });
     expect(unitMarks(scene, T.chosen)).toEqual({ taunt: true });
     expect(unitMarks(scene, T.tentacle)).toEqual({ sinks: 2 });
     expect(

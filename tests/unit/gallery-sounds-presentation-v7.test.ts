@@ -77,6 +77,7 @@ describe("Gallery sounds", () => {
       ["HITS", "Hits"],
       ["UNITS", "Units"],
       ["ABILITIES", "Abilities"],
+      ["CULT", "Cultists"],
       ["ECONOMY", "Cities and economy"],
       ["MATCH", "Turn and match"],
       ["INTERFACE", "Interface"],
@@ -92,6 +93,24 @@ describe("Gallery sounds", () => {
     expect(gallerySoundGroupOfV7("special.freeze")).toBe("ABILITIES");
     expect(gallerySoundGroupOfV7("village.capture")).toBe("ECONOMY");
     expect(gallerySoundGroupOfV7("ui.error")).toBe("INTERFACE");
+    // The Cultists' own sounds have a row of their own (pulp_wars-mch9.24).
+    expect(gallerySoundGroupOfV7("cult.ribbit")).toBe("CULT");
+    expect(
+      groups
+        .find((group) => group.id === "CULT")
+        ?.entries.map((entry) => [entry.key, entry.name, entry.origin?.kind]),
+    ).toEqual([
+      ["cult.ribbit", "Frog croak", "RECORDED"],
+      ["cult.pamphlets", "Paper rustle", "RECORDED"],
+      ["cult.proclaim", "Proclaim", "RECORDED"],
+      ["cult.summon", "Summoning", "RECORDED"],
+      ["cult.herald", "Herald arrives", "RECORDED"],
+      ["cult.starfall", "Falling star", "RECORDED"],
+      ["cult.snap", "Strand snaps", "RECORDED"],
+      ["cult.unbound", "Daemon unbound", "RECORDED"],
+      ["cult.tentacle", "Tentacle", "RECORDED"],
+      ["cult.sacrifice", "Sacrifice", "RECORDED"],
+    ]);
     // Inside a group the manifest's order is kept.
     for (const group of groups.filter((entry) => entry.id !== "THEMES"))
       expect(group.entries.map((entry) => entry.key)).toEqual(

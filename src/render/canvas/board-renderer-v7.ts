@@ -5927,15 +5927,11 @@ function drawCultChannelV7(
     ) {
       begin();
       const { x, y } = centre(entry.at);
+      // The Cowed banner's shutters are drawn in code at every size (bead
+      // `pulp_wars-mch9.24`): the `ICON:STATUS:COWED` raster is not drawn here.
       drawCultOverMarkV7(context, entry.cultMark, x, y, camera.zoom, {
         highContrast,
         banner: COWED_BANNER_V7,
-        art: {
-          cowed:
-            entry.cultMark.kind === "COWED" && raster !== null
-              ? raster("ICON:STATUS:COWED")
-              : null,
-        },
       });
     }
   if (saved) context.restore();

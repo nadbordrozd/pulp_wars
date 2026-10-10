@@ -660,8 +660,10 @@ is an ellipse round each participant's feet (the leader's is double) and
 the marked tile carries a chalk sign (an eight-pointed star, or the lodge's
 eye, in a circle), both under trees, rocks and pieces; the countdown is a
 dark dial with its ring and the number; a Cowed city has an indigo banner
-with the shutters (`ICON:STATUS:COWED`, or two code-drawn leaves) and
-"KNEEL!"; a Chosen that shouted has a cream "ME!" bubble; a Grab is a teal
+with the shutters and "KNEEL!" (since bead `pulp_wars-mch9.24` the
+shutters are always two code-drawn cream leaves with louvre slits: the
+`ICON:STATUS:COWED` raster, a round window, did not read at the banner's
+13 to 20 px and is not drawn on the board); a Chosen that shouted has a cream "ME!" bubble; a Grab is a teal
 arm that coils once round the held unit; the Switcheroo ghosts are the two
 units' own sprites, faint, each beside the other's tile; a Tentacle's
 turns are three pips under it. The frog is the `FROG` raster on a dark

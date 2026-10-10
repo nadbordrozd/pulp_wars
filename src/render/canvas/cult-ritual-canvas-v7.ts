@@ -227,37 +227,76 @@ export function drawCultGroundMarkV7(
   context.restore();
 }
 
-/** Two closed shutters, in code: the glyph of a Cowed city. */
-function drawShutters(
+/** The whole-pixel measures of the Cowed shutters at a height. */
+function cowedShutters(size: number): {
+  readonly height: number;
+  readonly gap: number;
+  readonly leaf: number;
+  readonly line: number;
+  readonly slats: number;
+} {
+  const height = Math.max(9, Math.round(size));
+  return {
+    height,
+    gap: Math.max(1, Math.round(height * 0.1)),
+    leaf: Math.max(4, Math.round(height * 0.42)),
+    line: Math.max(1, Math.round(height * 0.09)),
+    // Three louvres a leaf where they keep a clear pixel between them.
+    slats: height >= 11 ? 3 : 2,
+  };
+}
+
+/** How wide the Cowed shutters are drawn at the height `size`. */
+export function cowedShuttersWidthV7(size: number): number {
+  const { gap, leaf, line } = cowedShutters(size);
+  return leaf * 2 + gap + line * 2;
+}
+
+/**
+ * Two closed shutters, in code: the glyph of a Cowed city, `size` high. It
+ * is drawn for the banner's 13 to 20 px (bead `pulp_wars-mch9.24`: the
+ * 48 px raster of the round window was a dark dot there): a dark plate, on
+ * it two cream leaves that fill the height with a dark gap between them,
+ * and evenly spaced louvre slits across each leaf. Every edge is on a whole
+ * pixel.
+ */
+export function drawCowedShuttersV7(
   context: CanvasRenderingContext2D,
   cx: number,
   cy: number,
   size: number,
   highContrast: boolean,
 ): void {
-  const leaf = size * 0.42;
-  context.lineWidth = Math.max(0.8, size * 0.07);
-  for (const side of [-1, 1]) {
-    const left = side === -1 ? cx - leaf - size * 0.03 : cx + size * 0.03;
-    context.fillStyle = highContrast ? "#ffffff" : CULT_PALETTE_V7.brass;
-    context.strokeStyle = highContrast ? "#000000" : CULT_PALETTE_V7.casing;
-    context.beginPath();
-    context.rect(left, cy - size / 2, leaf, size);
-    context.fill();
-    context.stroke();
-    // The slats.
-    context.beginPath();
-    for (const slat of [-0.25, 0, 0.25]) {
-      context.moveTo(left + leaf * 0.18, cy + slat * size);
-      context.lineTo(left + leaf * 0.82, cy + slat * size);
-    }
-    context.stroke();
+  const { height, gap, leaf, line, slats } = cowedShutters(size);
+  const top = Math.round(cy - height / 2);
+  const left = Math.round(cx - leaf - gap / 2);
+  const dark = highContrast ? "#000000" : CULT_PALETTE_V7.casing;
+  // The frame: a dark plate one line larger than the two leaves.
+  context.fillStyle = dark;
+  context.fillRect(
+    left - line,
+    top - line,
+    leaf * 2 + gap + line * 2,
+    height + line * 2,
+  );
+  for (const side of [0, 1]) {
+    const x = left + side * (leaf + gap);
+    context.fillStyle = highContrast ? "#ffffff" : CULT_PALETTE_V7.wax;
+    context.fillRect(x, top, leaf, height);
+    // The louvres: dark slits, evenly spaced down the leaf.
+    context.fillStyle = dark;
+    for (let slat = 1; slat <= slats; slat += 1)
+      context.fillRect(
+        x + line,
+        top + Math.round((height * slat) / (slats + 1) - line / 2),
+        leaf - line * 2,
+        line,
+      );
   }
 }
 
 /** Rasters of the over-piece marks, each optional (code-drawn without). */
 export interface CultTrickArtV7 {
-  readonly cowed?: CanvasImageSource | null;
   readonly frog?: CanvasImageSource | null;
   readonly starfall?: CanvasImageSource | null;
   readonly summoning?: CanvasImageSource | null;
@@ -310,9 +349,11 @@ export function drawCultOverMarkV7(
     const height = Math.max(13, frame.banner.height * zoom);
     const font = Math.max(9, height * 0.62);
     context.font = `800 ${font}px ${BOARD_LABEL_FONT_FAMILY_V7}`;
-    const glyph = height * 0.74;
-    const pad = height * 0.3;
-    const width = pad * 2.4 + glyph + context.measureText(text).width;
+    // The shutters: two leaves, a little wider than they are high.
+    const glyph = height * 0.62;
+    const shutters = cowedShuttersWidthV7(glyph);
+    const pad = height * 0.36;
+    const width = pad * 2.6 + shutters + context.measureText(text).width;
     const left = x - width / 2;
     const top = y + frame.banner.y * zoom - height / 2;
     context.fillStyle = highContrast ? "#000000" : CULT_PALETTE_V7.indigo;
@@ -322,16 +363,14 @@ export function drawCultOverMarkV7(
     context.roundRect(left, top, width, height, height * 0.22);
     context.fill();
     context.stroke();
-    const gx = left + pad + glyph / 2;
+    const gx = left + pad + shutters / 2;
     const gy = top + height / 2;
-    const image = options.art?.cowed ?? null;
-    if (image !== null)
-      context.drawImage(image, gx - glyph / 2, gy - glyph / 2, glyph, glyph);
-    else drawShutters(context, gx, gy, glyph * 0.86, highContrast);
+    // Always the code-drawn leaves: the raster does not read this small.
+    drawCowedShuttersV7(context, gx, gy, glyph, highContrast);
     context.fillStyle = highContrast ? "#ffffff" : CULT_PALETTE_V7.wax;
     context.textAlign = "left";
     context.textBaseline = "middle";
-    context.fillText(text, left + pad * 1.4 + glyph, gy + height * 0.04);
+    context.fillText(text, left + pad * 1.6 + shutters, gy + height * 0.04);
   }
   context.restore();
 }

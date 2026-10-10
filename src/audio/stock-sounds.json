@@ -1011,6 +1011,438 @@
       ]
     },
     {
+      "id": "cult.ribbit",
+      "default": 1,
+      "confidence": "low",
+      "listenFirst": "The bundle has no frog. A squeak of wet rubber stands in for the croak; the generated croak is the other choice.",
+      "why": "No frog, toad or croak anywhere in the bundle. A croak is a short train of low pulses with a throat's resonance over it, and one squeak of a wet wetsuit measures like that: about 100 ms of pulses near 90 Hz with most of the energy round 450 Hz. The android's goofy 'wah' is the only other short comic voice-like sound.",
+      "candidates": [
+        {
+          "n": 1,
+          "file": "cult-ribbit-1.m4a",
+          "part": 9,
+          "library": "TheWorkRoom Audio Post - Neoprene - Wet- Wetsuit",
+          "originalFile": "NEOW003.wav",
+          "startSeconds": 3.78,
+          "endSeconds": 4.12,
+          "fadeInMs": 10,
+          "fadeOutMs": 90,
+          "highpassHz": 120,
+          "gain": 0.6,
+          "take": "The fourth event (3.8 to 4.1 s): a faint rub, then the squeak from 3.9 to 4.0 s.",
+          "note": "A 100 ms burst of pulses near 90 Hz with its energy round 450 Hz, after 100 ms of a faint rub: one low rubbery croak; 0.34 s."
+        },
+        {
+          "n": 2,
+          "file": "cult-ribbit-2.m4a",
+          "part": 9,
+          "library": "TheWorkRoom Audio Post - Neoprene - Wet- Wetsuit",
+          "originalFile": "NEOW003.wav",
+          "startSeconds": 9.47,
+          "endSeconds": 9.74,
+          "fadeInMs": 10,
+          "fadeOutMs": 80,
+          "highpassHz": 120,
+          "gain": 0.55,
+          "take": "The sixth event (9.36 to 9.74 s) from its second rub on: the squeak is 9.5 to 9.65 s.",
+          "note": "The same wetsuit, a longer squeak in two parts (70 ms, then 80 ms louder and lower): nearer to 'rib-bit'; 0.27 s."
+        },
+        {
+          "n": 3,
+          "file": "cult-ribbit-3.m4a",
+          "part": 1,
+          "library": "Bolt - ARP 2600- Droids, Blips, Drones & more",
+          "originalFile": "ROBTVox_Android Talking Wah Goofy 01_BOLT_ARP2600.wav",
+          "startSeconds": 0.165,
+          "endSeconds": 0.57,
+          "fadeInMs": 3,
+          "fadeOutMs": 25,
+          "highpassHz": 100,
+          "gain": 0.4,
+          "take": "The first of five phrases (0.175 to 0.55 s): three syllables with gaps of 50 ms.",
+          "note": "A synthesiser 'wah-wah-wah', three syllables that jump between 400 and 850 Hz: a cartoon voice and no animal; 0.41 s."
+        }
+      ]
+    },
+    {
+      "id": "cult.pamphlets",
+      "default": 1,
+      "confidence": "high",
+      "why": "The Cardboard and Paper library has a sheet of paper crumpled in the hand, which is the leaflets' rustle by name, and a large book's page turned.",
+      "candidates": [
+        {
+          "n": 1,
+          "file": "cult-pamphlets-1.m4a",
+          "part": 2,
+          "library": "Mechanical Wave - Cardboard and Paper",
+          "originalFile": "PAPRHndl_Paper Sheet Crumple_ 04_MWSFX_CDAP.wav",
+          "startSeconds": 0.05,
+          "endSeconds": 0.65,
+          "fadeInMs": 15,
+          "fadeOutMs": 220,
+          "highpassHz": 200,
+          "gain": 0.3,
+          "take": "The first 0.6 s of 2.9 s of crumpling, which is even throughout.",
+          "note": "Dry crackling paper, steady, energy from 2 to 5 kHz and nothing below 1 kHz; 0.6 s."
+        },
+        {
+          "n": 2,
+          "file": "cult-pamphlets-2.m4a",
+          "part": 2,
+          "library": "Mechanical Wave - Cardboard and Paper",
+          "originalFile": "PAPRHndl_Large Book Squeak Page Turn_ 01_MWSFX_CDAP.wav",
+          "startSeconds": 0.08,
+          "endSeconds": 0.78,
+          "fadeInMs": 15,
+          "fadeOutMs": 160,
+          "highpassHz": 200,
+          "gain": 0.4,
+          "take": "The first movement of the page (0.1 to 0.8 s); the turn that ends the file (1.5 to 1.9 s) is a candidate of End turn.",
+          "note": "One page lifted and flicked: two swells, the second the louder, a little duller than the crumple; 0.7 s."
+        }
+      ]
+    },
+    {
+      "id": "cult.proclaim",
+      "default": 1,
+      "confidence": "medium",
+      "listenFirst": "The 'KNEEL!' is a horn, since no speech is used: a low cinematic battle horn, or a coach's air horn.",
+      "why": "The Herald's booming 'KNEEL!' cannot be a spoken line (the bundle's voices are robots reading sentences, and no speech synthesis is used), so it is a horn. The Cinematic Feel library's 'Horn, Battle, Call, Heavy, Loud' is a low brass blast by name and by measurement; the coach's air horn is the other horn of the bundle. The low horn is also a candidate of Rally, which plays its generated call.",
+      "candidates": [
+        {
+          "n": 1,
+          "file": "cult-proclaim-1.m4a",
+          "part": 2,
+          "library": "Mechanical Wave - Cinematic Feel",
+          "originalFile": "DSGNBram_Cinematic Horn_MWSFX_CF 05.wav",
+          "startSeconds": 0.25,
+          "endSeconds": 1.3,
+          "fadeInMs": 20,
+          "fadeOutMs": 380,
+          "highpassHz": 60,
+          "gain": 0.5,
+          "take": "The horn's attack and its first second (it starts at 0.24 s and holds for six seconds); a shorter cut than Rally's candidate, with a longer fade.",
+          "note": "A steady blast at 75 Hz with its energy round 350 Hz, full after 250 ms: a low brass 'braam'; 1.05 s."
+        },
+        {
+          "n": 2,
+          "file": "cult-proclaim-2.m4a",
+          "part": 6,
+          "library": "Pole Position - The Vehicle Doors and More Library",
+          "originalFile": "Man Lions Coach - VAR SFX - Horn Various - Mono - RSM191.wav",
+          "startSeconds": 55.34,
+          "endSeconds": 55.93,
+          "fadeInMs": 3,
+          "fadeOutMs": 60,
+          "highpassHz": 150,
+          "gain": 0.3,
+          "take": "The fifth of sixteen blasts (55.36 to 56.0 s), the shortest with a hard start.",
+          "note": "An air horn: a steady two-note honk with its energy round 2.2 kHz, strident; 0.59 s."
+        }
+      ]
+    },
+    {
+      "id": "cult.summon",
+      "default": 1,
+      "confidence": "medium",
+      "listenFirst": "A designed 'vortex in' for the Horror popping into the world; nobody has heard whether it reads as an arrival.",
+      "why": "A summoning is a designed sound, and the Essential Scifi library has one named for it: 'Vortex In', a bright hiss drawn down into a low swell. The robotic creature powering on is the only other 'something wakes' of the bundle.",
+      "candidates": [
+        {
+          "n": 1,
+          "file": "cult-summon-1.m4a",
+          "part": 1,
+          "library": "Chupapsound - Essential Scifi",
+          "originalFile": "DSGN VORTEX IN.wav",
+          "startSeconds": 0.0,
+          "endSeconds": 1.2,
+          "fadeInMs": 30,
+          "fadeOutMs": 350,
+          "highpassHz": 80,
+          "gain": 0.45,
+          "take": "The start of the file: the hiss (to 0.2 s) and the first second of the swell that follows; the tail runs on to 4.6 s.",
+          "note": "A hiss at 6 to 9 kHz for 200 ms that falls into a low swell round 400 Hz: something drawn in; 1.2 s."
+        },
+        {
+          "n": 2,
+          "file": "cult-summon-2.m4a",
+          "part": 1,
+          "library": "DavidDumais - Robotic Creatures Sound FX",
+          "originalFile": "CREAMisc_Creature Power On 14_DDUMAIS_MCSFX.wav",
+          "startSeconds": 0.02,
+          "endSeconds": 0.95,
+          "fadeInMs": 20,
+          "fadeOutMs": 220,
+          "highpassHz": 80,
+          "gain": 0.35,
+          "take": "The rise and the first body of the sound (it lasts 1.6 s).",
+          "note": "A noisy mechanical creature starting up, full after 300 ms, energy from 2 to 4 kHz over a low thump: more machine than magic; 0.93 s."
+        }
+      ]
+    },
+    {
+      "id": "cult.herald",
+      "default": 1,
+      "confidence": "medium",
+      "why": "The Herald's arrival is the biggest moment the Cult has, so it gets a trailer hit. The Haunted Metal hits are 'metallic, boom, horror' by name; number 18 is the one whose energy is in the midrange (86% between 150 Hz and 1 kHz), so a laptop plays it. The Cinematic Feel hit is brighter and heavier below.",
+      "candidates": [
+        {
+          "n": 1,
+          "file": "cult-herald-1.m4a",
+          "part": 2,
+          "library": "Jake Fielding - Haunted Metal Vol.1 - Cinematic Hits & Impacts",
+          "originalFile": "DSGNBoom_Cinematic Metallic Hit, Boom, Trailer, Sub_JF_Haunted Metal Vol 1_18.wav",
+          "startSeconds": 1.38,
+          "endSeconds": 3.1,
+          "fadeInMs": 10,
+          "fadeOutMs": 650,
+          "highpassHz": 60,
+          "gain": 0.7,
+          "take": "The hit (it builds from 1.39 s and peaks at 1.7 s) and 1.4 s of its ring; the tail runs on to 7.3 s.",
+          "note": "A metallic boom that swells for 300 ms, energy round 300 Hz falling to 170 Hz as it rings; 1.72 s."
+        },
+        {
+          "n": 2,
+          "file": "cult-herald-2.m4a",
+          "part": 2,
+          "library": "Mechanical Wave - Cinematic Feel",
+          "originalFile": "DSGNBoom_Cinematic Hit_MWSFX_CF 05.wav",
+          "startSeconds": 0.08,
+          "endSeconds": 1.5,
+          "fadeInMs": 5,
+          "fadeOutMs": 550,
+          "highpassHz": 60,
+          "gain": 0.5,
+          "take": "The impact and its first 1.4 s; the tail runs on to 6 s.",
+          "note": "A crash that is bright for 400 ms (5 kHz) over a heavy low end, then a rumble: louder and harsher; 1.42 s."
+        }
+      ]
+    },
+    {
+      "id": "cult.starfall",
+      "default": 1,
+      "confidence": "medium",
+      "listenFirst": "The star's flight is a whoosh that peaks where the burst begins; the explosion that follows is the game's own.",
+      "why": "The star falls for 0.3 s and bursts, and the burst keeps the Explosion sound. For the flight the Distinct Whooshes library has a 'pure sci-fi whoosh, fast' that swells for 300 ms to its peak; the Cinematic Transitions 'Searing' ('quick, bright, heat') and the low pass-by are the other passes of that length.",
+      "candidates": [
+        {
+          "n": 1,
+          "file": "cult-starfall-1.m4a",
+          "part": 6,
+          "library": "Rescopic Sound - Distinct Whooshes",
+          "originalFile": "WHSH_Pure SciFi-Whoosh Fast 03_RSCPC_DW.wav",
+          "startSeconds": 0.15,
+          "endSeconds": 0.8,
+          "fadeInMs": 30,
+          "fadeOutMs": 250,
+          "highpassHz": 90,
+          "gain": 0.6,
+          "take": "The rise (0.15 to 0.45 s), the peak and 250 ms after it; the low tail to 1.3 s is left out.",
+          "note": "A whoosh that swells for 300 ms to its peak, brightest (1.2 kHz) at the peak: it arrives as the star lands; 0.65 s."
+        },
+        {
+          "n": 2,
+          "file": "cult-starfall-2.m4a",
+          "part": 2,
+          "library": "Orbital Emitter - Cinematic Transitions for Editors Volume 2",
+          "originalFile": "27,Searing.wav",
+          "startSeconds": 0.0,
+          "endSeconds": 1.0,
+          "fadeInMs": 20,
+          "fadeOutMs": 300,
+          "highpassHz": 90,
+          "gain": 0.6,
+          "take": "The rise and the bright peak (0.5 to 0.8 s); the cavernous ring-out to 4 s is left out.",
+          "note": "A slower rise, 600 ms to its peak, that brightens from 300 Hz to 3 kHz: a searing sweep, later than the burst; 1.0 s."
+        },
+        {
+          "n": 3,
+          "file": "cult-starfall-3.m4a",
+          "part": 1,
+          "library": "Chupapsound - Essential Scifi",
+          "originalFile": "WHOOSH PASS SF LOW.wav",
+          "startSeconds": 0.45,
+          "endSeconds": 1.25,
+          "fadeInMs": 40,
+          "fadeOutMs": 300,
+          "highpassHz": 90,
+          "gain": 0.6,
+          "take": "The approach and the pass (peak at 0.8 s); the sub-bass tail to 2 s is left out.",
+          "note": "A low pass-by, most of its energy below 300 Hz, peak after 350 ms: heavy, more a boulder than a star; 0.8 s."
+        }
+      ]
+    },
+    {
+      "id": "cult.snap",
+      "default": 1,
+      "confidence": "medium",
+      "why": "A strand is a taut string of light, and its breaking is a snap. The Mask Foley library has the elastic of a mask let go, a snap by name and by measurement (full in 15 ms, gone in 30); the yacht library has a taut steel cable plucked, recorded with a contact microphone.",
+      "candidates": [
+        {
+          "n": 1,
+          "file": "cult-snap-1.m4a",
+          "part": 1,
+          "library": "InMotionAudio - Mask Foley",
+          "originalFile": "FOLYMisc_BluePPEMask_Elastic09_InMotionAudio_MaskFoley.wav",
+          "startSeconds": 1.095,
+          "endSeconds": 1.25,
+          "fadeInMs": 3,
+          "fadeOutMs": 70,
+          "highpassHz": 150,
+          "gain": 0.65,
+          "take": "The third event (1.105 to 1.235 s), the snap; the two before it are the elastic being stretched, 24 dB quieter.",
+          "note": "A dry snap, full in 15 ms and 20 dB down 20 ms later, energy round 3 kHz; 0.155 s."
+        },
+        {
+          "n": 2,
+          "file": "cult-snap-2.m4a",
+          "part": 6,
+          "library": "Rogue Waves - Yacht & Marina",
+          "originalFile": "METLTonl_Contact Mic, Cable Rope Stays, Percussive_RogueWaves_YachtMarina_02.wav",
+          "startSeconds": 14.39,
+          "endSeconds": 14.85,
+          "fadeInMs": 3,
+          "fadeOutMs": 220,
+          "highpassHz": 70,
+          "gain": 0.7,
+          "take": "The fourth of six plucks (14.4 s), the one with the hardest attack.",
+          "note": "A hard click and a low string ringing under it (about 90 Hz, with a zing round 300 Hz): a cable let go; quiet on small speakers; 0.46 s."
+        }
+      ]
+    },
+    {
+      "id": "cult.unbound",
+      "default": 1,
+      "confidence": "medium",
+      "listenFirst": "A gong for a daemon slipping its collar; it is the same gong that is offered for the Monument, cut shorter.",
+      "why": "The design asks for a gong and a deep laugh. The bundle has one gong ('The Gong', also a candidate of Monument, which plays its generated tune) and no laugh; the nearest thing to a deep voice is the Essential Scifi library's angry roar.",
+      "candidates": [
+        {
+          "n": 1,
+          "file": "cult-unbound-1.m4a",
+          "part": 2,
+          "library": "Orbital Emitter - Cinematic Transitions for Editors Volume 2",
+          "originalFile": "80,TheGong.wav",
+          "startSeconds": 0.09,
+          "endSeconds": 1.9,
+          "fadeInMs": 5,
+          "fadeOutMs": 750,
+          "highpassHz": 60,
+          "gain": 0.5,
+          "take": "The stroke and 1.8 s of its ring, shorter than Monument's candidate and faded sooner.",
+          "note": "A gong struck once: full at once, the ring brightening from 200 Hz to 900 Hz as it fades; 1.81 s."
+        },
+        {
+          "n": 2,
+          "file": "cult-unbound-2.m4a",
+          "part": 1,
+          "library": "Chupapsound - Essential Scifi",
+          "originalFile": "GRWL ROAR ANGRY.wav",
+          "startSeconds": 0.05,
+          "endSeconds": 1.55,
+          "fadeInMs": 60,
+          "fadeOutMs": 320,
+          "highpassHz": 80,
+          "gain": 0.5,
+          "take": "The whole roar without its breathy end (it fades from 1.5 s).",
+          "note": "A creature's roar that opens up over 400 ms, energy from 300 Hz to 1 kHz: a beast and no laugh; 1.5 s."
+        }
+      ]
+    },
+    {
+      "id": "cult.tentacle",
+      "default": 1,
+      "confidence": "medium",
+      "listenFirst": "A designed watery surge for the Tentacle coming up (and going down); a rubber squeal is the comic choice.",
+      "why": "The Tentacle rises out of water. The Designed Water library has a thick surge that starts with a slap; the Distinct Whooshes library has a 'watery whoosh, fizzy'; and a long squeal of the wet wetsuit is the rubbery reading of the same thing.",
+      "candidates": [
+        {
+          "n": 1,
+          "file": "cult-tentacle-1.m4a",
+          "part": 1,
+          "library": "BluezoneCorp - Designed Water",
+          "originalFile": "Bluezone_BC0298_designed_water_texture_014.wav",
+          "startSeconds": 0.18,
+          "endSeconds": 1.15,
+          "fadeInMs": 30,
+          "fadeOutMs": 220,
+          "highpassHz": 100,
+          "gain": 0.5,
+          "take": "The slap at 0.25 s and the surge after it, to where it thins out.",
+          "note": "A wet slap, then a thick surge that sinks from 800 Hz to below 200 Hz and comes up once more; 0.97 s."
+        },
+        {
+          "n": 2,
+          "file": "cult-tentacle-2.m4a",
+          "part": 6,
+          "library": "Rescopic Sound - Distinct Whooshes",
+          "originalFile": "WHSH_Watery-Whoosh FIzzy Fast 03_RSCPC_DW.wav",
+          "startSeconds": 0.75,
+          "endSeconds": 1.75,
+          "fadeInMs": 120,
+          "fadeOutMs": 320,
+          "highpassHz": 100,
+          "gain": 0.5,
+          "take": "The swell and the peak (1.1 to 1.5 s); the low tail to 2.6 s is left out.",
+          "note": "A smooth watery swell round 650 Hz, 350 ms to its peak, without a slap; 1.0 s."
+        },
+        {
+          "n": 3,
+          "file": "cult-tentacle-3.m4a",
+          "part": 9,
+          "library": "TheWorkRoom Audio Post - Neoprene - Wet- Wetsuit",
+          "originalFile": "NEOW030.wav",
+          "startSeconds": 4.15,
+          "endSeconds": 4.95,
+          "fadeInMs": 25,
+          "fadeOutMs": 90,
+          "highpassHz": 150,
+          "gain": 0.5,
+          "take": "The third event (4.0 to 4.97 s) without its faint start: a squeal, a rub and a second squeak.",
+          "note": "Wet rubber squealing at 750 to 800 Hz, then two rubs: rubbery and comic, no water in it; 0.8 s."
+        }
+      ]
+    },
+    {
+      "id": "cult.sacrifice",
+      "default": 1,
+      "confidence": "medium",
+      "listenFirst": "A cleaver's chop for the Sacrifice; it is a 'flesh hit' by name, so hear whether it is too grim for the game.",
+      "why": "The Sacrifice is the Chosen's ceremonial cleaver. The Melee Weapons library has a long axe hitting flesh, five takes; the two with the least high end were taken. The game's Splat already plays a clip of the Gore library, so the register is one the game has.",
+      "candidates": [
+        {
+          "n": 1,
+          "file": "cult-sacrifice-1.m4a",
+          "part": 2,
+          "library": "Justsoundeffects - Melee Weapons",
+          "originalFile": "WEAPAxe_Long Two-Handed Axe Flesh Hit_JSE_MW.wav",
+          "startSeconds": 7.235,
+          "endSeconds": 7.72,
+          "fadeInMs": 5,
+          "fadeOutMs": 140,
+          "highpassHz": 80,
+          "gain": 0.5,
+          "take": "The fourth of five hits (7.245 to 7.8 s), the dullest: its centroid is 1.5 kHz where the first is 3 kHz.",
+          "note": "A swing of 100 ms into a thick chop, full at 150 ms, with a short wet tail; 0.485 s."
+        },
+        {
+          "n": 2,
+          "file": "cult-sacrifice-2.m4a",
+          "part": 2,
+          "library": "Justsoundeffects - Melee Weapons",
+          "originalFile": "WEAPAxe_Long Two-Handed Axe Flesh Hit_JSE_MW.wav",
+          "startSeconds": 9.635,
+          "endSeconds": 10.05,
+          "fadeInMs": 5,
+          "fadeOutMs": 140,
+          "highpassHz": 80,
+          "gain": 0.5,
+          "take": "The fifth hit (9.645 to 10.2 s), the one that dies away soonest.",
+          "note": "A quicker, harder chop: full after 60 ms and 100 ms long, brighter (2 to 3 kHz); 0.415 s."
+        }
+      ]
+    },
+    {
       "id": "city.lost",
       "default": 0,
       "confidence": "low",

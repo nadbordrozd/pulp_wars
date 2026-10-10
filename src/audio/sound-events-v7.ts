@@ -350,52 +350,51 @@ export function soundCuesForStepV7(
       }
       return [];
     case "CULT":
-      // The Cultists' channel (bead pulp_wars-mch9.18): the sounds the
-      // game already has, until the Cult's own are recorded (the taut
-      // string, the snap, the gong and the horn of section 14.2).
+      // The Cultists (beads pulp_wars-mch9.18 and pulp_wars-mch9.19). The
+      // signature events have sounds of their own (bead pulp_wars-mch9.24,
+      // the `cult.*` ids); the rest keep the sounds the game already had.
       switch (step.effect) {
         case "SUMMON":
-          return [{ id: "special.sparkle", delayMs: 0 }];
+          return [{ id: "cult.summon", delayMs: 0 }];
         case "STRAND_SNAP":
-          return [{ id: "special.pop", delayMs: 0 }];
+          return [{ id: "cult.snap", delayMs: 0 }];
         case "IDOL":
           return [{ id: "support.rally", delayMs: 0 }];
         case "BOO":
           return [{ id: "special.boing", delayMs: 0 }];
         case "UNBOUND":
-          return [{ id: "support.dark", delayMs: 0 }];
+          return [{ id: "cult.unbound", delayMs: 0 }];
         case "STRAND_FORMED":
           return [];
-        // Rituals, hexes and tricks (bead pulp_wars-mch9.19), likewise
-        // with the sounds the game has (the croak, the paper-rustle and
-        // the booming "KNEEL!" of section 14.2 are still to be recorded).
         case "RITUAL_BEGUN":
           return [{ id: "support.dark", delayMs: 0 }];
         case "RITUAL_FIZZLE":
           return [{ id: "special.puff", delayMs: 0 }];
         case "STARFALL":
+          // The star's whistle, then its burst over the nine tiles.
           return [
-            { id: "attack.magic", delayMs: 0 },
+            { id: "cult.starfall", delayMs: 0 },
             { id: "impact.explosion", delayMs: step.durationMs * 0.42 },
           ];
         case "HERALD":
-          return [{ id: "support.dark", delayMs: 0 }];
+          return [{ id: "cult.herald", delayMs: 0 }];
         case "CONSUMED":
           return [{ id: "special.puff", delayMs: 0 }];
         case "PROCLAIM":
-          return [{ id: "support.rally", delayMs: 0 }];
+          return [{ id: "cult.proclaim", delayMs: 0 }];
         case "RIBBIT":
-          return [{ id: "special.pop", delayMs: step.durationMs * 0.35 }];
+          // The croak as the frog jumps out of the puff.
+          return [{ id: "cult.ribbit", delayMs: step.durationMs * 0.35 }];
         case "SWITCHEROO":
           return [{ id: "special.sparkle", delayMs: 0 }];
         case "TENTACLE":
-          return [{ id: "impact.splash", delayMs: 0 }];
+          return [{ id: "cult.tentacle", delayMs: 0 }];
         case "GRAB":
           return [{ id: "special.boing", delayMs: 0 }];
         case "PICK_ME":
           return [{ id: "support.rally", delayMs: 0 }];
         case "PAMPHLETS":
-          return [{ id: "special.sparkle", delayMs: 0 }];
+          return [{ id: "cult.pamphlets", delayMs: 0 }];
       }
       return [];
     case "CANDY":
@@ -549,6 +548,15 @@ export function soundCuesForBoundaryV7(
         break;
       case "CITY_REWARD_CHOSEN":
         if (event.playerId === viewer) start.push("reward.chosen");
+        break;
+      case "UNIT_SACRIFICED":
+        // The Cultists (bead pulp_wars-mch9.24): the viewer's own offering.
+        if (event.playerId === viewer) start.push("cult.sacrifice");
+        break;
+      case "UNIT_SEIZED":
+        // Heard by the Cult that seized and by the owner of the victim.
+        if (event.playerId === viewer || event.victimOwnerId === viewer)
+          start.push("cult.sacrifice");
         break;
       case "UNIT_DISBANDED":
         if (event.playerId === viewer && event.coinDelta > 0)

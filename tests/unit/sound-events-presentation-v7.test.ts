@@ -20,6 +20,10 @@ import {
 } from "../../src/audio/index";
 import { ATTACK_EFFECT_IDS_V7 } from "../../src/render/canvas/attack-effects-v7";
 import {
+  CULT_EFFECT_DURATIONS_V7,
+  type CultFeedbackEffectV7,
+} from "../../src/render/canvas/cult-effects-v7";
+import {
   corePresentationPlanV7,
   type CorePresentationStepV7,
 } from "../../src/render/canvas/presentation-plan-v7";
@@ -433,6 +437,88 @@ describe("sounds of presentation steps", () => {
       expect(used).toContain(id);
   });
 
+  it("gives the Cultists' signature cues their own sounds", () => {
+    // Bead pulp_wars-mch9.24: the `cult.*` ids replace the stand-ins of
+    // U2 and U3 for the signature events; the rest keep the game's sounds.
+    const view = viewForV7(
+      exploredAllV7(initialV7(1518)),
+      exploredAllV7(initialV7(1518)).humanPlayerId,
+    );
+    const envelope: PlayerEventEnvelopeV7 = {
+      format: "pulp-wars-player-events",
+      version: 7,
+      viewerId: view.viewer.id,
+      commandIndex: view.commandIndex,
+      events: [],
+    };
+    const cues = (effect: CultFeedbackEffectV7): readonly SoundCueV1[] =>
+      soundCuesForStepV7({
+        step: {
+          kind: "CULT",
+          effect,
+          cells: [{ x: 1, y: 1 }],
+          durationMs: CULT_EFFECT_DURATIONS_V7[effect],
+        },
+        before: view,
+        after: view,
+        envelope,
+        durationScale: 1,
+      });
+    const expected: Readonly<Record<CultFeedbackEffectV7, readonly string[]>> =
+      {
+        SUMMON: ["cult.summon"],
+        STRAND_FORMED: [],
+        STRAND_SNAP: ["cult.snap"],
+        IDOL: ["support.rally"],
+        BOO: ["special.boing"],
+        UNBOUND: ["cult.unbound"],
+        RITUAL_BEGUN: ["support.dark"],
+        RITUAL_FIZZLE: ["special.puff"],
+        STARFALL: ["cult.starfall", "impact.explosion"],
+        HERALD: ["cult.herald"],
+        CONSUMED: ["special.puff"],
+        PROCLAIM: ["cult.proclaim"],
+        RIBBIT: ["cult.ribbit"],
+        SWITCHEROO: ["special.sparkle"],
+        TENTACLE: ["cult.tentacle"],
+        GRAB: ["special.boing"],
+        PICK_ME: ["support.rally"],
+        PAMPHLETS: ["cult.pamphlets"],
+      };
+    for (const effect of Object.keys(expected) as CultFeedbackEffectV7[]) {
+      expect(ids(cues(effect)), effect).toEqual(expected[effect]);
+      for (const cue of cues(effect)) {
+        expect(SOUND_IDS_V1, cue.id).toContain(cue.id);
+        expect(cue.delayMs).toBeGreaterThanOrEqual(0);
+        expect(cue.delayMs).toBeLessThan(CULT_EFFECT_DURATIONS_V7[effect]);
+      }
+    }
+    expect(Object.keys(expected).sort()).toEqual(
+      Object.keys(CULT_EFFECT_DURATIONS_V7).sort(),
+    );
+    // The star's burst lands inside its flight; the croak waits for the frog.
+    expect(cues("STARFALL")[1]?.delayMs).toBeCloseTo(
+      CULT_EFFECT_DURATIONS_V7.STARFALL * 0.42,
+    );
+    expect(cues("RIBBIT")[0]?.delayMs).toBeGreaterThan(0);
+    // No signature event is left on the sound it borrowed.
+    const signature = (
+      [
+        "SUMMON",
+        "STRAND_SNAP",
+        "UNBOUND",
+        "STARFALL",
+        "HERALD",
+        "PROCLAIM",
+        "RIBBIT",
+        "TENTACLE",
+        "PAMPHLETS",
+      ] as const
+    ).map((effect) => cues(effect)[0]?.id);
+    for (const id of signature) expect(id).toMatch(/^cult\./);
+    expect(new Set(signature).size).toBe(signature.length);
+  });
+
   it("holds a shattering target's hit for its Shatter", () => {
     const view = viewForV7(
       exploredAllV7(initialV7(1518)),
@@ -588,6 +674,47 @@ describe("sounds of a boundary", () => {
       { id: "economy.coin", delayMs: 0 },
       { id: "city.levelup", delayMs: 140 },
     ]);
+  });
+
+  it("sounds a Sacrifice for the viewer and both sides of a Seize", () => {
+    // Bead pulp_wars-mch9.24.
+    const at = { x: 2, y: 2 };
+    const sacrificed = (playerId: PlayerId): PlayerEventV7 => ({
+      kind: "UNIT_SACRIFICED",
+      playerId,
+      unitId: unit.id,
+      victimUnitId: (unit.id + 1) as UnitId,
+      role: "FIGHTER",
+      at,
+      favour: 2,
+    });
+    const seized = (playerId: PlayerId, victimOwnerId: PlayerId) =>
+      ({
+        kind: "UNIT_SEIZED",
+        playerId,
+        unitId: unit.id,
+        holderUnitId: (unit.id + 2) as UnitId,
+        victimUnitId: (unit.id + 1) as UnitId,
+        victimOwnerId,
+        role: "FIGHTER",
+        at,
+        favour: 4,
+      }) satisfies PlayerEventV7;
+    expect(sounds([sacrificed(viewer)])).toEqual({
+      start: [{ id: "cult.sacrifice", delayMs: 0 }],
+      end: [],
+      essential: [],
+    });
+    expect(ids(sounds([seized(viewer, other)]).start)).toEqual([
+      "cult.sacrifice",
+    ]);
+    expect(ids(sounds([seized(other, viewer)]).start)).toEqual([
+      "cult.sacrifice",
+    ]);
+    // Another Cult's rites, seen by a bystander, are silent.
+    expect(sounds([sacrificed(other)]).start).toEqual([]);
+    const third = (Math.max(viewer, other) + 1) as PlayerId;
+    expect(sounds([seized(other, third)]).start).toEqual([]);
   });
 
   it("stays silent for other players' economy and unknown cities", () => {

@@ -1266,8 +1266,9 @@ item 13). The details are in
   ("2 / 1") and reads "Bind" for an Unbound daemon; the board marks that
   daemon while the cultist is selected. With two or more the button arms and
   the daemon is picked on the board (coordinator's decision, 2026-10-10).
-- **Sounds** use the game's existing ones (a sparkle, a pop, the rally
-  horn, a boing, the dark chord) until the Cult's own are recorded.
+- **Sounds** used the game's existing ones (a sparkle, a pop, the rally
+  horn, a boing, the dark chord) until the Cult's own were cut (bead
+  `pulp_wars-mch9.24`, "As built by `pulp_wars-mch9.24`" below).
 
 **As built by U3** (`pulp_wars-mch9.19`; it closes item 17 of
 [section 21.5](#215-e5-rituals-and-the-herald-pulp_wars-mch97-pulp-wars-poc-7r77)
@@ -1345,7 +1346,7 @@ The decisions U3 took where this table left room:
   it holds. A Tentacle has three pips under it, lit for the neutral turns
   it has left. (Its dock lines are E6's.)
 - **Cowed** is a small indigo banner over the city with closed shutters
-  and "KNEEL!", and the line "Status: Cowed" in the city's panel, for
+  (code-drawn since bead `pulp_wars-mch9.24`) and "KNEEL!", and the line "Status: Cowed" in the city's panel, for
   every player who sees the city.
 - **The Herald's two attacks** (Ravage) are a chip on its owner's card,
   "Attacks" with two pips, lit for an attack it has left; a Proclaim
@@ -1418,13 +1419,50 @@ What U4 decided:
    `pulp_wars-mch9.25`** the Cult has its own theme (`theme.cultists`,
    encoded from the user's master of 2026-10-10): it plays in a Cult
    player's match, on New game once the Cult is chosen, and from its
-   Gallery row, and the stand-in table is empty. The sounds are still
-   stand-ins: the abilities keep the existing sounds U2 and U3 chose; the
-   Cult Battleship fires the Human cannonball.
+   Gallery row, and the stand-in table is empty. The sounds were
+   stand-ins until bead `pulp_wars-mch9.24` (below); the Cult Battleship
+   fires the Human cannonball.
 6. **The Stargazer has no animation preview in the Gallery**: the preview
    plays a unit's attack or an ability that needs only the unit and a
    target, and the Stargazer has neither (Star-fall needs a circle).
 7. **The campaign roster** lists the Cult, locked: no mission unlocks it.
+
+**As built by `pulp_wars-mch9.24`** (sounds and three marks; no rule, no AI
+and no identity changed).
+
+1. **Ten sounds of the Cult's own**, the `cult.*` ids of
+   [Sound, "The Cultists' own sounds"](../ui/SOUND.md#the-cultists-own-sounds):
+   Ribbit (a croak), Pamphlets (paper), Proclaim (a horn for "KNEEL!"; no
+   voice and no speech synthesis), a Horror summoned, the Herald arriving,
+   the star in flight (its burst stays the game's explosion), a strand
+   breaking (a snap), a daemon Unbound (the gong), a Tentacle rising or
+   sinking, and Sacrifice and Seize (which had no sound). Each is a short
+   clip cut from the licensed bundle with the checked-in script, chosen
+   from names and measurements and never by ear, with one to two more to
+   compare in the Gallery's Sounds tab under **Cultists**. The croak is
+   the least certain: the bundle has no frog, so a squeak of wet rubber
+   that measures like one stands in. Not in the bundle and left out: the
+   taut violin string of a strand forming (silent, as before) and the
+   deep laugh of Unbound.
+2. **Kept:** Behold! and Pick Me! (the rally call), Boo! and Grab (the
+   boing), a rite begun (the dark chord), a fizzle and a unit consumed
+   (the puff), Switcheroo (the sparkle). The Cult Battleship's broadside
+   keeps the Battleship's cannon, explosion and cannonball: a gondola with
+   a gun fires a cannonball, and one broadside reads the same in every
+   fleet.
+3. **The Cowed banner's shutters are drawn in code** at every size: two
+   cream leaves on a dark plate with louvre slits (two or three a leaf).
+   The `ICON:STATUS:COWED` raster, a round window, was a dark dot at the
+   banner's 13 to 20 px and is no longer drawn on the board.
+4. **Aiming the Great Summoning, the player's own chanters read "Chants"
+   and nothing else.** Every chanter's tile is a legal mark, so each also
+   read "+2 Favour". The label returns on a chanter's tile once it is the
+   chosen mark (it is then what Begin would do), and the cursor's sentence
+   says it throughout.
+5. **The unit a Tentacle slaps next wears the daemons' eye**: the weakest
+   unit beside it as the board stands, by the engine's own slap rule over
+   the units in sight, for every viewer. A Tentacle with nobody beside it
+   marks nobody.
 
 ## 15. Normal AI
 
@@ -3302,7 +3340,8 @@ kill a Frozen bound Horror.
 
 **Still open.** No number of the faction or of its Normal AI was tuned or
 played, and the lab `LAB_CULT_MID` has not been played (the standing rule:
-only if the user asks). The Cult has no sounds of its own
+only if the user asks). The Cult's own sounds (bead `pulp_wars-mch9.24`)
+were chosen from names and measurements and have not been heard
 ([section 14.2](#142-colour-looks-sound-music)). Its theme music is its
 own since `pulp_wars-mch9.25` (`theme.cultists`), which ended the Undead
 theme's turn as a stand-in.

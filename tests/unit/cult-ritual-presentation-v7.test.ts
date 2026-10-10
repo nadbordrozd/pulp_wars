@@ -5,6 +5,7 @@ import {
   previewRitualV7,
   projectEventsV7,
   queryPlayerCommandsV7,
+  tentacleSlapTargetV7,
   viewForV7,
   type CommandV7,
   type CoordV7,
@@ -35,6 +36,8 @@ import {
   TENTACLE_TURN_PIPS_V7,
   drawCultGrabV7,
   drawCultGroundMarkV7,
+  cowedShuttersWidthV7,
+  drawCowedShuttersV7,
   drawCultOverMarkV7,
   drawCultSwapArrowsV7,
   drawCultTauntTetherV7,
@@ -736,13 +739,57 @@ describe("the marks, drawn", () => {
     );
     expect(cowed).toContain("fillText:KNEEL!");
     expect(cowed.some((entry) => entry.startsWith("drawImage"))).toBe(false);
-    // With the art's shutters, the raster is drawn in the banner.
-    const raster = draw((context) =>
-      drawCultOverMarkV7(context, { kind: "COWED" }, 100, 100, 1, {
-        art: { cowed: { assetId: "shutters" } as unknown as CanvasImageSource },
-      }),
+    // The shutters are leaves drawn in code at every size (bead
+    // pulp_wars-mch9.24; the raster was a dark dot at the banner's 16 px):
+    // a plate, then a leaf and its two or three louvre slits on each side.
+    expect([7, 9]).toContain(
+      cowed.filter((entry) => entry === "fillRect").length,
     );
-    expect(raster).toContain("drawImage:shutters");
+  });
+
+  it("draws the Cowed shutters on whole pixels, in two tones when asked", () => {
+    for (const size of [9, 12, 16, 24]) {
+      const rects: number[][] = [];
+      const fills: string[] = [];
+      const context = {
+        set fillStyle(value: string) {
+          fills.push(value);
+        },
+        fillRect: (...args: number[]) => {
+          rects.push(args);
+        },
+      } as unknown as CanvasRenderingContext2D;
+      drawCowedShuttersV7(context, 50.3, 40.6, size, true);
+      // The plate, and on each side a leaf with two or three louvres.
+      const slats = size >= 11 ? 3 : 2;
+      expect(rects).toHaveLength(1 + 2 * (1 + slats));
+      for (const rect of rects)
+        for (const value of rect) expect(Number.isInteger(value)).toBe(true);
+      // High contrast: black and white only.
+      expect(new Set(fills)).toEqual(new Set(["#000000", "#ffffff"]));
+      const plate = rects[0];
+      const left = rects[1];
+      const right = rects[2 + slats];
+      if (plate === undefined || left === undefined || right === undefined)
+        throw new Error("shutters missing");
+      // Two leaves of one size, side by side with a gap, inside the plate.
+      expect(left[2]).toBe(right[2]);
+      expect(left[3]).toBe(size);
+      expect(right[0]).toBeGreaterThan((left[0] ?? 0) + (left[2] ?? 0));
+      expect(plate[0]).toBeLessThan(left[0] ?? 0);
+      expect((plate[0] ?? 0) + (plate[2] ?? 0)).toBeGreaterThan(
+        (right[0] ?? 0) + (right[2] ?? 0),
+      );
+      expect(plate[2]).toBe(cowedShuttersWidthV7(size));
+      // The louvres of a leaf keep a clear pixel between them.
+      const rows = rects.slice(2, 2 + slats).map((rect) => rect[1] ?? 0);
+      for (let index = 1; index < rows.length; index += 1)
+        expect((rows[index] ?? 0) - (rows[index - 1] ?? 0)).toBeGreaterThan(
+          rects[2]?.[3] ?? 0,
+        );
+      // The glyph is about as wide as it is high, so it reads in a banner.
+      expect(plate[2]).toBeLessThanOrEqual(size * 1.4);
+    }
   });
 
   it("draws the frog, the bubble, the badge and a Tentacle's turns", () => {
@@ -897,7 +944,7 @@ describe("the board", () => {
     return log;
   }
 
-  it("draws a hexed board with the frog's and the Cowed city's rasters", () => {
+  it("draws a hexed board with the frog's raster and a Cowed city's code-drawn shutters", () => {
     const log = drawn(cultTricksRivalUiFixtureV7());
     expect(balanced(log)).toBe(true);
     expect(
@@ -907,7 +954,48 @@ describe("the board", () => {
     expect(log).toContain("fillText:ME!");
     const cowed = drawn(withCowedV7(cultTricksUiFixtureV7(), R.enemyCapital));
     expect(cowed).toContain("fillText:KNEEL!");
-    expect(cowed.some((entry) => /^drawImage:.*cowed/i.test(entry))).toBe(true);
+    // Bead pulp_wars-mch9.24: the banner's shutters are never the raster.
+    expect(cowed.some((entry) => /^drawImage:.*cowed/i.test(entry))).toBe(
+      false,
+    );
+  });
+
+  it("puts the daemons' eye on the unit a Tentacle slaps next", () => {
+    // Bead pulp_wars-mch9.24. The hexed scene: the Tentacle stands beside
+    // the Knight alone, so the Knight is slapped in the next neutral turn.
+    const eyes = (view: PlayerViewV7) =>
+      planOf(view).entries.flatMap((entry) =>
+        entry.kind === "UNIT" && entry.cult?.eye === true ? [entry.at] : [],
+      );
+    const hexed = viewOf(cultTricksDoneUiFixtureV7());
+    expect(eyes(hexed)).toEqual([T.knight]);
+    expect(required(tentacleSlapTargetV7(hexed.units, T.tentacle)).at).toEqual(
+      T.knight,
+    );
+    // The victim's seat sees the same mark on its own unit.
+    expect(eyes(viewOf(cultTricksRivalUiFixtureV7()))).toEqual([T.knight]);
+    // Beside the Caller alone: the Cult's own unit is next.
+    expect(
+      eyes(viewOf(withTentacleV7(cultTricksUiFixtureV7(), T.caller, at(8, 2)))),
+    ).toEqual([T.caller]);
+    // Between two units: the one with the fewest HP, as the engine rules.
+    const between = viewOf(
+      withTentacleV7(cultTricksUiFixtureV7(), T.caller, at(3, 6)),
+    );
+    expect(eyes(between)).toEqual([
+      required(tentacleSlapTargetV7(between.units, at(3, 6))).at,
+    ]);
+    // Nobody beside it: no eye, and none on a board without a Tentacle.
+    expect(
+      eyes(viewOf(withTentacleV7(cultTricksUiFixtureV7(), T.caller, at(9, 4)))),
+    ).toEqual([]);
+    expect(eyes(viewOf(cultTricksUiFixtureV7()))).toEqual([]);
+    // The Tentacle keeps its own marker: its turns.
+    expect(
+      planOf(hexed).entries.find(
+        (entry) => entry.kind === "UNIT" && entry.cult?.sinks !== undefined,
+      )?.cult,
+    ).toEqual({ sinks: 2 });
   });
 
   it("draws a ritual's countdown, and nothing of the Cult on a board without it", () => {

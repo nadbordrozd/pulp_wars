@@ -1,8 +1,10 @@
 # Sound
 
 Bead `pulp_wars-2yc.10`. The game has sound effects for attacks, damage,
-deaths, cities, the economy, turns, achievements and the interface: 55 sounds.
-Twenty-eight of them play a recorded clip cut from a stock sound library
+deaths, cities, the economy, turns, achievements and the interface, and ten
+of the Cultists' own (bead `pulp_wars-mch9.24`,
+[The Cultists' own sounds](#the-cultists-own-sounds)): 65 sounds.
+Thirty-eight of them play a recorded clip cut from a stock sound library
 (beads `pulp_wars-2yc.20` and `pulp_wars-2yc.24`,
 [Stock recordings](#stock-recordings)). The other twenty-seven are
 synthesised in the browser, and every recorded sound keeps its synthesised
@@ -213,6 +215,20 @@ economy is silent.
 | Charge! hit, Bow Ram                                            | `impact.heavy`                                                        |
 | Hatch, Egg destroyed                                            | `special.hatch`                                                       |
 | Grow                                                            | `unit.levelup`                                                        |
+| Horror summoned                                                 | `cult.summon`                                                         |
+| Strand broken                                                   | `cult.snap`                                                           |
+| Daemon Unbound                                                  | `cult.unbound`                                                        |
+| Star-fall                                                       | `cult.starfall`, then `impact.explosion` as the star lands            |
+| The Herald arrives                                              | `cult.herald`                                                         |
+| Proclaim (a city Cowed)                                         | `cult.proclaim`                                                       |
+| Ribbit                                                          | `cult.ribbit` as the frog jumps out                                   |
+| Tentacle rises or sinks                                         | `cult.tentacle`                                                       |
+| Pamphlets take a village                                        | `cult.pamphlets`                                                      |
+| Behold!, Pick Me!                                               | `support.rally`                                                       |
+| Boo!, Grab                                                      | `special.boing`                                                       |
+| A rite begun                                                    | `support.dark`                                                        |
+| A rite fizzled, a unit consumed by the Herald                   | `special.puff`                                                        |
+| Switcheroo                                                      | `special.sparkle`                                                     |
 | The viewer's own unit moving                                    | `unit.step`                                                           |
 | Another player's move, a push, a visibility crossfade           | none                                                                  |
 | Another player's building in sight                              | `economy.build`, quieter                                              |
@@ -233,6 +249,7 @@ the viewer's.
 | Own unit trained or granted                       | at once              | `unit.train`           |
 | Own city reward chosen                            | at once              | `reward.chosen`        |
 | Own Disband that returns Coins                    | at once              | `economy.coin`         |
+| Own Sacrifice; a Seize by or of the viewer        | at once              | `cult.sacrifice`       |
 | City captured by the viewer                       | after the animations | `city.capture`         |
 | Neutral village captured by the viewer            | after the animations | `village.capture`      |
 | City lost by the viewer                           | after the animations | `city.lost`            |
@@ -281,6 +298,7 @@ remembered with the others. It replaces the header's Sounds button of
   | Hits               | `impact`                                           |
   | Units              | `unit`                                             |
   | Abilities          | `support`, `special`                               |
+  | Cultists           | `cult`                                             |
   | Cities and economy | `city`, `village`, `reward`, `research`, `economy` |
   | Turn and match     | `turn`, `achievement`, `match`                     |
   | Interface          | `ui`                                               |
@@ -565,6 +583,16 @@ full scale). A unit test compares this table with the manifest.
 | `special.sparkle`      | Sparkle          | combat   | triangle                         | 659–1319   | 337         | 0.2  |
 | `special.dizzy`        | Dizzy            | combat   | sine + triangle                  | 130–700    | 392         | 0.22 |
 | `special.boing`        | Bounce           | combat   | triangle                         | 160–420    | 232         | 0.26 |
+| `cult.ribbit`          | Frog croak       | combat   | square                           | 96–132     | 262         | 0.28 |
+| `cult.pamphlets`       | Paper rustle     | combat   | noise                            | noise only | 272         | 0.2  |
+| `cult.proclaim`        | Proclaim         | combat   | saw + square                     | 66–147     | 412         | 0.3  |
+| `cult.summon`          | Summoning        | combat   | sine + triangle + noise          | 160–1280   | 362         | 0.24 |
+| `cult.herald`          | Herald arrives   | combat   | sine + noise + saw               | 45–90      | 452         | 0.38 |
+| `cult.starfall`        | Falling star     | combat   | sine + triangle + noise          | 300–2000   | 292         | 0.24 |
+| `cult.snap`            | Strand snaps     | combat   | noise + triangle                 | 220–880    | 82          | 0.26 |
+| `cult.unbound`         | Daemon unbound   | combat   | sine + triangle                  | 110–220    | 472         | 0.34 |
+| `cult.tentacle`        | Tentacle         | combat   | sine + noise                     | 120–380    | 332         | 0.28 |
+| `cult.sacrifice`       | Sacrifice        | combat   | noise + sine + saw               | 55–130     | 452         | 0.32 |
 | `city.capture`         | City captured    | economy  | square + sine + noise + triangle | 70–1047    | 662         | 0.32 |
 | `village.capture`      | Village captured | economy  | square + sine + noise + triangle | 70–659     | 472         | 0.28 |
 | `city.lost`            | City lost        | economy  | square + triangle                | 110–330    | 692         | 0.3  |
@@ -610,8 +638,9 @@ remaining parts of the sounds catalog. use them. pick whatever looks like it
 fits. if there are multiple plausible options make a note of it and i will
 pick the best one later."
 
-Twenty-eight of the 55 sounds play a clip cut from the Sonniss
-#GameAudioGDC Bundle 2024. Fifteen more are generated by default and have
+Thirty-eight of the 65 sounds play a clip cut from the Sonniss
+#GameAudioGDC Bundle 2024 (ten of them are the Cultists', bead
+`pulp_wars-mch9.24`). Fifteen more are generated by default and have
 recordings to compare them with, and twelve have none.
 [docs/audio/STOCK_SOUND_CHOICES.md](../audio/STOCK_SOUND_CHOICES.md) lists
 every sound with its status, its recordings and what was measured of each;
@@ -643,7 +672,7 @@ number. What it means for this repository:
 
 | Path                                    | What it is                                                                                          |
 | --------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| `public/assets/audio/*.m4a`             | The 78 clips, 904 kB together (5.3 to 37 kB each). Named after the game's sound and a number.       |
+| `public/assets/audio/*.m4a`             | The 101 clips, 1.25 MB together (5.3 to 37 kB each). Named after the game's sound and a number.     |
 | `public/assets/audio/themes/`           | The theme music, which is not from the bundle ([Theme music](#theme-music)).                        |
 | `src/audio/stock-sounds.json`           | The provenance manifest: each sound's recordings, where each was cut from and how, and the default. |
 | `docs/audio/STOCK_SOUND_CHOICES.md`     | The manifest as a document for the person who chooses. Generated.                                   |
@@ -660,8 +689,9 @@ when any is uncompressed, when a clip is larger than
 60 kB or all of them together exceed 1.5 MB, when the clip folder holds a
 file the manifest does not list, and when a file under `public/` has a
 library file's name. The total is the alternatives included: 78 clips fit
-the 1.5 MB that bead `pulp_wars-2yc.20` set for fifteen, so the limit was
-not raised. Raise it on purpose if more clips need it, and not past about
+the 1.5 MB that bead `pulp_wars-2yc.20` set for fifteen, and the 101 clips
+of bead `pulp_wars-mch9.24` (the Cultists' 23 are 342 kB) still do, with
+about 250 kB to spare, so the limit was not raised. Raise it on purpose if more clips need it, and not past about
 3 MB.
 
 ### The manifest
@@ -710,7 +740,8 @@ The table of every sound, the recordings of each and the reasons are in
 [docs/audio/STOCK_SOUND_CHOICES.md](../audio/STOCK_SOUND_CHOICES.md). In
 short:
 
-- **Recorded by default, 28.** The fifteen of bead `pulp_wars-2yc.20`
+- **Recorded by default, 38.** The ten of the Cultists
+  ([The Cultists' own sounds](#the-cultists-own-sounds)), the fifteen of bead `pulp_wars-2yc.20`
   (`attack.ray`, `attack.rocket`, `attack.gatling`, `attack.cannon`,
   `impact.hit`, `impact.heavy`, `impact.explosion`, `impact.ice`,
   `unit.levelup`, `special.burrow`, `special.puff`, `special.boing`,
@@ -718,8 +749,8 @@ short:
   `attack.melee`, `attack.pop`, `impact.splat`, `impact.shield`,
   `impact.splash`, `unit.step`, `special.freeze`, `special.hatch`,
   `special.pop`, `reward.chosen`, `economy.harvest`, `turn.start`,
-  `ui.select`. Eighteen of the 28 have two to four recordings to choose
-  from.
+  `ui.select`. Twenty-eight of the 38 have two to four recordings to
+  choose from.
 - **One default changed.** `special.puff` now plays a "steam release" from
   part 2, named for what the sound is; the pneumatic hiss of bead
   `pulp_wars-2yc.20` is its second candidate. The other fourteen keep their
@@ -744,6 +775,49 @@ crowds) gave nothing. No gunshot was taken from the firearm libraries (real
 pistols, rifles and automatic fire): two of the coin candidates are their
 cartridge cases landing on a floor. No spoken line and no music bed was
 used.
+
+### The Cultists' own sounds
+
+Bead `pulp_wars-mch9.24`. Until it, a Cult match used the sounds the game
+already had (a pop for Ribbit, the rally call for Proclaim, a sparkle for a
+summoning). Ten events now have a sound of their own, the `cult.*` ids, each
+cut from the same bundle with the same script and chosen the same way: from
+names and measurements, never by ear. No speech synthesis and no spoken line
+was used, and nothing was downloaded.
+
+| Sound            | Event                           | Default recording                                             | Others to compare                    |
+| ---------------- | ------------------------------- | ------------------------------------------------------------- | ------------------------------------ |
+| `cult.ribbit`    | Ribbit lands                    | a squeak of wet rubber (the bundle has no frog)               | a longer squeak; a synthesiser "wah" |
+| `cult.pamphlets` | Pamphlets take a village        | a sheet of paper crumpled                                     | a book's page turned                 |
+| `cult.proclaim`  | Proclaim cows a city ("KNEEL!") | a low cinematic battle horn                                   | a coach's air horn                   |
+| `cult.summon`    | A Horror is summoned            | a designed "vortex in"                                        | a robotic creature powering on       |
+| `cult.herald`    | The Herald arrives              | a metallic trailer boom                                       | a brighter cinematic hit             |
+| `cult.starfall`  | The star in flight              | a fast designed whoosh; the burst is still `impact.explosion` | a "searing" sweep; a low pass-by     |
+| `cult.snap`      | A strand breaks                 | an elastic let go                                             | a taut steel cable plucked           |
+| `cult.unbound`   | A daemon becomes Unbound        | a gong                                                        | a creature's roar                    |
+| `cult.tentacle`  | A Tentacle rises or sinks       | a designed watery surge                                       | a watery whoosh; a rubber squeal     |
+| `cult.sacrifice` | Sacrifice and Seize             | an axe's chop                                                 | a second, quicker chop               |
+
+Decisions:
+
+- **A row of their own.** The ids start with `cult`, so the Gallery's Sounds
+  tab shows them under **Cultists**, after Abilities. A sound another
+  faction could use stays under its general id.
+- **Ribbit is the least certain.** The bundle has no frog. The default is a
+  100 ms squeak of a wet wetsuit that measures like a croak (pulses near
+  90 Hz, energy round 450 Hz); the generated sound is a two-part "rib-bit"
+  of a narrow low pulse. A listener should pick, and a real croak from
+  another year's bundle would settle it.
+- **"KNEEL!" is a horn**, not a voice.
+- **Unbound is the gong** of the design; its "deep laugh" is not in the
+  bundle (a roar is offered).
+- **Kept as they were:** Behold! and Pick Me! (the rally call), Boo! and Grab
+  (the boing, which is a comic clip already), a rite begun (the dark chord),
+  a rite fizzled and a unit consumed (the puff), Switcheroo (the sparkle),
+  a strand formed (silent), and the Cult Battleship's broadside, which is
+  the Battleship's cannon and explosion in every faction.
+- **Sacrifice had no sound.** It now plays when the viewer sacrifices, and
+  for both sides of a Seize.
 
 ### How the clips were chosen
 
@@ -826,8 +900,8 @@ hears as louder. It is a starting point, not a mix.
   the title 1.8 s later on a slow link. It does not wait for any of them:
   no screen depends on sound, and a click in the two seconds the clips
   need on such a link plays the synthesised sound. The factions' art
-  loads after the clips. No alternative is fetched at the start: 28 files
-  of the 78.
+  loads after the clips. No alternative is fetched at the start: 38 files
+  of the 101.
 - **First gesture.** The audio device opens and decodes the clips that have
   arrived (`web-audio-output.ts`). A browser cannot decode sound before the
   gesture.
@@ -960,6 +1034,7 @@ design and spoken lines; it has none of these:
 | A plain water splash, ice forming (water stirred, glass, sizzle)   | `impact.splash`, `impact.ice`, `special.freeze`                                                                                                                      |
 | Short musical stingers and fanfares, 0.5 to 3 s, bright; a sad one | `city.capture`, `village.capture`, `city.levelup`, `city.lost`, `research.complete`, `achievement.unlocked`, `achievement.monument`, `match.victory`, `match.defeat` |
 | A refusal buzz and a turn-end chime made for a game                | `ui.error`, `turn.end`                                                                                                                                               |
+| A frog's croak, a deep laugh, a string drawn taut                  | `cult.ribbit`, `cult.unbound`, a strand forming (silent)                                                                                                             |
 
 The `generated` list of the manifest says, sound by sound, what recording
 would serve. The bundles of other years
@@ -1015,10 +1090,10 @@ instrumentation, never by listening
   ([How the clips were chosen](#how-the-clips-were-chosen)), and
   [docs/audio/STOCK_SOUND_CHOICES.md](../audio/STOCK_SOUND_CHOICES.md)
   lists the fifteen to listen to first.
-- Which of a sound's recordings is the best one. Eighteen sounds have two
-  to four; the default is a guess.
+- Which of a sound's recordings is the best one. Twenty-eight sounds have
+  two to four; the default is a guess.
 - Whether the recorded and the synthesised sounds fit together in one game.
-  Twenty-eight sounds are now recordings of real or designed sources and
+  Thirty-eight sounds are now recordings of real or designed sources and
   twenty-seven are simple synthesised tones.
 - The clips in Safari and Firefox. They decode correctly in Chrome; the
   other two have not been tried.

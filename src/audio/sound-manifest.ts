@@ -55,6 +55,17 @@ export const SOUND_IDS_V1 = [
   "special.sparkle",
   "special.dizzy",
   "special.boing",
+  // The Cultists' own (bead pulp_wars-mch9.24).
+  "cult.ribbit",
+  "cult.pamphlets",
+  "cult.proclaim",
+  "cult.summon",
+  "cult.herald",
+  "cult.starfall",
+  "cult.snap",
+  "cult.unbound",
+  "cult.tentacle",
+  "cult.sacrifice",
   // Cities and the economy.
   "city.capture",
   "village.capture",
@@ -746,6 +757,210 @@ const SYNTH_SOUNDS: Readonly<Record<SoundIdV1, SoundEntryV1>> = {
       hzEnd: 420,
       vibrato: { hz: 24, cents: 90 },
       decay: 1.5,
+    },
+  ]),
+  // The Cultists' own sounds (bead pulp_wars-mch9.24). Each has
+  // recordings in `stock-sounds.json`; these are what plays until a clip
+  // is decoded, and with the recordings switched off.
+  // A croak: two bursts of a narrow low pulse, "rib-bit".
+  "cult.ribbit": synth("Frog croak", "combat", 2, 40, 0.28, [
+    {
+      wave: "square",
+      ms: 70,
+      hz: 118,
+      hzEnd: 96,
+      duty: 0.2,
+      lowpassHz: 1100,
+      decay: 1.4,
+    },
+    {
+      wave: "square",
+      at: 110,
+      ms: 140,
+      hz: 104,
+      hzEnd: 132,
+      duty: 0.2,
+      lowpassHz: 1100,
+      attackMs: 8,
+      decay: 1.2,
+    },
+  ]),
+  // Paper: three short rustles of filtered noise.
+  "cult.pamphlets": synth("Paper rustle", "combat", 1, 50, 0.2, [
+    {
+      wave: "noise",
+      ms: 70,
+      lowpassHz: 3600,
+      highpassHz: 1200,
+      attackMs: 10,
+      decay: 1.5,
+    },
+    {
+      wave: "noise",
+      at: 80,
+      ms: 60,
+      lowpassHz: 3000,
+      highpassHz: 1200,
+      gain: 0.7,
+      attackMs: 10,
+      decay: 1.5,
+    },
+    {
+      wave: "noise",
+      at: 150,
+      ms: 110,
+      lowpassHz: 3600,
+      highpassHz: 1000,
+      gain: 0.8,
+      attackMs: 15,
+      decay: 1.3,
+    },
+  ]),
+  // "KNEEL!": one bark of a low horn.
+  "cult.proclaim": synth("Proclaim", "combat", 2, 15, 0.3, [
+    {
+      wave: "saw",
+      ms: 400,
+      hz: 147,
+      hzEnd: 131,
+      lowpassHz: 1100,
+      attackMs: 25,
+      holdMs: 140,
+      decay: 1.3,
+    },
+    {
+      wave: "square",
+      ms: 400,
+      hz: 73.5,
+      hzEnd: 65.5,
+      lowpassHz: 600,
+      gain: 0.5,
+      attackMs: 25,
+      holdMs: 140,
+      decay: 1.3,
+    },
+  ]),
+  // Something is pulled into the world: a rise that ends in a puff.
+  "cult.summon": synth("Summoning", "combat", 2, 30, 0.24, [
+    { wave: "sine", ms: 300, hz: 160, hzEnd: 640, attackMs: 40, decay: 1.2 },
+    {
+      wave: "triangle",
+      ms: 300,
+      hz: 320,
+      hzEnd: 1280,
+      gain: 0.3,
+      attackMs: 40,
+      decay: 1.2,
+    },
+    {
+      wave: "noise",
+      at: 270,
+      ms: 80,
+      lowpassHz: 2400,
+      highpassHz: 400,
+      gain: 0.5,
+      attackMs: 2,
+      decay: 2,
+    },
+  ]),
+  // The Herald lands: a low boom under a slow growl.
+  "cult.herald": synth("Herald arrives", "combat", 3, 0, 0.38, [
+    { wave: "sine", ms: 440, hz: 90, hzEnd: 45, decay: 1.6 },
+    { wave: "noise", ms: 200, lowpassHz: 500, gain: 0.6, decay: 2 },
+    {
+      wave: "saw",
+      at: 40,
+      ms: 400,
+      hz: 65,
+      hzEnd: 58,
+      lowpassHz: 500,
+      gain: 0.5,
+      attackMs: 60,
+      vibrato: { hz: 7, cents: 60 },
+      decay: 1.3,
+    },
+  ]),
+  // The star in flight: a falling whistle with air rising under it. It
+  // ends where the burst begins.
+  "cult.starfall": synth("Falling star", "combat", 2, 20, 0.24, [
+    { wave: "sine", ms: 280, hz: 1500, hzEnd: 300, attackMs: 30, decay: 0.8 },
+    {
+      wave: "triangle",
+      ms: 280,
+      hz: 2000,
+      hzEnd: 400,
+      gain: 0.3,
+      attackMs: 30,
+      decay: 0.8,
+    },
+    {
+      wave: "noise",
+      ms: 280,
+      lowpassHz: 3000,
+      highpassHz: 600,
+      gain: 0.4,
+      attackMs: 200,
+      decay: 2,
+    },
+  ]),
+  // A strand breaks: a snap and a short falling twang.
+  "cult.snap": synth("Strand snaps", "combat", 1, 50, 0.26, [
+    tick(0, 1),
+    { wave: "triangle", ms: 70, hz: 880, hzEnd: 220, gain: 0.7, decay: 2.5 },
+  ]),
+  // A daemon slips its collar: one stroke of a gong.
+  "cult.unbound": synth("Daemon unbound", "combat", 3, 0, 0.34, [
+    {
+      wave: "sine",
+      ms: 460,
+      hz: 110,
+      fm: { ratio: 1.41, index: 3, indexEnd: 0.5 },
+      decay: 1.3,
+    },
+    { wave: "triangle", ms: 460, hz: 220, gain: 0.4, decay: 1.6 },
+  ]),
+  // A Tentacle comes up through water: a wobbling rise in a wash.
+  "cult.tentacle": synth("Tentacle", "combat", 2, 40, 0.28, [
+    {
+      wave: "sine",
+      ms: 320,
+      hz: 120,
+      hzEnd: 380,
+      attackMs: 30,
+      vibrato: { hz: 14, cents: 200 },
+      decay: 1.2,
+    },
+    {
+      wave: "noise",
+      ms: 300,
+      lowpassHz: 900,
+      highpassHz: 200,
+      gain: 0.5,
+      attackMs: 60,
+      decay: 1.4,
+    },
+  ]),
+  // The cleaver, then the dark chord of the offering.
+  "cult.sacrifice": synth("Sacrifice", "combat", 2, 20, 0.32, [
+    {
+      wave: "noise",
+      ms: 40,
+      lowpassHz: 2600,
+      highpassHz: 300,
+      attackMs: 1,
+      decay: 3,
+    },
+    { wave: "sine", ms: 150, hz: 130, hzEnd: 55, decay: 2 },
+    {
+      wave: "saw",
+      at: 60,
+      ms: 380,
+      hz: 98,
+      hzEnd: 82,
+      lowpassHz: 600,
+      gain: 0.5,
+      attackMs: 30,
+      decay: 1.4,
     },
   ]),
   "city.capture": synth("City captured", "economy", 3, 0, 0.32, [

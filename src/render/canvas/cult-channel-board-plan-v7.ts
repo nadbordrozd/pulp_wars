@@ -72,7 +72,10 @@ export interface CultUnitMarkersV7 {
   readonly unbound?: true;
   /** A daemon that broke loose this turn: steam. */
   readonly furious?: true;
-  /** The unit a loose daemon (or one that would break now) goes for. */
+  /**
+   * The unit a loose daemon (or one that would break now) goes for, and
+   * the unit a Tentacle slaps next (cult-ritual-board-plan-v7.ts).
+   */
   readonly eye?: true;
   /**
    * Rituals, hexes and tricks (bead `pulp_wars-mch9.19`,

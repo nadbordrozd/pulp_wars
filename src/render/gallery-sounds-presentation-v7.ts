@@ -44,6 +44,7 @@ export type GallerySoundGroupIdV7 =
   | "HITS"
   | "UNITS"
   | "ABILITIES"
+  | "CULT"
   | "ECONOMY"
   | "MATCH"
   | "INTERFACE"
@@ -56,6 +57,7 @@ export const GALLERY_SOUND_GROUP_IDS_V7: readonly GallerySoundGroupIdV7[] = [
   "HITS",
   "UNITS",
   "ABILITIES",
+  "CULT",
   "ECONOMY",
   "MATCH",
   "INTERFACE",
@@ -68,6 +70,8 @@ const GROUP_LABELS: Readonly<Record<GallerySoundGroupIdV7, string>> = {
   HITS: "Hits",
   UNITS: "Units",
   ABILITIES: "Abilities",
+  // The Cultists' own sounds (bead pulp_wars-mch9.24): a row of their own.
+  CULT: "Cultists",
   ECONOMY: "Cities and economy",
   MATCH: "Turn and match",
   INTERFACE: "Interface",
@@ -86,6 +90,7 @@ const GROUP_OF_PREFIX: Readonly<Record<string, GallerySoundGroupIdV7>> = {
   unit: "UNITS",
   support: "ABILITIES",
   special: "ABILITIES",
+  cult: "CULT",
   city: "ECONOMY",
   village: "ECONOMY",
   reward: "ECONOMY",
@@ -320,6 +325,47 @@ const NOTES: Readonly<Partial<Record<SoundIdV1, SoundNoteV7>>> = {
   "special.boing": {
     when: "Candy unit bounces",
     picture: unit("GUARD", "CANDY"),
+  },
+  // The Cultists' own (bead pulp_wars-mch9.24).
+  "cult.ribbit": {
+    when: "Ribbit lands",
+    picture: art("ICON:ACTION:RIBBIT"),
+  },
+  "cult.pamphlets": {
+    when: "Pamphlets take a village",
+    picture: art("ICON:ACTION:PAMPHLETS"),
+  },
+  "cult.proclaim": {
+    when: "City is Cowed",
+    picture: art("ICON:ACTION:PROCLAIM"),
+  },
+  "cult.summon": {
+    when: "Horror summoned",
+    picture: art("ICON:ACTION:SUMMON"),
+  },
+  "cult.herald": {
+    when: "Great Summoning succeeds",
+    picture: art("ICON:ACTION:GREAT_SUMMONING"),
+  },
+  "cult.starfall": {
+    when: "Star-fall lands",
+    picture: art("ICON:ACTION:STARFALL"),
+  },
+  "cult.snap": {
+    when: "Channel broken",
+    picture: art("ICON:ACTION:CHANNEL"),
+  },
+  "cult.unbound": {
+    when: "Collar bursts",
+    picture: art("ICON:STATUS:UNBOUND"),
+  },
+  "cult.tentacle": {
+    when: "Rises or sinks",
+    picture: art("ICON:ACTION:TENTACLE"),
+  },
+  "cult.sacrifice": {
+    when: "Unit offered for Favour",
+    picture: art("ICON:ACTION:SACRIFICE"),
   },
   "city.capture": { when: "You take a city", picture: art("CITY:3") },
   "village.capture": {

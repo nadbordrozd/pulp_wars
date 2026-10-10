@@ -155,7 +155,8 @@ const chebyshev = (left: CoordV7, right: CoordV7): number =>
  * The marks of rituals, hexes and tricks on every visible unit, added to
  * the channel's (`cultUnitMarkersV7`): a ritual's leader and chanters are
  * Candlelit, the leader wears the rite's badge, a frog its frog, a taunting
- * Chosen its bubble, a Tentacle its turns.
+ * Chosen its bubble, a Tentacle its turns, and the unit a Tentacle slaps
+ * next the daemons' eye (bead `pulp_wars-mch9.24`).
  */
 export function cultTrickUnitMarkersV7(
   view: PlayerViewV7,
@@ -182,8 +183,17 @@ export function cultTrickUnitMarkersV7(
   }
   for (const unitId of tricks.frogs) mark(unitId, { frog: true });
   for (const unitId of tricks.taunts) mark(unitId, { taunt: true });
-  for (const entry of tricks.tentacles)
+  const unitById = new Map(view.units.map((unit) => [unit.id, unit]));
+  for (const entry of tricks.tentacles) {
     mark(entry.unitId, { sinks: entry.turnsLeft });
+    // Section 9.3: in every neutral turn it slaps the weakest unit beside
+    // it. Whom that is as the board stands wears the eye a loose daemon's
+    // target wears: the engine's own slap rule over the units in sight.
+    const tentacle = unitById.get(entry.unitId);
+    if (tentacle === undefined) continue;
+    const next = tentacleSlapTargetV7(view.units, tentacle.at);
+    if (next !== null) mark(next.id, { eye: true });
+  }
   return markers;
 }
 
@@ -446,7 +456,14 @@ export function cultTrickPickTargetsV7(
             ],
       );
     }
-    case "GREAT_SUMMONING":
+    case "GREAT_SUMMONING": {
+      // The tiles of the viewer's own chanters read "Chants" and nothing
+      // else while a mark is looked for (bead `pulp_wars-mch9.24`: "+2
+      // Favour" on each of them was noise). What the Herald would do to a
+      // chanter is said once its tile is the chosen mark.
+      const chanting = new Set(
+        ritualChantersV7(view, view.units, actor).map((unit) => key(unit.at)),
+      );
       return offered.flatMap((command): MapCommandTargetV7[] => {
         if (command.kind !== "BEGIN_RITUAL") return [];
         const preview = previewBeginRitualV7(
@@ -458,16 +475,18 @@ export function cultTrickPickTargetsV7(
         if (preview === null || preview.summoning === null) return [];
         const label = summoningMarkLabelV7(preview.summoning);
         const chosen = pick.chosen !== null && same(pick.chosen, command.at);
+        const quiet = !chosen && chanting.has(key(command.at));
         return [
           {
             at: command.at,
             command,
             family: "GREAT_SUMMONING",
-            ...(label === null ? {} : { previewLabel: label }),
+            ...(label === null || quiet ? {} : { previewLabel: label }),
             semanticLabel: `${beginRitualTargetNameV7(preview)} ${chosen ? RITUAL_CONFIRM_HINT_V7 : prompt}.`,
           },
         ];
       });
+    }
     case "PROCLAIM":
       return offered.flatMap((command): MapCommandTargetV7[] => {
         if (command.kind !== "PROCLAIM") return [];
