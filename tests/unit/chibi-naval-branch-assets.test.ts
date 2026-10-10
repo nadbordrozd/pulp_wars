@@ -158,10 +158,15 @@ describe("naval branch art (pulp_wars-5ti.6)", () => {
         (entry) => `${entry.faction} ${entry.kind} ${entry.role}`,
       ).sort(),
     ).toEqual(
-      SEAFARERS.flatMap((faction) => [
-        `${faction} PORTRAIT SUBMARINE`,
-        `${faction} UNIT SUBMARINE`,
-      ]).sort(),
+      [
+        ...SEAFARERS.flatMap((faction) => [
+          `${faction} PORTRAIT SUBMARINE`,
+          `${faction} UNIT SUBMARINE`,
+        ]),
+        // The Cult (hidden until it is offered) has its map sprite since
+        // bead pulp_wars-mch9.15; its portrait is bead pulp_wars-mch9.16's.
+        "CULT UNIT SUBMARINE",
+      ].sort(),
     );
     // The faction naval list ends with them, so the live registry has them.
     expect(
@@ -255,7 +260,8 @@ describe("naval branch art (pulp_wars-5ti.6)", () => {
         .filter((entry) => entry.kind === "UNIT")
         .map((entry) => asRegistered(entry.asset)),
     ];
-    expect(sprites).toHaveLength(1 + 2 * SEAFARERS.length);
+    // The shared one, each seafaring faction's, and the Cult's.
+    expect(sprites).toHaveLength(1 + 2 * (SEAFARERS.length + 1));
     for (const asset of sprites) {
       const master = await raster(masterFile(asset));
       const anchor = chibiAnchorV7(asset);

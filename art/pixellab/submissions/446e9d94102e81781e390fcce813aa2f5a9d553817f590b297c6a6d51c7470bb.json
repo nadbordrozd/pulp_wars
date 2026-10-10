@@ -1,0 +1,37 @@
+{
+  "id": "idol-bearer-s",
+  "jobId": "acdb8e7e-ed58-421a-85c7-c014d9025526",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-cult",
+    "asset": "chibi-direction-cult-idol-bearer",
+    "subject": "UNIT:CULT:GUARD",
+    "faction": "CULT",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 91502,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Redraw it as another member of the same society in the same blue robe, short, stout and wide: the hood is short and squashed flat on top; both arms are raised straight up and hold one squat grinning pale grey stone idol head with two small green eyes above its own head, the idol as big as the hooded head under it, like two heads stacked. No candle and no scroll. Keep the two cream eyes, the slippers, the thick black outline and the art style, on a transparent background."
+      }
+    ],
+    "prompt": "Redraw it as another member of the same society in the same blue robe, short, stout and wide: the hood is short and squashed flat on top; both arms are raised straight up and hold one squat grinning pale grey stone idol head with two small green eyes above its own head, the idol as big as the hooded head under it, like two heads stacked. No candle and no scroll. Keep the two cream eyes, the slippers, the thick black outline and the art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Redraw it as another member of the same society in the same blue robe, short, stout and wide: the hood is short and squashed flat on top; both arms are raised straight up and hold one squat grinning pale grey stone idol head with two small green eyes above its own head, the idol as big as the hooded head under it, like two heads stacked. No candle and no scroll. Keep the two cream eyes, the slippers, the thick black outline and the art style, on a transparent background.",
+    "editInstruction": "Redraw it as another member of the same society in the same blue robe, short, stout and wide: the hood is short and squashed flat on top; both arms are raised straight up and hold one squat grinning pale grey stone idol head with two small green eyes above its own head, the idol as big as the hooded head under it, like two heads stacked. No candle and no scroll. Keep the two cream eyes, the slippers, the thick black outline and the art style, on a transparent background.",
+    "source": {
+      "recipe": "initiate-a-indigo-flop",
+      "candidate": 0,
+      "sibling": true,
+      "sha256": "cefa62c0111e70a862feff039a021a09ec50212d3cb52a2d99f0df0035926c68"
+    }
+  }
+}

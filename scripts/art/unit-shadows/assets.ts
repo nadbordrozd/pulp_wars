@@ -44,6 +44,10 @@ const MODULES = [
     ["CHIBI_DIRECTION_CANDY_ART_ASSETS_V7"],
   ],
   [
+    "/src/assets/chibi-direction-cult-art-manifest.ts",
+    ["CHIBI_DIRECTION_CULT_ART_ASSETS_V7"],
+  ],
+  [
     "/src/assets/chibi-curiosities-art-manifest.ts",
     [
       "CHIBI_CURIOSITIES_ART_ASSETS_V7",

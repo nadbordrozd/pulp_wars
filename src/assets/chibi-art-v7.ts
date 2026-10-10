@@ -5,6 +5,7 @@ import type {
   ImprovementIdV7,
   NavalRoleIdV7,
   ResourceIdV7,
+  SummonedRoleIdV7,
   TechnologyIdV7,
   TerrainIdV7,
   UnitFormV7,
@@ -361,18 +362,50 @@ export type CandyArtRoleV7 = UndeadArtRoleV7;
  * 1-3. The Cult naval subjects need no type here: they are
  * NavalFactionArtSubjectV7 (`UNIT:CULT:<ROLE>`, `PORTRAIT:CULT:<ROLE>`).
  *
- * NO RASTER IS REGISTERED YET. The faction is registered ahead of its art
- * (the art beads are `pulp_wars-mch9.14` to `.16`), so every one of these
- * subjects falls back to the shared Human subject of the same role or level
- * (chibiFallbackSubjectV7), drawn in the Cult's colour, and a Cult unit on
- * the board wears the stand-in letter badge of `FACTION_STAND_IN_LETTERS_V7`
- * until its own raster is registered. An art bead only registers rasters
- * against these subjects; no resolver changes.
+ * The faction was registered ahead of its art (the art beads are
+ * `pulp_wars-mch9.14` to `.16`). Since bead `pulp_wars-mch9.15` the nine
+ * land units and the four ships have their own rasters
+ * (chibi-direction-cult-art-manifest.ts). The portraits and the cities
+ * (bead `pulp_wars-mch9.16`) still fall back to the shared Human subject of
+ * the same role or level (chibiFallbackSubjectV7), and a Cult unit whose
+ * raster fails to load is drawn as that stand-in with the letter badge of
+ * `FACTION_STAND_IN_LETTERS_V7`.
+ *
+ * The summoned units (`SUMMONED_ROLE_IDS_V7`: they are no unit roles, so
+ * `unitArtSubjectV7` never returns them) have the subjects
+ * `UNIT:CULT:<SUMMONED ROLE>`, which `cultSummonedArtSubjectV7` names; the
+ * Horror and the Herald have a second, Unbound look
+ * (`UNIT:CULT:HORROR_UNBOUND`, `UNIT:CULT:HERALD_UNBOUND`: red eyes, the
+ * collar cracked). They have no Human counterpart and no fallback. `FROG` is
+ * the marker drawn over a unit turned into a frog by Ribbit, a tile marker
+ * like `CRUMBS`.
  */
 export type CultArtSubjectV7 =
   | `UNIT:CULT:${CultArtRoleV7}`
   | `PORTRAIT:CULT:${CultArtRoleV7}`
-  | `CITY:CULT:${1 | 2 | 3}`;
+  | `CITY:CULT:${1 | 2 | 3}`
+  | CultSummonedArtSubjectV7
+  | "FROG";
+
+/** The sprites of the Cult's summoned units, bound and Unbound. */
+export type CultSummonedArtSubjectV7 =
+  `UNIT:CULT:${SummonedRoleIdV7}` | `UNIT:CULT:${"HORROR" | "HERALD"}_UNBOUND`;
+
+/**
+ * The art subject of a summoned Cult unit (bead pulp_wars-mch9.15): the
+ * engine's summoned role ID under `UNIT:CULT:`, and the Unbound look of a
+ * Horror or a Herald whose strands are gone. The wild Tentacle has one look.
+ * Nothing spawns a summoned unit yet; the beads that do
+ * (`pulp_wars-mch9.5` to `.8`) ask for its sprite here.
+ */
+export function cultSummonedArtSubjectV7(
+  role: SummonedRoleIdV7,
+  unbound = false,
+): CultSummonedArtSubjectV7 {
+  return unbound && role !== "TENTACLE"
+    ? `UNIT:CULT:${role}_UNBOUND`
+    : `UNIT:CULT:${role}`;
+}
 
 /** The land roles the Cult will have its own art for. */
 export type CultArtRoleV7 = UndeadArtRoleV7;
@@ -880,6 +913,9 @@ export function factionStandInLetterV7(
   return FACTION_STAND_IN_LETTERS_V7[faction] ?? null;
 }
 
+const CULT_SUMMONED_SUBJECT_PATTERN_V7 =
+  /^UNIT:CULT:(HORROR|HERALD|TENTACLE)(_UNBOUND)?$/;
+
 /**
  * The Dwarf revision (bead pulp_wars-78i.6): the subject of a mound, the
  * heap a burrowed unit leaves on its tile (the Mole's, or its rider's with
@@ -913,7 +949,9 @@ export function moundArtSubjectV7(rider: boolean): ArtSubjectV7 {
  * `ICON:ACTION:DWARF:TEND_WOUNDED` (Repair, to the Human Tend Wounded),
  * Dig In and Blasting Charges (`ICON:TECH:DWARF:*`) to the Human
  * Fortification and Explosives art; the two mounds have no Human
- * counterpart (code-drawn, like the Egg's legacy stand-in). A faction's
+ * counterpart (code-drawn, like the Egg's legacy stand-in), and neither
+ * have the Cult's summoned units (`UNIT:CULT:HORROR`, `UNIT:CULT:HERALD`,
+ * `UNIT:CULT:TENTACLE` and the two Unbound looks). A faction's
  * naval subject (`UNIT:<FACTION>:<ROLE>`
  * or `PORTRAIT:<FACTION>:<ROLE>` of a ship or the transport, bead
  * pulp_wars-w5j.3) falls back to the shared ship, for any faction. Every
@@ -930,6 +968,9 @@ export function chibiFallbackSubjectV7(
   if (subject === "UNIT:DINOSAUR:EGG") return null;
   if (subject === "UNIT:DWARF:MOUND" || subject === "UNIT:DWARF:MOUND_RIDER")
     return null;
+  // The Cult's summoned units (bead pulp_wars-mch9.15) are no unit roles:
+  // no Human sprite stands in for a Horror, a Herald or a Tentacle.
+  if (CULT_SUMMONED_SUBJECT_PATTERN_V7.test(subject)) return null;
   // The ninth unit (`pulp_wars-w49.17`, 7r55): STAND-IN. A new unit listed
   // in `NINTH_UNIT_STAND_INS_V7` is drawn as the nearest unit of its own
   // faction until its art bead registers its subjects (the board and the

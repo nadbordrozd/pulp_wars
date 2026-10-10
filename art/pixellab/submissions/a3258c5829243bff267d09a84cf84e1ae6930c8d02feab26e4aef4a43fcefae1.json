@@ -1,0 +1,36 @@
+{
+  "id": "tentacle-a-alone",
+  "jobId": "c1aa1c73-48d6-4563-8d44-5ddffd7b2f0f",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-cult",
+    "asset": "chibi-direction-cult-tentacle",
+    "subject": "UNIT:CULT:TENTACLE",
+    "faction": "CULT",
+    "recipeClass": "creature",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 91592,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Erase the small round creature with the face at the bottom, the small curled tentacle on the left and the loose drop on the right, so only the one tall thick teal tentacle remains: it rises straight up from a flat cut base at the bottom and curls over at the top, with its row of suckers and the one eye at its tip. The suckers become pale cream, colour #f3e7c4, with no pink. Keep the tall tentacle, the thick black outline and the art style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Erase the small round creature with the face at the bottom, the small curled tentacle on the left and the loose drop on the right, so only the one tall thick teal tentacle remains: it rises straight up from a flat cut base at the bottom and curls over at the top, with its row of suckers and the one eye at its tip. The suckers become pale cream, colour #f3e7c4, with no pink. Keep the tall tentacle, the thick black outline and the art style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Erase the small round creature with the face at the bottom, the small curled tentacle on the left and the loose drop on the right, so only the one tall thick teal tentacle remains: it rises straight up from a flat cut base at the bottom and curls over at the top, with its row of suckers and the one eye at its tip. The suckers become pale cream, colour #f3e7c4, with no pink. Keep the tall tentacle, the thick black outline and the art style the same, on a transparent background.",
+    "editInstruction": "Erase the small round creature with the face at the bottom, the small curled tentacle on the left and the loose drop on the right, so only the one tall thick teal tentacle remains: it rises straight up from a flat cut base at the bottom and curls over at the top, with its row of suckers and the one eye at its tip. The suckers become pale cream, colour #f3e7c4, with no pink. Keep the tall tentacle, the thick black outline and the art style the same, on a transparent background.",
+    "source": {
+      "recipe": "tentacle-a",
+      "candidate": 0,
+      "sha256": "d8b6b71bbca8707d40911b07aca9ff88b2779e1ef72ae2f0a71e25cc0f0d67da"
+    }
+  }
+}

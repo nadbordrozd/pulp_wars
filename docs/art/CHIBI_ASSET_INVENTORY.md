@@ -785,22 +785,45 @@ Home chip are code-drawn by the UI bead; the palette and the proposed
 marker sizes are in
 [`chibi-direction-candy-presentation.ts`](../../src/assets/chibi-direction-candy-presentation.ts).
 
-## Cult sample: batch `direction-cult` (bead `pulp_wars-mch9.14`)
+## Cult units: batches `direction-cult` and `naval-cult` (beads `pulp_wars-mch9.14`, `pulp_wars-mch9.15`)
 
-The first three pieces of a ninth faction's art, made before the faction is
-in the game and **not registered** (no art manifest lists them yet). Fixed
-faction colours (indigo cloth, cream wax, brass, one green flame; the
-summoned in deep-sea teal), no owner mask. See
-[CULT.md](factions/CULT.md#the-first-sample).
+The unit art of the ninth faction: the nine trained units, the three
+summoned units with the two Unbound looks, the four ships with the derived
+submerged Submarine, and the frog of Ribbit. Fixed faction colours (indigo
+cloth, cream wax, brass, one green flame; the summoned in deep-sea teal), no
+owner mask. **Registered** in the live direction registry by bead
+`pulp_wars-mch9.15`
+([`chibi-direction-cult-art-manifest.ts`](../../src/assets/chibi-direction-cult-art-manifest.ts);
+the Submarine with the other factions' in
+[`chibi-naval-submarine-art-manifest.ts`](../../src/assets/chibi-naval-submarine-art-manifest.ts)).
+The faction is still hidden from setup and the Gallery. See
+[CULT.md](factions/CULT.md#the-batches).
 
-| Subject             | Asset                           | Class and canvas         |
-| ------------------- | ------------------------------- | ------------------------ |
-| `UNIT:CULT:FIGHTER` | `chibi-direction-cult-initiate` | `STANDARD_UNIT`, 56 x 80 |
-| `UNIT:CULT:HORROR`  | `chibi-direction-cult-horror`   | `LARGE_UNIT`, 72 x 88    |
-| `UNIT:CULT:HERALD`  | `chibi-direction-cult-herald`   | `GIANT_UNIT`, 88 x 104   |
+| Subject                                                                     | Asset                                                          | Class and canvas                                       |
+| --------------------------------------------------------------------------- | -------------------------------------------------------------- | ------------------------------------------------------ |
+| `UNIT:CULT:FIGHTER`                                                         | `chibi-direction-cult-initiate`                                | `STANDARD_UNIT`, 56 x 80                               |
+| `UNIT:CULT:GUARD`                                                           | `chibi-direction-cult-idol-bearer`                             | `STANDARD_UNIT`, 56 x 80                               |
+| `UNIT:CULT:RAIDER`                                                          | `chibi-direction-cult-familiar`                                | `LARGE_UNIT`, 72 x 88                                  |
+| `UNIT:CULT:MARKSMAN`                                                        | `chibi-direction-cult-hexer`                                   | `STANDARD_UNIT`, 56 x 80                               |
+| `UNIT:CULT:CAPTAIN`                                                         | `chibi-direction-cult-summoner`                                | `STANDARD_UNIT`, 56 x 80                               |
+| `UNIT:CULT:CATAPULT`                                                        | `chibi-direction-cult-stargazer`                               | `LARGE_UNIT`, 72 x 88                                  |
+| `UNIT:CULT:KNIGHT`                                                          | `chibi-direction-cult-caller`                                  | `LARGE_UNIT`, 72 x 88                                  |
+| `UNIT:CULT:SWORDSMAN`                                                       | `chibi-direction-cult-chosen`                                  | `STANDARD_UNIT`, 56 x 80                               |
+| `UNIT:CULT:JUGGERNAUT`                                                      | `chibi-direction-cult-thing`                                   | `GIANT_UNIT`, 88 x 104                                 |
+| `UNIT:CULT:HORROR`, `UNIT:CULT:HORROR_UNBOUND`                              | `chibi-direction-cult-horror`, `-horror-unbound`               | `LARGE_UNIT`, 72 x 88                                  |
+| `UNIT:CULT:HERALD`, `UNIT:CULT:HERALD_UNBOUND`                              | `chibi-direction-cult-herald`, `-herald-unbound`               | `GIANT_UNIT`, 88 x 104                                 |
+| `UNIT:CULT:TENTACLE`                                                        | `chibi-direction-cult-tentacle`                                | `STANDARD_UNIT`, 56 x 80                               |
+| `FROG`                                                                      | `chibi-direction-cult-frog`                                    | `RESOURCE`, 40 x 40 (the Grave's class and canvas)     |
+| `UNIT:CULT:PATROL_BOAT`, `BATTLESHIP`, `EMBARKED_TRANSPORT` (generic naval) | `chibi-naval-cult-patrol-boat`, `-battleship`, `-transport`    | the shared ships' canvases (72 x 88, 88 x 96, 72 x 72) |
+| `UNIT:CULT:SUBMARINE`, `UNIT:CULT:SUBMARINE_SUBMERGED`                      | `chibi-naval-cult-submarine`, `-submarine-submerged` (derived) | `LARGE_UNIT`, 72 x 88, anchor (32, 48)                 |
 
-3 assets from 29 recipes (29 PixelLab calls). The summoned subject keys are
-proposals until the engine names the summoned roles.
+20 rasters: 19 accepted assets from 56 recipes (56 PixelLab calls: 29 for
+the sample, 23 more in `direction-cult` and 4 in `naval-cult`) and one
+derived sprite. The summoned subjects are the engine's summoned role IDs
+(`SUMMONED_ROLE_IDS_V7`; `cultSummonedArtSubjectV7`). Nothing spawns a
+summoned unit or a frog yet, so nothing asks for those five subjects and
+`FROG`; the portraits, cities, icons and effects are bead
+`pulp_wars-mch9.16`'s.
 
 ## Faction forests and forest buildings (bead `pulp_wars-2yc.38`)
 

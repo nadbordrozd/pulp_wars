@@ -1,0 +1,37 @@
+{
+  "id": "summoner-s",
+  "jobId": "f5e3f5ee-a76c-4ff9-9c8d-71026a066ed2",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-cult",
+    "asset": "chibi-direction-cult-summoner",
+    "subject": "UNIT:CULT:CAPTAIN",
+    "faction": "CULT",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 91532,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Redraw it as another member of the same society in the same blue robe, tall and thin: the pointed hood becomes a very tall straight spike, twice as tall as before, whose tip reaches the top edge of the image, and the robe is narrow; a pale cream stole hangs round the neck; one hand raises a small brass hand bell; a looped brass chain hangs from the other hand. No candle and no scroll. Keep the two cream eyes, the slippers, the thick black outline and the art style, on a transparent background."
+      }
+    ],
+    "prompt": "Redraw it as another member of the same society in the same blue robe, tall and thin: the pointed hood becomes a very tall straight spike, twice as tall as before, whose tip reaches the top edge of the image, and the robe is narrow; a pale cream stole hangs round the neck; one hand raises a small brass hand bell; a looped brass chain hangs from the other hand. No candle and no scroll. Keep the two cream eyes, the slippers, the thick black outline and the art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Redraw it as another member of the same society in the same blue robe, tall and thin: the pointed hood becomes a very tall straight spike, twice as tall as before, whose tip reaches the top edge of the image, and the robe is narrow; a pale cream stole hangs round the neck; one hand raises a small brass hand bell; a looped brass chain hangs from the other hand. No candle and no scroll. Keep the two cream eyes, the slippers, the thick black outline and the art style, on a transparent background.",
+    "editInstruction": "Redraw it as another member of the same society in the same blue robe, tall and thin: the pointed hood becomes a very tall straight spike, twice as tall as before, whose tip reaches the top edge of the image, and the robe is narrow; a pale cream stole hangs round the neck; one hand raises a small brass hand bell; a looped brass chain hangs from the other hand. No candle and no scroll. Keep the two cream eyes, the slippers, the thick black outline and the art style, on a transparent background.",
+    "source": {
+      "recipe": "initiate-a-indigo-flop",
+      "candidate": 0,
+      "sibling": true,
+      "sha256": "cefa62c0111e70a862feff039a021a09ec50212d3cb52a2d99f0df0035926c68"
+    }
+  }
+}

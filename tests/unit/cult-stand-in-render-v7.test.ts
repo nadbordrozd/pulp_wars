@@ -11,6 +11,7 @@ import {
   buildChibiArtRegistryV7,
   chibiFallbackSubjectV7,
   cityArtSubjectV7,
+  cultSummonedArtSubjectV7,
   factionStandInLetterV7,
   monumentArtSubjectV7,
   navalArtSubjectV7,
@@ -37,6 +38,7 @@ import {
   IMPROVEMENT_IDS_V7,
   NAVAL_ROLE_IDS_V7,
   OFFERED_FACTION_IDS_V7,
+  SUMMONED_ROLE_IDS_V7,
   TECHNOLOGY_IDS_V7,
   TERRAIN_IDS_V7,
   UNIT_ROLE_IDS_V7,
@@ -97,10 +99,12 @@ import { roleGlossaryV7 } from "../../src/render/unit-glossary-v7";
 import { at, fieldV7 } from "../fixtures/v7-revision20";
 
 /**
- * The Cultists are registered before their art (`pulp_wars-mch9.3`; the art
- * beads are `pulp_wars-mch9.14` to `.16`). Until then every Cult subject
- * stands in with the shared Human art of the same role or level, in the
- * Cult's colour, a Cult unit on the board wears a lettered stand-in badge,
+ * The Cultists were registered before their art (`pulp_wars-mch9.3`; the art
+ * beads are `pulp_wars-mch9.14` to `.16`). Since `pulp_wars-mch9.15` the
+ * live look has the Cult's unit and ship sprites; every other Cult subject
+ * (portraits, cities, Monuments), and every Cult subject in the looks without
+ * its art, stands in with the shared Human art of the same role or level, in
+ * the Cult's colour. A Cult unit drawn as a stand-in wears a lettered badge,
  * and no player-facing faction list (setup, Gallery, title scene) offers the
  * faction. Nothing here crashes for want of a Cult raster, sound, or theme.
  */
@@ -312,23 +316,93 @@ describe("Cult art subjects stand in with the shared art", () => {
       // for every other subject, so a stand-in in either is a drawn sprite.
       const found = standIn(live, subject) ?? standIn(classic, subject);
       expect(found, subject).not.toBeNull();
-      // The stand-in is never the Cult's own subject: it has no raster.
-      expect(found?.steps, subject).toBeGreaterThan(
-        subject.includes(":CULT:") ? 0 : -1,
-      );
+      // Since the unit art (`pulp_wars-mch9.15`) a Cult unit and a Cult ship
+      // are their own raster in the live look; a portrait, a city, a
+      // Monument is still never the Cult's own subject (bead mch9.16).
+      if (subject.startsWith("UNIT:CULT:")) {
+        expect(standIn(live, subject)?.steps, subject).toBe(0);
+        expect(classic.variants(subject), subject).toEqual([]);
+      } else
+        expect(found?.steps, subject).toBeGreaterThan(
+          subject.includes(":CULT:") ? 0 : -1,
+        );
     }
   });
 
-  it("has no raster of its own yet: the Cult's art is the art beads'", () => {
-    const registered = [
-      ...CHIBI_ART_ASSETS_V7,
-      ...chibiDirectionArtAssetsV7(),
-    ].filter((asset) => assetGroupOfSubjectV7(asset.subject) === "CULT");
-    expect(registered).toEqual([]);
+  it("registers the Cult's units, summoned units, ships and frog in the live look only (pulp_wars-mch9.15)", () => {
+    const cult = (assets: readonly ChibiArtAssetV7[]): string[] =>
+      assets
+        .filter(
+          (asset) =>
+            assetGroupOfSubjectV7(asset.subject) === "CULT" ||
+            asset.subject === "FROG",
+        )
+        .map((asset) => asset.subject)
+        .sort();
+    expect(cult(CHIBI_ART_ASSETS_V7)).toEqual([]);
+    const live = chibiDirectionArtRegistryV7();
+    const expected: ArtSubjectV7[] = [
+      ...LAND_ROLES.map((role) =>
+        unitArtSubjectV7({ role, form: "LAND", faction: "CULT" }),
+      ),
+      ...NAVAL_ROLE_IDS_V7.map((role) =>
+        unitArtSubjectV7({ role, form: "NAVAL", faction: "CULT" }),
+      ),
+      navalArtSubjectV7("CULT", "UNIT", "EMBARKED_TRANSPORT"),
+      navalArtSubjectV7("CULT", "UNIT", "SUBMARINE_SUBMERGED"),
+      // The summoned units take the engine's summoned role IDs; the Horror
+      // and the Herald have an Unbound look, the wild Tentacle one look.
+      ...SUMMONED_ROLE_IDS_V7.map((role) => cultSummonedArtSubjectV7(role)),
+      cultSummonedArtSubjectV7("HORROR", true),
+      cultSummonedArtSubjectV7("HERALD", true),
+      "FROG",
+    ];
+    expect(cult(chibiDirectionArtAssetsV7())).toEqual([...expected].sort());
+    for (const subject of expected) {
+      const [asset, ...more] = live.variants(subject);
+      expect(more, subject).toEqual([]);
+      expect(asset?.ownerMaskUrl, subject).toBeUndefined();
+      // The frog is a marker; every unit and ship wears fixed colours.
+      expect(asset?.fixedColours, subject).toBe(
+        subject === "FROG" ? undefined : true,
+      );
+    }
+    expect(
+      SUMMONED_ROLE_IDS_V7.map((role) => cultSummonedArtSubjectV7(role)),
+    ).toEqual(["UNIT:CULT:HORROR", "UNIT:CULT:HERALD", "UNIT:CULT:TENTACLE"]);
+    expect(cultSummonedArtSubjectV7("HORROR", true)).toBe(
+      "UNIT:CULT:HORROR_UNBOUND",
+    );
+    expect(cultSummonedArtSubjectV7("HERALD", true)).toBe(
+      "UNIT:CULT:HERALD_UNBOUND",
+    );
+    expect(cultSummonedArtSubjectV7("TENTACLE", true)).toBe(
+      "UNIT:CULT:TENTACLE",
+    );
+    // A summoned sprite has no Human counterpart to stand in for it.
+    for (const subject of [
+      "UNIT:CULT:HORROR",
+      "UNIT:CULT:HERALD_UNBOUND",
+      "UNIT:CULT:TENTACLE",
+      "FROG",
+    ] as const)
+      expect(chibiFallbackSubjectV7(subject), subject).toBeNull();
     expect(assetGroupOfSubjectV7("UNIT:CULT:FIGHTER")).toBe("CULT");
-    // A match with a Cult seat preloads the shared art and nothing else,
-    // and the whole-look inventory names no Cult file.
-    for (const look of ["LIVE", "CLASSIC", "LEGACY"] as const) {
+    // A match with a Cult seat preloads the Cult's sprites in the live look
+    // and nothing more in the looks that have none of its art.
+    const cultFiles = assetInventoryV7("LIVE").filter(
+      (entry) => entry.group === "CULT",
+    );
+    expect(cultFiles).toHaveLength(expected.length - 1);
+    expect(assetInventoryForFactionsV7("LIVE", ["CULT", "ORIGINAL"])).toEqual(
+      expect.arrayContaining([...cultFiles]),
+    );
+    expect(
+      assetInventoryForFactionsV7("LIVE", ["ORIGINAL"]).filter(
+        (entry) => entry.group === "CULT",
+      ),
+    ).toEqual([]);
+    for (const look of ["CLASSIC", "LEGACY"] as const) {
       expect(assetInventoryForFactionsV7(look, ["CULT", "ORIGINAL"])).toEqual(
         assetInventoryForFactionsV7(look, ["ORIGINAL"]),
       );

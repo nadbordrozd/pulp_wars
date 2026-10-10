@@ -1,0 +1,36 @@
+{
+  "id": "familiar-a-brass",
+  "jobId": "4f2ea43a-eaf3-421d-979a-421d1b0ee480",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-cult",
+    "asset": "chibi-direction-cult-familiar",
+    "subject": "UNIT:CULT:RAIDER",
+    "faction": "CULT",
+    "recipeClass": "creature",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 91522,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only two things. The brown leather collar becomes a polished yellow brass collar, colour #c9a24a with shade #8a6a2a, with no red and no brown left; the brass bell stays. The open mouth with its pink tongue becomes a wide closed happy smile, a single dark line on the cream muzzle, with no pink and no red. Keep the blue hide, the cream belly, the ears, the two small wings, the eyes, the tail, the shape, the thick black outline and the art style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only two things. The brown leather collar becomes a polished yellow brass collar, colour #c9a24a with shade #8a6a2a, with no red and no brown left; the brass bell stays. The open mouth with its pink tongue becomes a wide closed happy smile, a single dark line on the cream muzzle, with no pink and no red. Keep the blue hide, the cream belly, the ears, the two small wings, the eyes, the tail, the shape, the thick black outline and the art style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only two things. The brown leather collar becomes a polished yellow brass collar, colour #c9a24a with shade #8a6a2a, with no red and no brown left; the brass bell stays. The open mouth with its pink tongue becomes a wide closed happy smile, a single dark line on the cream muzzle, with no pink and no red. Keep the blue hide, the cream belly, the ears, the two small wings, the eyes, the tail, the shape, the thick black outline and the art style the same, on a transparent background.",
+    "editInstruction": "Change only two things. The brown leather collar becomes a polished yellow brass collar, colour #c9a24a with shade #8a6a2a, with no red and no brown left; the brass bell stays. The open mouth with its pink tongue becomes a wide closed happy smile, a single dark line on the cream muzzle, with no pink and no red. Keep the blue hide, the cream belly, the ears, the two small wings, the eyes, the tail, the shape, the thick black outline and the art style the same, on a transparent background.",
+    "source": {
+      "recipe": "familiar-a",
+      "candidate": 0,
+      "sha256": "4cf8ac3de50f32916623346237ee4e008c5ead9f46e5812a011969bf12d967dc"
+    }
+  }
+}

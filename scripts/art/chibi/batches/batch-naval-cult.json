@@ -1,0 +1,134 @@
+{
+  "schemaVersion": 1,
+  "batch": "naval-cult",
+  "title": "Naval units in the Cult look: an indigo gondola with a curled brass prow, an indigo galleon with cream sails and a brass dome, an indigo rowing barge and a brass bathysphere submarine",
+  "bead": "pulp_wars-mch9.15",
+  "faction": "CULT",
+  "dryRun": false,
+  "fixedFactionColours": true,
+  "assets": [
+    {
+      "id": "chibi-naval-cult-patrol-boat",
+      "subject": "UNIT:CULT:PATROL_BOAT",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "ship",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "ownerColour": false,
+      "accent": "cult-lodge"
+    },
+    {
+      "id": "chibi-naval-cult-battleship",
+      "subject": "UNIT:CULT:BATTLESHIP",
+      "assetClass": "GIANT_UNIT",
+      "recipeClass": "ship",
+      "canvas": {
+        "width": 88,
+        "height": 96
+      },
+      "ownerColour": false,
+      "accent": "cult-lodge"
+    },
+    {
+      "id": "chibi-naval-cult-transport",
+      "subject": "UNIT:CULT:EMBARKED_TRANSPORT",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "ship",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      },
+      "ownerColour": false,
+      "accent": "cult-lodge"
+    },
+    {
+      "id": "chibi-naval-cult-submarine",
+      "subject": "UNIT:CULT:SUBMARINE",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "ship",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "anchor": {
+        "x": 32,
+        "y": 48
+      },
+      "ownerColour": false,
+      "accent": "cult-lodge",
+      "bottomMargin": 8
+    }
+  ],
+  "recipes": [
+    {
+      "id": "cult-patrol-boat-a",
+      "asset": "chibi-naval-cult-patrol-boat",
+      "endpoint": "edit-image-pixen",
+      "seed": 92001,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "batch": "4",
+        "recipe": "patrol-boat-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Turn it into a secret-society gondola: the hull becomes long glossy indigo-blue lacquer #4a43b5 with shade #372f8f and a tall polished brass prow #c9a24a curled like a tentacle tip; the red sail becomes a small sail in indigo-blue and pale cream #f3e7c4 stripes; the red pennant becomes one small lantern with a bright green flame at the stern. Nothing red. Keep the mast, boat shape, size, waterline, thick black outline and style the same, with nothing under the hull.",
+      "notes": "The batch-4 cog as the Cult's indigo gondola, on the shared hull's footprint and waterline (CULT.md, Ships; NAVAL_FACTIONS.md)."
+    },
+    {
+      "id": "cult-battleship-a",
+      "asset": "chibi-naval-cult-battleship",
+      "endpoint": "edit-image-pixen",
+      "seed": 92011,
+      "requestSize": {
+        "width": 88,
+        "height": 96
+      },
+      "source": {
+        "batch": "4",
+        "recipe": "battleship-d-edit",
+        "candidate": 1
+      },
+      "editInstruction": "Turn it into a secret-society galleon: the hull becomes indigo-blue wood #4a43b5 with shade #372f8f and polished brass trim #c9a24a; the grey stone tower becomes a round polished brass dome with a small telescope; the red sails become pale cream #f3e7c4 sails, the big one with one indigo eye-in-a-spiral sign; the red pennants become small lanterns with bright green flames. Nothing red. Keep the ship shape, size, thick black outline and style the same, with nothing under the hull.",
+      "notes": "The batch-4 carrack as the Cult's indigo galleon with cream sails and a brass dome."
+    },
+    {
+      "id": "cult-transport-a",
+      "asset": "chibi-naval-cult-transport",
+      "endpoint": "edit-image-pixen",
+      "seed": 92021,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "source": {
+        "batch": "4",
+        "recipe": "embarked-transport-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Turn it into a secret-society rowing barge: the hull becomes indigo-blue lacquered wood #4a43b5 with shade #372f8f and a polished brass rim #c9a24a; the red tarp becomes an indigo-blue tarp with a pale cream #f3e7c4 border; the red pennant becomes one candle lantern with a bright green flame on the pole. Nothing red. Keep the oars, boat shape, size, thick black outline and style the same, with nothing under the hull.",
+      "notes": "The batch-4 barge as the Cult's indigo rowing barge."
+    },
+    {
+      "id": "cult-submarine-a",
+      "asset": "chibi-naval-cult-submarine",
+      "endpoint": "edit-image-pixen",
+      "seed": 92031,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "cult-patrol-boat-a",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Turn it into a small brass bathysphere submarine lying level, no longer than the boat's hull is now: remove the mast, the striped sail, the pennant and the curled prow; the hull becomes one closed short fat barrel of polished brass #c9a24a with shade #8a6a2a and rows of rivets, one big round porthole glowing bright green in its side, a short brass periscope on top and an indigo-blue tail fin #4a43b5 at the stern. Nothing red. Keep the thick black outline and style, with nothing under the hull.",
+      "notes": "The accepted Cult Patrol Boat as a brass bathysphere barrel with a green porthole, a periscope and an indigo tail fin (CULT.md, Ships); seated on the shared Submarine's margin and anchor."
+    }
+  ]
+}

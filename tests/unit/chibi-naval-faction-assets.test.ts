@@ -79,8 +79,17 @@ const SPRITES: readonly (readonly [
   ["PORTRAIT", "SUBMARINE", "portrait-submarine", "chibi-portrait-submarine"],
 ];
 /** The Ice Folk have no Submarine raster (RULESET_7_NAVAL_BRANCH.md, 14.3). */
-const hasSprite = (faction: FactionIdV7, role: NavalArtRoleV7): boolean =>
-  !(faction === "ICE_FOLK" && role === "SUBMARINE");
+/**
+ * The Cult has its four map sprites (bead pulp_wars-mch9.15); its three
+ * ship portraits are bead pulp_wars-mch9.16's.
+ */
+const hasSprite = (
+  faction: FactionIdV7,
+  role: NavalArtRoleV7,
+  kind: "UNIT" | "PORTRAIT" = "UNIT",
+): boolean =>
+  !(faction === "ICE_FOLK" && role === "SUBMARINE") &&
+  !(faction === "CULT" && kind === "PORTRAIT");
 
 const masterFile = (asset: { readonly url: string }): string =>
   path.join(ROOT, "public", asset.url.replace(/^.*?assets\//, "assets/"));
@@ -100,16 +109,19 @@ describe("faction-styled naval art (pulp_wars-w5j.2)", () => {
   // The Dwarf UI bead (pulp_wars-78i.6) appended the seventh faction's set
   // (batch `naval-dwarf` of bead pulp_wars-78i.5, checked by the Dwarf art
   // test), so the list has 35 rasters.
-  it("lists every naval sprite and portrait of the eight factions, once", () => {
+  it("lists every naval sprite and portrait of the nine fleets, once", () => {
     const expected = [
       ...FACTIONS.map(([faction, slug]) => [faction, slug] as const),
       ["DWARF", "dwarf"] as const,
       // The Candy engine bead (pulp_wars-jdb.3) appended the eighth set
       // (batch `naval-candy` of bead pulp_wars-jdb.5): 40 rasters.
       ["CANDY", "candy"] as const,
+      // The Cult's map sprites (batch `naval-cult` of bead
+      // pulp_wars-mch9.15, checked by the Cult art test): 4 more.
+      ["CULT", "cult"] as const,
     ]
       .flatMap(([faction, slug]) =>
-        SPRITES.filter(([, role]) => hasSprite(faction, role)).map(
+        SPRITES.filter(([kind, role]) => hasSprite(faction, role, kind)).map(
           ([kind, role, suffix]) =>
             `${faction} ${kind} ${role} chibi-naval-${slug}-${suffix} ${navalFactionArtSubjectV7(faction, kind, role)}`,
         ),
@@ -123,7 +135,7 @@ describe("faction-styled naval art (pulp_wars-w5j.2)", () => {
     ).toEqual(expected);
     // 40 rasters of the eight fleets, and the Submarine and its portrait of
     // the seven seafaring factions (bead pulp_wars-5ti.6).
-    expect(expected).toHaveLength(54);
+    expect(expected).toHaveLength(58);
     // The Humans keep the shared subjects; the others get their own.
     expect(navalFactionArtSubjectV7("ORIGINAL", "UNIT", "PATROL_BOAT")).toBe(
       "UNIT:PATROL_BOAT",

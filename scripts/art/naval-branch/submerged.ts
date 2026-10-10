@@ -55,6 +55,7 @@ export const SUBMARINE_ASSET_IDS = [
   "chibi-naval-martian-submarine",
   "chibi-naval-dwarf-submarine",
   "chibi-naval-candy-submarine",
+  "chibi-naval-cult-submarine",
 ] as const;
 
 const UNITS = "public/assets/chibi/units";

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "batch": "direction-cult",
-  "title": "Cultists of the Ancient Ones in fixed faction colours: the first sample (Initiate, Horror, Herald)",
+  "title": "Cultists of the Ancient Ones in fixed faction colours: the first sample (Initiate, Horror, Herald) and the batches (the other six cultists, the Familiar, the Thing in the Cellar, the Tentacle, the two Unbound looks and the frog)",
   "bead": "pulp_wars-mch9.14",
   "faction": "CULT",
   "dryRun": false,
@@ -42,6 +42,154 @@
       },
       "ownerColour": false,
       "accent": "cult-lodge"
+    },
+    {
+      "id": "chibi-direction-cult-idol-bearer",
+      "subject": "UNIT:CULT:GUARD",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false,
+      "accent": "cult-lodge"
+    },
+    {
+      "id": "chibi-direction-cult-familiar",
+      "subject": "UNIT:CULT:RAIDER",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "creature",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "ownerColour": false,
+      "accent": "cult-lodge",
+      "bottomMargin": 6
+    },
+    {
+      "id": "chibi-direction-cult-hexer",
+      "subject": "UNIT:CULT:MARKSMAN",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false,
+      "accent": "cult-lodge"
+    },
+    {
+      "id": "chibi-direction-cult-summoner",
+      "subject": "UNIT:CULT:CAPTAIN",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false,
+      "accent": "cult-lodge"
+    },
+    {
+      "id": "chibi-direction-cult-stargazer",
+      "subject": "UNIT:CULT:CATAPULT",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "ownerColour": false,
+      "accent": "cult-lodge",
+      "bottomMargin": 6
+    },
+    {
+      "id": "chibi-direction-cult-caller",
+      "subject": "UNIT:CULT:KNIGHT",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "ownerColour": false,
+      "accent": "cult-lodge",
+      "bottomMargin": 6
+    },
+    {
+      "id": "chibi-direction-cult-chosen",
+      "subject": "UNIT:CULT:SWORDSMAN",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false,
+      "accent": "cult-lodge"
+    },
+    {
+      "id": "chibi-direction-cult-thing",
+      "subject": "UNIT:CULT:JUGGERNAUT",
+      "assetClass": "GIANT_UNIT",
+      "recipeClass": "creature",
+      "canvas": {
+        "width": 88,
+        "height": 104
+      },
+      "ownerColour": false,
+      "accent": "cult-green",
+      "bottomMargin": 8
+    },
+    {
+      "id": "chibi-direction-cult-tentacle",
+      "subject": "UNIT:CULT:TENTACLE",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "creature",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false,
+      "accent": "cult-green",
+      "bottomMargin": 4
+    },
+    {
+      "id": "chibi-direction-cult-horror-unbound",
+      "subject": "UNIT:CULT:HORROR_UNBOUND",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "ownerColour": false,
+      "accent": "cult-green"
+    },
+    {
+      "id": "chibi-direction-cult-herald-unbound",
+      "subject": "UNIT:CULT:HERALD_UNBOUND",
+      "assetClass": "GIANT_UNIT",
+      "recipeClass": "machine",
+      "canvas": {
+        "width": 88,
+        "height": 104
+      },
+      "ownerColour": false,
+      "accent": "cult-lodge"
+    },
+    {
+      "id": "chibi-direction-cult-frog",
+      "subject": "FROG",
+      "assetClass": "RESOURCE",
+      "recipeClass": "creature",
+      "canvas": {
+        "width": 40,
+        "height": 40
+      },
+      "accent": "cult-green"
     }
   ],
   "recipes": [
@@ -461,6 +609,344 @@
       "promptAddendum": "A living robed creature, not a machine: it has no arms and holds nothing. It is very tall and thin like a pillar and fills the image from the very top edge to the very bottom edge: about 44 pixels wide and 104 pixels tall.",
       "negativeAddendum": "face, mouth, nose, two eyes, hands, fingers, arms holding something, feet, shoes, legs, staff, sword, cleaver, axe, book, lantern, candle, flame, weapon, skull, beard, wizard hat, jewels, black robe, navy robe, wings, horns, robot, wheels, vehicle, metal body",
       "notes": "The edits of herald-e stop 4 px inside the canvas (rows 4 to 100, 97 px): two more creations that ask for a pillar from edge to edge, for the 100 px of gate 3."
+    },
+    {
+      "id": "idol-bearer-a",
+      "asset": "chibi-direction-cult-idol-bearer",
+      "endpoint": "create-image-pixen",
+      "seed": 91501,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "The hood and the robe are a bright saturated royal blue, clearly blue cloth and much lighter than the black outline, never grey, charcoal, navy or black. The hands are pale cream mittens; no skin shows anywhere. The figure with its idol is drawn large: about 48 pixels wide and 74 pixels tall.",
+      "negativeAddendum": "staff, wand, dagger, knife, beard, skull face, skeleton, grey robe, charcoal robe, black robe, wizard hat brim, cape, wings, skin, bare hands, two people, shield",
+      "notes": "Bead pulp_wars-mch9.15, first sample of the batches: a fresh creation with the unit class. The subject lines of the batches call the cloth royal blue: the cult-lodge accent turns any saturated blue into the lodge's indigo, and 'midnight indigo' drew slate grey (initiate-a, -b)."
+    },
+    {
+      "id": "hexer-a",
+      "asset": "chibi-direction-cult-hexer",
+      "endpoint": "create-image-pixen",
+      "seed": 91511,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "The hood and the robe are a bright saturated royal blue, clearly blue cloth and much lighter than the black outline, never grey, charcoal, navy or black. The hands are pale cream mittens; no skin shows anywhere. The figure is drawn large: about 46 pixels wide and 72 pixels tall.",
+      "negativeAddendum": "staff, wand, dagger, knife, beard, skull face, skeleton, grey robe, charcoal robe, black robe, wizard hat brim, cape, wings, skin, bare hands",
+      "notes": "First sample of the batches: a fresh creation with the unit class."
+    },
+    {
+      "id": "hexer-s",
+      "asset": "chibi-direction-cult-hexer",
+      "endpoint": "edit-image-pixen",
+      "seed": 91512,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "initiate-a-indigo-flop",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Redraw it as another member of the same society in the same blue robe: the tip of the hood curls up and over like a question mark; big round brass spectacles sit on the hood over the two cream eyes; one hand holds an open pale cream book upside down; the other arm is thrown forward with one small bright green squiggle of light leaving the mitten. No candle and no scroll. Keep the size, the slippers, the thick black outline and the art style, on a transparent background.",
+      "notes": "First sample of the batches, the other way to a robed unit: a sibling edit of the accepted Initiate, which keeps its cloth, eyes and size (as the Wight was made from the Skeleton)."
+    },
+    {
+      "id": "thing-a",
+      "asset": "chibi-direction-cult-thing",
+      "endpoint": "create-image-pixen",
+      "seed": 91581,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "promptAddendum": "The heap is drawn very large and wide: about 82 pixels wide and 72 pixels tall. Every eye is pale yellow, colour #ffe27a, with a black pupil. The tentacles are deep-sea teal, colour #1f8f95 with shade #145f6b. Nothing on it glows green.",
+      "negativeAddendum": "person, human, nose, legs, feet, toes, octopus head, squid mantle, green slime, purple, violet, pink, red, tongue",
+      "notes": "First sample of the batches: the Thing with the new creature class, which sends no faction layer (root decision 4: layer 3's cloth and green flames reached every Horror creation)."
+    },
+    {
+      "id": "thing-b",
+      "asset": "chibi-direction-cult-thing",
+      "endpoint": "create-image-pixen",
+      "seed": 91582,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "promptAddendum": "The heap is drawn very large and wide: about 82 pixels wide and 72 pixels tall. Every eye is pale yellow, colour #ffe27a, with a black pupil. The tentacles are deep-sea teal, colour #1f8f95 with shade #145f6b. Nothing on it glows green.",
+      "negativeAddendum": "person, human, nose, legs, feet, toes, octopus head, squid mantle, green slime, purple, violet, pink, red, tongue",
+      "notes": "A second seed of thing-a."
+    },
+    {
+      "id": "familiar-a",
+      "asset": "chibi-direction-cult-familiar",
+      "endpoint": "create-image-pixen",
+      "seed": 91521,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "The animal is drawn large and low, on all four feet: about 60 pixels wide and 50 pixels tall. Its hide is a bright saturated royal blue, never grey, navy or black. Nothing on it glows green.",
+      "negativeAddendum": "person, human, hands, standing upright, long tail, green, lime, purple, violet, pink, red, tongue, teeth",
+      "notes": "The Familiar with the creature class: the one trained unit with no robe, so layer 3's cloth and flames are kept out of its prompt; the lodge accent makes its blue hide the robes' indigo."
+    },
+    {
+      "id": "stargazer-a",
+      "asset": "chibi-direction-cult-stargazer",
+      "endpoint": "create-image-pixen",
+      "seed": 91541,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "The robe and the nightcap are a bright saturated royal blue, clearly blue cloth, never grey, charcoal, navy or black. The telescope is polished yellow brass, colour #c9a24a, and is the biggest thing in the image. The hands are pale cream mittens; no skin shows. The group is drawn large: about 64 pixels wide and 76 pixels tall.",
+      "negativeAddendum": "staff, wand, weapon, cannon, gun, wheels, beard, skull face, skeleton, grey robe, charcoal robe, black robe, cape, wings, skin, bare hands",
+      "notes": "The Stargazer: a fresh creation with the unit class (the direction allows the machine class if the unit class fights the telescope)."
+    },
+    {
+      "id": "caller-a",
+      "asset": "chibi-direction-cult-caller",
+      "endpoint": "create-image-pixen",
+      "seed": 91551,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "The robe is a bright saturated royal blue, clearly blue cloth, never grey, charcoal, navy or black. The round helmet is polished yellow brass, colour #c9a24a, and hides the whole head. The hands are pale cream mittens; no skin shows anywhere. The figure with its horn is drawn large: about 62 pixels wide and 78 pixels tall.",
+      "negativeAddendum": "staff, wand, dagger, knife, sword, gun, beard, skull face, skeleton, face, grey robe, charcoal robe, black robe, cape, wings, skin, bare hands, air hose, flippers",
+      "notes": "The Caller: a fresh creation with the unit class."
+    },
+    {
+      "id": "tentacle-a",
+      "asset": "chibi-direction-cult-tentacle",
+      "endpoint": "create-image-pixen",
+      "seed": 91591,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "The tentacle is drawn large: about 36 pixels wide and 74 pixels tall. It is deep-sea teal, colour #1f8f95 with shade #145f6b, and its eye is pale yellow, colour #ffe27a. Nothing on it glows green.",
+      "negativeAddendum": "octopus head, body, face, mouth, teeth, second tentacle, hole, water, splash, puddle, green slime, purple, violet, pink, red",
+      "notes": "The Tentacle with the creature class (no faction layer)."
+    },
+    {
+      "id": "horror-unbound-a",
+      "asset": "chibi-direction-cult-horror-unbound",
+      "endpoint": "edit-image-pixen",
+      "seed": 91601,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "horror-a-gums",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Change only three small things. The pale yellow of both big eyes becomes bright glowing red, colour #e0281e, with the black pupils kept. The short brass chain trailing behind is erased. The brass spiked collar gets one clear jagged black crack through it. Keep the round teal body, the wide grin with its cream teeth, the cream belly, the four tentacle feet, the shape, the thick black outline and the art style the same, on a transparent background.",
+      "notes": "The Unbound look of the Horror: an edit of the accepted bound sprite that changes the eyes, the chain and the collar only (CULT.md, Unbound looks)."
+    },
+    {
+      "id": "herald-unbound-a",
+      "asset": "chibi-direction-cult-herald-unbound",
+      "endpoint": "edit-image-pixen",
+      "seed": 91611,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "source": {
+        "recipe": "herald-e-tall-indigo",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Change only two small things. The pale yellow of the one huge eye becomes bright glowing red, colour #e0281e, with the black pupil kept. The brass collar ring gets one clear jagged black crack through it and is broken open at the front. Keep the starry blue robe, the teal tentacle crown, the hanging sleeves, the shape, the thick black outline and the art style the same, on a transparent background.",
+      "notes": "The Unbound look of the Herald: an edit of the accepted bound sprite that changes the eye and the collar only."
+    },
+    {
+      "id": "frog-a",
+      "asset": "chibi-direction-cult-frog",
+      "endpoint": "create-image-pixen",
+      "seed": 91621,
+      "requestSize": {
+        "width": 40,
+        "height": 40
+      },
+      "promptAddendum": "The frog is drawn large: about 32 pixels wide and 28 pixels tall. It is teal, not green.",
+      "negativeAddendum": "lily pad, leaf, water, pond, crown, tongue, fly, green frog, lime, purple, violet, pink, red, person",
+      "notes": "The frog overlay of Ribbit with the creature class at the Grave's 40 x 40 canvas."
+    },
+    {
+      "id": "idol-bearer-s",
+      "asset": "chibi-direction-cult-idol-bearer",
+      "endpoint": "edit-image-pixen",
+      "seed": 91502,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "initiate-a-indigo-flop",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Redraw it as another member of the same society in the same blue robe, short, stout and wide: the hood is short and squashed flat on top; both arms are raised straight up and hold one squat grinning pale grey stone idol head with two small green eyes above its own head, the idol as big as the hooded head under it, like two heads stacked. No candle and no scroll. Keep the two cream eyes, the slippers, the thick black outline and the art style, on a transparent background.",
+      "notes": "idol-bearer-a held a small idol at its chest. hexer-s showed the recipe of a robed unit: a sibling edit of the accepted Initiate keeps the cloth, the eyes and the size."
+    },
+    {
+      "id": "summoner-s",
+      "asset": "chibi-direction-cult-summoner",
+      "endpoint": "edit-image-pixen",
+      "seed": 91532,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "initiate-a-indigo-flop",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Redraw it as another member of the same society in the same blue robe, tall and thin: the pointed hood becomes a very tall straight spike, twice as tall as before, whose tip reaches the top edge of the image, and the robe is narrow; a pale cream stole hangs round the neck; one hand raises a small brass hand bell; a looped brass chain hangs from the other hand. No candle and no scroll. Keep the two cream eyes, the slippers, the thick black outline and the art style, on a transparent background.",
+      "notes": "The Summoner as a sibling edit of the accepted Initiate."
+    },
+    {
+      "id": "chosen-s",
+      "asset": "chibi-direction-cult-chosen",
+      "endpoint": "edit-image-pixen",
+      "seed": 91562,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "initiate-a-indigo-flop",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Redraw it as another member of the same society in the same blue robe, burly and square with big broad shoulders: the hood is short with a small point; a broad pale cream sash crosses the chest with one round brass medal; one hand holds a huge polished brass cleaver low; the other arm is raised straight up with one finger pointing at the sky. No candle and no scroll. Keep the two cream eyes, the slippers, the thick black outline and the art style, on a transparent background.",
+      "notes": "The Chosen as a sibling edit of the accepted Initiate."
+    },
+    {
+      "id": "thing-c",
+      "asset": "chibi-direction-cult-thing",
+      "endpoint": "create-image-pixen",
+      "seed": 91583,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "promptAddendum": "It has no head and no dome: it is a low wide pile of tentacles, like a heap of thick rope, about 84 pixels wide and 62 pixels tall, and the eyes sit on the tentacles themselves. The broken wooden trapdoor frame lies round the heap like a square collar. Every eye is pale yellow, colour #ffe27a, with a black pupil. The tentacles are deep-sea teal, colour #1f8f95 with shade #145f6b. Nothing on it glows green.",
+      "negativeAddendum": "person, human, nose, legs, feet, toes, octopus head, round head, dome, squid mantle, barrel, door on the belly, green slime, purple, violet, pink, red, tongue",
+      "notes": "thing-a is a tall octopus with a domed head and a barrel lid on its belly (67 x 85 px), not the mound of the direction; thing-b came back empty. The shape is named as a pile with no head."
+    },
+    {
+      "id": "thing-d",
+      "asset": "chibi-direction-cult-thing",
+      "endpoint": "create-image-pixen",
+      "seed": 91584,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "promptAddendum": "It has no head and no dome: it is a low wide pile of tentacles, like a heap of thick rope, about 84 pixels wide and 62 pixels tall, and the eyes sit on the tentacles themselves. The broken wooden trapdoor frame lies round the heap like a square collar. Every eye is pale yellow, colour #ffe27a, with a black pupil. The tentacles are deep-sea teal, colour #1f8f95 with shade #145f6b. Nothing on it glows green.",
+      "negativeAddendum": "person, human, nose, legs, feet, toes, octopus head, round head, dome, squid mantle, barrel, door on the belly, green slime, purple, violet, pink, red, tongue",
+      "notes": "A second seed of thing-c."
+    },
+    {
+      "id": "familiar-a-brass",
+      "asset": "chibi-direction-cult-familiar",
+      "endpoint": "edit-image-pixen",
+      "seed": 91522,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "familiar-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only two things. The brown leather collar becomes a polished yellow brass collar, colour #c9a24a with shade #8a6a2a, with no red and no brown left; the brass bell stays. The open mouth with its pink tongue becomes a wide closed happy smile, a single dark line on the cream muzzle, with no pink and no red. Keep the blue hide, the cream belly, the ears, the two small wings, the eyes, the tail, the shape, the thick black outline and the art style the same, on a transparent background.",
+      "notes": "familiar-a is a fat blue winged toad-cat with a cream belly and a brass bell (58 x 65 px); its collar is red-brown leather (73 px in the red band: red means Unbound) and its tongue is pink."
+    },
+    {
+      "id": "idol-bearer-s-one",
+      "asset": "chibi-direction-cult-idol-bearer",
+      "endpoint": "edit-image-pixen",
+      "seed": 91503,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "idol-bearer-s",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the idol: the two small stacked stone heads become one single big squat grinning pale grey stone idol head, as wide as the blue hood under it, resting on the two raised mittens, with two small bright green eyes, colour #00ff78. Keep the blue hood and robe, the two cream eyes, the raised arms, the belt, the slippers, the thick black outline and the art style the same, on a transparent background.",
+      "notes": "idol-bearer-s:0 holds two small stone heads stacked on its hood (43 x 74 px); the direction asks for one idol as big as the head under it, and its eyes are a grey-green."
+    },
+    {
+      "id": "stargazer-a-hood",
+      "asset": "chibi-direction-cult-stargazer",
+      "endpoint": "edit-image-pixen",
+      "seed": 91542,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "stargazer-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the head of the small figure: the pink skin face, the white hair and the white beard become the black inside of a blue hood with two big round cream-white eyes, so no skin and no hair show; the blue nightcap with its cream stars and pompom stays on top. Keep the brass telescope, the tripod, the blue robe, the star chart, the mittens, the shape, the thick black outline and the art style the same, on a transparent background.",
+      "notes": "stargazer-a is the Stargazer of the direction (a brass telescope on a tripod, a starry nightcap with a pompom, a star chart; 68 x 54 px), but its astronomer has a pink face, white hair and a beard: the direction allows no face, no skin and no beard."
+    },
+    {
+      "id": "tentacle-a-alone",
+      "asset": "chibi-direction-cult-tentacle",
+      "endpoint": "edit-image-pixen",
+      "seed": 91592,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "tentacle-a",
+        "candidate": 0
+      },
+      "editInstruction": "Erase the small round creature with the face at the bottom, the small curled tentacle on the left and the loose drop on the right, so only the one tall thick teal tentacle remains: it rises straight up from a flat cut base at the bottom and curls over at the top, with its row of suckers and the one eye at its tip. The suckers become pale cream, colour #f3e7c4, with no pink. Keep the tall tentacle, the thick black outline and the art style the same, on a transparent background.",
+      "notes": "tentacle-a drew the tall tentacle with its suckers and an eye at the tip, but growing out of a small round creature with a face, a second tentacle and a loose drop; the direction asks for one limb with nothing else."
+    },
+    {
+      "id": "tentacle-b",
+      "asset": "chibi-direction-cult-tentacle",
+      "endpoint": "create-image-pixen",
+      "seed": 91593,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "There is no animal in the image: only one single limb, like an elephant trunk standing upright on its flat cut end, with no body, no head and no face at its foot; its only eye is at the curled tip. The tentacle is drawn large: about 34 pixels wide and 72 pixels tall. It is deep-sea teal, colour #1f8f95 with shade #145f6b, its suckers pale cream, colour #f3e7c4, and its eye pale yellow, colour #ffe27a. Nothing on it glows green.",
+      "negativeAddendum": "octopus, squid, animal, creature body, head, face, mouth, teeth, two eyes, second tentacle, several tentacles, drops, hole, water, splash, puddle, green slime, purple, violet, pink, red",
+      "notes": "A second creation that names the piece as one limb with no animal."
+    },
+    {
+      "id": "thing-c-heap",
+      "asset": "chibi-direction-cult-thing",
+      "endpoint": "edit-image-pixen",
+      "seed": 91585,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "source": {
+        "recipe": "thing-c",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the small creature at the bottom right of the heap: its head with the two big white eyes and its mouth become one more fat teal tentacle coil with one small round pale yellow eye, colour #ffe27a, like the other tentacles of the heap, so the heap has no face. Keep the pile of teal tentacles, every yellow eye, the broken round wooden trapdoor in the middle, the striped party hat, the shape, the thick black outline and the art style the same, on a transparent background.",
+      "notes": "thing-c is the mound of the direction (a heap of teal tentacles with yellow eyes all over, a broken wooden trapdoor in its middle, a party hat; 80 x 84 px), but a small creature with a face and two white eyes sits at its bottom right."
     }
   ]
 }

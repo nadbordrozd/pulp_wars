@@ -39,6 +39,15 @@ export type ChibiRecipeClass =
    * instead of the figure's "big head, both feet visible".
    */
   | "machine"
+  /**
+   * A faction's creature that wears none of the faction's materials (bead
+   * pulp_wars-mch9.15, the Cult's Thing in the Cellar, Tentacle, Familiar
+   * and frog): the unit sizes and Pixen options, the light stated, and no
+   * faction layer, so the subject line names every colour. Layer 3 of the
+   * Cult names cloth and green flames, which every Horror creation of the
+   * unit class grew on horns.
+   */
+  | "creature"
   | "ship"
   | "settlement"
   | "building"
@@ -248,6 +257,22 @@ export const CHIBI_CLASS_RECIPES: Readonly<
     camera: "three-quarter",
     factionLayer: true,
     assetClasses: ["STANDARD_UNIT", "LARGE_UNIT", "GIANT_UNIT"],
+    generators: ["create-image-pixen"],
+    editPass: true,
+    noBackground: true,
+    derivation: "as-is",
+    options: { "create-image-pixen": PIECE_OPTIONS },
+  },
+  // Bead pulp_wars-mch9.15: the clothless creatures of a faction whose layer
+  // 3 names cloth and flames (the Cult's summoned things, its Familiar and
+  // the frog of Ribbit). No faction layer; the subject line carries the
+  // palette, and the batch's accent preset still pins it. A RESOURCE (the
+  // frog marker) is made the same way at its own canvas.
+  creature: {
+    camera: "three-quarter",
+    factionLayer: false,
+    light: true,
+    assetClasses: ["STANDARD_UNIT", "LARGE_UNIT", "GIANT_UNIT", "RESOURCE"],
     generators: ["create-image-pixen"],
     editPass: true,
     noBackground: true,
@@ -1284,7 +1309,7 @@ export function requestBody(
 }
 
 const SUBJECT_PATTERN =
-  /^(TERRAIN|RESOURCE|IMPROVEMENT|UNIT|PORTRAIT):[A-Z_]+$|^(UNIT|PORTRAIT|IMPROVEMENT):(UNDEAD|GOBLIN|DINOSAUR|MARTIAN|ICE_FOLK|DWARF|CANDY|CULT):[A-Z_]+$|^ICON:(TECH|ACTION|REWARD|HUD):(UNDEAD:|GOBLIN:|DINOSAUR:|MARTIAN:|ICE_FOLK:|DWARF:|CANDY:|CULT:)?[A-Z_]+$|^ICON:STATUS:(SHIELD|COOLING|CHILLED|FROZEN|CLOCKWORK|DUG_IN|RUSHED|CRASHED|SPLATTED|STUCK|TOOTHACHE)$|^CITY:((UNDEAD|GOBLIN|DINOSAUR|MARTIAN|ICE_FOLK|DWARF|CANDY|CULT):)?[123]$|^SITE:VILLAGE$|^TREASURE$|^GRAVE$|^CRUMBS$|^STATUS:(PLAGUED|BITTEN|PROVOKED)$|^EFFECT:[A-Z_]+$|^CURIOSITY:(WEB|FOUNTAIN|SHRINE|WRECK|DOWNED_SAUCER|GRAVEYARD|GATE|WISHING_WELL)$|^ICON:CURIOSITY:(WEB|FOUNTAIN|SHRINE|WRECK|BOUNTY|DOWNED_SAUCER|GRAVEYARD|GATE|BIGFOOT|WISHING_WELL)$|^OVERLAY:ICEBOUND$|^IMPROVEMENT:MONUMENT:((UNDEAD|GOBLIN|DINOSAUR|MARTIAN|ICE_FOLK|DWARF|CANDY|CULT)(:(EXPLORER|ENGINEER|MUSTER|CONQUEROR|LAND_BARON|SEA_DOG|SLAYER))?|EXPLORER|ENGINEER|MUSTER|CONQUEROR|LAND_BARON|SEA_DOG|SLAYER)$/;
+  /^(TERRAIN|RESOURCE|IMPROVEMENT|UNIT|PORTRAIT):[A-Z_]+$|^(UNIT|PORTRAIT|IMPROVEMENT):(UNDEAD|GOBLIN|DINOSAUR|MARTIAN|ICE_FOLK|DWARF|CANDY|CULT):[A-Z_]+$|^ICON:(TECH|ACTION|REWARD|HUD):(UNDEAD:|GOBLIN:|DINOSAUR:|MARTIAN:|ICE_FOLK:|DWARF:|CANDY:|CULT:)?[A-Z_]+$|^ICON:STATUS:(SHIELD|COOLING|CHILLED|FROZEN|CLOCKWORK|DUG_IN|RUSHED|CRASHED|SPLATTED|STUCK|TOOTHACHE)$|^CITY:((UNDEAD|GOBLIN|DINOSAUR|MARTIAN|ICE_FOLK|DWARF|CANDY|CULT):)?[123]$|^SITE:VILLAGE$|^TREASURE$|^GRAVE$|^CRUMBS$|^FROG$|^STATUS:(PLAGUED|BITTEN|PROVOKED)$|^EFFECT:[A-Z_]+$|^CURIOSITY:(WEB|FOUNTAIN|SHRINE|WRECK|DOWNED_SAUCER|GRAVEYARD|GATE|WISHING_WELL)$|^ICON:CURIOSITY:(WEB|FOUNTAIN|SHRINE|WRECK|BOUNTY|DOWNED_SAUCER|GRAVEYARD|GATE|BIGFOOT|WISHING_WELL)$|^OVERLAY:ICEBOUND$|^IMPROVEMENT:MONUMENT:((UNDEAD|GOBLIN|DINOSAUR|MARTIAN|ICE_FOLK|DWARF|CANDY|CULT)(:(EXPLORER|ENGINEER|MUSTER|CONQUEROR|LAND_BARON|SEA_DOG|SLAYER))?|EXPLORER|ENGINEER|MUSTER|CONQUEROR|LAND_BARON|SEA_DOG|SLAYER)$/;
 const ID_PATTERN = /^chibi-[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const RECIPE_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const SHA_PATTERN = /^[a-f0-9]{64}$/;

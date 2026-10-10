@@ -1,0 +1,37 @@
+{
+  "id": "cult-transport-a",
+  "jobId": "3a720a95-a262-40ce-a79a-b68ec49a4354",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-cult",
+    "asset": "chibi-naval-cult-transport",
+    "subject": "UNIT:CULT:EMBARKED_TRANSPORT",
+    "faction": "CULT",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 72,
+      "height": 72
+    },
+    "seed": 92021,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Turn it into a secret-society rowing barge: the hull becomes indigo-blue lacquered wood #4a43b5 with shade #372f8f and a polished brass rim #c9a24a; the red tarp becomes an indigo-blue tarp with a pale cream #f3e7c4 border; the red pennant becomes one candle lantern with a bright green flame on the pole. Nothing red. Keep the oars, boat shape, size, thick black outline and style the same, with nothing under the hull."
+      }
+    ],
+    "prompt": "Turn it into a secret-society rowing barge: the hull becomes indigo-blue lacquered wood #4a43b5 with shade #372f8f and a polished brass rim #c9a24a; the red tarp becomes an indigo-blue tarp with a pale cream #f3e7c4 border; the red pennant becomes one candle lantern with a bright green flame on the pole. Nothing red. Keep the oars, boat shape, size, thick black outline and style the same, with nothing under the hull.",
+    "negativePrompt": "",
+    "description": "Turn it into a secret-society rowing barge: the hull becomes indigo-blue lacquered wood #4a43b5 with shade #372f8f and a polished brass rim #c9a24a; the red tarp becomes an indigo-blue tarp with a pale cream #f3e7c4 border; the red pennant becomes one candle lantern with a bright green flame on the pole. Nothing red. Keep the oars, boat shape, size, thick black outline and style the same, with nothing under the hull.",
+    "editInstruction": "Turn it into a secret-society rowing barge: the hull becomes indigo-blue lacquered wood #4a43b5 with shade #372f8f and a polished brass rim #c9a24a; the red tarp becomes an indigo-blue tarp with a pale cream #f3e7c4 border; the red pennant becomes one candle lantern with a bright green flame on the pole. Nothing red. Keep the oars, boat shape, size, thick black outline and style the same, with nothing under the hull.",
+    "source": {
+      "batch": "4",
+      "recipe": "embarked-transport-a-edit",
+      "candidate": 0,
+      "sha256": "578a6fc04765643c75b3948088f8a803f4d00d06c0faab0e6a8896e7e55297bb"
+    }
+  }
+}

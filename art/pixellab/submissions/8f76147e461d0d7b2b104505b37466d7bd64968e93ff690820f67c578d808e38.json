@@ -1,0 +1,37 @@
+{
+  "id": "cult-patrol-boat-a",
+  "jobId": "3e21caf3-65ca-4bc5-a95b-1c1f91f592bc",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-cult",
+    "asset": "chibi-naval-cult-patrol-boat",
+    "subject": "UNIT:CULT:PATROL_BOAT",
+    "faction": "CULT",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 92001,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Turn it into a secret-society gondola: the hull becomes long glossy indigo-blue lacquer #4a43b5 with shade #372f8f and a tall polished brass prow #c9a24a curled like a tentacle tip; the red sail becomes a small sail in indigo-blue and pale cream #f3e7c4 stripes; the red pennant becomes one small lantern with a bright green flame at the stern. Nothing red. Keep the mast, boat shape, size, waterline, thick black outline and style the same, with nothing under the hull."
+      }
+    ],
+    "prompt": "Turn it into a secret-society gondola: the hull becomes long glossy indigo-blue lacquer #4a43b5 with shade #372f8f and a tall polished brass prow #c9a24a curled like a tentacle tip; the red sail becomes a small sail in indigo-blue and pale cream #f3e7c4 stripes; the red pennant becomes one small lantern with a bright green flame at the stern. Nothing red. Keep the mast, boat shape, size, waterline, thick black outline and style the same, with nothing under the hull.",
+    "negativePrompt": "",
+    "description": "Turn it into a secret-society gondola: the hull becomes long glossy indigo-blue lacquer #4a43b5 with shade #372f8f and a tall polished brass prow #c9a24a curled like a tentacle tip; the red sail becomes a small sail in indigo-blue and pale cream #f3e7c4 stripes; the red pennant becomes one small lantern with a bright green flame at the stern. Nothing red. Keep the mast, boat shape, size, waterline, thick black outline and style the same, with nothing under the hull.",
+    "editInstruction": "Turn it into a secret-society gondola: the hull becomes long glossy indigo-blue lacquer #4a43b5 with shade #372f8f and a tall polished brass prow #c9a24a curled like a tentacle tip; the red sail becomes a small sail in indigo-blue and pale cream #f3e7c4 stripes; the red pennant becomes one small lantern with a bright green flame at the stern. Nothing red. Keep the mast, boat shape, size, waterline, thick black outline and style the same, with nothing under the hull.",
+    "source": {
+      "batch": "4",
+      "recipe": "patrol-boat-a-edit",
+      "candidate": 0,
+      "sha256": "d712c28b91c8ef3e04b9ae6c0f05ae77f27b5f76ae6f7817868a852d92546bd1"
+    }
+  }
+}

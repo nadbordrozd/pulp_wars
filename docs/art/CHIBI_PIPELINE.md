@@ -63,25 +63,26 @@ the Human-era owner text they were generated with.
 
 ## Class recipes
 
-| Recipe class      | Endpoint                                                                    | Master                                                                                                   |
-| ----------------- | --------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| `unit`            | `create-image-pixen`, south-east, low detail                                | the candidate, generated at the master size                                                              |
-| `ship`            | as `unit`, then optional edit                                               | as `unit`; a boat class text (no water, waves or plate under the hull) for ships and the embarked form   |
-| `settlement`      | Pixen, then optional `edit-image-pixen`                                     | the candidate; the edit removes a plate ("Remove all ground …")                                          |
-| `building`        | Pixen, then optional edit                                                   | as settlement                                                                                            |
-| `crop-field`      | Pixen, then optional edit, no faction layer                                 | as settlement: an unowned field of crops registered as a building (the Farm, bead `pulp_wars-6gd.5`)     |
-| `resource`        | Pixen, then optional edit                                                   | as settlement                                                                                            |
-| `terrain`         | `create-image-pixflux` (flat shading) or Pixen                              | a field at least 2x the tile; the seamless 80 x 80 window is cropped, optionally inside a `cropRegion`   |
-| `tall-terrain`    | Pixen, then optional edit                                                   | the transparent body drawn over an accepted ground tile's bottom cell                                    |
-| `portrait`        | Pixen, `side` view, south-east, low detail                                  | the candidate: a 48 x 48 head-and-shoulders interface portrait with an owner mask (batch 5)              |
-| `icon`            | Pixen, low top-down, no direction                                           | the candidate: a 48 x 48 (HUD 32 x 32) interface item sprite; also whole ships, the Catapult, the Egg    |
-| `status`          | Pixen, flat camera, side view                                               | the candidate palette-mapped: a 32 x 32 board status marker                                              |
-| `effect`          | Pixen, icon camera, side view                                               | the candidate palette-mapped: an ability effect sprite up to 48 x 48                                     |
-| `calm-building`   | Pixen (selective outline), then optional edit; calm style, no faction layer | **seated**: the calm improvement set of the new direction                                                |
-| `calm-settlement` | as `calm-building`                                                          | **seated**: cities and the Village in the calm style                                                     |
-| `crop-rows`       | Pixen or Pixflux, crops on strips of soil, then edits; no faction layer     | **crop-rows**: the Farm as a seamless pattern of crop rows                                               |
-| `calm-markers`    | `generate-image-v2`, chibi style, light layer, no faction layer             | **seated**: free-standing things with nothing under them (the Undead Graveyard, bead `pulp_wars-2yc.14`) |
-| `calm-feature`    | as `calm-markers`, for a BUILDING or a RESOURCE                             | **seated**: one free-standing piece, with what its subject names under it (bead `pulp_wars-2yc.15`)      |
+| Recipe class      | Endpoint                                                                    | Master                                                                                                               |
+| ----------------- | --------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `unit`            | `create-image-pixen`, south-east, low detail                                | the candidate, generated at the master size                                                                          |
+| `creature`        | as `unit`, the light stated, no faction layer                               | as `unit`: a faction's clothless creature or marker whose subject line names every colour (bead `pulp_wars-mch9.15`) |
+| `ship`            | as `unit`, then optional edit                                               | as `unit`; a boat class text (no water, waves or plate under the hull) for ships and the embarked form               |
+| `settlement`      | Pixen, then optional `edit-image-pixen`                                     | the candidate; the edit removes a plate ("Remove all ground …")                                                      |
+| `building`        | Pixen, then optional edit                                                   | as settlement                                                                                                        |
+| `crop-field`      | Pixen, then optional edit, no faction layer                                 | as settlement: an unowned field of crops registered as a building (the Farm, bead `pulp_wars-6gd.5`)                 |
+| `resource`        | Pixen, then optional edit                                                   | as settlement                                                                                                        |
+| `terrain`         | `create-image-pixflux` (flat shading) or Pixen                              | a field at least 2x the tile; the seamless 80 x 80 window is cropped, optionally inside a `cropRegion`               |
+| `tall-terrain`    | Pixen, then optional edit                                                   | the transparent body drawn over an accepted ground tile's bottom cell                                                |
+| `portrait`        | Pixen, `side` view, south-east, low detail                                  | the candidate: a 48 x 48 head-and-shoulders interface portrait with an owner mask (batch 5)                          |
+| `icon`            | Pixen, low top-down, no direction                                           | the candidate: a 48 x 48 (HUD 32 x 32) interface item sprite; also whole ships, the Catapult, the Egg                |
+| `status`          | Pixen, flat camera, side view                                               | the candidate palette-mapped: a 32 x 32 board status marker                                                          |
+| `effect`          | Pixen, icon camera, side view                                               | the candidate palette-mapped: an ability effect sprite up to 48 x 48                                                 |
+| `calm-building`   | Pixen (selective outline), then optional edit; calm style, no faction layer | **seated**: the calm improvement set of the new direction                                                            |
+| `calm-settlement` | as `calm-building`                                                          | **seated**: cities and the Village in the calm style                                                                 |
+| `crop-rows`       | Pixen or Pixflux, crops on strips of soil, then edits; no faction layer     | **crop-rows**: the Farm as a seamless pattern of crop rows                                                           |
+| `calm-markers`    | `generate-image-v2`, chibi style, light layer, no faction layer             | **seated**: free-standing things with nothing under them (the Undead Graveyard, bead `pulp_wars-2yc.14`)             |
+| `calm-feature`    | as `calm-markers`, for a BUILDING or a RESOURCE                             | **seated**: one free-standing piece, with what its subject names under it (bead `pulp_wars-2yc.15`)                  |
 
 "Generate at the display size" is enforced: a non-terrain request must
 equal its master canvas. Pixen sizes must be multiples of 4.
@@ -1836,11 +1837,11 @@ Batch `direction-cult` holds the first sample of a ninth faction, the
 [Cultists](factions/CULT.md#the-first-sample): faction `CULT`,
 `fixedFactionColours`, three assets (the Initiate, the Horror and the
 Herald: `UNIT:CULT:FIGHTER`, `UNIT:CULT:HORROR`, `UNIT:CULT:HERALD`)
-from 29 recipes, all new PixelLab calls (seeds 91401 to 91432). **Nothing
-registers them**: `CULT` is not a faction of the game yet, so there is no
-art manifest under `src/assets` and no subject type for them; the batch
-manifest's subject pattern accepts `CULT`, and `art:validate` checks the
-masters like any accepted asset. It added these pipeline pieces:
+from 29 recipes, all new PixelLab calls (seeds 91401 to 91432). Nothing
+registered them in this bead (`CULT` was not yet a faction of the game);
+bead `pulp_wars-mch9.15` did, with the rest of the roster
+([The Cult batches](#the-cult-batches-bead-pulp_wars-mch915)). It added
+these pipeline pieces:
 
 - **A second accent band.** An accent preset may name `then`, another
   band applied to the result of the first
@@ -1857,8 +1858,8 @@ masters like any accepted asset. It added these pipeline pieces:
   saturation capped at 0.6 and its value compressed into 0.49 to 0.92.
   PixelLab shades indigo cloth with navy whatever hex values it is given.
 - **Subjects** are in `scripts/art/chibi/subjects/CULT.json`: the three
-  sample lines and City 1 from the direction, and draft lines for the rest
-  of the roster, not yet generated.
+  sample lines and City 1 from the direction, and the lines of the rest of
+  the roster (drafts in this bead, generated by `pulp_wars-mch9.15`).
 
 What PixelLab did, added to the prompt notes of the earlier batches:
 
@@ -1891,3 +1892,54 @@ from the masters on the accepted terrain tiles. With `--out DIR --recipes
 initiate=<recipe>[:k],horror=…,herald=…` it reads recorded candidates
 (the accent applied in memory) instead of masters, for the review before
 `accept`; `--copy-to DIR` copies the output.
+
+## The Cult batches (bead `pulp_wars-mch9.15`)
+
+Batch `direction-cult` grew to 15 assets (the nine trained units, the
+Horror, the Herald and the Tentacle, the two Unbound looks and the frog) and
+the new batch `naval-cult` holds the four ships: 27 new PixelLab calls
+(seeds 91501 to 91621 and 92001 to 92031) for 16 accepted pieces. They are
+registered in
+[`chibi-direction-cult-art-manifest.ts`](../../src/assets/chibi-direction-cult-art-manifest.ts)
+and, for the Submarine and its derived submerged sprite, with the other
+factions' in the Submarine manifest; `submerged.ts` lists the Cult
+Submarine. They added one pipeline piece:
+
+- **Recipe class `creature`** (`class-creature.txt`): the unit sizes and
+  Pixen options, the light layer, **no faction layer** and no owner colour;
+  it also makes a `RESOURCE` marker. For a faction's clothless creatures
+  when its layer 3 names cloth and flames: the Cult's Thing in the Cellar,
+  Tentacle, Familiar and frog. The subject line names every colour and the
+  asset's accent preset still pins them. The manifest's subject pattern
+  accepts `FROG`.
+
+What PixelLab did, added to the prompt notes of the earlier batches:
+
+- **A sibling edit makes a robed roster.** "Redraw it as another member of
+  the same society in the same blue robe: …" on the accepted Initiate gave
+  the Hexer, the Summoner and the Chosen at the first call each, with the
+  Initiate's cloth, eyes and size; a fresh creation of the same subject drew
+  a face with skin.
+- **Ask for the colour the accent step can find.** "Bright saturated royal
+  blue" drew a saturated blue on every creation, which `cult-lodge` turns
+  into the lodge's indigo; "midnight indigo" had drawn slate grey.
+- **One big thing may come back as two small ones.** "One idol as big as
+  the head" on a sibling edit drew two small idols stacked; an edit that
+  named "the two small stacked stone heads become one single big … head"
+  fixed it.
+- **A creation can come back empty** (`thing-b`: a fully transparent
+  image); reject it and use another seed.
+- **"One tentacle" still grew an animal** under the first Tentacle; "There
+  is no animal in the image: only one single limb, like an elephant trunk
+  standing upright" drew the limb alone.
+- **An erase can leave a plate.** Erasing the creature under the first
+  Tentacle left a round disc under it.
+
+`npm run art:chibi-cult-direction-review` also writes
+`roster-{x4,1x}.png` and `roster-zoom-0.75.png` (every Cult unit sprite on
+five grounds), `roster-lineup-{1x,x3}.png` and `roster-lineup.json` (the
+faction side by side, and each piece beside the look-alikes the direction
+names, with the lineup's measures), `ships-x3.png` (the Cult fleet above the
+Undead, Human and Dwarf fleets on both waters), `frog-x4.png` (the frog on
+every ground beside the Grave and the Crumbs), `roster.json` and
+`candidates-naval-x3.png`. It still starts no browser.

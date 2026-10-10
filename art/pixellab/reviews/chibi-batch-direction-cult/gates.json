@@ -61,7 +61,7 @@
         "eyePixelsAtZoom075": 27,
         "rule": "opaque height at least 100 px and at least the tallest giant's"
       },
-      "byEye": "On giants-x2.png the Herald stands level with the Brass Titan and under the Gingerbread Giant only; the yellow eye is the brightest shape of the sprite at zoom 0.75.",
+      "byEye": "On giants-x2.png the Herald stands level with the Brass Titan and under the Gingerbread Giant only; the yellow eye is the brightest shape of the sprite at zoom 0.75. The measured verdict stays FAIL (97 px, 3 under the 100 asked for); the root waived the gate on 2026-10-10 and accepted the Herald at 97 px (bead pulp_wars-mch9.15).",
       "verdict": "FAIL"
     },
     {

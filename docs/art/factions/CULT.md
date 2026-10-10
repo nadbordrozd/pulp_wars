@@ -6,9 +6,12 @@ standing instruction is to consider art approved, so this document is the
 direction the art beads generate from; every decision in it is recorded so
 that it can be overruled. **The first sample exists** (bead
 `pulp_wars-mch9.14`, ART2): the Initiate, the Horror and the Herald, accepted
-in batch `direction-cult` and not yet wired into the game. What it measured
-and what it changed is under [The first sample](#the-first-sample); every
-other colour below is still a target.
+in batch `direction-cult`. What it measured and what it changed is under
+[The first sample](#the-first-sample). **The unit art is complete and wired**
+(bead `pulp_wars-mch9.15`, ART3): the other eight trained units, the
+Tentacle, the two Unbound looks, the four ships and the frog, under
+[The batches](#the-batches). The cities, buildings, portraits, icons and
+effects below are still targets.
 
 The art pipeline reads the two `text` blocks under **Prompt fragment** and
 **Negative fragment** below as layer 3 of every Cult prompt, so edit them
@@ -282,8 +285,9 @@ accent `cult-lodge` (the summoned without cloth: `cult-green`; see
 ### Summoned units
 
 Never trained, so they have no training card; each still needs a portrait
-for the selection dock. Their subject keys are proposals: the engine bead E1
-names the three summoned role IDs, and the wiring follows it.
+for the selection dock. Their subject keys are the engine's summoned role IDs
+(`SUMMONED_ROLE_IDS_V7`: `HORROR`, `HERALD`, `TENTACLE`), wired by bead
+`pulp_wars-mch9.15`.
 
 | Unit     | Subject, asset                                        | Canvas, class            | Silhouette and what it shows                                                                                                                                                                                                                                                                                                                                    |
 | -------- | ----------------------------------------------------- | ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -624,12 +628,12 @@ What each art bead of
 generates from this document. Counts are accepted rasters, not PixelLab
 calls.
 
-| Bead     | Assets                                                                                                                                                                                                                                            | Count |
-| -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----: |
-| **ART2** | the sample: Initiate, Horror, Herald; `subjects/CULT.json`; batch `direction-cult`; the `cult-green` accent preset; the review command `art:chibi-cult-direction-review`                                                                          |     3 |
-| **ART3** | the other eight trained units (Idol Bearer, Familiar, Hexer, Summoner, Stargazer, Caller, Chosen, Thing); the Tentacle; the two Unbound looks; the four ships and the derived submerged one; the frog                                             |    17 |
-| **ART4** | City 1 to 3; the seven buildings; the seven Monuments and the obelisk; twelve unit portraits and three ship portraits; three technology icons; eighteen ability icons; ten HUD and status icons (the Favour candle at two sizes); fifteen effects |    80 |
-| (none)   | the heather-moor Grass (three tiles) and the lantern-wood Forest set: see [Follow-ups](#follow-ups)                                                                                                                                               |     — |
+| Bead            | Assets                                                                                                                                                                                                                                            | Count |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----: |
+| **ART2**        | the sample: Initiate, Horror, Herald; `subjects/CULT.json`; batch `direction-cult`; the `cult-green` accent preset; the review command `art:chibi-cult-direction-review`                                                                          |     3 |
+| **ART3** (done) | the other eight trained units (Idol Bearer, Familiar, Hexer, Summoner, Stargazer, Caller, Chosen, Thing); the Tentacle; the two Unbound looks; the four ships and the derived submerged one; the frog                                             |    17 |
+| **ART4**        | City 1 to 3; the seven buildings; the seven Monuments and the obelisk; twelve unit portraits and three ship portraits; three technology icons; eighteen ability icons; ten HUD and status icons (the Favour candle at two sizes); fifteen effects |    80 |
+| (none)          | the heather-moor Grass (three tiles) and the lantern-wood Forest set: see [Follow-ups](#follow-ups)                                                                                                                                               |     — |
 
 **Gates the sample must pass before ART3 batches** (the faction layer's
 step 4, with the Cult's own risks):
@@ -666,10 +670,9 @@ Bead `pulp_wars-mch9.14` (ART2), batch `direction-cult`, 29 PixelLab calls
 (15 creations, 14 edits). `npm run art:chibi-cult-direction-review` writes
 the evidence to `art/pixellab/reviews/chibi-batch-direction-cult/`
 (`candidates-x3.png` shows every candidate with its verdict; `gates.json`
-holds the numbers below). The three rasters are accepted and validated but
-**not wired**: `CULT` is not a faction of the game yet, so no art manifest
-under `src/assets` lists them; the next art bead registers them when the
-faction's subjects exist.
+holds the numbers below). The three rasters were accepted and validated before `CULT` was a faction of
+the game; bead `pulp_wars-mch9.15` registered them with the rest of the
+roster ([The batches](#the-batches)).
 
 | Asset                           | Accepted recipe          | Sprite     | Accent       |
 | ------------------------------- | ------------------------ | ---------- | ------------ |
@@ -687,7 +690,9 @@ faction's subjects exist.
 | 4    | pass     | green is 0.7%, 0.5% and 4.1% of the three sprites, every green tone at hue 147 to 150; no red, violet or magenta pixel                                                                                                                                                   |
 | 5    | pass     | all nine named pairs are distinct by the Dwarf lineup's thresholds (palette 18.5, simulated 12.4): the closest are Initiate and Ice Witch (22.8) and Herald and Frost Giant (23.3); the Lich, the Banshee and the Shaman beside the Initiate measure 23 to 33            |
 
-**Gate 3 is open.** Pixen draws a creation about 6 px inside the canvas
+**Gate 3 is waived** (root decision, 2026-10-10: the Herald is accepted at
+97 px, taller than six giants and level with the Brass Titan; no more calls
+are spent on 100 px). Pixen draws a creation about 6 px inside the canvas
 (nine Heralds came out 74 to 92 px tall, whatever height the prompt named),
 and an edit keeps the outer 4 px clear, so 97 px was the most two
 lengthening edits gave. The root or the designer decides: accept 97 px
@@ -754,6 +759,100 @@ and H pixels tall"; give every recolour as hex values with its shadow tone;
 name one part per edit, and do not ask an edit to repaint the inside of a
 mouth (the grin became a hole); an edit instruction is at most 500
 characters.
+
+## The batches
+
+Bead `pulp_wars-mch9.15` (ART3): 23 more PixelLab calls in batch
+`direction-cult` (12 creations, 11 edits) and 4 edits in the new batch
+`naval-cult`, 27 calls for 16 accepted pieces; the submerged Submarine is
+derived. `npm run art:chibi-cult-direction-review` now also writes
+`roster-{x4,1x}.png`, `roster-zoom-0.75.png`, `roster-lineup-{1x,x3}.png`,
+`roster-lineup.json`, `ships-x3.png`, `frog-x4.png`, `roster.json` and
+`candidates-naval-x3.png`.
+
+![The whole Cult roster on Grass, Forest, Mountain, Snow and Shallow Water at zoom 0.75](../../../art/pixellab/reviews/chibi-batch-direction-cult/roster-zoom-0.75.png)
+
+| Asset                                  | Accepted recipe      | Sprite     | Class, accent            | How it was made                                                          |
+| -------------------------------------- | -------------------- | ---------- | ------------------------ | ------------------------------------------------------------------------ |
+| `chibi-direction-cult-idol-bearer`     | `idol-bearer-s-one`  | 43 x 71 px | `unit`, `cult-lodge`     | a sibling edit of the Initiate, then one edit (two small idols into one) |
+| `chibi-direction-cult-familiar`        | `familiar-a-brass`   | 58 x 65 px | `creature`, `cult-lodge` | a creation, then one edit (a leather collar to brass, the tongue gone)   |
+| `chibi-direction-cult-hexer`           | `hexer-s`            | 50 x 73 px | `unit`, `cult-lodge`     | a sibling edit of the Initiate                                           |
+| `chibi-direction-cult-summoner`        | `summoner-s`         | 36 x 75 px | `unit`, `cult-lodge`     | a sibling edit of the Initiate                                           |
+| `chibi-direction-cult-stargazer`       | `stargazer-a-hood`   | 68 x 54 px | `unit`, `cult-lodge`     | a creation, then one edit (a bearded face into a hood with two eyes)     |
+| `chibi-direction-cult-caller`          | `caller-a`           | 62 x 79 px | `unit`, `cult-lodge`     | the first creation                                                       |
+| `chibi-direction-cult-chosen`          | `chosen-s`           | 56 x 73 px | `unit`, `cult-lodge`     | a sibling edit of the Initiate                                           |
+| `chibi-direction-cult-thing`           | `thing-c-heap`       | 80 x 84 px | `creature`, `cult-green` | the third creation, then one edit (a small face into a tentacle coil)    |
+| `chibi-direction-cult-tentacle`        | `tentacle-b`         | 53 x 74 px | `creature`, `cult-green` | the second creation                                                      |
+| `chibi-direction-cult-horror-unbound`  | `horror-unbound-a`   | 68 x 68 px | `unit`, `cult-green`     | one edit of the accepted Horror                                          |
+| `chibi-direction-cult-herald-unbound`  | `herald-unbound-a`   | 53 x 97 px | `machine`, `cult-lodge`  | one edit of the accepted Herald                                          |
+| `chibi-direction-cult-frog`            | `frog-a`             | 33 x 34 px | `creature`, `cult-green` | the first creation                                                       |
+| `chibi-naval-cult-patrol-boat`         | `cult-patrol-boat-a` | 59 x 68 px | `ship`, `cult-lodge`     | one edit of the shared cog                                               |
+| `chibi-naval-cult-battleship`          | `cult-battleship-a`  | 71 x 79 px | `ship`, `cult-lodge`     | one edit of the shared carrack                                           |
+| `chibi-naval-cult-transport`           | `cult-transport-a`   | 60 x 49 px | `ship`, `cult-lodge`     | one edit of the shared barge                                             |
+| `chibi-naval-cult-submarine`           | `cult-submarine-a`   | 61 x 52 px | `ship`, `cult-lodge`     | one sibling edit of the accepted gondola                                 |
+| `chibi-naval-cult-submarine-submerged` | derived              | 61 x 46 px | none                     | `scripts/art/naval-branch/submerged.ts`                                  |
+
+### What the batches changed
+
+- **A robed unit is a sibling edit of the Initiate.** "Redraw it as another
+  member of the same society in the same blue robe: …" on the accepted
+  Initiate kept its cloth, its two cream eyes, its mittens, its slippers and
+  its size, and changed the hood and the props as asked: the Hexer, the
+  Summoner and the Chosen were accepted at the first call. The fresh
+  creations of the same units drew a face with skin in the hood (`hexer-a`)
+  or hugged the idol at the chest (`idol-bearer-a`).
+- **The cloth is asked for as "bright royal blue".** "Midnight indigo" drew
+  slate grey, which the accent step cannot find; any saturated blue becomes
+  the lodge's indigo under `cult-lodge`. The subject lines of the batches say
+  royal blue for that reason, and no recolour edit was needed.
+- **A `creature` recipe class** (root decision 4): the unit sizes and
+  options, the light stated, and **no faction layer**. The Thing, the
+  Tentacle, the Familiar and the frog were made with it: none grew a robe, a
+  hood or a green flame. Their colours are in their subject lines, and the
+  batch's accent presets still apply.
+- **Fresh creations are seated on their class's foot line** (`bottomMargin`
+  6 for the three large units, 8 for the Thing, 4 for the Tentacle): Pixen
+  drew the Stargazer 19 px above the canvas bottom.
+- **The ships are edits of the shared fleet**, one call each, so canvas,
+  anchor and waterline are the shared ships' (lowest rows 77, 84, 58 against
+  79, 84, 58); the Submarine is seated and anchored like the other seven.
+- **Subjects.** The summoned units take the engine's summoned role IDs
+  (`UNIT:CULT:HORROR`, `UNIT:CULT:HERALD`, `UNIT:CULT:TENTACLE`), the
+  Unbound looks `UNIT:CULT:HORROR_UNBOUND` and `UNIT:CULT:HERALD_UNBOUND`,
+  the frog `FROG`; `cultSummonedArtSubjectV7` names them for the beads that
+  spawn them. They have no fallback: no Human sprite stands in for them.
+
+### Differences from the direction, accepted
+
+- The **Hexer** holds a rolled scroll, not an open book.
+- The **Idol Bearer** is no wider than the other robed units; its tell is
+  the second head.
+- The **Familiar** sits upright and is not in mid-hop.
+- The **Summoner**'s stole is a collar and carries no sign.
+- The **Stargazer** is the smallest large unit (68 x 54 px) and has two small
+  green flames on its telescope.
+- The **Thing**'s party hat is orange and blue, and six pixels of its stripe
+  shadow (`#c25e4a`) sit at the edge of the red band; no eye is red.
+- The **Tentacle** ends in a small curled tail on the ground.
+- The **Unbound Horror**'s cracked collar does not read at board size; its
+  red eyes carry the cue. Its grin shows more teeth.
+- The **transport**'s tarp has cream cords, not a cream border; the
+  **Battleship** flies a green pennant; the **Submarine**'s periscope has no
+  painted eye.
+
+### What the measure says
+
+`roster-lineup.json` holds the Dwarf lineup's measure for every look-alike
+the direction names and for every two pieces of the faction. Of the 17
+look-alike pairs one is not called distinct (the Thing against the
+Abomination, by palette distance; by eye a teal heap against a grey
+figure). Inside the faction most pairs are "colour too close": the lodge
+shares one palette by design, and the thresholds were calibrated between
+factions, so the pieces are told apart by outline, as the
+[roster](#how-each-is-told-apart-at-board-size) asks. The four pairs that
+are also close in greyscale are the Initiate against the Hexer and the
+Chosen, the Idol Bearer against the Chosen, and the Caller against the
+Horror.
 
 ## Decisions
 

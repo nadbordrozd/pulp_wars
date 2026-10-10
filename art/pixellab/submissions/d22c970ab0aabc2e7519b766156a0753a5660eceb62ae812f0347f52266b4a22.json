@@ -1,0 +1,36 @@
+{
+  "id": "idol-bearer-s-one",
+  "jobId": "d9134534-144f-4900-8c1b-f26a14a2922e",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-cult",
+    "asset": "chibi-direction-cult-idol-bearer",
+    "subject": "UNIT:CULT:GUARD",
+    "faction": "CULT",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 91503,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only the idol: the two small stacked stone heads become one single big squat grinning pale grey stone idol head, as wide as the blue hood under it, resting on the two raised mittens, with two small bright green eyes, colour #00ff78. Keep the blue hood and robe, the two cream eyes, the raised arms, the belt, the slippers, the thick black outline and the art style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only the idol: the two small stacked stone heads become one single big squat grinning pale grey stone idol head, as wide as the blue hood under it, resting on the two raised mittens, with two small bright green eyes, colour #00ff78. Keep the blue hood and robe, the two cream eyes, the raised arms, the belt, the slippers, the thick black outline and the art style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only the idol: the two small stacked stone heads become one single big squat grinning pale grey stone idol head, as wide as the blue hood under it, resting on the two raised mittens, with two small bright green eyes, colour #00ff78. Keep the blue hood and robe, the two cream eyes, the raised arms, the belt, the slippers, the thick black outline and the art style the same, on a transparent background.",
+    "editInstruction": "Change only the idol: the two small stacked stone heads become one single big squat grinning pale grey stone idol head, as wide as the blue hood under it, resting on the two raised mittens, with two small bright green eyes, colour #00ff78. Keep the blue hood and robe, the two cream eyes, the raised arms, the belt, the slippers, the thick black outline and the art style the same, on a transparent background.",
+    "source": {
+      "recipe": "idol-bearer-s",
+      "candidate": 0,
+      "sha256": "54699de76db28484c7dc85593a8b707b2eb360bfe585ae180667c4e273581a71"
+    }
+  }
+}

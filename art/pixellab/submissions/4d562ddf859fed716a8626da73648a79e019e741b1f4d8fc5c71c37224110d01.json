@@ -1,0 +1,37 @@
+{
+  "id": "hexer-s",
+  "jobId": "baafde8c-3924-4162-a3d5-dea54993a01b",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-cult",
+    "asset": "chibi-direction-cult-hexer",
+    "subject": "UNIT:CULT:MARKSMAN",
+    "faction": "CULT",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 91512,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Redraw it as another member of the same society in the same blue robe: the tip of the hood curls up and over like a question mark; big round brass spectacles sit on the hood over the two cream eyes; one hand holds an open pale cream book upside down; the other arm is thrown forward with one small bright green squiggle of light leaving the mitten. No candle and no scroll. Keep the size, the slippers, the thick black outline and the art style, on a transparent background."
+      }
+    ],
+    "prompt": "Redraw it as another member of the same society in the same blue robe: the tip of the hood curls up and over like a question mark; big round brass spectacles sit on the hood over the two cream eyes; one hand holds an open pale cream book upside down; the other arm is thrown forward with one small bright green squiggle of light leaving the mitten. No candle and no scroll. Keep the size, the slippers, the thick black outline and the art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Redraw it as another member of the same society in the same blue robe: the tip of the hood curls up and over like a question mark; big round brass spectacles sit on the hood over the two cream eyes; one hand holds an open pale cream book upside down; the other arm is thrown forward with one small bright green squiggle of light leaving the mitten. No candle and no scroll. Keep the size, the slippers, the thick black outline and the art style, on a transparent background.",
+    "editInstruction": "Redraw it as another member of the same society in the same blue robe: the tip of the hood curls up and over like a question mark; big round brass spectacles sit on the hood over the two cream eyes; one hand holds an open pale cream book upside down; the other arm is thrown forward with one small bright green squiggle of light leaving the mitten. No candle and no scroll. Keep the size, the slippers, the thick black outline and the art style, on a transparent background.",
+    "source": {
+      "recipe": "initiate-a-indigo-flop",
+      "candidate": 0,
+      "sibling": true,
+      "sha256": "cefa62c0111e70a862feff039a021a09ec50212d3cb52a2d99f0df0035926c68"
+    }
+  }
+}

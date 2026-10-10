@@ -1,8 +1,10 @@
 /**
- * Review evidence of the Cultists' first art sample (bead pulp_wars-mch9.14,
- * batch `direction-cult`, docs/art/factions/CULT.md): the Initiate, the
- * Horror and the Herald, measured against the five gates the direction sets
- * before the roster is batched.
+ * Review evidence of the Cultists' unit art (batches `direction-cult` and
+ * `naval-cult`, docs/art/factions/CULT.md): the first sample (bead
+ * pulp_wars-mch9.14: the Initiate, the Horror and the Herald, measured
+ * against the five gates the direction sets before the roster is batched)
+ * and the whole roster (bead pulp_wars-mch9.15: the nine trained units, the
+ * summoned and their Unbound looks, the ships and the frog).
  *
  *   npm run art:chibi-cult-direction-review
  *   npm run art:chibi-cult-direction-review -- --copy-to DIR
@@ -29,6 +31,17 @@
  * - `palette.{png,json}`: the measured palette beside the direction's
  *   targets;
  * - `gates.json`: the five gates, measured, with a verdict each;
+ * - `roster-{x4,1x}.png`, `roster-zoom-0.75.png`: every Cult unit sprite on
+ *   Grass, Forest, Mountain, Snow and Shallow Water;
+ * - `roster-lineup-{1x,x3}.png`, `roster-lineup.json`: the lodge, the
+ *   summoned and the bound and Unbound pairs side by side, then each piece
+ *   beside the look-alikes the direction names, at native and half size, in
+ *   colour and greyscale, with the lineup's measures;
+ * - `ships-x3.png`: the four Cult ships and the submerged Submarine on both
+ *   waters, above the Undead (the near neighbour), Human and Dwarf fleets;
+ * - `frog-x4.png`: the frog on every ground, beside the Grave and the Crumbs;
+ * - `roster.json`: sizes, foot lines and colour shares of every piece;
+ * - `candidates-naval-x3.png`: every recorded candidate of `naval-cult`;
  * - `index.json`.
  */
 import { copyFile, mkdir, writeFile } from "node:fs/promises";
@@ -301,6 +314,21 @@ async function sampleSheet(
   zoom: number,
   name: string,
 ): Promise<void> {
+  await groundsSheet(
+    SAMPLE.map((unit) => [unit.title, sprites[unit.key]] as const),
+    scale,
+    zoom,
+    name,
+  );
+}
+
+/** Each piece on Grass, Forest, Mountain, Snow and Shallow Water. */
+async function groundsSheet(
+  units: readonly (readonly [title: string, sprite: RgbaRaster])[],
+  scale: number,
+  zoom: number,
+  name: string,
+): Promise<void> {
   const grass = await terrain("chibi-grass-1");
   const grounds: readonly (readonly [string, RgbaRaster])[] = [
     ["Grass", grass],
@@ -315,7 +343,7 @@ async function sampleSheet(
   const cellH = Math.round(CELL_H * zoom) * scale + GAP;
   const canvas = blank(
     labelW + grounds.length * cellW + GAP,
-    header + SAMPLE.length * cellH + GAP,
+    header + units.length * cellH + GAP,
     PAPER,
   );
   const labels: Label[] = grounds.map(([text], column) => ({
@@ -324,11 +352,11 @@ async function sampleSheet(
     top: 4,
     size: 12,
   }));
-  for (const [row, unit] of SAMPLE.entries()) {
+  for (const [row, [title, sprite]] of units.entries()) {
     const top = header + row * cellH;
-    labels.push({ text: unit.title, left: 6, top: top + 6, size: 13 });
+    labels.push({ text: title, left: 6, top: top + 6, size: 13 });
     for (const [column, [, ground]] of grounds.entries()) {
-      const cell = boardCell(ground, sprites[unit.key], 1);
+      const cell = boardCell(ground, sprite, 1);
       blit(
         canvas,
         await resample(cell, zoom),
@@ -488,10 +516,14 @@ async function giantsSheet(
   return heights;
 }
 
-async function candidatesSheet(records: BatchRecords): Promise<void> {
+async function candidatesSheet(
+  records: BatchRecords,
+  batch: string = BATCH,
+  name = "candidates-x3.png",
+): Promise<void> {
   const scale = 3;
   const grass = await terrain("chibi-grass-1");
-  const manifest = await loadBatchManifest(ROOT, BATCH);
+  const manifest = await loadBatchManifest(ROOT, batch);
   const cells: { label: string; verdict: string; raster: RgbaRaster }[] = [];
   for (const recipe of manifest.recipes) {
     const record = records.recipes[recipe.id];
@@ -543,7 +575,7 @@ async function candidatesSheet(records: BatchRecords): Promise<void> {
       },
     );
   }
-  await sheet("candidates-x3.png", canvas, labels);
+  await sheet(name, canvas, labels);
 }
 
 // ------------------------------------------------------------ measurements
@@ -797,7 +829,7 @@ const BY_EYE: Readonly<
   },
   3: {
     pass: true,
-    note: "On giants-x2.png the Herald stands level with the Brass Titan and under the Gingerbread Giant only; the yellow eye is the brightest shape of the sprite at zoom 0.75.",
+    note: "On giants-x2.png the Herald stands level with the Brass Titan and under the Gingerbread Giant only; the yellow eye is the brightest shape of the sprite at zoom 0.75. The measured verdict stays FAIL (97 px, 3 under the 100 asked for); the root waived the gate on 2026-10-10 and accepted the Herald at 97 px (bead pulp_wars-mch9.15).",
   },
   4: {
     pass: true,
@@ -808,6 +840,384 @@ const BY_EYE: Readonly<
     note: "On lineup-1x.png, at half size and in greyscale: the Initiate is a hood with two white eyes and no staff (Necromancer: beard and skull staff; Ice Witch: pale face and crown); the Horror is a ball with a pale belly band (Spider: flat with eight legs; Bunny: ears); the Herald is a bell with one eye (Lich: raised arms and ribs).",
   },
 };
+
+// ------------------------------------------------------------ the roster
+
+/** The bead that batched the roster and extended this review. */
+const ROSTER_BEAD = "pulp_wars-mch9.15";
+const NAVAL_BATCH = "naval-cult";
+
+type Family = "lodge" | "summoned" | "unbound";
+/** Every Cult unit sprite: the nine trained, the summoned, the Unbound. */
+const ROSTER: readonly (readonly [
+  title: string,
+  asset: string,
+  family: Family,
+])[] = [
+  ["Initiate", "chibi-direction-cult-initiate", "lodge"],
+  ["Idol Bearer", "chibi-direction-cult-idol-bearer", "lodge"],
+  ["Familiar", "chibi-direction-cult-familiar", "lodge"],
+  ["Hexer", "chibi-direction-cult-hexer", "lodge"],
+  ["Summoner", "chibi-direction-cult-summoner", "lodge"],
+  ["Stargazer", "chibi-direction-cult-stargazer", "lodge"],
+  ["Caller", "chibi-direction-cult-caller", "lodge"],
+  ["Chosen", "chibi-direction-cult-chosen", "lodge"],
+  ["Thing in the Cellar", "chibi-direction-cult-thing", "summoned"],
+  ["Horror", "chibi-direction-cult-horror", "summoned"],
+  ["Herald", "chibi-direction-cult-herald", "summoned"],
+  ["Tentacle", "chibi-direction-cult-tentacle", "summoned"],
+  ["Horror, Unbound", "chibi-direction-cult-horror-unbound", "unbound"],
+  ["Herald, Unbound", "chibi-direction-cult-herald-unbound", "unbound"],
+];
+
+/**
+ * The look-alikes of CULT.md ("Against the robed units of other factions"
+ * and "How each is told apart at board size"): each Cult piece beside the
+ * rivals it must be told from.
+ */
+const LOOK_ALIKES: readonly (readonly [
+  unit: string,
+  rivals: readonly Named[],
+])[] = [
+  ["Summoner", [["Necromancer", "chibi-direction-undead-necromancer"]]],
+  ["Stargazer", [["Lich", "chibi-direction-undead-lich"]]],
+  ["Hexer", [["Ice Witch", "chibi-direction-ice-folk-ice-witch"]]],
+  [
+    "Initiate",
+    [
+      ["Banshee", "chibi-direction-undead-banshee"],
+      ["Shaman", "chibi-direction-dinosaur-shaman"],
+    ],
+  ],
+  [
+    "Herald",
+    [
+      ["Colossus", "chibi-direction-martian-colossus"],
+      ["Tripod", "chibi-direction-martian-tripod"],
+    ],
+  ],
+  [
+    "Horror, Unbound",
+    [
+      ["Giant Spider", "chibi-curiosity-giant-spider"],
+      ["Bigfoot", "chibi-curiosity-bigfoot"],
+    ],
+  ],
+  [
+    "Herald, Unbound",
+    [
+      ["Giant Spider", "chibi-curiosity-giant-spider"],
+      ["Bigfoot", "chibi-curiosity-bigfoot"],
+    ],
+  ],
+  [
+    "Tentacle",
+    [
+      ["Giant Spider", "chibi-curiosity-giant-spider"],
+      ["Bigfoot", "chibi-curiosity-bigfoot"],
+    ],
+  ],
+  [
+    "Thing in the Cellar",
+    [
+      ["Abomination", "chibi-direction-undead-abomination"],
+      ["Gingerbread Giant", "chibi-direction-candy-rock-candy-golem"],
+    ],
+  ],
+  [
+    "Familiar",
+    [
+      ["Sabretooth", "chibi-direction-ice-folk-sabretooth"],
+      ["Raptor", "chibi-direction-dinosaur-raptor"],
+    ],
+  ],
+];
+
+/** The ships of the batch `naval-cult`, with the shared ship each replaces. */
+const SHIPS: readonly (readonly [
+  title: string,
+  piece: string,
+  shared: string,
+])[] = [
+  ["Patrol Boat", "patrol-boat", "chibi-patrol-boat"],
+  ["Battleship", "battleship", "chibi-battleship"],
+  ["Embarked transport", "transport", "chibi-embarked-transport"],
+  ["Submarine", "submarine", "chibi-submarine"],
+  ["Submarine, submerged", "submarine-submerged", "chibi-submarine"],
+];
+/** The fleets the Cult's is shown beside: its near neighbour first. */
+const FLEETS: readonly (readonly [title: string, slug: string])[] = [
+  ["Cult", "cult"],
+  ["Undead", "undead"],
+  ["Human", "human"],
+  ["Dwarf", "dwarf"],
+];
+
+const resourceMaster = (id: string): Promise<RgbaRaster> =>
+  readRaster(path.join(ROOT, "public/assets/chibi/resources", `${id}.png`));
+
+/** Lowest opaque row of a sprite: where it stands, or its waterline. */
+const footRow = (raster: RgbaRaster): number => opaqueBounds(raster).bottom;
+
+async function shipsSheet(): Promise<Record<string, unknown>> {
+  const scale = 3;
+  const waters: readonly (readonly [string, RgbaRaster])[] = [
+    ["Shallow Water", await terrain("chibi-shallow-water-1")],
+    ["Deep Water", await terrain("chibi-deep-water-1")],
+  ];
+  const cellW = 100;
+  const cellH = 104;
+  const labelW = 150;
+  const header = 24;
+  const blockH = waters.length * (cellH + GAP) + 18;
+  const canvas = blank(
+    (labelW + SHIPS.length * (cellW + GAP) + GAP) * scale,
+    (header + FLEETS.length * blockH) * scale,
+    PAPER,
+  );
+  const labels: Label[] = SHIPS.map(([title], column) => ({
+    text: title,
+    left: (labelW + column * (cellW + GAP)) * scale,
+    top: 6,
+    size: 16,
+  }));
+  const measured: Record<string, unknown> = {};
+  for (const [fleetIndex, [fleet, slug]] of FLEETS.entries()) {
+    const top = header + fleetIndex * blockH;
+    labels.push({ text: fleet, left: 6, top: top * scale + 6, size: 18 });
+    for (const [column, [title, piece, shared]] of SHIPS.entries()) {
+      const sprite = await unitMaster(`chibi-naval-${slug}-${piece}`);
+      for (const [row, [water, tile]] of waters.entries()) {
+        if (column === 0)
+          labels.push({
+            text: water,
+            left: 6,
+            top: (top + row * (cellH + GAP)) * scale + 30,
+            size: 13,
+            fill: "#aab3c0",
+          });
+        const left = (labelW + column * (cellW + GAP)) * scale;
+        const cellTop = (top + row * (cellH + GAP)) * scale;
+        blit(canvas, tiled(tile, cellW, cellH), left, cellTop, scale);
+        blit(
+          canvas,
+          sprite,
+          left + ((cellW - sprite.width) / 2) * scale,
+          cellTop + (cellH - sprite.height) * scale,
+          scale,
+        );
+      }
+      if (slug !== "cult") continue;
+      const sharedSprite = await unitMaster(shared);
+      const undead = await unitMaster(`chibi-naval-undead-${piece}`);
+      const bounds = opaqueBounds(sprite);
+      measured[title] = {
+        asset: `chibi-naval-cult-${piece}`,
+        size: `${bounds.width} x ${bounds.height}`,
+        waterline: footRow(sprite),
+        sharedWaterline: footRow(sharedSprite),
+        indigoShare: percent(share(sprite, isCloth)),
+        greenShare: percent(share(sprite, isGreen)),
+        redPixels: pixelsWhere([sprite], isRed).count,
+        violetOrMagentaPixels: pixelsWhere([sprite], isViolet).count,
+        fromUndead: measurePair(
+          sprite,
+          undead,
+          (await calibratedThresholds()).thresholds,
+        ),
+      };
+    }
+  }
+  await sheet("ships-x3.png", canvas, labels);
+  return measured;
+}
+
+async function frogSheet(frog: RgbaRaster): Promise<Record<string, unknown>> {
+  const scale = 4;
+  const grass = await terrain("chibi-grass-1");
+  const grounds: readonly (readonly [string, RgbaRaster])[] = [
+    ["Grass", grass],
+    ["Forest", await terrain("chibi-forest-1")],
+    ["Mountain", await terrain("chibi-mountain-ground-1")],
+    ["Snow", snowOf(grass)],
+    ["Shallow Water", await terrain("chibi-shallow-water-1")],
+    ["Deep Water", await terrain("chibi-deep-water-1")],
+  ];
+  const others: readonly (readonly [string, RgbaRaster])[] = [
+    ["Grave", await resourceMaster("chibi-grave")],
+    ["Crumbs", await resourceMaster("chibi-direction-candy-crumbs")],
+  ];
+  const columns = grounds.length + others.length;
+  const header = 24;
+  const canvas = blank(
+    columns * (TILE * scale + GAP) + GAP,
+    header + TILE * scale + GAP + TILE + GAP + 20,
+    PAPER,
+  );
+  const labels: Label[] = [];
+  const cells: (readonly [string, RgbaRaster, RgbaRaster])[] = [
+    ...grounds.map(([name, tile]) => [name, tile, frog] as const),
+    ...others.map(([name, marker]) => [name, grass, marker] as const),
+  ];
+  for (const [column, [name, tile, marker]] of cells.entries()) {
+    const left = GAP + column * (TILE * scale + GAP);
+    labels.push({ text: name, left, top: 4, size: 14 });
+    // A RESOURCE marker is centred on its cell.
+    const crop = tiled(tile, TILE, TILE);
+    blit(canvas, crop, left, header, scale);
+    blit(
+      canvas,
+      marker,
+      left + ((TILE - marker.width) / 2) * scale,
+      header + ((TILE - marker.height) / 2) * scale,
+      scale,
+    );
+    const small = header + TILE * scale + GAP;
+    blit(canvas, crop, left, small);
+    blit(
+      canvas,
+      marker,
+      left + (TILE - marker.width) / 2,
+      small + (TILE - marker.height) / 2,
+    );
+  }
+  await sheet("frog-x4.png", canvas, labels);
+  const bounds = opaqueBounds(frog);
+  const teal = pixelsWhere([frog], BANDS[5]?.test ?? isInk);
+  return {
+    asset: "chibi-direction-cult-frog",
+    size: `${bounds.width} x ${bounds.height}`,
+    tealShare: percent(teal.count / Math.max(1, teal.opaque)),
+    tealMean: teal.count === 0 ? null : hexOf(teal.mean),
+    greenShare: percent(share(frog, isGreen)),
+    fromGrass: round1(
+      deltaE(teal.mean, meanColour(await terrain("chibi-grass-1"))),
+    ),
+    redPixels: pixelsWhere([frog], isRed).count,
+  };
+}
+
+/**
+ * The evidence of the batches (bead pulp_wars-mch9.15): the whole roster on
+ * every ground, each piece beside the look-alikes the direction names and
+ * beside its own faction, the ships beside the Undead fleet, and the frog.
+ */
+async function rosterEvidence(): Promise<void> {
+  const sprites = new Map<string, RgbaRaster>();
+  for (const [title, asset] of ROSTER)
+    sprites.set(title, await unitMaster(asset));
+  const of = (title: string): RgbaRaster => {
+    const sprite = sprites.get(title);
+    if (sprite === undefined) throw new Error(`${title}: not in the roster`);
+    return sprite;
+  };
+  const units = ROSTER.map(([title]) => [title, of(title)] as const);
+  await groundsSheet(units, 4, 1, "roster-x4.png");
+  await groundsSheet(units, 1, 1, "roster-1x.png");
+  await groundsSheet(units, 2, 0.75, "roster-zoom-0.75.png");
+
+  const { thresholds } = await calibratedThresholds();
+  const rows: LineupRow[] = [];
+  const pairs: {
+    unit: string;
+    rival: string;
+    kind: "look-alike" | "own faction";
+    measure: PairMeasure;
+  }[] = [];
+  for (const family of ["lodge", "summoned", "unbound"] as const) {
+    const members = ROSTER.filter(([, , kind]) => kind === family);
+    const shown =
+      family === "unbound"
+        ? ["Horror", "Horror, Unbound", "Herald", "Herald, Unbound"]
+        : members.map(([title]) => title);
+    rows.push({
+      title:
+        family === "lodge"
+          ? "The lodge"
+          : family === "summoned"
+            ? "The summoned"
+            : "Bound and Unbound",
+      rivals: "",
+      sprites: shown.map(of),
+    });
+  }
+  // Inside the faction, every pair of two different pieces.
+  const own = ROSTER.filter(([, , kind]) => kind !== "unbound");
+  for (const [index, [a]] of own.entries())
+    for (const [b] of own.slice(index + 1))
+      pairs.push({
+        unit: a,
+        rival: b,
+        kind: "own faction",
+        measure: measurePair(of(a), of(b), thresholds),
+      });
+  for (const [unit, rivals] of LOOK_ALIKES) {
+    const loaded = await Promise.all(rivals.map(([, id]) => unitMaster(id)));
+    rows.push({
+      title: unit,
+      rivals: rivals.map(([name]) => name).join(", "),
+      sprites: [of(unit), ...loaded],
+    });
+    for (const [index, [name]] of rivals.entries()) {
+      const rival = loaded[index];
+      if (rival !== undefined)
+        pairs.push({
+          unit,
+          rival: name,
+          kind: "look-alike",
+          measure: measurePair(of(unit), rival, thresholds),
+        });
+    }
+  }
+  await lineupSheet("roster-lineup-1x.png", rows, 1);
+  await lineupSheet("roster-lineup-x3.png", rows, 3);
+  const notDistinct = pairs
+    .filter((pair) => !pair.measure.distinct)
+    .map(
+      (pair) =>
+        `${pair.unit} / ${pair.rival}: ${pair.measure.reasons.join(", ")}`,
+    );
+  await json("roster-lineup.json", {
+    bead: ROSTER_BEAD,
+    note: 'The Dwarf lineup\'s measures and calibrated thresholds on the accepted masters. `look-alike` pairs are the ones CULT.md names; `own faction` pairs are every two different pieces of the roster (an Unbound look is its bound sprite with red eyes and is not paired). The thresholds were calibrated between factions: two cultists share one palette by design, so most `own faction` pairs are "colour too close" and are told apart by outline (CULT.md, "How each is told apart at board size"). A pair the measure does not call distinct is listed in `notDistinct` and judged by eye on roster-lineup-1x.png.',
+    thresholds,
+    notDistinct,
+    pairs,
+  });
+
+  const ships = await shipsSheet();
+  const frog = await frogSheet(
+    await resourceMaster("chibi-direction-cult-frog"),
+  );
+  await json("roster.json", {
+    bead: ROSTER_BEAD,
+    note: "Measured on the accepted masters. Green is the accent band (hue 80 to 152); red (hue 345 to 12) is allowed on an Unbound look only; no piece may carry violet or magenta. `foot` is the lowest opaque row of the canvas.",
+    units: ROSTER.map(([title, asset, family]) => {
+      const sprite = of(title);
+      const bounds = opaqueBounds(sprite);
+      return {
+        title,
+        asset,
+        family,
+        canvas: `${sprite.width} x ${sprite.height}`,
+        size: `${bounds.width} x ${bounds.height}`,
+        foot: bounds.bottom,
+        greenShare: percent(share(sprite, isGreen)),
+        indigoShare: percent(share(sprite, isCloth)),
+        tealShare: percent(share(sprite, BANDS[5]?.test ?? isInk)),
+        redPixels: pixelsWhere([sprite], isRed).count,
+        violetOrMagentaPixels: pixelsWhere([sprite], isViolet).count,
+      };
+    }),
+    ships,
+    frog,
+  });
+  await candidatesSheet(
+    await loadRecords(productionLayout(ROOT, NAVAL_BATCH), NAVAL_BATCH),
+    NAVAL_BATCH,
+    "candidates-naval-x3.png",
+  );
+}
 
 // ------------------------------------------------------------ main
 
@@ -918,6 +1328,8 @@ async function main(): Promise<void> {
     calibrationPairs,
     pairs: lineup,
   });
+
+  if (!study) await rosterEvidence();
 
   const giantHeights = await giantsSheet(sprites.herald);
   await paletteFiles(sprites);

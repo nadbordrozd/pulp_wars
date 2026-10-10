@@ -7,6 +7,7 @@ import {
 } from "./chibi-art-v7";
 import { chibiArtUrl } from "./chibi-art-manifest";
 import { CHIBI_DIRECTION_CANDY_NAVAL_ART_ASSETS_V7 } from "./chibi-direction-candy-art-manifest";
+import { CHIBI_DIRECTION_CULT_NAVAL_ART_ASSETS_V7 } from "./chibi-direction-cult-art-manifest";
 import { CHIBI_DIRECTION_DWARF_NAVAL_ART_ASSETS_V7 } from "./chibi-direction-dwarf-art-manifest";
 import { CHIBI_NAVAL_SUBMARINE_ART_ASSETS_V7 } from "./chibi-naval-submarine-art-manifest";
 
@@ -62,7 +63,8 @@ export function navalFactionArtSubjectV7(
  * Seven factions x (three map sprites + two portraits) = 35 rasters: the six
  * sets of bead pulp_wars-w5j.2, then the Dwarf set of bead pulp_wars-78i.5
  * (batch `naval-dwarf`, kept in the Dwarf manifest), appended by the Dwarf UI
- * bead pulp_wars-78i.6. The Candy set (bead pulp_wars-jdb.5) follows, and
+ * bead pulp_wars-78i.6. The Candy set (bead pulp_wars-jdb.5) follows, then
+ * the Cult's three map sprites (bead pulp_wars-mch9.15), and
  * last the Submarine and its portrait of each of the seven seafaring
  * factions (bead pulp_wars-5ti.6, chibi-naval-submarine-art-manifest.ts).
  */
@@ -544,6 +546,9 @@ export const CHIBI_NAVAL_FACTION_ART_ASSETS_V7: readonly ChibiNavalFactionArtV7[
     ...CHIBI_DIRECTION_DWARF_NAVAL_ART_ASSETS_V7,
     // --- Candy (pulp_wars-jdb.5 art, wired in by pulp_wars-jdb.3) ---
     ...CHIBI_DIRECTION_CANDY_NAVAL_ART_ASSETS_V7,
+    // --- Cult (pulp_wars-mch9.15): the three map sprites; the two warship
+    // portraits are bead pulp_wars-mch9.16's ---
+    ...CHIBI_DIRECTION_CULT_NAVAL_ART_ASSETS_V7,
     // --- The Submarines of every seafaring faction (pulp_wars-5ti.6) ---
     ...CHIBI_NAVAL_SUBMARINE_ART_ASSETS_V7,
   ];

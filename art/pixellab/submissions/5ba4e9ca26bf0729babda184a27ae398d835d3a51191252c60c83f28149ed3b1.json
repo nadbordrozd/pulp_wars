@@ -1,0 +1,36 @@
+{
+  "id": "stargazer-a-hood",
+  "jobId": "1bb9a160-7964-4fdb-a462-2a446fb10ed8",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-cult",
+    "asset": "chibi-direction-cult-stargazer",
+    "subject": "UNIT:CULT:CATAPULT",
+    "faction": "CULT",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 91542,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only the head of the small figure: the pink skin face, the white hair and the white beard become the black inside of a blue hood with two big round cream-white eyes, so no skin and no hair show; the blue nightcap with its cream stars and pompom stays on top. Keep the brass telescope, the tripod, the blue robe, the star chart, the mittens, the shape, the thick black outline and the art style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only the head of the small figure: the pink skin face, the white hair and the white beard become the black inside of a blue hood with two big round cream-white eyes, so no skin and no hair show; the blue nightcap with its cream stars and pompom stays on top. Keep the brass telescope, the tripod, the blue robe, the star chart, the mittens, the shape, the thick black outline and the art style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only the head of the small figure: the pink skin face, the white hair and the white beard become the black inside of a blue hood with two big round cream-white eyes, so no skin and no hair show; the blue nightcap with its cream stars and pompom stays on top. Keep the brass telescope, the tripod, the blue robe, the star chart, the mittens, the shape, the thick black outline and the art style the same, on a transparent background.",
+    "editInstruction": "Change only the head of the small figure: the pink skin face, the white hair and the white beard become the black inside of a blue hood with two big round cream-white eyes, so no skin and no hair show; the blue nightcap with its cream stars and pompom stays on top. Keep the brass telescope, the tripod, the blue robe, the star chart, the mittens, the shape, the thick black outline and the art style the same, on a transparent background.",
+    "source": {
+      "recipe": "stargazer-a",
+      "candidate": 0,
+      "sha256": "f7aa8423052c3a6f8f73369ab164b5626d27d03da110902de40f4ad0ad718241"
+    }
+  }
+}

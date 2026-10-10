@@ -1,0 +1,36 @@
+{
+  "id": "thing-c-heap",
+  "jobId": "3563d61a-e992-443d-8ba5-e638f48898d4",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-cult",
+    "asset": "chibi-direction-cult-thing",
+    "subject": "UNIT:CULT:JUGGERNAUT",
+    "faction": "CULT",
+    "recipeClass": "creature",
+    "requestSize": {
+      "width": 88,
+      "height": 104
+    },
+    "seed": 91585,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only the small creature at the bottom right of the heap: its head with the two big white eyes and its mouth become one more fat teal tentacle coil with one small round pale yellow eye, colour #ffe27a, like the other tentacles of the heap, so the heap has no face. Keep the pile of teal tentacles, every yellow eye, the broken round wooden trapdoor in the middle, the striped party hat, the shape, the thick black outline and the art style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only the small creature at the bottom right of the heap: its head with the two big white eyes and its mouth become one more fat teal tentacle coil with one small round pale yellow eye, colour #ffe27a, like the other tentacles of the heap, so the heap has no face. Keep the pile of teal tentacles, every yellow eye, the broken round wooden trapdoor in the middle, the striped party hat, the shape, the thick black outline and the art style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only the small creature at the bottom right of the heap: its head with the two big white eyes and its mouth become one more fat teal tentacle coil with one small round pale yellow eye, colour #ffe27a, like the other tentacles of the heap, so the heap has no face. Keep the pile of teal tentacles, every yellow eye, the broken round wooden trapdoor in the middle, the striped party hat, the shape, the thick black outline and the art style the same, on a transparent background.",
+    "editInstruction": "Change only the small creature at the bottom right of the heap: its head with the two big white eyes and its mouth become one more fat teal tentacle coil with one small round pale yellow eye, colour #ffe27a, like the other tentacles of the heap, so the heap has no face. Keep the pile of teal tentacles, every yellow eye, the broken round wooden trapdoor in the middle, the striped party hat, the shape, the thick black outline and the art style the same, on a transparent background.",
+    "source": {
+      "recipe": "thing-c",
+      "candidate": 0,
+      "sha256": "9c10d0f5f7dce29c17c6cbf4342f488dc71032eb198e2aac0e49eb90e8d7da67"
+    }
+  }
+}

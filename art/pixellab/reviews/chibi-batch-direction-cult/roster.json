@@ -1,0 +1,319 @@
+{
+  "bead": "pulp_wars-mch9.15",
+  "note": "Measured on the accepted masters. Green is the accent band (hue 80 to 152); red (hue 345 to 12) is allowed on an Unbound look only; no piece may carry violet or magenta. `foot` is the lowest opaque row of the canvas.",
+  "units": [
+    {
+      "title": "Initiate",
+      "asset": "chibi-direction-cult-initiate",
+      "family": "lodge",
+      "canvas": "56 x 80",
+      "size": "48 x 73",
+      "foot": 76,
+      "greenShare": 0.7,
+      "indigoShare": 56,
+      "tealShare": 0,
+      "redPixels": 0,
+      "violetOrMagentaPixels": 0
+    },
+    {
+      "title": "Idol Bearer",
+      "asset": "chibi-direction-cult-idol-bearer",
+      "family": "lodge",
+      "canvas": "56 x 80",
+      "size": "43 x 71",
+      "foot": 76,
+      "greenShare": 0.7,
+      "indigoShare": 38.9,
+      "tealShare": 0,
+      "redPixels": 0,
+      "violetOrMagentaPixels": 0
+    },
+    {
+      "title": "Familiar",
+      "asset": "chibi-direction-cult-familiar",
+      "family": "lodge",
+      "canvas": "72 x 88",
+      "size": "58 x 65",
+      "foot": 81,
+      "greenShare": 0,
+      "indigoShare": 29,
+      "tealShare": 6,
+      "redPixels": 0,
+      "violetOrMagentaPixels": 0
+    },
+    {
+      "title": "Hexer",
+      "asset": "chibi-direction-cult-hexer",
+      "family": "lodge",
+      "canvas": "56 x 80",
+      "size": "50 x 73",
+      "foot": 76,
+      "greenShare": 2.6,
+      "indigoShare": 47.7,
+      "tealShare": 0,
+      "redPixels": 0,
+      "violetOrMagentaPixels": 0
+    },
+    {
+      "title": "Summoner",
+      "asset": "chibi-direction-cult-summoner",
+      "family": "lodge",
+      "canvas": "56 x 80",
+      "size": "36 x 75",
+      "foot": 76,
+      "greenShare": 0,
+      "indigoShare": 56.3,
+      "tealShare": 0,
+      "redPixels": 0,
+      "violetOrMagentaPixels": 0
+    },
+    {
+      "title": "Stargazer",
+      "asset": "chibi-direction-cult-stargazer",
+      "family": "lodge",
+      "canvas": "72 x 88",
+      "size": "68 x 54",
+      "foot": 81,
+      "greenShare": 3,
+      "indigoShare": 23.7,
+      "tealShare": 0.6,
+      "redPixels": 0,
+      "violetOrMagentaPixels": 0
+    },
+    {
+      "title": "Caller",
+      "asset": "chibi-direction-cult-caller",
+      "family": "lodge",
+      "canvas": "72 x 88",
+      "size": "62 x 79",
+      "foot": 81,
+      "greenShare": 4.4,
+      "indigoShare": 17.5,
+      "tealShare": 0,
+      "redPixels": 0,
+      "violetOrMagentaPixels": 0
+    },
+    {
+      "title": "Chosen",
+      "asset": "chibi-direction-cult-chosen",
+      "family": "lodge",
+      "canvas": "56 x 80",
+      "size": "56 x 73",
+      "foot": 76,
+      "greenShare": 0,
+      "indigoShare": 46.1,
+      "tealShare": 0,
+      "redPixels": 0,
+      "violetOrMagentaPixels": 0
+    },
+    {
+      "title": "Thing in the Cellar",
+      "asset": "chibi-direction-cult-thing",
+      "family": "summoned",
+      "canvas": "88 x 104",
+      "size": "80 x 84",
+      "foot": 95,
+      "greenShare": 0,
+      "indigoShare": 2.1,
+      "tealShare": 45.1,
+      "redPixels": 6,
+      "violetOrMagentaPixels": 0
+    },
+    {
+      "title": "Horror",
+      "asset": "chibi-direction-cult-horror",
+      "family": "summoned",
+      "canvas": "72 x 88",
+      "size": "68 x 68",
+      "foot": 80,
+      "greenShare": 0.5,
+      "indigoShare": 11.7,
+      "tealShare": 41.2,
+      "redPixels": 0,
+      "violetOrMagentaPixels": 0
+    },
+    {
+      "title": "Herald",
+      "asset": "chibi-direction-cult-herald",
+      "family": "summoned",
+      "canvas": "88 x 104",
+      "size": "53 x 97",
+      "foot": 100,
+      "greenShare": 4.1,
+      "indigoShare": 50,
+      "tealShare": 5.3,
+      "redPixels": 0,
+      "violetOrMagentaPixels": 0
+    },
+    {
+      "title": "Tentacle",
+      "asset": "chibi-direction-cult-tentacle",
+      "family": "summoned",
+      "canvas": "56 x 80",
+      "size": "53 x 74",
+      "foot": 75,
+      "greenShare": 0,
+      "indigoShare": 0.8,
+      "tealShare": 61.7,
+      "redPixels": 0,
+      "violetOrMagentaPixels": 0
+    },
+    {
+      "title": "Horror, Unbound",
+      "asset": "chibi-direction-cult-horror-unbound",
+      "family": "unbound",
+      "canvas": "72 x 88",
+      "size": "68 x 68",
+      "foot": 80,
+      "greenShare": 0.6,
+      "indigoShare": 11.8,
+      "tealShare": 37.8,
+      "redPixels": 164,
+      "violetOrMagentaPixels": 0
+    },
+    {
+      "title": "Herald, Unbound",
+      "asset": "chibi-direction-cult-herald-unbound",
+      "family": "unbound",
+      "canvas": "88 x 104",
+      "size": "53 x 97",
+      "foot": 100,
+      "greenShare": 4.1,
+      "indigoShare": 49.7,
+      "tealShare": 5.3,
+      "redPixels": 101,
+      "violetOrMagentaPixels": 0
+    }
+  ],
+  "ships": {
+    "Patrol Boat": {
+      "asset": "chibi-naval-cult-patrol-boat",
+      "size": "59 x 68",
+      "waterline": 77,
+      "sharedWaterline": 79,
+      "indigoShare": 31,
+      "greenShare": 1.6,
+      "redPixels": 0,
+      "violetOrMagentaPixels": 0,
+      "fromUndead": {
+        "palette": 32,
+        "deuteranopia": 27.6,
+        "protanopia": 27,
+        "greyPalette": 1.5,
+        "lightness": 13,
+        "meanLightness": [
+          35,
+          22
+        ],
+        "silhouette": 0.63,
+        "distinct": true,
+        "reasons": []
+      }
+    },
+    "Battleship": {
+      "asset": "chibi-naval-cult-battleship",
+      "size": "71 x 79",
+      "waterline": 84,
+      "sharedWaterline": 84,
+      "indigoShare": 26.5,
+      "greenShare": 3.1,
+      "redPixels": 0,
+      "violetOrMagentaPixels": 0,
+      "fromUndead": {
+        "palette": 29.1,
+        "deuteranopia": 25.1,
+        "protanopia": 24.7,
+        "greyPalette": 3.2,
+        "lightness": 31.6,
+        "meanLightness": [
+          48.6,
+          16.7
+        ],
+        "silhouette": 0.98,
+        "distinct": true,
+        "reasons": []
+      }
+    },
+    "Embarked transport": {
+      "asset": "chibi-naval-cult-transport",
+      "size": "60 x 49",
+      "waterline": 58,
+      "sharedWaterline": 58,
+      "indigoShare": 32.9,
+      "greenShare": 0.9,
+      "redPixels": 0,
+      "violetOrMagentaPixels": 0,
+      "fromUndead": {
+        "palette": 30.9,
+        "deuteranopia": 25.8,
+        "protanopia": 26.1,
+        "greyPalette": 4,
+        "lightness": 15,
+        "meanLightness": [
+          39.9,
+          24.7
+        ],
+        "silhouette": 0.97,
+        "distinct": true,
+        "reasons": []
+      }
+    },
+    "Submarine": {
+      "asset": "chibi-naval-cult-submarine",
+      "size": "61 x 52",
+      "waterline": 79,
+      "sharedWaterline": 79,
+      "indigoShare": 6.7,
+      "greenShare": 3.8,
+      "redPixels": 0,
+      "violetOrMagentaPixels": 0,
+      "fromUndead": {
+        "palette": 23.4,
+        "deuteranopia": 16.2,
+        "protanopia": 16.7,
+        "greyPalette": 2.6,
+        "lightness": 23.5,
+        "meanLightness": [
+          39.2,
+          15.3
+        ],
+        "silhouette": 0.6,
+        "distinct": true,
+        "reasons": []
+      }
+    },
+    "Submarine, submerged": {
+      "asset": "chibi-naval-cult-submarine-submerged",
+      "size": "61 x 46",
+      "waterline": 80,
+      "sharedWaterline": 79,
+      "indigoShare": 5.4,
+      "greenShare": 4.4,
+      "redPixels": 0,
+      "violetOrMagentaPixels": 0,
+      "fromUndead": {
+        "palette": 20.5,
+        "deuteranopia": 13.9,
+        "protanopia": 14.7,
+        "greyPalette": 2.3,
+        "lightness": 26.9,
+        "meanLightness": [
+          47.3,
+          19.4
+        ],
+        "silhouette": 0.64,
+        "distinct": true,
+        "reasons": []
+      }
+    }
+  },
+  "frog": {
+    "asset": "chibi-direction-cult-frog",
+    "size": "33 x 34",
+    "tealShare": 25.5,
+    "tealMean": "#21787c",
+    "greenShare": 0,
+    "fromGrass": 56.6,
+    "redPixels": 0
+  }
+}
