@@ -1,4 +1,5 @@
 import { configDefaults, defineConfig } from "vitest/config";
+import { assetCachePlugin } from "./scripts/build/asset-cache-plugin.ts";
 
 const GITHUB_PAGES_BASE = "/pulp_wars/";
 
@@ -21,6 +22,9 @@ export default defineConfig(({ command }) => ({
   // Keep localhost at `/`, while production output targets the GitHub Pages
   // project site at https://nadbordrozd.github.io/pulp_wars/.
   base: command === "build" ? GITHUB_PAGES_BASE : "/",
+  // A build also gets its service worker and asset manifest
+  // (pulp_wars-2yc.11); the development server and the tests do not.
+  plugins: [assetCachePlugin()],
   server: {
     host: "localhost",
     port: 6173,

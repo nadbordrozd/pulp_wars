@@ -1967,14 +1967,23 @@ piece seen for the first time is drawn with its final art in that frame.
   for a preload when the other look is not loaded yet (a page started in
   the classic look switching to the live one).
 - **One blocking phase.** The whole look, every faction, is preloaded at
-  the start (671 files, about 1.4 MB, for `LIVE`): the Gallery and an
-  eight-player match show all of them, and the set is small enough that a
-  second, background phase would add nothing. Within it the loading
-  screen's scene comes first (below).
+  the start (983 files, about 2.5 MB, for `LIVE` in October 2026): the
+  Gallery and an eight-player match show all of them. Within it the loading
+  screen's scene comes first (below). A return visit reads them from the
+  service worker's cache
+  ([Asset delivery](#asset-delivery-pulp_wars-2yc11)).
 - **Preloader.** `createAssetPreloaderV7` (`src/app/asset-preloader-v7.ts`)
-  loads at most 24 rasters at once through an injectable loader (the
+  loads at most 64 rasters at once through an injectable loader (the
   browser's creates an image element and awaits `decode()`), retries a
-  failure once, and gives each raster 15 s and the whole preload 30 s. A
+  failure once, and gives each raster 15 s and the whole preload 30 s. The
+  files average 2.6 kB, so a lane mostly waits for a round trip: 64 lanes
+  keep a slow link busy where 24 left it two thirds idle, and stay under
+  the 100 streams of one HTTP/2 connection. A preload may name a `front`:
+  its first files load alone, and the rest starts when they have settled
+  (or after 12 s, so one stuck file cannot hold the preload). The start
+  passes the scene's files as the front; many files in flight share the
+  link evenly, and without it the scene's large backdrops would finish
+  among the last. A
   raster that fails is reported once with `console.warn` and left out; the
   game starts regardless, and rasters still in flight when the budget runs
   out reach the store when they arrive.
@@ -2013,6 +2022,115 @@ piece seen for the first time is drawn with its final art in that frame.
   the bar's width eases and the scene fades in only with full motion (the
   stored Motion setting, else `prefers-reduced-motion`), and with reduced
   motion the scene is still.
+
+### Asset delivery (`pulp_wars-2yc.11`)
+
+The deployed site is about a thousand small files on GitHub Pages, whose
+cache lifetime is ten minutes and cannot be changed: a return visit used to
+revalidate every file, one round trip each, and on a slow link took almost
+as long as the first visit. A service worker now keeps the files.
+
+- **Build.** `assetCachePlugin` (`scripts/build/asset-cache-plugin.ts`, in
+  `vite.config.ts`, `vite build` only) adds two files beside the page:
+  `sw.js`, bundled from `src/service-worker/entry.ts` as one classic
+  script, and `asset-manifest.json`, which lists every file of the site
+  with the first 64 bits of the SHA-256 of its bytes and a `build` id
+  hashed from that list, and `"worker": "on"` or `"off"` (the switch,
+  below). The worker's script names no file and no version,
+  so it changes only when its logic does. The art pipeline's files under
+  `public/assets/` are untouched and stay the source of truth.
+- **Page.** `startAssetCacheV1` (`src/app/asset-cache-registration.ts`,
+  called by `src/main.ts`) registers `sw.js` with the site's base as its
+  scope when `import.meta.env.PROD`. The development server, the tests and
+  the browser smokes (run against the development server) have no worker. On
+  a visit the worker did not serve from its first request (the first one),
+  the page names the files it loaded once it has started, and the worker
+  keeps those it did not see; they come from the browser's HTTP cache.
+- **Worker.** `createAssetCacheWorkerV1`
+  (`src/service-worker/asset-cache-worker.ts`) answers same-origin `GET`
+  requests under its scope for files the manifest lists; everything else
+  (other origins, byte ranges, `sw.js`, the manifest) is the browser's.
+  - **The page itself.** On a page load the worker fetches, at the same
+    time and both with `cache: "no-store"`, the manifest and the page.
+    They are the two requests of a return visit. Online, the page served
+    is always that network copy, never a kept one, whatever the manifest
+    says or fails to say; it is kept (for a load with no network) only
+    when its bytes are the page the manifest names. A response of the host
+    that is not a 200 is passed on as it is. Only when the network gives
+    no answer at all is the kept page of the build in the cache served;
+    with no kept page the load is the browser's own (its offline error).
+  - A cache entry is one version of one file: its key is the URL with
+    `?sha256=<hash>`. A file is answered from the cache only under the hash
+    the manifest in force names.
+  - A file fetched from the network is kept only when its bytes hash to
+    the manifest's value. When they do not, it is fetched again with
+    `cache: "no-cache"` (the HTTP cache may hold the previous deploy for
+    ten minutes); when they still do not, the host serves another build
+    than the manifest: the file is passed on, not kept, and the manifest is
+    read again.
+  - Entries the manifest no longer names are deleted. A deploy that
+    changes ten sprites downloads the manifest, the page and ten sprites.
+  - Without a network the stored manifest stands and the game starts from
+    the cache.
+  - A request the page aborts (a theme it stopped playing) aborts the
+    worker's download.
+  - **Faults.** Anything that throws while the worker answers a request
+    (cache storage, hashing, its own fetch) hands that request to the
+    network untouched, in `respond` and again in `entry.ts`; a request it
+    cannot read is left to the browser. A broken cache can cost speed,
+    never a file.
+- **Versioning.** There is no cache per build to throw away: the cache is
+  addressed by content, so nothing stale can be served and unchanged files
+  survive every deploy. `ASSET_CACHE_NAME_V1` changes only if the entry
+  format does, and the worker deletes caches of other formats.
+- **How to turn the worker off.** A faulty worker on the public site
+  outlives a normal fix for the visitors who already have it, so there are
+  two ways out, neither of which depends on the worker's cache logic:
+  - _Everywhere, with one deploy._ Set `ASSET_CACHE_WORKER_ENABLED_V1` to
+    `false` in `src/service-worker/asset-manifest.ts` and deploy. The build
+    then writes `"worker": "off"` into `asset-manifest.json` (the build log
+    says `worker off`) and the page no longer registers the worker. On each
+    visitor's next visit the worker they have reads the manifest (it does
+    so on every page load, when it takes over, and on its first request
+    when it has no manifest), deletes every `pulp-wars-assets-*` cache,
+    unregisters itself and answers nothing more; the page load that read
+    the switch is answered with the host's fresh page, and that page, built
+    with the switch off, unregisters whatever registration it finds, tells
+    a worker still serving it to stop, and deletes the caches again. The
+    same happens when the manifest is one the worker cannot read (another
+    `format` or `version`, no `worker` field, not JSON) or is gone (404,
+    410), so removing the feature from the build also removes the worker.
+    A manifest that merely cannot be fetched (no network, a 5xx) changes
+    nothing. To turn it on again, set the constant to `true` and deploy.
+  - _For one visitor._ Loading the site with `?no-cache-worker=1`
+    (`/pulp_wars/?no-cache-worker=1`) unregisters the worker, deletes its
+    caches in that browser and does not register it on that load. The next
+    ordinary load registers it afresh.
+  - The worker's script is fetched by the browser past every cache on each
+    visit, so a corrected `sw.js` also replaces a faulty one at once
+    (`skipWaiting`, `clients.claim`).
+  - Seen in Chrome: after the off deploy the first visit ends with no
+    registration and no cache, and from the next visit nothing is answered
+    by the worker. The tab that was open keeps naming the stopped worker as
+    its controller until it is closed; it answers no request.
+- **Measured** (October 2026; muted headless Chrome, DevTools throttling on
+  the page and the worker, an HTTP/2 stand-in for Pages with
+  `max-age=600`; time to the title screen; the "after" columns were taken
+  on a busy machine and were about 0.7 s lower on a quiet one):
+
+  | Visit                                | Fast 3G before | Fast 3G after | Fast 4G before | Fast 4G after |
+  | ------------------------------------ | -------------- | ------------- | -------------- | ------------- |
+  | First                                | 35.9 s         | 27.9 s        | 9.3 s          | 5.8 s         |
+  | Return after more than ten minutes   | 25.9 s         | 2.0 s         | 7.9 s          | 1.2 s         |
+  | Return after a deploy of ten sprites | as above       | 2.7 s         | as above       | 1.4 s         |
+  | Return with no network               | fails          | 1.2 s         | fails          | 1.0 s         |
+
+  "Fast 3G" (now named "Slow 4G" in DevTools) is 1.6 Mbit/s with 562 ms of
+  latency, "Fast 4G" 9 Mbit/s with 165 ms. The first visit is 1,025
+  requests and 3.76 MB either way; it is now bound by bytes, not round
+  trips. A return visit is 2 requests and 24 kB (it was 1,023 requests),
+  one after a deploy of ten sprites 12 requests and 35 kB. A new-game board
+  needs no further art request.
 
 ### Sound (`pulp_wars-2yc.10`)
 

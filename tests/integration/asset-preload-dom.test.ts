@@ -69,17 +69,20 @@ function manualPreloader(covered = false) {
     readonly urls: readonly string[];
     readonly onProgress:
       ((progress: AssetPreloadProgressV7) => void) | undefined;
+    /** Files asked to load alone first (the loading screen's scene). */
+    readonly front: number;
     readonly resolve: (result: AssetPreloadResultV7) => void;
     readonly reject: (error: Error) => void;
   }[] = [];
   const loaded = new Set<string>();
   const preloader: AssetPreloaderV7 = {
     covers: (urls) => covered || urls.every((url) => loaded.has(url)),
-    preload: (urls, onProgress) =>
+    preload: (urls, onProgress, options) =>
       new Promise((resolve, reject) => {
         requests.push({
           urls,
           onProgress,
+          front: options?.front ?? 0,
           resolve: (result) => {
             for (const url of urls) loaded.add(url);
             resolve(result);
@@ -156,6 +159,9 @@ describe("Ruleset 7 start behind the asset preloader", () => {
     expect(requests[0]?.urls).toHaveLength(assetInventoryV7("LIVE").length);
     const scene = titleSceneAssetUrlsV7();
     expect(requests[0]?.urls.slice(0, scene.length)).toEqual(scene);
+    // The scene's files load alone before the rest (pulp_wars-2yc.11).
+    expect(requests[0]?.front).toBe(scene.length);
+    expect(new Set(scene).size).toBe(scene.length);
     expect(new Set(requests[0]?.urls)).toEqual(
       new Set(assetPreloadUrlsV7("LIVE")),
     );

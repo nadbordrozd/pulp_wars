@@ -48,29 +48,56 @@ export interface AssetPreloaderOptionsV7<Raster> {
   readonly assetTimeoutMs?: number;
   /** `preload` resolves after this long whatever is still in flight. */
   readonly budgetMs?: number;
+  /**
+   * The longest the files after a preload's `front` wait for it; then they
+   * start whatever of the front is still in flight.
+   */
+  readonly frontHoldMs?: number;
   /** Receives the one failure report of a preload. */
   readonly warn?: (message: string) => void;
   readonly setTimer?: (callback: () => void, ms: number) => unknown;
   readonly clearTimer?: (timer: unknown) => void;
 }
 
+export interface AssetPreloadCallOptionsV7 {
+  /**
+   * The first `front` URLs load alone: no later file starts until they
+   * have all settled (or the hold runs out). Many files in flight share
+   * the link evenly, so without this a large early file (the title scene's
+   * backdrop) would finish among the last.
+   */
+  readonly front?: number;
+}
+
 export interface AssetPreloaderV7 {
   preload(
     urls: readonly string[],
     onProgress?: (progress: AssetPreloadProgressV7) => void,
+    options?: AssetPreloadCallOptionsV7,
   ): Promise<AssetPreloadResultV7>;
   /** True when every URL is in the store: nothing to wait for. */
   covers(urls: readonly string[]): boolean;
 }
 
 /**
- * The files are small (2 kB on average), so a preload is bound by round
- * trips, not bytes: 24 in flight uses an HTTP/2 connection well, and
- * HTTP/1.1 still caps itself at the browser's six connections.
+ * The files are small (2.6 kB on average), so each lane spends most of its
+ * time waiting for a round trip, not receiving bytes: the first load is as
+ * fast as the link only when enough files are in flight to keep it busy.
+ * At 24 a throttled link stood two thirds idle (pulp_wars-2yc.11: 111 kB/s
+ * asked of a 180 kB/s "Fast 3G" link, 380 kB/s of a 1 MB/s "Fast 4G" one);
+ * 64 fills both and stays under the 100 streams an HTTP/2 host allows on
+ * one connection, with room for the sounds and fonts. HTTP/1.1 still caps
+ * itself at the browser's six connections.
  */
-export const ASSET_PRELOAD_CONCURRENCY_V7 = 24;
+export const ASSET_PRELOAD_CONCURRENCY_V7 = 64;
 export const ASSET_PRELOAD_ASSET_TIMEOUT_MS_V7 = 15_000;
 export const ASSET_PRELOAD_BUDGET_MS_V7 = 30_000;
+/**
+ * A front that has not settled by now no longer holds the rest back: one
+ * stuck file must not cost the whole preload its budget. The title scene
+ * needs about 4 s on "Fast 3G" and 13 s on "Slow 3G".
+ */
+export const ASSET_PRELOAD_FRONT_HOLD_MS_V7 = 12_000;
 
 export function createAssetPreloaderV7<Raster>(
   options: AssetPreloaderOptionsV7<Raster>,
@@ -83,6 +110,7 @@ export function createAssetPreloaderV7<Raster>(
   const assetTimeoutMs =
     options.assetTimeoutMs ?? ASSET_PRELOAD_ASSET_TIMEOUT_MS_V7;
   const budgetMs = options.budgetMs ?? ASSET_PRELOAD_BUDGET_MS_V7;
+  const frontHoldMs = options.frontHoldMs ?? ASSET_PRELOAD_FRONT_HOLD_MS_V7;
   const warn =
     options.warn ?? ((message: string): void => console.warn(message));
   const setTimer =
@@ -127,18 +155,28 @@ export function createAssetPreloaderV7<Raster>(
     covers(urls) {
       return urls.every((url) => store.has(url));
     },
-    preload(urls, onProgress) {
-      const queue = [...new Set(urls)].filter((url) => !store.has(url));
+    preload(urls, onProgress, call = {}) {
+      const distinct = [...new Set(urls)];
+      const ahead = new Set(
+        distinct.slice(0, Math.max(0, Math.floor(call.front ?? 0))),
+      );
+      const queue = distinct.filter((url) => !store.has(url));
       const total = queue.length;
+      // The queue keeps the order, so the front is its first files.
+      const front = queue.filter((url) => ahead.has(url)).length;
       const failed: string[] = [];
       let settled = 0;
       let next = 0;
+      let flying = 0;
       let resolved = false;
+      // The rest waits for the front, when there is one and a rest.
+      let held = front > 0 && front < total;
       return new Promise<AssetPreloadResultV7>((resolve) => {
         const finish = (): void => {
           if (resolved) return;
           resolved = true;
           clearTimer(budget);
+          if (hold !== undefined) clearTimer(hold);
           if (failed.length > 0)
             warn(
               `Asset preload: ${failed.length} of ${total} images failed and load on demand: ${failed.slice(0, 5).join(", ")}${failed.length > 5 ? ", ..." : ""}`,
@@ -151,22 +189,37 @@ export function createAssetPreloaderV7<Raster>(
           });
         };
         const budget = setTimer(finish, budgetMs);
+        /** Starts files until the lanes are full or the queue is held. */
         const pump = (): void => {
-          const url = queue[next];
-          if (url === undefined) return;
-          next += 1;
-          void fetchOne(url).then((ok) => {
-            if (!ok) failed.push(url);
-            settled += 1;
-            if (!resolved) onProgress?.({ settled, total });
-            if (settled === total) finish();
-            else pump();
-          });
+          while (flying < concurrency) {
+            const url = queue[next];
+            if (url === undefined || (held && next >= front)) return;
+            next += 1;
+            flying += 1;
+            void fetchOne(url).then((ok) => {
+              if (!ok) failed.push(url);
+              settled += 1;
+              flying -= 1;
+              if (!resolved) onProgress?.({ settled, total });
+              if (settled === total) {
+                finish();
+                return;
+              }
+              // Only the front was in flight while it held the rest.
+              if (held && settled >= front) held = false;
+              pump();
+            });
+          }
         };
+        const hold = held
+          ? setTimer(() => {
+              held = false;
+              pump();
+            }, frontHoldMs)
+          : undefined;
         onProgress?.({ settled, total });
         if (total === 0) finish();
-        for (let lane = 0; lane < Math.min(concurrency, total); lane += 1)
-          pump();
+        pump();
       });
     },
   };

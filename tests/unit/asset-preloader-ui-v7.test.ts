@@ -235,6 +235,103 @@ describe("asset preloader", () => {
     expect(progress).toHaveLength(reported);
   });
 
+  it("loads the front alone, then the rest; progress counts every file", async () => {
+    const h = harness();
+    const preloader = createAssetPreloaderV7({ ...h.options, concurrency: 8 });
+    const progress: AssetPreloadProgressV7[] = [];
+    const done = preloader.preload(
+      urls(12),
+      (update) => progress.push(update),
+      { front: 3 },
+    );
+    await h.tick();
+    // Eight lanes, but only the three front files are in flight.
+    expect(h.pending.map((entry) => entry.url)).toEqual(urls(3));
+    h.pending.shift()?.resolve();
+    h.pending.shift()?.resolve();
+    await h.tick();
+    expect(h.pending.map((entry) => entry.url)).toEqual(["/art/2.png"]);
+    h.pending.shift()?.resolve();
+    await h.tick();
+    // The front has settled: every lane starts on the rest.
+    expect(h.pending.map((entry) => entry.url)).toEqual(urls(11).slice(3));
+    await h.drain();
+    expect(await done).toEqual({
+      total: 12,
+      loaded: 12,
+      failed: [],
+      unfinished: 0,
+    });
+    expect(h.peak()).toBe(8);
+    expect(progress.map((update) => update.settled)).toEqual(
+      Array.from({ length: 13 }, (_, index) => index),
+    );
+    expect(progress.every((update) => update.total === 12)).toBe(true);
+  });
+
+  it("a failed front file releases the rest; a stuck one only until the hold runs out", async () => {
+    const failing = harness();
+    const first = createAssetPreloaderV7({
+      ...failing.options,
+      concurrency: 4,
+    });
+    const failed = first.preload(urls(6), undefined, { front: 1 });
+    await failing.tick();
+    failing.pending.shift()?.reject();
+    await failing.tick();
+    // Its second attempt is still the only file in flight.
+    expect(failing.pending.map((entry) => entry.url)).toEqual(["/art/0.png"]);
+    failing.pending.shift()?.reject();
+    await failing.tick();
+    expect(failing.pending).toHaveLength(4);
+    await failing.drain();
+    expect((await failed).failed).toEqual(["/art/0.png"]);
+
+    const stuck = harness();
+    const second = createAssetPreloaderV7({
+      ...stuck.options,
+      concurrency: 4,
+      frontHoldMs: 700,
+    });
+    const held = second.preload(urls(6), undefined, { front: 2 });
+    await stuck.tick();
+    stuck.pending.shift()?.resolve();
+    await stuck.tick();
+    expect(stuck.pending.map((entry) => entry.url)).toEqual(["/art/1.png"]);
+    stuck.fire(700);
+    await stuck.tick();
+    // The stuck file keeps its lane; the other three take the rest.
+    expect(stuck.pending.map((entry) => entry.url)).toEqual([
+      "/art/1.png",
+      "/art/2.png",
+      "/art/3.png",
+      "/art/4.png",
+    ]);
+    await stuck.drain();
+    expect((await held).loaded).toBe(6);
+    expect(stuck.peak()).toBe(4);
+  });
+
+  it("holds nothing back when the front is already stored or is the whole list", async () => {
+    const h = harness();
+    h.stored.set("/art/0.png", "decoded");
+    h.stored.set("/art/1.png", "decoded");
+    const preloader = createAssetPreloaderV7({ ...h.options, concurrency: 3 });
+    const done = preloader.preload(urls(6), undefined, { front: 2 });
+    await h.tick();
+    expect(h.pending.map((entry) => entry.url)).toEqual(urls(5).slice(2));
+    await h.drain();
+    expect((await done).total).toBe(4);
+
+    const whole = harness();
+    const all = createAssetPreloaderV7({ ...whole.options, concurrency: 3 });
+    const finished = all.preload(urls(5), undefined, { front: 9 });
+    await whole.tick();
+    expect(whole.pending).toHaveLength(3);
+    await whole.drain();
+    expect((await finished).loaded).toBe(5);
+  });
+
   it("has nothing to do for rasters already in the store", async () => {
     const h = harness();
     h.stored.set("/art/0.png", "decoded");

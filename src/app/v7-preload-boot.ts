@@ -171,10 +171,16 @@ export async function bootstrapPreloadedRuleset7App(
   if (timer === null) show();
   let result: AssetPreloadResultV7;
   try {
-    result = await preloader.preload(urls, (update) => {
-      progress = update;
-      screen?.update(update);
-    });
+    result = await preloader.preload(
+      urls,
+      (update) => {
+        progress = update;
+        screen?.update(update);
+      },
+      // The scene's files load alone first, so the loading screen shows
+      // the scene as early as the link allows (pulp_wars-2yc.11).
+      { front: new Set(sceneUrls ?? []).size },
+    );
   } catch {
     // A broken preloader must not keep the game from starting: every
     // raster then loads on demand, as it did before preloading.
