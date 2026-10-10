@@ -51,6 +51,14 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     // burrowed unit is not drawn and is offered no Move or Capture, so the
     // coach has nothing to point at underground.
     "src/render/first-steps-v7.ts::chooseFirstStepV7": "BOARD",
+    // Bead pulp_wars-0yxy: the tutorial names its commands by place, so it
+    // reads the view's units for the own unit standing on a tile of the
+    // script (the one to move, to attack with, to capture with) and for the
+    // enemy standing on the tile to attack. Its board has Humans and
+    // Goblins only: nothing burrows there, and a burrowed unit takes no
+    // command anyway.
+    "src/render/tutorial-v7.ts::ownUnitAt": "BOARD",
+    "src/render/tutorial-v7.ts::tutorialCommandMatchesV7": "BOARD",
     // Bead pulp_wars-2yc.10 (classified by pulp_wars-2yp): the boundary
     // sounds read the views' units only to ask whether a promoted unit is
     // the viewer's (`UNIT_PROMOTED`, the level-up sound). A unit is promoted

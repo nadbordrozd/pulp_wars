@@ -2631,7 +2631,11 @@ Martians), `LAB_DINOSAUR_MID` (the Dinosaur pass: the hand player is the
 Dinosaurs), `LAB_ICE_FOLK_MID` (step two of the Ice Folk pass: the hand
 player is the Ice Folk), `LAB_DWARF_MID` (step two of the Dwarf pass:
 the hand player is the Dwarves), and `LAB_CULT_MID` (the Cult's sixth
-engine step: the hand player is the Cultists; built, not played). A Cult
+engine step: the hand player is the Cultists; built, not played), and
+`TUTORIAL_1` (`pulp_wars-0yxy`: the 11 x 11 board of the interface's guided
+first game, Humans against one Goblin seat; in no chapter, started from the
+main menu's Tutorial; the forcing of its first steps is the interface's and
+changes no rule, [the screen flow](../ui/SCREEN_FLOW.md#tutorial)). A Cult
 seat of a mission may start with Favour (`favour`). A mission unit may carry `kills` (a dinosaur that has
 grown: it starts at the HP of its stage) and `egg` (an Egg with its
 turns to hatch); the builder refuses `kills` on a role that does not grow

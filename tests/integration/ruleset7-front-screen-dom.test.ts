@@ -118,13 +118,17 @@ describe("Ruleset 7 front screen", () => {
     expect(menu.parentElement).toBe(screen);
     expect(menu.closest("form, dialog, [role='dialog'], section")).toBeNull();
     const items = [...menu.querySelectorAll<HTMLButtonElement>("button")];
+    // A profile that has never played: the Tutorial leads
+    // (`pulp_wars-0yxy`).
     expect(items.map((item) => item.dataset.action)).toEqual([
+      "tutorial",
       "new-game",
       "campaign",
       "gallery",
       "front-settings",
     ]);
     expect(items.map((item) => item.textContent)).toEqual([
+      "Tutorial",
       "New game",
       "Campaign",
       "Gallery",
@@ -145,6 +149,7 @@ describe("Ruleset 7 front screen", () => {
       .filter((node) => node.closest("[hidden]") === null)
       .map((node) => node.id || node.dataset.action || node.tagName);
     expect(shown).toEqual([
+      "tutorial",
       "new-game",
       "campaign",
       "gallery",
@@ -158,6 +163,8 @@ describe("Ruleset 7 front screen", () => {
   it("selects the first button on entry and moves with the arrow keys", async () => {
     mount();
     await settle();
+    expect(focused()).toBe("tutorial");
+    key("ArrowDown");
     expect(focused()).toBe("new-game");
     key("ArrowDown");
     expect(focused()).toBe("campaign");
@@ -166,11 +173,11 @@ describe("Ruleset 7 front screen", () => {
     expect(focused()).toBe("front-settings");
     // The stack wraps both ways; Home and End go to its ends.
     key("ArrowDown");
-    expect(focused()).toBe("new-game");
+    expect(focused()).toBe("tutorial");
     key("ArrowUp");
     expect(focused()).toBe("front-settings");
     key("Home");
-    expect(focused()).toBe("new-game");
+    expect(focused()).toBe("tutorial");
     key("End");
     expect(focused()).toBe("front-settings");
     // With nothing focused the arrows enter the menu.
@@ -336,6 +343,7 @@ describe("Ruleset 7 front screen", () => {
     expect(items.map((item) => item.dataset.action)).toEqual([
       "resume",
       "new-game",
+      "tutorial",
       "campaign",
       "gallery",
       "front-settings",
@@ -365,7 +373,8 @@ describe("Ruleset 7 front screen", () => {
     await waitUntil(() => second.controller.snapshot().phase === "EMPTY");
     await settle();
     expect(document.querySelector('[data-action="resume"]')).toBeNull();
-    expect(focused()).toBe("new-game");
+    // No turn was played: the Tutorial leads the menu again.
+    expect(focused()).toBe("tutorial");
   });
 
   it("Save & quit in a match returns to the menu with Continue selected", async () => {

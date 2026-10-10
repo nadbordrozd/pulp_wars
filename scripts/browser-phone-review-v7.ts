@@ -28,7 +28,9 @@ import { prepareSmokeOutput } from "./browser-smoke-output";
  * scenes `cult-*`, `setup-cult-allied`, `end-nine-players`): a new
  * nine-player game as the Cult before any command, its leaderboard with
  * nine rows (rivals, and the AIs allied with a head start), and its
- * technology tree.
+ * technology tree. The tutorial (bead pulp_wars-0yxy; scenes `tutorial-*`):
+ * its line at each of its eight steps, with the step's unit, city or tile
+ * picked, the technology screen of its research step, and the farewell.
  *
  * Every state is hand-built (tests/fixtures/v7-*-ui.ts and the score
  * fixtures); no AI runs and no match is played. It needs the Vite dev
@@ -144,6 +146,70 @@ const browser = spawn(
 const REVIEW = "globalThis.__PHONE_REVIEW__";
 const errors: string[] = [];
 const findings: Record<string, readonly Problem[]> = {};
+
+/** The places of the tutorial board (src/render/tutorial-v7.ts). */
+const TUTORIAL_PLACE = {
+  capital: { x: 2, y: 8 },
+  fruit: { x: 1, y: 9 },
+  walker: { x: 4, y: 8 },
+  village: { x: 5, y: 8 },
+  attacker: { x: 3, y: 7 },
+} as const;
+
+/** A tutorial scene: its name, the step, and what is done after mounting. */
+const TUTORIAL_SCENES: readonly (readonly [
+  string,
+  string,
+  ((connection: Connection) => Promise<void>)?,
+])[] = [
+  ["tutorial-research", "RESEARCH"],
+  ["tutorial-research-tech", "RESEARCH", (c) => click(c, "tech")],
+  [
+    "tutorial-research-detail",
+    "RESEARCH",
+    async (c) => {
+      await click(c, "tech");
+      await click(c, "tech-gathering");
+    },
+  ],
+  ["tutorial-harvest", "HARVEST"],
+  [
+    "tutorial-harvest-picked",
+    "HARVEST",
+    (c) => activate(c, TUTORIAL_PLACE.fruit),
+  ],
+  ["tutorial-resources", "RESOURCES"],
+  ["tutorial-move", "MOVE"],
+  ["tutorial-move-picked", "MOVE", (c) => activate(c, TUTORIAL_PLACE.walker)],
+  ["tutorial-train", "TRAIN"],
+  [
+    "tutorial-train-picked",
+    "TRAIN",
+    (c) => activate(c, TUTORIAL_PLACE.capital),
+  ],
+  ["tutorial-attack", "ATTACK"],
+  [
+    "tutorial-attack-picked",
+    "ATTACK",
+    (c) => activate(c, TUTORIAL_PLACE.attacker),
+  ],
+  ["tutorial-end-turn", "END_TURN"],
+  ["tutorial-capture", "CAPTURE"],
+  [
+    "tutorial-capture-picked",
+    "CAPTURE",
+    (c) => activate(c, TUTORIAL_PLACE.village),
+  ],
+  [
+    "tutorial-farewell",
+    "CAPTURE",
+    async (c) => {
+      await activate(c, TUTORIAL_PLACE.village);
+      await click(c, "command-capture");
+      await delay(2_500);
+    },
+  ],
+];
 
 const SCENES: readonly Scene[] = [
   // ---------- Front screens ----------
@@ -390,6 +456,24 @@ const SCENES: readonly Scene[] = [
       );
     },
   },
+  // The tutorial (bead pulp_wars-0yxy): its line at every step, with what
+  // the step asks for picked, the technology screen of the research step,
+  // and the farewell after the capture. Each state is the tutorial board
+  // with the script's commands applied; no AI runs.
+  ...TUTORIAL_SCENES.map(([name, step, after]): Scene => ({
+    name,
+    match: true,
+    run: async (c) => {
+      await mount(
+        c,
+        "/tests/fixtures/v7-tutorial-ui.ts",
+        `tutorialFixtureV7('${step}').state`,
+        undefined,
+        `fixtures.tutorialFixtureV7('${step}').storage`,
+      );
+      await after?.(c);
+    },
+  })),
   {
     name: "match-menu",
     match: true,
@@ -1493,6 +1577,8 @@ async function mount(
   module: string,
   build: string,
   override?: string,
+  /** An expression for the view's settings storage (the tutorial's record). */
+  storage?: string,
 ): Promise<void> {
   await navigate(connection, url({ art: "chibi" }));
   await waitFor(
@@ -1547,7 +1633,7 @@ async function mount(
       };
       const root = document.querySelector('#app');
       const boardHost = new CanvasBoardHostV7(document);
-      const view = new Ruleset7DomAppView(document, root, controller, { boardHost, settingsStorage: null, artSet: 'CHIBI' });
+      const view = new Ruleset7DomAppView(document, root, controller, { boardHost, settingsStorage: ${storage ?? "null"}, artSet: 'CHIBI' });
       ${REVIEW} = { boardHost, view, fixtures, engine, state: () => state };
     })()`,
     true,

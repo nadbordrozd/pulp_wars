@@ -26,6 +26,7 @@ import { LAB_UNDEAD_MID_V7 } from "./lab-undead";
 import { TEST_GROUNDS_V7 } from "./test-grounds";
 import { TEST_GUARD_V7, TEST_HOLD_V7, TEST_RUSH_V7 } from "./test-directives";
 import { TEST_NECK_V7 } from "./test-neck";
+import { TUTORIAL_1_V7 } from "./tutorial";
 import type { MissionDefinitionV7, MissionSeatV7 } from "./types";
 
 export type * from "./types";
@@ -84,6 +85,9 @@ export const MISSION_REGISTRY_V7: readonly MissionDefinitionV7[] = deepFreeze([
   // the same middle game on the same land, the hand player as the Cult,
   // with Favour to summon. Built and checked; not played.
   LAB_CULT_MID_V7,
+  // The tutorial (`pulp_wars-0yxy`): the board of the guided first game,
+  // started from the main menu; in no campaign chapter.
+  TUTORIAL_1_V7,
 ]);
 
 /** The registered mission with this ID (any revision), or null. */

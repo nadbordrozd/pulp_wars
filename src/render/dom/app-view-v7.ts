@@ -781,6 +781,29 @@ import {
   type FirstStepsProgressV7,
 } from "../first-steps-v7";
 import {
+  NEW_TUTORIAL_PROGRESS_V7,
+  TUTORIAL_FAREWELL_V7,
+  TUTORIAL_MISSION_ID_V7,
+  TUTORIAL_NEXT_LABEL_V7,
+  TUTORIAL_REFUSED_V7,
+  TUTORIAL_SKIP_LABEL_V7,
+  TUTORIAL_STORAGE_KEY_V7,
+  acknowledgeTutorialV7,
+  advanceTutorialV7,
+  isTutorialMatchV7,
+  parseTutorialProgressV7,
+  reconcileTutorialV7,
+  serializeTutorialProgressV7,
+  skipTutorialV7,
+  startTutorialV7,
+  tutorialAcceptsV7,
+  tutorialActiveV7,
+  tutorialCommandsV7,
+  tutorialCueV7,
+  type TutorialCueV7,
+  type TutorialProgressV7,
+} from "../tutorial-v7";
+import {
   SPIDER_GLOSSARY_IDS_V7,
   glossaryEntryV7,
   roleGlossaryV7,
@@ -1677,6 +1700,18 @@ export class Ruleset7DomAppView {
   #firstStepWatchUnitId: number | null = null;
   #firstStepOutOfMovesUnitId: number | null = null;
   #firstStepTimer: number | null = null;
+  /**
+   * The tutorial (bead pulp_wars-0yxy): how far this browser profile is
+   * (never part of a save), the cue of the current render, whether the
+   * farewell line is up, the snapshot as the controller gave it (the
+   * interface reads `#snapshot`, whose offered commands the tutorial has
+   * filtered), and the menu's "replace the saved game?" question.
+   */
+  #tutorial: TutorialProgressV7 = NEW_TUTORIAL_PROGRESS_V7;
+  #tutorialCue: TutorialCueV7 | null = null;
+  #tutorialFarewell = false;
+  #controllerSnapshot: Ruleset7BrowserSnapshot;
+  #confirmTutorialReplace = false;
   #uiScale: 1 | 1.25 | 1.5 | 2 = 1;
   /** Developer experiment (pulp_wars-x6c); presentation only. */
   #boardSaturation: BoardSaturationV7 = DEFAULT_BOARD_SATURATION_V7;
@@ -1859,7 +1894,15 @@ export class Ruleset7DomAppView {
     this.#boardSaturation = loadBoardSaturationV7(this.#settingsStorage);
     this.#classicLook = loadBoardClassicLookV7(this.#settingsStorage);
     this.#classicLookWanted = this.#classicLook;
-    this.#snapshot = controller.snapshot();
+    try {
+      this.#tutorial = parseTutorialProgressV7(
+        this.#settingsStorage?.getItem(TUTORIAL_STORAGE_KEY_V7),
+      );
+    } catch {
+      // Without storage the tutorial is offered as new on every visit.
+    }
+    this.#controllerSnapshot = controller.snapshot();
+    this.#snapshot = this.#tutorialSnapshot(this.#controllerSnapshot);
     this.#document.addEventListener("keydown", this.#onKeyDown);
     this.#root.addEventListener("dragstart", this.#onDragStart);
     // Capturing: the click is heard before the sound of what it does.
@@ -1871,7 +1914,8 @@ export class Ruleset7DomAppView {
     this.#unsubscribe = controller.subscribe((snapshot) => {
       if (this.#destroyed) return;
       const prior = this.#snapshot;
-      this.#snapshot = snapshot;
+      this.#controllerSnapshot = snapshot;
+      this.#snapshot = this.#tutorialSnapshot(snapshot);
       // The victory wave: a match won while watched holds its dialog.
       if (
         prior.phase === "ACTIVE" &&
@@ -2486,13 +2530,41 @@ export class Ruleset7DomAppView {
     }
     const play = this.#menuButton("New game", "new-game", "play", !resumable);
     play.onclick = () => this.#openFrontPage("SETUP");
+    // The tutorial (bead pulp_wars-0yxy): first and primary for a player
+    // who has never played here (no save, Hints on with no step of the
+    // coach done, no mission won, the tutorial never finished or skipped).
+    const newcomer =
+      !resumable &&
+      !this.#tutorial.completed &&
+      this.#firstSteps.enabled &&
+      this.#firstSteps.turns === 0 &&
+      Object.values(this.#firstSteps.done).every((count) => count === 0) &&
+      Object.keys(this.#campaignProgress().completed).length === 0;
+    const tutorial = this.#menuButton(
+      this.#confirmTutorialReplace ? "Replace saved game?" : "Tutorial",
+      "tutorial",
+      "info",
+      newcomer,
+    );
+    if (newcomer) play.classList.remove("is-primary");
+    tutorial.onclick = () => {
+      // A saved game is replaced only after a second press.
+      if (resumable && !this.#confirmTutorialReplace) {
+        this.#confirmTutorialReplace = true;
+        this.#frontFocus = '[data-action="tutorial"]';
+        this.#render();
+        return;
+      }
+      void this.#launchTutorial(resumable);
+    };
     const campaign = this.#menuButton("Campaign", "campaign", "flag");
     campaign.onclick = () => this.#openFrontPage("CAMPAIGN");
     const gallery = this.#menuButton("Gallery", "gallery", "sight");
     gallery.onclick = () => this.#openGallery();
     const settings = this.#menuButton("Settings", "front-settings", "gear");
     settings.onclick = () => this.#openFrontPage("SETTINGS");
-    nav.append(play, campaign, gallery, settings);
+    if (newcomer) nav.append(tutorial, play, campaign, gallery, settings);
+    else nav.append(play, tutorial, campaign, gallery, settings);
     main.append(nav);
     if (!resumable) {
       // The setup form is built with the menu and shown by New game, so a
@@ -2546,6 +2618,7 @@ export class Ruleset7DomAppView {
     this.#briefingMissionId = null;
     this.#confirmCampaignReset = false;
     this.#confirmStarsReset = false;
+    this.#confirmTutorialReplace = false;
     this.#error = "";
     this.#frontFocus =
       page !== "MENU"
@@ -4055,8 +4128,19 @@ export class Ruleset7DomAppView {
     const active = view.players.find((player) => player.id === activeId);
     const humanTurn = active?.controller === "HUMAN";
     // First steps (bead pulp_wars-2yc.39): the one cue of this render.
-    const firstStep = this.#chooseFirstStep(view);
-    this.#firstStepCue = firstStep;
+    // The tutorial (bead pulp_wars-0yxy) speaks instead of the coach while
+    // it forces the match, and while its farewell line is up.
+    const tutorial = this.#chooseTutorialCue(view);
+    this.#tutorialCue = tutorial;
+    const tutorialForces = tutorialActiveV7(this.#tutorial, view);
+    const coach =
+      tutorialForces || this.#tutorialFarewell
+        ? null
+        : this.#chooseFirstStep(view);
+    this.#firstStepCue = coach;
+    // What a HUD button is pointed at with: the tutorial's cue or the
+    // coach's (the technology screen has the tutorial's own line).
+    const firstStep = this.#screen === "MATCH" ? (tutorial ?? coach) : coach;
     const hud = el(this.#document, "header", "v7-match-hud");
     hud.dataset.v7Region = "hud";
     const projectedIncome = view.cities
@@ -4242,10 +4326,35 @@ export class Ruleset7DomAppView {
       if (firstStep?.button === "END_TURN")
         end.dataset.firstStep = firstStep.buttonMotion.toLowerCase();
       nav.append(end);
+    } else if (
+      tutorialForces &&
+      this.#controllerSnapshot.offeredCommands.some(
+        (candidate) => candidate.kind === "END_TURN",
+      )
+    ) {
+      // The tutorial: End turn stays in its place, closed until its step.
+      const end = button(
+        this.#document,
+        "End turn",
+        "end-turn",
+        "v7-hud-end-turn",
+      );
+      end.disabled = true;
+      end.dataset.tutorialGated = "true";
+      end.title = TUTORIAL_REFUSED_V7;
+      nav.append(end);
     }
     // The coach's line is the HUD's last child (bead pulp_wars-eu3r.9): on
     // a phone it flows under the HUD's rows, however many they wrap to.
-    if (firstStep !== null) hud.append(this.#firstStepLine(firstStep));
+    if (this.#screen === "MATCH" && tutorial !== null)
+      hud.append(this.#tutorialLine(tutorial));
+    else if (
+      this.#tutorialFarewell &&
+      this.#screen === "MATCH" &&
+      this.#snapshot.phase === "ACTIVE"
+    )
+      hud.append(this.#tutorialFarewellLine());
+    else if (coach !== null) hud.append(this.#firstStepLine(coach));
     nextChildren.push(hud);
     // The coins' flight layer: over the board and the HUD, under dialogs.
     nextChildren.push(this.#coinFlight.element);
@@ -4446,6 +4555,163 @@ export class Ruleset7DomAppView {
   }
 
   /**
+   * The tutorial (bead pulp_wars-0yxy): the snapshot the interface reads.
+   * While the tutorial forces the match, the offered commands are the
+   * step's one command (or none), so every highlight, button and End turn
+   * drawn from them follows. A step the engine does not offer on the
+   * player's turn ends the tutorial instead of trapping the player; that
+   * is not judged in the middle of the player's own command, when the
+   * step has not moved on yet.
+   */
+  #tutorialSnapshot(
+    snapshot: Ruleset7BrowserSnapshot,
+  ): Ruleset7BrowserSnapshot {
+    if (snapshot.phase !== "ACTIVE" || !isTutorialMatchV7(snapshot.view))
+      return snapshot;
+    if (!this.#humanDispatchPending) {
+      const progress = reconcileTutorialV7(
+        this.#tutorial,
+        snapshot.view,
+        snapshot.offeredCommands,
+      );
+      if (progress !== this.#tutorial) {
+        this.#tutorial = progress;
+        this.#persistTutorial();
+      }
+    }
+    const offeredCommands = tutorialCommandsV7(
+      this.#tutorial,
+      snapshot.view,
+      snapshot.offeredCommands,
+    );
+    return offeredCommands === snapshot.offeredCommands
+      ? snapshot
+      : { ...snapshot, offeredCommands };
+  }
+
+  /** The tutorial's record changed: store it and filter the commands anew. */
+  #setTutorial(progress: TutorialProgressV7): void {
+    if (progress === this.#tutorial) return;
+    this.#tutorial = progress;
+    this.#persistTutorial();
+    this.#snapshot = this.#tutorialSnapshot(this.#controllerSnapshot);
+  }
+
+  #persistTutorial(): void {
+    try {
+      this.#settingsStorage?.setItem(
+        TUTORIAL_STORAGE_KEY_V7,
+        serializeTutorialProgressV7(this.#tutorial),
+      );
+    } catch {
+      // The tutorial is then offered as new on the next visit.
+    }
+  }
+
+  /** The tutorial's cue of this render, or null. */
+  #chooseTutorialCue(view: PlayerViewV7): TutorialCueV7 | null {
+    if (this.#snapshot.phase !== "ACTIVE") return null;
+    return tutorialCueV7({
+      progress: this.#tutorial,
+      view,
+      selection: this.#selection,
+      ready:
+        (this.#screen === "MATCH" || this.#screen === "TECH") &&
+        view.turnOrder[view.activeSeatIndex] === view.humanPlayerId &&
+        !this.#snapshot.transitioning &&
+        !this.#snapshot.ai.active &&
+        !this.#presentationActive &&
+        this.#achievementNotices.length === 0 &&
+        view.pendingChoices.length === 0 &&
+        this.#selectedRecruitHelp === null &&
+        this.#selectedUnitHelpId === null,
+      technologyOpen: this.#screen === "TECH",
+      motion: this.#motion,
+    });
+  }
+
+  /**
+   * The tutorial's line: the step's number, one or two short sentences, a
+   * Next on an explanation, and Skip tutorial. The plate ignores the
+   * pointer; only its buttons take a click.
+   */
+  #tutorialLine(cue: TutorialCueV7): HTMLElement {
+    const line = el(this.#document, "div", "v7-first-step v7-tutorial-line");
+    line.dataset.v7Region = "tutorial";
+    line.dataset.tutorialStep = cue.step.toLowerCase();
+    line.setAttribute("role", "status");
+    const counter = text(
+      this.#document,
+      "span",
+      `${cue.number}/${cue.count}`,
+      "v7-tutorial-counter",
+    );
+    counter.setAttribute("aria-label", `Step ${cue.number} of ${cue.count}`);
+    const actions = el(this.#document, "span", "v7-tutorial-actions");
+    if (cue.next) {
+      const next = button(
+        this.#document,
+        TUTORIAL_NEXT_LABEL_V7,
+        "tutorial-next",
+        "primary-action v7-tutorial-next",
+      );
+      next.onclick = () => {
+        this.#setTutorial(acknowledgeTutorialV7(this.#tutorial));
+        this.#render();
+        this.#queueBoardFocus();
+      };
+      actions.append(next);
+    }
+    actions.append(this.#tutorialSkipButton());
+    line.append(
+      counter,
+      text(this.#document, "span", cue.line, "v7-first-step-text"),
+      actions,
+    );
+    return line;
+  }
+
+  #tutorialSkipButton(): HTMLButtonElement {
+    const skip = button(
+      this.#document,
+      TUTORIAL_SKIP_LABEL_V7,
+      "tutorial-skip",
+      "v7-tutorial-skip",
+    );
+    skip.onclick = () => {
+      this.#setTutorial(skipTutorialV7(this.#tutorial));
+      this.#render();
+      this.#queueBoardFocus();
+    };
+    return skip;
+  }
+
+  /** "You're on your own": up until the next command or its dismiss. */
+  #tutorialFarewellLine(): HTMLElement {
+    const line = el(this.#document, "p", "v7-first-step v7-tutorial-line");
+    line.dataset.v7Region = "tutorial";
+    line.dataset.tutorialStep = "done";
+    line.setAttribute("role", "status");
+    const dismiss = iconButton(
+      this.#document,
+      "close",
+      "Dismiss hint",
+      "tutorial-dismiss",
+    );
+    dismiss.classList.add("v7-first-step-dismiss");
+    dismiss.onclick = () => {
+      this.#tutorialFarewell = false;
+      this.#render();
+      this.#queueBoardFocus();
+    };
+    line.append(
+      text(this.#document, "span", TUTORIAL_FAREWELL_V7, "v7-first-step-text"),
+      dismiss,
+    );
+    return line;
+  }
+
+  /**
    * First steps (bead pulp_wars-2yc.39): the cue to show now. A unit whose
    * command the player just gave is checked first: when it has no Move
    * left, its "out of moves" line goes up for a few seconds (the first two
@@ -4576,7 +4842,10 @@ export class Ruleset7DomAppView {
       view,
       offeredCommands: this.#snapshot.offeredCommands,
       interactive: this.#boardInteractive(view),
-      firstStepMarker: this.#firstStepCue?.marker ?? null,
+      firstStepMarker:
+        (this.#screen === "MATCH" ? this.#tutorialCue?.marker : null) ??
+        this.#firstStepCue?.marker ??
+        null,
       motion: this.#motion,
       animationSpeed: this.#animationSpeed,
       presentationPaused: this.#screen === "SETTINGS",
@@ -7948,6 +8217,30 @@ export class Ruleset7DomAppView {
     };
     branches.append(branchSelect);
     section.append(branches, graph);
+    // The tutorial's research step: its line under the header, and the
+    // technology to pick ringed like a HUD button the coach points at.
+    const tutorial = this.#tutorialCue;
+    if (tutorial !== null && tutorial.technology !== null) {
+      const hint = el(this.#document, "div", "v7-tutorial-tech-line");
+      hint.dataset.v7Region = "tutorial";
+      hint.dataset.tutorialStep = tutorial.step.toLowerCase();
+      hint.setAttribute("role", "status");
+      hint.append(
+        text(
+          this.#document,
+          "span",
+          `${tutorial.number}/${tutorial.count}`,
+          "v7-tutorial-counter",
+        ),
+        text(this.#document, "span", tutorial.line, "v7-first-step-text"),
+      );
+      header.after(hint);
+      const node = graph.querySelector<HTMLElement>(
+        `[data-action="tech-${tutorial.technology.toLowerCase()}"]`,
+      );
+      if (node !== null && this.#selectedTech !== tutorial.technology)
+        node.dataset.firstStep = tutorial.buttonMotion.toLowerCase();
+    }
     const selected = tree.nodes.find((node) => node.id === this.#selectedTech);
     if (selected !== undefined) section.append(this.#techDetail(selected));
     return section;
@@ -9598,6 +9891,29 @@ export class Ruleset7DomAppView {
     )
       this.#queueBoardFocus();
   }
+  /** The main menu's Tutorial: the tutorial board, from its first step. */
+  async #launchTutorial(replace: boolean): Promise<void> {
+    this.#confirmTutorialReplace = false;
+    const mission = missionByIdV7(TUTORIAL_MISSION_ID_V7);
+    const setup = mission === null ? null : missionMatchSetupV7(mission);
+    if (setup === null) {
+      this.#error = "The tutorial can't be started.";
+      this.#render();
+      return;
+    }
+    const before = this.#tutorial;
+    // The record is set before the match exists, so its first snapshot is
+    // already the first step's.
+    this.#tutorialFarewell = false;
+    this.#tutorial = startTutorialV7(before);
+    this.#persistTutorial();
+    await this.#launch(setup, replace);
+    if (this.#destroyed) return;
+    if (!isTutorialMatchV7(this.#controllerSnapshot.view)) {
+      this.#tutorial = before;
+      this.#persistTutorial();
+    }
+  }
   async #resumeMatch(): Promise<void> {
     this.#achievementNotices = [];
     this.#scoreBreakdownFor = null;
@@ -9636,6 +9952,15 @@ export class Ruleset7DomAppView {
   /** Resolves true when the command was accepted and its presentation ran. */
   async #dispatch(command: CommandV7): Promise<boolean> {
     if (this.#localBusy()) return false;
+    // The tutorial (bead pulp_wars-0yxy): only the step's command goes to
+    // the engine; anything else is refused here.
+    const tutorialView = this.#controllerSnapshot.view;
+    if (!tutorialAcceptsV7(this.#tutorial, tutorialView, command)) {
+      this.#showToast(TUTORIAL_REFUSED_V7);
+      this.#audio.play("ui.error");
+      this.#render();
+      return false;
+    }
     this.#kaboomArmedUnitId = null;
     this.#kaboomHoverUnitId = null;
     this.#areaSupportHover = null;
@@ -9680,6 +10005,25 @@ export class Ruleset7DomAppView {
       return false;
     }
     this.#error = "";
+    // The tutorial: the step is done; the farewell goes up after the last
+    // one and comes down at the next command.
+    this.#tutorialFarewell = false;
+    if (
+      tutorialView !== null &&
+      tutorialActiveV7(this.#tutorial, tutorialView)
+    ) {
+      this.#setTutorial(
+        advanceTutorialV7(this.#tutorial, tutorialView, command),
+      );
+      if (this.#tutorial.step === null) this.#tutorialFarewell = true;
+      // The technology screen closes on the tutorial's research, so the
+      // next step is seen on the board.
+      if (command.kind === "RESEARCH") {
+        this.#screen = "MATCH";
+        this.#techGoal = null;
+        this.#modalReturnAction = null;
+      }
+    }
     if (this.#firstSteps.enabled) {
       const progress = noteFirstStepCommandV7(this.#firstSteps, command);
       if (progress !== this.#firstSteps) {
@@ -9777,10 +10121,20 @@ export class Ruleset7DomAppView {
     this.#releaseVictoryHold(false);
     this.#cancelPresentations();
     this.#scoreBreakdownFor = null;
+    // A restarted tutorial starts over at its first step.
+    const tutorialBefore = this.#tutorial;
+    const tutorialRestart = isTutorialMatchV7(this.#controllerSnapshot.view);
+    if (tutorialRestart) {
+      this.#tutorialFarewell = false;
+      this.#tutorial = startTutorialV7(tutorialBefore);
+      this.#persistTutorial();
+    }
     const result = await this.#controller.restart();
     if (this.#destroyed) return;
-    if (!result.ok) this.#error = result.diagnostic;
-    else {
+    if (!result.ok) {
+      this.#error = result.diagnostic;
+      if (tutorialRestart) this.#setTutorial(tutorialBefore);
+    } else {
       this.#matchInstance += 1;
       this.#selection = null;
       this.#screen = "MATCH";

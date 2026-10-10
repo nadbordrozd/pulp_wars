@@ -366,6 +366,76 @@ then the city to train in. Capture and End turn follow the sequence.
   from an offered command, so it never suggests an action a mission
   forbids.
 
+#### Tutorial
+
+Bead `pulp_wars-0yxy`. The main menu's **Tutorial** starts a guided first
+game: a real match (Humans against one Goblin AI seat) on the hand-built
+11 x 11 mission board `TUTORIAL_1`
+(`src/engine/v7/missions/tutorial.ts`), in which the player must take one
+given action at a time for the first two turns and then plays on. The
+script, its record and its cue are the pure module
+`src/render/tutorial-v7.ts`; the engine knows nothing of it and no rule
+changes.
+
+| Step | Turn | The one command the interface offers                 | Line (then, with the step's unit, city or tile selected)                                                                                    |
+| ---: | ---: | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+|    1 |    1 | Research Gathering (free: the first technology)      | "Technologies unlock new things. Your first is free: open Tech." In the technology screen: "Pick Gathering, then Research."                 |
+|    2 |    1 | Harvest Fruit on the fruit in the capital's land     | "Tap the fruit in your land." / "Press Harvest: it costs 2 Coins."                                                                          |
+|    3 |    1 | none: an explanation with **Next**                   | "Coins pay for everything, and your cities earn them every turn. The fruit fed your city: fill its population and it grows and earns more." |
+|    4 |    1 | Move the Fighter beside the village onto the village | "Tap this Fighter to move it." / "Tap the village to walk there."                                                                           |
+|    5 |    1 | Train a Fighter in the capital                       | "Tap your city to train a unit." / "Train a Fighter for 2 Coins."                                                                           |
+|    6 |    1 | Attack the lone Goblin with the other Fighter        | "A Goblin! Tap this Fighter." / "Tap the Goblin to attack it."                                                                              |
+|    7 |    1 | End turn                                             | "Each unit acts once a turn. End your turn."                                                                                                |
+|    8 |    2 | Capture the village with the Fighter standing on it  | "A unit that starts its turn on a village can take it. Tap this Fighter." / "Press Capture: the village becomes your city."                 |
+
+After step 8: "You're on your own. Take the Goblin city to win.", which
+goes at the next command or its dismiss, and the match is an ordinary one.
+
+- **The board** has everything in place before any AI turn: Fruit in the
+  capital's land, a Fighter one step from a village, an empty city center
+  with a free unit slot (the capital is level 2), 6 Coins on the first turn
+  (the harvest and the Fighter cost 2 each), and one Goblin next to the
+  second Fighter, which the one attack kills. The Goblin capital is in the
+  far corner with one Goblin and no Coins, so nothing of theirs is near
+  the village on turn 2.
+- **Forcing.** While the tutorial runs, the commands the interface reads
+  are the step's one command (none on the explanation): the board
+  highlights only that target, the dock and the technology screen show only
+  that action, and every other board pick and key does nothing. A command
+  that is not the step's is refused before it reaches the engine ("Follow
+  the tutorial step first."). **End turn** stays in its place, disabled,
+  until step 7. Looking is free: any tile, unit or city can be selected,
+  and the menu, Help, Settings and the leaderboard open as usual.
+- **The line** is the coach's yellow plate
+  (`[data-v7-region="tutorial"]`, `role="status"`) with the step's number
+  ("3/8"), one or two short sentences, **Next** on the explanation and
+  **Skip tutorial**. The plate ignores the pointer; its buttons take it.
+  The board marker and the ring on the Tech or End turn button are the
+  coach's own, and point at what to tap next: the step's unit, city or
+  tile, then (a move, an attack) its target. In the technology screen the
+  line stands under the title and Gathering has a red ring. The screen
+  closes by itself after the research. The first-steps coach is silent
+  while the tutorial runs and while its farewell is up; the commands the
+  player gives in the tutorial count for the coach's record.
+- **Skip tutorial** ends the forcing at once; the match goes on as an
+  ordinary game.
+- **Never a trap.** If, on the player's turn, the engine does not offer
+  the step's command (a save resumed in a state the script did not expect),
+  the tutorial ends quietly, as if skipped.
+- **The record** is per browser profile, not per save
+  (`pulpWars.ruleset7.tutorial.v1`: whether the tutorial was ever finished
+  or skipped, and the step a running tutorial is at; a missing or malformed
+  value is a new profile). A tutorial left with Save & quit resumes at its
+  step; Restart in the tutorial match starts it over.
+- **The menu.** **Tutorial** is the second button, after New game. For a
+  first-time player (no saved game, Hints on with nothing of the coach's
+  record done, no mission won, the tutorial never finished or skipped) it is the first and the primary
+  button, and New game an ordinary one. With a saved game waiting, the
+  first press turns the button into "Replace saved game?" and the second
+  starts the tutorial; opening another screen takes the question back.
+- The tutorial match records no campaign progress and no tribe stars (it
+  is a mission in no chapter). No line names a tile coordinate.
+
 #### Help
 
 Help is "How to play" (`src/render/help-text-v7.ts`): eight sections of a
@@ -2017,9 +2087,11 @@ the screens it opens (new game, campaign, Settings, save recovery). Ruleset
   directly over the picture, never in a panel, a side column or a dialog. In
   order: **Continue** (only when a saved game is waiting; under the word,
   its summary: "Turn 7 · 12 coins · 2 players · Continents", or "Mission 2 ·
-  The Warrens · Turn 7"), **New game**, **Campaign**, **Gallery**,
+  The Warrens · Turn 7"), **New game**, **Tutorial** (bead
+  `pulp_wars-0yxy`, [Tutorial](#tutorial)), **Campaign**, **Gallery**,
   **Settings**. Each button is an icon and one or two words. The first
-  button is the primary one (Continue, else New game). On a wide screen the
+  button is the primary one (Continue, else New game; for a first-time
+  player Tutorial comes first and is the primary one). On a wide screen the
   logo is top left and the stack bottom left, and the scene's units stand
   clear of it; on a phone or an upright tablet the logo and the stack are
   centred in the sky above the scene. A soft dark vignette behind the stack

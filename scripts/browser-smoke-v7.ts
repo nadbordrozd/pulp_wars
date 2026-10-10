@@ -261,7 +261,10 @@ try {
     })()`,
   );
   if (
-    titleScreen.actions.join() !== "new-game,campaign,gallery,front-settings" ||
+    // The Tutorial (pulp_wars-0yxy) is second here: this profile has won
+    // a mission, so it is not led with.
+    titleScreen.actions.join() !==
+      "new-game,tutorial,campaign,gallery,front-settings" ||
     titleScreen.focused !== "new-game" ||
     !titleScreen.overScene ||
     !titleScreen.inside ||

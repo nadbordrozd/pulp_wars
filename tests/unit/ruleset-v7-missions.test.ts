@@ -163,6 +163,9 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
   // checks).
   "LAB_CULT_MID@1:CULT":
     "93dd6cf4cf2ccdd33830315a9f5974c1d1ea88764ec34b4cd8fc74c32e0263b1",
+  // The tutorial board (`pulp_wars-0yxy`): Humans against one Goblin seat.
+  "TUTORIAL_1@1:ORIGINAL":
+    "f8d36a0cd1ab6b2e351b45b3f2721d0b1cfab3b58728cbd5b7cd9b471bc3ecb1",
 };
 
 /**
@@ -384,6 +387,9 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
   // The Cult's tricks (`pulp_wars-mch9.8`).
   "LAB_CULT_MID@1:CULT":
     "64514091a4c6998dbd67ff33bf9187ffe770f1fa2a631e572ede1a851819f576",
+  // The tutorial board (`pulp_wars-0yxy`).
+  "TUTORIAL_1@1:ORIGINAL":
+    "7740c5e7f57484e405c12cb665cfd33322eadbaf3c4907bc9b2483c5c05b0463",
 };
 
 function preCuriosityMissionStateHash(state: GameStateV7): string {

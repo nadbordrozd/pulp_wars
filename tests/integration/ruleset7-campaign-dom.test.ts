@@ -369,8 +369,10 @@ describe("Ruleset 7 mission dialogs", () => {
       expect(document.querySelector("[data-v7-campaign]")).toBeNull();
       expect(document.querySelector(".v7-main-menu")).not.toBeNull();
       expect(document.querySelector('[data-action="resume"]')).toBeNull();
+      // The menu's first button: the Tutorial, on a profile that has
+      // never played (`pulp_wars-0yxy`).
       expect(document.activeElement?.getAttribute("data-action")).toBe(
-        "new-game",
+        "tutorial",
       );
       view.destroy();
     }
@@ -487,9 +489,15 @@ describe("Ruleset 7 mission dialogs", () => {
       );
       expect(
         [...menu.querySelectorAll("button")].map((node) => node.dataset.action),
-      ).toEqual(["new-game", "campaign", "gallery", "front-settings"]);
-      expect(document.activeElement?.getAttribute("data-action")).toBe(
+      ).toEqual([
+        "tutorial",
         "new-game",
+        "campaign",
+        "gallery",
+        "front-settings",
+      ]);
+      expect(document.activeElement?.getAttribute("data-action")).toBe(
+        "tutorial",
       );
       view.destroy();
     }

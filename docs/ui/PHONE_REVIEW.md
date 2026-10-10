@@ -99,6 +99,23 @@ label); a dock that scrolls after its first row of actions (a city's
 training cards, a Kaboom! confirmation); in landscape the dock's close
 button over the zoom-out button while a dock is open.
 
+## The tutorial
+
+Bead `pulp_wars-0yxy` added the scenes `tutorial-research`,
+`tutorial-research-tech`, `tutorial-research-detail`, `tutorial-harvest`,
+`tutorial-harvest-picked`, `tutorial-resources`, `tutorial-move`,
+`tutorial-move-picked`, `tutorial-train`, `tutorial-train-picked`,
+`tutorial-attack`, `tutorial-attack-picked`, `tutorial-end-turn`,
+`tutorial-capture`, `tutorial-capture-picked` and `tutorial-farewell`: the
+tutorial's line at each of its eight steps, with the step's unit, city or
+tile picked, the technology screen of its research step, and the farewell
+after the capture. Each state is the tutorial board with the script's
+commands applied by the engine (`tests/fixtures/v7-tutorial-ui.ts`); no AI
+runs. They and `menu` (Tutorial first, for a new profile) were run at
+390 x 844, 320 x 720, 844 x 390 and, for comparison, 1440 x 900. Every
+check passes. On a phone the line is the HUD's last row, like the coach's;
+at 320 px Skip tutorial (and Next) wrap under the text.
+
 ## Nine seats and the Cultists
 
 Bead `pulp_wars-mch9.20` offered the ninth faction, so the setup seats nine

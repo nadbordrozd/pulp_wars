@@ -875,8 +875,9 @@ describe("Ruleset 7 browser smoke script", () => {
   it("drives the title screen: the menu over the scene, its keys, New game, and Main menu after a match", () => {
     const source = readFileSync("scripts/browser-smoke-v7.ts", "utf8");
     // The opening checks the menu's buttons, focus and place over the scene.
+    // The Tutorial is in the stack (`pulp_wars-0yxy`).
     expect(source).toContain(
-      'titleScreen.actions.join() !== "new-game,campaign,gallery,front-settings"',
+      '"new-game,tutorial,campaign,gallery,front-settings" ||',
     );
     expect(source).toContain('titleScreen.focused !== "new-game"');
     expect(source).toContain("!titleScreen.overScene");

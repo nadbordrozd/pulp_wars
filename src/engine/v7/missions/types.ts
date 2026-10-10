@@ -29,7 +29,10 @@ export interface MissionDefinitionV7 {
   readonly id: string;
   /** Bumped whenever the built initial state changes (section 2.4). */
   readonly revision: number;
-  /** Test fixtures: registered for headless and tests, in no chapter. */
+  /**
+   * In no campaign chapter: the test fixtures (registered for headless and
+   * tests) and the tutorial board (`TUTORIAL_1`, started from the menu).
+   */
   readonly hidden?: true;
   /**
    * Hidden fixtures only (`pulp_wars-w49.3`, the Human tuning labs): the
