@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
+  ACHIEVEMENT_IDS_V7,
+  FACTION_IDS_V7,
+  MONUMENT_POPULATION_V7,
   OFFERED_FACTION_IDS_V7,
   UNIT_ROLE_IDS_V7,
   effectiveRoleRuleV7,
@@ -15,6 +18,7 @@ import {
   galleryBuildingNameV7,
   galleryBuildingPerFactionV7,
   galleryBuildingSubjectV7,
+  galleryRowLabelV7,
   galleryUnitCellV7,
   galleryUnitDetailsV7,
   parseGalleryFiltersV7,
@@ -27,6 +31,17 @@ import {
 } from "../../src/render/gallery-demo-v7";
 import { recruitmentRolePresentationV7 } from "../../src/render/role-presentation-v7";
 import { roleGlossaryV7 } from "../../src/render/unit-glossary-v7";
+import {
+  ACHIEVEMENT_GOALS_V7,
+  achievementNameV7,
+} from "../../src/render/achievement-presentation-v7";
+import { chibiDirectionArtRegistryV7 } from "../../src/assets/chibi-direction-art-manifest";
+import {
+  assetGroupOfSubjectV7,
+  assetTiersV7,
+  chibiAssetUrlsV7,
+  factionAssetUrlsV7,
+} from "../../src/assets/asset-inventory-v7";
 
 /** The Gallery's pure model (bead pulp_wars-ic8). */
 describe("Gallery presentation", () => {
@@ -133,8 +148,8 @@ describe("Gallery presentation", () => {
     // other improvement stays one shared cell.
     // Bead pulp_wars-2yc.38: the Lumber Camp splits too.
     // Stage 2: the Forge, the Workshop, the Port and the Shipyard too, and
-    // the Market (pulp_wars-eu3r.1); the Mine and the Monuments stay one
-    // shared cell.
+    // the Market (pulp_wars-eu3r.1). The Monuments too (pulp_wars-2yc.44,
+    // below); the Mine stays one shared cell.
     const split = [
       "FARM",
       "WINDMILL",
@@ -145,6 +160,8 @@ describe("Gallery presentation", () => {
       "PORT",
       "SHIPYARD",
       "MARKET",
+      "MONUMENT",
+      ...ACHIEVEMENT_IDS_V7.map((achievement) => `MONUMENT_${achievement}`),
     ];
     for (const row of GALLERY_BUILDING_ROWS_V7.slice(3))
       expect(galleryBuildingPerFactionV7(row), row).toBe(split.includes(row));
@@ -242,6 +259,114 @@ describe("Gallery presentation", () => {
       cost: null,
       technology: null,
     });
+  });
+
+  it("shows every Monument and the obelisk in every faction's skin", () => {
+    // Bead pulp_wars-2yc.44 (the user: "all skins for all the monuments
+    // for all factions"): the obelisk row, then one row per achievement,
+    // named as the game names the achievement.
+    const rows = GALLERY_BUILDING_ROWS_V7.filter((row) =>
+      row.startsWith("MONUMENT"),
+    );
+    expect(rows).toEqual([
+      "MONUMENT",
+      "MONUMENT_EXPLORER",
+      "MONUMENT_ENGINEER",
+      "MONUMENT_MUSTER",
+      "MONUMENT_CONQUEROR",
+      "MONUMENT_LAND_BARON",
+      "MONUMENT_SEA_DOG",
+      "MONUMENT_SLAYER",
+    ]);
+    expect(rows.map((row) => galleryRowLabelV7(row))).toEqual([
+      "Monument",
+      ...ACHIEVEMENT_IDS_V7.map(
+        (achievement) => `${achievementNameV7(achievement)} Monument`,
+      ),
+    ]);
+    const live = chibiDirectionArtRegistryV7();
+    const subjects = new Set<string>();
+    for (const row of rows) {
+      expect(galleryBuildingPerFactionV7(row), row).toBe(true);
+      for (const faction of GALLERY_FACTIONS_V7) {
+        const subject = galleryBuildingSubjectV7(row, faction);
+        subjects.add(subject);
+        // The real sprite: the live look has a raster of its own for it.
+        expect(live.variants(subject), subject).toHaveLength(1);
+        // On the builder's ground, under the row's name.
+        expect(galleryBuildingGroundV7(row, faction)).toBe(
+          galleryBuildingGroundV7("FARM", faction),
+        );
+        expect(galleryBuildingNameV7(row, faction)).toBe(
+          galleryRowLabelV7(row),
+        );
+      }
+    }
+    // Every faction by every Monument is a sprite of its own.
+    expect(subjects.size).toBe(rows.length * GALLERY_FACTIONS_V7.length);
+    expect(galleryBuildingSubjectV7("MONUMENT", "ORIGINAL")).toBe(
+      "IMPROVEMENT:MONUMENT",
+    );
+    expect(galleryBuildingSubjectV7("MONUMENT", "DWARF")).toBe(
+      "IMPROVEMENT:MONUMENT:DWARF",
+    );
+    expect(galleryBuildingSubjectV7("MONUMENT_SLAYER", "ORIGINAL")).toBe(
+      "IMPROVEMENT:MONUMENT:SLAYER",
+    );
+    expect(galleryBuildingSubjectV7("MONUMENT_SLAYER", "CANDY")).toBe(
+      "IMPROVEMENT:MONUMENT:CANDY:SLAYER",
+    );
+    // The detail says in a few words which achievement earns it.
+    for (const achievement of ACHIEVEMENT_IDS_V7) {
+      const details = galleryBuildingDetailsV7(
+        `MONUMENT_${achievement}`,
+        "MARTIAN",
+      );
+      expect(details).toMatchObject({
+        name: `${achievementNameV7(achievement)} Monument`,
+        factionName: "Martian",
+        cost: null,
+        technology: null,
+      });
+      expect(details.description).toBe(
+        `The Monument of the ${achievementNameV7(achievement)} achievement: ${ACHIEVEMENT_GOALS_V7[achievement]} Each achievement earns a free Monument: +${MONUMENT_POPULATION_V7} population, one per city. It keeps its builder's look when its city is captured.`,
+      );
+    }
+    expect(galleryBuildingDetailsV7("MONUMENT", "UNDEAD")).toMatchObject({
+      name: "Monument",
+      factionName: "Undead",
+      description: `Another player's Monument: its achievement stays hidden. Each achievement earns a free Monument: +${MONUMENT_POPULATION_V7} population, one per city. It keeps its builder's look when its city is captured.`,
+    });
+    // A faction the Gallery hides has its Monuments ready (the Cult,
+    // tests/unit/gallery-unhidden-factions-v7.test.ts).
+    expect(DEFAULT_GALLERY_FILTERS_V7.buildingRows).toEqual(
+      GALLERY_BUILDING_ROWS_V7,
+    );
+  });
+
+  it("waits for every Monument sprite it shows", () => {
+    // The asset tiers (bead pulp_wars-2yc.42): the Gallery opens when the
+    // front tier and every faction's tier are in (app-view-v7.ts,
+    // #openGallery). Each Monument cell's files are in the front tier (the
+    // Human set, shared art) or in the tier of the cell's own faction.
+    const live = chibiDirectionArtRegistryV7();
+    const tiers = assetTiersV7("LIVE");
+    const front = new Set(tiers.front);
+    for (const row of GALLERY_BUILDING_ROWS_V7.filter((candidate) =>
+      candidate.startsWith("MONUMENT"),
+    ))
+      for (const faction of FACTION_IDS_V7) {
+        const asset = live.variants(galleryBuildingSubjectV7(row, faction))[0];
+        if (asset === undefined) throw new Error(`${row} ${faction}: no art`);
+        const waited = new Set([
+          ...front,
+          ...factionAssetUrlsV7(tiers, [faction]),
+        ]);
+        for (const url of chibiAssetUrlsV7(asset))
+          expect(waited.has(url), `${row} ${faction}: ${url}`).toBe(true);
+        if (faction !== "ORIGINAL")
+          expect(assetGroupOfSubjectV7(asset.subject)).toBe(faction);
+      }
   });
 
   it("parses, serializes and toggles the remembered filters", () => {

@@ -319,6 +319,71 @@ describe("Ruleset 7 Gallery", () => {
     expect(document.querySelectorAll(".v7-gallery-cell")).toHaveLength(101);
   });
 
+  it("filters the Monument rows and their factions, remembered", () => {
+    // Bead pulp_wars-2yc.44: the Monument rows obey the same chips.
+    mount();
+    openGallery();
+    required<HTMLButtonElement>(
+      '[data-action="gallery-tab-buildings"]',
+    ).click();
+    required<HTMLButtonElement>(
+      '[data-filter="rows"] [data-action="gallery-rows-none"]',
+    ).click();
+    for (const row of ["MONUMENT", "MONUMENT_SEA_DOG"])
+      required<HTMLButtonElement>(
+        `[data-filter="rows"] .v7-gallery-chip[data-value="${row}"]`,
+      ).click();
+    expect(
+      required(
+        '[data-filter="rows"] .v7-gallery-chip[data-value="MONUMENT_SEA_DOG"]',
+      ).textContent,
+    ).toBe("Sea Dog Monument");
+    required<HTMLButtonElement>(
+      '[data-filter="factions"] [data-action="gallery-factions-none"]',
+    ).click();
+    for (const faction of ["UNDEAD", "ICE_FOLK"])
+      required<HTMLButtonElement>(
+        `[data-filter="factions"] .v7-gallery-chip[data-value="${faction}"]`,
+      ).click();
+    const shown = () =>
+      [...document.querySelectorAll<HTMLElement>(".v7-gallery-cell")].map(
+        (node) =>
+          `${node.dataset.row}:${node.dataset.faction}:${node.querySelector("canvas")?.dataset.subject}`,
+      );
+    const expected = [
+      "MONUMENT:UNDEAD:IMPROVEMENT:MONUMENT:UNDEAD",
+      "MONUMENT:ICE_FOLK:IMPROVEMENT:MONUMENT:ICE_FOLK",
+      "MONUMENT_SEA_DOG:UNDEAD:IMPROVEMENT:MONUMENT:UNDEAD:SEA_DOG",
+      "MONUMENT_SEA_DOG:ICE_FOLK:IMPROVEMENT:MONUMENT:ICE_FOLK:SEA_DOG",
+    ];
+    expect(shown()).toEqual(expected);
+    expect(
+      JSON.parse(
+        window.localStorage.getItem(GALLERY_FILTERS_STORAGE_KEY_V7) ?? "{}",
+      ),
+    ).toMatchObject({
+      tab: "BUILDINGS",
+      factions: ["UNDEAD", "ICE_FOLK"],
+      buildingRows: ["MONUMENT", "MONUMENT_SEA_DOG"],
+    });
+    // A new visit restores the tab, the rows and the factions.
+    app?.destroy();
+    document.body.innerHTML = '<div id="app"></div>';
+    mount();
+    openGallery();
+    expect(shown()).toEqual(expected);
+    // The detail's arrows stay within the shown factions and rows.
+    cell("MONUMENT_SEA_DOG", "UNDEAD").click();
+    expect(
+      required('[data-action="gallery-next-faction"]').getAttribute(
+        "aria-label",
+      ),
+    ).toBe("Next faction: Ice Folk");
+    key(required(".v7-gallery-detail"), "ArrowUp");
+    expect(required("#v7-gallery-detail-title").textContent).toBe("Monument");
+    expect(required(".v7-gallery-detail-faction").textContent).toBe("Undead");
+  });
+
   it("survives storage that throws", () => {
     app = bootstrapRuleset7App(document, {
       storage: null,
@@ -593,14 +658,55 @@ describe("Ruleset 7 Gallery", () => {
       "PORT",
       "SHIPYARD",
     ]);
-    const slayer = rows[19]?.querySelectorAll<HTMLElement>(".v7-gallery-cell");
-    expect(slayer).toHaveLength(1);
-    expect(slayer?.[0]?.getAttribute("aria-label")).toBe(
-      "Slayer Monument, every faction",
-    );
-    expect(slayer?.[0]?.querySelector("canvas")?.dataset.subject).toBe(
+    // Bead pulp_wars-2yc.44: every Monument and the obelisk in every
+    // faction's skin, one cell per faction on that faction's ground.
+    const monumentRows = rows.slice(12, 20);
+    expect(
+      monumentRows.map(
+        (row) => row.querySelector(".v7-gallery-row-head")?.textContent,
+      ),
+    ).toEqual([
+      "Monument",
+      "Explorer Monument",
+      "Engineer Monument",
+      "Muster Monument",
+      "Conqueror Monument",
+      "Land Baron Monument",
+      "Sea Dog Monument",
+      "Slayer Monument",
+    ]);
+    const monumentSubjects = new Set<string>();
+    for (const row of monumentRows) {
+      const cells = [...row.querySelectorAll<HTMLElement>(".v7-gallery-cell")];
+      expect(cells.map((node) => node.dataset.faction)).toEqual([
+        ...OFFERED_FACTION_IDS_V7,
+      ]);
+      expect(row.querySelector(".is-shared")).toBeNull();
+      for (const node of cells) {
+        const subject = node.querySelector("canvas")?.dataset.subject ?? "";
+        expect(subject.startsWith("IMPROVEMENT:MONUMENT")).toBe(true);
+        monumentSubjects.add(subject);
+      }
+    }
+    expect(monumentSubjects.size).toBe(8 * OFFERED_FACTION_IDS_V7.length);
+    const slayer = cell("MONUMENT_SLAYER", "ORIGINAL");
+    expect(slayer.getAttribute("aria-label")).toBe("Slayer Monument, Human");
+    expect(slayer.querySelector("canvas")?.dataset.subject).toBe(
       "IMPROVEMENT:MONUMENT:SLAYER",
     );
+    const undeadSlayer = cell("MONUMENT_SLAYER", "UNDEAD");
+    expect(undeadSlayer.getAttribute("aria-label")).toBe(
+      "Slayer Monument, Undead",
+    );
+    expect(undeadSlayer.querySelector("canvas")?.dataset.subject).toBe(
+      "IMPROVEMENT:MONUMENT:UNDEAD:SLAYER",
+    );
+    expect(
+      cell("MONUMENT", "ORIGINAL").querySelector("canvas")?.dataset.subject,
+    ).toBe("IMPROVEMENT:MONUMENT");
+    expect(
+      cell("MONUMENT", "MARTIAN").querySelector("canvas")?.dataset.subject,
+    ).toBe("IMPROVEMENT:MONUMENT:MARTIAN");
     expect(rows[0]?.querySelectorAll(".v7-gallery-cell").length).toBe(8);
     expect(
       cell("CITY_2", "MARTIAN").querySelector("canvas")?.dataset.subject,
@@ -670,8 +776,47 @@ describe("Ruleset 7 Gallery", () => {
     expect(
       cell("MARKET", "ORIGINAL").querySelector("canvas")?.dataset.subject,
     ).toBe("IMPROVEMENT:MARKET");
-    for (const row of [6, 12, 13, 14])
+    // Only the Village and the Mine are still one shared cell.
+    for (const row of [3, 6])
       expect(rows[row]?.querySelectorAll(".v7-gallery-cell")).toHaveLength(1);
+    expect(document.querySelectorAll(".v7-gallery-cell")).toHaveLength(
+      20 * 8 + 2,
+    );
+    // A Monument's detail: the faction, the name, what earns it; the
+    // arrows step along the factions and down the Monument rows.
+    cell("MONUMENT_EXPLORER", "DWARF").click();
+    expect(required("#v7-gallery-detail-title").textContent).toBe(
+      "Explorer Monument",
+    );
+    expect(required(".v7-gallery-detail-faction").textContent).toBe("Dwarf");
+    expect(required(".v7-gallery-description").textContent).toContain(
+      "The Monument of the Explorer achievement: Explore half the map.",
+    );
+    expect(
+      required(".v7-gallery-detail canvas.v7-gallery-tile").dataset.subject,
+    ).toBe("IMPROVEMENT:MONUMENT:DWARF:EXPLORER");
+    key(required(".v7-gallery-detail"), "ArrowRight");
+    expect(required(".v7-gallery-detail-faction").textContent).toBe("Candy");
+    expect(
+      required(".v7-gallery-detail canvas.v7-gallery-tile").dataset.subject,
+    ).toBe("IMPROVEMENT:MONUMENT:CANDY:EXPLORER");
+    key(required(".v7-gallery-detail"), "ArrowUp");
+    expect(required("#v7-gallery-detail-title").textContent).toBe("Monument");
+    expect(required(".v7-gallery-detail-faction").textContent).toBe("Candy");
+    expect(required(".v7-gallery-description").textContent).toContain(
+      "Another player's Monument: its achievement stays hidden.",
+    );
+    expect(
+      required(".v7-gallery-detail canvas.v7-gallery-tile").dataset.subject,
+    ).toBe("IMPROVEMENT:MONUMENT:CANDY");
+    required<HTMLButtonElement>('[data-action="gallery-detail-close"]').click();
+    // The grid's arrow keys walk the Monument cells.
+    const explorer = cell("MONUMENT_EXPLORER", "GOBLIN");
+    explorer.focus();
+    key(explorer, "ArrowRight");
+    expect(document.activeElement).toBe(cell("MONUMENT_EXPLORER", "DINOSAUR"));
+    key(cell("MONUMENT_EXPLORER", "DINOSAUR"), "ArrowDown");
+    expect(document.activeElement).toBe(cell("MONUMENT_ENGINEER", "DINOSAUR"));
     const graveyard = cell("FARM", "UNDEAD");
     expect(graveyard.getAttribute("aria-label")).toBe("Graveyard, Undead");
     expect(graveyard.querySelector("canvas")?.dataset.subject).toBe(

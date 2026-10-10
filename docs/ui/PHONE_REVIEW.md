@@ -15,7 +15,9 @@ npm run review:ruleset7-phone-ui -- http://localhost:6173/ --output-dir=<new-dir
 fixtures of `tests/fixtures`) and `CHROME_PATH`; Chrome runs headless and
 muted. Options: `--only=<scene,...>`, `--sizes=p390,p320,l844`,
 `--report-only` (write the findings, never fail). One size takes about a
-quarter of an hour; the three sizes can run side by side.
+quarter of an hour; the three sizes can run side by side. `--sizes=d1440`
+adds a 1440 x 900 desktop capture of the named scenes for comparison (it
+is not one of the phone sizes and never runs unasked).
 
 Each scene is captured as `<scene>-<size>.png` and checked in the page.
 The run fails on any of:
@@ -40,7 +42,8 @@ The findings are written to `findings.json` beside the captures.
 
 The main menu; New game (both modes, the tribe picker with its stars and
 their rules, eight seats, a seed); the campaign and a briefing; settings;
-every Gallery tab, the filters, a unit and a curiosity; the loading screen;
+every Gallery tab, the filters, the Monument rows (both ends of the table)
+and a Monument, a unit and a curiosity; the loading screen;
 the HUD with the coach line; the match menu; the leaderboard with a score
 breakdown; Perfection's round counter; the technology tree and a
 technology; Help, settings and achievements in a match; a city with its

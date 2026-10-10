@@ -279,8 +279,8 @@ describe("the faction Monuments", () => {
     }
     // The skin rule (bead pulp_wars-eu3r.3): the board, the dock and the
     // build button ask for the builder's faction look (the territory
-    // owner's faction is ignored for a Monument); the Gallery still shows
-    // the achievement's (Human) look or the shared one, whatever the faction.
+    // owner's faction is ignored for a Monument); the Gallery shows every
+    // faction's own (bead pulp_wars-2yc.44).
     for (const faction of FACTIONS) {
       expect(
         tileImprovementSubjectV7(
@@ -291,7 +291,7 @@ describe("the faction Monuments", () => {
         ),
       ).toBe("IMPROVEMENT:MONUMENT");
       expect(galleryBuildingSubjectV7("MONUMENT", faction)).toBe(
-        "IMPROVEMENT:MONUMENT",
+        subjectOf(faction, null),
       );
       expect(monumentArtSubjectV7(null, faction)).toBe(
         subjectOf(faction, null),
@@ -311,7 +311,7 @@ describe("the faction Monuments", () => {
         ).toBe(subjectOf(faction, achievement));
         expect(
           galleryBuildingSubjectV7(`MONUMENT_${achievement}`, faction),
-        ).toBe(`IMPROVEMENT:MONUMENT:${achievement}`);
+        ).toBe(subjectOf(faction, achievement));
       }
     }
     expect(

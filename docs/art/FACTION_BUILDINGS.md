@@ -612,7 +612,9 @@ Purely visual: no rule, command, save or identity changed.
   (`commandSubjectV7`), the Achievements screen shows each one beside its
   card, the "achievement complete" notice shows it in the badge, and the
   Gallery's Buildings tab has one row per achievement under the shared
-  Monument ("Explorer Monument", ...). A subject without a raster (the
+  Monument ("Explorer Monument", ...; since bead `pulp_wars-2yc.44` each
+  row has a cell per faction, [section 15](#15-faction-monuments-bead-pulp_wars-eu3r2)).
+  A subject without a raster (the
   Classic look) falls back to the shared Monument.
 
 ### Evidence
@@ -965,7 +967,8 @@ its subject line `IMPROVEMENT:<FACTION>:MARKET` in
 - **Fallbacks.** The Classic look and the LEGACY art set draw the shared
   Market.
 - **Gallery.** The Market row of the Buildings tab has one cell per
-  faction; the Mine and the Monuments stay one shared cell.
+  faction; the Mine and the Monuments stay one shared cell (the Monuments
+  until bead `pulp_wars-2yc.44`, section 15).
 
 ### Evidence
 
@@ -1116,8 +1119,13 @@ and everyone else for the builder's obelisk `IMPROVEMENT:MONUMENT:<FACTION>`;
 a Human Monument, and one without a recorded builder, keeps the Human
 subjects (`IMPROVEMENT:MONUMENT:<ACHIEVEMENT>` or the shared
 `IMPROVEMENT:MONUMENT`). The build buttons and the Achievements screen show
-the viewer's own faction's Monument. The Gallery still shows one Human row
-per achievement.
+the viewer's own faction's Monument. The Gallery shows every one of them
+(bead `pulp_wars-2yc.44`, the user 2026-10-10: "all skins for all the
+monuments for all factions"): the Buildings tab's "Monument" row is the
+obelisk and the seven rows under it the achievements' Monuments, each with
+one cell per faction on that faction's ground
+(`galleryBuildingSubjectV7` asks `monumentArtSubjectV7` with the column's
+faction). A hidden faction has no column; its Monuments appear with it.
 
 ### Evidence
 

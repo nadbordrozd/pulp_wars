@@ -2053,6 +2053,16 @@ This overlay (`pulp_wars-ic8`) adds one front screen to the current Ruleset
   cell is named as that faction has the building ("Graveyard", "Solar
   Array"; "Farm" for a faction that keeps the shared one), and an Undead
   cell stands on the Undead ground.
+- **Monuments** (`pulp_wars-2yc.44`). Eight rows of the Buildings tab:
+  **Monument** (the obelisk another player sees, since a Monument's
+  achievement is its owner's to know) and one per achievement, named as
+  the game names it ("Explorer Monument" to "Slayer Monument"). Each has a
+  cell per shown faction with that faction's own sprite on its ground; the
+  faction and row chips filter them like every other row. A detail says
+  which achievement earns the Monument and what it asks for; the obelisk's
+  says "Another player's Monument: its achievement stays hidden." A
+  faction the Gallery hides (the Cult today) has no column; its Monuments
+  appear when it is offered, with no change here.
 - **Sounds tab** (`pulp_wars-2yc.19`,
   [Sound](SOUND.md#the-gallerys-sounds-tab)). The last tab has no table and
   no filters: the Settings sound toggle and volume slider, then every sound

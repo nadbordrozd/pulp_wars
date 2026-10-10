@@ -247,8 +247,9 @@ export const GALLERY_UNIT_ROWS_V7: readonly GalleryUnitRowIdV7[] = [
 
 /**
  * A Monument as one achievement draws it (bead pulp_wars-2yc.15): a row of
- * its own under the shared Monument, which is how a Monument looks when
- * its achievement is not the viewer's to see.
+ * its own under the "Monument" row, the obelisk a Monument shows a viewer
+ * who may not see its achievement. Every faction builds each of them in
+ * its own materials (bead pulp_wars-2yc.44: a cell per faction).
  */
 export type GalleryMonumentRowIdV7 = `MONUMENT_${AchievementIdV7}`;
 
@@ -549,7 +550,12 @@ export function gallerySlotsTextV7(slots: number): string {
 
 // ---------- Buildings ----------
 
-/** The art subject of a building row as a faction has it. */
+/**
+ * The art subject of a building row as a faction has it. A Monument is the
+ * one `faction` builds (bead pulp_wars-2yc.44: every achievement's Monument
+ * and the obelisk in every faction's materials; the Human ones are the
+ * shared set).
+ */
 export function galleryBuildingSubjectV7(
   row: GalleryBuildingRowIdV7,
   faction: FactionIdV7,
@@ -561,9 +567,9 @@ export function galleryBuildingSubjectV7(
     });
   if (row === "VILLAGE") return "SITE:VILLAGE";
   const improvement = galleryRowImprovement(row);
-  return improvement === null
-    ? monumentArtSubjectV7(galleryMonumentAchievementV7(row))
-    : factionImprovementSubjectV7(improvement, faction);
+  if (improvement === null || improvement === "MONUMENT")
+    return monumentArtSubjectV7(galleryMonumentAchievementV7(row), faction);
+  return factionImprovementSubjectV7(improvement, faction);
 }
 
 /**
@@ -571,17 +577,17 @@ export function galleryBuildingSubjectV7(
  * column per faction, else one shared cell. Cities differ, and so do the
  * improvements some faction draws in a look of its own (the Farm, the
  * Windmill and the Sawmill, epic pulp_wars-xdh; the Lumber Camp and every
- * faction's Sawmill, bead pulp_wars-2yc.38).
+ * faction's Sawmill, bead pulp_wars-2yc.38), and every Monument (bead
+ * pulp_wars-2yc.44). `factions` is the Gallery's (a test passes another
+ * list).
  */
 export function galleryBuildingPerFactionV7(
   row: GalleryBuildingRowIdV7,
+  factions: readonly FactionIdV7[] = GALLERY_FACTIONS_V7,
 ): boolean {
   return (
-    new Set(
-      GALLERY_FACTIONS_V7.map((faction) =>
-        galleryBuildingSubjectV7(row, faction),
-      ),
-    ).size > 1
+    new Set(factions.map((faction) => galleryBuildingSubjectV7(row, faction)))
+      .size > 1
   );
 }
 
@@ -691,6 +697,13 @@ const BUILDING_DESCRIPTIONS: Readonly<
   SHIPYARD: "An upgraded Port. Ships cost less.",
 };
 
+/**
+ * The "Monument" row is the obelisk: the view names a Monument's
+ * achievement to its owner only (RULESET_7.md), so everyone else sees this.
+ */
+export const MONUMENT_OBELISK_TEXT_V7 =
+  "Another player's Monument: its achievement stays hidden.";
+
 /** Port and Shipyard costs (the engine's economic preview, query.ts). */
 const NAVAL_BUILDING_COSTS: Partial<Record<ImprovementIdV7, number>> = {
   PORT: 4,
@@ -731,7 +744,8 @@ export function galleryBuildingDetailsV7(
     return {
       name,
       factionName,
-      description,
+      // The obelisk (pulp_wars-2yc.44): what the row shows and why.
+      description: `${MONUMENT_OBELISK_TEXT_V7} ${description}`,
       effects: [],
       cost: null,
       technology: null,

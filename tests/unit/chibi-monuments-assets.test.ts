@@ -274,7 +274,7 @@ describe("a Monument on the board", () => {
 });
 
 describe("the Gallery's Monuments", () => {
-  it("lists the shared Monument and one row per achievement, each one shared cell", () => {
+  it("lists the obelisk and one row per achievement, the Human cells in the shared set", () => {
     const at = GALLERY_BUILDING_ROWS_V7.indexOf("MONUMENT");
     expect(
       GALLERY_BUILDING_ROWS_V7.slice(at, at + 1 + ACHIEVEMENT_IDS_V7.length),
@@ -283,13 +283,14 @@ describe("the Gallery's Monuments", () => {
       ...ACHIEVEMENT_IDS_V7.map((achievement) => `MONUMENT_${achievement}`),
     ]);
     expect(galleryMonumentAchievementV7("MONUMENT")).toBeNull();
-    expect(galleryBuildingSubjectV7("MONUMENT", "UNDEAD")).toBe(
+    expect(galleryBuildingSubjectV7("MONUMENT", "ORIGINAL")).toBe(
       "IMPROVEMENT:MONUMENT",
     );
     for (const achievement of ACHIEVEMENT_IDS_V7) {
       const row = `MONUMENT_${achievement}` as const;
       expect(galleryMonumentAchievementV7(row)).toBe(achievement);
-      expect(galleryBuildingPerFactionV7(row), row).toBe(false);
+      // One cell per faction (bead pulp_wars-2yc.44).
+      expect(galleryBuildingPerFactionV7(row), row).toBe(true);
       expect(galleryBuildingSubjectV7(row, "ORIGINAL")).toBe(
         `IMPROVEMENT:MONUMENT:${achievement}`,
       );
@@ -297,9 +298,9 @@ describe("the Gallery's Monuments", () => {
     expect(galleryBuildingNameV7("MONUMENT_LAND_BARON", null)).toBe(
       "Land Baron Monument",
     );
-    expect(galleryBuildingDetailsV7("MONUMENT_SEA_DOG", null)).toEqual({
+    expect(galleryBuildingDetailsV7("MONUMENT_SEA_DOG", "ORIGINAL")).toEqual({
       name: "Sea Dog Monument",
-      factionName: null,
+      factionName: "Human",
       description:
         "The Monument of the Sea Dog achievement: Own 5 warships at once. Each achievement earns a free Monument: +3 population, one per city. It keeps its builder's look when its city is captured.",
       effects: [],

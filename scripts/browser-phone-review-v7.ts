@@ -39,6 +39,7 @@ import { prepareSmokeOutput } from "./browser-smoke-output";
  * Usage: tsx scripts/browser-phone-review-v7.ts http://localhost:6173/
  *   [--output-dir=<new-dir>] [--only=menu,setup,...] [--sizes=p390,p320,l844]
  *   [--report-only]
+ * `--sizes=d1440` adds a 1440 x 900 desktop capture of the named scenes.
  */
 
 interface DebugTarget {
@@ -62,9 +63,11 @@ interface Coord {
   readonly y: number;
 }
 interface Size {
-  readonly name: "p390" | "p320" | "l844";
+  readonly name: "p390" | "p320" | "l844" | "d1440";
   readonly width: number;
   readonly height: number;
+  /** Captured only when `--sizes` names it (the desktop comparison). */
+  readonly onRequest?: boolean;
 }
 interface Problem {
   readonly check: string;
@@ -86,6 +89,9 @@ const SIZES: readonly Size[] = [
   { name: "p390", width: 390, height: 844 },
   { name: "p320", width: 320, height: 720 },
   { name: "l844", width: 844, height: 390 },
+  // A desktop window, for a side-by-side look at a front screen (bead
+  // pulp_wars-2yc.44); not one of the phone sizes.
+  { name: "d1440", width: 1440, height: 900, onRequest: true },
 ];
 
 const args = process.argv.slice(2);
@@ -252,6 +258,55 @@ const SCENES: readonly Scene[] = [
         `document.querySelector('.v7-gallery-filters')?.setAttribute('open', '')`,
       );
       await delay(300);
+    },
+  },
+  // The Monuments (bead pulp_wars-2yc.44): eight rows by every faction.
+  ...(["MONUMENT", "MONUMENT_LAND_BARON"] as const).map((row): Scene => ({
+    name: row === "MONUMENT" ? "gallery-monuments" : "gallery-monuments-lower",
+    match: false,
+    sideways: [".v7-gallery-scroll"],
+    run: async (c) => {
+      await front(c);
+      await click(c, "gallery");
+      await click(c, "gallery-tab-buildings");
+      await delay(800);
+      // The row's head under the sticky faction header.
+      await evaluate(
+        c,
+        `(() => { const scroll = document.querySelector('.v7-gallery-scroll'); const row = document.querySelector('.v7-gallery-table tr[data-row="${row}"]'); const head = document.querySelector('.v7-gallery-table thead'); if (scroll === null || row === null || head === null) throw new Error('no Monument row'); row.scrollIntoView({ block: 'start' }); scroll.scrollTop -= head.getBoundingClientRect().height; })()`,
+      );
+      await delay(600);
+    },
+  })),
+  {
+    name: "gallery-monuments-right",
+    match: false,
+    sideways: [".v7-gallery-scroll"],
+    run: async (c) => {
+      await front(c);
+      await click(c, "gallery");
+      await click(c, "gallery-tab-buildings");
+      await delay(800);
+      // The last factions' columns of the same rows.
+      await evaluate(
+        c,
+        `(() => { const scroll = document.querySelector('.v7-gallery-scroll'); const row = document.querySelector('.v7-gallery-table tr[data-row="MONUMENT"]'); const head = document.querySelector('.v7-gallery-table thead'); if (scroll === null || row === null || head === null) throw new Error('no Monument row'); row.scrollIntoView({ block: 'start' }); scroll.scrollTop -= head.getBoundingClientRect().height; scroll.scrollLeft = scroll.scrollWidth; })()`,
+      );
+      await delay(600);
+    },
+  },
+  {
+    name: "gallery-monument-detail",
+    match: false,
+    run: async (c) => {
+      await front(c);
+      await click(c, "gallery");
+      await click(c, "gallery-tab-buildings");
+      await evaluate(
+        c,
+        `document.querySelector('[data-action="gallery-open-building"][data-row="MONUMENT_LAND_BARON"][data-faction="ICE_FOLK"]')?.click()`,
+      );
+      await delay(1_200);
     },
   },
   {
@@ -1024,7 +1079,10 @@ const EIGHT_PLAYER_VICTORY = `(() => {
 try {
   let connection = await openPage(await waitForTarget());
   for (const size of SIZES) {
-    if (sizes !== undefined && !sizes.includes(size.name)) continue;
+    if (
+      sizes === undefined ? size.onRequest === true : !sizes.includes(size.name)
+    )
+      continue;
     for (const scene of SCENES) {
       if (only !== undefined && !only.includes(scene.name)) continue;
       if (size.name === "l844" && !scene.match) continue;
@@ -1206,7 +1264,10 @@ async function check(
       // Overlaps, among the controls and among the text a player reads, in
       // the same layer: a menu, a dialog, the dock or a sheet laid over
       // other things (its own positioned layer) covers them by design.
+      // A sticky box is a layer by itself: what scrolls under a table's
+      // pinned header or first column is covered by design.
       const layerOf = (node) => {
+        if (getComputedStyle(node).position === 'sticky') return node;
         for (let up = node.parentElement; up !== null; up = up.parentElement)
           if (up === document.body || /^(absolute|fixed|sticky)$/.test(getComputedStyle(up).position)) return up;
         return document.body;
@@ -1458,8 +1519,9 @@ async function setViewport(connection: Connection, size: Size): Promise<void> {
   await connection.send("Emulation.setDeviceMetricsOverride", {
     width: size.width,
     height: size.height,
-    deviceScaleFactor: 2,
-    mobile: true,
+    // The desktop comparison is a plain window at DPR 1.
+    deviceScaleFactor: size.onRequest === true ? 1 : 2,
+    mobile: size.onRequest !== true,
     screenOrientation:
       size.width > size.height
         ? { type: "landscapePrimary", angle: 90 }
