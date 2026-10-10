@@ -2485,6 +2485,249 @@
         "reviewedAt": "2026-10-02T23:33:49.846Z"
       }
     },
+    "icon-freeze-a": {
+      "id": "icon-freeze-a",
+      "asset": "chibi-direction-icon-action-freeze",
+      "jobId": "sync-9647453d-2ce1-400a-a545-b48c2907c4f8",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "direction-ice-folk",
+        "asset": "chibi-direction-icon-action-freeze",
+        "subject": "ICON:ACTION:FREEZE",
+        "faction": "ICE_FOLK",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 76001,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/ICE_FOLK.md#prompt-fragment + docs/art/factions/ICE_FOLK.md#negative-fragment",
+            "text": "Faction: ice-age folk of the frozen mountain peaks, calm and friendly. Their fixed colours: shaggy warm white and cream fur shaded with warm taupe grey, never blue-grey; dark charcoal slate on the bare faces, hands and feet of beasts; dark brown-grey hide and furs; pale ivory bone; and exactly one accent colour, a bright clear ice blue with white highlights, only as small ice crystals, frost and ice shards.",
+            "negative": "red, crimson, gold, brass, orange, fire, flames, green, lime, purple, violet, magenta, pink, blue-grey fur, grey fur, metal armour, steel, chrome, plate armour, medieval knight, helmet, sword, gun, scary, horror, realistic, large glowing area"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+            "text": "Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/ICE_FOLK.json",
+            "text": "Subject: Freeze: one big curling sea wave frozen solid into clear ice crystal, with a row of sharp icicles hanging from its curled crest and a white shine along its back; nothing else in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "",
+            "negative": "grass, ground, dirt, slab, platform, person, character, hand, fire, orange, purple, red, surfer, boat, fish, beach, sand, green water"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: ice-age folk of the frozen mountain peaks, calm and friendly. Their fixed colours: shaggy warm white and cream fur shaded with warm taupe grey, never blue-grey; dark charcoal slate on the bare faces, hands and feet of beasts; dark brown-grey hide and furs; pale ivory bone; and exactly one accent colour, a bright clear ice blue with white highlights, only as small ice crystals, frost and ice shards. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Freeze: one big curling sea wave frozen solid into clear ice crystal, with a row of sharp icicles hanging from its curled crest and a white shine along its back; nothing else in the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, red, crimson, gold, brass, orange, fire, flames, green, lime, purple, violet, magenta, pink, blue-grey fur, grey fur, metal armour, steel, chrome, plate armour, medieval knight, helmet, sword, gun, scary, horror, realistic, large glowing area, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, grass, ground, dirt, slab, platform, person, character, hand, surfer, boat, fish, beach, sand, green water",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: ice-age folk of the frozen mountain peaks, calm and friendly. Their fixed colours: shaggy warm white and cream fur shaded with warm taupe grey, never blue-grey; dark charcoal slate on the bare faces, hands and feet of beasts; dark brown-grey hide and furs; pale ivory bone; and exactly one accent colour, a bright clear ice blue with white highlights, only as small ice crystals, frost and ice shards. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Freeze: one big curling sea wave frozen solid into clear ice crystal, with a row of sharp icicles hanging from its curled crest and a white shine along its back; nothing else in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, red, crimson, gold, brass, orange, fire, flames, green, lime, purple, violet, magenta, pink, blue-grey fur, grey fur, metal armour, steel, chrome, plate armour, medieval knight, helmet, sword, gun, scary, horror, realistic, large glowing area, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, grass, ground, dirt, slab, platform, person, character, hand, surfer, boat, fish, beach, sand, green water."
+      },
+      "submittedAt": "2026-10-10T12:44:17.013Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-ice-folk/icon-freeze-a.png",
+      "rawSheetSha256": "c1f193bbc121bb344fd875ebf54cdad28bece8bb8230abea9f71492350af6982",
+      "plateHints": [
+        {
+          "bandRows": 5,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-10T12:44:43.510Z",
+      "usageUsd": 0.007472292529212104,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "A yeti's face inside a small ball of water, 36 px wide: the faction layer's beast, and no wave.",
+        "reviewedAt": "2026-10-10T12:55:44.082Z"
+      }
+    },
+    "icon-freeze-b": {
+      "id": "icon-freeze-b",
+      "asset": "chibi-direction-icon-action-freeze",
+      "jobId": "sync-4d91f710-ef9f-4b46-9228-301e483d5aed",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "direction-ice-folk",
+        "asset": "chibi-direction-icon-action-freeze",
+        "subject": "ICON:ACTION:FREEZE",
+        "faction": "ICE_FOLK",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 76002,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/ICE_FOLK.md#prompt-fragment + docs/art/factions/ICE_FOLK.md#negative-fragment",
+            "text": "Faction: ice-age folk of the frozen mountain peaks, calm and friendly. Their fixed colours: shaggy warm white and cream fur shaded with warm taupe grey, never blue-grey; dark charcoal slate on the bare faces, hands and feet of beasts; dark brown-grey hide and furs; pale ivory bone; and exactly one accent colour, a bright clear ice blue with white highlights, only as small ice crystals, frost and ice shards.",
+            "negative": "red, crimson, gold, brass, orange, fire, flames, green, lime, purple, violet, magenta, pink, blue-grey fur, grey fur, metal armour, steel, chrome, plate armour, medieval knight, helmet, sword, gun, scary, horror, realistic, large glowing area"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+            "text": "Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/ICE_FOLK.json",
+            "text": "Subject: Freeze: one big curling sea wave frozen solid into clear ice crystal, with a row of sharp icicles hanging from its curled crest and a white shine along its back; nothing else in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "It is a plain object, not a living thing: no face, no eyes, no animal and no fur anywhere. Only the frozen wave, tall and wide, filling the whole square; its ice is bright blue with white edges.",
+            "negative": "grass, ground, dirt, slab, platform, person, character, hand, fire, orange, purple, red, surfer, boat, fish, beach, sand, green water, face, eyes, animal, yeti, ape, fur, skull, ball"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: ice-age folk of the frozen mountain peaks, calm and friendly. Their fixed colours: shaggy warm white and cream fur shaded with warm taupe grey, never blue-grey; dark charcoal slate on the bare faces, hands and feet of beasts; dark brown-grey hide and furs; pale ivory bone; and exactly one accent colour, a bright clear ice blue with white highlights, only as small ice crystals, frost and ice shards. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Freeze: one big curling sea wave frozen solid into clear ice crystal, with a row of sharp icicles hanging from its curled crest and a white shine along its back; nothing else in the image. It is a plain object, not a living thing: no face, no eyes, no animal and no fur anywhere. Only the frozen wave, tall and wide, filling the whole square; its ice is bright blue with white edges.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, red, crimson, gold, brass, orange, fire, flames, green, lime, purple, violet, magenta, pink, blue-grey fur, grey fur, metal armour, steel, chrome, plate armour, medieval knight, helmet, sword, gun, scary, horror, realistic, large glowing area, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, grass, ground, dirt, slab, platform, person, character, hand, surfer, boat, fish, beach, sand, green water, face, eyes, animal, yeti, ape, fur, skull, ball",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: ice-age folk of the frozen mountain peaks, calm and friendly. Their fixed colours: shaggy warm white and cream fur shaded with warm taupe grey, never blue-grey; dark charcoal slate on the bare faces, hands and feet of beasts; dark brown-grey hide and furs; pale ivory bone; and exactly one accent colour, a bright clear ice blue with white highlights, only as small ice crystals, frost and ice shards. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Freeze: one big curling sea wave frozen solid into clear ice crystal, with a row of sharp icicles hanging from its curled crest and a white shine along its back; nothing else in the image. It is a plain object, not a living thing: no face, no eyes, no animal and no fur anywhere. Only the frozen wave, tall and wide, filling the whole square; its ice is bright blue with white edges. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, red, crimson, gold, brass, orange, fire, flames, green, lime, purple, violet, magenta, pink, blue-grey fur, grey fur, metal armour, steel, chrome, plate armour, medieval knight, helmet, sword, gun, scary, horror, realistic, large glowing area, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, grass, ground, dirt, slab, platform, person, character, hand, surfer, boat, fish, beach, sand, green water, face, eyes, animal, yeti, ape, fur, skull, ball."
+      },
+      "submittedAt": "2026-10-10T12:49:15.156Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-ice-folk/icon-freeze-b.png",
+      "rawSheetSha256": "1ee2fcaf128d0c39b28f98145d75d67dde324b8bf955f4fd8e4273c04596c800",
+      "plateHints": [
+        {
+          "bandRows": 8,
+          "groundShare": 0.1979,
+          "footprintWidthShare": 0.8049,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-10T12:49:56.358Z",
+      "usageUsd": 0.008886094331741333,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "A fine curling wave of ice with icicles, but a yeti stands under it.",
+        "reviewedAt": "2026-10-10T12:55:44.218Z"
+      }
+    },
+    "icon-freeze-b-wave": {
+      "id": "icon-freeze-b-wave",
+      "asset": "chibi-direction-icon-action-freeze",
+      "jobId": "5a3030fd-d72b-4b3a-88c6-011627a53b2e",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-ice-folk",
+        "asset": "chibi-direction-icon-action-freeze",
+        "subject": "ICON:ACTION:FREEZE",
+        "faction": "ICE_FOLK",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 76003,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Erase the furry animal completely: its head, face, body, arms and feet are all removed. Where it stood, the big curling wave of bright blue ice continues down to the bottom of the image as one solid thick curl of ice with white icicles hanging from its crest, so the image shows only a frozen sea wave and nothing else. Keep the wave's bright blue colour, its white icicles, the thick black outline and the art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Erase the furry animal completely: its head, face, body, arms and feet are all removed. Where it stood, the big curling wave of bright blue ice continues down to the bottom of the image as one solid thick curl of ice with white icicles hanging from its crest, so the image shows only a frozen sea wave and nothing else. Keep the wave's bright blue colour, its white icicles, the thick black outline and the art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Erase the furry animal completely: its head, face, body, arms and feet are all removed. Where it stood, the big curling wave of bright blue ice continues down to the bottom of the image as one solid thick curl of ice with white icicles hanging from its crest, so the image shows only a frozen sea wave and nothing else. Keep the wave's bright blue colour, its white icicles, the thick black outline and the art style exactly the same, on a transparent background.",
+        "editInstruction": "Erase the furry animal completely: its head, face, body, arms and feet are all removed. Where it stood, the big curling wave of bright blue ice continues down to the bottom of the image as one solid thick curl of ice with white icicles hanging from its crest, so the image shows only a frozen sea wave and nothing else. Keep the wave's bright blue colour, its white icicles, the thick black outline and the art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "icon-freeze-b",
+          "candidate": 0,
+          "sha256": "1ee2fcaf128d0c39b28f98145d75d67dde324b8bf955f4fd8e4273c04596c800"
+        }
+      },
+      "submittedAt": "2026-10-10T12:52:13.777Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-ice-folk/icon-freeze-b-wave.png",
+      "rawSheetSha256": "fcc995dfb4d7a1851b74643699ddae214ad33203747196738b195eb9ef040ea2",
+      "plateHints": [
+        {
+          "bandRows": 8,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 8,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-10T12:52:48.954Z",
+      "usageUsd": 0.00797363797823588,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Freeze: a curling sea wave frozen solid, icicles on its crest. Candidate 0 keeps more icicles than candidate 1.",
+        "reviewedAt": "2026-10-10T12:55:44.356Z"
+      }
+    },
     "icon-status-chilled-a": {
       "id": "icon-status-chilled-a",
       "asset": "chibi-direction-icon-status-chilled",
@@ -2723,6 +2966,161 @@
         "candidate": 0,
         "notes": "Frozen: a cube of clear ice with icicles, for the sluggish status line.",
         "reviewedAt": "2026-10-02T23:38:27.983Z"
+      }
+    },
+    "icon-tech-black-ice-a": {
+      "id": "icon-tech-black-ice-a",
+      "asset": "chibi-direction-icon-tech-black-ice",
+      "jobId": "sync-5ed82cf0-7f7c-4298-b62c-e8afd6fb364f",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "direction-ice-folk",
+        "asset": "chibi-direction-icon-tech-black-ice",
+        "subject": "ICON:TECH:ICE_FOLK:SEAMANSHIP",
+        "faction": "ICE_FOLK",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 76041,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/ICE_FOLK.md#prompt-fragment + docs/art/factions/ICE_FOLK.md#negative-fragment",
+            "text": "Faction: ice-age folk of the frozen mountain peaks, calm and friendly. Their fixed colours: shaggy warm white and cream fur shaded with warm taupe grey, never blue-grey; dark charcoal slate on the bare faces, hands and feet of beasts; dark brown-grey hide and furs; pale ivory bone; and exactly one accent colour, a bright clear ice blue with white highlights, only as small ice crystals, frost and ice shards.",
+            "negative": "red, crimson, gold, brass, orange, fire, flames, green, lime, purple, violet, magenta, pink, blue-grey fur, grey fur, metal armour, steel, chrome, plate armour, medieval knight, helmet, sword, gun, scary, horror, realistic, large glowing area"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+            "text": "Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/ICE_FOLK.json",
+            "text": "Subject: Black Ice: one flat round slab of glossy very dark navy ice, almost black, with one bold white shine streak across it and a rim of small sharp bright ice crystals, and one chunky cream fur boot frozen fast in its middle with two small icicles; nothing else in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "",
+            "negative": "grass, ground, dirt, slab, platform, person, character, hand, fire, orange, purple, red, leg, body, water, hole, puddle"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: ice-age folk of the frozen mountain peaks, calm and friendly. Their fixed colours: shaggy warm white and cream fur shaded with warm taupe grey, never blue-grey; dark charcoal slate on the bare faces, hands and feet of beasts; dark brown-grey hide and furs; pale ivory bone; and exactly one accent colour, a bright clear ice blue with white highlights, only as small ice crystals, frost and ice shards. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Black Ice: one flat round slab of glossy very dark navy ice, almost black, with one bold white shine streak across it and a rim of small sharp bright ice crystals, and one chunky cream fur boot frozen fast in its middle with two small icicles; nothing else in the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, red, crimson, gold, brass, orange, fire, flames, green, lime, purple, violet, magenta, pink, blue-grey fur, grey fur, metal armour, steel, chrome, plate armour, medieval knight, helmet, sword, gun, scary, horror, realistic, large glowing area, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, grass, ground, dirt, slab, platform, person, character, hand, leg, body, water, hole, puddle",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: ice-age folk of the frozen mountain peaks, calm and friendly. Their fixed colours: shaggy warm white and cream fur shaded with warm taupe grey, never blue-grey; dark charcoal slate on the bare faces, hands and feet of beasts; dark brown-grey hide and furs; pale ivory bone; and exactly one accent colour, a bright clear ice blue with white highlights, only as small ice crystals, frost and ice shards. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Black Ice: one flat round slab of glossy very dark navy ice, almost black, with one bold white shine streak across it and a rim of small sharp bright ice crystals, and one chunky cream fur boot frozen fast in its middle with two small icicles; nothing else in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, red, crimson, gold, brass, orange, fire, flames, green, lime, purple, violet, magenta, pink, blue-grey fur, grey fur, metal armour, steel, chrome, plate armour, medieval knight, helmet, sword, gun, scary, horror, realistic, large glowing area, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, grass, ground, dirt, slab, platform, person, character, hand, leg, body, water, hole, puddle."
+      },
+      "submittedAt": "2026-10-10T12:47:48.499Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-ice-folk/icon-tech-black-ice-a.png",
+      "rawSheetSha256": "c1d71bd20b41a90f48408c006d8896c75a210cd13de46184764b9011e148cf91",
+      "plateHints": [
+        {
+          "bandRows": 6,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7813,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-10T12:48:38.803Z",
+      "usageUsd": 0.009367154598236085,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The dark slab and its ice rim are right, but the boot came out as a cream cup with a key-red thing in it, hiding the dark ice.",
+        "reviewedAt": "2026-10-10T12:55:45.093Z"
+      }
+    },
+    "icon-tech-black-ice-a-bare": {
+      "id": "icon-tech-black-ice-a-bare",
+      "asset": "chibi-direction-icon-tech-black-ice",
+      "jobId": "d92e2efa-ee3d-4b7d-a8b9-fa430d3fc18a",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-ice-folk",
+        "asset": "chibi-direction-icon-tech-black-ice",
+        "subject": "ICON:TECH:ICE_FOLK:SEAMANSHIP",
+        "faction": "ICE_FOLK",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 76042,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Erase everything that stands on the dark round slab: the cream cup, the red thing and the small pale lumps are all removed. The slab's top becomes one smooth empty glossy surface of very dark navy ice, colour #1c233e, with one bold white shine streak across it and two short thin pale blue cracks. Do not redraw anything else: keep the round slab's shape, its rim of sharp bright blue ice spikes, the thick black outline and the art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Erase everything that stands on the dark round slab: the cream cup, the red thing and the small pale lumps are all removed. The slab's top becomes one smooth empty glossy surface of very dark navy ice, colour #1c233e, with one bold white shine streak across it and two short thin pale blue cracks. Do not redraw anything else: keep the round slab's shape, its rim of sharp bright blue ice spikes, the thick black outline and the art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Erase everything that stands on the dark round slab: the cream cup, the red thing and the small pale lumps are all removed. The slab's top becomes one smooth empty glossy surface of very dark navy ice, colour #1c233e, with one bold white shine streak across it and two short thin pale blue cracks. Do not redraw anything else: keep the round slab's shape, its rim of sharp bright blue ice spikes, the thick black outline and the art style exactly the same, on a transparent background.",
+        "editInstruction": "Erase everything that stands on the dark round slab: the cream cup, the red thing and the small pale lumps are all removed. The slab's top becomes one smooth empty glossy surface of very dark navy ice, colour #1c233e, with one bold white shine streak across it and two short thin pale blue cracks. Do not redraw anything else: keep the round slab's shape, its rim of sharp bright blue ice spikes, the thick black outline and the art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "icon-tech-black-ice-a",
+          "candidate": 0,
+          "sha256": "c1d71bd20b41a90f48408c006d8896c75a210cd13de46184764b9011e148cf91"
+        }
+      },
+      "submittedAt": "2026-10-10T12:52:48.971Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-ice-folk/icon-tech-black-ice-a-bare.png",
+      "rawSheetSha256": "701efbe718a4979ba6cfbdbd77b8a4d7b5ef87498218b9d13f1c67e773fcfcb0",
+      "plateHints": [
+        {
+          "bandRows": 5,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7813,
+          "suspect": false
+        },
+        {
+          "bandRows": 5,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7813,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-10T12:53:20.352Z",
+      "usageUsd": 0.007714705520206028,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Black Ice: a round slab of glossy near-black ice with a white shine, ringed by bright ice spikes. Candidate 0 has the bolder shine.",
+        "reviewedAt": "2026-10-10T12:55:45.236Z"
       }
     },
     "icon-tech-brittle-a": {
@@ -2984,6 +3382,601 @@
         "candidate": 0,
         "notes": "Deep Winter: an igloo with a snowdrift spreading from it and snowflakes falling.",
         "reviewedAt": "2026-10-02T23:37:52.417Z"
+      }
+    },
+    "icon-tech-glacier-a": {
+      "id": "icon-tech-glacier-a",
+      "asset": "chibi-direction-icon-tech-glacier",
+      "jobId": "sync-63840e3b-6c46-4c3f-8569-0778e00c895e",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "direction-ice-folk",
+        "asset": "chibi-direction-icon-tech-glacier",
+        "subject": "ICON:TECH:ICE_FOLK:SUBMERSIBLES",
+        "faction": "ICE_FOLK",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 76051,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/ICE_FOLK.md#prompt-fragment + docs/art/factions/ICE_FOLK.md#negative-fragment",
+            "text": "Faction: ice-age folk of the frozen mountain peaks, calm and friendly. Their fixed colours: shaggy warm white and cream fur shaded with warm taupe grey, never blue-grey; dark charcoal slate on the bare faces, hands and feet of beasts; dark brown-grey hide and furs; pale ivory bone; and exactly one accent colour, a bright clear ice blue with white highlights, only as small ice crystals, frost and ice shards.",
+            "negative": "red, crimson, gold, brass, orange, fire, flames, green, lime, purple, violet, magenta, pink, blue-grey fur, grey fur, metal armour, steel, chrome, plate armour, medieval knight, helmet, sword, gun, scary, horror, realistic, large glowing area"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+            "text": "Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/ICE_FOLK.json",
+            "text": "Subject: Glacier: one massive wide wall of layered ice crystal with a flat top under a thick white snow cap, three deep vertical crevasses down its front, and one small dark arched cave at its foot; nothing else in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "",
+            "negative": "grass, ground, dirt, slab, platform, person, character, hand, fire, orange, purple, red, water, sea, mountain rock, grey rock, igloo, door, animal"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: ice-age folk of the frozen mountain peaks, calm and friendly. Their fixed colours: shaggy warm white and cream fur shaded with warm taupe grey, never blue-grey; dark charcoal slate on the bare faces, hands and feet of beasts; dark brown-grey hide and furs; pale ivory bone; and exactly one accent colour, a bright clear ice blue with white highlights, only as small ice crystals, frost and ice shards. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Glacier: one massive wide wall of layered ice crystal with a flat top under a thick white snow cap, three deep vertical crevasses down its front, and one small dark arched cave at its foot; nothing else in the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, red, crimson, gold, brass, orange, fire, flames, green, lime, purple, violet, magenta, pink, blue-grey fur, grey fur, metal armour, steel, chrome, plate armour, medieval knight, helmet, sword, gun, scary, horror, realistic, large glowing area, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, grass, ground, dirt, slab, platform, person, character, hand, water, sea, mountain rock, grey rock, igloo, door, animal",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: ice-age folk of the frozen mountain peaks, calm and friendly. Their fixed colours: shaggy warm white and cream fur shaded with warm taupe grey, never blue-grey; dark charcoal slate on the bare faces, hands and feet of beasts; dark brown-grey hide and furs; pale ivory bone; and exactly one accent colour, a bright clear ice blue with white highlights, only as small ice crystals, frost and ice shards. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Glacier: one massive wide wall of layered ice crystal with a flat top under a thick white snow cap, three deep vertical crevasses down its front, and one small dark arched cave at its foot; nothing else in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, red, crimson, gold, brass, orange, fire, flames, green, lime, purple, violet, magenta, pink, blue-grey fur, grey fur, metal armour, steel, chrome, plate armour, medieval knight, helmet, sword, gun, scary, horror, realistic, large glowing area, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, grass, ground, dirt, slab, platform, person, character, hand, water, sea, mountain rock, grey rock, igloo, door, animal."
+      },
+      "submittedAt": "2026-10-10T12:48:38.809Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-ice-folk/icon-tech-glacier-a.png",
+      "rawSheetSha256": "f2b2b17f4abb7b907018eeb7045dab73bf1b51242c66ae60faa3b61f0e54455b",
+      "plateHints": [
+        {
+          "bandRows": 6,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9714,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-10T12:49:15.151Z",
+      "usageUsd": 0.008438794718848334,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "No black outline; reads as a blue tree stump or a tablecloth, and has no cave.",
+        "reviewedAt": "2026-10-10T12:55:45.380Z"
+      }
+    },
+    "icon-tech-glacier-b": {
+      "id": "icon-tech-glacier-b",
+      "asset": "chibi-direction-icon-tech-glacier",
+      "jobId": "sync-394c2f84-9a3d-4a8d-b11b-9271653f459d",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "direction-ice-folk",
+        "asset": "chibi-direction-icon-tech-glacier",
+        "subject": "ICON:TECH:ICE_FOLK:SUBMERSIBLES",
+        "faction": "ICE_FOLK",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 76052,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/ICE_FOLK.md#prompt-fragment + docs/art/factions/ICE_FOLK.md#negative-fragment",
+            "text": "Faction: ice-age folk of the frozen mountain peaks, calm and friendly. Their fixed colours: shaggy warm white and cream fur shaded with warm taupe grey, never blue-grey; dark charcoal slate on the bare faces, hands and feet of beasts; dark brown-grey hide and furs; pale ivory bone; and exactly one accent colour, a bright clear ice blue with white highlights, only as small ice crystals, frost and ice shards.",
+            "negative": "red, crimson, gold, brass, orange, fire, flames, green, lime, purple, violet, magenta, pink, blue-grey fur, grey fur, metal armour, steel, chrome, plate armour, medieval knight, helmet, sword, gun, scary, horror, realistic, large glowing area"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+            "text": "Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/ICE_FOLK.json",
+            "text": "Subject: Glacier: one massive wide wall of layered ice crystal with a flat top under a thick white snow cap, three deep vertical crevasses down its front, and one small dark arched cave at its foot; nothing else in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "A thick black outline runs round the whole shape. The wall is taller than it is wide, a big upright block with a flat top, drawn with three or four big flat faces of bright blue ice and one thick white snow cap; the cave at the middle of its foot is one big dark arch, as wide as a third of the wall. It is not a tree stump and not a cloth.",
+            "negative": "grass, ground, dirt, slab, platform, person, character, hand, fire, orange, purple, red, water, sea, mountain rock, grey rock, igloo, door, animal, tree stump, table, cloth, curtain, roots, many small bricks"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: ice-age folk of the frozen mountain peaks, calm and friendly. Their fixed colours: shaggy warm white and cream fur shaded with warm taupe grey, never blue-grey; dark charcoal slate on the bare faces, hands and feet of beasts; dark brown-grey hide and furs; pale ivory bone; and exactly one accent colour, a bright clear ice blue with white highlights, only as small ice crystals, frost and ice shards. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Glacier: one massive wide wall of layered ice crystal with a flat top under a thick white snow cap, three deep vertical crevasses down its front, and one small dark arched cave at its foot; nothing else in the image. A thick black outline runs round the whole shape. The wall is taller than it is wide, a big upright block with a flat top, drawn with three or four big flat faces of bright blue ice and one thick white snow cap; the cave at the middle of its foot is one big dark arch, as wide as a third of the wall. It is not a tree stump and not a cloth.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, red, crimson, gold, brass, orange, fire, flames, green, lime, purple, violet, magenta, pink, blue-grey fur, grey fur, metal armour, steel, chrome, plate armour, medieval knight, helmet, sword, gun, scary, horror, realistic, large glowing area, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, grass, ground, dirt, slab, platform, person, character, hand, water, sea, mountain rock, grey rock, igloo, door, animal, tree stump, table, cloth, curtain, roots, many small bricks",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: ice-age folk of the frozen mountain peaks, calm and friendly. Their fixed colours: shaggy warm white and cream fur shaded with warm taupe grey, never blue-grey; dark charcoal slate on the bare faces, hands and feet of beasts; dark brown-grey hide and furs; pale ivory bone; and exactly one accent colour, a bright clear ice blue with white highlights, only as small ice crystals, frost and ice shards. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Glacier: one massive wide wall of layered ice crystal with a flat top under a thick white snow cap, three deep vertical crevasses down its front, and one small dark arched cave at its foot; nothing else in the image. A thick black outline runs round the whole shape. The wall is taller than it is wide, a big upright block with a flat top, drawn with three or four big flat faces of bright blue ice and one thick white snow cap; the cave at the middle of its foot is one big dark arch, as wide as a third of the wall. It is not a tree stump and not a cloth. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, red, crimson, gold, brass, orange, fire, flames, green, lime, purple, violet, magenta, pink, blue-grey fur, grey fur, metal armour, steel, chrome, plate armour, medieval knight, helmet, sword, gun, scary, horror, realistic, large glowing area, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, grass, ground, dirt, slab, platform, person, character, hand, water, sea, mountain rock, grey rock, igloo, door, animal, tree stump, table, cloth, curtain, roots, many small bricks."
+      },
+      "submittedAt": "2026-10-10T12:53:20.362Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-ice-folk/icon-tech-glacier-b.png",
+      "rawSheetSha256": "de7f871daf43bf5b6b06403e4fe6ecd0e39ccdf04e5c2f7da4a4e23e7d170116",
+      "plateHints": [
+        {
+          "bandRows": 10,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-10T12:53:47.849Z",
+      "usageUsd": 0.0078033021291097,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Glacier: a tall wall of blue ice under a snow cap with a cave at its foot (the shelter). It fills the canvas with no margin; the whole wall is inside it.",
+        "reviewedAt": "2026-10-10T12:55:45.529Z"
+      }
+    },
+    "icon-tech-glacier-c": {
+      "id": "icon-tech-glacier-c",
+      "asset": "chibi-direction-icon-tech-glacier",
+      "jobId": "sync-182c95a3-3e4b-41d8-9269-84e39e987c43",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "direction-ice-folk",
+        "asset": "chibi-direction-icon-tech-glacier",
+        "subject": "ICON:TECH:ICE_FOLK:SUBMERSIBLES",
+        "faction": "ICE_FOLK",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 76053,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/ICE_FOLK.md#prompt-fragment + docs/art/factions/ICE_FOLK.md#negative-fragment",
+            "text": "Faction: ice-age folk of the frozen mountain peaks, calm and friendly. Their fixed colours: shaggy warm white and cream fur shaded with warm taupe grey, never blue-grey; dark charcoal slate on the bare faces, hands and feet of beasts; dark brown-grey hide and furs; pale ivory bone; and exactly one accent colour, a bright clear ice blue with white highlights, only as small ice crystals, frost and ice shards.",
+            "negative": "red, crimson, gold, brass, orange, fire, flames, green, lime, purple, violet, magenta, pink, blue-grey fur, grey fur, metal armour, steel, chrome, plate armour, medieval knight, helmet, sword, gun, scary, horror, realistic, large glowing area"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+            "text": "Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/ICE_FOLK.json",
+            "text": "Subject: Glacier: one massive wide wall of layered ice crystal with a flat top under a thick white snow cap, three deep vertical crevasses down its front, and one small dark arched cave at its foot; nothing else in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "A thick black outline runs round the whole shape. The wall is a big upright block with a flat top, drawn with three or four big flat faces of bright blue ice and one thick white snow cap; the cave at the middle of its foot is one big dark arch. The whole wall is drawn small enough to fit inside the image, about two thirds of its width and height, with an empty transparent margin on every side; no part of it touches an edge of the image. It is not a tree stump and not a cloth.",
+            "negative": "grass, ground, dirt, slab, platform, person, character, hand, fire, orange, purple, red, water, sea, mountain rock, grey rock, igloo, door, animal, tree stump, table, cloth, curtain, roots, many small bricks, cropped at the edge"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: ice-age folk of the frozen mountain peaks, calm and friendly. Their fixed colours: shaggy warm white and cream fur shaded with warm taupe grey, never blue-grey; dark charcoal slate on the bare faces, hands and feet of beasts; dark brown-grey hide and furs; pale ivory bone; and exactly one accent colour, a bright clear ice blue with white highlights, only as small ice crystals, frost and ice shards. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Glacier: one massive wide wall of layered ice crystal with a flat top under a thick white snow cap, three deep vertical crevasses down its front, and one small dark arched cave at its foot; nothing else in the image. A thick black outline runs round the whole shape. The wall is a big upright block with a flat top, drawn with three or four big flat faces of bright blue ice and one thick white snow cap; the cave at the middle of its foot is one big dark arch. The whole wall is drawn small enough to fit inside the image, about two thirds of its width and height, with an empty transparent margin on every side; no part of it touches an edge of the image. It is not a tree stump and not a cloth.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, red, crimson, gold, brass, orange, fire, flames, green, lime, purple, violet, magenta, pink, blue-grey fur, grey fur, metal armour, steel, chrome, plate armour, medieval knight, helmet, sword, gun, scary, horror, realistic, large glowing area, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, grass, ground, dirt, slab, platform, person, character, hand, water, sea, mountain rock, grey rock, igloo, door, animal, tree stump, table, cloth, curtain, roots, many small bricks, cropped at the edge",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: ice-age folk of the frozen mountain peaks, calm and friendly. Their fixed colours: shaggy warm white and cream fur shaded with warm taupe grey, never blue-grey; dark charcoal slate on the bare faces, hands and feet of beasts; dark brown-grey hide and furs; pale ivory bone; and exactly one accent colour, a bright clear ice blue with white highlights, only as small ice crystals, frost and ice shards. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Glacier: one massive wide wall of layered ice crystal with a flat top under a thick white snow cap, three deep vertical crevasses down its front, and one small dark arched cave at its foot; nothing else in the image. A thick black outline runs round the whole shape. The wall is a big upright block with a flat top, drawn with three or four big flat faces of bright blue ice and one thick white snow cap; the cave at the middle of its foot is one big dark arch. The whole wall is drawn small enough to fit inside the image, about two thirds of its width and height, with an empty transparent margin on every side; no part of it touches an edge of the image. It is not a tree stump and not a cloth. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, red, crimson, gold, brass, orange, fire, flames, green, lime, purple, violet, magenta, pink, blue-grey fur, grey fur, metal armour, steel, chrome, plate armour, medieval knight, helmet, sword, gun, scary, horror, realistic, large glowing area, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, grass, ground, dirt, slab, platform, person, character, hand, water, sea, mountain rock, grey rock, igloo, door, animal, tree stump, table, cloth, curtain, roots, many small bricks, cropped at the edge."
+      },
+      "submittedAt": "2026-10-10T12:54:36.623Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-ice-folk/icon-tech-glacier-c.png",
+      "rawSheetSha256": "607723a6b973aabf95b0eb6ed23ce1f9b9fdb2155331c9739f345d4db01e916c",
+      "plateHints": [
+        {
+          "bandRows": 7,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9706,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-10T12:55:04.245Z",
+      "usageUsd": 0.007792522059546577,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "A smaller block with a margin, but its right side and cave are shaded purple and its face carries white marks that read as letters.",
+        "reviewedAt": "2026-10-10T12:55:45.669Z"
+      }
+    },
+    "icon-tech-icebound-a": {
+      "id": "icon-tech-icebound-a",
+      "asset": "chibi-direction-icon-tech-icebound",
+      "jobId": "sync-55682212-c5a7-4619-bc79-e7a93b9732b4",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "direction-ice-folk",
+        "asset": "chibi-direction-icon-tech-icebound",
+        "subject": "ICON:TECH:ICE_FOLK:NAVAL_ENGINEERING",
+        "faction": "ICE_FOLK",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 76031,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/ICE_FOLK.md#prompt-fragment + docs/art/factions/ICE_FOLK.md#negative-fragment",
+            "text": "Faction: ice-age folk of the frozen mountain peaks, calm and friendly. Their fixed colours: shaggy warm white and cream fur shaded with warm taupe grey, never blue-grey; dark charcoal slate on the bare faces, hands and feet of beasts; dark brown-grey hide and furs; pale ivory bone; and exactly one accent colour, a bright clear ice blue with white highlights, only as small ice crystals, frost and ice shards.",
+            "negative": "red, crimson, gold, brass, orange, fire, flames, green, lime, purple, violet, magenta, pink, blue-grey fur, grey fur, metal armour, steel, chrome, plate armour, medieval knight, helmet, sword, gun, scary, horror, realistic, large glowing area"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+            "text": "Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/ICE_FOLK.json",
+            "text": "Subject: Icebound: one small chunky pale birch-wood sailing boat hull with one short mast and no sail, tilted to one side and stuck fast between big jagged sharp spikes of ice crystal that grip it from both sides; nothing else in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "",
+            "negative": "grass, ground, dirt, slab, platform, person, character, hand, fire, orange, purple, red, sailor, sail, flag, water, sea, waves"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: ice-age folk of the frozen mountain peaks, calm and friendly. Their fixed colours: shaggy warm white and cream fur shaded with warm taupe grey, never blue-grey; dark charcoal slate on the bare faces, hands and feet of beasts; dark brown-grey hide and furs; pale ivory bone; and exactly one accent colour, a bright clear ice blue with white highlights, only as small ice crystals, frost and ice shards. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Icebound: one small chunky pale birch-wood sailing boat hull with one short mast and no sail, tilted to one side and stuck fast between big jagged sharp spikes of ice crystal that grip it from both sides; nothing else in the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, red, crimson, gold, brass, orange, fire, flames, green, lime, purple, violet, magenta, pink, blue-grey fur, grey fur, metal armour, steel, chrome, plate armour, medieval knight, helmet, sword, gun, scary, horror, realistic, large glowing area, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, grass, ground, dirt, slab, platform, person, character, hand, sailor, sail, flag, water, sea, waves",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: ice-age folk of the frozen mountain peaks, calm and friendly. Their fixed colours: shaggy warm white and cream fur shaded with warm taupe grey, never blue-grey; dark charcoal slate on the bare faces, hands and feet of beasts; dark brown-grey hide and furs; pale ivory bone; and exactly one accent colour, a bright clear ice blue with white highlights, only as small ice crystals, frost and ice shards. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Icebound: one small chunky pale birch-wood sailing boat hull with one short mast and no sail, tilted to one side and stuck fast between big jagged sharp spikes of ice crystal that grip it from both sides; nothing else in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, red, crimson, gold, brass, orange, fire, flames, green, lime, purple, violet, magenta, pink, blue-grey fur, grey fur, metal armour, steel, chrome, plate armour, medieval knight, helmet, sword, gun, scary, horror, realistic, large glowing area, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, grass, ground, dirt, slab, platform, person, character, hand, sailor, sail, flag, water, sea, waves."
+      },
+      "submittedAt": "2026-10-10T12:47:18.854Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-ice-folk/icon-tech-icebound-a.png",
+      "rawSheetSha256": "37e7548df3464770b72045d702329d7854f9e15e97bda10bbb1311c7d318c23b",
+      "plateHints": [
+        {
+          "bandRows": 7,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7368,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-10T12:47:48.496Z",
+      "usageUsd": 0.007677901479932997,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Icebound: a small timber hull tilted and gripped by jagged spikes of ice.",
+        "reviewedAt": "2026-10-10T12:55:44.944Z"
+      }
+    },
+    "icon-tech-pack-ice-a": {
+      "id": "icon-tech-pack-ice-a",
+      "asset": "chibi-direction-icon-tech-pack-ice",
+      "jobId": "sync-34cba70e-d257-4ee8-93de-3843426c28d1",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "direction-ice-folk",
+        "asset": "chibi-direction-icon-tech-pack-ice",
+        "subject": "ICON:TECH:ICE_FOLK:NAVIGATION",
+        "faction": "ICE_FOLK",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 76021,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/ICE_FOLK.md#prompt-fragment + docs/art/factions/ICE_FOLK.md#negative-fragment",
+            "text": "Faction: ice-age folk of the frozen mountain peaks, calm and friendly. Their fixed colours: shaggy warm white and cream fur shaded with warm taupe grey, never blue-grey; dark charcoal slate on the bare faces, hands and feet of beasts; dark brown-grey hide and furs; pale ivory bone; and exactly one accent colour, a bright clear ice blue with white highlights, only as small ice crystals, frost and ice shards.",
+            "negative": "red, crimson, gold, brass, orange, fire, flames, green, lime, purple, violet, magenta, pink, blue-grey fur, grey fur, metal armour, steel, chrome, plate armour, medieval knight, helmet, sword, gun, scary, horror, realistic, large glowing area"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+            "text": "Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/ICE_FOLK.json",
+            "text": "Subject: Pack Ice: one tall pointed iceberg of clear ice crystal with a white snow cap and flat cut faces, with two small flat round ice floes drifting beside its foot; nothing else in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "",
+            "negative": "grass, ground, dirt, slab, platform, person, character, hand, fire, orange, purple, red, water, sea, waves, penguin, bear, ship, boat, mountain rock"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: ice-age folk of the frozen mountain peaks, calm and friendly. Their fixed colours: shaggy warm white and cream fur shaded with warm taupe grey, never blue-grey; dark charcoal slate on the bare faces, hands and feet of beasts; dark brown-grey hide and furs; pale ivory bone; and exactly one accent colour, a bright clear ice blue with white highlights, only as small ice crystals, frost and ice shards. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Pack Ice: one tall pointed iceberg of clear ice crystal with a white snow cap and flat cut faces, with two small flat round ice floes drifting beside its foot; nothing else in the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, red, crimson, gold, brass, orange, fire, flames, green, lime, purple, violet, magenta, pink, blue-grey fur, grey fur, metal armour, steel, chrome, plate armour, medieval knight, helmet, sword, gun, scary, horror, realistic, large glowing area, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, grass, ground, dirt, slab, platform, person, character, hand, water, sea, waves, penguin, bear, ship, boat, mountain rock",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: ice-age folk of the frozen mountain peaks, calm and friendly. Their fixed colours: shaggy warm white and cream fur shaded with warm taupe grey, never blue-grey; dark charcoal slate on the bare faces, hands and feet of beasts; dark brown-grey hide and furs; pale ivory bone; and exactly one accent colour, a bright clear ice blue with white highlights, only as small ice crystals, frost and ice shards. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Pack Ice: one tall pointed iceberg of clear ice crystal with a white snow cap and flat cut faces, with two small flat round ice floes drifting beside its foot; nothing else in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, red, crimson, gold, brass, orange, fire, flames, green, lime, purple, violet, magenta, pink, blue-grey fur, grey fur, metal armour, steel, chrome, plate armour, medieval knight, helmet, sword, gun, scary, horror, realistic, large glowing area, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, grass, ground, dirt, slab, platform, person, character, hand, water, sea, waves, penguin, bear, ship, boat, mountain rock."
+      },
+      "submittedAt": "2026-10-10T12:45:16.279Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-ice-folk/icon-tech-pack-ice-a.png",
+      "rawSheetSha256": "10f831960254d1eac3187f9f729fb6b289f6ca91c4a4c7784b2c081b36541202",
+      "plateHints": [
+        {
+          "bandRows": 6,
+          "groundShare": 0,
+          "footprintWidthShare": 0.931,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-10T12:45:56.454Z",
+      "usageUsd": 0.008587744235992432,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Pack Ice: a pointed iceberg with a snow cap and a floe at its foot.",
+        "reviewedAt": "2026-10-10T12:55:44.789Z"
+      }
+    },
+    "icon-tech-rime-a": {
+      "id": "icon-tech-rime-a",
+      "asset": "chibi-direction-icon-tech-rime",
+      "jobId": "sync-fe3a6fe0-024a-4350-a0d4-c0c9b78fc710",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "direction-ice-folk",
+        "asset": "chibi-direction-icon-tech-rime",
+        "subject": "ICON:TECH:ICE_FOLK:SHORECRAFT",
+        "faction": "ICE_FOLK",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 76011,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/ICE_FOLK.md#prompt-fragment + docs/art/factions/ICE_FOLK.md#negative-fragment",
+            "text": "Faction: ice-age folk of the frozen mountain peaks, calm and friendly. Their fixed colours: shaggy warm white and cream fur shaded with warm taupe grey, never blue-grey; dark charcoal slate on the bare faces, hands and feet of beasts; dark brown-grey hide and furs; pale ivory bone; and exactly one accent colour, a bright clear ice blue with white highlights, only as small ice crystals, frost and ice shards.",
+            "negative": "red, crimson, gold, brass, orange, fire, flames, green, lime, purple, violet, magenta, pink, blue-grey fur, grey fur, metal armour, steel, chrome, plate armour, medieval knight, helmet, sword, gun, scary, horror, realistic, large glowing area"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+            "text": "Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/ICE_FOLK.json",
+            "text": "Subject: Rime: one chunky ice skate seen from the side: a short boot of cream fur with a dark brown-grey hide strap, on one long curved blade of bright ice crystal with a white shine, and three small white frost sparkles behind its heel; nothing else in the image."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "",
+            "negative": "grass, ground, dirt, slab, platform, person, character, hand, fire, orange, purple, red, leg, foot, skater, metal, steel, laces"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: ice-age folk of the frozen mountain peaks, calm and friendly. Their fixed colours: shaggy warm white and cream fur shaded with warm taupe grey, never blue-grey; dark charcoal slate on the bare faces, hands and feet of beasts; dark brown-grey hide and furs; pale ivory bone; and exactly one accent colour, a bright clear ice blue with white highlights, only as small ice crystals, frost and ice shards. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Rime: one chunky ice skate seen from the side: a short boot of cream fur with a dark brown-grey hide strap, on one long curved blade of bright ice crystal with a white shine, and three small white frost sparkles behind its heel; nothing else in the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, red, crimson, gold, brass, orange, fire, flames, green, lime, purple, violet, magenta, pink, blue-grey fur, grey fur, metal armour, steel, chrome, plate armour, medieval knight, helmet, sword, gun, scary, horror, realistic, large glowing area, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, grass, ground, dirt, slab, platform, person, character, hand, leg, foot, skater, metal, laces",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: ice-age folk of the frozen mountain peaks, calm and friendly. Their fixed colours: shaggy warm white and cream fur shaded with warm taupe grey, never blue-grey; dark charcoal slate on the bare faces, hands and feet of beasts; dark brown-grey hide and furs; pale ivory bone; and exactly one accent colour, a bright clear ice blue with white highlights, only as small ice crystals, frost and ice shards. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Rime: one chunky ice skate seen from the side: a short boot of cream fur with a dark brown-grey hide strap, on one long curved blade of bright ice crystal with a white shine, and three small white frost sparkles behind its heel; nothing else in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, red, crimson, gold, brass, orange, fire, flames, green, lime, purple, violet, magenta, pink, blue-grey fur, grey fur, metal armour, steel, chrome, plate armour, medieval knight, helmet, sword, gun, scary, horror, realistic, large glowing area, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, grass, ground, dirt, slab, platform, person, character, hand, leg, foot, skater, metal, laces."
+      },
+      "submittedAt": "2026-10-10T12:44:43.518Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-ice-folk/icon-tech-rime-a.png",
+      "rawSheetSha256": "8e83dd8ebd6e28132bed9e802b9b8c9251b29fafd303637addc678cdb41c36d7",
+      "plateHints": [
+        {
+          "bandRows": 7,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7667,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-10T12:45:16.271Z",
+      "usageUsd": 0.0077882151338789195,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Reads as a boot on an ice blade, but the boot is chestnut orange leather.",
+        "reviewedAt": "2026-10-10T12:55:44.494Z"
+      }
+    },
+    "icon-tech-rime-a-hide": {
+      "id": "icon-tech-rime-a-hide",
+      "asset": "chibi-direction-icon-tech-rime",
+      "jobId": "ac858b11-4309-4cc9-a368-37cd1b295a38",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-ice-folk",
+        "asset": "chibi-direction-icon-tech-rime",
+        "subject": "ICON:TECH:ICE_FOLK:SHORECRAFT",
+        "faction": "ICE_FOLK",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 76012,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only the colours of the boot: its orange-brown leather becomes dark brown-grey hide, colour #594f4d with shade #2d2b2b, not orange and not red-brown; the fur cuff round its top and its toe cap become cream white fur, colour #f9e8c6 with shade #aa856e. Do not redraw anything else: keep the boot's shape, the bright blue ice blade under it with its white shine, the thick black outline and the art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change only the colours of the boot: its orange-brown leather becomes dark brown-grey hide, colour #594f4d with shade #2d2b2b, not orange and not red-brown; the fur cuff round its top and its toe cap become cream white fur, colour #f9e8c6 with shade #aa856e. Do not redraw anything else: keep the boot's shape, the bright blue ice blade under it with its white shine, the thick black outline and the art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change only the colours of the boot: its orange-brown leather becomes dark brown-grey hide, colour #594f4d with shade #2d2b2b, not orange and not red-brown; the fur cuff round its top and its toe cap become cream white fur, colour #f9e8c6 with shade #aa856e. Do not redraw anything else: keep the boot's shape, the bright blue ice blade under it with its white shine, the thick black outline and the art style exactly the same, on a transparent background.",
+        "editInstruction": "Change only the colours of the boot: its orange-brown leather becomes dark brown-grey hide, colour #594f4d with shade #2d2b2b, not orange and not red-brown; the fur cuff round its top and its toe cap become cream white fur, colour #f9e8c6 with shade #aa856e. Do not redraw anything else: keep the boot's shape, the bright blue ice blade under it with its white shine, the thick black outline and the art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "icon-tech-rime-a",
+          "candidate": 0,
+          "sha256": "8e83dd8ebd6e28132bed9e802b9b8c9251b29fafd303637addc678cdb41c36d7"
+        }
+      },
+      "submittedAt": "2026-10-10T12:49:56.366Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-ice-folk/icon-tech-rime-a-hide.png",
+      "rawSheetSha256": "a5e64add2027960f2a4680e28cc2c7b0edd027a934be751661ef28511e15edc9",
+      "plateHints": [
+        {
+          "bandRows": 7,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7667,
+          "suspect": false
+        },
+        {
+          "bandRows": 7,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7667,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-10T12:50:45.847Z",
+      "usageUsd": 0.007296958711412218,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Rime: a fur-topped hide boot on a blade of ice, the slide across the frozen shallows. Candidate 0; candidate 1 is the same with a duller toe.",
+        "reviewedAt": "2026-10-10T12:55:44.643Z"
       }
     },
     "mammoth-a": {
@@ -6987,6 +7980,71 @@
       "notes": "Cold Snap: a big ice snowflake with a ring of shards, alone on transparency.",
       "acceptedAt": "2026-10-02T23:33:49.845Z"
     },
+    "chibi-direction-icon-action-freeze": {
+      "id": "chibi-direction-icon-action-freeze",
+      "subject": "ICON:ACTION:FREEZE",
+      "assetClass": "ICON",
+      "status": "ACCEPTED",
+      "recipe": "icon-freeze-b-wave",
+      "candidate": 0,
+      "candidateSha256": "3b4288502d85500c4d2715045c30a8be03186aaf87859d9879e834a835424ae4",
+      "master": {
+        "path": "public/assets/chibi/icons/chibi-direction-icon-action-freeze.png",
+        "sha256": "903e1a9ce510b6b0f213df90a1f7a3b4313c13c40e90573cc668c01323a1d3b7",
+        "pixelSha256": "b1469163fb8556510673b2187668d5b022d608606b97d7e2999fcadb4327b209",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is",
+        "accent": {
+          "preset": "ice-folk-blue",
+          "spec": {
+            "band": {
+              "hueFrom": 175,
+              "hueTo": 218,
+              "saturationMin": 0.2,
+              "valueMin": 0.62,
+              "hueCentre": 195
+            },
+            "hue": 205,
+            "hueSpread": 0.3,
+            "saturation": {
+              "scale": 1.4,
+              "add": 0.3,
+              "max": 0.95
+            }
+          },
+          "accentPixels": 907,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 8,
+        "groundShare": 0,
+        "footprintWidthShare": 1,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Freeze: a curling sea wave frozen solid, icicles on its crest. Candidate 0 keeps more icicles than candidate 1.",
+      "acceptedAt": "2026-10-10T12:55:44.356Z"
+    },
     "chibi-direction-icon-action-prowl": {
       "id": "chibi-direction-icon-action-prowl",
       "subject": "ICON:ACTION:PROWL",
@@ -7442,6 +8500,71 @@
       "notes": "Frozen: a cube of clear ice with icicles, for the sluggish status line.",
       "acceptedAt": "2026-10-02T23:38:27.983Z"
     },
+    "chibi-direction-icon-tech-black-ice": {
+      "id": "chibi-direction-icon-tech-black-ice",
+      "subject": "ICON:TECH:ICE_FOLK:SEAMANSHIP",
+      "assetClass": "ICON",
+      "status": "ACCEPTED",
+      "recipe": "icon-tech-black-ice-a-bare",
+      "candidate": 0,
+      "candidateSha256": "b60aa482a1d84c95140576a6f2748021c42c4635b08cbead6fbe5056242e0208",
+      "master": {
+        "path": "public/assets/chibi/icons/chibi-direction-icon-tech-black-ice.png",
+        "sha256": "7b5371fa4f225a07e2377ba32dc7d09efb2bc653926058338c93ed003ae6e3a3",
+        "pixelSha256": "350bfa50400804b7b8919c155c2be0a9a161741bcdb4e16f3107b6ab2d416ba1",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is",
+        "accent": {
+          "preset": "ice-folk-blue",
+          "spec": {
+            "band": {
+              "hueFrom": 175,
+              "hueTo": 218,
+              "saturationMin": 0.2,
+              "valueMin": 0.62,
+              "hueCentre": 195
+            },
+            "hue": 205,
+            "hueSpread": 0.3,
+            "saturation": {
+              "scale": 1.4,
+              "add": 0.3,
+              "max": 0.95
+            }
+          },
+          "accentPixels": 106,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 5,
+        "groundShare": 0,
+        "footprintWidthShare": 0.7813,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Black Ice: a round slab of glossy near-black ice with a white shine, ringed by bright ice spikes. Candidate 0 has the bolder shine.",
+      "acceptedAt": "2026-10-10T12:55:45.236Z"
+    },
     "chibi-direction-icon-tech-brittle": {
       "id": "chibi-direction-icon-tech-brittle",
       "subject": "ICON:TECH:ICE_FOLK:EXPLOSIVES",
@@ -7571,6 +8694,266 @@
       },
       "notes": "Deep Winter: an igloo with a snowdrift spreading from it and snowflakes falling.",
       "acceptedAt": "2026-10-02T23:37:52.417Z"
+    },
+    "chibi-direction-icon-tech-glacier": {
+      "id": "chibi-direction-icon-tech-glacier",
+      "subject": "ICON:TECH:ICE_FOLK:SUBMERSIBLES",
+      "assetClass": "ICON",
+      "status": "ACCEPTED",
+      "recipe": "icon-tech-glacier-b",
+      "candidate": 0,
+      "candidateSha256": "de7f871daf43bf5b6b06403e4fe6ecd0e39ccdf04e5c2f7da4a4e23e7d170116",
+      "master": {
+        "path": "public/assets/chibi/icons/chibi-direction-icon-tech-glacier.png",
+        "sha256": "2cbdf9e35cb43ea0d0d05e459a1c546a1fa0eddbed89f51447fdf560d1657f45",
+        "pixelSha256": "ba0c475cbbfc07af6221c4c8124719524e4938d4cd14068f14956c0d9fbf1d70",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is",
+        "accent": {
+          "preset": "ice-folk-blue",
+          "spec": {
+            "band": {
+              "hueFrom": 175,
+              "hueTo": 218,
+              "saturationMin": 0.2,
+              "valueMin": 0.62,
+              "hueCentre": 195
+            },
+            "hue": 205,
+            "hueSpread": 0.3,
+            "saturation": {
+              "scale": 1.4,
+              "add": 0.3,
+              "max": 0.95
+            }
+          },
+          "accentPixels": 740,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 10,
+        "groundShare": 0,
+        "footprintWidthShare": 1,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Glacier: a tall wall of blue ice under a snow cap with a cave at its foot (the shelter). It fills the canvas with no margin; the whole wall is inside it.",
+      "acceptedAt": "2026-10-10T12:55:45.529Z"
+    },
+    "chibi-direction-icon-tech-icebound": {
+      "id": "chibi-direction-icon-tech-icebound",
+      "subject": "ICON:TECH:ICE_FOLK:NAVAL_ENGINEERING",
+      "assetClass": "ICON",
+      "status": "ACCEPTED",
+      "recipe": "icon-tech-icebound-a",
+      "candidate": 0,
+      "candidateSha256": "37e7548df3464770b72045d702329d7854f9e15e97bda10bbb1311c7d318c23b",
+      "master": {
+        "path": "public/assets/chibi/icons/chibi-direction-icon-tech-icebound.png",
+        "sha256": "f58c85f99a2607a0cd0e407dc24019d30b200e70a9abbc95dc2ae748da654c8c",
+        "pixelSha256": "c67288b161e92c4b736bb48084adf2e363799c5d6123f034b8d036eaf5f8a213",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is",
+        "accent": {
+          "preset": "ice-folk-blue",
+          "spec": {
+            "band": {
+              "hueFrom": 175,
+              "hueTo": 218,
+              "saturationMin": 0.2,
+              "valueMin": 0.62,
+              "hueCentre": 195
+            },
+            "hue": 205,
+            "hueSpread": 0.3,
+            "saturation": {
+              "scale": 1.4,
+              "add": 0.3,
+              "max": 0.95
+            }
+          },
+          "accentPixels": 199,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 7,
+        "groundShare": 0,
+        "footprintWidthShare": 0.7368,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Icebound: a small timber hull tilted and gripped by jagged spikes of ice.",
+      "acceptedAt": "2026-10-10T12:55:44.944Z"
+    },
+    "chibi-direction-icon-tech-pack-ice": {
+      "id": "chibi-direction-icon-tech-pack-ice",
+      "subject": "ICON:TECH:ICE_FOLK:NAVIGATION",
+      "assetClass": "ICON",
+      "status": "ACCEPTED",
+      "recipe": "icon-tech-pack-ice-a",
+      "candidate": 0,
+      "candidateSha256": "10f831960254d1eac3187f9f729fb6b289f6ca91c4a4c7784b2c081b36541202",
+      "master": {
+        "path": "public/assets/chibi/icons/chibi-direction-icon-tech-pack-ice.png",
+        "sha256": "e645376bcaa4a87036167c6407887f54339309e7c66e2c696872edd4b33f96c9",
+        "pixelSha256": "57b5d6238efe699711a1ca56411e914fec4285cce463645db1bc12d826ff1e5c",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is",
+        "accent": {
+          "preset": "ice-folk-blue",
+          "spec": {
+            "band": {
+              "hueFrom": 175,
+              "hueTo": 218,
+              "saturationMin": 0.2,
+              "valueMin": 0.62,
+              "hueCentre": 195
+            },
+            "hue": 205,
+            "hueSpread": 0.3,
+            "saturation": {
+              "scale": 1.4,
+              "add": 0.3,
+              "max": 0.95
+            }
+          },
+          "accentPixels": 201,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 6,
+        "groundShare": 0,
+        "footprintWidthShare": 0.931,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Pack Ice: a pointed iceberg with a snow cap and a floe at its foot.",
+      "acceptedAt": "2026-10-10T12:55:44.789Z"
+    },
+    "chibi-direction-icon-tech-rime": {
+      "id": "chibi-direction-icon-tech-rime",
+      "subject": "ICON:TECH:ICE_FOLK:SHORECRAFT",
+      "assetClass": "ICON",
+      "status": "ACCEPTED",
+      "recipe": "icon-tech-rime-a-hide",
+      "candidate": 0,
+      "candidateSha256": "42c8ab13e04e9c302554ad1431cf715b2deba42c3937745bed25a09712e343a4",
+      "master": {
+        "path": "public/assets/chibi/icons/chibi-direction-icon-tech-rime.png",
+        "sha256": "717e2f7c789c6b8dfaaa392d4c2fb89eda663fa85ca2c897100e67dd17f7ecbb",
+        "pixelSha256": "0d2773cd4d423d20800d2ae87991bf0b4777852d9fde748a752d109d2db13c0e",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is",
+        "accent": {
+          "preset": "ice-folk-blue",
+          "spec": {
+            "band": {
+              "hueFrom": 175,
+              "hueTo": 218,
+              "saturationMin": 0.2,
+              "valueMin": 0.62,
+              "hueCentre": 195
+            },
+            "hue": 205,
+            "hueSpread": 0.3,
+            "saturation": {
+              "scale": 1.4,
+              "add": 0.3,
+              "max": 0.95
+            }
+          },
+          "accentPixels": 68,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 7,
+        "groundShare": 0,
+        "footprintWidthShare": 0.7667,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Rime: a fur-topped hide boot on a blade of ice, the slide across the frozen shallows. Candidate 0; candidate 1 is the same with a duller toe.",
+      "acceptedAt": "2026-10-10T12:55:44.643Z"
     },
     "chibi-direction-portrait-ice-folk-boulder-yeti": {
       "id": "chibi-direction-portrait-ice-folk-boulder-yeti",

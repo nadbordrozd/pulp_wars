@@ -11,7 +11,9 @@ import { chibiArtUrl } from "./chibi-art-manifest";
  *
  * The eight unit sprites, their portraits, ten command, ability, technology
  * and status icons, five effect sprites and City 1-3 (an igloo settlement
- * with a bone pole for the pennant).
+ * with a bone pole for the pennant). Bead pulp_wars-5ti.10 added the Freeze
+ * icon and the icons of the five Ice Folk Naval technologies (Rime, Pack
+ * Ice, Icebound, Black Ice and Glacier).
  *
  * Since bead `pulp_wars-7g3.6` this list is registered in the direction
  * registry (chibiDirectionArtRegistryV7), ICE_FOLK_FLAG_ANCHORS_V7 is part
@@ -348,6 +350,65 @@ export const CHIBI_DIRECTION_ICE_FOLK_ART_ASSETS_V7: readonly ChibiArtAssetV7[] 
       height: 48,
       url: chibiArtUrl(
         "assets/chibi/icons/chibi-direction-icon-tech-deep-winter.png",
+      ),
+    },
+    // --- The frozen sea (bead pulp_wars-5ti.10): the Freeze icon and the five Naval technology icons ---
+    {
+      id: "chibi-direction-icon-action-freeze",
+      subject: "ICON:ACTION:FREEZE",
+      assetClass: "ICON",
+      width: 48,
+      height: 48,
+      url: chibiArtUrl(
+        "assets/chibi/icons/chibi-direction-icon-action-freeze.png",
+      ),
+    },
+    {
+      id: "chibi-direction-icon-tech-rime",
+      subject: "ICON:TECH:ICE_FOLK:SHORECRAFT",
+      assetClass: "ICON",
+      width: 48,
+      height: 48,
+      url: chibiArtUrl("assets/chibi/icons/chibi-direction-icon-tech-rime.png"),
+    },
+    {
+      id: "chibi-direction-icon-tech-pack-ice",
+      subject: "ICON:TECH:ICE_FOLK:NAVIGATION",
+      assetClass: "ICON",
+      width: 48,
+      height: 48,
+      url: chibiArtUrl(
+        "assets/chibi/icons/chibi-direction-icon-tech-pack-ice.png",
+      ),
+    },
+    {
+      id: "chibi-direction-icon-tech-icebound",
+      subject: "ICON:TECH:ICE_FOLK:NAVAL_ENGINEERING",
+      assetClass: "ICON",
+      width: 48,
+      height: 48,
+      url: chibiArtUrl(
+        "assets/chibi/icons/chibi-direction-icon-tech-icebound.png",
+      ),
+    },
+    {
+      id: "chibi-direction-icon-tech-black-ice",
+      subject: "ICON:TECH:ICE_FOLK:SEAMANSHIP",
+      assetClass: "ICON",
+      width: 48,
+      height: 48,
+      url: chibiArtUrl(
+        "assets/chibi/icons/chibi-direction-icon-tech-black-ice.png",
+      ),
+    },
+    {
+      id: "chibi-direction-icon-tech-glacier",
+      subject: "ICON:TECH:ICE_FOLK:SUBMERSIBLES",
+      assetClass: "ICON",
+      width: 48,
+      height: 48,
+      url: chibiArtUrl(
+        "assets/chibi/icons/chibi-direction-icon-tech-glacier.png",
       ),
     },
     {

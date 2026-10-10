@@ -441,6 +441,72 @@
       },
       "ownerColour": false,
       "accent": "ice-folk-blue"
+    },
+    {
+      "id": "chibi-direction-icon-action-freeze",
+      "subject": "ICON:ACTION:FREEZE",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "ice-folk-blue"
+    },
+    {
+      "id": "chibi-direction-icon-tech-rime",
+      "subject": "ICON:TECH:ICE_FOLK:SHORECRAFT",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "ice-folk-blue"
+    },
+    {
+      "id": "chibi-direction-icon-tech-pack-ice",
+      "subject": "ICON:TECH:ICE_FOLK:NAVIGATION",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "ice-folk-blue"
+    },
+    {
+      "id": "chibi-direction-icon-tech-icebound",
+      "subject": "ICON:TECH:ICE_FOLK:NAVAL_ENGINEERING",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "ice-folk-blue"
+    },
+    {
+      "id": "chibi-direction-icon-tech-black-ice",
+      "subject": "ICON:TECH:ICE_FOLK:SEAMANSHIP",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "ice-folk-blue"
+    },
+    {
+      "id": "chibi-direction-icon-tech-glacier",
+      "subject": "ICON:TECH:ICE_FOLK:SUBMERSIBLES",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "ice-folk-blue"
     }
   ],
   "recipes": [
@@ -1509,6 +1575,165 @@
       },
       "editInstruction": "Change the shading of the wool only, so that the animal is lit from the left: the rump, the back and the left half of the body become lighter warm brown wool, colour #8a7560, with a pale highlight along the top left of the back; the chest, the belly and the wool under the head on the right become one tone darker, colour #4a3b30. Do not change any shape or other colour: keep the mane, saddle patch, muzzle, eyes, frost-blue horns, legs, black outline and art style the same, transparent background.",
       "notes": "Bead pulp_wars-2yc.34, correction pass: musk-ox-b has no clear lit left side (lighting-qa faces -16.3: a dark rump on the left, the pale mane on the right). The same animal with its rump and back lit from the left."
+    },
+    {
+      "id": "icon-freeze-a",
+      "asset": "chibi-direction-icon-action-freeze",
+      "endpoint": "create-image-pixen",
+      "seed": 76001,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "grass, ground, dirt, slab, platform, person, character, hand, fire, orange, purple, red, surfer, boat, fish, beach, sand, green water",
+      "notes": "Bead pulp_wars-5ti.10: a fresh creation with the icon class, as the Deep Winter and Brittle icons."
+    },
+    {
+      "id": "icon-tech-rime-a",
+      "asset": "chibi-direction-icon-tech-rime",
+      "endpoint": "create-image-pixen",
+      "seed": 76011,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "grass, ground, dirt, slab, platform, person, character, hand, fire, orange, purple, red, leg, foot, skater, metal, steel, laces",
+      "notes": "Bead pulp_wars-5ti.10: a fresh creation with the icon class, as the Deep Winter and Brittle icons."
+    },
+    {
+      "id": "icon-tech-pack-ice-a",
+      "asset": "chibi-direction-icon-tech-pack-ice",
+      "endpoint": "create-image-pixen",
+      "seed": 76021,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "grass, ground, dirt, slab, platform, person, character, hand, fire, orange, purple, red, water, sea, waves, penguin, bear, ship, boat, mountain rock",
+      "notes": "Bead pulp_wars-5ti.10: a fresh creation with the icon class, as the Deep Winter and Brittle icons."
+    },
+    {
+      "id": "icon-tech-icebound-a",
+      "asset": "chibi-direction-icon-tech-icebound",
+      "endpoint": "create-image-pixen",
+      "seed": 76031,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "grass, ground, dirt, slab, platform, person, character, hand, fire, orange, purple, red, sailor, sail, flag, water, sea, waves",
+      "notes": "Bead pulp_wars-5ti.10: a fresh creation with the icon class, as the Deep Winter and Brittle icons."
+    },
+    {
+      "id": "icon-tech-black-ice-a",
+      "asset": "chibi-direction-icon-tech-black-ice",
+      "endpoint": "create-image-pixen",
+      "seed": 76041,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "grass, ground, dirt, slab, platform, person, character, hand, fire, orange, purple, red, leg, body, water, hole, puddle",
+      "notes": "Bead pulp_wars-5ti.10: a fresh creation with the icon class, as the Deep Winter and Brittle icons."
+    },
+    {
+      "id": "icon-tech-glacier-a",
+      "asset": "chibi-direction-icon-tech-glacier",
+      "endpoint": "create-image-pixen",
+      "seed": 76051,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "grass, ground, dirt, slab, platform, person, character, hand, fire, orange, purple, red, water, sea, mountain rock, grey rock, igloo, door, animal",
+      "notes": "Bead pulp_wars-5ti.10: a fresh creation with the icon class, as the Deep Winter and Brittle icons."
+    },
+    {
+      "id": "icon-freeze-b",
+      "asset": "chibi-direction-icon-action-freeze",
+      "endpoint": "create-image-pixen",
+      "seed": 76002,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "It is a plain object, not a living thing: no face, no eyes, no animal and no fur anywhere. Only the frozen wave, tall and wide, filling the whole square; its ice is bright blue with white edges.",
+      "negativeAddendum": "grass, ground, dirt, slab, platform, person, character, hand, fire, orange, purple, red, surfer, boat, fish, beach, sand, green water, face, eyes, animal, yeti, ape, fur, skull, ball",
+      "notes": "icon-freeze-a drew a yeti's face inside a small ball of water (the faction layer's beasts), 36 px wide: a second creation that says no living thing and asks for the wave to fill the square."
+    },
+    {
+      "id": "icon-tech-rime-a-hide",
+      "asset": "chibi-direction-icon-tech-rime",
+      "endpoint": "edit-image-pixen",
+      "seed": 76012,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-tech-rime-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the colours of the boot: its orange-brown leather becomes dark brown-grey hide, colour #594f4d with shade #2d2b2b, not orange and not red-brown; the fur cuff round its top and its toe cap become cream white fur, colour #f9e8c6 with shade #aa856e. Do not redraw anything else: keep the boot's shape, the bright blue ice blade under it with its white shine, the thick black outline and the art style exactly the same, on a transparent background.",
+      "notes": "icon-tech-rime-a reads as a boot on an ice blade, but the boot is chestnut orange leather, a Human and Goblin colour the faction does not wear."
+    },
+    {
+      "id": "icon-freeze-b-wave",
+      "asset": "chibi-direction-icon-action-freeze",
+      "endpoint": "edit-image-pixen",
+      "seed": 76003,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-freeze-b",
+        "candidate": 0
+      },
+      "editInstruction": "Erase the furry animal completely: its head, face, body, arms and feet are all removed. Where it stood, the big curling wave of bright blue ice continues down to the bottom of the image as one solid thick curl of ice with white icicles hanging from its crest, so the image shows only a frozen sea wave and nothing else. Keep the wave's bright blue colour, its white icicles, the thick black outline and the art style exactly the same, on a transparent background.",
+      "notes": "icon-freeze-b is a fine curling wave of ice with icicles, but a yeti stands under it (the faction layer's beasts again, although the line forbids every living thing). Erasing a figure by an edit worked for the Bolas icon."
+    },
+    {
+      "id": "icon-tech-black-ice-a-bare",
+      "asset": "chibi-direction-icon-tech-black-ice",
+      "endpoint": "edit-image-pixen",
+      "seed": 76042,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-tech-black-ice-a",
+        "candidate": 0
+      },
+      "editInstruction": "Erase everything that stands on the dark round slab: the cream cup, the red thing and the small pale lumps are all removed. The slab's top becomes one smooth empty glossy surface of very dark navy ice, colour #1c233e, with one bold white shine streak across it and two short thin pale blue cracks. Do not redraw anything else: keep the round slab's shape, its rim of sharp bright blue ice spikes, the thick black outline and the art style exactly the same, on a transparent background.",
+      "notes": "icon-tech-black-ice-a has the dark slab with its rim of bright ice spikes, but the boot on it came out as a cream cup with a red thing in it (key red, which no Ice Folk raster may carry), and the pile hides the dark ice that names the technology."
+    },
+    {
+      "id": "icon-tech-glacier-b",
+      "asset": "chibi-direction-icon-tech-glacier",
+      "endpoint": "create-image-pixen",
+      "seed": 76052,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "A thick black outline runs round the whole shape. The wall is taller than it is wide, a big upright block with a flat top, drawn with three or four big flat faces of bright blue ice and one thick white snow cap; the cave at the middle of its foot is one big dark arch, as wide as a third of the wall. It is not a tree stump and not a cloth.",
+      "negativeAddendum": "grass, ground, dirt, slab, platform, person, character, hand, fire, orange, purple, red, water, sea, mountain rock, grey rock, igloo, door, animal, tree stump, table, cloth, curtain, roots, many small bricks",
+      "notes": "icon-tech-glacier-a has no black outline and reads as a blue tree stump or a tablecloth: many small scale marks, no cave."
+    },
+    {
+      "id": "icon-tech-glacier-c",
+      "asset": "chibi-direction-icon-tech-glacier",
+      "endpoint": "create-image-pixen",
+      "seed": 76053,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "A thick black outline runs round the whole shape. The wall is a big upright block with a flat top, drawn with three or four big flat faces of bright blue ice and one thick white snow cap; the cave at the middle of its foot is one big dark arch. The whole wall is drawn small enough to fit inside the image, about two thirds of its width and height, with an empty transparent margin on every side; no part of it touches an edge of the image. It is not a tree stump and not a cloth.",
+      "negativeAddendum": "grass, ground, dirt, slab, platform, person, character, hand, fire, orange, purple, red, water, sea, mountain rock, grey rock, igloo, door, animal, tree stump, table, cloth, curtain, roots, many small bricks, cropped at the edge",
+      "notes": "icon-tech-glacier-b is the wall of ice with its snow cap and its cave, outlined, but it fills the canvas from edge to edge with no margin and its left side and foot touch the border."
     }
   ]
 }

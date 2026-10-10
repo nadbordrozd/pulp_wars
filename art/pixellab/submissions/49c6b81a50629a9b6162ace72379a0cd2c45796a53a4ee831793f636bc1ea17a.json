@@ -1,0 +1,36 @@
+{
+  "id": "icon-tech-black-ice-a-bare",
+  "jobId": "d92e2efa-ee3d-4b7d-a8b9-fa430d3fc18a",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-ice-folk",
+    "asset": "chibi-direction-icon-tech-black-ice",
+    "subject": "ICON:TECH:ICE_FOLK:SEAMANSHIP",
+    "faction": "ICE_FOLK",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 76042,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Erase everything that stands on the dark round slab: the cream cup, the red thing and the small pale lumps are all removed. The slab's top becomes one smooth empty glossy surface of very dark navy ice, colour #1c233e, with one bold white shine streak across it and two short thin pale blue cracks. Do not redraw anything else: keep the round slab's shape, its rim of sharp bright blue ice spikes, the thick black outline and the art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Erase everything that stands on the dark round slab: the cream cup, the red thing and the small pale lumps are all removed. The slab's top becomes one smooth empty glossy surface of very dark navy ice, colour #1c233e, with one bold white shine streak across it and two short thin pale blue cracks. Do not redraw anything else: keep the round slab's shape, its rim of sharp bright blue ice spikes, the thick black outline and the art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Erase everything that stands on the dark round slab: the cream cup, the red thing and the small pale lumps are all removed. The slab's top becomes one smooth empty glossy surface of very dark navy ice, colour #1c233e, with one bold white shine streak across it and two short thin pale blue cracks. Do not redraw anything else: keep the round slab's shape, its rim of sharp bright blue ice spikes, the thick black outline and the art style exactly the same, on a transparent background.",
+    "editInstruction": "Erase everything that stands on the dark round slab: the cream cup, the red thing and the small pale lumps are all removed. The slab's top becomes one smooth empty glossy surface of very dark navy ice, colour #1c233e, with one bold white shine streak across it and two short thin pale blue cracks. Do not redraw anything else: keep the round slab's shape, its rim of sharp bright blue ice spikes, the thick black outline and the art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "icon-tech-black-ice-a",
+      "candidate": 0,
+      "sha256": "c1d71bd20b41a90f48408c006d8896c75a210cd13de46184764b9011e148cf91"
+    }
+  }
+}

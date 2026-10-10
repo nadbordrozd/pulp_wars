@@ -1448,6 +1448,15 @@ export class Ruleset7DomAppView {
   #freezePick: FreezePickV7 | null = null;
   #freezeHoverUnitId: number | null = null;
   /**
+   * The Ice Witch whose Freeze a touch has armed (`pulp_wars-5ti.10`): a
+   * finger has no hover, so its first tap lifts the ring with its outcome
+   * and asks; a mouse or a key casts at once, as its hover or focus has
+   * already shown the same.
+   */
+  #freezeRingArmedUnitId: number | null = null;
+  /** The pointer type of the last press on the Witch's Freeze button. */
+  #freezeRingPointerType: string | null = null;
+  /**
    * The Cultists (bead pulp_wars-mch9.17): the Sacrifice or the Seize the
    * selected Summoner is aiming on the board (Escape, Cancel or another
    * selection leaves it and sends nothing).
@@ -1904,6 +1913,9 @@ export class Ruleset7DomAppView {
       } else if (this.#freezePick !== null) {
         // The frozen sea: Escape first disarms Freeze.
         this.#cancelFreezePick();
+        return;
+      } else if (this.#freezeRingArmedUnitId !== null) {
+        this.#cancelFreezeRing();
         return;
       } else if (this.#cultPick !== null) {
         // The Cultists: Escape first disarms the Sacrifice or the Seize.
@@ -3881,6 +3893,7 @@ export class Ruleset7DomAppView {
           this.#navalPick = null;
           this.#freezePick = null;
           this.#freezeHoverUnitId = null;
+          this.#freezeRingArmedUnitId = null;
           this.#cultPick = null;
           this.#selectedRecruitHelp = null;
           this.#selectedUnitHelpId = null;
@@ -4359,6 +4372,7 @@ export class Ruleset7DomAppView {
       this.#giantPick !== null ||
       this.#navalPick !== null ||
       this.#freezePick !== null ||
+      this.#freezeRingArmedUnitId !== null ||
       this.#cultPick !== null
     );
   }
@@ -4480,14 +4494,15 @@ export class Ruleset7DomAppView {
           ? { navalPick: this.#navalPick }
           : {}),
         // The frozen sea: the Freeze being aimed, and the Witch whose
-        // Freeze button is hovered or focused.
+        // Freeze button is hovered or focused, or armed by a touch.
         ...(this.#freezePick !== null &&
         this.#freezePick.unitId === selectedUnitId
           ? { freezePick: this.#freezePick }
           : {}),
-        ...(this.#freezeHoverUnitId !== null &&
-        this.#freezeHoverUnitId === selectedUnitId
-          ? { freezeRingFocusUnitId: this.#freezeHoverUnitId }
+        ...(selectedUnitId !== null &&
+        (this.#freezeHoverUnitId === selectedUnitId ||
+          this.#freezeRingArmedUnitId === selectedUnitId)
+          ? { freezeRingFocusUnitId: selectedUnitId }
           : {}),
         // The Cultists: the Sacrifice or the Seize being aimed.
         ...(this.#cultPick !== null && this.#cultPick.unitId === selectedUnitId
@@ -4517,6 +4532,7 @@ export class Ruleset7DomAppView {
       this.#navalPick = null;
       this.#freezePick = null;
       this.#freezeHoverUnitId = null;
+      this.#freezeRingArmedUnitId = null;
       this.#cultPick = null;
       this.#render();
       this.#queueBoardFocus();
@@ -5568,6 +5584,7 @@ export class Ruleset7DomAppView {
         this.#giantPickPanel(view, unit.id) ??
         this.#navalPickPanel(unit.id) ??
         this.#freezePickPanel(unit.id) ??
+        this.#freezeRingPanel(view, unit.id) ??
         this.#cultPickPanel(unit.id);
       if (martianPanel !== null) {
         dock.dataset.hasActions = "true";
@@ -9333,6 +9350,7 @@ export class Ruleset7DomAppView {
     this.#navalPick = null;
     this.#freezePick = null;
     this.#freezeHoverUnitId = null;
+    this.#freezeRingArmedUnitId = null;
     this.#cultPick = null;
     let restoreAction =
       command.kind === "RESEARCH" ? `tech-${command.tech.toLowerCase()}` : null;
@@ -11369,7 +11387,7 @@ export class Ruleset7DomAppView {
           ? null
           : previewFreezeV7(view, command.unitId, command.at);
       if (command === undefined || preview === null) return [];
-      const outcome = freezeOutcomeTextV7(freezeOutcomeV7(view, unit, preview));
+      const outcome = freezeOutcomeTextV7(freezeOutcomeV7(preview));
       action.title = `${FREEZE_RING_TOOLTIP_V7}. ${outcome}`;
       action.setAttribute("aria-label", `${FREEZE_LABEL_V7}. ${outcome}`);
       action.dataset.boardTiles = String(preview.tiles.length);
@@ -11387,7 +11405,19 @@ export class Ruleset7DomAppView {
       action.addEventListener("focus", show);
       action.addEventListener("pointerleave", hide);
       action.addEventListener("blur", hide);
-      action.onclick = () => void this.#dispatch(command);
+      // A touch has no hover: its tap arms (the ring lifts, the outcome
+      // is labelled on her tile, and the dock asks: `#freezeRingPanel`).
+      action.addEventListener("pointerdown", (event) => {
+        this.#freezeRingPointerType = event.pointerType;
+      });
+      action.onclick = () => {
+        const touch =
+          this.#freezeRingPointerType === "touch" ||
+          this.#freezeRingPointerType === "pen";
+        this.#freezeRingPointerType = null;
+        if (touch) this.#armFreezeRing(unit.id);
+        else void this.#dispatch(command);
+      };
       return [action];
     }
     const aiming = this.#freezePick !== null;
@@ -11462,6 +11492,83 @@ export class Ruleset7DomAppView {
     );
     cancel.onclick = () => this.#cancelFreezePick();
     buttons.append(cancel);
+    panel.append(buttons);
+    return panel;
+  }
+
+  /** A touch arms the Ice Witch's Freeze: the dock asks before it casts. */
+  #armFreezeRing(unitId: UnitId): void {
+    if (this.#localBusy()) return;
+    this.#freezeRingArmedUnitId = unitId;
+    this.#freezeHoverUnitId = null;
+    this.#pendingFocusAction = "confirm-freeze";
+    this.#render();
+  }
+
+  /** Disarms the Ice Witch's Freeze, and returns focus to its button. */
+  #cancelFreezeRing(): void {
+    const armed = this.#freezeRingArmedUnitId !== null;
+    this.#freezeRingArmedUnitId = null;
+    this.#pendingFocusAction = armed ? "freeze" : null;
+    this.#render();
+  }
+
+  /**
+   * The Ice Witch's armed Freeze in the dock (`pulp_wars-5ti.10`): the
+   * action's icon and name, its "?", Freeze and Cancel. The ring and its
+   * outcome ("Ice 6 · 3 turns", the ships it locks in) are on the board;
+   * the dock repeats neither. Null (and the arming ends) when her Freeze
+   * is not offered any more.
+   */
+  #freezeRingPanel(view: PlayerViewV7, unitId: UnitId): HTMLElement | null {
+    if (this.#freezeRingArmedUnitId !== unitId) return null;
+    const command = this.#snapshot.offeredCommands.find(
+      (candidate): candidate is Extract<CommandV7, { kind: "FREEZE" }> =>
+        candidate.kind === "FREEZE" && candidate.unitId === unitId,
+    );
+    const preview =
+      command === undefined
+        ? null
+        : previewFreezeV7(view, command.unitId, command.at);
+    if (command === undefined || preview === null) {
+      this.#freezeRingArmedUnitId = null;
+      return null;
+    }
+    const outcome = freezeOutcomeTextV7(freezeOutcomeV7(preview));
+    const panel = el(
+      this.#document,
+      "section",
+      "v7-kaboom-preview v7-martian-pick v7-ice-folk-pick v7-freeze-pick v7-board-pick",
+    );
+    panel.dataset.v7FreezePick = "ring";
+    panel.dataset.boardTiles = String(preview.tiles.length);
+    panel.setAttribute("aria-label", `${FREEZE_LABEL_V7}. ${outcome}`);
+    panel.append(
+      this.#pickHead(
+        "ICON:ACTION:FREEZE",
+        "snowflake",
+        FREEZE_LABEL_V7,
+        `${FREEZE_RING_TOOLTIP_V7}. ${outcome}`,
+      ),
+    );
+    const buttons = el(this.#document, "div", "button-row v7-kaboom-actions");
+    const confirm = button(
+      this.#document,
+      FREEZE_LABEL_V7,
+      "confirm-freeze",
+      "primary-action v7-freeze-confirm",
+    );
+    confirm.setAttribute("aria-label", `${FREEZE_LABEL_V7}. ${outcome}`);
+    confirm.disabled = this.#localBusy();
+    confirm.onclick = () => void this.#dispatch(command);
+    const cancel = button(
+      this.#document,
+      "Cancel",
+      "freeze-pick-cancel",
+      "v7-kaboom-cancel",
+    );
+    cancel.onclick = () => this.#cancelFreezeRing();
+    buttons.append(confirm, cancel);
     panel.append(buttons);
     return panel;
   }

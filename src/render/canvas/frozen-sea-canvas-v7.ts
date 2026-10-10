@@ -204,6 +204,25 @@ export function drawSeaIceCellV7(
 }
 
 /**
+ * The slide arrow's weight (`pulp_wars-5ti.10`): the casing's width in
+ * world units and its floor in canvas pixels. At the desktop's zoom steps
+ * (a camera zoom of 0.47 and 0.625) the first arrow was a 4 to 7 px
+ * casing round a 2 to 3 px core, which a row of Move outlines drowned.
+ */
+export const SLIDE_ARROW_WEIGHT_V7 = {
+  prominent: { width: 15, minimum: 10 },
+  quiet: { width: 12, minimum: 8 },
+} as const;
+
+/** The casing width of a slide arrow at `zoom`, in canvas pixels. */
+export function slideArrowWidthV7(zoom: number, prominent: boolean): number {
+  const weight = prominent
+    ? SLIDE_ARROW_WEIGHT_V7.prominent
+    : SLIDE_ARROW_WEIGHT_V7.quiet;
+  return Math.max(weight.minimum, weight.width * zoom);
+}
+
+/**
  * A slide's arrow through `points` (canvas px, the tile the unit steps
  * from first): a dark line with a pale ice core, so it reads on the ice
  * and on open water alike, and an arrowhead on the tile it stops on. `prominent` (the focused
@@ -229,7 +248,7 @@ export function drawSlideArrowV7(
   )
     return;
   const prominent = options.prominent === true;
-  const width = (prominent ? 12 : 9) * zoom;
+  const width = slideArrowWidthV7(zoom, prominent);
   const length = Math.hypot(last.x - before.x, last.y - before.y) || 1;
   const ux = (last.x - before.x) / length;
   const uy = (last.y - before.y) / length;
@@ -251,8 +270,9 @@ export function drawSlideArrowV7(
     for (const point of points.slice(1, -1)) context.lineTo(point.x, point.y);
     context.lineTo(tip.x, tip.y);
     // The arrowhead.
-    const head = 24 * zoom;
-    const spread = 15 * zoom;
+    // The head keeps its proportion to a line held at its pixel floor.
+    const head = Math.max(24 * zoom, width * 2);
+    const spread = Math.max(15 * zoom, width * 1.25);
     context.moveTo(tip.x, tip.y);
     context.lineTo(
       tip.x - ux * head - uy * spread,
@@ -271,7 +291,7 @@ export function drawSlideArrowV7(
   trace();
   context.strokeStyle =
     options.highContrast === true ? "#ffffff" : SEA_ICE_COLOURS_V7.slide;
-  context.lineWidth = width * 0.5;
+  context.lineWidth = width * 0.55;
   context.stroke();
   context.restore();
 }
@@ -280,9 +300,49 @@ export function drawSlideArrowV7(
 export const ICEBOUND_MARKER_FRAME_V7 = {
   /** The pack ice: the lower half of the cell. */
   ice: { left: -64, top: 0, width: 128, height: 64 },
-  /** The crush pill, under the boardable badge's slot. */
-  crush: { x: 44, y: 8, halfWidth: 19, halfHeight: 9 },
+  /**
+   * The crush pill, under the boardable badge's slot: its top edge and its
+   * right edge (world units from the tile's centre), its half size and its
+   * text, with the camera zoom it is never drawn smaller than
+   * (`pulp_wars-5ti.10`: at the desktop's zoom steps it was 18 x 8 px with
+   * 8 px text).
+   */
+  crush: {
+    right: 63,
+    top: -1,
+    halfWidth: 21,
+    halfHeight: 10,
+    font: 13,
+    minimumZoom: 0.8,
+  },
 } as const;
+
+/** The crush pill's box at `zoom` round the tile centre (`x`, `y`). */
+export function crushPillBoxV7(
+  x: number,
+  y: number,
+  zoom: number,
+): {
+  readonly cx: number;
+  readonly cy: number;
+  readonly halfWidth: number;
+  readonly halfHeight: number;
+  readonly font: number;
+} {
+  const pill = ICEBOUND_MARKER_FRAME_V7.crush;
+  const scale = Math.max(zoom, pill.minimumZoom);
+  const halfWidth = pill.halfWidth * scale;
+  const halfHeight = pill.halfHeight * scale;
+  return {
+    // Held to the tile's right edge and to its own top, so a pill at its
+    // floor grows down and to the left, over its own ship.
+    cx: x + pill.right * zoom - halfWidth,
+    cy: y + pill.top * zoom + halfHeight,
+    halfWidth,
+    halfHeight,
+    font: pill.font * scale,
+  };
+}
 
 /**
  * An icebound ship's markers at its tile centre (`x`, `y`): the pack ice
@@ -339,14 +399,10 @@ export function drawIceboundMarkerV7(
     context.stroke();
   }
   // The crush pill.
-  const pill = frame.crush;
-  const cx = x + pill.x * zoom;
-  const cy = y + pill.y * zoom;
-  const halfWidth = pill.halfWidth * zoom;
-  const halfHeight = pill.halfHeight * zoom;
+  const { cx, cy, halfWidth, halfHeight, font } = crushPillBoxV7(x, y, zoom);
   context.fillStyle = highContrast ? "#000000" : SEA_ICE_COLOURS_V7.crushToken;
   context.strokeStyle = highContrast ? "#ffffff" : SEA_ICE_COLOURS_V7.crushRim;
-  context.lineWidth = Math.max(1, 1.4 * zoom);
+  context.lineWidth = Math.max(1.5, 1.6 * zoom);
   context.beginPath();
   context.moveTo(cx - halfWidth + halfHeight, cy - halfHeight);
   context.lineTo(cx + halfWidth - halfHeight, cy - halfHeight);
@@ -372,9 +428,9 @@ export function drawIceboundMarkerV7(
     marker.lethal && !highContrast
       ? SEA_ICE_COLOURS_V7.crushLethal
       : SEA_ICE_COLOURS_V7.crushText;
-  context.font = `800 ${Math.max(8, 11.5 * zoom)}px ${BOARD_LABEL_FONT_FAMILY_V7}`;
+  context.font = `800 ${font}px ${BOARD_LABEL_FONT_FAMILY_V7}`;
   context.textAlign = "center";
   context.textBaseline = "middle";
-  context.fillText(marker.crush.replace(" HP", ""), cx, cy + 0.5 * zoom);
+  context.fillText(marker.crush.replace(" HP", ""), cx, cy + 0.5);
   context.restore();
 }

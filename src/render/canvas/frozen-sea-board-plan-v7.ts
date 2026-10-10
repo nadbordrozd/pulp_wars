@@ -139,7 +139,7 @@ export function freezePickTargetsV7(
     if (command.kind !== "FREEZE" || command.unitId !== pick.unitId) return [];
     const preview = previewFreezeV7(view, command.unitId, command.at);
     if (preview === null) return [];
-    const outcome = freezeOutcomeV7(view, unit, preview);
+    const outcome = freezeOutcomeV7(preview);
     return [
       {
         at: command.at,
@@ -271,7 +271,7 @@ export function addFreezeRingEntriesV7(
     layer: 7.5,
     at: witch.at,
     abilityStyle: "FREEZE_FOCUS",
-    label: freezeTargetLabelV7(freezeOutcomeV7(view, witch, preview)),
+    label: freezeTargetLabelV7(freezeOutcomeV7(preview)),
   });
   addIceboundPreviewEntries(entries, view, new Set(preview.icebound));
 }

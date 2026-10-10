@@ -32,6 +32,8 @@ import {
   drawIceboundMarkerV7,
   drawSeaIceCellV7,
   drawSlideArrowV7,
+  crushPillBoxV7,
+  slideArrowWidthV7,
   seaIceCracksV7,
 } from "../../src/render/canvas/frozen-sea-canvas-v7";
 import {
@@ -246,7 +248,7 @@ describe("Freeze on the board plan", () => {
     const yeti = unitAt(view, { x: 6, y: 2 });
     const preview = previewFreezeV7(view, yeti.id, { x: 6, y: 3 });
     if (preview === null) throw new Error("preview missing");
-    const outcome = freezeOutcomeV7(view, yeti, preview);
+    const outcome = freezeOutcomeV7(preview);
     expect(outcome).toMatchObject({ tiles: 2, permanent: 1, icebound: 0 });
     expect(freezeTargetLabelV7(outcome)).toBe("Ice 2 · 5 turns, 1 stays");
     // The engine agrees: after the Freeze that tile is permanent.
@@ -860,6 +862,61 @@ describe("frozen-sea marks on the canvas", () => {
     expect(none.calls).toEqual([]);
   });
 
+  it("keeps the slide arrow and the crush pill readable at the desktop's zoom steps", () => {
+    // `pulp_wars-5ti.10`: the camera zoom of the chibi zoom steps 0.75 and 1
+    // (60 and 80 px tiles). The first arrow was a 4 to 7 px casing there
+    // and the pill 18 x 8 px with 8 px text.
+    for (const zoom of [0.46875, 0.625]) {
+      expect(slideArrowWidthV7(zoom, false)).toBeGreaterThanOrEqual(8);
+      expect(slideArrowWidthV7(zoom, true)).toBeGreaterThanOrEqual(10);
+      expect(slideArrowWidthV7(zoom, true)).toBeGreaterThan(
+        slideArrowWidthV7(zoom, false),
+      );
+      const { context } = recorder();
+      drawSlideArrowV7(
+        context,
+        [
+          { x: 0, y: 0 },
+          { x: 0, y: 128 * zoom },
+          { x: 0, y: 256 * zoom },
+        ],
+        zoom,
+      );
+      // The pale core, stroked last, is more than half the casing: at
+      // least 4 px.
+      expect(context.lineWidth).toBeCloseTo(
+        slideArrowWidthV7(zoom, false) * 0.55,
+        6,
+      );
+      expect(context.lineWidth).toBeGreaterThanOrEqual(4);
+
+      const box = crushPillBoxV7(100, 100, zoom);
+      expect(box.font).toBeGreaterThanOrEqual(10);
+      expect(box.halfHeight * 2).toBeGreaterThanOrEqual(16);
+      expect(box.halfWidth * 2).toBeGreaterThanOrEqual(32);
+      // It stays inside its own tile on the right, and under the badge slot.
+      const half = 64 * zoom;
+      expect(box.cx + box.halfWidth).toBeLessThanOrEqual(100 + half);
+      expect(box.cx - box.halfWidth).toBeGreaterThanOrEqual(100 - half);
+      expect(box.cy - box.halfHeight).toBeCloseTo(100 - zoom, 6);
+      expect(box.cy + box.halfHeight).toBeLessThanOrEqual(100 + half);
+    }
+    // Above the floor both scale with the camera, as before.
+    expect(slideArrowWidthV7(2, true)).toBe(30);
+    expect(crushPillBoxV7(0, 0, 2).font).toBe(26);
+    const drawn = recorder();
+    drawIceboundMarkerV7(
+      drawn.context,
+      { crush: "−3 HP", lethal: false },
+      100,
+      100,
+      0.46875,
+    );
+    const text = drawn.named("fillText")[0];
+    const box = crushPillBoxV7(100, 100, 0.46875);
+    expect([text?.[1], text?.[2]]).toEqual(["−3", box.cx]);
+  });
+
   it("draws the pack ice and the crush pill of an icebound ship", () => {
     const overlay = { id: "icebound" } as unknown as CanvasImageSource;
     const withRaster = recorder();
@@ -956,8 +1013,9 @@ describe("frozen-sea words", () => {
   });
 
   it("shows ice on the Ice Folk Naval cards and no ship in their Gallery", () => {
+    // Its own icon since `pulp_wars-5ti.10` (the pack-ice overlay before).
     expect(technologySubjectV7("NAVAL_ENGINEERING", "ICE_FOLK")).toBe(
-      "OVERLAY:ICEBOUND",
+      "ICON:TECH:ICE_FOLK:NAVAL_ENGINEERING",
     );
     expect(technologySubjectV7("NAVAL_ENGINEERING", "ORIGINAL")).toBe(
       "UNIT:BATTLESHIP",

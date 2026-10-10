@@ -1,0 +1,36 @@
+{
+  "id": "icon-tech-rime-a-hide",
+  "jobId": "ac858b11-4309-4cc9-a368-37cd1b295a38",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-ice-folk",
+    "asset": "chibi-direction-icon-tech-rime",
+    "subject": "ICON:TECH:ICE_FOLK:SHORECRAFT",
+    "faction": "ICE_FOLK",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 76012,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only the colours of the boot: its orange-brown leather becomes dark brown-grey hide, colour #594f4d with shade #2d2b2b, not orange and not red-brown; the fur cuff round its top and its toe cap become cream white fur, colour #f9e8c6 with shade #aa856e. Do not redraw anything else: keep the boot's shape, the bright blue ice blade under it with its white shine, the thick black outline and the art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only the colours of the boot: its orange-brown leather becomes dark brown-grey hide, colour #594f4d with shade #2d2b2b, not orange and not red-brown; the fur cuff round its top and its toe cap become cream white fur, colour #f9e8c6 with shade #aa856e. Do not redraw anything else: keep the boot's shape, the bright blue ice blade under it with its white shine, the thick black outline and the art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only the colours of the boot: its orange-brown leather becomes dark brown-grey hide, colour #594f4d with shade #2d2b2b, not orange and not red-brown; the fur cuff round its top and its toe cap become cream white fur, colour #f9e8c6 with shade #aa856e. Do not redraw anything else: keep the boot's shape, the bright blue ice blade under it with its white shine, the thick black outline and the art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only the colours of the boot: its orange-brown leather becomes dark brown-grey hide, colour #594f4d with shade #2d2b2b, not orange and not red-brown; the fur cuff round its top and its toe cap become cream white fur, colour #f9e8c6 with shade #aa856e. Do not redraw anything else: keep the boot's shape, the bright blue ice blade under it with its white shine, the thick black outline and the art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "icon-tech-rime-a",
+      "candidate": 0,
+      "sha256": "8e83dd8ebd6e28132bed9e802b9b8c9251b29fafd303637addc678cdb41c36d7"
+    }
+  }
+}

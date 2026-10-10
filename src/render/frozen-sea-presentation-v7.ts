@@ -116,13 +116,6 @@ export function unitHasFreezeV7(
   );
 }
 
-function tileAt(view: PlayerViewV7, at: CoordV7) {
-  const tile = view.board.tiles.find(
-    (candidate) => candidate.at.x === at.x && candidate.at.y === at.y,
-  );
-  return tile?.explored === true ? tile : undefined;
-}
-
 /** The ice entry of a tile the viewer has explored, or undefined. */
 export function iceOnTileV7(
   view: Pick<PlayerViewV7, "ice">,
@@ -199,21 +192,15 @@ export interface FreezeOutcomeV7 {
 }
 
 /**
- * The exact outcome of an offered Freeze, from `previewFreezeV7`, the unit
- * owner's `iceTurns` and the territory of each tile (ice in its owner's
+ * The exact outcome of an offered Freeze, counted from `previewFreezeV7`,
+ * which carries the countdown and the tiles that stay (ice in its owner's
  * territory does not melt, section 8.5).
  */
-export function freezeOutcomeV7(
-  view: PlayerViewV7,
-  unit: PublicUnitV7,
-  preview: FreezePreviewV7,
-): FreezeOutcomeV7 {
+export function freezeOutcomeV7(preview: FreezePreviewV7): FreezeOutcomeV7 {
   return {
     tiles: preview.tiles.length,
-    permanent: preview.tiles.filter(
-      (at) => tileAt(view, at)?.territoryOwnerId === unit.ownerId,
-    ).length,
-    turns: unitCapabilitiesV7(view, unit, view.viewer.researchedTechs).iceTurns,
+    permanent: preview.permanent.length,
+    turns: preview.turns,
     icebound: preview.icebound.length,
   };
 }

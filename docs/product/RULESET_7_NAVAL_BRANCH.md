@@ -535,9 +535,12 @@ order, the newly icebound unit IDs in ID order). A Freeze moves no unit and
 touches no dock, so it is not on the blockade-event list.
 
 **Preview.** `previewFreezeV7(view, unitId, at)` returns null unless the
-command is offered, otherwise `{ unitId, tiles, refreshed, icebound }`. Every
-tile it reads is explored by the actor and every unit on it visible, so it is
-exact.
+command is offered, otherwise
+`{ unitId, tiles, refreshed, icebound, turns, permanent }` (`turns` and
+`permanent` since `pulp_wars-5ti.10`: the countdown every tile of the set
+gets, and the tiles of the set in the actor's owner's territory, which do
+not count down). Every tile it reads is explored by the actor and every unit
+on it visible, so it is exact.
 
 ### 8.5 Thaw
 
@@ -1826,7 +1829,8 @@ differently:
    Dig In, so every preview is exact.
 3. **Freeze.** The Ice Witch is the role with the Blizzard; her `at` is her
    own tile. `previewFreezeV7(view, unitId, at)` returns
-   `{ unitId, tiles, refreshed, icebound }`. The Freezing unit is marked like
+   `{ unitId, tiles, refreshed, icebound }` (and, since `pulp_wars-5ti.10`,
+   `turns` and `permanent`). The Freezing unit is marked like
    a unit that used a special action. A Freeze by a mind-controlled Ice Folk
    unit makes its controller's ice.
 4. **Slide.** A slide starts only on ice that was there, and explored by the
@@ -2004,10 +2008,10 @@ the build):
 [section 13](#13-normal-ai-requirements) (`pulp_wars-5ti.4` and
 `pulp_wars-5ti.5`), the coarse balance of
 [section 15](#15-headless-support-measurement-tuning-bounds-and-balance-acceptance)
-(`pulp_wars-5ti.8`), and the polish of `pulp_wars-5ti.10` (a Freeze action
-icon and five Ice Folk technology icons; `previewFreezeV7` carrying the
-turns and the permanence; a confirm step for the Ice Witch's Freeze on a
-phone; a thicker slide arrow and crush pill at desktop zoom). The three
+(`pulp_wars-5ti.8`). The polish of `pulp_wars-5ti.10` is done (a Freeze
+action icon and five Ice Folk technology icons; `previewFreezeV7` carrying
+the turns and the permanence; a confirm step for the Ice Witch's Freeze on
+a touch; a thicker slide arrow and crush pill at desktop zoom). The three
 questions of [section 18.1](#181-questions-for-the-root) were ruled by the
 root on 2026-10-03: no ships and no transports for the Ice Folk, ice in
 their own territory stays, and Submerged is accepted.

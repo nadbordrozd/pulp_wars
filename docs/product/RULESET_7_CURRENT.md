@@ -10793,10 +10793,14 @@ Legality, in this order (all rejections atomic):
   order, the newly icebound unit IDs in ID order). A Freeze moves no unit
   and touches no dock, so it is not on the blockade-event list.
 - **Preview.** `previewFreezeV7(view, unitId, at)` returns null unless the
-  command is offered, otherwise `{ unitId, tiles, refreshed, icebound }`.
-  Every tile it reads is explored by the actor and every unit on it
-  visible, so it is exact. It does not carry the countdown: the turns are
-  the unit owner's `iceTurns`, and a tile in that owner's territory stays.
+  command is offered, otherwise
+  `{ unitId, tiles, refreshed, icebound, turns, permanent }`. Every tile it
+  reads is explored by the actor and every unit on it visible, so it is
+  exact. `turns` is the countdown every tile of the set gets (the unit
+  owner's `iceTurns`), and `permanent` the tiles of the set in that
+  owner's territory, in the order of `tiles`: that ice stays. (The two
+  fields were added by `pulp_wars-5ti.10`; a preview is no rule and no
+  state, so the ruleset identity did not change.)
 
 **Thaw.** At the End Turn of player `P`, after the Frozen countdown:
 
@@ -13313,13 +13317,14 @@ items left after the fold, and the pending balance steps below.
     `iceFolk` block but have none of the naval telemetry of its section
     15.2. Both AI beads are done, so the check can run. The numbers
     here are the overlay's decided ones (with the Snow cover of `7r37`).
-  - **Polish, `pulp_wars-5ti.10`.** (1) Freeze has no registered action
-    icon (the button shows a snowflake glyph), and the five Ice Folk Naval
-    technology cards show registered ice art as stand-ins. (2)
-    `previewFreezeV7` carries the tiles, the refreshed ones, and the ships,
-    not the turns or the permanence, which the interface reads from two
-    other public facts. (3) The Ice Witch's Freeze has no confirm step on a
-    phone. (4) The slide arrow and the crush pill are thin at desktop zoom.
+  - **Polish, `pulp_wars-5ti.10` (done, no identity change).** (1) Freeze
+    has its own action icon and each of the five Ice Folk Naval technology
+    cards its own icon. (2) `previewFreezeV7` carries the countdown
+    (`turns`) and the tiles that stay (`permanent`); the interface reads
+    them from it. (3) A touch arms the Ice Witch's Freeze and the dock asks
+    before it casts; a mouse or a key still casts at once. (4) The slide
+    arrow and the crush pill have a floor in canvas pixels, so both read at
+    the desktop's zoom steps.
   - **Where the code differs from the overlay's rules text** (this
     document states the code's behavior): (1) Glacier's cover is the Snow
     cover of today, × 1.25 (the overlay's section 8.10 quotes × 1.5); (2)

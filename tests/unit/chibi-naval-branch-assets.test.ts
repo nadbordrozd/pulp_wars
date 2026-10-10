@@ -291,26 +291,28 @@ describe("naval branch art (pulp_wars-5ti.6)", () => {
   it("shows the two technologies with their icons for every faction, and registers the Ram, Board and Torpedo icons", () => {
     const classic = buildChibiArtRegistryV7(CHIBI_ART_ASSETS_V7).registry;
     for (const faction of OFFERED_FACTION_IDS_V7) {
-      // The frozen sea (`pulp_wars-5ti.7`): the Ice Folk have no ship; their
-      // Black Ice and Glacier cards show ice (registered stand-ins).
+      // The frozen sea: the Ice Folk have no ship; their Black Ice and
+      // Glacier cards show ice, with icons of their own since
+      // `pulp_wars-5ti.10` (stand-ins of registered art before).
       expect(technologySubjectV7("SEAMANSHIP", faction), faction).toBe(
-        faction === "ICE_FOLK" ? "EFFECT:COLD_SNAP" : "ICON:TECH:SEAMANSHIP",
+        faction === "ICE_FOLK"
+          ? "ICON:TECH:ICE_FOLK:SEAMANSHIP"
+          : "ICON:TECH:SEAMANSHIP",
       );
       expect(technologySubjectV7("SUBMERSIBLES", faction), faction).toBe(
         faction === "ICE_FOLK"
-          ? "ICON:STATUS:FROZEN"
+          ? "ICON:TECH:ICE_FOLK:SUBMERSIBLES"
           : "ICON:TECH:SUBMERSIBLES",
       );
     }
-    expect(technologySubjectV7("SHORECRAFT", "ICE_FOLK")).toBe(
-      "ICON:STATUS:CHILLED",
-    );
-    expect(technologySubjectV7("NAVIGATION", "ICE_FOLK")).toBe(
-      "EFFECT:SHATTER_SHARDS",
-    );
-    expect(technologySubjectV7("NAVAL_ENGINEERING", "ICE_FOLK")).toBe(
-      "OVERLAY:ICEBOUND",
-    );
+    for (const tech of [
+      "SHORECRAFT",
+      "NAVIGATION",
+      "NAVAL_ENGINEERING",
+    ] as const)
+      expect(technologySubjectV7(tech, "ICE_FOLK")).toBe(
+        `ICON:TECH:ICE_FOLK:${tech}`,
+      );
     const icons: readonly (readonly [ArtSubjectV7, string])[] = [
       ["ICON:TECH:SEAMANSHIP", "chibi-icon-tech-seamanship"],
       ["ICON:TECH:SUBMERSIBLES", "chibi-icon-tech-submersibles"],

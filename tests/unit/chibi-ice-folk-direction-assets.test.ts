@@ -92,6 +92,14 @@ const ICONS = [
   ["ICON:TECH:ICE_FOLK:EXPLOSIVES", "tech-brittle"],
   ["ICON:STATUS:CHILLED", "status-chilled"],
   ["ICON:STATUS:FROZEN", "status-frozen"],
+  // The frozen sea (bead pulp_wars-5ti.10): the Freeze icon and the five
+  // Naval technologies, each with an icon of its own.
+  ["ICON:ACTION:FREEZE", "action-freeze"],
+  ["ICON:TECH:ICE_FOLK:SHORECRAFT", "tech-rime"],
+  ["ICON:TECH:ICE_FOLK:NAVIGATION", "tech-pack-ice"],
+  ["ICON:TECH:ICE_FOLK:NAVAL_ENGINEERING", "tech-icebound"],
+  ["ICON:TECH:ICE_FOLK:SEAMANSHIP", "tech-black-ice"],
+  ["ICON:TECH:ICE_FOLK:SUBMERSIBLES", "tech-glacier"],
 ] as const;
 const EFFECTS = [
   ["EFFECT:SHATTER", "shatter"],
@@ -137,7 +145,7 @@ describe("Ice Folk production art (pulp_wars-7g3.5)", () => {
     CHIBI_DIRECTION_ICE_FOLK_ART_ASSETS_V7.map((asset) => [asset.id, asset]),
   );
 
-  it("lists the nine units and portraits, ten icons, five effects and City 1-3", () => {
+  it("lists the nine units and portraits, sixteen icons, five effects and City 1-3", () => {
     const expected: [string, string][] = [
       ...UNITS.map(
         ([role, name]) =>

@@ -565,8 +565,11 @@ Done in this bead:
    `EFFECT:SHATTER_SHARDS`, `OVERLAY:ICEBOUND`, `EFFECT:COLD_SNAP`,
    `ICON:STATUS:FROZEN`; `ICE_FOLK_NAVAL_TECH_SUBJECTS_V7`).
 
-What remains for art: icons of their own for those five cards, and an
-`ICON:ACTION:FREEZE` (the Freeze button shows the code-drawn snowflake).
+Bead `pulp_wars-5ti.10` made those: the five cards show
+`ICON:TECH:ICE_FOLK:<technology>` and the Freeze button
+`ICON:ACTION:FREEZE` (see
+[ICE_FOLK.md](factions/ICE_FOLK.md#the-frozen-sea-icons-bead-pulp_wars-5ti10)).
+The stand-ins of item 3 are no longer used for the cards.
 
 ### Evidence
 

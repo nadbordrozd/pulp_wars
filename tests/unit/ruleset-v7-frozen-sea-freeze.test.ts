@@ -281,6 +281,9 @@ describe("the freeze set (section 8.4)", () => {
         { x: 2, y: 4 },
       ],
       icebound: [],
+      // Outside the capital's territory: it counts down from 3.
+      turns: 3,
+      permanent: [],
     });
     const result = acceptV7(base, 0, freeze(base, SHORE, { x: 2, y: 3 }));
     expect(result.state.ice.map((entry) => entry.turnsLeft)).toEqual([3, 3]);
@@ -352,6 +355,9 @@ describe("the freeze set (section 8.4)", () => {
       ],
       refreshed: [witchAt],
       icebound: [boat.id],
+      // Glacier: 5 turns; none of the ring is in her owner's territory.
+      turns: 5,
+      permanent: [],
     });
     const result = acceptV7(state, 0, freeze(state, witchAt, witchAt));
     expect(frozenTiles(result.state)).toEqual(preview?.tiles);
@@ -374,6 +380,7 @@ describe("the freeze set (section 8.4)", () => {
       (command) => command.kind === "FREEZE",
     );
     expect(offers.length).toBeGreaterThan(4);
+    const seenPermanence = new Set<boolean>();
     for (const command of offers) {
       if (command.kind !== "FREEZE") throw new Error("not a Freeze");
       const preview = previewFreezeV7(view, command.unitId, command.at);
@@ -386,7 +393,24 @@ describe("the freeze set (section 8.4)", () => {
         icebound: preview?.icebound,
       });
       expect(parseEventV7(result.events[0]).ok).toBe(true);
+      // The countdown and the permanence it carries are those of the ice
+      // the Freeze leaves (`pulp_wars-5ti.10`).
+      if (preview === null) throw new Error("preview missing");
+      const after = viewForV7(result.state, seatV7(state, 0).id).ice;
+      for (const at of preview.tiles) {
+        const entry = after.find(
+          (ice) => ice.at.x === at.x && ice.at.y === at.y,
+        );
+        expect(entry?.turnsLeft).toBe(preview.turns);
+        expect(entry?.permanent).toBe(
+          preview.permanent.some((tile) => tile.x === at.x && tile.y === at.y),
+        );
+        seenPermanence.add(entry?.permanent === true);
+      }
+      expect(preview.turns).toBe(3);
     }
+    // The scene has both: ice in the capital's territory and ice outside.
+    expect([...seenPermanence].sort()).toEqual([false, true]);
     // Every `at` that is not offered is rejected.
     const offered = new Set(
       offers.map((command) =>

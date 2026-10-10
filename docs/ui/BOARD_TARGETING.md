@@ -191,7 +191,7 @@ area fixed by the rules, or it opens a screen).
 | Ice Folk | Cold Aura            | (c)   | No action (part of the Frost Giant's Move)                   | A Move tile next to enemies reads "Freezes 2"; focused, each enemy it freezes is marked "Freeze"                                                                                                   | Move (the Move)              |
 | Ice Folk | Blizzard, Rockfall   | (c)   | No action (a passive aura; part of an Attack)                | Unchanged                                                                                                                                                                                          | none                         |
 | Ice Folk | Freeze (a line role) | (a)   | No control (the frozen sea had no interface)                 | One button arms it; the tile to freeze toward is picked on the board (section 3.5)                                                                                                                 | Place                        |
-| Ice Folk | Freeze (Ice Witch)   | (c)   | No control                                                   | One button casts her ring; its tiles are marked while she is selected (section 3.5)                                                                                                                | none (an area preview)       |
+| Ice Folk | Freeze (Ice Witch)   | (c)   | No control                                                   | One button casts her ring (a touch arms it first); its tiles are marked (section 3.5)                                                                                                              | none (an area preview)       |
 | Dwarf    | Tunnel: passenger    | (b)   | A portrait button per Hammerer and "Alone"                   | The badged Hammerers on the board; the dock shows who rides and one "Alone" toggle                                                                                                                 | Help                         |
 | Dwarf    | Tunnel: destination  | (a)   | A tile on the board, chosen then confirmed                   | Unchanged                                                                                                                                                                                          | Move                         |
 | Dwarf    | Bomb Run: target     | (b)   | A button per target, and board targets                       | The board targets only                                                                                                                                                                             | Attack                       |
@@ -315,8 +315,13 @@ arrow, the icebound marker).
   dashed cream edge, quiet), and lifted, with the outcome's label on her
   tile, while the button is hovered or focused. They are an area preview,
   not targets, like an area support's recipients (section 2.1): a click on
-  one does what its own mark says. On a phone, which has no hover, the
-  quiet marks are the preview.
+  one does what its own mark says. **A touch arms it first**
+  (`pulp_wars-5ti.10`): a finger has no hover, so a tap on the button lifts
+  the ring, labels the outcome on her tile and opens the aiming panel with
+  "Freeze" and Cancel (and the "?"); "Freeze" casts, Cancel or Escape
+  steps back. A mouse or a key casts at once, having seen the same on
+  hover or focus. The press is told apart by its pointer type, not by the
+  width of the screen.
 - **Reasons.** When no `FREEZE` is offered, a unit with the ability that
   stands next to water shows the button disabled with the first failing
   row of the rules: "Needs Rime", "Frozen: it cannot act this turn", "Already acted this
@@ -327,7 +332,8 @@ arrow, the icebound marker).
   targets. A destination reached by a slide is outlined in the pale ice of
   a Glide tile and draws an **arrow** from the tile the unit steps from,
   across the ice, to the tile it stops on (once per slide, at full weight
-  on the focused destination); the dock's legend reads "Slide: it stops
+  on the focused destination; its casing is never thinner than 8 canvas
+  pixels, 10 at full weight); the dock's legend reads "Slide: it stops
   where the ice ends". The path is the command's own. A unit that does not
   slide (the Sabretooth, a walker, a flyer) has plain Moves.
 - **The slip.** A ground unit of another faction is offered the ice tile
@@ -336,7 +342,8 @@ arrow, the icebound marker).
   not know of is announced ("Ice: the Move ended there").
 - **An icebound ship** is no target of its owner's: the engine offers it
   no Move, Attack or Board. It wears the pack ice at its hull's foot and a
-  pill with the crush it takes next ("−3", "Sinks"); its dock has the
+  pill with the crush it takes next ("−3", "Sinks"; never drawn smaller
+  than at a camera zoom of 0.8, held to its tile's right edge); its dock has the
   chips "Icebound" and "−3 HP" (whose turn, in the tooltip) and, for its
   owner, one disabled "Sail" button with the reason. Board's own reason
   for an icebound boarder is in section 3.4.

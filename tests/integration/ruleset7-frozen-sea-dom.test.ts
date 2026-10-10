@@ -251,6 +251,72 @@ describe("Freeze, the Ice Witch: her ring, one button", () => {
     app.destroy();
   });
 
+  it("asks a touch before it casts: the first tap lifts and labels the ring, Freeze casts, Cancel and Escape step back", async () => {
+    // `pulp_wars-5ti.10`: a finger has no hover, so one tap must not cast
+    // a ring the player has only seen quiet.
+    const { controller, host, app, unitAt } = rig(frozenFreezeUiFixtureV7());
+    const witch = unitAt(FROZEN_UI_V7.witch);
+    host.callbacks?.onSelection({ kind: "UNIT", unitId: witch.id });
+    const tap = (): void => {
+      const freeze = requiredButton("freeze");
+      const down = new MouseEvent("pointerdown", { bubbles: true });
+      Object.defineProperty(down, "pointerType", { value: "touch" });
+      freeze.dispatchEvent(down);
+      freeze.click();
+    };
+    const label = () =>
+      boardPlan(host).entries.find((entry) =>
+        entry.key.startsWith("ability-target:FREEZE_RING:"),
+      )?.label;
+    tap();
+    expect(controller.accepted).toEqual([]);
+    expect(host.lastModel?.interaction.freezeRingFocusUnitId).toBe(witch.id);
+    expect(label()).toBe("Ice 3 · 5 turns");
+    const panel = requiredElement<HTMLElement>("[data-v7-freeze-pick]");
+    expect(panel.dataset.v7FreezePick).toBe("ring");
+    expect(panel.classList.contains("v7-board-pick")).toBe(true);
+    const controls = [...panel.querySelectorAll("button")].map(
+      (control) => control.dataset.action,
+    );
+    expect(controls).toEqual([
+      "pick-info",
+      "confirm-freeze",
+      "freeze-pick-cancel",
+    ]);
+    expect(controls.length).toBeLessThanOrEqual(
+      BOARD_PICK_PANEL_MAX_BUTTONS_V7,
+    );
+    expect(panel.textContent).not.toMatch(COORDINATE);
+    expect(panel.getAttribute("aria-label")).toContain("3 tiles of ice");
+    // The ring's tiles are still an area preview, not targets.
+    expect(
+      boardPlan(host).targets.some((target) => target.family === "FREEZE"),
+    ).toBe(false);
+
+    // Cancel and Escape each step back.
+    requiredButton("freeze-pick-cancel").click();
+    expect(document.querySelector("[data-v7-freeze-pick]")).toBeNull();
+    expect(label()).toBeUndefined();
+    tap();
+    document.dispatchEvent(
+      new KeyboardEvent("keydown", { key: "Escape", bubbles: true }),
+    );
+    expect(document.querySelector("[data-v7-freeze-pick]")).toBeNull();
+    expect(controller.accepted).toEqual([]);
+
+    // Armed, Freeze casts her ring.
+    tap();
+    requiredButton("confirm-freeze").click();
+    await waitUntil(() => controller.accepted.length === 1);
+    expect(controller.accepted[0]).toEqual({
+      kind: "FREEZE",
+      unitId: witch.id,
+      at: FROZEN_UI_V7.witch,
+    });
+    expect(document.querySelector("[data-v7-freeze-pick]")).toBeNull();
+    app.destroy();
+  });
+
   it("freezes Deep Water only with Pack Ice", () => {
     // A Witch standing on the ice at the edge of the deep sea.
     const scene = (technologies: readonly TechnologyIdV7[]) =>

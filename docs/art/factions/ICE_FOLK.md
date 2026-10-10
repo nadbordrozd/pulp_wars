@@ -603,3 +603,45 @@ Record: [faction buildings, section 14](../FACTION_BUILDINGS.md#14-a-market-per-
 The seven achievement Monuments and the faction obelisk in Ice Folk materials. Pale grey stone, white snow, ivory bone and one ice blue (`chibi-ice-folk-monument-<achievement>`): the Explorer a snow-capped obelisk with a bone compass rose; the Engineer a snowy pillar under a bone cogwheel; the Muster a snowy pillar with a timber and a hide shield and a tusk horn at its foot; the Conqueror an arch of snow blocks with an ice-crystal wreath; the Land Baron a boundary stone with a mammoth shield and an ice-crystal crown; the Sea Dog a snowy column with a bone anchor and a bone wheel (the anchor stays: their Sea Dog counts units on ice); the Slayer an ice-blade sword with a fur-lined helmet. **Obelisk** (`chibi-ice-folk-monument`): a clear ice-blue obelisk, candidate 9 of the Explorer sheet reused (no new PixelLab job). Art only: the board still draws the Human (achievement) Monument or the shared obelisk until bead `pulp_wars-eu3r.3` wires the skin rule.
 
 Record: [faction buildings, section 15](../FACTION_BUILDINGS.md#15-faction-monuments-bead-pulp_wars-eu3r2).
+
+## The frozen-sea icons (bead `pulp_wars-5ti.10`)
+
+The Freeze button and the five cards of the Ice Folk Naval branch showed a
+code glyph and stand-ins of other ice art. Six icons of their own, 48 x 48,
+`icon` class, accent `ice-folk-blue`, in batch `direction-ice-folk`:
+
+| Subject                                | Asset                                 | What it shows                                                         |
+| -------------------------------------- | ------------------------------------- | --------------------------------------------------------------------- |
+| `ICON:ACTION:FREEZE`                   | `chibi-direction-icon-action-freeze`  | a curling sea wave frozen solid, icicles on its crest                 |
+| `ICON:TECH:ICE_FOLK:SHORECRAFT`        | `chibi-direction-icon-tech-rime`      | Rime: a fur-topped hide boot on a blade of ice (the slide)            |
+| `ICON:TECH:ICE_FOLK:NAVIGATION`        | `chibi-direction-icon-tech-pack-ice`  | Pack Ice: a pointed iceberg with a snow cap and a floe                |
+| `ICON:TECH:ICE_FOLK:NAVAL_ENGINEERING` | `chibi-direction-icon-tech-icebound`  | Icebound: a small timber hull gripped by jagged ice                   |
+| `ICON:TECH:ICE_FOLK:SEAMANSHIP`        | `chibi-direction-icon-tech-black-ice` | Black Ice: a round slab of near-black ice ringed by bright ice spikes |
+| `ICON:TECH:ICE_FOLK:SUBMERSIBLES`      | `chibi-direction-icon-tech-glacier`   | Glacier: a wall of ice under a snow cap with a cave at its foot       |
+
+- **Told apart by shape and tone**, at 18 px on the cream plate: a wave, a
+  boot, a triangle, a tan hull in a blue nest, a dark disc, a white-capped
+  block with a dark arch. None is a snowflake (Frosted, Cold Snap) or a
+  plain cube (Frozen, Brittle).
+  [`frozen-sea-icons.png`](../../../art/pixellab/reviews/chibi-batch-direction-ice-folk/frozen-sea-icons.png)
+  shows them at x4, 48, 24 and 18 px on the cream plate and the technology
+  card's tone, beside those icons and the other factions' Naval icons
+  (`npm run art:chibi-ice-folk-direction-review -- --frozen-sea-icons-only`).
+- **Twelve PixelLab calls** (seeds 76001 to 76053), six accepted. Pack Ice
+  and Icebound were first creations.
+- **The faction layer's beasts walk into an icon.** Both Freeze creations
+  drew a yeti (in a ball of water, then under the wave), the second although
+  its line forbade every living thing; "Erase the furry animal completely
+  ... the wave continues down to the bottom of the image" as an edit left
+  the wave alone (as the Bolas icon was rescued).
+- **Rejected.** Rime's first boot was chestnut orange leather (recoloured to
+  the faction's dark hide and cream fur by an edit with hex values). Black
+  Ice's first slab carried a cream cup with a key-red thing in it (erased by
+  an edit that names what stays). Glacier's first was an outline-less blue
+  lump like a tree stump; its third had purple shading and marks that read
+  as letters.
+- **Weak spots.** The Glacier fills its canvas with no margin, so it is
+  drawn larger than its neighbours; at 18 px it is a blue block, told from
+  the Frozen cube by its white cap and dark arch. The Rime boot keeps a
+  small rust-brown heel. The wave says "sea" before it says "ice" at 18 px;
+  its icicles read from 24 px up.

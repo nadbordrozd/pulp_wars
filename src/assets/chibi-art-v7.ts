@@ -530,10 +530,23 @@ export type IceFolkArtSubjectV7 =
   | `UNIT:ICE_FOLK:${IceFolkArtRoleV7}`
   | `PORTRAIT:ICE_FOLK:${IceFolkArtRoleV7}`
   | `CITY:ICE_FOLK:${1 | 2 | 3}`
-  | `ICON:ACTION:${"THROW_BOLAS" | "COLD_SNAP" | "SWEEP" | "ROCKFALL" | "PROWL" | "SHATTER"}`
-  | `ICON:TECH:ICE_FOLK:${"FORTIFICATION" | "EXPLOSIVES"}`
+  | `ICON:ACTION:${"THROW_BOLAS" | "COLD_SNAP" | "SWEEP" | "ROCKFALL" | "PROWL" | "SHATTER" | "FREEZE"}`
+  | `ICON:TECH:ICE_FOLK:${"FORTIFICATION" | "EXPLOSIVES" | IceFolkNavalTechV7}`
   | `ICON:STATUS:${"CHILLED" | "FROZEN"}`
   | `EFFECT:${IceFolkEffectIdV7}`;
+
+/**
+ * The Ice Folk Naval branch (bead pulp_wars-5ti.10): Rime, Pack Ice,
+ * Icebound, Black Ice and Glacier each have an icon of their own,
+ * `ICON:TECH:ICE_FOLK:<technology>`; `ICON:ACTION:FREEZE` is the Freeze
+ * button's.
+ */
+export type IceFolkNavalTechV7 =
+  | "SHORECRAFT"
+  | "NAVIGATION"
+  | "NAVAL_ENGINEERING"
+  | "SEAMANSHIP"
+  | "SUBMERSIBLES";
 
 /**
  * Ice Folk effect sprites: SHATTER (the burst of a shattered unit),

@@ -1073,8 +1073,12 @@ ten icons, five effects, City 1 to 3) from 72 recipes, all new PixelLab
 calls. Like the Martian batch it starts from fresh creations and **nothing
 registers it yet**: its registry lines are in
 [`chibi-direction-ice-folk-art-manifest.ts`](../../src/assets/chibi-direction-ice-folk-art-manifest.ts),
-which no game module imports until bead `pulp_wars-7g3.6`. It added these
-pipeline pieces:
+which no game module imports until bead `pulp_wars-7g3.6`. Bead
+`pulp_wars-5ti.10` added six icons to the batch (the Freeze button and the
+five Naval technologies: 6 assets from 12 recipes, seeds 76001 to 76053,
+all new PixelLab calls; see
+[ICE_FOLK.md](factions/ICE_FOLK.md#the-frozen-sea-icons-bead-pulp_wars-5ti10)).
+The batch added these pipeline pieces:
 
 - **`ice-folk-blue` accent preset**
   ([`accent.ts`](../../scripts/art/chibi/accent.ts)): the band hue 175 to

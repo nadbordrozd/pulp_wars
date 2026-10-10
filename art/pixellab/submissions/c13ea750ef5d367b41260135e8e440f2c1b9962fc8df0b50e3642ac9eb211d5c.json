@@ -1,0 +1,36 @@
+{
+  "id": "icon-freeze-b-wave",
+  "jobId": "5a3030fd-d72b-4b3a-88c6-011627a53b2e",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-ice-folk",
+    "asset": "chibi-direction-icon-action-freeze",
+    "subject": "ICON:ACTION:FREEZE",
+    "faction": "ICE_FOLK",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 76003,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Erase the furry animal completely: its head, face, body, arms and feet are all removed. Where it stood, the big curling wave of bright blue ice continues down to the bottom of the image as one solid thick curl of ice with white icicles hanging from its crest, so the image shows only a frozen sea wave and nothing else. Keep the wave's bright blue colour, its white icicles, the thick black outline and the art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Erase the furry animal completely: its head, face, body, arms and feet are all removed. Where it stood, the big curling wave of bright blue ice continues down to the bottom of the image as one solid thick curl of ice with white icicles hanging from its crest, so the image shows only a frozen sea wave and nothing else. Keep the wave's bright blue colour, its white icicles, the thick black outline and the art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Erase the furry animal completely: its head, face, body, arms and feet are all removed. Where it stood, the big curling wave of bright blue ice continues down to the bottom of the image as one solid thick curl of ice with white icicles hanging from its crest, so the image shows only a frozen sea wave and nothing else. Keep the wave's bright blue colour, its white icicles, the thick black outline and the art style exactly the same, on a transparent background.",
+    "editInstruction": "Erase the furry animal completely: its head, face, body, arms and feet are all removed. Where it stood, the big curling wave of bright blue ice continues down to the bottom of the image as one solid thick curl of ice with white icicles hanging from its crest, so the image shows only a frozen sea wave and nothing else. Keep the wave's bright blue colour, its white icicles, the thick black outline and the art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "icon-freeze-b",
+      "candidate": 0,
+      "sha256": "1ee2fcaf128d0c39b28f98145d75d67dde324b8bf955f4fd8e4273c04596c800"
+    }
+  }
+}

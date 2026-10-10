@@ -18,6 +18,11 @@
  *   Deep Water, and on the Snow overlay over Grass, Forest and Mountain;
  * - `portraits-x4.png`, `icons-x4.png`, `effects-x3.png`,
  *   `shatter-frames-x3.png`, `cities-x3.png`, `markers-x3.png`;
+ * - `frozen-sea-icons.png` (bead pulp_wars-5ti.10): the Freeze icon and the
+ *   five Naval technology icons on the interface's cream plate and on the
+ *   technology card's tone, at x4, 48, 24 and 18 px, beside the faction's
+ *   other ice icons and the Naval icons of the other factions
+ *   (`-- --frozen-sea-icons-only` writes this sheet alone);
  * - `snow-tiles-x2.png` (the overlay's edge sets and seams) and
  *   `snow-board-zoom-{1,0.75}.png` (a board mock: Snow over an Ice Folk
  *   city's territory with Roads, Forest and Mountain, and a Witch's
@@ -192,6 +197,15 @@ const ICONS = [
   ["tech-brittle", "Brittle"],
   ["status-chilled", "Chilled"],
   ["status-frozen", "Frozen"],
+] as const;
+/** The frozen sea (bead pulp_wars-5ti.10), reviewed on a sheet of its own. */
+const FROZEN_SEA_ICONS = [
+  ["action-freeze", "Freeze"],
+  ["tech-rime", "Rime"],
+  ["tech-pack-ice", "Pack Ice"],
+  ["tech-icebound", "Icebound"],
+  ["tech-black-ice", "Black Ice"],
+  ["tech-glacier", "Glacier"],
 ] as const;
 const EFFECTS = [
   ["shatter", "Shatter burst"],
@@ -1973,8 +1987,86 @@ const KEY_SHEETS = [
   "scene-mixed-a-phone-zoom-0.75.png",
 ];
 
+/** The interface's cream plate and the technology card's tone (STYLE.md). */
+const CREAM_PLATE: Rgb = [247, 239, 216];
+const CARD_TONE: Rgb = [234, 220, 180];
+
+/**
+ * The frozen-sea icons where the interface shows them: on the cream plate
+ * (the Freeze button) and on the technology card's tone, at x4 and at 48,
+ * 24 and 18 px, beside the icons they must not be mistaken for.
+ */
+async function frozenSeaIconsSheet(): Promise<void> {
+  const scale = 4;
+  const all = [
+    ...FROZEN_SEA_ICONS.map(
+      ([name, title]) => [`chibi-direction-icon-${name}`, title] as const,
+    ),
+    ["chibi-direction-icon-action-cold-snap", "(Cold Snap)"],
+    ["chibi-direction-icon-tech-deep-winter", "(Deep Winter)"],
+    ["chibi-direction-icon-tech-brittle", "(Brittle)"],
+    ["chibi-direction-icon-status-chilled", "(Chilled)"],
+    ["chibi-direction-icon-status-frozen", "(Frozen)"],
+    ["chibi-icon-tech-navigation", "(Navigation)"],
+    ["chibi-icon-tech-seamanship", "(Seamanship)"],
+    ["chibi-icon-tech-submersibles", "(Submersibles)"],
+    ["chibi-icon-action-board", "(Board)"],
+  ] as const;
+  const cellW = 48 * scale + GAP;
+  const strip = 48 + GAP * 2;
+  const out = blank(
+    all.length * cellW + GAP,
+    LABEL_H * 2 + 48 * scale + strip * 2 + GAP * 5,
+    PAPER,
+  );
+  const labels: Label[] = [];
+  for (const [column, [id, title]] of all.entries()) {
+    const left = GAP + column * cellW;
+    const icon = await readRaster(chibi("icons", id));
+    labels.push({ text: title, left, top: 4, size: 12 });
+    let top = LABEL_H;
+    fill(out, left, top, 48 * scale, 48 * scale, CREAM_PLATE);
+    blit(out, icon, left, top, scale);
+    top += 48 * scale + GAP;
+    for (const tone of [CREAM_PLATE, CARD_TONE]) {
+      fill(out, left, top, 48 * scale, strip, tone);
+      blit(out, icon, left + GAP, top + GAP, 1);
+      let x = left + GAP + 48 + GAP * 2;
+      for (const size of [24, 18]) {
+        const small = await sharp(Buffer.from(icon.data), {
+          raw: { width: icon.width, height: icon.height, channels: 4 },
+        })
+          .resize(size, size, { kernel: "lanczos3" })
+          .raw()
+          .toBuffer();
+        blit(
+          out,
+          { width: size, height: size, data: new Uint8Array(small) },
+          x,
+          top + GAP + (48 - size) / 2,
+          1,
+        );
+        x += size + GAP * 3;
+      }
+      top += strip + GAP;
+    }
+  }
+  labels.push({
+    text: "cream plate x4; then 48, 24 and 18 px on the cream plate and on the technology card's tone; names in brackets are existing icons",
+    left: GAP,
+    top: out.height - LABEL_H,
+    size: 12,
+    fill: "#aab3c0",
+  });
+  await sheet("frozen-sea-icons.png", out, labels);
+}
+
 async function main(): Promise<void> {
   await mkdir(OUT, { recursive: true });
+  if (process.argv.includes("--frozen-sea-icons-only")) {
+    await frozenSeaIconsSheet();
+    return;
+  }
   await writeStudy(ROOT, OUT);
   written.push("study-options-x3.png", "study-options-1x.png", "study.json");
   await rosterSheet(4, "roster-x4.png");
@@ -1991,6 +2083,7 @@ async function main(): Promise<void> {
   await terrainSheet();
   await portraitsSheet();
   await iconsSheet();
+  await frozenSeaIconsSheet();
   await effectsSheet();
   await shatterFramesSheet();
   await citiesSheet();

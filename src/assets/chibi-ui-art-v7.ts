@@ -198,15 +198,20 @@ export const CHIBI_TECH_ART_SUBJECTS_V7 = {
   SUBMERSIBLES: "ICON:TECH:SUBMERSIBLES",
 } as const satisfies Readonly<Record<TechnologyIdV7, ArtSubjectV7>>;
 
-/** The Ice Folk cards of the Naval branch (see `technologySubjectV7`). */
+/**
+ * The Ice Folk cards of the Naval branch (see `technologySubjectV7`): the
+ * faction's own icons since bead pulp_wars-5ti.10 (Rime a fur boot on a
+ * blade of ice, Pack Ice an iceberg, Icebound a hull gripped by ice, Black
+ * Ice a slab of dark ice, Glacier a wall of ice with a cave).
+ */
 export const ICE_FOLK_NAVAL_TECH_SUBJECTS_V7: Readonly<
   Partial<Record<TechnologyIdV7, ArtSubjectV7>>
 > = {
-  SHORECRAFT: "ICON:STATUS:CHILLED",
-  NAVIGATION: "EFFECT:SHATTER_SHARDS",
-  NAVAL_ENGINEERING: "OVERLAY:ICEBOUND",
-  SEAMANSHIP: "EFFECT:COLD_SNAP",
-  SUBMERSIBLES: "ICON:STATUS:FROZEN",
+  SHORECRAFT: "ICON:TECH:ICE_FOLK:SHORECRAFT",
+  NAVIGATION: "ICON:TECH:ICE_FOLK:NAVIGATION",
+  NAVAL_ENGINEERING: "ICON:TECH:ICE_FOLK:NAVAL_ENGINEERING",
+  SEAMANSHIP: "ICON:TECH:ICE_FOLK:SEAMANSHIP",
+  SUBMERSIBLES: "ICON:TECH:ICE_FOLK:SUBMERSIBLES",
 };
 
 /**
@@ -234,12 +239,10 @@ export function technologySubjectV7(
     (tech === "FORTIFICATION" || tech === "EXPLOSIVES")
   )
     return `ICON:TECH:ICE_FOLK:${tech}`;
-  // The frozen sea (bead pulp_wars-5ti.7): the Ice Folk Naval branch has no
-  // ship, so its cards show the ice instead of a Port, a compass, a wheel,
-  // a Battleship and a diving helmet: Rime the frost glyph, Pack Ice
-  // the drifting floes, Icebound the pack ice, Black Ice the frost ring and
-  // Glacier the ice block. Stand-ins of registered art until the faction
-  // has icons of its own for them.
+  // The frozen sea (beads pulp_wars-5ti.7 and pulp_wars-5ti.10): the Ice
+  // Folk Naval branch has no ship, so its cards show the ice instead of a
+  // Port, a compass, a wheel, a Battleship and a diving helmet, each with
+  // an icon of its own.
   if (faction === "ICE_FOLK") {
     const frozen = ICE_FOLK_NAVAL_TECH_SUBJECTS_V7[tech];
     if (frozen !== undefined) return frozen;

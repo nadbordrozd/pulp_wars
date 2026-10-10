@@ -1788,13 +1788,19 @@ function publicFreezeTargetsV7(
 /**
  * Section 8.4: the exact result of an offered `FREEZE`: every tile that
  * becomes (or stays) ice, the ones of them that were already ice and are
- * refreshed, and the afloat units locked in the ice.
+ * refreshed, the afloat units locked in the ice, the countdown every tile
+ * of the set gets (`turns`: the actor's `iceTurns`, in its owner's turns),
+ * and the tiles of the set in the actor's owner's territory (`permanent`,
+ * in the order of `tiles`): that ice does not count down while the
+ * territory is the owner's (section 8.5).
  */
 export interface FreezePreviewV7 {
   readonly unitId: UnitId;
   readonly tiles: readonly CoordV7[];
   readonly refreshed: readonly CoordV7[];
   readonly icebound: readonly UnitId[];
+  readonly turns: number;
+  readonly permanent: readonly CoordV7[];
 }
 
 /**
@@ -1823,6 +1829,13 @@ export function previewFreezeV7(
     tiles: frozen.tiles,
     refreshed: frozen.refreshed,
     icebound: frozen.icebound,
+    turns: unitCapabilitiesV7(view, unit, view.viewer.researchedTechs).iceTurns,
+    // An offered Freeze is the viewer's own unit's, and every tile of the
+    // set is explored, so its territory owner is public.
+    permanent: frozen.tiles.filter((target) => {
+      const tile = tileAtView(view, target);
+      return tile?.explored === true && tile.territoryOwnerId === unit.ownerId;
+    }),
   };
 }
 
