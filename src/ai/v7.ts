@@ -4733,7 +4733,8 @@ function armyCultSeatV7(context: PolicyContextV7): boolean {
  * The Cult seat's plan of this decision (`pulp_wars-mch9.10`,
  * docs/product/RULESET_7_CULTISTS.md sections 15.2 to 15.4 and 15.7;
  * `src/ai/v7-cult-channel.ts`): the steps it wants now (a Seizure, the
- * channel, a Summon, a Sacrifice, an Offering, a grip, a raised idol), the
+ * channel, a Summon, a Sacrifice, an Offering, a grip, a raised idol; and
+ * the rituals and the tricks of `pulp_wars-mch9.11`, section 15.8), the
  * units it holds for them, and where each own daemon may end a Move. Null
  * for every seat but a Cult seat of the army play.
  */
@@ -4763,6 +4764,8 @@ function cultPlanForV7(context: PolicyContextV7): CultPlanV7 | null {
       }
       return threatened.has(coordKey(at));
     },
+    reach: (unitId, at) =>
+      context.threatenedTiles.get(unitId)?.has(coordKey(at)) === true,
     moved: (moves) =>
       projectPublicUnits(
         view,
@@ -10974,8 +10977,20 @@ function isPolicyCandidate(
   // to its tile, a Seizure's holder, a daemon released toward the enemy):
   // the plan has claimed that unit, and nothing else is offered to it.
   const cultPlan = cultPlanForV7(context);
-  if (cultPlan !== null && cultStepForV7(cultPlan, command) !== undefined)
-    return true;
+  // (`pulp_wars-mch9.11`: but a cultist's walk to a village, a circle, or
+  // a Stargazer is never a Move the curiosity rules close: it goes beside
+  // no healthy Monster. The channel's and the bind's Moves are exempt: a
+  // binder walks up to an Unbound daemon.)
+  const cultStep =
+    cultPlan === null ? undefined : cultStepForV7(cultPlan, command);
+  if (cultStep !== undefined)
+    return !(
+      (cultStep.reason === "PAMPHLETS" ||
+        cultStep.reason === "GATHER" ||
+        cultStep.reason === "STARFALL_CHANTER") &&
+      context.curiosities !== null &&
+      curiosityRejectsV7(context, command)
+    );
   if (navalRejectsV7(context, command)) return false;
   if (frozenSeaRejectsV7(context, command)) return false;
   // Against the Cult (`pulp_wars-mch9.12`; `src/ai/v7-cult-against.ts`): a
@@ -11031,20 +11046,20 @@ function isPolicyCandidate(
     command.kind === "ANCHOR"
   )
     return false;
-  // Boo! (`pulp_wars-mch9.5`, section 8.5) waits for the Cult AI bead of
-  // the tricks (`pulp_wars-mch9.11`): it moves friend and foe.
+  // Boo! (`pulp_wars-mch9.5`, section 8.5) moves friend and foe: likewise
+  // only as a step of the Cult seat's plan (`pulp_wars-mch9.11`, section
+  // 15.8; `src/ai/v7-cult-rituals.ts`).
   if (command.kind === "BOO") return false;
-  // Rituals and Proclaim (`pulp_wars-mch9.7`): likewise until the Cult AI
-  // beads (`pulp_wars-mch9.11`: the Great Summoning, Star-fall, the Herald
-  // and Proclaim). A Great Summoning spends 20 Favour and a star hurts
-  // friend and foe, so neither may be picked by a general rule.
+  // Rituals and Proclaim (`pulp_wars-mch9.7`): likewise (the Great
+  // Summoning, Star-fall, the Herald's Proclaim). A Great Summoning spends
+  // 20 Favour and a star hurts friend and foe, so neither may be picked by
+  // a general rule.
   if (command.kind === "BEGIN_RITUAL" || command.kind === "PROCLAIM")
     return false;
-  // Hexes and tricks (`pulp_wars-mch9.8`): likewise until the Cult AI bead
-  // (`pulp_wars-mch9.11`: Ribbit, Switcheroo, Tentacle, Pick Me!). A swap
-  // or a wild Tentacle can hurt its own side, so none may be picked by a
-  // general rule. (Pamphlets needs no rule: it is the ordinary Capture,
-  // offered a turn earlier.)
+  // Hexes and tricks (`pulp_wars-mch9.8`): likewise (Ribbit, Switcheroo,
+  // Tentacle, Pick Me!). A swap or a wild Tentacle can hurt its own side,
+  // so none may be picked by a general rule. (Pamphlets needs no rule: it
+  // is the ordinary Capture, offered a turn earlier.)
   if (
     command.kind === "RIBBIT" ||
     command.kind === "SWITCHEROO" ||

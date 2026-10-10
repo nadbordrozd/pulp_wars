@@ -302,8 +302,17 @@ plan is a candidate whatever the general Move rules say; a held unit has
 no other candidate. What was built and decided is in
 [section 15.7 of the spec](../product/RULESET_7_CULTISTS.md#157-as-built-a2-the-cult-seats-own-commands-pulp_wars-mch910).
 
-The seat begins no ritual and uses no Proclaim, Boo!, hex, or trick yet
-(bead A3). This entry is replaced by the Cult's full one when the faction is
+The third AI bead (A3, `pulp_wars-mch9.11`) adds the rituals and the
+tricks as one more part of that plan (`cultRitualPlanV7` in
+`src/ai/v7-cult-rituals.ts`): the Great Summoning and the Favour kept for
+it, the gathering of a circle, Star-fall and the chanter a Stargazer calls,
+the Herald's Move chosen for its two attacks, Proclaim, Boo!, Ribbit,
+Switcheroo, the Tentacle, Pick Me!, and an Initiate's step onto a village;
+and no own unit ends a Move under an own ritual's mark. What was built and
+decided is in
+[section 15.8 of the spec](../product/RULESET_7_CULTISTS.md#158-as-built-a3-the-cult-seats-rituals-and-tricks-pulp_wars-mch911).
+
+This entry is replaced by the Cult's full one when the faction is
 folded in (bead D1).
 
 **Every seat against the Cult** (bead A4, `pulp_wars-mch9.12`;
@@ -335,6 +344,7 @@ Nothing was tuned: no match, no lab run.
 
 Tests: `tests/unit/ruleset-v7-cult-ai.test.ts`,
 `tests/unit/ruleset-v7-cult-channel-ai.test.ts`,
+`tests/unit/ruleset-v7-cult-rituals-ai.test.ts`,
 `tests/unit/ruleset-v7-cult-against-ai.test.ts`.
 
 ## The Candy army seat (`pulp_wars-jdb.13`)

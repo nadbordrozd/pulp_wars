@@ -9,6 +9,12 @@ import {
 import { isNeutralOwnerV7, type CoordV7 } from "../engine/v7/types";
 import type { PlayerViewV7, PublicUnitV7 } from "../engine/v7/view";
 import { cultBodiesV7, cultFavourV7, cultRobedV7 } from "./v7-cult";
+import {
+  CULT_HORROR_COST_V7,
+  CULT_SUMMONING_FAVOUR_V7,
+  cultRitualPlanV7,
+  type CultRitualReasonV7,
+} from "./v7-cult-rituals";
 
 /**
  * The Cult seat's own commands (`pulp_wars-mch9.10`, bead A2 of
@@ -47,6 +53,14 @@ import { cultBodiesV7, cultFavourV7, cultRobedV7 } from "./v7-cult";
  *    **Offering**.
  * 6. Last of all (`CULT_DOOMED_PRIORITY_V7`, below every ordinary command):
  *    the Sacrifice of an own unit the visible enemy kills this round.
+ *
+ * The rituals and the tricks (`pulp_wars-mch9.11`, bead A3; section 15.8)
+ * are the part of the plan in `src/ai/v7-cult-rituals.ts`
+ * (`cultRitualPlanV7`), called here once the channel plan has claimed its
+ * cultists: the Herald's Move and Proclaim and a Horror's Boo! (above the
+ * daemons' ordinary play), the Great Summoning (between Behold! and
+ * Summon), and Ribbit, Switcheroo, the Tentacle, Pick Me!, and Star-fall
+ * (below the Offering, above the ordinary play).
  */
 
 /** A cultist channels a daemon within this many tiles (section 6.2). */
@@ -95,7 +109,9 @@ export interface CultToolsV7 {
   readonly danger: (unit: PublicUnitV7, at: CoordV7) => number;
   /** A visible enemy can attack a unit on `at` in its next turn. */
   readonly threatened: (at: CoordV7) => boolean;
-  /** The view with each of these own units after a Move to its tile. */
+  /** The visible unit `unitId` can attack a unit on `at` in its next turn. */
+  readonly reach: (unitId: UnitId, at: CoordV7) => boolean;
+  /** The view with each of these units after a Move to its tile. */
   readonly moved: (
     moves: readonly { readonly unit: PublicUnitV7; readonly at: CoordV7 }[],
   ) => PlayerViewV7;
@@ -119,7 +135,8 @@ export type CultStepReasonV7 =
   | "SUMMON"
   | "SACRIFICE_SPARE"
   | "SACRIFICE_DOOMED"
-  | "OFFERING";
+  | "OFFERING"
+  | CultRitualReasonV7;
 
 export interface CultStepV7 {
   /** One of `CultToolsV7.commands` (the same object). */
@@ -942,6 +959,63 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
   const pending = channelPending || bindPending;
   const wantedAll = work.reduce((sum, daemon) => sum + daemon.control + 1, 0);
 
+  // ------------------------------------------- where a daemon may end
+  const workById = new Map(work.map((daemon) => [daemon.unit.id, daemon]));
+  const daemonMayEnd = (daemonUnitId: UnitId, at: CoordV7): boolean => {
+    const daemon = workById.get(daemonUnitId);
+    if (daemon === undefined) return true;
+    if (!daemon.holdable) {
+      // Its one Move is the plan's (back to its cultists, or released).
+      const release = releaseTiles.get(daemonUnitId);
+      return release === undefined || release === cultTileKeyV7(at);
+    }
+    const holders = holdersOf(daemonUnitId);
+    if (holders.some((unit) => gap(unit.at, at) > CULT_CHANNEL_RANGE_V7))
+      return false;
+    const near = free.filter(
+      (unit) =>
+        (assigned.get(unit.id)?.daemon.id ?? daemonUnitId) === daemonUnitId &&
+        gap(unit.at, at) <=
+          (unit.activation.moved
+            ? CULT_CHANNEL_RANGE_V7
+            : CULT_DAEMON_LEASH_V7),
+    ).length;
+    return daemon.strands + near >= daemon.wanted;
+  };
+
+  // ------------------------------------------- the rituals and tricks
+  // Bead A3 (`pulp_wars-mch9.11`, `src/ai/v7-cult-rituals.ts`): from the
+  // cultists the channel plan and the Seizure have left.
+  const rituals = cultRitualPlanV7({
+    view,
+    commands,
+    hostile: tools.hostile,
+    danger: tools.danger,
+    threatened: tools.threatened,
+    reach: tools.reach,
+    moved: tools.moved,
+    own,
+    enemies,
+    held,
+    movesByUnit,
+    channellers: new Set(strandOf.keys()),
+    pending,
+    bodies,
+    wantedAll,
+    favour,
+    stars,
+    daemons: work.map((daemon) => ({
+      unit: daemon.unit,
+      herald: daemon.unit.summoned === "HERALD",
+      holdable: daemon.holdable,
+    })),
+    daemonMayEnd,
+    landTile,
+    onOwnCenter,
+    enemyGap,
+  });
+  steps.push(...rituals.steps);
+
   // ---------------------------------------------------------- Behold!
   // Section 15.4: an Idol Bearer next to two or more channellers that a
   // visible enemy can hit raises its idol (once the channellers stand).
@@ -969,8 +1043,15 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
   // Section 15.3: a Horror only when the seat can hold it: a robed cultist
   // to spare for every daemon's Control + 1 afterwards, an enemy near
   // enough to send it at, and never beside an enemy where the Summoner or
-  // its helper would be its nearest unit if it broke.
-  if (!pending && bodies >= wantedAll + 2) {
+  // its helper would be its nearest unit if it broke. Bead A3: and not with
+  // the Favour the seat keeps for the Great Summoning (`cultSavingV7`): a
+  // Horror then only from what is above the Herald's price.
+  if (
+    !pending &&
+    bodies >= wantedAll + 2 &&
+    (!rituals.saving ||
+      favour - CULT_HORROR_COST_V7 >= CULT_SUMMONING_FAVOUR_V7)
+  ) {
     const hostileCenters = view.cities.filter(
       (city) => !isNeutralOwnerV7(city.ownerId) && tools.hostile(city.ownerId),
     );
@@ -1141,29 +1222,6 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
       });
     }
 
-  // ------------------------------------------- where a daemon may end
-  const workById = new Map(work.map((daemon) => [daemon.unit.id, daemon]));
-  const daemonMayEnd = (daemonUnitId: UnitId, at: CoordV7): boolean => {
-    const daemon = workById.get(daemonUnitId);
-    if (daemon === undefined) return true;
-    if (!daemon.holdable) {
-      // Its one Move is the plan's (back to its cultists, or released).
-      const release = releaseTiles.get(daemonUnitId);
-      return release === undefined || release === cultTileKeyV7(at);
-    }
-    const holders = holdersOf(daemonUnitId);
-    if (holders.some((unit) => gap(unit.at, at) > CULT_CHANNEL_RANGE_V7))
-      return false;
-    const near = free.filter(
-      (unit) =>
-        (assigned.get(unit.id)?.daemon.id ?? daemonUnitId) === daemonUnitId &&
-        gap(unit.at, at) <=
-          (unit.activation.moved
-            ? CULT_CHANNEL_RANGE_V7
-            : CULT_DAEMON_LEASH_V7),
-    ).length;
-    return daemon.strands + near >= daemon.wanted;
-  };
   // A Thing that grips stays beside its cultist (the strand counts three
   // only while it does: section 8.4).
   const gripTiles = new Map<UnitId, CoordV7>();
@@ -1190,6 +1248,8 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
       channellerUnitIds: daemon.channellers,
     })),
     mayEnd: (unitId, at) => {
+      // Bead A3: no own unit ends a Move under an own ritual's mark.
+      if (!rituals.mayEnd(at)) return false;
       const cultist = gripTiles.get(unitId);
       if (cultist !== undefined) return gap(cultist, at) === 1;
       return !ownDaemonIds.has(unitId) || daemonMayEnd(unitId, at);

@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { chooseNormalCommandV7 } from "../../src/ai/v7";
 import {
+  ARMY_PLAY_FACTIONS_V7,
+  setArmyPlayFactionsV7,
+} from "../../src/ai/v7-army";
+import {
   queryPlayerCommandsV7,
   queryTechnologyTreeV7,
   unitId,
@@ -256,15 +260,25 @@ describe("hexes and tricks: the older Normal policy tolerates the commands", () 
         .filter((kind) => TRICK_KINDS.includes(kind)),
     );
     expect([...offered].sort()).toEqual([...TRICK_KINDS].sort());
-    const commands = turn(state);
-    expect(commands.at(-1)?.kind).toBe("END_TURN");
-    for (const command of commands)
-      expect(TRICK_KINDS).not.toContain(command.kind);
-    const decision = chooseNormalCommandV7(
-      viewForV7(state, seatIdV7(state, 1)),
+    // The older policy (the tests' switch): a Cult seat of the army play
+    // plays its tricks by its plan from bead A3
+    // (`pulp_wars-mch9.11`; tests/unit/ruleset-v7-cult-rituals-ai.test.ts).
+    const previous = setArmyPlayFactionsV7(
+      ARMY_PLAY_FACTIONS_V7.filter((faction) => faction !== "CULT"),
     );
-    for (const candidate of decision.candidates)
-      expect(TRICK_KINDS).not.toContain(candidate.command.kind);
+    try {
+      const commands = turn(state);
+      expect(commands.at(-1)?.kind).toBe("END_TURN");
+      for (const command of commands)
+        expect(TRICK_KINDS).not.toContain(command.kind);
+      const decision = chooseNormalCommandV7(
+        viewForV7(state, seatIdV7(state, 1)),
+      );
+      for (const candidate of decision.candidates)
+        expect(TRICK_KINDS).not.toContain(candidate.command.kind);
+    } finally {
+      setArmyPlayFactionsV7(previous);
+    }
   });
 
   it("plays a turn against a Cult seat with a frog of its own, a taunt beside it, and a Tentacle holding a unit", () => {

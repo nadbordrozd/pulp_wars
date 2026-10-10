@@ -1417,7 +1417,11 @@ separate [Ruleset 6](RULESET_6.md) route.
     change) gave it the channel plan, Summon, Sacrifice, Seize, Offering,
     Anchor, and Behold!
     ([section 15.7](RULESET_7_CULTISTS.md#157-as-built-a2-the-cult-seats-own-commands-pulp_wars-mch910)).
-    It still begins no ritual and uses no Proclaim, Boo!, hex, or trick.
+    Its third (`pulp_wars-mch9.11`, likewise) gave it the Great Summoning
+    and the Favour kept for it, Star-fall, the Herald's two attacks and
+    Proclaim, Boo!, Ribbit, Switcheroo, the Tentacle, Pick Me!, and the
+    Initiate's step onto a village
+    ([section 15.8](RULESET_7_CULTISTS.md#158-as-built-a3-the-cult-seats-rituals-and-tricks-pulp_wars-mch911)).
 - **The Cult's Favour** (`pulp_wars-mch9.4`, `7r72`, bead E2 of
   [the Cultists spec](RULESET_7_CULTISTS.md#19-implementation-beads); its
   sections 3, 5, and 8.2 are the design, and
@@ -1790,7 +1794,8 @@ separate [Ruleset 6](RULESET_6.md) route.
     The text harness offers `.starfall.x,y`, `.summoning.x,y`, and
     `.proclaim.cN` and prints the circles, a Cowed city, and a Herald's
     attacks left.
-  - **Normal AI.** It picks neither command (`pulp_wars-mch9.11`).
+  - **Normal AI.** Only a Cult seat of the army play picks either
+    command, by its plan (`pulp_wars-mch9.11`).
 - **The Cult's hexes and tricks** (`pulp_wars-mch9.8`, `7r78`, bead E6 of
   [the Cultists spec](RULESET_7_CULTISTS.md#19-implementation-beads); its
   sections 9, 8.2, and 8.7 are the design, and
@@ -1868,8 +1873,8 @@ separate [Ruleset 6](RULESET_6.md) route.
     technology card of Familiars and the glossary name them. The text
     harness offers `.ribbit.uN`, `.switch.uN`, `.tentacle.x,y`, and
     `.pickme`.
-  - **Normal AI.** It picks none of the four commands
-    (`pulp_wars-mch9.11`). Every seat reads a visible Tentacle as a lone
+  - **Normal AI.** Only a Cult seat of the army play picks one of the four
+    commands, by its plan (`pulp_wars-mch9.11`). Every seat reads a visible Tentacle as a lone
     monster: no routine Move ends beside it, and it is attacked only for a
     kill this turn.
   - **The lab** `LAB_CULT_MID` (hidden; built and checked, not played)

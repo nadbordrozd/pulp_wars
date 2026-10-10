@@ -93,6 +93,11 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/ai/v7-cult-channel.ts::cultNearestToV7": "BOARD",
     "src/ai/v7-cult-channel.ts::cultPlanV7": "BOARD",
     "src/ai/v7.ts::cultPlanForV7": "BOARD",
+    // The Cult seat's rituals and tricks (`pulp_wars-mch9.11`): the units
+    // under a star or on a mark, beside a Tentacle's tile, and the targets
+    // of a Ribbit, a Switcheroo, a Boo!, and the Herald's attacks are units
+    // on the board (a star never reaches a burrowed unit: section 7.4).
+    "src/ai/v7-cult-rituals.ts::cultRitualPlanV7": "BOARD",
     // Against the Cult (`pulp_wars-mch9.12`): channellers, Idol Bearers,
     // chanters, daemons, taunting Chosen, frogs, the units a Tentacle
     // holds, and the units a rampage may go for are units on the board (a

@@ -1475,14 +1475,16 @@ and the counts in `src/ai/v7-army.ts`.
    its objective until a unit with Defense 2 or more (a Chosen, an Idol
    Bearer, the Thing) can stand beside its tile; an Initiate (Defense 1.5)
    is no such screen. Star-fall reaches 2 to 4 tiles, so A3 must decide how
-   a Stargazer comes up.
+   a Stargazer comes up (decided: [section 15.8](#158-as-built-a3-the-cult-seats-rituals-and-tricks-pulp_wars-mch911),
+   rule 8).
 8. **What a Cult seat does not do yet.** The policy still offers none of
    Sacrifice, Seize, Offering, Summon, Channel, Behold!, Anchor, Boo!, a
    ritual, or Proclaim (`isPolicyCandidate`), so a Cult seat plays its
    cultists as plain units, gains Favour only from a Chosen's Martyr, and
    trains Summoners and Stargazers it has no use for until A2 and A3. That
    is why the Cult stays hidden from the setup screen. (Bead A2 plays the
-   first seven: [section 15.7](#157-as-built-a2-the-cult-seats-own-commands-pulp_wars-mch910).)
+   first seven: [section 15.7](#157-as-built-a2-the-cult-seats-own-commands-pulp_wars-mch910);
+   bead A3 the rest: [section 15.8](#158-as-built-a3-the-cult-seats-rituals-and-tricks-pulp_wars-mch911).)
 
 ### 15.7 As built: A2, the Cult seat's own commands (`pulp_wars-mch9.10`)
 
@@ -1539,7 +1541,8 @@ and the first lines of `isPolicyCandidate`).
    still wants (within 3 for one that has moved). **Not built:** the
    Herald's two attacks scored together, and the preference for a tile
    where an enemy is nearer than any own unit; both wait for the Herald's
-   bead (A3).
+   bead (A3; built for the Herald: [section 15.8](#158-as-built-a3-the-cult-seats-rituals-and-tricks-pulp_wars-mch911),
+   rule 9).
 5. **A daemon that cannot be held** (fewer strands than its Control can
    reach it where it stands). First, decided here: **it goes back** when a
    Move brings it within 4 of enough free cultists. Otherwise it is
@@ -1576,7 +1579,9 @@ and the first lines of `isPolicyCandidate`).
    own seat, then to the fewest HP, then to the lowest ID) is neither the
    Summoner nor the helper. **The seat does not save Favour for the Great
    Summoning yet**: with 5 Favour and the conditions met it summons a
-   Horror (A3 decides when to wait for 20).
+   Horror (A3 decides when to wait for 20; decided:
+   [section 15.8](#158-as-built-a3-the-cult-seats-rituals-and-tricks-pulp_wars-mch911),
+   rule 3).
 9. **Sacrifice.** (a) An own unit beside a Summoner that the visible
    enemies' next turn kills where it stands, and that has no offered Move
    to a tile where it lives, is offered up **last of all** (after its own
@@ -1597,7 +1602,9 @@ and the first lines of `isPolicyCandidate`).
     exempt from "contact with company" (`armyDinosaurContactHeldV7`) and
     the Summoner's (and the holder's) from "the back row out of reach"
     (`armyIceFolkShooterHeldV7`). **Not built:** the Hexer's frog before a
-    Seizure (Ribbit is A3's).
+    Seizure (Ribbit is A3's; built:
+    [section 15.8](#158-as-built-a3-the-cult-seats-rituals-and-tricks-pulp_wars-mch911),
+    rule 12).
 11. **Offering.** A city whose Offering the engine offers, at its unit
     limit or with no unit on offer to train, with no visible enemy within
     3 of its center, when Favour is below 5, or below 20 with The Stars Are
@@ -1611,7 +1618,165 @@ and the first lines of `isPolicyCandidate`).
     Proclaim, and no Boo! (`isPolicyCandidate`; bead A3), and no other seat
     played against the Cult's mechanics yet (bead A4, built:
     [section 15.9](#159-as-built-a4-every-seat-against-the-cult-pulp_wars-mch912)).
-    The Cult stays hidden from the setup screen.
+    The Cult stays hidden from the setup screen. (Bead A3 plays them:
+    [section 15.8](#158-as-built-a3-the-cult-seats-rituals-and-tricks-pulp_wars-mch911).)
+
+### 15.8 As built: A3, the Cult seat's rituals and tricks (`pulp_wars-mch9.11`)
+
+Bead A3 implements the Great Summoning of
+[section 15.3](#153-summon-only-what-it-can-hold), what bead A2 left of
+[section 15.2](#152-channel-first-and-keep-the-channellers-safe-and-spare)
+(the Herald's two attacks), and the Star-fall, Ribbit, Switcheroo,
+Tentacle, Pick Me!, Boo!, Proclaim, and Pamphlets rows of
+[section 15.4](#154-everything-else-in-simple-high-value-ways). No rule
+changed and the ruleset identity did not move. No match was played: every
+rule below is a decision, or the one turn the seat plays, on a hand-built
+state in `tests/unit/ruleset-v7-cult-rituals-ai.test.ts`. The rules are
+`cultRitualPlanV7` in `src/ai/v7-cult-rituals.ts`, one part of the Cult
+seat's plan (`cultPlanV7` calls it once the channel plan and the Seizure
+have claimed their cultists); `src/ai/v7.ts` gained one tool for it (which
+tiles one visible unit can attack next turn) and nothing else.
+
+1. **How it joins the plan.** Each rule adds steps (an offered command
+   with a priority) and holds, as in section 15.7. None of `BEGIN_RITUAL`,
+   `PROCLAIM`, `BOO`, `RIBBIT`, `SWITCHEROO`, `TENTACLE`, or `PICK_ME` is a
+   candidate but as a step (`isPolicyCandidate`), so a seat that is no Cult
+   seat of the army play picks none. The plan reads the public previews
+   (`previewBeginRitualV7`, `previewProclaimV7`, `previewBooV7`,
+   `previewRibbitV7`, `previewSwitcherooV7`, `previewTentacleV7`,
+   `previewPickMeV7`, `previewSeizeV7`, the combat preview) and the pure
+   predicates of `src/engine/v7/cult-hexes.ts`; it imports no reducer and
+   draws nothing from the PRNG. A cultist the channel plan has claimed is
+   never used for a trick or counted as a chanter.
+2. **The order**, by priority, among the steps of section 15.7: the
+   Herald's planned Move and its Proclaim (3970) and a Horror's Boo! (3950)
+   come before the daemons' ordinary play; the Great Summoning and the
+   gathering for it (1915) between Behold! and Summon; then, below the
+   Offering and above every ordinary command, Ribbit (1880), Switcheroo
+   (1875), the Tentacle (1870), Pick Me! (1865), Star-fall and the chanter
+   that comes for it (1860), and an Initiate's step onto a village (1855).
+   A Herald that has neither moved nor attacked and has nobody to attack
+   Proclaims after every ordinary command of the turn (10).
+3. **Favour is saved for the Great Summoning** (decided here; A2 summoned a
+   Horror with every 5). The seat keeps its Favour when it has The Stars
+   Are Right, a Summoner on the board, the robed cultists to hold a Herald
+   beyond every other daemon's Control + 1 (four more), and **10 Favour or
+   more** (`CULT_SAVE_FAVOUR_V7`, half the price). Then it summons a Horror
+   only from what is above 20 (so with 25). Below 10 Favour it summons
+   Horrors as before: a seat at the front spends its 5s, and one that has
+   gathered 10 goes for the Herald. A2's Sacrifice of a spare Initiate and
+   its Offering already work toward 20 with The Stars Are Right.
+4. **The Great Summoning** is begun when the seat is saving, has 20 Favour,
+   no channeller is still to be placed, and a Summoner has three chanters
+   or more (every own robed cultist beside it that has not acted joins:
+   the engine's rule), none of them claimed by the plan, with **the
+   Summoner, every chanter, and the mark outside every visible enemy's
+   threatened tiles**. The mark is a free tile (so the forecast is
+   `ARRIVES`: the seat consumes nobody, and marks no tile with a broken
+   enemy, which rests 2 HP and blocks), the one with the most own units
+   around it, then the farthest from the enemy. The Herald must arrive with
+   its Control in strands (the preview). "Four robed cultists to spare" is
+   the saving rule's count: the circle itself is those four.
+5. **Gathering.** With 20 Favour and no circle to begin, the seat takes
+   the Summoner nearest an own center that no visible enemy can attack
+   (one with the most chanters first). The cheapest free robed cultists
+   that can end a Move beside it on a tile no enemy can attack come, one at
+   a time. When enough can come this turn to make three, the Summoner and
+   the cultists beside it are held for it and the circle begins in the same
+   turn (a chanter may have moved); with fewer, those that can come do, and
+   nobody is held. "Idle at home" is read as: not claimed by the plan, not
+   on an own center, and with such a Move.
+6. **Under an own mark.** No own unit ends a Move on the mark of an own
+   Great Summoning (it would be consumed, or block the arrival), nor on a
+   tile under an own star (`CultPlanV7.mayEnd`). The advance after a kill
+   is not held by this.
+7. **Star-fall.** A Stargazer that has not moved looks at every explored
+   tile 2 to 4 tiles away with no own or allied unit on its nine tiles. A
+   tile is worth the hostile units under it: twice its cost for a unit the
+   star kills as the board stands, else its share of the damage, and half
+   as much again for a unit that is likely to be there still (a siege unit,
+   an Egg, a unit on a Field Defense, a fortified tile, or a center). **One
+   unit in the open is no target** (decided here: it walks away): a mark
+   needs two hostile units, or one that stays. The best mark is checked
+   against the preview, the Stargazer is held (a leader that moved leads no
+   star), and the star is begun above the ordinary play, so every unacted
+   robed cultist beside the Stargazer chants. A unit without a cost (a
+   giant, a daemon, an Egg) counts 12.
+8. **How a Stargazer comes up** (left open by A1). It keeps the shared
+   siege rule: four tiles from its objective until a unit with Defense 2 or
+   more can screen it. Four tiles is the reach of a star, so nothing was
+   added to its Moves. What was added is its chanter: **a Stargazer with a
+   mark and nobody beside it calls one free cultist** (the cheapest, then
+   the nearest) to a tile beside it that no enemy can attack, and the star
+   falls in the same turn.
+9. **The Herald's two attacks** are scored together through its Move (it
+   cannot move after an attack). Before it has moved or attacked, each
+   tile it may end on (section 15.7 rule 4) and its own are scored by the
+   two best attacks from there, read from the combat preview on the
+   projected board: the kills, then the value killed, then the attacks it
+   has a use for (a Proclaim counts for one that is left over), then the
+   damage, then **a tile where a visible enemy is nearer to it than any own
+   unit** (section 15.2 step 2's preference, for the Herald). It moves
+   only to a tile that is better than its own; its attacks are then the
+   ordinary scoring's, kills first. The preference is not applied to a
+   Horror's Moves, which stay the ordinary scoring's.
+10. **Proclaim.** After its first attack, when no attack on offer kills:
+    the hostile city within 3 of the highest level, then the nearest, never
+    one whose center an own unit stands on. A Herald that has moved and has
+    nobody to attack Proclaims at once; one that has not moved does so last
+    of all (rule 2), so its Move is not given up. "Could train next turn"
+    is read as: not Cowed already (the engine's offer).
+11. **Boo!** A Horror whose Boo! moves two or more hostile units, or the
+    garrison off a hostile center while an own unit that captures stands
+    beside that center and has not moved. Decided here: **never with an own
+    or allied unit on its eight tiles** (in either case), and **not in
+    place of an attack that kills**. The capturer's step onto the center is
+    the ordinary play's.
+12. **Ribbit**, by a Hexer the plan has not claimed, in this order: the
+    enemy that can attack an own channeller or chanter next turn (decided
+    here: **any hit**, not only a kill, since any loss of Hit Points breaks
+    the strand; the most cultists first); then the enemy a Seizure can
+    follow this turn; then the strongest melee unit in reach (by cost).
+    **Not in place of a shot that kills.** "A Seizure can follow" is: a
+    Summoner with its action and a holder can each stand beside it this
+    turn, and either it is at half its Hit Points already (checked with
+    `previewSeizeV7` on the board as it would stand, the unit a frog), or
+    the attacks offered on it now bring it there (their previewed damage
+    against the unit as it is, which a frog only exceeds). The Seizure
+    itself, and the stop of the attacks on a unit that can be Seized, are
+    section 15.7 rule 10.
+13. **Switcheroo** swaps with an enemy only (so never an own channeller):
+    a broken enemy (5 HP or less, or a frog at half) that no Seizure
+    reaches where it stands, when a Summoner and a holder can stand beside
+    the Familiar's tile (checked with `previewSeizeV7`); else an enemy
+    ranged or siege unit when two own melee units that can still act stand
+    beside the Familiar's tile and fewer than two beside the enemy's, and
+    the visible enemy does not kill the Familiar where it lands.
+14. **The Tentacle.** Among the offered tiles with no own or allied unit
+    within 1 and a hostile unit beside them: the one whose slap (the fewest
+    HP, `tentacleSlapTargetV7`) lands on a ranged or siege unit first, then
+    the most hostile value around it. **Not in place of a kill** by the
+    Caller.
+15. **Pick Me!** As specified, once the channellers are placed: a Chosen
+    beside an own cultist that holds a strand **or takes part in an own
+    ritual**, which a hostile melee unit can attack next turn; not when the
+    Chosen's own attack kills.
+16. **Pamphlets.** The Capture needs no rule. "The village hunt sends
+    Initiates first" is one step: an Initiate that can end a Move on a
+    neutral village this turn does, before the ordinary play sends another
+    unit there, unless the visible enemy kills it on that tile. An Initiate
+    with a Monster within 3 tiles is left to the ordinary play (the hunt of
+    a wounded Spider, the step away from a healthy one), and a cultist's
+    walk to a village, a circle, or a Stargazer is no candidate when it is a
+    Move the curiosity rules close.
+17. **Not built, and what follows.** The seat does not walk a Hexer, a
+    Familiar, or a Caller into reach for its trick (each trick is taken
+    where the engine offers it); a Horror does not move to Boo; a
+    Stargazer's star is not timed with a Boo! or a grab that holds its
+    targets; a gripped Thing is not counted toward a Herald's upkeep
+    before the circle. Every other seat against the Cult is bead A4
+    ([section 15.9](#159-as-built-a4-every-seat-against-the-cult-pulp_wars-mch912));
+    the Cult stays hidden from the setup screen.
 
 ### 15.9 As built: A4, every seat against the Cult (`pulp_wars-mch9.12`)
 
@@ -2454,7 +2619,8 @@ left room:
     built: a Cult seat of the army play uses Summon, Channel, Behold!, and
     Anchor by its plan,
     [section 15.7](#157-as-built-a2-the-cult-seats-own-commands-pulp_wars-mch910);
-    Boo! waits for A3, and the position now holds the older policy.)
+    Boo! is A3's, [section 15.8](#158-as-built-a3-the-cult-seats-rituals-and-tricks-pulp_wars-mch911),
+    and the position now holds the older policy.)
 13. **The interface stand-in** was replaced by bead U2
     (`pulp_wars-mch9.18`; see "As built by U2" in
     [section 14.3](#143-how-it-reads-on-the-board-without-text)): the tile,
@@ -2730,7 +2896,10 @@ where this spec left room:
     deals it 9 and takes 9, a Champion 7 and takes 10, a Juggernaut 9 and
     takes 9, a Catapult 6, a Marksman 3.
 16. **The Normal AI** never picks `BEGIN_RITUAL` or `PROCLAIM` until bead A3
-    (`pulp_wars-mch9.11`).
+    (`pulp_wars-mch9.11`). (A3 is built: a Cult seat of the army play uses
+    both by its plan,
+    [section 15.8](#158-as-built-a3-the-cult-seats-rituals-and-tricks-pulp_wars-mch911);
+    the older policy still picks neither.)
 17. **The interface.** The browser offers no button for a ritual or a
     Proclaim yet (a Star-fall alone is one command per tile in reach):
     rings, countdowns, marks, and the buttons are bead U3
@@ -2867,7 +3036,11 @@ is in the engine. The choices E6 made where this spec left room:
     and a Fighter at 4 (and takes 4).
 15. **The Normal AI** never picks `RIBBIT`, `SWITCHEROO`, `TENTACLE`, or
     `PICK_ME` until bead A3 (`pulp_wars-mch9.11`); Pamphlets needs no rule
-    (it is the ordinary Capture, offered a turn earlier). Every seat reads
+    (it is the ordinary Capture, offered a turn earlier). (A3 is built: a
+    Cult seat of the army play uses the four by its plan, and sends an
+    Initiate onto a village first,
+    [section 15.8](#158-as-built-a3-the-cult-seats-rituals-and-tricks-pulp_wars-mch911);
+    the older policy still picks none.) Every seat reads
     a visible Tentacle as a lone monster, like an Unbound daemon: no
     routine Move ends on the eight tiles around it, and it is attacked only
     for a kill this turn. (Bead A4 adds the blow of the unit it holds, and

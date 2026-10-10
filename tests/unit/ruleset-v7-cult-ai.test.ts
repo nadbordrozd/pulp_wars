@@ -921,13 +921,30 @@ describe("the Cult seat: the back row out of reach", () => {
 describe("the Cult seat: legal, deterministic turns on what A1 covers", () => {
   // Bead A2 (`pulp_wars-mch9.10`) plays Sacrifice, Seize, Offering, Summon,
   // Channel, Behold!, and Anchor by the Cult seat's plan
-  // (tests/unit/ruleset-v7-cult-channel-ai.test.ts); the rituals, Proclaim,
-  // and Boo! wait for bead A3.
-  const LATER_BEADS: readonly CommandV7["kind"][] = [
+  // (tests/unit/ruleset-v7-cult-channel-ai.test.ts), and bead A3
+  // (`pulp_wars-mch9.11`) the rituals, Proclaim, Boo!, and the tricks
+  // (tests/unit/ruleset-v7-cult-rituals-ai.test.ts): every one of them is a
+  // candidate only as a step of that plan, above the ordinary play.
+  const PLAN_ONLY: readonly CommandV7["kind"][] = [
+    "SACRIFICE",
+    "SEIZE",
+    "OFFERING",
+    "SUMMON",
+    "CHANNEL",
+    "BEHOLD",
+    "ANCHOR",
     "BOO",
     "BEGIN_RITUAL",
     "PROCLAIM",
+    "RIBBIT",
+    "SWITCHEROO",
+    "TENTACLE",
+    "PICK_ME",
   ];
+  /** The lowest priority of a step of the plan but the last-of-all ones. */
+  const PLAN_PRIORITY = 1860;
+  /** A doomed unit's Sacrifice (5) and an idle Herald's Proclaim (10). */
+  const LAST_OF_ALL = [5, 10];
 
   const midGame = (): GameStateV7 =>
     withFavourV7(
@@ -954,11 +971,18 @@ describe("the Cult seat: legal, deterministic turns on what A1 covers", () => {
       30,
     );
 
-  it("plays a whole mid-game turn with offered commands only, and none of the later beads' commands", () => {
+  it("plays a whole mid-game turn with offered commands only, and none of the plan's commands on the older policy", () => {
     const turn = policyTurn(midGame());
     expect(turn.commands.length).toBeGreaterThan(0);
-    for (const command of turn.commands)
-      expect(LATER_BEADS, command.kind).not.toContain(command.kind);
+    const previous = setArmyPlayFactionsV7(
+      ARMY_PLAY_FACTIONS_V7.filter((faction) => faction !== "CULT"),
+    );
+    try {
+      for (const command of policyTurn(midGame()).commands)
+        expect(PLAN_ONLY, command.kind).not.toContain(command.kind);
+    } finally {
+      setArmyPlayFactionsV7(previous);
+    }
   });
 
   it("decides the same command for the same public view", () => {
@@ -973,12 +997,15 @@ describe("the Cult seat: legal, deterministic turns on what A1 covers", () => {
     );
   });
 
-  it("offers a Cult seat none of the later beads' commands as a candidate", () => {
-    const kinds = new Set(
-      chooseNormalCommandV7(viewOf(midGame())).candidates.map(
-        (candidate) => candidate.command.kind,
-      ),
-    );
-    for (const kind of LATER_BEADS) expect(kinds.has(kind), kind).toBe(false);
+  it("offers a Cult seat its own commands as candidates only as steps of its plan", () => {
+    for (const candidate of chooseNormalCommandV7(viewOf(midGame()))
+      .candidates) {
+      if (!PLAN_ONLY.includes(candidate.command.kind)) continue;
+      const priority = candidate.score.priority;
+      expect(
+        priority >= PLAN_PRIORITY || LAST_OF_ALL.includes(priority),
+        candidate.command.kind,
+      ).toBe(true);
+    }
   });
 });

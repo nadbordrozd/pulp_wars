@@ -1087,10 +1087,16 @@ describe("the Cult seat: Behold! (section 15.4)", () => {
 });
 
 describe("the Cult seat: legal, deterministic turns on what A2 covers", () => {
-  const LATER_BEADS: readonly CommandV7["kind"][] = [
+  // Bead A3 (`pulp_wars-mch9.11`) plays these, by the same plan
+  // (tests/unit/ruleset-v7-cult-rituals-ai.test.ts).
+  const A3: readonly CommandV7["kind"][] = [
     "BOO",
     "BEGIN_RITUAL",
     "PROCLAIM",
+    "RIBBIT",
+    "SWITCHEROO",
+    "TENTACLE",
+    "PICK_ME",
   ];
   const A2: readonly CommandV7["kind"][] = [
     "SACRIFICE",
@@ -1134,11 +1140,9 @@ describe("the Cult seat: legal, deterministic turns on what A2 covers", () => {
       30,
     );
 
-  it("plays a whole mid-game turn with offered commands only, holds its Horror, and plays none of the later beads' commands", () => {
+  it("plays a whole mid-game turn with offered commands only, and holds its Horror", () => {
     const turn = policyTurn(midGame());
     expect(turn.commands.length).toBeGreaterThan(0);
-    for (const command of turn.commands)
-      expect(LATER_BEADS, command.kind).not.toContain(command.kind);
     const horror = turn.state.units.find((unit) => unit.summoned === "HORROR");
     if (horror !== undefined)
       expect(strandsOn(turn.state, horror.at)).toBeGreaterThanOrEqual(1);
@@ -1164,9 +1168,7 @@ describe("the Cult seat: legal, deterministic turns on what A2 covers", () => {
     try {
       const turn = policyTurn(midGame());
       for (const command of turn.commands)
-        expect([...A2, ...LATER_BEADS], command.kind).not.toContain(
-          command.kind,
-        );
+        expect([...A2, ...A3], command.kind).not.toContain(command.kind);
     } finally {
       setArmyPlayFactionsV7(previous);
     }

@@ -45,10 +45,11 @@ import type { PlayerViewV7, PublicUnitV7 } from "../engine/v7/view";
  *
  * The channel, Summon, Sacrifice, Seize, Offering, Anchor, and Behold! are
  * bead A2 (`pulp_wars-mch9.10`): the Cult seat's plan in
- * `src/ai/v7-cult-channel.ts`. What is left to the later beads: the
- * rituals, the hexes, and the tricks (A3, `pulp_wars-mch9.11`), and every
- * other seat against the Cult (A4, `pulp_wars-mch9.12`). Until then the
- * policy offers none of those commands (`isPolicyCandidate`).
+ * `src/ai/v7-cult-channel.ts`. The rituals, the hexes, and the tricks are
+ * bead A3 (`pulp_wars-mch9.11`): `src/ai/v7-cult-rituals.ts`, a part of
+ * that plan. What is left: every other seat against the Cult (A4,
+ * `pulp_wars-mch9.12`). The policy offers each of the Cult's commands only
+ * as a step of the plan (`isPolicyCandidate`).
  *
  * Everything is read from the public view; nothing draws from the PRNG or
  * depends on elapsed time.
