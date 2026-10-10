@@ -2803,8 +2803,8 @@ later kind's ordinal by three; that changes only the `-ordinal` tie-break
 value of the pinned decisions (their revision-12-ordinal hashes are
 unchanged).
 The naval branch (`pulp_wars-5ti.2` and `pulp_wars-5ti.3`,
-`pulp-wars-poc-7r43` and `7r44`) has no play of its own yet: the policy
-stays legal with it and uses none of it on purpose
+`pulp-wars-poc-7r43` and `7r44`) is played by the seafaring seats
+(`pulp_wars-5ti.4`, `src/ai/v7-naval.ts`); the Ice Folk side is open
 ([summarized below](#the-naval-branch-pulp_wars-5ti2-and-5ti3)).
 The campaign plan (`pulp_wars-9s0.1`, `src/ai/v7-campaign.ts`) is
 [summarized below](#campaign-expansion-exploration-and-standing-pressure-pulp_wars-9s01):
@@ -5184,20 +5184,62 @@ the 3 starting Coins and tier 3 base cost of 9 of `7r41`.
 
 ## The naval branch (`pulp_wars-5ti.2` and `5ti.3`)
 
-**Status: legal, not clever.** The two engine steps of the
+**Status: the seven seafaring factions play the branch; the Ice Folk side
+is open.** The two engine steps of the
 [naval branch](../product/RULESET_7_NAVAL_BRANCH.md) (folded into
 [current rules section 14](../product/RULESET_7_CURRENT.md#14-naval-rules)
 and [section 21.16](../product/RULESET_7_CURRENT.md#2116-the-frozen-sea) by
 `pulp_wars-5ti.9`) changed the policy only where it had to stay correct.
-The play the overlay asks for is two open beads.
+`pulp_wars-5ti.4` added the play of
+[overlay section 13.1](../product/RULESET_7_NAVAL_BRANCH.md#131-seafaring-seats-bead-5ti4)
+for a Human, Undead, Goblin, Dinosaur, Martian, Dwarf, or Candy seat. The
+rules live in `src/ai/v7-naval.ts` and are the same for the seven (their
+ships are the same three); `src/ai/v7.ts` calls them at the candidate
+filter, the scores, the city's training choice, and the threat estimate.
+Every rule returns its neutral value in a view without a ship, so Dry Land
+and every position without a naval unit decide as before.
 
-What the policy does today (`src/ai/v7.ts`):
+### The seafaring seats (`pulp_wars-5ti.4`)
 
-- **Submarines count as naval units** for the two-ship training cap of the
-  naval plan; the plan never asks for one. A seat may still research
-  Seamanship or Submersibles, train a Submarine, ram (by moving a Patrol
-  Boat and then attacking), or pick an offered `BOARD` as its general
-  scoring happens to; nothing values them on purpose.
+| Rule             | What the seat does                                                                                                                                                                                                                                                                                                                  | Where                                                                 |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| Research         | Boarding (Seamanship) at 1170 with a hostile ship in sight and a warship of its own afloat; at 1075 with a hostile ship in sight or two naval units of its own. Submersibles at 1170 with Seamanship and a hostile Battleship in sight; at 1105 for the Harbours of three docks. Navigation and Shipbuilding stay the naval plan's. | `navalBranchResearchV7`                                               |
+| Training         | A Submarine while a hostile Battleship is in sight and its Submarines are fewer than twice those Battleships; a Patrol Boat while a hostile Submarine is in sight and its Patrol Boats are fewer than twice those Submarines. That ship is the city's preferred naval role, at priority 1288.                                       | `navalCounterRoleV7`                                                  |
+| Ram              | The plain attack of an unmoved Patrol Boat is held while a Move on offer earns a better Ram on the same target; the Move that earns a Ram scores 1276. A Ram's shove adds 30 for a blockader off an own dock, 12 for a transport out of landing reach of own land, 8 for a target put beside another own ship.                      | `navalRamApproachV7`, `navalRamHoldsAttackV7`, `navalRamShoveValueV7` |
+| Board            | The prize is worth its role's cost, or three tenths of it when a visible hostile unit can sink it next turn at its patched HP. The ship boards (1352) when that is at least its best offered attack, and always boards a Battleship or a Submarine out of lethal reach; otherwise it attacks.                                       | `navalBoardFactsV7`                                                   |
+| Torpedo          | A torpedo is never answered, so every offered one is fired: the Battleship first (1279), then a Submarine, a transport, a Patrol Boat (1276).                                                                                                                                                                                       | `navalTorpedoPriorityV7`                                              |
+| Submarine safety | No Move that ends next to a Battleship it will not torpedo (two of them, or one with its attack spent), nor into the ram reach of two Patrol Boats unless it torpedoes from there. It may always leave such a tile.                                                                                                                 | `navalSubmarineMoveRejectedV7`                                        |
+| Screen           | A Patrol Boat with no attack on offer goes next to an own Battleship, on the side of a hostile Submarine within 5 tiles of it (835), when no other Patrol Boat screens it.                                                                                                                                                          | `navalScreenValueV7`                                                  |
+| Battleship       | It keeps choosing the shot whose splash hits most (the splash was always in the attack's value) and now sails to a firing station (832): a tile with hostile units two or three tiles away, the largest group first, never one a hostile Submarine reaches.                                                                         | `navalBattleshipStationValueV7`                                       |
+| Transports       | No Move of an embarked unit, and no embarking, onto a tile a hostile Battleship or Submarine reaches, unless a warship of its own stands on or next to that tile or the unit is already in such reach.                                                                                                                              | `navalTransportMoveRejectedV7`                                        |
+| Threat estimate  | A hostile Submarine reaches water tiles only and deals nothing to a unit that is not afloat; a submerged Submarine is threatened only from the next tile; a hostile Patrol Boat is assumed to ram (+1 Attack), its owner's research being private.                                                                                  | `navalThreatFactsV7`, `navalSubmergedReachV7`, `navalTorpedoReachV7`  |
+
+**Projections are the engine's previews.** An offered attack and an offered
+Board are read from `queryCombatPreviewV7` and `previewBoardV7`. The attack
+after a planned Move is `queryCombatPreviewV7` on the view with the boat
+moved there (`navalAttackAfterMoveV7`), which carries the Ram and its shove
+exactly; the tests compare it with the resolution after the real Move. The
+threat estimate's torpedo, adjacent Battleship shot, and assumed Ram are
+compared with `estimateCombatV7`.
+
+**Ports, Shipyards, Harbours.** Docks were and are built as economy (the
+economic preview gives a Port its population, 2 with Harbours, and the
+Shipyard its extra one); the naval plan's first Port is unchanged. Harbours
+is the Submersibles rule above.
+
+**Not measured.** By the user's standing rule no match was played for this
+bead: no head-to-head, no `validate:ruleset7-naval-playable`, no benchmark.
+The numbers above are reasoned from the worked examples of rules section
+14.3, not tuned. Each rule is proven on a hand-built strait in
+`tests/unit/ruleset-v7-naval-branch-ai.test.ts`.
+
+**Left alone.** The landing and embark oscillation on Pangea and Lakes
+(`pulp_wars-eru`) and the overseas invasion plan (`pulp_wars-9s0.14`) are
+not touched: nothing here changes when a unit boards or lands, except that
+it no longer boards or sails into a Battleship's or Submarine's reach.
+
+### What the policy still does not do
+
 - **An Ice Folk seat makes no naval plan** (it has no ships and cannot
   embark) and **`FREEZE` is never a policy candidate**, so it does not
   cross water on purpose. Its units reach what they can walk to, ice that
@@ -5210,20 +5252,14 @@ What the policy does today (`src/ai/v7.ts`):
   unit walks the ice in the estimate), so its reach on ice is understated.
 - **Dry Land is unchanged:** nothing of the branch is offered there.
 
-Checks: `tests/unit/ruleset-v7-naval-branch-headless.sim.test.ts` (short water
+Checks: `tests/unit/ruleset-v7-naval-branch-ai.test.ts` (the rules above),
+`tests/unit/ruleset-v7-naval-branch-headless.sim.test.ts` (short water
 matches of every faction and a Showcase finish without an error, a stall,
 or a rejected command) and `tests/unit/ruleset-v7-frozen-sea-headless.sim.test.ts`
 (the same for the Ice Folk against every faction, with no ship).
 
 Open:
 
-- **`pulp_wars-5ti.4`, the seafaring seats**
-  ([overlay section 13.1](../product/RULESET_7_NAVAL_BRANCH.md#131-seafaring-seats-bead-5ti4)):
-  research of Seamanship and Submersibles, Submarine training against
-  visible Battleships, the Ram read from the preview, Board valued against
-  the best attack, Submarine targets and safety, and the Submerged and
-  torpedo threat estimates. Each rule comes with a modest head-to-head
-  test, as the user asked for every change of AI strategy.
 - **`pulp_wars-5ti.5`, the frozen sea**
   ([overlay sections 13.2 and 13.3](../product/RULESET_7_NAVAL_BRANCH.md#132-the-ice-folk-bead-5ti5)):
   the Ice Folk ice plan (crossings, builders, the wave, Icebound, home
@@ -5231,7 +5267,8 @@ Open:
   ships out of Freeze reach, slide reach in the threat map). Until it
   lands an Ice Folk seat stays on its own landmass on Continents and
   Archipelago.
-- The coarse balance on water maps (`pulp_wars-5ti.8`) waits for both.
+- The coarse balance on water maps (`pulp_wars-5ti.8`) waits for both, and
+  is where the numbers of the table above are measured.
 
 ## The Rift (`pulp_wars-9s0.5`)
 

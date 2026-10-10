@@ -197,8 +197,8 @@ sections changed where a shared rule reads differently
 [12](#12-movement-and-unit-actions), [13](#13-combat-and-fortification),
 [15](#15-fog-and-observation), and [16](#16-normal-ai-summary)). A match on
 Dry Land plays as before (the whole branch is forbidden there), and a match
-without an Ice Folk seat has no ice. What is still open (the Normal AI's
-use of the branch, `pulp_wars-5ti.4` and `pulp_wars-5ti.5`; the coarse
+without an Ice Folk seat has no ice. What is still open (the Normal AI
+for and against the frozen sea, `pulp_wars-5ti.5`; the coarse
 balance on water maps, `pulp_wars-5ti.8`; and the polish items of
 `pulp_wars-5ti.10`) is in [section 25](#25-known-discrepancies).
 `pulp-wars-poc-7r45` (`pulp_wars-5ti.11`) fixes one rule of the frozen sea:
@@ -6981,20 +6981,30 @@ Harbours from it.
   commands; an embarked Move of one cell that ends next to a planned landing
   cell is preferred, so a transport one cell from the coast moves and lands
   the same turn.
-- **The naval branch** (`pulp_wars-5ti.2` and `5ti.3`; legal, not clever).
-  The policy does not yet play the branch on purpose. A seafaring seat
-  counts Submarines among its naval units for the two-ship training cap,
-  its naval plan never asks for one, and it may research Seamanship or
-  Submersibles, train a Submarine, ram (by moving and then attacking), or
-  pick an offered `BOARD` only as its general scoring happens to. An Ice
+- **The naval branch.** A seafaring seat plays it on purpose
+  (`pulp_wars-5ti.4`, `src/ai/v7-naval.ts`): it researches Seamanship
+  against a ship in sight or for a fleet of two, and Submersibles against a
+  Battleship or for the Harbours of three docks; trains a Submarine against
+  a visible Battleship and a Patrol Boat against a visible Submarine (up to
+  two for each); moves a Patrol Boat first when that earns the Ram, and
+  values a shove that clears its dock or pushes a transport off its coast;
+  boards when the prize is worth at least the ship's best attack (a prize
+  that would be sunk next turn counts three tenths); torpedoes the
+  Battleship first; keeps a Submarine from ending next to a Battleship it
+  will not torpedo or in the ram reach of two Patrol Boats, a Patrol Boat
+  between its Battleship and a Submarine, and a transport out of the reach
+  of a hostile Battleship or Submarine unless a warship of its own is
+  beside it. Its threat estimate gives a Submarine water tiles and afloat
+  targets only, threatens a submerged Submarine only from the next tile,
+  and assumes a hostile Patrol Boat rams. Every planned attack is read
+  from the public preview. None of it is measured in matches yet. An Ice
   Folk seat makes no naval plan and never picks `FREEZE` (the command is
   not a policy candidate), so it does not cross water on purpose; its units
   walk and slide onto ice that exists when an offered Move does. Every
   seat's threat estimate treats ice as ground for land units, gives a
   slipping unit one tile of ice and an icebound unit no threat, and does
-  not follow a slide. Dry Land decisions are unchanged. The rules for the
-  seafaring seats (`pulp_wars-5ti.4`) and the Ice Folk ice plan with the
-  play against the ice (`pulp_wars-5ti.5`) are open
+  not follow a slide. Dry Land decisions are unchanged. The Ice Folk ice
+  plan with the play against the ice (`pulp_wars-5ti.5`) is open
   ([section 25](#25-known-discrepancies);
   [Normal AI, naval plan](../architecture/NORMAL_AI.md#the-naval-branch-pulp_wars-5ti2-and-5ti3)).
 - **Undead play.** In a match with an Undead seat (and only there, so
@@ -13057,13 +13067,14 @@ items left after the fold, and the pending balance steps below.
   `pulp_wars-5ti.6`, and the UI `pulp_wars-5ti.7` are done, and
   [sections 14](#14-naval-rules) and [21.16](#2116-the-frozen-sea) state
   the rules as built):
-  - **Normal AI for the seafaring seats, `pulp_wars-5ti.4`.** The policy
-    does not use the Ram, Board, or Submarines on purpose: its naval plan
-    never asks for a Submarine, and none of the research, training, Ram,
-    Board, Submarine, or estimate rules of the overlay is implemented (its
-    [section 13.1](RULESET_7_NAVAL_BRANCH.md#131-seafaring-seats-bead-5ti4)).
-    It stays legal: Submarines count for the two-ship training cap, and
-    headless water matches of every faction finish.
+  - **Normal AI for the seafaring seats, `pulp_wars-5ti.4`: done, not
+    measured.** The research, training, Ram, Board, Submarine, and estimate
+    rules of the overlay's
+    [section 13.1](RULESET_7_NAVAL_BRANCH.md#131-seafaring-seats-bead-5ti4)
+    are in the policy and proven on hand-built positions
+    ([section 16](#16-normal-ai-summary)). The head-to-head test the
+    overlay asks of each rule was not run (no match is played without the
+    user's word); the numbers are checked with the balance below.
   - **Normal AI for and against the frozen sea, `pulp_wars-5ti.5`.** An Ice
     Folk seat never Freezes and makes no naval plan, so on Continents and
     Archipelago it stays on the land it can walk to; other seats do not

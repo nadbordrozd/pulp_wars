@@ -555,6 +555,30 @@ import {
 } from "./v7-dwarf";
 import { ninthUnitMoveValueV7, ownWightGraveHeldV7 } from "./v7-ninth-unit";
 import {
+  NAVAL_COUNTER_TRAINING_PRIORITY_V7,
+  NAVAL_RAM_APPROACH_PRIORITY_V7,
+  NAVAL_SCREEN_PRIORITY_V7,
+  NAVAL_STATION_PRIORITY_V7,
+  navalBattleshipStationValueV7,
+  navalBoardScoreV7,
+  navalBranchResearchV7,
+  navalCounterRoleV7,
+  navalFleetFactsV7,
+  navalRamApproachV7,
+  navalRamHoldsAttackV7,
+  navalRamShoveValueV7,
+  navalScreenValueV7,
+  navalShipsInViewV7,
+  navalSubmarineMoveRejectedV7,
+  navalSubmergedReachV7,
+  navalThreatFactsV7,
+  navalTorpedoPriorityV7,
+  navalTorpedoReachV7,
+  navalTransportMoveRejectedV7,
+  type NavalFleetFactsV7,
+  type NavalToolsV7,
+} from "./v7-naval";
+import {
   BREAK_OFF_FRONT_RADIUS_V7,
   BREAK_OFF_MINIMUM_HP_V7,
   BREAK_OFF_PRIORITY_V7,
@@ -10036,7 +10060,11 @@ function* publicThreatenedTilesWorkV7(
       }
     yield;
   }
-  return [...new Map(direct.map((at) => [coordKey(at), at])).values()];
+  // The naval branch (`pulp_wars-5ti.4`): a Submarine's torpedo reaches
+  // water tiles only (the identity for every other unit).
+  return navalTorpedoReachV7(view, unit, [
+    ...new Map(direct.map((at) => [coordKey(at), at])).values(),
+  ]);
 }
 
 const WAIL_THREAT_RADIUS_V7 = 2;
@@ -10151,11 +10179,70 @@ function machineMayEndForThreatV7(
   return tile.terrain !== "RIFT" || mode === "FLY";
 }
 
+// ---------------------------------------------------------------------------
+// The naval branch for the seafaring seats (`pulp_wars-5ti.4`,
+// `src/ai/v7-naval.ts`).
+// ---------------------------------------------------------------------------
+
+const NAVAL_TOOLS_CACHE_V7 = new WeakMap<PolicyContextV7, NavalToolsV7>();
+
+/** What the naval rules borrow from the policy (cached per decision). */
+function navalToolsV7(context: PolicyContextV7): NavalToolsV7 {
+  const cached = NAVAL_TOOLS_CACHE_V7.get(context);
+  if (cached !== undefined) return cached;
+  const tools: NavalToolsV7 = {
+    isHostile: (ownerId) => isHostile(context.view, ownerId),
+    danger: (view, unit, at) => visibleImmediateDamage(view, unit, at, context),
+    reaches: (hostile, at) =>
+      context.threatenedTiles.get(hostile.id)?.has(coordKey(at)) ?? false,
+    project: projectPublicUnitForPolicyV7,
+    moveDestinations: (unitId) =>
+      context.lookup.moveDestinationsByUnit.get(unitId) ?? [],
+    commands: context.commands,
+  };
+  NAVAL_TOOLS_CACHE_V7.set(context, tools);
+  return tools;
+}
+
+/** The ships of the decision's view (`navalFleetFactsV7`). */
+function navalFactsV7(context: PolicyContextV7): NavalFleetFactsV7 {
+  return navalFleetFactsV7(context.view, (ownerId) =>
+    isHostile(context.view, ownerId),
+  );
+}
+
+/**
+ * The Moves and attacks the naval rules refuse: the plain attack of a
+ * Patrol Boat that a sidestep turns into a Ram, a Submarine's Move next to
+ * a Battleship it will not torpedo or into the ram reach of two Patrol
+ * Boats, and a transport's Move (or an embarking) into the reach of a
+ * hostile Battleship or Submarine with no own warship beside it. False at
+ * once in a view without a ship.
+ */
+function navalRejectsV7(context: PolicyContextV7, command: CommandV7): boolean {
+  if (command.kind !== "MOVE" && command.kind !== "ATTACK") return false;
+  const facts = navalFactsV7(context);
+  if (!navalShipsInViewV7(facts)) return false;
+  const tools = navalToolsV7(context);
+  if (command.kind === "ATTACK")
+    return navalRamHoldsAttackV7(context.view, tools, command);
+  const actor = context.lookup.unitsById.get(command.unitId);
+  const to = command.path.at(-1);
+  if (actor === undefined || to === undefined) return false;
+  if (actor.form === "NAVAL")
+    return navalSubmarineMoveRejectedV7(context.view, tools, facts, actor, to);
+  return (
+    (actor.form === "EMBARKED" || isAutoembarkMoveV7(context, command)) &&
+    navalTransportMoveRejectedV7(context.view, tools, facts, actor, to)
+  );
+}
+
 function isPolicyCandidate(
   context: PolicyContextV7,
   command: CommandV7,
 ): boolean {
   if (command.kind === "WAIT") return false;
+  if (navalRejectsV7(context, command)) return false;
   // The giants' signatures (`pulp_wars-w49.31`, RULESET_7_GIANTS.md
   // section 9): the four commands by their plans (`giantTossPlanV7`...).
   // A Swallow is scored by its preview; the large Toss and Break Off offer
@@ -11706,16 +11793,24 @@ function* sharedCityContextWorkV7(
       if (command.role === "BATTLESHIP") offersBattleship = true;
       yield;
     }
+    // The naval branch (`pulp_wars-5ti.4`): the ship that counters a
+    // hostile Battleship or Submarine in sight, of those this city offers
+    // (`navalCounterRoleV7`); null in a view without one.
+    const counterNaval = navalCounterRoleV7(navalFactsV7(context), (role) =>
+      naval.some((command) => command.role === role),
+    );
     const preferredNaval =
-      context.naval.visibleNavalDanger && patrolBoats === 0
-        ? offersPatrol
-          ? "PATROL_BOAT"
-          : firstNaval
-        : defendedLanding && offersBattleship && battleships === 0
-          ? "BATTLESHIP"
-          : transports > 0 && patrolBoats < transports && offersPatrol
+      counterNaval !== null
+        ? counterNaval
+        : context.naval.visibleNavalDanger && patrolBoats === 0
+          ? offersPatrol
             ? "PATROL_BOAT"
-            : null;
+            : firstNaval
+          : defendedLanding && offersBattleship && battleships === 0
+            ? "BATTLESHIP"
+            : transports > 0 && patrolBoats < transports && offersPatrol
+              ? "PATROL_BOAT"
+              : null;
     const centerGuard = centerGuardByCity.get(cityId);
     let best: SharedCityCommandV7 | null = null;
     let bestUtility = Number.NEGATIVE_INFINITY;
@@ -12622,6 +12717,27 @@ function scoreCommandWithContext(
         command.tech === "NAVAL_ENGINEERING")
     )
       priority = Math.max(priority, 1070);
+    // The naval branch (`pulp_wars-5ti.4`): Seamanship for a fleet or
+    // against a ship in sight, Submersibles against a Battleship or for
+    // the Harbours of three docks (`navalBranchResearchV7`).
+    if (command.tech === "SEAMANSHIP" || command.tech === "SUBMERSIBLES") {
+      const branch = navalBranchResearchV7(
+        view,
+        navalFactsV7(context),
+        (tech) =>
+          context.commands.some(
+            (offered) => offered.kind === "RESEARCH" && offered.tech === tech,
+          ),
+      );
+      if (
+        branch !== null &&
+        branch.tech === command.tech &&
+        branch.priority > priority
+      ) {
+        priority = branch.priority;
+        strategicValue = Math.max(strategicValue, branch.strategic);
+      }
+    }
   }
 
   // Tuning 5 (`pulp_wars-w49.4`): the army's next fighting role.
@@ -12748,6 +12864,27 @@ function scoreCommandWithContext(
       command.role === "PATROL_BOAT"
         ? 25 + Number(context.naval.visibleNavalDanger) * 25
         : 35;
+    // The naval branch (`pulp_wars-5ti.4`): the ship that counters a
+    // hostile Battleship or Submarine in sight (`navalCounterRoleV7`).
+    if (
+      navalCounterRoleV7(navalFactsV7(context), (role) =>
+        context.commands.some(
+          (offered) => offered.kind === "TRAIN_NAVAL" && offered.role === role,
+        ),
+      ) === command.role
+    ) {
+      priority = Math.max(priority, NAVAL_COUNTER_TRAINING_PRIORITY_V7);
+      strategicValue = Math.max(strategicValue, 50);
+    }
+  }
+
+  // The naval branch (`pulp_wars-5ti.4`): a Board that beats the ship's
+  // best attack (`navalBoardScoreV7`); otherwise the ship attacks.
+  if (command.kind === "BOARD") {
+    const board = navalBoardScoreV7(view, navalToolsV7(context), command);
+    priority = board.priority;
+    strategicValue = board.strategic;
+    immediateValue = board.immediate;
   }
 
   if (command.kind === "DISEMBARK" && actor !== undefined) {
@@ -12852,6 +12989,20 @@ function scoreCommandWithContext(
         strategicValue += 35;
       }
       if (preview.escapeAvailable) strategicValue += 4;
+      // The naval branch (`pulp_wars-5ti.4`): a torpedo is never answered
+      // and goes to the Battleship first; a Ram's shove is worth what it
+      // moves (a blockader off a dock, a transport off the coast, the
+      // target beside another own ship).
+      if (targetUnit !== undefined && actor !== undefined) {
+        const torpedo = navalTorpedoPriorityV7(targetUnit, preview);
+        if (torpedo !== null) priority = Math.max(priority, torpedo);
+        strategicValue += navalRamShoveValueV7(
+          view,
+          actor,
+          targetUnit,
+          preview,
+        );
+      }
       if (
         actor?.role === "KNIGHT" &&
         actor.form === "LAND" &&
@@ -13638,6 +13789,52 @@ function scoreCommandWithContext(
         priority,
         precomputedKnightOverrun.strategic > 0 ? 1175 : 905,
       );
+    }
+    // The naval branch (`pulp_wars-5ti.4`): the Move that earns a Patrol
+    // Boat its Ram, the Patrol Boat between a Battleship and a Submarine,
+    // and the Battleship's firing station. Own ships only.
+    if (
+      actor.form === "NAVAL" &&
+      actor.ownerId === view.viewer.id &&
+      resultAt !== null
+    ) {
+      const fleet = navalFactsV7(context);
+      const tools = navalToolsV7(context);
+      const ram = navalRamApproachV7(
+        view,
+        tools,
+        actor,
+        resultAt,
+        command.path.length,
+      );
+      if (ram !== null) {
+        priority = Math.max(priority, NAVAL_RAM_APPROACH_PRIORITY_V7);
+        strategicValue += Math.floor(ram.value / 10);
+      }
+      const screenWorth = navalScreenValueV7(
+        view,
+        fleet,
+        actor,
+        resultAt,
+        !context.commands.some(
+          (offered) => offered.kind === "ATTACK" && offered.unitId === actor.id,
+        ),
+      );
+      if (screenWorth > 0) {
+        priority = Math.max(priority, NAVAL_SCREEN_PRIORITY_V7);
+        strategicValue += screenWorth;
+      }
+      const station = navalBattleshipStationValueV7(
+        view,
+        tools,
+        fleet,
+        actor,
+        resultAt,
+      );
+      if (station > 0) {
+        priority = Math.max(priority, NAVAL_STATION_PRIORITY_V7);
+        strategicValue += station;
+      }
     }
     const destinationTile =
       resultAt === null ? undefined : findPublicTileV7(view, resultAt);
@@ -23529,9 +23726,31 @@ function computeVisibleImmediateDamage(
     const d = distance(hostile.at, at);
     const minimumRange = wail ? 1 : facts.minimumRange;
     const maximumRange = wail ? WAIL_THREAT_RADIUS_V7 : facts.maximumRange;
-    const directlyThreatened = d >= minimumRange && d <= maximumRange;
-    const reachableThreat =
+    // The naval branch (`pulp_wars-5ti.4`, section 13.1 "Estimates"): a
+    // Submarine's torpedo spares every unit that is not afloat; a submerged
+    // Submarine is attacked only from the next tile (a Wail keeps its
+    // reach); a hostile Patrol Boat is assumed to ram. Neutral unless the
+    // hostile unit or the actor is a ship.
+    const naval = navalThreatFactsV7(view, hostile, actor, at);
+    if (naval.spared) continue;
+    const plainReach =
       context?.threatenedTiles.get(hostile.id)?.has(coordKey(at)) ?? false;
+    const submergedReach =
+      naval.submerged && !wail
+        ? navalSubmergedReachV7(
+            hostile,
+            at,
+            facts,
+            unitMayActAfterMoveV7(view, hostile),
+            plainReach,
+          )
+        : null;
+    const directlyThreatened =
+      submergedReach === null
+        ? d >= minimumRange && d <= maximumRange
+        : submergedReach.direct;
+    const reachableThreat =
+      submergedReach === null ? plainReach : submergedReach.reachable;
     // Revision 20: a hostile Triceratops that reaches `at` by a Move charges
     // with its run-up (`min(2, path length)`, at least the tiles between).
     const runUp2 = directlyThreatened
@@ -23569,6 +23788,8 @@ function computeVisibleImmediateDamage(
           : {}),
         // Revision 20: the Charge! run-up (+1 Attack per tile moved).
         ...(runUp2 > 0 ? { bonusAttack2: runUp2 } : {}),
+        // The naval branch: the assumed Ram of a hostile Patrol Boat.
+        ...(naval.ramBonus2 > 0 ? { bonusAttack2: naval.ramBonus2 } : {}),
         // The Martian revision: full power only when it need not move and
         // is not Cooling.
         ...(martian === null
@@ -23749,6 +23970,23 @@ export function publicProjectedDamageForPolicyV7(
     defenderAt,
     options,
   );
+}
+
+/**
+ * The policy's threat estimate, for tests and harnesses (`pulp_wars-5ti.4`):
+ * the damage the visible hostile units can deal `unit` standing on `at` on
+ * their next turn, as a decision on `view` reads it.
+ */
+export function publicDangerForPolicyV7(
+  view: PlayerViewV7,
+  unit: PublicUnitV7,
+  at: CoordV7,
+): number {
+  const context = makeContext(
+    view,
+    queryAiReadyCommandsV7(view).map((item) => item.command),
+  );
+  return visibleImmediateDamage(view, unit, at, context);
 }
 
 /**

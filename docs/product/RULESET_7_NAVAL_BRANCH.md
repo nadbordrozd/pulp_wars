@@ -24,7 +24,7 @@ reads as Frozen in the current rules
 | Art                                                               | `pulp_wars-5ti.6`  | done; [section 14.3](#143-what-the-art-bead-must-draw-bead-5ti6), "As built"                                                                  |
 | Interface, both parts                                             | `pulp_wars-5ti.7`  | done; [sections 21](#21-naval-interface-first-part-as-built-pulp_wars-5ti7) and [23](#23-naval-interface-second-part-as-built-pulp_wars-5ti7) |
 | Fold                                                              | `pulp_wars-5ti.9`  | done, before the three steps below; [section 24](#24-fold-notes-pulp_wars-5ti9)                                                               |
-| Normal AI for the seafaring seats                                 | `pulp_wars-5ti.4`  | open: [section 13.1](#131-seafaring-seats-bead-5ti4) is still a plan                                                                          |
+| Normal AI for the seafaring seats                                 | `pulp_wars-5ti.4`  | done, without the head-to-head tests; [section 13.1](#131-seafaring-seats-bead-5ti4), "As built"                                              |
 | Normal AI for and against the frozen sea                          | `pulp_wars-5ti.5`  | open: [sections 13.2 and 13.3](#132-the-ice-folk-bead-5ti5) are still a plan                                                                  |
 | Coarse balance on water maps                                      | `pulp_wars-5ti.8`  | open: [section 15](#15-headless-support-measurement-tuning-bounds-and-balance-acceptance) is still a plan; no number has been tuned           |
 | Polish (Freeze icon, Ice Folk technology icons, preview, markers) | `pulp_wars-5ti.10` | open                                                                                                                                          |
@@ -1078,6 +1078,39 @@ without that rule. A rule that does not tend to win is dropped.
   visible Submarines are threatened only from adjacent tiles; a visible
   hostile Patrol Boat is assumed to ram (research is private: the
   Wallbreaker precedent). Water routes treat ice as a wall.
+
+**As built (`pulp_wars-5ti.4`).** The rules are in `src/ai/v7-naval.ts`,
+tabulated in
+[Normal AI, the seafaring seats](../architecture/NORMAL_AI.md#the-seafaring-seats-pulp_wars-5ti4),
+and proven on hand-built positions in
+`tests/unit/ruleset-v7-naval-branch-ai.test.ts`. What differs from the
+plan above:
+
+- **No head-to-head or win-tendency test was run**, by the user's later
+  standing rule that no match is played without being asked for. No rule
+  was dropped or tuned on results; the coarse balance (`5ti.8`) is where
+  they are measured.
+- **Research.** Seamanship is bought at once only when the seat also has a
+  warship afloat to ram or board with; with a hostile ship in sight and no
+  warship, or with two naval units and no enemy at sea, it only goes ahead
+  of the generic research.
+- **Training.** The counter ship is asked for whatever the fleet's size,
+  and before the first Patrol Boat of a seat that sees a Battleship (a
+  Patrol Boat does nothing to one).
+- **Ram.** "Pushes a transport away from an own coast" is read as: out of
+  landing reach of the seat's land. A ram is planned only when the boat
+  survives it, the exchange is not a loss in Coins, and the boat is not
+  left in lethal reach it is not in already.
+- **Submarine play.** A Submarine torpedoes after its Move, so "next to a
+  Battleship it did not torpedo" is: next to two Battleships, or next to
+  one with its attack spent.
+- **Added: transports** do not sail or embark into the reach of a hostile
+  Battleship or Submarine without a warship of their own beside the tile;
+  **the Battleship** sails to a firing station out of Submarine reach.
+- **Estimates.** A ranged unit that may fire after a Move is taken to
+  reach a submerged Submarine within its Move plus one (the estimate keeps
+  no list of the tiles it can stand on). Water routes already treated ice
+  as a wall.
 
 ### 13.2 The Ice Folk (bead `5ti.5`)
 

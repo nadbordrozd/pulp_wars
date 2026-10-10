@@ -151,6 +151,10 @@ export const KIND_READER_CLASSES_V7: Readonly<
   "src/ai/v7-ice-folk.ts::iceFolkFactsV7": "SEAT",
   "src/ai/v7-ice-folk.ts::iceFolkProductionAdjustmentV7": "SEAT",
   "src/ai/v7-ice-folk.ts::iceFolkResearchV7": "SEAT",
+  // `pulp_wars-5ti.4`: the seat's own tree (whether Seamanship gives it
+  // the Ram: a seafaring seat); a ship's Ram is read by its kind
+  // (`navalRammerV7`, through `unitCapabilitiesV7`).
+  "src/ai/v7-naval.ts::navalBranchResearchV7": "SEAT",
   "src/ai/v7-martian.ts::martianMatchForPolicyV7": "SEAT",
   "src/ai/v7-martian.ts::martianFactsV7": "SEAT",
   "src/ai/v7-martian.ts::martianProductionAdjustmentV7": "SEAT",

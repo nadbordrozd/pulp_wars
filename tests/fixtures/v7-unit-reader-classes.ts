@@ -107,6 +107,18 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/ai/v7-dwarf.ts::planAssemblesV7": "BOARD",
     "src/ai/v7-dwarf.ts::planTunnelsV7": "BOARD",
     "src/ai/v7-dwarf.ts::repairValueV7": "BOARD",
+    // `pulp_wars-5ti.4`: the naval rules read the board: the ships afloat,
+    // the units a Ram, a Board, or a torpedo targets, and the units in a
+    // Battleship's range (a burrowed unit is never afloat, never a ship's
+    // target, and a mound is not shelled).
+    "src/ai/v7-naval.ts::navalBattleshipStationValueV7": "BOARD",
+    "src/ai/v7-naval.ts::navalBoardFactsV7": "BOARD",
+    "src/ai/v7-naval.ts::navalDangerAfterAttackV7": "BOARD",
+    "src/ai/v7-naval.ts::navalFleetFactsV7": "BOARD",
+    "src/ai/v7-naval.ts::navalRamApproachV7": "BOARD",
+    "src/ai/v7-naval.ts::navalRamHoldsAttackV7": "BOARD",
+    "src/ai/v7-naval.ts::navalRamShoveValueV7": "BOARD",
+    "src/ai/v7-naval.ts::navalSubmarineMoveRejectedV7": "BOARD",
     "src/ai/v7-endgame.ts::endgamePlanForPolicyV7": "BOARD",
     "src/ai/v7-endgame.ts::routeDistances": "BOARD",
     "src/ai/v7-goblin.ts::explosionChainValueV7": "BOARD",
