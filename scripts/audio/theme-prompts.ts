@@ -141,11 +141,11 @@ export interface ThemeFactionV1 {
 }
 
 /**
- * Offered factions whose theme is not written yet, so they have no prompt.
- * The Cultists (offered by `pulp_wars-mch9.20`) get their theme prompt with
- * their sounds in a later bead; until then the game plays them the Undead
- * theme (`STAND_IN_THEME_FACTIONS_V1` in src/audio/theme-scene.ts). Remove
- * a faction from this list when its prompt is added to the data file.
+ * Offered factions that have no prompt in the data file. The Cultists
+ * (offered by `pulp_wars-mch9.20`) have their theme (`theme.cultists`,
+ * `pulp_wars-mch9.25`): the user generated it from a prompt of their own,
+ * of which the repository has no copy, so its record cites none. Remove a
+ * faction from this list when its prompt is added to the data file.
  */
 export const THEME_PENDING_FACTION_IDS_V1: readonly FactionIdV7[] =
   Object.freeze(["CULT"] as const);

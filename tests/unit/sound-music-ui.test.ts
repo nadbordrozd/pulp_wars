@@ -919,30 +919,30 @@ describe("which theme a screen plays", () => {
     expect(themeForSceneV1({ kind: "MATCH", viewer: "ORIGINAL" })).toBe(
       "theme.human",
     );
+    // The Cultists have their own theme (`pulp_wars-mch9.25`): a match
+    // shown to a Cult seat plays it, and so does New game once the Cult is
+    // chosen there.
+    expect(themeForSceneV1({ kind: "MATCH", viewer: "CULT" })).toBe(
+      "theme.cultists",
+    );
+    expect(themeForSceneV1({ kind: "SETUP", preview: "CULT" })).toBe(
+      "theme.cultists",
+    );
   });
 
-  it("plays the Cultists the Undead theme until they have their own", () => {
-    // Offered by `pulp_wars-mch9.20` with no recording of their own: the
-    // stand-in is played in a match and on New game, never silence.
+  it("gives no faction a stand-in now that the Cultists have their theme", () => {
+    // Offered by `pulp_wars-mch9.20` with the Undead theme as a stand-in;
+    // their own recording (`pulp_wars-mch9.25`) ended it.
     expect(OFFERED_FACTION_IDS_V7).toContain("CULT");
-    expect(soundThemeOfFactionV1("CULT")).toBeNull();
-    expect(STAND_IN_THEME_FACTIONS_V1).toEqual({ CULT: "UNDEAD" });
-    expect(playedThemeOfFactionV1("CULT")?.id).toBe(UNDEAD);
-    expect(themeForSceneV1({ kind: "MATCH", viewer: "CULT" })).toBe(UNDEAD);
-    expect(themeForSceneV1({ kind: "SETUP", preview: "CULT" })).toBe(UNDEAD);
-    // Its own theme, once registered, wins over the stand-in.
-    const own = {
-      ...required(soundThemeOfFactionV1("UNDEAD")),
-      id: "theme.cult" as const,
-      faction: "CULT" as const,
-    };
-    expect(
-      themeForSceneV1({ kind: "MATCH", viewer: "CULT" }, [
-        ...SOUND_THEMES_V1,
-        own,
-      ]),
-    ).toBe("theme.cult");
-    // A stand-in with no recording leaves the title theme, or silence.
+    expect(soundThemeOfFactionV1("CULT")?.id).toBe("theme.cultists");
+    expect(STAND_IN_THEME_FACTIONS_V1).toEqual({});
+    expect(playedThemeOfFactionV1("CULT")?.id).toBe("theme.cultists");
+    for (const faction of OFFERED_FACTION_IDS_V7)
+      expect(playedThemeOfFactionV1(faction)).toBe(
+        soundThemeOfFactionV1(faction),
+      );
+    // A faction with neither a theme nor a stand-in leaves the title
+    // theme, or silence.
     const titleOnly = SOUND_THEMES_V1.filter((theme) => theme.faction === null);
     expect(
       themeForSceneV1({ kind: "MATCH", viewer: "CULT" }, titleOnly),

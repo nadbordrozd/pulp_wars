@@ -1412,9 +1412,10 @@ separate [Ruleset 6](RULESET_6.md) route.
     from `7r71` until then). `HIDDEN_FACTION_IDS_V7` is empty and
     `OFFERED_FACTION_IDS_V7` is all nine. The setup screen (its selects,
     its tribe grid, its opponent counts, 1 to 8), the campaign roster, the
-    title scene, and the Gallery read the offered factions. The Cult has no
-    theme of its own yet: a Cult player hears the Undead theme
-    ([Sound](../ui/SOUND.md#theme-music)).
+    title scene, and the Gallery read the offered factions. A Cult player
+    heard the Undead theme as a stand-in until the Cult's own theme was
+    encoded (`pulp_wars-mch9.25`, `theme.cultists`;
+    [Sound](../ui/SOUND.md#theme-music)).
   - **Art.** The registration drew the Cult with stand-in art. It has its
     own since the art beads (`pulp_wars-mch9.13` to `mch9.16`, `mch9.22`,
     and `mch9.23`; [the Cult's art direction](../art/factions/CULT.md)):
@@ -1422,8 +1423,8 @@ separate [Ruleset 6](RULESET_6.md) route.
     forest, and icons, in the Cult's colour (`#00ff78`). A subject without
     a registered raster asks for `UNIT:CULT:<ROLE>`,
     `PORTRAIT:CULT:<ROLE>`, or `CITY:CULT:<level>` and is drawn as a
-    lettered stand-in ("C", `FACTION_STAND_IN_LETTERS_V7`). Its sounds and
-    its theme are still stand-ins (the Offered bullet above).
+    lettered stand-in ("C", `FACTION_STAND_IN_LETTERS_V7`). Its sounds are
+    still stand-ins; its theme is its own (the Offered bullet above).
   - **Normal AI.** The registration left the Cult off the army policy
     (`ARMY_PLAY_FACTIONS_V7`). Its first AI bead (`pulp_wars-mch9.9`, no
     rule and no identity change) put it on: both seats of a match with a
@@ -14119,9 +14120,8 @@ items left after the fold, and the pending balance steps below.
   none is a defect of the engine against a decision of the user. Open: no
   number of the faction or of its Normal AI was tuned or played (the
   standing rule of no simulations), the lab `LAB_CULT_MID` has not been
-  played, the Cult has no theme music and no sounds of its own (a Cult
-  player hears the Undead theme as a stand-in; its own theme is
-  `pulp_wars-mch9.25`), and the
+  played, the Cult has no sounds of its own (its theme music is its own
+  since `pulp_wars-mch9.25`), and the
   step notes of [section 1](#1-identity-and-compatibility) describe each
   engine step as it stood when it was made (their "for now" and "not yet"
   lines are history: section 26 is the current state).
@@ -15201,10 +15201,11 @@ and tricks). In summary:
     arm round the unit it holds.
   - **End Turn** with a daemon short of its Control asks once.
   - The unit glossary has one sentence for every ability and status. The
-    cues use the game's existing sounds, and the Cult has no theme music
-    of its own yet: a Cult player hears the **Undead theme** as a stand-in
-    (`STAND_IN_THEME_FACTIONS_V1`; [Sound](../ui/SOUND.md#theme-music)),
-    and the Cult's own theme is `pulp_wars-mch9.25`.
+    cues use the game's existing sounds. The Cult has its own theme music
+    (`theme.cultists`, `pulp_wars-mch9.25`;
+    [Sound](../ui/SOUND.md#theme-music)): a Cult player hears it in a
+    match and on New game, where the Undead theme stood in before
+    (`STAND_IN_THEME_FACTIONS_V1`, now empty).
 
   The details and the decisions taken are in
   [the spec, section 14.3](RULESET_7_CULTISTS.md#143-how-it-reads-on-the-board-without-text)

@@ -201,7 +201,7 @@ describe("Gallery sounds", () => {
   });
 
   it("has a playable theme row for every faction, and one for the title theme", () => {
-    // Bead pulp_wars-2yc.27: the nine themes are in the manifest.
+    // Bead pulp_wars-2yc.27: the themes are in the manifest.
     const themes = gallerySoundGroupsV7().at(-1);
     expect(themes?.id).toBe("THEMES");
     expect(themes?.entries.map((entry) => entry.faction)).toEqual([
@@ -209,13 +209,6 @@ describe("Gallery sounds", () => {
       null,
     ]);
     for (const entry of themes?.entries ?? []) {
-      // The Cultists (offered by pulp_wars-mch9.20) have no recording yet:
-      // their row waits ("Coming soon"); a match plays them the Undead's.
-      if (entry.faction === "CULT") {
-        expect(entry.key).toBeNull();
-        expect(entry.when).toBe(GALLERY_THEME_PENDING_TEXT_V7);
-        continue;
-      }
       // Each plays its manifest entry and says which file that is.
       const theme = SOUND_THEMES_V1.find(
         (candidate) => candidate.faction === entry.faction,

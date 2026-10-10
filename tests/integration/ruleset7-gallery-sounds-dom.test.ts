@@ -433,17 +433,6 @@ describe("Gallery Sounds tab", () => {
       "theme:TITLE",
     ]);
     for (const node of rows) {
-      // The Cultists (offered by pulp_wars-mch9.20) have no recording yet:
-      // their row waits.
-      if (node.dataset.faction === "CULT") {
-        expect(node.dataset.pending).toBe("true");
-        expect(
-          node
-            .querySelector<HTMLButtonElement>("[data-sound-play]")
-            ?.getAttribute("aria-disabled"),
-        ).toBe("true");
-        continue;
-      }
       expect(node.dataset.pending).toBeUndefined();
       const play = node.querySelector<HTMLButtonElement>("[data-sound-play]");
       expect(play?.getAttribute("aria-disabled")).toBeNull();

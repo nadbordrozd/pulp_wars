@@ -729,7 +729,7 @@ describe("Ruleset 7 browser smoke script", () => {
     // Bead pulp_wars-2yc.27: one playable theme row per faction column
     // and the title theme's, under the Music and Sound sliders.
     expect(probe).toContain("listed.themes !== factions + 1");
-    expect(probe).toContain("listed.pending !== 1");
+    expect(probe).toContain("listed.pending !== 0");
     expect(probe).toContain("#v7-music-volume-gallery");
     expect(probe).toContain("#v7-sound-volume-gallery");
     expect(probe).toContain("listed.levels !== 2");

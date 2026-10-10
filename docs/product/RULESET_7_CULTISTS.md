@@ -1383,8 +1383,9 @@ The decisions U3 took where this table left room:
   [section 14.2](#142-colour-looks-sound-music) (the croak, the
   paper-rustle, the booming "KNEEL!") and its theme are **not made here**:
   the theme music is encoded from masters recorded outside the repository
-  (`scripts/audio/encode-themes.ts`), so a Cult match plays a stand-in
-  until one is delivered (the Undead theme: "As built by U4" below).
+  (`scripts/audio/encode-themes.ts`), so a Cult match played a stand-in
+  (the Undead theme: "As built by U4" below) until the user's master was
+  delivered and encoded as `theme.cultists` (bead `pulp_wars-mch9.25`).
 
 **As built by U4** (`pulp_wars-mch9.20`; no rule changed and the ruleset
 identity is unchanged). The Cult is offered and a game seats nine. The
@@ -1409,13 +1410,17 @@ What U4 decided:
    of three on a phone.
 4. **The faction chip** "Cultists" in the leaderboard is emerald ink on the
    mint fill (`--pw-emerald`, `--pw-emerald-fill`), the Cult's hue.
-5. **Music and sound are stand-ins.** The Cult has no theme and no sounds
-   of its own (a follow-up bead). A Cult player hears the **Undead theme**
-   (`STAND_IN_THEME_FACTIONS_V1`), the nearest in mood to the mock-sinister
-   procession of [section 14.2](#142-colour-looks-sound-music); the
-   Gallery's Sounds tab shows the Cultists' theme as "Coming soon"; the
-   abilities keep the existing sounds U2 and U3 chose; the Cult Battleship
-   fires the Human cannonball.
+5. **Music and sound were stand-ins.** U4 shipped with no Cult theme: a
+   Cult player heard the **Undead theme** (`STAND_IN_THEME_FACTIONS_V1`),
+   the nearest in mood to the mock-sinister procession of
+   [section 14.2](#142-colour-looks-sound-music), and the Gallery's Sounds
+   tab showed the Cultists' theme as "Coming soon". **Since bead
+   `pulp_wars-mch9.25`** the Cult has its own theme (`theme.cultists`,
+   encoded from the user's master of 2026-10-10): it plays in a Cult
+   player's match, on New game once the Cult is chosen, and from its
+   Gallery row, and the stand-in table is empty. The sounds are still
+   stand-ins: the abilities keep the existing sounds U2 and U3 chose; the
+   Cult Battleship fires the Human cannonball.
 6. **The Stargazer has no animation preview in the Gallery**: the preview
    plays a unit's attack or an ability that needs only the unit and a
    target, and the Stargazer has neither (Star-fall needs a circle).
@@ -2597,7 +2602,8 @@ The choices E1 made where this spec left room:
    renderer take a Cult seat, so the later beads can show one from a
    fixture. Bead U4 emptied the list (`pulp_wars-mch9.20`: "As built by
    U4" in [section 14.3](#143-how-it-reads-on-the-board-without-text)); the
-   theme list no longer follows it, because the Cult has no theme yet.
+   theme list did not follow it until the Cult's theme was encoded
+   (`pulp_wars-mch9.25`).
 6. **Nine seats** needed no generator change: the map scale already places
    nine capitals (all nine domains, no central zone). E1 pins the cells of
    [section 17.8](#178-g-consistency-with-the-current-rules-and-nine-seats)
@@ -3296,10 +3302,10 @@ kill a Frozen bound Horror.
 
 **Still open.** No number of the faction or of its Normal AI was tuned or
 played, and the lab `LAB_CULT_MID` has not been played (the standing rule:
-only if the user asks). The Cult has no sounds of its own and no theme
-music ([section 14.2](#142-colour-looks-sound-music)): a Cult player hears
-the Undead theme as a stand-in, and the Cult's own theme is
-`pulp_wars-mch9.25`.
+only if the user asks). The Cult has no sounds of its own
+([section 14.2](#142-colour-looks-sound-music)). Its theme music is its
+own since `pulp_wars-mch9.25` (`theme.cultists`), which ended the Undead
+theme's turn as a stand-in.
 
 ## Appendix A. The proposal's fifteen decisions, answered
 

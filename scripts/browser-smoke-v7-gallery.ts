@@ -237,14 +237,14 @@ async function probeGallerySoundsV7(
     `({ ids: [...document.querySelectorAll('[data-v7-gallery-sounds] [data-sound-play][data-sound-id]')].map((card) => card.dataset.soundId), groups: document.querySelectorAll('.v7-gallery-sound-group').length, pending: document.querySelectorAll('.v7-gallery-sound-group[data-group="themes"] .v7-gallery-sound[data-pending="true"] [aria-disabled="true"]').length, themes: document.querySelectorAll('.v7-gallery-sound-group[data-group="themes"] .v7-gallery-sound').length, levels: document.querySelectorAll('[data-v7-gallery-sounds] #v7-music-volume-gallery, [data-v7-gallery-sounds] #v7-sound-volume-gallery').length, enabled: ${SOUNDS_AUDIO}.settings.enabled, noticeHidden: document.querySelector('.v7-gallery-sounds-notice')?.hidden === true, overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth })`,
   );
   // Every manifest sound and theme once; one theme row per faction column
-  // and one for the title theme, all playable (bead pulp_wars-2yc.27) but
-  // the Cultists', which waits for its recording ("Coming soon"); the
-  // Music and Sound sliders above them; sound is on.
+  // and one for the title theme, all playable (bead pulp_wars-2yc.27; the
+  // Cultists' since pulp_wars-mch9.25); the Music and Sound sliders above
+  // them; sound is on.
   if (
     [...listed.ids].sort().join() !== [...playableSoundIdsV1()].sort().join() ||
     listed.groups < 2 ||
     listed.themes !== factions + 1 ||
-    listed.pending !== 1 ||
+    listed.pending !== 0 ||
     listed.levels !== 2 ||
     !listed.enabled ||
     !listed.noticeHidden ||

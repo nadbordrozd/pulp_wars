@@ -74,8 +74,13 @@ export interface ThemeMasterV1 {
   readonly faction: string | null;
   /** The master's file name in the folder, as its author named it. */
   readonly master: string;
-  /** The prompt it was generated from (docs/audio/theme-prompts.json). */
-  readonly prompt: string;
+  /**
+   * The prompt it was generated from (docs/audio/theme-prompts.json); null
+   * when its author wrote the prompt and the repository has no copy of it.
+   */
+  readonly prompt: string | null;
+  /** The day its author generated it, when not `THEME_MASTERS_DATE_V1`. */
+  readonly date?: string;
   /**
    * Set to choose by ear how many seconds before its end the next pass of
    * the loop starts; without it the measured value is used.
@@ -83,7 +88,14 @@ export interface ThemeMasterV1 {
   readonly overlapSeconds?: number;
 }
 
-/** The nine masters the user generated with Suno on 2026-10-07. */
+/** The day the first nine masters were generated. */
+export const THEME_MASTERS_DATE_V1 = "2026-10-07";
+
+/**
+ * The masters the user generated with Suno: nine on 2026-10-07, and the
+ * Cultists' on 2026-10-10 (bead pulp_wars-mch9.25), from a prompt of the
+ * user's own. In the order of the factions, the title theme last.
+ */
 export const THEME_MASTERS_V1: readonly ThemeMasterV1[] = [
   {
     id: "theme.human",
@@ -132,6 +144,13 @@ export const THEME_MASTERS_V1: readonly ThemeMasterV1[] = [
     faction: "CANDY",
     master: "candy christmassy.wav",
     prompt: "CANDY@2+s1",
+  },
+  {
+    id: "theme.cultists",
+    faction: "CULT",
+    master: "cultists v3.wav",
+    prompt: null,
+    date: "2026-10-10",
   },
   {
     id: "theme.title",
@@ -372,8 +391,10 @@ export interface ThemeTrackRecordV1 {
   readonly file: string;
   /** The master it was encoded from, as its author named it. */
   readonly master: string;
-  /** The prompt entry and version it was generated from. */
-  readonly prompt: string;
+  /** The prompt entry and version it was generated from; null for none. */
+  readonly prompt: string | null;
+  /** The day its author generated the master. */
+  readonly date: string;
   /** Length of the master, in seconds. */
   readonly masterSeconds: number;
   /** Silence cut from the start and the end, in seconds. */
@@ -474,6 +495,7 @@ function main(): void {
         file,
         master: entry.master,
         prompt: entry.prompt,
+        date: entry.date ?? THEME_MASTERS_DATE_V1,
         masterSeconds: round(info.durationSeconds, 3),
         headTrimSeconds: round(start / rate, 3),
         tailTrimSeconds: round((info.frames - end) / rate, 3),

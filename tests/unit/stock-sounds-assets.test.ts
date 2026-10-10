@@ -24,12 +24,13 @@ import {
   THEME_RECORDS_AUTHOR_V1,
   THEME_RECORDS_DATE_V1,
   THEME_RECORDS_DOC_PATH,
+  THEME_RECORDS_NO_PROMPT_V1,
   renderThemeRecordsV1,
   themeRecordFieldsV1,
   themeRecordsSectionV1,
 } from "../../scripts/audio/theme-records";
 import { soundAssetUrlsV7 } from "../../src/assets/asset-inventory-v7";
-import { OFFERED_FACTION_IDS_V7 } from "../../src/engine/index";
+import { FACTION_IDS_V7, OFFERED_FACTION_IDS_V7 } from "../../src/engine/index";
 import {
   SOUND_IDS_V1,
   SOUND_MANIFEST_V1,
@@ -82,12 +83,13 @@ const MAX_AUDIO_FILE_BYTES = 200_000;
 /**
  * The theme music's own budget (bead pulp_wars-2yc.27): a theme is about
  * 100 seconds of stereo AAC at 112 kbit/s, 1.4 MB. One theme may not be
- * larger than this, nor all of them together (nine are 12.6 MB). It is
+ * larger than this, nor all of them together (ten are 14.0 MB: the tenth,
+ * the Cultists', raised it from 14 MB in bead pulp_wars-mch9.25). It is
  * for the files of the theme manifest in their folder and for nothing
- * else; raise it on purpose, with a tenth theme.
+ * else; raise it on purpose, with an eleventh theme.
  */
 const MAX_THEME_BYTES = 1_700_000;
-const MAX_THEMES_TOTAL_BYTES = 14_000_000;
+const MAX_THEMES_TOTAL_BYTES = 14_500_000;
 /** A theme is a loop of about 100 seconds (THEME_MUSIC.md). */
 const THEME_SECONDS = { min: 90, max: 120 } as const;
 
@@ -386,13 +388,9 @@ describe("recorded sound clips", () => {
 
 describe("theme music files", () => {
   it("has a theme for every faction of the game, and the title theme", () => {
-    // The Cultists (offered by pulp_wars-mch9.20) have no recording yet:
-    // they are played the Undead theme (src/audio/theme-scene.ts).
-    expect(soundThemeOfFactionV1("CULT")).toBeNull();
-    const themed = OFFERED_FACTION_IDS_V7.filter(
-      (faction) => faction !== "CULT",
-    );
-    for (const faction of themed) {
+    // The Cultists' is the tenth (bead pulp_wars-mch9.25).
+    expect(soundThemeOfFactionV1("CULT")?.id).toBe("theme.cultists");
+    for (const faction of OFFERED_FACTION_IDS_V7) {
       const theme = soundThemeOfFactionV1(faction);
       expect(theme, faction).not.toBeNull();
       expect(
@@ -405,7 +403,12 @@ describe("theme music files", () => {
     );
     expect(title?.faction).toBeNull();
     expect(title?.label).toBe("Title");
-    expect(SOUND_THEMES_V1).toHaveLength(themed.length + 1);
+    // A theme belongs to a faction of the game or to none, and no faction
+    // has two.
+    for (const theme of SOUND_THEMES_V1)
+      if (theme.faction !== null)
+        expect(FACTION_IDS_V7, theme.id).toContain(theme.faction);
+    expect(SOUND_THEMES_V1).toHaveLength(OFFERED_FACTION_IDS_V7.length + 1);
     expect(new Set(SOUND_THEMES_V1.map((theme) => theme.id)).size).toBe(
       SOUND_THEMES_V1.length,
     );
@@ -510,10 +513,18 @@ describe("theme music files", () => {
     const doc = readFileSync(THEME_RECORDS_DOC_PATH, "utf8");
     expect(themeRecordsSectionV1(doc)).toBe(await renderThemeRecordsV1(doc));
     for (const track of THEME_MUSIC_TRACKS_V1) {
-      expect(doc, track.id).toContain(
-        `### ${track.id}, ${THEME_RECORDS_DATE_V1}`,
+      expect(doc, track.id).toContain(`### ${track.id}, ${track.date}`);
+      expect(track.date, track.id).toBe(
+        track.id === "theme.cultists" ? "2026-10-10" : THEME_RECORDS_DATE_V1,
       );
       const fields = new Map(themeRecordFieldsV1(track));
+      // A theme cites its prompt, or says that the repository has none.
+      expect(fields.get("Prompt version"), track.id).toContain(
+        track.prompt ?? THEME_RECORDS_NO_PROMPT_V1,
+      );
+      expect(track.prompt === null, track.id).toBe(
+        track.id === "theme.cultists",
+      );
       expect(fields.get("Service")).toBe("Suno");
       expect(fields.get("Take chosen"), track.id).toContain(track.master);
       // What only the author knows is left for the author.

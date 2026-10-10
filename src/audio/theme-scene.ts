@@ -31,16 +31,17 @@ export type MusicSceneV1 =
 
 /**
  * The faction whose theme stands in for a faction that has none of its own
- * yet. The Cultists (offered by `pulp_wars-mch9.20`) have no recording:
- * until theirs is made they march to the Undead's, the nearest in mood (a
- * mock-sinister procession), so a Cult player's match is not silent. A
- * stand-in is only ever played; the Gallery's Sounds tab still shows the
- * faction's own row as "Coming soon". Remove the entry when the faction's
- * theme is registered in `theme-music.json` (its own theme wins anyway).
+ * yet, so that its player's match is not silent. A stand-in is only ever
+ * played; the Gallery's Sounds tab still shows the faction's own row as
+ * "Coming soon". Remove the entry when the faction's theme is registered in
+ * `theme-music.json` (its own theme wins anyway).
+ *
+ * Empty: the Cultists (offered by `pulp_wars-mch9.20`) marched to the
+ * Undead's until their own theme was registered (`pulp_wars-mch9.25`).
  */
 export const STAND_IN_THEME_FACTIONS_V1: Readonly<
   Partial<Record<FactionIdV7, FactionIdV7>>
-> = Object.freeze({ CULT: "UNDEAD" });
+> = Object.freeze({});
 
 /** A faction's own theme, else its stand-in's ({@link STAND_IN_THEME_FACTIONS_V1}). */
 export function playedThemeOfFactionV1(

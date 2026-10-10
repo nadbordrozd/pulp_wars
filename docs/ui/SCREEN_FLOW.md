@@ -1999,11 +1999,11 @@ player and up to eight opponents:
   in the front rank; its Thing in the Cellar joins the back rank on a
   canvas 1000 px wide or more). The Stargazer's Gallery card has no
   animation preview: it cannot attack and Star-fall needs a circle.
-- **Sound.** The Cult has no theme and no sounds of its own yet. A Cult
-  player hears the Undead theme in a match and on New game
-  (`STAND_IN_THEME_FACTIONS_V1`), the Gallery's Sounds tab shows the
-  Cultists' theme row as "Coming soon", its abilities use the game's
-  existing sounds, and its Battleship fires the Human cannonball.
+- **Sound.** The Cult has its own theme (`theme.cultists`, bead
+  `pulp_wars-mch9.25`): a Cult player hears it in a match and on New game,
+  and the Gallery's Sounds tab plays it from the Cultists' theme row. It
+  has no sounds of its own yet: its abilities use the game's existing
+  sounds, and its Battleship fires the Human cannonball.
 
 ## Current Ruleset 7 title scene and menu
 

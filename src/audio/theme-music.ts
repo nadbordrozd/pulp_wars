@@ -21,8 +21,13 @@ export interface ThemeMusicTrackV1 {
   readonly file: string;
   /** The master it was encoded from, as its author named it. */
   readonly master: string;
-  /** The prompt entry and version it was generated from. */
-  readonly prompt: string;
+  /**
+   * The prompt entry and version it was generated from; null when its
+   * author wrote the prompt and the repository has no copy of it.
+   */
+  readonly prompt: string | null;
+  /** The day its author generated the master. */
+  readonly date: string;
   readonly masterSeconds: number;
   /** Silence cut from the start and the end of the master, in seconds. */
   readonly headTrimSeconds: number;

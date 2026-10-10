@@ -14,12 +14,14 @@ import {
   renderThemePromptSectionV1,
   sunoExcludeV1,
   sunoStyleV1,
+  themeNameV1,
   validateThemePromptsV1,
   wordsFoundV1,
   type ThemeFactionPromptV1,
   type ThemePromptsV1,
 } from "../../scripts/audio/theme-prompts";
 import { SOUND_THEMES_V1 } from "../../src/audio/sound-manifest";
+import { THEME_MUSIC_TRACKS_V1 } from "../../src/audio/theme-music";
 import {
   FACTION_DISPLAY_NAMES_V7,
   OFFERED_FACTION_IDS_V7,
@@ -73,8 +75,8 @@ const THEMED_FACTION_IDS = OFFERED_FACTION_IDS_V7.filter(
 
 describe("faction theme prompts", () => {
   it("has one entry for every faction of the game and no other", () => {
-    // The Cultists (offered by pulp_wars-mch9.20) have no theme yet: their
-    // prompt comes with their sounds, and the game plays them the Undead's.
+    // The Cultists (offered by pulp_wars-mch9.20) have no prompt here:
+    // their theme (pulp_wars-mch9.25) is from a prompt of the user's own.
     expect(THEME_PENDING_FACTION_IDS_V1).toEqual(["CULT"]);
     expect(THEMED_FACTION_IDS).toHaveLength(OFFERED_FACTION_IDS_V7.length - 1);
     expect(Object.keys(data.factions).sort()).toEqual(
@@ -413,7 +415,19 @@ describe("faction theme prompts", () => {
     for (const theme of SOUND_THEMES_V1) {
       if (theme.faction === null)
         expect(data.extras.map((extra) => extra.id)).toContain(theme.id);
-      else expect(data.factions[theme.faction]?.themeId).toBe(theme.id);
+      else if (data.factions[theme.faction] !== undefined)
+        expect(data.factions[theme.faction]?.themeId).toBe(theme.id);
+      // A theme made from a prompt of its author's own (the Cultists',
+      // bead pulp_wars-mch9.25) is named as an entry of its faction would
+      // name it, and cites no prompt.
+      else {
+        expect(theme.id).toBe(
+          `theme.${themeNameV1(FACTION_DISPLAY_NAMES_V7[theme.faction])}`,
+        );
+        expect(
+          THEME_MUSIC_TRACKS_V1.find((track) => track.id === theme.id)?.prompt,
+        ).toBeNull();
+      }
     }
   });
 });
