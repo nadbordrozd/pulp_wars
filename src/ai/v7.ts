@@ -67,6 +67,7 @@ import type { CombatPreviewV7 } from "../engine/v7/events";
 import {
   blizzardHalvedDamageV7,
   blizzardProtectsV7,
+  canBeFrozenV7,
   deepSnowStopsUnitV7,
   unitAvoidsForeignSitesV7,
   unitGlidesV7,
@@ -429,6 +430,8 @@ import {
   MIND_CONTROL_FIRST_CEILING_V7,
   MIND_CONTROL_FOCUS_MINIMUM_VALUE_V7,
   MIND_CONTROL_PRIORITY_V7,
+  MIND_CONTROL_SAFE_STEP_PRIORITY_V7,
+  MIND_CONTROL_UNHELD_VALUE_WEIGHT_V7,
   MIND_CONTROL_FOCUS_PRIORITY_V7,
   MIND_CONTROL_VALUE_WEIGHT_V7,
   RAY_SIEGE_PRIORITY_V7,
@@ -492,6 +495,8 @@ import {
   SNOW_HUNTER_CHIP_OFFSET_V7,
   SNOW_OBJECTIVE_V7,
   TRAMPLE_VALUE_V7,
+  COLD_SNAP_SETUP_STRIKE_VALUE_V7,
+  COLD_SNAP_SETUP_TARGET_VALUE_V7,
   WITCH_CHILL_REACH_V7,
   WITCH_ESCORT_OBJECTIVE_V7,
   WITCH_FOCUS_PRIORITY_V7,
@@ -983,6 +988,10 @@ interface PolicyContextV7 {
     { readonly tech: TechnologyIdV7; readonly cost: number } | null | undefined;
   /** `pulp_wars-9s0.1`: embarked units with no way forward (cached). */
   readonly strandedTransports: Map<UnitId, boolean>;
+  /** `pulp_wars-9s0.14`: transports that wait for the wave to land (cached). */
+  readonly navalLandingWaits: Map<UnitId, boolean>;
+  /** `pulp_wars-9s0.14`: Mind Control targets the seat would keep (cached). */
+  readonly mindControlHeld: Map<UnitId, boolean>;
   redevelopmentMayChangeImprovement: Map<string, boolean>;
   sharedCityContextPrepared: boolean;
   preferredSharedCityActionByCity: Map<CityId, CommandV7 | null>;
@@ -1125,6 +1134,19 @@ interface NavalPlanV7 {
   readonly walkDistanceByKey: ReadonlyMap<string, number>;
   /** `pulp_wars-eru`: land-route steps from the target's nearest coast tile to it. */
   readonly coastDistance: number;
+  /**
+   * `pulp_wars-9s0.14`: the own active Ports with a public water route
+   * (Deep Water included) to the water beside the landing coast.
+   */
+  readonly servingPortKeys: ReadonlySet<string>;
+  /**
+   * `pulp_wars-9s0.14`: the seat has active Ports and none of them serves
+   * the landing coast, while a Port site of its own does: it builds that
+   * Port, and no unit boards at the others.
+   */
+  readonly portMissing: boolean;
+  /** `pulp_wars-9s0.14`: the target is a hostile city (not a village). */
+  readonly targetIsCity: boolean;
   /** Canonical public water-route distance to the invasion/frontier goal. */
   readonly waterDistanceByKey: ReadonlyMap<string, number>;
   /** Same route with known Deep Water allowed, used to choose a future Port. */
@@ -1146,6 +1168,9 @@ const NO_NAVAL_PLAN_V7: NavalPlanV7 = Object.freeze({
   retainLandedUnitIds: new Set<UnitId>(),
   walkDistanceByKey: new Map(),
   coastDistance: 0,
+  servingPortKeys: new Set<string>(),
+  portMissing: false,
+  targetIsCity: false,
   waterDistanceByKey: new Map(),
   prospectiveWaterDistanceByKey: new Map(),
   fleetDistanceByKey: new Map(),
@@ -1954,6 +1979,8 @@ function bareContext(
     threats,
     threatenedTiles,
     naval: NO_NAVAL_PLAN_V7,
+    navalLandingWaits: new Map(),
+    mindControlHeld: new Map(),
     tactical: NO_TACTICAL_PLAN_V7,
     warTraining: null,
     savings: undefined,
@@ -2554,6 +2581,13 @@ function* roadCorridorWorkV7(
   return selected;
 }
 
+/**
+ * `pulp_wars-9s0.14`: a coast the seat can sail to today is the landing
+ * coast when it is at most this many steps farther from the target than
+ * the best coast it could reach with Navigation.
+ */
+const NAVAL_COAST_DETOUR_V7 = 3;
+
 /** One bounded public-board pass per policy decision, advanced through work slices. */
 function* navalPlanWorkV7(
   view: PlayerViewV7,
@@ -2633,6 +2667,32 @@ function* navalPlanWorkV7(
       return id === undefined ? [] : [id];
     }),
   );
+  const ownCenters = view.cities
+    .filter((city) => city.ownerId === view.viewer.id)
+    .map((city) => city.at);
+  const ownedCityComponents = new Set(
+    ownCenters.flatMap((at) => {
+      const id = componentByKey.get(coordKey(at));
+      return id === undefined ? [] : [id];
+    }),
+  );
+  // pulp_wars-9s0.14: one target, kept while the wave sails and lands.
+  // "Overseas" used to mean "on no landmass an own capture unit stands on",
+  // and the objectives were ordered by their distance to the nearest such
+  // unit. Both moved with the units: the unit that landed made its landmass
+  // "reachable", so the plan turned to the next overseas objective with the
+  // rest of the wave still at sea and the units at home stopped boarding;
+  // with every capture unit aboard nothing was reachable and the order fell
+  // back on board position; and with three or four seats the nearest unit,
+  // and so the target, changed from turn to turn. Both are now counted from
+  // home: an objective is overseas when it stands on no landmass with an own
+  // city, and the order is the distance to the nearest own city center. The
+  // cities do not move, so the target changes when it is taken, when a city
+  // changes hands, or when the known board does.
+  const homeComponents =
+    ownedCityComponents.size > 0 ? ownedCityComponents : captureComponents;
+  const anchors =
+    ownCenters.length > 0 ? ownCenters : captureUnits.map((unit) => unit.at);
   const objectives = [
     ...view.cities
       .filter((city) => isHostile(view, city.ownerId))
@@ -2648,26 +2708,20 @@ function* navalPlanWorkV7(
   ].sort(
     (left, right) =>
       left.rank - right.rank ||
-      (captureUnits.length === 0
+      (anchors.length === 0
         ? 0
-        : nearestDistance(
-            left.at,
-            captureUnits.map((unit) => unit.at),
-          ) -
-          nearestDistance(
-            right.at,
-            captureUnits.map((unit) => unit.at),
-          )) ||
+        : nearestDistance(left.at, anchors) -
+          nearestDistance(right.at, anchors)) ||
       left.at.y - right.at.y ||
       left.at.x - right.at.x,
   );
   const reachable = objectives.filter((objective) => {
     const id = componentByKey.get(coordKey(objective.at));
-    return id !== undefined && captureComponents.has(id);
+    return id !== undefined && homeComponents.has(id);
   });
   const overseas = objectives.filter((objective) => {
     const id = componentByKey.get(coordKey(objective.at));
-    return id === undefined || !captureComponents.has(id);
+    return id === undefined || !homeComponents.has(id);
   });
   const landFrontier = view.board.tiles.filter(
     (tile) =>
@@ -2705,13 +2759,6 @@ function* navalPlanWorkV7(
       const id = componentByKey.get(coordKey(adjacent));
       if (id !== undefined) objectiveComponents.add(id);
     }
-  const ownedCityComponents = new Set(
-    view.cities.flatMap((city) => {
-      if (city.ownerId !== view.viewer.id) return [];
-      const id = componentByKey.get(coordKey(city.at));
-      return id === undefined ? [] : [id];
-    }),
-  );
   const retainLandedUnitIds = new Set(
     captureUnits.flatMap((unit) => {
       const id = componentByKey.get(coordKey(unit.at));
@@ -2725,7 +2772,30 @@ function* navalPlanWorkV7(
   const existingTransport = view.units.some(
     (unit) => unit.ownerId === view.viewer.id && unit.form === "EMBARKED",
   );
-  const target = overseas[0]?.at ?? reachable[0]?.at ?? null;
+  // pulp_wars-9s0.14: a landmass without a hostile city whose known
+  // villages each have a capture unit of the viewer or an ally on that
+  // landmass already (the rule of pulp_wars-ykw.7 below) is passed over
+  // while another overseas objective is known: it used to drop out as
+  // "reachable" the moment a unit landed there.
+  const landmassWorkDone = (at: CoordV7): boolean => {
+    const id = componentByKey.get(coordKey(at));
+    if (id === undefined) return false;
+    let work = 0;
+    for (const objective of objectives) {
+      if (componentByKey.get(coordKey(objective.at)) !== id) continue;
+      if (objective.rank === 0) return false;
+      work += 1;
+    }
+    let claimants = 0;
+    for (const unit of visibleObjectiveClaimants)
+      if (componentByKey.get(coordKey(unit.at)) === id) claimants += 1;
+    return claimants > 0 && claimants >= work;
+  };
+  const target =
+    overseas.find((objective) => !landmassWorkDone(objective.at))?.at ??
+    overseas[0]?.at ??
+    reachable[0]?.at ??
+    null;
   // pulp_wars-ykw.7: a landmass takes no more landings than it has work.
   // When the target is a neutral village on a landmass that already holds
   // as many of the viewer's and its allies' capturers as it has known
@@ -2807,18 +2877,66 @@ function* navalPlanWorkV7(
       command.kind === "DISEMBARK" ? [coordKey(command.at)] : [],
     ),
   );
+  // pulp_wars-9s0.14: the landing coast is one the seat's transports can
+  // reach. The coast used to be the target landmass's coast tile nearest
+  // the target whatever water it lay on: a lake or a bay behind the target
+  // city, and the transports had no route. It is now the nearest coast tile
+  // on water that a public water route joins to an own Port, a Port site of
+  // an own city, or an own transport: first by the water the seat can sail
+  // today (Shallow Water without Navigation) when that coast is at most
+  // `NAVAL_COAST_DETOUR_V7` steps farther from the target than the best
+  // coast over Deep Water, else by Deep Water too (Navigation is then
+  // asked for, as before). With no such water known the old coast stands.
+  const launch = [
+    ...starts,
+    ...view.units
+      .filter(
+        (unit) => unit.ownerId === view.viewer.id && unit.form === "EMBARKED",
+      )
+      .map((unit) => unit.at),
+  ];
+  const launchWater =
+    target === null
+      ? new Map<string, number>()
+      : yield* publicWaterRouteDistancesV7(view, launch, true, pathWork);
+  const launchWaterToday =
+    target === null || view.viewer.researchedTechs.includes("NAVIGATION")
+      ? launchWater
+      : yield* publicWaterRouteDistancesV7(view, launch, false, pathWork);
+  const coastOn = (water: ReadonlyMap<string, number>): readonly CoordV7[] =>
+    coastalTargetLand.filter((landAt) =>
+      neighbors8V7(view, landAt).some((at) => water.has(coordKey(at))),
+    );
+  const coastToday = coastOn(launchWaterToday);
+  const coastLater = coastOn(launchWater);
+  const coastTodayDistance = nearestRouteDistance(
+    coastToday,
+    targetLandDistances,
+  );
+  const coastLaterDistance = nearestRouteDistance(
+    coastLater,
+    targetLandDistances,
+  );
+  const servedCoast =
+    coastTodayDistance !== null &&
+    (coastLaterDistance === null ||
+      coastTodayDistance <= coastLaterDistance + NAVAL_COAST_DETOUR_V7)
+      ? coastToday
+      : coastLaterDistance !== null
+        ? coastLater
+        : coastalTargetLand;
   const closestCoastDistance = nearestRouteDistance(
-    coastalTargetLand,
+    servedCoast,
     targetLandDistances,
   );
   const targetLand =
     closestCoastDistance === null
       ? targetComponentLand
-      : coastalTargetLand.filter(
+      : servedCoast.filter(
           (at) =>
             targetLandDistances.get(coordKey(at)) === closestCoastDistance,
         );
-  const legalTargetLand = coastalTargetLand.filter((at) => {
+  const legalTargetLand = servedCoast.filter((at) => {
     const routeDistance = targetLandDistances.get(coordKey(at));
     return (
       legalDisembarkKeys.has(coordKey(at)) &&
@@ -2877,7 +2995,12 @@ function* navalPlanWorkV7(
         : targetLand.flatMap((landAt) =>
             neighbors8V7(view, landAt).filter((at) => {
               const tile = tilesByKey.get(coordKey(at));
-              return tile?.explored === true && tile.biome === null;
+              return (
+                tile?.explored === true &&
+                tile.biome === null &&
+                // pulp_wars-9s0.14: on the water the transports reach.
+                (coastLaterDistance === null || launchWater.has(coordKey(at)))
+              );
             }),
           )
       ).map((at) => [coordKey(at), at]),
@@ -2979,6 +3102,20 @@ function* navalPlanWorkV7(
     routeGoals.length > 0 &&
     anyWaterDistance !== null &&
     shallowDistance === null;
+  // pulp_wars-9s0.14: the Port that serves the landing coast.
+  const activePorts = view.naval.ownedPorts
+    .filter((port) => port.status === "ACTIVE")
+    .map((port) => port.at);
+  const servingPortKeys = new Set(
+    activePorts
+      .map(coordKey)
+      .filter((key) => prospectiveWaterDistanceByKey.has(key)),
+  );
+  const portMissing =
+    target !== null &&
+    activePorts.length > 0 &&
+    servingPortKeys.size === 0 &&
+    starts.some((at) => prospectiveWaterDistanceByKey.has(coordKey(at)));
   const tree = queryTechnologyTreeV7(view);
   const researchCost = (tech: TechnologyIdV7): number =>
     tree.nodes.find((node) => node.id === tech)?.cost ?? 0;
@@ -2990,8 +3127,7 @@ function* navalPlanWorkV7(
     !view.viewer.researchedTechs.includes("NAVIGATION")
   )
     reserveCoins = researchCost("NAVIGATION");
-  else if (view.naval.ownedPorts.every((port) => port.status !== "ACTIVE"))
-    reserveCoins = 4;
+  else if (activePorts.length === 0 || portMissing) reserveCoins = 4;
   else if (
     visibleNavalDanger &&
     !view.units.some(
@@ -3013,6 +3149,9 @@ function* navalPlanWorkV7(
     retainLandedUnitIds,
     walkDistanceByKey: targetLandDistances,
     coastDistance: closestCoastDistance ?? 0,
+    servingPortKeys,
+    portMissing,
+    targetIsCity: target !== null && !targetIsVillage,
     waterDistanceByKey: view.viewer.researchedTechs.includes("NAVIGATION")
       ? prospectiveWaterDistanceByKey
       : shallowDistances,
@@ -3317,6 +3456,14 @@ export function inspectNormalNavalPlanV7(view: PlayerViewV7): {
   readonly target: CoordV7 | null;
   readonly seaShortcut: boolean;
   readonly reserveCoins: number;
+  /** `pulp_wars-9s0.14`: the tiles the plan lands on at this decision. */
+  readonly landing: readonly CoordV7[];
+  /** `pulp_wars-9s0.14`: the own active Ports that serve the landing coast. */
+  readonly servingPorts: readonly CoordV7[];
+  /** `pulp_wars-9s0.14`: no own Port serves it, and a Port site does. */
+  readonly portMissing: boolean;
+  /** The transports wait off a target that is being taken. */
+  readonly holding: boolean;
 } {
   const plan = drain(
     navalPlanWorkV7(
@@ -3329,6 +3476,16 @@ export function inspectNormalNavalPlanV7(view: PlayerViewV7): {
     target: plan.target,
     seaShortcut: plan.seaShortcut,
     reserveCoins: plan.reserveCoins,
+    landing: plan.landing,
+    servingPorts: view.naval.ownedPorts
+      .filter(
+        (port) =>
+          port.status === "ACTIVE" &&
+          plan.servingPortKeys.has(coordKey(port.at)),
+      )
+      .map((port) => port.at),
+    portMissing: plan.portMissing,
+    holding: plan.holding,
   };
 }
 
@@ -4571,6 +4728,43 @@ function armyUndeadShortOfUnitsV7(context: PolicyContextV7): boolean {
   return units < cities + ARMY_UNDEAD_SPARE_UNITS_V7;
 }
 
+/**
+ * The third pass (`pulp_wars-9s0.14`, "army size under savings"): bodies
+ * first for the two army seats `armyBodiesSeatV7` leaves out, a Human and a
+ * Goblin one, in a war. Their passes gave them no such rule: in a war the
+ * technology the clock says is due is bought before the units (1219 over
+ * 1215) and its Coins are kept while it cannot be paid
+ * (`armyResearchFloorV7`), whatever the army's size. A Human or Goblin seat
+ * with an enemy army in the field (`armyWarV7`: a hostile land unit near an
+ * own center, or near an own unit in the field) that fields fewer land
+ * units than it owns cities and `ARMY_UNDEAD_SPARE_UNITS_V7` more now
+ * trains first and keeps no Coins, exactly as the other six
+ * (`armyUndeadBodiesFirstV7`: until the research clock of the war is a
+ * whole technology behind). In peace nothing changes: their openings and
+ * the due technology before the units while no enemy is near (tuning 6)
+ * were played by hand and are left as they are, and so are the other rules
+ * that `armyBodiesSeatV7` gates (the free unit of a city level, growth
+ * before the defender, the technology before a capture).
+ */
+function armyThinAtWarV7(context: PolicyContextV7): boolean {
+  if (
+    !context.army ||
+    armyBodiesSeatV7(context) ||
+    context.naval.active ||
+    context.openingGrowthHarvest ||
+    !armyWarV7(context)
+  )
+    return false;
+  const view = context.view;
+  let cities = 0;
+  for (const city of view.cities)
+    if (city.ownerId === view.viewer.id) cities += 1;
+  let units = 0;
+  for (const unit of view.units)
+    if (unit.ownerId === view.viewer.id && unit.form === "LAND") units += 1;
+  return units < cities + ARMY_UNDEAD_SPARE_UNITS_V7;
+}
+
 const ARMY_UNDEAD_BODIES_CACHE_V7 = new WeakMap<PolicyContextV7, boolean>();
 
 /**
@@ -4618,7 +4812,7 @@ function armyUndeadBodiesFirstV7(context: PolicyContextV7): boolean {
   if (cached !== undefined) return cached;
   const view = context.view;
   const result =
-    armyUndeadShortOfUnitsV7(context) &&
+    (armyUndeadShortOfUnitsV7(context) || armyThinAtWarV7(context)) &&
     view.viewer.coins >=
       (effectiveRoleRuleV7("FIGHTER", view.viewer.faction).cost ?? 0) &&
     view.cities.some(
@@ -6273,6 +6467,16 @@ function armyIceFolkShooterHeldV7(
     )
   )
     return false;
+  // The third pass (`pulp_wars-9s0.14`): the Witch's step to the tile she
+  // casts her Cold Snap from is hers to judge (`witchMoveKeyV7`: the units
+  // beside that tile are Frozen through their next turn, and what the
+  // others deal her there is less than her HP).
+  if (
+    context.iceFolk &&
+    rule.abilities.includes("COLD_SNAP") &&
+    iceFolkWitchSnapMoveV7(context, actor, to)
+  )
+    return false;
   if (
     context.lookup.citiesByKey.has(coordKey(to)) ||
     armyVillageMoveV7(context, actor, to)
@@ -6406,6 +6610,11 @@ function armyHuntGatedV7(
 
 /** Routine Moves: exploration, the objective, pickets, and siege staging. */
 const ARMY_ROUTINE_MOVE_MAXIMUM_V7 = 735;
+/**
+ * `pulp_wars-9s0.17`: strategic value of each tile a regrouping unit comes
+ * nearer to its friends.
+ */
+const ARMY_REGROUP_STEP_VALUE_V7 = 4;
 
 /**
  * Army play for a land Move (`src/ai/v7-army.ts`): the step off a center
@@ -7024,9 +7233,42 @@ function armyPlainMoveValueV7(
       // Not held by the reach it crosses on the way out.
       return {
         priority: Math.max(priority, ARMY_REGROUP_PRIORITY_V7),
-        strategic: -spacing,
+        // `pulp_wars-9s0.17`: the step that brings it nearest first (every
+        // such step scored alike, and the unit drifted sideways along the
+        // enemy's front before it turned back).
+        strategic:
+          ARMY_REGROUP_STEP_VALUE_V7 *
+            (distance(actor.at, friend) - distance(to, friend)) -
+          spacing,
       };
   }
+  // `pulp_wars-9s0.17`: nor does a routine Move take a unit to a tile where
+  // it would be alone among enemies. The approach below (720) and the march
+  // on a city (700) walked a unit out of its friends' company, the rule
+  // above (705) walked it back the turn after, and a lone unit in front of
+  // a held city stepped between the same two tiles for the rest of the
+  // match. Both rules now ask the one question (`armyAloneV7`), of the tile
+  // the unit stands on and of the tile it would stand on, so the unit waits
+  // on the last tile in company until the others come up. Read from the
+  // public view at this decision; nothing is remembered between turns.
+  if (
+    !alone &&
+    approach === 0 &&
+    ownMode === "NONE" &&
+    fights &&
+    (!roaming || job === "EXPLORE") &&
+    !same(actor.at, to) &&
+    priority <= ARMY_ROUTINE_MOVE_MAXIMUM_V7 &&
+    !armyAloneV7(context, actor) &&
+    armyAloneV7(context, actor, to) &&
+    !(
+      job === "EXPLORE" &&
+      assignment?.safe === true &&
+      danger <= 0 &&
+      visibleImmediateDamage(view, actor, actor.at, context) <= 0
+    )
+  )
+    return { priority: -1, strategic: 0 };
   // Approach: toward the nearest visible hostile land unit. A staging unit
   // comes from farther and stops outside every reach.
   if (
@@ -8903,14 +9145,19 @@ function armyPressedCentersV7(context: PolicyContextV7): readonly CoordV7[] {
  * within `ARMY_NEAR_RADIUS_V7`, and no own fighting land unit within
  * `ARMY_ALONE_RADIUS_V7`.
  */
-function armyAloneV7(context: PolicyContextV7, actor: PublicUnitV7): boolean {
+function armyAloneV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+  // `pulp_wars-9s0.17`: the same question for a tile the unit may move to.
+  at: CoordV7 = actor.at,
+): boolean {
   const view = context.view;
-  const tile = findPublicTileV7(view, actor.at);
+  const tile = findPublicTileV7(view, at);
   if (tile?.explored === true && tile.territoryOwnerId === view.viewer.id)
     return false;
   if (
     !armyHostilesV7(context).some(
-      (unit) => distance(unit.at, actor.at) <= ARMY_NEAR_RADIUS_V7,
+      (unit) => distance(unit.at, at) <= ARMY_NEAR_RADIUS_V7,
     )
   )
     return false;
@@ -8919,7 +9166,7 @@ function armyAloneV7(context: PolicyContextV7, actor: PublicUnitV7): boolean {
       unit.id !== actor.id &&
       unit.ownerId === view.viewer.id &&
       unit.form === "LAND" &&
-      distance(unit.at, actor.at) <= ARMY_ALONE_RADIUS_V7 &&
+      distance(unit.at, at) <= ARMY_ALONE_RADIUS_V7 &&
       armyFightsV7(context, unit),
   );
 }
@@ -10802,6 +11049,15 @@ function isPolicyCandidate(
   }
   const autoembark = isAutoembarkMoveV7(context, command);
   if (autoembark && !context.naval.active) return false;
+  // pulp_wars-9s0.14: a transport that waits for its wave stays in place.
+  if (
+    command.kind === "MOVE" &&
+    context.naval.active &&
+    context.naval.targetIsCity &&
+    context.lookup.unitsById.get(command.unitId)?.form === "EMBARKED" &&
+    navalLandingWaitsV7(context, command.unitId)
+  )
+    return false;
   // pulp_wars-ykw.7: the mirror of the endgame landing below: a capturer
   // that can walk to an endgame target does not board. Without it a unit
   // boarded to explore, was landed again for the endgame beside the tile it
@@ -10817,7 +11073,9 @@ function isPolicyCandidate(
     return false;
   if (command.kind === "DISEMBARK" && context.naval.active)
     return (
-      context.naval.landing.some((at) => same(at, command.at)) ||
+      (context.naval.landing.some((at) => same(at, command.at)) &&
+        // pulp_wars-9s0.14: the wave lands together.
+        !navalLandingWaitsV7(context, command.unitId)) ||
       // The frozen sea: the crew of an icebound transport climbs out.
       iceboundCrewLandingV7(
         context.view,
@@ -10835,6 +11093,11 @@ function isPolicyCandidate(
   // pulp_wars-eru: a unit that can walk to the plan's target boards only
   // at a Port whose sea route beats its walk by a clear margin.
   if (autoembark && !navalBoardsAtV7(context, command)) return false;
+  // pulp_wars-9s0.14: nobody boards while the plan holds its transports
+  // off a target that is being taken, and a wave boards together.
+  if (autoembark && context.naval.target !== null && context.naval.holding)
+    return false;
+  if (autoembark && navalWaveWaitsV7(context, command)) return false;
   if (
     autoembark &&
     context.naval.visibleNavalDanger &&
@@ -12741,7 +13004,10 @@ function scoreCommandWithContext(
     if (
       context.naval.active &&
       command.kind === "BUILD_PORT" &&
-      view.naval.ownedPorts.every((port) => port.status !== "ACTIVE")
+      (view.naval.ownedPorts.every((port) => port.status !== "ACTIVE") ||
+        // pulp_wars-9s0.14: the Port that serves the landing coast, when
+        // no Port the seat has does.
+        navalServingPortSiteV7(context, command.at))
     ) {
       priority = 1285;
       const cityId = findPublicTileV7(view, command.at);
@@ -13736,7 +14002,11 @@ function scoreCommandWithContext(
   }
 
   if (command.kind === "MIND_CONTROL" && context.martian) {
-    const control = mindControlScoreV7(martianCacheV7(context).tools, command);
+    const control = mindControlScoreV7(
+      martianCacheV7(context).tools,
+      command,
+      mindControlHeldV7(context, command.targetUnitId),
+    );
     priority = control.priority;
     strategicValue = control.strategic;
     immediateValue = control.immediate;
@@ -17115,7 +17385,15 @@ function navalBoardingPortsV7(
     plan.target === null
       ? undefined
       : plan.walkDistanceByKey.get(coordKey(from));
-  if (walk === undefined) return ports;
+  if (walk === undefined) {
+    // pulp_wars-9s0.14: overseas, only at a Port that serves the landing
+    // coast; while none does and the seat can build one that would, at none.
+    if (plan.target === null) return ports;
+    const serving = ports.filter((port) =>
+      plan.servingPortKeys.has(coordKey(port)),
+    );
+    return serving.length > 0 ? serving : plan.portMissing ? [] : ports;
+  }
   return ports.filter((port) =>
     navalSeaRouteBeatsWalkV7({
       walk,
@@ -17124,6 +17402,174 @@ function navalBoardingPortsV7(
       coast: plan.coastDistance,
     }),
   );
+}
+
+/** `pulp_wars-9s0.14`: units of one wave (boarding, and landing). */
+const NAVAL_WAVE_SIZE_V7 = 3;
+/** A unit this close to the Port has gathered there. */
+const NAVAL_WAVE_GATHER_RADIUS_V7 = 2;
+/** A unit this close to the Port, and able to come nearer, is waited for. */
+const NAVAL_WAVE_COMING_RADIUS_V7 = 5;
+/** An own transport this close to the Port has just left: the wave is out. */
+const NAVAL_WAVE_OUT_RADIUS_V7 = 4;
+/** An own transport this close behind one at the coast is waited for. */
+const NAVAL_LANDING_FOLLOWER_RADIUS_V7 = 3;
+/** An own land unit this close to a transport at the coast: a beachhead. */
+const NAVAL_BEACHHEAD_RADIUS_V7 = 2;
+
+/**
+ * `pulp_wars-9s0.14`: an own land unit that goes by sea from `port`: a
+ * capture unit without a campaign job that the plan does not keep ashore
+ * and that would board there from where it stands
+ * (`navalBoardingPortsV7`), the nearest such Port to it.
+ */
+function navalSailorV7(
+  context: PolicyContextV7,
+  unit: PublicUnitV7,
+  port: CoordV7,
+): boolean {
+  const view = context.view;
+  if (
+    unit.ownerId !== view.viewer.id ||
+    unit.form !== "LAND" ||
+    !policyCapturerV7(view, unit) ||
+    context.tactical.campaign?.assignmentByUnitId.has(unit.id) === true ||
+    context.naval.retainLandedUnitIds.has(unit.id) ||
+    endgameKeepsAshoreV7(context, unit.id) ||
+    (context.undead && fragileCargoV7(context, unit.id))
+  )
+    return false;
+  const ports = navalBoardingPortsV7(context, unit.at);
+  let nearest: CoordV7 | null = null;
+  for (const at of ports)
+    if (
+      nearest === null ||
+      distance(unit.at, at) < distance(unit.at, nearest) ||
+      (distance(unit.at, at) === distance(unit.at, nearest) &&
+        (at.y < nearest.y || (at.y === nearest.y && at.x < nearest.x)))
+    )
+      nearest = at;
+  return nearest !== null && same(nearest, port);
+}
+
+/**
+ * `pulp_wars-9s0.14`, a wave boards together. The units of an invasion
+ * boarded as each reached the Port and sailed at once, so they came ashore
+ * a turn or more apart, each alone under the target city. A unit now waits
+ * beside the Port of an invasion (the plan has a target) while another
+ * sailor is on its way there and fewer than `NAVAL_WAVE_SIZE_V7` are
+ * gathered: the sailors within `NAVAL_WAVE_GATHER_RADIUS_V7` tiles of the
+ * Port and the own transports within `NAVAL_WAVE_OUT_RADIUS_V7` of it (a
+ * wave that has begun to leave is followed at once). A sailor is on its way
+ * while it stands within `NAVAL_WAVE_COMING_RADIUS_V7` tiles, off every own
+ * city center, and is offered a Move that ends nearer the Port. So the wait
+ * ends when the others arrive, when none can come nearer, or when three
+ * have gathered; a seat with one free unit sails it alone, as before.
+ */
+function navalWaveWaitsV7(
+  context: PolicyContextV7,
+  command: Extract<CommandV7, { kind: "MOVE" }>,
+): boolean {
+  const view = context.view;
+  const port = command.path.at(-1);
+  if (context.naval.target === null || port === undefined) return false;
+  let gathered = 0;
+  let coming = 0;
+  for (const unit of view.units) {
+    if (unit.ownerId !== view.viewer.id) continue;
+    const away = distance(unit.at, port);
+    if (unit.form === "EMBARKED") {
+      if (away <= NAVAL_WAVE_OUT_RADIUS_V7) gathered += 1;
+      continue;
+    }
+    if (away > NAVAL_WAVE_COMING_RADIUS_V7) continue;
+    if (unit.id !== command.unitId && !navalSailorV7(context, unit, port))
+      continue;
+    if (away <= NAVAL_WAVE_GATHER_RADIUS_V7) gathered += 1;
+    else if (
+      !context.lookup.citiesByKey.has(coordKey(unit.at)) &&
+      (context.lookup.moveDestinationsByUnit.get(unit.id) ?? []).some(
+        (to) => distance(to, port) < away,
+      )
+    )
+      coming += 1;
+  }
+  return coming > 0 && gathered < NAVAL_WAVE_SIZE_V7;
+}
+
+/**
+ * `pulp_wars-9s0.14`, a wave lands together. A transport with a planned
+ * landing on offer beside a hostile city waits a turn for the transports
+ * close behind it, so that the units come ashore side by side in one turn
+ * (each takes the nearest free tile of the landing coast) instead of one a
+ * turn. It lands at once when `NAVAL_WAVE_SIZE_V7` transports have a
+ * planned landing on offer, when an own land unit already stands within
+ * `NAVAL_BEACHHEAD_RADIUS_V7` tiles (the landing has begun), when the
+ * visible enemies could sink it where it waits, or when no own transport
+ * within `NAVAL_LANDING_FOLLOWER_RADIUS_V7` tiles is still coming up: one
+ * that has moved this turn, or one that is offered a Move along the route
+ * that the transport rules allow. A follower that is stuck is not waited
+ * for, so the wait is bounded by the followers' own progress. A transport
+ * that waits stays where it is (its Moves are no candidates): it drifted
+ * along the coast otherwise and gave its place up.
+ */
+function navalLandingWaitsV7(
+  context: PolicyContextV7,
+  unitId: UnitId,
+): boolean {
+  const cached = context.navalLandingWaits.get(unitId);
+  if (cached !== undefined) return cached;
+  const view = context.view;
+  const plan = context.naval;
+  const actor = context.lookup.unitsById.get(unitId);
+  let waits = false;
+  if (
+    actor !== undefined &&
+    actor.form === "EMBARKED" &&
+    actor.ownerId === view.viewer.id &&
+    plan.targetIsCity
+  ) {
+    const atCoast = new Set<UnitId>();
+    for (const command of context.commands)
+      if (
+        command.kind === "DISEMBARK" &&
+        plan.landing.some((at) => same(at, command.at))
+      )
+        atCoast.add(command.unitId);
+    const beachhead = view.units.some(
+      (unit) =>
+        unit.ownerId === view.viewer.id &&
+        unit.form === "LAND" &&
+        distance(unit.at, actor.at) <= NAVAL_BEACHHEAD_RADIUS_V7 &&
+        plan.walkDistanceByKey.has(coordKey(unit.at)),
+    );
+    if (
+      atCoast.has(actor.id) &&
+      atCoast.size < NAVAL_WAVE_SIZE_V7 &&
+      !beachhead &&
+      visibleImmediateDamage(view, actor, actor.at, context) < actor.hp
+    )
+      waits = view.units.some(
+        (unit) =>
+          unit.id !== actor.id &&
+          unit.ownerId === view.viewer.id &&
+          unit.form === "EMBARKED" &&
+          !atCoast.has(unit.id) &&
+          distance(unit.at, actor.at) <= NAVAL_LANDING_FOLLOWER_RADIUS_V7 &&
+          (unit.activation.moved ||
+            (context.lookup.moveDestinationsByUnit.get(unit.id) ?? []).some(
+              (to) =>
+                routeProgress(plan.waterDistanceByKey, unit.at, to) > 0 &&
+                !navalRejectsV7(context, {
+                  kind: "MOVE",
+                  unitId: unit.id,
+                  path: [to],
+                }),
+            )),
+      );
+  }
+  context.navalLandingWaits.set(unitId, waits);
+  return waits;
 }
 
 /** `pulp_wars-eru`: whether the unit of a boarding Move boards at that Port. */
@@ -20200,6 +20646,99 @@ function martianConvertibleAfterV7(
 }
 
 /**
+ * The third pass (`pulp_wars-9s0.14`): whether a hostile unit, once taken
+ * by Mind Control, lives through the enemy's turn where it stands (it is
+ * exhausted when taken and does not move): the visible hostile units other
+ * than itself deal it less than its HP there, counted as for any own unit
+ * (`visibleImmediateDamage`) in the view as the Mind Control leaves it: the
+ * unit is the viewer's and is listed as controlled, so it keeps its kind
+ * (its own Defense and no Shield). True without the Mind Control play.
+ */
+function mindControlHeldV7(
+  context: PolicyContextV7,
+  targetId: UnitId,
+): boolean {
+  if (!mindControlPlayV7()) return true;
+  const cached = context.mindControlHeld.get(targetId);
+  if (cached !== undefined) return cached;
+  const view = context.view;
+  const target = context.lookup.unitsById.get(targetId);
+  let held = true;
+  if (target !== undefined) {
+    const taken: PublicUnitV7 = { ...target, ownerId: view.viewer.id };
+    const after: PlayerViewV7 = {
+      ...view,
+      units: view.units.map((unit) => (unit.id === targetId ? taken : unit)),
+      mindControlled: [
+        ...view.mindControlled.filter((entry) => entry.unitId !== targetId),
+        {
+          unitId: targetId,
+          brainUnitId: null,
+          originalOwnerId: target.ownerId,
+        },
+      ].sort((left, right) => left.unitId - right.unitId),
+    };
+    held = visibleImmediateDamage(after, taken, target.at, context) < target.hp;
+  }
+  context.mindControlHeld.set(targetId, held);
+  return held;
+}
+
+/** The third pass: what a Mind Control on `target` is worth (held or not). */
+function mindControlTargetWorthV7(
+  context: PolicyContextV7,
+  target: PublicUnitV7,
+): number {
+  return (
+    (mindControlHeldV7(context, target.id)
+      ? MIND_CONTROL_VALUE_WEIGHT_V7
+      : MIND_CONTROL_UNHELD_VALUE_WEIGHT_V7) *
+    mindControlValueV7(context.view, target)
+  );
+}
+
+/** The third pass: the target worth most, the lower unit ID first; or null. */
+function mindControlBestTargetV7(
+  context: PolicyContextV7,
+  targets: readonly PublicUnitV7[],
+): PublicUnitV7 | null {
+  let best: PublicUnitV7 | null = null;
+  let bestWorth = 0;
+  for (const target of targets) {
+    const worth = mindControlTargetWorthV7(context, target);
+    if (
+      best === null ||
+      worth > bestWorth ||
+      (worth === bestWorth && target.id < best.id)
+    ) {
+      best = target;
+      bestWorth = worth;
+    }
+  }
+  return best;
+}
+
+/**
+ * The third pass: what the visible enemies deal a Brain on `at` once it
+ * has taken `taken` from them (the unit taken is exhausted and its own).
+ */
+function mindControlBrainDangerV7(
+  context: PolicyContextV7,
+  brain: PublicUnitV7,
+  at: CoordV7,
+  taken: PublicUnitV7 | null,
+): number {
+  if (taken === null)
+    return visibleImmediateDamage(context.view, brain, at, context);
+  return visibleImmediateDamage(context.view, brain, at, context, {
+    ...context.lookup,
+    visibleHostiles: context.lookup.visibleHostiles.filter(
+      (unit) => unit.id !== taken.id,
+    ),
+  });
+}
+
+/**
  * `pulp_wars-b5f.3` (RULESET_7_MIND_CONTROL.md section 8, the setup): the
  * first of two own hits that leave a hostile unit convertible. This hit
  * leaves it above `MIND_CONTROL_HP_V7`, another own unit's offered attack
@@ -21117,6 +21656,63 @@ function martianMoveValueV7(
         );
       }
     }
+    // The third pass (`pulp_wars-9s0.14`): the Brain is kept alive, because
+    // its controlled unit goes back to its owner the moment it dies.
+    if (mindControlPlayV7()) {
+      // With a Mind Control on offer: when the visible enemies kill the
+      // Brain where it stands even with its best target taken from them,
+      // it first steps to a tile where they do not, from which a
+      // conversion is still in range, and takes the unit from there.
+      if (cache.mindControllers.has(actor.id)) {
+        if (
+          !actor.activation.moved &&
+          mindControlBrainDangerV7(
+            context,
+            actor,
+            actor.at,
+            mindControlBestTargetV7(
+              context,
+              hostileLand.filter((unit) =>
+                context.commands.some(
+                  (command) =>
+                    command.kind === "MIND_CONTROL" &&
+                    command.unitId === actor.id &&
+                    command.targetUnitId === unit.id,
+                ),
+              ),
+            ),
+          ) >= actor.hp
+        ) {
+          const best = mindControlBestTargetV7(
+            context,
+            hostileLand.filter(
+              (unit) =>
+                distance(unit.at, to) <= MIND_CONTROL_RANGE_V7 &&
+                mindControlExposedV7(view, unit, unit.at, unit.hp, [
+                  { ...actor, at: to },
+                ]),
+            ),
+          );
+          if (best !== null) {
+            const left = mindControlBrainDangerV7(context, actor, to, best);
+            if (left < actor.hp) {
+              next = Math.max(next, MIND_CONTROL_SAFE_STEP_PRIORITY_V7);
+              strategic += mindControlTargetWorthV7(context, best) - left;
+            }
+          }
+        }
+      }
+      // With a unit under its control and nothing to take: out of the
+      // lethal reach it stands in.
+      else if (
+        (facts.controlledOfBrain.get(actor.id)?.length ?? 0) > 0 &&
+        dangerHere() >= actor.hp &&
+        dangerThere() < actor.hp
+      ) {
+        next = Math.max(next, MIND_CONTROL_ESCAPE_PRIORITY_V7);
+        strategic += retainedUnitValue(view, actor) - dangerThere();
+      }
+    }
     if (
       next < MARTIAN_ROUTINE_MOVE_PRIORITY_V7 &&
       hostileLand.some((unit) => distance(unit.at, to) <= 1) &&
@@ -21181,6 +21777,11 @@ interface IceFolkContextCacheV7 {
   readonly shatterSetups: Map<UnitId, readonly UnitId[]>;
   /** Each own Witch's best Move destination (rule 2), or null to stay. */
   readonly witchDestination: Map<UnitId, CoordV7 | null>;
+  /**
+   * `pulp_wars-9s0.14`: the Witches whose destination is a tile she casts a
+   * Cold Snap from that leaves her out of lethal reach.
+   */
+  readonly witchSnapMoves: Set<UnitId>;
   /** Own Sleds with an offered killing attack. */
   readonly sledKills: Map<UnitId, boolean>;
 }
@@ -21210,6 +21811,7 @@ function iceFolkCacheV7(context: PolicyContextV7): IceFolkContextCacheV7 {
     attacksOnTarget: new Map(),
     shatterSetups,
     witchDestination: new Map(),
+    witchSnapMoves: new Set(),
     sledKills: new Map(),
     tools: {
       view,
@@ -21561,6 +22163,45 @@ function iceFolkWitchDestinationV7(
   if (cached !== undefined) return cached;
   const view = context.view;
   const campaign = context.tactical.campaign;
+  // The third pass (`pulp_wars-9s0.14`): the Cold Snap she casts from the
+  // tile after the Move (a Witch may move and then cast), by the units it
+  // newly freezes, and the danger left on the tile once those units, and
+  // the Frozen ones beside it, cannot act in their next turn.
+  const casts = isPrimaryUnusedV7(witch);
+  const struck = new Set<UnitId>();
+  if (casts)
+    for (const command of context.commands)
+      if (command.kind === "ATTACK" && command.unitId !== witch.id)
+        struck.add(command.targetUnitId);
+  const snapAt = (
+    at: CoordV7,
+  ): { readonly value: number; readonly danger: number } | undefined => {
+    if (!casts) return undefined;
+    let value = 0;
+    const frozen = new Set<UnitId>();
+    for (const unit of context.lookup.visibleHostiles) {
+      if (
+        distance(unit.at, at) > COLD_SNAP_RANGE_V7 ||
+        !canBeFrozenV7(view, witch.ownerId, unit)
+      )
+        continue;
+      frozen.add(unit.id);
+      if (cache.facts.frozen.has(unit.id)) continue;
+      value +=
+        COLD_SNAP_SETUP_TARGET_VALUE_V7 +
+        (struck.has(unit.id) ? COLD_SNAP_SETUP_STRIKE_VALUE_V7 : 0);
+    }
+    if (value === 0) return undefined;
+    return {
+      value,
+      danger: visibleImmediateDamage(view, witch, at, context, {
+        ...context.lookup,
+        visibleHostiles: context.lookup.visibleHostiles.filter(
+          (unit) => !frozen.has(unit.id),
+        ),
+      }),
+    };
+  };
   const keyAt = (at: CoordV7): readonly number[] =>
     witchMoveKeyV7(
       view,
@@ -21571,6 +22212,7 @@ function iceFolkWitchDestinationV7(
         ? 0
         : (campaignRouteProgressV7(campaign, witch, at) ?? 0),
       (owner) => isHostile(view, owner),
+      snapAt(at),
     );
   let best: CoordV7 | null = null;
   let bestKey = keyAt(witch.at);
@@ -21591,7 +22233,27 @@ function iceFolkWitchDestinationV7(
     }
   }
   cache.witchDestination.set(witch.id, best);
+  // (The second entry of the key: the Cold Snap she casts from there.)
+  if (best !== null && (bestKey[1] ?? 0) > 0)
+    cache.witchSnapMoves.add(witch.id);
   return best;
+}
+
+/**
+ * `pulp_wars-9s0.14`: whether `to` is the tile an own Witch steps to in
+ * order to cast a Cold Snap from it (`iceFolkWitchDestinationV7`).
+ */
+function iceFolkWitchSnapMoveV7(
+  context: PolicyContextV7,
+  witch: PublicUnitV7,
+  to: CoordV7,
+): boolean {
+  const best = iceFolkWitchDestinationV7(context, witch);
+  return (
+    best !== null &&
+    same(best, to) &&
+    iceFolkCacheV7(context).witchSnapMoves.has(witch.id)
+  );
 }
 
 /**
@@ -23895,6 +24557,24 @@ function researchChain(
   };
   visit(target);
   return result;
+}
+
+/**
+ * `pulp_wars-9s0.14`: `at` is the Port site the plan builds on because no
+ * Port the seat has serves the landing coast (`NavalPlanV7.portMissing`):
+ * the offered site with the shortest public water route to that coast.
+ */
+function navalServingPortSiteV7(
+  context: PolicyContextV7,
+  at: CoordV7,
+): boolean {
+  if (!context.naval.portMissing) return false;
+  const reserved = reservedPortCommandV7(context);
+  return (
+    reserved !== null &&
+    same(reserved.at, at) &&
+    context.naval.prospectiveWaterDistanceByKey.has(coordKey(at))
+  );
 }
 
 function reservedPortCommandV7(

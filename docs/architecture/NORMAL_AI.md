@@ -3295,10 +3295,13 @@ embark oscillation on every map type (it had been a warning outside
 Continents since `pulp_wars-if6`); the validator was not rerun for this
 bead (simulations are run when the user asks).
 
-Not done: while every own capture unit is aboard, the plan still orders
-its targets by board position, not by distance, so the target can change
-when the last unit boards; and a transport still returns to land beside a
-walkable village another unit is nearer to.
+Not done then: while every own capture unit was aboard, the plan ordered
+its targets by board position, not by distance, so the target could change
+when the last unit boarded (since `pulp_wars-9s0.14` the order is counted
+from the own cities: see the
+[third pass](#third-pass-overseas-invasion-mind-control-the-witch-thin-armies-pulp_wars-9s014-pulp_wars-9s017));
+and a transport still returns to land beside a walkable village another
+unit is nearer to.
 
 A Raider pickets its richest city only while a threat to an own city is
 visible, and a screen does not step back from its job to stand next to a
@@ -3596,6 +3599,217 @@ Cost: on the retained late view
 the sliced decision takes 29.6 to 30.0 ms (main 29.4 to 30.9 ms) and the
 synchronous one 4.7 to 5.9 ms (4.6 to 5.0 ms); the largest 8 ms slice is
 9.4 ms (9.3 ms) and none exceeds 16 ms. The view's decision is unchanged.
+
+## Third pass: overseas invasion, Mind Control, the Witch, thin armies (`pulp_wars-9s0.14`, `pulp_wars-9s0.17`)
+
+**Status: built and proven on hand-built states; not measured in matches.**
+The bead was written against the policy of the
+[second pass](#second-pass-savings-hunts-and-sieges-pulp_wars-9s08) and
+quotes its simulation numbers ("Mind Control 36% of Brain seat-games",
+"Witch kills 9/57", "armies 6 to 5 at round 20"). Since then every faction
+plays the army policy and the naval branch, the frozen sea, Frozen, and the
+landing discipline were built. Each item was first checked against the code
+and the documents as they are now; what still applied was built. By the
+user's standing rule no match was played: no head-to-head, no validator, no
+benchmark, no percentage. Every rule reads the public view and the public
+previews, adds no PRNG use, no elapsed-time input, and no memory between
+turns. No game rule and no number of the ruleset changed (the identity
+stays).
+
+| Item of the bead          | What was found                                                                                                                                                                                                                                                                     | What was done                                                                |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| Overseas invasion         | Still open: the plan's target moved with the units, the landing coast could lie on water no transport reaches, a Port on other water was boarded at, and units sailed and landed one at a time.                                                                                    | The landing plan below.                                                      |
+| Mind Control use          | The [Mind Control play](#mind-control-play-pulp_wars-b5f3) already takes the dearest unit, sets a target up, and approaches outside lethal reach. It did not ask whether the unit taken lives, and a Brain with a target in range took it from where it stood, in lethal reach.    | Hold, the safe step, and the escape of a Brain that controls a unit (below). |
+| Witch kills               | Two readings. The bead's number counted how often a hostile Witch was killed: every army seat now plans a combined kill on every visible unit, and the Witch keeps her kill tier (1182); a test pins it. The other reading, the Witch's own set-ups, was broken by Frozen (below). | The Cold Snap set up on purpose (below).                                     |
+| Army size under savings   | The savings goal of the second pass (a Chivalry-tier unit holds training) no longer applies to an army seat. Bodies first covered six factions; a Human and a Goblin seat still bought a due technology before units and kept Coins for one in a war, whatever the army's size.    | Bodies first for those two seats in a war (below).                           |
+| The lone march (`9s0.17`) | Reproduced on a hand-built state.                                                                                                                                                                                                                                                  | One question for both rules (below).                                         |
+
+### The landing plan
+
+The [naval plan](#campaign-expansion-exploration-and-standing-pressure-pulp_wars-9s01)
+(`navalPlanWorkV7` in `src/ai/v7.ts`) keeps its structure: one target, the
+coast to land on, the water route to it, and the Port. Six things changed.
+
+**1. One target, counted from home.** "Overseas" meant "on no landmass an
+own capture unit stands on", and the objectives were ordered by their
+distance to the nearest such unit. Both moved with the units:
+
+- the unit that landed made its landmass "reachable", so the plan turned to
+  the next overseas objective with the rest of the wave at sea, and once no
+  transport was afloat the units at home stopped boarding while a single
+  landed unit lived;
+- with every capture unit aboard nothing was reachable and the order fell
+  back on board position (the `pulp_wars-eru` note);
+- with three or four seats the unit nearest to anything, and so the target,
+  changed from turn to turn.
+
+An objective is now overseas when it stands on no landmass with an own
+city, and the order is the rank (a hostile city before a village) and then
+the distance to the nearest own city center. Cities do not move: the target
+changes when it is taken, when a city changes hands, or when the known
+board does. A landmass without a hostile city whose known villages each
+have a capture unit of the viewer or an ally on it already (the rule of
+`pulp_wars-ykw.7`) is passed over while another overseas objective is
+known. A landed unit keeps its campaign job ashore and does not board again
+(`retainLandedUnitIds`, as before); the units at home keep boarding for the
+same target.
+
+**2. A coast the transports can reach.** The landing coast was the coast
+tile of the target's landmass nearest the target, whatever water it lay on:
+with a lake or a closed bay behind the target city that was the lake shore,
+and no transport had a route. It is now the nearest coast tile on water
+that a public water route joins to an own Port, a Port site of an own city,
+or an own transport: by the water the seat can sail today when that coast
+is at most `NAVAL_COAST_DETOUR_V7` (3) steps farther from the target than
+the best coast over Deep Water, else by Deep Water too (Navigation is then
+asked for, as before). With no such water known the old coast stands.
+
+**3. The Port that serves it.** A Port serves the landing coast when a
+public water route (Deep Water included) joins it to the water beside that
+coast (`servingPortKeys`). For an overseas target a unit boards only at
+such a Port. When the seat has Ports and none serves, and a Port site of
+its own would (`portMissing`), nobody boards, the Coins of a Port are kept
+(the reserve of a seat with no Port), and the offered site with the
+shortest route is built at 1285 (`navalServingPortSiteV7`): a Port built
+for its Fish on a pond or on another sea no longer takes the army aboard.
+While no site would serve either (the sea is not known, or lies outside
+every own territory) the old rule stands and any Port is boarded at. A
+target the unit can walk to keeps the rule of `pulp_wars-eru`.
+
+**4. A wave boards together** (`navalWaveWaitsV7`). A unit beside the Port
+of an invasion waits while another sailor is on its way and fewer than
+`NAVAL_WAVE_SIZE_V7` (3) have gathered: the sailors within 2 tiles of the
+Port and the own transports within 4 of it (a wave that has begun to leave
+is followed at once). A sailor is a capture unit without a campaign job
+that would board at that Port (the nearest one it would board at); it is
+on its way while it stands within 5 tiles, off every own city center, and
+is offered a Move that ends nearer the Port. So the wait ends when the
+others arrive, when none can come nearer, or when three have gathered, and
+a seat with one free unit sails it alone. Nobody boards while the plan
+holds its transports off a target that is being taken.
+
+**5. A wave lands together** (`navalLandingWaitsV7`). One Port takes one
+unit a turn, so a wave is strung out at sea. A transport with a planned
+landing on offer beside a hostile city waits, in place, for the transports
+within 3 tiles behind it that are still coming up (one that has moved this
+turn, or one offered a Move along the route that the transport rules
+allow). It lands at once when three transports have a landing on offer,
+when an own land unit already stands within 2 tiles (the landing has
+begun), when the visible enemies could sink it where it waits, or when
+nobody close is coming. The units then come ashore in one turn, each on
+the nearest free tile of the coast (the landing set was already rebuilt
+after every landing). A village is landed on at once.
+
+**6. The escort** is the rule the plan had: with no hostile ship in sight
+the warships sail for the own transports (`fleetDistanceByKey`, 830), with
+one in sight for it, and no unit boards under visible naval danger without
+a Patrol Boat. A test pins it; nothing was added.
+
+### Mind Control
+
+All behind the Mind Control play (`mindControlPlayV7`), for a Martian seat:
+
+- **Hold** (`mindControlHeldV7`). A unit is taken exhausted and stays on
+  its tile. When the visible hostile units other than itself deal it its HP
+  there (the danger estimate of any own unit, in the view as the Mind
+  Control leaves it: it keeps its kind, so its own Defense and no Shield),
+  it is only taken from the enemy: its value counts half
+  (`MIND_CONTROL_UNHELD_VALUE_WEIGHT_V7` 5 a point against 10). Of two
+  targets the Brain takes the one it keeps; a single target is still taken.
+- **The safe step** (`MIND_CONTROL_SAFE_STEP_PRIORITY_V7` 1187). A Brain
+  that has not moved, has a Mind Control on offer, and stands where the
+  visible enemies kill it even with its best target taken from them first
+  steps to a tile where they do not (counted the same way, with the best
+  target in range from there taken), the best conversion first, and takes
+  the unit from there (a Brain may move and then use Mind Control). Where
+  taking the unit is what saves it, it takes the unit where it stands.
+- **The escape.** A Brain that controls a unit, has nothing to take, and
+  stands in lethal reach steps out of it (1150, by its retained value,
+  which carries the controlled unit): the unit goes back to its owner the
+  moment the Brain dies.
+
+Left as it was: the value of a target (its kind cost and kills, less the
+abilities it loses), the engine's own target test (a construct, a unit on a
+Rift or a settlement, a two-slot unit, an unwounded unit, and a unit above
+6 HP are no targets), one unit per Brain, the set-up hits, and the approach.
+A Plague that would kill the taken unit is not counted.
+
+### The Witch
+
+Since Ice Folk Freeze (`pulp_wars-w49.37`) the Cold Snap reaches only the
+eight tiles around the Witch, and her Move key kept "not adjacent to a
+visible hostile unit" above her targets: she never stood where the Cold
+Snap has a target, and stepped off an enemy that came up to her instead of
+freezing it. The key (`witchMoveKeyV7`) now takes what a Cold Snap cast
+from the tile after the Move is worth: 1 for each unit it newly freezes and
+1 more when an own unit has an attack on that unit on offer, and the danger
+left on the tile once the units beside it cannot act in their next turn. A
+tile with a Cold Snap worth casting that leaves her out of lethal reach is
+judged by that danger, ranks by the Cold Snap before her escort, and is not
+held against her for the enemies beside it. Her Move (1296) and the Cold
+Snap (1295) were already the first two commands of the turn, so every
+attack after them is previewed against Frozen units: no retaliation, and a
+hit that leaves one at the Shatter threshold kills it. The rule that keeps
+an Ice Folk shooter out of lethal reach lets that one step through
+(`iceFolkWitchSnapMoveV7`). A Witch that cannot cast any more, and every
+other tile, keep the key as it was. The opening's "villages first" still
+holds every unit, the Witch too, out of the enemy's reach in the first
+rounds.
+
+### Thin armies
+
+`armyThinAtWarV7`: a Human or a Goblin seat with an enemy army in the field
+(`armyWarV7`: a hostile land unit near an own center, or near an own unit
+in the field) that fields fewer land units than it owns cities and two more
+plays bodies first exactly as the other six seats do
+(`armyUndeadBodiesFirstV7`): it trains before it researches, keeps no Coins
+for a technology, and buys the technology with what the units leave, until
+the research clock of the war is a whole technology behind. In peace
+nothing changes: the openings of both seats, and the due technology before
+the units while no enemy is near (tuning 6), were played by hand. The other
+rules `armyBodiesSeatV7` gates (the free unit of a city level, growth
+before the defender, the technology before a capture) stay with the six.
+
+### The lone march (`pulp_wars-9s0.17`)
+
+A unit is "alone among enemies" outside its own land with a hostile land
+unit within 5 tiles and no own fighting unit within 3 (`armyAloneV7`). The
+approach (720) and the march on a city (700) did not ask that question of
+the tile they moved to, and the regroup (705) asked it only of the tile the
+unit stood on: a lone unit in front of a held city stepped out of its
+friends' company, was called back the turn after (sideways first: every
+step toward a friend scored alike), and stepped out again, for the rest of
+the match. A routine Move now does not take a unit that is not alone to a
+tile where it would be, and the regroup takes the step that brings it
+nearest (`ARMY_REGROUP_STEP_VALUE_V7`). The unit waits on the last tile in
+company until the wave comes up; two units go on together. A kill, an
+acceptable exchange, a capture, a hunt, a rally, and a unit on an errand or
+in a position's assault are not held.
+
+### What it does not do
+
+- **The units at home after the first capture.** Once a city on the far
+  shore is taken that landmass is home: its other objectives are
+  "reachable", the plan is active only while a transport is afloat, and the
+  units on the first landmass wait until the far one is won. The captured
+  city trains the front.
+- **The army rules stay off while the plan is active** (training by
+  shares, the army's research order): the invasion plays the older
+  production, as before.
+- **A wave is three**, not sized against the holders of the target, and it
+  waits for no escort.
+- **A stranded transport** still lands beside a walkable village that a
+  land unit is nearer to (the second `pulp_wars-eru` note).
+- **The Ice Folk** have no ships: their crossing is the ice plan, unchanged.
+
+Checks: `tests/unit/ruleset-v7-third-pass-ai.test.ts` (the march, thin
+armies, the landing plan, on the boards of `tests/fixtures/v7-third-pass.ts`)
+and `tests/unit/ruleset-v7-third-pass-specials-ai.test.ts` (Mind Control,
+the Witch). Each asks for one decision or applies the policy's own commands
+for two or three turns of one seat, with the other seats only ending their
+turns. The simulation suites were not run; the pins of matches on water
+maps, with a Martian or an Ice Folk seat, and of Human and Goblin seats at
+war are expected to move (`pulp_wars-b5pd`).
 
 ## Revision-13 Undead play (`pulp_wars-vkq.9`)
 
@@ -5463,9 +5677,10 @@ The numbers above are reasoned from the worked examples of rules section
 **Left alone.** The landing and embark oscillation on Pangea and Lakes
 (`pulp_wars-eru`, fixed since: see
 [Landing discipline](#campaign-expansion-exploration-and-standing-pressure-pulp_wars-9s01))
-and the overseas invasion plan (`pulp_wars-9s0.14`) are
-not touched: nothing here changes when a unit boards or lands, except that
-it no longer boards or sails into a Battleship's or Submarine's reach.
+and the overseas invasion plan (`pulp_wars-9s0.14`, built since: see the
+[third pass](#third-pass-overseas-invasion-mind-control-the-witch-thin-armies-pulp_wars-9s014-pulp_wars-9s017))
+are not touched: nothing here changes when a unit boards or lands, except
+that it no longer boards or sails into a Battleship's or Submarine's reach.
 
 ### The frozen sea (`pulp_wars-5ti.5`)
 

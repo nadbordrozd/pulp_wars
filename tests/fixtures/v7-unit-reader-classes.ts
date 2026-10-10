@@ -253,6 +253,15 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/ai/v7.ts::martianProjectedKillersV7": "BOARD",
     "src/ai/v7.ts::martianSoleDefenderBesideV7": "BOARD",
     "src/ai/v7.ts::navalPlanWorkV7": "BOARD",
+    // The third pass (`pulp_wars-9s0.14`): the sailors gathered at a Port
+    // and the transports of a wave are units on the board in the public
+    // view (a burrowed unit neither boards nor lands); so are the units a
+    // Mind Control target is weighed among, and the land units a Human or
+    // Goblin seat counts against its cities (neither seat has a Mole).
+    "src/ai/v7.ts::navalWaveWaitsV7": "BOARD",
+    "src/ai/v7.ts::navalLandingWaitsV7": "BOARD",
+    "src/ai/v7.ts::mindControlHeldV7": "BOARD",
+    "src/ai/v7.ts::armyThinAtWarV7": "BOARD",
     "src/ai/v7.ts::nextNavalTechnologyV7": "BOARD",
     "src/ai/v7.ts::plunderResearchValueV7": "BOARD",
     "src/ai/v7.ts::policyLookupWorkV7": "BOARD",

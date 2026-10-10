@@ -733,7 +733,10 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // The giants' signatures (`pulp_wars-w49.31`): the unit a signature
     // Move rule is for is a land-form mover (an Egg makes no Move, and an
     // embarked unit keeps the naval rules).
-    "src/ai/v7.ts": 55,
+    // The third pass (`pulp_wars-9s0.14`): a sailor of a wave is a
+    // land-form unit beside a Port (an Egg does not board, and an embarked
+    // unit is counted as a transport).
+    "src/ai/v7.ts": 56,
     // The giants' signatures (`pulp_wars-w49.31`): a giant has its
     // signature in land form only (section 6.0, G2), and so has a Troll
     // that throws; the unit a crush is added to, the unit lined up behind

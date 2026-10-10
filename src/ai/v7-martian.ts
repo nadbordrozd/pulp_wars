@@ -178,6 +178,18 @@ export const MIND_CONTROL_FOCUS_MINIMUM_VALUE_V7 = 3;
 /** Strategic weight of one point of Mind Control value. */
 export const MIND_CONTROL_VALUE_WEIGHT_V7 = 10;
 /**
+ * The third pass (`pulp_wars-9s0.14`): the same for a target the visible
+ * enemies kill where it stands in their next turn.
+ */
+export const MIND_CONTROL_UNHELD_VALUE_WEIGHT_V7 = 5;
+/**
+ * The third pass: a Brain that the visible enemies kill where it stands
+ * steps, before it uses Mind Control, to a tile out of their lethal reach
+ * from which a conversion is still in range (a Brain may move and then use
+ * Mind Control): just above Mind Control itself.
+ */
+export const MIND_CONTROL_SAFE_STEP_PRIORITY_V7 = 1187;
+/**
  * `pulp_wars-b5f.3`: an own attack on a unit an offered Mind Control
  * targets waits below the Mind Control (1185), unless it is worth at least
  * this (clearing or capturing a city).
@@ -1215,6 +1227,11 @@ function beamDownPassengerIsGarrisonV7(
 export function mindControlScoreV7(
   tools: MartianPolicyToolsV7,
   command: Extract<CommandV7, { kind: "MIND_CONTROL" }>,
+  // The third pass (`pulp_wars-9s0.14`): whether the unit, once taken, lives
+  // through the enemy's turn where it stands. A unit the visible enemies
+  // kill at once is only taken from them (half the value): of two targets
+  // the Brain takes the one it keeps.
+  held = true,
 ): MartianScoreV7 {
   const target = tools.unit(command.targetUnitId);
   if (target === undefined) return NOT_A_CANDIDATE_V7;
@@ -1222,7 +1239,10 @@ export function mindControlScoreV7(
     return {
       priority: MIND_CONTROL_PRIORITY_V7,
       strategic:
-        MIND_CONTROL_VALUE_WEIGHT_V7 * mindControlValueV7(tools.view, target),
+        (held
+          ? MIND_CONTROL_VALUE_WEIGHT_V7
+          : MIND_CONTROL_UNHELD_VALUE_WEIGHT_V7) *
+        mindControlValueV7(tools.view, target),
       immediate: -target.id,
     };
   const cost = unitRoleRuleV7(tools.view, target).cost ?? 0;

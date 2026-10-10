@@ -40,6 +40,14 @@ import { policyUnitFactionV7 } from "./v7-martian";
  * (1180 to 1280) and below captures and city-clearing kills (1340 and up).
  */
 export const WITCH_MOVE_PRIORITY_V7 = 1296;
+/**
+ * The third pass (`pulp_wars-9s0.14`): what a unit a Cold Snap newly
+ * freezes is worth to the Witch's choice of tile, and what it is worth more
+ * when an own unit has an attack on it on offer (a Frozen unit does not
+ * strike back, and a hit that leaves it at the Shatter threshold kills it).
+ */
+export const COLD_SNAP_SETUP_TARGET_VALUE_V7 = 1;
+export const COLD_SNAP_SETUP_STRIKE_VALUE_V7 = 1;
 export const COLD_SNAP_PRIORITY_V7 = 1295;
 export const BOLAS_SHATTER_PRIORITY_V7 = 1293;
 /** A Bolas on a hostile unit that can reach an own unit next turn. */
@@ -736,6 +744,19 @@ export function bolasScoreV7(
  * Cold Snap range (so that she does not step away from her targets for a
  * tie); the route progress toward the wave's target; the least visible
  * danger.
+ *
+ * The third pass (`pulp_wars-9s0.14`), the Cold Snap set up on purpose.
+ * Since Ice Folk Freeze the Cold Snap reaches only the eight tiles around
+ * her, and "not adjacent to a visible hostile unit" kept her from ever
+ * standing where it has a target (she stepped off an enemy that came up to
+ * her instead of freezing it). `snap` is what a Cold Snap cast from `to`
+ * after the Move is worth (`value`: 0 when it freezes no unit that is not
+ * Frozen already, or when she cannot cast any more this turn) and the
+ * visible danger on `to` once it is cast (`danger`: the units it freezes
+ * do not act in their next turn). A tile with a Cold Snap worth casting
+ * that leaves her out of lethal reach is judged by that danger, ranks by
+ * the value of the Cold Snap before her escort, and is not held against
+ * her for the enemies beside it. Absent: the key as it was.
  */
 export function witchMoveKeyV7(
   view: PlayerViewV7,
@@ -744,6 +765,7 @@ export function witchMoveKeyV7(
   danger: number,
   routeProgress: number,
   isHostile: (ownerId: PlayerId) => boolean,
+  snap?: { readonly value: number; readonly danger: number },
 ): readonly number[] {
   let escort = 0;
   let adjacentHostile = false;
@@ -766,13 +788,16 @@ export function witchMoveKeyV7(
         escort += 1;
     } else if (isHostile(unit.ownerId)) adjacentHostile = true;
   }
+  const snaps = snap !== undefined && snap.value > 0 && snap.danger < witch.hp;
+  const left = snaps ? snap.danger : danger;
   return [
-    danger >= witch.hp ? 0 : 1,
+    left >= witch.hp ? 0 : 1,
+    snaps ? snap.value : 0,
     escort,
-    adjacentHostile ? 0 : 1,
+    adjacentHostile && !snaps ? 0 : 1,
     targets,
     routeProgress,
-    -danger,
+    -left,
   ];
 }
 

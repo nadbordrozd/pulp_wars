@@ -120,9 +120,8 @@ describe("Ice Folk Normal AI: the Witch", () => {
       own("FIGHTER", 7, 2),
       foe("FIGHTER", 6, 1),
     ]);
-    // (Her Move, rule 2, still ranks first and steps her off the adjacent
-    // enemy: an AI follow-up of Ice Folk Freeze; the Cold Snap keeps its
-    // tier.)
+    // (Since the third pass, `pulp_wars-9s0.14`, she stays beside the
+    // enemy and casts: her Move used to rank first and step her off it.)
     const snap = unitCandidatesV7(state, at(6, 2), "COLD_SNAP");
     expect(snap[0]?.command.kind).toBe("COLD_SNAP");
     expect(snap[0]?.score.priority).toBe(COLD_SNAP_PRIORITY_V7);

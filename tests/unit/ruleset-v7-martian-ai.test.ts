@@ -278,10 +278,13 @@ describe("Martian Normal AI: Saucer, Brain, and Mothership", () => {
   });
 
   it("takes a Mind Control on the most valuable convertible target", () => {
+    // (The third pass, `pulp_wars-9s0.14`: the Marksman has 6 HP, so that
+    // it lives through the Fighter's hit once it is taken. At 4 HP it
+    // would be killed at once, and the Brain takes the unit it keeps.)
     const state = asMartian([
       own("CAPTAIN", 5, 5),
       foe("FIGHTER", 4, 4, { hp: 5 }),
-      foe("MARKSMAN", 6, 3, { hp: 4 }),
+      foe("MARKSMAN", 6, 3, { hp: 6 }),
     ]);
     const best = unitCandidatesV7(state, at(5, 5))[0];
     expect(best?.command).toEqual({

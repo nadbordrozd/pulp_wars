@@ -130,10 +130,11 @@ describe("Mind Control AI: targets by what they become", () => {
           .targetUnitId,
       ).toBe(unitIdAtV7(veteran, at(6, 4))),
     );
-    // Two Fighters of equal value: the lower ID, whatever the HP.
+    // Two Fighters of equal value that each live through the other's hit:
+    // the lower ID.
     const tie = asMartian([
       own("CAPTAIN", 5, 5),
-      foe("FIGHTER", 4, 4, { hp: 3 }),
+      foe("FIGHTER", 4, 4, { hp: 6 }),
       foe("FIGHTER", 6, 4, { hp: 6 }),
     ]);
     const ids = [unitIdAtV7(tie, at(4, 4)), unitIdAtV7(tie, at(6, 4))];
@@ -141,6 +142,18 @@ describe("Mind Control AI: targets by what they become", () => {
       (mindControlOf(tie, at(5, 5))?.command as { targetUnitId: number })
         .targetUnitId,
     ).toBe(Math.min(...ids));
+    // The third pass (`pulp_wars-9s0.14`): the one at 3 HP would be killed
+    // by the other the moment it is taken, so the Brain takes the one it
+    // keeps (it was "the lower ID, whatever the HP").
+    const doomed = asMartian([
+      own("CAPTAIN", 5, 5),
+      foe("FIGHTER", 4, 4, { hp: 3 }),
+      foe("FIGHTER", 6, 4, { hp: 6 }),
+    ]);
+    expect(
+      (mindControlOf(doomed, at(5, 5))?.command as { targetUnitId: number })
+        .targetUnitId,
+    ).toBe(unitIdAtV7(doomed, at(6, 4)));
   });
 
   it("discounts the abilities a target loses under control", () => {
