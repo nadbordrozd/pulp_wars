@@ -193,7 +193,10 @@ import {
   createCoastSandArtV7,
   type CoastSandArtV7,
 } from "./coast-sand-v7";
-import { settlementShadowEnabledV7 } from "./settlement-shadow-v7";
+import {
+  settlementShadowEnabledV7,
+  settlementShadowPlainV7,
+} from "./settlement-shadow-v7";
 import {
   createTerrainRippleV7,
   terrainRippleEnabledV7,
@@ -423,6 +426,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
   readonly #factionGrassArt?: { resolve(): FactionGrassArtV7 | null };
   /** A TRY (pulp_wars-2yc.8): the settlement shadow switch, read once. */
   readonly #settlementShadow = settlementShadowEnabledV7();
+  readonly #settlementShadowPlain = settlementShadowPlainV7();
   /** The shoreline (pulp_wars-2yc.5): undefined with the switch off. */
   readonly #coastArt?: CoastSandArtV7;
   /** The atmosphere (pulp_wars-2yc.17): each undefined with its switch off. */
@@ -2084,6 +2088,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         mountainArt: this.#mountainArt,
         ...(this.#coastArt === undefined ? {} : { coastArt: this.#coastArt }),
         settlementShadow: this.#settlementShadow,
+        ...(this.#settlementShadowPlain ? { settlementShadowPlain: true } : {}),
         ...(this.#waterBlendArt === undefined
           ? {}
           : { waterBlendArt: this.#waterBlendArt }),

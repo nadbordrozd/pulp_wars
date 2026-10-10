@@ -19,7 +19,9 @@
  * A scenes module that serves several switches is run once per switch with
  * `SWITCH_PARAMETER` in the environment (it overrides the module's);
  * `SWITCH_AFTER_VALUE` gives the "after" side a value other than the
- * default (a variant such as `water-blend=gradient`), and
+ * default (a variant such as `water-blend=gradient`),
+ * `SWITCH_BEFORE_VALUE` gives the "before" side a value other than 0 (an
+ * earlier variant such as `city-shadow=plain`), and
  * `SWITCH_FIXED_QUERY` (`a=0&b=0`) holds other switches the same on both
  * sides.
  *
@@ -180,7 +182,8 @@ async function capture(
 ): Promise<void> {
   const url = new URL(base);
   url.searchParams.set("art", "chibi");
-  if (!on) url.searchParams.set(parameter, "0");
+  if (!on)
+    url.searchParams.set(parameter, process.env.SWITCH_BEFORE_VALUE ?? "0");
   else if (process.env.SWITCH_AFTER_VALUE !== undefined)
     url.searchParams.set(parameter, process.env.SWITCH_AFTER_VALUE);
   // Further switches held the same on both sides, as a query string.

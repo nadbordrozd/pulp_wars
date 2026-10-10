@@ -2370,6 +2370,8 @@ export function drawBoardV7(input: {
   readonly factionGrassArt?: { resolve(): FactionGrassArtV7 | null };
   /** A TRY (pulp_wars-2yc.8): cities and villages on a ground shadow. */
   readonly settlementShadow?: boolean;
+  /** The review's "before" (pulp_wars-2yc.12): one shape for every raster. */
+  readonly settlementShadowPlain?: boolean;
   /** The shoreline (pulp_wars-2yc.5, coast-sand-v7.ts); the live look only. */
   readonly coastArt?: CoastSandArtV7;
   /**
@@ -3854,13 +3856,22 @@ export function drawBoardV7(input: {
                     },
             );
           }
-          // A TRY (pulp_wars-2yc.8): a city or a village on its shadow.
+          // A TRY (pulp_wars-2yc.8): a city or a village on its shadow,
+          // fitted to the footprint of its own raster (pulp_wars-2yc.12).
           if (
             direction !== undefined &&
             chibiReady !== null &&
             input.settlementShadow === true
           )
-            drawSettlementShadowV7(context, entry, rect, sceneAlpha);
+            drawSettlementShadowV7(
+              context,
+              entry,
+              rect,
+              sceneAlpha,
+              input.settlementShadowPlain === true
+                ? undefined
+                : chibiReady.asset.id,
+            );
           // Bead pulp_wars-2yc.29: a city's small hop (its shadow stays).
           if (feedback !== null && entry.kind === "CITY") {
             const hop = feedback.cityHopCssPx(Number(entry.key.slice(5)));

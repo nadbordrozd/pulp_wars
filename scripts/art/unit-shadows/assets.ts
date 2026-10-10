@@ -114,6 +114,42 @@ export async function liveUnitAssetsV7(): Promise<ChibiArtAssetV7[]> {
   }
 }
 
+/**
+ * The settlement assets (the cities of every faction and art level, the
+ * Village) the live look draws first, one per subject, in manifest order
+ * (bead pulp_wars-2yc.12).
+ */
+export async function liveSettlementAssetsV7(): Promise<ChibiArtAssetV7[]> {
+  const server = await createServer({
+    configFile: false,
+    root: ROOT,
+    server: { middlewareMode: true, hmr: false },
+    appType: "custom",
+    logLevel: "error",
+  });
+  try {
+    const manifest = (await server.ssrLoadModule(
+      "/src/assets/chibi-direction-art-manifest.ts",
+    )) as {
+      chibiDirectionArtAssetsV7(): readonly ChibiArtAssetV7[];
+      chibiDirectionArtRegistryV7(): ChibiArtRegistryV7;
+    };
+    const registry = manifest.chibiDirectionArtRegistryV7();
+    const seen = new Set<ArtSubjectV7>();
+    const live: ChibiArtAssetV7[] = [];
+    for (const asset of manifest.chibiDirectionArtAssetsV7()) {
+      if (asset.assetClass !== "SETTLEMENT" || seen.has(asset.subject))
+        continue;
+      seen.add(asset.subject);
+      const first = registry.variants(asset.subject)[0];
+      if (first !== undefined) live.push(first);
+    }
+    return live;
+  } finally {
+    await server.close();
+  }
+}
+
 /** The public file of an asset URL (`/assets/...` at the dev base `/`). */
 export function publicFileOfUrlV7(url: string): string {
   return path.join(ROOT, "public", url.replace(/^\//, ""));
