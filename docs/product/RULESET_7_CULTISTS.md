@@ -1125,6 +1125,15 @@ paper-rustle for Pamphlets, and a booming "KNEEL!"; and the 5/4
 mock-sinister procession theme
 ([section 7.6](RULESET_7_CULT_PROPOSAL.md#76-theme-music)).
 
+**The art direction** (bead ART1, `pulp_wars-mch9.13`) is
+[the Cult's faction fragment](../art/factions/CULT.md): the palette, the
+silhouettes, the cities, buildings and ships, the icons and effects, and the
+asset list of the art beads. It re-measured the colour (it passes; the board
+capture moves to the bead that registers the colour) and it is the design
+where it differs from the looks above: the Chosen has a plain cream sash
+with no crimson and no lettering, the Initiate carries no dagger, the Idol
+Bearer is one figure, and the gondola is indigo.
+
 ### 14.3 How it reads on the board without text
 
 | Thing                      | Shown as                                                                                                                                 |

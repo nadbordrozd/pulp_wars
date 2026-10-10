@@ -11,7 +11,10 @@ it on 2026-09-29: [`UNDEAD`](UNDEAD.md). The Goblin faction (epic
 `pulp_wars-0ao`) has its fragment in bead `pulp_wars-0ao.10`:
 [`GOBLIN`](GOBLIN.md), approved by the root on 2026-09-30. The Dinosaur
 faction (epic `pulp_wars-c87`) has its fragment in bead `pulp_wars-c87.6`:
-[`DINOSAUR`](DINOSAUR.md), approved by the root on 2026-10-01.
+[`DINOSAUR`](DINOSAUR.md), approved by the root on 2026-10-01. The Cultists
+(epic `pulp_wars-mch9`) have their fragment in bead `pulp_wars-mch9.13`:
+[`CULT`](CULT.md), the approved direction of 2026-10-10, written before any
+of their art.
 
 ## How the layers combine
 
