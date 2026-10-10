@@ -347,10 +347,14 @@ describe("Snow cover (section 6.2, 2)", () => {
 
   // `pulp_wars-1wy.3`: at x 1.25 a Yeti takes 2 on Snow too, so the
   // example is the Mammoth (Defense 2).
-  it("counts for Wail (not an attack): 1 on a Mammoth on Snow, 2 in the open", () => {
+  // The Vampire and Banshee rework (`pulp_wars-ty6i`, 7r70): the Wail hits
+  // at Attack 1.5, and a full Banshee deals a Mammoth 3 either way, so the
+  // Banshee has 7 of 8 HP (3 in the open, 2 on Snow; it was 2 and 1 at
+  // Attack 1 with a full Banshee).
+  it("counts for Wail (not an attack): 2 on a Mammoth on Snow, 3 in the open", () => {
     const state = iceFieldV7(
       [
-        { seat: 1, role: "MARKSMAN", at: at(7, 5) },
+        { seat: 1, role: "MARKSMAN", at: at(7, 5), hp: 7 },
         { seat: 0, role: "SWORDSMAN", at: at(7, 6) },
         { seat: 0, role: "SWORDSMAN", at: at(6, 4) },
       ],
@@ -362,11 +366,18 @@ describe("Snow cover (section 6.2, 2)", () => {
     );
     const banshee = unitAtV7(state, at(7, 5));
     const targets = wailTargetsV7(state, banshee);
+    expect(isSnowV7(state, at(7, 6))).toBe(true);
+    expect(isSnowV7(state, at(6, 4))).toBe(false);
     expect(
-      targets.map((entry) => [entry.at.x, entry.at.y, entry.damage]),
+      targets.map((entry) => [
+        entry.at.x,
+        entry.at.y,
+        entry.damage,
+        `${entry.defenseBonusNumerator}/${entry.defenseBonusDenominator}`,
+      ]),
     ).toEqual([
-      [6, 4, 2],
-      [7, 6, 1],
+      [6, 4, 3, "1/1"],
+      [7, 6, 2, "5/4"],
     ]);
   });
 });

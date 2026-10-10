@@ -206,7 +206,9 @@ describe("ruleset-7 revision-20 section 6.3 sturdiness numbers", () => {
     // Fighter, Raider, Marksman, Guard, Captain, Catapult, Knight, Juggernaut.
     // Tuning 1 (`pulp_wars-w49.3`, 7r46): the Human Knight has 13.
     expect(hp("ORIGINAL")).toEqual([12, 12, 12, 17, 10, 10, 13, 40]);
-    expect(hp("UNDEAD")).toEqual([10, 10, 8, 18, 10, 10, 10, 40]);
+    // The Vampire and Banshee rework (`pulp_wars-ty6i`, 7r70): the Vampire
+    // has 13 (was 10).
+    expect(hp("UNDEAD")).toEqual([10, 10, 8, 18, 10, 10, 13, 40]);
     expect(hp("GOBLIN")).toEqual([6, 10, 8, 15, 12, 8, 10, 40]);
     // (The ninth unit, 7r55: the Dinosaur siege role is the Stegosaurus,
     // 12 HP; the Triceratops, 20, is the heavy role, pinned in

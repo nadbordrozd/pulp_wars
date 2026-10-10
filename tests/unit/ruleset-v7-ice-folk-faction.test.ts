@@ -789,8 +789,12 @@ describe("Ice Folk roster (section 3)", () => {
           mountainBorn: false,
           glides: false,
           // Tuning 4 (`pulp_wars-w49.3`): the Human Raider slips past zones
-          // of control too (a mechanic, not the Prowl ability).
-          ignoresZocStops: faction === "ORIGINAL" && role === "RAIDER",
+          // of control too (a mechanic, not the Prowl ability). The Vampire
+          // and Banshee rework (`pulp_wars-ty6i`, 7r70): so does the Undead
+          // Banshee (its own ability, Ethereal, on the same mechanic).
+          ignoresZocStops:
+            (faction === "ORIGINAL" && role === "RAIDER") ||
+            (faction === "UNDEAD" && role === "MARKSMAN"),
           sweepDamage: 0,
           tramplesFieldDefense: false,
           ignoresFortification: false,

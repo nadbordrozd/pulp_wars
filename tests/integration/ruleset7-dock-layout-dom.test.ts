@@ -178,11 +178,13 @@ describe("Ruleset 7 selection dock layout", () => {
       ),
     ).toEqual(["Frenzy", "Raise Dead", "Disband", "Wait"]);
     selectUnitAt(undeadState, undeadHost, UNDEAD_SHOWCASE_V7.banshee);
+    // The Vampire and Banshee interface (`pulp_wars-iqhp`): the Guard that
+    // survives the Wail is terrified, and the chip counts it.
     expect(
       document.querySelector(
         '.v7-context-actions [data-action="command-wail"] .v7-undead-preview-chip',
       )?.textContent,
-    ).toBe("2 hit · 1 ✕");
+    ).toBe("2 hit · 1 ✕ · 1 Terror");
     undeadApp.destroy();
   });
 

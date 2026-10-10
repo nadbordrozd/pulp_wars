@@ -575,7 +575,16 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // holder are land-form units (an Egg, an embarked unit, and a boat must
     // fail the `giants` check), and a Gingerbread Man (`variant`) is a land
     // or embarked unit (never an Egg or a boat).
-    "src/engine/v7/state-schema.ts": 11,
+    // The Vampire and Banshee rework (`pulp_wars-ty6i`, 7r70): a unit
+    // listed in `feastedThisTurn` is a land-form unit (only a land-form
+    // attacker Feasts, `unitFeastsV7`, and its Bat Escape lands on land; an
+    // Egg, an embarked unit, and a boat must fail the state check).
+    "src/engine/v7/state-schema.ts": 12,
+    // The Vampire and Banshee rework: only a land-form unit's Escape Move
+    // is a Bat Escape (`batEscapeTilesV7`; the state check allows
+    // `escapeAvailable` in land form only, so an Egg, an embarked unit, and
+    // a boat keep the Move budget of their form).
+    "src/engine/v7/vampire-banshee.ts": 1,
     // The giants' signatures (`pulp_wars-w49.30`, G2): every signature
     // needs the giant in land form (the Abomination of a Swallow, the Troll
     // of a Toss, the Brontosaurus of a Stomp, the Gingerbread Giant of a
