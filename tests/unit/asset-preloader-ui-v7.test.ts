@@ -421,7 +421,7 @@ describe("preloaded rasters", () => {
     expect(redraws).toBe(0);
   });
 
-  it("gives the LEGACY board resolver a preloaded raster on the first ask", () => {
+  it("gives the fallback (PixelLab) board resolver a preloaded raster on the first ask", () => {
     const { document, created } = inertDocument();
     const [id, url] = Object.entries(ACCEPTED_ART_URLS)[0] ?? ["", ""];
     let redraws = 0;

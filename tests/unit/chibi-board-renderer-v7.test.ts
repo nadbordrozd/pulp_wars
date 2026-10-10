@@ -624,7 +624,7 @@ describe("CHIBI board rendering", () => {
       right: (left + width) * css + 1,
       bottom: (top + height) * css + 1,
     }));
-    // Giants are exempt (CHIBI_ART_DIRECTION.md section 3): they may reach
+    // Giants are exempt (ART_DIRECTION.md section 3): they may reach
     // the overlay strips, and the overlays are drawn after every piece (see
     // "draws a giant's HP bar, seat badge and Undead badge after its sprite").
     const units = CHIBI_ART_ASSETS_V7.filter(

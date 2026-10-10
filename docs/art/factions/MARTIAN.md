@@ -621,7 +621,7 @@ gave it its own art.
 - **Rejected.** `shock-trooper-b`, the Shield Projector without its disc: a
   dark gunmetal body with two small claws and no antenna, darker than the
   faction's chrome and less clearly a new unit.
-- LEGACY (`?art=legacy`) and the developer option "Classic look" have no Shock
+- LEGACY (retired; an internal fallback only) and the developer option "Classic look" have no Shock
   Trooper art: there it falls back like every faction subject, to the Human
   unit of the slot under the Martian badge.
 

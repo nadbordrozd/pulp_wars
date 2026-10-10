@@ -1,6 +1,6 @@
 /**
  * Deterministic owner-mask extraction and mask QA for chibi assets
- * (docs/art/CHIBI_ART_DIRECTION.md section 4, bead pulp_wars-67q.2).
+ * (docs/art/ART_DIRECTION.md section 4, bead pulp_wars-67q.2).
  *
  * Assets are generated with every owner area in one key colour (#d8262c).
  * The mask is the runtime's only owner selector: a pixel with alpha >= 128

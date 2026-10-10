@@ -5,7 +5,6 @@ import { bootstrapRuleset7App } from "../../src/app/index";
 import {
   ART_SET_STORAGE_KEY_V7,
   DEFAULT_ART_SET_V7,
-  artSetFromSearchV7,
   resolveArtSetV7,
 } from "../../src/app/art-set-v7";
 import { viewForV7 } from "../../src/engine/index";
@@ -49,38 +48,38 @@ function memoryStorage(): StorageAdapter & {
   };
 }
 
-describe("Ruleset 7 art-set switch", () => {
-  it("defaults to CHIBI, persists ?art=legacy and ?art=chibi, and respects a stored choice", () => {
-    expect(artSetFromSearchV7("")).toBeNull();
-    expect(artSetFromSearchV7("?art=chibi")).toBe("CHIBI");
-    expect(artSetFromSearchV7("?ruleset=7&art=CHIBI")).toBe("CHIBI");
-    expect(artSetFromSearchV7("?art=legacy")).toBe("LEGACY");
-    expect(artSetFromSearchV7("?art=neon")).toBeNull();
-    expect(artSetFromSearchV7("?art=chibi&art=legacy")).toBeNull();
-
+describe("Ruleset 7 art set (the switch is retired, pulp_wars-67q.13)", () => {
+  it("is always CHIBI: ?art=legacy is not recognised and nothing is stored", () => {
     expect(DEFAULT_ART_SET_V7).toBe("CHIBI");
     const storage = memoryStorage();
-    // No parameter and no stored choice: the CHIBI default, not persisted.
-    expect(resolveArtSetV7("", storage)).toBe("CHIBI");
-    expect(resolveArtSetV7("?art=neon", storage)).toBe("CHIBI");
-    expect(storage.values.size).toBe(0);
-    // ?art=legacy selects and persists the opt-out, which is then respected.
-    expect(resolveArtSetV7("?art=legacy", storage)).toBe("LEGACY");
-    expect(storage.values.get(ART_SET_STORAGE_KEY_V7)).toBe("LEGACY");
-    expect(resolveArtSetV7("", storage)).toBe("LEGACY");
-    expect(resolveArtSetV7("?art=neon", storage)).toBe("LEGACY");
-    expect(resolveArtSetV7("?art=chibi&art=legacy", storage)).toBe("LEGACY");
-    // ?art=chibi selects and persists CHIBI.
-    expect(resolveArtSetV7("?art=chibi", storage)).toBe("CHIBI");
-    expect(storage.values.get(ART_SET_STORAGE_KEY_V7)).toBe("CHIBI");
-    expect(resolveArtSetV7("", storage)).toBe("CHIBI");
-    // A previously stored explicit LEGACY choice survives the default change.
-    const earlier = memoryStorage();
-    earlier.setItem(ART_SET_STORAGE_KEY_V7, "LEGACY");
-    expect(resolveArtSetV7("", earlier)).toBe("LEGACY");
-    expect(earlier.values.get(ART_SET_STORAGE_KEY_V7)).toBe("LEGACY");
-    storage.setItem(ART_SET_STORAGE_KEY_V7, "corrupt");
-    expect(resolveArtSetV7("", storage)).toBe("CHIBI");
+    for (const search of [
+      "",
+      "?art=legacy",
+      "?art=LEGACY",
+      "?art=chibi",
+      "?art=neon",
+      "?art=chibi&art=legacy",
+      "?ruleset=7&art=legacy",
+    ]) {
+      expect(resolveArtSetV7(search, storage)).toBe("CHIBI");
+      expect(storage.values.size).toBe(0);
+    }
+    expect(resolveArtSetV7("?art=legacy", null)).toBe("CHIBI");
+  });
+
+  it("clears a stale stored choice and falls back to the default", () => {
+    for (const stale of ["LEGACY", "CHIBI", "corrupt", ""]) {
+      const storage = memoryStorage();
+      storage.setItem(ART_SET_STORAGE_KEY_V7, stale);
+      storage.setItem("pulpWars.settings.v1", "kept");
+      expect(resolveArtSetV7("", storage)).toBe("CHIBI");
+      // The retired key is gone; no other setting is touched.
+      expect(storage.values.has(ART_SET_STORAGE_KEY_V7)).toBe(false);
+      expect(storage.values.get("pulpWars.settings.v1")).toBe("kept");
+      expect(resolveArtSetV7("?art=legacy", storage)).toBe("CHIBI");
+      expect(storage.values.has(ART_SET_STORAGE_KEY_V7)).toBe(false);
+    }
+    // Storage that cannot be read or cleared never stops the start.
     const denied: StorageAdapter = {
       getItem: () => {
         throw new Error("denied");
@@ -92,13 +91,18 @@ describe("Ruleset 7 art-set switch", () => {
         throw new Error("denied");
       },
     };
-    expect(resolveArtSetV7("?art=chibi", denied)).toBe("CHIBI");
-    expect(resolveArtSetV7("?art=legacy", denied)).toBe("LEGACY");
     expect(resolveArtSetV7("", denied)).toBe("CHIBI");
-    expect(resolveArtSetV7("", null)).toBe("CHIBI");
+    const readOnly: StorageAdapter = {
+      getItem: () => "LEGACY",
+      setItem: () => undefined,
+      removeItem: () => {
+        throw new Error("denied");
+      },
+    };
+    expect(resolveArtSetV7("", readOnly)).toBe("CHIBI");
   });
 
-  it("boots the production view on the resolved art set and hands it to the board host", async () => {
+  it("boots the production view on CHIBI whatever the address or an earlier visit asked for", async () => {
     vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue(null);
     const settings = memoryStorage();
     const boot = async (search: string): Promise<DOMStringMap | undefined> => {
@@ -120,27 +124,23 @@ describe("Ruleset 7 art-set switch", () => {
       app.destroy();
       return snapshot;
     };
+    const expectChibi = (dataset: DOMStringMap | undefined): void => {
+      expect(dataset?.artSet).toBe("CHIBI");
+      expect(["0.75", "1"]).toContain(dataset?.zoomStep);
+      expect(Number(dataset?.tileCssPx)).toBe(80 * Number(dataset?.zoomStep));
+      expect(settings.values.has(ART_SET_STORAGE_KEY_V7)).toBe(false);
+    };
 
-    // Fresh storage, no parameter: the CHIBI default on the 80 px cell.
-    const fresh = await boot("");
-    expect(fresh?.artSet).toBe("CHIBI");
-    expect(["0.75", "1"]).toContain(fresh?.zoomStep);
-    expect(Number(fresh?.tileCssPx)).toBe(80 * Number(fresh?.zoomStep));
-    expect(settings.values.has(ART_SET_STORAGE_KEY_V7)).toBe(false);
-
-    // ?art=legacy selects and persists the LEGACY opt-out.
-    const legacy = await boot("?art=legacy");
-    expect(legacy?.artSet).toBe("LEGACY");
-    expect(legacy?.zoomStep).toBeUndefined();
-    expect(settings.values.get(ART_SET_STORAGE_KEY_V7)).toBe("LEGACY");
-    // The stored choice is respected without the parameter.
-    expect((await boot(""))?.artSet).toBe("LEGACY");
-
-    // ?art=chibi selects and persists CHIBI again.
-    expect((await boot("?art=chibi"))?.artSet).toBe("CHIBI");
-    expect(settings.values.get(ART_SET_STORAGE_KEY_V7)).toBe("CHIBI");
-    expect((await boot(""))?.artSet).toBe("CHIBI");
-    // The shared settings envelope is untouched by the art-set preference.
+    // Fresh storage, no parameter: CHIBI on the 80 px cell, nothing stored.
+    expectChibi(await boot(""));
+    // The retired opt-out: the default look, and no choice is stored.
+    expectChibi(await boot("?art=legacy"));
+    expectChibi(await boot("?art=chibi"));
+    // A browser that opted out before the retirement: its stored LEGACY
+    // preference is cleared and the default look is drawn.
+    settings.setItem(ART_SET_STORAGE_KEY_V7, "LEGACY");
+    expectChibi(await boot(""));
+    // The shared settings envelope is untouched.
     expect(settings.values.has("pulpWars.settings.v1")).toBe(false);
     window.history.replaceState(null, "", "/");
   });

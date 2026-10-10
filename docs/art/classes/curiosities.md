@@ -3,7 +3,7 @@
 **Status:** written first in bead `pulp_wars-737.5`, as
 [the curiosities spec, section 12.2](../../product/RULESET_7_MAP_CURIOSITIES.md#122-art-pixellab-chibi-direction)
 requires, then filled in with what the batch made. It specializes the
-[chibi direction](../CHIBI_ART_DIRECTION.md) for the rare neutral features of
+[chibi direction](../ART_DIRECTION.md) for the rare neutral features of
 the map: the roaming Giant Spider, its lair web, the Fountain of Youth, the
 Shrine and the Sunken Wreck, and their small interface and effect pieces.
 The UI bead (`pulp_wars-737.6`) wired it into the live look: the board, the

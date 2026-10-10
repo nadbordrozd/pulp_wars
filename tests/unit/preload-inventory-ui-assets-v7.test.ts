@@ -53,24 +53,28 @@ describe("Ruleset 7 asset inventory", () => {
     expect(manifests.size).toBeGreaterThan(900);
     // The CHIBI set: the live look and the classic look's own rasters.
     const chibi = new Set([...urlsOf("LIVE"), ...urlsOf("CLASSIC")]);
-    const legacy = urlsOf("LEGACY");
     const uncovered: string[] = [];
+    let pixellab = 0;
     for (const [url, file] of manifests) {
-      const covered = url.includes("assets/chibi/")
-        ? chibi.has(url)
-        : url.includes("assets/pixellab/")
-          ? legacy.has(url)
-          : false;
-      if (!covered) uncovered.push(`${file}: ${url}`);
+      // The PixelLab set is no look (bead pulp_wars-67q.13): the frozen
+      // art of Ruleset 6 and the last per-subject fallback of a failed
+      // chibi raster, never preloaded.
+      if (url.includes("assets/pixellab/")) {
+        pixellab += 1;
+        expect(chibi.has(url), url).toBe(false);
+        continue;
+      }
+      if (!url.includes("assets/chibi/") || !chibi.has(url))
+        uncovered.push(`${file}: ${url}`);
     }
     expect(uncovered).toEqual([]);
+    expect(pixellab).toBeGreaterThan(200);
     // And nothing in an inventory comes from anywhere but a manifest.
-    for (const url of [...chibi, ...legacy])
-      expect(manifests.has(url), url).toBe(true);
+    for (const url of chibi) expect(manifests.has(url), url).toBe(true);
   });
 
   it("lists only files that exist, each once", () => {
-    for (const look of ["LIVE", "CLASSIC", "LEGACY"] as const) {
+    for (const look of ["LIVE", "CLASSIC"] as const) {
       const entries = assetInventoryV7(look);
       expect(new Set(entries.map((entry) => entry.url)).size).toBe(
         entries.length,
@@ -117,10 +121,9 @@ describe("Ruleset 7 asset inventory", () => {
     ).toBe(true);
   });
 
-  it("keeps the looks apart: the live look holds the classic art it draws, LEGACY is the PixelLab set", () => {
+  it("keeps the looks apart: the live look holds the classic art it draws, and no look holds the PixelLab set", () => {
     const live = urlsOf("LIVE");
     const classic = urlsOf("CLASSIC");
-    const legacy = urlsOf("LEGACY");
     // What the live look leaves to the classic look (pulp_wars-2yc.42):
     // the default raster of a unit, city or improvement whose subject
     // the direction draws. Nothing else of the classic look.
@@ -163,14 +166,11 @@ describe("Ruleset 7 asset inventory", () => {
     // The direction's own art is what the classic look leaves out.
     const direction = chibiDirectionArtAssetsV7().map((asset) => asset.url);
     expect(direction.some((url) => !classic.has(url))).toBe(true);
-    for (const url of legacy) {
-      expect(url).toContain("assets/pixellab/");
-      expect(live.has(url)).toBe(false);
-    }
-    expect(assetLookV7("CHIBI")).toBe("LIVE");
-    expect(assetLookV7("CHIBI", true)).toBe("CLASSIC");
-    expect(assetLookV7("LEGACY")).toBe("LEGACY");
-    expect(assetLookV7("LEGACY", true)).toBe("LEGACY");
+    for (const url of [...live, ...classic])
+      expect(url).toContain("assets/chibi/");
+    expect(assetLookV7()).toBe("LIVE");
+    expect(assetLookV7(false)).toBe("LIVE");
+    expect(assetLookV7(true)).toBe("CLASSIC");
   });
 
   it("groups art by faction and gives a match only its factions' art", () => {

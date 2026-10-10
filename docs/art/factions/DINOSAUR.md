@@ -469,7 +469,7 @@ gave it its own art.
   moved a grey slate to the roster's blue; an edit that erased the neck marks
   also paled the fins, and a second recolour with hex values for the fin and
   its shadow side (`#f47b20`, `#c9540f`) brought the orange back without red.
-- LEGACY (`?art=legacy`) and the developer option "Classic look" have no
+- LEGACY (retired; an internal fallback only) and the developer option "Classic look" have no
   Stegosaurus art: there it falls back like every faction subject, to the
   Human unit of the slot under the Dinosaur badge.
 

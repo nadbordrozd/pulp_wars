@@ -984,10 +984,10 @@ try {
 /**
  * Default CHIBI art set: with fresh storage and no `art` parameter Ruleset 7
  * boots on the 80 px CHIBI cell with discrete zoom steps and paints accepted
- * chibi rasters without persisting a choice. `?art=legacy` selects and
- * persists the LEGACY opt-out, which a later parameterless load respects;
- * `?art=chibi` persists CHIBI again, and the probe then resets storage to the
- * default so later probes start fresh.
+ * chibi rasters without persisting a choice. The `?art=legacy` opt-out is
+ * retired (bead pulp_wars-67q.13): with a stored LEGACY choice and the
+ * parameter the page still boots on CHIBI and the stale choice is cleared,
+ * so later probes start fresh.
  */
 async function probeChibiArtSet(connection: Connection): Promise<string> {
   const launchSelector = '[data-action="launch"]';
@@ -1070,49 +1070,38 @@ async function probeChibiArtSet(connection: Connection): Promise<string> {
       `default CHIBI art set failed: ${JSON.stringify(evidence)}`,
     );
 
-  // ?art=legacy selects and persists the LEGACY opt-out on the legacy cell.
+  // The retired opt-out (bead pulp_wars-67q.13): a browser that stored
+  // LEGACY and still opens `?art=legacy` gets the default look, and its
+  // stale choice is cleared.
   await evaluate(
     connection,
-    `localStorage.removeItem(${JSON.stringify(saveKey)})`,
+    `localStorage.removeItem(${JSON.stringify(saveKey)}); localStorage.setItem(${JSON.stringify(artKey)}, 'LEGACY')`,
   );
   await navigateFresh(artUrl("legacy"), freshSetup);
   await openNewGame(connection);
   await pointerClick(connection, launchSelector);
-  await waitForExpression(connection, activeWithArt("LEGACY"), 900);
-  const legacy = await evaluate<{
+  await waitForExpression(connection, activeWithArt("CHIBI"), 900);
+  const retired = await evaluate<{
     readonly step?: string;
     readonly stored: string | null;
   }>(
     connection,
     `({ step: document.querySelector(${JSON.stringify(canvasSelector)}).dataset.zoomStep, stored: localStorage.getItem(${JSON.stringify(artKey)}) })`,
   );
-  if (legacy.step !== undefined || legacy.stored !== "LEGACY")
-    throw new Error(`?art=legacy opt-out failed: ${JSON.stringify(legacy)}`);
+  if (retired.step === undefined || retired.stored !== null)
+    throw new Error(
+      `retired ?art=legacy opt-out failed: ${JSON.stringify(retired)}`,
+    );
 
-  // Without the parameter, the persisted LEGACY choice still applies.
-  await navigateFresh(
-    artUrl(null),
-    `globalThis.__PULP_WARS_APP__?.controller.snapshot().phase === 'RESUMABLE'`,
-  );
-  await touchClick(connection, '[data-action="resume"]');
-  await waitForExpression(connection, activeWithArt("LEGACY"), 900);
-
-  // ?art=chibi persists CHIBI again; then reset storage to the default.
+  // Leave no saved match and the plain address for the later probes.
   await evaluate(
     connection,
     `localStorage.removeItem(${JSON.stringify(saveKey)})`,
   );
-  await navigateFresh(
-    artUrl("chibi"),
-    `${freshSetup} && localStorage.getItem(${JSON.stringify(artKey)}) === 'CHIBI'`,
-  );
-  await evaluate(
-    connection,
-    `localStorage.removeItem(${JSON.stringify(artKey)})`,
-  );
+  await navigateFresh(artUrl(null), freshSetup);
   if ((await storedArt()) !== null)
-    throw new Error("art-set reset failed to clear the stored choice");
-  return `default CHIBI zoom ${beforeStep}->${evidence.after.step} at ${evidence.after.tile}px cells with ${evidence.chibiDomArt} chibi DOM images, ?art=legacy persisted and resumed, ?art=chibi persisted, reset`;
+    throw new Error("the retired art-set choice came back");
+  return `default CHIBI zoom ${beforeStep}->${evidence.after.step} at ${evidence.after.tile}px cells with ${evidence.chibiDomArt} chibi DOM images, stale ?art=legacy opt-out ignored and cleared`;
 }
 
 /**

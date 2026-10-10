@@ -14,7 +14,7 @@ import {
  * (`scene.ready()`, asked again at every progress step) the screen is a
  * plain sky over grass drawn by CSS, so no piece is ever drawn half-loaded
  * or as a broken image; then the scene is mounted whole, in one frame. A
- * screen without a scene (the legacy art set) keeps the plain backdrop.
+ * screen mounted without a scene keeps the plain backdrop.
  *
  * The bar carries its state for assistive technology (role progressbar,
  * labelled by the visible "Loading"; the percentage beside it repeats

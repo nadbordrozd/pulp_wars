@@ -6,18 +6,13 @@ import {
 import { stockSoundCandidateV1, stockSoundUrlV1 } from "../audio/stock-sounds";
 import { FACTION_IDS_V7, type FactionIdV7 } from "../engine/index";
 import { CHIBI_ART_ASSETS_V7 } from "./chibi-art-manifest";
-import {
-  navalArtRoleOfSubjectV7,
-  type ArtSetV7,
-  type ChibiArtAssetV7,
-} from "./chibi-art-v7";
+import { navalArtRoleOfSubjectV7, type ChibiArtAssetV7 } from "./chibi-art-v7";
 import { chibiDirectionArtAssetsV7 } from "./chibi-direction-art-manifest";
 import { CHIBI_FOREST_ART_SET_V7 } from "./chibi-forest-pieces-manifest";
 import { CHIBI_MOUNTAIN_ART_SET_V7 } from "./chibi-mountain-ranges-manifest";
 import { portraitSubjectV7 } from "./chibi-ui-art-v7";
 import { FACTION_FOREST_ART_SETS_V7 } from "./faction-forest-pieces-manifest";
 import { FACTION_GRASS_TILES_V7 } from "./faction-grass-manifest";
-import { ACCEPTED_ART_URLS } from "./generated-art-manifest";
 
 /**
  * The raster inventory of the Ruleset 7 client (bead pulp_wars-2yc.6): every
@@ -39,9 +34,13 @@ import { ACCEPTED_ART_URLS } from "./generated-art-manifest";
 /**
  * The looks of the client. LIVE is the CHIBI art set with the new visual
  * direction, CLASSIC the CHIBI set as it was before the direction (the
- * developer option "Classic look"), LEGACY the PixelLab set of `?art=legacy`.
+ * developer option "Classic look"). The legacy PixelLab set of
+ * `?art=legacy` is no longer a look (bead pulp_wars-67q.13): no player can
+ * select it, so none of its files is preloaded. They stay on disk as the
+ * last per-subject fallback of a chibi raster that failed to load, and as
+ * the frozen art of Ruleset 6, and load on demand.
  */
-export type AssetLookV7 = "LIVE" | "CLASSIC" | "LEGACY";
+export type AssetLookV7 = "LIVE" | "CLASSIC";
 
 /** Who a raster belongs to: one faction's art, or art every match can show. */
 export type AssetGroupV7 = "SHARED" | Exclude<FactionIdV7, "ORIGINAL">;
@@ -228,13 +227,6 @@ function classicEntries(live = false): AssetInventoryEntryV7[] {
 export function assetInventoryV7(
   look: AssetLookV7,
 ): readonly AssetInventoryEntryV7[] {
-  if (look === "LEGACY")
-    return unique(
-      Object.values(ACCEPTED_ART_URLS).map((url) => ({
-        url,
-        group: "SHARED" as const,
-      })),
-    );
   return unique(
     look === "CLASSIC"
       ? classicEntries()
@@ -242,12 +234,9 @@ export function assetInventoryV7(
   );
 }
 
-/** The look whose inventory an art set and the classic-look option draw. */
-export function assetLookV7(
-  artSet: ArtSetV7,
-  classicLook = false,
-): AssetLookV7 {
-  return artSet !== "CHIBI" ? "LEGACY" : classicLook ? "CLASSIC" : "LIVE";
+/** The look whose inventory the classic-look option draws. */
+export function assetLookV7(classicLook = false): AssetLookV7 {
+  return classicLook ? "CLASSIC" : "LIVE";
 }
 
 /**
@@ -292,7 +281,7 @@ export interface AssetTiersV7 {
  * `first` names files to put at the head of FRONT whatever their group
  * (the title scene draws a few faction units); files of `first` that the
  * inventory does not list (the scene's direction rasters, for the classic
- * look) are added. LEGACY has no faction tier.
+ * look) are added.
  */
 export function assetTiersV7(
   look: AssetLookV7,

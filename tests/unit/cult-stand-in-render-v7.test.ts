@@ -470,12 +470,6 @@ describe("Cult art subjects stand in with the shared art", () => {
     expect(
       assetInventoryV7("CLASSIC").filter((entry) => entry.group === "CULT"),
     ).toHaveLength(terrainFiles);
-    expect(assetInventoryForFactionsV7("LEGACY", ["CULT", "ORIGINAL"])).toEqual(
-      assetInventoryForFactionsV7("LEGACY", ["ORIGINAL"]),
-    );
-    expect(
-      assetInventoryV7("LEGACY").filter((entry) => entry.group === "CULT"),
-    ).toEqual([]);
   });
 
   it("gives the Cult a stand-in letter, and no other faction one", () => {

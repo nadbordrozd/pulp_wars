@@ -600,7 +600,7 @@ the Clockwork Gunner under a steel disc lettered **W** until bead
   hammers inside a pale blue motion ring (`-b`); the ring erased but a small
   bluish steam wisp left beside the lamp (`-b-ring`, the source of the
   accepted edit, which erased the wisp).
-- LEGACY (`?art=legacy`) and the developer option "Classic look" have no
+- LEGACY (retired; an internal fallback only) and the developer option "Classic look" have no
   Whirligig art: there it falls back like every faction subject, to the Human
   unit of the slot under the Dwarf badge.
 

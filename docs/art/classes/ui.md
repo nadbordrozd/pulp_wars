@@ -1,5 +1,12 @@
 # UI Asset and Visual Contract
 
+> **Geometry since the chibi direction (`pulp_wars-67q.13`).** New interface art follows [ART_DIRECTION.md, sections 3 and 5](../ART_DIRECTION.md#3-geometry-and-resolution): portraits and icons generated at 48 x 48 (HUD icons 32 x 32), shown 1:1 or at 1.5x, one item floating on transparency; glyphs of the HUD, the docks and the tactical statuses stay vector. The interface's own look is in [STYLE.md](../../ui/STYLE.md).
+> The sections below that give 128 px cells, diamond anchors, 256 x 296 or
+> 384 x 384 sources and display scales are the contracts of the frozen
+> Ruleset 6 art and of the earlier Ruleset 7 art, which now survives only as
+> an internal fallback. They are provenance for those files, not a target
+> for new art.
+
 ## Ruleset-7 revision-9 action and status inventory
 
 The approved

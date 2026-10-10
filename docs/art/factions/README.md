@@ -1,6 +1,6 @@
 # Faction art layer
 
-Every faction uses the same [chibi art direction](../CHIBI_ART_DIRECTION.md).
+Every faction uses the same [chibi art direction](../ART_DIRECTION.md).
 A faction adds one **faction fragment**: a short, faction-wide set of
 instructions that gives it its own identity without breaking the shared rules.
 

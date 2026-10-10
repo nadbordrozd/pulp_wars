@@ -7,6 +7,14 @@ subject lists, canvases and anchors from here; where this inventory is more
 precise than a bead, the inventory wins. [Flags](#flags-the-plan-did-not-foresee)
 at the end list what the plan did not foresee.
 
+**Since `pulp_wars-67q.13` (2026-10-10)** the migration is complete for
+players: CHIBI is the only art set a player sees, `?art=legacy` is retired
+and `?art=chibi`, which this inventory names as the way to see the chibi
+runtime, is simply the game. The "Legacy art today" columns and every
+sentence about what LEGACY draws now describe the renderer's internal
+fallback (a subject whose chibi raster cannot be drawn, and a view built
+without an art set in tests), which no player can select.
+
 ## How it was built
 
 The list comes from the Ruleset 7 runtime, not from the asset folders:
@@ -22,13 +30,13 @@ The list comes from the Ruleset 7 runtime, not from the asset folders:
 - the art-set subjects in [`chibi-art-v7.ts`](../../src/assets/chibi-art-v7.ts).
 
 Canvases are DPR 1 masters in CSS px at zoom 1 (one tile is 80 x 80), within
-the limits of the [chibi direction, section 3](CHIBI_ART_DIRECTION.md#3-geometry-and-resolution).
+the limits of the [chibi direction, section 3](ART_DIRECTION.md#3-geometry-and-resolution).
 Pixen needs multiples of 4, so every piece canvas below is one. The anchor
 is the master pixel placed on the cell centre; "default" is the class
 placement (`chibiAnchorV7`): bottom-centred pieces use
 `(width / 2, height - 40)`, terrain and resources use the centre. Overflow is
 beyond the 80 px cell, given as side / up. "Mask" means an owner mask is
-required ([direction, section 4](CHIBI_ART_DIRECTION.md#4-owner-colour)).
+required ([direction, section 4](ART_DIRECTION.md#4-owner-colour)).
 
 ## Map layer (canvas board)
 
@@ -579,7 +587,7 @@ sprite and one portrait, and the Stegosaurus's Egg is the shared one.
    Battleship 88 x 96; the embarked transport, a low mastless barge, is a
    72 x 72 LARGE_UNIT (no upward overflow). Ships use their own `ship`
    recipe class (a boat class text with no water, waves or plate) and are
-   recorded in the [direction, section 3](CHIBI_ART_DIRECTION.md#3-geometry-and-resolution).
+   recorded in the [direction, section 3](ART_DIRECTION.md#3-geometry-and-resolution).
    Undead naval units have the same role ids and reuse these sprites with
    the Undead skull badge.
 7. **Shorelines.** Water boundaries are drawn in code over the terrain. With

@@ -2,9 +2,13 @@
 
 **Status:** built in bead `pulp_wars-67q.2` for the
 [chibi migration](CHIBI_MIGRATION_PLAN.md). Batches 1–5 generate, review and
-register their art with it. The [chibi direction](CHIBI_ART_DIRECTION.md)
+register their art with it. The [chibi direction](ART_DIRECTION.md)
 sets the rules; the [asset inventory](CHIBI_ASSET_INVENTORY.md) sets each
-batch's subjects, canvases and anchors.
+batch's subjects, canvases and anchors. Since `pulp_wars-67q.13` the chibi
+art is the game's only art set: where this document says a review captures
+the game "with `?art=chibi`", the parameter is no longer needed (it is
+ignored), and "LEGACY" names the renderer's internal fallback, which no
+player can select.
 
 ## Files
 

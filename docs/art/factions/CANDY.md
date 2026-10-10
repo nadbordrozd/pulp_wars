@@ -750,7 +750,7 @@ the Marshmallow under a steel disc lettered **J** until bead
   +9.8.
 - **Rejected.** `jawbreaker-b`: a moustached man in a striped turban and a
   cloak, a person and not a living sweet.
-- LEGACY (`?art=legacy`) and the developer option "Classic look" have no
+- LEGACY (retired; an internal fallback only) and the developer option "Classic look" have no
   Jawbreaker art: there it falls back like every faction subject, to the Human
   unit of the slot under the Candy badge.
 

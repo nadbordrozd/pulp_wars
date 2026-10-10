@@ -1,6 +1,15 @@
 # Square-grid presentation experiment
 
-**Status:** active presentation contract from rollback baseline `07229e2`.
+**Status:** historical since `pulp_wars-67q.13` (2026-10-10). This was the
+presentation contract, from rollback baseline `07229e2`, of the art that
+came before the chibi direction: the 128 px cell, its footprints and its
+layers. It still describes the frozen Ruleset 6 presentation and the
+internal LEGACY path of the Ruleset 7 renderer. The game a player sees
+follows [ART_DIRECTION.md, section 3](ART_DIRECTION.md#3-geometry-and-resolution)
+(an 80 px cell, discrete zoom steps) and takes its light from the
+[south-west](ART_DIRECTION.md#light); where the two differ, that file wins.
+The square grid itself (axis-aligned cells, integer `(x,y)`, cardinal
+adjacency) is not an experiment any more: it is how the board is drawn.
 
 This experiment changes presentation only. The game still stores integer
 `(x,y)` coordinates, uses the same cardinal adjacency and command rules, and

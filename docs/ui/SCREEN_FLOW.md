@@ -2012,8 +2012,10 @@ the screens it opens (new game, campaign, Settings, save recovery). Ruleset
   pixel, ten frames a second; with reduced motion (the setting, which starts
   from the system preference) it is a still picture. It is hidden from
   assistive technology, takes no input and makes no sound; it stops while a
-  match or the Gallery is shown. The LEGACY art set (`?art=legacy`) keeps
-  the plain logo and the same menu on the plain background.
+  match or the Gallery is shown. A view built without the CHIBI art set (the
+  internal LEGACY path of tests; no player can select it since
+  `pulp_wars-67q.13`) keeps the plain logo and the same menu on the plain
+  background.
 - **Leaving a match.** A match's menu ends with **Save & quit**, which
   saves and shows the main menu with Continue focused. Every end dialog has
   **Main menu** after its other actions (Victory and Defeat: Play again,

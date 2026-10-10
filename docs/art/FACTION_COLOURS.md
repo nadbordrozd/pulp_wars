@@ -108,11 +108,11 @@ Dwarf's at desktop or phone width in any of the three looks.
 
 ## Where the colour is drawn
 
-| Look                                      | What carries the faction colour                                                                                                 |
-| ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| Default (live) look of the CHIBI art set  | the territory border (solid), the Egg's countdown ring, and the interface (leaderboard swatch and row edge, art in owner areas) |
-| Classic look (Settings > Developer tools) | as before, but in the faction colour: unit and building owner masks, the numbered seat badge, the dashed border                 |
-| LEGACY art set (`?art=legacy`)            | the seat badge, the dashed border and the code-drawn owner details, in the faction colour                                       |
+| Look                                                | What carries the faction colour                                                                                                 |
+| --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| Default (live) look of the CHIBI art set            | the territory border (solid), the Egg's countdown ring, and the interface (leaderboard swatch and row edge, art in owner areas) |
+| Classic look (Settings > Developer tools)           | as before, but in the faction colour: unit and building owner masks, the numbered seat badge, the dashed border                 |
+| LEGACY art set (retired; an internal fallback only) | the seat badge, the dashed border and the code-drawn owner details, in the faction colour                                       |
 
 The Classic look and LEGACY use the faction colour too: one colour per
 player in every look is the simplest consistent rule, and the faction is

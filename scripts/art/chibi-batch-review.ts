@@ -2196,9 +2196,8 @@ async function main(): Promise<void> {
     "",
     "## In the game",
     "",
-    `Play with the chibi art set at ${PAGES_URL}?art=chibi (the choice is`,
-    "remembered; `?art=legacy` switches back). Zoom with + and - or pinch; the",
-    "steps are 0.75, 1, 1.5 and 2.",
+    `Play at ${PAGES_URL} (the chibi art is the game's only art set).`,
+    "Zoom with + and - or pinch; the steps are 0.75, 1, 1.5 and 2.",
     "",
   ].join("\n");
   const linksFile = path.join(directory, "phone-links.md");

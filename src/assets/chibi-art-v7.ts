@@ -13,8 +13,13 @@ import type {
 } from "../engine/index";
 
 /**
- * Ruleset 7 art sets. LEGACY is the default production art; CHIBI is the
- * opt-in migration target described in docs/art/CHIBI_ART_DIRECTION.md.
+ * Ruleset 7 art sets. CHIBI is the art of the game
+ * (docs/art/ART_DIRECTION.md) and the only set a player sees. LEGACY, the
+ * earlier PixelLab set, is no longer selectable (bead pulp_wars-67q.13):
+ * it remains inside the renderer as the base plan and the last per-subject
+ * fallback of a chibi raster that cannot be drawn, and as the default of a
+ * host or view built without an art set (unit tests), until that path is
+ * removed.
  */
 export type ArtSetV7 = "LEGACY" | "CHIBI";
 
@@ -1243,7 +1248,7 @@ export interface ChibiClassGeometryV7 {
 
 export const CHIBI_TILE_CSS_PX = 80;
 
-/** Normative canvas and overflow table from CHIBI_ART_DIRECTION.md section 3. */
+/** Normative canvas and overflow table from ART_DIRECTION.md section 3. */
 export const CHIBI_CLASS_GEOMETRY_V7 = {
   TERRAIN: {
     maxWidth: 80,

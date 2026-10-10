@@ -1,5 +1,12 @@
 # Terrain Tile Asset Contract
 
+> **Geometry since the chibi direction (`pulp_wars-67q.13`).** New terrain follows [ART_DIRECTION.md, section 3](../ART_DIRECTION.md#3-geometry-and-resolution): opaque 80 x 80 tiles that tile seamlessly, tall terrain up to 80 x 104 that overflows upward only, light from the [south-west](../ART_DIRECTION.md#light). Forests and mountains are composed from pieces ([forests](../COMPOSED_FORESTS.md), [terrain](../COMPOSED_TERRAIN.md)), and each faction has its own ground and wood ([grass](../FACTION_GRASS.md), [forests](../FACTION_FORESTS.md)).
+> The sections below that give 128 px cells, diamond anchors, 256 x 296 or
+> 384 x 384 sources and display scales are the contracts of the frozen
+> Ruleset 6 art and of the earlier Ruleset 7 art, which now survives only as
+> an internal fallback. They are provenance for those files, not a target
+> for new art.
+
 ## Active square-grid override
 
 The active presentation and all forthcoming terrain replacements follow the

@@ -276,7 +276,7 @@ describe("Ruleset 7 start behind the asset preloader", () => {
     app.destroy();
   });
 
-  it("shows the scene once the preloader holds its rasters, with the stored motion; none for the legacy set", async () => {
+  it("shows the scene once the preloader holds its rasters, with the stored motion, also for a browser that had opted out to the legacy art", async () => {
     window.localStorage.setItem(
       "pulpWars.settings.v1",
       JSON.stringify({
@@ -320,34 +320,45 @@ describe("Ruleset 7 start behind the asset preloader", () => {
     expect(query("[data-v7-loading]")).toBeNull();
     app.destroy();
 
+    // The retired opt-out (bead pulp_wars-67q.13): a stored LEGACY choice
+    // and `?art=legacy` get the default start, scene and all, and the stale
+    // choice is cleared.
     document.body.innerHTML = '<div id="app"></div>';
-    const legacy = manualPreloader(true);
+    window.localStorage.setItem("pulpWars.ruleset7.artSet.v1", "LEGACY");
+    window.history.replaceState(null, "", "/?art=legacy");
+    const stale = manualPreloader();
     const second = bootstrapPreloadedRuleset7App(document, {
-      preloader: legacy.preloader,
-      artSet: "LEGACY",
+      preloader: stale.preloader,
       loadingScreenDelayMs: 0,
       storage: null,
       boardHost: new Host(),
     });
     await flush();
-    expect(query("[data-v7-loading]")?.dataset.scene).toBe("none");
-    legacy.requests[0]?.resolve(result(1));
-    (await second).destroy();
+    expect(query("[data-v7-loading]")?.dataset.scene).toBe("waiting");
+    expect(stale.requests[0]?.urls).toEqual(startPreloadUrlsV7("LIVE"));
+    expect(
+      stale.requests[0]?.urls.some((url) => url.includes("assets/pixellab/")),
+    ).toBe(false);
+    expect(
+      window.localStorage.getItem("pulpWars.ruleset7.artSet.v1"),
+    ).toBeNull();
+    stale.requests[0]?.resolve(result(1));
+    const staleApp = await second;
+    expect(staleApp.preload.look).toBe("LIVE");
+    staleApp.destroy();
+    window.history.replaceState(null, "", "/");
   });
 
-  it("preloads the look in use: LEGACY for the legacy art set, the classic look when it is stored", async () => {
-    const legacy = manualPreloader();
+  it("preloads the look in use: the live look, or the classic look when it is stored", async () => {
+    const live = manualPreloader();
     const first = bootstrapPreloadedRuleset7App(document, {
-      preloader: legacy.preloader,
-      artSet: "LEGACY",
+      preloader: live.preloader,
       storage: null,
       boardHost: new Host(),
     });
     await flush();
-    // The legacy art set has no scene: its own inventory, as it was.
-    expect(legacy.requests[0]?.urls).toEqual(assetPreloadUrlsV7("LEGACY"));
-    expect(startPreloadUrlsV7("LEGACY")).toEqual(assetPreloadUrlsV7("LEGACY"));
-    legacy.requests[0]?.resolve(result(1));
+    expect(live.requests[0]?.urls).toEqual(startPreloadUrlsV7("LIVE"));
+    live.requests[0]?.resolve(result(1));
     (await first).destroy();
 
     document.body.innerHTML = '<div id="app"></div>';
@@ -641,7 +652,7 @@ describe("Ruleset 7 board entry and the factions' art", () => {
     app.destroy();
   });
 
-  it("does not wait when the art is loaded, or for the legacy art set", async () => {
+  it("does not wait when the art is loaded", async () => {
     // Everything in the store (a return visit): no request, no plate.
     const warm = manualPreloader(true);
     const host = new Host();
@@ -662,27 +673,6 @@ describe("Ruleset 7 board entry and the factions' art", () => {
     expect(warm.requests).toHaveLength(1);
     expect(query("[data-v7-art-wait]")).toBeNull();
     app.destroy();
-
-    // LEGACY has no faction tier: the title waited for the whole set.
-    document.body.innerHTML = '<div id="app"></div>';
-    const legacy = manualPreloader();
-    const legacyHost = new Host();
-    const second = bootstrapPreloadedRuleset7App(document, {
-      preloader: legacy.preloader,
-      artSet: "LEGACY",
-      loadingScreenDelayMs: 0,
-      storage: null,
-      boardHost: legacyHost,
-      randomSeed: () => 7,
-    });
-    await flush();
-    legacy.requests[0]?.resolve(result(1));
-    const legacyApp = await second;
-    await legacyApp.background;
-    query('[data-action="launch"]')?.click();
-    await waitUntil(() => legacyHost.model !== null);
-    expect(legacy.requests).toHaveLength(1);
-    legacyApp.destroy();
   });
 
   it("holds a resumed game's board the same way", async () => {

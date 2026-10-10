@@ -36,7 +36,7 @@ import { titleSceneAssetUrlsV7 } from "../../src/render/title-scene-v7";
  * that shows the faction, and the live look leaves to the classic look the
  * default rasters it draws only in place of a failed direction raster.
  */
-const LOOKS: readonly AssetLookV7[] = ["LIVE", "CLASSIC", "LEGACY"];
+const LOOKS: readonly AssetLookV7[] = ["LIVE", "CLASSIC"];
 const FACTIONS = FACTION_IDS_V7.filter(
   (faction): faction is Exclude<FactionIdV7, "ORIGINAL"> =>
     faction !== "ORIGINAL",
@@ -45,7 +45,7 @@ const FACTIONS = FACTION_IDS_V7.filter(
 describe("asset tiers", () => {
   it("puts every file of a look in exactly one tier", () => {
     for (const look of LOOKS) {
-      const scene = look === "LEGACY" ? [] : titleSceneAssetUrlsV7();
+      const scene = titleSceneAssetUrlsV7();
       const tiers = assetTiersV7(look, scene);
       const lists = [tiers.front, ...Object.values(tiers.factions)];
       const all = lists.flat();
@@ -56,11 +56,6 @@ describe("asset tiers", () => {
         new Set([...scene, ...assetInventoryV7(look).map(({ url }) => url)]),
       );
     }
-    // LEGACY has no faction tier: the title waits for all of it.
-    expect(assetTiersV7("LEGACY").factions).toEqual({});
-    expect(assetTiersV7("LEGACY").front).toHaveLength(
-      assetInventoryV7("LEGACY").length,
-    );
   });
 
   it("blocks the title on the scene, the shared art and what every screen asks for", () => {

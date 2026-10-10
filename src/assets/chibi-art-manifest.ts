@@ -6,7 +6,7 @@ import type { ChibiArtAssetV7 } from "./chibi-art-v7";
  * entries here after review; every subject without an entry keeps rendering
  * its legacy asset at the chibi geometry. Rasters live under
  * public/assets/chibi/ and use chibiArtUrl so the Vite base path applies.
- * Contract: docs/art/CHIBI_ART_DIRECTION.md sections 3 and 4.
+ * Contract: docs/art/ART_DIRECTION.md sections 3 and 4.
  */
 export const CHIBI_ART_ASSETS_V7: readonly ChibiArtAssetV7[] = [
   // Batch 1 (pulp_wars-67q.3): terrain, Village, City 1-3, Fighter, Marksman.

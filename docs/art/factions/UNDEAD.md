@@ -304,7 +304,7 @@ it its own art.
   29, 72% dark), with violet only in the eye slits. `wight-b`, a fresh
   creation: the bare skull shows under a crown (it reads as the Lich), the
   armour is orange-brown and the weapon a sword.
-- LEGACY (`?art=legacy`) and the developer option "Classic look" have no Wight
+- LEGACY (retired; an internal fallback only) and the developer option "Classic look" have no Wight
   art: there it falls back like every faction subject, to the Human unit of
   the slot under the Undead badge.
 

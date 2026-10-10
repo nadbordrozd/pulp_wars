@@ -632,7 +632,7 @@ uses the wander draw or hidden state.
 ### 12.2 Art (PixelLab, chibi direction)
 
 Production art is generated in the art bead under the
-[chibi direction](../art/CHIBI_ART_DIRECTION.md) and its PixelLab rules;
+[chibi direction](../art/ART_DIRECTION.md) and its PixelLab rules;
 the art bead writes `docs/art/classes/curiosities.md` first.
 
 | Asset                       | Kind                                      | Notes                                                                                      |

@@ -51,16 +51,14 @@ import {
  * takes the next free lanes. So a board still never draws a stand-in for
  * art that is downloading.
  *
- * The LEGACY set is loaded only when `?art=legacy` selects it (it has no
- * faction tier); the classic look's own rasters load when the player
- * switches to it (`ensureLookAssets`). A failed raster never stops the
- * start: the app mounts when the preload settles or its time budget runs
- * out.
+ * The classic look's own rasters load when the player switches to it
+ * (`ensureLookAssets`). A failed raster never stops the start: the app
+ * mounts when the preload settles or its time budget runs out.
  *
  * The loading screen is the title scene with the progress bar over it
- * (bead pulp_wars-502h): of a CHIBI look the scene's own files come first
- * in the one preload, so the scene is drawn after about a quarter of it
- * while the bar shows the rest. The legacy art set has no scene.
+ * (bead pulp_wars-502h): the scene's own files come first in the one
+ * preload, so the scene is drawn after about a quarter of it while the bar
+ * shows the rest.
  */
 export interface PreloadedBootOptionsV7 extends BootstrapRuleset7Options {
   /** The preloader; the browser's (image elements, decoded) by default. */
@@ -111,11 +109,11 @@ export const SOUND_PREFETCH_HOLD_MS_V7 = 4_000;
 
 /**
  * The tiers the start loads a look in: the loading screen's scene heads
- * the FRONT tier (a CHIBI look; the classic look gains the scene's
- * direction rasters, which its title screen draws too).
+ * the FRONT tier (the classic look gains the scene's direction rasters,
+ * which its title screen draws too).
  */
 export function startAssetTiersV7(look: AssetLookV7): AssetTiersV7 {
-  return assetTiersV7(look, look === "LEGACY" ? [] : titleSceneAssetUrlsV7());
+  return assetTiersV7(look, titleSceneAssetUrlsV7());
 }
 
 /**
@@ -167,7 +165,7 @@ export async function bootstrapPreloadedRuleset7App(
   const artSet =
     options.artSet ??
     resolveArtSetV7(browser?.location.search ?? "", settingsStorage);
-  const look = assetLookV7(artSet, loadBoardClassicLookV7(settingsStorage));
+  const look = assetLookV7(loadBoardClassicLookV7(settingsStorage));
   const preloader = options.preloader ?? browserAssetPreloaderV7(documentRoot);
   const now = options.now ?? ((): number => performance.now());
 
@@ -186,18 +184,14 @@ export async function bootstrapPreloadedRuleset7App(
     return tiers;
   };
   const urls = tiersOf(look).front;
-  const sceneUrls = look === "LEGACY" ? null : titleSceneAssetUrlsV7();
+  const sceneUrls = titleSceneAssetUrlsV7();
   const show = (): void => {
     screen = mountLoadingScreenV7(documentRoot, root, {
       motion: startMotionV7(documentRoot, settingsStorage),
-      ...(sceneUrls === null
-        ? {}
-        : {
-            scene: {
-              environment: browserChibiRasterEnvironmentV7(documentRoot),
-              ready: () => preloader.covers(sceneUrls),
-            },
-          }),
+      scene: {
+        environment: browserChibiRasterEnvironmentV7(documentRoot),
+        ready: () => preloader.covers(sceneUrls),
+      },
     });
     if (progress !== null) screen.update(progress);
   };
@@ -214,7 +208,7 @@ export async function bootstrapPreloadedRuleset7App(
       },
       // The scene's files load alone first, so the loading screen shows
       // the scene as early as the link allows (pulp_wars-2yc.11).
-      { front: new Set(sceneUrls ?? []).size },
+      { front: new Set(sceneUrls).size },
     );
   } catch {
     // A broken preloader must not keep the game from starting: every
@@ -245,13 +239,7 @@ export async function bootstrapPreloadedRuleset7App(
     settingsStorage,
     ensureLookAssets: (next) => waitFor(assetPreloadUrlsV7(next)),
     ensureFactionAssets: (next, factions, onProgress) =>
-      waitFor(
-        factionAssetUrlsV7(
-          tiersOf(look === "LEGACY" ? "LEGACY" : next),
-          factions,
-        ),
-        onProgress,
-      ),
+      waitFor(factionAssetUrlsV7(tiersOf(next), factions), onProgress),
   });
 
   // The app is on screen. Now the sound clips (never waited for by a

@@ -1,5 +1,12 @@
 # Building and Settlement Asset Contract
 
+> **Geometry since the chibi direction (`pulp_wars-67q.13`).** New buildings and settlements follow [ART_DIRECTION.md, section 3](../ART_DIRECTION.md#3-geometry-and-resolution): a city or village up to 96 x 104 (side overflow up to 8 px, upward up to 24 px), a building or improvement up to 80 x 88, bottom-centred on the 80 px cell, with nothing drawn under it. Improvements are neutral and each faction has its own set ([faction buildings](../FACTION_BUILDINGS.md)); the player is shown by markers ([section 4a](../ART_DIRECTION.md#4a-the-new-owner-colour-rule-october-2026-direction)).
+> The sections below that give 128 px cells, diamond anchors, 256 x 296 or
+> 384 x 384 sources and display scales are the contracts of the frozen
+> Ruleset 6 art and of the earlier Ruleset 7 art, which now survives only as
+> an internal fallback. They are provenance for those files, not a target
+> for new art.
+
 ## Ruleset-7 revision-11 Port overlay
 
 The approved

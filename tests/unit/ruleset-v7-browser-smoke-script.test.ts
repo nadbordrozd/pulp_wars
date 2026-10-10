@@ -172,7 +172,7 @@ describe("Ruleset 7 browser smoke script", () => {
       naval.indexOf("click('[data-action=\"launch\"]')"),
     );
   });
-  it("probes the CHIBI default, the persisted ?art=legacy opt-out and a reset", () => {
+  it("probes the CHIBI default and that the retired ?art=legacy opt-out is ignored and cleared", () => {
     const source = readFileSync("scripts/browser-smoke-v7.ts", "utf8");
     const probe = source.slice(
       source.indexOf("async function probeChibiArtSet("),
@@ -183,15 +183,24 @@ describe("Ruleset 7 browser smoke script", () => {
     expect(probe).toContain('activeWithArt("CHIBI")');
     expect(probe).toContain("80 * Number(beforeStep)");
     expect(probe).toContain("evidence.stored !== null");
-    expect(probe).toContain(
+    // A stored LEGACY choice and the parameter: still CHIBI, key cleared.
+    const stale = probe.indexOf(
+      "localStorage.setItem(${JSON.stringify(artKey)}, 'LEGACY')",
+    );
+    expect(stale).toBeGreaterThan(-1);
+    const opened = probe.indexOf(
       'await navigateFresh(artUrl("legacy"), freshSetup)',
     );
-    expect(probe).toContain('legacy.stored !== "LEGACY"');
-    expect(probe).toContain('activeWithArt("LEGACY")');
-    expect(probe).toContain('artUrl("chibi")');
-    expect(
-      probe.lastIndexOf("localStorage.removeItem(${JSON.stringify(artKey)})"),
-    ).toBeGreaterThan(probe.indexOf('artUrl("chibi")'));
+    expect(opened).toBeGreaterThan(stale);
+    expect(probe.indexOf('activeWithArt("CHIBI")', opened)).toBeGreaterThan(
+      opened,
+    );
+    expect(probe).toContain(
+      "retired.step === undefined || retired.stored !== null",
+    );
+    // No art set but CHIBI is ever expected on the page.
+    expect(probe).not.toContain('activeWithArt("LEGACY")');
+    expect(probe).not.toContain('artUrl("chibi")');
   });
   it("chooses Undead seats in the default-route setup without a development flag", () => {
     const source = readFileSync("scripts/browser-smoke-v7.ts", "utf8");

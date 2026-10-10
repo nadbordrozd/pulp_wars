@@ -15,7 +15,7 @@ export const RULESET7_PLAYER_COLORS = {
   VIOLET: "#a277d2",
 } as const satisfies Readonly<Partial<Record<PlayerColorV7, string>>>;
 
-/** Generation key colour for owner areas (CHIBI_ART_DIRECTION.md section 4). */
+/** Generation key colour for owner areas (ART_DIRECTION.md section 4). */
 export const CHIBI_OWNER_KEY_COLOUR = "#d8262c";
 
 export interface RgbV7 {

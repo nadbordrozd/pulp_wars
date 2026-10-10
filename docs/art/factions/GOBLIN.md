@@ -342,7 +342,7 @@ This guides the subject lines; it is not sent to PixelLab.
   jaw and two tusks jutting up from an underbite. The Troll is a giant
   hunched lump with very long arms, a huge drooping nose and moss.
 - **"Small" is posture, not pixels.** Goblins still fill 90–110% of the
-  tile height, as the [chibi direction](../CHIBI_ART_DIRECTION.md#3-geometry-and-resolution)
+  tile height, as the [chibi direction](../ART_DIRECTION.md#3-geometry-and-resolution)
   requires: they read small through the hunch, the thin limbs and the
   oversized ears and head, and beside the broad orcs. Every goblin line asks
   for the head and ears to fill the whole width.
@@ -885,7 +885,7 @@ gave it its own art.
   of the figure's height and an enormously fat round body"; without it Pixen
   drew a realistic small-headed soldier. One edit changed the face, the skin
   (by hex value) and the club together.
-- LEGACY (`?art=legacy`) and the developer option "Classic look" have no Ogre
+- LEGACY (retired; an internal fallback only) and the developer option "Classic look" have no Ogre
   art: there it falls back like every faction subject, to the Human unit of
   the slot under the Goblin badge.
 

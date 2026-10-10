@@ -2106,7 +2106,7 @@ One sentence per rule, shown in Help for every viewer:
 `pulp_wars-jdb.5` makes the art direction fragment
 `docs/art/factions/CANDY.md` from [the faction template](../art/factions/FACTION_TEMPLATE.md)
 under the shared [art direction](../art/ART_DIRECTION.md) and the
-[chibi direction](../art/CHIBI_ART_DIRECTION.md), with user approval of the
+[chibi direction](../art/ART_DIRECTION.md), with user approval of the
 fragment and subject lines, then the production art under the PixelLab
 workflow of the project instructions (needs PixelLab access). **Faction
 looks replace the coloured base plates**: every Candy piece is registered

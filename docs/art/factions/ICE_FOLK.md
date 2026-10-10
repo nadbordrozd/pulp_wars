@@ -565,7 +565,7 @@ own art.
   `musk-ox-b-light`, an edit asked to light the rump and back from the left:
   it turned the whole skirt of wool light tan, the Mammoth's colour, and the
   face near-black, so the ox lost the dark coat that sets it apart.
-- LEGACY (`?art=legacy`) and the developer option "Classic look" have no Musk
+- LEGACY (retired; an internal fallback only) and the developer option "Classic look" have no Musk
   Ox art: there it falls back like every faction subject, to the Human unit of
   the slot under the Ice Folk badge.
 

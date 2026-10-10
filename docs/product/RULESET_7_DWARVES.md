@@ -2325,7 +2325,7 @@ under the PixelLab workflow of the project instructions; this contract lists
 what must exist and the binding colour rules of root decision 8. The fragment
 is written from [the faction template](../art/factions/FACTION_TEMPLATE.md)
 under the shared [art direction](../art/ART_DIRECTION.md) and the
-[chibi direction](../art/CHIBI_ART_DIRECTION.md). **Faction looks replace the
+[chibi direction](../art/ART_DIRECTION.md). **Faction looks replace the
 coloured base plates** (epic `pulp_wars-w5j`): every Dwarf piece is
 registered with fixed colours, no owner area and no mask, and the look alone
 must say "Dwarf" at 32 px. Until the art exists, a Dwarf unit draws the Human

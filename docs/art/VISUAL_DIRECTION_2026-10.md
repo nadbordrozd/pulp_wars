@@ -38,7 +38,7 @@ owner colour is the faction's own, permanent colour
 retired: the territory border is the only owner colour left on the board
 ([section 21](#21-faction-colours-and-the-pennants-retired)).
 
-The [chibi art direction](CHIBI_ART_DIRECTION.md) governs production art;
+The [chibi art direction](ART_DIRECTION.md) governs production art;
 its section 4a holds the rules this direction changed.
 
 The user's brief: a developed map looks cluttered and slightly unpleasant;

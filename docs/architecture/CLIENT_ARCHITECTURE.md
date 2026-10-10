@@ -1844,26 +1844,34 @@ state hash.
 
 ### Ruleset 7 art sets
 
-Ruleset 7 has two presentation-only art sets. CHIBI, from the
-[chibi migration](../art/CHIBI_MIGRATION_PLAN.md), is the default. LEGACY
-draws exactly as described above and remains an opt-out until its retirement
-(`pulp_wars-67q.13`). The app resolves the art set once at bootstrap
-(`src/app/art-set-v7.ts`):
+A player of Ruleset 7 sees one art set: CHIBI, from the
+[chibi migration](../art/CHIBI_MIGRATION_PLAN.md). The player-facing switch
+to the earlier LEGACY set was retired in `pulp_wars-67q.13`. The app
+resolves the art set once at bootstrap (`resolveArtSetV7` in
+`src/app/art-set-v7.ts`), and the answer is always CHIBI:
 
-- `?art=legacy` or `?art=chibi` selects that art set and stores it under its
-  own `pulpWars.ruleset7.artSet.v1` key, so the shared exact-schema settings
-  envelope is unchanged.
-- Without a valid parameter, a stored choice applies, so a player who chose
-  LEGACY keeps it.
-- Otherwise, including unreadable storage or a corrupt stored value, the app
-  uses CHIBI and stores nothing.
+- `?art=legacy` is not recognised and `?art=chibi`, which old links and
+  review scripts still carry, changes nothing.
+- Nothing is stored. A choice an earlier version left under
+  `pulpWars.ruleset7.artSet.v1` (LEGACY or CHIBI) is removed at the start,
+  so a browser that had opted out gets the default look. The shared
+  exact-schema settings envelope is untouched, and unreadable storage never
+  stops the start.
 
-Views and board hosts constructed directly without an art set, as tests and
-review harnesses do, still fall back to LEGACY until the legacy path is
-retired. Ruleset 6, rules, commands, saves, replay and hashes never see the
-art set.
+LEGACY still exists **inside** the renderer, and only there. The board plan
+is built with the legacy asset ids described above and CHIBI art is resolved
+over it per subject, so a subject whose chibi raster cannot be drawn falls
+back to its legacy raster at the chibi geometry (`ACCEPTED_ART_URLS`, the
+PixelLab set under `public/assets/pixellab/` that Ruleset 6 also draws;
+never preloaded, fetched on demand). A view or a board host constructed
+directly without an art set, as most unit tests and some review harnesses
+do, also draws LEGACY. Wherever this document and the art and interface
+documents say what "LEGACY" draws, they describe that internal path: no
+player can select it. Removing it, together with the rasters only it can
+name, is follow-up work to `pulp_wars-67q.13`. Ruleset 6, rules, commands,
+saves, replay and hashes never see the art set.
 
-CHIBI follows [chibi direction](../art/CHIBI_ART_DIRECTION.md) sections 3–4:
+CHIBI follows [chibi direction](../art/ART_DIRECTION.md) sections 3–4:
 
 - World coordinates keep the 128-unit square projection, so picking, depth
   sorting and code-native overlays are shared. A zoom step `s` sets
@@ -1888,7 +1896,7 @@ CHIBI follows [chibi direction](../art/CHIBI_ART_DIRECTION.md) sections 3–4:
   `chibiGarrisonDestinationRect`: 0.75 x its normal size, canvas bottom on
   the cell's bottom edge, right edge at the population-pip column (46 world
   units right of the centre), so the settlement stays readable under it
-  ([chibi direction](../art/CHIBI_ART_DIRECTION.md#3-geometry-and-resolution)).
+  ([chibi direction](../art/ART_DIRECTION.md#3-geometry-and-resolution)).
   The overlay frame is unchanged; LEGACY draws units on cities as before.
 - Tall terrain draws its owning cell in the ground pass, below Roads, and
   its upward overflow in the row-major foreground pass. Cities, units and
@@ -1955,10 +1963,12 @@ before a match draw, and a board waits for the art of its own factions.
   manifests the client resolves art from: `CHIBI_ART_ASSETS_V7`, the
   direction registry's `chibiDirectionArtAssetsV7()`, the composed forest
   and mountain sets and the faction grass tiles for the CHIBI set, each
-  with its density, owner-mask and layer files, and `ACCEPTED_ART_URLS` for
-  LEGACY. Nothing is listed by hand; `preload-inventory-ui-assets-v7.test.ts`
-  fails when a manifest module under `src/assets` exports a raster the
-  inventory does not cover. Each entry carries a group (`SHARED` or a
+  with its density, owner-mask and layer files. The PixelLab set
+  (`ACCEPTED_ART_URLS`) is in no inventory since `pulp_wars-67q.13`: it is
+  never preloaded. Nothing is listed by hand;
+  `preload-inventory-ui-assets-v7.test.ts` fails when a manifest module
+  under `src/assets` exports a CHIBI raster the inventory does not cover, or
+  when an inventory lists a PixelLab file. Each entry carries a group (`SHARED` or a
   faction); `assetInventoryForFactionsV7` gives the part a match can show.
 - **Looks.** `LIVE` is the CHIBI set with the visual direction, `CLASSIC`
   the CHIBI set as it was before it (the developer option "Classic look").
@@ -1977,9 +1987,9 @@ before a match draw, and a board waits for the art of its own factions.
   raster loads on demand, as any failed preload does.
   `asset-tiers-ui-v7.test.ts` resolves every subject through the live
   board's and the live interface's art chains and fails when one of them
-  asks for a file the live look left out. `LEGACY` is preloaded only when
-  `?art=legacy` selects it, whole (it has no faction tier); the art set is
-  chosen by the address and does not change on a page.
+  asks for a file the live look left out. There is no `LEGACY` look: until
+  `pulp_wars-67q.13` `?art=legacy` preloaded the whole PixelLab set (260
+  files, 7.7 MB) in one blocking tier.
 - **Tiers** (`pulp_wars-2yc.42`). `assetTiersV7(look, first)` puts every
   file of a look in exactly one tier.
   - `FRONT` is what the start waits for (about 400 files, 0.8 MB, for
@@ -2061,7 +2071,7 @@ before a match draw, and a board waits for the art of its own factions.
   subject the scene draws plus the composed forest and massif pieces, a
   quarter of the `FRONT` tier, then the rest of that tier, each file once;
   the classic look gains the scene's direction rasters, which its title
-  screen draws too; LEGACY has no scene). At every progress step the screen asks
+  screen draws too). At every progress step the screen asks
   `preloader.covers(sceneUrls)` and mounts the scene only when all of them
   are in, so it draws whole in its first frame from the store; before that
   the CSS backdrop is a sky over flat grass (`--pw-ground`) whose horizon

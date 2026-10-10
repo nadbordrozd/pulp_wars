@@ -269,7 +269,7 @@ and ART3 put each pair in a lineup):
 ## Roster
 
 Canvases, classes and placement are the role's, as for every faction
-([chibi direction, section 3](../CHIBI_ART_DIRECTION.md#3-geometry-and-resolution);
+([chibi direction, section 3](../ART_DIRECTION.md#3-geometry-and-resolution);
 `CHIBI_CLASS_GEOMETRY_V7`): every unit is **bottom-centred** on its cell (the
 canvas bottom on the cell's bottom edge), `STANDARD_UNIT` 56 x 80 with no
 overflow, `LARGE_UNIT` 72 x 88 with at most 4 px to a side and 8 px upward,
