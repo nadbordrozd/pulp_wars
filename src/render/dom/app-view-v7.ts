@@ -216,6 +216,10 @@ import {
   type StorageAdapter,
 } from "../../persistence/index";
 import { CanvasBoardHostV7, type BoardHostV7 } from "../canvas/board-host-v7";
+import {
+  VICTORY_WAVE_V7,
+  victoryWaveTriggerV7,
+} from "../canvas/victory-wave-v7";
 import type {
   AreaSupportFocusV7,
   BoardSelectionV7,
@@ -1343,6 +1347,15 @@ export class Ruleset7DomAppView {
    */
   #rewardHeld = false;
   #rewardHoldTimer: number | null = null;
+  /**
+   * The victory wave (bead pulp_wars-556y): the Victory dialog waits for
+   * the board's wave to land, never longer than its limit; any click or
+   * key ends the wait at once.
+   */
+  #victoryHold: {
+    readonly matchInstance: number;
+    readonly timer: number | null;
+  } | null = null;
   #presentationTail: Promise<void> = Promise.resolve();
   #humanDispatchPending = false;
   #humanDispatchSettling = false;
@@ -1531,6 +1544,7 @@ export class Ruleset7DomAppView {
     this.#root.addEventListener("dragstart", this.#onDragStart);
     // Capturing: the click is heard before the sound of what it does.
     this.#root.addEventListener("click", this.#onClickSound, true);
+    this.#root.addEventListener("pointerdown", this.#onSkipVictoryWave, true);
     this.#unsubscribeAcceptedBoundary = controller.subscribeAcceptedBoundary(
       (boundary) => this.#queueBoundary(boundary),
     );
@@ -1538,6 +1552,13 @@ export class Ruleset7DomAppView {
       if (this.#destroyed) return;
       const prior = this.#snapshot;
       this.#snapshot = snapshot;
+      // The victory wave: a match won while watched holds its dialog.
+      if (
+        prior.phase === "ACTIVE" &&
+        snapshot.phase === "COMPLETE" &&
+        snapshot.view !== null
+      )
+        this.#holdVictoryDialog(snapshot.view);
       if (this.#humanDispatchPending) return;
       if (
         prior.ai.active &&
@@ -1557,6 +1578,12 @@ export class Ruleset7DomAppView {
     this.#document.removeEventListener("keydown", this.#onKeyDown);
     this.#root.removeEventListener("dragstart", this.#onDragStart);
     this.#root.removeEventListener("click", this.#onClickSound, true);
+    this.#root.removeEventListener(
+      "pointerdown",
+      this.#onSkipVictoryWave,
+      true,
+    );
+    this.#releaseVictoryHold(false);
     this.#boardHost.setPresentationStepListener?.(null);
     this.#coinFlight.destroy();
     this.#clearFirstStepOutOfMoves();
@@ -1620,6 +1647,11 @@ export class Ruleset7DomAppView {
   }
 
   readonly #onKeyDown = (event: KeyboardEvent): void => {
+    // The victory wave: a key brings the Victory dialog at once.
+    if (this.#victoryHold !== null) {
+      this.#releaseVictoryHold(true);
+      return;
+    }
     // The Gallery handles its own keys (grid, dialog, Escape).
     if (this.#galleryOpen) return;
     // The front screens have keys of their own, and none of a match's.
@@ -1871,6 +1903,13 @@ export class Ruleset7DomAppView {
 
   #render(): void {
     if (this.#destroyed) return;
+    // A wait for another match's victory wave ends with that match.
+    if (
+      this.#victoryHold !== null &&
+      (this.#victoryHold.matchInstance !== this.#matchInstance ||
+        this.#snapshot.phase !== "COMPLETE")
+    )
+      this.#releaseVictoryHold(false);
     // Bead pulp_wars-2yc.29: another match, or no match on screen, ends
     // the feedback animations of the last one.
     const inMatch =
@@ -3416,7 +3455,9 @@ export class Ruleset7DomAppView {
       (this.#snapshot.phase === "ACTIVE" ||
         this.#snapshot.phase === "COMPLETE") &&
       view.pendingChoices.length === 0 &&
-      this.#achievementNotices.length > 0;
+      this.#achievementNotices.length > 0 &&
+      // The victory wave plays before any dialog of the won match.
+      this.#victoryHold === null;
     let shell = this.#matchShell;
     let main = this.#matchRoot;
     let board = this.#boardContainer;
@@ -3760,7 +3801,11 @@ export class Ruleset7DomAppView {
       nextChildren.push(this.#reward(view));
     else if (showAchievementNotice)
       nextChildren.push(this.#achievementNotice());
-    if (this.#snapshot.phase === "COMPLETE" && !showAchievementNotice)
+    if (
+      this.#snapshot.phase === "COMPLETE" &&
+      !showAchievementNotice &&
+      this.#victoryHold === null
+    )
       nextChildren.push(this.#results(view));
     if (this.#snapshot.phase === "ERROR") nextChildren.push(this.#errorPanel());
     if (this.#snapshot.saveWarning !== null) {
@@ -8840,6 +8885,7 @@ export class Ruleset7DomAppView {
     this.#render();
   }
   async #restart(): Promise<void> {
+    this.#releaseVictoryHold(false);
     this.#cancelPresentations();
     this.#scoreBreakdownFor = null;
     const result = await this.#controller.restart();
@@ -9114,6 +9160,58 @@ export class Ruleset7DomAppView {
       if (!this.#destroyed) this.#render();
     }, forMs);
   }
+
+  /**
+   * The victory wave (bead pulp_wars-556y): when the viewer has just won
+   * and the board will play the wave (or, with reduced motion, its short
+   * crossfade), the Victory dialog waits for it to land (the board's
+   * listener), and never longer than VICTORY_WAVE_V7.dialogHoldLimitMs. A
+   * defeat, and a board that cannot play it, show the dialog at once, as
+   * before.
+   */
+  #holdVictoryDialog(view: PlayerViewV7): void {
+    const browser = this.#document.defaultView;
+    if (
+      browser === null ||
+      victoryWaveTriggerV7(view) === null ||
+      this.#boardHost.setVictoryWaveListener === undefined ||
+      this.#boardHost.victoryWaveAnimates?.() !== true
+    )
+      return;
+    this.#releaseVictoryHold(false);
+    const hold = {
+      matchInstance: this.#matchInstance,
+      timer:
+        typeof browser.setTimeout === "function"
+          ? browser.setTimeout(() => {
+              if (this.#victoryHold === hold) this.#releaseVictoryHold(true);
+            }, VICTORY_WAVE_V7.dialogHoldLimitMs)
+          : null,
+    };
+    this.#victoryHold = hold;
+    this.#boardHost.setVictoryWaveListener(() => {
+      if (this.#victoryHold === hold) this.#releaseVictoryHold(true);
+    });
+  }
+
+  /** Ends the wait for the victory wave; `render` shows the dialog now. */
+  #releaseVictoryHold(render: boolean): void {
+    const hold = this.#victoryHold;
+    if (hold === null) return;
+    this.#victoryHold = null;
+    if (hold.timer !== null)
+      this.#document.defaultView?.clearTimeout(hold.timer);
+    this.#boardHost.setVictoryWaveListener?.(null);
+    if (render && !this.#destroyed) this.#render();
+  }
+
+  /** A click or tap anywhere during the wave brings the dialog at once. */
+  readonly #onSkipVictoryWave = (event: Event): void => {
+    if (this.#victoryHold === null) return;
+    // The tap only skips the wait: it never reaches the board.
+    event.stopPropagation();
+    this.#releaseVictoryHold(true);
+  };
 
   #releaseReward(): boolean {
     const held = this.#rewardHeld;

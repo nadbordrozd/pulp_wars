@@ -199,6 +199,13 @@ import {
   terrainRippleEnabledV7,
 } from "./terrain-ripple-v7";
 import {
+  createVictoryWaveV7,
+  drawVictoryFadeTintV7,
+  victoryWaveEnabledV7,
+  type VictoryWaveFrameV7,
+  type VictoryWaveModeV7,
+} from "./victory-wave-v7";
+import {
   terrainAtFogEnabledV7,
   terrainGhostsOfV7,
   terrainSkeletonOfViewV7,
@@ -306,6 +313,19 @@ export interface BoardHostV7 {
    * shows every gain at once.
    */
   readonly feedback?: BoardFeedbackPortV7;
+  /**
+   * The victory wave (bead pulp_wars-556y, victory-wave-v7.ts): whether a
+   * victory reached now would play on this board, as the wave or (reduced
+   * motion) the crossfade: the switch on, a board that draws frames. The
+   * Victory dialog waits for it only then.
+   */
+  victoryWaveAnimates?(): boolean;
+  /**
+   * Called once when a victory wave has landed and the dialog may show
+   * (at once for a crossfade or a won match loaded as it is). Null
+   * removes the listener.
+   */
+  setVictoryWaveListener?(listener: (() => void) | null): void;
   destroy(): void;
 }
 
@@ -436,6 +456,28 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
   #terrainRippleFrame: number | null = null;
   /** Review tooling only (pinTerrainRipple): the ripple held at a time. */
   #pinnedTerrainRippleMs: number | null = null;
+  /**
+   * The victory wave (pulp_wars-556y, victory-wave-v7.ts): when the viewer
+   * wins, every explored cell hops in a widening ring and takes the
+   * winner's faction skin. It runs on a clock of its own
+   * (#victoryClockMs) and asks for frames only while it plays.
+   */
+  readonly #victoryWave = createVictoryWaveV7();
+  readonly #victoryWaveEnabled = victoryWaveEnabledV7();
+  #victoryWaveFrame: number | null = null;
+  /**
+   * The wave's clock: it advances like the atmosphere's (at most
+   * ATMOSPHERE_STEP_MS a drawn frame, in reduced motion too), but only
+   * with frames that draw the game's own view.
+   */
+  #victoryClockMs = 0;
+  #victoryWaveListener: (() => void) | null = null;
+  /** The start of the wave whose landing the listener has heard. */
+  #victoryWaveHeard: number | null = null;
+  /** The reduced-motion crossfade's own canvas (see #victoryFadeLayer). */
+  #victoryFadeContext: CanvasRenderingContext2D | null = null;
+  /** Review tooling only (pinVictoryWave): the wave held at a time. */
+  #pinnedVictoryWaveMs: number | null = null;
   /** The Blizzard's slow ambient redraw (a timer, not every frame). */
   #blizzardTimer: number | null = null;
   /** The unit being shattered on the board, cased in ice until it bursts. */
@@ -1859,11 +1901,19 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     if (model === null || context === null) return;
     this.#drawSerial += 1;
     const now = this.#now();
-    if (model.motion !== "REDUCED" && this.#atmosphereDrawnAt !== null)
-      this.#atmosphereClockMs += Math.min(
-        ATMOSPHERE_STEP_MS,
-        Math.max(0, now - this.#atmosphereDrawnAt),
-      );
+    const step =
+      this.#atmosphereDrawnAt === null
+        ? 0
+        : Math.min(
+            ATMOSPHERE_STEP_MS,
+            Math.max(0, now - this.#atmosphereDrawnAt),
+          );
+    if (model.motion !== "REDUCED") this.#atmosphereClockMs += step;
+    // The victory wave's clock runs only while the game's own view is
+    // drawn: a presentation that plays first never eats into the wave.
+    const gameViewShown =
+      this.#presentedView === null && this.#crossfade === null;
+    if (gameViewShown) this.#victoryClockMs += step;
     this.#atmosphereDrawnAt = now;
     const jump = this.#selectionJump;
     // Preview labels stay clear of the HUD and the open dock (the band the
@@ -1872,6 +1922,16 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       this.#presentedView === null && model.offeredCommands.length > 0
         ? this.#unobscuredBand()
         : null;
+    // The victory wave: the view the game is at (never a presentation's)
+    // starts it once the viewer has won.
+    if (this.#victoryWaveEnabled && gameViewShown)
+      this.#victoryWave.observe(
+        model.view,
+        model.matchInstanceId,
+        this.#victoryClockMs,
+        this.#victoryWaveMode(model),
+      );
+    const victoryNow = this.#victoryWaveNow(model);
     const renderView = (
       view: PlayerViewV7,
       clear: boolean,
@@ -1890,7 +1950,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
             "function",
         (prior) => this.#planFor(prior, NO_COMMANDS).entries,
       );
-      const plan = this.#terrainRipple.plan(
+      const rippled = this.#terrainRipple.plan(
         this.#planFor(
           view,
           this.#presentedView === null ? model.offeredCommands : NO_COMMANDS,
@@ -1898,14 +1958,24 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         view,
         this.#terrainRippleNow(),
       );
+      // The victory wave: the cells it has passed wear the winner's skin;
+      // with reduced motion the skin crossfades in over the old look.
+      const plan = this.#victoryWave.plan(rippled, view, victoryNow);
+      const fade =
+        plan === rippled ? null : this.#victoryWave.fade(view, victoryNow);
+      const tileHops = [
+        ...this.#terrainRipple.hops(this.#terrainRippleNow()),
+        ...this.#victoryWave.hops(view, victoryNow),
+      ];
+      const victoryWave = this.#victoryWave.frame(view, victoryNow);
       const animated = this.#animatedUnit;
       const held = this.#heldUnits;
-      const presented =
+      const present = (shown: typeof plan): typeof plan =>
         animated === null && held.size === 0
-          ? plan
+          ? shown
           : {
-              ...plan,
-              entries: plan.entries.map((entry) => {
+              ...shown,
+              entries: shown.entries.map((entry) => {
                 if (entry.kind !== "UNIT") return entry;
                 if (animated !== null && entry.key === `unit:${animated.id}`)
                   return { ...entry, at: animated.at };
@@ -1913,8 +1983,60 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
                 return hold === undefined ? entry : { ...entry, at: hold };
               }),
             };
+      const layer = fade === null ? null : this.#victoryFadeLayer();
+      if (fade !== null && layer !== null) {
+        // The crossfade: the skinned board is drawn whole, apart, and laid
+        // over the old one, so a unit or a city never shows through it.
+        drawLayer(
+          context,
+          view,
+          present(rippled),
+          clear,
+          sceneAlpha,
+          tileHops,
+          null,
+        );
+        drawLayer(layer, view, present(plan), true, 1, tileHops, null);
+        context.save();
+        context.setTransform(1, 0, 0, 1, 0, 0);
+        context.globalAlpha = sceneAlpha * fade;
+        context.drawImage(layer.canvas, 0, 0);
+        context.restore();
+        // A Human win's look does not change: a gold tint shows the fade.
+        if (this.#victoryWave.faction === "ORIGINAL")
+          drawVictoryFadeTintV7(
+            context,
+            {
+              camera: this.#camera,
+              devicePixelRatio:
+                this.#document.defaultView?.devicePixelRatio ?? 1,
+              sceneAlpha,
+            },
+            view.board,
+            fade,
+          );
+      } else
+        drawLayer(
+          context,
+          view,
+          present(plan),
+          clear,
+          sceneAlpha,
+          tileHops,
+          victoryWave,
+        );
+    };
+    const drawLayer = (
+      target: CanvasRenderingContext2D,
+      view: PlayerViewV7,
+      presented: BoardRenderPlanV7,
+      clear: boolean,
+      sceneAlpha: number,
+      tileHops: NonNullable<Parameters<typeof drawBoardV7>[0]["tileHops"]>,
+      victoryWave: VictoryWaveFrameV7 | null,
+    ): void => {
       drawBoardV7({
-        context,
+        context: target,
         viewport: this.#viewport,
         devicePixelRatio: this.#document.defaultView?.devicePixelRatio ?? 1,
         camera: this.#camera,
@@ -1969,7 +2091,8 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         starfield: this.#starfield,
         atmosphereTimeMs:
           model.motion === "REDUCED" ? 0 : this.#atmosphereClockMs,
-        tileHops: this.#terrainRipple.hops(this.#terrainRippleNow()),
+        tileHops,
+        victoryWave,
         ...(this.#factionGrassArt === undefined
           ? {}
           : { factionGrassArt: this.#factionGrassArt }),
@@ -1995,6 +2118,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       renderView(this.#crossfade.after, false, this.#crossfade.progress);
     } else renderView(this.#presentedView ?? model.view, true, 1);
     this.#pumpTerrainRipple();
+    this.#pumpVictoryWave(victoryNow);
     if (this.#projectile !== null) {
       const from = worldToScreen(
         projectGrid(this.#projectile.from),
@@ -3182,6 +3306,12 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       );
     this.#terrainRippleFrame = null;
     this.#terrainRipple.reset();
+    if (this.#victoryWaveFrame !== null)
+      this.#document.defaultView?.cancelAnimationFrame(this.#victoryWaveFrame);
+    this.#victoryWaveFrame = null;
+    this.#victoryWave.reset();
+    this.#victoryWaveHeard = null;
+    this.#victoryFadeContext = null;
     this.#resizeObserver?.disconnect();
     this.#resizeObserver = null;
     const canvas = this.#canvas;
@@ -3399,6 +3529,145 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
   pinTerrainRipple(elapsedMs: number | null): void {
     this.#pinnedTerrainRippleMs = elapsedMs;
     this.#draw();
+  }
+
+  /**
+   * The reduced-motion crossfade's own canvas, the board's size, made
+   * when first needed (null where no canvas can be made).
+   */
+  #victoryFadeLayer(): CanvasRenderingContext2D | null {
+    const board = this.#canvas;
+    if (board === null) return null;
+    let layer = this.#victoryFadeContext;
+    if (layer === null) {
+      try {
+        layer = this.#document.createElement("canvas").getContext("2d");
+      } catch {
+        layer = null;
+      }
+      this.#victoryFadeContext = layer;
+    }
+    if (layer === null) return null;
+    if (layer.canvas.width !== board.width) layer.canvas.width = board.width;
+    if (layer.canvas.height !== board.height)
+      layer.canvas.height = board.height;
+    return layer;
+  }
+
+  /** How a victory reached now shows on this board. */
+  #victoryWaveMode(model: BoardHostModelV7): VictoryWaveModeV7 {
+    if (model.motion === "REDUCED") return "FADE";
+    const browser = this.#document.defaultView;
+    return this.#context !== null &&
+      browser !== null &&
+      typeof browser.requestAnimationFrame === "function"
+      ? "WAVE"
+      : "INSTANT";
+  }
+
+  /**
+   * The wave's time: its own clock (a switch to reduced motion in the
+   * middle of the wave ends it at once), or the pinned time.
+   */
+  #victoryWaveNow(model: BoardHostModelV7): number {
+    const started = this.#victoryWave.startedAtMs;
+    if (this.#pinnedVictoryWaveMs !== null)
+      return (started ?? 0) + this.#pinnedVictoryWaveMs;
+    return model.motion === "REDUCED" &&
+      started !== null &&
+      this.#victoryWave.mode === "WAVE"
+      ? Number.MAX_SAFE_INTEGER
+      : this.#victoryClockMs;
+  }
+
+  /**
+   * Asks for the next frame while the wave plays, and tells the listener
+   * once it has landed.
+   */
+  #pumpVictoryWave(nowMs: number): void {
+    const wave = this.#victoryWave;
+    const started = wave.startedAtMs;
+    const settled = wave.settledAtMs;
+    const browser = this.#document.defaultView;
+    if (
+      started !== null &&
+      settled !== null &&
+      nowMs >= settled &&
+      this.#victoryWaveHeard !== started &&
+      this.#pinnedVictoryWaveMs === null
+    ) {
+      this.#victoryWaveHeard = started;
+      const listener = this.#victoryWaveListener;
+      // After this frame: the listener renders the dialog, which updates
+      // this host again.
+      if (listener !== null)
+        if (browser !== null && typeof browser.setTimeout === "function")
+          browser.setTimeout(listener, 0);
+        else listener();
+    }
+    if (
+      this.#victoryWaveFrame !== null ||
+      this.#pinnedVictoryWaveMs !== null ||
+      browser === null ||
+      typeof browser.requestAnimationFrame !== "function" ||
+      (!wave.active(nowMs) && (settled === null || nowMs >= settled))
+    )
+      return;
+    this.#victoryWaveFrame = browser.requestAnimationFrame(() => {
+      this.#victoryWaveFrame = null;
+      this.#draw();
+    });
+  }
+
+  victoryWaveAnimates(): boolean {
+    const model = this.#model;
+    const browser = this.#document.defaultView;
+    return (
+      this.#victoryWaveEnabled &&
+      model !== null &&
+      this.#context !== null &&
+      browser !== null &&
+      typeof browser.requestAnimationFrame === "function"
+    );
+  }
+
+  setVictoryWaveListener(listener: (() => void) | null): void {
+    this.#victoryWaveListener = listener;
+    // A wave that has landed already is heard at once.
+    const started = this.#victoryWave.startedAtMs;
+    if (
+      listener !== null &&
+      started !== null &&
+      this.#victoryWaveHeard === started
+    )
+      this.#document.defaultView?.setTimeout(listener, 0);
+  }
+
+  /**
+   * Review tooling and tests: holds the victory wave `elapsedMs` after its
+   * start and redraws (null lets it run again). The game never calls it.
+   */
+  pinVictoryWave(elapsedMs: number | null): void {
+    this.#pinnedVictoryWaveMs = elapsedMs;
+    this.#draw();
+  }
+
+  /** Review tooling and tests: the wave's start cell, faction and mode. */
+  victoryWaveState(): {
+    readonly origin: CoordV7 | null;
+    readonly faction: string | null;
+    readonly mode: VictoryWaveModeV7 | null;
+    readonly startedAtMs: number | null;
+    readonly settledAtMs: number | null;
+  } {
+    const wave = this.#victoryWave;
+    return {
+      origin: wave.origin,
+      faction: wave.faction,
+      mode: wave.mode,
+      startedAtMs: wave.startedAtMs,
+      settledAtMs: wave.settledAtMs,
+    };
   }
 
   #animate(

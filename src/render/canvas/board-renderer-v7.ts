@@ -427,8 +427,15 @@ import {
 import {
   TILE_HOP_KINDS_V7,
   tileHopLiftsV7,
+  tileHopWidensV7,
   type TileHopV7,
 } from "./terrain-ripple-v7";
+import {
+  drawVictoryGlowsV7,
+  drawVictoryRipplesV7,
+  drawVictorySparklesV7,
+  type VictoryWaveFrameV7,
+} from "./victory-wave-v7";
 import { drawStarfieldV7 } from "./starfield-v7";
 import {
   drawWaterBlendV7,
@@ -2384,6 +2391,12 @@ export function drawBoardV7(input: {
    */
   readonly tileHops?: readonly TileHopV7[];
   /**
+   * The victory wave (bead pulp_wars-556y, victory-wave-v7.ts): the rings
+   * on water the wave is passing (over the ground, under trees and pieces)
+   * and a Human win's sparkles (over everything). Omitted or null: none.
+   */
+  readonly victoryWave?: VictoryWaveFrameV7 | null;
+  /**
    * The Mind Control revision: the control halo's pulse clock in ms (0, the
    * default, and reduced motion draw it static in the faction colour).
    */
@@ -2836,6 +2849,13 @@ export function drawBoardV7(input: {
     input.tileHops === undefined || input.tileHops.length === 0
       ? null
       : tileHopLiftsV7(input.tileHops, camera, devicePixelRatio);
+  // The victory wave (pulp_wars-556y): a crouching or landing cell is
+  // drawn a little wider about its centre.
+  const tileWidens =
+    input.tileHops === undefined || input.tileHops.length === 0
+      ? null
+      : tileHopWidensV7(input.tileHops, camera, devicePixelRatio);
+  const victoryWave = input.victoryWave ?? null;
   let lifted = false;
   const terrainFrame = { camera, devicePixelRatio, sceneAlpha, fogAt };
   // The Candy redesign (section 7.2): the Glaze streak of each Glazed cell,
@@ -2870,6 +2890,15 @@ export function drawBoardV7(input: {
             highContrast: input.highContrast ?? false,
           },
         );
+    if (
+      victoryWave !== null &&
+      pass === (chibiArt === undefined ? "FOREGROUND" : "TALL_BODY")
+    )
+      drawVictoryRipplesV7(
+        context,
+        { camera, devicePixelRatio, sceneAlpha },
+        victoryWave.ripples,
+      );
     if (pass === "FOREGROUND")
       for (const entry of fogEdgeAgain)
         drawFogEdgeV7(context, fogFrame, fogArt, entry, fogCells);
@@ -2883,14 +2912,20 @@ export function drawBoardV7(input: {
         tileLifts === null || !TILE_HOP_KINDS_V7.has(entry.kind)
           ? undefined
           : tileLifts.get(coordKey(entry.at));
-      if (hopLift !== undefined) {
-        // Stretched upward from the cell's foot, which stays where it is.
+      const hopWiden =
+        tileWidens === null || !TILE_HOP_KINDS_V7.has(entry.kind)
+          ? undefined
+          : tileWidens.get(coordKey(entry.at));
+      if (hopLift !== undefined || hopWiden !== undefined) {
+        // Stretched upward from the cell's foot, which stays where it is
+        // (and, in the victory wave, widened about the cell's centre).
         const cell = TILE_HEIGHT * camera.zoom;
         const foot = camera.offsetY + entry.at.y * cell + cell / 2;
+        const centre = camera.offsetX + entry.at.x * TILE_WIDTH * camera.zoom;
         context.save();
-        context.translate(0, foot);
-        context.scale(1, 1 + hopLift / cell);
-        context.translate(0, -foot);
+        context.translate(centre, foot);
+        context.scale(hopWiden ?? 1, 1 + (hopLift ?? 0) / cell);
+        context.translate(-centre, -foot);
         lifted = true;
       }
       if (entry.kind === "FOG" && pass === "TALL_BODY" && ghosted) {
@@ -5213,6 +5248,20 @@ export function drawBoardV7(input: {
     context.arc(x, y, 34 * camera.zoom, 0, Math.PI * 2);
     context.fill();
     context.restore();
+  }
+  // The victory wave (pulp_wars-556y): the ring of light, and a Human
+  // win's sparkles, on top.
+  if (victoryWave !== null) {
+    drawVictoryGlowsV7(
+      context,
+      { camera, devicePixelRatio, sceneAlpha },
+      victoryWave,
+    );
+    drawVictorySparklesV7(
+      context,
+      { camera, devicePixelRatio, sceneAlpha },
+      victoryWave.sparkles,
+    );
   }
   context.restore();
 }

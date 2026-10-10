@@ -208,6 +208,16 @@ export interface TerrainRippleV7<
 export interface TileHopV7 {
   readonly at: CoordV7;
   readonly lift: number;
+  /**
+   * The victory wave (bead pulp_wars-556y, victory-wave-v7.ts): the hop's
+   * height as a share of the cell's side, where it is not the ripple's.
+   */
+  readonly height?: number;
+  /**
+   * The victory wave: the extra width of a crouching or landing cell, as a
+   * share of the cell's side, about its centre (0 or absent: none).
+   */
+  readonly widen?: number;
 }
 
 export function createTerrainRippleV7<
@@ -372,9 +382,35 @@ export function tileHopLiftsV7(
   for (const hop of hops) {
     const lift =
       Math.round(
-        hop.lift * TERRAIN_RIPPLE_V7.height * TILE_WIDTH * camera.zoom * ratio,
+        hop.lift *
+          (hop.height ?? TERRAIN_RIPPLE_V7.height) *
+          TILE_WIDTH *
+          camera.zoom *
+          ratio,
       ) / ratio;
     if (lift > 0) lifts.set(key(hop.at), lift);
   }
   return lifts;
+}
+
+/**
+ * The victory wave (bead pulp_wars-556y): how much wider each crouching or
+ * landing cell is this frame, as a scale above 1 about the cell's centre,
+ * by "x,y". A whole number of device pixels on each side; a cell that
+ * would widen by none is left out.
+ */
+export function tileHopWidensV7(
+  hops: readonly TileHopV7[],
+  camera: CameraState,
+  devicePixelRatio: number,
+): Map<string, number> {
+  const ratio = devicePixelRatio > 0 ? devicePixelRatio : 1;
+  const cell = TILE_WIDTH * camera.zoom;
+  const widens = new Map<string, number>();
+  for (const hop of hops) {
+    if (hop.widen === undefined || hop.widen <= 0) continue;
+    const side = Math.round((hop.widen * cell * ratio) / 2) / ratio;
+    if (side > 0) widens.set(key(hop.at), 1 + (2 * side) / cell);
+  }
+  return widens;
 }

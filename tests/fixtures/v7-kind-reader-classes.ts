@@ -285,6 +285,17 @@ export const KIND_READER_CLASSES_V7: Readonly<
   // pulp_wars-2yc.28: the faction of the seat that owns a territory (the
   // forest set a wood in the fog is packed with).
   "src/render/canvas/terrain-at-fog-v7.ts::terrainGhostsV7": "SEAT",
+  // pulp_wars-556y: the victory wave takes the winning seat's faction skin
+  // (the winner, the viewer's seat, and the Human win's sparkles).
+  "src/render/canvas/victory-wave-v7.ts::victoryWaveTriggerV7": "SEAT",
+  "src/render/canvas/victory-wave-v7.ts::createVictoryWaveV7": "SEAT",
+  "src/render/canvas/victory-wave-v7.ts::frame": "SEAT",
+  // The Human win's taller hop, and the gold tint of its crossfade.
+  "src/render/canvas/victory-wave-v7.ts::hops": "SEAT",
+  "src/render/canvas/board-host-v7.ts::CanvasBoardHostV7.#draw": "SEAT",
+  "src/render/canvas/victory-wave-v7.ts::faction": "SEAT",
+  "src/render/canvas/board-host-v7.ts::CanvasBoardHostV7.victoryWaveState":
+    "SEAT",
   "src/render/dinosaur-presentation-v7.ts::matchHasDinosaurV7": "SEAT",
   "src/render/dinosaur-presentation-v7.ts::dinosaurLabel": "SEAT",
   "src/render/dinosaur-presentation-v7.ts::bigBodyRolesV7": "SEAT",
