@@ -1,28 +1,51 @@
 # Ruleset 7: the Cultists of the Ancient Ones (spec)
 
-**Status:** final design spec for the ninth faction, validated on paper
-(bead `pulp_wars-mch9.2`, epic `pulp_wars-mch9`, 2026-10-09; the first
-draft was bead `pulp_wars-mch9.1`). No game was played or simulated to
-write it. **Implemented so far:** the registration, bead E1; Favour with
-Sacrifice, Seize, Offering, and Martyr, bead E2; the channel, bead E3:
-Summon and the Horror, Channel and the strands, the disruption rule, the
-Start Turn check, Behold!, Anchor, and Boo!; and Unbound, bead E4: a daemon
-that fails its check belongs to nobody and rampages, Furious, Bind again, a
-bound daemon's kills as Favour; rituals and the Herald, bead E5:
-Star-fall, the Great Summoning, Ravage, Unstoppable, Proclaim and the Cowed
-city; and hexes and tricks, bead E6: Ribbit and the frog, Switcheroo, the
-Tentacle and Grab, Pick Me!, Pamphlets, and the lab `LAB_CULT_MID`
-([section 21](#21-implementation-notes)). The engine is complete; the
-Normal AI, the interface of the rites and tricks, and the setup screen are
-not. It
-replaces
+**Status:** **folded into [Ruleset 7: current rules](RULESET_7_CURRENT.md)
+(kept as the design record)** by `pulp_wars-mch9.21` at
+`pulp-wars-poc-7r78`: the current rules describe the running nine-faction
+game, with the Cultists in their
+[section 26](RULESET_7_CURRENT.md#26-cultist-faction-rules), their roster in
+[section 11](RULESET_7_CURRENT.md#11-unit-roster), and their technology in
+[section 6.2](RULESET_7_CURRENT.md#62-technology-tree), and win wherever
+this document differs; [section 22](#22-fold-notes-pulp_wars-mch921) here
+lists where the build differs from this text. Read this document for why a
+rule is what it is, not for what the rule is.
+
+It is the final design spec for the ninth faction, validated on paper (bead
+`pulp_wars-mch9.2`, epic `pulp_wars-mch9`, 2026-10-09; the first draft was
+bead `pulp_wars-mch9.1`). No game was played or simulated to write it or to
+build it. **Every step is built:**
+
+- **the engine**, in six steps (E1 to E6, `pulp_wars-mch9.3` to `mch9.8`,
+  identities `pulp-wars-poc-7r71` to `7r78`): the registration; Favour with
+  Sacrifice, Seize, Offering, and Martyr; the channel (Summon and the
+  Horror, Channel and the strands, the disruption rule, the Start Turn
+  check, Behold!, Anchor, and Boo!); Unbound (the rampage, Furious, Bind
+  again, a bound daemon's kills as Favour); rituals and the Herald
+  (Star-fall, the Great Summoning, Ravage, Unstoppable, Proclaim and the
+  Cowed city); and hexes and tricks (Ribbit and the frog, Switcheroo, the
+  Tentacle and Grab, Pick Me!, Pamphlets, and the lab `LAB_CULT_MID`), with
+  the choices of each step in [section 21](#21-implementation-notes);
+- **the Normal AI** (A1 to A4, `pulp_wars-mch9.9` to `mch9.12`), as built
+  in sections [15.6](#156-as-built-a1-the-cult-seat-on-the-army-policy-pulp_wars-mch99)
+  to [15.9](#159-as-built-a4-every-seat-against-the-cult-pulp_wars-mch912)
+  and in
+  [Normal AI, the Cult seat](../architecture/NORMAL_AI.md#the-cult-seat-pulp_wars-mch99-to-mch912);
+- **the art** ([the Cult's art direction](../art/factions/CULT.md)) and
+  **the interface** (U1 to U3, `pulp_wars-mch9.17` to `mch9.19`), as built
+  in [section 14.3](#143-how-it-reads-on-the-board-without-text), with the
+  faction offered in the setup screen and nine seats (U4,
+  `pulp_wars-mch9.20`).
+
+It replaced
 [the Cult proposal](RULESET_7_CULT_PROPOSAL.md) of 2026-10-06 (bead
 `pulp_wars-2yc.25`), which stays as design history; where the two
-disagree, this document is the design. It is an overlay over
-[Ruleset 7: current rules](RULESET_7_CURRENT.md); every rule it does not
-mention stays in force. Every number is a first guess for the contract
-step to run through the engine's combat preview, except where a
-[variance rule](#2-the-variance-rules) forbids a change. The user's
+disagree, this document is the design. It was written as an overlay over
+[Ruleset 7: current rules](RULESET_7_CURRENT.md). Every number was a first
+guess; the engine steps re-ran the quoted combat results through the
+engine's combat preview ([section 21](#21-implementation-notes)), and no
+number has been tuned since. A [variance rule](#2-the-variance-rules) still
+forbids some changes. The user's
 answers of 2026-10-09 to the first draft's questions are applied
 throughout ([section 20](#20-decisions-and-open-questions)).
 
@@ -2502,8 +2525,10 @@ text-harness lines and previews.
 | **U4**   | Nine seats and the Cult in the setup screen (eight opponents) and a nine-row leaderboard; the Cult offered once A1 to A4, U1 to U3, and ART3 and ART4 are done                                                                                                 | `ui/presentation`    | A4, U3, ART4             |
 | **D1**   | Fold into the current rules as a new faction section (and section 2.1's nine seats), the Cult entry of `NORMAL_AI.md`, and the history of this spec                                                                                                            | `docs/tracker`       | every bead above         |
 
-A hand-play fairness check against [the variance rules](#2-the-variance-rules)
-with the lab is **not filed**: it runs only if the user asks for it.
+Every bead of the table is built; D1's notes are
+[section 22](#22-fold-notes-pulp_wars-mch921). A hand-play fairness check
+against [the variance rules](#2-the-variance-rules) with the lab is **not
+filed**: it runs only if the user asks for it.
 
 ## 20. Decisions and open questions
 
@@ -3220,6 +3245,61 @@ is in the engine. The choices E6 made where this spec left room:
     Summoners side by side, a Stargazer, a Caller, 2 Chosen), 35 Coins on
     the first turn, two free unit slots, and **12 Favour** and no daemon. A
     mission seat may now start with Favour (`favour`, a Cult seat's only).
+
+## 22. Fold notes (`pulp_wars-mch9.21`)
+
+Bead D1 folded this spec into
+[the current rules](RULESET_7_CURRENT.md#26-cultist-faction-rules) at
+`pulp-wars-poc-7r78`. It changed no code and no rule. The rules there were
+written from the engine (`src/engine/rules/ruleset-v7.ts` and
+`src/engine/v7/cult*.ts`), and **every number of sections 3 to 9 matches
+the registry**: the nine units' costs, Hit Points, Attack, Defense, Move,
+range, and Sight; the three summoned units' numbers, prices, Control, and
+values; the Seizure's 5 HP and its double; the Offering's 2 population, 3
+Favour, and level 2; Martyr's 6; the channel's 3 tiles; the grip's three
+strands; a star's 5 + 1 at 2 to 4 tiles; the rites' 1 and 3 chanters;
+Proclaim's 3 tiles; Ribbit's and Switcheroo's 2 tiles and their every
+second turn; a frog's Defense 0.5 and Move 1; and the Tentacle's 3 tiles
+and 3 rounds. No number differs.
+
+Where the design text of sections 1 to 14 and the build differ, the build
+is the rule. Most of these are choices the engine steps made and recorded
+in [section 21](#21-implementation-notes); they are gathered here so that
+nobody reads the design text as the rule.
+
+| #   | Design text                                                                                                                      | As built                                                                                                                                                                                                                                                |
+| --- | -------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | 4.2: "a daemon moves like a Martian walker"                                                                                      | It also defends like one: a daemon is never fortified and takes no cover (the walker rule of the current rules). The design did not say so.                                                                                                             |
+| 2   | 6.2: a status disrupts when "another seat puts" it on a cultist; the list is Frozen, Stuck, Toothache, Splatted, Plagued, Bitten | Who caused it does not matter (the Cult's own Boo!, star, or daemon disrupts too), and the marks a hit leaves count as well: Terror, the hunted mark, the bombed mark, and Cracked. A frog is a status.                                                 |
+| 3   | 6.4: an Unbound daemon "moves toward the target by its ordinary Move"                                                            | The rampage's walk is its own: zones of control, Roads, Snow, and terrain neither stop nor slow it; it never steps onto ice, a Rift, a center, a chest, or a curiosity tile. The target is chosen whether anyone sees it or not.                        |
+| 4   | 8.1: the idol is raised "until the end of the Cult seat's next Start Turn"                                                       | Until the end of that Start Turn's channel check. A command that also disrupts the Idol Bearer wards nobody, and the Idol Bearer does not ward its own strand.                                                                                          |
+| 5   | 8.4: Anchor is "once per turn" on a cultist "that holds a strand this turn (it may channel after the grip)"                      | The cultist must hold its strand before it is gripped. There is no once-a-turn mark: a Thing whose grip broke may grip again. The Thing's own Move does not fail the grip, but the strand counts three only while the Thing stands beside the cultist.  |
+| 6   | 18, change 13: Martyr does not pay for "a wild unit's kill"                                                                      | It does not pay for a death as the target (or in the splash) of an attack **made by** an Unbound daemon or a Tentacle (sections 3 and 8.2). A Chosen that attacks one and dies of the retaliation is a Martyr.                                          |
+| 7   | 13.1: "Muster counts daemons as kinds while commanded"                                                                           | It does not: Muster counts kinds with a price, and a daemon has none.                                                                                                                                                                                   |
+| 8   | 7.1, 6.1: who may chant or help is "robed cultists that have not used a primary action"                                          | Also not Frozen and not a frog.                                                                                                                                                                                                                         |
+| 9   | 7.3: the Herald consumes "a hostile unit that could be Seized by the leader"                                                     | Only one at 5 HP or less: a frog at half its Hit Points is Seized but not consumed. A chanter on the mark is consumed. An ally's unit and a Plagued or Bitten own unit block; so does a Barricade or a mound put on the mark.                           |
+| 10  | 7.4: Star-fall's "kills are credited to the Stargazer"                                                                           | Its kill count grows for hostile victims only; own victims are Losses, and an own Chosen pays its Martyr. The mark may be any explored tile, water included, and neutral units are hit.                                                                 |
+| 11  | 8.6: a city "may be Proclaimed again every turn"                                                                                 | A city that is Cowed already is refused (`COWED`), so two Heralds do not stack it. It ends with its owner's turn, so it can be Cowed again in every Cult turn. Cowed is built as "the city action is spent", and it ends at once if the city is taken.  |
+| 12  | 9.1: a frog has "no attack, retaliation, capture, Kaboom, or other primary action"                                               | A frog gives no command but Move, Disembark, Promote, Disband, and Wait. "No cover" includes Snow and ice; a Blizzard's halving stays. A unit that is a frog already is no target.                                                                      |
+| 13  | 9.2: Switcheroo takes a unit "own or enemy"                                                                                      | Any player's unit, an ally's too. Never a unit nothing moves (a Jawbreaker). The tiles are tested with the actor's Engineering and Navigation, and both units lose their capture eligibility.                                                           |
+| 14  | 9.3: a Tentacle rises on "a free land or water tile within 3"                                                                    | On a tile its Caller's seat has explored, 1 to 3 tiles away; ice is allowed, a Rift and a center are not. A mind-controlled Caller has no Tentacle (section 13.1 did not name it). Every step of a held unit's Move must be beside the Tentacle.        |
+| 15  | 6.1: the Horror appears on "a free land tile next to the Summoner that a Horror could enter"                                     | Also explored by the seat, never a settlement center, and not in an ally's territory.                                                                                                                                                                   |
+| 16  | 3, 14.3: Favour is shown as "a row of green candles and a number"                                                                | One candle and a number (section 14.3, as built by U1).                                                                                                                                                                                                 |
+| 17  | 14.3, as built by U3, said "a Cult match plays the title theme until one is delivered"                                           | It played nothing: a match whose viewer's faction had no theme was silent. U4 (`pulp_wars-mch9.20`) gave the Cult a stand-in, the Undead theme (`STAND_IN_THEME_FACTIONS_V1`), and corrected that sentence.                                             |
+| 18  | 15.5: a channeller is worth "the value of the daemon it holds"                                                                   | The policy uses the daemon's price in Favour (5 and 20), not its unit value (6 and 24): section 15.9, rule 2. The other differences between sections 15.1 to 15.5 and the built policy are in sections 15.6 to 15.9.                                    |
+| 19  | 4.2, 21.1: the summoned units have "role IDs"                                                                                    | They are not unit roles. A daemon's stored role is a mechanical role no rule reads (the Horror's `KNIGHT`, the Herald's and the Tentacle's `JUGGERNAUT`), which is why the big-body rules (no Seizure, Swallow, Knockback, or Bounce) cover the Herald. |
+
+**Not checked by the fold** (stated in section 13.1 and not traced in the
+code by D1, so the current rules do not repeat them): that a bound daemon
+may attack a Barricade and what the Herald deals one, and that Shatter can
+kill a Frozen bound Horror.
+
+**Still open.** No number of the faction or of its Normal AI was tuned or
+played, and the lab `LAB_CULT_MID` has not been played (the standing rule:
+only if the user asks). The Cult has no sounds of its own and no theme
+music ([section 14.2](#142-colour-looks-sound-music)): a Cult player hears
+the Undead theme as a stand-in, and the Cult's own theme is
+`pulp_wars-mch9.25`.
 
 ## Appendix A. The proposal's fifteen decisions, answered
 

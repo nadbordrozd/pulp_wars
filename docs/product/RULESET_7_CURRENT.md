@@ -1,20 +1,20 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r79`, for all eight offered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r79`, for all nine offered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
-(`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), and Candy (`CANDY`). A
-ninth faction, the Cultists (`CULT`), is **registered and not offered**: its
-roster, tree, start, and rewards are in the engine, and so are its Favour
-(Sacrifice, Seize, Offering, and Martyr), its channel (Summon and the
-Horror, Channel, the disruption rule, Behold!, Anchor, and Boo!), and
-Unbound (a daemon that fails its check belongs to nobody and rampages;
-Furious; Bind again), its rituals and the Herald (Star-fall, the Great
-Summoning, Ravage, Unstoppable, Proclaim and the Cowed city), and its hexes
-and tricks (Ribbit and the frog, Switcheroo, the Tentacle and Grab, Pick
-Me!, Pamphlets; [section 1](#1-identity-and-compatibility)); the Normal AI
-does not play its rites and tricks yet and the browser does not offer them,
-and [its spec](RULESET_7_CULTISTS.md) is folded in here only when they do. It
+(`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), Candy (`CANDY`), and
+the Cultists (`CULT`). The ninth faction, the Cultists of the Ancient Ones,
+is folded in by `pulp_wars-mch9.21`: its rules (Favour with Sacrifice,
+Seize, Offering, and Martyr; the daemons and the channel that holds them;
+Unbound, the rampage, and Bind again; the rituals Star-fall and the Great
+Summoning, and the Herald; the hexes and tricks) are
+[section 26](#26-cultist-faction-rules), its roster is in
+[section 11](#11-unit-roster), its technology in
+[section 6.2](#62-technology-tree), and its Normal AI in
+[section 16](#16-normal-ai-summary); [its spec](RULESET_7_CULTISTS.md) is
+kept as the design record, and the notes of its six engine steps are in
+[section 1](#1-identity-and-compatibility). It
 folds in
 revision 12 (free opening technology, Fruit visible from the start, Fertile
 Ground revealed by Gathering, resources kept under improvements, Normal AI
@@ -87,8 +87,10 @@ its UI notes in
 and its fold notes in
 [section 25](RULESET_7_CANDY.md#25-fold-notes-pulp_wars-jdb8)).
 The Undead, the Goblins, the Dinosaurs, the Martians, the Ice Folk, the
-Dwarves, and the Candy are part of the ordinary game: faction choice is offered in every
-match setup, with no development flag. The numbers of the first five
+Dwarves, the Candy, and the Cultists are part of the ordinary game: faction choice is offered in every
+match setup, with no development flag. The numbers of the Cultists were
+checked against the engine code at `pulp-wars-poc-7r78`
+(`pulp_wars-mch9.21`). The numbers of the first five
 factions were checked against the engine code at `pulp-wars-poc-7r25`, those
 of the Ice Folk at `pulp-wars-poc-7r30` (`pulp_wars-7g3.8`), those of
 the Dwarves at `pulp-wars-poc-7r31` (`pulp_wars-78i.8`), and those of the
@@ -1399,11 +1401,13 @@ separate [Ruleset 6](RULESET_6.md) route.
     Tentacle 8 HP, Attack 3, Defense 1, Move 0, value 0. The Horror is on
     the board since the channel (the note after the next); the Herald and
     the Tentacle are still read by nothing.
-  - **Not there yet:** the Unbound rules (the rampage, Furious, Bind
-    again), the rituals and the Herald, Proclaim, Ribbit, Switcheroo, the
-    Tentacle, Pamphlets, and Pick Me!. Their ability literals, commands,
-    events, and technology unlocks arrive with the bead that implements
-    each, so that no card names an ability that does nothing.
+  - **Not there at the registration, built since:** the Unbound rules
+    (the rampage, Furious, Bind again), the rituals and the Herald,
+    Proclaim, Ribbit, Switcheroo, the Tentacle, Pamphlets, and Pick Me!.
+    Their ability literals, commands, events, and technology unlocks
+    arrived with the bead that implemented each (the five notes below), so
+    that no card named an ability that did nothing; the whole faction is
+    [section 26](#26-cultist-faction-rules).
   - **Offered** (`pulp_wars-mch9.20`, no rule and no identity change; hidden
     from `7r71` until then). `HIDDEN_FACTION_IDS_V7` is empty and
     `OFFERED_FACTION_IDS_V7` is all nine. The setup screen (its selects,
@@ -1411,14 +1415,15 @@ separate [Ruleset 6](RULESET_6.md) route.
     title scene, and the Gallery read the offered factions. The Cult has no
     theme of its own yet: a Cult player hears the Undead theme
     ([Sound](../ui/SOUND.md#theme-music)).
-  - **Stand-in art.** The Cult has no art, sound, or theme of its own. Its
-    units, portraits, city, and ships ask for `UNIT:CULT:<ROLE>`,
-    `PORTRAIT:CULT:<ROLE>`, and `CITY:CULT:<level>` and fall back to the
-    shared Human art in the Cult's colour (`#00ff78`); on the board a Cult
-    unit drawn with stand-in art wears a lettered badge ("C",
-    `FACTION_STAND_IN_LETTERS_V7`) until a raster is registered for its
-    subject. Its buildings, ground, and forest are the shared ones; a match
-    shown to a Cult seat plays no theme.
+  - **Art.** The registration drew the Cult with stand-in art. It has its
+    own since the art beads (`pulp_wars-mch9.13` to `mch9.16`, `mch9.22`,
+    and `mch9.23`; [the Cult's art direction](../art/factions/CULT.md)):
+    units, summoned units, portraits, cities, buildings, ships, ground,
+    forest, and icons, in the Cult's colour (`#00ff78`). A subject without
+    a registered raster asks for `UNIT:CULT:<ROLE>`,
+    `PORTRAIT:CULT:<ROLE>`, or `CITY:CULT:<level>` and is drawn as a
+    lettered stand-in ("C", `FACTION_STAND_IN_LETTERS_V7`). Its sounds and
+    its theme are still stand-ins (the Offered bullet above).
   - **Normal AI.** The registration left the Cult off the army policy
     (`ARMY_PLAY_FACTIONS_V7`). Its first AI bead (`pulp_wars-mch9.9`, no
     rule and no identity change) put it on: both seats of a match with a
@@ -1950,12 +1955,13 @@ player per offered faction (`OFFERED_FACTION_IDS_V7`).
   but 11 x 11 Lakes (2), 11 x 11 Continents (2–6), 11 x 11 Archipelago
   (2–4), 11 x 11 Pangea (2–8), and 14 x 14 Archipelago (2–8). The minimums of
   `7r41` (14 for 3 seats, 16 for 4) are gone: four players on an 11 x 11
-  Dry Land board are legal. The setup screen still offers at most three
-  opponents and those minimum sizes until `pulp_wars-ykw.5`.
+  Dry Land board are legal. The setup screen offers every legal count
+  and size since `pulp_wars-ykw.5` (one to eight opponents since the Cult
+  is offered).
 
 - **Crowded.** A generated board with less than one village per two
   players (`2 × villages < seats`, `crowdedBoardV7`) is a capital brawl:
-  legal, never the auto size, and to be labelled on the setup screen
+  legal, never the auto size, and labelled on the setup screen
   (`pulp_wars-ykw.5`). 11 x 11 Dry Land is crowded from six players.
 
 - **Faction choice.** `factions` is a dense array; index `i` is seat `i`'s
@@ -1967,7 +1973,7 @@ player per offered faction (`OFFERED_FACTION_IDS_V7`).
   Only headless and test setups may lift the rule, with
   `allowDuplicateFactions: true`, which the browser never builds and
   refuses to launch or resume. The browser setup always offers one
-  Human/Undead/Goblin/Dinosaur/Martian/Ice Folk/Dwarf/Candy select per seat
+  Human/Undead/Goblin/Dinosaur/Martian/Ice Folk/Dwarf/Candy/Cultists select per seat
   ("Your faction", "Player N faction"), with the factions other seats play
   disabled in the opponents' selects (the human's pick moves an opponent who
   played it to a free faction), and defaults to Human, Undead, Goblin, and
@@ -2238,8 +2244,9 @@ The seats each width holds are in [section 2.1](#21-match-setup).
   or a full-HP exhausted unit of the mover's faction's **treasure role**
   (faction rule `treasureUnitRole`: the `KNIGHT` role for Human, Undead, and
   Goblin, so a Knight, Vampire, or Scrap Buggy; the `RAIDER` role for
-  Dinosaur, Martian, Ice Folk, Dwarf, and Candy, so a Raptor, a Saucer, a
-  Sled, a Gyrocopter, or a Donut Racer) on the first legal adjacent
+  Dinosaur, Martian, Ice Folk, Dwarf, Candy, and the Cultists, so a Raptor,
+  a Saucer, a Sled, a Gyrocopter, a Donut Racer, or a Familiar) on the first
+  legal adjacent
   land cell (entered under the treasure unit's own movement mode, so a
   Saucer or a Gyrocopter needs no Engineering for a Mountain; never a mound
   tile), homed to the
@@ -3210,7 +3217,8 @@ of the spec.
   AI head start, [section 2.1](#21-match-setup)), no technology, a level-1 capital, one
   full-HP unit of its faction's `FIGHTER` role (Fighter for Human, Skeleton
   for Undead, Goblin for Goblin, Caveman for Dinosaur, Grunt at full Shield
-  for Martian, Yeti for Ice Folk, Hammerer for Dwarf, Toffee Trooper for Candy) on
+  for Martian, Yeti for Ice Folk, Hammerer for Dwarf, Toffee Trooper for Candy,
+  Initiate for the Cultists) on
   the capital and
   homed there, seven locked achievement entitlements, and every cell within
   radius 2 of its capital explored. A Dinosaur seat starts with no Egg. A
@@ -3220,7 +3228,7 @@ of the spec.
   contract's second-Goblin placement for a value of 2 (created after every
   seat's first unit, on the first land, non-Mountain, empty, chest-free cell
   of the capital ring in `(y, x)` order, or not at all), but it is unused.
-- Turn order is a seeded shuffle of every seat (2 to 8 players,
+- Turn order is a seeded shuffle of every seat (2 to 9 players,
   [section 2.1](#21-match-setup)); `round` starts at 1 and increments after
   the last seat in turn order. No seat is compensated for moving later.
 - A `SHOWCASE` match starts differently: three developed cities, every
@@ -3251,7 +3259,10 @@ of the spec.
   healing; heal the seat's unit on each Fountain of Youth
   ([section 2.7](#27-map-curiosities)); regenerate Trolls
   ([section 18.10](#1810-berserk-ram-and-troll-regeneration)); award income;
-  settle pending city rewards; evaluate achievements. Events:
+  settle pending city rewards; evaluate achievements. A Cult seat's Start
+  Turn adds its hex cooldowns (with the Mind Control cooldowns) and, after
+  Plague and its chains and before the Eggs, its channel check and its
+  rituals ([section 26.13](#2613-resolution-order)). Events:
   `TURN_STARTED`, then `SHIELDS_RECHARGED`, then one `UNITS_FROZEN` with
   source `BLACK_ICE`, then `UNITS_CRUSHED` with its `UNIT_DIED` (cause `CRUSHED`),
   the releases of a crushed Brain's controlled unit, the economy changes,
@@ -3309,8 +3320,9 @@ of the spec.
   seat's Start Turn (by Plague or a chain) emits `PORT_BLOCKADE_CHANGED` and
   `SEA_NETWORK_CHANGED` in that `END_TURN`.
 - **Neutral turn** ([section 2.7](#27-map-curiosities)): in a match with a
-  neutral unit on the board (the Giant Spider, a camp's guards, or, since
-  round 2, Bigfoot), the `END_TURN` of the last seat of a round runs the
+  neutral unit on the board (the Giant Spider, a camp's guards, since
+  round 2 Bigfoot, or an Unbound daemon or a Tentacle of the Cultists,
+  [section 26.6](#266-unbound-the-rampage-furious-and-bind-again)), the `END_TURN` of the last seat of a round runs the
   neutral turn after `TURN_ENDED` and before the next round's first Start
   Turn: `NEUTRAL_TURN_STARTED`, each neutral unit's step and attack or
   flight in unit-ID order (`UNIT_MOVED`, `COMBAT_RESOLVED`, deaths and
@@ -3339,7 +3351,7 @@ of the spec.
   score or turn-limit victory; in Perfection the match also ends after
   round 30 and the highest score wins
   ([section 3.1](#31-score-play-modes-and-stars)). The rule is the same with
-  2 or 8 players: an eliminated AI seat's turns are skipped and the match
+  2 or 9 players: an eliminated AI seat's turns are skipped and the match
   goes on until the human is the last player or is eliminated.
 
 ### 3.1 Score, play modes, and stars
@@ -3541,8 +3553,10 @@ else max(1, min(level, 4) + capital + landTrade + market + min(0, population))
   Mind Control frees its old city's slot at once. A burrowed Dwarf unit
   keeps its home and its slot while it is off the board
   ([section 22.2](#222-the-tunnel-and-burrowed-units)). Martian, Ice Folk,
-  Dwarf, and Candy cities have no capacity bonus, and every Ice Folk, Dwarf,
-  and Candy role uses 1 slot.
+  Dwarf, Candy, and Cult cities have no capacity bonus, and every Ice Folk,
+  Dwarf, Candy, and Cult role uses 1 slot; a Cult daemon has no home city
+  and uses none
+  ([section 26.4](#264-daemons-and-summon)).
 - `TRAIN`, `TRAIN_NAVAL`, `LAY_EGG`, `ASSEMBLE` (in the Engineer's home
   city, [section 22.8](#228-engineer-repair-and-assemble)), `REBAKE` (in the
   Confectioner's home city, [section 23.3](#233-crumbs)), and a treasure
@@ -3683,7 +3697,8 @@ same ladder holds for every faction:
   Treasury pays 10 (`CITY_REWARD_COINS_V7.TREASURY`; 6 before).
   **Scouts** grants the faction's `RAIDER`-role unit for every faction
   (`SURVEY_RAIDERS_V7`): a Raider, Ghoul, Wolf Rider, Raptor (hatched, no
-  Egg), Saucer (with its Shield), Sled, Gyrocopter, or Donut Racer, homed
+  Egg), Saucer (with its Shield), Sled, Gyrocopter, Donut Racer, or
+  Familiar, homed
   to the city and placed like any reward unit, without Scouting.
   **The Economic Miracle** is a record in the city's reward history:
   `cityEconomicMiracleIncomeV7` adds `ECONOMIC_MIRACLE_COINS_V7` (1) to the
@@ -3769,7 +3784,9 @@ same ladder holds for every faction:
   (2 slots, full Shield); an Ice Folk Militia is one Yeti and an Ice Folk
   Juggernaut reward is a Frost Giant; a Dwarf Militia is one Hammerer and a
   Dwarf Juggernaut reward is a Brass Titan; a Candy Militia is one Toffee Trooper
-  and a Candy Juggernaut reward is a Gingerbread Giant. Reward
+  and a Candy Juggernaut reward is a Gingerbread Giant; a Cult Militia is
+  two Initiates and a Cult Juggernaut reward is a Thing in the Cellar.
+  Reward
   IDs (`MILITIA`, `JUGGERNAUT`) are the same for every faction.
 - Rewards settle only for the active player's cities, by city ID then level;
   the first unrewarded level becomes the single pending choice, which blocks
@@ -4032,33 +4049,33 @@ sentence case. Eight shared names changed at `7r55`: `DRILL` was **Garrison** an
 `NAVAL_ENGINEERING` **Shipbuilding**, and `SEAMANSHIP` **Boarding**. The
 names every player sees (a cell in bold is the faction's own):
 
-| ID                  | Human         | Undead         | Goblin            | Dinosaur        | Martian           | Ice Folk        | Dwarf                | Candy                   |
-| ------------------- | ------------- | -------------- | ----------------- | --------------- | ----------------- | --------------- | -------------------- | ----------------------- |
-| `GATHERING`         | Gathering     | Gathering      | Gathering         | Gathering       | Gathering         | Gathering       | Gathering            | Gathering               |
-| `FARMING`           | Farming       | Farming        | Farming           | Farming         | Farming           | Farming         | Farming              | Farming                 |
-| `MILLING`           | Milling       | **Bone Mills** | Milling           | **Grinding**    | **Solar Arrays**  | Milling         | **Steam Pumps**      | Milling                 |
-| `ADMINISTRATION`    | Leadership    | Leadership     | Leadership        | Leadership      | Leadership        | Leadership      | Leadership           | Leadership              |
-| `PLANNING`          | Land Grants   | Land Grants    | Land Grants       | Land Grants     | Land Grants       | Land Grants     | Land Grants          | Land Grants             |
-| `HUNTING`           | Hunting       | Hunting        | Hunting           | Hunting         | Hunting           | Hunting         | Hunting              | Hunting                 |
-| `FORESTRY`          | Forestry      | Forestry       | Forestry          | Forestry        | Forestry          | Forestry        | Forestry             | Forestry                |
-| `SAWMILLING`        | Sawmilling    | **Liches**     | **Rocket Carts**  | **Timber**      | **Tripods**       | **Boulders**    | **Steam Cannons**    | **Pie Launchers**       |
-| `MARKSMANSHIP`      | Marksmanship  | **Banshees**   | **Bomb Chuckers** | **Spitters**    | **Ray Gunners**   | Marksmanship    | **Clockwork**        | **Gumball Gunners**     |
-| `FIELDCRAFT`        | Pathfinding   | Pathfinding    | Pathfinding       | Pathfinding     | **Heat Sinks**    | Pathfinding     | Pathfinding          | Pathfinding             |
-| `SCOUTING`          | Scouting      | Scouting       | Scouting          | Scouting        | **Saucers**       | Scouting        | **Gyrocopters**      | Scouting                |
-| `ROADS`             | Roads         | Roads          | Roads             | Roads           | Roads             | Roads           | Roads                | Roads                   |
-| `COMMERCE`          | Commerce      | Commerce       | **Plunder**       | Commerce        | Commerce          | Commerce        | Commerce             | Commerce                |
-| `RAIDING`           | Raiding       | Raiding        | Raiding           | Raiding         | Raiding           | Raiding         | **Dive Bombing**     | Raiding                 |
-| `CHIVALRY`          | Chivalry      | **Vampires**   | **Scrap Buggies** | **T-Rex**       | **Motherships**   | **Sabretooths** | **Whirligigs**       | **Chocolate Bunnies**   |
-| `DRILL`             | Crafting      | Crafting       | Crafting          | Crafting        | Crafting          | Crafting        | Crafting             | Crafting                |
-| `ENGINEERING`       | Engineering   | Engineering    | Engineering       | Engineering     | Engineering       | Engineering     | **Mining**           | Engineering             |
-| `METALLURGY`        | Armoury       | Armoury        | Armoury           | **Triceratops** | Armoury           | **Mammoths**    | **Steam Tanks**      | **Jawbreakers**         |
-| `FORTIFICATION`     | Fortification | Fortification  | Fortification     | **Nesting**     | **Force Fields**  | **Deep Winter** | **Dig In**           | **Home Sweet Home**     |
-| `EXPLOSIVES`        | Explosives    | **Pestilence** | Explosives        | **Wallbreaker** | **Disintegrator** | **Brittle**     | **Blasting Charges** | **Peppermint Surprise** |
-| `SHORECRAFT`        | Sailing       | Sailing        | Sailing           | Sailing         | Sailing           | **Rime**        | Sailing              | Sailing                 |
-| `NAVIGATION`        | Navigation    | Navigation     | Navigation        | Navigation      | Navigation        | **Pack Ice**    | Navigation           | Navigation              |
-| `NAVAL_ENGINEERING` | Shipbuilding  | Shipbuilding   | Shipbuilding      | Shipbuilding    | Shipbuilding      | **Icebound**    | Shipbuilding         | Shipbuilding            |
-| `SEAMANSHIP`        | Boarding      | Boarding       | Boarding          | Boarding        | Boarding          | **Black Ice**   | Boarding             | Boarding                |
-| `SUBMERSIBLES`      | Submersibles  | Submersibles   | Submersibles      | Submersibles    | Submersibles      | **Glacier**     | Submersibles         | Submersibles            |
+| ID                  | Human         | Undead         | Goblin            | Dinosaur        | Martian           | Ice Folk        | Dwarf                | Candy                   | Cult                    |
+| ------------------- | ------------- | -------------- | ----------------- | --------------- | ----------------- | --------------- | -------------------- | ----------------------- | ----------------------- |
+| `GATHERING`         | Gathering     | Gathering      | Gathering         | Gathering       | Gathering         | Gathering       | Gathering            | Gathering               | Gathering               |
+| `FARMING`           | Farming       | Farming        | Farming           | Farming         | Farming           | Farming         | Farming              | Farming                 | **Harvest Rites**       |
+| `MILLING`           | Milling       | **Bone Mills** | Milling           | **Grinding**    | **Solar Arrays**  | Milling         | **Steam Pumps**      | Milling                 | Milling                 |
+| `ADMINISTRATION`    | Leadership    | Leadership     | Leadership        | Leadership      | Leadership        | Leadership      | Leadership           | Leadership              | Leadership              |
+| `PLANNING`          | Land Grants   | Land Grants    | Land Grants       | Land Grants     | Land Grants       | Land Grants     | Land Grants          | Land Grants             | Land Grants             |
+| `HUNTING`           | Hunting       | Hunting        | Hunting           | Hunting         | Hunting           | Hunting         | Hunting              | Hunting                 | Hunting                 |
+| `FORESTRY`          | Forestry      | Forestry       | Forestry          | Forestry        | Forestry          | Forestry        | Forestry             | Forestry                | Forestry                |
+| `SAWMILLING`        | Sawmilling    | **Liches**     | **Rocket Carts**  | **Timber**      | **Tripods**       | **Boulders**    | **Steam Cannons**    | **Pie Launchers**       | **Stargazers**          |
+| `MARKSMANSHIP`      | Marksmanship  | **Banshees**   | **Bomb Chuckers** | **Spitters**    | **Ray Gunners**   | Marksmanship    | **Clockwork**        | **Gumball Gunners**     | **Hexers**              |
+| `FIELDCRAFT`        | Pathfinding   | Pathfinding    | Pathfinding       | Pathfinding     | **Heat Sinks**    | Pathfinding     | Pathfinding          | Pathfinding             | Pathfinding             |
+| `SCOUTING`          | Scouting      | Scouting       | Scouting          | Scouting        | **Saucers**       | Scouting        | **Gyrocopters**      | Scouting                | **Familiars**           |
+| `ROADS`             | Roads         | Roads          | Roads             | Roads           | Roads             | Roads           | Roads                | Roads                   | Roads                   |
+| `COMMERCE`          | Commerce      | Commerce       | **Plunder**       | Commerce        | Commerce          | Commerce        | Commerce             | Commerce                | Commerce                |
+| `RAIDING`           | Raiding       | Raiding        | Raiding           | Raiding         | Raiding           | Raiding         | **Dive Bombing**     | Raiding                 | Raiding                 |
+| `CHIVALRY`          | Chivalry      | **Vampires**   | **Scrap Buggies** | **T-Rex**       | **Motherships**   | **Sabretooths** | **Whirligigs**       | **Chocolate Bunnies**   | **Callers**             |
+| `DRILL`             | Crafting      | Crafting       | Crafting          | Crafting        | Crafting          | Crafting        | Crafting             | Crafting                | Crafting                |
+| `ENGINEERING`       | Engineering   | Engineering    | Engineering       | Engineering     | Engineering       | Engineering     | **Mining**           | Engineering             | Engineering             |
+| `METALLURGY`        | Armoury       | Armoury        | Armoury           | **Triceratops** | Armoury           | **Mammoths**    | **Steam Tanks**      | **Jawbreakers**         | **The Chosen**          |
+| `FORTIFICATION`     | Fortification | Fortification  | Fortification     | **Nesting**     | **Force Fields**  | **Deep Winter** | **Dig In**           | **Home Sweet Home**     | **Warding Circles**     |
+| `EXPLOSIVES`        | Explosives    | **Pestilence** | Explosives        | **Wallbreaker** | **Disintegrator** | **Brittle**     | **Blasting Charges** | **Peppermint Surprise** | **The Stars Are Right** |
+| `SHORECRAFT`        | Sailing       | Sailing        | Sailing           | Sailing         | Sailing           | **Rime**        | Sailing              | Sailing                 | Sailing                 |
+| `NAVIGATION`        | Navigation    | Navigation     | Navigation        | Navigation      | Navigation        | **Pack Ice**    | Navigation           | Navigation              | Navigation              |
+| `NAVAL_ENGINEERING` | Shipbuilding  | Shipbuilding   | Shipbuilding      | Shipbuilding    | Shipbuilding      | **Icebound**    | Shipbuilding         | Shipbuilding            | Shipbuilding            |
+| `SEAMANSHIP`        | Boarding      | Boarding       | Boarding          | Boarding        | Boarding          | **Black Ice**   | Boarding             | Boarding                | Boarding                |
+| `SUBMERSIBLES`      | Submersibles  | Submersibles   | Submersibles      | Submersibles    | Submersibles      | **Glacier**     | Submersibles         | Submersibles            | Submersibles            |
 
 The rest of this document, the tuning documents, and the faction documents
 name a technology by its ID in title case (Drill, Administration,
@@ -4070,7 +4087,7 @@ Human name of that time).
 **The heavy line unit (`7r55`).** In every tree Metallurgy unlocks the
 faction's `SWORDSMAN` role next to the Forge and Arms Industry: the
 Champion, the Wight, the Ogre, the Triceratops (an Egg), the Shock Trooper,
-the Mammoth, the Steam Tank, and the Jawbreaker. Engineering unlocks no
+the Mammoth, the Steam Tank, the Jawbreaker, and the Chosen. Engineering unlocks no
 unit in any tree. Three units of the tables below moved: the Triceratops
 Egg left Sawmilling (which unlocks the Stegosaurus Egg), the Mammoth left
 Drill (the Musk Ox), and the Steam Tank left Chivalry (the Whirligig).
@@ -4080,7 +4097,8 @@ the faction's `GUARD` role next to what the node had (the Guard with Field
 Defense; the Zombie and the Orc Brute with Field Defense; the Ankylosaurus
 Egg with Nesting; the Shield Projector with Force Fields; the Musk Ox with
 Deep Winter; the Steam Mole with Dig In; the Marshmallow with Home Sweet
-Home), and the root (Drill, shown as **Crafting**) unlocks the Workshop
+Home; the Idol Bearer with Warding Circles, which has no rule of its own),
+and the root (Drill, shown as **Crafting**) unlocks the Workshop
 and no unit. A defender is two technologies from the start (5 and 7 Coins
 with one city; the first technology of a match is free) and the heavy
 line unit three, on the other sub-branch. The defender rows of the
@@ -4091,8 +4109,8 @@ the shape of every other branch: one tier-1 root (Shorecraft), two tier-2
 children (Navigation and Seamanship), and one tier-3 child under each
 (Naval Engineering and Submersibles). `SEAMANSHIP` and `SUBMERSIBLES` are
 the last two entries of `TECHNOLOGY_IDS_V7`. Seamanship and Submersibles
-read the same for the Human, Undead, Goblin, Dinosaur, Martian, Dwarf, and
-Candy trees (the **seafaring** factions: same unlocks, numbers, and names;
+read the same for the Human, Undead, Goblin, Dinosaur, Martian, Dwarf,
+Candy, and Cult trees (the **seafaring** factions: same unlocks, numbers, and names;
 [section 14](#14-naval-rules)); the Ice Folk tree replaces the whole branch
 (below).
 
@@ -4360,6 +4378,42 @@ read differently from the Human table are:
 | Fortification  | Home Sweet Home     | Marshmallow (Bounce; `7r56`); Rushed units that end the turn on or next to your city centers don't Crash |
 | Explosives     | Peppermint Surprise | Blast Mountain; Breach; enemies that eat your Crumbs take 3                                              |
 
+The Cult tree (`CULT_BASELINE_V1`) has the same graph, tiers,
+prerequisites, costs, free opener, Dry Land Naval rule, and technology IDs as
+the Human one, with six unlock differences. **Administration** grants
+`SUMMONER_SUPPORT` (the Summoner's Sacrifice and Seize on its card) instead
+of Captain support: no Rally and no Tend Wounded. **Farming**, displayed as
+**Harvest Rites**, also grants `OFFERING`
+([section 26.3](#263-sacrifice-seize-and-the-offering)). **Scouting**,
+displayed as **Familiars**, also grants `SWITCHEROO`
+([section 26.12](#2612-hexes-and-tricks)). **Chivalry**, displayed as
+**Callers**, grants no Overrun. **Fortification**, displayed as **Warding
+Circles**, grants no Field Defense command. **Explosives**, displayed as
+**The Stars Are Right**, keeps Blast Mountain and Breach and adds
+`GREAT_SUMMONING`
+([section 26.9](#269-the-great-summoning-and-the-herald)). Raiding keeps
+the Charge bonus (the Familiar's Charge). `TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7`
+holds the Cult's eight names (the table above). Arms Industry lowers
+training costs and never a price in Favour or a unit's value. Summon,
+Channel, Star-fall, Behold!, Ribbit, the Tentacle, Pick Me!, Martyr,
+Pamphlets, and Anchor need no technology beyond the unit that uses them,
+and every technology has a live unlock for a Cult seat. The Cult unlocks
+that read differently from the Human table are:
+
+| Technology     | Cult name           | Cult unlocks                                                  |
+| -------------- | ------------------- | ------------------------------------------------------------- |
+| Farming        | Harvest Rites       | Farm; Offering (a city gives 2 population for 3 Favour)       |
+| Administration | same                | Summoner (Sacrifice, Seize, Summon a Horror); Market; Disband |
+| Sawmilling     | Stargazers          | Sawmill; Stargazer (Star-fall)                                |
+| Marksmanship   | Hexers              | Hexer (Ribbit)                                                |
+| Fieldcraft     | same                | Replant Forest; Forest march; Hexer Sight 2                   |
+| Scouting       | Familiars           | Familiar (Switcheroo); Familiar Sight 2                       |
+| Raiding        | same                | Pillage; Familiar Charge                                      |
+| Chivalry       | Callers             | Caller (Tentacle); Cultivate Forest                           |
+| Metallurgy     | The Chosen          | Forge; Arms Industry; Chosen (Pick Me!, Martyr)               |
+| Fortification  | Warding Circles     | Idol Bearer (Behold!)                                         |
+| Explosives     | The Stars Are Right | Blast Mountain; Breach; the Great Summoning (the Herald)      |
+
 The other technologies read the same for every faction. The engine, query,
 and AI checks of land trade read the technology capability
 `landTradeIncomeCoins` (never a raw `COMMERCE` test), the sea link the
@@ -4372,7 +4426,8 @@ Fields and the Disintegrator through `shieldsRechargeAtEndTurn` and
 and `shatterThreshold` (3 or 4), and the Dwarf unlocks through `digIn`,
 `assemble`, `bombDamage` (5 or 6), `eruptionDamage` (2 or 3), and
 `cannonIgnoresFortification`, and the Candy unlocks through `homeSweetHome`
-and `crumbsBite` (0 or 3), never through a raw `FORTIFICATION`,
+and `crumbsBite` (0 or 3), and the Cult unlocks through `offering`,
+`switcheroo`, and `greatSummoning`, never through a raw `FORTIFICATION`,
 `EXPLOSIVES`, `RAIDING`, or `MARKSMANSHIP` test. The naval branch is read
 the same way: `ram`, `boarding`, and `harbourPopulation` (0 or 1), and for
 the Ice Folk `freezeWater` (`NONE`, `SHALLOW`, or `DEEP`), `icebound`,
@@ -4841,6 +4896,11 @@ benefit of a Port connection.)
   Confectioner has Attack, Re-bake, and **Top-Up** (one adjacent unit; the
   Candy redesign replaced its Frosting), and neither Rally nor Tend Wounded
   ([sections 23.3](#233-crumbs) and [23.7](#237-the-redesign-abilities)).
+  The Cult Summoner has Attack, Sacrifice, Seize, Summon, and Channel, and
+  neither Rally nor Tend Wounded
+  ([sections 26.3](#263-sacrifice-seize-and-the-offering) and
+  [26.4](#264-daemons-and-summon)). Tend Wounded, Repair, and Top-Up also
+  cure a frog ([section 26.12](#2612-hexes-and-tricks)).
 - **Rally** (Undead: **Frenzy**, labelled "Frenzied";
   Dinosaur: **War Drums**; Martian: **Psychic Command**; all with the same
   command `RALLY`, flag `inspired`, and event `UNITS_RALLIED`): every
@@ -4909,17 +4969,17 @@ every faction. A test fails if a faction has fewer than nine
 (`tests/unit/ruleset-v7-ninth-unit.test.ts`). Bold units are new at `7r55`;
 italic units moved into the heavy role.
 
-| Job          | Role         | Tactical label | Human      | Undead      | Goblin       | Dinosaur        | Martian           | Ice Folk     | Dwarf            | Candy             |
-| ------------ | ------------ | -------------- | ---------- | ----------- | ------------ | --------------- | ----------------- | ------------ | ---------------- | ----------------- |
-| Basic line   | `FIGHTER`    | `LINE`         | Fighter    | Skeleton    | Goblin       | Caveman         | Grunt             | Yeti         | Hammerer         | Toffee Trooper    |
-| Defender     | `GUARD`      | `DEFENDER`     | Guard      | Zombie      | Orc Brute    | Ankylosaurus    | Shield Projector  | **Musk Ox**  | Steam Mole       | Marshmallow       |
-| Fast         | `RAIDER`     | `SKIRMISHER`   | Raider     | Ghoul       | Wolf Rider   | Raptor          | Saucer            | Sled         | Gyrocopter       | Donut Racer       |
-| Ranged       | `MARKSMAN`   | `RANGED`       | Marksman   | Banshee     | Bomb Chucker | Spitter         | Ray Gunner        | Snow Hunter  | Clockwork Gunner | Gumball Gunner    |
-| Support      | `CAPTAIN`    | `SUPPORT`      | Captain    | Necromancer | Orc Warboss  | Shaman          | Brain             | Ice Witch    | Engineer         | Confectioner      |
-| Siege        | `CATAPULT`   | `SIEGE`        | Catapult   | Lich        | Rocket Cart  | **Stegosaurus** | Tripod            | Boulder Yeti | Steam Cannon     | Pie Launcher      |
-| Breakthrough | `KNIGHT`     | `BREAKTHROUGH` | Knight     | Vampire     | Scrap Buggy  | T-Rex           | Mothership        | Sabretooth   | **Whirligig**    | Chocolate Bunny   |
-| Heavy line   | `SWORDSMAN`  | `LINE`         | Champion   | **Wight**   | **Ogre**     | _Triceratops_   | **Shock Trooper** | _Mammoth_    | _Steam Tank_     | **Jawbreaker**    |
-| Reward giant | `JUGGERNAUT` | `MYTHIC`       | Juggernaut | Abomination | Troll        | Brontosaurus    | Colossus          | Frost Giant  | Brass Titan      | Gingerbread Giant |
+| Job          | Role         | Tactical label | Human      | Undead      | Goblin       | Dinosaur        | Martian           | Ice Folk     | Dwarf            | Candy             | Cult                |
+| ------------ | ------------ | -------------- | ---------- | ----------- | ------------ | --------------- | ----------------- | ------------ | ---------------- | ----------------- | ------------------- |
+| Basic line   | `FIGHTER`    | `LINE`         | Fighter    | Skeleton    | Goblin       | Caveman         | Grunt             | Yeti         | Hammerer         | Toffee Trooper    | Initiate            |
+| Defender     | `GUARD`      | `DEFENDER`     | Guard      | Zombie      | Orc Brute    | Ankylosaurus    | Shield Projector  | **Musk Ox**  | Steam Mole       | Marshmallow       | Idol Bearer         |
+| Fast         | `RAIDER`     | `SKIRMISHER`   | Raider     | Ghoul       | Wolf Rider   | Raptor          | Saucer            | Sled         | Gyrocopter       | Donut Racer       | Familiar            |
+| Ranged       | `MARKSMAN`   | `RANGED`       | Marksman   | Banshee     | Bomb Chucker | Spitter         | Ray Gunner        | Snow Hunter  | Clockwork Gunner | Gumball Gunner    | Hexer               |
+| Support      | `CAPTAIN`    | `SUPPORT`      | Captain    | Necromancer | Orc Warboss  | Shaman          | Brain             | Ice Witch    | Engineer         | Confectioner      | Summoner            |
+| Siege        | `CATAPULT`   | `SIEGE`        | Catapult   | Lich        | Rocket Cart  | **Stegosaurus** | Tripod            | Boulder Yeti | Steam Cannon     | Pie Launcher      | Stargazer           |
+| Breakthrough | `KNIGHT`     | `BREAKTHROUGH` | Knight     | Vampire     | Scrap Buggy  | T-Rex           | Mothership        | Sabretooth   | **Whirligig**    | Chocolate Bunny   | Caller              |
+| Heavy line   | `SWORDSMAN`  | `LINE`         | Champion   | **Wight**   | **Ogre**     | _Triceratops_   | **Shock Trooper** | _Mammoth_    | _Steam Tank_     | **Jawbreaker**    | Chosen              |
+| Reward giant | `JUGGERNAUT` | `MYTHIC`       | Juggernaut | Abomination | Troll        | Brontosaurus    | Colossus          | Frost Giant  | Brass Titan      | Gingerbread Giant | Thing in the Cellar |
 
 The heavy line unit of every faction needs Metallurgy, attacks from the
 next tile only, attacks after moving, advances after a kill, builds no
@@ -4936,6 +4996,7 @@ numbers are first guesses ([the ninth unit](RULESET_7_NINTH_UNIT.md)):
 | Ice Folk | _Mammoth_         |    6 |  20 |    2.5 |       2 |    1 | yes      | Sweep and Trample ([21.10](#2110-sweep-and-trample))                       |
 | Dwarf    | _Steam Tank_      |    9 |  16 |      3 |       2 |    2 | yes      | Plated 4 ([22.10](#2210-steam-tank-plated-and-the-brass-titan))            |
 | Candy    | **Jawbreaker**    |    6 |  16 |      3 |     2.5 |    1 | yes      | Sugar Rush; Rock Hard ([23.12](#2312-the-jawbreaker-rock-hard)); Toothache |
+| Cult     | Chosen            |    6 |  15 |    3.5 |       2 |    1 | yes      | Pick Me!; Martyr ([26.12](#2612-hexes-and-tricks))                         |
 
 | Unit        | Tech              | Cost |  HP | Attack | Defense | Move | Range | Sight | Attack after Move | Capture | Abilities                                                    |
 | ----------- | ----------------- | ---: | --: | -----: | ------: | ---: | ----: | ----: | ----------------- | ------- | ------------------------------------------------------------ |
@@ -5021,8 +5082,8 @@ an adjacent tile (**Submerged**), and attacking only units afloat, which
 never strike back (**Torpedo**). A Patrol Boat's **Ram** needs Seamanship
 (the interface calls it **Bow Ram**, since the Goblin Scrap Buggy's Overrun
 is displayed as "Ram"). The three ships have the same numbers, names, and
-rules in the Human, Undead, Goblin, Dinosaur, Martian, Dwarf, and Candy
-rosters (each drawn in its faction's style); the Ice Folk have none
+rules in the Human, Undead, Goblin, Dinosaur, Martian, Dwarf, Candy, and
+Cult rosters (each drawn in its faction's style); the Ice Folk have none
 ([section 14](#14-naval-rules)). Public abilities: Patrol Boat `ATTACK`,
 `RAM` (listed whatever its owner has researched); Battleship `ATTACK`;
 Submarine `ATTACK`, `SUBMERGED`, `TORPEDO`.
@@ -5647,6 +5708,92 @@ living, and every Candy land unit is a ground unit:
   the public unit stats
   ([section 23.10](#2310-commands-events-errors-and-queries)).
 
+The Cult (`CULT`) roster, by mechanical role, with the first-guess numbers
+of [the Cultists spec](RULESET_7_CULTISTS.md#41-trained-units), unchanged
+since the registration (`pulp-wars-poc-7r71`) and checked against
+`CULT_ROLE_RULES_V7` and `CULT_ROLE_MECHANICS_V7` at `pulp-wars-poc-7r78`.
+Every role uses one slot, every trained Cult unit is living, and every
+trained Cult land unit is a ground unit:
+
+| Unit                | Role          | Tech              | Cost |  HP |  Attack | Defense | Move | Range | Sight | Attack after Move | Capture | Abilities                                        |
+| ------------------- | ------------- | ----------------- | ---: | --: | ------: | ------: | ---: | ----: | ----: | ----------------- | ------- | ------------------------------------------------ |
+| Initiate            | `FIGHTER`     | start             |    2 |  10 |   2 (4) | 1.5 (3) |    1 |     1 |     1 | yes               | yes     | Pamphlets; Channel; no Field Defense             |
+| Familiar            | `RAIDER`      | Scouting          |    3 |   8 |   2 (4) |   1 (2) |    2 |     1 |     2 | yes               | yes     | Switcheroo; Charge (Raiding); no Escape          |
+| Hexer               | `MARKSMAN`    | Marksmanship      |    4 |   9 |   2 (4) |   1 (2) |    1 |   1–2 |   1¹⁴ | yes               | yes     | Ribbit; Channel; never advances                  |
+| Idol Bearer         | `GUARD`       | Fortification     |    3 |  16 | 1.5 (3) | 2.5 (5) |    1 |     1 |     1 | no                | yes     | Behold!; Channel; no Field Defense               |
+| Summoner            | `CAPTAIN`     | Administration    |    5 |  10 |   1 (2) |   1 (2) |    1 |     1 |     1 | yes               | yes     | Sacrifice; Seize; Summon; Channel; no Rally      |
+| Stargazer           | `CATAPULT`    | Sawmilling        |    8 |  10 |       — | 0.5 (1) |    1 |     — |     1 | no                | yes     | Star-fall; Channel; no attack and no strike back |
+| Caller              | `KNIGHT`      | Chivalry          |    8 |  12 | 2.5 (5) |   1 (2) |    2 |     1 |     1 | yes               | yes     | Tentacle; Channel; no Overrun                    |
+| Chosen              | `SWORDSMAN`   | Metallurgy        |    6 |  15 | 3.5 (7) |   2 (4) |    1 |     1 |     1 | yes               | yes     | Pick Me!; Martyr; Channel                        |
+| Thing in the Cellar | `JUGGERNAUT`  | reward only       |    — |  40 |   4 (8) | 3.5 (7) |    1 |     1 |     1 | yes               | yes     | Anchor; no Push                                  |
+| Patrol Boat         | `PATROL_BOAT` | Shorecraft        |    5 |  10 |   2 (4) |   2 (4) |    2 |     1 |     2 | yes               | no      | naval; Ram (Seamanship)                          |
+| Battleship          | `BATTLESHIP`  | Naval Engineering |   16 |  25 |  6 (12) |   4 (8) |    2 |   1–3 |     3 | no                | no      | naval; splash                                    |
+| Submarine           | `SUBMARINE`   | Submersibles      |    9 |  12 |   4 (8) |   2 (4) |    2 |     1 |     2 | yes               | no      | naval; Submerged; Torpedo                        |
+
+¹⁴ Hexer Sight becomes 2 with Fieldcraft.
+
+The Cult's **summoned units** are in no technology and no training list
+(`CULT_SUMMONED_ROLE_RULES_V7`; they are not unit roles, and a unit names
+its own in the key `summoned`):
+
+| Unit     | From                | Favour | Control |  HP | Attack | Defense | Move | Sight | Value | Abilities                                           |
+| -------- | ------------------- | -----: | ------: | --: | -----: | ------: | ---: | ----: | ----: | --------------------------------------------------- |
+| Horror   | a Summoner's Summon |      5 |       1 |  18 |  4 (8) |   2 (4) |    2 |     1 |     6 | Boo!; strides; captures while bound                 |
+| Herald   | the Great Summoning |     20 |       3 |  60 | 7 (14) |   4 (8) |    2 |     1 |    24 | Ravage; Unstoppable; Proclaim; strides; captures    |
+| Tentacle | a Caller's Tentacle |      — |       — |   8 |  3 (6) |   1 (2) |    0 |  none |     0 | Grab; nobody's from birth; sinks after three rounds |
+
+- **Initiate** has the Fighter's price, Attack, and Move with 10 HP and
+  Defense 1.5. It cannot build Field Defense. It channels, chants, helps a
+  summoning, and holds down a Seizure, and it has **Pamphlets**
+  ([section 26.12](#2612-hexes-and-tricks)). It is the start unit and the
+  Militia (two of them).
+- **Familiar** has the Raider's Move 2, Sight 2, and Charge with Raiding,
+  for 3 Coins and with 8 HP. It has no Escape, and hostile zones of control
+  stop it. It is not a robed cultist: it never channels or chants. It has
+  **Switcheroo**. It is the Scouts unit and the treasure unit.
+- **Hexer** has the Marksman's shot (range 1–2, never advances, Sight 2
+  with Fieldcraft) with 9 HP, and **Ribbit**.
+- **Idol Bearer** has the Guard's "cannot attack after moving" (Behold! and
+  Channel may follow its Move), with 16 HP and Defense 2.5 at every
+  distance. It cannot build Field Defense. It has **Behold!**
+  ([section 26.11](#2611-behold-anchor-and-boo)).
+- **Summoner** has the Captain's body. It has no Rally and no Tend Wounded
+  (`RALLY` and `TEND_WOUNDED` are never offered and are rejected with
+  `UNIT_ROLE_INVALID`); it has **Sacrifice**, **Seize**, and **Summon**, and
+  leads the Great Summoning.
+- **Stargazer** has **no attack**: no `ATTACK` ability, Attack 0, and no
+  reach, so it never strikes back and destroys no Field Defense by an
+  attack. Like every siege unit it does not act after it moves, but it may
+  Channel after a Move. It leads **Star-fall**
+  ([section 26.8](#268-star-fall)).
+- **Caller** has Move 2 and Attack 2.5 and never Overrun. It has the
+  **Tentacle**.
+- **Chosen** is the Champion with Defense 2. It has **Pick Me!** and
+  **Martyr**.
+- **Thing in the Cellar** has Juggernaut parity (reward only, capture, the
+  advance, no Pillage, no Disband) with Defense 3.5 and no Push. Its
+  signature is **Anchor**.
+- **Horror and Herald** are daemons
+  ([section 26.4](#264-daemons-and-summon)): not living, never healed,
+  homeless, striding, never fortified or in cover. Unbound, each is a
+  neutral unit with the same numbers and Attack only ("Unbound Horror",
+  "Unbound Herald"; [section 26.6](#266-unbound-the-rampage-furious-and-bind-again)).
+- **Patrol Boat, Battleship, and Submarine** are the Human units. Cult
+  faction rules do not apply to them.
+- **Public abilities** (the role rule's `abilities`): Initiate `ATTACK`,
+  `CAPTURE`, `CHANNEL`, `PAMPHLETS`; Familiar `ATTACK`, `CAPTURE`, `CHARGE`,
+  `SWITCHEROO`; Hexer `ATTACK`, `CAPTURE`, `CHANNEL`, `RIBBIT`; Idol Bearer
+  `ATTACK`, `CAPTURE`, `CHANNEL`, `BEHOLD`; Summoner `ATTACK`, `CAPTURE`,
+  `SACRIFICE`, `SEIZE`, `SUMMON`, `CHANNEL`; Stargazer `CAPTURE`, `CHANNEL`,
+  `STARFALL`; Caller `ATTACK`, `CAPTURE`, `CHANNEL`, `TENTACLE`; Chosen
+  `ATTACK`, `CAPTURE`, `MARTYR`, `CHANNEL`, `PICK_ME`; Thing in the Cellar
+  `ATTACK`, `CAPTURE`, `ANCHOR`; Horror `ATTACK`, `CAPTURE`, `BOO`, `STRIDE`;
+  Herald `ATTACK`, `CAPTURE`, `RAVAGE`, `UNSTOPPABLE`, `PROCLAIM`, `STRIDE`;
+  Unbound Horror and Unbound Herald `ATTACK`, `STRIDE`; Tentacle `ATTACK`,
+  `GRAB`. Role mechanics: `robed` (the seven robed cultists),
+  `martyrFavour` (the Chosen 6), `anchorStrands` (the Thing 2),
+  `ravageAttacks` (the Herald 2).
+
 General roster rules:
 
 - An **embarked** land unit of any faction that embarks (never a unit of
@@ -5705,6 +5852,13 @@ Bead `pulp_wars-w49.30`, the rules of
 | Frost Giant       | Ice Folk | Glacial Smash  | `GLACIAL_SMASH` | `GLACIAL_SMASH_HP_V7` 8                             |
 | Brass Titan       | Dwarf    | Siege Hammer   | `SIEGE_HAMMER`  | (no number)                                         |
 | Gingerbread Giant | Candy    | Break Off      | `BREAK_OFF`     | `BREAK_OFF_HP_V7` 10; `BREAK_OFF_UNITS_V7` 2        |
+
+The ninth giant, the Cult's **Thing in the Cellar**, has **Anchor**
+(`ANCHOR`, `ANCHOR_STRANDS_V7` 2: the strand of the cultist it grips counts
+three). It came with the Cult's channel, not with this bead: it is a Cult
+rule ([section 26.11](#2611-behold-anchor-and-boo)), it is not a primary
+action, and the common rules below were written for the eight signatures
+above. Like them it needs land form, and the Thing has no Push.
 
 **Common rules.**
 
@@ -6144,7 +6298,7 @@ uses its own giant's signature and every seat reads a hostile giant's
 - `BUILD_FIELD_DEFENSE` (Fortification, 3 Coins) needs a unit whose role
   mechanics allow it (`buildsFieldDefense`: Fighter, Guard, Skeleton, Zombie,
   or Orc Brute; never the Goblin, and no Dinosaur, Martian, Ice Folk,
-  Dwarf, or Candy unit) in land
+  Dwarf, Candy, or Cult unit) in land
   form that has neither moved nor acted this turn, standing on an explored
   land tile of its owner's territory without Field Defense. **It does not
   use the unit's turn** (tuning 1, `7r46`; before, it did): the unit keeps
@@ -6155,9 +6309,9 @@ uses its own giant's signature and every seat reads a hostile giant's
   or a Marshmallow is never
   offered it and is rejected like any other role that cannot build it
   (`INVALID_TILE` with `action: "BUILD_FIELD_DEFENSE"`); the Dinosaur,
-  Martian, Ice Folk, Dwarf, and Candy trees also have no Field Defense
+  Martian, Ice Folk, Dwarf, Candy, and Cult trees also have no Field Defense
   unlock (their Fortification is Nesting, Force Fields, Deep Winter, Dig
-  In, and Home Sweet Home).
+  In, Home Sweet Home, and Warding Circles).
   Field Defense that already stands in territory a Dinosaur, Martian, Ice
   Folk, Dwarf, or Candy seat captures fortifies its units as usual (never a
   Martian walker or flyer or a Gyrocopter, which is never fortified; an Ice
@@ -6638,8 +6792,8 @@ Disintegrator ([section 21.5](#215-snow)).
 ## 14. Naval rules
 
 The ships are the Patrol Boat, the Battleship, and the Submarine, the same
-three for the Human, Undead, Goblin, Dinosaur, Martian, Dwarf, and Candy
-factions (the **seafaring** factions). The Ice Folk have none: they freeze
+three for the Human, Undead, Goblin, Dinosaur, Martian, Dwarf, Candy, and
+Cult factions (the **seafaring** factions). The Ice Folk have none: they freeze
 the sea and cross it on foot ([section 21.16](#2116-the-frozen-sea)). The
 branch gives sea warfare three roles that counter each other: the
 Battleship outguns Patrol Boats at range, the Submarine sinks Battleships
@@ -7391,6 +7545,45 @@ Harbours from it.
   for the tunnels, the bombs, Assemble, Repair, the Gunner's two shots, Dig
   In, and Knockback apply under both
   ([Normal AI](../architecture/NORMAL_AI.md#step-two-of-the-dwarf-pass-pulp_wars-w4928)).
+- **The Cult seat, and every seat against the Cult** (`pulp_wars-mch9.9`
+  to `mch9.12`, no rule and no identity change; made without matches or
+  hand play, so its numbers are first values). A Cult seat plays the army
+  rules, and so does every other seat of its match: every match of the nine
+  factions plays them. Its order of units is the Summoner, the Hexer, the
+  Idol Bearer, the Familiar, the Chosen, the Stargazer, the Caller (Hexers
+  first with a hostile fast or breakthrough unit in sight), and The Stars
+  Are Right is its first late technology once it has 12 Favour. It fields
+  45% line units (Initiates, and one Chosen for every two of them), a fifth
+  Hexers, and a tenth each of Idol Bearers (no more than its cities, nor a
+  third of the army), Stargazers, and Callers, with one Summoner for six
+  units (one to three) and one Familiar for five (two at most). It trains
+  before it researches while short of robed cultists, takes the two
+  Initiates at level 2 while short, and takes the Thing at every level from 5. **It channels first:** before its ordinary play each bound daemon gets
+  its Control and one strand to spare, the Herald first; a daemon moves
+  before its channellers and only where they can follow; a daemon it cannot
+  hold goes back to them or is let go toward the enemy; and an Unbound
+  daemon is bound again when its whole Control can come in one turn. It
+  summons a Horror only when it can hold one more and an enemy is near,
+  keeps its Favour for the Great Summoning from 10 Favour once it has The
+  Stars Are Right, and begins it with a circle and a free mark that no
+  visible enemy can reach. It Seizes whenever it can (and frogs or swaps an
+  enemy to make a Seizure), Sacrifices a doomed unit last of all and a
+  spare Initiate when that reaches a price, makes an Offering from a city
+  with nothing to train, raises an idol beside two threatened channellers,
+  grips with the Thing, drops a star on two units or on one that stays,
+  calls a Tentacle beside a ranged or siege unit, shouts Pick Me! beside a
+  threatened channeller, Boos two enemies or a garrison off a center,
+  Proclaims when no second kill is on offer, and sends Initiates onto
+  villages first. **Against the Cult** every seat breaks the strands of a
+  daemon it can bring below its Control this turn before its ordinary kills
+  (the Idol Bearer first under a raised idol), ends a Great Summoning by a
+  hit on its leader or by standing a sturdy unit on the mark, steps out
+  from under a star, keeps its units from being the one a daemon short of
+  its Control would go for, never strikes a bound Herald without killing it
+  (but for a shot it cannot answer), cures or withdraws a frog, lets the
+  unit a Tentacle holds strike it, and holds a Cowed city's center. A
+  match without a Cult seat decides exactly as before
+  ([Normal AI](../architecture/NORMAL_AI.md#the-cult-seat-pulp_wars-mch99-to-mch912)).
 - **The Candy army seat** (`pulp_wars-jdb.13`, `7r70`, no rule and no
   identity change; made without matches or hand play, so its numbers are
   first values). A Candy seat plays the army rules, and so does every other
@@ -13916,6 +14109,22 @@ items left after the fold, and the pending balance steps below.
     Patrol Boat, Battleship, and Submarine, Seamanship, and Submersibles,
     with no Candy rule on a boat).
 
+- **Cultists: what the fold found** (`pulp_wars-mch9.21`; the faction is
+  [section 26](#26-cultist-faction-rules)). The Cult's rules in this
+  document were written from the engine code at `pulp-wars-poc-7r78`, and
+  where [the Cultists spec](RULESET_7_CULTISTS.md) differs, this document
+  is the rule. The differences between its design text and the build are
+  listed in
+  [its section 22](RULESET_7_CULTISTS.md#22-fold-notes-pulp_wars-mch921);
+  none is a defect of the engine against a decision of the user. Open: no
+  number of the faction or of its Normal AI was tuned or played (the
+  standing rule of no simulations), the lab `LAB_CULT_MID` has not been
+  played, the Cult has no theme music and no sounds of its own (a Cult
+  player hears the Undead theme as a stand-in; its own theme is
+  `pulp_wars-mch9.25`), and the
+  step notes of [section 1](#1-identity-and-compatibility) describe each
+  engine step as it stood when it was made (their "for now" and "not yet"
+  lines are history: section 26 is the current state).
 - **Martian and Ice Folk balance: the measurement
   pending.** The engine step of the
   [balance design](RULESET_7_BALANCE_MARTIAN_ICE.md) (`pulp_wars-1wy.3`,
@@ -14205,3 +14414,805 @@ the code's behavior):
   Martian overlay, the contract's Yeti and the examples above in the Ice
   Folk overlay, and the decided bomb of 4 and 5 in the Dwarf overlay) as
   design history; this document states the current values.
+
+## 26. Cultist faction rules
+
+The Cultists of the Ancient Ones are **a terrible bargain**: their robed
+people are a little weaker than the Humans of the same job, and what they
+buy with them is stronger than anything else in the game. Units are turned
+into **Favour** (a Sacrifice, a Seizure, an Offering), Favour into
+**daemons** (the Horror, and the Herald, which is far above every other
+unit), and every daemon must be **channelled** by cultists every turn or it
+is **Unbound**: it belongs to nobody and attacks the nearest unit, its own
+side first. They are strong for as long as the channel holds and with a
+Herald on the board; they are weak wherever an enemy can hurt, move, or put
+a status on the cultists that hold a daemon or chant a rite, which any
+faction can do. Every rule in this section applies only to units of the
+Cult kind, to a Cult seat, or to the units the Cult summons, except where a
+rule names its target (a frog, a swapped unit, a Cowed city, a unit a
+Tentacle holds, a unit bound by Pick Me!). In a match without a Cult seat
+the `cult` block is empty (`favour`, `strands`, `grips`, `idols`,
+`rituals`, `cowed`, `frogs`, `hexCooldowns`, `taunts`, `tentacles`), no
+Cult command is offered or accepted, and no unit carries `summoned`. Each
+rule resolves through the unit's kind's registration (`FACTION_RULES_V7`,
+`CULT_ROLE_RULES_V7`, `CULT_ROLE_MECHANICS_V7`,
+`CULT_SUMMONED_ROLE_RULES_V7`) and the helpers of `src/engine/v7/cult.ts`,
+`cult-channel.ts`, `cult-unbound.ts`, `cult-rituals.ts`, `cult-hexes.ts`,
+and `cult-tricks.ts`. The other eight factions keep every ability against
+the Cult, with the rulings of
+[section 26.14](#2614-interactions-with-other-rules).
+
+Design, the reasons for every rule, the validation on paper, and the notes
+of each implementation step: [the Cultists spec](RULESET_7_CULTISTS.md),
+kept as the design record; where it differs from this section, this
+section is the rule, and the differences the fold found are listed in
+[its section 22](RULESET_7_CULTISTS.md#22-fold-notes-pulp_wars-mch921). The
+Cult's numbers were checked against the engine code at
+`pulp-wars-poc-7r78` (`pulp_wars-mch9.21`). The Cultists are an ordinary
+faction offered in every setup. (This section follows the revision history
+and the known discrepancies, and is numbered 26, so that the links to
+sections 24 and 25 from every other document still hold.)
+
+**The variance rules.** Seven design rules of the faction bind every later
+balance, tuning, and AI pass
+([the spec, section 2](RULESET_7_CULTISTS.md#2-the-variance-rules); the
+user, 2026-10-09). In short: the Herald is truly overpowered and is never
+brought nearer to a giant; the daemons are paid for by Favour and by the
+channel, never by weaker numbers; there is no cap on Favour or on daemons;
+a failure is never softened (nothing is refunded, an Unbound daemon never
+fades, there is no way to dismiss one); nothing helps a Cult that is
+losing or slows one that is winning; the only fairness rule is that the
+counterplay is on the board for everyone (the channellers and the
+chanters); and control is never decided by a random draw. A later pass may
+change a number only to restore counterplay that was shown to be missing.
+
+### 26.1 Roles, robed cultists, and labels
+
+| Mechanical role | Cult unit           | Its own thing                                                     |
+| --------------- | ------------------- | ----------------------------------------------------------------- |
+| `FIGHTER`       | Initiate            | Pamphlets; channels; the start unit and the Militia (two of them) |
+| `GUARD`         | Idol Bearer         | Behold!; channels                                                 |
+| `RAIDER`        | Familiar            | Switcheroo; Charge; the Scouts unit and the treasure unit         |
+| `MARKSMAN`      | Hexer               | Ribbit; channels                                                  |
+| `CAPTAIN`       | Summoner            | Sacrifice, Seize, Summon; leads the Great Summoning; channels     |
+| `CATAPULT`      | Stargazer           | no attack of its own; leads Star-fall; channels                   |
+| `KNIGHT`        | Caller              | Tentacle; channels                                                |
+| `SWORDSMAN`     | Chosen              | Pick Me!; Martyr; channels                                        |
+| `JUGGERNAUT`    | Thing in the Cellar | Anchor; the giant reward                                          |
+| `PATROL_BOAT`   | Patrol Boat         | the Human boat                                                    |
+| `BATTLESHIP`    | Battleship          | the Human boat                                                    |
+| `SUBMARINE`     | Submarine           | the Human boat                                                    |
+
+Summoned, never trained, hired, found, or rewarded:
+
+| Summoned unit | From                           | Its own thing                                      |
+| ------------- | ------------------------------ | -------------------------------------------------- |
+| Horror        | a Summoner's Summon, 5 Favour  | a daemon, Control 1; Boo!                          |
+| Herald        | the Great Summoning, 20 Favour | a daemon, Control 3; Ravage, Unstoppable, Proclaim |
+| Tentacle      | a Caller's Tentacle            | nobody's from birth; slaps and Grabs; sinks        |
+
+A **Cult unit** is a unit whose kind is `CULT`; a **Cult seat** is a player
+whose faction is `CULT`. A **robed cultist** is one of the seven trained
+land units other than the Familiar (Initiate, Idol Bearer, Hexer, Summoner,
+Stargazer, Caller, Chosen; role mechanic `robed`), in land form. Only a
+robed cultist channels, chants in a ritual, helps a summoning, or holds
+down a Seizure. A **daemon** is a Horror or a Herald; a **summoned unit**
+is a daemon or a Tentacle (the unit key `summoned`). The stats are in
+[section 11](#11-unit-roster) and the technology in
+[section 6.2](#62-technology-tree).
+
+A Cult seat starts with one Initiate. Its Militia reward is **two
+Initiates** (`MILITIA_FIGHTERS_V7`), its Scouts reward a Familiar, its
+giant reward the Thing in the Cellar at every level from 5, and its
+treasure unit a Familiar ([section 4.8](#48-city-rewards)). No reward,
+chest, or Market hire ever gives Favour or a daemon. Faction rules:
+`restless` false, `cityCapacityBonus` 0, `gangUpMaximum` 0,
+`treasureUnitRole` `RAIDER`, `snow` false. No Cult unit builds Field
+Defense, the Summoner has neither Rally nor Tend Wounded, and the Caller has
+no Overrun.
+
+**Needs a Cult seat.** A mind-controlled Cult unit keeps the tricks that
+belong to the unit (Behold!, Ribbit, Switcheroo, Pick Me!, Pamphlets) and
+loses everything that calls on the Ancient Ones: it has no Sacrifice,
+Seize, Summon, Channel, Anchor, Star-fall, or Tentacle, it leads and chants
+in no ritual, and a mind-controlled Chosen's death pays nobody
+(`MIND_CONTROLLED_LOST_ABILITIES_V7`).
+
+### 26.2 Favour
+
+Every Cult seat has **Favour**: a whole number, 0 at the start, with **no
+maximum**, and **public** (every player sees every Cult seat's Favour). It
+is not Coins: it is never bought, traded, or lost, and it is spent only on
+summoning. It is not a Score factor. An eliminated seat's Favour is gone.
+
+| Source                | What happens                                                                          | Favour                      |
+| --------------------- | ------------------------------------------------------------------------------------- | --------------------------- |
+| Sacrifice             | A Summoner removes an own unit beside it                                              | the unit's value            |
+| Seize                 | A Summoner removes a broken living enemy beside it that a second cultist holds down   | twice its value             |
+| Offering              | A city gives up 2 population                                                          | 3                           |
+| A bound daemon's kill | A Horror or Herald the seat commands kills a hostile unit that is not a summoned unit | the victim's value          |
+| Martyr                | A Chosen of the seat dies                                                             | 6                           |
+| Consumed              | The unit on the Great Summoning's mark is eaten when the Herald arrives               | as a Sacrifice or a Seizure |
+
+| Spent on                                   | Favour |
+| ------------------------------------------ | -----: |
+| Summon a Horror                            |      5 |
+| Begin the Great Summoning (never refunded) |     20 |
+
+A unit's **value** is the Score's unit value
+([section 3.1](#31-score-play-modes-and-stars)): the printed cost of its
+role under its kind (an Initiate 2, a Knight 9), 12 for a reward giant, a
+neutral monster its bounty (the Giant Spider 10), and a summoned unit its
+own value (a Horror 6, the Herald 24, a Tentacle 0). A free unit is worth
+its role, and Arms Industry lowers a price, never a value.
+
+### 26.3 Sacrifice, Seize, and the Offering
+
+**Sacrifice.** "The Summoner offers a unit beside it to the Ancient Ones:
+it is gone, and you gain its value in Favour." A primary action of a
+Summoner in land form, which may follow its Move. The victim is an own unit
+in land form on one of the eight tiles around the Summoner, of any role
+(the Thing in the Cellar pays 12; another Summoner may be offered), hurt,
+Frozen, or exhausted or not; never a daemon, a mind-controlled unit, an
+Egg, or a Plagued or Bitten unit (so a Sacrifice never dodges a bite). The
+victim is removed: nobody gets a kill, and it leaves no Grave, rising,
+death blast, Crumbs, Plunder, or growth; its unit slot is free. In the
+Score it is no Loss (like Disband), it lowers the Army, and it ends a
+flawless game. There is no limit but the Summoner's one action a turn; the
+last unit of a city may be offered.
+
+**Seize.** "Two cultists hold down a broken enemy; the Summoner offers it.
+Twice its value in Favour." A primary action of a Summoner in land form,
+which may follow its Move. The victim is a hostile unit in land form on one
+of the eight tiles around the Summoner that the actor sees, and it must be:
+
+- **living** (not of the Undead kind, not a construct, not a summoned
+  unit), a player's unit, not a reward giant, and not a two-slot unit;
+- **broken**: at **5 HP or less** (a Shield does not count), or a **frog**
+  at **half its maximum HP or less** ([section 26.12](#2612-hexes-and-tricks));
+- **held**: another robed cultist of the actor stands on one of the eight
+  tiles around the victim. The holder spends nothing and may have acted.
+
+The victim dies as a kill of the Summoner (its kill count, Promotion,
+Slayer, the Score's Kills; a Loss for the victim's seat), and leaves no
+Grave, rising, death blast, Crumbs, or Plunder. A Seized Brain releases the
+unit it controls. The seat gains twice the victim's value: a Fighter 4, a
+Guard 6, a Raider 8, a Champion 12, a Knight 18.
+
+**Offering.** "A city gives up 2 population to the Ancient Ones for 3
+Favour." The city action of an own city, with **Harvest Rites** (the
+Cult's Farming). The city is level 2 or more, not besieged and not Cowed,
+has no reward waiting to be chosen, and has **2 population or more**. Its
+population drops by 2 for good (the city's `offeredPopulation`, subtracted
+in the population of [section 4.2](#42-population-growth-and-levels)), so
+it is 2 further from its next level; a level is never lost and a reward
+never repeats. What a city gave up stays with the city through a capture.
+
+### 26.4 Daemons, and Summon
+
+A daemon is a land unit of a Cult seat with these rules of its own:
+
+- **Not living.** No Plague, bite, Infect, Wail, Seizure, or Boo! takes it;
+  it is immune to Mind Control and Swallow; it leaves no Grave.
+- **It never heals:** no recovery, Windmill, Fountain of Youth, or Wishing
+  Well, and it tosses no Coin.
+- **It belongs to no city.** It has no home city and fills no unit slot,
+  also after a capture it makes. It is never promoted (also not at a
+  Shrine), disbanded, or Sacrificed, and it is never a veteran.
+- **It strides.** Forest and Mountain neither stop nor refuse it, with or
+  without Engineering. It never enters water and never embarks. Like a
+  Martian walker it is never fortified and takes no cover.
+- **While bound** it attacks and **captures** like any land unit. A Horror
+  advances after a kill and may Pillage; the Herald never advances.
+- **Its kills feed.** A kill by a bound daemon's attack or retaliation of a
+  hostile unit pays its seat the victim's value in Favour, and a neutral
+  monster's bounty Coins as to anyone. A summoned unit of any seat, bound
+  or Unbound, pays nothing.
+- **Its value** (Horror 6, Herald 24) is in its seat's Army while the seat
+  commands it, and is what its kill is worth.
+
+**Summon a Horror.** "The Summoner and a cultist beside it summon a Horror
+for 5 Favour. Both channel it this turn." A primary action of a Summoner in
+land form, which may follow its Move. It needs a **helper**: another own
+robed cultist on one of the eight tiles around the Summoner that has not
+used its action (it may have moved) and is neither Frozen nor a frog. The
+Horror appears on a tile next to the Summoner that the seat has explored:
+land, never water, ice, or a settlement center, with no unit, mound,
+Barricade, treasure chest, or curiosity, and not in an ally's territory (a
+Mountain is fine). It stands there at full HP and cannot act until the next
+turn. The Summoner and the helper each hold a strand to it and have used
+their actions. There is no limit: a Summoner may summon every turn it has a
+helper and 5 Favour.
+
+The Horror: 18 HP, Attack 4, Defense 2, Move 2, Sight 1. A bound Horror can
+be pushed, knocked back, Stuck, and Frozen like an ordinary unit.
+
+### 26.5 The Channel, strands, and the check
+
+**Channel.** "A cultist channels a daemon within 3 tiles. At the start of
+your turn each daemon needs as many unbroken strands as its Control, or it
+is Unbound." A primary action of a robed cultist, which may follow its Move
+(also for the Idol Bearer and the Stargazer, which may not attack after
+one). The daemon is an own daemon within 3 tiles, or an Unbound one
+([section 26.6](#266-unbound-the-rampage-furious-and-bind-again)). The
+cultist holds a **strand** to it until the next check. A cultist holds one
+strand a turn; a daemon may hold any number. A cultist that has channelled
+cannot move afterwards.
+
+**Control** is the number of strands a daemon needs: a Horror **1**, the
+Herald **3**.
+
+**Disrupted.** One rule decides when a strand breaks, a chanter leaves a
+ritual, a Thing's grip fails, and a raised idol drops. After every command,
+and inside a Start Turn after Plague, each such unit is compared with what
+it was before. It is disrupted when:
+
+- it **lost Hit Points**, from any source (an attack, a retaliation, a
+  splash, a blast, a bomb, Plague, a crush, a star, a slap);
+- it **stands on another tile** and the command was not its own (a Push, a
+  Knockback, a Tractor Beam, a Bounce, a Boo!, a Switcheroo, a gate's
+  shove, a reward unit taking its center);
+- it has a **status it did not have**: Plagued, Bitten, Frozen, Stuck,
+  Toothache, Splatted, a frog, or one of the marks a hit leaves (Terror,
+  the hunted mark, the bombed mark, Cracked);
+- it has **another owner**; or
+- it is **no longer on the board in land form** (a death, a Sacrifice, a
+  Seizure, a Swallow, an embarkation).
+
+Who caused it does not matter: the Cult's own Boo!, its own Star-fall, and
+its own daemon's kill of an exploding unit beside a channeller disrupt like
+an enemy's act. A unit that gains Hit Points is not disrupted. A unit's own
+states (a Shield, Cooling, Sugar Rush and the Crash, Berserk) are no
+status. A disrupted cultist's strand breaks at once.
+
+**Candlelit.** Every unit on a tile a player has explored is visible to
+that player ([section 15](#15-fog-and-observation)), so a channeller, a
+chanter, and a gripping Thing are seen, and can be targeted, by everyone who
+has explored their tiles. The strands, the Control of every visible daemon
+and the strands it holds, the grips, the raised idols, and the rituals are
+public too: the counterplay is always on the board.
+
+**The check** runs at the Cult seat's Start Turn, after Plague and its
+chains ([section 26.13](#2613-resolution-order)). For each of the seat's
+bound daemons, in unit-ID order, its **holding strands** are counted: the
+strands whose cultist is still on the board as the seat's own robed
+cultist, within 3 tiles of the daemon **now**. Each counts 1, or 3 under a
+holding Anchor grip ([section 26.11](#2611-behold-anchor-and-boo)). With
+at least its Control the daemon stays bound; with fewer it is **Unbound**
+at once. Then every strand and grip of the seat is cleared, and the seat
+must channel again this turn. A fresh daemon is checked at the first Start
+Turn after it appears, with the strands of its summoning. What one break
+does is felt by the next: a rampage that hurts, moves, or kills a
+channeller breaks that strand before the next daemon is checked.
+
+Ending a turn with a daemon short of its Control is legal. The interface
+asks once ("The Horror will be Unbound.") and nothing stops the choice.
+
+### 26.6 Unbound, the rampage, Furious, and Bind again
+
+"An Unbound daemon belongs to nobody. It attacks the nearest unit, friend
+or foe, at once and after every round."
+
+**Unbound.** A daemon that fails its check belongs to the neutral owner,
+like the Giant Spider ([section 2.7](#27-map-curiosities)), and is shown as
+an "Unbound Horror" or "Unbound Herald". It keeps its Hit Points, its
+numbers, and its kills, and loses every status and every strand. As a
+neutral unit it only attacks: it never captures, besieges, Boos, or
+Proclaims, it sees nothing, no status, shove, Mind Control, or Swallow
+takes it, and it pays no bounty. **It never fades**: it stays until it is
+killed or bound again. In the Score it is no Loss; it leaves its seat's
+Army, and the seat's game is no longer flawless.
+
+**The rampage** happens at the check that lets the daemon loose, and then
+in every neutral turn after a round, in unit-ID order with the other
+neutral units:
+
+1. **The target** is the nearest unit of any player (an Egg, and a daemon
+   another seat commands, included), measured in tiles in any direction.
+   Never a neutral unit, a ship or an embarked unit, or a burrowed unit. A
+   tie goes to a unit of **the seat that summoned it**, then to the fewest
+   Hit Points, then to the lowest unit ID. It is chosen whether or not
+   anyone sees it.
+2. **The walk.** The daemon walks up to its Move toward a tile next to the
+   target by a shortest way over Grass, Forest, and Mountain, and stops as
+   soon as it stands beside it. It never steps onto water, ice, a Rift, a
+   settlement center, a curiosity tile, a treasure chest, or a tile with a
+   unit, a mound, or a Barricade. **Zones of control, Roads, Snow, and
+   terrain neither stop nor slow it.** With no way to the target it goes as
+   near as it can.
+3. **The attack.** If it ends beside its target it attacks it: an ordinary
+   attack with retaliation. A Herald then attacks a second time, the
+   nearest unit beside it by the same tie rule (which may be the same
+   unit), and its attacks still ignore fortification. A daemon that does
+   not end beside its target attacks nobody.
+
+Its kills are credited to nobody and pay no Favour; a Chosen that dies as
+the target of its attack is no Martyr. A daemon Unbound while it stands on
+a city center besieges nothing from that moment and leaves at its first
+step. Killing an Unbound daemon is an ordinary kill at its value (Horror 6,
+Herald 24) with no bounty Coins, except that the seat that summoned it gets
+no Kills in the Score for it.
+
+**The eye mark.** Nothing about a rampage is random or hidden: the board
+marks the unit each visible Unbound daemon will go for, and the unit each
+bound daemon short of its Control would go for if it broke now
+(`previewRampageV7`).
+
+**Furious.** A daemon that broke loose in a Cult seat's Start Turn cannot
+be channelled until that seat's turn ends. So it rampages twice, at the
+check and after the round, before its seat can bind it again.
+
+**Bind again.** "Channel an Unbound daemon with enough cultists in one turn
+and it is yours again." A Channel may name an Unbound daemon the actor
+sees, within 3 tiles, that is not Furious. The moment the acting seat's
+strands on it this turn (each 1, or 3 under a grip) reach its Control, it
+is bound to that seat: it cannot act until the seat's next turn, and those
+strands count for the next check. Fewer strands change nothing. Any Cult
+seat may bind any Unbound daemon. A player may also let a daemon go on
+purpose, by not channelling it.
+
+### 26.7 Rituals
+
+"A leader and the cultists next to it chant. Everyone sees the countdown.
+Disrupt the circle and nothing happens."
+
+A ritual has a **leader** and **chanters**: every own robed cultist on the
+eight tiles around the leader that has not used its action (it may have
+moved) and is neither Frozen nor a frog. Every such unit joins; a player
+who wants one left out uses it first. Beginning a ritual spends the action
+of the leader and of every chanter, marks a tile, and is public: the
+circle, its mark, and its countdown are shown to every player who sees a
+participant or has explored the mark.
+
+A ritual **completes at the start of its seat's next turn**, after the
+channel check, so the enemy has exactly one turn to answer. A participant
+that is disrupted ([section 26.5](#265-the-channel-strands-and-the-check);
+Behold! protects no chanter) leaves the ritual. If the leader leaves, or
+fewer chanters remain than the rite needs, the ritual **fizzles** at once
+and nothing is refunded.
+
+| Rite                | Technology                       | Leader                         | Chanters needed | Price     | Pay-off                                               |
+| ------------------- | -------------------------------- | ------------------------------ | --------------: | --------- | ----------------------------------------------------- |
+| Star-fall           | Stargazers (Sawmilling)          | a Stargazer that has not moved |               1 | none      | 5, plus 1 for each chanter, to nine tiles             |
+| The Great Summoning | The Stars Are Right (Explosives) | a Summoner (it may have moved) |               3 | 20 Favour | the Herald, channelled by the leader and the chanters |
+
+### 26.8 Star-fall
+
+"Next turn a star lands 2 to 4 tiles away: 5, plus 1 for every chanter, to
+everything around it."
+
+The Stargazer has no attack of its own and never strikes back. A Stargazer
+that has not moved this turn, with one chanter or more, marks any tile its
+seat has explored that is 2 to 4 tiles away, of any terrain.
+
+When the ritual completes, **every unit on the marked tile and the eight
+tiles around it**, of every seat and every form (the Cult's own units,
+ships, embarked units, Eggs, daemons, giants, and neutral units included; a
+burrowed unit is not on the board), takes **5 + 1 for each chanter still in
+the ritual**. It is fixed damage: Defense, fortification, cover, Snow, and
+the Blizzard do not count; Armoured, Plated, and a Shield apply as for
+every fixed hit. Every Field Defense in the area is destroyed and every
+Barricade removed. Nobody strikes back.
+
+A star with eight chanters deals 13. A chanter that was disrupted before
+the star fell makes it weaker by 1. The deaths are resolved like a Thunder
+Stomp's: Graves, risings, Crumbs, and death blasts as for a splash death.
+The Stargazer is credited with the hostile units it kills, and its seat
+with their Score, Plunder, and bounty; an own unit the star kills is a
+Loss, and an own Chosen it kills is a Martyr. A star provokes the Giant
+Spider for its Stargazer.
+
+### 26.9 The Great Summoning and the Herald
+
+A Summoner of a seat with **The Stars Are Right**, with three chanters or
+more, pays **20 Favour** and marks a tile next to itself where the Herald
+could stand: land the seat has explored, never water, ice, or a settlement
+center, with no mound, Barricade, treasure chest, or curiosity, and not in
+an ally's territory. The mark may hold a unit.
+
+When the ritual completes, with its leader and at least three chanters
+still in it, the unit on the mark decides it:
+
+- **Nobody:** the Herald arrives.
+- **A legal victim is consumed**, and the Herald arrives: an own unit a
+  Sacrifice could take (for its value), or a hostile unit that is living,
+  one-slot, a player's, no reward giant, and at **5 HP or less** (for twice
+  its value, as a kill of the leader). Nothing is left of it, and a
+  consumed Chosen is no Martyr. A chanter that stands on the mark is
+  consumed like any own unit. A frog above 5 HP is not consumed.
+- **Any other unit blocks the arrival**, and so does a Barricade or a
+  mound put on the mark: a healthy enemy, an ally's unit, a giant, a
+  two-slot unit, an Undead or construct unit, a daemon, a neutral unit, an
+  Egg, a Plagued or Bitten own unit. The ritual fizzles and the 20 Favour
+  is gone. "Stand on the mark" is counterplay any sturdy unit can play. (A
+  broken enemy that stands still recovers 2 HP at its own End Turn, so only
+  one that walked onto the mark is still broken.)
+
+The Herald stands on the mark at full HP and cannot act that turn. The
+leader and every remaining chanter hold a strand to it at once, which is
+their whole turn. Its first check is the seat's next Start Turn, so it
+needs three of those strands unbroken. The enemy has two turns to answer:
+the one after the ritual begins, and the one after the Herald arrives.
+
+**The Herald:** 60 HP, Attack 7, Defense 4, Move 2, Sight 1, Control 3.
+
+- **Ravage.** It makes **two attacks** in each of its seat's turns, after
+  its Move or without one, at one target or two. It cannot move after an
+  attack and never advances after a kill. A Proclaim takes the place of
+  one attack.
+- **Unstoppable.** Its attacks ignore the defender's fortification (Walls,
+  Field Defense, Dig In; cover still counts, and so do Armoured, Plated,
+  and Shields) and destroy a Field Defense on the target's tile, bound or
+  Unbound. No status sticks to it: it is never Frozen, Stuck, Splatted,
+  Cracked, a frog, or given Toothache. Nothing moves it: no Push, Charge!
+  push, Knockback, Tractor Beam, Bounce, Boo!, or Switcheroo, and a unit
+  that would come through a Dimensional Gate onto it is blocked. A
+  Crushing Shove it does not yield to crushes it, as damage. Damage of
+  every kind hurts it.
+- It has none of the giants' signatures, and it is never Seized,
+  mind-controlled, or Swallowed.
+
+At full HP it kills a full-HP Fighter, Guard, Knight, Champion, or Captain
+with one attack and takes nothing back, and it kills a Juggernaut in one
+turn (20 and 20, taking 7). A Knight deals it 9 and takes 9, a Catapult 6,
+a Marksman 3. The cheap answer is never the Herald: it is its channellers.
+
+### 26.10 Proclaim and the Cowed city
+
+"'KNEEL!' A hostile city within 3 hides in its cellars: no income and no
+city action until its owner's turn ends."
+
+Proclaim is one of the bound Herald's two attacks, before or after the
+other and also after its Move. The city is a hostile player's city whose
+center the Herald's seat has explored, within 3 tiles, that is not Cowed
+already. It touches no unit.
+
+A **Cowed** city pays no income at its owner's next Start Turn (like a
+besieged city) and begins that turn with its city action spent: no
+training, Egg, hire with the action, Land Grant, or Offering. Harvests and
+buildings in its territory are not city actions and go on, and its rewards
+still settle. It ends when its owner's turn ends, and at once when the city
+changes hands. It may be Cowed again every turn.
+
+### 26.11 Behold!, Anchor, and Boo!
+
+**Behold! (the Idol Bearer).** "It holds up the idol. Cultists beside it
+are too awestruck to flinch, until someone hits the Idol Bearer." A primary
+action of an Idol Bearer, which may follow its Move (so it does not channel
+that turn). The idol stays raised until the end of its seat's next channel
+check. While it is raised, an own robed cultist that stood on one of the
+eight tiles around the Idol Bearer when a command began, and **only lost
+Hit Points** in it, **keeps its strand**. Being killed, moved, given a
+status, or taken still breaks it; rituals are never protected; and the Idol
+Bearer does not protect its own strand. The idol drops the moment the Idol
+Bearer is itself disrupted, and **a command that also disrupts the Idol
+Bearer protects nobody** (one Whirl, one blast, one star, or one Start
+Turn's Plague that hits both). So the order matters: hit the Idol Bearer
+first, then the channellers. Two raised idols protect no more than one.
+
+**Anchor (the Thing in the Cellar).** "The Thing grips the cultist beside
+it: that cultist's strand counts three. Hit that cultist and all three
+go." It is not a primary action: once a turn, before or after the Thing's
+Move or attack, the Thing grips an own robed cultist next to it **that
+holds a strand already**. One grip per Thing, one per cultist. At the check
+(and when binding an Unbound daemon) the gripped strand counts **3** while
+the Thing stands next to the cultist. The grip fails when the Thing is
+moved by anything but its own command, gets a status (also one from its own
+attack, such as Toothache from a Jawbreaker), is taken, or leaves the
+board; the Thing's own loss of Hit Points never matters. It ends with its
+cultist's strand: disrupt the cultist and all three are gone. A grip that
+broke may be made again in the same turn. So one Initiate beside a Thing
+holds a Herald, at the risk of losing it to one hit. Anchor is the Thing's
+signature, and it is a Cult rule of its own
+([section 11.1](#111-the-giants-signatures)).
+
+**Boo! (the Horror).** "BOO! Every living unit beside it, friend or foe,
+jumps one tile away." A primary action of a bound Horror in place of its
+attack, which may follow its Move. Every **living** land-form unit on the
+eight tiles around it, **of any owner**, that is not a reward giant, a
+two-slot unit, or a neutral unit, jumps one tile directly away from the
+Horror, one after the other, when that tile passes the Push conditions
+([section 13.4](#134-after-combat)); otherwise it stays. No damage and no
+retaliation. Undead units, constructs, daemons, and Eggs are not scared. It
+needs somebody to scare. A scared cultist is moved, so it is disrupted (a
+Horror never Boos beside its own channellers).
+
+### 26.12 Hexes and tricks
+
+Each is a primary action of its unit, in land form, that may follow its
+Move.
+
+**Ribbit (the Hexer).** "Turns an enemy within 2 into a frog until the end
+of its next turn." In place of its attack, the Hexer turns a hostile unit
+in land form that it sees, within 2 tiles, into a **frog**. Not a reward
+giant, a two-slot unit, an Egg, a neutral unit, a summoned unit, or a unit
+that is a frog already. The Hexer cannot Ribbit on its owner's next turn
+(every second turn at most).
+
+**A frog** lasts until the end of its owner's next turn:
+
+- It may only Move (1 tile, whatever its role), Disembark, Promote,
+  Disband, and Wait. It does not attack, capture, or use any ability, it
+  helps no summoning, and it chants in no ritual.
+- Against an attack it has **Defense 0.5**, no fortification (Walls, Field
+  Defense, Dig In), no cover (terrain, Snow, ice), and **no strike back**.
+  A Shield, Armoured, Plated, and a Blizzard's halving stay. Area hits and
+  fixed damage are unchanged.
+- It still blocks its tile and exerts its zone of control.
+- A Summoner may **Seize** it at half its maximum HP or less.
+- It may be frogged again as soon as it ends. **Tend Wounded** (and the
+  Dwarf Repair) and the Candy **Top-Up** cure it, also at full HP, and a
+  cured unit may act in that turn.
+- A frog is a status: a frogged channeller's strand breaks, a frogged
+  chanter leaves its circle, and a frogged Idol Bearer's idol drops.
+
+An Initiate deals a frogged Fighter 7 (5 left) and a frogged Knight 7 (6
+left, which can be Seized) and takes nothing back.
+
+**Switcheroo (the Familiar).** "The toad-cat and a unit within 2 swap
+places. Never on a settlement center." With **Familiars** (the Cult's
+Scouting; a Familiar from the Scouts reward or a chest swaps only once its
+owner has it), the Familiar and one land-form unit of any player that it
+sees, within 2 tiles, swap tiles. Not a reward giant, a two-slot unit, an
+Egg, a neutral unit, a summoned unit, or a unit nothing moves (a
+Jawbreaker). **Neither tile may be a settlement center**, each unit must be
+able to stand where the other stood by the Push conditions, and neither is
+put into territory allied to it. A swap is not a Move: it changes neither
+unit's turn but for the Familiar's spent action, neither may capture where
+it lands this turn, and nothing on either tile is picked up. A swapped
+channeller or chanter, of either side, is disrupted. The Familiar cannot
+swap on its owner's next turn.
+
+**The Tentacle (the Caller).** "Up comes a Tentacle within 3. It slaps and
+grabs whoever is weakest beside it." The Caller calls a Tentacle up on a
+free tile its seat has explored, 1 to 3 tiles away: land, water, or ice,
+never a settlement center or a Rift, with no unit, mound, Barricade,
+treasure chest, or curiosity. One Tentacle per Caller at a time; it
+outlives its Caller.
+
+- **The Tentacle** belongs to nobody from birth: 8 HP, Attack 3, Defense 1,
+  Move 0. Nothing moves it and it is no living thing. Anyone may attack it;
+  killing it is worth nothing.
+- **The slap.** At once when it rises, and in every neutral turn, it
+  attacks the unit of a player on the eight tiles around it with the
+  **fewest Hit Points** (a tie to the lowest unit ID), of any seat, its
+  Caller's own included, and of any form, ships included: an ordinary
+  attack with retaliation. Its kills are credited to nobody, pay no
+  Favour, and make no Martyr.
+- **It sinks** at the end of the third neutral turn after it rose, so it
+  slaps four times at most.
+- **Grab.** "The unit it slapped cannot leave its side." After each slap
+  the Tentacle holds the unit it slapped, while both live and the unit
+  stands next to it. Every step of a held unit's Move must be a tile next
+  to that Tentacle. Anything else that takes the unit from its side ends
+  the grab (a shove, a swap, a Boo!, the advance after a kill), and so
+  does the Tentacle's death, its sinking, or its next slap on another
+  unit.
+
+On arrival it kills a full-HP Catapult, and leaves a Marksman at 2, an
+Initiate at 1, and a Fighter at 4 (taking 4).
+
+**Pick Me! (the Chosen).** "'I AM THE CHOSEN ONE!' Enemies beside it can
+attack nobody else until your next turn." Until its owner's next Start
+Turn, a unit hostile to the Chosen's owner that stands on one of the eight
+tiles around it, in any form, may **attack only that Chosen** (next to two
+shouting Chosen, either). Ranged units next to it are bound too; units two
+or more tiles away are not. Only the targeted attack is restricted: area
+effects (Whirl, Thump, Kaboom, blasts, Wail, Plague, Stomp), statuses
+(Bolas, Frost Bolt, Cold Snap), Mind Control, the Tractor Beam, and neutral
+units are free. It ends when the Chosen leaves the board; a Frozen or
+frogged Chosen still taunts.
+
+**Martyr (the Chosen).** "When a Chosen dies, the Ancient Ones pay 6
+Favour." Whatever killed it, on whoever's turn, a star of its own seat and
+a Seizure by another Cult seat included. Not for a Sacrifice (which pays
+its value anyway), a consumption on the Great Summoning's mark, a death as
+the target of an attack by an Unbound daemon or a Tentacle (the Ancient
+Ones do not reward a failure), a mind-controlled Chosen, or a seat that is
+eliminated in the same command. A Chosen that attacks an Unbound daemon and
+dies of its retaliation is a Martyr.
+
+**Pamphlets (the Initiate).** "Have you heard the good news about the
+Ancient Ones? The village joins at once." An Initiate that ends its Move on
+the center of a village nobody owns may capture it **in the same turn**.
+Every other capture rule holds: a player's city still takes a turn, and a
+frog does not preach.
+
+### 26.13 Resolution order
+
+**A Cult seat's Start Turn** adds these steps to
+[section 3](#3-players-turns-and-victory):
+
+1. With the Mind Control cooldowns, before the Shield recharge: the seat's
+   Ribbit and Switcheroo cooldowns count down and its Chosen stop taunting.
+2. After Plague and its chains, the watched units are judged (a channeller
+   Plague hurt is disrupted), and then **the channel check** runs for each
+   bound daemon in unit-ID order. Each daemon that breaks loose rampages at
+   once, with its deaths and their consequences, and is Furious for the
+   turn. Then the seat's strands and grips are cleared and its raised idols
+   drop.
+3. **The rituals**, each completing or fizzling in leader unit-ID order:
+   Star-fall's damage; the Great Summoning's consumption or block and the
+   Herald's arrival. What one completion hurts is disrupted before the
+   next: a star takes chanters out of the seat's second circle, and breaks,
+   for the next check, the strand of a channeller of a Herald that arrived
+   just before it.
+4. Then the existing steps from Egg hatching on. A Cowed city pays no
+   income.
+
+So a Cult's own star that hurts its own channellers breaks those strands
+for the **next** check, not for the one just made.
+
+**End Turn.** A daemon stops being Furious when the seat in whose Start
+Turn it broke loose ends its turn. A Cowed city stops being Cowed, and a
+frog stops being a frog, when its owner's turn ends.
+
+**The neutral turn** ([section 2.7](#27-map-curiosities)) runs every
+neutral unit in unit-ID order: the Giant Spider, camp guards, Bigfoot,
+Unbound daemons, and Tentacles. Each Tentacle's count goes down at the end
+of the neutral turn. An Unbound daemon or a Tentacle on the board is enough
+for a neutral turn, on a board with or without map curiosities.
+
+**Elimination.** When a Cult seat is eliminated, its bound daemons are
+Unbound in that moment (not Furious) and stay on the board, like its
+Unbound ones; its other units are removed as for any seat, and its Favour
+is gone. A Cult seat with a bound Herald and no city is eliminated like any
+seat.
+
+### 26.14 Interactions with other rules
+
+| Other rule                                            | Ruling                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Freeze                                                | A Frozen cultist is disrupted and cannot channel, help a summoning, or chant. A bound Horror can be Frozen; the Herald never; an Unbound daemon takes no status. A Cold Snap on a circle breaks every chanter it freezes. A Frozen Thing's grip fails. A Frozen Chosen still taunts.                                                                                                                                                               |
+| Plague and Bitten                                     | Plague damage at the Cult's Start Turn comes before the check and breaks every plagued channeller (Behold! protects one only when the Idol Bearer is not hit by the same Plague). A Plagued or Bitten own unit cannot be Sacrificed or consumed. A Bitten enemy can be Seized; it does not rise. No daemon is ever Plagued or bitten.                                                                                                              |
+| Graves and risings                                    | A Sacrifice, a Seizure, and a consumption leave no Grave and no rising; a daemon and a Tentacle leave none either. Every other death of a Cult unit, and the victims of a star, a rampage, and a Tentacle, leave Graves as any death.                                                                                                                                                                                                              |
+| Eggs                                                  | An Egg is never Sacrificed, Seized, frogged, swapped, scared, or consumed; one on the mark blocks the Herald's arrival. Star-fall, a rampage, and a Tentacle's slap hit Eggs as units.                                                                                                                                                                                                                                                             |
+| Barricades and mounds                                 | No Horror, Herald, or Tentacle appears on one, and one on the Great Summoning's mark blocks the arrival. Star-fall removes every Barricade in its area. A rampage walks round them.                                                                                                                                                                                                                                                                |
+| Area hits (Whirl, Thump, Stomp, Sweep, blasts, bombs) | Each hit is a loss of Hit Points and disrupts every cultist it reaches. Pick Me! does not restrict them.                                                                                                                                                                                                                                                                                                                                           |
+| Burrowed units                                        | A burrowed unit is not on the board: never a rampage's target, a star's victim, or a Seizure. A surfacing eruption disrupts the cultists it hurts.                                                                                                                                                                                                                                                                                                 |
+| Kaboom and death blasts                               | A Sacrificed, Seized, or consumed exploding unit is removed and never explodes; one a daemon or a star kills explodes as usual. A frog cannot Kaboom.                                                                                                                                                                                                                                                                                              |
+| Candy statuses, Crumbs, Bounce                        | Splat, Stuck, and Toothache disrupt a cultist. A Sacrifice, a Seizure, and a consumption leave no Crumbs. The Herald is never Stuck, Splatted, given Toothache, or bounced; a bound Horror may be. A Top-Up cures a frog. A Jawbreaker is never swapped.                                                                                                                                                                                           |
+| Mind Control and the Tractor Beam                     | A mind-controlled cultist has changed owner and a pulled one is moved: both are disrupted. No summoned unit is mind-controlled or pulled. A Brain may be Seized, and its controlled unit is released. A mind-controlled Cult unit keeps only its unit's tricks ([section 26.1](#261-roles-robed-cultists-and-labels)).                                                                                                                             |
+| Giants' signatures                                    | A swallowed cultist is off the board (disrupted); no daemon is Swallowed. A Thunder Stomp and a trample disrupt the cultists they hit. A Crushing Shove crushes a Herald, which does not yield. A status from the Thing's own attack fails its grip.                                                                                                                                                                                               |
+| Curiosities                                           | An Unbound daemon and a Tentacle act in the neutral turn and are monsters to every seat's previews (`previewMonsterV7`). A daemon never heals at a Fountain or a Wishing Well and is never promoted at a Shrine. A rampage never steps onto a curiosity tile or through a gate; a unit that would come through a gate onto the Herald is blocked. A bound daemon's kill of the Spider, a guard, or Bigfoot pays its bounty in Favour and in Coins. |
+| Score and play modes                                  | Favour is not scored. A daemon counts in its seat's Army while commanded. A Sacrifice and a consumed own unit are no Loss and end a flawless game; so does a daemon that breaks loose. A Seizure and a consumed enemy are kills. The kills of an Unbound daemon and of a Tentacle are nobody's.                                                                                                                                                    |
+| Achievements                                          | Slayer counts a Summoner's Seizures and a daemon's kills like any unit's. Muster counts the Cult's trained kinds; a daemon has no price and is not counted.                                                                                                                                                                                                                                                                                        |
+| Capture and siege                                     | Every Cult land unit and every bound daemon captures; a city a daemon takes does not become its home. An Unbound daemon never besieges or captures. An Initiate captures a neutral village on arrival.                                                                                                                                                                                                                                             |
+| Boats and embarking                                   | The Cult's boats are the Human boats. An embarked cultist is no robed cultist: embarking breaks its strand, and it neither channels nor chants. Star-fall hits ships and embarked units; a Tentacle may rise on water and slaps ships; a rampage never goes for a unit afloat.                                                                                                                                                                     |
+| Missions                                              | A `MISSION` setup accepts a Cult seat, which may start with Favour ([section 2.6](#26-mission-setup)). The hidden lab `LAB_CULT_MID` stages the roster with 12 Favour; it is built and has not been played.                                                                                                                                                                                                                                        |
+| Nine seats                                            | The Cult is the ninth faction, so a match has 2 to 9 players ([section 2.1](#21-match-setup)). With more seats there are more enemy turns between two checks: more chances to break a strand.                                                                                                                                                                                                                                                      |
+
+### 26.15 Commands, events, errors, and queries
+
+The exact shapes, the order of events, and who is shown each event are in
+the six step notes of [section 1](#1-identity-and-compatibility) (the Cult
+registration, Favour, the channel, Unbound, rituals and the Herald, hexes
+and tricks). In summary:
+
+- **Commands.** `SACRIFICE` and `SEIZE` (`unitId`, `victimUnitId`),
+  `OFFERING` (`cityId`), `SUMMON` (`unitId`, `helperUnitId`, `at`),
+  `CHANNEL` (`unitId`, `daemonUnitId`; also Bind again), `BEHOLD`
+  (`unitId`), `ANCHOR` (`unitId`, `cultistUnitId`), `BOO` (`unitId`),
+  `BEGIN_RITUAL` (`ritual` `STARFALL` or `GREAT_SUMMONING`, `unitId`,
+  `at`), `PROCLAIM` (`unitId`, `cityId`), `RIBBIT` and `SWITCHEROO`
+  (`unitId`, `targetUnitId`), `TENTACLE` (`unitId`, `at`), and `PICK_ME`
+  (`unitId`). Pamphlets is the ordinary `CAPTURE`, and the Herald's two
+  attacks the ordinary `ATTACK`.
+- **State.** The `cult` block: `favour`, `strands`, `grips`, `idols`,
+  `rituals`, `cowed`, `frogs`, `hexCooldowns`, `taunts`, and `tentacles`.
+  A summoned unit has the key `summoned` (`HORROR`, `HERALD`, `TENTACLE`)
+  and a stored mechanical role that no rule reads; an Unbound daemon and a
+  Tentacle have an entry in the neutral registration (`monsters`). A city
+  has `offeredPopulation` once it has made an Offering.
+- **Events.** `FAVOUR_GAINED` (source `SACRIFICE`, `SEIZE`, `OFFERING`,
+  `MARTYR`, `DAEMON_KILL`, or `CONSUMPTION`) and `FAVOUR_SPENT`, both shown
+  to every player; `UNIT_SACRIFICED`, `UNIT_SEIZED`, `OFFERING_MADE`;
+  `DAEMON_SUMMONED`, `STRAND_FORMED`, `STRAND_BROKEN`, `IDOL_RAISED`,
+  `IDOL_DROPPED`, `ANCHOR_GRIPPED`, `ANCHOR_BROKEN`, `UNITS_SCARED`;
+  `DAEMON_UNBOUND`, `DAEMON_BOUND`; `RITUAL_BEGUN`, `RITUAL_DISRUPTED`,
+  `RITUAL_FIZZLED` (reason `LEADER`, `CHANTERS`, or `BLOCKED`),
+  `STAR_FELL`, `UNIT_CONSUMED`, `HERALD_ARRIVED`, `CITY_COWED`;
+  `UNIT_FROGGED`, `UNITS_SWAPPED`, `TENTACLE_ROSE`, `UNIT_GRABBED`,
+  `TENTACLE_SANK`, `PICK_ME_SHOUTED`. `UNIT_DIED.cause` gains
+  `SACRIFICED`, `CONSUMED`, `STARFALL`, and `SANK`.
+- **Errors.** `INSUFFICIENT_FAVOUR`; `SACRIFICE_NOT_LEGAL` (`EMBARKED`,
+  `VICTIM`, `DAEMON`, `CONTROLLED`, `PLAGUED`, `BITTEN`); `SEIZE_NOT_LEGAL`
+  (`EMBARKED`, `VICTIM`, `IMMUNE`, `HEALTHY`, `NO_HOLDER`);
+  `OFFERING_NOT_LEGAL` (`LEVEL`, `POPULATION`); `SUMMON_NOT_LEGAL`
+  (`EMBARKED`, `HELPER`, `TILE`); `CHANNEL_NOT_LEGAL` (`EMBARKED`,
+  `DAEMON`, `FURIOUS`, `RANGE`); `BEHOLD_NOT_LEGAL` (`EMBARKED`, `RAISED`);
+  `ANCHOR_NOT_LEGAL` (`EMBARKED`, `GRIPPING`, `CULTIST`); `BOO_NOT_LEGAL`
+  (`NOBODY`); `RITUAL_NOT_LEGAL` (`EMBARKED`, `MOVED`, `CHANTERS`, `TILE`);
+  `PROCLAIM_NOT_LEGAL` (`CITY`, `RANGE`, `COWED`); `RIBBIT_NOT_LEGAL`
+  (`EMBARKED`, `COOLDOWN`, `TARGET`, `IMMUNE`, `FROG`, `RANGE`);
+  `SWITCHEROO_NOT_LEGAL` (`EMBARKED`, `TECHNOLOGY`, `COOLDOWN`, `TARGET`,
+  `IMMUNE`, `RANGE`, `CENTER`, `TILE`); `TENTACLE_NOT_LEGAL` (`EMBARKED`,
+  `EXISTS`, `TILE`); `PICK_ME_NOT_LEGAL` (`EMBARKED`); `UNIT_FROGGED` (a
+  frog's refused command), `ATTACK_TAUNTED` (with the Chosen's ID), the
+  movement reason `GRABBED`, and `GATE_BLOCKED`. A Cowed city's refused
+  action is `CITY_ACTION_SPENT`.
+- **Queries and previews.** The public command query offers exactly the
+  commands the reducer accepts. `previewSacrificeV7`, `previewSeizeV7`,
+  `previewOfferingV7`, `previewSummonV7`, `previewChannelV7` (the daemon's
+  strands before and after, and whether it binds), `previewAnchorV7`,
+  `previewBeholdV7`, `previewBooV7`, `previewBeginRitualV7`,
+  `previewRitualV7` (a star's damage and hits; whether the Herald
+  `ARRIVES`, `CONSUMES`, or is `BLOCKED`), `previewProclaimV7`,
+  `previewRibbitV7`, `previewSwitcherooV7`, `previewTentacleV7`, and
+  `previewPickMeV7` describe an offered command and are null otherwise.
+  `previewRampageV7` gives the unit a visible daemon goes for and its walk
+  (`exact` is false when an unexplored tile could hold a nearer unit);
+  `previewMonsterV7` answers for an Unbound daemon and a Tentacle;
+  `attacksLeftV7` is a Herald's attacks left; `publicBindingTauntsV7`
+  names the Chosen that bind an own unit. The combat preview of a frog is
+  exact, and an attack a taunt or a frog forbids has none.
+- **Fog.** A view carries the Favour of every Cult seat; the strands,
+  grips, idols, frogs, cooldowns, taunts, and Tentacles of the units its
+  viewer sees; every visible daemon's Control and holding strands (which
+  count the strands of cultists the viewer does not see); the rituals it
+  knows of (it sees a participant or has explored the mark); and the Cowed
+  cities it sees.
+- **Text harness** ([text-mode play](../validation/TEXT_PLAY.md)): the
+  commands `.sacrifice.u<id>`, `.seize.u<id>`, `c<id>.offering`,
+  `.summon.u<id>.<x>,<y>`, `.channel.u<id>`, `.behold`, `.anchor.u<id>`,
+  `.boo`, `.starfall.<x>,<y>`, `.summoning.<x>,<y>`, `.proclaim.c<id>`,
+  `.ribbit.u<id>`, `.switch.u<id>`, `.tentacle.<x>,<y>`, and `.pickme`,
+  and lines for Favour, strands and Control, grips, idols, Unbound
+  daemons and their targets, circles, Cowed cities, frogs, taunts, and
+  Tentacles. The headless tools take `cult` (alias `cultists`) in
+  `--factions`.
+
+### 26.16 Normal AI, presentation, and balance
+
+- **Normal AI** (`pulp_wars-mch9.9` to `mch9.12`; no rule and no identity
+  change): the Cult seat's play and every seat's play against the Cult, in
+  [section 16](#16-normal-ai-summary) and in
+  [Normal AI, the Cult](../architecture/NORMAL_AI.md#the-cult-seat-pulp_wars-mch99-to-mch912).
+  It is a baseline made by judgement on hand-built positions: no match was
+  played to set a number in it.
+- **Presentation** (`pulp_wars-mch9.17` to `mch9.19`, with the art of
+  `pulp_wars-mch9.13` to `mch9.16`, `mch9.22`, and `mch9.23`). Every seat's faction
+  select offers the Cultists (`pulp_wars-mch9.20`: the tribe picker has
+  nine cards, and a game seats up to eight opponents;
+  [the screen flow](../ui/SCREEN_FLOW.md#current-ruleset-7-many-players-overlay)).
+  Their owner colour is eldritch green
+  (`#00ff78`), and their units, portraits, cities, buildings, ships,
+  ground, and forest have their own art
+  ([the Cult's art direction](../art/factions/CULT.md)). Every number and
+  legal choice the interface shows comes from the public view, the offered
+  commands, and the public previews:
+  - **Favour** is a candle and a number beside the Coins of a Cult player,
+    and in the leaderboard row of every Cult seat for everyone.
+  - **Sacrifice, Seize, Summon, Channel, Anchor, Star-fall, the Great
+    Summoning, Proclaim, Ribbit, Switcheroo, and the Tentacle** have one
+    button each, and what they aim at is picked on the board
+    ([board targeting](../ui/BOARD_TARGETING.md)), labelled with what it
+    pays or does; a rite's mark is previewed first and then begun.
+    Behold!, Boo!, and Pick Me! are cast by their buttons, and the Offering
+    is a button of the city panel.
+  - **On the board, for every player who sees it:** a green chain for each
+    strand (red and parted when its cultist is out of reach), a candle over
+    each channeller and chanter, pips under a daemon for its strands
+    against its Control, the eye mark on the unit a daemon would go for, a
+    chalk ring round a raised idol, a tentacle from a gripping Thing, the
+    circle of a ritual with its mark and countdown and what a star will
+    deal to each unit, a banner over a Cowed city, a small frog on a
+    frogged unit, a "ME!" bubble and tethers for Pick Me!, and a Tentacle's
+    arm round the unit it holds.
+  - **End Turn** with a daemon short of its Control asks once.
+  - The unit glossary has one sentence for every ability and status. The
+    cues use the game's existing sounds, and the Cult has no theme music
+    of its own yet: a Cult player hears the **Undead theme** as a stand-in
+    (`STAND_IN_THEME_FACTIONS_V1`; [Sound](../ui/SOUND.md#theme-music)),
+    and the Cult's own theme is `pulp_wars-mch9.25`.
+
+  The details and the decisions taken are in
+  [the spec, section 14.3](RULESET_7_CULTISTS.md#143-how-it-reads-on-the-board-without-text)
+  and [the screen flow](../ui/SCREEN_FLOW.md).
+
+- **Balance.** Every number is the design's first guess: none was tuned,
+  and no match, hand-played game, or simulation was run for the faction
+  (the user's standing rule). The head-to-head results quoted in the spec
+  were re-run through the engine's combat preview by the engine steps and
+  match. A hand-played fairness check with `LAB_CULT_MID` runs only if the
+  user asks for it; any later pass is bound by the variance rules above.

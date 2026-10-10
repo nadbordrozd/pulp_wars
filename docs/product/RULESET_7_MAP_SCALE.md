@@ -291,7 +291,9 @@ Polytopia, and each capital lies in its own domain.
   ring: slot `round(j * 8 / N + r) mod 8` for `j = 0 .. N - 1`, ring order
   clockwise from the top-left corner, with a seeded rotation `r` in 0–7
   and a seeded mirror.
-- **9 seats** (`k = 3`, only once there are 9 factions): all nine domains.
+- **9 seats** (`k = 3`; reachable since the Cultists, the ninth faction,
+  `pulp-wars-poc-7r71`, and offered by the setup screen since
+  `pulp_wars-mch9.20`): all nine domains.
 - **Central zone.** With at most 8 seats no capital stands on a tile whose
   distance to the nearest board edge is `floor(w / 3)` or more. Every capital
   therefore has neighbours only on its sides, never all around, and the
@@ -314,7 +316,8 @@ Polytopia, and each capital lies in its own domain.
   otherwise the set with the most villages among the first 12 settled. The
   projected score is no longer asked on water maps: the capital levelling
   of section 4.4 item 2 evens the rings instead. With nine or more seats
-  (not reachable with eight factions) the `k x k` domains are shuffled and
+  (nine since the ninth faction, the Cultists; more is not reachable) the
+  `k x k` domains are shuffled and
   the first `N` used.
 - **Where the domain grid applies** (amended 2026-10-05): Dry Land, Pangea,
   and Lakes at every seat count. On Continents and Archipelago the
