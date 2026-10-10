@@ -255,8 +255,6 @@ describe("Undead effect and status art (bead pulp_wars-vkq.14)", () => {
         devicePixelRatio: 2,
         camera,
         plan,
-        images: { resolve: () => ({}) as CanvasImageSource },
-        artSet: "CHIBI",
         chibiArt,
         highContrast,
       });

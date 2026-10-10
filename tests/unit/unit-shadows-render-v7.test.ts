@@ -426,8 +426,6 @@ describe("unit shadow render plan (pulp_wars-jg1)", () => {
           ],
           targets: [],
         },
-        images: { resolve: () => null },
-        artSet: "CHIBI",
         chibiArt: art,
         reducedMotion: true,
         direction: {

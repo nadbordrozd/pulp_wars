@@ -4,8 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { bootstrapRuleset7App } from "../../src/app/index";
 import {
   ART_SET_STORAGE_KEY_V7,
-  DEFAULT_ART_SET_V7,
-  resolveArtSetV7,
+  clearStoredArtSetV7,
 } from "../../src/app/art-set-v7";
 import { viewForV7 } from "../../src/engine/index";
 import type { StorageAdapter } from "../../src/persistence/index";
@@ -48,36 +47,23 @@ function memoryStorage(): StorageAdapter & {
   };
 }
 
-describe("Ruleset 7 art set (the switch is retired, pulp_wars-67q.13)", () => {
-  it("is always CHIBI: ?art=legacy is not recognised and nothing is stored", () => {
-    expect(DEFAULT_ART_SET_V7).toBe("CHIBI");
+describe("Ruleset 7 art set (one set: pulp_wars-67q.13, pulp_wars-67q.15)", () => {
+  it("stores nothing for a browser without a stored choice", () => {
     const storage = memoryStorage();
-    for (const search of [
-      "",
-      "?art=legacy",
-      "?art=LEGACY",
-      "?art=chibi",
-      "?art=neon",
-      "?art=chibi&art=legacy",
-      "?ruleset=7&art=legacy",
-    ]) {
-      expect(resolveArtSetV7(search, storage)).toBe("CHIBI");
-      expect(storage.values.size).toBe(0);
-    }
-    expect(resolveArtSetV7("?art=legacy", null)).toBe("CHIBI");
+    clearStoredArtSetV7(storage);
+    expect(storage.values.size).toBe(0);
+    clearStoredArtSetV7(null);
   });
 
-  it("clears a stale stored choice and falls back to the default", () => {
+  it("clears a stale stored choice and touches no other setting", () => {
     for (const stale of ["LEGACY", "CHIBI", "corrupt", ""]) {
       const storage = memoryStorage();
       storage.setItem(ART_SET_STORAGE_KEY_V7, stale);
       storage.setItem("pulpWars.settings.v1", "kept");
-      expect(resolveArtSetV7("", storage)).toBe("CHIBI");
+      clearStoredArtSetV7(storage);
       // The retired key is gone; no other setting is touched.
       expect(storage.values.has(ART_SET_STORAGE_KEY_V7)).toBe(false);
       expect(storage.values.get("pulpWars.settings.v1")).toBe("kept");
-      expect(resolveArtSetV7("?art=legacy", storage)).toBe("CHIBI");
-      expect(storage.values.has(ART_SET_STORAGE_KEY_V7)).toBe(false);
     }
     // Storage that cannot be read or cleared never stops the start.
     const denied: StorageAdapter = {
@@ -91,7 +77,7 @@ describe("Ruleset 7 art set (the switch is retired, pulp_wars-67q.13)", () => {
         throw new Error("denied");
       },
     };
-    expect(resolveArtSetV7("", denied)).toBe("CHIBI");
+    expect(() => clearStoredArtSetV7(denied)).not.toThrow();
     const readOnly: StorageAdapter = {
       getItem: () => "LEGACY",
       setItem: () => undefined,
@@ -99,7 +85,7 @@ describe("Ruleset 7 art set (the switch is retired, pulp_wars-67q.13)", () => {
         throw new Error("denied");
       },
     };
-    expect(resolveArtSetV7("", readOnly)).toBe("CHIBI");
+    expect(() => clearStoredArtSetV7(readOnly)).not.toThrow();
   });
 
   it("boots the production view on CHIBI whatever the address or an earlier visit asked for", async () => {
@@ -147,7 +133,7 @@ describe("Ruleset 7 art set (the switch is retired, pulp_wars-67q.13)", () => {
 });
 
 describe("CHIBI Canvas host camera", () => {
-  function rig(artSet: BoardHostModelV7["artSet"]) {
+  function rig() {
     const draws: Parameters<typeof renderer.drawBoardV7>[0][] = [];
     vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue({
       clearRect: vi.fn(),
@@ -188,7 +174,6 @@ describe("CHIBI Canvas host camera", () => {
         selectedUnitId: null,
         selectedAchievement: null,
       },
-      ...(artSet === undefined ? {} : { artSet }),
     };
     host.update(model);
     const canvas = container.querySelector("canvas");
@@ -236,11 +221,10 @@ describe("CHIBI Canvas host camera", () => {
   }
 
   it("fits at 0.75, steps through 1, 1.5 and 2 with keys, and never leaves the step list", () => {
-    const { host, canvas, draws, camera, key } = rig("CHIBI");
-    expect(draws.at(-1)).toMatchObject({ artSet: "CHIBI" });
+    const { host, canvas, draws, camera, key } = rig();
     expect(draws.at(-1)?.chibiArt).toBeDefined();
+    expect(canvas.dataset.artSet).toBe("CHIBI");
     expect(canvas.dataset).toMatchObject({
-      artSet: "CHIBI",
       zoomStep: "0.75",
       tileCssPx: "60",
     });
@@ -258,7 +242,7 @@ describe("CHIBI Canvas host camera", () => {
   });
 
   it("turns one wheel notch or accumulated trackpad deltas into exactly one step", () => {
-    const { host, canvas } = rig("CHIBI");
+    const { host, canvas } = rig();
     const wheel = (deltaY: number) =>
       canvas.dispatchEvent(
         new WheelEvent("wheel", {
@@ -282,8 +266,7 @@ describe("CHIBI Canvas host camera", () => {
   });
 
   it("snaps pinch zoom to discrete steps and picks tiles at the 80 px geometry", () => {
-    const { host, view, canvas, camera, pointer, onSelection, key } =
-      rig("CHIBI");
+    const { host, view, canvas, camera, pointer, onSelection, key } = rig();
     key("+");
     expect(canvas.dataset.zoomStep).toBe("1");
     pointer("pointerdown", 1, 400, 300);
@@ -319,10 +302,10 @@ describe("CHIBI Canvas host camera", () => {
     host.destroy();
   });
 
-  it.each(["CHIBI", "LEGACY"] as const)(
-    "never drags, pinches or zooms the %s explored map out of view (bead pulp_wars-eu3r.5)",
-    (artSet) => {
-      const { host, view, camera, pointer, canvas, key } = rig(artSet);
+  it.each(["CHIBI"] as const)(
+    "never drags, pinches or zooms the explored map out of view (bead pulp_wars-eu3r.5)",
+    () => {
+      const { host, view, camera, pointer, canvas, key } = rig();
       // The explored cells (plus one cell) must stay in view, not fog.
       const area = cameraLimitArea(
         view.board,
@@ -425,21 +408,6 @@ describe("CHIBI Canvas host camera", () => {
       host.destroy();
     },
   );
-
-  it("keeps LEGACY camera behaviour and refits when the art set changes", () => {
-    const { host, model, canvas, camera, key } = rig(undefined);
-    expect(canvas.dataset.artSet).toBe("LEGACY");
-    expect(canvas.dataset.zoomStep).toBeUndefined();
-    const legacyZoom = camera().zoom;
-    key("+");
-    expect(camera().zoom).toBeCloseTo(Math.min(1.75, legacyZoom * 1.2));
-    host.update({ ...model, artSet: "CHIBI" });
-    expect(canvas.dataset.zoomStep).toBe("0.75");
-    host.update({ ...model, artSet: "LEGACY" });
-    expect(canvas.dataset.artSet).toBe("LEGACY");
-    expect(camera().zoom).toBe(legacyZoom);
-    host.destroy();
-  });
 });
 
 function sameAt(

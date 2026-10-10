@@ -689,8 +689,7 @@ export function showUndeadDirectionSceneV7(
     animationSpeed: "NORMAL",
     presentationPaused: true,
     highContrast: false,
-    artSet: "CHIBI",
-    ...liveBoardLookV7("CHIBI", options.classic === true),
+    ...liveBoardLookV7(options.classic === true),
   });
   if (magic === "CUES" || magic === "CUES_B")
     host.pinSupportFeedback(magicFeedback(scene, magic));

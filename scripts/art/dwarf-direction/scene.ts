@@ -618,7 +618,7 @@ export function showDwarfSceneV7(
     onCommand: () => undefined,
   });
   const scene = dwarfSceneViewV7(live, options.kind);
-  const look = liveBoardLookV7("CHIBI");
+  const look = liveBoardLookV7();
   const direction = look.visualDirection;
   if (direction === undefined)
     throw new Error("the live look has no direction");
@@ -642,7 +642,6 @@ export function showDwarfSceneV7(
     animationSpeed: "NORMAL",
     presentationPaused: true,
     highContrast: false,
-    artSet: "CHIBI",
     // The live look as the game passes it: no base plates since bead
     // pulp_wars-w5j.3 (checked above); only the art registry is the scene's.
     ...look,

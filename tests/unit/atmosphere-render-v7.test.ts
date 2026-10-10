@@ -853,11 +853,6 @@ function fakeChibi(): ChibiBoardArtV7 {
   };
 }
 
-const legacyImages = {
-  resolve: (assetId: string) =>
-    ({ legacy: assetId }) as unknown as CanvasImageSource,
-};
-
 function drawBoard(options: {
   readonly live: boolean;
   readonly atmosphere: boolean;
@@ -877,8 +872,6 @@ function drawBoard(options: {
     devicePixelRatio: 1,
     camera: { zoom: chibiCameraZoom(1), offsetX: 40, offsetY: 40 },
     plan,
-    images: legacyImages,
-    artSet: "CHIBI",
     chibiArt,
     ...(options.live
       ? { direction: { spec: LIVE_DIRECTION_V7, art: chibiArt } }

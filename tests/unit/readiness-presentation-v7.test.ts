@@ -223,7 +223,6 @@ function unit(x: number, ready: boolean): BoardRenderPlanEntryV7 {
 }
 
 function drawReady(options: {
-  readonly artSet: "CHIBI" | "LEGACY";
   readonly zoom: number;
   readonly elapsedMs: number;
   readonly reducedMotion?: boolean;
@@ -253,11 +252,6 @@ function drawReady(options: {
     devicePixelRatio: 1,
     camera: { offsetX: 100, offsetY: 100, zoom: options.zoom },
     plan: { version: 7, entries: [unit(0, true), unit(1, false)], targets: [] },
-    images: {
-      resolve: (assetId: string) =>
-        ({ legacy: assetId }) as unknown as CanvasImageSource,
-    },
-    artSet: options.artSet,
     chibiArt,
     glowCache,
     readinessElapsedMs: options.elapsedMs,
@@ -268,11 +262,11 @@ function drawReady(options: {
 }
 
 describe("Ruleset 7 ready-unit outline drawing", () => {
-  for (const artSet of ["CHIBI", "LEGACY"] as const)
-    it(`draws the aura then the band before an opaque, unscaled ${artSet} sprite`, () => {
+  {
+    it("draws the aura then the band before an opaque, unscaled sprite", () => {
       const step = 0.75;
-      const zoom = artSet === "CHIBI" ? chibiCameraZoom(step) : step;
-      const { log, glowDraws } = drawReady({ artSet, zoom, elapsedMs: 0 });
+      const zoom = chibiCameraZoom(step);
+      const { log, glowDraws } = drawReady({ zoom, elapsedMs: 0 });
       const expected = readinessUnitStyleV7(0, false, false, step);
       // Only the ready unit is outlined: two layers, aura first.
       expect(glowDraws.map((call) => call.glow)).toEqual([
@@ -307,8 +301,7 @@ describe("Ruleset 7 ready-unit outline drawing", () => {
       const sprites = log.filter(
         (call) =>
           call[0] === "drawImage" &&
-          ((call[1] as { chibi?: string; legacy?: string }).chibi ??
-            (call[1] as { legacy?: string }).legacy) !== undefined,
+          (call[1] as { chibi?: string }).chibi !== undefined,
       );
       expect(sprites).toHaveLength(2);
       const readySprite = log.indexOf(sprites[0] as LogEntry);
@@ -320,18 +313,15 @@ describe("Ruleset 7 ready-unit outline drawing", () => {
       // Ready and handled sprites share one size: nothing is enlarged.
       expect(sprites[0]?.slice(4)).toEqual(sprites[1]?.slice(4));
     });
+  }
 
   it("follows the sprite's own scale: the CHIBI step, not the world zoom", () => {
     const chibi = drawReady({
-      artSet: "CHIBI",
       zoom: chibiCameraZoom(1),
       elapsedMs: 0,
     });
-    const legacy = drawReady({ artSet: "LEGACY", zoom: 1, elapsedMs: 0 });
     expect(chibi.glowDraws[1]?.glow.outline?.width).toBe(4);
-    expect(legacy.glowDraws[1]?.glow.outline?.width).toBe(4);
     const zoomed = drawReady({
-      artSet: "CHIBI",
       zoom: chibiCameraZoom(2),
       elapsedMs: 0,
     });
@@ -340,7 +330,7 @@ describe("Ruleset 7 ready-unit outline drawing", () => {
 
   it("requests the same rasters every frame and only changes composite opacity", () => {
     const frames = [0, 300, 800, 1_300].map((elapsedMs) =>
-      drawReady({ artSet: "CHIBI", zoom: chibiCameraZoom(1), elapsedMs }),
+      drawReady({ zoom: chibiCameraZoom(1), elapsedMs }),
     );
     for (const frame of frames)
       expect(frame.glowDraws.map((call) => call.glow)).toEqual(
@@ -356,15 +346,13 @@ describe("Ruleset 7 ready-unit outline drawing", () => {
   it("draws Reduced motion and high contrast as static strong outlines", () => {
     const reduced = [0, 800].map((elapsedMs) =>
       drawReady({
-        artSet: "LEGACY",
-        zoom: 0.75,
+        zoom: chibiCameraZoom(0.75),
         elapsedMs,
         reducedMotion: true,
       }),
     );
     expect(reduced[1]?.log).toEqual(reduced[0]?.log);
     const contrasted = drawReady({
-      artSet: "CHIBI",
       zoom: chibiCameraZoom(0.75),
       elapsedMs: 400,
       highContrast: true,

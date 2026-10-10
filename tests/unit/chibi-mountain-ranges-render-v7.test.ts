@@ -420,7 +420,6 @@ function fakeChibi(): ChibiBoardArtV7 {
 function draw(
   entries: readonly Entry[],
   options: {
-    readonly artSet?: "LEGACY" | "CHIBI";
     readonly mountainArt?: ReturnType<typeof art> | null;
     readonly iceFolkArt?: IceFolkBoardArtV7;
     /** Every context method call in order, by name (drawImage with args). */
@@ -444,26 +443,12 @@ function draw(
     },
   ) as CanvasRenderingContext2D;
   const built: BoardRenderPlanV7 = { version: 7, entries, targets: [] };
-  const artSet = options.artSet ?? "CHIBI";
   drawBoardV7({
     context,
     viewport: { width: 2400, height: 2400 },
     devicePixelRatio: 1,
-    camera: {
-      offsetX: 40,
-      offsetY: 64,
-      zoom: artSet === "CHIBI" ? chibiCameraZoom(1) : 1,
-    },
+    camera: { offsetX: 40, offsetY: 64, zoom: chibiCameraZoom(1) },
     plan: built,
-    images: {
-      resolve: (assetId: string) =>
-        ({ legacy: assetId }) as unknown as CanvasImageSource,
-      resolveTerrainGround: (assetId: string) =>
-        ({ legacyGround: assetId }) as unknown as CanvasImageSource,
-      resolveRaisedTerrain: (assetId: string) =>
-        ({ legacyRaised: assetId }) as unknown as CanvasImageSource,
-    },
-    artSet,
     chibiArt: fakeChibi(),
     ...(options.mountainArt === null
       ? {}
@@ -552,12 +537,6 @@ describe("massif drawing", () => {
         draw(single, { mountainArt: art(CHIBI_MOUNTAIN_ART_SET_V7, true) }),
       ),
     ).toEqual(expected);
-  });
-
-  it("leaves the LEGACY art set alone", () => {
-    expect(draw(block, { artSet: "LEGACY" })).toEqual(
-      draw(block, { artSet: "LEGACY", mountainArt: null }),
-    );
   });
 
   it("draws a Mine as the mined mountain, and keeps the row south of it low", () => {

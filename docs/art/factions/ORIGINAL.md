@@ -143,7 +143,7 @@ Recipes `swordsman-*` and `portrait-swordsman-*` in batch
   fist (`-a`), one kept a round shield (`-b`), one was lit from the right
   (`-c`), and two relights were too hard or drew a cream bar on the helm
   (`-d`, `-e`).
-- LEGACY (retired; an internal fallback only) and the developer option "Classic look" have no
+- LEGACY (removed in `pulp_wars-67q.15`) and the developer option "Classic look" have no
   Swordsman art: LEGACY draws the Guard's legacy raster, as it draws the
   Patrol Boat for the Submarine.
 

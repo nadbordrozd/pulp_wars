@@ -239,13 +239,13 @@ describe("Revision 13 Undead presentation", () => {
     expect(undeadCommandLabelV7("RALLY", "UNDEAD")).toBe("Frenzy");
   });
 
-  it("draws the Grave corner marker and the Undead badge in both art sets", () => {
+  it("draws the Grave corner marker and the Undead badge over stand-in art", () => {
     const state = undeadShowcaseFixtureV7();
     const view = viewForV7(state, state.humanPlayerId);
     const plan = buildBoardRenderPlanV7(view, [], NO_SELECTION);
     const banshee = UNDEAD_SHOWCASE_V7.banshee;
     const camera = { offsetX: 64, offsetY: 64, zoom: 1 };
-    for (const artSet of ["LEGACY", "CHIBI"] as const) {
+    {
       const { context, log } = recordingContext();
       drawBoardV7({
         context,
@@ -253,9 +253,7 @@ describe("Revision 13 Undead presentation", () => {
         devicePixelRatio: 1,
         camera,
         plan,
-        images: { resolve: () => ({}) as CanvasImageSource },
-        artSet,
-        // CHIBI Human units resolve a registered raster, so they use the
+        // Human units resolve a registered raster, so they use the
         // chibi overlay frame. No Undead raster is registered, so Undead
         // units fall back to the Human sprite of their role (with the badge).
         chibiArt: fixtureChibiArt(
@@ -264,11 +262,8 @@ describe("Revision 13 Undead presentation", () => {
         ),
       });
       // Every Grave is a small code-drawn tombstone in the bottom-right
-      // corner of its cell: no mound, no raster, in either art set.
-      const frame0 =
-        artSet === "CHIBI"
-          ? GRAVE_MARKER_FRAME_V7.chibi
-          : GRAVE_MARKER_FRAME_V7.legacy;
+      // corner of its cell: no mound, no raster.
+      const frame0 = GRAVE_MARKER_FRAME_V7.chibi;
       expect(frame0.left).toBeGreaterThan(0);
       expect(frame0.top).toBeGreaterThan(0);
       expect(frame0.left + frame0.size).toBeLessThanOrEqual(64);
@@ -288,11 +283,8 @@ describe("Revision 13 Undead presentation", () => {
         // never hides the marker.
         expect(index).toBeGreaterThan(lastImage);
       }
-      // The faction badge is a disc on the art-set frame of the Banshee.
-      const frame =
-        artSet === "CHIBI"
-          ? UNDEAD_BADGE_FRAME_V7.chibi
-          : UNDEAD_BADGE_FRAME_V7.legacy;
+      // The faction badge is a disc on the sprite frame of the Banshee.
+      const frame = UNDEAD_BADGE_FRAME_V7.chibi;
       expect(
         log.some(
           (call) =>
@@ -302,8 +294,7 @@ describe("Revision 13 Undead presentation", () => {
             call[3] === frame.size / 2,
         ),
       ).toBe(true);
-      if (artSet === "CHIBI")
-        expect(drawnSubjects(log)).toContain("UNIT:MARKSMAN");
+      expect(drawnSubjects(log)).toContain("UNIT:MARKSMAN");
     }
   });
 
@@ -343,8 +334,6 @@ describe("Revision 13 Undead presentation", () => {
         devicePixelRatio: 1,
         camera,
         plan,
-        images: { resolve: () => ({}) as CanvasImageSource },
-        artSet: "CHIBI",
         chibiArt: fixtureChibiArt(ready, loading),
       });
       return log;

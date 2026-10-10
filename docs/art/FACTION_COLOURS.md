@@ -108,13 +108,13 @@ Dwarf's at desktop or phone width in any of the three looks.
 
 ## Where the colour is drawn
 
-| Look                                                | What carries the faction colour                                                                                                 |
-| --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| Default (live) look of the CHIBI art set            | the territory border (solid), the Egg's countdown ring, and the interface (leaderboard swatch and row edge, art in owner areas) |
-| Classic look (Settings > Developer tools)           | as before, but in the faction colour: unit and building owner masks, the numbered seat badge, the dashed border                 |
-| LEGACY art set (retired; an internal fallback only) | the seat badge, the dashed border and the code-drawn owner details, in the faction colour                                       |
+| Look                                             | What carries the faction colour                                                                                                 |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------- |
+| Default (live) look of the CHIBI art set         | the territory border (solid), the Egg's countdown ring, and the interface (leaderboard swatch and row edge, art in owner areas) |
+| Classic look (Settings > Developer tools)        | as before, but in the faction colour: unit and building owner masks, the numbered seat badge, the dashed border                 |
+| A piece without a raster (a code-drawn stand-in) | the seat badge and the lettered marker's fill, in the faction colour                                                            |
 
-The Classic look and LEGACY use the faction colour too: one colour per
+The Classic look uses the faction colour too: one colour per
 player in every look is the simplest consistent rule, and the faction is
 unique per player. Their owner recolour reads (see the captures): Dwarf
 units in jade, Goblins in hazard yellow, and so on.
@@ -147,9 +147,9 @@ a later engine bead.
 `npm run art:faction-colours-review -- --out DIR` captures the setup form,
 two Showcases with four factions each (seven factions between them) at
 desktop and phone widths and zoom steps 1 and 0.75, their leaderboards,
-Showcase a in the Classic look and in LEGACY, and the nine factions'
+Showcase a in the Classic look, and the nine factions'
 territories side by side over Mountain, Grass, Snow, Shallow and Deep Water
 ([`scripts/art/faction-colours/scene.ts`](../../scripts/art/faction-colours/scene.ts))
-in all three looks. Since the Cult registration the scene has the Cult
+in both looks. Since the Cult registration the scene has the Cult
 beside the Dwarves and the Candy at its east end, and a frame of its own on
 that end (`territories-<look>-desktop-cult.png`).

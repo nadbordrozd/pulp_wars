@@ -171,7 +171,6 @@ function draw(
     devicePixelRatio: 1,
     camera: { offsetX: 100, offsetY: 100, zoom: 1 },
     plan,
-    images: { resolve: () => null },
     ...options,
   });
   return log;
@@ -829,7 +828,7 @@ describe("Martian board markers", () => {
     }
   });
 
-  it("draws the Martian markers and badge on the board in LEGACY", () => {
+  it("draws the Martian markers and badge on a board without art", () => {
     const view = humanView(martianUiFixtureV7());
     const log = draw(planFor(view, null));
     expect(fills(log)).toContain(MARTIAN_PALETTE_V7.magenta);
@@ -862,7 +861,6 @@ describe("Martian board markers", () => {
           : { kind: "MISSING" },
     };
     const log = draw(plan, {
-      artSet: "CHIBI",
       chibiArt: art,
       direction: { spec: LIVE_DIRECTION_V7, art },
     });

@@ -84,6 +84,7 @@ import {
   frozenIceboundUiFixtureV7,
   frozenSlideUiFixtureV7,
 } from "../fixtures/v7-frozen-sea-ui";
+import { readyBoardArtV7 } from "../fixtures/v7-board-art";
 
 // The frozen sea interface (bead pulp_wars-5ti.7, second part;
 // docs/ui/BOARD_TARGETING.md section 3.5): the board plan, the words and
@@ -961,14 +962,7 @@ describe("frozen-sea marks on the canvas", () => {
         devicePixelRatio: 1,
         camera: { offsetX: 100, offsetY: 100, zoom: 1 },
         plan: built,
-        images: {
-          resolve: (id) =>
-            ({ id, width: 128, height: 128 }) as unknown as CanvasImageSource,
-          resolveTerrainGround: (id) =>
-            ({ id: `ground:${id}`, width: 128, height: 128 }) as never,
-          resolveRaisedTerrain: (id) =>
-            ({ id: `raised:${id}`, width: 256, height: 256 }) as never,
-        },
+        chibiArt: readyBoardArtV7(),
         iceFolkArt: art,
       });
       return named;

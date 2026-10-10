@@ -566,7 +566,7 @@ export function showGoblinStudySceneV7(
   // the Human production art plus the study's sprites, so "today" keeps the
   // classic Goblin sprites and only the three study units change; `live`
   // uses the game's whole registry, with the Goblin production art.
-  const look = liveBoardLookV7("CHIBI");
+  const look = liveBoardLookV7();
   const samples = options.samples ?? [];
   const art = buildChibiArtRegistryV7([
     ...CHIBI_DIRECTION_ART_ASSETS_V7,
@@ -588,7 +588,6 @@ export function showGoblinStudySceneV7(
     animationSpeed: "NORMAL",
     presentationPaused: true,
     highContrast: false,
-    artSet: "CHIBI",
     ...look,
     ...(options.live === true ? {} : { visualDirectionArt: art.registry }),
   });

@@ -150,7 +150,6 @@ function draw(
     devicePixelRatio: 1,
     camera: { offsetX: 100, offsetY: 100, zoom: 1 },
     plan,
-    images: { resolve: () => null },
     ...options,
   });
   return log;

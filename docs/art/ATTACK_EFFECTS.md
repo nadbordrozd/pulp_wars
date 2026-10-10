@@ -113,16 +113,16 @@ during the flight.
 | `HARPOON`         | Snow Hunter                   | an ivory harpoon with an ice-crystal head on a sagging line                                                                  | a pale ice star and frost sparks; the line falls slack                | 380 |
 
 Colours come from the faction palettes: the Undead violet effects (the
-Classic look and LEGACY use the classic pale blue, as the other Undead
+Classic look uses the classic pale blue, as the other Undead
 cues do), the Goblin blast palette and the rocket paper colours (no
 orange), the Dwarf iron, copper, steam and earth, and the Ice Folk ice and
 snow.
 
-**Looks.** The cues are code only, so they draw in the live look, the
-Classic look and LEGACY alike. On the CHIBI board their sizes are 1.7 times
-world size (`ATTACK_EFFECT_SCALE_V7`), so a shot reads beside a 70 px unit
-at zoom step 1; LEGACY, whose stand-in units are drawn at a larger zoom,
-draws them at world size.
+**Looks.** The cues are code only, so they draw in the live look and the
+Classic look alike (the LEGACY art set this document also names was removed
+in `pulp_wars-67q.15`). On the board their sizes are 1.7 times world size
+(`ATTACK_EFFECT_SCALE_V7`), so a shot reads beside a 70 px unit at zoom
+step 1.
 
 **Reduced motion** holds one frame for 220 ms (`attackReducedMotionProgressV7`:
 the shot near its target with its trail behind it, the gatling with one
@@ -141,7 +141,7 @@ on the same timeline rules:
 
 Unlike the six cues above they draw the Candy art's own sprites where the
 look has them (`EFFECT:PIE`, `EFFECT:SPLAT`, `EFFECT:GUMBALL_SHOT`), and the
-same shapes in code in the Classic look and LEGACY.
+same shapes in code in the Classic look.
 
 ### The Candy redesign: Ricochet and Thump (bead `pulp_wars-jdb.14`)
 
@@ -269,8 +269,8 @@ chunks in flight). The board never shakes under reduced motion.
 with the real board host over its shooter and an enemy Human Fighter
 (`scripts/art/attack-effects/scene.ts`) at progress 0.15, 0.35, 0.5, 0.65
 and 0.85, at zoom steps 1 and 0.75 on desktop (1440 x 900) and phone
-(390 x 844, DPR 3), plus the reduced-motion frame and the Classic and
-LEGACY looks, with one contact sheet per viewport and zoom. The
+(390 x 844, DPR 3), plus the reduced-motion frame and the Classic look,
+with one contact sheet per viewport and zoom. The
 broadside is one case per faction (`broadside-<faction>-*.png`): the
 faction's Battleship on a strip of Shallow Water at range 2 from an enemy
 Fighter, with two more Fighters in its splash, one beside the target and

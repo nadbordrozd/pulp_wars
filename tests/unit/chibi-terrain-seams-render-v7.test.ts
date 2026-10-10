@@ -63,11 +63,6 @@ function recordingContext(): {
   return { context: context as CanvasRenderingContext2D, log };
 }
 
-const legacyImages = {
-  resolve: (assetId: string) =>
-    ({ legacy: assetId }) as unknown as CanvasImageSource,
-};
-
 const tall = (subject: ArtSubjectV7, id: string): ChibiArtAssetV7 => ({
   id,
   subject,
@@ -181,8 +176,6 @@ function draw(
       zoom: chibiCameraZoom(input.step as 0.75),
     },
     plan: plan(entries),
-    images: legacyImages,
-    artSet: "CHIBI",
     chibiArt: input.chibiArt,
   });
   return log;

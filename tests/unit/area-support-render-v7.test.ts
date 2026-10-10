@@ -39,6 +39,7 @@ import {
   AFFLICTION_SHOWCASE_V7,
   afflictionHumanFixtureV7,
 } from "../fixtures/v7-undead-ui";
+import { readyBoardArtV7 } from "../fixtures/v7-board-art";
 
 /**
  * Bead pulp_wars-621 (docs/ui/BOARD_TARGETING.md section 2.1): the units
@@ -374,14 +375,7 @@ describe("area support marks on the canvas", () => {
       devicePixelRatio: 1,
       camera: { offsetX: 100, offsetY: 100, zoom: 1 },
       plan,
-      images: {
-        resolve: (id) =>
-          ({ id, width: 128, height: 128 }) as unknown as CanvasImageSource,
-        resolveTerrainGround: (id) =>
-          ({ id: `ground:${id}`, width: 128, height: 128 }) as never,
-        resolveRaisedTerrain: (id) =>
-          ({ id: `raised:${id}`, width: 256, height: 256 }) as never,
-      },
+      chibiArt: readyBoardArtV7(),
     });
     return log;
   };

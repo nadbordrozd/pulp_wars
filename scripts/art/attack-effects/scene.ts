@@ -2,7 +2,7 @@
  * Review scene of the attack cues (bead pulp_wars-b5f.5,
  * docs/art/ATTACK_EFFECTS.md): one shooter and one target on a small Grass
  * board, drawn by the real CanvasBoardHostV7 in the look asked for (the
- * live look the game passes, the Classic look, or the LEGACY art set), with
+ * live look the game passes, or the Classic look), with
  * the shooter's attack cue pinned at a given progress through
  * `pinAttackFeedback`. Loaded in the browser through the Vite dev server by
  * scripts/art/attack-effects-review.ts; a live match supplies the view the
@@ -33,7 +33,7 @@ import { CanvasBoardHostV7 } from "../../../src/render/canvas/board-host-v7";
 import { liveBoardLookV7 } from "../../../src/render/canvas/live-board-look-v7";
 import { attackEffectsCaseV7 } from "./cases";
 
-export type AttackEffectsLookV7 = "LIVE" | "CLASSIC" | "LEGACY";
+export type AttackEffectsLookV7 = "LIVE" | "CLASSIC";
 
 const ROW = 2;
 const HEIGHT = 5;
@@ -175,7 +175,6 @@ export function showAttackEffectsSceneV7(
     onSelection: () => undefined,
     onCommand: () => undefined,
   });
-  const artSet = options.look === "LEGACY" ? "LEGACY" : "CHIBI";
   const scene = attackEffectsSceneViewV7(live, options.caseId);
   const reviewed = attackEffectsCaseV7(options.caseId);
   const broadside: Pick<AttackFeedbackV7, "shell" | "splash"> =
@@ -199,8 +198,7 @@ export function showAttackEffectsSceneV7(
     animationSpeed: "NORMAL",
     presentationPaused: true,
     highContrast: false,
-    artSet,
-    ...liveBoardLookV7(artSet, options.look === "CLASSIC"),
+    ...liveBoardLookV7(options.look === "CLASSIC"),
   });
   const canvas = container.querySelector("canvas.board-canvas-v7");
   if (!(canvas instanceof HTMLCanvasElement))

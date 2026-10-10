@@ -175,7 +175,6 @@ describe("Vampire Bat Escape interface (pulp_wars-iqhp)", () => {
       devicePixelRatio: 1,
       camera: { offsetX: 100, offsetY: 100, zoom: 0.625 },
       plan,
-      images: { resolve: () => null },
       previewFocus: focus,
     });
     expect(styles).toContain(BAT_ESCAPE_PALETTE_V7.bat);

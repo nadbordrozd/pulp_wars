@@ -680,7 +680,7 @@ export function showIceFolkSceneV7(
     onCommand: () => undefined,
   });
   const scene = iceFolkSceneViewV7(live, options.kind);
-  const look = liveBoardLookV7("CHIBI");
+  const look = liveBoardLookV7();
   const art = buildChibiArtRegistryV7(iceFolkSceneArtV7(options.kind));
   if (art.problems.length > 0) throw new Error(art.problems.join("; "));
   host.update({
@@ -697,7 +697,6 @@ export function showIceFolkSceneV7(
     animationSpeed: "NORMAL",
     presentationPaused: true,
     highContrast: false,
-    artSet: "CHIBI",
     ...look,
     visualDirectionArt: art.registry,
   });

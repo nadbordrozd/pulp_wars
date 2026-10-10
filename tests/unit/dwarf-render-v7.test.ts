@@ -84,6 +84,7 @@ import {
   dwarfUiFixtureV7,
 } from "../fixtures/v7-dwarf-ui";
 import { martianUiFixtureV7 } from "../fixtures/v7-martian-ui";
+import { readyBoardArtV7 } from "../fixtures/v7-board-art";
 
 const AT = DWARF_UI_V7;
 type LogEntry = readonly unknown[];
@@ -165,14 +166,7 @@ function draw(
     devicePixelRatio: 1,
     camera: { offsetX: 100, offsetY: 100, zoom: 1 },
     plan,
-    images: {
-      resolve: (id) =>
-        ({ id, width: 128, height: 128 }) as unknown as CanvasImageSource,
-      resolveTerrainGround: (id) =>
-        ({ id: `ground:${id}`, width: 128, height: 128 }) as never,
-      resolveRaisedTerrain: (id) =>
-        ({ id: `raised:${id}`, width: 256, height: 256 }) as never,
-    },
+    chibiArt: readyBoardArtV7(),
     dwarfArt: fakeDwarfArt(),
     ...options,
   });
@@ -274,14 +268,17 @@ describe("mounds (section 5.3 and 16.1)", () => {
     expect(log.filter((call) => call[0] === "stroke")).toHaveLength(2);
   });
 
-  it("draws the code mound with its surfacing chip in LEGACY, never a badge", () => {
+  it("draws the code mound with its surfacing chip without a mound raster, never a badge", () => {
     const plan = planFor(view, null);
-    const log = draw({
-      ...plan,
-      entries: plan.entries.filter(
-        (entry) => entry.dwarfMound !== undefined || entry.kind === "TERRAIN",
-      ),
-    });
+    const log = draw(
+      {
+        ...plan,
+        entries: plan.entries.filter(
+          (entry) => entry.dwarfMound !== undefined || entry.kind === "TERRAIN",
+        ),
+      },
+      { chibiArt: readyBoardArtV7({ missing: () => true }) },
+    );
     // The heap is an ellipse; the chip is an arc with the arrow.
     expect(log.filter((call) => call[0] === "ellipse").length).toBeGreaterThan(
       1,
@@ -327,7 +324,7 @@ describe("Dwarf markers (section 16.1)", () => {
     const log = draw({ ...plan, entries: [entry] });
     const back = drawIndexes(log, (image) => image.earthwork === "back");
     const front = drawIndexes(log, (image) => image.earthwork === "front");
-    const sprite = drawIndexes(log, (image) => image.id === entry.assetId);
+    const sprite = drawIndexes(log, (image) => image.id === entry.artSubject);
     expect(back).toHaveLength(1);
     expect(front).toHaveLength(1);
     expect(back[0]).toBeLessThan(sprite[0] ?? -1);
@@ -398,8 +395,6 @@ describe("Dwarf markers (section 16.1)", () => {
         devicePixelRatio: 1,
         camera,
         plan: { ...dugIn, entries: [entry], targets: [] },
-        images: { resolve: () => null },
-        artSet: "CHIBI",
         chibiArt: art,
         reducedMotion: true,
         dwarfArt: fakeDwarfArt(),
@@ -636,8 +631,6 @@ describe("Dwarf targets and previews on the board (section 16.1)", () => {
         devicePixelRatio: 1,
         camera: { zoom: chibiCameraZoom(1), offsetX: 0, offsetY: 0 },
         plan,
-        images: { resolve: () => null },
-        artSet: "CHIBI",
         chibiArt: art,
         reducedMotion: true,
         previewFocus: focus,

@@ -191,8 +191,6 @@ function drawPieces(
     devicePixelRatio: 1,
     camera: { zoom: 1, offsetX: 200, offsetY: 200 },
     plan: { version: 7, entries, targets: [] },
-    images: { resolve: () => null },
-    artSet: "CHIBI",
     chibiArt: base,
     reducedMotion: true,
     ...(direction === null
@@ -220,7 +218,7 @@ function drawPieces(
 }
 
 describe("Undead art in the live default look (pulp_wars-3tq.12)", () => {
-  it("is registered in the art the game loads, and is not passed for the classic look or LEGACY", () => {
+  it("is registered in the art the game loads, and is not passed for the classic look", () => {
     const registry = LIVE_DIRECTION_ART_REGISTRY_V7;
     expect(registry.variants("UNIT:UNDEAD:FIGHTER")[0]?.id).toBe(
       "chibi-direction-undead-skeleton",
@@ -242,14 +240,11 @@ describe("Undead art in the live default look (pulp_wars-3tq.12)", () => {
     expect(registry.variants("UNIT:FIGHTER")[0]?.id).toBe(
       "chibi-direction-fighter",
     );
-    expect(liveBoardLookV7("CHIBI").visualDirectionArt).toBe(registry);
-    expect(liveBoardLookV7("CHIBI").visualDirection?.undeadAccent).toBe(
-      "VIOLET",
-    );
-    // The classic look and LEGACY get no direction and no direction art,
-    // so they draw the classic Undead art exactly as before.
-    expect(liveBoardLookV7("CHIBI", true)).toEqual({});
-    expect(liveBoardLookV7("LEGACY")).toEqual({});
+    expect(liveBoardLookV7().visualDirectionArt).toBe(registry);
+    expect(liveBoardLookV7().visualDirection?.undeadAccent).toBe("VIOLET");
+    // The classic look gets no direction and no direction art, so it draws
+    // the classic Undead art exactly as before.
+    expect(liveBoardLookV7(true)).toEqual({});
     expect(BASELINE_DIRECTION_V7.undeadAccent).toBeUndefined();
     expect(HUMAN_DEMO_DIRECTION_V7.undeadAccent).toBeUndefined();
   });

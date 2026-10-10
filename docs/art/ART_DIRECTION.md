@@ -3,9 +3,12 @@
 This is the canonical shared art direction for Pulp Wars: the **Bold chibi**
 direction the user approved on 2026-09-29 for all Ruleset 7 art, with the
 owner-colour rule of 2026-10-02. All of its art is approved (user,
-2026-10-10) and it is the only art a player of the current game sees: the
-earlier art set and its `?art=legacy` switch were retired in bead
-`pulp_wars-67q.13` (see the [migration plan](CHIBI_MIGRATION_PLAN.md)).
+2026-10-10) and it is the only art the current game draws: the earlier art
+set's `?art=legacy` switch was retired in bead `pulp_wars-67q.13` and its
+render path was removed in bead `pulp_wars-67q.15` (see the
+[migration plan](CHIBI_MIGRATION_PLAN.md)). A subject whose raster is
+missing or fails to load is drawn in code (a flat wash for ground, a
+lettered marker for a piece), never with a raster of the earlier set.
 This file absorbed the former `CHIBI_ART_DIRECTION.md`; its section numbers
 are unchanged.
 

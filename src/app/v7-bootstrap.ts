@@ -7,7 +7,7 @@ import {
   cleanupObsoleteRuleset7Saves,
   type ObsoleteSaveCleanupResultV7,
 } from "../persistence/index";
-import { resolveArtSetV7 } from "./art-set-v7";
+import { clearStoredArtSetV7 } from "./art-set-v7";
 import {
   Ruleset7BrowserController,
   type Ruleset7BrowserControllerOptions,
@@ -46,11 +46,9 @@ export function bootstrapRuleset7App(
     options.settingsStorage === undefined
       ? browserStorageV7(browser)
       : options.settingsStorage;
+  clearStoredArtSetV7(settingsStorage);
   const view = new Ruleset7DomAppView(documentRoot, root, controller, {
     ...options,
-    artSet:
-      options.artSet ??
-      resolveArtSetV7(browser?.location.search ?? "", settingsStorage),
     ...(obsoleteSaveCleanup.removedCount === 0
       ? {}
       : {

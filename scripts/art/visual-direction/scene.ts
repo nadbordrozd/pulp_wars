@@ -840,7 +840,6 @@ export function showVisualDirectionSceneV7(
     animationSpeed: "NORMAL",
     presentationPaused: true,
     highContrast: false,
-    artSet: "CHIBI",
     ...(options.direction === undefined
       ? {}
       : { visualDirection: options.direction }),

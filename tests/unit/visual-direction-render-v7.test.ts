@@ -210,8 +210,6 @@ function draw(direction?: BoardVisualDirectionV7): LogEntry[] {
     devicePixelRatio: 1,
     camera: { zoom: 1, offsetX: 200, offsetY: 200 },
     plan,
-    images: { resolve: () => null },
-    artSet: "CHIBI",
     chibiArt: base,
     reducedMotion: true,
     ...(direction === undefined
@@ -961,8 +959,6 @@ describe("live default look (pulp_wars-3tq.6)", () => {
       devicePixelRatio: 1,
       camera: { zoom: 1, offsetX: 200, offsetY: 200 },
       plan: { version: 7, entries, targets: [] },
-      images: { resolve: () => null },
-      artSet: "CHIBI",
       chibiArt: base,
       reducedMotion: true,
       ...(options.saturation === undefined
@@ -997,14 +993,13 @@ describe("live default look (pulp_wars-3tq.6)", () => {
     };
   };
 
-  it("is what the game passes for the CHIBI set, and nothing for LEGACY or the classic look", () => {
-    expect(liveBoardLookV7("CHIBI")).toEqual({
+  it("is what the game passes by default, and nothing for the classic look", () => {
+    expect(liveBoardLookV7()).toEqual({
       visualDirection: LIVE_DIRECTION_V7,
       visualDirectionArt: LIVE_DIRECTION_ART_REGISTRY_V7,
     });
-    expect(liveBoardLookV7("CHIBI", true)).toEqual({});
-    expect(liveBoardLookV7("LEGACY")).toEqual({});
-    expect(liveBoardLookV7(undefined)).toEqual({});
+    expect(liveBoardLookV7(false)).toEqual(liveBoardLookV7());
+    expect(liveBoardLookV7(true)).toEqual({});
     // Since bead pulp_wars-w5j.3: no plate (a faint neutral shadow), and
     // the ready cue is a cream ring on the ground.
     expect(LIVE_DIRECTION_V7).toMatchObject({
@@ -1270,16 +1265,14 @@ describe("live default look (pulp_wars-3tq.6)", () => {
     expect(drawLive([goblin], { samples: directionArt([]) }).images).toEqual([
       raster(`UNIT:GOBLIN:FIGHTER#${CORAL}`),
     ]);
-    // The Classic look (and LEGACY, which gets no look at all) never asks
-    // for the direction art.
+    // The Classic look never asks for the direction art.
     expect(
       drawLive([goblin], {
         classic: true,
         samples: directionArt(["UNIT:GOBLIN:FIGHTER"]),
       }).images,
     ).toEqual([raster(`UNIT:GOBLIN:FIGHTER#${CORAL}`)]);
-    expect(liveBoardLookV7("LEGACY").visualDirectionArt).toBeUndefined();
-    expect(liveBoardLookV7("CHIBI", true).visualDirectionArt).toBeUndefined();
+    expect(liveBoardLookV7(true).visualDirectionArt).toBeUndefined();
   });
 
   it("draws a Goblin city from its direction art without a pennant (the study's on its own pole), and the classic city when the art is missing (pulp_wars-3tq.9, b5f.4)", () => {
@@ -1523,9 +1516,9 @@ describe("live default look (pulp_wars-3tq.6)", () => {
         maxHp: 10,
       }),
     ];
-    /** drawBoardV7 with a glow-cache spy, in the live, classic or LEGACY look. */
+    /** drawBoardV7 with a glow-cache spy, in the live or the classic look. */
     const drawWithGlow = (
-      look: "LIVE" | "CLASSIC" | "LEGACY",
+      look: "LIVE" | "CLASSIC",
       entries: readonly BoardRenderPlanEntryV7[],
     ) => {
       const { context, log } = recordingContext();
@@ -1537,10 +1530,8 @@ describe("live default look (pulp_wars-3tq.6)", () => {
         devicePixelRatio: 1,
         camera: { zoom: 1, offsetX: 200, offsetY: 200 },
         plan: { version: 7, entries, targets: [] },
-        images: { resolve: (id) => raster(`legacy:${id}`) },
         glowCache: { draw: glow } as never,
-        artSet: look === "LEGACY" ? "LEGACY" : "CHIBI",
-        ...(look === "LEGACY" ? {} : { chibiArt: base }),
+        chibiArt: base,
         reducedMotion: true,
         ...(look === "LIVE"
           ? {
@@ -1558,7 +1549,7 @@ describe("live default look (pulp_wars-3tq.6)", () => {
       return { log, glow };
     };
 
-    it("draws no plate in the live look, and the classic look and LEGACY are unchanged", () => {
+    it("draws no plate in the live look, and the classic look is unchanged", () => {
       const live = drawWithGlow("LIVE", units(false));
       // No base in any player colour, no seat-shaped path: a faint neutral
       // shadow ellipse under each unit.
@@ -1575,9 +1566,9 @@ describe("live default look (pulp_wars-3tq.6)", () => {
       // The Human demo the study benches draw keeps its plates.
       const demo = draw(HUMAN_DEMO_DIRECTION_V7);
       expect(fills(demo)).toContain(darkerColourV7(CORAL));
-      // The classic look and LEGACY draw no shadow, no plate and no ring:
-      // their frame is the stock one (the seat badge and the glow).
-      for (const look of ["CLASSIC", "LEGACY"] as const) {
+      // The classic look draws no shadow, no plate and no ring: its frame
+      // is the stock one (the seat badge and the glow).
+      for (const look of ["CLASSIC"] as const) {
         const frame = drawWithGlow(look, units(true));
         expect(fills(frame.log), look).not.toContain(
           DIRECTED_GROUND_SHADOW_COLOUR_V7,

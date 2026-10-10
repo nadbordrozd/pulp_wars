@@ -176,7 +176,6 @@ function draw(input: {
     devicePixelRatio: 1,
     camera,
     plan: input.plan,
-    images: { resolve: () => null },
     ...(input.labelSafeArea === undefined
       ? {}
       : { labelSafeArea: input.labelSafeArea }),
@@ -560,7 +559,6 @@ describe("dense Goblin preview labels never overlap (pulp_wars-0ao.12)", () => {
         offsetY: screen.y - scene.focus.y * cell,
       },
       plan: scene.plan,
-      images: { resolve: () => null },
       previewFocus: scene.focus,
       labelSafeArea: size.safe,
     });

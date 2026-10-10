@@ -19,7 +19,8 @@ import {
  * The DOM side of the CHIBI art set (bead pulp_wars-67q.11). Docks, action
  * tiles, technology cards, rewards and dialogs ask for an art subject; a
  * subject with a usable registered raster is drawn from it, anything else
- * keeps its legacy art, the same per-subject fallback as the canvas. Owned
+ * is MISSING and shown as a code-drawn figure or the lettered stand-in
+ * (bead pulp_wars-67q.15), never as art of the earlier set. Owned
  * rasters are recoloured through their checked-in mask with the same
  * resolver the board uses (a masked piece without an owner gets the neutral
  * stone grey, never the raw key colour), trimmed to their painted pixels and
@@ -66,7 +67,7 @@ export function chibiDomScaleV7(
 }
 
 export type ChibiDomResolutionV7 =
-  /** No usable raster: keep the legacy art. */
+  /** No usable raster: the caller shows a code-drawn stand-in. */
   | { readonly kind: "MISSING" }
   /** A raster or its mask is loading; the DOM redraws when it settles. */
   | { readonly kind: "LOADING"; readonly factionArt: boolean }

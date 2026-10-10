@@ -1844,32 +1844,54 @@ state hash.
 
 ### Ruleset 7 art sets
 
-A player of Ruleset 7 sees one art set: CHIBI, from the
+Ruleset 7 has one art set: CHIBI, from the
 [chibi migration](../art/CHIBI_MIGRATION_PLAN.md). The player-facing switch
-to the earlier LEGACY set was retired in `pulp_wars-67q.13`. The app
-resolves the art set once at bootstrap (`resolveArtSetV7` in
-`src/app/art-set-v7.ts`), and the answer is always CHIBI:
+to the earlier LEGACY set was retired in `pulp_wars-67q.13`, and the LEGACY
+render path was removed in `pulp_wars-67q.15`: there is no `ArtSetV7` type
+and no `artSet` option on the board renderer, the board host or the app
+view.
 
 - `?art=legacy` is not recognised and `?art=chibi`, which old links and
   review scripts still carry, changes nothing.
 - Nothing is stored. A choice an earlier version left under
-  `pulpWars.ruleset7.artSet.v1` (LEGACY or CHIBI) is removed at the start,
-  so a browser that had opted out gets the default look. The shared
+  `pulpWars.ruleset7.artSet.v1` (LEGACY or CHIBI) is removed at bootstrap
+  (`clearStoredArtSetV7` in `src/app/art-set-v7.ts`). The shared
   exact-schema settings envelope is untouched, and unreadable storage never
   stops the start.
+- The board canvas keeps `data-art-set="CHIBI"` beside its zoom step and
+  cell size, for the review scripts that read it.
 
-LEGACY still exists **inside** the renderer, and only there. The board plan
-is built with the legacy asset ids described above and CHIBI art is resolved
-over it per subject, so a subject whose chibi raster cannot be drawn falls
-back to its legacy raster at the chibi geometry (`ACCEPTED_ART_URLS`, the
-PixelLab set under `public/assets/pixellab/` that Ruleset 6 also draws;
-never preloaded, fetched on demand). A view or a board host constructed
-directly without an art set, as most unit tests and some review harnesses
-do, also draws LEGACY. Wherever this document and the art and interface
-documents say what "LEGACY" draws, they describe that internal path: no
-player can select it. Removing it, together with the rasters only it can
-name, is follow-up work to `pulp_wars-67q.13`. Ruleset 6, rules, commands,
-saves, replay and hashes never see the art set.
+**A subject without a raster is drawn in code** (decision of
+`pulp_wars-67q.15`), never with a raster of the earlier set. No Ruleset 7
+module resolves `ACCEPTED_ART_URLS` (the PixelLab set under
+`public/assets/pixellab/`, which Ruleset 6 and the older screens draw):
+
+- On the board (`src/render/canvas/missing-art-v7.ts`), ground whose
+  raster is not registered or failed to load is a flat wash of its terrain,
+  with the code-drawn Rift, Snow and Blizzard over it as before. A unit,
+  city, village, building, resource or chest is a lettered marker (a disc
+  for a unit, a plate for the rest, in the owner's colour) with the plain
+  overlay frame; the code-drawn Egg, mound, Spider, Bigfoot and curiosity
+  markers are unchanged. A raster that is still loading draws nothing yet,
+  as before. `drawBoardV7` given no art at all (some unit tests) draws
+  every subject this way.
+- In the interface, `#chibiArt` returns null for a subject without a
+  raster and the caller shows its code-drawn figure (the Egg, a glyph) or
+  the lettered plate `.v7-art-missing`. The letter is drawn by the style
+  sheet from `data-letter`, so it is in no text or accessible name. A coin
+  or population icon whose raster is not ready is a plain disc.
+
+The board plan still carries an `assetId` per entry (the ids of
+`src/assets/ruleset7-*-art.ts`). Since `pulp_wars-67q.15` they are keys
+only: the renderer reads them to tell tall terrain from flat and for the
+plain overlay geometry, and the interface names its stand-ins with them;
+none is looked up as a file. The 42 rasters only the removed path could
+name are still on disk and unreachable from Ruleset 7; deleting them with
+their PixelLab records is follow-up work (see the
+[migration plan](../art/CHIBI_MIGRATION_PLAN.md)). Where this document and
+the art and interface documents still say what "LEGACY" draws, they
+describe the removed path. Ruleset 6, rules, commands, saves, replay and
+hashes never saw the art set.
 
 CHIBI follows [chibi direction](../art/ART_DIRECTION.md) sections 3–4:
 
@@ -1897,7 +1919,7 @@ CHIBI follows [chibi direction](../art/ART_DIRECTION.md) sections 3–4:
   the cell's bottom edge, right edge at the population-pip column (46 world
   units right of the centre), so the settlement stays readable under it
   ([chibi direction](../art/ART_DIRECTION.md#3-geometry-and-resolution)).
-  The overlay frame is unchanged; LEGACY draws units on cities as before.
+  The overlay frame is unchanged.
 - Tall terrain draws its owning cell in the ground pass, below Roads, and
   its upward overflow in the row-major foreground pass. Cities, units and
   buildings draw in the foreground pass, so upward and side overflow cover
@@ -1906,20 +1928,20 @@ CHIBI follows [chibi direction](../art/ART_DIRECTION.md) sections 3–4:
   dimensions: a mask pixel with alpha >= 128 selects an owner pixel, which
   becomes the owner colour scaled by its brightness relative to the key
   colour `#d8262c`. The result is cached per asset, density and owner. There
-  is no runtime hue matching. A mask or pixel readback that fails falls back
-  to the legacy asset rather than showing the key colour.
-- A subject with no registered raster, or whose raster fails to load, draws
-  its legacy asset at the chibi geometry. A registered raster that is still
-  loading draws nothing, as legacy images do; in the game the look's
-  rasters are preloaded, so this state is not reached (see
-  [Asset preloading](#asset-preloading-pulp_wars-2yc6)).
+  is no runtime hue matching. A mask or pixel readback that fails makes
+  the subject one without a raster, rather than showing the key colour.
+- A subject with no registered raster, or whose raster fails to load, is
+  drawn in code (above; since `pulp_wars-67q.15`, never a file of the
+  earlier set). A registered raster that is still loading draws nothing;
+  in the game the look's rasters are preloaded, so this state is not
+  reached (see [Asset preloading](#asset-preloading-pulp_wars-2yc6)).
 - **The default look** of the CHIBI set is the visual direction
   ([VISUAL_DIRECTION_2026-10.md](../art/VISUAL_DIRECTION_2026-10.md)):
   `liveBoardLookV7` (`src/render/canvas/live-board-look-v7.ts`) gives the
   board host `LIVE_DIRECTION_V7` and the direction art registry
   (`chibiDirectionArtRegistryV7`), which the board and the interface
   (`createChibiDomArtV7`'s `preferred`) resolve before the default
-  registry; the Classic look developer option and LEGACY get neither. Since
+  registry; the Classic look developer option gets neither. Since
   bead `pulp_wars-w5j.3` (every player plays a different faction) the
   faction's look carries ownership: no base plates (`unit.base: "SHADOW"`,
   a faint neutral ground shadow), the ready cue is a cream ring on the
@@ -2014,7 +2036,7 @@ before a match draw, and a board waits for the art of its own factions.
   players, which covers a new game, Resume, a campaign mission, the
   Showcase, Restart and a look switched in a match, and before the Gallery
   opens, for every faction. The answer is null when the art is in (always
-  on a return visit, and for the legacy art set). Otherwise the view keeps
+  on a return visit). Otherwise the view keeps
   the screen that asked for the board exactly as it is, made inert, and
   after 150 ms puts the loading plate over it on a scrim (`.v7-art-wait`,
   the plate of the loading screen, `createLoadingPlateV7`), whose bar
@@ -2051,8 +2073,8 @@ before a match draw, and a board waits for the art of its own factions.
   `lazyAssetLoads()`.
   `browserChibiRasterEnvironmentV7().loadImage` (the board, the interface,
   the Gallery, the composed forests, massifs and faction grass, the effect
-  sprites) and `createBoardImageResolverV7` (legacy assets) ask it first
-  and settle synchronously, so the resolvers never report `LOADING` for a
+  sprites) asks it first
+  and settles synchronously, so the resolvers never report `LOADING` for a
   preloaded raster and the caches derived from it (owner recolours, tones,
   shadows, forest and massif bakes, grass spills, trimmed interface art)
   are built in the frame that first needs them. A URL the store does not

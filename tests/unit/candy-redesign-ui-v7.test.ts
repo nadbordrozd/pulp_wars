@@ -83,6 +83,7 @@ import {
   candyRedesignFixtureV7,
 } from "../fixtures/v7-candy-ui";
 import { martianUiFixtureV7 } from "../fixtures/v7-martian-ui";
+import { readyBoardArtV7 } from "../fixtures/v7-board-art";
 
 // Bead pulp_wars-jdb.14 (docs/product/RULESET_7_CANDY_REDESIGN.md section
 // 14): the Candy redesign's markers, overlays, previews, pickers, cues and
@@ -161,14 +162,7 @@ function draw(
     devicePixelRatio: 1,
     camera,
     plan,
-    images: {
-      resolve: (id) =>
-        ({ id, width: 128, height: 128 }) as unknown as CanvasImageSource,
-      resolveTerrainGround: (id) =>
-        ({ id: `ground:${id}`, width: 128, height: 128 }) as never,
-      resolveRaisedTerrain: (id) =>
-        ({ id: `raised:${id}`, width: 256, height: 256 }) as never,
-    },
+    chibiArt: readyBoardArtV7(),
     ...options,
   });
   return log;

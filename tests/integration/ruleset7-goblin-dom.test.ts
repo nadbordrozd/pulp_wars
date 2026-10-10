@@ -41,6 +41,7 @@ import {
 } from "../fixtures/v7-goblin-ui";
 import { goblinArenaV7 } from "../fixtures/v7-goblin-arena";
 import { HELP_SECTIONS_V7 } from "../../src/render/help-text-v7";
+import { uiIconV7 } from "../../src/render/dom/ui-icons-v7";
 
 const AT = GOBLIN_SHOWCASE_V7;
 // Blast damages from the Goblin registry (tuned by `pulp_wars-0ao.7`), so
@@ -118,10 +119,8 @@ describe("Revision 17 Goblin DOM", () => {
       dock.querySelector('.v7-faction-chip[data-faction="goblin"]')
         ?.textContent,
     ).toBe("Goblin");
-    // LEGACY art: the Human sprite carries the Goblin badge.
-    expect(dock.querySelector(".v7-identity-art .v7-goblin-badge")).not.toBe(
-      null,
-    );
+    // Its own art carries no Goblin badge.
+    expect(dock.querySelector(".v7-identity-art .v7-goblin-badge")).toBe(null);
     expect(actionLabels()).toEqual(["Kaboom!", "Disband", "Wait"]);
     const kaboom = requiredButton("command-kaboom");
     expect(kaboom.title).toBe(kaboomText(KABOOM));
@@ -138,7 +137,9 @@ describe("Revision 17 Goblin DOM", () => {
     // black ball with only a hairline grey edge (never a ring in the button's
     // colour), a glint, a fuse rising straight up from the top (cream over a
     // dark under-stroke) and a pale spark at its tip.
-    const bomb = required(kaboom.querySelector('svg[data-icon="bomb"]'));
+    // It is the stand-in of the Kaboom! raster (which the page draws when
+    // loaded), so it is read here from the icon set.
+    const bomb = uiIconV7(document, "bomb");
     expect(
       [...bomb.querySelectorAll("path")].map((path) => [
         path.getAttribute("fill"),
@@ -414,7 +415,7 @@ describe("Revision 17 Goblin DOM", () => {
     trainerHost.callbacks?.onSelection({ kind: "CITY", cityId: home.id });
     const goblin = requiredButton("command-train");
     expect(goblin.getAttribute("aria-label")).toBe("Train Goblin for 1 Coins");
-    expect(goblin.querySelector(".v7-goblin-badge")).not.toBe(null);
+    expect(goblin.querySelector(".v7-goblin-badge")).toBe(null);
     expect(actionLabels()).toContain("Bomb Chucker");
     trainerApp.destroy();
 

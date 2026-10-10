@@ -229,9 +229,8 @@ describe("Revision 13 Undead DOM", () => {
       dock.querySelector('.v7-faction-chip[data-faction="undead"]')
         ?.textContent,
     ).toBe("Undead");
-    expect(dock.querySelector(".v7-identity-art .v7-undead-badge")).not.toBe(
-      null,
-    );
+    // Its own art carries no Undead badge.
+    expect(dock.querySelector(".v7-identity-art .v7-undead-badge")).toBe(null);
     expect(dock.querySelector('[data-stat="range"] dd')?.textContent).toBe("—");
     const wail = requiredButton("command-wail");
     expect(wail.querySelector(".v7-action-label")?.textContent).toBe("Wail");
@@ -333,9 +332,9 @@ describe("Revision 13 Undead DOM", () => {
         "Train Lich for 8 Coins",
       ]),
     );
-    expect(
-      document.querySelector(".v7-train-action .v7-undead-badge"),
-    ).not.toBe(null);
+    expect(document.querySelector(".v7-train-action .v7-undead-badge")).toBe(
+      null,
+    );
     requiredButton("train-help-marksman").click();
     const recruit = requiredElement<HTMLElement>(".v7-recruit-help");
     expect(recruit.querySelector("h2")?.textContent).toBe("Banshee");

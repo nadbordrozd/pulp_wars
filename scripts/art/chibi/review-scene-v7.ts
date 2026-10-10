@@ -604,9 +604,8 @@ export function showChibiReviewSceneV7(
     animationSpeed: "NORMAL",
     presentationPaused: true,
     highContrast: false,
-    artSet: "CHIBI",
     // The look the game draws by default (bead pulp_wars-3tq.6).
-    ...liveBoardLookV7("CHIBI"),
+    ...liveBoardLookV7(),
   });
   const canvas = container.querySelector("canvas.board-canvas-v7");
   if (!(canvas instanceof HTMLCanvasElement))

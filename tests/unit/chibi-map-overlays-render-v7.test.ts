@@ -48,11 +48,6 @@ function recordingContext(): {
   return { context: context as CanvasRenderingContext2D, log };
 }
 
-const legacyImages = {
-  resolve: (assetId: string) =>
-    ({ legacy: assetId }) as unknown as CanvasImageSource,
-};
-
 /** Every subject resolves to a ready 1:1 raster of its class's size. */
 function readyChibi(): ChibiBoardArtV7 {
   return {
@@ -91,25 +86,16 @@ function plan(entries: readonly BoardRenderPlanEntryV7[]): BoardRenderPlanV7 {
   return { version: 7, entries, targets: [] };
 }
 
-function draw(
-  built: BoardRenderPlanV7,
-  artSet: "LEGACY" | "CHIBI",
-  highContrast = false,
-): LogEntry[] {
+function draw(built: BoardRenderPlanV7, highContrast = false): LogEntry[] {
   const { context, log } = recordingContext();
   drawBoardV7({
     context,
     viewport: { width: 1000, height: 800 },
     devicePixelRatio: 1,
-    camera: {
-      offsetX: 64,
-      offsetY: 64,
-      zoom: artSet === "CHIBI" ? chibiCameraZoom(1) : 1,
-    },
+    camera: { offsetX: 64, offsetY: 64, zoom: chibiCameraZoom(1) },
     plan: built,
-    images: legacyImages,
     highContrast,
-    ...(artSet === "CHIBI" ? { artSet, chibiArt: readyChibi() } : {}),
+    chibiArt: readyChibi(),
   });
   return log;
 }
@@ -120,7 +106,7 @@ const strokeColours = (log: readonly LogEntry[]): unknown[] =>
     .map((call) => call[2]);
 
 describe("CHIBI batch-3 map overlays", () => {
-  it("skips Ore under a Mine and Fertile Ground under a Farm in CHIBI only", () => {
+  it("skips Ore under a Mine and Fertile Ground under a Farm", () => {
     const state = exploredAllV7(initialV7(1516));
     const base = viewForV7(state, state.humanPlayerId);
     const view = {
@@ -179,15 +165,12 @@ describe("CHIBI batch-3 map overlays", () => {
         .filter(
           (image) =>
             (image as { chibi?: string }).chibi?.startsWith("RESOURCE:") ===
-              true || (image as { legacy?: string }).legacy !== undefined,
+            true,
         );
-    expect(drawnResources(draw(only, "LEGACY"))).toHaveLength(3);
-    expect(drawnResources(draw(only, "CHIBI"))).toEqual([
-      { chibi: "RESOURCE:ORE" },
-    ]);
+    expect(drawnResources(draw(only))).toEqual([{ chibi: "RESOURCE:ORE" }]);
   });
 
-  it("draws every CHIBI road casing before any road fill and keeps LEGACY roads", () => {
+  it("draws every road casing before any road fill", () => {
     const roads = plan([
       {
         key: "road-join:1,1",
@@ -220,7 +203,7 @@ describe("CHIBI batch-3 map overlays", () => {
       },
     ]);
     const [casing, fill] = CHIBI_ROAD_STROKES_V7;
-    const chibi = strokeColours(draw(roads, "CHIBI"));
+    const chibi = strokeColours(draw(roads));
     expect(chibi).toEqual([
       casing[0],
       casing[0],
@@ -229,17 +212,9 @@ describe("CHIBI batch-3 map overlays", () => {
       fill[0],
       fill[0],
     ]);
-    expect(strokeColours(draw(roads, "LEGACY"))).toEqual([
-      "#69472e",
-      "#a57a4c",
-      "#69472e",
-      "#a57a4c",
-      "#69472e",
-      "#a57a4c",
-    ]);
   });
 
-  it("draws the CHIBI Field Defense palisade after every piece, in the top-left badge frame", () => {
+  it("draws the Field Defense palisade after every piece, in the top-left badge frame", () => {
     const fieldDefense: BoardRenderPlanEntryV7 = {
       key: "field-defense:1,1",
       kind: "FIELD_DEFENSE",
@@ -255,7 +230,7 @@ describe("CHIBI batch-3 map overlays", () => {
       assetId: "unit-original-juggernaut",
       artSubject: "UNIT:JUGGERNAUT",
     };
-    const log = draw(plan([fieldDefense, giant]), "CHIBI");
+    const log = draw(plan([fieldDefense, giant]));
     const lastImage = log.map((call) => call[0]).lastIndexOf("drawImage");
     const palisade = log.findIndex(
       (call) =>
@@ -274,14 +249,7 @@ describe("CHIBI batch-3 map overlays", () => {
     expect(log.some((call) => call[0] === "fillText" && call[1] === "2")).toBe(
       true,
     );
-    const legacy = draw(plan([fieldDefense]), "LEGACY");
-    expect(
-      legacy.some(
-        (call) =>
-          call[0] === "set" && call[1] === "fillStyle" && call[2] === "#f1dc8f",
-      ),
-    ).toBe(false);
-    const contrast = draw(plan([fieldDefense]), "CHIBI", true);
+    const contrast = draw(plan([fieldDefense]), true);
     expect(
       contrast.some(
         (call) =>

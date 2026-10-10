@@ -8,8 +8,6 @@ import {
   createChibiArtResolverV7,
 } from "../../src/render/canvas/chibi-art-resolver-v7";
 import { buildChibiArtRegistryV7 } from "../../src/assets/chibi-art-v7";
-import { createBoardImageResolverV7 } from "../../src/render/canvas/board-renderer-v7";
-import { ACCEPTED_ART_URLS } from "../../src/assets/generated-art-manifest";
 import {
   lazyRasterLoadsV7,
   markRasterPreloadCompleteV7,
@@ -418,22 +416,6 @@ describe("preloaded rasters", () => {
     const first = resolver(() => (redraws += 1)).resolve(request);
     expect(first.kind).toBe("READY");
     expect(first.kind === "READY" && first.image).toBe(decoded);
-    expect(redraws).toBe(0);
-  });
-
-  it("gives the fallback (PixelLab) board resolver a preloaded raster on the first ask", () => {
-    const { document, created } = inertDocument();
-    const [id, url] = Object.entries(ACCEPTED_ART_URLS)[0] ?? ["", ""];
-    let redraws = 0;
-    const lazy = createBoardImageResolverV7(document, () => (redraws += 1));
-    expect(lazy.resolve(id)).toBeNull();
-    expect(created).toEqual([url]);
-    const decoded = { decoded: true } as unknown as HTMLImageElement;
-    storePreloadedRasterV7(url, decoded);
-    const ready = createBoardImageResolverV7(document, () => (redraws += 1));
-    expect(ready.resolve(id)).toBe(decoded);
-    expect(ready.resolve(id)).toBe(decoded);
-    expect(created).toEqual([url]);
     expect(redraws).toBe(0);
   });
 });

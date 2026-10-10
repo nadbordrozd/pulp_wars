@@ -19,7 +19,7 @@ import { parseHexColourV7, recolourOwnerPixelsV7 } from "./owner-recolour-v7";
 import { noteLazyRasterV7, preloadedRasterV7 } from "./preloaded-rasters-v7";
 
 export type ChibiResolutionV7 =
-  /** No usable chibi raster: draw the legacy asset at chibi geometry. */
+  /** No usable raster: the subject is drawn in code (missing-art-v7.ts). */
   | { readonly kind: "MISSING" }
   /** A registered raster (or its mask) is still loading: draw nothing yet. */
   | { readonly kind: "LOADING" }
@@ -107,7 +107,7 @@ export interface ChibiEntryResolutionV7 {
   /**
    * True when a faction subject (for example `UNIT:UNDEAD:FIGHTER`) resolved
    * to its own raster (ready or still loading). False for a stand-in: the
-   * shared subject's raster, or the legacy asset.
+   * shared subject's raster, or no raster at all.
    */
   readonly factionArt: boolean;
 }
@@ -207,8 +207,8 @@ type RasterRecord =
 /**
  * Resolves CHIBI rasters by subject. Owner recolour runs once per asset,
  * density and owner colour through the checked-in mask and is cached; a
- * failed load or pixel readback falls back to the legacy asset rather than
- * ever showing the raw key colour.
+ * failed load or pixel readback makes the subject MISSING (drawn in code)
+ * rather than ever showing the raw key colour.
  */
 export function createChibiArtResolverV7(input: {
   readonly environment: ChibiRasterEnvironmentV7;

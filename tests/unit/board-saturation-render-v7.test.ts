@@ -268,11 +268,6 @@ function raster(kind: string, name: string): CanvasImageSource {
   rasters.set(key, created);
   return created;
 }
-const legacyImages = {
-  resolve: (assetId: string) => raster("legacy", assetId),
-  resolveTerrainGround: (assetId: string) => raster("ground", assetId),
-  resolveRaisedTerrain: (assetId: string) => raster("raised", assetId),
-};
 
 function chibiArt(): ChibiBoardArtV7 {
   return {
@@ -316,13 +311,10 @@ function taggingCache(): SpriteSaturationCacheV7 & {
   };
 }
 
-function draw(
-  artSet: "CHIBI" | "LEGACY",
-  saturation?: {
-    readonly levels: BoardSaturationV7;
-    readonly cache: SpriteSaturationCacheV7;
-  },
-): LogEntry[] {
+function draw(saturation?: {
+  readonly levels: BoardSaturationV7;
+  readonly cache: SpriteSaturationCacheV7;
+}): LogEntry[] {
   const { context, log } = recordingContext();
   drawBoardV7({
     context,
@@ -330,8 +322,6 @@ function draw(
     devicePixelRatio: 1,
     camera: { zoom: 1, offsetX: 200, offsetY: 200 },
     plan,
-    images: legacyImages,
-    artSet,
     chibiArt: chibiArt(),
     ...(saturation === undefined ? {} : { saturation }),
   });
@@ -383,11 +373,11 @@ describe("board drawing with saturation (pulp_wars-x6c)", () => {
     ).toBeNull();
   });
 
-  for (const artSet of ["CHIBI", "LEGACY"] as const) {
-    it(`${artSet}: 100 percent requests no copy and draws exactly as without the setting`, () => {
+  {
+    it(`100 percent requests no copy and draws exactly as without the setting`, () => {
       const cache = taggingCache();
-      const baseline = draw(artSet);
-      const atDefault = draw(artSet, {
+      const baseline = draw();
+      const atDefault = draw({
         levels: { building: 100, city: 100 },
         cache,
       });
@@ -395,18 +385,16 @@ describe("board drawing with saturation (pulp_wars-x6c)", () => {
       expect(atDefault).toEqual(baseline);
     });
 
-    it(`${artSet}: buildings and cities draw their desaturated copy; units, terrain and resources keep their raster`, () => {
+    it(`buildings and cities draw their desaturated copy; units, terrain and resources keep their raster`, () => {
       const cache = taggingCache();
-      const baseline = draw(artSet);
-      const log = draw(artSet, { levels: { building: 30, city: 60 }, cache });
+      const baseline = draw();
+      const log = draw({ levels: { building: 30, city: 60 }, cache });
       const before = drawnImages(baseline);
       const after = drawnImages(log);
       expect(after).toHaveLength(before.length);
       const name = (image: unknown): string => {
         const source = image as Record<string, unknown>;
-        return String(
-          source.chibi ?? source.legacy ?? source.raised ?? source.ground,
-        );
+        return String(source.chibi);
       };
       const changed = new Map<string, number>();
       for (const [index, image] of after.entries()) {
@@ -419,22 +407,13 @@ describe("board drawing with saturation (pulp_wars-x6c)", () => {
         expect(copy.desaturated).toBe(before[index]);
         changed.set(name(copy.desaturated), copy.percent ?? -1);
       }
-      const expected =
-        artSet === "CHIBI"
-          ? new Map([
-              ["TERRAIN:MINED_MOUNTAIN", 30],
-              ["IMPROVEMENT:WINDMILL", 30],
-              ["IMPROVEMENT:MARKET", 30],
-              ["SITE:VILLAGE", 60],
-              ["CITY:1", 60],
-            ])
-          : new Map([
-              ["terrain-ruleset7-revision3-mined-mountain-1", 30],
-              ["building-windmill", 30],
-              ["building-market", 30],
-              ["building-village", 60],
-              ["building-city-1", 60],
-            ]);
+      const expected = new Map([
+        ["TERRAIN:MINED_MOUNTAIN", 30],
+        ["IMPROVEMENT:WINDMILL", 30],
+        ["IMPROVEMENT:MARKET", 30],
+        ["SITE:VILLAGE", 60],
+        ["CITY:1", 60],
+      ]);
       expect(changed).toEqual(expected);
       const untouched = after
         .filter(
@@ -442,19 +421,12 @@ describe("board drawing with saturation (pulp_wars-x6c)", () => {
             (image as { desaturated?: unknown }).desaturated === undefined,
         )
         .map(name);
-      for (const kept of artSet === "CHIBI"
-        ? [
-            "TERRAIN:GRASS",
-            "TERRAIN:MOUNTAIN",
-            "RESOURCE:FRUIT",
-            "UNIT:FIGHTER",
-          ]
-        : [
-            "terrain-ruleset7-original-grass-1",
-            "terrain-ruleset7-revision3-mountain-1",
-            "resource-fruit",
-            "unit-fighter",
-          ])
+      for (const kept of [
+        "TERRAIN:GRASS",
+        "TERRAIN:MOUNTAIN",
+        "RESOURCE:FRUIT",
+        "UNIT:FIGHTER",
+      ])
         expect(untouched).toContain(kept);
       // Everything that is not an image draw is identical: geometry,
       // overlays, badges and pips do not move or change colour.
@@ -465,9 +437,9 @@ describe("board drawing with saturation (pulp_wars-x6c)", () => {
       expect(withoutImages(log)).toEqual(withoutImages(baseline));
     });
 
-    it(`${artSet}: each slider fades only its own group`, () => {
+    it("each slider fades only its own group", () => {
       const cache = taggingCache();
-      draw(artSet, { levels: { building: 100, city: 0 }, cache });
+      draw({ levels: { building: 100, city: 0 }, cache });
       const levels = cache.resolve.mock.calls.map((call) => call[1] as number);
       expect(levels.length).toBeGreaterThan(0);
       expect(new Set(levels)).toEqual(new Set([0]));

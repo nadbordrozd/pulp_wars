@@ -33,7 +33,7 @@ import { at } from "../fixtures/v7-revision20";
 
 /**
  * The channel on the canvas (bead `pulp_wars-mch9.18`): the live look draws
- * the Candlelit raster on its halo and the cues' sprites; LEGACY and the
+ * the Candlelit raster on its halo and the cues' sprites; a board without art and the
  * classic look draw every mark in code; a board without the channel draws
  * none of it.
  */
@@ -83,7 +83,7 @@ const classicArt: ChibiBoardArtV7 = { resolve: () => ({ kind: "MISSING" }) };
 const camera = { zoom: chibiCameraZoom(1), offsetX: 40, offsetY: 40 };
 
 function draw(
-  look: "LIVE" | "CLASSIC" | "LEGACY",
+  look: "LIVE" | "CLASSIC" | "NO_ART",
   state: GameStateV7,
 ): LogEntry[] {
   const view = viewForV7(state, state.humanPlayerId);
@@ -103,11 +103,8 @@ function draw(
       ...full,
       entries: full.entries.filter((entry) => entry.kind !== "TERRAIN"),
     },
-    images: { resolve: () => null },
     reducedMotion: true,
-    ...(look === "LEGACY"
-      ? { artSet: "LEGACY" as const }
-      : { artSet: "CHIBI" as const, chibiArt: classicArt }),
+    ...(look === "NO_ART" ? {} : { chibiArt: classicArt }),
     ...(look === "LIVE"
       ? {
           direction: {
@@ -155,8 +152,8 @@ describe("the channel on the canvas", () => {
     expect(strokes(log, CULT_PALETTE_V7.teal)).toBe(1);
   });
 
-  it("draws every mark in code in LEGACY and the classic look", () => {
-    for (const look of ["LEGACY", "CLASSIC"] as const) {
+  it("draws every mark in code without art and in the classic look", () => {
+    for (const look of ["NO_ART", "CLASSIC"] as const) {
       const log = draw(look, cultChannelBusyUiFixtureV7());
       expect(
         imagesDrawn(log).filter((id) => id.includes("cult-status")),
@@ -232,8 +229,8 @@ describe("an Unbound daemon on the canvas", () => {
     expect(calm).not.toContain("chibi-direction-icon-cult-status-furious");
   });
 
-  it("renders it in LEGACY and the classic look too, with the marks in code", () => {
-    for (const look of ["LEGACY", "CLASSIC"] as const) {
+  it("renders it without art and in the classic look too, with the marks in code", () => {
+    for (const look of ["NO_ART", "CLASSIC"] as const) {
       const log = draw(look, cultChannelFuriousUiFixtureV7());
       expect(
         imagesDrawn(log).filter((id) => id.includes("cult-status")),

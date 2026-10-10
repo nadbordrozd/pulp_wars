@@ -16,7 +16,6 @@ import type {
   PublicPopulationContributionV7,
 } from "../../src/engine/index";
 import { effectiveRoleRuleV7, UNIT_ROLE_IDS_V7 } from "../../src/engine/index";
-import { RULESET7_UNIT_ART_IDS } from "../../src/assets/ruleset7-ui-art";
 import type {
   BoardHostCallbacksV7,
   BoardHostModelV7,
@@ -195,7 +194,7 @@ describe("Ruleset 7 DOM shell", () => {
       startupNotice: "Treasury automatically granted · +12 Coins.",
     });
     const icon = document.querySelector(
-      "#v7-live [data-asset-id='ui-hud-gold-coin-v7']",
+      "#v7-live .v7-economy-icon[data-asset-id='ui-hud-coin']",
     );
     expect(icon).not.toBeNull();
     expect(document.querySelector("#v7-live")?.textContent).toBe(
@@ -203,7 +202,9 @@ describe("Ruleset 7 DOM shell", () => {
     );
     host.callbacks?.onSelection({ kind: "TILE", at: { x: 0, y: 0 } });
     expect(
-      document.querySelector("#v7-live [data-asset-id='ui-hud-gold-coin-v7']"),
+      document.querySelector(
+        "#v7-live .v7-economy-icon[data-asset-id='ui-hud-coin']",
+      ),
     ).toBe(icon);
     app.destroy();
     source.destroy();
@@ -320,7 +321,7 @@ describe("Ruleset 7 DOM shell", () => {
       );
     expect(
       document.querySelectorAll(
-        ".v7-coins [data-asset-id='ui-hud-gold-coin-v7']",
+        ".v7-coins .v7-economy-icon[data-asset-id='ui-hud-coin']",
       ),
     ).toHaveLength(1);
     expect(document.querySelector(".v7-coins")?.textContent).toBe(
@@ -707,8 +708,8 @@ describe("Ruleset 7 DOM shell", () => {
       "Knight",
     );
     expect(
-      modal.querySelector<HTMLImageElement>(".v7-art-frame")?.dataset.assetId,
-    ).toBe(RULESET7_UNIT_ART_IDS.KNIGHT);
+      modal.querySelector<HTMLElement>(".v7-art-frame")?.dataset.chibiSubject,
+    ).toBe("PORTRAIT:KNIGHT");
     expect(modal.textContent).toContain("HP13");
     expect(modal.textContent).toContain("Range1");
     // The unit glossary's lines (bead pulp_wars-2yc.39). Tuning 2 (7r47):
@@ -1138,7 +1139,7 @@ describe("Ruleset 7 DOM shell", () => {
     third.destroy();
   });
 
-  it("says farms join into one field only where they are drawn joined: the Classic look and LEGACY (pulp_wars-2o7.5)", async () => {
+  it("says farms join into one field only where they are drawn joined: the Classic look (pulp_wars-2o7.5)", async () => {
     const line = "Neighboring farms join into one field";
     const farmingUnlocks = (): string[] => {
       if (document.querySelector('[data-action="tech-farming"]') === null)
@@ -1173,19 +1174,6 @@ describe("Ruleset 7 DOM shell", () => {
     expect(farmingUnlocks()).toEqual(current);
     app.destroy();
     window.localStorage.clear();
-
-    // The LEGACY art set never had the new look.
-    document.body.innerHTML = '<div id="app"></div>';
-    const legacy = bootstrapRuleset7App(document, {
-      storage: null,
-      artSet: "LEGACY",
-      boardHost: new CapturingBoardHost(),
-    });
-    chooseSeed();
-    requiredButton('[data-action="launch"]').click();
-    await waitUntil(() => legacy.controller.snapshot().phase === "ACTIVE");
-    expect(farmingUnlocks()).toContain(line);
-    legacy.destroy();
   });
 
   it("draws the new visual direction by default and offers a persistent Classic look developer option (pulp_wars-3tq.6)", async () => {
@@ -1203,9 +1191,7 @@ describe("Ruleset 7 DOM shell", () => {
     await waitUntil(() => first.controller.snapshot().phase === "ACTIVE");
     // A fresh player gets the new look: no plates (a neutral shadow, since
     // bead pulp_wars-w5j.3), pennants, calm chrome with the ground ready
-    // ring, and the direction's own art, loaded with the rest of the CHIBI
-    // set.
-    expect(host.model?.artSet).toBe("CHIBI");
+    // ring, and the direction's own art, loaded with the rest of the art.
     expect(host.model?.visualDirection).toEqual(LIVE_DIRECTION_V7);
     expect(host.model?.visualDirection?.unit.base).toBe("SHADOW");
     expect(host.model?.visualDirection?.chrome).toEqual({
@@ -1269,24 +1255,6 @@ describe("Ruleset 7 DOM shell", () => {
       restoredHost.model !== null && "visualDirection" in restoredHost.model,
     ).toBe(false);
     second.destroy();
-
-    // The LEGACY art set never carries the direction.
-    window.localStorage.clear();
-    document.body.innerHTML = '<div id="app"></div>';
-    const legacyHost = new CapturingBoardHost();
-    const third = bootstrapRuleset7App(document, {
-      storage: null,
-      boardHost: legacyHost,
-      artSet: "LEGACY",
-    });
-    chooseSeed();
-    requiredButton('[data-action="launch"]').click();
-    await waitUntil(() => third.controller.snapshot().phase === "ACTIVE");
-    expect(legacyHost.model?.artSet).toBe("LEGACY");
-    expect(
-      legacyHost.model !== null && "visualDirection" in legacyHost.model,
-    ).toBe(false);
-    third.destroy();
   });
 
   it("draws one Farm, has no Farm crop option and drops its stored key (pulp_wars-9s0.7)", async () => {
@@ -1564,7 +1532,7 @@ describe("Ruleset 7 DOM shell", () => {
     ).toContain("City actionReady");
     expect(
       document
-        .querySelector(".v7-city-stats .v7-population-value img")
+        .querySelector(".v7-city-stats .v7-population-value .v7-economy-icon")
         ?.getAttribute("data-asset-id"),
     ).toBe("ui-hud-population");
     const populationPips = [
@@ -1578,16 +1546,18 @@ describe("Ruleset 7 DOM shell", () => {
     );
     expect(
       document
-        .querySelector(".v7-city-stats .v7-city-income img")
+        .querySelector(".v7-city-stats .v7-city-income .v7-economy-icon")
         ?.getAttribute("data-asset-id"),
-    ).toBe("ui-hud-gold-coin-v7");
+    ).toBe("ui-hud-coin");
     const trainCost = document.querySelector<HTMLElement>(
       ".v7-train-action .v7-command-economy",
     );
     expect(trainCost?.textContent).toMatch(/^\d+$/);
-    expect(trainCost?.querySelector("img")?.getAttribute("data-asset-id")).toBe(
-      "ui-hud-gold-coin-v7",
-    );
+    expect(
+      trainCost
+        ?.querySelector(".v7-economy-icon")
+        ?.getAttribute("data-asset-id"),
+    ).toBe("ui-hud-coin");
     expect(document.querySelectorAll(".v7-train-action")).toHaveLength(
       trainableRoles.length,
     );
@@ -1619,10 +1589,8 @@ describe("Ruleset 7 DOM shell", () => {
     ).toBeNull();
     expect(requiredButton('[data-action="unit-help"]').textContent).toBe("?");
     expect(
-      document
-        .querySelector(".v7-identity-art")
-        ?.getAttribute("data-frame-mode"),
-    ).toBe("visible-alpha");
+      document.querySelector(".v7-identity-art")?.getAttribute("data-art-set"),
+    ).toBe("chibi");
     const modifier = requiredButton(".v7-stat-modifier");
     const modifierSource = modifier.getAttribute("aria-label")?.split(":")[0];
     modifier.focus();
@@ -1664,7 +1632,7 @@ describe("Ruleset 7 DOM shell", () => {
       '[data-action="command-build_monument-engineer"]',
     );
     expect(
-      build.querySelector('[data-asset-id="building-square-monument"]'),
+      build.querySelector('[data-chibi-subject*="MONUMENT"]'),
     ).not.toBeNull();
     build.click();
     build.click();

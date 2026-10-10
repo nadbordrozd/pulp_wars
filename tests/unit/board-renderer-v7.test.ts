@@ -3,7 +3,6 @@ import { queryPlayerCommandsV7, viewForV7 } from "../../src/engine/index";
 import {
   buildBoardRenderPlanV7,
   drawBoardV7,
-  type BoardRenderPlanEntryV7,
 } from "../../src/render/canvas/board-renderer-v7";
 import { FACTION_COLOURS_V7 } from "../../src/render/canvas/faction-colours-v7";
 import {
@@ -124,16 +123,13 @@ describe("Ruleset 7 board renderer", () => {
         },
       },
     ) as CanvasRenderingContext2D;
-    for (const artSet of ["LEGACY", "CHIBI"] as const)
-      drawBoardV7({
-        context,
-        viewport: { width: 1600, height: 1600 },
-        devicePixelRatio: 1,
-        camera: { offsetX: 64, offsetY: 64, zoom: 1 },
-        plan,
-        images: { resolve: () => ({}) as CanvasImageSource },
-        artSet,
-      });
+    drawBoardV7({
+      context,
+      viewport: { width: 1600, height: 1600 },
+      devicePixelRatio: 1,
+      camera: { offsetX: 64, offsetY: 64, zoom: 1 },
+      plan,
+    });
     expect(strokes.length).toBeGreaterThan(0);
     expect(strokes).not.toContain("#ecdfb7");
     expect(strokes).not.toContain("#b7d8d4");
@@ -490,60 +486,8 @@ describe("Ruleset 7 board renderer", () => {
     expect(plan.entries[firstValueIndex]).toMatchObject({ at: valueAt });
   });
 
-  it("uses calibrated accepted aspect ratios for units, processors and cities", () => {
-    const entries: BoardRenderPlanEntryV7[] = [
-      imageEntry("standard", "UNIT", "unit-original-fighter", 0, 0),
-      imageEntry("captain", "UNIT", "unit-original-captain-v7r10", 1, 0),
-      imageEntry("catapult", "UNIT", "unit-original-catapult", 2, 0),
-      imageEntry("giant", "UNIT", "unit-original-juggernaut", 3, 0),
-      imageEntry("processor", "IMPROVEMENT", "building-square-windmill", 4, 0),
-      imageEntry("shipyard", "IMPROVEMENT", "building-ruleset7-shipyard", 5, 0),
-      imageEntry(
-        "camp",
-        "IMPROVEMENT",
-        "building-ruleset7-resource-lumber-camp",
-        6,
-        0,
-      ),
-      { ...imageEntry("city", "CITY", "building-city-2", 7, 0), value: 2 },
-    ];
-    const drawImage = vi.fn();
-    const context = drawingContext(drawImage);
-    drawBoardV7({
-      context,
-      viewport: { width: 800, height: 300 },
-      devicePixelRatio: 1,
-      camera: { offsetX: 100, offsetY: 150, zoom: 1 },
-      plan: { version: 7, entries, targets: [] },
-      images: { resolve: () => ({}) as CanvasImageSource },
-    });
-    const dimensions = drawImage.mock.calls.map((call) => call.slice(3, 5));
-    for (const [actual, expected] of dimensions.flatMap((pair, index) =>
-      pair.map(
-        (value, axis) =>
-          [
-            value as number,
-            [
-              [64, 74],
-              [70.4, 81.4],
-              [92.16, 92.16],
-              [96, 112],
-              [115.2, 115.2],
-              [115.2, 115.2],
-              [138.24, 138.24],
-              [115.2, 115.2],
-            ][index]?.[axis] ?? 0,
-          ] as const,
-      ),
-    ))
-      expect(actual).toBeCloseTo(expected);
-  });
-
-  it.each(
-    [0.625, 1, 1.75].flatMap((zoom) => [1, 2].map((dpr) => ({ zoom, dpr }))),
-  )(
-    "paints treasure at its readable size without changing depth or map targets ($zoom zoom, DPR $dpr)",
-    ({ zoom, dpr }) => {
+  it("plans treasure under the unit on its tile, without map targets", () => {
+    {
       const state = exploredAllV7(initialV7(1516));
       const base = viewForV7(state, state.humanPlayerId);
       const unit = base.units[0];
@@ -568,113 +512,6 @@ describe("Ruleset 7 board renderer", () => {
         plan.entries.findIndex((entry) => entry.key === `unit:${unit.id}`),
       );
       expect(plan.targets).toEqual([]);
-      const drawImage = vi.fn();
-      drawBoardV7({
-        context: drawingContext(drawImage),
-        viewport: { width: 2000, height: 2000 },
-        devicePixelRatio: dpr,
-        camera: { offsetX: 100, offsetY: 150, zoom },
-        plan: { ...plan, entries: [chest] },
-        images: { resolve: () => ({}) as CanvasImageSource },
-      });
-      expect(drawImage).toHaveBeenCalledTimes(1);
-      const [, x, y, width, height] = drawImage.mock.calls[0] as [
-        unknown,
-        number,
-        number,
-        number,
-        number,
-      ];
-      expect(width).toBeCloseTo(153.6 * zoom);
-      expect(height).toBeCloseTo(177.6 * zoom);
-      expect(width / height).toBeCloseTo(256 / 296);
-      expect(x + 128 * 0.6 * zoom).toBeCloseTo(100 + unit.at.x * 128 * zoom);
-      expect(y + 222 * 0.6 * zoom).toBeCloseTo(150 + unit.at.y * 128 * zoom);
-    },
-  );
-
-  it("draws single and pair Farm crops at exact ground-cell rectangles", () => {
-    const drawImage = vi.fn();
-    drawBoardV7({
-      context: drawingContext(drawImage),
-      viewport: { width: 400, height: 300 },
-      devicePixelRatio: 1,
-      camera: { offsetX: 100, offsetY: 100, zoom: 1 },
-      plan: {
-        version: 7,
-        targets: [],
-        entries: [
-          imageEntry(
-            "farm-single",
-            "IMPROVEMENT",
-            "building-ruleset7-farm-single",
-            0,
-            0,
-          ),
-          {
-            ...imageEntry(
-              "farm-left",
-              "IMPROVEMENT",
-              "building-ruleset7-farm-pair-horizontal",
-              1,
-              0,
-            ),
-            sourceCrop: { x: 0, y: 0, width: 256, height: 256 },
-          },
-          {
-            ...imageEntry(
-              "farm-right",
-              "IMPROVEMENT",
-              "building-ruleset7-farm-pair-horizontal",
-              2,
-              0,
-            ),
-            sourceCrop: { x: 256, y: 0, width: 256, height: 256 },
-          },
-          {
-            ...imageEntry(
-              "farm-top",
-              "IMPROVEMENT",
-              "building-ruleset7-farm-pair-vertical",
-              0,
-              1,
-            ),
-            sourceCrop: { x: 0, y: 0, width: 256, height: 256 },
-          },
-          {
-            ...imageEntry(
-              "farm-bottom",
-              "IMPROVEMENT",
-              "building-ruleset7-farm-pair-vertical",
-              0,
-              2,
-            ),
-            sourceCrop: { x: 0, y: 256, width: 256, height: 256 },
-          },
-        ],
-      },
-      images: { resolve: () => ({}) as CanvasImageSource },
-    });
-    expect(drawImage).toHaveBeenCalledTimes(5);
-    expect(drawImage.mock.calls[0]?.slice(1)).toEqual([36, 36, 128, 128]);
-    expect(
-      drawImage.mock.calls.slice(1).map((call) => call.slice(1, 5)),
-    ).toEqual([
-      [0, 0, 256, 256],
-      [256, 0, 256, 256],
-      [0, 0, 256, 256],
-      [0, 256, 256, 256],
-    ]);
-    expect(drawImage.mock.calls.slice(1).map((call) => call.slice(5))).toEqual([
-      [164, 36, 128, 128],
-      [292, 36, 128, 128],
-      [36, 164, 128, 128],
-      [36, 292, 128, 128],
-    ]);
-    for (const call of drawImage.mock.calls.slice(1)) {
-      expect(call).toHaveLength(9);
-      expect(call[7]).toBe(128);
-      expect(call[8]).toBe(128);
     }
   });
 
@@ -871,193 +708,6 @@ describe("Ruleset 7 board renderer", () => {
     ).toEqual([]);
   });
 
-  it.each([0.625, 1, 1.75])(
-    "uses the accepted mounted Knight scale below Juggernaut at zoom %s",
-    (zoom) => {
-      const drawImage = vi.fn();
-      drawBoardV7({
-        context: drawingContext(drawImage),
-        viewport: { width: 800, height: 300 },
-        devicePixelRatio: 1,
-        camera: { offsetX: 100, offsetY: 150, zoom },
-        plan: {
-          version: 7,
-          entries: [
-            imageEntry("fighter", "UNIT", "unit-original-fighter", 0, 0),
-            imageEntry("knight", "UNIT", "unit-original-knight", 1, 0),
-            imageEntry("juggernaut", "UNIT", "unit-original-juggernaut", 2, 0),
-          ],
-          targets: [],
-        },
-        images: { resolve: () => ({}) as CanvasImageSource },
-      });
-      const [fighter, knight, juggernaut] = drawImage.mock.calls;
-      expect(knight?.[3]).toBeCloseTo(103.68 * zoom);
-      expect(knight?.[4]).toBeCloseTo(103.68 * zoom);
-      expect(Number(knight?.[3])).toBeGreaterThan(Number(fighter?.[3]));
-      expect(Number(knight?.[4])).toBeLessThan(Number(juggernaut?.[4]));
-    },
-  );
-
-  it("draws narrow brown half-segments before an opaque improvement", () => {
-    const drawImage = vi.fn();
-    const lineTo = vi.fn();
-    const stroke = vi.fn();
-    const styles: Record<string, unknown> = {};
-    const context = drawingContext(
-      drawImage,
-      vi.fn(),
-      { lineTo, stroke },
-      (key, value) => {
-        styles[String(key)] = value;
-      },
-    );
-    drawBoardV7({
-      context,
-      viewport: { width: 300, height: 300 },
-      devicePixelRatio: 1,
-      camera: { offsetX: 100, offsetY: 100, zoom: 1 },
-      plan: {
-        version: 7,
-        entries: [
-          {
-            key: "road",
-            kind: "ROAD",
-            layer: 2,
-            at: { x: 0, y: 0 },
-            roadNeighbors: [
-              { x: 1, y: 1 },
-              { x: 0, y: 1 },
-            ],
-          },
-          imageEntry(
-            "farm",
-            "IMPROVEMENT",
-            "building-ruleset7-farm-single",
-            0,
-            0,
-          ),
-        ],
-        targets: [],
-      },
-      images: { resolve: () => ({}) as CanvasImageSource },
-    });
-    expect(context.lineTo).toHaveBeenCalledWith(164, 164);
-    expect(context.lineTo).toHaveBeenCalledWith(100, 164);
-    expect(styles.strokeStyle).toBe("#a57a4c");
-    expect(styles.lineWidth).toBe(5);
-    expect(
-      vi.mocked(context.stroke).mock.invocationCallOrder.at(-1),
-    ).toBeLessThan(drawImage.mock.invocationCallOrder[0] ?? 0);
-  });
-
-  it("stages all Roads and diagonal joins above ground and below raised terrain and objects", () => {
-    const operations: string[] = [];
-    const state: Record<PropertyKey, unknown> = {};
-    const context = new Proxy(state, {
-      get: (target, key) => {
-        if (key === "drawImage")
-          return (image: { readonly id?: string }) =>
-            operations.push(image.id ?? "unknown-image");
-        if (key === "stroke")
-          return () => {
-            if (target.strokeStyle === "#a57a4c") operations.push("road");
-          };
-        return key in target ? target[key] : vi.fn();
-      },
-      set: (target, key, value) => {
-        target[key] = value;
-        return true;
-      },
-    }) as unknown as CanvasRenderingContext2D;
-    const entries: BoardRenderPlanEntryV7[] = [
-      imageEntry(
-        "forest",
-        "TERRAIN",
-        "terrain-ruleset7-original-forest-2",
-        1,
-        1,
-      ),
-      {
-        key: "join",
-        kind: "ROAD_JOIN",
-        layer: 2,
-        at: { x: 1, y: 0 },
-        roadJoins: [
-          [
-            { x: 0, y: 0 },
-            { x: 1, y: 1 },
-          ],
-        ],
-      },
-      {
-        key: "road",
-        kind: "ROAD",
-        layer: 2,
-        at: { x: 1, y: 1 },
-        roadNeighbors: [{ x: 1, y: 0 }],
-      },
-      imageEntry("fruit", "RESOURCE", "terrain-square-original-fruit", 1, 1),
-      imageEntry("mine", "IMPROVEMENT", "building-square-mine", 1, 1),
-      imageEntry("unit", "UNIT", "unit-original-fighter", 1, 1),
-    ];
-    drawBoardV7({
-      context,
-      viewport: { width: 500, height: 500 },
-      devicePixelRatio: 1,
-      camera: { offsetX: 100, offsetY: 100, zoom: 1 },
-      plan: { version: 7, entries, targets: [] },
-      images: {
-        resolve: (id) => ({ id }) as unknown as CanvasImageSource,
-        resolveTerrainGround: () =>
-          ({ id: "forest-ground" }) as unknown as CanvasImageSource,
-        resolveRaisedTerrain: () =>
-          ({ id: "forest-raised" }) as unknown as CanvasImageSource,
-      },
-    });
-    const firstRoad = operations.indexOf("road");
-    const lastRoad = operations.lastIndexOf("road");
-    expect(firstRoad).toBeGreaterThan(operations.indexOf("forest-ground"));
-    expect(lastRoad).toBeLessThan(operations.indexOf("forest-raised"));
-    expect(lastRoad).toBeLessThan(
-      operations.indexOf("terrain-square-original-fruit"),
-    );
-    expect(lastRoad).toBeLessThan(operations.indexOf("building-square-mine"));
-    expect(lastRoad).toBeLessThan(operations.indexOf("unit-original-fighter"));
-  });
-
-  it("keeps the tall overflow anchor when pixel isolation is unavailable", () => {
-    const drawImage = vi.fn();
-    drawBoardV7({
-      context: drawingContext(drawImage),
-      viewport: { width: 300, height: 300 },
-      devicePixelRatio: 1,
-      camera: { offsetX: 100, offsetY: 100, zoom: 1 },
-      plan: {
-        version: 7,
-        targets: [],
-        entries: [
-          imageEntry(
-            "forest",
-            "TERRAIN",
-            "terrain-ruleset7-original-forest-1",
-            0,
-            0,
-          ),
-        ],
-      },
-      images: {
-        resolve: () => ({}) as CanvasImageSource,
-        resolveTerrainGround: () => null,
-        resolveRaisedTerrain: () => null,
-      },
-    });
-    expect(drawImage).toHaveBeenCalledTimes(1);
-    expect(drawImage.mock.calls[0]?.slice(1)).toEqual([
-      0, 0, 256, 128, 36, -28, 128, 64,
-    ]);
-  });
-
   it("emits one real contour winner per physical edge, including explored-to-fog edges", () => {
     const state = exploredAllV7(initialV7(1519));
     const base = viewForV7(state, state.humanPlayerId);
@@ -1178,7 +828,6 @@ describe("Ruleset 7 board renderer", () => {
       devicePixelRatio: 1,
       camera: { offsetX: 100, offsetY: 100, zoom: 1 },
       plan: { ...plan, entries: targetEntries },
-      images: { resolve: () => null },
     });
     expect(lineTo).toHaveBeenCalledTimes(7);
     expect(strokeRect).not.toHaveBeenCalled();
@@ -1223,7 +872,6 @@ describe("Ruleset 7 board renderer", () => {
           },
         ],
       },
-      images: { resolve: () => null },
     });
     // Bead pulp_wars-9im: the Move mark is its dark casing, then its teal
     // dashes; the territory border under the shared edge is not drawn.
@@ -1255,7 +903,6 @@ describe("Ruleset 7 board renderer", () => {
         ],
         targets: [],
       },
-      images: { resolve: () => null },
     });
     const pips = fillRect.mock.calls.filter(
       (call) => call[2] === 7 && call[3] === 7,
@@ -1331,7 +978,6 @@ describe("Ruleset 7 board renderer", () => {
           },
         ],
       },
-      images: { resolve: () => null },
     });
     expect(populationFills.slice(1)).toEqual([
       "#b8f4d0",
@@ -1350,7 +996,7 @@ describe("Ruleset 7 board renderer", () => {
     ).toHaveLength(9);
   });
 
-  it("uses the attached readiness outline only for units with offered Move", () => {
+  it("marks a unit ready only when a Move is offered", () => {
     const state = exploredAllV7(initialV7(1524));
     const view = viewForV7(state, state.humanPlayerId);
     const owned = view.units.find((unit) => unit.ownerId === view.viewer.id);
@@ -1367,75 +1013,8 @@ describe("Ruleset 7 board renderer", () => {
     expect(
       waitOnly.entries.find((entry) => entry.key === `unit:${owned.id}`)?.ready,
     ).toBe(false);
-
-    const drawImage = vi.fn();
-    const ellipse = vi.fn();
-    const alphaValues: number[] = [];
-    const context = drawingContext(
-      drawImage,
-      vi.fn(),
-      { ellipse },
-      (key, value) => {
-        if (key === "globalAlpha" && typeof value === "number")
-          alphaValues.push(value);
-      },
-    );
-    drawBoardV7({
-      context,
-      viewport: { width: 300, height: 300 },
-      devicePixelRatio: 1,
-      camera: { offsetX: 100, offsetY: 100, zoom: 1 },
-      plan: {
-        version: 7,
-        entries: [
-          {
-            ...imageEntry("unit:1", "UNIT", "unit-original-fighter", 0, 0),
-            ready: true,
-          },
-        ],
-        targets: [],
-      },
-      images: { resolve: () => ({}) as CanvasImageSource },
-      readinessElapsedMs: 800,
-      reducedMotion: false,
-      highContrast: false,
-    });
-    // pulp_wars-q8b: the outline alone carries readiness; the LEGACY sprite
-    // is neither enlarged nor faded at mid-pulse.
-    expect(drawImage.mock.calls[0]?.[3]).toBeCloseTo(64);
-    expect(drawImage.mock.calls[0]?.[4]).toBeCloseTo(74);
-    expect(alphaValues.every((alpha) => alpha > 0.99)).toBe(true);
-    expect(ellipse).not.toHaveBeenCalled();
-
-    const selectedImage = vi.fn();
-    drawBoardV7({
-      context: drawingContext(selectedImage),
-      viewport: { width: 300, height: 300 },
-      devicePixelRatio: 1,
-      camera: { offsetX: 100, offsetY: 100, zoom: 1 },
-      plan: {
-        version: 7,
-        entries: [imageEntry("unit:1", "UNIT", "unit-original-fighter", 0, 0)],
-        targets: [],
-      },
-      images: { resolve: () => ({}) as CanvasImageSource },
-      selectionJump: { unitId: 1, elapsedMs: 120, speed: "NORMAL" },
-      reducedMotion: false,
-    });
-    const baselineTop = 100 + 18 - 222 * 0.25;
-    expect(selectedImage.mock.calls[0]?.[2]).toBeCloseTo(baselineTop - 12);
   });
 });
-
-function imageEntry(
-  key: string,
-  kind: BoardRenderPlanEntryV7["kind"],
-  assetId: string,
-  x: number,
-  y: number,
-): BoardRenderPlanEntryV7 {
-  return { key, kind, assetId, at: { x, y }, layer: 1 };
-}
 
 function testEdgeKey(
   at: { readonly x: number; readonly y: number },

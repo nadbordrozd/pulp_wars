@@ -153,7 +153,6 @@ describe("square territory boundary presentation", () => {
             },
           ],
         },
-        images: { resolve: () => null },
       });
       expect(strokes.slice(-3)).toEqual([
         { style: "#243633", dash: [12, 4], offset: -6 },
@@ -188,7 +187,6 @@ describe("square territory boundary presentation", () => {
             },
           ],
         },
-        images: { resolve: () => null },
       });
       expect(strokes.slice(-2)).toEqual([
         { style: "#243633", dash: [20, 12], offset: -6 },
@@ -229,7 +227,6 @@ describe("square territory boundary presentation", () => {
         devicePixelRatio: 1,
         camera: { zoom, offsetX: 64, offsetY: 64 },
         plan,
-        images: { resolve: () => null },
       });
       // Locate the explored-ground mask used by the first territory casing.
       // Earlier per-cell Road clips are independent of this boundary mask.

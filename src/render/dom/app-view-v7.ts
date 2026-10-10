@@ -1,4 +1,3 @@
-import { ACCEPTED_ART_URLS } from "../../assets/generated-art-manifest";
 import {
   BLAST_MOUNTAIN_UNLOCK_TEXT_V7,
   BREACH_UNLOCK_TEXT_V7,
@@ -23,7 +22,6 @@ import {
 } from "../technology-unlock-text-v7";
 import {
   RULESET7_IMPROVEMENT_ART_IDS,
-  RULESET7_RESOURCE_ART_IDS,
   resourceMapArtIdV7,
   RULESET7_TECH_ART_IDS,
   RULESET7_TERRAIN_ART_IDS,
@@ -269,10 +267,6 @@ import { technologyTreeLayoutV7 } from "./technology-tree-layout-v7";
 import { createTacticalSymbolV7 } from "./tactical-symbol-v7";
 import type { TacticalSymbolTheme } from "../../assets/ruleset7-tactical-ui-symbols";
 import {
-  selectionIdentityArtworkLayoutV7,
-  technologyArtworkLayoutV7,
-} from "./selection-identity-v7";
-import {
   FAVOUR_CANDLE_SPRITE_URL_V7,
   uiIconV7,
   type UiIconIdV7,
@@ -285,7 +279,6 @@ import {
   territoryGroundV7,
   territoryTerrainSubjectV7,
   unitArtSubjectV7,
-  type ArtSetV7,
   type ArtSubjectV7,
 } from "../../assets/chibi-art-v7";
 import {
@@ -1210,9 +1203,7 @@ export const ROAD_MOVEMENT_TEXT_V7 =
 
 export interface MountRuleset7AppOptions {
   readonly boardHost?: BoardHostV7;
-  /** Presentation-only Ruleset 7 art set; LEGACY when omitted. */
-  readonly artSet?: ArtSetV7;
-  /** CHIBI DOM raster seams (tests); the browser's by default. */
+  /** DOM raster seams (tests); the browser's by default. */
   readonly chibiDomEnvironment?: ChibiDomEnvironmentV7;
   readonly downloadSafeLog?: (source: string, filename: string) => void;
   readonly downloadDebugBundle?: (source: string, filename: string) => void;
@@ -1438,9 +1429,8 @@ export class Ruleset7DomAppView {
   readonly #downloadDebugBundle: (source: string, filename: string) => void;
   readonly #settingsStorage: StorageAdapter | null;
   readonly #randomSeed: () => number;
-  readonly #artSet: ArtSetV7;
-  /** CHIBI interface art; null in LEGACY, which keeps its markup unchanged. */
-  readonly #chibiDom: ChibiDomArtV7 | null;
+  /** The interface art (the live look's rasters first). */
+  readonly #chibiDom: ChibiDomArtV7;
   #chibiRenderQueued = false;
   #snapshot: Ruleset7BrowserSnapshot;
   #unsubscribe: (() => void) | null = null;
@@ -1644,7 +1634,7 @@ export class Ruleset7DomAppView {
    * on first use, so the default game never loads the previous portraits.
    */
   #classicChibiDom: ChibiDomArtV7 | null = null;
-  readonly #chibiDomEnvironment: ChibiDomEnvironmentV7 | null;
+  readonly #chibiDomEnvironment: ChibiDomEnvironmentV7;
   /**
    * The tile dock's Forest and Mountain pictures (bead pulp_wars-2yc.41),
    * drawn like the Gallery's terrain swatches; one per look, on first use.
@@ -1755,10 +1745,7 @@ export class Ruleset7DomAppView {
       this.#audio.playCues(soundCuesForStepV7(cue), cue.durationScale),
     );
     this.#coinFlight = new CoinFlightLayerV7(documentRoot, {
-      coinUrl: () =>
-        this.#economyIcons("coin")?.url ??
-        ACCEPTED_ART_URLS["ui-hud-gold-coin-v7"] ??
-        null,
+      coinUrl: () => this.#economyIcons("coin")?.url ?? null,
       counterIcon: () => this.#root.querySelector(".v7-coins .v7-economy-icon"),
       onBalance: (landed) => this.#showCoinBalance(landed),
       // The Cultists (bead pulp_wars-mch9.17): Favour flies to its chip.
@@ -1770,25 +1757,18 @@ export class Ruleset7DomAppView {
       },
     });
     this.#coinFlight.attach(this.#boardHost.feedback ?? null);
-    this.#artSet = options.artSet ?? "LEGACY";
     this.#chibiDomEnvironment =
-      this.#artSet === "CHIBI"
-        ? (options.chibiDomEnvironment ??
-          browserChibiDomEnvironmentV7(documentRoot))
-        : null;
+      options.chibiDomEnvironment ?? browserChibiDomEnvironmentV7(documentRoot);
     // The interface resolves the new direction's art first (Human and Goblin
     // portraits, cities, the shared improvements) and the default art for
     // everything else, like the board.
-    this.#chibiDom =
-      this.#chibiDomEnvironment === null
-        ? null
-        : createChibiDomArtV7({
-            environment: this.#chibiDomEnvironment,
-            onChange: () => this.#queueChibiRender(),
-            preferred: LIVE_DIRECTION_ART_REGISTRY_V7,
-          });
-    // Every view claims the document's economy icons, so a LEGACY view never
-    // inherits a CHIBI provider left by another view.
+    this.#chibiDom = createChibiDomArtV7({
+      environment: this.#chibiDomEnvironment,
+      onChange: () => this.#queueChibiRender(),
+      preferred: LIVE_DIRECTION_ART_REGISTRY_V7,
+    });
+    // Every view claims the document's economy icons, so a view never
+    // inherits the provider left by another view.
     CHIBI_ECONOMY_ICONS.set(documentRoot, this.#economyIcons);
     this.#notice = options.startupNotice ?? "";
     this.#motion =
@@ -2089,9 +2069,10 @@ export class Ruleset7DomAppView {
   }
 
   /**
-   * CHIBI art for an interface subject, or null to keep the legacy art (the
-   * LEGACY set, or no usable chibi raster). factionArt is true when an
-   * Undead subject drew its own art, which drops the placeholder badge.
+   * The art of an interface subject, or null when it has no usable raster
+   * (the caller then shows its code-drawn figure or the lettered stand-in).
+   * factionArt is true when an Undead subject drew its own art, which drops
+   * the placeholder badge.
    */
   #chibiArt(
     subject: ArtSubjectV7 | null,
@@ -2102,7 +2083,7 @@ export class Ruleset7DomAppView {
     readonly element: HTMLImageElement;
     readonly factionArt: boolean;
   } | null {
-    if (this.#chibiDom === null || subject === null) return null;
+    if (subject === null) return null;
     const request = {
       subject,
       ownerColor,
@@ -2120,15 +2101,14 @@ export class Ruleset7DomAppView {
    * The tile dock's picture of a Forest or Mountain cell as the board
    * draws it (dock-terrain-presentation-v7.ts): the massif's mountain, the
    * mined mountain, a faction's own trees, each on its territory's ground.
-   * Null keeps the registered master: every other cell, the LEGACY set, and
-   * a swatch that cannot be drawn.
+   * Null keeps the registered master: every other cell, and a swatch that
+   * cannot be drawn.
    */
   #dockTerrainArtwork(
     request: DockTerrainRequestV7,
     subject: ArtSubjectV7,
   ): HTMLCanvasElement | null {
     const environment = this.#chibiDomEnvironment;
-    if (environment === null) return null;
     const swatch = dockTerrainSwatchV7(request);
     if (swatch === null) return null;
     const look = request.live ? "live" : "classic";
@@ -2165,7 +2145,7 @@ export class Ruleset7DomAppView {
 
   /**
    * Map curiosities: a legend icon (the live look's raster, or the
-   * code-drawn glyph in LEGACY and the classic look).
+   * code-drawn glyph in the classic look).
    */
   #curiosityIcon(
     id: Parameters<typeof curiosityIconSubjectV7>[0],
@@ -2179,12 +2159,10 @@ export class Ruleset7DomAppView {
     return image;
   }
 
-  /** The interface art of the current look; only called for the CHIBI set. */
+  /** The interface art of the current look. */
   #interfaceArt(): ChibiDomArtV7 {
     const directed = this.#chibiDom;
     const environment = this.#chibiDomEnvironment;
-    if (directed === null || environment === null)
-      throw new Error("Interface art requires the CHIBI art set");
     if (!this.#classicLook) return directed;
     this.#classicChibiDom ??= createChibiDomArtV7({
       environment,
@@ -2196,10 +2174,10 @@ export class Ruleset7DomAppView {
   readonly #economyIcons = (
     kind: "coin" | "population",
   ): { readonly url: string; readonly assetId: string } | null => {
-    const resolution = this.#chibiDom?.resolve({
+    const resolution = this.#chibiDom.resolve({
       subject: kind === "coin" ? "ICON:HUD:COIN" : "ICON:HUD:POPULATION",
     });
-    return resolution?.kind === "READY"
+    return resolution.kind === "READY"
       ? { url: resolution.url, assetId: resolution.asset.id }
       : null;
   };
@@ -2207,10 +2185,9 @@ export class Ruleset7DomAppView {
   /**
    * The Cultists (bead pulp_wars-mch9.17): the Favour candle's raster in
    * the current look, or null until the art registers
-   * `ICON:HUD:CULT:FAVOUR` (and in the LEGACY set).
+   * `ICON:HUD:CULT:FAVOUR`.
    */
   #favourIconUrl(): string | null {
-    if (this.#chibiDom === null) return null;
     const resolution = this.#interfaceArt().resolve({
       subject: "ICON:HUD:CULT:FAVOUR",
     });
@@ -3003,16 +2980,14 @@ export class Ruleset7DomAppView {
 
   #brand(): HTMLElement {
     const header = el(this.#document, "header", "v7-brand");
-    // The scene is the live CHIBI look's art, which the CHIBI set preloads.
-    if (this.#artSet === "CHIBI" && this.#chibiDomEnvironment !== null) {
-      this.#titleScene ??= new TitleSceneViewV7(this.#document, {
-        environment: this.#chibiDomEnvironment,
-        motion: this.#motion,
-        menuWidth: () => this.#menuClear(),
-      });
-      header.classList.add("v7-title");
-      header.append(this.#titleScene.root);
-    }
+    // The scene is the live look's art, which the page preloads.
+    this.#titleScene ??= new TitleSceneViewV7(this.#document, {
+      environment: this.#chibiDomEnvironment,
+      motion: this.#motion,
+      menuWidth: () => this.#menuClear(),
+    });
+    header.classList.add("v7-title");
+    header.append(this.#titleScene.root);
     header.append(text(this.#document, "h1", "Pulp Wars"));
     return header;
   }
@@ -3816,7 +3791,7 @@ export class Ruleset7DomAppView {
    */
   #boardArtPending(factions: readonly FactionIdV7[]): Promise<void> | null {
     const ensure = this.#ensureFactionAssets;
-    if (ensure === undefined || this.#artSet !== "CHIBI") return null;
+    if (ensure === undefined) return null;
     const look = this.#classicLook ? "CLASSIC" : "LIVE";
     const key = `${look}:${[...new Set(factions)].sort().join(",")}`;
     if (this.#artReady.has(key)) return null;
@@ -3902,9 +3877,7 @@ export class Ruleset7DomAppView {
       audio: this.#audio,
       onTabChange: () => this.#syncMusic(),
       motion: () => this.#motion,
-      ...(this.#chibiDomEnvironment === null
-        ? {}
-        : { domEnvironment: this.#chibiDomEnvironment }),
+      domEnvironment: this.#chibiDomEnvironment,
       ...(this.#galleryDemoHost === undefined
         ? {}
         : { createDemoHost: this.#galleryDemoHost }),
@@ -4551,11 +4524,10 @@ export class Ruleset7DomAppView {
       animationSpeed: this.#animationSpeed,
       presentationPaused: this.#screen === "SETTINGS",
       highContrast: this.#highContrast,
-      artSet: this.#artSet,
       saturation: this.#boardSaturation,
-      // The new visual direction is the CHIBI set's default look; the
-      // classic look and the LEGACY set carry no direction at all.
-      ...liveBoardLookV7(this.#artSet, this.#classicLook),
+      // The new visual direction is the default look; the classic look
+      // carries no direction at all.
+      ...liveBoardLookV7(this.#classicLook),
       interaction: {
         selection: this.#selection,
         selectedUnitId,
@@ -4721,7 +4693,6 @@ export class Ruleset7DomAppView {
           unit.form === "EMBARKED"
             ? `${roleLabel} (${machine ? "afloat" : "at sea"})`
             : roleLabel,
-          true,
           dockArt?.factionArt === true || egg ? null : unitBadge,
           dockArt?.element ?? eggFigure,
           eggFigure === undefined ? "chibi" : "code",
@@ -5852,7 +5823,6 @@ export class Ruleset7DomAppView {
           this.#document,
           `building-city-${cityTier}`,
           cityNameV7(view, city),
-          true,
           null,
           this.#chibiArt(
             cityArtSubjectV7({
@@ -6257,7 +6227,6 @@ export class Ruleset7DomAppView {
             this.#document,
             asset,
             name,
-            true,
             null,
             // A Forest, a Mountain or a Mine as the board draws the cell
             // (bead pulp_wars-2yc.41); every other tile its master.
@@ -7870,7 +7839,6 @@ export class Ruleset7DomAppView {
         this.#document,
         RULESET7_TECH_ART_IDS[node.id],
         name,
-        false,
         null,
         this.#technologyChibiArt(node.id)?.element,
       ),
@@ -7902,7 +7870,7 @@ export class Ruleset7DomAppView {
     for (const group of technologyEffectGroupsV7(
       node.effects,
       this.#viewerFaction(),
-      { farmsJoin: farmsJoinInLookV7(this.#artSet, this.#classicLook) },
+      { farmsJoin: farmsJoinInLookV7(this.#classicLook) },
     ))
       for (const item of group.items) {
         const entry = text(this.#document, "li", item);
@@ -13736,17 +13704,7 @@ function appendTechNode(
   const assetId = RULESET7_TECH_ART_IDS[layout.node.id];
   const chibiImage = chibiArt(layout.node.id);
   if (chibiImage !== null) artFrame.dataset.artSet = "chibi";
-  const image = chibiImage ?? art(documentRoot, assetId, "");
-  const artworkLayout =
-    chibiImage === null ? technologyArtworkLayoutV7(assetId) : null;
-  if (artworkLayout !== null) {
-    artFrame.dataset.frameMode = "visible-alpha";
-    image.style.left = `${artworkLayout.image.left}px`;
-    image.style.top = `${artworkLayout.image.top}px`;
-    image.style.width = `${artworkLayout.image.width}px`;
-    image.style.height = `${artworkLayout.image.height}px`;
-  }
-  artFrame.append(image);
+  artFrame.append(chibiImage ?? art(documentRoot, assetId, ""));
   card.append(artFrame, text(documentRoot, "span", name, "v7-tech-name"));
   const achievement = techAchievementV7(layout.node.id);
   if (achievement !== null) {
@@ -13812,35 +13770,17 @@ function identity(
   documentRoot: Document,
   assetId: string,
   label: string,
-  normalizePaintedSize = false,
   /** Undead or Goblin placeholder badge over Human art; null for none. */
   badge: FactionBadgeV7 = null,
-  /** CHIBI art already sized for its box; replaces the legacy asset. */
+  /** The subject's art, already sized for its box. */
   chibiImage?: HTMLElement | SVGElement,
-  /** "code" for a code-drawn figure (the LEGACY Egg) in the legacy frame. */
+  /** "code" for a code-drawn figure (an Egg without its sprite). */
   artSet: "chibi" | "code" = "chibi",
 ): HTMLElement {
   const identity = el(documentRoot, "div", "v7-identity");
   const viewport = el(documentRoot, "span", "v7-identity-art");
   if (chibiImage !== undefined) viewport.dataset.artSet = artSet;
-  const image = chibiImage ?? art(documentRoot, assetId, "");
-  const layout =
-    chibiImage === undefined &&
-    (normalizePaintedSize ||
-      assetId === "terrain-square-original-fruit" ||
-      assetId === "terrain-square-original-animal" ||
-      assetId === RULESET7_IMPROVEMENT_ART_IDS.LUMBER_CAMP ||
-      assetId === RULESET7_RESOURCE_ART_IDS.FERTILE_GROUND)
-      ? selectionIdentityArtworkLayoutV7(assetId)
-      : null;
-  if (layout !== null) {
-    viewport.dataset.frameMode = "visible-alpha";
-    image.style.left = `${layout.left}px`;
-    image.style.top = `${layout.top}px`;
-    image.style.width = `${layout.width}px`;
-    image.style.height = `${layout.height}px`;
-  }
-  viewport.append(image);
+  viewport.append(chibiImage ?? art(documentRoot, assetId, ""));
   if (badge !== null) {
     viewport.dataset.faction = badge.toLowerCase();
     viewport.append(factionBadgeIcon(documentRoot, badge));
@@ -13916,17 +13856,39 @@ function eggFigureV7(
   return svg;
 }
 
+/**
+ * The stand-in of a subject without a usable raster (none registered, or
+ * its load failed; bead pulp_wars-67q.15): a lettered plate drawn by the
+ * page, never another art set's raster. `assetId` names the subject for
+ * tests and the letter; it is not looked up. The letter is drawn by the
+ * style sheet from `data-letter`, so it is in no label or text.
+ */
 function art(
   documentRoot: Document,
   assetId: string,
   alt: string,
-): HTMLImageElement {
-  const image = documentRoot.createElement("img");
-  image.className = "v7-art-frame";
-  image.src = ACCEPTED_ART_URLS[assetId] ?? "";
-  image.alt = alt;
-  image.dataset.assetId = assetId;
-  return image;
+): HTMLElement {
+  const figure = documentRoot.createElement("span");
+  figure.className = "v7-art-frame v7-art-missing";
+  figure.dataset.assetId = assetId;
+  figure.dataset.artSet = "code";
+  if (alt === "") figure.setAttribute("aria-hidden", "true");
+  else {
+    figure.setAttribute("role", "img");
+    figure.setAttribute("aria-label", alt);
+  }
+  figure.dataset.letter = missingArtLetterOfAssetV7(assetId);
+  return figure;
+}
+
+/** The stand-in's letter: the first letter of the subject's own name. */
+export function missingArtLetterOfAssetV7(assetId: string): string {
+  const name = assetId
+    .split("-")
+    .filter((part) => !/^(v\d.*|\d+)$/.test(part))
+    .at(-1);
+  const letter = name === undefined ? undefined : /[a-z]/i.exec(name)?.[0];
+  return letter === undefined ? "?" : letter.toUpperCase();
 }
 /** A group heading of the setup form: an icon and one word. */
 function setupHeading(
@@ -14278,16 +14240,13 @@ export interface TechnologyEffectGroupV7 {
 }
 
 /**
- * Whether neighbouring Farms are drawn as one field. They are in the LEGACY
- * art set and in the Classic look; in the current look every Farm is one
+ * Whether neighbouring Farms are drawn as one field. They are in the
+ * Classic look; in the current look every Farm is one
  * whole sprite on its tile (bead pulp_wars-2o7.2), so the Farming card must
  * not promise a joined field there (bead pulp_wars-2o7.5).
  */
-export function farmsJoinInLookV7(
-  artSet: ArtSetV7 | undefined,
-  classicLook: boolean,
-): boolean {
-  return artSet !== "CHIBI" || classicLook;
+export function farmsJoinInLookV7(classicLook: boolean): boolean {
+  return classicLook;
 }
 
 /**
@@ -14859,9 +14818,10 @@ function text(
 }
 
 /**
- * CHIBI economy icons per document: the mounted CHIBI view registers a
- * provider, so the many text helpers that inline a coin or population icon
- * need no art-set parameter. Without a provider (LEGACY) nothing changes.
+ * Economy icons per document: the mounted view registers a provider, so
+ * the many text helpers that inline a coin or population icon need no
+ * parameter. Without a provider, or before its raster is ready, the icon
+ * is a plain disc drawn by the style sheet.
  */
 const CHIBI_ECONOMY_ICONS = new WeakMap<
   Document,
@@ -14873,11 +14833,11 @@ const CHIBI_ECONOMY_ICONS = new WeakMap<
 function economyIcon(
   documentRoot: Document,
   kind: "coin" | "population",
-): HTMLImageElement {
-  const icon = documentRoot.createElement("img");
-  icon.className = "v7-economy-icon";
+): HTMLElement {
   const chibi = CHIBI_ECONOMY_ICONS.get(documentRoot)?.(kind);
   if (chibi !== null && chibi !== undefined) {
+    const icon = documentRoot.createElement("img");
+    icon.className = "v7-economy-icon";
     icon.src = chibi.url;
     icon.alt = "";
     icon.setAttribute("aria-hidden", "true");
@@ -14885,14 +14845,11 @@ function economyIcon(
     icon.dataset.chibiAssetId = chibi.assetId;
     return icon;
   }
-  icon.src =
-    ACCEPTED_ART_URLS[
-      kind === "coin" ? "ui-hud-gold-coin-v7" : "ui-hud-population"
-    ] ?? "";
-  icon.alt = "";
+  const icon = documentRoot.createElement("span");
+  icon.className = "v7-economy-icon v7-art-missing";
   icon.setAttribute("aria-hidden", "true");
-  icon.dataset.assetId =
-    kind === "coin" ? "ui-hud-gold-coin-v7" : "ui-hud-population";
+  icon.dataset.artSet = "code";
+  icon.dataset.assetId = kind === "coin" ? "ui-hud-coin" : "ui-hud-population";
   return icon;
 }
 

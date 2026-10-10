@@ -2,9 +2,9 @@
 import type { ChibiArtAssetV7 } from "./chibi-art-v7";
 
 /**
- * Accepted CHIBI art-set rasters for Ruleset 7 (?art=chibi). Batch beads add
- * entries here after review; every subject without an entry keeps rendering
- * its legacy asset at the chibi geometry. Rasters live under
+ * Accepted rasters of the Ruleset 7 art. Batch beads add entries here
+ * after review; a subject without an entry is drawn in code (bead
+ * pulp_wars-67q.15). Rasters live under
  * public/assets/chibi/ and use chibiArtUrl so the Vite base path applies.
  * Contract: docs/art/ART_DIRECTION.md sections 3 and 4.
  */

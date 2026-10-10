@@ -10,10 +10,13 @@ at the end list what the plan did not foresee.
 **Since `pulp_wars-67q.13` (2026-10-10)** the migration is complete for
 players: CHIBI is the only art set a player sees, `?art=legacy` is retired
 and `?art=chibi`, which this inventory names as the way to see the chibi
-runtime, is simply the game. The "Legacy art today" columns and every
-sentence about what LEGACY draws now describe the renderer's internal
-fallback (a subject whose chibi raster cannot be drawn, and a view built
-without an art set in tests), which no player can select.
+runtime, is simply the game. **Since `pulp_wars-67q.15`** the LEGACY
+render path is removed: the "Legacy art today" columns and every sentence
+about what LEGACY draws are history. A subject whose chibi raster cannot be
+drawn is drawn in code (a flat wash for ground, a lettered marker or plate
+for a piece), and the code-drawn figures this inventory names (the Egg, the
+mound, the Spider, the curiosity markers, the vector glyphs) are what a
+subject without a raster shows, in the Classic look too.
 
 ## How it was built
 

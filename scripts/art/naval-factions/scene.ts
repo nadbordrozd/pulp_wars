@@ -445,8 +445,7 @@ export function showNavalSceneV7(
     animationSpeed: "NORMAL",
     presentationPaused: true,
     highContrast: false,
-    artSet: "CHIBI",
-    ...liveBoardLookV7("CHIBI", options.classic === true),
+    ...liveBoardLookV7(options.classic === true),
   });
   const canvas = container.querySelector("canvas.board-canvas-v7");
   if (!(canvas instanceof HTMLCanvasElement))

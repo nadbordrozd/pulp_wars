@@ -798,7 +798,7 @@ export function showMartianSceneV7(
     onCommand: () => undefined,
   });
   const scene = martianSceneViewV7(live, options.kind);
-  const look = liveBoardLookV7("CHIBI");
+  const look = liveBoardLookV7();
   const art = buildChibiArtRegistryV7(
     martianSceneArtV7(options.kind, options.before),
   );
@@ -817,7 +817,6 @@ export function showMartianSceneV7(
     animationSpeed: "NORMAL",
     presentationPaused: true,
     highContrast: false,
-    artSet: "CHIBI",
     ...look,
     visualDirectionArt: art.registry,
   });

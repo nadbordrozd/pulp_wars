@@ -620,11 +620,6 @@ describe("the Undead territory ground", () => {
       devicePixelRatio: 1,
       camera: { offsetX: 40, offsetY: 64, zoom: chibiCameraZoom(1) },
       plan: { version: 7, entries, targets: [] },
-      images: {
-        resolve: (assetId: string) =>
-          ({ legacy: assetId }) as unknown as CanvasImageSource,
-      },
-      artSet: "CHIBI",
       chibiArt: art,
     });
     return drawn;

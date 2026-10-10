@@ -1,4 +1,3 @@
-import { ACCEPTED_ART_URLS } from "../../assets/generated-art-manifest";
 import { advanceCombatNotesV7 } from "../technology-unlock-text-v7";
 import {
   RULESET7_IMPROVEMENT_ART_IDS,
@@ -136,7 +135,6 @@ import {
   drawGoblinBadgeV7,
 } from "./goblin-canvas-v7";
 import {
-  FLYER_LIFT_LEGACY_V7,
   FLYER_LIFT_MASTER_PX_V7,
   drawCoolingGlyphV7,
   drawFlyerShadowV7,
@@ -367,7 +365,6 @@ import {
   ninthUnitCombatNotesV7,
 } from "../ninth-unit-presentation-v7";
 import type {
-  ArtSetV7,
   ArtSubjectV7,
   ChibiArtAssetV7,
   RiftPieceV7,
@@ -481,7 +478,11 @@ import {
   type FactionGrassArtV7,
   type FactionGrassIdV7,
 } from "./faction-grass-v7";
-import { noteLazyRasterV7, preloadedRasterV7 } from "./preloaded-rasters-v7";
+import {
+  drawMissingArtMarkerV7,
+  missingArtLetterV7,
+  missingTerrainWashV7,
+} from "./missing-art-v7";
 import { drawLegacyRiftV7, riftPieceV7 } from "./rift-presentation-v7";
 import { factionColourV7 } from "./faction-colours-v7";
 import { drawDirtRoadV7 } from "./dirt-road-v7";
@@ -1010,8 +1011,13 @@ export interface BoardRenderPlanEntryV7 {
     | "BARRICADE"
     | "ABILITY_AREA"
     | "ABILITY_TARGET";
+  /**
+   * A key of the entry's kind of piece (tall or flat terrain, the plain
+   * overlay geometry of a stand-in). Since bead pulp_wars-67q.15 no file is
+   * looked up by it: the raster comes from `artSubject`.
+   */
   readonly assetId?: string;
-  /** Art-set-neutral subject; the CHIBI art set resolves its raster from it. */
+  /** The subject the entry's raster is resolved from. */
   readonly artSubject?: ArtSubjectV7;
   readonly roadNeighbors?: readonly CoordV7[];
   readonly roadJoins?: readonly (readonly [CoordV7, CoordV7])[];
@@ -1060,7 +1066,7 @@ export interface BoardRenderPlanEntryV7 {
   /**
    * RESOURCE only: the same cell's improvement art already shows this
    * resource (a Mine's ore cart over Ore, a Farm's wheat over Fertile
-   * Ground). The CHIBI art set skips it; LEGACY still draws it.
+   * Ground), so the board skips it.
    */
   readonly coveredByImprovement?: boolean;
   /** CITY only: the owner's capital (marked by a crown in the CHIBI art set). */
@@ -1136,7 +1142,8 @@ export interface BoardRenderPlanEntryV7 {
   readonly glazed?: true;
   /**
    * TERRAIN only, the Rift (bead pulp_wars-9s0.5): the piece of the crack
-   * this cell shows. LEGACY draws it in code over the cell's Grass.
+   * this cell shows. A piece without a raster is drawn in code over the
+   * cell's ground.
    */
   readonly riftPiece?: RiftPieceV7;
   /**
@@ -1615,8 +1622,8 @@ export function buildBoardRenderPlanV7(
     const egg = unit.form === "EGG";
     const growthStage = unitGrowthStageV7(view, unit);
     // Map curiosities: a neutral unit has no owner colour and its own name.
-    // The Spider and Bigfoot have their own sprites (code-drawn discs in
-    // LEGACY); a camp guard wears its faction's sprite (round 2, section
+    // The Spider and Bigfoot have their own sprites (code-drawn discs
+    // without them); a camp guard wears its faction's sprite (round 2, section
     // 34.2), with no faction badge, since it names no player.
     // The Cultists (section 6.4): an Unbound daemon is a neutral unit of
     // its own breed, with its Unbound look and name (`pulp_wars-mch9.6`).
@@ -1637,7 +1644,7 @@ export function buildBoardRenderPlanV7(
       ...ownerPresentation(view, unit.ownerId),
       hp: unit.hp,
       maxHp: unit.maxHp,
-      // The Egg has no legacy raster: LEGACY draws it in code.
+      // A plan key only (bead pulp_wars-67q.15): no file is looked up by it.
       assetId:
         breed === "GIANT_SPIDER"
           ? SPIDER_CODE_ART_ID_V7
@@ -2209,12 +2216,6 @@ export const CHIBI_OVERLAY_FRAME_V7 = {
   fieldDefense: { left: -63, top: -64, size: 28 },
 } as const;
 
-/** LEGACY road: brown dirt strokes (outline, then fill) in world units. */
-const ROAD_STROKES_V7 = [
-  ["#69472e", 8],
-  ["#a57a4c", 5],
-] as const satisfies readonly (readonly [string, number])[];
-
 /**
  * CHIBI road: a beige cobblestone path (the ORIGINAL settlement stone) with
  * the chibi pieces' near-black outline, about 1 px each side at zoom 1.
@@ -2374,21 +2375,12 @@ export interface UnitPulseV7 {
   readonly offsetXCssPx?: number;
 }
 
-export interface BoardImageResolverV7 {
-  resolve(assetId: string): CanvasImageSource | null;
-  /** Registered square ground used beneath a tall terrain body. */
-  resolveTerrainGround?(assetId: string): CanvasImageSource | null;
-  /** Cached body-only raster for tall terrain; null while either source loads. */
-  resolveRaisedTerrain?(assetId: string): CanvasImageSource | null;
-}
-
 export function drawBoardV7(input: {
   readonly context: CanvasRenderingContext2D;
   readonly viewport: Size;
   readonly devicePixelRatio: number;
   readonly camera: CameraState;
   readonly plan: BoardRenderPlanV7;
-  readonly images: BoardImageResolverV7;
   readonly glowCache?: BoardGlowCacheV7;
   readonly readinessElapsedMs?: number;
   readonly reducedMotion?: boolean;
@@ -2416,9 +2408,11 @@ export function drawBoardV7(input: {
    * for this frame. Overlays do not move.
    */
   readonly unitPulses?: readonly UnitPulseV7[];
-  /** LEGACY (default) or the opt-in CHIBI art set. */
-  readonly artSet?: ArtSetV7;
-  /** Required for CHIBI; subjects it cannot resolve draw their legacy asset. */
+  /**
+   * The art of the board. A subject it cannot resolve (none registered, or
+   * its load failed) is drawn in code (missing-art-v7.ts), and so is every
+   * subject when it is omitted.
+   */
   readonly chibiArt?: ChibiBoardArtV7;
   /**
    * Revision 13: the cell whose attack target shows its splash area (the
@@ -2450,8 +2444,7 @@ export function drawBoardV7(input: {
   /**
    * The visual direction of the CHIBI art set (beads pulp_wars-3tq.1 to .6;
    * the game passes the live direction by default). Omitted, the frame is
-   * the classic look, drawn exactly as before the direction existed; the
-   * LEGACY art set ignores it.
+   * the classic look, drawn exactly as before the direction existed.
    */
   readonly direction?: BoardDirectionRuntimeV7;
   /**
@@ -2476,7 +2469,6 @@ export function drawBoardV7(input: {
    * Composed CHIBI forests (bead pulp_wars-maw.3,
    * docs/art/COMPOSED_FORESTS.md): the multi-tile piece set. Omitted, or
    * while it loads, every Forest cell draws its single clump as before.
-   * LEGACY never uses it.
    */
   readonly forestArt?: { resolve(): ChibiForestArtV7 | null };
   /**
@@ -2560,20 +2552,15 @@ export function drawBoardV7(input: {
       ? image
       : input.saturation.cache.resolve(image, percent);
   };
-  const chibiArt =
-    input.artSet === "CHIBI"
-      ? (input.direction?.art ?? input.chibiArt)
-      : undefined;
-  const direction = chibiArt === undefined ? undefined : input.direction?.spec;
-  // CHIBI cells land on whole device pixels; LEGACY keeps its exact camera.
-  const camera =
-    chibiArt === undefined
-      ? input.camera
-      : snapCameraToDevicePixels(input.camera, devicePixelRatio);
+  const chibiArt: ChibiBoardArtV7 =
+    input.direction?.art ?? input.chibiArt ?? NO_BOARD_ART_V7;
+  const direction = input.direction?.spec;
+  // Cells land on whole device pixels.
+  const camera = snapCameraToDevicePixels(input.camera, devicePixelRatio);
   const resolveChibiEntry = (
     entry: BoardRenderPlanEntryV7,
   ): ChibiEntryResolutionV7 | null =>
-    chibiArt === undefined || entry.artSubject === undefined
+    entry.artSubject === undefined
       ? null
       : resolveChibiWithFallbackV7(chibiArt, {
           // Terrain inside a faction's territory draws that faction's
@@ -2623,26 +2610,19 @@ export function drawBoardV7(input: {
       const x = camera.offsetX + at.x * TILE_WIDTH * camera.zoom;
       const y = camera.offsetY + at.y * TILE_HEIGHT * camera.zoom;
       const chibi = resolveChibiEntry({ ...source, at })?.resolution ?? null;
+      // A ghost whose sprite is loading or has no raster is not drawn.
       const ready = chibi?.kind === "READY" ? chibi : null;
-      const image =
-        ready?.image ??
-        (chibi === null || chibi.kind === "MISSING"
-          ? input.images.resolve(source.assetId)
-          : null);
-      if (image === null || image === undefined) return;
-      const rect =
-        ready === null
-          ? anchoredDestinationRect({ x, y }, camera.zoom, geometryFor(source))
-          : chibiDestinationRect(
-              { x, y },
-              camera,
-              ready.asset,
-              devicePixelRatio,
-            );
+      if (ready === null) return;
+      const rect = chibiDestinationRect(
+        { x, y },
+        camera,
+        ready.asset,
+        devicePixelRatio,
+      );
       context.save();
       context.globalAlpha = TUNNEL_GHOST_ALPHA_V7 * sceneAlpha;
-      context.imageSmoothingEnabled = ready?.smoothing ?? true;
-      context.drawImage(image, rect.x, rect.y, rect.width, rect.height);
+      context.imageSmoothingEnabled = ready.smoothing;
+      context.drawImage(ready.image, rect.x, rect.y, rect.width, rect.height);
       context.restore();
     };
     ghost(tunnel.moleUnitId, shown.at);
@@ -2695,26 +2675,19 @@ export function drawBoardV7(input: {
           : { ownerColor: ghost.ownerColor }),
       };
       const chibi = resolveChibiEntry(source)?.resolution ?? null;
+      // A ghost whose sprite is loading or has no raster is not drawn.
       const ready = chibi?.kind === "READY" ? chibi : null;
-      const image =
-        ready?.image ??
-        (chibi === null || chibi.kind === "MISSING"
-          ? input.images.resolve(ghost.assetId)
-          : null);
-      if (image === null || image === undefined) continue;
-      const rect =
-        ready === null
-          ? anchoredDestinationRect({ x, y }, camera.zoom, geometryFor(source))
-          : chibiDestinationRect(
-              { x, y },
-              camera,
-              ready.asset,
-              devicePixelRatio,
-            );
+      if (ready === null) continue;
+      const rect = chibiDestinationRect(
+        { x, y },
+        camera,
+        ready.asset,
+        devicePixelRatio,
+      );
       context.save();
       context.globalAlpha = TUNNEL_GHOST_ALPHA_V7 * sceneAlpha;
-      context.imageSmoothingEnabled = ready?.smoothing ?? true;
-      context.drawImage(image, rect.x, rect.y, rect.width, rect.height);
+      context.imageSmoothingEnabled = ready.smoothing;
+      context.drawImage(ready.image, rect.x, rect.y, rect.width, rect.height);
       context.restore();
     }
   };
@@ -2765,55 +2738,43 @@ export function drawBoardV7(input: {
     );
     return occupied;
   };
-  // CHIBI draws every road casing before any road fill, so a corner join
+  // Every road casing is drawn before any road fill, so a corner join
   // and its cell's road read as one path instead of crossing outlines.
   // A Road (or a corner join) on tall terrain passes under the tree or rock
   // body: those cells draw their ground tile in the ground pass and the
   // body's owning cell in TALL_BODY, after every Road and before any piece,
   // so neighbouring pieces keep overlapping the cell as before.
-  const passes =
-    chibiArt === undefined
-      ? (["FOG", "GROUND", "ROAD", "FOREGROUND"] as const)
-      : ([
-          "FOG",
-          "GROUND",
-          "ROAD_CASING",
-          "ROAD",
-          "TALL_BODY",
-          "FOREGROUND",
-        ] as const);
+  const passes = [
+    "FOG",
+    "GROUND",
+    "ROAD_CASING",
+    "ROAD",
+    "TALL_BODY",
+    "FOREGROUND",
+  ] as const;
   const roadCells = new Set(
-    chibiArt === undefined
-      ? []
-      : input.plan.entries
-          .filter(
-            (entry) => entry.kind === "ROAD" || entry.kind === "ROAD_JOIN",
-          )
-          .map((entry) => coordKey(entry.at)),
+    input.plan.entries
+      .filter((entry) => entry.kind === "ROAD" || entry.kind === "ROAD_JOIN")
+      .map((entry) => coordKey(entry.at)),
   );
   // The Ice Folk revision: a tall terrain body on a Snow cell is drawn after
   // its ground and Snow overlay, like a body over a Road, so the Snow lies
   // on the ground under the trees and peaks and their snow caps go on top.
   const splitCells = new Set(roadCells);
-  if (chibiArt !== undefined)
-    for (const entry of input.plan.entries)
-      if (entry.kind === "TERRAIN" && entry.snow !== undefined)
-        splitCells.add(coordKey(entry.at));
+  for (const entry of input.plan.entries)
+    if (entry.kind === "TERRAIN" && entry.snow !== undefined)
+      splitCells.add(coordKey(entry.at));
   // Composed forests (pulp_wars-maw.3): every explored Forest cell with a
   // canopy draws its ground now and its trees after the Roads, so pieces
   // and seam clumps can cross cell borders over finished ground.
-  const forestArt =
-    chibiArt === undefined ? null : (input.forestArt?.resolve() ?? null);
+  const forestArt = input.forestArt?.resolve() ?? null;
   // Faction forests (pulp_wars-2yc.2): with their art object each
   // faction's Forest is packed as a forest of its own, in the live look.
   // Multi-cell terrain at the fog (pulp_wars-2yc.28): the cover is packed
   // over the plan's entries and its ghosts, and drawn only where no fog is.
-  const composition =
-    chibiArt === undefined
-      ? input.plan.entries
-      : compositionEntriesV7(input.plan);
+  const composition = compositionEntriesV7(input.plan);
   const ghosted = composition !== input.plan.entries;
-  const fogAt = chibiArt === undefined ? null : fogAtOfV7(input.plan.entries);
+  const fogAt = fogAtOfV7(input.plan.entries);
   const forestCells =
     forestArt === null
       ? null
@@ -2825,8 +2786,7 @@ export function drawBoardV7(input: {
   if (forestCells !== null)
     for (const key of forestCells.keys()) splitCells.add(key);
   // Composed mountain ranges (pulp_wars-e9f), the same way.
-  const mountainArt =
-    chibiArt === undefined ? null : (input.mountainArt?.resolve() ?? null);
+  const mountainArt = input.mountainArt?.resolve() ?? null;
   const mountainCells =
     mountainArt === null ? null : massifCellsOf(input.plan, mountainArt);
   if (mountainCells !== null)
@@ -2890,38 +2850,25 @@ export function drawBoardV7(input: {
       entry.seaIce === undefined
     )
       return;
-    const cell =
-      chibiArt === undefined
-        ? {
-            x: x - (TILE_WIDTH * camera.zoom) / 2,
-            y: y - (TILE_HEIGHT * camera.zoom) / 2,
-            width: TILE_WIDTH * camera.zoom,
-            height: TILE_HEIGHT * camera.zoom,
-          }
-        : chibiTerrainPartRect(
-            { x, y },
-            camera,
-            SNOW_OVERLAY_ASSET_V7,
-            devicePixelRatio,
-            "CELL",
-          );
+    const cell = chibiTerrainPartRect(
+      { x, y },
+      camera,
+      SNOW_OVERLAY_ASSET_V7,
+      devicePixelRatio,
+      "CELL",
+    );
     if (entry.snow !== undefined)
       drawSnowCellV7(context, iceFolkArt, cell, entry.snow, sceneAlpha);
     if (entry.seaIce !== undefined) {
       // The frozen sea: the cut ice sheet of the water's depth over it (a
-      // code-drawn floe in LEGACY and while the sheet loads), then cracks.
-      const sheet =
-        chibiArt === undefined
-          ? null
-          : chibiArt.resolve({
-              subject: seaIceArtSubjectV7(
-                entry.seaIce.depth === "SHALLOW"
-                  ? "SHALLOW_WATER"
-                  : "DEEP_WATER",
-              ),
-              at: entry.at,
-              deviceScale: 1,
-            });
+      // code-drawn floe while the sheet loads or is missing), then cracks.
+      const sheet = chibiArt.resolve({
+        subject: seaIceArtSubjectV7(
+          entry.seaIce.depth === "SHALLOW" ? "SHALLOW_WATER" : "DEEP_WATER",
+        ),
+        at: entry.at,
+        deviceScale: 1,
+      });
       const tile =
         sheet?.kind === "READY" && sheet.density === 1
           ? (iceFolkArt?.seaIce(
@@ -2948,24 +2895,22 @@ export function drawBoardV7(input: {
     for (const entry of input.plan.entries)
       if (entry.kind === "CITY")
         cityIdByCell.set(coordKey(entry.at), Number(entry.key.slice(5)));
-  // CHIBI settlement centres (cities and villages): a unit standing on one
+  // Settlement centres (cities and villages): a unit standing on one
   // draws smaller in the cell's front-right, so the settlement stays
   // readable. A unit mid-move (fractional cell) never matches.
   const settlementCells = new Set(
-    chibiArt === undefined
-      ? []
-      : input.plan.entries
-          .filter(
-            (entry) =>
-              entry.kind === "CITY" ||
-              (entry.kind === "SITE" && entry.artSubject === "SITE:VILLAGE"),
-          )
-          .map((entry) => coordKey(entry.at)),
+    input.plan.entries
+      .filter(
+        (entry) =>
+          entry.kind === "CITY" ||
+          (entry.kind === "SITE" && entry.artSubject === "SITE:VILLAGE"),
+      )
+      .map((entry) => coordKey(entry.at)),
   );
   // CHIBI Mountain ground fringe (pulp_wars-6gd.7): terrain subjects by
   // cell, so a Mountain knows which of its edges border other land.
   const terrainSubjects = new Map<string, ArtSubjectV7>();
-  if (chibiArt?.resolveFringedGround !== undefined)
+  if (chibiArt.resolveFringedGround !== undefined)
     for (const entry of input.plan.entries)
       if (entry.kind === "TERRAIN" && entry.artSubject !== undefined)
         terrainSubjects.set(coordKey(entry.at), entry.artSubject);
@@ -2998,10 +2943,7 @@ export function drawBoardV7(input: {
     (entry) => entry.kind === "TERRAIN" && entry.glazed === true,
   );
   for (const pass of passes) {
-    if (
-      glazedCells.length > 0 &&
-      pass === (chibiArt === undefined ? "FOREGROUND" : "TALL_BODY")
-    )
+    if (glazedCells.length > 0 && pass === "TALL_BODY")
       for (const entry of glazedCells)
         drawCandyGlazeCellV7(
           context,
@@ -3024,10 +2966,7 @@ export function drawBoardV7(input: {
             highContrast: input.highContrast ?? false,
           },
         );
-    if (
-      victoryWave !== null &&
-      pass === (chibiArt === undefined ? "FOREGROUND" : "TALL_BODY")
-    )
+    if (victoryWave !== null && pass === "TALL_BODY")
       drawVictoryRipplesV7(
         context,
         { camera, devicePixelRatio, sceneAlpha },
@@ -3365,18 +3304,15 @@ export function drawBoardV7(input: {
             fogAt !== null &&
             fogAt(entry.at.x, entry.at.y - 1);
           const territoryGrass = (): void => {
-            const grass =
-              chibiArt === undefined
-                ? undefined
-                : resolveChibiWithFallbackV7(chibiArt, {
-                    subject: territoryTerrainSubjectV7(
-                      "TERRAIN:GRASS",
-                      entry.territoryGround,
-                    ),
-                    at: entry.at,
-                    deviceScale: chibiMasterScale(camera) * devicePixelRatio,
-                  }).resolution;
-            if (grass?.kind === "READY")
+            const grass = resolveChibiWithFallbackV7(chibiArt, {
+              subject: territoryTerrainSubjectV7(
+                "TERRAIN:GRASS",
+                entry.territoryGround,
+              ),
+              at: entry.at,
+              deviceScale: chibiMasterScale(camera) * devicePixelRatio,
+            }).resolution;
+            if (grass.kind === "READY")
               drawChibiTerrainV7(context, grass, {
                 centre: { x, y },
                 camera,
@@ -3513,28 +3449,16 @@ export function drawBoardV7(input: {
             drawFogEdgeV7(context, fogFrame, fogArt, entry, fogCells);
           continue;
         }
+        // No raster for this ground (none registered, or its load failed):
+        // a flat wash of its terrain, drawn in code (missing-art-v7.ts).
         if (pass === "GROUND") {
-          context.fillStyle =
-            entry.ownerColor === undefined
-              ? "#65965b"
-              : `${entry.ownerColor}55`;
+          context.save();
+          context.globalAlpha = sceneAlpha;
+          context.fillStyle = missingTerrainWashV7(entry.artSubject);
           context.fillRect(left, top, size, size);
-          if (isTallTerrainEntry(entry))
-            drawSquareTerrainGround(
-              context,
-              input.images.resolveTerrainGround?.(entry.assetId ?? "") ?? null,
-              { x, y, zoom: camera.zoom, sceneAlpha },
-            );
-          else
-            drawEntryImage(context, input.images.resolve(entry.assetId ?? ""), {
-              x,
-              y,
-              zoom: camera.zoom,
-              entry,
-              sceneAlpha,
-            });
-          // The Rift (bead pulp_wars-9s0.5): LEGACY (and a CHIBI piece
-          // that is missing) draws the crack in code over the Grass.
+          context.restore();
+          // The Rift (bead pulp_wars-9s0.5): a piece that is missing draws
+          // the crack in code over the Grass.
           if (entry.riftPiece !== undefined)
             drawLegacyRiftV7(
               context,
@@ -3545,46 +3469,13 @@ export function drawBoardV7(input: {
             );
           // The Ice Folk revision: Snow and the Blizzard over the ground.
           drawWinterGround(entry, x, y);
-        } else {
-          const raised = atSaturation(
-            entry,
-            input.images.resolveRaisedTerrain?.(entry.assetId ?? ""),
-          );
-          if (raised !== null && raised !== undefined) {
-            drawEntryImage(context, raised, {
-              x,
-              y,
-              zoom: camera.zoom,
-              entry,
-              sceneAlpha,
-            });
-            // The Ice Folk revision: snow caps on the raised body.
-            if (entry.snow !== undefined)
-              drawSnowCapsV7(
-                context,
-                iceFolkArt,
-                raised,
-                anchoredDestinationRect(
-                  { x, y },
-                  camera.zoom,
-                  geometryFor(entry),
-                ),
-                null,
-                sceneAlpha,
-              );
-          } else
-            drawTallTerrainOverflowFallback(
-              context,
-              atSaturation(entry, input.images.resolve(entry.assetId ?? "")),
-              { x, y, zoom: camera.zoom, sceneAlpha },
-            );
         }
         continue;
       }
       if (entry.kind === "ROAD" || entry.kind === "ROAD_JOIN") {
         // The live look (CALM): worn dirt tracks with a rough edge, beads
         // pulp_wars-g6b5 and pulp_wars-2yc.43.
-        if (chibiArt !== undefined && direction?.chrome.roads === "CALM")
+        if (direction?.chrome.roads === "CALM")
           drawDirtRoadV7(
             context,
             {
@@ -3608,18 +3499,16 @@ export function drawBoardV7(input: {
             x,
             y,
             camera.zoom,
-            chibiArt === undefined
-              ? ROAD_STROKES_V7
-              : CHIBI_ROAD_STROKES_V7.slice(
-                  ...(pass === "ROAD_CASING" ? [0, 1] : [1]),
-                ),
+            CHIBI_ROAD_STROKES_V7.slice(
+              ...(pass === "ROAD_CASING" ? [0, 1] : [1]),
+            ),
           );
         continue;
       }
       if (entry.kind === "CURIOSITY") {
         // Map curiosities: the registered overlay on its cell (the live
-        // look), or the code-drawn marker (LEGACY, the classic look, a
-        // raster that failed).
+        // look), or the code-drawn marker (the classic look, a raster
+        // that failed).
         const chibi = resolveChibi(entry);
         if (chibi !== null && chibi.kind === "READY") {
           const rect = chibiDestinationRect(
@@ -3709,7 +3598,6 @@ export function drawBoardV7(input: {
           const crumbsRaster = (
             subject: ArtSubjectV7,
           ): CanvasImageSource | null => {
-            if (chibiArt === undefined) return null;
             const resolved = chibiArt.resolve({
               subject,
               at: entry.at,
@@ -3768,11 +3656,10 @@ export function drawBoardV7(input: {
         continue;
       }
       if (entry.kind === "GRAVE") {
-        const chibi = chibiArt !== undefined;
         const slot = entry.attachmentSlot ?? 0;
         deferredGraveMarkers.push(() =>
           drawGraveCornerMarkerV7(context, x, y, camera.zoom, {
-            chibi,
+            chibi: true,
             besideCity: slot > 0,
             highContrast: input.highContrast ?? false,
             wightGrave: entry.wightGrave === true,
@@ -3805,13 +3692,9 @@ export function drawBoardV7(input: {
         context.restore();
         continue;
       }
-      if (
-        entry.kind === "RESOURCE" &&
-        entry.coveredByImprovement === true &&
-        chibiArt !== undefined
-      )
+      if (entry.kind === "RESOURCE" && entry.coveredByImprovement === true)
         continue;
-      if (entry.kind === "FIELD_DEFENSE" && chibiArt !== undefined) {
+      if (entry.kind === "FIELD_DEFENSE") {
         // Deferred with the piece overlays so a tall piece in the row below
         // never hides it.
         const highContrast = input.highContrast ?? false;
@@ -3829,38 +3712,8 @@ export function drawBoardV7(input: {
         );
         continue;
       }
-      if (entry.kind === "FIELD_DEFENSE") {
-        const symbolSize = 22 * camera.zoom;
-        drawTacticalSymbolOnCanvas(
-          context,
-          "ui-action-field-defense",
-          x - 53 * camera.zoom,
-          y - 54 * camera.zoom,
-          symbolSize,
-          input.highContrast ?? false,
-          saturationOf(entry),
-        );
-        if ((entry.value ?? 0) > 0) {
-          context.fillStyle = input.highContrast ? "#ffffff" : "#fff8df";
-          context.strokeStyle = "#172529";
-          context.lineWidth = 3 * camera.zoom;
-          context.font = `800 ${13 * camera.zoom}px ${BOARD_LABEL_FONT_FAMILY_V7}`;
-          context.textAlign = "center";
-          context.strokeText(
-            String(entry.value),
-            x - 30 * camera.zoom,
-            y - 37 * camera.zoom,
-          );
-          context.fillText(
-            String(entry.value),
-            x - 30 * camera.zoom,
-            y - 37 * camera.zoom,
-          );
-        }
-        continue;
-      }
-      // A unit or city drawn with (or loading) a registered chibi raster uses
-      // the chibi overlay frame; legacy fallbacks keep the legacy overlays.
+      // A unit or city drawn with (or loading) a registered raster uses the
+      // chibi overlay frame; a code-drawn stand-in keeps the plain overlays.
       let chibiPiece = false;
       // Visual direction: the piece's pennant was drawn on its own art.
       let directedFlag = false;
@@ -3941,45 +3794,34 @@ export function drawBoardV7(input: {
         if (standInLetter !== null) factionArt = true;
         // The Cultists (`pulp_wars-mch9.3`): a unit of a faction registered
         // without art of its own is drawn with the Human sprite of its role
-        // (in LEGACY too) and wears the faction's stand-in letter until its
-        // own raster is registered.
+        // and wears the faction's stand-in letter until its own raster is
+        // registered.
         if (entry.kind === "UNIT" && standInLetter === null && !factionArt)
           standInLetter = factionStandInLetterV7(entry.faction);
         // Buildings and cities take their desaturated copy (pulp_wars-x6c);
         // every other piece, and 100 percent, keeps its own raster.
+        // A piece whose raster is loading draws nothing yet; one without a
+        // raster is the lettered marker below, never another set's raster.
         const image = atSaturation(
           entry,
-          chibi === null || chibi.kind === "MISSING"
-            ? input.images.resolve(entry.assetId)
-            : chibiReady === null
-              ? null
-              : chibiReady.image,
+          chibiReady === null ? null : chibiReady.image,
         );
         const garrisoned =
-          chibiReady !== null &&
-          entry.kind === "UNIT" &&
-          settlementCells.has(coordKey(entry.at));
-        if (image !== null) {
-          let rect =
-            chibiReady === null
-              ? anchoredDestinationRect(
-                  { x, y },
-                  camera.zoom,
-                  geometryFor(entry),
-                )
-              : garrisoned
-                ? chibiGarrisonDestinationRect(
-                    { x, y },
-                    camera,
-                    chibiReady.asset,
-                    devicePixelRatio,
-                  )
-                : chibiDestinationRect(
-                    { x, y },
-                    camera,
-                    chibiReady.asset,
-                    devicePixelRatio,
-                  );
+          entry.kind === "UNIT" && settlementCells.has(coordKey(entry.at));
+        if (image !== null && chibiReady !== null) {
+          let rect = garrisoned
+            ? chibiGarrisonDestinationRect(
+                { x, y },
+                camera,
+                chibiReady.asset,
+                devicePixelRatio,
+              )
+            : chibiDestinationRect(
+                { x, y },
+                camera,
+                chibiReady.asset,
+                devicePixelRatio,
+              );
           let alpha = 1;
           // Bead pulp_wars-jg1: the shadow and the ready ring sit under the
           // unit's own measured feet, grown with a Big or Alpha sprite
@@ -3987,12 +3829,10 @@ export function drawBoardV7(input: {
           // The giants' signatures (`pulp_wars-w49.32`): a Gingerbread Man is
           // the Gingerbread Giant's sprite drawn small.
           const growth =
-            chibiReady === null
-              ? 1
-              : growthSpriteScaleV7(entry.growthStage, chibiReady.asset.width) *
-                (entry.kind === "UNIT" && entry.gingerbreadMan === true
-                  ? GINGERBREAD_MAN_SPRITE_SCALE_V7
-                  : 1);
+            growthSpriteScaleV7(entry.growthStage, chibiReady.asset.width) *
+            (entry.kind === "UNIT" && entry.gingerbreadMan === true
+              ? GINGERBREAD_MAN_SPRITE_SCALE_V7
+              : 1);
           const groundRect =
             growth === 1
               ? rect
@@ -4012,19 +3852,12 @@ export function drawBoardV7(input: {
                   ground: directedUnitShadowGeometryV7(
                     entry,
                     groundRect,
-                    chibiReady?.asset.id,
+                    chibiReady.asset.id,
                   ).shadow,
-                  pixelScale:
-                    chibiReady === null
-                      ? chibiMasterScale(camera)
-                      : groundRect.width / chibiReady.asset.width,
+                  pixelScale: groundRect.width / chibiReady.asset.width,
                 }
               : null;
-          if (
-            direction !== undefined &&
-            entry.kind === "UNIT" &&
-            chibiReady !== null
-          ) {
+          if (direction !== undefined && entry.kind === "UNIT") {
             drawDirectedUnitBaseV7(
               context,
               direction,
@@ -4046,11 +3879,7 @@ export function drawBoardV7(input: {
           }
           // A TRY (pulp_wars-2yc.8): a city or a village on its shadow,
           // fitted to the footprint of its own raster (pulp_wars-2yc.12).
-          if (
-            direction !== undefined &&
-            chibiReady !== null &&
-            input.settlementShadow === true
-          )
+          if (direction !== undefined && input.settlementShadow === true)
             drawSettlementShadowV7(
               context,
               entry,
@@ -4075,24 +3904,20 @@ export function drawBoardV7(input: {
             drawFlyerShadowV7(
               context,
               rect,
-              chibiReady?.asset.id ?? entry.assetId,
-              chibiReady?.asset.width ?? rect.width / camera.zoom,
+              chibiReady.asset.id,
+              chibiReady.asset.width,
             );
             rect = {
               ...rect,
-              y:
-                rect.y -
-                (chibiReady === null
-                  ? FLYER_LIFT_LEGACY_V7 * camera.zoom
-                  : FLYER_LIFT_MASTER_PX_V7 * chibiMasterScale(camera)),
+              y: rect.y - FLYER_LIFT_MASTER_PX_V7 * chibiMasterScale(camera),
             };
           }
           // Revision 19: a Big or Alpha chibi sprite is drawn larger about
           // its feet (DINOSAUR.md "Growth display"); a cue may scale it too.
           const spriteScale = growth * (unitPulse?.scale ?? 1);
           if (entry.kind === "UNIT") {
-            // The ready cue is the attached outline alone: in both art sets
-            // the sprite stays opaque at its own size, so neither it nor the
+            // The ready cue is the attached outline alone: the sprite
+            // stays opaque at its own size, so neither it nor the
             // city under it is hidden. Widths follow the sprite's own scale.
             // A direction may move the cue to the base (BASE) or the ground
             // (GROUND, the live look since bead pulp_wars-w5j.3).
@@ -4103,10 +3928,8 @@ export function drawBoardV7(input: {
                     input.readinessElapsedMs ?? 0,
                     input.reducedMotion ?? false,
                     input.highContrast ?? false,
-                    chibiReady === null
-                      ? camera.zoom
-                      : chibiMasterScale(camera) *
-                          (garrisoned ? CHIBI_GARRISON_SCALE : 1),
+                    chibiMasterScale(camera) *
+                      (garrisoned ? CHIBI_GARRISON_SCALE : 1),
                   )
                 : null;
             const scale = (readiness?.scale ?? 1) * spriteScale;
@@ -4163,7 +3986,7 @@ export function drawBoardV7(input: {
                   input.glowCache.draw(
                     context,
                     image,
-                    chibiReady?.cacheKey ?? entry.assetId,
+                    chibiReady.cacheKey,
                     rect,
                     glow,
                   );
@@ -4193,34 +4016,19 @@ export function drawBoardV7(input: {
               : image;
           if (crashed && drooped === image)
             context.globalAlpha *= CRASHED_SPRITE_ALPHA_V7;
-          if (chibiReady !== null) {
-            // A garrisoned unit is smoothed unless its reduced scale still
-            // lands on whole raster pixels (zoom 2 on a DPR 2 screen).
-            // A grown sprite follows the same rule (never a second raster).
-            const drawnScale =
-              spriteScale * (garrisoned ? CHIBI_GARRISON_SCALE : 1);
-            context.imageSmoothingEnabled =
-              drawnScale === 1
-                ? chibiReady.smoothing
-                : !isWholeScale(
-                    (chibiMasterScale(camera) * drawnScale * devicePixelRatio) /
-                      chibiReady.density,
-                  );
-            context.drawImage(drooped, rect.x, rect.y, rect.width, rect.height);
-          } else if (entry.sourceCrop === undefined)
-            context.drawImage(drooped, rect.x, rect.y, rect.width, rect.height);
-          else
-            context.drawImage(
-              image,
-              entry.sourceCrop.x,
-              entry.sourceCrop.y,
-              entry.sourceCrop.width,
-              entry.sourceCrop.height,
-              rect.x,
-              rect.y,
-              rect.width,
-              rect.height,
-            );
+          // A garrisoned unit is smoothed unless its reduced scale still
+          // lands on whole raster pixels (zoom 2 on a DPR 2 screen).
+          // A grown sprite follows the same rule (never a second raster).
+          const drawnScale =
+            spriteScale * (garrisoned ? CHIBI_GARRISON_SCALE : 1);
+          context.imageSmoothingEnabled =
+            drawnScale === 1
+              ? chibiReady.smoothing
+              : !isWholeScale(
+                  (chibiMasterScale(camera) * drawnScale * devicePixelRatio) /
+                    chibiReady.density,
+                );
+          context.drawImage(drooped, rect.x, rect.y, rect.width, rect.height);
           context.restore();
           if (entry.kind === "UNIT" && entry.martian?.controlled === true) {
             const anchor = spriteHeadAnchorV7(image);
@@ -4277,7 +4085,7 @@ export function drawBoardV7(input: {
             !entry.martian.flyer
           )
             drawWadeRipplesV7(context, rect, camera.zoom);
-          if (direction !== undefined && chibiReady !== null)
+          if (direction !== undefined)
             directedFlag = drawDirectedFlagV7(
               context,
               direction,
@@ -4290,8 +4098,8 @@ export function drawBoardV7(input: {
       }
       const directedGarrison =
         entry.kind === "UNIT" && settlementCells.has(coordKey(entry.at));
-      // Revision 19: LEGACY has no Egg raster (and CHIBI may lack one), so
-      // the Egg is drawn in code, in its owner's colour.
+      // Revision 19: an Egg without a raster is drawn in code, in its
+      // owner's colour.
       if (entry.kind === "UNIT" && entry.egg !== undefined && !chibiPiece)
         drawCodeEggV7(
           context,
@@ -4304,8 +4112,8 @@ export function drawBoardV7(input: {
             scale: unitPulse?.scale ?? 1,
           },
         );
-      // The Dwarf revision: LEGACY and the classic look have no mound
-      // raster, so the mound is drawn in code.
+      // The Dwarf revision: the classic look has no mound raster, so the
+      // mound is drawn in code.
       if (
         entry.kind === "UNIT" &&
         entry.dwarfMound !== undefined &&
@@ -4315,20 +4123,42 @@ export function drawBoardV7(input: {
           rider: entry.dwarfMound.rider,
           highContrast: input.highContrast ?? false,
         });
-      // Map curiosities: LEGACY and the classic look have no Spider or
-      // Bigfoot raster, so each is a neutral disc drawn in code (a spider,
-      // a footprint). A camp guard has its faction's legacy figure.
+      // Map curiosities: the classic look has no Spider or Bigfoot raster,
+      // so each is a neutral disc drawn in code (a spider, a footprint).
       if (entry.kind === "UNIT" && entry.monster !== undefined && !chibiPiece) {
         if (entry.monster.breed === undefined)
           drawCodeSpiderV7(context, x, y, camera.zoom, input.highContrast);
         else if (entry.monster.breed === "BIGFOOT")
           drawCodeBigfootV7(context, x, y, camera.zoom, input.highContrast);
       }
+      // Any other piece without a raster (none registered, or its load
+      // failed): the lettered marker of missing-art-v7.ts.
+      if (
+        entry.assetId !== undefined &&
+        !chibiPiece &&
+        entry.egg === undefined &&
+        entry.dwarfMound === undefined &&
+        !(
+          entry.monster !== undefined &&
+          (entry.monster.breed === undefined ||
+            entry.monster.breed === "BIGFOOT")
+        )
+      ) {
+        context.save();
+        context.globalAlpha = sceneAlpha;
+        drawMissingArtMarkerV7(context, x, y, camera.zoom, {
+          shape: entry.kind === "UNIT" ? "DISC" : "PLATE",
+          letter: missingArtLetterV7(entry.artSubject),
+          ownerColor: entry.ownerColor,
+          highContrast: input.highContrast ?? false,
+        });
+        context.restore();
+      }
       const drawPieceOverlays = (): void => {
         // Map curiosities: the provoked marker in the cell's top-right
         // corner (16 master px), over the Spider.
         if (entry.kind === "UNIT" && entry.monster?.provoked === true) {
-          const marker = chibiArt?.resolve({
+          const marker = chibiArt.resolve({
             subject: "STATUS:PROVOKED",
             at: entry.at,
             deviceScale: chibiMasterScale(camera) * devicePixelRatio,
@@ -4338,7 +4168,7 @@ export function drawBoardV7(input: {
             x + 46 * camera.zoom,
             y - 46 * camera.zoom,
             25.6 * camera.zoom,
-            marker?.kind === "READY" ? marker.image : null,
+            marker.kind === "READY" ? marker.image : null,
             devicePixelRatio,
           );
         }
@@ -4410,13 +4240,13 @@ export function drawBoardV7(input: {
         )
           drawDinosaurBadgeV7(context, x, y, camera.zoom, chibiPiece);
         // The Martian revision: the saucer badge over Human stand-in art
-        // (LEGACY and the classic look), then (below) the Cooling glyph, or
+        // (the classic look), then (below) the Cooling glyph, or
         // a controlled unit's halo and brain chip, in the status slot right
         // of the sprite.
         if (entry.kind === "UNIT" && entry.faction === "MARTIAN" && !factionArt)
           drawMartianBadgeV7(context, x, y, camera.zoom, chibiPiece);
         // The Ice Folk revision: the snow-capped peak badge over Human stand-in art
-        // (LEGACY and the classic look).
+        // (the classic look).
         if (
           entry.kind === "UNIT" &&
           entry.faction === "ICE_FOLK" &&
@@ -4424,7 +4254,7 @@ export function drawBoardV7(input: {
         )
           drawIceFolkBadgeV7(context, x, y, camera.zoom, chibiPiece);
         // The Dwarf revision: the copper cog badge over Human stand-in art
-        // (LEGACY and the classic look); a mound is the Dwarves' own.
+        // (the classic look); a mound is the Dwarves' own.
         if (
           entry.kind === "UNIT" &&
           entry.faction === "DWARF" &&
@@ -4433,7 +4263,7 @@ export function drawBoardV7(input: {
         )
           drawDwarfBadgeV7(context, x, y, camera.zoom, chibiPiece);
         // The Candy polish (`pulp_wars-jdb.9`): the wrapped-sweet badge over
-        // Human stand-in art (LEGACY, the classic look, a failed raster).
+        // Human stand-in art (the classic look, a failed raster).
         if (entry.kind === "UNIT" && entry.faction === "CANDY" && !factionArt)
           drawCandyBadgeV7(context, x, y, camera.zoom, chibiPiece);
         // The Dwarf revision (section 5.3): the mound's surfacing chip.
@@ -4478,9 +4308,7 @@ export function drawBoardV7(input: {
             // pulp_wars-vkq.14) unless the hook supplies one; high contrast
             // and a raster still loading keep the code-drawn marker.
             const registered =
-              chibiPiece &&
-              chibiArt !== undefined &&
-              !(input.highContrast ?? false)
+              chibiPiece && !(input.highContrast ?? false)
                 ? chibiArt.resolve({
                     subject,
                     at: entry.at,
@@ -4505,7 +4333,7 @@ export function drawBoardV7(input: {
           const candyRaster = (
             subject: ArtSubjectV7,
           ): CanvasImageSource | null => {
-            if (!chibiPiece || chibiArt === undefined) return null;
+            if (!chibiPiece) return null;
             const resolved = chibiArt.resolve({
               subject,
               at: entry.at,
@@ -4550,7 +4378,7 @@ export function drawBoardV7(input: {
         // periscope badge, and a boardable ship's grappling hook. A
         // Submarine drawn with its low-riding raster already shows its
         // waterline (foam, the hull under it a ghost), so it gets no wash;
-        // the Classic look, LEGACY and a stand-in keep it.
+        // the Classic look and a stand-in keep it.
         if (entry.kind === "UNIT" && entry.naval !== undefined) {
           context.save();
           context.globalAlpha = sceneAlpha;
@@ -4567,14 +4395,13 @@ export function drawBoardV7(input: {
         // The frozen sea: the pack ice at an icebound ship's foot and the
         // crush it takes next.
         if (entry.kind === "UNIT" && entry.icebound !== undefined) {
-          const overlay =
-            chibiPiece && chibiArt !== undefined
-              ? chibiArt.resolve({
-                  subject: "OVERLAY:ICEBOUND",
-                  at: entry.at,
-                  deviceScale: chibiMasterScale(camera) * devicePixelRatio,
-                })
-              : null;
+          const overlay = chibiPiece
+            ? chibiArt.resolve({
+                subject: "OVERLAY:ICEBOUND",
+                at: entry.at,
+                deviceScale: chibiMasterScale(camera) * devicePixelRatio,
+              })
+            : null;
           context.save();
           context.globalAlpha = sceneAlpha;
           drawIceboundMarkerV7(context, entry.icebound, x, y, camera.zoom, {
@@ -4591,9 +4418,7 @@ export function drawBoardV7(input: {
           entry.kind === "UNIT" ? (entry.iceFolk?.frozen ?? null) : null;
         if (frozenMarker !== null) {
           const registered =
-            chibiPiece &&
-            chibiArt !== undefined &&
-            !(input.highContrast ?? false)
+            chibiPiece && !(input.highContrast ?? false)
               ? chibiArt.resolve({
                   subject: "ICON:STATUS:FROZEN",
                   at: entry.at,
@@ -4650,17 +4475,15 @@ export function drawBoardV7(input: {
         if (entry.kind === "UNIT" && entry.swallowed !== undefined) {
           const badge = entry.swallowed;
           const resolveVictim = (subject: ArtSubjectV7) =>
-            chibiArt === undefined
-              ? null
-              : resolveChibiWithFallbackV7(chibiArt, {
-                  subject,
-                  at: entry.at,
-                  ownerColor: badge.ownerColor,
-                  deviceScale: chibiMasterScale(camera) * devicePixelRatio,
-                }).resolution;
+            resolveChibiWithFallbackV7(chibiArt, {
+              subject,
+              at: entry.at,
+              ownerColor: badge.ownerColor,
+              deviceScale: chibiMasterScale(camera) * devicePixelRatio,
+            }).resolution;
           const portrait = resolveVictim(badge.portraitSubject);
           const sprite =
-            portrait?.kind === "READY" ? null : resolveVictim(badge.artSubject);
+            portrait.kind === "READY" ? null : resolveVictim(badge.artSubject);
           context.save();
           context.globalAlpha = sceneAlpha;
           drawSwallowedBadgeV7(context, x, y, camera.zoom, badge, {
@@ -4883,8 +4706,8 @@ export function drawBoardV7(input: {
           );
         }
         // The Martian revision (section 13.1): the segmented Shield bar,
-        // with the HP bar of the look: under the LEGACY bar's row, beside the
-        // classic CHIBI side bar, or on the live look's base.
+        // with the HP bar of the look: under a stand-in's plain bar, beside
+        // the classic side bar, or on the live look's base.
         if (
           entry.kind === "UNIT" &&
           entry.martian !== undefined &&
@@ -4960,7 +4783,7 @@ export function drawBoardV7(input: {
               const size =
                 promotionMarkerSizeCssPxV7(camera.zoom, promotionMarker.own) *
                 promotionMarker.scale;
-              const icon = chibiArt?.resolve({
+              const icon = chibiArt.resolve({
                 subject: "ICON:ACTION:PROMOTE",
                 at: entry.at,
                 deviceScale: chibiMasterScale(camera) * devicePixelRatio,
@@ -4971,12 +4794,7 @@ export function drawBoardV7(input: {
                 top - size / 2 + promotionMarker.bobCssPx * camera.zoom,
                 size,
                 {
-                  icon:
-                    icon?.kind === "READY"
-                      ? icon.image
-                      : chibiArt === undefined
-                        ? input.images.resolve("ui-action-promote")
-                        : null,
+                  icon: icon.kind === "READY" ? icon.image : null,
                   own: promotionMarker.own,
                   highContrast: input.highContrast ?? false,
                 },
@@ -5219,16 +5037,14 @@ export function drawBoardV7(input: {
     input.plan.entries,
     input.highContrast ?? false,
     sceneAlpha,
-    chibiArt === undefined
-      ? null
-      : (subject) => {
-          const resolved = chibiArt.resolve({
-            subject,
-            at: { x: 0, y: 0 },
-            deviceScale: chibiMasterScale(camera) * devicePixelRatio,
-          });
-          return resolved.kind === "READY" ? resolved.image : null;
-        },
+    (subject) => {
+      const resolved = chibiArt.resolve({
+        subject,
+        at: { x: 0, y: 0 },
+        deviceScale: chibiMasterScale(camera) * devicePixelRatio,
+      });
+      return resolved.kind === "READY" ? resolved.image : null;
+    },
   );
   // Preview labels and notes stay inside the visible, unobscured band and
   // off each other; one placer serves every preview box of this frame.
@@ -6858,189 +6674,10 @@ function tacticalLinkExclusionRect(
   return { x: left, y: top, width: right - left, height: bottom - top };
 }
 
-export function createBoardImageResolverV7(
-  documentRoot: Document,
-  redraw: () => void,
-): BoardImageResolverV7 {
-  const cache = new Map<string, { image: HTMLImageElement; ready: boolean }>();
-  const raisedCache = new Map<
-    string,
-    {
-      readonly source: CanvasImageSource;
-      readonly ground: CanvasImageSource;
-      readonly image: CanvasImageSource;
-    }
-  >();
-  const resolve = (assetId: string): CanvasImageSource | null => {
-    const source = ACCEPTED_ART_URLS[assetId];
-    if (source === undefined) return null;
-    let record = cache.get(assetId);
-    if (record === undefined) {
-      // A preloaded raster is ready at once (bead pulp_wars-2yc.6).
-      const preloaded = preloadedRasterV7(source);
-      if (preloaded !== null) {
-        record = { image: preloaded, ready: true };
-        cache.set(assetId, record);
-        return preloaded;
-      }
-      noteLazyRasterV7(source);
-      const image = documentRoot.createElement("img");
-      record = { image, ready: false };
-      cache.set(assetId, record);
-      image.addEventListener("load", () => {
-        const current = cache.get(assetId);
-        if (current !== undefined) current.ready = true;
-        redraw();
-      });
-      image.src = source;
-    }
-    return record.ready ? record.image : null;
-  };
-  return {
-    resolve,
-    resolveTerrainGround(assetId) {
-      const groundId = tallTerrainGroundArtId(assetId);
-      return groundId === null ? null : resolve(groundId);
-    },
-    resolveRaisedTerrain(assetId) {
-      const groundId = tallTerrainGroundArtId(assetId);
-      if (groundId === null) return null;
-      const source = resolve(assetId);
-      const ground = resolve(groundId);
-      if (source === null || ground === null) return null;
-      const cached = raisedCache.get(assetId);
-      if (cached?.source === source && cached.ground === ground)
-        return cached.image;
-      const image = isolateTallTerrainForegroundV7(
-        documentRoot,
-        source,
-        ground,
-      );
-      // A missing/tainted 2D context is retryable; never cache that fallback.
-      if (image === null) return null;
-      raisedCache.set(assetId, { source, ground, image });
-      return image;
-    },
-  };
-}
-
-function tallTerrainGroundArtId(assetId: string): string | null {
-  if (assetId.startsWith("terrain-ruleset7-original-forest-"))
-    return "terrain-ruleset7-original-grass-1";
-  if (assetId.includes("mountain")) return "terrain-ruleset7-revision3-gravel";
-  return null;
-}
-
-/**
- * Reuses the checked-in tall-terrain derivation: pixels that differ from the
- * accepted owning-square ground form the raised body, while enclosed flat
- * body colors are restored after border flood fill. The result is cached by
- * the resolver and never read back per frame.
- */
-function isolateTallTerrainForegroundV7(
-  documentRoot: Document,
-  source: CanvasImageSource,
-  ground: CanvasImageSource,
-): CanvasImageSource | null {
-  const width = 256;
-  const height = 384;
-  const footprintTop = 128;
-  try {
-    const output = documentRoot.createElement("canvas");
-    output.width = width;
-    output.height = height;
-    const context = output.getContext("2d", { willReadFrequently: true });
-    const groundCanvas = documentRoot.createElement("canvas");
-    groundCanvas.width = width;
-    groundCanvas.height = height - footprintTop;
-    const groundContext = groundCanvas.getContext("2d", {
-      willReadFrequently: true,
-    });
-    if (context === null || groundContext === null) return null;
-    context.clearRect(0, 0, width, height);
-    context.drawImage(source, 0, 0, width, height);
-    groundContext.drawImage(ground, 0, 0, width, height - footprintTop);
-    const body = context.getImageData(0, 0, width, height);
-    const groundPixels = groundContext.getImageData(
-      0,
-      0,
-      width,
-      height - footprintTop,
-    ).data;
-    const originalAlpha = new Uint8Array(width * height);
-    for (let y = 0; y < height; y += 1)
-      for (let x = 0; x < width; x += 1) {
-        const pixel = y * width + x;
-        const offset = pixel * 4;
-        const sourceAlpha = body.data[offset + 3] ?? 0;
-        originalAlpha[pixel] = sourceAlpha;
-        if (y < footprintTop) continue;
-        const groundOffset = ((y - footprintTop) * width + x) * 4;
-        const difference = Math.max(
-          Math.abs(
-            (body.data[offset] ?? 0) - (groundPixels[groundOffset] ?? 0),
-          ),
-          Math.abs(
-            (body.data[offset + 1] ?? 0) -
-              (groundPixels[groundOffset + 1] ?? 0),
-          ),
-          Math.abs(
-            (body.data[offset + 2] ?? 0) -
-              (groundPixels[groundOffset + 2] ?? 0),
-          ),
-        );
-        // The accepted composite already contains the exact antialiased edge
-        // color. A binary mask restores that pixel verbatim above Roads and
-        // exactly reconstructs the source above its registered square ground.
-        body.data[offset + 3] = difference === 0 ? 0 : sourceAlpha;
-      }
-    fillEnclosedTallTerrainBodyV7(body.data, originalAlpha, width, height);
-    context.putImageData(body, 0, 0);
-    return output;
-  } catch {
-    return null;
-  }
-}
-
-function fillEnclosedTallTerrainBodyV7(
-  body: Uint8ClampedArray,
-  originalAlpha: Uint8Array,
-  width: number,
-  height: number,
-): void {
-  const reachable = new Uint8Array(width * height);
-  const queue = new Int32Array(width * height);
-  let head = 0;
-  let tail = 0;
-  const enqueue = (x: number, y: number): void => {
-    const pixel = y * width + x;
-    if (reachable[pixel] !== 0 || (body[pixel * 4 + 3] ?? 0) !== 0) return;
-    reachable[pixel] = 1;
-    queue[tail] = pixel;
-    tail += 1;
-  };
-  for (let x = 0; x < width; x += 1) {
-    enqueue(x, 0);
-    enqueue(x, height - 1);
-  }
-  for (let y = 1; y < height - 1; y += 1) {
-    enqueue(0, y);
-    enqueue(width - 1, y);
-  }
-  while (head < tail) {
-    const pixel = queue[head] ?? 0;
-    head += 1;
-    const x = pixel % width;
-    const y = Math.floor(pixel / width);
-    if (x > 0) enqueue(x - 1, y);
-    if (x + 1 < width) enqueue(x + 1, y);
-    if (y > 0) enqueue(x, y - 1);
-    if (y + 1 < height) enqueue(x, y + 1);
-  }
-  for (let pixel = 0; pixel < width * height; pixel += 1)
-    if (reachable[pixel] === 0 && (originalAlpha[pixel] ?? 0) > 0)
-      body[pixel * 4 + 3] = originalAlpha[pixel] ?? 0;
-}
+/** The board with no art at all: every subject is drawn in code. */
+const NO_BOARD_ART_V7: ChibiBoardArtV7 = {
+  resolve: () => ({ kind: "MISSING" }),
+};
 
 /**
  * Revision 13 ability previews for the selected own unit, from the exact
@@ -8014,31 +7651,9 @@ function isTallTerrainEntry(entry: BoardRenderPlanEntryV7): boolean {
   return (
     entry.kind === "TERRAIN" &&
     entry.assetId !== undefined &&
-    tallTerrainGroundArtId(entry.assetId) !== null
+    (entry.assetId.startsWith("terrain-ruleset7-original-forest-") ||
+      entry.assetId.includes("mountain"))
   );
-}
-
-function drawEntryImage(
-  context: CanvasRenderingContext2D,
-  image: CanvasImageSource | null,
-  input: {
-    readonly x: number;
-    readonly y: number;
-    readonly zoom: number;
-    readonly entry: BoardRenderPlanEntryV7;
-    readonly sceneAlpha: number;
-  },
-): void {
-  if (image === null) return;
-  const rect = anchoredDestinationRect(
-    { x: input.x, y: input.y },
-    input.zoom,
-    geometryFor(input.entry),
-  );
-  context.save();
-  context.globalAlpha = input.sceneAlpha;
-  context.drawImage(image, rect.x, rect.y, rect.width, rect.height);
-  context.restore();
 }
 
 /**
@@ -8161,58 +7776,6 @@ function drawChibiSnowCapsV7(
     { x: 0, y: part === "OVERFLOW" ? 0 : up, width: asset.width, height: rows },
     sceneAlpha,
   );
-}
-
-function drawSquareTerrainGround(
-  context: CanvasRenderingContext2D,
-  image: CanvasImageSource | null,
-  input: {
-    readonly x: number;
-    readonly y: number;
-    readonly zoom: number;
-    readonly sceneAlpha: number;
-  },
-): void {
-  if (image === null) return;
-  const size = 128 * input.zoom;
-  context.save();
-  context.globalAlpha = input.sceneAlpha;
-  context.drawImage(image, input.x - size / 2, input.y - size / 2, size, size);
-  context.restore();
-}
-
-/**
- * If browser pixel readback is unavailable, preserve raised overflow without
- * repainting the opaque owning-square floor over Roads. The next successful
- * resolver call retries the complete cached body isolation.
- */
-function drawTallTerrainOverflowFallback(
-  context: CanvasRenderingContext2D,
-  image: CanvasImageSource | null,
-  input: {
-    readonly x: number;
-    readonly y: number;
-    readonly zoom: number;
-    readonly sceneAlpha: number;
-  },
-): void {
-  if (image === null) return;
-  const width = 256 * 0.5 * input.zoom;
-  const overflowHeight = 128 * 0.5 * input.zoom;
-  context.save();
-  context.globalAlpha = input.sceneAlpha;
-  context.drawImage(
-    image,
-    0,
-    0,
-    256,
-    128,
-    input.x - width / 2,
-    input.y - 2 * overflowHeight,
-    width,
-    overflowHeight,
-  );
-  context.restore();
 }
 
 function geometryFor(entry: BoardRenderPlanEntryV7): SourceGeometry {

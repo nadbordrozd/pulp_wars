@@ -192,6 +192,15 @@ const ASSETS: readonly ChibiArtAssetV7[] = [
   flat("TERRAIN:RIFT_V_NORTH", "rift-v-north"),
   flat("TERRAIN:RIFT_V_MIDDLE", "rift-v-middle"),
   flat("TERRAIN:RIFT_V_SOUTH", "rift-v-south"),
+  // One unit, for the tests that stand a piece on the ground.
+  {
+    id: "unit",
+    subject: "UNIT:FIGHTER",
+    assetClass: "STANDARD_UNIT",
+    width: 56,
+    height: 80,
+    url: "/fixture/unit.png",
+  },
 ];
 
 function fakeChibi(): ChibiBoardArtV7 {
@@ -363,11 +372,6 @@ export function paintBoard(
     devicePixelRatio: 1,
     camera: { offsetX: 40, offsetY: 40, zoom: chibiCameraZoom(1) },
     plan,
-    images: {
-      resolve: (assetId: string) =>
-        ({ of: "legacy", url: assetId }) as unknown as CanvasImageSource,
-    },
-    artSet: "CHIBI",
     chibiArt: art.chibi,
     direction: { spec: LIVE_DIRECTION_V7, art: art.chibi },
     forestArt: art.forest,

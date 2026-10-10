@@ -75,6 +75,7 @@ import {
   frozenGlacierUiFixtureV7,
 } from "../fixtures/v7-frozen-sea-ui";
 import { martianUiFixtureV7 } from "../fixtures/v7-martian-ui";
+import { readyBoardArtV7 } from "../fixtures/v7-board-art";
 
 // Every Ice Folk number below is read from a public preview of the same
 // view: the balance bead (`pulp_wars-7g3.7`) may retune the faction.
@@ -171,14 +172,7 @@ function draw(
     devicePixelRatio: 1,
     camera: { offsetX: 100, offsetY: 100, zoom: 1 },
     plan,
-    images: {
-      resolve: (id) =>
-        ({ id, width: 128, height: 128 }) as unknown as CanvasImageSource,
-      resolveTerrainGround: (id) =>
-        ({ id: `ground:${id}`, width: 128, height: 128 }) as never,
-      resolveRaisedTerrain: (id) =>
-        ({ id: `raised:${id}`, width: 256, height: 256 }) as never,
-    },
+    chibiArt: readyBoardArtV7(),
     iceFolkArt: fakeIceFolkArt(),
     ...options,
   });
@@ -259,7 +253,7 @@ describe("Ice Folk art wiring (ICE_FOLK.md wiring steps 1-3, 5)", () => {
     ).toBe("ICON:ACTION:COLD_SNAP");
   });
 
-  it("falls back to the Human art in the Classic look and LEGACY", () => {
+  it("falls back to the Human art in the Classic look", () => {
     expect(chibiFallbackSubjectV7("UNIT:ICE_FOLK:KNIGHT")).toBe("UNIT:KNIGHT");
     expect(chibiFallbackSubjectV7("PORTRAIT:ICE_FOLK:GUARD")).toBe(
       "PORTRAIT:GUARD",
@@ -367,7 +361,7 @@ describe("the Snow overlay and the Blizzard (section 13.1)", () => {
       log,
       (image) =>
         typeof image.id === "string" &&
-        (image.id.startsWith("unit-") || image.id.startsWith("building-")),
+        (image.id.startsWith("UNIT:") || image.id.startsWith("CITY:")),
     );
     const firstRoad = log.findIndex((call) => call[0] === "lineTo");
     expect(Math.max(...snow)).toBeLessThan(Math.min(...pieces));
@@ -392,7 +386,8 @@ describe("the Snow overlay and the Blizzard (section 13.1)", () => {
         tile.snow === true &&
         (tile.terrain === "FOREST" || tile.terrain === "MOUNTAIN"),
     );
-    expect(caps).toHaveLength(tall.length);
+    // Each body is capped in its two parts: its own cell and its overflow.
+    expect(caps).toHaveLength(tall.length * 2);
   });
 
   it("drops the same Blizzard flakes for the same clock, and freezes them at 0", () => {

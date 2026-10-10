@@ -224,7 +224,6 @@ describe("the renderer and the feedback frame", () => {
         devicePixelRatio: 1,
         camera: { offsetX: 0, offsetY: 0, zoom: 0.5 },
         plan,
-        images: { resolve: () => null },
         feedback: frame,
       });
     draw(null);

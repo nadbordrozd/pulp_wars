@@ -8,8 +8,8 @@
  * the browser through the Vite dev server by
  * scripts/art/faction-colours-review.ts and drawn by the real
  * CanvasBoardHostV7 in the look asked for: the live look the game passes
- * (`liveBoardLookV7`), the Classic look, or the LEGACY art set. Nothing here
- * is part of the game build.
+ * (`liveBoardLookV7`) or the Classic look. Nothing here is part of the
+ * game build.
  *
  * The board is 30 x 9. Each faction holds a territory two cells wide and
  * six tall (rows 1 to 6), with one unowned column between territories and
@@ -60,7 +60,7 @@ export const FACTION_COLOURS_SCENE_FACTIONS_V7: readonly FactionIdV7[] = [
   "CANDY",
 ];
 
-export type FactionColoursLookV7 = "LIVE" | "CLASSIC" | "LEGACY";
+export type FactionColoursLookV7 = "LIVE" | "CLASSIC";
 
 const WIDTH = 30;
 const HEIGHT = 9;
@@ -253,7 +253,6 @@ export function showFactionColoursSceneV7(
     onSelection: () => undefined,
     onCommand: () => undefined,
   });
-  const artSet = options.look === "LEGACY" ? "LEGACY" : "CHIBI";
   host.update({
     matchInstanceId: `faction-colours-${options.look}-${options.viewerFaction}`,
     view: factionColoursSceneViewV7(live, options.viewerFaction),
@@ -268,8 +267,7 @@ export function showFactionColoursSceneV7(
     animationSpeed: "NORMAL",
     presentationPaused: true,
     highContrast: false,
-    artSet,
-    ...liveBoardLookV7(artSet, options.look === "CLASSIC"),
+    ...liveBoardLookV7(options.look === "CLASSIC"),
   });
   const canvas = container.querySelector("canvas.board-canvas-v7");
   if (!(canvas instanceof HTMLCanvasElement))

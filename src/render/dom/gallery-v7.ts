@@ -205,8 +205,7 @@ function previewModel(
     animationSpeed: "NORMAL",
     presentationPaused: false,
     highContrast: false,
-    artSet: "CHIBI",
-    ...liveBoardLookV7("CHIBI"),
+    ...liveBoardLookV7(),
   };
 }
 

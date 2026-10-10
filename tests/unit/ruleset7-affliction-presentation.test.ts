@@ -47,6 +47,7 @@ import {
   afflictionUndeadFixtureV7,
   undeadShowcaseFixtureV7,
 } from "../fixtures/v7-undead-ui";
+import { readyBoardArtV7 } from "../fixtures/v7-board-art";
 
 const HUMAN = AFFLICTION_SHOWCASE_V7.human;
 const UNDEAD = AFFLICTION_SHOWCASE_V7.undead;
@@ -81,12 +82,12 @@ describe("Revision 14 Plague and Bitten presentation", () => {
     ]);
   });
 
-  it("draws the markers in the art-set frame, clear of every other overlay", () => {
+  it("draws the markers in the frame of a sprite or of a stand-in, clear of every other overlay", () => {
     const { view } = fixture(afflictionHumanFixtureV7);
     const plan = buildBoardRenderPlanV7(view, [], NO_SELECTION);
     const camera = { offsetX: 64, offsetY: 64, zoom: 1 };
     const at = HUMAN.doublyAfflicted;
-    for (const artSet of ["LEGACY", "CHIBI"] as const) {
+    for (const piece of ["STAND_IN", "SPRITE"] as const) {
       const { context, log } = recordingContext();
       drawBoardV7({
         context,
@@ -94,12 +95,10 @@ describe("Revision 14 Plague and Bitten presentation", () => {
         devicePixelRatio: 1,
         camera,
         plan,
-        images: { resolve: () => ({}) as CanvasImageSource },
-        artSet,
-        chibiArt: unitChibiArt(),
+        ...(piece === "SPRITE" ? { chibiArt: unitChibiArt() } : {}),
       });
       const frames =
-        artSet === "CHIBI"
+        piece === "SPRITE"
           ? AFFLICTION_MARKER_FRAME_V7.chibi
           : AFFLICTION_MARKER_FRAME_V7.legacy;
       for (const frame of frames)
@@ -122,7 +121,7 @@ describe("Revision 14 Plague and Bitten presentation", () => {
       devicePixelRatio: 1,
       camera,
       plan,
-      images: { resolve: () => ({}) as CanvasImageSource },
+      chibiArt: readyBoardArtV7(),
       afflictionArt: (subject) => (subject === "STATUS:BITTEN" ? raster : null),
     });
     expect(

@@ -601,7 +601,7 @@ describe("Ruleset 7 Gallery", () => {
     // The preview shows the ready unit on the demo board at once.
     expect(host.updates[0]?.interactive).toBe(false);
     expect(host.updates[0]?.showCursor).toBe(false);
-    expect(host.updates[0]?.artSet).toBe("CHIBI");
+    expect(host.updates[0]?.visualDirection).toBeDefined();
     // Full motion plays the first cue after a short idle.
     expect(demo.dataset.demoState).toBe("playing");
     await waitUntil(() => host.presented.length === 1);
@@ -1126,7 +1126,7 @@ describe("Ruleset 7 Gallery: Terrain (pulp_wars-2yc.3)", () => {
     expect(hosts[0]?.mounted).toBe(true);
     const model = hosts[0]?.updates.at(-1);
     expect(model?.interactive).toBe(false);
-    expect(model?.artSet).toBe("CHIBI");
+    expect(model?.visualDirection).toBeDefined();
     expect(model?.view.viewer.faction).toBe("ORIGINAL");
     expect(
       model?.view.board.tiles.filter(

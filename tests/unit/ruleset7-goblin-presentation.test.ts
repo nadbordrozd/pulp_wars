@@ -677,7 +677,6 @@ describe("Revision 17 Goblin board previews", () => {
       devicePixelRatio: 1,
       camera: { offsetX: 100, offsetY: 100, zoom: 0.625 },
       plan,
-      images: { resolve: () => null },
     });
     const texts = log
       .filter((call) => call[0] === "fillText")

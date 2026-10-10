@@ -1,25 +1,38 @@
 # Chibi art migration plan
 
-**Status:** complete for players. All five batches are approved and on
+**Status:** complete in the game. All five batches are approved and on
 `main`, the user approved all the art on 2026-10-10, and CHIBI is the only
-Ruleset 7 art set a player sees. `pulp_wars-67q.13` retired the
-player-facing switch: `?art=legacy` is no longer recognised, a stored
-LEGACY choice is cleared and falls back to the default look, the legacy set
-is no longer a preload look, and the chibi direction was folded into
-[ART_DIRECTION.md](ART_DIRECTION.md).
+Ruleset 7 art set. `pulp_wars-67q.13` retired the player-facing switch:
+`?art=legacy` is no longer recognised, a stored LEGACY choice is cleared,
+the legacy set is no longer a preload look, and the chibi direction was
+folded into [ART_DIRECTION.md](ART_DIRECTION.md). `pulp_wars-67q.15`
+removed the LEGACY render path itself: the board renderer, the board host
+and the app view have no art-set choice, the `ArtSetV7` type is gone, and
+no Ruleset 7 code resolves a file of the earlier PixelLab set
+(`ACCEPTED_ART_URLS`). A subject whose raster is missing or fails to load
+is drawn in code: a flat wash of its terrain for ground, a lettered marker
+for a unit, city, building or resource on the board
+(`src/render/canvas/missing-art-v7.ts`), and a lettered plate in the
+interface (`.v7-art-missing`). The tests that drew LEGACY by default draw
+the chibi art, or the stand-in where they are about missing art.
 
-**What is left** is internal and is follow-up work, done in one piece so
-that there is never a state where the renderer names art that no longer
-exists: make CHIBI the only render path in the board renderer, the board
-host and the app view (today the plan is still built with legacy asset ids,
-a chibi raster that cannot be drawn falls back to its legacy raster, and a
-view built without an art set, as most unit tests do, draws LEGACY), move
-those tests off the LEGACY default, and then delete the 42 rasters only that
-path can name (1.27 MB under `public/assets/pixellab/`: all of
-`terrain-ruleset7/` and `buildings-ruleset7/`, five `terrain-square/ruleset7-*`
-files and ten interface files) with their `ruleset7-*` art scripts, asset
-tests, review evidence and PixelLab records. Ruleset 6 and the older
-screens draw the other 218 files of that folder and stay untouched.
+**What is left** is deleting files nothing reaches any more, and it is
+follow-up work to `pulp_wars-67q.15`: the 42 rasters only the removed path
+could name (1.27 MB under `public/assets/pixellab/`: all of
+`terrain-ruleset7/` and `buildings-ruleset7/`, five
+`terrain-square/ruleset7-*` files and ten interface files), with their
+PixelLab recipes and records, their `ruleset7-*` art scripts and order
+checks, asset tests and review evidence, the Ruleset 7 art id tables
+(`src/assets/ruleset7-*-art.ts`, whose ids are now only keys of the board
+plan and names of interface stand-ins) and the two review scripts of the
+removed path (`scripts/browser-playtest-review-v7.ts`,
+`scripts/browser-city-buff-review-v7.ts`). The PixelLab records are
+hash-chained to their recipes, and two recipes that stay
+(`ui-action-defection`, `ui-action-blackout`) take a removed raster as
+their style reference, so the removal needs a checked-in retire step in
+`scripts/art/pixellab.ts` that rewrites the manifest and the records
+without calling PixelLab. Ruleset 6 and the older screens draw the other
+218 files of that folder and stay untouched.
 
 The Beads IDs below are the source of truth for progress; this document
 records the plan in git, so it survives a move to a new machine.
@@ -44,27 +57,29 @@ will be named by the user.
     -> 67q.9 batch 4 -> 67q.10 USER REVIEW -> 67q.11 batch 5 -> 67q.12 USER REVIEW
     -> 67q.14 chibi becomes the default (?art=legacy opt-out)
     -> 67q.13 the ?art=legacy switch retired, art docs folded
-    -> follow-up: CHIBI the only render path, legacy-only rasters deleted
+    -> 67q.15 CHIBI the only render path, tests moved off LEGACY
+    -> follow-up: the legacy-only rasters and their records deleted
 
 tt3.1 faction-layer dry run  (after 67q.2 and batch-1 approval 67q.4;
                               runs in parallel with batches 2–5)
 ```
 
-| Bead               | What                                                                                            | Validation profile                |
-| ------------------ | ----------------------------------------------------------------------------------------------- | --------------------------------- |
-| `pulp_wars-67q`    | Epic: chibi migration                                                                           | —                                 |
-| `pulp_wars-67q.1`  | Runtime: `?art=chibi` art-set switch, 80 px tile, discrete zoom steps, mask recolour, anchors   | `ui/presentation` + browser smoke |
-| `pulp_wars-67q.2`  | Production pipeline, layered prompts, owner masks and QA, asset inventory, batch review tooling | `asset-only`                      |
-| `pulp_wars-67q.3`  | Batch 1 (pilot): terrain, village and city tiers, Fighter, Marksman                             | `ui/presentation` + asset gates   |
-| `pulp_wars-67q.5`  | Batch 2: Raider, Guard, Captain, Catapult, Knight, Juggernaut                                   | same                              |
-| `pulp_wars-67q.7`  | Batch 3: resources, Farm, Lumber Camp, Mine, Port, Roads, Field Defense, chest, Monument        | same                              |
-| `pulp_wars-67q.9`  | Batch 4: Windmill, Sawmill, Forge, Workshop, Market, Shipyard, ships, embarked form, leftovers  | same                              |
-| `pulp_wars-67q.11` | Batch 5: portraits, tech/action/reward/achievement icons, HUD symbols, leftovers                | same                              |
-| `.4/.6/.8/.10/.12` | User review gates, one per batch                                                                | explicit user approval            |
-| `pulp_wars-67q.14` | Chibi becomes the default; `?art=legacy` stays a persisted opt-out                              | `ui/presentation` + browser smoke |
-| `pulp_wars-67q.13` | Cutover: the `?art=legacy` switch and the LEGACY preload look retired, art docs folded          | `cross-cutting/release`           |
-| `pulp_wars-tt3`    | Epic: faction art layer                                                                         | —                                 |
-| `pulp_wars-tt3.1`  | Dry run of the faction fragment with a throwaway test faction                                   | `asset-only`                      |
+| Bead               | What                                                                                            | Validation profile                 |
+| ------------------ | ----------------------------------------------------------------------------------------------- | ---------------------------------- |
+| `pulp_wars-67q`    | Epic: chibi migration                                                                           | —                                  |
+| `pulp_wars-67q.1`  | Runtime: `?art=chibi` art-set switch, 80 px tile, discrete zoom steps, mask recolour, anchors   | `ui/presentation` + browser smoke  |
+| `pulp_wars-67q.2`  | Production pipeline, layered prompts, owner masks and QA, asset inventory, batch review tooling | `asset-only`                       |
+| `pulp_wars-67q.3`  | Batch 1 (pilot): terrain, village and city tiers, Fighter, Marksman                             | `ui/presentation` + asset gates    |
+| `pulp_wars-67q.5`  | Batch 2: Raider, Guard, Captain, Catapult, Knight, Juggernaut                                   | same                               |
+| `pulp_wars-67q.7`  | Batch 3: resources, Farm, Lumber Camp, Mine, Port, Roads, Field Defense, chest, Monument        | same                               |
+| `pulp_wars-67q.9`  | Batch 4: Windmill, Sawmill, Forge, Workshop, Market, Shipyard, ships, embarked form, leftovers  | same                               |
+| `pulp_wars-67q.11` | Batch 5: portraits, tech/action/reward/achievement icons, HUD symbols, leftovers                | same                               |
+| `.4/.6/.8/.10/.12` | User review gates, one per batch                                                                | explicit user approval             |
+| `pulp_wars-67q.14` | Chibi becomes the default; `?art=legacy` stays a persisted opt-out                              | `ui/presentation` + browser smoke  |
+| `pulp_wars-67q.13` | Cutover: the `?art=legacy` switch and the LEGACY preload look retired, art docs folded          | `cross-cutting/release`            |
+| `pulp_wars-67q.15` | CHIBI the only render path: no art-set choice, a missing raster is drawn in code                | `cross-cutting/release`, unit tier |
+| `pulp_wars-tt3`    | Epic: faction art layer                                                                         | —                                  |
+| `pulp_wars-tt3.1`  | Dry run of the faction fragment with a throwaway test faction                                   | `asset-only`                       |
 
 The design field of each bead holds the full scope, the worker checks and
 the final gates.

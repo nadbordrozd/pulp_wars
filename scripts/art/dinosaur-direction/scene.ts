@@ -511,7 +511,7 @@ export function showDinosaurStudySceneV7(
   // The look the game draws (bead pulp_wars-3tq.6); the study's sprites are
   // added to its production art (Human, Goblin and Undead), so only the
   // three Dinosaur units change.
-  const look = liveBoardLookV7("CHIBI");
+  const look = liveBoardLookV7();
   const samples = options.samples ?? [];
   const art = buildChibiArtRegistryV7([
     ...CHIBI_DIRECTION_ART_ASSETS_V7,
@@ -535,7 +535,6 @@ export function showDinosaurStudySceneV7(
     animationSpeed: "NORMAL",
     presentationPaused: true,
     highContrast: false,
-    artSet: "CHIBI",
     ...look,
     // The study's own registry: the live direction art of the three
     // converted factions as of this study, plus the samples. The Dinosaur

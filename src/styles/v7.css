@@ -3807,6 +3807,38 @@
   image-rendering: auto;
 }
 
+/*
+ * A subject without a usable raster (bead pulp_wars-67q.15): a lettered
+ * plate drawn by the page, in the frame its art would have had.
+ */
+.v7-art-missing {
+  display: inline-grid;
+  place-items: center;
+  box-sizing: border-box;
+  overflow: hidden;
+  border: 2px solid var(--pw-line);
+  background: var(--pw-surface-2);
+  color: var(--pw-text);
+  font-family: var(--pw-ui);
+  font-weight: var(--pw-fw-heavy);
+  line-height: 1;
+}
+
+.v7-art-frame.v7-art-missing {
+  width: 3rem;
+  height: 3rem;
+  font-size: var(--pw-fs-xl);
+}
+
+.v7-art-missing[data-letter]::before {
+  content: attr(data-letter);
+}
+
+.v7-economy-icon.v7-art-missing {
+  border-width: 1px;
+  border-radius: 50%;
+}
+
 /* The chibi dock art keeps the legacy footprint (112 x 130 at 0.64). */
 .v7-selection-dock .v7-identity-art[data-art-set="chibi"] {
   width: 4.5rem;
@@ -4085,7 +4117,7 @@
   overflow: hidden;
 }
 
-/* The LEGACY code-drawn Egg fills the legacy identity frame. */
+/* The code-drawn Egg (an Egg without its sprite) fills the identity frame. */
 .v7-art-frame.v7-egg-figure {
   width: 112px;
   height: 130px;

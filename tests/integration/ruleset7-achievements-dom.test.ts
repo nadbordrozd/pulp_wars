@@ -459,7 +459,7 @@ describe("Ruleset 7 revision-21 achievements UI", () => {
       "Monument · free · population +3",
     );
     expect(
-      build.querySelector('[data-asset-id="building-square-monument"]'),
+      build.querySelector('[data-chibi-subject*="MONUMENT"]'),
     ).not.toBeNull();
     app.destroy();
     source.destroy();

@@ -271,8 +271,6 @@ function draw(
     devicePixelRatio: 1,
     camera: { offsetX: 64, offsetY: 64, zoom },
     plan: built,
-    images: { resolve: () => null },
-    artSet: "CHIBI",
     chibiArt,
     reducedMotion: true,
     direction: { spec: direction, art: chibiArt },

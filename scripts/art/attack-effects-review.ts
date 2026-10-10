@@ -11,8 +11,8 @@
  *       steps 1 and 0.75, at progress 0.15, 0.35, 0.5, 0.65 and 0.85
  *   <effect>-<viewport>-reduced.png                  the frame reduced
  *       motion holds (attackReducedMotionProgressV7), live look, zoom 1
- *   <effect>-<look>-desktop-p<progress>.png          the Classic look and
- *       LEGACY at the hit and in the burst
+ *   <effect>-<look>-desktop-p<progress>.png          the Classic look at
+ *       the hit and in the burst
  *   contact-<viewport>-zoom-<step>.png               every effect (rows) at
  *       every progress (columns), cropped round the pair
  *   contact-<viewport>-zoom-<step>-x2.png            the same at 2x
@@ -248,7 +248,7 @@ async function launchShowcase(
 
 async function showScene(
   connection: Connection,
-  look: "LIVE" | "CLASSIC" | "LEGACY",
+  look: "LIVE" | "CLASSIC",
   caseId: string,
 ): Promise<void> {
   await evaluate(
@@ -385,7 +385,7 @@ async function captureAll(baseUrl: string): Promise<void> {
         });
         await hideScene(connection);
         if (size.name === "desktop")
-          for (const look of ["CLASSIC", "LEGACY"] as const) {
+          for (const look of ["CLASSIC"] as const) {
             await showScene(connection, look, reviewed.id);
             await sceneZoom(connection, 1);
             for (const progress of [

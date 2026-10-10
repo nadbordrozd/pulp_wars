@@ -190,8 +190,6 @@ function drawPieces(
     devicePixelRatio: 1,
     camera: { zoom: 1, offsetX: 200, offsetY: 200 },
     plan: { version: 7, entries, targets: [] },
-    images: { resolve: () => null },
-    artSet: "CHIBI",
     chibiArt: base,
     reducedMotion: true,
     ...(direction === null
@@ -224,7 +222,7 @@ const fillsOf = (log: readonly LogEntry[]): unknown[] =>
     .map((call) => call[2]);
 
 describe("Dinosaur art in the live default look (pulp_wars-3tq.13)", () => {
-  it("is registered in the art the game loads, and is not passed for the classic look or LEGACY", () => {
+  it("is registered in the art the game loads, and is not passed for the classic look", () => {
     const registry = LIVE_DIRECTION_ART_REGISTRY_V7;
     for (const [role, name] of ROLES) {
       expect(registry.variants(`UNIT:DINOSAUR:${role}`)[0], role).toMatchObject(
@@ -253,11 +251,10 @@ describe("Dinosaur art in the live default look (pulp_wars-3tq.13)", () => {
     expect(registry.variants("UNIT:UNDEAD:FIGHTER")[0]?.id).toBe(
       "chibi-direction-undead-skeleton",
     );
-    expect(liveBoardLookV7("CHIBI").visualDirectionArt).toBe(registry);
-    // The classic look and LEGACY get no direction and no direction art,
-    // so they draw the classic Dinosaur art exactly as before.
-    expect(liveBoardLookV7("CHIBI", true)).toEqual({});
-    expect(liveBoardLookV7("LEGACY")).toEqual({});
+    expect(liveBoardLookV7().visualDirectionArt).toBe(registry);
+    // The classic look gets no direction and no direction art, so it draws
+    // the classic Dinosaur art exactly as before.
+    expect(liveBoardLookV7(true)).toEqual({});
   });
 
   it("draws every Dinosaur unit's direction sprite as authored, nothing while it loads, and the classic sprite when it fails", () => {

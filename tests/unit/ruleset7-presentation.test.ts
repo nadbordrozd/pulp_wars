@@ -192,13 +192,10 @@ describe("Ruleset 7 public presentation", () => {
   });
 
   it("promises a joined field of Farms only in a look that draws one (pulp_wars-2o7.5)", () => {
-    // LEGACY and the Classic look pair neighbouring Farms; the current look
-    // draws each Farm as a whole sprite (bead pulp_wars-2o7.2).
-    expect(farmsJoinInLookV7("CHIBI", false)).toBe(false);
-    expect(farmsJoinInLookV7("CHIBI", true)).toBe(true);
-    expect(farmsJoinInLookV7("LEGACY", false)).toBe(true);
-    expect(farmsJoinInLookV7("LEGACY", true)).toBe(true);
-    expect(farmsJoinInLookV7(undefined, false)).toBe(true);
+    // The Classic look pairs neighbouring Farms; the current look draws
+    // each Farm as a whole sprite (bead pulp_wars-2o7.2).
+    expect(farmsJoinInLookV7(false)).toBe(false);
+    expect(farmsJoinInLookV7(true)).toBe(true);
     const effects = [
       { kind: "COMMAND", command: "BUILD_FARM" },
       { kind: "CONNECTED_FARM_VISUALS" },

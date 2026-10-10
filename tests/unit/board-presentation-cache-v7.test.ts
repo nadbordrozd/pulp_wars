@@ -5,6 +5,7 @@ import { BoardGlowCacheV7 } from "../../src/render/canvas/glow-cache-v7";
 import { CanvasBoardHostV7 } from "../../src/render/canvas/board-host-v7";
 import { drawBoardV7 } from "../../src/render/canvas/board-renderer-v7";
 import { viewForV7 } from "../../src/engine/index";
+import { readyBoardArtV7 } from "../fixtures/v7-board-art";
 import { exploredAllV7, initialV7 } from "../fixtures/v7-builders";
 
 afterEach(() => {
@@ -53,19 +54,21 @@ describe("Ruleset 7 presentation caches", () => {
       at: { x: 0, y: 0 },
       layer: 1,
       assetId: "terrain-ruleset7-original-forest-1",
+      artSubject: "TERRAIN:FOREST" as const,
     };
     const common = {
       context: drawn.buffer,
       viewport: { width: 300, height: 300 },
       devicePixelRatio: 1,
       plan: { version: 7 as const, entries: [entry], targets: [] },
-      images: { resolve: () => ({}) as CanvasImageSource },
+      chibiArt: readyBoardArtV7(),
     };
     drawBoardV7({
       ...common,
       camera: { offsetX: 100, offsetY: -50, zoom: 1 },
     });
-    expect(drawn.drawImage).toHaveBeenCalledTimes(1);
+    // The cell is above the viewport; its tree top's cell is not.
+    expect(drawn.drawImage).toHaveBeenCalled();
     drawn.drawImage.mockClear();
     drawBoardV7({
       ...common,

@@ -885,7 +885,7 @@ gave it its own art.
   of the figure's height and an enormously fat round body"; without it Pixen
   drew a realistic small-headed soldier. One edit changed the face, the skin
   (by hex value) and the club together.
-- LEGACY (retired; an internal fallback only) and the developer option "Classic look" have no Ogre
+- LEGACY (removed in `pulp_wars-67q.15`) and the developer option "Classic look" have no Ogre
   art: there it falls back like every faction subject, to the Human unit of
   the slot under the Goblin badge.
 

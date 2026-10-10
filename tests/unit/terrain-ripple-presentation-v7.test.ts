@@ -469,6 +469,7 @@ describe("a cell in the air on the board", () => {
         layer: 5,
         at: { x: 1, y: 1 },
         assetId: "unit",
+        artSubject: "UNIT:FIGHTER" as const,
       },
     ];
     const still = paintBoard(entries, { art, fog: false });

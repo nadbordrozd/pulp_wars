@@ -514,15 +514,6 @@ function recordingContext(): {
   return { context: context as CanvasRenderingContext2D, log };
 }
 
-const legacyImages = {
-  resolve: (assetId: string) =>
-    ({ legacy: assetId }) as unknown as CanvasImageSource,
-  resolveTerrainGround: (assetId: string) =>
-    ({ legacyGround: assetId }) as unknown as CanvasImageSource,
-  resolveRaisedTerrain: (assetId: string) =>
-    ({ legacyRaised: assetId }) as unknown as CanvasImageSource,
-};
-
 const forestAsset: ChibiArtAssetV7 = {
   id: "forest",
   subject: "TERRAIN:FOREST",
@@ -611,26 +602,18 @@ function readyForest(set = SMALL_SET) {
 function draw(
   entries: readonly Entry[],
   options: {
-    readonly artSet?: "LEGACY" | "CHIBI";
     readonly forestArt?: ReturnType<typeof readyForest> | null;
     readonly iceFolkArt?: IceFolkBoardArtV7;
   } = {},
 ): unknown[][] {
   const { context, log } = recordingContext();
   const built: BoardRenderPlanV7 = { version: 7, entries, targets: [] };
-  const artSet = options.artSet ?? "CHIBI";
   drawBoardV7({
     context,
     viewport: { width: 2400, height: 2400 },
     devicePixelRatio: 1,
-    camera: {
-      offsetX: 40,
-      offsetY: 64,
-      zoom: artSet === "CHIBI" ? chibiCameraZoom(1) : 1,
-    },
+    camera: { offsetX: 40, offsetY: 64, zoom: chibiCameraZoom(1) },
     plan: built,
-    images: legacyImages,
-    artSet,
     chibiArt: fakeChibi(),
     ...(options.forestArt === null
       ? {}
@@ -732,15 +715,6 @@ describe("composed forest drawing", () => {
     });
     for (const forestArt of [null, loading])
       expect(named(draw(single, { forestArt }))).toEqual(expected);
-  });
-
-  it("leaves the LEGACY art set alone", () => {
-    const withForest = draw(block, { artSet: "LEGACY" });
-    const without = draw(block, { artSet: "LEGACY", forestArt: null });
-    expect(withForest).toEqual(without);
-    expect(withForest.map((call) => kindOf(call[0]))).not.toContain(
-      "surface:160x160",
-    );
   });
 
   it("draws a unit over the trees of its own cell", () => {

@@ -103,14 +103,10 @@ import {
   matchHasCandySeatV7,
 } from "../candy-presentation-v7";
 import {
-  MAX_ZOOM,
-  MIN_ZOOM,
-  boardWorldBounds,
   cameraLimitArea,
   cellWorldBounds,
   centerCameraOn,
   clampCamera,
-  fitCamera,
   frameCameraOnArea,
   panCamera,
   panToFrameArea,
@@ -118,7 +114,6 @@ import {
   projectGrid,
   screenToWorld,
   worldToScreen,
-  zoomCameraAt,
   type CameraState,
   type Point,
   type ScreenBand,
@@ -126,9 +121,7 @@ import {
 } from "./geometry";
 import {
   buildBoardRenderPlanV7,
-  createBoardImageResolverV7,
   drawBoardV7,
-  type BoardImageResolverV7,
   type BoardRenderInteractionV7,
   type BoardSelectionV7,
   type BoardRenderPlanV7,
@@ -147,7 +140,7 @@ import {
   arrowGeometry,
 } from "./combat-presentation";
 import { BoardGlowCacheV7 } from "./glow-cache-v7";
-import { unitArtSubjectV7, type ArtSetV7 } from "../../assets/chibi-art-v7";
+import { unitArtSubjectV7 } from "../../assets/chibi-art-v7";
 import { playerFactionColourV7 } from "./faction-colours-v7";
 import { presentedUnitFactionV7 } from "../neutral-presentation-v7";
 import {
@@ -264,17 +257,15 @@ export interface BoardHostModelV7 {
   readonly animationSpeed: "NORMAL" | "FAST";
   readonly presentationPaused: boolean;
   readonly highContrast: boolean;
-  /** Presentation-only art set; omitted means LEGACY. */
-  readonly artSet?: ArtSetV7;
   /**
    * Developer experiment (pulp_wars-x6c): building and city saturation in
    * percent. Omitted, or 100, draws exactly as without it.
    */
   readonly saturation?: BoardSaturationV7;
   /**
-   * The visual direction of the CHIBI art set (pulp_wars-3tq.6: the app
-   * passes the live direction by default). Omitted draws the classic look,
-   * exactly as before the direction existed; the LEGACY set ignores it.
+   * The visual direction of the art (pulp_wars-3tq.6: the app passes the
+   * live direction by default). Omitted draws the classic look, exactly as
+   * before the direction existed.
    */
   readonly visualDirection?: BoardVisualDirectionV7;
   /**
@@ -347,7 +338,6 @@ const ATMOSPHERE_STEP_MS = 50;
 
 export class CanvasBoardHostV7 implements BoardHostV7 {
   readonly #document: Document;
-  readonly #images: BoardImageResolverV7;
   readonly #chibiArt: ChibiBoardArtV7;
   readonly #glowCache: BoardGlowCacheV7;
   readonly #saturationCache: SpriteSaturationCacheV7;
@@ -613,10 +603,6 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       canvasClientRect: () => this.#canvas?.getBoundingClientRect() ?? null,
     });
     this.#glowCache = new BoardGlowCacheV7(documentRoot);
-    this.#images = createBoardImageResolverV7(documentRoot, () => {
-      this.#glowCache.clear();
-      this.#draw();
-    });
     this.#saturationCache = createSpriteSaturationCacheV7(
       browserChibiRasterEnvironmentV7(documentRoot),
     );
@@ -798,13 +784,10 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       )
     )
       this.#inspectionCycle = null;
-    const key = `${String(model.matchInstanceId)}:${model.view.board.width}x${model.view.board.height}:${this.#artSet()}`;
+    const key = `${String(model.matchInstanceId)}:${model.view.board.width}x${model.view.board.height}`;
     if (this.#boardKey !== key) {
       this.#boardKey = key;
-      const chibi = this.#artSet() === "CHIBI";
-      const fitted = chibi
-        ? fitChibiCamera(model.view.board, this.#viewport)
-        : fitCamera(model.view.board, this.#viewport);
+      const fitted = fitChibiCamera(model.view.board, this.#viewport);
       const capital = model.view.cities.find(
         (city) => city.ownerId === model.view.viewer.id && city.isCapital,
       );
@@ -818,9 +801,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
             .map((tile) => tile.at),
         ),
         focus: projectGrid(this.#focused),
-        board: chibi
-          ? chibiBoardWorldBounds(model.view.board)
-          : boardWorldBounds(model.view.board.width, model.view.board.height),
+        board: chibiBoardWorldBounds(model.view.board),
         viewport: this.#viewport,
         band: this.#unobscuredBand(true),
       });
@@ -974,25 +955,10 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
   zoom(direction: "IN" | "OUT"): void {
     this.#cameraFollowAllowed = false;
     this.#cancelCameraPan();
-    if (this.#artSet() === "CHIBI") {
-      this.#camera = this.#limitCamera(
-        zoomChibiCameraAt(
-          this.#camera,
-          adjacentChibiZoomStep(
-            chibiZoomStepForCamera(this.#camera),
-            direction,
-          ),
-          { x: this.#viewport.width / 2, y: this.#viewport.height / 2 },
-        ),
-      );
-      this.#draw();
-      return;
-    }
-    const factor = direction === "IN" ? 1.2 : 1 / 1.2;
     this.#camera = this.#limitCamera(
-      zoomCameraAt(
+      zoomChibiCameraAt(
         this.#camera,
-        Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, this.#camera.zoom * factor)),
+        adjacentChibiZoomStep(chibiZoomStepForCamera(this.#camera), direction),
         { x: this.#viewport.width / 2, y: this.#viewport.height / 2 },
       ),
     );
@@ -1884,20 +1850,13 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     const built = buildBoardRenderPlanV7(view, commands, interaction, {
       terrainSkeleton: this.#terrainSkeleton,
     });
-    // Multi-cell terrain at the fog (pulp_wars-2yc.28): the CHIBI art set
-    // packs its forests and massifs over the explored cells and the ghosts.
-    const ghosts =
-      this.#artSet() === "CHIBI"
-        ? terrainGhostsOfV7(view, this.#terrainSkeleton(view))
-        : [];
+    // Multi-cell terrain at the fog (pulp_wars-2yc.28): the forests and
+    // massifs are packed over the explored cells and the ghosts.
+    const ghosts = terrainGhostsOfV7(view, this.#terrainSkeleton(view));
     const plan = ghosts.length === 0 ? built : { ...built, ghosts };
     if (this.#planCache.length === 2) this.#planCache.shift();
     this.#planCache.push({ view, commands, interactionKey, plan });
     return plan;
-  }
-
-  #artSet(): ArtSetV7 {
-    return this.#model?.artSet ?? "LEGACY";
   }
 
   /**
@@ -1938,18 +1897,18 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     return runtime;
   }
 
-  /** Public diagnostics for the art set and its exact cell size. */
+  /**
+   * Public diagnostics for the exact cell size and zoom step. The art set
+   * is always CHIBI (Ruleset 7 has one); review scripts still read it.
+   */
   #syncArtSetDataset(): void {
     const canvas = this.#canvas;
     if (canvas === null) return;
-    const artSet = this.#artSet();
     const tile = String(chibiTileCssPx(this.#camera));
-    const step =
-      artSet === "CHIBI" ? String(chibiZoomStepForCamera(this.#camera)) : null;
-    if (canvas.dataset.artSet !== artSet) canvas.dataset.artSet = artSet;
+    const step = String(chibiZoomStepForCamera(this.#camera));
+    if (canvas.dataset.artSet !== "CHIBI") canvas.dataset.artSet = "CHIBI";
     if (canvas.dataset.tileCssPx !== tile) canvas.dataset.tileCssPx = tile;
-    if (step === null) delete canvas.dataset.zoomStep;
-    else if (canvas.dataset.zoomStep !== step) canvas.dataset.zoomStep = step;
+    if (canvas.dataset.zoomStep !== step) canvas.dataset.zoomStep = step;
   }
 
   #draw(): void {
@@ -2100,7 +2059,6 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         devicePixelRatio: this.#document.defaultView?.devicePixelRatio ?? 1,
         camera: this.#camera,
         plan: presented,
-        images: this.#images,
         glowCache: this.#glowCache,
         readinessElapsedMs: now - this.#readinessStartedAt,
         reducedMotion: model.motion === "REDUCED",
@@ -2112,7 +2070,6 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         ...(this.#unitPulses.length === 0
           ? {}
           : { unitPulses: this.#unitPulses }),
-        artSet: this.#artSet(),
         chibiArt: this.#chibiArt,
         ...(model.saturation === undefined
           ? {}
@@ -2264,10 +2221,6 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
 
   /** The game's own population and Promote icons, or null while loading. */
   #feedbackIcon(kind: "POPULATION" | "PROMOTE"): CanvasImageSource | null {
-    if (this.#artSet() !== "CHIBI")
-      return this.#images.resolve(
-        kind === "POPULATION" ? "ui-hud-population" : "ui-action-promote",
-      );
     const model = this.#model;
     const art =
       model?.visualDirection === undefined
@@ -2288,13 +2241,12 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
   }
 
   /**
-   * CHIBI effect rasters for the support cues (bead pulp_wars-vkq.14), or
-   * null in LEGACY. Asking for every subject once starts their loads, so the
-   * first Undead cue of a game usually finds its sprite ready; a sprite
-   * still loading draws the code cue for that frame.
+   * Effect rasters for the support cues (bead pulp_wars-vkq.14). Asking
+   * for every subject once starts their loads, so the first Undead cue of a
+   * game usually finds its sprite ready; a sprite still loading draws the
+   * code cue for that frame.
    */
-  #supportEffectArt(): SupportEffectArtV7 | null {
-    if (this.#artSet() !== "CHIBI") return null;
+  #supportEffectArt(): SupportEffectArtV7 {
     const devicePixelRatio = this.#document.defaultView?.devicePixelRatio ?? 1;
     const deviceScale = chibiMasterScale(this.#camera) * devicePixelRatio;
     // The default look draws the direction's own effect sprites (the Undead
@@ -2329,9 +2281,9 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     };
   }
 
-  /** Starts loading the CHIBI effect rasters once, before the first cue. */
+  /** Starts loading the effect rasters once, before the first cue. */
   #requestEffectArt(): void {
-    if (this.#effectArtRequested || this.#artSet() !== "CHIBI") return;
+    if (this.#effectArtRequested) return;
     this.#effectArtRequested = true;
     const art = this.#supportEffectArt();
     for (const subject of SUPPORT_EFFECT_SUBJECTS_V7) art?.image(subject);
@@ -2567,20 +2519,18 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       ...(this.#model?.visualDirection?.undeadAccent === "VIOLET"
         ? { undeadViolet: true }
         : {}),
-      // LEGACY draws its stand-in units at a larger zoom.
-      ...(this.#artSet() === "CHIBI" ? {} : { scale: 1 }),
     };
   }
 
   /**
-   * A unit's own CHIBI sprite at its drawn size, or null (LEGACY, or while
-   * it loads).
+   * A unit's own sprite at its drawn size, or null while it loads or when
+   * it has no raster.
    */
   #unitSprite(
     view: PlayerViewV7 | null,
     unit: PlayerViewV7["units"][number],
   ): GiantSpriteV7 | null {
-    if (view === null || this.#artSet() !== "CHIBI") return null;
+    if (view === null) return null;
     const model = this.#model;
     const art =
       model?.visualDirection === undefined
@@ -2664,8 +2614,6 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       ...(this.#model?.visualDirection?.undeadAccent === "VIOLET"
         ? { undeadViolet: true }
         : {}),
-      // LEGACY draws its stand-in units at a larger zoom.
-      ...(this.#artSet() === "CHIBI" ? {} : { scale: 1 }),
     };
   }
 
@@ -3026,19 +2974,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
           y: current.midpoint.y - prior.midpoint.y,
         });
         const start = this.#pinchStart;
-        if (this.#artSet() !== "CHIBI")
-          this.#camera = zoomCameraAt(
-            this.#camera,
-            Math.max(
-              MIN_ZOOM,
-              Math.min(
-                MAX_ZOOM,
-                this.#camera.zoom * (current.distance / prior.distance),
-              ),
-            ),
-            current.midpoint,
-          );
-        else if (start !== null && start.distance > 0) {
+        if (start !== null && start.distance > 0) {
           const step = nearestChibiZoomStep(
             start.step * (current.distance / start.distance),
           );
@@ -3148,34 +3084,18 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     event.preventDefault();
     const canvas = this.#canvas;
     if (canvas === null) return;
-    if (this.#artSet() === "CHIBI") {
-      // Accumulate trackpad deltas so one wheel notch moves one discrete step.
-      const unit = event.deltaMode === 1 ? 40 : event.deltaMode === 2 ? 800 : 1;
-      const delta = event.deltaY * unit;
-      if (Math.sign(delta) !== Math.sign(this.#wheelDelta))
-        this.#wheelDelta = 0;
-      this.#wheelDelta += delta;
-      if (Math.abs(this.#wheelDelta) < CHIBI_WHEEL_STEP_DELTA) return;
-      const direction = this.#wheelDelta < 0 ? "IN" : "OUT";
-      this.#wheelDelta = 0;
-      this.#camera = this.#limitCamera(
-        zoomChibiCameraAt(
-          this.#camera,
-          adjacentChibiZoomStep(
-            chibiZoomStepForCamera(this.#camera),
-            direction,
-          ),
-          localPoint(canvas, event),
-        ),
-      );
-      this.#draw();
-      return;
-    }
-    const factor = event.deltaY < 0 ? 1.1 : 1 / 1.1;
+    // Accumulate trackpad deltas so one wheel notch moves one discrete step.
+    const unit = event.deltaMode === 1 ? 40 : event.deltaMode === 2 ? 800 : 1;
+    const delta = event.deltaY * unit;
+    if (Math.sign(delta) !== Math.sign(this.#wheelDelta)) this.#wheelDelta = 0;
+    this.#wheelDelta += delta;
+    if (Math.abs(this.#wheelDelta) < CHIBI_WHEEL_STEP_DELTA) return;
+    const direction = this.#wheelDelta < 0 ? "IN" : "OUT";
+    this.#wheelDelta = 0;
     this.#camera = this.#limitCamera(
-      zoomCameraAt(
+      zoomChibiCameraAt(
         this.#camera,
-        Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, this.#camera.zoom * factor)),
+        adjacentChibiZoomStep(chibiZoomStepForCamera(this.#camera), direction),
         localPoint(canvas, event),
       ),
     );

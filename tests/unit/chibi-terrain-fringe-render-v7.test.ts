@@ -352,7 +352,6 @@ const terrain = (
 function draw(
   entries: readonly BoardRenderPlanEntryV7[],
   chibiArt: ChibiBoardArtV7,
-  artSet: "CHIBI" | "LEGACY" = "CHIBI",
   zoomStep: 0.75 | 1 = 1,
   devicePixelRatio = 1,
 ): unknown[][] {
@@ -364,14 +363,9 @@ function draw(
     camera: {
       offsetX: 40,
       offsetY: 64,
-      zoom: artSet === "CHIBI" ? chibiCameraZoom(zoomStep) : 1,
+      zoom: chibiCameraZoom(zoomStep),
     },
     plan: { version: 7, entries, targets: [] },
-    images: {
-      resolve: (assetId: string) =>
-        ({ legacy: assetId }) as unknown as CanvasImageSource,
-    },
-    artSet,
     chibiArt,
   });
   return log.flatMap((call): unknown[][] =>
@@ -470,8 +464,6 @@ describe("CHIBI Mountain fringe drawing", () => {
         ],
         targets: [],
       },
-      images: { resolve: () => null },
-      artSet: "CHIBI",
       chibiArt: art,
     });
     const order = log.flatMap((call): string[] => {
@@ -504,7 +496,6 @@ describe("CHIBI Mountain fringe drawing", () => {
       const drawn = draw(
         lone,
         fakeChibi({ fringe: true }),
-        "CHIBI",
         0.75,
         devicePixelRatio,
       );
@@ -539,12 +530,6 @@ describe("CHIBI Mountain fringe drawing", () => {
         ),
       ).toBe(true);
     }
-  });
-
-  it("never asks for a fringe in the LEGACY art set", () => {
-    const art = fakeChibi({ fringe: true });
-    draw(lone, art, "LEGACY");
-    expect(art.resolveFringedGround).not.toHaveBeenCalled();
   });
 });
 

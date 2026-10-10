@@ -13,18 +13,17 @@
  *   leaderboard-{a,b}-<viewport>.png            the leaderboard of each
  *   showcase-a-classic-<viewport>-zoom-1.png    Showcase a in the Classic look
  *       (Settings > Developer tools)
- *   showcase-a-legacy-<viewport>.png            Showcase a in the LEGACY art set
  *   territories-<look>-desktop-zoom-<step>.png  the nine factions'
  *       territories side by side over Mountain, Grass, Snow, Shallow and
- *       Deep Water (scripts/art/faction-colours/scene.ts), in the live,
- *       Classic and LEGACY looks (LEGACY at its own zoom)
+ *       Deep Water (scripts/art/faction-colours/scene.ts), in the live
+ *       and the Classic look
  *   territories-<look>-desktop-cult.png         the same framed on the Cult
  *       (the east end: Goblin, Dwarf, Cult, Candy)
  *   territories-<look>-phone-<faction>.png      the same on the phone at the
  *       smallest zoom, framed on five factions in turn
  *
  * Usage: npm run art:faction-colours-review -- [--out DIR] [--port 6545]
- *   [--url http://localhost:PORT/] [--only=setup,showcase,classic,legacy,territories]
+ *   [--url http://localhost:PORT/] [--only=setup,showcase,classic,territories]
  *
  * Captures go to --out (default <tmp>/pulp-wars-faction-colours), written
  * after the browser closes. It starts Vite on --port (never the user's
@@ -66,7 +65,7 @@ const SHOWCASES = [
   ["a", ["DWARF", "MARTIAN", "ICE_FOLK", "UNDEAD"]],
   ["b", ["ORIGINAL", "GOBLIN", "DINOSAUR", "MARTIAN"]],
 ] as const;
-const LOOKS = ["LIVE", "CLASSIC", "LEGACY"] as const;
+const LOOKS = ["LIVE", "CLASSIC"] as const;
 /** The phone frames the scene on these factions' territories in turn. */
 const PHONE_FRAMES = [
   "UNDEAD",
@@ -272,7 +271,7 @@ async function launchShowcase(
   connection: Connection,
   href: string,
   factions: readonly string[],
-  options: { readonly classic: boolean; readonly artSet: "CHIBI" | "LEGACY" },
+  options: { readonly classic: boolean },
 ): Promise<void> {
   await openSetup(connection, href, options.classic);
   await evaluate(
@@ -291,7 +290,7 @@ async function launchShowcase(
   );
   await waitFor(
     connection,
-    `(() => { const s = globalThis.__PULP_WARS_APP__?.controller.snapshot(); const v = s?.view; return s?.phase === 'ACTIVE' && !s.transitioning && !s.ai.active && v?.turnOrder[v.activeSeatIndex] === v?.humanPlayerId && document.querySelector('canvas.board-canvas-v7')?.dataset.artSet === '${options.artSet}'; })()`,
+    `(() => { const s = globalThis.__PULP_WARS_APP__?.controller.snapshot(); const v = s?.view; return s?.phase === 'ACTIVE' && !s.transitioning && !s.ai.active && v?.turnOrder[v.activeSeatIndex] === v?.humanPlayerId && document.querySelector('canvas.board-canvas-v7')?.dataset.artSet === 'CHIBI'; })()`,
     900,
   );
   const played = await evaluate<string[]>(
@@ -355,8 +354,6 @@ async function captureAll(baseUrl: string): Promise<void> {
   const profile = await mkdtemp(path.join(tmpdir(), "pulp-wars-colours-"));
   const chibi = new URL(baseUrl);
   chibi.searchParams.set("art", "chibi");
-  const legacy = new URL(baseUrl);
-  legacy.searchParams.set("art", "legacy");
   const browser = spawn(
     chrome,
     [
@@ -408,7 +405,6 @@ async function captureAll(baseUrl: string): Promise<void> {
         for (const [label, factions] of SHOWCASES) {
           await launchShowcase(connection, chibi.href, factions, {
             classic: false,
-            artSet: "CHIBI",
           });
           for (const step of STEPS) {
             await zoomStep(connection, step);
@@ -423,42 +419,30 @@ async function captureAll(baseUrl: string): Promise<void> {
       if (want("classic")) {
         await launchShowcase(connection, chibi.href, SHOWCASES[0][1], {
           classic: true,
-          artSet: "CHIBI",
         });
         await zoomStep(connection, 1);
         await capture(connection, `showcase-a-classic-${size.name}-zoom-1.png`);
-      }
-      if (want("legacy")) {
-        await launchShowcase(connection, legacy.href, SHOWCASES[0][1], {
-          classic: false,
-          artSet: "LEGACY",
-        });
-        await capture(connection, `showcase-a-legacy-${size.name}.png`);
       }
       if (want("territories")) {
         // Any live match supplies the view the scene is built on.
         await launchShowcase(connection, chibi.href, SHOWCASES[1][1], {
           classic: false,
-          artSet: "CHIBI",
         });
         for (const look of LOOKS) {
           if (size.name === "desktop") {
             await showTerritories(connection, look, "ORIGINAL");
-            if (look === "LEGACY")
-              await capture(connection, `territories-legacy-desktop.png`);
-            else
-              for (const step of STEPS) {
-                await sceneZoom(connection, step);
-                await capture(
-                  connection,
-                  `territories-${look.toLowerCase()}-desktop-zoom-${step}.png`,
-                );
-              }
+            for (const step of STEPS) {
+              await sceneZoom(connection, step);
+              await capture(
+                connection,
+                `territories-${look.toLowerCase()}-desktop-zoom-${step}.png`,
+              );
+            }
             // The Cult registration (pulp_wars-mch9.3): the nine territories
             // are wider than the screen, so the east end (Goblin, Dwarf,
             // Cult, Candy) has a frame of its own.
             await showTerritories(connection, look, "CULT");
-            if (look !== "LEGACY") await sceneZoom(connection, 1);
+            await sceneZoom(connection, 1);
             await capture(
               connection,
               `territories-${look.toLowerCase()}-desktop-cult.png`,

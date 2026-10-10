@@ -498,7 +498,7 @@ export function showUndeadStudySceneV7(
   const scene = undeadStudySceneViewV7(live, options.kind);
   // The look the game draws (bead pulp_wars-3tq.6); the study's sprites are
   // added to its production art, so only the three Undead units change.
-  const look = liveBoardLookV7("CHIBI");
+  const look = liveBoardLookV7();
   const samples = options.samples ?? [];
   const art = buildChibiArtRegistryV7([
     ...CHIBI_DIRECTION_ART_ASSETS_V7,
@@ -520,7 +520,6 @@ export function showUndeadStudySceneV7(
     animationSpeed: "NORMAL",
     presentationPaused: true,
     highContrast: false,
-    artSet: "CHIBI",
     ...look,
     // Always the study's own registry (the Human production art plus the
     // samples): since bead pulp_wars-3tq.12 the game's registry holds the

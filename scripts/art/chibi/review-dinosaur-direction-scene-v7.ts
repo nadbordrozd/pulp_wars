@@ -526,10 +526,9 @@ export function showDinosaurDirectionSceneV7(
     animationSpeed: "NORMAL",
     presentationPaused: true,
     highContrast: false,
-    artSet: "CHIBI",
     // What the game draws: its own direction registry, which holds the
     // Dinosaur production art (or nothing, in the Classic look).
-    ...liveBoardLookV7("CHIBI", options.classic === true),
+    ...liveBoardLookV7(options.classic === true),
   });
   const canvas = container.querySelector("canvas.board-canvas-v7");
   if (!(canvas instanceof HTMLCanvasElement))

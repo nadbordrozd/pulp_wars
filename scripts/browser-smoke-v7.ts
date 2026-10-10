@@ -1300,7 +1300,7 @@ async function probeAfflictionFixture(
   url: string,
 ): Promise<string> {
   const doubly = { x: 9, y: 7 };
-  for (const artSet of ["LEGACY", "CHIBI"] as const) {
+  for (const artSet of ["CHIBI"] as const) {
     await evaluate(connection, `globalThis.__V7_AFFLICTION_PRIOR__ = true`);
     await connection.send("Page.navigate", { url });
     await waitForExpression(
@@ -1347,7 +1347,7 @@ async function probeAfflictionFixture(
     connection,
     `(() => { globalThis.__UNDEAD_REVIEW__?.view?.destroy?.(); delete globalThis.__UNDEAD_REVIEW__; })()`,
   );
-  return "Plague/Bitten fixture markers, chips and Disband explained in LEGACY and CHIBI";
+  return "Plague/Bitten fixture markers, chips and Disband explained";
 }
 
 /**

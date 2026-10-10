@@ -32,6 +32,7 @@ import {
   curiositiesOffFixtureV7,
   curiositiesUiFixtureV7,
 } from "../fixtures/v7-curiosities-ui";
+import { classicLookStorageV7 } from "../fixtures/v7-board-art";
 import { monsterArenaV7, monsterOfV7 } from "../fixtures/v7-monster-arena";
 
 /**
@@ -39,7 +40,7 @@ import { monsterArenaV7, monsterOfV7 } from "../fixtures/v7-monster-arena";
  * docs/product/RULESET_7_MAP_CURIOSITIES.md sections 12.1 and 13.4): the
  * Giant Spider's dock ("Neutral", its stats, its lines, no faction badge
  * and no owner), a curiosity tile's dock, Help, the notices of a Shrine
- * claim and of the neutral turn, in the LEGACY art set and the live look;
+ * claim and of the neutral turn, in the classic and the live look;
  * and that the Spider can be selected and attacked in a match of every
  * faction (no presentation reader trips over the neutral owner).
  */
@@ -51,7 +52,7 @@ beforeEach(() => {
   window.localStorage.clear();
 });
 
-function mount(initial: GameStateV7, artSet: "LEGACY" | "CHIBI" = "LEGACY") {
+function mount(initial: GameStateV7, look: "CLASSIC" | "LIVE" = "LIVE") {
   let state = initial;
   const subscribers = new Set<(snapshot: Ruleset7BrowserSnapshot) => void>();
   const boundaries = new Set<(boundary: Ruleset7AcceptedBoundary) => void>();
@@ -166,8 +167,7 @@ function mount(initial: GameStateV7, artSet: "LEGACY" | "CHIBI" = "LEGACY") {
   if (root === null) throw new Error("no root");
   const view = new Ruleset7DomAppView(document, root, controller, {
     boardHost,
-    settingsStorage: null,
-    artSet,
+    settingsStorage: look === "CLASSIC" ? classicLookStorageV7() : null,
   });
   const select = (at: CoordV7, tile = false): void => {
     const unit = tile
@@ -201,9 +201,9 @@ const settle = async (): Promise<void> => {
 };
 
 describe("Ruleset 7 curiosities in the dock, Help and the notices", () => {
-  for (const artSet of ["LEGACY", "CHIBI"] as const)
-    it(`${artSet}: shows the Spider as Neutral with its stats, lines and no faction or owner`, () => {
-      const app = mount(curiositiesUiFixtureV7(), artSet);
+  for (const look of ["CLASSIC", "LIVE"] as const)
+    it(`${look}: shows the Spider as Neutral with its stats, lines and no faction or owner`, () => {
+      const app = mount(curiositiesUiFixtureV7(), look);
       app.select(AT.spider);
       const dock = app.dock();
       if (dock === null) throw new Error("no dock");
@@ -222,9 +222,9 @@ describe("Ruleset 7 curiosities in the dock, Help and the notices", () => {
       );
       // No command of the Spider is ever offered.
       expect(dock.dataset.hasActions).toBe("false");
-      // Its figure: the portrait in the live look, a code spider in LEGACY.
+      // Its figure: the portrait in the live look, a code spider in the classic look.
       const figure = dock.querySelector(".v7-identity-art > *");
-      if (artSet === "LEGACY")
+      if (look === "CLASSIC")
         expect(figure?.getAttribute("data-asset-id")).toBe(
           "unit-neutral-giant-spider-code",
         );
@@ -351,9 +351,9 @@ describe("the Spider in a match of every faction", () => {
         factions,
       );
       const spider = monsterOfV7(state);
-      for (const artSet of ["LEGACY", "CHIBI"] as const) {
+      for (const look of ["CLASSIC", "LIVE"] as const) {
         document.body.innerHTML = '<div id="app"></div>';
-        const app = mount(state, artSet);
+        const app = mount(state, look);
         app.select(spider.at);
         expect(app.dock()?.querySelector("h2")?.textContent).toBe(
           "Giant Spider",

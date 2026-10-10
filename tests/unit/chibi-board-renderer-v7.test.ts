@@ -25,6 +25,7 @@ import {
 } from "../../src/render/canvas/chibi-geometry-v7";
 import { RULESET7_PLAYER_COLORS } from "../../src/render/canvas/owner-recolour-v7";
 import { FACTION_COLOURS_V7 } from "../../src/render/canvas/faction-colours-v7";
+import { missingArtLetterV7 } from "../../src/render/canvas/missing-art-v7";
 import { exploredAllV7, initialV7 } from "../fixtures/v7-builders";
 import { goblinArenaV7 } from "../fixtures/v7-goblin-arena";
 
@@ -55,11 +56,6 @@ function recordingContext(): {
   );
   return { context: context as CanvasRenderingContext2D, log };
 }
-
-const legacyImages = {
-  resolve: (assetId: string) =>
-    ({ legacy: assetId }) as unknown as CanvasImageSource,
-};
 
 function chibiAsset(
   subject: ArtSubjectV7,
@@ -194,7 +190,7 @@ describe("CHIBI board rendering", () => {
     expect(byKey(`city:${city.id}`)?.artSubject).toMatch(/^CITY:[123]$/);
   });
 
-  it("leaves LEGACY drawing identical and draws unregistered CHIBI subjects with their legacy asset", () => {
+  it("draws subjects without a raster in code, never as another art set's raster (pulp_wars-67q.15)", () => {
     const state = exploredAllV7(initialV7(1516));
     const view = viewForV7(state, state.humanPlayerId);
     const built = buildBoardRenderPlanV7(view, queryPlayerCommandsV7(view), {
@@ -213,35 +209,39 @@ describe("CHIBI board rendering", () => {
         devicePixelRatio: 1,
         camera,
         plan: built,
-        images: legacyImages,
         ...extra,
       });
       return log;
     };
-    const legacyCamera = { offsetX: 60, offsetY: 80, zoom: 1 };
-    const baseline = draw(legacyCamera);
-    expect(images(baseline).length).toBeGreaterThan(0);
-    const unused = fakeChibi([chibiAsset("TERRAIN:GRASS", "TERRAIN", 80, 80)]);
-    expect(draw(legacyCamera, { artSet: "LEGACY", chibiArt: unused })).toEqual(
-      baseline,
+    const camera = { offsetX: 60, offsetY: 80, zoom: chibiCameraZoom(1) };
+    // A board given no art, and one whose art has no raster for anything,
+    // draw the same frame: no image at all.
+    const none = draw(camera);
+    const empty = fakeChibi([]);
+    expect(draw(camera, { chibiArt: empty })).toEqual(none);
+    expect(empty.resolve).toHaveBeenCalled();
+    expect(images(none)).toEqual([]);
+    // The ground is a flat wash, one whole 80 CSS px cell each.
+    const washes = none.filter(
+      (call) => call[0] === "fillRect" && call[3] === 80 && call[4] === 80,
     );
-    expect(unused.resolve).not.toHaveBeenCalled();
-
-    const chibiCamera = { offsetX: 60, offsetY: 80, zoom: chibiCameraZoom(1) };
-    const fallback = fakeChibi([]);
-    expect(draw(chibiCamera, { artSet: "CHIBI", chibiArt: fallback })).toEqual(
-      draw(chibiCamera),
+    expect(washes.length).toBeGreaterThanOrEqual(
+      built.entries.filter((candidate) => candidate.kind === "TERRAIN").length,
     );
-    expect(fallback.resolve).toHaveBeenCalled();
-    // Legacy art at chibi geometry: the whole cell is 80 CSS px.
-    const terrain = images(
-      draw(chibiCamera, { artSet: "CHIBI", chibiArt: fallback }),
-    ).find(
-      (call) =>
-        String((call[1] as { legacy?: string }).legacy).includes("grass") &&
-        call.length === 6,
-    );
-    expect(terrain?.slice(4)).toEqual([80, 80]);
+    // Every unit and city is a lettered marker.
+    const letters = none
+      .filter((call) => call[0] === "fillText")
+      .map((call) => call[1]);
+    for (const piece of built.entries.filter(
+      (candidate) => candidate.kind === "UNIT" || candidate.kind === "CITY",
+    ))
+      expect(letters).toContain(missingArtLetterV7(piece.artSubject));
+    // With its raster registered a subject is drawn from it, and only it.
+    const grass = fakeChibi([chibiAsset("TERRAIN:GRASS", "TERRAIN", 80, 80)]);
+    const drawn = images(draw(camera, { chibiArt: grass }));
+    expect(drawn.length).toBeGreaterThan(0);
+    for (const call of drawn)
+      expect(call[1]).toEqual({ chibi: "fixture-TERRAIN:GRASS" });
   });
 
   it("draws a registered unit bottom-centred at 1:1 with smoothing off and skips loading subjects", () => {
@@ -263,8 +263,6 @@ describe("CHIBI board rendering", () => {
           maxHp: 10,
         }),
       ]),
-      images: legacyImages,
-      artSet: "CHIBI",
       chibiArt: chibi,
     });
     const drawn = images(log);
@@ -294,7 +292,7 @@ describe("CHIBI board rendering", () => {
     );
   });
 
-  it("marks a registered CHIBI capital with a crown and leaves LEGACY and fallback cities unmarked", () => {
+  it("marks a registered capital with a crown and leaves a stand-in city unmarked", () => {
     const city = chibiAsset("CITY:2", "SETTLEMENT", 96, 100);
     const crownFills = (
       extra: Partial<Parameters<typeof drawBoardV7>[0]>,
@@ -312,7 +310,6 @@ describe("CHIBI board rendering", () => {
             ...(capital ? { capital: true } : {}),
           }),
         ]),
-        images: legacyImages,
         ...extra,
       });
       return log.filter(
@@ -321,12 +318,10 @@ describe("CHIBI board rendering", () => {
       ).length;
     };
     const chibi = fakeChibi([city]);
-    expect(crownFills({ artSet: "CHIBI", chibiArt: chibi }, true)).toBe(1);
-    expect(crownFills({ artSet: "CHIBI", chibiArt: chibi }, false)).toBe(0);
-    expect(crownFills({ artSet: "CHIBI", chibiArt: fakeChibi([]) }, true)).toBe(
-      0,
-    );
-    expect(crownFills({ artSet: "LEGACY", chibiArt: chibi }, true)).toBe(0);
+    expect(crownFills({ chibiArt: chibi }, true)).toBe(1);
+    expect(crownFills({ chibiArt: chibi }, false)).toBe(0);
+    expect(crownFills({ chibiArt: fakeChibi([]) }, true)).toBe(0);
+    expect(crownFills({}, true)).toBe(0);
   });
 
   it("keeps a ready CHIBI unit opaque at its garrison size and frames its overlays outside the figure", () => {
@@ -355,8 +350,6 @@ describe("CHIBI board rendering", () => {
             ready: true,
           }),
         ]),
-        images: legacyImages,
-        artSet: "CHIBI",
         chibiArt,
         // Mid-pulse: the pre-q8b LEGACY pulse was most translucent here.
         readinessElapsedMs: 800,
@@ -399,21 +392,11 @@ describe("CHIBI board rendering", () => {
           true,
         );
     }
-    // A legacy-fallback unit in the CHIBI set is opaque and unscaled too
-    // (pulp_wars-q8b): the outline alone carries readiness.
-    const fallback = draw(fakeChibi([]), 1);
-    const legacyUnit = images(fallback).find(
-      (call) =>
-        (call[1] as { legacy?: string }).legacy === "unit-original-fighter",
-    );
-    const fallbackIndex = fallback.indexOf(legacyUnit as LogEntry);
-    const fallbackAlpha = fallback
-      .slice(0, fallbackIndex)
-      .filter((call) => call[0] === "set" && call[1] === "globalAlpha");
-    expect(fallbackAlpha.at(-1)?.[2]).toBe(1);
+    // A unit without a raster is a marker drawn in code: no image.
+    expect(images(draw(fakeChibi([]), 1))).toEqual([]);
   });
 
-  it("draws a CHIBI unit on a city or village centre smaller in the front-right and leaves other units and LEGACY unchanged", () => {
+  it("draws a unit on a city or village centre smaller in the front-right and leaves other units unchanged", () => {
     const fighter = chibiAsset("UNIT:FIGHTER", "STANDARD_UNIT", 56, 80);
     const city = chibiAsset("CITY:1", "SETTLEMENT", 88, 96);
     const village = chibiAsset("SITE:VILLAGE", "SETTLEMENT", 80, 88);
@@ -425,11 +408,7 @@ describe("CHIBI board rendering", () => {
         hp: 10,
         maxHp: 10,
       });
-    const draw = (
-      artSet: "CHIBI" | "LEGACY",
-      step: 1 | 2,
-      devicePixelRatio: number,
-    ) => {
+    const draw = (step: 1 | 2, devicePixelRatio: number) => {
       const { context, log } = recordingContext();
       drawBoardV7({
         context,
@@ -445,8 +424,6 @@ describe("CHIBI board rendering", () => {
           // Mid-move off the city: a fractional cell is never garrisoned.
           unit(1.5, 1),
         ]),
-        images: legacyImages,
-        artSet,
         chibiArt: fakeChibi([fighter, city, village]),
       });
       return log;
@@ -457,9 +434,7 @@ describe("CHIBI board rendering", () => {
         .filter(
           ({ call }) =>
             call[0] === "drawImage" &&
-            ((call[1] as { chibi?: string }).chibi === fighter.id ||
-              (call[1] as { legacy?: string }).legacy ===
-                "unit-original-fighter"),
+            (call[1] as { chibi?: string }).chibi === fighter.id,
         );
     const smoothingAt = (log: readonly LogEntry[], index: number) =>
       log
@@ -469,7 +444,7 @@ describe("CHIBI board rendering", () => {
         )
         .at(-1)?.[2];
 
-    const chibi = draw("CHIBI", 1, 1);
+    const chibi = draw(1, 1);
     const [onCity, onVillage, onGrass, moving] = unitDraws(chibi);
     const zoom = chibiCameraZoom(1);
     const cellX = (x: number) => 40 + 128 * x * zoom;
@@ -498,21 +473,10 @@ describe("CHIBI board rendering", () => {
     }
 
     // Zoom 2 on DPR 2: 0.75 x 2 x 2 = 3 whole device pixels per master pixel.
-    const crisp = draw("CHIBI", 2, 2);
+    const crisp = draw(2, 2);
     const [crispCity] = unitDraws(crisp);
     expect(crispCity?.call.slice(4)).toEqual([84, 120]);
     expect(smoothingAt(crisp, crispCity?.index ?? 0)).toBe(false);
-
-    // LEGACY draws a unit on a city exactly like a unit anywhere else.
-    const legacy = unitDraws(draw("LEGACY", 1, 1)).map(({ call }) =>
-      call.slice(2),
-    );
-    const [legacyCity, , legacyGrass] = legacy;
-    expect(legacyCity?.[2]).toBe(legacyGrass?.[2]);
-    expect(legacyCity?.[3]).toBe(legacyGrass?.[3]);
-    expect(Number(legacyGrass?.[0]) - Number(legacyCity?.[0])).toBeCloseTo(
-      4 * 128 * zoom,
-    );
   });
 
   it("puts capital on the plan entry of the viewer's capital only", () => {
@@ -558,8 +522,6 @@ describe("CHIBI board rendering", () => {
             "TERRAIN:GRASS",
           ),
         ]),
-        images: legacyImages,
-        artSet: "CHIBI",
         chibiArt: fakeChibi([grass]),
       });
       const drawn = images(log);
@@ -593,17 +555,15 @@ describe("CHIBI board rendering", () => {
         ),
         entry("CITY", 2, 1, "building-city-1", "CITY:1", { value: 1 }),
       ]),
-      images: legacyImages,
-      artSet: "CHIBI",
       chibiArt: fakeChibi([forest, city, fighter]),
     });
     const drawn = images(log).map((call) => call.slice(1));
     expect(drawn).toEqual([
       // Ground pass: the forest's owning cell only, below Roads.
       [{ chibi: forest.id }, 0, 24, 80, 80, 80, 104, 80, 80],
-      // Foreground pass in row-major order: row 0 first.
+      // Foreground pass in row-major order: row 0 first (the Marksman has
+      // no raster and is a marker drawn in code).
       [{ chibi: fighter.id }, 92, 24, 56, 80],
-      [{ legacy: "unit-original-marksman" }, ...(drawn[2]?.slice(1) ?? [])],
       // The forest's upward overflow covers the row behind it.
       [{ chibi: forest.id }, 0, 0, 80, 24, 80, 80, 80, 24],
       // The city overflows 8 px each side and 24 px upward, still after row 0.
@@ -702,10 +662,7 @@ describe("CHIBI board rendering", () => {
       80,
     );
     const fighter = chibiAsset("UNIT:FIGHTER", "STANDARD_UNIT", 56, 80);
-    const discs = (
-      artSet: "LEGACY" | "CHIBI",
-      ready: readonly ChibiArtAssetV7[],
-    ) => {
+    const discs = (ready: readonly ChibiArtAssetV7[]) => {
       const { context, log } = recordingContext();
       drawBoardV7({
         context,
@@ -713,8 +670,6 @@ describe("CHIBI board rendering", () => {
         devicePixelRatio: 1,
         camera: { offsetX: 40, offsetY: 40, zoom: chibiCameraZoom(1) },
         plan: plan([{ ...goblin, at: { x: 1, y: 1 } }]),
-        images: legacyImages,
-        artSet,
         chibiArt: fakeChibi(ready),
       });
       return {
@@ -722,12 +677,12 @@ describe("CHIBI board rendering", () => {
         arcs: log.filter((call) => call[0] === "arc").length,
       };
     };
-    // LEGACY: the Human sprite plus the Goblin badge (a disc).
-    const legacy = discs("LEGACY", [placeholder]);
-    expect(legacy.drawn).toEqual([{ legacy: goblin.assetId }]);
-    expect(legacy.arcs).toBeGreaterThan(0);
-    // CHIBI with the placeholder registered: the placeholder, no badge.
-    const own = discs("CHIBI", [placeholder, fighter]);
+    // Only the Human sprite registered: it, plus the Goblin badge (a disc).
+    const standIn = discs([fighter]);
+    expect(standIn.drawn).toEqual([{ chibi: fighter.id }]);
+    expect(standIn.arcs).toBeGreaterThan(0);
+    // With the placeholder registered: the placeholder, no badge.
+    const own = discs([placeholder, fighter]);
     expect(own.drawn).toEqual([{ chibi: placeholder.id }]);
     expect(own.arcs).toBe(0);
   });
@@ -766,8 +721,6 @@ describe("CHIBI board rendering", () => {
           giant(1, RULESET7_PLAYER_COLORS.CORAL, 0),
           giant(2, RULESET7_PLAYER_COLORS.TEAL, 1),
         ]),
-        images: legacyImages,
-        artSet: "CHIBI",
         chibiArt: fakeChibi(ready),
       });
       return log;
@@ -842,8 +795,6 @@ describe("CHIBI board rendering", () => {
             ready: true,
           }),
         ]),
-        images: legacyImages,
-        artSet: "CHIBI",
         chibiArt: fakeChibi([knight, juggernaut, city, fighter]),
         glowCache,
         readinessElapsedMs: 800,

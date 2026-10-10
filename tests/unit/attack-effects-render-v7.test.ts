@@ -605,7 +605,7 @@ describe("Attack cue drawing", () => {
     expect(fills(false)).not.toContain(NECRO_BOLT_VIOLET_V7.mid);
   });
 
-  it("draws smaller at LEGACY's scale", () => {
+  it("draws smaller at scale 1", () => {
     const radius = (scale?: number) => {
       const { context, log } = recordingContext();
       drawAttackFeedbackV7(

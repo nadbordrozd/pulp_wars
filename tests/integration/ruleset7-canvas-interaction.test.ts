@@ -14,9 +14,11 @@ import {
 import { CanvasBoardHostV7 } from "../../src/render/canvas/board-host-v7";
 import { buildBoardRenderPlanV7 } from "../../src/render/canvas/board-renderer-v7";
 import {
-  boardWorldBounds,
+  chibiBoardWorldBounds,
+  fitChibiCamera,
+} from "../../src/render/canvas/chibi-geometry-v7";
+import {
   cellWorldBounds,
-  fitCamera,
   frameCameraOnArea,
   projectGrid,
   worldToScreen,
@@ -250,12 +252,12 @@ describe("Ruleset 7 Canvas interaction", () => {
     // The new match is framed on its explored area in the 800 x 600 host;
     // there is no HUD or dock to leave out of the visible band.
     const viewport = { width: 800, height: 600 };
-    const framed = frameCameraOnArea(fitCamera(view.board, viewport), {
+    const framed = frameCameraOnArea(fitChibiCamera(view.board, viewport), {
       area: cellWorldBounds(
         view.board.tiles.filter((tile) => tile.explored).map((tile) => tile.at),
       ),
       focus: projectGrid(unit.at),
-      board: boardWorldBounds(view.board.width, view.board.height),
+      board: chibiBoardWorldBounds(view.board),
       viewport,
       band: { top: 0, bottom: viewport.height },
     });
@@ -849,7 +851,9 @@ describe("Ruleset 7 Canvas interaction", () => {
     expect(new Set(arrowPoints.map((point) => point.y)).size).toBeGreaterThan(
       1,
     );
-    const dyingHealthRatio = 48 / 17 / 5;
+    // The HP bar is the vertical one in the cell's left strip: 7 wide, and
+    // 74 tall at full HP.
+    const dyingHealthRatio = 7 / (74 / 17);
     expect(
       healthRatios.some(
         (ratio) => Math.abs(ratio - dyingHealthRatio) < 0.00001,
@@ -860,7 +864,7 @@ describe("Ruleset 7 Canvas interaction", () => {
     const impact = takeFrame(frames);
     now = 1_047;
     impact(now);
-    expect(impactRadii.some((radius) => radius > 20)).toBe(true);
+    expect(impactRadii.some((radius) => radius > 10)).toBe(true);
     host.finishPresentations();
     await presentation;
     expect(
@@ -869,7 +873,9 @@ describe("Ruleset 7 Canvas interaction", () => {
       ),
     ).toBe(false);
     expect(healthRatios.length).toBeGreaterThanOrEqual(1);
-    expect(healthRatios.every((ratio) => ratio === 48 / 5)).toBe(true);
+    expect(
+      healthRatios.every((ratio) => Math.abs(ratio - 7 / 74) < 0.00001),
+    ).toBe(true);
 
     host.update({
       matchInstanceId: 1,

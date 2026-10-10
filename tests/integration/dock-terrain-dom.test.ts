@@ -18,7 +18,6 @@ import {
   type Ruleset7ControllerPortV7,
 } from "../../src/render/dom/app-view-v7";
 import type { ChibiDomEnvironmentV7 } from "../../src/render/dom/chibi-dom-art-v7";
-import type { ArtSetV7 } from "../../src/assets/chibi-art-v7";
 import { goblinShowcaseFixtureV7 } from "../fixtures/v7-goblin-ui";
 
 /**
@@ -130,7 +129,7 @@ function scene(): {
   };
 }
 
-function mount(state: GameStateV7, artSet: ArtSetV7) {
+function mount(state: GameStateV7) {
   const view = viewForV7(state, state.humanPlayerId);
   const snapshot = {
     phase: "ACTIVE",
@@ -167,7 +166,6 @@ function mount(state: GameStateV7, artSet: ArtSetV7) {
     {
       boardHost: host,
       settingsStorage: null,
-      artSet,
       chibiDomEnvironment: environment(),
     },
   );
@@ -210,7 +208,7 @@ describe("the tile dock's Forest and Mountain pictures", () => {
   it("shows the faction's own trees for a Forest in its territory, with or without a Treasure on it", () => {
     drawable();
     const { state, forest, treasure, wild } = scene();
-    const { app, dockArt } = mount(state, "CHIBI");
+    const { app, dockArt } = mount(state);
     expect(dockArt(forest)).toBe(
       "canvas:chibi-forest-goblin-piece-1x1-a:TERRAIN:FOREST",
     );
@@ -224,27 +222,22 @@ describe("the tile dock's Forest and Mountain pictures", () => {
   it("shows a Mountain as the massif's mountain, not the old single one", () => {
     drawable();
     const { state, mountain } = scene();
-    const { app, dockArt } = mount(state, "CHIBI");
+    const { app, dockArt } = mount(state);
     expect(dockArt(mountain)).toMatch(
       /^canvas:chibi-mountain-range-1x1-[a-z]:TERRAIN:MOUNTAIN$/,
     );
     app.destroy();
   });
 
-  it("keeps the registered master where a canvas cannot be drawn, and the LEGACY set as it was", () => {
+  it("keeps the registered master where a canvas cannot be drawn", () => {
     vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockImplementation(
       () => null,
     );
     const { state, forest, mountain } = scene();
-    const chibi = mount(state, "CHIBI");
+    const chibi = mount(state);
     expect(chibi.dockArt(forest)).toMatch(/^image:chibi-forest-/);
     expect(chibi.dockArt(mountain)).toMatch(/^image:chibi-mountain-/);
-    chibi.app.destroy();
-    document.body.innerHTML = '<div id="app"></div>';
-    const legacy = mount(state, "LEGACY");
-    expect(legacy.dockArt(forest)).toMatch(/^image:terrain-/);
-    expect(legacy.dockArt(mountain)).toMatch(/^image:terrain-/);
     expect(document.querySelector(".v7-selection-dock canvas")).toBeNull();
-    legacy.app.destroy();
+    chibi.app.destroy();
   });
 });

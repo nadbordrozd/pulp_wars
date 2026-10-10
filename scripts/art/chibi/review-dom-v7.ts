@@ -27,7 +27,6 @@ import {
   Ruleset7DomAppView,
   type Ruleset7ControllerPortV7,
 } from "../../../src/render/dom/app-view-v7";
-import type { ArtSetV7 } from "../../../src/assets/chibi-art-v7";
 import {
   UNDEAD_SHOWCASE_V7,
   undeadShowcaseFixtureV7,
@@ -201,7 +200,6 @@ const settle = () => new Promise((resolve) => setTimeout(resolve, 50));
 
 export async function showChibiDomReviewV7(
   scene: ChibiDomReviewSceneV7,
-  artSet: ArtSetV7 = "CHIBI",
 ): Promise<ChibiDomReviewV7> {
   const undeadViewer =
     scene === "UNDEAD_UNIT" ||
@@ -238,7 +236,6 @@ export async function showChibiDomReviewV7(
   const app = new Ruleset7DomAppView(document, root, port(snapshot), {
     boardHost: host,
     settingsStorage: null,
-    artSet,
   });
   await settle();
   const view = snapshot.view;

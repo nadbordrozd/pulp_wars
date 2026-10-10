@@ -388,13 +388,4 @@ describe("Ruleset 7 front screen", () => {
     await waitUntil(() => mounted.controller.snapshot().phase === "ACTIVE");
     expect(document.querySelector(".v7-front-shell")).toBeNull();
   });
-
-  it("keeps the plain logo for the LEGACY art set, whose art the scene is not", () => {
-    mount({ artSet: "LEGACY" });
-    const brand = required(".v7-brand");
-    expect(brand.classList.contains("v7-title")).toBe(false);
-    expect(document.querySelector(".v7-title-scene")).toBeNull();
-    expect(brand.querySelector("h1")?.textContent).toBe("Pulp Wars");
-    required('[data-action="front-settings"]');
-  });
 });

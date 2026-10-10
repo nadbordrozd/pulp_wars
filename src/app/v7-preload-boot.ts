@@ -18,7 +18,7 @@ import {
 } from "../render/canvas/preloaded-rasters-v7";
 import { mountLoadingScreenV7 } from "../render/dom/loading-screen-v7";
 import { titleSceneAssetUrlsV7 } from "../render/title-scene-v7";
-import { resolveArtSetV7 } from "./art-set-v7";
+import { clearStoredArtSetV7 } from "./art-set-v7";
 import {
   browserAssetPreloaderV7,
   type AssetPreloadProgressV7,
@@ -162,9 +162,7 @@ export async function bootstrapPreloadedRuleset7App(
     options.settingsStorage === undefined
       ? browserStorageV7(browser)
       : options.settingsStorage;
-  const artSet =
-    options.artSet ??
-    resolveArtSetV7(browser?.location.search ?? "", settingsStorage);
+  clearStoredArtSetV7(settingsStorage);
   const look = assetLookV7(loadBoardClassicLookV7(settingsStorage));
   const preloader = options.preloader ?? browserAssetPreloaderV7(documentRoot);
   const now = options.now ?? ((): number => performance.now());
@@ -235,7 +233,6 @@ export async function bootstrapPreloadedRuleset7App(
 
   const app = bootstrapRuleset7App(documentRoot, {
     ...options,
-    artSet,
     settingsStorage,
     ensureLookAssets: (next) => waitFor(assetPreloadUrlsV7(next)),
     ensureFactionAssets: (next, factions, onProgress) =>

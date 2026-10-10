@@ -170,7 +170,6 @@ function draw(
     devicePixelRatio: 1,
     camera: { offsetX: 100, offsetY: 100, zoom: 1 },
     plan,
-    images: { resolve: () => null },
     ...options,
   });
   return log;
@@ -515,17 +514,23 @@ describe("a Cult match on the board", () => {
     expect(factionColourShadesV7("CULT").base).toBe("#00ff78");
   });
 
-  it("draws every Cult unit with the stand-in letter in LEGACY, and no other unit", () => {
+  /** The units alone: a city without a raster is a marker lettered "C". */
+  const unitsOf = (plan: BoardRenderPlanV7): BoardRenderPlanV7 => ({
+    ...plan,
+    entries: plan.entries.filter((entry) => entry.kind === "UNIT"),
+  });
+
+  it("draws every Cult unit with the stand-in letter on a board without art, and no other unit", () => {
     const scene = cultBoard();
     const cultUnits = scene.view.units.filter(
       (unit) => unit.ownerId === scene.view.viewer.id,
     );
     expect(cultUnits).toHaveLength(4);
-    const log = draw(scene.plan);
+    const log = draw(unitsOf(scene.plan));
     expect(letters(log, "C")).toBe(cultUnits.length);
   });
 
-  it("draws the letter over the shared sprite in CHIBI, and drops it once the Cult's own raster is registered", () => {
+  it("draws the letter over the shared sprite, and drops it once the Cult's own raster is registered", () => {
     const scene = cultBoard();
     const asset = (id: string, subject: ArtSubjectV7): ChibiArtAssetV7 => ({
       id,
@@ -559,7 +564,7 @@ describe("a Cult match on the board", () => {
       asset("human-boat", "UNIT:PATROL_BOAT"),
     ];
     const drawn = (assets: readonly ChibiArtAssetV7[]) => {
-      const log = draw(scene.plan, { artSet: "CHIBI", chibiArt: art(assets) });
+      const log = draw(unitsOf(scene.plan), { chibiArt: art(assets) });
       return {
         letters: letters(log, "C"),
         sprites: log

@@ -13,20 +13,9 @@ import type {
 } from "../engine/index";
 
 /**
- * Ruleset 7 art sets. CHIBI is the art of the game
- * (docs/art/ART_DIRECTION.md) and the only set a player sees. LEGACY, the
- * earlier PixelLab set, is no longer selectable (bead pulp_wars-67q.13):
- * it remains inside the renderer as the base plan and the last per-subject
- * fallback of a chibi raster that cannot be drawn, and as the default of a
- * host or view built without an art set (unit tests), until that path is
- * removed.
- */
-export type ArtSetV7 = "LEGACY" | "CHIBI";
-
-/**
- * Art-set-neutral name of what a map entry depicts. Batch beads register
- * CHIBI rasters against these subjects; a subject without a registered
- * raster falls back to its legacy asset drawn at the chibi geometry.
+ * The name of what a map entry depicts. Batch beads register rasters
+ * against these subjects; a subject without a registered raster is drawn
+ * in code (bead pulp_wars-67q.15), never with art of the earlier set.
  */
 export type ArtSubjectV7 =
   | `TERRAIN:${TerrainIdV7 | "MINED_MOUNTAIN"}`

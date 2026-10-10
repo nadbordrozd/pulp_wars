@@ -406,9 +406,8 @@ describe("Revision 19 Dinosaur city panel", () => {
           `lay-egg-${preview.role.toLowerCase()}`,
         ).querySelector<HTMLElement>('[data-egg-fact="slots"]')?.dataset.slots,
       ).toBe(String(preview.slots));
-    // LEGACY art: the role's Human portrait with the Dinosaur badge and an
-    // egg cue, never the Lay Egg icon.
-    expect(tRex.querySelector(".v7-egg-art .v7-dinosaur-badge")).not.toBe(null);
+    // The role's portrait with an egg cue, never the Lay Egg icon.
+    expect(tRex.querySelector(".v7-egg-art .v7-chibi-art")).not.toBe(null);
     expect(tRex.querySelector('.v7-egg-art svg[data-icon="egg"]')).not.toBe(
       null,
     );
@@ -636,10 +635,11 @@ describe("Revision 19 Egg dock and Shaman Hatch", () => {
     expect(
       dock.querySelector('[data-stat="hp"] .v7-stat-value')?.textContent,
     ).toBe(`${EGG_HP_V7}/${EGG_HP_V7}`);
-    // LEGACY: the code-drawn Egg, no faction badge, and not dimmed as done.
-    expect(dock.querySelector(".v7-identity-art .v7-egg-figure")).not.toBe(
-      null,
-    );
+    // The Egg's own art, no faction badge, and not dimmed as done.
+    expect(
+      dock.querySelector<HTMLElement>(".v7-identity-art .v7-chibi-art")?.dataset
+        .chibiSubject,
+    ).toBe("UNIT:DINOSAUR:EGG");
     expect(dock.querySelector(".v7-identity-art .v7-dinosaur-badge")).toBe(
       null,
     );
@@ -1057,10 +1057,10 @@ describe("Revision 19 growth, abilities and labels", () => {
     expect(
       requiredElement('.v7-faction-chip[data-faction="dinosaur"]').textContent,
     ).toBe("Dinosaur");
-    // LEGACY art: the Human sprite carries the Dinosaur badge.
-    expect(
-      document.querySelector(".v7-identity-art .v7-dinosaur-badge"),
-    ).not.toBe(null);
+    // Its own art carries no Dinosaur badge.
+    expect(document.querySelector(".v7-identity-art .v7-dinosaur-badge")).toBe(
+      null,
+    );
     selectUnitAt(controller, host, { x: 8, y: 9 });
     expect(requiredElement(".v7-selection-dock h2").textContent).toBe(
       "Caveman",

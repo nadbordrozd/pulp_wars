@@ -231,7 +231,7 @@ describe("Ruleset 7 start behind the asset preloader", () => {
     query('[data-action="launch"]')?.click();
     await waitUntil(() => app.controller.snapshot().phase === "ACTIVE");
     await waitUntil(() => host.model !== null);
-    expect(host.model?.artSet).toBe("CHIBI");
+    expect(host.model?.visualDirection).toBeDefined();
     expect(query("canvas.board-canvas-v7")).not.toBeNull();
     expect(requests).toHaveLength(2);
     expect(query("[data-v7-art-wait]")).toBeNull();
@@ -568,7 +568,7 @@ describe("Ruleset 7 board entry and the factions' art", () => {
     expect(query("[data-v7-art-wait]")).toBeNull();
     expect(query("[inert]")).toBeNull();
     expect(query("canvas.board-canvas-v7")).not.toBeNull();
-    expect(host.model?.artSet).toBe("CHIBI");
+    expect(host.model?.visualDirection).toBeDefined();
     app.destroy();
   });
 

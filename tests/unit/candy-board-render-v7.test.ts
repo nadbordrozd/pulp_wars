@@ -75,6 +75,7 @@ import {
   candyVictimFixtureV7,
 } from "../fixtures/v7-candy-ui";
 import { martianUiFixtureV7 } from "../fixtures/v7-martian-ui";
+import { readyBoardArtV7 } from "../fixtures/v7-board-art";
 
 // Bead pulp_wars-jdb.6: the Candy part of the board plan, its markers and
 // its cues. Every expected number is read from the engine constants or a
@@ -151,14 +152,7 @@ function draw(
     devicePixelRatio: 1,
     camera: { offsetX: 100, offsetY: 100, zoom: 1 },
     plan,
-    images: {
-      resolve: (id) =>
-        ({ id, width: 128, height: 128 }) as unknown as CanvasImageSource,
-      resolveTerrainGround: (id) =>
-        ({ id: `ground:${id}`, width: 128, height: 128 }) as never,
-      resolveRaisedTerrain: (id) =>
-        ({ id: `raised:${id}`, width: 256, height: 256 }) as never,
-    },
+    chibiArt: readyBoardArtV7(),
     ...options,
   });
   return log;
@@ -1030,21 +1024,13 @@ describe("the Candy badge over stand-in art (pulp_wars-jdb.9)", () => {
     expect(otherUnits.length).toBeGreaterThan(0);
   });
 
-  it("marks every Candy unit drawn as a Human sprite in LEGACY, and no other unit", () => {
-    const log = draw(plan);
-    expect(badged(log, candyUnits, CANDY_BADGE_FRAME_V7.legacy)).toEqual(
-      candyUnits,
-    );
-    expect(badged(log, otherUnits, CANDY_BADGE_FRAME_V7.legacy)).toEqual([]);
-  });
-
   it("marks a Candy unit whose raster is missing in CHIBI (the classic look, a failed load), and none drawn in its own art", () => {
-    const standIn = draw(plan, { artSet: "CHIBI", chibiArt: chibiArt(false) });
+    const standIn = draw(plan, { chibiArt: chibiArt(false) });
     expect(badged(standIn, candyUnits, CANDY_BADGE_FRAME_V7.chibi)).toEqual(
       candyUnits,
     );
     expect(badged(standIn, otherUnits, CANDY_BADGE_FRAME_V7.chibi)).toEqual([]);
-    const own = draw(plan, { artSet: "CHIBI", chibiArt: chibiArt(true) });
+    const own = draw(plan, { chibiArt: chibiArt(true) });
     expect(badged(own, candyUnits, CANDY_BADGE_FRAME_V7.chibi)).toEqual([]);
   });
 

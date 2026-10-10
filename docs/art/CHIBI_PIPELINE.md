@@ -7,8 +7,9 @@ sets the rules; the [asset inventory](CHIBI_ASSET_INVENTORY.md) sets each
 batch's subjects, canvases and anchors. Since `pulp_wars-67q.13` the chibi
 art is the game's only art set: where this document says a review captures
 the game "with `?art=chibi`", the parameter is no longer needed (it is
-ignored), and "LEGACY" names the renderer's internal fallback, which no
-player can select.
+ignored). Since `pulp_wars-67q.15` there is no LEGACY render path either:
+where this document says what "LEGACY" draws or captures, it is history,
+and a subject without a usable raster is drawn in code.
 
 ## Files
 

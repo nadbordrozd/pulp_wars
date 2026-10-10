@@ -101,7 +101,6 @@ function rig(options: ConstructorParameters<typeof CanvasBoardHostV7>[1] = {}) {
       selectedUnitId: null,
       selectedAchievement: null,
     },
-    artSet: "CHIBI",
     ...more,
   });
   /** Runs the frames asked for, 16 ms apart, until none is asked for. */
@@ -184,11 +183,8 @@ describe("the board host and the ghosts", () => {
     expect(last().plan).toBe(plan);
   });
 
-  it("gives none to the LEGACY art set, with the switch off, or without a skeleton", () => {
+  it("gives none with the switch off, or without a skeleton", () => {
     const view = game();
-    const legacy = rig();
-    legacy.host.update(legacy.model(view, { artSet: "LEGACY" }));
-    expect(legacy.last().plan.ghosts).toBeUndefined();
     const none = rig({ terrainSkeleton: () => null });
     none.host.update(none.model(view));
     expect(none.last().plan.ghosts).toBeUndefined();
@@ -286,20 +282,19 @@ describe("the board host and a Rift half in the fog (pulp_wars-2yc.37)", () => {
     ["PANGEA", ["H_WEST", "H_MIDDLE", "H_EAST"]],
     ["DRY_LAND", ["V_NORTH", "V_MIDDLE", "V_SOUTH"]],
   ] as const)
-    for (const artSet of ["CHIBI", "LEGACY"] as const)
-      it(`plans each explored cell of a real match's Rift its own third: ${mapType}, ${artSet}`, () => {
-        const { rift, seeing } = riftGame(mapType);
-        expect(rift).toHaveLength(3);
-        const { host, model, last } = rig();
-        host.update(model(seeing([true, true, true]), { artSet }));
-        expect(riftPieces(last(), rift)).toEqual(whole);
-        for (const mask of RIFT_MASKS) {
-          host.update(model(seeing(mask), { artSet }));
-          expect(riftPieces(last(), rift), mask.join()).toEqual(
-            whole.map((piece, index) => (mask[index] ? piece : null)),
-          );
-        }
-      });
+    it(`plans each explored cell of a real match's Rift its own third: ${mapType}`, () => {
+      const { rift, seeing } = riftGame(mapType);
+      expect(rift).toHaveLength(3);
+      const { host, model, last } = rig();
+      host.update(model(seeing([true, true, true])));
+      expect(riftPieces(last(), rift)).toEqual(whole);
+      for (const mask of RIFT_MASKS) {
+        host.update(model(seeing(mask)));
+        expect(riftPieces(last(), rift), mask.join()).toEqual(
+          whole.map((piece, index) => (mask[index] ? piece : null)),
+        );
+      }
+    });
 
   it("guesses from the explored cells without a skeleton or with the switch off", () => {
     const { rift, seeing } = riftGame("DRY_LAND");

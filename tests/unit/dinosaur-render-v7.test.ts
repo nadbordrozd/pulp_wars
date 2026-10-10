@@ -193,7 +193,6 @@ function draw(
     devicePixelRatio: 1,
     camera: { offsetX: 100, offsetY: 100, zoom: 1 },
     plan,
-    images: { resolve: () => null },
     ...options,
   });
   return log;
@@ -496,7 +495,7 @@ describe("Revision 19 board drawing", () => {
     entries: readonly BoardRenderPlanEntryV7[],
   ): BoardRenderPlanV7 => ({ version: 7, entries, targets: [] });
 
-  it("draws the LEGACY Egg in code with its countdown, and an HP bar only when damaged", () => {
+  it("draws an Egg without a raster in code with its countdown, and an HP bar only when damaged", () => {
     const full = draw(plan([egg()]));
     // Nest and shell ellipses, no raster, the seat number and the countdown.
     expect(full.filter((call) => call[0] === "ellipse").length).toBe(4);
@@ -517,7 +516,7 @@ describe("Revision 19 board drawing", () => {
   it("draws the CHIBI Egg from its raster with the countdown in the CHIBI frame", () => {
     const chibiArt = fakeChibi([chibiAsset("UNIT:DINOSAUR:EGG", 48, 48)]);
     const camera = { offsetX: 100, offsetY: 100, zoom: chibiCameraZoom(1) };
-    const log = draw(plan([egg()]), { artSet: "CHIBI", chibiArt, camera });
+    const log = draw(plan([egg()]), { chibiArt, camera });
     expect(log.filter((call) => call[0] === "drawImage")).toHaveLength(1);
     expect(log.some((call) => call[0] === "ellipse")).toBe(false);
     const countdown = log.find(
@@ -569,7 +568,6 @@ describe("Revision 19 board drawing", () => {
     const chibiArt = fakeChibi([chibiAsset("UNIT:DINOSAUR:KNIGHT", 72, 88)]);
     const camera = { offsetX: 100, offsetY: 100, zoom: chibiCameraZoom(1) };
     const base = draw(plan([grown(null)]), {
-      artSet: "CHIBI",
       chibiArt,
       camera,
     }).find((call) => call[0] === "drawImage");
@@ -578,7 +576,6 @@ describe("Revision 19 board drawing", () => {
       [2, 1.25],
     ] as const) {
       const log = draw(plan([grown(stage)]), {
-        artSet: "CHIBI",
         chibiArt,
         camera,
       });
@@ -622,7 +619,6 @@ describe("Revision 19 board drawing", () => {
       unitPulses: Parameters<typeof drawBoardV7>[0]["unitPulses"],
     ) =>
       draw(plan([egg()]), {
-        artSet: "CHIBI",
         chibiArt,
         camera,
         ...(unitPulses === undefined ? {} : { unitPulses }),

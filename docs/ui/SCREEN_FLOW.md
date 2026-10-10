@@ -22,6 +22,15 @@ tech-detail views, not spelled out in the HUD or dock. Where later sections
 require specific verbose labels, formula prose, or `+N/turn` wording for
 Ruleset 7, this overlay wins. Ruleset 6 and legacy routes are unchanged.
 
+**One art set (bead `pulp_wars-67q.15`).** Ruleset 7 draws the CHIBI art
+only. Where a section below says what the "LEGACY" art set draws, or that
+something holds "in both art sets", it describes a render path that was
+removed: read it as what the one art set draws, and as the code-drawn
+stand-in where it is about a subject without a raster (the Egg, the mound,
+the Spider, the curiosity markers and the vector glyphs still stand in for
+a missing raster, in the Classic look too; any other piece without a raster
+is a lettered marker, [client architecture](../architecture/CLIENT_ARCHITECTURE.md#ruleset-7-art-sets)).
+
 ### No coordinates, minimal text (bead `pulp_wars-b5f.8`)
 
 This rule binds every Ruleset 7 player-facing string: dock prompts and
@@ -394,7 +403,7 @@ It is what a player with no stored preference sees. Where a later section
 describes the CHIBI seat badge, the always-on vertical HP bar, the unit
 outline glow as the ready cue, dashed territory borders or black-cased
 Roads, that text now describes the **Classic look** developer option
-([section 11](#11-settings-and-pause)); the LEGACY art set is unchanged.
+([section 11](#11-settings-and-pause)).
 
 - **No base plates; the faction says whose a unit is** (bead
   `pulp_wars-w5j.3`, [section 20 of the visual direction](../art/VISUAL_DIRECTION_2026-10.md#20-faction-looks-instead-of-base-plates)).
@@ -605,8 +614,7 @@ Roads, that text now describes the **Classic look** developer option
   bar (`role="progressbar"`, labelled by "Loading"; the percentage is hidden
   from assistive technology) eases only with full motion, and under reduced
   motion (the system setting, or the game's Motion setting once stored)
-  the scene is a still picture. The legacy art set keeps the plain
-  backdrop. After it, a sprite seen for the first time
+  the scene is a still picture. After it, a sprite seen for the first time
   is drawn at once, in a match, the Gallery or a dialog. An image that
   fails to load does not hold the game back: it loads when first needed,
   with the fallback above. See
@@ -2028,10 +2036,8 @@ the screens it opens (new game, campaign, Settings, save recovery). Ruleset
   pixel, ten frames a second; with reduced motion (the setting, which starts
   from the system preference) it is a still picture. It is hidden from
   assistive technology, takes no input and makes no sound; it stops while a
-  match or the Gallery is shown. A view built without the CHIBI art set (the
-  internal LEGACY path of tests; no player can select it since
-  `pulp_wars-67q.13`) keeps the plain logo and the same menu on the plain
-  background.
+  match or the Gallery is shown. Every view shows it: since
+  `pulp_wars-67q.15` there is no art set without it.
 - **Leaving a match.** A match's menu ends with **Save & quit**, which
   saves and shows the main menu with Continue focused. Every end dialog has
   **Main menu** after its other actions (Victory and Defeat: Play again,

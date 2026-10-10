@@ -27,7 +27,7 @@ import {
 /**
  * Map curiosities on the canvas (bead pulp_wars-737.6): the live look draws
  * the registered rasters (the Wreck cut at its waterline, the Spider on its
- * measured shadow with no owner chrome), the classic look and LEGACY draw
+ * measured shadow with no owner chrome), the classic look and a board without art draw
  * the code markers, and the effect cues draw their sprites.
  */
 type LogEntry = readonly unknown[];
@@ -99,7 +99,7 @@ function plan(): BoardRenderPlanV7 {
   };
 }
 
-function draw(look: "LIVE" | "CLASSIC" | "LEGACY"): LogEntry[] {
+function draw(look: "LIVE" | "CLASSIC" | "NO_ART"): LogEntry[] {
   const { context, log } = recordingContext();
   drawBoardV7({
     context,
@@ -107,11 +107,8 @@ function draw(look: "LIVE" | "CLASSIC" | "LEGACY"): LogEntry[] {
     devicePixelRatio: 1,
     camera,
     plan: plan(),
-    images: { resolve: () => null },
     reducedMotion: true,
-    ...(look === "LEGACY"
-      ? { artSet: "LEGACY" as const }
-      : { artSet: "CHIBI" as const, chibiArt: classicArt }),
+    ...(look === "NO_ART" ? {} : { chibiArt: classicArt }),
     ...(look === "LIVE"
       ? {
           direction: {
@@ -222,7 +219,7 @@ describe("curiosities on the canvas", () => {
     expect(log.some((entry) => entry[0] === "fillText")).toBe(false);
   });
 
-  for (const look of ["CLASSIC", "LEGACY"] as const)
+  for (const look of ["CLASSIC", "NO_ART"] as const)
     it(`${look}: draws code markers and a code Spider, and no raster`, () => {
       const log = draw(look);
       expect(imagesDrawn(log)).toEqual([]);
@@ -298,7 +295,7 @@ describe("the curiosity effect cues", () => {
     }
   });
 
-  it("keeps a code cue without the sprites (LEGACY) and holds still under reduced motion", () => {
+  it("keeps a code cue without the sprites (a board without art) and holds still under reduced motion", () => {
     for (const effect of [
       "FOUNTAIN",
       "BLESSING",

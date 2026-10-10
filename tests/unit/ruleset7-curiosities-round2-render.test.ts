@@ -33,7 +33,7 @@ import {
 /**
  * Map curiosities round 2 on the canvas (bead pulp_wars-737.16): the live
  * look draws the round-2 rasters (the Downed Saucer, both gates, the Well,
- * Bigfoot on its measured shadow); LEGACY and the classic look draw the
+ * Bigfoot on its measured shadow); a board without art and the classic look draw the
  * code markers and a code Bigfoot; the gate Move preview marks the exit and
  * the shove, or the exit as blocked; and the gate and Well cues draw their
  * sprites.
@@ -120,7 +120,7 @@ function plan(
 }
 
 function draw(
-  look: "LIVE" | "CLASSIC" | "LEGACY",
+  look: "LIVE" | "CLASSIC" | "NO_ART",
   board: BoardRenderPlanV7 = plan(round2SaucerUiFixtureV7()),
 ): LogEntry[] {
   const { context, log } = recordingContext();
@@ -130,11 +130,8 @@ function draw(
     devicePixelRatio: 1,
     camera,
     plan: board,
-    images: { resolve: () => null },
     reducedMotion: true,
-    ...(look === "LEGACY"
-      ? { artSet: "LEGACY" as const }
-      : { artSet: "CHIBI" as const, chibiArt: classicArt }),
+    ...(look === "NO_ART" ? {} : { chibiArt: classicArt }),
     ...(look === "LIVE"
       ? {
           direction: {
@@ -221,7 +218,7 @@ describe("curiosities round two on the canvas", () => {
     ).toBe(true);
   });
 
-  for (const look of ["CLASSIC", "LEGACY"] as const)
+  for (const look of ["CLASSIC", "NO_ART"] as const)
     it(`${look}: draws code markers and a code Bigfoot, and no curiosity raster`, () => {
       const log = draw(look);
       expect(
@@ -235,10 +232,11 @@ describe("curiosities round two on the canvas", () => {
           (entry) => entry[0] === "stroke" || entry[0] === "strokeRect",
         ).length,
       ).toBeGreaterThan(20);
-      // Each provoked guard wears the code "!" marker; Bigfoot none.
+      // Each provoked guard is a lettered marker (no raster) wearing the
+      // code "!" marker; Bigfoot none.
       expect(
         log.filter((entry) => entry[0] === "fillText").map((entry) => entry[1]),
-      ).toEqual(["!", "!", "!"]);
+      ).toEqual(["F", "!", "M", "!", "G", "!"]);
     });
 });
 
@@ -254,7 +252,7 @@ describe("the gate Move preview on the canvas", () => {
     const state = round2SaucerUiFixtureV7();
     const traveller = unitAt(state, AT.traveller);
     const log = draw(
-      "LEGACY",
+      "NO_ART",
       plan(state, { kind: "UNIT", unitId: traveller.id }, false),
     );
     expect(labels(log)).toEqual(expect.arrayContaining(["Exit", "Shoved"]));
@@ -267,7 +265,7 @@ describe("the gate Move preview on the canvas", () => {
     const state = round2GateBlockedUiFixtureV7();
     const traveller = unitAt(state, AT.traveller);
     const log = draw(
-      "LEGACY",
+      "NO_ART",
       plan(state, { kind: "UNIT", unitId: traveller.id }, false),
     );
     expect(labels(log)).toContain("Blocked");

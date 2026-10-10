@@ -332,9 +332,8 @@ export function showChibiEffectsReviewV7(
     animationSpeed: "NORMAL",
     presentationPaused: true,
     highContrast: false,
-    artSet: "CHIBI",
     // The look the game draws by default (bead pulp_wars-3tq.6).
-    ...liveBoardLookV7("CHIBI"),
+    ...liveBoardLookV7(),
   });
   const pin = (): void =>
     host.pinSupportFeedback(chibiEffectsReviewFeedbackV7(origin, scene));

@@ -31,6 +31,7 @@ import {
   round2GraveyardUiFixtureV7,
   round2SaucerUiFixtureV7,
 } from "../fixtures/v7-curiosities-round2-ui";
+import { classicLookStorageV7 } from "../fixtures/v7-board-art";
 
 /**
  * Map curiosities round 2 in the DOM (bead pulp_wars-737.16,
@@ -39,7 +40,7 @@ import {
  * a guard's and Bigfoot's dock (Neutral, Provoked or Alert, its stats, no
  * faction or owner) and "?" dialog, each new tile's dock, the Toss a Coin
  * command and its toast, a gate traversal with its displacement, and a
- * blocked gate, in the LEGACY art set and the live look; the board plan the
+ * blocked gate, in the classic and the live look; the board plan the
  * view hands to the board carries the camp threat and the gate preview.
  */
 const AT = ROUND2_UI_V7;
@@ -50,7 +51,7 @@ beforeEach(() => {
   window.localStorage.clear();
 });
 
-function mount(initial: GameStateV7, artSet: "LEGACY" | "CHIBI" = "LEGACY") {
+function mount(initial: GameStateV7, look: "CLASSIC" | "LIVE" = "LIVE") {
   let state = initial;
   const subscribers = new Set<(snapshot: Ruleset7BrowserSnapshot) => void>();
   const boundaries = new Set<(boundary: Ruleset7AcceptedBoundary) => void>();
@@ -165,8 +166,7 @@ function mount(initial: GameStateV7, artSet: "LEGACY" | "CHIBI" = "LEGACY") {
   if (root === null) throw new Error("no root");
   const view = new Ruleset7DomAppView(document, root, controller, {
     boardHost,
-    settingsStorage: null,
-    artSet,
+    settingsStorage: look === "CLASSIC" ? classicLookStorageV7() : null,
   });
   const select = (at: CoordV7, tile = false): void => {
     const unit = tile
@@ -213,9 +213,9 @@ const chips = (dock: HTMLElement | null): readonly (string | null)[] =>
   );
 
 describe("Ruleset 7 curiosities round two: a camp and Bigfoot in the dock", () => {
-  for (const artSet of ["LEGACY", "CHIBI"] as const) {
-    it(`${artSet}: shows a saucer guard as Neutral and Provoked, with no faction or owner`, () => {
-      const app = mount(round2SaucerUiFixtureV7(), artSet);
+  for (const look of ["CLASSIC", "LIVE"] as const) {
+    it(`${look}: shows a saucer guard as Neutral and Provoked, with no faction or owner`, () => {
+      const app = mount(round2SaucerUiFixtureV7(), look);
       app.select(AT.guards[0]);
       const dock = app.dock();
       if (dock === null) throw new Error("no dock");
@@ -246,8 +246,8 @@ describe("Ruleset 7 curiosities round two: a camp and Bigfoot in the dock", () =
       app.destroy();
     });
 
-    it(`${artSet}: shows Bigfoot as Neutral and Alert, with its figure`, () => {
-      const app = mount(round2SaucerUiFixtureV7(), artSet);
+    it(`${look}: shows Bigfoot as Neutral and Alert, with its figure`, () => {
+      const app = mount(round2SaucerUiFixtureV7(), look);
       app.select(AT.bigfoot);
       const dock = app.dock();
       expect(dock?.querySelector("h2")?.textContent).toBe("Bigfoot");
@@ -255,7 +255,7 @@ describe("Ruleset 7 curiosities round two: a camp and Bigfoot in the dock", () =
       expect(chips(dock)).not.toContain("Provoked");
       expect(dock?.querySelector(".v7-faction-chip")).toBeNull();
       const figure = dock?.querySelector(".v7-identity-art > *");
-      if (artSet === "LEGACY")
+      if (look === "CLASSIC")
         expect(figure?.getAttribute("data-asset-id")).toBe(
           "unit-neutral-bigfoot-code",
         );
@@ -337,9 +337,9 @@ describe("Ruleset 7 curiosities round two: a camp and Bigfoot in the dock", () =
 });
 
 describe("Ruleset 7 curiosities round two: the Well and the gates", () => {
-  for (const artSet of ["LEGACY", "CHIBI"] as const)
-    it(`${artSet}: tosses a Coin from the dock and toasts the outcome`, async () => {
-      const app = mount(round2SaucerUiFixtureV7(), artSet);
+  for (const look of ["CLASSIC", "LIVE"] as const)
+    it(`${look}: tosses a Coin from the dock and toasts the outcome`, async () => {
+      const app = mount(round2SaucerUiFixtureV7(), look);
       app.select(AT.pilgrim);
       const toss = app
         .dock()
@@ -347,10 +347,10 @@ describe("Ruleset 7 curiosities round two: the Well and the gates", () => {
       if (toss === null || toss === undefined) throw new Error("no toss");
       expect(toss.textContent).toContain("Toss a Coin");
       expect(toss.title).toContain("Once per match");
-      // Its icon: the Well's raster in the live look, its glyph in LEGACY.
+      // Its icon: the Well's raster in the live look, its glyph in the classic look.
       expect(
         toss.querySelector(
-          artSet === "LEGACY"
+          look === "CLASSIC"
             ? '[data-asset-id="curiosity-wishing_well-code"]'
             : "img",
         ),

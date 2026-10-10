@@ -35,7 +35,11 @@ export function undeadFixtureMountExpressionV7(
 export function ruleset7FixtureMountExpressionV7(options: {
   readonly module: string;
   readonly fixture: string;
-  readonly artSet: "LEGACY" | "CHIBI";
+  /**
+   * Ignored: Ruleset 7 has one art set (bead pulp_wars-67q.15). Kept so the
+   * review scripts that still pass it need no change.
+   */
+  readonly artSet?: "LEGACY" | "CHIBI";
   readonly global: string;
   /** Object-literal members evaluated with `fixtures` in scope. */
   readonly extras: string;
@@ -94,7 +98,7 @@ export function ruleset7FixtureMountExpressionV7(options: {
       };
       const root = document.querySelector('#app');
       const boardHost = new CanvasBoardHostV7(document);
-      const view = new Ruleset7DomAppView(document, root, controller, { boardHost, settingsStorage: ${options.settingsStorage === "localStorage" ? "localStorage" : "null"}, artSet: ${JSON.stringify(options.artSet)} });
+      const view = new Ruleset7DomAppView(document, root, controller, { boardHost, settingsStorage: ${options.settingsStorage === "localStorage" ? "localStorage" : "null"} });
       globalThis[${global}] = { boardHost, traces, view, snapshotView: () => snapshot().view, ${options.extras} };
     })()`;
 }

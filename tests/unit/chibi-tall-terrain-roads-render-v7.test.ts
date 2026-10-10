@@ -20,7 +20,7 @@ import { chibiCameraZoom } from "../../src/render/canvas/chibi-geometry-v7";
 
 /**
  * pulp_wars-yyy: in the CHIBI art set a Road (or a corner join) on Forest,
- * Mountain or Mine passes under the tree or rock body, as in LEGACY. The
+ * Mountain or Mine passes under the tree or rock body, as before the chibi art. The
  * cell draws its ground tile, then Roads, then the body's owning cell, then
  * pieces; the upward overflow keeps its row-ordered foreground slot.
  */
@@ -51,15 +51,6 @@ function recordingContext(): {
   );
   return { context: context as CanvasRenderingContext2D, log };
 }
-
-const legacyImages = {
-  resolve: (assetId: string) =>
-    ({ legacy: assetId }) as unknown as CanvasImageSource,
-  resolveTerrainGround: (assetId: string) =>
-    ({ legacyGround: assetId }) as unknown as CanvasImageSource,
-  resolveRaisedTerrain: (assetId: string) =>
-    ({ legacyRaised: assetId }) as unknown as CanvasImageSource,
-};
 
 const tall = (
   subject: ArtSubjectV7,
@@ -165,7 +156,6 @@ const plan = (
 
 function draw(
   built: BoardRenderPlanV7,
-  artSet: "LEGACY" | "CHIBI" | undefined,
   chibiArt?: ChibiBoardArtV7,
 ): LogEntry[] {
   const { context, log } = recordingContext();
@@ -173,14 +163,8 @@ function draw(
     context,
     viewport: { width: 800, height: 600 },
     devicePixelRatio: 1,
-    camera: {
-      offsetX: 40,
-      offsetY: 64,
-      zoom: artSet === "CHIBI" ? chibiCameraZoom(1) : 1,
-    },
+    camera: { offsetX: 40, offsetY: 64, zoom: chibiCameraZoom(1) },
     plan: built,
-    images: legacyImages,
-    ...(artSet === undefined ? {} : { artSet }),
     ...(chibiArt === undefined ? {} : { chibiArt }),
   });
   return log;
@@ -216,7 +200,7 @@ describe("CHIBI Roads under tall terrain", () => {
         artSubject: "UNIT:FIGHTER",
       },
     ]);
-    const drawn = events(draw(built, "CHIBI", fakeChibi([forest, fighter])));
+    const drawn = events(draw(built, fakeChibi([forest, fighter])));
     expect(drawn).toEqual([
       // Ground pass: the ground tile fills the owning cell.
       [{ ground: forest.id }, 0, 0, 80, 80, ...CELL],
@@ -265,9 +249,7 @@ describe("CHIBI Roads under tall terrain", () => {
       ]),
       road(2, 1, [{ x: 1, y: 1 }]),
     ]);
-    const drawn = events(
-      draw(built, "CHIBI", fakeChibi([forest, mountain, mine])),
-    );
+    const drawn = events(draw(built, fakeChibi([forest, mountain, mine])));
     const index = (predicate: (event: unknown[]) => boolean): number[] =>
       drawn.flatMap((event, at) => (predicate(event) ? [at] : []));
     const layer = (event: unknown[], kind: string): boolean =>
@@ -304,10 +286,9 @@ describe("CHIBI Roads under tall terrain", () => {
       ),
       road(3, 1, []),
     ]);
-    const withLayers = draw(built, "CHIBI", fakeChibi([forest, mountain]));
+    const withLayers = draw(built, fakeChibi([forest, mountain]));
     const withoutLayers = draw(
       built,
-      "CHIBI",
       fakeChibi([
         tall("TERRAIN:FOREST", "forest", false),
         tall("TERRAIN:MOUNTAIN", "mountain", false),
@@ -325,32 +306,11 @@ describe("CHIBI Roads under tall terrain", () => {
       terrain(1, 1, "TERRAIN:FOREST", "terrain-ruleset7-original-forest-1"),
       road(1, 1, [{ x: 2, y: 1 }]),
     ]);
-    expect(
-      events(draw(built, "CHIBI", fakeChibi([forest], { bare: true }))),
-    ).toEqual([
+    expect(events(draw(built, fakeChibi([forest], { bare: true })))).toEqual([
       [{ chibi: forest.id }, 0, 24, 80, 80, ...CELL],
       ["stroke", casing[0]],
       ["stroke", fill[0]],
       [{ chibi: forest.id }, ...OVERFLOW],
-    ]);
-  });
-
-  it("keeps LEGACY byte-identical: ground, Road, raised body", () => {
-    const built = plan([
-      terrain(1, 1, "TERRAIN:FOREST", "terrain-ruleset7-original-forest-1"),
-      road(1, 1, [{ x: 2, y: 1 }]),
-    ]);
-    const legacy = draw(built, undefined);
-    expect(draw(built, "LEGACY", fakeChibi([forest]))).toEqual(legacy);
-    expect(
-      events(legacy).map((event) =>
-        typeof event[0] === "object" ? event[0] : event,
-      ),
-    ).toEqual([
-      { legacyGround: "terrain-ruleset7-original-forest-1" },
-      ["stroke", "#69472e"],
-      ["stroke", "#a57a4c"],
-      { legacyRaised: "terrain-ruleset7-original-forest-1" },
     ]);
   });
 });

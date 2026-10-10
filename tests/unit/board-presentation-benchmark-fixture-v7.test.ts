@@ -17,6 +17,7 @@ import {
   fitCamera,
   projectGrid,
 } from "../../src/render/canvas/geometry";
+import { readyBoardArtV7 } from "../fixtures/v7-board-art";
 
 /** A recording 2D context; jsdom has no Canvas backend. */
 function recordingContext(canvas: HTMLCanvasElement) {
@@ -75,7 +76,7 @@ function drawOnce(fixture: BoardPresentationFixtureV7) {
       viewport,
     ),
     plan,
-    images: { resolve: () => ({}) as CanvasImageSource },
+    chibiArt: readyBoardArtV7(),
     readinessElapsedMs: 800,
   });
   return { plan, drawImage: recorded.drawImage };

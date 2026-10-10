@@ -432,7 +432,7 @@ export function showFactionBuildingsSceneV7(
     onSelection: () => undefined,
     onCommand: () => undefined,
   });
-  const look = liveBoardLookV7("CHIBI");
+  const look = liveBoardLookV7();
   host.update({
     matchInstanceId: `faction-buildings-${options.faction}-${options.after ? "after" : "before"}-${options.captured === true ? "captured" : "own"}${options.monuments === true ? "-monuments" : ""}`,
     view: scene.view,
@@ -447,7 +447,6 @@ export function showFactionBuildingsSceneV7(
     animationSpeed: "NORMAL",
     presentationPaused: true,
     highContrast: false,
-    artSet: "CHIBI",
     ...look,
     ...(!options.after
       ? { visualDirectionArt: registryWithoutFactionLooks() }
