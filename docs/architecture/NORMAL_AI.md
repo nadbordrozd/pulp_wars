@@ -5777,12 +5777,121 @@ within its bound, and a seat seldom has one near a Wreck; no rule sends a
 unit to sea for it. Widening it, or the Fountain and Shrine bounds, needs
 matches to measure.
 
-The same facts cover the round-2 neutrals without any rule of their own:
-a camp guard and Bigfoot are entries of the view's `monsters`, so no
-routine Move ends on a camp's area (a guard's `provokeTiles`) or on
-Bigfoot's, and each is attacked only for a kill this turn or from outside
-its reach. The policy has no rule for a Dimensional Gate or the Wishing
-Well (`pulp_wars-737.15`).
+The round-2 neutrals (a camp guard, Bigfoot) are entries of the view's
+`monsters` too; their rules, the gates', and the Well's are
+[below](#map-curiosities-round-2-pulp_wars-73715).
+
+### Map curiosities, round 2 (`pulp_wars-737.15`)
+
+[Section 33 of the spec](../product/RULESET_7_MAP_CURIOSITIES.md#33-normal-ai-round-2)
+with the notes of its
+[section 41](../product/RULESET_7_MAP_CURIOSITIES.md#41-implementation-notes-pulp_wars-73715).
+No rule or number of the game changed and the identity is the same. The
+facts and the errands are in `src/ai/v7-curiosities.ts`; the hooks are the
+round-1 ones in `src/ai/v7.ts` (`curiosityRejectsV7`,
+`curiosityMoveValueV7`, `huntPlansV7`, the threat estimate) plus the score
+of `TOSS_COIN` and the result tile of a Move onto a gate. Everything is
+behind `curiosityFactsV7`, and each rule runs only when the view has its
+curiosity, so a match without one decides as before. Before this bead the
+Spider rules applied to every neutral unit as they stood: a guard closed
+its whole provoke area and was counted a threat on all of it, and Bigfoot
+closed the 48 tiles within 3 of it and was counted a threat there, though
+it never attacks.
+
+**The facts by breed** (`MonsterFactsV7`). `avoidKeys` are the tiles no
+routine Move ends on: the Spider's and a guard's `provokeTiles` from
+`previewMonsterV7` (a saucer's perimeter and the tiles next to each visible
+guard, 25 or more; a Zombie's reach), none for Bigfoot. `threatKeys` are
+the tiles where the neutral unit counts a unit unprovoked: the Spider's
+provoke tiles, a guard's provoke tiles **within its reach**, none for
+Bigfoot. A guard's `provokedBy` is its camp's (a hurt to one guard provokes
+the camp). `bounty` is the breed's (`NEUTRAL_BOUNTY_FOR_POLICY_V7`, pinned
+to the engine's table) and `regeneration` is 0 except the Spider's 4.
+
+**Camps: avoid unless strong.**
+
+- No routine Move, landing, or Beam Down ends on a guard's `avoidKeys`. A
+  unit there, or one a guard threatens, with no attack on a seat's unit
+  and no part in a kill, steps out (`MONSTER_STEP_AWAY_PRIORITY_V7`, 1176).
+- The threat estimate counts a guard for a unit on its `threatKeys`, or
+  one that hurt its camp and stands in its reach. A perimeter tile no guard
+  reaches costs nothing.
+- An attack on a guard is a candidate (a) as part of a kill this turn
+  (`huntPlansV7`: every visible guard is a target, planned after the seat's
+  other kills so it takes no hunter from them; the kill adds the guard's
+  bounty), or (b) when `monsterRetaliates` is false (outside the reach of
+  every guard of the camp), the hit does damage, and the unit has no
+  offered attack on a seat's unit.
+- **Enough force** (`campTooStrongV7`, `CAMP_ANSWER_HP_DIVISOR_V7` 2). The
+  kills planned on one camp stand only when no hunter, on the tile it
+  strikes from, would lose half its HP or more to the guards the plans
+  leave alive whose reach covers that tile. Otherwise every plan on that
+  camp is dropped this turn. So one Knight does not ride into two Grunts
+  and a Shield Projector, two Knights that kill both Grunts do, and a camp
+  of one guard is taken by whatever kills it. The tile is the one the unit
+  strikes from; an advance after the kill is not followed.
+
+**Bigfoot: opportunistic.** It closes no tile and is no threat. An attack
+on it is a candidate only for a unit with no offered attack on a seat's
+unit (it never answers, so any hit that does damage counts). The kill plan
+of the hunt rules is kept, with three limits: Bigfoot is planned last, a
+unit with a seat's unit to strike is no hunter, and the Move that sets up
+the kill has `BIGFOOT_HUNT_MOVE_PRIORITY_V7` (736: above the routine Moves,
+at most 735; below every capture, chest, errand of a wounded unit, and
+hunt of a unit that fights back; the Spider's hunt Move has 1177). No Move
+is made toward a Bigfoot that this turn's hits do not kill.
+
+**Gates.** `gateTraversalExitV7` reads `previewGateV7`: a Move that ends on
+a gate is scored on the gate's exit (the danger, the route progress),
+which is where the engine puts the unit.
+
+- A unit has a gate errand (`planCuriosityErrandsV7`) when its campaign job
+  is not `EXPLORE`, the job's tile is explored, and the gate route (route
+  steps to a visible gate over explored land, then the job's route field
+  from the exit) is at least `GATE_ROUTE_TURNS_SAVED_V7` (3) turns shorter
+  than the job's land route, in turns of the unit's Move with the
+  traversal ending a turn; or when it is the only route. Never a sole city
+  defender; never through an exit on a Spider's or a guard's `avoidKeys`,
+  or where the visible enemies would kill the unit.
+- The Move onto the gate has `GATE_TRAVERSE_PRIORITY_V7` (728) and a Move
+  that comes closer to it `GATE_APPROACH_PRIORITY_V7` (725), the routine
+  tier: kills, captures, and the other errands come first. A wave that
+  forms at home is not sent out through a gate (`campaignHoldsMoveV7`).
+- **No Move ends on a gate otherwise** (nor a landing): a gate is not
+  walked into by accident, and a hunt plan counts no gate tile as a tile
+  to strike from.
+- **The exit.** With an own unit on the exit, or an occupant that cannot be
+  shoved aside (`blocked`), the traversal is not a candidate, and no
+  routine Move takes the unit farther from the gate: it waits for the exit
+  to clear (the unit ahead of it in a column arrived this turn). An enemy
+  on the exit is shoved aside as the preview says.
+
+**The Wishing Well.** While the seat has not tossed and has at least
+`WELL_TOSS_COINS_V7` (3) Coins, one unit has the errand: the own land unit
+on the Well, or, on a free Well, one that an offered Move takes onto it
+this turn; a unit at half HP or less first, then the nearest, then the
+lower ID. Never a sole city defender, a unit with an offered attack on a
+seat's unit, or one the visible enemies would kill on the Well. Its Move
+onto the Well has `WELL_ARRIVE_PRIORITY_V7` (948) and its `TOSS_COIN`
+`WELL_TOSS_PRIORITY_V7` (950), above `RECOVER` and the Fountain so that the
+unit picked goes, below the step away, every hunt, kill, and capture. No
+other `TOSS_COIN` is a candidate.
+
+**Tests** (`tests/unit/ruleset-v7-curiosities-round2-ai.test.ts`, hand-built
+boards on the 20 x 20 round-2 arena, each curiosity with a unit of every
+army faction; a Martian seat meets the Graveyard, an Undead seat the
+saucer): the facts against `previewMonsterV7`; routine Moves, the step
+out, and the cleared camp; the threat inside and outside a reach; the shot
+from outside the reach; a Knight's kill of a Grunt with its bounty; one
+and two Knights against three guards; Bigfoot's board compared with the
+same board without it, the strike, the unit that has a seat's unit to
+strike, and the kill; the traversal against `previewGateV7` and the
+engine's events, the approach, the gate that does not shorten the march,
+the own unit and the enemy on the exit, the deadly exit, the exit in a
+camp, and the three-turn rule on the planner; the Well's walk and toss,
+once, with the Coins, the reach, the preference, and the units not sent.
+No match was played (the user's rule); the simulation pins that may move
+are listed in section 41 of the spec.
 
 ### Curiosity measurements
 

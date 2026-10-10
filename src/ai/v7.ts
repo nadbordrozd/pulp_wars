@@ -89,6 +89,7 @@ import {
   previewAssembleV7,
   previewBombRunV7,
   previewEconomicV7,
+  previewGateV7,
   previewWhirlV7,
   previewStampedeV7,
   previewSwallowV7,
@@ -652,11 +653,15 @@ import {
   type RushPlanV7,
 } from "./v7-candy";
 import {
-  MONSTER_BOUNTY_FOR_POLICY_V7,
-  MONSTER_REGENERATION_FOR_POLICY_V7,
+  BIGFOOT_HUNT_MOVE_PRIORITY_V7,
+  CAMP_ANSWER_HP_DIVISOR_V7,
   MONSTER_STEP_AWAY_PRIORITY_V7,
+  WELL_TOSS_PRIORITY_V7,
+  campMatesV7,
   curiosityErrandMoveV7,
   curiosityFactsV7,
+  gateErrandWaitsV7,
+  monsterHoldsOffV7,
   monsterProvokedAtV7,
   monsterThreatensV7,
   monstersThreateningV7,
@@ -664,6 +669,7 @@ import {
   soleCityDefenderV7,
   type CuriosityErrandV7,
   type CuriosityFactsV7,
+  type MonsterFactsV7,
 } from "./v7-curiosities";
 import {
   directivePlanForViewV7,
@@ -3145,12 +3151,13 @@ function* addHostileThreatsWorkV7(
   const view = context.view;
   // Map curiosities (`pulp_wars-737.4`, section 11): a Monster threatens
   // exactly its provoke tiles and never a city (it never comes within 2 of
-  // a center).
+  // a center). Round 2 (`pulp_wars-737.15`, section 33): a camp guard its
+  // provoke tiles within its reach, Bigfoot none.
   const monster = context.curiosities?.monsterById.get(unit.id);
   if (monster !== undefined) {
     (context.threatenedTiles as Map<UnitId, ReadonlySet<string>>).set(
       unit.id,
-      monster.provokeKeys,
+      monster.threatKeys,
     );
     return;
   }
@@ -12392,9 +12399,14 @@ function scoreCommandWithContext(
 ): AiScoreV7 {
   const view = context.view;
   const actor = unitForCommand(view, command, context.lookup);
+  // Map curiosities round 2 (`pulp_wars-737.15`): a Move that ends on a gate
+  // puts the unit on the gate's exit, so it is valued there.
   const resultAt =
     command.kind === "MOVE"
-      ? (command.path.at(-1) ?? actor?.at ?? null)
+      ? (gateTraversalExitV7(context, command) ??
+        command.path.at(-1) ??
+        actor?.at ??
+        null)
       : (actor?.at ?? null);
   let priority = -1;
   let strategicValue = 0;
@@ -13177,11 +13189,11 @@ function scoreCommandWithContext(
       );
       // Map curiosities (`pulp_wars-737.4`): the kill of a Monster is worth
       // its bounty on top of the ordinary kill value.
-      if (
-        preview.defenderDies &&
-        context.curiosities?.monsterById.has(command.targetUnitId) === true
-      )
-        strategicValue += MONSTER_BOUNTY_FOR_POLICY_V7;
+      // (Round 2: each breed's own bounty.)
+      if (preview.defenderDies)
+        strategicValue +=
+          context.curiosities?.monsterById.get(command.targetUnitId)?.bounty ??
+          0;
     }
   }
 
@@ -13548,6 +13560,22 @@ function scoreCommandWithContext(
       )
     )
       strategicValue += 10;
+  }
+
+  // Map curiosities round 2 (`pulp_wars-737.15`, section 33): the unit the
+  // Well's errand picked tosses its Coin; no other toss is a candidate.
+  if (
+    command.kind === "TOSS_COIN" &&
+    actor !== undefined &&
+    context.curiosities !== null
+  ) {
+    const errand = curiosityErrandsV7(context, context.curiosities).get(
+      actor.id,
+    );
+    if (errand?.kind === "WELL" && same(errand.at, actor.at)) {
+      priority = WELL_TOSS_PRIORITY_V7;
+      immediateValue = 4;
+    }
   }
 
   if (command.kind === "RECOVER") {
@@ -13963,6 +13991,7 @@ function scoreCommandWithContext(
         context,
         context.curiosities,
         actor,
+        command.path.at(-1) ?? resultAt,
         resultAt,
         priority,
       );
@@ -14984,7 +15013,22 @@ function huntPlansV7(context: PolicyContextV7): readonly HuntPlanV7[] {
   // serves one kill, and one whose hit would be answered with its death
   // takes no part.
   const armyTargets = new Set(armyHuntTargetsV7(context, namedTargets));
-  const targets = [...namedTargets, ...armyTargets];
+  // Round 2 (`pulp_wars-737.15`, section 33): the camp guards and Bigfoot
+  // ("opportunistic") are planned last, with the hunters no other kill uses.
+  const bigfoot = (unit: PublicUnitV7): boolean =>
+    monsters?.get(unit.id)?.breed === "BIGFOOT";
+  const campGuard = (unit: PublicUnitV7): boolean => {
+    const breed = monsters?.get(unit.id)?.breed;
+    return (
+      breed !== undefined && breed !== "GIANT_SPIDER" && breed !== "BIGFOOT"
+    );
+  };
+  const targets = [
+    ...namedTargets.filter((unit) => !bigfoot(unit) && !campGuard(unit)),
+    ...armyTargets,
+    ...namedTargets.filter(campGuard),
+    ...namedTargets.filter(bigfoot),
+  ];
   const armyHunters = new Set<UnitId>();
   // Indexed once per decision: the offered attacks and each unit's Moves
   // that a hunter may make (not boarding, not leaving a sole defender).
@@ -15005,7 +15049,9 @@ function huntPlansV7(context: PolicyContextV7): readonly HuntPlanV7[] {
           leavesSoleThreatenedDefender(context, command) ||
           armyGarrisonHoldsV7(context, command) ||
           // Tuning 7: nor a fast unit that waits for the infantry.
-          (mover !== undefined && armyHoldsFastV7(context, mover, to))
+          (mover !== undefined && armyHoldsFastV7(context, mover, to)) ||
+          // Round 2: a Move onto a gate ends on its exit, not there.
+          context.curiosities?.gateByKey.has(coordKey(to)) === true
         )
           continue;
         const list = movesByUnit.get(command.unitId) ?? [];
@@ -15041,6 +15087,14 @@ function huntPlansV7(context: PolicyContextV7): readonly HuntPlanV7[] {
       // A hunter its retaliation would kill takes no part (judged against
       // the Monster as it stands, so a late hitter is judged cautiously).
       const monster = monsters?.get(target.id);
+      // Round 2 (`pulp_wars-737.15`): Bigfoot is hunted only by a unit with
+      // no offered attack on a seat's unit.
+      if (
+        monster?.breed === "BIGFOOT" &&
+        context.curiosities !== null &&
+        curiosityOtherTargetsV7(context, context.curiosities).has(unit.id)
+      )
+        continue;
       if (offeredAttacks.has(`${unit.id}:${target.id}`)) {
         const preview = queryCombatPreviewV7(view, unit.id, target.id);
         if (
@@ -15242,6 +15296,47 @@ function huntPlansV7(context: PolicyContextV7): readonly HuntPlanV7[] {
       );
       if (context.army) for (const id of hunters.keys()) armyHunters.add(id);
       if (bolas !== undefined) armyHunters.add(bolas.unitId);
+    }
+  }
+  // Round 2 (`pulp_wars-737.15`, section 33, "avoid unless strong"): the
+  // kills planned on a camp's guards stand only when no hunter is left, on
+  // the tile it strikes from, to an answer of the guards the plans do not
+  // kill that takes half its HP or more (`campTooStrongV7`). Otherwise the
+  // camp is left alone this turn.
+  const facts = context.curiosities;
+  const campPlans =
+    facts === null ? [] : plans.filter((plan) => campGuard(plan.target));
+  if (facts !== null && campPlans.length > 0) {
+    const killed = new Set(campPlans.map((plan) => plan.target.id));
+    const tooStrong = new Set<string>();
+    for (const plan of campPlans) {
+      const monster = facts.monsterById.get(plan.target.id);
+      if (monster === undefined) continue;
+      for (const [id, stays] of plan.hunters) {
+        const unit = context.lookup.unitsById.get(id);
+        const tile = plan.tiles.get(id);
+        const at = stays
+          ? unit?.at
+          : movesByUnit.get(id)?.find((to) => coordKey(to) === tile);
+        if (
+          unit !== undefined &&
+          at !== undefined &&
+          campTooStrongV7(context, monster, unit, at, killed)
+        )
+          tooStrong.add(coordKey(monster.home));
+      }
+    }
+    if (tooStrong.size > 0) {
+      const kept = plans.filter((plan) => {
+        const monster = facts.monsterById.get(plan.target.id);
+        return !(
+          monster !== undefined &&
+          campGuard(plan.target) &&
+          tooStrong.has(coordKey(monster.home))
+        );
+      });
+      context.hunts = kept;
+      return kept;
     }
   }
   context.hunts = plans;
@@ -16003,7 +16098,13 @@ function huntMoveValueV7(
   return {
     priority: Math.max(
       priority,
-      plan.army ? ARMY_HUNT_MOVE_PRIORITY_V7 : HUNT_MOVE_PRIORITY_V7,
+      // Round 2 (`pulp_wars-737.15`): the Move for Bigfoot's kill ranks
+      // just above a routine Move.
+      context.curiosities?.monsterById.get(plan.target.id)?.breed === "BIGFOOT"
+        ? BIGFOOT_HUNT_MOVE_PRIORITY_V7
+        : plan.army
+          ? ARMY_HUNT_MOVE_PRIORITY_V7
+          : HUNT_MOVE_PRIORITY_V7,
     ),
     strategic:
       -visibleImmediateDamage(view, actor, to, context) +
@@ -16101,6 +16202,59 @@ function monsterHuntDangerV7(
   return total;
 }
 
+/**
+ * Round 2 (`pulp_wars-737.15`, section 33, "avoid unless strong"): whether
+ * the unit `unit`, having struck the camp guard `monster` from `at`, would
+ * lose `1 / CAMP_ANSWER_HP_DIVISOR_V7` of its HP or more to the answer of
+ * the camp's other visible guards at the next neutral turn: those not in
+ * `killed` (the guards this turn's plans kill) whose reach covers the tile
+ * (a hurt to one guard provokes the camp, so each of them may answer).
+ * Never for the Spider or Bigfoot, which have no camp. The tile is the one
+ * the unit strikes from: an advance after the kill is not followed.
+ */
+function campTooStrongV7(
+  context: PolicyContextV7,
+  monster: MonsterFactsV7,
+  unit: PublicUnitV7,
+  at: CoordV7,
+  killed: ReadonlySet<UnitId>,
+): boolean {
+  const facts = context.curiosities;
+  if (facts === null) return false;
+  const where = coordKey(at);
+  let answer = 0;
+  for (const mate of campMatesV7(facts, monster))
+    if (!killed.has(mate.unit.id) && mate.reachKeys.has(where))
+      answer += publicProjectedDamageWithLookupV7(
+        context.view,
+        mate.unit,
+        { ...unit, at },
+        at,
+        {},
+        context.lookup,
+      );
+  return answer * CAMP_ANSWER_HP_DIVISOR_V7 >= unit.hp;
+}
+
+/**
+ * Round 2 (`pulp_wars-737.15`, section 28): the tile a `MOVE` that ends on
+ * a visible gate puts its unit on (the gate's exit, by the engine's gate
+ * preview), or null for any other command and for a traversal the preview
+ * says is blocked (the unit then stays on the entry gate).
+ */
+function gateTraversalExitV7(
+  context: PolicyContextV7,
+  command: CommandV7,
+): CoordV7 | null {
+  const facts = context.curiosities;
+  if (facts === null || facts.gates.length === 0 || command.kind !== "MOVE")
+    return null;
+  const to = command.path.at(-1);
+  if (to === undefined || !facts.gateByKey.has(coordKey(to))) return null;
+  const preview = previewGateV7(context.view, command.unitId, to);
+  return preview === null || preview.blocked ? null : preview.exit;
+}
+
 /** The own units with an offered attack on a unit that is not a Monster. */
 function curiosityOtherTargetsV7(
   context: PolicyContextV7,
@@ -16135,6 +16289,33 @@ function curiosityErrandsV7(
     captures: (unit) => canCaptureV7(view, unit),
     danger: (unit, at) => visibleImmediateDamage(view, unit, at, context),
     navalDanger: context.naval.visibleNavalDanger,
+    // Round 2 (`pulp_wars-737.15`): the Well and the gates.
+    otherTargets: (unit) =>
+      curiosityOtherTargetsV7(context, facts).has(unit.id),
+    reaches: (unit, at) =>
+      context.commands.some(
+        (command) =>
+          command.kind === "MOVE" &&
+          command.unitId === unit.id &&
+          same(command.path.at(-1) ?? unit.at, at),
+      ),
+    goal: (unit) => {
+      // The campaign job's tile and its land-route field; a scout's
+      // frontier is no visible goal.
+      const assignment = context.tactical.campaign?.assignmentByUnitId.get(
+        unit.id,
+      );
+      if (
+        assignment === undefined ||
+        assignment.job === "EXPLORE" ||
+        findPublicTileV7(view, assignment.at)?.explored !== true
+      )
+        return null;
+      return {
+        at: assignment.at,
+        steps: (from) => assignment.field.get(from),
+      };
+    },
   });
   context.curiosityErrands = errands;
   return errands;
@@ -16149,6 +16330,17 @@ function curiosityErrandsV7(
  *   combined kill (or as the kill itself), or (b) from outside its reach
  *   when the hit beats its regeneration and the unit has no other target;
  * - a hurt unit on a safe Fountain stands until it has healed.
+ *
+ * Round 2 (`pulp_wars-737.15`, section 33):
+ *
+ * - a camp guard is the Spider with its own provoke tiles and reach, and
+ *   one is killed only when the guards left alive answer weakly
+ *   (`campTooStrongV7`);
+ * - Bigfoot closes no tile, and is attacked by a unit with no offered
+ *   attack on a seat's unit;
+ * - a Move (or a landing) ends on a gate only as the traversal of a unit
+ *   whose gate route is shorter, and never while its exit holds an own
+ *   unit or cannot be cleared.
  */
 function curiosityRejectsV7(
   context: PolicyContextV7,
@@ -16157,7 +16349,10 @@ function curiosityRejectsV7(
   const facts = context.curiosities;
   if (facts === null) return false;
   if (command.kind === "DISEMBARK")
-    return monsterProvokedAtV7(facts, command.at) !== undefined;
+    return (
+      monsterProvokedAtV7(facts, command.at) !== undefined ||
+      facts.gateByKey.has(coordKey(command.at))
+    );
   // `pulp_wars-1wy.4`: a carrier sets no unit down on a Monster's provoke
   // tiles (a delivery, a shot on arrival, or an extraction).
   if (command.kind === "BEAM_DOWN")
@@ -16171,33 +16366,67 @@ function curiosityRejectsV7(
       command.targetUnitId,
     );
     if (preview === null) return true;
-    if (
-      preview.defenderDies ||
-      monsterHunterV7(context, command.unitId, monster.unit.id) !== undefined
-    )
+    const others = curiosityOtherTargetsV7(context, facts).has(command.unitId);
+    if (monster.breed === "BIGFOOT")
+      return others || preview.damageToDefender <= 0;
+    if (monsterHunterV7(context, command.unitId, monster.unit.id) !== undefined)
       return false;
+    if (preview.defenderDies) {
+      // A kill outside the plans (a boat's, a held garrison's): of a camp
+      // guard only when the camp's answer is weak, as for a planned kill.
+      const attacker = context.lookup.unitsById.get(command.unitId);
+      return (
+        attacker !== undefined &&
+        campTooStrongV7(
+          context,
+          monster,
+          attacker,
+          attacker.at,
+          new Set([
+            monster.unit.id,
+            ...huntPlansV7(context).map((plan) => plan.target.id),
+          ]),
+        )
+      );
+    }
     return !(
       preview.monsterRetaliates === false &&
       !preview.attackerDies &&
-      preview.damageToDefender > MONSTER_REGENERATION_FOR_POLICY_V7 &&
-      !curiosityOtherTargetsV7(context, facts).has(command.unitId)
+      preview.damageToDefender > monster.regeneration &&
+      !others
     );
   }
   if (command.kind !== "MOVE") return false;
   const actor = context.lookup.unitsById.get(command.unitId);
   const to = command.path.at(-1);
   if (actor === undefined || to === undefined) return false;
-  const monster = monsterProvokedAtV7(facts, to);
-  // Only the tile the kill plan counted for this hunter (a melee hunter's:
-  // the plan gives a ranged hunter no tile next to the Monster).
+  // Only the tile a kill plan on a Monster counted for this hunter (a melee
+  // hunter's beside the Spider: the plan gives a ranged hunter no tile next
+  // to it; inside a camp, the tile it strikes its guard from).
   if (
-    monster !== undefined &&
-    huntPlansV7(context)
-      .find((plan) => plan.target.id === monster.unit.id)
-      ?.tiles.get(actor.id) !== coordKey(to)
+    monsterProvokedAtV7(facts, to) !== undefined &&
+    !huntPlansV7(context).some(
+      (plan) =>
+        facts.monsterById.has(plan.target.id) &&
+        plan.tiles.get(actor.id) === coordKey(to),
+    )
   )
     return true;
   const errand = curiosityErrandsV7(context, facts).get(actor.id);
+  if (
+    facts.gateByKey.has(coordKey(to)) &&
+    !(
+      errand?.kind === "GATE" &&
+      same(errand.at, to) &&
+      errand.held !== true &&
+      !campaignHoldsMoveV7(
+        context.tactical.campaign,
+        actor,
+        errand.gate?.exit ?? to,
+      )
+    )
+  )
+    return true;
   return (
     errand?.kind === "FOUNTAIN" &&
     same(errand.at, actor.at) &&
@@ -16209,27 +16438,46 @@ function curiosityRejectsV7(
  * The Move values of section 11: an errand unit's Move onto or toward its
  * Fountain, Shrine, or Wreck, and the step of a unit the Monster would
  * attack (and that has no attack of its own to make) to a tile where it
- * would not.
+ * would not. Round 2 (section 33): the Move onto the Well, the Moves of a
+ * gate route (`end` is the Move's own last tile, `to` where the unit then
+ * stands: the exit after a traversal), and the step out of a camp.
  */
 function curiosityMoveValueV7(
   context: PolicyContextV7,
   facts: CuriosityFactsV7,
   actor: PublicUnitV7,
+  end: CoordV7,
   to: CoordV7,
   priority: number,
 ): { readonly priority: number; readonly strategic: number } {
   let strategic = 0;
   const errand = curiosityErrandsV7(context, facts).get(actor.id);
   const value =
-    errand === undefined ? null : curiosityErrandMoveV7(errand, actor.at, to);
+    errand === undefined ||
+    // A wave that forms at home is not sent out through a gate.
+    (errand.kind === "GATE" &&
+      campaignHoldsMoveV7(context.tactical.campaign, actor, to))
+      ? null
+      : curiosityErrandMoveV7(errand, actor.at, end);
   if (value !== null) {
     priority = Math.max(priority, value.priority);
     strategic += value.strategic;
   }
-  const threats = monstersThreateningV7(facts, actor.id, actor.at);
+  // The exit holds an own unit: no routine Move leaves the gate.
+  if (
+    errand !== undefined &&
+    priority <= ARMY_ROUTINE_MOVE_MAXIMUM_V7 &&
+    gateErrandWaitsV7(errand, actor.at, end)
+  )
+    priority = -1;
+  const holdsOff = (at: CoordV7): MonsterFactsV7[] =>
+    facts.monsters.filter((monster) =>
+      monsterHoldsOffV7(monster, actor.id, at),
+    );
+  const threats = holdsOff(actor.at);
   if (
     threats.length > 0 &&
-    monstersThreateningV7(facts, actor.id, to).length === 0 &&
+    holdsOff(to).length === 0 &&
     !threats.some(
       (monster) =>
         monsterHunterV7(context, actor.id, monster.unit.id) !== undefined,

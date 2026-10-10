@@ -2479,8 +2479,9 @@ sections 22 to 38 and the notes of
 `pulp-wars-poc-7r66`) adds five kinds: two
 neutral **camps** (the Downed Saucer and the Graveyard), a pair of
 **Dimensional Gates**, **Bigfoot**, and the **Wishing Well**. The Normal AI
-is not yet aware of them (bead `pulp_wars-737.15`; it stays legal and reads
-every neutral unit through `previewMonsterV7`), and the browser does not
+knows them (bead `pulp_wars-737.15`, no rule or identity change:
+[Normal AI, round 2](../architecture/NORMAL_AI.md#map-curiosities-round-2-pulp_wars-73715)),
+and the browser does not
 yet draw them (bead `pulp_wars-737.16`; the art of `pulp_wars-737.13` is
 registered).
 

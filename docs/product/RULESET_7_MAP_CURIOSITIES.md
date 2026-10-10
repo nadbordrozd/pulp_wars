@@ -2122,6 +2122,51 @@ URL>` captures every kind, the threats, the gate previews (blocked
   the user's 2026-10-09 rule keeps whole-game runs, the browser smoke
   included, for when the user asks.
 
+## 41. Implementation notes (`pulp_wars-737.15`)
+
+The Normal AI of section 33 is implemented, with no rule, number, or
+identity change; the description is
+[Normal AI: map curiosities, round 2](../architecture/NORMAL_AI.md#map-curiosities-round-2-pulp_wars-73715).
+Where section 33 was silent or did not fit the code, the policy rules as
+follows:
+
+- **Bigfoot's tiles.** Section 33 gives Bigfoot no avoidance and no
+  threat; `previewMonsterV7` lists the 48 tiles within 3 of it as its
+  `provokeTiles` (where it flees), which the Spider rules read as closed.
+  The policy now takes no tile from Bigfoot's preview.
+- **A guard's threat** is its `provokeTiles` within its `reachTiles`, as
+  section 33 says; the Move filter and the step out use the whole
+  `provokeTiles`, as section 33 says of them. A perimeter tile outside
+  every reach is therefore avoided and costs nothing in the estimate.
+- **Enough force.** "A hunt plan that kills it this turn" would send one
+  unit into a camp of three for one guard. The kills planned on a camp
+  stand only when no hunter would lose half its HP or more to the guards
+  left alive; and the guards are planned after the seat's other kills.
+- **Bigfoot's kill.** "After a Move the existing hunt plan finds" is kept
+  as a kill plan with a Move priority just above the routine Moves (736),
+  made by units with no seat's unit to strike, after every other plan.
+- **Gates.** The route goal is the unit's campaign job (never a scout's);
+  turns are steps divided by the unit's Move, rounded up, on each side of
+  the traversal. The gate route also counts when no explored land route
+  exists. A unit is not sent through to its death (the visible enemies'
+  damage on the exit reaches its HP), and a wave that forms at home does
+  not leave through a gate. With an own unit on the exit the unit waits
+  beside the gate instead of walking back.
+- **The Well.** "Can stand on it this turn" is read from the offered
+  Moves. A unit that the visible enemies would kill on the Well is not
+  sent. The errand outranks `RECOVER` and the Fountain so that the unit
+  picked (the wounded one first) goes; the outcome is not predicted (the
+  draw is the player's, section 30.2).
+- **Not done.** No test plays a match (section 35.3's headless lines): the
+  user's rule keeps whole-game runs for when the user asks. The
+  simulation pins that may have moved are those of matches whose board
+  drew a round-2 kind: the curiosity matches of
+  `tests/unit/ruleset-v7-curiosities.sim.test.ts` and
+  `tests/unit/ruleset-v7-curiosities-ai.sim.test.ts`, and any headless,
+  release-corpus, or browser match with `curiosities: true` on a seed with
+  a camp, Bigfoot, a gate pair, or a Well. A match with the option off, or
+  whose board drew only round-1 kinds, decides as before.
+
 ## Appendix A. Draft, critique, and changes
 
 ### A.1 Draft 1

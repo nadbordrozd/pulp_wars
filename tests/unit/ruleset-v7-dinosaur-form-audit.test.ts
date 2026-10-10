@@ -659,7 +659,9 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // `pulp_wars-737.4`: a sole city defender is a land-form unit (an Egg
     // lies next to a center, never on one, and an embarked unit or a boat
     // defends no center).
-    "src/ai/v7-curiosities.ts": 1,
+    // `pulp_wars-737.15`: a gate route is planned for a land-form unit (an
+    // Egg never moves, and an afloat unit never reaches a gate).
+    "src/ai/v7-curiosities.ts": 2,
     "src/ai/v7-dinosaur.ts": 2,
     // Step two of the Goblin pass (`pulp_wars-w49.23`): only a land-form
     // attacker has Gang Up (`gangUpWithHelpersV7`, as the engine's
