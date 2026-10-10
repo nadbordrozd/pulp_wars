@@ -41,7 +41,10 @@ describe("title scene", () => {
     );
 
   it("shows every faction's flagship and Fighter on a wide canvas", () => {
-    const scene = titleSceneV7({ width: 900, height: 420 });
+    // Nine factions since the Cultists (pulp_wars-mch9.20): the back rank
+    // needs 84 px a flagship.
+    const scene = titleSceneV7({ width: 1000, height: 420 });
+    expect(scene.flagships).toHaveLength(9);
     expect([...scene.flagships].sort()).toEqual(
       [...OFFERED_FACTION_IDS_V7].sort(),
     );
@@ -59,7 +62,7 @@ describe("title scene", () => {
     expect(subjects.some((subject) => subject.includes("BATTLESHIP"))).toBe(
       true,
     );
-    expect(units(scene)).toHaveLength(16);
+    expect(units(scene)).toHaveLength(18);
   });
 
   it("re-flows for a phone: fewer units and one column of sea, nothing off the canvas", () => {

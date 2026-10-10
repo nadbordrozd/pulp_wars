@@ -20,9 +20,9 @@ import {
 } from "./canvas/coast-sand-v7";
 
 /**
- * The factions of the title scene: the ones the setup screen offers. A
- * hidden faction (the Cultists until `pulp_wars-mch9.20`) has no art of its
- * own yet, so it stays off the front page.
+ * The factions of the title scene: the ones the setup screen offers (all
+ * nine since `pulp_wars-mch9.20` offered the Cultists). A hidden faction
+ * stays off the front page.
  */
 const FACTION_IDS_V7: readonly FactionIdV7[] = OFFERED_FACTION_IDS_V7;
 
@@ -316,11 +316,11 @@ export function titleSceneV7(size: {
   // Two ranks: the flagships behind, the Fighters in front.
   // Beside the menu a short rank may be one flagship and two Fighters.
   const flagships = spread(
-    clamp(Math.floor(rankWidth / 84), west > 0 ? 1 : 2, 8),
+    clamp(Math.floor(rankWidth / 84), west > 0 ? 1 : 2, FACTION_IDS_V7.length),
     false,
   );
   const fighters = spread(
-    clamp(Math.floor(rankWidth / 50), west > 0 ? 2 : 3, 8),
+    clamp(Math.floor(rankWidth / 50), west > 0 ? 2 : 3, FACTION_IDS_V7.length),
     true,
   );
   const FLAGSHIP_MARGIN = 46;

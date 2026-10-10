@@ -66,7 +66,11 @@ import {
 const ROOT = process.cwd();
 const BATCH = "naval-branch";
 
-/** The seafaring factions: every faction but the Ice Folk. */
+/**
+ * The seafaring factions: every faction but the Ice Folk. The Cult (offered
+ * since pulp_wars-mch9.20) has its map sprite since bead pulp_wars-mch9.15
+ * and its portrait since pulp_wars-mch9.23.
+ */
 const SEAFARERS = OFFERED_FACTION_IDS_V7.filter(
   (faction) => faction !== "ICE_FOLK",
 );
@@ -158,16 +162,10 @@ describe("naval branch art (pulp_wars-5ti.6)", () => {
         (entry) => `${entry.faction} ${entry.kind} ${entry.role}`,
       ).sort(),
     ).toEqual(
-      [
-        ...SEAFARERS.flatMap((faction) => [
-          `${faction} PORTRAIT SUBMARINE`,
-          `${faction} UNIT SUBMARINE`,
-        ]),
-        // The Cult (hidden until it is offered) has its map sprite since
-        // bead pulp_wars-mch9.15 and its portrait since pulp_wars-mch9.23.
-        "CULT PORTRAIT SUBMARINE",
-        "CULT UNIT SUBMARINE",
-      ].sort(),
+      SEAFARERS.flatMap((faction) => [
+        `${faction} PORTRAIT SUBMARINE`,
+        `${faction} UNIT SUBMARINE`,
+      ]).sort(),
     );
     // The faction naval list ends with them, so the live registry has them.
     expect(
@@ -261,8 +259,9 @@ describe("naval branch art (pulp_wars-5ti.6)", () => {
         .filter((entry) => entry.kind === "UNIT")
         .map((entry) => asRegistered(entry.asset)),
     ];
-    // The shared one, each seafaring faction's, and the Cult's.
-    expect(sprites).toHaveLength(1 + 2 * (SEAFARERS.length + 1));
+    // The shared one and each seafaring faction's (the Cult's among them).
+    expect(SEAFARERS).toContain("CULT");
+    expect(sprites).toHaveLength(1 + 2 * SEAFARERS.length);
     for (const asset of sprites) {
       const master = await raster(masterFile(asset));
       const anchor = chibiAnchorV7(asset);

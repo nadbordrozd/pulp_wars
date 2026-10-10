@@ -36,7 +36,9 @@ import {
  * Many players in the browser (`pulp_wars-ykw.5`,
  * docs/product/RULESET_7_MAP_SCALE.md sections 6.3, 8.5 and 10.3): the
  * setup offers up to one opponent per other faction and only the sizes the
- * engine allows; the match shows the turn order and every player.
+ * engine allows; the match shows the turn order and every player. Since the
+ * Cultists were offered (`pulp_wars-mch9.20`) that is nine seats: the player
+ * and eight opponents.
  */
 
 const SEATS = OFFERED_FACTION_IDS_V7.length;
@@ -269,8 +271,8 @@ describe("Ruleset 7 setup for many players", () => {
   });
 });
 
-describe("Ruleset 7 interface with eight players", () => {
-  it("resumes an eight-player match and lists every player in its faction colour", async () => {
+describe("Ruleset 7 interface with nine players", () => {
+  it("resumes a nine-player match and lists every player in its faction colour", async () => {
     const created = createPlayableGameV7(SETUP);
     if (!created.ok) throw new Error(created.error.code);
     window.localStorage.setItem(
@@ -307,7 +309,7 @@ describe("Ruleset 7 interface with eight players", () => {
     expect(colours).toEqual(
       view.leaderboard.map((entry) => FACTION_COLOURS_V7[entry.faction]),
     );
-    // Eight factions, eight different owner colours.
+    // Nine factions, nine different owner colours.
     expect(new Set(colours).size).toBe(SEATS);
     // The player whose turn it is carries the mark.
     expect(rows.filter((row) => row.dataset.active === "true")).toHaveLength(1);
@@ -425,6 +427,102 @@ describe("Ruleset 7 interface with eight players", () => {
     app.destroy();
   });
 
+  it("seats the Cult with eight allied opponents and their head start (pulp_wars-mch9.20)", () => {
+    expect(SEATS).toBe(9);
+    // The player leads the Cult; every other faction is an allied AI with
+    // the largest head start.
+    const plainSetup: MatchSetupV7 = {
+      ...SETUP,
+      width: 25,
+      height: 25,
+      aiMode: "COOPERATIVE",
+      factions: [
+        "CULT",
+        ...OFFERED_FACTION_IDS_V7.filter((faction) => faction !== "CULT"),
+      ],
+    };
+    const setup: MatchSetupV7 = {
+      ...plainSetup,
+      aiHeadStart: { coins: 20 },
+    };
+    const created = createPlayableGameV7(setup);
+    if (!created.ok) throw new Error(created.error.code);
+    const state = created.state;
+    const human = required_(
+      state.players.find((player) => player.id === state.humanPlayerId),
+    );
+    expect(human.faction).toBe("CULT");
+    // Every one of the eight opponents starts 20 Coins ahead of the player.
+    const rivals = state.players.filter((player) => player.id !== human.id);
+    expect(rivals).toHaveLength(8);
+    const plain = createPlayableGameV7(plainSetup);
+    if (!plain.ok) throw new Error(plain.error.code);
+    for (const player of state.players)
+      expect(player.coins).toBe(
+        required_(plain.state.players.find((each) => each.id === player.id))
+          .coins + (player.id === human.id ? 0 : 20),
+      );
+    const view = viewForV7(state, state.humanPlayerId);
+    const app = mount(new StaticController(snapshotOf(view)));
+    expect(document.querySelectorAll(".v7-turn-chip")).toHaveLength(9);
+    if (document.querySelector('[data-action="leaderboard"]') === null)
+      required<HTMLButtonElement>('[data-action="compact-menu"]').click();
+    required<HTMLButtonElement>('[data-action="leaderboard"]').click();
+    const list = required(".v7-leaderboard");
+    expect(list.dataset.players).toBe("9");
+    const rows = [...list.querySelectorAll<HTMLElement>(".v7-leaderboard-row")];
+    expect(rows).toHaveLength(9);
+    // The player's row: the Cult's colour, its chip and its Favour.
+    const own = required_(rows.find((row) => row.dataset.viewer === "true"));
+    expect(own.style.getPropertyValue("--player")).toBe(
+      FACTION_COLOURS_V7.CULT,
+    );
+    const chip = required_(own.querySelector<HTMLElement>(".v7-faction-chip"));
+    expect(chip.dataset.faction).toBe("cult");
+    expect(chip.textContent).toBe("Cultists");
+    expect(own.querySelector(".v7-leaderboard-favour")).not.toBeNull();
+    // "AIs allied" above the list, and the team mark on each of the eight.
+    expect(required(".v7-leaderboard-alliances").textContent).toContain(
+      "AIs allied",
+    );
+    expect(list.querySelectorAll(".v7-leaderboard-team")).toHaveLength(8);
+    expect(own.querySelector(".v7-leaderboard-team")).toBeNull();
+    expect(
+      rows.filter((row) => row.querySelector(".v7-leaderboard-favour")),
+    ).toHaveLength(1);
+    app.destroy();
+  });
+
+  it("has the Cult's chip and the nine-seat rules in the style sheet", () => {
+    const css = readFileSync("src/styles/v7.css", "utf8");
+    // The Cult's faction chip: its emerald ink on its own mint fill.
+    const chip = css.slice(
+      css.indexOf('.v7-faction-chip[data-faction="cult"]'),
+    );
+    expect(chip.slice(0, chip.indexOf("}"))).toContain(
+      "background: var(--pw-emerald-fill)",
+    );
+    expect(chip.slice(0, chip.indexOf("}"))).toContain(
+      "color: var(--pw-emerald)",
+    );
+    // Nine tribes: one row on a desktop, three rows of three on a phone.
+    const grid = css.slice(css.indexOf("\n.v7-tribe-grid {"));
+    expect(grid.slice(0, grid.indexOf("}"))).toContain(
+      "grid-template-columns: repeat(9, minmax(0, 1fr))",
+    );
+    const phone = grid.slice(grid.indexOf("@media (max-width: 599px)"));
+    expect(phone.slice(0, phone.indexOf("}"))).toContain(
+      "grid-template-columns: repeat(3, minmax(0, 1fr))",
+    );
+    // The tighter seat cells and leaderboard rows reach nine players.
+    expect(css).toContain(
+      '.v7-setup-factions[data-seats="9"] .v7-setup-seat > label',
+    );
+    expect(css).toContain(
+      '.v7-leaderboard[data-players="9"] .v7-leaderboard-row',
+    );
+  });
+
   it("keeps two-player matches free of the strip and the count", () => {
     const created = createPlayableGameV7({
       ...SETUP,
@@ -439,7 +537,7 @@ describe("Ruleset 7 interface with eight players", () => {
     app.destroy();
   });
 
-  it("keeps the same short Help with eight players", () => {
+  it("keeps the same short Help with nine players", () => {
     // Bead pulp_wars-2yc.39: the player limit is what the setup form shows;
     // Help is the short "How to play" of every match.
     const app = mount(new StaticController(snapshotOf(openingView())));

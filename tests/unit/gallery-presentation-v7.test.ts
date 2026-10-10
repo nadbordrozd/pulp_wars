@@ -184,6 +184,8 @@ describe("Gallery presentation", () => {
       "IMPROVEMENT:ICE_FOLK:FARM",
       "IMPROVEMENT:DWARF:FARM",
       "IMPROVEMENT:FARM",
+      // The Cultists (offered by pulp_wars-mch9.20) farm the shared Farm.
+      "IMPROVEMENT:FARM",
     ]);
     expect(
       GALLERY_FACTIONS_V7.map((faction) =>
@@ -197,6 +199,7 @@ describe("Gallery presentation", () => {
       "Solar Array",
       "Windmill",
       "Steam Pump",
+      "Windmill",
       "Windmill",
     ]);
     expect(galleryBuildingNameV7("SAWMILL", "DINOSAUR")).toBe("Chopping Block");
@@ -505,6 +508,12 @@ describe("Gallery animation preview scenes", () => {
         // A faction without the role has an empty cell (Ice Folk ships).
         if (galleryUnitCellV7(role, faction).kind === "EMPTY") continue;
         const cues = galleryDemoCuesV7(faction, role);
+        // The Stargazer cannot attack, and its Star-fall needs a circle of
+        // chanters: it has no cue, and its detail shows no preview.
+        if (faction === "CULT" && role === "CATAPULT") {
+          expect(cues).toEqual([]);
+          continue;
+        }
         expect(cues.length, `${faction} ${role}`).toBeGreaterThan(0);
         const scene = buildGalleryDemoSceneV7(
           faction,

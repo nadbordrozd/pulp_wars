@@ -475,7 +475,8 @@ describe("Cult art subjects stand in with the shared art", () => {
     expect(FACTION_STAND_IN_LETTERS_V7).toEqual({ CULT: "C" });
     expect(factionStandInLetterV7("CULT")).toBe("C");
     for (const faction of OFFERED_FACTION_IDS_V7)
-      expect(factionStandInLetterV7(faction), faction).toBeNull();
+      if (faction !== "CULT")
+        expect(factionStandInLetterV7(faction), faction).toBeNull();
     expect(factionStandInLetterV7(null)).toBeNull();
     expect(factionStandInLetterV7(undefined)).toBeNull();
   });
@@ -595,20 +596,29 @@ describe("a Cult match on the board", () => {
 });
 
 describe("the Cult in the interface's words and lists", () => {
-  it("is offered by no player-facing faction list", () => {
+  it("is offered by every player-facing faction list (pulp_wars-mch9.20)", () => {
     expect(SETUP_FACTIONS_V7).toEqual(OFFERED_FACTION_IDS_V7);
-    expect(SETUP_FACTIONS_V7).not.toContain("CULT");
-    expect(setupMaxSeatCountV7()).toBe(8);
-    expect(setupOpponentCountsV7()).toEqual([1, 2, 3, 4, 5, 6, 7]);
+    expect(SETUP_FACTIONS_V7.at(-1)).toBe("CULT");
+    expect(setupMaxSeatCountV7()).toBe(9);
+    expect(setupOpponentCountsV7()).toEqual([1, 2, 3, 4, 5, 6, 7, 8]);
     expect(GALLERY_FACTIONS_V7).toEqual(OFFERED_FACTION_IDS_V7);
+    expect(GALLERY_FACTIONS_V7.at(-1)).toBe("CULT");
+    // A wide title scene parades all nine: the Thing in the Cellar in the
+    // back rank and the Initiate in the front.
     const scene = titleSceneV7({ width: 2400, height: 420 });
-    expect(scene.flagships).not.toContain("CULT");
-    expect(scene.fighters).not.toContain("CULT");
+    expect(scene.flagships).toHaveLength(9);
+    expect(scene.fighters).toHaveLength(9);
+    expect(scene.flagships).toContain("CULT");
+    expect(scene.fighters).toContain("CULT");
     expect(
-      scene.items.some(
-        (item) => "subject" in item && String(item.subject).includes(":CULT:"),
-      ),
-    ).toBe(false);
+      scene.items
+        .filter(
+          (item) =>
+            "subject" in item && String(item.subject).includes(":CULT:"),
+        )
+        .map((item) => ("subject" in item ? item.subject : null))
+        .sort(),
+    ).toEqual(["UNIT:CULT:FIGHTER", "UNIT:CULT:JUGGERNAUT"]);
   });
 
   it("builds a Gallery cell, a recruit card and a glossary for every Cult unit all the same", () => {

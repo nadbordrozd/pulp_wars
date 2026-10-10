@@ -159,6 +159,7 @@ describe("Ruleset 7 Gallery", () => {
       "Ice Folk",
       "Dwarf",
       "Candy",
+      "Cultists",
     ]);
     const rows = [
       ...document.querySelectorAll<HTMLElement>(".v7-gallery-table tbody tr"),
@@ -187,10 +188,30 @@ describe("Ruleset 7 Gallery", () => {
     // cells more.
     // (93 before tuning 5, which added the Human Swordsman; 94 until the
     // ninth unit, 7r55, which fills the row for the other seven factions.)
-    expect(document.querySelectorAll(".v7-gallery-cell")).toHaveLength(101);
+    // The Cultists' column (pulp_wars-mch9.20) adds thirteen units and one
+    // empty Egg cell (101 and 11 before).
+    expect(document.querySelectorAll(".v7-gallery-cell")).toHaveLength(114);
     expect(
       document.querySelectorAll(".v7-gallery-cell-wrap.is-empty"),
-    ).toHaveLength(11);
+    ).toHaveLength(12);
+    expect(
+      [
+        ...document.querySelectorAll<HTMLElement>(
+          '.v7-gallery-cell[data-faction="CULT"] .v7-gallery-cell-name',
+        ),
+      ]
+        .slice(0, 8)
+        .map((node) => node.textContent?.trim()),
+    ).toEqual([
+      "Initiate",
+      "Familiar",
+      "Hexer",
+      "Idol Bearer",
+      "Summoner",
+      "Stargazer",
+      "Caller",
+      "Thing in the Cellar",
+    ]);
     // Nine land units for every faction, each with a name.
     for (const faction of [
       "ORIGINAL",
@@ -277,12 +298,13 @@ describe("Ruleset 7 Gallery", () => {
       "ICE_FOLK",
       "DWARF",
       "CANDY",
+      "CULT",
     ]);
     expect(
       [...document.querySelectorAll<HTMLElement>(".v7-gallery-cell")].map(
         (node) => node.dataset.row,
       ),
-    ).toEqual(Array(7).fill("KNIGHT"));
+    ).toEqual(Array(8).fill("KNIGHT"));
     expect(
       required(
         '[data-filter="factions"] .v7-gallery-chip[data-value="GOBLIN"]',
@@ -303,7 +325,7 @@ describe("Ruleset 7 Gallery", () => {
     document.body.innerHTML = '<div id="app"></div>';
     mount();
     openGallery();
-    expect(document.querySelectorAll(".v7-gallery-cell")).toHaveLength(7);
+    expect(document.querySelectorAll(".v7-gallery-cell")).toHaveLength(8);
     // None of a kind leaves an empty table; All brings everything back.
     required<HTMLButtonElement>(
       '[data-action="gallery-factions-none"]',
@@ -313,8 +335,8 @@ describe("Ruleset 7 Gallery", () => {
     );
     required<HTMLButtonElement>('[data-action="gallery-factions-all"]').click();
     required<HTMLButtonElement>('[data-action="gallery-rows-all"]').click();
-    // (94 before the ninth unit, 7r55.)
-    expect(document.querySelectorAll(".v7-gallery-cell")).toHaveLength(101);
+    // (94 before the ninth unit, 7r55; 101 before the Cultists' column.)
+    expect(document.querySelectorAll(".v7-gallery-cell")).toHaveLength(114);
   });
 
   it("shows every Monument to a browser that stored its filters before they had rows", () => {
@@ -473,7 +495,7 @@ describe("Ruleset 7 Gallery", () => {
     expect(cell("RAIDER", "UNDEAD").tabIndex).toBe(0);
     expect(first.tabIndex).toBe(-1);
     key(document.activeElement as Element, "End");
-    expect(document.activeElement).toBe(cell("RAIDER", "CANDY"));
+    expect(document.activeElement).toBe(cell("RAIDER", "CULT"));
     // Down from the Transport skips the empty Egg cells to the edge.
     cell("TRANSPORT", "DWARF").focus();
     key(document.activeElement as Element, "ArrowDown");
@@ -761,7 +783,7 @@ describe("Ruleset 7 Gallery", () => {
     expect(
       cell("MONUMENT", "MARTIAN").querySelector("canvas")?.dataset.subject,
     ).toBe("IMPROVEMENT:MONUMENT:MARTIAN");
-    expect(rows[0]?.querySelectorAll(".v7-gallery-cell").length).toBe(8);
+    expect(rows[0]?.querySelectorAll(".v7-gallery-cell").length).toBe(9);
     expect(
       cell("CITY_2", "MARTIAN").querySelector("canvas")?.dataset.subject,
     ).toBe("CITY:MARTIAN:2");
@@ -769,7 +791,7 @@ describe("Ruleset 7 Gallery", () => {
     const mine = rows[6]?.querySelectorAll<HTMLElement>(".v7-gallery-cell");
     expect(mine).toHaveLength(1);
     expect(mine?.[0]?.getAttribute("aria-label")).toBe("Mine, every faction");
-    expect(mine?.[0]?.closest("td")?.getAttribute("colspan")).toBe("8");
+    expect(mine?.[0]?.closest("td")?.getAttribute("colspan")).toBe("9");
     // Faction building looks (bead pulp_wars-xdh.2): the Farm, Windmill and
     // Sawmill rows have one cell per faction, named as that faction has it.
     const cellNames = (row: number) =>
@@ -786,6 +808,7 @@ describe("Ruleset 7 Gallery", () => {
       "Frost Garden",
       "Mushroom Farm",
       "Farm",
+      "Farm",
     ]);
     expect(cellNames(7)).toEqual([
       "Windmill",
@@ -796,12 +819,13 @@ describe("Ruleset 7 Gallery", () => {
       "Windmill",
       "Steam Pump",
       "Windmill",
+      "Windmill",
     ]);
     expect(cellNames(8)[3]).toBe("Chopping Block");
     // Bead pulp_wars-2yc.38: the Lumber Camp row has one cell per faction
     // too, each named "Lumber Camp"; so has the whole Sawmill row.
     expect(cellNames(5)).toEqual(
-      Array.from({ length: 8 }, () => "Lumber Camp"),
+      Array.from({ length: 9 }, () => "Lumber Camp"),
     );
     expect(
       cell("LUMBER_CAMP", "CANDY").querySelector("canvas")?.dataset.subject,
@@ -815,15 +839,15 @@ describe("Ruleset 7 Gallery", () => {
     // Stage 2: the Forge, Workshop, Port and Shipyard rows too, and the
     // Market row (pulp_wars-eu3r.1).
     for (const row of [9, 10, 11, 20, 21])
-      expect(rows[row]?.querySelectorAll(".v7-gallery-cell")).toHaveLength(8);
-    expect(cellNames(9)).toEqual(Array.from({ length: 8 }, () => "Forge"));
+      expect(rows[row]?.querySelectorAll(".v7-gallery-cell")).toHaveLength(9);
+    expect(cellNames(9)).toEqual(Array.from({ length: 9 }, () => "Forge"));
     expect(
       cell("SHIPYARD", "ICE_FOLK").querySelector("canvas")?.dataset.subject,
     ).toBe("IMPROVEMENT:ICE_FOLK:SHIPYARD");
     expect(
       cell("PORT", "ORIGINAL").querySelector("canvas")?.dataset.subject,
     ).toBe("IMPROVEMENT:PORT");
-    expect(cellNames(11)).toEqual(Array.from({ length: 8 }, () => "Market"));
+    expect(cellNames(11)).toEqual(Array.from({ length: 9 }, () => "Market"));
     expect(
       cell("MARKET", "CANDY").querySelector("canvas")?.dataset.subject,
     ).toBe("IMPROVEMENT:CANDY:MARKET");
@@ -834,7 +858,7 @@ describe("Ruleset 7 Gallery", () => {
     for (const row of [3, 6])
       expect(rows[row]?.querySelectorAll(".v7-gallery-cell")).toHaveLength(1);
     expect(document.querySelectorAll(".v7-gallery-cell")).toHaveLength(
-      20 * 8 + 2,
+      20 * 9 + 2,
     );
     // A Monument's detail: the faction, the name, what earns it; the
     // arrows step along the factions and down the Monument rows.
@@ -1035,7 +1059,7 @@ describe("Ruleset 7 Gallery: Terrain (pulp_wars-2yc.3)", () => {
       ),
     ).toEqual(["Grass", "Forest", "Mountain", "Water", "Sea Ice", "Rift"]);
     // Grass: every faction's own ground; the Ice Folk have Snow.
-    expect(rows[0]?.querySelectorAll(".v7-gallery-cell")).toHaveLength(8);
+    expect(rows[0]?.querySelectorAll(".v7-gallery-cell")).toHaveLength(9);
     expect(cell("GRASS", "ICE_FOLK").getAttribute("aria-label")).toBe(
       "Snow, Ice Folk",
     );
@@ -1057,6 +1081,7 @@ describe("Ruleset 7 Gallery: Terrain (pulp_wars-2yc.3)", () => {
       "ICE_FOLK",
       "DWARF",
       "CANDY",
+      "CULT",
     ]);
     expect(rows[1]?.querySelector("td.is-same")).toBeNull();
     // Shared terrain is one cell across the row.
@@ -1064,7 +1089,7 @@ describe("Ruleset 7 Gallery: Terrain (pulp_wars-2yc.3)", () => {
       const cells =
         rows[index]?.querySelectorAll<HTMLElement>(".v7-gallery-cell");
       expect(cells).toHaveLength(1);
-      expect(cells?.[0]?.closest("td")?.getAttribute("colspan")).toBe("8");
+      expect(cells?.[0]?.closest("td")?.getAttribute("colspan")).toBe("9");
       expect(cells?.[0]?.dataset.faction).toBe("ALL");
     }
     expect(cell("WATER", "ALL").getAttribute("aria-label")).toBe(
@@ -1072,7 +1097,7 @@ describe("Ruleset 7 Gallery: Terrain (pulp_wars-2yc.3)", () => {
     );
     // Sea ice: the Ice Folk's alone.
     expect(rows[4]?.querySelectorAll(".v7-gallery-cell")).toHaveLength(1);
-    expect(rows[4]?.querySelectorAll('td[aria-label="None"]')).toHaveLength(7);
+    expect(rows[4]?.querySelectorAll('td[aria-label="None"]')).toHaveLength(8);
     expect(cell("ICE", "ICE_FOLK")).not.toBeNull();
     // No coordinates anywhere.
     expect(required("[data-v7-gallery]").textContent).not.toMatch(
@@ -1100,7 +1125,7 @@ describe("Ruleset 7 Gallery: Terrain (pulp_wars-2yc.3)", () => {
       ...document.querySelectorAll<HTMLElement>(".v7-gallery-cell"),
     ];
     expect(cells.map((node) => node.dataset.row)).toEqual(
-      Array.from({ length: 7 }, () => "GRASS"),
+      Array.from({ length: 8 }, () => "GRASS"),
     );
     expect(cells.some((node) => node.dataset.faction === "GOBLIN")).toBe(false);
     const stored = JSON.parse(

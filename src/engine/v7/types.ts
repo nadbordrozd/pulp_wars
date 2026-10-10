@@ -116,26 +116,24 @@ export const FACTION_IDS_V7 = Object.freeze([
   // The Candy revision (docs/product/RULESET_7_CANDY.md).
   "CANDY",
   // The Cultists of the Ancient Ones (docs/product/RULESET_7_CULTISTS.md;
-  // registered by `pulp_wars-mch9.3`). The ninth faction, last so that every
-  // earlier faction keeps its ordinal. It is registered for headless and
-  // test setups; the browser does not offer it yet
-  // (`HIDDEN_FACTION_IDS_V7`).
+  // registered by `pulp_wars-mch9.3`, offered by `pulp_wars-mch9.20`). The
+  // ninth faction, last so that every earlier faction keeps its ordinal.
   "CULT",
 ] as const);
 /**
- * The Cultists (`pulp_wars-mch9.3`, docs/product/RULESET_7_CULTISTS.md
- * section 19): the registered factions the browser does not offer yet. A
- * hidden faction is a full engine registration: a headless or test setup may
- * name it, and a state that holds it loads, plays, saves, and is drawn (with
- * stand-in art). What leaves it out is everything a player picks or browses
- * factions from: the setup screen and its opponent counts, the tribe grid,
- * the campaign roster, the title scene, the Gallery, and the theme list.
- * Emptied by the bead that offers the Cult (`pulp_wars-mch9.20`), once its
- * AI, interface, and art beads are done.
+ * The registered factions the browser does not offer. A hidden faction is a
+ * full engine registration: a headless or test setup may name it, and a
+ * state that holds it loads, plays, saves, and is drawn. What leaves it out
+ * is everything a player picks or browses factions from: the setup screen
+ * and its opponent counts, the tribe grid, the campaign roster, the title
+ * scene, and the Gallery.
+ *
+ * Empty since `pulp_wars-mch9.20` offered the Cultists (who were hidden from
+ * their registration, `pulp_wars-mch9.3`, until their AI, interface, and art
+ * were done). The list stays as the one switch a later faction is registered
+ * behind.
  */
-export const HIDDEN_FACTION_IDS_V7: readonly FactionIdV7[] = Object.freeze([
-  "CULT",
-] as const);
+export const HIDDEN_FACTION_IDS_V7: readonly FactionIdV7[] = Object.freeze([]);
 /**
  * The factions the browser offers, in registration order: every registered
  * faction that is not hidden ({@link HIDDEN_FACTION_IDS_V7}).

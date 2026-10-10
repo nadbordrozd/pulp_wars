@@ -6,6 +6,7 @@ import { format } from "prettier";
 import {
   FACTION_DISPLAY_NAMES_V7,
   OFFERED_FACTION_IDS_V7,
+  type FactionIdV7,
 } from "../../src/engine/index";
 
 /**
@@ -140,12 +141,24 @@ export interface ThemeFactionV1 {
 }
 
 /**
- * The factions the game offers today, from the engine. A hidden faction
- * (`HIDDEN_FACTION_IDS_V7`: the Cultists until they are offered) gets its
- * theme prompt with its sounds, so it needs none yet.
+ * Offered factions whose theme is not written yet, so they have no prompt.
+ * The Cultists (offered by `pulp_wars-mch9.20`) get their theme prompt with
+ * their sounds in a later bead; until then the game plays them the Undead
+ * theme (`STAND_IN_THEME_FACTIONS_V1` in src/audio/theme-scene.ts). Remove
+ * a faction from this list when its prompt is added to the data file.
+ */
+export const THEME_PENDING_FACTION_IDS_V1: readonly FactionIdV7[] =
+  Object.freeze(["CULT"] as const);
+
+/**
+ * The factions that have a theme prompt: the ones the game offers, from the
+ * engine, but those whose theme is still to come
+ * ({@link THEME_PENDING_FACTION_IDS_V1}).
  */
 export const GAME_THEME_FACTIONS_V1: readonly ThemeFactionV1[] =
-  OFFERED_FACTION_IDS_V7.map((id) => ({
+  OFFERED_FACTION_IDS_V7.filter(
+    (id) => !THEME_PENDING_FACTION_IDS_V1.includes(id),
+  ).map((id) => ({
     id,
     name: FACTION_DISPLAY_NAMES_V7[id],
   }));

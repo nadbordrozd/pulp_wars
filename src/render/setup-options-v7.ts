@@ -19,11 +19,11 @@ import {
  * edit in this file.
  *
  * The screen offers the factions of `OFFERED_FACTION_IDS_V7`: every
- * registered faction but the hidden ones (the Cultists, registered for
- * headless and test setups only until the bead that offers them). Every
+ * registered faction but the hidden ones (none since the Cultists were
+ * offered, so nine factions and up to eight opponents). Every
  * player plays a different faction, so the most seats the screen offers is
  * the number of offered factions, which may be fewer than the engine allows
- * (`maxSeatCountV7`).
+ * (`maxSeatCountV7`) while a faction is hidden.
  */
 
 /** The factions the setup screen offers, in registration order. */

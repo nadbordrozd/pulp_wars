@@ -154,6 +154,8 @@ describe("Revision 19 Dinosaur setup", () => {
         "Ice Folk",
         "Dwarf",
         "Candy",
+        // The Cultists, offered by pulp_wars-mch9.20, are the ninth.
+        "Cultists",
       ]);
       // pulp_wars-w5j.1: distinct defaults (Human, Undead, Goblin, Dinosaur).
       expect(field.value).toBe(

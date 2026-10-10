@@ -51,7 +51,12 @@ export {
   type ThemeMusicOutputV1,
   type ThemeMusicTrackV1,
 } from "./theme-music";
-export { themeForSceneV1, type MusicSceneV1 } from "./theme-scene";
+export {
+  STAND_IN_THEME_FACTIONS_V1,
+  playedThemeOfFactionV1,
+  themeForSceneV1,
+  type MusicSceneV1,
+} from "./theme-scene";
 export {
   SOUND_CATEGORIES_V1,
   SOUND_IDS_V1,

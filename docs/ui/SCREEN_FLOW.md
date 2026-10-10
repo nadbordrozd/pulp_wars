@@ -1940,7 +1940,8 @@ repeated in the interface.
 - **Mode.** The Mode select's tooltip reads "AIs allied: every opponent is
   allied against you."
 - **Factions** is a compact grid, two seats a row on desktop and phone
-  (eight seats are four rows): each cell is the faction's emblem (its
+  (the eight opponents of a nine-player game are four rows): each cell is
+  the faction's emblem (its
   Fighter portrait ringed in the faction colour) beside the seat's select
   ("Your faction", "Player N faction"). The emblem follows the select in
   place. There is no random choice.
@@ -1955,7 +1956,7 @@ repeated in the interface.
   in it takes focus, and each emblem's name is spoken ("Player 5, Dwarf,
   playing now", "Player 3, Goblin, out", "You, Human"). Below 600 CSS px
   the strip collapses to the current player's emblem and the place in the
-  order, "3/8". Two-player matches have no strip.
+  order, "3/9". Two-player matches have no strip.
 - **AI-turn status.** With two or more opponents still in the game the
   status reads "Player 5 (Dwarf) is playing… (3 of 7)". The count starts
   with the opponent who plays right after the human, so it runs 1, 2, 3…
@@ -1970,9 +1971,39 @@ repeated in the interface.
   city count. The list scrolls inside the dialog. A Defeat shows no trophy:
   the match ends with the other players still in it.
 - **Resume and Help.** The resume summary names the player count ("Turn 7 ·
-  12 coins · 8 players · Dry land"), and Help has one line: "A game holds
-  up to 8 players, each a different faction." (the number is the faction
-  count).
+  12 coins · 9 players · Dry land").
+
+**Nine seats and the Cultists** (bead `pulp_wars-mch9.20`). The Cultists
+are offered wherever a faction is picked or browsed, and a game holds the
+player and up to eight opponents:
+
+- **Setup.** Opponents is 1 to 8. The tribe picker has nine cards: one row
+  on a desktop, three rows of three under 600 CSS px (four a row left the
+  ninth alone). Eight opponents are four rows of seat cells; Alliances and
+  AI head start work as with fewer seats (every one of the eight is allied
+  against the player, each starts with the extra Coins).
+- **Sizes.** The Size select lists what the engine allows for the seats on
+  the map type (`allowedBoardSizesV7`): nine players fit 11 × 11 only on
+  Dry Land, and 14 × 14 on every type but Archipelago; smaller boards are
+  marked Crowded. Nothing here repeats a table.
+- **Match.** The turn-order strip holds nine emblems (it scrolls in its
+  frame on a narrow desktop and collapses to "1/9" on a phone). The
+  leaderboard and the end-of-match list hold nine rows; on a phone a row is
+  the tighter one of five or more players, and the list scrolls in its
+  popup. The Cult's row has its emerald faction chip (`--pw-emerald` on
+  `--pw-emerald-fill`) and, for the Cult player, its Favour.
+- **Everywhere else.** The Cult is the ninth column of the Gallery's Units,
+  Buildings (its cities, obelisk and seven Monuments) and Terrain (its
+  ground and forest) tabs, the ninth entry of the campaign roster (locked:
+  no mission unlocks it yet), and stands in the title scene (its Initiate
+  in the front rank; its Thing in the Cellar joins the back rank on a
+  canvas 1000 px wide or more). The Stargazer's Gallery card has no
+  animation preview: it cannot attack and Star-fall needs a circle.
+- **Sound.** The Cult has no theme and no sounds of its own yet. A Cult
+  player hears the Undead theme in a match and on New game
+  (`STAND_IN_THEME_FACTIONS_V1`), the Gallery's Sounds tab shows the
+  Cultists' theme row as "Coming soon", its abilities use the game's
+  existing sounds, and its Battleship fires the Human cannonball.
 
 ## Current Ruleset 7 title scene and menu
 

@@ -80,8 +80,9 @@ type Connection = {
 /**
  * The setup's faction options in order, for every faction probe (the Martian
  * UI added the fifth, the Ice Folk UI, pulp_wars-7g3.6, the sixth, the Dwarf
- * UI, pulp_wars-78i.6, the seventh, and the Candy engine bead,
- * pulp_wars-jdb.3, the eighth).
+ * UI, pulp_wars-78i.6, the seventh, the Candy engine bead,
+ * pulp_wars-jdb.3, the eighth, and the Cult's setup bead,
+ * pulp_wars-mch9.20, the ninth).
  */
 const FACTION_OPTIONS_V7 = [
   "Human",
@@ -92,6 +93,7 @@ const FACTION_OPTIONS_V7 = [
   "Ice Folk",
   "Dwarf",
   "Candy",
+  "Cultists",
 ] as const;
 /**
  * Campaign progress (pulp_wars-68k.5, docs/product/CAMPAIGN.md section 4.1):
@@ -3591,7 +3593,7 @@ async function probePerfectionStart(connection: Connection): Promise<string> {
   await openNewGame(connection);
   await waitForExpression(
     connection,
-    `document.querySelectorAll('.v7-tribe-card').length === 8 && document.querySelector('[data-action="game-mode-domination"]')?.getAttribute('aria-pressed') === 'true'`,
+    `document.querySelectorAll('.v7-tribe-card').length === 9 && document.querySelector('[data-action="game-mode-domination"]')?.getAttribute('aria-pressed') === 'true'`,
   );
   await evaluate(
     connection,

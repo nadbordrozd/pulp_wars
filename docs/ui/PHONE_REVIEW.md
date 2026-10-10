@@ -41,7 +41,8 @@ The findings are written to `findings.json` beside the captures.
 ## Scenes
 
 The main menu; New game (both modes, the tribe picker with its stars and
-their rules, eight seats, a seed); the campaign and a briefing; settings;
+their rules, nine seats, a seed; the Cult's own setup with the AIs allied
+and a head start); the campaign and a briefing; settings;
 every Gallery tab, the filters, the Monument rows (both ends of the table)
 and a Monument, a unit and a curiosity; the loading screen;
 the HUD with the coach line; the match menu; the leaderboard with a score
@@ -56,8 +57,10 @@ ability lists; abilities being aimed (Kaboom!, Wail, Freeze, Cold Snap,
 Sugar Toss, Assemble, Tunnel, Bomb Run, Goblin Toss, Thunder Stomp); a
 mound, a Barricade and every curiosity's tile; the reward choices of level
 2 and of the giant; and the end of a match (Domination victory with its
-grade, Perfection defeat, a flawless victory, eight players), each with a
-breakdown open.
+grade, Perfection defeat, a flawless victory, nine players), each with a
+breakdown open; and, as the Cult in a new nine-player game with no command
+played, the first turn, the leaderboard with nine rows (rivals, and the AIs
+allied with a head start) and the technology tree.
 
 ## Findings
 
@@ -95,3 +98,20 @@ Gallery; the tribe picker's "Dinos..." at 320 (the full name is the card's
 label); a dock that scrolls after its first row of actions (a city's
 training cards, a Kaboom! confirmation); in landscape the dock's close
 button over the zoom-out button while a dock is open.
+
+## Nine seats and the Cultists
+
+Bead `pulp_wars-mch9.20` offered the ninth faction, so the setup seats nine
+players. The scenes `menu`, `setup`, `setup-9-seats-perfection`,
+`setup-cult-allied`, `tribe-stars`, `campaign`, the Gallery tabs, filters
+and Monument scenes, `cult-first-turn`, `cult-leaderboard-nine`,
+`cult-leaderboard-nine-allied`, `cult-tech-tree` and `end-nine-players`
+were run at 390 x 844, 320 x 720 and, for comparison, 1440 x 900. Every
+check passes at both phone sizes. One change came out of it: the tribe
+picker is three cards a row on a phone (four a row left the ninth card
+alone on its row).
+
+Noted, not changed: at 1440 x 900 the end-of-match list with a breakdown
+open scrolls inside the dialog, which scrolls too (`nested-scroll`); that
+is the desktop layout's own choice, with eight players as with nine, and
+the phone sizes have one scroll.

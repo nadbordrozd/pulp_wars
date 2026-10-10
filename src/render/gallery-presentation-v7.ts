@@ -81,12 +81,10 @@ import {
  */
 
 /**
- * Every faction the game offers, in the frozen order. A hidden faction (the
- * Cultists until the bead that offers them, `HIDDEN_FACTION_IDS_V7`) has no
- * art, sounds, or theme of its own yet, so it has no column. The cell
- * builders below take any registered faction: a hidden one gets its names
- * and its stand-in subjects, and nothing here needs a change when it is
- * offered.
+ * Every faction the game offers, in the frozen order: all nine since
+ * `pulp_wars-mch9.20` offered the Cultists. A hidden faction
+ * (`HIDDEN_FACTION_IDS_V7`, empty today) has no column. The cell builders
+ * below take any registered faction, so offering one needs no change here.
  */
 export const GALLERY_FACTIONS_V7: readonly FactionIdV7[] =
   OFFERED_FACTION_IDS_V7;

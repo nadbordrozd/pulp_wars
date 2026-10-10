@@ -119,9 +119,11 @@ describe("Ruleset 7 campaign front screen", () => {
     const roster = [
       ...document.querySelectorAll<HTMLElement>(".v7-campaign-faction"),
     ];
-    // Eight since the Candy engine (pulp_wars-jdb.3); no mission unlocks the
-    // Candy yet, so its entry stays dimmed.
-    expect(roster).toHaveLength(8);
+    // Nine since the Cultists were offered (pulp_wars-mch9.20); no mission
+    // unlocks the Candy or the Cultists yet, so their entries stay dimmed.
+    expect(roster).toHaveLength(9);
+    expect(roster.at(-1)?.dataset.faction).toBe("CULT");
+    expect(roster.at(-1)?.getAttribute("aria-label")).toBe("Cultists, locked");
     expect(
       roster
         .filter((entry) => entry.dataset.unlocked === "true")

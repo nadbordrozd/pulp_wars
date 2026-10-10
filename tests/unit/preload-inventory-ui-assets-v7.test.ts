@@ -203,12 +203,19 @@ describe("Ruleset 7 asset inventory", () => {
     expect(duel.some((entry) => entry.url.includes("goblin"))).toBe(false);
     // Every faction in play is the whole look.
     expect(assetInventoryForFactionsV7("LIVE", FACTION_IDS_V7)).toEqual(all);
-    // The hidden Cult has its unit art since bead pulp_wars-mch9.15: a match
-    // of the offered factions loads everything but the Cult's files.
+    // The Cult is offered since pulp_wars-mch9.20: the offered factions are
+    // the whole look, and a match without a Cult seat loads none of its
+    // files.
     expect(assetInventoryForFactionsV7("LIVE", OFFERED_FACTION_IDS_V7)).toEqual(
-      all.filter((entry) => entry.group !== "CULT"),
+      all,
     );
     expect(all.some((entry) => entry.group === "CULT")).toBe(true);
+    expect(
+      assetInventoryForFactionsV7(
+        "LIVE",
+        OFFERED_FACTION_IDS_V7.filter((faction) => faction !== "CULT"),
+      ),
+    ).toEqual(all.filter((entry) => entry.group !== "CULT"));
   });
 
   it("preloads the shared art first", () => {

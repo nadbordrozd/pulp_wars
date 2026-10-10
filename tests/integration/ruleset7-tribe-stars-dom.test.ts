@@ -291,7 +291,7 @@ afterEach(() => {
 });
 
 describe("Ruleset 7 new game: mode toggle and tribe grid", () => {
-  it("replaces the faction dropdown with a radio grid of all eight tribes and their stars", () => {
+  it("replaces the faction dropdown with a radio grid of all nine tribes and their stars", () => {
     mount(seeded());
     press("new-game");
     const grid = required(".v7-tribe-grid");
@@ -309,6 +309,7 @@ describe("Ruleset 7 new game: mode toggle and tribe grid", () => {
       "ICE_FOLK",
       "DWARF",
       "CANDY",
+      "CULT",
     ]);
     for (const node of cards()) {
       expect(node.getAttribute("role")).toBe("radio");
@@ -409,7 +410,8 @@ describe("Ruleset 7 new game: mode toggle and tribe grid", () => {
     expect(card("ORIGINAL").getAttribute("aria-checked")).toBe("true");
     key("ArrowLeft");
     key("ArrowLeft");
-    expect(document.activeElement).toBe(card("CANDY"));
+    // The grid wraps to its last card: the Cultists (pulp_wars-mch9.20).
+    expect(document.activeElement).toBe(card("CULT"));
     key("Home");
     key("ArrowRight");
     expect(document.activeElement).toBe(card("UNDEAD"));
@@ -510,7 +512,7 @@ describe("Ruleset 7 new game: mode toggle and tribe grid", () => {
     };
     const chosen = mount(blocked, { settings: blocked });
     press("new-game");
-    expect(cards()).toHaveLength(8);
+    expect(cards()).toHaveLength(9);
     expect(required(".v7-tribe-records-note").textContent).toBe(
       "Tribe stars can't be saved in this browser.",
     );

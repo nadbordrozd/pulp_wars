@@ -248,6 +248,7 @@ describe("Ruleset 7 front screen", () => {
       "tribe-ice-folk",
       "tribe-dwarf",
       "tribe-candy",
+      "tribe-cult",
       "v7-ai-count",
       "v7-ai-mode",
       // AI head start (`pulp_wars-w49.39`), after Alliances.

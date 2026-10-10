@@ -50,12 +50,14 @@ export async function probeGalleryV7(
   // more empty cells. Tuning 5 (`pulp_wars-w49.4`): the Swordsman's row.
   // The ninth unit (`pulp_wars-w49.17`, 7r55): that row is the heavy line
   // unit of every faction, so its seven empty cells are units (101 cells
-  // and 11 empty ones; 94 and 18 before).
+  // and 11 empty ones; 94 and 18 before). The Cultists' column
+  // (`pulp_wars-mch9.20`): thirteen units and an empty Egg cell (114 and
+  // 12).
   if (
     table.factions.join() !==
-      "ORIGINAL,UNDEAD,GOBLIN,DINOSAUR,MARTIAN,ICE_FOLK,DWARF,CANDY" ||
-    table.cells !== 101 ||
-    table.empty !== 11 ||
+      "ORIGINAL,UNDEAD,GOBLIN,DINOSAUR,MARTIAN,ICE_FOLK,DWARF,CANDY,CULT" ||
+    table.cells !== 114 ||
+    table.empty !== 12 ||
     table.overflow > 0
   )
     throw new Error(`Gallery table is incomplete: ${JSON.stringify(table)}`);
@@ -81,9 +83,9 @@ export async function probeGalleryV7(
     readonly hiddenFactions?: readonly string[];
     readonly hiddenUnitRows?: readonly string[];
   };
-  // The Catapult row of the seven factions left after hiding the Goblins.
+  // The Catapult row of the eight factions left after hiding the Goblins.
   if (
-    filtered.cells.length !== 7 ||
+    filtered.cells.length !== 8 ||
     filtered.cells.some(
       (cell) => !cell.startsWith("CATAPULT:") || cell.endsWith(":GOBLIN"),
     ) ||
@@ -129,7 +131,7 @@ export async function probeGalleryV7(
     `document.querySelector('.v7-gallery-detail') === null && document.activeElement?.dataset.row === 'CATAPULT'`,
   );
   // The Terrain tab (bead pulp_wars-2yc.3): the faction filter carries over
-  // (seven grounds, no Goblin one), every swatch is drawn, and a detail's
+  // (eight grounds, no Goblin one), every swatch is drawn, and a detail's
   // sample board is drawn by the board host with the pieces under it.
   await driver.pointerClick('[data-action="gallery-tab-terrain"]');
   await driver.waitForExpression(
@@ -140,7 +142,7 @@ export async function probeGalleryV7(
   // more. What the table still tells apart: a faction's own look (Grass and
   // Forest, one cell each), terrain every faction shares (one cell across
   // the row), and terrain a faction has none of (sea ice: only the Ice
-  // Folk's cell is drawn, the six others say "None").
+  // Folk's cell is drawn, the seven others say "None").
   const terrain = await driver.evaluate<{
     readonly rows: readonly string[];
     readonly grass: readonly string[];
@@ -156,14 +158,14 @@ export async function probeGalleryV7(
   if (
     terrain.rows[0] !== "GRASS" ||
     !terrain.rows.includes("FOREST") ||
-    terrain.grass.length !== 7 ||
+    terrain.grass.length !== 8 ||
     terrain.grass.includes("GOBLIN") ||
-    terrain.forest.length !== 7 ||
+    terrain.forest.length !== 8 ||
     !terrain.forest.includes("ICE_FOLK") ||
     terrain.forest.includes("GOBLIN") ||
     terrain.same !== 0 ||
     terrain.ice.join() !== "ICE_FOLK" ||
-    terrain.none !== 6 ||
+    terrain.none !== 7 ||
     terrain.shared < 2 ||
     terrain.overflow > 0
   )
@@ -235,13 +237,14 @@ async function probeGallerySoundsV7(
     `({ ids: [...document.querySelectorAll('[data-v7-gallery-sounds] [data-sound-play][data-sound-id]')].map((card) => card.dataset.soundId), groups: document.querySelectorAll('.v7-gallery-sound-group').length, pending: document.querySelectorAll('.v7-gallery-sound-group[data-group="themes"] .v7-gallery-sound[data-pending="true"] [aria-disabled="true"]').length, themes: document.querySelectorAll('.v7-gallery-sound-group[data-group="themes"] .v7-gallery-sound').length, levels: document.querySelectorAll('[data-v7-gallery-sounds] #v7-music-volume-gallery, [data-v7-gallery-sounds] #v7-sound-volume-gallery').length, enabled: ${SOUNDS_AUDIO}.settings.enabled, noticeHidden: document.querySelector('.v7-gallery-sounds-notice')?.hidden === true, overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth })`,
   );
   // Every manifest sound and theme once; one theme row per faction column
-  // and one for the title theme, all playable (bead pulp_wars-2yc.27); the
+  // and one for the title theme, all playable (bead pulp_wars-2yc.27) but
+  // the Cultists', which waits for its recording ("Coming soon"); the
   // Music and Sound sliders above them; sound is on.
   if (
     [...listed.ids].sort().join() !== [...playableSoundIdsV1()].sort().join() ||
     listed.groups < 2 ||
     listed.themes !== factions + 1 ||
-    listed.pending !== 0 ||
+    listed.pending !== 1 ||
     listed.levels !== 2 ||
     !listed.enabled ||
     !listed.noticeHidden ||

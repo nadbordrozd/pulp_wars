@@ -210,8 +210,8 @@ describe("the Cult's colours on its places (pulp_wars-mch9.16)", () => {
     );
     expect(cultBuildings).toHaveLength(7);
     expect(cultMonuments).toHaveLength(8);
-    // The faction stays hidden: its art is wired, not offered.
-    expect(HIDDEN_FACTION_IDS_V7).toContain("CULT");
+    // The faction is offered since pulp_wars-mch9.20.
+    expect(HIDDEN_FACTION_IDS_V7).not.toContain("CULT");
   });
 
   it("records the cult-lodge accent on every building and Monument", async () => {

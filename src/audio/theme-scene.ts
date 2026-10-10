@@ -30,10 +30,35 @@ export type MusicSceneV1 =
   | { readonly kind: "MATCH"; readonly viewer: FactionIdV7 };
 
 /**
+ * The faction whose theme stands in for a faction that has none of its own
+ * yet. The Cultists (offered by `pulp_wars-mch9.20`) have no recording:
+ * until theirs is made they march to the Undead's, the nearest in mood (a
+ * mock-sinister procession), so a Cult player's match is not silent. A
+ * stand-in is only ever played; the Gallery's Sounds tab still shows the
+ * faction's own row as "Coming soon". Remove the entry when the faction's
+ * theme is registered in `theme-music.json` (its own theme wins anyway).
+ */
+export const STAND_IN_THEME_FACTIONS_V1: Readonly<
+  Partial<Record<FactionIdV7, FactionIdV7>>
+> = Object.freeze({ CULT: "UNDEAD" });
+
+/** A faction's own theme, else its stand-in's ({@link STAND_IN_THEME_FACTIONS_V1}). */
+export function playedThemeOfFactionV1(
+  faction: FactionIdV7,
+  themes: readonly SoundThemeEntryV1[] = SOUND_THEMES_V1,
+): SoundThemeEntryV1 | null {
+  const own = soundThemeOfFactionV1(faction, themes);
+  if (own !== null) return own;
+  const standIn = STAND_IN_THEME_FACTIONS_V1[faction];
+  return standIn === undefined ? null : soundThemeOfFactionV1(standIn, themes);
+}
+
+/**
  * The theme a scene plays, or null for none: the title theme on the menus,
  * the chosen faction's theme on New game once one was chosen, the viewer's
- * own faction's theme for the whole of a match. A faction without a theme
- * leaves the title theme (in a match: silence).
+ * own faction's theme for the whole of a match. A faction with no theme of
+ * its own plays its stand-in's ({@link STAND_IN_THEME_FACTIONS_V1}); one
+ * with neither leaves the title theme (in a match: silence).
  */
 export function themeForSceneV1(
   scene: MusicSceneV1,
@@ -47,10 +72,10 @@ export function themeForSceneV1(
     case "SETUP":
       return scene.preview === null
         ? title
-        : (soundThemeOfFactionV1(scene.preview, themes)?.id ?? title);
+        : (playedThemeOfFactionV1(scene.preview, themes)?.id ?? title);
     case "SOUNDS":
       return null;
     case "MATCH":
-      return soundThemeOfFactionV1(scene.viewer, themes)?.id ?? null;
+      return playedThemeOfFactionV1(scene.viewer, themes)?.id ?? null;
   }
 }

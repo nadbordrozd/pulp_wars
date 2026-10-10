@@ -107,6 +107,8 @@ describe("Dwarf setup", () => {
         "Ice Folk",
         "Dwarf",
         "Candy",
+        // The Cultists, offered by pulp_wars-mch9.20, are the ninth.
+        "Cultists",
       ]);
     }
     // An opponent's Dwarf option is disabled while the human plays Dwarf.

@@ -454,8 +454,8 @@ describe("Dwarf faction registration (sections 2 and 14)", () => {
   // Turned round by the Dwarf UI bead (pulp_wars-78i.6): the setup screen
   // offers the Dwarves, last.
   it("is offered by the setup screen since the UI bead", () => {
-    // The Cultists (`pulp_wars-mch9.3`): the screen's list is the engine's
-    // offered factions, which leave the hidden Cult out.
+    // The screen's list is the engine's offered factions: all nine since
+    // the Cultists were offered (`pulp_wars-mch9.20`).
     const source = readFileSync("src/render/dom/app-view-v7.ts", "utf8");
     expect(source).toContain(
       "const FACTIONS: readonly FactionIdV7[] = SETUP_FACTIONS_V7;",
@@ -463,7 +463,8 @@ describe("Dwarf faction registration (sections 2 and 14)", () => {
     expect(SETUP_FACTIONS_V7).toContain("ICE_FOLK");
     // The Candy engine bead (pulp_wars-jdb.3) offers the Candy after them.
     expect(SETUP_FACTIONS_V7).toContain("DWARF");
-    expect(SETUP_FACTIONS_V7.at(-1)).toBe("CANDY");
+    expect(SETUP_FACTIONS_V7.at(-2)).toBe("CANDY");
+    expect(SETUP_FACTIONS_V7.at(-1)).toBe("CULT");
   });
 });
 

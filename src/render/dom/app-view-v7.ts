@@ -896,10 +896,10 @@ const BOARD_SIZE_LABELS: Readonly<Record<string, string>> = Object.fromEntries(
  * the Candy art, and their commands are plain buttons until their UI bead
  * (`pulp_wars-jdb.6`).
  *
- * The Cultists (`pulp_wars-mch9.3`) are registered and not offered: the
- * list is the engine's offered factions (`SETUP_FACTIONS_V7`), which leave
- * the hidden ones out of the setup's selects, the tribe grid, and the
- * campaign roster until `pulp_wars-mch9.20`.
+ * The Cultists (`pulp_wars-mch9.3`) are the ninth, offered since
+ * `pulp_wars-mch9.20`. The list is the engine's offered factions
+ * (`SETUP_FACTIONS_V7`): a hidden faction would stay out of the setup's
+ * selects, the tribe grid, and the campaign roster.
  */
 const FACTIONS: readonly FactionIdV7[] = SETUP_FACTIONS_V7;
 /** The setup's helper text under "Factions". */

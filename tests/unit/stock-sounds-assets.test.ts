@@ -386,7 +386,13 @@ describe("recorded sound clips", () => {
 
 describe("theme music files", () => {
   it("has a theme for every faction of the game, and the title theme", () => {
-    for (const faction of OFFERED_FACTION_IDS_V7) {
+    // The Cultists (offered by pulp_wars-mch9.20) have no recording yet:
+    // they are played the Undead theme (src/audio/theme-scene.ts).
+    expect(soundThemeOfFactionV1("CULT")).toBeNull();
+    const themed = OFFERED_FACTION_IDS_V7.filter(
+      (faction) => faction !== "CULT",
+    );
+    for (const faction of themed) {
       const theme = soundThemeOfFactionV1(faction);
       expect(theme, faction).not.toBeNull();
       expect(
@@ -399,7 +405,7 @@ describe("theme music files", () => {
     );
     expect(title?.faction).toBeNull();
     expect(title?.label).toBe("Title");
-    expect(SOUND_THEMES_V1).toHaveLength(OFFERED_FACTION_IDS_V7.length + 1);
+    expect(SOUND_THEMES_V1).toHaveLength(themed.length + 1);
     expect(new Set(SOUND_THEMES_V1.map((theme) => theme.id)).size).toBe(
       SOUND_THEMES_V1.length,
     );

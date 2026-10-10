@@ -112,6 +112,8 @@ describe("Revision 13 Undead DOM", () => {
         "Ice Folk",
         "Dwarf",
         "Candy",
+        // The Cultists, offered by pulp_wars-mch9.20, are the ninth.
+        "Cultists",
       ]);
     }
     // Seat 0 picks Martian; seat 2 then picks Human, which seat 0 freed.

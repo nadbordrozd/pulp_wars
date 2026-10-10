@@ -1046,7 +1046,7 @@ separate [Ruleset 6](RULESET_6.md) route.
 | Faction to tree binding                    | `ORIGINAL` → `ORIGINAL_BASELINE_V5`; `UNDEAD` → `UNDEAD_BASELINE_V1`; `GOBLIN` → `GOBLIN_BASELINE_V1`; `DINOSAUR` → `DINOSAUR_BASELINE_V1`; `MARTIAN` → `MARTIAN_BASELINE_V1`; `ICE_FOLK` → `ICE_FOLK_BASELINE_V1`; `DWARF` → `DWARF_BASELINE_V1`; `CANDY` → `CANDY_BASELINE_V1`; `CULT` → `CULT_BASELINE_V1`                                                                                                                                                                                                                                                                                                           |
 | Display names                              | `ORIGINAL` is "Human"; `UNDEAD` is "Undead"; `GOBLIN` is "Goblin"; `DINOSAUR` is "Dinosaur"; `MARTIAN` is "Martian"; `ICE_FOLK` is "Ice Folk"; `DWARF` is "Dwarf"; `CANDY` is "Candy"; `CULT` is "Cultists"                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Achievements (`ACHIEVEMENT_IDS_V7`)        | `EXPLORER`, `ENGINEER`, `MUSTER`, `CONQUEROR`, `LAND_BARON`, `SEA_DOG`, `SLAYER` ([section 5](#5-achievements-and-monuments))                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| Playable factions                          | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, all described here and offered by the browser setup, the engine, and the headless tools. `CULT` is registered in the engine and the headless tools and hidden from the browser (`HIDDEN_FACTION_IDS_V7`; the notes below)                                                                                                                                                                                                                                                                                                          |
+| Playable factions                          | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, all described here and offered by the browser setup, the engine, and the headless tools. `CULT` is registered in the engine and the headless tools and offered by the browser since `pulp_wars-mch9.20` (`HIDDEN_FACTION_IDS_V7` is empty; the notes below)                                                                                                                                                                                                                                                                        |
 | Folded overlays                            | Martian ([section 20](#20-martian-faction-rules), `pulp_wars-t6s.7`); Ice Folk ([section 21](#21-ice-folk-faction-rules), `pulp_wars-7g3.8`); Dwarf ([section 22](#22-dwarf-faction-rules), `pulp_wars-78i.8`); Candy ([section 23](#23-candy-faction-rules), `pulp_wars-jdb.8`, after the engine fold of `pulp_wars-jdb.3`); the naval branch ([sections 14](#14-naval-rules) and [21.16](#2116-the-frozen-sea), `pulp_wars-5ti.9`); the Rift (`7r28`, [Rift overlay](RULESET_7_RIFT.md)) and one faction per seat (`7r29`, [unique-factions overlay](RULESET_7_UNIQUE_FACTIONS.md)), folded directly when they landed |
 
 - The exact ruleset ID dispatches every state, setup, save, and replay; earlier
@@ -1404,13 +1404,13 @@ separate [Ruleset 6](RULESET_6.md) route.
     Tentacle, Pamphlets, and Pick Me!. Their ability literals, commands,
     events, and technology unlocks arrive with the bead that implements
     each, so that no card names an ability that does nothing.
-  - **Hidden.** `HIDDEN_FACTION_IDS_V7` is `CULT` and
-    `OFFERED_FACTION_IDS_V7` the other eight. The setup screen (its selects,
-    its tribe grid, its opponent counts, which stay 1 to 7), the campaign
-    roster, the title scene, the Gallery, and the theme list read the
-    offered factions. The engine, the state and save schemas, the headless
-    tools (`--factions cult`), and every renderer take a Cult seat: a state
-    that holds one loads, plays, and is drawn.
+  - **Offered** (`pulp_wars-mch9.20`, no rule and no identity change; hidden
+    from `7r71` until then). `HIDDEN_FACTION_IDS_V7` is empty and
+    `OFFERED_FACTION_IDS_V7` is all nine. The setup screen (its selects,
+    its tribe grid, its opponent counts, 1 to 8), the campaign roster, the
+    title scene, and the Gallery read the offered factions. The Cult has no
+    theme of its own yet: a Cult player hears the Undead theme
+    ([Sound](../ui/SOUND.md#theme-music)).
   - **Stand-in art.** The Cult has no art, sound, or theme of its own. Its
     units, portraits, city, and ships ask for `UNIT:CULT:<ROLE>`,
     `PORTRAIT:CULT:<ROLE>`, and `CITY:CULT:<level>` and fall back to the
@@ -1909,19 +1909,18 @@ registered factions (`FACTION_IDS_V7.length`, 9 since the Cult registration,
 `7r71`), so a match has 2 to 9 players, every one a different faction (many
 seats: `pulp_wars-ykw.3`, `pulp-wars-poc-7r42`,
 [map scale design](RULESET_7_MAP_SCALE.md) sections 3, 4, and 6; a match had
-1–3 AI seats through `7r41`). **The browser offers 2 to 8**: the ninth
-faction is hidden, and the setup screen seats one player per offered
-faction (`OFFERED_FACTION_IDS_V7`). Nine seats are a headless and test
-setup until the Cult is offered.
+1–3 AI seats through `7r41`). **The browser offers 2 to 9** since the Cult
+is offered (`pulp_wars-mch9.20`; 2 to 8 before): the setup screen seats one
+player per offered faction (`OFFERED_FACTION_IDS_V7`).
 
 | Setup field   | Legal values                                                                                                                                                                                                                             |
 | ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Board width   | 11, 14, 16, 20, or 25 (height equals width), as long as the width holds the seats on the map type (the table below)                                                                                                                      |
 | Auto size     | the smallest allowed width with at least 56 tiles per seat: 11, 14, 16 for 2, 3, 4 seats, 20 for 5–7, 25 for 8 and 9 (`autoBoardSizeV7`)                                                                                                 |
 | Map type      | `DRY_LAND`, `PANGEA`, `CONTINENTS` (default), `ARCHIPELAGO`, `LAKES`, `SHOWCASE` (width 16 only, at most 3 AI), `MISSION` (a registered mission only)                                                                                    |
-| AI            | `aiCount` 1 to `F − 1` (8 in the engine, 7 on the setup screen), difficulty `NORMAL`, mode `RIVAL` or `COOPERATIVE`                                                                                                                      |
+| AI            | `aiCount` 1 to `F − 1` (8, in the engine and on the setup screen), difficulty `NORMAL`, mode `RIVAL` or `COOPERATIVE`                                                                                                                    |
 | Human color   | `CORAL`, `TEAL`, `GOLD`, `VIOLET`, `SKY`, `LIME`, `ROSE`, `SLATE`, `AMBER` (`PLAYER_COLORS_V7`; stored, never shown: owner colours are the factions'). The AI seats take the other colours in this order. There are never fewer than `F` |
-| Factions      | one per seat (`aiCount + 1`, seat 0 is the human): `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, or (headless and test setups) `CULT`; no two seats alike                                         |
+| Factions      | one per seat (`aiCount + 1`, seat 0 is the human): `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, or `CULT`; no two seats alike                                                                    |
 | Seed          | uint32; equal setups and seeds generate byte-identical maps, turn order, and treasures                                                                                                                                                   |
 | Curiosities   | `true` (the setup screen's and the headless default) or `false`; `false` on a mission ([section 2.7](#27-map-curiosities))                                                                                                               |
 | Game mode     | `gameMode`: `DOMINATION` or `PERFECTION`, optional; a setup without it is Domination; never `PERFECTION` on the Showcase or a mission ([section 3.1](#31-score-play-modes-and-stars))                                                    |

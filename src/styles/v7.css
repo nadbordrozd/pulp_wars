@@ -4646,6 +4646,16 @@
   border-color: var(--pw-blue);
 }
 
+/*
+ * The Cultists' faction chip (bead pulp_wars-mch9.20): their emerald on its
+ * own mint fill, in the leaderboard.
+ */
+.v7-faction-chip[data-faction="cult"] {
+  border: 1px solid var(--pw-emerald);
+  background: var(--pw-emerald-fill);
+  color: var(--pw-emerald);
+}
+
 /* The Cultists (bead pulp_wars-mch9.17): Sacrifice and Seize. */
 .v7-cult-pick {
   border-color: var(--pw-emerald);
@@ -5853,7 +5863,7 @@
   min-width: 0;
 }
 
-/* Five or more players: a tighter grid, so eight seats stay in view. */
+/* Five or more players: a tighter grid, so nine seats stay in view. */
 .v7-setup-factions[data-seats="5"] .v7-setup-seat > label,
 .v7-setup-factions[data-seats="6"] .v7-setup-seat > label,
 .v7-setup-factions[data-seats="7"] .v7-setup-seat > label,
@@ -6407,7 +6417,7 @@
 }
 
 @media (max-width: 599px) {
-  /* Two seats a row on a phone too: eight seats are four rows. */
+  /* Two seats a row on a phone too: nine seats are five rows. */
   .v7-setup-factions {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -6433,7 +6443,7 @@
     padding-inline: 0.6rem;
   }
 
-  /* The strip collapses to the current player and "3/8". */
+  /* The strip collapses to the current player and "3/9". */
   .v7-turn-strip {
     padding: 0.2rem 0.6rem 0.2rem 0.4rem;
   }
@@ -7453,9 +7463,10 @@
   margin: 0;
 }
 
+/* One column a tribe on a desktop: nine tribes since the Cultists. */
 .v7-tribe-grid {
   display: grid;
-  grid-template-columns: repeat(8, minmax(0, 1fr));
+  grid-template-columns: repeat(9, minmax(0, 1fr));
   gap: 0.45rem;
 }
 
@@ -7617,10 +7628,13 @@
   font-size: var(--pw-fs-sm);
 }
 
-/* Section 7, item 7: four cards a row on a phone (two rows of tribes). */
+/*
+ * Section 7, item 7: a phone shows the tribes in whole rows. Nine tribes
+ * are three rows of three (four a row left the ninth alone on its row).
+ */
 @media (max-width: 599px) {
   .v7-tribe-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .v7-tribe-card > .v7-faction-emblem {

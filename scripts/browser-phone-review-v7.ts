@@ -9,7 +9,8 @@ import { prepareSmokeOutput } from "./browser-smoke-output";
  * Phone UI review (bead pulp_wars-eu3r.9). It walks every Ruleset 7 screen
  * and panel at phone sizes, 390 x 844 at DPR 2 and 320 x 720 at DPR 2 in
  * portrait, and the match scenes also at 844 x 390 in landscape: the title
- * and main menu, the new-game screen (modes, tribe picker, eight seats),
+ * and main menu, the new-game screen (modes, tribe picker, nine seats, and
+ * the Cult's own setup with the AIs allied and a head start),
  * the tribe stars, the campaign and a briefing, settings, every Gallery tab
  * with a unit and a curiosity detail, the loading screen, the HUD with the
  * coach line, the match menu, the leaderboard with a score breakdown, the
@@ -22,8 +23,12 @@ import { prepareSmokeOutput } from "./browser-smoke-output";
  * Assemble, Tunnel, Goblin Toss, Thunder Stomp), the curiosities' tiles, the reward choices of the reward ladder
  * (level 2 and the giant at level 6), Bomb Run aiming, the Wishing Well,
  * and the end of a match (Domination victory with its grade, Perfection
- * defeat, a flawless victory and an eight-player victory, each with a
- * breakdown open).
+ * defeat, a flawless victory and a nine-player victory, each with a
+ * breakdown open). The Cultists and nine seats (bead pulp_wars-mch9.20;
+ * scenes `cult-*`, `setup-cult-allied`, `end-nine-players`): a new
+ * nine-player game as the Cult before any command, its leaderboard with
+ * nine rows (rivals, and the AIs allied with a head start), and its
+ * technology tree.
  *
  * Every state is hand-built (tests/fixtures/v7-*-ui.ts and the score
  * fixtures); no AI runs and no match is played. It needs the Vite dev
@@ -159,7 +164,7 @@ const SCENES: readonly Scene[] = [
     },
   },
   {
-    name: "setup-8-seats-perfection",
+    name: "setup-9-seats-perfection",
     match: false,
     full: true,
     run: async (c) => {
@@ -172,6 +177,23 @@ const SCENES: readonly Scene[] = [
       await evaluate(
         c,
         `(() => { const select = Array.from(document.querySelectorAll('.v7-setup-form select')).find((node) => node.closest('label')?.textContent?.toLowerCase().includes('opponents')); if (!(select instanceof HTMLSelectElement)) return; select.value = select.options[select.options.length - 1].value; select.dispatchEvent(new Event('change', { bubbles: true })); select.dispatchEvent(new Event('input', { bubbles: true })); })()`,
+      );
+      await delay(500);
+    },
+  },
+  {
+    // The Cult's own setup (`pulp_wars-mch9.20`): the Cult tribe chosen,
+    // eight opponents allied against it, with the largest head start.
+    name: "setup-cult-allied",
+    match: false,
+    full: true,
+    run: async (c) => {
+      await front(c);
+      await click(c, "new-game");
+      await click(c, "tribe-cult");
+      await evaluate(
+        c,
+        `(() => { const set = (id, value) => { const select = document.querySelector(id); if (!(select instanceof HTMLSelectElement)) throw new Error('no ' + id); select.value = value; select.dispatchEvent(new Event('change', { bubbles: true })); }; const count = document.querySelector('#v7-ai-count'); set('#v7-ai-count', count.options[count.options.length - 1].value); set('#v7-ai-mode', 'COOPERATIVE'); set('#v7-ai-head-start', '20'); })()`,
       );
       await delay(500);
     },
@@ -233,7 +255,7 @@ const SCENES: readonly Scene[] = [
     (tab): Scene => ({
       name: `gallery-${tab}`,
       match: false,
-      // The faction tables are a grid of eight columns: they scroll inside
+      // The faction tables are a grid of nine columns: they scroll inside
       // their frame with the first column and the header fixed.
       ...(tab === "units" || tab === "buildings" || tab === "terrain"
         ? { sideways: [".v7-gallery-scroll"] }
@@ -415,6 +437,53 @@ const SCENES: readonly Scene[] = [
       await delay(500);
     },
   })),
+  // The Cultists and nine seats (bead pulp_wars-mch9.20): a new nine-player
+  // game as the Cult, before any command.
+  {
+    name: "cult-first-turn",
+    match: true,
+    run: async (c) => {
+      await mount(c, "/tests/fixtures/v7-score-ui.ts", "null", nineSeatCult());
+    },
+  },
+  {
+    name: "cult-leaderboard-nine",
+    match: true,
+    run: async (c) => {
+      await mount(c, "/tests/fixtures/v7-score-ui.ts", "null", nineSeatCult());
+      await click(c, "compact-menu");
+      await click(c, "leaderboard");
+      await evaluate(
+        c,
+        `document.querySelector('.v7-leaderboard-row[data-viewer="true"] [data-action^="score-breakdown-"]')?.click()`,
+      );
+      await delay(500);
+    },
+  },
+  {
+    name: "cult-leaderboard-nine-allied",
+    match: true,
+    run: async (c) => {
+      await mount(
+        c,
+        "/tests/fixtures/v7-score-ui.ts",
+        "null",
+        nineSeatCult("COOPERATIVE", 20),
+      );
+      await click(c, "compact-menu");
+      await click(c, "leaderboard");
+      await delay(500);
+    },
+  },
+  {
+    name: "cult-tech-tree",
+    match: true,
+    run: async (c) => {
+      await mount(c, "/tests/fixtures/v7-score-ui.ts", "null", nineSeatCult());
+      await click(c, "tech");
+      await delay(500);
+    },
+  },
   {
     name: "hud-perfection",
     match: true,
@@ -1056,14 +1125,14 @@ const SCENES: readonly Scene[] = [
     },
   })),
   {
-    name: "end-eight-players",
+    name: "end-nine-players",
     match: true,
     run: async (c) => {
       await mount(
         c,
         "/tests/fixtures/v7-score-ui.ts",
         "null",
-        EIGHT_PLAYER_VICTORY,
+        NINE_PLAYER_VICTORY,
       );
       await evaluate(
         c,
@@ -1074,15 +1143,39 @@ const SCENES: readonly Scene[] = [
   },
 ];
 
+/** Every faction, the Cult in the human's seat. */
+const NINE_FACTIONS = `['CULT', 'ORIGINAL', 'UNDEAD', 'GOBLIN', 'DINOSAUR', 'MARTIAN', 'ICE_FOLK', 'DWARF', 'CANDY']`;
+
 /**
- * An eight-player Domination victory, built in the page from a fresh
- * eight-seat setup: every rival eliminated by the human (no turn is
+ * A new nine-player game as the Cult on a 25 x 25 Dry Land board, built in
+ * the page: the first seed on which the human moves first, so the HUD
+ * shows the player's own first turn. Nothing is played.
+ */
+function nineSeatCult(
+  mode: "RIVAL" | "COOPERATIVE" = "RIVAL",
+  headStart: 0 | 5 | 10 | 20 = 0,
+): string {
+  return `(() => {
+  const builders = globalThis.__PHONE_BUILDERS__;
+  for (let seed = 4127; seed < 4327; seed += 1) {
+    const created = engine.createPlayableGameV7({ ...builders.browserSetupV7(seed, 3), aiCount: 8, aiMode: '${mode}', width: 25, height: 25, factions: ${NINE_FACTIONS}${headStart === 0 ? "" : `, aiHeadStart: { coins: ${headStart} }`} });
+    if (!created.ok) throw new Error('nine-seat setup failed: ' + JSON.stringify(created));
+    const live = created.state;
+    if (live.turnOrder[live.activeSeatIndex] === live.humanPlayerId) return live;
+  }
+  throw new Error('no seed gives the human the first turn');
+})()`;
+}
+
+/**
+ * A nine-player Domination victory as the Cult, built in the page from a
+ * fresh nine-seat setup: every rival eliminated by the human (no turn is
  * played).
  */
-const EIGHT_PLAYER_VICTORY = `(() => {
+const NINE_PLAYER_VICTORY = `(() => {
   const builders = globalThis.__PHONE_BUILDERS__;
-  const created = engine.createPlayableGameV7({ ...builders.browserSetupV7(4127, 3), aiCount: 7, width: 20, height: 20, factions: ['ORIGINAL', 'UNDEAD', 'GOBLIN', 'DINOSAUR', 'MARTIAN', 'ICE_FOLK', 'DWARF', 'CANDY'] });
-  if (!created.ok) throw new Error('eight-seat setup failed: ' + JSON.stringify(created));
+  const created = engine.createPlayableGameV7({ ...builders.browserSetupV7(4127, 3), aiCount: 8, width: 25, height: 25, factions: ${NINE_FACTIONS} });
+  if (!created.ok) throw new Error('nine-seat setup failed: ' + JSON.stringify(created));
   const live = created.state;
   const human = live.humanPlayerId;
   return { ...live, round: 18,

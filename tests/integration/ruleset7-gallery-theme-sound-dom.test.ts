@@ -132,6 +132,7 @@ describe("a registered faction theme", () => {
       ["ICE_FOLK", "true"],
       ["DWARF", "true"],
       ["CANDY", "true"],
+      ["CULT", "true"],
     ]);
     // A faction without a theme waits: named, focusable, not playable.
     const human = required<HTMLButtonElement>(

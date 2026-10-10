@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
 import { describe, expect, it } from "vitest";
 import {
   GAME_THEME_FACTIONS_V1,
+  THEME_PENDING_FACTION_IDS_V1,
   THEME_IMITATION_PHRASES_V1,
   THEME_MUSIC_DOC_PATH,
   THEME_NAME_DENYLIST_V1,
@@ -65,16 +66,25 @@ const styleLongEntries = [
   })),
 ];
 
+/** The offered factions that have a theme prompt: all but the pending ones. */
+const THEMED_FACTION_IDS = OFFERED_FACTION_IDS_V7.filter(
+  (faction) => !THEME_PENDING_FACTION_IDS_V1.includes(faction),
+);
+
 describe("faction theme prompts", () => {
   it("has one entry for every faction of the game and no other", () => {
+    // The Cultists (offered by pulp_wars-mch9.20) have no theme yet: their
+    // prompt comes with their sounds, and the game plays them the Undead's.
+    expect(THEME_PENDING_FACTION_IDS_V1).toEqual(["CULT"]);
+    expect(THEMED_FACTION_IDS).toHaveLength(OFFERED_FACTION_IDS_V7.length - 1);
     expect(Object.keys(data.factions).sort()).toEqual(
-      [...OFFERED_FACTION_IDS_V7].sort(),
+      [...THEMED_FACTION_IDS].sort(),
     );
-    for (const id of OFFERED_FACTION_IDS_V7) {
+    for (const id of THEMED_FACTION_IDS) {
       expect(data.factions[id]?.name).toBe(FACTION_DISPLAY_NAMES_V7[id]);
     }
     expect(GAME_THEME_FACTIONS_V1.map((faction) => faction.id)).toEqual([
-      ...OFFERED_FACTION_IDS_V7,
+      ...THEMED_FACTION_IDS,
     ]);
   });
 
@@ -105,7 +115,7 @@ describe("faction theme prompts", () => {
   it("has a Suno Styles-field string for every faction and extra, within 1000 characters", () => {
     expect(data.schemaVersion).toBe(2);
     expect(data.shared.budgets.sunoStyleLongChars).toBe(1000);
-    expect(styleLongEntries).toHaveLength(OFFERED_FACTION_IDS_V7.length + 3);
+    expect(styleLongEntries).toHaveLength(THEMED_FACTION_IDS.length + 3);
     for (const entry of styleLongEntries) {
       expect(typeof entry.styleLong, entry.key).toBe("string");
       const length = codePointLengthV1(entry.styleLong);
@@ -192,9 +202,7 @@ describe("faction theme prompts", () => {
       DWARF: ["tuba and euphonium", "concertina", "anvil", "steam hiss"],
       CANDY: ["toy piano", "glockenspiel", "ukulele", "woodblocks"],
     };
-    expect(Object.keys(named).sort()).toEqual(
-      [...OFFERED_FACTION_IDS_V7].sort(),
-    );
+    expect(Object.keys(named).sort()).toEqual([...THEMED_FACTION_IDS].sort());
     for (const [key, instruments] of Object.entries(named)) {
       for (const instrument of instruments) {
         expect(data.factions[key]?.sunoStyleLong, key).toContain(instrument);

@@ -218,12 +218,11 @@ describe("the Cult registration: the ninth faction", () => {
       expect(treasureUnitRoleForRoundV7("CULT", round)).toBe("RAIDER");
   });
 
-  it("is hidden from the browser: every other faction is offered, in order", () => {
-    expect(HIDDEN_FACTION_IDS_V7).toEqual(["CULT"]);
-    expect(OFFERED_FACTION_IDS_V7).toEqual(
-      FACTION_IDS_V7.filter((faction) => faction !== "CULT"),
-    );
-    expect(OFFERED_FACTION_IDS_V7).toHaveLength(8);
+  it("is offered by the browser since pulp_wars-mch9.20: no faction is hidden", () => {
+    expect(HIDDEN_FACTION_IDS_V7).toEqual([]);
+    expect(OFFERED_FACTION_IDS_V7).toEqual(FACTION_IDS_V7);
+    expect(OFFERED_FACTION_IDS_V7).toHaveLength(9);
+    expect(OFFERED_FACTION_IDS_V7.at(-1)).toBe("CULT");
   });
 });
 

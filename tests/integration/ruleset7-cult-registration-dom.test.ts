@@ -55,13 +55,13 @@ function cultMatch(): GameStateV7 {
   );
 }
 
-describe("the setup screen leaves the Cult out", () => {
-  it("offers eight factions, seven opponents, and no Cult tribe card", () => {
+describe("the setup screen offers the Cult (pulp_wars-mch9.20)", () => {
+  it("offers nine factions, eight opponents, and a Cult tribe card", () => {
     const app = bootstrapRuleset7App(document, { storage: null });
     const counts = [
       ...requiredElement<HTMLSelectElement>("#v7-ai-count").options,
     ].map((option) => option.value);
-    expect(counts).toEqual(["1", "2", "3", "4", "5", "6", "7"]);
+    expect(counts).toEqual(["1", "2", "3", "4", "5", "6", "7", "8"]);
     const own = requiredElement<HTMLSelectElement>("#v7-faction-0");
     expect([...own.options].map((option) => option.value)).toEqual([
       ...OFFERED_FACTION_IDS_V7,
@@ -71,16 +71,40 @@ describe("the setup screen leaves the Cult out", () => {
         (card) => card.dataset.faction,
       ),
     ).toEqual([...OFFERED_FACTION_IDS_V7]);
-    // With every opponent seated, no seat plays the Cult.
+    expect(OFFERED_FACTION_IDS_V7.at(-1)).toBe("CULT");
+    expect(
+      [...own.options].find((option) => option.value === "CULT")?.textContent,
+    ).toBe("Cultists");
+    const card = requiredElement<HTMLElement>(
+      '.v7-tribe-card[data-faction="CULT"]',
+    );
+    expect(card.dataset.action).toBe("tribe-cult");
+    expect(card.style.getPropertyValue("--player")).toBe(
+      FACTION_COLOURS_V7.CULT,
+    );
+    expect(card.textContent).toContain("Cultists");
+    // With every opponent seated, the ninth seat plays the Cult.
     const field = requiredElement<HTMLSelectElement>("#v7-ai-count");
-    field.value = "7";
+    field.value = "8";
     field.dispatchEvent(new Event("change", { bubbles: true }));
     const seats = [
       ...document.querySelectorAll<HTMLElement>(".v7-setup-seat"),
     ].map((cell) => cell.dataset.faction);
-    expect(seats).toHaveLength(8);
-    expect(seats).not.toContain("CULT");
-    expect(document.body.textContent ?? "").not.toContain("Cultists");
+    expect(seats).toHaveLength(9);
+    expect(seats.at(-1)).toBe("CULT");
+    expect(new Set(seats).size).toBe(9);
+    // The player takes the Cult from the tribe grid: the seat that held it
+    // switches to the faction the player left.
+    card.click();
+    expect(requiredElement<HTMLSelectElement>("#v7-faction-0").value).toBe(
+      "CULT",
+    );
+    expect(card.getAttribute("aria-checked")).toBe("true");
+    const after = [
+      ...document.querySelectorAll<HTMLElement>(".v7-setup-seat"),
+    ].map((cell) => cell.dataset.faction);
+    expect(after[0]).toBe("CULT");
+    expect(new Set(after).size).toBe(9);
     app.destroy();
   });
 });

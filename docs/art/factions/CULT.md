@@ -976,8 +976,9 @@ candidate was passed over is in the records.
   not see the achievement sees the obelisk; the cities are
   `CITY:CULT:<level>` with their own fitted ground shadow
   (`npm run art:settlement-shadows-measure`). The Classic look and the LEGACY
-  art set draw the shared pieces. The faction stays hidden
-  (`HIDDEN_FACTION_IDS_V7`). No building is renamed.
+  art set draw the shared pieces. The faction was hidden
+  (`HIDDEN_FACTION_IDS_V7`) until bead `pulp_wars-mch9.20` offered it. No
+  building is renamed.
 
 ### Differences from the direction, accepted
 

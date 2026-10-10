@@ -1,23 +1,14 @@
 // @vitest-environment jsdom
 
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type * as EngineTypes from "../../src/engine/v7/types";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 /**
- * The Gallery when no faction is hidden (bead pulp_wars-2yc.44): the list
- * of hidden factions (`HIDDEN_FACTION_IDS_V7`, today the Cult) is emptied
- * here, as the bead that offers the Cult will empty it, and nothing else
- * changes. The Gallery then has a Cult column, and the Buildings tab shows
- * the Cult's obelisk and its seven Monuments with their own sprites.
+ * The Gallery with no hidden faction (bead pulp_wars-2yc.44, then
+ * pulp_wars-mch9.20, which emptied `HIDDEN_FACTION_IDS_V7` and offered the
+ * Cult): the Gallery has a Cult column, and the Buildings tab shows the
+ * Cult's obelisk and its seven Monuments with their own sprites. Until the
+ * Cult was offered this file emptied the list with a module mock.
  */
-vi.mock("../../src/engine/v7/types", async (importOriginal) => {
-  const actual = await importOriginal<typeof EngineTypes>();
-  return {
-    ...actual,
-    HIDDEN_FACTION_IDS_V7: Object.freeze([]),
-    OFFERED_FACTION_IDS_V7: actual.FACTION_IDS_V7,
-  };
-});
 
 import { bootstrapRuleset7App } from "../../src/app/index";
 import {

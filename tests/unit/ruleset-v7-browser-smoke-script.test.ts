@@ -425,8 +425,9 @@ describe("Ruleset 7 browser smoke script", () => {
     expect(source).toContain(
       "; Martian ${martian}; Ice Folk ${iceFolk}; Dwarf ${dwarf}; Showcase ${showcase}; Gallery ${gallery}.",
     );
-    // The setup's eight faction options, Ice Folk sixth (pulp_wars-7g3.6),
-    // Dwarf seventh (pulp_wars-78i.6), and Candy last (pulp_wars-jdb.3).
+    // The setup's nine faction options, Ice Folk sixth (pulp_wars-7g3.6),
+    // Dwarf seventh (pulp_wars-78i.6), Candy eighth (pulp_wars-jdb.3), and
+    // the Cultists last (pulp_wars-mch9.20).
     const options = source.slice(
       source.indexOf("const FACTION_OPTIONS_V7 = ["),
       source.indexOf("] as const;", source.indexOf("FACTION_OPTIONS_V7")),
@@ -442,6 +443,7 @@ describe("Ruleset 7 browser smoke script", () => {
       "Ice Folk",
       "Dwarf",
       "Candy",
+      "Cultists",
     ]);
     // Setup: Ice Folk is offered, and chosen with three opponents on the
     // Showcase.
@@ -666,14 +668,16 @@ describe("Ruleset 7 browser smoke script", () => {
     expect(probe).toContain(`pointerClick('[data-action="gallery"]')`);
     // Eight factions since the Candy (pulp_wars-jdb.3): 11 x 8 units and the
     // Egg; the Egg row is empty for the seven factions that lay none.
+    // Nine since the Cultists (pulp_wars-mch9.20): thirteen more units and
+    // one more empty Egg cell.
     expect(probe).toContain(
-      "ORIGINAL,UNDEAD,GOBLIN,DINOSAUR,MARTIAN,ICE_FOLK,DWARF,CANDY",
+      "ORIGINAL,UNDEAD,GOBLIN,DINOSAUR,MARTIAN,ICE_FOLK,DWARF,CANDY,CULT",
     );
     // Tuning 5 (`pulp_wars-w49.4`): the Swordsman's row adds one unit and
     // seven empty cells (93 and 11 before).
-    expect(probe).toContain("table.cells !== 101");
-    expect(probe).toContain("table.empty !== 11");
-    expect(probe).toContain("filtered.cells.length !== 7");
+    expect(probe).toContain("table.cells !== 114");
+    expect(probe).toContain("table.empty !== 12");
+    expect(probe).toContain("filtered.cells.length !== 8");
     expect(probe).toContain(`.v7-gallery-chip[data-value="GOBLIN"]`);
     expect(probe).toContain(
       'storedFilters.hiddenFactions?.join() !== "GOBLIN"',
@@ -688,11 +692,11 @@ describe("Ruleset 7 browser smoke script", () => {
     // The Terrain tab: since the Ice Folk tundra forest (pulp_wars-2yc.38)
     // every shown faction has its own Forest, so no cell is "same as
     // default"; sea ice is the Ice Folk's alone and six cells say "None".
-    expect(probe).toContain("terrain.forest.length !== 7");
+    expect(probe).toContain("terrain.forest.length !== 8");
     expect(probe).toContain('!terrain.forest.includes("ICE_FOLK")');
     expect(probe).toContain("terrain.same !== 0");
     expect(probe).toContain('terrain.ice.join() !== "ICE_FOLK"');
-    expect(probe).toContain("terrain.none !== 6");
+    expect(probe).toContain("terrain.none !== 7");
     expect(probe).toContain("terrain.shared < 2");
     expect(probe).not.toContain("terrain.same === 0");
     expect(probe).toContain("await driver.pressEscape()");
@@ -725,7 +729,7 @@ describe("Ruleset 7 browser smoke script", () => {
     // Bead pulp_wars-2yc.27: one playable theme row per faction column
     // and the title theme's, under the Music and Sound sliders.
     expect(probe).toContain("listed.themes !== factions + 1");
-    expect(probe).toContain("listed.pending !== 0");
+    expect(probe).toContain("listed.pending !== 1");
     expect(probe).toContain("#v7-music-volume-gallery");
     expect(probe).toContain("#v7-sound-volume-gallery");
     expect(probe).toContain("listed.levels !== 2");
