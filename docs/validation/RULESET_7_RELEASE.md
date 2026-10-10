@@ -199,7 +199,7 @@ technology base cost is 9 (was 12), so the one-city costs read 5, 7, and 9
 The per-city steps did not change, and no shape changed. Every pin on a
 headless match was recomputed; generated boards and the missions (which set
 their own Coins) did not change.
-`npm run validate:ruleset7-naval-playable` lists the Normal AI's landing/embark oscillation on Pangea and Lakes boards as warnings (`pulp_wars-eru`, deferred) and still fails on one on Continents.
+`npm run validate:ruleset7-naval-playable` listed the Normal AI's landing/embark oscillation on Pangea and Lakes boards as warnings and still failed on one on Continents; since `pulp_wars-eru` (the landing discipline on one landmass) it fails on one on every map type again. It was not rerun for that bead.
 `pulp_wars-ykw.3` (`7r42`) is engine step II of the
 [map scale design](../product/RULESET_7_MAP_SCALE.md): a match has 2 to as
 many players as there are factions (8) on every width that holds them,

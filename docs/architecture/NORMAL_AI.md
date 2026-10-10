@@ -3163,7 +3163,8 @@ takes the first job that applies:
    target for as long as it is hostile, whatever was lost there. Where the
    naval plan's sea route to its target is more than three steps shorter
    than the walk, the capturers bound for that target get no job on land
-   and sail, as before.
+   and sail, as before (since `pulp_wars-eru` only those whose own way by
+   sea is that much shorter than their own walk; see "One landmass" below).
 
 **Waves.** A unit within two tiles of an own city center (home) does not
 leave the home zone until three units for its target are home; fewer when
@@ -3230,7 +3231,74 @@ read from the public view:
 The naval plan is inactive on Dry Land, so a Dry Land match plays exactly
 as before (20 matches on 11 x 11 and 14 x 14 compared hash for hash).
 
-Open (`pulp_wars-eru`, deferred): with the `7r41` economy a unit still boards, steps off one tile away, and re-boards on some Pangea and Lakes boards; `npm run validate:ruleset7-naval-playable` reports it as a warning there and fails on it only on Continents.
+**One landmass** (`pulp_wars-eru`). The three rules above stopped the
+cycle where the target is overseas (Continents). On Pangea and Lakes the
+target is usually on the unit's own landmass, and a unit still boarded,
+stepped off one tile on, and boarded again. The cause, read from the
+scoring and reproduced on hand-built boards:
+
+1. The plan called the sea the shortcut when the best public water route
+   from any Port or future Port surface, Deep Water included, was more than
+   three steps shorter than the walk of the capture unit nearest the target.
+   Then every capture unit bound for that target got no job on land.
+2. A unit with no job boarded at any own Port in reach (priority 1300),
+   whether or not that Port's water led to the target: a Port on a pond or
+   on another lake, or a crossing that needs Navigation the seat does not
+   have.
+3. Aboard with no way forward it was a stranded transport, and a stranded
+   transport lands (priority 810) where a village or an enemy city can be
+   walked to. On one landmass that is every tile at home, so it stepped off
+   beside the Port.
+4. On land it had no job again, and boarded.
+
+The rule now, for every water map type: **a unit that can walk to the
+plan's target goes by sea only from a Port whose water route the seat can
+sail today, and only when that way is shorter than its own walk by more
+than three steps** (`navalSeaRouteBeatsWalkV7` in `src/ai/v7-naval.ts`:
+the distance to the Port, the water route from the Port, and the walk from
+the landing coast, against the public land route from the unit's tile).
+It decides four things:
+
+- **Boarding.** A boarding Move is a candidate only at such a Port. A unit
+  does not board for a hop, at a Port on other water, or before the
+  technology that opens the crossing.
+- **Jobs.** Only the units that sail by this rule get no job on land; the
+  others keep their campaign job and walk (`CampaignFactsV7.sails`). While
+  the seat has no Port it can sail from, every unit walks, and the plan
+  still researches and builds toward one.
+- **The way to the Port.** A unit without a job is drawn only to a Port it
+  would board at.
+- **A stranded landing.** A stranded transport does not step off onto a
+  tile from which it would board again (a transport held up behind its own
+  ships waits aboard); where it would not, it lands and takes its job
+  ashore, as before.
+
+The policy keeps no memory between turns, and this rule needs none: every
+term is counted from the tile the unit stands on, against the plan's
+target, both public. Walking toward the Port keeps the answer yes (the way
+to the Port shortens by a step, the walk by at most a step); walking toward
+the target keeps it no; and a unit landed beside its target has a walk of
+the coast distance or one more, which no sea route beats by the margin. So
+a landed unit boards again only when the target changes or the known board
+does. A unit that cannot walk to the target (it is overseas from its tile),
+and every unit while the plan has no target and explores by sea, boards at
+any active Port as before: the Continents invasion is unchanged. A scout
+has a job and never boards, as before.
+
+Checks: `tests/unit/ruleset-v7-landing-discipline-ai.test.ts`, on the
+authored boards of `tests/fixtures/v7-coast-hop.ts` (a lake with a pond, a
+bay with a Deep Water crossing, a coast with a village, a canal) and the
+strait of the naval branch; each asks for two or three decisions of one
+unit, applying the policy's own command in between. No match was played.
+`npm run validate:ruleset7-naval-playable` fails again on a landing and
+embark oscillation on every map type (it had been a warning outside
+Continents since `pulp_wars-if6`); the validator was not rerun for this
+bead (simulations are run when the user asks).
+
+Not done: while every own capture unit is aboard, the plan still orders
+its targets by board position, not by distance, so the target can change
+when the last unit boards; and a transport still returns to land beside a
+walkable village another unit is nearer to.
 
 A Raider pickets its richest city only while a threat to an own city is
 visible, and a screen does not step back from its job to stand next to a
@@ -5393,7 +5461,9 @@ The numbers above are reasoned from the worked examples of rules section
 `tests/unit/ruleset-v7-naval-branch-ai.test.ts`.
 
 **Left alone.** The landing and embark oscillation on Pangea and Lakes
-(`pulp_wars-eru`) and the overseas invasion plan (`pulp_wars-9s0.14`) are
+(`pulp_wars-eru`, fixed since: see
+[Landing discipline](#campaign-expansion-exploration-and-standing-pressure-pulp_wars-9s01))
+and the overseas invasion plan (`pulp_wars-9s0.14`) are
 not touched: nothing here changes when a unit boards or lands, except that
 it no longer boards or sails into a Battleship's or Submarine's reach.
 

@@ -591,6 +591,7 @@ import {
   navalSubmarineMoveRejectedV7,
   navalSubmergedReachV7,
   navalThreatFactsV7,
+  navalSeaRouteBeatsWalkV7,
   navalTorpedoPriorityV7,
   navalTorpedoReachV7,
   navalTransportMoveRejectedV7,
@@ -1116,6 +1117,14 @@ interface NavalPlanV7 {
   readonly reserveCoins: number;
   /** Landed capture units that still have a public objective on this landmass. */
   readonly retainLandedUnitIds: ReadonlySet<UnitId>;
+  /**
+   * `pulp_wars-eru`: public land-route steps to the target from every tile
+   * of its landmass (empty without a target). A unit on one of these tiles
+   * can walk there.
+   */
+  readonly walkDistanceByKey: ReadonlyMap<string, number>;
+  /** `pulp_wars-eru`: land-route steps from the target's nearest coast tile to it. */
+  readonly coastDistance: number;
   /** Canonical public water-route distance to the invasion/frontier goal. */
   readonly waterDistanceByKey: ReadonlyMap<string, number>;
   /** Same route with known Deep Water allowed, used to choose a future Port. */
@@ -1135,6 +1144,8 @@ const NO_NAVAL_PLAN_V7: NavalPlanV7 = Object.freeze({
   holding: false,
   reserveCoins: 0,
   retainLandedUnitIds: new Set<UnitId>(),
+  walkDistanceByKey: new Map(),
+  coastDistance: 0,
   waterDistanceByKey: new Map(),
   prospectiveWaterDistanceByKey: new Map(),
   fleetDistanceByKey: new Map(),
@@ -2200,6 +2211,9 @@ function* tacticalPlanWorkV7(
   const campaign = campaignPlanForPolicyV7(view, {
     freeLandSlots,
     seaTarget: context.naval.seaShortcut ? context.naval.target : null,
+    // pulp_wars-eru: only the units whose own sea route beats their own
+    // walk go without a job on land.
+    sails: (unit) => navalBoardingPortsV7(context, unit.at).length > 0,
     isHostile: (ownerId) => isHostile(view, ownerId),
     isAllied: (ownerId) => publicPlayersAllied(view, view.viewer.id, ownerId),
     // The garrison of a threatened center and a defender walking to one
@@ -2997,6 +3011,8 @@ function* navalPlanWorkV7(
     holding: targetHasCaptureUnit,
     reserveCoins,
     retainLandedUnitIds,
+    walkDistanceByKey: targetLandDistances,
+    coastDistance: closestCoastDistance ?? 0,
     waterDistanceByKey: view.viewer.researchedTechs.includes("NAVIGATION")
       ? prospectiveWaterDistanceByKey
       : shallowDistances,
@@ -10810,10 +10826,15 @@ function isPolicyCandidate(
       ) !== null ||
       endgameLandingValueV7(context, command) > 0 ||
       (strandedTransportV7(context, command.unitId) &&
-        campaignHasWorkAtV7(context.tactical.campaign, command.at))
+        campaignHasWorkAtV7(context.tactical.campaign, command.at) &&
+        // pulp_wars-eru: not onto a tile it would board from again.
+        navalBoardingPortsV7(context, command.at).length === 0)
     );
   if (autoembark && context.naval.retainLandedUnitIds.has(command.unitId))
     return false;
+  // pulp_wars-eru: a unit that can walk to the plan's target boards only
+  // at a Port whose sea route beats its walk by a clear margin.
+  if (autoembark && !navalBoardsAtV7(context, command)) return false;
   if (
     autoembark &&
     context.naval.visibleNavalDanger &&
@@ -17065,6 +17086,57 @@ function endgameKeepsAshoreV7(
       actor.at,
       passesOwnUnitsV7(context.view, actor),
     ),
+  );
+}
+
+/**
+ * `pulp_wars-eru`: the own active Ports a land unit standing on `from`
+ * would board at. The landing discipline for a target on the unit's own
+ * landmass, on every water map type: a unit that can walk to the naval
+ * plan's target sails only from a Port with a public water route the seat
+ * can sail today, and only when the way by sea beats its own walk from
+ * `from` by a clear margin (`navalSeaRouteBeatsWalkV7`). So a unit does not
+ * board for a hop, does not board at a Port its target cannot be sailed to
+ * from, and, once landed near its target, does not board again. The answer
+ * follows from where the unit stands and from the plan's target, both
+ * public, and from nothing remembered between turns. From a tile with no
+ * walk to the target (it is overseas from there), and while the plan has no
+ * target (it explores by sea), every active Port counts, as before.
+ */
+function navalBoardingPortsV7(
+  context: PolicyContextV7,
+  from: CoordV7,
+): readonly CoordV7[] {
+  const plan = context.naval;
+  const ports = context.view.naval.ownedPorts
+    .filter((port) => port.status === "ACTIVE")
+    .map((port) => port.at);
+  const walk =
+    plan.target === null
+      ? undefined
+      : plan.walkDistanceByKey.get(coordKey(from));
+  if (walk === undefined) return ports;
+  return ports.filter((port) =>
+    navalSeaRouteBeatsWalkV7({
+      walk,
+      toPort: distance(from, port),
+      water: plan.waterDistanceByKey.get(coordKey(port)),
+      coast: plan.coastDistance,
+    }),
+  );
+}
+
+/** `pulp_wars-eru`: whether the unit of a boarding Move boards at that Port. */
+function navalBoardsAtV7(
+  context: PolicyContextV7,
+  command: Extract<CommandV7, { kind: "MOVE" }>,
+): boolean {
+  const unit = context.lookup.unitsById.get(command.unitId);
+  const port = command.path.at(-1);
+  return (
+    unit !== undefined &&
+    port !== undefined &&
+    navalBoardingPortsV7(context, unit.at).some((at) => same(at, port))
   );
 }
 
@@ -24085,7 +24157,6 @@ function navalMovementObjectiveValueV7(
   pathLength: number,
 ): number {
   if (to === null) return 0;
-  const view = context.view;
   if (actor.form === "EMBARKED") {
     const progress = routeProgress(
       context.naval.waterDistanceByKey,
@@ -24108,9 +24179,8 @@ function navalMovementObjectiveValueV7(
   // pulp_wars-9s0.1: nor does it walk to a Port.
   if (context.tactical.campaign?.assignmentByUnitId.has(actor.id) === true)
     return 0;
-  const ports = view.naval.ownedPorts
-    .filter((port) => port.status === "ACTIVE")
-    .map((port) => port.at);
+  // pulp_wars-eru: only to a Port it would board at.
+  const ports = navalBoardingPortsV7(context, actor.at);
   return ports.length === 0
     ? 0
     : nearestDistance(actor.at, ports) - nearestDistance(to, ports);

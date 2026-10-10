@@ -865,6 +865,40 @@ export function navalTransportMoveRejectedV7(
   ].some((ship) => chebyshev(ship.at, to) <= 1);
 }
 
+/**
+ * The landing discipline on one landmass (`pulp_wars-eru`): the way by sea
+ * must be shorter than the walk by more than this many steps. It pays for
+ * the turn spent boarding and the turn spent landing, and it keeps a unit
+ * that stands a step either side of the break-even point from changing its
+ * mind.
+ */
+export const NAVAL_SEA_ROUTE_MARGIN_V7 = 3;
+
+/**
+ * Whether a land unit that can walk to the naval plan's target goes by sea
+ * through one Port instead. `walk` is its public land route to the target
+ * from where it stands; `toPort` its distance to the Port; `water` the
+ * public water route the seat can sail today from the Port to the water
+ * beside the landing coast (absent: no such route, and the unit walks);
+ * `coast` the walk from that coast to the target. Every term is counted
+ * from the unit's own tile, so the answer changes only when the unit, the
+ * target, or the known board does: walking toward the Port keeps a yes,
+ * walking toward the target keeps a no, and a unit landed beside its target
+ * never gets a yes.
+ */
+export function navalSeaRouteBeatsWalkV7(route: {
+  readonly walk: number;
+  readonly toPort: number;
+  readonly water: number | undefined;
+  readonly coast: number;
+}): boolean {
+  return (
+    route.water !== undefined &&
+    route.toPort + route.water + route.coast + NAVAL_SEA_ROUTE_MARGIN_V7 <
+      route.walk
+  );
+}
+
 // --- Threat estimates ---------------------------------------------------------------
 
 /**

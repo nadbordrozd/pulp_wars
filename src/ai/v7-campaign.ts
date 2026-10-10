@@ -94,7 +94,8 @@ export function policyRoleCapturesV7(
  *    known enemy city (City Walls count as two extra steps). With several
  *    hostile seats in reach, each gets at least a pair of units. Where the
  *    naval plan's sea route to its target is the shortcut, the capturers
- *    bound for that target get no job on land and sail.
+ *    bound for that target get no job on land and sail (`pulp_wars-eru`:
+ *    those whose own way by sea beats their own walk; the others walk).
  *    A known city stays a target for as long as it is hostile: it is part
  *    of the seat's explored map, so losing every unit sent there changes
  *    nothing. Units set out in waves: a unit near an own city waits there
@@ -241,6 +242,13 @@ export interface CampaignFactsV7 {
    * job on land.
    */
   readonly seaTarget: CoordV7 | null;
+  /**
+   * `pulp_wars-eru`: whether a capture unit bound for `seaTarget` goes by
+   * sea from where it stands (its own sea route beats its own walk). Only
+   * such a unit gets no job on land; the others walk. Absent: every one of
+   * them sails.
+   */
+  readonly sails?: (unit: PublicUnitV7) => boolean;
   /**
    * The Ice Folk revision (`pulp_wars-7g3.4`): whether a unit is
    * Mountain-born. A wave made only of Mountain-born units routes over
@@ -778,11 +786,15 @@ export function campaignPlanForPolicyV7(
       tile.site === "VILLAGE" &&
       tile.territoryOwnerId === null &&
       !ownAt.has(index) &&
-      index !== seaTargetIndex &&
+      // The village the sea is the shortcut to is an errand only for the
+      // units that walk to it (`pulp_wars-eru`).
+      (index !== seaTargetIndex || facts.sails !== undefined) &&
       (confine === null || confine(tile.at))
     )
       errands.push({ job: "VILLAGE", index, field: field([index]) });
   }
+  /** A capture unit bound for the sea target that goes there by sea. */
+  const sails = (unit: PublicUnitV7): boolean => facts.sails?.(unit) ?? true;
   for (const chest of rush ? [] : view.treasureChests) {
     const index = indexOf(chest);
     if (!ownAt.has(index) && (confine === null || confine(chest)))
@@ -797,6 +809,7 @@ export function campaignPlanForPolicyV7(
     for (const unit of unassigned()) {
       // Capturers run the errands; a chest is worth a short detour only.
       if (!captures(unit)) continue;
+      if (errand.index === seaTargetIndex && sails(unit)) continue;
       const steps = errand.field.get(unit.at);
       if (
         steps !== undefined &&
@@ -864,7 +877,8 @@ export function campaignPlanForPolicyV7(
       for (const unit of free) {
         if (
           assignmentByUnitId.get(unit.id)?.job !== "EXPLORE" ||
-          !captures(unit)
+          !captures(unit) ||
+          (errand.index === seaTargetIndex && sails(unit))
         )
           continue;
         const steps = errand.field.get(unit.at);
@@ -1052,7 +1066,9 @@ export function campaignPlanForPolicyV7(
   // Pressure: every other unit marches on its nearest known enemy city.
   const targetByCityId = new Map<CityId, CampaignTargetV7>();
   const workFields: RouteFieldV7[] = errands
-    .filter((errand) => errand.job === "VILLAGE")
+    .filter(
+      (errand) => errand.job === "VILLAGE" && errand.index !== seaTargetIndex,
+    )
     .map((errand) => errand.field);
   // A HOLD seat marches on no city outside its zone.
   const marchTargets =
@@ -1401,8 +1417,10 @@ export function campaignPlanForPolicyV7(
       const city = marchTargets[order];
       const route = fields[order];
       if (city === undefined || route === undefined) continue;
-      // The sea is the shortcut to this city: its capturers sail.
-      if (indexOf(city.at) === seaTargetIndex && captures(unit)) continue;
+      // The sea is the shortcut to this city: its capturers sail, those
+      // whose own way by sea is the shorter one (`pulp_wars-eru`).
+      if (indexOf(city.at) === seaTargetIndex && captures(unit) && sails(unit))
+        continue;
       marching[order]?.push(unit);
       assignmentByUnitId.set(unit.id, {
         job: "ATTACK",
