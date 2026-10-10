@@ -1,0 +1,30 @@
+{
+  "bead": "pulp_wars-mch9.14",
+  "batch": "direction-cult",
+  "source": {
+    "Initiate": "master chibi-direction-cult-initiate",
+    "Horror": "master chibi-direction-cult-horror",
+    "Herald": "master chibi-direction-cult-herald"
+  },
+  "gates": {
+    "1": "PASS",
+    "2": "PASS",
+    "3": "FAIL",
+    "4": "PASS",
+    "5": "PASS"
+  },
+  "files": [
+    "candidates-x3.png",
+    "sample-x4.png",
+    "sample-1x.png",
+    "sample-zoom-0.75.png",
+    "lineup-1x.png",
+    "lineup-x3.png",
+    "lineup.json",
+    "giants-x2.png",
+    "palette.png",
+    "palette.json",
+    "gates.json",
+    "index.json"
+  ]
+}

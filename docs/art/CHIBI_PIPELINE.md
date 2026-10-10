@@ -1829,3 +1829,65 @@ output for this bead was read and not checked in. The faction direction
 reviews (`art:chibi-<faction>-direction-review`) compare each unit with a
 classic sprite or with the same role of other factions and do not list
 the ninth units yet.
+
+## The Cult sample batch (bead `pulp_wars-mch9.14`)
+
+Batch `direction-cult` holds the first sample of a ninth faction, the
+[Cultists](factions/CULT.md#the-first-sample): faction `CULT`,
+`fixedFactionColours`, three assets (the Initiate, the Horror and the
+Herald: `UNIT:CULT:FIGHTER`, `UNIT:CULT:HORROR`, `UNIT:CULT:HERALD`)
+from 29 recipes, all new PixelLab calls (seeds 91401 to 91432). **Nothing
+registers them**: `CULT` is not a faction of the game yet, so there is no
+art manifest under `src/assets` and no subject type for them; the batch
+manifest's subject pattern accepts `CULT`, and `art:validate` checks the
+masters like any accepted asset. It added these pipeline pieces:
+
+- **A second accent band.** An accent preset may name `then`, another
+  band applied to the result of the first
+  ([`accent.ts`](../../scripts/art/chibi/accent.ts)). The record stores the
+  whole chain with the spec, so `art:validate` re-derives it; the counts of
+  the record are the first band's. The earlier presets name none and keep
+  their derivation byte for byte (a test checks it).
+- **`cult-green`** (the summoned): greens of hue 80 to 152 (saturation at
+  least 0.5, value at least 0.45) go to hue 146 to 150, then purple shadow
+  pixels (hue 262 to 345) go to navy, hue 228.
+- **`cult-lodge`** (the cultists and the Herald): the same green band,
+  then every saturated blue of the cloth (hue 212 to 262, saturation at
+  least 0.45, value at least 0.14) goes to hue 240 to 248 with its
+  saturation capped at 0.6 and its value compressed into 0.49 to 0.92.
+  PixelLab shades indigo cloth with navy whatever hex values it is given.
+- **Subjects** are in `scripts/art/chibi/subjects/CULT.json`: the three
+  sample lines and City 1 from the direction, and draft lines for the rest
+  of the roster, not yet generated.
+
+What PixelLab did, added to the prompt notes of the earlier batches:
+
+- **The unit class draws hands, a tool and feet** on a figure whose subject
+  says it has none (four Heralds of four); the `machine` class text with
+  "A living robed creature, not a machine" in the addendum drew none.
+- **A creation stays about 6 px inside a tall canvas and an edit keeps the
+  outer 4 px clear:** nine Heralds were 74 to 92 px tall on the 104 px
+  canvas, and "lengthen the robe to the bottom edge" stopped at 97 px.
+- **A recolour edit lands the lit tone it is given and darkens the shade**
+  (asked `#4a43b5` and `#372f8f`, drew `#4342c6` and `#0e1176`);
+  asking for lighter tones overshot to another hue (azure, purple).
+- **A faction motif reaches the clothless pieces:** layer 3's green flames
+  sat on horns or antennae of every Horror creation.
+- An edit instruction over 500 characters is refused by the manifest check
+  before any call.
+
+`npm run art:chibi-cult-direction-review` writes
+`art/pixellab/reviews/chibi-batch-direction-cult/`: `candidates-x3.png`
+(every recorded candidate with its verdict), `sample-{x4,1x}.png` and
+`sample-zoom-0.75.png` (the three units on Grass, Forest, Mountain, Snow
+and Shallow Water), `lineup-{1x,x3}.png` and `lineup.json` (each unit
+beside the rivals the direction names, at native and half size, in colour
+and greyscale, with the Dwarf lineup's measures), `giants-x2.png` (the
+Herald beside the eight giants, with heights), `palette.{png,json}`,
+`gates.json` (the direction's five gates, measured, with what was judged
+by eye written in the script) and `index.json`. It starts no browser: the
+faction cannot be drawn by the board host yet, so the sheets are composed
+from the masters on the accepted terrain tiles. With `--out DIR --recipes
+initiate=<recipe>[:k],horror=…,herald=…` it reads recorded candidates
+(the accent applied in memory) instead of masters, for the review before
+`accept`; `--copy-to DIR` copies the output.

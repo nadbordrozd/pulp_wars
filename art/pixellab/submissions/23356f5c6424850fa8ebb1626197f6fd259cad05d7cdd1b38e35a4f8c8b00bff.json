@@ -1,0 +1,36 @@
+{
+  "id": "initiate-a-indigo-flop",
+  "jobId": "1490de61-fdd8-4f90-97c8-96558160ecf9",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-cult",
+    "asset": "chibi-direction-cult-initiate",
+    "subject": "UNIT:CULT:FIGHTER",
+    "faction": "CULT",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 91409,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only two small things. The pointed tip of the hood becomes longer and flops over to the right side, hanging down like the tip of a nightcap. The two bare hands become pale cream mittens, colour #f3e7c4, so no skin shows. Keep the blue hood and robe, the black inside of the hood, the two cream eyes, the candle with its green flame, the paper scroll, the badge, the slippers, the thick black outline and the art style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only two small things. The pointed tip of the hood becomes longer and flops over to the right side, hanging down like the tip of a nightcap. The two bare hands become pale cream mittens, colour #f3e7c4, so no skin shows. Keep the blue hood and robe, the black inside of the hood, the two cream eyes, the candle with its green flame, the paper scroll, the badge, the slippers, the thick black outline and the art style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only two small things. The pointed tip of the hood becomes longer and flops over to the right side, hanging down like the tip of a nightcap. The two bare hands become pale cream mittens, colour #f3e7c4, so no skin shows. Keep the blue hood and robe, the black inside of the hood, the two cream eyes, the candle with its green flame, the paper scroll, the badge, the slippers, the thick black outline and the art style the same, on a transparent background.",
+    "editInstruction": "Change only two small things. The pointed tip of the hood becomes longer and flops over to the right side, hanging down like the tip of a nightcap. The two bare hands become pale cream mittens, colour #f3e7c4, so no skin shows. Keep the blue hood and robe, the black inside of the hood, the two cream eyes, the candle with its green flame, the paper scroll, the badge, the slippers, the thick black outline and the art style the same, on a transparent background.",
+    "source": {
+      "recipe": "initiate-a-indigo",
+      "candidate": 0,
+      "sha256": "8d66f38adb9ece64852436f341d5e300de57e36b5fe6fcd1f5a421657cdb456c"
+    }
+  }
+}

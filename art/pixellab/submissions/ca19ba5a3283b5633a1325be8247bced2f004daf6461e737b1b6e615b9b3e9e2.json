@@ -1,0 +1,36 @@
+{
+  "id": "initiate-a-indigo-soft",
+  "jobId": "050d5f2e-86e6-4343-bc10-c0d20e421380",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-cult",
+    "asset": "chibi-direction-cult-initiate",
+    "subject": "UNIT:CULT:FIGHTER",
+    "faction": "CULT",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 91406,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only the shadows of the blue cloth: the dark navy folds and the dark shaded right side of the hood and robe become a medium violet indigo, colour #4038a4, and the lit left side stays violet indigo #4f48bd, so the cloth is purple-leaning blue with no dark navy. Keep the black inside of the hood, the two cream eyes, the candle with its green flame, the paper scroll, the badge, the slippers, the shape, the thick black outline and the art style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only the shadows of the blue cloth: the dark navy folds and the dark shaded right side of the hood and robe become a medium violet indigo, colour #4038a4, and the lit left side stays violet indigo #4f48bd, so the cloth is purple-leaning blue with no dark navy. Keep the black inside of the hood, the two cream eyes, the candle with its green flame, the paper scroll, the badge, the slippers, the shape, the thick black outline and the art style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only the shadows of the blue cloth: the dark navy folds and the dark shaded right side of the hood and robe become a medium violet indigo, colour #4038a4, and the lit left side stays violet indigo #4f48bd, so the cloth is purple-leaning blue with no dark navy. Keep the black inside of the hood, the two cream eyes, the candle with its green flame, the paper scroll, the badge, the slippers, the shape, the thick black outline and the art style the same, on a transparent background.",
+    "editInstruction": "Change only the shadows of the blue cloth: the dark navy folds and the dark shaded right side of the hood and robe become a medium violet indigo, colour #4038a4, and the lit left side stays violet indigo #4f48bd, so the cloth is purple-leaning blue with no dark navy. Keep the black inside of the hood, the two cream eyes, the candle with its green flame, the paper scroll, the badge, the slippers, the shape, the thick black outline and the art style the same, on a transparent background.",
+    "source": {
+      "recipe": "initiate-a-indigo",
+      "candidate": 0,
+      "sha256": "8d66f38adb9ece64852436f341d5e300de57e36b5fe6fcd1f5a421657cdb456c"
+    }
+  }
+}

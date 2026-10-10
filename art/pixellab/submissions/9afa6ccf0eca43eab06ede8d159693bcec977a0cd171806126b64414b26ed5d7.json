@@ -1,0 +1,36 @@
+{
+  "id": "herald-e-taller",
+  "jobId": "d07d9477-08b2-4faf-a67c-2f3948c410b9",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-cult",
+    "asset": "chibi-direction-cult-herald",
+    "subject": "UNIT:CULT:HERALD",
+    "faction": "CULT",
+    "recipeClass": "machine",
+    "requestSize": {
+      "width": 88,
+      "height": 104
+    },
+    "seed": 91430,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Make the creature a little taller without making it wider: lengthen the bell-shaped starry robe downward so that its round hem touches the very bottom edge of the image, and lengthen the tentacles of the crown upward so that their tips touch the very top edge of the image. Keep the one big pale yellow eye, the brass collar, the stars, the blue robe, the hanging sleeves, the thick black outline and the art style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Make the creature a little taller without making it wider: lengthen the bell-shaped starry robe downward so that its round hem touches the very bottom edge of the image, and lengthen the tentacles of the crown upward so that their tips touch the very top edge of the image. Keep the one big pale yellow eye, the brass collar, the stars, the blue robe, the hanging sleeves, the thick black outline and the art style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Make the creature a little taller without making it wider: lengthen the bell-shaped starry robe downward so that its round hem touches the very bottom edge of the image, and lengthen the tentacles of the crown upward so that their tips touch the very top edge of the image. Keep the one big pale yellow eye, the brass collar, the stars, the blue robe, the hanging sleeves, the thick black outline and the art style the same, on a transparent background.",
+    "editInstruction": "Make the creature a little taller without making it wider: lengthen the bell-shaped starry robe downward so that its round hem touches the very bottom edge of the image, and lengthen the tentacles of the crown upward so that their tips touch the very top edge of the image. Keep the one big pale yellow eye, the brass collar, the stars, the blue robe, the hanging sleeves, the thick black outline and the art style the same, on a transparent background.",
+    "source": {
+      "recipe": "herald-e-tall-indigo",
+      "candidate": 0,
+      "sha256": "380c1e70c49f2efee4ed95cd433e2252d1c3c484fcc0d739013e585d4512fedf"
+    }
+  }
+}

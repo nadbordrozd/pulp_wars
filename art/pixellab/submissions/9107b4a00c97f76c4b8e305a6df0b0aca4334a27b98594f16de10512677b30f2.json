@@ -1,0 +1,64 @@
+{
+  "id": "herald-i",
+  "jobId": "sync-f87523b6-249a-4170-9df7-8ef3e0b05caa",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "direction-cult",
+    "asset": "chibi-direction-cult-herald",
+    "subject": "UNIT:CULT:HERALD",
+    "faction": "CULT",
+    "recipeClass": "machine",
+    "requestSize": {
+      "width": 88,
+      "height": 104
+    },
+    "seed": 91432,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "low top-down",
+      "direction": "south-east"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+        "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+      },
+      {
+        "layer": "faction",
+        "source": "docs/art/factions/CULT.md#prompt-fragment + docs/art/factions/CULT.md#negative-fragment",
+        "text": "Faction: a pulp-magazine secret society of the 1920s, mock-sinister, silly and never scary. Their fixed colours: soft midnight indigo cloth shaded deeper violet-blue, never black; pale cream candle wax and parchment; small pieces of warm polished brass; and exactly one accent colour, a bright glowing spring green, only as small flames and glows: candle flames, lamp glass, an eye-in-a-spiral sign.",
+        "negative": "blood, gore, guts, dripping, horror, creepy realism, slime, skull, bone, black cloth, grey cloth, torn cloth, ragged hems, purple, violet, magenta, pink, red cloth, red robe, orange flames, yellow flames, blue flames, gold armour, chrome, steel armour, sword, gun, pentagram, cross, large glowing area"
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-machine.txt + scripts/art/chibi/fragments/class-machine.negative.txt",
+        "text": "Class: one chunky cute toy-like machine map piece, a single vehicle or device with big simple rounded shapes and one oversized signature feature, thick single-colour black outline; the whole machine is visible, and its lowest part is the lowest thing in the image.",
+        "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+      },
+      {
+        "layer": "subject",
+        "source": "scripts/art/chibi/subjects/CULT.json",
+        "text": "Subject: Herald, a chunky cute towering herald, a giant much taller than a normal soldier and narrow, filling the whole height of the image: a tall tapering bell-shaped robe of midnight indigo cloth sprinkled with a few small pale cream stars, reaching the ground with a neat round hem, long empty hanging sleeves, a brass collar ring, and in place of a head one huge round pale yellow eye with a black pupil under a crown of five short thick curling deep-sea teal tentacles with pale cream suckers; no face, no mouth, no hands, no feet, no weapon; the robe's hem is the lowest thing in the image; pompous and silly, not scary; simple shapes and very few details."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "A living robed creature, not a machine: it has no arms and holds nothing. It is very tall and thin like a pillar and fills the image from the very top edge to the very bottom edge: about 44 pixels wide and 104 pixels tall.",
+        "negative": "face, mouth, nose, two eyes, hands, fingers, arms holding something, feet, shoes, legs, staff, sword, cleaver, axe, book, lantern, candle, flame, weapon, skull, beard, wizard hat, jewels, black robe, navy robe, wings, horns, robot, wheels, vehicle, metal body"
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: a pulp-magazine secret society of the 1920s, mock-sinister, silly and never scary. Their fixed colours: soft midnight indigo cloth shaded deeper violet-blue, never black; pale cream candle wax and parchment; small pieces of warm polished brass; and exactly one accent colour, a bright glowing spring green, only as small flames and glows: candle flames, lamp glass, an eye-in-a-spiral sign. Class: one chunky cute toy-like machine map piece, a single vehicle or device with big simple rounded shapes and one oversized signature feature, thick single-colour black outline; the whole machine is visible, and its lowest part is the lowest thing in the image. Subject: Herald, a chunky cute towering herald, a giant much taller than a normal soldier and narrow, filling the whole height of the image: a tall tapering bell-shaped robe of midnight indigo cloth sprinkled with a few small pale cream stars, reaching the ground with a neat round hem, long empty hanging sleeves, a brass collar ring, and in place of a head one huge round pale yellow eye with a black pupil under a crown of five short thick curling deep-sea teal tentacles with pale cream suckers; no face, no mouth, no hands, no feet, no weapon; the robe's hem is the lowest thing in the image; pompous and silly, not scary; simple shapes and very few details. A living robed creature, not a machine: it has no arms and holds nothing. It is very tall and thin like a pillar and fills the image from the very top edge to the very bottom edge: about 44 pixels wide and 104 pixels tall.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, blood, gore, guts, dripping, horror, creepy realism, slime, skull, bone, black cloth, grey cloth, torn cloth, ragged hems, purple, violet, magenta, pink, red cloth, red robe, orange flames, yellow flames, blue flames, gold armour, chrome, steel armour, sword, gun, pentagram, cross, large glowing area, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, face, mouth, nose, two eyes, hands, fingers, arms holding something, feet, shoes, legs, staff, cleaver, axe, book, lantern, candle, flame, weapon, beard, wizard hat, jewels, black robe, navy robe, wings, horns, robot, wheels, vehicle, metal body",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: a pulp-magazine secret society of the 1920s, mock-sinister, silly and never scary. Their fixed colours: soft midnight indigo cloth shaded deeper violet-blue, never black; pale cream candle wax and parchment; small pieces of warm polished brass; and exactly one accent colour, a bright glowing spring green, only as small flames and glows: candle flames, lamp glass, an eye-in-a-spiral sign. Class: one chunky cute toy-like machine map piece, a single vehicle or device with big simple rounded shapes and one oversized signature feature, thick single-colour black outline; the whole machine is visible, and its lowest part is the lowest thing in the image. Subject: Herald, a chunky cute towering herald, a giant much taller than a normal soldier and narrow, filling the whole height of the image: a tall tapering bell-shaped robe of midnight indigo cloth sprinkled with a few small pale cream stars, reaching the ground with a neat round hem, long empty hanging sleeves, a brass collar ring, and in place of a head one huge round pale yellow eye with a black pupil under a crown of five short thick curling deep-sea teal tentacles with pale cream suckers; no face, no mouth, no hands, no feet, no weapon; the robe's hem is the lowest thing in the image; pompous and silly, not scary; simple shapes and very few details. A living robed creature, not a machine: it has no arms and holds nothing. It is very tall and thin like a pillar and fills the image from the very top edge to the very bottom edge: about 44 pixels wide and 104 pixels tall. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, blood, gore, guts, dripping, horror, creepy realism, slime, skull, bone, black cloth, grey cloth, torn cloth, ragged hems, purple, violet, magenta, pink, red cloth, red robe, orange flames, yellow flames, blue flames, gold armour, chrome, steel armour, sword, gun, pentagram, cross, large glowing area, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, face, mouth, nose, two eyes, hands, fingers, arms holding something, feet, shoes, legs, staff, cleaver, axe, book, lantern, candle, flame, weapon, beard, wizard hat, jewels, black robe, navy robe, wings, horns, robot, wheels, vehicle, metal body."
+  }
+}

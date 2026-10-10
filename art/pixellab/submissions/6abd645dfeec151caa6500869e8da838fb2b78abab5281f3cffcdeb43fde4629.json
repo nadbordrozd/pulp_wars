@@ -1,0 +1,36 @@
+{
+  "id": "horror-a-brass",
+  "jobId": "1510f51c-07c5-44ce-870e-71677769e0d8",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-cult",
+    "asset": "chibi-direction-cult-horror",
+    "subject": "UNIT:CULT:HORROR",
+    "faction": "CULT",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 91415,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only two colours. The collar round its middle becomes polished yellow brass, colour #c9a24a with shade #8a6a2a, with no red and no brown leather left. The whites of both big eyes become pale yellow, colour #ffe27a, with the black pupils kept. Keep the round teal body, the wide grin with its cream teeth, the cream belly, the four legs, the shape, the thick black outline and the art style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only two colours. The collar round its middle becomes polished yellow brass, colour #c9a24a with shade #8a6a2a, with no red and no brown leather left. The whites of both big eyes become pale yellow, colour #ffe27a, with the black pupils kept. Keep the round teal body, the wide grin with its cream teeth, the cream belly, the four legs, the shape, the thick black outline and the art style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only two colours. The collar round its middle becomes polished yellow brass, colour #c9a24a with shade #8a6a2a, with no red and no brown leather left. The whites of both big eyes become pale yellow, colour #ffe27a, with the black pupils kept. Keep the round teal body, the wide grin with its cream teeth, the cream belly, the four legs, the shape, the thick black outline and the art style the same, on a transparent background.",
+    "editInstruction": "Change only two colours. The collar round its middle becomes polished yellow brass, colour #c9a24a with shade #8a6a2a, with no red and no brown leather left. The whites of both big eyes become pale yellow, colour #ffe27a, with the black pupils kept. Keep the round teal body, the wide grin with its cream teeth, the cream belly, the four legs, the shape, the thick black outline and the art style the same, on a transparent background.",
+    "source": {
+      "recipe": "horror-a-smooth",
+      "candidate": 0,
+      "sha256": "7d6e71da086e8c308b60782c766add19211ce48353f4ab74e7d10d95fd536e51"
+    }
+  }
+}

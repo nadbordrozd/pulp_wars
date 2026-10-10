@@ -1,0 +1,466 @@
+{
+  "schemaVersion": 1,
+  "batch": "direction-cult",
+  "title": "Cultists of the Ancient Ones in fixed faction colours: the first sample (Initiate, Horror, Herald)",
+  "bead": "pulp_wars-mch9.14",
+  "faction": "CULT",
+  "dryRun": false,
+  "fixedFactionColours": true,
+  "assets": [
+    {
+      "id": "chibi-direction-cult-initiate",
+      "subject": "UNIT:CULT:FIGHTER",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false,
+      "accent": "cult-lodge"
+    },
+    {
+      "id": "chibi-direction-cult-horror",
+      "subject": "UNIT:CULT:HORROR",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "ownerColour": false,
+      "accent": "cult-green"
+    },
+    {
+      "id": "chibi-direction-cult-herald",
+      "subject": "UNIT:CULT:HERALD",
+      "assetClass": "GIANT_UNIT",
+      "recipeClass": "machine",
+      "canvas": {
+        "width": 88,
+        "height": 104
+      },
+      "ownerColour": false,
+      "accent": "cult-lodge"
+    }
+  ],
+  "recipes": [
+    {
+      "id": "initiate-a",
+      "asset": "chibi-direction-cult-initiate",
+      "endpoint": "create-image-pixen",
+      "seed": 91401,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "negativeAddendum": "staff, wand, dagger, knife, beard, skull face, skeleton, grey robe, black robe, navy robe, wizard hat brim, cape, wings",
+      "notes": "Sample unit 1 (CULT.md, gates 1, 4 and 5): a fresh creation with the unit class."
+    },
+    {
+      "id": "initiate-b",
+      "asset": "chibi-direction-cult-initiate",
+      "endpoint": "create-image-pixen",
+      "seed": 91402,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "negativeAddendum": "staff, wand, dagger, knife, beard, skull face, skeleton, grey robe, black robe, navy robe, wizard hat brim, cape, wings",
+      "notes": "Sample unit 1: a second seed of the same request."
+    },
+    {
+      "id": "horror-a",
+      "asset": "chibi-direction-cult-horror",
+      "endpoint": "create-image-pixen",
+      "seed": 91411,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "The monster is drawn large and fills most of the width of the image.",
+      "negativeAddendum": "robe, hood, cloak, cloth, clothes, hat, person, human, arms, hands, horns, claws, fangs, blood, octopus head, squid mantle, candle, weapon",
+      "notes": "Sample unit 2 (gate 2): the unit class with cloth words in the negative, because layer 3 names indigo cloth in every prompt."
+    },
+    {
+      "id": "horror-b",
+      "asset": "chibi-direction-cult-horror",
+      "endpoint": "create-image-pixen",
+      "seed": 91412,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "The monster is drawn large and fills most of the width of the image.",
+      "negativeAddendum": "robe, hood, cloak, cloth, clothes, hat, person, human, arms, hands, horns, claws, fangs, blood, octopus head, squid mantle, candle, weapon",
+      "notes": "Sample unit 2: a second seed of the same request."
+    },
+    {
+      "id": "herald-a",
+      "asset": "chibi-direction-cult-herald",
+      "endpoint": "create-image-pixen",
+      "seed": 91421,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "promptAddendum": "The giant is drawn very tall and narrow: the tentacle crown touches the top edge of the image and the robe's hem touches the bottom edge.",
+      "negativeAddendum": "face, mouth, nose, two eyes, hands, feet, legs, staff, sword, weapon, skull, beard, wizard hat, black robe, navy robe, wings, horns",
+      "notes": "Sample unit 3 (gate 3): a fresh creation with the unit class at the giant canvas."
+    },
+    {
+      "id": "herald-b",
+      "asset": "chibi-direction-cult-herald",
+      "endpoint": "create-image-pixen",
+      "seed": 91422,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "promptAddendum": "The giant is drawn very tall and narrow: the tentacle crown touches the top edge of the image and the robe's hem touches the bottom edge.",
+      "negativeAddendum": "face, mouth, nose, two eyes, hands, feet, legs, staff, sword, weapon, skull, beard, wizard hat, black robe, navy robe, wings, horns",
+      "notes": "Sample unit 3: a second seed of the same request."
+    },
+    {
+      "id": "initiate-c",
+      "asset": "chibi-direction-cult-initiate",
+      "endpoint": "create-image-pixen",
+      "seed": 91403,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "The hood and the robe are a clear bright indigo, a violet-leaning blue: colour #4a43b5 on the lit left side and #372f8f in the folds, clearly blue cloth and much lighter than the black outline, never dark grey, charcoal, navy or black. The long pointed tip of the hood flops over to one side like a nightcap. The figure is drawn large: about 44 pixels wide and 72 pixels tall.",
+      "negativeAddendum": "staff, wand, dagger, knife, beard, skull face, skeleton, grey robe, charcoal robe, black robe, navy robe, wizard hat brim, cape, wings",
+      "notes": "initiate-a and initiate-b drew a slate-grey robe (57% and 63% dark): the cloth colours are given as hex values, as the Goblin batch found, and the size in pixels."
+    },
+    {
+      "id": "initiate-a-indigo",
+      "asset": "chibi-direction-cult-initiate",
+      "endpoint": "edit-image-pixen",
+      "seed": 91404,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "initiate-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the colour of the cloth: recolour the dark grey-blue hood and robe to a clear bright indigo, a violet-leaning blue, colour #4a43b5 on the lit left side and #372f8f in the folds and on the shaded right side. Keep the two big round cream eyes, the candle with its small green flame, the cream paper scroll, the brass badge, the cream slippers, the shape, the thick black outline and the art style the same, on a transparent background.",
+      "notes": "initiate-a has the right shape (two cream eyes, candle, papers, slippers) in a slate-grey robe: a recolour edit with hex values."
+    },
+    {
+      "id": "horror-c",
+      "asset": "chibi-direction-cult-horror",
+      "endpoint": "create-image-pixen",
+      "seed": 91413,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "The top of its smooth round body has nothing on it: no horns, no flames, no candle and no lamp. Both eyes are pale yellow, colour #ffe27a, with black pupils. It stands on four fat curling tentacles like an octopus, never on legs with toes. Nothing on it glows green. The monster is drawn large: about 62 pixels wide and 66 pixels tall.",
+      "negativeAddendum": "robe, hood, cloak, cloth, clothes, hat, person, human, arms, hands, horns, antlers, spikes on the head, flame, fire, candle, lamp, lantern, claws, toes, fangs, blood, pink gums, tongue, weapon",
+      "notes": "horror-a and horror-b are the right ball with a grin and a collar, but both grew horns with green flames (layer 3 names flames), white eyes and legs with toes; horror-b also pink gums."
+    },
+    {
+      "id": "horror-a-smooth",
+      "asset": "chibi-direction-cult-horror",
+      "endpoint": "edit-image-pixen",
+      "seed": 91414,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "horror-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the top of the head: remove the two horns and remove the hanging lamp with its green flame, so the top of the round teal body is smooth, bare and round. Keep the round teal body, the two big googly eyes, the wide grin with its cream teeth, the brass spiked collar, the cream belly, the four legs, the thick black outline and the art style the same, on a transparent background.",
+      "notes": "horror-a is the best ball: an edit that names one part, the horns and the lamp."
+    },
+    {
+      "id": "herald-c",
+      "asset": "chibi-direction-cult-herald",
+      "endpoint": "create-image-pixen",
+      "seed": 91423,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "promptAddendum": "It has no arms and holds nothing: the two long sleeves hang down empty at its sides, and the robe hides everything under it, so no feet show. The robe is a clear indigo, a violet-leaning blue, colour #4a43b5 on the lit left side and #372f8f in the folds, never black or navy. The eye is pale yellow, colour #ffe27a. The figure is drawn very large and narrow: about 50 pixels wide and 102 pixels tall, from the tips of the tentacle crown at the very top edge of the image to the hem at the very bottom edge.",
+      "negativeAddendum": "face, mouth, nose, two eyes, hands, fingers, arms holding something, feet, shoes, legs, staff, sword, cleaver, lantern, candle, flame, weapon, skull, beard, wizard hat, crown of gold, black robe, navy robe, wings, horns",
+      "notes": "herald-a (90 px tall, a cleaver, hands, feet) and herald-b (hands with a lantern, feet) are too short for gate 3: the size is given in pixels, as the Gingerbread Giant was."
+    },
+    {
+      "id": "herald-d",
+      "asset": "chibi-direction-cult-herald",
+      "endpoint": "create-image-pixen",
+      "seed": 91424,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "promptAddendum": "It has no arms and holds nothing: the two long sleeves hang down empty at its sides, and the robe hides everything under it, so no feet show. The robe is a clear indigo, a violet-leaning blue, colour #4a43b5 on the lit left side and #372f8f in the folds, never black or navy. The eye is pale yellow, colour #ffe27a. The figure is drawn very large and narrow: about 50 pixels wide and 102 pixels tall, from the tips of the tentacle crown at the very top edge of the image to the hem at the very bottom edge.",
+      "negativeAddendum": "face, mouth, nose, two eyes, hands, fingers, arms holding something, feet, shoes, legs, staff, sword, cleaver, lantern, candle, flame, weapon, skull, beard, wizard hat, crown of gold, black robe, navy robe, wings, horns",
+      "notes": "A second seed of herald-c."
+    },
+    {
+      "id": "initiate-a-indigo-light",
+      "asset": "chibi-direction-cult-initiate",
+      "endpoint": "edit-image-pixen",
+      "seed": 91405,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "initiate-a-indigo",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the brightness of the blue cloth: make the whole hood and robe lighter, a soft bright indigo, colour #5d56cc on the lit left side and #443cab in the folds and on the shaded right side, with no dark navy anywhere on the cloth. Keep the black inside of the hood, the two big round cream eyes, the candle with its green flame, the paper scroll, the badge, the slippers, the shape, the thick black outline and the art style the same, on a transparent background.",
+      "notes": "initiate-a-indigo:0 is indigo (lit #4342c6, hue 240) but its shades are navy (#0b1b84, #0e1176): 61% dark, over the 45% of gate 1."
+    },
+    {
+      "id": "horror-a-brass",
+      "asset": "chibi-direction-cult-horror",
+      "endpoint": "edit-image-pixen",
+      "seed": 91415,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "horror-a-smooth",
+        "candidate": 0
+      },
+      "editInstruction": "Change only two colours. The collar round its middle becomes polished yellow brass, colour #c9a24a with shade #8a6a2a, with no red and no brown leather left. The whites of both big eyes become pale yellow, colour #ffe27a, with the black pupils kept. Keep the round teal body, the wide grin with its cream teeth, the cream belly, the four legs, the shape, the thick black outline and the art style the same, on a transparent background.",
+      "notes": "horror-a-smooth:0 has no horns and no flame; its collar strap is red-brown leather (hue 0 to 16, about 260 px: red means Unbound) and its eyes are cream, not yellow."
+    },
+    {
+      "id": "herald-e",
+      "asset": "chibi-direction-cult-herald",
+      "endpoint": "create-image-pixen",
+      "seed": 91425,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "promptAddendum": "A living robed creature, not a machine: it has no arms and holds nothing. The herald is drawn very large: about 52 pixels wide and 102 pixels tall.",
+      "negativeAddendum": "face, mouth, nose, two eyes, hands, fingers, arms holding something, feet, shoes, legs, staff, sword, cleaver, axe, book, lantern, candle, flame, weapon, skull, beard, wizard hat, jewels, black robe, navy robe, wings, horns, robot, wheels, vehicle, metal body",
+      "notes": "herald-c and herald-d (74 and 89 px tall) again drew hands with a book and an axe and feet: the unit class asks for a short sturdy body, a signature weapon or tool and both feet. The asset now uses the machine class text, which names none of them (CULT.md allows it for pieces the unit class fights), with the size phrased as the Gingerbread Giant was."
+    },
+    {
+      "id": "herald-f",
+      "asset": "chibi-direction-cult-herald",
+      "endpoint": "create-image-pixen",
+      "seed": 91426,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "promptAddendum": "A living robed creature, not a machine: it has no arms and holds nothing. The herald is drawn very large: about 52 pixels wide and 102 pixels tall.",
+      "negativeAddendum": "face, mouth, nose, two eyes, hands, fingers, arms holding something, feet, shoes, legs, staff, sword, cleaver, axe, book, lantern, candle, flame, weapon, skull, beard, wizard hat, jewels, black robe, navy robe, wings, horns, robot, wheels, vehicle, metal body",
+      "notes": "herald-c and herald-d (74 and 89 px tall) again drew hands with a book and an axe and feet: the unit class asks for a short sturdy body, a signature weapon or tool and both feet. The asset now uses the machine class text, which names none of them (CULT.md allows it for pieces the unit class fights), with the size phrased as the Gingerbread Giant was."
+    },
+    {
+      "id": "initiate-a-indigo-soft",
+      "asset": "chibi-direction-cult-initiate",
+      "endpoint": "edit-image-pixen",
+      "seed": 91406,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "initiate-a-indigo",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the shadows of the blue cloth: the dark navy folds and the dark shaded right side of the hood and robe become a medium violet indigo, colour #4038a4, and the lit left side stays violet indigo #4f48bd, so the cloth is purple-leaning blue with no dark navy. Keep the black inside of the hood, the two cream eyes, the candle with its green flame, the paper scroll, the badge, the slippers, the shape, the thick black outline and the art style the same, on a transparent background.",
+      "notes": "initiate-a-indigo-light overshot to a bright azure (the Ice Folk blue): a gentler edit that lifts only the navy shades."
+    },
+    {
+      "id": "horror-a-tentacles",
+      "asset": "chibi-direction-cult-horror",
+      "endpoint": "edit-image-pixen",
+      "seed": 91416,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "horror-a-brass",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the four feet: replace each leg and its toes with one short fat teal tentacle that curls outward on the ground, with small pale cream suckers on its underside, like the arms of an octopus. No toes and no claws. Keep the round teal body, the two big pale yellow eyes, the wide grin with its cream teeth, the brass spiked collar, the cream belly, the thick black outline and the art style the same, on a transparent background.",
+      "notes": "horror-a-brass:0 has the brass collar and the yellow eyes; the subject asks for four tentacles, and it stands on legs with toes."
+    },
+    {
+      "id": "herald-e-tall",
+      "asset": "chibi-direction-cult-herald",
+      "endpoint": "edit-image-pixen",
+      "seed": 91427,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "source": {
+        "recipe": "herald-e",
+        "candidate": 0
+      },
+      "editInstruction": "Make the creature taller without making it wider: lengthen the bell-shaped starry robe downward so that its round hem touches the very bottom edge of the image, and lengthen the tentacles of the crown upward so that their tips touch the very top edge of the image. Keep the one big round eye, the collar, the stars, the hanging sleeves, the thick black outline and the art style the same, on a transparent background.",
+      "notes": "herald-e (machine class) has no hands, no feet and no tool, but is 50 x 91 px: gate 3 asks for 100."
+    },
+    {
+      "id": "herald-g",
+      "asset": "chibi-direction-cult-herald",
+      "endpoint": "create-image-pixen",
+      "seed": 91428,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "promptAddendum": "A living robed creature, not a machine: it has no arms and holds nothing. The robe is a clear violet indigo, colour #4a43b5, and the eye is pale yellow, colour #ffe27a. The herald is drawn very large and fills the whole image from top to bottom: about 56 pixels wide and 104 pixels tall.",
+      "negativeAddendum": "face, mouth, nose, two eyes, hands, fingers, arms holding something, feet, shoes, legs, staff, sword, cleaver, axe, book, lantern, candle, flame, weapon, skull, beard, wizard hat, jewels, black robe, navy robe, wings, horns, robot, wheels, vehicle, metal body",
+      "notes": "A third seed of the machine-class request with the colours as hex values and the full canvas height asked for."
+    },
+    {
+      "id": "initiate-a-indigo-b",
+      "asset": "chibi-direction-cult-initiate",
+      "endpoint": "edit-image-pixen",
+      "seed": 91407,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "initiate-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the colour of the cloth: recolour the dark grey-blue hood and robe to a soft violet-leaning indigo blue: colour #5c55c6 on the lit left side, #4a43b5 on the rest, and #372f8f only in the deepest folds; no navy, no black and no purple on the cloth. Keep the two big round cream eyes, the candle with its small green flame, the paper scroll, the badge, the slippers, the shape, the thick black outline and the art style the same, on a transparent background.",
+      "notes": "initiate-a-indigo-soft turned the hood purple (the Undead accent) and stayed 60% dark: the recolour of the grey initiate-a again, with tones one step lighter than the first time (which landed its lit tone and went navy in the shades)."
+    },
+    {
+      "id": "initiate-a-indigo-mid",
+      "asset": "chibi-direction-cult-initiate",
+      "endpoint": "edit-image-pixen",
+      "seed": 91408,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "initiate-a-indigo",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the darkest blues of the cloth: every dark navy shadow on the hood and on the robe becomes the medium indigo blue #372f8f, the same hue as the lit cloth and only a little darker than it. The lit indigo parts do not change. Keep the black inside of the hood, the two cream eyes, the candle with its green flame, the paper scroll, the badge, the slippers, the shape, the thick black outline and the art style the same, on a transparent background.",
+      "notes": "A second way to the same end: lift only the navy shades of initiate-a-indigo:0, naming no lighter lit tone."
+    },
+    {
+      "id": "herald-e-tall-indigo",
+      "asset": "chibi-direction-cult-herald",
+      "endpoint": "edit-image-pixen",
+      "seed": 91429,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "source": {
+        "recipe": "herald-e-tall",
+        "candidate": 0
+      },
+      "editInstruction": "Change only three colours. The starry robe becomes a violet-leaning indigo blue, colour #4a43b5 on the lit left side and #372f8f in the folds, not grey and not navy. The white of the one big eye becomes pale yellow, colour #ffe27a, with the black pupil kept. The collar becomes polished yellow brass, colour #c9a24a. Keep the cream stars, the teal tentacles, the shape, the thick black outline and the art style the same, on a transparent background.",
+      "notes": "herald-e-tall:0 is 53 x 97 px with no hands, feet or tool; its robe is slate navy, its eye cream and its collar red-brown."
+    },
+    {
+      "id": "horror-a-mouth",
+      "asset": "chibi-direction-cult-horror",
+      "endpoint": "edit-image-pixen",
+      "seed": 91417,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "horror-a-tentacles",
+        "candidate": 0
+      },
+      "editInstruction": "Change only two colours. The inside of the open mouth and the gums become dark teal, colour #145f6b, with no purple, no violet and no pink. The darkest red-brown shadows of the brass collar and its chain become dark brass, colour #8a6a2a, with no red. Keep the cream teeth, the round teal body, the two big pale yellow eyes, the bright brass collar, the cream belly, the four tentacle feet, the shape, the thick black outline and the art style the same, on a transparent background.",
+      "notes": "horror-a-tentacles:0 is the Horror of the direction; about 80 px of purple and pink in its mouth and 50 px of red-brown collar shadow are left, and gate 4 allows no violet and no red pixel."
+    },
+    {
+      "id": "herald-e-taller",
+      "asset": "chibi-direction-cult-herald",
+      "endpoint": "edit-image-pixen",
+      "seed": 91430,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "source": {
+        "recipe": "herald-e-tall-indigo",
+        "candidate": 0
+      },
+      "editInstruction": "Make the creature a little taller without making it wider: lengthen the bell-shaped starry robe downward so that its round hem touches the very bottom edge of the image, and lengthen the tentacles of the crown upward so that their tips touch the very top edge of the image. Keep the one big pale yellow eye, the brass collar, the stars, the blue robe, the hanging sleeves, the thick black outline and the art style the same, on a transparent background.",
+      "notes": "herald-e-tall-indigo:0 has the yellow eye, the brass collar and a blue robe, and is 53 x 97 px: three more pixels for gate 3."
+    },
+    {
+      "id": "initiate-a-indigo-flop",
+      "asset": "chibi-direction-cult-initiate",
+      "endpoint": "edit-image-pixen",
+      "seed": 91409,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "initiate-a-indigo",
+        "candidate": 0
+      },
+      "editInstruction": "Change only two small things. The pointed tip of the hood becomes longer and flops over to the right side, hanging down like the tip of a nightcap. The two bare hands become pale cream mittens, colour #f3e7c4, so no skin shows. Keep the blue hood and robe, the black inside of the hood, the two cream eyes, the candle with its green flame, the paper scroll, the badge, the slippers, the thick black outline and the art style the same, on a transparent background.",
+      "notes": "initiate-a-indigo:0 is the indigo Initiate; the direction asks for a tip that flops (its outline tell) and for no skin."
+    },
+    {
+      "id": "horror-a-gums",
+      "asset": "chibi-direction-cult-horror",
+      "endpoint": "edit-image-pixen",
+      "seed": 91418,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "horror-a-tentacles",
+        "candidate": 0
+      },
+      "editInstruction": "Change only one colour: the purple and pink gums inside the grin become dark teal, colour #145f6b. The mouth stays exactly the same wide happy grin with every cream tooth in its place. Keep the round teal body, the two big pale yellow eyes, the brass collar, the cream belly, the four tentacle feet, the shape, the thick black outline and the art style the same, on a transparent background.",
+      "notes": "horror-a-mouth turned the grin into a black hole with loose teeth: a narrower edit of the gums only."
+    },
+    {
+      "id": "herald-h",
+      "asset": "chibi-direction-cult-herald",
+      "endpoint": "create-image-pixen",
+      "seed": 91431,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "promptAddendum": "A living robed creature, not a machine: it has no arms and holds nothing. It is very tall and thin like a pillar and fills the image from the very top edge to the very bottom edge: about 44 pixels wide and 104 pixels tall.",
+      "negativeAddendum": "face, mouth, nose, two eyes, hands, fingers, arms holding something, feet, shoes, legs, staff, sword, cleaver, axe, book, lantern, candle, flame, weapon, skull, beard, wizard hat, jewels, black robe, navy robe, wings, horns, robot, wheels, vehicle, metal body",
+      "notes": "The edits of herald-e stop 4 px inside the canvas (rows 4 to 100, 97 px): two more creations that ask for a pillar from edge to edge, for the 100 px of gate 3."
+    },
+    {
+      "id": "herald-i",
+      "asset": "chibi-direction-cult-herald",
+      "endpoint": "create-image-pixen",
+      "seed": 91432,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "promptAddendum": "A living robed creature, not a machine: it has no arms and holds nothing. It is very tall and thin like a pillar and fills the image from the very top edge to the very bottom edge: about 44 pixels wide and 104 pixels tall.",
+      "negativeAddendum": "face, mouth, nose, two eyes, hands, fingers, arms holding something, feet, shoes, legs, staff, sword, cleaver, axe, book, lantern, candle, flame, weapon, skull, beard, wizard hat, jewels, black robe, navy robe, wings, horns, robot, wheels, vehicle, metal body",
+      "notes": "The edits of herald-e stop 4 px inside the canvas (rows 4 to 100, 97 px): two more creations that ask for a pillar from edge to edge, for the 100 px of gate 3."
+    }
+  ]
+}

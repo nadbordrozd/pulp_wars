@@ -1,0 +1,136 @@
+{
+  "bead": "pulp_wars-mch9.14",
+  "note": "Band means measured on the sample's masters (the accent step applied); shares are of the opaque pixels of the units a band is measured on; fromTarget is CIE76 from the direction's target.",
+  "palette": [
+    {
+      "role": "Indigo cloth, lit",
+      "measuredOn": [
+        "initiate",
+        "herald"
+      ],
+      "target": "#4a43b5",
+      "mean": "#4d49ab",
+      "hue": 243,
+      "lightness": 36.5,
+      "fromTarget": 9.9,
+      "tones": [
+        "#5452ab",
+        "#443d98",
+        "#4a49b8",
+        "#3f439f"
+      ],
+      "share": 51.7
+    },
+    {
+      "role": "Indigo cloth, shade",
+      "measuredOn": [
+        "initiate",
+        "herald"
+      ],
+      "target": "#372f8f",
+      "mean": "#3c378a",
+      "hue": 244,
+      "lightness": 28.3,
+      "fromTarget": 8.9,
+      "tones": [
+        "#3d388c",
+        "#373380"
+      ],
+      "share": 0.7
+    },
+    {
+      "role": "Wax and parchment",
+      "measuredOn": [
+        "initiate",
+        "horror",
+        "herald"
+      ],
+      "target": "#f3e7c4",
+      "mean": "#eee5b0",
+      "hue": 52,
+      "lightness": 90.6,
+      "fromTarget": 9.5,
+      "tones": [
+        "#fceba0",
+        "#f8f0b1",
+        "#ddc893",
+        "#f6fed6"
+      ],
+      "share": 4.6
+    },
+    {
+      "role": "Brass",
+      "measuredOn": [
+        "initiate",
+        "horror",
+        "herald"
+      ],
+      "target": "#c9a24a",
+      "mean": "#af792c",
+      "hue": 35,
+      "lightness": 55.1,
+      "fromTarget": 16.4,
+      "tones": [
+        "#d9bb7f",
+        "#caa472",
+        "#b56e22",
+        "#80460a"
+      ],
+      "share": 7.9
+    },
+    {
+      "role": "Eldritch green",
+      "measuredOn": [
+        "initiate"
+      ],
+      "target": "#00ff78",
+      "mean": "#63e89f",
+      "hue": 147,
+      "lightness": 83.2,
+      "fromTarget": 36.1,
+      "tones": [
+        "#65eaa1",
+        "#3cc078"
+      ],
+      "share": 0.7
+    },
+    {
+      "role": "Deep-sea teal",
+      "measuredOn": [
+        "horror",
+        "herald"
+      ],
+      "target": "#1f8f95",
+      "mean": "#2c7e75",
+      "hue": 173,
+      "lightness": 48.1,
+      "fromTarget": 11.6,
+      "tones": [
+        "#11525a",
+        "#39708a",
+        "#257d73",
+        "#237770"
+      ],
+      "share": 22
+    },
+    {
+      "role": "Summoned eyes",
+      "measuredOn": [
+        "horror",
+        "herald"
+      ],
+      "target": "#ffe27a",
+      "mean": "#fcdd4b",
+      "hue": 50,
+      "lightness": 88.5,
+      "fromTarget": 18.3,
+      "tones": [
+        "#fef042",
+        "#feef7e",
+        "#f9b728",
+        "#fbd738"
+      ],
+      "share": 3.9
+    }
+  ]
+}

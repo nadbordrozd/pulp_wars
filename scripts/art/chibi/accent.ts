@@ -68,6 +68,15 @@ export interface AccentSpec {
     readonly scale: number;
     readonly add: number;
   };
+  /**
+   * A second band (bead pulp_wars-mch9.14), applied to the result of this
+   * one: a faction whose accent and whose main material both need a
+   * deterministic colour (the Cult lodge: the green flame, and indigo cloth
+   * that PixelLab shades navy). The counts of the record are this band's;
+   * the whole chain is stored with the spec and re-derived by
+   * `art:validate`. Omitted, nothing changes, as in the earlier presets.
+   */
+  readonly then?: AccentSpec;
 }
 
 /**
@@ -214,6 +223,81 @@ export const ACCENT_PRESETS = {
     saturation: { scale: 0.55, add: 0.08, max: 0.5 },
     value: { scale: 0.6, add: 0.42 },
   },
+  /**
+   * The Cult's eldritch green (bead pulp_wars-mch9.14, CULT.md): the faction
+   * colour `#00ff78` (hue 148), worn only as small flames and glows. PixelLab
+   * draws "a bright glowing spring green" as a yellow lime (the candle flames
+   * of the sample were hue 103 to 108). The step finds the saturated greens
+   * (hue 80 to 152, saturation at least 0.5, value at least 0.45) and moves
+   * them to hue 146 to 150. Cream wax, brass (hue 28 to 57) and the summoned
+   * things' deep-sea teal (hue 155 and more, its lit tones included) and
+   * pale yellow eyes lie outside the band and are never touched. This preset
+   * is for the summoned (the Horror, the Tentacle, the Thing), whose navy
+   * shading on teal must stay; the lodge uses `cult-lodge`. Its second band
+   * moves the few purple shadow pixels PixelLab leaves on a teal body (hue
+   * 262 to 345: violet and magenta are the Undead's and the Martians') to
+   * the body's own navy shade, hue 228.
+   */
+  "cult-green": {
+    band: {
+      hueFrom: 80,
+      hueTo: 152,
+      saturationMin: 0.5,
+      valueMin: 0.45,
+      hueCentre: 120,
+    },
+    hue: 148,
+    hueSpread: 0.07,
+    then: {
+      band: {
+        hueFrom: 262,
+        hueTo: 345,
+        saturationMin: 0.3,
+        valueMin: 0.14,
+        hueCentre: 300,
+      },
+      hue: 228,
+      hueSpread: 0,
+    },
+  },
+  /**
+   * The Cult lodge (bead pulp_wars-mch9.14, CULT.md, "Indigo, never black,
+   * never navy"): the green of `cult-green`, then the cloth. PixelLab holds
+   * the lit indigo it is given as a hex value (`#4342c6`, hue 240) but shades
+   * it with navy and near-black blues (`#0b1b84`, `#0e1176`, `#0a0e42`), and
+   * five recolour edits swung between that, an azure and a purple hood. The
+   * second band finds every saturated blue of the cloth (hue 212 to 262,
+   * saturation at least 0.45, value at least 0.14, so the outline and the
+   * black inside of a hood stay), moves its hue to 240 to 248, caps its
+   * saturation at 0.6 and compresses its value into 0.49 to 0.92 (a navy of
+   * value 0.26 becomes an indigo of 0.55), so the lit side stays the lightest
+   * and the folds are the direction's shade tone, not a navy. Cream, brass,
+   * green and teal (hue 205 and less) are never touched.
+   */
+  "cult-lodge": {
+    band: {
+      hueFrom: 80,
+      hueTo: 152,
+      saturationMin: 0.5,
+      valueMin: 0.45,
+      hueCentre: 120,
+    },
+    hue: 148,
+    hueSpread: 0.07,
+    then: {
+      band: {
+        hueFrom: 212,
+        hueTo: 262,
+        saturationMin: 0.45,
+        valueMin: 0.14,
+        hueCentre: 238,
+      },
+      hue: 244,
+      hueSpread: 0.3,
+      saturation: { scale: 1, add: 0, max: 0.6 },
+      value: { scale: 0.5, add: 0.42 },
+    },
+  },
 } as const satisfies Readonly<Record<string, AccentSpec>>;
 
 export type AccentPresetName = keyof typeof ACCENT_PRESETS;
@@ -281,6 +365,13 @@ export interface AccentResult {
 
 /** Recolours the accent pixels of `base`; every other pixel is copied. */
 export function accentRaster(base: RgbaRaster, spec: AccentSpec): AccentResult {
+  const first = accentBand(base, spec);
+  if (spec.then === undefined) return first;
+  // The later bands recolour the result; the counts stay the first band's.
+  return { ...first, raster: accentRaster(first.raster, spec.then).raster };
+}
+
+function accentBand(base: RgbaRaster, spec: AccentSpec): AccentResult {
   const { width, height } = base;
   const source = base.data;
   const data = new Uint8Array(source);

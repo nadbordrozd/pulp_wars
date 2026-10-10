@@ -1,0 +1,36 @@
+{
+  "id": "initiate-a-indigo-mid",
+  "jobId": "6b8d4c2f-e344-48b1-9c83-8aa77d825b57",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-cult",
+    "asset": "chibi-direction-cult-initiate",
+    "subject": "UNIT:CULT:FIGHTER",
+    "faction": "CULT",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 91408,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only the darkest blues of the cloth: every dark navy shadow on the hood and on the robe becomes the medium indigo blue #372f8f, the same hue as the lit cloth and only a little darker than it. The lit indigo parts do not change. Keep the black inside of the hood, the two cream eyes, the candle with its green flame, the paper scroll, the badge, the slippers, the shape, the thick black outline and the art style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only the darkest blues of the cloth: every dark navy shadow on the hood and on the robe becomes the medium indigo blue #372f8f, the same hue as the lit cloth and only a little darker than it. The lit indigo parts do not change. Keep the black inside of the hood, the two cream eyes, the candle with its green flame, the paper scroll, the badge, the slippers, the shape, the thick black outline and the art style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only the darkest blues of the cloth: every dark navy shadow on the hood and on the robe becomes the medium indigo blue #372f8f, the same hue as the lit cloth and only a little darker than it. The lit indigo parts do not change. Keep the black inside of the hood, the two cream eyes, the candle with its green flame, the paper scroll, the badge, the slippers, the shape, the thick black outline and the art style the same, on a transparent background.",
+    "editInstruction": "Change only the darkest blues of the cloth: every dark navy shadow on the hood and on the robe becomes the medium indigo blue #372f8f, the same hue as the lit cloth and only a little darker than it. The lit indigo parts do not change. Keep the black inside of the hood, the two cream eyes, the candle with its green flame, the paper scroll, the badge, the slippers, the shape, the thick black outline and the art style the same, on a transparent background.",
+    "source": {
+      "recipe": "initiate-a-indigo",
+      "candidate": 0,
+      "sha256": "8d66f38adb9ece64852436f341d5e300de57e36b5fe6fcd1f5a421657cdb456c"
+    }
+  }
+}

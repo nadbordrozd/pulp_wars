@@ -1,0 +1,36 @@
+{
+  "id": "horror-a-smooth",
+  "jobId": "4bf81d58-978c-43c3-b6f1-df9498b25169",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-cult",
+    "asset": "chibi-direction-cult-horror",
+    "subject": "UNIT:CULT:HORROR",
+    "faction": "CULT",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 91414,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only the top of the head: remove the two horns and remove the hanging lamp with its green flame, so the top of the round teal body is smooth, bare and round. Keep the round teal body, the two big googly eyes, the wide grin with its cream teeth, the brass spiked collar, the cream belly, the four legs, the thick black outline and the art style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only the top of the head: remove the two horns and remove the hanging lamp with its green flame, so the top of the round teal body is smooth, bare and round. Keep the round teal body, the two big googly eyes, the wide grin with its cream teeth, the brass spiked collar, the cream belly, the four legs, the thick black outline and the art style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only the top of the head: remove the two horns and remove the hanging lamp with its green flame, so the top of the round teal body is smooth, bare and round. Keep the round teal body, the two big googly eyes, the wide grin with its cream teeth, the brass spiked collar, the cream belly, the four legs, the thick black outline and the art style the same, on a transparent background.",
+    "editInstruction": "Change only the top of the head: remove the two horns and remove the hanging lamp with its green flame, so the top of the round teal body is smooth, bare and round. Keep the round teal body, the two big googly eyes, the wide grin with its cream teeth, the brass spiked collar, the cream belly, the four legs, the thick black outline and the art style the same, on a transparent background.",
+    "source": {
+      "recipe": "horror-a",
+      "candidate": 0,
+      "sha256": "73ab585f3bd7d6b9c916bab3c843d116ce0eae63f115f1a0c1f7a4c38bb1ef14"
+    }
+  }
+}

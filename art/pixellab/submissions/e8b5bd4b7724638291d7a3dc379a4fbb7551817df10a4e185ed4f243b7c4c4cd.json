@@ -1,0 +1,36 @@
+{
+  "id": "herald-e-tall-indigo",
+  "jobId": "d00ec42b-b5dd-46b6-bdf4-5fe07e9524f0",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-cult",
+    "asset": "chibi-direction-cult-herald",
+    "subject": "UNIT:CULT:HERALD",
+    "faction": "CULT",
+    "recipeClass": "machine",
+    "requestSize": {
+      "width": 88,
+      "height": 104
+    },
+    "seed": 91429,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only three colours. The starry robe becomes a violet-leaning indigo blue, colour #4a43b5 on the lit left side and #372f8f in the folds, not grey and not navy. The white of the one big eye becomes pale yellow, colour #ffe27a, with the black pupil kept. The collar becomes polished yellow brass, colour #c9a24a. Keep the cream stars, the teal tentacles, the shape, the thick black outline and the art style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only three colours. The starry robe becomes a violet-leaning indigo blue, colour #4a43b5 on the lit left side and #372f8f in the folds, not grey and not navy. The white of the one big eye becomes pale yellow, colour #ffe27a, with the black pupil kept. The collar becomes polished yellow brass, colour #c9a24a. Keep the cream stars, the teal tentacles, the shape, the thick black outline and the art style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only three colours. The starry robe becomes a violet-leaning indigo blue, colour #4a43b5 on the lit left side and #372f8f in the folds, not grey and not navy. The white of the one big eye becomes pale yellow, colour #ffe27a, with the black pupil kept. The collar becomes polished yellow brass, colour #c9a24a. Keep the cream stars, the teal tentacles, the shape, the thick black outline and the art style the same, on a transparent background.",
+    "editInstruction": "Change only three colours. The starry robe becomes a violet-leaning indigo blue, colour #4a43b5 on the lit left side and #372f8f in the folds, not grey and not navy. The white of the one big eye becomes pale yellow, colour #ffe27a, with the black pupil kept. The collar becomes polished yellow brass, colour #c9a24a. Keep the cream stars, the teal tentacles, the shape, the thick black outline and the art style the same, on a transparent background.",
+    "source": {
+      "recipe": "herald-e-tall",
+      "candidate": 0,
+      "sha256": "117c7662ebbb7b17ee4228c57117bee754104c4f9791f9bf7db8aed9f6187896"
+    }
+  }
+}

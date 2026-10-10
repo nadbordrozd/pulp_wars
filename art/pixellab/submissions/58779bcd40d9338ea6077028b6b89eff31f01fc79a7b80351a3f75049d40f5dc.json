@@ -1,0 +1,36 @@
+{
+  "id": "horror-a-mouth",
+  "jobId": "fa7715b7-f4de-4ba8-96f8-c6b5e431c943",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-cult",
+    "asset": "chibi-direction-cult-horror",
+    "subject": "UNIT:CULT:HORROR",
+    "faction": "CULT",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 91417,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only two colours. The inside of the open mouth and the gums become dark teal, colour #145f6b, with no purple, no violet and no pink. The darkest red-brown shadows of the brass collar and its chain become dark brass, colour #8a6a2a, with no red. Keep the cream teeth, the round teal body, the two big pale yellow eyes, the bright brass collar, the cream belly, the four tentacle feet, the shape, the thick black outline and the art style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only two colours. The inside of the open mouth and the gums become dark teal, colour #145f6b, with no purple, no violet and no pink. The darkest red-brown shadows of the brass collar and its chain become dark brass, colour #8a6a2a, with no red. Keep the cream teeth, the round teal body, the two big pale yellow eyes, the bright brass collar, the cream belly, the four tentacle feet, the shape, the thick black outline and the art style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only two colours. The inside of the open mouth and the gums become dark teal, colour #145f6b, with no purple, no violet and no pink. The darkest red-brown shadows of the brass collar and its chain become dark brass, colour #8a6a2a, with no red. Keep the cream teeth, the round teal body, the two big pale yellow eyes, the bright brass collar, the cream belly, the four tentacle feet, the shape, the thick black outline and the art style the same, on a transparent background.",
+    "editInstruction": "Change only two colours. The inside of the open mouth and the gums become dark teal, colour #145f6b, with no purple, no violet and no pink. The darkest red-brown shadows of the brass collar and its chain become dark brass, colour #8a6a2a, with no red. Keep the cream teeth, the round teal body, the two big pale yellow eyes, the bright brass collar, the cream belly, the four tentacle feet, the shape, the thick black outline and the art style the same, on a transparent background.",
+    "source": {
+      "recipe": "horror-a-tentacles",
+      "candidate": 0,
+      "sha256": "f053bd8443645f9cc5ed90f5e8a9d8ae81ff9e71787f852919ea4510475ca3a2"
+    }
+  }
+}

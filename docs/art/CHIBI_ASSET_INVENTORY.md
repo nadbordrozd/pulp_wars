@@ -785,6 +785,23 @@ Home chip are code-drawn by the UI bead; the palette and the proposed
 marker sizes are in
 [`chibi-direction-candy-presentation.ts`](../../src/assets/chibi-direction-candy-presentation.ts).
 
+## Cult sample: batch `direction-cult` (bead `pulp_wars-mch9.14`)
+
+The first three pieces of a ninth faction's art, made before the faction is
+in the game and **not registered** (no art manifest lists them yet). Fixed
+faction colours (indigo cloth, cream wax, brass, one green flame; the
+summoned in deep-sea teal), no owner mask. See
+[CULT.md](factions/CULT.md#the-first-sample).
+
+| Subject             | Asset                           | Class and canvas         |
+| ------------------- | ------------------------------- | ------------------------ |
+| `UNIT:CULT:FIGHTER` | `chibi-direction-cult-initiate` | `STANDARD_UNIT`, 56 x 80 |
+| `UNIT:CULT:HORROR`  | `chibi-direction-cult-horror`   | `LARGE_UNIT`, 72 x 88    |
+| `UNIT:CULT:HERALD`  | `chibi-direction-cult-herald`   | `GIANT_UNIT`, 88 x 104   |
+
+3 assets from 29 recipes (29 PixelLab calls). The summoned subject keys are
+proposals until the engine names the summoned roles.
+
 ## Faction forests and forest buildings (bead `pulp_wars-2yc.38`)
 
 The Ice Folk tundra forest, the Candy grove in warm pastels, and a Lumber

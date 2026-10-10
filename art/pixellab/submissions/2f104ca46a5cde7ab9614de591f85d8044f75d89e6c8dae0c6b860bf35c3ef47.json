@@ -1,0 +1,64 @@
+{
+  "id": "initiate-a",
+  "jobId": "sync-3d05baf8-bd8f-4f55-840e-597555a72755",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "direction-cult",
+    "asset": "chibi-direction-cult-initiate",
+    "subject": "UNIT:CULT:FIGHTER",
+    "faction": "CULT",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 91401,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "low top-down",
+      "direction": "south-east"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+        "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+      },
+      {
+        "layer": "faction",
+        "source": "docs/art/factions/CULT.md#prompt-fragment + docs/art/factions/CULT.md#negative-fragment",
+        "text": "Faction: a pulp-magazine secret society of the 1920s, mock-sinister, silly and never scary. Their fixed colours: soft midnight indigo cloth shaded deeper violet-blue, never black; pale cream candle wax and parchment; small pieces of warm polished brass; and exactly one accent colour, a bright glowing spring green, only as small flames and glows: candle flames, lamp glass, an eye-in-a-spiral sign.",
+        "negative": "blood, gore, guts, dripping, horror, creepy realism, slime, skull, bone, black cloth, grey cloth, torn cloth, ragged hems, purple, violet, magenta, pink, red cloth, red robe, orange flames, yellow flames, blue flames, gold armour, chrome, steel armour, sword, gun, pentagram, cross, large glowing area"
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-unit.txt + scripts/art/chibi/fragments/class-unit.negative.txt",
+        "text": "Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image.",
+        "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+      },
+      {
+        "layer": "subject",
+        "source": "scripts/art/chibi/subjects/CULT.json",
+        "text": "Subject: Initiate, a chunky cute small secret-society novice with a huge round head about half of the figure's height and a tiny round body lost in a robe too big for it: a tall pointed midnight indigo hood whose tip flops over to one side, the face hidden in the hood's dark opening except two big round cream-white eyes, a long bell-shaped midnight indigo robe with a neat round hem down to the ground and sleeves too long for the arms, a fat pale cream wax candle with a small bright green flame held up in one hand, a sheaf of pale cream paper pamphlets tucked under the other arm, a small brass badge on the chest, pale cream slippers peeking out under the hem; no weapon, no staff, no beard, no skull; simple shapes and very few details."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "",
+        "negative": "staff, wand, dagger, knife, beard, skull face, skeleton, grey robe, black robe, navy robe, wizard hat brim, cape, wings"
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: a pulp-magazine secret society of the 1920s, mock-sinister, silly and never scary. Their fixed colours: soft midnight indigo cloth shaded deeper violet-blue, never black; pale cream candle wax and parchment; small pieces of warm polished brass; and exactly one accent colour, a bright glowing spring green, only as small flames and glows: candle flames, lamp glass, an eye-in-a-spiral sign. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: Initiate, a chunky cute small secret-society novice with a huge round head about half of the figure's height and a tiny round body lost in a robe too big for it: a tall pointed midnight indigo hood whose tip flops over to one side, the face hidden in the hood's dark opening except two big round cream-white eyes, a long bell-shaped midnight indigo robe with a neat round hem down to the ground and sleeves too long for the arms, a fat pale cream wax candle with a small bright green flame held up in one hand, a sheaf of pale cream paper pamphlets tucked under the other arm, a small brass badge on the chest, pale cream slippers peeking out under the hem; no weapon, no staff, no beard, no skull; simple shapes and very few details.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, blood, gore, guts, dripping, horror, creepy realism, slime, skull, bone, black cloth, grey cloth, torn cloth, ragged hems, purple, violet, magenta, pink, red cloth, red robe, orange flames, yellow flames, blue flames, gold armour, chrome, steel armour, sword, gun, pentagram, cross, large glowing area, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, staff, wand, dagger, knife, beard, skull face, skeleton, grey robe, black robe, navy robe, wizard hat brim, cape, wings",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: a pulp-magazine secret society of the 1920s, mock-sinister, silly and never scary. Their fixed colours: soft midnight indigo cloth shaded deeper violet-blue, never black; pale cream candle wax and parchment; small pieces of warm polished brass; and exactly one accent colour, a bright glowing spring green, only as small flames and glows: candle flames, lamp glass, an eye-in-a-spiral sign. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: Initiate, a chunky cute small secret-society novice with a huge round head about half of the figure's height and a tiny round body lost in a robe too big for it: a tall pointed midnight indigo hood whose tip flops over to one side, the face hidden in the hood's dark opening except two big round cream-white eyes, a long bell-shaped midnight indigo robe with a neat round hem down to the ground and sleeves too long for the arms, a fat pale cream wax candle with a small bright green flame held up in one hand, a sheaf of pale cream paper pamphlets tucked under the other arm, a small brass badge on the chest, pale cream slippers peeking out under the hem; no weapon, no staff, no beard, no skull; simple shapes and very few details. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, blood, gore, guts, dripping, horror, creepy realism, slime, skull, bone, black cloth, grey cloth, torn cloth, ragged hems, purple, violet, magenta, pink, red cloth, red robe, orange flames, yellow flames, blue flames, gold armour, chrome, steel armour, sword, gun, pentagram, cross, large glowing area, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, staff, wand, dagger, knife, beard, skull face, skeleton, grey robe, black robe, navy robe, wizard hat brim, cape, wings."
+  }
+}

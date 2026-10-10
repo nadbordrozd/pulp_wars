@@ -4,8 +4,11 @@
 `pulp_wars-mch9.13`, ART1 of epic `pulp_wars-mch9`, 2026-10-10). The user's
 standing instruction is to consider art approved, so this document is the
 direction the art beads generate from; every decision in it is recorded so
-that it can be overruled. **No art exists yet:** nothing here was generated,
-and every colour below is a target to be measured on the first sample (ART2).
+that it can be overruled. **The first sample exists** (bead
+`pulp_wars-mch9.14`, ART2): the Initiate, the Horror and the Herald, accepted
+in batch `direction-cult` and not yet wired into the game. What it measured
+and what it changed is under [The first sample](#the-first-sample); every
+other colour below is still a target.
 
 The art pipeline reads the two `text` blocks under **Prompt fragment** and
 **Negative fragment** below as layer 3 of every Cult prompt, so edit them
@@ -256,7 +259,8 @@ canvas bottom on the cell's bottom edge), `STANDARD_UNIT` 56 x 80 with no
 overflow, `LARGE_UNIT` 72 x 88 with at most 4 px to a side and 8 px upward,
 `GIANT_UNIT` 88 x 104 with at most 4 px to a side and 24 px upward. All are
 fixed colours with no mask (`fixedFactionColours`, `ownerColour: false`),
-accent `cult-green`, light from the south-west
+accent `cult-lodge` (the summoned without cloth: `cult-green`; see
+[The first sample](#what-the-sample-changed)), light from the south-west
 ([art direction](../ART_DIRECTION.md#light)), never mirrored. Batch
 `direction-cult`; subject lines in `scripts/art/chibi/subjects/CULT.json`
 (written by ART2 from this section).
@@ -653,7 +657,103 @@ step 4, with the Cult's own risks):
 - [x] Every settlement line ends "Buildings only." and fills the width.
 - [x] Canvases, classes, anchors and overflow limits are the shared ones;
       nothing in the shared direction is changed.
-- [ ] The sample passes its gates (ART2).
+- [ ] The sample passes its gates (ART2): four of five pass; gate 3 is 3 px
+      short (see [The first sample](#the-first-sample)).
+
+## The first sample
+
+Bead `pulp_wars-mch9.14` (ART2), batch `direction-cult`, 29 PixelLab calls
+(15 creations, 14 edits). `npm run art:chibi-cult-direction-review` writes
+the evidence to `art/pixellab/reviews/chibi-batch-direction-cult/`
+(`candidates-x3.png` shows every candidate with its verdict; `gates.json`
+holds the numbers below). The three rasters are accepted and validated but
+**not wired**: `CULT` is not a faction of the game yet, so no art manifest
+under `src/assets` lists them; the next art bead registers them when the
+faction's subjects exist.
+
+| Asset                           | Accepted recipe          | Sprite     | Accent       |
+| ------------------------------- | ------------------------ | ---------- | ------------ |
+| `chibi-direction-cult-initiate` | `initiate-a-indigo-flop` | 48 x 73 px | `cult-lodge` |
+| `chibi-direction-cult-horror`   | `horror-a-gums`          | 68 x 68 px | `cult-green` |
+| `chibi-direction-cult-herald`   | `herald-e-tall-indigo`   | 53 x 97 px | `cult-lodge` |
+
+### The gates
+
+| Gate | Verdict  | Measured                                                                                                                                                                                                                                                                 |
+| ---- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1    | pass     | the Initiate is 22% dark (L\* under 35, outline excluded); cloth mean `#4e48b5`, hue 243, 66 from the Undead near-black; the eyes are 74 cream px and the flame 8 green px at zoom 0.75 (the eyes read first; the flame is small on Grass and Snow)                      |
+| 2    | pass     | by eye: a bare teal ball, no robe and no hood; its 12% of blue is the navy shade of the teal body                                                                                                                                                                        |
+| 3    | **fail** | the Herald is 53 x 97 px: as tall as the Brass Titan (97), taller than the Juggernaut, Abomination, Troll, Brontosaurus, Colossus and Frost Giant (83 to 93), **3 px under the 100 asked for and 5 px under the Gingerbread Giant (102)**; its eye is 27 px at zoom 0.75 |
+| 4    | pass     | green is 0.7%, 0.5% and 4.1% of the three sprites, every green tone at hue 147 to 150; no red, violet or magenta pixel                                                                                                                                                   |
+| 5    | pass     | all nine named pairs are distinct by the Dwarf lineup's thresholds (palette 18.5, simulated 12.4): the closest are Initiate and Ice Witch (22.8) and Herald and Frost Giant (23.3); the Lich, the Banshee and the Shaman beside the Initiate measure 23 to 33            |
+
+**Gate 3 is open.** Pixen draws a creation about 6 px inside the canvas
+(nine Heralds came out 74 to 92 px tall, whatever height the prompt named),
+and an edit keeps the outer 4 px clear, so 97 px was the most two
+lengthening edits gave. The root or the designer decides: accept 97 px
+(the Herald is then the joint second tallest piece of the game, and the
+narrowest giant by 23 px), or have ART3 try again for a creation that
+reaches the canvas edges, as the Gingerbread Giant's did.
+
+### The measured palette
+
+Band means on the three masters, with the accent step applied
+(`palette.json`).
+
+| Role                | Target    | Measured  | Note                                                                    |
+| ------------------- | --------- | --------- | ----------------------------------------------------------------------- |
+| Indigo cloth, lit   | `#4a43b5` | `#4d49ab` | hue 243, L\* 36.5; tones `#5452ab`, `#4a49b8`, `#443d98`                |
+| Indigo cloth, shade | `#372f8f` | `#3c378a` | under 1% of the cloth: the accent compresses the shading (see below)    |
+| Wax and parchment   | `#f3e7c4` | `#eee5b0` | a little yellower                                                       |
+| Brass               | `#c9a24a` | `#af792c` | PixelLab's brass is an orange gold, lit `#f9b728`; hue 35, not red      |
+| Eldritch green      | `#00ff78` | `#63e89f` | on hue 147, but paler than the faction colour (saturation 0.57)         |
+| Deep-sea teal       | `#1f8f95` | `#2c7e75` | greener than the target (hue 173); lit `#78ebb6`, shaded with navy blue |
+| Summoned eyes       | `#ffe27a` | `#fcdd4b` | a stronger yellow                                                       |
+
+### What the sample changed
+
+- **Two accent presets, not one.** `cult-green` (the summoned: Horror,
+  Tentacle, Thing) pins greens to hue 148 and moves the few purple shadow
+  pixels PixelLab leaves on a teal body to the body's navy. `cult-lodge`
+  (the cultists and the Herald) pins the green and then **makes the cloth
+  indigo**: every saturated blue (hue 212 to 262) goes to hue 240 to 248
+  with its value compressed into 0.49 to 0.92. PixelLab would not hold the
+  cloth: a creation with the hex values drew a charcoal robe, a recolour
+  edit landed the lit tone (`#4342c6`) but shaded it navy (61% dark), and
+  four more edits gave an azure robe, a purple hood, a periwinkle hood on a
+  navy body and a darker navy. The accent step is the deterministic rule
+  the Undead violet and the Candy pink already use, extended with a second
+  band (`then`) in [`accent.ts`](../../../scripts/art/chibi/accent.ts).
+- **The cloth is one step lighter and flatter than the targets.** Gate 1's
+  "under about 45% dark" cannot be met at the target tones: `#4a43b5` is
+  L\* 36 and `#372f8f` L\* 26, so a robe in exactly those colours is itself
+  more than half dark. The lodge preset therefore lifts the folds nearly to
+  the lit tone; the robe reads as flat indigo with a slightly lighter left
+  side. If deeper folds are wanted, lower the preset's value floor and
+  accept a dark share near 50%.
+- **The Herald uses the `machine` class text**, as the recipe notes above
+  allowed for pieces the unit class fights: under the `unit` class four
+  Heralds in four had hands, a tool (cleaver, lantern, book, axe) and feet.
+- **Layer 3's green flames reach the summoned.** Every Horror creation grew
+  horns or antennae carrying green flames; edits removed them one part at a
+  time (horns and lamp, then collar and eyes by hex colour, then the feet,
+  then the gums). The Thing and the Tentacle will need the same, or a class
+  without the faction layer.
+- **Lit teal sits beside the green band.** The lit tips of the Herald's
+  tentacle crown are greener than hue 152 and the lodge preset pins them to
+  the faction green (4% of the sprite). It reads as part of the crown; a
+  summoned piece whose body is that light must use `cult-green` and be
+  checked.
+- **Differences from the subject lines**, accepted: the Initiate holds its
+  papers in its hand and wears a brass belt buckle, not a chest badge; the
+  Horror's eyes are nearly the same size; the Herald's stars are pale gold
+  and its crown has more than five tentacles, which also hang round the eye.
+
+Prompt notes for ART3: give sizes as "drawn very large: about W pixels wide
+and H pixels tall"; give every recolour as hex values with its shadow tone;
+name one part per edit, and do not ask an edit to repaint the inside of a
+mouth (the grin became a hole); an edit instruction is at most 500
+characters.
 
 ## Decisions
 

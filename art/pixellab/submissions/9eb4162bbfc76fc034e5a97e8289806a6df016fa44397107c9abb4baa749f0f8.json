@@ -1,0 +1,36 @@
+{
+  "id": "horror-a-gums",
+  "jobId": "deaddd57-53f9-4a4a-ac59-5c4141174579",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-cult",
+    "asset": "chibi-direction-cult-horror",
+    "subject": "UNIT:CULT:HORROR",
+    "faction": "CULT",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 91418,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only one colour: the purple and pink gums inside the grin become dark teal, colour #145f6b. The mouth stays exactly the same wide happy grin with every cream tooth in its place. Keep the round teal body, the two big pale yellow eyes, the brass collar, the cream belly, the four tentacle feet, the shape, the thick black outline and the art style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only one colour: the purple and pink gums inside the grin become dark teal, colour #145f6b. The mouth stays exactly the same wide happy grin with every cream tooth in its place. Keep the round teal body, the two big pale yellow eyes, the brass collar, the cream belly, the four tentacle feet, the shape, the thick black outline and the art style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only one colour: the purple and pink gums inside the grin become dark teal, colour #145f6b. The mouth stays exactly the same wide happy grin with every cream tooth in its place. Keep the round teal body, the two big pale yellow eyes, the brass collar, the cream belly, the four tentacle feet, the shape, the thick black outline and the art style the same, on a transparent background.",
+    "editInstruction": "Change only one colour: the purple and pink gums inside the grin become dark teal, colour #145f6b. The mouth stays exactly the same wide happy grin with every cream tooth in its place. Keep the round teal body, the two big pale yellow eyes, the brass collar, the cream belly, the four tentacle feet, the shape, the thick black outline and the art style the same, on a transparent background.",
+    "source": {
+      "recipe": "horror-a-tentacles",
+      "candidate": 0,
+      "sha256": "f053bd8443645f9cc5ed90f5e8a9d8ae81ff9e71787f852919ea4510475ca3a2"
+    }
+  }
+}

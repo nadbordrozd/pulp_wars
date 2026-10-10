@@ -1,0 +1,257 @@
+{
+  "bead": "pulp_wars-mch9.14",
+  "source": {
+    "Initiate": "master chibi-direction-cult-initiate",
+    "Horror": "master chibi-direction-cult-horror",
+    "Herald": "master chibi-direction-cult-herald"
+  },
+  "gates": [
+    {
+      "gate": 1,
+      "asks": "The Initiate's robe is indigo with a lit side: not navy, not near-black, under about 45% dark pixels; its eyes and candle read at zoom 0.75.",
+      "measured": {
+        "darkShare": 21.7,
+        "meanLightness": 45.1,
+        "ink": 26.2,
+        "clothMean": "#4e48b5",
+        "clothHue": 243,
+        "clothLitMean": "#4f49b7",
+        "clothLitHue": 243,
+        "litShareOfCloth": 96.8,
+        "litClothFromUndeadBlack": 66.4,
+        "litClothFromIceWitchNavy": 27.5,
+        "atZoom075": {
+          "creamPixels": 74,
+          "greenPixels": 8
+        },
+        "rule": "dark share (L* under 35, outline excluded) under 45%; mean cloth hue 236 to 256; at least a quarter of the cloth lit (value 0.55 and more); lit cloth at least 40 from the Undead near-black #313135"
+      },
+      "byEye": "On sample-zoom-0.75.png the two cream eyes are the first thing read on every ground, and the candle is a cream stub with a green flame beside the body; the flame is 8 px at that zoom and weakest on Grass and Snow. The robe reads indigo, lighter on the left; its shading is shallow (the accent compresses it).",
+      "verdict": "PASS"
+    },
+    {
+      "gate": 2,
+      "asks": "The Horror has no cloth and no hood although layer 3 names cloth.",
+      "measured": {
+        "navyShadeShare": 11.7,
+        "tealShare": 41.2,
+        "rule": "by eye: the blue of the sprite (hue 228 to 266) is the shade of the teal body, which no measure tells from cloth"
+      },
+      "byEye": "No robe, hood, cloak or other cloth on sample-x4.png: a bare teal ball with a brass collar. The measured blue is the navy shade of the teal body, not cloth.",
+      "verdict": "PASS"
+    },
+    {
+      "gate": 3,
+      "asks": "The Herald fills the canvas height (100 px or more) and is not shorter than any giant of the review's lineup; its eye reads at zoom 0.75.",
+      "measured": {
+        "heraldHeight": 97,
+        "heraldWidth": 53,
+        "giantHeights": {
+          "Herald": 97,
+          "Juggernaut": 86,
+          "Abomination": 85,
+          "Troll": 93,
+          "Brontosaurus": 83,
+          "Colossus": 89,
+          "Frost Giant": 92,
+          "Brass Titan": 97,
+          "Gingerbread Giant": 102
+        },
+        "tallestGiant": 102,
+        "eyePixelsAtZoom075": 27,
+        "rule": "opaque height at least 100 px and at least the tallest giant's"
+      },
+      "byEye": "On giants-x2.png the Herald stands level with the Brass Titan and under the Gingerbread Giant only; the yellow eye is the brightest shape of the sprite at zoom 0.75.",
+      "verdict": "FAIL"
+    },
+    {
+      "gate": 4,
+      "asks": "Green is small on all three and lands on hue 148 after the accent step; no pixel is red, violet or magenta.",
+      "measured": {
+        "Initiate": {
+          "share": 0.7,
+          "pixels": 17,
+          "hueMin": 147,
+          "hueMax": 147,
+          "redPixels": 0,
+          "violetOrMagentaPixels": 0
+        },
+        "Horror": {
+          "share": 0.5,
+          "pixels": 16,
+          "hueMin": 147,
+          "hueMax": 148,
+          "redPixels": 0,
+          "violetOrMagentaPixels": 0
+        },
+        "Herald": {
+          "share": 4.1,
+          "pixels": 155,
+          "hueMin": 150,
+          "hueMax": 150,
+          "redPixels": 0,
+          "violetOrMagentaPixels": 0
+        },
+        "rule": "green (the accent band: hue 80 to 152, saturation 0.5 and more) at most 8% of each sprite and every green tone at hue 144 to 152; no red (hue 345 to 12) and no violet or magenta (hue 270 to 345) pixel"
+      },
+      "byEye": "The only green on the Initiate is the flame. The Horror keeps a few green specks on its head, and the lit tips of the Herald's tentacle crown fall in the accent band and turn green (4% of the sprite): they read as part of the teal crown.",
+      "verdict": "PASS"
+    },
+    {
+      "gate": 5,
+      "asks": "A lineup at native and half size, in colour and greyscale, by the measure of the Dwarf lineup.",
+      "measured": {
+        "pairs": [
+          {
+            "unit": "Initiate",
+            "rival": "Necromancer",
+            "palette": 25.7,
+            "deuteranopia": 17.2,
+            "protanopia": 18.1,
+            "greyPalette": 3.6,
+            "lightness": 13.7,
+            "meanLightness": [
+              33.3,
+              28.2
+            ],
+            "silhouette": 0.59,
+            "distinct": true,
+            "reasons": []
+          },
+          {
+            "unit": "Initiate",
+            "rival": "Ice Witch",
+            "palette": 22.8,
+            "deuteranopia": 17.1,
+            "protanopia": 18,
+            "greyPalette": 3.9,
+            "lightness": 16,
+            "meanLightness": [
+              33.3,
+              48.7
+            ],
+            "silhouette": 0.52,
+            "distinct": true,
+            "reasons": []
+          },
+          {
+            "unit": "Initiate",
+            "rival": "Human Fighter",
+            "palette": 39.1,
+            "deuteranopia": 33,
+            "protanopia": 32.7,
+            "greyPalette": 3.1,
+            "lightness": 11.6,
+            "meanLightness": [
+              33.3,
+              45.2
+            ],
+            "silhouette": 0.65,
+            "distinct": true,
+            "reasons": []
+          },
+          {
+            "unit": "Initiate",
+            "rival": "Grunt",
+            "palette": 29.3,
+            "deuteranopia": 29.2,
+            "protanopia": 25.2,
+            "greyPalette": 3.3,
+            "lightness": 14.3,
+            "meanLightness": [
+              33.3,
+              45.8
+            ],
+            "silhouette": 0.66,
+            "distinct": true,
+            "reasons": []
+          },
+          {
+            "unit": "Horror",
+            "rival": "Giant Spider",
+            "palette": 25.6,
+            "deuteranopia": 18.9,
+            "protanopia": 17.4,
+            "greyPalette": 1.7,
+            "lightness": 5.5,
+            "meanLightness": [
+              40,
+              34.1
+            ],
+            "silhouette": 0.59,
+            "distinct": true,
+            "reasons": []
+          },
+          {
+            "unit": "Horror",
+            "rival": "Chocolate Bunny",
+            "palette": 28,
+            "deuteranopia": 18.4,
+            "protanopia": 16.4,
+            "greyPalette": 1.3,
+            "lightness": 11.2,
+            "meanLightness": [
+              40,
+              28.7
+            ],
+            "silhouette": 0.66,
+            "distinct": true,
+            "reasons": []
+          },
+          {
+            "unit": "Herald",
+            "rival": "Lich",
+            "palette": 30.5,
+            "deuteranopia": 18.9,
+            "protanopia": 20.6,
+            "greyPalette": 2.6,
+            "lightness": 12.8,
+            "meanLightness": [
+              35.8,
+              29.3
+            ],
+            "silhouette": 0.63,
+            "distinct": true,
+            "reasons": []
+          },
+          {
+            "unit": "Herald",
+            "rival": "Colossus",
+            "palette": 27.6,
+            "deuteranopia": 20.6,
+            "protanopia": 20.3,
+            "greyPalette": 1.6,
+            "lightness": 13.9,
+            "meanLightness": [
+              35.8,
+              43.7
+            ],
+            "silhouette": 0.54,
+            "distinct": true,
+            "reasons": []
+          },
+          {
+            "unit": "Herald",
+            "rival": "Frost Giant",
+            "palette": 23.3,
+            "deuteranopia": 15.6,
+            "protanopia": 16.6,
+            "greyPalette": 2.7,
+            "lightness": 11.3,
+            "meanLightness": [
+              35.8,
+              41.1
+            ],
+            "silhouette": 0.56,
+            "distinct": true,
+            "reasons": []
+          }
+        ],
+        "failing": [],
+        "rule": "every named pair distinct by the Dwarf lineup's calibrated thresholds (lineup.json)"
+      },
+      "byEye": "On lineup-1x.png, at half size and in greyscale: the Initiate is a hood with two white eyes and no staff (Necromancer: beard and skull staff; Ice Witch: pale face and crown); the Horror is a ball with a pale belly band (Spider: flat with eight legs; Bunny: ears); the Herald is a bell with one eye (Lich: raised arms and ribs).",
+      "verdict": "PASS"
+    }
+  ]
+}

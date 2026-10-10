@@ -1,0 +1,36 @@
+{
+  "id": "horror-a-tentacles",
+  "jobId": "5d9a7188-6617-40d4-a4d4-7a760b3350e1",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-cult",
+    "asset": "chibi-direction-cult-horror",
+    "subject": "UNIT:CULT:HORROR",
+    "faction": "CULT",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 91416,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only the four feet: replace each leg and its toes with one short fat teal tentacle that curls outward on the ground, with small pale cream suckers on its underside, like the arms of an octopus. No toes and no claws. Keep the round teal body, the two big pale yellow eyes, the wide grin with its cream teeth, the brass spiked collar, the cream belly, the thick black outline and the art style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only the four feet: replace each leg and its toes with one short fat teal tentacle that curls outward on the ground, with small pale cream suckers on its underside, like the arms of an octopus. No toes and no claws. Keep the round teal body, the two big pale yellow eyes, the wide grin with its cream teeth, the brass spiked collar, the cream belly, the thick black outline and the art style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only the four feet: replace each leg and its toes with one short fat teal tentacle that curls outward on the ground, with small pale cream suckers on its underside, like the arms of an octopus. No toes and no claws. Keep the round teal body, the two big pale yellow eyes, the wide grin with its cream teeth, the brass spiked collar, the cream belly, the thick black outline and the art style the same, on a transparent background.",
+    "editInstruction": "Change only the four feet: replace each leg and its toes with one short fat teal tentacle that curls outward on the ground, with small pale cream suckers on its underside, like the arms of an octopus. No toes and no claws. Keep the round teal body, the two big pale yellow eyes, the wide grin with its cream teeth, the brass spiked collar, the cream belly, the thick black outline and the art style the same, on a transparent background.",
+    "source": {
+      "recipe": "horror-a-brass",
+      "candidate": 0,
+      "sha256": "4bd9f6babfd6f7e46c43a715530db50f3b6eaae54626679564c1a339fea27f31"
+    }
+  }
+}
