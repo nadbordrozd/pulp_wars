@@ -4,6 +4,7 @@ import {
   BOMB_LANDING_RANGE_V7,
   applyCommandV7,
   previewAssembleV7,
+  previewBombRunV7,
   previewBuildBarricadeV7,
   previewWhirlV7,
   projectEventsV7,
@@ -669,7 +670,7 @@ describe("Dwarf targets and previews on the board (section 16.1)", () => {
     ).toHaveLength(1);
   });
 
-  it("aims a Bomb Run: the targets, then the landings with their threat", () => {
+  it("aims a Bomb Run: the targets, then the landings, labelled only where threatened", () => {
     const targets = aim(AT.gyrocopter, {
       kind: "BOMB_RUN",
       unitId: id(AT.gyrocopter),
@@ -688,9 +689,18 @@ describe("Dwarf targets and previews on the board (section 16.1)", () => {
       targetUnitId: id(AT.bombTarget),
     });
     expect(landings.targets.length).toBeGreaterThan(0);
+    // Bead pulp_wars-eu3r.9: like the Tunnel, a safe landing is the plain
+    // outline (still named for the cursor); a threatened one keeps its
+    // "Land · up to N".
     for (const landing of landings.targets) {
       expect(landing.family).toBe("BOMB_RUN");
-      expect(landing.previewLabel).toMatch(/^Land · (up to \d+|safe)$/);
+      const command = landing.command;
+      if (command.kind !== "BOMB_RUN") throw new Error("not a Bomb Run");
+      const threat = previewBombRunV7(view, command)?.landingThreat ?? 0;
+      if (threat > 0)
+        expect(landing.previewLabel).toBe(`Land · up to ${threat}`);
+      else expect(landing.previewLabel).toBeUndefined();
+      expect(landing.semanticLabel).toMatch(/^Land here\. /);
     }
     expect(
       landings.entries.find((entry) => entry.abilityStyle === "BOMB")?.at,

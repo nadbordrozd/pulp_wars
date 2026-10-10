@@ -575,8 +575,8 @@ describe("Vampire and Banshee DOM (pulp_wars-iqhp)", () => {
       document.querySelector('[data-unit-status="feast"]')?.textContent,
     ).toBe("Feast");
     expect(
-      document.querySelector('[data-unit-status="escape"]')?.textContent,
-    ).toBe("Escape");
+      document.querySelector('[data-unit-status="bat-escape"]')?.textContent,
+    ).toBe("Bat Escape");
     expect(
       document
         .querySelector('[data-landing-marker="bat-escape"]')

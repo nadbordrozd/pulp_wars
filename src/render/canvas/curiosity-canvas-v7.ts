@@ -258,6 +258,56 @@ const WATER = "#dff6f4";
 const DRIFTWOOD = "#8c7a66";
 
 /**
+ * The curiosities a unit can stand on that are small enough to vanish under
+ * it (bead pulp_wars-eu3r.9): with a unit on top, a small copy of the
+ * overlay is drawn in the cell's bottom-right corner, over the unit, like a
+ * Grave's corner marker.
+ */
+export const CURIOSITY_CORNER_BADGE_KINDS_V7: ReadonlySet<CuriosityTileIdV7> =
+  new Set(["WISHING_WELL", "FOUNTAIN", "SHRINE"]);
+
+/** The corner badge, in world units from the cell's centre (128 = a cell). */
+export const CURIOSITY_CORNER_BADGE_FRAME_V7 = {
+  left: 22,
+  top: 22,
+  size: 40,
+} as const;
+
+/**
+ * The corner badge of an occupied curiosity: its own raster, scaled into a
+ * small pale disc with an ink keyline in the cell's bottom-right corner.
+ * `x`, `y` are the cell's centre in canvas pixels.
+ */
+export function drawCuriosityCornerBadgeV7(
+  context: CanvasRenderingContext2D,
+  image: CanvasImageSource,
+  x: number,
+  y: number,
+  zoom: number,
+  options: { readonly smoothing: boolean; readonly highContrast: boolean },
+): void {
+  const frame = CURIOSITY_CORNER_BADGE_FRAME_V7;
+  const size = frame.size * zoom;
+  const left = x + frame.left * zoom;
+  const top = y + frame.top * zoom;
+  const radius = size / 2;
+  context.save();
+  context.beginPath();
+  context.arc(left + radius, top + radius, radius, 0, Math.PI * 2);
+  context.fillStyle = options.highContrast ? "#ffffff" : "#fff8df";
+  context.fill();
+  context.save();
+  context.clip();
+  context.imageSmoothingEnabled = options.smoothing;
+  context.drawImage(image, left, top, size, size);
+  context.restore();
+  context.lineWidth = Math.max(1, 2.5 * zoom);
+  context.strokeStyle = options.highContrast ? "#000000" : "#171722";
+  context.stroke();
+  context.restore();
+}
+
+/**
  * A code-drawn tile marker. `x`, `y` is the cell centre and `zoom` the
  * camera zoom (128 world units to a cell).
  */

@@ -671,6 +671,10 @@ const ENTRIES = {
   STATUS_TENDED: ["Tended", "A healer has already tended it this turn."],
   STATUS_ATTACK_AGAIN: ["Attack again", "It just killed: it may attack again."],
   STATUS_ESCAPE: ["Escape", "It may move once more this turn."],
+  STATUS_BAT_ESCAPE: [
+    "Bat Escape",
+    "It may fly off this turn, over units and past enemies.",
+  ],
   // The Vampire and Banshee rework (`pulp_wars-ty6i`).
   STATUS_FEAST: [
     "Feast",
@@ -967,6 +971,7 @@ const STATUS_IDS: Readonly<Record<string, GlossaryIdV7>> = {
   ram: "STATUS_ATTACK_AGAIN",
   rampage: "STATUS_ATTACK_AGAIN",
   escape: "STATUS_ESCAPE",
+  "bat-escape": "STATUS_BAT_ESCAPE",
   feast: "STATUS_FEAST",
   terror: "STATUS_TERROR",
   cracked: "STATUS_CRACKED",

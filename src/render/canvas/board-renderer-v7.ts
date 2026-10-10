@@ -67,11 +67,13 @@ import {
 } from "../curiosity-presentation-v7";
 import {
   BIGFOOT_CODE_ART_ID_V7,
+  CURIOSITY_CORNER_BADGE_KINDS_V7,
   SPIDER_CODE_ART_ID_V7,
   WRECK_WATERLINE_ROW_V7,
   addCuriosityEntriesV7,
   drawCodeBigfootV7,
   drawCodeSpiderV7,
+  drawCuriosityCornerBadgeV7,
   drawCuriosityMarkerV7,
   drawProvokedMarkerV7,
   drawWreckRipplesV7,
@@ -241,6 +243,7 @@ import {
   type DwarfUnitMarkersV7,
 } from "./dwarf-board-plan-v7";
 import {
+  drawBarricadeHpV7,
   drawBarricadeV7,
   drawClockworkGearV7,
   drawCodeMoundV7,
@@ -2633,6 +2636,18 @@ export function drawBoardV7(input: {
   // Bead pulp_wars-2yc.29: Promotion markers and ready chevrons, drawn
   // last so a city's name plate never covers one.
   const deferredFeedbackMarks: (() => void)[] = [];
+  // A Barricade's HP goes over the target marks (bead pulp_wars-eu3r.9).
+  const deferredBarricadeHp: (() => void)[] = [];
+  // The cells a unit stands on (for a curiosity's corner badge).
+  let occupied: ReadonlySet<string> | null = null;
+  const occupiedCells = (): ReadonlySet<string> => {
+    occupied ??= new Set(
+      input.plan.entries
+        .filter((item) => item.kind === "UNIT")
+        .map((item) => `${item.at.x},${item.at.y}`),
+    );
+    return occupied;
+  };
   // CHIBI draws every road casing before any road fill, so a corner join
   // and its cell's road read as one path instead of crossing outlines.
   // A Road (or a corner join) on tall terrain passes under the tree or rock
@@ -3516,6 +3531,32 @@ export function drawBoardV7(input: {
             rect.height,
           );
           context.restore();
+          // A unit on a small curiosity (the Well, the Fountain, the
+          // Shrine) hides it: a small copy goes in the cell's corner, over
+          // the unit (bead pulp_wars-eu3r.9).
+          if (
+            entry.curiosity !== undefined &&
+            CURIOSITY_CORNER_BADGE_KINDS_V7.has(entry.curiosity) &&
+            occupiedCells().has(`${entry.at.x},${entry.at.y}`)
+          ) {
+            const badge = chibi;
+            deferredGraveMarkers.push(() => {
+              context.save();
+              context.globalAlpha = sceneAlpha;
+              drawCuriosityCornerBadgeV7(
+                context,
+                badge.image,
+                x,
+                y,
+                camera.zoom,
+                {
+                  smoothing: badge.smoothing,
+                  highContrast: input.highContrast ?? false,
+                },
+              );
+              context.restore();
+            });
+          }
           if (wreck) {
             context.save();
             context.globalAlpha = sceneAlpha;
@@ -3591,8 +3632,20 @@ export function drawBoardV7(input: {
             maxHp: entry.barricade.maxHp,
             ownerColor: entry.ownerColor ?? "#d8d2c0",
             highContrast: input.highContrast ?? false,
+            withHp: false,
           });
           context.restore();
+          const hp = entry.barricade;
+          deferredBarricadeHp.push(() => {
+            context.save();
+            context.globalAlpha = sceneAlpha;
+            drawBarricadeHpV7(context, x, y, camera.zoom, {
+              hp: hp.hp,
+              maxHp: hp.maxHp,
+              highContrast: input.highContrast ?? false,
+            });
+            context.restore();
+          });
         }
         continue;
       }
@@ -5218,6 +5271,7 @@ export function drawBoardV7(input: {
   }
   drawTunnelGhosts(placer, defer);
   drawRebakeGhosts();
+  for (const drawHp of deferredBarricadeHp) drawHp();
   for (const draw of labels) draw();
   for (const paint of paints) paint();
   const statusPulse = input.statusPulse;

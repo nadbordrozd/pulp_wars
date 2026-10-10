@@ -322,7 +322,10 @@ then the city to train in. Capture and End turn follow the sequence.
   can move) is passed over for the next one.
 - **The line** is a yellow plate under the HUD's left corner
   (`[data-v7-region="first-step"]`, `role="status"`), with a close button
-  ("Dismiss hint"). The plate itself ignores the pointer.
+  ("Dismiss hint"). The plate itself ignores the pointer. It is the HUD's
+  last child: on a phone (under 600 px wide) it is the HUD's last row,
+  under the buttons however many rows the chips take (bead
+  `pulp_wars-eu3r.9`).
 - **The marker** is a yellow arrow with an ink keyline and a hard shadow,
   drawn by the feedback layer over the city, tile or unit
   (`drawFirstStepMarkerV7`). It hops once about every second in full
@@ -330,6 +333,10 @@ then the city to train in. Capture and End turn follow the sequence.
   has a still yellow ring instead of a pulse. It is drawn only while the
   board takes the player's input: never during AI turns, a presentation, or
   behind a dialog or the technology screen.
+- **Aiming.** While an ability, a Kaboom! or an Egg's nest is being aimed
+  on the board, there is no cue at all: the aiming prompt in the dock says
+  what to pick. The cue comes back when the aim is sent or cancelled (bead
+  `pulp_wars-eu3r.9`).
 - **Retiring.** Research, Move, Train and Capture retire the first time
   the player's command of that kind is accepted, in any order: a step done
   early is never shown afterwards, nor its selected line. Research and
@@ -682,7 +689,8 @@ Undead badge's near-black disc (no raster yet).
   full weight with an arrowhead and a bat at its apex. The cursor
   description reads "Bat Escape: flies up to 2 tiles, over units and past
   enemies", how many units it flies over, and that it ends the turn; the
-  dock adds a "Bat Escape" legend and the engine's "Escape" chip. On the
+  dock adds a "Bat Escape" legend and a "Bat Escape" chip (the engine's
+  Escape status, named for the flight; bead `pulp_wars-eu3r.9`). On the
   Escape Move, bats swirl up round the Vampire and stream along the arc to
   the landing before it moves (`special.puff`, twice); reduced motion holds
   the swirl still.
@@ -717,8 +725,8 @@ Undead badge's near-black disc (no raster yet).
   reach is hatched in orange; the cursor and an "Ethereal reach" legend
   name it.
 - **Help.** The unit `?` details and the Gallery list Bat Escape, Feast,
-  Terror and Ethereal from the unit glossary, and the "Feast", "Escape"
-  and "Terror" chips explain themselves.
+  Terror and Ethereal from the unit glossary, and the "Feast", "Bat
+  Escape" and "Terror" chips explain themselves.
 
 ## Current Ruleset 7 revision 14 Plague and Bitten overlay
 
@@ -1631,9 +1639,11 @@ apart from the extra faction option.
     turn are marked "Bombed this turn". The dock is "Bomb Run" with its `?`
     and Cancel; it lists no targets (bead `pulp_wars-9im`): a target is
     chosen on the board (named "Bomb the Marksman: ...").
-    Choosing a target marks its landing tiles beyond it (Move marks), each labelled
-    with the landing threat ("Land · up to 8", "Land · safe"; named "Land
-    here. Lands next to: up to 8 damage next turn"), the target keeps its
+    Choosing a target marks its landing tiles beyond it (Move marks). Like
+    the Tunnel's destinations, only a threatened landing is labelled ("Land
+    · up to 8"); a safe one is the plain outline (bead `pulp_wars-eu3r.9`).
+    Every landing is named ("Land here. Lands next to: up to 8 damage next
+    turn", "Land here. Safe ..."), the target keeps its
     "Bomb −5" mark and a killed exploding target's blast is shown; the dock
     keeps only its head, Back and Cancel. Landings are chosen on the board.
   - **Assemble**: the free tiles round the Engineer are Place marks
@@ -2194,7 +2204,11 @@ Curiosities section whenever the match was launched with the option on).
   marker; a Move onto a gate is labelled "Gate", "Gate · shoves" or "Gate
   blocked", and the board marks the exit, the tile its occupant is shoved
   to, or the exit as blocked. A unit on the Well has **Toss a Coin** (1
-  Coin) in its actions; the toss splashes and toasts its outcome. Each new
+  Coin) in its actions; the toss splashes and toasts its outcome. A unit
+  standing on the Well, the Fountain or the Shrine hides it, so the board
+  then also draws a small copy of the curiosity in a pale disc in the
+  cell's bottom-right corner, over the unit, like a Grave's corner marker
+  (bead `pulp_wars-eu3r.9`). Each new
   tile's dock gives its one sentence (the Well adds whether the viewer has
   tossed); the Gallery's Curiosities tab gains a second row (Bigfoot, the
   Saucer, the Graveyard, the gate, the Well). LEGACY and the Classic look

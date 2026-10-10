@@ -604,6 +604,9 @@ export class GalleryViewV7 {
     const keys: string[] = [];
     GALLERY_CURIOSITY_GRID_V7.forEach((cells, gridRow) => {
       const tr = this.#document.createElement("tr");
+      // A phone lays the row out as a wrapping grid (v7.css), which drops
+      // a table row's implicit role: it is stated.
+      tr.setAttribute("role", "row");
       cells.forEach((row, column) => {
         const cell = galleryCuriosityCellV7(row);
         const td = el(this.#document, "td", "v7-gallery-cell-wrap");

@@ -7334,3 +7334,314 @@
     height: 2.6rem;
   }
 }
+
+/*
+ * Phone review (bead pulp_wars-eu3r.9, scripts/browser-phone-review-v7.ts):
+ * the fixes for 390 and 320 px wide portrait phones and 844 x 390
+ * landscape. Desktop layouts are unchanged: every rule here sits in a
+ * narrow-screen query or only touches content that overflowed everywhere.
+ */
+
+/* The Engineer's Repair chip ("+4 machines, +2 others") wraps under its
+ * label inside the card instead of running out of it. */
+.v7-dwarf-repair-chip {
+  display: block;
+  margin-left: 0;
+  line-height: 1.15;
+  text-align: center;
+  white-space: normal;
+}
+
+/* A mound's box narrows like a Barricade's, so it never covers the tile. */
+.v7-dwarf-mound {
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
+}
+
+.v7-dwarf-mound .v7-dwarf-mound-name {
+  flex-wrap: wrap;
+}
+
+/* The technology detail's close stays above its own text. */
+.v7-tech-detail > .close-button {
+  z-index: 1;
+}
+
+.v7-selection-details:has(.v7-dwarf-mound) {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+/* A long one-word name ("Confectioner") stays clear of the dialog's close. */
+.v7-dialog-header h2 {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 599px) {
+  /*
+   * A seat card wraps its label and select under the emblem when they do
+   * not fit beside it, so the select stays inside the card.
+   */
+  .v7-setup-form .v7-setup-seat {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .v7-setup-form .v7-setup-factions .v7-setup-seat > label {
+    flex: 1 1 6.5rem;
+    grid-template-columns: minmax(0, 1fr);
+    white-space: normal;
+  }
+
+  /* "New map" / "Use seed" over its one-line hint and the seed field. */
+  .v7-seed-choice {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .v7-game-mode-option {
+    padding-inline: 0.5rem;
+  }
+
+  /* The Gallery tabs fill whole rows when they wrap. */
+  .v7-gallery-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    justify-self: stretch;
+  }
+
+  .v7-gallery-tab {
+    flex: 1 1 auto;
+    padding-inline: 0.45rem;
+    font-size: var(--pw-fs-sm);
+  }
+
+  /* The Curiosities grid wraps its cells instead of scrolling sideways. */
+  .v7-gallery-table.v7-gallery-curiosities,
+  .v7-gallery-table.v7-gallery-curiosities > tbody {
+    display: block;
+  }
+
+  .v7-gallery-table.v7-gallery-curiosities tr {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(6.5rem, 1fr));
+  }
+
+  .v7-gallery-table.v7-gallery-curiosities .v7-gallery-cell-name {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+
+  /*
+   * A mound's or a Barricade's box takes the tile dock's whole width, after
+   * the tile's actions, which stay in view.
+   */
+  .v7-selection-dock
+    > .v7-selection-summary:has(.v7-dwarf-mound, .v7-dwarf-barricade) {
+    display: contents;
+  }
+
+  .v7-selection-dock
+    > .v7-selection-summary
+    > .v7-selection-details:has(.v7-dwarf-mound, .v7-dwarf-barricade) {
+    grid-column: 1 / -1;
+    order: 1;
+    max-width: none;
+  }
+
+  .v7-gallery-table.v7-gallery-curiosities tr + tr {
+    border-top: var(--pw-line-w-sm) solid var(--pw-line-soft);
+  }
+
+  .v7-gallery-table.v7-gallery-curiosities .v7-gallery-cell-wrap {
+    display: block;
+    border-top: 0;
+  }
+
+  /* A sound's numbered recording: its file name over its time and badge. */
+  .v7-gallery-sound-choice-play {
+    flex-wrap: wrap;
+    row-gap: 0.1rem;
+    padding-block: 0.3rem;
+  }
+
+  .v7-gallery-sound-choice-file {
+    flex: 1 1 9rem;
+  }
+
+  /* The technology detail: the name over the text, both full width. */
+  .v7-tech-detail {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .v7-tech-detail > .v7-identity {
+    grid-row: auto;
+    padding-right: 2.4rem;
+  }
+
+  .v7-tech-detail > .v7-identity h2 {
+    max-width: none;
+  }
+
+  .v7-tech-detail > .v7-tech-status,
+  .v7-tech-detail > * {
+    grid-column: 1;
+  }
+}
+
+@media (max-width: 599px) {
+  /*
+   * The coach's line is the HUD's last row: under the buttons, whether the
+   * HUD's chips take one row or two (Perfection's round counter).
+   */
+  .v7-match-hud > .v7-first-step {
+    position: static;
+    order: 9;
+    max-width: 100%;
+    margin-top: -0.1rem;
+  }
+
+  /* A unit's details: the portrait beside the close button, then the name
+   * on its own line, so "Confectioner" is not cut into syllables. */
+  .v7-dialog-header {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.3rem;
+    padding-right: 0;
+  }
+
+  /* "New map" and "Use seed" share the toggle's whole width. */
+  .v7-seed-toggle {
+    display: flex;
+  }
+
+  .v7-seed-toggle > * {
+    flex: 1 1 0;
+  }
+
+  /* Two wide columns of stats (a Martian's Shield) reach the dock's close
+   * button: they sit at the bottom of their cell, clear of it. */
+  .v7-selection-dock > .v7-unit-stats {
+    align-self: end;
+  }
+}
+
+/* The end of a match scrolls as one dialog on a phone, upright or on its
+ * side, not as a list inside a dialog that scrolls too. */
+@media (max-width: 599px), (max-height: 500px) {
+  .v7-results .v7-result-seats {
+    max-height: none;
+    overflow-y: visible;
+  }
+}
+
+@media (max-width: 360px) {
+  /* A result row: the emblem and the score, then the name on its own line,
+   * so "Player 4 · Dinosaur" never runs under the score. */
+  .v7-result-seat > .v7-score-cell {
+    margin-left: auto;
+  }
+
+  .v7-result-seat > .v7-result-seat-who {
+    flex: 1 0 100%;
+    order: 1;
+    padding-left: 0.3rem;
+  }
+
+  .v7-result-seat > .v7-score-breakdown {
+    order: 2;
+  }
+
+  .v7-dialog-header h2 {
+    font-size: var(--pw-fs-2xl);
+  }
+
+  /* "Dinosaur" fits its seat's select, still two seats a row. */
+  .v7-setup-form .v7-setup-factions {
+    gap: 0.5rem;
+    padding-inline: 0.4rem;
+  }
+
+  .v7-setup-form .v7-setup-seat select {
+    padding-inline: 0.35rem 0;
+    font-size: var(--pw-fs-sm);
+  }
+
+  /* Its stat chips wrap instead of sharing three columns too narrow for
+   * "10/10". */
+  .v7-unit-help-dialog .v7-unit-stats,
+  .v7-recruit-help .v7-unit-stats {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .v7-front-panel {
+    padding-inline: 0.75rem;
+  }
+
+  /*
+   * A long name ("Brontosaurus") leaves two columns of stats no room beside
+   * it: one column, as tall as the portrait and its chips, fits.
+   */
+  .v7-selection-dock {
+    gap: 0.5rem;
+    /* One column of stats is tall: the dock may take a little more of a
+     * very small screen, so the first row of actions is in view. */
+    max-height: min(54dvh, calc(100dvh - 8rem));
+    padding-left: 0.5rem;
+  }
+
+  .v7-selection-dock > .v7-unit-stats {
+    grid-template-columns: max-content;
+  }
+
+  .v7-tribe-grid {
+    gap: 0.3rem;
+  }
+}
+
+@media (max-width: 800px), (max-height: 500px) {
+  /* The dock's actions come before a giant's long signature line, so the
+   * buttons are in view without scrolling the dock. */
+  .v7-selection-dock > .v7-giant-signature {
+    order: 1;
+  }
+}
+
+/*
+ * A phone in landscape (wide but short): the dock's actions take the last
+ * column from the top, beside the portrait and stats, so a line the whole
+ * width (a legend, a giant's signature) does not push them out of view.
+ */
+@media (min-width: 801px) and (max-height: 500px) {
+  /* The technology branches one under another, as on a narrow screen,
+   * with the branch picker, instead of a tree that scrolls sideways. */
+  .v7-tech-graph {
+    grid-template-columns: minmax(0, 1fr);
+    overflow-x: visible;
+  }
+
+  .v7-tech-branch {
+    grid-column: auto;
+    scroll-margin-top: 4rem;
+  }
+
+  .v7-tech-branch-selector {
+    position: sticky;
+    z-index: 4;
+    top: 0;
+    display: block;
+    padding-right: 2.75rem;
+  }
+
+  /* A popup that scrolls keeps a gutter for its sticky close button, so
+   * no row slides under it (the leaderboard's score buttons). */
+  .v7-overlay > :not(.close-button, h2) {
+    margin-right: 2.6rem;
+  }
+
+  .v7-selection-dock[data-has-actions="true"] > .v7-context-actions,
+  .v7-selection-dock > .v7-board-pick {
+    grid-row: 1 / span 2;
+    grid-column: -2 / -1;
+    align-self: start;
+  }
+}

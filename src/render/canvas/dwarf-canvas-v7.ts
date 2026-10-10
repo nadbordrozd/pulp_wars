@@ -549,6 +549,11 @@ export function drawBarricadeV7(
     readonly maxHp: number;
     readonly ownerColor: string;
     readonly highContrast: boolean;
+    /**
+     * False leaves out the HP bar and number: the board draws them later,
+     * over the target marks (`drawBarricadeHpV7`, bead pulp_wars-eu3r.9).
+     */
+    readonly withHp?: boolean;
   },
 ): void {
   // The structure is drawn a fifth larger than its master sizes, centred
@@ -675,8 +680,29 @@ export function drawBarricadeV7(
   context.closePath();
   context.fill();
   context.stroke();
-  // The HP: a vertical segmented bar filling from the bottom, and its
-  // number above it.
+  context.restore();
+  if (options.withHp !== false) drawBarricadeHpV7(context, x, y, zoom, options);
+}
+
+/**
+ * A Barricade's HP: a vertical segmented bar in the cell's left strip,
+ * filling from the bottom, and its number above it. The board draws it
+ * after the target marks, so an attack bracket's corner never hides the
+ * number (bead pulp_wars-eu3r.9).
+ */
+export function drawBarricadeHpV7(
+  context: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  zoom: number,
+  options: {
+    readonly hp: number;
+    readonly maxHp: number;
+    readonly highContrast: boolean;
+  },
+): void {
+  const share = Math.max(0, Math.min(1, options.hp / options.maxHp));
+  context.save();
   const bar = BARRICADE_HP_BAR_V7;
   const barLeft = x + bar.left * zoom;
   const barTop = y + bar.top * zoom;

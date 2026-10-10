@@ -339,7 +339,13 @@ export function dwarfPickTargetsV7(
           at: command.to,
           command,
           family: "BOMB_RUN",
-          previewLabel: landingLabelV7(preview),
+          // Calm, like the Tunnel (bead pulp_wars-eu3r.9): only a landing
+          // an enemy can hit next turn has a label; a safe one is the
+          // plain outline, still named "Land here. Safe ..." for the
+          // cursor and assistive technology.
+          ...(preview.landingThreat > 0
+            ? { previewLabel: landingLabelV7(preview) }
+            : {}),
           semanticLabel: `Land here. ${landingHintV7(preview)}`,
         },
       ];

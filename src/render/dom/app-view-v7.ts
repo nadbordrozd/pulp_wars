@@ -3689,8 +3689,10 @@ export class Ruleset7DomAppView {
         end.dataset.firstStep = firstStep.buttonMotion.toLowerCase();
       nav.append(end);
     }
+    // The coach's line is the HUD's last child (bead pulp_wars-eu3r.9): on
+    // a phone it flows under the HUD's rows, however many they wrap to.
+    if (firstStep !== null) hud.append(this.#firstStepLine(firstStep));
     nextChildren.push(hud);
-    if (firstStep !== null) nextChildren.push(this.#firstStepLine(firstStep));
     // The coins' flight layer: over the board and the HUD, under dialogs.
     nextChildren.push(this.#coinFlight.element);
     const zoom = el(this.#document, "div", "v7-zoom-controls");
@@ -3892,6 +3894,9 @@ export class Ruleset7DomAppView {
     )
       return null;
     const commands = this.#snapshot.offeredCommands;
+    // Bead pulp_wars-eu3r.9: no cue while an ability is being aimed on the
+    // board; its own prompt in the dock says what to pick.
+    if (this.#aimingOnBoard()) return null;
     const interactive =
       this.#boardInteractive(view) &&
       this.#selectedRecruitHelp === null &&
@@ -3934,6 +3939,21 @@ export class Ruleset7DomAppView {
       motion: this.#motion,
       outOfMovesUnitId: this.#firstStepOutOfMovesUnitId,
     });
+  }
+
+  /** An ability (or a Kaboom!, an Egg's nest) is being aimed on the board. */
+  #aimingOnBoard(): boolean {
+    return (
+      this.#kaboomArmedUnitId !== null ||
+      this.#layEggPick !== null ||
+      this.#martianPick !== null ||
+      this.#iceFolkPick !== null ||
+      this.#dwarfPick !== null ||
+      this.#candyPick !== null ||
+      this.#giantPick !== null ||
+      this.#navalPick !== null ||
+      this.#freezePick !== null
+    );
   }
 
   /** The coach's one line, with its small dismiss. It takes no other click. */
@@ -4719,9 +4739,12 @@ export class Ruleset7DomAppView {
         if (stats.statuses.length > 0) {
           const cues = el(this.#document, "div", "v7-unit-status-cues");
           for (const status of stats.statuses) {
+            // A Vampire's Escape is its Bat Escape (it flies).
             const short = status.startsWith("Tended")
               ? "Tended"
-              : (status.split(":", 1)[0] ?? status);
+              : status.startsWith("Escape: may fly")
+                ? "Bat Escape"
+                : (status.split(":", 1)[0] ?? status);
             const statusId = short.toLowerCase().replaceAll(" ", "-");
             const cue = text(this.#document, "span", short, "v7-chip");
             cue.dataset.unitStatus = statusId;

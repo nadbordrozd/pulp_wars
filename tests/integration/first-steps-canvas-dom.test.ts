@@ -38,6 +38,7 @@ import {
   requiredElement,
   waitUntil,
 } from "../fixtures/v7-dom-rig";
+import { DWARF_UI_V7, dwarfUiFixtureV7 } from "../fixtures/v7-dwarf-ui";
 import { martianUiFieldV7 } from "../fixtures/v7-martian-ui";
 
 /**
@@ -226,6 +227,33 @@ describe("first steps in the interface", () => {
     expect(host.lastModel?.firstStepMarker).toBeNull();
     host.callbacks?.onSelection(null);
     expect(lineText()).toBe("Research Gathering to harvest your fruit");
+    app.destroy();
+  });
+
+  it("steps aside while an ability is aimed on the board, and comes back after", async () => {
+    // Bead pulp_wars-eu3r.9: the selected unit's "Pick a highlighted tile
+    // to move" is not the task while a Bomb Run is aimed.
+    const { controller, host, app } = open(dwarfUiFixtureV7());
+    const view = controller.snapshot().view;
+    const gyro = view?.units.find(
+      (unit) =>
+        unit.at.x === DWARF_UI_V7.gyrocopter.x &&
+        unit.at.y === DWARF_UI_V7.gyrocopter.y,
+    );
+    if (gyro === undefined) throw new Error("fixture");
+    host.callbacks?.onSelection({ kind: "UNIT", unitId: gyro.id });
+    expect(lineText()).toBe("Pick a highlighted tile to move");
+    requiredButton("dwarf-bomb-run").click();
+    await waitUntil(
+      () => host.lastModel?.interaction.dwarfPick?.kind === "BOMB_RUN",
+    );
+    expect(line()).toBeNull();
+    expect(host.lastModel?.firstStepMarker).toBeNull();
+    requiredButton("dwarf-pick-cancel").click();
+    await waitUntil(
+      () => (host.lastModel?.interaction.dwarfPick ?? null) === null,
+    );
+    expect(lineText()).toBe("Pick a highlighted tile to move");
     app.destroy();
   });
 

@@ -3143,8 +3143,10 @@ commands is a generic dock button any more.
   raster): sharpened timber stakes bound by riveted iron bands on a heap of
   earth, its owner's pennant, cracks at half its HP or less, and its HP as
   a segmented bar in the cell's left strip (one segment per HP, where a
-  unit's HP bar is) with the number above it. Its tile's dock names whose
-  it is, its HP, and its rule; the board cursor says the same.
+  unit's HP bar is) with the number above it. The bar and number are drawn
+  over the target marks, so an attack bracket's corner never hides the
+  number (bead `pulp_wars-eu3r.9`). Its tile's dock names whose it is, its
+  HP, and its rule; the board cursor says the same.
 - **Attacking a Barricade.** A unit that may attack a hostile Barricade
   shows an attack target on its tile, labelled with the exact damage and
   what is left ("Deal 5 · 5 left", "Deal 3 · Breaks it"). Choosing it
@@ -3152,9 +3154,10 @@ commands is a generic dock button any more.
 - **Repair.** A selected Engineer marks each damaged own Barricade next to
   it with the Help ring and "+4 HP", like the units its Repair heals; the
   Repair tooltip says it mends Barricades.
-- **Bomb Run.** Every landing within 2 tiles of the target is a Move target
-  labelled with its threat ("Land · up to 6", "Land · safe"); the landing
-  hint reads "Landing: …".
+- **Bomb Run.** Every landing within 2 tiles of the target is a Move target;
+  only a threatened one is labelled ("Land · up to 6"), a safe one is the
+  plain outline (bead `pulp_wars-eu3r.9`); the landing hint reads
+  "Landing: …".
 - **Log.** "Your Whirligig whirled: 3 units hit (1 killed)", "Your Engineer
   built a Barricade", "Player 2's Fighter hit your Barricade for 5" (a
   toast for the owner), "… broke your Barricade", and "Your Engineer
