@@ -43,12 +43,12 @@ import type { PlayerViewV7, PublicUnitV7 } from "../engine/v7/view";
  *   (`cultBackRowV7`): the hooks are `armyDinosaurContactHeldV7` and
  *   `armyIceFolkShooterHeldV7` in `src/ai/v7.ts`.
  *
- * What it leaves to the later beads: the channel, Summon, Sacrifice,
- * Seize, Offering, Anchor, and Behold! (A2, `pulp_wars-mch9.10`); the
- * rituals, the hexes, and the tricks (A3, `pulp_wars-mch9.11`); and every
+ * The channel, Summon, Sacrifice, Seize, Offering, Anchor, and Behold! are
+ * bead A2 (`pulp_wars-mch9.10`): the Cult seat's plan in
+ * `src/ai/v7-cult-channel.ts`. What is left to the later beads: the
+ * rituals, the hexes, and the tricks (A3, `pulp_wars-mch9.11`), and every
  * other seat against the Cult (A4, `pulp_wars-mch9.12`). Until then the
- * policy offers none of those commands (`isPolicyCandidate`), so a Cult
- * seat plays its cultists as plain units.
+ * policy offers none of those commands (`isPolicyCandidate`).
  *
  * Everything is read from the public view; nothing draws from the PRNG or
  * depends on elapsed time.

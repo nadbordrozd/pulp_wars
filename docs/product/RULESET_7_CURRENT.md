@@ -1380,7 +1380,11 @@ separate [Ruleset 6](RULESET_6.md) route.
     Cult seat play the army rules, and the Cult seat has its research
     order, shares, and unit rules
     ([the Cultists spec, section 15.6](RULESET_7_CULTISTS.md#156-as-built-a1-the-cult-seat-on-the-army-policy-pulp_wars-mch99)).
-    It still uses none of the Cult's own commands.
+    Its second (`pulp_wars-mch9.10`, likewise no rule and no identity
+    change) gave it the channel plan, Summon, Sacrifice, Seize, Offering,
+    Anchor, and Behold!
+    ([section 15.7](RULESET_7_CULTISTS.md#157-as-built-a2-the-cult-seats-own-commands-pulp_wars-mch910)).
+    It still begins no ritual and uses no Proclaim, Boo!, hex, or trick.
 - **The Cult's Favour** (`pulp_wars-mch9.4`, `7r72`, bead E2 of
   [the Cultists spec](RULESET_7_CULTISTS.md#19-implementation-beads); its
   sections 3, 5, and 8.2 are the design, and

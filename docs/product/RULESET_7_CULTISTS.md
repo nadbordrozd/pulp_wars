@@ -1460,11 +1460,13 @@ and the counts in `src/ai/v7-army.ts`.
    judgement, because the reason is the same for each. Company is another
    own unit beside that enemy, or one that can still come. A Move onto a
    village (a Pamphlets capture) or a center is exempt. **The Seizure
-   holder's exemption is left to A2**, which makes the Seizure.
+   holder's exemption is left to A2**, which makes the Seizure (built:
+   section 15.7).
 7. **The back row out of reach.** A Hexer, a Stargazer, and a Summoner
    (`cultBackRowV7`) are all held by the whole rule. Exempt: the Move from
    which the unit's attack kills, and a Move onto a center or a village.
-   **The Summoner's Move to a Seizure is left to A2.** The Stargazer is also
+   **The Summoner's Move to a Seizure is left to A2** (built: section
+   15.7). The Stargazer is also
    a siege unit to the shared policy, whose rule keeps it four tiles from
    its objective until a unit with Defense 2 or more (a Chosen, an Idol
    Bearer, the Thing) can stand beside its tile; an Initiate (Defense 1.5)
@@ -1475,7 +1477,136 @@ and the counts in `src/ai/v7-army.ts`.
    ritual, or Proclaim (`isPolicyCandidate`), so a Cult seat plays its
    cultists as plain units, gains Favour only from a Chosen's Martyr, and
    trains Summoners and Stargazers it has no use for until A2 and A3. That
-   is why the Cult stays hidden from the setup screen.
+   is why the Cult stays hidden from the setup screen. (Bead A2 plays the
+   first seven: [section 15.7](#157-as-built-a2-the-cult-seats-own-commands-pulp_wars-mch910).)
+
+### 15.7 As built: A2, the Cult seat's own commands (`pulp_wars-mch9.10`)
+
+Bead A2 implements [section 15.2](#152-channel-first-and-keep-the-channellers-safe-and-spare),
+the Horror of [section 15.3](#153-summon-only-what-it-can-hold), and the
+Seize, Sacrifice, Offering, Behold!, and Anchor rows of
+[section 15.4](#154-everything-else-in-simple-high-value-ways). No rule
+changed and the ruleset identity did not move. No match was played: every
+rule below is a decision, or the one turn the seat plays, on a hand-built
+state in `tests/unit/ruleset-v7-cult-channel-ai.test.ts`. The plan is
+`cultPlanV7` in `src/ai/v7-cult-channel.ts`; `src/ai/v7.ts` applies it
+(`cultPlanForV7`, the Cult block at the end of `scoreCommandWithContext`,
+and the first lines of `isPolicyCandidate`).
+
+1. **How "before its ordinary play" is built.** The Normal AI chooses one
+   command at a time and remembers nothing. So the plan is made again at
+   every decision, from the public view and the commands the engine offers:
+   it names the **steps** it wants now (each an offered command, with a
+   priority above every ordinary one), the units it **holds** (a held unit
+   is given no other command), the broken enemies it keeps for a Seizure,
+   and where each own daemon may end a Move. A step is a candidate whatever
+   the general Move rules of the army policy say (the plan has claimed that
+   unit). The policy reads the view and the public previews
+   (`previewSeizeV7`, `previewSacrificeV7`, `previewRampageV7`, the combat
+   preview), imports no reducer, and draws nothing from the PRNG.
+2. **The order of a Cult turn**, by priority: a Seizure and the Move that
+   makes one legal (4000); a daemon that cannot be held, and the own units
+   that step away from it (3990, 3980); the own bound daemons' ordinary
+   commands (their ordinary priority plus 2000, so a daemon moves and
+   attacks before its channellers are placed); Anchor (1950); the
+   channellers' Moves and Channels (1940); Bind again (1930); Behold!
+   (1920); Summon (1910); the Sacrifice of a spare Initiate (1900); the
+   Offering (1890); then the ordinary play (1305 and below); and last of
+   all, just above End Turn, the Sacrifice of a doomed unit (5).
+3. **Channel first.** A candidate channeller is an own robed cultist in
+   land form that has not used its action and holds no strand; it can
+   channel a daemon when the engine offers it the Channel, or a Move that
+   ends on land within 3 of the daemon. Pass 1 gives each bound daemon its
+   Control (the Herald first, then the Horrors by unit ID), pass 2 gives
+   each one strand to spare from the cultists that are left ("with too few
+   it wants Control"). The nearest come first, except that a cultist that
+   has moved already comes before the others (it came for this), and **an
+   Idol Bearer and a Summoner come last** (decided here: the one may raise
+   its idol, the other Seize, Summon, or Sacrifice). The unit on an own
+   center channels from its center or not at all. An assigned channeller
+   takes the tile of section 15.2 step 3 (next to an own Idol Bearer, then
+   unthreatened, then not next to another channeller, then the farthest
+   from the enemy), then one next to a Thing that grips nobody, then where
+   it stands. It is held: it moves, channels, and does nothing else.
+4. **The daemon's move.** A bound daemon's Move and attack are chosen by
+   the ordinary scoring and made first. A Move, and an attack whose kill
+   advances it, is refused unless the tile is within 3 of every cultist
+   that channels it already and within 4 of as many free cultists as it
+   still wants (within 3 for one that has moved). **Not built:** the
+   Herald's two attacks scored together, and the preference for a tile
+   where an enemy is nearer than any own unit; both wait for the Herald's
+   bead (A3).
+5. **A daemon that cannot be held** (fewer strands than its Control can
+   reach it where it stands). First, decided here: **it goes back** when a
+   Move brings it within 4 of enough free cultists. Otherwise it is
+   released toward the enemy: the offered tile with the greatest lead of
+   the nearest visible enemy over the nearest own unit, if that is better
+   than where it stands. When it stays, the own units that would be its
+   nearest (no farther than the nearest enemy, and within 4) step away one
+   at a time, to the farthest tile they are offered; the unit on a center
+   and a claimed channeller stay.
+6. **Bind again.** An Unbound daemon that is not Furious is bound when the
+   cultists the bound daemons leave can bring its whole Control this turn;
+   they walk up and channel one after the other, before anything else.
+   **The clause "none of those tiles is the daemon's current target" is not
+   applied** (decided here): a bind that completes in the turn it starts
+   makes no rampage on the way, and the nearest cultist is the daemon's
+   target in nearly every position, so the clause would forbid the bind
+   whenever it is possible. The seat binds with its Control only (no spare
+   that turn).
+7. **Anchor.** A Thing always grips a channeller beside it, at once after
+   that cultist's Channel. A gripped strand counts three; the seat then
+   still wants one strand from another cultist. With too few cultists for
+   a daemon's Control, one of them is sent to a tile beside a Thing that
+   grips nobody and the Thing waits for it (a Herald is held by two
+   cultists and a Thing). A Thing that grips makes no Move, and no kill
+   that advances it, away from its cultist.
+8. **Summon.** A Horror, when: Favour is 5, a Summoner has a helper (the
+   engine's offer), no channeller is still to be placed, the seat's robed
+   cultists number at least every bound daemon's Control + 1 and two more,
+   and, decided here, **an enemy unit or center is within 6 tiles of the
+   Summoner** (a Horror costs two actions a turn for as long as it lives;
+   it is summoned at the front). The tile is the one nearest the enemy, the
+   helper the cheapest cultist. A tile beside an enemy unit is taken only
+   when the unit the Horror would go for there (the nearest; a tie to the
+   own seat, then to the fewest HP, then to the lowest ID) is neither the
+   Summoner nor the helper. **The seat does not save Favour for the Great
+   Summoning yet**: with 5 Favour and the conditions met it summons a
+   Horror (A3 decides when to wait for 20).
+9. **Sacrifice.** (a) An own unit beside a Summoner that the visible
+   enemies' next turn kills where it stands, and that has no offered Move
+   to a tile where it lives, is offered up **last of all** (after its own
+   attack and every other command of the turn); its Summoner is held for
+   it. (b) An Initiate, when the seat fields more robed cultists than its
+   daemons' Control + 1 and two more, and its value brings Favour to 5, or
+   to 20 with The Stars Are Right. Never a unit that holds a strand, and
+   never **the unit on an own center with a visible enemy within 3** (the
+   reading of "a city's last defender" decided here).
+10. **Seize.** An offered Seizure is made first, the richest first, and no
+    attack on a broken enemy that can be Seized is a candidate. With none
+    offered, the seat makes the one Move that leads to one this turn: a
+    holder steps beside the broken enemy first, then the Summoner. The
+    plan asks `previewSeizeV7` on the projected board, so whatever the
+    engine calls broken (a frog at half its HP, from E6) is followed
+    without a change here. A claimed channeller and the unit on a center
+    are not sent. Both exemptions that A1 left are in: the holder's Move is
+    exempt from "contact with company" (`armyDinosaurContactHeldV7`) and
+    the Summoner's (and the holder's) from "the back row out of reach"
+    (`armyIceFolkShooterHeldV7`). **Not built:** the Hexer's frog before a
+    Seizure (Ribbit is A3's).
+11. **Offering.** A city whose Offering the engine offers, at its unit
+    limit or with no unit on offer to train, with no visible enemy within
+    3 of its center, when Favour is below 5, or below 20 with The Stars Are
+    Right. Decided here: **only with a Summoner on the board and the robed
+    cultists to hold one more Horror**, else the Favour buys nothing and
+    the population is gone for good. The same condition gates (b) above.
+12. **Behold!** An Idol Bearer with its action, next to two or more own
+    cultists that hold a strand and stand on a tile a visible enemy can
+    attack next turn, raises its idol, once every channeller is placed.
+13. **What a Cult seat still does not do.** The policy offers no ritual, no
+    Proclaim, and no Boo! (`isPolicyCandidate`; bead A3), and no other seat
+    plays against the Cult's mechanics yet (bead A4). The Cult stays hidden
+    from the setup screen.
 
 ## 16. Worked examples
 
@@ -2078,7 +2209,10 @@ this spec left room:
    Kills for the Cult seat, and for the victim's seat a Loss and its
    remaining HP as Damage taken.
 10. **The Normal AI** never picks one of the three commands until bead A2
-    (`pulp_wars-mch9.10`); a hand-built position holds it to that.
+    (`pulp_wars-mch9.10`); a hand-built position holds it to that. (A2 is
+    built: a Cult seat of the army play uses them by its plan,
+    [section 15.7](#157-as-built-a2-the-cult-seats-own-commands-pulp_wars-mch910);
+    the position now holds the older policy to it.)
 11. **The interface stand-in.** Until bead U1 (`pulp_wars-mch9.17`) the dock
     shows these commands with its generic action buttons: one button per
     victim, named by the victim's unit ("Sacrifice Initiate"), with what it
@@ -2203,7 +2337,11 @@ left room:
     mind-controlled cultist changed owner, so its strand, its grip, and
     its place under an idol are gone already.
 12. **The Normal AI** never picks one of the five commands until bead A2
-    (`pulp_wars-mch9.10`); a hand-built position holds it to that.
+    (`pulp_wars-mch9.10`); a hand-built position holds it to that. (A2 is
+    built: a Cult seat of the army play uses Summon, Channel, Behold!, and
+    Anchor by its plan,
+    [section 15.7](#157-as-built-a2-the-cult-seats-own-commands-pulp_wars-mch910);
+    Boo! waits for A3, and the position now holds the older policy.)
 13. **The interface stand-in** was replaced by bead U2
     (`pulp_wars-mch9.18`; see "As built by U2" in
     [section 14.3](#143-how-it-reads-on-the-board-without-text)): the tile,
@@ -2333,7 +2471,9 @@ where this spec left room:
     E5 did all three
     ([section 21.5](#215-e5-rituals-and-the-herald-pulp_wars-mch97-pulp-wars-poc-7r77)).
 16. **The Normal AI** still never picks a Channel (bead A2), so it never
-    binds. Every seat reads a visible Unbound daemon as a monster: it is
+    binds. (A2 is built: a Cult seat binds again by its plan,
+    [section 15.7](#157-as-built-a2-the-cult-seats-own-commands-pulp_wars-mch910).)
+    Every seat reads a visible Unbound daemon as a monster: it is
     hunted only by a kill this turn, and a routine Move does not end in its
     reach. The rules of [section 15.5](#155-against-the-cult-every-other-seat)
     are bead A4.

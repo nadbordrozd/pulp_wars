@@ -105,6 +105,9 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       "./v7-army",
       // pulp_wars-mch9.9: the Cult seat (public view only).
       "./v7-cult",
+      // pulp_wars-mch9.10: the Cult seat's plan (the public view and the
+      // public previews only; it imports no reducer).
+      "./v7-cult-channel",
       "./v7-campaign",
       "./v7-endgame",
       // pulp_wars-68k.6: the siege of a single-file front (public view only).

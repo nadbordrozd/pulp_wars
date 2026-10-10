@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { chooseNormalCommandV7 } from "../../src/ai/v7";
 import {
+  ARMY_PLAY_FACTIONS_V7,
+  setArmyPlayFactionsV7,
+} from "../../src/ai/v7-army";
+import {
   cultSummonedArtSubjectV7,
   unitArtSubjectV7,
 } from "../../src/assets/chibi-art-v7";
@@ -300,16 +304,26 @@ describe("the Cult's channel: the older Normal policy tolerates the commands", (
         .filter((kind) => CHANNEL_KINDS.includes(kind)),
     );
     expect([...offered].sort()).toEqual([...CHANNEL_KINDS].sort());
-    const commands = turn(state);
-    expect(commands.at(-1)?.kind).toBe("END_TURN");
-    for (const command of commands)
-      expect(CHANNEL_KINDS).not.toContain(command.kind);
-    // Every candidate the policy scored is one it may pick.
-    const decision = chooseNormalCommandV7(
-      viewForV7(state, seatIdV7(state, 1)),
+    // The older policy (the tests' switch): a Cult seat of the army play
+    // channels, summons, grips, and raises its idol by its plan from bead
+    // A2 (`pulp_wars-mch9.10`; tests/unit/ruleset-v7-cult-channel-ai.test.ts).
+    const previous = setArmyPlayFactionsV7(
+      ARMY_PLAY_FACTIONS_V7.filter((faction) => faction !== "CULT"),
     );
-    for (const candidate of decision.candidates)
-      expect(CHANNEL_KINDS).not.toContain(candidate.command.kind);
+    try {
+      const commands = turn(state);
+      expect(commands.at(-1)?.kind).toBe("END_TURN");
+      for (const command of commands)
+        expect(CHANNEL_KINDS).not.toContain(command.kind);
+      // Every candidate the policy scored is one it may pick.
+      const decision = chooseNormalCommandV7(
+        viewForV7(state, seatIdV7(state, 1)),
+      );
+      for (const candidate of decision.candidates)
+        expect(CHANNEL_KINDS).not.toContain(candidate.command.kind);
+    } finally {
+      setArmyPlayFactionsV7(previous);
+    }
   });
 
   it("plays a turn against a Cult seat with a channelled Horror in sight", () => {

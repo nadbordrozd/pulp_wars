@@ -293,6 +293,13 @@ import {
   cultWeakLinkV7,
 } from "./v7-cult";
 import {
+  CULT_DAEMON_PRIORITY_V7,
+  cultPlanV7,
+  cultStepForV7,
+  cultTileKeyV7,
+  type CultPlanV7,
+} from "./v7-cult-channel";
+import {
   CAMPAIGN_FRONT_DEFENSE_RADIUS_V7,
   campaignHasWorkAtV7,
   campaignHoldsMoveV7,
@@ -874,6 +881,12 @@ interface PolicyContextV7 {
   readonly candy: boolean;
   /** Candy matches: per-decision public Candy plans. */
   candyCache: CandyContextCacheV7 | null;
+  /**
+   * The Cult seat (`pulp_wars-mch9.10`, `src/ai/v7-cult-channel.ts`): the
+   * plan of this decision (undefined until computed; null for every seat
+   * but a Cult seat of the army play).
+   */
+  cultPlan: CultPlanV7 | null | undefined;
   /**
    * The giants' signatures (`pulp_wars-w49.31`, `src/ai/v7-giants.ts`): the
    * visible land-form giants that have a signature, or null without one;
@@ -1968,6 +1981,7 @@ function bareContext(
     dwarfCache: null,
     candy: candyMatchForPolicyV7(view),
     candyCache: null,
+    cultPlan: undefined,
     giants: giantFactsForViewV7(view),
     giantPlans: { toss: new Map(), stomp: new Map(), breakOff: new Map() },
     endgame: endgamePlanForPolicyV7(view, (owner) => isHostile(view, owner)),
@@ -4692,6 +4706,83 @@ function armyCultSeatV7(context: PolicyContextV7): boolean {
   return context.army && context.view.viewer.faction === "CULT";
 }
 
+/**
+ * The Cult seat's plan of this decision (`pulp_wars-mch9.10`,
+ * docs/product/RULESET_7_CULTISTS.md sections 15.2 to 15.4 and 15.7;
+ * `src/ai/v7-cult-channel.ts`): the steps it wants now (a Seizure, the
+ * channel, a Summon, a Sacrifice, an Offering, a grip, a raised idol), the
+ * units it holds for them, and where each own daemon may end a Move. Null
+ * for every seat but a Cult seat of the army play.
+ */
+function cultPlanForV7(context: PolicyContextV7): CultPlanV7 | null {
+  if (context.cultPlan !== undefined) return context.cultPlan;
+  if (!armyCultSeatV7(context)) {
+    context.cultPlan = null;
+    return null;
+  }
+  const view = context.view;
+  // While the plan is made, a rule that asks for it gets none.
+  context.cultPlan = null;
+  let threatened: Set<string> | undefined;
+  const plan = cultPlanV7({
+    view,
+    commands: context.commands,
+    hostile: (ownerId) => isHostile(view, ownerId),
+    danger: (unit, at) => visibleImmediateDamage(view, unit, at, context),
+    threatened: (at) => {
+      if (threatened === undefined) {
+        threatened = new Set();
+        for (const [unitId, tiles] of context.threatenedTiles) {
+          const unit = context.lookup.unitsById.get(unitId);
+          if (unit === undefined || !isHostile(view, unit.ownerId)) continue;
+          for (const tile of tiles) threatened.add(tile);
+        }
+      }
+      return threatened.has(coordKey(at));
+    },
+    moved: (moves) =>
+      projectPublicUnits(
+        view,
+        view.units.map((unit) => {
+          const move = moves.find((item) => item.unit.id === unit.id);
+          return move === undefined || same(move.at, unit.at)
+            ? unit
+            : {
+                ...unit,
+                at: move.at,
+                activation: {
+                  ...unit.activation,
+                  moved: true,
+                  movedPathLength: Math.max(1, distance(unit.at, move.at)),
+                },
+              };
+        }),
+        moves.map((move) => move.unit.id),
+      ),
+    freeCapacity: (cityId) => freeCapacity(view, cityId),
+  });
+  context.cultPlan = plan;
+  return plan;
+}
+
+/**
+ * The Cult seat (`pulp_wars-mch9.10`, section 15.1): a Move the plan makes
+ * for a Seizure, the holder's to a tile beside the broken enemy or the
+ * Summoner's to its own. Neither the rule of contact with company nor the
+ * rule of the back row out of reach holds it: the Seizure follows this turn.
+ */
+function cultSeizureMoveV7(
+  context: PolicyContextV7,
+  command: Extract<CommandV7, { kind: "MOVE" }>,
+): boolean {
+  const to = command.path.at(-1);
+  return (
+    to !== undefined &&
+    cultPlanForV7(context)?.seizureMoves.get(command.unitId) ===
+      cultTileKeyV7(to)
+  );
+}
+
 // ---------------------------------------------------------------------------
 // Step two of the Undead pass (`pulp_wars-w49.24`,
 // docs/product/RULESET_7_TUNING_UNDEAD.md section 15). Since the Industry
@@ -6369,6 +6460,9 @@ function armyDinosaurContactHeldV7(
     !cult
   )
     return false;
+  // The Cult seat (`pulp_wars-mch9.10`, section 15.1): a Seizure's holder
+  // is exempt (the broken enemy it steps beside is offered this turn).
+  if (cult && cultSeizureMoveV7(context, command)) return false;
   const view = context.view;
   const actor = context.lookup.unitsById.get(command.unitId);
   const to = command.path.at(-1);
@@ -6538,6 +6632,9 @@ function armyIceFolkShooterHeldV7(
   // which a Hexer's shot kills is exempt, as every shooter's is.
   const cult = armyCultSeatV7(context);
   if (!armyIceFolkSeatV7(context) && !dwarf && !candy && !cult) return false;
+  // The Cult seat (`pulp_wars-mch9.10`, section 15.1): a Summoner's Move
+  // to a Seizure is exempt (and its holder's, whatever robe it wears).
+  if (cult && cultSeizureMoveV7(context, command)) return false;
   const view = context.view;
   const actor = context.lookup.unitsById.get(command.unitId);
   const to = command.path.at(-1);
@@ -10849,6 +10946,13 @@ function isPolicyCandidate(
   command: CommandV7,
 ): boolean {
   if (command.kind === "WAIT") return false;
+  // The Cult seat (`pulp_wars-mch9.10`): a step of the plan is a candidate
+  // whatever the general rules below say of its Move (a channeller's step
+  // to its tile, a Seizure's holder, a daemon released toward the enemy):
+  // the plan has claimed that unit, and nothing else is offered to it.
+  const cultPlan = cultPlanForV7(context);
+  if (cultPlan !== null && cultStepForV7(cultPlan, command) !== undefined)
+    return true;
   if (navalRejectsV7(context, command)) return false;
   if (frozenSeaRejectsV7(context, command)) return false;
   // The giants' signatures (`pulp_wars-w49.31`, RULESET_7_GIANTS.md
@@ -10878,30 +10982,27 @@ function isPolicyCandidate(
       giantBreakOffPlanV7(context, giant)?.command === command
     );
   }
-  // The Cultists' Favour engine (`pulp_wars-mch9.4`,
-  // RULESET_7_CULTISTS.md section 19): until the Cult AI bead
-  // (`pulp_wars-mch9.10`) the policy uses none of the three commands. A
-  // Sacrifice removes an own unit and an Offering gives up population, so
-  // neither may be picked by a general rule; a Seizure waits for the same
-  // bead. They are offered only to a Cult seat.
+  // The Cult seat (`pulp_wars-mch9.10`, RULESET_7_CULTISTS.md sections 15.2
+  // to 15.4; `src/ai/v7-cult-channel.ts`): a Sacrifice, a Seizure, an
+  // Offering, a Summon, a Channel, a Behold!, and an Anchor are candidates
+  // only as a step of the Cult seat's plan (above). A Sacrifice removes an own
+  // unit, an Offering gives up population, and a Summon spends Favour on a
+  // unit that must be held, so none may be picked by a general rule; a seat
+  // that is no Cult seat of the army play (a controlled cultist's owner, a
+  // Cult seat on the older policy) picks none of them.
   if (
     command.kind === "SACRIFICE" ||
     command.kind === "SEIZE" ||
-    command.kind === "OFFERING"
-  )
-    return false;
-  // The channel (`pulp_wars-mch9.5`): likewise Summon, Channel, Behold!,
-  // Anchor, and Boo! until the same bead (channel first, summon only what
-  // it can hold: section 15.2 and 15.3). They are offered only for a Cult
-  // seat's units.
-  if (
+    command.kind === "OFFERING" ||
     command.kind === "SUMMON" ||
     command.kind === "CHANNEL" ||
     command.kind === "BEHOLD" ||
-    command.kind === "ANCHOR" ||
-    command.kind === "BOO"
+    command.kind === "ANCHOR"
   )
     return false;
+  // Boo! (`pulp_wars-mch9.5`, section 8.5) waits for the Cult AI bead of
+  // the tricks (`pulp_wars-mch9.11`): it moves friend and foe.
+  if (command.kind === "BOO") return false;
   // Rituals and Proclaim (`pulp_wars-mch9.7`): likewise until the Cult AI
   // beads (`pulp_wars-mch9.11`: the Great Summoning, Star-fall, the Herald
   // and Proclaim). A Great Summoning spends 20 Favour and a star hurts
@@ -14843,6 +14944,49 @@ function scoreCommandWithContext(
     // kill (a blast into two units ranks as a chip otherwise, 895).
     if (priority >= 0 && tossedGoblinV7(view, actor))
       priority = Math.max(priority, KABOOM_KILL_PRIORITY_V7);
+  }
+
+  // The Cult seat (`pulp_wars-mch9.10`, RULESET_7_CULTISTS.md sections 15.2
+  // to 15.4; `src/ai/v7-cult-channel.ts`): channel first. A step of the
+  // plan has the plan's priority, above the ordinary play (but the doomed
+  // unit's Sacrifice, which is below all of it); a unit the plan holds is
+  // given no other command; a broken enemy kept for a Seizure is not
+  // attacked; and an own bound daemon plays before its channellers are
+  // placed, and ends its Move (or its advance after a kill) only where
+  // they can follow.
+  const cultPlan = cultPlanForV7(context);
+  if (cultPlan !== null && command.kind !== "END_TURN") {
+    const step = cultStepForV7(cultPlan, command);
+    if (step !== undefined) {
+      priority = step.priority;
+      strategicValue = step.value;
+    } else if (actor !== undefined && cultPlan.held.has(actor.id))
+      priority = -1;
+    else if (
+      command.kind === "ATTACK" &&
+      cultPlan.seized.has(command.targetUnitId)
+    )
+      priority = -1;
+    else if (actor !== undefined && actor.ownerId === view.viewer.id) {
+      if (command.kind === "MOVE") {
+        if (resultAt === null || !cultPlan.mayEnd(actor.id, resultAt))
+          priority = -1;
+      } else if (
+        command.kind === "ATTACK" &&
+        priority >= 0 &&
+        cultPlan.leashed.has(actor.id)
+      ) {
+        const target = context.lookup.unitsById.get(command.targetUnitId);
+        if (
+          target !== undefined &&
+          queryCombatPreviewV7(view, actor.id, target.id)?.advances === true &&
+          !cultPlan.mayEnd(actor.id, target.at)
+        )
+          priority = -1;
+      }
+      if (actor.summoned !== undefined && priority >= 0)
+        priority += CULT_DAEMON_PRIORITY_V7;
+    }
   }
 
   if (command.kind === "END_TURN") priority = 0;

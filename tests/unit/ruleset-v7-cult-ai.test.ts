@@ -919,14 +919,11 @@ describe("the Cult seat: the back row out of reach", () => {
 });
 
 describe("the Cult seat: legal, deterministic turns on what A1 covers", () => {
+  // Bead A2 (`pulp_wars-mch9.10`) plays Sacrifice, Seize, Offering, Summon,
+  // Channel, Behold!, and Anchor by the Cult seat's plan
+  // (tests/unit/ruleset-v7-cult-channel-ai.test.ts); the rituals, Proclaim,
+  // and Boo! wait for bead A3.
   const LATER_BEADS: readonly CommandV7["kind"][] = [
-    "SACRIFICE",
-    "SEIZE",
-    "OFFERING",
-    "SUMMON",
-    "CHANNEL",
-    "BEHOLD",
-    "ANCHOR",
     "BOO",
     "BEGIN_RITUAL",
     "PROCLAIM",

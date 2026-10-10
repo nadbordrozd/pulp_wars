@@ -285,12 +285,30 @@ first by robed cultists, the Thing at every level from 5, weak links and
 escorts, contact with company, and the back row out of reach.
 
 Under the rule of no simulations: no match, no lab run, and no tuning.
-The seat uses none of the Cult's own commands yet (the channel, Sacrifice,
-the rituals, the hexes: beads A2 and A3), and no other seat plays against
-the Cult's mechanics yet (bead A4). This entry is replaced by the Cult's
-full one when the faction is folded in (bead D1).
 
-Tests: `tests/unit/ruleset-v7-cult-ai.test.ts`.
+The second AI bead (A2, `pulp_wars-mch9.10`) gives the seat its own
+commands: **channel first** (each bound daemon its Control and one strand
+to spare, the Herald first; a daemon moves before its channellers and only
+where they can follow; a daemon that cannot be held goes back to them or
+is released toward the enemy; Bind again), **summon only what it can
+hold**, Seize, Sacrifice, Offering, Anchor, and Behold!. The policy keeps
+no memory, so the Cult seat's plan (`cultPlanV7` in
+`src/ai/v7-cult-channel.ts`, cached per decision by `cultPlanForV7`) is
+made again at every decision from the public view and the offered
+commands: it names the steps it wants now, with priorities above the
+ordinary play, the units it holds for them, the broken enemies it keeps
+for a Seizure, and where each own daemon may end a Move. A step of the
+plan is a candidate whatever the general Move rules say; a held unit has
+no other candidate. What was built and decided is in
+[section 15.7 of the spec](../product/RULESET_7_CULTISTS.md#157-as-built-a2-the-cult-seats-own-commands-pulp_wars-mch910).
+
+The seat begins no ritual and uses no Proclaim, Boo!, hex, or trick yet
+(bead A3), and no other seat plays against the Cult's mechanics yet (bead
+A4). This entry is replaced by the Cult's full one when the faction is
+folded in (bead D1).
+
+Tests: `tests/unit/ruleset-v7-cult-ai.test.ts`,
+`tests/unit/ruleset-v7-cult-channel-ai.test.ts`.
 
 ## The Candy army seat (`pulp_wars-jdb.13`)
 
