@@ -3503,8 +3503,8 @@ export function drawBoardV7(input: {
         continue;
       }
       if (entry.kind === "ROAD" || entry.kind === "ROAD_JOIN") {
-        // The live look (CALM): slightly irregular brown dirt paths, bead
-        // pulp_wars-g6b5.
+        // The live look (CALM): worn dirt tracks with a rough edge, beads
+        // pulp_wars-g6b5 and pulp_wars-2yc.43.
         if (chibiArt !== undefined && direction?.chrome.roads === "CALM")
           drawDirtRoadV7(
             context,
@@ -3520,6 +3520,7 @@ export function drawBoardV7(input: {
             y,
             camera.zoom,
             pass === "ROAD_CASING" ? "CASING" : "FILL",
+            devicePixelRatio,
           );
         else
           drawRoad(

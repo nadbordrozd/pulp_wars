@@ -183,16 +183,16 @@ the only masked ones left. Review evidence:
 
 ## Map overlays drawn in code (no raster today)
 
-| Overlay                                                   | Drawn by                                         | Plan batch     | Notes                                                                                 |
-| --------------------------------------------------------- | ------------------------------------------------ | -------------- | ------------------------------------------------------------------------------------- |
-| Roads and road joins                                      | `drawRoad` strokes in `board-renderer-v7.ts`     | 3              | No raster and no art subject. Flag 1.                                                 |
-| Field Defense and city fortification level                | tactical symbol `ui-action-field-defense`        | 3 (Field Def.) | A vector symbol with light, dark and high-contrast treatments. Flag 1.                |
-| Status attachments (Port active/blockaded, inspired, ...) | `ruleset7-tactical-ui-symbols.ts` vector symbols | 5              | 20 vector symbols; not rasters.                                                       |
-| Fog of war                                                | flat fill and stroke                             | —              | Keep procedural unless the user asks.                                                 |
-| Water boundaries and shorelines                           | `addWaterBoundaries`                             | —              | Flag 7.                                                                               |
-| HP bars, seat badges, population pips, values, labels     | renderer                                         | —              | Placement must be checked against bottom-aligned chibi units (batch 1 bead notes).    |
-| Selection ring, glow, jump, sea routes, support feedback  | renderer                                         | —              | Selection glow and link-exclusion boxes still use legacy sprite bounds (67q.1 notes). |
-| Ground fill under chibi terrain                           | `#65965b` fill in the chibi ground pass          | —              | Visible only while a terrain raster is loading or missing.                            |
+| Overlay                                                   | Drawn by                                                                                       | Plan batch     | Notes                                                                                 |
+| --------------------------------------------------------- | ---------------------------------------------------------------------------------------------- | -------------- | ------------------------------------------------------------------------------------- |
+| Roads and road joins                                      | `drawRoad` strokes in `board-renderer-v7.ts`; the live look's dirt tracks in `dirt-road-v7.ts` | 3              | No raster and no art subject. Flag 1.                                                 |
+| Field Defense and city fortification level                | tactical symbol `ui-action-field-defense`                                                      | 3 (Field Def.) | A vector symbol with light, dark and high-contrast treatments. Flag 1.                |
+| Status attachments (Port active/blockaded, inspired, ...) | `ruleset7-tactical-ui-symbols.ts` vector symbols                                               | 5              | 20 vector symbols; not rasters.                                                       |
+| Fog of war                                                | flat fill and stroke                                                                           | —              | Keep procedural unless the user asks.                                                 |
+| Water boundaries and shorelines                           | `addWaterBoundaries`                                                                           | —              | Flag 7.                                                                               |
+| HP bars, seat badges, population pips, values, labels     | renderer                                                                                       | —              | Placement must be checked against bottom-aligned chibi units (batch 1 bead notes).    |
+| Selection ring, glow, jump, sea routes, support feedback  | renderer                                                                                       | —              | Selection glow and link-exclusion boxes still use legacy sprite bounds (67q.1 notes). |
+| Ground fill under chibi terrain                           | `#65965b` fill in the chibi ground pass                                                        | —              | Visible only while a terrain raster is loading or missing.                            |
 
 ## Interface rasters (DOM)
 
@@ -482,13 +482,29 @@ sprite and one portrait, and the Stegosaurus's Egg is the shared one.
    (LEGACY unchanged). Roads are a beige cobblestone path (`#d8c08c`) with
    the pieces' near-black casing (`CHIBI_ROAD_STROKES_V7`), and every road
    casing is drawn before any road fill so corner joins read as one path.
-   The live look (bead `pulp_wars-g6b5`) draws them instead as slightly
-   irregular brown dirt paths (`DIRT_ROAD_V7` in `dirt-road-v7.ts`): a dark
-   trodden edge (`#68432a`) round warm dirt (`#ae7c4b`) with a few rut
-   dashes and pebbles. Each link between two road cells bends sideways by
-   at most 4 world units and swells by at most 1.5, as a pure function of
-   its two cells, so both cells and any corner join draw the same path and
-   it never changes between frames, zoom levels or loads.
+   The live look (beads `pulp_wars-g6b5` and `pulp_wars-2yc.43`) draws
+   them instead as worn dirt tracks (`DIRT_ROAD_V7` in `dirt-road-v7.ts`),
+   painted in code as pixel art on the ground tiles' own grid (80 art
+   pixels to a cell). Each link between two road cells bends sideways by at
+   most 4 world units, as a pure function of its two cells. The dirt is
+   about nine art pixels wide and its half-width changes by up to 1.9 art
+   pixels with a noise read at each pixel's place in the world, so the
+   edge has bites and bulges instead of a straight line. The edge is a
+   one-pixel dark line in two tones (`#573620`, `#74492b`) with a few gaps,
+   and crumbs of dirt lie just outside it. The fill is warm dirt
+   (`#9c6a3b`, darker than the Martian dust so the track reads on it) with
+   patches of darker and lighter earth, a shaded rim under the south-west
+   bank and a lit one under the north-east bank, dashed wheel ruts along
+   each link, and pebbles with a small shadow. Every pixel is a function of
+   its place in the world and of the links crossing its cell, so a track
+   meets itself exactly across cell edges, a link looks the same whatever
+   other links its cells have, and nothing changes between frames, camera
+   positions, zoom levels or loads. A cell's pixels are computed once and
+   kept as two small sprites (the dark underlay, then the dirt), so a frame
+   costs two image draws for each road cell; every underlay on the board
+   is drawn before any dirt, so junctions and corner joins read as one
+   track. A Road is linked only to explored Road cells, as before, so at
+   the fog it ends in a rough round end at its cell's centre.
    Field Defense is a palisade badge (four pale birch stakes on a light
    steel crossbar, thick outline) in the cell's top-left corner above the
    HP bar strip (`CHIBI_OVERLAY_FRAME_V7.fieldDefense`); a city's

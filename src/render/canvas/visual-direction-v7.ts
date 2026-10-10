@@ -146,8 +146,8 @@ export interface BoardVisualDirectionV7 {
     readonly ready: "GLOW" | "BASE" | "GROUND";
     /**
      * BOLD is the CHIBI cobblestone path with a near-black casing; CALM
-     * (the live look) a slightly irregular brown dirt path, bead
-     * pulp_wars-g6b5 (dirt-road-v7.ts).
+     * (the live look) a worn brown dirt track with a rough edge, beads
+     * pulp_wars-g6b5 and pulp_wars-2yc.43 (dirt-road-v7.ts).
      */
     readonly roads: "BOLD" | "CALM";
     readonly borders: "DASHED" | "SOLID";
