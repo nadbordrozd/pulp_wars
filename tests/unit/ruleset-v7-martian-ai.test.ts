@@ -34,6 +34,13 @@ import {
 import { checkedV7 } from "../fixtures/v7-builders";
 import { martianFieldV7, type MartianPieceV7 } from "../fixtures/v7-martian";
 import { withoutTechsV7 } from "../fixtures/v7-revision20";
+import { candySeatKeepsOlderPolicyV7 } from "../fixtures/v7-older-policy";
+
+// The Candy army seat (`pulp_wars-jdb.13`): this file pins the older
+// policy on matches with a Candy seat, as it was written. No match
+// reaches that policy through its factions any more, so the file takes
+// the Candy out of the army factions (tests/fixtures/v7-older-policy.ts).
+candySeatKeepsOlderPolicyV7();
 
 // The Martian Normal AI (`pulp_wars-t6s.3`,
 // docs/product/RULESET_7_MARTIANS.md section 12). Two-seat 11 x 11 field:

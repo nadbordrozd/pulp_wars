@@ -76,6 +76,10 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     expect(imports).toEqual([
       "../engine/model/ids",
       "../engine/rules/ruleset-v7",
+      // The Candy army seat (`pulp_wars-jdb.13`): the Toothache of a
+      // projected blow, a Stuck unit's reach, and Sticky Toffee (four pure
+      // rule helpers over public lists).
+      "../engine/v7/candy-abilities",
       "../engine/v7/commands",
       "../engine/v7/dwarf",
       // Step two of the Dinosaur pass (`pulp_wars-w49.26`): the Cracked

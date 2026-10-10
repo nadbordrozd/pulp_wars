@@ -1076,6 +1076,11 @@ settlement sites), `ruleset-v7-candy-faction.test.ts`,
 
 ## 13. Normal AI notes
 
+(Step two is built, without matches or hand play:
+[the Candy army seat](../architecture/NORMAL_AI.md#the-candy-army-seat-pulp_wars-jdb13).
+Break Off was built as two Troopers with no slot rule, so its order against
+a Re-bake is the reverse of the one below.)
+
 The Candy keep the older policy (`src/ai/v7-candy.ts`) until step two; the
 engine bead only keeps it legal. Step two (`pulp_wars-jdb.13`) brings the
 Candy seat onto the army play (`ARMY_PLAY_FACTIONS_V7`) like the Dwarf pass

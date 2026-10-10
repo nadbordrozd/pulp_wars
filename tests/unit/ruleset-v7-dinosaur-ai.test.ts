@@ -39,6 +39,13 @@ import {
 } from "../fixtures/v7-dinosaur-ai";
 import { cityOfV7, withKillsV7 } from "../fixtures/v7-dinosaur-arena";
 import type { GoblinPieceV7 } from "../fixtures/v7-goblin-arena";
+import { candySeatKeepsOlderPolicyV7 } from "../fixtures/v7-older-policy";
+
+// The Candy army seat (`pulp_wars-jdb.13`): this file pins the older
+// policy on matches with a Candy seat, as it was written. No match
+// reaches that policy through its factions any more, so the file takes
+// the Candy out of the army factions (tests/fixtures/v7-older-policy.ts).
+candySeatKeepsOlderPolicyV7();
 
 // Revision 19 (`pulp_wars-c87.5`): the Normal AI playing Dinosaurs
 // (docs/product/RULESET_7_REVISION_19_DINOSAURS.md section 11). Seat 0 is the

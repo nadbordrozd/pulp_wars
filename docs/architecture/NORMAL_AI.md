@@ -1,5 +1,139 @@
 # Greedy Normal AI
 
+## The Candy army seat (`pulp_wars-jdb.13`)
+
+The Candy seat plays the army rules (`armyCandySeatV7`: `context.army` and
+a Candy viewer), as
+[section 13 of the Candy redesign](../product/RULESET_7_CANDY_REDESIGN.md#13-normal-ai-notes)
+asked. The Candy were the last faction outside `ARMY_PLAY_FACTIONS_V7`, so
+a match with a Candy seat no longer keeps the older policy for every seat:
+**every match of the eight factions of this list plays the army rules.** No
+rule changed (the identity stays `pulp-wars-poc-7r70`). Everything reads
+the viewer's `PlayerViewV7` and the public previews.
+
+**How it was made.** Under the rule of no simulations: no match, no
+diagnostic run, and no hand-played game. The order, the shares, and the
+values below are reasoned from the rules and the engine's previews, and
+each rule is shown on a small hand-built state in
+`tests/unit/ruleset-v7-candy-step2.test.ts`; every projection the policy
+makes is compared there with the engine's own preview or event. Nothing
+here is tuned by play, and the numbers should be read as first values.
+
+**1. The gate and the order** (`ARMY_PLAY_FACTIONS_V7`,
+`ARMY_RESEARCH_ROLES_V7.CANDY`). The Donut Racer, the Gumball Gunner, the
+Marshmallow, the Confectioner, the Pie Launcher, the Jawbreaker, the
+Chocolate Bunny: from a Gathering opener Scouting, Hunting, Marksmanship,
+Crafting, Home Sweet Home (the Marshmallow's technology), Leadership,
+Forestry, Sawmilling, Engineering, Metallurgy, Raiding, and Chivalry. The
+older Candy research plan (`candyResearchV7`) applies only outside the army
+rules.
+
+**2. The army** (`armySharesV7`, `armyRoleScoreV7`). 40% line (Toffee
+Troopers and Jawbreakers), 15% Marshmallows, 25% Gunners, 10% Pie
+Launchers, 10% Bunnies (35, 10, 25, 10, 20 against two or more visible
+hostile ranged, siege, or support units: the Bunny hops the screen); one
+Donut Racer for `ARMY_CANDY_SKIRMISHER_PER_UNITS_V7` (4) units,
+`ARMY_CANDY_SKIRMISHER_MAXIMUM_V7` (2) at most; Confectioners by the
+ordinary support rule (one for four units, two at most). Two caps: no more
+Marshmallows than cities, nor than a third of the army
+(`armyCandyDefenderCappedV7`: it does not strike after it moves, so it is a
+garrison), and one Jawbreaker for every two Troopers
+(`armyCandyHeavyCappedV7`: both are the line class, and a class the army is
+short of is bought in its dearest unit). While the seat is not alert (no
+enemy city known and no hostile unit near a center) its cities train by the
+older utility with the Candy production values
+(`candyProductionAdjustmentV7`), as every army seat's do with its own.
+
+**3. Bodies first, the garrison, and the rewards** (`armyBodiesSeatV7`,
+`armyOpeningSeatV7`, `armyCorrectionSeatV7`,
+`armyGarrisonYieldsToRangedV7`). As the other army seats: the seat trains
+before it researches while it fields fewer land units than its cities and
+two more, takes the Militia's free Trooper at level 2 while short of units
+and chooses the other rewards as every seat does, takes the villages first
+in its opening, and the garrison of a threatened city yields to a Gunner.
+
+**4. Weak links, escorts, and the back row** (`armyWeakLinkV7`,
+`armyEscortValueV7`, `ARMY_CANDY_STURDY_V7`, `armyDinosaurContactHeldV7`,
+`armyIceFolkShooterHeldV7`). A Candy unit of less than 15 HP at its maximum
+is a weak link of a kill chain at any HP; the Marshmallow and the
+Jawbreaker are not, and their Move beside weak units has an escort's value.
+A Trooper, a Racer, a Jawbreaker, a Bunny, or a Confectioner does not step
+beside an enemy unit where it would die unless a unit of its side stands
+beside that enemy or can still come (the Move of a Rushed unit's kill plan
+is exempt). A Gunner makes no Move into a visible melee unit's reach with
+no own line, defender, or breakthrough unit nearer to the enemy, nor onto a
+tile where the visible blows add up to its HP; it and the Confectioner stay
+out of the reach of a unit with Overrun.
+
+**5. The redesigned abilities** (`src/ai/v7-candy.ts`; the switch
+`abilities` of `CandyPolicyOptionsV7` turns the group off).
+
+| Ability       | What the seat does                                                                                                                                                                                                                                                                                                                                                                                   | Where                                                                     |
+| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| Ricochet      | The hit of a Ricochet is in the attack's immediate value, and a shot whose Ricochet kills has a kill's tier (1180, or 1280 for a unit that threatens a city) and the value of the unit it kills: the Gunner picks that shot.                                                                                                                                                                         | `combatImmediateValue`, `candySideKillsV7`                                |
+| Thump         | The same for the Thump of a Bunny's blow: every thumped unit's damage, and a kill's tier and value when one dies.                                                                                                                                                                                                                                                                                    | `combatImmediateValue`, `candySideKillsV7`                                |
+| Bunny Hop     | The engine offers the hops as Moves; the army's breakthrough rule (a fast unit that reaches a ranged, siege, or support unit goes first) takes the hop that lands beside one. No rule of its own was needed.                                                                                                                                                                                         | `ARMY_BREAKTHROUGH_MOVE_PRIORITY_V7`                                      |
+| Sticky Toffee | A blow that leaves a unit of Move 2 or more Stuck is worth `STICKY_FAST_TARGET_VALUE_V7` (6) more, unless the Trooper dies in it. A Trooper's Move beside its own ranged, siege, and support units has an escort's value while a hostile unit of Move 2 or more is within five tiles. A Stuck hostile unit's reach is one step in every threat estimate.                                             | `stickyTargetValueV7`, `armyEscortValueV7`, `publicThreatenedTilesWorkV7` |
+| Toothache     | The projection of a blow takes 1 off the Attack of a unit with Toothache (own or hostile). The Jawbreaker's Move below a kill's tier loses `JAWBREAKER_BATTERY_COST_V7` (8) for each hostile shooter over a tile under two or more, and gains `JAWBREAKER_FRONT_VALUE_V7` (4) for each hostile melee unit that can attack the tile, two at most.                                                     | `publicProjectedDamageWithLookupV7`, `jawbreakerPlaceValueV7`             |
+| Glaze Trail   | A Racer's routine Move toward the nearest visible enemy whose Glaze carries an own unit of Move 1 further than that unit's own step is lifted by `GLAZE_FIRST_OFFSET_V7` (66), above every routine Move of the wave, and is worth `GLAZE_CARRY_VALUE_V7` (4) for each tile carried. The slow unit then takes the longer Move the engine offers along the Glaze.                                      | `glazeCarriedTilesV7`, `glazeTilesForPolicyV7`                            |
+| Top-Up        | Never instead of a Re-bake the Confectioner would make. A Crashed unit with a kill from where it stands once the Crash is over (its plain blow, or a Rushed one for a unit that has not moved), just before that kill's tier (1181, 1281); else the Crashed unit in the most visible danger (936, above a Crashed unit's step back); else, as before, the heal that does the most, at the idle tier. | `topUpScoreV7`, `toppedUpKillV7`, `topUpProjectedViewV7`                  |
+| Re-bake       | As the redesign's engine bead left it: before every other command of the turn (1265), the dearest pile first, onto the tile beside the Confectioner with the least visible threat, never a fragile copy; the Confectioner walks to within two tiles of a pile out of reach. A pile dropped during the own turn is baked in the same turn (the Re-bake is offered at the next decision).              | `rebakeScoreV7`, `rebakeApproachValueV7`                                  |
+| Sugar Toss    | The Toss instead of a weak shot goes before a committed unit's shot, which has the tier 1176 whatever it deals (`SUGAR_TOSS_ARMY_PRIORITY_V7`, 1177).                                                                                                                                                                                                                                                | `sugarTossScoreV7`, the `SUGAR_TOSS` branch of `scoreCommandWithContext`  |
+| Splat         | The army's own order (a committed position fires its shots from two tiles before its melee) puts the Pie first; the Pie-first offset of the first Candy policy (`PIE_FIRST_OFFSET_V7`) is unchanged and pinned on the older policy.                                                                                                                                                                  | `candyAttackAdjustmentV7`                                                 |
+
+**Against the Candy** (every seat of a match with a Candy seat; the switch
+`respectStatuses`): a melee attack that leaves its own attacker Stuck (a
+unit of Move 2 or more) or with Toothache loses 2 of strategic value
+(`statusAttackCostV7`), and the Stuck reach and the Toothache projection
+above hold for every viewer.
+
+**What each projection equals.** The Ricochet and the Thump are read from
+`queryCombatPreviewV7` and equal the `RICOCHETED` and `THUMPED` events; the
+tiles of `glazeTilesForPolicyV7` equal `TILES_GLAZED`; the blow of a unit
+with Toothache equals the preview's `damageToDefender`; a Stuck unit's
+threatened tiles equal `queryThreatenedTilesV7`; and the kill a Top-Up
+opens is the preview's kill on the state after the real command.
+
+**The older policy after this bead.** No match reaches it through its
+factions: `context.army` is true for every seat of every match of the eight
+factions. (The naval plan and the opening growth harvest still switch army
+rules off for a turn; those are the army rules' own exceptions.) Two things
+still read it: a faction registered outside the list (the ninth faction is
+outside it until its own bead adds it, and a match with a seat of it would
+run the older policy for every seat, as a Candy seat did), and the tests
+that pin it, which take the Candy out of the list (`setArmyPlayFactionsV7`,
+`tests/fixtures/v7-older-policy.ts`: eleven test files whole, and single
+checks in three more).
+
+What is unreachable in a match of the eight factions, and could be deleted
+with its tests once no faction is outside the list and the user agrees: the
+five research plans behind `!context.army` (`martianResearchV7`,
+`iceFolkResearchV7`, `dwarfResearchV7`, `candyResearchV7`,
+`signatureResearchV7`) and `defenderLastStepResearchV7`; the `false` side
+of every army helper that begins `if (!context.army)` (the Move, attack,
+and training scores of a seat with no assault, no composition, and no
+research order); the gate itself; and the test switch. What stays, because
+army seats use it: the older training utility and each faction's
+production values while a seat is not alert, and every faction rule that is
+not about research (the Rush plans, the Crash retreat, Crumbs, the Witch,
+the Mole's tunnels, and so on). The curiosity rules (the Giant Spider's
+hunt among them) were written against the older policy and their tests
+have always run on an arena with a seat outside the army rules; three of
+the Spider's attack tests fail when every seat of that arena plays the army
+rules. This bead left that as it was (the tests keep their arena through
+the switch).
+
+**Not done.** Break Off has no policy yet (`pulp_wars-w49.31`); under the
+built rule (two Troopers for 10 HP, no slot needed) it puts the home city
+over its limit, so it must come **after** a Re-bake into the same city, the
+reverse of the order the redesign's section 7.9 gives for the earlier
+single-Trooper draft. The policy's own threat search does not count a
+hostile Bunny's hop. The lab `LAB_CANDY_MID`, the hand-played games, the
+Crumbs count, and the tuning record of the bead were not made (no
+simulations, no hand play).
+
+Tests: `tests/unit/ruleset-v7-candy-step2.test.ts`.
+
 ## Step two of the Dwarf pass (`pulp_wars-w49.28`)
 
 [Step two of the Dwarf pass](../product/RULESET_7_TUNING_DWARF.md)

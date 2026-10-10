@@ -113,6 +113,7 @@ import {
   unitAtV7,
   type GoblinPieceV7,
 } from "../fixtures/v7-goblin-arena";
+import { withCandyOnOlderPolicyV7 } from "../fixtures/v7-older-policy";
 import {
   at,
   attackV7,
@@ -927,9 +928,12 @@ describe("the Dinosaur pass: Dinosaur seats play the army rules", () => {
       "ICE_FOLK",
       // Step two of the Dwarf pass (`pulp_wars-w49.28`).
       "DWARF",
+      // The Candy army seat (`pulp_wars-jdb.13`).
+      "CANDY",
     ]);
     expect(armyPlayFactionV7("DINOSAUR")).toBe(true);
-    expect(armyPlayFactionV7("CANDY")).toBe(false);
+    // (An army faction too since the Candy army seat, `pulp_wars-jdb.13`.)
+    expect(armyPlayFactionV7("CANDY")).toBe(true);
     // Ankylosaurus, Spitter, Raptor, Triceratops, Stegosaurus, Shaman,
     // T-Rex (the ninth unit, 7r55: the Triceratops is the heavy role and
     // the Stegosaurus the siege role; step two of the Dinosaur pass,
@@ -1017,7 +1021,7 @@ describe("the Dinosaur pass: Dinosaur seats play the army rules", () => {
     }
   });
 
-  it("is on in a match of Humans, Goblins, Undead, Martians, and Dinosaurs, and off with another faction", () => {
+  it("is on in a match of Humans, Goblins, Undead, Martians, and Dinosaurs, and with every other faction since", () => {
     const pieces = [own("FIGHTER", 8, 7), foe("FIGHTER", 2, 7)];
     for (const opponent of [
       "ORIGINAL",
@@ -1043,9 +1047,11 @@ describe("the Dinosaur pass: Dinosaur seats play the army rules", () => {
         inspectNormalArmyV7(viewOf(asDinosaur(pieces, {}, opponent))).army,
         opponent,
       ).toBe(true);
+    // (And with a Candy seat since the Candy army seat, `pulp_wars-jdb.13`:
+    // it was off, for both seats.)
     expect(
       inspectNormalArmyV7(viewOf(asDinosaur(pieces, {}, "CANDY"))).army,
-    ).toBe(false);
+    ).toBe(true);
   });
 
   /** The research target of a Dinosaur seat with these technologies. */
@@ -1646,7 +1652,12 @@ describe("the Dinosaur pass: the Normal AI's units", () => {
       );
     // Against a Candy seat (a Dwarf one before step two of the Dwarf pass,
     // `pulp_wars-w49.28`): the Industry rule, now also for a Triceratops.
-    expect(wallbreaker("CANDY")?.score).toMatchObject({
+    // Since the Candy army seat (`pulp_wars-jdb.13`) no match is outside the
+    // army rules by its factions: the older rule is reached with the Candy
+    // taken out of the army factions (tests/fixtures/v7-older-policy.ts).
+    expect(
+      withCandyOnOlderPolicyV7(() => wallbreaker("CANDY"))?.score,
+    ).toMatchObject({
       priority: 1061,
       strategicValue: WALLBREAKER_CHARGER_VALUE_V7,
     });
@@ -2251,7 +2262,11 @@ describe("the Dinosaur pass, correction: the Dinosaur seat of the Normal AI", ()
       // (A Dwarf seat before step two of the Dwarf pass, `pulp_wars-w49.28`.)
       "CANDY",
     );
-    expect(inspectNormalArmyV7(viewOf(older)).army).toBe(false);
+    // (Since the Candy army seat, `pulp_wars-jdb.13`: with the Candy taken
+    // out of the army factions, tests/fixtures/v7-older-policy.ts.)
+    expect(
+      withCandyOnOlderPolicyV7(() => inspectNormalArmyV7(viewOf(older)).army),
+    ).toBe(false);
   });
 
   it("keeps its garrison on a center while a fast enemy unit is within four tiles", () => {

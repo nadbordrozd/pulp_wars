@@ -223,6 +223,9 @@ export const KIND_READER_CLASSES_V7: Readonly<
   // Step two of the Dwarf pass (`pulp_wars-w49.28`): the seat that decides
   // is a Dwarf one (the viewer's faction).
   "src/ai/v7.ts::armyDwarfSeatV7": "SEAT",
+  // The Candy army seat (`pulp_wars-jdb.13`): the seat that decides is a
+  // Candy one (the viewer's faction).
+  "src/ai/v7.ts::armyCandySeatV7": "SEAT",
   "src/ai/v7.ts::armyMartianResearchRolesV7": "SEAT",
   "src/ai/v7.ts::armyShootsBiterFirstV7": "SEAT",
   "src/ai/v7.ts::armyCureDueV7": "SEAT",

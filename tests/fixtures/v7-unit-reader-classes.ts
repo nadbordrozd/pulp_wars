@@ -76,6 +76,12 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/ai/v7-candy.ts::rebakeScoreV7": "BOARD",
     "src/ai/v7-candy.ts::splatSavedHpV7": "BOARD",
     "src/ai/v7-candy.ts::sugarTossScoreV7": "BOARD",
+    // The Candy army seat (`pulp_wars-jdb.13`): the Crashed unit a Top-Up
+    // is for, its projection, and the units along a Racer's Glaze are on
+    // the board (a Candy seat has no burrowed unit).
+    "src/ai/v7-candy.ts::toppedUpKillV7": "BOARD",
+    "src/ai/v7-candy.ts::topUpScoreV7": "BOARD",
+    "src/ai/v7-candy.ts::glazeCarriedTilesV7": "BOARD",
     "src/ai/v7.ts::candyCacheV7": "BOARD",
     "src/ai/v7-curiosities.ts::curiosityFactsV7": "BOARD",
     "src/ai/v7-curiosities.ts::planCuriosityErrandsV7": "BOARD",

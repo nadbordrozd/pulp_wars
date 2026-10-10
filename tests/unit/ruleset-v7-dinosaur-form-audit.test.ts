@@ -668,7 +668,11 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // unit a Crashed unit steps away from is a land-form unit (an Egg and
     // an embarked unit never attack); the Candy Move rules take a land-form
     // mover.
-    "src/ai/v7-candy.ts": 4,
+    // The Candy army seat (`pulp_wars-jdb.13`): the hostile unit a Racer's
+    // wave heads for, the own slow unit that follows its Glaze, and the
+    // hostile shooters over a Jawbreaker's tile are land-form units (an Egg
+    // neither moves nor shoots, and a boat is no part of a land wave).
+    "src/ai/v7-candy.ts": 7,
     // `pulp_wars-ykw.7`: the capturer that stays ashore because it can walk
     // to an endgame target is a land-form unit (an Egg never boards, and an
     // embarked unit is already afloat).

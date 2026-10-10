@@ -263,14 +263,17 @@ describe("step two of the Ice Folk pass: who plays the army rules", () => {
       "ICE_FOLK",
       // Step two of the Dwarf pass (`pulp_wars-w49.28`).
       "DWARF",
+      // The Candy army seat (`pulp_wars-jdb.13`).
+      "CANDY",
     ]);
     expect(armyPlayFactionV7("ICE_FOLK")).toBe(true);
-    expect(armyPlayFactionV7("CANDY")).toBe(false);
+    // (An army faction too since the Candy army seat, `pulp_wars-jdb.13`.)
+    expect(armyPlayFactionV7("CANDY")).toBe(true);
   });
 
   // Step two of the Dwarf pass (`pulp_wars-w49.28`): on against a Dwarf
   // seat too; only a Candy seat is outside the army rules.
-  it("is on against each of the other six, and off with a Candy seat", () => {
+  it("is on against each of the other seven", () => {
     for (const opponent of [
       "ORIGINAL",
       "UNDEAD",
@@ -284,9 +287,11 @@ describe("step two of the Ice Folk pass: who plays the army rules", () => {
         inspectNormalArmyV7(viewOf(field(pieces, { opponent }))).army,
         opponent,
       ).toBe(true);
+    // (And with a Candy seat since the Candy army seat, `pulp_wars-jdb.13`:
+    // it was off, for both seats.)
     expect(
       inspectNormalArmyV7(viewOf(field(pieces, { opponent: "CANDY" }))).army,
-    ).toBe(false);
+    ).toBe(true);
   });
 });
 

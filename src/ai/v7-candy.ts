@@ -7,7 +7,13 @@ import {
   unitMayActAfterMoveV7,
   unitRoleRuleV7,
 } from "../engine/rules/ruleset-v7";
-import { unitHopsV7 } from "../engine/v7/candy-abilities";
+import {
+  glazeTrailTilesV7,
+  unitGivesToothacheV7,
+  unitHopsV7,
+  unitIsStuckV7,
+  unitLaysGlazeV7,
+} from "../engine/v7/candy-abilities";
 import { unitIsCrashedV7, unitIsRushedV7 } from "../engine/v7/candy";
 import type { CommandV7 } from "../engine/v7/commands";
 import type { CombatPreviewV7 } from "../engine/v7/events";
@@ -72,6 +78,18 @@ export interface CandyPolicyOptionsV7 {
   readonly eatCrumbs: boolean;
   /** Against the Candy: a melee attack that will be bounced loses a step. */
   readonly respectBounce: boolean;
+  /**
+   * The Candy army seat (`pulp_wars-jdb.13`): the redesigned abilities as
+   * the Candy: the Ricochet and the Thump in an attack's score, Sticky
+   * Toffee on a fast unit, the Racer's Glaze before the wave, the
+   * Jawbreaker's place, and the Top-Up that ends a Crash for a kill.
+   */
+  readonly abilities: boolean;
+  /**
+   * The Candy army seat, against the Candy: a melee attack that leaves the
+   * attacker Stuck or with Toothache loses a little.
+   */
+  readonly respectStatuses: boolean;
 }
 
 export const DEFAULT_CANDY_POLICY_OPTIONS_V7: CandyPolicyOptionsV7 =
@@ -86,6 +104,8 @@ export const DEFAULT_CANDY_POLICY_OPTIONS_V7: CandyPolicyOptionsV7 =
     readCrash: true,
     eatCrumbs: true,
     respectBounce: true,
+    abilities: true,
+    respectStatuses: true,
   });
 
 /** Every group off: the ordinary policy of `pulp_wars-jdb.3`. */
@@ -100,6 +120,8 @@ export const NO_CANDY_POLICY_OPTIONS_V7: CandyPolicyOptionsV7 = Object.freeze({
   readCrash: false,
   eatCrumbs: false,
   respectBounce: false,
+  abilities: false,
+  respectStatuses: false,
 });
 
 let candyPolicyOptions: CandyPolicyOptionsV7 = DEFAULT_CANDY_POLICY_OPTIONS_V7;
@@ -147,6 +169,13 @@ export const REBAKE_APPROACH_RADIUS_V7 = 3;
 export const PIE_FIRST_OFFSET_V7 = 3;
 /** A Toss instead of a weak shot goes just before the chips. */
 export const SUGAR_TOSS_PRIORITY_V7 = 905;
+/**
+ * The Candy army seat (`pulp_wars-jdb.13`): the same Toss for a seat that
+ * plays the army rules. A committed unit's shot from two tiles has the
+ * tier 1176 whatever it deals (`ARMY_COMMIT_FIRE_PRIORITY_V7`), so the Toss
+ * instead of a weak shot goes just before it, below every kill (1180).
+ */
+export const SUGAR_TOSS_ARMY_PRIORITY_V7 = 1177;
 /** A Toss of a Gunner with no offered attack (Tend Wounded's tier). */
 export const SUGAR_TOSS_IDLE_PRIORITY_V7 = 650;
 /** A Gunner's shot is weak below this damage (unless it kills). */
@@ -259,6 +288,14 @@ export interface CandyPolicyToolsV7 {
   readonly attackCandidate: (
     command: Extract<CommandV7, { kind: "ATTACK" }>,
   ) => boolean;
+  /**
+   * The Candy army seat (`pulp_wars-jdb.13`): `view` with the given units
+   * in place of their own (the policy's public projection, with their
+   * public stats rebuilt).
+   */
+  readonly withUnits: (units: readonly PublicUnitV7[]) => PlayerViewV7;
+  /** How many visible hostile melee units can attack `at` next turn. */
+  readonly meleeReach: (at: CoordV7) => number;
 }
 
 // --- Sugar Rush ---------------------------------------------------------------
@@ -996,13 +1033,131 @@ export function sugarTossScoreV7(
   };
 }
 
+// --- The Candy army seat: the redesigned abilities (`pulp_wars-jdb.13`) ------
+
+/** A Top-Up that ends the Crash of a unit with a kill: just before the kill. */
+export const TOP_UP_KILL_PRIORITY_V7 = 1181;
+export const TOP_UP_THREAT_KILL_PRIORITY_V7 = 1281;
+/** A Top-Up of the Crashed unit in the most danger: above its step back (935). */
+export const TOP_UP_DANGER_PRIORITY_V7 = 936;
+/** What Sticky Toffee on a unit that moves two tiles or more is worth. */
+export const STICKY_FAST_TARGET_VALUE_V7 = 6;
+/** Against the Candy: what being Stuck, or a Toothache, costs an attack. */
+export const STUCK_ATTACKER_COST_V7 = 2;
+export const TOOTHACHE_ATTACKER_COST_V7 = 2;
 /**
- * The Candy redesign (`pulp_wars-jdb.12`, RULESET_7_CANDY_REDESIGN.md
- * section 13): a basic score for the Confectioner's Top-Up, offered
- * commands only, until the Candy step two (`pulp_wars-jdb.13`): the target
- * whose Top-Up does the most (a Crash ended counts 3, a cure 2, each HP 1),
- * then the lowest HP, then the lowest unit ID, at the idle tier of a heal
- * (a Re-bake and every attack come first).
+ * A Donut Racer's routine Move toward the enemy whose Glaze an own slow
+ * unit can follow goes before the Moves of the wave: lifted by this much
+ * from the tiers `GLAZE_FIRST_FROM_V7` to `GLAZE_FIRST_BELOW_V7` (a route
+ * step 700, an approach 720, a committed advance 760, a stormer 762, a
+ * battery 764), to 766 to 830: below every chip (900) and exchange (950).
+ */
+export const GLAZE_FIRST_OFFSET_V7 = 66;
+export const GLAZE_FIRST_FROM_V7 = 700;
+export const GLAZE_FIRST_BELOW_V7 = 765;
+/** What each tile the Glaze carries a slow unit forward is worth. */
+export const GLAZE_CARRY_VALUE_V7 = 4;
+/** A hostile unit this close makes the Racer's Move part of a wave. */
+export const GLAZE_WAVE_RADIUS_V7 = 9;
+/**
+ * The Jawbreaker's place: what each visible hostile shooter over a tile
+ * costs its Move there once there are `JAWBREAKER_BATTERY_SHOOTERS_V7` of
+ * them (ranged fire is its counter: no Toothache, no strike back), and what
+ * a tile a hostile melee unit must attack is worth (it bites, and its next
+ * attack is 1 weaker).
+ */
+export const JAWBREAKER_BATTERY_SHOOTERS_V7 = 2;
+export const JAWBREAKER_BATTERY_COST_V7 = 8;
+export const JAWBREAKER_FRONT_VALUE_V7 = 4;
+export const JAWBREAKER_FRONT_MAXIMUM_V7 = 2;
+
+/**
+ * The Candy army seat: `view` as it is after a Top-Up of the own unit
+ * `targetUnitId` (RULESET_7_CANDY_REDESIGN.md section 8.2): its `CRASHED`
+ * entry removed, `amount` HP healed, and its Stuck and Toothache entries
+ * gone. Its activation is untouched. The combat preview of the unit on
+ * this view equals the engine's after the real command.
+ */
+export function topUpProjectedViewV7(
+  tools: CandyPolicyToolsV7,
+  target: PublicUnitV7,
+  amount: number,
+): PlayerViewV7 {
+  const healed = tools.withUnits([
+    { ...target, hp: Math.min(target.maxHp, target.hp + amount) },
+  ]);
+  return {
+    ...healed,
+    sugarRush: healed.sugarRush.filter(
+      (entry) => entry.unitId !== target.id || entry.phase !== "CRASHED",
+    ),
+    stuck: healed.stuck.filter((entry) => entry.unitId !== target.id),
+    toothache: healed.toothache.filter((entry) => entry.unitId !== target.id),
+  };
+}
+
+/**
+ * The kill a Crashed own unit has from where it stands once it is Topped
+ * Up: its plain attack, or its Rushed one when the unit has not moved (a
+ * unit Topped Up before it moved may Rush again) and does not end in
+ * visible lethal reach unless the kill is a key role. The dearest target.
+ */
+function toppedUpKillV7(
+  tools: CandyPolicyToolsV7,
+  target: PublicUnitV7,
+  amount: number,
+): PublicUnitV7 | null {
+  if (
+    target.activation.attacked ||
+    target.activation.handled ||
+    (target.activation.moved && !unitMayActAfterMoveV7(tools.view, target))
+  )
+    return null;
+  const rule = unitRoleRuleV7(tools.view, target);
+  if (!rule.abilities.includes("ATTACK")) return null;
+  const after = topUpProjectedViewV7(tools, target, amount);
+  const unit = after.units.find((candidate) => candidate.id === target.id);
+  if (unit === undefined) return null;
+  const projected: CandyPolicyToolsV7 = { ...tools, view: after };
+  let best: PublicUnitV7 | null = null;
+  for (const hostile of tools.hostiles) {
+    const range = chebyshev(unit.at, hostile.at);
+    if (range < rule.minimumRange || range > rule.range) continue;
+    const plain = attackOptionV7(projected, unit, unit.at, hostile, false);
+    const kills = (option: AttackOptionV7 | null): option is AttackOptionV7 =>
+      option !== null &&
+      option.preview.defenderDies &&
+      !option.preview.attackerDies;
+    let found = kills(plain);
+    if (!found && !unit.activation.moved) {
+      const rushed = attackOptionV7(projected, unit, unit.at, hostile, true);
+      found = kills(rushed) && rushKillAcceptableV7(tools, unit, rushed);
+    }
+    if (
+      found &&
+      (best === null ||
+        tools.targetValue(hostile) > tools.targetValue(best) ||
+        (tools.targetValue(hostile) === tools.targetValue(best) &&
+          hostile.id < best.id))
+    )
+      best = hostile;
+  }
+  return best;
+}
+
+/**
+ * The Candy army seat (`pulp_wars-jdb.13`, RULESET_7_CANDY_REDESIGN.md
+ * section 13, "Top-Up"): the one Top-Up a Confectioner asks for.
+ *
+ * 1. Never instead of a Re-bake it would make (`rebakeScoreV7`).
+ * 2. A Crashed unit with a kill from where it stands once the Crash is
+ *    over (`toppedUpKillV7`), the dearest kill first, just before that
+ *    kill's tier.
+ * 3. Else the Crashed unit in the most visible danger, above a Crashed
+ *    unit's step back: it may then strike back, Rush, or act.
+ * 4. Else, as before the army seat, the target whose Top-Up does the most
+ *    (a Crash ended counts 3, a cure 2, each HP 1), then the lowest HP,
+ *    then the lowest unit ID, at the idle tier of a heal.
  */
 export function topUpScoreV7(
   tools: CandyPolicyToolsV7,
@@ -1016,8 +1171,70 @@ export function topUpScoreV7(
   const view = tools.view;
   const preview = previewTopUpV7(view, command.unitId);
   if (preview === null) return none;
+  const abilities = candyPolicyOptionsV7().abilities;
+  if (
+    abilities &&
+    tools.commands.some(
+      (offered) =>
+        offered.kind === "REBAKE" &&
+        offered.unitId === command.unitId &&
+        rebakeScoreV7(tools, offered).priority >= 0,
+    )
+  )
+    return none;
   const worth = (target: (typeof preview.targets)[number]): number =>
     (target.crashEnded ? 3 : 0) + (target.cured ? 2 : 0) + target.amount;
+  if (abilities) {
+    type Plan = {
+      readonly unitId: UnitId;
+      readonly priority: number;
+      readonly strategic: number;
+      readonly worth: number;
+    };
+    let plan: Plan | null = null;
+    const better = (next: Plan): boolean =>
+      plan === null ||
+      next.priority > plan.priority ||
+      (next.priority === plan.priority &&
+        (next.strategic > plan.strategic ||
+          (next.strategic === plan.strategic && next.unitId < plan.unitId)));
+    for (const entry of preview.targets) {
+      if (!entry.crashEnded) continue;
+      const unit = view.units.find((item) => item.id === entry.unitId);
+      if (unit === undefined) continue;
+      const kill = toppedUpKillV7(tools, unit, entry.amount);
+      const danger = tools.danger(unit, unit.at);
+      const next: Plan | null =
+        kill !== null
+          ? {
+              unitId: unit.id,
+              priority: tools.threatens(kill.id)
+                ? TOP_UP_THREAT_KILL_PRIORITY_V7
+                : TOP_UP_KILL_PRIORITY_V7,
+              strategic: tools.targetValue(kill),
+              worth: worth(entry),
+            }
+          : danger > 0
+            ? {
+                unitId: unit.id,
+                priority: TOP_UP_DANGER_PRIORITY_V7,
+                strategic: danger,
+                worth: worth(entry),
+              }
+            : null;
+      if (next !== null && better(next)) plan = next;
+    }
+    if (plan !== null) {
+      const chosen: Plan = plan;
+      return chosen.unitId === command.targetUnitId
+        ? {
+            priority: chosen.priority,
+            strategic: chosen.strategic,
+            immediate: chosen.worth * 8,
+          }
+        : none;
+    }
+  }
   const best = [...preview.targets].sort(
     (left, right) =>
       worth(right) - worth(left) ||
@@ -1030,6 +1247,218 @@ export function topUpScoreV7(
     strategic: 0,
     immediate: worth(best) * 8,
   };
+}
+
+/**
+ * The Candy army seat (section 13, "Gunners pick shots whose ricochet
+ * kills"; "counts Thump kills in its score"): the units an attack's
+ * Ricochet or Thump kills, from its exact preview. Their value is added to
+ * the attack's, and such an attack has a kill's tier.
+ */
+export function candySideKillsV7(preview: CombatPreviewV7): readonly UnitId[] {
+  return [
+    ...(preview.ricochet?.dies === true ? [preview.ricochet.unitId] : []),
+    ...preview.thump.filter((hit) => hit.dies).map((hit) => hit.unitId),
+  ];
+}
+
+/**
+ * The Candy army seat (section 13, "Troopers screen against visible
+ * Raider-role and Knight-role units: Stuck units are free kills next
+ * turn"): what an own attack whose preview leaves its target Stuck is
+ * worth more: `STICKY_FAST_TARGET_VALUE_V7` for a surviving target that
+ * moves two tiles or more and is not Stuck already (it walks one tile next
+ * turn: no Charge, no ride round the line, no way out), 0 otherwise. A
+ * Trooper that dies in the exchange still leaves its target Stuck, and
+ * gets nothing for it: a unit is not fed to an enemy for a status.
+ */
+export function stickyTargetValueV7(
+  view: PlayerViewV7,
+  target: PublicUnitV7,
+  preview: CombatPreviewV7,
+  targetMove: number,
+): number {
+  return (preview.stuckApplied === "TARGET" ||
+    preview.stuckApplied === "BOTH") &&
+    !preview.defenderDies &&
+    !preview.attackerDies &&
+    targetMove >= 2 &&
+    !unitIsStuckV7(view, target.id)
+    ? STICKY_FAST_TARGET_VALUE_V7
+    : 0;
+}
+
+/**
+ * The Candy army seat, against the Candy (section 13): what the statuses a
+ * melee attack leaves on its own attacker cost it: Stuck for a unit that
+ * moves two tiles or more, and Toothache for any attacker that survives.
+ */
+export function statusAttackCostV7(
+  preview: CombatPreviewV7,
+  attackerMove: number,
+): number {
+  if (preview.attackerDies) return 0;
+  return (
+    ((preview.stuckApplied === "ATTACKER" || preview.stuckApplied === "BOTH") &&
+    attackerMove >= 2
+      ? STUCK_ATTACKER_COST_V7
+      : 0) + (preview.toothacheApplied ? TOOTHACHE_ATTACKER_COST_V7 : 0)
+  );
+}
+
+/**
+ * The tiles a Move of the own unit along `path` Glazes (section 7.2): its
+ * start tile and every tile the path passes but the last, on land; empty
+ * for a unit that lays no Glaze. Equal to the `TILES_GLAZED` event of the
+ * Move when it is not interrupted.
+ */
+export function glazeTilesForPolicyV7(
+  view: PlayerViewV7,
+  unit: PublicUnitV7,
+  path: readonly CoordV7[],
+): readonly CoordV7[] {
+  if (!unitLaysGlazeV7(view, unit)) return [];
+  return glazeTrailTilesV7(unit.at, path, (at) => {
+    const tile = view.board.tiles.find((item) => same(item.at, at));
+    return tile?.explored === true && tile.biome !== null;
+  });
+}
+
+/**
+ * The Candy army seat (section 13, "Order the wave: the Racer moves first
+ * (its Glaze), then the slow units along it"): how many tiles the Glaze of
+ * a Racer's Move along `path` carries the own slow units forward, beyond
+ * what their own Move does.
+ *
+ * The Move must end nearer to the nearest visible hostile land unit within
+ * `GLAZE_WAVE_RADIUS_V7` than it starts. A follower is an own land unit of
+ * Move 1 that has not moved, beside a tile the Move Glazes. It steps onto
+ * that tile and on along the Glaze in the Racer's order, one half-point a
+ * tile (two tiles for its Move of 1), and stops before a tile a unit
+ * stands on. What it gains is the tiles it ends nearer to that hostile
+ * unit than its one ordinary step would bring it. (A Move of one tile
+ * Glazes its start alone and carries nobody: the second step is off the
+ * Glaze.)
+ */
+export function glazeCarriedTilesV7(
+  tools: CandyPolicyToolsV7,
+  unit: PublicUnitV7,
+  path: readonly CoordV7[],
+): number {
+  const view = tools.view;
+  const to = path.at(-1);
+  if (to === undefined || unit.ownerId !== view.viewer.id) return 0;
+  const glazed = new Set(
+    glazeTilesForPolicyV7(view, unit, path).map(
+      (tile) => `${tile.x},${tile.y}`,
+    ),
+  );
+  if (glazed.size < 2) return 0;
+  let target: PublicUnitV7 | null = null;
+  for (const hostile of tools.hostiles) {
+    if (hostile.form !== "LAND") continue;
+    if (
+      target === null ||
+      chebyshev(hostile.at, unit.at) < chebyshev(target.at, unit.at) ||
+      (chebyshev(hostile.at, unit.at) === chebyshev(target.at, unit.at) &&
+        hostile.id < target.id)
+    )
+      target = hostile;
+  }
+  if (
+    target === null ||
+    chebyshev(target.at, unit.at) > GLAZE_WAVE_RADIUS_V7 ||
+    chebyshev(target.at, to) >= chebyshev(target.at, unit.at)
+  )
+    return 0;
+  const goal = target.at;
+  // The Glaze in the Racer's order: its start, then each tile it passes.
+  const chain = [unit.at, ...path.slice(0, -1)].filter((tile) =>
+    glazed.has(`${tile.x},${tile.y}`),
+  );
+  const occupied = (tile: CoordV7): boolean =>
+    view.units.some((other) => other.id !== unit.id && same(other.at, tile));
+  let carried = 0;
+  for (const follower of view.units) {
+    if (
+      follower.id === unit.id ||
+      follower.ownerId !== view.viewer.id ||
+      follower.form !== "LAND" ||
+      follower.activation.moved ||
+      follower.activation.handled
+    )
+      continue;
+    const move = unitRoleRuleV7(view, follower).move;
+    if (move !== 1) continue;
+    let best = 0;
+    for (let first = 0; first < chain.length; first += 1) {
+      const entry = chain[first];
+      if (entry === undefined || chebyshev(follower.at, entry) !== 1) continue;
+      let end: CoordV7 | null = null;
+      let previous = follower.at;
+      for (
+        let index = first;
+        index < chain.length && index < first + 2 * move;
+        index += 1
+      ) {
+        const tile = chain[index];
+        if (
+          tile === undefined ||
+          chebyshev(previous, tile) !== 1 ||
+          occupied(tile)
+        )
+          break;
+        end = tile;
+        previous = tile;
+      }
+      if (end === null) continue;
+      best = Math.max(
+        best,
+        chebyshev(follower.at, goal) - chebyshev(end, goal) - move,
+      );
+    }
+    carried += best;
+  }
+  return carried;
+}
+
+/**
+ * The Candy army seat (section 13, "the Jawbreaker stands in the front row
+ * facing melee, never a ranged battery"): what a routine Move of an own
+ * unit that gives Toothache to `to` gains or loses. A tile under
+ * `JAWBREAKER_BATTERY_SHOOTERS_V7` or more visible hostile units that shoot
+ * from two tiles or more (from where they stand) costs
+ * `JAWBREAKER_BATTERY_COST_V7` for each, unless it stands under as many
+ * already; any other tile a visible hostile melee unit can attack next turn
+ * is worth `JAWBREAKER_FRONT_VALUE_V7` for each such unit, at most
+ * `JAWBREAKER_FRONT_MAXIMUM_V7`. 0 for every other unit.
+ */
+export function jawbreakerPlaceValueV7(
+  tools: CandyPolicyToolsV7,
+  unit: PublicUnitV7,
+  to: CoordV7,
+): number {
+  const view = tools.view;
+  if (!unitGivesToothacheV7(view, unit)) return 0;
+  const shooters = (at: CoordV7): number =>
+    tools.hostiles.filter((hostile) => {
+      if (hostile.form !== "LAND") return false;
+      const rule = unitRoleRuleV7(view, hostile);
+      const range = chebyshev(hostile.at, at);
+      return (
+        rule.abilities.includes("ATTACK") &&
+        rule.range >= 2 &&
+        range >= Math.max(2, rule.minimumRange) &&
+        range <= rule.range
+      );
+    }).length;
+  const there = shooters(to);
+  if (there >= JAWBREAKER_BATTERY_SHOOTERS_V7)
+    return there > shooters(unit.at) ? -JAWBREAKER_BATTERY_COST_V7 * there : 0;
+  return (
+    JAWBREAKER_FRONT_VALUE_V7 *
+    Math.min(JAWBREAKER_FRONT_MAXIMUM_V7, tools.meleeReach(to))
+  );
 }
 
 // --- Production ---------------------------------------------------------------

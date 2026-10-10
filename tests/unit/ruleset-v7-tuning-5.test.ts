@@ -604,6 +604,8 @@ describe("Normal AI army play: who plays it", () => {
       "ICE_FOLK",
       // Step two of the Dwarf pass (`pulp_wars-w49.28`).
       "DWARF",
+      // The Candy army seat (`pulp_wars-jdb.13`).
+      "CANDY",
     ]);
   });
 });
@@ -754,9 +756,14 @@ describe("Normal AI army play: units before research and buildings", () => {
         // like the others.
         // Step two of the Ice Folk pass (`pulp_wars-w49.27`): the Sled is
         // first in an Ice Folk seat's order (Scouting).
+        // The Candy army seat (`pulp_wars-jdb.13`): and the Donut Racer in
+        // a Candy seat's.
       ).toEqual({
         kind: "RESEARCH",
-        tech: faction === "ICE_FOLK" ? "SCOUTING" : "MARKSMANSHIP",
+        tech:
+          faction === "ICE_FOLK" || faction === "CANDY"
+            ? "SCOUTING"
+            : "MARKSMANSHIP",
       });
     }
   });

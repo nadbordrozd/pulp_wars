@@ -18,6 +18,13 @@ import {
 } from "../fixtures/v7-dinosaur-ai";
 import type { GoblinPieceV7 } from "../fixtures/v7-goblin-arena";
 import { iceFieldV7 } from "../fixtures/v7-ice-folk";
+import { candySeatKeepsOlderPolicyV7 } from "../fixtures/v7-older-policy";
+
+// The Candy army seat (`pulp_wars-jdb.13`): this file pins the older
+// policy on matches with a Candy seat, as it was written. No match
+// reaches that policy through its factions any more, so the file takes
+// the Candy out of the army factions (tests/fixtures/v7-older-policy.ts).
+candySeatKeepsOlderPolicyV7();
 
 // The Normal AI second pass (`pulp_wars-9s0.8`,
 // docs/architecture/NORMAL_AI.md, "Second pass"). Two-seat 11 x 11 field:

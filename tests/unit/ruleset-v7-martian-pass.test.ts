@@ -1012,9 +1012,12 @@ describe("the Martian pass: Martian seats play the army rules", () => {
       "ICE_FOLK",
       // Step two of the Dwarf pass (`pulp_wars-w49.28`).
       "DWARF",
+      // The Candy army seat (`pulp_wars-jdb.13`).
+      "CANDY",
     ]);
     expect(armyPlayFactionV7("MARTIAN")).toBe(true);
-    expect(armyPlayFactionV7("CANDY")).toBe(false);
+    // (An army faction too since the Candy army seat, `pulp_wars-jdb.13`.)
+    expect(armyPlayFactionV7("CANDY")).toBe(true);
     // Shield Projector, Ray Gunner, Brain (third since step two of the
     // Martian pass, `pulp_wars-w49.25`; it was fifth), Shock Trooper (the
     // ninth unit, 7r55), Tripod, Saucer, Mothership.
@@ -1077,7 +1080,7 @@ describe("the Martian pass: Martian seats play the army rules", () => {
     ]).toEqual([6, 2, 1, 2]);
   });
 
-  it("is on in a match of Humans, Goblins, Undead, and Martians, and off with another faction", () => {
+  it("is on in a match of Humans, Goblins, Undead, and Martians, and with every other faction since", () => {
     const pieces = [own("FIGHTER", 8, 7), foe("FIGHTER", 2, 7)];
     for (const opponent of ["ORIGINAL", "GOBLIN", "UNDEAD"] as const) {
       expect(
@@ -1102,9 +1105,11 @@ describe("the Martian pass: Martian seats play the army rules", () => {
         inspectNormalArmyV7(viewOf(asMartian(pieces, {}, opponent))).army,
         opponent,
       ).toBe(true);
+    // (And with a Candy seat since the Candy army seat, `pulp_wars-jdb.13`:
+    // it was off, for both seats.)
     expect(
       inspectNormalArmyV7(viewOf(asMartian(pieces, {}, "CANDY"))).army,
-    ).toBe(false);
+    ).toBe(true);
   });
 
   /** The research target of a Martian seat with these technologies. */

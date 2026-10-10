@@ -6533,6 +6533,29 @@ Harbours from it.
   for the tunnels, the bombs, Assemble, Repair, the Gunner's two shots, Dig
   In, and Knockback apply under both
   ([Normal AI](../architecture/NORMAL_AI.md#step-two-of-the-dwarf-pass-pulp_wars-w4928)).
+- **The Candy army seat** (`pulp_wars-jdb.13`, `7r70`, no rule and no
+  identity change; made without matches or hand play, so its numbers are
+  first values). A Candy seat plays the army rules, and so does every other
+  seat of its match: no match of the eight factions keeps the older policy.
+  Its order of units is the Donut Racer, the Gumball Gunner, the
+  Marshmallow (with Home Sweet Home), the Confectioner, the Pie Launcher,
+  the Jawbreaker, the Chocolate Bunny. It fields two fifths line units
+  (Toffee Troopers, and one Jawbreaker for every two of them), 15%
+  Marshmallows (no more than its cities, nor a third of the army), a
+  quarter Gunners, a tenth Pie Launchers, a tenth Bunnies (a fifth against
+  two or more hostile ranged, siege, or support units), and one Donut Racer
+  for four units (two at most). Like the other army seats it trains before
+  it researches while short of units, and the garrison of a threatened city
+  yields to a Gunner. It picks the shot whose Ricochet kills and counts a
+  Thump's kills, hops a Bunny over a screen to the unit behind it, values
+  Sticky Toffee on a fast unit and reads a Stuck unit's reach as one step,
+  moves a Racer before the slow units its Glaze carries, keeps the
+  Jawbreaker out of a ranged battery and in front of the melee, Tops Up the
+  Crashed unit that then kills (else the one in the most danger), and bakes
+  before anything else. Every seat of a match with a Candy seat takes a
+  little off a melee attack that leaves its attacker Stuck or with
+  Toothache
+  ([Normal AI](../architecture/NORMAL_AI.md#the-candy-army-seat-pulp_wars-jdb13)).
 - **Campaign** (`pulp_wars-9s0.1`): every land unit has one job and walks
   the land route to it: the nearest unclaimed village, an invader next to an
   own city, the unexplored frontier (two scouts and the group behind the

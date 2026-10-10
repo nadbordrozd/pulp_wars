@@ -40,6 +40,13 @@ import {
 import { dwarfFieldV7, withBurrowedV7 } from "../fixtures/v7-dwarf";
 import { type IcePieceV7 } from "../fixtures/v7-ice-folk";
 import { fieldV7 } from "../fixtures/v7-revision20";
+import { candySeatKeepsOlderPolicyV7 } from "../fixtures/v7-older-policy";
+
+// The Candy army seat (`pulp_wars-jdb.13`): this file pins the older
+// policy on matches with a Candy seat, as it was written. No match
+// reaches that policy through its factions any more, so the file takes
+// the Candy out of the army factions (tests/fixtures/v7-older-policy.ts).
+candySeatKeepsOlderPolicyV7();
 
 // The Steampunk Dwarf Normal AI (`pulp_wars-78i.4`,
 // docs/product/RULESET_7_DWARVES.md sections 15 and 18). The field: an

@@ -172,7 +172,7 @@ describe("step two of the Dwarf pass: no rule changed", () => {
 describe("step two of the Dwarf pass: who plays the army rules", () => {
   const pieces = [own("FIGHTER", 8, 8), foe("FIGHTER", 2, 8)];
 
-  it("counts a Dwarf seat among the army factions; only a Candy seat is outside", () => {
+  it("counts a Dwarf seat among the army factions", () => {
     expect(ARMY_PLAY_FACTIONS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",
@@ -181,12 +181,15 @@ describe("step two of the Dwarf pass: who plays the army rules", () => {
       "DINOSAUR",
       "ICE_FOLK",
       "DWARF",
+      // The Candy army seat (`pulp_wars-jdb.13`).
+      "CANDY",
     ]);
     expect(armyPlayFactionV7("DWARF")).toBe(true);
-    expect(armyPlayFactionV7("CANDY")).toBe(false);
+    // (An army faction too since the Candy army seat, `pulp_wars-jdb.13`.)
+    expect(armyPlayFactionV7("CANDY")).toBe(true);
   });
 
-  it("is on against each of the other six and a Dwarf mirror, and off with a Candy seat", () => {
+  it("is on against each of the other seven", () => {
     for (const opponent of [
       "ORIGINAL",
       "UNDEAD",
@@ -199,9 +202,11 @@ describe("step two of the Dwarf pass: who plays the army rules", () => {
         inspectNormalArmyV7(viewOf(field(pieces, { opponent }))).army,
         opponent,
       ).toBe(true);
+    // (And with a Candy seat since the Candy army seat, `pulp_wars-jdb.13`:
+    // it was off, for both seats.)
     expect(
       inspectNormalArmyV7(viewOf(field(pieces, { opponent: "CANDY" }))).army,
-    ).toBe(false);
+    ).toBe(true);
   });
 });
 
@@ -374,7 +379,10 @@ describe("step two of the Dwarf pass: the Dwarf Normal AI's army", () => {
     const army = counts({ LINE: 3, DEFENDER: 1 });
     expect(armyGarrisonYieldsToRangedV7("DWARF", army, true)).toBe(true);
     expect(armyGarrisonYieldsToRangedV7("DWARF", army, false)).toBe(false);
-    expect(armyGarrisonYieldsToRangedV7("CANDY", army, true)).toBe(false);
+    // (A Candy seat's does too since the Candy army seat, `pulp_wars-jdb.13`;
+    // a Martian seat's does not.)
+    expect(armyGarrisonYieldsToRangedV7("CANDY", army, true)).toBe(true);
+    expect(armyGarrisonYieldsToRangedV7("MARTIAN", army, true)).toBe(false);
   });
 
   // The reward ladder rework (`pulp_wars-zypi`): level 2 offers the

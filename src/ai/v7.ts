@@ -51,6 +51,12 @@ import {
   cityBarracksV7,
   CITY_REWARD_COINS_V7,
 } from "../engine/rules/ruleset-v7";
+import {
+  attack2AfterToothacheV7,
+  unitHasToothacheV7,
+  unitIsStuckV7,
+  unitSticksV7,
+} from "../engine/v7/candy-abilities";
 import type { CommandV7 } from "../engine/v7/commands";
 import { knockbackDestinationV7 } from "../engine/v7/dwarf";
 import { crackedDefense2V7, unitIsCrackedV7 } from "../engine/v7/ninth-unit";
@@ -248,6 +254,9 @@ import {
   ARMY_ICE_FOLK_DEFENDER_CAP_COST_V7,
   ARMY_ICE_FOLK_STURDY_V7,
   ARMY_DWARF_STURDY_V7,
+  ARMY_CANDY_STURDY_V7,
+  armyCandyDefenderCappedV7,
+  armyCandyHeavyCappedV7,
   armyPlayFactionV7,
   armyResearchDueV7,
   armyGarrisonYieldsToRangedV7,
@@ -537,21 +546,33 @@ import {
   CANDY_ROUTINE_MOVE_PRIORITY_V7,
   CRASHED_TARGET_VALUE_V7,
   CRUMBS_EAT_OBJECTIVE_V7,
+  GLAZE_CARRY_VALUE_V7,
+  GLAZE_FIRST_BELOW_V7,
+  GLAZE_FIRST_FROM_V7,
+  GLAZE_FIRST_OFFSET_V7,
   HOME_SWEET_HOME_THREAT_RADIUS_V7,
   PIE_FIRST_OFFSET_V7,
+  RUSH_MOVE_PRIORITY_V7,
+  SUGAR_TOSS_ARMY_PRIORITY_V7,
+  SUGAR_TOSS_PRIORITY_V7,
   candyArmyCountsV7,
   candyMatchForPolicyV7,
   candyPolicyOptionsV7,
   candyProductionAdjustmentV7,
   candyResearchV7,
+  candySideKillsV7,
   crashedForPolicyV7,
   crashedMoveValueV7,
   eatsCrumbsWorthV7,
+  glazeCarriedTilesV7,
+  jawbreakerPlaceValueV7,
   planSugarRushV7,
   rebakeApproachValueV7,
   rebakeScoreV7,
   rushedMovePlanV7,
   splatSavedHpV7,
+  statusAttackCostV7,
+  stickyTargetValueV7,
   sugarTossScoreV7,
   topUpScoreV7,
   type CandyPolicyToolsV7,
@@ -4252,7 +4273,11 @@ function armyBodiesSeatV7(context: PolicyContextV7): boolean {
     // docs/product/RULESET_7_TUNING_DWARF.md section 5): and a Dwarf seat.
     // Its Hammerers walk one tile a turn and take every village; its Steam
     // Mole is a technology away (Dig In).
-    armyDwarfSeatV7(context)
+    armyDwarfSeatV7(context) ||
+    // The Candy army seat (`pulp_wars-jdb.13`): and a Candy seat. Its
+    // Toffee Troopers walk one tile a turn and take every village, and its
+    // Marshmallow is two technologies away (the root, then Home Sweet Home).
+    armyCandySeatV7(context)
   );
 }
 
@@ -4269,6 +4294,11 @@ function armyIceFolkSeatV7(context: PolicyContextV7): boolean {
 /** A Dwarf seat of the army play (`pulp_wars-w49.28`). */
 function armyDwarfSeatV7(context: PolicyContextV7): boolean {
   return context.army && context.view.viewer.faction === "DWARF";
+}
+
+/** A Candy seat of the army play (`pulp_wars-jdb.13`). */
+function armyCandySeatV7(context: PolicyContextV7): boolean {
+  return context.army && context.view.viewer.faction === "CANDY";
 }
 
 // ---------------------------------------------------------------------------
@@ -4460,13 +4490,15 @@ function armyOpeningSeatV7(context: PolicyContextV7): boolean {
   // The Dinosaur pass (`pulp_wars-w49.15`): and a Dinosaur seat.
   // Step two of the Ice Folk pass (`pulp_wars-w49.27`): and an Ice Folk seat.
   // Step two of the Dwarf pass (`pulp_wars-w49.28`): and a Dwarf seat.
+  // The Candy army seat (`pulp_wars-jdb.13`): and a Candy seat.
   return (
     context.army &&
     (faction === "UNDEAD" ||
       faction === "MARTIAN" ||
       faction === "DINOSAUR" ||
       faction === "ICE_FOLK" ||
-      faction === "DWARF")
+      faction === "DWARF" ||
+      faction === "CANDY")
   );
 }
 
@@ -4498,13 +4530,15 @@ function armyCorrectionSeatV7(context: PolicyContextV7): boolean {
   // latest rules too.
   // Step two of the Ice Folk pass (`pulp_wars-w49.27`): and an Ice Folk seat.
   // Step two of the Dwarf pass (`pulp_wars-w49.28`): and a Dwarf seat.
+  // The Candy army seat (`pulp_wars-jdb.13`): and a Candy seat.
   return (
     context.army &&
     (faction === "ORIGINAL" ||
       faction === "MARTIAN" ||
       faction === "DINOSAUR" ||
       faction === "ICE_FOLK" ||
-      faction === "DWARF")
+      faction === "DWARF" ||
+      faction === "CANDY")
   );
 }
 
@@ -5868,10 +5902,25 @@ function armyDinosaurContactHeldV7(
   // seat's Yeti, Sled, Mammoth, or Witch too (a Sabretooth has its own
   // rule). On the older policy two Yetis of a hand-played game walked up
   // alone to three Human units in rounds 9 and 10, struck once, and died.
-  if (!armyDinosaurSeatV7(context) && !armyIceFolkSeatV7(context)) return false;
+  // The Candy army seat (`pulp_wars-jdb.13`): a Candy seat's Toffee Trooper,
+  // Donut Racer, Jawbreaker, Chocolate Bunny, or Confectioner too. The Move
+  // of a Rushed unit's kill plan is exempt (the unit Rushed for it).
+  const candy = armyCandySeatV7(context);
+  if (!armyDinosaurSeatV7(context) && !armyIceFolkSeatV7(context) && !candy)
+    return false;
   const view = context.view;
   const actor = context.lookup.unitsById.get(command.unitId);
   const to = command.path.at(-1);
+  if (
+    candy &&
+    actor !== undefined &&
+    to !== undefined &&
+    crashedForPolicyV7(view, actor.id) === false &&
+    view.sugarRush.some((entry) => entry.unitId === actor.id)
+  ) {
+    const rushed = rushedMovePlanV7(candyCacheV7(context).tools, actor);
+    if (rushed !== null && same(rushed.to, to)) return false;
+  }
   if (
     actor === undefined ||
     to === undefined ||
@@ -6012,7 +6061,12 @@ function armyIceFolkShooterHeldV7(
   command: Extract<CommandV7, { kind: "MOVE" }>,
 ): boolean {
   const dwarf = armyDwarfSeatV7(context);
-  if (!armyIceFolkSeatV7(context) && !dwarf) return false;
+  // The Candy army seat (`pulp_wars-jdb.13`): a Candy seat's Gumball Gunner
+  // is held the same way (8 HP, Defense 1), and its Confectioner as the Ice
+  // Witch is (out of a chaining unit's reach). The Pie Launcher keeps the
+  // siege rules (it does not shoot after a Move).
+  const candy = armyCandySeatV7(context);
+  if (!armyIceFolkSeatV7(context) && !dwarf && !candy) return false;
   const view = context.view;
   const actor = context.lookup.unitsById.get(command.unitId);
   const to = command.path.at(-1);
@@ -6026,8 +6080,15 @@ function armyIceFolkShooterHeldV7(
   const rule = unitRoleRuleV7(view, actor);
   const shooter = dwarf
     ? rule.abilities.includes("TWIN_SHOT")
-    : rule.range >= 2;
-  if (!shooter && !rule.abilities.includes(dwarf ? "ASSEMBLE" : "COLD_SNAP"))
+    : candy
+      ? rule.abilities.includes("RICOCHET")
+      : rule.range >= 2;
+  if (
+    !shooter &&
+    !rule.abilities.includes(
+      dwarf ? "ASSEMBLE" : candy ? "REBAKE" : "COLD_SNAP",
+    )
+  )
     return false;
   if (
     context.lookup.citiesByKey.has(coordKey(to)) ||
@@ -7584,11 +7645,21 @@ function armyWeakLinkV7(context: PolicyContextV7, unit: PublicUnitV7): boolean {
   // the Steam Mole, the Steam Tank, and the Brass Titan. (In the lab one
   // Knight killed a Hammerer, two Steam Cannons, the Engineer, and a
   // Clockwork Gunner in one ride, and was promoted.)
-  return (
+  if (
     context.dwarf &&
     unit.form === "LAND" &&
     policyUnitFactionV7(context.view, unit) === "DWARF" &&
     unit.maxHp < ARMY_DWARF_STURDY_V7
+  )
+    return true;
+  // The Candy army seat (`pulp_wars-jdb.13`): a Candy unit a Knight's hit
+  // kills at full HP (`ARMY_CANDY_STURDY_V7`): every one but the
+  // Marshmallow, the Jawbreaker, and the Gingerbread Giant.
+  return (
+    context.candy &&
+    unit.form === "LAND" &&
+    policyUnitFactionV7(context.view, unit) === "CANDY" &&
+    unit.maxHp < ARMY_CANDY_STURDY_V7
   );
 }
 
@@ -7700,7 +7771,29 @@ function armyEscortValueV7(
     armyDwarfSeatV7(context) &&
     actor.maxHp >= ARMY_DWARF_STURDY_V7 &&
     actor.role !== "JUGGERNAUT";
-  const sturdyEscort = iceFolk || dwarf;
+  // The Candy army seat (`pulp_wars-jdb.13`): a Candy seat's Marshmallow
+  // (a Knight that strikes it is bounced back) and its Jawbreaker (the
+  // Knight's next attack is 1 weaker: Toothache) stand beside the units a
+  // Knight kills in one attack (every other Candy unit) and end the ride.
+  const candy =
+    armyCandySeatV7(context) &&
+    actor.maxHp >= ARMY_CANDY_STURDY_V7 &&
+    actor.role !== "JUGGERNAUT";
+  // And its Toffee Trooper (Sticky Toffee) beside its ranged, siege, and
+  // support units while a visible hostile unit that moves two tiles or more
+  // is within `ARMY_APPROACH_RADIUS_V7` of the tile: what strikes the screen
+  // is Stuck.
+  const candyScreen =
+    !candy &&
+    armyCandySeatV7(context) &&
+    candyPolicyOptionsV7().abilities &&
+    unitSticksV7(view, actor) &&
+    armyHostilesV7(context).some(
+      (unit) =>
+        distance(unit.at, to) <= ARMY_APPROACH_RADIUS_V7 &&
+        publicCombatFacts(view, unit, context.lookup).move >= 2,
+    );
+  const sturdyEscort = iceFolk || dwarf || candy || candyScreen;
   if (
     (view.viewer.faction !== "GOBLIN" && !dinosaur && !sturdyEscort) ||
     (!sturdyEscort && armyClassV7(unitRoleRuleV7(view, actor)) !== "DEFENDER")
@@ -7723,7 +7816,8 @@ function armyEscortValueV7(
         unitClass === "SUPPORT" ||
         (dinosaur && unit.maxHp < ARMY_DINOSAUR_STURDY_V7) ||
         (iceFolk && unit.maxHp < ARMY_ICE_FOLK_STURDY_V7) ||
-        (dwarf && unit.maxHp < ARMY_DWARF_STURDY_V7)
+        (dwarf && unit.maxHp < ARMY_DWARF_STURDY_V7) ||
+        (candy && unit.maxHp < ARMY_CANDY_STURDY_V7)
       )
         escorted += 1;
     }
@@ -9709,6 +9803,11 @@ function* publicThreatenedTilesWorkV7(
     mode === "GROUND" &&
     unit.form === "LAND" &&
     unitAvoidsForeignSitesV7(view, unit);
+  // The Candy army seat (`pulp_wars-jdb.13`, RULESET_7_CANDY_REDESIGN.md
+  // section 6.2): a Stuck unit's Move has one step, whatever its Move (the
+  // entry lasts to the end of its owner's next turn). The list is empty in
+  // a match without a Candy seat.
+  const stuck = unitIsStuckV7(view, unit.id);
   const origins = new Map([[coordKey(unit.at), unit.at]]);
   if (
     unit.form !== "EMBARKED" &&
@@ -9818,7 +9917,7 @@ function* publicThreatenedTilesWorkV7(
         if (passedOnly && stops) continue;
         best.set(key, spent2);
         if (!passedOnly) origins.set(key, tile.at);
-        if (!stops) queue.push({ at: tile.at, spent2 });
+        if (!stops && !stuck) queue.push({ at: tile.at, spent2 });
       }
       yield;
     }
@@ -11525,7 +11624,10 @@ function* sharedCityContextWorkV7(
         armyIceFolkSeatV7(context) ||
         // Step two of the Dwarf pass (`pulp_wars-w49.28`): and a Dwarf
         // seat's, to a Clockwork Gunner.
-        armyDwarfSeatV7(context)) &&
+        armyDwarfSeatV7(context) ||
+        // The Candy army seat (`pulp_wars-jdb.13`): and a Candy seat's, to
+        // a Gumball Gunner.
+        armyCandySeatV7(context)) &&
       armyCounts !== null &&
       !armyAtTheGatesV7(context, cityId) &&
       armyGarrisonYieldsToRangedV7(
@@ -11693,6 +11795,27 @@ function* sharedCityContextWorkV7(
                   .length,
               )
                 ? ARMY_ICE_FOLK_DEFENDER_CAP_COST_V7
+                : 0) -
+              // The Candy army seat (`pulp_wars-jdb.13`): no more
+              // Marshmallows than cities, nor than a third of the army
+              // (`armyCandyDefenderCappedV7`), and a Jawbreaker for every
+              // two Toffee Troopers, no more (`armyCandyHeavyCappedV7`).
+              (armyCandySeatV7(context) &&
+              command.role === "GUARD" &&
+              armyCandyDefenderCappedV7(
+                armyCounts,
+                view.cities.filter((item) => item.ownerId === view.viewer.id)
+                  .length,
+              )
+                ? ARMY_ICE_FOLK_DEFENDER_CAP_COST_V7
+                : 0) -
+              (armyCandySeatV7(context) &&
+              command.role === "SWORDSMAN" &&
+              armyCandyHeavyCappedV7(
+                ownedRoleCounts.get("SWORDSMAN") ?? 0,
+                ownedRoleCounts.get("FIGHTER") ?? 0,
+              )
+                ? ARMY_MARTIAN_HEAVY_CAP_COST_V7
                 : 0) +
               // Step two of the Undead pass: the Necromancer for the
               // Graves beside this city (`armyNecromancerDueV7`).
@@ -12299,10 +12422,13 @@ function scoreCommandWithContext(
         strategicValue = plan.strategic;
       }
     }
+    // The Candy army seat (`pulp_wars-jdb.13`): an army seat researches in
+    // the army's order (`ARMY_RESEARCH_ROLES_V7.CANDY`).
     if (
       context.candy &&
       view.viewer.faction === "CANDY" &&
-      candyPolicyOptionsV7().research
+      candyPolicyOptionsV7().research &&
+      !context.army
     ) {
       // The Candy revision (`pulp_wars-jdb.4`): research toward the roles.
       const plan = candyResearchV7(view, candyResearchFactsV7(context));
@@ -12894,7 +13020,13 @@ function scoreCommandWithContext(
 
   if (command.kind === "SUGAR_TOSS" && context.candy) {
     const toss = sugarTossScoreV7(candyCacheV7(context).tools, command);
-    priority = toss.priority;
+    // The Candy army seat (`pulp_wars-jdb.13`): the Toss instead of a weak
+    // shot goes before a committed unit's shot (1176), which would
+    // otherwise be fired first whatever it deals.
+    priority =
+      context.army && toss.priority === SUGAR_TOSS_PRIORITY_V7
+        ? SUGAR_TOSS_ARMY_PRIORITY_V7
+        : toss.priority;
     strategicValue = toss.strategic;
     immediateValue = toss.immediate;
   }
@@ -13415,6 +13547,7 @@ function scoreCommandWithContext(
         resultAt,
         priority,
         objectiveValue,
+        command.path,
       );
       priority = candy.priority;
       strategicValue += candy.strategic;
@@ -21052,6 +21185,15 @@ function candyCacheV7(context: PolicyContextV7): CandyContextCacheV7 {
         );
       },
       attackCandidate: (command) => isPolicyCandidate(context, command),
+      withUnits: (units) =>
+        projectPublicUnits(
+          view,
+          view.units.map(
+            (unit) => units.find((item) => item.id === unit.id) ?? unit,
+          ),
+          units.map((unit) => unit.id),
+        ),
+      meleeReach: (at) => armyMeleeReachV7(context).get(coordKey(at)) ?? 0,
     },
   };
   context.candyCache = cache;
@@ -21140,6 +21282,46 @@ function candyAttackAdjustmentV7(
       strategic += saved;
     }
   }
+  // The Candy army seat (`pulp_wars-jdb.13`, RULESET_7_CANDY_REDESIGN.md
+  // section 13). As the Candy: a shot whose Ricochet kills and a blow whose
+  // Thump kills have a kill's tier and the value of the units they kill
+  // (the hits themselves are in `combatImmediateValue`), and Sticky Toffee
+  // on a unit that moves two tiles or more is worth a little.
+  if (options.abilities && candyUnitPlayV7(context, actor)) {
+    const sideKills = candySideKillsV7(preview);
+    if (sideKills.length > 0) {
+      for (const unitId of sideKills)
+        strategic += targetStrategicValue(view, unitId, context.lookup);
+      if (!preview.attackerDies)
+        next = Math.max(
+          next,
+          sideKills.some((unitId) =>
+            context.threats.some((item) => item.unitId === unitId),
+          )
+            ? 1280
+            : 1180,
+        );
+    }
+    if (isHostile(view, target.ownerId))
+      strategic += stickyTargetValueV7(
+        view,
+        target,
+        preview,
+        publicCombatFacts(view, target, context.lookup).move,
+      );
+  }
+  // Against the Candy (every seat of a match with a Candy seat): a melee
+  // attack that leaves its own attacker Stuck or with Toothache loses a
+  // little.
+  if (
+    options.respectStatuses &&
+    actor.ownerId === view.viewer.id &&
+    (preview.stuckApplied !== "NONE" || preview.toothacheApplied)
+  )
+    strategic -= statusAttackCostV7(
+      preview,
+      publicCombatFacts(view, actor, context.lookup).move,
+    );
   return { priority: next, strategic };
 }
 
@@ -21155,6 +21337,7 @@ function candyMoveValueV7(
   to: CoordV7,
   priority: number,
   objective: number,
+  path: readonly CoordV7[] = [],
 ): {
   readonly priority: number;
   readonly strategic: number;
@@ -21200,6 +21383,21 @@ function candyMoveValueV7(
       next = Math.max(next, approach.priority);
       strategic += approach.strategic;
     }
+  }
+  // The Candy army seat (`pulp_wars-jdb.13`, section 13): the Racer's Glaze
+  // goes before the wave it carries, and the Jawbreaker takes the front row
+  // facing melee, never a ranged battery.
+  if (options.abilities && context.army) {
+    if (next >= GLAZE_FIRST_FROM_V7 && next < GLAZE_FIRST_BELOW_V7) {
+      const carried = glazeCarriedTilesV7(cache.tools, actor, path);
+      if (carried > 0) {
+        next += GLAZE_FIRST_OFFSET_V7;
+        strategic += GLAZE_CARRY_VALUE_V7 * carried;
+      }
+    }
+    // (Every Move below a kill's: where it stands in an assault too.)
+    if (next >= 0 && next < RUSH_MOVE_PRIORITY_V7)
+      strategic += jawbreakerPlaceValueV7(cache.tools, actor, to);
   }
   return { priority: next, strategic, objective: bonus };
 }
@@ -21500,6 +21698,16 @@ function combatImmediateValue(
         friendlySplashUnitV7(view, splash.unitId) === undefined
           ? value + 10 * splash.damage + 20 * Number(splash.dies)
           : value - 12 * splash.damage - 24 * Number(splash.dies),
+      0,
+    ) +
+    // The Candy army seat (`pulp_wars-jdb.13`): a Gumball Gunner's Ricochet
+    // and a Chocolate Bunny's Thump hit hostile units only (null and empty
+    // for every other attacker).
+    (preview.ricochet === null
+      ? 0
+      : 10 * preview.ricochet.damage + 20 * Number(preview.ricochet.dies)) +
+    preview.thump.reduce(
+      (value, hit) => value + 10 * hit.damage + 20 * Number(hit.dies),
       0,
     ) +
     // Revision 13 Lifesteal (always 0 outside Undead matches): a heal offsets
@@ -22614,7 +22822,7 @@ function publicProjectedDamageWithLookupV7(
     attackFacts.attack2 + ice.bonus2;
   // Revision 19: an Alpha's +1 Attack is part of its published Attack; the
   // Pounce estimate adds it to the role's base (0 for every other unit).
-  const attack2 =
+  const unhurtAttack2 =
     (options.maximumCharge &&
     attacker.form === "LAND" &&
     attackFacts.abilities.includes("CHARGE")
@@ -22631,7 +22839,16 @@ function publicProjectedDamageWithLookupV7(
     // The Dinosaur pass, correction (`pulp_wars-w49.15`): a Caveman's Pack
     // Hunt (0 for every other unit).
     packHuntForPolicyV7(view, attacker, defender, defenderAt);
-  if (!Number.isInteger(attack2)) return 0;
+  if (!Number.isInteger(unhurtAttack2)) return 0;
+  // The Candy army seat (`pulp_wars-jdb.13`, RULESET_7_CANDY_REDESIGN.md
+  // section 6.2): the attacker's own Toothache (public on a visible unit)
+  // takes 1 off its next attack, after every other modifier and never below
+  // 0.5; it is not in the published Attack. The list is empty in a match
+  // without a Candy seat.
+  const attack2 = attack2AfterToothacheV7(
+    unhurtAttack2,
+    unitHasToothacheV7(view, attacker.id),
+  );
   // Revision 19 Acid: a Spitter's attack ignores the defender's cover and
   // fortification (only a Dinosaur unit has Acid).
   const acid =

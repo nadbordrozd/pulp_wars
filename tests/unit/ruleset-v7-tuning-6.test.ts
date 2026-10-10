@@ -969,6 +969,18 @@ describe("research toward the army", () => {
         "CATAPULT",
         "KNIGHT",
       ],
+      // The Candy army seat (`pulp_wars-jdb.13`): the Donut Racer, the
+      // Gumball Gunner, the Marshmallow (and Home Sweet Home), the
+      // Confectioner, the Pie Launcher, the Jawbreaker, the Chocolate Bunny.
+      CANDY: [
+        "RAIDER",
+        "MARKSMAN",
+        "GUARD",
+        "CAPTAIN",
+        "CATAPULT",
+        "SWORDSMAN",
+        "KNIGHT",
+      ],
     });
     expect(Object.keys(ARMY_RESEARCH_ROLES_V7)).toEqual([
       ...ARMY_PLAY_FACTIONS_V7,

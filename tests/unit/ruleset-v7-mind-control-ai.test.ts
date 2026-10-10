@@ -32,6 +32,13 @@ import {
   viewerViewV7,
 } from "../fixtures/v7-dinosaur-ai";
 import { martianFieldV7, type MartianPieceV7 } from "../fixtures/v7-martian";
+import { candySeatKeepsOlderPolicyV7 } from "../fixtures/v7-older-policy";
+
+// The Candy army seat (`pulp_wars-jdb.13`): this file pins the older
+// policy on matches with a Candy seat, as it was written. No match
+// reaches that policy through its factions any more, so the file takes
+// the Candy out of the army factions (tests/fixtures/v7-older-policy.ts).
+candySeatKeepsOlderPolicyV7();
 
 // The Mind Control revision's Normal AI pass (`pulp_wars-b5f.3`,
 // docs/product/RULESET_7_MIND_CONTROL.md sections 8 and 10). Two-seat

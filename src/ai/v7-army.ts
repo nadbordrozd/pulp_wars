@@ -56,11 +56,12 @@ import type { PlayerViewV7, PublicUnitV7 } from "../engine/v7/view";
  *
  * It applies to a Human, Undead, Goblin, (the Martian pass,
  * `pulp_wars-w49.14`) Martian, (the Dinosaur pass, `pulp_wars-w49.15`)
- * Dinosaur, (step two of the Ice Folk pass, `pulp_wars-w49.27`) Ice Folk, or
- * (step two of the Dwarf pass, `pulp_wars-w49.28`) Dwarf seat in a match
- * whose every seat is one of those seven (the pairings the tuning rounds
- * play): a match with a Candy seat keeps the policy of that faction's own
- * pass, on both sides. It is off while the seat's naval plan is active (it
+ * Dinosaur, (step two of the Ice Folk pass, `pulp_wars-w49.27`) Ice Folk,
+ * (step two of the Dwarf pass, `pulp_wars-w49.28`) Dwarf, or (the Candy army
+ * seat, `pulp_wars-jdb.13`) Candy seat in a match whose every seat is one of
+ * those eight: every faction registered when the Candy seat came over. A
+ * faction that is not in the list keeps the older policy for every seat of
+ * its matches. It is off while the seat's naval plan is active (it
  * must cross water to reach anyone) and while the opening growth harvest
  * is due. Everything is read from the public view and the public previews;
  * nothing draws from the PRNG or depends on elapsed time.
@@ -80,10 +81,33 @@ export const ARMY_PLAY_FACTIONS_V7: readonly FactionIdV7[] = Object.freeze([
   // docs/product/RULESET_7_TUNING_DWARF.md): a Dwarf seat too. Only a match
   // with a Candy seat keeps the older policy for every seat.
   "DWARF",
+  // The Candy army seat (`pulp_wars-jdb.13`,
+  // docs/product/RULESET_7_CANDY_REDESIGN.md section 13): a Candy seat too.
+  // Every registered faction of this list plays the army rules now, so no
+  // match keeps the older policy for the faction of a seat alone.
+  "CANDY",
 ]);
 
+let armyPlayFactions: readonly FactionIdV7[] = ARMY_PLAY_FACTIONS_V7;
+
 export function armyPlayFactionV7(faction: FactionIdV7): boolean {
-  return ARMY_PLAY_FACTIONS_V7.includes(faction);
+  return armyPlayFactions.includes(faction);
+}
+
+/**
+ * Tests only (`pulp_wars-jdb.13`): the factions whose seats play the army
+ * rules, and the previous list (restore it when done). Since the Candy army
+ * seat no match reaches the older policy through its factions, and the
+ * tests that pin the older policy (the research plans, the production
+ * values, and the rules of each faction's first pass) take a faction out of
+ * the list for their file. Nothing outside the tests calls this.
+ */
+export function setArmyPlayFactionsV7(
+  factions: readonly FactionIdV7[],
+): readonly FactionIdV7[] {
+  const previous = armyPlayFactions;
+  armyPlayFactions = Object.freeze([...factions]);
+  return previous;
 }
 
 /** A hostile land unit this close to an own center puts the seat on alert. */
@@ -443,6 +467,29 @@ export const ARMY_RESEARCH_ROLES_V7: Readonly<
     "CAPTAIN",
     "SWORDSMAN",
     "CATAPULT",
+    "KNIGHT",
+  ] as const),
+  // The Candy army seat (`pulp_wars-jdb.13`,
+  // docs/product/RULESET_7_CANDY_REDESIGN.md sections 10.3 and 13; reasoned
+  // from the rules and the engine previews, not played: no match was run
+  // for this order). The Donut Racer (Scouting, one technology of tier 1:
+  // the Glaze that carries the Troopers two tiles, and one comes free with
+  // Scouts), the Gumball Gunner (Hunting and Marksmanship: the shot from two
+  // tiles, its Ricochet, and Sugar Toss, the only healing before the
+  // Confectioner), the Marshmallow (the root and Home Sweet Home: the
+  // garrison, the one Candy unit of the early game a Knight does not kill in
+  // one attack, and the free Rush beside a center), the Confectioner
+  // (Leadership: Re-bake and Top-Up, once there is a line whose dead it
+  // bakes back), the Pie Launcher (Forestry and Sawmilling: the Splat the
+  // melee and the Gunners follow), the Jawbreaker (Engineering and
+  // Metallurgy: the anchor), the Chocolate Bunny (Raiding and Chivalry).
+  CANDY: Object.freeze([
+    "RAIDER",
+    "MARKSMAN",
+    "GUARD",
+    "CAPTAIN",
+    "CATAPULT",
+    "SWORDSMAN",
     "KNIGHT",
   ] as const),
 });
@@ -914,6 +961,30 @@ export const ARMY_SHARES_V7 = Object.freeze({
     SIEGE: 10,
     BREAKTHROUGH: 20,
   }),
+  // The Candy army seat (`pulp_wars-jdb.13`; reasoned, not played): two
+  // fifths line (Toffee Troopers, whose blow leaves a unit Stuck, and one
+  // Jawbreaker for every two of them: `armyCandyHeavyCappedV7`), 15%
+  // Marshmallows (the garrisons: a unit that cannot strike after it moves
+  // does not go to war, `armyCandyDefenderCappedV7`), a quarter Gumball
+  // Gunners (the Ricochet, and Sugar Toss), a tenth Pie Launchers, a tenth
+  // Chocolate Bunnies. Against two or more hostile ranged, siege, or support
+  // units a fifth Bunnies, which hop the screen and thump the row behind
+  // it. The Donut Racers and the Confectioners are counted apart (below,
+  // and `ARMY_SUPPORT_PER_UNITS_V7`).
+  candy: Object.freeze({
+    LINE: 40,
+    DEFENDER: 15,
+    RANGED: 25,
+    SIEGE: 10,
+    BREAKTHROUGH: 10,
+  }),
+  candyFragile: Object.freeze({
+    LINE: 35,
+    DEFENDER: 10,
+    RANGED: 25,
+    SIEGE: 10,
+    BREAKTHROUGH: 20,
+  }),
 });
 
 /** The shares of a faction's land army (`fragile`: see above). */
@@ -935,6 +1006,8 @@ export function armySharesV7(
     return fragile ? ARMY_SHARES_V7.iceFolkFragile : ARMY_SHARES_V7.iceFolk;
   if (faction === "DWARF")
     return fragile ? ARMY_SHARES_V7.dwarfFragile : ARMY_SHARES_V7.dwarf;
+  if (faction === "CANDY")
+    return fragile ? ARMY_SHARES_V7.candyFragile : ARMY_SHARES_V7.candy;
   return fragile ? ARMY_SHARES_V7.fragile : ARMY_SHARES_V7.standard;
 }
 /**
@@ -988,6 +1061,51 @@ export const ARMY_ICE_FOLK_SKIRMISHER_MAXIMUM_V7 = 3;
  */
 export const ARMY_DWARF_SKIRMISHER_PER_UNITS_V7 = 5;
 export const ARMY_DWARF_SKIRMISHER_MAXIMUM_V7 = 2;
+/**
+ * The Candy army seat (`pulp_wars-jdb.13`): a Candy army has one Donut Racer
+ * per this many units, at most two. One Racer's Move glazes the way for the
+ * whole wave behind it; a second covers another road. (10 HP and Defense 1:
+ * it is no line unit.)
+ */
+export const ARMY_CANDY_SKIRMISHER_PER_UNITS_V7 = 4;
+export const ARMY_CANDY_SKIRMISHER_MAXIMUM_V7 = 2;
+/**
+ * The Candy army seat: a Candy unit whose maximum HP is below this is a weak
+ * link of a kill chain at any HP: a Human Knight's hit kills a Toffee
+ * Trooper, a Donut Racer, a Gumball Gunner, a Confectioner, a Pie Launcher,
+ * and (14 HP) a Chocolate Bunny at full HP and rides on. A Marshmallow (18
+ * HP, Defense 2.5, and it bounces the Knight back) and a Jawbreaker (16 HP,
+ * Defense 2.5, and the Knight's next attack is 1 weaker) are not.
+ */
+export const ARMY_CANDY_STURDY_V7 = 15;
+/**
+ * The Candy army seat: a Candy seat's Marshmallows are capped as an Ice Folk
+ * seat's Musk Oxen are (`armyIceFolkDefenderCappedV7`): the Marshmallow does
+ * not strike after it moves, so it is the garrison of a center and the wall
+ * beside one. No more than the seat owns cities, nor than a third of the
+ * army. A capped Marshmallow costs `ARMY_ICE_FOLK_DEFENDER_CAP_COST_V7`.
+ */
+export function armyCandyDefenderCappedV7(
+  counts: ArmyCountsV7,
+  cities: number,
+): boolean {
+  return armyIceFolkDefenderCappedV7(counts, cities);
+}
+/**
+ * The Candy army seat: a Candy army has one Jawbreaker for every two Toffee
+ * Troopers, no more (the Martian seat's Shock Trooper rule,
+ * `armyMartianHeavyCappedV7`). Both are its line class, and a class the
+ * army is short of is bought in its dearest unit: without the cap a seat
+ * with Metallurgy trains Jawbreakers only, and the Troopers are the units
+ * whose blow leaves a unit Stuck, the 1-Coin Re-bakes, and the capturers. A
+ * capped Jawbreaker costs `ARMY_MARTIAN_HEAVY_CAP_COST_V7`.
+ */
+export function armyCandyHeavyCappedV7(
+  jawbreakers: number,
+  troopers: number,
+): boolean {
+  return jawbreakers * 2 >= troopers;
+}
 /**
  * Step two of the Ice Folk pass (`pulp_wars-w49.27`): an Ice Folk unit
  * whose maximum HP is below this is a weak link of a kill chain at any HP:
@@ -1269,7 +1387,16 @@ export function armyRoleScoreV7(
                         counts.total / ARMY_DWARF_SKIRMISHER_PER_UNITS_V7,
                       ),
                     )
-                  : Number(counts.total >= ARMY_SKIRMISHER_ARMY_V7)) -
+                  : // The Candy army seat: one Donut Racer per four
+                    // units, at most two.
+                    faction === "CANDY"
+                    ? Math.min(
+                        ARMY_CANDY_SKIRMISHER_MAXIMUM_V7,
+                        Math.floor(
+                          counts.total / ARMY_CANDY_SKIRMISHER_PER_UNITS_V7,
+                        ),
+                      )
+                    : Number(counts.total >= ARMY_SKIRMISHER_ARMY_V7)) -
         have);
   else if (unitClass === "SUPPORT")
     deficit =
@@ -1480,7 +1607,10 @@ export function armyGarrisonYieldsToRangedV7(
     faction !== "GOBLIN" &&
     faction !== "UNDEAD" &&
     faction !== "ICE_FOLK" &&
-    faction !== "DWARF"
+    faction !== "DWARF" &&
+    // The Candy army seat (`pulp_wars-jdb.13`): a Candy seat too (to a
+    // Gumball Gunner, which captures and shoots from a center).
+    faction !== "CANDY"
   )
     return false;
   const siege = faction === "UNDEAD" && offersSiege;

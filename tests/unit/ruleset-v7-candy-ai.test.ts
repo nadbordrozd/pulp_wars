@@ -15,6 +15,7 @@ import {
   REBAKE_PRIORITY_V7,
   RUSH_KILL_PRIORITY_V7,
   RUSH_MOVE_PRIORITY_V7,
+  SUGAR_TOSS_ARMY_PRIORITY_V7,
   SUGAR_TOSS_IDLE_PRIORITY_V7,
   SUGAR_TOSS_PRIORITY_V7,
   THREATENED_CANDY_SUPPORT_COST_V7,
@@ -50,6 +51,7 @@ import {
   unitIdAtV7,
   viewerViewV7,
 } from "../fixtures/v7-dinosaur-ai";
+import { withCandyOnOlderPolicyV7 } from "../fixtures/v7-older-policy";
 import { fieldV7 } from "../fixtures/v7-revision20";
 
 // The Candy Normal AI (`pulp_wars-jdb.4`, docs/product/RULESET_7_CANDY.md
@@ -403,19 +405,31 @@ describe("Candy Normal AI: Re-bake, Splat, and Sugar Toss", () => {
       own("FIGHTER", 5, 3),
       foe("GUARD", 5, 2),
     ]);
-    const pie = scoreV7(state, attackV7(state, at(5, 5), at(5, 2)));
-    const melee = scoreV7(state, attackV7(state, at(5, 3), at(5, 2)));
-    expect(pie.priority).toBe(melee.priority + PIE_FIRST_OFFSET_V7);
+    // The Candy army seat (`pulp_wars-jdb.13`): a seat that plays the army
+    // rules fires its shots from two tiles before its melee anyway (1176
+    // and 1174 for a committed position), so the Pie still goes first.
+    expect(
+      scoreV7(state, attackV7(state, at(5, 5), at(5, 2))).priority,
+    ).toBeGreaterThan(
+      scoreV7(state, attackV7(state, at(5, 3), at(5, 2))).priority,
+    );
     const turn = playTurn(state);
     const attackers = turn.commands.flatMap((command) =>
       command.kind === "ATTACK" ? [command.unitId] : [],
     );
     expect(attackers[0]).toBe(unitIdAtV7(state, at(5, 5)));
-    // Alone, the Pie's chip has the ordinary tier.
-    const alone = asCandy([own("CATAPULT", 5, 5), foe("GUARD", 5, 2)]);
-    expect(scoreV7(alone, attackV7(alone, at(5, 5), at(5, 2))).priority).toBe(
-      melee.priority,
-    );
+    // The Pie-first offset itself is the older policy's (a seat outside the
+    // army rules: tests/fixtures/v7-older-policy.ts).
+    withCandyOnOlderPolicyV7(() => {
+      const pie = scoreV7(state, attackV7(state, at(5, 5), at(5, 2)));
+      const melee = scoreV7(state, attackV7(state, at(5, 3), at(5, 2)));
+      expect(pie.priority).toBe(melee.priority + PIE_FIRST_OFFSET_V7);
+      // Alone, the Pie's chip has the ordinary tier.
+      const alone = asCandy([own("CATAPULT", 5, 5), foe("GUARD", 5, 2)]);
+      expect(scoreV7(alone, attackV7(alone, at(5, 5), at(5, 2))).priority).toBe(
+        melee.priority,
+      );
+    });
   });
 
   it("Tosses when the Gunner's shot is weak, at the dearest wounded unit", () => {
@@ -434,7 +448,15 @@ describe("Candy Normal AI: Re-bake, Splat, and Sugar Toss", () => {
     expect(shot?.damageToDefender).toBeLessThan(3);
     const tosses = unitCandidatesV7(weak, at(5, 4), "SUGAR_TOSS");
     expect(tosses).toHaveLength(1);
-    expect(tosses[0]?.score.priority).toBe(SUGAR_TOSS_PRIORITY_V7);
+    // The Candy army seat (`pulp_wars-jdb.13`): above a committed unit's
+    // shot (1176), which is fired whatever it deals. On the older policy
+    // the Toss has its own tier, just above the chips.
+    expect(tosses[0]?.score.priority).toBe(SUGAR_TOSS_ARMY_PRIORITY_V7);
+    expect(
+      withCandyOnOlderPolicyV7(
+        () => unitCandidatesV7(weak, at(5, 4), "SUGAR_TOSS")[0]?.score.priority,
+      ),
+    ).toBe(SUGAR_TOSS_PRIORITY_V7);
     expect(tosses[0]?.command).toMatchObject({
       targetUnitId: unitIdAtV7(weak, at(4, 3)),
     });
