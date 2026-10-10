@@ -117,7 +117,8 @@ treasures, public city-count exactness, active/blockaded Ports, hostile city
 occupation, and hostile naval coordinates used by prospective Port scoring.
 The key has no authoritative or concealed input. A separate preview key adds
 Coins, complete public city records including `cityActionAvailable`, published
-improvement values, and current land/sea trade lists. A preview is reused only
+improvement values, and the current land trade list (sea trade ended with
+`7r76`; the docks' `joinsCity` is in the planning key). A preview is reused only
 after the current view independently offers the same tile command.
 
 Stable-fact validation and result reconstruction are incremental. Each scanned

@@ -1336,7 +1336,7 @@ async function mountVisual(
       globalThis.__PULP_WARS_APP__?.destroy();
       const aiCount = ${size} === 11 ? 1 : 3;
       const setup = {
-        rulesetId: 'pulp-wars-poc-7r75', mapGenerationRevision: 'REGIONAL_BIOMES_NAVAL_V4', curiosities: false, seed: 42,
+        rulesetId: 'pulp-wars-poc-7r76', mapGenerationRevision: 'REGIONAL_BIOMES_NAVAL_V4', curiosities: false, seed: 42,
         width: ${size}, height: ${size}, aiCount, aiDifficulty: 'NORMAL', aiMode: 'RIVAL',
         humanColor: 'CORAL', factions: Array.from({ length: aiCount + 1 }, () => 'ORIGINAL'), mapType: 'ARCHIPELAGO',
         // A Human mirror presentation scene: the headless and test only
@@ -1418,7 +1418,7 @@ async function mountVisual(
         },
         units,
         naval: {
-          ownedPorts: [{ at: ownedCoast.at, cityId: ownCity.id, status: 'BLOCKADED' }],
+          ownedPorts: [{ at: ownedCoast.at, cityId: ownCity.id, status: 'BLOCKADED', joinsCity: false }],
           tradeCityIds: [], networkCityIds: [ownCity.id], networkRoads: [],
           seaRoutes: [{ fromCityId: ownCity.id, toCityId: hostileCity.id, path: [ownedCoast.at, anchor.at, hostilePort.at] }],
           recoverableNavalUnitIds: [units[0].id],

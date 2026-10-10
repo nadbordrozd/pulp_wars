@@ -430,6 +430,13 @@ hidden Ore cannot be probed through command availability.
 
 ## 8. Roads, trade, Naval, and Shipyard
 
+> **Superseded by `pulp-wars-poc-7r76` (`pulp_wars-5ti.12`, the user,
+> 2026-10-10).** Sections 8.1 and 8.2 are history. Ports now join the Road
+> network: sea trade's separate Coin is removed, a sea link between two
+> Ports connects cities as a Road does, and land trade pays every city the
+> one network links to another. The current rule is
+> [sections 9.3 and 9.5 of the current rules](RULESET_7_CURRENT.md#93-road-population-and-land-trade).
+
 ### 8.1 Roads and land trade
 
 Road placement, neutral/owned usability, eight-way city/Road edges, movement

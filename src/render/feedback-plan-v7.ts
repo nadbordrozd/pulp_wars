@@ -172,10 +172,13 @@ function roadPopulationOfV7(
 }
 
 /**
- * The shortest way along the viewer's capital-linked Road tiles
- * (`naval.networkRoads`, city tiles included) from `from` to `to`,
- * stepping in eight directions with straight steps tried first, both ends
- * included; the direct step when the Roads do not join them.
+ * The shortest way along the viewer's capital-linked network
+ * (`naval.networkRoads`: Road tiles, city tiles and docks) from `from` to
+ * `to`, stepping in eight directions with straight steps tried first, both
+ * ends included; the direct step when nothing joins them. Bead
+ * pulp_wars-5ti.12: a sea link (`naval.seaRoutes`) is one step from dock to
+ * dock, and its water tiles are part of the way, so the icons cross the
+ * dashed line.
  */
 function roadPathV7(
   view: PlayerViewV7,
@@ -187,6 +190,20 @@ function roadPathV7(
   nodes.add(key(from));
   nodes.add(key(to));
   const previous = new Map<string, CoordV7 | null>([[key(from), null]]);
+  // The water tiles between a dock and the dock it was reached from.
+  const crossing = new Map<string, readonly CoordV7[]>();
+  const sea = new Map<string, (readonly CoordV7[])[]>();
+  for (const route of view.naval.seaRoutes) {
+    const first = route.path[0];
+    const last = route.path[route.path.length - 1];
+    if (first === undefined || last === undefined) continue;
+    if (!nodes.has(key(first)) || !nodes.has(key(last))) continue;
+    sea.set(key(first), [...(sea.get(key(first)) ?? []), route.path]);
+    sea.set(key(last), [
+      ...(sea.get(key(last)) ?? []),
+      [...route.path].reverse(),
+    ]);
+  }
   const queue: CoordV7[] = [from];
   const steps = [
     [0, -1],
@@ -207,14 +224,23 @@ function roadPathV7(
         let cursor: CoordV7 | null = at;
         cursor !== null;
         cursor = previous.get(key(cursor)) ?? null
-      )
+      ) {
         path.unshift(cursor);
+        path.unshift(...(crossing.get(key(cursor)) ?? []));
+      }
       return path;
     }
     for (const [dx, dy] of steps) {
       const near = { x: at.x + dx, y: at.y + dy };
       if (!nodes.has(key(near)) || previous.has(key(near))) continue;
       previous.set(key(near), at);
+      queue.push(near);
+    }
+    for (const route of sea.get(key(at)) ?? []) {
+      const near = route[route.length - 1];
+      if (near === undefined || previous.has(key(near))) continue;
+      previous.set(key(near), at);
+      crossing.set(key(near), route.slice(1, -1));
       queue.push(near);
     }
   }

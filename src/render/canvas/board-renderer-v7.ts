@@ -1260,6 +1260,19 @@ export function buildBoardRenderPlanV7(
       .map((city) => coordKey(city.at)),
   );
   for (const cityKey of cityKeys) roadKeys.add(cityKey);
+  // Bead pulp_wars-5ti.12: a Port or Shipyard joins the Road network as if
+  // a Road lay on it, so a Road is drawn onto it from every city center or
+  // Road tile beside it. Two docks side by side get no track over the water.
+  const portKeys = new Set(
+    view.board.tiles
+      .filter(
+        (tile) =>
+          tile.explored &&
+          (tile.improvement === "PORT" || tile.improvement === "SHIPYARD"),
+      )
+      .map((tile) => coordKey(tile.at)),
+  );
+  for (const portKey of portKeys) roadKeys.add(portKey);
   // The Ice Folk revision: Snow and the Blizzard from the view's tile flags
   // (a match without an Ice Folk seat has neither).
   const iceFolkMatch = matchHasIceFolkSeatV7(view);
@@ -1378,7 +1391,11 @@ export function buildBoardRenderPlanV7(
         const vertical = { x: tile.at.x, y: tile.at.y + dy };
         if (
           roadKeys.has(coordKey(horizontal)) &&
-          roadKeys.has(coordKey(vertical))
+          roadKeys.has(coordKey(vertical)) &&
+          !(
+            portKeys.has(coordKey(horizontal)) &&
+            portKeys.has(coordKey(vertical))
+          )
         )
           joins.push([horizontal, vertical]);
       }
@@ -1390,9 +1407,14 @@ export function buildBoardRenderPlanV7(
         at: tile.at,
         roadJoins: joins,
       });
-    const cityNode = cityKeys.has(coordKey(tile.at));
+    const portNode = portKeys.has(coordKey(tile.at));
+    const cityNode = cityKeys.has(coordKey(tile.at)) || portNode;
     const neighbors =
-      tile.road || cityNode ? roadNeighbors(tile.at, roadKeys) : [];
+      tile.road || cityNode
+        ? roadNeighbors(tile.at, roadKeys).filter(
+            (near) => !portNode || !portKeys.has(coordKey(near)),
+          )
+        : [];
     if (tile.road || (cityNode && neighbors.length > 0))
       entries.push({
         key: `road:${tile.at.x},${tile.at.y}`,

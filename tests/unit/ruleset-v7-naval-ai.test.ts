@@ -888,7 +888,14 @@ function navalPolicyView(
     },
     naval: {
       ownedPorts: withPort
-        ? [{ at: portAt, cityId: ownCity.id, status: "ACTIVE" as const }]
+        ? [
+            {
+              at: portAt,
+              cityId: ownCity.id,
+              status: "ACTIVE" as const,
+              joinsCity: true,
+            },
+          ]
         : [],
       tradeCityIds: [],
       landTradeCityIds: [],
@@ -1075,7 +1082,14 @@ function ownedWaterCorridorView(): PlayerViewV7 {
     },
     naval: {
       ...transport.naval,
-      ownedPorts: [{ at: { x: 2, y: 1 }, cityId: city.id, status: "ACTIVE" }],
+      ownedPorts: [
+        {
+          at: { x: 2, y: 1 },
+          cityId: city.id,
+          status: "ACTIVE",
+          joinsCity: true,
+        },
+      ],
     },
   };
 }

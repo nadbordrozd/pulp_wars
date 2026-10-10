@@ -3,43 +3,50 @@ import {
   TECHNOLOGY_IDS_V7,
   combinedNetworkCityIdsV7,
   resetSeaRouteGeometryCacheV7,
+  seaLinksV7,
   seaRouteGeometryCacheDiagnosticsV7,
-  seaTradeCityIdsV7,
   type CityStateV7,
   type GameStateV7,
   type PlayerId,
 } from "../../src/engine/index";
 import { initialV7 } from "../fixtures/v7-builders";
 
+/**
+ * `pulp-wars-poc-7r76` (`pulp_wars-5ti.12`): the geometry now serves the
+ * sea links of the connection network (sea trade is gone). The links of a
+ * seat, as `"x,y>x,y"` strings.
+ */
+function links(state: GameStateV7, owner: PlayerId): readonly string[] {
+  return seaLinksV7(state, owner).map(
+    (link) => `${link.from.x},${link.from.y}>${link.to.x},${link.to.y}`,
+  );
+}
+
 describe("ruleset-7 bounded structural sea geometry", () => {
   it("reuses cold structurally equal and interleaved geometry with exact results", () => {
     const state = seaGraph(91);
     const owner = state.humanPlayerId;
-    const expected = [...seaTradeCityIdsV7(structuredClone(state), owner)];
+    const expected = [...links(structuredClone(state), owner)];
     resetSeaRouteGeometryCacheV7();
 
-    expect([...seaTradeCityIdsV7(structuredClone(state), owner)]).toEqual(
-      expected,
-    );
+    expect([...links(structuredClone(state), owner)]).toEqual(expected);
     expect(seaRouteGeometryCacheDiagnosticsV7()).toMatchObject({
       entries: 1,
       hits: 0,
       misses: 1,
       builds: 1,
     });
-    expect([...seaTradeCityIdsV7(structuredClone(state), owner)]).toEqual(
-      expected,
-    );
+    expect([...links(structuredClone(state), owner)]).toEqual(expected);
+    // A different sea (a tile of the lane is land) is a second entry.
+    // Exploration is no part of the geometry since 7r76.
     const interrupted = structuredClone(state);
-    interrupted.players = interrupted.players.map((player) =>
-      player.id === owner
-        ? { ...player, explored: player.explored.filter((at) => at.x !== 3) }
-        : player,
-    );
-    seaTradeCityIdsV7(interrupted, owner);
-    expect([...seaTradeCityIdsV7(structuredClone(state), owner)]).toEqual(
-      expected,
-    );
+    for (const tile of interrupted.board.tiles)
+      if (tile.at.x === 3 && tile.at.y === 1) {
+        tile.biome = "PLAINS";
+        tile.terrain = "GRASS";
+      }
+    links(interrupted, owner);
+    expect([...links(structuredClone(state), owner)]).toEqual(expected);
     expect(seaRouteGeometryCacheDiagnosticsV7()).toMatchObject({
       entries: 2,
       hits: 2,
@@ -51,8 +58,8 @@ describe("ruleset-7 bounded structural sea geometry", () => {
   it("keeps ownership, city ids, blockade, alliance, roads, and capital fresh", () => {
     const state = seaGraph(92);
     const owner = state.humanPlayerId;
-    const baseline = seaTradeCityIdsV7(state, owner);
-    expect(baseline.size).toBe(1);
+    const baseline = links(state, owner);
+    expect(baseline).toHaveLength(1);
 
     const ports = state.board.tiles.filter(
       (tile) => tile.improvement === "PORT",
@@ -73,18 +80,18 @@ describe("ruleset-7 bounded structural sea geometry", () => {
       hp: 10,
       maxHp: 10,
     });
-    expect(seaTradeCityIdsV7(state, owner)).toEqual(new Set());
+    expect(links(state, owner)).toEqual([]);
 
     state.units.pop();
     remoteCity.ownerId = enemy.id;
-    expect(seaTradeCityIdsV7(state, owner)).toEqual(new Set());
+    expect(links(state, owner)).toEqual([]);
     remoteCity.ownerId = owner;
-    expect(seaTradeCityIdsV7(state, owner)).toEqual(baseline);
+    expect(links(state, owner)).toEqual(baseline);
 
     remotePort.territoryCityId = required(ports[0]).territoryCityId;
-    expect(seaTradeCityIdsV7(state, owner)).toEqual(new Set());
+    expect(links(state, owner)).toEqual([]);
     remotePort.territoryCityId = remoteCityId;
-    expect(seaTradeCityIdsV7(state, owner)).toEqual(baseline);
+    expect(links(state, owner)).toEqual(baseline);
 
     const capital = required(
       state.players.find((player) => player.id === owner),
@@ -106,22 +113,27 @@ describe("ruleset-7 bounded structural sea geometry", () => {
     original.ownerId = owner;
   });
 
-  it("changes geometry for exploration, Navigation, Port removal, and water", () => {
+  it("changes geometry for Shorecraft, Navigation over Deep Water, Port removal, and water; not for exploration", () => {
     const state = seaGraph(93);
     const owner = state.humanPlayerId;
-    expect(seaTradeCityIdsV7(state, owner).size).toBe(1);
+    expect(links(state, owner)).toHaveLength(1);
 
+    // 7r76: fog is no condition, and the link needs Shorecraft only.
     const player = required(state.players.find((item) => item.id === owner));
     player.explored = player.explored.filter(
       (at) => !(at.x === 3 && at.y === 1),
     );
-    expect(seaTradeCityIdsV7(state, owner)).toEqual(new Set());
+    expect(links(state, owner)).toHaveLength(1);
     player.explored = state.board.tiles.map((tile) => tile.at);
 
     player.researchedTechs = player.researchedTechs.filter(
       (tech) => tech !== "NAVIGATION",
     );
-    expect(seaTradeCityIdsV7(state, owner)).toEqual(new Set());
+    expect(links(state, owner)).toHaveLength(1);
+    player.researchedTechs = player.researchedTechs.filter(
+      (tech) => tech !== "SHORECRAFT",
+    );
+    expect(links(state, owner)).toEqual([]);
     player.researchedTechs = TECHNOLOGY_IDS_V7;
 
     const middle = required(
@@ -129,16 +141,22 @@ describe("ruleset-7 bounded structural sea geometry", () => {
     );
     middle.biome = "PLAINS";
     middle.terrain = "GRASS";
-    expect(seaTradeCityIdsV7(state, owner)).toEqual(new Set());
+    expect(links(state, owner)).toEqual([]);
     middle.biome = null;
     middle.terrain = "DEEP_WATER";
-    expect(seaTradeCityIdsV7(state, owner).size).toBe(1);
+    expect(links(state, owner)).toHaveLength(1);
+    // Deep Water is crossed only with Navigation.
+    player.researchedTechs = player.researchedTechs.filter(
+      (tech) => tech !== "NAVIGATION",
+    );
+    expect(links(state, owner)).toEqual([]);
+    player.researchedTechs = TECHNOLOGY_IDS_V7;
 
     const remotePort = required(
       state.board.tiles.find((tile) => tile.at.x === 5 && tile.at.y === 1),
     );
     remotePort.improvement = null;
-    expect(seaTradeCityIdsV7(state, owner)).toEqual(new Set());
+    expect(links(state, owner)).toEqual([]);
   });
 
   it("reevaluates allied blockades for the current relationship", () => {
@@ -158,12 +176,12 @@ describe("ruleset-7 bounded structural sea geometry", () => {
       rival.units.find((candidate) => candidate.ownerId === ally),
     );
     rival.units = [{ ...unit, at: port.at, form: "NAVAL", hp: 10, maxHp: 10 }];
-    expect(seaTradeCityIdsV7(rival, owner)).toEqual(new Set());
+    expect(links(rival, owner)).toEqual([]);
     rival.setup = { ...rival.setup, aiMode: "COOPERATIVE" };
-    expect(seaTradeCityIdsV7(rival, owner).size).toBe(1);
+    expect(links(rival, owner)).toHaveLength(1);
   });
 
-  it("bounds entries and skips water expansion when Navigation or two Ports are absent", () => {
+  it("bounds entries and skips water expansion when Shorecraft or two Ports are absent", () => {
     const base = seaGraph(95);
     const owner = base.humanPlayerId;
     resetSeaRouteGeometryCacheV7();
@@ -183,7 +201,7 @@ describe("ruleset-7 bounded structural sea geometry", () => {
       tile.biome = null;
       tile.terrain = "SHALLOW_WATER";
       tile.site = null;
-      seaTradeCityIdsV7(state, owner);
+      links(state, owner);
     }
     expect(seaRouteGeometryCacheDiagnosticsV7()).toMatchObject({
       capacity: 16,
@@ -194,19 +212,19 @@ describe("ruleset-7 bounded structural sea geometry", () => {
     resetSeaRouteGeometryCacheV7();
     const noPorts = structuredClone(base);
     for (const tile of noPorts.board.tiles) tile.improvement = null;
-    seaTradeCityIdsV7(noPorts, owner);
-    const noNavigation = structuredClone(base);
-    noNavigation.players = noNavigation.players.map((player) =>
+    links(noPorts, owner);
+    const noShorecraft = structuredClone(base);
+    noShorecraft.players = noShorecraft.players.map((player) =>
       player.id === owner
         ? {
             ...player,
             researchedTechs: player.researchedTechs.filter(
-              (tech) => tech !== "NAVIGATION",
+              (tech) => tech !== "SHORECRAFT",
             ),
           }
         : player,
     );
-    seaTradeCityIdsV7(noNavigation, owner);
+    links(noShorecraft, owner);
     expect(seaRouteGeometryCacheDiagnosticsV7()).toEqual({
       capacity: 16,
       entries: 0,

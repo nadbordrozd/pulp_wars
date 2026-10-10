@@ -424,7 +424,6 @@ export function cityIncomeV7(state: GameStateV7, city: CityStateV7): number {
     (city.isCapital ? 1 : 0) +
     // `pulp_wars-zypi`: +1 for each Economic Miracle reward of the city.
     cityEconomicMiracleIncomeV7(city) +
-    (seaTradeCityIdsV7(state, city.ownerId).has(city.id) ? 1 : 0) +
     // Tuning 1 (7r46): Commerce pays 2 Coins per connected city.
     (landTradeCityIdsV7(state, city.ownerId).has(city.id)
       ? LAND_TRADE_INCOME_COINS_V7
@@ -457,6 +456,25 @@ const COMBINED_NETWORK_CACHE = new WeakMap<
 const LAND_LINKED_CACHE = new WeakMap<
   object,
   Map<PlayerId, ReadonlySet<CityId>>
+>();
+/**
+ * `pulp-wars-poc-7r76` (`pulp_wars-5ti.12`): one sea link of the owner's
+ * connection network, between two active docks of different own cities.
+ */
+export interface SeaLinkV7 {
+  readonly from: { readonly x: number; readonly y: number };
+  readonly to: { readonly x: number; readonly y: number };
+  readonly fromCityId: CityId;
+  readonly toCityId: CityId;
+}
+const SEA_LINK_CACHE = new WeakMap<
+  object,
+  Map<PlayerId, readonly SeaLinkV7[]>
+>();
+/** Every node of the owner's network: usable Roads, city centers, docks. */
+const NETWORK_NODE_CACHE = new WeakMap<
+  object,
+  Map<PlayerId, ReadonlyMap<string, number>>
 >();
 const COMBINED_ROAD_CACHE = new WeakMap<
   object,
@@ -515,7 +533,7 @@ export function combinedNetworkCityIdsV7(
   return COMBINED_NETWORK_CACHE.get(state)?.get(playerId) ?? new Set<CityId>();
 }
 
-/** Roads-only capital-rooted land graph, independent from land-trade income. */
+/** The capital-rooted connection network, independent from trade income. */
 export function landConnectedCityIdsV7(
   state: NetworkStateV7,
   playerId: PlayerId,
@@ -575,7 +593,43 @@ export function combinedNetworkRoadKeysV7(
   return COMBINED_ROAD_CACHE.get(state)?.get(playerId) ?? new Set<string>();
 }
 
-/** Owner-private Navigation Port/Shipyard graph with bounded sea edges. */
+/**
+ * The sea links that count in the owner's connection network: every pair
+ * of active docks of two different own cities joined by at most five
+ * eight-way steps of water the owner may sail (Shallow Water, and Deep
+ * Water with Navigation), explored or not, in board order of their docks.
+ */
+export function seaLinksV7(
+  state: NetworkStateV7,
+  playerId: PlayerId,
+): readonly SeaLinkV7[] {
+  seaTradeCityIdsV7(state, playerId);
+  return SEA_LINK_CACHE.get(state)?.get(playerId) ?? [];
+}
+
+/**
+ * Every node of the owner's connection network, as `"y,x"` keys: usable
+ * Road tiles (with Roads), every own city center, and every own active Port
+ * or Shipyard. The eight-way joins between them and {@link seaLinksV7} are
+ * the network's edges. The value is the number of the node's **land**
+ * component (eight-way joins only, no sea link): a dock with the number of
+ * its city's center is joined to it by land.
+ */
+export function networkNodeComponentsV7(
+  state: NetworkStateV7,
+  playerId: PlayerId,
+): ReadonlyMap<string, number> {
+  seaTradeCityIdsV7(state, playerId);
+  return (
+    NETWORK_NODE_CACHE.get(state)?.get(playerId) ?? new Map<string, number>()
+  );
+}
+
+/**
+ * Computes and caches the owner's connection network (Roads, city centers,
+ * docks and sea links; `pulp-wars-poc-7r76`). Its own result, the cities
+ * paid the former sea-trade Coin, is always empty since that identity.
+ */
 export function seaTradeCityIdsV7(
   state: NetworkStateV7,
   playerId: PlayerId,
@@ -614,24 +668,25 @@ export function seaTradeCityIdsV7(
     setNetworkCacheSignatureV7(state, playerId, signature);
     return empty;
   }
-  const explored = new Set(player.explored.map(coordKey));
   const navigation = player.researchedTechs.includes("NAVIGATION");
-  const portCandidates = navigation
+  // `pulp-wars-poc-7r76` (`pulp_wars-5ti.12`): a sea link needs only the
+  // technology that builds Ports (Shorecraft); Navigation adds Deep Water to
+  // the water a route may cross. Exploration is no longer a condition: the
+  // link gives stored population, which must not change when fog lifts.
+  const shorecraft = technologyCapabilitiesV7(
+    player.researchedTechs,
+    player.faction,
+  ).seaLink;
+  const portCandidates = shorecraft
     ? state.board.tiles.filter(
         (tile) =>
           (tile.improvement === "PORT" || tile.improvement === "SHIPYARD") &&
           tile.biome === null &&
-          explored.has(coordKey(tile.at)) &&
           (tile.terrain !== "DEEP_WATER" || navigation),
       )
     : [];
-  const seaEdges = new Map<CityId, Set<CityId>>();
-  const geometry = seaRouteGeometryV7(
-    state,
-    explored,
-    navigation,
-    portCandidates,
-  );
+  const seaLinks: SeaLinkV7[] = [];
+  const geometry = seaRouteGeometryV7(state, navigation, portCandidates);
   if (geometry !== null) {
     const active = new Set<number>();
     portCandidates.forEach((port, index) => {
@@ -645,21 +700,30 @@ export function seaTradeCityIdsV7(
       if (!active.has(leftIndex)) continue;
       const left = portCandidates[leftIndex];
       if (left?.territoryCityId === null || left === undefined) continue;
-      for (const rightIndex of geometry.reachablePortIndexes[leftIndex] ?? []) {
+      for (const rightIndex of [
+        ...(geometry.reachablePortIndexes[leftIndex] ?? []),
+      ].sort((a, b) => a - b)) {
         if (!active.has(rightIndex)) continue;
         const right = portCandidates[rightIndex];
         if (right?.territoryCityId === null || right === undefined) continue;
-        for (const [from, to] of [
-          [left.territoryCityId, right.territoryCityId],
-          [right.territoryCityId, left.territoryCityId],
-        ] as const) {
-          const sea = seaEdges.get(from) ?? new Set<CityId>();
-          if (from !== to) sea.add(to);
-          seaEdges.set(from, sea);
-        }
+        // Docks of one city join by Road or by standing side by side, never
+        // by a sea link (as sea trade never counted same-city docks).
+        if (left.territoryCityId === right.territoryCityId) continue;
+        seaLinks.push({
+          from: left.at,
+          to: right.at,
+          fromCityId: left.territoryCityId,
+          toCityId: right.territoryCityId,
+        });
       }
     }
   }
+  let seaLinksByOwner = SEA_LINK_CACHE.get(state);
+  if (seaLinksByOwner === undefined) {
+    seaLinksByOwner = new Map();
+    SEA_LINK_CACHE.set(state, seaLinksByOwner);
+  }
+  seaLinksByOwner.set(playerId, seaLinks);
   const ownedCityAt = new Map(
     state.cities
       .filter((city) => city.ownerId === playerId)
@@ -679,10 +743,17 @@ export function seaTradeCityIdsV7(
       )
       .map((tile) => coordKey(tile.at)),
   );
-  if (player.researchedTechs.includes("ROADS"))
-    for (const key of ownedCityAt.keys()) roadKeys.add(key);
+  // 7r76: every own city center and every own active Port or Shipyard is a
+  // node as if a Road lay on it, with or without the Roads technology.
+  for (const key of ownedCityAt.keys()) roadKeys.add(key);
+  for (const tile of state.board.tiles)
+    if (
+      (tile.improvement === "PORT" || tile.improvement === "SHIPYARD") &&
+      isActivePortV7(state, tile.at, playerId)
+    )
+      roadKeys.add(coordKey(tile.at));
   const roadLeft = new Set(roadKeys);
-  const roadComponents: {
+  const landComponents: {
     readonly keys: ReadonlySet<string>;
     readonly cityIds: ReadonlySet<CityId>;
   }[] = [];
@@ -708,8 +779,45 @@ export function seaTradeCityIdsV7(
           if (roadLeft.delete(coordKey(near))) roadQueue.push(near);
         }
     }
-    roadComponents.push({ keys: componentKeys, cityIds });
+    landComponents.push({ keys: componentKeys, cityIds });
   }
+  // The land components (eight-way joins only) merged over the sea links.
+  const landComponentOf = new Map<string, number>();
+  landComponents.forEach((component, index) => {
+    for (const at of component.keys) landComponentOf.set(at, index);
+  });
+  const merged = landComponents.map((_, index) => index);
+  const rootOf = (index: number): number => {
+    let root = index;
+    while (merged[root] !== root) root = merged[root] ?? root;
+    return root;
+  };
+  for (const link of seaLinks) {
+    const left = landComponentOf.get(coordKey(link.from));
+    const right = landComponentOf.get(coordKey(link.to));
+    if (left === undefined || right === undefined) continue;
+    const [low, high] = [rootOf(left), rootOf(right)].sort((a, b) => a - b);
+    if (low !== undefined && high !== undefined) merged[high] = low;
+  }
+  const roadComponents: {
+    readonly keys: ReadonlySet<string>;
+    readonly cityIds: ReadonlySet<CityId>;
+  }[] = [];
+  const mergedAt = new Map<
+    number,
+    { keys: Set<string>; cityIds: Set<CityId> }
+  >();
+  landComponents.forEach((component, index) => {
+    const root = rootOf(index);
+    let target = mergedAt.get(root);
+    if (target === undefined) {
+      target = { keys: new Set(), cityIds: new Set() };
+      mergedAt.set(root, target);
+      roadComponents.push(target);
+    }
+    for (const at of component.keys) target.keys.add(at);
+    for (const cityId of component.cityIds) target.cityIds.add(cityId);
+  });
   const linked = new Set<CityId>();
   for (const component of roadComponents)
     if (component.cityIds.size >= 2)
@@ -724,14 +832,8 @@ export function seaTradeCityIdsV7(
     for (const component of roadComponents)
       if (component.cityIds.has(originalCapital.id))
         for (const cityId of component.cityIds) connected.add(cityId);
-  const eligible = new Set<CityId>();
-  for (const city of state.cities)
-    if (
-      city.ownerId === playerId &&
-      city.id !== player.originalCapitalCityId &&
-      (seaEdges.get(city.id)?.size ?? 0) > 0
-    )
-      eligible.add(city.id);
+  // 7r76: the separate sea-trade Coin is gone; the link is the benefit.
+  const eligible: ReadonlySet<CityId> = new Set<CityId>();
   let combinedByOwner = COMBINED_NETWORK_CACHE.get(state);
   if (combinedByOwner === undefined) {
     combinedByOwner = new Map();
@@ -748,6 +850,12 @@ export function seaTradeCityIdsV7(
     COMBINED_ROAD_CACHE.set(state, roadsByOwner);
   }
   roadsByOwner.set(playerId, connectedRoadKeys);
+  let nodesByOwner = NETWORK_NODE_CACHE.get(state);
+  if (nodesByOwner === undefined) {
+    nodesByOwner = new Map();
+    NETWORK_NODE_CACHE.set(state, nodesByOwner);
+  }
+  nodesByOwner.set(playerId, landComponentOf);
   byOwner.set(playerId, eligible);
   setNetworkCacheSignatureV7(state, playerId, signature);
   return eligible;
@@ -803,21 +911,16 @@ function networkFactsSignatureV7(
 
 function seaRouteGeometryV7(
   state: NetworkStateV7,
-  explored: ReadonlySet<string>,
   navigation: boolean,
   ports: readonly GameStateV7["board"]["tiles"][number][],
 ): SeaRouteGeometryV7 | null {
-  if (!navigation || ports.length < 2) {
+  if (ports.length < 2) {
     seaRouteGeometrySkipped += 1;
     return null;
   }
   const water = new Set<string>();
   for (const tile of state.board.tiles)
-    if (
-      tile.biome === null &&
-      explored.has(coordKey(tile.at)) &&
-      (tile.terrain !== "DEEP_WATER" || navigation)
-    )
+    if (tile.biome === null && (tile.terrain !== "DEEP_WATER" || navigation))
       water.add(coordKey(tile.at));
   const key = `${state.board.width}x${state.board.height}|n:${Number(navigation)}|w:${[...water].join(";")}|p:${ports.map((port) => coordKey(port.at)).join(";")}`;
   const cached = SEA_ROUTE_GEOMETRY_CACHE.get(key);

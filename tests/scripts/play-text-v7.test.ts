@@ -359,7 +359,7 @@ describe("text-mode play harness", () => {
     );
     expect(tech).toContain("its city gains +1 population");
     expect(tech).toContain(
-      "Each city linked by Road to another of your cities: +1 Coin each turn",
+      "Each city linked by Road or Port to another of your cities: +1 Coin each turn",
     );
     expect(tech).toContain(
       "Build Field Defense: +2 Defense for the unit on it; the builder keeps its move and attack",
@@ -498,10 +498,10 @@ describe("text-mode play harness", () => {
 
     // Commerce researched, no second city: the capital's line says so.
     expect(ok("view", "--session", melee)).toContain(
-      "   No land trade: no Road link to another of your cities",
+      "   No trade: no Road or Port link to another of your cities",
     );
     expect(ok("view", "--session", newSession("no-commerce"))).not.toContain(
-      "land trade",
+      "No trade",
     );
   });
 
@@ -957,9 +957,7 @@ describe("text-mode play harness", () => {
     const started = ok("lab", "--session", session, "LAB_LATE");
     // The view: Barracks, land trade +1, and the notes of the unit lines.
     expect(started).toContain("barracks x1: +1 unit slot(s)");
-    expect(started).toContain(
-      "Land trade +1: linked by Road to another of your cities",
-    );
+    expect(started).toContain("Trade +1: linked to another of your cities");
     expect(started).toContain("| cannot move and attack in the same turn");
     expect(started).toContain(
       "| Overrun: after a kill it advances onto the victim's tile and may attack again from there, with no limit",

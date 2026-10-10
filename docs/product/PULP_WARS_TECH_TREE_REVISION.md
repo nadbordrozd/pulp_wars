@@ -666,6 +666,8 @@ Rules:
 
 Sea trade and Commerce land trade are separate. A city may earn both if it qualifies for both.
 
+(Superseded by `pulp-wars-poc-7r76`, `pulp_wars-5ti.12`: sea trade is removed and Ports join the Road network; see [the current rules, section 9.5](RULESET_7_CURRENT.md#95-sea-links).)
+
 ## 8.3 Naval Engineering — tier 3, requires Navigation
 
 Unlock:

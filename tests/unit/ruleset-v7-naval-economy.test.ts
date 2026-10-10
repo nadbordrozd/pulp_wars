@@ -9,6 +9,7 @@ import {
   projectEventsV7,
   queryPlayerCommandsV7,
   recomputeLiveEconomyV7,
+  seaLinksV7,
   seaTradeCityIdsV7,
   viewForV7,
   type GameStateV7,
@@ -403,7 +404,9 @@ describe("ruleset-7 naval economy", () => {
     }
   });
 
-  it("keeps capital Roads separate from Ports and ignores mid-lane occupation", () => {
+  // `pulp-wars-poc-7r76` (`pulp_wars-5ti.12`): Ports join the Road network.
+  // Before, this case kept the two apart and paid a sea-trade Coin.
+  it("joins capital Roads and Ports in one network, pays one trade Coin, and ignores mid-lane occupation", () => {
     const fixture = coastalV7(9103);
     const capital = fixture.state.cities.find(
       (city) => city.ownerId === fixture.state.humanPlayerId,
@@ -495,28 +498,34 @@ describe("ruleset-7 naval economy", () => {
         }),
       },
     } as GameStateV7;
-    expect(
-      [...seaTradeCityIdsV7(base, base.humanPlayerId)].sort((a, b) => a - b),
-    ).toEqual([cityBId, cityCId]);
-    expect(
-      combinedNetworkCityIdsV7(base, base.humanPlayerId).has(cityDId),
-    ).toBe(false);
+    // The capital's Road reaches the second city, whose dock stands beside
+    // its center; a sea link joins that dock to the third city's, and a
+    // Road runs on to the fourth: one network of four cities.
+    expect(seaTradeCityIdsV7(base, base.humanPlayerId)).toEqual(new Set());
+    expect(seaLinksV7(base, base.humanPlayerId)).toEqual([
+      {
+        from: { x: 4, y: 2 },
+        to: { x: 8, y: 2 },
+        fromCityId: cityBId,
+        toCityId: cityCId,
+      },
+    ]);
+    expect(combinedNetworkCityIdsV7(base, base.humanPlayerId)).toEqual(
+      new Set([capital.id, cityBId, cityCId, cityDId]),
+    );
     expect(
       cityIncomeV7(
         base,
         base.cities.find((city) => city.id === cityBId) ?? cityB,
       ),
-      // Level 1 + land trade 2 (tuning 1, 7r46; 1 before) + sea trade 1.
-    ).toBe(3);
+      // Level 1 + one trade Coin (3 through 7r75, with the sea-trade Coin).
+    ).toBe(2);
     expect(
       cityIncomeV7(
         base,
         base.cities.find((city) => city.id === cityCId) ?? cityC,
       ),
-      // Tuning 3 (`pulp_wars-w49.3`): a Road links this city to another of
-      // its owner's, so it earns land trade without the capital (2 before).
-      // Tuning 4: land trade pays 1 (the total was 4).
-    ).toBe(3);
+    ).toBe(2);
     // Revision 14 (E2): a lone Market pays 1 even with Commerce.
     expect(marketIncomeForCityV7(base, cityD)).toBe(1);
     expect(
@@ -537,11 +546,9 @@ describe("ruleset-7 naval economy", () => {
         },
       ],
     };
-    expect(seaTradeCityIdsV7(transitOccupied, base.humanPlayerId)).toEqual(
-      new Set([cityBId, cityCId]),
-    );
-    // The frozen sea (`pulp_wars-5ti.11`, current rules section 21.16): sea
-    // trade counts an ice tile as water, so the route runs under the ice.
+    expect(seaLinksV7(transitOccupied, base.humanPlayerId)).toHaveLength(1);
+    // The frozen sea (`pulp_wars-5ti.11`, current rules section 21.16): a
+    // sea link counts an ice tile as water, so the route runs under the ice.
     const frozenRoute = {
       ...base,
       ice: [5, 6, 7].map((x) => ({
@@ -550,9 +557,7 @@ describe("ruleset-7 naval economy", () => {
         turnsLeft: 3,
       })),
     };
-    expect(seaTradeCityIdsV7(frozenRoute, base.humanPlayerId)).toEqual(
-      new Set([cityBId, cityCId]),
-    );
+    expect(seaLinksV7(frozenRoute, base.humanPlayerId)).toHaveLength(1);
     expect(
       [cityBId, cityCId].map((id) =>
         cityIncomeV7(
@@ -561,7 +566,8 @@ describe("ruleset-7 naval economy", () => {
         ),
       ),
       // Tuning 3: both earn land trade (the second had 2). Tuning 4: 1 Coin.
-    ).toEqual([3, 3]);
+      // 7r76: and no sea-trade Coin (3 each before).
+    ).toEqual([2, 2]);
     const blockaded = {
       ...base,
       units: [
@@ -574,7 +580,12 @@ describe("ruleset-7 naval economy", () => {
         },
       ],
     };
-    expect(seaTradeCityIdsV7(blockaded, base.humanPlayerId)).toEqual(new Set());
+    // A blockaded dock ends the sea link and is no Road node: the cities
+    // beyond it leave the capital's network.
+    expect(seaLinksV7(blockaded, base.humanPlayerId)).toEqual([]);
+    expect(combinedNetworkCityIdsV7(blockaded, base.humanPlayerId)).toEqual(
+      new Set([capital.id, cityBId]),
+    );
   });
 
   it("emits canonical blockade and network transitions when a hostile ship enters a Port", () => {

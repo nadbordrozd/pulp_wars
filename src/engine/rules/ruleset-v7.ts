@@ -105,7 +105,12 @@ export type TechnologyUnlockV7 =
   | { readonly kind: "MARKET_INCOME_MULTIPLIER"; readonly multiplier: 2 }
   | { readonly kind: "ARMS_INDUSTRY_DISCOUNT"; readonly coins: 1 }
   | { readonly kind: "LAND_TRADE_INCOME"; readonly coins: 1 }
-  | { readonly kind: "SEA_TRADE_INCOME"; readonly coins: 1 }
+  /**
+   * `pulp-wars-poc-7r76` (`pulp_wars-5ti.12`): active Ports of two own
+   * cities join the connection network over the sea, as a Road does. It
+   * replaced `SEA_TRADE_INCOME` (Navigation's separate Coin).
+   */
+  | { readonly kind: "SEA_LINK" }
   /** Revision 17 Goblins: Coins for each credited hostile kill (2 since 7r50). */
   | { readonly kind: "PLUNDER"; readonly coins: 2 }
   | { readonly kind: "CAPTAIN_SUPPORT" }
@@ -1369,6 +1374,7 @@ export const ORIGINAL_BASELINE_V5_NODES = deepFreeze([
       { kind: "COMMAND", command: "HARVEST_FISH" },
       { kind: "COMMAND", command: "BUILD_PORT" },
       { kind: "UNIT_ROLE", role: "PATROL_BOAT" },
+      { kind: "SEA_LINK" },
     ],
   ),
   node(
@@ -1376,10 +1382,7 @@ export const ORIGINAL_BASELINE_V5_NODES = deepFreeze([
     "NAVAL",
     2,
     ["SHORECRAFT"],
-    [
-      { kind: "COMMAND", command: "GATHER_PEARLS" },
-      { kind: "SEA_TRADE_INCOME", coins: 1 },
-    ],
+    [{ kind: "COMMAND", command: "GATHER_PEARLS" }],
   ),
   node(
     "NAVAL_ENGINEERING",
@@ -4961,7 +4964,7 @@ export const RULESET_7 = deepFreeze({
  * a technology of tier `t` costs `5 / 7 / 9 + (T - 1)`, `T` being the
  * technologies the researcher already owns.
  *
- * The economy rejig (`pulp_wars-w49.16`, `pulp-wars-poc-7r75`,
+ * The economy rejig (`pulp_wars-w49.16`, `pulp-wars-poc-7r76`,
  * docs/product/RULESET_7_ECONOMY_REJIG.md): the price is per city again and
  * the technologies owned no longer enter it. A technology of tier `t`
  * costs `5 / 7 / 9 + (1 / 2 / 3) * (C - 1)`, `C` being the cities the
@@ -6559,7 +6562,8 @@ export interface TechnologyCapabilitiesV7 {
    * Forest ends the Move of the player's ground units.
    */
   readonly forestMarch: boolean;
-  readonly seaTradeIncomeCoins: 0 | 1;
+  /** 7r76: active Ports of two own cities join the network over the sea. */
+  readonly seaLink: boolean;
   readonly hostileCaptureSpoilsCoins: 0 | 2;
   /** Revision 17 Goblin Plunder: Coins per credited hostile kill. */
   readonly plunderCoins: 0 | 2;
@@ -6718,7 +6722,7 @@ export function technologyCapabilitiesV7(
   let breach = false;
   let forestCover = false;
   let forestMarch = false;
-  let seaTradeIncomeCoins: 0 | 1 = 0;
+  let seaLink = false;
   let hostileCaptureSpoilsCoins: 0 | 2 = 0;
   let plunderCoins: 0 | 2 = 0;
   let eggHpBonus: 0 | 4 = 0;
@@ -6802,8 +6806,8 @@ export function technologyCapabilitiesV7(
       case "LAND_TRADE_INCOME":
         landTradeIncomeCoins = LAND_TRADE_INCOME_COINS_V7;
         break;
-      case "SEA_TRADE_INCOME":
-        seaTradeIncomeCoins = 1;
+      case "SEA_LINK":
+        seaLink = true;
         break;
       case "FIRST_HOSTILE_CAPTURE_SPOILS":
         hostileCaptureSpoilsCoins = 2;
@@ -6934,7 +6938,7 @@ export function technologyCapabilitiesV7(
     breach,
     forestCover,
     forestMarch,
-    seaTradeIncomeCoins,
+    seaLink,
     hostileCaptureSpoilsCoins,
     plunderCoins,
     eggHpBonus,

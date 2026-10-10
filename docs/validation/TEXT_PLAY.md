@@ -537,10 +537,11 @@ city it is built in`, with an id to use.
   a `no attack: …` or `no fortify: …` line that names the reason (a Guard
   cannot attack after it has moved; only some roles build Field Defense,
   and only before moving, on a tile of your territory, for 3 Coins).
-- With Commerce, the line under each of your cities says how land trade
-  stands: `Land trade +2: linked by Road to another of your cities`, or
-  `No land trade: no Road link to another of your cities`. Every linked
-  city earns, the capital too.
+- With Commerce, the line under each of your cities says how trade
+  stands: `Trade +1: linked to another of your cities`, or
+  `No trade: no Road or Port link to another of your cities`. Every linked
+  city earns, the capital too, by Road or by Port (`7r76`; the `TRADE` line
+  lists the cities that earn, and sea trade is gone).
 - With Commerce, an empty Market offers `c1.hire.<ROLE>.x,y`: a second unit
   a turn in that city, at 1.5 times its price, without the city action.
   The unit arrives on the Market tile with its turn spent, and the city may

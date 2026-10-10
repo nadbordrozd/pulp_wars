@@ -13,6 +13,8 @@ import {
   arePlayersAlliedV7,
   combinedNetworkCityIdsV7,
   combinedNetworkRoadKeysV7,
+  networkNodeComponentsV7,
+  seaLinksV7,
   isActivePortV7,
   landTradeCityIdsV7,
   marketCoinsV7,
@@ -599,6 +601,12 @@ export interface PublicNavalFactsV7 {
     readonly at: CoordV7;
     readonly cityId: CityId;
     readonly status: "ACTIVE" | "BLOCKADED";
+    /**
+     * `pulp_wars-5ti.12`: the dock is joined to its own city's center in
+     * the connection network (beside the center, or by Road tiles and
+     * other docks); a blockaded dock is not.
+     */
+    readonly joinsCity: boolean;
   }[];
   readonly tradeCityIds: readonly CityId[];
   readonly landTradeCityIds: readonly CityId[];
@@ -641,13 +649,22 @@ export function viewForV7(
         state.cities.find((city) => city.id === tile.territoryCityId)
           ?.ownerId === viewerId,
     )
-    .map((tile) => ({
-      at: tile.at,
-      cityId: tile.territoryCityId as CityId,
-      status: isActivePortV7(state, tile.at, viewerId)
-        ? ("ACTIVE" as const)
-        : ("BLOCKADED" as const),
-    }));
+    .map((tile) => {
+      const components = networkNodeComponentsV7(state, viewerId);
+      const center = citiesById.get(tile.territoryCityId as CityId)?.at;
+      const component = components.get(key(tile.at));
+      return {
+        at: tile.at,
+        cityId: tile.territoryCityId as CityId,
+        status: isActivePortV7(state, tile.at, viewerId)
+          ? ("ACTIVE" as const)
+          : ("BLOCKADED" as const),
+        joinsCity:
+          center !== undefined &&
+          component !== undefined &&
+          component === components.get(key(center)),
+      };
+    });
   const tiles: PlayerTileViewV7[] = state.board.tiles.map((tile) => {
     const territory =
       tile.territoryCityId === null
@@ -998,7 +1015,7 @@ export function viewForV7(
             combinedNetworkRoadKeysV7(state, viewerId).has(key(tile.at)),
         )
         .map((tile) => tile.at),
-      seaRoutes: publicSeaRoutes(state, viewer, ownedPorts),
+      seaRoutes: publicSeaRoutes(state, viewer),
       recoverableNavalUnitIds: state.units
         .filter(
           (unit) =>
@@ -1305,13 +1322,7 @@ function scoreViewV7(
 function publicSeaRoutes(
   state: GameStateV7,
   viewer: PlayerStateV7,
-  ports: readonly {
-    readonly at: CoordV7;
-    readonly cityId: CityId;
-    readonly status: "ACTIVE" | "BLOCKADED";
-  }[],
 ): PublicNavalFactsV7["seaRoutes"] {
-  if (!viewer.researchedTechs.includes("SHORECRAFT")) return [];
   const explored = new Set(viewer.explored.map(key));
   const water = new Set(
     state.board.tiles
@@ -1324,36 +1335,76 @@ function publicSeaRoutes(
       )
       .map((tile) => key(tile.at)),
   );
-  const best = new Map<string, PublicNavalFactsV7["seaRoutes"][number]>();
-  const active = ports.filter((port) => port.status === "ACTIVE");
-  for (const from of active) {
-    const parents = waterParents(
-      state.board.width,
-      state.board.height,
-      water,
-      from.at,
-      5,
+  // `pulp-wars-poc-7r76` (`pulp_wars-5ti.12`): exactly the sea links of the
+  // viewer's connection network (`seaLinksV7`), one line for each pair of
+  // cities: a link whose two docks are joined to their own city centers
+  // first (the one that carries the connection), then the shortest.
+  const components = networkNodeComponentsV7(state, viewer.id);
+  const cityAt = new Map(state.cities.map((city) => [city.id, city.at]));
+  const carries = (at: CoordV7, cityId: CityId): boolean => {
+    const center = cityAt.get(cityId);
+    const component = components.get(key(at));
+    return (
+      center !== undefined &&
+      component !== undefined &&
+      component === components.get(key(center))
     );
-    for (const to of active) {
-      if (from.cityId >= to.cityId) continue;
-      const path = reconstructWaterPath(parents, to.at);
-      if (path === null) continue;
-      const route = { fromCityId: from.cityId, toCityId: to.cityId, path };
-      const routeKey = `${from.cityId}:${to.cityId}`;
-      const existing = best.get(routeKey);
-      if (
-        existing === undefined ||
-        route.path.length < existing.path.length ||
-        (route.path.length === existing.path.length &&
-          comparePath(route.path, existing.path) < 0)
-      )
-        best.set(routeKey, route);
+  };
+  const best = new Map<
+    string,
+    {
+      readonly route: PublicNavalFactsV7["seaRoutes"][number];
+      readonly carries: boolean;
     }
+  >();
+  const parentsByPort = new Map<string, ReadonlyMap<string, CoordV7 | null>>();
+  for (const link of seaLinksV7(state, viewer.id)) {
+    const [from, to] =
+      link.fromCityId < link.toCityId
+        ? ([
+            { at: link.from, cityId: link.fromCityId },
+            { at: link.to, cityId: link.toCityId },
+          ] as const)
+        : ([
+            { at: link.to, cityId: link.toCityId },
+            { at: link.from, cityId: link.fromCityId },
+          ] as const);
+    let parents = parentsByPort.get(key(from.at));
+    if (parents === undefined) {
+      parents = waterParents(
+        state.board.width,
+        state.board.height,
+        water,
+        from.at,
+        5,
+      );
+      parentsByPort.set(key(from.at), parents);
+    }
+    // A link counts whether or not its water is explored; a crossing the
+    // viewer has not explored is published as its two docks only.
+    const path = reconstructWaterPath(parents, to.at) ?? [from.at, to.at];
+    const candidate = {
+      route: { fromCityId: from.cityId, toCityId: to.cityId, path },
+      carries: carries(from.at, from.cityId) && carries(to.at, to.cityId),
+    };
+    const routeKey = `${from.cityId}:${to.cityId}`;
+    const existing = best.get(routeKey);
+    if (
+      existing === undefined ||
+      (candidate.carries && !existing.carries) ||
+      (candidate.carries === existing.carries &&
+        (candidate.route.path.length < existing.route.path.length ||
+          (candidate.route.path.length === existing.route.path.length &&
+            comparePath(candidate.route.path, existing.route.path) < 0)))
+    )
+      best.set(routeKey, candidate);
   }
-  return [...best.values()].sort(
-    (left, right) =>
-      left.fromCityId - right.fromCityId || left.toCityId - right.toCityId,
-  );
+  return [...best.values()]
+    .map((entry) => entry.route)
+    .sort(
+      (left, right) =>
+        left.fromCityId - right.fromCityId || left.toCityId - right.toCityId,
+    );
 }
 
 function comparePath(

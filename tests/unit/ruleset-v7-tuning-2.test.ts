@@ -58,10 +58,10 @@ const adjacentAttackers = (faction: FactionIdV7): readonly UnitRoleIdV7[] =>
 
 describe("tuning 2 identity", () => {
   it("is 7r47 with 7r46 last in the prior list", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r75");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r75.current");
-    expect(PRIOR_RULESET_7_IDS.at(-29)).toBe("pulp-wars-poc-7r46");
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(74);
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r76");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r76.current");
+    expect(PRIOR_RULESET_7_IDS.at(-30)).toBe("pulp-wars-poc-7r46");
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(75);
   });
 });
 
@@ -335,7 +335,7 @@ describe("5: Commerce's capital rule is shown", () => {
 
   it("states the rule on the tech card", () => {
     expect(landTradeUnlockTextV7(1)).toBe(
-      "Each city linked by Road to another of your cities: +1 Coin each turn",
+      "Each city linked by Road or Port to another of your cities: +1 Coin each turn",
     );
   });
 
@@ -349,7 +349,7 @@ describe("5: Commerce's capital rule is shown", () => {
       [8, 8],
     ] as const)
       expect(status(before, x, y)).toBe(
-        "No land trade: no Road link to another of your cities",
+        "No trade: no Road or Port link to another of your cities",
       );
     const after = linked();
     const owner = seatIdV7(after, 0);
@@ -358,7 +358,7 @@ describe("5: Commerce's capital rule is shown", () => {
       [8, 8],
     ] as const)
       expect(status(after, x, y)).toBe(
-        "Land trade +1: linked by Road to another of your cities",
+        "Trade +1: linked to another of your cities",
       );
     // The line agrees with the engine.
     expect([...landTradeCityIdsV7(after, owner)].sort()).toEqual(

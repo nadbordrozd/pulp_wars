@@ -42,15 +42,15 @@ import {
 
 describe("ruleset-7 revision-12 identity", () => {
   it("keeps rejecting r11 after the r54 identity and cleans every obsolete Ruleset-7 key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r75");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r75.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-21)).toBe(
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r76");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r76.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-22)).toBe(
       "pulpWars.save.v7r54.current",
     );
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
 
     const state = initialV7();
-    expect(state.rulesetId).toBe("pulp-wars-poc-7r75");
+    expect(state.rulesetId).toBe("pulp-wars-poc-7r76");
     expect(
       parseGameStateV7({ ...state, rulesetId: "pulp-wars-poc-7r11" }),
     ).toBeNull();

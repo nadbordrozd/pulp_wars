@@ -772,7 +772,6 @@ function cityIncomeV7(view: PlayerViewV7, city: PublicCityV7): number {
       cityEconomicMiracleIncomeV7(city) +
       Number(view.naval.landTradeCityIds.includes(city.id)) *
         LAND_TRADE_INCOME_COINS_V7 +
-      Number(view.naval.seaTradeCityIds.includes(city.id)) +
       market +
       Math.min(0, city.population),
   );
@@ -4109,12 +4108,9 @@ function viewLinesV7(session: SessionV7, full: boolean): string[] {
       lines.push(
         `BUILDING OUTPUT ${view.improvementValues.map((value) => `${value.improvement.toLowerCase()}@${xyV7(value.at)} ${value.measure === "POPULATION" ? "pop" : "coins"} +${value.level}`).join(" | ")}`,
       );
-    if (
-      view.naval.landTradeCityIds.length + view.naval.seaTradeCityIds.length >
-      0
-    )
+    if (view.naval.landTradeCityIds.length > 0)
       lines.push(
-        `TRADE land ${view.naval.landTradeCityIds.map((id) => `c${id}`).join(",") || "-"} sea ${view.naval.seaTradeCityIds.map((id) => `c${id}`).join(",") || "-"}`,
+        `TRADE ${view.naval.landTradeCityIds.map((id) => `c${id}`).join(",")}`,
       );
   }
   lines.push("", offeredSummaryV7(offered));

@@ -146,9 +146,10 @@ describe("ruleset-7 technology", () => {
         tech,
         ...(tech === "GATHERING" ? { cost: 0 } : {}),
       });
-      expect(result.events.slice(1).map((event) => event.kind)).toEqual(
-        tech === "ROADS" ? ["SEA_NETWORK_CHANGED"] : [],
-      );
+      // 7r76 (`pulp_wars-5ti.12`): a city center is in its owner's network
+      // without Roads, so researching Roads changes no network (it emitted
+      // `SEA_NETWORK_CHANGED` before).
+      expect(result.events.slice(1).map((event) => event.kind)).toEqual([]);
       expect(result.events.every((event) => parseEventV7(event).ok)).toBe(true);
       expect(result.state.random).toEqual(random);
       state = result.state;
@@ -219,7 +220,8 @@ describe("ruleset-7 technology", () => {
       armsIndustryDiscountCoins: 1,
       // Tuning 1 (7r46): Commerce pays 2 Coins per connected city.
       landTradeIncomeCoins: 1,
-      seaTradeIncomeCoins: 1,
+      // 7r76: Ports join the Road network; sea trade's Coin is gone.
+      seaLink: true,
       mountainMovement: true,
       ownedCityCapacityBonus: 1,
     });

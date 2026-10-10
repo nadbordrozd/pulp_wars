@@ -166,7 +166,7 @@ export const FIELD_DEFENSE_UNLOCK_TEXT_V7 = `Build Field Defense: +${FIELD_DEFEN
  * capital rule of tuning 2 is gone).
  */
 export function landTradeUnlockTextV7(coins: number): string {
-  return `Each city linked by Road to another of your cities: +${coins} ${coins === 1 ? "Coin" : "Coins"} each turn`;
+  return `Each city linked by Road or Port to another of your cities: +${coins} ${coins === 1 ? "Coin" : "Coins"} each turn`;
 }
 
 /**
@@ -197,6 +197,16 @@ export type LandTradeStatusV7 =
   | { readonly kind: "PAYS"; readonly coins: number }
   | { readonly kind: "NOT_LINKED" };
 
+/**
+ * Bead pulp_wars-5ti.12: Sailing's line. Active Ports of two cities join
+ * the same network as Roads (population link, and trade with Commerce).
+ */
+export const SEA_LINK_UNLOCK_TEXT_V7 = "Ports link cities like Roads";
+/** Navigation: a sea link may cross Deep Water. */
+export const SEA_LINK_DEEP_WATER_NOTE_V7 = "Port links can cross deep water";
+/** An own active dock that no Road joins to its city's center. */
+export const PORT_NOT_JOINED_TEXT_V7 = "No link: needs a Road to its city";
+
 export function landTradeStatusV7(
   view: PlayerViewV7,
   cityId: CityId,
@@ -215,6 +225,6 @@ export function landTradeStatusV7(
 /** The short line of a land trade status (city panel and text harness). */
 export function landTradeStatusTextV7(status: LandTradeStatusV7): string {
   return status.kind === "PAYS"
-    ? `Land trade +${status.coins}: linked by Road to another of your cities`
-    : "No land trade: no Road link to another of your cities";
+    ? `Trade +${status.coins}: linked to another of your cities`
+    : "No trade: no Road or Port link to another of your cities";
 }

@@ -24,6 +24,7 @@ import {
   queryCombatPreviewV7,
   queryPlayerCommandsV7,
   recomputeLiveEconomyV7,
+  seaLinksV7,
   seaTradeCityIdsV7,
   unitId,
   viewForV7,
@@ -66,7 +67,7 @@ const READY: UnitStateV7["activation"] = {
 
 describe("Ruleset 7 revision 7 networks and fortifications", () => {
   it("freezes the revision identity and removes the retired systems", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r75");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r76");
     expect(setupV7().mapGenerationRevision).toBe("REGIONAL_BIOMES_NAVAL_V4");
     expect(TECHNOLOGY_IDS_V7).toContain("ENGINEERING");
     expect(TECHNOLOGY_IDS_V7).not.toContain("GRAND_WORKS");
@@ -712,26 +713,22 @@ describe("Ruleset 7 revision 7 networks and fortifications", () => {
     const originalCapitalId = required(
       chained.players.find((player) => player.id === owner),
     ).originalCapitalCityId;
-    expect(seaTradeCityIdsV7(chained, owner)).toEqual(
-      new Set(
-        cities
-          .filter((city) => city.id !== originalCapitalId)
-          .map((city) => city.id),
-      ),
+    // `pulp-wars-poc-7r76` (`pulp_wars-5ti.12`): sea trade is gone. The
+    // docks of two different cities at most five water steps apart are
+    // joined by a sea link of the one connection network instead
+    // (tests/unit/ruleset-v7-port-road-network.test.ts covers what a link
+    // gives); these are the geometry rules it kept.
+    const links = (state: GameStateV7) =>
+      seaLinksV7(state, owner).map((link) => [link.from.x, link.to.x]);
+    expect(seaTradeCityIdsV7(chained, owner)).toEqual(new Set());
+    expect(links(chained)).toEqual([
+      [1, 6],
+      [6, 11],
+    ]);
+    expect(combinedNetworkCityIdsV7(chained, owner)).toContain(
+      originalCapitalId,
     );
-    expect(combinedNetworkCityIdsV7(chained, owner)).toEqual(
-      new Set(
-        cities
-          .filter((city) => city.id === originalCapitalId)
-          .map((city) => city.id),
-      ),
-    );
-    const chainedEconomy = recomputeLiveEconomyV7(chained, chained, []);
-    expect(
-      chainedEconomy.cities
-        .filter((city) => cities.some((candidate) => candidate.id === city.id))
-        .map((city) => [city.id, city.economicPopulation]),
-    ).toEqual(cities.map((city) => [city.id, 0]));
+    // The link needs Shorecraft only (Navigation before 7r76).
     const shorecraftOnly = {
       ...chained,
       players: chained.players.map((player) =>
@@ -740,20 +737,17 @@ describe("Ruleset 7 revision 7 networks and fortifications", () => {
           : player,
       ),
     };
-    expect(seaTradeCityIdsV7(shorecraftOnly, owner)).toEqual(new Set());
-    expect(combinedNetworkCityIdsV7(shorecraftOnly, owner)).toEqual(new Set());
-    expect(
-      recomputeLiveEconomyV7(shorecraftOnly, shorecraftOnly, [])
-        .cities.filter((city) =>
-          cities.some((candidate) => candidate.id === city.id),
-        )
-        .map((city) => city.economicPopulation),
-    ).toEqual([0, 0, 0]);
+    expect(links(shorecraftOnly)).toEqual(links(chained));
+    const noTechnology = {
+      ...chained,
+      players: chained.players.map((player) =>
+        player.id === owner ? { ...player, researchedTechs: [] } : player,
+      ),
+    };
+    expect(links(noTechnology)).toEqual([]);
 
     const tooFar = portGraph(base, owner, cities, [1, 6, 12]);
-    expect(seaTradeCityIdsV7(tooFar, owner)).not.toContain(
-      required(cities[2]).id,
-    );
+    expect(links(tooFar)).toEqual([[1, 6]]);
 
     const blocked = {
       ...chained,
@@ -772,9 +766,7 @@ describe("Ruleset 7 revision 7 networks and fortifications", () => {
         ),
       },
     };
-    expect(seaTradeCityIdsV7(blocked, owner)).toEqual(
-      new Set([required(cities[1]).id, required(cities[2]).id]),
-    );
+    expect(links(blocked)).toEqual([[6, 11]]);
 
     const dense = densePortGraph(base, owner, cities);
     expect(
@@ -832,7 +824,9 @@ describe("Ruleset 7 revision 7 networks and fortifications", () => {
       required(state.units[0]),
       [destination],
     );
-    expect(seaTradeCityIdsV7(state, owner)).toContain(remote.id);
+    // 7r76: the two docks are sea-linked, and neither stands beside its
+    // city's center, so the link joins no city.
+    expect(seaLinksV7(state, owner)).toHaveLength(1);
     expect(combinedNetworkCityIdsV7(state, owner)).not.toContain(remote.id);
     expect(combinedNetworkRoadKeysV7(state, owner)).not.toContain(
       key(remote.at),

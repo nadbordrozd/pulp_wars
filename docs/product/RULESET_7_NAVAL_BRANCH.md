@@ -487,7 +487,13 @@ water:
   (the Rift precedent);
 - its Fish or Pearls stay and may be harvested under the ordinary gates
   (ice fishing); a Port cannot be built on ice, and ice never forms on a dock;
-- sea trade counts it as water (a route may run under the ice);
+- sea trade counts it as water (a route may run under the ice); since
+  `pulp-wars-poc-7r76` (`pulp_wars-5ti.12`) sea trade is gone and Ports
+  join the Road network over **sea links**
+  ([current rules, section 9.5](RULESET_7_CURRENT.md#95-sea-links)), which
+  run under the ice the same way. Wherever this document says "sea trade",
+  read "sea links": they need Shorecraft only, and Navigation lets them
+  cross Deep Water;
 - a tunnel never passes under it, and an eruption does hit a land-form unit
   standing on it.
 

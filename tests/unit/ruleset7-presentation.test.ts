@@ -596,7 +596,8 @@ describe("Ruleset 7 public presentation", () => {
         },
         ownedCity.id,
       ),
-    ).toBe((baseIncome ?? 0) + 1);
+      // 7r76 (`pulp_wars-5ti.12`): sea trade pays nothing any more.
+    ).toBe(baseIncome ?? 0);
     const occupied = {
       ...view,
       units: view.units.map((unit) =>

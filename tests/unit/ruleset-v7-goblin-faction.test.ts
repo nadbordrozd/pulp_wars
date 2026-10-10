@@ -77,11 +77,11 @@ import {
 
 describe("ruleset-7 revision-17 identity", () => {
   it("keeps r16 among the prior identities after the r55 identity and cleans the r16 key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r75");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r75.current");
-    expect(PRIOR_RULESET_7_IDS.at(-59)).toBe("pulp-wars-poc-7r16");
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(74);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-59)).toBe(
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r76");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r76.current");
+    expect(PRIOR_RULESET_7_IDS.at(-60)).toBe("pulp-wars-poc-7r16");
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(75);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-60)).toBe(
       "pulpWars.save.v7r16.current",
     );
     const storage = new MemoryStorage([
@@ -889,7 +889,7 @@ describe("ruleset-7 Goblin technology", () => {
     ]);
     expect(text(1, "COMMERCE")).toEqual([
       hire,
-      "Each city linked by Road to another of your cities: +1 Coin each turn",
+      "Each city linked by Road or Port to another of your cities: +1 Coin each turn",
     ]);
     expect(text(0, "ADMINISTRATION")).toEqual([
       "Train Orc Warboss",

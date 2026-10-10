@@ -167,6 +167,7 @@ describe("ruleset-7 exact public planning reuse", () => {
                 at: explored.at,
                 cityId: ownedCity.id,
                 status: "BLOCKADED",
+                joinsCity: false,
               },
             ],
           },

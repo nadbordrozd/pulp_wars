@@ -48,6 +48,9 @@ export const KIND_READER_CLASSES_V7: Readonly<
   "src/engine/v7/dwarf-reducer.ts::applyAssembleV7": "SEAT",
   "src/engine/v7/economy.ts::cityUnitCapacityV7": "SEAT",
   "src/engine/v7/economy.ts::landTradeCityIdsV7": "SEAT",
+  // `pulp_wars-5ti.12` (7r76): the sea link is the owner's Shorecraft
+  // capability (`seaLink`), a seat-level economy rule like land trade.
+  "src/engine/v7/economy.ts::seaTradeCityIdsV7": "SEAT",
   // Tuning 2 (`pulp_wars-w49.3`): the land trade line reads the viewer's
   // own Commerce capability (a seat-level economy rule).
   "src/render/technology-unlock-text-v7.ts::landTradeStatusV7": "SEAT",

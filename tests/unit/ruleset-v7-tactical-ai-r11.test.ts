@@ -2044,7 +2044,12 @@ function multiDockSharedCityView(): ReturnType<typeof viewForV7> {
       ...view.naval,
       ownedPorts: [
         ...view.naval.ownedPorts,
-        { at: second.at, cityId: city.id, status: "ACTIVE" as const },
+        {
+          at: second.at,
+          cityId: city.id,
+          status: "ACTIVE" as const,
+          joinsCity: true,
+        },
       ],
     },
   };

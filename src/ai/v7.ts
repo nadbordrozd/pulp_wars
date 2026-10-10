@@ -2503,8 +2503,17 @@ function* roadCorridorWorkV7(
   const targets = view.cities
     .filter((city) => city.ownerId === view.viewer.id && city.id !== capital.id)
     .sort((left, right) => left.id - right.id);
+  // Bead pulp_wars-5ti.12 (7r76): Ports join the Road network, so a city
+  // already linked to the capital (by Road, by a Port, or by both) gains
+  // nothing from a Road corridor to it.
+  const linked = new Set(
+    view.naval.networkCityIds.includes(capital.id)
+      ? view.naval.networkCityIds
+      : [],
+  );
   let selected: RoadCorridorV7 | null = null;
   for (const target of targets) {
+    if (linked.has(target.id)) continue;
     type Node = { at: CoordV7; missing: readonly string[]; steps: number };
     const queue: Node[] = [{ at: capital.at, missing: [], steps: 0 }];
     const best = new Map<string, number>([[coordKey(capital.at), 0]]);

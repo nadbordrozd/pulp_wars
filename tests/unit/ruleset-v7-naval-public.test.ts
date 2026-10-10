@@ -244,8 +244,13 @@ describe("ruleset-7 naval public commands", () => {
     const view = viewForV7(state, state.humanPlayerId);
     expect(view.naval.ownedPorts).toEqual(
       [
-        { at: fixture.portAt, cityId: city.id, status: "ACTIVE" },
-        { at: secondAt, cityId: secondId, status: "ACTIVE" },
+        {
+          at: fixture.portAt,
+          cityId: city.id,
+          status: "ACTIVE",
+          joinsCity: true,
+        },
+        { at: secondAt, cityId: secondId, status: "ACTIVE", joinsCity: true },
       ].sort((left, right) => left.at.y - right.at.y || left.at.x - right.at.x),
     );
     expect(view.naval.seaRoutes).toEqual([
@@ -257,7 +262,11 @@ describe("ruleset-7 naval public commands", () => {
     ]);
     expect(view.naval.recoverableNavalUnitIds).toEqual([own.id]);
     expect(view.naval.networkCityIds).toContain(city.id);
-    expect(view.naval.tradeCityIds).toEqual([secondId]);
+    // 7r76 (`pulp_wars-5ti.12`): no sea-trade Coin; the two docks link the
+    // second city to the capital's network instead.
+    expect(view.naval.tradeCityIds).toEqual([]);
+    expect(view.naval.seaTradeCityIds).toEqual([]);
+    expect(view.naval.networkCityIds).toContain(secondId);
     const noShorecraft = {
       ...state,
       players: state.players.map((player) =>

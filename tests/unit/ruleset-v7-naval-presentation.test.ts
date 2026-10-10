@@ -445,11 +445,13 @@ describe("Ruleset 7 naval public presentation", () => {
             at: fixture.portAt,
             cityId: city.id,
             status: "ACTIVE" as const,
+            joinsCity: true,
           },
           {
             at: secondPort,
             cityId: city.id,
             status: "ACTIVE" as const,
+            joinsCity: true,
           },
         ],
       },

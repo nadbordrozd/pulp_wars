@@ -229,10 +229,10 @@ describe("Ruleset 7 selection dock layout", () => {
       '.v7-city-stats > [data-land-trade="not_linked"]',
     );
     expect(trade.textContent).toBe(
-      "No land trade: no Road link to another of your cities",
+      "No trade: no Road or Port link to another of your cities",
     );
     expect(trade.title).toBe(
-      "Each city linked by Road to another of your cities: +1 Coin each turn",
+      "Each city linked by Road or Port to another of your cities: +1 Coin each turn",
     );
     app.destroy();
 

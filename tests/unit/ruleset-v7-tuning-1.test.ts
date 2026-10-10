@@ -113,13 +113,13 @@ describe("tuning 1 identity", () => {
   // Tuning 1 took 7r46; tuning 2 (tests/unit/ruleset-v7-tuning-2.test.ts)
   // took 7r47, so 7r46 is the last prior identity.
   it("was 7r46, after 7r45 in the prior list", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r75");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r75.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-30, -28)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r76");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r76.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-31, -29)).toEqual([
       "pulp-wars-poc-7r45",
       "pulp-wars-poc-7r46",
     ]);
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(74);
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(75);
   });
 });
 
@@ -804,7 +804,7 @@ describe("F: Commerce, Explosives, and Field Defense", () => {
       "Breach: melee attacks ignore Walls and Field Defense, and destroy Field Defense",
     ]);
     expect(card("COMMERCE")).toContain(
-      "Each city linked by Road to another of your cities: +1 Coin each turn",
+      "Each city linked by Road or Port to another of your cities: +1 Coin each turn",
     );
     expect(card("FORTIFICATION")).toContain(
       "Build Field Defense: +2 Defense for the unit on it; the builder keeps its move and attack",

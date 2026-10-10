@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r75`, for all eight offered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r76`, for all eight offered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), and Candy (`CANDY`). A
 ninth faction, the Cultists (`CULT`), is **registered and not offered**: its
@@ -416,6 +416,21 @@ the `CHANNEL_NOT_LEGAL` reason `FURIOUS` are new, and the death cause
 `UNBOUND` is gone. One rule reaches every faction: a neutral unit on a city
 center besieges nothing. A save, replay, or setup of `7r74` is rejected, and
 the browser autosave has a new key.
+`pulp-wars-poc-7r76` (`pulp_wars-5ti.12`) is **Ports join the Road
+network** ([section 9](#9-roads-trade-and-market); the user, 2026-10-10:
+"the ports are supposed to connect cities the same way roads do ... as if
+every port and every city tile automatically had a road built on it"). A
+player has one connection network: Road tiles, every own city center, every
+own active Port or Shipyard, and the **sea links** between active docks of
+two own cities at most five water steps apart. A city joined to the
+original capital by any mix of them gets the link once: +1 population for
+it and +1 for the capital. **Sea trade is gone**: Navigation's separate
+Coin is removed, and Commerce's trade Coin goes to every city the network
+links to another, by Road or by Port. A sea link needs only **Shorecraft**
+(Navigation lets it cross Deep Water), city centers and docks count without
+the Roads technology, and unexplored water no longer breaks a link. A save,
+replay, or setup of `7r75` is rejected, and the browser autosave has a new
+key.
 `pulp-wars-poc-7r58` (`pulp_wars-w49.25`) is
 [step two of the Martian pass](RULESET_7_TUNING_MARTIAN.md#14-step-two):
 **City Walls hold a unit on its own city center against a Saucer's Tractor
@@ -866,7 +881,7 @@ the build differs (its sections 20 to 24 list them);
 the values here are current. Where a document and the code disagreed, the
 code's behavior is the rule and is stated below;
 [Known discrepancies](#25-known-discrepancies) lists the open items and the
-resolved ones as of `pulp-wars-poc-7r75`.
+resolved ones as of `pulp-wars-poc-7r76`.
 
 **Terms.** "On the board" means a unit that currently exists (HP above 0).
 **Living** has the narrower revision-13 meaning used by Wail, Plague,
@@ -967,10 +982,10 @@ separate [Ruleset 6](RULESET_6.md) route.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r75`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Ruleset                                    | `pulp-wars-poc-7r76`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r75.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Browser autosave                           | `pulpWars.save.v7r76.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, `CULT`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`, `CULT_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -2201,8 +2216,9 @@ capital's level-5 record `TREASURY` from the economy rejig, `7r54`.)
   add 1 each; 21 at round 3 of the Human tuning, when land trade paid 2)
   and 17 for a Goblin seat (Plunder replaces land trade; its capital pays
   7 and its North and Coast cities 5 each, and the table above shows the
-  other factions' incomes). No city has sea trade: the Port and Shipyard
-  belong to one city.
+  other factions' incomes). The Port and Shipyard belong to one city, so
+  there is no sea link; both stand beside the Coast center and are part of
+  the network the Roads already join ([section 9.3](#93-road-population-and-land-trade)).
 
 **Players.** Every seat has all 25 technologies (nothing is left to
 research and the free opening technology does not apply), 3 Coins before its
@@ -3202,7 +3218,7 @@ At Start Turn each owned city pays:
 
 ```text
 if besieged: 0
-else max(1, min(level, 4) + capital + seaTrade + landTrade + market + min(0, population))
+else max(1, min(level, 4) + capital + landTrade + market + min(0, population))
 ```
 
 - The **level term** is capped at 4 (`CITY_LEVEL_INCOME_CAP_V7`). Levels 5 and
@@ -3215,8 +3231,8 @@ else max(1, min(level, 4) + capital + seaTrade + landTrade + market + min(0, pop
   to every later owner), and the former owner loses it. This is separate from
   the _original capital_ that roots Road population and trade
   ([section 9](#9-roads-trade-and-market)).
-- `seaTrade` is 0 or 1 and `landTrade` 0 or 2
-  ([section 9](#9-roads-trade-and-market)).
+- `landTrade` is 0 or 1 ([section 9.3](#93-road-population-and-land-trade));
+  the separate `seaTrade` term was removed with `7r76`.
 - `market` is the city's Market income ([section 9.4](#94-market)).
 
 ### 4.4 Unit capacity
@@ -3709,8 +3725,8 @@ ordinary formula applies to every technology.
 | Wilds      |    2 | `MARKSMANSHIP`      | Hunting        | Marksman                                                                                                          |
 | Wilds      |    3 | `FIELDCRAFT`        | Marksmanship   | Replant Forest; Forest march (round 4: no ground unit stops in Forest); Marksman Sight 2                          |
 | Mobility   |    1 | `SCOUTING`          | —              | Raider; Raider Sight 2                                                                                            |
-| Mobility   |    2 | `ROADS`             | Scouting       | Build Road; half-cost Road movement; connected-city Road population                                               |
-| Mobility   |    3 | `COMMERCE`          | Roads          | +1 Coin land trade for every Road-linked city (round 4; 2 before); Hire at a Market                               |
+| Mobility   |    2 | `ROADS`             | Scouting       | Build Road; half-cost Road movement; link population ([section 9.3](#93-road-population-and-land-trade))          |
+| Mobility   |    3 | `COMMERCE`          | Roads          | +1 Coin trade for every city linked to another by Road or Port (round 4; 2 before); Hire at a Market              |
 | Mobility   |    2 | `RAIDING`           | Scouting       | Pillage (3 Coins; a Raider keeps its Move) for all trainable land roles; Raider Charge                            |
 | Mobility   |    3 | `CHIVALRY`          | Raiding        | Knight; Overrun; Cultivate Forest                                                                                 |
 | Industry   |    1 | `DRILL`             | —              | reveal Ore; Workshop (`7r56`; Engineering before); first-hostile-capture Spoils (2 Coins); no unit since `7r56`   |
@@ -3718,8 +3734,8 @@ ordinary formula applies to every technology.
 | Industry   |    3 | `METALLURGY`        | Engineering    | Forge; Arms Industry (−1 land training cost); **the faction's heavy line unit** (the Champion; `7r55`)            |
 | Industry   |    2 | `FORTIFICATION`     | Drill          | Fighter/Guard Build Field Defense; **the faction's defender** (the Guard; `7r56`, Drill before)                   |
 | Industry   |    3 | `EXPLOSIVES`        | Fortification  | Blast Mountain (an explosion; +1 population in the territory); Breach                                             |
-| Naval      |    1 | `SHORECRAFT`        | —              | Harvest Fish; Build Port; embarkation and Shallow Water transport; Patrol Boat                                    |
-| Naval      |    2 | `NAVIGATION`        | Shorecraft     | Deep Water movement; Gather Pearls; sea trade                                                                     |
+| Naval      |    1 | `SHORECRAFT`        | —              | Harvest Fish; Build Port; embarkation and Shallow Water transport; Patrol Boat; sea links (`7r76`)                |
+| Naval      |    2 | `NAVIGATION`        | Shorecraft     | Deep Water movement; Gather Pearls; sea links may cross Deep Water (sea trade before `7r76`)                      |
 | Naval      |    3 | `NAVAL_ENGINEERING` | Navigation     | Battleship; Shipyard; −2 Coin naval training at a Shipyard                                                        |
 | Naval      |    2 | `SEAMANSHIP`        | Shorecraft     | Ram (Patrol Boats); Board (every ship)                                                                            |
 | Naval      |    3 | `SUBMERSIBLES`      | Seamanship     | Submarine; Harbours (+1 population from every active Port and Shipyard)                                           |
@@ -3947,7 +3963,7 @@ tiles of each own city center is Snow, and Recover heals 6 in own territory
 adds `BRITTLE`: the player's Shatter threshold is 4 instead of 3
 ([section 21.4](#214-shatter)). **The Naval branch** keeps its five IDs,
 tiers, prerequisites, costs, and economic unlocks (Harvest Fish, Build
-Port, Gather Pearls, sea trade, Build Shipyard, Harbours), loses every
+Port and its sea links, Gather Pearls, Build Shipyard, Harbours), loses every
 ship, the Ram, and Board, and gains the frozen sea
 ([section 21.16](#2116-the-frozen-sea)): **Shorecraft**, displayed as
 **Rime**, grants `FREEZE { depth: "SHALLOW" }`; **Navigation**, displayed as
@@ -3981,7 +3997,7 @@ differently from the Human table are:
 | Fortification     | Deep Winter   | Musk Ox (Frostbite; `7r56`); Snow spreads two tiles from your city centers; Recover heals 6 in your territory                   |
 | Explosives        | Brittle       | Blast Mountain; Breach; Shatter at 4 HP or less                                                                                 |
 | Shorecraft        | Rime          | Harvest Fish; Build Port; Freeze Shallow Water; your units slide on ice; no Patrol Boat and no embarking                        |
-| Navigation        | Pack Ice      | Freeze Deep Water; Gather Pearls; sea trade                                                                                     |
+| Navigation        | Pack Ice      | Freeze Deep Water; Gather Pearls; sea links may cross Deep Water                                                                |
 | Naval Engineering | Icebound      | Freeze locks hostile ships in the ice, which crushes them for 3 a turn; Shipyard (no Battleship; the training discount is dead) |
 | Seamanship        | Black Ice     | hostile land units on your ice are Frozen at the start of your turn                                                             |
 | Submersibles      | Glacier       | your ice lasts 5 turns instead of 3; your units on ice have Snow cover (× 1.25); Harbours                                       |
@@ -4064,7 +4080,8 @@ read differently from the Human table are:
 
 The other technologies read the same for every faction. The engine, query,
 and AI checks of land trade read the technology capability
-`landTradeIncomeCoins` (never a raw `COMMERCE` test), and Plunder is the
+`landTradeIncomeCoins` (never a raw `COMMERCE` test), the sea link the
+capability `seaLink` (Shorecraft in every tree; `7r76`), and Plunder is the
 capability `plunderCoins`. Nesting and Wallbreaker are likewise read through
 the capabilities `eggHpBonus` (0 or 4), `eggHatchTurnReduction` (0 for every player since the correction of `7r53`; 1 with Nesting before),
 `nestingCityCapacityBonus` (0 or 1), and `ignoresCityWalls`, and Force
@@ -4266,7 +4283,9 @@ and no tile command changes a tile into water, a Rift, or a site.
 - A Road stores no builder. While its tile is neutral, every player with Roads
   may use it; once the tile is owned, only the owner may.
 - A usable Road node is a Road on a neutral or own-territory tile, or the
-  center of a city the player owns.
+  center of a city the player owns. This is the node of **movement**
+  ([section 9.2](#92-road-movement)); the connection network of
+  [section 9.3](#93-road-population-and-land-trade) also counts docks.
 
 ### 9.2 Road movement
 
@@ -4309,33 +4328,73 @@ and no tile command changes a tile into water, a Rift, or a site.
 
 ### 9.3 Road population and land trade
 
-- The population graph contains usable Road nodes joined in eight directions
-  and is rooted only at the player's **original capital** while the player
-  still owns it.
-- With Roads, each other owned city in that component gets +1 live
-  population, and the original capital gets +1 per such connected city.
+**One sentence:** a city joined to your first capital by Roads, by Ports, or
+by both gets +1 population, and the capital +1 for each such city.
+
+(`pulp-wars-poc-7r76`, `pulp_wars-5ti.12`; the user, 2026-10-10: "the ports
+are supposed to connect cities the same way roads do, giving both +1
+population. Not in addition to roads but just as part of the same network
+... As if every port and every city tile automatically had a road built on
+it." Through `7r75` the graph held Roads and city centers only, needed the
+Roads technology, and sea trade was a separate income.)
+
+- **The connection network** of a player has these nodes:
+  - every Road on a neutral or own-territory tile, with the Roads
+    technology (a Road inside another player's territory, an ally's
+    included, is no node);
+  - the center of every city the player owns, with or without Roads;
+  - every **active** Port and Shipyard of the player
+    ([section 14](#14-naval-rules)), with or without Roads, as if a Road
+    lay on it. A blockaded dock is no node.
+- Nodes join in eight directions, and two docks also join over the sea by a
+  **sea link** ([section 9.5](#95-sea-links)).
+- So a Port beside its city's center joins that city with no Road built; a
+  Port two or more tiles from the center needs Road tiles (or other docks)
+  between them, even inside the city's borders; and a city beside another
+  city's dock is joined to it.
+- The network is rooted only at the player's **original capital** while the
+  player still owns it. Each other owned city in the capital's component
+  gets +1 live population, and the original capital gets +1 per such
+  connected city. A city gets the link **once**, however many Roads and
+  docks join it: a city already linked by Road gains nothing from a Port
+  link, and the reverse.
 - **Land trade** (round 3, `7r47`; the amount is round 4's). With Commerce,
-  every city of the player that a Road links to at least one other city of
-  the player earns **+1 Coin** (2 at round 3)
+  every city of the player that the network links to at least one other
+  city of the player earns **+1 Coin** (2 at round 3)
   at Start Turn (`LAND_TRADE_INCOME_COINS_V7`; `landTradeCityIdsV7`: every
-  own city of a Road component that holds two or more of them). The first
+  own city of a component that holds two or more of them), by Road, by
+  Port, or by both, and once. The first
   capital earns it like any other city, and no capital is needed. (Through
   `7r46` only the cities linked to the first capital earned, the capital
   itself never did, and nothing was paid while it was lost.) In the income
   formula of [section 4.3](#43-income) `landTrade` is 0 or 1. Goblin
   Commerce is Plunder and grants no land trade
-  ([section 6.2](#62-technology-tree)).
-- Road **population** keeps its root: a captured foreign capital counts as
-  an ordinary city, and losing the original capital drops all Road
+  ([section 6.2](#62-technology-tree)). The engine keeps the name
+  `landTrade`; players read "Trade".
+- Link **population** keeps its root: a captured foreign capital counts as
+  an ordinary city, and losing the original capital drops all link
   population to zero until it is recaptured (`originalCapitalCityId` never
   changes).
+- **What breaks a link:** a Road tile that falls inside another player's
+  territory; a blockade of a dock on the way (a hostile naval or embarked
+  unit standing on it); the loss of a city or of the original capital. A
+  unit standing on a Road, a siege, ice, and fog break nothing (a besieged
+  city still pays no income, [section 4.3](#43-income)).
 - **Shown** (`src/render/technology-unlock-text-v7.ts`): the Commerce card
-  reads "Each city linked by Road to another of your cities: +1 Coin each
-  turn"; with Commerce the city panel of an own city that earns it has the
-  Land trade +1 stat, and one that does not says "No land trade: no Road
-  link to another of your cities". The text harness prints the same line
-  under each city.
-- Ports, sea routes, and allies never join this graph. Disconnection removes
+  reads "Each city linked by Road or Port to another of your cities: +1
+  Coin each turn"; the Sailing (Shorecraft) card reads "Ports link cities
+  like Roads" and the Navigation card "Port links can cross deep water";
+  with Commerce the city panel of an own city that earns it has the
+  Trade +1 stat, and one that does not says "No trade: no Road or Port
+  link to another of your cities". The tile dock of an own active Port or
+  Shipyard that nothing joins to its city's center says "No link: needs a
+  Road to its city". The text harness prints the trade line under each
+  city.
+- The board draws a Road onto every city center and every Port or Shipyard
+  from each Road tile or center beside it (two docks side by side get no
+  track over the water), and the link animation runs along the Roads and
+  across the dashed sea link.
+- Allies never join this graph. Disconnection removes
   the population without lowering level or repeating rewards.
 
 ### 9.4 Market
@@ -4384,20 +4443,38 @@ market income = min(3, 1 + distinct adjacent families)
     turn.
   - The Normal AI never hires.
 
-### 9.5 Sea trade
+### 9.5 Sea links
 
-- With Navigation, each owned city other than the player's own original
-  capital earns +1 Coin at Start Turn when one of its active Ports or
-  Shipyards connects to an active Port or Shipyard of a different owned city.
-  A captured foreign capital counts as an ordinary city and can earn sea
-  trade. The original capital earns none itself but can be the partner city,
-  and, unlike land trade, sea trade does not require the player to still own
-  its original capital.
-- Two docks connect when a path of at most five eight-way steps through water
-  the owner has explored (Deep Water included) joins them.
-- Mid-route units do not break a connection; a blockaded endpoint does.
-- A city earns at most one sea-trade Coin and may also earn land trade.
-  Allies never share trade.
+**One sentence:** two of your Ports in different cities, at most five water
+tiles apart, are joined as if a Road ran between them.
+
+(`pulp-wars-poc-7r76`. Through `7r75` this section was **sea trade**: with
+Navigation, +1 Coin for each city other than the original capital with a
+dock connected to a dock of another own city. That income is removed; the
+link of [section 9.3](#93-road-population-and-land-trade) is the whole
+benefit of a Port connection.)
+
+- With **Shorecraft** (the capability `seaLink`; Sailing, the free Naval
+  root, and Rime for the Ice Folk), two **active** docks (Ports or
+  Shipyards) of two **different** cities of the player are joined by a sea
+  link when a path of at most five eight-way steps of water joins them:
+  Shallow Water, and Deep Water once the player has Navigation. Docks of
+  one city get no sea link (they join by standing side by side or by Road).
+- A sea link is an edge of the connection network like the join of two
+  neighbouring Road tiles; it gives nothing by itself. A dock that nothing
+  joins to its city's center links nothing.
+- Mid-route units do not break a link; a blockaded endpoint does. Ice on
+  the route does not (a route may run under the ice), and neither does
+  unexplored water: the link gives stored population, which must not change
+  when a tile is explored (before `7r76` sea trade needed explored water).
+- The view publishes the links that count as `naval.seaRoutes`, one for
+  each pair of cities (a link whose two docks are joined to their centers
+  first, then the shortest), and the board draws each as a dashed line; a
+  crossing through water the viewer has not explored is published as its
+  two docks only. The public economic preview of a command is withheld
+  while two own docks might be linked through unexplored tiles.
+- Allies never share a link. The Ice Folk have no ships, and their docks
+  link the same way.
 
 ## 10. Recovery and support
 
@@ -6344,7 +6421,9 @@ Every rule that names "naval units", "ships", or "boats" covers all three.
 - **Active and blockaded docks:** a Port or Shipyard is active while its city's
   owner owns it and no hostile naval or embarked unit stands on it. A
   blockaded dock gives 0 population and cannot train, embark, harvest its
-  resource, recover ships, or join sea trade until the blockader leaves.
+  resource, recover ships, or join the connection network (it is no Road
+  node and ends no sea link; [section 9.5](#95-sea-links)) until the
+  blockader leaves.
 - **Naval training:** `TRAIN_NAVAL` selects an active, empty dock assigned to
   the city and spends the city action, capacity, and Coins. It trains the
   Patrol Boat (Shorecraft), the Battleship (Naval Engineering), and the
@@ -6397,7 +6476,7 @@ Every rule that names "naval units", "ships", or "boats" covers all three.
   never ends on a dock for it, its owner's own docks included (a body rule,
   so a mind-controlled Yeti does not embark either). Ports and Shipyards
   keep their economy for an Ice Folk seat (population, Harvest Fish on the
-  dock tile, sea trade, the Shipyard upgrade, and Harbours with Glacier),
+  dock tile, sea links, the Shipyard upgrade, and Harbours with Glacier),
   and an enemy ship can still blockade an Ice Folk dock it can reach. They
   cross water by freezing it ([section 21.16](#2116-the-frozen-sea), which
   replaces the floe the
@@ -10847,7 +10926,7 @@ nothing here happens: the `ice` list is always empty.
   a Confectioner re-bakes Crumbs ashore. **A death on ice is a water death:** no
   Grave, no Infect or Bitten rising, no Crumbs. The tile's Fish or Pearls
   stay and may be harvested under the ordinary gates; a Port cannot be
-  built on ice, and ice never forms on a dock. Sea trade counts an ice tile
+  built on ice, and ice never forms on a dock. A sea link counts an ice tile
   as water (a route may run under the ice). A tunnel never passes under it,
   and an eruption hits a land-form unit standing on it.
 - **Ships cannot enter ice.** A unit afloat (`NAVAL` or `EMBARKED`) never
@@ -11046,7 +11125,7 @@ approximation; [section 25](#25-known-discrepancies)). Glacier also grants Harbo
   mind-controlled Yeti does not either): a Move never ends on a dock for
   it, and a dock is never ice, so it cannot stand on one.
 - **Ports** keep their economic functions for the Ice Folk: +1 population
-  (2 with Harbours), Harvest Fish on the dock tile, sea trade, and the
+  (2 with Harbours), Harvest Fish on the dock tile, sea links, and the
   Shipyard upgrade (+2, 3 with Harbours). An enemy ship can still blockade
   an Ice Folk dock it can reach.
 - **Sea Dog** for an Ice Folk seat counts its land-form units standing on
@@ -11080,7 +11159,7 @@ own, and a ship frozen there stays until crushed.
 | Ice Folk (the rest)  | Ice is never Snow. The Blizzard's ranged halving protects Ice Folk units on ice within 1 of their seat's Witch. Shatter applies on ice (land form).                                                                                                                                                                                                                                      |
 | Push and pulls       | A land-form unit may be pushed, knocked back, or pulled onto ice; an afloat unit never; an icebound unit never moves.                                                                                                                                                                                                                                                                    |
 | Embarking, landing   | A transport may land on adjacent ice (landing ends the activation as always). A unit of the Ice Folk kind never embarks.                                                                                                                                                                                                                                                                 |
-| Blockade, sea trade  | Docks never freeze; sea-trade routes run under ice.                                                                                                                                                                                                                                                                                                                                      |
+| Blockade, sea links  | Docks never freeze; sea links run under ice.                                                                                                                                                                                                                                                                                                                                             |
 | Elimination          | Units are removed as always; an eliminated seat's ice counts down at every End Turn.                                                                                                                                                                                                                                                                                                     |
 | Map generation       | Unchanged; faction choice never affects any draw.                                                                                                                                                                                                                                                                                                                                        |
 
@@ -12883,13 +12962,14 @@ first guesses.
 | AI head start   | `pulp-wars-poc-7r73` | `pulp_wars-w49.39` the AI head start, a first difficulty control (the user, 2026-10-10; a save, replay, or setup of `7r72` is rejected): the optional setup key `aiHeadStart: { coins }` (5, 10, or 20) adds that many starting Coins to every AI seat and none to the human seat, in both play modes and on every generated map; never on the Showcase or a mission; the "AI head start" select on the new-game screen (None by default, remembered per browser), the line in a match's Settings, and `--ai-head-start` on the headless CLI and the text harness; no state key, command, event, price, AI policy, Score, or star rule changed ([section 2.1](#21-match-setup)).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | Cult, E3        | `pulp-wars-poc-7r74` | `pulp_wars-mch9.5` the Cult's channel, the third engine step of the Cultists (a save, replay, or setup of `7r73` is rejected): Summon a Horror for 5 Favour (a summoned unit names itself in `summoned`); Channel and the strands; the disruption rule (any Hit Point lost, any move not its own, any status, a new owner, or leaving the board breaks a strand, read from what happened to the unit after every command); the Start Turn check (a daemon short of its Control is Unbound and, until the Unbound rules, leaves the board); Behold!, Anchor, and Boo!; the `cult` lists `strands`, `grips`, and `idols`, five commands, ten events, and the death cause `UNBOUND`; no rule of another faction changed ([section 1](#1-identity-and-compatibility)).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | Cult, E4        | `pulp-wars-poc-7r75` | `pulp_wars-mch9.6` the Cult's Unbound, the fourth engine step of the Cultists (a save, replay, or setup of `7r74` is rejected): a daemon that fails its check belongs to nobody as a neutral unit of its own breed (`HORROR`, `HERALD`), rampages at once and after every round (it walks to the nearest unit of any player and attacks it), is Furious for that turn, and is bound again by the Cult seat whose strands on it reach its Control in one turn; a bound daemon's kills pay Favour; no Martyr for a Chosen a wild unit attacks and kills; an eliminated Cult seat's daemons are Unbound and stay; the `monsters` key `unbound`, the event `DAEMON_BOUND`, the Favour source `DAEMON_KILL`, no death cause `UNBOUND`; a neutral unit on a center besieges nothing ([section 1](#1-identity-and-compatibility)).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| Port links      | `pulp-wars-poc-7r76` | `pulp_wars-5ti.12` Ports join the Road network (the user, 2026-10-10; a save, replay, or setup of `7r75` is rejected): one connection network of Road tiles, own city centers, own active Ports and Shipyards, and sea links between active docks of two own cities at most five water steps apart; a city joined to the original capital by any mix of them gets +1 population once, and the capital +1 for each; sea trade (Navigation's +1 Coin) is removed and Commerce's trade Coin goes to every city linked to another by Road or Port; the sea link needs Shorecraft only (Navigation adds Deep Water crossings), city centers and docks count without Roads, and exploration is no longer a condition; the technology effect `SEA_TRADE_INCOME` and the capability `seaTradeIncomeCoins` are replaced by `SEA_LINK` (on Shorecraft) and `seaLink`; `naval.ownedPorts` entries gain `joinsCity`, `naval.seaRoutes` lists exactly the links that count (one for each pair of cities), and `naval.seaTradeCityIds` and `tradeCityIds` are always empty; the board draws a Road onto docks and city centers where they join                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 
 **Documentation parity (2026-09-28, no ruleset or identity change):** where
 older documents disagreed with the code, the code's behavior was adopted as
 the rule and is now stated in the ordinary sections: Field Defense
 destruction by attack regardless of tile owner
 ([section 13.4](#134-after-combat)); sea trade for a captured foreign capital
-([section 9.5](#95-sea-trade)); the capital +1 income following a captured
+([section 9.5](#95-sea-links); sea trade itself was removed with `7r76`); the capital +1 income following a captured
 capital to its new owner ([section 4.3](#43-income)); settlement counts on
 widths 11–16 following the AI count ([section 2.2](#22-settlements-and-treasures));
 and Windmill healing without Milling ([section 10](#10-recovery-and-support)).

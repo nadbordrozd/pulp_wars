@@ -563,7 +563,7 @@ describe("Ruleset 7 DOM shell", () => {
     ).not.toContain("Coins");
     requiredButton('[data-action="tech-commerce"]').click();
     expect(document.querySelector(".v7-tech-detail")?.textContent).toContain(
-      "Each city linked by Road to another of your cities: +1 Coin each turn",
+      "Each city linked by Road or Port to another of your cities: +1 Coin each turn",
     );
     // Revision 14 (E2): Commerce no longer doubles Markets.
     expect(document.querySelector(".v7-tech-detail")?.textContent).not.toMatch(

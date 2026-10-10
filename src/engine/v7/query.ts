@@ -6446,6 +6446,12 @@ function calculatePublicEconomicPreviewV7(
     const coinIncomeDeltaByCity: CityValueDeltaV7[] = [];
     const levelsReached: number[] = [];
     const changesLiveGraph = economicCommandChangesLiveGraphV7(command.kind);
+    if (
+      changesLiveGraph &&
+      (publicGraphNavalConnectivityV7(beforeGraph).ambiguous ||
+        publicGraphNavalConnectivityV7(afterGraph).ambiguous)
+    )
+      throw new RangeError("PUBLIC_GRAPH_AMBIGUOUS");
     for (const candidate of view.cities
       .filter((value) => value.ownerId === view.viewer.id)
       .sort((left, right) => left.id - right.id)) {
@@ -6477,13 +6483,7 @@ function calculatePublicEconomicPreviewV7(
               publicGraphNavalConnectivityV7(afterGraph).landTrade.has(
                 candidate.id,
               ),
-            ) *
-              LAND_TRADE_INCOME_COINS_V7 +
-              Number(
-                publicGraphNavalConnectivityV7(afterGraph).seaTrade.has(
-                  candidate.id,
-                ),
-              ),
+            ) * LAND_TRADE_INCOME_COINS_V7,
           ) -
           publicCityIncomeV7(
             view,
@@ -6493,13 +6493,7 @@ function calculatePublicEconomicPreviewV7(
               publicGraphNavalConnectivityV7(beforeGraph).landTrade.has(
                 candidate.id,
               ),
-            ) *
-              LAND_TRADE_INCOME_COINS_V7 +
-              Number(
-                publicGraphNavalConnectivityV7(beforeGraph).seaTrade.has(
-                  candidate.id,
-                ),
-              ),
+            ) * LAND_TRADE_INCOME_COINS_V7,
           )
         : exactIncomeDeltaWithUnchangedMarketV7(view, candidate, growth.city);
       if (incomeDelta === null) throw new RangeError("PUBLIC_GRAPH_AMBIGUOUS");
@@ -6718,8 +6712,9 @@ const PUBLIC_GRAPH_NAVAL_CONNECTIVITY = new WeakMap<
   {
     readonly network: ReadonlySet<CityId>;
     readonly landTrade: ReadonlySet<CityId>;
-    readonly seaTrade: ReadonlySet<CityId>;
     readonly roadKeys: ReadonlySet<string>;
+    /** `pulp_wars-5ti.12`: a sea link may run through unexplored tiles. */
+    readonly ambiguous: boolean;
   }
 >();
 
@@ -6836,7 +6831,6 @@ function publicEconomicPreviewFactKeyV7(view: PlayerViewV7): string {
     cities: view.cities,
     improvementValues: view.improvementValues,
     landTradeCityIds: view.naval.landTradeCityIds,
-    seaTradeCityIds: view.naval.seaTradeCityIds,
   });
   PUBLIC_ECONOMIC_PREVIEW_FACT_KEYS.set(view, key);
   return key;
@@ -7102,8 +7096,9 @@ function marketForCityV7(graph: PublicEconomyGraphV7, cityId: CityId): number {
 function publicGraphNavalConnectivityV7(graph: PublicEconomyGraphV7): {
   readonly network: ReadonlySet<CityId>;
   readonly landTrade: ReadonlySet<CityId>;
-  readonly seaTrade: ReadonlySet<CityId>;
   readonly roadKeys: ReadonlySet<string>;
+  /** `pulp_wars-5ti.12`: a sea link may run through unexplored tiles. */
+  readonly ambiguous: boolean;
 } {
   const cached = PUBLIC_GRAPH_NAVAL_CONNECTIVITY.get(graph);
   if (cached !== undefined) return cached;
@@ -7128,7 +7123,10 @@ function publicGraphNavalConnectivityV7(graph: PublicEconomyGraphV7): {
       )
       .map((tile) => coordKeyV7(tile.at)),
   );
-  const ports = graph.researchedTechs.includes("NAVIGATION")
+  // `pulp-wars-poc-7r76` (`pulp_wars-5ti.12`): a sea link needs only the
+  // technology that builds Ports; the engine's rule is `seaLinksV7`.
+  const ports = technologyCapabilitiesV7(graph.researchedTechs, graph.faction)
+    .seaLink
     ? graph.board.tiles.filter(
         (tile) =>
           (tile.improvement === "PORT" || tile.improvement === "SHIPYARD") &&
@@ -7138,7 +7136,7 @@ function publicGraphNavalConnectivityV7(graph: PublicEconomyGraphV7): {
           legalWater.has(coordKeyV7(tile.at)),
       )
     : [];
-  const seaEdges = new Map<CityId, Set<CityId>>();
+  const seaEdges: (readonly [string, string])[] = [];
   const edges = new Map<CityId, Set<CityId>>();
   const connect = (
     target: Map<CityId, Set<CityId>>,
@@ -7152,6 +7150,37 @@ function publicGraphNavalConnectivityV7(graph: PublicEconomyGraphV7): {
   const portsByCoordinate = new Map(
     ports.map((port) => [coordKeyV7(port.at), port] as const),
   );
+  // 7r76: a sea link counts through water the viewer has not explored, so
+  // two docks within five steps over unexplored tiles may or may not be
+  // linked; the public graph cannot tell, and says so (`ambiguous`).
+  const maybeWater = new Set(legalWater);
+  for (const tile of graph.board.tiles)
+    if (!tile.explored) maybeWater.add(coordKeyV7(tile.at));
+  let possibleLinks = 0;
+  if (maybeWater.size > legalWater.size)
+    for (const from of ports) {
+      const queue = [from.at];
+      const distance = new Map<string, number>([[coordKeyV7(from.at), 0]]);
+      for (let cursor = 0; cursor < queue.length; cursor += 1) {
+        const current = queue[cursor];
+        if (current === undefined) break;
+        const currentDistance = distance.get(coordKeyV7(current)) ?? 0;
+        const destination = portsByCoordinate.get(coordKeyV7(current));
+        if (
+          destination !== undefined &&
+          destination.territoryCityId !== from.territoryCityId
+        )
+          possibleLinks += 1;
+        if (currentDistance >= 5) continue;
+        for (const near of publicGraphNeighborCoordsV7(graph, current)) {
+          const nearKey = coordKeyV7(near);
+          if (maybeWater.has(nearKey) && !distance.has(nearKey)) {
+            distance.set(nearKey, currentDistance + 1);
+            queue.push(near);
+          }
+        }
+      }
+    }
   for (const from of ports) {
     const fromCityId = from.territoryCityId;
     if (fromCityId === null) continue;
@@ -7164,9 +7193,8 @@ function publicGraphNavalConnectivityV7(graph: PublicEconomyGraphV7): {
       if (currentDistance === undefined) continue;
       const destination = portsByCoordinate.get(coordKeyV7(current));
       const destinationCityId = destination?.territoryCityId ?? null;
-      if (destinationCityId !== null && destinationCityId !== fromCityId) {
-        connect(seaEdges, fromCityId, destinationCityId);
-      }
+      if (destinationCityId !== null && destinationCityId !== fromCityId)
+        seaEdges.push([coordKeyV7(from.at), coordKeyV7(current)]);
       if (currentDistance >= 5) continue;
       for (const near of publicGraphNeighborCoordsV7(graph, current)) {
         const nearKey = coordKeyV7(near);
@@ -7195,13 +7223,40 @@ function publicGraphNavalConnectivityV7(graph: PublicEconomyGraphV7): {
       )
       .map((tile) => coordKeyV7(tile.at)),
   );
-  if (graph.researchedTechs.includes("ROADS"))
-    for (const at of cityAt.keys()) roads.add(at);
+  const ambiguous =
+    maybeWater.size > legalWater.size && possibleLinks !== seaEdges.length;
+  // 7r76: every own city center and every own active Port or Shipyard is a
+  // node as if a Road lay on it, with or without the Roads technology.
+  for (const at of cityAt.keys()) roads.add(at);
+  for (const tile of graph.board.tiles)
+    if (
+      (tile.improvement === "PORT" || tile.improvement === "SHIPYARD") &&
+      tile.territoryCityId !== null &&
+      ownedIds.has(tile.territoryCityId) &&
+      graph.activePortKeys.has(coordKeyV7(tile.at))
+    )
+      roads.add(coordKeyV7(tile.at));
   const roadComponents: {
     readonly keys: ReadonlySet<string>;
     readonly cityIds: readonly CityId[];
   }[] = [];
-  for (const component of publicGraphComponentsV7(graph, roads)) {
+  // Land components joined in eight directions, then merged over sea links.
+  const landComponents = publicGraphComponentsV7(graph, roads).map(
+    (component) => new Set(component),
+  );
+  const componentOf = new Map<string, Set<string>>();
+  for (const component of landComponents)
+    for (const at of component) componentOf.set(at, component);
+  for (const [left, right] of seaEdges) {
+    const from = componentOf.get(left);
+    const to = componentOf.get(right);
+    if (from === undefined || to === undefined || from === to) continue;
+    for (const at of to) {
+      from.add(at);
+      componentOf.set(at, from);
+    }
+  }
+  for (const component of new Set(componentOf.values())) {
     const cityIds = [...component]
       .map((at) => cityAt.get(at))
       .filter((id): id is CityId => id !== undefined);
@@ -7237,19 +7292,11 @@ function publicGraphNavalConnectivityV7(graph: PublicEconomyGraphV7): {
           ),
         )
       : new Set<CityId>();
-  const seaTrade = new Set(
-    ownedCities
-      .map((city) => city.id)
-      .filter(
-        (cityId) =>
-          !roots.includes(cityId) && (seaEdges.get(cityId)?.size ?? 0) > 0,
-      ),
-  );
   const roadKeys = new Set<string>();
   for (const component of roadComponents)
     if (component.cityIds.some((cityId) => network.has(cityId)))
       for (const at of component.keys) roadKeys.add(at);
-  const result = { network, landTrade, seaTrade, roadKeys };
+  const result = { network, landTrade, roadKeys, ambiguous };
   PUBLIC_GRAPH_NAVAL_CONNECTIVITY.set(graph, result);
   return result;
 }
@@ -7354,8 +7401,7 @@ function publicCityIncomeV7(
   city: PlayerViewV7["cities"][number],
   market: number,
   tradeBonuses = Number(view.naval.landTradeCityIds.includes(city.id)) *
-    LAND_TRADE_INCOME_COINS_V7 +
-    Number(view.naval.seaTradeCityIds.includes(city.id)),
+    LAND_TRADE_INCOME_COINS_V7,
 ): number {
   if (publicCityBesieged(view, city.at)) return 0;
   const result = Math.max(

@@ -1643,6 +1643,10 @@ function navalTransitionEventsV7(
     }
   }
   for (const player of after.players) {
+    // 7r76 (`pulp_wars-5ti.12`): a city center is a node of its owner's
+    // network without Roads, so a seat's network always holds its capital.
+    // A seat left with no city has no network to report.
+    if (!after.cities.some((city) => city.ownerId === player.id)) continue;
     const beforeNetwork = sortedIds(
       combinedNetworkCityIdsV7(before, player.id),
     );

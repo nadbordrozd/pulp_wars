@@ -4,6 +4,9 @@ import {
   BREACH_UNLOCK_TEXT_V7,
   FIELD_DEFENSE_UNLOCK_TEXT_V7,
   TRAINING_BLOCKED_CENTER_V7,
+  PORT_NOT_JOINED_TEXT_V7,
+  SEA_LINK_DEEP_WATER_NOTE_V7,
+  SEA_LINK_UNLOCK_TEXT_V7,
   landTradeStatusTextV7,
   landTradeStatusV7,
   landTradeUnlockTextV7,
@@ -6033,30 +6036,23 @@ export class Ruleset7DomAppView {
           ),
         );
         details.append(units, income, cityAction);
+        // 7r76 (pulp_wars-5ti.12): one trade, by Road or Port link.
         for (const [kind, active] of [
           ["land", view.naval.landTradeCityIds.includes(city.id)],
-          ["sea", view.naval.seaTradeCityIds.includes(city.id)],
         ] as const)
           if (active) {
             const trade = el(this.#document, "div", "v7-city-stat");
             trade.dataset.stat = `${kind}-trade`;
-            trade.title =
-              kind === "land"
-                ? landTradeStatusTextV7({
-                    kind: "PAYS",
-                    coins: LAND_TRADE_INCOME_COINS_V7,
-                  })
-                : `${title(kind)} trade income`;
+            trade.title = landTradeStatusTextV7({
+              kind: "PAYS",
+              coins: LAND_TRADE_INCOME_COINS_V7,
+            });
             const value = el(this.#document, "dd", "v7-city-income");
-            // Tuning 1 (7r46): land trade pays 2 Coins, sea trade 1.
             value.append(
               economyIcon(this.#document, "coin"),
-              kind === "land" ? `+${LAND_TRADE_INCOME_COINS_V7}` : "+1",
+              `+${LAND_TRADE_INCOME_COINS_V7}`,
             );
-            trade.append(
-              text(this.#document, "dt", `${title(kind)} trade`),
-              value,
-            );
+            trade.append(text(this.#document, "dt", "Trade"), value);
             details.append(trade);
           }
         // Tunings 2 and 3: with Commerce, a city that earns no land trade
@@ -6620,11 +6616,18 @@ export class Ruleset7DomAppView {
               );
               details.append(chip);
             }
-            if (view.naval.seaTradeCityIds.includes(port.cityId)) {
-              const trade = el(this.#document, "p", "v7-chip");
-              trade.title = "Sea trade";
-              trade.append(economyIcon(this.#document, "coin"), "+1 trade");
-              details.append(trade);
+            // Bead pulp_wars-5ti.12: an active dock that nothing joins to
+            // its city's center carries no link.
+            if (port.status === "ACTIVE" && !port.joinsCity) {
+              const unjoined = text(
+                this.#document,
+                "p",
+                PORT_NOT_JOINED_TEXT_V7,
+                "v7-chip is-warning",
+              );
+              unjoined.dataset.portLink = "none";
+              unjoined.title = SEA_LINK_UNLOCK_TEXT_V7;
+              details.append(unjoined);
             }
           }
           if (tile.improvement === "SHIPYARD" && port?.status === "ACTIVE") {
@@ -13954,7 +13957,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffff_ffff)
     return null;
   return {
-    rulesetId: "pulp-wars-poc-7r75",
+    rulesetId: "pulp-wars-poc-7r76",
     seed,
     width: effectiveBoardSize(draft),
     height: effectiveBoardSize(draft),
@@ -14011,7 +14014,6 @@ export function cityIncomeForViewerV7(
       cityEconomicMiracleIncomeV7(city) +
       Number(view.naval.landTradeCityIds.includes(city.id)) *
         LAND_TRADE_INCOME_COINS_V7 +
-      Number(view.naval.seaTradeCityIds.includes(city.id)) +
       market +
       Math.min(0, city.population),
   );
@@ -14055,7 +14057,7 @@ function incomeDescription(view: PlayerViewV7): string {
     view.viewer.faction === "GOBLIN"
       ? "Plunder earns Coins for kills"
       : "Commerce earns trade";
-  return `Next income ${cities.reduce((sum, city) => sum + (cityIncomeForViewerV7(view, city.id) ?? 0), 0)} from ${cities.length} cities, including capital, land trade, sea trade, Market, population deficit, and siege effects. Connected cities grow with Roads; ${commerce}. City income: Level (max ${CITY_LEVEL_INCOME_CAP_V7}) + capital + trade + Markets.`;
+  return `Next income ${cities.reduce((sum, city) => sum + (cityIncomeForViewerV7(view, city.id) ?? 0), 0)} from ${cities.length} cities, including capital, trade, Market, population deficit, and siege effects. Connected cities grow with Roads; ${commerce}. City income: Level (max ${CITY_LEVEL_INCOME_CAP_V7}) + capital + trade + Markets.`;
 }
 function tileCity(view: PlayerViewV7, at: CoordV7): number | null {
   const tile = view.board.tiles.find((entry) => same(entry.at, at));
@@ -14145,11 +14147,11 @@ function effectDescription(
     case "LAND_TRADE_INCOME":
       return landTradeUnlockTextV7(effect.coins);
     case "LAND_ROAD_POPULATION":
-      return `Road-linked cities: +${effect.amount} live population`;
+      return `Cities linked to your capital: +${effect.amount} population each, and the capital +${effect.amount} for each`;
     case "MARKET_INCOME_MULTIPLIER":
       return `Markets earn ${effect.multiplier}× income`;
-    case "SEA_TRADE_INCOME":
-      return `Sea-linked cities: +${effect.coins} Coin`;
+    case "SEA_LINK":
+      return SEA_LINK_UNLOCK_TEXT_V7;
     case "CAPTAIN_SUPPORT":
       // Revision 19: the Dinosaur Rally is War Drums.
       return faction === "DINOSAUR"
@@ -14239,7 +14241,7 @@ function navalTechnologyNotesV7(
   // embarking, sailing and warships are not theirs.
   if (faction === "ICE_FOLK") {
     if (technology === "SHORECRAFT") return [ICE_NO_SHIPS_NOTE_V7];
-    if (technology === "NAVIGATION") return ["Active Ports link sea trade"];
+    if (technology === "NAVIGATION") return [SEA_LINK_DEEP_WATER_NOTE_V7];
     if (technology === "NAVAL_ENGINEERING" || technology === "SUBMERSIBLES")
       return [];
   }
@@ -14247,7 +14249,7 @@ function navalTechnologyNotesV7(
   // unit to sea is "embark".
   if (technology === "SHORECRAFT") return [SHORECRAFT_EMBARK_NOTE_V7];
   if (technology === "NAVIGATION")
-    return ["Ships can sail deep water", "Active Ports link sea trade"];
+    return ["Ships can sail deep water", SEA_LINK_DEEP_WATER_NOTE_V7];
   if (technology === "NAVAL_ENGINEERING")
     return ["Battleship: long-range splash damage"];
   // The naval branch (`pulp_wars-5ti.2`; RULESET_7_NAVAL_BRANCH.md 14.2).
@@ -14396,7 +14398,7 @@ function technologyEffectGroupIdV7(
     case "LAND_TRADE_INCOME":
     case "LAND_ROAD_POPULATION":
     case "MARKET_INCOME_MULTIPLIER":
-    case "SEA_TRADE_INCOME":
+    case "SEA_LINK":
     case "CAPTAIN_SUPPORT":
     case "NECROMANCER_SUPPORT":
     case "BERSERK_SUPPORT":
