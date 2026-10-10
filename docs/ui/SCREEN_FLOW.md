@@ -2099,7 +2099,11 @@ This overlay (`pulp_wars-ic8`) adds one front screen to the current Ruleset
   phone) holds a chip per faction and a chip per row, each group with All
   and None. The tab and both selections are remembered per viewer in this
   browser (`pulpWars.ruleset7.gallery.v1`); blocked storage keeps them for
-  the page only. With nothing selected the table reads "Nothing
+  the page only. The record names what the viewer switched off, so a row
+  or a faction added to the game later is shown (`pulp_wars-2yc.46`: a
+  record written before that listed what was shown, which hid every row
+  added since, the seven achievement Monuments among them; such a record
+  keeps its tab and shows everything). With nothing selected the table reads "Nothing
   selected."
 - **Layout.** The table scrolls inside its own frame in both directions,
   its header row and first column sticky; the page never scrolls

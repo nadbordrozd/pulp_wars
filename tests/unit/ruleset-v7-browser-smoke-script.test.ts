@@ -675,7 +675,12 @@ describe("Ruleset 7 browser smoke script", () => {
     expect(probe).toContain("table.empty !== 11");
     expect(probe).toContain("filtered.cells.length !== 7");
     expect(probe).toContain(`.v7-gallery-chip[data-value="GOBLIN"]`);
-    expect(probe).toContain('storedFilters.unitRows?.join() !== "CATAPULT"');
+    expect(probe).toContain(
+      'storedFilters.hiddenFactions?.join() !== "GOBLIN"',
+    );
+    expect(probe).toContain(
+      'storedFilters.hiddenUnitRows?.includes("CATAPULT") !== false',
+    );
     expect(probe).toContain(
       `.v7-gallery-cell[data-row="CATAPULT"][data-faction="UNDEAD"]`,
     );

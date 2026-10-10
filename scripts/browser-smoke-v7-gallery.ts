@@ -78,8 +78,8 @@ export async function probeGalleryV7(
     `({ cells: [...document.querySelectorAll('.v7-gallery-cell')].map((cell) => cell.dataset.row + ':' + cell.dataset.faction), stored: localStorage.getItem(${JSON.stringify(GALLERY_SMOKE_STORAGE_KEY_V7)}) })`,
   );
   const storedFilters = JSON.parse(filtered.stored ?? "{}") as {
-    readonly factions?: readonly string[];
-    readonly unitRows?: readonly string[];
+    readonly hiddenFactions?: readonly string[];
+    readonly hiddenUnitRows?: readonly string[];
   };
   // The Catapult row of the seven factions left after hiding the Goblins.
   if (
@@ -87,8 +87,10 @@ export async function probeGalleryV7(
     filtered.cells.some(
       (cell) => !cell.startsWith("CATAPULT:") || cell.endsWith(":GOBLIN"),
     ) ||
-    storedFilters.factions?.includes("GOBLIN") !== false ||
-    storedFilters.unitRows?.join() !== "CATAPULT"
+    // The record names what was switched off (pulp_wars-2yc.46).
+    storedFilters.hiddenFactions?.join() !== "GOBLIN" ||
+    storedFilters.hiddenUnitRows?.includes("CATAPULT") !== false ||
+    storedFilters.hiddenUnitRows.length === 0
   )
     throw new Error(`Gallery filters failed: ${JSON.stringify(filtered)}`);
   await driver.pointerClick(

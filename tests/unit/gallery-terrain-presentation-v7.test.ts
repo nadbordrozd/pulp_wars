@@ -186,10 +186,15 @@ describe("Gallery terrain presentation", () => {
       parseGalleryFiltersV7(
         JSON.stringify({
           tab: "TERRAIN",
-          terrainRows: ["RIFT", "LAVA", "GRASS"],
+          hiddenTerrainRows: ["RIFT", "LAVA", "GRASS"],
         }),
       ),
-    ).toMatchObject({ tab: "TERRAIN", terrainRows: ["GRASS", "RIFT"] });
+    ).toMatchObject({
+      tab: "TERRAIN",
+      terrainRows: GALLERY_TERRAIN_ROWS_V7.filter(
+        (row) => row !== "RIFT" && row !== "GRASS",
+      ),
+    });
     // Filters stored before the tab existed show every terrain.
     expect(
       parseGalleryFiltersV7(JSON.stringify({ tab: "UNITS" })).terrainRows,

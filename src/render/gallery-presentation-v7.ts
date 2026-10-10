@@ -800,19 +800,33 @@ export const DEFAULT_GALLERY_FILTERS_V7: GalleryFiltersV7 = {
   terrainRows: GALLERY_TERRAIN_ROWS_V7,
 };
 
-/** Keeps the known values of a stored list, in the canonical order. */
-function knownList<Value extends string>(
-  stored: unknown,
+/**
+ * The shown values of a stored "hidden" list: everything but the known
+ * values the viewer switched off, in the canonical order. A value the
+ * stored list has never heard of (a row or a faction added since) is shown.
+ * `null` when the record has no such list.
+ */
+function shownList<Value extends string>(
+  hidden: unknown,
   all: readonly Value[],
 ): readonly Value[] | null {
-  if (!Array.isArray(stored)) return null;
-  const values = new Set(stored.filter((item) => typeof item === "string"));
-  return all.filter((value) => values.has(value));
+  if (!Array.isArray(hidden)) return null;
+  const values = new Set(hidden.filter((item) => typeof item === "string"));
+  return all.filter((value) => !values.has(value));
 }
 
 /**
  * Reads stored filters; anything unknown or malformed takes the default
  * (every faction and row shown, the Units tab).
+ *
+ * The record names what the viewer switched off (`hiddenFactions`,
+ * `hiddenUnitRows`, `hiddenBuildingRows`, `hiddenTerrainRows`), so a row or
+ * a faction added to the game later is shown. Records written before bead
+ * pulp_wars-2yc.46 named what was shown instead, which hid everything added
+ * after the visit that wrote them (a browser that had used the Gallery
+ * before the Monuments had rows of their own kept showing the obelisk
+ * alone). Those lists cannot tell "switched off" from "did not exist yet",
+ * so they are ignored: such a record keeps its tab and shows everything.
  */
 export function parseGalleryFiltersV7(
   stored: string | null | undefined,
@@ -837,28 +851,37 @@ export function parseGalleryFiltersV7(
         ? record.tab
         : "UNITS",
     factions:
-      knownList(record.factions, GALLERY_FACTIONS_V7) ??
+      shownList(record.hiddenFactions, GALLERY_FACTIONS_V7) ??
       DEFAULT_GALLERY_FILTERS_V7.factions,
     unitRows:
-      knownList(record.unitRows, GALLERY_UNIT_ROWS_V7) ??
+      shownList(record.hiddenUnitRows, GALLERY_UNIT_ROWS_V7) ??
       DEFAULT_GALLERY_FILTERS_V7.unitRows,
     buildingRows:
-      knownList(record.buildingRows, GALLERY_BUILDING_ROWS_V7) ??
+      shownList(record.hiddenBuildingRows, GALLERY_BUILDING_ROWS_V7) ??
       DEFAULT_GALLERY_FILTERS_V7.buildingRows,
-    // Filters stored before the Terrain tab existed show every terrain.
     terrainRows:
-      knownList(record.terrainRows, GALLERY_TERRAIN_ROWS_V7) ??
+      shownList(record.hiddenTerrainRows, GALLERY_TERRAIN_ROWS_V7) ??
       DEFAULT_GALLERY_FILTERS_V7.terrainRows,
   };
+}
+
+function hiddenList<Value extends string>(
+  shown: readonly Value[],
+  all: readonly Value[],
+): readonly Value[] {
+  return all.filter((value) => !shown.includes(value));
 }
 
 export function serializeGalleryFiltersV7(filters: GalleryFiltersV7): string {
   return JSON.stringify({
     tab: filters.tab,
-    factions: filters.factions,
-    unitRows: filters.unitRows,
-    buildingRows: filters.buildingRows,
-    terrainRows: filters.terrainRows,
+    hiddenFactions: hiddenList(filters.factions, GALLERY_FACTIONS_V7),
+    hiddenUnitRows: hiddenList(filters.unitRows, GALLERY_UNIT_ROWS_V7),
+    hiddenBuildingRows: hiddenList(
+      filters.buildingRows,
+      GALLERY_BUILDING_ROWS_V7,
+    ),
+    hiddenTerrainRows: hiddenList(filters.terrainRows, GALLERY_TERRAIN_ROWS_V7),
   });
 }
 

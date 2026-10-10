@@ -10,7 +10,12 @@ import {
   OFFERED_FACTION_IDS_V7,
   type PlayerViewV7,
 } from "../../src/engine/index";
-import { GALLERY_FILTERS_STORAGE_KEY_V7 } from "../../src/render/gallery-presentation-v7";
+import {
+  GALLERY_BUILDING_ROWS_V7,
+  GALLERY_FILTERS_STORAGE_KEY_V7,
+  GALLERY_UNIT_ROWS_V7,
+} from "../../src/render/gallery-presentation-v7";
+import { GALLERY_TERRAIN_ROWS_V7 } from "../../src/render/gallery-terrain-presentation-v7";
 import { SETTINGS_STORAGE_KEY } from "../../src/persistence/index";
 import { roleGlossaryV7 } from "../../src/render/unit-glossary-v7";
 
@@ -289,16 +294,9 @@ describe("Ruleset 7 Gallery", () => {
       ),
     ).toMatchObject({
       tab: "UNITS",
-      factions: [
-        "ORIGINAL",
-        "UNDEAD",
-        "DINOSAUR",
-        "MARTIAN",
-        "ICE_FOLK",
-        "DWARF",
-        "CANDY",
-      ],
-      unitRows: ["KNIGHT"],
+      // What was switched off is what is stored (bead pulp_wars-2yc.46).
+      hiddenFactions: ["GOBLIN"],
+      hiddenUnitRows: GALLERY_UNIT_ROWS_V7.filter((row) => row !== "KNIGHT"),
     });
     // A new visit restores the choice.
     app?.destroy();
@@ -317,6 +315,58 @@ describe("Ruleset 7 Gallery", () => {
     required<HTMLButtonElement>('[data-action="gallery-rows-all"]').click();
     // (94 before the ninth unit, 7r55.)
     expect(document.querySelectorAll(".v7-gallery-cell")).toHaveLength(101);
+  });
+
+  it("shows every Monument to a browser that stored its filters before they had rows", () => {
+    // Bead pulp_wars-2yc.46: the record of a visit before the Monuments
+    // had rows of their own (it listed what was shown) used to leave the
+    // obelisk row alone on the screen.
+    window.localStorage.setItem(
+      GALLERY_FILTERS_STORAGE_KEY_V7,
+      JSON.stringify({
+        tab: "BUILDINGS",
+        factions: ["ORIGINAL", "UNDEAD", "GOBLIN", "DINOSAUR"],
+        unitRows: ["FIGHTER"],
+        buildingRows: ["CITY_1", "FARM", "MONUMENT", "PORT"],
+      }),
+    );
+    mount();
+    openGallery();
+    const monuments = [
+      ...document.querySelectorAll<HTMLElement>(
+        '.v7-gallery-cell[data-row^="MONUMENT"]',
+      ),
+    ];
+    const rows = GALLERY_BUILDING_ROWS_V7.filter((row) =>
+      row.startsWith("MONUMENT"),
+    );
+    expect(rows).toHaveLength(8);
+    expect(new Set(monuments.map((node) => node.dataset.row))).toEqual(
+      new Set(rows),
+    );
+    expect(monuments).toHaveLength(rows.length * OFFERED_FACTION_IDS_V7.length);
+    // Every cell asks for a sprite of its own.
+    expect(
+      new Set(
+        monuments.map((node) => node.querySelector("canvas")?.dataset.subject),
+      ).size,
+    ).toBe(monuments.length);
+    expect(
+      [
+        ...document.querySelectorAll<HTMLElement>(
+          '.v7-gallery-table tr[data-row^="MONUMENT"] th',
+        ),
+      ].map((node) => node.textContent),
+    ).toEqual([
+      "Monument",
+      "Explorer Monument",
+      "Engineer Monument",
+      "Muster Monument",
+      "Conqueror Monument",
+      "Land Baron Monument",
+      "Sea Dog Monument",
+      "Slayer Monument",
+    ]);
   });
 
   it("filters the Monument rows and their factions, remembered", () => {
@@ -363,8 +413,12 @@ describe("Ruleset 7 Gallery", () => {
       ),
     ).toMatchObject({
       tab: "BUILDINGS",
-      factions: ["UNDEAD", "ICE_FOLK"],
-      buildingRows: ["MONUMENT", "MONUMENT_SEA_DOG"],
+      hiddenFactions: OFFERED_FACTION_IDS_V7.filter(
+        (faction) => faction !== "UNDEAD" && faction !== "ICE_FOLK",
+      ),
+      hiddenBuildingRows: GALLERY_BUILDING_ROWS_V7.filter(
+        (row) => row !== "MONUMENT" && row !== "MONUMENT_SEA_DOG",
+      ),
     });
     // A new visit restores the tab, the rows and the factions.
     app?.destroy();
@@ -1053,9 +1107,11 @@ describe("Ruleset 7 Gallery: Terrain (pulp_wars-2yc.3)", () => {
       window.localStorage.getItem(GALLERY_FILTERS_STORAGE_KEY_V7) ?? "{}",
     );
     expect(stored.tab).toBe("TERRAIN");
-    expect(stored.terrainRows).toEqual(["GRASS"]);
+    expect(stored.hiddenTerrainRows).toEqual(
+      GALLERY_TERRAIN_ROWS_V7.filter((row) => row !== "GRASS"),
+    );
     // The unit rows keep their own selection.
-    expect(stored.unitRows.length).toBeGreaterThan(1);
+    expect(stored.hiddenUnitRows).toEqual([]);
   });
 
   it("opens a sample board drawn by the board host, with every piece, and steps between cells", () => {

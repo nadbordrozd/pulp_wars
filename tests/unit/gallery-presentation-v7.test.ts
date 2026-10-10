@@ -1,3 +1,6 @@
+import { createHash } from "node:crypto";
+import { readFileSync } from "node:fs";
+import path from "node:path";
 import { describe, expect, it } from "vitest";
 import {
   ACHIEVEMENT_IDS_V7,
@@ -369,6 +372,90 @@ describe("Gallery presentation", () => {
       }
   });
 
+  it("draws a different picture file for every Monument of every faction", () => {
+    // Bead pulp_wars-2yc.46 (the user: "the Gallery appears to show only 1
+    // type of monument"): for each faction, the obelisk and the seven
+    // achievement Monuments are eight rows of the default Gallery, each
+    // with its own asset, its own file and its own pixels.
+    const live = chibiDirectionArtRegistryV7();
+    const rows = DEFAULT_GALLERY_FILTERS_V7.buildingRows.filter((row) =>
+      row.startsWith("MONUMENT"),
+    );
+    expect(rows).toHaveLength(ACHIEVEMENT_IDS_V7.length + 1);
+    const everyUrl = new Set<string>();
+    const everyPicture = new Set<string>();
+    for (const faction of FACTION_IDS_V7) {
+      const ids = new Set<string>();
+      const urls = new Set<string>();
+      const pictures = new Set<string>();
+      for (const row of rows) {
+        const asset = live.variants(galleryBuildingSubjectV7(row, faction))[0];
+        if (asset === undefined) throw new Error(`${row} ${faction}: no art`);
+        ids.add(asset.id);
+        urls.add(asset.url);
+        everyUrl.add(asset.url);
+        const digest = createHash("sha256")
+          .update(readFileSync(path.join("public", asset.url)))
+          .digest("hex");
+        pictures.add(digest);
+        everyPicture.add(digest);
+      }
+      expect(ids.size, `${faction} asset ids`).toBe(rows.length);
+      expect(urls.size, `${faction} urls`).toBe(rows.length);
+      expect(pictures.size, `${faction} pictures`).toBe(rows.length);
+    }
+    // And no two factions share one: types by factions, hidden Cult too.
+    expect(everyUrl.size).toBe(rows.length * FACTION_IDS_V7.length);
+    expect(everyPicture.size).toBe(rows.length * FACTION_IDS_V7.length);
+    expect(GALLERY_FACTIONS_V7).toEqual(OFFERED_FACTION_IDS_V7);
+  });
+
+  it("shows rows and factions added after the filters were stored", () => {
+    // Bead pulp_wars-2yc.46, the cause of that report: the stored record
+    // used to list what was shown, so a browser that had used the Gallery
+    // before the Monuments had rows of their own went on showing the
+    // obelisk row alone. A record of that shape now shows everything.
+    const before = parseGalleryFiltersV7(
+      JSON.stringify({
+        tab: "BUILDINGS",
+        factions: ["ORIGINAL", "UNDEAD", "GOBLIN"],
+        unitRows: ["FIGHTER", "RAIDER"],
+        buildingRows: ["CITY_1", "FARM", "MONUMENT", "PORT"],
+      }),
+    );
+    expect(before).toEqual({ ...DEFAULT_GALLERY_FILTERS_V7, tab: "BUILDINGS" });
+    expect(
+      before.buildingRows.filter((row) => row.startsWith("MONUMENT")),
+    ).toHaveLength(ACHIEVEMENT_IDS_V7.length + 1);
+    // The record names what was switched off; a value it has never heard
+    // of (added to the game since) is shown.
+    const stored = JSON.parse(
+      serializeGalleryFiltersV7({
+        ...DEFAULT_GALLERY_FILTERS_V7,
+        tab: "BUILDINGS",
+        factions: ["UNDEAD"],
+        buildingRows: ["MONUMENT"],
+      }),
+    ) as Record<string, readonly string[]>;
+    expect(stored.hiddenBuildingRows).not.toContain("MONUMENT");
+    expect(stored.hiddenBuildingRows).toContain("MONUMENT_SLAYER");
+    expect(stored).not.toHaveProperty("buildingRows");
+    const withoutSlayer = {
+      ...stored,
+      hiddenBuildingRows: stored.hiddenBuildingRows?.filter(
+        (row) => row !== "MONUMENT_SLAYER",
+      ),
+      hiddenFactions: stored.hiddenFactions?.filter(
+        (faction) => faction !== "CANDY",
+      ),
+    };
+    expect(parseGalleryFiltersV7(JSON.stringify(withoutSlayer))).toMatchObject({
+      tab: "BUILDINGS",
+      factions: ["UNDEAD", "CANDY"],
+      buildingRows: ["MONUMENT", "MONUMENT_SLAYER"],
+    });
+  });
+
   it("parses, serializes and toggles the remembered filters", () => {
     expect(parseGalleryFiltersV7(null)).toEqual(DEFAULT_GALLERY_FILTERS_V7);
     expect(parseGalleryFiltersV7("{not json")).toEqual(
@@ -387,9 +474,17 @@ describe("Gallery presentation", () => {
     // Unknown values are dropped; the canonical order is kept.
     expect(
       parseGalleryFiltersV7(
-        JSON.stringify({ factions: ["DWARF", "ELF", "ORIGINAL"], tab: "X" }),
+        JSON.stringify({
+          hiddenFactions: ["DWARF", "ELF", "ORIGINAL"],
+          tab: "X",
+        }),
       ),
-    ).toMatchObject({ tab: "UNITS", factions: ["ORIGINAL", "DWARF"] });
+    ).toMatchObject({
+      tab: "UNITS",
+      factions: GALLERY_FACTIONS_V7.filter(
+        (faction) => faction !== "DWARF" && faction !== "ORIGINAL",
+      ),
+    });
     expect(
       toggleGalleryFilterV7(["DWARF"], "ORIGINAL", GALLERY_FACTIONS_V7),
     ).toEqual(["ORIGINAL", "DWARF"]);
