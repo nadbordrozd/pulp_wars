@@ -5,7 +5,7 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r72" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r73" as const;
 /**
  * Every earlier Ruleset 7 identity, oldest first. Readers report these as
  * incompatible (never invalid). An identity bump must append the outgoing
@@ -83,8 +83,9 @@ export const PRIOR_RULESET_7_IDS = Object.freeze([
   "pulp-wars-poc-7r69",
   "pulp-wars-poc-7r70",
   "pulp-wars-poc-7r71",
+  "pulp-wars-poc-7r72",
 ] as const);
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r72.current" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r73.current" as const;
 /**
  * The map generator a setup names (docs/product/RULESET_7_MAP_SCALE.md
  * section 8.8): `V4` is the many-seats generator of `pulp_wars-ykw.3`
@@ -696,6 +697,31 @@ export interface MatchSetupV7 {
    * {@link gameModeOfV7}.
    */
   readonly gameMode?: GameModeV7;
+  /**
+   * AI head start (`pulp_wars-w49.39`, docs/product/RULESET_7_CURRENT.md):
+   * what every AI seat (every seat but seat 0) starts ahead with. An
+   * optional key: a setup without it has no head start and keeps its exact
+   * shape; a setup never carries an empty head start. Today it holds only
+   * `coins` (extra starting Coins); further kinds (technology, starting
+   * cities: `pulp_wars-w49.7`) join it as further keys. A `SHOWCASE` or
+   * `MISSION` setup never has one. Read the Coins with
+   * {@link aiHeadStartCoinsV7}.
+   */
+  readonly aiHeadStart?: AiHeadStartV7;
+}
+
+/** AI head start: the extra starting Coins a setup may give each AI seat. */
+export const AI_HEAD_START_COINS_V7 = Object.freeze([5, 10, 20] as const);
+export type AiHeadStartCoinsV7 = (typeof AI_HEAD_START_COINS_V7)[number];
+/** AI head start (`MatchSetupV7.aiHeadStart`): one key per kind. */
+export interface AiHeadStartV7 {
+  readonly coins: AiHeadStartCoinsV7;
+}
+/** The extra starting Coins of each AI seat; 0 without a head start. */
+export function aiHeadStartCoinsV7(
+  setup: Pick<MatchSetupV7, "aiHeadStart">,
+): 0 | AiHeadStartCoinsV7 {
+  return setup.aiHeadStart?.coins ?? 0;
 }
 
 /** Score and modes (section 4): the two play modes, in display order. */

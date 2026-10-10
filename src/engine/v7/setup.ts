@@ -2,8 +2,11 @@ import {
   FACTION_IDS_V7,
   MAP_GENERATION_REVISION_V7,
   PLAYER_COLORS_V7,
+  AI_HEAD_START_COINS_V7,
   RULESET_7_ID,
   type AiCountV7,
+  type AiHeadStartCoinsV7,
+  type AiHeadStartV7,
   type BoardSizeV7,
   type FactionIdV7,
   type GameModeV7,
@@ -59,6 +62,35 @@ function splitGameModeV7(input: unknown): {
     rest,
     gameMode:
       gameMode === "DOMINATION" || gameMode === "PERFECTION" ? gameMode : null,
+  };
+}
+
+/**
+ * AI head start (`pulp_wars-w49.39`): the optional `aiHeadStart` key, an
+ * object with exactly the key `coins` (5, 10, or 20). A setup without it
+ * has no head start and keeps that exact shape.
+ */
+const AI_HEAD_START_KEY_V7 = "aiHeadStart";
+
+/** The setup's keys without `aiHeadStart`, and it (null when invalid). */
+function splitAiHeadStartV7(input: unknown): {
+  readonly rest: unknown;
+  readonly aiHeadStart: AiHeadStartV7 | undefined | null;
+} {
+  if (
+    typeof input !== "object" ||
+    input === null ||
+    !Object.prototype.hasOwnProperty.call(input, AI_HEAD_START_KEY_V7)
+  )
+    return { rest: input, aiHeadStart: undefined };
+  const { aiHeadStart, ...rest } = input as { readonly aiHeadStart?: unknown };
+  return {
+    rest,
+    aiHeadStart:
+      hasExactKeysV7(aiHeadStart, ["coins"]) &&
+      AI_HEAD_START_COINS_V7.includes(aiHeadStart.coins as AiHeadStartCoinsV7)
+        ? { coins: aiHeadStart.coins as AiHeadStartCoinsV7 }
+        : null,
   };
 }
 
@@ -169,21 +201,34 @@ export function allowDuplicateFactionsV7(setup: MatchSetupV7): MatchSetupV7 {
  * (docs/product/RULESET_7_SCORE_AND_STARS.md section 4.3) is `DOMINATION`
  * or `PERFECTION`, and never `PERFECTION` on the Showcase or a mission; a
  * setup without it is a Domination setup and is returned without the key.
+ * The optional `aiHeadStart` (`pulp_wars-w49.39`) is `{ coins }` with 5, 10,
+ * or 20, and never on the Showcase or a mission; a setup without it has no
+ * head start and is returned without the key.
  */
 export function validateMatchSetupV7(input: unknown): MatchSetupValidationV7 {
   // Score and modes (section 4.3): `gameMode` is optional; a `SHOWCASE` or
   // `MISSION` setup is never `PERFECTION`.
-  const { rest, gameMode } = splitGameModeV7(input);
-  if (gameMode === null)
+  const { rest: withoutMode, gameMode } = splitGameModeV7(input);
+  // AI head start (`pulp_wars-w49.39`): `aiHeadStart` is optional and never
+  // on a `SHOWCASE` or `MISSION` setup, which fix their own start.
+  const { rest, aiHeadStart } = splitAiHeadStartV7(withoutMode);
+  if (gameMode === null || aiHeadStart === null)
     return { ok: false, error: { code: "INVALID_SETUP", params: {} } };
   const result = validateSetupWithoutModeV7(rest);
-  if (!result.ok || gameMode === undefined) return result;
-  if (
-    gameMode === "PERFECTION" &&
-    (result.setup.mapType === "SHOWCASE" || result.setup.mapType === "MISSION")
-  )
+  if (!result.ok || (gameMode === undefined && aiHeadStart === undefined))
+    return result;
+  const fixed =
+    result.setup.mapType === "SHOWCASE" || result.setup.mapType === "MISSION";
+  if (fixed && (gameMode === "PERFECTION" || aiHeadStart !== undefined))
     return { ok: false, error: { code: "INVALID_SETUP", params: {} } };
-  return { ok: true, setup: { ...result.setup, gameMode } };
+  return {
+    ok: true,
+    setup: {
+      ...result.setup,
+      ...(gameMode === undefined ? {} : { gameMode }),
+      ...(aiHeadStart === undefined ? {} : { aiHeadStart }),
+    },
+  };
 }
 
 function validateSetupWithoutModeV7(input: unknown): MatchSetupValidationV7 {

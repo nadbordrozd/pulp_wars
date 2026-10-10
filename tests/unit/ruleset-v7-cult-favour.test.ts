@@ -142,14 +142,20 @@ const offering = (state: GameStateV7, seat = 0): CommandV7 => ({
 });
 
 describe("the Cult's Favour: identity", () => {
-  it("is 7r72 after 7r71, whose save key is obsolete", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r72");
-    expect(PRIOR_RULESET_7_IDS.at(-1)).toBe("pulp-wars-poc-7r71");
+  // The identity is 7r73 now: the AI head start (`pulp_wars-w49.39`) took
+  // it, so 7r72 is a prior identity.
+  it("was 7r72 after 7r71, with both save keys obsolete now", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r73");
+    expect(PRIOR_RULESET_7_IDS.slice(-2)).toEqual([
+      "pulp-wars-poc-7r71",
+      "pulp-wars-poc-7r72",
+    ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r72.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r73.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-2)).toEqual([
       "pulpWars.save.v7r71.current",
-    );
+      "pulpWars.save.v7r72.current",
+    ]);
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
   });
 

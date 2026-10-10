@@ -250,6 +250,8 @@ describe("Ruleset 7 front screen", () => {
       "tribe-candy",
       "v7-ai-count",
       "v7-ai-mode",
+      // AI head start (`pulp_wars-w49.39`), after Alliances.
+      "v7-ai-head-start",
       "v7-board-size",
       "v7-map-type",
       "v7-curiosities",

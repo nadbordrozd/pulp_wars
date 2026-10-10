@@ -4,9 +4,9 @@
   "target": { "x": 10, "y": 5 },
   "state": {
     "schemaVersion": 7,
-    "rulesetId": "pulp-wars-poc-7r72",
+    "rulesetId": "pulp-wars-poc-7r73",
     "setup": {
-      "rulesetId": "pulp-wars-poc-7r72",
+      "rulesetId": "pulp-wars-poc-7r73",
       "seed": 9,
       "width": 14,
       "height": 14,

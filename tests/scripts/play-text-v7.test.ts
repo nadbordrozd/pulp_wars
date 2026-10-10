@@ -1762,3 +1762,34 @@ describe("text-mode play harness", () => {
     ).toContain("--seat must be 0");
   });
 });
+
+describe("text play: the AI head start (pulp_wars-w49.39)", () => {
+  it("starts a match with --ai-head-start and refuses any other amount", () => {
+    const session = path.join(root, "head-start.json");
+    const output = ok(
+      "new",
+      "--session",
+      session,
+      "--seed",
+      SEED,
+      "--ai-head-start",
+      "20",
+    );
+    expect(output).toContain("ai-head-start +20 Coins");
+    expect(sessionState(session).setup.aiHeadStart).toEqual({ coins: 20 });
+    const none = path.join(root, "head-start-none.json");
+    expect(
+      ok("new", "--session", none, "--seed", SEED, "--ai-head-start", "0"),
+    ).not.toContain("ai-head-start");
+    expect("aiHeadStart" in sessionState(none).setup).toBe(false);
+    const refused = run(
+      "new",
+      "--session",
+      path.join(root, "head-start-bad.json"),
+      "--ai-head-start",
+      "7",
+    );
+    expect(refused.exitCode).toBe(1);
+    expect(refused.output).toContain("--ai-head-start must be 0, 5, 10, or 20");
+  });
+});

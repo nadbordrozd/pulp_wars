@@ -141,17 +141,17 @@ function generatedSetup(
 }
 
 describe("the Cult registration: identity", () => {
-  // The identity is 7r72 now: the Cult's Favour (`pulp_wars-mch9.4`) took
-  // it, so 7r71 is a prior identity.
+  // The Cult's Favour (`pulp_wars-mch9.4`) took 7r72 and the AI head start
+  // (`pulp_wars-w49.39`) 7r73, so 7r71 is a prior identity.
   it("was 7r71 after 7r70, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r72");
-    expect(PRIOR_RULESET_7_IDS.slice(-2)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r73");
+    expect(PRIOR_RULESET_7_IDS.slice(-3, -1)).toEqual([
       "pulp-wars-poc-7r70",
       "pulp-wars-poc-7r71",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r72.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-2)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r73.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-3, -1)).toEqual([
       "pulpWars.save.v7r70.current",
       "pulpWars.save.v7r71.current",
     ]);

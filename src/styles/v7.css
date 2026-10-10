@@ -846,6 +846,11 @@
   accent-color: var(--pw-accent);
 }
 
+/* AI head start (pulp_wars-w49.39): hidden on the Showcase. */
+.v7-setup-form label.v7-ai-head-start-choice[hidden] {
+  display: none;
+}
+
 /* Map curiosities: the Spider's dock, a curiosity tile and Help. */
 .v7-neutral-chip {
   border-color: var(--pw-amber);

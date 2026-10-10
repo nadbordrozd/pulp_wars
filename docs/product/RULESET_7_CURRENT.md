@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r72`, for all eight offered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r73`, for all eight offered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), and Candy (`CANDY`). A
 ninth faction, the Cultists (`CULT`), is **registered and not offered**: its
@@ -375,6 +375,14 @@ events `UNIT_SACRIFICED`, `UNIT_SEIZED`, `OFFERING_MADE`, and
 `FAVOUR_GAINED`, and the death cause `SACRIFICED` are new. No rule of the
 eight offered factions changed. A save, replay, or setup of `7r71` is
 rejected, and the browser autosave has a new key.
+`pulp-wars-poc-7r73` (`pulp_wars-w49.39`) is **the AI head start**
+([section 2.1](#21-match-setup)), the first difficulty control (the user,
+2026-10-10): the optional setup key `aiHeadStart: { coins }` gives every AI
+seat 5, 10, or 20 extra starting Coins; the human seat keeps its 3. The
+new-game screen offers it as "AI head start" (None by default), the
+headless CLI and the text harness as `--ai-head-start`. A setup without the
+key plays exactly as before, and no other rule changed. A save, replay, or
+setup of `7r72` is rejected, and the browser autosave has a new key.
 `pulp-wars-poc-7r58` (`pulp_wars-w49.25`) is
 [step two of the Martian pass](RULESET_7_TUNING_MARTIAN.md#14-step-two):
 **City Walls hold a unit on its own city center against a Saucer's Tractor
@@ -825,7 +833,7 @@ the build differs (its sections 20 to 24 list them);
 the values here are current. Where a document and the code disagreed, the
 code's behavior is the rule and is stated below;
 [Known discrepancies](#25-known-discrepancies) lists the open items and the
-resolved ones as of `pulp-wars-poc-7r72`.
+resolved ones as of `pulp-wars-poc-7r73`.
 
 **Terms.** "On the board" means a unit that currently exists (HP above 0).
 **Living** has the narrower revision-13 meaning used by Wail, Plague,
@@ -926,10 +934,10 @@ separate [Ruleset 6](RULESET_6.md) route.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r72`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Ruleset                                    | `pulp-wars-poc-7r73`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r72.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Browser autosave                           | `pulpWars.save.v7r73.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, `CULT`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`, `CULT_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -1210,7 +1218,10 @@ separate [Ruleset 6](RULESET_6.md) route.
   copy, the optional city key `offeredPopulation` (state and view), the
   commands `SACRIFICE`, `SEIZE`, and `OFFERING`, the events
   `UNIT_SACRIFICED`, `UNIT_SEIZED`, `OFFERING_MADE`, and `FAVOUR_GAINED`,
-  and the `UNIT_DIED` cause `SACRIFICED` (the notes below).
+  and the `UNIT_DIED` cause `SACRIFICED` (the notes below). The AI head
+  start (`pulp_wars-w49.39`, `7r73`) added the optional setup key
+  `aiHeadStart` ([section 2.1](#21-match-setup)) and no state key, command,
+  or event.
 - **The Cult registration** (`pulp_wars-mch9.3`, `7r71`, bead E1 of
   [the Cultists spec](RULESET_7_CULTISTS.md#19-implementation-beads)). What
   is in the engine today, and nothing more:
@@ -1379,17 +1390,18 @@ faction is hidden, and the setup screen seats one player per offered
 faction (`OFFERED_FACTION_IDS_V7`). Nine seats are a headless and test
 setup until the Cult is offered.
 
-| Setup field | Legal values                                                                                                                                                                                                                             |
-| ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Board width | 11, 14, 16, 20, or 25 (height equals width), as long as the width holds the seats on the map type (the table below)                                                                                                                      |
-| Auto size   | the smallest allowed width with at least 56 tiles per seat: 11, 14, 16 for 2, 3, 4 seats, 20 for 5–7, 25 for 8 and 9 (`autoBoardSizeV7`)                                                                                                 |
-| Map type    | `DRY_LAND`, `PANGEA`, `CONTINENTS` (default), `ARCHIPELAGO`, `LAKES`, `SHOWCASE` (width 16 only, at most 3 AI), `MISSION` (a registered mission only)                                                                                    |
-| AI          | `aiCount` 1 to `F − 1` (8 in the engine, 7 on the setup screen), difficulty `NORMAL`, mode `RIVAL` or `COOPERATIVE`                                                                                                                      |
-| Human color | `CORAL`, `TEAL`, `GOLD`, `VIOLET`, `SKY`, `LIME`, `ROSE`, `SLATE`, `AMBER` (`PLAYER_COLORS_V7`; stored, never shown: owner colours are the factions'). The AI seats take the other colours in this order. There are never fewer than `F` |
-| Factions    | one per seat (`aiCount + 1`, seat 0 is the human): `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, or (headless and test setups) `CULT`; no two seats alike                                         |
-| Seed        | uint32; equal setups and seeds generate byte-identical maps, turn order, and treasures                                                                                                                                                   |
-| Curiosities | `true` (the setup screen's and the headless default) or `false`; `false` on a mission ([section 2.7](#27-map-curiosities))                                                                                                               |
-| Game mode   | `gameMode`: `DOMINATION` or `PERFECTION`, optional; a setup without it is Domination; never `PERFECTION` on the Showcase or a mission ([section 3.1](#31-score-play-modes-and-stars))                                                    |
+| Setup field   | Legal values                                                                                                                                                                                                                             |
+| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Board width   | 11, 14, 16, 20, or 25 (height equals width), as long as the width holds the seats on the map type (the table below)                                                                                                                      |
+| Auto size     | the smallest allowed width with at least 56 tiles per seat: 11, 14, 16 for 2, 3, 4 seats, 20 for 5–7, 25 for 8 and 9 (`autoBoardSizeV7`)                                                                                                 |
+| Map type      | `DRY_LAND`, `PANGEA`, `CONTINENTS` (default), `ARCHIPELAGO`, `LAKES`, `SHOWCASE` (width 16 only, at most 3 AI), `MISSION` (a registered mission only)                                                                                    |
+| AI            | `aiCount` 1 to `F − 1` (8 in the engine, 7 on the setup screen), difficulty `NORMAL`, mode `RIVAL` or `COOPERATIVE`                                                                                                                      |
+| Human color   | `CORAL`, `TEAL`, `GOLD`, `VIOLET`, `SKY`, `LIME`, `ROSE`, `SLATE`, `AMBER` (`PLAYER_COLORS_V7`; stored, never shown: owner colours are the factions'). The AI seats take the other colours in this order. There are never fewer than `F` |
+| Factions      | one per seat (`aiCount + 1`, seat 0 is the human): `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, or (headless and test setups) `CULT`; no two seats alike                                         |
+| Seed          | uint32; equal setups and seeds generate byte-identical maps, turn order, and treasures                                                                                                                                                   |
+| Curiosities   | `true` (the setup screen's and the headless default) or `false`; `false` on a mission ([section 2.7](#27-map-curiosities))                                                                                                               |
+| Game mode     | `gameMode`: `DOMINATION` or `PERFECTION`, optional; a setup without it is Domination; never `PERFECTION` on the Showcase or a mission ([section 3.1](#31-score-play-modes-and-stars))                                                    |
+| AI head start | `aiHeadStart`: `{ coins }` with `coins` 5, 10, or 20, optional; a setup without it has no head start; never on the Showcase or a mission (the bullet below)                                                                              |
 
 - **Seats a width holds.** A generated board holds
   `P(w, type) = min(floor((w − 2) / 3)², floor(L / 9))` players (a 3 x 3
@@ -1457,6 +1469,34 @@ setup until the Cult is offered.
   sections 2.2–2.4 and the opening of
   [section 3](#3-players-turns-and-victory) do not apply to it.
   [Section 2.6](#26-mission-setup) is its complete description.
+- **AI head start** (`pulp_wars-w49.39`, `7r73`; the user, 2026-10-10: a
+  first way to set the difficulty). The optional `aiHeadStart` is an object
+  with exactly the key `coins`: 5, 10, or 20. At match creation every AI
+  seat (every seat but seat 0) starts with that many Coins on top of the
+  starting Coins of [section 3](#3-players-turns-and-victory); seat 0 is
+  unchanged. It applies in both play modes, on every generated map type and
+  seat count, and in `RIVAL` and `COOPERATIVE` alike. A setup without the
+  key has no head start and keeps its exact shape (the validated setup
+  never carries an empty head start); any other value is `INVALID_SETUP`,
+  and so is the key on a `SHOWCASE` or `MISSION` setup, which fix their own
+  start. Like `factions`, it never affects map generation, turn order, or
+  any PRNG draw: setups that differ only in `aiHeadStart` create states
+  that differ only in the AI seats' Coins. The field is saved with the
+  match (state, save, and replay setups) and is in every view's `setup`.
+  Nothing else reads it: income, prices, the Normal AI's policy, the Score,
+  and the star grade are unchanged, so the AI simply has more to spend on
+  its first turns, and a win against a head start grades and records as any
+  other win (the rating still divides by the best rival's peak score, which
+  a head start tends to raise). The object leaves room for further kinds of
+  head start (technology, starting cities: `pulp_wars-w49.7`) as further
+  keys; only `coins` exists. **Setup screen:** a select "AI head start" in
+  the Players group (None, +5 Coins, +10 Coins, +20 Coins; None by
+  default), remembered per browser, hidden for the Showcase; a match's
+  Settings show what it was started with ("AI head start: +10 Coins").
+  **Tools:** `--ai-head-start 0|5|10|20` on the headless CLI's `match` and
+  `batch` (refused with `--map-type mission` and, above 0, with the
+  Showcase; in an all-AI headless match seat 0 is the seat without the head
+  start) and on the text harness's `new`.
 - **Curiosities.** The required `curiosities` field switches the rare
   neutral map curiosities on or off ([section 2.7](#27-map-curiosities)).
   Like `factions`, it never affects any other generated feature: setups
@@ -2622,7 +2662,8 @@ of the spec.
 ## 3. Players, turns, and victory
 
 - Every seat starts with 3 Coins (`RULESET_7.startingCoins`; 5 before
-  `pulp-wars-poc-7r41`, `pulp_wars-if6`), no technology, a level-1 capital, one
+  `pulp-wars-poc-7r41`, `pulp_wars-if6`; an AI seat also with the setup's
+  AI head start, [section 2.1](#21-match-setup)), no technology, a level-1 capital, one
   full-HP unit of its faction's `FIGHTER` role (Fighter for Human, Skeleton
   for Undead, Goblin for Goblin, Caveman for Dinosaur, Grunt at full Shield
   for Martian, Yeti for Ice Folk, Hammerer for Dwarf, Toffee Trooper for Candy) on
@@ -12563,6 +12604,7 @@ first guesses.
 | Vampire/Banshee | `pulp-wars-poc-7r70` | `pulp_wars-ty6i` the Vampire and Banshee rework, engine (the user, 2026-10-09: the Vampire was not worth its price and the Banshee was weak; the identity became `7r70` when it was published after the Monument skin rule, `7r69`; a save, replay, or setup of `7r69` is rejected): the Vampire has 13 HP (10 before), Feast (a kill heals it fully and allows one more attack that turn, two at most) and Bat Escape (its Escape flies up to 2 tiles over units and zones of control to a free land tile); the Banshee's Wail hits at Attack 1.5 (1 before), Terror (enemies it wounds cannot strike back until the end of the turn), and Ethereal (enemy zones of control do not stop its Move) ([section 17.12](#1712-the-vampire-and-banshee-rework)).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Cult, E1        | `pulp-wars-poc-7r71` | `pulp_wars-mch9.3` the Cult registration, the first engine step of the Cultists of the Ancient Ones (the user, 2026-10-09; a save, replay, or setup of `7r70` is rejected): the ninth faction `CULT` ("Cultists") and its tree `CULT_BASELINE_V1`, its nine land units with the spec's numbers, the registered numbers of the Horror, the Herald, and the Tentacle (`SUMMONED_ROLE_IDS_V7`, on no board yet), its technology names, its start, its Militia of two Initiates, its Familiar from Scouts and chests, and its giant, the Thing in the Cellar; `F` is 9, so the engine and the headless tools seat 2 to 9 players; the browser offers neither the Cult nor a ninth seat (`HIDDEN_FACTION_IDS_V7`), and draws a Cult seat with the shared art under a lettered stand-in badge; none of the Cult's own rules exists yet, and no rule of another faction changed ([section 1](#1-identity-and-compatibility)).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | Cult, E2        | `pulp-wars-poc-7r72` | `pulp_wars-mch9.4` the Cult's Favour, the second engine step of the Cultists (a save, replay, or setup of `7r71` is rejected): a public pool of Favour for every Cult seat; the Summoner's Sacrifice (an own unit beside it, for its value) and Seize (a broken enemy held by a second robed cultist, for twice its value); a city's Offering (2 population for 3 Favour, with Harvest Rites); the Chosen's Martyr (6 Favour); the state block `cult`, the city key `offeredPopulation`, three commands, four events, and the death cause `SACRIFICED`; nothing spends Favour yet, and no rule of another faction changed ([section 1](#1-identity-and-compatibility)).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| AI head start   | `pulp-wars-poc-7r73` | `pulp_wars-w49.39` the AI head start, a first difficulty control (the user, 2026-10-10; a save, replay, or setup of `7r72` is rejected): the optional setup key `aiHeadStart: { coins }` (5, 10, or 20) adds that many starting Coins to every AI seat and none to the human seat, in both play modes and on every generated map; never on the Showcase or a mission; the "AI head start" select on the new-game screen (None by default, remembered per browser), the line in a match's Settings, and `--ai-head-start` on the headless CLI and the text harness; no state key, command, event, price, AI policy, Score, or star rule changed ([section 2.1](#21-match-setup)).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 
 **Documentation parity (2026-09-28, no ruleset or identity change):** where
 older documents disagreed with the code, the code's behavior was adopted as

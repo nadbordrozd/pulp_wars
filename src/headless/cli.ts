@@ -14,6 +14,8 @@ import {
   FACTION_IDS_V7,
   type BoardSizeV7,
   type FactionIdV7,
+  AI_HEAD_START_COINS_V7,
+  type AiHeadStartV7,
   type GameModeV7,
   type MapTypeV7,
   type MatchSetupV7,
@@ -59,12 +61,12 @@ if (mode === "replay") {
         : await headless.run(replay as ReplayFile);
   process.stdout.write(`${canonicalJson(result)}\n`);
 } else if (mode === "match") {
-  if (ruleset === "pulp-wars-poc-7r72") await runV7Match();
+  if (ruleset === "pulp-wars-poc-7r73") await runV7Match();
   else if (ruleset === "pulp-wars-poc-6") await runV6Match();
   else if (ruleset === "pulp-wars-poc-5") await runV5Match();
   else invalidRuleset();
 } else if (mode === "batch") {
-  if (ruleset === "pulp-wars-poc-7r72") await runV7Batch();
+  if (ruleset === "pulp-wars-poc-7r73") await runV7Batch();
   else if (ruleset === "pulp-wars-poc-6") await runV6Batch();
   else if (ruleset === "pulp-wars-poc-5") await runV5Batch();
   else invalidRuleset();
@@ -85,7 +87,7 @@ async function runV7Match(): Promise<void> {
   const aiCount = aiCountArgV7();
   const size = boardSizeArgV7(aiCount, mapType);
   const setup: MatchSetupV7 = {
-    rulesetId: "pulp-wars-poc-7r72",
+    rulesetId: "pulp-wars-poc-7r73",
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
     seed: numberArg("--seed", 0),
     width: size,
@@ -99,6 +101,7 @@ async function runV7Match(): Promise<void> {
     curiosities: curiositiesArgV7(),
     ...(allowDuplicateFactionsArgV7() ? { allowDuplicateFactions: true } : {}),
     gameMode: gameModeArgV7(mapType),
+    ...aiHeadStartArgV7(mapType),
   };
   const result = await headlessV7.runAiMatch(setup, {
     maxCommands: numberArg("--max-commands", V7_MATCH_MAX_COMMANDS_DEFAULT),
@@ -123,10 +126,11 @@ async function runV7MissionMatch(): Promise<void> {
     "--allow-duplicate-factions",
     "--curiosities",
     "--mode",
+    "--ai-head-start",
   ])
     if (args.includes(flag))
       throw new Error(
-        `${flag} does not apply to --map-type mission: the mission fixes its size, seats, seed, and mode, and has no curiosities`,
+        `${flag} does not apply to --map-type mission: the mission fixes its size, seats, seed, mode, and start, and has no curiosities`,
       );
   if (!args.includes("--mission"))
     throw new Error("--map-type mission requires --mission <ID>");
@@ -168,6 +172,7 @@ async function runV7Batch(): Promise<void> {
     mapTypes,
     curiosities: curiositiesArgV7(),
     gameMode: gameModeArgV7(mapTypes.includes("SHOWCASE") ? "SHOWCASE" : null),
+    ...aiHeadStartArgV7(mapTypes.includes("SHOWCASE") ? "SHOWCASE" : null),
     ...(factions === null ? {} : { factions }),
     ...(allowDuplicateFactionsArgV7() ? { allowDuplicateFactions: true } : {}),
   });
@@ -495,6 +500,25 @@ function gameModeArgV7(mapType: MapTypeV7 | null): GameModeV7 {
 }
 
 /**
+ * AI head start (`pulp_wars-w49.39`): `--ai-head-start 0` (the default, no
+ * head start), `5`, `10`, or `20`: the extra starting Coins of every seat
+ * but seat 0. The Showcase has no head start.
+ */
+function aiHeadStartArgV7(mapType: MapTypeV7 | null): {
+  readonly aiHeadStart?: AiHeadStartV7;
+} {
+  if (!args.includes("--ai-head-start")) return {};
+  const value = stringArg("--ai-head-start", "");
+  if (value === "0") return {};
+  const coins = AI_HEAD_START_COINS_V7.find((entry) => String(entry) === value);
+  if (coins === undefined)
+    throw new Error("--ai-head-start must be 0, 5, 10, or 20");
+  if (mapType === "SHOWCASE")
+    throw new Error("--ai-head-start does not apply to the showcase map type");
+  return { aiHeadStart: { coins } };
+}
+
+/**
  * Map curiosities (docs/product/RULESET_7_MAP_CURIOSITIES.md section 3):
  * `--curiosities on` or `--curiosities off`; on by default, as on the setup
  * screen. The Showcase never has curiosities, whatever the value.
@@ -606,6 +630,6 @@ function parseFactionValues(
 
 function invalidRuleset(): never {
   throw new Error(
-    "--ruleset must be pulp-wars-poc-7r72, pulp-wars-poc-6, or pulp-wars-poc-5",
+    "--ruleset must be pulp-wars-poc-7r73, pulp-wars-poc-6, or pulp-wars-poc-5",
   );
 }

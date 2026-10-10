@@ -6,7 +6,7 @@ import { describe, expect, it } from "vitest";
 import { runBreakthroughLabV7 } from "../fixtures/v7-breakthrough-lab";
 
 /**
- * Tuning 6 (`pulp_wars-w49.6`, identity `pulp-wars-poc-7r72`;
+ * Tuning 6 (`pulp_wars-w49.6`, identity `pulp-wars-poc-7r73`;
  * docs/product/RULESET_7_TUNING_HUMAN.md section 13): the Normal AI breaks
  * a line with numbers, expands and grows, researches toward its army and
  * buys its dear units, and keeps its discipline; research costs 1 Coin more

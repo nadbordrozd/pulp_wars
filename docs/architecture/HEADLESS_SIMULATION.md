@@ -409,6 +409,16 @@ npm run headless -- match --ruleset pulp-wars-poc-7r47 --map-type dry-land --siz
 npm run headless -- batch --ruleset pulp-wars-poc-7r47 --ai-counts 1 --seeds 0,1,2 --curiosities off --max-rounds 200
 ```
 
+AI head start (`pulp_wars-w49.39`,
+[current rules section 2.1](../product/RULESET_7_CURRENT.md#21-match-setup)):
+the CLI's `match` and `batch` modes take `--ai-head-start 0` (the default,
+no head start), `5`, `10`, or `20` and write `aiHeadStart: { coins }` into
+every setup (`runAiBatchV7` takes an optional `aiHeadStart`; without it the
+setups have no such key). The Coins go to every seat but seat 0, which in
+an all-AI headless match is the one seat without them, so a head start
+makes a headless match lopsided on purpose. `--ai-head-start` is refused
+with `--map-type mission`, and any amount above 0 with the Showcase.
+
 Score and modes (`pulp_wars-kaw6.2`,
 [score and stars spec](../product/RULESET_7_SCORE_AND_STARS.md) section
 9.4): the CLI's `match` and `batch` modes take `--mode domination` (the

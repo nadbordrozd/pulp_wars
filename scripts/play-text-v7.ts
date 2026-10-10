@@ -54,6 +54,7 @@ import {
   BASIC_ECONOMIC_ACTIONS_V7,
   FACTION_DISPLAY_NAMES_V7,
   FACTION_IDS_V7,
+  AI_HEAD_START_COINS_V7,
   MAP_GENERATION_REVISION_V7,
   PROMOTION_HP_V7,
   RULESET_7_ID,
@@ -73,6 +74,7 @@ import {
   LAND_TRADE_INCOME_COINS_V7,
   cityUnitCapacityForV7,
   createPlayableGameV7,
+  aiHeadStartCoinsV7,
   duplicateFactionV7,
   effectiveRoleRuleV7,
   isNavalRoleV7,
@@ -329,7 +331,8 @@ interface SessionV7 {
 const HELP_V7 = `Pulp Wars text play (Ruleset 7). One command per invocation; state lives in the session file.
 
   new     --session S [--map dry-land] [--size 11] [--seed 1] [--factions original,undead[,...]]
-          [--seat 0] [--curiosities on|off] [--mode domination|perfection] [--overwrite]
+          [--seat 0] [--curiosities on|off] [--mode domination|perfection]
+          [--ai-head-start 0|5|10|20] [--overwrite]
   lab     --session S <LAB> [--giant] [--overwrite]
                                         start a staged position (you play the Humans; LAB_GOBLIN_MID: the Goblins; LAB_UNDEAD_MID: the Undead; LAB_MARTIAN_MID: the Martians; LAB_DINOSAUR_MID: the Dinosaurs; LAB_ICE_FOLK_MID: the Ice Folk; LAB_DWARF_MID: the Dwarves); lab alone lists them
                                         --giant (a *_MID lab or LAB_BREAKTHROUGH): your faction's reward giant stands at the front, full HP
@@ -377,6 +380,7 @@ const VALUE_FLAGS_V7 = new Set([
   "seat",
   "curiosities",
   "mode",
+  "ai-head-start",
   "unit",
   "city",
   "tile",
@@ -2809,6 +2813,12 @@ function withLabGiantV7(state: GameStateV7): GameStateV7 {
   return placed;
 }
 
+/** " ai-head-start +10 Coins" for a setup with a head start, else "". */
+function headStartTextV7(setup: MatchSetupV7): string {
+  const coins = aiHeadStartCoinsV7(setup);
+  return coins === 0 ? "" : ` ai-head-start +${coins} Coins`;
+}
+
 function commandNewV7(args: ArgsV7): string {
   const path = sessionPathV7(args);
   if (existsSync(path) && !args.switches.has("overwrite"))
@@ -2843,6 +2853,14 @@ function commandNewV7(args: ArgsV7): string {
   const modeRaw = (args.flags.get("mode") ?? "domination").toLowerCase();
   if (modeRaw !== "domination" && modeRaw !== "perfection")
     throw new TextPlayErrorV7("--mode must be domination or perfection");
+  // AI head start (`pulp_wars-w49.39`): the extra starting Coins of every
+  // AI seat; 0 (the default) is no head start.
+  const headStartRaw = args.flags.get("ai-head-start") ?? "0";
+  const headStartCoins = AI_HEAD_START_COINS_V7.find(
+    (coins) => String(coins) === headStartRaw,
+  );
+  if (headStartRaw !== "0" && headStartCoins === undefined)
+    throw new TextPlayErrorV7("--ai-head-start must be 0, 5, 10, or 20");
   const setup: MatchSetupV7 = {
     rulesetId: RULESET_7_ID,
     mapGenerationRevision: MAP_GENERATION_REVISION_V7,
@@ -2857,6 +2875,9 @@ function commandNewV7(args: ArgsV7): string {
     mapType,
     curiosities: curiositiesRaw === "on",
     gameMode: modeRaw === "perfection" ? "PERFECTION" : "DOMINATION",
+    ...(headStartCoins === undefined
+      ? {}
+      : { aiHeadStart: { coins: headStartCoins } }),
     // A mirror match (Human against the Human AI, say): the engine's
     // tool-only path for repeated factions (`allowDuplicateFactionsV7`).
     ...(duplicateFactionV7(factions) === null
@@ -2888,7 +2909,7 @@ function commandNewV7(args: ArgsV7): string {
   const played = playAiSeatsV7(base, memory);
   saveSessionV7(path, played.session);
   return [
-    `NEW MATCH: ${mapType.toLowerCase()} ${size}x${size} seed ${setup.seed} curiosities ${curiositiesRaw} | session ${path}`,
+    `NEW MATCH: ${mapType.toLowerCase()} ${size}x${size} seed ${setup.seed} curiosities ${curiositiesRaw}${headStartTextV7(setup)} | session ${path}`,
     ...played.lines,
     ...viewLinesV7(played.session, false),
   ].join("\n");
@@ -4768,7 +4789,7 @@ function commandDebriefV7(args: ArgsV7): string {
   const lines = [
     "PULP WARS TEXT-PLAY DEBRIEF",
     "WARNING: this file reveals hidden information of every seat. Read it only after the game.",
-    `ruleset ${RULESET_7_ID} | ${session.setup.mapType.toLowerCase()} ${session.setup.width}x${session.setup.height} seed ${session.setup.seed} curiosities ${session.setup.curiosities ? "on" : "off"} | factions ${session.setup.factions.join(",")}`,
+    `ruleset ${RULESET_7_ID} | ${session.setup.mapType.toLowerCase()} ${session.setup.width}x${session.setup.height} seed ${session.setup.seed} curiosities ${session.setup.curiosities ? "on" : "off"}${headStartTextV7(session.setup)} | factions ${session.setup.factions.join(",")}`,
     `commands ${session.commands.length} | last round ${session.state.round} | replay ${verified ? "verified (state hash matches)" : "MISMATCH"}`,
     ...(session.state.outcome === null
       ? ["OUTCOME: the match was not finished"]

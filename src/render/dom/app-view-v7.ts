@@ -102,6 +102,8 @@ import {
   type CoordV7,
   type EconomicPreviewV7,
   type MatchSetupV7,
+  aiHeadStartCoinsV7,
+  type AiHeadStartCoinsV7,
   type GameModeV7,
   type MapTypeV7,
   type PlayerViewV7,
@@ -202,6 +204,17 @@ import {
   loadGameModePreferenceV7,
   storeGameModePreferenceV7,
 } from "../../app/game-mode-preference-v7";
+import {
+  loadAiHeadStartCoinsPreferenceV7,
+  storeAiHeadStartCoinsPreferenceV7,
+} from "../../app/ai-head-start-preference-v7";
+import {
+  AI_HEAD_START_CHOICES_V7,
+  AI_HEAD_START_CHOICE_LABELS_V7,
+  AI_HEAD_START_HINT_V7,
+  AI_HEAD_START_LABEL_V7,
+  aiHeadStartOfMatchV7,
+} from "../ai-head-start-presentation-v7";
 import {
   GAME_MODE_LABELS_V7,
   gameModeLineV7,
@@ -1270,6 +1283,12 @@ interface DraftV7 {
    * and keeps this choice for the next map.
    */
   readonly gameMode: GameModeV7;
+  /**
+   * AI head start (`pulp_wars-w49.39`): the extra starting Coins of every
+   * AI seat, 0 for none, remembered for the next game. The Showcase always
+   * launches without one and keeps this choice for the next map.
+   */
+  readonly aiHeadStartCoins: 0 | AiHeadStartCoinsV7;
 }
 
 type ScreenV7 =
@@ -1302,6 +1321,7 @@ export class Ruleset7DomAppView {
     curiosities: true,
     factions: distinctFactionsV7(setupMaxSeatCountV7()),
     gameMode: "DOMINATION",
+    aiHeadStartCoins: 0,
   };
   /**
    * What the setup last changed by itself (a size or map that stopped being
@@ -1561,6 +1581,7 @@ export class Ruleset7DomAppView {
     this.#draft = {
       ...this.#draft,
       gameMode: loadGameModePreferenceV7(this.#settingsStorage),
+      aiHeadStartCoins: loadAiHeadStartCoinsPreferenceV7(this.#settingsStorage),
     };
     this.#randomSeed =
       options.randomSeed ?? (() => browserRandomSeedV7(documentRoot));
@@ -2932,6 +2953,7 @@ export class Ruleset7DomAppView {
         this.#draft.aiMode,
         AI_MODE_LABELS,
       ),
+      this.#aiHeadStartChoice(),
       setupHeading(this.#document, "sight", "Map"),
       select(
         this.#document,
@@ -3423,6 +3445,34 @@ export class Ruleset7DomAppView {
       ".v7-curiosities-choice",
     );
     if (curiosities !== null) curiosities.hidden = showcase;
+    // The Showcase has no AI head start: the control is hidden (its choice
+    // is kept for the next map).
+    const headStart = form.querySelector<HTMLElement>(
+      ".v7-ai-head-start-choice",
+    );
+    if (headStart !== null) headStart.hidden = showcase;
+  }
+
+  /**
+   * AI head start (`pulp_wars-w49.39`): one select, "None" by default, in
+   * the Players group, with the hint as its tooltip and accessible
+   * description. The choice is remembered for the next game.
+   */
+  #aiHeadStartChoice(): HTMLElement {
+    const label = select(
+      this.#document,
+      AI_HEAD_START_LABEL_V7,
+      "v7-ai-head-start",
+      AI_HEAD_START_CHOICES_V7.map(String),
+      String(this.#draft.aiHeadStartCoins),
+      AI_HEAD_START_CHOICE_LABELS_V7,
+    );
+    label.classList.add("v7-ai-head-start-choice");
+    label.title = AI_HEAD_START_HINT_V7;
+    label
+      .querySelector("select")
+      ?.setAttribute("aria-description", AI_HEAD_START_HINT_V7);
+    return label;
   }
 
   /**
@@ -8140,6 +8190,19 @@ export class Ruleset7DomAppView {
     const mission =
       setup?.mission === undefined ? null : campaignMissionV7(setup.mission.id);
     const matchInfo: HTMLElement[] = [seed];
+    // AI head start (`pulp_wars-w49.39`): what this game was started with.
+    const headStart = setup === undefined ? null : aiHeadStartOfMatchV7(setup);
+    if (headStart !== null) {
+      const line = el(this.#document, "p", "v7-match-ai-head-start");
+      line.dataset.v7AiHeadStart = String(
+        setup === undefined ? 0 : aiHeadStartCoinsV7(setup),
+      );
+      line.append(
+        `${AI_HEAD_START_LABEL_V7}: `,
+        text(this.#document, "strong", headStart),
+      );
+      matchInfo.push(line);
+    }
     if (mission !== null) {
       const label = el(this.#document, "p", "v7-mission-label");
       label.dataset.v7Mission = mission.entry.missionId;
@@ -8963,6 +9026,19 @@ export class Ruleset7DomAppView {
         ? [`Size changed to ${BOARD_SIZE_LABELS[String(boardSize)]}.`]
         : []),
     ].join(" ");
+    const headStartField =
+      form.querySelector<HTMLSelectElement>("#v7-ai-head-start");
+    const aiHeadStartCoins =
+      headStartField === null
+        ? this.#draft.aiHeadStartCoins
+        : (AI_HEAD_START_CHOICES_V7.find(
+            (coins) => String(coins) === headStartField.value,
+          ) ?? 0);
+    if (aiHeadStartCoins !== this.#draft.aiHeadStartCoins)
+      storeAiHeadStartCoinsPreferenceV7(
+        this.#settingsStorage,
+        aiHeadStartCoins,
+      );
     this.#draft = {
       seedMode: this.#draft.seedMode,
       aiCount: resolved.opponents,
@@ -8975,6 +9051,7 @@ export class Ruleset7DomAppView {
         form.querySelector<HTMLInputElement>("#v7-curiosities")?.checked ??
         this.#draft.curiosities,
       gameMode: this.#draft.gameMode,
+      aiHeadStartCoins,
       // Seats keep their choice in seat order; a seat whose faction an
       // earlier seat now plays takes the first untaken faction, so the
       // seats always play different factions (RULESET_7_UNIQUE_FACTIONS.md).
@@ -13045,7 +13122,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffff_ffff)
     return null;
   return {
-    rulesetId: "pulp-wars-poc-7r72",
+    rulesetId: "pulp-wars-poc-7r73",
     seed,
     width: effectiveBoardSize(draft),
     height: effectiveBoardSize(draft),
@@ -13067,6 +13144,11 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
     // RULESET_7_SCORE_AND_STARS.md section 4.3: every new setup writes the
     // mode; the Showcase is always Domination.
     gameMode: effectiveGameModeV7(draft),
+    // AI head start (`pulp_wars-w49.39`): written only when chosen; the
+    // Showcase never has one.
+    ...(draft.mapType === "SHOWCASE" || draft.aiHeadStartCoins === 0
+      ? {}
+      : { aiHeadStart: { coins: draft.aiHeadStartCoins } }),
   };
 }
 /** The mode a launch uses; the draft keeps the player's own choice. */

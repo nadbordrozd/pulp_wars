@@ -58,6 +58,7 @@ import {
   emptyNinthUnitStateV7,
   emptyCultStateV7,
   emptyGiantsStateV7,
+  aiHeadStartCoinsV7,
   type MonsterStateV7,
   type AiCountV7,
   type BiomeIdV7,
@@ -4069,7 +4070,10 @@ function createPlayers(setup: MatchSetupV7): readonly PlayerStateV7[] {
       faction: tree.faction,
       factionTreeId: tree.id,
       status: "ACTIVE",
-      coins: RULESET_7.startingCoins,
+      // AI head start (`pulp_wars-w49.39`): every AI seat starts with the
+      // setup's extra Coins; seat 0 never does.
+      coins:
+        RULESET_7.startingCoins + (seat === 0 ? 0 : aiHeadStartCoinsV7(setup)),
       researchedTechs: tree.startingTechIds,
       explored: [],
       spoilsClaimedCityIds: [],

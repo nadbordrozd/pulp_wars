@@ -82,6 +82,7 @@ import {
   type CuriosityKindV7,
   type NeutralBreedV7,
   type FactionIdV7,
+  type AiHeadStartV7,
   type GameModeV7,
   type GameStateV7,
   type ImprovementIdV7,
@@ -134,7 +135,7 @@ export interface AiCommandRecordV7 {
 }
 
 export interface HeadlessMetricsV7 {
-  readonly rulesetId: "pulp-wars-poc-7r72";
+  readonly rulesetId: "pulp-wars-poc-7r73";
   readonly setupHash: string;
   readonly mapHash: string;
   readonly postGenerationPrngHash: string;
@@ -570,6 +571,12 @@ export interface AiBatchOptionsV7 {
    * without it the setups have no `gameMode` key (Domination).
    */
   readonly gameMode?: GameModeV7;
+  /**
+   * AI head start (`pulp_wars-w49.39`): every setup of the batch carries
+   * this head start when it is given; without it the setups have no
+   * `aiHeadStart` key (no head start).
+   */
+  readonly aiHeadStart?: AiHeadStartV7;
   /**
    * Map curiosities (docs/product/RULESET_7_MAP_CURIOSITIES.md section 3):
    * every setup of the batch carries this value. Required, so a caller
@@ -1094,7 +1101,7 @@ export async function runAiBatchV7(
           const factions = options.factions ?? distinctFactionsV7(aiCount + 1);
           const result = runAiMatchInternalV7(
             {
-              rulesetId: "pulp-wars-poc-7r72",
+              rulesetId: "pulp-wars-poc-7r73",
               mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
               seed,
               width: size,
@@ -1112,6 +1119,9 @@ export async function runAiBatchV7(
               ...(options.gameMode === undefined
                 ? {}
                 : { gameMode: options.gameMode }),
+              ...(options.aiHeadStart === undefined
+                ? {}
+                : { aiHeadStart: options.aiHeadStart }),
             },
             {
               ...(options.maxCommands === undefined
@@ -1212,7 +1222,7 @@ function createMetricsV7(state: GameStateV7): HeadlessMetricsV7 {
   for (const tile of state.board.tiles)
     if (tile.resource !== null) generated[tile.resource] += 1;
   return {
-    rulesetId: "pulp-wars-poc-7r72",
+    rulesetId: "pulp-wars-poc-7r73",
     setupHash: canonicalHash(state.setup),
     mapHash: canonicalHash({
       board: state.board,

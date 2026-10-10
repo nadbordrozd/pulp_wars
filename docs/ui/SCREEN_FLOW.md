@@ -2314,6 +2314,18 @@ both art sets. Where an older section below disagrees, this overlay wins.
   `pulp_wars-b5f.4`: each faction has its permanent colour). A Showcase match opens on the human's
   turn with the camera on the capital in the middle of the player's strip;
   the resume and results screens label the map "Showcase".
+- **Setup: AI head start** (`pulp_wars-w49.39`,
+  [match setup](../product/RULESET_7_CURRENT.md#21-match-setup)). In the
+  Players group, under Alliances, one select labelled **AI head start**:
+  None (the default), +5 Coins, +10 Coins, +20 Coins; its tooltip and
+  accessible description say "Every AI player starts with extra Coins."
+  The choice is remembered per browser (like the game mode), is hidden
+  while Showcase is selected (a Showcase launches without a head start)
+  and comes back with its earlier value. Campaign missions and labs do not
+  offer it. In a match, Settings show one read-only line under the map
+  seed, "AI head start: None" or "AI head start: +10 Coins", so a resumed
+  game says what it was started with; a Showcase or mission match has no
+  such line.
 - **Setup: Curiosities** (`pulp_wars-737.2`,
   [map curiosities](../product/RULESET_7_CURRENT.md#27-map-curiosities)).
   Right under the Map description, one checkbox labelled **Curiosities**,

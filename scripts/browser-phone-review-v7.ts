@@ -171,6 +171,21 @@ const SCENES: readonly Scene[] = [
     },
   },
   {
+    // AI head start (`pulp_wars-w49.39`): the longest choice selected.
+    name: "setup-ai-head-start",
+    match: false,
+    full: true,
+    run: async (c) => {
+      await front(c);
+      await click(c, "new-game");
+      await evaluate(
+        c,
+        `(() => { const select = document.querySelector('#v7-ai-head-start'); if (!(select instanceof HTMLSelectElement)) throw new Error('no AI head start control'); select.value = '20'; select.dispatchEvent(new Event('change', { bubbles: true })); select.scrollIntoView({ block: 'center' }); })()`,
+      );
+      await delay(400);
+    },
+  },
+  {
     name: "tribe-stars",
     match: false,
     run: async (c) => {
@@ -428,6 +443,27 @@ const SCENES: readonly Scene[] = [
       await activate(c, await fixtureCoord(c, `GIANTS_UI_V7.${group}.${unit}`));
     },
   })),
+  {
+    // AI head start (`pulp_wars-w49.39`): a match's Settings say what it
+    // was started with.
+    name: "match-settings-ai-head-start",
+    match: true,
+    run: async (c) => {
+      await mount(
+        c,
+        "/tests/fixtures/v7-score-ui.ts",
+        "",
+        `(() => { const base = fixtures.scoreDominationLiveFixtureV7(); const next = engine.parseGameStateV7(JSON.parse(JSON.stringify({ ...base, setup: { ...base.setup, aiHeadStart: { coins: 20 } } }))); if (next === null) throw new Error('head start state refused'); return next; })()`,
+      );
+      await click(c, "compact-menu");
+      await click(c, "settings");
+      await evaluate(
+        c,
+        `document.querySelector('.v7-match-ai-head-start')?.scrollIntoView({ block: 'end' })`,
+      );
+      await delay(400);
+    },
+  },
   {
     name: "dock-giant-glossary",
     match: true,
