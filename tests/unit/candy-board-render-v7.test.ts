@@ -38,8 +38,10 @@ import {
 } from "../../src/render/canvas/board-renderer-v7";
 import type { CandyPickV7 } from "../../src/render/canvas/candy-board-plan-v7";
 import {
+  CANDY_BADGE_FRAME_V7,
   CRASHED_SPRITE_ALPHA_V7,
   candyMarkerPlacesV7,
+  drawCandyBadgeV7,
   drawCandyBounceArrowV7,
   drawCandyCrumbsV7,
   drawCandyPipsV7,
@@ -54,6 +56,11 @@ import {
   drawCandyFeedbackV7,
   sugarTossPointV7,
 } from "../../src/render/canvas/candy-effects-v7";
+import type {
+  ChibiBoardArtV7,
+  ChibiResolutionV7,
+} from "../../src/render/canvas/chibi-art-resolver-v7";
+import { UNDEAD_BADGE_FRAME_V7 } from "../../src/render/canvas/undead-canvas-v7";
 import { corePresentationPlanV7 } from "../../src/render/canvas/presentation-plan-v7";
 import type { SupportEffectArtV7 } from "../../src/render/canvas/support-presentation-v7";
 import {
@@ -966,5 +973,103 @@ describe("Candy in the Gallery", () => {
     // No other faction's unit offers a Candy cue.
     expect(galleryDemoCuesV7("ORIGINAL", "CAPTAIN")).not.toContain("REBAKE");
     expect(galleryDemoCuesV7("DWARF", "FIGHTER")).not.toContain("SUGAR_RUSH");
+  });
+});
+
+describe("the Candy badge over stand-in art (pulp_wars-jdb.9)", () => {
+  const view = humanView(candyUiFixtureV7());
+  const plan = planFor(view, null);
+  const units = plan.entries.filter((entry) => entry.kind === "UNIT");
+  const candyUnits = units.filter((entry) => entry.faction === "CANDY");
+  const otherUnits = units.filter((entry) => entry.faction !== "CANDY");
+  // The camera of `draw` puts the centre of cell (0, 0) at (100, 100).
+  const badged = (
+    log: readonly LogEntry[],
+    entries: typeof units,
+    frame: {
+      readonly left: number;
+      readonly top: number;
+      readonly size: number;
+    },
+  ) =>
+    entries.filter((entry) =>
+      log.some(
+        (call) =>
+          call[0] === "arc" &&
+          call[1] === 100 + entry.at.x * 128 + frame.left + frame.size / 2 &&
+          call[2] === 100 + entry.at.y * 128 + frame.top + frame.size / 2 &&
+          call[3] === frame.size / 2,
+      ),
+    );
+  /** CHIBI art with a raster for every unit, or for the Human units only. */
+  const chibiArt = (candyRasters: boolean): ChibiBoardArtV7 => ({
+    resolve: (request): ChibiResolutionV7 =>
+      request.subject.startsWith("UNIT:") &&
+      (candyRasters || !request.subject.startsWith("UNIT:CANDY:"))
+        ? {
+            kind: "READY",
+            asset: {
+              id: request.subject,
+              subject: request.subject,
+              assetClass: "STANDARD_UNIT",
+              width: 56,
+              height: 80,
+              url: `/${request.subject}.png`,
+            },
+            image: { id: request.subject } as unknown as CanvasImageSource,
+            density: 1,
+            smoothing: false,
+            cacheKey: request.subject,
+          }
+        : { kind: "MISSING" },
+  });
+
+  it("sits in the corner every faction badge uses", () => {
+    expect(CANDY_BADGE_FRAME_V7).toBe(UNDEAD_BADGE_FRAME_V7);
+    expect(candyUnits.length).toBeGreaterThan(3);
+    expect(otherUnits.length).toBeGreaterThan(0);
+  });
+
+  it("marks every Candy unit drawn as a Human sprite in LEGACY, and no other unit", () => {
+    const log = draw(plan);
+    expect(badged(log, candyUnits, CANDY_BADGE_FRAME_V7.legacy)).toEqual(
+      candyUnits,
+    );
+    expect(badged(log, otherUnits, CANDY_BADGE_FRAME_V7.legacy)).toEqual([]);
+  });
+
+  it("marks a Candy unit whose raster is missing in CHIBI (the classic look, a failed load), and none drawn in its own art", () => {
+    const standIn = draw(plan, { artSet: "CHIBI", chibiArt: chibiArt(false) });
+    expect(badged(standIn, candyUnits, CANDY_BADGE_FRAME_V7.chibi)).toEqual(
+      candyUnits,
+    );
+    expect(badged(standIn, otherUnits, CANDY_BADGE_FRAME_V7.chibi)).toEqual([]);
+    const own = draw(plan, { artSet: "CHIBI", chibiArt: chibiArt(true) });
+    expect(badged(own, candyUnits, CANDY_BADGE_FRAME_V7.chibi)).toEqual([]);
+  });
+
+  it("draws a wrapped sweet: a disc, two wrapper ends and the sweet, scaled by zoom", () => {
+    for (const zoom of [1, 2]) {
+      const { context, log } = recordingContext();
+      drawCandyBadgeV7(context, 500, 300, zoom, false);
+      const frame = CANDY_BADGE_FRAME_V7.legacy;
+      const cx = 500 + (frame.left + frame.size / 2) * zoom;
+      const cy = 300 + (frame.top + frame.size / 2) * zoom;
+      const arcs = calls(log, "arc");
+      // The disc, the sweet and its shine.
+      expect(arcs).toHaveLength(3);
+      expect(arcs[0]?.slice(1, 4)).toEqual([cx, cy, (frame.size * zoom) / 2]);
+      expect(arcs[1]?.slice(1, 3)).toEqual([cx, cy]);
+      expect(arcs[1]?.[3]).toBeLessThan((frame.size * zoom) / 2);
+      // Two triangles, one on each side, inside the disc.
+      const tips = calls(log, "lineTo").map((call) => call[1] as number);
+      expect(tips).toHaveLength(4);
+      expect(tips.filter((x) => x < cx)).toHaveLength(2);
+      expect(tips.filter((x) => x > cx)).toHaveLength(2);
+      for (const x of tips)
+        expect(Math.abs(x - cx)).toBeLessThan((frame.size * zoom) / 2);
+      expect(calls(log, "save")).toHaveLength(1);
+      expect(calls(log, "restore")).toHaveLength(1);
+    }
   });
 });

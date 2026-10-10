@@ -23162,9 +23162,23 @@ function publicCombatFacts(
     ? lookup?.unitStatsById.get(unit.id)
     : view.unitStats.find((item) => item.unitId === unit.id);
   const role = unitRoleRuleV7(view, unit);
+  // The Candy polish (`pulp_wars-jdb.9`): the public Move stat now carries
+  // the Rush's +1. The policy read a Rushed unit's Move without it before
+  // and still does: that term is left out here, so no decision changes.
   const total = (id: "ATTACK" | "MOVE"): number | null => {
-    const value = published?.stats.find((item) => item.id === id)?.total;
-    return value === undefined ? null : value.numerator / value.denominator;
+    const stat = published?.stats.find((item) => item.id === id);
+    if (stat === undefined) return null;
+    const rush =
+      id === "MOVE"
+        ? stat.modifiers
+            .filter((term) => term.source === "SUGAR_RUSH")
+            .reduce(
+              (sum, term) =>
+                sum + term.value.numerator / term.value.denominator,
+              0,
+            )
+        : 0;
+    return stat.total.numerator / stat.total.denominator - rush;
   };
   const facts: PublicCombatFactsV7 = {
     attack2:

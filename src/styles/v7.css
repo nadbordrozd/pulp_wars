@@ -4669,6 +4669,22 @@
 
 /* ---------- Candy (bead pulp_wars-jdb.6) ---------- */
 
+/*
+ * The Candy badge over stand-in art (bead pulp_wars-jdb.9): the wrapped
+ * sweet in chocolate brown ink on a pale cotton-candy plate, apart from
+ * every other faction's badge.
+ */
+.v7-candy-badge {
+  border-color: var(--pw-brown);
+  background: var(--pw-pink-fill);
+  color: var(--pw-brown);
+}
+
+.v7-candy-badge path {
+  stroke: var(--pw-brown);
+  stroke-width: 0.8;
+}
+
 .v7-candy-chip {
   display: inline-flex;
   gap: 4px;

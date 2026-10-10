@@ -34,6 +34,7 @@ import {
   dinosaurCityFixtureV7,
   dinosaurShowcaseFixtureV7,
 } from "../fixtures/v7-dinosaur-ui";
+import { CANDY_UI_V7, candyUiFixtureV7 } from "../fixtures/v7-candy-ui";
 import { FACTION_COLOURS_V7 } from "../../src/render/canvas/faction-colours-v7";
 
 /**
@@ -741,5 +742,40 @@ describe("CHIBI art set in the Ruleset 7 DOM", () => {
     expect(document.body.innerHTML).not.toContain("v7-chibi-art");
     expect(document.querySelector(".v7-egg-figure")).not.toBeNull();
     legacy.app.destroy();
+  });
+});
+
+describe("the Candy badge over stand-in art (pulp_wars-jdb.9)", () => {
+  const dockOf = (
+    artSet: ArtSetV7 | undefined,
+    env?: ChibiDomEnvironmentV7,
+  ): { readonly badge: Element | null; readonly chips: number } => {
+    const { app, select } = mount(candyUiFixtureV7(), artSet, env);
+    select(CANDY_UI_V7.gumdrop);
+    const dock = document.querySelector<HTMLElement>(".v7-selection-dock");
+    if (dock === null) throw new Error("dock missing");
+    const result = {
+      badge: dock.querySelector(".v7-identity-art .v7-candy-badge"),
+      chips: dock.querySelectorAll(".v7-faction-chip").length,
+    };
+    app.destroy();
+    return result;
+  };
+
+  it("marks a Candy unit shown as a Human figure in LEGACY, with no faction chip", () => {
+    const legacy = dockOf("LEGACY");
+    expect(legacy.badge).not.toBeNull();
+    expect(legacy.badge?.classList.contains("v7-undead-badge")).toBe(true);
+    expect(legacy.badge?.getAttribute("aria-hidden")).toBe("true");
+    expect(legacy.chips).toBe(0);
+  });
+
+  it("leaves a Candy unit in its own art unmarked, and marks it when that raster fails to load", () => {
+    const own = dockOf("CHIBI");
+    expect(own.badge).toBeNull();
+    expect(own.chips).toBe(0);
+    expect(
+      dockOf("CHIBI", environment("chibi-direction-candy-")).badge,
+    ).not.toBeNull();
   });
 });

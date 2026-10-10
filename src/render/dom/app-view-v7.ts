@@ -841,13 +841,21 @@ const FACTION_LABELS: Readonly<Record<string, string>> = {
 };
 /** Non-Human factions drawn with a placeholder badge over Human art. */
 type FactionBadgeV7 =
-  "UNDEAD" | "GOBLIN" | "DINOSAUR" | "MARTIAN" | "ICE_FOLK" | "DWARF" | null;
+  | "UNDEAD"
+  | "GOBLIN"
+  | "DINOSAUR"
+  | "MARTIAN"
+  | "ICE_FOLK"
+  | "DWARF"
+  | "CANDY"
+  | null;
 /**
  * The placeholder badge of a faction. Revision 19 (bead `pulp_wars-c87.7`):
  * Dinosaur units shown with Human art wear the footprint badge; Martian
  * units (bead `pulp_wars-t6s.4`) the saucer badge; Ice Folk units (bead
  * `pulp_wars-7g3.6`) the snow-capped peak badge; Dwarf units (bead
- * `pulp_wars-78i.6`) the cog badge.
+ * `pulp_wars-78i.6`) the cog badge; Candy units (bead `pulp_wars-jdb.9`)
+ * the wrapped-sweet badge.
  */
 function factionBadgeV7(faction: FactionIdV7): FactionBadgeV7 {
   return faction === "UNDEAD" ||
@@ -855,7 +863,8 @@ function factionBadgeV7(faction: FactionIdV7): FactionBadgeV7 {
     faction === "DINOSAUR" ||
     faction === "MARTIAN" ||
     faction === "ICE_FOLK" ||
-    faction === "DWARF"
+    faction === "DWARF" ||
+    faction === "CANDY"
     ? faction
     : null;
 }
@@ -4335,7 +4344,9 @@ export class Ruleset7DomAppView {
         cue.append(text(this.#document, "span", victim.label));
         identityColumn?.append(cue);
       }
-      if (unitBadge !== null) {
+      // The Candy badge (bead `pulp_wars-jdb.9`) marks stand-in art only:
+      // the dock of a Candy unit gains no faction chip.
+      if (unitBadge !== null && unitBadge !== "CANDY") {
         const faction = text(
           this.#document,
           "span",
@@ -13915,14 +13926,16 @@ function factionBadgeArt<Image extends HTMLElement | SVGElement>(
 
 /**
  * The Undead skull, Goblin head, Dinosaur footprint, Martian saucer, Ice
- * Folk peak or Dwarf cog badge.
+ * Folk peak, Dwarf cog or Candy wrapped-sweet badge.
  */
 function factionBadgeIcon(
   documentRoot: Document,
-  badge: "UNDEAD" | "GOBLIN" | "DINOSAUR" | "MARTIAN" | "ICE_FOLK" | "DWARF",
+  badge: Exclude<FactionBadgeV7, null>,
 ): SVGSVGElement {
   if (badge === "UNDEAD")
     return uiIconV7(documentRoot, "skull", "v7-undead-badge");
+  if (badge === "CANDY")
+    return uiIconV7(documentRoot, "sweet", "v7-undead-badge v7-candy-badge");
   if (badge === "DWARF")
     return uiIconV7(documentRoot, "gear", "v7-undead-badge v7-dwarf-badge");
   if (badge === "ICE_FOLK")

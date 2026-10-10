@@ -721,8 +721,9 @@ presentation of the last item below.
   captures them on the fixtures of `tests/fixtures/v7-candy-ui.ts`, and the
   browser smoke has a Candy step (`scripts/browser-smoke-v7-candy.ts`). The
   faction emblem is registered and not drawn, and the Classic and LEGACY
-  looks draw Candy units as Human sprites with no badge
-  (`pulp_wars-jdb.9`). The Gallery shows the Candy column with the art and
+  looks draw Candy units as Human sprites with the wrapped-sweet badge
+  (`drawCandyBadgeV7` on the board, the `sweet` icon over a portrait;
+  `pulp_wars-jdb.9`). The Gallery shows the Candy column with the art and
   plays Sugar Rush, Re-bake, and Sugar Toss on its demo board.
 
 ## Naval branch boundary (`pulp_wars-5ti.2` and `5ti.3`)

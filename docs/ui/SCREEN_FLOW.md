@@ -1717,7 +1717,8 @@ faction option.
 - **Art and labels.** Candy units, portraits, cities, and ships use the
   production art of `pulp_wars-jdb.5` (a raster that fails to load falls
   back to the Human art, and the Classic and LEGACY looks draw Human
-  sprites; there is no Candy badge, `pulp_wars-jdb.9`) and are
+  sprites; all three wear the **Candy badge**, a wrapped sweet, on the
+  board and on the unit's portrait, `pulp_wars-jdb.9`) and are
   named by the Candy registration (Toffee Trooper, Donut Racer, Gumball
   Gunner, Marshmallow, Confectioner, Pie Launcher, Chocolate Bunny, Gingerbread
   Giant). Borders and pennants use the Candy colour, cotton-candy pink

@@ -22,9 +22,13 @@ and Juggernaut-role units were rethought: the user chose the **Chocolate
 Bunny** and the **Gingerbread Giant** in place of the Gummy Bear and the
 Rock Candy Golem (the asset ids keep the old names; the display names are
 changed by the rules bead that owns the role labels).
-**Still open:** the faction emblem is made and not drawn, and the Classic
-and LEGACY looks have no Candy badge (`pulp_wars-jdb.9`; that bead's
-Confectioner portrait was redone here). The Candy rules are folded into
+**Still open:** the faction emblem is made and not drawn. The Classic
+and LEGACY looks, and a Candy raster that fails to load, show the Human
+figure with the code-drawn **Candy badge** (`pulp_wars-jdb.9`): the
+emblem's wrapped sweet, a caramel round with two cream wrapper ends on a
+dark chocolate disc with a cream rim on the board
+(`drawCandyBadgeV7`), and the same sweet in brown ink on a pale pink plate
+over the portrait. That bead's Confectioner portrait was redone here. The Candy rules are folded into
 [Ruleset 7: current rules](../../product/RULESET_7_CURRENT.md#23-candy-faction-rules)
 (`pulp_wars-jdb.8`). The look follows
 [the Candy spec](../../product/RULESET_7_CANDY.md) (sections 2.1 and 15.4):

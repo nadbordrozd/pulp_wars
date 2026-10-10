@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   homeSweetHomeSparesV7,
   previewSugarRushV7,
+  publicUnitStatsV7,
   queryCombatPreviewV7,
   queryThreatenedTilesV7,
   unitIsCrashedV7,
@@ -314,6 +315,64 @@ describe("Rushed (section 5.2)", () => {
           sameV7(command.path[0] as CoordV7, at(3, 8)),
       ),
     ).toBe(false);
+  });
+
+  it("shows the Rush's +1 in the public Move stat, the number the Rush preview has (`pulp_wars-jdb.9`)", () => {
+    const moveStat = (state: GameStateV7, where: CoordV7) => {
+      const stats = publicUnitStatsV7(state, unitAtV7(state, where));
+      const move = stats.stats.find((entry) => entry.id === "MOVE");
+      if (move === undefined) throw new Error("no Move stat");
+      return move;
+    };
+    for (const [role, base] of [
+      ["FIGHTER", 1],
+      ["RAIDER", 2],
+      ["KNIGHT", 2],
+    ] as const) {
+      const fresh = candyFieldV7([{ seat: 0, role, at: at(5, 3) }, FAR]);
+      // Before the Rush: the role's Move, no modifier.
+      expect(moveStat(fresh, at(5, 3)), role).toMatchObject({
+        base: { value: { numerator: base, denominator: 1 } },
+        modifiers: [],
+        total: { numerator: base, denominator: 1 },
+      });
+      const preview = previewSugarRushV7(
+        activeViewV7(fresh),
+        unitAtV7(fresh, at(5, 3)).id,
+      );
+      const rushed = playV7(fresh, rushCommand(fresh, at(5, 3))).state;
+      const stat = moveStat(rushed, at(5, 3));
+      expect(stat.modifiers, role).toEqual([
+        {
+          value: { numerator: 1, denominator: 1 },
+          source: "SUGAR_RUSH",
+          sourceLabel: "Sugar Rush",
+          description: "Sugar Rush adds 1 Move until the end of the turn.",
+        },
+      ]);
+      expect(stat.total, role).toEqual({
+        numerator: base + 1,
+        denominator: 1,
+      });
+      // The stat, the Rush's event and the Rush preview agree.
+      expect(preview?.move, role).toBe(base + 1);
+      // The view carries the same breakdown, for every seat that sees it.
+      const view = viewForV7(rushed, seatIdV7(rushed, 1));
+      expect(
+        view.unitStats
+          .find((entry) => entry.unitId === unitAtV7(rushed, at(5, 3)).id)
+          ?.stats.find((entry) => entry.id === "MOVE"),
+        role,
+      ).toEqual(stat);
+    }
+    // Crashed (the turn after), embarked, and a unit of another faction:
+    // no modifier.
+    const crashed = candyFieldV7([
+      { seat: 0, role: "FIGHTER", at: at(5, 3), rush: "CRASHED" },
+      FAR,
+    ]);
+    expect(moveStat(crashed, at(5, 3)).modifiers).toEqual([]);
+    expect(moveStat(crashed, FAR.at).modifiers).toEqual([]);
   });
 
   it("moves a Rushed Donut Racer up to six tiles along a Road", () => {

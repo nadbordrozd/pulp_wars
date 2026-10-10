@@ -75,10 +75,12 @@ where the build differs from this text and what is still open. Contract
 
 **Still future:** the unlock achievement ("Sweet Tooth",
 [section 20](#20-the-future-unlock-a-proposal)); until then the Candy are
-an ordinary faction offered in every setup. **Open polish**
-(`pulp_wars-jdb.9`): the Confectioner's portrait, a public "why not" query
-for a Re-bake, the Rush's +1 in the Move stat, and a Candy badge for the
-Classic look.
+an ordinary faction offered in every setup. **The polish of
+`pulp_wars-jdb.9` is done:** the Confectioner's portrait matches its sprite
+(`pulp_wars-2o7.3`, then the Chocolatier look of `pulp_wars-jdb.10`), the
+public "why not" query for a Re-bake came with the redesign
+(`pulp_wars-jdb.12`), the Rush's +1 is in the Move stat, and a Candy unit
+drawn as a Human sprite wears a wrapped-sweet badge.
 
 It turns the approved design (`pulp_wars-jdb.1`, commit
 `0dd3686`: a first draft, a hard critique, a redraft, a second critique, and
@@ -214,8 +216,11 @@ character, name, likeness, place name, or catchphrase from the show:
   Gumball Gunner, Marshmallow, Confectioner, Pie Launcher, Chocolate Bunny, Gingerbread
   Giant.
 - **Avoided on purpose:** banana-shaped guards; giant gumball-headed
-  guardian statues (the Juggernaut is a rock-candy golem instead of a
-  gumball machine); a pink-haired princess in a lab coat (the Confectioner
+  guardian statues (the Juggernaut is never a gumball-headed guardian; the
+  Gumball Gunner, since `pulp_wars-2o7.3`, is a small sweet-shop gumball
+  machine with a face on its base, which is not one: see the
+  [Candy art fragment](../art/factions/CANDY.md)); a pink-haired princess
+  in a lab coat (the Confectioner
   is a round caramel sweet in an apron and goggles with a whisk); a
   peppermint butler; lemon-headed characters; any name of the show's
   kingdom, land, or characters. The art bead puts these in the faction's
@@ -2179,7 +2184,7 @@ Shallow Water.
 | Confectioner (unit, portrait)                           | A round caramel sweet in an apron and brass goggles, with a whisk: the unit to find and kill. Never a princess or a lab coat.                                                                               |
 | Pie Launcher (unit, portrait)                           | A gingerbread catapult with a cream pie in its cup.                                                                                                                                                         |
 | Chocolate Bunny (unit, portrait)                        | A big translucent gummy bear brawler.                                                                                                                                                                       |
-| Gingerbread Giant (unit, portrait)                      | A hulking golem of rock-candy crystals bound with caramel; never a gumball machine.                                                                                                                         |
+| Gingerbread Giant (unit, portrait)                      | A hulking golem of rock-candy crystals bound with caramel; never a gumball-headed guardian.                                                                                                                 |
 | Patrol Boat, Battleship, transport, two portraits       | A chocolate-bar boat with a wafer sail; a layered-cake galleon with candy-cane masts; a floating donut ring. The shared hull canvases, anchors, and waterline ([naval factions](../art/NAVAL_FACTIONS.md)). |
 | Cities (village, city, capital, with and without Walls) | Cake and candy houses with frosting roofs and lollipop trees, growing by level; Walls of wafer and hard candy. Faction building looks belong to `pulp_wars-xdh`.                                            |
 | Faction emblem and badge                                | A wrapped sweet, for the faction select, the leaderboard, and the fallback badge.                                                                                                                           |
@@ -2879,7 +2884,8 @@ Fighter's portrait. LEGACY and the Classic look draw Candy units as Human
 sprites without a Candy badge, as since `jdb.3`. The public `Move` stat of
 a Rushed unit does not include the Rush's +1 (the board's reach does); that
 is the engine's stat breakdown. The badge, the Move stat, and a public
-"why not" query for a Re-bake (reading 3) are `pulp_wars-jdb.9`.
+"why not" query for a Re-bake (reading 3) were `pulp_wars-jdb.9`, and all
+three are built since (the query by `pulp_wars-jdb.12`).
 
 ## 25. Fold notes (`pulp_wars-jdb.8`)
 
@@ -2919,8 +2925,9 @@ also in the current rules'
 6. **The Attack stat shows the Rush; the Move stat does not.** A Rushed
    unit's public Attack stat carries a `SUGAR_RUSH` modifier (+1) while its
    first attack is unused and neither Charge nor Inspired applies. Its Move
-   stat is the role's Move: the +1 is in the movement query and in
-   `previewSugarRushV7` only (`pulp_wars-jdb.9`).
+   stat was the role's Move, with the +1 in the movement query and in
+   `previewSugarRushV7` only, until `pulp_wars-jdb.9` gave the Move stat
+   the same `SUGAR_RUSH` modifier.
 7. **`tossedThisTurn` drops a unit that leaves land form** (it embarks),
    as well as one that leaves the board.
 8. **A Pillage by a Crashed Giant or a Crashed embarked unit** reports
@@ -2944,9 +2951,10 @@ also in the current rules'
 11. **No Candy badge.** [Section 15.4](#154-what-the-art-bead-must-draw)
     planned the Human sprite with a Candy badge until the art existed and
     as the fallback. The art was wired at once; a raster that fails to load
-    falls back to the Human art with no badge, and the Classic and LEGACY
-    looks draw Candy units as Human sprites with no badge
-    (`pulp_wars-jdb.9`). The faction emblem is made and not drawn.
+    fell back to the Human art with no badge, and the Classic and LEGACY
+    looks drew Candy units as Human sprites with no badge, until
+    `pulp_wars-jdb.9` added the wrapped-sweet badge for all three. The
+    faction emblem is made and not drawn.
 12. **The UI** differs from [section 15](#15-ui-requirements) as
     [section 24](#24-implementation-notes-pulp_wars-jdb6) lists (no second
     press to disarm a Rush, two more unavailable reasons, still markers, the

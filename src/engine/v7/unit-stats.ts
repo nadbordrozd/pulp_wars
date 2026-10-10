@@ -41,6 +41,7 @@ import {
   crumbsBiteV7,
   matchHasCandyV7,
   sugarRushAttack2V7,
+  sugarRushMoveBonusV7,
   unitBouncesV7,
   unitIsCrashedV7,
   unitIsRushedV7,
@@ -128,7 +129,8 @@ export type UnitStatModifierSourceV7 =
   // part (shown when the tile's Field Defense does not already count).
   | "DIG_IN"
   // The Candy revision: the Sugar Rush bonus on a Rushed unit's first attack
-  // (never together with Charge or Inspired).
+  // (never together with Charge or Inspired), and its extra Move
+  // (`pulp_wars-jdb.9`).
   | "SUGAR_RUSH"
   // The ninth unit (`pulp_wars-w49.17`, 7r55): a unit Cracked by a
   // Stegosaurus this turn has 1 less Defense (never below 0.5).
@@ -506,6 +508,9 @@ export function publicUnitStatsV7(
     chargeApplied: charge > 0,
     inspiredApplied: inspired > 0,
   });
+  // The Candy polish (`pulp_wars-jdb.9`): a Rushed unit's extra Move, the
+  // same number the movement query and `previewSugarRushV7` use.
+  const sugarRushMove = sugarRushMoveBonusV7(state, unit);
   const candy = kind === "CANDY";
   // Revision 20 Charge!: +1 Attack per tile moved this turn, up to 2, while
   // the unit can still attack (activations reset at the owner's Start Turn,
@@ -767,16 +772,28 @@ export function publicUnitStatsV7(
         "Move",
         null,
         base(labelText, "Move", embarked ? EMBARKED_MOVE_V7 : role.move),
-        berserkMove > 0
-          ? [
-              modifier(
-                berserkMove,
-                "BERSERK",
-                "Berserk",
-                "Orc Warboss Berserk adds 1 Move until the end of the turn.",
-              ),
-            ]
-          : [],
+        [
+          ...(berserkMove > 0
+            ? [
+                modifier(
+                  berserkMove,
+                  "BERSERK",
+                  "Berserk",
+                  "Orc Warboss Berserk adds 1 Move until the end of the turn.",
+                ),
+              ]
+            : []),
+          ...(sugarRushMove > 0
+            ? [
+                modifier(
+                  sugarRushMove,
+                  "SUGAR_RUSH",
+                  "Sugar Rush",
+                  "Sugar Rush adds 1 Move until the end of the turn.",
+                ),
+              ]
+            : []),
+        ],
       ),
       stat(
         "RANGE",

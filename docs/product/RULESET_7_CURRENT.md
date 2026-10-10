@@ -734,7 +734,7 @@ the balance record in
 [section 23.11](#2311-normal-ai-presentation-and-balance). The other
 faction sections' interaction tables (sections 17 to 22) do not name the
 Candy; [section 23.9](#239-interactions-with-other-rules) has every
-interaction. What is still open (the polish items of `pulp_wars-jdb.9`, two
+interaction. What is still open (two
 Normal AI items, a balance check that was a small sample, and the future
 unlock achievement) is in [section 25](#25-known-discrepancies).
 The [Dwarf overlay](RULESET_7_DWARVES.md) was folded in by
@@ -12228,9 +12228,11 @@ two events come after the idle-recovery events and before
   `givesToothache`, `bounces`, `splats`, `rebake` (`{ cost, hp }` or
   null), and the owner's `homeSweetHome` and `crumbsBite`. A Rushed unit's Attack stat carries the
   modifier `SUGAR_RUSH` (+1) while its first attack is unused and neither
-  Charge nor Inspired applies; its Move stat is the role's Move and does
-  not show the Rush's +1, which is in the movement query and
-  `previewSugarRushV7` ([section 25](#25-known-discrepancies)).
+  Charge nor Inspired applies, and its Move stat carries the same modifier
+  (+1) while it is Rushed in land form, the number the movement query and
+  `previewSugarRushV7` use (`pulp_wars-jdb.9`; a derived breakdown, no
+  shape or identity change). The Normal AI reads a Rushed unit's Move
+  without that term, as before.
 - `PublicPlayerV7` and the leaderboard carry `CANDY` and
   `CANDY_BASELINE_V1`. The headless metrics carry the block `candy`
   (`src/headless/candy-telemetry-v7.ts`), match totals of every Candy
@@ -12279,8 +12281,9 @@ two events come after the idle-recovery events and before
   the overlay's [section 15](RULESET_7_CANDY.md#15-ui-requirements), with
   the differences of its
   [section 24](RULESET_7_CANDY.md#24-implementation-notes-pulp_wars-jdb6).
-  The Classic and LEGACY looks draw Candy units as Human sprites with no
-  Candy badge ([section 25](#25-known-discrepancies)).
+  The Classic and LEGACY looks draw Candy units as Human sprites with the
+  Candy badge, a wrapped sweet (`pulp_wars-jdb.9`), on the board and on the
+  unit's portrait, as does a Candy raster that fails to load.
 - **Balance** (`pulp_wars-jdb.7`). The roster and every Candy constant are
   the overlay's contract values: the coarse balance changed none. It was
   closed on a small sample at `pulp-wars-poc-7r38` (Dry Land, 11 x 11,
@@ -12752,7 +12755,7 @@ reducer, the public queries, the unit stats, the state schema, and event
 projection, with `src/ai/v7-candy.ts` and
 `src/render/candy-presentation-v7.ts` for the two summaries. It gained the
 second `UNKNOWN_BEHIND_FOG` case of a Bounce, the `SUGAR_RUSH` Attack
-modifier and the Move stat without the Rush's +1, the pruning of the three
+modifier (the Move stat's came with `pulp_wars-jdb.9`), the pruning of the three
 unit lists, and [section 23.11](#2311-normal-ai-presentation-and-balance).
 The Candy numbers did not change between `7r38` and `7r41`; the player-wide
 numbers of `7r39` to `7r41` (the Grunt's 8 HP, 3 starting Coins, tier 3
@@ -12974,16 +12977,19 @@ items left after the fold, and the pending balance steps below.
   `pulp_wars-jdb.5`, the UI `pulp_wars-jdb.6`, and the coarse balance
   `pulp_wars-jdb.7` are done, and [section 23](#23-candy-faction-rules)
   states the rules as built):
-  - **Polish, `pulp_wars-jdb.9`.** (1) The public Move stat of a Rushed unit
-    does not include the Rush's +1; the board's reach, the movement query,
-    and `previewSugarRushV7` do. (2) Resolved by the Candy redesign
-    (`pulp_wars-jdb.12`): `queryRebakeBlockerV7` is the public "why not"
-    query for a Re-bake, and the UI reads it. (3) The Classic and LEGACY looks draw Candy units as Human sprites
-    with no Candy badge, and a Candy raster that fails to load falls back
-    to the Human art with no badge (the overlay's section 15.4 planned
-    one). (4) The Confectioner's portrait still shows the first sprite's
-    white apron top; the root ruled a pink frosting apron, which the board
-    sprite has ([Candy art fragment](../art/factions/CANDY.md#weak-spots)).
+  - **Polish, `pulp_wars-jdb.9`: done.** (1) The public Move stat of a
+    Rushed unit carries the Rush's +1 as a `SUGAR_RUSH` modifier
+    ([section 23.10](#2310-commands-events-errors-and-queries)). (2) The
+    Candy redesign (`pulp_wars-jdb.12`) built `queryRebakeBlockerV7`, the
+    public "why not" query for a Re-bake, and the dock shows its reason on
+    the Re-bake control. (3) A Candy unit drawn as a Human sprite (the
+    Classic and LEGACY looks, a raster that fails to load) wears the Candy
+    badge, a wrapped sweet, on the board and on its portrait. (4) The
+    Confectioner's portrait got the board sprite's apron in
+    `pulp_wars-2o7.3` (pink frosting then) and both were recoloured
+    together to the Chocolatier look in `pulp_wars-jdb.10` (dark
+    chocolate, cream frill, one pink bow); they match
+    ([Candy art fragment](../art/factions/CANDY.md)).
   - **Normal AI, no bead yet.** Two items of the overlay's section 14 are
     not implemented: Crashed units are still counted as attackers in the
     wave plan of their Crash turn, and Marshmallows and the Golem use the

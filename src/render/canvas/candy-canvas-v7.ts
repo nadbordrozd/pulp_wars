@@ -8,6 +8,10 @@ import type {
   CandyUnitMarkersV7,
 } from "./candy-board-plan-v7";
 import { BOARD_LABEL_FONT_FAMILY_V7 } from "./board-label-font-v7";
+import { UNDEAD_BADGE_FRAME_V7 } from "./undead-canvas-v7";
+
+/** The Candy badge sits in the Undead badge's corner, like every faction's. */
+export const CANDY_BADGE_FRAME_V7 = UNDEAD_BADGE_FRAME_V7;
 
 /**
  * The Candy board markers (bead pulp_wars-jdb.6, docs/art/factions/CANDY.md
@@ -1027,5 +1031,64 @@ export function drawCandyRushSparklesV7(
     context.fill();
     context.stroke();
   }
+  context.restore();
+}
+
+/**
+ * The Candy faction cue over Human stand-in art (LEGACY, the classic look,
+ * and a Candy raster that failed to load; bead `pulp_wars-jdb.9`): the
+ * emblem's wrapped sweet, a caramel round with two cream wrapper ends, on a
+ * dark chocolate disc with a cream rim. Chocolate, caramel and cream are
+ * off every owner colour; the wrapped sweet shares no shape with the other
+ * factions' badges.
+ */
+export function drawCandyBadgeV7(
+  context: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  zoom: number,
+  chibi: boolean,
+): void {
+  const frame = chibi
+    ? CANDY_BADGE_FRAME_V7.chibi
+    : CANDY_BADGE_FRAME_V7.legacy;
+  const size = frame.size * zoom;
+  const cx = x + (frame.left + frame.size / 2) * zoom;
+  const cy = y + (frame.top + frame.size / 2) * zoom;
+  context.save();
+  context.lineJoin = "round";
+  context.fillStyle = chocolate;
+  context.strokeStyle = cream;
+  context.lineWidth = Math.max(1, 1.6 * zoom);
+  context.beginPath();
+  context.arc(cx, cy, size / 2, 0, Math.PI * 2);
+  context.fill();
+  context.stroke();
+  // The two twisted wrapper ends, then the sweet over their inner tips.
+  const body = size * 0.2;
+  const reach = size * 0.4;
+  const flare = size * 0.19;
+  context.fillStyle = white;
+  context.strokeStyle = outline;
+  context.lineWidth = Math.max(0.8, size * 0.05);
+  for (const side of [-1, 1]) {
+    context.beginPath();
+    context.moveTo(cx + side * body * 0.6, cy);
+    context.lineTo(cx + side * reach, cy - flare);
+    context.lineTo(cx + side * reach, cy + flare);
+    context.closePath();
+    context.fill();
+    context.stroke();
+  }
+  context.fillStyle = caramel;
+  context.beginPath();
+  context.arc(cx, cy, body, 0, Math.PI * 2);
+  context.fill();
+  context.stroke();
+  // The hard shine, toward the light's far side of the sweet.
+  context.fillStyle = white;
+  context.beginPath();
+  context.arc(cx - body * 0.35, cy - body * 0.35, body * 0.26, 0, Math.PI * 2);
+  context.fill();
   context.restore();
 }

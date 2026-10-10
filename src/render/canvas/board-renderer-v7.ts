@@ -283,6 +283,7 @@ import {
 } from "./candy-board-plan-v7";
 import {
   CRASHED_SPRITE_ALPHA_V7,
+  drawCandyBadgeV7,
   drawCandyBounceArrowV7,
   drawCandyCrumbsV7,
   drawCandyGlazeCellV7,
@@ -4306,6 +4307,10 @@ export function drawBoardV7(input: {
           entry.dwarfMound === undefined
         )
           drawDwarfBadgeV7(context, x, y, camera.zoom, chibiPiece);
+        // The Candy polish (`pulp_wars-jdb.9`): the wrapped-sweet badge over
+        // Human stand-in art (LEGACY, the classic look, a failed raster).
+        if (entry.kind === "UNIT" && entry.faction === "CANDY" && !factionArt)
+          drawCandyBadgeV7(context, x, y, camera.zoom, chibiPiece);
         // The Dwarf revision (section 5.3): the mound's surfacing chip.
         if (entry.kind === "UNIT" && entry.dwarfMound !== undefined)
           drawMoundChipV7(context, x, y, camera.zoom, {
