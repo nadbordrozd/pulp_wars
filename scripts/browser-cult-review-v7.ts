@@ -16,7 +16,14 @@ import { ruleset7FixtureMountExpressionV7 } from "./browser-undead-fixture-v7";
  * board with its marks and labels, the Offering in the city panel, the
  * leaderboard with a Cult seat's Favour (as the Cult player and as its
  * rival), the candles in flight after a Seizure, and the Cult's hue beside
- * the Plague chip and the owned-technology tint. `evidence.json` records
+ * the Plague chip and the owned-technology tint. The channel (bead
+ * `pulp_wars-mch9.18`, section 3.8; scenes `channel`, `summon`, `aim`,
+ * `behold`, `boo`, `endturn`, `rival`, `grounds`, `wild`, `cues`, `cost`):
+ * the strands, candles, pips, grip and idol ring at rest and enlarged, each
+ * aimed action, the End Turn question, a rival's view, the strands on
+ * Grass, Snow and water, the Unbound and Furious marks on a hand-changed
+ * view, the cues held at their midpoint, and the cost of a still frame with
+ * a dozen strands against the same board without them. `evidence.json` records
  * each capture's texts and whether anything overflows the viewport. It needs
  * the Vite dev server, because the fixtures are imported from
  * `tests/fixtures`.
@@ -124,7 +131,19 @@ try {
     if (wanted("offering")) await offering(connection, size);
     if (wanted("leaderboard")) await leaderboard(connection, size);
     if (wanted("flight")) await flight(connection, size);
+    if (wanted("channel")) await channelBoard(connection, size);
+    if (wanted("summon")) await summonAim(connection, size);
+    if (wanted("aim")) await channelAims(connection, size);
+    if (wanted("behold")) await behold(connection, size);
+    if (wanted("boo")) await boo(connection, size);
+    if (wanted("endturn")) await endTurn(connection, size);
+    if (wanted("rival")) await rival(connection, size);
   }
+  await viewport(connection, "desktop");
+  if (wanted("grounds")) await grounds(connection);
+  if (wanted("wild")) await wild(connection);
+  if (wanted("cues")) await cues(connection);
+  if (wanted("cost")) await cost(connection);
   if (wanted("colour")) {
     await viewport(connection, "desktop");
     await colour(connection);
@@ -175,6 +194,11 @@ async function record(connection: Connection, key: string): Promise<void> {
         cursor: document.getElementById(document.querySelector('canvas.board-canvas-v7')?.getAttribute('aria-describedby') ?? '')?.textContent ?? null,
         leaderboard: Array.from(document.querySelectorAll('.v7-leaderboard-row')).map((node) => node.textContent),
         notice: document.querySelector('#v7-live')?.textContent ?? null,
+        cultButtons: Array.from(document.querySelectorAll('.v7-selection-dock [data-cult-ability]')).map((node) => [node.dataset.cultAbility, node.getAttribute('aria-disabled') === 'true' ? node.dataset.disabledReason : node.getAttribute('aria-pressed')]),
+        cultChips: Array.from(document.querySelectorAll('.v7-selection-dock .v7-cult-chip')).map((node) => node.textContent),
+        question: document.querySelector('.v7-end-turn-confirm')?.textContent ?? null,
+        questionRect: rect('.v7-end-turn-confirm'),
+        questionButtons: Array.from(document.querySelectorAll('.v7-end-turn-confirm button')).map((node) => { const box = node.getBoundingClientRect(); return [node.textContent, Math.round(box.left), Math.round(box.right), Math.round(box.height)]; }),
       };
     })()`,
   );
@@ -282,6 +306,355 @@ async function flight(connection: Connection, size: Size): Promise<void> {
   await capture(connection, `seize-landed-${size}.png`);
 }
 
+// ----------------------------------------------- The channel (U2) ---
+
+/** The scene's named tiles (tests/fixtures/v7-cult-ui.ts). */
+async function channelAt(
+  connection: Connection,
+): Promise<Record<string, Coord>> {
+  return (await evaluate(connection, `${REVIEW}.channelAt`)) as Record<
+    string,
+    Coord
+  >;
+}
+
+async function zoomIn(connection: Connection, steps = 2): Promise<void> {
+  await evaluate(
+    connection,
+    Array.from({ length: steps }, () => `${REVIEW}.boardHost.zoom('IN')`).join(
+      "; ",
+    ),
+  );
+  await delay(600);
+}
+
+/** The lodge at work, nothing selected: what every viewer sees. */
+async function channelBoard(connection: Connection, size: Size): Promise<void> {
+  await mount(connection, "cultChannelBusyUiFixtureV7");
+  await record(connection, `${size}ChannelBoard`);
+  await capture(connection, `channel-board-${size}.png`);
+  const at = await channelAt(connection);
+  for (const [name, where] of [
+    ["horror", at.horror],
+    ["channeller", at.channeller],
+    ["bearer", at.bearer],
+    ["thing", at.thing],
+  ] as const) {
+    await activate(connection, where as Coord);
+    await record(connection, `${size}ChannelCard${name}`);
+    if (size !== "desktop" || name === "horror")
+      await capture(connection, `channel-card-${name}-${size}.png`);
+  }
+  if (size === "desktop") {
+    await evaluate(
+      connection,
+      `document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))`,
+    );
+    await zoomIn(connection);
+    await capture(connection, `channel-board-zoom-${size}.png`);
+  }
+}
+
+/** Summon: the helper, then the Horror's tile. */
+async function summonAim(connection: Connection, size: Size): Promise<void> {
+  await mount(connection, "cultChannelUiFixtureV7");
+  const at = await channelAt(connection);
+  await activate(connection, at.summoner as Coord);
+  await record(connection, `${size}SummonerChannelButtons`);
+  await capture(connection, `summoner-channel-buttons-${size}.png`);
+  await click(connection, "cult-summon");
+  await record(connection, `${size}SummonHelper`);
+  await capture(connection, `summon-helper-${size}.png`);
+  await evaluate(
+    connection,
+    `${REVIEW}.boardHost.activate(${JSON.stringify(at.helper)})`,
+  );
+  await delay(600);
+  await record(connection, `${size}SummonTile`);
+  await capture(connection, `summon-tile-${size}.png`);
+  await evaluate(
+    connection,
+    `${REVIEW}.boardHost.activate(${JSON.stringify({ x: 5, y: 3 })})`,
+  );
+  await delay(2_200);
+  await record(connection, `${size}SummonDone`);
+  await capture(connection, `summon-done-${size}.png`);
+}
+
+/** Channel (the reach, the daemon and its strands after) and Anchor. */
+async function channelAims(connection: Connection, size: Size): Promise<void> {
+  for (const [kind, who] of [
+    ["channel", "helper"],
+    ["anchor", "thing"],
+  ] as const) {
+    await mount(connection, "cultChannelUiFixtureV7");
+    const at = await channelAt(connection);
+    await activate(connection, at[who] as Coord);
+    await click(connection, `cult-${kind}`);
+    await connection.send("Input.dispatchKeyEvent", {
+      type: "rawKeyDown",
+      key: "Tab",
+      code: "Tab",
+      windowsVirtualKeyCode: 9,
+    });
+    await connection.send("Input.dispatchKeyEvent", {
+      type: "keyUp",
+      key: "Tab",
+      code: "Tab",
+      windowsVirtualKeyCode: 9,
+    });
+    await delay(500);
+    await record(connection, `${size}${kind}Aim`);
+    await capture(connection, `${kind}-aim-${size}.png`);
+    await evaluate(
+      connection,
+      `${REVIEW}.boardHost.activate(${JSON.stringify(kind === "channel" ? at.horror : at.channeller)})`,
+    );
+    await delay(1_800);
+    await record(connection, `${size}${kind}Done`);
+    await capture(connection, `${kind}-done-${size}.png`);
+  }
+}
+
+/** Behold!: the ring it would raise, then the idol raised. */
+async function behold(connection: Connection, size: Size): Promise<void> {
+  await mount(connection, "cultChannelUiFixtureV7");
+  const at = await channelAt(connection);
+  await activate(connection, at.bearer as Coord);
+  await record(connection, `${size}BeholdOffered`);
+  await capture(connection, `behold-offered-${size}.png`);
+  await click(connection, "cult-behold");
+  await delay(900);
+  await record(connection, `${size}BeholdRaised`);
+  await capture(connection, `behold-raised-${size}.png`);
+}
+
+/** Boo!: where each unit jumps, and the one confirmation. */
+async function boo(connection: Connection, size: Size): Promise<void> {
+  await mount(connection, "cultChannelUiFixtureV7");
+  const at = await channelAt(connection);
+  await activate(connection, at.horror as Coord);
+  await record(connection, `${size}HorrorButtons`);
+  await click(connection, "cult-boo");
+  await record(connection, `${size}BooAim`);
+  await capture(connection, `boo-aim-${size}.png`);
+  await click(connection, "cult-boo-cast");
+  await delay(1_800);
+  await record(connection, `${size}BooDone`);
+  await capture(connection, `boo-done-${size}.png`);
+}
+
+/** End Turn with a daemon short of its Control: the one question. */
+async function endTurn(connection: Connection, size: Size): Promise<void> {
+  await mount(connection, "cultChannelShortUiFixtureV7");
+  await capture(connection, `end-turn-short-board-${size}.png`);
+  await click(connection, "end-turn");
+  await record(connection, `${size}EndTurnQuestion`);
+  await capture(connection, `end-turn-question-${size}.png`);
+  await click(connection, "end-turn-back");
+  await record(connection, `${size}EndTurnBack`);
+}
+
+/** A Human player watching a Cult seat channel. */
+async function rival(connection: Connection, size: Size): Promise<void> {
+  await mount(connection, "cultChannelRivalUiFixtureV7");
+  await activate(connection, { x: 5, y: 4 });
+  await record(connection, `${size}Rival`);
+  await capture(connection, `channel-rival-${size}.png`);
+}
+
+/**
+ * Wraps the board host's `update` so the board draws a changed copy of each
+ * view (`transform` is the body of a function of `view` and `engine`).
+ */
+async function drawWith(
+  connection: Connection,
+  transform: string,
+): Promise<void> {
+  await evaluate(
+    connection,
+    `(async () => {
+      const engine = await import('/src/engine/index.ts');
+      const host = ${REVIEW}.boardHost;
+      const original = host.__cultOriginalUpdate ?? host.update.bind(host);
+      host.__cultOriginalUpdate = original;
+      const change = (view) => { ${transform} };
+      host.update = (model) => { host.__cultLastModel = { ...model, view: change(model.view) }; return original(host.__cultLastModel); };
+      if (host.__cultSeenModel !== undefined) host.update(host.__cultSeenModel);
+    })()`,
+    true,
+  );
+}
+
+/** Records the model the app hands the board, for `drawWith`. */
+async function watchModel(connection: Connection): Promise<void> {
+  await evaluate(
+    connection,
+    `(() => { const host = ${REVIEW}.boardHost; const original = host.update.bind(host); host.__cultOriginalUpdate = original; host.update = (model) => { host.__cultSeenModel = model; return original(model); }; })()`,
+  );
+}
+
+/**
+ * The strands on Grass, water and Snow: one daemon with a channeller three
+ * tiles away over Grass and over water (drawn with a Control of 3, as a
+ * Herald will have), and one whose channellers stand in an Ice Folk seat's
+ * Snow.
+ */
+async function grounds(connection: Connection): Promise<void> {
+  await mount(connection, "cultChannelGroundsUiFixtureV7");
+  await watchModel(connection);
+  await activate(connection, { x: 10, y: 10 });
+  await drawWith(
+    connection,
+    `return { ...view, cult: { ...view.cult, daemons: view.cult.daemons.map((daemon) => ({ ...daemon, control: 3 })) } };`,
+  );
+  await delay(900);
+  await capture(connection, `strands-grounds-desktop.png`);
+  await zoomIn(connection);
+  await capture(connection, `strands-grounds-zoom-desktop.png`);
+  await evaluate(
+    connection,
+    `${REVIEW}.boardHost.zoom('OUT'); ${REVIEW}.boardHost.zoom('OUT'); ${REVIEW}.boardHost.zoom('OUT'); ${REVIEW}.boardHost.zoom('OUT')`,
+  );
+  await delay(600);
+  await capture(connection, `strands-grounds-far-desktop.png`);
+}
+
+/**
+ * A daemon short of its Control (the cracked collar, the hollow pip) and a
+ * slack strand (its daemon drawn four tiles from its channeller), and then
+ * a sheet of every mark on the colours of Grass, Snow, the Cult's moor and
+ * water at two sizes, drawn straight from the canvas module. Before them, a
+ * real Unbound Horror (calm, then Furious): the board, its card, and Bind
+ * again aimed.
+ */
+async function wild(connection: Connection): Promise<void> {
+  // The Unbound rules (`pulp_wars-mch9.6`): a real Unbound Horror, calm and
+  // Furious, with the eye on its target, its card, and Bind again aimed.
+  for (const [name, fixture] of [
+    ["unbound", "cultChannelUnboundUiFixtureV7"],
+    ["furious", "cultChannelFuriousUiFixtureV7"],
+  ] as const) {
+    await mount(connection, fixture);
+    const where = await channelAt(connection);
+    await capture(connection, `${name}-board-desktop.png`);
+    await activate(connection, where.loose as Coord);
+    await record(connection, `desktop${name}Card`);
+    await capture(connection, `${name}-card-desktop.png`);
+    if (name === "unbound") {
+      await activate(connection, where.helper as Coord);
+      await click(connection, "cult-channel");
+      await record(connection, `desktopBindAim`);
+      await capture(connection, `bind-aim-desktop.png`);
+    }
+    await evaluate(
+      connection,
+      `document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true })); document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))`,
+    );
+    await zoomIn(connection);
+    await capture(connection, `${name}-board-zoom-desktop.png`);
+  }
+  await mount(connection, "cultChannelShortUiFixtureV7");
+  await watchModel(connection);
+  const at = await channelAt(connection);
+  await activate(connection, { x: 10, y: 10 });
+  await capture(connection, `short-daemon-desktop.png`);
+  await drawWith(
+    connection,
+    `const horror = view.units.find((unit) => unit.at.x === ${at.horror?.x} && unit.at.y === ${at.horror?.y});
+     return { ...view, units: view.units.map((unit) => unit.id === horror.id ? { ...unit, at: { x: 5, y: 1 } } : unit) };`,
+  );
+  await delay(900);
+  await zoomIn(connection);
+  await capture(connection, `slack-strand-zoom-desktop.png`);
+  await evaluate(
+    connection,
+    `(async () => {
+      const draw = await import('/src/render/canvas/cult-channel-canvas-v7.ts');
+      const sheet = document.createElement('canvas');
+      sheet.width = 1200; sheet.height = 760;
+      sheet.style.cssText = 'position:fixed;z-index:999;left:120px;top:120px;border:3px solid #000';
+      const context = sheet.getContext('2d');
+      const grounds = [['Grass', '#7fb35a'], ['Snow', '#eef2f5'], ['Moor', '#9d94ab'], ['Water', '#8fd0dc']];
+      grounds.forEach(([name, colour], column) => {
+        context.fillStyle = colour;
+        context.fillRect(column * 300, 0, 300, 760);
+        context.fillStyle = '#10131c';
+        context.font = '700 16px sans-serif';
+        context.fillText(name, column * 300 + 10, 22);
+        const left = column * 300;
+        for (const [zoom, top] of [[1, 60], [0.5, 520]]) {
+          const x = left + 80; const y = top + 70 * zoom;
+          draw.drawCultUnitMarkersV7(context, { candle: true, control: { control: 3, strands: 2 } }, x, y, zoom);
+          draw.drawCultUnitMarkersV7(context, { unbound: true, furious: true, control: { control: 1, strands: 0 } }, x + 150 * zoom, y, zoom);
+          draw.drawCultUnitMarkersV7(context, { eye: true, control: { control: 3, strands: 5 } }, x, y + 170 * zoom, zoom);
+          draw.drawCultStrandV7(context, { x: x + 100 * zoom, y: y + 170 * zoom }, { x: x + 230 * zoom, y: y + 110 * zoom }, zoom, true);
+          draw.drawCultStrandV7(context, { x: x + 100 * zoom, y: y + 230 * zoom }, { x: x + 230 * zoom, y: y + 200 * zoom }, zoom, false);
+          draw.drawCultGripV7(context, { x: x - 40 * zoom, y: y + 300 * zoom }, { x: x + 90 * zoom, y: y + 300 * zoom }, zoom, true);
+          draw.drawCultBooJumpV7(context, { x: x + 110 * zoom, y: y + 290 * zoom }, { x: x + 230 * zoom, y: y + 290 * zoom }, zoom, 'JUMPS');
+          draw.drawCultBooJumpV7(context, { x: x + 110 * zoom, y: y + 340 * zoom }, { x: x + 230 * zoom, y: y + 340 * zoom }, zoom, 'STAYS');
+          draw.drawCultBooJumpV7(context, { x: x + 110 * zoom, y: y + 390 * zoom }, { x: x + 230 * zoom, y: y + 390 * zoom }, zoom, 'UNKNOWN');
+        }
+      });
+      document.body.append(sheet);
+    })()`,
+    true,
+  );
+  await delay(300);
+  await capture(connection, `marks-sheet-desktop.png`);
+}
+
+/** The cues, each held where it reads (review tooling: `pinCultFeedback`). */
+async function cues(connection: Connection): Promise<void> {
+  await mount(connection, "cultChannelBusyUiFixtureV7");
+  const at = await channelAt(connection);
+  await evaluate(
+    connection,
+    `${REVIEW}.boardHost.pinCultFeedback([
+      { effect: 'STRAND_SNAP', cells: [${JSON.stringify(at.horror)}], from: ${JSON.stringify(at.hexer)}, progress: 0.3 },
+      { effect: 'STRAND_FORMED', cells: [${JSON.stringify(at.horror)}], from: ${JSON.stringify(at.channeller)}, progress: 0.5 },
+      { effect: 'UNBOUND', cells: [{ x: 8, y: 3 }], progress: 0.45 },
+      { effect: 'SUMMON', cells: [{ x: 2, y: 3 }], progress: 0.45 },
+      { effect: 'BOO', cells: [{ x: 2, y: 5 }], progress: 0.45 },
+      { effect: 'IDOL', cells: [{ x: 8, y: 5 }], progress: 0.45 },
+    ])`,
+  );
+  await delay(500);
+  await capture(connection, `cues-desktop.png`);
+  await zoomIn(connection);
+  await capture(connection, `cues-zoom-desktop.png`);
+}
+
+/**
+ * The cost of a still frame: the board with a dozen strands (twelve
+ * channellers, four daemons) drawn 300 times, against the same board with
+ * the channel lists emptied.
+ */
+async function cost(connection: Connection): Promise<void> {
+  await mount(connection, "cultChannelDozenUiFixtureV7");
+  await watchModel(connection);
+  await activate(connection, { x: 0, y: 0 });
+  await delay(1_500);
+  await capture(connection, `dozen-strands-desktop.png`);
+  evidence.frameCost = await evaluate(
+    connection,
+    `(() => {
+      const host = ${REVIEW}.boardHost;
+      const draw = host.__cultOriginalUpdate;
+      const model = host.__cultSeenModel;
+      const bare = { ...model, view: { ...model.view, cult: { ...model.view.cult, strands: [], grips: [], idols: [], daemons: [] } } };
+      const time = (subject) => { const samples = []; for (let round = 0; round < 7; round += 1) { const start = performance.now(); for (let index = 0; index < 100; index += 1) draw({ ...subject }); samples.push((performance.now() - start) / 100); } samples.sort((a, b) => a - b); return samples[3]; };
+      time(model); time(bare);
+      const withChannel = time(model);
+      const without = time(bare);
+      const again = time(model);
+      const bareAgain = time(bare);
+      return { strands: model.view.cult.strands.length, daemons: model.view.cult.daemons.length, frameMsWithChannel: [withChannel, again], frameMsWithout: [without, bareAgain], addedMs: (withChannel + again - without - bareAgain) / 2 };
+    })()`,
+  );
+  console.log(JSON.stringify(evidence.frameCost));
+}
+
 /**
  * The Cult's hue beside its neighbours (docs/art/factions/CULT.md): the
  * Favour chip in emerald and in the fallback indigo, the Plague chip's
@@ -339,7 +712,7 @@ async function mount(
       fixture,
       artSet: "CHIBI",
       global: "__CULT_REVIEW__",
-      extras: "at: fixtures.CULT_UI_V7",
+      extras: "at: fixtures.CULT_UI_V7, channelAt: fixtures.CULT_CHANNEL_UI_V7",
     }),
     true,
   );

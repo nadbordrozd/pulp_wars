@@ -1188,6 +1188,61 @@ and [the screen flow](../ui/SCREEN_FLOW.md):
 - **Colour:** Cult chips use the hue token `--pw-emerald` on its mint fill
   ([the Cult's direction](../art/factions/CULT.md)).
 
+**As built by U2** (`pulp_wars-mch9.18`; it replaces the stand-in of
+[section 21.3](#213-e3-the-channel-pulp_wars-mch95-pulp-wars-poc-7r74),
+item 13). The details are in
+[Board targeting, section 3.8](../ui/BOARD_TARGETING.md#38-the-cultists-the-channel-bead-pulp_wars-mch918):
+
+- **A strand** is a green chain over the pieces from the channeller to its
+  daemon, for every viewer who sees both. A strand whose cultist is out of
+  reach, which counts for nothing at the check, is red and parted. A broken
+  strand flashes red and its link flies apart; a new one is lit by a bead
+  that runs down it.
+- **Candlelit** is a lit candle over every channeller and over a Thing that
+  grips one. Ritual participants join with the rituals (E5).
+- **Control** is a row of pips under the daemon: lit for a holding strand,
+  hollow and red for a missing one, and small pips after the row for strands
+  to spare ("4 / 3" is three lit and one small). A daemon short of its
+  Control has a red rim and a cracked collar on the row. The unit's card
+  shows the same count as a chip ("2 / 3"), to every player.
+- **Anchor** is a teal tentacle from the Thing looped round the gripped
+  cultist's feet; **Behold!** a chalk ring round the Idol Bearer's nine
+  tiles (its own tile is inside the ring, though it wards only the eight
+  around it).
+- **The actions** have one button each: Summon (the helper when several
+  could help, then the tile), Channel (the daemon, inside the outlined
+  reach), Anchor (the cultist), all picked on the board; Behold!, cast by
+  its button with the ring previewed; and Boo!, previewed with an arrow per
+  unit and confirmed once. The Thing's button reads "Anchor".
+- **End Turn** with a daemon short of its Control asks once: "The Horror
+  will be Unbound." with the count ("0 / 1") and the answers Back and End
+  turn. The words "End turn?" of [section 6.2](#62-channel) are the dialog's
+  accessible name; the button says them.
+- **Unbound and Furious** (wired to the Unbound rules, E4,
+  `pulp_wars-mch9.6`). When a check fails (`DAEMON_UNBOUND`) the collar
+  bursts on the daemon's tile and the notice reads "Your Horror is Unbound"
+  (to others who saw it, "A Horror is Unbound"). The Unbound daemon is the
+  neutral unit E4 makes it: its red-eyed sprite, the name "Unbound Horror"
+  on the board, in its dock and under the cursor, a broken collar at its
+  upper right, and the chip "Unbound". While it is Furious (its `monsters`
+  entry, read through `previewRampageV7`) it has steam over it and the chip
+  "Furious", and no Channel on it is offered. **The eye mark** is on the
+  unit `previewRampageV7` names: the target of every visible Unbound daemon,
+  and of every bound daemon short of its Control ("if it broke now").
+- **Bind again** is the same Channel: an Unbound daemon in reach is a target
+  like an own one, labelled with the strands of this turn against its
+  Control, and the cursor says "Bind this Horror: 1 strand of the 1 it
+  needs. It is yours again." While the viewer holds strands to it its pips
+  show the binding as progress (hollow pips in cream, no red rim). When it
+  is bound (`DAEMON_BOUND`) the notice reads "Horror bound again".
+- **One daemon in reach: no third click.** A cultist with exactly one daemon
+  it may channel casts from its button, which carries the strands after
+  ("2 / 1") and reads "Bind" for an Unbound daemon; the board marks that
+  daemon while the cultist is selected. With two or more the button arms and
+  the daemon is picked on the board (coordinator's decision, 2026-10-10).
+- **Sounds** use the game's existing ones (a sparkle, a pop, the rally
+  horn, a boing, the dark chord) until the Cult's own are recorded.
+
 ## 15. Normal AI
 
 The Normal AI is deterministic, reads only the public view and previews,
@@ -2063,16 +2118,14 @@ left room:
     its place under an idol are gone already.
 12. **The Normal AI** never picks one of the five commands until bead A2
     (`pulp_wars-mch9.10`); a hand-built position holds it to that.
-13. **The interface stand-in.** Until bead U2 (`pulp_wars-mch9.18`) the dock
-    shows the five commands with its generic action buttons: "Summon
-    Horror" (one button per Summoner: the first helper and tile the engine
-    offers), "Channel Horror" (one per daemon in reach, with the strands it
-    would have against its Control), "Behold!", "Grip Initiate" (one per
-    channeller beside the Thing), and "Boo!". U2 replaces them with the
-    tile, helper, daemon, and cultist picked on the board, and adds the
-    strands, the Control pips, the candles, the grip, the idol's ring, the
-    Boo! arrows, and the End Turn question for a daemon short of its
-    Control. The Horror already draws with its own sprite and name.
+13. **The interface stand-in** was replaced by bead U2
+    (`pulp_wars-mch9.18`; see "As built by U2" in
+    [section 14.3](#143-how-it-reads-on-the-board-without-text)): the tile,
+    helper, daemon, and cultist are picked on the board, and the board draws
+    the strands, the Control pips, the candles, the grip, the idol's ring,
+    the Boo! arrows, and End Turn asks about a daemon short of its Control.
+    The text-mode harness still prints one line per command ("Summon
+    Horror", "Channel Horror", "Grip Initiate").
 14. **The Horror's numbers of [section 4.2](#42-summoned-units) were re-run
     through the engine's combat preview** and all match: it kills a full-HP
     Fighter and Knight in one attack and takes nothing; it deals a Guard 10
@@ -2197,15 +2250,13 @@ where this spec left room:
     hunted only by a kill this turn, and a routine Move does not end in its
     reach. The rules of [section 15.5](#155-against-the-cult-every-other-seat)
     are bead A4.
-17. **The interface stand-in.** The Channel on an Unbound daemon is the
-    generic button "Bind Horror" with the strands of the turn against its
-    Control. An Unbound daemon draws with its red-eyed sprite, is named
-    "Unbound Horror", and its dock says what Unbound is, how to bind it or
-    that it is Furious, and whom it goes for. Bead U2 replaces the button
-    with the daemon picked on the board and adds the eye marks (from
-    `previewRampageV7`, for Unbound daemons and for bound ones short of
-    their Control), the pips of a binding, the Furious cue, and the broken
-    chains.
+17. **The interface stand-in** ("Bind Horror" as a generic button) was
+    replaced by bead U2 (`pulp_wars-mch9.18`; "As built by U2" in
+    [section 14.3](#143-how-it-reads-on-the-board-without-text)): the Channel
+    on an Unbound daemon is the cultist's one Channel button, the eye marks
+    come from `previewRampageV7`, and the board draws the pips of a binding,
+    the Furious steam, and the broken collar. The text-mode harness still
+    prints "Bind Horror".
 
 ## Appendix A. The proposal's fifteen decisions, answered
 

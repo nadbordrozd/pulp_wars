@@ -57,6 +57,9 @@ import {
   unitFactionV7,
   previewKaboomV7,
   previewOfferingV7,
+  previewBooV7,
+  previewChannelV7,
+  HORROR_FAVOUR_COST_V7,
   favourOfV7,
   unitRoleRuleV7,
   unitRoleMechanicsV7,
@@ -655,9 +658,35 @@ import {
   BOO_LABEL_V7,
   CHANNEL_LABEL_V7,
   SUMMON_LABEL_V7,
-  cultChannelCommandPresentationV7,
-  cultChannelStandInShownV7,
+  ANCHOR_BUTTON_LABEL_V7,
+  ANCHOR_PICK_V7,
+  BIND_LABEL_V7,
+  BIND_TOOLTIP_V7,
+  ANCHOR_TOOLTIP_V7,
+  BEHOLD_TOOLTIP_V7,
+  BOO_CAST_V7,
+  BOO_TOOLTIP_V7,
+  CHANNEL_PICK_V7,
+  CHANNEL_TOOLTIP_V7,
+  CULT_CHANNEL_KINDS_V7,
+  END_TURN_UNBOUND_BACK_V7,
+  END_TURN_UNBOUND_CONFIRM_V7,
+  SUMMON_BUTTON_LABEL_V7,
+  SUMMON_PICK_HELPER_V7,
+  SUMMON_PICK_TILE_V7,
+  SUMMON_TOOLTIP_V7,
+  booSummaryV7,
+  cultChannelChipsV7,
+  cultChannelUnavailableTextV7,
+  daemonsShortV7,
+  endTurnUnboundQuestionV7,
+  strandsTextV7,
+  type CultChannelKindV7,
 } from "../cult-channel-presentation-v7";
+import {
+  summonHelpersV7,
+  type CultChannelPickV7,
+} from "../canvas/cult-channel-board-plan-v7";
 import {
   FAVOUR_LABEL_V7,
   FAVOUR_TOOLTIP_V7,
@@ -678,7 +707,11 @@ import {
   seatHasFavourV7,
   seizeUnavailableTextV7,
 } from "../cult-presentation-v7";
-import type { CultPickV7 } from "../canvas/cult-board-plan-v7";
+import {
+  isCultOfferingPickV7,
+  type CultOfferingPickV7,
+  type CultPickV7,
+} from "../canvas/cult-board-plan-v7";
 import {
   CANDY_FIELD_DEFENSE_EXPLANATION_V7,
   CONFECTIONER_SUPPORT_UNLOCK_TEXT_V7,
@@ -990,7 +1023,63 @@ const NON_BUTTON_COMMANDS = new Set<CommandV7["kind"]>([
   // (BOARD_TARGETING.md section 3.7).
   "SACRIFICE",
   "SEIZE",
+  // The channel (bead pulp_wars-mch9.18): Summon, Channel, Anchor and Boo!
+  // have one button each that aims on the board, and Behold! one that
+  // casts (BOARD_TARGETING.md section 3.8).
+  "SUMMON",
+  "CHANNEL",
+  "BEHOLD",
+  "ANCHOR",
+  "BOO",
 ]);
+/**
+ * The Cultists' channel (bead pulp_wars-mch9.18): each action's button
+ * name, card text, and the glyph shown until (and, in the LEGACY set and
+ * the classic look, instead of) its `ICON:ACTION:<KIND>` raster.
+ */
+const CULT_CHANNEL_TEXT_V7: Readonly<
+  Record<
+    CultChannelKindV7,
+    {
+      readonly label: string;
+      readonly tooltip: string;
+      readonly icon: UiIconIdV7;
+    }
+  >
+> = {
+  SUMMON: {
+    label: SUMMON_BUTTON_LABEL_V7,
+    tooltip: SUMMON_TOOLTIP_V7,
+    icon: "summon",
+  },
+  CHANNEL: {
+    label: CHANNEL_LABEL_V7,
+    tooltip: CHANNEL_TOOLTIP_V7,
+    icon: "chain",
+  },
+  BEHOLD: { label: BEHOLD_LABEL_V7, tooltip: BEHOLD_TOOLTIP_V7, icon: "idol" },
+  ANCHOR: {
+    label: ANCHOR_BUTTON_LABEL_V7,
+    tooltip: ANCHOR_TOOLTIP_V7,
+    icon: "tentacle",
+  },
+  BOO: { label: BOO_LABEL_V7, tooltip: BOO_TOOLTIP_V7, icon: "boo" },
+};
+/** The instruction of an aimed channel action. */
+function cultChannelPickPromptV7(pick: CultChannelPickV7): string {
+  switch (pick.kind) {
+    case "SUMMON":
+      return pick.helperUnitId === null
+        ? SUMMON_PICK_HELPER_V7
+        : SUMMON_PICK_TILE_V7;
+    case "CHANNEL":
+      return CHANNEL_PICK_V7;
+    case "ANCHOR":
+      return ANCHOR_PICK_V7;
+    case "BOO":
+      return BOO_TOOLTIP_V7;
+  }
+}
 /**
  * The Cultists: the Summoner's two aimed offerings, each with its button's
  * name, card text, instruction, and the glyph shown until (and, in the
@@ -999,7 +1088,7 @@ const NON_BUTTON_COMMANDS = new Set<CommandV7["kind"]>([
  */
 const CULT_PICK_TEXT_V7: Readonly<
   Record<
-    CultPickV7["kind"],
+    CultOfferingPickV7["kind"],
     {
       readonly label: string;
       readonly tooltip: string;
@@ -1464,6 +1553,12 @@ export class Ruleset7DomAppView {
    * selection leaves it and sends nothing).
    */
   #cultPick: CultPickV7 | null = null;
+  /**
+   * The Cultists (bead pulp_wars-mch9.18, RULESET_7_CULTISTS.md section
+   * 6.2): End Turn was pressed with a daemon short of its Control and waits
+   * for the player's one answer.
+   */
+  #endTurnConfirm = false;
   #unitHelpModal: HTMLElement | null = null;
   #modalReturnAction: string | null = null;
   /**
@@ -1863,6 +1958,10 @@ export class Ruleset7DomAppView {
         } else if (this.#screen !== "MATCH") {
           event.preventDefault();
           this.#closeOverlay();
+        } else if (this.#endTurnConfirm) {
+          // The Cultists: Escape answers the End Turn question with Back.
+          event.preventDefault();
+          this.#closeEndTurnConfirm();
         }
       }
       return;
@@ -1920,8 +2019,9 @@ export class Ruleset7DomAppView {
         this.#cancelFreezeRing();
         return;
       } else if (this.#cultPick !== null) {
-        // The Cultists: Escape first disarms the Sacrifice or the Seize.
-        this.#cancelCultPick();
+        // The Cultists: Escape first disarms the Sacrifice or the Seize,
+        // and steps back out of a Summon's tile to its helper.
+        this.#cancelCultPick(true);
         return;
       } else this.#selection = null;
       this.#render();
@@ -1944,7 +2044,7 @@ export class Ruleset7DomAppView {
       );
       if (command !== undefined) {
         event.preventDefault();
-        void this.#dispatch(command);
+        this.#requestEndTurn(command);
       }
     }
   };
@@ -4104,7 +4204,7 @@ export class Ruleset7DomAppView {
         end.title = label;
         end.setAttribute("aria-label", `End turn. ${label}.`);
       }
-      end.onclick = () => void this.#dispatch(endTurn);
+      end.onclick = () => this.#requestEndTurn(endTurn);
       end.disabled = this.#localBusy() || blocked;
       if (firstStep?.button === "END_TURN")
         end.dataset.firstStep = firstStep.buttonMotion.toLowerCase();
@@ -4217,6 +4317,16 @@ export class Ruleset7DomAppView {
       !showAchievementNotice
     )
       nextChildren.push(this.#recruitHelp(this.#selectedRecruitHelp));
+    // The Cultists (bead pulp_wars-mch9.18): End Turn asks once when a
+    // daemon is short of its Control.
+    const endTurnQuestion =
+      this.#snapshot.phase === "ACTIVE" &&
+      this.#screen === "MATCH" &&
+      view.pendingChoices.length === 0 &&
+      !showAchievementNotice
+        ? this.#endTurnUnboundDialog(view)
+        : null;
+    if (endTurnQuestion !== null) nextChildren.push(endTurnQuestion);
     // Bead pulp_wars-2yc.29: a level-up's dialog waits for its animation.
     if (view.pendingChoices[0] !== undefined && this.#rewardHeld) {
       // Nothing yet: the population is on its way to the city.
@@ -5100,6 +5210,27 @@ export class Ruleset7DomAppView {
           cue.setAttribute("aria-label", chip.status);
           identityColumn?.append(cue);
         }
+      // The Cultists (bead pulp_wars-mch9.18): the channel on a unit of any
+      // owner: Candlelit, the grip, a raised idol, a daemon's strands
+      // against its Control, Unbound and Furious, each a word (or "2 / 3")
+      // with its one sentence as the tooltip.
+      for (const chip of cultChannelChipsV7(view, unit)) {
+        const cue = el(this.#document, "span", "v7-chip v7-cult-chip");
+        const glyph = this.#chibiArt(
+          chip.icon,
+          CHIBI_DOM_BOXES_V7.leaderboard,
+        )?.element;
+        if (glyph !== undefined) {
+          glyph.classList.add("v7-cult-chip-icon");
+          cue.append(glyph);
+        }
+        cue.append(text(this.#document, "span", chip.label));
+        cue.dataset.unitStatus = chip.id;
+        if (chip.short === true) cue.dataset.short = "true";
+        cue.title = chip.status;
+        cue.setAttribute("aria-label", `${chip.label}. ${chip.status}`);
+        identityColumn?.append(cue);
+      }
       // The Dwarf revision (section 16.1): Dig In, the clockwork status, the
       // Gunner's shots, Plated, the rider's surfacing brake and "bombed this
       // turn", from `stats.dwarf` and the per-turn flags.
@@ -5471,8 +5602,10 @@ export class Ruleset7DomAppView {
         ...this.#navalActionButtons(view, unit.id),
         // The frozen sea: Freeze likewise.
         ...this.#freezeActionButtons(view, unit.id),
-        // The Cultists: Sacrifice and Seize likewise.
+        // The Cultists: Sacrifice and Seize likewise, and the channel:
+        // Summon, Channel, Behold!, Anchor and Boo!.
         ...this.#cultActionButtons(view, unit.id),
+        ...this.#cultChannelActionButtons(view, unit.id),
       ].reverse())
         actions.prepend(button);
       if (goblinFieldDefenseBlockedV7(view, unit.id)) {
@@ -6562,14 +6695,7 @@ export class Ruleset7DomAppView {
     ).filter(
       (candidate) =>
         predicate(candidate.command) &&
-        !NON_BUTTON_COMMANDS.has(candidate.command.kind) &&
-        // The Cultists (`pulp_wars-mch9.5`): the stand-in lists one Summon
-        // per Summoner until the helper and the tile are picked on the
-        // board (`pulp_wars-mch9.18`).
-        cultChannelStandInShownV7(
-          candidate.command,
-          this.#snapshot.offeredCommands,
-        ),
+        !NON_BUTTON_COMMANDS.has(candidate.command.kind),
     )) {
       // A blocked action is priced and previewed with no shortage of Coins.
       const previewView =
@@ -6607,19 +6733,9 @@ export class Ruleset7DomAppView {
         this.#snapshot.view === undefined
           ? null
           : previewOfferingV7(this.#snapshot.view, command.cityId);
-      // The Cultists (`pulp_wars-mch9.5`): Summon, Channel, Behold!,
-      // Anchor, and Boo! use these generic buttons for now, each named in
-      // plain words with a chip that says what it does. The channel's
-      // interface bead (`pulp_wars-mch9.18`) replaces them with targets
-      // picked on the board, the strands, and the Control pips.
-      const channel =
-        this.#snapshot.view === null || this.#snapshot.view === undefined
-          ? null
-          : cultChannelCommandPresentationV7(this.#snapshot.view, command);
       const label =
         (released ? RELEASE_LABEL_V7 : null) ??
         (berserk ? BERSERK_LABEL_V7 : null) ??
-        channel?.label ??
         (abandonedEgg === undefined
           ? commandLabel(command, this.#viewerFaction())
           : ABANDON_EGG_LABEL_V7);
@@ -6863,18 +6979,6 @@ export class Ruleset7DomAppView {
         favour.append(`+${offering.favour}`, this.#favourIcon());
         chips.prepend(favour);
         action.append(chips);
-      } else if (channel !== null) {
-        // The Cultists' channel: the card text, and what the action does
-        // to the strands or the Favour.
-        action.title = channel.tooltip;
-        action.setAttribute("aria-label", `${channel.label} · ${channel.chip}`);
-        action.setAttribute("aria-description", `${channel.tooltip}.`);
-        action.dataset.cult = command.kind.toLowerCase();
-        const chip = el(this.#document, "span", "v7-command-economy");
-        chip.append(
-          text(this.#document, "span", channel.chip, "v7-economy-chip"),
-        );
-        action.append(chip);
       } else if (command.kind === "RALLY" && berserk) {
         // Goblin explosions and Berserk (`pulp_wars-w49.36`): what it does,
         // and how many units it reaches; hover and focus mark them.
@@ -7275,6 +7379,19 @@ export class Ruleset7DomAppView {
         targetUnitId: command.targetUnitId,
       };
       this.#notice = `${BOMB_RUN_PICK_LANDING_V7}.`;
+      this.#render();
+      this.#queueBoardFocus();
+      return;
+    }
+    // The Cultists (bead pulp_wars-mch9.18): choosing the cultist that
+    // helps a Summon moves on to the Horror's tiles; nothing is sent yet.
+    if (target.family === "SUMMON_HELPER" && command.kind === "SUMMON") {
+      this.#cultPick = {
+        kind: "SUMMON",
+        unitId: command.unitId,
+        helperUnitId: command.helperUnitId,
+      };
+      this.#notice = `${SUMMON_PICK_TILE_V7}.`;
       this.#render();
       this.#queueBoardFocus();
       return;
@@ -9399,6 +9516,7 @@ export class Ruleset7DomAppView {
     this.#freezeHoverUnitId = null;
     this.#freezeRingArmedUnitId = null;
     this.#cultPick = null;
+    this.#endTurnConfirm = false;
     let restoreAction =
       command.kind === "RESEARCH" ? `tech-${command.tech.toLowerCase()}` : null;
     // First steps: a unit that could still move before this command is
@@ -11856,7 +11974,7 @@ export class Ruleset7DomAppView {
   }
 
   /** Starts aiming the selected Summoner's Sacrifice or Seize. */
-  #startCultPick(kind: CultPickV7["kind"], unitId: UnitId): void {
+  #startCultPick(kind: CultOfferingPickV7["kind"], unitId: UnitId): void {
     if (this.#localBusy()) return;
     this.#cultPick = { kind, unitId };
     this.#notice = `${CULT_PICK_TEXT_V7[kind].pick}.`;
@@ -11866,9 +11984,26 @@ export class Ruleset7DomAppView {
     this.#queueBoardFocus();
   }
 
-  /** Leaves the aiming (nothing is sent); focus returns to its button. */
-  #cancelCultPick(): void {
+  /**
+   * Leaves the aiming (nothing is sent); focus returns to its button. With
+   * `stepBack`, a Summon's tile first steps back to its helper when several
+   * cultists could help.
+   */
+  #cancelCultPick(stepBack = false): void {
     const pick = this.#cultPick;
+    if (
+      stepBack &&
+      pick?.kind === "SUMMON" &&
+      pick.helperUnitId !== null &&
+      summonHelpersV7(this.#snapshot.offeredCommands, pick.unitId).length > 1
+    ) {
+      const back: CultChannelPickV7 = { ...pick, helperUnitId: null };
+      this.#cultPick = back;
+      this.#notice = `${cultChannelPickPromptV7(back)}.`;
+      this.#render();
+      this.#queueBoardFocus();
+      return;
+    }
     this.#cultPick = null;
     this.#pendingFocusAction =
       pick === null ? null : `cult-${pick.kind.toLowerCase()}`;
@@ -11884,6 +12019,8 @@ export class Ruleset7DomAppView {
   #cultPickPanel(unitId: UnitId): HTMLElement | null {
     const pick = this.#cultPick;
     if (pick === null || pick.unitId !== unitId) return null;
+    if (!isCultOfferingPickV7(pick))
+      return this.#cultChannelPickPanel(pick, unitId);
     const commands = this.#snapshot.offeredCommands.filter(
       (command) => command.kind === pick.kind && command.unitId === unitId,
     );
@@ -11919,6 +12056,358 @@ export class Ruleset7DomAppView {
     buttons.append(cancel);
     panel.append(buttons);
     return panel;
+  }
+
+  /**
+   * The Cultists' channel (bead pulp_wars-mch9.18; BOARD_TARGETING.md
+   * section 3.8): one button per action of the selected own unit, whatever
+   * the number of tiles, daemons or cultists. Summon, Channel and Anchor
+   * arm their aiming (pressed while aiming) and are picked on the board;
+   * Boo! arms its preview, with one confirmation in the dock; Behold!
+   * targets nothing and is cast by its button, the ring it would raise
+   * being drawn while the Idol Bearer is selected. Without an offered
+   * command a button is shown disabled with the engine's reason, or not at
+   * all when the action could apply to nothing on the board.
+   */
+  #cultChannelActionButtons(
+    view: PlayerViewV7,
+    unitId: UnitId,
+  ): readonly HTMLButtonElement[] {
+    const unit = view.units.find((candidate) => candidate.id === unitId);
+    if (
+      unit === undefined ||
+      unit.ownerId !== view.viewer.id ||
+      this.#snapshot.offeredCommands.length === 0
+    )
+      return [];
+    const buttons: HTMLButtonElement[] = [];
+    for (const kind of CULT_CHANNEL_KINDS_V7) {
+      const entry = CULT_CHANNEL_TEXT_V7[kind];
+      const commands = this.#snapshot.offeredCommands.filter(
+        (command) =>
+          command.kind === kind &&
+          "unitId" in command &&
+          command.unitId === unit.id,
+      );
+      const offered = commands.length > 0;
+      const reason = cultChannelUnavailableTextV7(view, unit, kind, offered);
+      if (!offered && reason === null) continue;
+      const slug = `cult-${kind.toLowerCase()}`;
+      // With exactly one daemon in reach there is nothing to pick: the
+      // button channels it (an Unbound one: "Bind"), and says what the
+      // daemon's strands will be; the board marks the daemon.
+      const [single] = commands;
+      const direct =
+        kind === "CHANNEL" &&
+        commands.length === 1 &&
+        single?.kind === "CHANNEL"
+          ? previewChannelV7(view, single.unitId, single.daemonUnitId)
+          : null;
+      const directUnbound =
+        direct !== null &&
+        view.monsters.some(
+          (monster) =>
+            monster.unitId === direct.daemonUnitId &&
+            monster.unbound !== undefined,
+        );
+      const label = directUnbound ? BIND_LABEL_V7 : entry.label;
+      const tooltip = directUnbound ? BIND_TOOLTIP_V7 : entry.tooltip;
+      const action = button(this.#document, "", slug, "v7-context-action");
+      action.append(
+        this.#chibiArt(`ICON:ACTION:${kind}`, CHIBI_DOM_BOXES_V7.action)
+          ?.element ??
+          uiIconV7(this.#document, entry.icon, "v7-ui-icon v7-command-icon"),
+        text(this.#document, "span", label, "v7-action-label"),
+      );
+      action.dataset.cultAbility = kind.toLowerCase();
+      // A Summon shows its price in Favour, as a build shows its Coins.
+      let price = "";
+      if (direct !== null && reason === null) {
+        const chips = el(this.#document, "span", "v7-command-economy");
+        const strands = strandsTextV7(direct.strandsAfter, direct.control);
+        chips.append(
+          text(
+            this.#document,
+            "span",
+            strands,
+            "v7-economy-chip v7-favour-chip",
+          ),
+        );
+        action.append(chips);
+        price = ` · ${strands}`;
+        action.dataset.cultDirect = "true";
+      }
+      if (kind === "SUMMON") {
+        const chips = el(this.#document, "span", "v7-command-economy");
+        const favour = el(
+          this.#document,
+          "span",
+          "v7-economy-chip v7-favour-chip",
+        );
+        favour.append(`−${HORROR_FAVOUR_COST_V7}`, this.#favourIcon());
+        chips.append(favour);
+        action.append(chips);
+        price = ` · −${HORROR_FAVOUR_COST_V7} Favour`;
+      }
+      if (reason === null) {
+        const aiming = this.#cultPick?.kind === kind;
+        const [only] = commands;
+        action.title = tooltip;
+        action.setAttribute("aria-label", `${label}${price}. ${tooltip}`);
+        action.disabled = this.#localBusy();
+        if (kind === "BEHOLD" || direct !== null) {
+          if (only !== undefined)
+            action.onclick = () => void this.#dispatch(only);
+        } else {
+          action.setAttribute("aria-pressed", String(aiming));
+          action.onclick = () =>
+            aiming
+              ? this.#cancelCultPick()
+              : this.#startCultChannelPick(kind, unit.id);
+        }
+      } else {
+        // aria-disabled keeps the reason reachable by keyboard and touch.
+        action.setAttribute("aria-disabled", "true");
+        action.dataset.disabledReason = reason;
+        action.title = reason;
+        action.setAttribute(
+          "aria-label",
+          `${entry.label} unavailable. ${reason}`,
+        );
+        action.onclick = () => {
+          this.#notice = `${reason}.`;
+          this.#showToast(`${reason}.`);
+          this.#pendingFocusAction = slug;
+          this.#render();
+        };
+      }
+      buttons.push(action);
+    }
+    return buttons;
+  }
+
+  /**
+   * Starts aiming a channel action on the board. A Summoner with a single
+   * cultist that may help goes straight to the Horror's tiles.
+   */
+  #startCultChannelPick(
+    kind: Exclude<CultChannelKindV7, "BEHOLD">,
+    unitId: UnitId,
+  ): void {
+    if (this.#localBusy()) return;
+    const helpers =
+      kind === "SUMMON"
+        ? summonHelpersV7(this.#snapshot.offeredCommands, unitId)
+        : [];
+    const pick: CultChannelPickV7 =
+      kind === "SUMMON"
+        ? {
+            kind,
+            unitId,
+            helperUnitId: helpers.length === 1 ? (helpers[0] ?? null) : null,
+          }
+        : { kind, unitId };
+    this.#cultPick = pick;
+    this.#notice = `${cultChannelPickPromptV7(pick)}.`;
+    this.#pendingFocusAction = kind === "BOO" ? "cult-boo-cast" : null;
+    this.#render();
+    // The board takes the keyboard, so Tab and Enter pick.
+    if (kind !== "BOO") this.#queueBoardFocus();
+  }
+
+  /**
+   * The aiming panel of a channel action in the dock: the action's icon and
+   * name with its "?", a Boo!'s summary and its one confirmation, Back (a
+   * Summon's tile, when several cultists could help) and Cancel. The
+   * helper, the tile, the daemon and the gripped cultist are highlighted
+   * and picked on the board; the dock lists none. Null (and the aiming
+   * ends) when nothing is offered any more.
+   */
+  #cultChannelPickPanel(
+    pick: CultChannelPickV7,
+    unitId: UnitId,
+  ): HTMLElement | null {
+    const view = this.#snapshot.view;
+    const commands = this.#snapshot.offeredCommands.filter(
+      (command) =>
+        command.kind === pick.kind &&
+        "unitId" in command &&
+        command.unitId === unitId,
+    );
+    if (commands.length === 0 || view === null || view === undefined) {
+      this.#cultPick = null;
+      return null;
+    }
+    const entry = CULT_CHANNEL_TEXT_V7[pick.kind];
+    const prompt = cultChannelPickPromptV7(pick);
+    const panel = el(
+      this.#document,
+      "section",
+      "v7-kaboom-preview v7-martian-pick v7-cult-pick v7-board-pick",
+    );
+    panel.dataset.v7CultPick = pick.kind.toLowerCase();
+    const helpers =
+      pick.kind === "SUMMON"
+        ? summonHelpersV7(this.#snapshot.offeredCommands, unitId)
+        : [];
+    let summary: string | null = null;
+    let cast: HTMLButtonElement | null = null;
+    if (pick.kind === "BOO") {
+      const [command] = commands;
+      const preview = previewBooV7(view, unitId);
+      if (command === undefined || preview === null) {
+        this.#cultPick = null;
+        return null;
+      }
+      summary = booSummaryV7(preview);
+      // Nothing is picked: the jumps are drawn, the dock confirms.
+      panel.dataset.boardTargets = "0";
+      cast = button(
+        this.#document,
+        BOO_CAST_V7,
+        "cult-boo-cast",
+        "primary-action v7-cult-confirm",
+      );
+      cast.setAttribute("aria-label", `${BOO_CAST_V7} ${summary}.`);
+      cast.title = summary;
+      cast.disabled = this.#localBusy();
+      cast.onclick = () => void this.#dispatch(command);
+    } else if (pick.kind === "SUMMON")
+      panel.dataset.boardTargets = String(
+        pick.helperUnitId === null
+          ? helpers.length
+          : commands.filter(
+              (command) =>
+                command.kind === "SUMMON" &&
+                command.helperUnitId === pick.helperUnitId,
+            ).length,
+      );
+    else panel.dataset.boardTargets = String(commands.length);
+    panel.setAttribute("aria-label", summary ?? prompt);
+    panel.append(
+      this.#pickHead(
+        `ICON:ACTION:${pick.kind}`,
+        entry.icon,
+        entry.label,
+        pick.kind === "BOO" ? entry.tooltip : `${prompt}. ${entry.tooltip}`,
+      ),
+    );
+    if (summary !== null && summary !== "")
+      panel.append(text(this.#document, "p", summary, "v7-martian-detail"));
+    const buttons = el(this.#document, "div", "button-row v7-kaboom-actions");
+    if (cast !== null) buttons.append(cast);
+    if (
+      pick.kind === "SUMMON" &&
+      pick.helperUnitId !== null &&
+      helpers.length > 1
+    ) {
+      const back = button(
+        this.#document,
+        "Back",
+        "cult-pick-back",
+        "v7-kaboom-cancel",
+      );
+      back.onclick = () => this.#cancelCultPick(true);
+      buttons.append(back);
+    }
+    const cancel = button(
+      this.#document,
+      "Cancel",
+      "cult-pick-cancel",
+      "v7-kaboom-cancel",
+    );
+    cancel.onclick = () => this.#cancelCultPick();
+    buttons.append(cancel);
+    panel.append(buttons);
+    return panel;
+  }
+
+  /**
+   * The Cultists (bead pulp_wars-mch9.18, RULESET_7_CULTISTS.md section
+   * 6.2): End Turn with a daemon short of its Control asks once. Nothing
+   * stops the choice: it is a confirmation, not a protection.
+   */
+  #requestEndTurn(command: CommandV7): void {
+    const view = this.#snapshot.view;
+    if (this.#endTurnConfirm) return;
+    if (
+      view !== null &&
+      view !== undefined &&
+      !this.#localBusy() &&
+      daemonsShortV7(view).length > 0
+    ) {
+      this.#endTurnConfirm = true;
+      this.#pendingFocusAction = "end-turn-back";
+      this.#render();
+      return;
+    }
+    void this.#dispatch(command);
+  }
+
+  /** Answers the End Turn question with Back: the turn goes on. */
+  #closeEndTurnConfirm(): void {
+    this.#endTurnConfirm = false;
+    this.#pendingFocusAction = "end-turn";
+    this.#render();
+  }
+
+  /**
+   * The End Turn question: one sentence, each short daemon's strands
+   * against its Control, and the two answers. Null (and the question is
+   * dropped) when it was not asked, the turn can no longer be ended, or no
+   * daemon is short any more.
+   */
+  #endTurnUnboundDialog(view: PlayerViewV7): HTMLElement | null {
+    if (!this.#endTurnConfirm) return null;
+    const command = this.#snapshot.offeredCommands.find(
+      (candidate) => candidate.kind === "END_TURN",
+    );
+    const short = daemonsShortV7(view);
+    if (command === undefined || short.length === 0) {
+      this.#endTurnConfirm = false;
+      return null;
+    }
+    const question = endTurnUnboundQuestionV7(short);
+    const modal = el(this.#document, "section", "v7-end-turn-confirm");
+    modal.dataset.v7Region = "end-turn-confirm";
+    modal.setAttribute("role", "alertdialog");
+    modal.setAttribute("aria-modal", "true");
+    modal.setAttribute("aria-label", `${question} End turn?`);
+    const line = el(this.#document, "p", "v7-end-turn-question");
+    line.append(text(this.#document, "span", question));
+    // The count the pips under the daemon show: "0 / 1".
+    for (const daemon of short) {
+      const chip = text(
+        this.#document,
+        "span",
+        strandsTextV7(daemon.strands, daemon.control),
+        "v7-chip v7-cult-chip",
+      );
+      chip.dataset.short = "true";
+      chip.dataset.unitStatus = "control";
+      line.append(chip);
+    }
+    const answers = el(this.#document, "div", "button-row v7-end-turn-answers");
+    const back = button(
+      this.#document,
+      END_TURN_UNBOUND_BACK_V7,
+      "end-turn-back",
+      "v7-end-turn-back",
+    );
+    back.onclick = () => this.#closeEndTurnConfirm();
+    const confirm = button(
+      this.#document,
+      END_TURN_UNBOUND_CONFIRM_V7,
+      "end-turn-confirm",
+      "primary-action v7-end-turn-anyway",
+    );
+    confirm.onclick = () => {
+      this.#endTurnConfirm = false;
+      void this.#dispatch(command);
+    };
+    answers.append(back, confirm);
+    modal.append(line, answers);
+    return modal;
   }
 
   /**

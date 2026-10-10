@@ -162,6 +162,13 @@ const FAMILY_STYLES_V7: Readonly<Record<string, TargetHighlightStyleV7>> = {
   // Seizes the Attack mark.
   SACRIFICE: "SUPPORT",
   SEIZE: "ATTACK",
+  // The channel (`pulp_wars-mch9.18`): the cultist that helps a summoning,
+  // the daemon a cultist channels and the channeller a Thing grips are the
+  // Cult's own units (the Help ring); the Horror's tile is a Place mark.
+  SUMMON_HELPER: "SUPPORT",
+  SUMMON: "PLACE",
+  CHANNEL: "SUPPORT",
+  ANCHOR: "SUPPORT",
 };
 
 /** Every family the vocabulary knows, for the audit and its tests. */

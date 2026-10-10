@@ -85,10 +85,13 @@ describe("Sacrifice is picked on the board", () => {
     select(scene, CULT_UI_V7.summoner);
     // One Sacrifice and one Seize button, whatever the number of victims.
     const sacrifice = requiredButton("cult-sacrifice");
+    // (The channel's Summon is the Summoner's third: bead pulp_wars-mch9.18.)
     expect(
-      dock().querySelectorAll("[data-cult-ability]").length,
+      [...dock().querySelectorAll<HTMLElement>("[data-cult-ability]")].map(
+        (button) => button.dataset.cultAbility,
+      ),
       "one button per ability",
-    ).toBe(2);
+    ).toEqual(["sacrifice", "seize", "summon"]);
     expect(
       dock().querySelector(
         '[data-action^="command-sacrifice"], [data-action^="command-seize"]',
@@ -276,7 +279,11 @@ describe("Seize is picked on the board", () => {
     document.body.innerHTML = '<div id="app"></div>';
     scene = rig(lonely([]));
     select(scene, at(5, 2));
-    expect(dock().querySelector("[data-cult-ability]")).toBeNull();
+    expect(
+      dock().querySelector(
+        '[data-cult-ability="sacrifice"], [data-cult-ability="seize"]',
+      ),
+    ).toBeNull();
     scene.app.destroy();
   });
 

@@ -4634,6 +4634,76 @@
   border-color: var(--pw-emerald);
 }
 
+/*
+ * The Cultists' channel (bead pulp_wars-mch9.18): the chips of a unit's
+ * card (Candlelit, the grip, a raised idol, a daemon's strands, Unbound and
+ * Furious) and the End Turn question.
+ */
+.v7-cult-chip {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  border: 1px solid var(--pw-emerald);
+  background: var(--pw-emerald-fill);
+  color: var(--pw-emerald);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.v7-cult-chip .v7-cult-chip-icon {
+  flex: none;
+  min-width: 0;
+  min-height: 0;
+}
+
+.v7-cult-chip[data-short="true"],
+.v7-cult-chip[data-unit-status="unbound"],
+.v7-cult-chip[data-unit-status="furious"] {
+  border-color: var(--pw-loss);
+  background: var(--pw-red-fill);
+  color: var(--pw-loss);
+}
+
+.v7-end-turn-confirm {
+  position: absolute;
+  z-index: 30;
+  inset: 50% auto auto 50%;
+  display: grid;
+  gap: 0.9rem;
+  width: min(22rem, calc(100% - 2rem));
+  padding: 1.1rem;
+  border: var(--pw-line-w) solid var(--pw-line);
+  border-radius: var(--pw-radius);
+  background: var(--pw-surface);
+  box-shadow: var(--pw-shadow);
+  text-align: center;
+  transform: translate(-50%, -50%);
+}
+
+.v7-end-turn-question {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  font-size: var(--pw-fs-lg);
+  font-weight: var(--pw-fw-bold);
+}
+
+.v7-end-turn-answers {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+}
+
+.v7-end-turn-answers > button {
+  min-width: 0;
+  padding-inline: 0.4rem;
+  font-size: clamp(0.9rem, 4.4vw, 1.1rem);
+  white-space: nowrap;
+}
+
 .v7-dwarf-chip {
   display: inline-flex;
   gap: 4px;

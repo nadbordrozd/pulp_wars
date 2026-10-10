@@ -61,7 +61,9 @@ colour written outside the token block.
 
 `--pw-emerald` is the Cultists' hue (bead `pulp_wars-mch9.17`,
 [the Cult's direction](../art/factions/CULT.md)): Favour and the Cult's
-chips. Its ink is close to `--pw-green` and `--pw-teal`, so it always stands
+chips (the channel's too, bead `pulp_wars-mch9.18`: Candlelit, a daemon's
+"2 / 3"; a daemon short of its Control, Unbound and Furious take
+`--pw-loss` on `--pw-red-fill`). Its ink is close to `--pw-green` and `--pw-teal`, so it always stands
 on its own mint fill or is an icon, never text on a plain plate.
 
 ## Recipes

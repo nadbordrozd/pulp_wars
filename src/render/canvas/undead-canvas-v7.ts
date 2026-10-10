@@ -100,7 +100,16 @@ export type AbilityPreviewStyleV7 =
    * ring while her button is hovered or focused.
    */
   | "FREEZE"
-  | "FREEZE_FOCUS";
+  | "FREEZE_FOCUS"
+  /**
+   * The Cultists (bead pulp_wars-mch9.18): the chalk ring of a raised idol
+   * (the wax cream, outlined only), the ring an offered Behold! would raise
+   * and its "Warded" labels, and the reach of an aimed Channel (the lodge's
+   * green glow).
+   */
+  | "IDOL_RING"
+  | "WARD_PREVIEW"
+  | "CHANNEL_RANGE";
 
 /** Legacy and CHIBI Undead badge frames, relative to the cell centre. */
 export const UNDEAD_BADGE_FRAME_V7 = {
@@ -615,6 +624,10 @@ const STYLE_COLORS: Readonly<
   GATE_EXIT: { fill: "rgba(236, 232, 255, 0.24)", stroke: "#ece8ff" },
   GATE_SHOVE: { fill: "rgba(236, 232, 255, 0.12)", stroke: "#c9c0f2" },
   GATE_BLOCKED: { fill: "rgba(170, 179, 192, 0.24)", stroke: "#aab3c0" },
+  // The Cultists: CULT_PALETTE_V7's wax cream (chalk) and green glow.
+  IDOL_RING: { fill: "rgba(243, 231, 196, 0.1)", stroke: "#f3e7c4" },
+  WARD_PREVIEW: { fill: "rgba(243, 231, 196, 0)", stroke: "#f3e7c4" },
+  CHANNEL_RANGE: { fill: "rgba(128, 255, 188, 0.1)", stroke: "#80ffbc" },
 };
 
 /** Dark stripes that turn the friendly-fire outline into a hazard band. */

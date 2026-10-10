@@ -429,6 +429,72 @@ reasons).
   and the classic look) they show code glyphs: a candle for Sacrifice, the
   Offering and Favour, the grappling hook for Seize.
 
+### 3.8 The Cultists: the channel (bead `pulp_wars-mch9.18`)
+
+The five channel actions
+([rules](../product/RULESET_7_CULTISTS.md#6-daemons-and-the-channel)) each
+have **one button** on their unit, whatever the number of tiles, daemons or
+cultists. Code: `src/render/cult-channel-presentation-v7.ts` (the words),
+`src/render/canvas/cult-channel-board-plan-v7.ts` (the targets and what is
+always drawn), `src/render/canvas/cult-channel-canvas-v7.ts` (the drawing)
+and `src/render/canvas/cult-effects-v7.ts` (the cues).
+
+| Action  | Unit          | Class | How it is chosen                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Style            |
+| ------- | ------------- | ----- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- |
+| Summon  | Summoner      | (b)   | One Summon button with its price ("−5" and the Favour candle). Armed, the cultists that may help wear the Help ring badged "Helper" (one cultist: skipped), then the free tiles next to the Summoner are Place marks. Back steps from the tiles to the helper                                                                                                                                                                                                                                                                                                                 | Help, then Place |
+| Channel | every cultist | (b)   | One Channel button. With **one** daemon in reach it casts at once: the button carries the daemon's strands after ("2 / 1") and the board marks that daemon with the broken Help ring. With two or more it arms: the tiles within 3 are outlined in the lodge's green and each daemon in reach wears the Help ring labelled with its strands after against its Control ("2 / 3"); the cursor says "It stays bound" or "Still short". An Unbound daemon that is not Furious is a target too ("Bind this Horror ... It is yours again"; alone in reach, the button reads "Bind") | Help             |
+| Behold! | Idol Bearer   | (c)   | One Behold! button casts it. While the Idol Bearer is selected and the button is offered, the ring it would raise is outlined in chalk cream and each cultist it would ward wears the broken Help ring labelled "Warded" (marked, not picked: section 2.1)                                                                                                                                                                                                                                                                                                                    | An area preview  |
+| Anchor  | Thing         | (b)   | One Anchor button. Armed, each channeller next to the Thing wears the Help ring labelled with its daemon's strands after the grip ("3 / 1")                                                                                                                                                                                                                                                                                                                                                                                                                                   | Help             |
+| Boo!    | Horror        | (c)   | One Boo! button opens a panel with its confirmation ("Boo!") and a summary ("2 jump · 1 stays · 1 strand breaks"). An arrow runs from each scared unit to the tile it jumps to; a unit that cannot jump has a barred stub and "Stays", an unknown jump a dashed arrow and "?"                                                                                                                                                                                                                                                                                                 | An area preview  |
+
+- **All but Behold! are armed** (a Channel only with two or more daemons in
+  reach: with one there is nothing to pick). A daemon and a channeller are own units,
+  which a click selects, and a Summon's tiles are tiles the Summoner could
+  move to, so each follows the arming rule. Escape, Cancel or another
+  selection disarms and sends nothing; Tab steps through the targets.
+- **A strand a Boo! would break** is labelled "Strand breaks" on its cultist
+  with the warning stripes of friendly fire, whoever's cultist it is.
+- **Reasons on the button.** Without an offered command the button is shown
+  disabled with the engine's first failing rule: "Already acted this turn",
+  "It must be on land", "Needs 5 Favour", "A cultist that has not acted must
+  stand next to it", "No free tile next to it", "It channels already", "No
+  daemon within 3 tiles", "The daemon is Furious this turn", "The idol is raised", "It grips a cultist already",
+  "No channelling cultist next to it", "Nobody next to it to scare". A
+  cultist with no daemon of its seat in sight has no Channel button, and a
+  Thing has no Anchor button while its seat channels nothing.
+- **Icons.** The buttons draw `ICON:ACTION:SUMMON`, `CHANNEL`, `BEHOLD`,
+  `ANCHOR` and `BOO`, the chips `ICON:STATUS:CANDLELIT`, `WARDED`, `UNBOUND`
+  and `FURIOUS`, the board the Candlelit, Unbound and Furious marks, and the
+  cues `EFFECT:SUMMON_POP`, `STRAND_SNAP`, `BOO` and `UNBOUND`
+  ([the Cult's art](../art/factions/CULT.md)). In the LEGACY set and the
+  classic look, and while a raster loads, each is drawn in code. On the
+  board the candle keeps its dark halo under the raster, so the cream wax
+  and the small green flame read on Grass and on Snow.
+
+**Always on the board, for every player** (nothing is selected or aimed;
+none of it is a target, and none of it moves):
+
+| What             | Drawn as                                                                                                                                                                                                                                                                                                                                                                          |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| A strand         | A green chain from the channeller to its daemon, over the pieces: a dark casing, dark green, lit links, a cream bead at each end. Out of reach (it counts for nothing) it is red and parted in the middle                                                                                                                                                                         |
+| Candlelit        | A lit candle on a dark disc at the unit's upper left: every channeller, and a Thing that grips one                                                                                                                                                                                                                                                                                |
+| Control          | A row of pips under the daemon: one slot per strand it needs, lit when held, hollow and red when missing; strands past its Control are small pips after the row. Short of its Control, the row is rimmed red with a cracked collar                                                                                                                                                |
+| Anchor           | A teal tentacle from the Thing that loops round the gripped cultist's feet                                                                                                                                                                                                                                                                                                        |
+| Behold!          | A dashed chalk ring round the Idol Bearer's nine tiles while its idol is raised                                                                                                                                                                                                                                                                                                   |
+| Unbound, Furious | The Unbound sprite and name ("Unbound Horror"), a broken collar at its upper right, steam over it while Furious, and an eye on the unit it goes for; the same eye for a bound daemon short of its Control ("if it broke now"), from the engine's `previewRampageV7`. While the viewer holds strands to an Unbound daemon, its pips show the binding (hollow in cream, no red rim) |
+
+The marks keep a dark casing under their colour, so the green reads on
+Grass, the cream on Snow, and both on the Cult's moor and on water. A dozen
+strands cost one link and one mark each: about 0.1 ms of a 1.2 ms still
+frame, measured on a hand-built board
+(`scripts/browser-cult-review-v7.ts --only=cost`).
+
+**End Turn.** With a daemon of the player's short of its Control, End Turn
+(the button or `E`) first asks once, in a small dialog over a scrim: "The
+Horror will be Unbound." (or "2 daemons will be Unbound."), the count the
+pips show ("0 / 1"), and two answers, **Back** (the default, also Escape)
+and **End turn**. It is a confirmation, not a protection.
+
 ## 4. The aiming panel
 
 While an ability is armed the dock shows its aiming panel in place of the
@@ -513,6 +579,19 @@ for tools; it is never read out.
   sweeps the two Cult scenes. `scripts/browser-cult-review-v7.ts` (dev
   server only) captures them at 1440, 390 and 320 px wide and records that
   nothing overflows.
+- `tests/unit/cult-channel-presentation-v7.test.ts` and
+  `tests/integration/ruleset7-cult-channel-dom.test.ts` (section 3.8, scenes
+  in `tests/fixtures/v7-cult-ui.ts`): the strands, candles, pips, grip and
+  idol ring of a lodge at work, for its player and for a rival; a slack
+  strand; the pips of every count; each aimed action (one button, the
+  targets and their labels, a board pick sends the offered command, Back,
+  Escape and Cancel), Behold!'s ring and Boo!'s jumps; every reason; the
+  card's chips; the End Turn question and its two answers; the Unbound,
+  Furious and eye marks on a hand-changed view; and the cue each event
+  plays. The guard test sweeps four channel scenes.
+  `scripts/browser-cult-review-v7.ts` captures them at 1440, 390 and 320 px
+  wide, the strands on Grass, water and Snow, every mark on four grounds,
+  the cues, and the cost of a frame.
 - `scripts/browser-board-targeting-review-v7.ts` (dev server only)
   captures every style on the faction fixtures, on Grass, Snow, a Forest,
   Mountains and the Undead ground, at desktop and phone widths, the area

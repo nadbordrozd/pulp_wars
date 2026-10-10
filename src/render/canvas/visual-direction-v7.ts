@@ -906,12 +906,17 @@ export function createDirectedChibiArtV7(input: {
         // Map curiosities (bead pulp_wars-737.6): the tile overlays and the
         // provoked marker are registered only in the direction's registry
         // and drawn as authored (faction-less, no owner colour, no tone).
+        // The Cultists' channel (bead pulp_wars-mch9.18): likewise the
+        // board marks of Candlelit, Unbound and Furious.
         if (
           input.samples !== undefined &&
           direction.unit.samples &&
           (request.subject.startsWith("EFFECT:") ||
             request.subject.startsWith("CURIOSITY:") ||
-            request.subject === "STATUS:PROVOKED")
+            request.subject === "STATUS:PROVOKED" ||
+            request.subject === "ICON:STATUS:CANDLELIT" ||
+            request.subject === "ICON:STATUS:UNBOUND" ||
+            request.subject === "ICON:STATUS:FURIOUS")
         ) {
           const sample = input.samples.resolve(request);
           if (sample.kind !== "MISSING") return sample;

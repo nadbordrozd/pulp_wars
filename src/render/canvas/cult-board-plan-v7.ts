@@ -21,6 +21,7 @@ import type {
   BoardRenderPlanEntryV7,
   MapCommandTargetV7,
 } from "./board-renderer-v7";
+import type { CultChannelPickV7 } from "./cult-channel-board-plan-v7";
 
 /**
  * The Cult part of the board plan (bead `pulp_wars-mch9.17`,
@@ -33,9 +34,22 @@ import type {
  */
 
 /** A Sacrifice or a Seize being aimed: its victims are the only targets. */
-export interface CultPickV7 {
+export interface CultOfferingPickV7 {
   readonly kind: "SACRIFICE" | "SEIZE";
   readonly unitId: UnitId;
+}
+
+/**
+ * What a Cult unit is aiming on the board: an offering (this module) or a
+ * channel action (bead `pulp_wars-mch9.18`, cult-channel-board-plan-v7.ts).
+ */
+export type CultPickV7 = CultOfferingPickV7 | CultChannelPickV7;
+
+/** Whether the pick is a Sacrifice or a Seize. */
+export function isCultOfferingPickV7(
+  pick: CultPickV7,
+): pick is CultOfferingPickV7 {
+  return pick.kind === "SACRIFICE" || pick.kind === "SEIZE";
 }
 
 const chebyshev = (a: CoordV7, b: CoordV7): number =>
@@ -45,7 +59,7 @@ const chebyshev = (a: CoordV7, b: CoordV7): number =>
 export function cultPickTargetsV7(
   view: PlayerViewV7,
   commands: readonly CommandV7[],
-  pick: CultPickV7,
+  pick: CultOfferingPickV7,
 ): MapCommandTargetV7[] {
   const summoner = view.units.find((unit) => unit.id === pick.unitId);
   if (summoner === undefined) return [];
@@ -99,7 +113,7 @@ export function addCultPickEntriesV7(
   entries: BoardRenderPlanEntryV7[],
   view: PlayerViewV7,
   targets: readonly MapCommandTargetV7[],
-  pick: CultPickV7,
+  pick: CultOfferingPickV7,
 ): void {
   const summoner = view.units.find((unit) => unit.id === pick.unitId);
   if (summoner === undefined) return;

@@ -349,6 +349,25 @@ export function soundCuesForStepV7(
           return [{ id: "impact.hit", delayMs: 0 }];
       }
       return [];
+    case "CULT":
+      // The Cultists' channel (bead pulp_wars-mch9.18): the sounds the
+      // game already has, until the Cult's own are recorded (the taut
+      // string, the snap, the gong and the horn of section 14.2).
+      switch (step.effect) {
+        case "SUMMON":
+          return [{ id: "special.sparkle", delayMs: 0 }];
+        case "STRAND_SNAP":
+          return [{ id: "special.pop", delayMs: 0 }];
+        case "IDOL":
+          return [{ id: "support.rally", delayMs: 0 }];
+        case "BOO":
+          return [{ id: "special.boing", delayMs: 0 }];
+        case "UNBOUND":
+          return [{ id: "support.dark", delayMs: 0 }];
+        case "STRAND_FORMED":
+          return [];
+      }
+      return [];
     case "CANDY":
       switch (step.effect) {
         case "RUSH":

@@ -1095,6 +1095,11 @@ export function moundArtSubjectV7(rider: boolean): ArtSubjectV7 {
  * other subject (the Martian, Ice Folk and Dwarf ability, status and
  * effect icons included) has no fallback.
  */
+/** Whether `subject` is the sprite of a Cult summoned unit (any look). */
+export function isCultSummonedArtSubjectV7(subject: ArtSubjectV7): boolean {
+  return CULT_SUMMONED_SUBJECT_PATTERN_V7.test(subject);
+}
+
 export function chibiFallbackSubjectV7(
   subject: ArtSubjectV7,
 ): ArtSubjectV7 | null {

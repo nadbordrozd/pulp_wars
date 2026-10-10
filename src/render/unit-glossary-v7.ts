@@ -756,6 +756,28 @@ const ENTRIES = {
     "Gingerbread Man",
     "Broken off a Gingerbread Giant. It is a Toffee Trooper in every way.",
   ],
+  // The Cultists' channel (`pulp_wars-mch9.18`): the chips of a channeller,
+  // a gripping Thing, an Idol Bearer and a daemon.
+  STATUS_CANDLELIT: [
+    "Candlelit",
+    "It channels a daemon, and everyone who has explored its tile sees it. Hurt, move or hex it and its strand snaps.",
+  ],
+  STATUS_GRIPPED: [
+    "Gripped",
+    "A Thing in the Cellar grips it, so its strand counts as three. Hit it and all three go.",
+  ],
+  STATUS_GRIPPING: [
+    "Grips",
+    "It grips the channelling cultist beside it. Move, freeze or hex the Thing and the grip fails.",
+  ],
+  STATUS_IDOL_RAISED: [
+    "Idol raised",
+    "Your cultists beside it keep their strands when they are hurt, until the Idol Bearer itself is hit.",
+  ],
+  STATUS_CONTROL: [
+    "Strands",
+    "The strands that hold it, against the number it needs. With too few at the start of its owner's turn it is Unbound.",
+  ],
 } as const satisfies Readonly<Record<string, readonly [string, string]>>;
 
 export type GlossaryIdV7 = keyof typeof ENTRIES;
@@ -1055,6 +1077,15 @@ const STATUS_IDS: Readonly<Record<string, GlossaryIdV7>> = {
   // victim, and a Gingerbread Man.
   swallowed: "STATUS_SWALLOWED",
   "gingerbread-man": "STATUS_GINGERBREAD_MAN",
+  // The Cultists' channel (`pulp_wars-mch9.18`).
+  candlelit: "STATUS_CANDLELIT",
+  gripped: "STATUS_GRIPPED",
+  gripping: "STATUS_GRIPPING",
+  idol: "STATUS_IDOL_RAISED",
+  control: "STATUS_CONTROL",
+  // An Unbound daemon's own lines (`pulp_wars-mch9.6`).
+  unbound: "UNBOUND",
+  furious: "FURIOUS",
 };
 
 /** Every status ID the unit dock can put on a chip (`data-unit-status`). */

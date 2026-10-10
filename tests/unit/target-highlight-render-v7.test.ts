@@ -95,6 +95,11 @@ const EVERY_FAMILY: Readonly<
   // The Cultists (`pulp_wars-mch9.17`).
   SACRIFICE: "SUPPORT",
   SEIZE: "ATTACK",
+  // The channel (`pulp_wars-mch9.18`).
+  SUMMON_HELPER: "SUPPORT",
+  SUMMON: "PLACE",
+  CHANNEL: "SUPPORT",
+  ANCHOR: "SUPPORT",
 };
 
 describe("target highlight vocabulary", () => {

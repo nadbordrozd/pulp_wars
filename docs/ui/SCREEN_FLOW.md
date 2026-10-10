@@ -487,6 +487,22 @@ Roads, that text now describes the **Classic look** developer option
     ("Offering: +3 Favour, −2 population", "Knight Seized: +18 Favour",
     "Initiate Sacrificed: +2 Favour", "Martyr: +6 Favour", and to the victim's
     owner "Player 1 Seized your Knight").
+  - **The channel (bead `pulp_wars-mch9.18`,
+    [board targeting, section 3.8](BOARD_TARGETING.md#38-the-cultists-the-channel-bead-pulp_wars-mch918)).**
+    A Horror arrives in a green ring that bursts upward; a new strand is lit
+    by a bead that runs from the channeller to the daemon; a broken strand
+    flashes red and its link flies apart; a raised idol spreads its chalk; a
+    Boo! throws out startle lines and each scared unit hops its one tile; a
+    daemon that fails its check bursts its collar. Each plays once, 260 to
+    620 ms, and another player's frames the camera as its moves do. With
+    reduced motion each holds one still frame and nothing travels. The
+    toast names what the board might not explain: "Strand broken: it was
+    hurt", "2 strands broken", "Your Horror is Unbound", "Horror bound again".
+  - **End Turn's question.** With a daemon of the player's short of its
+    Control, End Turn opens a small dialog over a scrim before anything is
+    sent: "The Horror will be Unbound.", the count ("0 / 1"), Back and End
+    turn. Back and Escape return focus to End Turn; the dialog fits a
+    320 px phone.
   - **Territory click.** A click or tap on a tile inside a city's territory
     hops that city (any player's visible city); a click that gives an order
     does not.

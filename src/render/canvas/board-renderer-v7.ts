@@ -204,8 +204,23 @@ import { drawNavalUnitMarkersV7 } from "./naval-canvas-v7";
 import {
   addCultPickEntriesV7,
   cultPickTargetsV7,
+  isCultOfferingPickV7,
   type CultPickV7,
 } from "./cult-board-plan-v7";
+import {
+  CULT_LINK_LABEL_V7,
+  addCultChannelEntriesV7,
+  addCultChannelPickEntriesV7,
+  addCultChannelPreviewsV7,
+  cultChannelPickTargetsV7,
+  cultUnitMarkersV7,
+  type CultLinkV7,
+  type CultUnitMarkersV7,
+} from "./cult-channel-board-plan-v7";
+import {
+  drawCultLinkV7,
+  drawCultUnitMarkersV7,
+} from "./cult-channel-canvas-v7";
 import {
   addFreezePickEntriesV7,
   addFreezeRingEntriesV7,
@@ -364,6 +379,7 @@ import {
   territoryGroundV7,
   territoryTerrainSubjectV7,
   unitArtSubjectV7,
+  isCultSummonedArtSubjectV7,
   type TerritoryGroundV7,
 } from "../../assets/chibi-art-v7";
 import {
@@ -571,7 +587,8 @@ export interface BoardRenderInteractionV7 {
   /**
    * The Cultists (bead `pulp_wars-mch9.17`): the Sacrifice or the Seize the
    * selected Summoner is aiming. Its victims become the only map targets;
-   * null or omitted aims none.
+   * null or omitted aims none. Bead `pulp_wars-mch9.18`: likewise an aimed
+   * Summon (its helper, then its tile), Channel, Anchor or Boo!.
    */
   readonly cultPick?: CultPickV7 | null;
   /**
@@ -692,7 +709,16 @@ export interface MapCommandTargetV7 {
      * Summoner may Sacrifice, and a broken enemy it may Seize.
      */
     | "SACRIFICE"
-    | "SEIZE";
+    | "SEIZE"
+    /**
+     * The Cultists (bead `pulp_wars-mch9.18`): the cultist that helps an
+     * aimed Summon and the tile its Horror arrives on, the daemon of an
+     * aimed Channel, and the channeller an aimed Anchor grips.
+     */
+    | "SUMMON_HELPER"
+    | "SUMMON"
+    | "CHANNEL"
+    | "ANCHOR";
   /**
    * Revision 16: a two-command landing. `command` is the one-cell Move to
    * the intermediate water cell; the UI sends this `DISEMBARK` only when that
@@ -1171,6 +1197,17 @@ export interface BoardRenderPlanEntryV7 {
    * its breed and its provoked marker.
    */
   readonly monster?: MonsterUnitMarkerV7;
+  /**
+   * UNIT only, the Cultists (bead `pulp_wars-mch9.18`): the candle of a
+   * Candlelit unit, a daemon's Control pips, and the marks of an Unbound
+   * daemon and of the unit it goes for (any owner).
+   */
+  readonly cult?: CultUnitMarkersV7;
+  /**
+   * LINK only, the Cultists: a strand, an Anchor grip, or the jump of an
+   * aimed Boo! (`label` is `CULT_LINK_LABEL_V7`).
+   */
+  readonly cultLink?: CultLinkV7;
 }
 
 export interface BoardRenderPlanV7 {
@@ -1514,6 +1551,8 @@ export function buildBoardRenderPlanV7(
   const ringWitch = iceFolkMatch
     ? selectedWitchV7(view, interaction.selectedUnitId)
     : undefined;
+  // The Cultists (bead pulp_wars-mch9.18): the channel marks, by unit.
+  const cultMarkers = cultUnitMarkersV7(view);
   for (const unit of view.units) {
     // The Mind Control revision (section 9): the sprite, label, and faction
     // cue follow the unit's kind; the owner colour stays the controller's.
@@ -1557,8 +1596,11 @@ export function buildBoardRenderPlanV7(
     // The Spider and Bigfoot have their own sprites (code-drawn discs in
     // LEGACY); a camp guard wears its faction's sprite (round 2, section
     // 34.2), with no faction badge, since it names no player.
+    // The Cultists (section 6.4): an Unbound daemon is a neutral unit of
+    // its own breed, with its Unbound look and name (`pulp_wars-mch9.6`).
     const monster = isMonsterUnitV7(unit);
     const breed = monster ? neutralBreedOfUnitV7(view, unit) : null;
+    const cult = cultMarkers.get(unit.id);
     // The giants' signatures (`pulp_wars-w49.32`): a Gingerbread Man, and
     // the victim an Abomination holds (its belly badge).
     const gingerbreadMan =
@@ -1635,6 +1677,7 @@ export function buildBoardRenderPlanV7(
       ...(candy === undefined ? {} : { candy }),
       ...(naval === undefined ? {} : { naval }),
       ...(icebound === undefined ? {} : { icebound }),
+      ...(cult === undefined ? {} : { cult }),
       ...(breed !== null
         ? {
             monster: {
@@ -1645,6 +1688,9 @@ export function buildBoardRenderPlanV7(
         : {}),
     });
   }
+  // The Cultists (bead pulp_wars-mch9.18): every strand and grip the
+  // viewer sees, and the chalk ring of each raised idol.
+  addCultChannelEntriesV7(entries, view);
   // The Dwarf revision (section 5.3): every visible mound, where its unit
   // would stand, with its HP bar; a selected mound tile outlines its ring.
   if (dwarfMatch)
@@ -1788,7 +1834,7 @@ export function buildBoardRenderPlanV7(
       (interaction.cultPick === undefined ||
         interaction.cultPick === null ||
         interaction.cultPick.unitId !== selectedUnitId)
-    )
+    ) {
       addAbilityPreviews(
         entries,
         view,
@@ -1798,6 +1844,9 @@ export function buildBoardRenderPlanV7(
           ? interaction.areaSupportFocus.kind
           : null,
       );
+      // The Cultists: the ring an offered Behold! would raise.
+      addCultChannelPreviewsV7(entries, view, commands, selectedUnitId);
+    }
     // The Martian revision: the Force Field of a selected Shield Projector
     // and the control link between a controlled unit and its Brain.
     if (martianMatch)
@@ -1917,7 +1966,9 @@ export function buildBoardRenderPlanV7(
             : navalPick !== null
               ? navalPickTargetsV7(view, commands, navalPick)
               : cultPick !== null
-                ? cultPickTargetsV7(view, commands, cultPick)
+                ? isCultOfferingPickV7(cultPick)
+                  ? cultPickTargetsV7(view, commands, cultPick)
+                  : cultChannelPickTargetsV7(view, commands, cultPick)
                 : freezePick !== null
                   ? freezePickTargetsV7(view, commands, freezePick)
                   : giantPick !== null
@@ -2031,7 +2082,13 @@ export function buildBoardRenderPlanV7(
     // A Submarine the selected unit cannot attack from where it stands.
     addSubmergedReasonEntriesV7(entries, view, commands, selectedUnitId);
   // The Cultists: the grey reasons of an aimed Sacrifice or Seize.
-  if (cultPick !== null) addCultPickEntriesV7(entries, view, targets, cultPick);
+  if (cultPick !== null) {
+    if (isCultOfferingPickV7(cultPick))
+      addCultPickEntriesV7(entries, view, targets, cultPick);
+    // Bead pulp_wars-mch9.18: a Channel's reach, a Summon's helper, a
+    // Boo!'s jumps.
+    else addCultChannelPickEntriesV7(entries, view, cultPick);
+  }
   for (const target of targets) {
     if (target.family === "LAY_EGG")
       entries.push({
@@ -3839,6 +3896,17 @@ export function drawBoardV7(input: {
         const resolved = resolveChibiEntry(entry);
         const chibi = resolved?.resolution ?? null;
         factionArt = resolved?.factionArt ?? false;
+        // The Cultists: a summoned unit has a sprite of its own and no
+        // stand-in (no Human sprite is a Horror), so once that sprite is
+        // drawn it is its faction's art: no stand-in letter.
+        if (
+          !factionArt &&
+          chibi !== null &&
+          chibi.kind !== "MISSING" &&
+          entry.artSubject !== undefined &&
+          isCultSummonedArtSubjectV7(entry.artSubject)
+        )
+          factionArt = true;
         const chibiReady = chibi?.kind === "READY" ? chibi : null;
         chibiPiece = chibi !== null && chibi.kind !== "MISSING";
         // The ninth unit (`pulp_wars-w49.17`, 7r55): a new unit drawn with
@@ -5060,7 +5128,8 @@ export function drawBoardV7(input: {
       entry.kind === "LINK" &&
       entry.linkTo !== undefined &&
       entry.label !== "CONTROL_LINK" &&
-      entry.label !== TUNNEL_TETHER_LINK_V7,
+      entry.label !== TUNNEL_TETHER_LINK_V7 &&
+      entry.label !== CULT_LINK_LABEL_V7,
   );
   if (publicLinks.length > 0) {
     context.save();
@@ -5118,6 +5187,27 @@ export function drawBoardV7(input: {
         camera.zoom,
         input.highContrast ?? false,
       );
+  // The Cultists (bead pulp_wars-mch9.18): the channel, over the pieces:
+  // each strand, grip and Boo! jump, then each unit's marks (the candle,
+  // the Control pips, an Unbound daemon's). A board without the Cult has
+  // none of either, and the loop finds nothing to draw.
+  drawCultChannelV7(
+    context,
+    camera,
+    input.plan.entries,
+    input.highContrast ?? false,
+    sceneAlpha,
+    chibiArt === undefined
+      ? null
+      : (subject) => {
+          const resolved = chibiArt.resolve({
+            subject,
+            at: { x: 0, y: 0 },
+            deviceScale: chibiMasterScale(camera) * devicePixelRatio,
+          });
+          return resolved.kind === "READY" ? resolved.image : null;
+        },
+  );
   // Preview labels and notes stay inside the visible, unobscured band and
   // off each other; one placer serves every preview box of this frame.
   // Every label is queued and drawn after every outline and area fill, so
@@ -5715,6 +5805,67 @@ function dedupeStacks(
 }
 
 /** Faint area fills and outer edges of the selected unit's ability preview. */
+/**
+ * The Cultists (bead pulp_wars-mch9.18): the channel's links and unit
+ * marks, drawn over the pieces. The rasters of the status icons are asked
+ * for only when a unit carries the mark; without one the mark is drawn in
+ * code.
+ */
+function drawCultChannelV7(
+  context: CanvasRenderingContext2D,
+  camera: CameraState,
+  entries: readonly BoardRenderPlanEntryV7[],
+  highContrast: boolean,
+  sceneAlpha: number,
+  raster: ((subject: ArtSubjectV7) => CanvasImageSource | null) | null,
+): void {
+  const centre = (at: CoordV7): { readonly x: number; readonly y: number } => ({
+    x: camera.offsetX + at.x * TILE_WIDTH * camera.zoom,
+    y: camera.offsetY + at.y * TILE_HEIGHT * camera.zoom,
+  });
+  let saved = false;
+  const begin = (): void => {
+    if (saved) return;
+    saved = true;
+    context.save();
+    context.globalAlpha = sceneAlpha;
+  };
+  for (const entry of entries)
+    if (
+      entry.kind === "LINK" &&
+      entry.cultLink !== undefined &&
+      entry.linkTo !== undefined
+    ) {
+      begin();
+      drawCultLinkV7(
+        context,
+        entry.cultLink,
+        centre(entry.at),
+        centre(entry.linkTo),
+        camera.zoom,
+        { highContrast },
+      );
+    }
+  for (const entry of entries)
+    if (entry.kind === "UNIT" && entry.cult !== undefined) {
+      begin();
+      const { x, y } = centre(entry.at);
+      const icon = (
+        name: "CANDLELIT" | "UNBOUND" | "FURIOUS",
+      ): CanvasImageSource | null =>
+        raster === null ? null : raster(`ICON:STATUS:${name}`);
+      drawCultUnitMarkersV7(context, entry.cult, x, y, camera.zoom, {
+        highContrast,
+        art: {
+          candlelit: entry.cult.candle === true ? icon("CANDLELIT") : null,
+          unbound: entry.cult.unbound === true ? icon("UNBOUND") : null,
+          furious: entry.cult.furious === true ? icon("FURIOUS") : null,
+        },
+      });
+    }
+  if (saved) context.restore();
+}
+
 function drawAbilityAreasV7(
   context: CanvasRenderingContext2D,
   camera: CameraState,

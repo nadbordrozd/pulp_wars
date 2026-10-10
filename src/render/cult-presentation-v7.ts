@@ -20,7 +20,10 @@ import {
   type PublicUnitV7,
   type UnitId,
 } from "../engine/index";
-import { cultChannelCommandPresentationV7 } from "./cult-channel-presentation-v7";
+import {
+  cultChannelCommandPresentationV7,
+  cultChannelNoticePartsV7,
+} from "./cult-channel-presentation-v7";
 
 /**
  * The Cultists of the Ancient Ones (docs/product/RULESET_7_CULTISTS.md;
@@ -407,5 +410,8 @@ export function cultBoundaryNoticeV7(
       parts.push(`Martyr: ${favourGainTextV7(event.amount)}`);
     }
   }
+  // The channel (bead pulp_wars-mch9.18): the viewer's strands broken and a
+  // daemon Unbound.
+  parts.push(...cultChannelNoticePartsV7(events, before, after));
   return parts.length === 0 ? null : { text: parts.join(" · "), toast: true };
 }

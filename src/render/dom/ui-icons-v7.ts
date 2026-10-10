@@ -84,6 +84,15 @@ export type UiIconIdV7 =
   // LEGACY and stand-in glyph until the art registers `ICON:HUD:CULT:FAVOUR`
   // and the action icons.
   | "candle"
+  // The channel (bead pulp_wars-mch9.18): the glyphs of Summon (a flame in
+  // a chalk circle), Channel (two chain links), Behold! (the idol and its
+  // rays), Anchor (a coiled tentacle) and Boo! (a grin under two eyes),
+  // until the art registers their `ICON:ACTION:<KIND>` rasters.
+  | "summon"
+  | "chain"
+  | "idol"
+  | "tentacle"
+  | "boo"
   // The leaderboard's alliance setting (bead pulp_wars-2yc.45): two linked
   // rings, the mark of "AIs allied" and of every allied AI row.
   | "allied";
@@ -208,6 +217,19 @@ const PATHS: Readonly<Record<UiIconIdV7, string>> = {
   // A fat candle on a dish, a short wick and a teardrop flame.
   candle:
     "M8.5 11.5h7V20h-7ZM5.5 20.5h13M12 11.5V9.8M12 2.6c1.9 2 2.7 3.3 2.7 4.5a2.7 2.7 0 0 1-5.4 0c0-1.2.8-2.5 2.7-4.5Z",
+  // A chalk circle on the ground with a flame standing in it.
+  summon:
+    "M4 17.2a8 3.2 0 1 0 16 0 8 3.2 0 1 0-16 0ZM12 4.4c2 2.1 2.9 3.6 2.9 4.9a2.9 2.9 0 0 1-5.8 0c0-1.3.9-2.8 2.9-4.9ZM12 12.2v3.6",
+  // Two chain links, one through the other.
+  chain:
+    "M10.6 13.4a3.4 3.4 0 0 1-4.8 0l-.7-.7a3.4 3.4 0 0 1 0-4.8l2-2a3.4 3.4 0 0 1 4.8 0l.7.7M13.4 10.6a3.4 3.4 0 0 1 4.8 0l.7.7a3.4 3.4 0 0 1 0 4.8l-2 2a3.4 3.4 0 0 1-4.8 0l-.7-.7M9.6 14.4l4.8-4.8",
+  // A squat idol: its block of a head, two eyes, a mouth, three rays.
+  idol: "M7.5 9.5h9V18a2 2 0 0 1-2 2h-5a2 2 0 0 1-2-2ZM10 13h.1M14 13h.1M10 16.5h4M12 3v3M5.2 5.2l2 2M18.8 5.2l-2 2",
+  // A tentacle rising from the ground and coiling in on itself.
+  tentacle:
+    "M4.5 20.5c.6-7.3 3.6-11.6 8.3-11.6a4.5 4.5 0 1 1-4.5 4.5 2.3 2.3 0 1 1 2.3 2.3",
+  // A wide toothy grin under two eyes of different sizes.
+  boo: "M4.5 12.5c1.6 6.4 13.4 6.4 15 0ZM9 14.2v2.6M12 14.4v3M15 14.2v2.6M8.4 6.2a1.5 1.5 0 1 0 .1 0M15.4 4.8a2.2 2.2 0 1 0 .1 0",
 };
 
 /**

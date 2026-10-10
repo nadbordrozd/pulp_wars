@@ -22,7 +22,6 @@ import {
   DISRUPTION_CAUSE_LABELS_V7,
   FAVOUR_PURPOSE_LABELS_V7,
   cultChannelCommandPresentationV7,
-  cultChannelStandInShownV7,
   strandsTextV7,
 } from "../../src/render/cult-channel-presentation-v7";
 import { cultCommandPresentationV7 } from "../../src/render/cult-presentation-v7";
@@ -199,7 +198,7 @@ describe("the Cult's channel: the Horror on the board", () => {
   });
 });
 
-describe("the Cult's channel: the dock's stand-in buttons", () => {
+describe("the Cult's channel: the words of each command (the text harness)", () => {
   it("names every offered channel command in plain words, with what it does", () => {
     const state = everything();
     const view = viewForV7(state, seatIdV7(state, 0));
@@ -210,10 +209,13 @@ describe("the Cult's channel: the dock's stand-in buttons", () => {
         .map((command) => command.kind),
     );
     expect([...kinds].sort()).toEqual([...CHANNEL_KINDS].sort());
+    // One line per command; of a Summoner's Summons (one per helper and
+    // free tile) the first stands for all here.
+    const firstSummon = offered.find((command) => command.kind === "SUMMON");
     const shown = offered.filter(
       (command) =>
         CHANNEL_KINDS.includes(command.kind) &&
-        cultChannelStandInShownV7(command, offered),
+        (command.kind !== "SUMMON" || command === firstSummon),
     );
     const buttons = shown.map((command) => {
       const button = cultCommandPresentationV7(view, command);

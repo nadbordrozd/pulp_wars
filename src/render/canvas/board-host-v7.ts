@@ -29,6 +29,13 @@ import {
 } from "./dinosaur-effects-v7";
 import { DINOSAUR_CUE_COLORS_V7 } from "./dinosaur-canvas-v7";
 import {
+  CULT_EFFECT_SUBJECTS_V7,
+  cultReducedMotionProgressV7,
+  drawCultFeedbackV7,
+  type CultFeedbackV7,
+} from "./cult-effects-v7";
+import { favourEntriesV7 } from "../cult-presentation-v7";
+import {
   MARTIAN_EFFECT_SUBJECTS_V7,
   drawMartianFeedbackV7,
   type MartianFeedbackV7,
@@ -239,6 +246,9 @@ import {
   CURIOSITY_LABELS_V7,
   CURIOSITY_RULES_V7,
   curiosityOverlayOnTileV7,
+  isMonsterUnitV7,
+  neutralBreedOfUnitV7,
+  neutralUnitLabelV7,
 } from "../curiosity-presentation-v7";
 import { BoardFeedbackV7, type BoardFeedbackPortV7 } from "./feedback-host-v7";
 import type { FirstStepMarkerV7 } from "../first-steps-v7";
@@ -404,6 +414,10 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     /** Revision 19: a Spitter's pale cream acid blob. */
     readonly acid?: boolean;
   } | null = null;
+  /** The Cultists (bead pulp_wars-mch9.18): the channel cue playing. */
+  #cultFeedback: CultFeedbackV7 | null = null;
+  /** Review tooling only (pinCultFeedback): cues frozen mid-animation. */
+  #pinnedCultFeedback: readonly CultFeedbackV7[] = [];
   /** Revision 19: the Dinosaur cue playing on the effects overlay. */
   #dinosaurFeedback: DinosaurFeedbackV7 | null = null;
   /** Review tooling only (pinDinosaurFeedback): cues frozen mid-animation. */
@@ -1065,6 +1079,8 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     this.#pinnedAttackFeedback = [];
     this.#dinosaurFeedback = null;
     this.#pinnedDinosaurFeedback = [];
+    this.#cultFeedback = null;
+    this.#pinnedCultFeedback = [];
     this.#martianFeedback = null;
     this.#pinnedMartianFeedback = [];
     this.#iceFolkFeedback = null;
@@ -1148,6 +1164,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       const dwarfSteps = steps.filter((step) => step.kind === "DWARF");
       const candySteps = steps.filter((step) => step.kind === "CANDY");
       const giantSteps = steps.filter((step) => step.kind === "GIANT");
+      const cultSteps = steps.filter((step) => step.kind === "CULT");
       const attackSteps = steps.filter(
         (step): step is ShotStepV7 => attackEffectOf(step) !== null,
       );
@@ -1164,6 +1181,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         ...dwarfSteps,
         ...candySteps,
         ...giantSteps,
+        ...cultSteps,
       ]);
       for (const step of steps) if (!framed.has(step)) announce(step);
       if (
@@ -1176,7 +1194,8 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         iceFolkSteps.length > 0 ||
         dwarfSteps.length > 0 ||
         candySteps.length > 0 ||
-        giantSteps.length > 0
+        giantSteps.length > 0 ||
+        cultSteps.length > 0
       ) {
         this.#presentedView = after;
         this.#draw();
@@ -1262,6 +1281,22 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
           await this.#animate(240 * durationScale, () => undefined);
           if (token !== this.#presentationToken) return;
           this.#dwarfFeedback = null;
+          this.#drawSupportOverlay();
+        }
+        // The Cultists' channel: each cue holds one still frame where it
+        // reads (the strand red and parted, the collar bursting).
+        for (const step of cultSteps) {
+          announce(step);
+          if (step.followCamera === true && step.cells[0] !== undefined)
+            this.#followCamera(step.cells[0]);
+          this.#cultFeedback = cultFeedbackOf(
+            step,
+            cultReducedMotionProgressV7(step.effect),
+          );
+          this.#drawSupportOverlay();
+          await this.#animate(240 * durationScale, () => undefined);
+          if (token !== this.#presentationToken) return;
+          this.#cultFeedback = null;
           this.#drawSupportOverlay();
         }
         // The Candy revision: each Candy cue holds one still frame where it
@@ -1371,7 +1406,8 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
             iceFolkSteps.length +
             dwarfSteps.length +
             candySteps.length +
-            giantSteps.length ===
+            giantSteps.length +
+            cultSteps.length ===
           steps.length
         ) {
           this.#presentedView = null;
@@ -1554,6 +1590,22 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         });
         if (token !== this.#presentationToken) return;
         this.#candyFeedback = null;
+        this.#drawSupportOverlay();
+      } else if (step.kind === "CULT") {
+        // The Cultists' channel: every cue plays over the result (the
+        // Horror arrived, the strand drawn or gone, the daemon off the
+        // board).
+        const first = step.cells[0];
+        if (first !== undefined && step.followCamera === true)
+          this.#followCamera(first);
+        this.#presentedView = after;
+        this.#draw();
+        await this.#animate(step.durationMs * durationScale, (progress) => {
+          this.#cultFeedback = cultFeedbackOf(step, progress);
+          this.#drawSupportOverlay();
+        });
+        if (token !== this.#presentationToken) return;
+        this.#cultFeedback = null;
         this.#drawSupportOverlay();
       } else if (step.kind === "GIANT") {
         // The giants' signatures (`pulp_wars-w49.32`): the cue plays on
@@ -2292,6 +2344,9 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     // The Candy revision: only a match with a Candy seat loads its cues.
     if (this.#model !== null && matchHasCandySeatV7(this.#model.view))
       for (const subject of CANDY_EFFECT_SUBJECTS_V7) art?.image(subject);
+    // The Cultists' channel: only a match with a Cult seat loads its cues.
+    if (this.#model !== null && favourEntriesV7(this.#model.view).length > 0)
+      for (const subject of CULT_EFFECT_SUBJECTS_V7) art?.image(subject);
   }
 
   /**
@@ -2376,6 +2431,18 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         : null;
     this.#requestEffectArt();
     this.#draw();
+    this.#drawSupportOverlay();
+  }
+
+  /**
+   * Review tooling and tests: draws the given cues of the Cult's channel at their fixed
+   * progress on the effects canvas until cleared with an empty list. The
+   * game never calls it; presentations clear it.
+   */
+  pinCultFeedback(feedback: readonly CultFeedbackV7[]): void {
+    this.#pinnedCultFeedback = feedback;
+    const art = this.#supportEffectArt();
+    for (const subject of CULT_EFFECT_SUBJECTS_V7) art?.image(subject);
     this.#drawSupportOverlay();
   }
 
@@ -2631,6 +2698,17 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       canvas.dataset.candyEffect = candy.effect;
       canvas.dataset.candyProgress = candy.progress.toFixed(3);
       drawCandyFeedbackV7(context, this.#camera, candy, effectArt);
+    }
+    for (const pinned of this.#pinnedCultFeedback)
+      drawCultFeedbackV7(context, this.#camera, pinned, effectArt);
+    const cult = this.#cultFeedback;
+    if (cult === null) {
+      delete canvas.dataset.cultEffect;
+      delete canvas.dataset.cultProgress;
+    } else {
+      canvas.dataset.cultEffect = cult.effect;
+      canvas.dataset.cultProgress = cult.progress.toFixed(3);
+      drawCultFeedbackV7(context, this.#camera, cult, effectArt);
     }
     for (const pinned of this.#pinnedGiantFeedback)
       drawGiantFeedbackV7(context, this.#camera, pinned);
@@ -3824,6 +3902,19 @@ function attackEffectOf(step: CorePresentationStepV7): AttackEffectIdV7 | null {
     : null;
 }
 
+/** The effects-overlay cue of a Cult presentation step at `progress`. */
+function cultFeedbackOf(
+  step: Extract<CorePresentationStepV7, { readonly kind: "CULT" }>,
+  progress: number,
+): CultFeedbackV7 {
+  return {
+    effect: step.effect,
+    cells: step.cells,
+    ...(step.from === undefined ? {} : { from: step.from }),
+    progress,
+  };
+}
+
 /** The effects-overlay cue of a Candy presentation step at `progress`. */
 function candyFeedbackOf(
   step: Extract<CorePresentationStepV7, { readonly kind: "CANDY" }>,
@@ -3908,6 +3999,19 @@ function unitName(
   view: PlayerViewV7,
   unit: PlayerViewV7["units"][number],
 ): string {
+  return boardUnitNameV7(view, unit);
+}
+
+/** The name the board's cursor reads for a visible unit. */
+export function boardUnitNameV7(
+  view: PlayerViewV7,
+  unit: PlayerViewV7["units"][number],
+): string {
+  // A neutral unit by its own name, never its mechanical role: the Giant
+  // Spider, a camp guard, Bigfoot, and (bead pulp_wars-mch9.18) an Unbound
+  // daemon: "Unbound Horror".
+  if (isMonsterUnitV7(unit))
+    return neutralUnitLabelV7(neutralBreedOfUnitV7(view, unit));
   // The giants' signatures (`pulp_wars-w49.32`): a Gingerbread Man by its
   // own name (a Toffee Trooper in every rule).
   if (unit.variant === "GINGERBREAD_MAN")

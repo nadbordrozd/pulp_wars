@@ -34,6 +34,10 @@ import {
   GIANT_EFFECT_DURATIONS_V7,
   type GiantFeedbackEffectV7,
 } from "./giant-effects-v7";
+import {
+  CULT_EFFECT_DURATIONS_V7,
+  type CultFeedbackEffectV7,
+} from "./cult-effects-v7";
 
 export type CorePresentationStepV7 =
   | {
@@ -166,6 +170,21 @@ export type CorePresentationStepV7 =
       readonly amounts?: readonly number[];
       readonly marks?: readonly CoordV7[];
       readonly walls?: true;
+      readonly durationMs: number;
+      /** Another player's cue: the camera frames it, like enemy moves. */
+      readonly followCamera?: true;
+    }
+  | {
+      /**
+       * The Cultists' channel (bead `pulp_wars-mch9.18`, cult-effects-v7):
+       * a Horror arriving, a strand formed (`from` the channeller, `cells`
+       * the daemon) or snapped, an idol raised, a Boo! and a daemon
+       * Unbound.
+       */
+      readonly kind: "CULT";
+      readonly effect: CultFeedbackEffectV7;
+      readonly cells: readonly CoordV7[];
+      readonly from?: CoordV7;
       readonly durationMs: number;
       /** Another player's cue: the camera frames it, like enemy moves. */
       readonly followCamera?: true;
@@ -557,6 +576,30 @@ export function corePresentationPlanV7(
         durationMs: 100,
       });
   };
+  /** Adds a Cult cue at its CULT_EFFECT_DURATIONS_V7 duration. */
+  const pushCult = (
+    step: Omit<
+      Extract<CorePresentationStepV7, { readonly kind: "CULT" }>,
+      "kind" | "followCamera" | "durationMs"
+    >,
+  ): void => {
+    steps.push({
+      kind: "CULT",
+      ...step,
+      durationMs: CULT_EFFECT_DURATIONS_V7[step.effect],
+      ...(enemyTurn ? { followCamera: true as const } : {}),
+    });
+  };
+  /** Where a unit stands for a Cult cue: after the boundary, else before. */
+  const cultUnitAt = (
+    unitId: number,
+    first: PlayerViewV7,
+    second: PlayerViewV7,
+  ): CoordV7 | undefined =>
+    (
+      first.units.find((unit) => unit.id === unitId) ??
+      second.units.find((unit) => unit.id === unitId)
+    )?.at;
   /** Adds a Candy cue at its CANDY_EFFECT_DURATIONS_V7 duration. */
   const pushCandy = (
     step: Omit<
@@ -976,6 +1019,43 @@ export function corePresentationPlanV7(
         });
       if (event.sourceUnitId === chargeUnitId)
         origins.set(event.targetUnitId, event.to);
+    } else if (event.kind === "DAEMON_SUMMONED") {
+      // The Cultists' channel (bead pulp_wars-mch9.18): the Horror pops in.
+      if (isExplored(event.at))
+        pushCult({ effect: "SUMMON", cells: [event.at] });
+    } else if (event.kind === "STRAND_FORMED") {
+      const from = cultUnitAt(event.unitId, after, before);
+      const to = cultUnitAt(event.daemonUnitId, after, before);
+      if (from !== undefined && to !== undefined)
+        pushCult({ effect: "STRAND_FORMED", cells: [to], from });
+    } else if (event.kind === "STRAND_BROKEN") {
+      // The strand that was: where its two ends stood before the boundary.
+      const from = cultUnitAt(event.unitId, before, after);
+      const to = cultUnitAt(event.daemonUnitId, before, after);
+      if (from !== undefined && to !== undefined)
+        pushCult({ effect: "STRAND_SNAP", cells: [to], from });
+    } else if (event.kind === "IDOL_RAISED") {
+      const at = cultUnitAt(event.unitId, after, before);
+      if (at !== undefined) pushCult({ effect: "IDOL", cells: [at] });
+    } else if (event.kind === "UNITS_SCARED") {
+      // The Boo!, then every scared unit the viewer sees hops one tile.
+      if (isExplored(event.at)) pushCult({ effect: "BOO", cells: [event.at] });
+      for (const result of event.results) {
+        if (result.to === null) continue;
+        if (isExplored(result.from) && isExplored(result.to))
+          steps.push({
+            kind: "MOVE",
+            unitId: result.unitId,
+            path: [result.from, result.to],
+            durationMs: 120,
+            pushSlide: true,
+          });
+        origins.set(result.unitId, result.to);
+      }
+    } else if (event.kind === "DAEMON_UNBOUND") {
+      const at = cultUnitAt(event.unitId, before, after);
+      if (at !== undefined && isExplored(at))
+        pushCult({ effect: "UNBOUND", cells: [at] });
     } else if (event.kind === "EGG_LAID") {
       if (isExplored(event.at))
         pushDinosaur("EGG_LAID", event.at, event.unitId, 150);

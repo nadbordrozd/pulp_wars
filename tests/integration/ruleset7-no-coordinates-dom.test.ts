@@ -85,6 +85,13 @@ import {
   giantsTossFixtureV7,
 } from "../fixtures/v7-giants-ui";
 import {
+  cultChannelBindUiFixtureV7,
+  cultChannelBusyUiFixtureV7,
+  cultChannelFuriousUiFixtureV7,
+  cultChannelRivalUiFixtureV7,
+  cultChannelUnboundUiFixtureV7,
+  cultChannelShortUiFixtureV7,
+  cultChannelUiFixtureV7,
   cultFavourUiFixtureV7,
   cultRivalUiFixtureV7,
 } from "../fixtures/v7-cult-ui";
@@ -110,6 +117,9 @@ const STAGE_FAMILIES = new Set([
   // the first Gingerbread Man's tile.
   "TOSS_PASSENGER",
   "BREAK_OFF_FIRST",
+  // The Cultists' channel (`pulp_wars-mch9.18`): the cultist that helps a
+  // Summon.
+  "SUMMON_HELPER",
 ]);
 /** These toggle or adjust an aimed ability without finishing it. */
 const ADJUST_FAMILIES = new Set(["TUNNEL_PASSENGER", "TUNNEL_RIDER"]);
@@ -256,6 +266,32 @@ const FIXTURES: readonly (readonly [
     ],
   ],
   ["Cult: a rival's Favour", cultRivalUiFixtureV7, []],
+  // The channel (`pulp_wars-mch9.18`): Summon (its helper, then its tile),
+  // Channel and Anchor are armed and picked on the board; Behold! is cast
+  // by its button; Boo! is previewed and confirmed in the dock.
+  [
+    "Cult: the channel",
+    cultChannelUiFixtureV7,
+    [
+      "cult-summon aimed",
+      "cult-summon stage 1",
+      "cult-summon performed",
+      "cult-channel aimed",
+      "cult-channel performed",
+      "cult-anchor aimed",
+      "cult-anchor performed",
+      "cult-behold performed",
+      "cult-boo aimed",
+    ],
+  ],
+  ["Cult: a lodge at work", cultChannelBusyUiFixtureV7, []],
+  ["Cult: a daemon short of its Control", cultChannelShortUiFixtureV7, []],
+  ["Cult: a rival's channel", cultChannelRivalUiFixtureV7, []],
+  // The Unbound rules (`pulp_wars-mch9.6`): an Unbound daemon's card and
+  // marks, Furious, and Bind again from the cultist's one button.
+  ["Cult: an Unbound daemon", () => cultChannelUnboundUiFixtureV7(), []],
+  ["Cult: a Furious daemon", cultChannelFuriousUiFixtureV7, []],
+  ["Cult: Bind again", cultChannelBindUiFixtureV7, ["cult-channel performed"]],
   [
     "Frozen sea: icebound victim",
     () => frozenIceboundUiFixtureV7({ victim: true }),
@@ -717,7 +753,7 @@ async function sweep(fixture: () => GameStateV7): Promise<{
 
 /** The only controls an aiming panel may hold (bead pulp_wars-9im). */
 const PICK_PANEL_CONTROLS =
-  /^(pick-info|[a-z-]+-pick-cancel|[a-z-]+-pick-back|tunnel-confirm|tunnel-passenger-none|cold-snap-cast|stampede-charge)$/;
+  /^(pick-info|[a-z-]+-pick-cancel|[a-z-]+-pick-back|tunnel-confirm|tunnel-passenger-none|cold-snap-cast|stampede-charge|cult-boo-cast)$/;
 
 /**
  * Bead pulp_wars-9im, the generic guard: targets are picked on the board,
