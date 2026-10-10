@@ -64,7 +64,7 @@ describe("the faction forests switch and sets", () => {
     expect(factionForestsEnabledV7()).toBe(true);
   });
 
-  it("gives seven factions a forest; Humans keep the default", () => {
+  it("gives eight factions a forest; Humans keep the default", () => {
     const own: FactionIdV7[] = [
       "UNDEAD",
       "GOBLIN",
@@ -75,8 +75,11 @@ describe("the faction forests switch and sets", () => {
       // The tundra forest (pulp_wars-2yc.38), last: the set numbers of
       // the six before it are what they were.
       "ICE_FOLK",
+      // The lantern wood (pulp_wars-mch9.22), appended the same way.
+      "CULT",
     ];
-    expect(FACTION_FOREST_IDS_V7.at(-1)).toBe("ICE_FOLK");
+    expect(FACTION_FOREST_IDS_V7.indexOf("ICE_FOLK")).toBe(6);
+    expect(FACTION_FOREST_IDS_V7.at(-1)).toBe("CULT");
     expect([...FACTION_FOREST_IDS_V7].sort()).toEqual([...own].sort());
     for (const faction of own) expect(factionForestIdV7(faction)).toBe(faction);
     expect(factionForestIdV7("ORIGINAL")).toBeNull();

@@ -79,6 +79,7 @@ cell inside the winner's territory, from the same helpers:
 | Dwarves   | Stony moor                                           | Pines among boulders |
 | Candy     | Sugar meadow                                         | The candy grove      |
 | Ice Folk  | Snow on every land cell (edges cut at water and fog) | The tundra forest    |
+| Cultists  | Heather moor                                         | The lantern wood     |
 
 Water and the Rift are never skinned. Another faction's Snow is cleared,
 except where a Blizzard still blows. Buildings keep the look of their

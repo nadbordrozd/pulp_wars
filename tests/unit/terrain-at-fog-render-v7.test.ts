@@ -294,6 +294,20 @@ describe("the ghosts", () => {
     );
     expect(iceFolk).toHaveLength(8);
     for (const ghost of iceFolk) expect(ghost.factionForest).toBe("ICE_FOLK");
+    // And round Cult land the lantern wood (bead pulp_wars-mch9.22).
+    const cult = terrainGhostsV7(
+      {
+        ...view([]),
+        players: full.players.map((player) =>
+          player.id === goblin.id
+            ? { ...player, faction: "CULT" as const }
+            : player,
+        ),
+      },
+      skeleton,
+    );
+    expect(cult).toHaveLength(8);
+    for (const ghost of cult) expect(ghost.factionForest).toBe("CULT");
   });
 
   it("know the factions that have a forest of their own", () => {

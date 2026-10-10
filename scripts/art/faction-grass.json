@@ -243,6 +243,65 @@
           "pixelSha256": "80bc4b761dac5bd5ba87139838a3998c225d5c4cc8729cf8e1117e08dd9b8260"
         }
       ]
+    },
+    {
+      "id": "CULT",
+      "label": "Heather moor: dusty rose-mauve turf, sage tufts, paler heather, a chalk arc or a toadstool ring",
+      "base": "#cc95a0",
+      "light": "#a9b29c",
+      "mid": "#879281",
+      "dark": "#778174",
+      "motifs": [
+        {
+          "kind": "stamp",
+          "stamp": "chalkArc",
+          "count": [0, 1],
+          "dark": "#dbb1b9",
+          "light": "#dbb1b9"
+        },
+        {
+          "kind": "patch",
+          "count": [1, 2],
+          "radius": [5, 8],
+          "fill": "#d6a4ae",
+          "speck": {
+            "colour": "#e0b4bc",
+            "share": 14
+          }
+        },
+        {
+          "kind": "tufts",
+          "share": 30,
+          "inside": true,
+          "light": "#b99acb",
+          "mid": "#9a7db2",
+          "dark": "#836899"
+        },
+        {
+          "kind": "stamp",
+          "stamp": "toadstoolRing",
+          "count": [0, 1],
+          "dark": "#a67a86",
+          "light": "#e6dcc4"
+        }
+      ],
+      "tiles": [
+        {
+          "path": "public/assets/chibi/terrain/faction-grass/chibi-cult-grass-1.png",
+          "sha256": "6187541ae574fcfdb86e520562d22d9424ccdc1b083434af7dbf432d4b19ad7e",
+          "pixelSha256": "72680c930203bb2706f585804244329dca04406a7c88523b1476717a1b272e81"
+        },
+        {
+          "path": "public/assets/chibi/terrain/faction-grass/chibi-cult-grass-2.png",
+          "sha256": "eaec061acaa76746ae12e6c4e73873bef7f9059cd5b15396ce6ef0d35efcd7c6",
+          "pixelSha256": "e913de6f4f26057d248551b2fbde583440a5b15854dc59114afe770d1f220b84"
+        },
+        {
+          "path": "public/assets/chibi/terrain/faction-grass/chibi-cult-grass-3.png",
+          "sha256": "1c56210f9c1a50e4b74a4e7826d57e3fbaeb03b08d0f9849dd1a9ee791468b27",
+          "pixelSha256": "92bac45112524f7e4bc80a228ae4dcbf10b25aa228b25fc4a02f248d8949274e"
+        }
+      ]
     }
   ]
 }

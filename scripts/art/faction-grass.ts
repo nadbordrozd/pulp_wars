@@ -127,6 +127,20 @@ const STAMPS = {
   /** A stray bone (bead pulp_wars-2yc.14): `+` the bone, `#` its shade. */
   bone: ["+.....+", "+++++++", "#.....#"],
   boneSmall: ["+...+", "+++++", "#...#"],
+  /**
+   * A ring of small toadstools (bead pulp_wars-mch9.22): `+` a cap, `#`
+   * its stalk.
+   */
+  toadstoolRing: [
+    "...+.+...",
+    "...#.#...",
+    "+.......+",
+    "#.......#",
+    "...+.+...",
+    "...#.#...",
+  ],
+  /** A faint chalk arc, one colour (`+`). */
+  chalkArc: ["..+++++..", ".+.....+.", "+.......+"],
 } as const;
 
 export type FactionGrassMotif = Motif;
@@ -280,6 +294,47 @@ export const FACTION_GRASS_RECIPES: readonly FactionGrassRecipe[] = [
         count: [1, 1],
         radius: [5, 7],
         fill: "#a6dabd",
+      },
+    ],
+  },
+  // Last, so the seeds of the five before it stay what they were.
+  {
+    id: "CULT",
+    label:
+      "Heather moor: dusty rose-mauve turf, sage tufts, paler heather, a chalk arc or a toadstool ring",
+    base: "#cc95a0",
+    light: "#a9b29c",
+    mid: "#879281",
+    dark: "#778174",
+    motifs: [
+      {
+        kind: "stamp",
+        stamp: "chalkArc",
+        count: [0, 1],
+        dark: "#dbb1b9",
+        light: "#dbb1b9",
+      },
+      {
+        kind: "patch",
+        count: [1, 2],
+        radius: [5, 8],
+        fill: "#d6a4ae",
+        speck: { colour: "#e0b4bc", share: 14 },
+      },
+      {
+        kind: "tufts",
+        share: 30,
+        inside: true,
+        light: "#b99acb",
+        mid: "#9a7db2",
+        dark: "#836899",
+      },
+      {
+        kind: "stamp",
+        stamp: "toadstoolRing",
+        count: [0, 1],
+        dark: "#a67a86",
+        light: "#e6dcc4",
       },
     ],
   },

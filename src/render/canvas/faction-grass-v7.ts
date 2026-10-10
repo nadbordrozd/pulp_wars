@@ -71,6 +71,8 @@ export function factionGrassEnabledV7(search?: string): boolean {
 export const FACTION_GRASS_IDS_V7 = [
   "CANDY",
   "GOBLIN",
+  // The heather moor (bead pulp_wars-mch9.22): lighter than the red dust.
+  "CULT",
   "MARTIAN",
   "DWARF",
   "UNDEAD",

@@ -169,6 +169,31 @@
           "candidate": 2
         }
       ]
+    },
+    "CULT": {
+      "grass": "public/assets/chibi/terrain/faction-grass/chibi-cult-grass-1.png",
+      "clumps": [
+        {
+          "recipe": "cult-a",
+          "candidate": 0
+        },
+        {
+          "recipe": "cult-a",
+          "candidate": 1
+        },
+        {
+          "recipe": "cult-a",
+          "candidate": 3
+        },
+        {
+          "recipe": "cult-b",
+          "candidate": 1
+        },
+        {
+          "recipe": "cult-b",
+          "candidate": 3
+        }
+      ]
     }
   }
 }

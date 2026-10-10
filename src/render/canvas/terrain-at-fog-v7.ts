@@ -234,6 +234,8 @@ export const GHOST_FOREST_FACTIONS_V7: ReadonlySet<string> = new Set([
   // territory of the explored ground beside it, not from that ground's
   // look, so the Ice Folk Snow needs nothing more.
   "ICE_FOLK",
+  // The lantern wood (pulp_wars-mch9.22).
+  "CULT",
 ]);
 
 const STEPS = [

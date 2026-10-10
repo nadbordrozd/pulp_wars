@@ -288,13 +288,26 @@ describe("Cult art subjects stand in with the shared art", () => {
       expect(factionBuildingV7(improvement, "CULT")).toBeNull();
     }
     expect(territoryGroundV7("CULT")).toBeNull();
-    expect(factionGrassIdV7("CULT")).toBeNull();
-    expect(factionForestIdV7("CULT")).toBeNull();
-    // So a Cult win's victory wave leaves every tile in the default skin.
+    // The heather moor and the lantern wood (bead pulp_wars-mch9.22): the
+    // moor is a baked faction ground, not a terrain tile of its own.
+    expect(factionGrassIdV7("CULT")).toBe("CULT");
+    expect(factionForestIdV7("CULT")).toBe("CULT");
+    // So a Cult win's victory wave turns the land to moor and lantern wood.
+    expect(victoryTerrainSkinV7("GRASS", "CULT")).toMatchObject({
+      factionGrass: "CULT",
+    });
+    expect(victoryTerrainSkinV7("FOREST", "CULT")).toMatchObject({
+      factionGrass: "CULT",
+      factionForest: "CULT",
+    });
+    expect(victoryTerrainSkinV7("MOUNTAIN", "CULT")).toMatchObject({
+      factionGrass: "CULT",
+    });
     for (const terrain of TERRAIN_IDS_V7)
-      expect(victoryTerrainSkinV7(terrain, "CULT"), terrain).toEqual(
-        victoryTerrainSkinV7(terrain, "ORIGINAL"),
-      );
+      if (terrain !== "GRASS" && terrain !== "FOREST" && terrain !== "MOUNTAIN")
+        expect(victoryTerrainSkinV7(terrain, "CULT"), terrain).toEqual(
+          victoryTerrainSkinV7(terrain, "ORIGINAL"),
+        );
     for (const achievement of ACHIEVEMENT_IDS_V7) {
       const subject = monumentArtSubjectV7(achievement, "CULT");
       expect(subject).toBe(`IMPROVEMENT:MONUMENT:CULT:${achievement}`);
@@ -433,14 +446,19 @@ describe("Cult art subjects stand in with the shared art", () => {
       expect(chibiFallbackSubjectV7(subject), subject).toBeNull();
     expect(assetGroupOfSubjectV7("UNIT:CULT:FIGHTER")).toBe("CULT");
     // A match with a Cult seat preloads the Cult's sprites in the live look
-    // and nothing more in the looks that have none of its art.
+    // with its ground and its wood (bead pulp_wars-mch9.22: three moor
+    // tiles, twenty forest pieces and five seam clumps, which the inventory
+    // lists with the composed terrain of every look but LEGACY, as it lists
+    // every faction's).
+    const terrainFiles = 3 + 20 + 5;
     const cultFiles = assetInventoryV7("LIVE").filter(
       (entry) => entry.group === "CULT",
     );
-    // The sprites, and (bead pulp_wars-mch9.23) the 21 interface rasters
-    // whose subject names the faction: twelve unit portraits, three ship
-    // portraits, three technology icons and three HUD icons.
-    expect(cultFiles).toHaveLength(expected.length - 1 + 21);
+    // The sprites, the terrain, and (bead pulp_wars-mch9.23) the 21
+    // interface rasters whose subject names the faction: twelve unit
+    // portraits, three ship portraits, three technology icons and three HUD
+    // icons.
+    expect(cultFiles).toHaveLength(expected.length - 1 + 21 + terrainFiles);
     expect(assetInventoryForFactionsV7("LIVE", ["CULT", "ORIGINAL"])).toEqual(
       expect.arrayContaining([...cultFiles]),
     );
@@ -449,14 +467,15 @@ describe("Cult art subjects stand in with the shared art", () => {
         (entry) => entry.group === "CULT",
       ),
     ).toEqual([]);
-    for (const look of ["CLASSIC", "LEGACY"] as const) {
-      expect(assetInventoryForFactionsV7(look, ["CULT", "ORIGINAL"])).toEqual(
-        assetInventoryForFactionsV7(look, ["ORIGINAL"]),
-      );
-      expect(
-        assetInventoryV7(look).filter((entry) => entry.group === "CULT"),
-      ).toEqual([]);
-    }
+    expect(
+      assetInventoryV7("CLASSIC").filter((entry) => entry.group === "CULT"),
+    ).toHaveLength(terrainFiles);
+    expect(assetInventoryForFactionsV7("LEGACY", ["CULT", "ORIGINAL"])).toEqual(
+      assetInventoryForFactionsV7("LEGACY", ["ORIGINAL"]),
+    );
+    expect(
+      assetInventoryV7("LEGACY").filter((entry) => entry.group === "CULT"),
+    ).toEqual([]);
   });
 
   it("gives the Cult a stand-in letter, and no other faction one", () => {

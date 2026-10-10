@@ -31,6 +31,7 @@ board host builds no faction art, and every Forest is drawn as before.
 | Dwarves   | Sturdy dark pines among mossy grey boulders.                                                                                                                        | 3      | default   |
 | Candy     | A candy grove, no trees: pink-striped candy canes, peach and pink swirl lollipops, gumdrop trees and gumdrop bushes, in warm pastels (bead `pulp_wars-2yc.38`).     | 5      | default   |
 | Ice Folk  | A tundra forest (bead `pulp_wars-2yc.38`): stunted dwarf firs under thick snow, leaning white birches, crooked gold-brown larches, frosted shrubs and lichen rocks. | 5      | default   |
+| Cultists  | A lantern wood (bead `pulp_wars-mch9.22`): crooked dark-barked weeping willows in a dull blue-green, some with a small green lantern, toadstools at the foot.       | 5      | default   |
 
 Each faction's forest is a whole piece set of the
 [composed forests](COMPOSED_FORESTS.md): the same twenty piece shapes (three
@@ -41,9 +42,10 @@ that a clearing keeps a single clump are the default Forest's.
 
 ### How the sets are made
 
-The clumps are PixelLab candidates: 20 calls, 4 candidates each, 27 used
+The clumps are PixelLab candidates: 22 calls, 4 candidates each, 32 used
 (14 calls until bead `pulp_wars-2yc.38`, which added six: two for the tundra
-forest and four for the warmer candy grove).
+forest and four for the warmer candy grove; bead `pulp_wars-mch9.22` added
+two for the lantern wood).
 The recipes, the credential-free requests, the hash and the review of every
 candidate are in `art/pixellab/faction-forests/` (`recipes.json`,
 `records.json`, `raw/`), made with the style-image generator of the mountain
@@ -113,16 +115,32 @@ npm run art:faction-forests -- sheet <out.png>
   and the bake derives that tile into
   `art/pixellab/faction-forests/ground/ice-folk-snow.png` (the `ground`
   member of the set in `sets.json`; `check` re-derives it).
+- **The Cult lantern wood** (bead `pulp_wars-mch9.22`,
+  [the Cult direction](factions/CULT.md#ground-and-forest)). Recipes
+  `cult-a` (three weeping willows, one small brass lantern with a green
+  flame, lilac toadstools) and `cult-b` (two willows and a squat
+  round-crowned tree, cream toadstools, a tuft of heather, no lantern),
+  made without a style image so the default Forest's green is not copied.
+  All eight candidates are the wood, and five are the set: `cult-a` 0, 1
+  and 3 and `cult-b` 1 and 3 (60 to 76 px tall, faces -0.9 to +22.4).
+  `cult-a-2` (-2.1), `cult-b-0` (-2.8) and `cult-b-2` (-2.5) measure lit
+  from the right and the bake refuses them. The canopy is the Lumber Camp's
+  dull blue-green (`#5f9484` asked), a mid value, so the indigo robes and
+  roofs stand off it; a lantern is a point of four or five pixels, on three
+  of the five clumps. The foliage is lifted toward the heather moor
+  (`chibi-cult-grass-1.png`). A first request was refused: a description
+  is at most 2000 characters with the fragments, and the subject and the
+  negative together had to come down to about 550.
 - **Light.** Every recipe carries the fragment `light-south-west` (the sun
   at the bottom left, the user 2026-10-05). **Nothing is mirrored**: a
   mirrored clump is lit from the other side. The default set still stamps
   its clumps both ways; that is unchanged here.
 - **Lighting QA.** `scripts/art/lighting-qa.ts` measures every clump (left
   half minus right half of every run of paint, in luma points). The bake
-  refuses a clump lit from the right (-1.5 or less). The 27 clumps measure
-  -1.0 to +30.5: 22 from the left, 5 flat, none from the right (the Undead
+  refuses a clump lit from the right (-1.5 or less). The 32 clumps measure
+  -1.0 to +30.5: 26 from the left, 6 flat, none from the right (the Undead
   four: +0.1, +5.5, +4.9, +3.9; the candy five: +2.5 to +14.7; the tundra
-  five: -1.0 to +30.3). On foliage
+  five: -1.0 to +30.3; the lantern wood's five: -0.9 to +22.4). On foliage
   the measure is weak (the default clumps themselves measure -4.9 to +5.0)
   and on sweets of two colours it reads colour as light: it left out
   five of the first candy grove's twelve candidates, and `candy-f-2` and
@@ -141,7 +159,7 @@ npm run art:faction-forests -- sheet <out.png>
   ground (default 16%), and move the outer outline 30% toward the ground,
   which the default set never does.
 
-The masters are in `public/assets/chibi/forest/<faction>/` (167 files), the
+The masters are in `public/assets/chibi/forest/<faction>/` (192 files), the
 record and runtime manifest is `src/assets/faction-forest-pieces.json`, and
 the preload inventory lists each set with its faction.
 
@@ -182,6 +200,8 @@ that has the faction sets behind the default one:
   [TERRAIN_AT_THE_FOG.md](TERRAIN_AT_THE_FOG.md). The tundra forest too:
   `GHOST_FOREST_FACTIONS_V7` names `ICE_FOLK`, and a ghost takes its
   faction from the territory beside it, not from the Snow on the ground.
+  It names `CULT` too (bead `pulp_wars-mch9.22`); a test holds that list
+  and `FACTION_FOREST_IDS_V7` together.
 - **A capture ripples.** The cells change one after another, each with a
   small hop: [TERRITORY_RIPPLE.md](TERRITORY_RIPPLE.md).
 
@@ -216,7 +236,21 @@ way) add a Lumber Camp and a Sawmill on Forest in both territories, the
 faction's units in the wood and beside it, and an Ice Folk scene whose
 tundra wood runs into the fog.
 
+The scenes of bead `pulp_wars-mch9.22`
+(`scripts/art/cult-terrain/review-scenes.ts`, run the same way) are the
+Cult's: its moor and lantern wood between Human and Undead territory with
+the capital, the seven Cult buildings, the seven Monuments, a Field Defense
+in the wood and five kinds of Cult unit in the wood and beside it; the same
+board with part of the wood unexplored; and the wood of the terrain-and-fog
+review held by a Cult city, whole and cut.
+
 ## Known limits
+
+- **The lantern wood is the bluest forest**: a teal mass on the rose-mauve
+  moor, beside the default green and the grey Undead wood, with the
+  lanterns only visible enlarged. Its foliage is lifted toward the moor, so
+  it was baked again when the moor's base changed
+  ([faction grass](FACTION_GRASS.md)).
 
 - **A clearing is one single piece.** A Forest cell with a Treasure, a
   Grave, a curiosity, a Field Defense or a building draws a 1x1 piece of

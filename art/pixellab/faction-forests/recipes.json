@@ -289,6 +289,32 @@
       "negative": "ground plate, platform, grass square, slab, background, buildings, people, text, leaves, brown, chocolate",
       "subject": "Subject: a small low candy grove, two thirds of the image tall, a wide empty margin above: two short striped candy canes with hooked tops (cream with soft pink stripes; cream with peach stripes), one round pink and cream swirl lollipop on a short cream stick, two gumdrop trees of three stacked gumdrops (peach #f0b99a; pink #e39aa6), gumdrop bushes at the foot (caramel #d9a56e, cream, one small mint #a9d9c2); soft warm pastels; every sweet lighter on its left; dusty rose-brown outline.",
       "notes": "Bead pulp_wars-2yc.38. A second small clump, two short canes and two gumdrop trees, so a grove is not one clump repeated."
+    },
+    {
+      "id": "cult-a",
+      "endpoint": "generate-image-v2",
+      "width": 80,
+      "height": 104,
+      "seed": 93701,
+      "fragments": ["style", "camera-three-quarter", "light-south-west"],
+      "klass": "@klass",
+      "negative": "ground plate, platform, grass square, soil patch, slab, background, buildings, people, text, dead trees, pines",
+      "subject": "Subject: a low clump of an eerie lantern wood: three crooked weeping willows, dark plum-brown bark (#4a3f52), drooping canopies of dull dusty blue-green leaves (#5f9484, lighter #7fae9c on the left, shaded #466f6b on the right), one small brass lantern with a tiny green flame hanging from a low branch, two fat lilac toadstools with cream spots at the foot; muted mid tones; dark indigo-slate outline, never black; space above the clump.",
+      "notes": "Bead pulp_wars-mch9.22 (docs/art/factions/CULT.md, Ground and forest). Sample: the lantern wood, weeping willows in the Lumber Camp's blue-green with one small green lantern, without a style image so the default Forest's green is not copied.",
+      "review": "Four clumps of weeping willows in the asked blue-green on dark plum trunks, each with one small brass lantern and lilac toadstools, 65 to 74 px wide. 0, 1 and 3 are clumps of the set (faces +22.4, +5.9, -0.9). 2 measures lit from the right (-2.1) and the bake refuses it."
+    },
+    {
+      "id": "cult-b",
+      "endpoint": "generate-image-v2",
+      "width": 80,
+      "height": 104,
+      "seed": 93702,
+      "fragments": ["style", "camera-three-quarter", "light-south-west"],
+      "klass": "@klass",
+      "negative": "ground plate, platform, grass square, soil patch, slab, background, buildings, people, text, dead trees, pines",
+      "subject": "Subject: a low clump of an eerie old wood: two crooked weeping willows and one squat twisted round-crowned tree, dark plum-brown bark (#4a3f52), full drooping canopies of dull dusty blue-green leaves (#5f9484, lighter #7fae9c on the left, shaded #466f6b on the right), three small cream toadstools and a tuft of pale lilac heather at the foot; muted mid tones; dark indigo-slate outline, never black; space above the clump.",
+      "notes": "Bead pulp_wars-mch9.22. Sample: the second clump, no lantern (only a few trees of the wood carry one), a round-crowned tree among the willows so a wood is not one tree repeated.",
+      "review": "Four clumps of two willows and a round-crowned tree with cream toadstools and a tuft of heather, no lantern; a little darker and greener than cult-a. 1 and 3 are clumps of the set (faces +10.2, +3.1). 0 (-2.8) and 2 (-2.5) measure lit from the right and the bake refuses them."
     }
   ]
 }

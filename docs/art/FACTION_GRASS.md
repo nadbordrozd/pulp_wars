@@ -46,6 +46,7 @@ the tiles) and `package.json` (two script names). Each is marked
 | Dwarves   | Stony moor: grey-khaki short turf with moss patches and grey stones.                             | `#959c7c` |
 | Candy     | Sugar meadow: pastel mint with sprinkles in pink, yellow, white, blue and lilac.                 | `#9cd4b6` |
 | Ice Folk  | Snow. Every land tile of Ice Folk territory is Snow by rule, so they need no grass of their own. | n/a       |
+| Cultists  | Heather moor (bead `pulp_wars-mch9.22`): dusty rose-mauve turf, sage tufts, paler heather.       | `#cc95a0` |
 
 **The Undead ground was redone in bead `pulp_wars-2yc.14`** (the user,
 2026-10-06: "make undead grass ... more spooky"). The first one, the
@@ -66,6 +67,33 @@ a tile is the colour swap alone and the three variants join as before.
 npx tsx scripts/art/faction-buildings/gloam-grass.ts bake    # then faction-forests bake
 npx tsx scripts/art/faction-buildings/gloam-grass.ts check   # also in art:validate
 ```
+
+**The Cult heather moor** (bead `pulp_wars-mch9.22`,
+[the Cult direction](factions/CULT.md#ground-and-forest)) is the last recipe
+of the list, so the seeds of the five before it did not move and their tiles
+are byte for byte what they were. The turf is a dusty rose-mauve, `#cc95a0`, with
+sage tufts (`#a9b29c`, `#879281`, `#778174`); three in ten of the inner
+tufts are purple heather (`#b99acb`, `#9a7db2`, `#836899`), each tile has
+one or two paler heather patches (`#d6a4ae`), and one tile of the three has
+a ring of six cream toadstools. The recipe also holds a faint chalk arc,
+which the seeded roll put on none of the three tiles: a ring and an arc on
+one tile read as a face.
+
+**The base is not the direction's `#9d94ab`** (a root decision in the same
+bead, 2026-10-10). That lilac grey sat too close to the dusk cloud of
+unexplored land (`FOG_PALETTES_V7.dusk`): explored Cult land beside the fog
+read as more fog. By the colour distance of the direction reviews (`deltaE`
+of `scripts/art/ice-folk-direction/colour.ts`) it was 22 to 32 from the
+cloud's body colours (mist, puff, puff shade) and 18 to 21 from its lit puff
+and rim. The rose-mauve is 35 to 44 from the body and 29 to 30 from the
+highlights; it is 35 or more from every colour of the `slate` cloud, and 34
+or more from the body of the `plum` one (24 and 17 from its lit puff and
+its rim). It does not reach
+the Undead ground's separation from the dusk cloud (47 to 53 and 41 to 43):
+a pink warm enough to do that is the Martian dust. From the other grounds it
+is 66 from the default Grass, 49 from Candy, 37 from the Undead, 34 from the
+Dwarves and 25 from the Martian dust, its nearest; 113 from the Cult border
+and 38 from the wax cream.
 
 ### How the tiles are made
 
@@ -110,6 +138,7 @@ hash of every source and tile.
 | Martians  | 58.3% | 42.6%      | 2.5%        | 4.9%                       |
 | Dwarves   | 58.6% | 20.7%      | 2.4%        | 4.5%                       |
 | Candy     | 75.0% | 26.6%      | 2.4%        | 3.8%                       |
+| Cultists  | 65.2% | 26.6%      | 2.5%        | 5.0%                       |
 
 Every ground is as flat as the default Grass (a luma spread under 3%). The
 Dinosaur ground is the darkest and Candy the lightest; the Undead ground is
@@ -129,8 +158,8 @@ improvements and units:
    ground's tile cut to an irregular strip about 10 px wide along the
    shared edge, with a blob at a shared corner and a few loose specks.
 
-The ranks, lowest first: default Grass, Candy, Goblins, Martians, Dwarves,
-Undead, Dinosaurs. A ground runs out over every ground below it, so no
+The ranks, lowest first: default Grass, Candy, Goblins, Cultists, Martians,
+Dwarves, Undead, Dinosaurs. A ground runs out over every ground below it, so no
 border between two grounds is a straight line, and the darker land always
 runs into the lighter one. The strip's width is a wave over board pixels
 that repeats every three cells: the strips of two cells meet without a

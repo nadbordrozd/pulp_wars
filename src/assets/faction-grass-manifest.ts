@@ -10,15 +10,16 @@ import { chibiArtUrl } from "./chibi-art-manifest";
  * tones like every Grass tile; they are listed for the border spill only.
  */
 export const FACTION_GRASS_TILES_V7: readonly FactionGrassTileAssetV7[] = [
-  ...(["CANDY", "GOBLIN", "MARTIAN", "DWARF", "DINOSAUR"] as const).flatMap(
-    (id) =>
-      [0, 1, 2].map((variant) => ({
-        id,
-        variant,
-        url: chibiArtUrl(
-          `assets/chibi/terrain/faction-grass/chibi-${id.toLowerCase()}-grass-${variant + 1}.png`,
-        ),
-      })),
+  ...(
+    ["CANDY", "GOBLIN", "CULT", "MARTIAN", "DWARF", "DINOSAUR"] as const
+  ).flatMap((id) =>
+    [0, 1, 2].map((variant) => ({
+      id,
+      variant,
+      url: chibiArtUrl(
+        `assets/chibi/terrain/faction-grass/chibi-${id.toLowerCase()}-grass-${variant + 1}.png`,
+      ),
+    })),
   ),
   ...[0, 1, 2].map((variant) => ({
     id: "UNDEAD" as const,

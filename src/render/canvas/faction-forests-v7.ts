@@ -25,7 +25,9 @@ import {
  * be regenerated as a tundra forest instead of just modifying the default
  * forest"): snow-laden dwarf firs, birches and larches over the Snow their
  * territory is by rule. Until that bead their Forest was the default one
- * under the snow caps the board draws on every tree over Snow.
+ * under the snow caps the board draws on every tree over Snow. The Cultists
+ * have a lantern wood (bead pulp_wars-mch9.22): weeping willows in a dull
+ * blue-green, a few with a small green lantern, on their heather moor.
  *
  * Everything here is presentation, in the live look of the CHIBI art set
  * only. To turn it off: set FACTION_FORESTS_ENABLED_V7 to false, or open
@@ -80,8 +82,10 @@ export const FACTION_FOREST_IDS_V7 = [
   "MARTIAN",
   "DWARF",
   "CANDY",
-  // Last, so the set numbers of the six before it stay what they were.
+  // After the six, so their set numbers stay what they were.
   "ICE_FOLK",
+  // The lantern wood (bead pulp_wars-mch9.22), last for the same reason.
+  "CULT",
 ] as const;
 
 export type FactionForestIdV7 = (typeof FACTION_FOREST_IDS_V7)[number];
@@ -105,6 +109,8 @@ export const FACTION_FOREST_FLOOR_V7: Readonly<
   CANDY: [36, 96, 84, 30],
   // A cold blue-slate shadow on the Snow.
   ICE_FOLK: [44, 66, 92, 30],
+  // A dark plum shadow on the heather moor.
+  CULT: [70, 42, 60, 34],
 };
 
 /**

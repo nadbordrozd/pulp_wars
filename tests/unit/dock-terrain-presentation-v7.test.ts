@@ -102,14 +102,15 @@ describe("the tile dock's terrain picture", () => {
           at: { x: 0, y: 0 },
         });
     }
-    // Five factions have a baked ground of their own.
+    // Six factions have a baked ground of their own (the Cult heather moor
+    // is the sixth, bead pulp_wars-mch9.22).
     expect(
       FACTION_IDS_V7.filter(
         (faction) =>
           dockTerrainSwatchV7(request("MOUNTAIN", faction))?.layers[0]?.kind ===
           "RASTER",
       ),
-    ).toHaveLength(5);
+    ).toHaveLength(6);
     // Snow lies over the ground, under the mountain.
     const snowy = dockTerrainSwatchV7(
       request("MOUNTAIN", "ICE_FOLK", { snow: true }),
@@ -142,9 +143,10 @@ describe("the tile dock's terrain picture", () => {
       );
       seen.add(trees);
     }
-    // Seven factions, seven forests: the Ice Folk tundra and the Candy
-    // grove among them.
-    expect(seen.size).toBe(7);
+    // Eight factions, eight forests: the Ice Folk tundra, the Candy grove
+    // and the Cult lantern wood among them.
+    expect(seen.size).toBe(8);
+    expect(FACTION_FOREST_IDS_V7).toContain("CULT");
     expect(FACTION_FOREST_IDS_V7).toContain("ICE_FOLK");
     expect(FACTION_FOREST_IDS_V7).toContain("CANDY");
   });

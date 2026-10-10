@@ -433,14 +433,19 @@ In the live look a faction's territory has its own Grass
 ([faction grass](../FACTION_GRASS.md)) and its own Forest
 ([faction forests](../FACTION_FORESTS.md)). The Cult's:
 
-- **Ground: heather moor.** A dusty lilac-grey turf, base `#9d94ab`, with
+- **Ground: heather moor.** A dusty rose-mauve turf, base `#cc95a0`, with
   sage-green tufts, clumps of paler heather, and on some tiles a faint
   chalk arc or a ring of small cream toadstools. It is made as the other
   grounds are (the tile derivation of `deriveFactionGrassTile`, three
   variants `chibi-cult-grass-1..3`, 80 x 80, opaque, seamless). Measured:
-  108 from the Cult border, 63 from the lit robe, 36 from the summoned teal,
-  42 from the wax cream; 28 from the Undead ashen ground, 31 from the Dwarf
-  moor, 36 from the Martian dust, 66 from the default Grass.
+  113 from the Cult border, 38 from the wax cream; 37 from the Undead ashen
+  ground, 34 from the Dwarf moor, 25 from the Martian dust, 49 from the
+  Candy meadow, 66 from the default Grass. **This document first gave a
+  dusty lilac grey, `#9d94ab`; a root decision in bead `pulp_wars-mch9.22`
+  supersedes it**: on the board that grey read as the dusk cloud of
+  unexplored land beside it (18 to 32 from the cloud's colours; the
+  rose-mauve is 29 to 44). The measures and the reason are in
+  [faction grass](../FACTION_GRASS.md).
 - **Forest: a lantern wood.** Crooked dark-barked trees with drooping
   blue-green willow canopies, a few with a small hanging lantern with a
   green flame, fat cream-spotted toadstools at the foot; no bare dead trees
@@ -448,11 +453,25 @@ In the live look a faction's territory has its own Grass
   [composed forests](../COMPOSED_FORESTS.md), three or four clumps, made as
   the other faction forests are.
 
-**Weak spot:** the heather is 11 from the rocky Mountain ground, so the
-edge between Cult moor and a Mountain cell is soft; the massif art on the
-Mountain carries it. **No bead of the spec's list covers the ground and the
-forest** (ART2 to ART4 name neither): until one does, Cult territory draws
-the default Grass and Forest. See [Follow-ups](#follow-ups).
+**Weak spot of the first base:** the lilac grey was 11 from the rocky
+Mountain ground; the rose-mauve was not measured against it, and stands off
+grey rock by its hue.
+
+**Both exist and are wired** (bead `pulp_wars-mch9.22`, ART5). The moor is
+the last recipe of [faction grass](../FACTION_GRASS.md) (sage tufts, three
+in ten of them heather, paler heather patches, a toadstool ring on one tile
+of three; the chalk arc is in the recipe and the seeded roll placed none).
+The lantern wood is a set of five clumps from two PixelLab calls
+([faction forests](../FACTION_FORESTS.md), recipes `cult-a` and `cult-b`):
+three with a lantern, two with a round-crowned tree among the willows. On
+the board (`scripts/art/cult-terrain/review-scenes.ts`) the indigo robes and
+roofs, the pale Monuments and the green border all stand off the moor; the
+units in the wood read against the mid blue-green canopy; the Lumber Camp's
+willows are the wood's. Two things to know: **the moor is the pinkest
+ground on the map**, a clear step beside the violet cloud of unexplored
+land, the default green and the Undead grey-green, and 25 from the Martian
+dust, its nearest ground; and **a lantern is four or five pixels**, a
+detail seen enlarged, not a glow at board size.
 
 ## Buildings
 
@@ -648,7 +667,7 @@ calls.
 | **ART3** (done) | the other eight trained units (Idol Bearer, Familiar, Hexer, Summoner, Stargazer, Caller, Chosen, Thing); the Tentacle; the two Unbound looks; the four ships and the derived submerged one; the frog |    17 |
 | **ART4** (done) | City 1 to 3; the seven buildings; the seven Monuments and the obelisk (bead `pulp_wars-mch9.16`, narrowed by the root)                                                                                |    18 |
 | `mch9.23`       | twelve unit portraits and three ship portraits; three technology icons; eighteen ability icons; ten HUD and status icons (the Favour candle at two sizes); fifteen effects                            |    62 |
-| (none)          | the heather-moor Grass (three tiles) and the lantern-wood Forest set: see [Follow-ups](#follow-ups)                                                                                                   |     — |
+| `mch9.22` ART5  | the heather-moor Grass (three tiles, derived in code) and the lantern-wood Forest set (five clumps, twenty pieces, five seam clumps): see [Ground and forest](#ground-and-forest)                     |    28 |
 
 **Gates the sample must pass before ART3 batches** (the faction layer's
 step 4, with the Cult's own risks):
@@ -966,8 +985,8 @@ candidate was passed over is in the records.
 
 - **The willow canopies are in the summoned's teal band** (23% of the
   Lumber Camp; a dull blue-green, `#5f9484` asked). It is the lantern wood
-  of this document's forest, which no bead has made yet; when the forest
-  exists the camp should be checked beside it.
+  of this document's forest. Checked beside the wood of bead
+  `pulp_wars-mch9.22`: the camp's two willows read as a cut corner of it.
 - **Roofs are large on City 1 and the Shipyard** (55% and 53% indigo). The
   accent keeps the indigo no darker than value 0.49, so neither is a dark
   blob, but they are the bluest pieces.
@@ -979,7 +998,8 @@ candidate was passed over is in the records.
   the same way). The bare stone Monuments all measure lit from the left.
 - **Reviewed on the default Grass only**, 43 to 54 (Monuments) and 58 to 77
   (cities and buildings) from it; the heather moor of bead
-  `pulp_wars-mch9.22` is a lilac grey, close to the Monuments' stone.
+  `pulp_wars-mch9.22` is a dusty rose-mauve, and the pale stone Monuments
+  stand off it on the review board of that bead.
 - **City 1 is 61 px wide**, the size of a building (the other factions'
   City 1 is 66 to 68 px); its three roofs and the telescope carry it.
 
@@ -1275,7 +1295,8 @@ For the root to file or fold; none is done here.
 1. **Ground and forest art.** No bead of the spec's list makes the Cult's
    faction Grass and Forest. A bead in the shape of the other factions'
    (three grass tiles; a forest piece set; `art:faction-forests`) is needed,
-   or the Cult keeps the default ones.
+   or the Cult keeps the default ones. **Done** in bead `pulp_wars-mch9.22`
+   ([Ground and forest](#ground-and-forest)).
 2. **The colour capture** moves to E1, which must add `CULT` to
    `FACTION_COLOURS_V7` anyway (the record is typed by faction ID).
 3. **The hue token** `--pw-emerald` goes in with the first Cult chip (U1),
