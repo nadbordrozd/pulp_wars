@@ -407,6 +407,10 @@ describe("ruleset-7 map scale: village density (7r40, the V3 parity rules)", () 
       "CAPITAL_DOMAINS",
       "CAPITAL_DOMAINS_RIFTS",
       "CAPITAL_DOMAINS_CURIOSITIES",
+      // `pulp_wars-9s0.12`: the current generator, villages spread.
+      "SPREAD_VILLAGES",
+      "SPREAD_VILLAGES_RIFTS",
+      "SPREAD_VILLAGES_CURIOSITIES",
     ]);
     const input = setup("DRY_LAND", 20, 1, 3, { curiosities: true });
     // The default rules and the density count are the current generator.

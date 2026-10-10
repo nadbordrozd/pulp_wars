@@ -19,7 +19,11 @@ folded into the current rules (sections 2.1 to 2.3 and 3). The setup
 screen and the match interface for many players (bead 5,
 `pulp_wars-ykw.5`) are implemented as the notes under sections 6.3 and 8.5
 say, with no change of identity. The Normal AI budget and the coarse check
-(beads 4 and 6) are not implemented yet. It is an overlay over
+(beads 4 and 6) are not implemented yet. **Amended 2026-10-10**
+(`pulp_wars-9s0.12`, `pulp-wars-poc-7r79`):
+[section 5.7](#57-villages-spread-over-the-land-pulp_wars-9s012-pulp-wars-poc-7r79)
+replaces the `(y, x)` fill of Continents and Archipelago and the choice of
+the coastal settlement, so villages spread over the land. It is an overlay over
 [Ruleset 7: current rules](RULESET_7_CURRENT.md) at `pulp-wars-poc-7r35`
 (sections 2.1–2.3, 2.7, and 3 in particular), the
 [unique-factions overlay](RULESET_7_UNIQUE_FACTIONS.md), and the
@@ -560,6 +564,11 @@ Section 5.6 lists the least and the mean per cell.
   the fill in `(y, x)` order of `7r39` (no draw; then `(x, y)` order and
   each reversed when a scan leaves villages unplaced), with the
   per-landmass rules below.
+- **Amended 2026-10-10**
+  ([section 5.7](#57-villages-spread-over-the-land-pulp_wars-9s012-pulp-wars-poc-7r79)):
+  on Continents and Archipelago the scan now only packs the land; the
+  villages are its sites taken in tile-rank order. The coastal settlement
+  of a landmass is the coast tile of lowest tile rank on every water map.
 - **Packing.** Village candidates are land tiles (on water maps, mask land
   with today's four-land-neighbour rule) at least 1 from the edge, at least
   3 from every settlement, and at least 3 from every wild centre. The
@@ -993,6 +1002,142 @@ players: 3 to 8 villages, mean 6.3 of 8), because their small landmasses
 leave fewer sites. The wild-reserve figures of the cells with 2 to 4
 seats (land features, Giant Spiders, and Rifts against `7r39`) are printed
 by the command and stay inside the section 10.1 allowance.
+
+### 5.7 Villages spread over the land (`pulp_wars-9s0.12`, `pulp-wars-poc-7r79`)
+
+**The report** (playtest round 4, `pulp_wars-9s0.2`, 2026-10-03): on a
+Pangea the villages cluster along the top rows of the island, because
+villages are placed in row order.
+
+**What was measured** (the generator alone, no match; 2 to 6 seats, every
+width, 20 to 40 seeds a cell, at `7r78`). The report predates the village
+density. Since `7r40` a Pangea's villages are packed lattice-first from a
+shuffle ([section 5.3](#53-placement-and-spacing)), and they follow the land:
+on 20 x 20 with two players the top, middle, and bottom thirds of the board
+hold 31% / 44% / 25% of the villages and 31% / 44% / 25% of the land. Two
+steps still chose a tile by its place in `(y, x)` order:
+
+1. **The coastal settlement.** A landmass with no capital on the coast gets
+   a village on a coast tile before any other village, for the port rule.
+   It was the first legal coast tile in `(y, x)` order: the top row of the
+   landmass. On a Pangea of width 16 to 25 with two players a village stood
+   on the island's top row on more than four boards in five (the mean gap
+   between the topmost land row and the topmost village was 0.07 to 0.20
+   rows, against 0.42 to 0.63 at the bottom). This is what is left of the
+   report on Pangea, and it applies to Lakes, Continents, and Archipelago
+   too.
+2. **The fill of Continents and Archipelago**
+   ([section 5.5](#55-amendments-after-measurement-2026-10-04), ruling 1). The
+   `(y, x)` fill stops when the count stands, so each landmass filled from
+   its top row and its lower rows stayed empty:
+
+   | Cell, two players | Villages by third of the board, top / middle / bottom | Land            |
+   | ----------------- | ----------------------------------------------------- | --------------- |
+   | Continents 16     | 41% / 47% / 13%                                       | 28% / 45% / 27% |
+   | Continents 20     | 33% / 62% / 5%                                        | 25% / 51% / 24% |
+   | Continents 25     | 40% / 56% / 4%                                        | 31% / 46% / 23% |
+   | Archipelago 16    | 39% / 49% / 12%                                       | 24% / 56% / 21% |
+   | Archipelago 20    | 26% / 58% / 16%                                       | 21% / 61% / 19% |
+
+   On widths 16 to 25 with two players the mean village stood 1.5 to 2.2
+   rows above the mean land tile on Continents and 0.6 to 0.9 rows above it
+   on Archipelago.
+   With three or more players the landmass shares hide the bias in thirds
+   of the board, but every landmass still filled from its top.
+
+Dry Land has neither step.
+
+**The rule** (the generation rules `SPREAD_VILLAGES`, `SPREAD_VILLAGES_RIFTS`,
+and `SPREAD_VILLAGES_CURIOSITIES`, the current generator; the three
+`CAPITAL_DOMAINS` rules reproduce the `7r78` maps for parity):
+
+- **Tile rank.** Every candidate already has a rank: the seeded shuffle of
+  the land tiles that orders the region seeds and the settlement floors.
+  It is drawn before the settlements are placed, so using it adds no draw
+  and moves no stream.
+- **The coastal settlement** of a landmass is the legal coast tile of
+  **lowest tile rank** (ties cannot happen; `(y, x)` order would break
+  them). Every legal coast tile is equally likely.
+- **The fill of Continents and Archipelago.** The scan now only **packs**:
+  taken in scan order, every candidate that keeps 3 from every settlement
+  becomes a site, whatever the count and the per-landmass rules. This is
+  the tight packing ruling 1 kept the scan for, carried across the whole
+  land. The villages are those sites taken in **tile-rank order**, each
+  added when the landmass share (Continents), the home-island rule
+  (Archipelago), and the village balance allow it, a refused site being
+  tried again once the others have caught up, until `S - N` villages
+  stand. The sites already keep the spacing, so which of them stand
+  depends on the rank and those rules alone.
+- **The first scan follows the seed.** A packing leans about one tile
+  toward the side its scan starts from. The four scans are `(y, x)` order,
+  `(x, y)` order, and each reversed; the first is number `rank mod 4` of
+  the first candidate in `(y, x)` order, and the others follow in turn
+  while villages are unplaced. The first scan that places every village
+  wins; where fewer may stand, the scan that places the most does.
+- Nothing else changes: `S`, the spacing, the edge margin, the wild
+  reserve, the landmass share, the home-island rule, the village balance,
+  and `VILLAGE_DENSITY` are as before.
+
+**Why not the lattice of Pangea** (the first idea: "fix them the same
+way"). Section 5.5 measured it: one board-wide lattice phase with a random
+tail packs irregular islands too loosely, and Continents and Archipelago
+then fail to generate. Keeping the scan as the packer and choosing among
+its sites keeps the packing and removes the direction.
+
+**Why a random choice of sites and not the farthest-first one.** Taking the
+site farthest from every settlement first would spread more evenly still,
+but it drops the sites nearest the capitals whenever sites outnumber
+villages, so every start would lose its nearest village. The rank is
+neutral to the capitals, and the village balance still evens the counts.
+
+**After** (the same cells and seeds):
+
+| Cell, two players | Villages by third of the board, top / middle / bottom | Land            |
+| ----------------- | ----------------------------------------------------- | --------------- |
+| Continents 16     | 33% / 40% / 28%                                       | 28% / 45% / 27% |
+| Continents 20     | 23% / 53% / 24%                                       | 25% / 51% / 24% |
+| Continents 25     | 31% / 44% / 24%                                       | 31% / 46% / 23% |
+| Archipelago 16    | 27% / 46% / 27%                                       | 24% / 56% / 21% |
+| Archipelago 20    | 25% / 55% / 21%                                       | 20% / 61% / 19% |
+
+- The mean village stands within 0.5 rows and 0.4 columns of the mean land
+  tile on every Continents and Archipelago cell of width 16 and up with
+  two to four players (it was up to 2.2 rows above).
+- On a Pangea of width 16 to 25 with two players the gap to the island's
+  top row is 0.38 to 0.50 rows and to its bottom row 0.38 to 0.50.
+- **Fairness.** Every board still passes room and village balance (they
+  are invariants). On the two- to four-player Continents and Archipelago
+  cells that hold their full count (width 14 and up, without Archipelago
+  14 with four players), the spread between the starts of their
+  nearest-village distance, mean over 20 seeds, was 0.05 to 1.00 and is
+  0.00 to 1.00 (worst board 4 before and after, on 14 x 14 Continents with
+  three players); on Continents 25 with two players the worst start's
+  nearest village was 8 tiles away on one board of twelve and is at most 3
+  now.
+- **Generation.** On the 39 Continents and Archipelago cells measured (40
+  seeds each) no seed fails and the mean candidates per accepted board
+  move by at most 0.6 (Archipelago 25 with four players, 1.8 to 2.4;
+  Archipelago 20 with three, 3.1 to 3.5); the largest mean is still
+  Archipelago 16 with four players, 6.7 with a worst board of 28, before
+  and after.
+- **Byte-identity.** Of 708 boards (every map type, five widths, 2 to 8
+  seats, six seeds, curiosities on) the `CAPITAL_DOMAINS_CURIOSITIES` rules
+  reproduce main's `7r78` board on all 708. Under the current rules all
+  150 Dry Land boards are byte-identical; 118 of 150 Pangea and 120 of 126
+  Lakes boards are (a board changes only when no capital stood on the
+  coast); 115 of 144 Continents and 89 of 138 Archipelago boards changed.
+
+**Left as it is.** On the crowded small cells (11 x 11 Continents with
+three or four players, 11 x 11 Archipelago with three) a board holds zero
+to three villages and they stand on the landmass that has room, usually
+the lower one: that follows the land mask and the capitals, not the fill,
+and is unchanged.
+
+**Tests:** `tests/unit/ruleset-v7-village-spread.test.ts` (thirds of the
+land over twelve seeds of eight cells, the `7r78` bias reproduced by the
+parity rules, the Pangea top row, fairness, determinism, and the pinned
+Dry Land hashes). `npm run validate:ruleset7-map-scale` (seeds 0-255 of
+every cell) was not run for this bead.
 
 ## 6. Setup rules
 

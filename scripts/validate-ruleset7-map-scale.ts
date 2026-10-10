@@ -524,7 +524,7 @@ for (const mapType of mapTypes)
       }
       const map = result.map;
       assert.equal(
-        partialVillagesV7("CAPITAL_DOMAINS_CURIOSITIES", setup),
+        partialVillagesV7("SPREAD_VILLAGES_CURIOSITIES", setup),
         !legacy,
       );
       checkMap(map, mapType, width, seats, label, !legacy);

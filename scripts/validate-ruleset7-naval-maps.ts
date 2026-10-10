@@ -185,7 +185,7 @@ for (const mapType of mapTypes)
       const base = generateInitialMapWithVillageCountV7(
         setup,
         villageCountV7(setup),
-        "CAPITAL_DOMAINS",
+        "SPREAD_VILLAGES",
       );
       assert(current.ok && base.ok, `${mapType}/${width}/${seed} failed`);
       const count = validateRifts(current.map, base.map, width);

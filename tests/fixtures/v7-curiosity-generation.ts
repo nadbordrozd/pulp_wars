@@ -90,7 +90,7 @@ export function checkCuriosityOnOffBoardV7(
   const rifts = generateInitialMapWithVillageCountV7(
     on,
     villageCountV7(on),
-    "CAPITAL_DOMAINS_RIFTS",
+    "SPREAD_VILLAGES_RIFTS",
   );
   if (!mapOn.ok || !mapOff.ok || !rifts.ok) throw new Error("map");
   // Off is the generator before the curiosities.

@@ -291,7 +291,7 @@ export function generateInitialMapV7(input: unknown): GenerateMapResultV7 {
   return generateMapWithVillageCountV7(
     setup,
     villageCountV7(setup),
-    "CAPITAL_DOMAINS_CURIOSITIES",
+    "SPREAD_VILLAGES_CURIOSITIES",
   );
 }
 
@@ -359,7 +359,23 @@ function showcaseMapV7(setup: MatchSetupV7): GenerateMapResultV7 {
 }
 
 /**
- * Generation rules a parity call reproduces. The three `CAPITAL_DOMAINS`
+ * Generation rules a parity call reproduces. The three `SPREAD_VILLAGES`
+ * rules are the generator of `pulp_wars-9s0.12` (`pulp-wars-poc-7r79`,
+ * docs/product/RULESET_7_MAP_SCALE.md section 5.7): the many-seats
+ * generator below except that no village is chosen by its place in
+ * `(y, x)` order. On every water map the coastal settlement a landmass
+ * needs is the legal coast tile of lowest tile rank (the first in `(y, x)`
+ * order before), and on Continents and Archipelago the villages are the
+ * sites of a full packing of the land kept in tile-rank order
+ * ({@link spreadFillVillagesV7}; the `(y, x)` fill before, which left the
+ * lower rows of every landmass empty). Neither draws from any stream. Dry
+ * Land has neither step, so a Dry Land map is byte-identical under
+ * `SPREAD_VILLAGES` and `CAPITAL_DOMAINS`. `SPREAD_VILLAGES` is that
+ * generator without Rifts or curiosities, `SPREAD_VILLAGES_RIFTS` adds Rift
+ * placement, and `SPREAD_VILLAGES_CURIOSITIES`, the current generator, adds
+ * curiosity placement when the setup's `curiosities` is true.
+ *
+ * The three `CAPITAL_DOMAINS`
  * rules are the many-seats generator of `pulp_wars-ykw.3`
  * (docs/product/RULESET_7_MAP_SCALE.md sections 3 and 4, map revision
  * `REGIONAL_BIOMES_NAVAL_V4`): the village-density generator below with
@@ -372,8 +388,8 @@ function showcaseMapV7(setup: MatchSetupV7): GenerateMapResultV7 {
  * seat, on the ring slots from five seats; and the room and village balance
  * invariants. `CAPITAL_DOMAINS` is that generator without Rifts or
  * curiosities, `CAPITAL_DOMAINS_RIFTS` adds Rift placement, and
- * `CAPITAL_DOMAINS_CURIOSITIES`, the current generator, adds curiosity
- * placement when the setup's `curiosities` is true, exactly as for the
+ * `CAPITAL_DOMAINS_CURIOSITIES`, the `7r42` to `7r78` generator, adds
+ * curiosity placement when the setup's `curiosities` is true, exactly as for the
  * `VILLAGE_DENSITY` rules.
  *
  * The three `VILLAGE_DENSITY`
@@ -439,15 +455,34 @@ export const MAP_GENERATION_RULES_V7 = Object.freeze([
   "CAPITAL_DOMAINS",
   "CAPITAL_DOMAINS_RIFTS",
   "CAPITAL_DOMAINS_CURIOSITIES",
+  "SPREAD_VILLAGES",
+  "SPREAD_VILLAGES_RIFTS",
+  "SPREAD_VILLAGES_CURIOSITIES",
 ] as const);
 export type MapGenerationRulesV7 = (typeof MAP_GENERATION_RULES_V7)[number];
 
-/** Whether `rules` are the many-seats generator (map revision V4). */
+/**
+ * Whether `rules` choose no village by its place in `(y, x)` order
+ * (`pulp-wars-poc-7r79`, map scale section 5.7).
+ */
+function spreadRulesV7(rules: MapGenerationRulesV7): boolean {
+  return (
+    rules === "SPREAD_VILLAGES" ||
+    rules === "SPREAD_VILLAGES_RIFTS" ||
+    rules === "SPREAD_VILLAGES_CURIOSITIES"
+  );
+}
+
+/**
+ * Whether `rules` are the many-seats generator (map revision V4) or the
+ * spread-villages generator built on it.
+ */
 function domainRulesV7(rules: MapGenerationRulesV7): boolean {
   return (
     rules === "CAPITAL_DOMAINS" ||
     rules === "CAPITAL_DOMAINS_RIFTS" ||
-    rules === "CAPITAL_DOMAINS_CURIOSITIES"
+    rules === "CAPITAL_DOMAINS_CURIOSITIES" ||
+    spreadRulesV7(rules)
   );
 }
 
@@ -485,7 +520,9 @@ function riftRulesV7(rules: MapGenerationRulesV7): boolean {
     rules === "VILLAGE_DENSITY_RIFTS" ||
     rules === "VILLAGE_DENSITY_CURIOSITIES" ||
     rules === "CAPITAL_DOMAINS_RIFTS" ||
-    rules === "CAPITAL_DOMAINS_CURIOSITIES"
+    rules === "CAPITAL_DOMAINS_CURIOSITIES" ||
+    rules === "SPREAD_VILLAGES_RIFTS" ||
+    rules === "SPREAD_VILLAGES_CURIOSITIES"
   );
 }
 
@@ -494,7 +531,8 @@ function curiosityRulesV7(rules: MapGenerationRulesV7): boolean {
   return (
     rules === "CURIOSITIES" ||
     rules === "VILLAGE_DENSITY_CURIOSITIES" ||
-    rules === "CAPITAL_DOMAINS_CURIOSITIES"
+    rules === "CAPITAL_DOMAINS_CURIOSITIES" ||
+    rules === "SPREAD_VILLAGES_CURIOSITIES"
   );
 }
 
@@ -515,7 +553,7 @@ function curiosityRulesV7(rules: MapGenerationRulesV7): boolean {
 export function generateInitialMapWithVillageCountV7(
   input: unknown,
   villages: number,
-  rules: MapGenerationRulesV7 = "CAPITAL_DOMAINS_CURIOSITIES",
+  rules: MapGenerationRulesV7 = "SPREAD_VILLAGES_CURIOSITIES",
 ): GenerateMapResultV7 {
   const validated = validateMatchSetupV7(input);
   if (!validated.ok) return validated;
@@ -2270,6 +2308,61 @@ function scanFillVillagesV7(
 }
 
 /**
+ * Map scale section 5.7, the fill of Continents and Archipelago under the
+ * spread-villages rules (no draw). The land is first packed in full: every
+ * candidate that keeps 3 from every settlement, taken in a scan order,
+ * whatever the count and the per-landmass rule; that is the tight packing
+ * of {@link scanFillVillagesV7} carried to the far side of the land. The
+ * villages are then those sites taken in `byRank` order (the seeded tile
+ * rank) by {@link fillVillagesV7} with the per-landmass rule, until `count`
+ * stand. The sites already keep the spacing, so which of them stand
+ * depends on the rank and the rule alone, never on a row or a column.
+ *
+ * The four scans are `(y, x)` order, `(x, y)` order, and each reversed. A
+ * packing leans one tile toward the side its scan starts from, so the
+ * first scan is chosen by the seed: scan `rank mod 4` of the first
+ * candidate in `(y, x)` order. The others follow in turn while villages are
+ * unplaced, and the first scan that places `count` villages wins. When
+ * none does, the first scan's villages are returned (the most any scan
+ * placed where fewer may stand) and `VILLAGE_DENSITY` rejects the
+ * candidate.
+ */
+function spreadFillVillagesV7(
+  candidates: readonly CoordV7[],
+  settlements: readonly CoordV7[],
+  count: number,
+  accepts: (at: CoordV7, placed: readonly CoordV7[]) => boolean,
+  partial: boolean,
+  rankOf: (at: CoordV7) => number,
+): readonly CoordV7[] {
+  const rows = [...candidates].sort(compareCoords);
+  const columns = [...candidates].sort((a, b) => a.x - b.x || a.y - b.y);
+  const scans = [rows, columns, [...rows].reverse(), [...columns].reverse()];
+  const corner = rows[0];
+  const start = corner === undefined ? 0 : rankOf(corner) % scans.length;
+  let first: readonly CoordV7[] | null = null;
+  let most: readonly CoordV7[] = [];
+  for (let turn = 0; turn < scans.length; turn += 1) {
+    const sites = fillVillagesV7(
+      scans[(start + turn) % scans.length] ?? [],
+      settlements,
+      Number.POSITIVE_INFINITY,
+      () => true,
+    );
+    const villages = fillVillagesV7(
+      [...sites].sort((a, b) => rankOf(a) - rankOf(b) || compareCoords(a, b)),
+      settlements,
+      count,
+      accepts,
+    );
+    if (villages.length >= count) return villages;
+    first ??= villages;
+    if (villages.length > most.length) most = villages;
+  }
+  return partial ? most : (first ?? []);
+}
+
+/**
  * Map scale section 5.3, the lattice packing of Dry Land, Pangea, and Lakes.
  * Draws the lattice phase `px` then `py` (each 0-2, match stream) and
  * shuffles the candidates once (match stream). A phase's order is the
@@ -2519,6 +2612,10 @@ function applyNavalTopologyV7(
   } => {
     const settlements = [...capitals];
     const partial = partialVillagesV7(rules, setup);
+    const spread = spreadRulesV7(rules);
+    const rankOf = (at: CoordV7): number => rank.get(key(at)) ?? 0;
+    const byRank = (a: CoordV7, b: CoordV7): number =>
+      rankOf(a) - rankOf(b) || compareCoords(a, b);
     const componentHasCoastalSettlement = (componentId: number): boolean =>
       settlements.some(
         (settlement) =>
@@ -2553,7 +2650,10 @@ function applyNavalTopologyV7(
                 wildCentreVillageDistanceV7(setup.width),
             ),
         )
-        .sort(compareCoords)[0];
+        // Map scale section 5.7: the coast tile of lowest tile rank (the
+        // first in `(y, x)` order under the rules before it, which put it
+        // on the top row of the landmass).
+        .sort(spread ? byRank : compareCoords)[0];
       if (coastal === undefined)
         throw new RangeError("Naval topology lacks coastal settlement");
       settlements.push(coastal);
@@ -2683,13 +2783,22 @@ function applyNavalTopologyV7(
     } else {
       random = wild.random;
       settlements.push(
-        ...scanFillVillagesV7(
-          villageCandidates,
-          settlements,
-          missing,
-          balanced,
-          partial,
-        ),
+        ...(spread
+          ? spreadFillVillagesV7(
+              villageCandidates,
+              settlements,
+              missing,
+              balanced,
+              partial,
+              rankOf,
+            )
+          : scanFillVillagesV7(
+              villageCandidates,
+              settlements,
+              missing,
+              balanced,
+              partial,
+            )),
       );
     }
     return { settlements, wildCentres, random };
@@ -3854,7 +3963,7 @@ export function createInitialMapStateV7(
 export function createInitialMapStateWithVillageCountV7(
   input: unknown,
   villages: number,
-  rules: MapGenerationRulesV7 = "CAPITAL_DOMAINS_CURIOSITIES",
+  rules: MapGenerationRulesV7 = "SPREAD_VILLAGES_CURIOSITIES",
 ): CreateInitialMapStateResultV7 {
   const validated = validateMatchSetupV7(input);
   if (!validated.ok) return validated;

@@ -227,7 +227,7 @@ function generated(input: MatchSetupV7) {
   const base = generateInitialMapWithVillageCountV7(
     input,
     villageCountV7(input),
-    "CAPITAL_DOMAINS",
+    "SPREAD_VILLAGES",
   );
   if (!map.ok || !base.ok) throw new Error("generation failed");
   return { map: map.map, base: base.map };

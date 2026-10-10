@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r78`, for all eight offered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r79`, for all eight offered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), and Candy (`CANDY`). A
 ninth faction, the Cultists (`CULT`), is **registered and not offered**: its
@@ -434,6 +434,18 @@ links to another, by Road or by Port. A sea link needs only **Shorecraft**
 the Roads technology, and unexplored water no longer breaks a link. A save,
 replay, or setup of `7r75` is rejected, and the browser autosave has a new
 key.
+`pulp-wars-poc-7r79` (`pulp_wars-9s0.12`) is **villages spread over the
+land**, a fix to map generation ([section 2.2](#22-settlements-and-treasures)): no
+village is chosen by its place in `(y, x)` order any more. On a water map
+the coastal settlement a landmass needs is the legal coast tile of lowest
+tile rank (it stood on the top row of the landmass before), and on
+Continents and Archipelago the villages are the sites of a full packing
+of the land, kept in tile-rank order (the `(y, x)` fill before left the
+lower rows of every landmass empty). The village count, the spacing, the
+landmass and home-island rules, and the village balance are unchanged,
+and no rule of play changed. Dry Land maps are byte-identical; other maps
+of a seed may differ. A save, replay, or setup of `7r78` is rejected, and
+the browser autosave has a new key.
 `pulp-wars-poc-7r78` (`pulp_wars-mch9.8`) is **the Cult's hexes and
 tricks** ([section 1](#1-identity-and-compatibility)), the sixth and last
 engine step of the Cultists. A Hexer's **Ribbit** turns a hostile unit
@@ -923,7 +935,7 @@ the build differs (its sections 20 to 24 list them);
 the values here are current. Where a document and the code disagreed, the
 code's behavior is the rule and is stated below;
 [Known discrepancies](#25-known-discrepancies) lists the open items and the
-resolved ones as of `pulp-wars-poc-7r78`.
+resolved ones as of `pulp-wars-poc-7r79`.
 
 **Terms.** "On the board" means a unit that currently exists (HP above 0).
 **Living** has the narrower revision-13 meaning used by Wail, Plague,
@@ -1024,10 +1036,10 @@ separate [Ruleset 6](RULESET_6.md) route.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r78`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Ruleset                                    | `pulp-wars-poc-7r79`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r78.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Browser autosave                           | `pulpWars.save.v7r79.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, `CULT`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`, `CULT_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -2134,12 +2146,30 @@ The seats each width holds are in [section 2.1](#21-match-setup).
   tried in turn from the drawn one (`px` advancing first, then `py`) and
   the first that places every village wins; where fewer may stand, the
   phase that places the most does (the earliest on a tie).
+- **Coastal settlement** (every water map). Every landmass that must be
+  settled (each major landmass on Continents and Archipelago, each
+  capital's landmass on Pangea and Lakes) needs a settlement next to
+  Water. Where no capital is one, a village goes first on a legal coast
+  tile of that landmass (3 from every settlement, clear of the wild
+  centres): the one of **lowest tile rank** (the seeded shuffle of the
+  land tiles that also orders the region seeds; no draw). Before `7r79`
+  it was the first such tile in `(y, x)` order, which put a village on the
+  top row of the landmass.
 - **Village fill on Continents and Archipelago.** No draw: after the
-  coastal settlement every major landmass needs, the candidates (land with
-  at least four land neighbours, 1 from the edge, 3 from every settlement)
-  are taken in `(y, x)` order, as before `7r40`; if that leaves villages
-  unplaced the same fill runs in `(x, y)` order, then in each order
-  reversed, and the first scan that places every village wins. On
+  coastal settlements, the candidates (land with at least four land
+  neighbours, 1 from the edge, 3 from every settlement) are first
+  **packed in full**: taken in a scan order, each that keeps 3 from
+  every settlement becomes a site, whatever the count. The villages are
+  then those sites taken in **tile-rank order**, each added if the rules
+  below allow it (a site refused is tried again once the others have
+  caught up), until `S − seats` villages stand. The four scans are
+  `(y, x)` order, `(x, y)` order, and each reversed; the first scan is
+  number `rank mod 4` of the first candidate in `(y, x)` order, the
+  others follow in turn while villages are unplaced, and the first scan
+  that places every village wins. (Before `7r79` the villages were the
+  first candidates of the scan itself, always from `(y, x)` order first,
+  so they filled each landmass from its top row and left its lower rows
+  empty.) On
   **Continents** only major landmasses take villages, and a landmass holds
   at most its share of the settlements by land,
   `ceil(S × landmass land / major land)` (two thirds of the settlements
@@ -13218,6 +13248,7 @@ first guesses.
 | Port links      | `pulp-wars-poc-7r76` | `pulp_wars-5ti.12` Ports join the Road network (the user, 2026-10-10; a save, replay, or setup of `7r75` is rejected): one connection network of Road tiles, own city centers, own active Ports and Shipyards, and sea links between active docks of two own cities at most five water steps apart; a city joined to the original capital by any mix of them gets +1 population once, and the capital +1 for each; sea trade (Navigation's +1 Coin) is removed and Commerce's trade Coin goes to every city linked to another by Road or Port; the sea link needs Shorecraft only (Navigation adds Deep Water crossings), city centers and docks count without Roads, and exploration is no longer a condition; the technology effect `SEA_TRADE_INCOME` and the capability `seaTradeIncomeCoins` are replaced by `SEA_LINK` (on Shorecraft) and `seaLink`; `naval.ownedPorts` entries gain `joinsCity`, `naval.seaRoutes` lists exactly the links that count (one for each pair of cities), and `naval.seaTradeCityIds` and `tradeCityIds` are always empty; the board draws a Road onto docks and city centers where they join                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | Cult, E5        | `pulp-wars-poc-7r77` | `pulp_wars-mch9.7` the Cult's rituals and the Herald, the fifth engine step of the Cultists (a save, replay, or setup of `7r76` is rejected): the ritual frame (a leader and its chanters begin a ritual with `BEGIN_RITUAL`, a disrupted participant leaves it, and it completes or fizzles at the seat's next Start Turn after the channel check); Star-fall (a Stargazer that has not moved, one chanter or more, a mark 2 to 4 tiles away: 5 + 1 for each chanter as a fixed hit to every unit on the mark and the eight tiles around it, friend and foe, with every Field Defense and Barricade there destroyed); the Great Summoning (a Summoner with The Stars Are Right and three chanters or more, 20 Favour: the unit on the mark is consumed or blocks the arrival, then the Herald arrives and the circle channels it); the Herald (60 HP, Attack 7, Defense 4, Move 2, Control 3; Ravage, two attacks a turn and never an advance; Unstoppable, its attacks ignore fortification and destroy Field Defense, and no status or shove takes it; Proclaim, one attack spent to Cow a hostile city within 3 tiles: no income and no city action until its owner's turn ends); the commands `BEGIN_RITUAL` and `PROCLAIM`, seven events, the `cult` lists `rituals` and `cowed`, the death causes `STARFALL` and `CONSUMED`, the Favour source `CONSUMPTION` and purpose `GREAT_SUMMONING`, and the Field Defense reasons `STARFALL` and `UNSTOPPABLE`. An Unbound Herald can be bound again. No rule of the eight offered factions changed                      |
 | Cult, E6        | `pulp-wars-poc-7r78` | `pulp_wars-mch9.8` the Cult's hexes and tricks, the sixth and last engine step of the Cultists (a save, replay, or setup of `7r77` is rejected): Ribbit (a Hexer turns a hostile unit within 2 tiles into a frog until its owner's next turn ends: Defense 0.5 with no fortification and no cover, Move 1, no attack, strike back, or capture; Seizable at half its Hit Points; cured by Tend Wounded, Repair, and Top-Up; a status for the disruption rule); Switcheroo (a Familiar with Scouting swaps with a unit within 2 tiles, never on a settlement center, each unit where it may stand); each waits out its owner's next turn; the Tentacle (a Caller calls a neutral unit of the breed `TENTACLE` within 3 tiles: 8 HP, Attack 3, Defense 1, rooted; it slaps the weakest unit beside it at once and in every neutral turn, friend or foe, credited to nobody, and sinks after its third) and Grab (the slapped unit moves only beside it); Pick Me! (hostile units beside a taunting Chosen may `ATTACK` only it until its owner's next Start Turn); Pamphlets (an Initiate captures a neutral village in the turn it walks onto it); the `cult` lists `frogs`, `hexCooldowns`, `taunts`, and `tentacles`, four commands, six events, the death cause `SANK`, and the hidden lab `LAB_CULT_MID` (a mission's Cult seat may start with Favour); no rule of another faction changed ([section 1](#1-identity-and-compatibility)).                                                                                                                              |
+| Village spread  | `pulp-wars-poc-7r79` | `pulp_wars-9s0.12` villages spread over the land, a map generation fix (a save, replay, or setup of `7r78` is rejected): no village is chosen by its place in `(y, x)` order any more. On every water map the coastal settlement a landmass needs is the legal coast tile of lowest tile rank (the first in `(y, x)` order before, a village on the top row of nearly every Pangea whose capitals stand inland); on Continents and Archipelago the villages are the sites of a full packing of the land, kept in tile-rank order until the density count stands (the `(y, x)` fill before left the bottom third of a two-player Continents board with 14% to 17% of its villages; about a third now), the first scan chosen by the seed. No draw is added, the density, the spacing, the landmass shares, the home-island rule, and the village balance are unchanged, and candidates per board are as before. Dry Land maps are byte-identical; Pangea and Lakes maps change only where no capital stands on the coast; most Continents and Archipelago maps change. The parity rules `CAPITAL_DOMAINS*` reproduce the `7r78` maps; the current rules are `SPREAD_VILLAGES_CURIOSITIES` ([map scale section 5.7](RULESET_7_MAP_SCALE.md#57-villages-spread-over-the-land-pulp_wars-9s012-pulp-wars-poc-7r79)); the browser autosave has a new key                                                                                                                                                                                                                      |
 
 **Documentation parity (2026-09-28, no ruleset or identity change):** where
 older documents disagreed with the code, the code's behavior was adopted as

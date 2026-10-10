@@ -128,7 +128,7 @@ describe("round-2 generation (section 24)", () => {
         const base = generateInitialMapWithVillageCountV7(
           setup,
           villageCountV7(setup),
-          "CAPITAL_DOMAINS_RIFTS",
+          "SPREAD_VILLAGES_RIFTS",
         );
         if (!on.ok || !base.ok) throw new Error("map");
         const placed = checkCuriosityPlacementV7(

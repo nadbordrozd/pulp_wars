@@ -135,7 +135,7 @@ function expectManySeatBoard(map: GeneratedMapV7, input: MatchSetupV7): void {
   expect(map.capitals).toHaveLength(seats);
   // Villages: the density count, or as many as fit on a setup new at V4.
   const target = villageCountV7(input);
-  if (partialVillagesV7("CAPITAL_DOMAINS_CURIOSITIES", input))
+  if (partialVillagesV7("SPREAD_VILLAGES_CURIOSITIES", input))
     expect(map.villages.length).toBeLessThanOrEqual(target);
   else expect(map.villages).toHaveLength(target);
   // Spacing, the edge margin, and the central zone.
@@ -567,7 +567,7 @@ describe("ruleset-7 map scale: many seats (7r42)", () => {
   });
 
   it("keeps exact village counts on the setups of 7r41 and fills the new ones as far as they go", () => {
-    const rules = "CAPITAL_DOMAINS_CURIOSITIES";
+    const rules = "SPREAD_VILLAGES_CURIOSITIES";
     expect(partialVillagesV7(rules, setup("DRY_LAND", 11, 2, 0))).toBe(false);
     expect(partialVillagesV7(rules, setup("DRY_LAND", 14, 3, 0))).toBe(false);
     expect(partialVillagesV7(rules, setup("DRY_LAND", 16, 4, 0))).toBe(false);
@@ -608,7 +608,7 @@ describe("ruleset-7 map scale: many seats (7r42)", () => {
     const rifts = generateInitialMapWithVillageCountV7(
       input,
       villageCountV7(input),
-      "CAPITAL_DOMAINS_RIFTS",
+      "SPREAD_VILLAGES_RIFTS",
     );
     const current = generateInitialMapV7(input);
     if (!rifts.ok || !current.ok) throw new Error("generation");
@@ -760,7 +760,12 @@ describe("ruleset-7 map scale: many seats (7r42)", () => {
 
 /**
  * `canonicalMapRandomHashV7`, the accepted candidate, the villages, and the
- * wild centres of seed 7, generated at `pulp-wars-poc-7r42`.
+ * wild centres of seed 7, generated at `pulp-wars-poc-7r42`. The Continents
+ * and Archipelago boards were pinned again at `pulp-wars-poc-7r79`
+ * (`pulp_wars-9s0.12`): their villages are no longer filled in `(y, x)`
+ * order, so they stand elsewhere (same candidate, same count). The Dry Land
+ * boards have no such step, and on these Pangea and Lakes boards a capital
+ * already stands on the coast, so those four hashes did not move.
  */
 const GOLDEN = {
   "DRY_LAND/11/8": [
@@ -788,13 +793,13 @@ const GOLDEN = {
     [{ x: 8, y: 10 }],
   ],
   "CONTINENTS/20/7": [
-    "f4a1da3435f3be65ca0e4ec28248487a76ddef74ecd37847b6b7cbd6d3233c1a",
+    "853658b92668693ebc309c0b03971b610a78c5d3f6d31ac054f50c8fe6214c8e",
     1,
     12,
     [],
   ],
   "ARCHIPELAGO/25/8": [
-    "3efbc13bd4644e9cb93202c3e1186dd2bd1f429d22f9affe0395717b4e6d2111",
+    "496bede5619ba413137a63c746275f96b2bdd4af30ac31f8f3156a535feb695c",
     1,
     15,
     [],
