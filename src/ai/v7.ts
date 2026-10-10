@@ -283,6 +283,16 @@ import {
   type ArmyCountsV7,
 } from "./v7-army";
 import {
+  cultBackRowV7,
+  cultChosenCappedV7,
+  cultEscortV7,
+  cultHexersWantedV7,
+  cultIdolBearerCappedV7,
+  cultRobedV7,
+  cultStarsDueV7,
+  cultWeakLinkV7,
+} from "./v7-cult";
+import {
   CAMPAIGN_FRONT_DEFENSE_RADIUS_V7,
   campaignHasWorkAtV7,
   campaignHoldsMoveV7,
@@ -4048,6 +4058,15 @@ function armyResearchTargetV7(
     }
     let unlocked = 0;
     const armyHostiles = armyHostilesV7(context);
+    // The Cult seat (`pulp_wars-mch9.9`, RULESET_7_CULTISTS.md section
+    // 15.1): Hexers first with a hostile Raider- or Knight-role unit in
+    // sight (`cultHexersWantedV7`; the pattern of the Orc Brute's `WANTED`:
+    // the next technology, on the seat's ordinary research tempo).
+    if (armyCultSeatV7(context) && cultHexersWantedV7(armyHostiles)) {
+      const hexer = effectiveRoleRuleV7("MARKSMAN", faction);
+      if (hexer.technology !== null && hexer.cost !== null)
+        chosen = toward(hexer.technology, "MARKSMAN") ?? chosen;
+    }
     for (const role of armyMartianResearchRolesV7(context)) {
       if (chosen !== null) break;
       if (roads && unlocked === ARMY_ROADS_AFTER_ROLES_V7)
@@ -4147,6 +4166,15 @@ function armyResearchTargetV7(
         )
           chosen = toward("PLANNING");
       }
+      // The Cult seat (`pulp_wars-mch9.9`, RULESET_7_CULTISTS.md section
+      // 15.1): Harvest Rites (the Farm, and the Offering) before the
+      // Chosen's two technologies, once the seat has its Summoner's.
+      if (
+        faction === "CULT" &&
+        role === "SWORDSMAN" &&
+        view.viewer.researchedTechs.includes("ADMINISTRATION")
+      )
+        chosen = toward("FARMING");
       if (chosen !== null) break;
       if (
         rule.technology === null ||
@@ -4173,6 +4201,11 @@ function armyResearchTargetV7(
       // first is Blasting Charges (eruptions of 3, Steam Cannons through
       // Walls, Field Defense, and Dig In, and the melee Breach).
       if (chosen === null && faction === "DWARF") chosen = toward("EXPLOSIVES");
+      // The Cult seat (`pulp_wars-mch9.9`): a Cult seat's first is The
+      // Stars Are Right (the Great Summoning) once its Favour has reached
+      // `CULT_STARS_FAVOUR_V7`.
+      if (chosen === null && faction === "CULT" && cultStarsDueV7(view))
+        chosen = toward("EXPLOSIVES");
       for (const technology of ARMY_LATE_RESEARCH_V7) {
         if (chosen !== null) break;
         chosen = toward(technology);
@@ -4622,7 +4655,12 @@ function armyBodiesSeatV7(context: PolicyContextV7): boolean {
     // The Candy army seat (`pulp_wars-jdb.13`): and a Candy seat. Its
     // Toffee Troopers walk one tile a turn and take every village, and its
     // Marshmallow is two technologies away (the root, then Home Sweet Home).
-    armyCandySeatV7(context)
+    armyCandySeatV7(context) ||
+    // The Cult seat (`pulp_wars-mch9.9`, RULESET_7_CULTISTS.md section
+    // 15.1, the Undead lesson): and a Cult seat. Its robed cultists are
+    // what captures, channels, chants, and holds, and an Initiate is 2
+    // Coins.
+    armyCultSeatV7(context)
   );
 }
 
@@ -4644,6 +4682,14 @@ function armyDwarfSeatV7(context: PolicyContextV7): boolean {
 /** A Candy seat of the army play (`pulp_wars-jdb.13`). */
 function armyCandySeatV7(context: PolicyContextV7): boolean {
   return context.army && context.view.viewer.faction === "CANDY";
+}
+
+/**
+ * A Cult seat of the army play (`pulp_wars-mch9.9`,
+ * docs/product/RULESET_7_CULTISTS.md section 15.1; `src/ai/v7-cult.ts`).
+ */
+function armyCultSeatV7(context: PolicyContextV7): boolean {
+  return context.army && context.view.viewer.faction === "CULT";
 }
 
 // ---------------------------------------------------------------------------
@@ -4724,6 +4770,11 @@ function armyUndeadShortOfUnitsV7(context: PolicyContextV7): boolean {
   // `pulp_wars-ke95` and count since), and its burrowed ones (a
   // Mole and its rider underground keep their slots and surface next turn).
   const dwarf = armyDwarfSeatV7(context);
+  // The Cult seat (`pulp_wars-mch9.9`): a Cult seat counts its robed
+  // cultists (`cultRobedV7`): a Familiar, the Thing, and a daemon neither
+  // channel nor chant, and a daemon is nothing a seat wants more of for
+  // being short of bodies.
+  const cult = armyCultSeatV7(context);
   let units = 0;
   for (const unit of dwarf
     ? [...view.units, ...view.burrowed.map((entry) => entry.unit)]
@@ -4732,7 +4783,8 @@ function armyUndeadShortOfUnitsV7(context: PolicyContextV7): boolean {
       unit.ownerId === view.viewer.id &&
       (unit.form === "LAND" || (dinosaur && unit.form === "EGG")) &&
       (!(martian || dinosaur || iceFolk || dwarf) ||
-        policyCapturerV7(view, unit))
+        policyCapturerV7(view, unit)) &&
+      (!cult || cultRobedV7(view, unit))
     )
       units += 1;
   return units < cities + ARMY_UNDEAD_SPARE_UNITS_V7;
@@ -4849,6 +4901,11 @@ function armyUndeadGrowthFirstV7(context: PolicyContextV7): boolean {
   // the Shield Projector's two technologies wait for its growth technology
   // while no enemy is in sight of its cities.
   if (!armyBodiesSeatV7(context) || context.naval.active) return false;
+  // The Cult seat (`pulp_wars-mch9.9`, RULESET_7_CULTISTS.md section 11):
+  // Leadership is a Cult seat's second technology (the Summoner is the
+  // faction's heart, and one technology behind the Gathering most seats
+  // open with); its growth technology follows it (`armyEconomyFirstV7`).
+  if (armyCultSeatV7(context)) return false;
   const view = context.view;
   const zombie = effectiveRoleRuleV7("GUARD", view.viewer.faction).technology;
   return (
@@ -4873,6 +4930,8 @@ function armyOpeningSeatV7(context: PolicyContextV7): boolean {
   // Step two of the Ice Folk pass (`pulp_wars-w49.27`): and an Ice Folk seat.
   // Step two of the Dwarf pass (`pulp_wars-w49.28`): and a Dwarf seat.
   // The Candy army seat (`pulp_wars-jdb.13`): and a Candy seat.
+  // The Cult seat (`pulp_wars-mch9.9`): and a Cult seat (Pamphlets win the
+  // village race).
   return (
     context.army &&
     (faction === "UNDEAD" ||
@@ -4880,7 +4939,8 @@ function armyOpeningSeatV7(context: PolicyContextV7): boolean {
       faction === "DINOSAUR" ||
       faction === "ICE_FOLK" ||
       faction === "DWARF" ||
-      faction === "CANDY")
+      faction === "CANDY" ||
+      faction === "CULT")
   );
 }
 
@@ -4913,6 +4973,7 @@ function armyCorrectionSeatV7(context: PolicyContextV7): boolean {
   // Step two of the Ice Folk pass (`pulp_wars-w49.27`): and an Ice Folk seat.
   // Step two of the Dwarf pass (`pulp_wars-w49.28`): and a Dwarf seat.
   // The Candy army seat (`pulp_wars-jdb.13`): and a Candy seat.
+  // The Cult seat (`pulp_wars-mch9.9`): and a Cult seat.
   return (
     context.army &&
     (faction === "ORIGINAL" ||
@@ -4920,7 +4981,8 @@ function armyCorrectionSeatV7(context: PolicyContextV7): boolean {
       faction === "DINOSAUR" ||
       faction === "ICE_FOLK" ||
       faction === "DWARF" ||
-      faction === "CANDY")
+      faction === "CANDY" ||
+      faction === "CULT")
   );
 }
 
@@ -6293,7 +6355,19 @@ function armyDinosaurContactHeldV7(
   // Donut Racer, Jawbreaker, Chocolate Bunny, or Confectioner too. The Move
   // of a Rushed unit's kill plan is exempt (the unit Rushed for it).
   const candy = armyCandySeatV7(context);
-  if (!armyDinosaurSeatV7(context) && !armyIceFolkSeatV7(context) && !candy)
+  // The Cult seat (`pulp_wars-mch9.9`, RULESET_7_CULTISTS.md section 15.1,
+  // the Goblin mob lesson): a Cult seat's Initiate too, and its Familiar,
+  // Summoner, Caller, and Chosen (every unit of it that strikes after a
+  // Move). Its company is a Goblin's (`goblinContactCompanyV7`): another
+  // own unit beside that enemy, or one that can still come. A Pamphlets
+  // capture is a Move onto a village, which is exempt below.
+  const cult = armyCultSeatV7(context);
+  if (
+    !armyDinosaurSeatV7(context) &&
+    !armyIceFolkSeatV7(context) &&
+    !candy &&
+    !cult
+  )
     return false;
   const view = context.view;
   const actor = context.lookup.unitsById.get(command.unitId);
@@ -6348,7 +6422,9 @@ function armyDinosaurContactHeldV7(
     return false;
   if (armyEngagementsForV7(context, actor).get(coordKey(to))?.kills === true)
     return false;
-  return !dinosaurContactCompanyV7(context, actor, to);
+  return cult
+    ? !goblinContactCompanyV7(context, actor, to)
+    : !dinosaurContactCompanyV7(context, actor, to);
 }
 
 /**
@@ -6453,7 +6529,15 @@ function armyIceFolkShooterHeldV7(
   // Witch is (out of a chaining unit's reach). The Pie Launcher keeps the
   // siege rules (it does not shoot after a Move).
   const candy = armyCandySeatV7(context);
-  if (!armyIceFolkSeatV7(context) && !dwarf && !candy) return false;
+  // The Cult seat (`pulp_wars-mch9.9`, RULESET_7_CULTISTS.md section 15.1,
+  // "shooters and the back row out of reach"): a Cult seat's Hexer,
+  // Stargazer, and Summoner are held the same way, all three by the whole
+  // rule (`cultBackRowV7`): no Move into a visible hostile melee unit's
+  // reach with no own line, defender, or Chosen nearer to the enemy, nor
+  // into the reach of a unit with Overrun from outside it. The Move from
+  // which a Hexer's shot kills is exempt, as every shooter's is.
+  const cult = armyCultSeatV7(context);
+  if (!armyIceFolkSeatV7(context) && !dwarf && !candy && !cult) return false;
   const view = context.view;
   const actor = context.lookup.unitsById.get(command.unitId);
   const to = command.path.at(-1);
@@ -6469,7 +6553,9 @@ function armyIceFolkShooterHeldV7(
     ? rule.abilities.includes("TWIN_SHOT")
     : candy
       ? rule.abilities.includes("RICOCHET")
-      : rule.range >= 2;
+      : cult
+        ? cultBackRowV7(view, actor)
+        : rule.range >= 2;
   if (
     !shooter &&
     !rule.abilities.includes(
@@ -8139,12 +8225,18 @@ function armyWeakLinkV7(context: PolicyContextV7, unit: PublicUnitV7): boolean {
   // The Candy army seat (`pulp_wars-jdb.13`): a Candy unit a Knight's hit
   // kills at full HP (`ARMY_CANDY_STURDY_V7`): every one but the
   // Marshmallow, the Jawbreaker, and the Gingerbread Giant.
-  return (
+  if (
     context.candy &&
     unit.form === "LAND" &&
     policyUnitFactionV7(context.view, unit) === "CANDY" &&
     unit.maxHp < ARMY_CANDY_STURDY_V7
-  );
+  )
+    return true;
+  // The Cult seat (`pulp_wars-mch9.9`, RULESET_7_CULTISTS.md section 15.1):
+  // a robed cultist a Knight's hit kills at full HP (`CULT_STURDY_V7`): the
+  // Initiate, the Hexer, the Summoner, the Stargazer, and the Caller; not
+  // the Chosen and the Idol Bearer. (No unit of another kind is robed.)
+  return cultWeakLinkV7(context.view, unit);
 }
 
 /** The visible hostile land units that attack again after a kill (Overrun). */
@@ -8277,7 +8369,12 @@ function armyEscortValueV7(
         distance(unit.at, to) <= ARMY_APPROACH_RADIUS_V7 &&
         publicCombatFacts(view, unit, context.lookup).move >= 2,
     );
-  const sturdyEscort = iceFolk || dwarf || candy || candyScreen;
+  // The Cult seat (`pulp_wars-mch9.9`, RULESET_7_CULTISTS.md section 15.1):
+  // a Cult seat's Chosen and its Idol Bearer stand beside the robed
+  // cultists a Knight kills in one attack (the channellers and chanters)
+  // and end the ride.
+  const cult = armyCultSeatV7(context) && cultEscortV7(view, actor);
+  const sturdyEscort = iceFolk || dwarf || candy || candyScreen || cult;
   if (
     (view.viewer.faction !== "GOBLIN" && !dinosaur && !sturdyEscort) ||
     (!sturdyEscort && armyClassV7(unitRoleRuleV7(view, actor)) !== "DEFENDER")
@@ -8301,7 +8398,8 @@ function armyEscortValueV7(
         (dinosaur && unit.maxHp < ARMY_DINOSAUR_STURDY_V7) ||
         (iceFolk && unit.maxHp < ARMY_ICE_FOLK_STURDY_V7) ||
         (dwarf && unit.maxHp < ARMY_DWARF_STURDY_V7) ||
-        (candy && unit.maxHp < ARMY_CANDY_STURDY_V7)
+        (candy && unit.maxHp < ARMY_CANDY_STURDY_V7) ||
+        (cult && cultWeakLinkV7(view, unit))
       )
         escorted += 1;
     }
@@ -12417,7 +12515,10 @@ function* sharedCityContextWorkV7(
         armyDwarfSeatV7(context) ||
         // The Candy army seat (`pulp_wars-jdb.13`): and a Candy seat's, to
         // a Gumball Gunner.
-        armyCandySeatV7(context)) &&
+        armyCandySeatV7(context) ||
+        // The Cult seat (`pulp_wars-mch9.9`): and a Cult seat's, to a
+        // Hexer.
+        armyCultSeatV7(context)) &&
       armyCounts !== null &&
       !armyAtTheGatesV7(context, cityId) &&
       armyGarrisonYieldsToRangedV7(
@@ -12602,6 +12703,29 @@ function* sharedCityContextWorkV7(
               (armyCandySeatV7(context) &&
               command.role === "SWORDSMAN" &&
               armyCandyHeavyCappedV7(
+                ownedRoleCounts.get("SWORDSMAN") ?? 0,
+                ownedRoleCounts.get("FIGHTER") ?? 0,
+              )
+                ? ARMY_MARTIAN_HEAVY_CAP_COST_V7
+                : 0) -
+              // The Cult seat (`pulp_wars-mch9.9`, RULESET_7_CULTISTS.md
+              // section 15.1): no more Idol Bearers than cities, nor than
+              // a third of the army (`cultIdolBearerCappedV7`, the Musk Ox
+              // cap), and a Chosen for every two Initiates, no more
+              // (`cultChosenCappedV7`).
+              (armyCultSeatV7(context) &&
+              command.role === "GUARD" &&
+              cultIdolBearerCappedV7(
+                armyCounts.byClass.DEFENDER,
+                armyCounts.total,
+                view.cities.filter((item) => item.ownerId === view.viewer.id)
+                  .length,
+              )
+                ? ARMY_ICE_FOLK_DEFENDER_CAP_COST_V7
+                : 0) -
+              (armyCultSeatV7(context) &&
+              command.role === "SWORDSMAN" &&
+              cultChosenCappedV7(
                 ownedRoleCounts.get("SWORDSMAN") ?? 0,
                 ownedRoleCounts.get("FIGHTER") ?? 0,
               )
@@ -24714,6 +24838,10 @@ function preferredReward(
   // the seat had fewer giants than cities; it was offered once per city
   // then.)
   if (offered.includes("JUGGERNAUT") && offered.includes("TREASURY")) {
+    // The Cult seat (`pulp_wars-mch9.9`, RULESET_7_CULTISTS.md section
+    // 15.1): the Thing in the Cellar at every level from 5 (a body that
+    // grips, and 12 Favour if it is Sacrificed).
+    if (armyCultSeatV7(context)) return "JUGGERNAUT";
     const cityCount =
       context.view.leaderboard.find((item) => item.isViewer)?.cityCount ?? 0;
     const juggernauts = context.view.units.filter(

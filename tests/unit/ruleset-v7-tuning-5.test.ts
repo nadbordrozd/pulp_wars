@@ -606,6 +606,8 @@ describe("Normal AI army play: who plays it", () => {
       "DWARF",
       // The Candy army seat (`pulp_wars-jdb.13`).
       "CANDY",
+      // The Cult seat (`pulp_wars-mch9.9`).
+      "CULT",
     ]);
   });
 });
@@ -631,10 +633,14 @@ describe("Normal AI army play: the composition", () => {
   it("shares add up to the whole army", () => {
     // (`reduce<number>`: the Dinosaur shares hold a 0, the Triceratops
     // being a line unit, which would otherwise narrow the sum's type.)
-    for (const shares of Object.values(ARMY_SHARES_V7))
+    // The Cult seat (`pulp_wars-mch9.9`): the Cult's shares are its spec's
+    // (RULESET_7_CULTISTS.md section 15.1: 45, 20, 10, 10, 10), which leave
+    // a twentieth to the Summoners and Familiars it counts apart.
+    for (const [name, shares] of Object.entries(ARMY_SHARES_V7))
       expect(
         Object.values(shares).reduce<number>((sum, value) => sum + value, 0),
-      ).toBe(100);
+        name,
+      ).toBe(name === "cult" ? 95 : 100);
   });
 
   it("never trains only defenders, and prefers the dearer line unit", () => {
@@ -758,12 +764,17 @@ describe("Normal AI army play: units before research and buildings", () => {
         // first in an Ice Folk seat's order (Scouting).
         // The Candy army seat (`pulp_wars-jdb.13`): and the Donut Racer in
         // a Candy seat's.
+        // The Cult seat (`pulp_wars-mch9.9`): the Summoner is first in a
+        // Cult seat's order, and Gathering (which this seat does not own)
+        // is the step to its Leadership.
       ).toEqual({
         kind: "RESEARCH",
         tech:
           faction === "ICE_FOLK" || faction === "CANDY"
             ? "SCOUTING"
-            : "MARKSMANSHIP",
+            : faction === "CULT"
+              ? "GATHERING"
+              : "MARKSMANSHIP",
       });
     }
   });

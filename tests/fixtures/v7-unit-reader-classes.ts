@@ -83,6 +83,9 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/ai/v7-candy.ts::topUpScoreV7": "BOARD",
     "src/ai/v7-candy.ts::glazeCarriedTilesV7": "BOARD",
     "src/ai/v7.ts::candyCacheV7": "BOARD",
+    // The Cult seat (`pulp_wars-mch9.9`): the robed cultists a Cult seat
+    // fields are on the board (a Cult seat has no burrowed unit).
+    "src/ai/v7-cult.ts::cultBodiesV7": "BOARD",
     "src/ai/v7-curiosities.ts::curiosityFactsV7": "BOARD",
     "src/ai/v7-curiosities.ts::planCuriosityErrandsV7": "BOARD",
     "src/ai/v7-curiosities.ts::soleCityDefenderV7": "BOARD",

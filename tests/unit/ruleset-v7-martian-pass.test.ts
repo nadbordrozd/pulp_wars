@@ -1016,6 +1016,8 @@ describe("the Martian pass: Martian seats play the army rules", () => {
       "DWARF",
       // The Candy army seat (`pulp_wars-jdb.13`).
       "CANDY",
+      // The Cult seat (`pulp_wars-mch9.9`).
+      "CULT",
     ]);
     expect(armyPlayFactionV7("MARTIAN")).toBe(true);
     // (An army faction too since the Candy army seat, `pulp_wars-jdb.13`.)

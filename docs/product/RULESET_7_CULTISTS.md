@@ -1392,6 +1392,91 @@ claimed the ones it needs.
   attack kills it; spend those units on its channellers. Attack an Unbound
   daemon only when the attacks this turn kill it.
 
+### 15.6 As built: A1, the Cult seat on the army policy (`pulp_wars-mch9.9`)
+
+Bead A1 implements [section 15.1](#151-the-gate-and-the-lessons-of-the-other-factions)
+and nothing of 15.2 to 15.5. No rule changed and the ruleset identity did
+not move (an AI policy change never moves it). No match was played: every
+rule below is a decision on a hand-built state in
+`tests/unit/ruleset-v7-cult-ai.test.ts`. The numbers and the unit
+predicates are in `src/ai/v7-cult.ts`; the hooks are `armyCultSeatV7` and
+the rules it gates in `src/ai/v7.ts`, and the list, the order, the shares,
+and the counts in `src/ai/v7-army.ts`.
+
+1. **The gate.** `CULT` is in `ARMY_PLAY_FACTIONS_V7`: both seats of a match
+   with a Cult seat play the army rules, and every registered faction is in
+   the list. The Cult is still offered nowhere.
+2. **Research order** (`CULT_RESEARCH_ROLES_V7`): as specified. From a
+   Gathering opener with no enemy in sight the seat names Leadership,
+   Hunting, Hexers, Crafting, Warding Circles, Familiars, Harvest Rites,
+   Engineering, the Chosen, Forestry, Stargazers, Raiding, Callers, the
+   thirteen of 15.1 in its order. Four rules are the Cult's own:
+   - Leadership is the second technology: a Cult seat is left out of the
+     other "bodies first" seats' rule of one growth technology before their
+     first unit (`armyUndeadGrowthFirstV7`). The shared "economy first" rule
+     still buys one growth technology the seat's land can use after
+     Leadership and before Hexers, so on fertile or wooded land Harvest
+     Rites or Forestry moves forward.
+   - Harvest Rites is named before the Chosen's two technologies once
+     Leadership is owned.
+   - With a hostile land unit of the `RAIDER` or `KNIGHT` role in sight and
+     no Hexers, the next technology is the first step to Hexers
+     (`cultHexersWantedV7`), on the seat's ordinary research tempo. The role
+     decides, not the unit's speed: a Human Knight and a Goblin Scrap Buggy
+     both count.
+   - The Stars Are Right is named before the shared late technologies
+     (Pathfinding first) once every unit of the order is unlocked, an enemy
+     army is in the field, and Favour has reached 12
+     (`CULT_STARS_FAVOUR_V7`). Below 12 the shared list applies, and it ends
+     with The Stars Are Right anyway.
+3. **The army.** The shares are 45 line, 10 Idol Bearers, 20 Hexers, 10
+   Stargazers, 10 Callers (`CULT_ARMY_SHARES_V7`; they add up to 95, the
+   Summoners and Familiars being counted apart), the same against fragile
+   enemies. One Summoner for every six units, at least one and at most
+   three; one Familiar for five units, two at most. Two caps were added by
+   judgement: the Idol Bearers are capped as the Musk Oxen are (no more than
+   cities, nor than a third of the army), as specified, and the Chosen at
+   **one for every two Initiates** (`cultChosenCappedV7`, the Martian and
+   Candy rule), which the spec did not name: without it a seat with the
+   Chosen's technology buys the dearer unit of its line class only, and the
+   Initiates are the channellers and the 2-Coin bodies.
+4. **Bodies first.** The seat counts its robed cultists (`cultRobedV7`: not
+   the Familiar, the Thing, or a daemon); with fewer than its cities and two
+   more it trains before it researches and keeps no Coins for a technology.
+   At level 2 it takes the Militia while short of bodies (or threatened, or
+   with fewer than two units a city: the shared rule). At level 3 the shared
+   rule applies: the Familiar, except that a threatened city takes its
+   Walls. At every level from 5 it takes the Thing, also with a Thing for
+   every city already.
+5. **Weak links.** Every robed cultist under 15 HP at its maximum is a weak
+   link of a kill chain at any HP (`cultWeakLinkV7`), so the shared spacing
+   cost (`armyChainSpacingV7`) applies to it inside the reach of a unit with
+   Overrun; the Chosen and the Idol Bearer are escorts (`cultEscortV7`) and
+   are drawn beside them. The Familiar (8 HP) is not robed and is left to
+   the shared rules.
+6. **Contact with company.** The rule holds a Cult seat's Initiate and
+   every other unit of it that strikes after a Move (the Familiar, the
+   Summoner, the Caller, the Chosen): a wider set than "an Initiate", by
+   judgement, because the reason is the same for each. Company is another
+   own unit beside that enemy, or one that can still come. A Move onto a
+   village (a Pamphlets capture) or a center is exempt. **The Seizure
+   holder's exemption is left to A2**, which makes the Seizure.
+7. **The back row out of reach.** A Hexer, a Stargazer, and a Summoner
+   (`cultBackRowV7`) are all held by the whole rule. Exempt: the Move from
+   which the unit's attack kills, and a Move onto a center or a village.
+   **The Summoner's Move to a Seizure is left to A2.** The Stargazer is also
+   a siege unit to the shared policy, whose rule keeps it four tiles from
+   its objective until a unit with Defense 2 or more (a Chosen, an Idol
+   Bearer, the Thing) can stand beside its tile; an Initiate (Defense 1.5)
+   is no such screen. Star-fall reaches 2 to 4 tiles, so A3 must decide how
+   a Stargazer comes up.
+8. **What a Cult seat does not do yet.** The policy still offers none of
+   Sacrifice, Seize, Offering, Summon, Channel, Behold!, Anchor, Boo!, a
+   ritual, or Proclaim (`isPolicyCandidate`), so a Cult seat plays its
+   cultists as plain units, gains Favour only from a Chosen's Martyr, and
+   trains Summoners and Stargazers it has no use for until A2 and A3. That
+   is why the Cult stays hidden from the setup screen.
+
 ## 16. Worked examples
 
 All with the formula of section 13.2 of the current rules, full-HP units

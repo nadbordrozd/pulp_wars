@@ -209,6 +209,8 @@ describe("the Candy army seat: who plays the army rules", () => {
       "ICE_FOLK",
       "DWARF",
       "CANDY",
+      // The Cult seat (`pulp_wars-mch9.9`).
+      "CULT",
     ]);
     expect(armyPlayFactionV7("CANDY")).toBe(true);
   });
@@ -252,14 +254,13 @@ describe("the Candy army seat: who plays the army rules", () => {
       setArmyPlayFactionsV7(previous);
     }
     expect(armyPlayFactionV7("CANDY")).toBe(true);
-    // Every faction registered with this bead is in the list. (The ninth,
-    // the Cult, is registered by its own engine bead and joins the list in
-    // its AI bead; until then a match with a Cult seat keeps the older
-    // policy for every seat, so it is left out of this check by name.)
+    // Every registered faction is in the list. (The ninth, the Cult, was
+    // registered by its own engine bead and joined the list in its AI
+    // bead, `pulp_wars-mch9.9`.)
     const outside: readonly string[] = FACTION_IDS_V7.filter(
       (faction: FactionIdV7) => !ARMY_PLAY_FACTIONS_V7.includes(faction),
     );
-    expect(outside.filter((faction) => faction !== "CULT")).toEqual([]);
+    expect(outside).toEqual([]);
   });
 });
 

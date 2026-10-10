@@ -1374,10 +1374,13 @@ separate [Ruleset 6](RULESET_6.md) route.
     `FACTION_STAND_IN_LETTERS_V7`) until a raster is registered for its
     subject. Its buildings, ground, and forest are the shared ones; a match
     shown to a Cult seat plays no theme.
-  - **Normal AI.** The Cult is not on the army policy
-    (`ARMY_PLAY_FACTIONS_V7`): a match with a Cult seat keeps the older
-    policy for every seat until the Cult's first AI bead
-    (`pulp_wars-mch9.9`).
+  - **Normal AI.** The registration left the Cult off the army policy
+    (`ARMY_PLAY_FACTIONS_V7`). Its first AI bead (`pulp_wars-mch9.9`, no
+    rule and no identity change) put it on: both seats of a match with a
+    Cult seat play the army rules, and the Cult seat has its research
+    order, shares, and unit rules
+    ([the Cultists spec, section 15.6](RULESET_7_CULTISTS.md#156-as-built-a1-the-cult-seat-on-the-army-policy-pulp_wars-mch99)).
+    It still uses none of the Cult's own commands.
 - **The Cult's Favour** (`pulp_wars-mch9.4`, `7r72`, bead E2 of
   [the Cultists spec](RULESET_7_CULTISTS.md#19-implementation-beads); its
   sections 3, 5, and 8.2 are the design, and

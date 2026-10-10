@@ -981,6 +981,17 @@ describe("research toward the army", () => {
         "SWORDSMAN",
         "KNIGHT",
       ],
+      // The Cult seat (`pulp_wars-mch9.9`): the Summoner, the Hexer, the
+      // Idol Bearer, the Familiar, the Chosen, the Stargazer, the Caller.
+      CULT: [
+        "CAPTAIN",
+        "MARKSMAN",
+        "GUARD",
+        "RAIDER",
+        "SWORDSMAN",
+        "CATAPULT",
+        "KNIGHT",
+      ],
     });
     expect(Object.keys(ARMY_RESEARCH_ROLES_V7)).toEqual([
       ...ARMY_PLAY_FACTIONS_V7,

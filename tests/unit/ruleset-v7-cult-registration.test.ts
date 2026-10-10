@@ -1219,14 +1219,17 @@ describe("the Cult registration: the Normal AI does not fall over a Cult seat", 
       { factions, activeSeat: active, coins: 30 },
     );
 
-  it("keeps the Cult off the army policy until its own AI bead", () => {
-    expect(ARMY_PLAY_FACTIONS_V7).not.toContain("CULT");
+  // The registration kept the Cult off the army policy; its own AI bead
+  // (A1, `pulp_wars-mch9.9`, tests/unit/ruleset-v7-cult-ai.test.ts) put it
+  // on, so both seats of a match with a Cult seat play the army rules.
+  it("has the Cult on the army policy since its own AI bead", () => {
+    expect(ARMY_PLAY_FACTIONS_V7).toContain("CULT");
     const state = midGame(["CULT", "ORIGINAL"], 0);
     for (const seat of [0, 1])
       expect(
         inspectNormalArmyV7(viewForV7(state, seatIdV7(state, seat))).army,
         String(seat),
-      ).toBe(false);
+      ).toBe(true);
   });
 
   it("chooses an offered command for a Cult seat at its start", () => {

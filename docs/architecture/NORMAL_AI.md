@@ -268,6 +268,30 @@ against (the Gingerbread Men are Toffee Troopers).
 
 Tests: `tests/unit/ruleset-v7-giants-ai.test.ts`.
 
+## The Cult seat on the army policy (`pulp_wars-mch9.9`)
+
+The ninth faction, the Cultists, is registered and offered nowhere. Its
+first AI bead (A1 of
+[the Cultists spec, section 15.1](../product/RULESET_7_CULTISTS.md#151-the-gate-and-the-lessons-of-the-other-factions))
+puts a Cult seat on the army rules (`armyCultSeatV7`: `context.army` and a
+Cult viewer), so **every match of the nine registered factions plays the
+army rules**. No rule changed and the identity did not move. The numbers and
+unit predicates are in `src/ai/v7-cult.ts`; what was built, rule by rule,
+and what was decided by judgement is in
+[section 15.6 of the spec](../product/RULESET_7_CULTISTS.md#156-as-built-a1-the-cult-seat-on-the-army-policy-pulp_wars-mch99):
+the research order (the Summoner first), the shares, the counts of
+Summoners and Familiars, the caps on Idol Bearers and the Chosen, bodies
+first by robed cultists, the Thing at every level from 5, weak links and
+escorts, contact with company, and the back row out of reach.
+
+Under the rule of no simulations: no match, no lab run, and no tuning.
+The seat uses none of the Cult's own commands yet (the channel, Sacrifice,
+the rituals, the hexes: beads A2 and A3), and no other seat plays against
+the Cult's mechanics yet (bead A4). This entry is replaced by the Cult's
+full one when the faction is folded in (bead D1).
+
+Tests: `tests/unit/ruleset-v7-cult-ai.test.ts`.
+
 ## The Candy army seat (`pulp_wars-jdb.13`)
 
 The Candy seat plays the army rules (`armyCandySeatV7`: `context.army` and

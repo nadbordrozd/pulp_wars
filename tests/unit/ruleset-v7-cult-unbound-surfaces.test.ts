@@ -297,16 +297,21 @@ describe("Unbound: the Normal AI reads an Unbound daemon as a monster", () => {
   });
 
   it("plays its turn beside one on the older policy (a match with a Cult seat) without picking a Channel", () => {
+    // The Cult is on the army policy since its own AI bead (A1,
+    // `pulp_wars-mch9.9`); the older policy is still there, and this takes
+    // the Cult out of the list to reach it.
+    previous = setArmyPlayFactionsV7(
+      ARMY_PLAY_FACTIONS_V7.filter((faction) => faction !== "CULT"),
+    );
     expect(armyPlayFactionV7("CULT")).toBe(false);
     const commands = turn(looseField(humans, { activeSeat: 1, coins: 30 }));
     expect(commands.at(-1)?.kind).toBe("END_TURN");
   });
 
   it("plays its turn beside one on the army policy, and kills it when it can", () => {
-    // The Cult joins the army policy with its own AI bead (A1); until then
-    // a match with a Cult seat keeps the older policy. This puts the Human
-    // seat of such a match on the army rules for the test.
-    previous = setArmyPlayFactionsV7([...ARMY_PLAY_FACTIONS_V7, "CULT"]);
+    // The Cult joined the army policy with its own AI bead (A1,
+    // `pulp_wars-mch9.9`), so the Human seat of a match with a Cult seat
+    // plays the army rules.
     expect(armyPlayFactionV7("CULT")).toBe(true);
     // A healthy Unbound Horror: the turn ends; nothing crashes.
     const healthy = turn(looseField(humans, { activeSeat: 1, coins: 30 }));

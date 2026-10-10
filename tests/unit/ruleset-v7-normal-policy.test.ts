@@ -103,6 +103,8 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       "../engine/v7/view",
       // Tuning 5 (`pulp_wars-w49.4`): army play (numbers and composition).
       "./v7-army",
+      // pulp_wars-mch9.9: the Cult seat (public view only).
+      "./v7-cult",
       "./v7-campaign",
       "./v7-endgame",
       // pulp_wars-68k.6: the siege of a single-file front (public view only).

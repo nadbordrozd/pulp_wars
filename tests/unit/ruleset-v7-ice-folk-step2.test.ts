@@ -265,6 +265,8 @@ describe("step two of the Ice Folk pass: who plays the army rules", () => {
       "DWARF",
       // The Candy army seat (`pulp_wars-jdb.13`).
       "CANDY",
+      // The Cult seat (`pulp_wars-mch9.9`).
+      "CULT",
     ]);
     expect(armyPlayFactionV7("ICE_FOLK")).toBe(true);
     // (An army faction too since the Candy army seat, `pulp_wars-jdb.13`.)

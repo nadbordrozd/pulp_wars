@@ -9,6 +9,12 @@ import type {
   UnitRoleIdV7,
 } from "../engine/v7/types";
 import type { PlayerViewV7, PublicUnitV7 } from "../engine/v7/view";
+import {
+  CULT_ARMY_SHARES_V7,
+  CULT_RESEARCH_ROLES_V7,
+  cultFamiliarsWantedV7,
+  cultSummonersWantedV7,
+} from "./v7-cult";
 
 /**
  * Normal AI army play (tuning 5, `pulp_wars-w49.4`,
@@ -58,10 +64,10 @@ import type { PlayerViewV7, PublicUnitV7 } from "../engine/v7/view";
  * `pulp_wars-w49.14`) Martian, (the Dinosaur pass, `pulp_wars-w49.15`)
  * Dinosaur, (step two of the Ice Folk pass, `pulp_wars-w49.27`) Ice Folk,
  * (step two of the Dwarf pass, `pulp_wars-w49.28`) Dwarf, or (the Candy army
- * seat, `pulp_wars-jdb.13`) Candy seat in a match whose every seat is one of
- * those eight: every faction registered when the Candy seat came over. A
- * faction that is not in the list keeps the older policy for every seat of
- * its matches. It is off while the seat's naval plan is active (it
+ * seat, `pulp_wars-jdb.13`) Candy, or (the Cult seat, `pulp_wars-mch9.9`)
+ * Cult seat in a match whose every seat is one of those nine: every
+ * registered faction. A faction that is not in the list keeps the older
+ * policy for every seat of its matches. It is off while the seat's naval plan is active (it
  * must cross water to reach anyone) and while the opening growth harvest
  * is due. Everything is read from the public view and the public previews;
  * nothing draws from the PRNG or depends on elapsed time.
@@ -86,6 +92,12 @@ export const ARMY_PLAY_FACTIONS_V7: readonly FactionIdV7[] = Object.freeze([
   // Every registered faction of this list plays the army rules now, so no
   // match keeps the older policy for the faction of a seat alone.
   "CANDY",
+  // The Cult seat (`pulp_wars-mch9.9`, bead A1 of
+  // docs/product/RULESET_7_CULTISTS.md section 15.1; `src/ai/v7-cult.ts`):
+  // on the army policy from its first AI bead, before the faction is
+  // offered anywhere, so a match with a Cult seat keeps every seat on the
+  // army rules (the Candy lesson).
+  "CULT",
 ]);
 
 let armyPlayFactions: readonly FactionIdV7[] = ARMY_PLAY_FACTIONS_V7;
@@ -492,6 +504,11 @@ export const ARMY_RESEARCH_ROLES_V7: Readonly<
     "SWORDSMAN",
     "KNIGHT",
   ] as const),
+  // The Cult seat (`pulp_wars-mch9.9`, RULESET_7_CULTISTS.md section 15.1;
+  // reasoned, not played): the Summoner, the Hexer, the Idol Bearer, the
+  // Familiar, the Chosen, the Stargazer, the Caller
+  // (`CULT_RESEARCH_ROLES_V7`, with the reasons).
+  CULT: CULT_RESEARCH_ROLES_V7,
 });
 
 /**
@@ -985,6 +1002,10 @@ export const ARMY_SHARES_V7 = Object.freeze({
     SIEGE: 10,
     BREAKTHROUGH: 20,
   }),
+  // The Cult seat (`pulp_wars-mch9.9`; reasoned, not played): 45 / 10 / 20
+  // / 10 / 10, the same against fragile enemies (`CULT_ARMY_SHARES_V7`).
+  // The Summoners and the Familiars are counted apart (`armyRoleScoreV7`).
+  cult: CULT_ARMY_SHARES_V7,
 });
 
 /** The shares of a faction's land army (`fragile`: see above). */
@@ -1008,6 +1029,7 @@ export function armySharesV7(
     return fragile ? ARMY_SHARES_V7.dwarfFragile : ARMY_SHARES_V7.dwarf;
   if (faction === "CANDY")
     return fragile ? ARMY_SHARES_V7.candyFragile : ARMY_SHARES_V7.candy;
+  if (faction === "CULT") return ARMY_SHARES_V7.cult;
   return fragile ? ARMY_SHARES_V7.fragile : ARMY_SHARES_V7.standard;
 }
 /**
@@ -1396,15 +1418,23 @@ export function armyRoleScoreV7(
                           counts.total / ARMY_CANDY_SKIRMISHER_PER_UNITS_V7,
                         ),
                       )
-                    : Number(counts.total >= ARMY_SKIRMISHER_ARMY_V7)) -
+                    : // The Cult seat: one Familiar per five units, at
+                      // most two.
+                      faction === "CULT"
+                      ? cultFamiliarsWantedV7(counts.total)
+                      : Number(counts.total >= ARMY_SKIRMISHER_ARMY_V7)) -
         have);
   else if (unitClass === "SUPPORT")
     deficit =
       100 *
-      (Math.min(
-        ARMY_SUPPORT_MAXIMUM_V7,
-        Math.floor(counts.total / ARMY_SUPPORT_PER_UNITS_V7),
-      ) -
+      // The Cult seat (`pulp_wars-mch9.9`): one Summoner per six units, at
+      // least one and at most three.
+      ((faction === "CULT"
+        ? cultSummonersWantedV7(counts.total)
+        : Math.min(
+            ARMY_SUPPORT_MAXIMUM_V7,
+            Math.floor(counts.total / ARMY_SUPPORT_PER_UNITS_V7),
+          )) -
         have);
   else {
     const shares = armySharesV7(
@@ -1610,7 +1640,10 @@ export function armyGarrisonYieldsToRangedV7(
     faction !== "DWARF" &&
     // The Candy army seat (`pulp_wars-jdb.13`): a Candy seat too (to a
     // Gumball Gunner, which captures and shoots from a center).
-    faction !== "CANDY"
+    faction !== "CANDY" &&
+    // The Cult seat (`pulp_wars-mch9.9`): a Cult seat too (to a Hexer,
+    // which captures and shoots from a center).
+    faction !== "CULT"
   )
     return false;
   const siege = faction === "UNDEAD" && offersSiege;
