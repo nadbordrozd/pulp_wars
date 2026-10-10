@@ -7,6 +7,7 @@ import {
   IMPROVEMENT_IDS_V7,
   RESOURCE_IDS_V7,
   NEUTRAL_OWNER_ID_V7,
+  type DaemonBreedV7,
   RULESET_7_ID,
   type NeutralBreedV7,
   SUMMONED_ROLE_IDS_V7,
@@ -4689,7 +4690,58 @@ export const NEUTRAL_ROLE_RULES_V7: Readonly<
     mayUsePrimaryActionAfterMove: true,
     abilities: [],
   },
+  // The Cultists (`pulp_wars-mch9.6`, RULESET_7_CULTISTS.md section 6.4):
+  // an Unbound daemon keeps its numbers and its stride and loses everything
+  // a seat gave it: it attacks, and nothing else (no capture, no Boo!, no
+  // Sight). Its role is its summoned role's mechanical role, and its name
+  // says what it is: an "Unbound Horror".
+  HORROR: {
+    role: "KNIGHT",
+    label: `Unbound ${CULT_SUMMONED_ROLE_RULES_V7.HORROR.label}`,
+    tacticalRole: "BREAKTHROUGH",
+    cost: null,
+    maxHp: CULT_SUMMONED_ROLE_RULES_V7.HORROR.maxHp,
+    attack2: CULT_SUMMONED_ROLE_RULES_V7.HORROR.attack2,
+    defense2: CULT_SUMMONED_ROLE_RULES_V7.HORROR.defense2,
+    move: CULT_SUMMONED_ROLE_RULES_V7.HORROR.move,
+    range: CULT_SUMMONED_ROLE_RULES_V7.HORROR.range,
+    minimumRange: CULT_SUMMONED_ROLE_RULES_V7.HORROR.minimumRange,
+    sightRadius: 0,
+    technology: null,
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "STRIDE"],
+  },
+  // The Herald is summoned from `pulp_wars-mch9.7`, which names its
+  // mechanical role in `SUMMONED_MECHANICAL_ROLES_V7` and must keep this
+  // `role` equal to it. Until then the neutral registration holds the big
+  // body's role (`JUGGERNAUT`, the Giant Spider's: no Push, Swallow, or
+  // Shatter takes it). Ravage's two attacks are `RAMPAGE_ATTACKS_V7`;
+  // Unstoppable arrives with the Herald itself.
+  HERALD: {
+    role: "JUGGERNAUT",
+    label: `Unbound ${CULT_SUMMONED_ROLE_RULES_V7.HERALD.label}`,
+    tacticalRole: "MYTHIC",
+    cost: null,
+    maxHp: CULT_SUMMONED_ROLE_RULES_V7.HERALD.maxHp,
+    attack2: CULT_SUMMONED_ROLE_RULES_V7.HERALD.attack2,
+    defense2: CULT_SUMMONED_ROLE_RULES_V7.HERALD.defense2,
+    move: CULT_SUMMONED_ROLE_RULES_V7.HERALD.move,
+    range: CULT_SUMMONED_ROLE_RULES_V7.HERALD.range,
+    minimumRange: CULT_SUMMONED_ROLE_RULES_V7.HERALD.minimumRange,
+    sightRadius: 0,
+    technology: null,
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "STRIDE"],
+  },
 });
+
+/**
+ * The Cultists (section 6.4, the rampage rule, and section 4.2, Ravage): the
+ * attacks an Unbound daemon makes in one rampage: the Horror one, the Herald
+ * two ("when Unbound, its rampage also has two attacks").
+ */
+export const RAMPAGE_ATTACKS_V7: Readonly<Record<DaemonBreedV7, number>> =
+  deepFreeze({ HORROR: 1, HERALD: 2 });
 
 const NEUTRAL_GUARD_MECHANICS_V7 = {
   advancesAfterKill: false,
@@ -4726,6 +4778,20 @@ export const NEUTRAL_ROLE_MECHANICS_V7: Readonly<
   BIGFOOT: {
     ...ORIGINAL_ROLE_MECHANICS_V7.RAIDER,
     ...NEUTRAL_GUARD_MECHANICS_V7,
+  },
+  // The Cultists (section 6.4): an Unbound daemon is still no living thing
+  // (a construct: no Plague, bite, Infect, Wail, Seizure, Boo!, Mind
+  // Control, Swallow, healing, or Grave), still strides, and never advances.
+  HORROR: {
+    ...ORIGINAL_ROLE_MECHANICS_V7.KNIGHT,
+    ...NEUTRAL_GUARD_MECHANICS_V7,
+    construct: true,
+    movementMode: CULT_SUMMONED_ROLE_RULES_V7.HORROR.movementMode,
+  },
+  HERALD: {
+    ...NEUTRAL_MONSTER_ROLE_MECHANICS_V7,
+    construct: true,
+    movementMode: CULT_SUMMONED_ROLE_RULES_V7.HERALD.movementMode,
   },
 });
 
@@ -4895,7 +4961,7 @@ export const RULESET_7 = deepFreeze({
  * a technology of tier `t` costs `5 / 7 / 9 + (T - 1)`, `T` being the
  * technologies the researcher already owns.
  *
- * The economy rejig (`pulp_wars-w49.16`, `pulp-wars-poc-7r74`,
+ * The economy rejig (`pulp_wars-w49.16`, `pulp-wars-poc-7r75`,
  * docs/product/RULESET_7_ECONOMY_REJIG.md): the price is per city again and
  * the technologies owned no longer enter it. A technology of tier `t`
  * costs `5 / 7 / 9 + (1 / 2 / 3) * (C - 1)`, `C` being the cities the
@@ -5268,8 +5334,12 @@ export function neutralBreedOfV7(
     readonly id: number;
     readonly role: UnitRoleIdV7;
     readonly maxHp?: number;
-  },
+  } & SummonedUnitRefV7,
 ): NeutralBreedV7 {
+  // The Cultists (`pulp_wars-mch9.6`, section 6.4): an Unbound daemon names
+  // its breed itself (its summoned role), whatever the roster holds.
+  if (unit.summoned === "HORROR" || unit.summoned === "HERALD")
+    return unit.summoned;
   if (roster.monsters !== undefined && roster.monsters.length > 0) {
     const entry = roster.monsters.find(
       (candidate) => candidate.unitId === unit.id,
@@ -5278,7 +5348,11 @@ export function neutralBreedOfV7(
   }
   switch (unit.role) {
     case "JUGGERNAUT":
-      return "GIANT_SPIDER";
+      return unit.maxHp === NEUTRAL_ROLE_RULES_V7.HERALD.maxHp
+        ? "HERALD"
+        : "GIANT_SPIDER";
+    case "KNIGHT":
+      return "HORROR";
     case "FIGHTER":
       return "GRUNT";
     case "MARKSMAN":

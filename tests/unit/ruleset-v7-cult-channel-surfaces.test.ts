@@ -152,11 +152,14 @@ describe("the Cult's channel: the Horror on the board", () => {
 
   it("explains a Horror in plain words, not as the Caller it is not", () => {
     const lines = summonedGlossaryV7("HORROR");
+    // (What its kills pay and what Unbound means: `pulp_wars-mch9.6`.)
     expect(lines.map((entry) => entry.id)).toEqual([
       "DAEMON",
+      "DAEMONS_FEED",
       "CAPTURE",
       "BOO",
       "STRIDE",
+      "UNBOUND",
     ]);
     expect(roleGlossaryV7("KNIGHT", "CULT").map((entry) => entry.id)).toEqual([
       "CAPTURE",

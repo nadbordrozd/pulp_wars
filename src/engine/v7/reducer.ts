@@ -57,6 +57,7 @@ import {
   isMindControlledV7,
   isRallyTargetV7,
   neutralBreedOfV7,
+  RAMPAGE_ATTACKS_V7,
   ownerResearchedTechsV7,
   technologyCapabilitiesV7,
   seatRoleMechanicsV7,
@@ -303,6 +304,7 @@ import {
   applySacrificeV7,
   applySeizeV7,
   prunedCultV7,
+  withDaemonKillFavourV7,
   withMartyrFavourV7,
 } from "./cult";
 import {
@@ -314,7 +316,15 @@ import {
   cultDisruptionsV7,
   prunedChannelV7,
   resolveStartTurnChannelV7,
+  withEliminatedSeatDaemonsUnboundV7,
 } from "./cult-channel";
+import {
+  rampageBoardV7,
+  rampagePlanV7,
+  rampageTargetV7,
+  unboundEntryV7,
+  withFuriousEndedV7,
+} from "./cult-unbound";
 import { unitIsConstructV7 } from "./afflictions";
 import {
   recoverEligibleV7,
@@ -340,6 +350,7 @@ import {
   TECHNOLOGY_IDS_V7,
   gameModeOfV7,
   isAfloatFormV7,
+  isDaemonBreedV7,
   isNavalRoleV7,
   isNeutralOwnerV7,
   type AchievementIdV7,
@@ -1192,16 +1203,23 @@ function withDisruptionsResultV7(
 /**
  * The Cultists (sections 6.2 and 13.3): the channel step of a Start Turn
  * (`resolveStartTurnChannelV7`: the disruptions of the `END_TURN` so far,
- * the check of each bound daemon, the cleared strands and grips, the
- * lowered idols), with the live economy of a board a daemon left.
+ * the check of each bound daemon and the rampage of each one that broke
+ * loose, the cleared strands and grips, the lowered idols), with the live
+ * economy of a board where a daemon left its seat (an Unbound daemon on a
+ * center besieges nothing).
  */
 function resolveStartTurnChannelStepV7(
   original: GameStateV7,
   state: GameStateV7,
   playerId: PlayerId,
 ): { readonly state: GameStateV7; readonly events: readonly DomainEventV7[] } {
-  const step = resolveStartTurnChannelV7(original, state, playerId);
-  if (step.removedUnitIds.length === 0)
+  const step = resolveStartTurnChannelV7(
+    original,
+    state,
+    playerId,
+    resolveRampageV7,
+  );
+  if (step.unboundUnitIds.length === 0)
     return { state: step.state, events: step.events };
   const economy = recomputeLiveEconomyV7(
     step.state,
@@ -6203,6 +6221,25 @@ function resolveAttackExchangeV7(
     ...chain.credits,
   ]);
   events.push(...plunder.events);
+  // The Cultists (RULESET_7_CULTISTS.md section 8.3): every enemy a bound
+  // daemon kills, by its attack or its retaliation, pays its seat the
+  // victim's value in Favour (never a daemon or a Tentacle).
+  let cult = state.cult;
+  if (attacker.summoned !== undefined || defender.summoned !== undefined) {
+    if (preview.defenderDies)
+      cult = withDaemonKillFavourV7(state, cult, attacker, defender, events);
+    for (const entry of preview.splash)
+      if (entry.dies)
+        cult = withDaemonKillFavourV7(
+          state,
+          cult,
+          attacker,
+          requireValue(state.units.find((unit) => unit.id === entry.unitId)),
+          events,
+        );
+    if (preview.attackerDies)
+      cult = withDaemonKillFavourV7(state, cult, defender, attacker, events);
+  }
   let players = plunder.players;
   if (preview.advances) {
     if (advanceReveal !== null && advanceReveal.revealed.length)
@@ -6279,6 +6316,7 @@ function resolveAttackExchangeV7(
         ? withUnitIdsSortedV7(state.feastedThisTurn, [attacker.id])
         : state.feastedThisTurn,
       populationContributions: economy.populationContributions,
+      cult,
     },
     events,
     preview: finalPreview,
@@ -7311,6 +7349,16 @@ function applyCapture(
       burrowed = release.burrowed;
       mindControlled = release.mindControlled;
     }
+    // The Cultists (RULESET_7_CULTISTS.md section 13.1): an eliminated Cult
+    // seat's bound daemons are Unbound at once and stay on the board (they
+    // rampage in the next neutral turn); its Unbound ones were nobody's
+    // already.
+    const loosed =
+      eliminatesFormerOwner && formerOwner !== null
+        ? withEliminatedSeatDaemonsUnboundV7({ ...state, units }, formerOwner)
+        : null;
+    if (loosed !== null) units = [...loosed.state.units];
+    const daemonState = loosed?.state ?? state;
     // The Dwarf revision section 5.2: every unit of an eliminated seat dies
     // with it, burrowed units included (an all-units read).
     const eliminatedUnits = eliminatesFormerOwner
@@ -7410,6 +7458,7 @@ function applyCapture(
       );
       events.push(
         ...releaseEvents,
+        ...(loosed?.events ?? []),
         ...eliminatedUnits.map((item): DomainEventV7 => ({
           kind: "UNIT_DIED",
           unitId: item.id,
@@ -7446,6 +7495,17 @@ function applyCapture(
         populationContributions: contributions,
         pendingChoices: choices,
         outcome,
+        // What the Unbound of an eliminated seat's daemons changed.
+        monsters: daemonState.monsters,
+        cult: daemonState.cult,
+        frozen: daemonState.frozen,
+        stuck: daemonState.stuck,
+        toothache: daemonState.toothache,
+        splattedThisTurn: daemonState.splattedThisTurn,
+        terrorThisTurn: daemonState.terrorThisTurn,
+        huntedThisTurn: daemonState.huntedThisTurn,
+        bombedThisTurn: daemonState.bombedThisTurn,
+        ninthUnit: daemonState.ninthUnit,
       }),
       events,
     );
@@ -7461,7 +7521,12 @@ function applyEndTurn(
 ): ApplyCommandResultV7 {
   try {
     const current = requirePlayer(state, actor);
-    const recovery = recoverIdleUnits(state, current);
+    // The Cultists (RULESET_7_CULTISTS.md section 6.5): Furious ends with
+    // the turn of the seat in whose Start Turn the daemon broke loose.
+    const recovery = recoverIdleUnits(
+      withFuriousEndedV7(state, actor),
+      current,
+    );
     const expiredUnits: GameStateV7 = {
       ...recovery.state,
       units: recovery.state.units.map((unit) =>
@@ -7743,6 +7808,15 @@ function resolveNeutralTurnV7(
       (unit) => unit.id === unitId && unit.hp > 0,
     );
     if (entry === undefined || found === undefined) continue;
+    // The Cultists (RULESET_7_CULTISTS.md sections 6.4 and 13.3): an
+    // Unbound daemon rampages, in unit-ID order with the other neutral
+    // units.
+    if (isDaemonBreedV7(entry.breed)) {
+      const rampaged = resolveRampageV7(current, unitId);
+      current = rampaged.state;
+      events.push(...rampaged.events);
+      continue;
+    }
     // Step 2: reset its activation.
     let monster: UnitStateV7 = { ...found, activation: freshActivationV7() };
     replace(monster);
@@ -7872,6 +7946,109 @@ function resolveNeutralTurnV7(
     ),
   };
   events.push({ kind: "NEUTRAL_TURN_ENDED", round });
+  return { state: current, events };
+}
+
+/**
+ * The Cultists (docs/product/RULESET_7_CULTISTS.md section 6.4, the rampage
+ * rule): one rampage of the Unbound daemon `daemonId`, at the check that
+ * let it loose or in a neutral turn. Its activation is reset; it goes for
+ * the nearest unit (`rampagePlanV7`: of any player, never a neutral, a
+ * burrowed, or an afloat unit; ties to the seat that summoned it, then the
+ * fewest HP, then the lowest ID), walks toward it by its Move
+ * (`UNIT_MOVED`), and attacks it when it ends next to it: the ordinary
+ * exchange, with retaliation, deaths, Graves, and blasts, credited to
+ * nobody. A daemon with more attacks (the Herald, `RAMPAGE_ATTACKS_V7`)
+ * then attacks the nearest unit next to it by the same tie rule. It never
+ * advances, captures, or explores. Returns `state` itself and no event for
+ * a unit that is not an Unbound daemon on the board.
+ */
+function resolveRampageV7(
+  state: GameStateV7,
+  daemonId: UnitId,
+): { readonly state: GameStateV7; readonly events: readonly DomainEventV7[] } {
+  const entry = unboundEntryV7(state, daemonId);
+  const found = state.units.find((unit) => unit.id === daemonId && unit.hp > 0);
+  if (
+    entry?.unbound === undefined ||
+    found === undefined ||
+    !isDaemonBreedV7(entry.breed)
+  )
+    return { state, events: [] };
+  const summonerPlayerId = entry.unbound.summonerPlayerId;
+  const events: DomainEventV7[] = [];
+  let current = state;
+  const replace = (unit: UnitStateV7): void => {
+    current = {
+      ...current,
+      units: current.units.map((candidate) =>
+        candidate.id === unit.id ? unit : candidate,
+      ),
+    };
+  };
+  let daemon: UnitStateV7 = { ...found, activation: freshActivationV7() };
+  replace(daemon);
+  const rule = unitRoleRuleV7(current, daemon);
+  const plan = rampagePlanV7(
+    rampageBoardV7(current, daemon.id),
+    current.units,
+    daemon,
+    rule.move,
+    summonerPlayerId,
+  );
+  const end = plan.path.at(-1);
+  if (end !== undefined) {
+    daemon = {
+      ...daemon,
+      at: end,
+      activation: {
+        ...daemon.activation,
+        moved: true,
+        movedPathLength: plan.path.length,
+      },
+    };
+    replace(daemon);
+    events.push({ kind: "UNIT_MOVED", unitId: daemon.id, path: plan.path });
+  }
+  let targetId: UnitId | null = plan.attacks ? (plan.target?.id ?? null) : null;
+  for (
+    let attack = 0;
+    attack < RAMPAGE_ATTACKS_V7[entry.breed] && targetId !== null;
+    attack += 1
+  ) {
+    const attacker = current.units.find(
+      (unit) => unit.id === daemonId && unit.hp > 0,
+    );
+    const defender = current.units.find(
+      (unit) => unit.id === targetId && unit.hp > 0,
+    );
+    if (attacker === undefined || defender === undefined) break;
+    const exchange = resolveAttackExchangeV7(
+      current,
+      NEUTRAL_OWNER_ID_V7,
+      attacker,
+      defender,
+      rule,
+      chebyshev(attacker.at, defender.at),
+    );
+    current = exchange.state;
+    events.push(...exchange.events);
+    const after = current.units.find(
+      (unit) => unit.id === daemonId && unit.hp > 0,
+    );
+    if (after === undefined) break;
+    targetId =
+      rampageTargetV7(current.units, after, after.at, summonerPlayerId, 1)
+        ?.id ?? null;
+  }
+  const survivor = current.units.find(
+    (unit) => unit.id === daemonId && unit.hp > 0,
+  );
+  if (survivor !== undefined && !survivor.activation.handled)
+    replace({
+      ...survivor,
+      activation: { ...survivor.activation, handled: true },
+    });
   return { state: current, events };
 }
 
@@ -8586,12 +8763,18 @@ function plunderAwardsV7(
     if (isNeutralOwnerV7(death.creditedId)) continue;
     const credited = requirePlayer(state, death.creditedId);
     // Round 2 (sections 25.6 and 29.4): the bounty of the victim's breed.
-    if (isNeutralOwnerV7(death.victimOwnerId))
-      bounties.push({
-        playerId: death.creditedId,
-        unitId: death.victimUnitId,
-        coins: neutralBountyV7(neutralVictimBreedV7(state, death.victimUnitId)),
-      });
+    // The Cultists (section 6.4): an Unbound daemon has none.
+    if (isNeutralOwnerV7(death.victimOwnerId)) {
+      const coins = neutralBountyV7(
+        neutralVictimBreedV7(state, death.victimUnitId),
+      );
+      if (coins > 0)
+        bounties.push({
+          playerId: death.creditedId,
+          unitId: death.victimUnitId,
+          coins,
+        });
+    }
     if (
       technologyCapabilitiesV7(credited.researchedTechs, credited.faction)
         .plunderCoins > 0 &&

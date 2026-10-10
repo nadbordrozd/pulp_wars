@@ -99,7 +99,7 @@ import { at, kindsV7, movedV7 } from "../fixtures/v7-revision20";
 // (docs/product/RULESET_7_MARTIANS.md sections 2 to 4, 10.9, 10.10, and 11).
 
 /** The revision number of this identity (`pulp-wars-poc-7rNN`). */
-const REVISION = 74;
+const REVISION = 75;
 const ID = `pulp-wars-poc-7r${REVISION}`;
 const PREVIOUS_ID = `pulp-wars-poc-7r${REVISION - 1}`;
 
@@ -307,7 +307,9 @@ describe("Martian faction registration (sections 2 and 11)", () => {
     // UNIT_SEIZED, OFFERING_MADE, and FAVOUR_GAINED (130).
     // The Cult's channel (`pulp_wars-mch9.5`) adds ten kinds after
     // FAVOUR_GAINED, from FAVOUR_SPENT to DAEMON_UNBOUND (140).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(140);
+    // The Cult's Unbound (`pulp_wars-mch9.6`) adds DAEMON_BOUND after
+    // DAEMON_UNBOUND (141).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(141);
     const after = (kind: string) =>
       DOMAIN_EVENT_KIND_ORDER_V7[
         DOMAIN_EVENT_KIND_ORDER_V7.indexOf(kind as never) + 1

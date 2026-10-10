@@ -771,6 +771,8 @@ describe("score and modes: the ledger fold", () => {
     expect([...FLAWLESS_BREAKING_EVENT_KINDS_V7].sort()).toEqual(
       [
         "CITY_CAPTURED",
+        // The Cultists (`pulp_wars-mch9.6`): a daemon left its seat.
+        "DAEMON_UNBOUND",
         "SHIP_BOARDED",
         "UNIT_DIED",
         "UNIT_DISBANDED",
@@ -846,6 +848,13 @@ describe("score and modes: the ledger fold", () => {
         at: victim.at,
         favour: 2,
       },
+      DAEMON_UNBOUND: {
+        kind: "DAEMON_UNBOUND",
+        unitId: victim.id,
+        summonerPlayerId: loser,
+        strands: 0,
+        control: 1,
+      },
     };
     for (const kind of FLAWLESS_BREAKING_EVENT_KINDS_V7) {
       const ledger = fold([events[kind]]);
@@ -854,6 +863,17 @@ describe("score and modes: the ledger fold", () => {
     }
     // Disbanding is not a loss (section 3.2).
     expect(entry(fold([events.UNIT_DISBANDED]), 1).lossValue).toBe(0);
+    // Nor is a daemon that broke loose, also when it dies later in the same
+    // command (it was nobody's by then).
+    expect(
+      entry(
+        fold([
+          events.DAEMON_UNBOUND,
+          { kind: "UNIT_DIED", unitId: victim.id, cause: "RETALIATION" },
+        ]),
+        1,
+      ).lossValue,
+    ).toBe(0);
   });
 
   it("records the captor of the last city as the eliminator", () => {

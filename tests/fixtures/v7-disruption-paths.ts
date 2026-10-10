@@ -154,8 +154,11 @@ export const DISRUPTION_EVENT_PATHS_V7: Readonly<
   IDOL_DROPPED: NONE,
   ANCHOR_GRIPPED: NONE,
   ANCHOR_BROKEN: NONE,
-  // The daemon itself leaves, not a cultist.
+  // The daemon itself changes hands, not a cultist: it is Unbound (the
+  // rampage that follows hurts with its own `COMBAT_RESOLVED`) or bound
+  // again (`pulp_wars-mch9.6`).
   DAEMON_UNBOUND: NONE,
+  DAEMON_BOUND: NONE,
   // The victim left the board when it was swallowed.
   UNIT_DIGESTED: NONE,
   UNIT_REGURGITATED: NONE,
@@ -306,7 +309,8 @@ export const DISRUPTION_STATE_KEY_CLASSES_V7: Readonly<
   tossedThisTurn: "NOT_A_STATUS",
   berserkThisTurn: "NOT_A_STATUS",
   feastedThisTurn: "NOT_A_STATUS",
-  // The neutral units' registry (breed, home, who provoked it).
+  // The neutral units' registry (breed, home, who provoked it; an Unbound
+  // daemon's summoner and whether it is Furious: the daemon's own state).
   monsters: "NOT_A_STATUS",
   // The channel itself.
   cult: "NOT_A_STATUS",

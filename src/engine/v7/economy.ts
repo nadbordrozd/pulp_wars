@@ -261,6 +261,9 @@ export function isCityBesiegedV7(
       unit.hp > 0 &&
       unit.at.x === city.at.x &&
       unit.at.y === city.at.y &&
+      // The Cultists (RULESET_7_CULTISTS.md section 6.4): a neutral unit
+      // never besieges (a daemon Unbound while it stood on a center).
+      !isNeutralOwnerV7(unit.ownerId) &&
       arePlayersHostileV7(state, unit.ownerId, city.ownerId),
   );
 }

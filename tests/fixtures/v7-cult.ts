@@ -1,8 +1,11 @@
 import {
+  NEUTRAL_OWNER_ID_V7,
+  NEUTRAL_ROLE_RULES_V7,
   SUMMONED_MECHANICAL_ROLES_V7,
   resolveCityGrowthV7,
   summonedUnitRoleRuleV7,
   unitId,
+  withDaemonUnboundV7,
   type CoordV7,
   type GameStateV7,
   type SummonedRoleIdV7,
@@ -217,5 +220,83 @@ export function withIdolsV7(
         ...bearers.map((where) => unitAtV7(state, where).id),
       ].sort((left, right) => left - right),
     },
+  });
+}
+
+/**
+ * The Unbound fixtures (`pulp_wars-mch9.6`, sections 6.4 and 6.5). The
+ * daemon on `where` broke loose: it belongs to nobody, with the seat
+ * `summonerSeat` as its summoner, Furious or not; the strands to it are
+ * gone.
+ */
+export function withUnboundV7(
+  state: GameStateV7,
+  where: CoordV7,
+  summonerSeat: number,
+  furious = false,
+): GameStateV7 {
+  const daemon = unitAtV7(state, where);
+  const loose = withDaemonUnboundV7(
+    state,
+    daemon.id,
+    seatIdV7(state, summonerSeat),
+    furious,
+  );
+  return checkedV7({
+    ...loose,
+    cult: {
+      ...loose.cult,
+      strands: loose.cult.strands.filter(
+        (strand) => strand.daemonUnitId !== daemon.id,
+      ),
+    },
+  });
+}
+
+/**
+ * An Unbound Herald on `where`, built by hand: the Herald is summoned from
+ * `pulp_wars-mch9.7`, but its breed is in the neutral registration already
+ * (two attacks in a rampage).
+ */
+export function withUnboundHeraldV7(
+  state: GameStateV7,
+  where: CoordV7,
+  summonerSeat: number,
+  options: { readonly hp?: number; readonly furious?: boolean } = {},
+): GameStateV7 {
+  const rule = NEUTRAL_ROLE_RULES_V7.HERALD;
+  const id = unitId(state.nextEntityId);
+  const herald: UnitStateV7 = {
+    id,
+    ownerId: NEUTRAL_OWNER_ID_V7,
+    homeCityId: null,
+    role: rule.role,
+    form: "LAND",
+    at: where,
+    hp: options.hp ?? rule.maxHp,
+    maxHp: rule.maxHp,
+    kills: 0,
+    veteran: false,
+    captureEligible: false,
+    activation: READY_V7,
+    summoned: "HERALD",
+  };
+  return checkedV7({
+    ...state,
+    nextEntityId: state.nextEntityId + 1,
+    units: [...state.units, herald],
+    monsters: [
+      ...state.monsters,
+      {
+        unitId: id,
+        breed: "HERALD" as const,
+        home: where,
+        provokedBy: [],
+        unbound: {
+          summonerPlayerId: seatIdV7(state, summonerSeat),
+          furious: options.furious ?? false,
+        },
+      },
+    ].sort((left, right) => left.unitId - right.unitId),
   });
 }

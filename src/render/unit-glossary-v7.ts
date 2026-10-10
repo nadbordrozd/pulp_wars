@@ -209,6 +209,23 @@ const ENTRIES = {
     "Daemon",
     "Summoned, never trained: it stays yours only while enough cultists channel it each turn. It never heals and fills no city slot.",
   ],
+  // Unbound (`pulp_wars-mch9.6`, sections 6.4, 6.5, and 8.3).
+  DAEMONS_FEED: [
+    "Daemons feed",
+    "Every enemy it kills while it is yours pays you Favour. Killing another daemon pays nothing.",
+  ],
+  UNBOUND: [
+    "Unbound",
+    "Its channel failed, so it belongs to nobody. Now and after every round it goes for the nearest unit, friend or foe, and attacks it.",
+  ],
+  FURIOUS: [
+    "Furious",
+    "It broke loose this turn. Nobody can channel it until this turn ends.",
+  ],
+  BIND_AGAIN: [
+    "Bind again",
+    "Channel it with enough robed cultists in one turn and it is yours again. It cannot be bound in the turn it broke loose.",
+  ],
 
   // ------------------------------------------------------------------ ships
   SHIP: ["Ship", "Built at a Port. It heals only next to your own Ports."],
@@ -956,10 +973,12 @@ export function roleGlossaryV7(
 export function summonedGlossaryV7(
   summoned: SummonedRoleIdV7,
 ): readonly GlossaryEntryV7[] {
-  const ids: GlossaryIdV7[] = ["DAEMON"];
+  const ids: GlossaryIdV7[] = ["DAEMON", "DAEMONS_FEED"];
   for (const ability of summonedUnitRoleRuleV7(summoned).abilities)
     if (ability in ENTRIES && !ids.includes(ability as GlossaryIdV7))
       ids.push(ability as GlossaryIdV7);
+  // What happens when its channel fails.
+  ids.push("UNBOUND");
   return ids.map(glossaryEntryV7);
 }
 

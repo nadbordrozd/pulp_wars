@@ -24,6 +24,7 @@ import {
   withFarmsV7,
   withFavourV7,
   withHorrorV7,
+  withUnboundV7,
 } from "../fixtures/v7-cult";
 
 /**
@@ -1757,7 +1758,10 @@ describe("text-mode play harness", () => {
     const view = ok("view", "--session", session, "--full");
     // The Horror is named for what it is, with its code and its strands.
     expect(view).toContain(`u${horror} Horror [HORROR] @2,2 hp 18/18`);
-    expect(view).toContain("daemon: strands 0/1 (UNBOUND at its turn start)");
+    // Unbound (`pulp_wars-mch9.6`): and whom it would go for if it broke.
+    expect(view).toContain(
+      `daemon: strands 0/1 (UNBOUND at its turn start; it would go for u${at(3, 2)} and can attack it)`,
+    );
     expect(view).toContain("Cult summoned: Ho horror");
     expect(view).not.toContain("[KNIGHT]");
     const summon = `u${at(5, 2)}.summon.u${at(6, 2)}.5,3`;
@@ -1810,6 +1814,68 @@ describe("text-mode play harness", () => {
     const booed = ok("do", "--session", session, boo);
     expect(booed).toMatch(/BOO by .* @2,2: .* 3,2->4,2/);
     expect(ok("view", "--session", session, "--full")).toContain("idol raised");
+  });
+
+  // Unbound (`pulp_wars-mch9.6`): the harness names an Unbound daemon, says
+  // whom it goes for, and offers the Channel on it as "bind again". A
+  // constructed position on the seat's own turn; no turn is ended.
+  it("prints an Unbound daemon and binds it again", () => {
+    // An Unbound Horror of the Cult's own making, an Initiate three tiles
+    // from it, and a Human Fighter beside it.
+    const field = withUnboundV7(
+      withHorrorV7(
+        cultFieldV7([
+          { seat: 0, role: "FIGHTER", at: { x: 2, y: 5 } },
+          { seat: 1, role: "FIGHTER", at: { x: 3, y: 2 } },
+        ]),
+        0,
+        { x: 2, y: 2 },
+      ),
+      { x: 2, y: 2 },
+      0,
+    );
+    const session = path.join(root, "cult-unbound.json");
+    writeFileSync(
+      session,
+      JSON.stringify({
+        format: "pulp-wars-text-play-session",
+        version: 1,
+        rulesetId: RULESET_7_ID,
+        seat: 0,
+        playerId: field.humanPlayerId,
+        setup: field.setup,
+        commands: [],
+        state: field,
+        stateHash: canonicalHash(field),
+        journal: { rounds: [], notes: [], observed: [] },
+      }),
+    );
+    const state = sessionState(session);
+    const at = (x: number, y: number) => {
+      const found = state.units.find(
+        (candidate) => candidate.at.x === x && candidate.at.y === y,
+      );
+      if (found === undefined) throw new Error(`no unit at ${x},${y}`);
+      return found.id;
+    };
+    const horror = at(2, 2);
+    const view = ok("view", "--session", session, "--full");
+    expect(view).toMatch(
+      new RegExp(`u${horror} (N )?Unbound Horror \\[HORROR\\] @2,2 hp 18/18`),
+    );
+    expect(view).toContain(
+      `UNBOUND daemon of S0: goes for u${at(3, 2)} and can attack it after this round | bind again with 1 strand in one turn (yours now: 0)`,
+    );
+    const bind = `u${at(2, 5)}.channel.u${horror}`;
+    expect(offeredIds(session)).toContain(bind);
+    expect(ok("options", "--session", session, "--all")).toContain(
+      "your strands this turn 0/1 -> 1/1: it is YOURS at once",
+    );
+    const bound = ok("do", "--session", session, bind);
+    expect(bound).toMatch(/BOUND AGAIN .* by S0: strands 1\/1/);
+    const after = ok("view", "--session", session, "--full");
+    expect(after).toContain("daemon: strands 1/1");
+    expect(after).not.toContain("UNBOUND daemon");
   });
 
   it("rejects illegal and stale ids cleanly", () => {

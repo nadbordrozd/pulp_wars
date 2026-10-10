@@ -9,6 +9,7 @@ import {
   BREAK_OFF_UNITS_V7,
   DIGEST_DAMAGE_V7,
   NEUTRAL_KIND_V7,
+  NEUTRAL_ROLE_RULES_V7,
   BASIC_ECONOMIC_ACTIONS_V7,
   BOMB_LANDING_RANGE_V7,
   BOMB_RANGE_V7,
@@ -24,6 +25,7 @@ import {
   MIND_CONTROL_COOLDOWN_TURNS_V7,
   MIND_CONTROL_LIMIT_V7,
   PROMOTION_KILLS_V7,
+  RAMPAGE_ATTACKS_V7,
   SUGAR_RUSH_MOVE_BONUS_V7,
   REBAKE_OVER_CAPACITY_V7,
   rebakeHpV7,
@@ -301,12 +303,22 @@ import {
   booDestinationV7,
   booRejectionV7,
   booVictimsV7,
+  bindingStrandsV7,
   channelRejectionV7,
   daemonControlV7,
+  daemonRoleV7,
   holdingStrandsV7,
   summonHelperLegalV7,
   summonRejectionV7,
 } from "./cult-channel";
+import {
+  rampagePlanV7,
+  rampageTargetableV7,
+  rampageTerrainV7,
+  unboundEntryV7,
+  unitIsUnboundV7,
+  type RampageBoardV7,
+} from "./cult-unbound";
 import { laidEggHpV7, laidEggTurnsV7, publicNestTilesV7 } from "./eggs";
 import {
   stampedeActorRejectionV7,
@@ -339,6 +351,7 @@ import {
   cityOfferedPopulationV7,
   isAfloatFormV7,
   isNavalRoleV7,
+  isDaemonBreedV7,
   isNeutralOwnerV7,
   type BoardStateV7,
   type CoordV7,
@@ -1504,10 +1517,12 @@ function appendPublicCultCommandsV7(
               at,
             });
   }
+  // Section 6.5: an Unbound daemon the viewer sees is a target too ("Bind
+  // again"), unless it is Furious.
   if (abilities.includes("CHANNEL"))
     for (const daemon of view.units)
       if (
-        daemon.ownerId === unit.ownerId &&
+        (daemon.ownerId === unit.ownerId || unitIsUnboundV7(daemon)) &&
         channelRejectionV7(view, unit, daemon) === null
       )
         candidates.push({
@@ -4115,6 +4130,8 @@ export function previewSummonV7(
  * daemon's Control and its holding strands as the board stands, before and
  * after this strand, and whether it would stay bound if its seat's Start
  * Turn check ran on this board. (Strands can still break before the check.)
+ * Section 6.5, for an Unbound daemon: the strands are the viewer's strands
+ * on it this turn, and `binds` says this strand binds it at once.
  */
 export interface ChannelPreviewV7 {
   readonly unitId: UnitId;
@@ -4125,6 +4142,23 @@ export interface ChannelPreviewV7 {
   readonly strandsAfter: number;
   /** `strandsAfter >= control`. */
   readonly holds: boolean;
+  /** The daemon is Unbound and this strand brings the viewer's to its Control. */
+  readonly binds: boolean;
+}
+
+/**
+ * Sections 6.2 and 6.5: the strands that count for the visible daemon
+ * `daemon` on `lookup`: a bound daemon's holding strands, or the viewer's
+ * strands on an Unbound one.
+ */
+function publicDaemonStrandsV7(
+  view: PlayerViewV7,
+  lookup: Parameters<typeof holdingStrandsV7>[0],
+  daemon: PublicUnitV7,
+): number {
+  return unitIsUnboundV7(daemon)
+    ? bindingStrandsV7(lookup, view.units, daemon, view.viewer.id)
+    : holdingStrandsV7(lookup, view.units, daemon);
 }
 
 /** Section 6.2: null unless that `CHANNEL` is offered; equals the result. */
@@ -4145,8 +4179,9 @@ export function previewChannelV7(
   const daemon = view.units.find((unit) => unit.id === daemonUnitId);
   if (daemon?.summoned === undefined) return null;
   const control = daemonControlV7(daemon);
-  const strandsBefore = holdingStrandsV7(view, view.units, daemon);
-  const strandsAfter = holdingStrandsV7(
+  const strandsBefore = publicDaemonStrandsV7(view, view, daemon);
+  const strandsAfter = publicDaemonStrandsV7(
+    view,
     {
       ...view,
       cult: {
@@ -4159,7 +4194,6 @@ export function previewChannelV7(
         ],
       },
     },
-    view.units,
     daemon,
   );
   return {
@@ -4170,6 +4204,7 @@ export function previewChannelV7(
     strandsBefore,
     strandsAfter,
     holds: strandsAfter >= control,
+    binds: unitIsUnboundV7(daemon) && strandsAfter >= control,
   };
 }
 
@@ -4186,6 +4221,8 @@ export interface AnchorPreviewV7 {
   readonly strandsBefore: number;
   readonly strandsAfter: number;
   readonly holds: boolean;
+  /** Section 6.5: the daemon is Unbound and this grip binds it at once. */
+  readonly binds: boolean;
 }
 
 /** Section 8.4: null unless that `ANCHOR` is offered; equals the result. */
@@ -4209,7 +4246,8 @@ export function previewAnchorV7(
   const daemon = view.units.find((unit) => unit.id === daemonUnitId);
   if (daemon === undefined) return null;
   const control = daemonControlV7(daemon);
-  const strandsAfter = holdingStrandsV7(
+  const strandsAfter = publicDaemonStrandsV7(
+    view,
     {
       ...view,
       cult: {
@@ -4217,7 +4255,6 @@ export function previewAnchorV7(
         grips: [...view.cult.grips, { thingUnitId: unitId, cultistUnitId }],
       },
     },
-    view.units,
     daemon,
   );
   return {
@@ -4225,9 +4262,124 @@ export function previewAnchorV7(
     cultistUnitId,
     daemonUnitId: daemon.id,
     control,
-    strandsBefore: holdingStrandsV7(view, view.units, daemon),
+    strandsBefore: publicDaemonStrandsV7(view, view, daemon),
     strandsAfter,
     holds: strandsAfter >= control,
+    binds: unitIsUnboundV7(daemon) && strandsAfter >= control,
+  };
+}
+
+/**
+ * The Cultists (section 6.4, "Public"; `pulp_wars-mch9.6`): the rampage of
+ * a visible daemon as the board stands. For an Unbound daemon it is what
+ * its next rampage does; for a bound one it is what it would do "if it
+ * broke now" (the eye mark of a daemon short of its Control). It reads only
+ * the view, so `exact` is false when a tile near enough to hold a nearer
+ * unit, or to change its path, is unexplored. Nothing in it is random.
+ */
+export interface RampagePreviewV7 {
+  readonly unitId: UnitId;
+  readonly role: SummonedRoleIdV7;
+  /** True for an Unbound daemon, false for a bound one. */
+  readonly unbound: boolean;
+  /**
+   * The seat a tie between targets goes to: an Unbound daemon's summoner; a
+   * bound daemon's own seat.
+   */
+  readonly summonerPlayerId: PlayerId;
+  /** Section 6.5: nobody may channel it for the rest of this turn. */
+  readonly furious: boolean;
+  readonly control: number;
+  /**
+   * A bound daemon's holding strands; for an Unbound one the viewer's
+   * strands on it this turn (it is bound when they reach `control`).
+   */
+  readonly strands: number;
+  /** A bound daemon with fewer holding strands than its Control. */
+  readonly short: boolean;
+  /** The eye mark: the unit it goes for, or null when it sees nobody. */
+  readonly targetUnitId: UnitId | null;
+  /** The tiles it steps through (empty when it stays). */
+  readonly path: readonly CoordV7[];
+  /** Whether it ends next to its target and attacks it. */
+  readonly attacks: boolean;
+  /** How many attacks its rampage has (the Herald two). */
+  readonly attackCount: number;
+  readonly exact: boolean;
+}
+
+/** Section 6.4: the rampage board a viewer knows (see `rampageBoardV7`). */
+function publicRampageBoardV7(
+  view: PlayerViewV7,
+  daemonId: UnitId,
+): RampageBoardV7 {
+  return {
+    width: view.board.width,
+    height: view.board.height,
+    tile: (at) => {
+      const tile = tileAtView(view, at);
+      if (tile === undefined) return "BLOCKED";
+      if (!tile.explored) return "UNKNOWN";
+      return rampageTerrainV7(tile.terrain) &&
+        !isIceAtV7(view, at) &&
+        tile.site === null &&
+        !tileOccupiedV7(view, at, daemonId) &&
+        !view.treasureChests.some((chest) => same(chest, at)) &&
+        !view.curiosities.some((curiosity) => same(curiosity.at, at))
+        ? "FREE"
+        : "BLOCKED";
+    },
+  };
+}
+
+/**
+ * Section 6.4: the preview of the visible daemon `unitId` (bound or
+ * Unbound), or null for any other unit.
+ */
+export function previewRampageV7(
+  view: PlayerViewV7,
+  unitId: UnitId,
+): RampagePreviewV7 | null {
+  const daemon = view.units.find((unit) => unit.id === unitId && unit.hp > 0);
+  const role = daemon === undefined ? null : daemonRoleV7(daemon);
+  if (daemon === undefined || (role !== "HORROR" && role !== "HERALD"))
+    return null;
+  const unbound = unitIsUnboundV7(daemon);
+  const entry = unbound ? unboundEntryV7(view, unitId) : undefined;
+  if (unbound && entry?.unbound === undefined) return null;
+  const summonerPlayerId = entry?.unbound?.summonerPlayerId ?? daemon.ownerId;
+  const control = daemonControlV7(daemon);
+  const strands = publicDaemonStrandsV7(view, view, daemon);
+  const move = NEUTRAL_ROLE_RULES_V7[role].move;
+  const plan = rampagePlanV7(
+    publicRampageBoardV7(view, unitId),
+    view.units,
+    daemon,
+    move,
+    summonerPlayerId,
+  );
+  // A hidden unit nearer than the target, or a hidden tile on the way,
+  // could change the choice.
+  const radius =
+    plan.target === null
+      ? Math.max(view.board.width, view.board.height)
+      : Math.max(chebyshev(plan.target.at, daemon.at), move + 1);
+  return {
+    unitId,
+    role,
+    unbound,
+    summonerPlayerId,
+    furious: entry?.unbound?.furious === true,
+    control,
+    strands,
+    short: !unbound && strands < control,
+    targetUnitId: plan.target?.id ?? null,
+    path: plan.path,
+    attacks: plan.attacks,
+    attackCount: RAMPAGE_ATTACKS_V7[role],
+    exact: view.board.tiles.every(
+      (tile) => tile.explored || chebyshev(tile.at, daemon.at) > radius,
+    ),
   };
 }
 
@@ -4914,6 +5066,46 @@ export function previewMonsterV7(
   const monster = view.units.find((unit) => unit.id === unitId && unit.hp > 0);
   if (entry === undefined || monster === undefined) return null;
   const breed = entry.breed;
+  // The Cultists (RULESET_7_CULTISTS.md section 6.4): an Unbound daemon has
+  // no lair and no provokers. Its preview is its rampage
+  // (`previewRampageV7`): `reachTiles`, and `provokeTiles` with them, are
+  // every tile it could strike in its next rampage (within its Move + 1);
+  // `provokers` the visible units there that it may go for; `likelyTarget`
+  // the unit it attacks as the board stands.
+  if (isDaemonBreedV7(breed)) {
+    const rampage = previewRampageV7(view, unitId);
+    if (rampage === null) return null;
+    const reach = NEUTRAL_ROLE_RULES_V7[breed].move + 1;
+    const reachTiles: CoordV7[] = [];
+    for (let y = monster.at.y - reach; y <= monster.at.y + reach; y += 1)
+      for (let x = monster.at.x - reach; x <= monster.at.x + reach; x += 1)
+        if (
+          x >= 0 &&
+          y >= 0 &&
+          x < view.board.width &&
+          y < view.board.height &&
+          !(x === monster.at.x && y === monster.at.y)
+        )
+          reachTiles.push({ x, y });
+    return {
+      unitId,
+      breed,
+      home: entry.home,
+      area: [],
+      provokeTiles: reachTiles,
+      reachTiles,
+      provokers: view.units
+        .filter(
+          (unit) =>
+            unit.id !== monster.id &&
+            rampageTargetableV7(unit) &&
+            chebyshev(unit.at, monster.at) <= reach,
+        )
+        .map((unit) => unit.id),
+      likelyTarget: rampage.attacks ? rampage.targetUnitId : null,
+      exact: rampage.exact,
+    };
+  }
   const onBoard = (at: CoordV7): boolean =>
     at.x >= 0 &&
     at.y >= 0 &&
@@ -5037,6 +5229,7 @@ export function previewMonsterV7(
           (other) =>
             other.breed !== "GIANT_SPIDER" &&
             other.breed !== "BIGFOOT" &&
+            !isDaemonBreedV7(other.breed) &&
             same(other.home, entry.home),
         );
   const campGuardUnits = view.units.filter((unit) =>
@@ -5276,12 +5469,15 @@ export function queryCombatPreviewV7(
   const answering =
     entry === undefined || entry.breed === "BIGFOOT"
       ? []
-      : entry.breed === "GIANT_SPIDER"
+      : // The Cultists (`pulp_wars-mch9.6`): an Unbound daemon answers
+        // alone, like the Spider (its reach is its next rampage's).
+        entry.breed === "GIANT_SPIDER" || isDaemonBreedV7(entry.breed)
         ? [entry]
         : view.monsters.filter(
             (other) =>
               other.breed !== "GIANT_SPIDER" &&
               other.breed !== "BIGFOOT" &&
+              !isDaemonBreedV7(other.breed) &&
               same(other.home, entry.home),
           );
   const reach = answering.flatMap(

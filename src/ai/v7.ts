@@ -118,6 +118,7 @@ import {
   UNIT_ROLE_IDS_V7,
   cityHasWallsV7,
   cityOfferedPopulationV7,
+  isDaemonBreedV7,
   type CoordV7,
   type ImprovementIdV7,
   type NavalRoleIdV7,
@@ -15654,8 +15655,13 @@ function huntPlansV7(context: PolicyContextV7): readonly HuntPlanV7[] {
     monsters?.get(unit.id)?.breed === "BIGFOOT";
   const campGuard = (unit: PublicUnitV7): boolean => {
     const breed = monsters?.get(unit.id)?.breed;
+    // The Cultists (`pulp_wars-mch9.6`): an Unbound daemon is hunted like
+    // the Spider (only a kill this turn makes a plan), not like a guard.
     return (
-      breed !== undefined && breed !== "GIANT_SPIDER" && breed !== "BIGFOOT"
+      breed !== undefined &&
+      breed !== "GIANT_SPIDER" &&
+      breed !== "BIGFOOT" &&
+      !isDaemonBreedV7(breed)
     );
   };
   const targets = [

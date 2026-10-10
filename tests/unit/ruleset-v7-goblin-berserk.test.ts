@@ -130,14 +130,14 @@ describe("the identity (pulp_wars-w49.35)", () => {
   // (`pulp_wars-eu3r.3`) 7r69, and the Vampire and Banshee rework
   // (`pulp_wars-ty6i`) 7r70.
   it("was 7r61 after 7r60, whose save keys are obsolete", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r74");
-    expect(PRIOR_RULESET_7_IDS.slice(-14, -12)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r75");
+    expect(PRIOR_RULESET_7_IDS.slice(-15, -13)).toEqual([
       "pulp-wars-poc-7r60",
       "pulp-wars-poc-7r61",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r74.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-14, -12)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r75.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-15, -13)).toEqual([
       "pulpWars.save.v7r60.current",
       "pulpWars.save.v7r61.current",
     ]);

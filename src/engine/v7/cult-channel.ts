@@ -1,5 +1,6 @@
 import { allocateUnitId, type PlayerId, type UnitId } from "../model/ids";
 import {
+  BOARD_SUMMONED_ROLE_IDS_V7,
   CHANNEL_RANGE_V7,
   CULT_SUMMONED_ROLE_RULES_V7,
   SUMMONED_MECHANICAL_ROLES_V7,
@@ -24,6 +25,12 @@ import {
   withFavourSpentV7,
   type CultReducerKitV7,
 } from "./cult";
+import {
+  daemonIsFuriousV7,
+  unitIsUnboundV7,
+  withDaemonBoundV7,
+  withDaemonUnboundV7,
+} from "./cult-unbound";
 import type { DisruptionCauseV7, DomainEventV7, ScaredUnitV7 } from "./events";
 import type { GiantTileFactsV7 } from "./giants";
 import { canonicalGiantTileFactsV7 } from "./giants";
@@ -35,6 +42,7 @@ import {
   type CultStateV7,
   type GameStateV7,
   type GripV7,
+  type MonsterStateV7,
   type SummonedRoleIdV7,
   type UnitActivationV7,
   type UnitFormV7,
@@ -47,6 +55,9 @@ import {
  * third Cult engine bead; docs/product/RULESET_7_CULTISTS.md sections 6.1,
  * 6.2, 8.1, 8.4, and 8.5): Summon a Horror, Channel and the strands, the
  * one disruption rule, the Start Turn check, Behold!, Anchor, and Boo!.
+ * `pulp_wars-mch9.6` (sections 6.4 and 6.5): a daemon that fails the check
+ * is Unbound and rampages at once (src/engine/v7/cult-unbound.ts), and a
+ * Channel may bind an Unbound daemon again.
  *
  * The legality helpers read only facts that canonical state and a player's
  * view share, so the public command query and the reducer agree exactly.
@@ -91,6 +102,10 @@ export interface ChannelListsV7 {
   };
 }
 export type ChannelLookupV7 = FactionRosterV7 & FrozenLookupV7 & ChannelListsV7;
+/** The lookup of a Channel: the channel facts and the Unbound daemons. */
+export type ChannelTargetLookupV7 = ChannelLookupV7 & {
+  readonly monsters?: readonly MonsterStateV7[];
+};
 
 const strandsOf = (lookup: ChannelListsV7) => lookup.cult?.strands ?? [];
 const gripsOf = (lookup: ChannelListsV7) => lookup.cult?.grips ?? [];
@@ -117,7 +132,7 @@ export function daemonControlV7(unit: SummonedUnitRefV7): number {
 
 /**
  * Section 6.2: whether the daemon is bound: a seat commands it. (An Unbound
- * daemon belongs to the neutral owner, from `pulp_wars-mch9.6`.)
+ * daemon belongs to the neutral owner: `unitIsUnboundV7`.)
  */
 export function daemonIsBoundV7(
   unit: SummonedUnitRefV7 & { readonly ownerId: PlayerId },
@@ -149,6 +164,38 @@ export function holdingStrandsV7<U extends ChannelUnitFactsV7>(
     if (
       cultist === undefined ||
       cultist.ownerId !== daemon.ownerId ||
+      !isRobedCultistV7(lookup, cultist) ||
+      chebyshev(cultist.at, daemon.at) > CHANNEL_RANGE_V7
+    )
+      continue;
+    total += 1 + gripStrandsV7(lookup, units, cultist);
+  }
+  return total;
+}
+
+/**
+ * Section 6.5: the strands of the seat `playerId` on the Unbound daemon
+ * `daemon` as the board stands: the strands to it whose cultist is on the
+ * board as that seat's robed cultist within `CHANNEL_RANGE_V7` tiles, each
+ * counting 1, or 3 under a holding Anchor grip (section 8.4). A seat's
+ * strands are cleared at its Start Turn, so these were all made in its
+ * current turn; when they reach the daemon's Control it is bound.
+ */
+export function bindingStrandsV7<U extends ChannelUnitFactsV7>(
+  lookup: FactionRosterV7 & ChannelListsV7,
+  units: readonly U[],
+  daemon: ChannelUnitFactsV7,
+  playerId: PlayerId,
+): number {
+  let total = 0;
+  for (const strand of strandsOf(lookup)) {
+    if (strand.daemonUnitId !== daemon.id) continue;
+    const cultist = units.find(
+      (unit) => unit.id === strand.cultistUnitId && unit.hp > 0,
+    );
+    if (
+      cultist === undefined ||
+      cultist.ownerId !== playerId ||
       !isRobedCultistV7(lookup, cultist) ||
       chebyshev(cultist.at, daemon.at) > CHANNEL_RANGE_V7
     )
@@ -310,19 +357,23 @@ export type ChannelRejectionV7 =
   | { readonly code: "UNIT_ALREADY_ACTED" }
   | {
       readonly code: "CHANNEL_NOT_LEGAL";
-      readonly reason: "EMBARKED" | "DAEMON" | "RANGE";
+      readonly reason: "EMBARKED" | "DAEMON" | "FURIOUS" | "RANGE";
     };
 
 /**
- * Section 6.2, shared by the reducer and the public command query: the
- * first reason `cultist` may not channel `daemon` (the unit the command
- * names if it is on the board, else undefined), or null. The cultist is a
- * robed cultist in land form with Channel (a mind-controlled one has none:
- * the channel needs a Cult seat) that has not used a primary action; the
- * daemon is an own bound daemon within `CHANNEL_RANGE_V7` tiles.
+ * Sections 6.2 and 6.5, shared by the reducer and the public command query:
+ * the first reason `cultist` may not channel `daemon` (the unit the command
+ * names if it is on the board and, for a daemon that is not the actor's,
+ * the actor sees it; else undefined), or null. The cultist is a robed
+ * cultist in land form with Channel (a mind-controlled one has none: the
+ * channel needs a Cult seat) that has not used a primary action; the daemon
+ * is an own bound daemon, or an Unbound one that is not Furious ("Bind
+ * again": `FURIOUS` in the turn it broke loose), within `CHANNEL_RANGE_V7`
+ * tiles. An Unbound daemon no seat can command yet (the Herald before
+ * `pulp_wars-mch9.7` registers it) is no target.
  */
 export function channelRejectionV7(
-  lookup: ChannelLookupV7,
+  lookup: ChannelTargetLookupV7,
   cultist: ActorFactsV7,
   daemon: ChannelUnitFactsV7 | undefined,
 ): ChannelRejectionV7 | null {
@@ -331,12 +382,17 @@ export function channelRejectionV7(
   if (!isRobedCultistV7(lookup, cultist))
     return { code: "CHANNEL_NOT_LEGAL", reason: "EMBARKED" };
   if (primaryActedV7(cultist)) return { code: "UNIT_ALREADY_ACTED" };
-  if (
-    daemon === undefined ||
-    daemon.hp <= 0 ||
-    daemon.ownerId !== cultist.ownerId ||
-    !daemonIsBoundV7(daemon)
-  )
+  if (daemon === undefined || daemon.hp <= 0 || daemonRoleV7(daemon) === null)
+    return { code: "CHANNEL_NOT_LEGAL", reason: "DAEMON" };
+  if (unitIsUnboundV7(daemon)) {
+    if (
+      daemon.summoned === undefined ||
+      !BOARD_SUMMONED_ROLE_IDS_V7.includes(daemon.summoned)
+    )
+      return { code: "CHANNEL_NOT_LEGAL", reason: "DAEMON" };
+    if (daemonIsFuriousV7(lookup, daemon.id))
+      return { code: "CHANNEL_NOT_LEGAL", reason: "FURIOUS" };
+  } else if (daemon.ownerId !== cultist.ownerId)
     return { code: "CHANNEL_NOT_LEGAL", reason: "DAEMON" };
   if (chebyshev(cultist.at, daemon.at) > CHANNEL_RANGE_V7)
     return { code: "CHANNEL_NOT_LEGAL", reason: "RANGE" };
@@ -779,7 +835,8 @@ export function cultDisruptionsV7(
  * The structural half of the channel lists (every reducer output runs
  * through it before validation, with `prunedCultV7`): a strand needs its
  * cultist (a land-form robed cultist with Channel on the board) and its
- * daemon (on the board, of the same seat); a grip its Thing (in land form,
+ * daemon (on the board, of the same seat, or Unbound: a strand toward a
+ * binding, section 6.5); a grip its Thing (in land form,
  * with Anchor, next to its cultist, of the same seat) and its cultist's
  * strand; an idol its bearer (in land form, with Behold!). What it drops
  * was reported, or is reported at the end of the command, by
@@ -802,7 +859,7 @@ export function prunedChannelV7(state: GameStateV7): GameStateV7 {
     return (
       cultist !== undefined &&
       daemon !== undefined &&
-      cultist.ownerId === daemon.ownerId &&
+      (cultist.ownerId === daemon.ownerId || unitIsUnboundV7(daemon)) &&
       daemonRoleV7(daemon) !== null &&
       isRobedCultistV7(state, cultist) &&
       unitRoleRuleV7(state, cultist).abilities.includes("CHANNEL")
@@ -839,17 +896,30 @@ export function prunedChannelV7(state: GameStateV7): GameStateV7 {
 // --------------------------------------------------- The Start Turn ---
 
 /**
- * Sections 6.2 and 13.3: the channel step of the Start Turn of `playerId`,
- * after Plague and its chains and before Egg hatching. `original` is the
- * state the `END_TURN` began with.
+ * Section 6.4: resolves one rampage of the Unbound daemon `daemonId` on
+ * `state` (its move and its attacks, with their deaths and consequences).
+ * The reducer supplies it: an attack is the ordinary exchange.
+ */
+export type RampageResolverV7 = (
+  state: GameStateV7,
+  daemonId: UnitId,
+) => { readonly state: GameStateV7; readonly events: readonly DomainEventV7[] };
+
+/**
+ * Sections 6.2, 6.4, and 13.3: the channel step of the Start Turn of
+ * `playerId`, after Plague and its chains and before Egg hatching.
+ * `original` is the state the `END_TURN` began with.
  *
  * 1. The disruptions of the command so far (the neutral turn, Black Ice,
  *    the surfacing, Plague and its chains) break their strands.
  * 2. **The check:** each bound daemon of the seat, in unit-ID order, needs
  *    holding strands ({@link holdingStrandsV7}) of at least its Control, or
- *    it is Unbound (`DAEMON_UNBOUND`). Until the Unbound rules
- *    (`pulp_wars-mch9.6`: the neutral owner, the rampage, Furious) an
- *    Unbound daemon leaves the board (`UNIT_DIED` cause `UNBOUND`).
+ *    it is **Unbound** (`DAEMON_UNBOUND`): it belongs to the neutral owner
+ *    as a neutral unit of its own breed, loses every status and the strands
+ *    to it, is Furious until this seat's turn ends, and **rampages at
+ *    once** (`rampage`). What the rampage disrupts breaks before the next
+ *    daemon is checked, so one break can start another; a daemon an earlier
+ *    rampage killed is not checked.
  * 3. Every strand and grip of the seat is cleared: it must channel again.
  * 4. The idols of the seat's Idol Bearers are lowered (`IDOL_DROPPED` cause
  *    `EXPIRED`): Behold! lasts until the end of this check.
@@ -860,11 +930,12 @@ export function resolveStartTurnChannelV7(
   original: GameStateV7,
   state: GameStateV7,
   playerId: PlayerId,
+  rampage: RampageResolverV7,
 ): {
   readonly state: GameStateV7;
   readonly events: readonly DomainEventV7[];
-  /** The daemons that left the board (the live economy may change). */
-  readonly removedUnitIds: readonly UnitId[];
+  /** The daemons that are Unbound now (the live economy may change). */
+  readonly unboundUnitIds: readonly UnitId[];
 } {
   const hasChannel =
     state.cult.strands.length > 0 ||
@@ -880,32 +951,44 @@ export function resolveStartTurnChannelV7(
     )
     .sort((left, right) => left.id - right.id);
   if (!hasChannel && daemons.length === 0)
-    return { state, events: [], removedUnitIds: [] };
+    return { state, events: [], unboundUnitIds: [] };
   const events: DomainEventV7[] = [];
   const disrupted = cultDisruptionsV7(original, state, null);
   events.push(...disrupted.events);
   let current: GameStateV7 =
     disrupted.cult === state.cult ? state : { ...state, cult: disrupted.cult };
-  const removed: UnitId[] = [];
-  for (const daemon of daemons) {
+  const unbound: UnitId[] = [];
+  for (const candidate of daemons) {
+    const daemon = current.units.find(
+      (unit) =>
+        unit.id === candidate.id && unit.hp > 0 && unit.ownerId === playerId,
+    );
+    if (daemon === undefined) continue;
     const control = daemonControlV7(daemon);
     const strands = holdingStrandsV7(current, current.units, daemon);
     if (strands >= control) continue;
-    removed.push(daemon.id);
-    events.push(
-      {
-        kind: "DAEMON_UNBOUND",
-        unitId: daemon.id,
-        summonerPlayerId: playerId,
-        strands,
-        control,
-      },
-      { kind: "UNIT_DIED", unitId: daemon.id, cause: "UNBOUND" },
+    unbound.push(daemon.id);
+    events.push({
+      kind: "DAEMON_UNBOUND",
+      unitId: daemon.id,
+      summonerPlayerId: playerId,
+      strands,
+      control,
+    });
+    const loose = withoutStrandsToV7(
+      withDaemonUnboundV7(current, daemon.id, playerId, true),
+      daemon.id,
     );
-    current = {
-      ...current,
-      units: current.units.filter((unit) => unit.id !== daemon.id),
-    };
+    const rampaged = rampage(loose, daemon.id);
+    events.push(...rampaged.events);
+    // The consequences of the rampage: the strands, grips, and idols of
+    // the units it hurt or killed break now, before the next check.
+    const broken = cultDisruptionsV7(loose, rampaged.state, null, null, events);
+    events.push(...broken.events);
+    current =
+      broken.cult === rampaged.state.cult
+        ? rampaged.state
+        : { ...rampaged.state, cult: broken.cult };
   }
   const ownerOf = (unitId: UnitId): PlayerId | undefined =>
     current.units.find((unit) => unit.id === unitId)?.ownerId ??
@@ -937,8 +1020,67 @@ export function resolveStartTurnChannelV7(
   return {
     state: changed ? { ...current, cult } : current,
     events,
-    removedUnitIds: removed,
+    unboundUnitIds: unbound,
   };
+}
+
+/**
+ * Section 6.4: the Cult state without the strands to the daemon `daemonId`
+ * (it broke loose: they failed) and without the grips on their cultists.
+ */
+function withoutStrandsToV7(state: GameStateV7, daemonId: UnitId): GameStateV7 {
+  const gone = new Set(
+    state.cult.strands
+      .filter((strand) => strand.daemonUnitId === daemonId)
+      .map((strand) => strand.cultistUnitId),
+  );
+  if (gone.size === 0) return state;
+  return {
+    ...state,
+    cult: {
+      ...state.cult,
+      strands: state.cult.strands.filter(
+        (strand) => strand.daemonUnitId !== daemonId,
+      ),
+      grips: state.cult.grips.filter((grip) => !gone.has(grip.cultistUnitId)),
+    },
+  };
+}
+
+/**
+ * Section 13.1, Elimination: every bound daemon of the seat `playerId`,
+ * which is leaving the match, is Unbound at once (`DAEMON_UNBOUND` with no
+ * strands): it stays on the board as a neutral unit and rampages from the
+ * next neutral turn. It is not Furious (no Start Turn check broke it).
+ * Returns `state` itself and no event for a seat without a daemon.
+ */
+export function withEliminatedSeatDaemonsUnboundV7(
+  state: GameStateV7,
+  playerId: PlayerId,
+): { readonly state: GameStateV7; readonly events: readonly DomainEventV7[] } {
+  const daemons = state.units
+    .filter(
+      (unit) =>
+        unit.hp > 0 && unit.ownerId === playerId && daemonIsBoundV7(unit),
+    )
+    .sort((left, right) => left.id - right.id);
+  if (daemons.length === 0) return { state, events: [] };
+  const events: DomainEventV7[] = [];
+  let current = state;
+  for (const daemon of daemons) {
+    events.push({
+      kind: "DAEMON_UNBOUND",
+      unitId: daemon.id,
+      summonerPlayerId: playerId,
+      strands: 0,
+      control: daemonControlV7(daemon),
+    });
+    current = withoutStrandsToV7(
+      withDaemonUnboundV7(current, daemon.id, playerId, false),
+      daemon.id,
+    );
+  }
+  return { state: current, events };
 }
 
 // ----------------------------------------------------- Reducer steps ---
@@ -1136,9 +1278,71 @@ export function applySummonV7(
 }
 
 /**
- * Section 6.2: `CHANNEL`, a primary action of a robed cultist that may
- * follow its Move: it holds a strand to the daemon until its seat's next
- * Start Turn check (`STRAND_FORMED`).
+ * Section 6.5, "Bind again": when the strands of `actor` on the Unbound
+ * daemon `daemonId` have reached its Control, it is bound to that seat at
+ * once (`DAEMON_BOUND`), exhausted until its next turn; it reveals its
+ * sight for its new seat, and the live economy, the rewards, and the
+ * achievements follow (a daemon on a hostile center besieges it again; a
+ * commanded daemon is a kind for Muster). The strands stay and count for
+ * the seat's next check. Returns `staged` itself otherwise.
+ */
+function withBindingV7(
+  kit: CultReducerKitV7,
+  staged: GameStateV7,
+  actor: PlayerId,
+  daemonId: UnitId,
+  events: DomainEventV7[],
+): GameStateV7 {
+  const daemon = staged.units.find(
+    (unit) => unit.id === daemonId && unit.hp > 0,
+  );
+  if (daemon === undefined || !unitIsUnboundV7(daemon)) return staged;
+  const control = daemonControlV7(daemon);
+  const strands = bindingStrandsV7(staged, staged.units, daemon, actor);
+  if (strands < control) return staged;
+  events.push({
+    kind: "DAEMON_BOUND",
+    playerId: actor,
+    unitId: daemon.id,
+    strands,
+    control,
+  });
+  const bound = withDaemonBoundV7(
+    staged,
+    daemon.id,
+    actor,
+    kit.exhaustedActivation(),
+  );
+  const held = bound.units.find((unit) => unit.id === daemon.id);
+  if (held === undefined) throw new RangeError("INVALID_STATE");
+  const reveal = kit.revealRadius(
+    bound,
+    actor,
+    held.at,
+    unitSightRadiusAtV7(bound, held),
+  );
+  if (reveal.revealed.length > 0)
+    events.push({
+      kind: "TILES_REVEALED",
+      playerId: actor,
+      tiles: reveal.revealed,
+    });
+  return kit.graveActionTail(
+    {
+      ...bound,
+      players: kit.setExplored(bound.players, actor, reveal.explored),
+    },
+    actor,
+    events,
+  );
+}
+
+/**
+ * Sections 6.2 and 6.5: `CHANNEL`, a primary action of a robed cultist that
+ * may follow its Move: it holds a strand to the daemon until its seat's
+ * next Start Turn check (`STRAND_FORMED`). A strand on an Unbound daemon
+ * that brings the seat's strands on it to its Control binds it at once
+ * (`DAEMON_BOUND`).
  */
 export function applyChannelV7(
   kit: CultReducerKitV7,
@@ -1153,30 +1357,46 @@ export function applyChannelV7(
   if (!actorCheck.ok)
     return kit.rejected(original, actorCheck.code, actorCheck.params);
   const cultist = actorCheck.unit;
-  const daemon = state.units.find(
+  const named = state.units.find(
     (unit) => unit.id === command.daemonUnitId && unit.hp > 0,
   );
+  // A daemon that is not the actor's (an Unbound one) is a target only
+  // when the actor sees it, as in its view.
+  const daemon =
+    named !== undefined &&
+    (named.ownerId === actor || exploredBy(state, actor, named.at))
+      ? named
+      : undefined;
   const rejection = channelRejectionV7(state, cultist, daemon);
   if (rejection !== null) return rejectWith(kit, original, cultist, rejection);
   if (daemon === undefined) return kit.rejected(original, "INVALID_STATE");
-  return kit.accepted(
-    kit.checked({
-      ...state,
-      commandIndex: kit.nextSafe(state.commandIndex),
-      units: state.units.map((unit) =>
-        unit.id === cultist.id ? withPrimaryUsed(unit) : unit,
-      ),
-      cult: withStrand(state.cult, cultist.id, daemon.id),
-    }),
-    [
+  try {
+    const events: DomainEventV7[] = [
       {
         kind: "STRAND_FORMED",
         playerId: actor,
         unitId: cultist.id,
         daemonUnitId: daemon.id,
       },
-    ],
-  );
+    ];
+    const staged = withBindingV7(
+      kit,
+      {
+        ...state,
+        commandIndex: kit.nextSafe(state.commandIndex),
+        units: state.units.map((unit) =>
+          unit.id === cultist.id ? withPrimaryUsed(unit) : unit,
+        ),
+        cult: withStrand(state.cult, cultist.id, daemon.id),
+      },
+      actor,
+      daemon.id,
+      events,
+    );
+    return kit.accepted(kit.checked(staged), events);
+  } catch (cause) {
+    return kit.arithmeticFailure(original, cause);
+  }
 }
 
 /**
@@ -1220,7 +1440,8 @@ export function applyBeholdV7(
 /**
  * Section 8.4: `ANCHOR`, the Thing's grip on a channeller beside it
  * (`ANCHOR_GRIPPED`). Not a primary action: the Thing's activation does not
- * change.
+ * change. A grip that brings the seat's strands on an Unbound daemon to its
+ * Control binds it at once (section 6.5, `DAEMON_BOUND`).
  */
 export function applyAnchorV7(
   kit: CultReducerKitV7,
@@ -1241,27 +1462,41 @@ export function applyAnchorV7(
   const rejection = anchorRejectionV7(state, thing, cultist);
   if (rejection !== null) return rejectWith(kit, original, thing, rejection);
   if (cultist === undefined) return kit.rejected(original, "INVALID_STATE");
-  return kit.accepted(
-    kit.checked({
-      ...state,
-      commandIndex: kit.nextSafe(state.commandIndex),
-      cult: {
-        ...state.cult,
-        grips: [
-          ...state.cult.grips,
-          { thingUnitId: thing.id, cultistUnitId: cultist.id },
-        ].sort((left, right) => left.thingUnitId - right.thingUnitId),
-      },
-    }),
-    [
+  const daemonUnitId = state.cult.strands.find(
+    (strand) => strand.cultistUnitId === cultist.id,
+  )?.daemonUnitId;
+  if (daemonUnitId === undefined)
+    return kit.rejected(original, "INVALID_STATE");
+  try {
+    const events: DomainEventV7[] = [
       {
         kind: "ANCHOR_GRIPPED",
         playerId: actor,
         unitId: thing.id,
         cultistUnitId: cultist.id,
       },
-    ],
-  );
+    ];
+    const staged = withBindingV7(
+      kit,
+      {
+        ...state,
+        commandIndex: kit.nextSafe(state.commandIndex),
+        cult: {
+          ...state.cult,
+          grips: [
+            ...state.cult.grips,
+            { thingUnitId: thing.id, cultistUnitId: cultist.id },
+          ].sort((left, right) => left.thingUnitId - right.thingUnitId),
+        },
+      },
+      actor,
+      daemonUnitId,
+      events,
+    );
+    return kit.accepted(kit.checked(staged), events);
+  } catch (cause) {
+    return kit.arithmeticFailure(original, cause);
+  }
 }
 
 /**
@@ -1371,6 +1606,14 @@ export function applyBooV7(
   } catch (cause) {
     return kit.arithmeticFailure(original, cause);
   }
+}
+
+function exploredBy(state: GameStateV7, viewerId: PlayerId, at: CoordV7) {
+  return (
+    state.players
+      .find((player) => player.id === viewerId)
+      ?.explored.some((tile) => tile.x === at.x && tile.y === at.y) === true
+  );
 }
 
 const chebyshev = (left: CoordV7, right: CoordV7): number =>

@@ -215,7 +215,11 @@ export function selectedNeutralV7(
   });
   const centre =
     preview !== undefined
-      ? preview.breed === "GIANT_SPIDER" || preview.breed === "BIGFOOT"
+      ? preview.breed === "GIANT_SPIDER" ||
+        preview.breed === "BIGFOOT" ||
+        // The Cultists: an Unbound daemon has no camp.
+        preview.breed === "HORROR" ||
+        preview.breed === "HERALD"
         ? null
         : preview.home
       : selection.kind === "TILE"

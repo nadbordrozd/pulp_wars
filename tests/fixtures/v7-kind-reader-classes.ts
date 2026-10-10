@@ -602,6 +602,10 @@ export const KIND_READER_CLASSES_V7: Readonly<
   // unit's kind through `unitRoleRuleV7` and `unitRoleMechanicsV7`.
   "src/engine/v7/cult.ts::offeringRejectionV7": "SEAT",
   "src/engine/v7/state-schema.ts::cultValid": "SEAT",
+  // The Cult's Unbound (`pulp_wars-mch9.6`): the seat that summoned an
+  // Unbound daemon is a Cult seat (a seat's own faction; a daemon is never
+  // mind-controlled).
+  "src/engine/v7/state-schema.ts::monstersValid": "SEAT",
 };
 
 /**

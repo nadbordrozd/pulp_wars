@@ -327,6 +327,12 @@ Thing grips), and `.boo`. A Horror prints as `Horror [HORROR]` with the map
 code `Ho`; a daemon's line shows `daemon: strands 1/1` (its holding strands
 against its Control), a channeller's `channels u40`, a gripped one's
 `gripped by u12 (strand counts three)`, and an Idol Bearer's `idol raised`.
+Unbound (`pulp_wars-mch9.6`) adds no id: `.channel.u40` on an Unbound daemon
+prints as `BIND AGAIN`, with the turn's strands against its Control. An
+Unbound daemon is a neutral unit (seat digit `N`); its line shows
+`UNBOUND daemon of S1: goes for u9 and can attack it after this round`, then
+`FURIOUS` or how many strands bind it. A bound daemon short of its Control
+shows whom it would go for. The log prints `UNBOUND` and `BOUND AGAIN`.
 
 A unit keeps its id for its whole life; a city keeps its id across captures.
 Roles and technologies use the engine's identifiers (`FIGHTER`, `FARMING`).

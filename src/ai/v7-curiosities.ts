@@ -1,5 +1,9 @@
 import type { UnitId } from "../engine/model/ids";
-import type { CoordV7, NeutralBreedV7 } from "../engine/v7/types";
+import {
+  isDaemonBreedV7,
+  type CoordV7,
+  type NeutralBreedV7,
+} from "../engine/v7/types";
 import {
   previewGateV7,
   previewMonsterV7,
@@ -75,7 +79,8 @@ export const MONSTER_BOUNTY_FOR_POLICY_V7 = 10;
 /**
  * Round 2 (sections 25.2 and 29.1): the Coins each neutral breed's kill
  * pays, pinned to the engine's `NEUTRAL_BOUNTIES_V7` by the round-2 AI
- * test. Only the Spider regenerates.
+ * test. Only the Spider regenerates. The Cultists (`pulp_wars-mch9.6`): an
+ * Unbound daemon pays no bounty.
  */
 export const NEUTRAL_BOUNTY_FOR_POLICY_V7: Readonly<
   Record<NeutralBreedV7, number>
@@ -86,6 +91,8 @@ export const NEUTRAL_BOUNTY_FOR_POLICY_V7: Readonly<
   SHIELD_PROJECTOR: 4,
   ZOMBIE: 5,
   BIGFOOT: 12,
+  HORROR: 0,
+  HERALD: 0,
 });
 /**
  * Section 33, "avoid unless strong": a unit strikes a camp guard only when
@@ -234,7 +241,12 @@ export function curiosityFactsV7(view: PlayerViewV7): CuriosityFactsV7 | null {
     if (preview === null || unit === undefined) continue;
     const breed = preview.breed;
     const bigfoot = breed === "BIGFOOT";
-    const guard = !bigfoot && breed !== "GIANT_SPIDER";
+    // The Cultists (`pulp_wars-mch9.6`, RULESET_7_CULTISTS.md section 6.4):
+    // an Unbound daemon is read like the Spider (a lone monster): a routine
+    // Move keeps off the tiles its next rampage can strike (its preview's
+    // provoke tiles), and a unit there is threatened.
+    const guard =
+      !bigfoot && breed !== "GIANT_SPIDER" && !isDaemonBreedV7(breed);
     const provokeKeys = new Set(preview.provokeTiles.map(key));
     const reachKeys = new Set(preview.reachTiles.map(key));
     monsters.push({
@@ -253,6 +265,7 @@ export function curiosityFactsV7(view: PlayerViewV7): CuriosityFactsV7 | null {
                   (other) =>
                     other.breed !== "GIANT_SPIDER" &&
                     other.breed !== "BIGFOOT" &&
+                    !isDaemonBreedV7(other.breed) &&
                     same(other.home, entry.home),
                 )
                 .flatMap((other) => other.provokedBy)
@@ -349,13 +362,18 @@ export function campMatesV7(
   facts: CuriosityFactsV7,
   monster: MonsterFactsV7,
 ): readonly MonsterFactsV7[] {
-  if (monster.breed === "GIANT_SPIDER" || monster.breed === "BIGFOOT")
+  if (
+    monster.breed === "GIANT_SPIDER" ||
+    monster.breed === "BIGFOOT" ||
+    isDaemonBreedV7(monster.breed)
+  )
     return [];
   return facts.monsters.filter(
     (other) =>
       other !== monster &&
       other.breed !== "GIANT_SPIDER" &&
       other.breed !== "BIGFOOT" &&
+      !isDaemonBreedV7(other.breed) &&
       same(other.home, monster.home),
   );
 }

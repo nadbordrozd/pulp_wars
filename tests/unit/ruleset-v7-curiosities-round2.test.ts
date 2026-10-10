@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   NEUTRAL_BOUNTIES_V7,
   NEUTRAL_BREEDS_V7,
+  isDaemonBreedV7,
   NEUTRAL_KIND_V7,
   NEUTRAL_ROLE_RULES_V7,
   WELL_OUTCOMES_V7,
@@ -171,6 +172,9 @@ describe("the neutral registration by breed (sections 25.2, 29.1, 32.3)", () => 
       SHIELD_PROJECTOR: ["GUARD", "Shield Projector", 15, 3, 5, 1],
       ZOMBIE: ["GUARD", "Zombie", 18, 4, 4, 1],
       BIGFOOT: ["RAIDER", "Bigfoot", 15, 0, 4, 0],
+      // The Cultists (`pulp_wars-mch9.6`): the Unbound daemons.
+      HORROR: ["KNIGHT", "Unbound Horror", 18, 8, 4, 1],
+      HERALD: ["JUGGERNAUT", "Unbound Herald", 60, 14, 8, 1],
     };
     for (const breed of NEUTRAL_BREEDS_V7) {
       const rule = NEUTRAL_ROLE_RULES_V7[breed];
@@ -225,7 +229,11 @@ describe("the neutral registration by breed (sections 25.2, 29.1, 32.3)", () => 
   });
 
   it("is immune to Mind Control, Frozen, Push, and Knockback, per breed", () => {
-    for (const breed of NEUTRAL_BREEDS_V7) {
+    // An Unbound daemon needs a Cult seat; its immunities are proved in
+    // `tests/unit/ruleset-v7-cult-unbound.test.ts`.
+    for (const breed of NEUTRAL_BREEDS_V7.filter(
+      (candidate) => !isDaemonBreedV7(candidate),
+    )) {
       const home = breed === "BIGFOOT" ? at(15, 10) : SAUCER;
       const standOn =
         breed === "GIANT_SPIDER" || breed === "BIGFOOT" ? home : at(5, 8);

@@ -5,7 +5,7 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r74" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r75" as const;
 /**
  * Every earlier Ruleset 7 identity, oldest first. Readers report these as
  * incompatible (never invalid). An identity bump must append the outgoing
@@ -85,8 +85,9 @@ export const PRIOR_RULESET_7_IDS = Object.freeze([
   "pulp-wars-poc-7r71",
   "pulp-wars-poc-7r72",
   "pulp-wars-poc-7r73",
+  "pulp-wars-poc-7r74",
 ] as const);
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r74.current" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r75.current" as const;
 /**
  * The map generator a setup names (docs/product/RULESET_7_MAP_SCALE.md
  * section 8.8): `V4` is the many-seats generator of `pulp_wars-ykw.3`
@@ -566,6 +567,9 @@ export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   "ANCHOR_BROKEN",
   "UNITS_SCARED",
   "DAEMON_UNBOUND",
+  // The Cultists (`pulp_wars-mch9.6`, section 6.5): an Unbound daemon was
+  // bound again by a Cult seat.
+  "DAEMON_BOUND",
   "SPOILS_AWARDED",
   "PLUNDER_AWARDED",
   // Map curiosities (section 8.7): the bounty for killing a Monster.
@@ -860,7 +864,10 @@ export function isNeutralOwnerV7(ownerId: PlayerId): boolean {
 /**
  * Round 2 (section 32.3): the breeds of the neutral registration, in the
  * frozen order: the Giant Spider, the Downed Saucer's guards, the
- * Graveyard's Zombies, and Bigfoot.
+ * Graveyard's Zombies, and Bigfoot. The Cultists (`pulp_wars-mch9.6`,
+ * docs/product/RULESET_7_CULTISTS.md section 6.4): an Unbound daemon is a
+ * neutral unit of its own breed, `HORROR` or `HERALD` (the summoned role's
+ * ID; {@link DAEMON_BREEDS_V7}).
  */
 export const NEUTRAL_BREEDS_V7 = Object.freeze([
   "GIANT_SPIDER",
@@ -869,20 +876,52 @@ export const NEUTRAL_BREEDS_V7 = Object.freeze([
   "SHIELD_PROJECTOR",
   "ZOMBIE",
   "BIGFOOT",
+  "HORROR",
+  "HERALD",
 ] as const);
 export type NeutralBreedV7 = (typeof NEUTRAL_BREEDS_V7)[number];
+
+/**
+ * The Cultists (section 6.4): the breeds of an Unbound daemon, each the ID
+ * of its summoned role. Such a neutral unit keeps its `summoned` field, has
+ * no lair, is provoked by nobody, and rampages instead (section 6.4).
+ */
+export const DAEMON_BREEDS_V7 = Object.freeze(["HORROR", "HERALD"] as const);
+export type DaemonBreedV7 = (typeof DAEMON_BREEDS_V7)[number];
+
+/** Whether `breed` is the breed of an Unbound daemon (section 6.4). */
+export function isDaemonBreedV7(breed: NeutralBreedV7): breed is DaemonBreedV7 {
+  return breed === "HORROR" || breed === "HERALD";
+}
+
+/**
+ * The Cultists (sections 6.4 and 6.5): what an Unbound daemon's entry
+ * records. `summonerPlayerId` is the seat that commanded it when it broke
+ * loose (its summoner, or the lodge that last bound it): a tie between
+ * rampage targets goes to that seat's unit, and that seat gets no Kills for
+ * killing it. `furious` is true from the Start Turn check that Unbound it
+ * until that seat's turn ends: nobody may channel it meanwhile.
+ */
+export interface UnboundDaemonV7 {
+  readonly summonerPlayerId: PlayerId;
+  readonly furious: boolean;
+}
 
 /**
  * Map curiosities (section 10.2; round 2, section 32.2): a neutral unit on
  * the board. `breed` names its registration; `home` is the Spider's lair,
  * a guard's camp centre, or Bigfoot's home; `provokedBy` lists, sorted,
  * every unit on the board that damaged it since its previous neutral turn.
+ * The Cultists (section 6.4): an Unbound daemon's entry has `unbound`, an
+ * empty `provokedBy`, and as `home` the tile where it broke loose (nothing
+ * reads it: a daemon roams the whole board); no other entry has `unbound`.
  */
 export interface MonsterStateV7 {
   readonly unitId: UnitId;
   readonly breed: NeutralBreedV7;
   readonly home: CoordV7;
   readonly provokedBy: readonly UnitId[];
+  readonly unbound?: UnboundDaemonV7;
 }
 
 export interface RandomStateV7 {

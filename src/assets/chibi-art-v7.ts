@@ -407,8 +407,10 @@ export type CultSummonedArtSubjectV7 =
  * engine's summoned role ID under `UNIT:CULT:`, and the Unbound look of a
  * Horror or a Herald whose strands are gone. The wild Tentacle has one look.
  * `unitArtSubjectV7` asks here for a unit that carries a summoned role (a
- * Horror since `pulp_wars-mch9.5`); the Unbound look waits for the Unbound
- * rules (`pulp_wars-mch9.6`).
+ * Horror since `pulp_wars-mch9.5`); an Unbound daemon is a neutral unit, so
+ * the board and the dock ask for its Unbound look through
+ * `neutralArtSubjectsV7` (src/render/curiosity-presentation-v7.ts,
+ * `pulp_wars-mch9.6`).
  */
 export function cultSummonedArtSubjectV7(
   role: SummonedRoleIdV7,

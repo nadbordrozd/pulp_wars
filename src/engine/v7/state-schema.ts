@@ -12,6 +12,7 @@ import {
   PROMOTION_HP_V7,
   PROMOTION_KILLS_V7,
   NEUTRAL_ROLE_RULES_V7,
+  RAMPAGE_ATTACKS_V7,
   BOOM_POPULATION_V7,
   MONUMENT_POPULATION_V7,
   OFFERING_MINIMUM_LEVEL_V7,
@@ -50,6 +51,7 @@ import {
   UNIT_ROLE_IDS_V7,
   NEUTRAL_OWNER_ID_V7,
   isNavalRoleV7,
+  isDaemonBreedV7,
   isNeutralOwnerV7,
   type MonsterStateV7,
   type NeutralBreedV7,
@@ -1250,12 +1252,19 @@ function parseUnit(
  * unit listed in `monsters`: its breed's role and maximum HP (the neutral
  * registration), land form, no home city, never veteran or
  * capture-eligible, and at most one attack and no Overrun or Escape in its
- * activation.
+ * activation. The Cultists (`pulp_wars-mch9.6`, RULESET_7_CULTISTS.md
+ * section 6.4): an Unbound daemon, and no other neutral unit, carries
+ * `summoned`, which equals its breed; it may have made as many attacks as
+ * its rampage has (`RAMPAGE_ATTACKS_V7`).
  */
 function parseNeutralUnit(
   input: unknown,
   neutralUnitIds: ReadonlyMap<number, NeutralBreedV7>,
 ): UnitStateV7 | null {
+  const summoned =
+    typeof input === "object" &&
+    input !== null &&
+    Object.hasOwn(input, "summoned");
   if (
     !hasExactKeysV7(input, [
       "activation",
@@ -1270,6 +1279,7 @@ function parseNeutralUnit(
       "role",
       "form",
       "veteran",
+      ...(summoned ? ["summoned"] : []),
     ]) ||
     input.ownerId !== NEUTRAL_OWNER_ID_V7 ||
     input.form !== "LAND" ||
@@ -1287,6 +1297,7 @@ function parseNeutralUnit(
   const activation = parseActivation(input.activation);
   const breed = id === null ? undefined : neutralUnitIds.get(id);
   const rule = breed === undefined ? undefined : NEUTRAL_ROLE_RULES_V7[breed];
+  const daemon = breed !== undefined && isDaemonBreedV7(breed) ? breed : null;
   if (
     id === null ||
     rule === undefined ||
@@ -1294,7 +1305,9 @@ function parseNeutralUnit(
     input.maxHp !== rule.maxHp ||
     at === null ||
     activation === null ||
-    activation.attacksUsed > 1 ||
+    (daemon === null ? summoned : input.summoned !== daemon) ||
+    activation.attacksUsed >
+      (daemon === null ? 1 : RAMPAGE_ATTACKS_V7[daemon]) ||
     activation.attacked !== activation.attacksUsed > 0 ||
     activation.overrunActive ||
     activation.escapeAvailable
@@ -1313,6 +1326,7 @@ function parseNeutralUnit(
     veteran: false,
     captureEligible: false,
     activation,
+    ...(daemon === null ? {} : { summoned: daemon }),
   };
 }
 
@@ -1323,20 +1337,34 @@ function parseNeutralUnit(
  * `curiosities` is true on a generated board of width 16 or more; at most
  * one Giant Spider and one Bigfoot, and no Bigfoot below width 20. The
  * cross references check the units and the camps.
+ *
+ * The Cultists (`pulp_wars-mch9.6`, RULESET_7_CULTISTS.md section 6.4): an
+ * Unbound daemon's entry (breed `HORROR` or `HERALD`) may be on any board;
+ * it, and no other entry, has `unbound` (the seat that summoned it and
+ * whether it is Furious) and its `provokedBy` is empty.
  */
 function parseMonsters(
   input: unknown,
   setup: MatchSetupV7,
 ): readonly MonsterStateV7[] | null {
   if (!isDenseArrayV7(input)) return null;
-  if (
-    input.length > 0 &&
-    (!setupHasCuriositiesV7(setup) || setup.width < MONSTER_MINIMUM_WIDTH_V7)
-  )
-    return null;
+  const curiosityBoard =
+    setupHasCuriositiesV7(setup) && setup.width >= MONSTER_MINIMUM_WIDTH_V7;
   const values: MonsterStateV7[] = [];
   for (const candidate of input) {
-    if (!hasExactKeysV7(candidate, ["breed", "home", "provokedBy", "unitId"]))
+    const loose =
+      typeof candidate === "object" &&
+      candidate !== null &&
+      Object.hasOwn(candidate, "unbound");
+    if (
+      !hasExactKeysV7(candidate, [
+        "breed",
+        "home",
+        "provokedBy",
+        "unitId",
+        ...(loose ? ["unbound"] : []),
+      ])
+    )
       return null;
     const unitId = parseUnitIdV7(candidate.unitId);
     const home = parseCoordV7(candidate.home);
@@ -1347,7 +1375,19 @@ function parseMonsters(
       candidate.provokedBy,
       parseUnitIdV7,
     );
+    const daemon = breed !== null && isDaemonBreedV7(breed);
+    let unbound: MonsterStateV7["unbound"];
+    if (loose) {
+      const record: unknown = candidate.unbound;
+      if (!hasExactKeysV7(record, ["furious", "summonerPlayerId"])) return null;
+      const summonerPlayerId = parsePlayerIdV7(record.summonerPlayerId);
+      if (summonerPlayerId === null || typeof record.furious !== "boolean")
+        return null;
+      unbound = { summonerPlayerId, furious: record.furious };
+    }
     if (
+      daemon !== loose ||
+      (daemon ? provokedBy?.length !== 0 : !curiosityBoard) ||
       unitId === null ||
       home === null ||
       breed === null ||
@@ -1359,7 +1399,13 @@ function parseMonsters(
       (values.length > 0 && (values.at(-1) as MonsterStateV7).unitId >= unitId)
     )
       return null;
-    values.push({ unitId, breed, home, provokedBy });
+    values.push({
+      unitId,
+      breed,
+      home,
+      provokedBy,
+      ...(unbound === undefined ? {} : { unbound }),
+    });
   }
   return values;
 }
@@ -2106,7 +2152,8 @@ function parseCult(input: unknown): CultStateV7 | null {
  * entry is of a Cult seat that is still in the match (an eliminated seat's
  * Favour is gone). Section 6.2: every strand is held by a land-form robed
  * cultist on the board that is not mind-controlled, to a summoned unit on
- * the board that has a Control, both of the same Cult seat. Section 8.4:
+ * the board that has a Control, both of the same Cult seat (or, section
+ * 6.5, the daemon is Unbound: a strand toward binding it). Section 8.4:
  * every grip is of a land-form unit with Anchor on a cultist that holds a
  * strand, of the same seat, next to it. Section 8.1: every raised idol is
  * of a land-form unit with Behold! on the board.
@@ -2148,7 +2195,9 @@ function cultValid(
       cultist === undefined ||
       daemon === undefined ||
       cultist.form !== "LAND" ||
-      cultist.ownerId !== daemon.ownerId ||
+      // Section 6.5: a strand toward the binding of an Unbound daemon.
+      (cultist.ownerId !== daemon.ownerId &&
+        !isNeutralOwnerV7(daemon.ownerId)) ||
       !cultSeat(cultist.ownerId) ||
       daemon.summoned === undefined ||
       CULT_SUMMONED_ROLE_RULES_V7[daemon.summoned].control === null ||
@@ -2636,7 +2685,14 @@ function validateCrossReferences(value: CrossInput): boolean {
         (unit.homeCityId !== null &&
           cityById.get(unit.homeCityId)?.ownerId !== unit.ownerId),
     ) ||
-    !monstersValid(board, units, value.monsters, value.curiosities) ||
+    !monstersValid(
+      board,
+      units,
+      value.monsters,
+      value.curiosities,
+      iceKeys,
+      playerById,
+    ) ||
     // Round 2 (section 32.2): only seats toss at the Well.
     value.curiosities.some(
       (curiosity) =>
@@ -3155,13 +3211,17 @@ function validateCrossReferences(value: CrossInput): boolean {
  * center, not a site); a guard on such a tile of its camp's area, never the
  * centre, with its `home` a camp centre of its kind (a Grunt, Ray Gunner,
  * or Shield Projector: a Downed Saucer; a Zombie: a Graveyard); Bigfoot on
- * its habitat. A camp never shares the board with a Spider.
+ * its habitat. A camp never shares the board with a Spider. An Unbound
+ * daemon (the Cultists, section 6.4) stands on land or ice, and its
+ * summoner is a Cult seat of the match.
  */
 function monstersValid(
   board: BoardStateV7,
   units: readonly UnitStateV7[],
   monsters: readonly MonsterStateV7[],
   curiosities: readonly CuriosityV7[],
+  iceKeys: ReadonlySet<string>,
+  playerById: ReadonlyMap<PlayerStateV7["id"], PlayerStateV7>,
 ): boolean {
   const neutral = units.filter((unit) => isNeutralOwnerV7(unit.ownerId));
   if (neutral.length !== monsters.length) return false;
@@ -3190,6 +3250,29 @@ function monstersValid(
       )
     )
       return false;
+    // The Cultists (RULESET_7_CULTISTS.md section 6.4): an Unbound daemon
+    // stands wherever it broke loose or rampaged to: on land (a center
+    // included, until its first move) or on ice. Its summoner is a Cult
+    // seat of the match (it may be out of it by now).
+    if (isDaemonBreedV7(entry.breed)) {
+      const summoner =
+        entry.unbound === undefined
+          ? undefined
+          : playerById.get(entry.unbound.summonerPlayerId);
+      if (
+        summoner === undefined ||
+        !factionHasFavourV7(summoner.faction) ||
+        unit.summoned !== entry.breed ||
+        !(
+          tile.terrain === "GRASS" ||
+          tile.terrain === "FOREST" ||
+          tile.terrain === "MOUNTAIN" ||
+          iceKeys.has(key(unit.at))
+        )
+      )
+        return false;
+      continue;
+    }
     if (entry.breed === "BIGFOOT") {
       if (
         !bigfootHabitatV7(

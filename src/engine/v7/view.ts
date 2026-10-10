@@ -378,7 +378,9 @@ export interface PlayerViewV7 {
    * Map curiosities (section 8.8; round 2, section 32.5): every visible
    * neutral unit (a unit in `units` owned by the neutral owner) with its
    * breed, its home, and its `provokedBy`
-   * filtered to the units the viewer can see, sorted by unit ID.
+   * filtered to the units the viewer can see, sorted by unit ID. The
+   * Cultists (`pulp_wars-mch9.6`): a visible Unbound daemon's entry carries
+   * `unbound` (its summoner's seat and whether it is Furious).
    */
   readonly monsters: readonly MonsterStateV7[];
   /** Revision 13: the viewer-explored subset of the canonical Graves. */
@@ -1051,6 +1053,10 @@ export function viewForV7(
         provokedBy: entry.provokedBy.filter((unitId) =>
           visibleUnitIds.has(unitId),
         ),
+        // The Cultists (RULESET_7_CULTISTS.md sections 6.4 and 6.5): the
+        // seat that summoned an Unbound daemon and whether it is Furious
+        // are public on a visible daemon.
+        ...(entry.unbound === undefined ? {} : { unbound: entry.unbound }),
       })),
     graves: state.graves.filter((grave) => explored.has(key(grave))),
     // Revision 14 statuses are public on every visible unit.

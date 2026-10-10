@@ -253,6 +253,7 @@ import {
   previewBeholdV7,
   previewBooV7,
   previewChannelV7,
+  previewRampageV7,
   previewOfferingV7,
   previewSacrificeV7,
   previewSeizeV7,
@@ -1998,6 +1999,14 @@ function describeCommandV7(
         command.unitId,
         command.daemonUnitId,
       );
+      // Unbound (`pulp_wars-mch9.6`, section 6.5): the same command binds
+      // an Unbound daemon when the strands of this turn reach its Control.
+      const unbound = view.monsters.some(
+        (entry) =>
+          entry.unitId === command.daemonUnitId && entry.unbound !== undefined,
+      );
+      if (unbound)
+        return `BIND AGAIN ${context.memory.tag(command.daemonUnitId)} (UNBOUND)${preview === null ? "" : `: your strands this turn ${preview.strandsBefore}/${preview.control} -> ${preview.strandsAfter}/${preview.control}${preview.binds ? ": it is YOURS at once, and cannot act until your next turn" : " (still short: it stays UNBOUND until they reach its Control in one turn)"}`} | the strand breaks if this unit is hurt, moved, given a status, or taken before your next turn | uses its action`;
       return `CHANNEL ${context.memory.tag(command.daemonUnitId)}${preview === null ? "" : `: strands ${preview.strandsBefore}/${preview.control} -> ${preview.strandsAfter}/${preview.control}${preview.holds ? "" : " (still short: it is UNBOUND at your next turn start)"}`} | the strand breaks if this unit is hurt, moved, given a status, or taken before your next turn | uses its action`;
     }
     case "BEHOLD": {
@@ -2337,12 +2346,20 @@ function eventTextV7(
       break;
     case "DAEMON_UNBOUND":
       lines.push(
-        `UNBOUND ${context.memory.tag(event.unitId)} of ${seatLabelV7(context.view, event.summonerPlayerId)}: strands ${event.strands}/${event.control} at its turn start; it is gone`,
+        `UNBOUND ${context.memory.tag(event.unitId)} of ${seatLabelV7(context.view, event.summonerPlayerId)}: strands ${event.strands}/${event.control}; it belongs to nobody now and attacks the nearest unit, friend or foe, at once and after every round`,
       );
-      if (event.summonerPlayerId === me)
-        notes.push(
-          `UNBOUND ${context.memory.tag(event.unitId)} (strands ${event.strands}/${event.control})`,
-        );
+      notes.push(
+        event.summonerPlayerId === me
+          ? `UNBOUND ${context.memory.tag(event.unitId)} (strands ${event.strands}/${event.control}): yours no more`
+          : `SAW UNBOUND ${context.memory.tag(event.unitId)}`,
+      );
+      break;
+    case "DAEMON_BOUND":
+      lines.push(
+        `BOUND AGAIN ${context.memory.tag(event.unitId)} by ${seatLabelV7(context.view, event.playerId)}: strands ${event.strands}/${event.control}; it is that seat's daemon again`,
+      );
+      if (event.playerId !== me)
+        notes.push(`SAW BINDING ${context.memory.tag(event.unitId)}`);
       break;
     case "UNIT_DISBANDED": {
       // Tuning 7 (`pulp_wars-w49.10`): a unit another seat disbands in
@@ -3290,9 +3307,20 @@ function unitStatusV7(view: PlayerViewV7, unit: PublicUnitV7): string {
   // The Cultists' channel (`pulp_wars-mch9.5`): a daemon's strands against
   // its Control, a channeller's strand, a grip, a raised idol.
   const daemon = view.cult.daemons.find((entry) => entry.unitId === unit.id);
+  // Unbound (`pulp_wars-mch9.6`): whom a daemon goes for, as the board
+  // stands (an Unbound one after this round; a bound one if it broke now).
+  const rampage = previewRampageV7(view, unit.id);
+  const prey =
+    rampage === null || rampage.targetUnitId === null
+      ? "nobody in sight"
+      : `u${rampage.targetUnitId}${rampage.attacks ? " and can attack it" : " but cannot reach it yet"}${rampage.exact ? "" : ", unless a nearer unit is hidden"}`;
   if (daemon !== undefined)
     parts.push(
-      `daemon: strands ${daemon.strands}/${daemon.control}${daemon.strands < daemon.control ? " (UNBOUND at its turn start)" : ""}`,
+      `daemon: strands ${daemon.strands}/${daemon.control}${daemon.strands < daemon.control ? ` (UNBOUND at its turn start; it would go for ${prey})` : ""}`,
+    );
+  if (rampage?.unbound === true)
+    parts.push(
+      `UNBOUND daemon of ${seatLabelV7(view, rampage.summonerPlayerId)}: goes for ${prey} after this round${rampage.furious ? " | FURIOUS: nobody can channel it this turn" : ` | bind again with ${rampage.control} strand${rampage.control === 1 ? "" : "s"} in one turn (yours now: ${rampage.strands})`}`,
     );
   const strand = view.cult.strands.find(
     (entry) => entry.cultistUnitId === unit.id,

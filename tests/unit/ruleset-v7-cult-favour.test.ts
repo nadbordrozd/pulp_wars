@@ -143,16 +143,17 @@ const offering = (state: GameStateV7, seat = 0): CommandV7 => ({
 
 describe("the Cult's Favour: identity", () => {
   // The AI head start (`pulp_wars-w49.39`) took 7r73 and the Cult's channel
-  // (`pulp_wars-mch9.5`) 7r74, so 7r72 is a prior identity.
+  // (`pulp_wars-mch9.5`) 7r74, and the Cult's Unbound (`pulp_wars-mch9.6`)
+  // 7r75, so 7r72 is a prior identity.
   it("was 7r72 after 7r71, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r74");
-    expect(PRIOR_RULESET_7_IDS.slice(-3, -1)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r75");
+    expect(PRIOR_RULESET_7_IDS.slice(-4, -2)).toEqual([
       "pulp-wars-poc-7r71",
       "pulp-wars-poc-7r72",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r74.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-3, -1)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r75.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-4, -2)).toEqual([
       "pulpWars.save.v7r71.current",
       "pulpWars.save.v7r72.current",
     ]);
@@ -330,6 +331,8 @@ describe("the Cult's Favour: the registry (sections 4, 5, 8.2, and 11)", () => {
       "SEIZE",
       "OFFERING",
       "MARTYR",
+      // `pulp_wars-mch9.6` (section 8.3): a bound daemon's kill.
+      "DAEMON_KILL",
     ]);
   });
 

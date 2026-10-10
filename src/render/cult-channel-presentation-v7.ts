@@ -1,4 +1,5 @@
 import {
+  CULT_SUMMONED_ROLE_RULES_V7,
   HORROR_FAVOUR_COST_V7,
   previewAnchorV7,
   previewBeholdV7,
@@ -35,6 +36,12 @@ import type { CultCommandPresentationV7 } from "./cult-presentation-v7";
  */
 export const SUMMON_LABEL_V7 = "Summon Horror";
 export const CHANNEL_LABEL_V7 = "Channel";
+/**
+ * Section 6.5 (`pulp_wars-mch9.6`): the same command on an Unbound daemon.
+ * A stand-in like the others: U2 (`pulp_wars-mch9.18`) picks the daemon on
+ * the board and shows the strands of the turn as pips under it.
+ */
+export const BIND_LABEL_V7 = "Bind";
 export const BEHOLD_LABEL_V7 = "Behold!";
 export const ANCHOR_LABEL_V7 = "Grip";
 export const BOO_LABEL_V7 = "Boo!";
@@ -44,6 +51,9 @@ export const SUMMON_TOOLTIP_V7 = `The Summoner and a cultist beside it summon a 
 /** Section 6.2, the card text. */
 export const CHANNEL_TOOLTIP_V7 =
   "A cultist channels a daemon within 3 tiles. At the start of your turn each daemon needs as many unbroken strands as its Control, or it is Unbound";
+/** Section 6.5, the card text. */
+export const BIND_TOOLTIP_V7 =
+  "Channel an Unbound daemon with enough cultists in one turn and it is yours again, but not in the turn it broke loose";
 /** Section 8.1, the card text. */
 export const BEHOLD_TOOLTIP_V7 =
   "It holds up the idol. Cultists beside it are too awestruck to flinch, until someone hits the Idol Bearer";
@@ -115,13 +125,22 @@ export function cultChannelCommandPresentationV7(
         command.unitId,
         command.daemonUnitId,
       );
-      const daemon = name(command.daemonUnitId);
+      const unbound =
+        view.monsters.find((entry) => entry.unitId === command.daemonUnitId)
+          ?.unbound !== undefined;
+      // "Bind Horror": the daemon's own name, not "Unbound Horror".
+      const daemon =
+        preview === null
+          ? null
+          : unbound
+            ? CULT_SUMMONED_ROLE_RULES_V7[preview.role].label
+            : name(command.daemonUnitId);
       return preview === null || daemon === null
         ? null
         : {
-            label: `${CHANNEL_LABEL_V7} ${daemon}`,
+            label: `${unbound ? BIND_LABEL_V7 : CHANNEL_LABEL_V7} ${daemon}`,
             chip: strandsTextV7(preview.strandsAfter, preview.control),
-            tooltip: CHANNEL_TOOLTIP_V7,
+            tooltip: unbound ? BIND_TOOLTIP_V7 : CHANNEL_TOOLTIP_V7,
           };
     }
     case "BEHOLD": {

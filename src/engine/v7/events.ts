@@ -14,14 +14,16 @@ import type {
 /**
  * The Cultists (`pulp_wars-mch9.4`, docs/product/RULESET_7_CULTISTS.md
  * section 3): what paid a Cult seat Favour, in the frozen order: a
- * Sacrifice, a Seizure, an Offering, and a Chosen's Martyr. The later Cult
- * beads add a bound daemon's kill and a consumption.
+ * Sacrifice, a Seizure, an Offering, a Chosen's Martyr, and (section 8.3,
+ * `pulp_wars-mch9.6`) a bound daemon's kill. A consumption joins with the
+ * Great Summoning (`pulp_wars-mch9.7`).
  */
 export const FAVOUR_SOURCES_V7 = Object.freeze([
   "SACRIFICE",
   "SEIZE",
   "OFFERING",
   "MARTYR",
+  "DAEMON_KILL",
 ] as const);
 export type FavourSourceV7 = (typeof FAVOUR_SOURCES_V7)[number];
 
@@ -1530,13 +1532,27 @@ export type DomainEventV7 =
       /**
        * The Cultists (sections 6.2 and 6.4): at the Start Turn check of
        * `summonerPlayerId` the daemon `unitId` had `strands` holding strands
-       * against its `control`: it is Unbound. Until the Unbound rules
-       * (`pulp_wars-mch9.6`) it leaves the board: its `UNIT_DIED` (cause
-       * `UNBOUND`) follows.
+       * against its `control`: it is Unbound. It belongs to nobody from
+       * this event on; the events of its first rampage follow. Also sent,
+       * with `strands` 0, for each bound daemon of a seat that is
+       * eliminated (section 13.1): no rampage follows that one.
        */
       readonly kind: "DAEMON_UNBOUND";
       readonly unitId: UnitId;
       readonly summonerPlayerId: PlayerId;
+      readonly strands: number;
+      readonly control: number;
+    }
+  | {
+      /**
+       * The Cultists (section 6.5, `pulp_wars-mch9.6`): the strands of
+       * `playerId` on the Unbound daemon `unitId` reached its `control`
+       * (`strands` of them) in one turn: it is bound to that seat,
+       * exhausted until its next turn.
+       */
+      readonly kind: "DAEMON_BOUND";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
       readonly strands: number;
       readonly control: number;
     }
@@ -1709,14 +1725,7 @@ export type DomainEventV7 =
          * (after `UNIT_SEIZED`: a kill credited to the Summoner). Nothing
          * is left: no Grave, Crumbs, blast, or rising.
          */
-        | "SACRIFICED"
-        /**
-         * The Cultists (`pulp_wars-mch9.5`): a daemon whose channel failed
-         * (after `DAEMON_UNBOUND`). A removal, not a kill, and the stand-in
-         * for the Unbound rules of `pulp_wars-mch9.6`, which keep the
-         * daemon on the board as a neutral unit.
-         */
-        | "UNBOUND";
+        | "SACRIFICED";
     }
   | {
       /**

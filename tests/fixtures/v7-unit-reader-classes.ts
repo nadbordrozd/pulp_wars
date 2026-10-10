@@ -911,6 +911,20 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/engine/v7/state-schema.ts::cultValid": "BOARD",
     "src/render/cult-channel-presentation-v7.ts::cultChannelCommandPresentationV7":
       "BOARD",
+    // The Cult's Unbound (`pulp_wars-mch9.6`, sections 6.4 and 6.5). Every
+    // reader means the board: an Unbound daemon is a neutral unit on the
+    // board, a rampage goes for the units on it (a burrowed unit is never a
+    // target: it is underground), a binding counts the strands of cultists
+    // on it, and the previews and the dock's lines name the same units.
+    "src/engine/v7/cult-channel.ts::withEliminatedSeatDaemonsUnboundV7":
+      "BOARD",
+    "src/engine/v7/cult-channel.ts::withBindingV7": "BOARD",
+    "src/engine/v7/cult-unbound.ts::withDaemonUnboundV7": "BOARD",
+    "src/engine/v7/cult-unbound.ts::withDaemonBoundV7": "BOARD",
+    "src/engine/v7/query.ts::publicDaemonStrandsV7": "BOARD",
+    "src/engine/v7/query.ts::previewRampageV7": "BOARD",
+    "src/engine/v7/reducer.ts::resolveRampageV7": "BOARD",
+    "src/render/curiosity-presentation-v7.ts::daemonInfoLinesV7": "BOARD",
   };
 
 /**

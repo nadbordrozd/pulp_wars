@@ -13,10 +13,12 @@ import {
   WELL_VISION_RADIUS_V7,
   WRECK_COINS_V7,
   guardCampKindV7,
+  isDaemonBreedV7,
   isNeutralOwnerV7,
   neutralBreedOfV7,
   previewGateV7,
   previewMonsterV7,
+  previewRampageV7,
   unitRoleRuleV7,
   type CommandV7,
   type CoordV7,
@@ -33,12 +35,14 @@ import {
   type UnitId,
 } from "../engine/index";
 import {
+  cultSummonedArtSubjectV7,
   unitArtSubjectV7,
   type ArtSubjectV7,
   type CuriosityOverlayIdV7,
   type CuriosityRound2OverlayIdV7,
 } from "../assets/chibi-art-v7";
 import { portraitSubjectV7 } from "../assets/chibi-ui-art-v7";
+import { glossaryEntryV7 } from "./unit-glossary-v7";
 
 /**
  * Map curiosities UI (bead pulp_wars-737.6,
@@ -134,9 +138,9 @@ const same = (left: CoordV7, right: CoordV7): boolean =>
   left.x === right.x && left.y === right.y;
 
 /**
- * Whether a visible unit is a neutral unit (the Giant Spider, a camp guard
- * or Bigfoot): it belongs to nobody and every reader presents it through
- * this module first.
+ * Whether a visible unit is a neutral unit (the Giant Spider, a camp guard,
+ * Bigfoot, or an Unbound daemon of the Cultists): it belongs to nobody and
+ * every reader presents it through this module first.
  */
 export function isMonsterUnitV7(unit: Pick<PublicUnitV7, "ownerId">): boolean {
   return isNeutralOwnerV7(unit.ownerId);
@@ -149,17 +153,26 @@ export function neutralBreedOfUnitV7(
     readonly id: number;
     readonly role: UnitRoleIdV7;
     readonly maxHp?: number;
+    readonly summoned?: PublicUnitV7["summoned"] | undefined;
   },
 ): NeutralBreedV7 {
   return neutralBreedOfV7(view, unit);
 }
 
-/** A neutral unit's name: "Giant Spider", "Grunt", "Zombie", "Bigfoot". */
+/**
+ * A neutral unit's name: "Giant Spider", "Grunt", "Zombie", "Bigfoot"; an
+ * Unbound daemon is an "Unbound Horror" (`pulp_wars-mch9.6`).
+ */
 export function neutralUnitLabelV7(breed: NeutralBreedV7): string {
   return breed === "GIANT_SPIDER"
     ? SPIDER_LABEL_V7
     : NEUTRAL_ROLE_RULES_V7[breed].label;
 }
+
+/** The Cultists (RULESET_7_CULTISTS.md section 14.1): the failure state. */
+export const UNBOUND_LABEL_V7 = "Unbound";
+/** Section 6.5: a daemon nobody may channel for the rest of the turn. */
+export const FURIOUS_LABEL_V7 = "Furious";
 
 /**
  * The faction whose sprite a camp guard wears (section 34.2: the Martian
@@ -194,6 +207,13 @@ export function neutralArtSubjectsV7(
       unit: "UNIT:NEUTRAL_BIGFOOT",
       portrait: "PORTRAIT:NEUTRAL_BIGFOOT",
     };
+  // The Cultists (section 14.3, "Unbound and Furious"): an Unbound daemon
+  // wears its Unbound look (red eyes, the collar cracked), on the board and
+  // in its dock.
+  if (isDaemonBreedV7(breed)) {
+    const unbound = cultSummonedArtSubjectV7(breed, true);
+    return { unit: unbound, portrait: unbound };
+  }
   const faction = neutralArtFactionV7(breed) ?? "MARTIAN";
   return {
     unit: unitArtSubjectV7({ role, form: "LAND", faction }),
@@ -312,8 +332,17 @@ export function provokeMoveWarningV7(
   const breeds = new Set(provokedAt(view, end).map((preview) => preview.breed));
   if (breeds.has("GIANT_SPIDER")) return PROVOKE_MOVE_WARNING_V7;
   if (breeds.has("ZOMBIE")) return GRAVEYARD_PROVOKE_WARNING_V7;
+  if (breeds.has("HORROR") || breeds.has("HERALD"))
+    return DAEMON_PROVOKE_WARNING_V7;
   return breeds.size > 0 ? SAUCER_PROVOKE_WARNING_V7 : null;
 }
+
+/**
+ * The Cultists (section 6.4): the same warning for an Unbound daemon, which
+ * goes for the nearest unit after every round.
+ */
+export const DAEMON_PROVOKE_WARNING_V7 =
+  "Ends in an Unbound daemon's reach: it attacks the nearest unit after this round.";
 
 /** Section 12.1: `monsterRetaliates` in the combat preview. */
 export const MONSTER_RETALIATES_V7 = "The spider will strike back next round";
@@ -348,6 +377,10 @@ export function monsterRetaliationNoteV7(
     return preview.monsterRetaliates
       ? MONSTER_RETALIATES_V7
       : MONSTER_OUT_OF_REACH_V7;
+  if (isDaemonBreedV7(breed))
+    return preview.monsterRetaliates
+      ? "The daemon may come for it after this round"
+      : "Out of the daemon's reach";
   const who = breed === "ZOMBIE" ? "Zombies" : "guards";
   return preview.monsterRetaliates
     ? `The ${who} will strike back next round`
@@ -372,7 +405,16 @@ function ownedUnitName(view: PlayerViewV7, unit: PublicUnitV7): string {
 
 export interface CuriosityInfoLineV7 {
   readonly id:
-    "neutral" | "regeneration" | "bounty" | "provoked" | "calm" | "alert";
+    | "neutral"
+    | "regeneration"
+    | "bounty"
+    | "provoked"
+    | "calm"
+    | "alert"
+    // The Cultists (`pulp_wars-mch9.6`): an Unbound daemon's lines.
+    | "unbound"
+    | "furious"
+    | "bind-again";
   readonly name: string;
   readonly description: string;
 }
@@ -404,6 +446,7 @@ export function monsterInfoLinesV7(
   );
   if (preview === undefined) return [];
   const breed = preview.breed;
+  if (isDaemonBreedV7(breed)) return daemonInfoLinesV7(view, unitId);
   const bounty: CuriosityInfoLineV7 = {
     id: "bounty",
     name: "Bounty",
@@ -472,6 +515,51 @@ export function monsterInfoLinesV7(
           id: "provoked",
           name: PROVOKED_LABEL_V7,
           description: `Will attack ${ownedUnitName(view, target)} after this round${preview.exact ? "" : ", unless something weaker hides nearby"}.`,
+        },
+  ];
+}
+
+/**
+ * The Cultists (RULESET_7_CULTISTS.md sections 6.4 and 6.5): an Unbound
+ * daemon's lines in its dock and its card: what Unbound means, Furious
+ * while it lasts (else how to bind it again), and the unit it goes for as
+ * the board stands (its eye mark).
+ */
+function daemonInfoLinesV7(
+  view: PlayerViewV7,
+  unitId: number,
+): readonly CuriosityInfoLineV7[] {
+  const rampage = previewRampageV7(view, unitId as UnitId);
+  if (rampage === null) return [];
+  const line = (
+    id: CuriosityInfoLineV7["id"],
+    glossary: "UNBOUND" | "FURIOUS" | "BIND_AGAIN",
+  ): CuriosityInfoLineV7 => {
+    const entry = glossaryEntryV7(glossary);
+    return { id, name: entry.name, description: entry.text };
+  };
+  const target =
+    rampage.targetUnitId === null
+      ? undefined
+      : view.units.find((unit) => unit.id === rampage.targetUnitId);
+  const hedge = rampage.exact ? "" : ", unless something nearer hides nearby";
+  return [
+    line("unbound", "UNBOUND"),
+    rampage.furious
+      ? line("furious", "FURIOUS")
+      : line("bind-again", "BIND_AGAIN"),
+    target === undefined
+      ? {
+          id: "calm",
+          name: "Calm",
+          description: "No unit it can go for is in sight.",
+        }
+      : {
+          id: "provoked",
+          name: "Hunting",
+          description: rampage.attacks
+            ? `Will attack ${ownedUnitName(view, target)} after this round${hedge}.`
+            : `Will go for ${ownedUnitName(view, target)} after this round${hedge}.`,
         },
   ];
 }

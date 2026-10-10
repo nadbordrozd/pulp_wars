@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   NEUTRAL_BREEDS_V7,
+  isDaemonBreedV7,
   applyCommandV7,
   effectiveRoleRuleV7,
   isNeutralOwnerV7,
@@ -829,7 +830,11 @@ describe("Ice Folk Freeze with any-unit capture and the round-2 curiosities", ()
   });
 
   it("never freezes a neutral unit of any breed: Cold Snap passes it over and a Frost Bolt cannot take it", () => {
-    for (const breed of NEUTRAL_BREEDS_V7) {
+    // An Unbound daemon needs a Cult seat; its immunity to Freeze is proved
+    // in `tests/unit/ruleset-v7-cult-unbound.test.ts`.
+    for (const breed of NEUTRAL_BREEDS_V7.filter(
+      (candidate) => !isDaemonBreedV7(candidate),
+    )) {
       const home = breed === "BIGFOOT" ? at(15, 10) : SAUCER;
       const standOn =
         breed === "GIANT_SPIDER" || breed === "BIGFOOT" ? home : at(5, 8);

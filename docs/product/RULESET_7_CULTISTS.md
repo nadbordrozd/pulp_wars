@@ -4,11 +4,12 @@
 (bead `pulp_wars-mch9.2`, epic `pulp_wars-mch9`, 2026-10-09; the first
 draft was bead `pulp_wars-mch9.1`). No game was played or simulated to
 write it. **Implemented so far:** the registration, bead E1; Favour with
-Sacrifice, Seize, Offering, and Martyr, bead E2; and the channel, bead E3:
+Sacrifice, Seize, Offering, and Martyr, bead E2; the channel, bead E3:
 Summon and the Horror, Channel and the strands, the disruption rule, the
-Start Turn check, Behold!, Anchor, and Boo!
-([section 21](#21-implementation-notes)). An Unbound daemon still leaves
-the board (the Unbound rules are bead E4); no ritual, Herald, or hex yet. It
+Start Turn check, Behold!, Anchor, and Boo!; and Unbound, bead E4: a daemon
+that fails its check belongs to nobody and rampages, Furious, Bind again, a
+bound daemon's kills as Favour
+([section 21](#21-implementation-notes)). No ritual, Herald, or hex yet. It
 replaces
 [the Cult proposal](RULESET_7_CULT_PROPOSAL.md) of 2026-10-06 (bead
 `pulp_wars-2yc.25`), which stays as design history; where the two
@@ -2042,12 +2043,12 @@ left room:
    are the strands whose cultist is on the board as its seat's own robed
    cultist within 3 tiles now, each 1, or 3 under a holding grip. Short of
    its Control the daemon is Unbound: `DAEMON_UNBOUND`, and **until the
-   Unbound rules (E4) it leaves the board** (`UNIT_DIED` cause `UNBOUND`: a
-   removal, no Loss in the Score, the seat no longer flawless). E4 replaces
-   the removal with the neutral owner and the rampage, adds Furious and
-   Bind again (Channel on an Unbound daemon), the eye mark, a bound
+   Unbound rules (E4) it left the board** (`UNIT_DIED` cause `UNBOUND`: a
+   removal, no Loss in the Score, the seat no longer flawless). E4 replaced
+   the removal with the neutral owner and the rampage, and added Furious
+   and Bind again (Channel on an Unbound daemon), the eye mark, a bound
    daemon's kills as a Favour source, and the Unbound of an eliminated
-   seat's daemons (today they are removed with its other units).
+   seat's daemons ([section 21.4](#214-e4-unbound-pulp_wars-mch96-pulp-wars-poc-7r75)).
 10. **Candlelit needed no rule.** In the current rules every unit on a tile
     a player has explored is visible to that player, so a channeller is
     already seen, and targeted, by everyone who has explored its tile. The
@@ -2076,6 +2077,135 @@ left room:
     through the engine's combat preview** and all match: it kills a full-HP
     Fighter and Knight in one attack and takes nothing; it deals a Guard 10
     and takes 6; a Knight deals it 12 and takes 3, a Catapult 8, a Marksman 5.
+
+### 21.4 E4, Unbound (`pulp_wars-mch9.6`, `pulp-wars-poc-7r75`)
+
+What the engine holds after E4 is listed in
+[the current rules, section 1](RULESET_7_CURRENT.md#1-identity-and-compatibility):
+Unbound and the rampage ([section 6.4](#64-unbound)), Furious and Bind again
+([section 6.5](#65-bind-again-and-furious)), a bound daemon's kills as Favour
+([section 8.3](#83-daemons-feed)), the Martyr exception for a wild unit's
+attack ([section 8.2](#82-pick-me-and-martyr-the-chosen)), and the Unbound of
+an eliminated seat's daemons
+([section 13.1](#131-faction-rules-and-other-systems)). The choices E4 made
+where this spec left room:
+
+1. **How an Unbound daemon is a neutral unit.** Its owner is the neutral
+   owner; it keeps its `summoned` field, its mechanical role, its Hit Points,
+   and its kills. It has an entry in the neutral registration (`monsters`)
+   whose breed is its summoned role (`HORROR`, `HERALD`), with
+   `unbound: { summonerPlayerId, furious }`, an empty `provokedBy` (nobody
+   provokes it), and as `home` the tile where it broke loose, which nothing
+   reads. Such an entry may be on any board, with or without map
+   curiosities. The neutral registration of a daemon is named "Unbound
+   Horror" ("Unbound Herald") and has its numbers, its stride, and the one
+   ability Attack: no Capture, no Boo!, Sight 0, never
+   an advance, still not living. Like every neutral unit it takes no status
+   and no shove (no Freeze, Stuck, Push, Knockback, Tractor Beam, Bounce, or
+   Boo! moves or marks it) and cannot be mind-controlled or Swallowed. The
+   statuses it loses when it breaks loose are Frozen, Stuck, Toothache, and
+   the marks of a hit that turn (Splatted, Terror, the hunted mark, the
+   bombed mark, Cracked).
+2. **The summoner** is the seat that commanded the daemon when it broke
+   loose. A daemon another lodge bound again and lost is that lodge's.
+3. **The rampage's walk** is the daemon's own, not a seat's Move: up to its
+   Move in steps, each to one of the eight tiles around it that it may
+   stand on. It may stand on Grass, Forest, and Mountain; never on water,
+   ice, or a Rift, a settlement center, a Dimensional Gate or any other
+   curiosity tile, a treasure chest, or a tile with a unit, a mound, or a
+   Barricade. **Zones of control, Roads, Snow, and terrain neither stop nor
+   slow it** (a thing that belongs to nobody is held by nobody's line): this
+   makes a failure worse, as rule 4 wants. It takes a shortest walk to a
+   tile next to its target, each step the first of the eight neighbours in
+   `(y, x)` order that shortens the walk, and stops as soon as it stands
+   next to the target. With no way there (water between, a ring of units)
+   it goes to the tile within its Move that is nearest to the target by
+   Chebyshev distance (fewer steps, then `(y, x)`, break a tie), which may
+   be where it stands.
+4. **The target** is chosen once, before the walk, among the units of every
+   player on the board, seen by anyone or not. Afloat means a ship or an
+   embarked unit; an Egg and a unit standing on ice are targets; so is
+   another daemon while a seat commands it. The daemon attacks only when
+   it ends next to that target: it does not turn on another unit it
+   happens to end beside. A Herald's second attack follows its first only
+   (the nearest unit next to it by the same tie rule, which may be the same
+   unit).
+5. **One break can start another.** In the check the daemons are taken in
+   unit-ID order; what a rampage hurts, moves, or kills is disrupted before
+   the next daemon is checked, so a strand it broke counts as broken for
+   that daemon. A daemon an earlier rampage killed is not checked.
+6. **Furious** is stored on the daemon's entry. It ends when the seat in
+   whose Start Turn it broke loose ends its turn. A daemon let loose by its
+   seat's elimination is not Furious.
+7. **Bind again** is the `CHANNEL` command on an Unbound daemon the actor
+   sees (it stands on a tile the seat has explored), within 3 tiles, that is
+   not Furious (`CHANNEL_NOT_LEGAL` reason `FURIOUS`). The strands that
+   count are the acting seat's on that daemon, each 1, or 3 under a holding
+   grip; a seat's strands are cleared at its Start Turn, so they are all of
+   one turn. The command (a Channel, or the Anchor that grips its
+   channeller) that brings them to the Control binds it at once
+   (`DAEMON_BOUND`): the seat commands it, it cannot act until the seat's
+   next turn, it reveals its sight, and its strands stay for the next
+   check. Strands that do not reach the Control change nothing.
+8. **Daemons feed** is read where an attack is resolved: the kill of the
+   target (or of a unit in the splash) by a bound daemon's attack, and the
+   kill of an attacker by its retaliation, each pay the daemon's seat the
+   victim's Score value (`FAVOUR_GAINED` source `DAEMON_KILL`). A neutral
+   monster is worth its bounty (the Spider 10), and its bounty Coins are
+   paid as to anyone. A summoned unit of any seat, bound or Unbound, pays
+   nothing.
+9. **Martyr and a wild unit.** A Chosen that dies as the target (or in the
+   splash) of an attack made by an Unbound daemon pays nothing. A Chosen
+   that attacks an Unbound daemon and dies of its retaliation is a Martyr
+   like any other: the wild unit did not attack it. (The spec says "an
+   attack by a wild unit" in sections 3 and 8.2 and "a wild unit's kill" in
+   section 18; the engine follows the first.)
+10. **Score.** `DAEMON_UNBOUND` ends a flawless game and is no Loss; the
+    daemon leaves its seat's Army. Killing an Unbound daemon is a kill at
+    its value (Horror 6, Herald 24), never at a bounty, and pays no bounty
+    Coins (there is no `MONSTER_BOUNTY_AWARDED` for it); the seat that
+    summoned it gets no Kills for it. A unit's own kill count (Promotion)
+    counts it like any kill.
+11. **Elimination.** An eliminated Cult seat's bound daemons are Unbound in
+    the capture that eliminates it (`DAEMON_UNBOUND` with 0 strands, before
+    the `UNIT_DIED` of its other units) and stay on the board; its Unbound
+    ones were nobody's already and stay too. Their summoner stays the seat
+    that is out.
+12. **A neutral unit never besieges.** A daemon Unbound on a hostile center
+    stops besieging it in that moment (the city's income and training are
+    back) and leaves at its first step.
+13. **The stand-in's death cause is gone.** `UNIT_DIED` has no cause
+    `UNBOUND` any more.
+14. **The eye mark** is data, not a rule: `previewRampageV7` gives, for a
+    visible daemon, the unit it goes for and its walk as the viewer's board
+    stands; for a bound daemon it is what it would do if it broke now, with
+    `short` when it has fewer holding strands than its Control. It is not
+    `exact` when a tile near enough to hold a nearer unit is unexplored. A
+    view carries each visible Unbound daemon's summoner and Furious state in
+    its `monsters` entry. `previewMonsterV7` answers for a daemon too (the
+    tiles within its Move + 1 are its reach and its provoke tiles), so the
+    board and the Normal AI treat it as a monster.
+15. **The Herald's breed** is registered for the neutral registration with
+    the Herald's numbers and two attacks in a rampage, and a hand-built
+    Unbound Herald is a valid state. Its mechanical role there is
+    `JUGGERNAUT` (the big body's); E5, which summons the Herald, names it in
+    `SUMMONED_MECHANICAL_ROLES_V7` and keeps the two equal. Until then no
+    seat can command a Herald, so a Channel on an Unbound one is refused.
+    Unstoppable is E5's.
+16. **The Normal AI** still never picks a Channel (bead A2), so it never
+    binds. Every seat reads a visible Unbound daemon as a monster: it is
+    hunted only by a kill this turn, and a routine Move does not end in its
+    reach. The rules of [section 15.5](#155-against-the-cult-every-other-seat)
+    are bead A4.
+17. **The interface stand-in.** The Channel on an Unbound daemon is the
+    generic button "Bind Horror" with the strands of the turn against its
+    Control. An Unbound daemon draws with its red-eyed sprite, is named
+    "Unbound Horror", and its dock says what Unbound is, how to bind it or
+    that it is Furious, and whom it goes for. Bead U2 replaces the button
+    with the daemon picked on the board and adds the eye marks (from
+    `previewRampageV7`, for Unbound daemons and for bound ones short of
+    their Control), the pips of a binding, the Furious cue, and the broken
+    chains.
 
 ## Appendix A. The proposal's fifteen decisions, answered
 

@@ -10,6 +10,7 @@ import {
   FAVOUR_PURPOSES_V7,
   HORROR_FAVOUR_COST_V7,
   MIND_CONTROLLED_LOST_ABILITIES_V7,
+  NEUTRAL_OWNER_ID_V7,
   SUMMONED_MECHANICAL_ROLES_V7,
   applyCommandV7,
   compareCommandsV7,
@@ -949,6 +950,7 @@ describe("the Cult's channel: Channel (section 6.2)", () => {
       strandsBefore: 0,
       strandsAfter: 1,
       holds: true,
+      binds: false,
     });
     const first = playV7(moved, channel(moved, at(5, 7), at(5, 4)));
     expect(first.events).toEqual([
@@ -1063,14 +1065,17 @@ describe("the Cult's channel: the Start Turn check (sections 6.2 and 13.3)", () 
     expect(kindsV7(round.events)).not.toContain("DAEMON_UNBOUND");
     expect(round.state.cult.strands).toEqual([]);
     // The seat must channel again this turn: with nothing done, the next
-    // check fails.
+    // check fails, and the Horror is nobody's.
     const next = endTurnUntilV7(round.state, cultId(state));
-    expect(next.state.units.some((unit) => unit.summoned !== undefined)).toBe(
-      false,
-    );
+    expect(kindsV7(next.events)).toContain("DAEMON_UNBOUND");
+    expect(
+      next.state.units.filter((unit) => unit.summoned !== undefined),
+    ).toEqual([expect.objectContaining({ ownerId: NEUTRAL_OWNER_ID_V7 })]);
   });
 
-  it("Unbinds a daemon short of its Control: until the Unbound rules it leaves the board", () => {
+  it("Unbinds a daemon short of its Control: it belongs to nobody and rampages at once", () => {
+    // The Unbound rules themselves are in
+    // `tests/unit/ruleset-v7-cult-unbound.test.ts` (`pulp_wars-mch9.6`).
     const state = horrorField([{ seat: 0, role: "FIGHTER", at: at(5, 7) }]);
     const horror = unitAtV7(state, at(5, 4));
     const round = endTurnUntilV7(state, cultId(state));
@@ -1086,12 +1091,14 @@ describe("the Cult's channel: the Start Turn check (sections 6.2 and 13.3)", () 
     const index = round.events.findIndex(
       (event) => event.kind === "DAEMON_UNBOUND",
     );
-    expect(round.events[index + 1]).toEqual({
-      kind: "UNIT_DIED",
+    // Its rampage follows: it walks to the Initiate, its nearest unit.
+    expect(round.events[index + 1]).toMatchObject({
+      kind: "UNIT_MOVED",
       unitId: horror.id,
-      cause: "UNBOUND",
     });
-    expect(round.state.units.some((unit) => unit.id === horror.id)).toBe(false);
+    expect(
+      round.state.units.find((unit) => unit.id === horror.id),
+    ).toMatchObject({ ownerId: NEUTRAL_OWNER_ID_V7, summoned: "HORROR" });
     // After the seat's turn began and before its income.
     const started = round.events.findIndex(
       (event) =>
@@ -1105,11 +1112,12 @@ describe("the Cult's channel: the Start Turn check (sections 6.2 and 13.3)", () 
     expect(index).toBeLessThan(income);
     for (const event of round.events)
       expect(parseEventV7(event).ok, event.kind).toBe(true);
-    // It is no Loss in the Score, and the seat is no longer flawless.
+    // It is no Loss in the Score (the Loss is the Initiate it killed), and
+    // the seat is no longer flawless.
     const entry = round.state.scoreLedger.find(
       (candidate) => candidate.playerId === cultId(state),
     );
-    expect(entry).toMatchObject({ lossValue: 0, flawless: false });
+    expect(entry).toMatchObject({ lossValue: 2, flawless: false });
   });
 
   it("counts only the strands of cultists within 3 tiles at the check", () => {
@@ -1224,6 +1232,7 @@ describe("the Cult's channel: Anchor (section 8.4)", () => {
       strandsBefore: 1,
       strandsAfter: 3,
       holds: true,
+      binds: false,
     });
     const played = playV7(state, anchor(state, at(6, 6), at(5, 6)));
     expect(played.events).toEqual([

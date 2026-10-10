@@ -505,6 +505,7 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
   ANCHOR_BROKEN: ["kind", "playerId", "unitId", "cultistUnitId", "cause"],
   UNITS_SCARED: ["kind", "playerId", "unitId", "at", "results"],
   DAEMON_UNBOUND: ["kind", "unitId", "summonerPlayerId", "strands", "control"],
+  DAEMON_BOUND: ["kind", "playerId", "unitId", "strands", "control"],
   SPOILS_AWARDED: ["kind", "playerId", "cityId", "coins"],
   PLUNDER_AWARDED: ["kind", "playerId", "kills", "coins"],
   MONSTER_BOUNTY_AWARDED: ["kind", "playerId", "unitId", "coins"],
@@ -1916,6 +1917,15 @@ function validPayload(
         pos(e.control) &&
         (e.strands as number) < (e.control as number)
       );
+    // Section 6.5: the strands of one turn reached the Control.
+    case "DAEMON_BOUND":
+      return (
+        id(e.playerId) &&
+        id(e.unitId) &&
+        pos(e.strands) &&
+        pos(e.control) &&
+        (e.strands as number) >= (e.control as number)
+      );
     case "SPOILS_AWARDED":
       return id(e.playerId) && id(e.cityId) && e.coins === 2;
     case "PLUNDER_AWARDED":
@@ -1930,6 +1940,7 @@ function validPayload(
       return (
         id(e.playerId) &&
         id(e.unitId) &&
+        pos(e.coins) &&
         Object.values(NEUTRAL_BOUNTIES_V7).includes(e.coins as number)
       );
     case "UNIT_RECOVERED":
@@ -1995,8 +2006,6 @@ function validPayload(
           "THUMP",
           // The Cultists: a Sacrifice or a Seizure.
           "SACRIFICED",
-          // The Cultists: a daemon whose channel failed (the stand-in).
-          "UNBOUND",
         ].includes(e.cause as string)
       );
     // The giants' signatures (docs/product/RULESET_7_GIANTS.md section 8).

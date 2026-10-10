@@ -10,6 +10,7 @@ import type { DomainEventV7 } from "./events";
 import { compareCoordsV7, sameCoordV7 } from "./schema";
 import {
   isAfloatFormV7,
+  isDaemonBreedV7,
   isNeutralOwnerV7,
   type BoardStateV7,
   type CoordV7,
@@ -196,7 +197,11 @@ export function gateSeparationV7(width: number): number {
   return Math.ceil((2 * width) / 3);
 }
 
-/** Sections 8.7, 25.2, and 29.4: the bounty of each breed. */
+/**
+ * Sections 8.7, 25.2, and 29.4: the bounty of each breed. The Cultists
+ * (docs/product/RULESET_7_CULTISTS.md section 6.4): killing an Unbound
+ * daemon pays no bounty Coins (its kill is worth its value in the Score).
+ */
 export const NEUTRAL_BOUNTIES_V7: Readonly<Record<NeutralBreedV7, number>> =
   Object.freeze({
     GIANT_SPIDER: 10,
@@ -205,6 +210,8 @@ export const NEUTRAL_BOUNTIES_V7: Readonly<Record<NeutralBreedV7, number>> =
     SHIELD_PROJECTOR: SHIELD_PROJECTOR_BOUNTY_V7,
     ZOMBIE: ZOMBIE_BOUNTY_V7,
     BIGFOOT: BIGFOOT_BOUNTY_V7,
+    HORROR: 0,
+    HERALD: 0,
   });
 
 /** The guard breeds of a camp (section 25). */
@@ -1228,6 +1235,9 @@ export function neutralStandableV7(
   at: CoordV7,
   exceptUnitId?: UnitStateV7["id"],
 ): boolean {
+  // The Cultists (section 6.4): an Unbound daemon has no area; it moves by
+  // the rampage rule (src/engine/v7/cult-unbound.ts), never by these steps.
+  if (isDaemonBreedV7(entry.breed)) return false;
   if (entry.breed === "GIANT_SPIDER")
     return monsterStandableV7(facts, entry.home, at, exceptUnitId);
   if (entry.breed !== "BIGFOOT")
@@ -1637,6 +1647,9 @@ export function withMonsterProvocationsV7(
   );
   let changed = false;
   const monsters = state.monsters.map((entry) => {
+    // The Cultists (section 6.4): nobody provokes an Unbound daemon; it
+    // goes for the nearest unit whoever hurt it.
+    if (isDaemonBreedV7(entry.breed)) return entry;
     const added = [...(sources.get(entry.unitId) ?? [])].filter(
       (id) => onBoard.has(id) && !entry.provokedBy.includes(id),
     );

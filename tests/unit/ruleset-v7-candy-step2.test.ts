@@ -192,7 +192,7 @@ afterEach(() => {
 
 describe("the Candy army seat: no rule changed (the identity moved later, with the Cult registration)", () => {
   it("kept the identity", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r74");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r75");
   });
 });
 

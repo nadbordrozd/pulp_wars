@@ -234,7 +234,9 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
     // UNIT_SEIZED, OFFERING_MADE, and FAVOUR_GAINED (130).
     // The Cult's channel (`pulp_wars-mch9.5`) adds ten kinds after
     // FAVOUR_GAINED, from FAVOUR_SPENT to DAEMON_UNBOUND (140).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(140);
+    // The Cult's Unbound (`pulp_wars-mch9.6`) adds DAEMON_BOUND after
+    // DAEMON_UNBOUND (141).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(141);
     const after = (order: readonly string[], kind: string) =>
       order[order.indexOf(kind) + 1];
     expect(after(DOMAIN_EVENT_KIND_ORDER_V7, "UNITS_RALLIED")).toBe(

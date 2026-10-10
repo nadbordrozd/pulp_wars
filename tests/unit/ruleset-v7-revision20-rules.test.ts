@@ -91,16 +91,16 @@ class MemoryStorage {
 // save keys are obsolete, and the scripts perform no Stampede.
 describe("ruleset-7 revision-20 identity", () => {
   it("keeps 7r19 and 7r20 as prior identities after the later bumps", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r74");
-    expect(RULESET_7.id).toBe("pulp-wars-poc-7r74");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r75");
+    expect(RULESET_7.id).toBe("pulp-wars-poc-7r75");
     expect(RULESET_7.version).toBe(7);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r74.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-55, -53)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r75.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-56, -54)).toEqual([
       "pulp-wars-poc-7r19",
       "pulp-wars-poc-7r20",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-55, -53)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-56, -54)).toEqual([
       "pulpWars.save.v7r19.current",
       "pulpWars.save.v7r20.current",
     ]);
@@ -142,7 +142,7 @@ describe("ruleset-7 revision-20 identity", () => {
       const setup = goblinSetupV7(["DINOSAUR", "ORIGINAL"]);
       const created = createPlayableGameV7(setup);
       if (!created.ok) throw new Error(created.error.code);
-      expect(created.state.rulesetId).toBe("pulp-wars-poc-7r74");
+      expect(created.state.rulesetId).toBe("pulp-wars-poc-7r75");
       const oldSetup = { ...setup, rulesetId: oldId };
       expect(parseMatchSetupV7(setup)).not.toBeNull();
       expect(parseMatchSetupV7(oldSetup)).toBeNull();
@@ -271,7 +271,9 @@ describe("ruleset-7 revision-20 Stampede removal", () => {
     // UNIT_SEIZED, OFFERING_MADE, and FAVOUR_GAINED (130).
     // The Cult's channel (`pulp_wars-mch9.5`) adds ten kinds after
     // FAVOUR_GAINED, from FAVOUR_SPENT to DAEMON_UNBOUND (140).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(140);
+    // The Cult's Unbound (`pulp_wars-mch9.6`) adds DAEMON_BOUND after
+    // DAEMON_UNBOUND (141).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(141);
   });
 
   it("fails to parse a revision-19 STAMPEDE command", () => {

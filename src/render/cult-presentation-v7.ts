@@ -68,6 +68,7 @@ export const FAVOUR_SOURCE_LABELS_V7: Readonly<Record<FavourSourceV7, string>> =
     SEIZE: "a Seizure",
     OFFERING: "an Offering",
     MARTYR: "a Martyr",
+    DAEMON_KILL: "a daemon's kill",
   };
 
 /** The Favour of a seat as a viewer knows it (Favour is public). */

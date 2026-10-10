@@ -6,11 +6,13 @@ import {
   unitRoleRuleV7,
   type FactionRosterV7,
 } from "../rules/ruleset-v7";
+import { unboundEntryV7 } from "./cult-unbound";
 import { MONSTER_BOUNTY_V7, neutralBountyV7 } from "./curiosities";
 import { arePlayersHostileV7 } from "./economy";
 import type { DomainEventV7 } from "./events";
 import type { CreditedDeathV7 } from "./explosions";
 import {
+  NEUTRAL_OWNER_ID_V7,
   PERFECTION_ROUNDS_V7,
   isNeutralOwnerV7,
   type GameStateV7,
@@ -166,12 +168,14 @@ export function unitScoreValueV7(
     readonly summoned?: SummonedRoleIdV7 | undefined;
   },
 ): number {
-  if (isNeutralOwnerV7(unit.ownerId))
-    return neutralBountyV7(neutralBreedOfV7(roster, unit));
   // The Cultists (RULESET_7_CULTISTS.md section 4.2): a summoned unit has
-  // its own value (a Horror 6), never a printed cost.
+  // its own value (a Horror 6), never a printed cost; an Unbound daemon
+  // keeps it (section 6.4: killing one is a kill at its value, not at a
+  // bounty).
   if (unit.summoned !== undefined)
     return CULT_SUMMONED_ROLE_RULES_V7[unit.summoned].value;
+  if (isNeutralOwnerV7(unit.ownerId))
+    return neutralBountyV7(neutralBreedOfV7(roster, unit));
   return unitRoleRuleV7(roster, unit).cost ?? SCORE_GIANT_VALUE_V7;
 }
 
@@ -393,12 +397,20 @@ export function recordScoreCreditsV7(
     GameStateV7,
     "players" | "mindControlled" | "units" | "burrowed"
   > &
-    Partial<Pick<GameStateV7, "giants">>,
+    Partial<Pick<GameStateV7, "giants" | "monsters">>,
   deaths: readonly CreditedDeathV7[],
 ): void {
   const sink = CREDIT_SINKS_V7[CREDIT_SINKS_V7.length - 1];
   if (sink === undefined || deaths.length === 0) return;
   for (const death of deaths) {
+    // The Cultists (RULESET_7_CULTISTS.md section 6.4): the seat that
+    // summoned an Unbound daemon gets no Kills for its own former daemon.
+    if (
+      isNeutralOwnerV7(death.victimOwnerId) &&
+      unboundEntryV7(state, death.victimUnitId)?.unbound?.summonerPlayerId ===
+        death.creditedId
+    )
+      continue;
     const victim = scoredUnitsV7(state).find(
       (unit) => unit.id === death.victimUnitId,
     );
@@ -455,15 +467,14 @@ export const FLAWLESS_BREAKING_EVENT_KINDS_V7 = Object.freeze([
   // unit away from its own seat (its `UNIT_DIED` follows; a Seizure is the
   // victim's `UNIT_DIED`).
   "UNIT_SACRIFICED",
+  // The Cultists (section 13.1): a daemon whose channel failed left its
+  // seat's control (not a Loss; it stays on the board as a neutral unit).
+  "DAEMON_UNBOUND",
 ] as const);
 
 const REMOVAL_CAUSES_V7: ReadonlySet<string> = new Set([
   "ELIMINATION",
   "BRAIN_LOST",
-  // The Cultists (RULESET_7_CULTISTS.md section 13.1): a daemon whose
-  // channel failed leaves its seat's Army without being a Loss; the seat is
-  // no longer flawless (its `UNIT_DIED` clears the flag like every death).
-  "UNBOUND",
 ]);
 
 interface UnitFactV7 {
@@ -559,6 +570,17 @@ export function foldScoreLedgerV7(
       case "UNIT_SACRIFICED":
         broken.add(event.playerId);
         removed.add(event.victimUnitId);
+        break;
+      // The Cultists (sections 6.4 and 13.1): an Unbound daemon left its
+      // seat's Army without dying: no Loss, no Damage taken from then on
+      // (what the wilds do to it is nobody's), and the seat is no longer
+      // flawless. Bound again, it is the binding seat's unit.
+      case "DAEMON_UNBOUND":
+        broken.add(event.summonerPlayerId);
+        owner.set(event.unitId, NEUTRAL_OWNER_ID_V7);
+        break;
+      case "DAEMON_BOUND":
+        owner.set(event.unitId, event.playerId);
         break;
       case "CITY_CAPTURED":
         if (event.from !== null) {
