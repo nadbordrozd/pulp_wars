@@ -504,6 +504,24 @@ const PATH_CASES: readonly PathCaseV7[] = [
     },
   },
   {
+    name: "another lodge's Ribbit",
+    proves: ["UNIT_FROGGED"],
+    cause: "STATUS",
+    build: () => {
+      const state = rig("CULT", [{ role: "MARKSMAN", at: at(4, 8) }]);
+      return { state, command: targeted("RIBBIT", state, at(4, 8)) };
+    },
+  },
+  {
+    name: "another lodge's Switcheroo",
+    proves: ["UNITS_SWAPPED"],
+    cause: "MOVED",
+    build: () => {
+      const state = rig("CULT", [{ role: "RAIDER", at: at(4, 7) }]);
+      return { state, command: targeted("SWITCHEROO", state, at(4, 7)) };
+    },
+  },
+  {
     name: "another lodge's Seizure",
     proves: ["UNIT_SEIZED", "UNIT_DIED"],
     cause: "GONE",
@@ -752,6 +770,8 @@ describe("the disruption rule: on bare state pairs", () => {
       cracked: (unitId) => ({
         ninthUnit: { ...before.ninthUnit, crackedThisTurn: [unitId] },
       }),
+      // `pulp_wars-mch9.8`: a frog.
+      cult: (unitId) => ({ cult: { ...before.cult, frogs: [unitId] } }),
     };
     for (const key of DISRUPTING_STATUS_LISTS_V7) {
       const marked = { ...before, ...withStatus[key](cultist) } as GameStateV7;

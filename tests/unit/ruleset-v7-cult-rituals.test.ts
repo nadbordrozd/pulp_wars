@@ -241,9 +241,10 @@ describe("rituals: identity", () => {
 describe("rituals: the registration (sections 4.2, 7.2, and 11)", () => {
   it("orders the new command and event kinds after the channel's", () => {
     const commands = COMMAND_KIND_ORDER_V7 as readonly string[];
+    // (`pulp_wars-mch9.8` adds the four tricks after PROCLAIM.)
     expect(
       commands.slice(commands.indexOf("BOO"), commands.indexOf("BOO") + 4),
-    ).toEqual(["BOO", "BEGIN_RITUAL", "PROCLAIM", "CAPTURE"]);
+    ).toEqual(["BOO", "BEGIN_RITUAL", "PROCLAIM", "RIBBIT"]);
     const events = DOMAIN_EVENT_KIND_ORDER_V7 as readonly string[];
     const from = events.indexOf("DAEMON_BOUND");
     expect(events.slice(from, from + 9)).toEqual([
@@ -255,7 +256,8 @@ describe("rituals: the registration (sections 4.2, 7.2, and 11)", () => {
       "UNIT_CONSUMED",
       "HERALD_ARRIVED",
       "CITY_COWED",
-      "SPOILS_AWARDED",
+      // (`pulp_wars-mch9.8` adds its six kinds before the Spoils.)
+      "UNIT_FROGGED",
     ]);
     expect(RITUAL_KINDS_V7).toEqual(["STARFALL", "GREAT_SUMMONING"]);
     expect(RITUAL_FIZZLE_REASONS_V7).toEqual(["LEADER", "CHANTERS", "BLOCKED"]);

@@ -243,6 +243,51 @@ const ENTRIES = {
     "Proclaim",
     "Instead of one attack, it cows an enemy city nearby: the city earns nothing and trains nothing until its owner's turn ends.",
   ],
+  // Hexes and tricks (`pulp_wars-mch9.8`, sections 8.7, 9, and 8.2).
+  PAMPHLETS: [
+    "Pamphlets",
+    "Captures a neutral village in the same turn it walks onto it. Every other unit has to wait a turn.",
+  ],
+  SWITCHEROO: [
+    "Switcheroo",
+    "Swaps places with a unit within 2 tiles, friend or foe, but never on a city or village. It cannot swap two turns running.",
+  ],
+  RIBBIT: [
+    "Ribbit",
+    "Turns an enemy within 2 tiles into a frog until its next turn ends. The Hexer cannot do it two turns running.",
+  ],
+  TENTACLE: [
+    "Tentacle",
+    "Calls up a Tentacle on a free tile within 3 tiles. It belongs to nobody and slaps whoever is weakest beside it.",
+  ],
+  PICK_ME: [
+    "Pick Me!",
+    "Until your next turn, enemies standing next to it can attack nobody else. Enemies further away are not bound.",
+  ],
+  GRAB: [
+    "Grab",
+    "The unit it slapped last cannot leave its side. It is free when the Tentacle dies, sinks or slaps someone else.",
+  ],
+  WILD_TENTACLE: [
+    "Wild Tentacle",
+    "Rooted, and nobody's. After every round it slaps the weakest unit beside it, friend or foe, and after 3 rounds it sinks.",
+  ],
+  STATUS_FROG: [
+    "Frog",
+    "It can only hop one tile and cannot attack, strike back or capture, and it is easy to hurt. A healer cures it.",
+  ],
+  STATUS_GRABBED: [
+    "Grabbed",
+    "A Tentacle holds it. It can move only to tiles next to that Tentacle.",
+  ],
+  STATUS_TAUNTED: [
+    "Taunted",
+    "A Chosen beside it shouted. It can attack nobody but that Chosen.",
+  ],
+  STATUS_HEX_SPENT: [
+    "Spent",
+    "It used its trick. It cannot use it again on its next turn.",
+  ],
 
   // ------------------------------------------------------------------ ships
   SHIP: ["Ship", "Built at a Port. It heals only next to your own Ports."],
@@ -1021,6 +1066,12 @@ export function summonedGlossaryV7(
   return ids.map(glossaryEntryV7);
 }
 
+/** A Tentacle's lines (`pulp_wars-mch9.8`, section 9.3). */
+export const TENTACLE_GLOSSARY_IDS_V7: readonly GlossaryIdV7[] = [
+  "WILD_TENTACLE",
+  "GRAB",
+];
+
 /** The Giant Spider's lines. */
 export const SPIDER_GLOSSARY_IDS_V7: readonly GlossaryIdV7[] = [
   "SPIDER",
@@ -1103,6 +1154,13 @@ const STATUS_IDS: Readonly<Record<string, GlossaryIdV7>> = {
   // An Unbound daemon's own lines (`pulp_wars-mch9.6`).
   unbound: "UNBOUND",
   furious: "FURIOUS",
+  // Hexes and tricks (`pulp_wars-mch9.8`; the chips are bead
+  // `pulp_wars-mch9.19`).
+  frog: "STATUS_FROG",
+  grabbed: "STATUS_GRABBED",
+  taunted: "STATUS_TAUNTED",
+  "pick-me": "PICK_ME",
+  "hex-spent": "STATUS_HEX_SPENT",
 };
 
 /** Every status ID the unit dock can put on a chip (`data-unit-status`). */

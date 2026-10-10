@@ -614,6 +614,12 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // its chanters are land-form robed cultists (`isRobedCultistV7`), and a
     // star hits every form in its area by design.
     "src/engine/v7/cult-rituals.ts": 1,
+    // The Cult's tricks (`pulp_wars-mch9.8`): Ribbit, Switcheroo, Pick Me!,
+    // and the Tentacle need their unit in land form (an embarked one is
+    // refused `EMBARKED`; an Egg never reaches them). A hex and a swap take
+    // only a land-form target (`trickTakesV7`: an Egg, an embarked unit,
+    // and a boat are immune), and a Tentacle slaps every form by design.
+    "src/engine/v7/cult-hexes.ts": 4,
     // Ice Folk Freeze (`pulp_wars-w49.37`): the Frost Giant's Cold Aura
     // freezes only when the Giant ends its Move in land form (an embarked
     // Giant, an Egg, and a boat freeze nothing), and a Stampede needs the
@@ -697,6 +703,11 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // hostile shooters over a Jawbreaker's tile are land-form units (an Egg
     // neither moves nor shoots, and a boat is no part of a land wave).
     "src/ai/v7-candy.ts": 7,
+    // The Cult seat's Seize step (`pulp_wars-mch9.10`): a Seizure takes
+    // only a land-form victim (`seizeRejectionV7` refuses an Egg, an
+    // embarked unit, and a boat as `VICTIM`), so the step that walks a
+    // Summoner and a holder beside a broken enemy skips every other form.
+    "src/ai/v7-cult-channel.ts": 1,
     // `pulp_wars-ykw.7`: the capturer that stays ashore because it can walk
     // to an endgame target is a land-form unit (an Egg never boards, and an
     // embarked unit is already afloat).

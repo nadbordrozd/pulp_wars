@@ -72,6 +72,12 @@ export interface MissionSeatV7 {
   /** A fixed faction, or (seat 0 only) a choice among these. */
   readonly faction: FactionIdV7 | { readonly choice: readonly FactionIdV7[] };
   readonly coins: number;
+  /**
+   * The Cultists (`pulp_wars-mch9.8`, docs/product/RULESET_7_CULTISTS.md
+   * section 3): the Favour the seat starts with. Only a seat whose fixed
+   * faction is the Cult may have it; absent: 0.
+   */
+  readonly favour?: number;
   readonly technologies: readonly TechnologyIdV7[];
   /** The first city is the seat's capital (its original capital). */
   readonly cities: readonly MissionCityV7[];

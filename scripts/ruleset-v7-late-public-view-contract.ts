@@ -172,7 +172,11 @@ export const RULESET7_LATE_PUBLIC_VIEW_NORMAL_DECISION = Object.freeze({
     // The Cult's rituals (`pulp_wars-mch9.7`) insert BEGIN_RITUAL and
     // PROCLAIM after BOO, moving the later command kinds forward by two
     // (was b23def…0b7e); the revision-12-ordinal value is unchanged.
-    "68445a812766ad559b53e38d58c8ba018d7af4b051df7a8dd8f0132051ed5827",
+    // The Cult's tricks (`pulp_wars-mch9.8`) insert RIBBIT, SWITCHEROO,
+    // TENTACLE, and PICK_ME after PROCLAIM, moving the later command kinds
+    // forward by four (was 68445a…5827); the revision-12-ordinal value is
+    // unchanged.
+    "e00a20ab41f823c63f81e7fe2c42ded471b464650b6706f57547863e7f3c2d64",
   command: Object.freeze({
     kind: "TRAIN",
     cityId: 16,
@@ -261,10 +265,10 @@ export function upgradeRetainedPublicViewV7(
   });
   return {
     ...retained,
-    rulesetId: "pulp-wars-poc-7r77",
+    rulesetId: "pulp-wars-poc-7r78",
     setup: {
       ...retained.setup,
-      rulesetId: "pulp-wars-poc-7r77",
+      rulesetId: "pulp-wars-poc-7r78",
       mapType: "DRY_LAND",
       mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
       curiosities: false,
@@ -404,6 +408,10 @@ export function upgradeRetainedPublicViewV7(
       idols: [],
       daemons: [],
       rituals: [],
+      frogs: [],
+      hexCooldowns: [],
+      taunts: [],
+      tentacles: [],
       cowed: [],
     },
   };

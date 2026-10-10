@@ -22,6 +22,11 @@ import {
   factionTreeV7,
   technologyCapabilitiesV7,
   EGG_DEFENSE2_V7,
+  FROG_DEFENSE2_V7,
+  FROG_MOVE_V7,
+  HEX_COOLDOWN_TURNS_V7,
+  TENTACLE_LIFETIME_V7,
+  TENTACLE_RANGE_V7,
   MIND_CONTROL_COOLDOWN_TURNS_V7,
   MIND_CONTROL_LIMIT_V7,
   PROMOTION_KILLS_V7,
@@ -316,6 +321,18 @@ import {
   summonRejectionV7,
 } from "./cult-channel";
 import {
+  bindingTauntsV7,
+  pamphletsApplyV7,
+  pickMeRejectionV7,
+  ribbitRejectionV7,
+  switcherooRejectionV7,
+  tauntRefusingAttackV7,
+  tentacleRejectionV7,
+  tentacleSlapTargetV7,
+  trickRefusalV7,
+  unitIsFrogV7,
+} from "./cult-hexes";
+import {
   rampagePlanV7,
   rampageTargetableV7,
   rampageTerrainV7,
@@ -369,6 +386,7 @@ import {
   isAfloatFormV7,
   isNavalRoleV7,
   isDaemonBreedV7,
+  isWildBreedV7,
   isNeutralOwnerV7,
   type BoardStateV7,
   type CoordV7,
@@ -1045,7 +1063,10 @@ export function queryLandingPreviewV7(
  * The unit commands of `unit`. Ice Folk Freeze (`pulp_wars-w49.37`, section
  * 21.3): every command that names an own Frozen unit (other than Promote,
  * Disband, and Wait), or tosses or carries one, is withheld, exactly as
- * the reducer refuses it (`UNIT_FROZEN`).
+ * the reducer refuses it (`UNIT_FROZEN`). The Cultists (`pulp_wars-mch9.8`,
+ * RULESET_7_CULTISTS.md sections 9.1 and 8.2): so is every command of an own
+ * frog but its hop (`UNIT_FROGGED`), and an `ATTACK` at anybody but the
+ * taunting Chosen beside the attacker (`ATTACK_TAUNTED`).
  */
 function appendOfferedUnitCommandsV7(
   view: PlayerViewV7,
@@ -1054,13 +1075,28 @@ function appendOfferedUnitCommandsV7(
 ): void {
   const start = candidates.length;
   appendPublicUnitCommandsV7(view, unit, candidates);
-  // A retained view captured before Ice Folk Freeze has no `frozen` list.
-  const lookup: { readonly frozen?: readonly unknown[] } = view;
-  if ((lookup.frozen?.length ?? 0) === 0 || candidates.length === start) return;
+  if (candidates.length === start) return;
+  // A retained view captured before Ice Folk Freeze has no `frozen` list,
+  // and one captured before the Cult's tricks has no trick lists.
+  const lookup: {
+    readonly frozen?: readonly unknown[];
+    readonly cult?: {
+      readonly frogs?: readonly unknown[];
+      readonly taunts?: readonly unknown[];
+    };
+  } = view;
+  const frozen = (lookup.frozen?.length ?? 0) > 0;
+  const tricks =
+    (lookup.cult?.frogs?.length ?? 0) > 0 ||
+    (lookup.cult?.taunts?.length ?? 0) > 0;
+  if (!frozen && !tricks) return;
   const kept = candidates
     .splice(start)
     .filter(
-      (command) => frozenUnitNamedV7(view, view.viewer.id, command) === null,
+      (command) =>
+        (!frozen ||
+          frozenUnitNamedV7(view, view.viewer.id, command) === null) &&
+        (!tricks || trickRefusalV7(view, view.viewer.id, command) === null),
     );
   candidates.push(...kept);
 }
@@ -1414,9 +1450,11 @@ function appendPublicUnitCommandsV7(
   // revision: a Crashed unit recovers idle at End Turn but cannot `RECOVER`.
   if (!crashed && recoverEligibleV7(publicRecoveryFactsV7(view, unit)))
     candidates.push({ kind: "RECOVER", unitId: unit.id });
+  // The Cultists (`pulp_wars-mch9.8`, section 8.7): Pamphlets, an Initiate
+  // captures a neutral village in the turn it walked onto it.
   if (
     !crashed &&
-    !unit.activation.moved &&
+    (!unit.activation.moved || publicPamphletsReadyV7(view, unit)) &&
     !primaryUsedForQuery(unit) &&
     unit.captureEligible &&
     publicCaptureTarget(view, unit.at)
@@ -1613,6 +1651,110 @@ function appendPublicCultCommandsV7(
           unitId: unit.id,
           cityId: city.id,
         });
+  // Hexes and tricks (`pulp_wars-mch9.8`, sections 9.1 to 9.3 and 8.2), each
+  // offered exactly when the reducer accepts it (the shared legality
+  // predicates of src/engine/v7/cult-hexes.ts): the frogs, cooldowns,
+  // taunts, and Tentacles of visible units are in the view, a target is a
+  // visible unit, a tile is one the viewer has explored, and a swap reads
+  // the viewer's own Engineering and Navigation.
+  if (abilities.includes("RIBBIT"))
+    for (const target of view.units)
+      if (ribbitRejectionV7(view, unit, target) === null)
+        candidates.push({
+          kind: "RIBBIT",
+          unitId: unit.id,
+          targetUnitId: target.id,
+        });
+  if (abilities.includes("SWITCHEROO")) {
+    const seat = publicSwitcherooSeatV7(view, unit);
+    const facts = publicGiantTileFactsV7(view);
+    for (const target of view.units)
+      if (
+        switcherooRejectionV7(
+          view,
+          facts,
+          seat.unlocked,
+          seat.technology,
+          unit,
+          target,
+        ) === null
+      )
+        candidates.push({
+          kind: "SWITCHEROO",
+          unitId: unit.id,
+          targetUnitId: target.id,
+        });
+  }
+  if (abilities.includes("TENTACLE")) {
+    const facts = publicGiantTileFactsV7(view);
+    tiles: for (
+      let y = unit.at.y - TENTACLE_RANGE_V7;
+      y <= unit.at.y + TENTACLE_RANGE_V7;
+      y += 1
+    )
+      for (
+        let x = unit.at.x - TENTACLE_RANGE_V7;
+        x <= unit.at.x + TENTACLE_RANGE_V7;
+        x += 1
+      ) {
+        if (x < 0 || y < 0 || x >= view.board.width || y >= view.board.height)
+          continue;
+        const rejection = tentacleRejectionV7(view, facts, unit, { x, y });
+        if (rejection === null)
+          candidates.push({ kind: "TENTACLE", unitId: unit.id, at: { x, y } });
+        // Every other reason holds for every tile.
+        else if (
+          rejection.code !== "TENTACLE_NOT_LEGAL" ||
+          rejection.reason !== "TILE"
+        )
+          break tiles;
+      }
+  }
+  if (abilities.includes("PICK_ME") && pickMeRejectionV7(view, unit) === null)
+    candidates.push({ kind: "PICK_ME", unitId: unit.id });
+}
+
+/**
+ * The Cultists (section 9.2): what a swap of the viewer's Familiar `unit`
+ * reads of its seat: Familiars (the viewer's research through the unit's
+ * own tree: a mind-controlled Familiar swaps for its controller) and the
+ * viewer's Engineering and Navigation.
+ */
+function publicSwitcherooSeatV7(
+  view: PlayerViewV7,
+  unit: PlayerViewV7["units"][number],
+): {
+  readonly unlocked: boolean;
+  readonly technology: {
+    readonly engineering: boolean;
+    readonly navigation: boolean;
+  };
+} {
+  const researched = view.viewer.researchedTechs;
+  return {
+    unlocked: unitCapabilitiesV7(view, unit, researched).switcheroo,
+    technology: {
+      engineering: researched.includes("ENGINEERING"),
+      navigation: researched.includes("NAVIGATION"),
+    },
+  };
+}
+
+/**
+ * The Cultists (section 8.7): whether Pamphlets lets the viewer's unit
+ * capture after its Move: it has Pamphlets and stands on a village center
+ * nobody owns.
+ */
+function publicPamphletsReadyV7(
+  view: PlayerViewV7,
+  unit: PlayerViewV7["units"][number],
+): boolean {
+  const tile = tileAtView(view, unit.at);
+  return (
+    tile?.explored === true &&
+    tile.territoryOwnerId === null &&
+    pamphletsApplyV7(view, unit, tile.site)
+  );
 }
 
 /** The Cultists (section 7): the viewer's Favour and The Stars Are Right. */
@@ -3676,7 +3818,9 @@ function publicTendTargetsV7(
           plagued.has(target.id) ||
           bitten.has(target.id) ||
           // Ice Folk Freeze (`pulp_wars-w49.37`): Tend Wounded thaws.
-          isFrozenV7(view.frozen, target.id)) &&
+          isFrozenV7(view.frozen, target.id) ||
+          // The Cultists (`pulp_wars-mch9.8`): and cures a frog.
+          unitIsFrogV7(view, target)) &&
         !target.activation.tendedThisTurn &&
         chebyshev(captain.at, target.at) === 1,
     )
@@ -3693,6 +3837,11 @@ export interface TendWoundedPreviewV7 {
     readonly curedBitten: boolean;
     /** Ice Folk Freeze (`pulp_wars-w49.37`): the target was Frozen and thaws. */
     readonly curedFrozen: boolean;
+    /**
+     * The Cultists (`pulp_wars-mch9.8`): the target is a frog and is cured
+     * (the key is present only then, as in `WOUNDED_TENDED`).
+     */
+    readonly curedFrog?: true;
   }[];
   /**
    * Dwarf crowd control (`pulp_wars-w49.33`): an Engineer's Repair of the
@@ -3761,6 +3910,7 @@ export function previewTendWoundedV7(
         curedPlague: plagued.has(target.id),
         curedBitten: bitten.has(target.id),
         curedFrozen: isFrozenV7(view.frozen, target.id),
+        ...(unitIsFrogV7(view, target) ? { curedFrog: true as const } : {}),
       };
     }),
     barricades: barricadeRepairsV7(view, barricadesOfV7(view), captain),
@@ -4726,6 +4876,223 @@ export function previewProclaimV7(
 }
 
 /**
+ * The Cultists (`pulp_wars-mch9.8`, section 9.1): the preview of an offered
+ * Ribbit: the unit that becomes a frog (until its owner's next turn ends),
+ * what the viewer sees it lose, and the Hexer's wait.
+ */
+export interface RibbitPreviewV7 {
+  readonly unitId: UnitId;
+  readonly targetUnitId: UnitId;
+  readonly targetOwnerId: PlayerId;
+  readonly at: CoordV7;
+  /** A frog's flat Defense in half-units (`FROG_DEFENSE2_V7`: 0.5). */
+  readonly defense2After: number;
+  /** A frog's Move (`FROG_MOVE_V7`). */
+  readonly moveAfter: number;
+  /** It holds a strand the viewer sees, which the hex breaks. */
+  readonly holdsStrand: boolean;
+  /** It is in a ritual the viewer sees, which it leaves. */
+  readonly inRitual: boolean;
+  /**
+   * The Start Turns of its owner the Hexer waits (`HEX_COOLDOWN_TURNS_V7`):
+   * it cannot Ribbit on its owner's next turn.
+   */
+  readonly cooldownTurns: number;
+}
+
+/** Section 9.1: null unless that `RIBBIT` is offered. */
+export function previewRibbitV7(
+  view: PlayerViewV7,
+  unitId: UnitId,
+  targetUnitId: UnitId,
+): RibbitPreviewV7 | null {
+  if (
+    !queryPlayerCommandsV7(view).some(
+      (command) =>
+        command.kind === "RIBBIT" &&
+        command.unitId === unitId &&
+        command.targetUnitId === targetUnitId,
+    )
+  )
+    return null;
+  const target = view.units.find((unit) => unit.id === targetUnitId);
+  if (target === undefined) return null;
+  return {
+    unitId,
+    targetUnitId,
+    targetOwnerId: target.ownerId,
+    at: { x: target.at.x, y: target.at.y },
+    defense2After: FROG_DEFENSE2_V7,
+    moveAfter: FROG_MOVE_V7,
+    holdsStrand: view.cult.strands.some(
+      (strand) => strand.cultistUnitId === target.id,
+    ),
+    inRitual: view.cult.rituals.some(
+      (ritual) =>
+        ritual.leaderUnitId === target.id ||
+        ritual.chanterUnitIds.includes(target.id),
+    ),
+    cooldownTurns: HEX_COOLDOWN_TURNS_V7,
+  };
+}
+
+/**
+ * The Cultists (section 9.2): the preview of an offered Switcheroo: where
+ * each unit lands, and what the viewer sees the swap break (a moved
+ * channeller is disrupted; a unit a Tentacle held is free).
+ */
+export interface SwitcherooPreviewV7 {
+  readonly unitId: UnitId;
+  readonly targetUnitId: UnitId;
+  readonly targetOwnerId: PlayerId;
+  /** Where the Familiar stands now and the target lands. */
+  readonly from: CoordV7;
+  /** Where the target stands now and the Familiar lands. */
+  readonly to: CoordV7;
+  /** The target holds a strand the viewer sees, which the swap breaks. */
+  readonly targetHoldsStrand: boolean;
+  /** The target is in a ritual the viewer sees, which it leaves. */
+  readonly targetInRitual: boolean;
+  /** A Tentacle the viewer sees holds the target; the swap frees it. */
+  readonly targetGrabbed: boolean;
+  readonly cooldownTurns: number;
+}
+
+/** Section 9.2: null unless that `SWITCHEROO` is offered. */
+export function previewSwitcherooV7(
+  view: PlayerViewV7,
+  unitId: UnitId,
+  targetUnitId: UnitId,
+): SwitcherooPreviewV7 | null {
+  if (
+    !queryPlayerCommandsV7(view).some(
+      (command) =>
+        command.kind === "SWITCHEROO" &&
+        command.unitId === unitId &&
+        command.targetUnitId === targetUnitId,
+    )
+  )
+    return null;
+  const familiar = view.units.find((unit) => unit.id === unitId);
+  const target = view.units.find((unit) => unit.id === targetUnitId);
+  if (familiar === undefined || target === undefined) return null;
+  return {
+    unitId,
+    targetUnitId,
+    targetOwnerId: target.ownerId,
+    from: { x: familiar.at.x, y: familiar.at.y },
+    to: { x: target.at.x, y: target.at.y },
+    targetHoldsStrand: view.cult.strands.some(
+      (strand) => strand.cultistUnitId === target.id,
+    ),
+    targetInRitual: view.cult.rituals.some(
+      (ritual) =>
+        ritual.leaderUnitId === target.id ||
+        ritual.chanterUnitIds.includes(target.id),
+    ),
+    targetGrabbed: view.cult.tentacles.some(
+      (entry) => entry.grabbedUnitId === target.id,
+    ),
+    cooldownTurns: HEX_COOLDOWN_TURNS_V7,
+  };
+}
+
+/**
+ * The Cultists (section 9.3): the preview of an offered Tentacle: the unit
+ * it slaps at once (the visible unit of a player beside the tile with the
+ * fewest Hit Points, ties to the lowest ID), which it then holds if both
+ * survive, and the neutral turns it stays. `exact` is false when a tile
+ * beside it is unexplored: a hidden unit there could be the one it slaps.
+ */
+export interface TentaclePreviewV7 {
+  readonly unitId: UnitId;
+  readonly at: CoordV7;
+  readonly slapTargetUnitId: UnitId | null;
+  /** `TENTACLE_LIFETIME_V7`. */
+  readonly neutralTurns: number;
+  readonly exact: boolean;
+}
+
+/** Section 9.3: null unless that `TENTACLE` is offered. */
+export function previewTentacleV7(
+  view: PlayerViewV7,
+  unitId: UnitId,
+  at: CoordV7,
+): TentaclePreviewV7 | null {
+  if (
+    !queryPlayerCommandsV7(view).some(
+      (command) =>
+        command.kind === "TENTACLE" &&
+        command.unitId === unitId &&
+        same(command.at, at),
+    )
+  )
+    return null;
+  return {
+    unitId,
+    at: { x: at.x, y: at.y },
+    slapTargetUnitId: tentacleSlapTargetV7(view.units, at)?.id ?? null,
+    neutralTurns: TENTACLE_LIFETIME_V7,
+    exact: adjacentPublicTiles(view, at).every((tile) => tile.explored),
+  };
+}
+
+/**
+ * The Cultists (section 8.2): the preview of an offered Pick Me!: the
+ * visible hostile units on the eight tiles around the Chosen now, which
+ * may attack nobody else until its owner's next turn.
+ */
+export interface PickMePreviewV7 {
+  readonly unitId: UnitId;
+  readonly boundUnitIds: readonly UnitId[];
+}
+
+/** Section 8.2: null unless that `PICK_ME` is offered. */
+export function previewPickMeV7(
+  view: PlayerViewV7,
+  unitId: UnitId,
+): PickMePreviewV7 | null {
+  if (
+    !queryPlayerCommandsV7(view).some(
+      (command) => command.kind === "PICK_ME" && command.unitId === unitId,
+    )
+  )
+    return null;
+  const chosen = view.units.find((unit) => unit.id === unitId);
+  if (chosen === undefined) return null;
+  return {
+    unitId,
+    boundUnitIds: view.units
+      .filter(
+        (unit) =>
+          unit.hp > 0 &&
+          chebyshev(unit.at, chosen.at) === 1 &&
+          !isNeutralOwnerV7(unit.ownerId) &&
+          publicHostile(view, chosen.ownerId, unit.ownerId),
+      )
+      .map((unit) => unit.id),
+  };
+}
+
+/**
+ * The Cultists (section 8.2): the taunting Chosen that bind the viewer's
+ * unit `unitId` now (it may `ATTACK` only one of them), in unit-ID order;
+ * empty when it is free.
+ */
+export function publicBindingTauntsV7(
+  view: PlayerViewV7,
+  unitId: UnitId,
+): readonly UnitId[] {
+  const unit = view.units.find(
+    (candidate) => candidate.id === unitId && candidate.hp > 0,
+  );
+  if (unit === undefined) return [];
+  return bindingTauntsV7(view, view.units, unit)
+    .map((chosen) => chosen.id)
+    .sort((left, right) => left - right);
+}
+
+/**
  * The Cultists (section 8.1): the preview of an offered Behold!: the own
  * robed cultists on the eight tiles around the Idol Bearer now, which keep
  * their strands when they lose Hit Points while the idol is raised.
@@ -5448,6 +5815,32 @@ export function previewMonsterV7(
       exact: rampage.exact,
     };
   }
+  // The Cultists (`pulp_wars-mch9.8`, section 9.3): a Tentacle is rooted,
+  // has no lair and no provokers. It slaps whoever is weakest beside it:
+  // `reachTiles`, and `provokeTiles` with them, are the eight tiles around
+  // it; `provokers` the visible units of a player there; `likelyTarget` the
+  // one it slaps as the board stands.
+  if (breed === "TENTACLE") {
+    const ring = adjacentPublicTiles(view, monster.at);
+    return {
+      unitId,
+      breed,
+      home: entry.home,
+      area: [],
+      provokeTiles: ring.map((tile) => tile.at),
+      reachTiles: ring.map((tile) => tile.at),
+      provokers: view.units
+        .filter(
+          (unit) =>
+            unit.hp > 0 &&
+            !isNeutralOwnerV7(unit.ownerId) &&
+            chebyshev(unit.at, monster.at) === 1,
+        )
+        .map((unit) => unit.id),
+      likelyTarget: tentacleSlapTargetV7(view.units, monster.at)?.id ?? null,
+      exact: ring.every((tile) => tile.explored),
+    };
+  }
   const onBoard = (at: CoordV7): boolean =>
     at.x >= 0 &&
     at.y >= 0 &&
@@ -5824,13 +6217,14 @@ export function queryCombatPreviewV7(
       ? []
       : // The Cultists (`pulp_wars-mch9.6`): an Unbound daemon answers
         // alone, like the Spider (its reach is its next rampage's).
-        entry.breed === "GIANT_SPIDER" || isDaemonBreedV7(entry.breed)
+        // (`pulp_wars-mch9.8`: and so does a Tentacle.)
+        entry.breed === "GIANT_SPIDER" || isWildBreedV7(entry.breed)
         ? [entry]
         : view.monsters.filter(
             (other) =>
               other.breed !== "GIANT_SPIDER" &&
               other.breed !== "BIGFOOT" &&
-              !isDaemonBreedV7(other.breed) &&
+              !isWildBreedV7(other.breed) &&
               same(other.home, entry.home),
           );
   const reach = answering.flatMap(
@@ -10006,7 +10400,11 @@ function publicCombatPreviewCore(
     distance > publicAttackMaximumRangeV7(view, attacker) ||
     // The frozen sea (naval branch section 8.9): an icebound ship cannot
     // attack.
-    unitIsIceboundV7(view, attacker)
+    unitIsIceboundV7(view, attacker) ||
+    // The Cultists (`pulp_wars-mch9.8`, sections 9.1 and 8.2): a frog does
+    // not attack, and a unit beside a taunting Chosen attacks only it.
+    unitIsFrogV7(view, attacker) ||
+    tauntRefusingAttackV7(view, view.units, attacker, target.id) !== null
   )
     return null;
   // The naval branch (docs/product/RULESET_7_NAVAL_BRANCH.md sections 5.2
@@ -10055,6 +10453,10 @@ function publicCombatPreviewCore(
   const targetFrozen =
     target.form === "LAND" &&
     (options.assumeTargetFrozen === true || isFrozenV7(view.frozen, target.id));
+  // The Cultists (`pulp_wars-mch9.8`, RULESET_7_CULTISTS.md section 9.1):
+  // a frog (public on a visible unit) defends with a flat 0.5, has no
+  // fortification and no cover, and never strikes back.
+  const targetFrog = target.form === "LAND" && unitIsFrogV7(view, target);
   const rockfallApplied =
     attackerLand && attackerMechanics0.rockfallAttack2 > 0 && distance === 2;
   const coldBloodApplied =
@@ -10184,17 +10586,19 @@ function publicCombatPreviewCore(
       ? 2
       : target.form === "EGG"
         ? EGG_DEFENSE2_V7
-        : // Tuning 5: the Human Guard is open to ranged attacks. The ninth
-          // unit (7r55): a Cracked unit has 1 less Defense (the public
-          // `crackedThisTurn` of a visible unit).
-          unitDefense2AtDistanceV7(
-            view,
-            target,
-            defenderRule,
-            unitRoleMechanicsV7(view, target),
-            distance,
-          ) +
-          fortificationLevel * 2;
+        : targetFrog
+          ? FROG_DEFENSE2_V7
+          : // Tuning 5: the Human Guard is open to ranged attacks. The ninth
+            // unit (7r55): a Cracked unit has 1 less Defense (the public
+            // `crackedThisTurn` of a visible unit).
+            unitDefense2AtDistanceV7(
+              view,
+              target,
+              defenderRule,
+              unitRoleMechanicsV7(view, target),
+              distance,
+            ) +
+            fortificationLevel * 2;
   // The Ice Folk revision section 6.2: Snow cover from the public Snow flag
   // (a hidden Witch's Blizzard is not known; `hiddenBlizzardPossible`).
   // `pulp_wars-1wy.3`: Snow cover is x 1.25 and yields to the x 1.5 of a
@@ -10204,6 +10608,7 @@ function publicCombatPreviewCore(
   // whether the terrain cover applies.
   const terrainCover =
     !acid &&
+    !targetFrog &&
     targetTakesCover &&
     terrainGivesCoverV7(
       targetTile.terrain,
@@ -10211,6 +10616,7 @@ function publicCombatPreviewCore(
     );
   const snowCover =
     !acid &&
+    !targetFrog &&
     targetTakesCover &&
     !terrainCover &&
     targetTile.snow === true &&
@@ -10219,7 +10625,8 @@ function publicCombatPreviewCore(
   // The frozen sea (naval branch section 8.10): Glacier's cover on ice,
   // read from the target's public stats (its owner's technologies are
   // private; the stats already hold the unit's fortification).
-  const iceCover = !acid && defenseStats.iceFolk?.iceCover === true;
+  const iceCover =
+    !acid && !targetFrog && defenseStats.iceFolk?.iceCover === true;
   // Section 8.9: an icebound defender never retaliates.
   const defenderIcebound = unitIsIceboundV7(view, target);
   const bonus = coverBonusV7(terrainCover, snowCover || iceCover);
@@ -10293,6 +10700,7 @@ function publicCombatPreviewCore(
     !unanswered &&
     !defenderIcebound &&
     !targetFrozen &&
+    !targetFrog &&
     target.form !== "EMBARKED" &&
     target.form !== "EGG" &&
     roleRetaliatesV7(defenderRule) &&

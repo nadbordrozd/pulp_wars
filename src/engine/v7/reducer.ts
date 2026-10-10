@@ -335,6 +335,25 @@ import {
   ritualDisruptionsV7,
   withCowedTurnEndedV7,
 } from "./cult-rituals";
+import {
+  pamphletsApplyV7,
+  tentacleSlapTargetV7,
+  trickRefusalV7,
+  unitIsFrogV7,
+  unitIsTentacleV7,
+} from "./cult-hexes";
+import {
+  applyPickMeV7,
+  applyRibbitV7,
+  applySwitcherooV7,
+  applyTentacleV7,
+  prunedTricksV7,
+  resolveTentacleCountdownV7,
+  tricksStartTurnStepV7,
+  withFrogCuredV7,
+  withFrogsTurnEndedV7,
+  withGrabAfterSlapV7,
+} from "./cult-tricks";
 import { unitIsConstructV7 } from "./afflictions";
 import {
   recoverEligibleV7,
@@ -521,7 +540,22 @@ export type RuleErrorCodeV7 =
   // cannot begin (`EMBARKED`, `MOVED`: a Stargazer that moved, `CHANTERS`,
   // `TILE`), and a Proclaim with no legal city (`CITY`, `RANGE`, `COWED`).
   | "RITUAL_NOT_LEGAL"
-  | "PROCLAIM_NOT_LEGAL";
+  | "PROCLAIM_NOT_LEGAL"
+  // The Cultists (`pulp_wars-mch9.8`, sections 9 and 8.2): an illegal
+  // Ribbit (`EMBARKED`, `COOLDOWN`, `TARGET`, `IMMUNE`, `FROG`, `RANGE`),
+  // Switcheroo (`EMBARKED`, `TECHNOLOGY`, `COOLDOWN`, `TARGET`, `IMMUNE`,
+  // `RANGE`, `CENTER`, `TILE`), Tentacle (`EMBARKED`, `EXISTS`, `TILE`), or
+  // Pick Me! (`EMBARKED`); a command of a frog other than Move,
+  // Disembark, Promote, Disband, or Wait (`UNIT_FROGGED { unitId }`); and
+  // an `ATTACK` by a unit beside a taunting Chosen at another target
+  // (`ATTACK_TAUNTED { unitId }`, the Chosen). A Move of a grabbed unit
+  // away from its Tentacle is `MOVEMENT_ILLEGAL` reason `GRABBED`.
+  | "RIBBIT_NOT_LEGAL"
+  | "SWITCHEROO_NOT_LEGAL"
+  | "TENTACLE_NOT_LEGAL"
+  | "PICK_ME_NOT_LEGAL"
+  | "UNIT_FROGGED"
+  | "ATTACK_TAUNTED";
 export interface RuleErrorV7 {
   readonly code: RuleErrorCodeV7;
   readonly params: Readonly<Record<string, JsonValue>>;
@@ -1427,6 +1461,9 @@ function navalFactsMayChangeV7(
     "SEIZE",
     // A Boo! moves units of any seat.
     "BOO",
+    // So does a Switcheroo; a Tentacle may rise on water and kill a ship.
+    "SWITCHEROO",
+    "TENTACLE",
   ].includes(command.kind);
   // (A star and the Great Summoning land inside an `END_TURN`.)
 }
@@ -1472,6 +1509,12 @@ function applyCommandCoreV7(
   const frozenNamed = frozenUnitNamedV7(state, actor, command);
   if (frozenNamed !== null)
     return rejected(stateInput, "UNIT_FROZEN", { unitId: frozenNamed });
+  // The Cultists (`pulp_wars-mch9.8`, RULESET_7_CULTISTS.md sections 9.1
+  // and 8.2): a frog only hops, and a unit beside a taunting Chosen attacks
+  // only it.
+  const trick = trickRefusalV7(state, actor, command);
+  if (trick !== null)
+    return rejected(stateInput, trick.code, { unitId: trick.unitId });
   // The Dwarf revision section 5.3: a burrowed unit spent its turn
   // underground; every command naming it is refused.
   if (
@@ -1672,6 +1715,22 @@ function applyCommandCoreV7(
     return applyBeginRitualV7(DWARF_KIT_V7, stateInput, state, actor, command);
   if (command.kind === "PROCLAIM")
     return applyProclaimV7(DWARF_KIT_V7, stateInput, state, actor, command);
+  // The Cultists, hexes and tricks (sections 9 and 8.2).
+  if (command.kind === "RIBBIT")
+    return applyRibbitV7(DWARF_KIT_V7, stateInput, state, actor, command);
+  if (command.kind === "SWITCHEROO")
+    return applySwitcherooV7(DWARF_KIT_V7, stateInput, state, actor, command);
+  if (command.kind === "TENTACLE")
+    return applyTentacleV7(
+      DWARF_KIT_V7,
+      stateInput,
+      state,
+      actor,
+      command,
+      resolveTentacleSlapV7,
+    );
+  if (command.kind === "PICK_ME")
+    return applyPickMeV7(DWARF_KIT_V7, stateInput, state, actor, command);
   return rejected(stateInput, "INVALID_COMMAND");
 }
 
@@ -4765,7 +4824,12 @@ function applyMove(
             ...candidate,
             at: validation.destination,
             form: embarks ? ("EMBARKED" as const) : candidate.form,
-            captureEligible: false,
+            // The Cultists (`pulp_wars-mch9.8`, RULESET_7_CULTISTS.md
+            // section 8.7): Pamphlets, an Initiate whose Move ends on a
+            // neutral village center may capture it this turn.
+            captureEligible:
+              !embarks &&
+              pamphletsApplyV7(state, candidate, destinationTile?.site),
             activation: embarks
               ? {
                   ...exhaustedActivation(),
@@ -6515,7 +6579,9 @@ function applyTendWounded(
         (unit.hp < unit.maxHp ||
           plaguedIds.has(unit.id) ||
           bittenIds.has(unit.id) ||
-          isFrozenV7(state.frozen, unit.id)) &&
+          isFrozenV7(state.frozen, unit.id) ||
+          // The Cultists (`pulp_wars-mch9.8`, section 9.1): and a frog.
+          unitIsFrogV7(state, unit)) &&
         !unit.activation.tendedThisTurn &&
         chebyshev(result.captain.at, unit.at) === 1,
     )
@@ -6565,6 +6631,10 @@ function applyTendWounded(
         (frozen, unit) => withFrozenCuredV7(frozen, unit.id),
         state.frozen,
       ),
+      cult: targets.reduce(
+        (cult, unit) => withFrogCuredV7(cult, unit.id),
+        state.cult,
+      ),
       units: state.units.map((unit) =>
         unit.id === result.captain.id
           ? {
@@ -6599,6 +6669,10 @@ function applyTendWounded(
                 curedPlague: plaguedIds.has(unit.id),
                 curedBitten: bittenIds.has(unit.id),
                 curedFrozen: isFrozenV7(state.frozen, unit.id),
+                // Present only on a cured frog.
+                ...(unitIsFrogV7(state, unit)
+                  ? { curedFrog: true as const }
+                  : {}),
               })),
             },
           ]),
@@ -7290,7 +7364,10 @@ function applyCapture(
     state.units.some(
       (item) => item.id !== unit.id && item.hp > 0 && same(item.at, unit.at),
     ) ||
-    unit.activation.moved ||
+    // The Cultists (section 8.7): Pamphlets, an Initiate captures a
+    // neutral village in the turn it walked onto it.
+    (unit.activation.moved &&
+      !(village && pamphletsApplyV7(state, unit, tile?.site))) ||
     primaryUsed(unit) ||
     !unit.captureEligible
   )
@@ -7610,8 +7687,13 @@ function applyEndTurn(
     // the turn of the seat in whose Start Turn the daemon broke loose.
     // Section 8.6 (`pulp_wars-mch9.7`): so does Cowed, for the actor's
     // cities (before its income preview).
+    // Section 9.1 (`pulp_wars-mch9.8`): and a frog (its idle recovery is
+    // an ordinary unit's).
     const recovery = recoverIdleUnits(
-      withCowedTurnEndedV7(withFuriousEndedV7(state, actor), actor),
+      withFrogsTurnEndedV7(
+        withCowedTurnEndedV7(withFuriousEndedV7(state, actor), actor),
+        actor,
+      ),
       current,
     );
     const expiredUnits: GameStateV7 = {
@@ -7771,8 +7853,14 @@ function applyEndTurn(
       nextPlayer,
       false,
       (reset) => {
+        // The Cultists (`pulp_wars-mch9.8`, sections 9.1, 9.2, and 8.2):
+        // the hex cooldowns count down and the seat's taunts end with the
+        // Mind Control cooldowns.
         const recharge = rechargeShieldsV7(
-          mindControlCooldownStepV7(reset, nextPlayer.id),
+          tricksStartTurnStepV7(
+            mindControlCooldownStepV7(reset, nextPlayer.id),
+            nextPlayer.id,
+          ),
           nextPlayer.id,
         );
         // The frozen sea (naval branch section 9): Black Ice, then the crush,
@@ -7918,6 +8006,13 @@ function resolveNeutralTurnV7(
       events.push(...rampaged.events);
       continue;
     }
+    // Section 9.3 (`pulp_wars-mch9.8`): a Tentacle slaps.
+    if (entry.breed === "TENTACLE") {
+      const slapped = resolveTentacleSlapV7(current, unitId);
+      current = slapped.state;
+      events.push(...slapped.events);
+      continue;
+    }
     // Step 2: reset its activation.
     let monster: UnitStateV7 = { ...found, activation: freshActivationV7() };
     replace(monster);
@@ -8046,7 +8141,72 @@ function resolveNeutralTurnV7(
       entry.provokedBy.length === 0 ? entry : { ...entry, provokedBy: [] },
     ),
   };
+  // The Cultists (RULESET_7_CULTISTS.md sections 9.3 and 13.3): each
+  // Tentacle's lifetime counts down at the end of the neutral turn.
+  current = resolveTentacleCountdownV7(current, events);
   events.push({ kind: "NEUTRAL_TURN_ENDED", round });
+  return { state: current, events };
+}
+
+/**
+ * The Cultists (docs/product/RULESET_7_CULTISTS.md section 9.3): one slap
+ * of the Tentacle `tentacleId`, when it rises and in every neutral turn.
+ * Its activation is reset; it attacks the unit of a player beside it with
+ * the fewest Hit Points (`tentacleSlapTargetV7`: any form, never a neutral
+ * unit; ties to the lowest ID): the ordinary exchange, with retaliation,
+ * deaths, Graves, and blasts, credited to nobody. Then the Grab: it holds
+ * the unit it slapped while both survive (`UNIT_GRABBED`), and nobody when
+ * there was nobody to slap. Returns `state` itself and no event for a unit
+ * that is not a Tentacle on the board.
+ */
+function resolveTentacleSlapV7(
+  state: GameStateV7,
+  tentacleId: UnitId,
+): { readonly state: GameStateV7; readonly events: readonly DomainEventV7[] } {
+  const found = state.units.find(
+    (unit) => unit.id === tentacleId && unit.hp > 0,
+  );
+  if (found === undefined || !unitIsTentacleV7(found))
+    return { state, events: [] };
+  const tentacle: UnitStateV7 = { ...found, activation: freshActivationV7() };
+  let current: GameStateV7 = {
+    ...state,
+    units: state.units.map((unit) =>
+      unit.id === tentacle.id ? tentacle : unit,
+    ),
+  };
+  const events: DomainEventV7[] = [];
+  const target = tentacleSlapTargetV7(current.units, tentacle.at);
+  if (target !== null) {
+    const exchange = resolveAttackExchangeV7(
+      current,
+      NEUTRAL_OWNER_ID_V7,
+      tentacle,
+      target,
+      unitRoleRuleV7(current, tentacle),
+      chebyshev(tentacle.at, target.at),
+    );
+    current = exchange.state;
+    events.push(...exchange.events);
+  }
+  current = withGrabAfterSlapV7(
+    current,
+    tentacle.id,
+    target?.id ?? null,
+    events,
+  );
+  const survivor = current.units.find(
+    (unit) => unit.id === tentacleId && unit.hp > 0,
+  );
+  if (survivor !== undefined && !survivor.activation.handled)
+    current = {
+      ...current,
+      units: current.units.map((unit) =>
+        unit.id === survivor.id
+          ? { ...unit, activation: { ...unit.activation, handled: true } }
+          : unit,
+      ),
+    };
   return { state: current, events };
 }
 
@@ -9602,18 +9762,23 @@ function checked(state: GameStateV7): GameStateV7 {
   // a released victim is an ordinary unit for the other prunes).
   // The Cultists: drop the Favour of a seat that left the game, and the
   // strands, grips, idols, ritual places, and Cowed entries whose units or
-  // cities left the board.
+  // cities left the board; and (`pulp_wars-mch9.8`) the frogs, hex
+  // cooldowns, taunts, Tentacle entries, and grabs whose units left it.
   const result = parseGameStateV7(
     prunedCultV7(
-      prunedRitualsV7(
-        prunedChannelV7(
-          prunedNinthUnitV7(
-            prunedCandyV7(
-              prunedMonstersV7(
-                prunedDwarfV7(
-                  prunedIceFolkV7(
-                    prunedMartianV7(
-                      prunedEggsV7(prunedAfflictionsV7(prunedGiantsV7(state))),
+      prunedTricksV7(
+        prunedRitualsV7(
+          prunedChannelV7(
+            prunedNinthUnitV7(
+              prunedCandyV7(
+                prunedMonstersV7(
+                  prunedDwarfV7(
+                    prunedIceFolkV7(
+                      prunedMartianV7(
+                        prunedEggsV7(
+                          prunedAfflictionsV7(prunedGiantsV7(state)),
+                        ),
+                      ),
                     ),
                   ),
                 ),

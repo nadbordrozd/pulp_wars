@@ -38,6 +38,7 @@ import {
   type CultLookupV7,
   type CultReducerKitV7,
 } from "./cult";
+import { unitIsFrogV7, type TrickListsV7 } from "./cult-hexes";
 import {
   cultDisruptionsV7,
   disruptingStatusKeysV7,
@@ -149,12 +150,12 @@ function primaryActedV7(unit: ActorFactsV7): boolean {
  * Section 7.1: the chanters a ritual led by `leader` would begin with: the
  * leader's own robed cultists (in land form, with Channel, so never a
  * mind-controlled unit) on the eight tiles around it that have not used a
- * primary action (they may have moved) and are not Frozen, in unit-ID
- * order. Every such unit joins; a player who wants one left out uses it
- * first.
+ * primary action (they may have moved) and are not Frozen or frogs
+ * (`pulp_wars-mch9.8`), in unit-ID order. Every such unit joins; a player
+ * who wants one left out uses it first.
  */
 export function ritualChantersV7<U extends ActorFactsV7>(
-  lookup: FrozenLookupV7,
+  lookup: FrozenLookupV7 & TrickListsV7,
   units: readonly U[],
   leader: RitualUnitFactsV7,
 ): readonly U[] {
@@ -168,7 +169,8 @@ export function ritualChantersV7<U extends ActorFactsV7>(
         isRobedCultistV7(lookup, unit) &&
         unitRoleRuleV7(lookup, unit).abilities.includes("CHANNEL") &&
         !primaryActedV7(unit) &&
-        !unitIsFrozenV7(lookup, unit),
+        !unitIsFrozenV7(lookup, unit) &&
+        !unitIsFrogV7(lookup, unit),
     )
     .sort((left, right) => left.id - right.id);
 }
@@ -248,7 +250,7 @@ export type BeginRitualRejectionV7 =
  * and a legal mark.
  */
 export function beginRitualRejectionV7<U extends ActorFactsV7>(
-  lookup: FrozenLookupV7,
+  lookup: FrozenLookupV7 & TrickListsV7,
   facts: RitualTileFactsV7,
   seat: { readonly favour: number; readonly greatSummoning: boolean },
   units: readonly U[],

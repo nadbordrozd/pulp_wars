@@ -528,6 +528,14 @@ export function applyTopUpV7(
         plagued: state.plagued.filter((entry) => entry.unitId !== target.id),
         bitten: state.bitten.filter((entry) => entry.unitId !== target.id),
         frozen: withFrozenCuredV7(state.frozen, target.id),
+        // The Cultists (`pulp_wars-mch9.8`, RULESET_7_CULTISTS.md section
+        // 9.1): a Top-Up cures a frog.
+        cult: state.cult.frogs.includes(target.id)
+          ? {
+              ...state.cult,
+              frogs: state.cult.frogs.filter((id) => id !== target.id),
+            }
+          : state.cult,
         stuck: withoutCandyStatusV7(state.stuck, target.id),
         toothache: withoutCandyStatusV7(state.toothache, target.id),
         units: state.units.map((unit) =>

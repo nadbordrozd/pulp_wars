@@ -219,8 +219,9 @@ Human and hold a line, and the AI attacks it as a Human, a Goblin, or an
 Undead seat; `LAB_GOBLIN_MID`, `LAB_UNDEAD_MID`, `LAB_MARTIAN_MID`, and
 `LAB_DINOSAUR_MID` (`lab-goblin.ts`, `lab-undead.ts`, `lab-martian.ts`,
 `lab-dinosaur.ts`) are four in which you play another faction, and
-`LAB_ICE_FOLK_MID` (`lab-ice-folk.ts`) is the fifth and `LAB_DWARF_MID`
-(`lab-dwarf.ts`) the sixth. Each is an
+`LAB_ICE_FOLK_MID` (`lab-ice-folk.ts`) is the fifth, `LAB_DWARF_MID`
+(`lab-dwarf.ts`) the sixth, and `LAB_CULT_MID` (`lab-cult.ts`) the seventh
+(built and checked; nobody has played it). Each is an
 ordinary match from a fixed start: every command, `verify`, and `debrief`
 work as in a generated match.
 
@@ -238,6 +239,7 @@ work as in a generated match.
 | `LAB_DINOSAUR_MID`        | 16 x 16. **You play the Dinosaurs** against the Human AI in an even middle game ([the Dinosaur pass](../product/RULESET_7_TUNING_DINOSAUR.md#9-the-lab)), on the land and against the Human side of `LAB_MARTIAN_MID`: five cities a side (a level-4 capital, two level-3, two level-2 at the front), 15 Coins a turn each, ten technologies each. You can produce every Dinosaur unit and hold 3 Cavemen, 2 Raptors (one Big), 2 Spitters (one Big), 2 Ankylosauruses, a Shaman, 2 Triceratops (one Big), and a T-Rex Egg beside your capital, two turns from hatching, with the Shaman next to it (12 units and the Egg, 67 Coins), 35 Coins on the first turn, and three free unit slots (two in the capital, one in the northern level-3 city; a Triceratops and a T-Rex fill two). You own neither Nesting (one more unit slot in every city, Eggs with 10 HP) nor Wallbreaker (the second tile of a Triceratops's run-up). The Humans hold 3 Swordsmen, 3 Marksmen, 2 Catapults, 2 Knights, 2 Guards, and 5 Fighters (77 Coins) at the start and 30 Coins on their first turn, a walled capital and a walled level-3 city, and Forest cover. |
 | `LAB_ICE_FOLK_MID`        | 16 x 16. **You play the Ice Folk** against the Human AI in an even middle game ([step two of the Ice Folk pass](../product/RULESET_7_TUNING_ICE_FOLK.md#6-the-lab)), on the land and against the Human side of `LAB_DINOSAUR_MID`: five cities a side, thirteen technologies for you (Deep Winter, Engineering, and Mammoths among them) and twelve for the Humans. You hold 5 Yetis, 2 Sleds, 2 Snow Hunters, 2 Musk Oxen, an Ice Witch, 2 Mammoths, a Boulder Yeti, and a Sabretooth (16 units, 70 Coins since revision 2), 35 Coins on the first turn, and three free unit slots; your land is Snow. The Humans hold 17 units (80 Coins). Revision 2 (Ice Folk Freeze, `pulp_wars-w49.37`: the same units under the new numbers).                                                                                                                                                                                                                                                                                                                                                                                                               |
 | `LAB_DWARF_MID`           | 16 x 16. **You play the Dwarves** against the Human AI in an even middle game ([step two of the Dwarf pass](../product/RULESET_7_TUNING_DWARF.md#6-the-lab)), on the land and against the Human side of `LAB_ICE_FOLK_MID`: five cities a side, thirteen technologies for you (Dig In, Clockwork, Dive Bombing, Mining, Steam Tanks, Steam Cannons, and Whirligigs among them; not Blasting Charges) and twelve for the Humans. You hold 5 Hammerers, 2 Gyrocopters, 2 Clockwork Gunners, 2 Steam Moles, an Engineer, 2 Steam Tanks, a Steam Cannon, and a Whirligig (16 units, 74 Coins), 35 Coins on the first turn, and three free unit slots. The Humans hold 17 units (80 Coins). Revision 1.                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| `LAB_CULT_MID`            | 16 x 16. **You play the Cultists** against the Human AI in an even middle game ([the Cultists spec, section 21.6](../product/RULESET_7_CULTISTS.md#216-e6-hexes-and-tricks-pulp_wars-mch98-pulp-wars-poc-7r78)), on the land and against the Human side of `LAB_DWARF_MID`: five cities a side, fourteen technologies for you (every Cult unit and every rite, The Stars Are Right among them; not Harvest Rites) and twelve for the Humans. You hold 5 Initiates, 2 Idol Bearers, 2 Familiars, 2 Hexers, 2 Summoners (side by side), a Stargazer, a Caller, and 2 Chosen (17 units, 68 Coins), 35 Coins on the first turn, **12 Favour** (a Horror costs 5, the Great Summoning 20), no daemon, and two free unit slots. **Built and checked; not played yet.**                                                                                                                                                                                                                                                                                                                                                                                   |
 
 ### Dinosaur seats
 
@@ -343,6 +345,19 @@ shows `leads Star-fall: 7 on 8,6 and around it, due at S0's next turn start
 (2 chanting)` or `chants in ...`; a Cowed city's line ends in `COWED`. The
 log prints `RITUAL BEGUN`, `RITUAL FIZZLED`, `STAR FELL`, `CONSUMED`,
 `THE HERALD ... arrived`, and `COWED`.
+Hexes and tricks (`pulp_wars-mch9.8`) add `.ribbit.u9` (the Hexer frogs that
+unit), `.switch.u9` (the Familiar swaps with it), `.tentacle.4,5` (the
+Caller calls a Tentacle up on that tile), and `.pickme` (the Chosen's
+taunt). `options` says what a frog loses, where the two units of a swap
+land, and whom a Tentacle slaps at once as the board stands. A unit's line
+shows `FROG until its owner's next turn ends`, `trick spent`,
+`PICK ME: enemies beside it can attack only it`, `taunted: may attack only
+u7`, or `GRABBED by u40: moves only to tiles next to it`. A Tentacle prints
+as `Tentacle [TENTACLE]` with the map code `Te` and the seat digit `N`,
+with `sinks after 3 more rounds` and whom it holds. The log prints
+`RIBBIT`, `SWITCHEROO`, `TENTACLE ... rose`, `GRABBED`, `TENTACLE ... sank`,
+and `PICK ME!`. An Initiate on a neutral village it walked onto this turn
+shows `can-capture-now` (Pamphlets).
 
 A unit keeps its id for its whole life; a city keeps its id across captures.
 Roles and technologies use the engine's identifiers (`FIGHTER`, `FARMING`).

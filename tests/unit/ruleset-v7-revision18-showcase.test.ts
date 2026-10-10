@@ -247,6 +247,10 @@ describe("ruleset-7 revision-18 Showcase setup", () => {
         idols: [],
         rituals: [],
         cowed: [],
+        frogs: [],
+        hexCooldowns: [],
+        taunts: [],
+        tentacles: [],
       });
       expectInitialScoreLedgerV7(created.state, scoreLedger, false);
       expect(ninthUnit).toEqual({

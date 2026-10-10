@@ -1,6 +1,6 @@
 import type { UnitId } from "../engine/model/ids";
 import {
-  isDaemonBreedV7,
+  isWildBreedV7,
   type CoordV7,
   type NeutralBreedV7,
 } from "../engine/v7/types";
@@ -93,6 +93,8 @@ export const NEUTRAL_BOUNTY_FOR_POLICY_V7: Readonly<
   BIGFOOT: 12,
   HORROR: 0,
   HERALD: 0,
+  // A Tentacle (`pulp_wars-mch9.8`) pays nothing either.
+  TENTACLE: 0,
 });
 /**
  * Section 33, "avoid unless strong": a unit strikes a camp guard only when
@@ -245,8 +247,9 @@ export function curiosityFactsV7(view: PlayerViewV7): CuriosityFactsV7 | null {
     // an Unbound daemon is read like the Spider (a lone monster): a routine
     // Move keeps off the tiles its next rampage can strike (its preview's
     // provoke tiles), and a unit there is threatened.
-    const guard =
-      !bigfoot && breed !== "GIANT_SPIDER" && !isDaemonBreedV7(breed);
+    // A Tentacle (`pulp_wars-mch9.8`, section 9.3) is read the same way:
+    // the tiles beside it are its provoke tiles.
+    const guard = !bigfoot && breed !== "GIANT_SPIDER" && !isWildBreedV7(breed);
     const provokeKeys = new Set(preview.provokeTiles.map(key));
     const reachKeys = new Set(preview.reachTiles.map(key));
     monsters.push({
@@ -265,7 +268,7 @@ export function curiosityFactsV7(view: PlayerViewV7): CuriosityFactsV7 | null {
                   (other) =>
                     other.breed !== "GIANT_SPIDER" &&
                     other.breed !== "BIGFOOT" &&
-                    !isDaemonBreedV7(other.breed) &&
+                    !isWildBreedV7(other.breed) &&
                     same(other.home, entry.home),
                 )
                 .flatMap((other) => other.provokedBy)
@@ -365,7 +368,7 @@ export function campMatesV7(
   if (
     monster.breed === "GIANT_SPIDER" ||
     monster.breed === "BIGFOOT" ||
-    isDaemonBreedV7(monster.breed)
+    isWildBreedV7(monster.breed)
   )
     return [];
   return facts.monsters.filter(
@@ -373,7 +376,7 @@ export function campMatesV7(
       other !== monster &&
       other.breed !== "GIANT_SPIDER" &&
       other.breed !== "BIGFOOT" &&
-      !isDaemonBreedV7(other.breed) &&
+      !isWildBreedV7(other.breed) &&
       same(other.home, monster.home),
   );
 }

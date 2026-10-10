@@ -8,9 +8,13 @@ Sacrifice, Seize, Offering, and Martyr, bead E2; the channel, bead E3:
 Summon and the Horror, Channel and the strands, the disruption rule, the
 Start Turn check, Behold!, Anchor, and Boo!; and Unbound, bead E4: a daemon
 that fails its check belongs to nobody and rampages, Furious, Bind again, a
-bound daemon's kills as Favour; and rituals and the Herald, bead E5:
+bound daemon's kills as Favour; rituals and the Herald, bead E5:
 Star-fall, the Great Summoning, Ravage, Unstoppable, Proclaim and the Cowed
-city ([section 21](#21-implementation-notes)). No hex yet. It
+city; and hexes and tricks, bead E6: Ribbit and the frog, Switcheroo, the
+Tentacle and Grab, Pick Me!, Pamphlets, and the lab `LAB_CULT_MID`
+([section 21](#21-implementation-notes)). The engine is complete; the
+Normal AI, the interface of the rites and tricks, and the setup screen are
+not. It
 replaces
 [the Cult proposal](RULESET_7_CULT_PROPOSAL.md) of 2026-10-06 (bead
 `pulp_wars-2yc.25`), which stays as design history; where the two
@@ -2585,8 +2589,9 @@ where this spec left room:
     a Dimensional Gate onto it is blocked (`GATE_BLOCKED`) instead of
     shoving it. A Crushing Shove it does not yield to crushes it, as
     damage. Plague, a bite, Infect, Wail, Boo!, Mind Control, and Swallow
-    never take a daemon. Ribbit and Switcheroo arrive with E6 and must read
-    `unitIsUnstoppableV7`.
+    never take a daemon. Ribbit and Switcheroo (E6) take no summoned unit at
+    all, so never the Herald
+    ([section 21.6](#216-e6-hexes-and-tricks-pulp_wars-mch98-pulp-wars-poc-7r78)).
 12. **Proclaim** (`PROCLAIM { unitId, cityId }`) takes one of the two
     attacks and may come before or after the other, also after the Move.
     The city is a player's city hostile to the Herald's seat whose center
@@ -2624,6 +2629,157 @@ where this spec left room:
     Unstoppable, and Proclaim. The text-mode harness prints a line per
     command (`.starfall.x,y`, `.summoning.x,y`, `.proclaim.cN`), the circles
     under way, a Cowed city, and a Herald's attacks left.
+
+### 21.6 E6, hexes and tricks (`pulp_wars-mch9.8`, `pulp-wars-poc-7r78`)
+
+What the engine holds after E6 is listed in
+[the current rules, section 1](RULESET_7_CURRENT.md#1-identity-and-compatibility):
+Ribbit and the frog ([section 9.1](#91-ribbit)), Switcheroo
+([section 9.2](#92-switcheroo)), the Tentacle and Grab
+([section 9.3](#93-tentacle-and-grab)), Pick Me!
+([section 8.2](#82-pick-me-and-martyr-the-chosen)), and Pamphlets
+([section 8.7](#87-pamphlets-the-initiate)). With it every rule of this spec
+is in the engine. The choices E6 made where this spec left room:
+
+1. **The commands and their units.** `RIBBIT { unitId, targetUnitId }`
+   (the Hexer's ability `RIBBIT`), `SWITCHEROO { unitId, targetUnitId }`
+   (the Familiar's `SWITCHEROO`), `TENTACLE { unitId, at }` (the Caller's
+   `TENTACLE`), and `PICK_ME { unitId }` (the Chosen's `PICK_ME`); the
+   Initiate has `PAMPHLETS` and the Tentacle `GRAB`. Each of the four is a
+   primary action that may follow the unit's Move. A mind-controlled Hexer,
+   Familiar, Chosen, or Initiate keeps its trick (it follows the unit); **a
+   mind-controlled Caller has no Tentacle**: calling one calls on the
+   Ancient Ones, like a summoning, and needs a Cult seat.
+2. **The state** is four lists of the `cult` block: `frogs` (unit IDs),
+   `hexCooldowns` (`{ unitId, turnsRemaining }`), `taunts` (unit IDs), and
+   `tentacles` (`{ unitId, callerUnitId, turnsLeft, grabbedUnitId }`). An
+   entry whose unit leaves the board is dropped.
+3. **A frog** is always made in another seat's turn, so it lasts through
+   its owner's next turn and ends when that turn ends. A frog gives no
+   command but Move, Disembark, Promote, Disband, and Wait (`UNIT_FROGGED`);
+   a frogged helper summons nothing and a frog chants in no ritual. Its
+   Move is one Move point (a Road still halves a step). Against an `ATTACK`
+   a land-form frog has Defense 0.5 flat (a Cracked one too), no
+   fortification level (Walls, Field Defense, Dig In), no cover (terrain,
+   Snow, ice), and no strike back; a Shield, Armoured, Plated, and a
+   Blizzard's halving stay. Area hits and fixed damage never read Defense,
+   so they are unchanged. A unit that is a frog already is no target
+   (`RIBBIT_NOT_LEGAL` reason `FROG`). **A frog is a status** for the
+   disruption rule: a frogged channeller's strand breaks, a frogged chanter
+   leaves its circle, and a frogged Idol Bearer's idol drops.
+4. **The cures.** Tend Wounded (the Dwarf Engineer's Repair is the same
+   command) takes a frog as a target at full Hit Points too and cures it;
+   its `WOUNDED_TENDED` result carries `curedFrog: true` (the key is
+   present only then). A Top-Up cures it (`cured`). A cured unit is itself
+   at once and may act in that turn.
+5. **Seize.** A frog is Seized at half its maximum Hit Points or less
+   (`hp * 2 <= maxHp`), every other condition as before
+   (`unitIsSeizableV7`). The Great Summoning still consumes only an enemy
+   at 5 HP or less.
+6. **"Every second turn."** A Ribbit or a Switcheroo gives its unit a
+   `hexCooldowns` entry of 2, which loses 1 at each Start Turn of the
+   unit's owner and is removed at 0: the trick is refused on the owner's
+   next turn (`COOLDOWN`) and back on the one after. The step runs with the
+   Mind Control cooldowns, before Plague.
+7. **Switcheroo** needs Familiars: the unlock `SWITCHEROO` on the Cult's
+   Scouting (the capability `switcheroo`), read through the Familiar's own
+   tree with its controller's research, so a Familiar from the Scouts
+   reward or a treasure chest swaps only once Scouting is researched. The
+   target is a land-form unit of any player that the actor sees, within 2
+   tiles, not a reward giant, a two-slot unit, an Egg, a neutral unit, a
+   summoned unit (so never the Herald), or a unit nothing moves (a
+   Jawbreaker). Neither tile is a settlement center (`CENTER`), and each
+   unit must be able to stand on the other's tile by the Push conditions,
+   **with the actor's Engineering and Navigation** (as a Tractor Beam
+   reads them, so the offer is exact) and not in territory allied to the
+   moved unit (`TILE`). A swap is not a Move: neither activation changes
+   but the Familiar's spent action, both lose `captureEligible`, each
+   reveals its sight where it lands, and nothing on either tile is picked
+   up or eaten.
+8. **The Tentacle** is a neutral unit of the breed `TENTACLE` from birth
+   (never a seat's unit, so it is not in `SUMMONED_MECHANICAL_ROLES_V7`):
+   `summoned: "TENTACLE"`, stored role `JUGGERNAUT` (the big body's, like
+   the Giant Spider's: no Push, Swallow, Knockback, Bounce, or Shatter
+   takes it), 8 HP, Attack 3, Defense 1, Move 0, no Sight, a construct
+   (not living: no Plague, bite, Boo!, Mind Control, or Grave), and
+   immovable. It rises on a tile its Caller's seat has explored, 1 to 3
+   tiles from the Caller, of any terrain but a Rift, land, water, or ice,
+   with no unit, mound, Barricade, treasure chest, or curiosity, and never
+   a settlement center. One Tentacle per Caller, by the Caller's unit ID
+   (`EXISTS`); it outlives its Caller.
+9. **The slap** is the ordinary attack exchange, made by nobody: at once
+   when it rises, and in every neutral turn in unit-ID order with the other
+   neutral units. Its target is the unit of a player on the eight tiles
+   around it with the fewest Hit Points, ties to the lowest unit ID, of any
+   seat (its Caller's too) and any form. Retaliation, deaths, Graves, and
+   blasts are as for any attack; the kill is credited to nobody, pays no
+   Favour, and a Chosen it kills is no Martyr. Killing a Tentacle is worth
+   nothing (value 0, no bounty). At the end of each neutral turn its
+   `turnsLeft` (3 when it rises) loses 1, and at 0 it sinks
+   (`TENTACLE_SANK`, then `UNIT_DIED` cause `SANK`; no Grave): so it slaps
+   four times at most.
+10. **Grab.** After each slap the Tentacle holds the unit it slapped when
+    both survive and the unit stands next to it (`UNIT_GRABBED`), and
+    nobody otherwise. **Every step of a held unit's Move must be a tile
+    next to that Tentacle** (`MOVEMENT_ILLEGAL` reason `GRABBED`; the Move
+    enumeration offers no other). Anything else that takes the unit from
+    its side ends the grab: a shove, a swap, a Boo!, the advance after a
+    kill, a landing. Grab is no status for the disruption rule (the slap's
+    loss of Hit Points is what breaks a strand).
+11. **Pick Me!** A unit hostile to a taunting Chosen's owner that stands on
+    one of the eight tiles around it, in any form, may name only such a
+    Chosen in an `ATTACK` (`ATTACK_TAUNTED`, with the Chosen's ID; next to
+    two taunting Chosen it may attack either). Nothing but `ATTACK` is
+    restricted, and a neutral unit (the Spider, a rampage, a Tentacle) is
+    never bound. The taunt ends at the Start Turn of the Chosen's owner
+    (with the hex cooldowns) and when the Chosen leaves the board; a frogged
+    or Frozen Chosen still taunts.
+12. **Pamphlets.** A Move of a land-form unit with `PAMPHLETS` that ends on
+    a village center nobody owns sets its `captureEligible`, and its
+    `CAPTURE` there is not refused for having moved. Nothing else of
+    Capture changes: a player's city still takes a turn, and a frog does
+    not preach.
+13. **Public data for the board.** A view lists, for the units its viewer
+    sees, `cult.frogs`, `cult.hexCooldowns`, `cult.taunts`, and
+    `cult.tentacles` (the caller and the held unit only when seen); a
+    Tentacle is in `monsters` with the breed `TENTACLE`. The previews are
+    `previewRibbitV7`, `previewSwitcherooV7`, `previewTentacleV7` (whom it
+    slaps at once as the board stands), and `previewPickMeV7` (whom it
+    binds); `publicBindingTauntsV7` names the Chosen that bind an own unit;
+    `previewMonsterV7` gives a Tentacle's ring and its next slap. The
+    public combat preview of a frog is exact, and an attack a taunt or a
+    frog forbids has none.
+14. **The numbers of sections 9.1 and 9.3 were re-run through the engine**
+    and all match: an Initiate deals a frogged Fighter 7 (5 left) and a
+    frogged Knight 7 (6 left) and takes nothing; a frogged Guard in Forest
+    on a Field Defense is as soft as one in the open; a Tentacle kills a
+    full-HP Catapult on arrival, leaves a Marksman at 2, an Initiate at 1,
+    and a Fighter at 4 (and takes 4).
+15. **The Normal AI** never picks `RIBBIT`, `SWITCHEROO`, `TENTACLE`, or
+    `PICK_ME` until bead A3 (`pulp_wars-mch9.11`); Pamphlets needs no rule
+    (it is the ordinary Capture, offered a turn earlier). Every seat reads
+    a visible Tentacle as a lone monster, like an Unbound daemon: no
+    routine Move ends on the eight tiles around it, and it is attacked only
+    for a kill this turn.
+16. **The interface.** The browser offers no button for the four commands
+    yet, draws no frog, taunt, or Grab mark, and a frog's unit card still
+    shows its ordinary Defense and Move (bead U3, `pulp_wars-mch9.19`). The
+    technology card of Familiars names Switcheroo; the glossary has
+    Pamphlets, Switcheroo, Ribbit, Tentacle, Pick Me!, Grab, the wild
+    Tentacle, and the statuses Frog, Grabbed, Taunted, and Spent; a
+    Tentacle's dock says how long it stays and whom it holds. The text-mode
+    harness offers `.ribbit.uN`, `.switch.uN`, `.tentacle.x,y`, and
+    `.pickme` and prints a frog, a spent trick, a taunt, a Tentacle, and
+    its Grab.
+17. **The lab `LAB_CULT_MID`** (`src/engine/v7/missions/lab-cult.ts`) is
+    **built and checked, and has not been played** (the standing rule: no
+    hand-played game unless the user asks). It is the land, the cities, and
+    the Human side of `LAB_DWARF_MID`; the player is the Cult with fourteen
+    technologies (every unit and every rite; not Harvest Rites), 17 units
+    worth 68 Coins (5 Initiates, 2 Idol Bearers, 2 Familiars, 2 Hexers, 2
+    Summoners side by side, a Stargazer, a Caller, 2 Chosen), 35 Coins on
+    the first turn, two free unit slots, and **12 Favour** and no daemon. A
+    mission seat may now start with Favour (`favour`, a Cult seat's only).
 
 ## Appendix A. The proposal's fifteen decisions, answered
 

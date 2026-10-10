@@ -1131,6 +1131,12 @@ export type DomainEventV7 =
          * and thawed.
          */
         readonly curedFrozen: boolean;
+        /**
+         * The Cultists (`pulp_wars-mch9.8`, RULESET_7_CULTISTS.md section
+         * 9.1): the tended unit was a frog and is itself again. The key is
+         * present only then.
+         */
+        readonly curedFrog?: true;
       }[];
     }
   | {
@@ -1695,6 +1701,82 @@ export type DomainEventV7 =
       readonly at: CoordV7;
     }
   | {
+      /**
+       * The Cultists (`pulp_wars-mch9.8`, section 9.1): the Hexer `unitId`
+       * of `playerId` turned the unit `targetUnitId` of `targetOwnerId`,
+       * which stands on `at`, into a frog until the end of its owner's next
+       * turn.
+       */
+      readonly kind: "UNIT_FROGGED";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly targetUnitId: UnitId;
+      readonly targetOwnerId: PlayerId;
+      readonly at: CoordV7;
+    }
+  | {
+      /**
+       * The Cultists (section 9.2): the Familiar `unitId` of `playerId`,
+       * which stood on `from`, and the unit `targetUnitId` of
+       * `targetOwnerId`, which stood on `to`, swapped places. A projection
+       * to a viewer that has not explored one of the two tiles has null
+       * for it.
+       */
+      readonly kind: "UNITS_SWAPPED";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly targetUnitId: UnitId;
+      readonly targetOwnerId: PlayerId;
+      readonly from: CoordV7 | null;
+      readonly to: CoordV7 | null;
+    }
+  | {
+      /**
+       * The Cultists (section 9.3): the Caller `unitId` of `playerId`
+       * called a Tentacle: the neutral unit `tentacleUnitId` stands on `at`
+       * with `hp` Hit Points. Its first slap follows (`COMBAT_RESOLVED`
+       * and `UNIT_GRABBED`) when a unit stands beside it.
+       */
+      readonly kind: "TENTACLE_ROSE";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly tentacleUnitId: UnitId;
+      readonly at: CoordV7;
+      readonly hp: number;
+    }
+  | {
+      /**
+       * The Cultists (section 9.3): the Tentacle `unitId`, which stands on
+       * `at`, holds the unit `targetUnitId` it just slapped: that unit may
+       * move only to tiles next to the Tentacle.
+       */
+      readonly kind: "UNIT_GRABBED";
+      readonly unitId: UnitId;
+      readonly targetUnitId: UnitId;
+      readonly at: CoordV7;
+    }
+  | {
+      /**
+       * The Cultists (section 9.3): the Tentacle `unitId` sank back at the
+       * end of its third neutral turn. Its `UNIT_DIED` (cause `SANK`)
+       * follows.
+       */
+      readonly kind: "TENTACLE_SANK";
+      readonly unitId: UnitId;
+      readonly at: CoordV7;
+    }
+  | {
+      /**
+       * The Cultists (section 8.2): the Chosen `unitId` of `playerId`, on
+       * `at`, shouted Pick Me!: until its owner's next Start Turn a hostile
+       * unit beside it may attack only it.
+       */
+      readonly kind: "PICK_ME_SHOUTED";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly at: CoordV7;
+    }
+  | {
       readonly kind: "SPOILS_AWARDED";
       readonly playerId: PlayerId;
       readonly cityId: CityId;
@@ -1872,7 +1954,13 @@ export type DomainEventV7 =
          * Sacrifice).
          */
         | "STARFALL"
-        | "CONSUMED";
+        | "CONSUMED"
+        /**
+         * The Cultists (`pulp_wars-mch9.8`, section 9.3): a Tentacle that
+         * sank at the end of its third neutral turn (after
+         * `TENTACLE_SANK`). Nothing is left of it.
+         */
+        | "SANK";
     }
   | {
       /**

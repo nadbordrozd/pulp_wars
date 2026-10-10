@@ -15,9 +15,9 @@
   },
   "state": {
     "schemaVersion": 7,
-    "rulesetId": "pulp-wars-poc-7r77",
+    "rulesetId": "pulp-wars-poc-7r78",
     "setup": {
-      "rulesetId": "pulp-wars-poc-7r77",
+      "rulesetId": "pulp-wars-poc-7r78",
       "seed": 1,
       "width": 16,
       "height": 16,
@@ -7059,7 +7059,11 @@
       "grips": [],
       "idols": [],
       "rituals": [],
-      "cowed": []
+      "cowed": [],
+      "frogs": [],
+      "hexCooldowns": [],
+      "taunts": [],
+      "tentacles": []
     },
     "pendingChoices": [],
     "outcome": null

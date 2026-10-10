@@ -25,6 +25,7 @@ import {
   withFavourSpentV7,
   type CultReducerKitV7,
 } from "./cult";
+import { unitIsFrogV7, type TrickListsV7 } from "./cult-hexes";
 import {
   daemonIsFuriousV7,
   unitIsUnboundV7,
@@ -101,7 +102,10 @@ export interface ChannelListsV7 {
     readonly idols?: readonly UnitId[];
   };
 }
-export type ChannelLookupV7 = FactionRosterV7 & FrozenLookupV7 & ChannelListsV7;
+export type ChannelLookupV7 = FactionRosterV7 &
+  FrozenLookupV7 &
+  ChannelListsV7 &
+  TrickListsV7;
 /** The lookup of a Channel: the channel facts and the Unbound daemons. */
 export type ChannelTargetLookupV7 = ChannelLookupV7 & {
   readonly monsters?: readonly MonsterStateV7[];
@@ -258,7 +262,7 @@ export type SummonRejectionV7 =
  * Section 6.1: whether `helper` may help `summoner` summon: another own
  * robed cultist (in land form, with Channel, so never a mind-controlled
  * unit) on one of the eight tiles around the Summoner that has not used a
- * primary action (it may have moved) and is not Frozen.
+ * primary action (it may have moved) and is not Frozen or a frog.
  */
 export function summonHelperLegalV7(
   lookup: ChannelLookupV7,
@@ -274,7 +278,8 @@ export function summonHelperLegalV7(
     isRobedCultistV7(lookup, helper) &&
     unitRoleRuleV7(lookup, helper).abilities.includes("CHANNEL") &&
     !primaryActedV7(helper) &&
-    !unitIsFrozenV7(lookup, helper)
+    !unitIsFrozenV7(lookup, helper) &&
+    !unitIsFrogV7(lookup, helper)
   );
 }
 
@@ -560,6 +565,7 @@ export function disruptingStatusKeysV7(
     | "huntedThisTurn"
     | "bombedThisTurn"
     | "ninthUnit"
+    | "cult"
   >,
 ): ReadonlySet<string> {
   const keys = new Set<string>();
@@ -574,6 +580,8 @@ export function disruptingStatusKeysV7(
   for (const unitId of state.bombedThisTurn) keys.add(`bombed:${unitId}`);
   for (const unitId of state.ninthUnit.crackedThisTurn)
     keys.add(`cracked:${unitId}`);
+  // `pulp_wars-mch9.8` (section 9.1): a frog is a status.
+  for (const unitId of state.cult.frogs) keys.add(`frogged:${unitId}`);
   return keys;
 }
 
@@ -589,6 +597,8 @@ export const DISRUPTING_STATUS_LISTS_V7 = Object.freeze([
   "huntedThisTurn",
   "bombedThisTurn",
   "ninthUnit",
+  // The frogs (`cult.frogs`); the rest of `cult` is the watched lists.
+  "cult",
 ] as const);
 
 const STATUS_PREFIXES_V7 = Object.freeze([
@@ -602,6 +612,7 @@ const STATUS_PREFIXES_V7 = Object.freeze([
   "hunted",
   "bombed",
   "cracked",
+  "frogged",
 ]);
 
 /** What the one disruption rule reads of a state (before and after). */

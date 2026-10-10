@@ -157,6 +157,12 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
   // the same middle game, the hand player as the Dwarves.
   "LAB_DWARF_MID@1:DWARF":
     "4b894f5fc0011e42932a7cb64442e2c01c44db227de74d34f68da6be9552ff46",
+  // The Cult's tricks (`pulp_wars-mch9.8`): the Cult roster in the same
+  // middle game, the hand player as the Cultists (its 12 Favour is in the
+  // `cult` record, which the pins leave out and `expectedMissionCult`
+  // checks).
+  "LAB_CULT_MID@1:CULT":
+    "93dd6cf4cf2ccdd33830315a9f5974c1d1ea88764ec34b4cd8fc74c32e0263b1",
 };
 
 /**
@@ -167,6 +173,35 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
  * keep hashing the name they were taken with.
  */
 const PINNED_MAP_GENERATION_REVISION = "REGIONAL_BIOMES_NAVAL_V2";
+
+/**
+ * The `cult` record of a mission's initial state: empty, but for the Favour
+ * a Cult seat's definition starts with (`pulp_wars-mch9.8`: `LAB_CULT_MID`).
+ * The pins leave the record out, so it is checked against the definition.
+ */
+function expectedMissionCult(state: GameStateV7): GameStateV7["cult"] {
+  const definition =
+    state.setup.mission === undefined
+      ? null
+      : missionDefinitionV7(state.setup.mission);
+  return {
+    favour: (definition?.seats ?? []).flatMap((seat, index) => {
+      const player = state.players[index];
+      return seat.favour === undefined || player === undefined
+        ? []
+        : [{ playerId: player.id, favour: seat.favour }];
+    }),
+    strands: [],
+    grips: [],
+    idols: [],
+    rituals: [],
+    cowed: [],
+    frogs: [],
+    hexCooldowns: [],
+    taunts: [],
+    tentacles: [],
+  };
+}
 
 function missionStateHash(state: GameStateV7): string {
   // The Giant Spider (`pulp_wars-737.3`) added the `monsters` list, always
@@ -225,14 +260,7 @@ function missionStateHash(state: GameStateV7): string {
   } = state;
   expect(frozen).toEqual([]);
   expect(giants).toEqual({ swallowed: [] });
-  expect(cult).toEqual({
-    favour: [],
-    strands: [],
-    grips: [],
-    idols: [],
-    rituals: [],
-    cowed: [],
-  });
+  expect(cult).toEqual(expectedMissionCult(state));
   expectInitialScoreLedgerV7(state, scoreLedger);
   expect(ninthUnit).toEqual({
     wightGraves: [],
@@ -353,6 +381,9 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
     "ebd63e3819669af5c3446cca594362b3f44fdd534624e342fb48d9b24c8b19e0",
   "LAB_DWARF_MID@1:DWARF":
     "8a17c1c43532dc6a5e830d0f552cee4a955902a2897545267726d39c890c7ca2",
+  // The Cult's tricks (`pulp_wars-mch9.8`).
+  "LAB_CULT_MID@1:CULT":
+    "64514091a4c6998dbd67ff33bf9187ffe770f1fa2a631e572ede1a851819f576",
 };
 
 function preCuriosityMissionStateHash(state: GameStateV7): string {
@@ -389,14 +420,7 @@ function preCuriosityMissionStateHash(state: GameStateV7): string {
   } = state;
   expect(frozen).toEqual([]);
   expect(giants).toEqual({ swallowed: [] });
-  expect(cult).toEqual({
-    favour: [],
-    strands: [],
-    grips: [],
-    idols: [],
-    rituals: [],
-    cowed: [],
-  });
+  expect(cult).toEqual(expectedMissionCult(state));
   expectInitialScoreLedgerV7(state, scoreLedger);
   expect(ninthUnit).toEqual({
     wightGraves: [],

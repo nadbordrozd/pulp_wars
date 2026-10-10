@@ -15,6 +15,7 @@ import {
   LAB_BREAKTHROUGH_UNDEAD_V7,
   LAB_BREAKTHROUGH_V7,
 } from "./lab-breakthrough";
+import { LAB_CULT_MID_V7 } from "./lab-cult";
 import { LAB_DINOSAUR_MID_V7 } from "./lab-dinosaur";
 import { LAB_DWARF_MID_V7 } from "./lab-dwarf";
 import { LAB_GOBLIN_MID_V7 } from "./lab-goblin";
@@ -79,6 +80,10 @@ export const MISSION_REGISTRY_V7: readonly MissionDefinitionV7[] = deepFreeze([
   // Step two of the Dwarf pass (`pulp_wars-w49.28`): the Dwarf roster in
   // the same middle game on the same land, the hand player as the Dwarves.
   LAB_DWARF_MID_V7,
+  // The Cult's sixth engine bead (`pulp_wars-mch9.8`): the Cult roster in
+  // the same middle game on the same land, the hand player as the Cult,
+  // with Favour to summon. Built and checked; not played.
+  LAB_CULT_MID_V7,
 ]);
 
 /** The registered mission with this ID (any revision), or null. */

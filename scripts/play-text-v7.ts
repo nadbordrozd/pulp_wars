@@ -246,6 +246,7 @@ import {
 import {
   FAVOUR_SOURCE_LABELS_V7,
   GREAT_SUMMONING_UNLOCK_TEXT_V7,
+  SWITCHEROO_UNLOCK_TEXT_V7,
   OFFERING_UNLOCK_TEXT_V7,
   SUMMONER_SUPPORT_UNLOCK_TEXT_V7,
 } from "../src/render/cult-presentation-v7";
@@ -260,6 +261,11 @@ import {
   previewProclaimV7,
   previewRampageV7,
   previewRitualV7,
+  previewPickMeV7,
+  previewRibbitV7,
+  previewSwitcherooV7,
+  previewTentacleV7,
+  publicBindingTauntsV7,
   attacksLeftV7,
   previewOfferingV7,
   previewSacrificeV7,
@@ -351,7 +357,7 @@ const HELP_V7 = `Pulp Wars text play (Ruleset 7). One command per invocation; st
           [--seat 0] [--curiosities on|off] [--mode domination|perfection]
           [--ai-head-start 0|5|10|20] [--overwrite]
   lab     --session S <LAB> [--giant] [--overwrite]
-                                        start a staged position (you play the Humans; LAB_GOBLIN_MID: the Goblins; LAB_UNDEAD_MID: the Undead; LAB_MARTIAN_MID: the Martians; LAB_DINOSAUR_MID: the Dinosaurs; LAB_ICE_FOLK_MID: the Ice Folk; LAB_DWARF_MID: the Dwarves); lab alone lists them
+                                        start a staged position (you play the Humans; LAB_GOBLIN_MID: the Goblins; LAB_UNDEAD_MID: the Undead; LAB_MARTIAN_MID: the Martians; LAB_DINOSAUR_MID: the Dinosaurs; LAB_ICE_FOLK_MID: the Ice Folk; LAB_DWARF_MID: the Dwarves; LAB_CULT_MID: the Cultists); lab alone lists them
                                         --giant (a *_MID lab or LAB_BREAKTHROUGH): your faction's reward giant stands at the front, full HP
   view    --session S [--full]          public view of your seat: header, map, cities, units
   tech    --session S                   technology tree with costs and unlocks
@@ -1067,6 +1073,15 @@ export function textPlayCommandIdV7(command: CommandV7): string {
       return `u${command.unitId}.${command.ritual === "STARFALL" ? "starfall" : "summoning"}.${xyV7(command.at)}`;
     case "PROCLAIM":
       return `u${command.unitId}.proclaim.c${command.cityId}`;
+    // Hexes and tricks (`pulp_wars-mch9.8`).
+    case "RIBBIT":
+      return `u${command.unitId}.ribbit.u${command.targetUnitId}`;
+    case "SWITCHEROO":
+      return `u${command.unitId}.switch.u${command.targetUnitId}`;
+    case "TENTACLE":
+      return `u${command.unitId}.tentacle.${xyV7(command.at)}`;
+    case "PICK_ME":
+      return `u${command.unitId}.pickme`;
     case "HATCH":
       return `u${command.unitId}.hatch.u${command.eggUnitId}`;
     case "BEAM_DOWN":
@@ -1700,6 +1715,8 @@ function unlockTextV7(
       return `${OFFERING_UNLOCK_TEXT_V7} [${unlock.kind}]`;
     case "GREAT_SUMMONING":
       return `${GREAT_SUMMONING_UNLOCK_TEXT_V7} [${unlock.kind}]`;
+    case "SWITCHEROO":
+      return `${SWITCHEROO_UNLOCK_TEXT_V7} [${unlock.kind}]`;
     default: {
       if (unlock.kind === "FOREST_COVER")
         return `${FOREST_COVER_UNLOCK_TEXT_V7} [${unlock.kind}]`;
@@ -2044,6 +2061,32 @@ function describeCommandV7(
     case "BOO": {
       const preview = previewBooV7(view, command.unitId);
       return `BOO: every living unit beside it jumps one tile away, friend or foe${preview === null ? "" : ` | ${preview.results.map((entry) => `${context.memory.tag(entry.unitId)} ${entry.outcome === "JUMPS" ? `-> ${xyV7(entry.to)}` : entry.outcome === "STAYS" ? "stays (blocked)" : `-> ${xyV7(entry.to)}?`}${entry.holdsStrand && entry.outcome !== "STAYS" ? " (its strand BREAKS)" : ""}`).join(", ")}`} | no damage | in place of its attack`;
+    }
+    // Hexes and tricks (`pulp_wars-mch9.8`, RULESET_7_CULTISTS.md sections
+    // 9.1 to 9.3 and 8.2).
+    case "RIBBIT": {
+      const preview = previewRibbitV7(
+        view,
+        command.unitId,
+        command.targetUnitId,
+      );
+      return `RIBBIT ${context.memory.tag(command.targetUnitId)}: a FROG until the end of its owner's next turn: Defense 0.5 flat with no fortification and no cover, Move 1, no attack, no strike back, no capture, no other action; Seizable at half its hp${preview?.holdsStrand === true ? " | its strand BREAKS" : ""}${preview?.inRitual === true ? " | it leaves its ritual" : ""} | a healer (Tend Wounded, Repair, Top-Up) cures it | this unit cannot Ribbit on your next turn | uses its action (in place of its attack)`;
+    }
+    case "SWITCHEROO": {
+      const preview = previewSwitcherooV7(
+        view,
+        command.unitId,
+        command.targetUnitId,
+      );
+      return `SWITCHEROO with ${context.memory.tag(command.targetUnitId)}${preview === null ? "" : `: this unit ${xyV7(preview.from)}->${xyV7(preview.to)}, it ${xyV7(preview.to)}->${xyV7(preview.from)}${preview.targetHoldsStrand ? " | its strand BREAKS (it is moved)" : ""}${preview.targetInRitual ? " | it leaves its ritual" : ""}${preview.targetGrabbed ? " | the Tentacle lets go of it" : ""}`} | neither unit's turn changes otherwise | this unit cannot swap on your next turn | uses its action`;
+    }
+    case "TENTACLE": {
+      const preview = previewTentacleV7(view, command.unitId, command.at);
+      return `TENTACLE on ${xyV7(command.at)} (${tileBriefV7(view, command.at)}): a WILD Tentacle (hp ${CULT_SUMMONED_ROLE_RULES_V7.TENTACLE.maxHp}, Attack ${CULT_SUMMONED_ROLE_RULES_V7.TENTACLE.attack2 / 2}, Defense ${CULT_SUMMONED_ROLE_RULES_V7.TENTACLE.defense2 / 2}, rooted, nobody's)${preview === null ? "" : ` | it slaps at once: ${preview.slapTargetUnitId === null ? "nobody stands beside that tile" : `${context.memory.tag(preview.slapTargetUnitId)} (the weakest unit beside it, FRIEND OR FOE; an ordinary attack, it may be hit back)`}${preview.exact ? "" : ", unless something weaker hides beside it"} | then it slaps the weakest unit beside it after each of the next ${preview.neutralTurns} rounds and sinks`} | the unit it slapped last cannot leave its side (Grab) | one Tentacle per Caller | uses its action`;
+    }
+    case "PICK_ME": {
+      const preview = previewPickMeV7(view, command.unitId);
+      return `PICK ME: until your next turn start, enemies standing next to this unit can ATTACK only it${preview === null ? "" : ` | beside it now: ${preview.boundUnitIds.length === 0 ? "nobody" : preview.boundUnitIds.map((unitId) => context.memory.tag(unitId)).join(", ")}`} | it does not stop area hits, statuses, or attackers two tiles away | uses its action`;
     }
     // Rituals and the Herald (`pulp_wars-mch9.7`, RULESET_7_CULTISTS.md
     // sections 7 and 8.6).
@@ -2398,6 +2441,41 @@ function eventTextV7(
         `BOO by ${context.memory.tag(event.unitId)} @${xyV7(event.at)}: ${event.results.length === 0 ? "nobody you see" : event.results.map((entry) => `${context.memory.tag(entry.unitId)} ${entry.to === null ? "stays" : `${xyV7(entry.from)}->${xyV7(entry.to)}`}`).join(", ")}`,
       );
       break;
+    // Hexes and tricks (`pulp_wars-mch9.8`).
+    case "UNIT_FROGGED": {
+      const text = `RIBBIT by ${context.memory.tag(event.unitId)} of ${seatLabelV7(context.view, event.playerId)}: ${context.memory.tag(event.targetUnitId)} @${xyV7(event.at)} is a FROG until the end of its owner's next turn (Defense 0.5, Move 1, no attack, no strike back, no capture)`;
+      lines.push(text);
+      if (event.targetOwnerId === me) notes.push(text);
+      break;
+    }
+    case "UNITS_SWAPPED": {
+      const text = `SWITCHEROO by ${context.memory.tag(event.unitId)} of ${seatLabelV7(context.view, event.playerId)}: it ${event.from === null ? "?" : xyV7(event.from)}->${event.to === null ? "?" : xyV7(event.to)}, ${context.memory.tag(event.targetUnitId)} ${event.to === null ? "?" : xyV7(event.to)}->${event.from === null ? "?" : xyV7(event.from)}`;
+      lines.push(text);
+      if (event.targetOwnerId === me && event.playerId !== me) notes.push(text);
+      break;
+    }
+    case "TENTACLE_ROSE": {
+      const text = `TENTACLE ${context.memory.tag(event.tentacleUnitId)} rose @${xyV7(event.at)} hp ${event.hp} (called by ${context.memory.tag(event.unitId)} of ${seatLabelV7(context.view, event.playerId)}): it is nobody's, slaps the weakest unit beside it now and after every round, and sinks after 3 rounds`;
+      lines.push(text);
+      if (event.playerId !== me) notes.push(text);
+      break;
+    }
+    case "UNIT_GRABBED":
+      lines.push(
+        `GRABBED ${context.memory.tag(event.targetUnitId)} by the Tentacle ${context.memory.tag(event.unitId)} @${xyV7(event.at)}: it can move only to tiles next to that Tentacle`,
+      );
+      break;
+    case "TENTACLE_SANK":
+      lines.push(
+        `TENTACLE ${context.memory.tag(event.unitId)} @${xyV7(event.at)} sank`,
+      );
+      break;
+    case "PICK_ME_SHOUTED": {
+      const text = `PICK ME! ${context.memory.tag(event.unitId)} of ${seatLabelV7(context.view, event.playerId)} @${xyV7(event.at)}: enemies standing next to it can ATTACK only it until that seat's next turn start`;
+      lines.push(text);
+      if (event.playerId !== me) notes.push(text);
+      break;
+    }
     case "DAEMON_UNBOUND":
       lines.push(
         `UNBOUND ${context.memory.tag(event.unitId)} of ${seatLabelV7(context.view, event.summonerPlayerId)}: strands ${event.strands}/${event.control}; it belongs to nobody now and attacks the nearest unit, friend or foe, at once and after every round`,
@@ -2862,6 +2940,10 @@ export const TEXT_PLAY_LABS_V7: Readonly<Record<string, string>> = {
   // the Dwarves, on the same land.
   LAB_DWARF_MID:
     "YOU PLAY THE DWARVES in an even middle game against the Human AI: five cities a side (a level-4 capital, two level-3, two level-2 at the front, 15c a turn each), every city with Forest and Fertile Ground in its land and the three larger ones with Ore and a Lumber Camp or two; you can train every Dwarf unit (thirteen technologies) and hold 5 Hammerers, 2 Gyrocopters, 2 Clockwork Gunners, 2 Steam Moles, an Engineer, 2 Steam Tanks, a Steam Cannon and a Whirligig (16 units), 35c in hand on the first turn and three free unit slots (two in the capital, one in the northern level-3 city); the Humans hold 3 Champions, 3 Marksmen, 2 Catapults, 2 Knights, 2 Guards and 5 Fighters (17 units) at the start (and 30c on their first turn, which buys more), a walled capital and a walled level-3 city, and Forest cover; you own Dig In, where the Steam Mole is (a Hammerer or a Mole that stands still beside one of your centers has Field Defense), Dive Bombing (bombs of 6) and Clockwork (an Engineer Assembles a Gunner), and not Blasting Charges",
+  // The Cult's sixth engine bead (`pulp_wars-mch9.8`): the one lab played
+  // as the Cultists, on the same land. Built and checked; not played yet.
+  LAB_CULT_MID:
+    "YOU PLAY THE CULTISTS in an even middle game against the Human AI: five cities a side (a level-4 capital, two level-3, two level-2 at the front, 15c a turn each), every city with Forest and Fertile Ground in its land and the three larger ones with Ore and a Lumber Camp or two; you can train every Cult unit and hold every rite (fourteen technologies, The Stars Are Right among them; not Harvest Rites) and hold 5 Initiates, 2 Idol Bearers, 2 Familiars, 2 Hexers, 2 Summoners, a Stargazer, a Caller and 2 Chosen (17 units), 35c in hand on the first turn, 12 Favour (a Horror costs 5, the Great Summoning 20) and two free unit slots (one in the capital, one in the northern level-3 city); the Humans hold 3 Champions, 3 Marksmen, 2 Catapults, 2 Knights, 2 Guards and 5 Fighters (17 units) at the start (and 30c on their first turn, which buys more), a walled capital and a walled level-3 city, and Forest cover; you start with no daemon: your two Summoners stand side by side",
 };
 
 function commandLabV7(args: ArgsV7): string {
@@ -3255,14 +3337,15 @@ const NINTH_UNIT_LEGEND_V7: Readonly<Partial<Record<FactionIdV7, string>>> = {
   ICE_FOLK: "  Ice Folk: Mm mammoth (the heavy) Ox musk ox (the defender)",
   DWARF: "  Dwarf: Tk steam tank (the heavy) Wh whirligig",
   CANDY: "  Candy heavy: Jb jawbreaker",
-  // The Cultists (`pulp_wars-mch9.5`): the summoned Horror; and
-  // (`pulp_wars-mch9.7`) the Herald.
-  CULT: "  Cult summoned: Ho horror He herald (a daemon: its line shows strands/Control)",
+  // The Cultists (`pulp_wars-mch9.5`): the summoned Horror;
+  // (`pulp_wars-mch9.7`) the Herald; and (`pulp_wars-mch9.8`) the Tentacle.
+  CULT: "  Cult summoned: Ho horror He herald (a daemon: its line shows strands/Control) Te tentacle (wild: seat N)",
 };
 function roleCodeV7(view: PlayerViewV7, unit: PublicUnitV7): string {
   // The Cultists (`pulp_wars-mch9.5`): a summoned unit has its own code.
   if (unit.summoned === "HORROR") return "Ho";
   if (unit.summoned === "HERALD") return "He";
+  if (unit.summoned === "TENTACLE") return "Te";
   const faction = unitFactionV7(view, unit);
   return (
     (faction === "MARTIAN"
@@ -3460,6 +3543,44 @@ function unitStatusV7(view: PlayerViewV7, unit: PublicUnitV7): string {
     view.turnOrder[view.activeSeatIndex] === unit.ownerId
   )
     parts.push(`attacks left ${attacksLeftV7(view, unit)}`);
+  // Hexes and tricks (`pulp_wars-mch9.8`): a frog, a spent trick, a
+  // taunting Chosen and the units it binds, a Tentacle and its Grab.
+  if (view.cult.frogs.includes(unit.id))
+    parts.push(
+      "FROG until its owner's next turn ends (Defense 0.5, Move 1, no attack)",
+    );
+  const hexCooldown = view.cult.hexCooldowns.find(
+    (entry) => entry.unitId === unit.id,
+  );
+  if (hexCooldown !== undefined)
+    parts.push(
+      hexCooldown.turnsRemaining === 2
+        ? "trick spent (back on the turn after its next)"
+        : "trick spent (back next turn)",
+    );
+  if (view.cult.taunts.includes(unit.id))
+    parts.push("PICK ME: enemies beside it can attack only it");
+  if (unit.ownerId === view.viewer.id) {
+    const binding = publicBindingTauntsV7(view, unit.id);
+    if (binding.length > 0)
+      parts.push(
+        `taunted: may attack only ${binding.map((unitId) => `u${unitId}`).join(" or ")}`,
+      );
+  }
+  const tentacle = view.cult.tentacles.find(
+    (entry) => entry.unitId === unit.id,
+  );
+  if (tentacle !== undefined)
+    parts.push(
+      `WILD tentacle: slaps the weakest unit beside it after every round | sinks after ${tentacle.turnsLeft} more round${tentacle.turnsLeft === 1 ? "" : "s"}${tentacle.grabbedUnitId === null ? "" : ` | holds u${tentacle.grabbedUnitId}`}`,
+    );
+  const grabbedBy = view.cult.tentacles.find(
+    (entry) => entry.grabbedUnitId === unit.id,
+  );
+  if (grabbedBy !== undefined)
+    parts.push(
+      `GRABBED by u${grabbedBy.unitId}: moves only to tiles next to it`,
+    );
   if (view.mindControlled.some((entry) => entry.unitId === unit.id))
     parts.push("mind-controlled");
   const rush = view.sugarRush.find((entry) => entry.unitId === unit.id);

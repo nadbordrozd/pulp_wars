@@ -214,6 +214,11 @@ export function neutralArtSubjectsV7(
     const unbound = cultSummonedArtSubjectV7(breed, true);
     return { unit: unbound, portrait: unbound };
   }
+  // A Tentacle (`pulp_wars-mch9.8`) has one look: it is wild from birth.
+  if (breed === "TENTACLE") {
+    const tentacle = cultSummonedArtSubjectV7(breed);
+    return { unit: tentacle, portrait: tentacle };
+  }
   const faction = neutralArtFactionV7(breed) ?? "MARTIAN";
   return {
     unit: unitArtSubjectV7({ role, form: "LAND", faction }),
@@ -381,6 +386,10 @@ export function monsterRetaliationNoteV7(
     return preview.monsterRetaliates
       ? "The daemon may come for it after this round"
       : "Out of the daemon's reach";
+  if (breed === "TENTACLE")
+    return preview.monsterRetaliates
+      ? "The Tentacle may slap it after this round"
+      : "Out of the Tentacle's reach";
   const who = breed === "ZOMBIE" ? "Zombies" : "guards";
   return preview.monsterRetaliates
     ? `The ${who} will strike back next round`
@@ -414,7 +423,10 @@ export interface CuriosityInfoLineV7 {
     // The Cultists (`pulp_wars-mch9.6`): an Unbound daemon's lines.
     | "unbound"
     | "furious"
-    | "bind-again";
+    | "bind-again"
+    // A Tentacle's lines (`pulp_wars-mch9.8`).
+    | "sinks"
+    | "grab";
   readonly name: string;
   readonly description: string;
 }
@@ -424,10 +436,16 @@ export function neutralRuleV7(breed: NeutralBreedV7): string {
   const camp = guardCampKindV7(breed);
   return breed === "BIGFOOT"
     ? BIGFOOT_RULE_V7
-    : camp === null
-      ? CURIOSITY_RULES_V7.WEB
-      : CURIOSITY_RULES_V7[camp];
+    : breed === "TENTACLE"
+      ? TENTACLE_RULE_V7
+      : camp === null
+        ? CURIOSITY_RULES_V7.WEB
+        : CURIOSITY_RULES_V7[camp];
 }
+
+/** The Cultists (section 9.3): the one sentence of a Tentacle's dock. */
+export const TENTACLE_RULE_V7 =
+  "Nobody's. After every round it slaps the weakest unit beside it and holds it.";
 
 export const ALERT_LABEL_V7 = "Alert";
 
@@ -447,6 +465,56 @@ export function monsterInfoLinesV7(
   if (preview === undefined) return [];
   const breed = preview.breed;
   if (isDaemonBreedV7(breed)) return daemonInfoLinesV7(view, unitId);
+  // A Tentacle (`pulp_wars-mch9.8`, section 9.3): its sentence, how long it
+  // stays, whom it holds, and whom it slaps next.
+  if (breed === "TENTACLE") {
+    const entry = view.cult.tentacles.find(
+      (candidate) => candidate.unitId === unitId,
+    );
+    const named = (id: number | null): PublicUnitV7 | undefined =>
+      id === null ? undefined : view.units.find((unit) => unit.id === id);
+    const held = named(entry?.grabbedUnitId ?? null);
+    const next = named(preview.likelyTarget);
+    return [
+      {
+        id: "neutral" as const,
+        name: NEUTRAL_LABEL_V7,
+        description: TENTACLE_RULE_V7,
+      },
+      ...(entry === undefined
+        ? []
+        : [
+            {
+              id: "sinks" as const,
+              name: "Sinks",
+              description:
+                entry.turnsLeft === 1
+                  ? "It sinks after this round."
+                  : `It sinks after ${entry.turnsLeft} more rounds.`,
+            },
+          ]),
+      ...(held === undefined
+        ? []
+        : [
+            {
+              id: "grab" as const,
+              name: "Grab",
+              description: `Holds ${ownedUnitName(view, held)}: it cannot leave the Tentacle's side.`,
+            },
+          ]),
+      next === undefined
+        ? {
+            id: "calm" as const,
+            name: "Calm",
+            description: "No unit it can see stands beside it.",
+          }
+        : {
+            id: "provoked" as const,
+            name: PROVOKED_LABEL_V7,
+            description: `Will slap ${ownedUnitName(view, next)} after this round${preview.exact ? "" : ", unless something weaker hides nearby"}.`,
+          },
+    ];
+  }
   const bounty: CuriosityInfoLineV7 = {
     id: "bounty",
     name: "Bounty",

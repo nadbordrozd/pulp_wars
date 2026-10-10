@@ -39,7 +39,7 @@ const setup: MatchSetupV7 = {
 
 describe("ruleset-7 revision-8 deterministic foundation", () => {
   it("freezes the exact identity and registries", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r77");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r78");
     expect(FACTION_IDS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",
@@ -136,7 +136,9 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
     // ANCHOR, and BOO after SEIZE (78).
     // The Cult's rituals (`pulp_wars-mch9.7`) add BEGIN_RITUAL and PROCLAIM
     // after BOO (80).
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(80);
+    // The Cult's tricks (`pulp_wars-mch9.8`) add RIBBIT, SWITCHEROO,
+    // TENTACLE, and PICK_ME after PROCLAIM (84).
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(84);
     // The revision-19 Dinosaur STAMPEDE stays gone; Ice Folk Freeze's
     // Mammoth STAMPEDE is a new command after BREAK_OFF.
     expect(COMMAND_KIND_ORDER_V7.indexOf("STAMPEDE")).toBe(
@@ -166,7 +168,9 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
     // DAEMON_UNBOUND (141).
     // The Cult's rituals (`pulp_wars-mch9.7`) add seven kinds after
     // DAEMON_BOUND, from RITUAL_BEGUN to CITY_COWED (148).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(148);
+    // The Cult's tricks (`pulp_wars-mch9.8`) add six kinds after
+    // CITY_COWED, from UNIT_FROGGED to PICK_ME_SHOUTED (154).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(154);
     // Revision 19 inserts HATCH after KABOOM (and, until revision 20,
     // STAMPEDE between them), LAY_EGG after TRAIN_NAVAL, EGG_LAID and
     // EGG_HATCHED after NAVAL_UNIT_TRAINED, and UNIT_GREW after

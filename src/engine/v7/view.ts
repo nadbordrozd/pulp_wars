@@ -48,6 +48,7 @@ import type {
   CoolingStatusV7,
   CoordV7,
   CowedCityV7,
+  HexCooldownV7,
   CrumbsV7,
   CuriosityV7,
   SugarRushStatusV7,
@@ -253,6 +254,19 @@ export interface PublicRitualV7 {
   readonly at: CoordV7 | null;
 }
 
+/**
+ * The Cultists (`pulp_wars-mch9.8`, section 9.3): a visible Tentacle: the
+ * neutral turns it has left before it sinks (public: it rose in plain
+ * sight), its Caller when the viewer sees that unit, and the unit it holds
+ * (Grab) when the viewer sees that unit.
+ */
+export interface PublicTentacleV7 {
+  readonly unitId: UnitId;
+  readonly callerUnitId: UnitId | null;
+  readonly turnsLeft: 1 | 2 | 3;
+  readonly grabbedUnitId: UnitId | null;
+}
+
 export interface PublicLeaderboardEntryV7 {
   readonly playerId: PlayerId;
   readonly seat: number;
@@ -404,7 +418,9 @@ export interface PlayerViewV7 {
    * breed, its home, and its `provokedBy`
    * filtered to the units the viewer can see, sorted by unit ID. The
    * Cultists (`pulp_wars-mch9.6`): a visible Unbound daemon's entry carries
-   * `unbound` (its summoner's seat and whether it is Furious).
+   * `unbound` (its summoner's seat and whether it is Furious). A visible
+   * Tentacle (`pulp_wars-mch9.8`) has the breed `TENTACLE`; its lifetime
+   * and its Grab are in `cult.tentacles`.
    */
   readonly monsters: readonly MonsterStateV7[];
   /** Revision 13: the viewer-explored subset of the canonical Graves. */
@@ -557,6 +573,18 @@ export interface PlayerViewV7 {
      * sees (public: `cowed`), sorted by city.
      */
     readonly cowed: readonly CowedCityV7[];
+    /**
+     * Hexes and tricks (`pulp_wars-mch9.8`, sections 9.1 to 9.3 and 8.2),
+     * for the units the viewer sees, each sorted by unit: the frogs, the
+     * Hexers and Familiars whose trick is on cooldown (with the Start
+     * Turns of their owner left), the Chosen that taunt, and the Tentacles
+     * (see {@link PublicTentacleV7}). All empty in a match without a Cult
+     * seat.
+     */
+    readonly frogs: readonly UnitId[];
+    readonly hexCooldowns: readonly HexCooldownV7[];
+    readonly taunts: readonly UnitId[];
+    readonly tentacles: readonly PublicTentacleV7[];
   };
   /** Score and modes (section 3.4): the score the viewer may know. */
   readonly score: PlayerScoreViewV7;
@@ -1339,6 +1367,27 @@ export function viewForV7(
       cowed: state.cult.cowed.filter((entry) =>
         publicCities.some((city) => city.id === entry.cityId),
       ),
+      // `pulp_wars-mch9.8` (sections 9 and 8.2): the tricks on visible
+      // units.
+      frogs: state.cult.frogs.filter((unitId) => visibleUnitIds.has(unitId)),
+      hexCooldowns: state.cult.hexCooldowns.filter((entry) =>
+        visibleUnitIds.has(entry.unitId),
+      ),
+      taunts: state.cult.taunts.filter((unitId) => visibleUnitIds.has(unitId)),
+      tentacles: state.cult.tentacles
+        .filter((entry) => visibleUnitIds.has(entry.unitId))
+        .map((entry) => ({
+          unitId: entry.unitId,
+          callerUnitId: visibleUnitIds.has(entry.callerUnitId)
+            ? entry.callerUnitId
+            : null,
+          turnsLeft: entry.turnsLeft,
+          grabbedUnitId:
+            entry.grabbedUnitId !== null &&
+            visibleUnitIds.has(entry.grabbedUnitId)
+              ? entry.grabbedUnitId
+              : null,
+        })),
     },
     score: scoreViewV7(state, viewerId, scores),
     pendingChoices: state.pendingChoices.filter((choice) =>

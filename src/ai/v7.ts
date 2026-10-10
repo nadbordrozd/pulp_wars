@@ -11009,6 +11009,18 @@ function isPolicyCandidate(
   // friend and foe, so neither may be picked by a general rule.
   if (command.kind === "BEGIN_RITUAL" || command.kind === "PROCLAIM")
     return false;
+  // Hexes and tricks (`pulp_wars-mch9.8`): likewise until the Cult AI bead
+  // (`pulp_wars-mch9.11`: Ribbit, Switcheroo, Tentacle, Pick Me!). A swap
+  // or a wild Tentacle can hurt its own side, so none may be picked by a
+  // general rule. (Pamphlets needs no rule: it is the ordinary Capture,
+  // offered a turn earlier.)
+  if (
+    command.kind === "RIBBIT" ||
+    command.kind === "SWITCHEROO" ||
+    command.kind === "TENTACLE" ||
+    command.kind === "PICK_ME"
+  )
+    return false;
   // The frozen sea (`pulp_wars-5ti.5`, RULESET_7_NAVAL_BRANCH.md section
   // 13.2): a Freeze only with a reason (a ship to lock in, the next tile of
   // the crossing, a crossing tile to keep, home ice): `iceFreezeScoreV7`.
@@ -15939,12 +15951,14 @@ function huntPlansV7(context: PolicyContextV7): readonly HuntPlanV7[] {
   const campGuard = (unit: PublicUnitV7): boolean => {
     const breed = monsters?.get(unit.id)?.breed;
     // The Cultists (`pulp_wars-mch9.6`): an Unbound daemon is hunted like
-    // the Spider (only a kill this turn makes a plan), not like a guard.
+    // the Spider (only a kill this turn makes a plan), not like a guard;
+    // so is a Tentacle (`pulp_wars-mch9.8`).
     return (
       breed !== undefined &&
       breed !== "GIANT_SPIDER" &&
       breed !== "BIGFOOT" &&
-      !isDaemonBreedV7(breed)
+      !isDaemonBreedV7(breed) &&
+      breed !== "TENTACLE"
     );
   };
   const targets = [

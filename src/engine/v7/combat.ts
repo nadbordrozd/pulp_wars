@@ -1,6 +1,7 @@
 import type { PlayerId, UnitId } from "../model/ids";
 import {
   EGG_DEFENSE2_V7,
+  FROG_DEFENSE2_V7,
   NO_COVER_V7,
   coverBonusV7,
   ownerHasForestCoverV7,
@@ -71,6 +72,7 @@ import {
   unitHasToothacheV7,
   unitThumpDamageV7,
 } from "./candy-abilities";
+import { unitIsFrogV7 } from "./cult-hexes";
 import { arePlayersAlliedV7, arePlayersHostileV7 } from "./economy";
 import { isUnitVisibleToPlayerV7 } from "./observation";
 import type { CombatPreviewV7, CombatSplashEntryV7 } from "./events";
@@ -449,6 +451,11 @@ export function calculateCombatPreviewV7(
     defender.form === "LAND" &&
     (options.assumeTargetFrozen === true ||
       isFrozenV7(state.frozen, defender.id));
+  // The Cultists (`pulp_wars-mch9.8`, RULESET_7_CULTISTS.md section 9.1):
+  // a frog defends with a flat 0.5, has no fortification and no cover, and
+  // never strikes back (a Shield still absorbs; Armoured and Plated apply).
+  const defenderFrog =
+    defender.form === "LAND" && unitIsFrogV7(state, defender);
   const rockfallApplied =
     attackerLand && attackerMechanics.rockfallAttack2 > 0 && distance === 2;
   const plantedApplied =
@@ -616,16 +623,18 @@ export function calculateCombatPreviewV7(
       ? 2
       : defender.form === "EGG"
         ? EGG_DEFENSE2_V7
-        : // Tuning 5: the Human Guard is open to ranged attacks. The ninth
-          // unit (7r55): a Cracked unit has 1 less Defense.
-          unitDefense2AtDistanceV7(
-            state,
-            defender,
-            defenderRule,
-            unitRoleMechanicsV7(state, defender),
-            distance,
-          ) +
-          fortificationLevel * 2;
+        : defenderFrog
+          ? FROG_DEFENSE2_V7
+          : // Tuning 5: the Human Guard is open to ranged attacks. The ninth
+            // unit (7r55): a Cracked unit has 1 less Defense.
+            unitDefense2AtDistanceV7(
+              state,
+              defender,
+              defenderRule,
+              unitRoleMechanicsV7(state, defender),
+              distance,
+            ) +
+            fortificationLevel * 2;
   const breachApplied = breach && fortificationIgnored > 0;
   // The Ice Folk revision section 6.2: Snow cover (a telemetry option can
   // evaluate the exchange without it).
@@ -633,11 +642,12 @@ export function calculateCombatPreviewV7(
     options.ignoreSnowCover === true
       ? () => false
       : (at: CoordV7) => isSnowV7(state, at);
-  const bonus = acid
+  const uncovered = acid || defenderFrog;
+  const bonus = uncovered
     ? NO_BONUS
     : defenseBonusForUnitV7(state, defender, snowAt);
-  const snowCover = !acid && snowCoverAppliesV7(state, defender, snowAt);
-  const iceCover = !acid && iceCoverAppliesV7(state, defender);
+  const snowCover = !uncovered && snowCoverAppliesV7(state, defender, snowAt);
+  const iceCover = !uncovered && iceCoverAppliesV7(state, defender);
   // The frozen sea (naval branch section 8.9): an icebound defender is
   // frozen solid and never retaliates.
   const defenderIcebound = unitIsIceboundV7(state, defender);
@@ -729,6 +739,7 @@ export function calculateCombatPreviewV7(
     !unanswered &&
     !defenderIcebound &&
     !defenderFrozen &&
+    !defenderFrog &&
     defender.form !== "EMBARKED" &&
     defender.form !== "EGG" &&
     roleRetaliatesV7(defenderRule) &&

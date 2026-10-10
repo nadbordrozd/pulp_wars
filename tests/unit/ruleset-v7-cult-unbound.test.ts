@@ -187,7 +187,12 @@ describe("Unbound: identity", () => {
 
 describe("Unbound: the registration (sections 6.4 and 13.1)", () => {
   it("registers the daemons as neutral breeds with their own numbers", () => {
-    expect(NEUTRAL_BREEDS_V7.slice(-2)).toEqual(["HORROR", "HERALD"]);
+    // (`pulp_wars-mch9.8` adds the Tentacle after them.)
+    expect(NEUTRAL_BREEDS_V7.slice(-3)).toEqual([
+      "HORROR",
+      "HERALD",
+      "TENTACLE",
+    ]);
     expect(DAEMON_BREEDS_V7).toEqual(["HORROR", "HERALD"]);
     for (const breed of NEUTRAL_BREEDS_V7)
       expect(isDaemonBreedV7(breed), breed).toBe(
@@ -1235,6 +1240,10 @@ describe("Unbound: elimination (section 13.1)", () => {
       idols: [],
       rituals: [],
       cowed: [],
+      frogs: [],
+      hexCooldowns: [],
+      taunts: [],
+      tentacles: [],
     });
     expect(parseGameStateV7(JSON.parse(JSON.stringify(result.state)))).toEqual(
       result.state,

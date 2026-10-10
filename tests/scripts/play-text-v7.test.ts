@@ -661,6 +661,8 @@ describe("text-mode play harness", () => {
       // Step two of the Dwarf pass (`pulp_wars-w49.28`): the player is the
       // Dwarves.
       LAB_DWARF_MID: ["ORIGINAL", "Human"],
+      // The Cult's tricks (`pulp_wars-mch9.8`): the player is the Cultists.
+      LAB_CULT_MID: ["ORIGINAL", "Human"],
     };
     expect(Object.keys(TEXT_PLAY_LABS_V7)).toEqual(Object.keys(attackers));
     for (const lab of Object.keys(TEXT_PLAY_LABS_V7)) {
@@ -678,7 +680,9 @@ describe("text-mode play harness", () => {
                   ? ["ICE_FOLK", "Ice Folk"]
                   : lab === "LAB_DWARF_MID"
                     ? ["DWARF", "Dwarf"]
-                    : ["ORIGINAL", "Human"];
+                    : lab === "LAB_CULT_MID"
+                      ? ["CULT", "Cultists"]
+                      : ["ORIGINAL", "Human"];
       const session = path.join(root, `${lab}.json`);
       const started = ok("lab", "--session", session, lab);
       expect(started).toContain(`LAB ${lab}:`);
@@ -716,6 +720,26 @@ describe("text-mode play harness", () => {
           // `pulp_wars-w49.35`: the Goblin's Kaboom is 6 (5 before).
           `u${lone.id}.kaboom  kaboom | blast 6 at ${lone.at.x},${lone.at.y}: hits nobody | enemy 0 damage, 0 kills; yours 0 damage, 0 kills | this unit dies`,
         );
+      }
+      if (lab === "LAB_CULT_MID") {
+        // The Cult's tricks (`pulp_wars-mch9.8`): the lab's text, its
+        // Favour, and the tricks its first turn offers. It is started and
+        // read here; nobody plays it.
+        expect(started).toContain("YOU PLAY THE CULTISTS");
+        expect(started).toContain("YOUR TURN | coins 35 |");
+        expect(started).toContain("favour 12");
+        const ids = offeredIds(session);
+        for (const pattern of [
+          /^u\d+\.summon\.u\d+\.\d+,\d+$/,
+          /^u\d+\.tentacle\.\d+,\d+$/,
+          /^u\d+\.pickme$/,
+          /^u\d+\.switch\.u\d+$/,
+          /^u\d+\.starfall\.\d+,\d+$/,
+        ])
+          expect(
+            ids.some((id) => pattern.test(id)),
+            String(pattern),
+          ).toBe(true);
       }
       if (lab === "LAB_DWARF_MID") {
         // Step two of the Dwarf pass (`pulp_wars-w49.28`): the lab's text,
@@ -1990,6 +2014,109 @@ describe("text-mode play harness", () => {
     expect(after).toContain("attacks left 1");
     expect(offeredIds(session)).not.toContain(proclaim);
     expect(offeredIds(session)).toContain(`u${herald}.a.u${at(4, 7)}`);
+  });
+
+  // The Cult's tricks (`pulp_wars-mch9.8`): the harness offers Ribbit,
+  // Switcheroo, the Tentacle, and Pick Me! with what each does, and prints
+  // a frog, a spent trick, a taunt, a Tentacle, and its Grab. A constructed
+  // position on the seat's own turn; no turn is ended.
+  it("prints the tricks, and offers Ribbit, Switcheroo, the Tentacle, and Pick Me!", () => {
+    // A Hexer two tiles from a Knight; a Familiar two tiles from a
+    // Catapult; a Caller with a Fighter in reach of a Tentacle; a Chosen
+    // beside another Fighter.
+    const field = cultFieldV7([
+      { seat: 0, role: "MARKSMAN", at: { x: 2, y: 2 } },
+      { seat: 1, role: "KNIGHT", at: { x: 2, y: 4 } },
+      { seat: 0, role: "RAIDER", at: { x: 5, y: 2 } },
+      { seat: 1, role: "CATAPULT", at: { x: 5, y: 4 } },
+      { seat: 0, role: "KNIGHT", at: { x: 8, y: 2 } },
+      { seat: 1, role: "FIGHTER", at: { x: 9, y: 4 } },
+      { seat: 0, role: "SWORDSMAN", at: { x: 7, y: 6 } },
+      { seat: 1, role: "FIGHTER", at: { x: 6, y: 6 } },
+    ]);
+    const session = path.join(root, "cult-tricks.json");
+    writeFileSync(
+      session,
+      JSON.stringify({
+        format: "pulp-wars-text-play-session",
+        version: 1,
+        rulesetId: RULESET_7_ID,
+        seat: 0,
+        playerId: field.humanPlayerId,
+        setup: field.setup,
+        commands: [],
+        state: field,
+        stateHash: canonicalHash(field),
+        journal: { rounds: [], notes: [], observed: [] },
+      }),
+    );
+    const state = sessionState(session);
+    const at = (x: number, y: number) => {
+      const found = state.units.find(
+        (candidate) => candidate.at.x === x && candidate.at.y === y,
+      );
+      if (found === undefined) throw new Error(`no unit at ${x},${y}`);
+      return found.id;
+    };
+    const ribbit = `u${at(2, 2)}.ribbit.u${at(2, 4)}`;
+    const swap = `u${at(5, 2)}.switch.u${at(5, 4)}`;
+    const tentacle = `u${at(8, 2)}.tentacle.8,4`;
+    const pickMe = `u${at(7, 6)}.pickme`;
+    expect(offeredIds(session)).toEqual(
+      expect.arrayContaining([ribbit, swap, tentacle, pickMe]),
+    );
+    // Every offered trick has an id of its own.
+    const ids = queryPlayerCommandsV7(viewForV7(state, state.humanPlayerId))
+      .filter((command) =>
+        ["RIBBIT", "SWITCHEROO", "TENTACLE", "PICK_ME"].includes(command.kind),
+      )
+      .map(textPlayCommandIdV7);
+    expect(new Set(ids).size).toBe(ids.length);
+    for (const id of ids)
+      expect(id).toMatch(
+        /^u\d+\.(ribbit\.u\d+|switch\.u\d+|tentacle\.\d+,\d+|pickme)$/,
+      );
+    const options = ok("options", "--session", session, "--all");
+    expect(options).toContain(
+      "a FROG until the end of its owner's next turn: Defense 0.5 flat with no fortification and no cover, Move 1, no attack, no strike back, no capture",
+    );
+    expect(options).toContain("this unit cannot Ribbit on your next turn");
+    expect(options).toContain("this unit 5,2->5,4, it 5,4->5,2");
+    expect(options).toContain("TENTACLE on 8,4");
+    expect(options).toContain(
+      "(the weakest unit beside it, FRIEND OR FOE; an ordinary attack, it may be hit back)",
+    );
+    expect(options).toContain(
+      "PICK ME: until your next turn start, enemies standing next to this unit can ATTACK only it",
+    );
+    // Ribbit: the Knight is a frog, and the Hexer's trick is spent.
+    const frogged = ok("do", "--session", session, ribbit);
+    expect(frogged).toMatch(/RIBBIT by .* of S0: .* @2,4 is a FROG/);
+    // The Tentacle: it rises, slaps the Fighter, and holds it.
+    const risen = ok("do", "--session", session, tentacle);
+    expect(risen).toMatch(/TENTACLE .* rose @8,4 hp 8/);
+    expect(risen).toMatch(/GRABBED .* by the Tentacle .* @8,4/);
+    // Pick Me! and the swap.
+    expect(ok("do", "--session", session, pickMe)).toMatch(
+      /PICK ME! .* of S0 @7,6/,
+    );
+    expect(ok("do", "--session", session, swap)).toMatch(
+      /SWITCHEROO by .* of S0: it 5,2->5,4, .* 5,4->5,2/,
+    );
+    const view = ok("view", "--session", session, "--full");
+    expect(view).toContain(
+      "FROG until its owner's next turn ends (Defense 0.5, Move 1, no attack)",
+    );
+    expect(view).toContain("trick spent (back on the turn after its next)");
+    expect(view).toContain("PICK ME: enemies beside it can attack only it");
+    expect(view).toMatch(/Tentacle \[TENTACLE\] @8,4/);
+    expect(view).toContain(
+      "WILD tentacle: slaps the weakest unit beside it after every round | sinks after 3 more rounds | holds u",
+    );
+    expect(view).toMatch(/GRABBED by u\d+: moves only to tiles next to it/);
+    expect(view).not.toContain("[JUGGERNAUT]");
+    for (const id of [ribbit, swap, tentacle, pickMe])
+      expect(offeredIds(session)).not.toContain(id);
   });
 
   it("rejects illegal and stale ids cleanly", () => {

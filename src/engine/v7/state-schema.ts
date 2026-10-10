@@ -20,6 +20,7 @@ import {
   BOARD_SUMMONED_ROLE_IDS_V7,
   CULT_SUMMONED_ROLE_RULES_V7,
   RITUAL_MINIMUM_CHANTERS_V7,
+  TENTACLE_LIFETIME_V7,
   SUMMONED_MECHANICAL_ROLES_V7,
   summonedUnitRoleMechanicsV7,
   summonedUnitRoleRuleV7,
@@ -58,6 +59,7 @@ import {
   isNavalRoleV7,
   isDaemonBreedV7,
   isNeutralOwnerV7,
+  isWildBreedV7,
   type MonsterStateV7,
   type NeutralBreedV7,
   isAfloatFormV7,
@@ -1262,9 +1264,10 @@ function parseUnit(
  * registration), land form, no home city, never veteran or
  * capture-eligible, and at most one attack and no Overrun or Escape in its
  * activation. The Cultists (`pulp_wars-mch9.6`, RULESET_7_CULTISTS.md
- * section 6.4): an Unbound daemon, and no other neutral unit, carries
- * `summoned`, which equals its breed; it may have made as many attacks as
- * its rampage has (`RAMPAGE_ATTACKS_V7`).
+ * section 6.4): an Unbound daemon and (`pulp_wars-mch9.8`, section 9.3) a
+ * Tentacle, and no other neutral unit, carry `summoned`, which equals their
+ * breed; a daemon may have made as many attacks as its rampage has
+ * (`RAMPAGE_ATTACKS_V7`).
  */
 function parseNeutralUnit(
   input: unknown,
@@ -1307,6 +1310,8 @@ function parseNeutralUnit(
   const breed = id === null ? undefined : neutralUnitIds.get(id);
   const rule = breed === undefined ? undefined : NEUTRAL_ROLE_RULES_V7[breed];
   const daemon = breed !== undefined && isDaemonBreedV7(breed) ? breed : null;
+  const wild: SummonedRoleIdV7 | null =
+    daemon ?? (breed === "TENTACLE" ? breed : null);
   if (
     id === null ||
     rule === undefined ||
@@ -1314,7 +1319,7 @@ function parseNeutralUnit(
     input.maxHp !== rule.maxHp ||
     at === null ||
     activation === null ||
-    (daemon === null ? summoned : input.summoned !== daemon) ||
+    (wild === null ? summoned : input.summoned !== wild) ||
     activation.attacksUsed >
       (daemon === null ? 1 : RAMPAGE_ATTACKS_V7[daemon]) ||
     activation.attacked !== activation.attacksUsed > 0 ||
@@ -1335,7 +1340,7 @@ function parseNeutralUnit(
     veteran: false,
     captureEligible: false,
     activation,
-    ...(daemon === null ? {} : { summoned: daemon }),
+    ...(wild === null ? {} : { summoned: wild }),
   };
 }
 
@@ -1350,7 +1355,9 @@ function parseNeutralUnit(
  * The Cultists (`pulp_wars-mch9.6`, RULESET_7_CULTISTS.md section 6.4): an
  * Unbound daemon's entry (breed `HORROR` or `HERALD`) may be on any board;
  * it, and no other entry, has `unbound` (the seat that summoned it and
- * whether it is Furious) and its `provokedBy` is empty.
+ * whether it is Furious) and its `provokedBy` is empty. A Tentacle's entry
+ * (`pulp_wars-mch9.8`, section 9.3) may be on any board too, with an empty
+ * `provokedBy` and no `unbound`.
  */
 function parseMonsters(
   input: unknown,
@@ -1396,7 +1403,9 @@ function parseMonsters(
     }
     if (
       daemon !== loose ||
-      (daemon ? provokedBy?.length !== 0 : !curiosityBoard) ||
+      (breed !== null && isWildBreedV7(breed)
+        ? provokedBy?.length !== 0
+        : !curiosityBoard) ||
       unitId === null ||
       home === null ||
       breed === null ||
@@ -2095,11 +2104,17 @@ function parseCult(input: unknown): CultStateV7 | null {
     !hasExactKeysV7(input, [
       "cowed",
       "favour",
+      "frogs",
       "grips",
+      "hexCooldowns",
       "idols",
       "rituals",
       "strands",
+      "taunts",
+      "tentacles",
     ]) ||
+    !isDenseArrayV7(input.hexCooldowns) ||
+    !isDenseArrayV7(input.tentacles) ||
     !isDenseArrayV7(input.favour) ||
     !isDenseArrayV7(input.strands) ||
     !isDenseArrayV7(input.grips) ||
@@ -2229,7 +2244,75 @@ function parseCult(input: unknown): CultStateV7 | null {
       return null;
     cowed.push({ cityId, endsLeft: candidate.endsLeft });
   }
-  return { favour, strands, grips, idols, rituals, cowed };
+  // `pulp_wars-mch9.8` (sections 9.1, 9.2, 8.2, and 9.3): the frogs and the
+  // taunts, strictly ascending; the hex cooldowns and the Tentacles,
+  // strictly ascending by unit.
+  const frogs = parseStrictlyAscendingIdsV7(input.frogs, parseUnitIdV7);
+  const taunts = parseStrictlyAscendingIdsV7(input.taunts, parseUnitIdV7);
+  if (frogs === null || taunts === null) return null;
+  const hexCooldowns: CultStateV7["hexCooldowns"][number][] = [];
+  for (const candidate of input.hexCooldowns) {
+    if (!hasExactKeysV7(candidate, ["turnsRemaining", "unitId"])) return null;
+    const unitId = parseUnitIdV7(candidate.unitId);
+    const prior = hexCooldowns.at(-1);
+    if (
+      unitId === null ||
+      (candidate.turnsRemaining !== 1 && candidate.turnsRemaining !== 2) ||
+      (prior !== undefined && prior.unitId >= unitId)
+    )
+      return null;
+    hexCooldowns.push({ unitId, turnsRemaining: candidate.turnsRemaining });
+  }
+  const tentacles: CultStateV7["tentacles"][number][] = [];
+  for (const candidate of input.tentacles) {
+    if (
+      !hasExactKeysV7(candidate, [
+        "callerUnitId",
+        "grabbedUnitId",
+        "turnsLeft",
+        "unitId",
+      ])
+    )
+      return null;
+    const unitId = parseUnitIdV7(candidate.unitId);
+    const callerUnitId = parseUnitIdV7(candidate.callerUnitId);
+    const grabbedUnitId =
+      candidate.grabbedUnitId === null
+        ? null
+        : parseUnitIdV7(candidate.grabbedUnitId);
+    const prior = tentacles.at(-1);
+    if (
+      unitId === null ||
+      callerUnitId === null ||
+      callerUnitId === unitId ||
+      (candidate.grabbedUnitId !== null && grabbedUnitId === null) ||
+      grabbedUnitId === unitId ||
+      (candidate.turnsLeft !== 1 &&
+        candidate.turnsLeft !== 2 &&
+        candidate.turnsLeft !== TENTACLE_LIFETIME_V7) ||
+      tentacles.some((entry) => entry.callerUnitId === callerUnitId) ||
+      (prior !== undefined && prior.unitId >= unitId)
+    )
+      return null;
+    tentacles.push({
+      unitId,
+      callerUnitId,
+      turnsLeft: candidate.turnsLeft as 1 | 2 | 3,
+      grabbedUnitId,
+    });
+  }
+  return {
+    favour,
+    strands,
+    grips,
+    idols,
+    rituals,
+    cowed,
+    frogs,
+    hexCooldowns,
+    taunts,
+    tentacles,
+  };
 }
 
 /**
@@ -2248,7 +2331,11 @@ function parseCult(input: unknown): CultStateV7 | null {
  * Star-fall is led by a unit with Star-fall and marks a tile on the board,
  * a Great Summoning by a unit with Summon and marks a tile next to it;
  * and no participant holds a strand (both spend the primary action).
- * Section 8.6: every Cowed city is a city on the board.
+ * Section 8.6: every Cowed city is a city on the board. Sections 9 and 8.2
+ * (`pulp_wars-mch9.8`): every frog, hex cooldown, and taunt is of a unit of
+ * a player on the board; the Tentacle entries are exactly the neutral units
+ * of the breed `TENTACLE`, one each; a held unit is a unit of a player on
+ * one of the eight tiles around its Tentacle, held by one Tentacle.
  */
 function cultValid(
   value: CrossInput,
@@ -2271,6 +2358,7 @@ function cultValid(
     )
   )
     return false;
+  if (!tricksValid(value)) return false;
   if (
     value.cult.strands.length === 0 &&
     value.cult.grips.length === 0 &&
@@ -2369,6 +2457,62 @@ function cultValid(
       !unitRoleRuleV7(roster, bearer).abilities.includes("BEHOLD")
     )
       return false;
+  }
+  return true;
+}
+
+/**
+ * The Cultists (`pulp_wars-mch9.8`, RULESET_7_CULTISTS.md sections 9.1 to
+ * 9.3 and 8.2): the cross references of the trick lists (see
+ * {@link cultValid}).
+ */
+function tricksValid(value: CrossInput): boolean {
+  const { frogs, hexCooldowns, taunts, tentacles } = value.cult;
+  const wild = value.monsters.filter((entry) => entry.breed === "TENTACLE");
+  if (
+    frogs.length === 0 &&
+    hexCooldowns.length === 0 &&
+    taunts.length === 0 &&
+    tentacles.length === 0 &&
+    wild.length === 0
+  )
+    return true;
+  const unitById = new Map(
+    value.units.filter((unit) => unit.hp > 0).map((unit) => [unit.id, unit]),
+  );
+  const ofPlayer = (unitId: UnitId): boolean => {
+    const unit = unitById.get(unitId);
+    return unit !== undefined && !isNeutralOwnerV7(unit.ownerId);
+  };
+  if (
+    !frogs.every(ofPlayer) ||
+    !taunts.every(ofPlayer) ||
+    !hexCooldowns.every((entry) => ofPlayer(entry.unitId)) ||
+    tentacles.length !== wild.length
+  )
+    return false;
+  const held = new Set<UnitId>();
+  for (const entry of tentacles) {
+    const tentacle = unitById.get(entry.unitId);
+    if (
+      tentacle === undefined ||
+      !isNeutralOwnerV7(tentacle.ownerId) ||
+      tentacle.summoned !== "TENTACLE"
+    )
+      return false;
+    if (entry.grabbedUnitId === null) continue;
+    const unit = unitById.get(entry.grabbedUnitId);
+    if (
+      unit === undefined ||
+      isNeutralOwnerV7(unit.ownerId) ||
+      held.has(unit.id) ||
+      Math.max(
+        Math.abs(unit.at.x - tentacle.at.x),
+        Math.abs(unit.at.y - tentacle.at.y),
+      ) !== 1
+    )
+      return false;
+    held.add(unit.id);
   }
   return true;
 }
@@ -3408,6 +3552,18 @@ function monstersValid(
           tile.terrain === "MOUNTAIN" ||
           iceKeys.has(key(unit.at))
         )
+      )
+        return false;
+      continue;
+    }
+    // The Cultists (section 9.3, `pulp_wars-mch9.8`): a Tentacle is rooted
+    // where it rose: any land or water tile but a Rift, never a settlement
+    // center. (`cultValid` checks its `cult.tentacles` entry.)
+    if (entry.breed === "TENTACLE") {
+      if (
+        unit.summoned !== "TENTACLE" ||
+        tile.site !== null ||
+        tile.terrain === "RIFT"
       )
         return false;
       continue;

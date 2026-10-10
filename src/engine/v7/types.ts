@@ -5,7 +5,7 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r77" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r78" as const;
 /**
  * Every earlier Ruleset 7 identity, oldest first. Readers report these as
  * incompatible (never invalid). An identity bump must append the outgoing
@@ -88,8 +88,9 @@ export const PRIOR_RULESET_7_IDS = Object.freeze([
   "pulp-wars-poc-7r74",
   "pulp-wars-poc-7r75",
   "pulp-wars-poc-7r76",
+  "pulp-wars-poc-7r77",
 ] as const);
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r77.current" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r78.current" as const;
 /**
  * The map generator a setup names (docs/product/RULESET_7_MAP_SCALE.md
  * section 8.8): `V4` is the many-seats generator of `pulp_wars-ykw.3`
@@ -359,6 +360,13 @@ export const COMMAND_KIND_ORDER_V7 = Object.freeze([
   // (Star-fall, the Great Summoning) and the Herald's Proclaim.
   "BEGIN_RITUAL",
   "PROCLAIM",
+  // The Cultists (`pulp_wars-mch9.8`, sections 9 and 8.2): the Hexer's
+  // Ribbit, the Familiar's Switcheroo, the Caller's Tentacle, and the
+  // Chosen's Pick Me!.
+  "RIBBIT",
+  "SWITCHEROO",
+  "TENTACLE",
+  "PICK_ME",
   "CAPTURE",
   "PROMOTE",
   "PILLAGE",
@@ -598,6 +606,15 @@ export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   "UNIT_CONSUMED",
   "HERALD_ARRIVED",
   "CITY_COWED",
+  // The Cultists (`pulp_wars-mch9.8`, sections 9 and 8.2): a unit turned
+  // into a frog, two units swapped, a Tentacle that rose, grabbed a unit,
+  // or sank, and a Chosen's Pick Me!.
+  "UNIT_FROGGED",
+  "UNITS_SWAPPED",
+  "TENTACLE_ROSE",
+  "UNIT_GRABBED",
+  "TENTACLE_SANK",
+  "PICK_ME_SHOUTED",
   "SPOILS_AWARDED",
   "PLUNDER_AWARDED",
   // Map curiosities (section 8.7): the bounty for killing a Monster.
@@ -906,6 +923,10 @@ export const NEUTRAL_BREEDS_V7 = Object.freeze([
   "BIGFOOT",
   "HORROR",
   "HERALD",
+  // The Cultists (`pulp_wars-mch9.8`, section 9.3): a Caller's Tentacle is
+  // wild from birth: a neutral unit of its own breed (its summoned role's
+  // ID), rooted, with no lair and no provokers ({@link isWildBreedV7}).
+  "TENTACLE",
 ] as const);
 export type NeutralBreedV7 = (typeof NEUTRAL_BREEDS_V7)[number];
 
@@ -920,6 +941,16 @@ export type DaemonBreedV7 = (typeof DAEMON_BREEDS_V7)[number];
 /** Whether `breed` is the breed of an Unbound daemon (section 6.4). */
 export function isDaemonBreedV7(breed: NeutralBreedV7): breed is DaemonBreedV7 {
   return breed === "HORROR" || breed === "HERALD";
+}
+
+/**
+ * The Cultists (sections 6.4 and 9.3): whether `breed` is a neutral unit of
+ * the Cult's making: an Unbound daemon or a Tentacle. Such a unit carries
+ * its `summoned` field, may be on any board, has no lair, camp, or area, and
+ * is provoked by nobody.
+ */
+export function isWildBreedV7(breed: NeutralBreedV7): boolean {
+  return isDaemonBreedV7(breed) || breed === "TENTACLE";
 }
 
 /**
@@ -1514,6 +1545,56 @@ export interface CultStateV7 {
    * until their owner's turn ends or the city changes hands.
    */
   readonly cowed: readonly CowedCityV7[];
+  /**
+   * Ribbit (`pulp_wars-mch9.8`, section 9.1): the units that are frogs,
+   * sorted. A unit is frogged in another seat's turn and is a frog until
+   * its owner's next turn ends, or until it is cured (Tend Wounded, Repair,
+   * Top-Up) or leaves the board.
+   */
+  readonly frogs: readonly UnitId[];
+  /**
+   * Sections 9.1 and 9.2: the Hexers and Familiars that cast their trick,
+   * sorted by `unitId`. A unit with an entry cannot Ribbit or Switcheroo;
+   * `turnsRemaining` (2 when cast, then 1) counts its owner's Start Turns
+   * before the entry is removed, so the trick is back on the second turn
+   * after the cast.
+   */
+  readonly hexCooldowns: readonly HexCooldownV7[];
+  /**
+   * Pick Me! (section 8.2): the Chosen that shouted, sorted. A unit hostile
+   * to a listed Chosen's owner that stands next to it may `ATTACK` only a
+   * listed Chosen next to it. An entry ends at its Chosen's owner's next
+   * Start Turn and when the Chosen leaves the board.
+   */
+  readonly taunts: readonly UnitId[];
+  /**
+   * Tentacle and Grab (section 9.3): one entry per Tentacle on the board,
+   * sorted by `unitId`.
+   */
+  readonly tentacles: readonly TentacleV7[];
+}
+/**
+ * The Cultists (sections 9.1 and 9.2): the Hexer or Familiar `unitId`
+ * cannot use its trick while it has an entry; `turnsRemaining` (1 or 2)
+ * counts its owner's Start Turns before the entry is removed.
+ */
+export interface HexCooldownV7 {
+  readonly unitId: UnitId;
+  readonly turnsRemaining: 1 | 2;
+}
+/**
+ * The Cultists (section 9.3): the Tentacle `unitId` (a neutral unit of
+ * breed `TENTACLE`) that the Caller `callerUnitId` called (one Tentacle per
+ * Caller at a time; the Caller may have left the board since). It sinks at
+ * the end of the neutral turn in which `turnsLeft` (3 when it rises)
+ * reaches 0. `grabbedUnitId` is the unit it last slapped while that unit
+ * survives and stands next to it (Grab), else null.
+ */
+export interface TentacleV7 {
+  readonly unitId: UnitId;
+  readonly callerUnitId: UnitId;
+  readonly turnsLeft: 1 | 2 | 3;
+  readonly grabbedUnitId: UnitId | null;
 }
 /**
  * The Cultists (section 7.1): a ritual under way. `leaderUnitId` leads it
@@ -1562,6 +1643,10 @@ export function emptyCultStateV7(): CultStateV7 {
     idols: [],
     rituals: [],
     cowed: [],
+    frogs: [],
+    hexCooldowns: [],
+    taunts: [],
+    tentacles: [],
   };
 }
 

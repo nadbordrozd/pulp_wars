@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r77`, for all eight offered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r78`, for all eight offered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), and Candy (`CANDY`). A
 ninth faction, the Cultists (`CULT`), is **registered and not offered**: its
@@ -9,10 +9,12 @@ roster, tree, start, and rewards are in the engine, and so are its Favour
 (Sacrifice, Seize, Offering, and Martyr), its channel (Summon and the
 Horror, Channel, the disruption rule, Behold!, Anchor, and Boo!), and
 Unbound (a daemon that fails its check belongs to nobody and rampages;
-Furious; Bind again), and its rituals and the Herald (Star-fall, the Great
-Summoning, Ravage, Unstoppable, Proclaim and the Cowed city;
-[section 1](#1-identity-and-compatibility)); its hexes are not, and
-[its spec](RULESET_7_CULTISTS.md) is folded in here only when they are. It
+Furious; Bind again), its rituals and the Herald (Star-fall, the Great
+Summoning, Ravage, Unstoppable, Proclaim and the Cowed city), and its hexes
+and tricks (Ribbit and the frog, Switcheroo, the Tentacle and Grab, Pick
+Me!, Pamphlets; [section 1](#1-identity-and-compatibility)); the Normal AI
+does not play its rites and tricks yet and the browser does not offer them,
+and [its spec](RULESET_7_CULTISTS.md) is folded in here only when they do. It
 folds in
 revision 12 (free opening technology, Fruit visible from the start, Fertile
 Ground revealed by Gathering, resources kept under improvements, Normal AI
@@ -432,6 +434,26 @@ links to another, by Road or by Port. A sea link needs only **Shorecraft**
 the Roads technology, and unexplored water no longer breaks a link. A save,
 replay, or setup of `7r75` is rejected, and the browser autosave has a new
 key.
+`pulp-wars-poc-7r78` (`pulp_wars-mch9.8`) is **the Cult's hexes and
+tricks** ([section 1](#1-identity-and-compatibility)), the sixth and last
+engine step of the Cultists. A Hexer's **Ribbit** turns a hostile unit
+within 2 tiles into a **frog** until its owner's next turn ends: Defense
+0.5 with no fortification and no cover, Move 1, no attack, no strike back,
+no capture; Seizable at half its Hit Points; cured by Tend Wounded, Repair,
+and Top-Up. A Familiar's **Switcheroo** (with Scouting) swaps it with a
+unit within 2 tiles, never on a settlement center. Each waits out its
+owner's next turn. A Caller's **Tentacle** rises within 3 tiles as a
+neutral unit that slaps the weakest unit beside it at once and after every
+round, holds the unit it slapped (**Grab**: it moves only beside the
+Tentacle), and sinks after three rounds. A Chosen's **Pick Me!** lets the
+hostile units beside it attack nobody else until its owner's next turn. An
+Initiate captures a neutral village in the turn it walks onto it
+(**Pamphlets**). The `cult` block gains the lists `frogs`, `hexCooldowns`,
+`taunts`, and `tentacles`; the commands `RIBBIT`, `SWITCHEROO`, `TENTACLE`,
+and `PICK_ME`, six events, the neutral breed `TENTACLE`, and the death
+cause `SANK` are new. No rule of the eight offered factions changed. A
+save, replay, or setup of `7r77` is rejected, and the browser autosave has
+a new key.
 `pulp-wars-poc-7r77` (`pulp_wars-mch9.7`) is **the Cult's rituals and the
 Herald** ([section 1](#1-identity-and-compatibility)), the fifth engine step
 of the Cultists: a leader and the robed cultists beside it begin a
@@ -901,7 +923,7 @@ the build differs (its sections 20 to 24 list them);
 the values here are current. Where a document and the code disagreed, the
 code's behavior is the rule and is stated below;
 [Known discrepancies](#25-known-discrepancies) lists the open items and the
-resolved ones as of `pulp-wars-poc-7r77`.
+resolved ones as of `pulp-wars-poc-7r78`.
 
 **Terms.** "On the board" means a unit that currently exists (HP above 0).
 **Living** has the narrower revision-13 meaning used by Wail, Plague,
@@ -1002,10 +1024,10 @@ separate [Ruleset 6](RULESET_6.md) route.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r77`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Ruleset                                    | `pulp-wars-poc-7r78`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r77.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Browser autosave                           | `pulpWars.save.v7r78.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, `CULT`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`, `CULT_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -1312,7 +1334,18 @@ separate [Ruleset 6](RULESET_6.md) route.
   causes `STARFALL` and `CONSUMED`, the Favour source `CONSUMPTION` and
   purpose `GREAT_SUMMONING`, the `FIELD_DEFENSE_DESTROYED` reasons
   `STARFALL` and `UNSTOPPABLE`, and the errors `RITUAL_NOT_LEGAL` and
-  `PROCLAIM_NOT_LEGAL` (the notes below).
+  `PROCLAIM_NOT_LEGAL` (the notes below). The Cult's hexes and tricks
+  (`pulp_wars-mch9.8`, `7r78`) added the required lists `frogs`,
+  `hexCooldowns`, `taunts`, and `tentacles` of the `cult` block (state and
+  view), the neutral breed `TENTACLE` (a `monsters` entry and a neutral unit
+  with `summoned: "TENTACLE"`), the commands `RIBBIT`, `SWITCHEROO`,
+  `TENTACLE`, and `PICK_ME`, the events `UNIT_FROGGED`, `UNITS_SWAPPED`,
+  `TENTACLE_ROSE`, `UNIT_GRABBED`, `TENTACLE_SANK`, and `PICK_ME_SHOUTED`,
+  the `UNIT_DIED` cause `SANK`, the optional key `curedFrog` of a
+  `WOUNDED_TENDED` result, the technology effect `SWITCHEROO`, the
+  `MOVEMENT_ILLEGAL` reason `GRABBED`, and the errors `RIBBIT_NOT_LEGAL`,
+  `SWITCHEROO_NOT_LEGAL`, `TENTACLE_NOT_LEGAL`, `PICK_ME_NOT_LEGAL`,
+  `UNIT_FROGGED`, and `ATTACK_TAUNTED` (the notes below).
 - **The Cult registration** (`pulp_wars-mch9.3`, `7r71`, bead E1 of
   [the Cultists spec](RULESET_7_CULTISTS.md#19-implementation-beads)). What
   is in the engine today, and nothing more:
@@ -1758,6 +1791,90 @@ separate [Ruleset 6](RULESET_6.md) route.
     `.proclaim.cN` and prints the circles, a Cowed city, and a Herald's
     attacks left.
   - **Normal AI.** It picks neither command (`pulp_wars-mch9.11`).
+- **The Cult's hexes and tricks** (`pulp_wars-mch9.8`, `7r78`, bead E6 of
+  [the Cultists spec](RULESET_7_CULTISTS.md#19-implementation-beads); its
+  sections 9, 8.2, and 8.7 are the design, and
+  [its section 21.6](RULESET_7_CULTISTS.md#216-e6-hexes-and-tricks-pulp_wars-mch98-pulp-wars-poc-7r78)
+  the choices made). What is in the engine today:
+  - **Ribbit** (`RIBBIT { unitId, targetUnitId }`): a primary action of a
+    land-form Hexer (the Cult `MARKSMAN`), in place of its attack, that may
+    follow its Move. The target is a hostile land-form unit the actor sees
+    within 2 tiles, not a reward giant, a two-slot unit, an Egg, a neutral
+    unit, a summoned unit, or a frog (`UNIT_FROGGED`). The Hexer cannot
+    Ribbit on its owner's next turn (`cult.hexCooldowns`).
+  - **A frog** (`cult.frogs`) lasts until its owner's next turn ends. It
+    gives no command but Move, Disembark, Promote, Disband, and Wait
+    (`UNIT_FROGGED`); its Move is 1. Against an `ATTACK` it has Defense 0.5
+    flat, no fortification, no cover, and no strike back (a Shield,
+    Armoured, and Plated stay). It blocks its tile and exerts its zone of
+    control. A Summoner Seizes it at half its maximum Hit Points or less.
+    Tend Wounded (and Repair) and Top-Up cure it. A frogged channeller,
+    chanter, or Idol Bearer is disrupted (a frog is a status).
+  - **Switcheroo** (`SWITCHEROO { unitId, targetUnitId }`): a primary
+    action of a land-form Familiar (the Cult `RAIDER`) of a seat with
+    Familiars (the Cult's Scouting; the `switcheroo` capability) that may
+    follow its Move: it and a land-form unit of any player within 2 tiles
+    swap tiles (`UNITS_SWAPPED`). Never a reward giant, a two-slot unit, an
+    Egg, a neutral unit, a summoned unit, or a Jawbreaker; neither tile a
+    settlement center; each unit must be able to stand on the other's tile
+    by the Push conditions, read with the actor's Engineering and
+    Navigation. Neither unit's activation changes otherwise; a swapped
+    channeller is disrupted. The Familiar cannot swap on its owner's next
+    turn.
+  - **The Tentacle** (`TENTACLE { unitId, at }`): a primary action of a
+    land-form Caller (the Cult `KNIGHT`; a mind-controlled one has none)
+    that may follow its Move, on a free tile its seat has explored within 3
+    tiles, land or water, never a settlement center or a Rift; one per
+    Caller (`TENTACLE_ROSE`). The Tentacle is a neutral unit (breed
+    `TENTACLE`, `summoned: "TENTACLE"`): 8 HP, Attack 3, Defense 1, Move 0,
+    rooted (nothing moves it), no living thing, worth nothing. **At once
+    and in every neutral turn** it attacks the unit of a player beside it
+    with the fewest Hit Points, ties to the lowest ID, friend or foe, of
+    any form: an ordinary attack with retaliation, credited to nobody (no
+    Favour, no Martyr). At the end of its third neutral turn it sinks
+    (`TENTACLE_SANK`, `UNIT_DIED` cause `SANK`). State: `cult.tentacles`,
+    `{ unitId, callerUnitId, turnsLeft, grabbedUnitId }`.
+  - **Grab:** the Tentacle holds the unit it last slapped while both
+    survive and the unit stands next to it (`UNIT_GRABBED`). Every step of
+    that unit's Move must be a tile next to the Tentacle
+    (`MOVEMENT_ILLEGAL` reason `GRABBED`). A shove, a swap, or anything
+    else that takes it from the Tentacle's side ends the grab.
+  - **Pick Me!** (`PICK_ME { unitId }`): a primary action of a land-form
+    Chosen (the Cult `SWORDSMAN`) that may follow its Move
+    (`PICK_ME_SHOUTED`). Until its owner's next Start Turn (`cult.taunts`),
+    a unit hostile to that owner on one of the eight tiles around it may
+    name only a taunting Chosen beside it in an `ATTACK`
+    (`ATTACK_TAUNTED`). Units two tiles away, area effects, statuses, Mind
+    Control, the Tractor Beam, and neutral units are free.
+  - **Pamphlets:** a Move of a land-form Initiate (the Cult `FIGHTER`)
+    that ends on a village center nobody owns sets its `captureEligible`,
+    and its `CAPTURE` is not refused for having moved.
+  - **Views and previews.** A view lists the frogs, hex cooldowns, taunts,
+    and Tentacles of the units its viewer sees (`cult.frogs`,
+    `cult.hexCooldowns`, `cult.taunts`, `cult.tentacles`).
+    `previewRibbitV7`, `previewSwitcherooV7`, `previewTentacleV7`, and
+    `previewPickMeV7` describe an offered command; `publicBindingTauntsV7`
+    names the Chosen that bind an own unit; `previewMonsterV7` gives a
+    Tentacle's ring and its next slap.
+  - **Events and who sees them.** `UNIT_FROGGED` and `UNITS_SWAPPED` reach
+    both seats and every player who sees one of the two units (a swap's
+    tiles only where explored); `TENTACLE_ROSE` its seat and whoever sees
+    the Tentacle or has explored its tile; `UNIT_GRABBED` the held unit's
+    owner and whoever sees either unit; `TENTACLE_SANK` whoever saw it;
+    `PICK_ME_SHOUTED` its seat and whoever sees the Chosen. A Tend that
+    cured a frog reaches every player who sees the Captain and the frog.
+  - **Interface, for now.** The browser offers none of the four commands
+    and draws no frog, taunt, or Grab yet (`pulp_wars-mch9.19`); the
+    technology card of Familiars and the glossary name them. The text
+    harness offers `.ribbit.uN`, `.switch.uN`, `.tentacle.x,y`, and
+    `.pickme`.
+  - **Normal AI.** It picks none of the four commands
+    (`pulp_wars-mch9.11`). Every seat reads a visible Tentacle as a lone
+    monster: no routine Move ends beside it, and it is attacked only for a
+    kill this turn.
+  - **The lab** `LAB_CULT_MID` (hidden; built and checked, not played)
+    stages the Cult roster with 12 Favour against the Human side of
+    `LAB_DWARF_MID`. A mission seat of the Cult may start with Favour.
 
 ## 2. Setup and map generation
 
@@ -2464,8 +2581,10 @@ Goblins), `LAB_UNDEAD_MID` (the Undead pass: the hand player is the
 Undead), `LAB_MARTIAN_MID` (the Martian pass: the hand player is the
 Martians), `LAB_DINOSAUR_MID` (the Dinosaur pass: the hand player is the
 Dinosaurs), `LAB_ICE_FOLK_MID` (step two of the Ice Folk pass: the hand
-player is the Ice Folk), and `LAB_DWARF_MID` (step two of the Dwarf pass:
-the hand player is the Dwarves). A mission unit may carry `kills` (a dinosaur that has
+player is the Ice Folk), `LAB_DWARF_MID` (step two of the Dwarf pass:
+the hand player is the Dwarves), and `LAB_CULT_MID` (the Cult's sixth
+engine step: the hand player is the Cultists; built, not played). A Cult
+seat of a mission may start with Favour (`favour`). A mission unit may carry `kills` (a dinosaur that has
 grown: it starts at the HP of its stage) and `egg` (an Egg with its
 turns to hatch); the builder refuses `kills` on a role that does not grow
 and `egg` on a role that is not egg-laid. Adding a mission is content: it
@@ -13087,6 +13206,7 @@ first guesses.
 | Cult, E4        | `pulp-wars-poc-7r75` | `pulp_wars-mch9.6` the Cult's Unbound, the fourth engine step of the Cultists (a save, replay, or setup of `7r74` is rejected): a daemon that fails its check belongs to nobody as a neutral unit of its own breed (`HORROR`, `HERALD`), rampages at once and after every round (it walks to the nearest unit of any player and attacks it), is Furious for that turn, and is bound again by the Cult seat whose strands on it reach its Control in one turn; a bound daemon's kills pay Favour; no Martyr for a Chosen a wild unit attacks and kills; an eliminated Cult seat's daemons are Unbound and stay; the `monsters` key `unbound`, the event `DAEMON_BOUND`, the Favour source `DAEMON_KILL`, no death cause `UNBOUND`; a neutral unit on a center besieges nothing ([section 1](#1-identity-and-compatibility)).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Port links      | `pulp-wars-poc-7r76` | `pulp_wars-5ti.12` Ports join the Road network (the user, 2026-10-10; a save, replay, or setup of `7r75` is rejected): one connection network of Road tiles, own city centers, own active Ports and Shipyards, and sea links between active docks of two own cities at most five water steps apart; a city joined to the original capital by any mix of them gets +1 population once, and the capital +1 for each; sea trade (Navigation's +1 Coin) is removed and Commerce's trade Coin goes to every city linked to another by Road or Port; the sea link needs Shorecraft only (Navigation adds Deep Water crossings), city centers and docks count without Roads, and exploration is no longer a condition; the technology effect `SEA_TRADE_INCOME` and the capability `seaTradeIncomeCoins` are replaced by `SEA_LINK` (on Shorecraft) and `seaLink`; `naval.ownedPorts` entries gain `joinsCity`, `naval.seaRoutes` lists exactly the links that count (one for each pair of cities), and `naval.seaTradeCityIds` and `tradeCityIds` are always empty; the board draws a Road onto docks and city centers where they join                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | Cult, E5        | `pulp-wars-poc-7r77` | `pulp_wars-mch9.7` the Cult's rituals and the Herald, the fifth engine step of the Cultists (a save, replay, or setup of `7r76` is rejected): the ritual frame (a leader and its chanters begin a ritual with `BEGIN_RITUAL`, a disrupted participant leaves it, and it completes or fizzles at the seat's next Start Turn after the channel check); Star-fall (a Stargazer that has not moved, one chanter or more, a mark 2 to 4 tiles away: 5 + 1 for each chanter as a fixed hit to every unit on the mark and the eight tiles around it, friend and foe, with every Field Defense and Barricade there destroyed); the Great Summoning (a Summoner with The Stars Are Right and three chanters or more, 20 Favour: the unit on the mark is consumed or blocks the arrival, then the Herald arrives and the circle channels it); the Herald (60 HP, Attack 7, Defense 4, Move 2, Control 3; Ravage, two attacks a turn and never an advance; Unstoppable, its attacks ignore fortification and destroy Field Defense, and no status or shove takes it; Proclaim, one attack spent to Cow a hostile city within 3 tiles: no income and no city action until its owner's turn ends); the commands `BEGIN_RITUAL` and `PROCLAIM`, seven events, the `cult` lists `rituals` and `cowed`, the death causes `STARFALL` and `CONSUMED`, the Favour source `CONSUMPTION` and purpose `GREAT_SUMMONING`, and the Field Defense reasons `STARFALL` and `UNSTOPPABLE`. An Unbound Herald can be bound again. No rule of the eight offered factions changed                      |
+| Cult, E6        | `pulp-wars-poc-7r78` | `pulp_wars-mch9.8` the Cult's hexes and tricks, the sixth and last engine step of the Cultists (a save, replay, or setup of `7r77` is rejected): Ribbit (a Hexer turns a hostile unit within 2 tiles into a frog until its owner's next turn ends: Defense 0.5 with no fortification and no cover, Move 1, no attack, strike back, or capture; Seizable at half its Hit Points; cured by Tend Wounded, Repair, and Top-Up; a status for the disruption rule); Switcheroo (a Familiar with Scouting swaps with a unit within 2 tiles, never on a settlement center, each unit where it may stand); each waits out its owner's next turn; the Tentacle (a Caller calls a neutral unit of the breed `TENTACLE` within 3 tiles: 8 HP, Attack 3, Defense 1, rooted; it slaps the weakest unit beside it at once and in every neutral turn, friend or foe, credited to nobody, and sinks after its third) and Grab (the slapped unit moves only beside it); Pick Me! (hostile units beside a taunting Chosen may `ATTACK` only it until its owner's next Start Turn); Pamphlets (an Initiate captures a neutral village in the turn it walks onto it); the `cult` lists `frogs`, `hexCooldowns`, `taunts`, and `tentacles`, four commands, six events, the death cause `SANK`, and the hidden lab `LAB_CULT_MID` (a mission's Cult seat may start with Favour); no rule of another faction changed ([section 1](#1-identity-and-compatibility)).                                                                                                                              |
 
 **Documentation parity (2026-09-28, no ruleset or identity change):** where
 older documents disagreed with the code, the code's behavior was adopted as

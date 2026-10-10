@@ -109,7 +109,7 @@ const moveTargets = (state: GameStateV7, from: CoordV7): readonly string[] => {
 
 describe("tuning 4 keeps the unpublished identity", () => {
   it("is 7r47", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r77");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r78");
   });
 });
 
@@ -698,6 +698,9 @@ describe("the Human labs", () => {
       "LAB_ICE_FOLK_MID",
       // Step two of the Dwarf pass: the hand player as the Dwarves.
       "LAB_DWARF_MID",
+      // The Cult's tricks (`pulp_wars-mch9.8`): the hand player as the
+      // Cultists (built, not played).
+      "LAB_CULT_MID",
     ]);
     for (const mission of labs) {
       expect(mission, mission.id).toMatchObject({ hidden: true, mirror: true });

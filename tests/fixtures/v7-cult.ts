@@ -6,6 +6,7 @@ import {
   summonedUnitRoleRuleV7,
   unitId,
   withDaemonUnboundV7,
+  withTentacleRisenV7,
   type CoordV7,
   type GameStateV7,
   type RitualKindV7,
@@ -282,6 +283,84 @@ export function withCowedV7(state: GameStateV7, center: CoordV7): GameStateV7 {
       ...state.cult,
       cowed: [...state.cult.cowed, { cityId: city.id, endsLeft: 1 }].sort(
         (left, right) => left.cityId - right.cityId,
+      ),
+    },
+  });
+}
+
+/**
+ * The trick fixtures (`pulp_wars-mch9.8`, sections 9 and 8.2). The unit on
+ * each of `where` is a frog (as after a `RIBBIT` in another seat's turn).
+ */
+export function withFrogsV7(
+  state: GameStateV7,
+  where: readonly CoordV7[],
+): GameStateV7 {
+  return checkedV7({
+    ...state,
+    cult: {
+      ...state.cult,
+      frogs: [
+        ...state.cult.frogs,
+        ...where.map((tile) => unitAtV7(state, tile).id),
+      ].sort((left, right) => left - right),
+    },
+  });
+}
+
+/** The Chosen on each of `where` has shouted Pick Me! (section 8.2). */
+export function withTauntsV7(
+  state: GameStateV7,
+  where: readonly CoordV7[],
+): GameStateV7 {
+  return checkedV7({
+    ...state,
+    cult: {
+      ...state.cult,
+      taunts: [
+        ...state.cult.taunts,
+        ...where.map((tile) => unitAtV7(state, tile).id),
+      ].sort((left, right) => left - right),
+    },
+  });
+}
+
+/**
+ * A Tentacle of the Caller on `caller` stands on `where` (section 9.3): a
+ * neutral unit at full HP unless `hp` says otherwise, with `turnsLeft`
+ * neutral turns to live (3 by default), holding the unit on `grabbed` if
+ * given. It has not slapped anybody.
+ */
+export function withTentacleV7(
+  state: GameStateV7,
+  caller: CoordV7,
+  where: CoordV7,
+  options: {
+    readonly hp?: number;
+    readonly turnsLeft?: 1 | 2 | 3;
+    readonly grabbed?: CoordV7;
+  } = {},
+): GameStateV7 {
+  const risen = withTentacleRisenV7(state, unitAtV7(state, caller).id, where);
+  const grabbedUnitId =
+    options.grabbed === undefined ? null : unitAtV7(state, options.grabbed).id;
+  return checkedV7({
+    ...risen.state,
+    units: risen.state.units.map((unit) =>
+      unit.id === risen.tentacle.id
+        ? { ...unit, hp: options.hp ?? unit.hp }
+        : unit,
+    ),
+    cult: {
+      ...risen.state.cult,
+      tentacles: risen.state.cult.tentacles.map((entry) =>
+        entry.unitId === risen.tentacle.id
+          ? {
+              ...entry,
+              turnsLeft: options.turnsLeft ?? entry.turnsLeft,
+              grabbedUnitId,
+            }
+          : entry,
       ),
     },
   });

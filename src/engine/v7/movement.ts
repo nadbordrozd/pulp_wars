@@ -1,6 +1,7 @@
 import type { PlayerId } from "../model/ids";
 import {
   EMBARKED_MOVE_V7,
+  FROG_MOVE_V7,
   GLACIER_ICE_MOVE_BONUS_V7,
   canCrossWaterV7,
   canEnterTerrainV7,
@@ -20,6 +21,7 @@ import {
   type MovementModeV7,
 } from "../rules/ruleset-v7";
 import { berserkIgnoresZocV7, berserkMoveBonusV7 } from "./berserk";
+import { grabbingTentacleAtV7, unitIsFrogV7 } from "./cult-hexes";
 import { sugarRushMoveBonusV7 } from "./candy";
 import {
   glazeStepAppliesV7,
@@ -122,7 +124,10 @@ export type MovementFailureReasonV7 =
   // 6.2 and 7.7): a Stuck unit's Move of more than one step; a hop over
   // water or ice.
   | "STUCK"
-  | "HOP_ILLEGAL";
+  | "HOP_ILLEGAL"
+  // The Cultists (`pulp_wars-mch9.8`, RULESET_7_CULTISTS.md section 9.3):
+  // a step of a unit a Tentacle holds that leaves the Tentacle's side.
+  | "GRABBED";
 
 export type MovementPathResultV7 =
   | {
@@ -213,6 +218,10 @@ function baseMoveBudget2V7(
   // at most `batEscapeTiles` tiles, each a whole step.
   const batTiles = batEscapeTilesV7(lookup, unit);
   if (batTiles > 0) return batTiles * 2;
+  // The Cultists (`pulp_wars-mch9.8`, RULESET_7_CULTISTS.md section 9.1): a
+  // frog hops: Move 1 whatever its role, with no bonus.
+  if (unit.form === "LAND" && unitIsFrogV7(lookup, unit))
+    return FROG_MOVE_V7 * 2;
   return (
     (unit.form === "EMBARKED"
       ? EMBARKED_MOVE_V7
@@ -385,6 +394,9 @@ function validateMovementPathCoreV7(
   const hops = unitHopsV7(state, unit);
   let hopUsed = false;
   let steps = 0;
+  // The Cultists (`pulp_wars-mch9.8`, RULESET_7_CULTISTS.md section 9.3):
+  // Grab. A unit a Tentacle holds moves only to tiles next to it.
+  const grabbedBy = grabbingTentacleAtV7(state, unit.id);
 
   for (let index = 0; index < path.length; index += 1) {
     const step = path[index];
@@ -395,6 +407,8 @@ function validateMovementPathCoreV7(
         : null;
     if (chebyshev(current, step) !== 1 && jumped === null)
       return { legal: false, reason: "NOT_ADJACENT" };
+    if (grabbedBy !== null && chebyshev(step, grabbedBy) !== 1)
+      return { legal: false, reason: "GRABBED" };
     if (jumped !== null) {
       // Section 7.7: the jumped tile is explored and not water or ice; it
       // is not entered (no cost, stop, ZOC, eating, or reveal of its own).
@@ -1249,6 +1263,9 @@ function validatePlayerMovementPathCoreV7(
   const hops = unitHopsV7(view, unit);
   let hopUsed = false;
   let steps = 0;
+  // The Cultists (section 9.3): Grab, from the public Tentacles (the
+  // Tentacle that holds an own unit stands next to it, so it is visible).
+  const grabbedBy = grabbingTentacleAtV7(view, unit.id);
   for (let index = 0; index < path.length; index += 1) {
     const step = path[index];
     if (step === undefined) return { legal: false, reason: "OUT_OF_BOUNDS" };
@@ -1258,6 +1275,8 @@ function validatePlayerMovementPathCoreV7(
         : null;
     if (chebyshev(current, step) !== 1 && jumped === null)
       return { legal: false, reason: "NOT_ADJACENT" };
+    if (grabbedBy !== null && chebyshev(step, grabbedBy) !== 1)
+      return { legal: false, reason: "GRABBED" };
     if (jumped !== null) {
       const jumpedTile = publicTileAt(view, jumped);
       if (jumpedTile === undefined)

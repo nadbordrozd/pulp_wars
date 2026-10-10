@@ -1040,7 +1040,11 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
           // The Cult's rituals (`pulp_wars-mch9.7`) insert BEGIN_RITUAL and
           // PROCLAIM after BOO, moving the later command kinds forward by two
           // (was 24dee0…e5a7); the revision-12-ordinal value is unchanged.
-          "c591a7d533ba05c1ae1b0489bd13161e4c8bb4eff3b59bac4f8b1afd8ab6a8a7",
+          // The Cult's tricks (`pulp_wars-mch9.8`) insert RIBBIT, SWITCHEROO,
+          // TENTACLE, and PICK_ME after PROCLAIM, moving the later command kinds
+          // forward by four (was c591a7…a8a7); the revision-12-ordinal value is
+          // unchanged.
+          "1ecd35a386debbd65dd3d70e88abbedea5b23c8a02d452c139b9abb9dec1e6d7",
         );
         // Revision 13 shifts the command-kind ordinals in AI tie-break
         // tuples (spec section 8); this is the value with revision-12
@@ -1155,7 +1159,11 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
           // The Cult's rituals (`pulp_wars-mch9.7`) insert BEGIN_RITUAL and
           // PROCLAIM after BOO, moving the later command kinds forward by two
           // (was 7401b8…2edb); the revision-12-ordinal value is unchanged.
-          "6dc144752dc986a8128ba7d48bf1edbe85dfb8d1210600d4651a8c38a64d1f25",
+          // The Cult's tricks (`pulp_wars-mch9.8`) insert RIBBIT, SWITCHEROO,
+          // TENTACLE, and PICK_ME after PROCLAIM, moving the later command kinds
+          // forward by four (was 6dc144…1f25); the revision-12-ordinal value is
+          // unchanged.
+          "a0c65af6a651e70c64a60052f3be40169db9ed7d0eb3c1fbd05da928c27600df",
         );
         // With revision-12 ordinals (pulp_wars-9s0.1: was c56f00…73c1;
         // pulp_wars-0hi.3: was 091615…054b).

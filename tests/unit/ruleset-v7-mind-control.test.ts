@@ -245,6 +245,8 @@ describe("Mind Control revision: legality (section 3)", () => {
       "ANCHOR",
       // The Cult's rituals (`pulp_wars-mch9.7`): so does a Star-fall.
       "STARFALL",
+      // The Cult's tricks (`pulp_wars-mch9.8`): and calling a Tentacle.
+      "TENTACLE",
     ]);
   });
 

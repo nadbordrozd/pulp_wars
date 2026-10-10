@@ -75,6 +75,19 @@ export function projectEventsV7(
     )
       visiblyCreatedUnitIds.add(event.daemonUnitId);
     else if (
+      // The Cultists (`pulp_wars-mch9.8`): the Tentacle of a projected rise.
+      event.kind === "TENTACLE_ROSE" &&
+      eventVisible(
+        beforeState,
+        afterState,
+        viewerId,
+        event,
+        beforeVisible,
+        afterVisible,
+      )
+    )
+      visiblyCreatedUnitIds.add(event.tentacleUnitId);
+    else if (
       // The Dwarf revision: the Gunner of a projected Assemble.
       event.kind === "UNIT_ASSEMBLED" &&
       event.playerId === viewerId
@@ -646,7 +659,11 @@ function eventVisible(
       seen(event.captainId) &&
       event.results.some(
         (result) =>
-          (result.curedPlague || result.curedBitten) && seen(result.unitId),
+          // (`pulp_wars-mch9.8`: or a frog, which the hexing seat watches.)
+          (result.curedPlague ||
+            result.curedBitten ||
+            result.curedFrog === true) &&
+          seen(result.unitId),
       )
     );
   }
@@ -674,6 +691,56 @@ function eventVisible(
     );
   if (event.kind === "HERALD_ARRIVED")
     return event.playerId === viewerId || afterVisible.has(event.daemonUnitId);
+  // The Cultists (`pulp_wars-mch9.8`, RULESET_7_CULTISTS.md sections 9 and
+  // 8.2). A hex and a swap are projected to both seats and to every viewer
+  // that sees one of the two units before or after; a Tentacle's rise to
+  // its Caller's seat and to every viewer that sees the Tentacle or has
+  // explored its tile; a Grab to the held unit's owner and to every viewer
+  // that sees the Tentacle or the unit; a sinking to every viewer that saw
+  // the Tentacle or has explored its tile; a Pick Me! to its seat and to
+  // every viewer that sees the Chosen.
+  if (
+    event.kind === "UNIT_FROGGED" ||
+    event.kind === "UNITS_SWAPPED" ||
+    event.kind === "TENTACLE_ROSE" ||
+    event.kind === "UNIT_GRABBED" ||
+    event.kind === "TENTACLE_SANK" ||
+    event.kind === "PICK_ME_SHOUTED"
+  ) {
+    const seen = (id: UnitId): boolean =>
+      beforeVisible.has(id) || afterVisible.has(id);
+    switch (event.kind) {
+      case "UNIT_FROGGED":
+      case "UNITS_SWAPPED":
+        return (
+          event.playerId === viewerId ||
+          event.targetOwnerId === viewerId ||
+          seen(event.unitId) ||
+          seen(event.targetUnitId)
+        );
+      case "TENTACLE_ROSE":
+        return (
+          event.playerId === viewerId ||
+          seen(event.tentacleUnitId) ||
+          coordVisible(before, after, viewerId, event.at)
+        );
+      case "UNIT_GRABBED":
+        return (
+          seen(event.unitId) ||
+          seen(event.targetUnitId) ||
+          after.units.some(
+            (unit) =>
+              unit.id === event.targetUnitId && unit.ownerId === viewerId,
+          )
+        );
+      case "TENTACLE_SANK":
+        return (
+          seen(event.unitId) || coordVisible(before, after, viewerId, event.at)
+        );
+      default:
+        return event.playerId === viewerId || seen(event.unitId);
+    }
+  }
   // The Martian revision section 10.8: a Beam Down, a Mind Control, and a
   // pull are projected to the actor and to every viewer that can see a unit
   // or tile involved before or after the command.
@@ -1010,7 +1077,10 @@ function projectEventPayload(
       ...event,
       results: event.results.filter(
         (result) =>
-          (result.curedPlague || result.curedBitten) &&
+          // (`pulp_wars-mch9.8`: or a frog, which the hexing seat watches.)
+          (result.curedPlague ||
+            result.curedBitten ||
+            result.curedFrog === true) &&
           (seenBefore.has(result.unitId) || seenAfter.has(result.unitId)),
       ),
     };
@@ -1026,6 +1096,22 @@ function projectEventPayload(
       chanterUnitIds: event.chanterUnitIds.filter(
         (unitId) => seenBefore.has(unitId) || seenAfter.has(unitId),
       ),
+    };
+  }
+  if (event.kind === "UNITS_SWAPPED") {
+    // The Cultists (section 9.2): a viewer learns a tile of the swap only
+    // when it has explored it.
+    if (event.playerId === viewerId) return event;
+    return {
+      ...event,
+      from:
+        event.from !== null && coordVisible(before, after, viewerId, event.from)
+          ? event.from
+          : null,
+      to:
+        event.to !== null && coordVisible(before, after, viewerId, event.to)
+          ? event.to
+          : null,
     };
   }
   if (event.kind === "UNITS_SCARED") {

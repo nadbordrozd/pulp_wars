@@ -665,12 +665,15 @@ describe("the Cult in the interface's words and lists", () => {
       "BEHOLD",
       "SLOW_TO_STRIKE",
     ]);
+    // (Switcheroo arrived with the tricks, `pulp_wars-mch9.8`.)
     expect(roleGlossaryV7("RAIDER", "CULT").map((entry) => entry.id)).toEqual([
       "CAPTURE",
       "CHARGE",
+      "SWITCHEROO",
     ]);
+    // (And Ribbit.)
     expect(roleGlossaryV7("MARKSMAN", "CULT").map((entry) => entry.id)).toEqual(
-      ["CAPTURE", "CHANNEL", "RANGED"],
+      ["CAPTURE", "CHANNEL", "RIBBIT", "RANGED"],
     );
   });
 

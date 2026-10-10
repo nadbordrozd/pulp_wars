@@ -19,6 +19,7 @@ import {
 } from "../rules/ruleset-v7";
 import { isLivingUnitV7 } from "./afflictions";
 import type { CommandV7 } from "./commands";
+import { unitIsFrogV7, type TrickListsV7 } from "./cult-hexes";
 import { unitIsWildV7 } from "./cult-unbound";
 import type { DwarfReducerKitV7 } from "./dwarf-reducer";
 import { arePlayersHostileV7, isCityBesiegedV7 } from "./economy";
@@ -242,7 +243,8 @@ export function withDaemonKillFavourV7(
 
 /** The facts the Summoner's two offerings read (state and view alike). */
 export type CultLookupV7 = FactionRosterV7 &
-  FrozenLookupV7 & {
+  FrozenLookupV7 &
+  TrickListsV7 & {
     readonly setup: GameStateV7["setup"];
     readonly humanPlayerId: PlayerId;
     readonly plagued: readonly { readonly unitId: UnitId }[];
@@ -335,11 +337,27 @@ export function sacrificeRejectionV7(
 
 /**
  * Section 5.2: whether a hostile unit is broken: at `SEIZE_BROKEN_HP_V7`
- * Hit Points or less (a Shield does not count). The frog's rule (half its
- * maximum HP or less) joins here with Ribbit (`pulp_wars-mch9.8`).
+ * Hit Points or less (a Shield does not count). (A frog is Seized sooner:
+ * {@link unitIsSeizableV7}.)
  */
 export function unitIsBrokenV7(unit: Pick<CultUnitFactsV7, "hp">): boolean {
   return unit.hp <= SEIZE_BROKEN_HP_V7;
+}
+
+/**
+ * Sections 5.2 and 9.1 (`pulp_wars-mch9.8`): whether a hostile unit is weak
+ * enough to Seize: broken ({@link unitIsBrokenV7}), or a frog at half its
+ * maximum Hit Points or less. (The Great Summoning consumes only a broken
+ * enemy: section 7.3.)
+ */
+export function unitIsSeizableV7(
+  lookup: TrickListsV7,
+  unit: Pick<CultUnitFactsV7, "id" | "hp"> & { readonly maxHp: number },
+): boolean {
+  return (
+    unitIsBrokenV7(unit) ||
+    (unitIsFrogV7(lookup, unit) && unit.hp * 2 <= unit.maxHp)
+  );
 }
 
 /**
@@ -378,14 +396,15 @@ export function seizeHolderV7<U extends CultUnitFactsV7>(
  * The victim is a hostile land-form unit on one of the eight tiles around
  * the Summoner; living (not of the Undead kind, not a construct), not a
  * reward giant, not a two-slot unit, not neutral (an Egg is not in land
- * form); broken ({@link unitIsBrokenV7}); and held by another robed cultist
- * of the actor next to it ({@link seizeHolderV7}).
+ * form); broken, or a frog at half its Hit Points ({@link unitIsSeizableV7});
+ * and held by another robed cultist of the actor next to it
+ * ({@link seizeHolderV7}).
  */
 export function seizeRejectionV7(
   lookup: CultLookupV7,
   units: readonly CultUnitFactsV7[],
   summoner: SummonerFactsV7,
-  victim: CultUnitFactsV7 | undefined,
+  victim: (CultUnitFactsV7 & { readonly maxHp: number }) | undefined,
 ): SeizeRejectionV7 | null {
   if (!unitRoleRuleV7(lookup, summoner).abilities.includes("SEIZE"))
     return { code: "UNIT_ROLE_INVALID" };
@@ -408,7 +427,7 @@ export function seizeRejectionV7(
     !isLivingUnitV7(lookup, victim)
   )
     return { code: "SEIZE_NOT_LEGAL", reason: "IMMUNE" };
-  if (!unitIsBrokenV7(victim))
+  if (!unitIsSeizableV7(lookup, victim))
     return { code: "SEIZE_NOT_LEGAL", reason: "HEALTHY" };
   if (seizeHolderV7(lookup, units, summoner, victim) === undefined)
     return { code: "SEIZE_NOT_LEGAL", reason: "NO_HOLDER" };
@@ -798,10 +817,10 @@ export function applyOfferingV7(
  * before the command. **No Martyr for an attack by a wild unit**
  * (`pulp_wars-mch9.6`; rule 4: the Ancient Ones do not reward a failure):
  * a Chosen that dies as the target (or in the splash) of an attack made by
- * an Unbound daemon (a Tentacle joins with `pulp_wars-mch9.8`). The
- * attacker is wild when it was wild before the command or a
- * `DAEMON_UNBOUND` earlier in the events let it loose (and no
- * `DAEMON_BOUND` since took it back). A Chosen that attacks a wild unit and
+ * an Unbound daemon or (`pulp_wars-mch9.8`) a Tentacle. The attacker is
+ * wild when it was wild before the command, or a `DAEMON_UNBOUND` earlier
+ * in the events let it loose (and no `DAEMON_BOUND` since took it back), or
+ * a `TENTACLE_ROSE` earlier in the events called it up. A Chosen that attacks a wild unit and
  * dies of its retaliation is a Martyr like any other. **No Martyr for a
  * consumption** (`pulp_wars-mch9.7`, section 8.2): a Chosen the Great
  * Summoning consumed on its marked tile (`UNIT_DIED` cause `CONSUMED`). A
@@ -844,6 +863,7 @@ export function withMartyrFavourV7(
     out.push(event);
     if (event.kind === "UNIT_SACRIFICED") sacrificed.add(event.victimUnitId);
     else if (event.kind === "DAEMON_UNBOUND") wild.add(event.unitId);
+    else if (event.kind === "TENTACLE_ROSE") wild.add(event.tentacleUnitId);
     else if (event.kind === "DAEMON_BOUND") wild.delete(event.unitId);
     else if (
       event.kind === "COMBAT_RESOLVED" &&

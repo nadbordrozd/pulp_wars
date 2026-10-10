@@ -59,6 +59,9 @@ export const SUMMONER_SUPPORT_UNLOCK_TEXT_V7 =
   "Summoners Sacrifice your own units and Seize badly hurt enemies for Favour, and Summon Horrors with it";
 /** Explosives (shown as The Stars Are Right), `GREAT_SUMMONING`. */
 export const GREAT_SUMMONING_UNLOCK_TEXT_V7 = `The Great Summoning: a Summoner and three cultists beside it call the Herald for ${HERALD_FAVOUR_COST_V7} Favour. It arrives next turn`;
+/** Scouting (shown as Familiars), `SWITCHEROO` (`pulp_wars-mch9.8`). */
+export const SWITCHEROO_UNLOCK_TEXT_V7 =
+  "Switcheroo: a Familiar swaps places with a unit within 2 tiles, never on a city or village center";
 /** Farming (shown as Harvest Rites), `OFFERING`. */
 export const OFFERING_UNLOCK_TEXT_V7 = `Offering: a city gives up ${OFFERING_POPULATION_V7} population for ${OFFERING_FAVOUR_V7} Favour`;
 

@@ -146,14 +146,14 @@ describe("the Cult registration: identity", () => {
   // 7r74, and the Cult's Unbound (`pulp_wars-mch9.6`) 7r75, so 7r71 is a
   // prior identity.
   it("was 7r71 after 7r70, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r77");
-    expect(PRIOR_RULESET_7_IDS.slice(-7, -5)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r78");
+    expect(PRIOR_RULESET_7_IDS.slice(-8, -6)).toEqual([
       "pulp-wars-poc-7r70",
       "pulp-wars-poc-7r71",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r77.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-7, -5)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r78.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-8, -6)).toEqual([
       "pulpWars.save.v7r70.current",
       "pulpWars.save.v7r71.current",
     ]);
@@ -325,18 +325,22 @@ describe("the Cult registration: the nine land roles (section 4.1)", () => {
       ]),
     );
     expect(abilities).toEqual({
-      FIGHTER: ["ATTACK", "CAPTURE", "CHANNEL"],
+      // Pamphlets (`pulp_wars-mch9.8`).
+      FIGHTER: ["ATTACK", "CAPTURE", "CHANNEL", "PAMPHLETS"],
       // Charge with Raiding; no Escape. The Familiar never channels.
-      RAIDER: ["ATTACK", "CAPTURE", "CHARGE"],
-      MARKSMAN: ["ATTACK", "CAPTURE", "CHANNEL"],
+      // Switcheroo (`pulp_wars-mch9.8`).
+      RAIDER: ["ATTACK", "CAPTURE", "CHARGE", "SWITCHEROO"],
+      // Ribbit (`pulp_wars-mch9.8`).
+      MARKSMAN: ["ATTACK", "CAPTURE", "CHANNEL", "RIBBIT"],
       GUARD: ["ATTACK", "CAPTURE", "CHANNEL", "BEHOLD"],
       // No Rally and no Tend Wounded; Sacrifice, Seize, and Summon.
       CAPTAIN: ["ATTACK", "CAPTURE", "SACRIFICE", "SEIZE", "SUMMON", "CHANNEL"],
       // No attack of its own; Star-fall is its ritual (`pulp_wars-mch9.7`).
       CATAPULT: ["CAPTURE", "CHANNEL", "STARFALL"],
-      // No Overrun.
-      KNIGHT: ["ATTACK", "CAPTURE", "CHANNEL"],
-      SWORDSMAN: ["ATTACK", "CAPTURE", "MARTYR", "CHANNEL"],
+      // No Overrun; it calls a Tentacle (`pulp_wars-mch9.8`).
+      KNIGHT: ["ATTACK", "CAPTURE", "CHANNEL", "TENTACLE"],
+      // Pick Me! (`pulp_wars-mch9.8`).
+      SWORDSMAN: ["ATTACK", "CAPTURE", "MARTYR", "CHANNEL", "PICK_ME"],
       // No Push; its signature is Anchor.
       JUGGERNAUT: ["ATTACK", "CAPTURE", "ANCHOR"],
     });
@@ -505,6 +509,8 @@ describe("the Cult registration: the tree and its names (section 11)", () => {
         ...(node.id === "FARMING" ? [{ kind: "OFFERING" }] : []),
         // `pulp_wars-mch9.7`: The Stars Are Right adds the Great Summoning.
         ...(node.id === "EXPLOSIVES" ? [{ kind: "GREAT_SUMMONING" }] : []),
+        // `pulp_wars-mch9.8`: Familiars adds the Switcheroo.
+        ...(node.id === "SCOUTING" ? [{ kind: "SWITCHEROO" }] : []),
       ]);
     }
     // Leadership: the Summoner with its Sacrifice and Seize, the Market,
@@ -575,6 +581,8 @@ describe("the Cult registration: the tree and its names (section 11)", () => {
       offering: true,
       // The Stars Are Right (`pulp_wars-mch9.7`).
       greatSummoning: true,
+      // Familiars (`pulp_wars-mch9.8`).
+      switcheroo: true,
     });
     expect(cult.trainableRoles).toEqual(
       UNIT_ROLE_IDS_V7.filter((role) => role !== "JUGGERNAUT"),

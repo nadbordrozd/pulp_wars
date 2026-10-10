@@ -357,6 +357,35 @@ export type CommandV7 =
     }
   | {
       /**
+       * The Cultists (`pulp_wars-mch9.8`). `RIBBIT` (section 9.1): the
+       * Hexer `unitId` turns the hostile unit `targetUnitId` within 2 tiles
+       * into a frog. `SWITCHEROO` (section 9.2): the Familiar `unitId` and
+       * the unit `targetUnitId` within 2 tiles swap places.
+       */
+      readonly kind: "RIBBIT" | "SWITCHEROO";
+      readonly unitId: UnitId;
+      readonly targetUnitId: UnitId;
+    }
+  | {
+      /**
+       * The Cultists (section 9.3): the Caller `unitId` calls a Tentacle up
+       * on the free tile `at` within 3 tiles.
+       */
+      readonly kind: "TENTACLE";
+      readonly unitId: UnitId;
+      readonly at: CoordV7;
+    }
+  | {
+      /**
+       * The Cultists (section 8.2): the Chosen `unitId` shouts Pick Me!:
+       * hostile units beside it may attack only it until its owner's next
+       * turn.
+       */
+      readonly kind: "PICK_ME";
+      readonly unitId: UnitId;
+    }
+  | {
+      /**
        * The Cultists (section 8.4): the Thing in the Cellar `unitId` grips
        * the channeller `cultistUnitId` beside it (free, once a turn).
        */
@@ -494,6 +523,8 @@ const UNIT_ONLY_KINDS = new Set<CommandKindV7>([
   // The Cultists (`pulp_wars-mch9.5`): Behold! and Boo!.
   "BEHOLD",
   "BOO",
+  // `pulp_wars-mch9.8`: Pick Me!.
+  "PICK_ME",
 ]);
 
 export function parseCommandEnvelopeV7(
@@ -583,7 +614,10 @@ export function parseCommandV7(input: unknown): CommandParseResultV7 {
     kind === "FROST_BOLT" ||
     kind === "SUGAR_TOSS" ||
     kind === "TOP_UP" ||
-    kind === "SWALLOW"
+    kind === "SWALLOW" ||
+    // The Cultists (`pulp_wars-mch9.8`).
+    kind === "RIBBIT" ||
+    kind === "SWITCHEROO"
   ) {
     if (!hasExactKeysV7(input, ["kind", "unitId", "targetUnitId"]))
       return invalid(kind);
@@ -720,7 +754,7 @@ export function parseCommandV7(input: unknown): CommandParseResultV7 {
       ? invalid(kind)
       : { ok: true, value: { kind, unitId: unit, targetUnitId: target, to } };
   }
-  if (kind === "FREEZE" || kind === "STAMPEDE") {
+  if (kind === "FREEZE" || kind === "STAMPEDE" || kind === "TENTACLE") {
     if (!hasExactKeysV7(input, ["at", "kind", "unitId"])) return invalid(kind);
     const unit = parseUnitIdV7(candidate.unitId);
     const at = parseCoordV7(candidate.at);
@@ -1045,7 +1079,11 @@ function referencedOrdinal(command: CommandV7): number {
     command.kind === "FROST_BOLT" ||
     command.kind === "SUGAR_TOSS" ||
     command.kind === "TOP_UP" ||
-    command.kind === "SWALLOW"
+    command.kind === "SWALLOW" ||
+    // The Cultists: `RIBBIT` and `SWITCHEROO` by unit, then target.
+    // (`TENTACLE` is ordered by its tile; `PICK_ME` by its unit.)
+    command.kind === "RIBBIT" ||
+    command.kind === "SWITCHEROO"
   )
     return command.targetUnitId;
   // The Cultists: `SACRIFICE` and `SEIZE` in unit-ID, then victim-ID order.

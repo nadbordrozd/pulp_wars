@@ -619,20 +619,24 @@ export function unitTopsUpV7(
 /**
  * Section 8.2, row 8: whether a Top-Up would cure an affliction of the
  * unit other than Stuck and Toothache: Plague, Bitten, or Frozen (Ice Folk
- * Freeze replaced Chill; a Top-Up thaws a Frozen unit, as Tend Wounded does).
+ * Freeze replaced Chill; a Top-Up thaws a Frozen unit, as Tend Wounded
+ * does), or (the Cultists, `pulp_wars-mch9.8`, RULESET_7_CULTISTS.md section
+ * 9.1) a frog.
  */
 export function unitIsAfflictedForTopUpV7(
   lookup: {
     readonly frozen: readonly FrozenStatusV7[];
     readonly plagued: readonly { readonly unitId: UnitId }[];
     readonly bitten: readonly { readonly unitId: UnitId }[];
+    readonly cult?: { readonly frogs?: readonly UnitId[] };
   },
   unitId: UnitId,
 ): boolean {
   return (
     lookup.plagued.some((entry) => entry.unitId === unitId) ||
     lookup.bitten.some((entry) => entry.unitId === unitId) ||
-    isFrozenV7(lookup.frozen, unitId)
+    isFrozenV7(lookup.frozen, unitId) ||
+    lookup.cult?.frogs?.includes(unitId) === true
   );
 }
 

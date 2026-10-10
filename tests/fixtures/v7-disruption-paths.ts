@@ -93,6 +93,14 @@ export const DISRUPTION_EVENT_PATHS_V7: Readonly<
   RITUAL_DISRUPTED: NONE,
   RITUAL_FIZZLED: NONE,
   CITY_COWED: NONE,
+  // Tricks (`pulp_wars-mch9.8`): a Tentacle rises on a free tile and sinks
+  // when its own time is up (it is never a watched unit); its Grab limits
+  // the held unit's own Move (the slap before it is a `COMBAT_RESOLVED`);
+  // a Pick Me! limits other units' own attacks.
+  TENTACLE_ROSE: NONE,
+  UNIT_GRABBED: NONE,
+  TENTACLE_SANK: NONE,
+  PICK_ME_SHOUTED: NONE,
   SPOILS_AWARDED: NONE,
   PLUNDER_AWARDED: NONE,
   MONSTER_BOUNTY_AWARDED: NONE,
@@ -199,6 +207,10 @@ export const DISRUPTION_EVENT_PATHS_V7: Readonly<
   STAR_FELL: ["HP_LOSS"],
   // Peppermint Surprise, on a unit that lands on Crumbs.
   CRUMBS_EATEN: ["HP_LOSS"],
+  // A Switcheroo (`pulp_wars-mch9.8`): the swapped unit stands elsewhere.
+  UNITS_SWAPPED: ["MOVED"],
+  // A Ribbit: a frog is a status.
+  UNIT_FROGGED: ["STATUS"],
 
   // --- Moved by something else. ---
   // Push, the Charge! push, Knockback, Bounce, a ram.
@@ -329,8 +341,11 @@ export const DISRUPTION_STATE_KEY_CLASSES_V7: Readonly<
   // The neutral units' registry (breed, home, who provoked it; an Unbound
   // daemon's summoner and whether it is Furious: the daemon's own state).
   monsters: "NOT_A_STATUS",
-  // The channel itself.
-  cult: "NOT_A_STATUS",
+  // The channel itself, and (`pulp_wars-mch9.8`) `frogs`, the units a
+  // Ribbit turned into frogs. Its other trick lists are no status of the
+  // unit they name: a hex cooldown and a taunt are the unit's own doing, and
+  // a Grab follows a slap (the loss of Hit Points is what the rule sees).
+  cult: "STATUS",
   schemaVersion: "OTHER",
   rulesetId: "OTHER",
   setup: "OTHER",

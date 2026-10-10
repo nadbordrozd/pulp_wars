@@ -240,6 +240,11 @@ export type TechnologyUnlockV7 =
    * Herald for 20 Favour.
    */
   | { readonly kind: "GREAT_SUMMONING" }
+  /**
+   * The Cultists (section 9.2): Switcheroo (the Cult `SCOUTING`, shown as
+   * Familiars): a Familiar swaps places with a unit within 2 tiles.
+   */
+  | { readonly kind: "SWITCHEROO" }
   | { readonly kind: "OVERRUN" }
   | {
       readonly kind: "CHARGE_BONUS";
@@ -458,7 +463,16 @@ export type UnitRoleAbilityV7 =
   | "STARFALL"
   | "RAVAGE"
   | "UNSTOPPABLE"
-  | "PROCLAIM";
+  | "PROCLAIM"
+  // The Cultists (`pulp_wars-mch9.8`, sections 8.7, 9, and 8.2): the
+  // Initiate's Pamphlets, the Familiar's Switcheroo, the Hexer's Ribbit, the
+  // Caller's Tentacle, the Chosen's Pick Me!, and the Tentacle's Grab.
+  | "PAMPHLETS"
+  | "SWITCHEROO"
+  | "RIBBIT"
+  | "TENTACLE"
+  | "PICK_ME"
+  | "GRAB";
 
 /**
  * The Martian revision (section 7): how a land-form unit moves. `STRIDE`
@@ -3806,8 +3820,8 @@ export function rebakeHpV7(role: UnitRoleIdV7): number {
  * that does nothing. So far (`pulp_wars-mch9.4`): Administration grants
  * `SUMMONER_SUPPORT` (the Summoner's Sacrifice and Seize) and Farming
  * (displayed as Harvest Rites) grants `OFFERING`; `pulp_wars-mch9.7`:
- * Explosives (The Stars Are Right) grants `GREAT_SUMMONING`. Switcheroo at
- * Scouting is still to come.
+ * Explosives (The Stars Are Right) grants `GREAT_SUMMONING`;
+ * `pulp_wars-mch9.8`: Scouting (Familiars) grants `SWITCHEROO`.
  */
 export const CULT_BASELINE_V1_NODES: readonly TechnologyNodeV7[] = deepFreeze(
   SHARED_BASELINE_NODES_V7.map((original) =>
@@ -3830,6 +3844,8 @@ export const CULT_BASELINE_V1_NODES: readonly TechnologyNodeV7[] = deepFreeze(
       ...(original.id === "EXPLOSIVES"
         ? [{ kind: "GREAT_SUMMONING" } as const]
         : []),
+      // `pulp_wars-mch9.8` (section 9.2): Familiars, the Switcheroo.
+      ...(original.id === "SCOUTING" ? [{ kind: "SWITCHEROO" } as const] : []),
     ]),
   ),
 );
@@ -3839,8 +3855,8 @@ export const CULT_BASELINE_V1_NODES: readonly TechnologyNodeV7[] = deepFreeze(
  * number is the spec's first guess. Unit for unit the cultists are a little
  * weaker or cheaper than the Human of the same role (section 10); what they
  * get for it (Pamphlets, Behold!, Switcheroo, Ribbit, Sacrifice, Seize,
- * Summon, Star-fall, the Tentacle, Pick Me!, Martyr, Anchor) is added by the
- * later Cult engine beads.
+ * Summon, Star-fall, the Tentacle, Pick Me!, Martyr, Anchor) was added by
+ * the later Cult engine beads (`pulp_wars-mch9.4` to `.8`).
  */
 export const CULT_ROLE_RULES_V7: Readonly<
   Record<UnitRoleIdV7, EffectiveRoleRuleV7>
@@ -3860,11 +3876,14 @@ export const CULT_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: null,
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "CAPTURE", "CHANNEL"],
+    // `pulp_wars-mch9.8` (section 8.7): Pamphlets, a neutral village is
+    // captured in the turn the Initiate walks onto it.
+    abilities: ["ATTACK", "CAPTURE", "CHANNEL", "PAMPHLETS"],
   }),
   // The Familiar: Sight 2 and the Charge with Raiding; no Escape, and
   // hostile zones of control stop it (the Human Raider's freedom is a role
-  // mechanic the Cult does not copy).
+  // mechanic the Cult does not copy). `pulp_wars-mch9.8` (section 9.2):
+  // Switcheroo, with Scouting.
   RAIDER: role({
     role: "RAIDER",
     label: "Familiar",
@@ -3879,9 +3898,10 @@ export const CULT_ROLE_RULES_V7: Readonly<
     sightRadius: 2,
     technology: "SCOUTING",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "CAPTURE", "CHARGE"],
+    abilities: ["ATTACK", "CAPTURE", "CHARGE", "SWITCHEROO"],
   }),
   // The Hexer: the Marksman's shot on 3 HP less. It never advances.
+  // `pulp_wars-mch9.8` (section 9.1): Ribbit, every second turn.
   MARKSMAN: role({
     role: "MARKSMAN",
     label: "Hexer",
@@ -3896,7 +3916,7 @@ export const CULT_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: "MARKSMANSHIP",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "CAPTURE", "CHANNEL"],
+    abilities: ["ATTACK", "CAPTURE", "CHANNEL", "RIBBIT"],
   }),
   // The Idol Bearer: it cannot attack after moving (the Guard's rule), has
   // no Field Defense, and defends alike at every distance. Behold! and
@@ -3957,6 +3977,7 @@ export const CULT_ROLE_RULES_V7: Readonly<
     abilities: ["CAPTURE", "CHANNEL", "STARFALL"],
   }),
   // The Caller: much weaker than a Knight in its own fight, no Overrun.
+  // `pulp_wars-mch9.8` (section 9.3): it calls a Tentacle.
   KNIGHT: role({
     role: "KNIGHT",
     label: "Caller",
@@ -3971,7 +3992,7 @@ export const CULT_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: "CHIVALRY",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "CAPTURE", "CHANNEL"],
+    abilities: ["ATTACK", "CAPTURE", "CHANNEL", "TENTACLE"],
   }),
   // The Thing in the Cellar: the reward giant, Defense 3.5 (as the
   // Gingerbread Giant) because its signature, Anchor, is a support one
@@ -3996,8 +4017,8 @@ export const CULT_ROLE_RULES_V7: Readonly<
   BATTLESHIP: role({ ...ORIGINAL_ROLE_RULES_V7.BATTLESHIP }),
   SUBMARINE: role({ ...ORIGINAL_ROLE_RULES_V7.SUBMARINE }),
   // The Chosen: the Champion with half a Defense less. Martyr: its death
-  // pays its seat Favour (`pulp_wars-mch9.4`); Pick Me! arrives with the
-  // tricks (`pulp_wars-mch9.8`).
+  // pays its seat Favour (`pulp_wars-mch9.4`); Pick Me! is its taunt
+  // (`pulp_wars-mch9.8`, section 8.2).
   SWORDSMAN: role({
     role: "SWORDSMAN",
     label: "Chosen",
@@ -4012,7 +4033,7 @@ export const CULT_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: "METALLURGY",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "CAPTURE", "MARTYR", "CHANNEL"],
+    abilities: ["ATTACK", "CAPTURE", "MARTYR", "CHANNEL", "PICK_ME"],
   }),
 });
 
@@ -4065,6 +4086,25 @@ export const RITUAL_MINIMUM_CHANTERS_V7: Readonly<
 export const PROCLAIM_RANGE_V7 = 3 as const;
 /** The Cultists (section 4.2): Ravage, the Herald's attacks in a turn. */
 export const RAVAGE_ATTACKS_V7 = 2 as const;
+/**
+ * The Cultists (`pulp_wars-mch9.8`, section 9.1): Ribbit. The farthest
+ * (Chebyshev) the Hexer's target may be; a frog's flat Defense in
+ * half-units (0.5) and its Move; and the Start Turns of its owner a Hexer or
+ * a Familiar waits after its trick (2: the turn after the cast is skipped).
+ */
+export const RIBBIT_RANGE_V7 = 2 as const;
+export const FROG_DEFENSE2_V7 = 1 as const;
+export const FROG_MOVE_V7 = 1 as const;
+export const HEX_COOLDOWN_TURNS_V7 = 2 as const;
+/** The Cultists (section 9.2): the farthest (Chebyshev) a Switcheroo reaches. */
+export const SWITCHEROO_RANGE_V7 = 2 as const;
+/**
+ * The Cultists (section 9.3): the farthest (Chebyshev) from its Caller a
+ * Tentacle may rise, and the neutral turns it stays before it sinks.
+ */
+export const TENTACLE_RANGE_V7 = 3 as const;
+export const TENTACLE_LIFETIME_V7 = 3 as const;
+
 /**
  * The Cultists (section 7.4): the damage of a star that `chanters` chanters
  * still chant for: 5, plus 1 for each.
@@ -4159,10 +4199,9 @@ export interface SummonedRoleRuleV7 {
 
 /**
  * The Cultists (section 4.2): the numbers of the three summoned units, the
- * spec's first guesses. They are registered here and read by nothing yet:
- * `pulp_wars-mch9.5` puts the Horror on the board, `pulp_wars-mch9.7` the
- * Herald, and `pulp_wars-mch9.8` the Tentacle, each with its own abilities
- * (Boo!; Ravage, Unstoppable, and Proclaim; Grab).
+ * spec's first guesses: `pulp_wars-mch9.5` put the Horror on the board,
+ * `pulp_wars-mch9.7` the Herald, and `pulp_wars-mch9.8` the Tentacle, each
+ * with its own abilities (Boo!; Ravage, Unstoppable, and Proclaim; Grab).
  */
 export const CULT_SUMMONED_ROLE_RULES_V7: Readonly<
   Record<SummonedRoleIdV7, SummonedRoleRuleV7>
@@ -4236,13 +4275,20 @@ export function summonedRoleRuleV7(id: SummonedRoleIdV7): SummonedRoleRuleV7 {
  * (`pulp_wars-mch9.7`) is `JUGGERNAUT`, the big body's, the same as its
  * Unbound breed's (`NEUTRAL_ROLE_RULES_V7.HERALD.role`): no Mind Control,
  * Swallow, Tractor Beam, Knockback, Bounce, or Seizure takes that role. The
- * Tentacle (`pulp_wars-mch9.8`) gets its mechanical role with its bead.
+ * Tentacle (`pulp_wars-mch9.8`) is never a seat's unit, so it is not listed
+ * here: it is a neutral unit of the breed `TENTACLE` from birth, and its
+ * stored role is its neutral registration's
+ * (`NEUTRAL_ROLE_RULES_V7.TENTACLE.role`, the big body's `JUGGERNAUT` too).
  */
 export const SUMMONED_MECHANICAL_ROLES_V7: Readonly<
   Partial<Record<SummonedRoleIdV7, UnitRoleIdV7>>
 > = deepFreeze({ HORROR: "KNIGHT", HERALD: "JUGGERNAUT" });
 
-/** The summoned roles a unit on the board may carry (in the frozen order). */
+/**
+ * The summoned roles a seat's unit on the board may carry (in the frozen
+ * order): the daemons. (A Tentacle carries `TENTACLE` and is always
+ * neutral.)
+ */
 export const BOARD_SUMMONED_ROLE_IDS_V7: readonly SummonedRoleIdV7[] =
   deepFreeze(
     SUMMONED_ROLE_IDS_V7.filter((id) =>
@@ -4255,7 +4301,7 @@ export interface SummonedUnitRefV7 {
   readonly summoned?: SummonedRoleIdV7 | undefined;
 }
 
-/** Whether the unit is a summoned unit (a daemon; later, a Tentacle). */
+/** Whether the unit is a summoned unit (a daemon or a Tentacle). */
 export function unitIsSummonedV7(unit: SummonedUnitRefV7): boolean {
   return unit.summoned !== undefined;
 }
@@ -4875,6 +4921,26 @@ export const NEUTRAL_ROLE_RULES_V7: Readonly<
     mayUsePrimaryActionAfterMove: true,
     abilities: ["ATTACK", "UNSTOPPABLE", "STRIDE"],
   },
+  // The Tentacle (`pulp_wars-mch9.8`, section 9.3): wild from birth, rooted
+  // (Move 0), no Sight. Its role is the big body's `JUGGERNAUT` (the Giant
+  // Spider's: no Push, Swallow, Shatter, Knockback, or Bounce takes it). It
+  // slaps (an ordinary attack) and Grabs.
+  TENTACLE: {
+    role: "JUGGERNAUT",
+    label: CULT_SUMMONED_ROLE_RULES_V7.TENTACLE.label,
+    tacticalRole: "MYTHIC",
+    cost: null,
+    maxHp: CULT_SUMMONED_ROLE_RULES_V7.TENTACLE.maxHp,
+    attack2: CULT_SUMMONED_ROLE_RULES_V7.TENTACLE.attack2,
+    defense2: CULT_SUMMONED_ROLE_RULES_V7.TENTACLE.defense2,
+    move: CULT_SUMMONED_ROLE_RULES_V7.TENTACLE.move,
+    range: CULT_SUMMONED_ROLE_RULES_V7.TENTACLE.range,
+    minimumRange: CULT_SUMMONED_ROLE_RULES_V7.TENTACLE.minimumRange,
+    sightRadius: 0,
+    technology: null,
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "GRAB"],
+  },
 });
 
 /**
@@ -4933,6 +4999,13 @@ export const NEUTRAL_ROLE_MECHANICS_V7: Readonly<
   // `pulp_wars-mch9.7`: the Herald's own mechanics (it never advances and
   // has no Shield as it is); the rampage counts its attacks itself.
   HERALD: HERALD_ROLE_MECHANICS_V7,
+  // `pulp_wars-mch9.8` (section 9.3): the Tentacle is no living thing (a
+  // construct, like a daemon) and is rooted: nothing shoves it.
+  TENTACLE: {
+    ...NEUTRAL_MONSTER_ROLE_MECHANICS_V7,
+    construct: true,
+    immovable: true,
+  },
 });
 
 /** Section 8.1: the faction-wide rules of the neutral registration. */
@@ -5101,7 +5174,7 @@ export const RULESET_7 = deepFreeze({
  * a technology of tier `t` costs `5 / 7 / 9 + (T - 1)`, `T` being the
  * technologies the researcher already owns.
  *
- * The economy rejig (`pulp_wars-w49.16`, `pulp-wars-poc-7r77`,
+ * The economy rejig (`pulp_wars-w49.16`, `pulp-wars-poc-7r78`,
  * docs/product/RULESET_7_ECONOMY_REJIG.md): the price is per city again and
  * the technologies owned no longer enter it. A technology of tier `t`
  * costs `5 / 7 / 9 + (1 / 2 / 3) * (C - 1)`, `C` being the cities the
@@ -5408,6 +5481,10 @@ export const MIND_CONTROLLED_LOST_ABILITIES_V7: readonly UnitRoleAbilityV7[] =
     // `pulp_wars-mch9.7` (section 7.1): rituals need a Cult seat. (The
     // Great Summoning is led by `SUMMON`, lost above.)
     "STARFALL",
+    // `pulp_wars-mch9.8` (section 13.1): calling a Tentacle calls on the
+    // Ancient Ones, so it needs a Cult seat. Ribbit, Switcheroo, Pick Me!,
+    // and Pamphlets are unit tricks and follow the unit.
+    "TENTACLE",
   ]);
 
 const CONTROLLED_ROLE_RULES_V7 = new WeakMap<
@@ -5481,7 +5558,12 @@ export function neutralBreedOfV7(
 ): NeutralBreedV7 {
   // The Cultists (`pulp_wars-mch9.6`, section 6.4): an Unbound daemon names
   // its breed itself (its summoned role), whatever the roster holds.
-  if (unit.summoned === "HORROR" || unit.summoned === "HERALD")
+  // `pulp_wars-mch9.8` (section 9.3): so does a Tentacle.
+  if (
+    unit.summoned === "HORROR" ||
+    unit.summoned === "HERALD" ||
+    unit.summoned === "TENTACLE"
+  )
     return unit.summoned;
   if (roster.monsters !== undefined && roster.monsters.length > 0) {
     const entry = roster.monsters.find(
@@ -6829,6 +6911,11 @@ export interface TechnologyCapabilitiesV7 {
    * may lead the Great Summoning.
    */
   readonly greatSummoning: boolean;
+  /**
+   * The Cultists (section 9.2): Familiars (the Cult `SCOUTING`), a Familiar
+   * of the tree may Switcheroo.
+   */
+  readonly switcheroo: boolean;
 }
 
 export function technologyCapabilitiesV7(
@@ -6899,6 +6986,7 @@ export function technologyCapabilitiesV7(
   let iceCover = false;
   let offering = false;
   let greatSummoning = false;
+  let switcheroo = false;
   for (const unlock of unlocks)
     switch (unlock.kind) {
       case "COMMAND":
@@ -7035,6 +7123,9 @@ export function technologyCapabilitiesV7(
       case "GREAT_SUMMONING":
         greatSummoning = true;
         break;
+      case "SWITCHEROO":
+        switcheroo = true;
+        break;
       case "SUMMONER_SUPPORT":
       case "CONFECTIONER_SUPPORT":
       case "ENGINEER_SUPPORT":
@@ -7120,6 +7211,7 @@ export function technologyCapabilitiesV7(
     iceCover,
     offering,
     greatSummoning,
+    switcheroo,
   });
   TECHNOLOGY_CAPABILITIES_CACHE_V7.set(cacheKey, result);
   if (TECHNOLOGY_CAPABILITIES_CACHE_V7.size > 32) {

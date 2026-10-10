@@ -150,14 +150,14 @@ describe("the Cult's Favour: identity", () => {
   // (`pulp_wars-mch9.5`) 7r74, and the Cult's Unbound (`pulp_wars-mch9.6`)
   // 7r75, so 7r72 is a prior identity.
   it("was 7r72 after 7r71, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r77");
-    expect(PRIOR_RULESET_7_IDS.slice(-6, -4)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r78");
+    expect(PRIOR_RULESET_7_IDS.slice(-7, -5)).toEqual([
       "pulp-wars-poc-7r71",
       "pulp-wars-poc-7r72",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r77.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-6, -4)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r78.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-7, -5)).toEqual([
       "pulpWars.save.v7r71.current",
       "pulpWars.save.v7r72.current",
     ]);
@@ -241,6 +241,10 @@ describe("the Cult's Favour: identity", () => {
       idols: [],
       rituals: [],
       cowed: [],
+      frogs: [],
+      hexCooldowns: [],
+      taunts: [],
+      tentacles: [],
     });
     const save = createSaveEnvelopeV7(
       { state: fresh.state, replay: createReplayV7(fresh.state.setup) },
@@ -266,6 +270,8 @@ describe("the Cult's Favour: the registry (sections 4, 5, 8.2, and 11)", () => {
       "CAPTURE",
       "MARTYR",
       "CHANNEL",
+      // The tricks (`pulp_wars-mch9.8`).
+      "PICK_ME",
     ]);
     // No other role of any faction has them.
     for (const faction of FACTION_IDS_V7)
@@ -390,6 +396,11 @@ describe("the Cult's Favour: the registry (sections 4, 5, 8.2, and 11)", () => {
       // Rituals and the Herald (`pulp_wars-mch9.7`).
       "BEGIN_RITUAL",
       "PROCLAIM",
+      // Hexes and tricks (`pulp_wars-mch9.8`).
+      "RIBBIT",
+      "SWITCHEROO",
+      "TENTACLE",
+      "PICK_ME",
       "CAPTURE",
     ]);
     expect(order[order.indexOf("LAY_EGG") + 1]).toBe("OFFERING");
@@ -470,6 +481,10 @@ describe("the Cult's Favour: the pool (section 3)", () => {
       idols: [],
       rituals: [],
       cowed: [],
+      frogs: [],
+      hexCooldowns: [],
+      taunts: [],
+      tentacles: [],
     });
     expect(favour(state, 0)).toBe(0);
     for (const seat of [0, 1]) {
@@ -504,6 +519,10 @@ describe("the Cult's Favour: the pool (section 3)", () => {
       idols: [],
       rituals: [],
       cowed: [],
+      frogs: [],
+      hexCooldowns: [],
+      taunts: [],
+      tentacles: [],
     });
     expect(viewForV7(state, seatIdV7(state, 0)).cult).toEqual({
       favour: [],
@@ -513,6 +532,10 @@ describe("the Cult's Favour: the pool (section 3)", () => {
       daemons: [],
       rituals: [],
       cowed: [],
+      frogs: [],
+      hexCooldowns: [],
+      taunts: [],
+      tentacles: [],
     });
   });
 
@@ -542,6 +565,10 @@ describe("the Cult's Favour: the pool (section 3)", () => {
         idols: [],
         rituals: [],
         cowed: [],
+        frogs: [],
+        hexCooldowns: [],
+        taunts: [],
+        tentacles: [],
         ...value,
       },
     });
@@ -607,6 +634,10 @@ describe("the Cult's Favour: the pool (section 3)", () => {
       idols: [],
       rituals: [],
       cowed: [],
+      frogs: [],
+      hexCooldowns: [],
+      taunts: [],
+      tentacles: [],
     });
     expect(
       viewForV7(result.state, seatIdV7(result.state, 1)).cult.favour,

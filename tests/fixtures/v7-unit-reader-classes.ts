@@ -970,6 +970,33 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/engine/v7/query.ts::publicSummoningForecastV7": "BOARD",
     "src/engine/v7/query.ts::previewBeginRitualV7": "BOARD",
     "src/engine/v7/query.ts::previewProclaimV7": "BOARD",
+    // The Cult's hexes and tricks (`pulp_wars-mch9.8`, sections 9.1 to 9.3
+    // and 8.2). Every reader means the board: a hex, a swap, a taunt, and a
+    // slap take units that stand on it (a burrowed unit is under it and a
+    // swallowed one inside its holder, so neither is a target, and a frog,
+    // a cooldown, a taunt, or a grab whose unit leaves `units` is pruned);
+    // a Tentacle is a unit on the board from its rise to its sinking; and
+    // the previews name the same units.
+    "src/engine/v7/cult-hexes.ts::grabbingTentacleAtV7": "BOARD",
+    "src/engine/v7/cult-hexes.ts::trickRefusalV7": "BOARD",
+    "src/engine/v7/cult-tricks.ts::withFrogsTurnEndedV7": "BOARD",
+    "src/engine/v7/cult-tricks.ts::tricksStartTurnStepV7": "BOARD",
+    "src/engine/v7/cult-tricks.ts::prunedTricksV7": "BOARD",
+    "src/engine/v7/cult-tricks.ts::visibleTarget": "BOARD",
+    "src/engine/v7/cult-tricks.ts::applyRibbitV7": "BOARD",
+    "src/engine/v7/cult-tricks.ts::applySwitcherooV7": "BOARD",
+    "src/engine/v7/cult-tricks.ts::applyPickMeV7": "BOARD",
+    "src/engine/v7/cult-tricks.ts::withTentacleRisenV7": "BOARD",
+    "src/engine/v7/cult-tricks.ts::withGrabAfterSlapV7": "BOARD",
+    "src/engine/v7/cult-tricks.ts::applyTentacleV7": "BOARD",
+    "src/engine/v7/cult-tricks.ts::resolveTentacleCountdownV7": "BOARD",
+    "src/engine/v7/query.ts::previewRibbitV7": "BOARD",
+    "src/engine/v7/query.ts::previewSwitcherooV7": "BOARD",
+    "src/engine/v7/query.ts::previewTentacleV7": "BOARD",
+    "src/engine/v7/query.ts::previewPickMeV7": "BOARD",
+    "src/engine/v7/query.ts::publicBindingTauntsV7": "BOARD",
+    "src/engine/v7/reducer.ts::resolveTentacleSlapV7": "BOARD",
+    "src/engine/v7/state-schema.ts::tricksValid": "BOARD",
     "src/render/curiosity-presentation-v7.ts::daemonInfoLinesV7": "BOARD",
   };
 

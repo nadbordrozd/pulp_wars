@@ -1716,6 +1716,10 @@ describe("the Cult's channel: the public view and Candlelit (section 6.2)", () =
       idols: [],
       rituals: [],
       cowed: [],
+      frogs: [],
+      hexCooldowns: [],
+      taunts: [],
+      tentacles: [],
     });
     expect(
       queryPlayerCommandsV7(viewForV7(state, seatIdV7(state, 0))).filter(

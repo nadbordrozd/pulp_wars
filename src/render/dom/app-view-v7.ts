@@ -699,6 +699,7 @@ import {
   SEIZE_PICK_V7,
   SEIZE_TOOLTIP_V7,
   SUMMONER_SUPPORT_UNLOCK_TEXT_V7,
+  SWITCHEROO_UNLOCK_TEXT_V7,
   cultBoundaryNoticeV7,
   favourCountTextV7,
   favourGainTextV7,
@@ -1035,6 +1036,14 @@ const NON_BUTTON_COMMANDS = new Set<CommandV7["kind"]>([
   // Their buttons, marks, and board targeting are bead pulp_wars-mch9.19.
   "BEGIN_RITUAL",
   "PROCLAIM",
+  // Hexes and tricks (engine bead pulp_wars-mch9.8): a Tentacle alone is
+  // one command per tile in reach, and the others aim on the board, so
+  // none is ever a generic button. Their buttons and board targeting are
+  // bead pulp_wars-mch9.19.
+  "RIBBIT",
+  "SWITCHEROO",
+  "TENTACLE",
+  "PICK_ME",
 ]);
 /**
  * The Cultists' channel (bead pulp_wars-mch9.18): each action's button
@@ -13924,7 +13933,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffff_ffff)
     return null;
   return {
-    rulesetId: "pulp-wars-poc-7r77",
+    rulesetId: "pulp-wars-poc-7r78",
     seed,
     width: effectiveBoardSize(draft),
     height: effectiveBoardSize(draft),
@@ -14180,6 +14189,8 @@ function effectDescription(
       return OFFERING_UNLOCK_TEXT_V7;
     case "GREAT_SUMMONING":
       return GREAT_SUMMONING_UNLOCK_TEXT_V7;
+    case "SWITCHEROO":
+      return SWITCHEROO_UNLOCK_TEXT_V7;
     case "OVERRUN":
       // Revision 17: the Goblin Overrun is Ram; revision 19: the Dinosaur
       // Overrun is Rampage.
@@ -14341,6 +14352,7 @@ function technologyEffectGroupIdV7(
     case "FREEZE":
     case "OFFERING":
     case "GREAT_SUMMONING":
+    case "SWITCHEROO":
       return "ACTIONS";
     case "COMMAND":
       return effect.command.startsWith("BUILD_") &&

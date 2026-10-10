@@ -16,6 +16,7 @@ import {
   canEnterTerrainV7,
   dockPopulationV7,
   effectiveRoleRuleV7,
+  factionHasFavourV7,
   factionTreeV7,
   gravesEnabledV7,
   growthStageForKillsV7,
@@ -611,7 +612,15 @@ export function buildMissionStateV7(
     ninthUnit: emptyNinthUnitStateV7(),
     barricades: [],
     giants: emptyGiantsStateV7(),
-    cult: emptyCultStateV7(),
+    // The Cultists (`pulp_wars-mch9.8`): a Cult seat's starting Favour.
+    cult: {
+      ...emptyCultStateV7(),
+      favour: mission.seats.flatMap((seat, index) =>
+        (seat.favour ?? 0) > 0
+          ? [{ playerId: playerId(index + 1), favour: seat.favour ?? 0 }]
+          : [],
+      ),
+    },
     pendingChoices: [],
     outcome: null,
   };
@@ -709,6 +718,14 @@ export function validateMissionDefinitionV7(
       fail(`seat ${String(index)} has an empty or repeated faction choice`);
     if (!Number.isSafeInteger(seat.coins) || seat.coins < 0)
       fail(`seat ${String(index)} has invalid Coins`);
+    // The Cultists: Favour is a whole number, and only a Cult seat's.
+    if (
+      seat.favour !== undefined &&
+      (!Number.isSafeInteger(seat.favour) ||
+        seat.favour <= 0 ||
+        factions.some((faction) => !factionHasFavourV7(faction)))
+    )
+      fail(`seat ${String(index)} has invalid Favour`);
     if (
       new Set(seat.technologies).size !== seat.technologies.length ||
       seat.technologies.some((tech) => !TECHNOLOGY_IDS_V7.includes(tech))

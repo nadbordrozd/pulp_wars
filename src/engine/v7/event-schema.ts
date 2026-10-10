@@ -560,6 +560,28 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
     "hp",
   ],
   CITY_COWED: ["kind", "playerId", "unitId", "cityId", "cityOwnerId", "at"],
+  // The Cultists (`pulp_wars-mch9.8`, sections 9 and 8.2).
+  UNIT_FROGGED: [
+    "kind",
+    "playerId",
+    "unitId",
+    "targetUnitId",
+    "targetOwnerId",
+    "at",
+  ],
+  UNITS_SWAPPED: [
+    "kind",
+    "playerId",
+    "unitId",
+    "targetUnitId",
+    "targetOwnerId",
+    "from",
+    "to",
+  ],
+  TENTACLE_ROSE: ["kind", "playerId", "unitId", "tentacleUnitId", "at", "hp"],
+  UNIT_GRABBED: ["kind", "unitId", "targetUnitId", "at"],
+  TENTACLE_SANK: ["kind", "unitId", "at"],
+  PICK_ME_SHOUTED: ["kind", "playerId", "unitId", "at"],
   SPOILS_AWARDED: ["kind", "playerId", "cityId", "coins"],
   PLUNDER_AWARDED: ["kind", "playerId", "kills", "coins"],
   MONSTER_BOUNTY_AWARDED: ["kind", "playerId", "unitId", "coins"],
@@ -2080,6 +2102,52 @@ function validPayload(
         e.cityOwnerId !== e.playerId &&
         parseCoordV7(e.at) !== null
       );
+    // The Cultists (`pulp_wars-mch9.8`). Section 9.1: a unit of another
+    // seat.
+    case "UNIT_FROGGED":
+      return (
+        id(e.playerId) &&
+        id(e.unitId) &&
+        id(e.targetUnitId) &&
+        e.unitId !== e.targetUnitId &&
+        id(e.targetOwnerId) &&
+        e.targetOwnerId !== e.playerId &&
+        parseCoordV7(e.at) !== null
+      );
+    // Section 9.2: two units, each tile a coordinate or (a projection to a
+    // viewer that has not explored it) null.
+    case "UNITS_SWAPPED":
+      return (
+        id(e.playerId) &&
+        id(e.unitId) &&
+        id(e.targetUnitId) &&
+        e.unitId !== e.targetUnitId &&
+        id(e.targetOwnerId) &&
+        (e.from === null || parseCoordV7(e.from) !== null) &&
+        (e.to === null || parseCoordV7(e.to) !== null)
+      );
+    // Section 9.3: a Tentacle at full HP.
+    case "TENTACLE_ROSE":
+      return (
+        id(e.playerId) &&
+        id(e.unitId) &&
+        id(e.tentacleUnitId) &&
+        e.unitId !== e.tentacleUnitId &&
+        parseCoordV7(e.at) !== null &&
+        e.hp === CULT_SUMMONED_ROLE_RULES_V7.TENTACLE.maxHp
+      );
+    case "UNIT_GRABBED":
+      return (
+        id(e.unitId) &&
+        id(e.targetUnitId) &&
+        e.unitId !== e.targetUnitId &&
+        parseCoordV7(e.at) !== null
+      );
+    case "TENTACLE_SANK":
+      return id(e.unitId) && parseCoordV7(e.at) !== null;
+    // Section 8.2.
+    case "PICK_ME_SHOUTED":
+      return id(e.playerId) && id(e.unitId) && parseCoordV7(e.at) !== null;
     case "SPOILS_AWARDED":
       return id(e.playerId) && id(e.cityId) && e.coins === 2;
     case "PLUNDER_AWARDED":
@@ -2163,6 +2231,8 @@ function validPayload(
           // A star, and a consumption by the Great Summoning.
           "STARFALL",
           "CONSUMED",
+          // A Tentacle that sank (`pulp_wars-mch9.8`).
+          "SANK",
         ].includes(e.cause as string)
       );
     // The giants' signatures (docs/product/RULESET_7_GIANTS.md section 8).
@@ -3274,6 +3344,12 @@ function tendResults(input: unknown): boolean {
   if (!isDenseArrayV7(input) || input.length === 0) return false;
   let prior = 0;
   for (const result of input) {
+    // The Cultists (`pulp_wars-mch9.8`): `curedFrog` is present, and
+    // true, only on a cured frog.
+    const frog =
+      typeof result === "object" &&
+      result !== null &&
+      Object.hasOwn(result, "curedFrog");
     if (
       !hasExactKeysV7(result, [
         "amount",
@@ -3282,7 +3358,9 @@ function tendResults(input: unknown): boolean {
         "curedPlague",
         "hpAfter",
         "unitId",
+        ...(frog ? ["curedFrog"] : []),
       ]) ||
+      (frog && result.curedFrog !== true) ||
       !id(result.unitId) ||
       !nn(result.amount) ||
       // The Dwarf revision (section 9.1): Repair heals a machine 4.
@@ -3294,7 +3372,8 @@ function tendResults(input: unknown): boolean {
       (result.amount === 0 &&
         !result.curedPlague &&
         !result.curedBitten &&
-        !result.curedFrozen) ||
+        !result.curedFrozen &&
+        !frog) ||
       !pos(result.hpAfter) ||
       Number(result.unitId) <= prior
     )
