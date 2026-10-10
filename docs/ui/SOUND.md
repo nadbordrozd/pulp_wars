@@ -196,6 +196,9 @@ economy is silent.
 | Tend, Cure, Regenerate, Recover, Fountain, Windmill, Sugar Toss | `support.heal`                                                        |
 | Raise, Devour, Wail, Infect, Grave, Plague, Bitten              | `support.dark`                                                        |
 | Lifesteal                                                       | `support.drain`                                                       |
+| Feast                                                           | `support.drain`                                                       |
+| Bat Escape swirl                                                | `special.puff`, then `special.puff` again as the bats fly off         |
+| Terror                                                          | `support.dark`                                                        |
 | Shrine blessing, Sugar Rush, Re-bake                            | `special.sparkle`                                                     |
 | Salvage, Spider bounty                                          | `economy.coin`                                                        |
 | Tunnel                                                          | `special.burrow`                                                      |

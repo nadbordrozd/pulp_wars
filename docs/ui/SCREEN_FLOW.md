@@ -664,6 +664,62 @@ an Undead seat looks and behaves exactly as in revision 12.
   `GRAVE_CREATED` animate on the effects canvas and are announced in the
   live region; all but Grave creation also show a toast.
 
+### Vampire and Banshee rework (bead `pulp_wars-iqhp`)
+
+The interface of the
+[Vampire and Banshee rework](../product/RULESET_7_CURRENT.md#1712-the-vampire-and-banshee-rework)
+(`pulp_wars-ty6i`). Every cue reads only the public `terrorThisTurn` and
+`feastedThisTurn` view lists, the units' public activations, the public
+previews and the offered commands, so a match without an Undead seat shows
+none of them. The marks are code-drawn in the Wail preview's violet on the
+Undead badge's near-black disc (no raster yet).
+
+- **Bat Escape.** After a Vampire attacks and survives, its offered Moves
+  are Escape flights: each landing is flying reach, a violet dotted outline
+  with a faint violet tint and a bat in the tile's top-right corner. A
+  flight that passes over a unit draws a faint dashed arc from the Vampire
+  to the landing; the focused landing (or the only one) draws its arc at
+  full weight with an arrowhead and a bat at its apex. The cursor
+  description reads "Bat Escape: flies up to 2 tiles, over units and past
+  enemies", how many units it flies over, and that it ends the turn; the
+  dock adds a "Bat Escape" legend and the engine's "Escape" chip. On the
+  Escape Move, bats swirl up round the Vampire and stream along the arc to
+  the landing before it moves (`special.puff`, twice); reduced motion holds
+  the swirl still.
+- **Feast.** An attack preview that Feasts adds "Feast: full heal, attack
+  again" (its first attack) or "Feast: full heal" (its second) to the
+  second line, after "Heal +N"; the semantic label says the kill heals it to
+  full and whether it may attack once more. The kill plays a ring of blood
+  drops closing on the Vampire with a red "+N" (the whole heal) and
+  "Feast!" (`support.drain`), the live region and a toast say "Vampire
+  feasted: healed to full and may attack again", and while the Feast attack
+  is offered the dock shows the engine's "Feast" chip and a violet prompt:
+  "Feast! It healed to full HP and may attack once more this turn, or fly
+  off with Bat Escape."
+- **Wail and Terror.** Each Wail target's board label adds "· Terror" when
+  it survives the damage (`previewWailV7`'s `terror`), the Wail button's
+  chip adds "· N Terror", and its description marks each such target
+  "(terrified)" and ends "Terror: the N terrified enemies won't strike back
+  this turn". After the Wail a screaming-face flicker shivers over each
+  terrified unit (`support.dark`), the notice adds "N terrified (no
+  strike-back this turn)", and every terrified unit of any owner carries
+  the Terror glyph (a pale screaming face on the near-black disc with a
+  violet rim) in its status column after its afflictions, frost and
+  Berserk; the cursor says "Terror: will not strike back this turn" and
+  the dock shows a "Terror" chip with that sentence for any owner.
+- **Won't strike back.** An attack preview on a terrified defender says
+  "Won't strike back (Terror)" (the combat preview's `TERROR` reason), and
+  the attack's notice says "The Fighter was terrified and didn't strike
+  back".
+- **Ethereal.** A Banshee's Move to a tile it reaches only past an enemy
+  zone of control (on a Road, the only way its one Move reaches two tiles)
+  is hatched in violet with a ghost wisp in its corner, the way the Berserk
+  reach is hatched in orange; the cursor and an "Ethereal reach" legend
+  name it.
+- **Help.** The unit `?` details and the Gallery list Bat Escape, Feast,
+  Terror and Ethereal from the unit glossary, and the "Feast", "Escape"
+  and "Terror" chips explain themselves.
+
 ## Current Ruleset 7 revision 14 Plague and Bitten overlay
 
 This overlay implements the UI of the

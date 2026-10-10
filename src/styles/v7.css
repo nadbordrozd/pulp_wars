@@ -3883,6 +3883,49 @@
 }
 
 /*
+ * The Vampire and Banshee rework (pulp_wars-iqhp): the Feast's "attack
+ * again" prompt in the dock, and the legend swatches of a Vampire's Bat
+ * Escape tiles (violet dots) and an Ethereal Banshee's tiles past enemy
+ * zones of control (violet hatch).
+ */
+.v7-terror-chip {
+  border-color: var(--pw-violet);
+  color: var(--pw-violet);
+  background: var(--pw-violet-fill);
+}
+
+.v7-feast-prompt {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 0.35rem 0.55rem;
+  border-left: 3px solid var(--pw-violet);
+  border-radius: var(--pw-radius-xs);
+  background: var(--pw-violet-fill);
+  color: var(--pw-violet);
+  font-size: var(--pw-fs-sm);
+  font-weight: var(--pw-fw-bold);
+  line-height: 1.3;
+}
+
+.v7-landing-legend-item[data-landing-marker="bat-escape"]
+  .v7-landing-legend-swatch {
+  border-style: dotted;
+  border-color: var(--pw-violet);
+  background: var(--pw-violet-fill);
+}
+
+.v7-landing-legend-item[data-landing-marker="ethereal"]
+  .v7-landing-legend-swatch {
+  border-style: solid;
+  border-color: var(--pw-violet);
+  background: repeating-linear-gradient(
+    45deg,
+    var(--pw-violet-fill) 0 3px,
+    var(--pw-board-bg) 3px 6px
+  );
+}
+
+/*
  * The giants' signatures (pulp_wars-w49.32): the unit card's signature
  * line, an Abomination's held victim (portrait and HP) and a Gingerbread
  * Man's chip.

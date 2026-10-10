@@ -1,5 +1,6 @@
 import {
   attackIsChargeV7,
+  batEscapeTilesV7,
   unitRoleRuleV7,
   type CoordV7,
   type PlayerEventEnvelopeV7,
@@ -360,7 +361,18 @@ export type SupportEffectV7 =
    * Coins outcome).
    */
   | "GATE"
-  | "WELL";
+  | "WELL"
+  /**
+   * The Vampire and Banshee rework, interface (`pulp_wars-iqhp`): bats
+   * swirl round a Vampire and stream to its Bat Escape landing (the actor
+   * at the take-off, the recipient at the landing), before its Move; a
+   * Feast kill's blood ring and "+N" (the actor's `amount`, its whole
+   * heal); and the Terror shiver on each unit a Wail terrified (the
+   * recipients; the actor is the Banshee).
+   */
+  | "BAT_SWIRL"
+  | "FEAST"
+  | "TERROR";
 
 /**
  * The Mind Control revision: how long the control halo takes to shatter
@@ -736,6 +748,33 @@ export function corePresentationPlanV7(
       }
     } else if (event.kind === "UNIT_MOVED") {
       const origin = origins.get(event.unitId);
+      // The Vampire and Banshee rework (`pulp_wars-iqhp`): a Bat Escape
+      // takes off in a swirl of bats that streams to the landing.
+      const flyer = before.units.find((unit) => unit.id === event.unitId);
+      const landing = event.path.at(-1);
+      if (
+        flyer !== undefined &&
+        origin !== undefined &&
+        isExplored(origin) &&
+        batEscapeTilesV7(before, flyer) > 0 &&
+        // An advance after the Vampire's own (Feast) attack is no flight.
+        !envelope.events.some(
+          (other) =>
+            other.kind === "COMBAT_RESOLVED" &&
+            other.preview.attackerId === flyer.id,
+        )
+      )
+        steps.push({
+          kind: "SUPPORT",
+          effect: "BAT_SWIRL",
+          actor: { unitId: flyer.id, at: origin },
+          recipients:
+            landing === undefined || !isExplored(landing)
+              ? []
+              : [{ unitId: flyer.id, at: landing }],
+          durationMs: 480,
+          ...(enemyTurn ? { followCamera: true as const } : {}),
+        });
       if (enemyTurn) {
         // Ordinary public moves may span fog; reveal/conceal events reset
         // their origins.
@@ -1786,6 +1825,20 @@ export function corePresentationPlanV7(
             recipients: [{ unitId: drained.id, at: drained.at }],
             durationMs: 320,
           });
+      // The Vampire and Banshee rework (`pulp_wars-iqhp`): a Feast kill's
+      // blood ring and its whole heal on the Vampire.
+      if (event.preview.feast && isExplored(attacker.at))
+        steps.push({
+          kind: "SUPPORT",
+          effect: "FEAST",
+          actor: {
+            unitId: attacker.id,
+            at: attacker.at,
+            amount: event.preview.attackerHeal,
+          },
+          recipients: [],
+          durationMs: 480,
+        });
       for (const splash of event.preview.splash) {
         const victim = before.units.find((unit) => unit.id === splash.unitId);
         if (victim !== undefined)
@@ -1982,6 +2035,22 @@ export function corePresentationPlanV7(
           damage: result.damage,
           lethal: result.dies,
           durationMs: 100,
+        });
+      // The Vampire and Banshee rework (`pulp_wars-iqhp`): Terror shivers
+      // over each unit the Wail terrified.
+      const terrified = event.results.filter((result) =>
+        event.terrified.includes(result.unitId),
+      );
+      if (terrified.length > 0)
+        steps.push({
+          kind: "SUPPORT",
+          effect: "TERROR",
+          actor: { unitId: event.unitId, at: event.at },
+          recipients: terrified.map((result) => ({
+            unitId: result.unitId,
+            at: result.at,
+          })),
+          durationMs: 480,
         });
     } else if (event.kind === "UNIT_INFECTED") {
       if (explored.has(`${event.at.x},${event.at.y}`))

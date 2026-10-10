@@ -180,7 +180,9 @@ describe("the public Wail preview equals the Wail (pulp_wars-7g3.9)", () => {
     // The UI shows the combat preview's caveat for it.
     const flagged = preview.targets.find((target) => target.at.x === 6);
     if (flagged === undefined) throw new Error("no flagged target");
-    expect(wailTargetLabelV7(flagged)).toBe("−3?");
+    // The Vampire and Banshee rework (`pulp_wars-iqhp`): the survivor is
+    // also terrified.
+    expect(wailTargetLabelV7(flagged)).toBe("−3? · Terror");
     expect(wailPreviewDescriptionV7(view, preview)).toContain(
       HIDDEN_BLIZZARD_PREVIEW_V7,
     );

@@ -12,6 +12,11 @@ import { chibiMasterScale, isWholeScale } from "./chibi-geometry-v7";
 import { projectGrid, worldToScreen, type CameraState } from "./geometry";
 import type { SupportCueUnitV7, SupportEffectV7 } from "./presentation-plan-v7";
 import { BOARD_LABEL_FONT_FAMILY_V7 } from "./board-label-font-v7";
+import {
+  drawBatSwirlCueV7,
+  drawFeastCueV7,
+  drawTerrorCueV7,
+} from "./vampire-banshee-canvas-v7";
 
 export interface SupportFeedbackV7 {
   readonly effect: SupportEffectV7;
@@ -132,6 +137,44 @@ export function drawSupportFeedbackV7(
       fade,
       sprites === null ? UNDEAD_PULSE_COLORS.WAIL : sprites.glow,
     );
+  // The Vampire and Banshee rework (`pulp_wars-iqhp`): the Bat Escape's
+  // swirl, the Feast and the Terror, code-drawn in every art set.
+  if (feedback.effect === "BAT_SWIRL") {
+    const landing = feedback.recipients[0];
+    drawBatSwirlCueV7(
+      context,
+      worldToScreen(projectGrid(feedback.actor.at), camera),
+      landing === undefined
+        ? null
+        : worldToScreen(projectGrid(landing.at), camera),
+      camera.zoom,
+      progress,
+      fade,
+    );
+    return;
+  }
+  if (feedback.effect === "FEAST") {
+    drawFeastCueV7(
+      context,
+      worldToScreen(projectGrid(feedback.actor.at), camera),
+      camera.zoom,
+      progress,
+      fade,
+      feedback.actor.amount,
+    );
+    return;
+  }
+  if (feedback.effect === "TERROR") {
+    for (const at of recipients)
+      drawTerrorCueV7(
+        context,
+        worldToScreen(projectGrid(at), camera),
+        camera.zoom,
+        progress,
+        fade,
+      );
+    return;
+  }
   if (feedback.effect === "LIFESTEAL") {
     for (const from of recipients)
       drawLifesteal(
@@ -405,6 +448,9 @@ const UNDEAD_PULSE_COLORS: Readonly<
       | "BOUNTY"
       | "GATE"
       | "WELL"
+      | "BAT_SWIRL"
+      | "FEAST"
+      | "TERROR"
     >,
     string
   >

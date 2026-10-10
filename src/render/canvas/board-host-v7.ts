@@ -7,6 +7,7 @@ import {
 } from "../../engine/index";
 import {
   afflictionCursorCueV7,
+  terrorCursorCueV7,
   unitIsUndeadV7,
 } from "../undead-presentation-v7";
 import { berserkCursorCueV7, unitIsGoblinV7 } from "../goblin-presentation-v7";
@@ -1632,7 +1633,9 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         if (token !== this.#presentationToken) return;
         this.#statusPulse = null;
       } else if (step.kind === "SUPPORT") {
-        this.#presentedView = after;
+        // The Vampire and Banshee rework (`pulp_wars-iqhp`): the bats swirl
+        // round the Vampire where it still stands, before its Escape Move.
+        this.#presentedView = step.effect === "BAT_SWIRL" ? before : after;
         if (step.followCamera === true) this.#followCamera(step.actor.at);
         this.#draw();
         await this.#animate(step.durationMs * durationScale, (progress) => {
@@ -2757,6 +2760,8 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
             candyCursorCueV7(model.view, unit),
             // Goblin explosions and Berserk (`pulp_wars-w49.36`).
             berserkCursorCueV7(model.view, unit),
+            // The Vampire and Banshee rework: a terrified unit, said.
+            terrorCursorCueV7(model.view, unit),
             // The Mind Control revision: the halo, said.
             mindControlledInfoV7(model.view, unit)?.byLine ?? "",
           ]
@@ -2912,7 +2917,11 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       cell !== null &&
       this.#planFor(model.view, model.offeredCommands).targets.some(
         (target) =>
-          (target.splash !== undefined || target.blast !== undefined) &&
+          // The Vampire and Banshee rework: a Bat Escape landing's flight
+          // is drawn at full weight while it is hovered.
+          (target.splash !== undefined ||
+            target.blast !== undefined ||
+            target.batEscape !== undefined) &&
           same(target.at, cell),
       );
     if (splashAt(prior) || splashAt(at)) this.#draw();

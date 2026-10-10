@@ -118,7 +118,9 @@ describe("Revision 13 Undead presentation", () => {
     ).toEqual(
       preview.targets.map((target) => [
         target.at,
-        `−${target.damage}`,
+        // The Vampire and Banshee rework (`pulp_wars-iqhp`): a survivor the
+        // Wail terrifies says so.
+        `−${target.damage}${target.terror ? " · Terror" : ""}`,
         target.dies,
       ]),
     );
@@ -431,7 +433,7 @@ describe("Revision 13 Undead presentation", () => {
     expect(
       undeadBoundaryNoticeV7(wail.events.events, wail.before, wail.after),
     ).toEqual({
-      text: "Banshee wailed: 2 hit, 1 fell · 1 Grave left",
+      text: "Banshee wailed: 2 hit, 1 fell, 1 terrified (no strike-back this turn) · 1 Grave left",
       toast: true,
     });
 

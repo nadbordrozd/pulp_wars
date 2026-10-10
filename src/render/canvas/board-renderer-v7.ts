@@ -87,13 +87,25 @@ import {
   unitDisplayNameV7,
 } from "../dinosaur-presentation-v7";
 import {
+  ETHEREAL_REACH_LABEL_V7,
+  batEscapeMoveV7,
+  batEscapeTargetSemanticV7,
   combatPreviewNoteV7,
   combatPreviewSemanticNoteV7,
+  etherealNewReachV7,
   matchHasUndeadV7,
   tendTargetLabelV7,
+  unitShowsTerrorV7,
   wailTargetLabelV7,
   type AfflictionIdV7,
 } from "../undead-presentation-v7";
+import {
+  BAT_ESCAPE_PALETTE_V7,
+  drawBatEscapeReachV7,
+  drawBatFlightArcV7,
+  drawEtherealReachV7,
+  drawTerrorGlyphV7,
+} from "./vampire-banshee-canvas-v7";
 import {
   abilityAreaStrokeV7,
   drawAbilityAreaCellV7,
@@ -842,6 +854,23 @@ export interface MapCommandTargetV7 {
    */
   readonly berserkReach?: true;
   /**
+   * The Vampire and Banshee rework, interface (`pulp_wars-iqhp`): a Bat
+   * Escape landing of a Vampire (flying reach: a violet dotted outline and
+   * a bat in its corner; the flight's arc over units is drawn from the
+   * Vampire, at full weight for the focused tile).
+   */
+  readonly batEscape?: {
+    readonly from: CoordV7;
+    readonly over: readonly CoordV7[];
+  };
+  /**
+   * The Vampire and Banshee rework, interface: a Move of an Ethereal
+   * Banshee to a tile only Ethereal reaches (past an enemy zone of
+   * control), drawn with the violet hatch and a ghost wisp, the way the
+   * Berserk reach is.
+   */
+  readonly etherealReach?: true;
+  /**
    * The Candy revision: the ghost of the unit a Re-bake tile would bake
    * back (its sprite at half strength; the label has its price and HP).
    */
@@ -1083,6 +1112,12 @@ export interface BoardRenderPlanEntryV7 {
    * the Berserk glyph in its status column.
    */
   readonly berserk?: true;
+  /**
+   * UNIT only, the Vampire and Banshee rework (`pulp_wars-iqhp`): a
+   * Banshee's Wail terrified the unit this turn (it will not strike back);
+   * it carries the Terror glyph in its status column.
+   */
+  readonly terror?: true;
   /**
    * UNIT only, the naval branch interface: a submerged Submarine and a
    * ship at or below its boarding line (any owner).
@@ -1555,6 +1590,9 @@ export function buildBoardRenderPlanV7(
       // Goblin explosions and Berserk (`pulp_wars-w49.36`): a Berserk unit
       // (any owner's, from the public list) carries its marker.
       ...(unitShowsBerserkV7(view, unit) ? { berserk: true as const } : {}),
+      // The Vampire and Banshee rework: a terrified unit (any owner's, from
+      // the public list) carries the Terror glyph.
+      ...(unitShowsTerrorV7(view, unit) ? { terror: true as const } : {}),
       ...(egg ? { egg: { turnsRemaining: eggTurns.get(unit.id) ?? 1 } } : {}),
       ...(growthStage === 1 || growthStage === 2 ? { growthStage } : {}),
       ...(gingerbreadMan ? { gingerbreadMan: true as const } : {}),
@@ -4353,6 +4391,22 @@ export function drawBoardV7(input: {
           });
           context.restore();
         }
+        // The Vampire and Banshee rework (`pulp_wars-iqhp`): a terrified
+        // unit's Terror glyph in the next status slot after its
+        // afflictions, frost and Berserk.
+        if (entry.kind === "UNIT" && entry.terror === true) {
+          context.save();
+          context.globalAlpha = sceneAlpha;
+          drawTerrorGlyphV7(context, x, y, camera.zoom, {
+            chibi: chibiPiece,
+            slot:
+              (entry.afflictions?.length ?? 0) +
+              ((entry.iceFolk?.frozen ?? null) !== null ? 1 : 0) +
+              (entry.berserk === true ? 1 : 0),
+            highContrast: input.highContrast ?? false,
+          });
+          context.restore();
+        }
         // The giants' signatures (`pulp_wars-w49.32`): an Abomination's
         // belly badge, its victim's sprite and HP.
         if (entry.kind === "UNIT" && entry.swallowed !== undefined) {
@@ -5015,6 +5069,13 @@ export function drawBoardV7(input: {
       input.previewFocus ?? null,
       input.highContrast ?? false,
     );
+    drawBatEscapePreviewV7(
+      context,
+      camera,
+      input.plan,
+      input.previewFocus ?? null,
+      input.highContrast ?? false,
+    );
   };
   if (goblinAreaFirst) drawAreaPreviews();
   // The Martian revision: the shooter's note goes on the focused target,
@@ -5317,6 +5378,10 @@ function targetVariant(target: MapCommandTargetV7 | undefined): {
     return { stroke: GLIDE_TARGET_STROKE_V7 };
   if (target?.family === "LANDING_AFTER_MOVE")
     return { stroke: LANDING_AFTER_MOVE_STROKE_V7, dash: [3, 6] };
+  // The Vampire and Banshee rework: a Bat Escape landing is flying reach,
+  // dotted in the Undead violet.
+  if (target?.batEscape !== undefined)
+    return { stroke: BAT_ESCAPE_PALETTE_V7.stroke, dash: [4, 4] };
   return {};
 }
 
@@ -5367,6 +5432,12 @@ function drawMapTarget(
   // Goblin explosions and Berserk: a tile only Berserk reaches is hatched.
   if (entry.target?.berserkReach === true)
     drawBerserkReachV7(context, x, y, camera.zoom, highContrast);
+  // The Vampire and Banshee rework: a tile only Ethereal reaches is hatched
+  // in violet, and a Bat Escape landing carries its bat.
+  if (entry.target?.etherealReach === true)
+    drawEtherealReachV7(context, x, y, camera.zoom, highContrast);
+  if (entry.target?.batEscape !== undefined)
+    drawBatEscapeReachV7(context, x, y, camera.zoom, highContrast);
   // Ice Folk Freeze: a tile only Glacier's +1 Move across ice reaches.
   if (entry.target?.glacier === true)
     drawGlacierReachV7(
@@ -6052,6 +6123,52 @@ function drawHopPreviewV7(
     camera.zoom,
     highContrast,
   );
+}
+
+/**
+ * The Vampire and Banshee rework (`pulp_wars-iqhp`): the Bat Escape
+ * flights, as arcs from the Vampire to the landing. Every flight that
+ * passes over a unit is drawn faintly, so the flying reach reads as such;
+ * the focused landing's flight (or the only one) is drawn last at full
+ * weight with its bat.
+ */
+function drawBatEscapePreviewV7(
+  context: CanvasRenderingContext2D,
+  camera: CameraState,
+  plan: BoardRenderPlanV7,
+  focus: CoordV7 | null,
+  highContrast: boolean,
+): void {
+  const flights = plan.targets.filter(
+    (target) => target.batEscape !== undefined,
+  );
+  if (flights.length === 0) return;
+  const point = (at: CoordV7): { readonly x: number; readonly y: number } => ({
+    x: camera.offsetX + at.x * TILE_WIDTH * camera.zoom,
+    y: camera.offsetY + at.y * TILE_HEIGHT * camera.zoom,
+  });
+  const focused =
+    (focus === null
+      ? undefined
+      : flights.find((candidate) => same(candidate.at, focus))) ??
+    (flights.length === 1 ? flights[0] : undefined);
+  for (const target of flights) {
+    const flight = target.batEscape;
+    if (target === focused || flight === undefined || flight.over.length === 0)
+      continue;
+    drawBatFlightArcV7(context, point(flight.from), point(target.at), {
+      zoom: camera.zoom,
+      prominent: false,
+      highContrast,
+    });
+  }
+  const flight = focused?.batEscape;
+  if (focused !== undefined && flight !== undefined)
+    drawBatFlightArcV7(context, point(flight.from), point(focused.at), {
+      zoom: camera.zoom,
+      prominent: true,
+      highContrast,
+    });
 }
 
 /**
@@ -6828,9 +6945,12 @@ function mapTargets(
 ): MapCommandTargetV7[] {
   return [
     ...commandMapTargets(view, commands, selectedUnitId).map((target) =>
-      withMoveHopV7(
+      withVampireBansheeReachV7(
         view,
-        withBerserkReachV7(view, withMoveOnIceV7(view, target)),
+        withMoveHopV7(
+          view,
+          withBerserkReachV7(view, withMoveOnIceV7(view, target)),
+        ),
       ),
     ),
     ...landingAfterMoveTargets(view, commands, selectedUnitId),
@@ -6863,6 +6983,38 @@ function withBerserkReachV7(
       target.semanticLabel === undefined
         ? BERSERK_REACH_LABEL_V7
         : `${target.semanticLabel}. ${BERSERK_REACH_LABEL_V7}`,
+  };
+}
+
+/**
+ * The Vampire and Banshee rework (`pulp_wars-iqhp`): a Vampire's Bat Escape
+ * Move carries its flight (the landing is flying reach, the arc passes
+ * over units) and an Ethereal Banshee's Move to a tile only Ethereal
+ * reaches is marked like the Berserk reach. Both say so. Every other target
+ * is returned as it is (a view with neither never computes more).
+ */
+function withVampireBansheeReachV7(
+  view: PlayerViewV7,
+  target: MapCommandTargetV7,
+): MapCommandTargetV7 {
+  if (target.family !== "MOVE" || target.command.kind !== "MOVE") return target;
+  const flight = batEscapeMoveV7(view, target.command);
+  const append = (label: string): string =>
+    target.semanticLabel === undefined
+      ? label
+      : `${target.semanticLabel}. ${label}`;
+  if (flight !== null)
+    return {
+      ...target,
+      batEscape: { from: flight.from, over: flight.over },
+      semanticLabel: append(batEscapeTargetSemanticV7(flight)),
+    };
+  if (!etherealNewReachV7(view, target.command.unitId).has(coordKey(target.at)))
+    return target;
+  return {
+    ...target,
+    etherealReach: true,
+    semanticLabel: append(ETHEREAL_REACH_LABEL_V7),
   };
 }
 

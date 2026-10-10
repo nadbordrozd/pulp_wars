@@ -99,6 +99,11 @@ const SUPPORT_SOUNDS: Readonly<Record<SupportEffectV7, SoundIdV1>> = {
   // Map curiosities round 2: the gate burst and the Coin in the Well.
   GATE: "special.sparkle",
   WELL: "economy.coin",
+  // The Vampire and Banshee rework (`pulp_wars-iqhp`): the bats' flutter,
+  // the Feast's drain, and the Terror's dark sting.
+  BAT_SWIRL: "special.puff",
+  FEAST: "support.drain",
+  TERROR: "support.dark",
 };
 
 /**
@@ -240,6 +245,12 @@ export function soundCuesForStepV7(
         { id: "economy.build", delayMs: 0, gain: OTHER_PLAYER_BUILD_GAIN_V7 },
       ];
     case "SUPPORT":
+      // The Vampire and Banshee rework: the bats flutter up, then off.
+      if (step.effect === "BAT_SWIRL")
+        return [
+          { id: "special.puff", delayMs: 0 },
+          { id: "special.puff", delayMs: step.durationMs * 0.5, gain: 0.7 },
+        ];
       return [{ id: SUPPORT_SOUNDS[step.effect], delayMs: 0 }];
     case "WINDMILL_HEALING":
       return [{ id: "support.heal", delayMs: step.sourceDurationMs }];

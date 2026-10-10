@@ -295,6 +295,14 @@ import {
   unitAfflictionsV7,
   unitIsUndeadV7,
   wailPreviewDescriptionV7,
+  BAT_ESCAPE_REACH_LABEL_V7,
+  ETHEREAL_REACH_LABEL_V7,
+  batEscapeMoveV7,
+  etherealNewReachV7,
+  feastPromptV7,
+  TERROR_LABEL_V7,
+  TERROR_STATUS_V7,
+  unitShowsTerrorV7,
 } from "../undead-presentation-v7";
 import {
   researchPathStepV7,
@@ -4289,6 +4297,26 @@ export class Ruleset7DomAppView {
         identityColumn?.append(cue);
       }
       const stats = view.unitStats.find((entry) => entry.unitId === unit.id);
+      // The Vampire and Banshee rework (`pulp_wars-iqhp`): Terror on a unit
+      // of any owner, from the public `terrorThisTurn` (the engine's status
+      // line reaches only its owner, and Terror is mostly on enemies).
+      if (
+        unitShowsTerrorV7(view, unit) &&
+        !(stats?.statuses ?? []).some((status) =>
+          status.startsWith(`${TERROR_LABEL_V7}:`),
+        )
+      ) {
+        const cue = text(
+          this.#document,
+          "span",
+          TERROR_LABEL_V7,
+          "v7-chip v7-terror-chip",
+        );
+        cue.dataset.unitStatus = "terror";
+        cue.title = TERROR_STATUS_V7;
+        cue.setAttribute("aria-label", TERROR_STATUS_V7);
+        identityColumn?.append(cue);
+      }
       // Revision 19: the Egg's countdown, capacity slots, and the growth
       // stage with the kills to the next one, from the public stats.
       const dinosaur = stats?.dinosaur;
@@ -4791,6 +4819,18 @@ export class Ruleset7DomAppView {
       // The frozen sea: what the pale tiles on ice mean for this unit.
       const iceLegend = this.#iceMoveLegend(view, unit.id);
       if (iceLegend !== null) dock.append(iceLegend);
+      // The Vampire and Banshee rework (`pulp_wars-iqhp`): the Feast's
+      // "attack again" prompt, and what the Bat Escape and Ethereal tiles
+      // mean.
+      const feast = feastPromptV7(view, unit);
+      if (feast !== null) {
+        const prompt = text(this.#document, "p", feast, "v7-feast-prompt");
+        prompt.dataset.v7Feast = "prompt";
+        prompt.setAttribute("role", "status");
+        dock.append(prompt);
+      }
+      const undeadReachLegend = this.#vampireBansheeLegend(view, unit.id);
+      if (undeadReachLegend !== null) dock.append(undeadReachLegend);
       // Revision 19: what an Egg is, in one sentence, right in its dock.
       if (egg && eggTurns !== null) {
         const info = text(
@@ -6843,6 +6883,39 @@ export class Ruleset7DomAppView {
     swatch.setAttribute("aria-hidden", "true");
     item.append(swatch, text(this.#document, "span", GLACIER_MOVE_LABEL_V7));
     legend.append(item);
+    return legend;
+  }
+
+  /**
+   * The Vampire and Banshee rework (`pulp_wars-iqhp`): the legend of a
+   * Vampire's Bat Escape tiles (flying reach) and of an Ethereal Banshee's
+   * tiles past enemy zones of control, shown while it has any.
+   */
+  #vampireBansheeLegend(
+    view: PlayerViewV7,
+    unitId: UnitId,
+  ): HTMLElement | null {
+    if (!matchHasUndeadV7(view)) return null;
+    const moves = this.#snapshot.offeredCommands.filter(
+      (command) => command.kind === "MOVE" && command.unitId === unitId,
+    );
+    if (moves.length === 0) return null;
+    const markers: (readonly [string, string])[] = [];
+    if (moves.some((command) => batEscapeMoveV7(view, command) !== null))
+      markers.push(["bat-escape", BAT_ESCAPE_REACH_LABEL_V7]);
+    else if (etherealNewReachV7(view, unitId).size > 0)
+      markers.push(["ethereal", ETHEREAL_REACH_LABEL_V7]);
+    if (markers.length === 0) return null;
+    const legend = el(this.#document, "ul", "v7-landing-legend");
+    legend.setAttribute("aria-label", "Undead move markers");
+    for (const [marker, label] of markers) {
+      const item = el(this.#document, "li", "v7-landing-legend-item");
+      item.dataset.landingMarker = marker;
+      const swatch = el(this.#document, "span", "v7-landing-legend-swatch");
+      swatch.setAttribute("aria-hidden", "true");
+      item.append(swatch, text(this.#document, "span", label));
+      legend.append(item);
+    }
     return legend;
   }
 
@@ -13588,8 +13661,10 @@ function undeadCommandPreview(
     const preview = previewWailV7(view, unitId);
     if (preview === null) return null;
     const kills = preview.targets.filter((target) => target.dies).length;
+    // The Vampire and Banshee rework: the survivors it would terrify.
+    const terror = preview.targets.filter((target) => target.terror).length;
     return {
-      chip: `${preview.targets.length} hit${kills > 0 ? ` · ${kills} ✕` : ""}`,
+      chip: `${preview.targets.length} hit${kills > 0 ? ` · ${kills} ✕` : ""}${terror > 0 ? ` · ${terror} Terror` : ""}`,
       description: wailPreviewDescriptionV7(view, preview),
     };
   }

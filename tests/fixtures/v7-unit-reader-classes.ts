@@ -687,6 +687,12 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/render/undead-presentation-v7.ts::undeadBoundaryNoticeV7": "BOARD",
     "src/render/undead-presentation-v7.ts::unitAfflictionsV7": "BOARD",
     "src/render/undead-presentation-v7.ts::wailTargetsPresentationV7": "BOARD",
+    // The Vampire and Banshee rework, interface (`pulp_wars-iqhp`): the
+    // units a Bat Escape flies over and the hostile zones of control round
+    // an Ethereal Banshee are what stands on the board.
+    "src/render/undead-presentation-v7.ts::batEscapeMoveV7": "BOARD",
+    "src/render/undead-presentation-v7.ts::hostileZocCellsV7": "BOARD",
+    "src/render/undead-presentation-v7.ts::etherealNewReachV7": "BOARD",
     // The Candy revision (`pulp_wars-jdb.3`): every Candy list names units
     // on the board. A `sugarRush` entry is a Candy-kind unit, and no Candy
     // role tunnels or rides a tunnel; Splat and Sugar Toss entries last only

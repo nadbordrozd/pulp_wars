@@ -1,15 +1,25 @@
 import {
   FACTION_DISPLAY_NAMES_V7,
   PLAGUE_DURATION_TURNS_V7,
+  batEscapeTilesV7,
+  cooperativeAlliesV7,
   factionRulesV7,
   factionTreeV7,
+  feastReadyV7,
   gravesEnabledV7,
+  isIceAtV7,
   isNeutralOwnerV7,
   playerFactionV7,
+  reachablePlayerMovementPathsV7,
   unitFactionV7,
+  unitFliesV7,
+  unitIsIceboundV7,
+  unitIsTerrifiedV7,
   queryPlayerCommandsV7,
   unitRoleRuleV7,
+  validatePlayerMovementPassagePathV7,
   type CombatPreviewV7,
+  type CommandV7,
   type CoordV7,
   type DevourPreviewV7,
   type FactionIdV7,
@@ -218,6 +228,261 @@ export function undeadCommandLabelV7(
   return null;
 }
 
+// ------------------------------------------------------------------------
+// The Vampire and Banshee rework, interface (`pulp_wars-iqhp`,
+// RULESET_7_CURRENT.md section 17.12). Every helper reads only the public
+// view (`terrorThisTurn`, `feastedThisTurn`, the units' activations), the
+// public previews and the offered commands, and returns the neutral answer
+// in a match without an Undead seat (both lists are then empty).
+// ------------------------------------------------------------------------
+
+export const TERROR_LABEL_V7 = "Terror";
+/** The status sentence of a terrified unit (the engine's status line). */
+export const TERROR_STATUS_V7 = "Terror: will not strike back this turn";
+/** The attack preview of a terrified defender that does not retaliate. */
+export const TERROR_NO_STRIKE_BACK_V7 = "Won't strike back (Terror)";
+/** The board label suffix of a Wail target the Wail would terrify. */
+export const WAIL_TERROR_LABEL_V7 = "Terror";
+export const FEAST_LABEL_V7 = "Feast";
+/** A Feast kill on the first attack: heals fully, one more attack. */
+export const FEAST_ATTACK_AGAIN_PREVIEW_V7 = "Feast: full heal, attack again";
+/** A Feast kill on the second attack: heals fully, no third attack. */
+export const FEAST_PREVIEW_V7 = "Feast: full heal";
+/** The cursor and legend name of a Bat Escape landing tile. */
+export const BAT_ESCAPE_REACH_LABEL_V7 =
+  "Bat Escape: flies up to 2 tiles, over units and past enemies";
+/** The cursor and legend name of a tile only Ethereal reaches. */
+export const ETHEREAL_REACH_LABEL_V7 =
+  "Ethereal reach: passes enemy zones of control";
+
+/** The note of an attack preview that Feasts, or null. */
+export function feastPreviewNoteV7(
+  preview: Pick<CombatPreviewV7, "feast" | "attacksRemaining">,
+): string | null {
+  if (!preview.feast) return null;
+  return preview.attacksRemaining > 0
+    ? FEAST_ATTACK_AGAIN_PREVIEW_V7
+    : FEAST_PREVIEW_V7;
+}
+
+/**
+ * Terror: whether a visible unit shows the Terror marker (it is in the
+ * public `terrorThisTurn`: a Banshee's Wail terrified it this turn).
+ */
+export function unitShowsTerrorV7(
+  view: Pick<PlayerViewV7, "terrorThisTurn">,
+  unit: Pick<PublicUnitV7, "id">,
+): boolean {
+  return unitIsTerrifiedV7(view, unit.id);
+}
+
+/** The spoken cue of a terrified unit, for the board cursor; "" otherwise. */
+export function terrorCursorCueV7(
+  view: Pick<PlayerViewV7, "terrorThisTurn">,
+  unit: Pick<PublicUnitV7, "id">,
+): string {
+  return unitShowsTerrorV7(view, unit) ? TERROR_STATUS_V7 : "";
+}
+
+/**
+ * Feast: the dock prompt of an own Vampire whose kill this turn allows one
+ * more attack (`feastReadyV7`), or null. It names the Bat Escape when the
+ * Vampire may still fly off instead.
+ */
+export function feastPromptV7(
+  view: PlayerViewV7,
+  unit: PublicUnitV7,
+): string | null {
+  if (unit.ownerId !== view.viewer.id || !feastReadyV7(view, unit)) return null;
+  const escape = batEscapeTilesV7(view, unit) > 0;
+  return `Feast! It healed to full HP and may attack once more this turn${
+    escape ? ", or fly off with Bat Escape" : ""
+  }.`;
+}
+
+/** One Bat Escape Move: where it flies from and the units it passes over. */
+export interface BatEscapeMoveV7 {
+  readonly from: CoordV7;
+  readonly to: CoordV7;
+  readonly path: readonly CoordV7[];
+  /** The tiles of the flight (not its landing) that hold a unit. */
+  readonly over: readonly CoordV7[];
+}
+
+/**
+ * Bat Escape: the flight of an offered Move of a Vampire whose Escape
+ * flies (`batEscapeTilesV7`), or null for every other Move.
+ */
+export function batEscapeMoveV7(
+  view: PlayerViewV7,
+  command: CommandV7,
+): BatEscapeMoveV7 | null {
+  if (command.kind !== "MOVE") return null;
+  const unit = view.units.find((candidate) => candidate.id === command.unitId);
+  const to = command.path.at(-1);
+  if (unit === undefined || to === undefined) return null;
+  if (batEscapeTilesV7(view, unit) <= 0) return null;
+  const over = command.path
+    .slice(0, -1)
+    .filter((at) =>
+      view.units.some(
+        (other) =>
+          other.id !== unit.id && other.at.x === at.x && other.at.y === at.y,
+      ),
+    );
+  return { from: unit.at, to, path: command.path, over };
+}
+
+/** The cursor description of one Bat Escape tile. */
+export function batEscapeTargetSemanticV7(flight: BatEscapeMoveV7): string {
+  return flight.over.length === 0
+    ? `${BAT_ESCAPE_REACH_LABEL_V7}. Ends its turn.`
+    : `${BAT_ESCAPE_REACH_LABEL_V7}. Flies over ${flight.over.length} ${
+        flight.over.length === 1 ? "unit" : "units"
+      }. Ends its turn.`;
+}
+
+const ETHEREAL_REACH_CACHE = new WeakMap<
+  PlayerViewV7,
+  Map<number, ReadonlySet<string>>
+>();
+
+/** Whether a visible unit moves Ethereal (its kind's `ETHEREAL`, land form). */
+export function unitIsEtherealV7(
+  view: PlayerViewV7,
+  unit: PublicUnitV7,
+): boolean {
+  return (
+    unit.form === "LAND" &&
+    (unitRoleRuleV7(view, unit).abilities as readonly string[]).includes(
+      "ETHEREAL",
+    )
+  );
+}
+
+/**
+ * The tiles ("y,x") in a hostile zone of control for a land-form `unit`,
+ * as the public movement reads them: the eight cells round every visible
+ * hostile unit on the board that projects one (not a flyer, an Egg, an
+ * embarked or icebound unit, a neutral, an own or allied unit): land and
+ * ice round a land unit, water round a ship; an unexplored cell counts.
+ */
+function hostileZocCellsV7(
+  view: PlayerViewV7,
+  unit: PublicUnitV7,
+): ReadonlySet<string> {
+  const cells = new Set<string>();
+  for (const other of view.units) {
+    if (
+      other.hp <= 0 ||
+      other.form === "EMBARKED" ||
+      other.form === "EGG" ||
+      other.ownerId === unit.ownerId ||
+      isNeutralOwnerV7(other.ownerId) ||
+      unitFliesV7(view, other) ||
+      unitIsIceboundV7(view, other) ||
+      cooperativeAlliesV7(
+        view.setup.aiMode,
+        view.humanPlayerId,
+        unit.ownerId,
+        other.ownerId,
+      )
+    )
+      continue;
+    for (let y = other.at.y - 1; y <= other.at.y + 1; y += 1)
+      for (let x = other.at.x - 1; x <= other.at.x + 1; x += 1) {
+        if (x === other.at.x && y === other.at.y) continue;
+        if (x < 0 || y < 0 || x >= view.board.width || y >= view.board.height)
+          continue;
+        const tile = view.board.tiles[y * view.board.width + x];
+        const projects =
+          tile === undefined || !tile.explored
+            ? true
+            : tile.biome !== null || isIceAtV7(view, { x, y })
+              ? other.form !== "NAVAL"
+              : other.form === "NAVAL";
+        if (projects) cells.add(`${y},${x}`);
+      }
+  }
+  return cells;
+}
+
+/**
+ * Ethereal (`pulp_wars-ty6i`): the Move destinations ("x,y") of an own
+ * Ethereal unit that only Ethereal gives it, the tiles it reaches past an
+ * enemy zone of control. The public movement query, against the same
+ * search with every hostile zone of control ending the Move (the rule of a
+ * unit without Ethereal); empty for a unit that is not Ethereal.
+ */
+export function etherealNewReachV7(
+  view: PlayerViewV7,
+  unitId: number,
+): ReadonlySet<string> {
+  let cache = ETHEREAL_REACH_CACHE.get(view);
+  if (cache === undefined) {
+    cache = new Map();
+    ETHEREAL_REACH_CACHE.set(view, cache);
+  }
+  const cached = cache.get(unitId);
+  if (cached !== undefined) return cached;
+  const unit = view.units.find((candidate) => candidate.id === unitId);
+  let reach: ReadonlySet<string> = new Set();
+  if (
+    unit !== undefined &&
+    unitIsEtherealV7(view, unit) &&
+    batEscapeTilesV7(view, unit) === 0
+  ) {
+    const key = (at: CoordV7): string => `${at.x},${at.y}`;
+    const zoc = hostileZocCellsV7(view, unit);
+    const inZoc = (at: CoordV7): boolean => zoc.has(`${at.y},${at.x}`);
+    // The search of a unit that stops on entering a hostile zone of
+    // control: a path never continues from a zone-of-control tile.
+    const plain = new Set<string>();
+    const best = new Map<string, number>([[key(unit.at), 0]]);
+    const queue: CoordV7[][] = [[]];
+    while (queue.length > 0) {
+      const path = queue.shift();
+      if (path === undefined) break;
+      const current = path.at(-1) ?? unit.at;
+      for (let dy = -1; dy <= 1; dy += 1)
+        for (let dx = -1; dx <= 1; dx += 1) {
+          if (dx === 0 && dy === 0) continue;
+          const step = { x: current.x + dx, y: current.y + dy };
+          if (
+            step.x < 0 ||
+            step.y < 0 ||
+            step.x >= view.board.width ||
+            step.y >= view.board.height
+          )
+            continue;
+          const candidate = [...path, step];
+          const validation = validatePlayerMovementPassagePathV7(
+            view,
+            unit,
+            candidate,
+          );
+          if (
+            !validation.legal ||
+            validation.traversedPath.length !== candidate.length
+          )
+            continue;
+          const prior = best.get(key(step));
+          if (prior !== undefined && prior <= validation.spentPoints2) continue;
+          best.set(key(step), validation.spentPoints2);
+          plain.add(key(step));
+          if (!validation.stopped && !inZoc(step)) queue.push(candidate);
+        }
+    }
+    reach = new Set(
+      reachablePlayerMovementPathsV7(view, unit)
+        .map((path) => key(path.destination))
+        .filter((at) => !plain.has(at)),
+    );
+  }
+  cache.set(unitId, reach);
+  return reach;
+}
+
 /**
  * Short canvas note for the Lifesteal and Infect outcomes of an attack
  * preview. It is null for every Human-only exchange (heal 0, not infected).
@@ -226,7 +491,13 @@ export function combatPreviewNoteV7(preview: CombatPreviewV7): string | null {
   const parts: string[] = [];
   if (preview.noRetaliationReason === "UNANSWERED")
     parts.push("No retaliation");
+  // The Vampire and Banshee rework (`pulp_wars-ty6i`): a defender a Wail
+  // terrified this turn does not strike back.
+  if (preview.noRetaliationReason === "TERROR")
+    parts.push(TERROR_NO_STRIKE_BACK_V7);
   if (preview.attackerHeal > 0) parts.push(`Heal +${preview.attackerHeal}`);
+  const feast = feastPreviewNoteV7(preview);
+  if (feast !== null) parts.push(feast);
   if (preview.defenderHeal > 0)
     parts.push(`Foe heals +${preview.defenderHeal}`);
   if (preview.defenderInfected) parts.push("Rises as Zombie");
@@ -261,7 +532,21 @@ export function combatPreviewSemanticNoteV7(
   const parts: string[] = [];
   if (preview.noRetaliationReason === "UNANSWERED")
     parts.push("The defender can't strike back at a Vampire.");
-  if (preview.attackerHeal > 0)
+  if (preview.noRetaliationReason === "TERROR")
+    parts.push(
+      "The defender won't strike back: a Banshee's Wail terrified it this turn.",
+    );
+  if (preview.feast)
+    parts.push(
+      `Feast: the kill heals the attacker to full HP${
+        preview.attackerHeal > 0 ? ` (+${preview.attackerHeal})` : ""
+      }${
+        preview.attacksRemaining > 0
+          ? " and it may attack once more this turn"
+          : ""
+      }.`,
+    );
+  else if (preview.attackerHeal > 0)
     parts.push(`Lifesteal heals the attacker by ${preview.attackerHeal} HP.`);
   if (preview.defenderHeal > 0)
     parts.push(`Lifesteal heals the defender by ${preview.defenderHeal} HP.`);
@@ -494,18 +779,25 @@ export interface WailTargetPresentationV7 {
    * lower this damage, as the combat preview's caveat.
    */
   readonly hiddenBlizzardPossible: boolean;
+  /**
+   * The Vampire and Banshee rework (`pulp_wars-ty6i`): Terror. The target
+   * survives the damage, so it will not strike back this turn.
+   */
+  readonly terror: boolean;
 }
 
 /**
  * The board label of one Wail target: the damage ("?" when a hidden
- * Blizzard may change it) and "Rises" for a bitten death.
+ * Blizzard may change it), "Rises" for a bitten death and "Terror" for a
+ * survivor the Wail terrifies.
  */
 export function wailTargetLabelV7(target: {
   readonly damage: number;
   readonly bittenRises: boolean;
   readonly hiddenBlizzardPossible: boolean;
+  readonly terror?: boolean;
 }): string {
-  return `−${target.damage}${target.hiddenBlizzardPossible ? "?" : ""}${target.bittenRises ? " · Rises" : ""}`;
+  return `−${target.damage}${target.hiddenBlizzardPossible ? "?" : ""}${target.bittenRises ? " · Rises" : ""}${target.terror === true ? ` · ${WAIL_TERROR_LABEL_V7}` : ""}`;
 }
 
 export function wailTargetsPresentationV7(
@@ -523,6 +815,7 @@ export function wailTargetsPresentationV7(
       leavesGrave: target.leavesGrave,
       bittenRises: target.bittenRises,
       hiddenBlizzardPossible: target.hiddenBlizzardPossible,
+      terror: target.terror,
     };
   });
 }
@@ -540,13 +833,18 @@ export function wailPreviewDescriptionV7(
   const list = targets
     .map(
       (target) =>
-        `${target.label} −${target.damage}${target.hiddenBlizzardPossible ? "?" : ""}${target.bittenRises ? " (dies, rises as a Zombie)" : target.dies ? " (dies)" : ""}`,
+        `${target.label} −${target.damage}${target.hiddenBlizzardPossible ? "?" : ""}${target.bittenRises ? " (dies, rises as a Zombie)" : target.dies ? " (dies)" : target.terror ? " (terrified)" : ""}`,
     )
     .join(", ");
+  const terrified = targets.filter((target) => target.terror).length;
+  const terror =
+    terrified === 0
+      ? ""
+      : `. Terror: ${terrified === 1 ? "the terrified enemy won't" : `the ${terrified} terrified enemies won't`} strike back this turn`;
   const caveat = targets.some((target) => target.hiddenBlizzardPossible)
     ? `. ${HIDDEN_BLIZZARD_PREVIEW_V7}`
     : "";
-  return `Hits ${targets.length} ${targets.length === 1 ? "enemy" : "enemies"} within 2 tiles${kills > 0 ? `, ${kills} ${kills === 1 ? "dies" : "die"}` : ""}: ${list}${caveat}`;
+  return `Hits ${targets.length} ${targets.length === 1 ? "enemy" : "enemies"} within 2 tiles${kills > 0 ? `, ${kills} ${kills === 1 ? "dies" : "die"}` : ""}: ${list}${terror}${caveat}`;
 }
 
 export function raiseDeadPreviewDescriptionV7(
@@ -606,9 +904,32 @@ export function undeadBoundaryNoticeV7(
     } else if (event.kind === "WAIL_RESOLVED") {
       toast = true;
       const kills = event.results.filter((result) => result.dies).length;
+      // The Vampire and Banshee rework: the survivors it terrified.
+      const terrified = event.terrified.length;
       parts.push(
-        `${owned(event.playerId, labelOf(event.unitId, "Banshee"))} wailed: ${event.results.length} hit${kills > 0 ? `, ${kills} fell` : ""}`,
+        `${owned(event.playerId, labelOf(event.unitId, "Banshee"))} wailed: ${event.results.length} hit${kills > 0 ? `, ${kills} fell` : ""}${terrified > 0 ? `, ${terrified} terrified (no strike-back this turn)` : ""}`,
       );
+    } else if (event.kind === "COMBAT_RESOLVED") {
+      // The Vampire and Banshee rework (`pulp_wars-ty6i`): a Feast kill,
+      // and a terrified defender that did not strike back.
+      const preview = event.preview;
+      if (preview.noRetaliationReason === "TERROR") {
+        const defender = unitById(preview.targetUnitId);
+        parts.push(
+          `${defender === undefined ? "The defender" : `The ${unitLabelV7(after, defender)}`} was terrified and didn't strike back`,
+        );
+      }
+      if (preview.feast) {
+        const attacker = unitById(preview.attackerId);
+        if (attacker?.ownerId === viewerId) toast = true;
+        parts.push(
+          `${
+            attacker === undefined
+              ? "A Vampire"
+              : owned(attacker.ownerId, unitLabelV7(after, attacker))
+          } feasted: healed to full${preview.attacksRemaining > 0 ? " and may attack again" : ""}`,
+        );
+      }
     } else if (event.kind === "UNIT_INFECTED") {
       toast = true;
       const victim = unitById(event.victimUnitId);

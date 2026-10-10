@@ -107,6 +107,7 @@
     "review:ruleset7-city-buff": "tsx scripts/browser-city-buff-review-v7.ts",
     "review:ruleset7-undead-ui": "tsx scripts/browser-undead-review-v7.ts",
     "review:ruleset7-goblin-ui": "tsx scripts/browser-goblin-review-v7.ts",
+    "review:ruleset7-vampire-banshee-ui": "tsx scripts/browser-vampire-banshee-review-v7.ts",
     "review:ruleset7-dinosaur-ui": "tsx scripts/browser-dinosaur-review-v7.ts",
     "review:ruleset7-martian-ui": "tsx scripts/browser-martian-review-v7.ts",
     "review:ruleset7-ice-folk-ui": "tsx scripts/browser-ice-folk-review-v7.ts",

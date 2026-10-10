@@ -38,6 +38,16 @@ import {
   undeadShowcaseFixtureV7,
   undeadUiArenaV7,
 } from "../fixtures/v7-undead-ui";
+import {
+  VAMPIRE_BANSHEE_UI_V7,
+  bansheeEtherealFixtureV7,
+  bansheeTerrorFixtureV7,
+  vampireFeastFixtureV7,
+} from "../fixtures/v7-vampire-banshee-ui";
+import {
+  BAT_ESCAPE_REACH_LABEL_V7,
+  ETHEREAL_REACH_LABEL_V7,
+} from "../../src/render/undead-presentation-v7";
 
 beforeEach(() => {
   document.body.innerHTML = '<div id="app"></div>';
@@ -227,11 +237,12 @@ describe("Revision 13 Undead DOM", () => {
     expect(wail.querySelector(".v7-action-label")?.textContent).toBe("Wail");
     expect(wail.getAttribute("aria-label")).toBe(
       // The Vampire and Banshee rework (`pulp_wars-ty6i`): Attack 1.5 (the
-      // Guard took 1).
-      "Wail · Hits 2 enemies within 2 tiles, 1 dies: Guard −2, Fighter −1 (dies)",
+      // Guard took 1); its interface (`pulp_wars-iqhp`): the surviving Guard
+      // is terrified.
+      "Wail · Hits 2 enemies within 2 tiles, 1 dies: Guard −2 (terrified), Fighter −1 (dies). Terror: the terrified enemy won't strike back this turn",
     );
     expect(wail.querySelector(".v7-undead-preview-chip")?.textContent).toBe(
-      "2 hit · 1 ✕",
+      "2 hit · 1 ✕ · 1 Terror",
     );
     expect(host.lastModel?.interaction.selectedUnitId).toBeDefined();
 
@@ -290,10 +301,10 @@ describe("Revision 13 Undead DOM", () => {
     await waitUntil(
       () =>
         document.querySelector("#v7-live")?.textContent ===
-        "Banshee wailed: 2 hit, 1 fell · 1 Grave left",
+        "Banshee wailed: 2 hit, 1 fell, 1 terrified (no strike-back this turn) · 1 Grave left",
     );
     expect(document.querySelector(".v7-toast")?.textContent).toBe(
-      "Banshee wailed: 2 hit, 1 fell · 1 Grave left",
+      "Banshee wailed: 2 hit, 1 fell, 1 terrified (no strike-back this turn) · 1 Grave left",
     );
     app.destroy();
   });
@@ -547,6 +558,73 @@ describe("Revision 13 Undead DOM", () => {
     requiredButton("leaderboard").click();
     expect(document.querySelector(".v7-faction-chip")).toBeNull();
     app.destroy();
+  });
+});
+
+describe("Vampire and Banshee DOM (pulp_wars-iqhp)", () => {
+  it("prompts the Feast's second attack and names the Bat Escape tiles", () => {
+    const controller = new FixtureController(vampireFeastFixtureV7());
+    const host = new RecordingBoardHost();
+    const app = mount(controller, host);
+    selectUnitAt(controller, host, VAMPIRE_BANSHEE_UI_V7.feast.victim);
+    const prompt = requiredElement<HTMLElement>('[data-v7-feast="prompt"]');
+    expect(prompt.textContent).toBe(
+      "Feast! It healed to full HP and may attack once more this turn, or fly off with Bat Escape.",
+    );
+    expect(
+      document.querySelector('[data-unit-status="feast"]')?.textContent,
+    ).toBe("Feast");
+    expect(
+      document.querySelector('[data-unit-status="escape"]')?.textContent,
+    ).toBe("Escape");
+    expect(
+      document
+        .querySelector('[data-landing-marker="bat-escape"]')
+        ?.textContent?.trim(),
+    ).toBe(BAT_ESCAPE_REACH_LABEL_V7);
+    requiredButton("unit-help").click();
+    const help = requiredElement<HTMLElement>(".v7-unit-help-dialog");
+    const abilities = [
+      ...help.querySelectorAll<HTMLElement>(".v7-unit-ability"),
+    ].map((line) => line.textContent ?? "");
+    expect(abilities.some((line) => line.startsWith("Bat Escape"))).toBe(true);
+    expect(abilities.some((line) => line.startsWith("Feast"))).toBe(true);
+    requiredButton("close-unit-help").click();
+    app.destroy();
+  });
+
+  it("shows the Wail's Terror, the Terror chip and the Ethereal legend", () => {
+    const controller = new FixtureController(bansheeTerrorFixtureV7());
+    const host = new RecordingBoardHost();
+    const app = mount(controller, host);
+    selectUnitAt(controller, host, VAMPIRE_BANSHEE_UI_V7.wail.survivor);
+    const terror = requiredElement<HTMLElement>('[data-unit-status="terror"]');
+    expect(terror.textContent).toBe("Terror");
+    expect(document.querySelector("[data-v7-feast]")).toBeNull();
+    app.destroy();
+    document.body.innerHTML = '<div id="app"></div>';
+    const ethereal = new FixtureController(bansheeEtherealFixtureV7());
+    const etherealHost = new RecordingBoardHost();
+    const etherealApp = mount(ethereal, etherealHost);
+    selectUnitAt(
+      ethereal,
+      etherealHost,
+      VAMPIRE_BANSHEE_UI_V7.ethereal.banshee,
+    );
+    expect(
+      document
+        .querySelector('[data-landing-marker="ethereal"]')
+        ?.textContent?.trim(),
+    ).toBe(ETHEREAL_REACH_LABEL_V7);
+    requiredButton("unit-help").click();
+    const abilities = [
+      ...requiredElement<HTMLElement>(
+        ".v7-unit-help-dialog",
+      ).querySelectorAll<HTMLElement>(".v7-unit-ability"),
+    ].map((line) => line.textContent ?? "");
+    expect(abilities.some((line) => line.startsWith("Terror"))).toBe(true);
+    expect(abilities.some((line) => line.startsWith("Ethereal"))).toBe(true);
+    etherealApp.destroy();
   });
 });
 
