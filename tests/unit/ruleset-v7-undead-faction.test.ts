@@ -78,8 +78,8 @@ const READY: UnitStateV7["activation"] = {
 
 describe("ruleset-7 revision-13 identity and faction registration", () => {
   it("pins the current identity, frozen faction and tree orders, and bindings", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r70");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r70.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r71");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r71.current");
     expect(FACTION_IDS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",
@@ -90,6 +90,7 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
       // The Dwarf revision (`pulp_wars-78i.3`).
       "DWARF",
       "CANDY",
+      "CULT",
     ]);
     expect(FACTION_TREE_IDS_V7).toEqual([
       "ORIGINAL_BASELINE_V5",
@@ -100,6 +101,7 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
       "ICE_FOLK_BASELINE_V1",
       "DWARF_BASELINE_V1",
       "CANDY_BASELINE_V1",
+      "CULT_BASELINE_V1",
     ]);
     expect(factionTreeIdV7("ORIGINAL")).toBe("ORIGINAL_BASELINE_V5");
     expect(factionTreeIdV7("UNDEAD")).toBe("UNDEAD_BASELINE_V1");
@@ -112,6 +114,7 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
       ICE_FOLK: "Ice Folk",
       DWARF: "Dwarf",
       CANDY: "Candy",
+      CULT: "Cultists",
     });
     expect(Object.keys(RULESET_7.factionTrees)).toEqual([
       "ORIGINAL",
@@ -123,6 +126,7 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
       // The Dwarf revision (`pulp_wars-78i.3`).
       "DWARF",
       "CANDY",
+      "CULT",
     ]);
     expect(FACTION_TREES_V7.UNDEAD.faction).toBe("UNDEAD");
     expect(() => assertRuleset7Registry()).not.toThrow();
@@ -135,10 +139,10 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
   });
 
   it("cleans obsolete keys through v7r65 and preserves the r66 save", () => {
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-5)).toBe(
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-6)).toBe(
       "pulpWars.save.v7r65.current",
     );
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(69);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(70);
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
     const storage = new MemoryStorage([
       ["pulpWars.save.v7r12.current", "r12"],

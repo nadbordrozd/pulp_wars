@@ -21,7 +21,7 @@ import {
 import { SOUND_THEMES_V1 } from "../../src/audio/sound-manifest";
 import {
   FACTION_DISPLAY_NAMES_V7,
-  FACTION_IDS_V7,
+  OFFERED_FACTION_IDS_V7,
 } from "../../src/engine/index";
 
 /**
@@ -68,13 +68,13 @@ const styleLongEntries = [
 describe("faction theme prompts", () => {
   it("has one entry for every faction of the game and no other", () => {
     expect(Object.keys(data.factions).sort()).toEqual(
-      [...FACTION_IDS_V7].sort(),
+      [...OFFERED_FACTION_IDS_V7].sort(),
     );
-    for (const id of FACTION_IDS_V7) {
+    for (const id of OFFERED_FACTION_IDS_V7) {
       expect(data.factions[id]?.name).toBe(FACTION_DISPLAY_NAMES_V7[id]);
     }
     expect(GAME_THEME_FACTIONS_V1.map((faction) => faction.id)).toEqual([
-      ...FACTION_IDS_V7,
+      ...OFFERED_FACTION_IDS_V7,
     ]);
   });
 
@@ -105,7 +105,7 @@ describe("faction theme prompts", () => {
   it("has a Suno Styles-field string for every faction and extra, within 1000 characters", () => {
     expect(data.schemaVersion).toBe(2);
     expect(data.shared.budgets.sunoStyleLongChars).toBe(1000);
-    expect(styleLongEntries).toHaveLength(FACTION_IDS_V7.length + 3);
+    expect(styleLongEntries).toHaveLength(OFFERED_FACTION_IDS_V7.length + 3);
     for (const entry of styleLongEntries) {
       expect(typeof entry.styleLong, entry.key).toBe("string");
       const length = codePointLengthV1(entry.styleLong);
@@ -192,7 +192,9 @@ describe("faction theme prompts", () => {
       DWARF: ["tuba and euphonium", "concertina", "anvil", "steam hiss"],
       CANDY: ["toy piano", "glockenspiel", "ukulele", "woodblocks"],
     };
-    expect(Object.keys(named).sort()).toEqual([...FACTION_IDS_V7].sort());
+    expect(Object.keys(named).sort()).toEqual(
+      [...OFFERED_FACTION_IDS_V7].sort(),
+    );
     for (const [key, instruments] of Object.entries(named)) {
       for (const instrument of instruments) {
         expect(data.factions[key]?.sunoStyleLong, key).toContain(instrument);

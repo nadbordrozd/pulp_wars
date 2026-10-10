@@ -930,6 +930,8 @@ describe("ruleset-7 revision-18 Showcase players and units", () => {
       "Brass Titan",
       // The Candy revision (`pulp_wars-jdb.3`).
       "Gingerbread Giant",
+      // The Cultists (`pulp_wars-mch9.3`).
+      "Thing in the Cellar",
     ]);
   });
 });

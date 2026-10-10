@@ -65,6 +65,7 @@ import {
 } from "../../src/engine/index";
 import { technologyEffectGroupsV7 } from "../../src/render/dom/app-view-v7";
 import { technologyNameV7 } from "../../src/render/goblin-presentation-v7";
+import { SETUP_FACTIONS_V7 } from "../../src/render/setup-options-v7";
 import { checkedV7, mirrorOptionV7 } from "../fixtures/v7-builders";
 import {
   cityOfV7,
@@ -104,6 +105,7 @@ describe("Dwarf faction registration (sections 2 and 14)", () => {
       "ICE_FOLK",
       "DWARF",
       "CANDY",
+      "CULT",
     ]);
     expect(FACTION_TREE_IDS_V7).toEqual([
       "ORIGINAL_BASELINE_V5",
@@ -114,6 +116,7 @@ describe("Dwarf faction registration (sections 2 and 14)", () => {
       "ICE_FOLK_BASELINE_V1",
       "DWARF_BASELINE_V1",
       "CANDY_BASELINE_V1",
+      "CULT_BASELINE_V1",
     ]);
     expect(factionTreeIdV7("DWARF")).toBe("DWARF_BASELINE_V1");
     expect(FACTION_TREES_V7.DWARF).toMatchObject({
@@ -437,15 +440,16 @@ describe("Dwarf faction registration (sections 2 and 14)", () => {
   // Turned round by the Dwarf UI bead (pulp_wars-78i.6): the setup screen
   // offers the Dwarves, last.
   it("is offered by the setup screen since the UI bead", () => {
+    // The Cultists (`pulp_wars-mch9.3`): the screen's list is the engine's
+    // offered factions, which leave the hidden Cult out.
     const source = readFileSync("src/render/dom/app-view-v7.ts", "utf8");
-    const factions = source.slice(
-      source.indexOf("const FACTIONS: readonly FactionIdV7[] = ["),
-      source.indexOf("];", source.indexOf("const FACTIONS:")),
+    expect(source).toContain(
+      "const FACTIONS: readonly FactionIdV7[] = SETUP_FACTIONS_V7;",
     );
-    expect(factions).toContain('"ICE_FOLK"');
+    expect(SETUP_FACTIONS_V7).toContain("ICE_FOLK");
     // The Candy engine bead (pulp_wars-jdb.3) offers the Candy after them.
-    expect(factions).toContain('"DWARF"');
-    expect(factions.trim().endsWith('"CANDY",')).toBe(true);
+    expect(SETUP_FACTIONS_V7).toContain("DWARF");
+    expect(SETUP_FACTIONS_V7.at(-1)).toBe("CANDY");
   });
 });
 
@@ -1053,6 +1057,7 @@ describe("Dwarf technology (section 4)", () => {
       ["ICE_FOLK", false, false, 5, 2, false],
       ["DWARF", true, true, 6, 3, true],
       ["CANDY", false, false, 5, 2, false],
+      ["CULT", false, false, 5, 2, false],
     ]);
     const some = (...techs: (typeof TECHNOLOGY_IDS_V7)[number][]) =>
       technologyCapabilitiesV7(techs, "DWARF");

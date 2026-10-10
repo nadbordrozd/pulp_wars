@@ -11,7 +11,7 @@ import {
 } from "../../src/assets/asset-inventory-v7";
 import { CHIBI_ART_ASSETS_V7 } from "../../src/assets/chibi-art-manifest";
 import { chibiDirectionArtAssetsV7 } from "../../src/assets/chibi-direction-art-manifest";
-import { FACTION_IDS_V7 } from "../../src/engine/index";
+import { OFFERED_FACTION_IDS_V7 } from "../../src/engine/index";
 
 /**
  * The asset preloader's inventory (bead pulp_wars-2yc.6): complete against
@@ -141,7 +141,7 @@ describe("Ruleset 7 asset inventory", () => {
 
     const all = assetInventoryV7("LIVE");
     const groups = new Set(all.map((entry) => entry.group));
-    for (const faction of FACTION_IDS_V7)
+    for (const faction of OFFERED_FACTION_IDS_V7)
       if (faction !== "ORIGINAL")
         expect(groups.has(faction), faction).toBe(true);
     expect(groups.has("SHARED")).toBe(true);
@@ -159,7 +159,9 @@ describe("Ruleset 7 asset inventory", () => {
     ).toBe(true);
     expect(duel.some((entry) => entry.url.includes("goblin"))).toBe(false);
     // Every faction in play is the whole look.
-    expect(assetInventoryForFactionsV7("LIVE", FACTION_IDS_V7)).toEqual(all);
+    expect(assetInventoryForFactionsV7("LIVE", OFFERED_FACTION_IDS_V7)).toEqual(
+      all,
+    );
   });
 
   it("preloads the shared art first", () => {

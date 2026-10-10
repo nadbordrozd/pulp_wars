@@ -190,9 +190,9 @@ afterEach(() => {
   setCandyPolicyOptionsV7(DEFAULT_CANDY_POLICY_OPTIONS_V7);
 });
 
-describe("the Candy army seat: no rule changed", () => {
+describe("the Candy army seat: no rule changed (the identity moved later, with the Cult registration)", () => {
   it("kept the identity", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r70");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r71");
   });
 });
 

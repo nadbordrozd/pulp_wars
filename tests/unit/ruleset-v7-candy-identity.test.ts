@@ -42,7 +42,7 @@ import { goblinSetupV7 } from "../fixtures/v7-goblin-arena";
 // tier 3 technology base cost 9) 7r41.
 
 /** The revision number of the current identity (`pulp-wars-poc-7rNN`). */
-const REVISION = 70;
+const REVISION = 71;
 const ID = `pulp-wars-poc-7r${REVISION}`;
 const PREVIOUS_ID = `pulp-wars-poc-7r${REVISION - 1}`;
 
@@ -171,6 +171,7 @@ describe("the Candy revision identity (section 2.2)", () => {
       "ICE_FOLK",
       "DWARF",
       "CANDY",
+      "CULT",
     ]);
     expect(FACTION_TREE_IDS_V7).toEqual([
       "ORIGINAL_BASELINE_V5",
@@ -181,11 +182,13 @@ describe("the Candy revision identity (section 2.2)", () => {
       "ICE_FOLK_BASELINE_V1",
       "DWARF_BASELINE_V1",
       "CANDY_BASELINE_V1",
+      "CULT_BASELINE_V1",
     ]);
     expect(factionTreeIdV7("CANDY")).toBe("CANDY_BASELINE_V1");
     expect(FACTION_TREES_V7.CANDY).toBe(CANDY_BASELINE_V1_TREE);
     expect(FACTION_DISPLAY_NAMES_V7.CANDY).toBe("Candy");
-    expect(Object.keys(FACTION_TREES_V7)).toHaveLength(8);
+    // The Cultists (`pulp_wars-mch9.3`) are the ninth registration.
+    expect(Object.keys(FACTION_TREES_V7)).toHaveLength(9);
     expect(() => assertRuleset7Registry()).not.toThrow();
   });
 
@@ -265,6 +268,7 @@ describe("Candy setup (sections 2.4 and 12.17)", () => {
       "DINOSAUR",
     ]);
     expect(distinctFactionsV7(8).at(-1)).toBe("CANDY");
+    expect(distinctFactionsV7(9).at(-1)).toBe("CULT");
     expect(distinctFactionsV7(2, ["CANDY", "CANDY"])).toEqual([
       "CANDY",
       "ORIGINAL",

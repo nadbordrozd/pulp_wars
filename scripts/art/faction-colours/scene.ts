@@ -1,7 +1,9 @@
 /**
  * Review scene of the faction colours (bead pulp_wars-b5f.4,
- * docs/art/FACTION_COLOURS.md): the seven factions' territories side by
- * side, each running over the same strip of ground, so every border colour
+ * docs/art/FACTION_COLOURS.md): the nine factions' territories side by
+ * side (seven until the Cult registration, pulp_wars-mch9.3, which added
+ * the Cult beside the Dwarves, its nearest colour, and the Candy), each
+ * running over the same strip of ground, so every border colour
  * is seen on Mountain, Grass, Snow, Shallow Water and Deep Water. Loaded in
  * the browser through the Vite dev server by
  * scripts/art/faction-colours-review.ts and drawn by the real
@@ -9,7 +11,7 @@
  * (`liveBoardLookV7`), the Classic look, or the LEGACY art set. Nothing here
  * is part of the game build.
  *
- * The board is 24 x 9. Each faction holds a territory two cells wide and
+ * The board is 30 x 9. Each faction holds a territory two cells wide and
  * six tall (rows 1 to 6), with one unowned column between territories and
  * an unowned frame, so every edge of a territory is a single-owner border:
  *
@@ -41,7 +43,11 @@ import { liveBoardLookV7 } from "../../../src/render/canvas/live-board-look-v7";
 
 type Tile = PlayerViewV7["board"]["tiles"][number];
 
-/** The seven factions in scene order, west to east. */
+/**
+ * The nine factions in scene order, west to east. The Cult's eldritch
+ * green stands beside the Dwarf jade, its nearest neighbour
+ * (docs/art/factions/CULT.md, "Faction colour, seat and hue token").
+ */
 export const FACTION_COLOURS_SCENE_FACTIONS_V7: readonly FactionIdV7[] = [
   "UNDEAD",
   "MARTIAN",
@@ -50,11 +56,13 @@ export const FACTION_COLOURS_SCENE_FACTIONS_V7: readonly FactionIdV7[] = [
   "DINOSAUR",
   "GOBLIN",
   "DWARF",
+  "CULT",
+  "CANDY",
 ];
 
 export type FactionColoursLookV7 = "LIVE" | "CLASSIC" | "LEGACY";
 
-const WIDTH = 24;
+const WIDTH = 30;
 const HEIGHT = 9;
 /** The west column of territory `index`. */
 const territoryX = (index: number): number => 2 + index * 3;

@@ -69,6 +69,7 @@ import {
 } from "../../src/engine/index";
 import { technologyEffectGroupsV7 } from "../../src/render/dom/app-view-v7";
 import { technologyNameV7 } from "../../src/render/goblin-presentation-v7";
+import { SETUP_FACTIONS_V7 } from "../../src/render/setup-options-v7";
 import { checkedV7, mirrorOptionV7 } from "../fixtures/v7-builders";
 import {
   cityOfV7,
@@ -109,6 +110,7 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
       // The Dwarf revision (`pulp_wars-78i.3`).
       "DWARF",
       "CANDY",
+      "CULT",
     ]);
     expect(FACTION_TREE_IDS_V7).toEqual([
       "ORIGINAL_BASELINE_V5",
@@ -119,6 +121,7 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
       "ICE_FOLK_BASELINE_V1",
       "DWARF_BASELINE_V1",
       "CANDY_BASELINE_V1",
+      "CULT_BASELINE_V1",
     ]);
     expect(factionTreeIdV7("ICE_FOLK")).toBe("ICE_FOLK_BASELINE_V1");
     expect(FACTION_TREES_V7.ICE_FOLK).toMatchObject({
@@ -491,12 +494,13 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
   // Turned round by the UI bead (`pulp_wars-7g3.6`): the setup screen's
   // FACTIONS constant offers ICE_FOLK last, labelled "Ice Folk".
   it("is registered and offered by the setup screen since the UI bead", () => {
+    // The Cultists (`pulp_wars-mch9.3`): the screen's list is the engine's
+    // offered factions, which leave the hidden Cult out.
     const source = readFileSync("src/render/dom/app-view-v7.ts", "utf8");
-    const factions = source.slice(
-      source.indexOf("const FACTIONS: readonly FactionIdV7[] = ["),
-      source.indexOf("];", source.indexOf("const FACTIONS:")),
+    expect(source).toContain(
+      "const FACTIONS: readonly FactionIdV7[] = SETUP_FACTIONS_V7;",
     );
-    expect(factions).toContain('"ICE_FOLK"');
+    expect(SETUP_FACTIONS_V7).toContain("ICE_FOLK");
     expect(source).toContain('ICE_FOLK: "Ice Folk"');
   });
 });
@@ -1083,6 +1087,7 @@ describe("Ice Folk technology (section 4)", () => {
       ["ICE_FOLK", true, 4],
       ["DWARF", false, 3],
       ["CANDY", false, 3],
+      ["CULT", false, 3],
     ]);
     const some = (...techs: (typeof TECHNOLOGY_IDS_V7)[number][]) =>
       technologyCapabilitiesV7(techs, "ICE_FOLK");

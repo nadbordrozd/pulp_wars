@@ -99,7 +99,7 @@ import { at, kindsV7, movedV7 } from "../fixtures/v7-revision20";
 // (docs/product/RULESET_7_MARTIANS.md sections 2 to 4, 10.9, 10.10, and 11).
 
 /** The revision number of this identity (`pulp-wars-poc-7rNN`). */
-const REVISION = 70;
+const REVISION = 71;
 const ID = `pulp-wars-poc-7r${REVISION}`;
 const PREVIOUS_ID = `pulp-wars-poc-7r${REVISION - 1}`;
 
@@ -227,6 +227,7 @@ describe("Martian faction registration (sections 2 and 11)", () => {
       // The Dwarf revision (`pulp_wars-78i.3`).
       "DWARF",
       "CANDY",
+      "CULT",
     ]);
     expect(FACTION_TREE_IDS_V7).toEqual([
       "ORIGINAL_BASELINE_V5",
@@ -237,6 +238,7 @@ describe("Martian faction registration (sections 2 and 11)", () => {
       "ICE_FOLK_BASELINE_V1",
       "DWARF_BASELINE_V1",
       "CANDY_BASELINE_V1",
+      "CULT_BASELINE_V1",
     ]);
     expect(factionTreeIdV7("MARTIAN")).toBe("MARTIAN_BASELINE_V1");
     expect(FACTION_TREES_V7.MARTIAN).toMatchObject({
@@ -1164,6 +1166,7 @@ describe("Martian technology (section 4)", () => {
       ["ICE_FOLK", false, false],
       ["DWARF", false, false],
       ["CANDY", false, false],
+      ["CULT", false, false],
     ]);
     const some = (...techs: (typeof TECHNOLOGY_IDS_V7)[number][]) =>
       technologyCapabilitiesV7(techs, "MARTIAN");

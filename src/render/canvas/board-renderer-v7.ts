@@ -226,6 +226,7 @@ import {
 } from "../frozen-sea-presentation-v7";
 import {
   ninthUnitStandInLetterV7,
+  factionStandInLetterV7,
   seaIceArtSubjectV7,
 } from "../../assets/chibi-art-v7";
 import {
@@ -1034,7 +1035,8 @@ export interface BoardRenderPlanEntryV7 {
     | "MARTIAN"
     | "ICE_FOLK"
     | "DWARF"
-    | "CANDY";
+    | "CANDY"
+    | "CULT";
   /**
    * UNIT only, revision 14: the public Plague and Bitten statuses, drawn as
    * small markers in the piece's overlay frame (absent when there are none).
@@ -1505,7 +1507,8 @@ export function buildBoardRenderPlanV7(
       faction === "MARTIAN" ||
       faction === "ICE_FOLK" ||
       faction === "DWARF" ||
-      faction === "CANDY";
+      faction === "CANDY" ||
+      faction === "CULT";
     // The Dwarf revision: Dig In, clockwork and the Gyrocopter's flight.
     const dwarf = dwarfMatch ? dwarfUnitMarkersV7(view, unit) : undefined;
     // The Ice Folk revision: the Frozen marker on units of any owner.
@@ -3810,6 +3813,12 @@ export function drawBoardV7(input: {
             ? ninthUnitStandInLetterV7(entry.artSubject)
             : null;
         if (standInLetter !== null) factionArt = true;
+        // The Cultists (`pulp_wars-mch9.3`): a unit of a faction registered
+        // without art of its own is drawn with the Human sprite of its role
+        // (in LEGACY too) and wears the faction's stand-in letter until its
+        // own raster is registered.
+        if (entry.kind === "UNIT" && standInLetter === null && !factionArt)
+          standInLetter = factionStandInLetterV7(entry.faction);
         // Buildings and cities take their desaturated copy (pulp_wars-x6c);
         // every other piece, and 100 percent, keeps its own raster.
         const image = atSaturation(

@@ -1,12 +1,13 @@
 import {
   BOARD_SIZES_V7,
+  OFFERED_FACTION_IDS_V7,
   allowedBoardSizesV7,
   crowdedBoardV7,
   generatedVillageCountV7,
   isGeneratedMapTypeV7,
-  maxSeatCountV7,
   maxSeatsV7,
   type BoardSizeV7,
+  type FactionIdV7,
   type MapTypeV7,
 } from "../engine/index";
 
@@ -16,7 +17,22 @@ import {
  * from the engine's map-scale queries: no size, seat, or village table is
  * repeated, so a new faction or a changed limit reaches the screen with no
  * edit in this file.
+ *
+ * The screen offers the factions of `OFFERED_FACTION_IDS_V7`: every
+ * registered faction but the hidden ones (the Cultists, registered for
+ * headless and test setups only until the bead that offers them). Every
+ * player plays a different faction, so the most seats the screen offers is
+ * the number of offered factions, which may be fewer than the engine allows
+ * (`maxSeatCountV7`).
  */
+
+/** The factions the setup screen offers, in registration order. */
+export const SETUP_FACTIONS_V7: readonly FactionIdV7[] = OFFERED_FACTION_IDS_V7;
+
+/** The most seats the setup screen offers: one per offered faction. */
+export function setupMaxSeatCountV7(): number {
+  return SETUP_FACTIONS_V7.length;
+}
 
 /** The map types the setup offers, in the order of its Map select. */
 export const SETUP_MAP_TYPES_V7: readonly MapTypeV7[] = Object.freeze([
@@ -31,14 +47,20 @@ export const SETUP_MAP_TYPES_V7: readonly MapTypeV7[] = Object.freeze([
 /** The map type a setup falls back to: the screen's default. */
 export const SETUP_DEFAULT_MAP_TYPE_V7: MapTypeV7 = "CONTINENTS";
 
-/** The opponent counts on offer: 1 up to one less than the faction count. */
+/**
+ * The opponent counts on offer: 1 up to one less than the offered faction
+ * count.
+ */
 export function setupOpponentCountsV7(): readonly number[] {
-  return Array.from({ length: maxSeatCountV7() - 1 }, (_, index) => index + 1);
+  return Array.from(
+    { length: setupMaxSeatCountV7() - 1 },
+    (_, index) => index + 1,
+  );
 }
 
 /** The nearest offered opponent count to `value` (1 when it is no number). */
 export function clampOpponentCountV7(value: number): number {
-  const most = maxSeatCountV7() - 1;
+  const most = setupMaxSeatCountV7() - 1;
   return Number.isSafeInteger(value) ? Math.min(most, Math.max(1, value)) : 1;
 }
 
@@ -89,7 +111,10 @@ export function setupMapOptionsV7(
     mapType,
     enabled: allowedBoardSizesV7(mapType, opponents + 1).length > 0,
     maxOpponents:
-      Math.max(...BOARD_SIZES_V7.map((size) => maxSeatsV7(size, mapType))) - 1,
+      Math.min(
+        setupMaxSeatCountV7(),
+        Math.max(...BOARD_SIZES_V7.map((size) => maxSeatsV7(size, mapType))),
+      ) - 1,
   }));
 }
 

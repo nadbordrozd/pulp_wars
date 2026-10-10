@@ -728,6 +728,7 @@ describe("ruleset-7 revision-13 Restless recovery", () => {
       ICE_FOLK: false,
       DWARF: false,
       CANDY: false,
+      CULT: false,
     });
   });
 

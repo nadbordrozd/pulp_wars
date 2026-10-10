@@ -76,6 +76,7 @@ export type ArtSubjectV7 =
   | CuriosityArtSubjectV7
   | CuriosityRound2ArtSubjectV7
   | CandyArtSubjectV7
+  | CultArtSubjectV7
   | NavalBranchArtSubjectV7;
 
 /**
@@ -354,6 +355,28 @@ export type CandyEffectIdV7 =
 /** Roles with their own Candy art (docs/art/factions/CANDY.md). */
 export type CandyArtRoleV7 = UndeadArtRoleV7;
 
+/**
+ * Cult art subjects (`pulp_wars-mch9.3`, docs/product/RULESET_7_CULTISTS.md
+ * section 14.2): the nine land units, their portraits, and the lodge City
+ * 1-3. The Cult naval subjects need no type here: they are
+ * NavalFactionArtSubjectV7 (`UNIT:CULT:<ROLE>`, `PORTRAIT:CULT:<ROLE>`).
+ *
+ * NO RASTER IS REGISTERED YET. The faction is registered ahead of its art
+ * (the art beads are `pulp_wars-mch9.14` to `.16`), so every one of these
+ * subjects falls back to the shared Human subject of the same role or level
+ * (chibiFallbackSubjectV7), drawn in the Cult's colour, and a Cult unit on
+ * the board wears the stand-in letter badge of `FACTION_STAND_IN_LETTERS_V7`
+ * until its own raster is registered. An art bead only registers rasters
+ * against these subjects; no resolver changes.
+ */
+export type CultArtSubjectV7 =
+  | `UNIT:CULT:${CultArtRoleV7}`
+  | `PORTRAIT:CULT:${CultArtRoleV7}`
+  | `CITY:CULT:${1 | 2 | 3}`;
+
+/** The land roles the Cult will have its own art for. */
+export type CultArtRoleV7 = UndeadArtRoleV7;
+
 /** The Rift pieces (bead pulp_wars-9s0.5, docs/art/classes/terrain-tiles.md). */
 export type RiftPieceV7 =
   "H_WEST" | "H_MIDDLE" | "H_EAST" | "V_NORTH" | "V_MIDDLE" | "V_SOUTH";
@@ -620,7 +643,16 @@ export function territoryTerrainSubjectV7(
 
 /** Factions with their own city art; every other faction uses `CITY:<level>`. */
 export type CityArtFactionV7 =
-  "UNDEAD" | "GOBLIN" | "DINOSAUR" | "MARTIAN" | "ICE_FOLK" | "DWARF" | "CANDY";
+  | "UNDEAD"
+  | "GOBLIN"
+  | "DINOSAUR"
+  | "MARTIAN"
+  | "ICE_FOLK"
+  | "DWARF"
+  | "CANDY"
+  // The Cultists (`pulp_wars-mch9.3`): no raster yet; `CITY:CULT:<level>`
+  // falls back to the shared city.
+  | "CULT";
 
 /**
  * The art subject of a city on the map or in the interface: the owner
@@ -639,7 +671,8 @@ export function cityArtSubjectV7(city: {
     city.faction === "MARTIAN" ||
     city.faction === "ICE_FOLK" ||
     city.faction === "DWARF" ||
-    city.faction === "CANDY"
+    city.faction === "CANDY" ||
+    city.faction === "CULT"
   )
     return `CITY:${city.faction}:${city.artLevel}`;
   return `CITY:${city.artLevel}`;
@@ -720,6 +753,9 @@ export function unitArtSubjectV7(unit: {
   // The Candy (art of pulp_wars-jdb.5, wired by pulp_wars-jdb.3): every
   // land role has its own art.
   if (unit.faction === "CANDY") return `UNIT:CANDY:${role as CandyArtRoleV7}`;
+  // The Cultists (`pulp_wars-mch9.3`): their own subjects, which fall back
+  // to the Human art until the Cult's rasters are registered.
+  if (unit.faction === "CULT") return `UNIT:CULT:${role as CultArtRoleV7}`;
   return `UNIT:${role}`;
 }
 
@@ -819,6 +855,32 @@ export function ninthUnitStandInLetterV7(
 }
 
 /**
+ * The Cultists (`pulp_wars-mch9.3`): FACTION STAND-IN ART. A faction
+ * registered without art of its own is listed here with a letter. Until an
+ * art bead registers a raster for a unit subject of the faction
+ * (`UNIT:<FACTION>:<ROLE>`, its ships included), that unit is drawn with the
+ * shared Human sprite of its role in the faction's colour
+ * (chibiFallbackSubjectV7) and the board marks it with the letter badge the
+ * ninth-unit stand-ins wore. A unit whose own raster is registered loses the
+ * badge at once; the entry is removed when the faction's art is complete.
+ */
+export const FACTION_STAND_IN_LETTERS_V7: Readonly<
+  Partial<Record<Exclude<FactionIdV7, "ORIGINAL">, string>>
+> = Object.freeze({ CULT: "C" });
+
+/**
+ * The stand-in letter of a faction without art of its own, or null for a
+ * faction that has its art (or none to stand in for: the Humans).
+ */
+export function factionStandInLetterV7(
+  faction: FactionIdV7 | null | undefined,
+): string | null {
+  if (faction === null || faction === undefined || faction === "ORIGINAL")
+    return null;
+  return FACTION_STAND_IN_LETTERS_V7[faction] ?? null;
+}
+
+/**
  * The Dwarf revision (bead pulp_wars-78i.6): the subject of a mound, the
  * heap a burrowed unit leaves on its tile (the Mole's, or its rider's with
  * a hammer head beside the drill).
@@ -904,6 +966,7 @@ export function chibiFallbackSubjectV7(
     ":ICE_FOLK:",
     ":DWARF:",
     ":CANDY:",
+    ":CULT:",
   ])
     if (subject.includes(faction))
       return subject.replace(faction, ":") as ArtSubjectV7;

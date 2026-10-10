@@ -77,6 +77,9 @@ const SIGNATURE_OF = {
   ICE_FOLK: "GLACIAL_SMASH",
   DWARF: "SIEGE_HAMMER",
   CANDY: "BREAK_OFF",
+  // The Cultists (`pulp_wars-mch9.3`): the Thing in the Cellar has no
+  // signature until Anchor's bead (`pulp_wars-mch9.5`).
+  CULT: null,
 } as const;
 
 function sceneOf(state: GameStateV7) {
@@ -155,10 +158,20 @@ describe("the eight signatures in words", () => {
       // No formula and no number but the whole point.
       expect(entry.text).not.toMatch(/\d/);
     }
-    for (const faction of FACTION_IDS_V7)
-      expect(
-        roleGlossaryV7("JUGGERNAUT", faction).map((entry) => entry.id),
-      ).toContain(SIGNATURE_OF[faction]);
+    for (const faction of FACTION_IDS_V7) {
+      const signature = SIGNATURE_OF[faction];
+      const ids = roleGlossaryV7("JUGGERNAUT", faction).map(
+        (entry) => entry.id,
+      );
+      if (signature === null)
+        expect(
+          ids.filter((id) =>
+            (GIANT_SIGNATURES_V7 as readonly string[]).includes(id),
+          ),
+          faction,
+        ).toEqual([]);
+      else expect(ids, faction).toContain(signature);
+    }
     expect(statusGlossaryV7("swallowed")?.name).toBe("Swallowed");
     expect(statusGlossaryV7("gingerbread-man")?.name).toBe(
       GINGERBREAD_MAN_LABEL_V7,
@@ -173,7 +186,14 @@ describe("the eight signatures in words", () => {
     for (const faction of FACTION_IDS_V7) {
       const [name, line] = giantRewardLabelV7(faction);
       expect(name).toBe(effectiveRoleRuleV7("JUGGERNAUT", faction).label);
-      expect(line).toMatch(new RegExp(`^A free ${name}, once: `));
+      // A giant without a signature (the Cult's, so far) says no more.
+      expect(line).toMatch(
+        new RegExp(
+          SIGNATURE_OF[faction] === null
+            ? `^A free ${name}, once$`
+            : `^A free ${name}, once: `,
+        ),
+      );
       expect(line.includes("slots"), faction).toBe(
         roleMechanicsV7("JUGGERNAUT", faction).capacitySlots > 1,
       );

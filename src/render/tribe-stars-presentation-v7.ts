@@ -31,6 +31,7 @@ const TRIBE_PLURALS_V7: Readonly<Record<FactionIdV7, string>> = Object.freeze({
   ICE_FOLK: "Ice Folk",
   DWARF: "Dwarves",
   CANDY: "Candy",
+  CULT: "Cultists",
 });
 
 export function tribePluralV7(faction: FactionIdV7): string {

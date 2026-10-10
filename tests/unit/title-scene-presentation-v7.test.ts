@@ -4,7 +4,7 @@ import { CHIBI_ART_ASSETS_V7 } from "../../src/assets/chibi-art-manifest";
 import { chibiDirectionArtAssetsV7 } from "../../src/assets/chibi-direction-art-manifest";
 import { CHIBI_FOREST_ART_SET_V7 } from "../../src/assets/chibi-forest-pieces-manifest";
 import { CHIBI_MOUNTAIN_ART_SET_V7 } from "../../src/assets/chibi-mountain-ranges-manifest";
-import { FACTION_IDS_V7 } from "../../src/engine/index";
+import { OFFERED_FACTION_IDS_V7 } from "../../src/engine/index";
 import {
   COAST_E,
   COAST_N,
@@ -37,8 +37,12 @@ describe("title scene", () => {
 
   it("shows every faction's flagship and Fighter on a wide canvas", () => {
     const scene = titleSceneV7({ width: 900, height: 420 });
-    expect([...scene.flagships].sort()).toEqual([...FACTION_IDS_V7].sort());
-    expect([...scene.fighters].sort()).toEqual([...FACTION_IDS_V7].sort());
+    expect([...scene.flagships].sort()).toEqual(
+      [...OFFERED_FACTION_IDS_V7].sort(),
+    );
+    expect([...scene.fighters].sort()).toEqual(
+      [...OFFERED_FACTION_IDS_V7].sort(),
+    );
     const subjects = scene.items.flatMap((item) =>
       item.kind === "SUBJECT" ? [item.subject] : [],
     );

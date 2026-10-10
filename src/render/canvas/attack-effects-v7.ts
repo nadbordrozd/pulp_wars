@@ -106,6 +106,9 @@ export const BROADSIDE_SHELLS_V7: Readonly<
   ICE_FOLK: "ICE",
   DWARF: "STEAM",
   CANDY: "CANDY",
+  // The Cultists (`pulp_wars-mch9.3`): the Human cannonball until the Cult's
+  // ships have their own art (`pulp_wars-mch9.15`).
+  CULT: "CANNONBALL",
 };
 
 /** The shell of a faction's Battleship; the Human cannonball without one. */

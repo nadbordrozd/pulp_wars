@@ -21,15 +21,17 @@ for what the board draws now.
 The single source is `FACTION_COLOURS_V7` in
 [`src/render/canvas/faction-colours-v7.ts`](../../src/render/canvas/faction-colours-v7.ts).
 
-| Faction  | Colour    | Name          | Why                                                                                                                                                  |
-| -------- | --------- | ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Human    | `#d01c3a` | crimson       | The Human heraldic cloth `#a8202c`, lifted (L\* 37 to 45) so it stands out of the border's dark casing.                                              |
-| Undead   | `#a221ee` | violet        | The user's example, and exactly the Undead's own lit violet accent (eyes, flames, the Lich's orb).                                                   |
-| Goblin   | `#fdd20f` | hazard yellow | The Goblins' hazard stripes `#fbc208` on everything that explodes. Their olive skin is a green that would vanish on Grass.                           |
-| Dinosaur | `#fe7500` | red-orange    | Exactly the Dinosaurs' lit red-orange of crests, spines and war paint. Their other hue, the blue hide, is the Ice Folk's.                            |
-| Martian  | `#e83aae` | magenta       | The Martian hot magenta of ray emitters and running lights (lit `#f30a96`), a touch lighter so it reads on Deep Water.                               |
-| Ice Folk | `#10b8ff` | ice blue      | The Ice Folk ice accent `#37b1fa`, more saturated, so it holds on its own Snow (69 apart) and on Shallow Water.                                      |
-| Dwarf    | `#2db885` | signal green  | The gauge lamp on every Dwarf machine, moved from its yellow-green (`#2bd94a`) toward jade. Copper, the Dwarf metal, is 20 from the Dinosaur orange. |
+| Faction  | Colour    | Name              | Why                                                                                                                                                                                                            |
+| -------- | --------- | ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Human    | `#d01c3a` | crimson           | The Human heraldic cloth `#a8202c`, lifted (L\* 37 to 45) so it stands out of the border's dark casing.                                                                                                        |
+| Undead   | `#a221ee` | violet            | The user's example, and exactly the Undead's own lit violet accent (eyes, flames, the Lich's orb).                                                                                                             |
+| Goblin   | `#fdd20f` | hazard yellow     | The Goblins' hazard stripes `#fbc208` on everything that explodes. Their olive skin is a green that would vanish on Grass.                                                                                     |
+| Dinosaur | `#fe7500` | red-orange        | Exactly the Dinosaurs' lit red-orange of crests, spines and war paint. Their other hue, the blue hide, is the Ice Folk's.                                                                                      |
+| Martian  | `#e83aae` | magenta           | The Martian hot magenta of ray emitters and running lights (lit `#f30a96`), a touch lighter so it reads on Deep Water.                                                                                         |
+| Ice Folk | `#10b8ff` | ice blue          | The Ice Folk ice accent `#37b1fa`, more saturated, so it holds on its own Snow (69 apart) and on Shallow Water.                                                                                                |
+| Dwarf    | `#2db885` | signal green      | The gauge lamp on every Dwarf machine, moved from its yellow-green (`#2bd94a`) toward jade. Copper, the Dwarf metal, is 20 from the Dinosaur orange.                                                           |
+| Candy    | `#ffb8d8` | cotton-candy pink | The Candy glaze and frosting (root ruling, [the Candy overlay](../product/RULESET_7_CANDY.md), section 15.4).                                                                                                  |
+| Cultists | `#00ff78` | eldritch green    | The green of the lodge's candle flames ([the Cultists spec](../product/RULESET_7_CULTISTS.md#142-colour-looks-sound-music)). Registered with the faction (`pulp_wars-mch9.3`); the faction is not offered yet. |
 
 Considered and rejected:
 
@@ -87,6 +89,23 @@ that casing: the Martian magenta on Deep Water (10) is a light line in a
 dark rim on a mid blue, and the Dwarf green is never on Snow (Snow lies in
 Ice Folk territory, and a border is drawn on its owner's side).
 
+**The ninth colour** (`pulp_wars-mch9.3`). The Cult's eldritch green was
+measured by its art-direction bead against the eight colours before it and
+every ground
+([the Cult fragment](factions/CULT.md#faction-colour-seat-and-hue-token) has
+the whole table), and the test above now holds all nine to the same
+thresholds (every pair at least 45, at least 20 under each deficiency, more
+than 25 from every ground, L\* above 42). Its nearest neighbour is the Dwarf
+jade, **50.2** apart with normal vision (38.4 and 45.7 under the two
+deficiencies), told by lightness: L\* 88 against 67. Its weakest simulated
+pair is the Goblin yellow under protanopia, **23.2**. Its nearest ground is
+Grass, 51.3 (17.8 under deuteranopia, carried by the border's dark casing
+like the other low simulated numbers). At L\* 88 it is the lightest of the
+nine, with the Goblin yellow (86). Seen in the territories capture beside
+the Dwarf jade, on plain Grass (the Cult has no ground of its own yet), the
+border reads as a brighter, yellower green and is not mistaken for the
+Dwarf's at desktop or phone width in any of the three looks.
+
 ## Where the colour is drawn
 
 | Look                                      | What carries the faction colour                                                                                                 |
@@ -126,9 +145,11 @@ a later engine bead.
 ## Evidence
 
 `npm run art:faction-colours-review -- --out DIR` captures the setup form,
-two Showcases with four factions each (all seven between them) at desktop
-and phone widths and zoom steps 1 and 0.75, their leaderboards, Showcase a
-in the Classic look and in LEGACY, and the seven factions' territories side
-by side over Mountain, Grass, Snow, Shallow and Deep Water
+two Showcases with four factions each (seven factions between them) at
+desktop and phone widths and zoom steps 1 and 0.75, their leaderboards,
+Showcase a in the Classic look and in LEGACY, and the nine factions'
+territories side by side over Mountain, Grass, Snow, Shallow and Deep Water
 ([`scripts/art/faction-colours/scene.ts`](../../scripts/art/faction-colours/scene.ts))
-in all three looks.
+in all three looks. Since the Cult registration the scene has the Cult
+beside the Dwarves and the Candy at its east end, and a frame of its own on
+that end (`territories-<look>-desktop-cult.png`).

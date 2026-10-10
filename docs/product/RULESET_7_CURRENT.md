@@ -1,9 +1,13 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r70`, for all eight registered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r71`, for all eight offered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
-(`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), and Candy (`CANDY`). It
+(`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), and Candy (`CANDY`). A
+ninth faction, the Cultists (`CULT`), is **registered and not offered**: its
+roster, tree, start, and rewards are in the engine
+([section 1](#1-identity-and-compatibility)), its own rules are not, and
+[its spec](RULESET_7_CULTISTS.md) is folded in here only when they are. It
 folds in
 revision 12 (free opening technology, Fruit visible from the start, Fertile
 Ground revealed by Gathering, resources kept under improvements, Normal AI
@@ -345,6 +349,17 @@ and the no-retaliation reason `TERROR`, `WAIL_RESOLVED` its `terrified`
 list, and `MOVEMENT_ILLEGAL` the reason `BAT_ESCAPE_LANDING`. A save,
 replay, or setup of `7r69` is rejected, and the browser autosave has a new
 key.
+`pulp-wars-poc-7r71` (`pulp_wars-mch9.3`) is **the Cult registration**
+([section 1](#1-identity-and-compatibility)), the first engine step of
+[the Cultists of the Ancient Ones](RULESET_7_CULTISTS.md): the ninth faction
+ID `CULT` with its tree `CULT_BASELINE_V1`, its nine land units and their
+numbers, the registered numbers of its three summoned units, its technology
+names, its start, and its rewards. `F` is 9, so a headless or test match
+seats 2 to 9 players ([section 2.1](#21-match-setup)). The browser offers
+neither the Cult nor a ninth seat. No rule of the eight offered factions
+changed, and none of the Cult's own rules (Favour, Sacrifice, the channel,
+the rituals, the hexes) exists yet. A save, replay, or setup of `7r70` is
+rejected, and the browser autosave has a new key.
 `pulp-wars-poc-7r58` (`pulp_wars-w49.25`) is
 [step two of the Martian pass](RULESET_7_TUNING_MARTIAN.md#14-step-two):
 **City Walls hold a unit on its own city center against a Saucer's Tractor
@@ -795,7 +810,7 @@ the build differs (its sections 20 to 24 list them);
 the values here are current. Where a document and the code disagreed, the
 code's behavior is the rule and is stated below;
 [Known discrepancies](#25-known-discrepancies) lists the open items and the
-resolved ones as of `pulp-wars-poc-7r70`.
+resolved ones as of `pulp-wars-poc-7r71`.
 
 **Terms.** "On the board" means a unit that currently exists (HP above 0).
 **Living** has the narrower revision-13 meaning used by Wail, Plague,
@@ -896,17 +911,17 @@ separate [Ruleset 6](RULESET_6.md) route.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r70`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Ruleset                                    | `pulp-wars-poc-7r71`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r70.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Browser autosave                           | `pulpWars.save.v7r71.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
-| Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Faction to tree binding                    | `ORIGINAL` → `ORIGINAL_BASELINE_V5`; `UNDEAD` → `UNDEAD_BASELINE_V1`; `GOBLIN` → `GOBLIN_BASELINE_V1`; `DINOSAUR` → `DINOSAUR_BASELINE_V1`; `MARTIAN` → `MARTIAN_BASELINE_V1`; `ICE_FOLK` → `ICE_FOLK_BASELINE_V1`; `DWARF` → `DWARF_BASELINE_V1`; `CANDY` → `CANDY_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                        |
-| Display names                              | `ORIGINAL` is "Human"; `UNDEAD` is "Undead"; `GOBLIN` is "Goblin"; `DINOSAUR` is "Dinosaur"; `MARTIAN` is "Martian"; `ICE_FOLK` is "Ice Folk"; `DWARF` is "Dwarf"; `CANDY` is "Candy"                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, `CULT`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`, `CULT_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| Faction to tree binding                    | `ORIGINAL` → `ORIGINAL_BASELINE_V5`; `UNDEAD` → `UNDEAD_BASELINE_V1`; `GOBLIN` → `GOBLIN_BASELINE_V1`; `DINOSAUR` → `DINOSAUR_BASELINE_V1`; `MARTIAN` → `MARTIAN_BASELINE_V1`; `ICE_FOLK` → `ICE_FOLK_BASELINE_V1`; `DWARF` → `DWARF_BASELINE_V1`; `CANDY` → `CANDY_BASELINE_V1`; `CULT` → `CULT_BASELINE_V1`                                                                                                                                                                                                                                                                                                           |
+| Display names                              | `ORIGINAL` is "Human"; `UNDEAD` is "Undead"; `GOBLIN` is "Goblin"; `DINOSAUR` is "Dinosaur"; `MARTIAN` is "Martian"; `ICE_FOLK` is "Ice Folk"; `DWARF` is "Dwarf"; `CANDY` is "Candy"; `CULT` is "Cultists"                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Achievements (`ACHIEVEMENT_IDS_V7`)        | `EXPLORER`, `ENGINEER`, `MUSTER`, `CONQUEROR`, `LAND_BARON`, `SEA_DOG`, `SLAYER` ([section 5](#5-achievements-and-monuments))                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| Playable factions                          | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, all described here and offered by the browser setup, the engine, and the headless tools                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| Playable factions                          | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, all described here and offered by the browser setup, the engine, and the headless tools. `CULT` is registered in the engine and the headless tools and hidden from the browser (`HIDDEN_FACTION_IDS_V7`; the notes below)                                                                                                                                                                                                                                                                                                          |
 | Folded overlays                            | Martian ([section 20](#20-martian-faction-rules), `pulp_wars-t6s.7`); Ice Folk ([section 21](#21-ice-folk-faction-rules), `pulp_wars-7g3.8`); Dwarf ([section 22](#22-dwarf-faction-rules), `pulp_wars-78i.8`); Candy ([section 23](#23-candy-faction-rules), `pulp_wars-jdb.8`, after the engine fold of `pulp_wars-jdb.3`); the naval branch ([sections 14](#14-naval-rules) and [21.16](#2116-the-frozen-sea), `pulp_wars-5ti.9`); the Rift (`7r28`, [Rift overlay](RULESET_7_RIFT.md)) and one faction per seat (`7r29`, [unique-factions overlay](RULESET_7_UNIQUE_FACTIONS.md)), folded directly when they landed |
 
 - The exact ruleset ID dispatches every state, setup, save, and replay; earlier
@@ -1171,7 +1186,75 @@ separate [Ruleset 6](RULESET_6.md) route.
   ([section 5](#5-achievements-and-monuments)). The Vampire and Banshee
   rework (`pulp_wars-ty6i`, `7r70`) added the state and view lists
   `terrorThisTurn` and `feastedThisTurn`
-  ([section 17.12](#1712-the-vampire-and-banshee-rework)).
+  ([section 17.12](#1712-the-vampire-and-banshee-rework)). The Cult
+  registration (`pulp_wars-mch9.3`, `7r71`) added the faction ID `CULT` and
+  the tree ID `CULT_BASELINE_V1` to the value sets of `factions`, a player's
+  `faction`, and a player's `factionTreeId`, and no key, list, command, or
+  event.
+- **The Cult registration** (`pulp_wars-mch9.3`, `7r71`, bead E1 of
+  [the Cultists spec](RULESET_7_CULTISTS.md#19-implementation-beads)). What
+  is in the engine today, and nothing more:
+  - **The faction.** `CULT`, shown as "Cultists", last in the frozen order,
+    bound to `CULT_BASELINE_V1`. Its faction rules are the plain ones (not
+    Restless, no Warrens, no Gang Up, no Snow); its chest unit is its
+    `RAIDER`-role unit.
+  - **The roster** (the spec's first-guess numbers,
+    [its section 4.1](RULESET_7_CULTISTS.md#41-trained-units)): Initiate
+    (`FIGHTER`, 2 Coins, 10 HP, Attack 2, Defense 1.5), Idol Bearer (`GUARD`,
+    3, 16, 1.5, 2.5, no attack after a Move), Familiar (`RAIDER`, 3, 8, 2, 1,
+    Move 2, Sight 2, Charge with Raiding, no Escape), Hexer (`MARKSMAN`, 4,
+    9, 2, 1, range 1–2, never advances), Summoner (`CAPTAIN`, 5, 10, 1, 1, no
+    Rally and no Tend Wounded), Stargazer (`CATAPULT`, 8, 10, Defense 0.5,
+    **no attack**: it has no `ATTACK`, Attack 0, and no reach, so it never
+    strikes back and destroys no Field Defense), Caller (`KNIGHT`, 8, 12,
+    2.5, 1, Move 2, no Overrun), Chosen (`SWORDSMAN`, 6, 15, 3.5, 2), and
+    the reward giant, the Thing in the Cellar (`JUGGERNAUT`, 40 HP, Attack 4,
+    Defense 3.5, no Push and no signature yet). Every land unit captures; no
+    role builds Field Defense; every role uses one slot and walks. The ships
+    are the shared ships.
+  - **The tree.** The shared graph without Captain support, Overrun, and
+    `BUILD_FIELD_DEFENSE`; Raiding keeps the Charge bonus and Explosives
+    keeps Blast Mountain and Breach. Its own names: Farming is Harvest
+    Rites, Sawmilling Stargazers, Marksmanship Hexers, Scouting Familiars,
+    Chivalry Callers, Metallurgy The Chosen, Fortification Warding Circles,
+    and Explosives The Stars Are Right.
+  - **Start and rewards.** One Initiate on the capital; the Militia is two
+    Initiates (`MILITIA_FIGHTERS_V7`, the Goblin precedent); Scouts gives a
+    Familiar; the giant reward is a Thing in the Cellar; a chest gives a
+    Familiar.
+  - **The summoned units are registered and nowhere on the board.**
+    `SUMMONED_ROLE_IDS_V7` is `HORROR`, `HERALD`, `TENTACLE`, outside
+    `UNIT_ROLE_IDS_V7` (no faction's role table has a slot for them, and a
+    state whose unit names one is invalid). `CULT_SUMMONED_ROLE_RULES_V7`
+    holds their numbers: Horror 5 Favour, Control 1, 18 HP, Attack 4,
+    Defense 2, Move 2, value 6; Herald 20 Favour, Control 3, 60 HP, Attack
+    7, Defense 4, Move 2, value 24; Tentacle 8 HP, Attack 3, Defense 1, Move
+    0, value 0. Nothing reads them yet.
+  - **Not there yet:** Favour, Sacrifice, Seize, Offering, Summon, Channel
+    and Unbound, the rituals, Behold!, Anchor, Boo!, Proclaim, Ribbit,
+    Switcheroo, the Tentacle, Pamphlets, Pick Me!, and Martyr. Their ability
+    literals, commands, events, and technology unlocks arrive with the bead
+    that implements each, so that no card names an ability that does
+    nothing. Until then a Cult seat is a plain army of the units above.
+  - **Hidden.** `HIDDEN_FACTION_IDS_V7` is `CULT` and
+    `OFFERED_FACTION_IDS_V7` the other eight. The setup screen (its selects,
+    its tribe grid, its opponent counts, which stay 1 to 7), the campaign
+    roster, the title scene, the Gallery, and the theme list read the
+    offered factions. The engine, the state and save schemas, the headless
+    tools (`--factions cult`), and every renderer take a Cult seat: a state
+    that holds one loads, plays, and is drawn.
+  - **Stand-in art.** The Cult has no art, sound, or theme of its own. Its
+    units, portraits, city, and ships ask for `UNIT:CULT:<ROLE>`,
+    `PORTRAIT:CULT:<ROLE>`, and `CITY:CULT:<level>` and fall back to the
+    shared Human art in the Cult's colour (`#00ff78`); on the board a Cult
+    unit drawn with stand-in art wears a lettered badge ("C",
+    `FACTION_STAND_IN_LETTERS_V7`) until a raster is registered for its
+    subject. Its buildings, ground, and forest are the shared ones; a match
+    shown to a Cult seat plays no theme.
+  - **Normal AI.** The Cult is not on the army policy
+    (`ARMY_PLAY_FACTIONS_V7`): a match with a Cult seat keeps the older
+    policy for every seat until the Cult's first AI bead
+    (`pulp_wars-mch9.9`).
 
 ## 2. Setup and map generation
 
@@ -1179,19 +1262,23 @@ separate [Ruleset 6](RULESET_6.md) route.
 
 A match is one human against 1 to `F − 1` equal-rules Normal AI seats, in
 `RIVAL` or `COOPERATIVE` mode, on a square board. `F` is the number of
-registered factions (`FACTION_IDS_V7.length`, 8 today), so a match has 2 to
-8 players, every one a different faction (many seats: `pulp_wars-ykw.3`,
-`pulp-wars-poc-7r42`, [map scale design](RULESET_7_MAP_SCALE.md) sections 3,
-4, and 6; a match had 1–3 AI seats through `7r41`).
+registered factions (`FACTION_IDS_V7.length`, 9 since the Cult registration,
+`7r71`), so a match has 2 to 9 players, every one a different faction (many
+seats: `pulp_wars-ykw.3`, `pulp-wars-poc-7r42`,
+[map scale design](RULESET_7_MAP_SCALE.md) sections 3, 4, and 6; a match had
+1–3 AI seats through `7r41`). **The browser offers 2 to 8**: the ninth
+faction is hidden, and the setup screen seats one player per offered
+faction (`OFFERED_FACTION_IDS_V7`). Nine seats are a headless and test
+setup until the Cult is offered.
 
 | Setup field | Legal values                                                                                                                                                                                                                             |
 | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Board width | 11, 14, 16, 20, or 25 (height equals width), as long as the width holds the seats on the map type (the table below)                                                                                                                      |
-| Auto size   | the smallest allowed width with at least 56 tiles per seat: 11, 14, 16 for 2, 3, 4 seats, 20 for 5–7, 25 for 8 (`autoBoardSizeV7`)                                                                                                       |
+| Auto size   | the smallest allowed width with at least 56 tiles per seat: 11, 14, 16 for 2, 3, 4 seats, 20 for 5–7, 25 for 8 and 9 (`autoBoardSizeV7`)                                                                                                 |
 | Map type    | `DRY_LAND`, `PANGEA`, `CONTINENTS` (default), `ARCHIPELAGO`, `LAKES`, `SHOWCASE` (width 16 only, at most 3 AI), `MISSION` (a registered mission only)                                                                                    |
-| AI          | `aiCount` 1 to `F − 1` (7 today), difficulty `NORMAL`, mode `RIVAL` or `COOPERATIVE`                                                                                                                                                     |
+| AI          | `aiCount` 1 to `F − 1` (8 in the engine, 7 on the setup screen), difficulty `NORMAL`, mode `RIVAL` or `COOPERATIVE`                                                                                                                      |
 | Human color | `CORAL`, `TEAL`, `GOLD`, `VIOLET`, `SKY`, `LIME`, `ROSE`, `SLATE`, `AMBER` (`PLAYER_COLORS_V7`; stored, never shown: owner colours are the factions'). The AI seats take the other colours in this order. There are never fewer than `F` |
-| Factions    | one per seat (`aiCount + 1`, seat 0 is the human): `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, or `CANDY`; no two seats alike                                                                            |
+| Factions    | one per seat (`aiCount + 1`, seat 0 is the human): `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, or (headless and test setups) `CULT`; no two seats alike                                         |
 | Seed        | uint32; equal setups and seeds generate byte-identical maps, turn order, and treasures                                                                                                                                                   |
 | Curiosities | `true` (the setup screen's and the headless default) or `false`; `false` on a mission ([section 2.7](#27-map-curiosities))                                                                                                               |
 | Game mode   | `gameMode`: `DOMINATION` or `PERFECTION`, optional; a setup without it is Domination; never `PERFECTION` on the Showcase or a mission ([section 3.1](#31-score-play-modes-and-stars))                                                    |
@@ -1216,8 +1303,9 @@ registered factions (`FACTION_IDS_V7.length`, 8 today), so a match has 2 to
   |    20 |       36 |    35 |     32 |         24 |          16 |
   |    25 |       49 |    49 |     49 |         38 |          27 |
 
-  With 8 factions every cell allows 2–8 players but 11 x 11 Lakes (2),
-  11 x 11 Continents (2–6), and 11 x 11 Archipelago (2–4). The minimums of
+  With 9 factions a cell allows 2 to `min(9, P)` players: nine everywhere
+  but 11 x 11 Lakes (2), 11 x 11 Continents (2–6), 11 x 11 Archipelago
+  (2–4), 11 x 11 Pangea (2–8), and 14 x 14 Archipelago (2–8). The minimums of
   `7r41` (14 for 3 seats, 16 for 4) are gone: four players on an 11 x 11
   Dry Land board are legal. The setup screen still offers at most three
   opponents and those minimum sizes until `pulp_wars-ykw.5`.
@@ -1243,7 +1331,8 @@ registered factions (`FACTION_IDS_V7.length`, 8 today), so a match has 2 to
   Dinosaur for seats 0–3. The
   headless tools default to the same distinct factions and accept
   `original` (alias `human`), `undead`, `goblin`, `dinosaur`, `martian`,
-  `ice` (alias `ice_folk`), `dwarf`, and `candy` in `--factions` (the
+  `ice` (alias `ice_folk`), `dwarf`, `candy`, and `cult` (alias
+  `cultists`) in `--factions` (the
   balance tools' pairing letter for the Dwarves is `W`, `D` is the
   Dinosaur's, and `C` the Candy's). Faction
   choice never
@@ -2874,7 +2963,7 @@ same ladder holds for every faction:
 
 | Reached level | Choices                                                                                                                                              |
 | ------------: | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-|             2 | Stockpile: +4 Coins; Militia: one free Fighter-role unit (Goblin: two Goblins)                                                                       |
+|             2 | Stockpile: +4 Coins; Militia: one free Fighter-role unit (Goblin: two Goblins; Cult: two Initiates)                                                  |
 |             3 | Scouts (`SURVEY`): explore radius 3 around the city and a free `RAIDER`-role unit; Walls: +2 fortification at the center                             |
 |             4 | Population Boom (`BOOM`): +3 permanent population; Economic Miracle (`ECONOMIC_MIRACLE`): +1 Coin of the city's income every turn, for good          |
 |      5, 6, 7… | The Juggernaut-role reward unit (the faction's giant); Treasury: +10 Coins. Every level from 5 offers both, with no limit on the giants a city gives |
@@ -12316,6 +12405,7 @@ first guesses.
 | Candy redesign  | `pulp-wars-poc-7r68` | `pulp_wars-jdb.12` [the Candy redesign](RULESET_7_CANDY_REDESIGN.md), engine (the user's direction of 2026-10-09: the mechanics as specified, no stat changes; the identity became `7r68` when it was published after Ice Folk Freeze, `7r67`; a save, replay, or setup of `7r67` is rejected): Sticky Toffee (a Toffee Trooper's hit, either way, makes its surviving victim Stuck: one step per Move), Glaze Trail (a Donut Racer's start and passed tiles cost its side a Road step this turn), Ricochet (a Gumball Gunner's shot from two tiles bounces half its hit onto the weakest visible neighbour of the target), Bunny Hop and Thump (a Chocolate Bunny hops one tile in a Move, and every attack it makes deals 2 to every other hostile unit around it), Toothache (a surviving distance-1 attacker of a Jawbreaker has −1 Attack on its next attack), and the Confectioner's Top-Up (one adjacent own unit: its Crash ends, it heals 2 and is cured) in place of Frosting; no Rush perks (Sugar Frenzy and the Rushed Racer's Escape removed); Crumbs on settlement sites and from Ricochet and Thump deaths; Re-bake reworked (`from` within 2, scooped from under any unit, the copy beside the Confectioner, one unit over capacity) with the public "why not" query of `pulp_wars-jdb.9`; three state lists (`stuck`, `toothache`, `glazedThisTurn`), one command (`TOP_UP`), six events, ten combat-preview fields; the Normal AI kept legal with a basic Top-Up; matches without a Candy seat decide as before apart from the command-kind ordinals | [section 23](#23-candy-faction-rules), [the Candy redesign](RULESET_7_CANDY_REDESIGN.md)                                              |
 | Monument skin   | `pulp-wars-poc-7r69` | `pulp_wars-eu3r.3` the Monument skin rule, engine and art choice (the user, 2026-10-08: unlike every other building, a Monument keeps its builder's look when another faction captures its city, so each Monument and look appears at most once on the map; the identity became `7r69` when it was published after the Candy redesign, `7r68`; a save, replay, or setup of `7r68` is rejected): `BUILD_MONUMENT` records the builder's faction as `builderFaction` on the Monument's population-contribution source, a capture never changes it, the view publishes it to every viewer (the achievement stays the owner's), and the board, the dock, the build button, and the Achievements screen draw the faction Monuments of `pulp_wars-eu3r.2`; a state without the field draws the Human or shared Monument; no rule, price, population, command, or event changed                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | [section 5](#5-achievements-and-monuments)                                                                                            |
 | Vampire/Banshee | `pulp-wars-poc-7r70` | `pulp_wars-ty6i` the Vampire and Banshee rework, engine (the user, 2026-10-09: the Vampire was not worth its price and the Banshee was weak; the identity became `7r70` when it was published after the Monument skin rule, `7r69`; a save, replay, or setup of `7r69` is rejected): the Vampire has 13 HP (10 before), Feast (a kill heals it fully and allows one more attack that turn, two at most) and Bat Escape (its Escape flies up to 2 tiles over units and zones of control to a free land tile); the Banshee's Wail hits at Attack 1.5 (1 before), Terror (enemies it wounds cannot strike back until the end of the turn), and Ethereal (enemy zones of control do not stop its Move) ([section 17.12](#1712-the-vampire-and-banshee-rework)).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| Cult, E1        | `pulp-wars-poc-7r71` | `pulp_wars-mch9.3` the Cult registration, the first engine step of the Cultists of the Ancient Ones (the user, 2026-10-09; a save, replay, or setup of `7r70` is rejected): the ninth faction `CULT` ("Cultists") and its tree `CULT_BASELINE_V1`, its nine land units with the spec's numbers, the registered numbers of the Horror, the Herald, and the Tentacle (`SUMMONED_ROLE_IDS_V7`, on no board yet), its technology names, its start, its Militia of two Initiates, its Familiar from Scouts and chests, and its giant, the Thing in the Cellar; `F` is 9, so the engine and the headless tools seat 2 to 9 players; the browser offers neither the Cult nor a ninth seat (`HIDDEN_FACTION_IDS_V7`), and draws a Cult seat with the shared art under a lettered stand-in badge; none of the Cult's own rules exists yet, and no rule of another faction changed ([section 1](#1-identity-and-compatibility)).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 
 **Documentation parity (2026-09-28, no ruleset or identity change):** where
 older documents disagreed with the code, the code's behavior was adopted as

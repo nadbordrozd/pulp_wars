@@ -67,9 +67,9 @@ const CELLS = [
 
 describe("ruleset-7 revision-16 identity", () => {
   it("keeps rejecting r15 after the r54 identity and cleans the r15 through r53 save keys", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r70");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r70.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-55, -15)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r71");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r71.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-56, -16)).toEqual([
       "pulpWars.save.v7r15.current",
       "pulpWars.save.v7r16.current",
       "pulpWars.save.v7r17.current",
@@ -170,8 +170,9 @@ describe("ruleset-7 prior identities", () => {
     // round 2 (`pulp_wars-737.14`): 7r66. Ice Folk Freeze
     // (`pulp_wars-w49.37`): 7r67. The Candy redesign (`pulp_wars-jdb.12`):
     // 7r68. The Monument skin rule (`pulp_wars-eu3r.3`): 7r69. The Vampire
-    // and Banshee rework (`pulp_wars-ty6i`): 7r70.
-    expect(revision).toBe(70);
+    // and Banshee rework (`pulp_wars-ty6i`): 7r70. The Cult registration
+    // (`pulp_wars-mch9.3`): 7r71.
+    expect(revision).toBe(71);
     expect([...PRIOR_RULESET_7_IDS]).toEqual(expectedPrior);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
   });
@@ -206,7 +207,7 @@ describe("ruleset-7 prior identities", () => {
 
   it("still reports an unknown Ruleset 7 identity as INVALID_REPLAY", () => {
     // The next identity after the current one is still unknown.
-    for (const id of ["pulp-wars-poc-7r1", "pulp-wars-poc-7r71", "other"])
+    for (const id of ["pulp-wars-poc-7r1", "pulp-wars-poc-7r72", "other"])
       expect(
         parseReplayFileV7({
           format: "pulp-wars-replay",

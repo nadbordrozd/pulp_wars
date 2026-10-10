@@ -121,22 +121,22 @@ const EGG_LAID_ROLES: readonly UnitRoleIdV7[] = [
 
 describe("ruleset-7 revision-19 identity", () => {
   it("keeps r18 among the gap-free prior identities after the r55 identity, and the save key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r70");
-    expect(RULESET_7.id).toBe("pulp-wars-poc-7r70");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r70.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r71");
+    expect(RULESET_7.id).toBe("pulp-wars-poc-7r71");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r71.current");
     expect([...PRIOR_RULESET_7_IDS]).toEqual([
       "pulp-wars-poc-7",
       ...Array.from(
-        { length: 68 },
+        { length: 69 },
         (_, index) => `pulp-wars-poc-7r${index + 2}`,
       ),
     ]);
-    expect(PRIOR_RULESET_7_IDS.at(-52)).toBe("pulp-wars-poc-7r18");
+    expect(PRIOR_RULESET_7_IDS.at(-53)).toBe("pulp-wars-poc-7r18");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
     expect([...OBSOLETE_SAVE_STORAGE_KEYS_V7]).toEqual([
       "pulpWars.save.v7.current",
       ...Array.from(
-        { length: 68 },
+        { length: 69 },
         (_, index) => `pulpWars.save.v7r${index + 2}.current`,
       ),
     ]);
@@ -174,7 +174,7 @@ describe("ruleset-7 revision-19 identity", () => {
     const setup = goblinSetupV7(["DINOSAUR", "ORIGINAL"]);
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
-    expect(created.state.rulesetId).toBe("pulp-wars-poc-7r70");
+    expect(created.state.rulesetId).toBe("pulp-wars-poc-7r71");
     const oldSetup = { ...setup, rulesetId: "pulp-wars-poc-7r18" };
     expect(parseMatchSetupV7(setup)).not.toBeNull();
     expect(parseMatchSetupV7(oldSetup)).toBeNull();
@@ -224,6 +224,7 @@ describe("ruleset-7 Dinosaur faction registration", () => {
       // The Dwarf revision (`pulp_wars-78i.3`).
       "DWARF",
       "CANDY",
+      "CULT",
     ]);
     expect(FACTION_TREE_IDS_V7).toEqual([
       "ORIGINAL_BASELINE_V5",
@@ -234,6 +235,7 @@ describe("ruleset-7 Dinosaur faction registration", () => {
       "ICE_FOLK_BASELINE_V1",
       "DWARF_BASELINE_V1",
       "CANDY_BASELINE_V1",
+      "CULT_BASELINE_V1",
     ]);
     expect(FACTION_IDS_V7.map(factionTreeIdV7)).toEqual(FACTION_TREE_IDS_V7);
     expect(FACTION_TREES_V7.DINOSAUR.faction).toBe("DINOSAUR");
@@ -249,6 +251,7 @@ describe("ruleset-7 Dinosaur faction registration", () => {
       ICE_FOLK: "Ice Folk",
       DWARF: "Dwarf",
       CANDY: "Candy",
+      CULT: "Cultists",
     });
     // The registry assertion accepts the fourth tree unchanged.
     expect(() => assertRuleset7Registry()).not.toThrow();
@@ -269,6 +272,8 @@ describe("ruleset-7 Dinosaur faction registration", () => {
       ["ICE_FOLK", "RAIDER", 0, 0, false],
       ["DWARF", "RAIDER", 0, 0, false],
       ["CANDY", "RAIDER", 0, 0, false],
+      // The Cultists (`pulp_wars-mch9.3`): the chest unit is a Familiar.
+      ["CULT", "RAIDER", 0, 0, false],
     ]);
     expect([
       EGG_HP_V7,
@@ -936,6 +941,8 @@ describe("ruleset-7 Dinosaur technology", () => {
       // The Dwarf Fortification is Dig In: no Field Defense.
       ["DWARF", 0, 0, false],
       ["CANDY", 0, 0, false],
+      // The Cult Fortification is Warding Circles: no Field Defense.
+      ["CULT", 0, 0, false],
     ]);
     const drill = technologyCapabilitiesV7(["DRILL"], "DINOSAUR");
     expect([drill.eggHpBonus, drill.eggHatchTurnReduction]).toEqual([0, 0]);
@@ -978,6 +985,7 @@ describe("ruleset-7 Dinosaur technology", () => {
       "Brittle",
       "Blasting Charges",
       "Peppermint Surprise",
+      "The Stars Are Right",
     ]);
     expect(
       FACTION_IDS_V7.map((faction) =>
@@ -992,6 +1000,7 @@ describe("ruleset-7 Dinosaur technology", () => {
       "Deep Winter",
       "Dig In",
       "Home Sweet Home",
+      "Warding Circles",
     ]);
     for (const tech of TECHNOLOGY_IDS_V7)
       if (

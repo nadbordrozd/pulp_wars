@@ -23,7 +23,10 @@ import {
   type SoundKeyV1,
   type SoundThemeEntryV1,
 } from "../../src/audio/index";
-import { FACTION_IDS_V7, type FactionIdV7 } from "../../src/engine/index";
+import {
+  OFFERED_FACTION_IDS_V7,
+  type FactionIdV7,
+} from "../../src/engine/index";
 import {
   installFakeAudioContext,
   type FakeAudioDeviceV1,
@@ -890,7 +893,7 @@ describe("which theme a screen plays", () => {
   });
 
   it("plays the chosen faction's theme on New game once one was chosen", () => {
-    for (const faction of FACTION_IDS_V7)
+    for (const faction of OFFERED_FACTION_IDS_V7)
       expect(themeForSceneV1({ kind: "SETUP", preview: faction })).toBe(
         required(soundThemeOfFactionV1(faction)).id,
       );
@@ -898,17 +901,22 @@ describe("which theme a screen plays", () => {
   });
 
   it("plays the viewing player's own faction theme for the whole match", () => {
-    const themes = FACTION_IDS_V7.map((faction) =>
+    const themes = OFFERED_FACTION_IDS_V7.map((faction) =>
       themeForSceneV1({ kind: "MATCH", viewer: faction }),
     );
     // Every faction has its own, and none is the title theme.
-    expect(new Set(themes).size).toBe(FACTION_IDS_V7.length);
+    expect(new Set(themes).size).toBe(OFFERED_FACTION_IDS_V7.length);
     expect(themes).not.toContain(TITLE);
     expect(themes).not.toContain(null);
     expect(themeForSceneV1({ kind: "MATCH", viewer: "UNDEAD" })).toBe(UNDEAD);
     expect(themeForSceneV1({ kind: "MATCH", viewer: "ORIGINAL" })).toBe(
       "theme.human",
     );
+    // The Cultists (`pulp_wars-mch9.3`) are registered without a theme: a
+    // match shown to a Cult seat is silent, and New game keeps the title
+    // theme (the screen never offers them).
+    expect(themeForSceneV1({ kind: "MATCH", viewer: "CULT" })).toBeNull();
+    expect(themeForSceneV1({ kind: "SETUP", preview: "CULT" })).toBe(TITLE);
   });
 
   it("changes at the hand-over when two people share the screen", () => {

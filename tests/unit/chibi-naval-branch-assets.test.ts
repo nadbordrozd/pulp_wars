@@ -36,7 +36,10 @@ import {
   seaIceTileV7,
   type SeaIceRasterV7,
 } from "../../src/assets/sea-ice-v7";
-import { FACTION_IDS_V7, type FactionIdV7 } from "../../src/engine/index";
+import {
+  OFFERED_FACTION_IDS_V7,
+  type FactionIdV7,
+} from "../../src/engine/index";
 import { CHIBI_OVERLAY_FRAME_V7 } from "../../src/render/canvas/board-renderer-v7";
 import { batchManifestProblems } from "../../scripts/art/chibi/batch-manifest";
 import {
@@ -64,7 +67,9 @@ const ROOT = process.cwd();
 const BATCH = "naval-branch";
 
 /** The seafaring factions: every faction but the Ice Folk. */
-const SEAFARERS = FACTION_IDS_V7.filter((faction) => faction !== "ICE_FOLK");
+const SEAFARERS = OFFERED_FACTION_IDS_V7.filter(
+  (faction) => faction !== "ICE_FOLK",
+);
 
 const masterFile = (asset: { readonly url: string }): string =>
   path.join(ROOT, "public", asset.url.replace(/^.*?assets\//, "assets/"));
@@ -278,7 +283,7 @@ describe("naval branch art (pulp_wars-5ti.6)", () => {
 
   it("shows the two technologies with their icons for every faction, and registers the Ram, Board and Torpedo icons", () => {
     const classic = buildChibiArtRegistryV7(CHIBI_ART_ASSETS_V7).registry;
-    for (const faction of FACTION_IDS_V7) {
+    for (const faction of OFFERED_FACTION_IDS_V7) {
       // The frozen sea (`pulp_wars-5ti.7`): the Ice Folk have no ship; their
       // Black Ice and Glacier cards show ice (registered stand-ins).
       expect(technologySubjectV7("SEAMANSHIP", faction), faction).toBe(

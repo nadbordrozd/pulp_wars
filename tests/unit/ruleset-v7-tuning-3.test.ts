@@ -83,7 +83,7 @@ const coinsOf = (state: GameStateV7, seat = 0): number =>
 
 describe("tuning 3 keeps the unpublished identity of tuning 2", () => {
   it("is 7r47", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r70");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r71");
   });
 });
 
@@ -846,6 +846,8 @@ describe("Militia", () => {
       ICE_FOLK: 1,
       DWARF: 1,
       CANDY: 1,
+      // The Cultists (`pulp_wars-mch9.3`): two Initiates.
+      CULT: 2,
     });
     const fixture = rewardStateV7("MILITIA", "ORIGINAL");
     const result = applied(fixture.state, {

@@ -16,6 +16,7 @@ import {
   type ArtSubjectV7,
   type DinosaurArtRoleV7,
   type CandyArtRoleV7,
+  type CultArtRoleV7,
   type DwarfArtRoleV7,
   type GoblinArtRoleV7,
   type IceFolkArtRoleV7,
@@ -79,6 +80,9 @@ export function portraitSubjectV7(
     return `PORTRAIT:ICE_FOLK:${slot as IceFolkArtRoleV7}`;
   if (faction === "DWARF") return `PORTRAIT:DWARF:${slot as DwarfArtRoleV7}`;
   if (faction === "CANDY") return `PORTRAIT:CANDY:${slot as CandyArtRoleV7}`;
+  // The Cultists (`pulp_wars-mch9.3`): falls back to the Human portrait
+  // until the Cult's are registered.
+  if (faction === "CULT") return `PORTRAIT:CULT:${slot as CultArtRoleV7}`;
   return `PORTRAIT:${slot}`;
 }
 

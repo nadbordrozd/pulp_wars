@@ -9,6 +9,7 @@ import {
   NEUTRAL_OWNER_ID_V7,
   RULESET_7_ID,
   type NeutralBreedV7,
+  type SummonedRoleIdV7,
   TECHNOLOGY_IDS_V7,
   UNIT_ROLE_IDS_V7,
   isNavalRoleV7,
@@ -744,9 +745,9 @@ export interface RoleMechanicsV7 {
   readonly rallyExcluded: boolean;
   /**
    * Every attack of the role destroys a Field Defense on the target's tile
-   * (reason `CATAPULT`): the `CATAPULT` role of every faction, and (the
-   * ninth unit) the Dinosaur Triceratops, which keeps the rule in the
-   * heavy slot.
+   * (reason `CATAPULT`): the `CATAPULT` role of every faction but the Cult
+   * (its Stargazer has no attack), and (the ninth unit) the Dinosaur
+   * Triceratops, which keeps the rule in the heavy slot.
    */
   readonly demolishesFieldDefense: boolean;
   /**
@@ -3707,6 +3708,349 @@ export function rebakeHpV7(role: UnitRoleIdV7): number {
   return Math.ceil(CANDY_ROLE_RULES_V7[role].maxHp / 2);
 }
 
+/**
+ * The Cult technology graph (docs/product/RULESET_7_CULTISTS.md section 11;
+ * registered by `pulp_wars-mch9.3`): identical to ORIGINAL_BASELINE_V5
+ * except that Administration grants no Captain support (the Summoner has no
+ * Rally and no Tend Wounded), Chivalry grants no Overrun, and Fortification
+ * (displayed as Warding Circles) grants no `BUILD_FIELD_DEFENSE`. Raiding
+ * keeps `CHARGE_BONUS` (the Familiar's Charge) and Explosives (displayed as
+ * The Stars Are Right) keeps Blast Mountain and Breach.
+ *
+ * The registration is the first of the six Cult engine beads: it carries
+ * the roster, its numbers, and the names. The Cult's own unlocks (Offering
+ * at Farming, Switcheroo at Scouting, the Great Summoning at Explosives) and
+ * every ability literal of section 11 arrive with the bead that implements
+ * the rule (`pulp_wars-mch9.4` to `.8`), so that no surface names an ability
+ * that does nothing.
+ */
+export const CULT_BASELINE_V1_NODES: readonly TechnologyNodeV7[] = deepFreeze(
+  SHARED_BASELINE_NODES_V7.map((original) =>
+    node(
+      original.id,
+      original.branch,
+      original.tier,
+      original.prerequisites,
+      original.unlocks.filter(
+        (unlock) =>
+          unlock.kind !== "CAPTAIN_SUPPORT" &&
+          unlock.kind !== "OVERRUN" &&
+          !(
+            unlock.kind === "COMMAND" &&
+            unlock.command === "BUILD_FIELD_DEFENSE"
+          ),
+      ),
+    ),
+  ),
+);
+
+/**
+ * The Cult roster (docs/product/RULESET_7_CULTISTS.md section 4.1). Every
+ * number is the spec's first guess. Unit for unit the cultists are a little
+ * weaker or cheaper than the Human of the same role (section 10); what they
+ * get for it (Pamphlets, Behold!, Switcheroo, Ribbit, Sacrifice, Seize,
+ * Summon, Star-fall, the Tentacle, Pick Me!, Martyr, Anchor) is added by the
+ * later Cult engine beads.
+ */
+export const CULT_ROLE_RULES_V7: Readonly<
+  Record<UnitRoleIdV7, EffectiveRoleRuleV7>
+> = deepFreeze({
+  // The Initiate: a Fighter's price for 2 HP and half a Defense less.
+  FIGHTER: role({
+    role: "FIGHTER",
+    label: "Initiate",
+    tacticalRole: "LINE",
+    cost: 2,
+    maxHp: 10,
+    attack2: 4,
+    defense2: 3,
+    move: 1,
+    range: 1,
+    minimumRange: 1,
+    sightRadius: 1,
+    technology: null,
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "CAPTURE"],
+  }),
+  // The Familiar: Sight 2 and the Charge with Raiding; no Escape, and
+  // hostile zones of control stop it (the Human Raider's freedom is a role
+  // mechanic the Cult does not copy).
+  RAIDER: role({
+    role: "RAIDER",
+    label: "Familiar",
+    tacticalRole: "SKIRMISHER",
+    cost: 3,
+    maxHp: 8,
+    attack2: 4,
+    defense2: 2,
+    move: 2,
+    range: 1,
+    minimumRange: 1,
+    sightRadius: 2,
+    technology: "SCOUTING",
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "CAPTURE", "CHARGE"],
+  }),
+  // The Hexer: the Marksman's shot on 3 HP less. It never advances.
+  MARKSMAN: role({
+    role: "MARKSMAN",
+    label: "Hexer",
+    tacticalRole: "RANGED",
+    cost: 4,
+    maxHp: 9,
+    attack2: 4,
+    defense2: 2,
+    move: 1,
+    range: 2,
+    minimumRange: 1,
+    sightRadius: 1,
+    technology: "MARKSMANSHIP",
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "CAPTURE"],
+  }),
+  // The Idol Bearer: it cannot attack after moving (the Guard's rule), has
+  // no Field Defense, and defends alike at every distance.
+  GUARD: role({
+    role: "GUARD",
+    label: "Idol Bearer",
+    tacticalRole: "DEFENDER",
+    cost: 3,
+    maxHp: 16,
+    attack2: 3,
+    defense2: 5,
+    move: 1,
+    range: 1,
+    minimumRange: 1,
+    sightRadius: 1,
+    technology: "FORTIFICATION",
+    mayUsePrimaryActionAfterMove: false,
+    abilities: ["ATTACK", "CAPTURE"],
+  }),
+  // The Summoner: a Captain's body with no Rally and no Tend Wounded.
+  CAPTAIN: role({
+    role: "CAPTAIN",
+    label: "Summoner",
+    tacticalRole: "SUPPORT",
+    cost: 5,
+    maxHp: 10,
+    attack2: 2,
+    defense2: 2,
+    move: 1,
+    range: 1,
+    minimumRange: 1,
+    sightRadius: 1,
+    technology: "ADMINISTRATION",
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "CAPTURE"],
+  }),
+  // The Stargazer has no attack of its own: no `ATTACK`, Attack 0, and no
+  // reach, so it never strikes back either (the neutral Bigfoot's shape).
+  // Star-fall is its ritual (`pulp_wars-mch9.7`).
+  CATAPULT: role({
+    role: "CATAPULT",
+    label: "Stargazer",
+    tacticalRole: "SIEGE",
+    cost: 8,
+    maxHp: 10,
+    attack2: 0,
+    defense2: 1,
+    move: 1,
+    range: 0,
+    minimumRange: 1,
+    sightRadius: 1,
+    technology: "SAWMILLING",
+    mayUsePrimaryActionAfterMove: false,
+    abilities: ["CAPTURE"],
+  }),
+  // The Caller: much weaker than a Knight in its own fight, no Overrun.
+  KNIGHT: role({
+    role: "KNIGHT",
+    label: "Caller",
+    tacticalRole: "BREAKTHROUGH",
+    cost: 8,
+    maxHp: 12,
+    attack2: 5,
+    defense2: 2,
+    move: 2,
+    range: 1,
+    minimumRange: 1,
+    sightRadius: 1,
+    technology: "CHIVALRY",
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "CAPTURE"],
+  }),
+  // The Thing in the Cellar: the reward giant, Defense 3.5 (as the
+  // Gingerbread Giant) because its signature, Anchor, is a support one
+  // (`pulp_wars-mch9.5`). No Push.
+  JUGGERNAUT: role({
+    role: "JUGGERNAUT",
+    label: "Thing in the Cellar",
+    tacticalRole: "MYTHIC",
+    cost: null,
+    maxHp: 40,
+    attack2: 8,
+    defense2: 7,
+    move: 1,
+    range: 1,
+    minimumRange: 1,
+    sightRadius: 1,
+    technology: null,
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "CAPTURE"],
+  }),
+  PATROL_BOAT: role({ ...ORIGINAL_ROLE_RULES_V7.PATROL_BOAT }),
+  BATTLESHIP: role({ ...ORIGINAL_ROLE_RULES_V7.BATTLESHIP }),
+  SUBMARINE: role({ ...ORIGINAL_ROLE_RULES_V7.SUBMARINE }),
+  // The Chosen: the Champion with half a Defense less.
+  SWORDSMAN: role({
+    role: "SWORDSMAN",
+    label: "Chosen",
+    tacticalRole: "LINE",
+    cost: 6,
+    maxHp: 15,
+    attack2: 7,
+    defense2: 4,
+    move: 1,
+    range: 1,
+    minimumRange: 1,
+    sightRadius: 1,
+    technology: "METALLURGY",
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "CAPTURE"],
+  }),
+});
+
+/**
+ * The Cult engine mechanics (section 4.1): no role builds Field Defense; the
+ * Hexer and the Stargazer never advance; the Stargazer, which has no attack,
+ * destroys no Field Defense by one (Star-fall's own rule is its ritual's,
+ * `pulp_wars-mch9.7`). Every role uses one slot and moves on the ground.
+ * Boats are Human boats.
+ */
+export const CULT_ROLE_MECHANICS_V7 = mechanics({
+  FIGHTER: { buildsFieldDefense: false },
+  GUARD: { buildsFieldDefense: false },
+  MARKSMAN: { advancesAfterKill: false },
+  CATAPULT: { advancesAfterKill: false, demolishesFieldDefense: false },
+  BATTLESHIP: { splash: true },
+});
+
+export const CULT_BASELINE_V1_TREE: FactionTechnologyTreeV7 = deepFreeze({
+  id: "CULT_BASELINE_V1",
+  faction: "CULT",
+  startingTechIds: [],
+  nodes: CULT_BASELINE_V1_NODES,
+  roleRules: CULT_ROLE_RULES_V7,
+  roleMechanics: CULT_ROLE_MECHANICS_V7,
+});
+
+/** The Cultists (section 3): what a Summon Horror costs in Favour. */
+export const HORROR_FAVOUR_COST_V7 = 5 as const;
+/** The Cultists (section 3): what the Great Summoning costs in Favour. */
+export const HERALD_FAVOUR_COST_V7 = 20 as const;
+/** The Cultists (section 6.2): the strands a Horror needs at each check. */
+export const HORROR_CONTROL_V7 = 1 as const;
+/** The Cultists (section 6.2): the strands the Herald needs at each check. */
+export const HERALD_CONTROL_V7 = 3 as const;
+
+/**
+ * The Cultists (section 4.2): the registration of a summoned unit. It has
+ * the stat fields of a role rule, without a role, a cost in Coins, or a
+ * technology (a summoned unit is never trained), and with what only a
+ * summoned unit has: its price in Favour, its Control, and its value.
+ */
+export interface SummonedRoleRuleV7 {
+  readonly id: SummonedRoleIdV7;
+  readonly label: string;
+  readonly maxHp: number;
+  readonly attack2: number;
+  readonly defense2: number;
+  readonly move: number;
+  readonly range: number;
+  readonly minimumRange: number;
+  /**
+   * What the summoning costs in Favour, or null for a unit that is not paid
+   * for in Favour (the Tentacle is its Caller's action).
+   */
+  readonly favourCost: number | null;
+  /**
+   * The unbroken strands the unit needs at its seat's Start Turn to stay
+   * bound, or null for a unit that is wild from birth (the Tentacle).
+   */
+  readonly control: number | null;
+  /**
+   * The unit value (the Score's and Favour's, section 3): what its kill is
+   * worth and what it adds to its seat's Army while commanded.
+   */
+  readonly value: number;
+  /** A daemon moves like a Martian walker; the Tentacle is rooted. */
+  readonly movementMode: MovementModeV7;
+}
+
+/**
+ * The Cultists (section 4.2): the numbers of the three summoned units, the
+ * spec's first guesses. They are registered here and read by nothing yet:
+ * `pulp_wars-mch9.5` puts the Horror on the board, `pulp_wars-mch9.7` the
+ * Herald, and `pulp_wars-mch9.8` the Tentacle, each with its own abilities
+ * (Boo!; Ravage, Unstoppable, and Proclaim; Grab).
+ */
+export const CULT_SUMMONED_ROLE_RULES_V7: Readonly<
+  Record<SummonedRoleIdV7, SummonedRoleRuleV7>
+> = deepFreeze({
+  HORROR: {
+    id: "HORROR",
+    label: "Horror",
+    maxHp: 18,
+    attack2: 8,
+    defense2: 4,
+    move: 2,
+    range: 1,
+    minimumRange: 1,
+    favourCost: HORROR_FAVOUR_COST_V7,
+    control: HORROR_CONTROL_V7,
+    value: 6,
+    movementMode: "STRIDE",
+  },
+  HERALD: {
+    id: "HERALD",
+    label: "Herald",
+    maxHp: 60,
+    attack2: 14,
+    defense2: 8,
+    move: 2,
+    range: 1,
+    minimumRange: 1,
+    favourCost: HERALD_FAVOUR_COST_V7,
+    control: HERALD_CONTROL_V7,
+    value: 24,
+    movementMode: "STRIDE",
+  },
+  TENTACLE: {
+    id: "TENTACLE",
+    label: "Tentacle",
+    maxHp: 8,
+    attack2: 6,
+    defense2: 2,
+    move: 0,
+    range: 1,
+    minimumRange: 1,
+    favourCost: null,
+    control: null,
+    value: 0,
+    movementMode: "GROUND",
+  },
+});
+
+/** The registration of a summoned unit; an unknown ID is a `RangeError`. */
+export function summonedRoleRuleV7(id: SummonedRoleIdV7): SummonedRoleRuleV7 {
+  const rule = Object.hasOwn(CULT_SUMMONED_ROLE_RULES_V7, id)
+    ? CULT_SUMMONED_ROLE_RULES_V7[id]
+    : undefined;
+  if (rule === undefined)
+    throw new RangeError(`Unknown v7 summoned role: ${String(id)}`);
+  return rule;
+}
+
 /** Frozen faction registrations; there is no cross-faction fallback. */
 export const FACTION_TREES_V7: Readonly<
   Record<FactionIdV7, FactionTechnologyTreeV7>
@@ -3719,6 +4063,7 @@ export const FACTION_TREES_V7: Readonly<
   ICE_FOLK: ICE_FOLK_BASELINE_V1_TREE,
   DWARF: DWARF_BASELINE_V1_TREE,
   CANDY: CANDY_BASELINE_V1_TREE,
+  CULT: CULT_BASELINE_V1_TREE,
 });
 
 export const FACTION_DISPLAY_NAMES_V7: Readonly<Record<FactionIdV7, string>> =
@@ -3731,6 +4076,8 @@ export const FACTION_DISPLAY_NAMES_V7: Readonly<Record<FactionIdV7, string>> =
     ICE_FOLK: "Ice Folk",
     DWARF: "Dwarf",
     CANDY: "Candy",
+    // The Cultists of the Ancient Ones (section 14.1): shown as Cultists.
+    CULT: "Cultists",
   });
 
 /**
@@ -3842,6 +4189,19 @@ export const TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7: Readonly<
     SAWMILLING: "Pie Launchers",
     CHIVALRY: "Chocolate Bunnies",
     METALLURGY: "Jawbreakers",
+  },
+  // The Cultists (docs/product/RULESET_7_CULTISTS.md section 11): the nodes
+  // named for their rite or unit. Administration stays Leadership, Milling
+  // Milling, and Fieldcraft Pathfinding.
+  CULT: {
+    FARMING: "Harvest Rites",
+    SAWMILLING: "Stargazers",
+    MARKSMANSHIP: "Hexers",
+    SCOUTING: "Familiars",
+    CHIVALRY: "Callers",
+    METALLURGY: "The Chosen",
+    FORTIFICATION: "Warding Circles",
+    EXPLOSIVES: "The Stars Are Right",
   },
 });
 
@@ -3961,6 +4321,14 @@ export const FACTION_RULES_V7: Readonly<Record<FactionIdV7, FactionRulesV7>> =
     },
     // The Candy revision (section 12.16): the treasure unit is a Donut Racer.
     CANDY: {
+      restless: false,
+      cityCapacityBonus: 0,
+      gangUpMaximum: 0,
+      treasureUnitRole: "RAIDER",
+      snow: false,
+    },
+    // The Cultists (section 4.3): the treasure unit is a Familiar.
+    CULT: {
       restless: false,
       cityCapacityBonus: 0,
       gangUpMaximum: 0,
@@ -4322,7 +4690,7 @@ export const RULESET_7 = deepFreeze({
  * a technology of tier `t` costs `5 / 7 / 9 + (T - 1)`, `T` being the
  * technologies the researcher already owns.
  *
- * The economy rejig (`pulp_wars-w49.16`, `pulp-wars-poc-7r70`,
+ * The economy rejig (`pulp_wars-w49.16`, `pulp-wars-poc-7r71`,
  * docs/product/RULESET_7_ECONOMY_REJIG.md): the price is per city again and
  * the technologies owned no longer enter it. A technology of tier `t`
  * costs `5 / 7 / 9 + (1 / 2 / 3) * (C - 1)`, `C` being the cities the

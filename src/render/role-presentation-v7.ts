@@ -66,6 +66,12 @@ import {
  * Gallery (bead pulp_wars-ic8) read these one texts.
  */
 
+/**
+ * The Cultists (`pulp_wars-mch9.3`): the recruit and Gallery line of a land
+ * unit with no attack at all (the Stargazer).
+ */
+export const NO_ATTACK_TEXT_V7 = "Can't attack or strike back.";
+
 /** Revision 16 (section 5.4) unit and help text for boats and transports. */
 export const AT_SEA_MOVE_TEXT_V7 = "At sea: Move 2; landing uses 1 of it.";
 
@@ -85,8 +91,18 @@ export function recruitmentRolePresentationV7(
   const role = effectiveRoleRuleV7(roleId, faction);
   const restrictions: string[] = [];
   const ship = isNavalRoleV7(roleId);
-  if (!role.mayUsePrimaryActionAfterMove && role.minimumRange <= 1 && !ship)
+  const attacks = role.abilities.includes("ATTACK");
+  if (
+    !role.mayUsePrimaryActionAfterMove &&
+    role.minimumRange <= 1 &&
+    !ship &&
+    attacks
+  )
     restrictions.push("Can't attack after moving.");
+  // The Cultists (`pulp_wars-mch9.3`): the Stargazer has no attack of its
+  // own (Attack 0, no `ATTACK`) and never strikes back.
+  if (!ship && !attacks && role.attack2 === 0)
+    restrictions.push(NO_ATTACK_TEXT_V7);
   // Tuning 4 (`pulp_wars-w49.3`): the Human Raider slips past a screen.
   if (
     faction === "ORIGINAL" &&

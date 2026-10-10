@@ -15,7 +15,7 @@ import {
   playableSoundIdsV1,
   type SoundIdV1,
 } from "../../src/audio/index";
-import { FACTION_IDS_V7 } from "../../src/engine/index";
+import { OFFERED_FACTION_IDS_V7 } from "../../src/engine/index";
 import { GALLERY_FILTERS_STORAGE_KEY_V7 } from "../../src/render/gallery-presentation-v7";
 import { gallerySoundGroupsV7 } from "../../src/render/gallery-sounds-presentation-v7";
 import {
@@ -425,11 +425,11 @@ describe("Gallery Sounds tab", () => {
     const rows = [...group.querySelectorAll<HTMLElement>(".v7-gallery-sound")];
     // One row per faction, each with its theme, then the title theme.
     expect(rows.map((node) => node.dataset.faction)).toEqual([
-      ...FACTION_IDS_V7,
+      ...OFFERED_FACTION_IDS_V7,
       undefined,
     ]);
     expect(rows.map((node) => node.dataset.soundRow)).toEqual([
-      ...FACTION_IDS_V7.map((faction) => `theme:${faction}`),
+      ...OFFERED_FACTION_IDS_V7.map((faction) => `theme:${faction}`),
       "theme:TITLE",
     ]);
     for (const node of rows) {

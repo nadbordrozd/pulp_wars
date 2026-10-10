@@ -97,7 +97,7 @@ import {
   withoutTechsV7,
 } from "../fixtures/v7-revision20";
 
-// The Martian pass (`pulp_wars-w49.14`, `pulp-wars-poc-7r70`,
+// The Martian pass (`pulp_wars-w49.14`, `pulp-wars-poc-7r71`,
 // docs/product/RULESET_7_TUNING_MARTIAN.md): a unit pulled by the Tractor
 // Beam explores for its owner from the tile it lands on; Scouts for a
 // Martian city (a free Saucer); the Shield Projector's Force Field needs
@@ -205,13 +205,13 @@ describe("the Martian pass: identity", () => {
   // The Dinosaur pass (tests/unit/ruleset-v7-dinosaur-pass.test.ts) took
   // 7r53 and the economy rejig 7r54, so 7r52 is a prior identity.
   it("was 7r52 after 7r51, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r70");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r70.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-19, -17)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r71");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r71.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-20, -18)).toEqual([
       "pulp-wars-poc-7r51",
       "pulp-wars-poc-7r52",
     ]);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-19, -17)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-20, -18)).toEqual([
       "pulpWars.save.v7r51.current",
       "pulpWars.save.v7r52.current",
     ]);
@@ -440,6 +440,8 @@ describe("the Martian pass: Scouts", () => {
       // Donut Racer.
       DWARF: 1,
       CANDY: 1,
+      // The Cultists (`pulp_wars-mch9.3`): a Familiar.
+      CULT: 1,
     });
     const base = asMartian([own("FIGHTER", 8, 8), foe("FIGHTER", 2, 8)], {
       techs: { 0: techsOf("GATHERING", "FARMING"), 1: [] },

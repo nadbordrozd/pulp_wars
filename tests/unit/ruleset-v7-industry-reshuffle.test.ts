@@ -108,7 +108,8 @@ const FORTIFICATION: Readonly<
     {
       readonly name: string;
       readonly defender: string;
-      readonly keeps: string;
+      /** Null: the node holds the defender alone (the Cult, so far). */
+      readonly keeps: string | null;
     }
   >
 > = {
@@ -140,6 +141,9 @@ const FORTIFICATION: Readonly<
     defender: "Marshmallow",
     keeps: "HOME_SWEET_HOME",
   },
+  // The Cultists (`pulp_wars-mch9.3`): Warding Circles gives the Idol
+  // Bearer and no Field Defense; Behold! arrives with its own bead.
+  CULT: { name: "Warding Circles", defender: "Idol Bearer", keeps: null },
 };
 
 /** Seat 0 with a Farm at (9, 9) and `techs` beside Gathering and Farming. */
@@ -181,14 +185,14 @@ describe("the Industry reshuffle: identity", () => {
   it("was 7r56 after 7r55, with both save keys obsolete now", () => {
     // (Step two of the Undead pass, `pulp_wars-w49.24`, took 7r57, and
     // step two of the Martian pass, `pulp_wars-w49.25`, 7r58.)
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r70");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r70.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-15, -13)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r71");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r71.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-16, -14)).toEqual([
       "pulp-wars-poc-7r55",
       "pulp-wars-poc-7r56",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-15, -13)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-16, -14)).toEqual([
       "pulpWars.save.v7r55.current",
       "pulpWars.save.v7r56.current",
     ]);
@@ -265,7 +269,7 @@ describe("the Industry reshuffle: the tree of every faction", () => {
         "FORTIFICATION",
       ]);
       expect(unlocksOf(faction, "FORTIFICATION"), faction).toEqual([
-        expected.keeps,
+        ...(expected.keeps === null ? [] : [expected.keeps]),
         "UNIT:GUARD",
       ]);
       const node = factionTreeV7(faction).nodes.find(
@@ -328,8 +332,9 @@ describe("the Industry reshuffle: the tree of every faction", () => {
       // bead pulp_wars-2yc.38 (stage 2) every faction but the Humans draws
       // the Workshop in a look of its own, and a technology card shows the
       // viewer faction's look.
+      // (The Cultists, `pulp_wars-mch9.3`, have no building art yet.)
       expect(technologySubjectV7("DRILL", faction), faction).toBe(
-        faction === "ORIGINAL"
+        faction === "ORIGINAL" || faction === "CULT"
           ? "IMPROVEMENT:WORKSHOP"
           : `IMPROVEMENT:${faction}:WORKSHOP`,
       );

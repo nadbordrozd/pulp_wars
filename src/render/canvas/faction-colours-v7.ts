@@ -33,6 +33,13 @@ export const FACTION_COLOURS_V7 = {
    * 15.4): the Candy glaze and frosting.
    */
   CANDY: "#ffb8d8",
+  /**
+   * Eldritch green (docs/product/RULESET_7_CULTISTS.md section 14.2): the
+   * Cult's green flame. The candidate of the Cult proposal's colour test;
+   * the capture beside the Dwarf jade is the art-direction bead's
+   * (`pulp_wars-mch9.13`), which may move it.
+   */
+  CULT: "#00ff78",
 } as const satisfies Readonly<Record<FactionIdV7, string>>;
 
 export function factionColourV7(faction: FactionIdV7): string {

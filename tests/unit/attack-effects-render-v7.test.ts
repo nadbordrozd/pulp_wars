@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   applyCommandV7,
   FACTION_IDS_V7,
+  OFFERED_FACTION_IDS_V7,
   GIANT_SIGNATURES_V7,
   queryPlayerCommandsV7,
   type CommandV7,
@@ -293,9 +294,14 @@ describe("The Battleship's broadside (bead pulp_wars-eu3r.4)", () => {
   };
 
   it("gives every faction its own shell", () => {
-    expect(new Set(Object.values(BROADSIDE_SHELLS_V7)).size).toBe(
-      FACTION_IDS_V7.length,
-    );
+    // The Cultists (`pulp_wars-mch9.3`) are registered without ship art:
+    // their Battleship fires the Human cannonball until they have their own.
+    expect(BROADSIDE_SHELLS_V7.CULT).toBe("CANNONBALL");
+    expect(
+      new Set(
+        OFFERED_FACTION_IDS_V7.map((faction) => BROADSIDE_SHELLS_V7[faction]),
+      ).size,
+    ).toBe(OFFERED_FACTION_IDS_V7.length);
     for (const faction of FACTION_IDS_V7)
       expect(broadsideShellForV7(faction)).toBe(BROADSIDE_SHELLS_V7[faction]);
     expect(broadsideShellForV7(undefined)).toBe("CANNONBALL");

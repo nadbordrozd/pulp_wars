@@ -22,8 +22,8 @@ const archive = JSON.parse(
 if (archive.rulesetId !== "pulp-wars-poc-7r2")
   throw new Error("Archived revision-2 release corpus identity changed");
 if (
-  RULESET_7_ID !== "pulp-wars-poc-7r70" ||
-  SAVE_STORAGE_KEY_V7 !== "pulpWars.save.v7r70.current" ||
+  RULESET_7_ID !== "pulp-wars-poc-7r71" ||
+  SAVE_STORAGE_KEY_V7 !== "pulpWars.save.v7r71.current" ||
   MAP_GENERATION_REVISION_V7 !== "REGIONAL_BIOMES_NAVAL_V4" ||
   parseMatchSetupV7({
     rulesetId: RULESET_7_ID,

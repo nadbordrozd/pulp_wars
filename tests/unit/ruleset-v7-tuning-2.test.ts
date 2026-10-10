@@ -58,10 +58,10 @@ const adjacentAttackers = (faction: FactionIdV7): readonly UnitRoleIdV7[] =>
 
 describe("tuning 2 identity", () => {
   it("is 7r47 with 7r46 last in the prior list", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r70");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r70.current");
-    expect(PRIOR_RULESET_7_IDS.at(-24)).toBe("pulp-wars-poc-7r46");
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(69);
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r71");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r71.current");
+    expect(PRIOR_RULESET_7_IDS.at(-25)).toBe("pulp-wars-poc-7r46");
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(70);
   });
 });
 
@@ -153,6 +153,7 @@ describe("1: who moves after a kill", () => {
       "ICE_FOLK Boulder Yeti",
       "DWARF Clockwork Gunner",
       "CANDY Gumball Gunner",
+      "CULT Hexer",
     ]);
     // The melee units that do not advance are the ones that never did.
     const stay = FACTION_IDS_V7.flatMap((faction) =>
@@ -287,6 +288,7 @@ describe("3: the Human Knight captures settlements", () => {
       // (The ninth unit, 7r55: the Steam Tank is the Dwarf heavy role.)
       "Whirligig",
       "Chocolate Bunny",
+      "Caller",
     ]);
   });
 });

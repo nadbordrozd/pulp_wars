@@ -6,7 +6,7 @@ import { FACTION_FOREST_ART_SETS_V7 } from "../../src/assets/faction-forest-piec
 import { FACTION_FOREST_IDS_V7 } from "../../src/render/canvas/faction-forests-v7";
 import { CHIBI_MOUNTAIN_ART_SET_V7 } from "../../src/assets/chibi-mountain-ranges-manifest";
 import { FACTION_GRASS_TILES_V7 } from "../../src/assets/faction-grass-manifest";
-import { FACTION_IDS_V7 } from "../../src/engine/index";
+import { OFFERED_FACTION_IDS_V7 } from "../../src/engine/index";
 import {
   DEFAULT_GALLERY_FILTERS_V7,
   parseGalleryFiltersV7,
@@ -47,7 +47,7 @@ describe("Gallery terrain presentation", () => {
     }
     // Every faction has ground of its own: baked grass tiles, the Undead
     // gloam, the Ice Folk Snow.
-    for (const faction of FACTION_IDS_V7)
+    for (const faction of OFFERED_FACTION_IDS_V7)
       expect(galleryTerrainLookV7("GRASS", faction), faction).toBe("OWN");
     const snow = galleryTerrainCellV7("GRASS", "ICE_FOLK");
     expect(snow.kind === "OWN" && snow.name).toBe("Snow");
@@ -86,7 +86,7 @@ describe("Gallery terrain presentation", () => {
         expect(urls).not.toContain(piece.url);
     }
     // Sea ice is the Ice Folk's alone.
-    for (const faction of FACTION_IDS_V7)
+    for (const faction of OFFERED_FACTION_IDS_V7)
       expect(galleryTerrainLookV7("ICE", faction)).toBe(
         faction === "ICE_FOLK" ? "OWN" : "NONE",
       );
@@ -169,7 +169,7 @@ describe("Gallery terrain presentation", () => {
     );
     let checked = 0;
     for (const row of GALLERY_TERRAIN_ROWS_V7)
-      for (const faction of [null, ...FACTION_IDS_V7])
+      for (const faction of [null, ...OFFERED_FACTION_IDS_V7])
         for (const piece of galleryTerrainPiecesV7(row, faction))
           for (const url of galleryTerrainRasterUrlsV7(piece)) {
             expect(preloaded.has(url), url).toBe(true);
@@ -206,7 +206,7 @@ describe("Gallery terrain sample boards", () => {
 
   it("builds a real board for every cell: the terrain round a capital, a Fighter for scale", () => {
     for (const row of GALLERY_TERRAIN_ROWS_V7)
-      for (const faction of [null, ...FACTION_IDS_V7]) {
+      for (const faction of [null, ...OFFERED_FACTION_IDS_V7]) {
         if (galleryTerrainCellV7(row, faction).kind !== "OWN") continue;
         const view = buildGalleryTerrainSampleV7(row, faction);
         expect(view, `${row}:${String(faction)}`).not.toBeNull();

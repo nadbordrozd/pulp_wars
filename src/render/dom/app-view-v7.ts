@@ -112,7 +112,6 @@ import {
   type FactionIdV7,
   type BoardSizeV7,
   BOARD_SIZES_V7,
-  maxSeatCountV7,
   previewBlastMountainV7,
   publicHireCostV7,
   cityBarracksV7,
@@ -136,6 +135,8 @@ import {
   CROWDED_LABEL_V7,
   SETUP_MAP_TYPES_V7,
   clampOpponentCountV7,
+  SETUP_FACTIONS_V7,
+  setupMaxSeatCountV7,
   resolveSetupChoiceV7,
   setupMapLimitReasonV7,
   setupMapOptionsV7,
@@ -772,17 +773,13 @@ const BOARD_SIZE_LABELS: Readonly<Record<string, string>> = Object.fromEntries(
  * game runs with eight factions; their units, portraits, cities and ships use
  * the Candy art, and their commands are plain buttons until their UI bead
  * (`pulp_wars-jdb.6`).
+ *
+ * The Cultists (`pulp_wars-mch9.3`) are registered and not offered: the
+ * list is the engine's offered factions (`SETUP_FACTIONS_V7`), which leave
+ * the hidden ones out of the setup's selects, the tribe grid, and the
+ * campaign roster until `pulp_wars-mch9.20`.
  */
-const FACTIONS: readonly FactionIdV7[] = [
-  "ORIGINAL",
-  "UNDEAD",
-  "GOBLIN",
-  "DINOSAUR",
-  "MARTIAN",
-  "ICE_FOLK",
-  "DWARF",
-  "CANDY",
-];
+const FACTIONS: readonly FactionIdV7[] = SETUP_FACTIONS_V7;
 /** The setup's helper text under "Factions". */
 const FACTIONS_HINT_V7 =
   "Every player plays a different faction. Take an opponent's and they switch to a free one.";
@@ -828,6 +825,7 @@ const FACTION_LABELS: Readonly<Record<string, string>> = {
   ICE_FOLK: "Ice Folk",
   DWARF: "Dwarf",
   CANDY: "Candy",
+  CULT: "Cultists",
 };
 /** Non-Human factions drawn with a placeholder badge over Human art. */
 type FactionBadgeV7 =
@@ -1219,7 +1217,7 @@ export class Ruleset7DomAppView {
     seedText: "42",
     mapType: "CONTINENTS",
     curiosities: true,
-    factions: distinctFactionsV7(maxSeatCountV7()),
+    factions: distinctFactionsV7(setupMaxSeatCountV7()),
     gameMode: "DOMINATION",
   };
   /**
@@ -8697,7 +8695,7 @@ export class Ruleset7DomAppView {
       // earlier seat now plays takes the first untaken faction, so the
       // seats always play different factions (RULESET_7_UNIQUE_FACTIONS.md).
       factions: distinctFactionsV7(
-        maxSeatCountV7(),
+        setupMaxSeatCountV7(),
         this.#draft.factions.map((prior, seat) => {
           const field = form.querySelector<HTMLSelectElement>(
             `#v7-faction-${seat}`,
@@ -12605,7 +12603,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffff_ffff)
     return null;
   return {
-    rulesetId: "pulp-wars-poc-7r70",
+    rulesetId: "pulp-wars-poc-7r71",
     seed,
     width: effectiveBoardSize(draft),
     height: effectiveBoardSize(draft),
@@ -13234,6 +13232,13 @@ function rewardLabel(
   // Revision 17: Goblin Militia is two Goblins.
   if (faction === "GOBLIN" && reward === "MILITIA")
     return ["Militia", "Two free Goblins"];
+  // The Cultists (`pulp_wars-mch9.3`, RULESET_7_CULTISTS.md section 4.3):
+  // the Cult Militia is two Initiates.
+  if (faction === "CULT" && reward === "MILITIA")
+    return [
+      "Militia",
+      `Two free ${effectiveRoleRuleV7("FIGHTER", faction).label}s`,
+    ];
   // Revision 19: Dinosaur Militia is the registry's Cavemen; the giant is a
   // Brontosaurus, named with its unit slots.
   const dinosaur =
@@ -13268,7 +13273,8 @@ function rewardLabel(
               // with it and could not train in round 4).
               // `pulp_wars-zypi`: and the Dwarf Gyrocopter and the Candy
               // Donut Racer, now that every faction's Scouts has a unit.
-              `${scoutsRewardTextV7(effectiveRoleRuleV7("RAIDER", faction).label)}${faction === "MARTIAN" || faction === "DINOSAUR" || faction === "ICE_FOLK" || faction === "DWARF" || faction === "CANDY" ? " (uses a unit slot)" : ""}`,
+              // The Cultists (`pulp_wars-mch9.3`): and the Familiar.
+              `${scoutsRewardTextV7(effectiveRoleRuleV7("RAIDER", faction).label)}${faction === "MARTIAN" || faction === "DINOSAUR" || faction === "ICE_FOLK" || faction === "DWARF" || faction === "CANDY" || faction === "CULT" ? " (uses a unit slot)" : ""}`,
         ]
       : ["Survey", "Reveal the area"];
   if (reward === "STOCKPILE") return ["Stockpile", "+4 Coins"];

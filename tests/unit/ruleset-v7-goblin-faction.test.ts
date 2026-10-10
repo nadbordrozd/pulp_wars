@@ -77,11 +77,11 @@ import {
 
 describe("ruleset-7 revision-17 identity", () => {
   it("keeps r16 among the prior identities after the r55 identity and cleans the r16 key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r70");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r70.current");
-    expect(PRIOR_RULESET_7_IDS.at(-54)).toBe("pulp-wars-poc-7r16");
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(69);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-54)).toBe(
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r71");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r71.current");
+    expect(PRIOR_RULESET_7_IDS.at(-55)).toBe("pulp-wars-poc-7r16");
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(70);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-55)).toBe(
       "pulpWars.save.v7r16.current",
     );
     const storage = new MemoryStorage([
@@ -156,6 +156,7 @@ describe("ruleset-7 Goblin faction registration", () => {
       // The Dwarf revision (`pulp_wars-78i.3`).
       "DWARF",
       "CANDY",
+      "CULT",
     ]);
     expect(FACTION_TREE_IDS_V7).toEqual([
       "ORIGINAL_BASELINE_V5",
@@ -166,6 +167,7 @@ describe("ruleset-7 Goblin faction registration", () => {
       "ICE_FOLK_BASELINE_V1",
       "DWARF_BASELINE_V1",
       "CANDY_BASELINE_V1",
+      "CULT_BASELINE_V1",
     ]);
     expect(factionTreeIdV7("GOBLIN")).toBe("GOBLIN_BASELINE_V1");
     expect(FACTION_TREES_V7.GOBLIN.faction).toBe("GOBLIN");
@@ -188,6 +190,7 @@ describe("ruleset-7 Goblin faction registration", () => {
       ["ICE_FOLK", 0, 0, false],
       ["DWARF", 0, 0, false],
       ["CANDY", 0, 0, false],
+      ["CULT", 0, 0, false],
     ]);
   });
 
@@ -766,6 +769,7 @@ describe("ruleset-7 Goblin technology", () => {
       ["ICE_FOLK", 1, 0],
       ["DWARF", 1, 0],
       ["CANDY", 1, 0],
+      ["CULT", 1, 0],
     ]);
     const goblin = technologyCapabilitiesV7(all, "GOBLIN");
     const human = technologyCapabilitiesV7(all, "ORIGINAL");
@@ -850,6 +854,17 @@ describe("ruleset-7 Goblin technology", () => {
         CHIVALRY: "Chocolate Bunnies",
         METALLURGY: "Jawbreakers",
       },
+      // The Cultists (`pulp_wars-mch9.3`, RULESET_7_CULTISTS.md section 11).
+      CULT: {
+        FARMING: "Harvest Rites",
+        SAWMILLING: "Stargazers",
+        MARKSMANSHIP: "Hexers",
+        SCOUTING: "Familiars",
+        CHIVALRY: "Callers",
+        METALLURGY: "The Chosen",
+        FORTIFICATION: "Warding Circles",
+        EXPLOSIVES: "The Stars Are Right",
+      },
     });
     const state = goblinArenaV7(
       ["GOBLIN", "ORIGINAL"],
@@ -909,6 +924,7 @@ describe("ruleset-7 Goblin starting units", () => {
       ICE_FOLK: 1,
       DWARF: 1,
       CANDY: 1,
+      CULT: 1,
     });
     let checkedSeats = 0;
     for (const [seed, mapType, factions] of [

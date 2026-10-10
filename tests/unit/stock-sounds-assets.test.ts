@@ -29,7 +29,7 @@ import {
   themeRecordsSectionV1,
 } from "../../scripts/audio/theme-records";
 import { soundAssetUrlsV7 } from "../../src/assets/asset-inventory-v7";
-import { FACTION_IDS_V7 } from "../../src/engine/index";
+import { OFFERED_FACTION_IDS_V7 } from "../../src/engine/index";
 import {
   SOUND_IDS_V1,
   SOUND_MANIFEST_V1,
@@ -386,7 +386,7 @@ describe("recorded sound clips", () => {
 
 describe("theme music files", () => {
   it("has a theme for every faction of the game, and the title theme", () => {
-    for (const faction of FACTION_IDS_V7) {
+    for (const faction of OFFERED_FACTION_IDS_V7) {
       const theme = soundThemeOfFactionV1(faction);
       expect(theme, faction).not.toBeNull();
       expect(
@@ -399,7 +399,7 @@ describe("theme music files", () => {
     );
     expect(title?.faction).toBeNull();
     expect(title?.label).toBe("Title");
-    expect(SOUND_THEMES_V1).toHaveLength(FACTION_IDS_V7.length + 1);
+    expect(SOUND_THEMES_V1).toHaveLength(OFFERED_FACTION_IDS_V7.length + 1);
     expect(new Set(SOUND_THEMES_V1.map((theme) => theme.id)).size).toBe(
       SOUND_THEMES_V1.length,
     );

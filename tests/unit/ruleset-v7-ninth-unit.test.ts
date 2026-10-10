@@ -249,6 +249,18 @@ const JOBS: Readonly<Record<FactionIdV7, Readonly<Record<Job, string>>>> = {
     HEAVY_LINE: "Jawbreaker",
     REWARD_GIANT: "Gingerbread Giant",
   },
+  // The Cultists (`pulp_wars-mch9.3`, RULESET_7_CULTISTS.md section 4.1).
+  CULT: {
+    BASIC_LINE: "Initiate",
+    DEFENDER: "Idol Bearer",
+    FAST: "Familiar",
+    RANGED: "Hexer",
+    SUPPORT: "Summoner",
+    SIEGE: "Stargazer",
+    BREAKTHROUGH: "Caller",
+    HEAVY_LINE: "Chosen",
+    REWARD_GIANT: "Thing in the Cellar",
+  },
 };
 
 /** The technology of each job's role (the same node in every tree). */
@@ -290,6 +302,8 @@ const HEAVY: Readonly<Record<FactionIdV7, Numbers>> = {
   ICE_FOLK: num(7, 20, 5, 4, 1),
   DWARF: num(9, 16, 6, 4, 2),
   CANDY: num(6, 16, 6, 5, 1),
+  // The Chosen: the Champion with half a Defense less.
+  CULT: num(6, 15, 7, 4, 1),
 };
 function num(
   cost: number,
@@ -375,11 +389,11 @@ const productionOf = (
 
 describe("the ninth unit: identity", () => {
   it("was 7r55 after 7r54, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r70");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r70.current");
-    expect(PRIOR_RULESET_7_IDS.at(-16)).toBe("pulp-wars-poc-7r54");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r71");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r71.current");
+    expect(PRIOR_RULESET_7_IDS.at(-17)).toBe("pulp-wars-poc-7r54");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-16)).toBe(
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-17)).toBe(
       "pulpWars.save.v7r54.current",
     );
     const state = field([]);
@@ -657,12 +671,13 @@ describe("the ninth unit: nine land units and nine jobs for every faction", () =
     });
     // Only the `CATAPULT` role of each faction and the Triceratops destroy
     // Field Defense with every attack; only the Triceratops is kept out of
-    // a Rally by a flag.
+    // a Rally by a flag. (The Cult's `CATAPULT` role, the Stargazer of
+    // `pulp_wars-mch9.3`, has no attack and so destroys none.)
     for (const faction of FACTION_IDS_V7)
       for (const role of UNIT_ROLE_IDS_V7) {
         const value = roleMechanicsV7(role, faction);
         expect(value.demolishesFieldDefense, `${faction} ${role}`).toBe(
-          role === "CATAPULT" ||
+          (role === "CATAPULT" && faction !== "CULT") ||
             (faction === "DINOSAUR" && role === "SWORDSMAN"),
         );
         expect(value.rallyExcluded, `${faction} ${role}`).toBe(
@@ -865,6 +880,17 @@ describe("the ninth unit: technology display names", () => {
       SAWMILLING: "Pie Launchers",
       CHIVALRY: "Chocolate Bunnies",
       METALLURGY: "Jawbreakers",
+    },
+    // The Cultists (`pulp_wars-mch9.3`, RULESET_7_CULTISTS.md section 11).
+    CULT: {
+      FARMING: "Harvest Rites",
+      SAWMILLING: "Stargazers",
+      MARKSMANSHIP: "Hexers",
+      SCOUTING: "Familiars",
+      CHIVALRY: "Callers",
+      METALLURGY: "The Chosen",
+      FORTIFICATION: "Warding Circles",
+      EXPLOSIVES: "The Stars Are Right",
     },
   };
 

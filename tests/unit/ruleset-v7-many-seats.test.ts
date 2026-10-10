@@ -431,7 +431,15 @@ describe("ruleset-7 map scale: many seats (7r42)", () => {
       expect(validateMatchSetupV7(setup("CONTINENTS", 11, seats, 0)).ok).toBe(
         seats <= 6,
       );
+      // The Cultists (`pulp_wars-mch9.3`): with nine factions the cells
+      // that hold eight stop there (RULESET_7_CULTISTS.md section 17.8).
       expect(validateMatchSetupV7(setup("ARCHIPELAGO", 14, seats, 0)).ok).toBe(
+        seats <= 8,
+      );
+      expect(validateMatchSetupV7(setup("PANGEA", 11, seats, 0)).ok).toBe(
+        seats <= 8,
+      );
+      expect(validateMatchSetupV7(setup("DRY_LAND", 14, seats, 0)).ok).toBe(
         true,
       );
     }

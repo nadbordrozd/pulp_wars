@@ -4091,6 +4091,8 @@ export const STARTING_FIGHTERS_V7: Readonly<Record<FactionIdV7, 1 | 2>> =
     ICE_FOLK: 1,
     DWARF: 1,
     CANDY: 1,
+    // The Cultists (section 4.3): one Initiate on the capital.
+    CULT: 1,
   });
 
 /**
@@ -4109,6 +4111,10 @@ export const MILITIA_FIGHTERS_V7: Readonly<Record<FactionIdV7, 1 | 2>> =
     ICE_FOLK: 1,
     DWARF: 1,
     CANDY: 1,
+    // The Cultists (docs/product/RULESET_7_CULTISTS.md section 4.3): two
+    // Initiates, the Goblin precedent (4 Coins of units against the 4-Coin
+    // Stockpile).
+    CULT: 2,
   });
 
 /**
@@ -4135,6 +4141,8 @@ export const SURVEY_RAIDERS_V7: Readonly<Record<FactionIdV7, 0 | 1>> =
     // Dwarves a Gyrocopter and the Candy a Donut Racer.
     DWARF: 1,
     CANDY: 1,
+    // The Cultists (section 4.3): the reveal and a Familiar.
+    CULT: 1,
   });
 
 /**

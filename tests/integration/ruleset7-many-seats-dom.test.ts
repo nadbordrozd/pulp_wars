@@ -8,7 +8,7 @@ import {
   type Ruleset7BrowserSnapshot,
 } from "../../src/app/index";
 import {
-  FACTION_IDS_V7,
+  OFFERED_FACTION_IDS_V7,
   MAP_GENERATION_REVISION_V7,
   RULESET_7_ID,
   SAVE_STORAGE_KEY_V7,
@@ -39,7 +39,7 @@ import {
  * engine allows; the match shows the turn order and every player.
  */
 
-const SEATS = FACTION_IDS_V7.length;
+const SEATS = OFFERED_FACTION_IDS_V7.length;
 const MOST_OPPONENTS = SEATS - 1;
 
 const SETUP: MatchSetupV7 = {
@@ -51,7 +51,7 @@ const SETUP: MatchSetupV7 = {
   aiDifficulty: "NORMAL",
   aiMode: "RIVAL",
   humanColor: "CORAL",
-  factions: [...FACTION_IDS_V7],
+  factions: [...OFFERED_FACTION_IDS_V7],
   mapType: "DRY_LAND",
   mapGenerationRevision: MAP_GENERATION_REVISION_V7,
   curiosities: false,
@@ -73,10 +73,11 @@ describe("Ruleset 7 setup for many players", () => {
     expect(cells).toHaveLength(SEATS);
     // Every seat a different faction, each with its emblem in its colour.
     expect(cells.map((cell) => cell.dataset.faction)).toEqual([
-      ...FACTION_IDS_V7,
+      ...OFFERED_FACTION_IDS_V7,
     ]);
     for (const cell of cells) {
-      const faction = cell.dataset.faction as (typeof FACTION_IDS_V7)[number];
+      const faction = cell.dataset
+        .faction as (typeof OFFERED_FACTION_IDS_V7)[number];
       expect(cell.querySelector(".v7-faction-emblem")).not.toBeNull();
       expect(cell.style.getPropertyValue("--player")).toBe(
         FACTION_COLOURS_V7[faction],

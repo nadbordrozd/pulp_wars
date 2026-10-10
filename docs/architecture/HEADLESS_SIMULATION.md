@@ -878,11 +878,14 @@ Without `--size`, headless match and batch retain the Auto sizes 11/14/16 for
 **Ruleset 7, many seats** (`pulp_wars-ykw.3`, `pulp-wars-poc-7r42`,
 [map scale design](../product/RULESET_7_MAP_SCALE.md) section 9).
 `--ai-count` and each `--ai-counts` value take 1 to `F - 1`, `F` the number
-of factions (1 to 7 today); the defaults stay 1 and `1,2,3`. `--factions`
-takes one value per seat, up to `F`. Without `--size` a match or a batch
-entry plays the **auto size** of its seat count and map type, the smallest
-allowed width with at least 56 tiles per seat (11, 14, 16 for 2, 3, 4
-seats, 20 for 5 to 7, 25 for 8). A `--size` that does not hold the seats on
+of factions (1 to 8 since the Cult registration, `pulp_wars-mch9.3`,
+`pulp-wars-poc-7r71`); the defaults stay 1 and `1,2,3`. `--factions`
+takes one value per seat, up to `F`; `cult` (alias `cultists`) names the
+ninth faction, which the browser does not offer yet and which the default
+factions of two to eight seats never include. Without `--size` a match or
+a batch entry plays the **auto size** of its seat count and map type, the
+smallest allowed width with at least 56 tiles per seat (11, 14, 16 for 2,
+3, 4 seats, 20 for 5 to 7, 25 for 8 and 9). A `--size` that does not hold the seats on
 the map type is an error that names the allowed sizes
 (`--size must be 14, 16, 20, 25 for 5 seats on the archipelago map type`);
 the Showcase stays 16 x 16 with at most three AI seats. Rulesets 6 and 5

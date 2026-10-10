@@ -2,8 +2,9 @@
 
 **Status:** final design spec for the ninth faction, validated on paper
 (bead `pulp_wars-mch9.2`, epic `pulp_wars-mch9`, 2026-10-09; the first
-draft was bead `pulp_wars-mch9.1`). Nothing here is implemented, and no
-game was played or simulated to write it. It replaces
+draft was bead `pulp_wars-mch9.1`). No game was played or simulated to
+write it. **Implemented so far:** the registration, bead E1
+([section 21](#21-implementation-notes)); none of the faction's own rules. It replaces
 [the Cult proposal](RULESET_7_CULT_PROPOSAL.md) of 2026-10-06 (bead
 `pulp_wars-2yc.25`), which stays as design history; where the two
 disagree, this document is the design. It is an overlay over
@@ -1796,6 +1797,62 @@ no swaps on centers, Switcheroo at Scouting.
 **Open:** none that blocks the engine. The art beads wait for the user's
 approval of the faction's art direction (ART1), which also settles the
 colour capture.
+
+## 21. Implementation notes
+
+### 21.1 E1, the registration (`pulp_wars-mch9.3`, `pulp-wars-poc-7r71`)
+
+What the engine holds after E1 is listed in
+[the current rules, section 1](RULESET_7_CURRENT.md#1-identity-and-compatibility).
+The choices E1 made where this spec left room:
+
+1. **The three summoned role IDs are not unit roles.** `HORROR`, `HERALD`,
+   and `TENTACLE` are `SUMMONED_ROLE_IDS_V7`, a list of their own, with
+   their numbers in `CULT_SUMMONED_ROLE_RULES_V7`. They are not appended to
+   `UNIT_ROLE_IDS_V7`: every faction's role table must hold exactly the
+   unit roles (`assertRuleset7Registry`), so a role there is a slot in all
+   nine factions, in the Showcase, the Gallery rows, the art manifests, and
+   every training list. The beads that put a summoned unit on the board
+   (E3, E5, E6) add the state that names its summoned role, the way the
+   neutral registration names a breed in `monsters`
+   ([section 6.4](#64-unbound) already makes an Unbound daemon a neutral
+   breed). The registry gives them no mechanical unit role yet; the bead
+   that needs one chooses it.
+2. **Abilities arrive with their rules.** The ability literals of
+   [section 11](#11-technology-tree) and the capabilities `offering`,
+   `switcheroo`, and `greatSummoning` are not registered by E1: an ability
+   on a role is shown on its card, in the Gallery, and in the glossary, and
+   it would name a rule that does not exist. Each engine bead adds its
+   literals, unlocks, commands, and glossary entries with the rule. Until
+   then the nine units have `ATTACK` and `CAPTURE` (the Familiar also
+   `CHARGE`; the Stargazer `CAPTURE` only).
+3. **The Stargazer** has no `ATTACK`, Attack 0, and range 0 (the neutral
+   Bigfoot's shape), so it never strikes back, and its role destroys no
+   Field Defense by an attack; its card says "Can't attack or strike back."
+   It keeps the siege role's "no action after a Move", which Star-fall's
+   "a Stargazer that has not moved" will read.
+4. **Metallurgy is shown as "The Chosen"**, with a capital, as a node's
+   title; [section 11](#11-technology-tree) writes "the Chosen" in running
+   text.
+5. **Hidden means the browser's faction lists.** `HIDDEN_FACTION_IDS_V7`
+   keeps the Cult out of the setup screen and its opponent counts, the
+   tribe grid, the campaign roster, the title scene, the Gallery, and the
+   theme list. The engine, the schemas, the headless tools, and every
+   renderer take a Cult seat, so the later beads can show one from a
+   fixture. Bead U4 empties the list.
+6. **Nine seats** needed no generator change: the map scale already places
+   nine capitals (all nine domains, no central zone). E1 pins the cells of
+   [section 17.8](#178-g-consistency-with-the-current-rules-and-nine-seats)
+   and generates nine-seat boards of every map type in its tests.
+7. **Every number of [section 10](#10-balance-against-the-humans-unit-by-unit)
+   was re-run through the engine's combat preview** (the sixteen
+   head-to-head results of the trained units and the giant): all sixteen
+   match the hand-computed values. The daemons' numbers are registered and
+   cannot be run until E3.
+8. **The colour** is the spec's `#00ff78`. It passes the faction-colour
+   test (every pair at least 45 apart in CIE76 and 20 under deuteranopia
+   and protanopia, readable on every ground); the capture beside the Dwarf
+   jade is still ART1's.
 
 ## Appendix A. The proposal's fifteen decisions, answered
 

@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 import { format } from "prettier";
 import {
   FACTION_DISPLAY_NAMES_V7,
-  FACTION_IDS_V7,
+  OFFERED_FACTION_IDS_V7,
 } from "../../src/engine/index";
 
 /**
@@ -139,9 +139,16 @@ export interface ThemeFactionV1 {
   readonly name: string;
 }
 
-/** The factions the game has today, from the engine. */
+/**
+ * The factions the game offers today, from the engine. A hidden faction
+ * (`HIDDEN_FACTION_IDS_V7`: the Cultists until they are offered) gets its
+ * theme prompt with its sounds, so it needs none yet.
+ */
 export const GAME_THEME_FACTIONS_V1: readonly ThemeFactionV1[] =
-  FACTION_IDS_V7.map((id) => ({ id, name: FACTION_DISPLAY_NAMES_V7[id] }));
+  OFFERED_FACTION_IDS_V7.map((id) => ({
+    id,
+    name: FACTION_DISPLAY_NAMES_V7[id],
+  }));
 
 export async function loadThemePromptsV1(): Promise<ThemePromptsV1> {
   return JSON.parse(

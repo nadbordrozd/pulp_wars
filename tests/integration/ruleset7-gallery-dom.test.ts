@@ -6,7 +6,10 @@ import type {
   BoardHostModelV7,
   BoardHostV7,
 } from "../../src/render/canvas/board-host-v7";
-import { FACTION_IDS_V7, type PlayerViewV7 } from "../../src/engine/index";
+import {
+  OFFERED_FACTION_IDS_V7,
+  type PlayerViewV7,
+} from "../../src/engine/index";
 import { GALLERY_FILTERS_STORAGE_KEY_V7 } from "../../src/render/gallery-presentation-v7";
 import { SETTINGS_STORAGE_KEY } from "../../src/persistence/index";
 import { roleGlossaryV7 } from "../../src/render/unit-glossary-v7";
@@ -140,7 +143,7 @@ describe("Ruleset 7 Gallery", () => {
       ...document.querySelectorAll<HTMLElement>(".v7-gallery-faction"),
     ];
     expect(headers.map((header) => header.dataset.faction)).toEqual([
-      ...FACTION_IDS_V7,
+      ...OFFERED_FACTION_IDS_V7,
     ]);
     expect(headers.map((header) => header.textContent)).toEqual([
       "Human",

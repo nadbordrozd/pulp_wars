@@ -1,4 +1,5 @@
-import { FACTION_IDS_V7, type FactionIdV7 } from "../engine/index";
+import { OFFERED_FACTION_IDS_V7, type FactionIdV7 } from "../engine/index";
+
 import { chibiAssetUrlsV7 } from "../assets/asset-inventory-v7";
 import { CHIBI_ART_ASSETS_V7 } from "../assets/chibi-art-manifest";
 import { chibiDirectionArtAssetsV7 } from "../assets/chibi-direction-art-manifest";
@@ -14,6 +15,13 @@ import {
   type CoastEntryV7,
   type CoastLayerKindV7,
 } from "./canvas/coast-sand-v7";
+
+/**
+ * The factions of the title scene: the ones the setup screen offers. A
+ * hidden faction (the Cultists until `pulp_wars-mch9.20`) has no art of its
+ * own yet, so it stays off the front page.
+ */
+const FACTION_IDS_V7: readonly FactionIdV7[] = OFFERED_FACTION_IDS_V7;
 
 /**
  * The title scene (bead pulp_wars-2yc.4): a small diorama behind the logo,

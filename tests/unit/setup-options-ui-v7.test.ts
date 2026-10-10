@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import {
   BOARD_SIZES_V7,
-  FACTION_IDS_V7,
+  OFFERED_FACTION_IDS_V7,
   allowedBoardSizesV7,
   crowdedBoardV7,
   generatedVillageCountV7,
@@ -18,6 +18,7 @@ import {
   resolveSetupChoiceV7,
   setupMapLimitReasonV7,
   setupMapOptionsV7,
+  setupMaxSeatCountV7,
   setupOpponentCountsV7,
   setupSizeOptionsV7,
   setupVillageLineV7,
@@ -37,10 +38,10 @@ const COUNTS = setupOpponentCountsV7();
 describe("setup options for many players", () => {
   it("offers one opponent up to one less than the faction count", () => {
     expect(COUNTS[0]).toBe(1);
-    expect(COUNTS.at(-1)).toBe(FACTION_IDS_V7.length - 1);
-    expect(COUNTS).toHaveLength(FACTION_IDS_V7.length - 1);
+    expect(COUNTS.at(-1)).toBe(OFFERED_FACTION_IDS_V7.length - 1);
+    expect(COUNTS).toHaveLength(OFFERED_FACTION_IDS_V7.length - 1);
     expect(clampOpponentCountV7(0)).toBe(1);
-    expect(clampOpponentCountV7(99)).toBe(FACTION_IDS_V7.length - 1);
+    expect(clampOpponentCountV7(99)).toBe(OFFERED_FACTION_IDS_V7.length - 1);
     expect(clampOpponentCountV7(Number.NaN)).toBe(1);
     expect(clampOpponentCountV7(4)).toBe(4);
   });
@@ -89,13 +90,20 @@ describe("setup options for many players", () => {
         expect(option.enabled).toBe(
           allowedBoardSizesV7(option.mapType, opponents + 1).length > 0,
         );
-        // The limit is the engine's: one more opponent is never legal.
+        // The limit is the engine's: one more opponent is never legal,
+        // unless the limit is the screen's own (one seat per offered
+        // faction: the engine also seats the hidden Cult,
+        // `pulp_wars-mch9.3`).
         expect(
           allowedBoardSizesV7(option.mapType, option.maxOpponents + 1).length,
         ).toBeGreaterThan(0);
-        expect(
-          allowedBoardSizesV7(option.mapType, option.maxOpponents + 2),
-        ).toEqual([]);
+        expect(option.maxOpponents).toBeLessThanOrEqual(
+          setupMaxSeatCountV7() - 1,
+        );
+        if (option.maxOpponents < setupMaxSeatCountV7() - 1)
+          expect(
+            allowedBoardSizesV7(option.mapType, option.maxOpponents + 2),
+          ).toEqual([]);
       }
     const showcase = setupMapOptionsV7(COUNTS.at(-1) ?? 1).find(
       (option) => option.mapType === "SHOWCASE",

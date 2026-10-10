@@ -14,12 +14,14 @@
  *   showcase-a-classic-<viewport>-zoom-1.png    Showcase a in the Classic look
  *       (Settings > Developer tools)
  *   showcase-a-legacy-<viewport>.png            Showcase a in the LEGACY art set
- *   territories-<look>-desktop-zoom-<step>.png  the seven factions'
+ *   territories-<look>-desktop-zoom-<step>.png  the nine factions'
  *       territories side by side over Mountain, Grass, Snow, Shallow and
  *       Deep Water (scripts/art/faction-colours/scene.ts), in the live,
  *       Classic and LEGACY looks (LEGACY at its own zoom)
+ *   territories-<look>-desktop-cult.png         the same framed on the Cult
+ *       (the east end: Goblin, Dwarf, Cult, Candy)
  *   territories-<look>-phone-<faction>.png      the same on the phone at the
- *       smallest zoom, framed on four factions in turn
+ *       smallest zoom, framed on five factions in turn
  *
  * Usage: npm run art:faction-colours-review -- [--out DIR] [--port 6545]
  *   [--url http://localhost:PORT/] [--only=setup,showcase,classic,legacy,territories]
@@ -66,7 +68,14 @@ const SHOWCASES = [
 ] as const;
 const LOOKS = ["LIVE", "CLASSIC", "LEGACY"] as const;
 /** The phone frames the scene on these factions' territories in turn. */
-const PHONE_FRAMES = ["UNDEAD", "ICE_FOLK", "DINOSAUR", "DWARF"] as const;
+const PHONE_FRAMES = [
+  "UNDEAD",
+  "ICE_FOLK",
+  "DINOSAUR",
+  "DWARF",
+  // The Cult registration (pulp_wars-mch9.3): the Cult beside the Dwarves.
+  "CULT",
+] as const;
 const SCENE = "globalThis.__FACTION_COLOURS_SCENE__";
 const CLASSIC_KEY = "pulpWars.ruleset7.boardClassicLook.v1";
 
@@ -445,6 +454,15 @@ async function captureAll(baseUrl: string): Promise<void> {
                   `territories-${look.toLowerCase()}-desktop-zoom-${step}.png`,
                 );
               }
+            // The Cult registration (pulp_wars-mch9.3): the nine territories
+            // are wider than the screen, so the east end (Goblin, Dwarf,
+            // Cult, Candy) has a frame of its own.
+            await showTerritories(connection, look, "CULT");
+            if (look !== "LEGACY") await sceneZoom(connection, 1);
+            await capture(
+              connection,
+              `territories-${look.toLowerCase()}-desktop-cult.png`,
+            );
           } else
             for (const faction of PHONE_FRAMES) {
               await showTerritories(connection, look, faction);

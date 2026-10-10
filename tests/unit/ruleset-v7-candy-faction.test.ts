@@ -746,6 +746,7 @@ describe("Candy technology (section 4)", () => {
       ["ICE_FOLK", false, 0],
       ["DWARF", false, 0],
       ["CANDY", true, 3],
+      ["CULT", false, 0],
     ]);
     const some = (...techs: (typeof TECHNOLOGY_IDS_V7)[number][]) =>
       technologyCapabilitiesV7(techs, "CANDY");

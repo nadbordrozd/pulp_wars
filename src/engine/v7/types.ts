@@ -5,7 +5,7 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r70" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r71" as const;
 /**
  * Every earlier Ruleset 7 identity, oldest first. Readers report these as
  * incompatible (never invalid). An identity bump must append the outgoing
@@ -81,8 +81,9 @@ export const PRIOR_RULESET_7_IDS = Object.freeze([
   "pulp-wars-poc-7r67",
   "pulp-wars-poc-7r68",
   "pulp-wars-poc-7r69",
+  "pulp-wars-poc-7r70",
 ] as const);
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r70.current" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r71.current" as const;
 /**
  * The map generator a setup names (docs/product/RULESET_7_MAP_SCALE.md
  * section 8.8): `V4` is the many-seats generator of `pulp_wars-ykw.3`
@@ -106,7 +107,34 @@ export const FACTION_IDS_V7 = Object.freeze([
   "DWARF",
   // The Candy revision (docs/product/RULESET_7_CANDY.md).
   "CANDY",
+  // The Cultists of the Ancient Ones (docs/product/RULESET_7_CULTISTS.md;
+  // registered by `pulp_wars-mch9.3`). The ninth faction, last so that every
+  // earlier faction keeps its ordinal. It is registered for headless and
+  // test setups; the browser does not offer it yet
+  // (`HIDDEN_FACTION_IDS_V7`).
+  "CULT",
 ] as const);
+/**
+ * The Cultists (`pulp_wars-mch9.3`, docs/product/RULESET_7_CULTISTS.md
+ * section 19): the registered factions the browser does not offer yet. A
+ * hidden faction is a full engine registration: a headless or test setup may
+ * name it, and a state that holds it loads, plays, saves, and is drawn (with
+ * stand-in art). What leaves it out is everything a player picks or browses
+ * factions from: the setup screen and its opponent counts, the tribe grid,
+ * the campaign roster, the title scene, the Gallery, and the theme list.
+ * Emptied by the bead that offers the Cult (`pulp_wars-mch9.20`), once its
+ * AI, interface, and art beads are done.
+ */
+export const HIDDEN_FACTION_IDS_V7: readonly FactionIdV7[] = Object.freeze([
+  "CULT",
+] as const);
+/**
+ * The factions the browser offers, in registration order: every registered
+ * faction that is not hidden ({@link HIDDEN_FACTION_IDS_V7}).
+ */
+export const OFFERED_FACTION_IDS_V7: readonly FactionIdV7[] = Object.freeze(
+  FACTION_IDS_V7.filter((faction) => !HIDDEN_FACTION_IDS_V7.includes(faction)),
+);
 export const FACTION_TREE_IDS_V7 = Object.freeze([
   "ORIGINAL_BASELINE_V5",
   "UNDEAD_BASELINE_V1",
@@ -116,6 +144,7 @@ export const FACTION_TREE_IDS_V7 = Object.freeze([
   "ICE_FOLK_BASELINE_V1",
   "DWARF_BASELINE_V1",
   "CANDY_BASELINE_V1",
+  "CULT_BASELINE_V1",
 ] as const);
 export const TERRAIN_IDS_V7 = Object.freeze([
   "GRASS",
@@ -194,6 +223,24 @@ export type NavalRoleIdV7 = (typeof NAVAL_ROLE_IDS_V7)[number];
 export function isNavalRoleV7(role: unknown): role is NavalRoleIdV7 {
   return NAVAL_ROLE_IDS_V7.includes(role as NavalRoleIdV7);
 }
+/**
+ * The Cultists (`pulp_wars-mch9.3`, docs/product/RULESET_7_CULTISTS.md
+ * section 4.2): the IDs of the Cult's summoned units, in the frozen order:
+ * the Horror, the Herald, and the wild Tentacle. They are never trained,
+ * hired, found, or rewarded, so they are **not** `UNIT_ROLE_IDS_V7` entries:
+ * no faction's role table has a slot for them, no setup, Showcase, Gallery
+ * role row, or training list reads them, and no unit in a state carries one
+ * yet. Their numbers are registered in `CULT_SUMMONED_ROLE_RULES_V7`
+ * (src/engine/rules/ruleset-v7.ts); the beads that put them on the board
+ * (`pulp_wars-mch9.5`, `.6`, `.7`, `.8`) add the state that names a unit's
+ * summoned role, as the neutral registration names a breed.
+ */
+export const SUMMONED_ROLE_IDS_V7 = Object.freeze([
+  "HORROR",
+  "HERALD",
+  "TENTACLE",
+] as const);
+export type SummonedRoleIdV7 = (typeof SUMMONED_ROLE_IDS_V7)[number];
 export const TECHNOLOGY_IDS_V7 = Object.freeze([
   "GATHERING",
   "FARMING",

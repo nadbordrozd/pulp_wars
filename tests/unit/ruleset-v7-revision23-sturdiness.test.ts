@@ -230,7 +230,11 @@ describe("ruleset-7 revision-20 section 6.3 sturdiness numbers", () => {
     // The Candy revision (`pulp_wars-jdb.3`) adds an eighth faction
     // (docs/product/RULESET_7_CANDY.md section 3).
     expect(hp("CANDY")).toEqual([10, 10, 8, 18, 10, 10, 14, 40]);
-    expect(FACTION_IDS_V7).toHaveLength(8);
+    // The Cult registration (`pulp_wars-mch9.3`) adds a ninth faction
+    // (docs/product/RULESET_7_CULTISTS.md section 4.1): Initiate, Familiar,
+    // Hexer, Idol Bearer, Summoner, Stargazer, Caller, Thing in the Cellar.
+    expect(hp("CULT")).toEqual([10, 8, 9, 16, 10, 10, 12, 40]);
+    expect(FACTION_IDS_V7).toHaveLength(9);
   });
 
   it("changes only maximum HP: the Human core roles keep every other value", () => {

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
-  FACTION_IDS_V7,
+  OFFERED_FACTION_IDS_V7,
   UNIT_ROLE_IDS_V7,
   effectiveRoleRuleV7,
   isNavalRoleV7,
@@ -31,7 +31,7 @@ import { roleGlossaryV7 } from "../../src/render/unit-glossary-v7";
 /** The Gallery's pure model (bead pulp_wars-ic8). */
 describe("Gallery presentation", () => {
   it("has one column per registered faction and one row per role", () => {
-    expect(GALLERY_FACTIONS_V7).toEqual(FACTION_IDS_V7);
+    expect(GALLERY_FACTIONS_V7).toEqual(OFFERED_FACTION_IDS_V7);
     expect(GALLERY_UNIT_ROWS_V7).toEqual([
       ...UNIT_ROLE_IDS_V7,
       "TRANSPORT",
@@ -40,7 +40,7 @@ describe("Gallery presentation", () => {
   });
 
   it("fills every role cell with the faction's own unit and art", () => {
-    for (const faction of FACTION_IDS_V7)
+    for (const faction of OFFERED_FACTION_IDS_V7)
       for (const role of UNIT_ROLE_IDS_V7) {
         const cell = galleryUnitCellV7(role, faction);
         // The frozen sea: the Ice Folk have no ships (an empty cell).
@@ -66,7 +66,7 @@ describe("Gallery presentation", () => {
   });
 
   it("shows the Egg only for the faction that lays Eggs", () => {
-    for (const faction of FACTION_IDS_V7)
+    for (const faction of OFFERED_FACTION_IDS_V7)
       expect(galleryUnitCellV7("EGG", faction).kind).toBe(
         faction === "DINOSAUR" ? "UNIT" : "EMPTY",
       );
@@ -280,7 +280,7 @@ describe("Gallery presentation", () => {
 
 describe("Gallery animation preview scenes", () => {
   it("plays every role's first cue on the demo board", () => {
-    for (const faction of FACTION_IDS_V7)
+    for (const faction of OFFERED_FACTION_IDS_V7)
       for (const role of UNIT_ROLE_IDS_V7) {
         // A faction without the role has an empty cell (Ice Folk ships).
         if (galleryUnitCellV7(role, faction).kind === "EMPTY") continue;

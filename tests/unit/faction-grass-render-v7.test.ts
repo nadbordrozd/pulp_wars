@@ -63,7 +63,7 @@ describe("the faction grass switch", () => {
     expect(factionGrassEnabledV7()).toBe(true);
   });
 
-  it("gives every faction but the Humans and the Ice Folk a ground", () => {
+  it("gives every faction but the Humans, the Ice Folk and the Cultists a ground", () => {
     const expected: Record<FactionIdV7, FactionGrassIdV7 | null> = {
       ORIGINAL: null,
       UNDEAD: "UNDEAD",
@@ -74,6 +74,9 @@ describe("the faction grass switch", () => {
       ICE_FOLK: null,
       DWARF: "DWARF",
       CANDY: "CANDY",
+      // The Cultists (`pulp_wars-mch9.3`) are registered without art: their
+      // territory is the default Grass until their art bead.
+      CULT: null,
     };
     for (const [faction, id] of Object.entries(expected))
       expect(factionGrassIdV7(faction as FactionIdV7)).toBe(id);

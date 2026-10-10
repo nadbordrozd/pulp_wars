@@ -71,14 +71,15 @@ function acceptAll(mixes: readonly (readonly FactionIdV7[])[]): number {
 describe("ruleset-7 revision-18 Showcase setup: every faction mix", () => {
   // The Ice Folk revision: six factions (36, 216, and 1296 mixes); the
   // Dwarf revision: seven (49, 343, and 2401 mixes); the Candy revision:
-  // eight (64, 512, and 4096 mixes).
-  it("has eight factions", () => {
-    expect(FACTION_IDS_V7).toHaveLength(8);
+  // eight (64, 512, and 4096 mixes); the Cult registration
+  // (`pulp_wars-mch9.3`): nine (81, 729, and 6561 mixes).
+  it("has nine factions", () => {
+    expect(FACTION_IDS_V7).toHaveLength(9);
   });
 
   it.each([
-    [2, 64],
-    [3, 512],
+    [2, 81],
+    [3, 729],
   ] as const)(
     "accepts SHOWCASE at 16 for every %i-seat faction mix (%i mixes)",
     { timeout: 120_000 },
@@ -87,12 +88,12 @@ describe("ruleset-7 revision-18 Showcase setup: every faction mix", () => {
     },
   );
 
-  // The 4096 four-seat mixes, one partition of 512 per Human-seat faction.
+  // The 6561 four-seat mixes, one partition of 729 per Human-seat faction.
   it.each(FACTION_IDS_V7)(
     "accepts SHOWCASE at 16 for every 4-seat faction mix with %s in the first seat",
     { timeout: 120_000 },
     (faction) => {
-      expect(acceptAll(factionMixes(4, [faction]))).toBe(512);
+      expect(acceptAll(factionMixes(4, [faction]))).toBe(729);
     },
   );
 

@@ -83,7 +83,12 @@ import { rewardStateV7 } from "../fixtures/v7-dinosaur-arena";
  * otherwise.
  */
 
-const SIGNATURE_OF: Readonly<Record<FactionIdV7, string>> = {
+/**
+ * The Cultists (`pulp_wars-mch9.3`): the Thing in the Cellar is registered
+ * without a signature; Anchor arrives with its own bead
+ * (`pulp_wars-mch9.5`), so its entry is null until then.
+ */
+const SIGNATURE_OF: Readonly<Record<FactionIdV7, string | null>> = {
   ORIGINAL: "CRUSH",
   UNDEAD: "SWALLOW",
   GOBLIN: "TOSS",
@@ -92,6 +97,7 @@ const SIGNATURE_OF: Readonly<Record<FactionIdV7, string>> = {
   ICE_FOLK: "GLACIAL_SMASH",
   DWARF: "SIEGE_HAMMER",
   CANDY: "BREAK_OFF",
+  CULT: null,
 };
 
 function field(
@@ -156,14 +162,14 @@ describe("the giants' signatures: the identity", () => {
   // Monument skin rule (`pulp_wars-eu3r.3`) 7r69, and the Vampire and
   // Banshee rework (`pulp_wars-ty6i`) 7r70.
   it("was 7r62 after 7r61, whose save keys are obsolete", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r70");
-    expect(PRIOR_RULESET_7_IDS.slice(-9, -7)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r71");
+    expect(PRIOR_RULESET_7_IDS.slice(-10, -8)).toEqual([
       "pulp-wars-poc-7r61",
       "pulp-wars-poc-7r62",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r70.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-9, -7)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r71.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-10, -8)).toEqual([
       "pulpWars.save.v7r61.current",
       "pulpWars.save.v7r62.current",
     ]);
@@ -177,7 +183,10 @@ describe("the giants' signatures: the registry", () => {
       const signatures = GIANT_SIGNATURES_V7.filter((ability) =>
         rule.abilities.includes(ability),
       );
-      expect(signatures, faction).toEqual([SIGNATURE_OF[faction]]);
+      const signature = SIGNATURE_OF[faction];
+      expect(signatures, faction).toEqual(
+        signature === null ? [] : [signature],
+      );
       // Push stays only on the Human Juggernaut (G1).
       expect(rule.abilities.includes("PUSH"), faction).toBe(
         faction === "ORIGINAL",

@@ -14,7 +14,7 @@ import {
   synthRecipeDurationMsV1,
   type SoundThemeEntryV1,
 } from "../../src/audio/index";
-import { FACTION_IDS_V7 } from "../../src/engine/index";
+import { OFFERED_FACTION_IDS_V7 } from "../../src/engine/index";
 import {
   GALLERY_SOUND_GENERATED_TEXT_V7,
   GALLERY_SOUND_GROUP_IDS_V7,
@@ -205,7 +205,7 @@ describe("Gallery sounds", () => {
     const themes = gallerySoundGroupsV7().at(-1);
     expect(themes?.id).toBe("THEMES");
     expect(themes?.entries.map((entry) => entry.faction)).toEqual([
-      ...FACTION_IDS_V7,
+      ...OFFERED_FACTION_IDS_V7,
       null,
     ]);
     for (const entry of themes?.entries ?? []) {
@@ -244,7 +244,7 @@ describe("Gallery sounds", () => {
     const themes = gallerySoundGroupsV7([]).at(-1);
     expect(themes?.id).toBe("THEMES");
     expect(themes?.entries.map((entry) => entry.faction)).toEqual([
-      ...FACTION_IDS_V7,
+      ...OFFERED_FACTION_IDS_V7,
     ]);
     for (const entry of themes?.entries ?? []) {
       expect(entry.key).toBeNull();
@@ -271,7 +271,7 @@ describe("Gallery sounds", () => {
   it("makes a faction's row playable once its theme is in the manifest", () => {
     const themes = gallerySoundGroupsV7([TEST_THEME]).at(-1);
     const undead = themes?.entries.find((entry) => entry.faction === "UNDEAD");
-    expect(themes?.entries).toHaveLength(FACTION_IDS_V7.length);
+    expect(themes?.entries).toHaveLength(OFFERED_FACTION_IDS_V7.length);
     expect(undead).toMatchObject({
       key: "theme.undead",
       rowId: "theme:UNDEAD",
@@ -286,7 +286,7 @@ describe("Gallery sounds", () => {
       themes?.entries
         .filter((entry) => entry.key === null)
         .map((entry) => entry.faction),
-    ).toEqual(FACTION_IDS_V7.filter((faction) => faction !== "UNDEAD"));
+    ).toEqual(OFFERED_FACTION_IDS_V7.filter((faction) => faction !== "UNDEAD"));
   });
 
   it("keeps the theme manifest well formed", () => {
@@ -301,7 +301,7 @@ describe("Gallery sounds", () => {
     for (const theme of SOUND_THEMES_V1) {
       expect(theme.id.startsWith("theme.")).toBe(true);
       if (theme.faction === null) expect(theme.label).toBe("Title");
-      else expect(FACTION_IDS_V7).toContain(theme.faction);
+      else expect(OFFERED_FACTION_IDS_V7).toContain(theme.faction);
       expect((SOUND_IDS_V1 as readonly string[]).includes(theme.id)).toBe(
         false,
       );
