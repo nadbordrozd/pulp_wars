@@ -68,6 +68,14 @@ export type ChibiRecipeClass =
   /** Undead ability effect sprites for the effects canvas (vkq.14). */
   | "effect"
   /**
+   * An effect sprite in a faction's own accent (bead pulp_wars-mch9.23, the
+   * Cult's green flame, teal tentacles and brass): the effect class with a
+   * negative text that does not forbid green, teal, yellow and creatures.
+   * The effect class's negative ("bright green, lime, teal, yellow, gold")
+   * drew a green ring grey and a green chain link brass.
+   */
+  | "accent-effect"
+  /**
    * The calmer building style of the new visual direction (bead
    * pulp_wars-3tq.5): a smaller, simpler improvement with a toned outline
    * and no owner colour, in the shared neutral materials.
@@ -267,12 +275,20 @@ export const CHIBI_CLASS_RECIPES: Readonly<
   // 3 names cloth and flames (the Cult's summoned things, its Familiar and
   // the frog of Ribbit). No faction layer; the subject line carries the
   // palette, and the batch's accent preset still pins it. A RESOURCE (the
-  // frog marker) is made the same way at its own canvas.
+  // frog marker) is made the same way at its own canvas, and so is a
+  // PORTRAIT (bead pulp_wars-mch9.23): the whole creature at 48 x 48 for
+  // the interface, where the portrait and icon classes would send layer 3.
   creature: {
     camera: "three-quarter",
     factionLayer: false,
     light: true,
-    assetClasses: ["STANDARD_UNIT", "LARGE_UNIT", "GIANT_UNIT", "RESOURCE"],
+    assetClasses: [
+      "STANDARD_UNIT",
+      "LARGE_UNIT",
+      "GIANT_UNIT",
+      "RESOURCE",
+      "PORTRAIT",
+    ],
     generators: ["create-image-pixen"],
     editPass: true,
     noBackground: true,
@@ -440,6 +456,20 @@ export const CHIBI_CLASS_RECIPES: Readonly<
     factionLayer: false,
     assetClasses: ["EFFECT"],
     generators: ["create-image-pixen", "create-image-pixflux"],
+    editPass: true,
+    noBackground: true,
+    derivation: "palette-map",
+    options: EFFECT_OPTIONS,
+  },
+  // Bead pulp_wars-mch9.23: the Cult's effects are green, teal and brass,
+  // which the effect class's negative text forbids (it keeps the player
+  // colours out of the Undead frost). Same camera, options and palette map;
+  // the asset's palette alone pins the colours.
+  "accent-effect": {
+    camera: "icon",
+    factionLayer: false,
+    assetClasses: ["EFFECT"],
+    generators: ["create-image-pixen"],
     editPass: true,
     noBackground: true,
     derivation: "palette-map",
@@ -1312,7 +1342,7 @@ export function requestBody(
 }
 
 const SUBJECT_PATTERN =
-  /^(TERRAIN|RESOURCE|IMPROVEMENT|UNIT|PORTRAIT):[A-Z_]+$|^(UNIT|PORTRAIT|IMPROVEMENT):(UNDEAD|GOBLIN|DINOSAUR|MARTIAN|ICE_FOLK|DWARF|CANDY|CULT):[A-Z_]+$|^ICON:(TECH|ACTION|REWARD|HUD):(UNDEAD:|GOBLIN:|DINOSAUR:|MARTIAN:|ICE_FOLK:|DWARF:|CANDY:|CULT:)?[A-Z_]+$|^ICON:STATUS:(SHIELD|COOLING|CHILLED|FROZEN|CLOCKWORK|DUG_IN|RUSHED|CRASHED|SPLATTED|STUCK|TOOTHACHE)$|^CITY:((UNDEAD|GOBLIN|DINOSAUR|MARTIAN|ICE_FOLK|DWARF|CANDY|CULT):)?[123]$|^SITE:VILLAGE$|^TREASURE$|^GRAVE$|^CRUMBS$|^FROG$|^STATUS:(PLAGUED|BITTEN|PROVOKED)$|^EFFECT:[A-Z_]+$|^CURIOSITY:(WEB|FOUNTAIN|SHRINE|WRECK|DOWNED_SAUCER|GRAVEYARD|GATE|WISHING_WELL)$|^ICON:CURIOSITY:(WEB|FOUNTAIN|SHRINE|WRECK|BOUNTY|DOWNED_SAUCER|GRAVEYARD|GATE|BIGFOOT|WISHING_WELL)$|^OVERLAY:ICEBOUND$|^IMPROVEMENT:MONUMENT:((UNDEAD|GOBLIN|DINOSAUR|MARTIAN|ICE_FOLK|DWARF|CANDY|CULT)(:(EXPLORER|ENGINEER|MUSTER|CONQUEROR|LAND_BARON|SEA_DOG|SLAYER))?|EXPLORER|ENGINEER|MUSTER|CONQUEROR|LAND_BARON|SEA_DOG|SLAYER)$/;
+  /^(TERRAIN|RESOURCE|IMPROVEMENT|UNIT|PORTRAIT):[A-Z_]+$|^(UNIT|PORTRAIT|IMPROVEMENT):(UNDEAD|GOBLIN|DINOSAUR|MARTIAN|ICE_FOLK|DWARF|CANDY|CULT):[A-Z_]+$|^ICON:(TECH|ACTION|REWARD|HUD):(UNDEAD:|GOBLIN:|DINOSAUR:|MARTIAN:|ICE_FOLK:|DWARF:|CANDY:|CULT:)?[A-Z_]+$|^ICON:STATUS:(SHIELD|COOLING|CHILLED|FROZEN|CLOCKWORK|DUG_IN|RUSHED|CRASHED|SPLATTED|STUCK|TOOTHACHE|CANDLELIT|FROG|UNBOUND|FURIOUS|GRABBED|COWED|WARDED|PICK_ME)$|^CITY:((UNDEAD|GOBLIN|DINOSAUR|MARTIAN|ICE_FOLK|DWARF|CANDY|CULT):)?[123]$|^SITE:VILLAGE$|^TREASURE$|^GRAVE$|^CRUMBS$|^FROG$|^STATUS:(PLAGUED|BITTEN|PROVOKED)$|^EFFECT:[A-Z_]+$|^CURIOSITY:(WEB|FOUNTAIN|SHRINE|WRECK|DOWNED_SAUCER|GRAVEYARD|GATE|WISHING_WELL)$|^ICON:CURIOSITY:(WEB|FOUNTAIN|SHRINE|WRECK|BOUNTY|DOWNED_SAUCER|GRAVEYARD|GATE|BIGFOOT|WISHING_WELL)$|^OVERLAY:ICEBOUND$|^IMPROVEMENT:MONUMENT:((UNDEAD|GOBLIN|DINOSAUR|MARTIAN|ICE_FOLK|DWARF|CANDY|CULT)(:(EXPLORER|ENGINEER|MUSTER|CONQUEROR|LAND_BARON|SEA_DOG|SLAYER))?|EXPLORER|ENGINEER|MUSTER|CONQUEROR|LAND_BARON|SEA_DOG|SLAYER)$/;
 const ID_PATTERN = /^chibi-[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const RECIPE_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const SHA_PATTERN = /^[a-f0-9]{64}$/;

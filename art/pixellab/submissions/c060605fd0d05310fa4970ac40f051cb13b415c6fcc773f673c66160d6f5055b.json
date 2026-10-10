@@ -1,0 +1,64 @@
+{
+  "id": "portrait-herald-a",
+  "jobId": "sync-200f726d-9c8b-43d8-abae-d105965c63c8",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "interface-cult",
+    "asset": "chibi-direction-portrait-cult-herald",
+    "subject": "PORTRAIT:CULT:HERALD",
+    "faction": "CULT",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 93101,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "side",
+      "direction": "south-east"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-portrait.txt",
+        "text": "Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image."
+      },
+      {
+        "layer": "faction",
+        "source": "docs/art/factions/CULT.md#prompt-fragment + docs/art/factions/CULT.md#negative-fragment",
+        "text": "Faction: a pulp-magazine secret society of the 1920s, mock-sinister, silly and never scary. Their fixed colours: soft midnight indigo cloth shaded deeper violet-blue, never black; pale cream candle wax and parchment; small pieces of warm polished brass; and exactly one accent colour, a bright glowing spring green, only as small flames and glows: candle flames, lamp glass, an eye-in-a-spiral sign.",
+        "negative": "blood, gore, guts, dripping, horror, creepy realism, slime, skull, bone, black cloth, grey cloth, torn cloth, ragged hems, purple, violet, magenta, pink, red cloth, red robe, orange flames, yellow flames, blue flames, gold armour, chrome, steel armour, sword, gun, pentagram, cross, large glowing area"
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-portrait.txt + scripts/art/chibi/fragments/class-portrait.negative.txt",
+        "text": "Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels.",
+        "negative": "full body, legs, feet, standing figure, pedestal, base, plinth, frame, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, text"
+      },
+      {
+        "layer": "subject",
+        "source": "scripts/art/chibi/subjects/CULT.json",
+        "text": "Subject: Herald portrait, the top of a chunky cute towering robed herald: in place of a head one huge round pale yellow eye with a black pupil, filling the middle of the image, under a crown of many short thick curling deep-sea teal tentacles with pale cream suckers, a polished brass collar ring under the eye, and below it the shoulders of a bright royal blue robe sprinkled with a few small pale cream stars; no face, no nose, no mouth, no hands; pompous and silly, not scary; simple shapes and very few details."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "A close-up: the huge eye with its tentacle crown and the collar fill the whole square. The cloth is a bright saturated royal blue, clearly blue and much lighter than the black outline, never grey, charcoal, navy or black.",
+        "negative": "face, nose, mouth, skin, hair, hands, human, person, second eye, two eyes, hood, hat"
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: a pulp-magazine secret society of the 1920s, mock-sinister, silly and never scary. Their fixed colours: soft midnight indigo cloth shaded deeper violet-blue, never black; pale cream candle wax and parchment; small pieces of warm polished brass; and exactly one accent colour, a bright glowing spring green, only as small flames and glows: candle flames, lamp glass, an eye-in-a-spiral sign. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Subject: Herald portrait, the top of a chunky cute towering robed herald: in place of a head one huge round pale yellow eye with a black pupil, filling the middle of the image, under a crown of many short thick curling deep-sea teal tentacles with pale cream suckers, a polished brass collar ring under the eye, and below it the shoulders of a bright royal blue robe sprinkled with a few small pale cream stars; no face, no nose, no mouth, no hands; pompous and silly, not scary; simple shapes and very few details. A close-up: the huge eye with its tentacle crown and the collar fill the whole square. The cloth is a bright saturated royal blue, clearly blue and much lighter than the black outline, never grey, charcoal, navy or black.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, blood, gore, guts, dripping, horror, creepy realism, slime, skull, bone, black cloth, grey cloth, torn cloth, ragged hems, purple, violet, magenta, pink, red cloth, red robe, orange flames, yellow flames, blue flames, gold armour, chrome, steel armour, sword, gun, pentagram, cross, large glowing area, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, face, nose, mouth, skin, hair, hands, human, person, second eye, two eyes, hood, hat",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: a pulp-magazine secret society of the 1920s, mock-sinister, silly and never scary. Their fixed colours: soft midnight indigo cloth shaded deeper violet-blue, never black; pale cream candle wax and parchment; small pieces of warm polished brass; and exactly one accent colour, a bright glowing spring green, only as small flames and glows: candle flames, lamp glass, an eye-in-a-spiral sign. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Subject: Herald portrait, the top of a chunky cute towering robed herald: in place of a head one huge round pale yellow eye with a black pupil, filling the middle of the image, under a crown of many short thick curling deep-sea teal tentacles with pale cream suckers, a polished brass collar ring under the eye, and below it the shoulders of a bright royal blue robe sprinkled with a few small pale cream stars; no face, no nose, no mouth, no hands; pompous and silly, not scary; simple shapes and very few details. A close-up: the huge eye with its tentacle crown and the collar fill the whole square. The cloth is a bright saturated royal blue, clearly blue and much lighter than the black outline, never grey, charcoal, navy or black. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, blood, gore, guts, dripping, horror, creepy realism, slime, skull, bone, black cloth, grey cloth, torn cloth, ragged hems, purple, violet, magenta, pink, red cloth, red robe, orange flames, yellow flames, blue flames, gold armour, chrome, steel armour, sword, gun, pentagram, cross, large glowing area, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, face, nose, mouth, skin, hair, hands, human, person, second eye, two eyes, hood, hat."
+  }
+}

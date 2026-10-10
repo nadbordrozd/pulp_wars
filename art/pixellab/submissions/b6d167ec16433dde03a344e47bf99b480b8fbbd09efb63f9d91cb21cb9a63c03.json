@@ -1,0 +1,37 @@
+{
+  "id": "cult-portrait-battleship-a",
+  "jobId": "29633f37-c792-47b6-a58e-169484dacccf",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-cult",
+    "asset": "chibi-naval-cult-portrait-battleship",
+    "subject": "PORTRAIT:CULT:BATTLESHIP",
+    "faction": "CULT",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 92111,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Turn it into a secret-society galleon: the hull becomes indigo-blue wood #4a43b5 with shade #372f8f and polished brass trim #c9a24a; the grey stone castles become round polished brass domes; the red sails become pale cream #f3e7c4 sails, the big one with one indigo eye-in-a-spiral sign; the red pennants become small lanterns with bright green flames. Nothing red. Keep the ship shape, size, thick black outline and art style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Turn it into a secret-society galleon: the hull becomes indigo-blue wood #4a43b5 with shade #372f8f and polished brass trim #c9a24a; the grey stone castles become round polished brass domes; the red sails become pale cream #f3e7c4 sails, the big one with one indigo eye-in-a-spiral sign; the red pennants become small lanterns with bright green flames. Nothing red. Keep the ship shape, size, thick black outline and art style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Turn it into a secret-society galleon: the hull becomes indigo-blue wood #4a43b5 with shade #372f8f and polished brass trim #c9a24a; the grey stone castles become round polished brass domes; the red sails become pale cream #f3e7c4 sails, the big one with one indigo eye-in-a-spiral sign; the red pennants become small lanterns with bright green flames. Nothing red. Keep the ship shape, size, thick black outline and art style the same, on a transparent background.",
+    "editInstruction": "Turn it into a secret-society galleon: the hull becomes indigo-blue wood #4a43b5 with shade #372f8f and polished brass trim #c9a24a; the grey stone castles become round polished brass domes; the red sails become pale cream #f3e7c4 sails, the big one with one indigo eye-in-a-spiral sign; the red pennants become small lanterns with bright green flames. Nothing red. Keep the ship shape, size, thick black outline and art style the same, on a transparent background.",
+    "source": {
+      "batch": "5",
+      "recipe": "portrait-battleship-b",
+      "candidate": 0,
+      "sha256": "7ad384ea7048e910e14443de77e5b649cf8e3df1ee23c3bf92d576d2dbbb8d58"
+    }
+  }
+}

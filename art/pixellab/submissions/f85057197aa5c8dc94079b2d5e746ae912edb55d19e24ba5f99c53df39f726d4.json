@@ -1,0 +1,36 @@
+{
+  "id": "effect-summon-pop-b-clean",
+  "jobId": "c84ae934-a768-4caa-8987-46571a5c7743",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "effects-cult",
+    "asset": "chibi-direction-effect-cult-summon-pop",
+    "subject": "EFFECT:SUMMON_POP",
+    "faction": "CULT",
+    "recipeClass": "accent-effect",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 94023,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only one thing: erase the stack of brown and blue blocks under the ring completely, leaving that area transparent, so the ring floats alone. Do not redraw anything else: keep the ring, the bright green rays shooting up from it, the cream stars above it, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only one thing: erase the stack of brown and blue blocks under the ring completely, leaving that area transparent, so the ring floats alone. Do not redraw anything else: keep the ring, the bright green rays shooting up from it, the cream stars above it, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only one thing: erase the stack of brown and blue blocks under the ring completely, leaving that area transparent, so the ring floats alone. Do not redraw anything else: keep the ring, the bright green rays shooting up from it, the cream stars above it, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only one thing: erase the stack of brown and blue blocks under the ring completely, leaving that area transparent, so the ring floats alone. Do not redraw anything else: keep the ring, the bright green rays shooting up from it, the cream stars above it, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "effect-summon-pop-b",
+      "candidate": 0,
+      "sha256": "e98cc567407b7b9f67736dc5983a436ec0755a6160381cb3aa75a094d51c7e93"
+    }
+  }
+}

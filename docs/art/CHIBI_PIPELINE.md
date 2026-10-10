@@ -78,6 +78,7 @@ the Human-era owner text they were generated with.
 | `icon`            | Pixen, low top-down, no direction                                           | the candidate: a 48 x 48 (HUD 32 x 32) interface item sprite; also whole ships, the Catapult, the Egg                |
 | `status`          | Pixen, flat camera, side view                                               | the candidate palette-mapped: a 32 x 32 board status marker                                                          |
 | `effect`          | Pixen, icon camera, side view                                               | the candidate palette-mapped: an ability effect sprite up to 48 x 48                                                 |
+| `accent-effect`   | as `effect`, with a negative text that allows green, teal and yellow        | as `effect`: an effect in a faction's own accent (the Cult's green and teal, bead `pulp_wars-mch9.23`)               |
 | `calm-building`   | Pixen (selective outline), then optional edit; calm style, no faction layer | **seated**: the calm improvement set of the new direction                                                            |
 | `calm-settlement` | as `calm-building`                                                          | **seated**: cities and the Village in the calm style                                                                 |
 | `crop-rows`       | Pixen or Pixflux, crops on strips of soil, then edits; no faction layer     | **crop-rows**: the Farm as a seamless pattern of crop rows                                                           |
@@ -1981,3 +1982,65 @@ What PixelLab did, added to the prompt notes of the earlier batches:
 the docks on Shallow Water, the Monuments), `places-compare-x2.png` (the
 Cult's cities and buildings above the Human, Undead and Dwarf ones),
 `places.json` and `candidates-{cities,buildings,monuments}-x2.png`.
+<!-- pulp_wars-mch9.23: begin -->
+
+## The Cult interface batches (bead `pulp_wars-mch9.23`)
+
+Batches `interface-cult` (the twelve unit portraits, three technology
+icons, eighteen command and ability icons and eleven HUD and status icons
+of the [Cultists](factions/CULT.md#the-interface-batches)) and
+`effects-cult` (fifteen effect sprites), and three ship portraits added to
+`naval-cult`: 62 accepted rasters from 104 new PixelLab calls (seeds 93001
+to 93603, 94001 to 94141 and 92101 to 92121). They are registered in
+[`chibi-direction-cult-interface-art-manifest.ts`](../../src/assets/chibi-direction-cult-interface-art-manifest.ts)
+and with the Cult fleet. They added these pipeline pieces:
+
+- **Recipe class `accent-effect`** (`class-accent-effect.txt`): the
+  `effect` class (icon camera, no faction layer, palette map) with a
+  negative text that does not forbid green, teal, yellow and creatures. The
+  `effect` text keeps the player colours out of the Undead frost; under it
+  a green ring was drawn grey and a green chain link brass.
+- **The `creature` class makes a `PORTRAIT`**: a clothless creature whole
+  at 48 x 48, sent without the faction layer.
+- **Accent presets `cult-lodge-icon` and `cult-summoned-icon`**
+  ([`accent.ts`](../../scripts/art/chibi/accent.ts)), chains of four bands
+  (`then` nests): the green from hue 66; every blue from hue 196 to the
+  lodge's indigo, or to the summoned teal; purple shading to the same hue;
+  saturated red to a brass brown, hue 28. `cult-green` and `cult-lodge`
+  are unchanged, and the Furious chip, whose red eyes are its subject,
+  keeps `cult-green`.
+- **Palette `cult-green.png`**, written by
+  `npx tsx scripts/art/cult-direction/green-palette.ts` (a test checks the
+  bytes).
+- **Subjects**: the manifest's subject pattern accepts the eight Cult
+  status names (`ICON:STATUS:{CANDLELIT,FROG,UNBOUND,FURIOUS,GRABBED,COWED,WARDED,PICK_ME}`).
+
+What worked, added to the prompt notes of the earlier batches:
+
+- **Measure before editing a colour.** Twelve first candidates carried
+  violet shading or a steel blue where teal was asked; two presets fixed
+  them all with no call, as the Candy pink was fixed.
+- **A sibling edit crosses asset kinds.** The Boo! icon is a sibling edit
+  of the accepted Horror portrait ("a close-up of only this monster's
+  face"), and the Pick Me! chip a sibling of the Pick Me! icon with its
+  starburst erased: same canvas, so the pipeline allows it, and the two
+  show the same thing.
+- **A part of a body draws the body** unless the line says "there is no
+  person in the image: only one sleeve with its mitten", or "one single
+  limb, like an elephant trunk".
+- **A recolour edit that names two hex values** (the lit tone and its
+  shade) turned four yellow effects green at the first call each; an erase
+  edit that names what stays removed five stands and stray objects.
+- **A generate run of 36 recipes takes about 20 minutes** when another
+  worker is generating too (creations 25 to 45 s each, edits about a
+  minute); run it in the background and review the finished ones meanwhile.
+
+`npm run art:chibi-cult-direction-review` also writes `portraits-x4.png`,
+`icons-x4.png`, `icons-small-1x.png`, `markers-x3.png`,
+`effects-{x3,1x}.png`, `effects-zoom-0.75-x2.png`, the three
+`candidates-{interface,effects,naval-portraits}-x4.png` sheets and
+`interface.json`
+([`interface-review.ts`](../../scripts/art/cult-direction/interface-review.ts)).
+It still starts no browser.
+
+<!-- pulp_wars-mch9.23: end -->

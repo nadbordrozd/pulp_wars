@@ -1,0 +1,550 @@
+{
+  "schemaVersion": 1,
+  "batch": "effects-cult",
+  "title": "Cultists of the Ancient Ones, the ability effect sprites, palette-mapped to cult-green.png",
+  "bead": "pulp_wars-mch9.23",
+  "faction": "CULT",
+  "dryRun": false,
+  "fixedFactionColours": true,
+  "assets": [
+    {
+      "id": "chibi-direction-effect-cult-sacrifice-puff",
+      "subject": "EFFECT:SACRIFICE_PUFF",
+      "assetClass": "EFFECT",
+      "recipeClass": "accent-effect",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "palette": {
+        "path": "scripts/art/chibi/palettes/cult-green.png",
+        "sha256": "4699465ad1a0c1ce795e2eb9f7dff57b4a4b848eca8a5075a65caf8256b5c252"
+      }
+    },
+    {
+      "id": "chibi-direction-effect-cult-seize",
+      "subject": "EFFECT:SEIZE",
+      "assetClass": "EFFECT",
+      "recipeClass": "accent-effect",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "palette": {
+        "path": "scripts/art/chibi/palettes/cult-green.png",
+        "sha256": "4699465ad1a0c1ce795e2eb9f7dff57b4a4b848eca8a5075a65caf8256b5c252"
+      }
+    },
+    {
+      "id": "chibi-direction-effect-cult-summon-pop",
+      "subject": "EFFECT:SUMMON_POP",
+      "assetClass": "EFFECT",
+      "recipeClass": "accent-effect",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "palette": {
+        "path": "scripts/art/chibi/palettes/cult-green.png",
+        "sha256": "4699465ad1a0c1ce795e2eb9f7dff57b4a4b848eca8a5075a65caf8256b5c252"
+      }
+    },
+    {
+      "id": "chibi-direction-effect-cult-strand-snap",
+      "subject": "EFFECT:STRAND_SNAP",
+      "assetClass": "EFFECT",
+      "recipeClass": "accent-effect",
+      "canvas": {
+        "width": 40,
+        "height": 40
+      },
+      "palette": {
+        "path": "scripts/art/chibi/palettes/cult-green.png",
+        "sha256": "4699465ad1a0c1ce795e2eb9f7dff57b4a4b848eca8a5075a65caf8256b5c252"
+      }
+    },
+    {
+      "id": "chibi-direction-effect-cult-unbound",
+      "subject": "EFFECT:UNBOUND",
+      "assetClass": "EFFECT",
+      "recipeClass": "accent-effect",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "palette": {
+        "path": "scripts/art/chibi/palettes/cult-green.png",
+        "sha256": "4699465ad1a0c1ce795e2eb9f7dff57b4a4b848eca8a5075a65caf8256b5c252"
+      }
+    },
+    {
+      "id": "chibi-direction-effect-cult-starfall-star",
+      "subject": "EFFECT:STARFALL_STAR",
+      "assetClass": "EFFECT",
+      "recipeClass": "accent-effect",
+      "canvas": {
+        "width": 40,
+        "height": 40
+      },
+      "palette": {
+        "path": "scripts/art/chibi/palettes/cult-green.png",
+        "sha256": "4699465ad1a0c1ce795e2eb9f7dff57b4a4b848eca8a5075a65caf8256b5c252"
+      }
+    },
+    {
+      "id": "chibi-direction-effect-cult-starfall-burst",
+      "subject": "EFFECT:STARFALL_BURST",
+      "assetClass": "EFFECT",
+      "recipeClass": "accent-effect",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "palette": {
+        "path": "scripts/art/chibi/palettes/cult-green.png",
+        "sha256": "4699465ad1a0c1ce795e2eb9f7dff57b4a4b848eca8a5075a65caf8256b5c252"
+      }
+    },
+    {
+      "id": "chibi-direction-effect-cult-boo",
+      "subject": "EFFECT:BOO",
+      "assetClass": "EFFECT",
+      "recipeClass": "accent-effect",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "palette": {
+        "path": "scripts/art/chibi/palettes/cult-green.png",
+        "sha256": "4699465ad1a0c1ce795e2eb9f7dff57b4a4b848eca8a5075a65caf8256b5c252"
+      }
+    },
+    {
+      "id": "chibi-direction-effect-cult-ribbit",
+      "subject": "EFFECT:RIBBIT",
+      "assetClass": "EFFECT",
+      "recipeClass": "accent-effect",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "palette": {
+        "path": "scripts/art/chibi/palettes/cult-green.png",
+        "sha256": "4699465ad1a0c1ce795e2eb9f7dff57b4a4b848eca8a5075a65caf8256b5c252"
+      }
+    },
+    {
+      "id": "chibi-direction-effect-cult-switcheroo",
+      "subject": "EFFECT:SWITCHEROO",
+      "assetClass": "EFFECT",
+      "recipeClass": "accent-effect",
+      "canvas": {
+        "width": 40,
+        "height": 40
+      },
+      "palette": {
+        "path": "scripts/art/chibi/palettes/cult-green.png",
+        "sha256": "4699465ad1a0c1ce795e2eb9f7dff57b4a4b848eca8a5075a65caf8256b5c252"
+      }
+    },
+    {
+      "id": "chibi-direction-effect-cult-tentacle-slap",
+      "subject": "EFFECT:TENTACLE_SLAP",
+      "assetClass": "EFFECT",
+      "recipeClass": "effect",
+      "canvas": {
+        "width": 40,
+        "height": 40
+      },
+      "palette": {
+        "path": "scripts/art/chibi/palettes/cult-green.png",
+        "sha256": "4699465ad1a0c1ce795e2eb9f7dff57b4a4b848eca8a5075a65caf8256b5c252"
+      }
+    },
+    {
+      "id": "chibi-direction-effect-cult-proclaim",
+      "subject": "EFFECT:PROCLAIM",
+      "assetClass": "EFFECT",
+      "recipeClass": "accent-effect",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "palette": {
+        "path": "scripts/art/chibi/palettes/cult-green.png",
+        "sha256": "4699465ad1a0c1ce795e2eb9f7dff57b4a4b848eca8a5075a65caf8256b5c252"
+      }
+    },
+    {
+      "id": "chibi-direction-effect-cult-pamphlets",
+      "subject": "EFFECT:PAMPHLETS",
+      "assetClass": "EFFECT",
+      "recipeClass": "accent-effect",
+      "canvas": {
+        "width": 40,
+        "height": 40
+      },
+      "palette": {
+        "path": "scripts/art/chibi/palettes/cult-green.png",
+        "sha256": "4699465ad1a0c1ce795e2eb9f7dff57b4a4b848eca8a5075a65caf8256b5c252"
+      }
+    },
+    {
+      "id": "chibi-direction-effect-cult-favour",
+      "subject": "EFFECT:FAVOUR",
+      "assetClass": "EFFECT",
+      "recipeClass": "accent-effect",
+      "canvas": {
+        "width": 40,
+        "height": 40
+      },
+      "palette": {
+        "path": "scripts/art/chibi/palettes/cult-green.png",
+        "sha256": "4699465ad1a0c1ce795e2eb9f7dff57b4a4b848eca8a5075a65caf8256b5c252"
+      }
+    },
+    {
+      "id": "chibi-direction-effect-cult-ritual-fizzle",
+      "subject": "EFFECT:RITUAL_FIZZLE",
+      "assetClass": "EFFECT",
+      "recipeClass": "accent-effect",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "palette": {
+        "path": "scripts/art/chibi/palettes/cult-green.png",
+        "sha256": "4699465ad1a0c1ce795e2eb9f7dff57b4a4b848eca8a5075a65caf8256b5c252"
+      }
+    }
+  ],
+  "recipes": [
+    {
+      "id": "effect-sacrifice-puff-a",
+      "asset": "chibi-direction-effect-cult-sacrifice-puff",
+      "endpoint": "create-image-pixen",
+      "seed": 94001,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "notes": "Sacrifice and every consumption."
+    },
+    {
+      "id": "effect-sacrifice-puff-b",
+      "asset": "chibi-direction-effect-cult-sacrifice-puff",
+      "endpoint": "create-image-pixen",
+      "seed": 94002,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "flower, petals, chess pawn, vase, bottle, wizard hat brim, face, eyes",
+      "notes": "effect-sacrifice-puff-a drew a six-petalled mint flower round an indigo pawn shape: a second creation that asks for a pointed cone hood in front of the puff."
+    },
+    {
+      "id": "effect-sacrifice-puff-b-green",
+      "asset": "chibi-direction-effect-cult-sacrifice-puff",
+      "endpoint": "edit-image-pixen",
+      "seed": 94003,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "effect-sacrifice-puff-b",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the colour of the round lumps of the puff: the yellow-brown lumps become bright green smoke #00ff78 with darker green #00b85a shading; no yellow or brown is left in them. Do not redraw anything else: keep the blue pointed hood lying on the puff, the shape of the puff, the thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "effect-sacrifice-puff-b is a pointed indigo hood on a round puff, but the puff is yellow-brown lumps: the smoke is the faction green."
+    },
+    {
+      "id": "effect-seize-a",
+      "asset": "chibi-direction-effect-cult-seize",
+      "endpoint": "create-image-pixen",
+      "seed": 94011,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "notes": "Seize."
+    },
+    {
+      "id": "effect-summon-pop-a",
+      "asset": "chibi-direction-effect-cult-summon-pop",
+      "endpoint": "create-image-pixen",
+      "seed": 94021,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "notes": "Effect sample: a Horror or the Herald arriving. Generated with the effect class, whose negative text forbids bright green."
+    },
+    {
+      "id": "effect-summon-pop-b",
+      "asset": "chibi-direction-effect-cult-summon-pop",
+      "endpoint": "create-image-pixen",
+      "seed": 94022,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "notes": "effect-summon-pop-a drew the ring grey (the effect class forbids bright green): the same subject with the accent-effect class."
+    },
+    {
+      "id": "effect-summon-pop-b-clean",
+      "asset": "chibi-direction-effect-cult-summon-pop",
+      "endpoint": "edit-image-pixen",
+      "seed": 94023,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "effect-summon-pop-b",
+        "candidate": 0
+      },
+      "editInstruction": "Change only one thing: erase the stack of brown and blue blocks under the ring completely, leaving that area transparent, so the ring floats alone. Do not redraw anything else: keep the ring, the bright green rays shooting up from it, the cream stars above it, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "effect-summon-pop-b is the ring bursting upward with green rays and cream stars, standing on a plinth of blocks."
+    },
+    {
+      "id": "effect-strand-snap-a",
+      "asset": "chibi-direction-effect-cult-strand-snap",
+      "endpoint": "create-image-pixen",
+      "seed": 94031,
+      "requestSize": {
+        "width": 40,
+        "height": 40
+      },
+      "notes": "Effect sample: a broken strand (the red flash is drawn in code). Generated with the effect class, whose negative text forbids bright green."
+    },
+    {
+      "id": "effect-strand-snap-b",
+      "asset": "chibi-direction-effect-cult-strand-snap",
+      "endpoint": "create-image-pixen",
+      "seed": 94032,
+      "requestSize": {
+        "width": 40,
+        "height": 40
+      },
+      "notes": "effect-strand-snap-a drew the link brass and cream (the effect class forbids bright green): the same subject with the accent-effect class."
+    },
+    {
+      "id": "effect-unbound-a",
+      "asset": "chibi-direction-effect-cult-unbound",
+      "endpoint": "create-image-pixen",
+      "seed": 94041,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "notes": "A daemon becoming Unbound."
+    },
+    {
+      "id": "effect-starfall-star-a",
+      "asset": "chibi-direction-effect-cult-starfall-star",
+      "endpoint": "create-image-pixen",
+      "seed": 94051,
+      "requestSize": {
+        "width": 40,
+        "height": 40
+      },
+      "notes": "The star of Star-fall in flight."
+    },
+    {
+      "id": "effect-starfall-star-a-green",
+      "asset": "chibi-direction-effect-cult-starfall-star",
+      "endpoint": "edit-image-pixen",
+      "seed": 94052,
+      "requestSize": {
+        "width": 40,
+        "height": 40
+      },
+      "source": {
+        "recipe": "effect-starfall-star-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the colour of the curved tail behind the star: the yellow crescent becomes bright green #00ff78 with darker green #00b85a shading on its lower edge; no yellow is left in the tail. Do not redraw anything else: keep the pale cream star, the tail's curved shape, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "effect-starfall-star-a is the cream star with a curved tail, but the tail is golden yellow: the star-fall's light is the faction green."
+    },
+    {
+      "id": "effect-starfall-burst-a",
+      "asset": "chibi-direction-effect-cult-starfall-burst",
+      "endpoint": "create-image-pixen",
+      "seed": 94061,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "notes": "The star of Star-fall landing."
+    },
+    {
+      "id": "effect-starfall-burst-a-green",
+      "asset": "chibi-direction-effect-cult-starfall-burst",
+      "endpoint": "edit-image-pixen",
+      "seed": 94062,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "effect-starfall-burst-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only two things: erase the round stand and its stem under the starburst completely, leaving that area transparent; and recolour the dark brown rays bright green #00ff78, so cream and green rays alternate round the pale flash. Do not redraw anything else: keep the round flash, the cream rays and the sparks, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "effect-starfall-burst-a is a round starburst of cream and brown rays standing on a trophy stand: the stand goes and the dark rays become the faction green."
+    },
+    {
+      "id": "effect-boo-a",
+      "asset": "chibi-direction-effect-cult-boo",
+      "endpoint": "create-image-pixen",
+      "seed": 94071,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "notes": "Boo!"
+    },
+    {
+      "id": "effect-boo-a-teal",
+      "asset": "chibi-direction-effect-cult-boo",
+      "endpoint": "edit-image-pixen",
+      "seed": 94072,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "effect-boo-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the colour of the round dome above the mouth: the yellow-brown cap becomes dark teal #1f8f95 with shade #145f6b, the same colour as the lips, so it reads as the top of a round teal head. Do not redraw anything else: keep the wide mouth with its cream teeth, the dark lips and the ring of cream startle lines, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "effect-boo-a is the wide toothy grin in a ring of startle lines, under a brass dome like a helmet: the dome becomes the Horror's teal."
+    },
+    {
+      "id": "effect-ribbit-a",
+      "asset": "chibi-direction-effect-cult-ribbit",
+      "endpoint": "create-image-pixen",
+      "seed": 94081,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "notes": "Ribbit landing; a frog ending."
+    },
+    {
+      "id": "effect-ribbit-a-green",
+      "asset": "chibi-direction-effect-cult-ribbit",
+      "endpoint": "edit-image-pixen",
+      "seed": 94082,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "effect-ribbit-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the colour of the round lumps under the frog: the yellow lumps become bright green smoke #00ff78 with darker green #00b85a shading; no yellow is left in them. Do not redraw anything else: keep the teal frog with its cream belly, the shape of the puff, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "effect-ribbit-a is the teal frog leaping out of a puff, but the puff is golden yellow lumps, like coins: the puff is green smoke."
+    },
+    {
+      "id": "effect-switcheroo-a",
+      "asset": "chibi-direction-effect-cult-switcheroo",
+      "endpoint": "create-image-pixen",
+      "seed": 94091,
+      "requestSize": {
+        "width": 40,
+        "height": 40
+      },
+      "notes": "Switcheroo, drawn on both tiles."
+    },
+    {
+      "id": "effect-tentacle-slap-a",
+      "asset": "chibi-direction-effect-cult-tentacle-slap",
+      "endpoint": "create-image-pixen",
+      "seed": 94101,
+      "requestSize": {
+        "width": 40,
+        "height": 40
+      },
+      "notes": "Effect sample: the Tentacle's slap, with the effect class (teal survived its negative text)."
+    },
+    {
+      "id": "effect-proclaim-a",
+      "asset": "chibi-direction-effect-cult-proclaim",
+      "endpoint": "create-image-pixen",
+      "seed": 94111,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "notes": "Proclaim."
+    },
+    {
+      "id": "effect-pamphlets-a",
+      "asset": "chibi-direction-effect-cult-pamphlets",
+      "endpoint": "create-image-pixen",
+      "seed": 94121,
+      "requestSize": {
+        "width": 40,
+        "height": 40
+      },
+      "notes": "Pamphlets (the instant capture)."
+    },
+    {
+      "id": "effect-pamphlets-a-clean",
+      "asset": "chibi-direction-effect-cult-pamphlets",
+      "endpoint": "edit-image-pixen",
+      "seed": 94122,
+      "requestSize": {
+        "width": 40,
+        "height": 40
+      },
+      "source": {
+        "recipe": "effect-pamphlets-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only one thing: erase the brown leaf-shaped object and the blue piece under it in the middle of the image completely, leaving that area transparent, so only the three cream paper leaflets with their motion lines are left. Do not redraw the leaflets: keep them, their lines of print, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "effect-pamphlets-a is three cream leaflets fluttering, round a brown and blue object that is not asked for."
+    },
+    {
+      "id": "effect-favour-a",
+      "asset": "chibi-direction-effect-cult-favour",
+      "endpoint": "create-image-pixen",
+      "seed": 94131,
+      "requestSize": {
+        "width": 40,
+        "height": 40
+      },
+      "notes": "Favour gained."
+    },
+    {
+      "id": "effect-favour-a-green",
+      "asset": "chibi-direction-effect-cult-favour",
+      "endpoint": "edit-image-pixen",
+      "seed": 94132,
+      "requestSize": {
+        "width": 40,
+        "height": 40
+      },
+      "source": {
+        "recipe": "effect-favour-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the colour of the flame: the yellow-brown teardrop becomes bright green #00ff78 with a pale green #80ffbc middle and darker green #00b85a at its edge; no yellow or brown is left in the flame. Do not redraw anything else: keep the flame's teardrop shape, the white sparkle beside it, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "effect-favour-a is a teardrop flame with a sparkle, but brass yellow: Favour is the green flame."
+    },
+    {
+      "id": "effect-ritual-fizzle-a",
+      "asset": "chibi-direction-effect-cult-ritual-fizzle",
+      "endpoint": "create-image-pixen",
+      "seed": 94141,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "notes": "A ritual fizzling."
+    }
+  ]
+}

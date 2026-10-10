@@ -558,7 +558,7 @@ portrait; Leadership (Administration) shows the Summoner's.
 | `ICON:ACTION:SUMMON`          | a chalk circle with a green flame in it and two teal tentacle tips rising |
 | `ICON:ACTION:CHANNEL`         | a cream sleeve and hand holding one glowing green chain link              |
 | `ICON:ACTION:BEHOLD`          | the squat grinning stone idol with green eyes and short rays              |
-| `ICON:ACTION:PICK_ME`         | a raised cream hand with one finger up and a starburst behind it          |
+| `ICON:ACTION:PICK_ME`         | an open waving cream hand, all fingers spread, with a starburst behind it |
 | `ICON:ACTION:ANCHOR`          | a teal tentacle coiled three times round a lit candle                     |
 | `ICON:ACTION:BOO`             | a wide toothy grin under two googly yellow eyes, with startle lines       |
 | `ICON:ACTION:PROCLAIM`        | an unrolled cream scroll with the eye-in-a-spiral seal and a brass bell   |
@@ -578,18 +578,18 @@ Ravage and Unstoppable are text lines on the Herald's card with no icon
 and the board marker, drawn small on a dark token in the unit's marker
 slot, as the Candy status icons are):
 
-| Subject                 | Shows                                                                        |
-| ----------------------- | ---------------------------------------------------------------------------- |
-| `ICON:HUD:CULT:FAVOUR`  | Favour: one fat cream candle with a green flame (48 x 48 and 32 x 32)        |
-| `ICON:HUD:CULT:EMBLEM`  | the faction emblem: an eye in a spiral, green on indigo                      |
-| `ICON:STATUS:CANDLELIT` | a lit candle with a small halo: over every channeller and ritual participant |
-| `ICON:STATUS:FROG`      | the teal frog's head                                                         |
-| `ICON:STATUS:UNBOUND`   | a cracked brass collar with a snapped chain                                  |
-| `ICON:STATUS:FURIOUS`   | two red eyes under two puffs of steam                                        |
-| `ICON:STATUS:GRABBED`   | a tentacle loop                                                              |
-| `ICON:STATUS:COWED`     | a round window with its shutters closed                                      |
-| `ICON:STATUS:WARDED`    | Behold!: the idol's head inside a chalk ring                                 |
-| `ICON:STATUS:PICK_ME`   | the raised hand                                                              |
+| Subject                 | Shows                                                                                                                |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `ICON:HUD:CULT:FAVOUR`  | Favour: one fat cream candle with a green flame, 32 x 32; `ICON:HUD:CULT:FAVOUR_LARGE` is the same candle at 48 x 48 |
+| `ICON:HUD:CULT:EMBLEM`  | the faction emblem: an eye in a spiral, green on indigo                                                              |
+| `ICON:STATUS:CANDLELIT` | a lit candle with a small halo: over every channeller and ritual participant                                         |
+| `ICON:STATUS:FROG`      | the teal frog's head                                                                                                 |
+| `ICON:STATUS:UNBOUND`   | a cracked brass collar with a snapped chain                                                                          |
+| `ICON:STATUS:FURIOUS`   | two red eyes under two puffs of steam                                                                                |
+| `ICON:STATUS:GRABBED`   | a tentacle loop                                                                                                      |
+| `ICON:STATUS:COWED`     | a round window with its shutters closed                                                                              |
+| `ICON:STATUS:WARDED`    | Behold!: the idol's head inside a chalk ring                                                                         |
+| `ICON:STATUS:PICK_ME`   | the open waving hand                                                                                                 |
 
 ## Markers and effects
 
@@ -982,6 +982,234 @@ candidate was passed over is in the records.
   `pulp_wars-mch9.22` is a lilac grey, close to the Monuments' stone.
 - **City 1 is 61 px wide**, the size of a building (the other factions'
   City 1 is 66 to 68 px); its three roofs and the telescope carry it.
+
+<!-- pulp_wars-mch9.23: begin -->
+
+## The interface batches
+
+Bead `pulp_wars-mch9.23` (ART4b: ART4 was split by class, and bead
+`pulp_wars-mch9.16` keeps the cities, the buildings and the Monuments): the
+portraits, the icons and the effects of the sections above, **62 accepted
+rasters from 104 PixelLab calls** (73 creations, 31 edits). Two new batches
+and three more assets of `naval-cult`:
+
+| Batch            | Holds                                                                                                              | Assets | Calls |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------ | -----: | ----: |
+| `interface-cult` | the twelve unit portraits, three technology icons, eighteen command and ability icons, eleven HUD and status icons |     44 |    75 |
+| `effects-cult`   | the fifteen effect sprites, palette-mapped to `cult-green.png`                                                     |     15 |    26 |
+| `naval-cult`     | the three ship portraits (beside the four ships of ART3)                                                           |      3 |     3 |
+
+`npm run art:chibi-cult-direction-review` writes their evidence beside the
+roster's, in `art/pixellab/reviews/chibi-batch-direction-cult/`:
+`portraits-x4.png` (each portrait on the cream plate beside the board sprite
+it must match), `icons-x4.png` and `icons-small-1x.png` (every icon at 24
+and 18 px on the four Newsstand cream surfaces, and at 24 and 16 px on
+Grass, Snow and Shallow Water, bare and on the dark marker token),
+`markers-x3.png` (the eight status icons as board markers over an
+Initiate), `effects-{x3,1x}.png` and `effects-zoom-0.75-x2.png` (each effect
+on six grounds and over a unit), the three `candidates-*-x4.png` sheets
+(every recorded candidate with its verdict) and `interface.json` (accepted
+recipe, sprite box, colour shares, call counts).
+
+![Every Cult icon at 24 and 18 px on the cream surfaces, and on Grass, Snow and water, bare and on the dark token](../../../art/pixellab/reviews/chibi-batch-direction-cult/icons-small-1x.png)
+
+![The Cult portraits beside the board sprites they match](../../../art/pixellab/reviews/chibi-batch-direction-cult/portraits-x4.png)
+
+### The portraits
+
+| Asset                                       | Subject                     | Accepted recipe               | Sprite     | Class, accent                 | Calls              |
+| ------------------------------------------- | --------------------------- | ----------------------------- | ---------- | ----------------------------- | ------------------ |
+| `chibi-direction-portrait-cult-initiate`    | `PORTRAIT:CULT:FIGHTER`     | `portrait-initiate-b-eyes`    | 43 x 42 px | `portrait`, `cult-lodge-icon` | 1 creation, 1 edit |
+| `chibi-direction-portrait-cult-idol-bearer` | `PORTRAIT:CULT:GUARD`       | `portrait-idol-bearer-s`      | 34 x 42 px | `portrait`, `cult-lodge-icon` | 1 edit             |
+| `chibi-direction-portrait-cult-familiar`    | `PORTRAIT:CULT:RAIDER`      | `portrait-familiar-a`         | 48 x 44 px | `creature`, `cult-lodge-icon` | 1 creation         |
+| `chibi-direction-portrait-cult-hexer`       | `PORTRAIT:CULT:MARKSMAN`    | `portrait-hexer-s`            | 43 x 42 px | `portrait`, `cult-lodge-icon` | 1 edit             |
+| `chibi-direction-portrait-cult-summoner`    | `PORTRAIT:CULT:CAPTAIN`     | `portrait-summoner-s`         | 34 x 44 px | `portrait`, `cult-lodge-icon` | 1 edit             |
+| `chibi-direction-portrait-cult-stargazer`   | `PORTRAIT:CULT:CATAPULT`    | `portrait-stargazer-s`        | 45 x 42 px | `portrait`, `cult-lodge-icon` | 1 edit             |
+| `chibi-direction-portrait-cult-caller`      | `PORTRAIT:CULT:KNIGHT`      | `portrait-caller-s-helmet`    | 38 x 38 px | `portrait`, `cult-lodge-icon` | 2 edits            |
+| `chibi-direction-portrait-cult-chosen`      | `PORTRAIT:CULT:SWORDSMAN`   | `portrait-chosen-s`           | 42 x 43 px | `portrait`, `cult-lodge-icon` | 1 edit             |
+| `chibi-direction-portrait-cult-thing`       | `PORTRAIT:CULT:JUGGERNAUT`  | `portrait-thing-a`            | 42 x 40 px | `creature`, `cult-green`      | 1 creation         |
+| `chibi-direction-portrait-cult-horror`      | `PORTRAIT:CULT:HORROR`      | `portrait-horror-a-horns`     | 39 x 36 px | `creature`, `cult-green`      | 1 creation, 1 edit |
+| `chibi-direction-portrait-cult-herald`      | `PORTRAIT:CULT:HERALD`      | `portrait-herald-a-yellow`    | 37 x 48 px | `portrait`, `cult-lodge-icon` | 1 creation, 1 edit |
+| `chibi-direction-portrait-cult-tentacle`    | `PORTRAIT:CULT:TENTACLE`    | `portrait-tentacle-b`         | 21 x 42 px | `creature`, `cult-green`      | 2 creations        |
+| `chibi-naval-cult-portrait-patrol-boat`     | `PORTRAIT:CULT:PATROL_BOAT` | `cult-portrait-patrol-boat-a` | 43 x 38 px | `portrait`, `cult-lodge-icon` | 1 edit             |
+| `chibi-naval-cult-portrait-battleship`      | `PORTRAIT:CULT:BATTLESHIP`  | `cult-portrait-battleship-a`  | 34 x 43 px | `portrait`, `cult-lodge-icon` | 1 edit             |
+| `chibi-naval-cult-portrait-submarine`       | `PORTRAIT:CULT:SUBMARINE`   | `cult-portrait-submarine-a`   | 41 x 35 px | `portrait`, `cult-lodge-icon` | 1 edit             |
+
+### The icons
+
+| Asset                                              | Subject                        | Accepted recipe                 | Sprite     | Class, accent                | Calls               |
+| -------------------------------------------------- | ------------------------------ | ------------------------------- | ---------- | ---------------------------- | ------------------- |
+| `chibi-direction-icon-cult-tech-warding-circles`   | `ICON:TECH:CULT:FORTIFICATION` | `icon-warding-circles-a-pale`   | 30 x 34 px | `icon`, `cult-lodge-icon`    | 1 creation, 1 edit  |
+| `chibi-direction-icon-cult-tech-stars-are-right`   | `ICON:TECH:CULT:EXPLOSIVES`    | `icon-stars-are-right-a`        | 36 x 31 px | `icon`, `cult-lodge-icon`    | 1 creation          |
+| `chibi-direction-icon-cult-tech-harvest-rites`     | `ICON:TECH:CULT:FARMING`       | `icon-harvest-rites-a`          | 39 x 41 px | `icon`, `cult-lodge-icon`    | 1 creation          |
+| `chibi-direction-icon-cult-action-sacrifice`       | `ICON:ACTION:SACRIFICE`        | `icon-sacrifice-b-hood`         | 30 x 45 px | `icon`, `cult-lodge-icon`    | 2 creations, 1 edit |
+| `chibi-direction-icon-cult-action-seize`           | `ICON:ACTION:SEIZE`            | `icon-seize-b`                  | 34 x 37 px | `icon`, `cult-summoned-icon` | 2 creations         |
+| `chibi-direction-icon-cult-action-offering`        | `ICON:ACTION:OFFERING`         | `icon-offering-a`               | 38 x 32 px | `icon`, `cult-lodge-icon`    | 1 creation          |
+| `chibi-direction-icon-cult-action-summon`          | `ICON:ACTION:SUMMON`           | `icon-summon-a`                 | 35 x 28 px | `icon`, `cult-summoned-icon` | 1 creation          |
+| `chibi-direction-icon-cult-action-channel`         | `ICON:ACTION:CHANNEL`          | `icon-channel-b`                | 15 x 44 px | `icon`, `cult-lodge-icon`    | 2 creations         |
+| `chibi-direction-icon-cult-action-behold`          | `ICON:ACTION:BEHOLD`           | `icon-behold-a`                 | 34 x 36 px | `icon`, `cult-lodge-icon`    | 1 creation          |
+| `chibi-direction-icon-cult-action-pick-me`         | `ICON:ACTION:PICK_ME`          | `icon-pick-me-d`                | 46 x 46 px | `icon`, `cult-lodge-icon`    | 4 creations         |
+| `chibi-direction-icon-cult-action-anchor`          | `ICON:ACTION:ANCHOR`           | `icon-anchor-a`                 | 32 x 42 px | `icon`, `cult-summoned-icon` | 1 creation          |
+| `chibi-direction-icon-cult-action-boo`             | `ICON:ACTION:BOO`              | `icon-boo-s`                    | 42 x 40 px | `icon`, `cult-summoned-icon` | 1 creation, 1 edit  |
+| `chibi-direction-icon-cult-action-proclaim`        | `ICON:ACTION:PROCLAIM`         | `icon-proclaim-c`               | 44 x 44 px | `icon`, `cult-lodge-icon`    | 3 creations         |
+| `chibi-direction-icon-cult-action-ribbit`          | `ICON:ACTION:RIBBIT`           | `icon-ribbit-a`                 | 40 x 40 px | `icon`, `cult-summoned-icon` | 1 creation          |
+| `chibi-direction-icon-cult-action-switcheroo`      | `ICON:ACTION:SWITCHEROO`       | `icon-switcheroo-b`             | 37 x 35 px | `icon`, `cult-lodge-icon`    | 2 creations         |
+| `chibi-direction-icon-cult-action-tentacle`        | `ICON:ACTION:TENTACLE`         | `icon-tentacle-b`               | 25 x 37 px | `icon`, `cult-summoned-icon` | 2 creations         |
+| `chibi-direction-icon-cult-action-starfall`        | `ICON:ACTION:STARFALL`         | `icon-starfall-a-plain`         | 39 x 43 px | `icon`, `cult-lodge-icon`    | 1 creation, 1 edit  |
+| `chibi-direction-icon-cult-action-great-summoning` | `ICON:ACTION:GREAT_SUMMONING`  | `icon-great-summoning-a-yellow` | 30 x 31 px | `icon`, `cult-lodge-icon`    | 1 creation, 1 edit  |
+| `chibi-direction-icon-cult-action-pamphlets`       | `ICON:ACTION:PAMPHLETS`        | `icon-pamphlets-a-clean`        | 31 x 31 px | `icon`, `cult-lodge-icon`    | 1 creation, 1 edit  |
+| `chibi-direction-icon-cult-action-martyr`          | `ICON:ACTION:MARTYR`           | `icon-martyr-a`                 | 34 x 34 px | `icon`, `cult-lodge-icon`    | 1 creation          |
+| `chibi-direction-icon-cult-action-grab`            | `ICON:ACTION:GRAB`             | `icon-grab-b`                   | 34 x 37 px | `icon`, `cult-summoned-icon` | 2 creations         |
+| `chibi-direction-icon-cult-favour`                 | `ICON:HUD:CULT:FAVOUR`         | `icon-favour-d`                 | 16 x 30 px | `icon`, `cult-lodge-icon`    | 4 creations         |
+| `chibi-direction-icon-cult-favour-large`           | `ICON:HUD:CULT:FAVOUR_LARGE`   | `icon-favour-large-a-clean`     | 22 x 36 px | `icon`, `cult-lodge-icon`    | 1 creation, 1 edit  |
+| `chibi-direction-icon-cult-emblem`                 | `ICON:HUD:CULT:EMBLEM`         | `icon-emblem-a`                 | 42 x 43 px | `icon`, `cult-lodge-icon`    | 1 creation          |
+| `chibi-direction-icon-cult-status-candlelit`       | `ICON:STATUS:CANDLELIT`        | `icon-candlelit-a`              | 22 x 37 px | `icon`, `cult-lodge-icon`    | 1 creation          |
+| `chibi-direction-icon-cult-status-frog`            | `ICON:STATUS:FROG`             | `icon-frog-a`                   | 36 x 37 px | `icon`, `cult-summoned-icon` | 1 creation          |
+| `chibi-direction-icon-cult-status-unbound`         | `ICON:STATUS:UNBOUND`          | `icon-unbound-a`                | 37 x 34 px | `icon`, `cult-lodge-icon`    | 1 creation          |
+| `chibi-direction-icon-cult-status-furious`         | `ICON:STATUS:FURIOUS`          | `icon-furious-b-clean`          | 36 x 35 px | `icon`, `cult-green`         | 2 creations, 1 edit |
+| `chibi-direction-icon-cult-status-grabbed`         | `ICON:STATUS:GRABBED`          | `icon-grabbed-a`                | 39 x 40 px | `icon`, `cult-summoned-icon` | 1 creation          |
+| `chibi-direction-icon-cult-status-cowed`           | `ICON:STATUS:COWED`            | `icon-cowed-b`                  | 40 x 36 px | `icon`, `cult-lodge-icon`    | 2 creations         |
+| `chibi-direction-icon-cult-status-warded`          | `ICON:STATUS:WARDED`           | `icon-warded-a`                 | 38 x 40 px | `icon`, `cult-lodge-icon`    | 1 creation          |
+| `chibi-direction-icon-cult-status-pick-me`         | `ICON:STATUS:PICK_ME`          | `icon-pick-me-status-t`         | 32 x 34 px | `icon`, `cult-lodge-icon`    | 1 creation, 2 edits |
+
+### The effects
+
+| Asset                                        | Subject                 | Accepted recipe                 | Sprite     | Class, accent                     | Calls               |
+| -------------------------------------------- | ----------------------- | ------------------------------- | ---------- | --------------------------------- | ------------------- |
+| `chibi-direction-effect-cult-sacrifice-puff` | `EFFECT:SACRIFICE_PUFF` | `effect-sacrifice-puff-b-green` | 38 x 36 px | `accent-effect`, `cult-green.png` | 2 creations, 1 edit |
+| `chibi-direction-effect-cult-seize`          | `EFFECT:SEIZE`          | `effect-seize-a`                | 19 x 32 px | `accent-effect`, `cult-green.png` | 1 creation          |
+| `chibi-direction-effect-cult-summon-pop`     | `EFFECT:SUMMON_POP`     | `effect-summon-pop-b-clean`     | 30 x 36 px | `accent-effect`, `cult-green.png` | 2 creations, 1 edit |
+| `chibi-direction-effect-cult-strand-snap`    | `EFFECT:STRAND_SNAP`    | `effect-strand-snap-b`          | 24 x 24 px | `accent-effect`, `cult-green.png` | 2 creations         |
+| `chibi-direction-effect-cult-unbound`        | `EFFECT:UNBOUND`        | `effect-unbound-a`              | 41 x 32 px | `accent-effect`, `cult-green.png` | 1 creation          |
+| `chibi-direction-effect-cult-starfall-star`  | `EFFECT:STARFALL_STAR`  | `effect-starfall-star-a-green`  | 24 x 31 px | `accent-effect`, `cult-green.png` | 1 creation, 1 edit  |
+| `chibi-direction-effect-cult-starfall-burst` | `EFFECT:STARFALL_BURST` | `effect-starfall-burst-a-green` | 30 x 32 px | `accent-effect`, `cult-green.png` | 1 creation, 1 edit  |
+| `chibi-direction-effect-cult-boo`            | `EFFECT:BOO`            | `effect-boo-a-teal`             | 40 x 35 px | `accent-effect`, `cult-green.png` | 1 creation, 1 edit  |
+| `chibi-direction-effect-cult-ribbit`         | `EFFECT:RIBBIT`         | `effect-ribbit-a-green`         | 34 x 31 px | `accent-effect`, `cult-green.png` | 1 creation, 1 edit  |
+| `chibi-direction-effect-cult-switcheroo`     | `EFFECT:SWITCHEROO`     | `effect-switcheroo-a`           | 22 x 22 px | `accent-effect`, `cult-green.png` | 1 creation          |
+| `chibi-direction-effect-cult-tentacle-slap`  | `EFFECT:TENTACLE_SLAP`  | `effect-tentacle-slap-a`        | 36 x 32 px | `effect`, `cult-green.png`        | 1 creation          |
+| `chibi-direction-effect-cult-proclaim`       | `EFFECT:PROCLAIM`       | `effect-proclaim-a`             | 42 x 34 px | `accent-effect`, `cult-green.png` | 1 creation          |
+| `chibi-direction-effect-cult-pamphlets`      | `EFFECT:PAMPHLETS`      | `effect-pamphlets-a-clean`      | 35 x 39 px | `accent-effect`, `cult-green.png` | 1 creation, 1 edit  |
+| `chibi-direction-effect-cult-favour`         | `EFFECT:FAVOUR`         | `effect-favour-a-green`         | 17 x 22 px | `accent-effect`, `cult-green.png` | 1 creation, 1 edit  |
+| `chibi-direction-effect-cult-ritual-fizzle`  | `EFFECT:RITUAL_FIZZLE`  | `effect-ritual-fizzle-a`        | 26 x 24 px | `accent-effect`, `cult-green.png` | 1 creation          |
+
+### What the interface batches changed
+
+- **A robed bust is a sibling edit of the Initiate's bust**, as a robed unit
+  is a sibling of the Initiate: the Idol Bearer, the Hexer, the Summoner,
+  the Stargazer, the Chosen and the Caller came from `portrait-initiate-b-eyes`
+  at one call each (the Caller needed one more, to take the hood tip off its
+  helmet). The Initiate's own bust is a fresh creation with the `portrait`
+  class, then one edit (pupils out of the eyes, a grey hand to a cream
+  mitten).
+- **The summoned things' portraits use the `creature` class**, which may now
+  make a `PORTRAIT`: the Familiar, the Thing, the Horror and the Tentacle
+  whole, with no faction layer, from subject lines that describe the
+  accepted sprites. The Herald's is a `portrait` class close-up of its eye
+  and crown.
+- **Two interface accent presets**
+  ([`accent.ts`](../../../scripts/art/chibi/accent.ts)), because a 48 px item
+  sprite drifts further than a unit and a colour is not worth an edit:
+  `cult-lodge-icon` (the green band from hue 66, every blue from hue 196 to
+  the lodge's indigo, purple shading to the indigo's hue, saturated red to a
+  brass brown) and `cult-summoned-icon` (the same green and red bands, and
+  every blue and purple to the teal's hue, 182 to 190). They made the
+  Familiar's azure fur indigo, the wheat sheaf's purple shadows indigo, and
+  a steel-blue tentacle loop, coil and frog teal, with no call. The unit
+  presets are unchanged. **The Furious chip keeps `cult-green`**, the one
+  preset that leaves red alone: its red eyes are the Unbound cue.
+- **An `accent-effect` recipe class.** The `effect` class's negative text
+  forbids "bright green, lime, teal, yellow, gold" (it keeps the player
+  colours out of the Undead frost): under it the summoning ring came out
+  grey and the chain link brass. `accent-effect` is the same class with a
+  negative text that keeps only red, orange, purple and pink out; the
+  palette map pins the rest. Even so Pixen drew four green things yellow
+  (the star's tail, the Favour flame, two puffs): each was one recolour
+  edit that names the palette's hex values.
+- **The effect palette** `scripts/art/chibi/palettes/cult-green.png`
+  (`npx tsx scripts/art/cult-direction/green-palette.ts`, twenty colours:
+  the four greens, wax, brass, the summoned eye, three teals, three
+  indigos, two greys, white and the outline). It has no red: the snapped
+  strand's red flash is code-drawn.
+- **Subjects** as this document's tables name them, with one addition: the
+  Favour candle is two subjects, `ICON:HUD:CULT:FAVOUR` (32 x 32, the HUD
+  chip, as the coin and the population icons are) and
+  `ICON:HUD:CULT:FAVOUR_LARGE` (48 x 48, cards and dialogs), because one
+  subject resolves to one raster. The summoned units' portraits are
+  `PORTRAIT:CULT:{HORROR,HERALD,TENTACLE}`
+  (`cultSummonedPortraitSubjectV7`). The types are
+  `CultInterfaceArtSubjectV7` in
+  [`chibi-art-v7.ts`](../../../src/assets/chibi-art-v7.ts).
+- **Wired:** every raster is registered in the live direction registry
+  ([`chibi-direction-cult-interface-art-manifest.ts`](../../../src/assets/chibi-direction-cult-interface-art-manifest.ts);
+  the ship portraits with the fleet). The game already asks for the unit
+  and ship portraits (training tiles, cards, the setup emblem, which is the
+  Initiate's bust) and for the three technology icons
+  (`technologySubjectV7`: Fortification, Explosives and Farming of a Cult
+  viewer; in a look without the Cult's art they fall back to the
+  Fortification icon, Blast Mountain and the Farm). The Favour
+  interface (bead `pulp_wars-mch9.17`) already asked for
+  `ICON:HUD:CULT:FAVOUR` and for `ICON:ACTION:{SACRIFICE,SEIZE,OFFERING}`
+  with a code glyph until the raster existed: the Favour chip of the HUD and
+  the leaderboard and the three buttons now show the art in the live look
+  (the LEGACY set and the classic look keep the glyphs). Nothing asks for
+  the other command icons, the status icons, the emblem or the effects yet:
+  the strands, the rituals and the hexes are not in the engine on `main`
+  (beads `pulp_wars-mch9.5` to `.8`); the interface beads name the
+  subjects.
+
+What PixelLab did, for the prompt notes:
+
+- **A subject that names a body part draws the body.** "A sleeve and hand
+  holding a chain link" drew a bald man; "a tentacle round a boot" an
+  octopus-headed figure in a robe; "two red eyes under steam" a horned
+  beast, twice. "There is no person in the image: only one sleeve with its
+  mitten" and "one single limb, like an elephant trunk" drew the part alone.
+- **"Pale cream wax" is drawn tan or orange** at 48 px. It was kept: a warm
+  tan candle carries on the Newsstand cream plates, where the target cream
+  would not.
+- **No single raised finger.** A fist with one finger up reads as a rude
+  gesture at 18 to 24 px, from the back or from the palm side (three
+  candidates, the last rejected on review). "One big open waving hand …
+  with the flat palm facing the viewer and all five fingers spread wide
+  apart like a friendly hello wave" drew the open hand at the first call.
+- **Pixen puts small things on a stand** (a candle on a pedestal, a burst
+  on a trophy base, a ring on a plinth, papers on a clump of grass); one
+  erase edit each removed it and left nothing behind.
+- **A 32 x 32 creation needs "drawn very large and fills the image"**: three
+  Favour candles were a few pixels wide before the fourth.
+
+### Differences from the direction, accepted
+
+- **Candles are a warm tan**, not the wax cream (see above).
+- **Summon** shows a low stone ring with one tentacle tip, not a chalk
+  circle with two. **Channel** holds a chain of four links, not one link.
+  **Switcheroo** has no puff between its arrows. **Martyr** is a medal on
+  two ribbon ends, not a folded sash. **The Great Summoning**'s eye sits on
+  an indigo diamond.
+- **Seize and Grab are close** (a boot in a tentacle's coil; a boot hooked
+  from behind): they are told apart by where each is shown, a command and a
+  line on the Tentacle's card.
+- **The Unbound chip**'s crack does not read; the open spiked collar and
+  its loose chain carry it, and a small green flame sits on it.
+- **The Furious chip** is two red eyes and two puffs of steam on a dark
+  round head, not eyes alone.
+- **The strand snap** is one link snapped open, not two halves apart.
+- **The Idol Bearer's bust** carries a small idol; **the Chosen's** has a
+  tall hood tip and crossed sashes; **the Thing's portrait** is a taller
+  heap than the sprite.
+
+### Weak spots of the interface art
+
+- **Green on Grass.** The Favour flame, the strand link and the star's tail
+  are the faction green on a green ground; their dark outline and the
+  cream or indigo beside them carry them, and the code can lift them over
+  the unit. The proclaim rings are thin on Grass.
+- **Channel at 18 px** is a thin green strand in a hand; it reads at 24 px.
+- **Pick Me!** is an open waving hand with all five fingers spread, on the
+  icon and on the chip, not the Chosen sprite's one raised finger: at icon
+  size a single finger can be misread (root review, 2026-10-10).
+
+<!-- pulp_wars-mch9.23: end -->
 
 ## Decisions
 

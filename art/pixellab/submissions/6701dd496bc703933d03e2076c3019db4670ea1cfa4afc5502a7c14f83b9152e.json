@@ -1,0 +1,37 @@
+{
+  "id": "portrait-hexer-s",
+  "jobId": "bd3cb890-efd6-403e-8182-9e30b77ac887",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "interface-cult",
+    "asset": "chibi-direction-portrait-cult-hexer",
+    "subject": "PORTRAIT:CULT:MARKSMAN",
+    "faction": "CULT",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 93031,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Redraw it as another member of the same society in the same blue hood: the tip of the hood curls up and over like a question mark; big round brass spectacles sit on the hood above the two cream eyes; the cream mitten is raised with one small bright green squiggle of light above it. No candle. Keep the blue cloth, the black hood opening with its two cream eyes, the size, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "Redraw it as another member of the same society in the same blue hood: the tip of the hood curls up and over like a question mark; big round brass spectacles sit on the hood above the two cream eyes; the cream mitten is raised with one small bright green squiggle of light above it. No candle. Keep the blue cloth, the black hood opening with its two cream eyes, the size, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Redraw it as another member of the same society in the same blue hood: the tip of the hood curls up and over like a question mark; big round brass spectacles sit on the hood above the two cream eyes; the cream mitten is raised with one small bright green squiggle of light above it. No candle. Keep the blue cloth, the black hood opening with its two cream eyes, the size, thick black outline and art style, on a transparent background.",
+    "editInstruction": "Redraw it as another member of the same society in the same blue hood: the tip of the hood curls up and over like a question mark; big round brass spectacles sit on the hood above the two cream eyes; the cream mitten is raised with one small bright green squiggle of light above it. No candle. Keep the blue cloth, the black hood opening with its two cream eyes, the size, thick black outline and art style, on a transparent background.",
+    "source": {
+      "recipe": "portrait-initiate-b-eyes",
+      "candidate": 0,
+      "sibling": true,
+      "sha256": "11b3d55230c6e738ee6364d2da50bd05b01c875a97b2b78a3a8d054fdd69f8cf"
+    }
+  }
+}

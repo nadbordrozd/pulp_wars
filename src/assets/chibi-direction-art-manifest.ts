@@ -10,6 +10,7 @@ import {
   CHIBI_CURIOSITIES_ROUND2_ART_ASSETS_V7,
 } from "./chibi-curiosities-art-manifest";
 import { CHIBI_DIRECTION_CANDY_ART_ASSETS_V7 } from "./chibi-direction-candy-art-manifest";
+import { CHIBI_DIRECTION_CULT_INTERFACE_ART_ASSETS_V7 } from "./chibi-direction-cult-interface-art-manifest";
 import {
   CHIBI_DIRECTION_CULT_ART_ASSETS_V7,
   CHIBI_DIRECTION_CULT_CITY_ART_ASSETS_V7,
@@ -620,6 +621,9 @@ export function chibiDirectionArtAssetsV7(): readonly ChibiArtAssetV7[] {
     // --- Candy (pulp_wars-jdb.5 art; units, portraits and cities wired in
     // by pulp_wars-jdb.3, the rest drawn from pulp_wars-jdb.6) ---
     ...CHIBI_DIRECTION_CANDY_ART_ASSETS_V7,
+    // --- Cult interface art (pulp_wars-mch9.23): the unit portraits, the
+    // technology, command, status and HUD icons and the effect sprites ---
+    ...CHIBI_DIRECTION_CULT_INTERFACE_ART_ASSETS_V7,
     // --- Cult (pulp_wars-mch9.14 and .15 art, wired in by pulp_wars-mch9.15):
     // the nine units, the summoned and their Unbound looks, the frog ---
     ...CHIBI_DIRECTION_CULT_ART_ASSETS_V7,

@@ -255,6 +255,14 @@ export function technologySubjectV7(
     (tech === "FORTIFICATION" || tech === "EXPLOSIVES")
   )
     return `ICON:TECH:CANDY:${tech}`;
+  // The Cult's Warding Circles, The Stars Are Right and Harvest Rites (bead
+  // pulp_wars-mch9.23, CULT.md "Icons"): the three technologies whose name
+  // and rule differ and that show no unit.
+  if (
+    faction === "CULT" &&
+    (tech === "FORTIFICATION" || tech === "EXPLOSIVES" || tech === "FARMING")
+  )
+    return `ICON:TECH:CULT:${tech}`;
   if (subject.startsWith("PORTRAIT:"))
     return portraitSubjectV7(
       subject.slice("PORTRAIT:".length) as UnitRoleIdV7,

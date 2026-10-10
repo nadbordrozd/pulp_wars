@@ -80,16 +80,11 @@ const SPRITES: readonly (readonly [
 ];
 /** The Ice Folk have no Submarine raster (RULESET_7_NAVAL_BRANCH.md, 14.3). */
 /**
- * The Cult has its four map sprites (bead pulp_wars-mch9.15); its three
- * ship portraits are bead pulp_wars-mch9.16's.
+ * The Cult has its four map sprites (bead pulp_wars-mch9.15) and its three
+ * ship portraits (bead pulp_wars-mch9.23).
  */
-const hasSprite = (
-  faction: FactionIdV7,
-  role: NavalArtRoleV7,
-  kind: "UNIT" | "PORTRAIT" = "UNIT",
-): boolean =>
-  !(faction === "ICE_FOLK" && role === "SUBMARINE") &&
-  !(faction === "CULT" && kind === "PORTRAIT");
+const hasSprite = (faction: FactionIdV7, role: NavalArtRoleV7): boolean =>
+  !(faction === "ICE_FOLK" && role === "SUBMARINE");
 
 const masterFile = (asset: { readonly url: string }): string =>
   path.join(ROOT, "public", asset.url.replace(/^.*?assets\//, "assets/"));
@@ -121,7 +116,7 @@ describe("faction-styled naval art (pulp_wars-w5j.2)", () => {
       ["CULT", "cult"] as const,
     ]
       .flatMap(([faction, slug]) =>
-        SPRITES.filter(([kind, role]) => hasSprite(faction, role, kind)).map(
+        SPRITES.filter(([, role]) => hasSprite(faction, role)).map(
           ([kind, role, suffix]) =>
             `${faction} ${kind} ${role} chibi-naval-${slug}-${suffix} ${navalFactionArtSubjectV7(faction, kind, role)}`,
         ),
@@ -134,8 +129,9 @@ describe("faction-styled naval art (pulp_wars-w5j.2)", () => {
       ).sort(),
     ).toEqual(expected);
     // 40 rasters of the eight fleets, and the Submarine and its portrait of
-    // the seven seafaring factions (bead pulp_wars-5ti.6).
-    expect(expected).toHaveLength(58);
+    // the seven seafaring factions (bead pulp_wars-5ti.6); the Cult's four
+    // map sprites and (bead pulp_wars-mch9.23) its three ship portraits.
+    expect(expected).toHaveLength(61);
     // The Humans keep the shared subjects; the others get their own.
     expect(navalFactionArtSubjectV7("ORIGINAL", "UNIT", "PATROL_BOAT")).toBe(
       "UNIT:PATROL_BOAT",

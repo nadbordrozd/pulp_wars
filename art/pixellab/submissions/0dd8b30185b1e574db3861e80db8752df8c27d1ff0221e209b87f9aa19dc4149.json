@@ -1,0 +1,36 @@
+{
+  "id": "effect-sacrifice-puff-b-green",
+  "jobId": "6413a513-ed7a-482c-ab65-98063b51bf2c",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "effects-cult",
+    "asset": "chibi-direction-effect-cult-sacrifice-puff",
+    "subject": "EFFECT:SACRIFICE_PUFF",
+    "faction": "CULT",
+    "recipeClass": "accent-effect",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 94003,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only the colour of the round lumps of the puff: the yellow-brown lumps become bright green smoke #00ff78 with darker green #00b85a shading; no yellow or brown is left in them. Do not redraw anything else: keep the blue pointed hood lying on the puff, the shape of the puff, the thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only the colour of the round lumps of the puff: the yellow-brown lumps become bright green smoke #00ff78 with darker green #00b85a shading; no yellow or brown is left in them. Do not redraw anything else: keep the blue pointed hood lying on the puff, the shape of the puff, the thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only the colour of the round lumps of the puff: the yellow-brown lumps become bright green smoke #00ff78 with darker green #00b85a shading; no yellow or brown is left in them. Do not redraw anything else: keep the blue pointed hood lying on the puff, the shape of the puff, the thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only the colour of the round lumps of the puff: the yellow-brown lumps become bright green smoke #00ff78 with darker green #00b85a shading; no yellow or brown is left in them. Do not redraw anything else: keep the blue pointed hood lying on the puff, the shape of the puff, the thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "effect-sacrifice-puff-b",
+      "candidate": 0,
+      "sha256": "f8d2bec10c9caf9ea3b0484c36cf6e16047ee2e01317a69c9696bbb37ae028fb"
+    }
+  }
+}

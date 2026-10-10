@@ -1,0 +1,36 @@
+{
+  "id": "icon-furious-b-clean",
+  "jobId": "f0abd819-d979-4633-af07-4690041c3d5d",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "interface-cult",
+    "asset": "chibi-direction-icon-cult-status-furious",
+    "subject": "ICON:STATUS:FURIOUS",
+    "faction": "CULT",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 93563,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only two things: erase the two brass horns at the sides of the head, and erase the green tongue under the eyes, so that part is the same dark blue as the rest. Do not redraw anything else: keep the two big red eyes, the two white puffs of steam above them, the dark round shape, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only two things: erase the two brass horns at the sides of the head, and erase the green tongue under the eyes, so that part is the same dark blue as the rest. Do not redraw anything else: keep the two big red eyes, the two white puffs of steam above them, the dark round shape, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only two things: erase the two brass horns at the sides of the head, and erase the green tongue under the eyes, so that part is the same dark blue as the rest. Do not redraw anything else: keep the two big red eyes, the two white puffs of steam above them, the dark round shape, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only two things: erase the two brass horns at the sides of the head, and erase the green tongue under the eyes, so that part is the same dark blue as the rest. Do not redraw anything else: keep the two big red eyes, the two white puffs of steam above them, the dark round shape, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "icon-furious-b",
+      "candidate": 0,
+      "sha256": "9e087496a38152c823bdc07501300c3156031dcb5dfbd2269b3dc53e93897e64"
+    }
+  }
+}

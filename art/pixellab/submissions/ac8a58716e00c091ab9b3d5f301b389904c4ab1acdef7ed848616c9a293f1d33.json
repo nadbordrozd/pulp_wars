@@ -1,0 +1,37 @@
+{
+  "id": "portrait-caller-s",
+  "jobId": "ad61f598-d705-4a6b-9fc1-f3a844eaa096",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "interface-cult",
+    "asset": "chibi-direction-portrait-cult-caller",
+    "subject": "PORTRAIT:CULT:KNIGHT",
+    "faction": "CULT",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 93061,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Redraw it as another member of the same society in the same blue hood: the hood and its eyes become one big round polished brass diving helmet with one round porthole glowing bright green in its front; beside the helmet is the wide mouth of one huge pale cream conch shell horn held in a cream mitten. No candle and no eyes. Keep the blue cloth, the size, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "Redraw it as another member of the same society in the same blue hood: the hood and its eyes become one big round polished brass diving helmet with one round porthole glowing bright green in its front; beside the helmet is the wide mouth of one huge pale cream conch shell horn held in a cream mitten. No candle and no eyes. Keep the blue cloth, the size, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Redraw it as another member of the same society in the same blue hood: the hood and its eyes become one big round polished brass diving helmet with one round porthole glowing bright green in its front; beside the helmet is the wide mouth of one huge pale cream conch shell horn held in a cream mitten. No candle and no eyes. Keep the blue cloth, the size, thick black outline and art style, on a transparent background.",
+    "editInstruction": "Redraw it as another member of the same society in the same blue hood: the hood and its eyes become one big round polished brass diving helmet with one round porthole glowing bright green in its front; beside the helmet is the wide mouth of one huge pale cream conch shell horn held in a cream mitten. No candle and no eyes. Keep the blue cloth, the size, thick black outline and art style, on a transparent background.",
+    "source": {
+      "recipe": "portrait-initiate-b-eyes",
+      "candidate": 0,
+      "sibling": true,
+      "sha256": "11b3d55230c6e738ee6364d2da50bd05b01c875a97b2b78a3a8d054fdd69f8cf"
+    }
+  }
+}

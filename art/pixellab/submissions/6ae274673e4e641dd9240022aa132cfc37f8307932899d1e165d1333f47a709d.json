@@ -1,0 +1,64 @@
+{
+  "id": "portrait-initiate-a",
+  "jobId": "sync-ddbd1365-4d9a-4d76-b295-443993f82c14",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "interface-cult",
+    "asset": "chibi-direction-portrait-cult-initiate",
+    "subject": "PORTRAIT:CULT:FIGHTER",
+    "faction": "CULT",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 93001,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "side",
+      "direction": "south-east"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-portrait.txt",
+        "text": "Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image."
+      },
+      {
+        "layer": "faction",
+        "source": "docs/art/factions/CULT.md#prompt-fragment + docs/art/factions/CULT.md#negative-fragment",
+        "text": "Faction: a pulp-magazine secret society of the 1920s, mock-sinister, silly and never scary. Their fixed colours: soft midnight indigo cloth shaded deeper violet-blue, never black; pale cream candle wax and parchment; small pieces of warm polished brass; and exactly one accent colour, a bright glowing spring green, only as small flames and glows: candle flames, lamp glass, an eye-in-a-spiral sign.",
+        "negative": "blood, gore, guts, dripping, horror, creepy realism, slime, skull, bone, black cloth, grey cloth, torn cloth, ragged hems, purple, violet, magenta, pink, red cloth, red robe, orange flames, yellow flames, blue flames, gold armour, chrome, steel armour, sword, gun, pentagram, cross, large glowing area"
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-portrait.txt + scripts/art/chibi/fragments/class-portrait.negative.txt",
+        "text": "Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels.",
+        "negative": "full body, legs, feet, standing figure, pedestal, base, plinth, frame, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, text"
+      },
+      {
+        "layer": "subject",
+        "source": "scripts/art/chibi/subjects/CULT.json",
+        "text": "Subject: Initiate portrait, head and shoulders of a chunky cute small secret-society novice: a huge pointed bright royal blue hood whose tip flops over to one side, the face completely hidden in the hood's black opening except two big round cream-white eyes, bright royal blue robe shoulders, and one fat pale cream wax candle with a small bright green flame held up beside the head in a pale cream mitten; no skin, no nose, no mouth, no beard, no skull; simple shapes and very few details."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "A close-up bust: the hooded head and the shoulders fill the whole square; no legs. The cloth is a bright saturated royal blue, clearly blue and much lighter than the black outline, never grey, charcoal, navy or black. The hood's opening is pure black with only the two eyes in it.",
+        "negative": "full body, legs, feet, skin, face, nose, mouth, beard, skull face, skeleton, grey hood, black robe, staff, wand, dagger"
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: a pulp-magazine secret society of the 1920s, mock-sinister, silly and never scary. Their fixed colours: soft midnight indigo cloth shaded deeper violet-blue, never black; pale cream candle wax and parchment; small pieces of warm polished brass; and exactly one accent colour, a bright glowing spring green, only as small flames and glows: candle flames, lamp glass, an eye-in-a-spiral sign. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Subject: Initiate portrait, head and shoulders of a chunky cute small secret-society novice: a huge pointed bright royal blue hood whose tip flops over to one side, the face completely hidden in the hood's black opening except two big round cream-white eyes, bright royal blue robe shoulders, and one fat pale cream wax candle with a small bright green flame held up beside the head in a pale cream mitten; no skin, no nose, no mouth, no beard, no skull; simple shapes and very few details. A close-up bust: the hooded head and the shoulders fill the whole square; no legs. The cloth is a bright saturated royal blue, clearly blue and much lighter than the black outline, never grey, charcoal, navy or black. The hood's opening is pure black with only the two eyes in it.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, blood, gore, guts, dripping, horror, creepy realism, slime, skull, bone, black cloth, grey cloth, torn cloth, ragged hems, purple, violet, magenta, pink, red cloth, red robe, orange flames, yellow flames, blue flames, gold armour, chrome, steel armour, sword, gun, pentagram, cross, large glowing area, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, skin, face, nose, mouth, beard, skull face, skeleton, grey hood, black robe, staff, wand, dagger",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: a pulp-magazine secret society of the 1920s, mock-sinister, silly and never scary. Their fixed colours: soft midnight indigo cloth shaded deeper violet-blue, never black; pale cream candle wax and parchment; small pieces of warm polished brass; and exactly one accent colour, a bright glowing spring green, only as small flames and glows: candle flames, lamp glass, an eye-in-a-spiral sign. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Subject: Initiate portrait, head and shoulders of a chunky cute small secret-society novice: a huge pointed bright royal blue hood whose tip flops over to one side, the face completely hidden in the hood's black opening except two big round cream-white eyes, bright royal blue robe shoulders, and one fat pale cream wax candle with a small bright green flame held up beside the head in a pale cream mitten; no skin, no nose, no mouth, no beard, no skull; simple shapes and very few details. A close-up bust: the hooded head and the shoulders fill the whole square; no legs. The cloth is a bright saturated royal blue, clearly blue and much lighter than the black outline, never grey, charcoal, navy or black. The hood's opening is pure black with only the two eyes in it. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, blood, gore, guts, dripping, horror, creepy realism, slime, skull, bone, black cloth, grey cloth, torn cloth, ragged hems, purple, violet, magenta, pink, red cloth, red robe, orange flames, yellow flames, blue flames, gold armour, chrome, steel armour, sword, gun, pentagram, cross, large glowing area, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, skin, face, nose, mouth, beard, skull face, skeleton, grey hood, black robe, staff, wand, dagger."
+  }
+}

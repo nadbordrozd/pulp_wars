@@ -1,0 +1,37 @@
+{
+  "id": "portrait-stargazer-s",
+  "jobId": "37663982-5fb6-4eab-aebd-8f0f4a5e67ad",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "interface-cult",
+    "asset": "chibi-direction-portrait-cult-stargazer",
+    "subject": "PORTRAIT:CULT:CATAPULT",
+    "faction": "CULT",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 93051,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Redraw it as another member of the same society in the same blue hood: the hood becomes a floppy nightcap of the same blue cloth with small pale cream stars and a cream pompom at its tip; beside the head is the eyepiece end of one fat polished brass telescope tube pointing up to the right. No candle. Keep the blue cloth, the black hood opening with its two cream eyes, the size, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "Redraw it as another member of the same society in the same blue hood: the hood becomes a floppy nightcap of the same blue cloth with small pale cream stars and a cream pompom at its tip; beside the head is the eyepiece end of one fat polished brass telescope tube pointing up to the right. No candle. Keep the blue cloth, the black hood opening with its two cream eyes, the size, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Redraw it as another member of the same society in the same blue hood: the hood becomes a floppy nightcap of the same blue cloth with small pale cream stars and a cream pompom at its tip; beside the head is the eyepiece end of one fat polished brass telescope tube pointing up to the right. No candle. Keep the blue cloth, the black hood opening with its two cream eyes, the size, thick black outline and art style, on a transparent background.",
+    "editInstruction": "Redraw it as another member of the same society in the same blue hood: the hood becomes a floppy nightcap of the same blue cloth with small pale cream stars and a cream pompom at its tip; beside the head is the eyepiece end of one fat polished brass telescope tube pointing up to the right. No candle. Keep the blue cloth, the black hood opening with its two cream eyes, the size, thick black outline and art style, on a transparent background.",
+    "source": {
+      "recipe": "portrait-initiate-b-eyes",
+      "candidate": 0,
+      "sibling": true,
+      "sha256": "11b3d55230c6e738ee6364d2da50bd05b01c875a97b2b78a3a8d054fdd69f8cf"
+    }
+  }
+}

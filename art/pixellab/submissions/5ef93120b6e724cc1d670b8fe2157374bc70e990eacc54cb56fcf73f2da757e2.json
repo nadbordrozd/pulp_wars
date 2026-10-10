@@ -1,0 +1,36 @@
+{
+  "id": "portrait-horror-a-horns",
+  "jobId": "c83b795d-3f46-4097-b895-38f454afe0b6",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "interface-cult",
+    "asset": "chibi-direction-portrait-cult-horror",
+    "subject": "PORTRAIT:CULT:HORROR",
+    "faction": "CULT",
+    "recipeClass": "creature",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 93092,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only one thing: erase the two small pointed horns on top of the head, so the top of the round teal body is smooth and round. Do not redraw anything else: keep the two yellow eyes, the wide grin with its teeth, the brass spiked collar, the cream belly, the four tentacle legs, the thick black outline and the art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only one thing: erase the two small pointed horns on top of the head, so the top of the round teal body is smooth and round. Do not redraw anything else: keep the two yellow eyes, the wide grin with its teeth, the brass spiked collar, the cream belly, the four tentacle legs, the thick black outline and the art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only one thing: erase the two small pointed horns on top of the head, so the top of the round teal body is smooth and round. Do not redraw anything else: keep the two yellow eyes, the wide grin with its teeth, the brass spiked collar, the cream belly, the four tentacle legs, the thick black outline and the art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only one thing: erase the two small pointed horns on top of the head, so the top of the round teal body is smooth and round. Do not redraw anything else: keep the two yellow eyes, the wide grin with its teeth, the brass spiked collar, the cream belly, the four tentacle legs, the thick black outline and the art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "portrait-horror-a",
+      "candidate": 0,
+      "sha256": "d6545ed361f7c942bbdbd36f2c5ea8aa8241cca13264f10cba44b6f6f45df943"
+    }
+  }
+}

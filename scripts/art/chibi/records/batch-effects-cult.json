@@ -1,0 +1,2548 @@
+{
+  "schemaVersion": 1,
+  "batch": "effects-cult",
+  "recipes": {
+    "effect-boo-a": {
+      "id": "effect-boo-a",
+      "asset": "chibi-direction-effect-cult-boo",
+      "jobId": "sync-ee6bfe3f-c3d6-48c8-850c-15848aeb54f2",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "effects-cult",
+        "asset": "chibi-direction-effect-cult-boo",
+        "subject": "EFFECT:BOO",
+        "faction": "CULT",
+        "recipeClass": "accent-effect",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 94071,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "side"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-accent-effect.txt + scripts/art/chibi/fragments/class-accent-effect.negative.txt",
+            "text": "Class: one bold chunky item sprite of a single small magical thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, button, border, circular background, square background, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, campfire, explosion, person, text, letters, numbers, red, crimson, blood, gore, orange, purple, violet, magenta, pink, translucent, see-through, soft glow"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/CULT.json",
+            "text": "Subject: one very wide grinning mouth full of blunt pale cream teeth with dark teal lips, seen from the front, and a ring of eight short thick pale cream startle lines round it pointing outward; pale cream and dark teal only; floating in empty space."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Class: one bold chunky item sprite of a single small magical thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one very wide grinning mouth full of blunt pale cream teeth with dark teal lips, seen from the front, and a ring of eight short thick pale cream startle lines round it pointing outward; pale cream and dark teal only; floating in empty space.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, emblem, button, border, circular background, square background, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, campfire, explosion, person, red, crimson, blood, gore, orange, purple, violet, magenta, pink, translucent, see-through, soft glow",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Class: one bold chunky item sprite of a single small magical thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one very wide grinning mouth full of blunt pale cream teeth with dark teal lips, seen from the front, and a ring of eight short thick pale cream startle lines round it pointing outward; pale cream and dark teal only; floating in empty space. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, emblem, button, border, circular background, square background, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, campfire, explosion, person, red, crimson, blood, gore, orange, purple, violet, magenta, pink, translucent, see-through, soft glow."
+      },
+      "submittedAt": "2026-10-10T11:44:18.741Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-effects-cult/effect-boo-a.png",
+      "rawSheetSha256": "8af74b901051bdc6dacb7d6cd3e7b81836922c2894bf9dbec3f07f94e33a5da5",
+      "plateHints": [
+        {
+          "bandRows": 7,
+          "groundShare": 0.0414,
+          "footprintWidthShare": 0.7,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-10T11:45:06.332Z",
+      "usageUsd": 0.009403806686401367,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The wide toothy grin in a ring of startle lines, under a brass dome like a helmet; source of effect-boo-a-teal.",
+        "reviewedAt": "2026-10-10T11:50:22.005Z"
+      }
+    },
+    "effect-boo-a-teal": {
+      "id": "effect-boo-a-teal",
+      "asset": "chibi-direction-effect-cult-boo",
+      "jobId": "39af43bb-dafa-471e-9922-2b0553b89e79",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "effects-cult",
+        "asset": "chibi-direction-effect-cult-boo",
+        "subject": "EFFECT:BOO",
+        "faction": "CULT",
+        "recipeClass": "accent-effect",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 94072,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only the colour of the round dome above the mouth: the yellow-brown cap becomes dark teal #1f8f95 with shade #145f6b, the same colour as the lips, so it reads as the top of a round teal head. Do not redraw anything else: keep the wide mouth with its cream teeth, the dark lips and the ring of cream startle lines, thick black outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change only the colour of the round dome above the mouth: the yellow-brown cap becomes dark teal #1f8f95 with shade #145f6b, the same colour as the lips, so it reads as the top of a round teal head. Do not redraw anything else: keep the wide mouth with its cream teeth, the dark lips and the ring of cream startle lines, thick black outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change only the colour of the round dome above the mouth: the yellow-brown cap becomes dark teal #1f8f95 with shade #145f6b, the same colour as the lips, so it reads as the top of a round teal head. Do not redraw anything else: keep the wide mouth with its cream teeth, the dark lips and the ring of cream startle lines, thick black outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Change only the colour of the round dome above the mouth: the yellow-brown cap becomes dark teal #1f8f95 with shade #145f6b, the same colour as the lips, so it reads as the top of a round teal head. Do not redraw anything else: keep the wide mouth with its cream teeth, the dark lips and the ring of cream startle lines, thick black outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "effect-boo-a",
+          "candidate": 0,
+          "sha256": "8af74b901051bdc6dacb7d6cd3e7b81836922c2894bf9dbec3f07f94e33a5da5"
+        }
+      },
+      "submittedAt": "2026-10-10T11:54:11.317Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-effects-cult/effect-boo-a-teal.png",
+      "rawSheetSha256": "4e31bf6615bcd5523b13a60ae220619f2f70f0af69f2d8efc53c5bbbef44b05f",
+      "plateHints": [
+        {
+          "bandRows": 7,
+          "groundShare": 0.0333,
+          "footprintWidthShare": 0.675,
+          "suspect": false
+        },
+        {
+          "bandRows": 7,
+          "groundShare": 0.0333,
+          "footprintWidthShare": 0.675,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-10T11:54:39.372Z",
+      "usageUsd": 0.007437549961937798,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Boo!: a round teal head that is all grin, wide cream teeth between dark lips, in a ring of cream startle lines. Reads on every ground at 1:1. Reviewed at 1:1 and x6 after the palette map.",
+        "reviewedAt": "2026-10-10T11:57:44.229Z"
+      }
+    },
+    "effect-favour-a": {
+      "id": "effect-favour-a",
+      "asset": "chibi-direction-effect-cult-favour",
+      "jobId": "sync-7dd71b9c-9a61-4a26-9927-018b15e80bd4",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "effects-cult",
+        "asset": "chibi-direction-effect-cult-favour",
+        "subject": "EFFECT:FAVOUR",
+        "faction": "CULT",
+        "recipeClass": "accent-effect",
+        "requestSize": {
+          "width": 40,
+          "height": 40
+        },
+        "seed": 94131,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "side"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-accent-effect.txt + scripts/art/chibi/fragments/class-accent-effect.negative.txt",
+            "text": "Class: one bold chunky item sprite of a single small magical thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, button, border, circular background, square background, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, campfire, explosion, person, text, letters, numbers, red, crimson, blood, gore, orange, purple, violet, magenta, pink, translucent, see-through, soft glow"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/CULT.json",
+            "text": "Subject: one big teardrop-shaped candle flame of bright spring green with a pale green middle, on top of a short stub of pale cream wick, with one white four-pointed sparkle star beside it; green and pale cream only; floating in empty space."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Class: one bold chunky item sprite of a single small magical thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one big teardrop-shaped candle flame of bright spring green with a pale green middle, on top of a short stub of pale cream wick, with one white four-pointed sparkle star beside it; green and pale cream only; floating in empty space.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, emblem, button, border, circular background, square background, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, campfire, explosion, person, red, crimson, blood, gore, orange, purple, violet, magenta, pink, translucent, see-through, soft glow",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Class: one bold chunky item sprite of a single small magical thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one big teardrop-shaped candle flame of bright spring green with a pale green middle, on top of a short stub of pale cream wick, with one white four-pointed sparkle star beside it; green and pale cream only; floating in empty space. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, emblem, button, border, circular background, square background, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, campfire, explosion, person, red, crimson, blood, gore, orange, purple, violet, magenta, pink, translucent, see-through, soft glow."
+      },
+      "submittedAt": "2026-10-10T11:47:07.904Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 40,
+        "height": 40
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-effects-cult/effect-favour-a.png",
+      "rawSheetSha256": "8642131b9883278134376af80105ae804610f22ceeb09cb2dbdbcf1e113876b5",
+      "plateHints": [
+        {
+          "bandRows": 4,
+          "groundShare": 0.6667,
+          "footprintWidthShare": 0.7647,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-10T11:47:52.328Z",
+      "usageUsd": 0.009288262923558555,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "A teardrop flame with a sparkle, but brass yellow, not green; source of effect-favour-a-green.",
+        "reviewedAt": "2026-10-10T11:50:24.345Z"
+      }
+    },
+    "effect-favour-a-green": {
+      "id": "effect-favour-a-green",
+      "asset": "chibi-direction-effect-cult-favour",
+      "jobId": "6e2c80cc-f732-442f-bf26-d99fe04f8d87",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "effects-cult",
+        "asset": "chibi-direction-effect-cult-favour",
+        "subject": "EFFECT:FAVOUR",
+        "faction": "CULT",
+        "recipeClass": "accent-effect",
+        "requestSize": {
+          "width": 40,
+          "height": 40
+        },
+        "seed": 94132,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only the colour of the flame: the yellow-brown teardrop becomes bright green #00ff78 with a pale green #80ffbc middle and darker green #00b85a at its edge; no yellow or brown is left in the flame. Do not redraw anything else: keep the flame's teardrop shape, the white sparkle beside it, thick black outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change only the colour of the flame: the yellow-brown teardrop becomes bright green #00ff78 with a pale green #80ffbc middle and darker green #00b85a at its edge; no yellow or brown is left in the flame. Do not redraw anything else: keep the flame's teardrop shape, the white sparkle beside it, thick black outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change only the colour of the flame: the yellow-brown teardrop becomes bright green #00ff78 with a pale green #80ffbc middle and darker green #00b85a at its edge; no yellow or brown is left in the flame. Do not redraw anything else: keep the flame's teardrop shape, the white sparkle beside it, thick black outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Change only the colour of the flame: the yellow-brown teardrop becomes bright green #00ff78 with a pale green #80ffbc middle and darker green #00b85a at its edge; no yellow or brown is left in the flame. Do not redraw anything else: keep the flame's teardrop shape, the white sparkle beside it, thick black outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "effect-favour-a",
+          "candidate": 0,
+          "sha256": "8642131b9883278134376af80105ae804610f22ceeb09cb2dbdbcf1e113876b5"
+        }
+      },
+      "submittedAt": "2026-10-10T11:55:54.024Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 40,
+        "height": 40
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-effects-cult/effect-favour-a-green.png",
+      "rawSheetSha256": "1fc998a067920ee13795c888ccc590562b871b745b41f644d2a89d383499145f",
+      "plateHints": [
+        {
+          "bandRows": 4,
+          "groundShare": 0.6667,
+          "footprintWidthShare": 0.7647,
+          "suspect": true
+        },
+        {
+          "bandRows": 4,
+          "groundShare": 0.6667,
+          "footprintWidthShare": 0.7647,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-10T11:56:48.242Z",
+      "usageUsd": 0.009314177221722075,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Favour gained: a teardrop flame of the faction green with a pale middle and a white sparkle. About 20 px tall in its 40 px canvas. Reviewed at 1:1 and x6 after the palette map.",
+        "reviewedAt": "2026-10-10T11:57:47.096Z"
+      }
+    },
+    "effect-pamphlets-a": {
+      "id": "effect-pamphlets-a",
+      "asset": "chibi-direction-effect-cult-pamphlets",
+      "jobId": "sync-f95051a0-b7d6-497a-aaa9-3560e996142e",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "effects-cult",
+        "asset": "chibi-direction-effect-cult-pamphlets",
+        "subject": "EFFECT:PAMPHLETS",
+        "faction": "CULT",
+        "recipeClass": "accent-effect",
+        "requestSize": {
+          "width": 40,
+          "height": 40
+        },
+        "seed": 94121,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "side"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-accent-effect.txt + scripts/art/chibi/fragments/class-accent-effect.negative.txt",
+            "text": "Class: one bold chunky item sprite of a single small magical thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, button, border, circular background, square background, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, campfire, explosion, person, text, letters, numbers, red, crimson, blood, gore, orange, purple, violet, magenta, pink, translucent, see-through, soft glow"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/CULT.json",
+            "text": "Subject: three small flat pale cream paper leaflets fluttering down at different angles, each a simple rectangle with two thin indigo-blue lines of print, with two short cream motion lines above them; pale cream and indigo-blue only; floating in empty space."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Class: one bold chunky item sprite of a single small magical thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: three small flat pale cream paper leaflets fluttering down at different angles, each a simple rectangle with two thin indigo-blue lines of print, with two short cream motion lines above them; pale cream and indigo-blue only; floating in empty space.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, emblem, button, border, circular background, square background, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, campfire, explosion, person, red, crimson, blood, gore, orange, purple, violet, magenta, pink, translucent, see-through, soft glow",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Class: one bold chunky item sprite of a single small magical thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: three small flat pale cream paper leaflets fluttering down at different angles, each a simple rectangle with two thin indigo-blue lines of print, with two short cream motion lines above them; pale cream and indigo-blue only; floating in empty space. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, emblem, button, border, circular background, square background, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, campfire, explosion, person, red, crimson, blood, gore, orange, purple, violet, magenta, pink, translucent, see-through, soft glow."
+      },
+      "submittedAt": "2026-10-10T11:46:33.794Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 40,
+        "height": 40
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-effects-cult/effect-pamphlets-a.png",
+      "rawSheetSha256": "43e8c62f5c89eda612c7d32badbc74e9e0540d73313287c5593d55f426771497",
+      "plateHints": [
+        {
+          "bandRows": 8,
+          "groundShare": 0,
+          "footprintWidthShare": 0.4571,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-10T11:47:07.901Z",
+      "usageUsd": 0.008259796301523844,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Three cream leaflets fluttering round a brown and blue object that is not asked for; source of effect-pamphlets-a-clean.",
+        "reviewedAt": "2026-10-10T11:50:23.571Z"
+      }
+    },
+    "effect-pamphlets-a-clean": {
+      "id": "effect-pamphlets-a-clean",
+      "asset": "chibi-direction-effect-cult-pamphlets",
+      "jobId": "b5acddf2-6cae-4e61-9e9d-db7883e35753",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "effects-cult",
+        "asset": "chibi-direction-effect-cult-pamphlets",
+        "subject": "EFFECT:PAMPHLETS",
+        "faction": "CULT",
+        "recipeClass": "accent-effect",
+        "requestSize": {
+          "width": 40,
+          "height": 40
+        },
+        "seed": 94122,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only one thing: erase the brown leaf-shaped object and the blue piece under it in the middle of the image completely, leaving that area transparent, so only the three cream paper leaflets with their motion lines are left. Do not redraw the leaflets: keep them, their lines of print, thick black outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change only one thing: erase the brown leaf-shaped object and the blue piece under it in the middle of the image completely, leaving that area transparent, so only the three cream paper leaflets with their motion lines are left. Do not redraw the leaflets: keep them, their lines of print, thick black outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change only one thing: erase the brown leaf-shaped object and the blue piece under it in the middle of the image completely, leaving that area transparent, so only the three cream paper leaflets with their motion lines are left. Do not redraw the leaflets: keep them, their lines of print, thick black outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Change only one thing: erase the brown leaf-shaped object and the blue piece under it in the middle of the image completely, leaving that area transparent, so only the three cream paper leaflets with their motion lines are left. Do not redraw the leaflets: keep them, their lines of print, thick black outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "effect-pamphlets-a",
+          "candidate": 0,
+          "sha256": "43e8c62f5c89eda612c7d32badbc74e9e0540d73313287c5593d55f426771497"
+        }
+      },
+      "submittedAt": "2026-10-10T11:55:16.073Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 40,
+        "height": 40
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-effects-cult/effect-pamphlets-a-clean.png",
+      "rawSheetSha256": "9b902036b7b36a8f8e2e99696a7dd3089363ee82d4804603441e772f9c9b0237",
+      "plateHints": [
+        {
+          "bandRows": 8,
+          "groundShare": 0,
+          "footprintWidthShare": 0.4571,
+          "suspect": false
+        },
+        {
+          "bandRows": 8,
+          "groundShare": 0,
+          "footprintWidthShare": 0.4571,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-10T11:55:54.017Z",
+      "usageUsd": 0.007920079867045085,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Pamphlets: three cream leaflets with lines of print fluttering at different angles, with motion lines; the object between them is gone. Reads on Grass, water and the dark token; pale on the dock and Snow, where the outline carries it. Reviewed at 1:1 and x6 after the palette map.",
+        "reviewedAt": "2026-10-10T11:57:46.161Z"
+      }
+    },
+    "effect-proclaim-a": {
+      "id": "effect-proclaim-a",
+      "asset": "chibi-direction-effect-cult-proclaim",
+      "jobId": "sync-7abd71b1-6c04-4ac0-9aae-3b5ad14801c4",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "effects-cult",
+        "asset": "chibi-direction-effect-cult-proclaim",
+        "subject": "EFFECT:PROCLAIM",
+        "faction": "CULT",
+        "recipeClass": "accent-effect",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 94111,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "side"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-accent-effect.txt + scripts/art/chibi/fragments/class-accent-effect.negative.txt",
+            "text": "Class: one bold chunky item sprite of a single small magical thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, button, border, circular background, square background, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, campfire, explosion, person, text, letters, numbers, red, crimson, blood, gore, orange, purple, violet, magenta, pink, translucent, see-through, soft glow"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/CULT.json",
+            "text": "Subject: one huge round wide-open pale yellow eye with a big black pupil seen from the front, and three thick curved bright spring green sound rings spreading outward from it like ripples; pale yellow and green only; floating in empty space."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Class: one bold chunky item sprite of a single small magical thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one huge round wide-open pale yellow eye with a big black pupil seen from the front, and three thick curved bright spring green sound rings spreading outward from it like ripples; pale yellow and green only; floating in empty space.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, emblem, button, border, circular background, square background, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, campfire, explosion, person, red, crimson, blood, gore, orange, purple, violet, magenta, pink, translucent, see-through, soft glow",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Class: one bold chunky item sprite of a single small magical thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one huge round wide-open pale yellow eye with a big black pupil seen from the front, and three thick curved bright spring green sound rings spreading outward from it like ripples; pale yellow and green only; floating in empty space. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, emblem, button, border, circular background, square background, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, campfire, explosion, person, red, crimson, blood, gore, orange, purple, violet, magenta, pink, translucent, see-through, soft glow."
+      },
+      "submittedAt": "2026-10-10T11:46:07.063Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-effects-cult/effect-proclaim-a.png",
+      "rawSheetSha256": "a4b9badbc711df026edf8ceff7cb0ecd101fc4565df8459fde18743024835b8e",
+      "plateHints": [
+        {
+          "bandRows": 7,
+          "groundShare": 0.8519,
+          "footprintWidthShare": 0.2619,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-10T11:46:33.791Z",
+      "usageUsd": 0.007286334779527452,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Proclaim: one huge wide-open pale yellow eye with a black pupil and green sound rings spreading from both sides. Reads at 1:1 on every ground; the thin rings carry less on Grass than on the dock. Reviewed at 1:1 and x6 after the palette map.",
+        "reviewedAt": "2026-10-10T11:50:17.105Z"
+      }
+    },
+    "effect-ribbit-a": {
+      "id": "effect-ribbit-a",
+      "asset": "chibi-direction-effect-cult-ribbit",
+      "jobId": "sync-b6cec13c-75f9-4654-859c-5ab86dc6c7c5",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "effects-cult",
+        "asset": "chibi-direction-effect-cult-ribbit",
+        "subject": "EFFECT:RIBBIT",
+        "faction": "CULT",
+        "recipeClass": "accent-effect",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 94081,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "side"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-accent-effect.txt + scripts/art/chibi/fragments/class-accent-effect.negative.txt",
+            "text": "Class: one bold chunky item sprite of a single small magical thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, button, border, circular background, square background, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, campfire, explosion, person, text, letters, numbers, red, crimson, blood, gore, orange, purple, violet, magenta, pink, translucent, see-through, soft glow"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/CULT.json",
+            "text": "Subject: one round fluffy puff of bright spring green smoke made of four soft round lumps, and one small fat dark teal frog with a pale cream belly leaping up out of its top; green, dark teal and pale cream only; floating in empty space."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Class: one bold chunky item sprite of a single small magical thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one round fluffy puff of bright spring green smoke made of four soft round lumps, and one small fat dark teal frog with a pale cream belly leaping up out of its top; green, dark teal and pale cream only; floating in empty space.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, emblem, button, border, circular background, square background, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, campfire, explosion, person, red, crimson, blood, gore, orange, purple, violet, magenta, pink, translucent, see-through, soft glow",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Class: one bold chunky item sprite of a single small magical thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one round fluffy puff of bright spring green smoke made of four soft round lumps, and one small fat dark teal frog with a pale cream belly leaping up out of its top; green, dark teal and pale cream only; floating in empty space. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, emblem, button, border, circular background, square background, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, campfire, explosion, person, red, crimson, blood, gore, orange, purple, violet, magenta, pink, translucent, see-through, soft glow."
+      },
+      "submittedAt": "2026-10-10T11:45:06.335Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-effects-cult/effect-ribbit-a.png",
+      "rawSheetSha256": "de425adf123d4542c570127fe10025b6e167def1f72c3d5c69f41dc10fee3987",
+      "plateHints": [
+        {
+          "bandRows": 6,
+          "groundShare": 0.717,
+          "footprintWidthShare": 0.7059,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-10T11:45:42.819Z",
+      "usageUsd": 0.008319700135125055,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The teal frog leaping out of a puff of golden yellow lumps, like coins; source of effect-ribbit-a-green.",
+        "reviewedAt": "2026-10-10T11:50:22.725Z"
+      }
+    },
+    "effect-ribbit-a-green": {
+      "id": "effect-ribbit-a-green",
+      "asset": "chibi-direction-effect-cult-ribbit",
+      "jobId": "9bb44c34-d807-42d8-92a8-732ca5752343",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "effects-cult",
+        "asset": "chibi-direction-effect-cult-ribbit",
+        "subject": "EFFECT:RIBBIT",
+        "faction": "CULT",
+        "recipeClass": "accent-effect",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 94082,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only the colour of the round lumps under the frog: the yellow lumps become bright green smoke #00ff78 with darker green #00b85a shading; no yellow is left in them. Do not redraw anything else: keep the teal frog with its cream belly, the shape of the puff, thick black outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change only the colour of the round lumps under the frog: the yellow lumps become bright green smoke #00ff78 with darker green #00b85a shading; no yellow is left in them. Do not redraw anything else: keep the teal frog with its cream belly, the shape of the puff, thick black outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change only the colour of the round lumps under the frog: the yellow lumps become bright green smoke #00ff78 with darker green #00b85a shading; no yellow is left in them. Do not redraw anything else: keep the teal frog with its cream belly, the shape of the puff, thick black outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Change only the colour of the round lumps under the frog: the yellow lumps become bright green smoke #00ff78 with darker green #00b85a shading; no yellow is left in them. Do not redraw anything else: keep the teal frog with its cream belly, the shape of the puff, thick black outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "effect-ribbit-a",
+          "candidate": 0,
+          "sha256": "de425adf123d4542c570127fe10025b6e167def1f72c3d5c69f41dc10fee3987"
+        }
+      },
+      "submittedAt": "2026-10-10T11:54:39.378Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-effects-cult/effect-ribbit-a-green.png",
+      "rawSheetSha256": "5363d4945186bc9e24e5aee6d1ada62a8eb6ddfded02212de0c18a2240656ad6",
+      "plateHints": [
+        {
+          "bandRows": 6,
+          "groundShare": 0.7547,
+          "footprintWidthShare": 0.7059,
+          "suspect": true
+        },
+        {
+          "bandRows": 6,
+          "groundShare": 0.7547,
+          "footprintWidthShare": 0.7059,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-10T11:55:16.067Z",
+      "usageUsd": 0.007420792208777534,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Ribbit landing and a frog ending: a small teal frog with a cream belly leaping out of a round puff of green smoke. Reads on every ground at 1:1; on Grass the puff's dark green edge and the frog carry it. Reviewed at 1:1 and x6 after the palette map.",
+        "reviewedAt": "2026-10-10T11:57:45.167Z"
+      }
+    },
+    "effect-ritual-fizzle-a": {
+      "id": "effect-ritual-fizzle-a",
+      "asset": "chibi-direction-effect-cult-ritual-fizzle",
+      "jobId": "sync-3c91d064-28e4-439a-9e3b-a2433f28d0c6",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "effects-cult",
+        "asset": "chibi-direction-effect-cult-ritual-fizzle",
+        "subject": "EFFECT:RITUAL_FIZZLE",
+        "faction": "CULT",
+        "recipeClass": "accent-effect",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 94141,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "side"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-accent-effect.txt + scripts/art/chibi/fragments/class-accent-effect.negative.txt",
+            "text": "Class: one bold chunky item sprite of a single small magical thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, button, border, circular background, square background, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, campfire, explosion, person, text, letters, numbers, red, crimson, blood, gore, orange, purple, violet, magenta, pink, translucent, see-through, soft glow"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/CULT.json",
+            "text": "Subject: three thin curling wisps of pale grey smoke rising side by side from three tiny black burnt wick stubs, each wisp ending in a small curl; pale grey only, no flame; floating in empty space."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Class: one bold chunky item sprite of a single small magical thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: three thin curling wisps of pale grey smoke rising side by side from three tiny black burnt wick stubs, each wisp ending in a small curl; pale grey only, no flame; floating in empty space.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, emblem, button, border, circular background, square background, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, campfire, explosion, person, red, crimson, blood, gore, orange, purple, violet, magenta, pink, translucent, see-through, soft glow",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Class: one bold chunky item sprite of a single small magical thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: three thin curling wisps of pale grey smoke rising side by side from three tiny black burnt wick stubs, each wisp ending in a small curl; pale grey only, no flame; floating in empty space. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, emblem, button, border, circular background, square background, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, campfire, explosion, person, red, crimson, blood, gore, orange, purple, violet, magenta, pink, translucent, see-through, soft glow."
+      },
+      "submittedAt": "2026-10-10T11:47:52.331Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-effects-cult/effect-ritual-fizzle-a.png",
+      "rawSheetSha256": "0a68a65302a5c0caf048d83199a0bd4af36e023ce1cbfc66ab5aa00c37cc6dfa",
+      "plateHints": [
+        {
+          "bandRows": 5,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-10T11:48:23.872Z",
+      "usageUsd": 0.00790796282556322,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "A ritual fizzling: three curling wisps of pale smoke rising from three burnt stubs. Reads as three smoking wicks at 1:1; cream, grey, brass and indigo tones of the palette, no flame. Reviewed at 1:1 and x6 after the palette map.",
+        "reviewedAt": "2026-10-10T11:50:17.841Z"
+      }
+    },
+    "effect-sacrifice-puff-a": {
+      "id": "effect-sacrifice-puff-a",
+      "asset": "chibi-direction-effect-cult-sacrifice-puff",
+      "jobId": "sync-93266957-510a-46de-946f-55b606e8cef0",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "effects-cult",
+        "asset": "chibi-direction-effect-cult-sacrifice-puff",
+        "subject": "EFFECT:SACRIFICE_PUFF",
+        "faction": "CULT",
+        "recipeClass": "accent-effect",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 94001,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "side"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-accent-effect.txt + scripts/art/chibi/fragments/class-accent-effect.negative.txt",
+            "text": "Class: one bold chunky item sprite of a single small magical thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, button, border, circular background, square background, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, campfire, explosion, person, text, letters, numbers, red, crimson, blood, gore, orange, purple, violet, magenta, pink, translucent, see-through, soft glow"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/CULT.json",
+            "text": "Subject: one big round fluffy puff of bright spring green smoke made of five soft round lumps with darker green shading, and in its middle one small empty pointed indigo-blue cloth hood tumbling upside down; green, indigo-blue and pale cream only; floating in empty space."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Class: one bold chunky item sprite of a single small magical thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one big round fluffy puff of bright spring green smoke made of five soft round lumps with darker green shading, and in its middle one small empty pointed indigo-blue cloth hood tumbling upside down; green, indigo-blue and pale cream only; floating in empty space.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, emblem, button, border, circular background, square background, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, campfire, explosion, person, red, crimson, blood, gore, orange, purple, violet, magenta, pink, translucent, see-through, soft glow",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Class: one bold chunky item sprite of a single small magical thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one big round fluffy puff of bright spring green smoke made of five soft round lumps with darker green shading, and in its middle one small empty pointed indigo-blue cloth hood tumbling upside down; green, indigo-blue and pale cream only; floating in empty space. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, emblem, button, border, circular background, square background, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, campfire, explosion, person, red, crimson, blood, gore, orange, purple, violet, magenta, pink, translucent, see-through, soft glow."
+      },
+      "submittedAt": "2026-10-10T11:41:47.193Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-effects-cult/effect-sacrifice-puff-a.png",
+      "rawSheetSha256": "92d14860cf2a66d19cc18ac403e2c11ac2c4fbc0e89b13432ab432558498503e",
+      "plateHints": [
+        {
+          "bandRows": 7,
+          "groundShare": 0.7091,
+          "footprintWidthShare": 0.75,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-10T11:42:08.983Z",
+      "usageUsd": 0.0070388936466640895,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "A six-petalled mint flower round an indigo pawn shape: neither smoke nor a hood.",
+        "reviewedAt": "2026-10-10T11:50:19.364Z"
+      }
+    },
+    "effect-sacrifice-puff-b": {
+      "id": "effect-sacrifice-puff-b",
+      "asset": "chibi-direction-effect-cult-sacrifice-puff",
+      "jobId": "sync-0eeae5dd-8fbb-48d7-b8df-e22b9dba778c",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "effects-cult",
+        "asset": "chibi-direction-effect-cult-sacrifice-puff",
+        "subject": "EFFECT:SACRIFICE_PUFF",
+        "faction": "CULT",
+        "recipeClass": "accent-effect",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 94002,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "side"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-accent-effect.txt + scripts/art/chibi/fragments/class-accent-effect.negative.txt",
+            "text": "Class: one bold chunky item sprite of a single small magical thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, button, border, circular background, square background, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, campfire, explosion, person, text, letters, numbers, red, crimson, blood, gore, orange, purple, violet, magenta, pink, translucent, see-through, soft glow"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/CULT.json",
+            "text": "Subject: one big round fluffy puff of bright spring green smoke made of five soft round lumps with darker green shading, and in front of its middle one small empty pointed cone-shaped cloth hood of indigo-blue with a floppy tip and a black opening, tilted to one side; green and indigo-blue only; floating in empty space."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "",
+            "negative": "flower, petals, chess pawn, vase, bottle, wizard hat brim, face, eyes"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Class: one bold chunky item sprite of a single small magical thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one big round fluffy puff of bright spring green smoke made of five soft round lumps with darker green shading, and in front of its middle one small empty pointed cone-shaped cloth hood of indigo-blue with a floppy tip and a black opening, tilted to one side; green and indigo-blue only; floating in empty space.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, emblem, button, border, circular background, square background, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, campfire, explosion, person, red, crimson, blood, gore, orange, purple, violet, magenta, pink, translucent, see-through, soft glow, flower, petals, chess pawn, vase, bottle, wizard hat brim, face, eyes",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Class: one bold chunky item sprite of a single small magical thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one big round fluffy puff of bright spring green smoke made of five soft round lumps with darker green shading, and in front of its middle one small empty pointed cone-shaped cloth hood of indigo-blue with a floppy tip and a black opening, tilted to one side; green and indigo-blue only; floating in empty space. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, emblem, button, border, circular background, square background, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, campfire, explosion, person, red, crimson, blood, gore, orange, purple, violet, magenta, pink, translucent, see-through, soft glow, flower, petals, chess pawn, vase, bottle, wizard hat brim, face, eyes."
+      },
+      "submittedAt": "2026-10-10T11:51:50.547Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-effects-cult/effect-sacrifice-puff-b.png",
+      "rawSheetSha256": "f8d2bec10c9caf9ea3b0484c36cf6e16047ee2e01317a69c9696bbb37ae028fb",
+      "plateHints": [
+        {
+          "bandRows": 7,
+          "groundShare": 0.7661,
+          "footprintWidthShare": 0.7368,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-10T11:52:22.908Z",
+      "usageUsd": 0.007906409607993232,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "A pointed indigo hood on a round puff, but the puff is yellow-brown lumps with a green edge; source of effect-sacrifice-puff-b-green.",
+        "reviewedAt": "2026-10-10T11:57:47.941Z"
+      }
+    },
+    "effect-sacrifice-puff-b-green": {
+      "id": "effect-sacrifice-puff-b-green",
+      "asset": "chibi-direction-effect-cult-sacrifice-puff",
+      "jobId": "6413a513-ed7a-482c-ab65-98063b51bf2c",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "effects-cult",
+        "asset": "chibi-direction-effect-cult-sacrifice-puff",
+        "subject": "EFFECT:SACRIFICE_PUFF",
+        "faction": "CULT",
+        "recipeClass": "accent-effect",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 94003,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only the colour of the round lumps of the puff: the yellow-brown lumps become bright green smoke #00ff78 with darker green #00b85a shading; no yellow or brown is left in them. Do not redraw anything else: keep the blue pointed hood lying on the puff, the shape of the puff, the thick black outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change only the colour of the round lumps of the puff: the yellow-brown lumps become bright green smoke #00ff78 with darker green #00b85a shading; no yellow or brown is left in them. Do not redraw anything else: keep the blue pointed hood lying on the puff, the shape of the puff, the thick black outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change only the colour of the round lumps of the puff: the yellow-brown lumps become bright green smoke #00ff78 with darker green #00b85a shading; no yellow or brown is left in them. Do not redraw anything else: keep the blue pointed hood lying on the puff, the shape of the puff, the thick black outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Change only the colour of the round lumps of the puff: the yellow-brown lumps become bright green smoke #00ff78 with darker green #00b85a shading; no yellow or brown is left in them. Do not redraw anything else: keep the blue pointed hood lying on the puff, the shape of the puff, the thick black outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "effect-sacrifice-puff-b",
+          "candidate": 0,
+          "sha256": "f8d2bec10c9caf9ea3b0484c36cf6e16047ee2e01317a69c9696bbb37ae028fb"
+        }
+      },
+      "submittedAt": "2026-10-10T11:58:00.745Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-effects-cult/effect-sacrifice-puff-b-green.png",
+      "rawSheetSha256": "e4b2bf5e4cc9989f3d3c396bf48748a845b370ffc65859d739b22f0fb6f9592a",
+      "plateHints": [
+        {
+          "bandRows": 7,
+          "groundShare": 0.7661,
+          "footprintWidthShare": 0.7368,
+          "suspect": true
+        },
+        {
+          "bandRows": 7,
+          "groundShare": 0.7661,
+          "footprintWidthShare": 0.7368,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-10T11:58:32.107Z",
+      "usageUsd": 0.007397508621215821,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Sacrifice and every consumption: a round puff of bright green smoke with a small pointed indigo hood lying on it. Reads on every ground at 1:1; on Grass the dark green edge and the indigo hood carry it. Green and indigo tones of cult-green.png only. Reviewed at 1:1 and x6 after the palette map.",
+        "reviewedAt": "2026-10-10T12:01:05.279Z"
+      }
+    },
+    "effect-seize-a": {
+      "id": "effect-seize-a",
+      "asset": "chibi-direction-effect-cult-seize",
+      "jobId": "sync-c5bc9b46-2c13-4b98-bb1a-a56a0449ab2e",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "effects-cult",
+        "asset": "chibi-direction-effect-cult-seize",
+        "subject": "EFFECT:SEIZE",
+        "faction": "CULT",
+        "recipeClass": "accent-effect",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 94011,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "side"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-accent-effect.txt + scripts/art/chibi/fragments/class-accent-effect.negative.txt",
+            "text": "Class: one bold chunky item sprite of a single small magical thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, button, border, circular background, square background, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, campfire, explosion, person, text, letters, numbers, red, crimson, blood, gore, orange, purple, violet, magenta, pink, translucent, see-through, soft glow"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/CULT.json",
+            "text": "Subject: one thick rubbery dark teal tentacle with round pale cream suckers reaching up out of a short black crack and bent over at the top like a hook pulling down, with two short pale cream motion lines beside it; floating in empty space."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Class: one bold chunky item sprite of a single small magical thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one thick rubbery dark teal tentacle with round pale cream suckers reaching up out of a short black crack and bent over at the top like a hook pulling down, with two short pale cream motion lines beside it; floating in empty space.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, emblem, button, border, circular background, square background, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, campfire, explosion, person, red, crimson, blood, gore, orange, purple, violet, magenta, pink, translucent, see-through, soft glow",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Class: one bold chunky item sprite of a single small magical thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one thick rubbery dark teal tentacle with round pale cream suckers reaching up out of a short black crack and bent over at the top like a hook pulling down, with two short pale cream motion lines beside it; floating in empty space. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, emblem, button, border, circular background, square background, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, campfire, explosion, person, red, crimson, blood, gore, orange, purple, violet, magenta, pink, translucent, see-through, soft glow."
+      },
+      "submittedAt": "2026-10-10T11:42:08.985Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-effects-cult/effect-seize-a.png",
+      "rawSheetSha256": "a72cdba43dc56a02c2f24162a06c36fb6df741d3340c2089e9e8fe80eb24173b",
+      "plateHints": [
+        {
+          "bandRows": 6,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6316,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-10T11:42:39.298Z",
+      "usageUsd": 0.0075791829427083336,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Seize: a teal tentacle with pale suckers reaching up out of a small dark hole and hooked over, with motion lines. Reads on every ground at 1:1; teal, cream and brass tones of the palette. Reviewed at 1:1 and x6 after the palette map.",
+        "reviewedAt": "2026-10-10T11:50:14.846Z"
+      }
+    },
+    "effect-starfall-burst-a": {
+      "id": "effect-starfall-burst-a",
+      "asset": "chibi-direction-effect-cult-starfall-burst",
+      "jobId": "sync-78b8352a-5930-4796-99eb-284db954cf69",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "effects-cult",
+        "asset": "chibi-direction-effect-cult-starfall-burst",
+        "subject": "EFFECT:STARFALL_BURST",
+        "faction": "CULT",
+        "recipeClass": "accent-effect",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 94061,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "side"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-accent-effect.txt + scripts/art/chibi/fragments/class-accent-effect.negative.txt",
+            "text": "Class: one bold chunky item sprite of a single small magical thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, button, border, circular background, square background, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, campfire, explosion, person, text, letters, numbers, red, crimson, blood, gore, orange, purple, violet, magenta, pink, translucent, see-through, soft glow"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/CULT.json",
+            "text": "Subject: a round starburst: one pale cream flash in the middle with eight thick pointed rays, alternately pale cream and bright spring green, flying outward in every direction, and small cream sparks between them; round overall; pale cream and green only; floating in empty space."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Class: one bold chunky item sprite of a single small magical thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: a round starburst: one pale cream flash in the middle with eight thick pointed rays, alternately pale cream and bright spring green, flying outward in every direction, and small cream sparks between them; round overall; pale cream and green only; floating in empty space.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, emblem, button, border, circular background, square background, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, campfire, explosion, person, red, crimson, blood, gore, orange, purple, violet, magenta, pink, translucent, see-through, soft glow",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Class: one bold chunky item sprite of a single small magical thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: a round starburst: one pale cream flash in the middle with eight thick pointed rays, alternately pale cream and bright spring green, flying outward in every direction, and small cream sparks between them; round overall; pale cream and green only; floating in empty space. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, emblem, button, border, circular background, square background, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, campfire, explosion, person, red, crimson, blood, gore, orange, purple, violet, magenta, pink, translucent, see-through, soft glow."
+      },
+      "submittedAt": "2026-10-10T11:43:42.406Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-effects-cult/effect-starfall-burst-a.png",
+      "rawSheetSha256": "4c6e219c295d4e9cb93e22bf325fc3b05f2ba77f18652d980f522595f24ac052",
+      "plateHints": [
+        {
+          "bandRows": 8,
+          "groundShare": 0.3662,
+          "footprintWidthShare": 0.7333,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-10T11:44:18.735Z",
+      "usageUsd": 0.007932124005423652,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "A round starburst of cream and brown rays on a trophy stand; source of effect-starfall-burst-a-green.",
+        "reviewedAt": "2026-10-10T11:50:21.207Z"
+      }
+    },
+    "effect-starfall-burst-a-green": {
+      "id": "effect-starfall-burst-a-green",
+      "asset": "chibi-direction-effect-cult-starfall-burst",
+      "jobId": "eaa15cce-3529-4e01-b50a-432fa19e4801",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "effects-cult",
+        "asset": "chibi-direction-effect-cult-starfall-burst",
+        "subject": "EFFECT:STARFALL_BURST",
+        "faction": "CULT",
+        "recipeClass": "accent-effect",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 94062,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only two things: erase the round stand and its stem under the starburst completely, leaving that area transparent; and recolour the dark brown rays bright green #00ff78, so cream and green rays alternate round the pale flash. Do not redraw anything else: keep the round flash, the cream rays and the sparks, thick black outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change only two things: erase the round stand and its stem under the starburst completely, leaving that area transparent; and recolour the dark brown rays bright green #00ff78, so cream and green rays alternate round the pale flash. Do not redraw anything else: keep the round flash, the cream rays and the sparks, thick black outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change only two things: erase the round stand and its stem under the starburst completely, leaving that area transparent; and recolour the dark brown rays bright green #00ff78, so cream and green rays alternate round the pale flash. Do not redraw anything else: keep the round flash, the cream rays and the sparks, thick black outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Change only two things: erase the round stand and its stem under the starburst completely, leaving that area transparent; and recolour the dark brown rays bright green #00ff78, so cream and green rays alternate round the pale flash. Do not redraw anything else: keep the round flash, the cream rays and the sparks, thick black outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "effect-starfall-burst-a",
+          "candidate": 0,
+          "sha256": "4c6e219c295d4e9cb93e22bf325fc3b05f2ba77f18652d980f522595f24ac052"
+        }
+      },
+      "submittedAt": "2026-10-10T11:53:37.926Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-effects-cult/effect-starfall-burst-a-green.png",
+      "rawSheetSha256": "5ee8d683cbef6d124076ffe116b24e9378610a593b44b9ffc367b04168043fc2",
+      "plateHints": [
+        {
+          "bandRows": 6,
+          "groundShare": 0.1333,
+          "footprintWidthShare": 0.3333,
+          "suspect": false
+        },
+        {
+          "bandRows": 6,
+          "groundShare": 0.1333,
+          "footprintWidthShare": 0.3333,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-10T11:54:11.311Z",
+      "usageUsd": 0.0073696338335673016,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "The star landing: a round cream flash with green and cream rays alternating round it; the stand is gone. About 30 px across; the code scales it over the 3 x 3. Reviewed at 1:1 and x6 after the palette map.",
+        "reviewedAt": "2026-10-10T11:57:43.209Z"
+      }
+    },
+    "effect-starfall-star-a": {
+      "id": "effect-starfall-star-a",
+      "asset": "chibi-direction-effect-cult-starfall-star",
+      "jobId": "sync-d5bab768-34b7-4786-9337-a7b6946c0ea4",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "effects-cult",
+        "asset": "chibi-direction-effect-cult-starfall-star",
+        "subject": "EFFECT:STARFALL_STAR",
+        "faction": "CULT",
+        "recipeClass": "accent-effect",
+        "requestSize": {
+          "width": 40,
+          "height": 40
+        },
+        "seed": 94051,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "side"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-accent-effect.txt + scripts/art/chibi/fragments/class-accent-effect.negative.txt",
+            "text": "Class: one bold chunky item sprite of a single small magical thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, button, border, circular background, square background, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, campfire, explosion, person, text, letters, numbers, red, crimson, blood, gore, orange, purple, violet, magenta, pink, translucent, see-through, soft glow"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/CULT.json",
+            "text": "Subject: one fat pale cream five-pointed star falling down to the right, with a thick bright spring green tail of light streaming up to the left behind it; pale cream and green only; floating in empty space."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Class: one bold chunky item sprite of a single small magical thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one fat pale cream five-pointed star falling down to the right, with a thick bright spring green tail of light streaming up to the left behind it; pale cream and green only; floating in empty space.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, emblem, button, border, circular background, square background, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, campfire, explosion, person, red, crimson, blood, gore, orange, purple, violet, magenta, pink, translucent, see-through, soft glow",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Class: one bold chunky item sprite of a single small magical thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one fat pale cream five-pointed star falling down to the right, with a thick bright spring green tail of light streaming up to the left behind it; pale cream and green only; floating in empty space. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, emblem, button, border, circular background, square background, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, campfire, explosion, person, red, crimson, blood, gore, orange, purple, violet, magenta, pink, translucent, see-through, soft glow."
+      },
+      "submittedAt": "2026-10-10T11:43:06.121Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 40,
+        "height": 40
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-effects-cult/effect-starfall-star-a.png",
+      "rawSheetSha256": "228df8f0b6793787f288e0e8d6c9c01f8bc181814631323d4ef8ecaf41e50b44",
+      "plateHints": [
+        {
+          "bandRows": 6,
+          "groundShare": 0.6102,
+          "footprintWidthShare": 0.5417,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-10T11:43:42.403Z",
+      "usageUsd": 0.007999856074651084,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The cream star with a curved tail, but the tail is golden yellow, not green; source of effect-starfall-star-a-green.",
+        "reviewedAt": "2026-10-10T11:50:20.371Z"
+      }
+    },
+    "effect-starfall-star-a-green": {
+      "id": "effect-starfall-star-a-green",
+      "asset": "chibi-direction-effect-cult-starfall-star",
+      "jobId": "c7cff0b8-c2b3-4cfd-8ce3-af55dc0da047",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "effects-cult",
+        "asset": "chibi-direction-effect-cult-starfall-star",
+        "subject": "EFFECT:STARFALL_STAR",
+        "faction": "CULT",
+        "recipeClass": "accent-effect",
+        "requestSize": {
+          "width": 40,
+          "height": 40
+        },
+        "seed": 94052,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only the colour of the curved tail behind the star: the yellow crescent becomes bright green #00ff78 with darker green #00b85a shading on its lower edge; no yellow is left in the tail. Do not redraw anything else: keep the pale cream star, the tail's curved shape, thick black outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change only the colour of the curved tail behind the star: the yellow crescent becomes bright green #00ff78 with darker green #00b85a shading on its lower edge; no yellow is left in the tail. Do not redraw anything else: keep the pale cream star, the tail's curved shape, thick black outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change only the colour of the curved tail behind the star: the yellow crescent becomes bright green #00ff78 with darker green #00b85a shading on its lower edge; no yellow is left in the tail. Do not redraw anything else: keep the pale cream star, the tail's curved shape, thick black outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Change only the colour of the curved tail behind the star: the yellow crescent becomes bright green #00ff78 with darker green #00b85a shading on its lower edge; no yellow is left in the tail. Do not redraw anything else: keep the pale cream star, the tail's curved shape, thick black outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "effect-starfall-star-a",
+          "candidate": 0,
+          "sha256": "228df8f0b6793787f288e0e8d6c9c01f8bc181814631323d4ef8ecaf41e50b44"
+        }
+      },
+      "submittedAt": "2026-10-10T11:52:54.462Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 40,
+        "height": 40
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-effects-cult/effect-starfall-star-a-green.png",
+      "rawSheetSha256": "5eaa8d46a699adb75cb6b3440899c1e75f5672002135ac75b406d86aa3c8805d",
+      "plateHints": [
+        {
+          "bandRows": 6,
+          "groundShare": 0.6102,
+          "footprintWidthShare": 0.5417,
+          "suspect": false
+        },
+        {
+          "bandRows": 6,
+          "groundShare": 0.6102,
+          "footprintWidthShare": 0.5417,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-10T11:53:37.920Z",
+      "usageUsd": 0.00865696512328254,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "The star of Star-fall in flight: a cream five-pointed star with a curved bright green tail. Reads on every ground at 1:1, on Grass by its cream star and dark outline. Reviewed at 1:1 and x6 after the palette map.",
+        "reviewedAt": "2026-10-10T11:57:42.246Z"
+      }
+    },
+    "effect-strand-snap-a": {
+      "id": "effect-strand-snap-a",
+      "asset": "chibi-direction-effect-cult-strand-snap",
+      "jobId": "sync-dd1b1b77-a155-4f46-ade7-19dd3e7479e2",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "effects-cult",
+        "asset": "chibi-direction-effect-cult-strand-snap",
+        "subject": "EFFECT:STRAND_SNAP",
+        "faction": "CULT",
+        "recipeClass": "effect",
+        "requestSize": {
+          "width": 40,
+          "height": 40
+        },
+        "seed": 94031,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "side"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-effect.txt + scripts/art/chibi/fragments/class-effect.negative.txt",
+            "text": "Class: one bold chunky item sprite of a single small magical thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, button, border, circular background, square background, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, campfire, fire, explosion, character, person, creature, text, letters, numbers, red, crimson, blood, gore, orange, yellow, gold, bright green, lime, cyan, teal, turquoise, purple, violet, translucent, see-through, soft glow"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/CULT.json",
+            "text": "Subject: one thick bright spring green chain link snapped in two: its two C-shaped halves flying apart to the left and to the right, with three tiny pale green sparks in the gap between them; green only; floating in empty space."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Class: one bold chunky item sprite of a single small magical thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one thick bright spring green chain link snapped in two: its two C-shaped halves flying apart to the left and to the right, with three tiny pale green sparks in the gap between them; green only; floating in empty space.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, emblem, button, border, circular background, square background, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, campfire, fire, explosion, character, person, creature, red, crimson, blood, gore, orange, yellow, gold, bright green, lime, cyan, teal, turquoise, purple, violet, translucent, see-through, soft glow",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Class: one bold chunky item sprite of a single small magical thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one thick bright spring green chain link snapped in two: its two C-shaped halves flying apart to the left and to the right, with three tiny pale green sparks in the gap between them; green only; floating in empty space. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, emblem, button, border, circular background, square background, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, campfire, fire, explosion, character, person, creature, red, crimson, blood, gore, orange, yellow, gold, bright green, lime, cyan, teal, turquoise, purple, violet, translucent, see-through, soft glow."
+      },
+      "submittedAt": "2026-10-10T10:55:35.737Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 40,
+        "height": 40
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-effects-cult/effect-strand-snap-a.png",
+      "rawSheetSha256": "2fd37c6327b8337bcbab367fd1b4f090b4685027d7833407d4a9563f91b99da4",
+      "plateHints": [
+        {
+          "bandRows": 5,
+          "groundShare": 0.575,
+          "footprintWidthShare": 0.3871,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-10T10:55:59.289Z",
+      "usageUsd": 0.007077000432544285,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Two halves of a chain link in brass and cream, not green: the effect class's negative text forbids bright green.",
+        "reviewedAt": "2026-10-10T10:58:57.146Z"
+      }
+    },
+    "effect-strand-snap-b": {
+      "id": "effect-strand-snap-b",
+      "asset": "chibi-direction-effect-cult-strand-snap",
+      "jobId": "sync-f8cd2313-8480-4965-8d4c-a7ae80afb682",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "effects-cult",
+        "asset": "chibi-direction-effect-cult-strand-snap",
+        "subject": "EFFECT:STRAND_SNAP",
+        "faction": "CULT",
+        "recipeClass": "accent-effect",
+        "requestSize": {
+          "width": 40,
+          "height": 40
+        },
+        "seed": 94032,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "side"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-accent-effect.txt + scripts/art/chibi/fragments/class-accent-effect.negative.txt",
+            "text": "Class: one bold chunky item sprite of a single small magical thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, button, border, circular background, square background, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, campfire, explosion, person, text, letters, numbers, red, crimson, blood, gore, orange, purple, violet, magenta, pink, translucent, see-through, soft glow"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/CULT.json",
+            "text": "Subject: one thick bright spring green chain link snapped in two: its two C-shaped halves flying apart to the left and to the right, with three tiny pale green sparks in the gap between them; green only; floating in empty space."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Class: one bold chunky item sprite of a single small magical thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one thick bright spring green chain link snapped in two: its two C-shaped halves flying apart to the left and to the right, with three tiny pale green sparks in the gap between them; green only; floating in empty space.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, emblem, button, border, circular background, square background, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, campfire, explosion, person, red, crimson, blood, gore, orange, purple, violet, magenta, pink, translucent, see-through, soft glow",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Class: one bold chunky item sprite of a single small magical thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one thick bright spring green chain link snapped in two: its two C-shaped halves flying apart to the left and to the right, with three tiny pale green sparks in the gap between them; green only; floating in empty space. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, emblem, button, border, circular background, square background, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, campfire, explosion, person, red, crimson, blood, gore, orange, purple, violet, magenta, pink, translucent, see-through, soft glow."
+      },
+      "submittedAt": "2026-10-10T11:41:01.945Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 40,
+        "height": 40
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-effects-cult/effect-strand-snap-b.png",
+      "rawSheetSha256": "4c4efbfb0eb75ec76fcd59b9d4306137441f7150fbbcd1b598eeb80a05b4aeeb",
+      "plateHints": [
+        {
+          "bandRows": 5,
+          "groundShare": 0.5098,
+          "footprintWidthShare": 0.5833,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-10T11:41:47.189Z",
+      "usageUsd": 0.008456995672649808,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "A broken strand: one thick green chain link snapped open into a U, its two ends apart. Reads as a broken green link on Grass (dark green outline tones carry it), Snow, water and the dock. Difference from the direction: one opened link, not two halves flying apart; the code moves and fades it. Green tones of cult-green.png only. Reviewed at 1:1 and x6 after the palette map.",
+        "reviewedAt": "2026-10-10T11:50:13.979Z"
+      }
+    },
+    "effect-summon-pop-a": {
+      "id": "effect-summon-pop-a",
+      "asset": "chibi-direction-effect-cult-summon-pop",
+      "jobId": "sync-b692be03-d51e-46a1-8fb4-a4caf3a056dd",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "effects-cult",
+        "asset": "chibi-direction-effect-cult-summon-pop",
+        "subject": "EFFECT:SUMMON_POP",
+        "faction": "CULT",
+        "recipeClass": "effect",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 94021,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "side"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-effect.txt + scripts/art/chibi/fragments/class-effect.negative.txt",
+            "text": "Class: one bold chunky item sprite of a single small magical thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, button, border, circular background, square background, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, campfire, fire, explosion, character, person, creature, text, letters, numbers, red, crimson, blood, gore, orange, yellow, gold, bright green, lime, cyan, teal, turquoise, purple, violet, translucent, see-through, soft glow"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/CULT.json",
+            "text": "Subject: a magic ring bursting upward: one wide flat ring of bright spring green light seen at an angle, with five short thick bright green rays shooting straight up from it and four small pale cream five-pointed stars above; green and pale cream only; floating in empty space."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Class: one bold chunky item sprite of a single small magical thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: a magic ring bursting upward: one wide flat ring of bright spring green light seen at an angle, with five short thick bright green rays shooting straight up from it and four small pale cream five-pointed stars above; green and pale cream only; floating in empty space.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, emblem, button, border, circular background, square background, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, campfire, fire, explosion, character, person, creature, red, crimson, blood, gore, orange, yellow, gold, bright green, lime, cyan, teal, turquoise, purple, violet, translucent, see-through, soft glow",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Class: one bold chunky item sprite of a single small magical thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: a magic ring bursting upward: one wide flat ring of bright spring green light seen at an angle, with five short thick bright green rays shooting straight up from it and four small pale cream five-pointed stars above; green and pale cream only; floating in empty space. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, emblem, button, border, circular background, square background, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, campfire, fire, explosion, character, person, creature, red, crimson, blood, gore, orange, yellow, gold, bright green, lime, cyan, teal, turquoise, purple, violet, translucent, see-through, soft glow."
+      },
+      "submittedAt": "2026-10-10T10:54:57.974Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-effects-cult/effect-summon-pop-a.png",
+      "rawSheetSha256": "34d4cb0641c1a919d3df5751cfd456c20bba9dc1772f2ad60039edbf231e8790",
+      "plateHints": [
+        {
+          "bandRows": 7,
+          "groundShare": 0.2828,
+          "footprintWidthShare": 0.7442,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-10T10:55:35.720Z",
+      "usageUsd": 0.00812886079152425,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "A grey ring with brass stars on sticks: the effect class's negative text forbids bright green, so the ring is not green.",
+        "reviewedAt": "2026-10-10T10:58:57.029Z"
+      }
+    },
+    "effect-summon-pop-b": {
+      "id": "effect-summon-pop-b",
+      "asset": "chibi-direction-effect-cult-summon-pop",
+      "jobId": "sync-827e6fe5-cc8c-4ee3-8cb5-2b3406f1c472",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "effects-cult",
+        "asset": "chibi-direction-effect-cult-summon-pop",
+        "subject": "EFFECT:SUMMON_POP",
+        "faction": "CULT",
+        "recipeClass": "accent-effect",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 94022,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "side"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-accent-effect.txt + scripts/art/chibi/fragments/class-accent-effect.negative.txt",
+            "text": "Class: one bold chunky item sprite of a single small magical thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, button, border, circular background, square background, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, campfire, explosion, person, text, letters, numbers, red, crimson, blood, gore, orange, purple, violet, magenta, pink, translucent, see-through, soft glow"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/CULT.json",
+            "text": "Subject: a magic ring bursting upward: one wide flat ring of bright spring green light seen at an angle, with five short thick bright green rays shooting straight up from it and four small pale cream five-pointed stars above; green and pale cream only; floating in empty space."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Class: one bold chunky item sprite of a single small magical thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: a magic ring bursting upward: one wide flat ring of bright spring green light seen at an angle, with five short thick bright green rays shooting straight up from it and four small pale cream five-pointed stars above; green and pale cream only; floating in empty space.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, emblem, button, border, circular background, square background, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, campfire, explosion, person, red, crimson, blood, gore, orange, purple, violet, magenta, pink, translucent, see-through, soft glow",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Class: one bold chunky item sprite of a single small magical thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: a magic ring bursting upward: one wide flat ring of bright spring green light seen at an angle, with five short thick bright green rays shooting straight up from it and four small pale cream five-pointed stars above; green and pale cream only; floating in empty space. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, emblem, button, border, circular background, square background, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, campfire, explosion, person, red, crimson, blood, gore, orange, purple, violet, magenta, pink, translucent, see-through, soft glow."
+      },
+      "submittedAt": "2026-10-10T11:40:29.512Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-effects-cult/effect-summon-pop-b.png",
+      "rawSheetSha256": "e98cc567407b7b9f67736dc5983a436ec0755a6160381cb3aa75a094d51c7e93",
+      "plateHints": [
+        {
+          "bandRows": 8,
+          "groundShare": 0.6402,
+          "footprintWidthShare": 0.9333,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-10T11:41:01.940Z",
+      "usageUsd": 0.007543608877393935,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The ring bursting upward with green rays and cream stars, standing on a plinth of brown and blue blocks; source of effect-summon-pop-b-clean.",
+        "reviewedAt": "2026-10-10T11:50:18.662Z"
+      }
+    },
+    "effect-summon-pop-b-clean": {
+      "id": "effect-summon-pop-b-clean",
+      "asset": "chibi-direction-effect-cult-summon-pop",
+      "jobId": "c84ae934-a768-4caa-8987-46571a5c7743",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "effects-cult",
+        "asset": "chibi-direction-effect-cult-summon-pop",
+        "subject": "EFFECT:SUMMON_POP",
+        "faction": "CULT",
+        "recipeClass": "accent-effect",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 94023,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only one thing: erase the stack of brown and blue blocks under the ring completely, leaving that area transparent, so the ring floats alone. Do not redraw anything else: keep the ring, the bright green rays shooting up from it, the cream stars above it, thick black outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change only one thing: erase the stack of brown and blue blocks under the ring completely, leaving that area transparent, so the ring floats alone. Do not redraw anything else: keep the ring, the bright green rays shooting up from it, the cream stars above it, thick black outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change only one thing: erase the stack of brown and blue blocks under the ring completely, leaving that area transparent, so the ring floats alone. Do not redraw anything else: keep the ring, the bright green rays shooting up from it, the cream stars above it, thick black outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Change only one thing: erase the stack of brown and blue blocks under the ring completely, leaving that area transparent, so the ring floats alone. Do not redraw anything else: keep the ring, the bright green rays shooting up from it, the cream stars above it, thick black outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "effect-summon-pop-b",
+          "candidate": 0,
+          "sha256": "e98cc567407b7b9f67736dc5983a436ec0755a6160381cb3aa75a094d51c7e93"
+        }
+      },
+      "submittedAt": "2026-10-10T11:52:22.917Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-effects-cult/effect-summon-pop-b-clean.png",
+      "rawSheetSha256": "071e1b9089deca5e46175e7a25678a3b8e332804387c4a4f7c216c321e24c531",
+      "plateHints": [
+        {
+          "bandRows": 7,
+          "groundShare": 0.7068,
+          "footprintWidthShare": 0.8667,
+          "suspect": true
+        },
+        {
+          "bandRows": 7,
+          "groundShare": 0.7068,
+          "footprintWidthShare": 0.8667,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-10T11:52:54.455Z",
+      "usageUsd": 0.007632612731721666,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "A Horror or the Herald arriving: a ring seen at an angle with green rays shooting up from it and three cream stars above; the plinth is gone. Reads on every ground at 1:1. Teal, cream and green tones of cult-green.png. Reviewed at 1:1 and x6 after the palette map.",
+        "reviewedAt": "2026-10-10T11:57:41.158Z"
+      }
+    },
+    "effect-switcheroo-a": {
+      "id": "effect-switcheroo-a",
+      "asset": "chibi-direction-effect-cult-switcheroo",
+      "jobId": "sync-db350c6d-2a9a-48ce-9b69-955c177e26b8",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "effects-cult",
+        "asset": "chibi-direction-effect-cult-switcheroo",
+        "subject": "EFFECT:SWITCHEROO",
+        "faction": "CULT",
+        "recipeClass": "accent-effect",
+        "requestSize": {
+          "width": 40,
+          "height": 40
+        },
+        "seed": 94091,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "side"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-accent-effect.txt + scripts/art/chibi/fragments/class-accent-effect.negative.txt",
+            "text": "Class: one bold chunky item sprite of a single small magical thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, button, border, circular background, square background, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, campfire, explosion, person, text, letters, numbers, red, crimson, blood, gore, orange, purple, violet, magenta, pink, translucent, see-through, soft glow"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/CULT.json",
+            "text": "Subject: one small round puff of smoke drawn as a spiral swirl, pale cream with a bright spring green spiral line winding into its middle, and two tiny cream sparkle stars beside it; floating in empty space."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Class: one bold chunky item sprite of a single small magical thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one small round puff of smoke drawn as a spiral swirl, pale cream with a bright spring green spiral line winding into its middle, and two tiny cream sparkle stars beside it; floating in empty space.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, emblem, button, border, circular background, square background, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, campfire, explosion, person, red, crimson, blood, gore, orange, purple, violet, magenta, pink, translucent, see-through, soft glow",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Class: one bold chunky item sprite of a single small magical thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one small round puff of smoke drawn as a spiral swirl, pale cream with a bright spring green spiral line winding into its middle, and two tiny cream sparkle stars beside it; floating in empty space. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, emblem, button, border, circular background, square background, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, campfire, explosion, person, red, crimson, blood, gore, orange, purple, violet, magenta, pink, translucent, see-through, soft glow."
+      },
+      "submittedAt": "2026-10-10T11:45:42.822Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 40,
+        "height": 40
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-effects-cult/effect-switcheroo-a.png",
+      "rawSheetSha256": "9c7fe01c45daa90cafce32394e50c4add02b9b62e896a99224b3594632d766d8",
+      "plateHints": [
+        {
+          "bandRows": 4,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8636,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-10T11:46:07.059Z",
+      "usageUsd": 0.007249732282426622,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Switcheroo: a small round swirl puff, cream with a green spiral in its middle, and two sparkles. About 26 px in its 40 px canvas, as a small puff should be; drawn on both tiles. Reviewed at 1:1 and x6 after the palette map.",
+        "reviewedAt": "2026-10-10T11:50:16.354Z"
+      }
+    },
+    "effect-tentacle-slap-a": {
+      "id": "effect-tentacle-slap-a",
+      "asset": "chibi-direction-effect-cult-tentacle-slap",
+      "jobId": "sync-b08d78c9-e87f-4bcd-8d1c-d22902cbc723",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "effects-cult",
+        "asset": "chibi-direction-effect-cult-tentacle-slap",
+        "subject": "EFFECT:TENTACLE_SLAP",
+        "faction": "CULT",
+        "recipeClass": "effect",
+        "requestSize": {
+          "width": 40,
+          "height": 40
+        },
+        "seed": 94101,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "side"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-effect.txt + scripts/art/chibi/fragments/class-effect.negative.txt",
+            "text": "Class: one bold chunky item sprite of a single small magical thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, button, border, circular background, square background, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, campfire, fire, explosion, character, person, creature, text, letters, numbers, red, crimson, blood, gore, orange, yellow, gold, bright green, lime, cyan, teal, turquoise, purple, violet, translucent, see-through, soft glow"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/CULT.json",
+            "text": "Subject: the curled tip of one thick rubbery dark teal tentacle with round pale cream suckers slapping down, and beside it one big pale cream impact star with six points; dark teal and pale cream only; floating in empty space."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Class: one bold chunky item sprite of a single small magical thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: the curled tip of one thick rubbery dark teal tentacle with round pale cream suckers slapping down, and beside it one big pale cream impact star with six points; dark teal and pale cream only; floating in empty space.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, emblem, button, border, circular background, square background, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, campfire, fire, explosion, character, person, creature, red, crimson, blood, gore, orange, yellow, gold, bright green, lime, cyan, teal, turquoise, purple, violet, translucent, see-through, soft glow",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Class: one bold chunky item sprite of a single small magical thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: the curled tip of one thick rubbery dark teal tentacle with round pale cream suckers slapping down, and beside it one big pale cream impact star with six points; dark teal and pale cream only; floating in empty space. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, emblem, button, border, circular background, square background, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, campfire, fire, explosion, character, person, creature, red, crimson, blood, gore, orange, yellow, gold, bright green, lime, cyan, teal, turquoise, purple, violet, translucent, see-through, soft glow."
+      },
+      "submittedAt": "2026-10-10T10:55:59.292Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 40,
+        "height": 40
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-effects-cult/effect-tentacle-slap-a.png",
+      "rawSheetSha256": "2f041d768f83b8f4f4260b40f0a4ab4d3783ae4a34c66dca37f8a2cb93de345c",
+      "plateHints": [
+        {
+          "bandRows": 6,
+          "groundShare": 0.0727,
+          "footprintWidthShare": 0.8056,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-10T10:56:33.144Z",
+      "usageUsd": 0.008101114723417494,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "The Tentacle's slap: a curled teal tentacle tip with cream suckers and a cream six-pointed impact star; teal, cream and brass tones of cult-green.png only. Reads on Grass, Shallow Water and the dock at 1:1. Reviewed at 1:1 and x6 after the palette map.",
+        "reviewedAt": "2026-10-10T10:58:56.431Z"
+      }
+    },
+    "effect-unbound-a": {
+      "id": "effect-unbound-a",
+      "asset": "chibi-direction-effect-cult-unbound",
+      "jobId": "sync-cf7b3f4b-7d65-4a11-947a-e951787f4a6f",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "effects-cult",
+        "asset": "chibi-direction-effect-cult-unbound",
+        "subject": "EFFECT:UNBOUND",
+        "faction": "CULT",
+        "recipeClass": "accent-effect",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 94041,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "side"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-accent-effect.txt + scripts/art/chibi/fragments/class-accent-effect.negative.txt",
+            "text": "Class: one bold chunky item sprite of a single small magical thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, button, border, circular background, square background, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, campfire, explosion, person, text, letters, numbers, red, crimson, blood, gore, orange, purple, violet, magenta, pink, translucent, see-through, soft glow"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/CULT.json",
+            "text": "Subject: one polished brass collar ring with blunt spikes bursting apart into four curved pieces, with four loose brass chain links flying outward and a few small pale cream sparks; brass yellow and pale cream only; round overall; floating in empty space."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Class: one bold chunky item sprite of a single small magical thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one polished brass collar ring with blunt spikes bursting apart into four curved pieces, with four loose brass chain links flying outward and a few small pale cream sparks; brass yellow and pale cream only; round overall; floating in empty space.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, emblem, button, border, circular background, square background, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, campfire, explosion, person, red, crimson, blood, gore, orange, purple, violet, magenta, pink, translucent, see-through, soft glow",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Class: one bold chunky item sprite of a single small magical thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one polished brass collar ring with blunt spikes bursting apart into four curved pieces, with four loose brass chain links flying outward and a few small pale cream sparks; brass yellow and pale cream only; round overall; floating in empty space. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, emblem, button, border, circular background, square background, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, campfire, explosion, person, red, crimson, blood, gore, orange, purple, violet, magenta, pink, translucent, see-through, soft glow."
+      },
+      "submittedAt": "2026-10-10T11:42:39.302Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-effects-cult/effect-unbound-a.png",
+      "rawSheetSha256": "4c577281aa7eef5f057371f44ecbb84eadb29a677a0604423288b6aae1843ecd",
+      "plateHints": [
+        {
+          "bandRows": 6,
+          "groundShare": 0.36,
+          "footprintWidthShare": 0.4146,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-10T11:43:06.117Z",
+      "usageUsd": 0.007620076762305366,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "A daemon becoming Unbound: a spiked brass collar ring bursting outward with cream sparks. Reads as a brass ring flying apart at 1:1; brass and cream only, no red. Reviewed at 1:1 and x6 after the palette map.",
+        "reviewedAt": "2026-10-10T11:50:15.586Z"
+      }
+    }
+  },
+  "assets": {
+    "chibi-direction-effect-cult-boo": {
+      "id": "chibi-direction-effect-cult-boo",
+      "subject": "EFFECT:BOO",
+      "assetClass": "EFFECT",
+      "status": "ACCEPTED",
+      "recipe": "effect-boo-a-teal",
+      "candidate": 0,
+      "candidateSha256": "4d057d8872b2d303ab566f2d7626a6e3c509018fe71b7bd86facd44e9373307c",
+      "master": {
+        "path": "public/assets/chibi/effects/chibi-direction-effect-cult-boo.png",
+        "sha256": "73db8bb1d6425f609381348d30a85c6e5e8908c62d0285907738e1e1f1582e22",
+        "pixelSha256": "bd7db4e756f245c2453b7aaa3f80329d8d54c753f9beb6a331c5372239afa7dd",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "palette-map",
+        "palette": {
+          "path": "scripts/art/chibi/palettes/cult-green.png",
+          "sha256": "4699465ad1a0c1ce795e2eb9f7dff57b4a4b848eca8a5075a65caf8256b5c252"
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Boo!: a round teal head that is all grin, wide cream teeth between dark lips, in a ring of cream startle lines. Reads on every ground at 1:1. Reviewed at 1:1 and x6 after the palette map.",
+      "acceptedAt": "2026-10-10T11:57:44.229Z"
+    },
+    "chibi-direction-effect-cult-favour": {
+      "id": "chibi-direction-effect-cult-favour",
+      "subject": "EFFECT:FAVOUR",
+      "assetClass": "EFFECT",
+      "status": "ACCEPTED",
+      "recipe": "effect-favour-a-green",
+      "candidate": 0,
+      "candidateSha256": "77d3f565615bc17a1e3bb6b1a4cf43e4f5c64af7257cb51fe471959eeb057dab",
+      "master": {
+        "path": "public/assets/chibi/effects/chibi-direction-effect-cult-favour.png",
+        "sha256": "3a8ed37ef67cdd780967d78de993c92749548b0eb17b555b9f43a9a93a4c2cfe",
+        "pixelSha256": "ba11aadf9711c3e5364324245dfcfe8fc3d9eafbc712c93076e63295d8f16980",
+        "width": 40,
+        "height": 40
+      },
+      "derivation": {
+        "kind": "palette-map",
+        "palette": {
+          "path": "scripts/art/chibi/palettes/cult-green.png",
+          "sha256": "4699465ad1a0c1ce795e2eb9f7dff57b4a4b848eca8a5075a65caf8256b5c252"
+        }
+      },
+      "anchor": {
+        "x": 20,
+        "y": 20
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Favour gained: a teardrop flame of the faction green with a pale middle and a white sparkle. About 20 px tall in its 40 px canvas. Reviewed at 1:1 and x6 after the palette map.",
+      "acceptedAt": "2026-10-10T11:57:47.096Z"
+    },
+    "chibi-direction-effect-cult-pamphlets": {
+      "id": "chibi-direction-effect-cult-pamphlets",
+      "subject": "EFFECT:PAMPHLETS",
+      "assetClass": "EFFECT",
+      "status": "ACCEPTED",
+      "recipe": "effect-pamphlets-a-clean",
+      "candidate": 0,
+      "candidateSha256": "2ffd45ddeba3fd5f9b1ef9f9779dea6e32e273c1d69fda282a0f7f330f03965e",
+      "master": {
+        "path": "public/assets/chibi/effects/chibi-direction-effect-cult-pamphlets.png",
+        "sha256": "67b89d8de7a17d38c0e189e7aafcb15d9559b5dcd880c540a73f089b2e45d964",
+        "pixelSha256": "31c9771b04284886d8b8cfd6c8fc66b389621389049be21b93526c57fbf63969",
+        "width": 40,
+        "height": 40
+      },
+      "derivation": {
+        "kind": "palette-map",
+        "palette": {
+          "path": "scripts/art/chibi/palettes/cult-green.png",
+          "sha256": "4699465ad1a0c1ce795e2eb9f7dff57b4a4b848eca8a5075a65caf8256b5c252"
+        }
+      },
+      "anchor": {
+        "x": 20,
+        "y": 20
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Pamphlets: three cream leaflets with lines of print fluttering at different angles, with motion lines; the object between them is gone. Reads on Grass, water and the dark token; pale on the dock and Snow, where the outline carries it. Reviewed at 1:1 and x6 after the palette map.",
+      "acceptedAt": "2026-10-10T11:57:46.161Z"
+    },
+    "chibi-direction-effect-cult-proclaim": {
+      "id": "chibi-direction-effect-cult-proclaim",
+      "subject": "EFFECT:PROCLAIM",
+      "assetClass": "EFFECT",
+      "status": "ACCEPTED",
+      "recipe": "effect-proclaim-a",
+      "candidate": 0,
+      "candidateSha256": "a4b9badbc711df026edf8ceff7cb0ecd101fc4565df8459fde18743024835b8e",
+      "master": {
+        "path": "public/assets/chibi/effects/chibi-direction-effect-cult-proclaim.png",
+        "sha256": "9c7b99e1dc200821e7632299ea012db75cdbb34a345d6e784a7d8272768b4722",
+        "pixelSha256": "d656caf341d6847b1dcee5aa6ac99fa55cdac2012fdd2eef3f6b70efe3ee880e",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "palette-map",
+        "palette": {
+          "path": "scripts/art/chibi/palettes/cult-green.png",
+          "sha256": "4699465ad1a0c1ce795e2eb9f7dff57b4a4b848eca8a5075a65caf8256b5c252"
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Proclaim: one huge wide-open pale yellow eye with a black pupil and green sound rings spreading from both sides. Reads at 1:1 on every ground; the thin rings carry less on Grass than on the dock. Reviewed at 1:1 and x6 after the palette map.",
+      "acceptedAt": "2026-10-10T11:50:17.105Z"
+    },
+    "chibi-direction-effect-cult-ribbit": {
+      "id": "chibi-direction-effect-cult-ribbit",
+      "subject": "EFFECT:RIBBIT",
+      "assetClass": "EFFECT",
+      "status": "ACCEPTED",
+      "recipe": "effect-ribbit-a-green",
+      "candidate": 0,
+      "candidateSha256": "5c98999a4e2ce6a78f9083516b2971e27d73015b189697224e7369e46f21b889",
+      "master": {
+        "path": "public/assets/chibi/effects/chibi-direction-effect-cult-ribbit.png",
+        "sha256": "0aad2d2250bce62f41b301017a3cd67901da6c4c0e8dbcc789ed928c20ac3601",
+        "pixelSha256": "3702536a1f27ab760f722feaaf462b6261a03ebd61e00d2e6b2203cfab9929fc",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "palette-map",
+        "palette": {
+          "path": "scripts/art/chibi/palettes/cult-green.png",
+          "sha256": "4699465ad1a0c1ce795e2eb9f7dff57b4a4b848eca8a5075a65caf8256b5c252"
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Ribbit landing and a frog ending: a small teal frog with a cream belly leaping out of a round puff of green smoke. Reads on every ground at 1:1; on Grass the puff's dark green edge and the frog carry it. Reviewed at 1:1 and x6 after the palette map.",
+      "acceptedAt": "2026-10-10T11:57:45.167Z"
+    },
+    "chibi-direction-effect-cult-ritual-fizzle": {
+      "id": "chibi-direction-effect-cult-ritual-fizzle",
+      "subject": "EFFECT:RITUAL_FIZZLE",
+      "assetClass": "EFFECT",
+      "status": "ACCEPTED",
+      "recipe": "effect-ritual-fizzle-a",
+      "candidate": 0,
+      "candidateSha256": "0a68a65302a5c0caf048d83199a0bd4af36e023ce1cbfc66ab5aa00c37cc6dfa",
+      "master": {
+        "path": "public/assets/chibi/effects/chibi-direction-effect-cult-ritual-fizzle.png",
+        "sha256": "2bee371ae20a62efb2539462a75705413c1be2d8ad2344bfa1f93ce0eec75b6d",
+        "pixelSha256": "6eb9a70319961db2237dc5c227dc53d5d8c4cf25b8e3678f0a1959307ef037d0",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "palette-map",
+        "palette": {
+          "path": "scripts/art/chibi/palettes/cult-green.png",
+          "sha256": "4699465ad1a0c1ce795e2eb9f7dff57b4a4b848eca8a5075a65caf8256b5c252"
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "A ritual fizzling: three curling wisps of pale smoke rising from three burnt stubs. Reads as three smoking wicks at 1:1; cream, grey, brass and indigo tones of the palette, no flame. Reviewed at 1:1 and x6 after the palette map.",
+      "acceptedAt": "2026-10-10T11:50:17.841Z"
+    },
+    "chibi-direction-effect-cult-sacrifice-puff": {
+      "id": "chibi-direction-effect-cult-sacrifice-puff",
+      "subject": "EFFECT:SACRIFICE_PUFF",
+      "assetClass": "EFFECT",
+      "status": "ACCEPTED",
+      "recipe": "effect-sacrifice-puff-b-green",
+      "candidate": 0,
+      "candidateSha256": "9cd6e83645fe7adff1108741f27d6aba2dcc6fed8b72459a99938ecade520692",
+      "master": {
+        "path": "public/assets/chibi/effects/chibi-direction-effect-cult-sacrifice-puff.png",
+        "sha256": "aa85afac7f79c85d1a847aa849bb73ba18e1980d47b8a67bfdc1263f110f29a8",
+        "pixelSha256": "4530e4197d319b1039a3724403a74777f812caecbe469ea968075d3362883091",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "palette-map",
+        "palette": {
+          "path": "scripts/art/chibi/palettes/cult-green.png",
+          "sha256": "4699465ad1a0c1ce795e2eb9f7dff57b4a4b848eca8a5075a65caf8256b5c252"
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Sacrifice and every consumption: a round puff of bright green smoke with a small pointed indigo hood lying on it. Reads on every ground at 1:1; on Grass the dark green edge and the indigo hood carry it. Green and indigo tones of cult-green.png only. Reviewed at 1:1 and x6 after the palette map.",
+      "acceptedAt": "2026-10-10T12:01:05.279Z"
+    },
+    "chibi-direction-effect-cult-seize": {
+      "id": "chibi-direction-effect-cult-seize",
+      "subject": "EFFECT:SEIZE",
+      "assetClass": "EFFECT",
+      "status": "ACCEPTED",
+      "recipe": "effect-seize-a",
+      "candidate": 0,
+      "candidateSha256": "a72cdba43dc56a02c2f24162a06c36fb6df741d3340c2089e9e8fe80eb24173b",
+      "master": {
+        "path": "public/assets/chibi/effects/chibi-direction-effect-cult-seize.png",
+        "sha256": "bc46efe231299149caa2e24d37764013a634a86a4c88c6a6421b204aaedc370d",
+        "pixelSha256": "00f6a20dfd3580bf01a53400d6094698b1438183e178e9dbf71911bef115336a",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "palette-map",
+        "palette": {
+          "path": "scripts/art/chibi/palettes/cult-green.png",
+          "sha256": "4699465ad1a0c1ce795e2eb9f7dff57b4a4b848eca8a5075a65caf8256b5c252"
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Seize: a teal tentacle with pale suckers reaching up out of a small dark hole and hooked over, with motion lines. Reads on every ground at 1:1; teal, cream and brass tones of the palette. Reviewed at 1:1 and x6 after the palette map.",
+      "acceptedAt": "2026-10-10T11:50:14.846Z"
+    },
+    "chibi-direction-effect-cult-starfall-burst": {
+      "id": "chibi-direction-effect-cult-starfall-burst",
+      "subject": "EFFECT:STARFALL_BURST",
+      "assetClass": "EFFECT",
+      "status": "ACCEPTED",
+      "recipe": "effect-starfall-burst-a-green",
+      "candidate": 0,
+      "candidateSha256": "3fd0f5978b68c2619586e4d99aef9fa192a88844ff8ffa8e111e70330ce2bd34",
+      "master": {
+        "path": "public/assets/chibi/effects/chibi-direction-effect-cult-starfall-burst.png",
+        "sha256": "138767c7d02b955a56968dbb9cadde4356f6b58fe32967ee23ff4bcd12d22ce3",
+        "pixelSha256": "949ce33a8479c866062447d8918fb9336cb7664544f5ad2a14179eef869c86b7",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "palette-map",
+        "palette": {
+          "path": "scripts/art/chibi/palettes/cult-green.png",
+          "sha256": "4699465ad1a0c1ce795e2eb9f7dff57b4a4b848eca8a5075a65caf8256b5c252"
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "The star landing: a round cream flash with green and cream rays alternating round it; the stand is gone. About 30 px across; the code scales it over the 3 x 3. Reviewed at 1:1 and x6 after the palette map.",
+      "acceptedAt": "2026-10-10T11:57:43.209Z"
+    },
+    "chibi-direction-effect-cult-starfall-star": {
+      "id": "chibi-direction-effect-cult-starfall-star",
+      "subject": "EFFECT:STARFALL_STAR",
+      "assetClass": "EFFECT",
+      "status": "ACCEPTED",
+      "recipe": "effect-starfall-star-a-green",
+      "candidate": 0,
+      "candidateSha256": "fd32d42a82dd3e02cc77db3bd1db06041956b3f55813ae47adcb89ef2f881bc7",
+      "master": {
+        "path": "public/assets/chibi/effects/chibi-direction-effect-cult-starfall-star.png",
+        "sha256": "aab46824fffa28408cc2b27b45c1494f97fea1011e12dcdb561adf8677428f93",
+        "pixelSha256": "13fd5b481c640bb4cf3528a6e98ca7e0ef1636edddfabacd3e06cdf9c914d56a",
+        "width": 40,
+        "height": 40
+      },
+      "derivation": {
+        "kind": "palette-map",
+        "palette": {
+          "path": "scripts/art/chibi/palettes/cult-green.png",
+          "sha256": "4699465ad1a0c1ce795e2eb9f7dff57b4a4b848eca8a5075a65caf8256b5c252"
+        }
+      },
+      "anchor": {
+        "x": 20,
+        "y": 20
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "The star of Star-fall in flight: a cream five-pointed star with a curved bright green tail. Reads on every ground at 1:1, on Grass by its cream star and dark outline. Reviewed at 1:1 and x6 after the palette map.",
+      "acceptedAt": "2026-10-10T11:57:42.246Z"
+    },
+    "chibi-direction-effect-cult-strand-snap": {
+      "id": "chibi-direction-effect-cult-strand-snap",
+      "subject": "EFFECT:STRAND_SNAP",
+      "assetClass": "EFFECT",
+      "status": "ACCEPTED",
+      "recipe": "effect-strand-snap-b",
+      "candidate": 0,
+      "candidateSha256": "4c4efbfb0eb75ec76fcd59b9d4306137441f7150fbbcd1b598eeb80a05b4aeeb",
+      "master": {
+        "path": "public/assets/chibi/effects/chibi-direction-effect-cult-strand-snap.png",
+        "sha256": "2fbda2e8560b66fe517b33709355b225fe4a7929b0bdd79ae11680afa51599a4",
+        "pixelSha256": "dd669ffa006560c83e1b25c66e68a67bb695b66e7c5d9ea8b6faba6f73656846",
+        "width": 40,
+        "height": 40
+      },
+      "derivation": {
+        "kind": "palette-map",
+        "palette": {
+          "path": "scripts/art/chibi/palettes/cult-green.png",
+          "sha256": "4699465ad1a0c1ce795e2eb9f7dff57b4a4b848eca8a5075a65caf8256b5c252"
+        }
+      },
+      "anchor": {
+        "x": 20,
+        "y": 20
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "A broken strand: one thick green chain link snapped open into a U, its two ends apart. Reads as a broken green link on Grass (dark green outline tones carry it), Snow, water and the dock. Difference from the direction: one opened link, not two halves flying apart; the code moves and fades it. Green tones of cult-green.png only. Reviewed at 1:1 and x6 after the palette map.",
+      "acceptedAt": "2026-10-10T11:50:13.979Z"
+    },
+    "chibi-direction-effect-cult-summon-pop": {
+      "id": "chibi-direction-effect-cult-summon-pop",
+      "subject": "EFFECT:SUMMON_POP",
+      "assetClass": "EFFECT",
+      "status": "ACCEPTED",
+      "recipe": "effect-summon-pop-b-clean",
+      "candidate": 0,
+      "candidateSha256": "83a270b158a460cd1c867fdc68da9892defdb56b3fc392915b5e6a483a08c4f8",
+      "master": {
+        "path": "public/assets/chibi/effects/chibi-direction-effect-cult-summon-pop.png",
+        "sha256": "41910e3d6d189b09a5bb68231857a5e7f40ba2dace3f8e21379439ee08c758e7",
+        "pixelSha256": "9fac9115da441580a2e544781b70aa2fe1cf06683c3a8d546117fa25b98729c5",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "palette-map",
+        "palette": {
+          "path": "scripts/art/chibi/palettes/cult-green.png",
+          "sha256": "4699465ad1a0c1ce795e2eb9f7dff57b4a4b848eca8a5075a65caf8256b5c252"
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "A Horror or the Herald arriving: a ring seen at an angle with green rays shooting up from it and three cream stars above; the plinth is gone. Reads on every ground at 1:1. Teal, cream and green tones of cult-green.png. Reviewed at 1:1 and x6 after the palette map.",
+      "acceptedAt": "2026-10-10T11:57:41.158Z"
+    },
+    "chibi-direction-effect-cult-switcheroo": {
+      "id": "chibi-direction-effect-cult-switcheroo",
+      "subject": "EFFECT:SWITCHEROO",
+      "assetClass": "EFFECT",
+      "status": "ACCEPTED",
+      "recipe": "effect-switcheroo-a",
+      "candidate": 0,
+      "candidateSha256": "9c7fe01c45daa90cafce32394e50c4add02b9b62e896a99224b3594632d766d8",
+      "master": {
+        "path": "public/assets/chibi/effects/chibi-direction-effect-cult-switcheroo.png",
+        "sha256": "afa93d312d96068ff79c45b3c13e851efc699934d462008655d0927f3f3da39f",
+        "pixelSha256": "14cab35decfd3c370512c7ac80eac6c8f0644ce48d6ab0c41a865c60f1c623a4",
+        "width": 40,
+        "height": 40
+      },
+      "derivation": {
+        "kind": "palette-map",
+        "palette": {
+          "path": "scripts/art/chibi/palettes/cult-green.png",
+          "sha256": "4699465ad1a0c1ce795e2eb9f7dff57b4a4b848eca8a5075a65caf8256b5c252"
+        }
+      },
+      "anchor": {
+        "x": 20,
+        "y": 20
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Switcheroo: a small round swirl puff, cream with a green spiral in its middle, and two sparkles. About 26 px in its 40 px canvas, as a small puff should be; drawn on both tiles. Reviewed at 1:1 and x6 after the palette map.",
+      "acceptedAt": "2026-10-10T11:50:16.354Z"
+    },
+    "chibi-direction-effect-cult-tentacle-slap": {
+      "id": "chibi-direction-effect-cult-tentacle-slap",
+      "subject": "EFFECT:TENTACLE_SLAP",
+      "assetClass": "EFFECT",
+      "status": "ACCEPTED",
+      "recipe": "effect-tentacle-slap-a",
+      "candidate": 0,
+      "candidateSha256": "2f041d768f83b8f4f4260b40f0a4ab4d3783ae4a34c66dca37f8a2cb93de345c",
+      "master": {
+        "path": "public/assets/chibi/effects/chibi-direction-effect-cult-tentacle-slap.png",
+        "sha256": "d0823c510c0e4ad5d00dfd9b01d0360031ab885b2a6c595f3aac13a3e76c5a73",
+        "pixelSha256": "153e102f622ea8cca5b63252e9c5cd41789ef25d739248c66ca89e6e6c03a78e",
+        "width": 40,
+        "height": 40
+      },
+      "derivation": {
+        "kind": "palette-map",
+        "palette": {
+          "path": "scripts/art/chibi/palettes/cult-green.png",
+          "sha256": "4699465ad1a0c1ce795e2eb9f7dff57b4a4b848eca8a5075a65caf8256b5c252"
+        }
+      },
+      "anchor": {
+        "x": 20,
+        "y": 20
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "The Tentacle's slap: a curled teal tentacle tip with cream suckers and a cream six-pointed impact star; teal, cream and brass tones of cult-green.png only. Reads on Grass, Shallow Water and the dock at 1:1. Reviewed at 1:1 and x6 after the palette map.",
+      "acceptedAt": "2026-10-10T10:58:56.431Z"
+    },
+    "chibi-direction-effect-cult-unbound": {
+      "id": "chibi-direction-effect-cult-unbound",
+      "subject": "EFFECT:UNBOUND",
+      "assetClass": "EFFECT",
+      "status": "ACCEPTED",
+      "recipe": "effect-unbound-a",
+      "candidate": 0,
+      "candidateSha256": "4c577281aa7eef5f057371f44ecbb84eadb29a677a0604423288b6aae1843ecd",
+      "master": {
+        "path": "public/assets/chibi/effects/chibi-direction-effect-cult-unbound.png",
+        "sha256": "0e138bd993199a5dec8e9e63277bed264e31b43cf990c91ce20e8eb2b98d9556",
+        "pixelSha256": "efc16d6a65d1cd062c3af04ccc3afb44254fe5e18239342c3add4609024bf7df",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "palette-map",
+        "palette": {
+          "path": "scripts/art/chibi/palettes/cult-green.png",
+          "sha256": "4699465ad1a0c1ce795e2eb9f7dff57b4a4b848eca8a5075a65caf8256b5c252"
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "A daemon becoming Unbound: a spiked brass collar ring bursting outward with cream sparks. Reads as a brass ring flying apart at 1:1; brass and cream only, no red. Reviewed at 1:1 and x6 after the palette map.",
+      "acceptedAt": "2026-10-10T11:50:15.586Z"
+    }
+  }
+}

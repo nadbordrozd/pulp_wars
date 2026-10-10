@@ -1,0 +1,36 @@
+{
+  "id": "effect-boo-a-teal",
+  "jobId": "39af43bb-dafa-471e-9922-2b0553b89e79",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "effects-cult",
+    "asset": "chibi-direction-effect-cult-boo",
+    "subject": "EFFECT:BOO",
+    "faction": "CULT",
+    "recipeClass": "accent-effect",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 94072,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only the colour of the round dome above the mouth: the yellow-brown cap becomes dark teal #1f8f95 with shade #145f6b, the same colour as the lips, so it reads as the top of a round teal head. Do not redraw anything else: keep the wide mouth with its cream teeth, the dark lips and the ring of cream startle lines, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only the colour of the round dome above the mouth: the yellow-brown cap becomes dark teal #1f8f95 with shade #145f6b, the same colour as the lips, so it reads as the top of a round teal head. Do not redraw anything else: keep the wide mouth with its cream teeth, the dark lips and the ring of cream startle lines, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only the colour of the round dome above the mouth: the yellow-brown cap becomes dark teal #1f8f95 with shade #145f6b, the same colour as the lips, so it reads as the top of a round teal head. Do not redraw anything else: keep the wide mouth with its cream teeth, the dark lips and the ring of cream startle lines, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only the colour of the round dome above the mouth: the yellow-brown cap becomes dark teal #1f8f95 with shade #145f6b, the same colour as the lips, so it reads as the top of a round teal head. Do not redraw anything else: keep the wide mouth with its cream teeth, the dark lips and the ring of cream startle lines, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "effect-boo-a",
+      "candidate": 0,
+      "sha256": "8af74b901051bdc6dacb7d6cd3e7b81836922c2894bf9dbec3f07f94e33a5da5"
+    }
+  }
+}

@@ -337,10 +337,11 @@ describe("Cult art subjects stand in with the shared art", () => {
       expect(found, subject).not.toBeNull();
       // Since the unit art (`pulp_wars-mch9.15`) a Cult unit and a Cult ship
       // are their own raster in the live look, and since `pulp_wars-mch9.16`
-      // a Cult city, building and Monument; a portrait is still never the
-      // Cult's own subject (bead mch9.23).
+      // a Cult city, building and Monument, and since `pulp_wars-mch9.23`
+      // every Cult portrait.
       if (
         subject.startsWith("UNIT:CULT:") ||
+        subject.startsWith("PORTRAIT:CULT:") ||
         subject.startsWith("CITY:CULT:") ||
         subject.startsWith("IMPROVEMENT:CULT:") ||
         subject.startsWith("IMPROVEMENT:MONUMENT:CULT")
@@ -359,7 +360,10 @@ describe("Cult art subjects stand in with the shared art", () => {
       assets
         .filter(
           (asset) =>
-            assetGroupOfSubjectV7(asset.subject) === "CULT" ||
+            (assetGroupOfSubjectV7(asset.subject) === "CULT" &&
+              // The portraits and icons of the interface art are listed by
+              // chibi-cult-interface-assets.test.ts (bead pulp_wars-mch9.23).
+              !/^(PORTRAIT|ICON):/.test(asset.subject)) ||
             asset.subject === "FROG",
         )
         .map((asset) => asset.subject)
@@ -433,7 +437,10 @@ describe("Cult art subjects stand in with the shared art", () => {
     const cultFiles = assetInventoryV7("LIVE").filter(
       (entry) => entry.group === "CULT",
     );
-    expect(cultFiles).toHaveLength(expected.length - 1);
+    // The sprites, and (bead pulp_wars-mch9.23) the 21 interface rasters
+    // whose subject names the faction: twelve unit portraits, three ship
+    // portraits, three technology icons and three HUD icons.
+    expect(cultFiles).toHaveLength(expected.length - 1 + 21);
     expect(assetInventoryForFactionsV7("LIVE", ["CULT", "ORIGINAL"])).toEqual(
       expect.arrayContaining([...cultFiles]),
     );

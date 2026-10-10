@@ -1,0 +1,36 @@
+{
+  "id": "icon-starfall-a-plain",
+  "jobId": "d7d940b7-dda7-45a6-9e76-468f685db494",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "interface-cult",
+    "asset": "chibi-direction-icon-cult-action-starfall",
+    "subject": "ICON:ACTION:STARFALL",
+    "faction": "CULT",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 93432,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only one thing: erase the little face on the star (its two eyes and its mouth), so the star is plain pale cream with no face. Do not redraw anything else: keep the star's five points, its shading, the green tail of light behind it, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only one thing: erase the little face on the star (its two eyes and its mouth), so the star is plain pale cream with no face. Do not redraw anything else: keep the star's five points, its shading, the green tail of light behind it, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only one thing: erase the little face on the star (its two eyes and its mouth), so the star is plain pale cream with no face. Do not redraw anything else: keep the star's five points, its shading, the green tail of light behind it, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only one thing: erase the little face on the star (its two eyes and its mouth), so the star is plain pale cream with no face. Do not redraw anything else: keep the star's five points, its shading, the green tail of light behind it, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "icon-starfall-a",
+      "candidate": 0,
+      "sha256": "b378dd8d90e5f75221e950226e24a2d93ac0ba8aac252dc984869793f9c3f254"
+    }
+  }
+}

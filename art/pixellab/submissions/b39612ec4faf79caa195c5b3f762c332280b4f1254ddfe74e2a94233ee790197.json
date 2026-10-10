@@ -1,0 +1,37 @@
+{
+  "id": "icon-pick-me-status-s",
+  "jobId": "5a5db4c9-3191-4e58-abff-2bdca6a3d639",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "interface-cult",
+    "asset": "chibi-direction-icon-cult-status-pick-me",
+    "subject": "ICON:STATUS:PICK_ME",
+    "faction": "CULT",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 93602,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only one thing: erase the brass starburst behind the hand and the small green sparkle completely, leaving those areas transparent, so only the hand on its blue cuff is left. Do not redraw the hand: keep the cream glove with its index finger pointing up, the blue cuff, the thick black outline and the art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only one thing: erase the brass starburst behind the hand and the small green sparkle completely, leaving those areas transparent, so only the hand on its blue cuff is left. Do not redraw the hand: keep the cream glove with its index finger pointing up, the blue cuff, the thick black outline and the art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only one thing: erase the brass starburst behind the hand and the small green sparkle completely, leaving those areas transparent, so only the hand on its blue cuff is left. Do not redraw the hand: keep the cream glove with its index finger pointing up, the blue cuff, the thick black outline and the art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only one thing: erase the brass starburst behind the hand and the small green sparkle completely, leaving those areas transparent, so only the hand on its blue cuff is left. Do not redraw the hand: keep the cream glove with its index finger pointing up, the blue cuff, the thick black outline and the art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "icon-pick-me-c",
+      "candidate": 0,
+      "sibling": true,
+      "sha256": "77cd9c4b16d6223f999fa1284dffa9d20ae5aa55e1a3a943158ce3b697ab1827"
+    }
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "id": "portrait-chosen-s",
+  "jobId": "9c0696d5-236e-4a87-93e2-387e2384d04a",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "interface-cult",
+    "asset": "chibi-direction-portrait-cult-chosen",
+    "subject": "PORTRAIT:CULT:SWORDSMAN",
+    "faction": "CULT",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 93071,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Redraw it as another member of the same society in the same blue hood: burly, with big broad shoulders; the hood is short with a small point; a broad pale cream sash crosses the chest with one round brass medal; the cream mitten is raised beside the head with one finger pointing straight up. No candle. Keep the blue cloth, the black hood opening with its two cream eyes, the size, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "Redraw it as another member of the same society in the same blue hood: burly, with big broad shoulders; the hood is short with a small point; a broad pale cream sash crosses the chest with one round brass medal; the cream mitten is raised beside the head with one finger pointing straight up. No candle. Keep the blue cloth, the black hood opening with its two cream eyes, the size, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Redraw it as another member of the same society in the same blue hood: burly, with big broad shoulders; the hood is short with a small point; a broad pale cream sash crosses the chest with one round brass medal; the cream mitten is raised beside the head with one finger pointing straight up. No candle. Keep the blue cloth, the black hood opening with its two cream eyes, the size, thick black outline and art style, on a transparent background.",
+    "editInstruction": "Redraw it as another member of the same society in the same blue hood: burly, with big broad shoulders; the hood is short with a small point; a broad pale cream sash crosses the chest with one round brass medal; the cream mitten is raised beside the head with one finger pointing straight up. No candle. Keep the blue cloth, the black hood opening with its two cream eyes, the size, thick black outline and art style, on a transparent background.",
+    "source": {
+      "recipe": "portrait-initiate-b-eyes",
+      "candidate": 0,
+      "sibling": true,
+      "sha256": "11b3d55230c6e738ee6364d2da50bd05b01c875a97b2b78a3a8d054fdd69f8cf"
+    }
+  }
+}

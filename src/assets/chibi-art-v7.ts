@@ -78,6 +78,7 @@ export type ArtSubjectV7 =
   | CuriosityRound2ArtSubjectV7
   | CandyArtSubjectV7
   | CultArtSubjectV7
+  | CultInterfaceArtSubjectV7
   | NavalBranchArtSubjectV7;
 
 /**
@@ -420,6 +421,98 @@ export function cultSummonedArtSubjectV7(
 
 /** The land roles the Cult will have its own art for. */
 export type CultArtRoleV7 = UndeadArtRoleV7;
+
+// --- Cult interface art (bead pulp_wars-mch9.23) ---
+/**
+ * The Cult's interface art (bead `pulp_wars-mch9.23`, batches
+ * `interface-cult`, `effects-cult` and `naval-cult`; CULT.md, "Icons" and
+ * "Markers and effects"): the portraits of the three summoned units (the
+ * nine trained units' are `PORTRAIT:CULT:<ROLE>` above), the technology
+ * icons of Warding Circles, The Stars Are Right and Harvest Rites, the
+ * command and ability icons, the Favour candle of the HUD (32 x 32, as the
+ * coin is) and of cards and dialogs (`FAVOUR_LARGE`, 48 x 48), the faction
+ * emblem, the status chips and the effect sprites.
+ *
+ * The portraits and the three technology icons are asked for today
+ * (`portraitSubjectV7`, `technologySubjectV7`), and so are the Favour
+ * candle of the HUD and the Sacrifice, Seize and Offering icons (the Favour
+ * interface, bead `pulp_wars-mch9.17`). Every other subject is registered
+ * ahead of the mechanic it belongs to (the strands, rituals and hexes: the
+ * engine beads `pulp_wars-mch9.5` to `.8` and the interface beads after
+ * them), so those beads only name the subject.
+ */
+export type CultInterfaceArtSubjectV7 =
+  | `PORTRAIT:CULT:${SummonedRoleIdV7}`
+  | `ICON:TECH:CULT:${CultTechIconIdV7}`
+  | `ICON:ACTION:${CultActionIconIdV7}`
+  | `ICON:HUD:CULT:${"FAVOUR" | "FAVOUR_LARGE" | "EMBLEM"}`
+  | `ICON:STATUS:${CultStatusIconIdV7}`
+  | `EFFECT:${CultEffectIdV7}`;
+
+/** Warding Circles, The Stars Are Right and Harvest Rites. */
+export type CultTechIconIdV7 = "FORTIFICATION" | "EXPLOSIVES" | "FARMING";
+
+/** The Cult's commands, rituals, hexes and unit abilities with an icon. */
+export type CultActionIconIdV7 =
+  | "SACRIFICE"
+  | "SEIZE"
+  | "OFFERING"
+  | "SUMMON"
+  | "CHANNEL"
+  | "BEHOLD"
+  | "PICK_ME"
+  | "ANCHOR"
+  | "BOO"
+  | "PROCLAIM"
+  | "RIBBIT"
+  | "SWITCHEROO"
+  | "TENTACLE"
+  | "STARFALL"
+  | "GREAT_SUMMONING"
+  | "PAMPHLETS"
+  | "MARTYR"
+  | "GRAB";
+
+/** The Cult's status chips, each also the board marker of its status. */
+export type CultStatusIconIdV7 =
+  | "CANDLELIT"
+  | "FROG"
+  | "UNBOUND"
+  | "FURIOUS"
+  | "GRABBED"
+  | "COWED"
+  | "WARDED"
+  | "PICK_ME";
+
+/** The Cult's effect sprites (CULT.md, "Markers and effects"). */
+export type CultEffectIdV7 =
+  | "SACRIFICE_PUFF"
+  | "SEIZE"
+  | "SUMMON_POP"
+  | "STRAND_SNAP"
+  | "UNBOUND"
+  | "STARFALL_STAR"
+  | "STARFALL_BURST"
+  | "BOO"
+  | "RIBBIT"
+  | "SWITCHEROO"
+  | "TENTACLE_SLAP"
+  | "PROCLAIM"
+  | "PAMPHLETS"
+  | "FAVOUR"
+  | "RITUAL_FIZZLE";
+
+/**
+ * The portrait of a summoned Cult unit for the dock and the cards: the
+ * Horror and the Tentacle whole, the Herald's eye and crown. An Unbound
+ * daemon keeps the portrait of its kind.
+ */
+export function cultSummonedPortraitSubjectV7(
+  role: SummonedRoleIdV7,
+): CultInterfaceArtSubjectV7 {
+  return `PORTRAIT:CULT:${role}`;
+}
+// --- end of the Cult interface art ---
 
 /** The Rift pieces (bead pulp_wars-9s0.5, docs/art/classes/terrain-tiles.md). */
 export type RiftPieceV7 =
@@ -937,6 +1030,8 @@ export function factionStandInLetterV7(
 
 const CULT_SUMMONED_SUBJECT_PATTERN_V7 =
   /^UNIT:CULT:(HORROR|HERALD|TENTACLE)(_UNBOUND)?$/;
+const CULT_SUMMONED_PORTRAIT_PATTERN_V7 =
+  /^PORTRAIT:CULT:(HORROR|HERALD|TENTACLE)$/;
 
 /**
  * The Dwarf revision (bead pulp_wars-78i.6): the subject of a mound, the
@@ -1018,9 +1113,17 @@ export function chibiFallbackSubjectV7(
     subject === "ICON:TECH:DWARF:EXPLOSIVES" ||
     // The Candy Peppermint Surprise (bead pulp_wars-jdb.6); Home Sweet Home
     // (and the retired Frosting) fall back by the faction rule below.
-    subject === "ICON:TECH:CANDY:EXPLOSIVES"
+    subject === "ICON:TECH:CANDY:EXPLOSIVES" ||
+    // The Cult's The Stars Are Right (bead pulp_wars-mch9.23); Warding
+    // Circles falls back by the faction rule below.
+    subject === "ICON:TECH:CULT:EXPLOSIVES"
   )
     return "ICON:ACTION:BLAST_MOUNTAIN";
+  // The Cult's Harvest Rites (bead pulp_wars-mch9.23): Farming shows the
+  // Farm for every other faction, and for the Cult in a look without its art.
+  if (subject === "ICON:TECH:CULT:FARMING") return "IMPROVEMENT:FARM";
+  // The portraits of the Cult's summoned units: no Human counterpart.
+  if (CULT_SUMMONED_PORTRAIT_PATTERN_V7.test(subject)) return null;
   for (const faction of [
     ":UNDEAD:",
     ":GOBLIN:",

@@ -1,0 +1,36 @@
+{
+  "id": "icon-favour-large-a-clean",
+  "jobId": "66a6e6e5-4c74-4a0e-8c4d-44684549e43c",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "interface-cult",
+    "asset": "chibi-direction-icon-cult-favour-large",
+    "subject": "ICON:HUD:CULT:FAVOUR_LARGE",
+    "faction": "CULT",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 93512,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only one thing: erase the small loose yellow dot floating to the left of the flame, leaving that area transparent. Do not redraw anything else: keep the fat wax candle with its drips, the green flame, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only one thing: erase the small loose yellow dot floating to the left of the flame, leaving that area transparent. Do not redraw anything else: keep the fat wax candle with its drips, the green flame, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only one thing: erase the small loose yellow dot floating to the left of the flame, leaving that area transparent. Do not redraw anything else: keep the fat wax candle with its drips, the green flame, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only one thing: erase the small loose yellow dot floating to the left of the flame, leaving that area transparent. Do not redraw anything else: keep the fat wax candle with its drips, the green flame, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "icon-favour-large-a",
+      "candidate": 0,
+      "sha256": "1ae1d70861a03a3da0220916107ec309e64f5581232bf67bceb5b8b13120ccad"
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "id": "effect-ribbit-a-green",
+  "jobId": "9bb44c34-d807-42d8-92a8-732ca5752343",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "effects-cult",
+    "asset": "chibi-direction-effect-cult-ribbit",
+    "subject": "EFFECT:RIBBIT",
+    "faction": "CULT",
+    "recipeClass": "accent-effect",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 94082,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only the colour of the round lumps under the frog: the yellow lumps become bright green smoke #00ff78 with darker green #00b85a shading; no yellow is left in them. Do not redraw anything else: keep the teal frog with its cream belly, the shape of the puff, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only the colour of the round lumps under the frog: the yellow lumps become bright green smoke #00ff78 with darker green #00b85a shading; no yellow is left in them. Do not redraw anything else: keep the teal frog with its cream belly, the shape of the puff, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only the colour of the round lumps under the frog: the yellow lumps become bright green smoke #00ff78 with darker green #00b85a shading; no yellow is left in them. Do not redraw anything else: keep the teal frog with its cream belly, the shape of the puff, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only the colour of the round lumps under the frog: the yellow lumps become bright green smoke #00ff78 with darker green #00b85a shading; no yellow is left in them. Do not redraw anything else: keep the teal frog with its cream belly, the shape of the puff, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "effect-ribbit-a",
+      "candidate": 0,
+      "sha256": "de425adf123d4542c570127fe10025b6e167def1f72c3d5c69f41dc10fee3987"
+    }
+  }
+}

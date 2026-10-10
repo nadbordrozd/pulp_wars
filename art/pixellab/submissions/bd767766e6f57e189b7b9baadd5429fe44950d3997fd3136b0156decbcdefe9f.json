@@ -1,0 +1,36 @@
+{
+  "id": "icon-great-summoning-a-yellow",
+  "jobId": "c547c7e2-fcca-4b46-bcf1-f21dfd1aa5f9",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "interface-cult",
+    "asset": "chibi-direction-icon-cult-action-great-summoning",
+    "subject": "ICON:ACTION:GREAT_SUMMONING",
+    "faction": "CULT",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 93442,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only the eye in the middle: the eyeball becomes plain pale yellow #ffe27a with one big round black pupil and a small white shine; no grey and no blue in the eye. Do not redraw anything else: keep the blue diamond round the eye, the four small candles with green flames at its corners, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only the eye in the middle: the eyeball becomes plain pale yellow #ffe27a with one big round black pupil and a small white shine; no grey and no blue in the eye. Do not redraw anything else: keep the blue diamond round the eye, the four small candles with green flames at its corners, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only the eye in the middle: the eyeball becomes plain pale yellow #ffe27a with one big round black pupil and a small white shine; no grey and no blue in the eye. Do not redraw anything else: keep the blue diamond round the eye, the four small candles with green flames at its corners, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only the eye in the middle: the eyeball becomes plain pale yellow #ffe27a with one big round black pupil and a small white shine; no grey and no blue in the eye. Do not redraw anything else: keep the blue diamond round the eye, the four small candles with green flames at its corners, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "icon-great-summoning-a",
+      "candidate": 0,
+      "sha256": "d8b78f74c81b52bec4c421a6c9986b4eb19860790a15d8520d1de1a4c11dc538"
+    }
+  }
+}

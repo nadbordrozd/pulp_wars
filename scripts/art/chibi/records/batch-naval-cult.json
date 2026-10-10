@@ -138,6 +138,210 @@
         "reviewedAt": "2026-10-10T10:16:40.623Z"
       }
     },
+    "cult-portrait-battleship-a": {
+      "id": "cult-portrait-battleship-a",
+      "asset": "chibi-naval-cult-portrait-battleship",
+      "jobId": "29633f37-c792-47b6-a58e-169484dacccf",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-cult",
+        "asset": "chibi-naval-cult-portrait-battleship",
+        "subject": "PORTRAIT:CULT:BATTLESHIP",
+        "faction": "CULT",
+        "recipeClass": "portrait",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 92111,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Turn it into a secret-society galleon: the hull becomes indigo-blue wood #4a43b5 with shade #372f8f and polished brass trim #c9a24a; the grey stone castles become round polished brass domes; the red sails become pale cream #f3e7c4 sails, the big one with one indigo eye-in-a-spiral sign; the red pennants become small lanterns with bright green flames. Nothing red. Keep the ship shape, size, thick black outline and art style the same, on a transparent background."
+          }
+        ],
+        "prompt": "Turn it into a secret-society galleon: the hull becomes indigo-blue wood #4a43b5 with shade #372f8f and polished brass trim #c9a24a; the grey stone castles become round polished brass domes; the red sails become pale cream #f3e7c4 sails, the big one with one indigo eye-in-a-spiral sign; the red pennants become small lanterns with bright green flames. Nothing red. Keep the ship shape, size, thick black outline and art style the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Turn it into a secret-society galleon: the hull becomes indigo-blue wood #4a43b5 with shade #372f8f and polished brass trim #c9a24a; the grey stone castles become round polished brass domes; the red sails become pale cream #f3e7c4 sails, the big one with one indigo eye-in-a-spiral sign; the red pennants become small lanterns with bright green flames. Nothing red. Keep the ship shape, size, thick black outline and art style the same, on a transparent background.",
+        "editInstruction": "Turn it into a secret-society galleon: the hull becomes indigo-blue wood #4a43b5 with shade #372f8f and polished brass trim #c9a24a; the grey stone castles become round polished brass domes; the red sails become pale cream #f3e7c4 sails, the big one with one indigo eye-in-a-spiral sign; the red pennants become small lanterns with bright green flames. Nothing red. Keep the ship shape, size, thick black outline and art style the same, on a transparent background.",
+        "source": {
+          "batch": "5",
+          "recipe": "portrait-battleship-b",
+          "candidate": 0,
+          "sha256": "7ad384ea7048e910e14443de77e5b649cf8e3df1ee23c3bf92d576d2dbbb8d58"
+        }
+      },
+      "submittedAt": "2026-10-10T11:59:20.790Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-cult/cult-portrait-battleship-a.png",
+      "rawSheetSha256": "f6dceb5f1dea4afa8db6daddcbcb626cc7acf5b65bfae505d7481eda14096740",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0.1483,
+          "footprintWidthShare": 0.8235,
+          "suspect": false
+        },
+        {
+          "bandRows": 9,
+          "groundShare": 0.1483,
+          "footprintWidthShare": 0.8235,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-10T11:59:52.727Z",
+      "usageUsd": 0.007558498356077407,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "The Cult Battleship's portrait at the first edit of the shared portrait: an indigo hull with brass trim, cream sails, the big one with the indigo eye-in-a-spiral sign, and green pennants, as the map sprite. No red or violet. Reviewed at 1:1 and x6 on the cream plates beside the sprite.",
+        "reviewedAt": "2026-10-10T12:01:07.279Z"
+      }
+    },
+    "cult-portrait-patrol-boat-a": {
+      "id": "cult-portrait-patrol-boat-a",
+      "asset": "chibi-naval-cult-portrait-patrol-boat",
+      "jobId": "24943064-fbf6-4049-8388-d9173fd73a27",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-cult",
+        "asset": "chibi-naval-cult-portrait-patrol-boat",
+        "subject": "PORTRAIT:CULT:PATROL_BOAT",
+        "faction": "CULT",
+        "recipeClass": "portrait",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 92101,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Turn it into a secret-society gondola: the hull becomes long glossy indigo-blue lacquer #4a43b5 with shade #372f8f and a tall polished brass prow #c9a24a curled like a tentacle tip; the red sail becomes a small sail in indigo-blue and pale cream #f3e7c4 stripes; the red pennant becomes one small lantern with a bright green flame at the stern. Nothing red. Keep the mast, boat shape, size, thick black outline and art style the same, on a transparent background."
+          }
+        ],
+        "prompt": "Turn it into a secret-society gondola: the hull becomes long glossy indigo-blue lacquer #4a43b5 with shade #372f8f and a tall polished brass prow #c9a24a curled like a tentacle tip; the red sail becomes a small sail in indigo-blue and pale cream #f3e7c4 stripes; the red pennant becomes one small lantern with a bright green flame at the stern. Nothing red. Keep the mast, boat shape, size, thick black outline and art style the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Turn it into a secret-society gondola: the hull becomes long glossy indigo-blue lacquer #4a43b5 with shade #372f8f and a tall polished brass prow #c9a24a curled like a tentacle tip; the red sail becomes a small sail in indigo-blue and pale cream #f3e7c4 stripes; the red pennant becomes one small lantern with a bright green flame at the stern. Nothing red. Keep the mast, boat shape, size, thick black outline and art style the same, on a transparent background.",
+        "editInstruction": "Turn it into a secret-society gondola: the hull becomes long glossy indigo-blue lacquer #4a43b5 with shade #372f8f and a tall polished brass prow #c9a24a curled like a tentacle tip; the red sail becomes a small sail in indigo-blue and pale cream #f3e7c4 stripes; the red pennant becomes one small lantern with a bright green flame at the stern. Nothing red. Keep the mast, boat shape, size, thick black outline and art style the same, on a transparent background.",
+        "source": {
+          "batch": "5",
+          "recipe": "portrait-patrol-boat-a",
+          "candidate": 0,
+          "sha256": "2eae5e8a9b5db75fbf9e7eea584b23d21fb1b0f7f70d5384c9cd87d2200dde12"
+        }
+      },
+      "submittedAt": "2026-10-10T11:58:32.746Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-cult/cult-portrait-patrol-boat-a.png",
+      "rawSheetSha256": "e4973a0480283783dd969bafdba5d8f64fbc49517d42cce44d514b74ff69a293",
+      "plateHints": [
+        {
+          "bandRows": 8,
+          "groundShare": 0.1195,
+          "footprintWidthShare": 0.8837,
+          "suspect": false
+        },
+        {
+          "bandRows": 8,
+          "groundShare": 0.1195,
+          "footprintWidthShare": 0.8837,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-10T11:59:20.782Z",
+      "usageUsd": 0.00828768425517612,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "The Cult Patrol Boat's portrait at the first edit of the shared portrait: the indigo gondola with a curled brass prow, an indigo-and-cream striped sail and a green lantern at the stern, as the map sprite. No red or violet. Reviewed at 1:1 and x6 on the cream plates beside the sprite.",
+        "reviewedAt": "2026-10-10T12:01:06.386Z"
+      }
+    },
+    "cult-portrait-submarine-a": {
+      "id": "cult-portrait-submarine-a",
+      "asset": "chibi-naval-cult-portrait-submarine",
+      "jobId": "517877b5-75a9-482d-a223-901846e746a2",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-cult",
+        "asset": "chibi-naval-cult-portrait-submarine",
+        "subject": "PORTRAIT:CULT:SUBMARINE",
+        "faction": "CULT",
+        "recipeClass": "portrait",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 92121,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Turn it into a small brass bathysphere submarine: remove the mast, the striped sail, the lantern and the curled prow; the hull becomes one closed short fat barrel of polished brass #c9a24a with shade #8a6a2a and rows of rivets, one big round porthole glowing bright green in its side, a short brass periscope on top and an indigo-blue tail fin #4a43b5 at the stern. Nothing red. Keep the size, thick black outline and art style the same, on a transparent background."
+          }
+        ],
+        "prompt": "Turn it into a small brass bathysphere submarine: remove the mast, the striped sail, the lantern and the curled prow; the hull becomes one closed short fat barrel of polished brass #c9a24a with shade #8a6a2a and rows of rivets, one big round porthole glowing bright green in its side, a short brass periscope on top and an indigo-blue tail fin #4a43b5 at the stern. Nothing red. Keep the size, thick black outline and art style the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Turn it into a small brass bathysphere submarine: remove the mast, the striped sail, the lantern and the curled prow; the hull becomes one closed short fat barrel of polished brass #c9a24a with shade #8a6a2a and rows of rivets, one big round porthole glowing bright green in its side, a short brass periscope on top and an indigo-blue tail fin #4a43b5 at the stern. Nothing red. Keep the size, thick black outline and art style the same, on a transparent background.",
+        "editInstruction": "Turn it into a small brass bathysphere submarine: remove the mast, the striped sail, the lantern and the curled prow; the hull becomes one closed short fat barrel of polished brass #c9a24a with shade #8a6a2a and rows of rivets, one big round porthole glowing bright green in its side, a short brass periscope on top and an indigo-blue tail fin #4a43b5 at the stern. Nothing red. Keep the size, thick black outline and art style the same, on a transparent background.",
+        "source": {
+          "recipe": "cult-portrait-patrol-boat-a",
+          "candidate": 0,
+          "sibling": true,
+          "sha256": "a6064f76bdadda7fa50b2ef5b974cc0698a672dbaf1adf1199fcbd747e31a494"
+        }
+      },
+      "submittedAt": "2026-10-10T11:59:52.733Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-cult/cult-portrait-submarine-a.png",
+      "rawSheetSha256": "e055734f04821f8a8680abe5846f4c3e54043baf72a1a5dccd40c2eb11046c10",
+      "plateHints": [
+        {
+          "bandRows": 7,
+          "groundShare": 0.7233,
+          "footprintWidthShare": 0.8537,
+          "suspect": true
+        },
+        {
+          "bandRows": 7,
+          "groundShare": 0.7233,
+          "footprintWidthShare": 0.8537,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-10T12:00:29.160Z",
+      "usageUsd": 0.007757304430007935,
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "The Cult Submarine's portrait at the first sibling edit of the Patrol Boat's: a fat riveted brass bathysphere with one big green porthole, a short periscope and an indigo tail fin, as the map sprite. No red or violet. Reviewed at 1:1 and x6 on the cream plates beside the sprite.",
+        "reviewedAt": "2026-10-10T12:01:08.297Z"
+      }
+    },
     "cult-submarine-a": {
       "id": "cult-submarine-a",
       "asset": "chibi-naval-cult-submarine",
@@ -435,6 +639,327 @@
       },
       "notes": "The Cult gondola at the first edit of the shared cog: an indigo lacquered hull with a brass rim and a curled brass prow, an indigo-and-cream striped sail, a green lantern on the stern post and an indigo pennant; 59 x 68 px, its lowest row 77 (the shared hull's is 79), 2% green, no red or violet pixel. Clearly blue beside the Undead near-black hull. Reviewed at 1:1 and x4 on both waters and in greyscale.",
       "acceptedAt": "2026-10-10T10:16:40.623Z"
+    },
+    "chibi-naval-cult-portrait-battleship": {
+      "id": "chibi-naval-cult-portrait-battleship",
+      "subject": "PORTRAIT:CULT:BATTLESHIP",
+      "assetClass": "PORTRAIT",
+      "status": "ACCEPTED",
+      "recipe": "cult-portrait-battleship-a",
+      "candidate": 0,
+      "candidateSha256": "037d51135c0b2cb428b334bfabebacf4cec48731e9c428c4b72f093566ea75bb",
+      "master": {
+        "path": "public/assets/chibi/portraits/chibi-naval-cult-portrait-battleship.png",
+        "sha256": "236ce426b53a9634f0f5e8819e1f838065293a34ba095ffe5c875c26f6f50515",
+        "pixelSha256": "aebfb1c22452979e46c763d6ec50f6aebc8bf375f1884701954c05f0a590fb4a",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is",
+        "accent": {
+          "preset": "cult-lodge-icon",
+          "spec": {
+            "band": {
+              "hueFrom": 66,
+              "hueTo": 152,
+              "saturationMin": 0.5,
+              "valueMin": 0.45,
+              "hueCentre": 120
+            },
+            "hue": 148,
+            "hueSpread": 0.07,
+            "then": {
+              "band": {
+                "hueFrom": 196,
+                "hueTo": 262,
+                "saturationMin": 0.45,
+                "valueMin": 0.14,
+                "hueCentre": 238
+              },
+              "hue": 244,
+              "hueSpread": 0.3,
+              "saturation": {
+                "scale": 1,
+                "add": 0,
+                "max": 0.6
+              },
+              "value": {
+                "scale": 0.5,
+                "add": 0.42
+              },
+              "then": {
+                "band": {
+                  "hueFrom": 262,
+                  "hueTo": 345,
+                  "saturationMin": 0.3,
+                  "valueMin": 0.14,
+                  "hueCentre": 300
+                },
+                "hue": 244,
+                "hueSpread": 0,
+                "then": {
+                  "band": {
+                    "hueFrom": 345,
+                    "hueTo": 12,
+                    "saturationMin": 0.5,
+                    "valueMin": 0.35,
+                    "hueCentre": 0
+                  },
+                  "hue": 28,
+                  "hueSpread": 0,
+                  "saturation": {
+                    "scale": 0.8,
+                    "add": 0,
+                    "max": 0.8
+                  }
+                }
+              }
+            }
+          },
+          "accentPixels": 30,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 9,
+        "groundShare": 0.1483,
+        "footprintWidthShare": 0.8235,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "The Cult Battleship's portrait at the first edit of the shared portrait: an indigo hull with brass trim, cream sails, the big one with the indigo eye-in-a-spiral sign, and green pennants, as the map sprite. No red or violet. Reviewed at 1:1 and x6 on the cream plates beside the sprite.",
+      "acceptedAt": "2026-10-10T12:01:07.279Z"
+    },
+    "chibi-naval-cult-portrait-patrol-boat": {
+      "id": "chibi-naval-cult-portrait-patrol-boat",
+      "subject": "PORTRAIT:CULT:PATROL_BOAT",
+      "assetClass": "PORTRAIT",
+      "status": "ACCEPTED",
+      "recipe": "cult-portrait-patrol-boat-a",
+      "candidate": 0,
+      "candidateSha256": "a6064f76bdadda7fa50b2ef5b974cc0698a672dbaf1adf1199fcbd747e31a494",
+      "master": {
+        "path": "public/assets/chibi/portraits/chibi-naval-cult-portrait-patrol-boat.png",
+        "sha256": "751c3fc9e477ff1f60d211f8a3e783f79f66f2779b8e907c256db1010e8ce56f",
+        "pixelSha256": "659c6f29f78109707f38569781f38ad68ee953318a4cd612ad9f55c546849bdd",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is",
+        "accent": {
+          "preset": "cult-lodge-icon",
+          "spec": {
+            "band": {
+              "hueFrom": 66,
+              "hueTo": 152,
+              "saturationMin": 0.5,
+              "valueMin": 0.45,
+              "hueCentre": 120
+            },
+            "hue": 148,
+            "hueSpread": 0.07,
+            "then": {
+              "band": {
+                "hueFrom": 196,
+                "hueTo": 262,
+                "saturationMin": 0.45,
+                "valueMin": 0.14,
+                "hueCentre": 238
+              },
+              "hue": 244,
+              "hueSpread": 0.3,
+              "saturation": {
+                "scale": 1,
+                "add": 0,
+                "max": 0.6
+              },
+              "value": {
+                "scale": 0.5,
+                "add": 0.42
+              },
+              "then": {
+                "band": {
+                  "hueFrom": 262,
+                  "hueTo": 345,
+                  "saturationMin": 0.3,
+                  "valueMin": 0.14,
+                  "hueCentre": 300
+                },
+                "hue": 244,
+                "hueSpread": 0,
+                "then": {
+                  "band": {
+                    "hueFrom": 345,
+                    "hueTo": 12,
+                    "saturationMin": 0.5,
+                    "valueMin": 0.35,
+                    "hueCentre": 0
+                  },
+                  "hue": 28,
+                  "hueSpread": 0,
+                  "saturation": {
+                    "scale": 0.8,
+                    "add": 0,
+                    "max": 0.8
+                  }
+                }
+              }
+            }
+          },
+          "accentPixels": 20,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 8,
+        "groundShare": 0.1195,
+        "footprintWidthShare": 0.8837,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "The Cult Patrol Boat's portrait at the first edit of the shared portrait: the indigo gondola with a curled brass prow, an indigo-and-cream striped sail and a green lantern at the stern, as the map sprite. No red or violet. Reviewed at 1:1 and x6 on the cream plates beside the sprite.",
+      "acceptedAt": "2026-10-10T12:01:06.386Z"
+    },
+    "chibi-naval-cult-portrait-submarine": {
+      "id": "chibi-naval-cult-portrait-submarine",
+      "subject": "PORTRAIT:CULT:SUBMARINE",
+      "assetClass": "PORTRAIT",
+      "status": "ACCEPTED",
+      "recipe": "cult-portrait-submarine-a",
+      "candidate": 0,
+      "candidateSha256": "86c78d2ccb600cf9314174b32d3d32733e5fb6f718e6f62e4feddc12a1d93a87",
+      "master": {
+        "path": "public/assets/chibi/portraits/chibi-naval-cult-portrait-submarine.png",
+        "sha256": "21fcf188cc380f8a21b3c1288c26c9203b650b4330ca906c8754feb264b6a64d",
+        "pixelSha256": "5a7612c35abc4c56ec9e5ac47a2b358ad3e3fa8527007c5e9e5c3974edb93eb2",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is",
+        "accent": {
+          "preset": "cult-lodge-icon",
+          "spec": {
+            "band": {
+              "hueFrom": 66,
+              "hueTo": 152,
+              "saturationMin": 0.5,
+              "valueMin": 0.45,
+              "hueCentre": 120
+            },
+            "hue": 148,
+            "hueSpread": 0.07,
+            "then": {
+              "band": {
+                "hueFrom": 196,
+                "hueTo": 262,
+                "saturationMin": 0.45,
+                "valueMin": 0.14,
+                "hueCentre": 238
+              },
+              "hue": 244,
+              "hueSpread": 0.3,
+              "saturation": {
+                "scale": 1,
+                "add": 0,
+                "max": 0.6
+              },
+              "value": {
+                "scale": 0.5,
+                "add": 0.42
+              },
+              "then": {
+                "band": {
+                  "hueFrom": 262,
+                  "hueTo": 345,
+                  "saturationMin": 0.3,
+                  "valueMin": 0.14,
+                  "hueCentre": 300
+                },
+                "hue": 244,
+                "hueSpread": 0,
+                "then": {
+                  "band": {
+                    "hueFrom": 345,
+                    "hueTo": 12,
+                    "saturationMin": 0.5,
+                    "valueMin": 0.35,
+                    "hueCentre": 0
+                  },
+                  "hue": 28,
+                  "hueSpread": 0,
+                  "saturation": {
+                    "scale": 0.8,
+                    "add": 0,
+                    "max": 0.8
+                  }
+                }
+              }
+            }
+          },
+          "accentPixels": 50,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 7,
+        "groundShare": 0.7233,
+        "footprintWidthShare": 0.8537,
+        "suspect": true
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "The Cult Submarine's portrait at the first sibling edit of the Patrol Boat's: a fat riveted brass bathysphere with one big green porthole, a short periscope and an indigo tail fin, as the map sprite. No red or violet. Reviewed at 1:1 and x6 on the cream plates beside the sprite.",
+      "acceptedAt": "2026-10-10T12:01:08.297Z"
     },
     "chibi-naval-cult-submarine": {
       "id": "chibi-naval-cult-submarine",

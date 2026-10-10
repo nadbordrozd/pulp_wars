@@ -1,0 +1,36 @@
+{
+  "id": "effect-starfall-star-a-green",
+  "jobId": "c7cff0b8-c2b3-4cfd-8ce3-af55dc0da047",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "effects-cult",
+    "asset": "chibi-direction-effect-cult-starfall-star",
+    "subject": "EFFECT:STARFALL_STAR",
+    "faction": "CULT",
+    "recipeClass": "accent-effect",
+    "requestSize": {
+      "width": 40,
+      "height": 40
+    },
+    "seed": 94052,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only the colour of the curved tail behind the star: the yellow crescent becomes bright green #00ff78 with darker green #00b85a shading on its lower edge; no yellow is left in the tail. Do not redraw anything else: keep the pale cream star, the tail's curved shape, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only the colour of the curved tail behind the star: the yellow crescent becomes bright green #00ff78 with darker green #00b85a shading on its lower edge; no yellow is left in the tail. Do not redraw anything else: keep the pale cream star, the tail's curved shape, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only the colour of the curved tail behind the star: the yellow crescent becomes bright green #00ff78 with darker green #00b85a shading on its lower edge; no yellow is left in the tail. Do not redraw anything else: keep the pale cream star, the tail's curved shape, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only the colour of the curved tail behind the star: the yellow crescent becomes bright green #00ff78 with darker green #00b85a shading on its lower edge; no yellow is left in the tail. Do not redraw anything else: keep the pale cream star, the tail's curved shape, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "effect-starfall-star-a",
+      "candidate": 0,
+      "sha256": "228df8f0b6793787f288e0e8d6c9c01f8bc181814631323d4ef8ecaf41e50b44"
+    }
+  }
+}

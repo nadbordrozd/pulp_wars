@@ -1,0 +1,36 @@
+{
+  "id": "effect-starfall-burst-a-green",
+  "jobId": "eaa15cce-3529-4e01-b50a-432fa19e4801",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "effects-cult",
+    "asset": "chibi-direction-effect-cult-starfall-burst",
+    "subject": "EFFECT:STARFALL_BURST",
+    "faction": "CULT",
+    "recipeClass": "accent-effect",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 94062,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only two things: erase the round stand and its stem under the starburst completely, leaving that area transparent; and recolour the dark brown rays bright green #00ff78, so cream and green rays alternate round the pale flash. Do not redraw anything else: keep the round flash, the cream rays and the sparks, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only two things: erase the round stand and its stem under the starburst completely, leaving that area transparent; and recolour the dark brown rays bright green #00ff78, so cream and green rays alternate round the pale flash. Do not redraw anything else: keep the round flash, the cream rays and the sparks, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only two things: erase the round stand and its stem under the starburst completely, leaving that area transparent; and recolour the dark brown rays bright green #00ff78, so cream and green rays alternate round the pale flash. Do not redraw anything else: keep the round flash, the cream rays and the sparks, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only two things: erase the round stand and its stem under the starburst completely, leaving that area transparent; and recolour the dark brown rays bright green #00ff78, so cream and green rays alternate round the pale flash. Do not redraw anything else: keep the round flash, the cream rays and the sparks, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "effect-starfall-burst-a",
+      "candidate": 0,
+      "sha256": "4c6e219c295d4e9cb93e22bf325fc3b05f2ba77f18652d980f522595f24ac052"
+    }
+  }
+}

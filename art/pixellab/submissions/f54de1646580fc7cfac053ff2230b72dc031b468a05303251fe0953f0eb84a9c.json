@@ -1,0 +1,36 @@
+{
+  "id": "portrait-initiate-b-eyes",
+  "jobId": "a52b7d59-036d-4ad8-9a1c-e114a99e9520",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "interface-cult",
+    "asset": "chibi-direction-portrait-cult-initiate",
+    "subject": "PORTRAIT:CULT:FIGHTER",
+    "faction": "CULT",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 93002,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only two things: the two big eyes become plain round cream-white ovals with no pupils and no black dots inside them; the grey hand under the candle becomes a pale cream mitten. Do not redraw anything else: keep the blue hood with its floppy tip, the black hood opening, the candle with its green flame, the brass badge, the thick black outline and the art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only two things: the two big eyes become plain round cream-white ovals with no pupils and no black dots inside them; the grey hand under the candle becomes a pale cream mitten. Do not redraw anything else: keep the blue hood with its floppy tip, the black hood opening, the candle with its green flame, the brass badge, the thick black outline and the art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only two things: the two big eyes become plain round cream-white ovals with no pupils and no black dots inside them; the grey hand under the candle becomes a pale cream mitten. Do not redraw anything else: keep the blue hood with its floppy tip, the black hood opening, the candle with its green flame, the brass badge, the thick black outline and the art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only two things: the two big eyes become plain round cream-white ovals with no pupils and no black dots inside them; the grey hand under the candle becomes a pale cream mitten. Do not redraw anything else: keep the blue hood with its floppy tip, the black hood opening, the candle with its green flame, the brass badge, the thick black outline and the art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "portrait-initiate-a",
+      "candidate": 0,
+      "sha256": "203c4b3013cf6257ef1785235ee2b0b123a2a1c363ed6b19baf2fce66929c297"
+    }
+  }
+}

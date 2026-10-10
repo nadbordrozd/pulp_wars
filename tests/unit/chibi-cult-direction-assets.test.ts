@@ -455,11 +455,13 @@ describe("the Cultists' batches (pulp_wars-mch9.15)", () => {
     expect(creature.factionLayer).toBe(false);
     expect(creature.light).toBe(true);
     expect(creature.derivation).toBe("as-is");
+    // PORTRAIT since bead pulp_wars-mch9.23 (the summoned things' portraits).
     expect(creature.assetClasses).toEqual([
       "STANDARD_UNIT",
       "LARGE_UNIT",
       "GIANT_UNIT",
       "RESOURCE",
+      "PORTRAIT",
     ]);
     const fragments = await loadFragments(ROOT);
     const text = fragments.classes.creature.text.toLowerCase();
@@ -623,8 +625,13 @@ describe("the Cultists' batches (pulp_wars-mch9.15)", () => {
     expect(manifest.faction).toBe("CULT");
     expect(manifest.fixedFactionColours).toBe(true);
     const records = await loadRecords(productionLayout(ROOT, batch), batch);
+    // The ships; the three ship portraits the batch also holds since bead
+    // pulp_wars-mch9.23 are checked in chibi-cult-interface-assets.test.ts.
+    const ships = manifest.assets.filter(
+      (asset) => asset.assetClass !== "PORTRAIT",
+    );
     expect(
-      manifest.assets.map((asset) => [
+      ships.map((asset) => [
         asset.id,
         asset.subject,
         asset.assetClass,
@@ -639,11 +646,13 @@ describe("the Cultists' batches (pulp_wars-mch9.15)", () => {
       ...CHIBI_NAVAL_SUBMARINE_ART_ASSETS_V7.filter(
         (entry) => entry.faction === "CULT",
       ),
-    ].map((entry) => entry.asset);
+    ]
+      .filter((entry) => entry.kind === "UNIT")
+      .map((entry) => entry.asset);
     expect(registered.map((asset) => asset.id)).toEqual(
       SHIPS.map(([name]) => `chibi-naval-cult-${name}`),
     );
-    for (const asset of manifest.assets) {
+    for (const asset of ships) {
       expect(asset.recipeClass, asset.id).toBe("ship");
       expect(asset.ownerColour, asset.id).toBe(false);
       expect(asset.accent, asset.id).toBe("cult-lodge");

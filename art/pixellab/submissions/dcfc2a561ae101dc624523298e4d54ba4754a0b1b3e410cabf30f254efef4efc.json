@@ -1,0 +1,37 @@
+{
+  "id": "icon-boo-s",
+  "jobId": "9ba20c83-456c-4baa-80fe-c8bb84215e12",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "interface-cult",
+    "asset": "chibi-direction-icon-cult-action-boo",
+    "subject": "ICON:ACTION:BOO",
+    "faction": "CULT",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 93382,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Redraw it as a close-up of only this monster's face, seen from the front: the round teal head fills the image, with its two big googly yellow eyes wide open and its very wide grin full of blunt cream teeth, and six short thick pale cream startle lines round the head pointing outward. No legs, no collar and no belly. Keep the teal colour, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "Redraw it as a close-up of only this monster's face, seen from the front: the round teal head fills the image, with its two big googly yellow eyes wide open and its very wide grin full of blunt cream teeth, and six short thick pale cream startle lines round the head pointing outward. No legs, no collar and no belly. Keep the teal colour, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Redraw it as a close-up of only this monster's face, seen from the front: the round teal head fills the image, with its two big googly yellow eyes wide open and its very wide grin full of blunt cream teeth, and six short thick pale cream startle lines round the head pointing outward. No legs, no collar and no belly. Keep the teal colour, thick black outline and art style, on a transparent background.",
+    "editInstruction": "Redraw it as a close-up of only this monster's face, seen from the front: the round teal head fills the image, with its two big googly yellow eyes wide open and its very wide grin full of blunt cream teeth, and six short thick pale cream startle lines round the head pointing outward. No legs, no collar and no belly. Keep the teal colour, thick black outline and art style, on a transparent background.",
+    "source": {
+      "recipe": "portrait-horror-a-horns",
+      "candidate": 0,
+      "sibling": true,
+      "sha256": "fd1f2b29a62198cd76f4748ab780bb599a122f99af04bbfe42a1261e393cd871"
+    }
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "id": "cult-portrait-submarine-a",
+  "jobId": "517877b5-75a9-482d-a223-901846e746a2",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-cult",
+    "asset": "chibi-naval-cult-portrait-submarine",
+    "subject": "PORTRAIT:CULT:SUBMARINE",
+    "faction": "CULT",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 92121,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Turn it into a small brass bathysphere submarine: remove the mast, the striped sail, the lantern and the curled prow; the hull becomes one closed short fat barrel of polished brass #c9a24a with shade #8a6a2a and rows of rivets, one big round porthole glowing bright green in its side, a short brass periscope on top and an indigo-blue tail fin #4a43b5 at the stern. Nothing red. Keep the size, thick black outline and art style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Turn it into a small brass bathysphere submarine: remove the mast, the striped sail, the lantern and the curled prow; the hull becomes one closed short fat barrel of polished brass #c9a24a with shade #8a6a2a and rows of rivets, one big round porthole glowing bright green in its side, a short brass periscope on top and an indigo-blue tail fin #4a43b5 at the stern. Nothing red. Keep the size, thick black outline and art style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Turn it into a small brass bathysphere submarine: remove the mast, the striped sail, the lantern and the curled prow; the hull becomes one closed short fat barrel of polished brass #c9a24a with shade #8a6a2a and rows of rivets, one big round porthole glowing bright green in its side, a short brass periscope on top and an indigo-blue tail fin #4a43b5 at the stern. Nothing red. Keep the size, thick black outline and art style the same, on a transparent background.",
+    "editInstruction": "Turn it into a small brass bathysphere submarine: remove the mast, the striped sail, the lantern and the curled prow; the hull becomes one closed short fat barrel of polished brass #c9a24a with shade #8a6a2a and rows of rivets, one big round porthole glowing bright green in its side, a short brass periscope on top and an indigo-blue tail fin #4a43b5 at the stern. Nothing red. Keep the size, thick black outline and art style the same, on a transparent background.",
+    "source": {
+      "recipe": "cult-portrait-patrol-boat-a",
+      "candidate": 0,
+      "sibling": true,
+      "sha256": "a6064f76bdadda7fa50b2ef5b974cc0698a672dbaf1adf1199fcbd747e31a494"
+    }
+  }
+}

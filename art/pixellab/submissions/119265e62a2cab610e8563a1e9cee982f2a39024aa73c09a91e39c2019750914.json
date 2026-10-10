@@ -1,0 +1,36 @@
+{
+  "id": "icon-pamphlets-a-clean",
+  "jobId": "9aab0fe5-4f42-4431-ac6c-7b2a0e6f4732",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "interface-cult",
+    "asset": "chibi-direction-icon-cult-action-pamphlets",
+    "subject": "ICON:ACTION:PAMPHLETS",
+    "faction": "CULT",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 93452,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only one thing: erase the green and brown clump at the bottom of the image completely, leaving that area transparent, so the sheaf of papers floats alone. Do not redraw anything else: keep the cream papers, the blue eye-in-a-spiral sign on the front one, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only one thing: erase the green and brown clump at the bottom of the image completely, leaving that area transparent, so the sheaf of papers floats alone. Do not redraw anything else: keep the cream papers, the blue eye-in-a-spiral sign on the front one, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only one thing: erase the green and brown clump at the bottom of the image completely, leaving that area transparent, so the sheaf of papers floats alone. Do not redraw anything else: keep the cream papers, the blue eye-in-a-spiral sign on the front one, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only one thing: erase the green and brown clump at the bottom of the image completely, leaving that area transparent, so the sheaf of papers floats alone. Do not redraw anything else: keep the cream papers, the blue eye-in-a-spiral sign on the front one, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "icon-pamphlets-a",
+      "candidate": 0,
+      "sha256": "778bd93881d9490aa2f3b129f7b69ae9918a6ee13208a092a7b12be1e82b3961"
+    }
+  }
+}

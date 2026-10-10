@@ -1,0 +1,1538 @@
+{
+  "schemaVersion": 1,
+  "batch": "interface-cult",
+  "title": "Cultists of the Ancient Ones, the interface art: the twelve unit portraits (the summoned things included), the three technology icons, the eighteen command and ability icons and the ten HUD and status icons (the Favour candle at two sizes)",
+  "bead": "pulp_wars-mch9.23",
+  "faction": "CULT",
+  "dryRun": false,
+  "fixedFactionColours": true,
+  "assets": [
+    {
+      "id": "chibi-direction-portrait-cult-initiate",
+      "subject": "PORTRAIT:CULT:FIGHTER",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "cult-lodge-icon"
+    },
+    {
+      "id": "chibi-direction-portrait-cult-idol-bearer",
+      "subject": "PORTRAIT:CULT:GUARD",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "cult-lodge-icon"
+    },
+    {
+      "id": "chibi-direction-portrait-cult-familiar",
+      "subject": "PORTRAIT:CULT:RAIDER",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "creature",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "cult-lodge-icon"
+    },
+    {
+      "id": "chibi-direction-portrait-cult-hexer",
+      "subject": "PORTRAIT:CULT:MARKSMAN",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "cult-lodge-icon"
+    },
+    {
+      "id": "chibi-direction-portrait-cult-summoner",
+      "subject": "PORTRAIT:CULT:CAPTAIN",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "cult-lodge-icon"
+    },
+    {
+      "id": "chibi-direction-portrait-cult-stargazer",
+      "subject": "PORTRAIT:CULT:CATAPULT",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "cult-lodge-icon"
+    },
+    {
+      "id": "chibi-direction-portrait-cult-caller",
+      "subject": "PORTRAIT:CULT:KNIGHT",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "cult-lodge-icon"
+    },
+    {
+      "id": "chibi-direction-portrait-cult-chosen",
+      "subject": "PORTRAIT:CULT:SWORDSMAN",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "cult-lodge-icon"
+    },
+    {
+      "id": "chibi-direction-portrait-cult-thing",
+      "subject": "PORTRAIT:CULT:JUGGERNAUT",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "creature",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "cult-green"
+    },
+    {
+      "id": "chibi-direction-portrait-cult-horror",
+      "subject": "PORTRAIT:CULT:HORROR",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "creature",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "cult-green"
+    },
+    {
+      "id": "chibi-direction-portrait-cult-herald",
+      "subject": "PORTRAIT:CULT:HERALD",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "cult-lodge-icon"
+    },
+    {
+      "id": "chibi-direction-portrait-cult-tentacle",
+      "subject": "PORTRAIT:CULT:TENTACLE",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "creature",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "cult-green"
+    },
+    {
+      "id": "chibi-direction-icon-cult-tech-warding-circles",
+      "subject": "ICON:TECH:CULT:FORTIFICATION",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "cult-lodge-icon"
+    },
+    {
+      "id": "chibi-direction-icon-cult-tech-stars-are-right",
+      "subject": "ICON:TECH:CULT:EXPLOSIVES",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "cult-lodge-icon"
+    },
+    {
+      "id": "chibi-direction-icon-cult-tech-harvest-rites",
+      "subject": "ICON:TECH:CULT:FARMING",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "cult-lodge-icon"
+    },
+    {
+      "id": "chibi-direction-icon-cult-action-sacrifice",
+      "subject": "ICON:ACTION:SACRIFICE",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "cult-lodge-icon"
+    },
+    {
+      "id": "chibi-direction-icon-cult-action-seize",
+      "subject": "ICON:ACTION:SEIZE",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "cult-summoned-icon"
+    },
+    {
+      "id": "chibi-direction-icon-cult-action-offering",
+      "subject": "ICON:ACTION:OFFERING",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "cult-lodge-icon"
+    },
+    {
+      "id": "chibi-direction-icon-cult-action-summon",
+      "subject": "ICON:ACTION:SUMMON",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "cult-summoned-icon"
+    },
+    {
+      "id": "chibi-direction-icon-cult-action-channel",
+      "subject": "ICON:ACTION:CHANNEL",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "cult-lodge-icon"
+    },
+    {
+      "id": "chibi-direction-icon-cult-action-behold",
+      "subject": "ICON:ACTION:BEHOLD",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "cult-lodge-icon"
+    },
+    {
+      "id": "chibi-direction-icon-cult-action-pick-me",
+      "subject": "ICON:ACTION:PICK_ME",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "cult-lodge-icon"
+    },
+    {
+      "id": "chibi-direction-icon-cult-action-anchor",
+      "subject": "ICON:ACTION:ANCHOR",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "cult-summoned-icon"
+    },
+    {
+      "id": "chibi-direction-icon-cult-action-boo",
+      "subject": "ICON:ACTION:BOO",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "cult-summoned-icon"
+    },
+    {
+      "id": "chibi-direction-icon-cult-action-proclaim",
+      "subject": "ICON:ACTION:PROCLAIM",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "cult-lodge-icon"
+    },
+    {
+      "id": "chibi-direction-icon-cult-action-ribbit",
+      "subject": "ICON:ACTION:RIBBIT",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "cult-summoned-icon"
+    },
+    {
+      "id": "chibi-direction-icon-cult-action-switcheroo",
+      "subject": "ICON:ACTION:SWITCHEROO",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "cult-lodge-icon"
+    },
+    {
+      "id": "chibi-direction-icon-cult-action-tentacle",
+      "subject": "ICON:ACTION:TENTACLE",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "cult-summoned-icon"
+    },
+    {
+      "id": "chibi-direction-icon-cult-action-starfall",
+      "subject": "ICON:ACTION:STARFALL",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "cult-lodge-icon"
+    },
+    {
+      "id": "chibi-direction-icon-cult-action-great-summoning",
+      "subject": "ICON:ACTION:GREAT_SUMMONING",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "cult-lodge-icon"
+    },
+    {
+      "id": "chibi-direction-icon-cult-action-pamphlets",
+      "subject": "ICON:ACTION:PAMPHLETS",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "cult-lodge-icon"
+    },
+    {
+      "id": "chibi-direction-icon-cult-action-martyr",
+      "subject": "ICON:ACTION:MARTYR",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "cult-lodge-icon"
+    },
+    {
+      "id": "chibi-direction-icon-cult-action-grab",
+      "subject": "ICON:ACTION:GRAB",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "cult-summoned-icon"
+    },
+    {
+      "id": "chibi-direction-icon-cult-favour",
+      "subject": "ICON:HUD:CULT:FAVOUR",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 32,
+        "height": 32
+      },
+      "accent": "cult-lodge-icon"
+    },
+    {
+      "id": "chibi-direction-icon-cult-favour-large",
+      "subject": "ICON:HUD:CULT:FAVOUR_LARGE",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "cult-lodge-icon"
+    },
+    {
+      "id": "chibi-direction-icon-cult-emblem",
+      "subject": "ICON:HUD:CULT:EMBLEM",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "cult-lodge-icon"
+    },
+    {
+      "id": "chibi-direction-icon-cult-status-candlelit",
+      "subject": "ICON:STATUS:CANDLELIT",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "cult-lodge-icon"
+    },
+    {
+      "id": "chibi-direction-icon-cult-status-frog",
+      "subject": "ICON:STATUS:FROG",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "cult-summoned-icon"
+    },
+    {
+      "id": "chibi-direction-icon-cult-status-unbound",
+      "subject": "ICON:STATUS:UNBOUND",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "cult-lodge-icon"
+    },
+    {
+      "id": "chibi-direction-icon-cult-status-furious",
+      "subject": "ICON:STATUS:FURIOUS",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "cult-green"
+    },
+    {
+      "id": "chibi-direction-icon-cult-status-grabbed",
+      "subject": "ICON:STATUS:GRABBED",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "cult-summoned-icon"
+    },
+    {
+      "id": "chibi-direction-icon-cult-status-cowed",
+      "subject": "ICON:STATUS:COWED",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "cult-lodge-icon"
+    },
+    {
+      "id": "chibi-direction-icon-cult-status-warded",
+      "subject": "ICON:STATUS:WARDED",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "cult-lodge-icon"
+    },
+    {
+      "id": "chibi-direction-icon-cult-status-pick-me",
+      "subject": "ICON:STATUS:PICK_ME",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "cult-lodge-icon"
+    }
+  ],
+  "recipes": [
+    {
+      "id": "portrait-initiate-a",
+      "asset": "chibi-direction-portrait-cult-initiate",
+      "endpoint": "create-image-pixen",
+      "seed": 93001,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "A close-up bust: the hooded head and the shoulders fill the whole square; no legs. The cloth is a bright saturated royal blue, clearly blue and much lighter than the black outline, never grey, charcoal, navy or black. The hood's opening is pure black with only the two eyes in it.",
+      "negativeAddendum": "full body, legs, feet, skin, face, nose, mouth, beard, skull face, skeleton, grey hood, black robe, staff, wand, dagger",
+      "notes": "Portrait sample: a fresh creation with the portrait class and the close-up addendum of the Dwarf and Candy portraits; the cloth is asked for as royal blue so the cult-lodge accent makes it the lodge's indigo."
+    },
+    {
+      "id": "portrait-initiate-b-eyes",
+      "asset": "chibi-direction-portrait-cult-initiate",
+      "endpoint": "edit-image-pixen",
+      "seed": 93002,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-initiate-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only two things: the two big eyes become plain round cream-white ovals with no pupils and no black dots inside them; the grey hand under the candle becomes a pale cream mitten. Do not redraw anything else: keep the blue hood with its floppy tip, the black hood opening, the candle with its green flame, the brass badge, the thick black outline and the art style exactly the same, on a transparent background.",
+      "notes": "portrait-initiate-a is the right bust, but its eyes have pupils and the hand on the candle is grey: the map sprite has plain cream eyes and cream mittens."
+    },
+    {
+      "id": "portrait-familiar-a",
+      "asset": "chibi-direction-portrait-cult-familiar",
+      "endpoint": "create-image-pixen",
+      "seed": 93021,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The creature is drawn large and fills the whole square.",
+      "negativeAddendum": "frog, toad, dragon, long tail, tongue, leather collar",
+      "notes": "The Familiar whole with the creature class (no faction layer), from a subject line that describes the accepted map sprite: a blue pet sitting upright with a cream belly and a brass bell."
+    },
+    {
+      "id": "portrait-thing-a",
+      "asset": "chibi-direction-portrait-cult-thing",
+      "endpoint": "create-image-pixen",
+      "seed": 93081,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The heap is drawn large and fills the whole square.",
+      "negativeAddendum": "octopus head, face, mouth, teeth, legs",
+      "notes": "The Thing in the Cellar whole with the creature class, from a subject line that describes the accepted map sprite."
+    },
+    {
+      "id": "portrait-horror-a",
+      "asset": "chibi-direction-portrait-cult-horror",
+      "endpoint": "create-image-pixen",
+      "seed": 93091,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The creature is drawn large and fills the whole square.",
+      "negativeAddendum": "antennae, lamp, arms, hands",
+      "notes": "Portrait sample of a summoned thing: the Horror whole with the creature class (no faction layer: layer 3's green flames sat on horns of every Horror creation of the unit class)."
+    },
+    {
+      "id": "portrait-horror-a-horns",
+      "asset": "chibi-direction-portrait-cult-horror",
+      "endpoint": "edit-image-pixen",
+      "seed": 93092,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-horror-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only one thing: erase the two small pointed horns on top of the head, so the top of the round teal body is smooth and round. Do not redraw anything else: keep the two yellow eyes, the wide grin with its teeth, the brass spiked collar, the cream belly, the four tentacle legs, the thick black outline and the art style exactly the same, on a transparent background.",
+      "notes": "portrait-horror-a is the Horror of the map sprite, but with two small horns the sprite does not have."
+    },
+    {
+      "id": "portrait-herald-a",
+      "asset": "chibi-direction-portrait-cult-herald",
+      "endpoint": "create-image-pixen",
+      "seed": 93101,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "A close-up: the huge eye with its tentacle crown and the collar fill the whole square. The cloth is a bright saturated royal blue, clearly blue and much lighter than the black outline, never grey, charcoal, navy or black.",
+      "negativeAddendum": "face, nose, mouth, skin, hair, hands, human, person, second eye, two eyes, hood, hat",
+      "notes": "The Herald close up with the portrait class: the eye and the crown fill the frame (CULT.md, Portraits)."
+    },
+    {
+      "id": "portrait-herald-a-yellow",
+      "asset": "chibi-direction-portrait-cult-herald",
+      "endpoint": "edit-image-pixen",
+      "seed": 93102,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-herald-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the eye: the whole big round eyeball becomes plain pale yellow #ffe27a with a slightly darker yellow rim #e0b84a and one big round black pupil with a small white shine in its middle; no brown, no orange and no rings in it. Do not redraw anything else: keep the crown of teal tentacles, the blue robe shoulders, the thick black outline and the art style exactly the same, on a transparent background.",
+      "notes": "portrait-herald-a is the Herald's eye under its tentacle crown, but the eye is brown and orange rings: the map sprite's is one pale yellow eyeball with a black pupil."
+    },
+    {
+      "id": "portrait-tentacle-a",
+      "asset": "chibi-direction-portrait-cult-tentacle",
+      "endpoint": "create-image-pixen",
+      "seed": 93111,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "There is no animal in the image: only one single limb, like an elephant trunk standing upright. It is drawn large and fills the whole height of the square.",
+      "negativeAddendum": "octopus, squid, body, head, face, mouth, several tentacles",
+      "notes": "The Tentacle whole with the creature class and the 'one single limb' sentence that gave the map sprite."
+    },
+    {
+      "id": "portrait-tentacle-b",
+      "asset": "chibi-direction-portrait-cult-tentacle",
+      "endpoint": "create-image-pixen",
+      "seed": 93112,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "There is no animal in the image: only one single limb, like an elephant trunk standing upright, in the shape of the letter S. Its base is one blunt round stump with nothing growing from it. It is drawn large and fills the whole height of the square.",
+      "negativeAddendum": "octopus, squid, body, head, face, mouth, several tentacles, small tentacles at the base, roots, legs, plant, seaweed",
+      "notes": "portrait-tentacle-a grew five small tentacles at the foot of the limb, like a squid standing up: a second creation that says the base is one blunt stump."
+    },
+    {
+      "id": "icon-warding-circles-a",
+      "asset": "chibi-direction-icon-cult-tech-warding-circles",
+      "endpoint": "create-image-pixen",
+      "seed": 93201,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, figure, checkerboard, dark background, plate, dish, table, grass, candles, flames",
+      "notes": "Warding Circles: a fresh creation with the icon class."
+    },
+    {
+      "id": "icon-warding-circles-a-pale",
+      "asset": "chibi-direction-icon-cult-tech-warding-circles",
+      "endpoint": "edit-image-pixen",
+      "seed": 93202,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-warding-circles-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only two things: the dark grey statue becomes pale grey stone #b9b8b0 with shade #8a8a86, much lighter than before; and the small green sprig on top of its head is erased. Do not redraw anything else: keep the statue's shape, its grinning face, its two green eyes, the cream chalk ring round its foot, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "icon-warding-circles-a is the idol in its chalk ring, but the statue is charcoal (it vanishes on the dark marker token and the Idol Bearer's idol is pale stone) and wears a green sprig."
+    },
+    {
+      "id": "icon-stars-are-right-a",
+      "asset": "chibi-direction-icon-cult-tech-stars-are-right",
+      "endpoint": "create-image-pixen",
+      "seed": 93211,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "It is a plain object, not a living thing: no face, no arms and no legs.",
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, figure, checkerboard, dark background, clock hands, numbers, compass needle, face, eyes",
+      "notes": "Icon sample: The Stars Are Right, a fresh creation with the icon class."
+    },
+    {
+      "id": "icon-harvest-rites-a",
+      "asset": "chibi-direction-icon-cult-tech-harvest-rites",
+      "endpoint": "create-image-pixen",
+      "seed": 93221,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, figure, checkerboard, dark background, scythe, sickle, basket, field",
+      "notes": "Harvest Rites: a fresh creation with the icon class."
+    },
+    {
+      "id": "icon-sacrifice-a",
+      "asset": "chibi-direction-icon-cult-action-sacrifice",
+      "endpoint": "create-image-pixen",
+      "seed": 93301,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The cloth is a bright saturated royal blue, clearly blue and much lighter than the black outline, never grey, charcoal, navy or black. The hood is empty: no head, no eyes and no body in it.",
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, figure, checkerboard, dark background, face, eyes, head, body, skull, blood, knife, dagger, altar, fire",
+      "notes": "Icon sample: Sacrifice, a fresh creation with the icon class."
+    },
+    {
+      "id": "icon-sacrifice-b",
+      "asset": "chibi-direction-icon-cult-action-sacrifice",
+      "endpoint": "create-image-pixen",
+      "seed": 93302,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The cloth is a bright saturated royal blue, clearly blue and much lighter than the black outline, never grey, charcoal, navy or black. The hood is empty: no head, no eyes and no body in it.",
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, figure, checkerboard, dark background, face, eyes, head, body, skull, blood, knife, dagger, altar, fire, cap, helmet, broccoli, bush",
+      "notes": "icon-sacrifice-a drew a round cap lying on green lumps, like a hat on a bush: a second creation from a subject line that asks for a tall pointed cone hood floating above the puff."
+    },
+    {
+      "id": "icon-sacrifice-b-hood",
+      "asset": "chibi-direction-icon-cult-action-sacrifice",
+      "endpoint": "edit-image-pixen",
+      "seed": 93303,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-sacrifice-b",
+        "candidate": 0
+      },
+      "editInstruction": "Change only two things: the wide brim of the blue hat is erased, so it is a plain pointed cloth hood with its black opening; and the green bush under it becomes one round puff of bright green smoke made of soft round lumps, with no yellow dots and no leaves. Do not redraw anything else: keep the hood's pointed shape and colour, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "icon-sacrifice-b is a pointed hood over a green mass, but the hood has a witch-hat brim and the smoke is a bush with yellow flowers."
+    },
+    {
+      "id": "icon-seize-a",
+      "asset": "chibi-direction-icon-cult-action-seize",
+      "endpoint": "create-image-pixen",
+      "seed": 93311,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, figure, checkerboard, dark background, octopus, eyes, face, leg, foot, blue cloth, candle, flame",
+      "notes": "Seize: a fresh creation with the icon class."
+    },
+    {
+      "id": "icon-seize-b",
+      "asset": "chibi-direction-icon-cult-action-seize",
+      "endpoint": "create-image-pixen",
+      "seed": 93312,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "There is no animal and no person in the image: the tentacle is one single limb, like an elephant trunk.",
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, figure, checkerboard, dark background, octopus, squid, head, eyes, face, body, robe, cloak, two boots, leg, blue cloth, candle, flame",
+      "notes": "icon-seize-a drew an octopus-headed figure in a robe and boots: a second creation from a subject line of one boot and one limb."
+    },
+    {
+      "id": "icon-offering-a",
+      "asset": "chibi-direction-icon-cult-action-offering",
+      "endpoint": "create-image-pixen",
+      "seed": 93321,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "It is a plain object, not a living thing: no face, no arms and no legs.",
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, figure, checkerboard, dark background, food, fruit, coins, altar, table, face, eyes",
+      "notes": "Offering: a fresh creation with the icon class."
+    },
+    {
+      "id": "icon-summon-a",
+      "asset": "chibi-direction-icon-cult-action-summon",
+      "endpoint": "create-image-pixen",
+      "seed": 93331,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, figure, checkerboard, dark background, pentagram, star, octopus, eyes, face, candle, blue cloth",
+      "notes": "Summon: a fresh creation with the icon class."
+    },
+    {
+      "id": "icon-channel-a",
+      "asset": "chibi-direction-icon-cult-action-channel",
+      "endpoint": "create-image-pixen",
+      "seed": 93341,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The cloth is a bright saturated royal blue, clearly blue and much lighter than the black outline, never grey, charcoal, navy or black.",
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, figure, checkerboard, dark background, face, eyes, long chain, handcuffs, skin, fingers",
+      "notes": "Channel: a fresh creation with the icon class."
+    },
+    {
+      "id": "icon-channel-b",
+      "asset": "chibi-direction-icon-cult-action-channel",
+      "endpoint": "create-image-pixen",
+      "seed": 93342,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The cloth is a bright saturated royal blue, clearly blue and much lighter than the black outline, never grey, charcoal, navy or black. There is no person in the image: only one sleeve with its mitten.",
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, figure, checkerboard, dark background, head, face, eyes, bald, body, legs, long chain, several links, handcuffs, skin, fingers, staff, candle",
+      "notes": "icon-channel-a drew a whole bald figure holding a chain: a second creation that asks for one sleeve, one mitten and one link."
+    },
+    {
+      "id": "icon-behold-a",
+      "asset": "chibi-direction-icon-cult-action-behold",
+      "endpoint": "create-image-pixen",
+      "seed": 93351,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, figure, checkerboard, dark background, body, arms, legs, skull, moai, blue cloth, candle, flames",
+      "notes": "Behold!: a fresh creation with the icon class."
+    },
+    {
+      "id": "icon-pick-me-a",
+      "asset": "chibi-direction-icon-cult-action-pick-me",
+      "endpoint": "create-image-pixen",
+      "seed": 93361,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The cloth is a bright saturated royal blue, clearly blue and much lighter than the black outline, never grey, charcoal, navy or black.",
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, figure, checkerboard, dark background, face, eyes, skin, fist, thumb, glove with five fingers, flames",
+      "notes": "Pick Me!: a fresh creation with the icon class."
+    },
+    {
+      "id": "icon-pick-me-b",
+      "asset": "chibi-direction-icon-cult-action-pick-me",
+      "endpoint": "create-image-pixen",
+      "seed": 93362,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The cloth is a bright saturated royal blue, clearly blue and much lighter than the black outline, never grey, charcoal, navy or black. It is a plain object, not a living thing: no face, no arms and no legs.",
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, figure, checkerboard, dark background, face, eyes, skin, fist, knuckles, fingernail, middle finger, five fingers, flames, green",
+      "notes": "icon-pick-me-a drew a fist seen from the back with one finger up, which can be read as a rude gesture: a second creation that asks for a flat foam hand with an index finger and a thumb."
+    },
+    {
+      "id": "icon-pick-me-c",
+      "asset": "chibi-direction-icon-cult-action-pick-me",
+      "endpoint": "create-image-pixen",
+      "seed": 93363,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The cloth is a bright saturated royal blue, clearly blue and much lighter than the black outline, never grey, charcoal, navy or black. It is a plain object, not a living thing: no face, no arms and no legs. The glove is smooth and plain, with no hair, no claws and no fur.",
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, figure, checkerboard, dark background, face, eyes, skin, fist seen from the back, knuckles, fingernail, claws, fur, hair, crown, flames, green, orange",
+      "notes": "icon-pick-me-b drew a ragged fist with a spiky yellow fringe: a third creation that asks for a smooth round cartoon glove with the index finger up and the thumb out."
+    },
+    {
+      "id": "icon-pick-me-d",
+      "asset": "chibi-direction-icon-cult-action-pick-me",
+      "endpoint": "create-image-pixen",
+      "seed": 93364,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The cloth is a bright saturated royal blue, clearly blue and much lighter than the black outline, never grey, charcoal, navy or black. It is a plain object, not a living thing: no face, no arms and no legs. All five fingers are open and spread: no fist and no single raised finger.",
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, figure, checkerboard, dark background, face, eyes, skin, fist, pointing finger, one finger, two fingers, peace sign, thumbs up, claws, fur, hair, crown, flames, green, orange",
+      "notes": "Review of bead pulp_wars-mch9.23: a single raised finger can be misread as a rude gesture at 18 to 24 px. Pick Me! is redone as an open waving hand with all five fingers spread."
+    },
+    {
+      "id": "icon-anchor-a",
+      "asset": "chibi-direction-icon-cult-action-anchor",
+      "endpoint": "create-image-pixen",
+      "seed": 93371,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, figure, checkerboard, dark background, octopus, eyes, face, ship anchor, blue cloth, snake",
+      "notes": "Anchor: a fresh creation with the icon class."
+    },
+    {
+      "id": "icon-boo-a",
+      "asset": "chibi-direction-icon-cult-action-boo",
+      "endpoint": "create-image-pixen",
+      "seed": 93381,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "grass, ground tile, slab, platform, person, figure, checkerboard, dark background, body, legs, arms, horns, fangs, blood, blue cloth, hood, candle, flames, ghost",
+      "notes": "Boo!: a fresh creation with the icon class."
+    },
+    {
+      "id": "icon-proclaim-a",
+      "asset": "chibi-direction-icon-cult-action-proclaim",
+      "endpoint": "create-image-pixen",
+      "seed": 93391,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "It is a plain object, not a living thing: no face, no arms and no legs.",
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, figure, checkerboard, dark background, face, quill, ink, wax seal, red, candle, flames, writing",
+      "notes": "Proclaim: a fresh creation with the icon class."
+    },
+    {
+      "id": "icon-proclaim-b",
+      "asset": "chibi-direction-icon-cult-action-proclaim",
+      "endpoint": "create-image-pixen",
+      "seed": 93392,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "It is a plain object, not a living thing: no face, no arms and no legs.",
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, figure, checkerboard, dark background, face, quill, ink pot, wax seal, red, orange, pink, purple, brown leather, candle, flames, writing, green gem",
+      "notes": "icon-proclaim-a drew a salmon scroll with a purple sign and a red-brown bell: a second creation that names each colour."
+    },
+    {
+      "id": "icon-proclaim-c",
+      "asset": "chibi-direction-icon-cult-action-proclaim",
+      "endpoint": "create-image-pixen",
+      "seed": 93393,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "It is a plain object, not a living thing: no face, no arms and no legs. The scroll is almost as wide and as tall as the image.",
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, figure, checkerboard, dark background, face, quill, ink pot, wax seal, red, orange, pink, purple, brown leather, candle, flames, writing, green gem, small scroll",
+      "notes": "icon-proclaim-b drew the right scroll, sign and bell in the right colours, but 24 px tall in its 48 px square and pale: a third creation that asks for it very large."
+    },
+    {
+      "id": "icon-ribbit-a",
+      "asset": "chibi-direction-icon-cult-action-ribbit",
+      "endpoint": "create-image-pixen",
+      "seed": 93401,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "grass, ground tile, slab, platform, person, figure, checkerboard, dark background, lily pad, pond, water, crown, green frog, blue cloth, hood, candle, flames",
+      "notes": "Ribbit: a fresh creation with the icon class."
+    },
+    {
+      "id": "icon-switcheroo-a",
+      "asset": "chibi-direction-icon-cult-action-switcheroo",
+      "endpoint": "create-image-pixen",
+      "seed": 93411,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "It is a plain object, not a living thing: no face, no arms and no legs.",
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, figure, checkerboard, dark background, face, eyes, recycling triangle, three arrows, candle, flames, blue cloth",
+      "notes": "Switcheroo: a fresh creation with the icon class."
+    },
+    {
+      "id": "icon-switcheroo-b",
+      "asset": "chibi-direction-icon-cult-action-switcheroo",
+      "endpoint": "create-image-pixen",
+      "seed": 93412,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "It is a plain object, not a living thing: no face, no arms and no legs.",
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, figure, checkerboard, dark background, face, eyes, skull, recycling triangle, three arrows, orange, pink, purple, red, candle, flames, blue cloth, ring, wheel",
+      "notes": "icon-switcheroo-a drew a wheel of orange, pink and green arrows round a face: a second creation of two arrows in cream and green with an empty middle."
+    },
+    {
+      "id": "icon-tentacle-a",
+      "asset": "chibi-direction-icon-cult-action-tentacle",
+      "endpoint": "create-image-pixen",
+      "seed": 93421,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, figure, checkerboard, dark background, octopus, eyes, face, several tentacles, boot, blue cloth, candle, flames",
+      "notes": "Tentacle: a fresh creation with the icon class."
+    },
+    {
+      "id": "icon-tentacle-b",
+      "asset": "chibi-direction-icon-cult-action-tentacle",
+      "endpoint": "create-image-pixen",
+      "seed": 93422,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "There is no animal in the image: only one single limb, like an elephant trunk standing upright.",
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, figure, checkerboard, dark background, octopus, squid, head, eyes, face, body, hands, paws, fingers, several tentacles, boot, blue cloth, candle, flames, green",
+      "notes": "icon-tentacle-a drew an octopus with a spiral head and four paws: a second creation with the 'one single limb' sentence that gave the map sprite."
+    },
+    {
+      "id": "icon-starfall-a",
+      "asset": "chibi-direction-icon-cult-action-starfall",
+      "endpoint": "create-image-pixen",
+      "seed": 93431,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "It is a plain object, not a living thing: no face, no arms and no legs.",
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, figure, checkerboard, dark background, face, eyes, several stars, fire, orange, wand, blue cloth, candle",
+      "notes": "Star-fall: a fresh creation with the icon class."
+    },
+    {
+      "id": "icon-starfall-a-plain",
+      "asset": "chibi-direction-icon-cult-action-starfall",
+      "endpoint": "edit-image-pixen",
+      "seed": 93432,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-starfall-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only one thing: erase the little face on the star (its two eyes and its mouth), so the star is plain pale cream with no face. Do not redraw anything else: keep the star's five points, its shading, the green tail of light behind it, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "icon-starfall-a is the falling star with its green tail, but the star has a smiling face: an icon is not a character."
+    },
+    {
+      "id": "icon-great-summoning-a",
+      "asset": "chibi-direction-icon-cult-action-great-summoning",
+      "endpoint": "create-image-pixen",
+      "seed": 93441,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, figure, checkerboard, dark background, face, mouth, eyelashes, two eyes, pentagram, blue cloth, hood, tentacles",
+      "notes": "The Great Summoning: a fresh creation with the icon class."
+    },
+    {
+      "id": "icon-great-summoning-a-yellow",
+      "asset": "chibi-direction-icon-cult-action-great-summoning",
+      "endpoint": "edit-image-pixen",
+      "seed": 93442,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-great-summoning-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the eye in the middle: the eyeball becomes plain pale yellow #ffe27a with one big round black pupil and a small white shine; no grey and no blue in the eye. Do not redraw anything else: keep the blue diamond round the eye, the four small candles with green flames at its corners, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "icon-great-summoning-a is an eye among four lit candles, but the eye is grey-blue: the Herald's eye, like every summoned eye, is pale yellow."
+    },
+    {
+      "id": "icon-pamphlets-a",
+      "asset": "chibi-direction-icon-cult-action-pamphlets",
+      "endpoint": "create-image-pixen",
+      "seed": 93451,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "It is a plain object, not a living thing: no face, no arms and no legs.",
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, figure, checkerboard, dark background, face, hand, playing cards, hearts, spades, writing, book, candle, flames",
+      "notes": "Pamphlets: a fresh creation with the icon class."
+    },
+    {
+      "id": "icon-pamphlets-a-clean",
+      "asset": "chibi-direction-icon-cult-action-pamphlets",
+      "endpoint": "edit-image-pixen",
+      "seed": 93452,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-pamphlets-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only one thing: erase the green and brown clump at the bottom of the image completely, leaving that area transparent, so the sheaf of papers floats alone. Do not redraw anything else: keep the cream papers, the blue eye-in-a-spiral sign on the front one, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "icon-pamphlets-a is the sheaf of pamphlets with the eye sign, standing on a clump of grass and earth."
+    },
+    {
+      "id": "icon-martyr-a",
+      "asset": "chibi-direction-icon-cult-action-martyr",
+      "endpoint": "create-image-pixen",
+      "seed": 93461,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "It is a plain object, not a living thing: no face, no arms and no legs.",
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, figure, checkerboard, dark background, face, body, red ribbon, blue ribbon, star medal, cross, candle, blue cloth",
+      "notes": "Martyr: a fresh creation with the icon class."
+    },
+    {
+      "id": "icon-grab-a",
+      "asset": "chibi-direction-icon-cult-action-grab",
+      "endpoint": "create-image-pixen",
+      "seed": 93471,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "grass, ground tile, slab, platform, checkerboard, dark background, octopus, eyes, face, whole body, two legs, crack, blue cloth, candle, flames",
+      "notes": "Grab: a fresh creation with the icon class."
+    },
+    {
+      "id": "icon-grab-b",
+      "asset": "chibi-direction-icon-cult-action-grab",
+      "endpoint": "create-image-pixen",
+      "seed": 93472,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "There is no animal and no person in the image: the tentacle is one single limb, like an elephant trunk.",
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, figure, checkerboard, dark background, octopus, squid, head, eyes, face, hair, wig, mushroom, body, leg, two boots, crack, blue cloth, candle, flames",
+      "notes": "icon-grab-a drew a blue mass on a white post, like a wig on a stand: a second creation of one boot and one tentacle tip."
+    },
+    {
+      "id": "icon-favour-a",
+      "asset": "chibi-direction-icon-cult-favour",
+      "endpoint": "create-image-pixen",
+      "seed": 93501,
+      "requestSize": {
+        "width": 32,
+        "height": 32
+      },
+      "promptAddendum": "It is a plain object, not a living thing: no face, no arms and no legs.",
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, figure, checkerboard, dark background, face, eyes, candlestick, holder, dish, several candles, orange flame, yellow flame",
+      "notes": "Icon sample: the Favour candle of the HUD at 32 x 32, as the coin and population icons are."
+    },
+    {
+      "id": "icon-favour-b",
+      "asset": "chibi-direction-icon-cult-favour",
+      "endpoint": "create-image-pixen",
+      "seed": 93502,
+      "requestSize": {
+        "width": 32,
+        "height": 32
+      },
+      "promptAddendum": "It is a plain object, not a living thing: no face, no arms and no legs.",
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, figure, checkerboard, dark background, face, eyes, candlestick, holder, dish, pedestal, stool, table, altar, box, stand, blue, brown wood, several candles, orange flame, yellow flame",
+      "notes": "icon-favour-a stood a small candle on a blue and brown pedestal: a second creation from a subject line that says the candle stands by itself and fills the image."
+    },
+    {
+      "id": "icon-favour-c",
+      "asset": "chibi-direction-icon-cult-favour",
+      "endpoint": "create-image-pixen",
+      "seed": 93503,
+      "requestSize": {
+        "width": 32,
+        "height": 32
+      },
+      "promptAddendum": "It is a plain object, not a living thing: no face, no arms and no legs.",
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, figure, checkerboard, dark background, face, eyes, candlestick, holder, dish, pedestal, stool, table, altar, box, stand, blue, thin candle, tall candle, several candles, orange flame, yellow flame, pink, purple",
+      "notes": "icon-favour-b drew a thin orange candle eight pixels wide: a third creation that asks for a candle as wide as it is tall under a flame as big as itself."
+    },
+    {
+      "id": "icon-favour-d",
+      "asset": "chibi-direction-icon-cult-favour",
+      "endpoint": "create-image-pixen",
+      "seed": 93504,
+      "requestSize": {
+        "width": 32,
+        "height": 32
+      },
+      "promptAddendum": "It is a plain object, not a living thing: no face, no arms and no legs. The candle is drawn very large and fills the image.",
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, figure, checkerboard, dark background, face, eyes, candlestick, holder, dish, pedestal, stool, table, altar, box, stand, blue, brown candle, orange candle, thin candle, several candles, orange flame, yellow flame, pink, purple",
+      "notes": "icon-favour-c drew a tall brown candle with a yellow flame: a fourth creation from the subject line that gave the 48 px candle."
+    },
+    {
+      "id": "icon-favour-large-a",
+      "asset": "chibi-direction-icon-cult-favour-large",
+      "endpoint": "create-image-pixen",
+      "seed": 93511,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "It is a plain object, not a living thing: no face, no arms and no legs.",
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, figure, checkerboard, dark background, face, eyes, candlestick, holder, dish, several candles, orange flame, yellow flame",
+      "notes": "The Favour candle at 48 x 48 for cards and dialogs."
+    },
+    {
+      "id": "icon-favour-large-a-clean",
+      "asset": "chibi-direction-icon-cult-favour-large",
+      "endpoint": "edit-image-pixen",
+      "seed": 93512,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-favour-large-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only one thing: erase the small loose yellow dot floating to the left of the flame, leaving that area transparent. Do not redraw anything else: keep the fat wax candle with its drips, the green flame, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "icon-favour-large-a is the Favour candle, with one loose yellow speck beside the flame."
+    },
+    {
+      "id": "icon-emblem-a",
+      "asset": "chibi-direction-icon-cult-emblem",
+      "endpoint": "create-image-pixen",
+      "seed": 93521,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The cloth is a bright saturated royal blue, clearly blue and much lighter than the black outline, never grey, charcoal, navy or black. It is a plain object, not a living thing: no face, no arms and no legs.",
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, figure, checkerboard, dark background, face, eyelashes, pyramid, triangle, pentagram, flag pole, candle, flames, brass",
+      "notes": "The faction emblem: a fresh creation with the icon class."
+    },
+    {
+      "id": "icon-candlelit-a",
+      "asset": "chibi-direction-icon-cult-status-candlelit",
+      "endpoint": "create-image-pixen",
+      "seed": 93531,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "It is a plain object, not a living thing: no face, no arms and no legs.",
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, figure, checkerboard, dark background, face, eyes, candlestick, holder, dish, several candles, orange flame, yellow flame, angel",
+      "notes": "Icon sample: the Candlelit chip and board marker, a fresh creation with the icon class."
+    },
+    {
+      "id": "icon-frog-a",
+      "asset": "chibi-direction-icon-cult-status-frog",
+      "endpoint": "create-image-pixen",
+      "seed": 93541,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "grass, ground tile, slab, platform, person, figure, checkerboard, dark background, body, legs, feet, lily pad, crown, green frog, blue cloth, hood, candle, flames",
+      "notes": "The Frog chip: a fresh creation with the icon class."
+    },
+    {
+      "id": "icon-unbound-a",
+      "asset": "chibi-direction-icon-cult-status-unbound",
+      "endpoint": "create-image-pixen",
+      "seed": 93551,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "It is a plain object, not a living thing: no face, no arms and no legs.",
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, figure, checkerboard, dark background, face, neck, dog, handcuffs, padlock, blue cloth, candle, flames",
+      "notes": "The Unbound chip: a fresh creation with the icon class."
+    },
+    {
+      "id": "icon-furious-a",
+      "asset": "chibi-direction-icon-cult-status-furious",
+      "endpoint": "create-image-pixen",
+      "seed": 93561,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "grass, ground tile, slab, platform, person, figure, checkerboard, dark background, body, mouth, teeth, nose, horns, blue cloth, hood, candle, flames, fire",
+      "notes": "The Furious chip: red eyes are the cue of an Unbound daemon (CULT.md, 'Red means broken')."
+    },
+    {
+      "id": "icon-furious-b",
+      "asset": "chibi-direction-icon-cult-status-furious",
+      "endpoint": "create-image-pixen",
+      "seed": 93562,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "There is no creature in the image: no head, no horns, no body and no mouth.",
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, figure, checkerboard, dark background, head, horns, bull, animal, creature, body, mouth, teeth, nose, ears, feet, blue cloth, hood, candle, flames, fire, green, orange",
+      "notes": "icon-furious-a drew a grey horned creature with red eyes in green flames: a second creation of two eyes and two puffs of steam alone."
+    },
+    {
+      "id": "icon-furious-b-clean",
+      "asset": "chibi-direction-icon-cult-status-furious",
+      "endpoint": "edit-image-pixen",
+      "seed": 93563,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-furious-b",
+        "candidate": 0
+      },
+      "editInstruction": "Change only two things: erase the two brass horns at the sides of the head, and erase the green tongue under the eyes, so that part is the same dark blue as the rest. Do not redraw anything else: keep the two big red eyes, the two white puffs of steam above them, the dark round shape, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "icon-furious-b is two red eyes under two puffs of white steam on a dark round head, with two brass horns and a green tongue it does not need."
+    },
+    {
+      "id": "icon-grabbed-a",
+      "asset": "chibi-direction-icon-cult-status-grabbed",
+      "endpoint": "create-image-pixen",
+      "seed": 93571,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, figure, checkerboard, dark background, octopus, eyes, face, several tentacles, rope, snake, blue cloth, candle, flames",
+      "notes": "The Grabbed chip: a fresh creation with the icon class."
+    },
+    {
+      "id": "icon-cowed-a",
+      "asset": "chibi-direction-icon-cult-status-cowed",
+      "endpoint": "create-image-pixen",
+      "seed": 93581,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "It is a plain object, not a living thing: no face, no arms and no legs. The shutters are a bright saturated royal blue.",
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, figure, checkerboard, dark background, face, eyes, house, wall, door, open window, glass, candle, flames, green light",
+      "notes": "The Cowed chip: a fresh creation with the icon class."
+    },
+    {
+      "id": "icon-cowed-b",
+      "asset": "chibi-direction-icon-cult-status-cowed",
+      "endpoint": "create-image-pixen",
+      "seed": 93582,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "It is a plain object, not a living thing: no face, no arms and no legs. The shutters are closed and a bright saturated royal blue.",
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, figure, checkerboard, dark background, face, eyes, house, wall, door, open shutters, open window, glass, fire, flames, fireplace, red, orange, purple, candle, green light",
+      "notes": "icon-cowed-a drew the shutters open on a fire: a second creation of a round window filled by two closed shutter halves."
+    },
+    {
+      "id": "icon-warded-a",
+      "asset": "chibi-direction-icon-cult-status-warded",
+      "endpoint": "create-image-pixen",
+      "seed": 93591,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, figure, checkerboard, dark background, body, arms, legs, skull, moai, blue cloth, candle, flames, rays",
+      "notes": "The Warded chip: a fresh creation with the icon class."
+    },
+    {
+      "id": "icon-pick-me-status-a",
+      "asset": "chibi-direction-icon-cult-status-pick-me",
+      "endpoint": "create-image-pixen",
+      "seed": 93601,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The cloth is a bright saturated royal blue, clearly blue and much lighter than the black outline, never grey, charcoal, navy or black.",
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, figure, checkerboard, dark background, face, eyes, skin, fist, thumb, glove with five fingers, flames, star",
+      "notes": "The Pick Me! chip: a fresh creation with the icon class."
+    },
+    {
+      "id": "portrait-idol-bearer-s",
+      "asset": "chibi-direction-portrait-cult-idol-bearer",
+      "endpoint": "edit-image-pixen",
+      "seed": 93011,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-initiate-b-eyes",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Redraw it as another member of the same society in the same blue hood: the hood is short and squashed flat on top, and on top of it sits one squat grinning pale grey stone idol head with two small bright green eyes, as big as the hooded head under it; both cream mittens reach up and hold the idol's sides. No candle. Keep the blue cloth, the black hood opening with its two cream eyes, the size, thick black outline and art style, on a transparent background.",
+      "notes": "The Idol Bearer's bust as a sibling edit of the accepted Initiate bust, as the map sprites were made (CULT.md, 'A robed unit is a sibling edit of the Initiate')."
+    },
+    {
+      "id": "portrait-hexer-s",
+      "asset": "chibi-direction-portrait-cult-hexer",
+      "endpoint": "edit-image-pixen",
+      "seed": 93031,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-initiate-b-eyes",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Redraw it as another member of the same society in the same blue hood: the tip of the hood curls up and over like a question mark; big round brass spectacles sit on the hood above the two cream eyes; the cream mitten is raised with one small bright green squiggle of light above it. No candle. Keep the blue cloth, the black hood opening with its two cream eyes, the size, thick black outline and art style, on a transparent background.",
+      "notes": "The Hexer's bust as a sibling edit of the accepted Initiate bust."
+    },
+    {
+      "id": "portrait-summoner-s",
+      "asset": "chibi-direction-portrait-cult-summoner",
+      "endpoint": "edit-image-pixen",
+      "seed": 93041,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-initiate-b-eyes",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Redraw it as another member of the same society in the same blue hood: the hood becomes a very tall straight narrow pointed cone that reaches the top of the image; a pale cream collar lies round the neck; the cream mitten holds up one small polished brass hand bell. No candle. Keep the blue cloth, the black hood opening with its two cream eyes, the size, thick black outline and art style, on a transparent background.",
+      "notes": "The Summoner's bust as a sibling edit of the accepted Initiate bust."
+    },
+    {
+      "id": "portrait-stargazer-s",
+      "asset": "chibi-direction-portrait-cult-stargazer",
+      "endpoint": "edit-image-pixen",
+      "seed": 93051,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-initiate-b-eyes",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Redraw it as another member of the same society in the same blue hood: the hood becomes a floppy nightcap of the same blue cloth with small pale cream stars and a cream pompom at its tip; beside the head is the eyepiece end of one fat polished brass telescope tube pointing up to the right. No candle. Keep the blue cloth, the black hood opening with its two cream eyes, the size, thick black outline and art style, on a transparent background.",
+      "notes": "The Stargazer's bust as a sibling edit of the accepted Initiate bust."
+    },
+    {
+      "id": "portrait-caller-s",
+      "asset": "chibi-direction-portrait-cult-caller",
+      "endpoint": "edit-image-pixen",
+      "seed": 93061,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-initiate-b-eyes",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Redraw it as another member of the same society in the same blue hood: the hood and its eyes become one big round polished brass diving helmet with one round porthole glowing bright green in its front; beside the helmet is the wide mouth of one huge pale cream conch shell horn held in a cream mitten. No candle and no eyes. Keep the blue cloth, the size, thick black outline and art style, on a transparent background.",
+      "notes": "The Caller's bust as a sibling edit of the accepted Initiate bust: the helmet replaces the hood."
+    },
+    {
+      "id": "portrait-chosen-s",
+      "asset": "chibi-direction-portrait-cult-chosen",
+      "endpoint": "edit-image-pixen",
+      "seed": 93071,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-initiate-b-eyes",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Redraw it as another member of the same society in the same blue hood: burly, with big broad shoulders; the hood is short with a small point; a broad pale cream sash crosses the chest with one round brass medal; the cream mitten is raised beside the head with one finger pointing straight up. No candle. Keep the blue cloth, the black hood opening with its two cream eyes, the size, thick black outline and art style, on a transparent background.",
+      "notes": "The Chosen's bust as a sibling edit of the accepted Initiate bust."
+    },
+    {
+      "id": "icon-boo-s",
+      "asset": "chibi-direction-icon-cult-action-boo",
+      "endpoint": "edit-image-pixen",
+      "seed": 93382,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-horror-a-horns",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Redraw it as a close-up of only this monster's face, seen from the front: the round teal head fills the image, with its two big googly yellow eyes wide open and its very wide grin full of blunt cream teeth, and six short thick pale cream startle lines round the head pointing outward. No legs, no collar and no belly. Keep the teal colour, thick black outline and art style, on a transparent background.",
+      "notes": "icon-boo-a drew a dark ball with spikes and square eyes, like a sea mine: Boo! is the Horror's ability, so the icon is a sibling edit of the accepted Horror portrait."
+    },
+    {
+      "id": "icon-pick-me-status-s",
+      "asset": "chibi-direction-icon-cult-status-pick-me",
+      "endpoint": "edit-image-pixen",
+      "seed": 93602,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-pick-me-c",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Change only one thing: erase the brass starburst behind the hand and the small green sparkle completely, leaving those areas transparent, so only the hand on its blue cuff is left. Do not redraw the hand: keep the cream glove with its index finger pointing up, the blue cuff, the thick black outline and the art style exactly the same, on a transparent background.",
+      "notes": "The Pick Me! chip is the raised hand of the accepted Pick Me! icon without its starburst: a sibling edit, so the chip and the command show the same hand."
+    },
+    {
+      "id": "icon-pick-me-status-t",
+      "asset": "chibi-direction-icon-cult-status-pick-me",
+      "endpoint": "edit-image-pixen",
+      "seed": 93603,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-pick-me-d",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Change only one thing: erase the brass starburst behind the hand completely, leaving that area transparent, so only the open waving hand on its blue cuff and its motion lines are left. Do not redraw the hand: keep the cream glove with all five fingers spread open, the blue cuff, the thick black outline and the art style exactly the same, on a transparent background.",
+      "notes": "Review of bead pulp_wars-mch9.23: the chip is the open waving hand of the redone Pick Me! icon without its starburst, a sibling edit."
+    },
+    {
+      "id": "portrait-caller-s-helmet",
+      "asset": "chibi-direction-portrait-cult-caller",
+      "endpoint": "edit-image-pixen",
+      "seed": 93062,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-caller-s",
+        "candidate": 0
+      },
+      "editInstruction": "Change only one thing: erase the blue cloth hood tip that sticks up behind the top of the brass helmet, leaving that area transparent, so the round brass diving helmet has nothing on top of it. Do not redraw anything else: keep the helmet with its green porthole and rivets, the cream conch shell, the blue robe shoulders, the thick black outline and the art style exactly the same, on a transparent background.",
+      "notes": "portrait-caller-s is the Caller's helmet and conch, but the Initiate's hood tip still sits on top of the helmet: the map sprite's helmet replaces the hood."
+    }
+  ]
+}

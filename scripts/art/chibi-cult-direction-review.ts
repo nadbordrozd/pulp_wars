@@ -68,6 +68,7 @@ import {
   readRaster,
   type BatchRecords,
 } from "./chibi/pipeline";
+import { cultInterfaceEvidence } from "./cult-direction/interface-review";
 import { candidateOfRecipe } from "./dwarf-direction/measure";
 import {
   greyscale,
@@ -1544,6 +1545,8 @@ async function main(): Promise<void> {
 
   if (!study) await rosterEvidence();
   if (!study) await placesEvidence();
+  // Bead pulp_wars-mch9.23: the portraits, icons and effects.
+  if (!study) await cultInterfaceEvidence({ root: ROOT, sheet, json });
 
   const giantHeights = await giantsSheet(sprites.herald);
   await paletteFiles(sprites);

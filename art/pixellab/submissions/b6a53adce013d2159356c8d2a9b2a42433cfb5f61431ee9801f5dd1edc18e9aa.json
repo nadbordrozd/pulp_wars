@@ -1,0 +1,37 @@
+{
+  "id": "icon-pick-me-status-t",
+  "jobId": "1c6a95b9-a4b4-488b-8018-157592071d7d",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "interface-cult",
+    "asset": "chibi-direction-icon-cult-status-pick-me",
+    "subject": "ICON:STATUS:PICK_ME",
+    "faction": "CULT",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 93603,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only one thing: erase the brass starburst behind the hand completely, leaving that area transparent, so only the open waving hand on its blue cuff and its motion lines are left. Do not redraw the hand: keep the cream glove with all five fingers spread open, the blue cuff, the thick black outline and the art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only one thing: erase the brass starburst behind the hand completely, leaving that area transparent, so only the open waving hand on its blue cuff and its motion lines are left. Do not redraw the hand: keep the cream glove with all five fingers spread open, the blue cuff, the thick black outline and the art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only one thing: erase the brass starburst behind the hand completely, leaving that area transparent, so only the open waving hand on its blue cuff and its motion lines are left. Do not redraw the hand: keep the cream glove with all five fingers spread open, the blue cuff, the thick black outline and the art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only one thing: erase the brass starburst behind the hand completely, leaving that area transparent, so only the open waving hand on its blue cuff and its motion lines are left. Do not redraw the hand: keep the cream glove with all five fingers spread open, the blue cuff, the thick black outline and the art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "icon-pick-me-d",
+      "candidate": 0,
+      "sibling": true,
+      "sha256": "be7f3b9a80f13e8dbc4a9703de2648128aced459cdd7140414b3c088b751574e"
+    }
+  }
+}

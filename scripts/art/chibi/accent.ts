@@ -80,6 +80,27 @@ export interface AccentSpec {
 }
 
 /**
+ * The last band of the Cult's two interface presets (bead
+ * pulp_wars-mch9.23): "red means broken" (CULT.md, Palette), so the few
+ * saturated reds PixelLab shades brass, leather and a tentacle's suckers
+ * with (hue 345 to 12) go to the brass's own orange-brown, hue 28, a little
+ * less saturated. The Furious chip, whose red eyes are the cue, uses
+ * `cult-green`, which has no such band.
+ */
+const CULT_ICON_RED_BAND: AccentSpec = {
+  band: {
+    hueFrom: 345,
+    hueTo: 12,
+    saturationMin: 0.5,
+    valueMin: 0.35,
+    hueCentre: 0,
+  },
+  hue: 28,
+  hueSpread: 0,
+  saturation: { scale: 0.8, add: 0, max: 0.8 },
+};
+
+/**
  * Presets by name. `undead-violet` is the accent the user chose on
  * 2026-10-02: hue 274 (lit `#a221ee`), with hems, hood edges and other
  * one-pixel trim on dark cloth lightened to about `#b55cf5`.
@@ -296,6 +317,96 @@ export const ACCENT_PRESETS = {
       hueSpread: 0.3,
       saturation: { scale: 1, add: 0, max: 0.6 },
       value: { scale: 0.5, add: 0.42 },
+    },
+  },
+  /**
+   * The lodge's interface art (bead pulp_wars-mch9.23: busts, icons, ship
+   * portraits). `cult-lodge` with three changes an item sprite needs, where
+   * a 48 px creation drifts further than a unit and no edit is spent on a
+   * colour: the green band starts at hue 66 (a flame drawn yellow-green);
+   * the cloth band starts at hue 196, so an azure ribbon or hide becomes the
+   * lodge's indigo too (teal, hue 190 and less, is never touched); and a
+   * third band moves the purple shading PixelLab puts on cream, wheat and
+   * brass (hue 262 to 345: violet and magenta are the Undead's and the
+   * Martians') to the indigo's hue, its tone kept.
+   */
+  "cult-lodge-icon": {
+    band: {
+      hueFrom: 66,
+      hueTo: 152,
+      saturationMin: 0.5,
+      valueMin: 0.45,
+      hueCentre: 120,
+    },
+    hue: 148,
+    hueSpread: 0.07,
+    then: {
+      band: {
+        hueFrom: 196,
+        hueTo: 262,
+        saturationMin: 0.45,
+        valueMin: 0.14,
+        hueCentre: 238,
+      },
+      hue: 244,
+      hueSpread: 0.3,
+      saturation: { scale: 1, add: 0, max: 0.6 },
+      value: { scale: 0.5, add: 0.42 },
+      then: {
+        band: {
+          hueFrom: 262,
+          hueTo: 345,
+          saturationMin: 0.3,
+          valueMin: 0.14,
+          hueCentre: 300,
+        },
+        hue: 244,
+        hueSpread: 0,
+        then: CULT_ICON_RED_BAND,
+      },
+    },
+  },
+  /**
+   * The summoned things' interface art (bead pulp_wars-mch9.23: the icons
+   * that show a tentacle, the frog or the Horror's grin). `cult-green` with
+   * the wider green band of `cult-lodge-icon` and a band between: Pixen
+   * draws "deep-sea teal" at 48 px as a steel blue as often as a teal (a
+   * blue tentacle loop, a frog shaded navy), so every saturated blue (hue
+   * 196 to 262) goes to the teal's hue, 182 to 190, its tone kept. An icon
+   * has no cloth, so no blue is lost; the purple shadows then go to hue 190.
+   */
+  "cult-summoned-icon": {
+    band: {
+      hueFrom: 66,
+      hueTo: 152,
+      saturationMin: 0.5,
+      valueMin: 0.45,
+      hueCentre: 120,
+    },
+    hue: 148,
+    hueSpread: 0.07,
+    then: {
+      band: {
+        hueFrom: 196,
+        hueTo: 262,
+        saturationMin: 0.3,
+        valueMin: 0.14,
+        hueCentre: 229,
+      },
+      hue: 186,
+      hueSpread: 0.12,
+      then: {
+        band: {
+          hueFrom: 262,
+          hueTo: 345,
+          saturationMin: 0.3,
+          valueMin: 0.14,
+          hueCentre: 300,
+        },
+        hue: 190,
+        hueSpread: 0,
+        then: CULT_ICON_RED_BAND,
+      },
     },
   },
 } as const satisfies Readonly<Record<string, AccentSpec>>;

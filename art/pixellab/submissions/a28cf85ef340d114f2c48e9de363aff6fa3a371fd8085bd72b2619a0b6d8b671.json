@@ -1,0 +1,36 @@
+{
+  "id": "icon-warding-circles-a-pale",
+  "jobId": "d6c84cd6-0746-4a68-b1b0-749469569c3a",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "interface-cult",
+    "asset": "chibi-direction-icon-cult-tech-warding-circles",
+    "subject": "ICON:TECH:CULT:FORTIFICATION",
+    "faction": "CULT",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 93202,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only two things: the dark grey statue becomes pale grey stone #b9b8b0 with shade #8a8a86, much lighter than before; and the small green sprig on top of its head is erased. Do not redraw anything else: keep the statue's shape, its grinning face, its two green eyes, the cream chalk ring round its foot, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only two things: the dark grey statue becomes pale grey stone #b9b8b0 with shade #8a8a86, much lighter than before; and the small green sprig on top of its head is erased. Do not redraw anything else: keep the statue's shape, its grinning face, its two green eyes, the cream chalk ring round its foot, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only two things: the dark grey statue becomes pale grey stone #b9b8b0 with shade #8a8a86, much lighter than before; and the small green sprig on top of its head is erased. Do not redraw anything else: keep the statue's shape, its grinning face, its two green eyes, the cream chalk ring round its foot, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only two things: the dark grey statue becomes pale grey stone #b9b8b0 with shade #8a8a86, much lighter than before; and the small green sprig on top of its head is erased. Do not redraw anything else: keep the statue's shape, its grinning face, its two green eyes, the cream chalk ring round its foot, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "icon-warding-circles-a",
+      "candidate": 0,
+      "sha256": "6bc08f5f7d8bd448408d905928cd4dce74e2c339fc26726841ea77f0dd031ff9"
+    }
+  }
+}

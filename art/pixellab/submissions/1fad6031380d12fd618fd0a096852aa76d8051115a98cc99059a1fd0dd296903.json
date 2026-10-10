@@ -1,0 +1,36 @@
+{
+  "id": "effect-pamphlets-a-clean",
+  "jobId": "b5acddf2-6cae-4e61-9e9d-db7883e35753",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "effects-cult",
+    "asset": "chibi-direction-effect-cult-pamphlets",
+    "subject": "EFFECT:PAMPHLETS",
+    "faction": "CULT",
+    "recipeClass": "accent-effect",
+    "requestSize": {
+      "width": 40,
+      "height": 40
+    },
+    "seed": 94122,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only one thing: erase the brown leaf-shaped object and the blue piece under it in the middle of the image completely, leaving that area transparent, so only the three cream paper leaflets with their motion lines are left. Do not redraw the leaflets: keep them, their lines of print, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only one thing: erase the brown leaf-shaped object and the blue piece under it in the middle of the image completely, leaving that area transparent, so only the three cream paper leaflets with their motion lines are left. Do not redraw the leaflets: keep them, their lines of print, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only one thing: erase the brown leaf-shaped object and the blue piece under it in the middle of the image completely, leaving that area transparent, so only the three cream paper leaflets with their motion lines are left. Do not redraw the leaflets: keep them, their lines of print, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only one thing: erase the brown leaf-shaped object and the blue piece under it in the middle of the image completely, leaving that area transparent, so only the three cream paper leaflets with their motion lines are left. Do not redraw the leaflets: keep them, their lines of print, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "effect-pamphlets-a",
+      "candidate": 0,
+      "sha256": "43e8c62f5c89eda612c7d32badbc74e9e0540d73313287c5593d55f426771497"
+    }
+  }
+}

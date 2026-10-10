@@ -171,7 +171,8 @@ export type CultNavalArtRoleV7 =
 export interface ChibiCultNavalArtV7 {
   readonly faction: "CULT";
   readonly role: CultNavalArtRoleV7;
-  readonly kind: "UNIT";
+  /** The map sprite (UNIT) or the interface portrait (PORTRAIT). */
+  readonly kind: "UNIT" | "PORTRAIT";
   readonly asset: ChibiArtAssetV7;
 }
 
@@ -227,6 +228,41 @@ export const CHIBI_DIRECTION_CULT_NAVAL_ART_ASSETS_V7: readonly ChibiCultNavalAr
         fixedColours: true,
       },
     },
+    // --- Bead pulp_wars-mch9.23: the two warship portraits, edits of the
+    // shared ship portraits (the Submarine's is with the Submarines) ---
+    {
+      faction: "CULT",
+      role: "PATROL_BOAT",
+      kind: "PORTRAIT",
+      asset: {
+        id: "chibi-naval-cult-portrait-patrol-boat",
+        subject: "PORTRAIT:CULT:PATROL_BOAT",
+        assetClass: "PORTRAIT",
+        width: 48,
+        height: 48,
+        url: chibiArtUrl(
+          "assets/chibi/portraits/chibi-naval-cult-portrait-patrol-boat.png",
+        ),
+        fixedColours: true,
+      },
+    },
+    {
+      faction: "CULT",
+      role: "BATTLESHIP",
+      kind: "PORTRAIT",
+      asset: {
+        id: "chibi-naval-cult-portrait-battleship",
+        subject: "PORTRAIT:CULT:BATTLESHIP",
+        assetClass: "PORTRAIT",
+        width: 48,
+        height: 48,
+        url: chibiArtUrl(
+          "assets/chibi/portraits/chibi-naval-cult-portrait-battleship.png",
+        ),
+        fixedColours: true,
+      },
+    },
+    // --- end of bead pulp_wars-mch9.23 ---
   ];
 
 // ===== Bead pulp_wars-mch9.16: the lodge town (batch `cities-cult`) =====

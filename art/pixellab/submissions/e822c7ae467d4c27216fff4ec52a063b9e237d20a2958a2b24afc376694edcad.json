@@ -1,0 +1,36 @@
+{
+  "id": "icon-sacrifice-b-hood",
+  "jobId": "6bdc4b3e-0a36-4324-99e7-21588e8cb3af",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "interface-cult",
+    "asset": "chibi-direction-icon-cult-action-sacrifice",
+    "subject": "ICON:ACTION:SACRIFICE",
+    "faction": "CULT",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 93303,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only two things: the wide brim of the blue hat is erased, so it is a plain pointed cloth hood with its black opening; and the green bush under it becomes one round puff of bright green smoke made of soft round lumps, with no yellow dots and no leaves. Do not redraw anything else: keep the hood's pointed shape and colour, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only two things: the wide brim of the blue hat is erased, so it is a plain pointed cloth hood with its black opening; and the green bush under it becomes one round puff of bright green smoke made of soft round lumps, with no yellow dots and no leaves. Do not redraw anything else: keep the hood's pointed shape and colour, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only two things: the wide brim of the blue hat is erased, so it is a plain pointed cloth hood with its black opening; and the green bush under it becomes one round puff of bright green smoke made of soft round lumps, with no yellow dots and no leaves. Do not redraw anything else: keep the hood's pointed shape and colour, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only two things: the wide brim of the blue hat is erased, so it is a plain pointed cloth hood with its black opening; and the green bush under it becomes one round puff of bright green smoke made of soft round lumps, with no yellow dots and no leaves. Do not redraw anything else: keep the hood's pointed shape and colour, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "icon-sacrifice-b",
+      "candidate": 0,
+      "sha256": "c20c1be42bcdd7fb9efb26b6469cf9f9c3ee3ccf451cfe597f714dc9f58342b6"
+    }
+  }
+}

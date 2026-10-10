@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "batch": "naval-cult",
-  "title": "Naval units in the Cult look: an indigo gondola with a curled brass prow, an indigo galleon with cream sails and a brass dome, an indigo rowing barge and a brass bathysphere submarine",
+  "title": "Cult ships: the lodge's indigo fleet (Patrol Boat gondola, Battleship galleon, embarked rowing barge, brass bathysphere Submarine) and the three ship portraits",
   "bead": "pulp_wars-mch9.15",
   "faction": "CULT",
   "dryRun": false,
@@ -59,6 +59,42 @@
       "ownerColour": false,
       "accent": "cult-lodge",
       "bottomMargin": 8
+    },
+    {
+      "id": "chibi-naval-cult-portrait-patrol-boat",
+      "subject": "PORTRAIT:CULT:PATROL_BOAT",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "cult-lodge-icon"
+    },
+    {
+      "id": "chibi-naval-cult-portrait-battleship",
+      "subject": "PORTRAIT:CULT:BATTLESHIP",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "cult-lodge-icon"
+    },
+    {
+      "id": "chibi-naval-cult-portrait-submarine",
+      "subject": "PORTRAIT:CULT:SUBMARINE",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "cult-lodge-icon"
     }
   ],
   "recipes": [
@@ -129,6 +165,57 @@
       },
       "editInstruction": "Turn it into a small brass bathysphere submarine lying level, no longer than the boat's hull is now: remove the mast, the striped sail, the pennant and the curled prow; the hull becomes one closed short fat barrel of polished brass #c9a24a with shade #8a6a2a and rows of rivets, one big round porthole glowing bright green in its side, a short brass periscope on top and an indigo-blue tail fin #4a43b5 at the stern. Nothing red. Keep the thick black outline and style, with nothing under the hull.",
       "notes": "The accepted Cult Patrol Boat as a brass bathysphere barrel with a green porthole, a periscope and an indigo tail fin (CULT.md, Ships); seated on the shared Submarine's margin and anchor."
+    },
+    {
+      "id": "cult-portrait-patrol-boat-a",
+      "asset": "chibi-naval-cult-portrait-patrol-boat",
+      "endpoint": "edit-image-pixen",
+      "seed": 92101,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "batch": "5",
+        "recipe": "portrait-patrol-boat-a",
+        "candidate": 0
+      },
+      "editInstruction": "Turn it into a secret-society gondola: the hull becomes long glossy indigo-blue lacquer #4a43b5 with shade #372f8f and a tall polished brass prow #c9a24a curled like a tentacle tip; the red sail becomes a small sail in indigo-blue and pale cream #f3e7c4 stripes; the red pennant becomes one small lantern with a bright green flame at the stern. Nothing red. Keep the mast, boat shape, size, thick black outline and art style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-mch9.23: the batch-5 Patrol Boat portrait with the map sprite's changes (the instruction of cult-patrol-boat-a)."
+    },
+    {
+      "id": "cult-portrait-battleship-a",
+      "asset": "chibi-naval-cult-portrait-battleship",
+      "endpoint": "edit-image-pixen",
+      "seed": 92111,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "batch": "5",
+        "recipe": "portrait-battleship-b",
+        "candidate": 0
+      },
+      "editInstruction": "Turn it into a secret-society galleon: the hull becomes indigo-blue wood #4a43b5 with shade #372f8f and polished brass trim #c9a24a; the grey stone castles become round polished brass domes; the red sails become pale cream #f3e7c4 sails, the big one with one indigo eye-in-a-spiral sign; the red pennants become small lanterns with bright green flames. Nothing red. Keep the ship shape, size, thick black outline and art style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-mch9.23: the batch-5 Battleship portrait with the map sprite's changes (the instruction of cult-battleship-a)."
+    },
+    {
+      "id": "cult-portrait-submarine-a",
+      "asset": "chibi-naval-cult-portrait-submarine",
+      "endpoint": "edit-image-pixen",
+      "seed": 92121,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "cult-portrait-patrol-boat-a",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Turn it into a small brass bathysphere submarine: remove the mast, the striped sail, the lantern and the curled prow; the hull becomes one closed short fat barrel of polished brass #c9a24a with shade #8a6a2a and rows of rivets, one big round porthole glowing bright green in its side, a short brass periscope on top and an indigo-blue tail fin #4a43b5 at the stern. Nothing red. Keep the size, thick black outline and art style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-mch9.23: the accepted Cult Patrol Boat portrait with the map sprite's change (the instruction of cult-submarine-a)."
     }
   ]
 }

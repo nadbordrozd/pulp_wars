@@ -164,7 +164,8 @@ describe("naval branch art (pulp_wars-5ti.6)", () => {
           `${faction} UNIT SUBMARINE`,
         ]),
         // The Cult (hidden until it is offered) has its map sprite since
-        // bead pulp_wars-mch9.15; its portrait is bead pulp_wars-mch9.16's.
+        // bead pulp_wars-mch9.15 and its portrait since pulp_wars-mch9.23.
+        "CULT PORTRAIT SUBMARINE",
         "CULT UNIT SUBMARINE",
       ].sort(),
     );

@@ -1,0 +1,36 @@
+{
+  "id": "portrait-caller-s-helmet",
+  "jobId": "be67f340-c517-45bb-ae36-49363a214e03",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "interface-cult",
+    "asset": "chibi-direction-portrait-cult-caller",
+    "subject": "PORTRAIT:CULT:KNIGHT",
+    "faction": "CULT",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 93062,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only one thing: erase the blue cloth hood tip that sticks up behind the top of the brass helmet, leaving that area transparent, so the round brass diving helmet has nothing on top of it. Do not redraw anything else: keep the helmet with its green porthole and rivets, the cream conch shell, the blue robe shoulders, the thick black outline and the art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only one thing: erase the blue cloth hood tip that sticks up behind the top of the brass helmet, leaving that area transparent, so the round brass diving helmet has nothing on top of it. Do not redraw anything else: keep the helmet with its green porthole and rivets, the cream conch shell, the blue robe shoulders, the thick black outline and the art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only one thing: erase the blue cloth hood tip that sticks up behind the top of the brass helmet, leaving that area transparent, so the round brass diving helmet has nothing on top of it. Do not redraw anything else: keep the helmet with its green porthole and rivets, the cream conch shell, the blue robe shoulders, the thick black outline and the art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only one thing: erase the blue cloth hood tip that sticks up behind the top of the brass helmet, leaving that area transparent, so the round brass diving helmet has nothing on top of it. Do not redraw anything else: keep the helmet with its green porthole and rivets, the cream conch shell, the blue robe shoulders, the thick black outline and the art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "portrait-caller-s",
+      "candidate": 0,
+      "sha256": "70305d6673957fa9c34d7d9c7250df6ca6dae7087cecfb5d7899ce0052c40acb"
+    }
+  }
+}

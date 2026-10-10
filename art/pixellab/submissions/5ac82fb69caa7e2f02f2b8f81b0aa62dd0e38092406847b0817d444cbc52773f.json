@@ -1,0 +1,37 @@
+{
+  "id": "portrait-idol-bearer-s",
+  "jobId": "9d452b94-dcfe-45c0-bdca-f8e905fdf055",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "interface-cult",
+    "asset": "chibi-direction-portrait-cult-idol-bearer",
+    "subject": "PORTRAIT:CULT:GUARD",
+    "faction": "CULT",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 93011,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Redraw it as another member of the same society in the same blue hood: the hood is short and squashed flat on top, and on top of it sits one squat grinning pale grey stone idol head with two small bright green eyes, as big as the hooded head under it; both cream mittens reach up and hold the idol's sides. No candle. Keep the blue cloth, the black hood opening with its two cream eyes, the size, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "Redraw it as another member of the same society in the same blue hood: the hood is short and squashed flat on top, and on top of it sits one squat grinning pale grey stone idol head with two small bright green eyes, as big as the hooded head under it; both cream mittens reach up and hold the idol's sides. No candle. Keep the blue cloth, the black hood opening with its two cream eyes, the size, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Redraw it as another member of the same society in the same blue hood: the hood is short and squashed flat on top, and on top of it sits one squat grinning pale grey stone idol head with two small bright green eyes, as big as the hooded head under it; both cream mittens reach up and hold the idol's sides. No candle. Keep the blue cloth, the black hood opening with its two cream eyes, the size, thick black outline and art style, on a transparent background.",
+    "editInstruction": "Redraw it as another member of the same society in the same blue hood: the hood is short and squashed flat on top, and on top of it sits one squat grinning pale grey stone idol head with two small bright green eyes, as big as the hooded head under it; both cream mittens reach up and hold the idol's sides. No candle. Keep the blue cloth, the black hood opening with its two cream eyes, the size, thick black outline and art style, on a transparent background.",
+    "source": {
+      "recipe": "portrait-initiate-b-eyes",
+      "candidate": 0,
+      "sibling": true,
+      "sha256": "11b3d55230c6e738ee6364d2da50bd05b01c875a97b2b78a3a8d054fdd69f8cf"
+    }
+  }
+}

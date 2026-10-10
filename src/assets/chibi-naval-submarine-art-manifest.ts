@@ -253,7 +253,7 @@ export const CHIBI_NAVAL_SUBMARINE_ART_ASSETS_V7: readonly ChibiNavalFactionArtV
       },
     },
     // The Cult (bead pulp_wars-mch9.15): the brass bathysphere; its portrait
-    // is bead pulp_wars-mch9.16's.
+    // is bead pulp_wars-mch9.23's.
     {
       faction: "CULT",
       role: "SUBMARINE",
@@ -266,6 +266,22 @@ export const CHIBI_NAVAL_SUBMARINE_ART_ASSETS_V7: readonly ChibiNavalFactionArtV
         height: 88,
         anchor: SUBMARINE_ANCHOR_V7,
         url: chibiArtUrl("assets/chibi/units/chibi-naval-cult-submarine.png"),
+        fixedColours: true,
+      },
+    },
+    {
+      faction: "CULT",
+      role: "SUBMARINE",
+      kind: "PORTRAIT",
+      asset: {
+        id: "chibi-naval-cult-portrait-submarine",
+        subject: "PORTRAIT:CULT:SUBMARINE",
+        assetClass: "PORTRAIT",
+        width: 48,
+        height: 48,
+        url: chibiArtUrl(
+          "assets/chibi/portraits/chibi-naval-cult-portrait-submarine.png",
+        ),
         fixedColours: true,
       },
     },

@@ -1,0 +1,36 @@
+{
+  "id": "portrait-herald-a-yellow",
+  "jobId": "e33378b5-9c77-4cdd-bbda-7d0ad1d3477f",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "interface-cult",
+    "asset": "chibi-direction-portrait-cult-herald",
+    "subject": "PORTRAIT:CULT:HERALD",
+    "faction": "CULT",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 93102,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only the eye: the whole big round eyeball becomes plain pale yellow #ffe27a with a slightly darker yellow rim #e0b84a and one big round black pupil with a small white shine in its middle; no brown, no orange and no rings in it. Do not redraw anything else: keep the crown of teal tentacles, the blue robe shoulders, the thick black outline and the art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only the eye: the whole big round eyeball becomes plain pale yellow #ffe27a with a slightly darker yellow rim #e0b84a and one big round black pupil with a small white shine in its middle; no brown, no orange and no rings in it. Do not redraw anything else: keep the crown of teal tentacles, the blue robe shoulders, the thick black outline and the art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only the eye: the whole big round eyeball becomes plain pale yellow #ffe27a with a slightly darker yellow rim #e0b84a and one big round black pupil with a small white shine in its middle; no brown, no orange and no rings in it. Do not redraw anything else: keep the crown of teal tentacles, the blue robe shoulders, the thick black outline and the art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only the eye: the whole big round eyeball becomes plain pale yellow #ffe27a with a slightly darker yellow rim #e0b84a and one big round black pupil with a small white shine in its middle; no brown, no orange and no rings in it. Do not redraw anything else: keep the crown of teal tentacles, the blue robe shoulders, the thick black outline and the art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "portrait-herald-a",
+      "candidate": 0,
+      "sha256": "5e9c3ccb802ede00847b6c82592ef549ef6f1d3f833530bc6e80c69d6180d836"
+    }
+  }
+}
