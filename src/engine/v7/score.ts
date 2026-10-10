@@ -1,5 +1,6 @@
 import type { PlayerId, UnitId } from "../model/ids";
 import {
+  CULT_SUMMONED_ROLE_RULES_V7,
   factionTreeV7,
   neutralBreedOfV7,
   unitRoleRuleV7,
@@ -15,6 +16,7 @@ import {
   type GameStateV7,
   type PlayerStateV7,
   type ScoreLedgerEntryV7,
+  type SummonedRoleIdV7,
   type TechnologyIdV7,
   type UnitRoleIdV7,
 } from "./types";
@@ -161,10 +163,15 @@ export function unitScoreValueV7(
     readonly ownerId: PlayerId;
     readonly role: UnitRoleIdV7;
     readonly maxHp?: number;
+    readonly summoned?: SummonedRoleIdV7 | undefined;
   },
 ): number {
   if (isNeutralOwnerV7(unit.ownerId))
     return neutralBountyV7(neutralBreedOfV7(roster, unit));
+  // The Cultists (RULESET_7_CULTISTS.md section 4.2): a summoned unit has
+  // its own value (a Horror 6), never a printed cost.
+  if (unit.summoned !== undefined)
+    return CULT_SUMMONED_ROLE_RULES_V7[unit.summoned].value;
   return unitRoleRuleV7(roster, unit).cost ?? SCORE_GIANT_VALUE_V7;
 }
 
@@ -453,6 +460,10 @@ export const FLAWLESS_BREAKING_EVENT_KINDS_V7 = Object.freeze([
 const REMOVAL_CAUSES_V7: ReadonlySet<string> = new Set([
   "ELIMINATION",
   "BRAIN_LOST",
+  // The Cultists (RULESET_7_CULTISTS.md section 13.1): a daemon whose
+  // channel failed leaves its seat's Army without being a Loss; the seat is
+  // no longer flawless (its `UNIT_DIED` clears the flag like every death).
+  "UNBOUND",
 ]);
 
 interface UnitFactV7 {
@@ -460,6 +471,7 @@ interface UnitFactV7 {
   readonly ownerId: PlayerId;
   readonly role: UnitRoleIdV7;
   readonly hp: number;
+  readonly summoned?: SummonedRoleIdV7 | undefined;
 }
 
 /**

@@ -15,6 +15,7 @@ import {
   unitFliesV7,
   unitIsMountainBornV7,
   unitMovementModeV7,
+  unitIsSummonedV7,
   unitRoleRuleV7,
   type MovementModeV7,
 } from "../rules/ruleset-v7";
@@ -374,6 +375,7 @@ function validateMovementPathCoreV7(
     return { legal: false, reason: "ICEBOUND" };
   const slides = iceSet.size > 0 && unitSlidesV7(state, unit);
   const iceFolkKind = unitKindWalksIceV7(state, unit);
+  const summoned = unitIsSummonedV7(unit);
   /** The direction the next step must take: the slide continues. */
   let slide: { readonly dx: number; readonly dy: number } | null = null;
   // The Candy redesign (RULESET_7_CANDY_REDESIGN.md sections 6.2 and 7.7):
@@ -520,9 +522,12 @@ function validateMovementPathCoreV7(
       (tile.terrain === "SHALLOW_WATER" || tile.terrain === "DEEP_WATER") &&
       !stepIce;
     // Section 8.11: a unit of the Ice Folk kind never embarks.
+    // The Cultists (`pulp_wars-mch9.5`, section 4.2): a summoned unit
+    // never embarks and never crosses water, though it strides.
     const autoEmbark =
       unit.form === "LAND" &&
       !iceFolkKind &&
+      !summoned &&
       !batEscape &&
       index === path.length - 1 &&
       (tile.improvement === "PORT" || tile.improvement === "SHIPYARD") &&
@@ -540,11 +545,12 @@ function validateMovementPathCoreV7(
       unit.form === "LAND"
         ? water
           ? (!autoEmbark &&
-              !canCrossWaterV7({
-                terrain: tile.terrain,
-                movementMode: mode,
-                navigation,
-              })) ||
+              (summoned ||
+                !canCrossWaterV7({
+                  terrain: tile.terrain,
+                  movementMode: mode,
+                  navigation,
+                }))) ||
             (tile.terrain === "DEEP_WATER" && !navigation)
           : !canEnterTerrainV7({
               terrain: tile.terrain,
@@ -1234,6 +1240,7 @@ function validatePlayerMovementPathCoreV7(
     return { legal: false, reason: "ICEBOUND" };
   const slides = iceSet.size > 0 && unitSlidesV7(view, unit);
   const iceFolkKind = unitKindWalksIceV7(view, unit);
+  const summoned = unitIsSummonedV7(unit);
   let slide: { readonly dx: number; readonly dy: number } | null = null;
   const traversedPath: CoordV7[] = [];
   // The Candy redesign (sections 6.2 and 7.7): Stuck and the hop, from the
@@ -1282,6 +1289,7 @@ function validatePlayerMovementPathCoreV7(
       const autoEmbark =
         unit.form === "LAND" &&
         !iceFolkKind &&
+        !summoned &&
         !batEscape &&
         index === path.length - 1 &&
         tile.explored &&
@@ -1295,11 +1303,12 @@ function validatePlayerMovementPathCoreV7(
         (unit.form === "LAND" &&
           water &&
           !autoEmbark &&
-          !canCrossWaterV7({
-            terrain: tile.terrain,
-            movementMode: mode,
-            navigation,
-          })) ||
+          (summoned ||
+            !canCrossWaterV7({
+              terrain: tile.terrain,
+              movementMode: mode,
+              navigation,
+            }))) ||
         (unit.form !== "LAND" && !water) ||
         (water && tile.terrain === "DEEP_WATER" && !navigation)
       )

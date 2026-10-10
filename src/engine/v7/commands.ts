@@ -325,6 +325,45 @@ export type CommandV7 =
     }
   | {
       /**
+       * The Cultists (section 6.1): the Summoner `unitId` and the robed
+       * cultist `helperUnitId` beside it summon a Horror on the free tile
+       * `at` next to the Summoner, for 5 Favour. Both channel it.
+       */
+      readonly kind: "SUMMON";
+      readonly unitId: UnitId;
+      readonly helperUnitId: UnitId;
+      readonly at: CoordV7;
+    }
+  | {
+      /**
+       * The Cultists (section 6.2): the robed cultist `unitId` channels the
+       * own daemon `daemonUnitId` within 3 tiles: it holds a strand to it
+       * until its seat's next Start Turn.
+       */
+      readonly kind: "CHANNEL";
+      readonly unitId: UnitId;
+      readonly daemonUnitId: UnitId;
+    }
+  | {
+      /**
+       * The Cultists. `BEHOLD` (section 8.1): the Idol Bearer `unitId`
+       * raises its idol. `BOO` (section 8.5): the Horror `unitId` scares
+       * every living unit beside it one tile away.
+       */
+      readonly kind: "BEHOLD" | "BOO";
+      readonly unitId: UnitId;
+    }
+  | {
+      /**
+       * The Cultists (section 8.4): the Thing in the Cellar `unitId` grips
+       * the channeller `cultistUnitId` beside it (free, once a turn).
+       */
+      readonly kind: "ANCHOR";
+      readonly unitId: UnitId;
+      readonly cultistUnitId: UnitId;
+    }
+  | {
+      /**
        * The Cultists (section 5.3): the own city `cityId` gives up 2
        * population for 3 Favour, as its city action.
        */
@@ -427,6 +466,9 @@ const UNIT_ONLY_KINDS = new Set<CommandKindV7>([
   "WAIL",
   "KABOOM",
   "TOSS_COIN",
+  // The Cultists (`pulp_wars-mch9.5`): Behold! and Boo!.
+  "BEHOLD",
+  "BOO",
 ]);
 
 export function parseCommandEnvelopeV7(
@@ -534,6 +576,35 @@ export function parseCommandV7(input: unknown): CommandParseResultV7 {
     return unit === null || victim === null || unit === victim
       ? invalid(kind)
       : { ok: true, value: { kind, unitId: unit, victimUnitId: victim } };
+  }
+  // The Cultists (`pulp_wars-mch9.5`).
+  if (kind === "SUMMON") {
+    if (!hasExactKeysV7(input, ["at", "helperUnitId", "kind", "unitId"]))
+      return invalid(kind);
+    const unit = parseUnitIdV7(candidate.unitId);
+    const helper = parseUnitIdV7(candidate.helperUnitId);
+    const at = parseCoordV7(candidate.at);
+    return unit === null || helper === null || at === null || unit === helper
+      ? invalid(kind)
+      : { ok: true, value: { kind, unitId: unit, helperUnitId: helper, at } };
+  }
+  if (kind === "CHANNEL") {
+    if (!hasExactKeysV7(input, ["daemonUnitId", "kind", "unitId"]))
+      return invalid(kind);
+    const unit = parseUnitIdV7(candidate.unitId);
+    const daemon = parseUnitIdV7(candidate.daemonUnitId);
+    return unit === null || daemon === null || unit === daemon
+      ? invalid(kind)
+      : { ok: true, value: { kind, unitId: unit, daemonUnitId: daemon } };
+  }
+  if (kind === "ANCHOR") {
+    if (!hasExactKeysV7(input, ["cultistUnitId", "kind", "unitId"]))
+      return invalid(kind);
+    const unit = parseUnitIdV7(candidate.unitId);
+    const cultist = parseUnitIdV7(candidate.cultistUnitId);
+    return unit === null || cultist === null || unit === cultist
+      ? invalid(kind)
+      : { ok: true, value: { kind, unitId: unit, cultistUnitId: cultist } };
   }
   if (kind === "BEAM_DOWN") {
     if (!hasExactKeysV7(input, ["kind", "unitId", "passengerUnitId", "to"]))
@@ -926,6 +997,11 @@ function referencedOrdinal(command: CommandV7): number {
   // The Cultists: `SACRIFICE` and `SEIZE` in unit-ID, then victim-ID order.
   if (command.kind === "SACRIFICE" || command.kind === "SEIZE")
     return command.victimUnitId;
+  // `SUMMON` by tile, Summoner, then helper; `CHANNEL` by cultist, then
+  // daemon; `ANCHOR` by Thing, then cultist.
+  if (command.kind === "SUMMON") return command.helperUnitId;
+  if (command.kind === "CHANNEL") return command.daemonUnitId;
+  if (command.kind === "ANCHOR") return command.cultistUnitId;
   if (command.kind === "HATCH") return command.eggUnitId;
   return 0;
 }

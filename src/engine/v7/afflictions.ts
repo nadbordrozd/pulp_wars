@@ -71,6 +71,7 @@ export function isLivingUnitV7(
     readonly id: UnitId;
     readonly ownerId: PlayerId;
     readonly role: UnitStateV7["role"];
+    readonly summoned?: UnitStateV7["summoned"] | undefined;
   },
 ): boolean {
   return (
@@ -98,6 +99,7 @@ export function unitIsConstructV7(
     readonly id: UnitId;
     readonly ownerId: PlayerId;
     readonly role: UnitStateV7["role"];
+    readonly summoned?: UnitStateV7["summoned"] | undefined;
   },
 ): boolean {
   return unitRoleMechanicsV7(roster, unit).construct;

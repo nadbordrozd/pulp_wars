@@ -1,7 +1,22 @@
-import { resolveCityGrowthV7, type GameStateV7 } from "../../src/engine/index";
+import {
+  SUMMONED_MECHANICAL_ROLES_V7,
+  resolveCityGrowthV7,
+  summonedUnitRoleRuleV7,
+  unitId,
+  type CoordV7,
+  type GameStateV7,
+  type SummonedRoleIdV7,
+  type UnitStateV7,
+} from "../../src/engine/index";
 import { checkedV7 } from "./v7-builders";
 import { cityOfV7 } from "./v7-dinosaur-arena";
-import { sameV7, seatIdV7, type GoblinPieceV7 } from "./v7-goblin-arena";
+import {
+  READY_V7,
+  sameV7,
+  seatIdV7,
+  unitAtV7,
+  type GoblinPieceV7,
+} from "./v7-goblin-arena";
 import { fieldV7, type FieldOptionsV7 } from "./v7-revision20";
 
 /**
@@ -101,5 +116,106 @@ export function withFarmsV7(
         },
       })),
     ],
+  });
+}
+
+/**
+ * The channel fixtures (`pulp_wars-mch9.5`, sections 6 and 8). A Horror of
+ * the Cult seat `seat` on `where` (a free land tile), at full HP unless
+ * `hp` says otherwise, ready to act unless `activation` says otherwise.
+ */
+export function withHorrorV7(
+  state: GameStateV7,
+  seat: number,
+  where: CoordV7,
+  options: {
+    readonly hp?: number;
+    readonly activation?: Partial<UnitStateV7["activation"]>;
+    readonly role?: SummonedRoleIdV7;
+  } = {},
+): GameStateV7 {
+  const summoned = options.role ?? "HORROR";
+  const rule = summonedUnitRoleRuleV7(summoned);
+  const role = SUMMONED_MECHANICAL_ROLES_V7[summoned];
+  if (role === undefined) throw new Error("no such summoned unit");
+  const horror: UnitStateV7 = {
+    id: unitId(state.nextEntityId),
+    ownerId: seatIdV7(state, seat),
+    homeCityId: null,
+    role,
+    form: "LAND",
+    at: where,
+    hp: options.hp ?? rule.maxHp,
+    maxHp: rule.maxHp,
+    kills: 0,
+    veteran: false,
+    captureEligible: false,
+    activation: { ...READY_V7, ...options.activation },
+    summoned,
+  };
+  return checkedV7({
+    ...state,
+    nextEntityId: state.nextEntityId + 1,
+    units: [...state.units, horror],
+  });
+}
+
+/** The unit on `daemon` is channelled by the cultist on each of `cultists`. */
+export function withStrandsV7(
+  state: GameStateV7,
+  daemon: CoordV7,
+  cultists: readonly CoordV7[],
+): GameStateV7 {
+  const daemonUnitId = unitAtV7(state, daemon).id;
+  return checkedV7({
+    ...state,
+    cult: {
+      ...state.cult,
+      strands: [
+        ...state.cult.strands,
+        ...cultists.map((where) => ({
+          cultistUnitId: unitAtV7(state, where).id,
+          daemonUnitId,
+        })),
+      ].sort((left, right) => left.cultistUnitId - right.cultistUnitId),
+    },
+  });
+}
+
+/** The Thing on `thing` grips the channeller on `cultist` (it holds a strand). */
+export function withGripV7(
+  state: GameStateV7,
+  thing: CoordV7,
+  cultist: CoordV7,
+): GameStateV7 {
+  return checkedV7({
+    ...state,
+    cult: {
+      ...state.cult,
+      grips: [
+        ...state.cult.grips,
+        {
+          thingUnitId: unitAtV7(state, thing).id,
+          cultistUnitId: unitAtV7(state, cultist).id,
+        },
+      ].sort((left, right) => left.thingUnitId - right.thingUnitId),
+    },
+  });
+}
+
+/** The Idol Bearer on each of `bearers` has its idol raised. */
+export function withIdolsV7(
+  state: GameStateV7,
+  bearers: readonly CoordV7[],
+): GameStateV7 {
+  return checkedV7({
+    ...state,
+    cult: {
+      ...state.cult,
+      idols: [
+        ...state.cult.idols,
+        ...bearers.map((where) => unitAtV7(state, where).id),
+      ].sort((left, right) => left - right),
+    },
   });
 }

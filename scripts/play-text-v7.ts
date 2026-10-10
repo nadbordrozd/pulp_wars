@@ -238,6 +238,10 @@ import {
   turnsTextV7,
 } from "../src/render/dinosaur-presentation-v7";
 import {
+  DISRUPTION_CAUSE_LABELS_V7,
+  FAVOUR_PURPOSE_LABELS_V7,
+} from "../src/render/cult-channel-presentation-v7";
+import {
   FAVOUR_SOURCE_LABELS_V7,
   OFFERING_UNLOCK_TEXT_V7,
   SUMMONER_SUPPORT_UNLOCK_TEXT_V7,
@@ -245,9 +249,14 @@ import {
 import {
   factionHasFavourV7,
   favourOfV7,
+  previewAnchorV7,
+  previewBeholdV7,
+  previewBooV7,
+  previewChannelV7,
   previewOfferingV7,
   previewSacrificeV7,
   previewSeizeV7,
+  previewSummonV7,
 } from "../src/engine/index";
 import {
   BRAIN_SUPPORT_UNLOCK_TEXT_V7,
@@ -1028,6 +1037,17 @@ export function textPlayCommandIdV7(command: CommandV7): string {
       return `u${command.unitId}.seize.u${command.victimUnitId}`;
     case "OFFERING":
       return `c${command.cityId}.offering`;
+    // The channel (`pulp_wars-mch9.5`).
+    case "SUMMON":
+      return `u${command.unitId}.summon.u${command.helperUnitId}.${xyV7(command.at)}`;
+    case "CHANNEL":
+      return `u${command.unitId}.channel.u${command.daemonUnitId}`;
+    case "BEHOLD":
+      return `u${command.unitId}.behold`;
+    case "ANCHOR":
+      return `u${command.unitId}.anchor.u${command.cultistUnitId}`;
+    case "BOO":
+      return `u${command.unitId}.boo`;
     case "HATCH":
       return `u${command.unitId}.hatch.u${command.eggUnitId}`;
     case "BEAM_DOWN":
@@ -1961,6 +1981,41 @@ function describeCommandV7(
       );
       return `OFFERING${preview === null ? "" : `: the city gives up ${preview.population} population for good${city === undefined ? "" : ` (pop ${city.population}/${city.level + 1} -> ${preview.populationAfter}/${city.level + 1})`} | +${preview.favour} Favour (favour ${preview.favourAfter - preview.favour}->${preview.favourAfter})`} | uses the city action`;
     }
+    // The channel (`pulp_wars-mch9.5`, RULESET_7_CULTISTS.md sections 6
+    // and 8).
+    case "SUMMON": {
+      const preview = previewSummonV7(
+        view,
+        command.unitId,
+        command.helperUnitId,
+        command.at,
+      );
+      return `SUMMON a Horror at ${xyV7(command.at)} with ${context.memory.tag(command.helperUnitId)}${preview === null ? "" : `: hp ${preview.hp}, it cannot act this turn | -${preview.favour} Favour (favour ${preview.favourAfter + preview.favour}->${preview.favourAfter}) | both channel it: strands ${preview.strands}/${preview.control}`} | uses both units' actions`;
+    }
+    case "CHANNEL": {
+      const preview = previewChannelV7(
+        view,
+        command.unitId,
+        command.daemonUnitId,
+      );
+      return `CHANNEL ${context.memory.tag(command.daemonUnitId)}${preview === null ? "" : `: strands ${preview.strandsBefore}/${preview.control} -> ${preview.strandsAfter}/${preview.control}${preview.holds ? "" : " (still short: it is UNBOUND at your next turn start)"}`} | the strand breaks if this unit is hurt, moved, given a status, or taken before your next turn | uses its action`;
+    }
+    case "BEHOLD": {
+      const preview = previewBeholdV7(view, command.unitId);
+      return `BEHOLD: raise the idol until your next turn start${preview === null ? "" : ` | wards ${preview.wardedUnitIds.length === 0 ? "nobody yet" : preview.wardedUnitIds.map((unitId) => context.memory.tag(unitId)).join(", ")}`} (your robed cultists beside it keep their strands when they lose hp; a move, a status, or a kill still breaks them) | it drops when this unit is hit | uses its action (it does not channel this turn)`;
+    }
+    case "ANCHOR": {
+      const preview = previewAnchorV7(
+        view,
+        command.unitId,
+        command.cultistUnitId,
+      );
+      return `ANCHOR: grip ${context.memory.tag(command.cultistUnitId)}${preview === null ? "" : `, whose strand to ${context.memory.tag(preview.daemonUnitId)} counts three: strands ${preview.strandsBefore}/${preview.control} -> ${preview.strandsAfter}/${preview.control}`} | free, once a turn | all three go if that cultist is disrupted; the grip fails if this unit is moved, frozen, or given a status`;
+    }
+    case "BOO": {
+      const preview = previewBooV7(view, command.unitId);
+      return `BOO: every living unit beside it jumps one tile away, friend or foe${preview === null ? "" : ` | ${preview.results.map((entry) => `${context.memory.tag(entry.unitId)} ${entry.outcome === "JUMPS" ? `-> ${xyV7(entry.to)}` : entry.outcome === "STAYS" ? "stays (blocked)" : `-> ${xyV7(entry.to)}?`}${entry.holdsStrand && entry.outcome !== "STAYS" ? " (its strand BREAKS)" : ""}`).join(", ")}`} | no damage | in place of its attack`;
+    }
     // The giants' signatures (`pulp_wars-w49.30`).
     case "SWALLOW": {
       const preview = previewSwallowV7(
@@ -2229,6 +2284,65 @@ function eventTextV7(
       );
       if (event.playerId === me && event.source === "MARTYR")
         notes.push(`MARTYR +${event.amount} Favour (now ${event.favour})`);
+      break;
+    // The channel (`pulp_wars-mch9.5`).
+    case "FAVOUR_SPENT":
+      lines.push(
+        `FAVOUR ${seatLabelV7(context.view, event.playerId)} -${event.amount} for ${FAVOUR_PURPOSE_LABELS_V7[event.purpose]} (now ${event.favour})`,
+      );
+      break;
+    case "DAEMON_SUMMONED":
+      lines.push(
+        `SUMMONED a ${event.role === "HORROR" ? "Horror" : event.role} ${context.memory.tag(event.daemonUnitId)} @${xyV7(event.at)} hp ${event.hp} by ${context.memory.tag(event.unitId)} and ${context.memory.tag(event.helperUnitId)}`,
+      );
+      if (event.playerId !== me)
+        notes.push(`SAW SUMMONING ${context.memory.tag(event.daemonUnitId)}`);
+      break;
+    case "STRAND_FORMED":
+      lines.push(
+        `STRAND ${context.memory.tag(event.unitId)} channels ${context.memory.tag(event.daemonUnitId)}`,
+      );
+      break;
+    case "STRAND_BROKEN":
+      lines.push(
+        `STRAND BROKEN ${context.memory.tag(event.unitId)} -> ${context.memory.tag(event.daemonUnitId)}: ${DISRUPTION_CAUSE_LABELS_V7[event.cause]}`,
+      );
+      if (event.playerId === me)
+        notes.push(
+          `STRAND BROKEN ${context.memory.tag(event.unitId)} (${DISRUPTION_CAUSE_LABELS_V7[event.cause]})`,
+        );
+      break;
+    case "IDOL_RAISED":
+      lines.push(`IDOL RAISED by ${context.memory.tag(event.unitId)}`);
+      break;
+    case "IDOL_DROPPED":
+      lines.push(
+        `IDOL DROPPED ${context.memory.tag(event.unitId)}: ${event.cause === "EXPIRED" ? "its turn is over" : DISRUPTION_CAUSE_LABELS_V7[event.cause]}`,
+      );
+      break;
+    case "ANCHOR_GRIPPED":
+      lines.push(
+        `ANCHOR ${context.memory.tag(event.unitId)} grips ${context.memory.tag(event.cultistUnitId)} (its strand counts three)`,
+      );
+      break;
+    case "ANCHOR_BROKEN":
+      lines.push(
+        `ANCHOR BROKEN ${context.memory.tag(event.unitId)} lost its grip on ${context.memory.tag(event.cultistUnitId)}: ${DISRUPTION_CAUSE_LABELS_V7[event.cause]}`,
+      );
+      break;
+    case "UNITS_SCARED":
+      lines.push(
+        `BOO by ${context.memory.tag(event.unitId)} @${xyV7(event.at)}: ${event.results.length === 0 ? "nobody you see" : event.results.map((entry) => `${context.memory.tag(entry.unitId)} ${entry.to === null ? "stays" : `${xyV7(entry.from)}->${xyV7(entry.to)}`}`).join(", ")}`,
+      );
+      break;
+    case "DAEMON_UNBOUND":
+      lines.push(
+        `UNBOUND ${context.memory.tag(event.unitId)} of ${seatLabelV7(context.view, event.summonerPlayerId)}: strands ${event.strands}/${event.control} at its turn start; it is gone`,
+      );
+      if (event.summonerPlayerId === me)
+        notes.push(
+          `UNBOUND ${context.memory.tag(event.unitId)} (strands ${event.strands}/${event.control})`,
+        );
       break;
     case "UNIT_DISBANDED": {
       // Tuning 7 (`pulp_wars-w49.10`): a unit another seat disbands in
@@ -3027,8 +3141,12 @@ const NINTH_UNIT_LEGEND_V7: Readonly<Partial<Record<FactionIdV7, string>>> = {
   ICE_FOLK: "  Ice Folk: Mm mammoth (the heavy) Ox musk ox (the defender)",
   DWARF: "  Dwarf: Tk steam tank (the heavy) Wh whirligig",
   CANDY: "  Candy heavy: Jb jawbreaker",
+  // The Cultists (`pulp_wars-mch9.5`): the summoned Horror.
+  CULT: "  Cult summoned: Ho horror (a daemon: its line shows strands/Control)",
 };
 function roleCodeV7(view: PlayerViewV7, unit: PublicUnitV7): string {
+  // The Cultists (`pulp_wars-mch9.5`): a summoned unit has its own code.
+  if (unit.summoned === "HORROR") return "Ho";
   const faction = unitFactionV7(view, unit);
   return (
     (faction === "MARTIAN"
@@ -3169,6 +3287,30 @@ function unitStatusV7(view: PlayerViewV7, unit: PublicUnitV7): string {
     parts.push("bitten");
   const frozen = view.frozen.find((entry) => entry.unitId === unit.id);
   if (frozen !== undefined) parts.push(`frozen ${frozen.turnsLeft}`);
+  // The Cultists' channel (`pulp_wars-mch9.5`): a daemon's strands against
+  // its Control, a channeller's strand, a grip, a raised idol.
+  const daemon = view.cult.daemons.find((entry) => entry.unitId === unit.id);
+  if (daemon !== undefined)
+    parts.push(
+      `daemon: strands ${daemon.strands}/${daemon.control}${daemon.strands < daemon.control ? " (UNBOUND at its turn start)" : ""}`,
+    );
+  const strand = view.cult.strands.find(
+    (entry) => entry.cultistUnitId === unit.id,
+  );
+  if (strand !== undefined)
+    parts.push(
+      `channels ${strand.daemonUnitId === null ? "a daemon you do not see" : `u${strand.daemonUnitId}`}`,
+    );
+  const grip = view.cult.grips.find(
+    (entry) => entry.thingUnitId === unit.id || entry.cultistUnitId === unit.id,
+  );
+  if (grip !== undefined)
+    parts.push(
+      grip.thingUnitId === unit.id
+        ? `grips u${grip.cultistUnitId}`
+        : `gripped by u${grip.thingUnitId} (strand counts three)`,
+    );
+  if (view.cult.idols.includes(unit.id)) parts.push("idol raised");
   if (view.mindControlled.some((entry) => entry.unitId === unit.id))
     parts.push("mind-controlled");
   const rush = view.sugarRush.find((entry) => entry.unitId === unit.id);
@@ -3508,7 +3650,9 @@ function unitLineV7(
   const parts = [
     `u${unit.id}`,
     own ? "" : seatLabelV7(view, unit.ownerId),
-    `${unitLabelV7(view, unit)} [${unit.role}]`,
+    // The Cultists: a summoned unit is named by its summoned role (its
+    // `role` is a mechanical one that says nothing).
+    `${unitLabelV7(view, unit)} [${unit.summoned ?? unit.role}]`,
     `@${xyV7(unit.at)}`,
     `hp ${unit.hp}/${unit.maxHp}`,
     `atk ${stat("ATTACK")} def ${stat("DEFENSE")} mov ${stat("MOVE")} rng ${range}`,

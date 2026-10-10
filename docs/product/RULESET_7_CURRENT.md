@@ -1,15 +1,16 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r73`, for all eight offered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r74`, for all eight offered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), and Candy (`CANDY`). A
 ninth faction, the Cultists (`CULT`), is **registered and not offered**: its
-roster, tree, start, and rewards are in the engine, and so is its Favour
-(Sacrifice, Seize, Offering, and Martyr;
-[section 1](#1-identity-and-compatibility)); its daemons, rituals, and
-hexes are not, and [its spec](RULESET_7_CULTISTS.md) is folded in here only
-when they are. It
+roster, tree, start, and rewards are in the engine, and so are its Favour
+(Sacrifice, Seize, Offering, and Martyr) and its channel (Summon and the
+Horror, Channel, the disruption rule, Behold!, Anchor, and Boo!;
+[section 1](#1-identity-and-compatibility)); the Unbound rules, its rituals
+and Herald, and its hexes are not, and [its spec](RULESET_7_CULTISTS.md) is
+folded in here only when they are. It
 folds in
 revision 12 (free opening technology, Fruit visible from the start, Fertile
 Ground revealed by Gathering, resources kept under improvements, Normal AI
@@ -382,6 +383,22 @@ new-game screen offers it as "AI head start" (None by default), the
 headless CLI and the text harness as `--ai-head-start`. A setup without the
 key plays exactly as before, and no other rule changed. A save, replay, or
 setup of `7r72` is rejected, and the browser autosave has a new key.
+`pulp-wars-poc-7r74` (`pulp_wars-mch9.5`) is **the Cult's channel**
+([section 1](#1-identity-and-compatibility)), the third engine step of the
+Cultists: a Summoner and a robed cultist beside it **Summon** a Horror for 5
+Favour; a robed cultist **Channels** a daemon within 3 tiles and holds a
+strand to it; a cultist that loses Hit Points, is moved, gets a status,
+changes owner, or leaves the board is **disrupted** and its strand breaks;
+at its seat's Start Turn a daemon with fewer holding strands than its
+Control is **Unbound** (for now it leaves the board); an Idol Bearer's
+**Behold!** keeps its neighbours' strands through a loss of Hit Points; the
+Thing's **Anchor** makes one channeller's strand count three; and a
+Horror's **Boo!** makes every living unit beside it jump one tile away. A
+unit gains the optional `summoned` and the `cult` block the lists `strands`,
+`grips`, and `idols`; the commands `SUMMON`, `CHANNEL`, `BEHOLD`, `ANCHOR`,
+and `BOO`, ten events, and the death cause `UNBOUND` are new. No rule of the
+eight offered factions changed. A save, replay, or setup of `7r73` is
+rejected, and the browser autosave has a new key.
 `pulp-wars-poc-7r58` (`pulp_wars-w49.25`) is
 [step two of the Martian pass](RULESET_7_TUNING_MARTIAN.md#14-step-two):
 **City Walls hold a unit on its own city center against a Saucer's Tractor
@@ -832,7 +849,7 @@ the build differs (its sections 20 to 24 list them);
 the values here are current. Where a document and the code disagreed, the
 code's behavior is the rule and is stated below;
 [Known discrepancies](#25-known-discrepancies) lists the open items and the
-resolved ones as of `pulp-wars-poc-7r73`.
+resolved ones as of `pulp-wars-poc-7r74`.
 
 **Terms.** "On the board" means a unit that currently exists (HP above 0).
 **Living** has the narrower revision-13 meaning used by Wail, Plague,
@@ -933,10 +950,10 @@ separate [Ruleset 6](RULESET_6.md) route.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r73`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Ruleset                                    | `pulp-wars-poc-7r74`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r73.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Browser autosave                           | `pulpWars.save.v7r74.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, `CULT`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`, `CULT_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -1220,7 +1237,15 @@ separate [Ruleset 6](RULESET_6.md) route.
   and the `UNIT_DIED` cause `SACRIFICED` (the notes below). The AI head
   start (`pulp_wars-w49.39`, `7r73`) added the optional setup key
   `aiHeadStart` ([section 2.1](#21-match-setup)) and no state key, command,
-  or event.
+  or event. The Cult's channel (`pulp_wars-mch9.5`, `7r74`) added the
+  optional unit key
+  `summoned` (state and view), the required lists `strands`, `grips`, and
+  `idols` of the `cult` block (and, in a view, `daemons`), the commands
+  `SUMMON`, `CHANNEL`, `BEHOLD`, `ANCHOR`, and `BOO`, the events
+  `FAVOUR_SPENT`, `DAEMON_SUMMONED`, `STRAND_FORMED`, `STRAND_BROKEN`,
+  `IDOL_RAISED`, `IDOL_DROPPED`, `ANCHOR_GRIPPED`, `ANCHOR_BROKEN`,
+  `UNITS_SCARED`, and `DAEMON_UNBOUND`, and the `UNIT_DIED` cause `UNBOUND`
+  (the notes below).
 - **The Cult registration** (`pulp_wars-mch9.3`, `7r71`, bead E1 of
   [the Cultists spec](RULESET_7_CULTISTS.md#19-implementation-beads)). What
   is in the engine today, and nothing more:
@@ -1252,21 +1277,21 @@ separate [Ruleset 6](RULESET_6.md) route.
     Initiates (`MILITIA_FIGHTERS_V7`, the Goblin precedent); Scouts gives a
     Familiar; the giant reward is a Thing in the Cellar; a chest gives a
     Familiar.
-  - **The summoned units are registered and nowhere on the board.**
+  - **The summoned units are registered outside the unit roles.**
     `SUMMONED_ROLE_IDS_V7` is `HORROR`, `HERALD`, `TENTACLE`, outside
     `UNIT_ROLE_IDS_V7` (no faction's role table has a slot for them, and a
-    state whose unit names one is invalid). `CULT_SUMMONED_ROLE_RULES_V7`
-    holds their numbers: Horror 5 Favour, Control 1, 18 HP, Attack 4,
-    Defense 2, Move 2, value 6; Herald 20 Favour, Control 3, 60 HP, Attack
-    7, Defense 4, Move 2, value 24; Tentacle 8 HP, Attack 3, Defense 1, Move
-    0, value 0. Nothing reads them yet.
-  - **Not there yet:** Summon, Channel and Unbound, the rituals, Behold!,
-    Anchor, Boo!, Proclaim, Ribbit, Switcheroo, the Tentacle, Pamphlets, and
-    Pick Me!. Their ability literals, commands, events, and technology
-    unlocks arrive with the bead that implements each, so that no card names
-    an ability that does nothing. Until then a Cult seat is an army of the
-    units above that can gather Favour (the next note) and spend it on
-    nothing.
+    state whose unit has one as its `role` is invalid).
+    `CULT_SUMMONED_ROLE_RULES_V7` holds their numbers: Horror 5 Favour,
+    Control 1, 18 HP, Attack 4, Defense 2, Move 2, value 6; Herald 20
+    Favour, Control 3, 60 HP, Attack 7, Defense 4, Move 2, value 24;
+    Tentacle 8 HP, Attack 3, Defense 1, Move 0, value 0. The Horror is on
+    the board since the channel (the note after the next); the Herald and
+    the Tentacle are still read by nothing.
+  - **Not there yet:** the Unbound rules (the rampage, Furious, Bind
+    again), the rituals and the Herald, Proclaim, Ribbit, Switcheroo, the
+    Tentacle, Pamphlets, and Pick Me!. Their ability literals, commands,
+    events, and technology unlocks arrive with the bead that implements
+    each, so that no card names an ability that does nothing.
   - **Hidden.** `HIDDEN_FACTION_IDS_V7` is `CULT` and
     `OFFERED_FACTION_IDS_V7` the other eight. The setup screen (its selects,
     its tribe grid, its opponent counts, which stay 1 to 7), the campaign
@@ -1373,6 +1398,132 @@ separate [Ruleset 6](RULESET_6.md) route.
     The text harness prints the Favour in its header and player list.
   - **Normal AI.** The older policy never picks one of the three commands
     (`pulp_wars-mch9.10` gives the Cult seat its use of them).
+- **The Cult's channel** (`pulp_wars-mch9.5`, `7r74`, bead E3 of
+  [the Cultists spec](RULESET_7_CULTISTS.md#19-implementation-beads); its
+  sections 6.1, 6.2, 8.1, 8.4, and 8.5 are the design, and
+  [its section 21.3](RULESET_7_CULTISTS.md#213-e3-the-channel-pulp_wars-mch95-pulp-wars-poc-7r74)
+  the choices made). What is in the engine today:
+  - **A summoned unit.** A unit with the key `summoned` (`HORROR`, the only
+    one yet) is a summoned unit: its rule and mechanics are the summoned
+    registration's (`unitRoleRuleV7`, `unitRoleMechanicsV7`), and its `role`
+    is a mechanical role nothing reads (the Horror's is `KNIGHT`). It is a
+    land-form unit of a Cult seat with no home city (also after a capture
+    it makes), never a veteran, never mind-controlled.
+  - **The Horror.** 18 HP, Attack 4, Defense 2, Move 2, Sight 1, value 6.
+    It attacks, captures, advances after a kill, and Boos. It strides
+    (Forest and Mountain neither stop nor refuse it, with no Engineering)
+    and never enters water or embarks. It is not living (a construct in
+    the engine's sense): no Plague, bite, Infect, Wail, Seizure, or Boo!;
+    immune to Mind Control and Swallow; it never heals (no Recover, idle
+    recovery, Windmill, Fountain, or Wishing Well heal) and leaves no
+    Grave. It is never promoted (also not at a Shrine), disbanded, or
+    Sacrificed, and tosses no Coin.
+  - **Summon** (`SUMMON { unitId, helperUnitId, at }`): a primary action of
+    a land-form Summoner, also after its Move. The helper is another own
+    robed cultist on one of the eight tiles around it that has not used a
+    primary action (it may have moved) and is not Frozen; `at` is a tile
+    next to the Summoner that the actor has explored: land (never water or
+    ice), no settlement center, no unit, mound, Barricade, chest, or
+    curiosity, not in allied territory. It costs **5 Favour**
+    (`FAVOUR_SPENT`). A Horror of the actor stands on `at` at full HP,
+    exhausted until the next turn (`DAEMON_SUMMONED`); the Summoner and the
+    helper each hold a strand to it (`STRAND_FORMED`) and have used their
+    primary actions. No limit. Illegal: `INSUFFICIENT_FAVOUR` or
+    `SUMMON_NOT_LEGAL` with `EMBARKED`, `HELPER`, or `TILE`.
+  - **Channel** (`CHANNEL { unitId, daemonUnitId }`): a primary action of a
+    land-form robed cultist, also after its Move (the Idol Bearer and the
+    Stargazer too). The daemon is an own bound daemon within Chebyshev
+    distance **3**. The cultist holds a **strand** to it (`STRAND_FORMED`)
+    until the next check; one strand per cultist, any number per daemon.
+    Illegal: `CHANNEL_NOT_LEGAL` with `EMBARKED`, `DAEMON`, or `RANGE`.
+    State: `cult.strands`, `{ cultistUnitId, daemonUnitId }` sorted by
+    cultist.
+  - **Disrupted.** After every accepted command, and in a Start Turn after
+    Plague and its chains, each watched unit (a strand's cultist, a grip's
+    Thing, a raised idol's bearer) is compared with what it was when the
+    command began. It is disrupted when it **lost Hit Points**; **stands on
+    another tile** and is not the unit whose own command this is; **has a
+    status** it did not have (Plagued, Bitten, Frozen, Stuck, Toothache,
+    Splatted, Terror, the hunted mark, the bombed mark, Cracked); **has
+    another owner**; or is **no longer on the board in land form** (a
+    death, a Sacrifice, a Seizure, a Swallow, an embarkation). Who caused
+    it does not matter. A disrupted cultist's strand breaks at once
+    (`STRAND_BROKEN`, with the first cause of Hit Points, moved, status,
+    owner, gone).
+  - **The check.** At a Cult seat's Start Turn, after Plague and its chains
+    and before Egg hatching, each of its bound daemons in unit-ID order
+    counts its **holding strands**: the strands whose cultist is on the
+    board as the seat's own robed cultist within 3 tiles of the daemon
+    now, each 1, or 3 under a holding grip. With fewer than its **Control**
+    (Horror 1) it is **Unbound** (`DAEMON_UNBOUND`). Until the Unbound
+    rules (`pulp_wars-mch9.6`) an Unbound daemon leaves the board
+    (`UNIT_DIED` cause `UNBOUND`): no kill, no Loss in the Score, and the
+    seat is no longer flawless. Then every strand and grip of the seat is
+    cleared.
+  - **Candlelit.** Every unit on a tile a player has explored is visible to
+    that player ([section 15](#15-fog-and-observation)), so
+    a channeller is seen and can be targeted by everyone who has explored
+    its tile; no further rule is needed. A view lists each strand whose
+    cultist the viewer sees (`cult.strands`, with a null `daemonUnitId`
+    when the viewer does not see the daemon), each visible bound daemon
+    with its Control and holding strands (`cult.daemons`), the grips whose
+    two units it sees, and the raised idols it sees.
+  - **Behold!** (`BEHOLD { unitId }`): a primary action of a land-form Idol
+    Bearer, also after its Move. Its idol is raised (`IDOL_RAISED`; state
+    `cult.idols`) until the end of the channel check of its owner's next
+    Start Turn (`IDOL_DROPPED` cause `EXPIRED`). While it is raised, an own
+    robed cultist that stood on one of the eight tiles around the Idol
+    Bearer when a command began and **only lost Hit Points** in it keeps
+    its strand. The idol drops at once when the Idol Bearer is disrupted,
+    and a command that disrupts the Idol Bearer wards nobody. Illegal:
+    `BEHOLD_NOT_LEGAL` with `EMBARKED` or `RAISED`.
+  - **Anchor** (`ANCHOR { unitId, cultistUnitId }`): the Thing in the
+    Cellar grips an own robed cultist next to it that holds a strand
+    (`ANCHOR_GRIPPED`; state `cult.grips`). It is not a primary action: the
+    Thing may have moved or attacked, and may afterwards. One grip per
+    Thing, one per cultist. At the check the gripped strand counts **3**
+    while the Thing stands next to the cultist. The grip fails
+    (`ANCHOR_BROKEN`) when the Thing is moved by anything but its own
+    command, gets a status, is taken, or leaves the board; its own loss of
+    Hit Points never matters. It ends with its cultist's strand. Illegal:
+    `ANCHOR_NOT_LEGAL` with `EMBARKED`, `GRIPPING`, or `CULTIST`.
+  - **Boo!** (`BOO { unitId }`): a primary action of a land-form Horror a
+    seat commands, in place of its attack, also after its Move. Every
+    **living** land-form unit on the eight tiles around it, of any owner,
+    that is not a reward giant, a two-slot unit, or a neutral unit jumps
+    one tile directly away, in `(y, x, unit ID)` order, when that tile
+    passes the Push conditions
+    ([section 13.4](#134-after-combat)); otherwise it stays. No damage and
+    no retaliation (`UNITS_SCARED`). It needs somebody to scare
+    (`BOO_NOT_LEGAL` reason `NOBODY`). A moved cultist is disrupted.
+  - **Mind Control.** The channel needs a Cult seat: a mind-controlled unit
+    has no Summon, Channel, or Anchor (`MIND_CONTROLLED_LOST_ABILITIES_V7`);
+    Behold! follows the unit.
+  - **Events and who sees them.** `FAVOUR_SPENT` reaches every player, like
+    `FAVOUR_GAINED`. `STRAND_FORMED`, `STRAND_BROKEN`, `IDOL_RAISED`,
+    `IDOL_DROPPED`, `UNITS_SCARED`, and `DAEMON_UNBOUND` reach every player
+    who sees the unit they are about (the cultist, the bearer, the Horror);
+    a `UNITS_SCARED` lists only the scared units a viewer sees.
+    `DAEMON_SUMMONED` reaches a player who sees the Summoner, the helper,
+    and the Horror (any other player who sees the Horror gets its
+    `UNIT_REVEALED`); `ANCHOR_GRIPPED` and `ANCHOR_BROKEN` one who sees the
+    Thing and the cultist.
+  - **Previews.** `previewSummonV7`, `previewChannelV7` (the daemon's
+    holding strands before and after, against its Control),
+    `previewAnchorV7`, `previewBeholdV7` (the cultists it would ward), and
+    `previewBooV7` (where each unit jumps) are null unless the command is
+    offered; the public command query offers exactly the commands the
+    reducer accepts.
+  - **Interface, for now.** The dock shows the five commands with its
+    generic action buttons ("Summon Horror", one per Summoner; "Channel
+    Horror" with the strands it would have; "Behold!"; "Grip Initiate";
+    "Boo!"). A Horror draws with its own sprite and name. The strands, the
+    Control pips, the candles, the board targeting, and the End Turn
+    question are the interface bead's (`pulp_wars-mch9.18`). The text
+    harness prints a daemon's strands and Control, a channeller's strand,
+    a grip, and a raised idol on the unit's line.
+  - **Normal AI.** The older policy never picks one of the five commands
+    (`pulp_wars-mch9.10`).
 
 ## 2. Setup and map generation
 
@@ -12627,6 +12778,7 @@ first guesses.
 | Cult, E1        | `pulp-wars-poc-7r71` | `pulp_wars-mch9.3` the Cult registration, the first engine step of the Cultists of the Ancient Ones (the user, 2026-10-09; a save, replay, or setup of `7r70` is rejected): the ninth faction `CULT` ("Cultists") and its tree `CULT_BASELINE_V1`, its nine land units with the spec's numbers, the registered numbers of the Horror, the Herald, and the Tentacle (`SUMMONED_ROLE_IDS_V7`, on no board yet), its technology names, its start, its Militia of two Initiates, its Familiar from Scouts and chests, and its giant, the Thing in the Cellar; `F` is 9, so the engine and the headless tools seat 2 to 9 players; the browser offers neither the Cult nor a ninth seat (`HIDDEN_FACTION_IDS_V7`), and draws a Cult seat with the shared art under a lettered stand-in badge; none of the Cult's own rules exists yet, and no rule of another faction changed ([section 1](#1-identity-and-compatibility)).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | Cult, E2        | `pulp-wars-poc-7r72` | `pulp_wars-mch9.4` the Cult's Favour, the second engine step of the Cultists (a save, replay, or setup of `7r71` is rejected): a public pool of Favour for every Cult seat; the Summoner's Sacrifice (an own unit beside it, for its value) and Seize (a broken enemy held by a second robed cultist, for twice its value); a city's Offering (2 population for 3 Favour, with Harvest Rites); the Chosen's Martyr (6 Favour); the state block `cult`, the city key `offeredPopulation`, three commands, four events, and the death cause `SACRIFICED`; nothing spends Favour yet, and no rule of another faction changed ([section 1](#1-identity-and-compatibility)).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | AI head start   | `pulp-wars-poc-7r73` | `pulp_wars-w49.39` the AI head start, a first difficulty control (the user, 2026-10-10; a save, replay, or setup of `7r72` is rejected): the optional setup key `aiHeadStart: { coins }` (5, 10, or 20) adds that many starting Coins to every AI seat and none to the human seat, in both play modes and on every generated map; never on the Showcase or a mission; the "AI head start" select on the new-game screen (None by default, remembered per browser), the line in a match's Settings, and `--ai-head-start` on the headless CLI and the text harness; no state key, command, event, price, AI policy, Score, or star rule changed ([section 2.1](#21-match-setup)).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| Cult, E3        | `pulp-wars-poc-7r74` | `pulp_wars-mch9.5` the Cult's channel, the third engine step of the Cultists (a save, replay, or setup of `7r73` is rejected): Summon a Horror for 5 Favour (a summoned unit names itself in `summoned`); Channel and the strands; the disruption rule (any Hit Point lost, any move not its own, any status, a new owner, or leaving the board breaks a strand, read from what happened to the unit after every command); the Start Turn check (a daemon short of its Control is Unbound and, until the Unbound rules, leaves the board); Behold!, Anchor, and Boo!; the `cult` lists `strands`, `grips`, and `idols`, five commands, ten events, and the death cause `UNBOUND`; no rule of another faction changed ([section 1](#1-identity-and-compatibility)).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 
 **Documentation parity (2026-09-28, no ruleset or identity change):** where
 older documents disagreed with the code, the code's behavior was adopted as

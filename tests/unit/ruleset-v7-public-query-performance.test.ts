@@ -147,7 +147,11 @@ describe("ruleset-7 late public query performance", () => {
       // after STAMPEDE and OFFERING after LAY_EGG, moving the later command
       // kinds forward (was b2ea3f…4cea); the revision-12-ordinal value is
       // unchanged.
-      "30582f8ad81c3b7bad280b2a9ff6c5b479786ce795a17ae365328c7ae724b810",
+      // The Cult's channel (`pulp_wars-mch9.5`) inserts SUMMON, CHANNEL,
+      // BEHOLD, ANCHOR, and BOO after SEIZE, moving the later command kinds
+      // forward by five (was 30582f…b810); the revision-12-ordinal value is
+      // unchanged.
+      "d49d92441e091c3d109b67ac8b1d132bdbd9b476b70a107cf74aecb46cb7ea29",
     );
     // Revision 13 shifts the command-kind ordinals in AI tie-break tuples
     // (spec section 8); with revision-12 ordinals the value is unchanged.

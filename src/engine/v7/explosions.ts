@@ -47,6 +47,8 @@ export interface BlastUnitV7 {
   readonly form: UnitStateV7["form"];
   readonly at: CoordV7;
   readonly hp: number;
+  /** The Cultists: a summoned unit's summoned role (its rule follows it). */
+  readonly summoned?: UnitStateV7["summoned"];
 }
 
 /** One resolved explosion of a chain, in resolution order. */

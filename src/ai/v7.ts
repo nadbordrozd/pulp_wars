@@ -10519,6 +10519,18 @@ function isPolicyCandidate(
     command.kind === "OFFERING"
   )
     return false;
+  // The channel (`pulp_wars-mch9.5`): likewise Summon, Channel, Behold!,
+  // Anchor, and Boo! until the same bead (channel first, summon only what
+  // it can hold: section 15.2 and 15.3). They are offered only for a Cult
+  // seat's units.
+  if (
+    command.kind === "SUMMON" ||
+    command.kind === "CHANNEL" ||
+    command.kind === "BEHOLD" ||
+    command.kind === "ANCHOR" ||
+    command.kind === "BOO"
+  )
+    return false;
   // The frozen sea (`pulp_wars-5ti.5`, RULESET_7_NAVAL_BRANCH.md section
   // 13.2): a Freeze only with a reason (a ship to lock in, the next tile of
   // the crossing, a crossing tile to keep, home ice): `iceFreezeScoreV7`.

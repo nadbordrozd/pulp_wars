@@ -239,6 +239,10 @@ describe("Mind Control revision: legality (section 3)", () => {
       "SACRIFICE",
       "SEIZE",
       "MARTYR",
+      // The Cult's channel (`pulp_wars-mch9.5`): it needs a Cult seat.
+      "SUMMON",
+      "CHANNEL",
+      "ANCHOR",
     ]);
   });
 

@@ -16,6 +16,11 @@ import {
   MONUMENT_POPULATION_V7,
   OFFERING_MINIMUM_LEVEL_V7,
   OFFERING_POPULATION_V7,
+  BOARD_SUMMONED_ROLE_IDS_V7,
+  CULT_SUMMONED_ROLE_RULES_V7,
+  SUMMONED_MECHANICAL_ROLES_V7,
+  summonedUnitRoleRuleV7,
+  unitRoleRuleV7,
   cityRewardCandidatesV7,
   cityRewardRecordMatchesLevelV7,
   dockPopulationV7,
@@ -90,6 +95,7 @@ import {
   type MindControlledStatusV7,
   type TileStateV7,
   type UnitActivationV7,
+  type SummonedRoleIdV7,
   type UnitRoleIdV7,
   type UnitStateV7,
 } from "./types";
@@ -1063,6 +1069,15 @@ function parseUnit(
     typeof input === "object" &&
     input !== null &&
     Object.hasOwn(input, "variant");
+  // The Cultists (`pulp_wars-mch9.5`, RULESET_7_CULTISTS.md section 21.3):
+  // a summoned unit carries `summoned`; no other unit has the key. It is
+  // checked below: a land-form unit of a Cult seat with its summoned role's
+  // mechanical role and maximum HP, no home city, never a veteran, never
+  // mind-controlled.
+  const summoned =
+    typeof input === "object" &&
+    input !== null &&
+    Object.hasOwn(input, "summoned");
   if (
     !hasExactKeysV7(input, [
       "activation",
@@ -1078,8 +1093,14 @@ function parseUnit(
       "form",
       "veteran",
       ...(variant ? ["variant"] : []),
+      ...(summoned ? ["summoned"] : []),
     ]) ||
     (variant && input.variant !== GINGERBREAD_MAN_VARIANT_V7) ||
+    (summoned &&
+      (variant ||
+        !BOARD_SUMMONED_ROLE_IDS_V7.includes(
+          input.summoned as SummonedRoleIdV7,
+        ))) ||
     !UNIT_ROLE_IDS_V7.includes(input.role as UnitRoleIdV7) ||
     !isPositiveSafeIntegerV7(input.hp) ||
     !isPositiveSafeIntegerV7(input.maxHp) ||
@@ -1109,7 +1130,23 @@ function parseUnit(
     owner;
   const faction = players.find((player) => player.id === kindOwner)?.faction;
   if (faction === undefined) return null;
-  const rule = effectiveRoleRuleV7(role, faction);
+  const summonedRole = summoned
+    ? (input.summoned as SummonedRoleIdV7)
+    : undefined;
+  if (
+    summonedRole !== undefined &&
+    (!factionHasFavourV7(faction) ||
+      kindOwner !== owner ||
+      role !== SUMMONED_MECHANICAL_ROLES_V7[summonedRole] ||
+      input.form !== "LAND" ||
+      input.homeCityId !== null ||
+      input.veteran)
+  )
+    return null;
+  const rule =
+    summonedRole === undefined
+      ? effectiveRoleRuleV7(role, faction)
+      : summonedUnitRoleRuleV7(summonedRole);
   // The Candy redesign (RULESET_7_CANDY_REDESIGN.md section 6.1): the Rush
   // perks are gone, so only the role abilities grant Overrun and Escape.
   const overrun = rule.abilities.includes("OVERRUN");
@@ -1204,6 +1241,7 @@ function parseUnit(
     captureEligible: input.captureEligible,
     activation,
     ...(variant ? { variant: GINGERBREAD_MAN_VARIANT_V7 } : {}),
+    ...(summonedRole === undefined ? {} : { summoned: summonedRole }),
   };
 }
 
@@ -1990,12 +2028,21 @@ function ninthUnitValid(
 }
 
 /**
- * The Cultists (docs/product/RULESET_7_CULTISTS.md section 3): the shape of
- * `cult`: the Favour entries, strictly ascending by player, each a positive
- * whole number. The cross references are checked by `cultValid`.
+ * The Cultists (docs/product/RULESET_7_CULTISTS.md sections 3, 6.2, 8.1, and
+ * 8.4): the shape of `cult`: the Favour entries, strictly ascending by
+ * player, each a positive whole number; the strands, strictly ascending by
+ * cultist; the grips, strictly ascending by Thing, no cultist gripped twice;
+ * and the raised idols, strictly ascending. The cross references are
+ * checked by `cultValid`.
  */
 function parseCult(input: unknown): CultStateV7 | null {
-  if (!hasExactKeysV7(input, ["favour"]) || !isDenseArrayV7(input.favour))
+  if (
+    !hasExactKeysV7(input, ["favour", "grips", "idols", "strands"]) ||
+    !isDenseArrayV7(input.favour) ||
+    !isDenseArrayV7(input.strands) ||
+    !isDenseArrayV7(input.grips) ||
+    !isDenseArrayV7(input.idols)
+  )
     return null;
   const favour: CultStateV7["favour"][number][] = [];
   for (const candidate of input.favour) {
@@ -2010,26 +2057,132 @@ function parseCult(input: unknown): CultStateV7 | null {
       return null;
     favour.push({ playerId, favour: candidate.favour });
   }
-  return { favour };
+  const strands: CultStateV7["strands"][number][] = [];
+  for (const candidate of input.strands) {
+    if (!hasExactKeysV7(candidate, ["cultistUnitId", "daemonUnitId"]))
+      return null;
+    const cultistUnitId = parseUnitIdV7(candidate.cultistUnitId);
+    const daemonUnitId = parseUnitIdV7(candidate.daemonUnitId);
+    const prior = strands.at(-1);
+    if (
+      cultistUnitId === null ||
+      daemonUnitId === null ||
+      cultistUnitId === daemonUnitId ||
+      (prior !== undefined && prior.cultistUnitId >= cultistUnitId)
+    )
+      return null;
+    strands.push({ cultistUnitId, daemonUnitId });
+  }
+  const grips: CultStateV7["grips"][number][] = [];
+  for (const candidate of input.grips) {
+    if (!hasExactKeysV7(candidate, ["cultistUnitId", "thingUnitId"]))
+      return null;
+    const thingUnitId = parseUnitIdV7(candidate.thingUnitId);
+    const cultistUnitId = parseUnitIdV7(candidate.cultistUnitId);
+    const prior = grips.at(-1);
+    if (
+      thingUnitId === null ||
+      cultistUnitId === null ||
+      thingUnitId === cultistUnitId ||
+      (prior !== undefined && prior.thingUnitId >= thingUnitId) ||
+      grips.some((grip) => grip.cultistUnitId === cultistUnitId)
+    )
+      return null;
+    grips.push({ thingUnitId, cultistUnitId });
+  }
+  const idols: UnitId[] = [];
+  for (const candidate of input.idols) {
+    const unitId = parseUnitIdV7(candidate);
+    const prior = idols.at(-1);
+    if (unitId === null || (prior !== undefined && prior >= unitId))
+      return null;
+    idols.push(unitId);
+  }
+  return { favour, strands, grips, idols };
 }
 
 /**
- * The Cultists (section 3): the cross references of `cult.favour`: every
+ * The Cultists: the cross references of `cult`. Section 3: every Favour
  * entry is of a Cult seat that is still in the match (an eliminated seat's
- * Favour is gone).
+ * Favour is gone). Section 6.2: every strand is held by a land-form robed
+ * cultist on the board that is not mind-controlled, to a summoned unit on
+ * the board that has a Control, both of the same Cult seat. Section 8.4:
+ * every grip is of a land-form unit with Anchor on a cultist that holds a
+ * strand, of the same seat, next to it. Section 8.1: every raised idol is
+ * of a land-form unit with Behold! on the board.
  */
 function cultValid(
   value: CrossInput,
   playerById: ReadonlyMap<PlayerStateV7["id"], PlayerStateV7>,
 ): boolean {
-  return value.cult.favour.every((entry) => {
-    const player = playerById.get(entry.playerId);
-    return (
-      player !== undefined &&
-      player.status === "ACTIVE" &&
-      factionHasFavourV7(player.faction)
-    );
-  });
+  if (
+    !value.cult.favour.every((entry) => {
+      const player = playerById.get(entry.playerId);
+      return (
+        player !== undefined &&
+        player.status === "ACTIVE" &&
+        factionHasFavourV7(player.faction)
+      );
+    })
+  )
+    return false;
+  if (
+    value.cult.strands.length === 0 &&
+    value.cult.grips.length === 0 &&
+    value.cult.idols.length === 0
+  )
+    return true;
+  const roster = {
+    players: value.players,
+    mindControlled: value.mindControlled,
+  };
+  const unitById = new Map(value.units.map((unit) => [unit.id, unit]));
+  const cultSeat = (ownerId: PlayerStateV7["id"]): boolean => {
+    const player = playerById.get(ownerId);
+    return player !== undefined && factionHasFavourV7(player.faction);
+  };
+  for (const strand of value.cult.strands) {
+    const cultist = unitById.get(strand.cultistUnitId);
+    const daemon = unitById.get(strand.daemonUnitId);
+    if (
+      cultist === undefined ||
+      daemon === undefined ||
+      cultist.form !== "LAND" ||
+      cultist.ownerId !== daemon.ownerId ||
+      !cultSeat(cultist.ownerId) ||
+      daemon.summoned === undefined ||
+      CULT_SUMMONED_ROLE_RULES_V7[daemon.summoned].control === null ||
+      !unitRoleRuleV7(roster, cultist).abilities.includes("CHANNEL")
+    )
+      return false;
+  }
+  for (const grip of value.cult.grips) {
+    const thing = unitById.get(grip.thingUnitId);
+    const cultist = unitById.get(grip.cultistUnitId);
+    if (
+      thing === undefined ||
+      cultist === undefined ||
+      thing.form !== "LAND" ||
+      thing.ownerId !== cultist.ownerId ||
+      Math.max(
+        Math.abs(thing.at.x - cultist.at.x),
+        Math.abs(thing.at.y - cultist.at.y),
+      ) !== 1 ||
+      !unitRoleRuleV7(roster, thing).abilities.includes("ANCHOR") ||
+      !value.cult.strands.some((strand) => strand.cultistUnitId === cultist.id)
+    )
+      return false;
+  }
+  for (const unitId of value.cult.idols) {
+    const bearer = unitById.get(unitId);
+    if (
+      bearer === undefined ||
+      bearer.form !== "LAND" ||
+      !unitRoleRuleV7(roster, bearer).abilities.includes("BEHOLD")
+    )
+      return false;
+  }
+  return true;
 }
 
 /**

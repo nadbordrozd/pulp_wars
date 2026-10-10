@@ -25,6 +25,10 @@
 export const OWNER_READER_CLASSES_V7: Readonly<
   Record<string, "NEUTRAL_AWARE" | "NEUTRAL_SAFE" | "PLAYER_ONLY">
 > = {
+  // The Cult's channel (`pulp_wars-mch9.5`): whether the owner of a strand's
+  // cultist is a Cult seat. An owner that is no player has no record, which
+  // reads as "no Cult seat": the right answer for a neutral unit.
+  "src/engine/v7/state-schema.ts::cultValid": "NEUTRAL_SAFE",
   // The Normal AI: the viewer seat's own role, the kind resolver of the
   // per-unit policies, and the public Undead faction reads.
   // `pulp_wars-5ti.5`: the owner of an ice tile; an owner that is no

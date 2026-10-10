@@ -1033,7 +1033,11 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
           // after STAMPEDE and OFFERING after LAY_EGG, moving the later command
           // kinds forward (was f9a9ea…c16a); the revision-12-ordinal value is
           // unchanged.
-          "8014206ebd14b24638de5d45c78119107d3e236bdcba6bea73740f3aa8fa4766",
+          // The Cult's channel (`pulp_wars-mch9.5`) inserts SUMMON, CHANNEL,
+          // BEHOLD, ANCHOR, and BOO after SEIZE, moving the later command kinds
+          // forward by five (was 801420…4766); the revision-12-ordinal value is
+          // unchanged.
+          "24dee01a645188a87f8fe8aa17e31dbc632cd6e9eaeb034b9c7ed42798c0e5a7",
         );
         // Revision 13 shifts the command-kind ordinals in AI tie-break
         // tuples (spec section 8); this is the value with revision-12
@@ -1141,7 +1145,11 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
           // after STAMPEDE and OFFERING after LAY_EGG, moving the later command
           // kinds forward (was 8ed359…3718); the revision-12-ordinal value is
           // unchanged.
-          "faf32cbe95ee829021f21b1367355b6595bb277fee8998cd053bf14e906ea68e",
+          // The Cult's channel (`pulp_wars-mch9.5`) inserts SUMMON, CHANNEL,
+          // BEHOLD, ANCHOR, and BOO after SEIZE, moving the later command kinds
+          // forward by five (was faf32c…a68e); the revision-12-ordinal value is
+          // unchanged.
+          "7401b89d0eca52ba533aaf24c9d04e8d4ac0e11252ece86c3995f8ffa5dd2edb",
         );
         // With revision-12 ordinals (pulp_wars-9s0.1: was c56f00…73c1;
         // pulp_wars-0hi.3: was 091615…054b).

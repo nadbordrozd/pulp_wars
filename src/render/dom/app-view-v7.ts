@@ -643,6 +643,15 @@ import {
 } from "../dwarf-tunnel-v7";
 import type { DwarfPickV7 } from "../canvas/dwarf-board-plan-v7";
 import {
+  ANCHOR_LABEL_V7,
+  BEHOLD_LABEL_V7,
+  BOO_LABEL_V7,
+  CHANNEL_LABEL_V7,
+  SUMMON_LABEL_V7,
+  cultChannelCommandPresentationV7,
+  cultChannelStandInShownV7,
+} from "../cult-channel-presentation-v7";
+import {
   FAVOUR_LABEL_V7,
   FAVOUR_TOOLTIP_V7,
   OFFERING_LABEL_V7,
@@ -712,6 +721,7 @@ import {
   SPIDER_GLOSSARY_IDS_V7,
   glossaryEntryV7,
   roleGlossaryV7,
+  summonedGlossaryV7,
   statusGlossaryV7,
 } from "../unit-glossary-v7";
 import {
@@ -5502,7 +5512,11 @@ export class Ruleset7DomAppView {
                 ? [glossaryEntryV7("EGG")]
                 : unit.form === "EMBARKED"
                   ? [glossaryEntryV7(machine ? "STATUS_AFLOAT" : "AT_SEA")]
-                  : roleGlossaryV7(unit.role, unitFaction);
+                  : // The Cultists (`pulp_wars-mch9.5`): a summoned unit's
+                    // own lines (its `role` is a mechanical one).
+                    unit.summoned !== undefined
+                    ? summonedGlossaryV7(unit.summoned)
+                    : roleGlossaryV7(unit.role, unitFaction);
         if (lines.length > 0)
           unitDetails.append(
             glossaryListV7(this.#document, lines, (line, entry) =>
@@ -6385,7 +6399,14 @@ export class Ruleset7DomAppView {
     ).filter(
       (candidate) =>
         predicate(candidate.command) &&
-        !NON_BUTTON_COMMANDS.has(candidate.command.kind),
+        !NON_BUTTON_COMMANDS.has(candidate.command.kind) &&
+        // The Cultists (`pulp_wars-mch9.5`): the stand-in lists one Summon
+        // per Summoner until the helper and the tile are picked on the
+        // board (`pulp_wars-mch9.18`).
+        cultChannelStandInShownV7(
+          candidate.command,
+          this.#snapshot.offeredCommands,
+        ),
     )) {
       // A blocked action is priced and previewed with no shortage of Coins.
       const previewView =
@@ -6423,9 +6444,19 @@ export class Ruleset7DomAppView {
         this.#snapshot.view === undefined
           ? null
           : previewOfferingV7(this.#snapshot.view, command.cityId);
+      // The Cultists (`pulp_wars-mch9.5`): Summon, Channel, Behold!,
+      // Anchor, and Boo! use these generic buttons for now, each named in
+      // plain words with a chip that says what it does. The channel's
+      // interface bead (`pulp_wars-mch9.18`) replaces them with targets
+      // picked on the board, the strands, and the Control pips.
+      const channel =
+        this.#snapshot.view === null || this.#snapshot.view === undefined
+          ? null
+          : cultChannelCommandPresentationV7(this.#snapshot.view, command);
       const label =
         (released ? RELEASE_LABEL_V7 : null) ??
         (berserk ? BERSERK_LABEL_V7 : null) ??
+        channel?.label ??
         (abandonedEgg === undefined
           ? commandLabel(command, this.#viewerFaction())
           : ABANDON_EGG_LABEL_V7);
@@ -6669,6 +6700,18 @@ export class Ruleset7DomAppView {
         favour.append(`+${offering.favour}`, this.#favourIcon());
         chips.prepend(favour);
         action.append(chips);
+      } else if (channel !== null) {
+        // The Cultists' channel: the card text, and what the action does
+        // to the strands or the Favour.
+        action.title = channel.tooltip;
+        action.setAttribute("aria-label", `${channel.label} · ${channel.chip}`);
+        action.setAttribute("aria-description", `${channel.tooltip}.`);
+        action.dataset.cult = command.kind.toLowerCase();
+        const chip = el(this.#document, "span", "v7-command-economy");
+        chip.append(
+          text(this.#document, "span", channel.chip, "v7-economy-chip"),
+        );
+        action.append(chip);
       } else if (command.kind === "RALLY" && berserk) {
         // Goblin explosions and Berserk (`pulp_wars-w49.36`): what it does,
         // and how many units it reaches; hover and focus mark them.
@@ -13122,7 +13165,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffff_ffff)
     return null;
   return {
-    rulesetId: "pulp-wars-poc-7r73",
+    rulesetId: "pulp-wars-poc-7r74",
     seed,
     width: effectiveBoardSize(draft),
     height: effectiveBoardSize(draft),
@@ -13851,6 +13894,12 @@ const COMMAND_LABELS: Partial<Record<CommandV7["kind"], string>> = {
   SACRIFICE: SACRIFICE_LABEL_V7,
   SEIZE: SEIZE_LABEL_V7,
   OFFERING: OFFERING_LABEL_V7,
+  // The channel (`pulp_wars-mch9.5`).
+  SUMMON: SUMMON_LABEL_V7,
+  CHANNEL: CHANNEL_LABEL_V7,
+  BEHOLD: BEHOLD_LABEL_V7,
+  ANCHOR: ANCHOR_LABEL_V7,
+  BOO: BOO_LABEL_V7,
   HARVEST_FRUIT: "Harvest",
   HUNT_GAME: "Hunt",
   HARVEST_FISH: "Fish",

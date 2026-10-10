@@ -9,6 +9,7 @@ import {
   NEUTRAL_OWNER_ID_V7,
   RULESET_7_ID,
   type NeutralBreedV7,
+  SUMMONED_ROLE_IDS_V7,
   type SummonedRoleIdV7,
   TECHNOLOGY_IDS_V7,
   UNIT_ROLE_IDS_V7,
@@ -427,7 +428,16 @@ export type UnitRoleAbilityV7 =
   // their rules.
   | "SACRIFICE"
   | "SEIZE"
-  | "MARTYR";
+  | "MARTYR"
+  // The Cultists (`pulp_wars-mch9.5`, sections 6.1, 6.2, 8.1, 8.4, and
+  // 8.5): the Summoner's Summon, every robed cultist's Channel, the Idol
+  // Bearer's Behold!, the Thing in the Cellar's Anchor, and the Horror's
+  // Boo!.
+  | "SUMMON"
+  | "CHANNEL"
+  | "BEHOLD"
+  | "ANCHOR"
+  | "BOO";
 
 /**
  * The Martian revision (section 7): how a land-form unit moves. `STRIDE`
@@ -816,6 +826,13 @@ export interface RoleMechanicsV7 {
    * role.
    */
   readonly martyrFavour: number;
+  /**
+   * The Cultists (section 8.4): Anchor, the strands the role's grip adds to
+   * the strand of the channeller it holds (the Thing in the Cellar 2, so a
+   * gripped strand counts three), read only when the role, under the unit's
+   * kind, has the `ANCHOR` ability literal. 0 for every other role.
+   */
+  readonly anchorStrands: number;
 }
 
 export interface FactionTechnologyTreeV7 {
@@ -1744,6 +1761,7 @@ const mechanics = (
           batEscapeTiles: 0,
           robed: false,
           martyrFavour: 0,
+          anchorStrands: 0,
           ...overrides[roleId],
         },
       ]),
@@ -3808,7 +3826,7 @@ export const CULT_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: null,
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "CAPTURE"],
+    abilities: ["ATTACK", "CAPTURE", "CHANNEL"],
   }),
   // The Familiar: Sight 2 and the Charge with Raiding; no Escape, and
   // hostile zones of control stop it (the Human Raider's freedom is a role
@@ -3844,10 +3862,11 @@ export const CULT_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: "MARKSMANSHIP",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "CAPTURE"],
+    abilities: ["ATTACK", "CAPTURE", "CHANNEL"],
   }),
   // The Idol Bearer: it cannot attack after moving (the Guard's rule), has
-  // no Field Defense, and defends alike at every distance.
+  // no Field Defense, and defends alike at every distance. Behold! and
+  // Channel may follow its Move (`pulp_wars-mch9.5`).
   GUARD: role({
     role: "GUARD",
     label: "Idol Bearer",
@@ -3862,11 +3881,11 @@ export const CULT_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: "FORTIFICATION",
     mayUsePrimaryActionAfterMove: false,
-    abilities: ["ATTACK", "CAPTURE"],
+    abilities: ["ATTACK", "CAPTURE", "CHANNEL", "BEHOLD"],
   }),
   // The Summoner: a Captain's body with no Rally and no Tend Wounded. It
-  // Sacrifices an own unit and Seizes a broken enemy (`pulp_wars-mch9.4`);
-  // Summon arrives with the Horror (`pulp_wars-mch9.5`).
+  // Sacrifices an own unit and Seizes a broken enemy (`pulp_wars-mch9.4`),
+  // and Summons a Horror and Channels (`pulp_wars-mch9.5`).
   CAPTAIN: role({
     role: "CAPTAIN",
     label: "Summoner",
@@ -3881,7 +3900,7 @@ export const CULT_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: "ADMINISTRATION",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "CAPTURE", "SACRIFICE", "SEIZE"],
+    abilities: ["ATTACK", "CAPTURE", "SACRIFICE", "SEIZE", "SUMMON", "CHANNEL"],
   }),
   // The Stargazer has no attack of its own: no `ATTACK`, Attack 0, and no
   // reach, so it never strikes back either (the neutral Bigfoot's shape).
@@ -3900,7 +3919,7 @@ export const CULT_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: "SAWMILLING",
     mayUsePrimaryActionAfterMove: false,
-    abilities: ["CAPTURE"],
+    abilities: ["CAPTURE", "CHANNEL"],
   }),
   // The Caller: much weaker than a Knight in its own fight, no Overrun.
   KNIGHT: role({
@@ -3917,7 +3936,7 @@ export const CULT_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: "CHIVALRY",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "CAPTURE"],
+    abilities: ["ATTACK", "CAPTURE", "CHANNEL"],
   }),
   // The Thing in the Cellar: the reward giant, Defense 3.5 (as the
   // Gingerbread Giant) because its signature, Anchor, is a support one
@@ -3936,7 +3955,7 @@ export const CULT_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: null,
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "CAPTURE"],
+    abilities: ["ATTACK", "CAPTURE", "ANCHOR"],
   }),
   PATROL_BOAT: role({ ...ORIGINAL_ROLE_RULES_V7.PATROL_BOAT }),
   BATTLESHIP: role({ ...ORIGINAL_ROLE_RULES_V7.BATTLESHIP }),
@@ -3958,7 +3977,7 @@ export const CULT_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: "METALLURGY",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "CAPTURE", "MARTYR"],
+    abilities: ["ATTACK", "CAPTURE", "MARTYR", "CHANNEL"],
   }),
 });
 
@@ -3983,6 +4002,16 @@ export const OFFERING_FAVOUR_V7 = 3 as const;
 export const OFFERING_MINIMUM_LEVEL_V7 = 2 as const;
 /** The Cultists (section 8.2): the Favour a Chosen's death pays (its value). */
 export const MARTYR_FAVOUR_V7 = 6 as const;
+/**
+ * The Cultists (section 6.2): the farthest (Chebyshev) a cultist may be from
+ * the daemon it channels, when it channels and again at the check.
+ */
+export const CHANNEL_RANGE_V7 = 3 as const;
+/**
+ * The Cultists (section 8.4): what the Thing's grip adds to the strand of
+ * the channeller it holds (so the strand counts three).
+ */
+export const ANCHOR_STRANDS_V7 = 2 as const;
 
 /**
  * The Cult engine mechanics (section 4.1): no role builds Field Defense; the
@@ -4005,6 +4034,8 @@ export const CULT_ROLE_MECHANICS_V7 = mechanics({
   },
   KNIGHT: { robed: true },
   SWORDSMAN: { robed: true, martyrFavour: MARTYR_FAVOUR_V7 },
+  // `pulp_wars-mch9.5` (section 8.4): the Thing's grip adds two strands.
+  JUGGERNAUT: { anchorStrands: ANCHOR_STRANDS_V7 },
   BATTLESHIP: { splash: true },
 });
 
@@ -4122,6 +4153,107 @@ export function summonedRoleRuleV7(id: SummonedRoleIdV7): SummonedRoleRuleV7 {
   if (rule === undefined)
     throw new RangeError(`Unknown v7 summoned role: ${String(id)}`);
   return rule;
+}
+
+/**
+ * The Cultists (`pulp_wars-mch9.5`, section 21.3): how a summoned unit is a
+ * unit. A unit on the board names its summoned role in its own `summoned`
+ * field (`UnitStateV7.summoned`), and its stored `role` is the summoned
+ * role's **mechanical role**, a unit role that only raw role readers see
+ * (the Giant Spider's `JUGGERNAUT` is the precedent). Every rule read goes
+ * through `unitRoleRuleV7` and `unitRoleMechanicsV7`, which return the
+ * registrations below for a unit that carries the field, whatever roster
+ * they are given. Only the Horror is on the board so far; the Herald
+ * (`pulp_wars-mch9.7`) and the Tentacle (`pulp_wars-mch9.8`) get their
+ * mechanical roles with their beads.
+ */
+export const SUMMONED_MECHANICAL_ROLES_V7: Readonly<
+  Partial<Record<SummonedRoleIdV7, UnitRoleIdV7>>
+> = deepFreeze({ HORROR: "KNIGHT" });
+
+/** The summoned roles a unit on the board may carry (in the frozen order). */
+export const BOARD_SUMMONED_ROLE_IDS_V7: readonly SummonedRoleIdV7[] =
+  deepFreeze(
+    SUMMONED_ROLE_IDS_V7.filter((id) =>
+      Object.hasOwn(SUMMONED_MECHANICAL_ROLES_V7, id),
+    ),
+  );
+
+/** The unit facts that name a summoned unit (state and public units). */
+export interface SummonedUnitRefV7 {
+  readonly summoned?: SummonedRoleIdV7 | undefined;
+}
+
+/** Whether the unit is a summoned unit (a daemon; later, a Tentacle). */
+export function unitIsSummonedV7(unit: SummonedUnitRefV7): boolean {
+  return unit.summoned !== undefined;
+}
+
+/**
+ * The Cultists (section 4.2): the role rule of a summoned unit on the
+ * board, built from its registration: no cost, no technology, Sight 1, and
+ * its own abilities. The Horror attacks, captures while bound, and Boos.
+ */
+const SUMMONED_UNIT_ROLE_RULES_V7: Readonly<
+  Partial<Record<SummonedRoleIdV7, EffectiveRoleRuleV7>>
+> = deepFreeze({
+  HORROR: {
+    role: "KNIGHT",
+    label: CULT_SUMMONED_ROLE_RULES_V7.HORROR.label,
+    tacticalRole: "BREAKTHROUGH",
+    cost: null,
+    maxHp: CULT_SUMMONED_ROLE_RULES_V7.HORROR.maxHp,
+    attack2: CULT_SUMMONED_ROLE_RULES_V7.HORROR.attack2,
+    defense2: CULT_SUMMONED_ROLE_RULES_V7.HORROR.defense2,
+    move: CULT_SUMMONED_ROLE_RULES_V7.HORROR.move,
+    range: CULT_SUMMONED_ROLE_RULES_V7.HORROR.range,
+    minimumRange: CULT_SUMMONED_ROLE_RULES_V7.HORROR.minimumRange,
+    sightRadius: 1,
+    technology: null,
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "CAPTURE", "BOO", "STRIDE"],
+  },
+});
+
+/**
+ * The Cultists (section 4.2): the engine mechanics of a summoned unit on
+ * the board. A daemon is not living, in the engine's sense of a construct:
+ * no Plague, bite, Infect, Wail, or Seizure, immune to Mind Control and
+ * Swallow, no Grave, and it never mends (no Recover, Windmill, Fountain, or
+ * Wishing Well heal). It moves like a Martian walker (`STRIDE`).
+ */
+const SUMMONED_UNIT_ROLE_MECHANICS_V7: Readonly<
+  Partial<Record<SummonedRoleIdV7, RoleMechanicsV7>>
+> = deepFreeze({
+  HORROR: {
+    ...ORIGINAL_ROLE_MECHANICS_V7.KNIGHT,
+    construct: true,
+    movementMode: CULT_SUMMONED_ROLE_RULES_V7.HORROR.movementMode,
+  },
+});
+
+/** The role rule of a summoned unit on the board; `RangeError` otherwise. */
+export function summonedUnitRoleRuleV7(
+  id: SummonedRoleIdV7,
+): EffectiveRoleRuleV7 {
+  const rule = Object.hasOwn(SUMMONED_UNIT_ROLE_RULES_V7, id)
+    ? SUMMONED_UNIT_ROLE_RULES_V7[id]
+    : undefined;
+  if (rule === undefined)
+    throw new RangeError(`No v7 unit of the summoned role: ${String(id)}`);
+  return rule;
+}
+
+/** The mechanics of a summoned unit on the board; `RangeError` otherwise. */
+export function summonedUnitRoleMechanicsV7(
+  id: SummonedRoleIdV7,
+): RoleMechanicsV7 {
+  const mechanics = Object.hasOwn(SUMMONED_UNIT_ROLE_MECHANICS_V7, id)
+    ? SUMMONED_UNIT_ROLE_MECHANICS_V7[id]
+    : undefined;
+  if (mechanics === undefined)
+    throw new RangeError(`No v7 unit of the summoned role: ${String(id)}`);
+  return mechanics;
 }
 
 /** Frozen faction registrations; there is no cross-faction fallback. */
@@ -4763,7 +4895,7 @@ export const RULESET_7 = deepFreeze({
  * a technology of tier `t` costs `5 / 7 / 9 + (T - 1)`, `T` being the
  * technologies the researcher already owns.
  *
- * The economy rejig (`pulp_wars-w49.16`, `pulp-wars-poc-7r73`,
+ * The economy rejig (`pulp_wars-w49.16`, `pulp-wars-poc-7r74`,
  * docs/product/RULESET_7_ECONOMY_REJIG.md): the price is per city again and
  * the technologies owned no longer enter it. A technology of tier `t`
  * costs `5 / 7 / 9 + (1 / 2 / 3) * (C - 1)`, `C` being the cities the
@@ -5062,6 +5194,11 @@ export const MIND_CONTROLLED_LOST_ABILITIES_V7: readonly UnitRoleAbilityV7[] =
     "SACRIFICE",
     "SEIZE",
     "MARTYR",
+    // `pulp_wars-mch9.5` (section 13.1): Summon, Channel, and Anchor need a
+    // Cult seat too. Behold! and Boo! are unit tricks and follow the unit.
+    "SUMMON",
+    "CHANNEL",
+    "ANCHOR",
   ]);
 
 const CONTROLLED_ROLE_RULES_V7 = new WeakMap<
@@ -5078,8 +5215,12 @@ const CONTROLLED_ROLE_RULES_V7 = new WeakMap<
  */
 export function unitRoleRuleV7(
   roster: FactionRosterV7,
-  unit: UnitKindRefV7 & { readonly role: UnitRoleIdV7 },
+  unit: UnitKindRefV7 & { readonly role: UnitRoleIdV7 } & SummonedUnitRefV7,
 ): EffectiveRoleRuleV7 {
+  // The Cultists (`pulp_wars-mch9.5`): a summoned unit's own registration,
+  // while a seat commands it (an Unbound one is neutral: `pulp_wars-mch9.6`).
+  if (unit.summoned !== undefined && unit.ownerId !== NEUTRAL_OWNER_ID_V7)
+    return summonedUnitRoleRuleV7(unit.summoned);
   const kind = unitFactionV7(roster, unit);
   // Map curiosities (section 8.1; round 2, section 32.3): the neutral
   // registration of the unit's breed.
@@ -5102,8 +5243,10 @@ export function unitRoleRuleV7(
 /** Resolves a unit's engine mechanics through its kind. */
 export function unitRoleMechanicsV7(
   roster: FactionRosterV7,
-  unit: UnitKindRefV7 & { readonly role: UnitRoleIdV7 },
+  unit: UnitKindRefV7 & { readonly role: UnitRoleIdV7 } & SummonedUnitRefV7,
 ): RoleMechanicsV7 {
+  if (unit.summoned !== undefined && unit.ownerId !== NEUTRAL_OWNER_ID_V7)
+    return summonedUnitRoleMechanicsV7(unit.summoned);
   const kind = unitFactionV7(roster, unit);
   if (kind === NEUTRAL_KIND_V7)
     return NEUTRAL_ROLE_MECHANICS_V7[neutralBreedOfV7(roster, unit)];

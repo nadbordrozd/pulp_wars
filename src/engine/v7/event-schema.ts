@@ -1,4 +1,6 @@
 import {
+  DISRUPTION_CAUSES_V7,
+  FAVOUR_PURPOSES_V7,
   FAVOUR_SOURCES_V7,
   type DomainEventV7,
   type EventEnvelopeV7,
@@ -50,6 +52,8 @@ import {
   OFFERING_FAVOUR_V7,
   OFFERING_POPULATION_V7,
   SEIZE_FAVOUR_MULTIPLIER_V7,
+  CULT_SUMMONED_ROLE_RULES_V7,
+  HORROR_FAVOUR_COST_V7,
 } from "../rules/ruleset-v7";
 import {
   ACHIEVEMENT_IDS_V7,
@@ -481,6 +485,26 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
   ],
   OFFERING_MADE: ["kind", "playerId", "cityId", "at", "population", "favour"],
   FAVOUR_GAINED: ["kind", "playerId", "source", "amount", "favour"],
+  // The Cultists (`pulp_wars-mch9.5`, sections 6 and 8).
+  FAVOUR_SPENT: ["kind", "playerId", "purpose", "amount", "favour"],
+  DAEMON_SUMMONED: [
+    "kind",
+    "playerId",
+    "unitId",
+    "helperUnitId",
+    "daemonUnitId",
+    "role",
+    "at",
+    "hp",
+  ],
+  STRAND_FORMED: ["kind", "playerId", "unitId", "daemonUnitId"],
+  STRAND_BROKEN: ["kind", "playerId", "unitId", "daemonUnitId", "cause"],
+  IDOL_RAISED: ["kind", "playerId", "unitId"],
+  IDOL_DROPPED: ["kind", "playerId", "unitId", "cause"],
+  ANCHOR_GRIPPED: ["kind", "playerId", "unitId", "cultistUnitId"],
+  ANCHOR_BROKEN: ["kind", "playerId", "unitId", "cultistUnitId", "cause"],
+  UNITS_SCARED: ["kind", "playerId", "unitId", "at", "results"],
+  DAEMON_UNBOUND: ["kind", "unitId", "summonerPlayerId", "strands", "control"],
   SPOILS_AWARDED: ["kind", "playerId", "cityId", "coins"],
   PLUNDER_AWARDED: ["kind", "playerId", "kills", "coins"],
   MONSTER_BOUNTY_AWARDED: ["kind", "playerId", "unitId", "coins"],
@@ -1784,6 +1808,114 @@ function validPayload(
         pos(e.favour) &&
         (e.favour as number) >= (e.amount as number)
       );
+    // The Cultists (`pulp_wars-mch9.5`). Section 3: the price of a summoning
+    // (the seat may have nothing left).
+    case "FAVOUR_SPENT":
+      return (
+        id(e.playerId) &&
+        e.purpose === "SUMMON_HORROR" &&
+        FAVOUR_PURPOSES_V7.includes(e.purpose) &&
+        e.amount === HORROR_FAVOUR_COST_V7 &&
+        isNonNegativeSafeIntegerV7(e.favour)
+      );
+    // Section 6.1: a Horror at full HP, next to nobody it names twice.
+    case "DAEMON_SUMMONED":
+      return (
+        id(e.playerId) &&
+        id(e.unitId) &&
+        id(e.helperUnitId) &&
+        id(e.daemonUnitId) &&
+        new Set([e.unitId, e.helperUnitId, e.daemonUnitId]).size === 3 &&
+        e.role === "HORROR" &&
+        parseCoordV7(e.at) !== null &&
+        e.hp === CULT_SUMMONED_ROLE_RULES_V7.HORROR.maxHp
+      );
+    // Section 6.2.
+    case "STRAND_FORMED":
+      return (
+        id(e.playerId) &&
+        id(e.unitId) &&
+        id(e.daemonUnitId) &&
+        e.unitId !== e.daemonUnitId
+      );
+    case "STRAND_BROKEN":
+      return (
+        id(e.playerId) &&
+        id(e.unitId) &&
+        id(e.daemonUnitId) &&
+        e.unitId !== e.daemonUnitId &&
+        DISRUPTION_CAUSES_V7.includes(e.cause as never)
+      );
+    // Section 8.1.
+    case "IDOL_RAISED":
+      return id(e.playerId) && id(e.unitId);
+    case "IDOL_DROPPED":
+      return (
+        id(e.playerId) &&
+        id(e.unitId) &&
+        (e.cause === "EXPIRED" ||
+          DISRUPTION_CAUSES_V7.includes(e.cause as never))
+      );
+    // Section 8.4: the Thing's own HP loss never breaks its grip.
+    case "ANCHOR_GRIPPED":
+      return (
+        id(e.playerId) &&
+        id(e.unitId) &&
+        id(e.cultistUnitId) &&
+        e.unitId !== e.cultistUnitId
+      );
+    case "ANCHOR_BROKEN":
+      return (
+        id(e.playerId) &&
+        id(e.unitId) &&
+        id(e.cultistUnitId) &&
+        e.unitId !== e.cultistUnitId &&
+        e.cause !== "HP_LOSS" &&
+        DISRUPTION_CAUSES_V7.includes(e.cause as never)
+      );
+    // Section 8.5: at most the eight units around the Horror, each named
+    // once, each from a tile next to the Horror; one that jumped lands one
+    // tile further on the same line.
+    case "UNITS_SCARED": {
+      const at = parseCoordV7(e.at);
+      if (
+        !id(e.playerId) ||
+        !id(e.unitId) ||
+        at === null ||
+        !isDenseArrayV7(e.results) ||
+        e.results.length > 8
+      )
+        return false;
+      const seen = new Set<unknown>();
+      for (const result of e.results) {
+        if (!hasExactKeysV7(result, ["from", "to", "unitId"])) return false;
+        const from = parseCoordV7(result.from);
+        const to = result.to === null ? null : parseCoordV7(result.to);
+        if (
+          !id(result.unitId) ||
+          result.unitId === e.unitId ||
+          seen.has(result.unitId) ||
+          from === null ||
+          Math.max(Math.abs(from.x - at.x), Math.abs(from.y - at.y)) !== 1 ||
+          (result.to !== null &&
+            (to === null ||
+              to.x !== from.x + (from.x - at.x) ||
+              to.y !== from.y + (from.y - at.y)))
+        )
+          return false;
+        seen.add(result.unitId);
+      }
+      return true;
+    }
+    // Sections 6.2 and 6.4: fewer holding strands than the Control.
+    case "DAEMON_UNBOUND":
+      return (
+        id(e.unitId) &&
+        id(e.summonerPlayerId) &&
+        isNonNegativeSafeIntegerV7(e.strands) &&
+        pos(e.control) &&
+        (e.strands as number) < (e.control as number)
+      );
     case "SPOILS_AWARDED":
       return id(e.playerId) && id(e.cityId) && e.coins === 2;
     case "PLUNDER_AWARDED":
@@ -1863,6 +1995,8 @@ function validPayload(
           "THUMP",
           // The Cultists: a Sacrifice or a Seizure.
           "SACRIFICED",
+          // The Cultists: a daemon whose channel failed (the stand-in).
+          "UNBOUND",
         ].includes(e.cause as string)
       );
     // The giants' signatures (docs/product/RULESET_7_GIANTS.md section 8).

@@ -47,6 +47,20 @@ export function projectEventsV7(
     )
       visiblyCreatedUnitIds.add(event.unitId);
     else if (
+      // The Cultists (`pulp_wars-mch9.5`): the Horror of a projected
+      // summoning.
+      event.kind === "DAEMON_SUMMONED" &&
+      eventVisible(
+        beforeState,
+        afterState,
+        viewerId,
+        event,
+        beforeVisible,
+        afterVisible,
+      )
+    )
+      visiblyCreatedUnitIds.add(event.daemonUnitId);
+    else if (
       // The Dwarf revision: the Gunner of a projected Assemble.
       event.kind === "UNIT_ASSEMBLED" &&
       event.playerId === viewerId
@@ -819,6 +833,7 @@ function eventVisible(
     // event names no unit and no tile. (An Offering follows the city rule
     // below: the owner and every viewer that has explored the center.)
     case "FAVOUR_GAINED":
+    case "FAVOUR_SPENT":
       return true;
     default:
       if ("cityId" in event)
@@ -868,6 +883,16 @@ function unitIds(event: DomainEventV7): readonly UnitId[] {
     case "RICOCHETED":
     case "UNIT_TOPPED_UP":
       return [event.unitId, event.targetUnitId];
+    // The Cultists (`pulp_wars-mch9.5`, section 6.1): a summoning is shown
+    // to a viewer who sees the Summoner, its helper, and the Horror (any
+    // other viewer that sees the Horror gets its `UNIT_REVEALED`). A strand
+    // event follows its cultist (the default rule: the candle is on the
+    // cultist), a grip its Thing and its cultist.
+    case "DAEMON_SUMMONED":
+      return [event.unitId, event.helperUnitId, event.daemonUnitId];
+    case "ANCHOR_GRIPPED":
+    case "ANCHOR_BROKEN":
+      return [event.unitId, event.cultistUnitId];
     default:
       return "unitId" in event ? [event.unitId] : [];
   }
@@ -942,6 +967,20 @@ function projectEventPayload(
         (result) =>
           (result.curedPlague || result.curedBitten) &&
           (seenBefore.has(result.unitId) || seenAfter.has(result.unitId)),
+      ),
+    };
+  }
+  if (event.kind === "UNITS_SCARED") {
+    // The Cultists (section 8.5): another viewer's copy lists only the
+    // scared units it sees (before or after the jump).
+    if (event.playerId === viewerId) return event;
+    const seenBefore = visibility(before, viewerId);
+    const seenAfter = visibility(after, viewerId);
+    return {
+      ...event,
+      results: event.results.filter(
+        (result) =>
+          seenBefore.has(result.unitId) || seenAfter.has(result.unitId),
       ),
     };
   }

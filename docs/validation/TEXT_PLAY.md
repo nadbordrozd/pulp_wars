@@ -320,7 +320,13 @@ Other factions add `.raise`, `.devour`, `.wail`, `.kaboom`, `.coldsnap`,
 Barricades on explored tiles (owner and HP) and marks their cells `B`.
 The Cultists (`pulp_wars-mch9.4`) add `.sacrifice.u9` and `.seize.u31`
 (the Summoner offers that unit) and `c1.offering`; a Cult seat's header and
-every Cult seat in the player list show its Favour.
+every Cult seat in the player list show its Favour. The channel
+(`pulp_wars-mch9.5`) adds `.summon.u9.4,5` (the helper, then the Horror's
+tile), `.channel.u40` (the daemon), `.behold`, `.anchor.u9` (the cultist the
+Thing grips), and `.boo`. A Horror prints as `Horror [HORROR]` with the map
+code `Ho`; a daemon's line shows `daemon: strands 1/1` (its holding strands
+against its Control), a channeller's `channels u40`, a gripped one's
+`gripped by u12 (strand counts three)`, and an Idol Bearer's `idol raised`.
 
 A unit keeps its id for its whole life; a city keeps its id across captures.
 Roles and technologies use the engine's identifiers (`FIGHTER`, `FARMING`).

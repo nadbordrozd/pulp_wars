@@ -19,7 +19,12 @@ import {
   runTextPlayV7,
   textPlayCommandIdV7,
 } from "../../scripts/play-text-v7";
-import { cultFieldV7, withFarmsV7, withFavourV7 } from "../fixtures/v7-cult";
+import {
+  cultFieldV7,
+  withFarmsV7,
+  withFavourV7,
+  withHorrorV7,
+} from "../fixtures/v7-cult";
 
 /**
  * The text-mode play harness (`pulp_wars-w49.1`,
@@ -1650,7 +1655,7 @@ describe("text-mode play harness", () => {
       "Offering: a city gives up 2 population for 3 Favour [OFFERING]",
     );
     expect(tech).toContain(
-      "Summoners Sacrifice your own units and Seize badly hurt enemies for Favour [SUMMONER_SUPPORT]",
+      "Summoners Sacrifice your own units and Seize badly hurt enemies for Favour, and Summon Horrors with it [SUMMONER_SUPPORT]",
     );
     const state = sessionState(session);
     const view = ok("view", "--session", session);
@@ -1698,6 +1703,113 @@ describe("text-mode play harness", () => {
     expect(ok("view", "--session", session)).toContain("| favour 28 |");
     // The Summoner has acted: no Sacrifice is left on offer.
     expect(offeredIds(session)).not.toContain(sacrifice);
+  });
+
+  // The Cult's channel (`pulp_wars-mch9.5`): the harness names a Horror,
+  // prints its strands against its Control, and offers Summon, Channel,
+  // Behold!, Anchor, and Boo! with what each does. A constructed position
+  // on the seat's own turn; no turn is ended.
+  it("prints the Cult's channel, and offers Summon, Channel, Behold!, Anchor, and Boo!", () => {
+    // A Summoner with an Initiate beside it and 6 Favour; a Horror with an
+    // Idol Bearer, a second Initiate, and the Thing near it, and a Human
+    // Fighter beside the Horror.
+    const field = withHorrorV7(
+      withFavourV7(
+        cultFieldV7([
+          { seat: 0, role: "CAPTAIN", at: { x: 5, y: 2 } },
+          { seat: 0, role: "FIGHTER", at: { x: 6, y: 2 } },
+          { seat: 0, role: "GUARD", at: { x: 2, y: 5 } },
+          { seat: 0, role: "FIGHTER", at: { x: 2, y: 4 } },
+          { seat: 0, role: "JUGGERNAUT", at: { x: 1, y: 4 } },
+          { seat: 1, role: "FIGHTER", at: { x: 3, y: 2 } },
+        ]),
+        0,
+        6,
+      ),
+      0,
+      { x: 2, y: 2 },
+    );
+    const session = path.join(root, "cult-channel.json");
+    writeFileSync(
+      session,
+      JSON.stringify({
+        format: "pulp-wars-text-play-session",
+        version: 1,
+        rulesetId: RULESET_7_ID,
+        seat: 0,
+        playerId: field.humanPlayerId,
+        setup: field.setup,
+        commands: [],
+        state: field,
+        stateHash: canonicalHash(field),
+        journal: { rounds: [], notes: [], observed: [] },
+      }),
+    );
+    const state = sessionState(session);
+    const at = (x: number, y: number) => {
+      const found = state.units.find(
+        (candidate) => candidate.at.x === x && candidate.at.y === y,
+      );
+      if (found === undefined) throw new Error(`no unit at ${x},${y}`);
+      return found.id;
+    };
+    const horror = at(2, 2);
+    const view = ok("view", "--session", session, "--full");
+    // The Horror is named for what it is, with its code and its strands.
+    expect(view).toContain(`u${horror} Horror [HORROR] @2,2 hp 18/18`);
+    expect(view).toContain("daemon: strands 0/1 (UNBOUND at its turn start)");
+    expect(view).toContain("Cult summoned: Ho horror");
+    expect(view).not.toContain("[KNIGHT]");
+    const summon = `u${at(5, 2)}.summon.u${at(6, 2)}.5,3`;
+    const channel = `u${at(2, 4)}.channel.u${horror}`;
+    const behold = `u${at(2, 5)}.behold`;
+    const boo = `u${horror}.boo`;
+    expect(offeredIds(session)).toEqual(
+      expect.arrayContaining([summon, channel, behold, boo]),
+    );
+    // Every offered channel command has an id of its own.
+    const ids = queryPlayerCommandsV7(viewForV7(state, state.humanPlayerId))
+      .filter((command) =>
+        ["SUMMON", "CHANNEL", "BEHOLD", "ANCHOR", "BOO"].includes(command.kind),
+      )
+      .map(textPlayCommandIdV7);
+    expect(new Set(ids).size).toBe(ids.length);
+    for (const id of ids)
+      expect(id).toMatch(/^u\d+\.[a-z]+(\.u\d+)?(\.\d+,\d+)?$/);
+    const options = ok("options", "--session", session, "--all");
+    expect(options).toContain("SUMMON a Horror at 5,3 with");
+    expect(options).toContain(
+      "-5 Favour (favour 6->1) | both channel it: strands 2/1",
+    );
+    expect(options).toContain("strands 0/1 -> 1/1");
+    expect(options).toContain(
+      "BEHOLD: raise the idol until your next turn start",
+    );
+    expect(options).toContain(
+      "BOO: every living unit beside it jumps one tile away",
+    );
+    // Channel, then the Thing grips the channeller: its strand counts three.
+    const channelled = ok("do", "--session", session, channel);
+    expect(channelled).toMatch(/STRAND .* channels /);
+    const anchor = `u${at(1, 4)}.anchor.u${at(2, 4)}`;
+    expect(offeredIds(session)).toContain(anchor);
+    expect(ok("options", "--session", session, "--all")).toContain(
+      "strands 1/1 -> 3/1",
+    );
+    const gripped = ok("do", "--session", session, anchor);
+    expect(gripped).toMatch(/ANCHOR .* grips .* \(its strand counts three\)/);
+    const after = ok("view", "--session", session, "--full");
+    expect(after).toContain("daemon: strands 3/1");
+    expect(after).toContain(`channels u${horror}`);
+    expect(after).toContain(`gripped by u${at(1, 4)} (strand counts three)`);
+    // Summon, Behold!, and Boo!.
+    const summoned = ok("do", "--session", session, summon);
+    expect(summoned).toContain("-5 for summoning a Horror (now 1)");
+    expect(summoned).toMatch(/SUMMONED a Horror .* @5,3 hp 18/);
+    expect(ok("do", "--session", session, behold)).toContain("IDOL RAISED");
+    const booed = ok("do", "--session", session, boo);
+    expect(booed).toMatch(/BOO by .* @2,2: .* 3,2->4,2/);
+    expect(ok("view", "--session", session, "--full")).toContain("idol raised");
   });
 
   it("rejects illegal and stale ids cleanly", () => {

@@ -65,6 +65,8 @@ import {
   primaryActionBlockedAfterMoveV7,
   kaboomReadyV7,
   unitMovementModeV7,
+  unitIsSummonedV7,
+  CULT_SUMMONED_ROLE_RULES_V7,
   unitRoleMechanicsV7,
   isRangedRoleRuleV7,
   unitRoleRuleV7,
@@ -285,6 +287,7 @@ import {
 } from "./giants";
 import {
   favourOfV7,
+  isRobedCultistV7,
   offeringRejectionV7,
   sacrificeFavourV7,
   sacrificeRejectionV7,
@@ -292,6 +295,18 @@ import {
   seizeHolderV7,
   seizeRejectionV7,
 } from "./cult";
+import {
+  anchorRejectionV7,
+  beholdRejectionV7,
+  booDestinationV7,
+  booRejectionV7,
+  booVictimsV7,
+  channelRejectionV7,
+  daemonControlV7,
+  holdingStrandsV7,
+  summonHelperLegalV7,
+  summonRejectionV7,
+} from "./cult-channel";
 import { laidEggHpV7, laidEggTurnsV7, publicNestTilesV7 } from "./eggs";
 import {
   stampedeActorRejectionV7,
@@ -335,6 +350,7 @@ import {
   type GameStateV7,
   type ImprovementIdV7,
   type TechnologyIdV7,
+  type SummonedRoleIdV7,
   type UnitRoleIdV7,
   type UnitStateV7,
 } from "./types";
@@ -1351,6 +1367,8 @@ function appendPublicUnitCommandsV7(
   if (
     primaryReady &&
     unit.form === "LAND" &&
+    // The Cultists (section 13.1): a daemon never tosses a Coin.
+    !unitIsSummonedV7(unit) &&
     view.curiosities.some(
       (curiosity) =>
         curiosity.kind === "WISHING_WELL" &&
@@ -1380,7 +1398,9 @@ function appendPublicUnitCommandsV7(
     unit.form !== "EMBARKED" &&
     unit.kills >= PROMOTION_KILLS_V7 &&
     !unit.veteran &&
-    !unitGrowsV7(view, unit)
+    !unitGrowsV7(view, unit) &&
+    // The Cultists (section 4.2): a summoned unit is never promoted.
+    !unitIsSummonedV7(unit)
   )
     candidates.push({ kind: "PROMOTE", unitId: unit.id });
   const tile = tileAtView(view, unit.at);
@@ -1404,6 +1424,9 @@ function appendPublicUnitCommandsV7(
     !primaryUsedForQuery(unit) &&
     unit.form === "LAND" &&
     unit.role !== "JUGGERNAUT" &&
+    // The Cultists (section 4.2): a summoned unit is never disbanded (it
+    // has no printed cost, like a reward giant).
+    !unitIsSummonedV7(unit) &&
     !controlled &&
     !view.plagued.some((entry) => entry.unitId === unit.id) &&
     !view.bitten.some((entry) => entry.unitId === unit.id)
@@ -1461,6 +1484,55 @@ function appendPublicCultCommandsV7(
           unitId: unit.id,
           victimUnitId: victim.id,
         });
+  // The channel (`pulp_wars-mch9.5`, sections 6.1, 6.2, 8.1, 8.4, and 8.5),
+  // each offered exactly when the reducer accepts it (the shared legality
+  // predicates of src/engine/v7/cult-channel.ts): Favour and the strands of
+  // own cultists are in the view, and every unit beside an own unit is
+  // visible.
+  if (abilities.includes("SUMMON")) {
+    const favour = favourOfV7(view, view.viewer.id);
+    const facts = publicGiantTileFactsV7(view);
+    const tiles = ringTilesV7(view.board.width, view.board.height, unit.at);
+    for (const helper of view.units)
+      if (summonHelperLegalV7(view, unit, helper))
+        for (const at of tiles)
+          if (summonRejectionV7(view, facts, favour, unit, helper, at) === null)
+            candidates.push({
+              kind: "SUMMON",
+              unitId: unit.id,
+              helperUnitId: helper.id,
+              at,
+            });
+  }
+  if (abilities.includes("CHANNEL"))
+    for (const daemon of view.units)
+      if (
+        daemon.ownerId === unit.ownerId &&
+        channelRejectionV7(view, unit, daemon) === null
+      )
+        candidates.push({
+          kind: "CHANNEL",
+          unitId: unit.id,
+          daemonUnitId: daemon.id,
+        });
+  if (abilities.includes("BEHOLD") && beholdRejectionV7(view, unit) === null)
+    candidates.push({ kind: "BEHOLD", unitId: unit.id });
+  if (abilities.includes("ANCHOR"))
+    for (const cultist of view.units)
+      if (
+        cultist.ownerId === unit.ownerId &&
+        anchorRejectionV7(view, unit, cultist) === null
+      )
+        candidates.push({
+          kind: "ANCHOR",
+          unitId: unit.id,
+          cultistUnitId: cultist.id,
+        });
+  if (
+    abilities.includes("BOO") &&
+    booRejectionV7(view, view.units, unit) === null
+  )
+    candidates.push({ kind: "BOO", unitId: unit.id });
 }
 
 /**
@@ -3971,6 +4043,334 @@ export function previewOfferingV7(
     favour: OFFERING_FAVOUR_V7,
     favourAfter: favourOfV7(view, view.viewer.id) + OFFERING_FAVOUR_V7,
   };
+}
+
+/**
+ * The Cultists (`pulp_wars-mch9.5`, section 6.1): the preview of an offered
+ * Summon: what it costs, the Horror that arrives, and the two strands it
+ * starts with against its Control.
+ */
+export interface SummonPreviewV7 {
+  readonly unitId: UnitId;
+  readonly helperUnitId: UnitId;
+  readonly at: CoordV7;
+  readonly role: SummonedRoleIdV7;
+  /** The Horror's Hit Points (full). */
+  readonly hp: number;
+  /** The Favour spent. */
+  readonly favour: number;
+  readonly favourAfter: number;
+  readonly control: number;
+  /** The strands the summoning leaves on the Horror (the two summoners'). */
+  readonly strands: number;
+}
+
+/** Section 6.1: null unless that `SUMMON` is offered; equals the result. */
+export function previewSummonV7(
+  view: PlayerViewV7,
+  unitId: UnitId,
+  helperUnitId: UnitId,
+  at: CoordV7,
+): SummonPreviewV7 | null {
+  if (
+    !queryPlayerCommandsV7(view).some(
+      (command) =>
+        command.kind === "SUMMON" &&
+        command.unitId === unitId &&
+        command.helperUnitId === helperUnitId &&
+        same(command.at, at),
+    )
+  )
+    return null;
+  const registration = CULT_SUMMONED_ROLE_RULES_V7.HORROR;
+  const favour = registration.favourCost ?? 0;
+  return {
+    unitId,
+    helperUnitId,
+    at: { x: at.x, y: at.y },
+    role: "HORROR",
+    hp: registration.maxHp,
+    favour,
+    favourAfter: favourOfV7(view, view.viewer.id) - favour,
+    control: registration.control ?? 0,
+    strands: 2,
+  };
+}
+
+/**
+ * The Cultists (section 6.2): the preview of an offered Channel: the
+ * daemon's Control and its holding strands as the board stands, before and
+ * after this strand, and whether it would stay bound if its seat's Start
+ * Turn check ran on this board. (Strands can still break before the check.)
+ */
+export interface ChannelPreviewV7 {
+  readonly unitId: UnitId;
+  readonly daemonUnitId: UnitId;
+  readonly role: SummonedRoleIdV7;
+  readonly control: number;
+  readonly strandsBefore: number;
+  readonly strandsAfter: number;
+  /** `strandsAfter >= control`. */
+  readonly holds: boolean;
+}
+
+/** Section 6.2: null unless that `CHANNEL` is offered; equals the result. */
+export function previewChannelV7(
+  view: PlayerViewV7,
+  unitId: UnitId,
+  daemonUnitId: UnitId,
+): ChannelPreviewV7 | null {
+  if (
+    !queryPlayerCommandsV7(view).some(
+      (command) =>
+        command.kind === "CHANNEL" &&
+        command.unitId === unitId &&
+        command.daemonUnitId === daemonUnitId,
+    )
+  )
+    return null;
+  const daemon = view.units.find((unit) => unit.id === daemonUnitId);
+  if (daemon?.summoned === undefined) return null;
+  const control = daemonControlV7(daemon);
+  const strandsBefore = holdingStrandsV7(view, view.units, daemon);
+  const strandsAfter = holdingStrandsV7(
+    {
+      ...view,
+      cult: {
+        ...view.cult,
+        strands: [
+          ...view.cult.strands.filter(
+            (strand) => strand.cultistUnitId !== unitId,
+          ),
+          { cultistUnitId: unitId, daemonUnitId },
+        ],
+      },
+    },
+    view.units,
+    daemon,
+  );
+  return {
+    unitId,
+    daemonUnitId,
+    role: daemon.summoned,
+    control,
+    strandsBefore,
+    strandsAfter,
+    holds: strandsAfter >= control,
+  };
+}
+
+/**
+ * The Cultists (section 8.4): the preview of an offered Anchor: the daemon
+ * the gripped cultist channels, and its holding strands before and after
+ * the grip (the cultist's strand counts three while the grip holds).
+ */
+export interface AnchorPreviewV7 {
+  readonly unitId: UnitId;
+  readonly cultistUnitId: UnitId;
+  readonly daemonUnitId: UnitId;
+  readonly control: number;
+  readonly strandsBefore: number;
+  readonly strandsAfter: number;
+  readonly holds: boolean;
+}
+
+/** Section 8.4: null unless that `ANCHOR` is offered; equals the result. */
+export function previewAnchorV7(
+  view: PlayerViewV7,
+  unitId: UnitId,
+  cultistUnitId: UnitId,
+): AnchorPreviewV7 | null {
+  if (
+    !queryPlayerCommandsV7(view).some(
+      (command) =>
+        command.kind === "ANCHOR" &&
+        command.unitId === unitId &&
+        command.cultistUnitId === cultistUnitId,
+    )
+  )
+    return null;
+  const daemonUnitId = view.cult.strands.find(
+    (strand) => strand.cultistUnitId === cultistUnitId,
+  )?.daemonUnitId;
+  const daemon = view.units.find((unit) => unit.id === daemonUnitId);
+  if (daemon === undefined) return null;
+  const control = daemonControlV7(daemon);
+  const strandsAfter = holdingStrandsV7(
+    {
+      ...view,
+      cult: {
+        ...view.cult,
+        grips: [...view.cult.grips, { thingUnitId: unitId, cultistUnitId }],
+      },
+    },
+    view.units,
+    daemon,
+  );
+  return {
+    unitId,
+    cultistUnitId,
+    daemonUnitId: daemon.id,
+    control,
+    strandsBefore: holdingStrandsV7(view, view.units, daemon),
+    strandsAfter,
+    holds: strandsAfter >= control,
+  };
+}
+
+/**
+ * The Cultists (section 8.1): the preview of an offered Behold!: the own
+ * robed cultists on the eight tiles around the Idol Bearer now, which keep
+ * their strands when they lose Hit Points while the idol is raised.
+ */
+export interface BeholdPreviewV7 {
+  readonly unitId: UnitId;
+  readonly wardedUnitIds: readonly UnitId[];
+}
+
+/** Section 8.1: null unless that `BEHOLD` is offered. */
+export function previewBeholdV7(
+  view: PlayerViewV7,
+  unitId: UnitId,
+): BeholdPreviewV7 | null {
+  if (
+    !queryPlayerCommandsV7(view).some(
+      (command) => command.kind === "BEHOLD" && command.unitId === unitId,
+    )
+  )
+    return null;
+  const bearer = view.units.find((unit) => unit.id === unitId);
+  if (bearer === undefined) return null;
+  return {
+    unitId,
+    wardedUnitIds: view.units
+      .filter(
+        (unit) =>
+          unit.id !== bearer.id &&
+          unit.ownerId === bearer.ownerId &&
+          chebyshev(unit.at, bearer.at) === 1 &&
+          isRobedCultistV7(view, unit),
+      )
+      .map((unit) => unit.id),
+  };
+}
+
+/**
+ * The Cultists (section 8.5): the preview of an offered Boo!: every unit it
+ * reaches, in the order they jump, with where each lands. A jump is exact
+ * except where another player's private technology decides it (a hostile
+ * unit scared onto a Mountain) or the tile behind is unexplored: `UNKNOWN`,
+ * which the preview counts as staying for the units after it.
+ */
+export interface BooPreviewEntryV7 {
+  readonly unitId: UnitId;
+  readonly ownerId: PlayerId;
+  readonly from: CoordV7;
+  readonly outcome: "JUMPS" | "STAYS" | "UNKNOWN";
+  /** The tile one step directly away from the Horror. */
+  readonly to: CoordV7;
+  /** It holds a strand the viewer sees, which a jump breaks. */
+  readonly holdsStrand: boolean;
+}
+export interface BooPreviewV7 {
+  readonly unitId: UnitId;
+  readonly results: readonly BooPreviewEntryV7[];
+}
+
+/** Section 8.5: null unless that `BOO` is offered. */
+export function previewBooV7(
+  view: PlayerViewV7,
+  unitId: UnitId,
+): BooPreviewV7 | null {
+  if (
+    !queryPlayerCommandsV7(view).some(
+      (command) => command.kind === "BOO" && command.unitId === unitId,
+    )
+  )
+    return null;
+  const horror = view.units.find((unit) => unit.id === unitId);
+  if (horror === undefined) return null;
+  let units = view.units;
+  const results: BooPreviewEntryV7[] = [];
+  for (const victim of booVictimsV7(view, view.units, horror)) {
+    const to = booDestinationV7(horror.at, victim.at);
+    const outcome = publicBooJumpV7(
+      units === view.units ? view : { ...view, units },
+      victim,
+      to,
+    );
+    results.push({
+      unitId: victim.id,
+      ownerId: victim.ownerId,
+      from: { x: victim.at.x, y: victim.at.y },
+      outcome,
+      to,
+      holdsStrand: view.cult.strands.some(
+        (strand) => strand.cultistUnitId === victim.id,
+      ),
+    });
+    if (outcome === "JUMPS")
+      units = units.map((unit) =>
+        unit.id === victim.id ? { ...unit, at: to } : unit,
+      );
+  }
+  return { unitId, results };
+}
+
+/**
+ * The Cultists (section 8.5): the public mirror of the Push conditions
+ * (`displacementDestinationLegalV7`) for a land-form unit a Boo! scares
+ * onto `to`: on the board, not a settlement site, land or ice, enterable by
+ * the unit, empty, and not in territory allied to it. Every unit and mound
+ * on an explored tile is visible.
+ */
+function publicBooJumpV7(
+  view: PlayerViewV7,
+  victim: PlayerViewV7["units"][number],
+  to: CoordV7,
+): BooPreviewEntryV7["outcome"] {
+  if (unitIsImmovableV7(view, victim)) return "STAYS";
+  const tile = tileAtView(view, to);
+  if (tile === undefined) return "STAYS";
+  if (!tile.explored) return "UNKNOWN";
+  const ice = isIceAtV7(view, to);
+  if (
+    tile.site !== null ||
+    (tile.biome === null && !ice) ||
+    tileOccupiedV7(view, to, victim.id) ||
+    (tile.territoryOwnerId !== null &&
+      publicAllied(view, victim.ownerId, tile.territoryOwnerId))
+  )
+    return "STAYS";
+  if (
+    tile.terrain === "RIFT" &&
+    !canEnterTerrainV7({
+      terrain: tile.terrain,
+      movementMode: unitMovementModeV7(view, victim),
+      afloat: false,
+      engineering: false,
+      navigation: false,
+      mountainBorn: false,
+      ice: false,
+    })
+  )
+    return "STAYS";
+  if (tile.terrain === "MOUNTAIN") {
+    if (
+      !unitMayEnterMountainV7(view, victim, false) &&
+      victim.ownerId !== view.viewer.id
+    )
+      return "UNKNOWN";
+    if (
+      !unitMayEnterMountainV7(
+        view,
+        victim,
+        view.viewer.researchedTechs.includes("ENGINEERING"),
+      )
+    )
+      return "STAYS";
+  }
+  return "JUMPS";
 }
 
 /** Section 6.3: the preview of an offered Goblin Toss. */
@@ -10123,6 +10523,7 @@ function createPublicChainSimulationV7(
       form: unit.form,
       at: unit.at,
       hp: unit.hp,
+      ...(unit.summoned === undefined ? {} : { summoned: unit.summoned }),
     }),
     bite: (unitId, biterId) => {
       bites.set(unitId, biterId);

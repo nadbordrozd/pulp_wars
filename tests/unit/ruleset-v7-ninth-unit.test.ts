@@ -389,11 +389,11 @@ const productionOf = (
 
 describe("the ninth unit: identity", () => {
   it("was 7r55 after 7r54, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r73");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r73.current");
-    expect(PRIOR_RULESET_7_IDS.at(-19)).toBe("pulp-wars-poc-7r54");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r74");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r74.current");
+    expect(PRIOR_RULESET_7_IDS.at(-20)).toBe("pulp-wars-poc-7r54");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-19)).toBe(
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-20)).toBe(
       "pulpWars.save.v7r54.current",
     );
     const state = field([]);
@@ -430,7 +430,9 @@ describe("the ninth unit: identity", () => {
     // (126).
     // The Cult's Favour (`pulp_wars-mch9.4`) adds UNIT_SACRIFICED,
     // UNIT_SEIZED, OFFERING_MADE, and FAVOUR_GAINED (130).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(130);
+    // The Cult's channel (`pulp_wars-mch9.5`) adds ten kinds after
+    // FAVOUR_GAINED, from FAVOUR_SPENT to DAEMON_UNBOUND (140).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(140);
   });
 });
 

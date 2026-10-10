@@ -20,6 +20,7 @@ import {
   type PublicUnitV7,
   type UnitId,
 } from "../engine/index";
+import { cultChannelCommandPresentationV7 } from "./cult-channel-presentation-v7";
 
 /**
  * The Cultists of the Ancient Ones (docs/product/RULESET_7_CULTISTS.md;
@@ -51,7 +52,7 @@ export const OFFERING_TOOLTIP_V7 = `The city gives up ${OFFERING_POPULATION_V7} 
 
 /** Administration (shown as Leadership), `SUMMONER_SUPPORT`. */
 export const SUMMONER_SUPPORT_UNLOCK_TEXT_V7 =
-  "Summoners Sacrifice your own units and Seize badly hurt enemies for Favour";
+  "Summoners Sacrifice your own units and Seize badly hurt enemies for Favour, and Summon Horrors with it";
 /** Farming (shown as Harvest Rites), `OFFERING`. */
 export const OFFERING_UNLOCK_TEXT_V7 = `Offering: a city gives up ${OFFERING_POPULATION_V7} population for ${OFFERING_FAVOUR_V7} Favour`;
 
@@ -93,6 +94,10 @@ export function cultCommandPresentationV7(
   view: PlayerViewV7,
   command: CommandV7,
 ): CultCommandPresentationV7 | null {
+  // The channel (`pulp_wars-mch9.5`): Summon, Channel, Behold!, Anchor, and
+  // Boo! (src/render/cult-channel-presentation-v7.ts).
+  const channel = cultChannelCommandPresentationV7(view, command);
+  if (channel !== null) return channel;
   if (command.kind === "OFFERING") {
     const preview = previewOfferingV7(view, command.cityId);
     return preview === null

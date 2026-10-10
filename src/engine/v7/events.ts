@@ -6,6 +6,7 @@ import type {
   MatchOutcomeV7,
   NavalRoleIdV7,
   RewardIdV7,
+  SummonedRoleIdV7,
   TechnologyIdV7,
   UnitRoleIdV7,
 } from "./types";
@@ -23,6 +24,38 @@ export const FAVOUR_SOURCES_V7 = Object.freeze([
   "MARTYR",
 ] as const);
 export type FavourSourceV7 = (typeof FAVOUR_SOURCES_V7)[number];
+
+/**
+ * The Cultists (`pulp_wars-mch9.5`, section 3): what a Cult seat spent
+ * Favour on, in the frozen order: summoning a Horror. The Great Summoning
+ * joins with the Herald (`pulp_wars-mch9.7`).
+ */
+export const FAVOUR_PURPOSES_V7 = Object.freeze(["SUMMON_HORROR"] as const);
+export type FavourPurposeV7 = (typeof FAVOUR_PURPOSES_V7)[number];
+
+/**
+ * The Cultists (`pulp_wars-mch9.5`, section 6.2): how a cultist was
+ * disrupted, in the frozen order: it lost Hit Points; it was moved by
+ * anything but its own action; it got a status; it changed owner; it left
+ * the board (a death, a Sacrifice, a Swallow, an embarkation). When several
+ * happened in one command the first of this order is reported.
+ */
+export const DISRUPTION_CAUSES_V7 = Object.freeze([
+  "HP_LOSS",
+  "MOVED",
+  "STATUS",
+  "OWNER",
+  "GONE",
+] as const);
+export type DisruptionCauseV7 = (typeof DISRUPTION_CAUSES_V7)[number];
+
+/** One unit a Horror's Boo! reached (section 8.5). */
+export interface ScaredUnitV7 {
+  readonly unitId: UnitId;
+  readonly from: CoordV7;
+  /** Where it jumped to, or null when it could not jump and stayed. */
+  readonly to: CoordV7 | null;
+}
 
 export interface CityIncomeEntryV7 {
   readonly cityId: CityId;
@@ -1392,6 +1425,122 @@ export type DomainEventV7 =
       readonly favour: number;
     }
   | {
+      /**
+       * The Cultists (`pulp_wars-mch9.5`, section 3): the Cult seat
+       * `playerId` spent `amount` Favour on `purpose` and has `favour` left.
+       * Public, like `FAVOUR_GAINED`; it names no unit and no tile.
+       */
+      readonly kind: "FAVOUR_SPENT";
+      readonly playerId: PlayerId;
+      readonly purpose: FavourPurposeV7;
+      readonly amount: number;
+      readonly favour: number;
+    }
+  | {
+      /**
+       * The Cultists (section 6.1): the Summoner `unitId` of `playerId` and
+       * its helper `helperUnitId` summoned the daemon `daemonUnitId` (a
+       * `role`) on `at`. The seat's `FAVOUR_SPENT` comes first; the two
+       * `STRAND_FORMED` follow.
+       */
+      readonly kind: "DAEMON_SUMMONED";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly helperUnitId: UnitId;
+      readonly daemonUnitId: UnitId;
+      readonly role: SummonedRoleIdV7;
+      readonly at: CoordV7;
+      readonly hp: number;
+    }
+  | {
+      /**
+       * The Cultists (section 6.2): the cultist `unitId` of `playerId`
+       * holds a strand to the daemon `daemonUnitId` (a Channel, or a
+       * summoning).
+       */
+      readonly kind: "STRAND_FORMED";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly daemonUnitId: UnitId;
+    }
+  | {
+      /**
+       * The Cultists (section 6.2): the strand of the cultist `unitId` (of
+       * `playerId` when it formed) to `daemonUnitId` broke: the cultist was
+       * disrupted (`cause`).
+       */
+      readonly kind: "STRAND_BROKEN";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly daemonUnitId: UnitId;
+      readonly cause: DisruptionCauseV7;
+    }
+  | {
+      /** The Cultists (section 8.1): the Idol Bearer `unitId` raised its idol. */
+      readonly kind: "IDOL_RAISED";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+    }
+  | {
+      /**
+       * The Cultists (section 8.1): the idol of `unitId` dropped: its
+       * bearer was disrupted (`cause`), or it was lowered at the end of the
+       * channel check of its owner's next Start Turn (`EXPIRED`).
+       */
+      readonly kind: "IDOL_DROPPED";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly cause: DisruptionCauseV7 | "EXPIRED";
+    }
+  | {
+      /**
+       * The Cultists (section 8.4): the Thing `unitId` of `playerId` grips
+       * the channeller `cultistUnitId` beside it.
+       */
+      readonly kind: "ANCHOR_GRIPPED";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly cultistUnitId: UnitId;
+    }
+  | {
+      /**
+       * The Cultists (section 8.4): the grip of the Thing `unitId` on
+       * `cultistUnitId` failed: the Thing was moved, given a status, taken,
+       * or removed (`cause`; its own HP loss never matters). A grip whose
+       * cultist was disrupted ends with that cultist's `STRAND_BROKEN`.
+       */
+      readonly kind: "ANCHOR_BROKEN";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly cultistUnitId: UnitId;
+      readonly cause: Exclude<DisruptionCauseV7, "HP_LOSS">;
+    }
+  | {
+      /**
+       * The Cultists (section 8.5): the Horror `unitId` of `playerId` Booed:
+       * `results` lists every unit it reached, in the order they jumped.
+       */
+      readonly kind: "UNITS_SCARED";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly at: CoordV7;
+      readonly results: readonly ScaredUnitV7[];
+    }
+  | {
+      /**
+       * The Cultists (sections 6.2 and 6.4): at the Start Turn check of
+       * `summonerPlayerId` the daemon `unitId` had `strands` holding strands
+       * against its `control`: it is Unbound. Until the Unbound rules
+       * (`pulp_wars-mch9.6`) it leaves the board: its `UNIT_DIED` (cause
+       * `UNBOUND`) follows.
+       */
+      readonly kind: "DAEMON_UNBOUND";
+      readonly unitId: UnitId;
+      readonly summonerPlayerId: PlayerId;
+      readonly strands: number;
+      readonly control: number;
+    }
+  | {
       readonly kind: "SPOILS_AWARDED";
       readonly playerId: PlayerId;
       readonly cityId: CityId;
@@ -1560,7 +1709,14 @@ export type DomainEventV7 =
          * (after `UNIT_SEIZED`: a kill credited to the Summoner). Nothing
          * is left: no Grave, Crumbs, blast, or rising.
          */
-        | "SACRIFICED";
+        | "SACRIFICED"
+        /**
+         * The Cultists (`pulp_wars-mch9.5`): a daemon whose channel failed
+         * (after `DAEMON_UNBOUND`). A removal, not a kill, and the stand-in
+         * for the Unbound rules of `pulp_wars-mch9.6`, which keep the
+         * daemon on the board as a neutral unit.
+         */
+        | "UNBOUND";
     }
   | {
       /**

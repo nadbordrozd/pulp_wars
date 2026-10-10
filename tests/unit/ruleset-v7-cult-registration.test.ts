@@ -141,17 +141,18 @@ function generatedSetup(
 }
 
 describe("the Cult registration: identity", () => {
-  // The Cult's Favour (`pulp_wars-mch9.4`) took 7r72 and the AI head start
-  // (`pulp_wars-w49.39`) 7r73, so 7r71 is a prior identity.
+  // The Cult's Favour (`pulp_wars-mch9.4`) took 7r72, the AI head start
+  // (`pulp_wars-w49.39`) 7r73, and the Cult's channel (`pulp_wars-mch9.5`)
+  // 7r74, so 7r71 is a prior identity.
   it("was 7r71 after 7r70, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r73");
-    expect(PRIOR_RULESET_7_IDS.slice(-3, -1)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r74");
+    expect(PRIOR_RULESET_7_IDS.slice(-4, -2)).toEqual([
       "pulp-wars-poc-7r70",
       "pulp-wars-poc-7r71",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r73.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-3, -1)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r74.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-4, -2)).toEqual([
       "pulpWars.save.v7r70.current",
       "pulpWars.save.v7r71.current",
     ]);
@@ -313,7 +314,8 @@ describe("the Cult registration: the nine land roles (section 4.1)", () => {
   });
 
   // The Summoner's Sacrifice and Seize and the Chosen's Martyr arrived
-  // with the Favour bead (`pulp_wars-mch9.4`).
+  // with the Favour bead (`pulp_wars-mch9.4`); Summon, Channel, Behold!,
+  // and Anchor with the channel (`pulp_wars-mch9.5`).
   it("registers only the abilities that work today: no Cult rule is named before its bead", () => {
     const abilities = Object.fromEntries(
       LAND_ROLES.map((role) => [
@@ -322,20 +324,20 @@ describe("the Cult registration: the nine land roles (section 4.1)", () => {
       ]),
     );
     expect(abilities).toEqual({
-      FIGHTER: ["ATTACK", "CAPTURE"],
-      // Charge with Raiding; no Escape.
+      FIGHTER: ["ATTACK", "CAPTURE", "CHANNEL"],
+      // Charge with Raiding; no Escape. The Familiar never channels.
       RAIDER: ["ATTACK", "CAPTURE", "CHARGE"],
-      MARKSMAN: ["ATTACK", "CAPTURE"],
-      GUARD: ["ATTACK", "CAPTURE"],
-      // No Rally and no Tend Wounded; Sacrifice and Seize.
-      CAPTAIN: ["ATTACK", "CAPTURE", "SACRIFICE", "SEIZE"],
+      MARKSMAN: ["ATTACK", "CAPTURE", "CHANNEL"],
+      GUARD: ["ATTACK", "CAPTURE", "CHANNEL", "BEHOLD"],
+      // No Rally and no Tend Wounded; Sacrifice, Seize, and Summon.
+      CAPTAIN: ["ATTACK", "CAPTURE", "SACRIFICE", "SEIZE", "SUMMON", "CHANNEL"],
       // No attack of its own.
-      CATAPULT: ["CAPTURE"],
+      CATAPULT: ["CAPTURE", "CHANNEL"],
       // No Overrun.
-      KNIGHT: ["ATTACK", "CAPTURE"],
-      SWORDSMAN: ["ATTACK", "CAPTURE", "MARTYR"],
-      // No Push, and no signature until Anchor's bead.
-      JUGGERNAUT: ["ATTACK", "CAPTURE"],
+      KNIGHT: ["ATTACK", "CAPTURE", "CHANNEL"],
+      SWORDSMAN: ["ATTACK", "CAPTURE", "MARTYR", "CHANNEL"],
+      // No Push; its signature is Anchor.
+      JUGGERNAUT: ["ATTACK", "CAPTURE", "ANCHOR"],
     });
     // Every land unit captures (`pulp_wars-ke95`).
     for (const role of LAND_ROLES)
@@ -358,7 +360,8 @@ describe("the Cult registration: the nine land roles (section 4.1)", () => {
       // The Stargazer has no attack, so it wrecks no Field Defense by one.
       expect(mechanics.demolishesFieldDefense, role).toBe(false);
       // The Cult's own mechanics so far (`pulp_wars-mch9.4`): the robed
-      // cultists and the Chosen's Martyr.
+      // cultists and the Chosen's Martyr; and (`pulp_wars-mch9.5`) the
+      // Thing's Anchor.
       expect(mechanics, role).toEqual({
         ...human[role],
         buildsFieldDefense: false,
@@ -368,6 +371,7 @@ describe("the Cult registration: the nine land roles (section 4.1)", () => {
         demolishesFieldDefense: false,
         robed: !["RAIDER", "JUGGERNAUT", ...NAVAL_ROLE_IDS_V7].includes(role),
         martyrFavour: role === "SWORDSMAN" ? 6 : 0,
+        anchorStrands: role === "JUGGERNAUT" ? 2 : 0,
       });
       expect(mechanics.capacitySlots, role).toBe(1);
       expect(mechanics.movementMode, role).toBe("GROUND");

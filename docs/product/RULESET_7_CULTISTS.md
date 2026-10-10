@@ -3,9 +3,12 @@
 **Status:** final design spec for the ninth faction, validated on paper
 (bead `pulp_wars-mch9.2`, epic `pulp_wars-mch9`, 2026-10-09; the first
 draft was bead `pulp_wars-mch9.1`). No game was played or simulated to
-write it. **Implemented so far:** the registration, bead E1, and Favour
-with Sacrifice, Seize, Offering, and Martyr, bead E2
-([section 21](#21-implementation-notes)); no daemon, ritual, or hex yet. It
+write it. **Implemented so far:** the registration, bead E1; Favour with
+Sacrifice, Seize, Offering, and Martyr, bead E2; and the channel, bead E3:
+Summon and the Horror, Channel and the strands, the disruption rule, the
+Start Turn check, Behold!, Anchor, and Boo!
+([section 21](#21-implementation-notes)). An Unbound daemon still leaves
+the board (the Unbound rules are bead E4); no ritual, Herald, or hex yet. It
 replaces
 [the Cult proposal](RULESET_7_CULT_PROPOSAL.md) of 2026-10-06 (bead
 `pulp_wars-2yc.25`), which stays as design history; where the two
@@ -1943,6 +1946,136 @@ this spec left room:
     adds Favour to the HUD and the leaderboard.
 12. **Nothing spends Favour yet.** Summon (E3) and the Great Summoning (E5)
     do.
+
+### 21.3 E3, the channel (`pulp_wars-mch9.5`, `pulp-wars-poc-7r74`)
+
+What the engine holds after E3 is listed in
+[the current rules, section 1](RULESET_7_CURRENT.md#1-identity-and-compatibility):
+Summon and the Horror ([section 6.1](#61-summon-a-horror)), Channel, the
+disruption rule, Candlelit, and the check ([section 6.2](#62-channel)),
+Behold! ([section 8.1](#81-behold-the-idol-bearer)), Anchor
+([section 8.4](#84-anchor-the-thing-in-the-cellar)), and Boo!
+([section 8.5](#85-boo-the-horror)). The choices E3 made where this spec
+left room:
+
+1. **How a summoned unit is a unit.** A unit names its summoned role in its
+   own `summoned` field (`HORROR`; the Herald and the Tentacle join with
+   their beads), and its stored `role` is a **mechanical role** that no rule
+   reads (the Horror's is `KNIGHT`; the Giant Spider's `JUGGERNAUT` is the
+   precedent). `unitRoleRuleV7` and `unitRoleMechanicsV7` return the
+   summoned registration for such a unit from any roster, so every rule,
+   stat, label, and preview is the Horror's. The registry's unit roles are
+   untouched ([section 21.1](#211-e1-the-registration-pulp_wars-mch93-pulp-wars-poc-7r71),
+   choice 1). A summoned unit is in land form, of a Cult seat, has no home
+   city (also after a capture it makes), is never a veteran, and is never
+   mind-controlled; a state that says otherwise is invalid.
+2. **The Horror's registration.** Attack, Capture, Boo!, and the walker's
+   Stride; Sight 1; no cost and no technology; it advances after a kill and
+   may Pillage like any land unit. It is **not living, in the engine's sense
+   of a construct**: no Plague, bite, Infect, Wail, Seizure, or Boo!; immune
+   to Mind Control and Swallow; no Recover, no idle recovery, no Windmill,
+   Fountain, or Wishing Well heal; **and no Grave**. It strides over Forest
+   and Mountain (no Engineering needed) and **never enters water** (a
+   walker's shallow-water crossing and every embarkation are refused). It is
+   never promoted (also not at a Shrine), disbanded, or Sacrificed
+   (`SACRIFICE_NOT_LEGAL` reason `DAEMON`), and tosses no Coin. Its value is
+   6: the Score's Army while its seat commands it, and what its kill is
+   worth.
+3. **Summon.** The tile is land the actor has explored, never water or ice,
+   never a settlement center (as for every unit an action places), with no
+   unit, mound, Barricade, chest, or curiosity, and not in allied territory;
+   a Mountain is fine. The helper has not used a primary action and is not
+   Frozen. The Horror is exhausted for the turn and reveals its sight.
+   Favour that reaches 0 has no entry.
+4. **Channel.** Every robed cultist channels after its Move, also the Idol
+   Bearer and the Stargazer (which may not attack after one). A cultist
+   that has channelled cannot Move afterwards (the engine's rule for every
+   unit that has used its action), so "its own Move" never moves a strand
+   holder; what the exemption protects is the acting unit of a command, a
+   gripping Thing's own Move or advance first of all.
+5. **Disruption is decided by what happened to the unit.** After every
+   accepted command, and inside a Start Turn after Plague and before the
+   check, the engine compares each watched unit (a strand's cultist, a
+   grip's Thing, a raised idol's bearer) with what it was when the command
+   began: fewer Hit Points; another tile, unless the command is the unit's
+   own; a status it did not have; another owner; or no longer on the board
+   in land form. No rule asks "does this disrupt?", so a new way of hurting,
+   moving, marking, taking, or removing a unit disrupts without new code.
+   **The statuses** are Plagued, Bitten, Frozen, Stuck, Toothache, and
+   Splatted, and the marks a hit leaves: Terror, the hunted mark, the
+   bombed mark, and Cracked. A unit's own states (a Shield, Cooling, Sugar
+   Rush and the Crash, Berserk) are not. The source does not matter: the
+   Cult's own Boo!, its own Horror's kill of a Rocket Cart beside a
+   channeller, and (from E5) its own Star-fall disrupt like an enemy's act.
+   A unit that gains Hit Points is not disrupted. The event
+   (`STRAND_BROKEN`, `ANCHOR_BROKEN`, `IDOL_DROPPED`) names one cause, the
+   first of Hit Points, moved, status, owner, gone.
+   `tests/fixtures/v7-disruption-paths.ts` is the audit: every domain event
+   kind and every key of the game state is classified there (a new one does
+   not compile until it is), and each classified path has a hand-built
+   proof or a stated reason.
+6. **Behold!** wards a loss of Hit Points only, for an own robed cultist
+   that stood on one of the eight tiles around the Idol Bearer when the
+   command began. **A command that also disrupts the Idol Bearer wards
+   nobody** (one Whirl, one blast, or one Start Turn's Plague that hits
+   both: [section 13.1](#131-faction-rules-and-other-systems)). The Idol
+   Bearer does not ward its own strand. The idol is lowered at the end of
+   the channel check of its owner's next Start Turn (`IDOL_DROPPED` cause
+   `EXPIRED`), which is also when that seat's strands are cleared.
+7. **Anchor** is one grip per Thing and one per cultist; the check clears
+   it. There is no separate "used this turn" mark: a Thing whose grip broke
+   in its own turn (its own Horror Booed the cultist away) may grip again.
+   The Thing's own Move or advance does not fail the grip, but the strand
+   counts three only while the Thing stands next to the cultist at the
+   check. Any status on the Thing fails it, also one from its own attack
+   (Toothache from a Jawbreaker, Frostbite from a Musk Ox). Anchor is a Cult
+   rule of its own and is not one of the giants' eight signature tables.
+8. **Boo!** needs somebody to scare (`BOO_NOT_LEGAL` reason `NOBODY`
+   otherwise; it is not offered beside nobody). The jumps resolve in
+   `(y, x, unit ID)` order, each on the board the earlier ones left, by the
+   Push conditions alone (the tile behind need not be explored by the
+   Horror's seat). A scared unit reveals its sight where it lands; nobody's
+   activation changes but the Horror's. The preview marks a jump `UNKNOWN`
+   where another seat's Engineering decides it (a hostile unit onto a
+   Mountain) or the tile behind is unexplored.
+9. **The check, and the stand-in for Unbound.** A daemon's holding strands
+   are the strands whose cultist is on the board as its seat's own robed
+   cultist within 3 tiles now, each 1, or 3 under a holding grip. Short of
+   its Control the daemon is Unbound: `DAEMON_UNBOUND`, and **until the
+   Unbound rules (E4) it leaves the board** (`UNIT_DIED` cause `UNBOUND`: a
+   removal, no Loss in the Score, the seat no longer flawless). E4 replaces
+   the removal with the neutral owner and the rampage, adds Furious and
+   Bind again (Channel on an Unbound daemon), the eye mark, a bound
+   daemon's kills as a Favour source, and the Unbound of an eliminated
+   seat's daemons (today they are removed with its other units).
+10. **Candlelit needed no rule.** In the current rules every unit on a tile
+    a player has explored is visible to that player, so a channeller is
+    already seen, and targeted, by everyone who has explored its tile. The
+    view adds what the board must draw: each strand by its cultist (with a
+    null daemon when the viewer does not see the daemon), each visible
+    daemon with its Control and its holding strands (which count the
+    strands of cultists the viewer does not see: the pips are public), the
+    grips, and the raised idols.
+11. **"Needs a Cult seat"**: a mind-controlled unit has no `SUMMON`,
+    `CHANNEL`, or `ANCHOR`. `BEHOLD` and `BOO` follow the unit. A
+    mind-controlled cultist changed owner, so its strand, its grip, and
+    its place under an idol are gone already.
+12. **The Normal AI** never picks one of the five commands until bead A2
+    (`pulp_wars-mch9.10`); a hand-built position holds it to that.
+13. **The interface stand-in.** Until bead U2 (`pulp_wars-mch9.18`) the dock
+    shows the five commands with its generic action buttons: "Summon
+    Horror" (one button per Summoner: the first helper and tile the engine
+    offers), "Channel Horror" (one per daemon in reach, with the strands it
+    would have against its Control), "Behold!", "Grip Initiate" (one per
+    channeller beside the Thing), and "Boo!". U2 replaces them with the
+    tile, helper, daemon, and cultist picked on the board, and adds the
+    strands, the Control pips, the candles, the grip, the idol's ring, the
+    Boo! arrows, and the End Turn question for a daemon short of its
+    Control. The Horror already draws with its own sprite and name.
+14. **The Horror's numbers of [section 4.2](#42-summoned-units) were re-run
+    through the engine's combat preview** and all match: it kills a full-HP
+    Fighter and Knight in one attack and takes nothing; it deals a Guard 10
+    and takes 6; a Knight deals it 12 and takes 3, a Catapult 8, a Marksman 5.
 
 ## Appendix A. The proposal's fifteen decisions, answered
 

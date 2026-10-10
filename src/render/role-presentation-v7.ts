@@ -11,6 +11,7 @@ import {
   carrionTextV7,
   rangedDefenseTextV7,
 } from "./technology-unlock-text-v7";
+import { BEHOLD_LABEL_V7, BOO_LABEL_V7 } from "./cult-channel-presentation-v7";
 import {
   undeadAbilityDescriptionV7,
   undeadAbilityNameV7,
@@ -288,6 +289,9 @@ export function roleAbilityNameV7(
   // Scrap Buggy's Overrun is displayed as "Ram").
   const naval = navalAbilityNameV7(ability);
   if (naval !== null) return naval;
+  // The Cultists (`pulp_wars-mch9.5`): the abilities that are shouted.
+  if (ability === "BEHOLD") return BEHOLD_LABEL_V7;
+  if (ability === "BOO") return BOO_LABEL_V7;
   return title(ability);
 }
 

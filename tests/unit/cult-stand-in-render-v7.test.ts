@@ -618,8 +618,9 @@ describe("the Cult in the interface's words and lists", () => {
     expect(stargazer.restrictions).toEqual([NO_ATTACK_TEXT_V7]);
     expect(stargazer.stats).toContainEqual({ label: "Attack", value: "0" });
     expect(stargazer.stats).toContainEqual({ label: "Range", value: "—" });
+    // (It channels, like every robed cultist: `pulp_wars-mch9.5`.)
     expect(roleGlossaryV7("CATAPULT", "CULT").map((entry) => entry.id)).toEqual(
-      ["CAPTURE"],
+      ["CAPTURE", "CHANNEL"],
     );
     for (const role of [
       "FIGHTER",
@@ -631,8 +632,11 @@ describe("the Cult in the interface's words and lists", () => {
       "JUGGERNAUT",
     ] as const)
       expect(restrictions(role), role).toEqual([]);
+    // (Channel and Behold! arrived with the channel, `pulp_wars-mch9.5`.)
     expect(roleGlossaryV7("GUARD", "CULT").map((entry) => entry.id)).toEqual([
       "CAPTURE",
+      "CHANNEL",
+      "BEHOLD",
       "SLOW_TO_STRIKE",
     ]);
     expect(roleGlossaryV7("RAIDER", "CULT").map((entry) => entry.id)).toEqual([
@@ -640,7 +644,7 @@ describe("the Cult in the interface's words and lists", () => {
       "CHARGE",
     ]);
     expect(roleGlossaryV7("MARKSMAN", "CULT").map((entry) => entry.id)).toEqual(
-      ["CAPTURE", "RANGED"],
+      ["CAPTURE", "CHANNEL", "RANGED"],
     );
   });
 
@@ -665,7 +669,9 @@ describe("the Cult in the interface's words and lists", () => {
     expect(rewardSubjectV7("JUGGERNAUT", "CULT")).toBe(
       "PORTRAIT:CULT:JUGGERNAUT",
     );
-    // The Thing has no signature to name until Anchor's bead.
+    // The Thing's card names no signature yet: Anchor (`pulp_wars-mch9.5`)
+    // is a Cult rule of its own, outside the giants' eight signature tables;
+    // its reward phrase is the channel interface's (`pulp_wars-mch9.18`).
     expect(giantRewardLabelV7("CULT")).toEqual([
       "Thing in the Cellar",
       "A free Thing in the Cellar, once",

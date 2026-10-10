@@ -1019,10 +1019,14 @@ export function tractorBeamTargetBlockV7(
     readonly role: UnitRoleIdV7;
     readonly form: UnitStateV7["form"];
     readonly at: CoordV7;
+    readonly summoned?: UnitStateV7["summoned"];
   },
   heldByWalls: boolean,
 ): TractorBeamTargetBlockV7 | null {
   if (
+    // The Cultists (RULESET_7_CULTISTS.md section 4.2): no Tractor Beam
+    // pulls a summoned unit.
+    target.summoned !== undefined ||
     // Step two of the Martian pass (`7r58`): City Walls hold a unit against
     // the ordinary beam; the Heavy Tractor Beam (free, the Mothership's)
     // pulls it.

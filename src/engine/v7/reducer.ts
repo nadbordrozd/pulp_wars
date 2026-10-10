@@ -49,6 +49,7 @@ import {
   unitFliesV7,
   unitIsMountainBornV7,
   unitMovementModeV7,
+  unitIsSummonedV7,
   EMBARKED_LANDING_MAX_SPENT_V7,
   embarkedMovementSpentV7,
   factionRulesV7,
@@ -304,6 +305,16 @@ import {
   prunedCultV7,
   withMartyrFavourV7,
 } from "./cult";
+import {
+  applyAnchorV7,
+  applyBeholdV7,
+  applyBooV7,
+  applyChannelV7,
+  applySummonV7,
+  cultDisruptionsV7,
+  prunedChannelV7,
+  resolveStartTurnChannelV7,
+} from "./cult-channel";
 import { unitIsConstructV7 } from "./afflictions";
 import {
   recoverEligibleV7,
@@ -473,7 +484,18 @@ export type RuleErrorCodeV7 =
   // Offering (`LEVEL`, `POPULATION`).
   | "SACRIFICE_NOT_LEGAL"
   | "SEIZE_NOT_LEGAL"
-  | "OFFERING_NOT_LEGAL";
+  | "OFFERING_NOT_LEGAL"
+  // The Cultists (`pulp_wars-mch9.5`, sections 6 and 8): an illegal Summon
+  // (`EMBARKED`, `HELPER`, `TILE`), Channel (`EMBARKED`, `DAEMON`, `RANGE`),
+  // Behold! (`EMBARKED`, `RAISED`), Anchor (`EMBARKED`, `GRIPPING`,
+  // `CULTIST`), or Boo! (`NOBODY`); and a summoning the seat's Favour does
+  // not pay for (`cost`).
+  | "SUMMON_NOT_LEGAL"
+  | "CHANNEL_NOT_LEGAL"
+  | "BEHOLD_NOT_LEGAL"
+  | "ANCHOR_NOT_LEGAL"
+  | "BOO_NOT_LEGAL"
+  | "INSUFFICIENT_FAVOUR";
 export interface RuleErrorV7 {
   readonly code: RuleErrorCodeV7;
   readonly params: Readonly<Record<string, JsonValue>>;
@@ -634,12 +656,19 @@ function applyCommandUnscoredV7(
   // victims the command let go.
   // The Cultists (RULESET_7_CULTISTS.md section 8.2): then the Favour the
   // command's Chosen deaths paid (Martyr), folded from the events too.
-  const core = withMartyrFavourResultV7(
+  // The Cultists (section 6.2): last, the strands, grips, and idols the
+  // command broke (the one disruption rule, read from what happened to
+  // each watched unit between the state before the command and after it).
+  const core = withDisruptionsResultV7(
     stateInput,
-    withWightGravesResultV7(
+    input,
+    withMartyrFavourResultV7(
       stateInput,
-      withCrumbsLeftResultV7(
-        withSwallowedOutcomesResultV7(stateInput, applied),
+      withWightGravesResultV7(
+        stateInput,
+        withCrumbsLeftResultV7(
+          withSwallowedOutcomesResultV7(stateInput, applied),
+        ),
       ),
     ),
   );
@@ -809,7 +838,13 @@ function applyTossCoin(
     (curiosity) =>
       curiosity.kind === "WISHING_WELL" && same(curiosity.at, unit.at),
   );
-  if (unit.form !== "LAND" || well?.kind !== "WISHING_WELL")
+  // The Cultists (RULESET_7_CULTISTS.md section 13.1): a daemon never
+  // tosses a Coin into the Wishing Well.
+  if (
+    unit.form !== "LAND" ||
+    well?.kind !== "WISHING_WELL" ||
+    unitIsSummonedV7(unit)
+  )
     return rejected(original, "TOSS_COIN_NOT_LEGAL", { reason: "NOT_ON_WELL" });
   if (unitIsCrashedV7(state, unit.id))
     return rejected(original, "UNIT_CRASHED", { unitId: unit.id });
@@ -1111,6 +1146,83 @@ function withMartyrFavourResultV7(
 }
 
 /**
+ * The Cultists (docs/product/RULESET_7_CULTISTS.md section 6.2): the one
+ * disruption rule, applied to every accepted command. A strand's cultist, a
+ * grip's Thing, or a raised idol's bearer that lost Hit Points, was moved
+ * by anything but its own command, got a status, changed owner, or left
+ * the board between `before` and the result is disrupted
+ * (`cultDisruptionsV7`): `STRAND_BROKEN`, `ANCHOR_BROKEN`, and
+ * `IDOL_DROPPED` follow the command's other events. In an `END_TURN` the
+ * seat that began its turn was judged before its channel check
+ * (`resolveStartTurnChannelStepV7`) and is not judged again. Only `cult`
+ * changes. Returns `result` itself when nothing was watched or broke.
+ */
+function withDisruptionsResultV7(
+  before: GameStateV7,
+  command: CommandV7,
+  result: Extract<ApplyCommandResultV7, { readonly accepted: true }>,
+): Extract<ApplyCommandResultV7, { readonly accepted: true }> {
+  const watched = before.cult;
+  if (
+    watched.strands.length === 0 &&
+    watched.grips.length === 0 &&
+    watched.idols.length === 0
+  )
+    return result;
+  let started: PlayerId | null = null;
+  for (const event of result.events)
+    if (event.kind === "TURN_STARTED") started = event.playerId;
+  const disrupted = cultDisruptionsV7(
+    before,
+    result.state,
+    "unitId" in command ? command.unitId : null,
+    started,
+    result.events,
+  );
+  if (disrupted.events.length === 0 && disrupted.cult === result.state.cult)
+    return result;
+  const next = accepted(checked({ ...result.state, cult: disrupted.cult }), [
+    ...result.events,
+    ...disrupted.events,
+  ]);
+  if (!next.accepted) throw new RangeError("INVALID_STATE");
+  return next;
+}
+
+/**
+ * The Cultists (sections 6.2 and 13.3): the channel step of a Start Turn
+ * (`resolveStartTurnChannelV7`: the disruptions of the `END_TURN` so far,
+ * the check of each bound daemon, the cleared strands and grips, the
+ * lowered idols), with the live economy of a board a daemon left.
+ */
+function resolveStartTurnChannelStepV7(
+  original: GameStateV7,
+  state: GameStateV7,
+  playerId: PlayerId,
+): { readonly state: GameStateV7; readonly events: readonly DomainEventV7[] } {
+  const step = resolveStartTurnChannelV7(original, state, playerId);
+  if (step.removedUnitIds.length === 0)
+    return { state: step.state, events: step.events };
+  const economy = recomputeLiveEconomyV7(
+    step.state,
+    {
+      board: step.state.board,
+      cities: step.state.cities,
+      units: step.state.units,
+    },
+    step.state.populationContributions,
+  );
+  return {
+    state: {
+      ...step.state,
+      cities: economy.cities,
+      populationContributions: economy.populationContributions,
+    },
+    events: [...step.events, ...economyAndGrowth(economy.changes)],
+  };
+}
+
+/**
  * The Mind Control revision (section 4.2): each released unit reveals its
  * sight for its (original) owner where it stands at the end of the command;
  * the `TILES_REVEALED` follows its `UNIT_RELEASED`. A unit that left the
@@ -1224,6 +1336,8 @@ function navalFactsMayChangeV7(
     // like a kill.
     "SACRIFICE",
     "SEIZE",
+    // A Boo! moves units of any seat.
+    "BOO",
   ].includes(command.kind);
 }
 
@@ -1452,6 +1566,17 @@ function applyCommandCoreV7(
     return applySeizeV7(DWARF_KIT_V7, stateInput, state, actor, command);
   if (command.kind === "OFFERING")
     return applyOfferingV7(DWARF_KIT_V7, stateInput, state, actor, command);
+  // The Cultists, the channel (sections 6.1, 6.2, 8.1, 8.4, and 8.5).
+  if (command.kind === "SUMMON")
+    return applySummonV7(DWARF_KIT_V7, stateInput, state, actor, command);
+  if (command.kind === "CHANNEL")
+    return applyChannelV7(DWARF_KIT_V7, stateInput, state, actor, command);
+  if (command.kind === "BEHOLD")
+    return applyBeholdV7(DWARF_KIT_V7, stateInput, state, actor, command);
+  if (command.kind === "ANCHOR")
+    return applyAnchorV7(DWARF_KIT_V7, stateInput, state, actor, command);
+  if (command.kind === "BOO")
+    return applyBooV7(DWARF_KIT_V7, stateInput, state, actor, command);
   return rejected(stateInput, "INVALID_COMMAND");
 }
 
@@ -6670,7 +6795,9 @@ function applyPromote(
     unit.form === "EMBARKED" ||
     unit.veteran ||
     unit.kills < PROMOTION_KILLS_V7 ||
-    unitGrowsV7(state, unit)
+    unitGrowsV7(state, unit) ||
+    // The Cultists (section 4.2): a summoned unit is never promoted.
+    unitIsSummonedV7(unit)
   )
     return rejected(original, "PROMOTION_NOT_ELIGIBLE", { unitId });
   // Revision 20 section 5: a promotion fully heals (`hp` is the new maximum).
@@ -7116,10 +7243,13 @@ function applyCapture(
           ? {
               ...item,
               // The Mind Control revision section 4.1: a controlled unit
-              // stays homeless, even after a capture it makes.
-              homeCityId: isMindControlledV7(state, item.id)
-                ? null
-                : captured.id,
+              // stays homeless, even after a capture it makes. The
+              // Cultists (RULESET_7_CULTISTS.md section 13.1): so does a
+              // daemon (it fills no unit slot).
+              homeCityId:
+                isMindControlledV7(state, item.id) || unitIsSummonedV7(item)
+                  ? null
+                  : captured.id,
               captureEligible: false,
               activation: { ...item.activation, captured: true, handled: true },
             }
@@ -7506,7 +7636,21 @@ function applyEndTurn(
           nextPlayer.id,
         );
         const next = surfacing.state;
-        const plague = resolveStartTurnPlagueAndChainV7(next, nextPlayer.id);
+        const plagued = resolveStartTurnPlagueAndChainV7(next, nextPlayer.id);
+        // The Cultists (RULESET_7_CULTISTS.md section 13.3): the channel
+        // check, after Plague and its chains and before the hatch step.
+        const channel = resolveStartTurnChannelStepV7(
+          original,
+          plagued.state,
+          nextPlayer.id,
+        );
+        const plague =
+          channel.events.length === 0 && channel.state === plagued.state
+            ? plagued
+            : {
+                state: channel.state,
+                events: [...plagued.events, ...channel.events],
+              };
         const hatched = resolveStartTurnHatchV7(plague.state, nextPlayer.id);
         // The ninth unit (7r55): Rise Again, after the hatch step and before
         // Windmill healing.
@@ -9175,13 +9319,15 @@ function checked(state: GameStateV7): GameStateV7 {
   // The Cultists: drop the Favour of a seat that left the game.
   const result = parseGameStateV7(
     prunedCultV7(
-      prunedNinthUnitV7(
-        prunedCandyV7(
-          prunedMonstersV7(
-            prunedDwarfV7(
-              prunedIceFolkV7(
-                prunedMartianV7(
-                  prunedEggsV7(prunedAfflictionsV7(prunedGiantsV7(state))),
+      prunedChannelV7(
+        prunedNinthUnitV7(
+          prunedCandyV7(
+            prunedMonstersV7(
+              prunedDwarfV7(
+                prunedIceFolkV7(
+                  prunedMartianV7(
+                    prunedEggsV7(prunedAfflictionsV7(prunedGiantsV7(state))),
+                  ),
                 ),
               ),
             ),

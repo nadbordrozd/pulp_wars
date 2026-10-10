@@ -155,7 +155,7 @@ const research = (state: GameStateV7) =>
 describe("step two of the Dinosaur pass: no rule changed", () => {
   it("kept the identity of step two of the Martian pass", () => {
     // (7r58 then; step two of the Ice Folk pass took 7r59.)
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r73");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r74");
   });
 });
 

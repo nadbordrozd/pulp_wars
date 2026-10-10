@@ -142,17 +142,17 @@ const offering = (state: GameStateV7, seat = 0): CommandV7 => ({
 });
 
 describe("the Cult's Favour: identity", () => {
-  // The identity is 7r73 now: the AI head start (`pulp_wars-w49.39`) took
-  // it, so 7r72 is a prior identity.
+  // The AI head start (`pulp_wars-w49.39`) took 7r73 and the Cult's channel
+  // (`pulp_wars-mch9.5`) 7r74, so 7r72 is a prior identity.
   it("was 7r72 after 7r71, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r73");
-    expect(PRIOR_RULESET_7_IDS.slice(-2)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r74");
+    expect(PRIOR_RULESET_7_IDS.slice(-3, -1)).toEqual([
       "pulp-wars-poc-7r71",
       "pulp-wars-poc-7r72",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r73.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-2)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r74.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-3, -1)).toEqual([
       "pulpWars.save.v7r71.current",
       "pulpWars.save.v7r72.current",
     ]);
@@ -229,7 +229,12 @@ describe("the Cult's Favour: identity", () => {
     // A new Cult match saves with its empty Cult block.
     const fresh = createPlayableGameV7(goblinSetupV7(["CULT", "ORIGINAL"]));
     if (!fresh.ok) throw new Error(fresh.error.code);
-    expect(fresh.state.cult).toEqual({ favour: [] });
+    expect(fresh.state.cult).toEqual({
+      favour: [],
+      strands: [],
+      grips: [],
+      idols: [],
+    });
     const save = createSaveEnvelopeV7(
       { state: fresh.state, replay: createReplayV7(fresh.state.setup) },
       "2026-10-10T12:00:00.000Z",
@@ -240,16 +245,20 @@ describe("the Cult's Favour: identity", () => {
 
 describe("the Cult's Favour: the registry (sections 4, 5, 8.2, and 11)", () => {
   it("gives the Summoner Sacrifice and Seize, and the Chosen Martyr", () => {
+    // (Summon and Channel joined with the channel, `pulp_wars-mch9.5`.)
     expect(effectiveRoleRuleV7("CAPTAIN", "CULT").abilities).toEqual([
       "ATTACK",
       "CAPTURE",
       "SACRIFICE",
       "SEIZE",
+      "SUMMON",
+      "CHANNEL",
     ]);
     expect(effectiveRoleRuleV7("SWORDSMAN", "CULT").abilities).toEqual([
       "ATTACK",
       "CAPTURE",
       "MARTYR",
+      "CHANNEL",
     ]);
     // No other role of any faction has them.
     for (const faction of FACTION_IDS_V7)
@@ -357,14 +366,25 @@ describe("the Cult's Favour: the registry (sections 4, 5, 8.2, and 11)", () => {
     const order = COMMAND_KIND_ORDER_V7 as readonly string[];
     expect(
       order.slice(order.indexOf("STAMPEDE"), order.indexOf("CAPTURE") + 1),
-    ).toEqual(["STAMPEDE", "SACRIFICE", "SEIZE", "CAPTURE"]);
+    ).toEqual([
+      "STAMPEDE",
+      "SACRIFICE",
+      "SEIZE",
+      // The channel (`pulp_wars-mch9.5`).
+      "SUMMON",
+      "CHANNEL",
+      "BEHOLD",
+      "ANCHOR",
+      "BOO",
+      "CAPTURE",
+    ]);
     expect(order[order.indexOf("LAY_EGG") + 1]).toBe("OFFERING");
     expect(order.at(-1)).toBe("END_TURN");
     const events = DOMAIN_EVENT_KIND_ORDER_V7 as readonly string[];
     expect(
       events.slice(
         events.indexOf("UNIT_DISBANDED"),
-        events.indexOf("SPOILS_AWARDED") + 1,
+        events.indexOf("FAVOUR_GAINED") + 1,
       ),
     ).toEqual([
       "UNIT_DISBANDED",
@@ -372,8 +392,11 @@ describe("the Cult's Favour: the registry (sections 4, 5, 8.2, and 11)", () => {
       "UNIT_SEIZED",
       "OFFERING_MADE",
       "FAVOUR_GAINED",
-      "SPOILS_AWARDED",
     ]);
+    // The channel's events (`pulp_wars-mch9.5`) follow, before the Spoils.
+    expect(events.indexOf("SPOILS_AWARDED")).toBeGreaterThan(
+      events.indexOf("FAVOUR_GAINED"),
+    );
   });
 
   it("parses the three commands and nothing near them", () => {
@@ -426,7 +449,12 @@ describe("the Cult's Favour: the registry (sections 4, 5, 8.2, and 11)", () => {
 describe("the Cult's Favour: the pool (section 3)", () => {
   it("starts at 0 and is public for every Cult seat", () => {
     const state = cultFieldV7([SUMMONER]);
-    expect(state.cult).toEqual({ favour: [] });
+    expect(state.cult).toEqual({
+      favour: [],
+      strands: [],
+      grips: [],
+      idols: [],
+    });
     expect(favour(state, 0)).toBe(0);
     for (const seat of [0, 1]) {
       const view = viewForV7(state, seatIdV7(state, seat));
@@ -453,8 +481,19 @@ describe("the Cult's Favour: the pool (section 3)", () => {
     const state = fieldV7([{ seat: 0, role: "FIGHTER", at: at(5, 2) }], {
       factions: ["ORIGINAL", "GOBLIN"],
     });
-    expect(state.cult).toEqual({ favour: [] });
-    expect(viewForV7(state, seatIdV7(state, 0)).cult).toEqual({ favour: [] });
+    expect(state.cult).toEqual({
+      favour: [],
+      strands: [],
+      grips: [],
+      idols: [],
+    });
+    expect(viewForV7(state, seatIdV7(state, 0)).cult).toEqual({
+      favour: [],
+      strands: [],
+      grips: [],
+      idols: [],
+      daemons: [],
+    });
   });
 
   it("reads a view captured before the Cultists as no Favour", () => {
@@ -474,7 +513,11 @@ describe("the Cult's Favour: the pool (section 3)", () => {
     expect(parseGameStateV7(JSON.parse(JSON.stringify(state)))).toEqual(state);
     const cult = seatIdV7(state, 0);
     const human = seatIdV7(state, 1);
-    const withCult = (value: unknown): unknown => ({ ...state, cult: value });
+    // The channel lists (`pulp_wars-mch9.5`) are empty in every case here.
+    const withCult = (value: object): unknown => ({
+      ...state,
+      cult: { strands: [], grips: [], idols: [], ...value },
+    });
     const { cult: _cult, ...without } = state;
     void _cult;
     for (const [label, input] of [
@@ -496,8 +539,9 @@ describe("the Cult's Favour: the pool (section 3)", () => {
           ],
         }),
       ],
-      ["an extra key", withCult({ favour: [], strands: [] })],
+      ["an extra key", withCult({ favour: [], rituals: [] })],
       ["no list", withCult({})],
+      ["no channel lists", { ...state, cult: { favour: [] } }],
     ] as const)
       expect(parseGameStateV7(input), label).toBeNull();
     // An eliminated seat has none.
@@ -529,7 +573,12 @@ describe("the Cult's Favour: the pool (section 3)", () => {
       unitId: unitAtV7(state, at(8, 8)).id,
     });
     expect(kindsV7(result.events)).toContain("PLAYER_ELIMINATED");
-    expect(result.state.cult).toEqual({ favour: [] });
+    expect(result.state.cult).toEqual({
+      favour: [],
+      strands: [],
+      grips: [],
+      idols: [],
+    });
     expect(
       viewForV7(result.state, seatIdV7(result.state, 1)).cult.favour,
     ).toEqual([]);

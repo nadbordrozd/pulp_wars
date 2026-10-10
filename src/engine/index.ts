@@ -80,6 +80,7 @@ export * from "./v7/ninth-unit";
 export * from "./v7/ice";
 export * from "./v7/giants";
 export * from "./v7/cult";
+export * from "./v7/cult-channel";
 export * from "./v7/observation";
 export * from "./v7/order";
 export * from "./v7/plague";

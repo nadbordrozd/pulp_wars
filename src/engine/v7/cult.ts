@@ -10,9 +10,11 @@ import {
   technologyCapabilitiesV7,
   unitCapacitySlotsV7,
   unitRoleMechanicsV7,
+  unitIsSummonedV7,
   unitRoleRuleV7,
   type FactionRosterV7,
   type FrozenLookupV7,
+  type SummonedUnitRefV7,
 } from "../rules/ruleset-v7";
 import { isLivingUnitV7 } from "./afflictions";
 import type { CommandV7 } from "./commands";
@@ -41,10 +43,10 @@ import { allOwnedUnitsV7 } from "./units";
  * `pulp_wars-mch9.4`, the second Cult engine bead): Favour, the faction's
  * one economic mechanic (section 3), and what feeds it so far: the
  * Summoner's Sacrifice and Seize (sections 5.1 and 5.2), a city's Offering
- * (section 5.3), and the Chosen's Martyr (section 8.2). Nothing spends
- * Favour yet: Summon and the Great Summoning arrive with the daemons
- * (`pulp_wars-mch9.5` and `.7`), which also add a bound daemon's kills and
- * a consumption as sources.
+ * (section 5.3), and the Chosen's Martyr (section 8.2). Summoning a Horror
+ * spends it (`pulp_wars-mch9.5`, src/engine/v7/cult-channel.ts); the Great
+ * Summoning (`pulp_wars-mch9.7`) will, and a bound daemon's kills
+ * (`pulp_wars-mch9.6`) and a consumption (`.7`) join the sources.
  *
  * The legality helpers read only facts that canonical state and a player's
  * view share, so the public command query and the reducer agree exactly.
@@ -53,7 +55,7 @@ import { allOwnedUnitsV7 } from "./units";
 export type CultReducerKitV7 = DwarfReducerKitV7;
 
 /** The unit facts the Cult helpers read (state and public units). */
-export interface CultUnitFactsV7 {
+export interface CultUnitFactsV7 extends SummonedUnitRefV7 {
   readonly id: UnitId;
   readonly ownerId: PlayerId;
   readonly role: UnitRoleIdV7;
@@ -101,6 +103,27 @@ export function withFavourGainedV7(
   };
 }
 
+/**
+ * Section 3: the Cult state after `playerId` spent `amount` Favour (a
+ * positive whole number it has). A seat left with none has no entry.
+ */
+export function withFavourSpentV7(
+  cult: CultStateV7,
+  playerId: PlayerId,
+  amount: number,
+): CultStateV7 {
+  const left = favourOfV7({ cult }, playerId) - amount;
+  if (!Number.isSafeInteger(amount) || amount <= 0 || left < 0)
+    throw new RangeError("INVALID_STATE");
+  return {
+    ...cult,
+    favour: [
+      ...cult.favour.filter((entry) => entry.playerId !== playerId),
+      ...(left > 0 ? [{ playerId, favour: left }] : []),
+    ].sort((first, second) => first.playerId - second.playerId),
+  };
+}
+
 /** The `FAVOUR_GAINED` event of a gain that left the seat at `favour`. */
 function favourGainedEventV7(
   cult: CultStateV7,
@@ -125,7 +148,7 @@ function favourGainedEventV7(
  */
 export function unitFavourValueV7(
   roster: FactionRosterV7,
-  unit: Pick<CultUnitFactsV7, "id" | "ownerId" | "role">,
+  unit: Pick<CultUnitFactsV7, "id" | "ownerId" | "role" | "summoned">,
 ): number {
   return unitScoreValueV7(roster, unit);
 }
@@ -136,7 +159,7 @@ export function unitFavourValueV7(
  */
 export function isRobedCultistV7(
   roster: FactionRosterV7,
-  unit: Pick<CultUnitFactsV7, "id" | "ownerId" | "role" | "form">,
+  unit: Pick<CultUnitFactsV7, "id" | "ownerId" | "role" | "form" | "summoned">,
 ): boolean {
   return unit.form === "LAND" && unitRoleMechanicsV7(roster, unit).robed;
 }
@@ -178,7 +201,7 @@ export type SacrificeRejectionV7 =
   | {
       readonly code: "SACRIFICE_NOT_LEGAL";
       readonly reason:
-        "EMBARKED" | "VICTIM" | "CONTROLLED" | "PLAGUED" | "BITTEN";
+        "EMBARKED" | "VICTIM" | "DAEMON" | "CONTROLLED" | "PLAGUED" | "BITTEN";
     };
 
 export type SeizeRejectionV7 =
@@ -221,9 +244,9 @@ function summonerActedV7(
  *
  * The victim is an own land-form unit on one of the eight tiles around the
  * Summoner, of any role (the Thing in the Cellar and the Familiar
- * included), never an Egg (it is not in land form) or a mind-controlled
- * unit, and not Plagued or Bitten (as for Disband, so a Sacrifice never
- * dodges a bite). A mind-controlled Summoner has no `SACRIFICE` ability
+ * included), never a summoned unit (a daemon: `pulp_wars-mch9.5`), an Egg
+ * (it is not in land form), or a mind-controlled unit, and not Plagued or
+ * Bitten (as for Disband, so a Sacrifice never dodges a bite). A mind-controlled Summoner has no `SACRIFICE` ability
  * (Favour needs a Cult seat), so it is refused by its role.
  */
 export function sacrificeRejectionV7(
@@ -245,6 +268,8 @@ export function sacrificeRejectionV7(
     chebyshev(summoner.at, victim.at) !== 1
   )
     return { code: "SACRIFICE_NOT_LEGAL", reason: "VICTIM" };
+  if (unitIsSummonedV7(victim))
+    return { code: "SACRIFICE_NOT_LEGAL", reason: "DAEMON" };
   if (isMindControlledV7(lookup, victim.id))
     return { code: "SACRIFICE_NOT_LEGAL", reason: "CONTROLLED" };
   if (lookup.plagued.some((entry) => entry.unitId === victim.id))

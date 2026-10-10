@@ -259,13 +259,19 @@ describe("the shared terrain-entry rule", () => {
       "src/engine/v7/combat.ts": 1,
       "src/engine/v7/eggs.ts": 2,
       "src/engine/v7/movement.ts": 3,
-      // was 7: the public gate preview (`pulp_wars-737.14`).
-      "src/engine/v7/query.ts": 8,
+      // was 7: the public gate preview (`pulp_wars-737.14`); was 8: the
+      // public tile a Boo! scares a unit onto (`pulp_wars-mch9.5`,
+      // `publicBooJumpV7`: the Rift, as the public Push reads it).
+      "src/engine/v7/query.ts": 9,
       // was 4: the canonical gate displacement (`pulp_wars-737.14`).
       "src/engine/v7/reducer.ts": 5,
       "src/engine/v7/dwarf-reducer.ts": 1,
       "src/engine/v7/martian.ts": 2,
       "src/engine/v7/candy-reducer.ts": 1,
+      // The Cultists (`pulp_wars-mch9.5`): the tile a Horror is summoned on
+      // (`summonTileLegalV7`, ONE predicate shared by the reducer and the
+      // public query). Tested in ruleset-v7-cult-channel.test.ts.
+      "src/engine/v7/cult-channel.ts": 1,
     };
     for (const [file, count] of Object.entries(AUDITED)) {
       const source = readFileSync(file, "utf8");

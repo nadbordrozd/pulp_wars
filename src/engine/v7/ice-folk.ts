@@ -364,6 +364,8 @@ export function frozenUnitNamedV7(
   if ("unitId" in command && !FROZEN_ALLOWED_KINDS_V7.has(command.kind))
     named.push(command.unitId);
   if (command.kind === "TOSS") named.push(command.passengerUnitId);
+  // The Cultists (`pulp_wars-mch9.5`): a Frozen helper summons nothing.
+  if (command.kind === "SUMMON") named.push(command.helperUnitId);
   if (command.kind === "TUNNEL" && command.rider !== null)
     named.push(command.rider.unitId);
   for (const unitId of named)

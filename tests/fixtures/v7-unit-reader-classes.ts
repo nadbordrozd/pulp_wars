@@ -877,6 +877,31 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/engine/v7/query.ts::previewSacrificeV7": "BOARD",
     "src/engine/v7/query.ts::previewSeizeV7": "BOARD",
     "src/render/cult-presentation-v7.ts::cultCommandPresentationV7": "BOARD",
+    // The Cult's channel (`pulp_wars-mch9.5`, sections 6 and 8). Every
+    // reader means the board: a strand's cultist, its daemon, a grip's
+    // Thing, an idol's bearer, a Summoner's helper, and whoever a Boo!
+    // scares all stand on the board (no cultist and no daemon burrows; a
+    // watched unit that leaves the board is disrupted because it is no
+    // longer in `units`), and the previews and the dock's stand-in buttons
+    // name the same units.
+    "src/engine/v7/cult-channel.ts::unitDisruptionCausesV7": "BOARD",
+    "src/engine/v7/cult-channel.ts::cultDisruptionsV7": "BOARD",
+    "src/engine/v7/cult-channel.ts::prunedChannelV7": "BOARD",
+    "src/engine/v7/cult-channel.ts::resolveStartTurnChannelV7": "BOARD",
+    "src/engine/v7/cult-channel.ts::applySummonV7": "BOARD",
+    "src/engine/v7/cult-channel.ts::applyChannelV7": "BOARD",
+    "src/engine/v7/cult-channel.ts::applyBeholdV7": "BOARD",
+    "src/engine/v7/cult-channel.ts::applyAnchorV7": "BOARD",
+    "src/engine/v7/cult-channel.ts::planBooV7": "BOARD",
+    "src/engine/v7/cult-channel.ts::applyBooV7": "BOARD",
+    "src/engine/v7/query.ts::previewChannelV7": "BOARD",
+    "src/engine/v7/query.ts::previewAnchorV7": "BOARD",
+    "src/engine/v7/query.ts::previewBeholdV7": "BOARD",
+    "src/engine/v7/query.ts::previewBooV7": "BOARD",
+    "src/engine/v7/reducer.ts::resolveStartTurnChannelStepV7": "BOARD",
+    "src/engine/v7/state-schema.ts::cultValid": "BOARD",
+    "src/render/cult-channel-presentation-v7.ts::cultChannelCommandPresentationV7":
+      "BOARD",
   };
 
 /**

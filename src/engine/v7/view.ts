@@ -26,6 +26,12 @@ import {
   FIELD_DEFENSE_FORTIFICATION_LEVELS_V7,
 } from "../rules/ruleset-v7";
 import { favourOfV7 } from "./cult";
+import {
+  daemonControlV7,
+  daemonIsBoundV7,
+  daemonRoleV7,
+  holdingStrandsV7,
+} from "./cult-channel";
 import { isUnitVisibleToPlayerV7 } from "./observation";
 import { spatialContributionAtV7 } from "./spatial-economy";
 import { knownWinterV7 } from "./ice-folk";
@@ -48,6 +54,8 @@ import type {
   FactionTreeIdV7,
   FavourEntryV7,
   GameStateV7,
+  GripV7,
+  SummonedRoleIdV7,
   IceTileV7,
   ImprovementIdV7,
   MatchOutcomeV7,
@@ -189,6 +197,36 @@ export interface PublicUnitV7 {
    * Man (a Toffee Trooper in every rule; public, it is how the unit looks).
    */
   readonly variant?: "GINGERBREAD_MAN";
+  /**
+   * The Cultists (docs/product/RULESET_7_CULTISTS.md section 4.2): the
+   * summoned role of a summoned unit (a Horror), public like its role: it
+   * is what the unit is. Its `role` is then a mechanical role nothing
+   * should show; read its rule with `unitRoleRuleV7`. Absent otherwise.
+   */
+  readonly summoned?: SummonedRoleIdV7;
+}
+
+/**
+ * The Cultists (section 6.2): a strand the viewer sees: its cultist is
+ * visible (a channeller is Candlelit: every unit on an explored tile is
+ * visible, so its candle shows on every explored tile). `daemonUnitId` is
+ * null when the viewer does not see the daemon.
+ */
+export interface PublicStrandV7 {
+  readonly cultistUnitId: UnitId;
+  readonly daemonUnitId: UnitId | null;
+}
+
+/**
+ * The Cultists (section 6.2): the channel of a daemon the viewer sees: its
+ * Control and its holding strands as the board stands (what its seat's
+ * Start Turn check would count now; public, like the pips under it).
+ */
+export interface PublicDaemonV7 {
+  readonly unitId: UnitId;
+  readonly role: SummonedRoleIdV7;
+  readonly control: number;
+  readonly strands: number;
 }
 
 export interface PublicLeaderboardEntryV7 {
@@ -471,6 +509,17 @@ export interface PlayerViewV7 {
    */
   readonly cult: {
     readonly favour: readonly FavourEntryV7[];
+    /**
+     * The channel (`pulp_wars-mch9.5`, sections 6.2, 8.1, and 8.4), for the
+     * units the viewer sees: the strands (by cultist), the grips whose
+     * Thing and cultist are both visible, the raised idols of visible Idol
+     * Bearers, and every visible bound daemon with its Control and holding
+     * strands. All empty in a match without a Cult seat.
+     */
+    readonly strands: readonly PublicStrandV7[];
+    readonly grips: readonly GripV7[];
+    readonly idols: readonly UnitId[];
+    readonly daemons: readonly PublicDaemonV7[];
   };
   /** Score and modes (section 3.4): the score the viewer may know. */
   readonly score: PlayerScoreViewV7;
@@ -730,6 +779,7 @@ export function viewForV7(
           ? unit.activation
           : { ...unit.activation, tendedThisTurn: false },
       ...(unit.variant === undefined ? {} : { variant: unit.variant }),
+      ...(unit.summoned === undefined ? {} : { summoned: unit.summoned }),
     };
   };
   const publicUnits = visibleUnits.map(publicUnit);
@@ -1182,6 +1232,33 @@ export function viewForV7(
           playerId: player.id,
           favour: favourOfV7(state, player.id),
         })),
+      strands: state.cult.strands
+        .filter((strand) => visibleUnitIds.has(strand.cultistUnitId))
+        .map((strand) => ({
+          cultistUnitId: strand.cultistUnitId,
+          daemonUnitId: visibleUnitIds.has(strand.daemonUnitId)
+            ? strand.daemonUnitId
+            : null,
+        })),
+      grips: state.cult.grips.filter(
+        (grip) =>
+          visibleUnitIds.has(grip.thingUnitId) &&
+          visibleUnitIds.has(grip.cultistUnitId),
+      ),
+      idols: state.cult.idols.filter((unitId) => visibleUnitIds.has(unitId)),
+      daemons: visibleUnits.flatMap((unit): PublicDaemonV7[] => {
+        const role = daemonIsBoundV7(unit) ? daemonRoleV7(unit) : null;
+        return role === null
+          ? []
+          : [
+              {
+                unitId: unit.id,
+                role,
+                control: daemonControlV7(unit),
+                strands: holdingStrandsV7(state, state.units, unit),
+              },
+            ];
+      }),
     },
     score: scoreViewV7(state, viewerId, scores),
     pendingChoices: state.pendingChoices.filter((choice) =>

@@ -225,7 +225,7 @@ function missionStateHash(state: GameStateV7): string {
   } = state;
   expect(frozen).toEqual([]);
   expect(giants).toEqual({ swallowed: [] });
-  expect(cult).toEqual({ favour: [] });
+  expect(cult).toEqual({ favour: [], strands: [], grips: [], idols: [] });
   expectInitialScoreLedgerV7(state, scoreLedger);
   expect(ninthUnit).toEqual({
     wightGraves: [],
@@ -382,7 +382,7 @@ function preCuriosityMissionStateHash(state: GameStateV7): string {
   } = state;
   expect(frozen).toEqual([]);
   expect(giants).toEqual({ swallowed: [] });
-  expect(cult).toEqual({ favour: [] });
+  expect(cult).toEqual({ favour: [], strands: [], grips: [], idols: [] });
   expectInitialScoreLedgerV7(state, scoreLedger);
   expect(ninthUnit).toEqual({
     wightGraves: [],

@@ -5,7 +5,7 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r73" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r74" as const;
 /**
  * Every earlier Ruleset 7 identity, oldest first. Readers report these as
  * incompatible (never invalid). An identity bump must append the outgoing
@@ -84,8 +84,9 @@ export const PRIOR_RULESET_7_IDS = Object.freeze([
   "pulp-wars-poc-7r70",
   "pulp-wars-poc-7r71",
   "pulp-wars-poc-7r72",
+  "pulp-wars-poc-7r73",
 ] as const);
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r73.current" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r74.current" as const;
 /**
  * The map generator a setup names (docs/product/RULESET_7_MAP_SCALE.md
  * section 8.8): `V4` is the many-seats generator of `pulp_wars-ykw.3`
@@ -333,6 +334,13 @@ export const COMMAND_KIND_ORDER_V7 = Object.freeze([
   // Ice Folk Freeze block, so no earlier kind moves).
   "SACRIFICE",
   "SEIZE",
+  // The Cultists (`pulp_wars-mch9.5`, sections 6.1, 6.2, 8.1, 8.4, and
+  // 8.5): Summon a Horror, Channel, Behold!, Anchor, and Boo!.
+  "SUMMON",
+  "CHANNEL",
+  "BEHOLD",
+  "ANCHOR",
+  "BOO",
   "CAPTURE",
   "PROMOTE",
   "PILLAGE",
@@ -544,6 +552,20 @@ export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   "UNIT_SEIZED",
   "OFFERING_MADE",
   "FAVOUR_GAINED",
+  // The Cultists (`pulp_wars-mch9.5`, sections 6 and 8): Favour spent on a
+  // summoning; a Horror summoned; a strand formed and broken; an idol
+  // raised and dropped; a grip made and broken; a Horror's Boo!; and a
+  // daemon whose channel failed at its seat's Start Turn.
+  "FAVOUR_SPENT",
+  "DAEMON_SUMMONED",
+  "STRAND_FORMED",
+  "STRAND_BROKEN",
+  "IDOL_RAISED",
+  "IDOL_DROPPED",
+  "ANCHOR_GRIPPED",
+  "ANCHOR_BROKEN",
+  "UNITS_SCARED",
+  "DAEMON_UNBOUND",
   "SPOILS_AWARDED",
   "PLUNDER_AWARDED",
   // Map curiosities (section 8.7): the bounty for killing a Monster.
@@ -961,6 +983,16 @@ export interface UnitStateV7 {
    * in every rule it is a Toffee Trooper. Absent on every other unit.
    */
   readonly variant?: "GINGERBREAD_MAN";
+  /**
+   * The Cultists (`pulp_wars-mch9.5`, docs/product/RULESET_7_CULTISTS.md
+   * sections 4.2 and 21.3): the summoned role of a summoned unit (a
+   * Horror; later the Herald and the Tentacle). Its `role` is then the
+   * summoned role's mechanical role (`SUMMONED_MECHANICAL_ROLES_V7`), which
+   * no rule reads: `unitRoleRuleV7` and `unitRoleMechanicsV7` return the
+   * summoned registration. Such a unit has no home city, is never a
+   * veteran, and is never mind-controlled. Absent on every other unit.
+   */
+  readonly summoned?: SummonedRoleIdV7;
 }
 
 export interface CityRewardRecordV7 {
@@ -1380,6 +1412,36 @@ export interface CultStateV7 {
    * a seat's Favour with `favourOfV7` (src/engine/v7/cult.ts).
    */
   readonly favour: readonly FavourEntryV7[];
+  /**
+   * The channel (`pulp_wars-mch9.5`, section 6.2): the unbroken strands,
+   * sorted by `cultistUnitId` (one strand per cultist). A strand is made by
+   * a Channel or a summoning, removed the moment its cultist is disrupted,
+   * and cleared at its seat's Start Turn check.
+   */
+  readonly strands: readonly StrandV7[];
+  /**
+   * Anchor (section 8.4): the grips that hold, sorted by `thingUnitId` (one
+   * grip per Thing, one per cultist). A grip is removed when its Thing is
+   * moved, given a status, taken, or removed, when its cultist is
+   * disrupted, and at the seat's Start Turn check.
+   */
+  readonly grips: readonly GripV7[];
+  /**
+   * Behold! (section 8.1): the Idol Bearers whose idol is raised, sorted. An
+   * idol drops when its bearer is disrupted and at the end of the channel
+   * check of its owner's next Start Turn.
+   */
+  readonly idols: readonly UnitId[];
+}
+/** The Cultists (section 6.2): the strand `cultistUnitId` holds to a daemon. */
+export interface StrandV7 {
+  readonly cultistUnitId: UnitId;
+  readonly daemonUnitId: UnitId;
+}
+/** The Cultists (section 8.4): the Thing's grip on a channeller beside it. */
+export interface GripV7 {
+  readonly thingUnitId: UnitId;
+  readonly cultistUnitId: UnitId;
 }
 /** The Cultists (section 3): the Favour of the Cult seat `playerId`. */
 export interface FavourEntryV7 {
@@ -1388,7 +1450,7 @@ export interface FavourEntryV7 {
 }
 /** The empty Cult state (a new match, a mission, a fixture). */
 export function emptyCultStateV7(): CultStateV7 {
-  return { favour: [] };
+  return { favour: [], strands: [], grips: [], idols: [] };
 }
 
 /**

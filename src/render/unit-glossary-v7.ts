@@ -3,7 +3,9 @@ import {
   factionRulesV7,
   isNavalRoleV7,
   roleMechanicsV7,
+  summonedUnitRoleRuleV7,
   type FactionIdV7,
+  type SummonedRoleIdV7,
   type UnitRoleAbilityV7,
   type UnitRoleIdV7,
 } from "../engine/index";
@@ -181,6 +183,31 @@ const ENTRIES = {
   MARTYR: [
     "Martyr",
     "When it dies, the Ancient Ones pay you Favour. Sacrificing it pays nothing extra.",
+  ],
+  // The channel (`pulp_wars-mch9.5`, sections 6 and 8).
+  SUMMON: [
+    "Summon",
+    "With a robed cultist beside it, calls a Horror onto a free tile next to it for Favour. Both of them channel it this turn.",
+  ],
+  CHANNEL: [
+    "Channel",
+    "Holds a strand to one of your daemons nearby until your next turn. If it is hurt, moved, hexed or taken, the strand snaps.",
+  ],
+  BEHOLD: [
+    "Behold!",
+    "Raises its idol. Your cultists beside it keep their strands when they are hurt, until the Idol Bearer itself is hit.",
+  ],
+  ANCHOR: [
+    "Anchor",
+    "Grips a channelling cultist beside it, once a turn, so that its strand counts as three. Hit the cultist and all three go.",
+  ],
+  BOO: [
+    "Boo!",
+    "Instead of attacking, makes every living unit next to it jump one tile away, friend or foe. It hurts nobody.",
+  ],
+  DAEMON: [
+    "Daemon",
+    "Summoned, never trained: it stays yours only while enough cultists channel it each turn. It never heals and fills no city slot.",
   ],
 
   // ------------------------------------------------------------------ ships
@@ -918,6 +945,21 @@ export function roleGlossaryV7(
   }
   for (const id of roleTraitGlossaryIdsV7(role, faction))
     if (!ids.includes(id)) ids.push(id);
+  return ids.map(glossaryEntryV7);
+}
+
+/**
+ * The Cultists (`pulp_wars-mch9.5`): everything a summoned unit can do, in
+ * plain words: what it is, then its abilities in its own order. (A unit
+ * names its summoned role in `summoned`; its `role` says nothing.)
+ */
+export function summonedGlossaryV7(
+  summoned: SummonedRoleIdV7,
+): readonly GlossaryEntryV7[] {
+  const ids: GlossaryIdV7[] = ["DAEMON"];
+  for (const ability of summonedUnitRoleRuleV7(summoned).abilities)
+    if (ability in ENTRIES && !ids.includes(ability as GlossaryIdV7))
+      ids.push(ability as GlossaryIdV7);
   return ids.map(glossaryEntryV7);
 }
 

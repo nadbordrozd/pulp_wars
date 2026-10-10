@@ -55,7 +55,7 @@ export type GraveContextV7 = Pick<
  * revision: its ID resolves its kind).
  */
 export type GraveUnitV7 = Pick<UnitStateV7, "form" | "at"> &
-  Partial<Pick<UnitStateV7, "id" | "ownerId" | "role">>;
+  Partial<Pick<UnitStateV7, "id" | "ownerId" | "role" | "summoned">>;
 
 /**
  * Whether the death of `unit` on its tile creates a Grave, given the Graves
@@ -68,7 +68,9 @@ export function deathCreatesGraveV7(
   unit: GraveUnitV7,
 ): boolean {
   if (!gravesEnabledV7(context.setup) || unit.form !== "LAND") return false;
-  // The Dwarf revision section 7.2: a construct leaves no Grave.
+  // The Dwarf revision section 7.2: a construct leaves no Grave. The
+  // Cultists (RULESET_7_CULTISTS.md section 21.3): nor does a summoned unit
+  // (a daemon is not living; its registration is a construct's).
   if (
     context.players !== undefined &&
     unit.id !== undefined &&
@@ -79,7 +81,12 @@ export function deathCreatesGraveV7(
         players: context.players,
         mindControlled: context.mindControlled ?? [],
       },
-      { id: unit.id, ownerId: unit.ownerId, role: unit.role },
+      {
+        id: unit.id,
+        ownerId: unit.ownerId,
+        role: unit.role,
+        summoned: unit.summoned,
+      },
     )
   )
     return false;

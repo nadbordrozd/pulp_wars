@@ -99,7 +99,7 @@ import { at, kindsV7, movedV7 } from "../fixtures/v7-revision20";
 // (docs/product/RULESET_7_MARTIANS.md sections 2 to 4, 10.9, 10.10, and 11).
 
 /** The revision number of this identity (`pulp-wars-poc-7rNN`). */
-const REVISION = 73;
+const REVISION = 74;
 const ID = `pulp-wars-poc-7r${REVISION}`;
 const PREVIOUS_ID = `pulp-wars-poc-7r${REVISION - 1}`;
 
@@ -278,7 +278,9 @@ describe("Martian faction registration (sections 2 and 11)", () => {
     // TOSS_COIN (70).
     // The Cult's Favour (`pulp_wars-mch9.4`) adds SACRIFICE and SEIZE
     // after STAMPEDE and OFFERING after LAY_EGG (73).
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(73);
+    // The Cult's channel (`pulp_wars-mch9.5`) adds SUMMON, CHANNEL, BEHOLD,
+    // ANCHOR, and BOO after SEIZE (78).
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(78);
     const hatch = COMMAND_KIND_ORDER_V7.indexOf("HATCH");
     expect(COMMAND_KIND_ORDER_V7.slice(hatch, hatch + 4)).toEqual([
       "HATCH",
@@ -303,7 +305,9 @@ describe("Martian faction registration (sections 2 and 11)", () => {
     // (126).
     // The Cult's Favour (`pulp_wars-mch9.4`) adds UNIT_SACRIFICED,
     // UNIT_SEIZED, OFFERING_MADE, and FAVOUR_GAINED (130).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(130);
+    // The Cult's channel (`pulp_wars-mch9.5`) adds ten kinds after
+    // FAVOUR_GAINED, from FAVOUR_SPENT to DAEMON_UNBOUND (140).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(140);
     const after = (kind: string) =>
       DOMAIN_EVENT_KIND_ORDER_V7[
         DOMAIN_EVENT_KIND_ORDER_V7.indexOf(kind as never) + 1

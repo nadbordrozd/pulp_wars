@@ -373,8 +373,8 @@ export type CandyArtRoleV7 = UndeadArtRoleV7;
  * whose raster fails to load is drawn as that stand-in with the letter badge
  * of `FACTION_STAND_IN_LETTERS_V7`.
  *
- * The summoned units (`SUMMONED_ROLE_IDS_V7`: they are no unit roles, so
- * `unitArtSubjectV7` never returns them) have the subjects
+ * The summoned units (`SUMMONED_ROLE_IDS_V7`: they are no unit roles; a
+ * unit names its summoned role in `summoned`) have the subjects
  * `UNIT:CULT:<SUMMONED ROLE>`, which `cultSummonedArtSubjectV7` names; the
  * Horror and the Herald have a second, Unbound look
  * (`UNIT:CULT:HORROR_UNBOUND`, `UNIT:CULT:HERALD_UNBOUND`: red eyes, the
@@ -405,8 +405,9 @@ export type CultSummonedArtSubjectV7 =
  * The art subject of a summoned Cult unit (bead pulp_wars-mch9.15): the
  * engine's summoned role ID under `UNIT:CULT:`, and the Unbound look of a
  * Horror or a Herald whose strands are gone. The wild Tentacle has one look.
- * Nothing spawns a summoned unit yet; the beads that do
- * (`pulp_wars-mch9.5` to `.8`) ask for its sprite here.
+ * `unitArtSubjectV7` asks here for a unit that carries a summoned role (a
+ * Horror since `pulp_wars-mch9.5`); the Unbound look waits for the Unbound
+ * rules (`pulp_wars-mch9.6`).
  */
 export function cultSummonedArtSubjectV7(
   role: SummonedRoleIdV7,
@@ -756,7 +757,15 @@ export function unitArtSubjectV7(unit: {
   readonly faction: FactionIdV7;
   readonly machine?: boolean;
   readonly submerged?: boolean;
+  /**
+   * The Cultists (`pulp_wars-mch9.5`): the summoned role of a summoned unit
+   * (`PublicUnitV7.summoned`). Such a unit draws its own sprite
+   * (`cultSummonedArtSubjectV7`), whatever its mechanical `role` is.
+   */
+  readonly summoned?: SummonedRoleIdV7 | undefined;
 }): ArtSubjectV7 {
+  if (unit.summoned !== undefined && unit.form === "LAND")
+    return cultSummonedArtSubjectV7(unit.summoned);
   if (
     unit.form === "EMBARKED" &&
     unit.faction === "MARTIAN" &&

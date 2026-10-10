@@ -39,7 +39,7 @@ const setup: MatchSetupV7 = {
 
 describe("ruleset-7 revision-8 deterministic foundation", () => {
   it("freezes the exact identity and registries", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r73");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r74");
     expect(FACTION_IDS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",
@@ -132,7 +132,9 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
     // TOSS_COIN (70).
     // The Cult's Favour (`pulp_wars-mch9.4`) adds SACRIFICE and SEIZE
     // after STAMPEDE and OFFERING after LAY_EGG (73).
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(73);
+    // The Cult's channel (`pulp_wars-mch9.5`) adds SUMMON, CHANNEL, BEHOLD,
+    // ANCHOR, and BOO after SEIZE (78).
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(78);
     // The revision-19 Dinosaur STAMPEDE stays gone; Ice Folk Freeze's
     // Mammoth STAMPEDE is a new command after BREAK_OFF.
     expect(COMMAND_KIND_ORDER_V7.indexOf("STAMPEDE")).toBe(
@@ -156,7 +158,9 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
     // (126).
     // The Cult's Favour (`pulp_wars-mch9.4`) adds UNIT_SACRIFICED,
     // UNIT_SEIZED, OFFERING_MADE, and FAVOUR_GAINED (130).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(130);
+    // The Cult's channel (`pulp_wars-mch9.5`) adds ten kinds after
+    // FAVOUR_GAINED, from FAVOUR_SPENT to DAEMON_UNBOUND (140).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(140);
     // Revision 19 inserts HATCH after KABOOM (and, until revision 20,
     // STAMPEDE between them), LAY_EGG after TRAIN_NAVAL, EGG_LAID and
     // EGG_HATCHED after NAVAL_UNIT_TRAINED, and UNIT_GREW after

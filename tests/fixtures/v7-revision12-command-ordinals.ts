@@ -67,6 +67,13 @@ const LATER_COMMAND_KINDS: readonly string[] = [
   // after STAMPEDE, and OFFERING after LAY_EGG.
   "SACRIFICE",
   "SEIZE",
+  // The Cult's channel (`pulp_wars-mch9.5`) inserts SUMMON, CHANNEL, BEHOLD,
+  // ANCHOR, and BOO after SEIZE.
+  "SUMMON",
+  "CHANNEL",
+  "BEHOLD",
+  "ANCHOR",
+  "BOO",
   "LAY_EGG",
   "OFFERING",
   // Tuning 3 (`pulp_wars-w49.3`) inserts HIRE after TRAIN_NAVAL.

@@ -1,8 +1,8 @@
 {
   "schemaVersion": 7,
-  "rulesetId": "pulp-wars-poc-7r73",
+  "rulesetId": "pulp-wars-poc-7r74",
   "setup": {
-    "rulesetId": "pulp-wars-poc-7r73",
+    "rulesetId": "pulp-wars-poc-7r74",
     "seed": 9,
     "width": 14,
     "height": 14,
@@ -2870,7 +2870,10 @@
     "swallowed": []
   },
   "cult": {
-    "favour": []
+    "favour": [],
+    "strands": [],
+    "grips": [],
+    "idols": []
   },
   "pendingChoices": [],
   "outcome": null
