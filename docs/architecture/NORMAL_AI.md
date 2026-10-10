@@ -303,12 +303,39 @@ no other candidate. What was built and decided is in
 [section 15.7 of the spec](../product/RULESET_7_CULTISTS.md#157-as-built-a2-the-cult-seats-own-commands-pulp_wars-mch910).
 
 The seat begins no ritual and uses no Proclaim, Boo!, hex, or trick yet
-(bead A3), and no other seat plays against the Cult's mechanics yet (bead
-A4). This entry is replaced by the Cult's full one when the faction is
+(bead A3). This entry is replaced by the Cult's full one when the faction is
 folded in (bead D1).
 
+**Every seat against the Cult** (bead A4, `pulp_wars-mch9.12`;
+`src/ai/v7-cult-against.ts`). The facts of a decision
+(`cultAgainstFactsV7`, `context.cultAgainst`) are null unless the view holds
+a hostile bound daemon, a hostile circle, a star of another seat, an own
+frog, a hostile taunting Chosen, an own unit a Tentacle holds, or an own
+Cowed city, so a match without a Cult seat decides byte for byte as before.
+With them a seat: breaks the strands of a daemon it can bring below its
+Control this turn before its ordinary kills (the Idol Bearer first under a
+raised idol; a gripped strand counts three); ends a Great Summoning by a hit
+on its leader or on a chanter it cannot spare, or by walking a unit that
+blocks the arrival onto the mark, where it stays; steps out from under a
+star and makes no routine Move into one; makes no routine Move that ends as
+the unit a daemon short of its Control would go for, and pulls that unit
+back once it has struck; never strikes a bound Herald without killing it
+(but for a shot it cannot answer from a unit with no other target); cures a
+frog with Tend Wounded first, and steps an uncured frog to a safer tile;
+gives a Move that would only bind its unit to a taunting Chosen no more
+than a routine Move's priority; lets the unit a Tentacle holds strike it;
+and keeps the garrison of a Cowed city on its center, or gives an empty one
+a garrison. An Unbound daemon and a Tentacle were lone monsters to the
+policy already (`src/ai/v7-curiosities.ts`). The policy's own commands are
+candidates whatever the general Move rules say (`cultAgainstForcedV7`), but
+never onto a tile the curiosity rules close. What was built and decided is
+in
+[section 15.9 of the spec](../product/RULESET_7_CULTISTS.md#159-as-built-a4-every-seat-against-the-cult-pulp_wars-mch912).
+Nothing was tuned: no match, no lab run.
+
 Tests: `tests/unit/ruleset-v7-cult-ai.test.ts`,
-`tests/unit/ruleset-v7-cult-channel-ai.test.ts`.
+`tests/unit/ruleset-v7-cult-channel-ai.test.ts`,
+`tests/unit/ruleset-v7-cult-against-ai.test.ts`.
 
 ## The Candy army seat (`pulp_wars-jdb.13`)
 

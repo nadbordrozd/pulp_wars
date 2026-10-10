@@ -708,6 +708,11 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // embarked unit, and a boat as `VICTIM`), so the step that walks a
     // Summoner and a holder beside a broken enemy skips every other form.
     "src/ai/v7-cult-channel.ts": 1,
+    // Against the Cult (`pulp_wars-mch9.12`), the eye mark: a rampage goes
+    // for a unit in land form or an Egg, never one afloat
+    // (`rampageTargetableV7`), so the actor and every other unit are
+    // tested for exactly those two forms (an Egg is named beside each).
+    "src/ai/v7-cult-against.ts": 2,
     // `pulp_wars-ykw.7`: the capturer that stays ashore because it can walk
     // to an endgame target is a land-form unit (an Egg never boards, and an
     // embarked unit is already afloat).

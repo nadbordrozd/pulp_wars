@@ -1609,8 +1609,117 @@ and the first lines of `isPolicyCandidate`).
     attack next turn, raises its idol, once every channeller is placed.
 13. **What a Cult seat still does not do.** The policy offers no ritual, no
     Proclaim, and no Boo! (`isPolicyCandidate`; bead A3), and no other seat
-    plays against the Cult's mechanics yet (bead A4). The Cult stays hidden
-    from the setup screen.
+    played against the Cult's mechanics yet (bead A4, built:
+    [section 15.9](#159-as-built-a4-every-seat-against-the-cult-pulp_wars-mch912)).
+    The Cult stays hidden from the setup screen.
+
+### 15.9 As built: A4, every seat against the Cult (`pulp_wars-mch9.12`)
+
+Bead A4 implements [section 15.5](#155-against-the-cult-every-other-seat)
+for every seat, a Cult seat that faces another lodge included. (It is
+numbered 15.9 because bead A3, the Cult seat's rituals, hexes, and tricks,
+was written at the same time and takes 15.8.) No rule changed and the
+ruleset identity did not move. No match was played: every rule below is a
+decision, or the candidates of one decision, on a hand-built state in
+`tests/unit/ruleset-v7-cult-against-ai.test.ts`, most of them shown again
+with the module switched off (`setCultAgainstPolicyOptionsV7`). The policy is
+`src/ai/v7-cult-against.ts`; `src/ai/v7.ts` applies it in four marked places
+(the facts of the decision, one line of `isPolicyCandidate`, one of
+`curiosityRejectsV7`, and one block at the end of `scoreCommandWithContext`,
+before the Cult seat's own).
+
+1. **The gate.** `cultAgainstFactsV7` reads the viewer's `cult` lists and is
+   null unless the view holds a hostile bound daemon, a hostile circle, a
+   star of another seat, an own frog, a hostile taunting Chosen, an own unit
+   a Tentacle holds, or an own Cowed city. With null nothing is asked and a
+   decision is byte for byte what it was (the test compares the whole
+   candidate list of three views: plain Cult units in sight, a Cult seat to
+   move, a match without a Cult seat). The policy reads the view, the public
+   combat preview, and `previewRitualV7`; it imports no reducer and draws
+   nothing from the PRNG.
+2. **Hunt the strands.** A hit that breaks a hostile channeller's strand (any
+   damage, or the kill of a warded one) adds the daemon's value (its Favour
+   cost: Horror 5, Herald 20) times 4, divided by the strands to spare
+   (holding strands - Control + 1; a gripped channeller's strand counts its
+   three). Decided here: **the hit goes before the ordinary kills (priority
+   1285, above the kill of a unit that threatens a city, below every
+   capture) only when the attacks the seat is offered now can bring the
+   daemon below its Control this turn** (`cultAgainstDecisiveV7`: the
+   channellers a hit frees, heaviest first, need one attacker each). A hit
+   that cannot keeps its ordinary priority and the added value: one shot at
+   a daemon with two strands to spare is not put before a kill. The strands
+   are checked at the Cult's next Start Turn, so a daemon brought below its
+   Control this turn breaks loose there. An attack the attacker dies of is
+   never put first.
+3. **Under a raised idol** only a kill breaks a strand. The hit that drops
+   the ward (any damage on the Idol Bearer) is put first (1286, just above
+   the strand's) when the seat has one more attacker than the strands it
+   must break; otherwise it only adds the value of the best strand it wards.
+4. **A circle.** A hit on the leader of a Great Summoning, or on a chanter
+   when it has only its three, ends it: priority 1287 and the Herald's
+   value. A chanter it can spare is worth its share. A hit that ends a
+   Star-fall (its leader, or its last chanter) is put before the ordinary
+   attacks on a threatening unit (1245) when the star's forecast takes Hit
+   Points from the seat's own units, and is an ordinary attack otherwise.
+5. **Stand on the X.** The Move of a unit onto the explored mark of a
+   hostile Great Summoning has the priority of the hit that ends it (1287)
+   when the engine's forecast for the board after the Move says the arrival
+   is `BLOCKED` by that unit (so a living unit at 5 HP or less, which would
+   be consumed, is not sent, and nothing is sent to a mark that is blocked
+   already); the sturdiest unit goes. **The unit that blocks a mark stays**:
+   it makes no Move, and no attack whose kill would advance it.
+6. **Step out from under a star.** The ring of every Star-fall of another
+   seat (an ally's too: a star hurts everybody) is its mark and the eight
+   tiles around. A unit in it has the step out at the priority of the step
+   away from the Spider (1176: after its kills, before its other attacks),
+   and no routine Move (priority 735 or less) ends in a ring from outside.
+   A Fighter in the middle of a ring cannot leave it in one Move and stays.
+7. **The eye mark.** For a hostile bound daemon with fewer holding strands
+   than its Control (it breaks loose at its seat's next Start Turn), the
+   policy computes the unit it would go for with the engine's rule (the
+   nearest unit of a player in land form or an Egg, a tie to the daemon's
+   own seat, then the fewest HP, then the lowest ID; the test compares it
+   with `previewRampageV7`), within its Move and one. No routine Move ends
+   as that unit. The unit that is it has a step to a tile where it is not at
+   priority 890: **below every attack and above the routine Moves** (decided
+   here), so a unit strikes first and pulls back if it still can; this is
+   "after a turn that broke a strand, units pull back", read from the board
+   because the policy has no memory. An Unbound daemon is left to the rule
+   it had (item 9).
+8. **Do not fight the Herald.** An attack on a hostile bound Herald that
+   does not kill it is no candidate. Decided here, one exception: **a shot
+   the Herald cannot answer, from a unit with no other attack on offer**
+   (a Marksman with nothing else in range loses nothing by it).
+9. **An Unbound daemon and a Tentacle** are lone monsters to the policy
+   since E4 and E6 (`src/ai/v7-curiosities.ts`): no routine Move ends in an
+   Unbound daemon's reach or beside a Tentacle, and each is attacked only
+   for a kill this turn. Added here: **the unit a Tentacle holds may strike
+   it** when the exchange does not kill the unit (it cannot leave, and the
+   Tentacle slaps the weakest unit beside it again).
+10. **A frog.** A unit with Tend Wounded (or Repair) beside an own frog
+    Tends first (1290, before anything else moves): the frog is itself at
+    once and has its turn. A frog that is not cured has the step to a tile
+    where the visible enemy deals it less at priority 890, and makes no
+    routine Move to a tile where it is dealt more. **Not built:** a Tender's
+    walk to a frog it is not beside, and the Candy Top-Up as a cure.
+11. **Pick Me!** The engine offers a bound unit no attack but the Chosen, so
+    nothing forbidden is ever a candidate. The policy's Move values do not
+    know of the taunt, so, decided here: **a Move that ends beside a hostile
+    taunting Chosen, from a tile that is not beside it, has at most a routine
+    Move's priority** (the kill it was made for may be refused), unless it
+    ends on a settlement center, a village, or a treasure chest. A taunt
+    ends at its owner's Start Turn, so it binds only the turn in which the
+    policy sees it.
+12. **A Cowed city** can train nobody this turn and has a Herald within 3:
+    the unit on its center makes no Move (and no attack whose kill would
+    advance it), and the Move onto an empty Cowed center of the seat's own
+    has the priority of the Move onto an empty threatened city (1250).
+13. **Left open.** No number here was tuned (no simulation). The policy does
+    not: plan the several attacks of a kill of a bound Herald together;
+    count the strands the Cult can form again in its own turn; choose which
+    unit blocks a mark by anything but its Hit Points; walk toward a far
+    mark over several turns; or weigh a step out of a ring or back from an
+    eye mark against the danger of the tile it steps to.
 
 ## 16. Worked examples
 
@@ -2480,7 +2589,8 @@ where this spec left room:
     Every seat reads a visible Unbound daemon as a monster: it is
     hunted only by a kill this turn, and a routine Move does not end in its
     reach. The rules of [section 15.5](#155-against-the-cult-every-other-seat)
-    are bead A4.
+    are bead A4 (built:
+    [section 15.9](#159-as-built-a4-every-seat-against-the-cult-pulp_wars-mch912)).
 17. **The interface stand-in** ("Bind Horror" as a generic button) was
     replaced by bead U2 (`pulp_wars-mch9.18`; "As built by U2" in
     [section 14.3](#143-how-it-reads-on-the-board-without-text)): the Channel
@@ -2760,7 +2870,9 @@ is in the engine. The choices E6 made where this spec left room:
     (it is the ordinary Capture, offered a turn earlier). Every seat reads
     a visible Tentacle as a lone monster, like an Unbound daemon: no
     routine Move ends on the eight tiles around it, and it is attacked only
-    for a kill this turn.
+    for a kill this turn. (Bead A4 adds the blow of the unit it holds, and
+    every seat's play against a frog and a taunt:
+    [section 15.9](#159-as-built-a4-every-seat-against-the-cult-pulp_wars-mch912).)
 16. **The interface.** The browser offers no button for the four commands
     yet, draws no frog, taunt, or Grab mark, and a frog's unit card still
     shows its ordinary Defense and Move (bead U3, `pulp_wars-mch9.19`). The

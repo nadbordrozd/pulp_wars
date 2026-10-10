@@ -93,6 +93,15 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/ai/v7-cult-channel.ts::cultNearestToV7": "BOARD",
     "src/ai/v7-cult-channel.ts::cultPlanV7": "BOARD",
     "src/ai/v7.ts::cultPlanForV7": "BOARD",
+    // Against the Cult (`pulp_wars-mch9.12`): channellers, Idol Bearers,
+    // chanters, daemons, taunting Chosen, frogs, the units a Tentacle
+    // holds, and the units a rampage may go for are units on the board (a
+    // burrowed unit holds no strand, chants in no circle, is no frog, and
+    // is never the unit a daemon goes for).
+    "src/ai/v7-cult-against.ts::cultAgainstFactsV7": "BOARD",
+    "src/ai/v7-cult-against.ts::steppedView": "BOARD",
+    "src/ai/v7-cult-against.ts::cultAgainstEyeMarkedV7": "BOARD",
+    "src/ai/v7-cult-against.ts::cultAgainstCuresV7": "BOARD",
     "src/ai/v7-curiosities.ts::curiosityFactsV7": "BOARD",
     "src/ai/v7-curiosities.ts::planCuriosityErrandsV7": "BOARD",
     "src/ai/v7-curiosities.ts::soleCityDefenderV7": "BOARD",

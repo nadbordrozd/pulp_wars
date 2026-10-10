@@ -713,6 +713,18 @@ import {
   type CuriosityFactsV7,
   type MonsterFactsV7,
 } from "./v7-curiosities";
+// Against the Cult (`pulp_wars-mch9.12`): every seat's play against the
+// Cult's marks (public view and previews only; it imports no reducer).
+import {
+  CULT_AGAINST_CURE_PRIORITY_V7,
+  cultAgainstAttackV7,
+  cultAgainstCuresV7,
+  cultAgainstFactsV7,
+  cultAgainstGrabAttackV7,
+  cultAgainstMoveV7,
+  type CultAgainstFactsV7,
+  type CultAgainstMoveValueV7,
+} from "./v7-cult-against";
 import {
   directivePlanForViewV7,
   leashReadyCommandsV7,
@@ -931,6 +943,14 @@ interface PolicyContextV7 {
    * is not a Monster (undefined until computed).
    */
   curiosityOtherTargets: ReadonlySet<UnitId> | undefined;
+  /**
+   * Against the Cult (`pulp_wars-mch9.12`, RULESET_7_CULTISTS.md section
+   * 15.5; `src/ai/v7-cult-against.ts`): what the Cult has put on the
+   * viewer's board (strands, circles, marks, frogs, taunts, a Grab, a Cowed
+   * city), or null when there is none of it; every rule against the Cult
+   * is gated on it.
+   */
+  readonly cultAgainst: CultAgainstFactsV7 | null;
   readonly commands: readonly CommandV7[];
   /**
    * `pulp_wars-68k.3`: the seat's active mission directive (null for NORMAL
@@ -1996,6 +2016,9 @@ function bareContext(
     curiosities: curiosityFactsV7(view),
     curiosityErrands: undefined,
     curiosityOtherTargets: undefined,
+    cultAgainst: cultAgainstFactsV7(view, commands, (owner) =>
+      isHostile(view, owner),
+    ),
     commands,
     directive,
     openingGrowthHarvest: commands.some((command) =>
@@ -10955,6 +10978,14 @@ function isPolicyCandidate(
     return true;
   if (navalRejectsV7(context, command)) return false;
   if (frozenSeaRejectsV7(context, command)) return false;
+  // Against the Cult (`pulp_wars-mch9.12`; `src/ai/v7-cult-against.ts`): a
+  // command of that policy's own (the Move onto the X, out from under a
+  // star, back from an eye mark, a frog's retreat and its cure, a hit that
+  // breaks a strand or ends a circle, the blow of a Grabbed unit) is a
+  // candidate whatever the general rules below say of it. Never in a view
+  // with none of the Cult's marks.
+  if (context.cultAgainst !== null && cultAgainstForcedV7(context, command))
+    return true;
   // The giants' signatures (`pulp_wars-w49.31`, RULESET_7_GIANTS.md
   // section 9): the four commands by their plans (`giantTossPlanV7`...).
   // A Swallow is scored by its preview; the large Toss and Break Off offer
@@ -14958,6 +14989,16 @@ function scoreCommandWithContext(
       priority = Math.max(priority, KABOOM_KILL_PRIORITY_V7);
   }
 
+  // Against the Cult (`pulp_wars-mch9.12`, RULESET_7_CULTISTS.md section
+  // 15.5; `src/ai/v7-cult-against.ts`): the strands, the X, the star, the
+  // eye mark, the bound Herald, a frog, a taunt, a Grab, and a Cowed city.
+  // Null (and nothing changes) in a view with none of the Cult's marks.
+  if (context.cultAgainst !== null) {
+    const against = cultAgainstValueV7(context, command, resultAt, priority);
+    priority = against.priority;
+    strategicValue += against.strategic;
+  }
+
   // The Cult seat (`pulp_wars-mch9.10`, RULESET_7_CULTISTS.md sections 15.2
   // to 15.4; `src/ai/v7-cult-channel.ts`): channel first. A step of the
   // plan has the plan's priority, above the ordinary play (but the doomed
@@ -17304,6 +17345,18 @@ function curiosityRejectsV7(
       command.targetUnitId,
     );
     if (preview === null) return true;
+    // Against the Cult (`pulp_wars-mch9.12`): the unit a Tentacle holds
+    // may strike it (it cannot leave its side).
+    if (
+      context.cultAgainst !== null &&
+      cultAgainstGrabAttackV7(
+        context.cultAgainst,
+        command.unitId,
+        command.targetUnitId,
+        preview,
+      )
+    )
+      return false;
     const others = curiosityOtherTargetsV7(context, facts).has(command.unitId);
     if (monster.breed === "BIGFOOT")
       return others || preview.damageToDefender <= 0;
@@ -17424,6 +17477,98 @@ function curiosityMoveValueV7(
   )
     priority = Math.max(priority, MONSTER_STEP_AWAY_PRIORITY_V7);
   return { priority, strategic };
+}
+
+/**
+ * Against the Cult (`pulp_wars-mch9.12`, docs/product/RULESET_7_CULTISTS.md
+ * section 15.5; `src/ai/v7-cult-against.ts`): the value that policy gives
+ * the command at `priority`. Reached only with `context.cultAgainst` set.
+ * `resultAt` is where a Move leaves its unit (null: its last tile).
+ */
+function cultAgainstValueV7(
+  context: PolicyContextV7,
+  command: CommandV7,
+  resultAt: CoordV7 | null,
+  priority: number,
+): CultAgainstMoveValueV7 {
+  const facts = context.cultAgainst;
+  const unchanged = { priority, strategic: 0, forced: false };
+  if (
+    facts === null ||
+    (command.kind !== "MOVE" &&
+      command.kind !== "ATTACK" &&
+      command.kind !== "TEND_WOUNDED")
+  )
+    return unchanged;
+  const view = context.view;
+  const actor = context.lookup.unitsById.get(command.unitId);
+  if (actor === undefined || actor.ownerId !== view.viewer.id) return unchanged;
+  if (command.kind === "MOVE") {
+    const to = resultAt ?? command.path.at(-1);
+    if (to === undefined) return unchanged;
+    return cultAgainstMoveV7(
+      facts,
+      {
+        view,
+        danger: (unit, at) => visibleImmediateDamage(view, unit, at, context),
+        site: (at) => {
+          const tile = findPublicTileV7(view, at);
+          return (
+            (tile?.explored === true && tile.site !== null) ||
+            view.treasureChests.some((chest) => same(chest, at))
+          );
+        },
+        routineMaximum: ARMY_ROUTINE_MOVE_MAXIMUM_V7,
+      },
+      actor,
+      to,
+      priority,
+    );
+  }
+  if (command.kind === "ATTACK") {
+    const target = context.lookup.unitsById.get(command.targetUnitId);
+    const hit = queryCombatPreviewV7(view, actor.id, command.targetUnitId);
+    if (target === undefined || hit === null) return unchanged;
+    const value = cultAgainstAttackV7(
+      facts,
+      view,
+      (attackerId, targetUnitId) =>
+        queryCombatPreviewV7(view, attackerId, targetUnitId),
+      actor,
+      target,
+      hit,
+      priority,
+    );
+    return {
+      ...value,
+      forced:
+        value.priority > priority ||
+        cultAgainstGrabAttackV7(facts, actor.id, target.id, hit),
+    };
+  }
+  const cured = cultAgainstCuresV7(facts, view, actor);
+  return cured === 0
+    ? unchanged
+    : {
+        priority: Math.max(priority, CULT_AGAINST_CURE_PRIORITY_V7),
+        strategic: 20 * cured,
+        forced: true,
+      };
+}
+
+/**
+ * Against the Cult (`pulp_wars-mch9.12`): a command that policy makes a
+ * candidate itself (see `isPolicyCandidate`). A Move onto a tile the
+ * curiosity rules close (a Monster's reach, a gate) is never one.
+ */
+function cultAgainstForcedV7(
+  context: PolicyContextV7,
+  command: CommandV7,
+): boolean {
+  return (
+    cultAgainstValueV7(context, command, null, 0).forced &&
+    !(command.kind === "MOVE" && curiosityRejectsV7(context, command))
+  );
 }
 
 /**

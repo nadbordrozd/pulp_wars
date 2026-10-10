@@ -134,6 +134,9 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       "./v7-candy",
       // pulp_wars-737.4: map curiosities (public view and previews only).
       "./v7-curiosities",
+      // pulp_wars-mch9.12: every seat against the Cult (the public view
+      // and the public previews only; it imports no reducer).
+      "./v7-cult-against",
       // pulp_wars-68k.3: mission directives (read from the public setup).
       "./v7-directives",
       "./v7-opening",
