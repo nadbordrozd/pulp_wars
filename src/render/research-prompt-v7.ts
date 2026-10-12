@@ -94,7 +94,7 @@ function whatIfCommandsV7(
  * The research prompts of one tile, in the engine's command order: one per
  * missing technology that would let the viewer harvest or extract the
  * tile's resource. Empty for a tile the viewer could not use anyway (fog,
- * foreign or neutral land, a besieged city), for a technology that is
+ * foreign or neutral land, a tile an enemy unit stands on), for a technology that is
  * known, and for one that cannot be researched in this match.
  */
 export function tileResearchPromptsV7(

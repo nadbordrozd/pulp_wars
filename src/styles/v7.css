@@ -3053,6 +3053,16 @@
   font-size: var(--pw-fs-md);
 }
 
+.v7-reward-arrival {
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-sm);
+}
+
+.v7-reward-arrival.is-warning {
+  color: var(--pw-red);
+  font-weight: var(--pw-fw-bold);
+}
+
 .v7-results {
   justify-items: center;
   text-align: center;

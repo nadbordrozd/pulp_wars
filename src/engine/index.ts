@@ -90,6 +90,7 @@ export * from "./v7/order";
 export * from "./v7/plague";
 export * from "./v7/query";
 export * from "./v7/recovery";
+export * from "./v7/reward-arrival";
 export * from "./v7/replay";
 export * from "./v7/reducer";
 export * from "./v7/schema";

@@ -67,7 +67,7 @@ import {
 } from "../fixtures/v7-revision20";
 
 /**
- * Tuning 6 (`pulp_wars-w49.6`, identity `pulp-wars-poc-7r79`;
+ * Tuning 6 (`pulp_wars-w49.6`, identity `pulp-wars-poc-7r80`;
  * docs/product/RULESET_7_TUNING_HUMAN.md section 13): the Normal AI breaks
  * a line with numbers, expands and grows, researches toward its army and
  * buys its dear units, and keeps its discipline; research costs 1 Coin more
@@ -176,13 +176,13 @@ describe("tuning 6 identity and the research price", () => {
   // and the Undead pass 7r51, so 7r49 is the prior identity before the
   // last.
   it("was 7r49 after 7r48, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r79");
-    expect(PRIOR_RULESET_7_IDS.slice(-31, -29)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r80");
+    expect(PRIOR_RULESET_7_IDS.slice(-32, -30)).toEqual([
       "pulp-wars-poc-7r48",
       "pulp-wars-poc-7r49",
     ]);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r79.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-31, -29)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r80.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-32, -30)).toEqual([
       "pulpWars.save.v7r48.current",
       "pulpWars.save.v7r49.current",
     ]);
@@ -1825,19 +1825,20 @@ describe("an unseen attacker's damage reaches the victim's owner", () => {
   });
 });
 
-describe("a reward unit leaves the garrison on its center", () => {
-  it("appears on a free tile of the city next to the center", () => {
+// Siege rules (`pulp_wars-0pgd`, 7r80) reversed tuning 6 here: the reward
+// unit takes the center and the garrison steps aside (the cases are in
+// tests/unit/ruleset-v7-siege-rules.test.ts).
+describe("a reward unit takes its center from the garrison", () => {
+  it("moves the garrison to a free tile of the city next to the center", () => {
     const fixture = rewardStateV7("MILITIA", "ORIGINAL", [
       { role: "GUARD", at: at(8, 8) },
     ]);
     const own = seatIdV7(fixture.state, 0);
     const guard = unitAtV7(fixture.state, at(8, 8));
     const result = applyOkV7(fixture.state, own, fixture.command);
-    expect(result.events.map((event) => event.kind)).not.toContain(
-      "UNIT_SPAWN_DISPLACED",
-    );
-    // The Guard has not moved.
-    expect(unitAtV7(result.state, at(8, 8)).id).toBe(guard.id);
+    // The Guard stands on the first tile of the city's territory next to
+    // the center.
+    expect(unitAtV7(result.state, at(7, 7)).id).toBe(guard.id);
     const granted = result.events.find(
       (event) => event.kind === "UNIT_REWARD_GRANTED",
     );
@@ -1845,8 +1846,16 @@ describe("a reward unit leaves the garrison on its center", () => {
     const fighter = result.state.units.find(
       (unit) => unit.id === granted.unitId,
     );
-    // The first tile of the city's territory next to the center.
-    expect(fighter).toMatchObject({ role: "FIGHTER", at: at(7, 7) });
+    expect(fighter).toMatchObject({ role: "FIGHTER", at: at(8, 8) });
+    expect(result.events).toContainEqual({
+      kind: "UNIT_SPAWN_DISPLACED",
+      playerId: own,
+      cityId: fixture.command.cityId,
+      spawnedUnitId: granted.unitId,
+      displacedUnitId: guard.id,
+      from: at(8, 8),
+      to: at(7, 7),
+    });
     expect(parseGameStateV7(JSON.parse(JSON.stringify(result.state)))).toEqual(
       result.state,
     );
@@ -1862,7 +1871,7 @@ describe("a reward unit leaves the garrison on its center", () => {
     expect(unitAtV7(result.state, at(8, 8)).role).toBe("FIGHTER");
   });
 
-  it("displaces the garrison only when no tile next to the center is free", () => {
+  it("kills the garrison when no tile next to the center is free", () => {
     const ring = [
       at(7, 7),
       at(8, 7),
@@ -1898,6 +1907,11 @@ describe("a reward unit leaves the garrison on its center", () => {
         to: null,
       }),
     );
+    expect(result.events).toContainEqual({
+      kind: "UNIT_DIED",
+      unitId: guard.id,
+      cause: "DISPLACED",
+    });
   });
 });
 

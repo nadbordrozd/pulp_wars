@@ -77,6 +77,7 @@ import {
   isEggLaidRoleV7,
   previewHatchV7,
   previewLayEggV7,
+  publicTileEnemyOccupiedV7,
   previewColdSnapV7,
   previewBreakOffV7,
   previewStompV7,
@@ -356,8 +357,12 @@ import {
   type TileResearchPromptV7,
 } from "../research-prompt-v7";
 import {
+  BESIEGED_TOOLTIP_V7,
+  ENEMY_ON_TILE_LABEL_V7,
+  ENEMY_ON_TILE_TOOLTIP_V7,
   OUTSIDE_BORDERS_LABEL_V7,
   OUTSIDE_BORDERS_TOOLTIP_V7,
+  rewardArrivalNoteV7,
   UNIT_DONE_LABEL_V7,
   UNIT_DONE_TOOLTIP_V7,
   coinRichViewV7,
@@ -6511,6 +6516,9 @@ export class Ruleset7DomAppView {
           text(this.#document, "dt", "Status"),
           text(this.#document, "dd", "Besieged"),
         );
+        // Siege rules (`pulp_wars-0pgd`, 7r80): what a siege stops.
+        siege.title = BESIEGED_TOOLTIP_V7;
+        siege.setAttribute("aria-label", `Besieged. ${BESIEGED_TOOLTIP_V7}`);
         details.append(siege);
       }
       // Proclaim (bead pulp_wars-mch9.19, section 8.6): a Cowed city, for
@@ -6894,6 +6902,26 @@ export class Ruleset7DomAppView {
             `${OUTSIDE_BORDERS_LABEL_V7}. ${OUTSIDE_BORDERS_TOOLTIP_V7}`,
           );
           details.append(outside);
+        }
+        // Siege rules (`pulp_wars-0pgd`, 7r80): an own tile an enemy unit
+        // stands on takes no building and no harvest; one chip says why.
+        if (
+          tile.territoryOwnerId === view.viewer.id &&
+          publicTileEnemyOccupiedV7(view, tile.at)
+        ) {
+          const enemy = text(
+            this.#document,
+            "p",
+            ENEMY_ON_TILE_LABEL_V7,
+            "v7-chip is-warning",
+          );
+          enemy.dataset.disabledReason = "enemy-on-tile";
+          enemy.title = ENEMY_ON_TILE_TOOLTIP_V7;
+          enemy.setAttribute(
+            "aria-label",
+            `${ENEMY_ON_TILE_LABEL_V7}. ${ENEMY_ON_TILE_TOOLTIP_V7}`,
+          );
+          details.append(enemy);
         }
         if (
           tile.improvement !== null &&
@@ -9225,7 +9253,22 @@ export class Ruleset7DomAppView {
         text(this.#document, "strong", name),
         text(this.#document, "span", detail, "v7-reward-detail"),
       );
-      action.setAttribute("aria-label", `${name}: ${detail}`);
+      // Siege rules (`pulp_wars-0pgd`, 7r80): who makes room for the unit.
+      const arrival = rewardArrivalNoteV7(view, choice.cityId, reward);
+      if (arrival !== null) {
+        const note = text(
+          this.#document,
+          "span",
+          arrival.text,
+          `v7-reward-arrival${arrival.warning ? " is-warning" : ""}`,
+        );
+        note.dataset.rewardArrival = arrival.warning ? "loss" : "move";
+        action.append(note);
+      }
+      action.setAttribute(
+        "aria-label",
+        `${name}: ${detail}${arrival === null ? "" : `. ${arrival.text}`}`,
+      );
       action.disabled = this.#localBusy();
       action.onclick = () => void this.#dispatch(command);
       modal.append(action);
@@ -14648,7 +14691,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffff_ffff)
     return null;
   return {
-    rulesetId: "pulp-wars-poc-7r79",
+    rulesetId: "pulp-wars-poc-7r80",
     seed,
     width: effectiveBoardSize(draft),
     height: effectiveBoardSize(draft),

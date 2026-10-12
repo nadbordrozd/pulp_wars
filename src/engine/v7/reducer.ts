@@ -89,6 +89,7 @@ import {
   RICOCHET_DIVISOR_V7,
 } from "../rules/ruleset-v7";
 import { hasExactKeysV7 } from "./schema";
+import { rewardArrivalV7, rewardUnitRoleV7 } from "./reward-arrival";
 import {
   freezeSetV7,
   resolveBlackIceV7,
@@ -138,6 +139,7 @@ import {
   growthEventsV7,
   harbourPopulationForV7,
   isCityBesiegedV7,
+  isTileEnemyOccupiedV7,
   isActivePortV7,
   combinedNetworkCityIdsV7,
   marketCoinsV7,
@@ -182,6 +184,7 @@ import { grownUnitV7 } from "./growth";
 import { recordInfectionV7 } from "./infect";
 import {
   prunedNinthUnitV7,
+  unitIsImmovableV7,
   wightRisingRuleV7,
   withNinthUnitTurnEndedV7,
   withSortedUnitIdV7,
@@ -208,7 +211,6 @@ import {
   MILITIA_FIGHTERS_V7,
   createInitialMapStateV7,
   type CreateInitialMapStateResultV7,
-  SURVEY_RAIDERS_V7,
 } from "./map";
 import {
   beamDownCarrierReadyV7,
@@ -412,6 +414,9 @@ export type RuleErrorCodeV7 =
   | "REDEVELOP_INVALID_TARGET"
   | "TERRITORY_NOT_OWNED"
   | "CITY_BESIEGED"
+  // Siege rules (`pulp_wars-0pgd`, 7r80): a tile command on a tile a hostile
+  // unit stands on.
+  | "TILE_ENEMY_OCCUPIED"
   | "CITY_REWARD_PENDING"
   | "CITY_BUILDING_LIMIT"
   | "PLACEMENT_REQUIREMENT_UNMET"
@@ -2038,7 +2043,8 @@ function applySpatial(
   const city = state.cities.find((item) => item.id === tile.territoryCityId);
   if (city === undefined || city.ownerId !== actor)
     return rejected(original, "TERRITORY_NOT_OWNED");
-  if (isCityBesiegedV7(state, city)) return rejected(original, "CITY_BESIEGED");
+  if (isTileEnemyOccupiedV7(state, actor, command.at))
+    return rejected(original, "TILE_ENEMY_OCCUPIED");
   if (hasCityChoice(state, city.id))
     return rejected(original, "CITY_REWARD_PENDING");
   if (
@@ -2143,7 +2149,8 @@ function applyMonument(
   const city = state.cities.find((item) => item.id === tile.territoryCityId);
   if (city === undefined || city.ownerId !== actor)
     return rejected(original, "TERRITORY_NOT_OWNED");
-  if (isCityBesiegedV7(state, city)) return rejected(original, "CITY_BESIEGED");
+  if (isTileEnemyOccupiedV7(state, actor, command.at))
+    return rejected(original, "TILE_ENEMY_OCCUPIED");
   if (hasCityChoice(state, city.id))
     return rejected(original, "CITY_REWARD_PENDING");
   if (
@@ -2309,8 +2316,6 @@ function applyBlastMountain(
   const place = blastPlaceV7(state, actor, tile);
   if (place === null) return rejected(original, "TERRITORY_NOT_OWNED");
   const city = place.city;
-  if (city !== null && isCityBesiegedV7(state, city))
-    return rejected(original, "CITY_BESIEGED");
   if (city !== null && hasCityChoice(state, city.id))
     return rejected(original, "CITY_REWARD_PENDING");
   const cost = BLAST_MOUNTAIN_COST_V7;
@@ -2528,8 +2533,11 @@ function applyInfrastructure(
     return rejected(original, "TERRITORY_NOT_OWNED");
   if (city !== undefined && city.ownerId !== actor)
     return rejected(original, "TERRITORY_NOT_OWNED");
-  if (city !== undefined && isCityBesiegedV7(state, city))
-    return rejected(original, "CITY_BESIEGED");
+  if (
+    command.kind !== "BLAST_MOUNTAIN" &&
+    isTileEnemyOccupiedV7(state, actor, command.at)
+  )
+    return rejected(original, "TILE_ENEMY_OCCUPIED");
   if (city !== undefined && hasCityChoice(state, city.id))
     return rejected(original, "CITY_REWARD_PENDING");
   const cost =
@@ -2717,7 +2725,8 @@ function applyPearls(
     !isActivePortV7(state, at, actor)
   )
     return rejected(original, "INVALID_TILE", { action: "GATHER_PEARLS" });
-  if (isCityBesiegedV7(state, city)) return rejected(original, "CITY_BESIEGED");
+  if (isTileEnemyOccupiedV7(state, actor, at))
+    return rejected(original, "TILE_ENEMY_OCCUPIED");
   if (hasCityChoice(state, city.id))
     return rejected(original, "CITY_REWARD_PENDING");
   if (player.coins < 2)
@@ -2781,7 +2790,8 @@ function applyPort(
     !touchesLand
   )
     return rejected(original, "INVALID_TILE", { action: "BUILD_PORT" });
-  if (isCityBesiegedV7(state, city)) return rejected(original, "CITY_BESIEGED");
+  if (isTileEnemyOccupiedV7(state, actor, at))
+    return rejected(original, "TILE_ENEMY_OCCUPIED");
   if (hasCityChoice(state, city.id))
     return rejected(original, "CITY_REWARD_PENDING");
   if (player.coins < 4)
@@ -2858,7 +2868,6 @@ function applyShipyard(
     )
   )
     return rejected(original, "CITY_BUILDING_LIMIT");
-  if (isCityBesiegedV7(state, city)) return rejected(original, "CITY_BESIEGED");
   if (hasCityChoice(state, city.id))
     return rejected(original, "CITY_REWARD_PENDING");
   if (player.coins < 5)
@@ -4550,15 +4559,10 @@ function applyReward(
   // Every reward unit is granted whether or not its city has a free unit
   // slot (a level reward is never lost to a full city); it uses a slot
   // from then on.
-  const unitRole =
-    command.reward === "MILITIA"
-      ? "FIGHTER"
-      : command.reward === "JUGGERNAUT"
-        ? "JUGGERNAUT"
-        : command.reward === "SURVEY" &&
-            SURVEY_RAIDERS_V7[requirePlayer(state, actor).faction] === 1
-          ? "RAIDER"
-          : null;
+  const unitRole = rewardUnitRoleV7(
+    command.reward,
+    requirePlayer(state, actor).faction,
+  );
   try {
     let nextEntityId = state.nextEntityId;
     let players = state.players;
@@ -8460,8 +8464,8 @@ function validateTileContext(
   const city = state.cities.find((item) => item.id === tile.territoryCityId);
   if (city === undefined || city.ownerId !== actor)
     return { ok: false, code: "TERRITORY_NOT_OWNED", params: {} };
-  if (isCityBesiegedV7(state, city))
-    return { ok: false, code: "CITY_BESIEGED", params: {} };
+  if (isTileEnemyOccupiedV7(state, actor, at))
+    return { ok: false, code: "TILE_ENEMY_OCCUPIED", params: {} };
   if (hasCityChoice(state, city.id))
     return { ok: false, code: "CITY_REWARD_PENDING", params: {} };
   return { ok: true, player, tile, city };
@@ -9330,83 +9334,87 @@ function settleCityRewardsV7(
 }
 
 /**
- * The reward displacement rule: the first cell adjacent to `center` in (y, x)
- * order that is land, enterable by `unit` (the shared `canEnterTerrainV7`:
- * a Mountain needs its owner's Engineering unless it strides or flies), has
- * no treasure chest and no unit, and is not an ally's territory. The Martian
- * revision: a flyer is never displaced onto a settlement center it cannot
- * stand on.
+ * The reward displacement predicate: whether `unit` may be put on the cell
+ * `at` beside a city center: it is land, enterable by `unit` (the shared
+ * `canEnterTerrainV7`: a Mountain needs its owner's Engineering unless it
+ * strides or flies), has no treasure chest and no unit, mound, or
+ * Barricade, and is not an ally's territory. The Martian revision: a flyer
+ * is never put on a settlement center it cannot stand on. A neutral unit
+ * (an Unbound daemon on a center) has no technology.
+ */
+function rewardCellLegalV7(
+  state: GameStateV7,
+  unit: Pick<UnitStateV7, "id" | "ownerId" | "role">,
+  at: CoordV7,
+): boolean {
+  const ownerId = unit.ownerId;
+  const techs =
+    state.players.find((player) => player.id === ownerId)?.researchedTechs ??
+    [];
+  const tile = tileAtV7(state.board, at);
+  if (tile === undefined || tile.biome === null) return false;
+  if (state.treasureChests.some((chest) => same(chest, at))) return false;
+  if (
+    !canEnterTerrainV7({
+      terrain: tile.terrain,
+      movementMode: unitMovementModeV7(state, unit),
+      afloat: false,
+      engineering: techs.includes("ENGINEERING"),
+      navigation: techs.includes("NAVIGATION"),
+      mountainBorn: unitIsMountainBornV7(state, unit),
+      // A displacement tile is land (its biome is not null).
+      ice: false,
+    })
+  )
+    return false;
+  if (
+    unitAvoidsForeignSitesV7(state, unit) &&
+    !flyerMayStandOnSiteV7(
+      tile.site,
+      state.cities.find((city) => same(city.at, at))?.ownerId ?? null,
+      ownerId,
+    )
+  )
+    return false;
+  const territoryOwner = state.cities.find(
+    (candidate) => candidate.id === tile.territoryCityId,
+  )?.ownerId;
+  if (
+    territoryOwner !== undefined &&
+    territoryOwner !== ownerId &&
+    arePlayersAlliedV7(state, ownerId, territoryOwner)
+  )
+    return false;
+  // The Dwarf revision section 5.3: the occupancy predicate.
+  return !tileOccupiedV7(state, at);
+}
+
+/**
+ * The first cell adjacent to `center` in (y, x) order that `unit` may be put
+ * on (`rewardCellLegalV7`): where the second Goblin or Initiate of a Militia
+ * appears.
  */
 function rewardDisplacementCellV7(
   state: GameStateV7,
   unit: Pick<UnitStateV7, "id" | "ownerId" | "role">,
   center: CoordV7,
-  allowed: (at: CoordV7) => boolean = () => true,
 ): CoordV7 | null {
-  const ownerId = unit.ownerId;
-  const owner = requirePlayer(state, ownerId);
-  const movementMode = unitMovementModeV7(state, unit);
   return (
-    adjacentCoords(state, center).find((at) => {
-      const tile = tileAtV7(state.board, at);
-      if (tile === undefined || tile.biome === null || !allowed(at))
-        return false;
-      if (state.treasureChests.some((chest) => same(chest, at))) return false;
-      if (
-        !canEnterTerrainV7({
-          terrain: tile.terrain,
-          movementMode,
-          afloat: false,
-          engineering: owner.researchedTechs.includes("ENGINEERING"),
-          navigation: owner.researchedTechs.includes("NAVIGATION"),
-          mountainBorn: unitIsMountainBornV7(state, unit),
-          // A displacement tile is land (its biome is not null).
-          ice: false,
-        })
-      )
-        return false;
-      if (
-        unitAvoidsForeignSitesV7(state, unit) &&
-        !flyerMayStandOnSiteV7(
-          tile.site,
-          state.cities.find((city) => same(city.at, at))?.ownerId ?? null,
-          ownerId,
-        )
-      )
-        return false;
-      const territoryOwner = state.cities.find(
-        (candidate) => candidate.id === tile.territoryCityId,
-      )?.ownerId;
-      if (
-        territoryOwner !== undefined &&
-        territoryOwner !== ownerId &&
-        arePlayersAlliedV7(state, ownerId, territoryOwner)
-      )
-        return false;
-      // The Dwarf revision section 5.3: the occupancy predicate.
-      return !tileOccupiedV7(state, at);
-    }) ?? null
+    adjacentCoords(state, center).find((at) =>
+      rewardCellLegalV7(state, unit, at),
+    ) ?? null
   );
 }
 
 /**
- * Tuning 6 (`pulp_wars-w49.6`): where a reward unit appears when its
- * city's center is occupied: a free tile next to the center that the unit
- * may stand on (the reward displacement predicate), one of the city's own
- * territory before any other, in (y, x) order. Null when there is none.
+ * Siege rules (`pulp_wars-0pgd`, `pulp-wars-poc-7r80`; RULESET_7_CURRENT.md
+ * section 4.6): a reward unit appears on its city's center. The unit
+ * standing there (the garrison or a besieger) steps to a tile next to the
+ * center, or dies when it has none (`rewardArrivalV7`; `UNIT_SPAWN_DISPLACED`
+ * and, for a death, `UNIT_DIED` cause `DISPLACED`: no credit, Plunder,
+ * Grave, Crumbs, blast, or Martyr). Tuning 6 (`7r49` to `7r79`) kept the
+ * garrison on the center and put the reward unit beside it.
  */
-function rewardArrivalCellV7(
-  state: GameStateV7,
-  unit: Pick<UnitStateV7, "id" | "ownerId" | "role">,
-  city: CityStateV7,
-): CoordV7 | null {
-  const free = (own: boolean): CoordV7 | null =>
-    rewardDisplacementCellV7(state, unit, city.at, (at) =>
-      own ? tileAtV7(state.board, at)?.territoryCityId === city.id : true,
-    );
-  return free(true) ?? free(false);
-}
-
 function resolveCityCenterSpawnV7(
   state: GameStateV7,
   actor: PlayerId,
@@ -9421,19 +9429,33 @@ function resolveCityCenterSpawnV7(
   const occupant = state.units.find(
     (unit) => unit.hp > 0 && same(unit.at, city.at),
   );
-  // Tuning 6 (`pulp_wars-w49.6`, `pulp-wars-poc-7r49`): the unit on the
-  // center stays. A reward unit that finds the center occupied appears on
-  // a free tile next to it (`rewardArrivalCellV7`); it used to take the
-  // center and push the garrison to the first free cell in (y, x) order,
-  // which put a wounded garrison in the open without its owner choosing.
-  // Only when no tile next to the center is free does the old rule apply.
-  const beside =
-    occupant === undefined ? null : rewardArrivalCellV7(state, spawned, city);
-  if (beside !== null) spawned = { ...spawned, at: beside };
-  const displaces = occupant !== undefined && beside === null;
-  const destination = displaces
-    ? rewardDisplacementCellV7(state, occupant, city.at)
-    : null;
+  const arrival = rewardArrivalV7({
+    center: city.at,
+    around: adjacentCoords(state, city.at),
+    occupant:
+      occupant === undefined
+        ? null
+        : {
+            id: occupant.id,
+            immovable:
+              occupant.form === "EGG" || unitIsImmovableV7(state, occupant),
+          },
+    occupantMayStand: (at) =>
+      occupant !== undefined && rewardCellLegalV7(state, occupant, at),
+    preferred: (at) =>
+      occupant !== undefined &&
+      occupant.ownerId === city.ownerId &&
+      state.cities.find(
+        (candidate) =>
+          candidate.id === tileAtV7(state.board, at)?.territoryCityId,
+      )?.ownerId === occupant.ownerId,
+    spawnedMayStand: (at) => rewardCellLegalV7(state, spawned, at),
+    cityTerritory: (at) =>
+      tileAtV7(state.board, at)?.territoryCityId === city.id,
+  });
+  spawned = { ...spawned, at: arrival.at };
+  const displaces = occupant !== undefined && arrival.displacedUnitId !== null;
+  const destination = arrival.displaceTo;
   const displaced =
     !displaces || destination === null
       ? null
@@ -9460,6 +9482,7 @@ function resolveCityCenterSpawnV7(
   // releases its controlled unit.
   let burrowed = state.burrowed;
   if (displaces && displaced === null) {
+    events.push({ kind: "UNIT_DIED", unitId: occupant.id, cause: "DISPLACED" });
     const release = releaseControlledV7(
       units,
       burrowed,

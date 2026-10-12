@@ -400,10 +400,16 @@ import {
   type RitualKindV7,
   type TechnologyIdV7,
   type SummonedRoleIdV7,
+  type RewardIdV7,
   type UnitRoleIdV7,
   type UnitStateV7,
 } from "./types";
 import { publicUnitStatsV7, type PublicUnitStatsV7 } from "./unit-stats";
+import {
+  rewardArrivalV7,
+  rewardUnitRoleV7,
+  type RewardArrivalV7,
+} from "./reward-arrival";
 import {
   allOwnedUnitsV7,
   barricadeAtV7,
@@ -695,7 +701,9 @@ function appendPublicTileCommandsV7(
   );
   if (
     monumentCity?.ownerId === view.viewer.id &&
-    !publicCityBesieged(view, monumentCity.at) &&
+    // Siege rules (`pulp_wars-0pgd`, 7r80): a siege does not block it; a
+    // hostile unit on the tile does.
+    !publicTileEnemyOccupiedV7(view, tile.at) &&
     publicCityDevelopmentFootprintKnown(view, monumentCity) &&
     !view.pendingChoices.some((choice) => choice.cityId === monumentCity.id) &&
     tile.biome !== null &&
@@ -6138,6 +6146,163 @@ export function previewGateV7(
 }
 
 /**
+ * Siege rules (`pulp_wars-0pgd`, `pulp-wars-poc-7r80`; RULESET_7_CURRENT.md
+ * section 4.6): the public preview of the unit a city reward grants: its
+ * role, where it appears (`at`: the center, or a tile beside an occupant
+ * that nothing moves), the unit that leaves the center for it
+ * (`displacedUnitId`), where that unit steps to (`displaceTo`), and whether
+ * it dies for want of a tile (`dies`). `exact` is false only when the
+ * occupant is another seat's and its private Engineering could change the
+ * answer (a Mountain beside the center); the preview then assumes none.
+ */
+export interface RewardArrivalPreviewV7 {
+  readonly cityId: CityId;
+  readonly reward: RewardIdV7;
+  readonly role: UnitRoleIdV7;
+  readonly at: CoordV7;
+  readonly displacedUnitId: UnitId | null;
+  readonly displaceTo: CoordV7 | null;
+  readonly dies: boolean;
+  readonly exact: boolean;
+}
+
+/**
+ * The reward-arrival preview of `reward` for the viewer's own city
+ * `cityId`; null for a reward that grants no unit or a city that is not the
+ * viewer's. It does not ask whether the reward is on offer.
+ */
+export function previewRewardArrivalV7(
+  view: PlayerViewV7,
+  cityId: CityId,
+  reward: RewardIdV7,
+): RewardArrivalPreviewV7 | null {
+  const viewer = view.viewer;
+  const city = view.cities.find(
+    (candidate) => candidate.id === cityId && candidate.ownerId === viewer.id,
+  );
+  const role = rewardUnitRoleV7(reward, viewer.faction);
+  if (city === undefined || role === null) return null;
+  const occupant = view.units.find(
+    (unit) => unit.hp > 0 && same(unit.at, city.at),
+  );
+  const around: CoordV7[] = [];
+  for (let y = city.at.y - 1; y <= city.at.y + 1; y += 1)
+    for (let x = city.at.x - 1; x <= city.at.x + 1; x += 1) {
+      const at = { x, y };
+      if (!same(at, city.at) && tileAtView(view, at) !== undefined)
+        around.push(at);
+    }
+  // The reward displacement predicate (`rewardCellLegalV7`) on the view.
+  const mayStand = (
+    at: CoordV7,
+    ownerId: PlayerId,
+    terrain: {
+      readonly movementMode: MovementModeV7;
+      readonly mountainBorn: boolean;
+      readonly engineering: boolean;
+      readonly navigation: boolean;
+      readonly avoidsForeignSites: boolean;
+    },
+  ): boolean => {
+    const tile = tileAtView(view, at);
+    if (tile?.explored !== true || tile.biome === null) return false;
+    if (view.treasureChests.some((chest) => same(chest, at))) return false;
+    if (
+      !canEnterTerrainV7({
+        terrain: tile.terrain,
+        movementMode: terrain.movementMode,
+        afloat: false,
+        engineering: terrain.engineering,
+        navigation: terrain.navigation,
+        mountainBorn: terrain.mountainBorn,
+        ice: false,
+      })
+    )
+      return false;
+    if (
+      terrain.avoidsForeignSites &&
+      !flyerMayStandOnSiteV7(
+        tile.site,
+        view.cities.find((candidate) => same(candidate.at, at))?.ownerId ??
+          null,
+        ownerId,
+      )
+    )
+      return false;
+    if (
+      tile.territoryOwnerId !== null &&
+      tile.territoryOwnerId !== ownerId &&
+      publicAllied(view, ownerId, tile.territoryOwnerId)
+    )
+      return false;
+    return !tileOccupiedV7(view, at);
+  };
+  const spawnedMechanics = seatRoleMechanicsV7(view, viewer.id, role);
+  const spawnedMayStand = (at: CoordV7): boolean =>
+    mayStand(at, viewer.id, {
+      movementMode: spawnedMechanics.movementMode,
+      mountainBorn: spawnedMechanics.mountainBorn,
+      engineering: viewer.researchedTechs.includes("ENGINEERING"),
+      navigation: viewer.researchedTechs.includes("NAVIGATION"),
+      avoidsForeignSites: false,
+    });
+  const own = occupant?.ownerId === viewer.id;
+  const arrivalWith = (engineering: boolean): RewardArrivalV7 =>
+    rewardArrivalV7({
+      center: city.at,
+      around,
+      occupant:
+        occupant === undefined
+          ? null
+          : {
+              id: occupant.id,
+              immovable:
+                occupant.form === "EGG" || unitIsImmovableV7(view, occupant),
+            },
+      occupantMayStand: (at) =>
+        occupant !== undefined &&
+        mayStand(at, occupant.ownerId, {
+          movementMode: unitMovementModeV7(view, occupant),
+          mountainBorn: unitIsMountainBornV7(view, occupant),
+          engineering,
+          navigation: own && viewer.researchedTechs.includes("NAVIGATION"),
+          avoidsForeignSites: unitAvoidsForeignSitesV7(view, occupant),
+        }),
+      preferred: (at) => {
+        const tile = tileAtView(view, at);
+        return (
+          own && tile?.explored === true && tile.territoryOwnerId === viewer.id
+        );
+      },
+      spawnedMayStand,
+      cityTerritory: (at) => {
+        const tile = tileAtView(view, at);
+        return tile?.explored === true && tile.territoryCityId === city.id;
+      },
+    });
+  const arrival = arrivalWith(
+    own && viewer.researchedTechs.includes("ENGINEERING"),
+  );
+  const other = own || occupant === undefined ? arrival : arrivalWith(true);
+  return {
+    cityId,
+    reward,
+    role,
+    at: arrival.at,
+    displacedUnitId: arrival.displacedUnitId,
+    displaceTo: arrival.displaceTo,
+    dies: arrival.dies,
+    exact:
+      arrival.dies === other.dies &&
+      same(arrival.at, other.at) &&
+      (arrival.displaceTo === null) === (other.displaceTo === null) &&
+      (arrival.displaceTo === null ||
+        other.displaceTo === null ||
+        same(arrival.displaceTo, other.displaceTo)),
+  };
+}
+
+/**
  * Map curiosities round 2 (section 32.5): the movement query's gate marks:
  * every offered `MOVE` destination of the own unit `unitId` that is a gate,
  * with its exit and its gate preview, in (y, x) order of the gates.
@@ -7443,6 +7608,7 @@ const PUBLIC_ECONOMIC_PREVIEW_REUSE = new Map<
   Map<string, EconomicPreviewResultV7>
 >();
 const PUBLIC_CITY_BESIEGED = new WeakMap<PlayerViewV7, Map<string, boolean>>();
+const PUBLIC_ENEMY_OCCUPIED_TILES = new WeakMap<PlayerViewV7, Set<string>>();
 const PUBLIC_CITY_DEVELOPMENT_FOOTPRINT_KNOWN = new WeakMap<
   PlayerViewV7,
   Map<CityId, boolean>
@@ -9773,9 +9939,11 @@ function publicCityAllowsDevelopmentV7(
   cityId: CityId,
 ): boolean {
   const city = view.cities.find((candidate) => candidate.id === cityId);
+  // Siege rules (`pulp_wars-0pgd`, 7r80): a besieged city develops. A
+  // hostile unit on a tile blocks only this turn's command
+  // (`publicTileCommandLegal`), not the plan for the tile.
   return (
     city?.ownerId === view.viewer.id &&
-    !publicCityBesieged(view, city.at) &&
     (!view.pendingChoices.some((choice) => choice.cityId === city.id) ||
       graph.resolvedPendingCityIds.has(city.id))
   );
@@ -10037,6 +10205,34 @@ function publicHostile(
   );
 }
 
+/**
+ * Siege rules (`pulp_wars-0pgd`, `pulp-wars-poc-7r80`; RULESET_7_CURRENT.md
+ * section 8.1): whether a visible unit hostile to the viewer (a neutral
+ * unit included, an ally's not) stands on `at`. No tile command of the
+ * viewer but Blast Mountain targets such a tile (`TILE_ENEMY_OCCUPIED`).
+ * The public copy of `isTileEnemyOccupiedV7`.
+ */
+export function publicTileEnemyOccupiedV7(
+  view: PlayerViewV7,
+  at: CoordV7,
+): boolean {
+  // One pass over the units for each view: the tile-command query asks
+  // for every tile and command kind.
+  let keys = PUBLIC_ENEMY_OCCUPIED_TILES.get(view);
+  if (keys === undefined) {
+    keys = new Set<string>();
+    for (const unit of view.units)
+      if (
+        unit.hp > 0 &&
+        unit.ownerId !== view.viewer.id &&
+        !publicAllied(view, view.viewer.id, unit.ownerId)
+      )
+        keys.add(coordKeyV7(unit.at));
+    PUBLIC_ENEMY_OCCUPIED_TILES.set(view, keys);
+  }
+  return keys.has(coordKeyV7(at));
+}
+
 function publicCityBesieged(view: PlayerViewV7, at: CoordV7): boolean {
   let byCity = PUBLIC_CITY_BESIEGED.get(view);
   if (byCity === undefined) {
@@ -10161,7 +10357,9 @@ function publicTileCommandLegal(
     );
   if (
     (!neutralRoad && city?.ownerId !== view.viewer.id) ||
-    (city !== undefined && publicCityBesieged(view, city.at)) ||
+    // Siege rules (`pulp_wars-0pgd`, 7r80): a siege blocks no tile command;
+    // a hostile unit on the tile blocks every one but Blast Mountain.
+    (kind !== "BLAST_MOUNTAIN" && publicTileEnemyOccupiedV7(view, tile.at)) ||
     (city !== undefined &&
       view.pendingChoices.some((choice) => choice.cityId === city.id))
   )

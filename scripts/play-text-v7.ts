@@ -102,6 +102,8 @@ import {
   previewLayEggV7,
   previewMindControlV7,
   previewMonumentV7,
+  previewRewardArrivalV7,
+  publicTileEnemyOccupiedV7,
   previewRaiseDeadV7,
   previewRebakeV7,
   previewSugarRushV7,
@@ -2224,7 +2226,27 @@ function describeCommandV7(
                 SURVEY_RAIDERS_V7[view.viewer.faction] === 1
               ? `Scouts: ${scoutsRewardTextV7(effectiveRoleRuleV7("RAIDER", view.viewer.faction).label)} (${effectiveRoleRuleV7("RAIDER", view.viewer.faction).label}; it fills a unit slot of this city, and may stand above the unit limit)`
               : (REWARD_TEXT_V7[command.reward] ?? command.reward);
-      return `reward for city ${cityTagV7(view, command.cityId)} reaching level ${command.reachedLevel}: ${special}`;
+      // Siege rules (`pulp_wars-0pgd`, 7r80): who makes room for the unit.
+      const arrival = previewRewardArrivalV7(
+        view,
+        command.cityId,
+        command.reward,
+      );
+      const room =
+        arrival === null
+          ? ""
+          : arrival.displacedUnitId === null
+            ? sameV7(
+                arrival.at,
+                view.cities.find((city) => city.id === command.cityId)?.at ??
+                  arrival.at,
+              )
+              ? ""
+              : ` | the unit on the center cannot be moved: the new unit appears beside it at ${xyV7(arrival.at)}`
+            : arrival.dies
+              ? ` | it takes the center: ${context.memory.tag(arrival.displacedUnitId)} standing there has no tile to step to and DIES${arrival.exact ? "" : " (unless its owner's Engineering lets it onto a Mountain)"}`
+              : ` | it takes the center: ${context.memory.tag(arrival.displacedUnitId)} standing there steps to ${arrival.displaceTo === null ? "?" : xyV7(arrival.displaceTo)}${arrival.exact ? "" : " (or a Mountain, with its owner's Engineering)"}`;
+      return `reward for city ${cityTagV7(view, command.cityId)} reaching level ${command.reachedLevel}: ${special}${room}`;
     }
     case "RESEARCH": {
       const node = safeTechTreeV7(view)?.nodes.find(
@@ -2355,6 +2377,14 @@ function eventTextV7(
           `HIT_UNSEEN ${context.memory.tag(entry.unitId)} @${xyV7(entry.at)} takes ${entry.damage} from a source you do not see${hp === null ? "" : ` (hp ${hp}->${Math.max(0, hp - entry.damage)})`}${entry.shieldDamage > 0 ? ` shield -${entry.shieldDamage}` : ""}${entry.dies ? " DIES" : ""}`,
         );
       }
+      break;
+    // Siege rules (`pulp_wars-0pgd`, 7r80): a reward unit took a center.
+    case "UNIT_SPAWN_DISPLACED":
+      lines.push(
+        event.to === null
+          ? `DISPLACED ${context.memory.tag(event.displacedUnitId)} @${xyV7(event.from)}: the reward unit ${context.memory.tag(event.spawnedUnitId)} took the center and it had no tile to step to`
+          : `DISPLACED ${context.memory.tag(event.displacedUnitId)} ${xyV7(event.from)}>${xyV7(event.to)}: the reward unit ${context.memory.tag(event.spawnedUnitId)} took the center`,
+      );
       break;
     case "UNIT_DIED": {
       const owner = context.memory.owner(event.unitId);
@@ -4502,6 +4532,11 @@ function commandOptionsV7(args: ArgsV7): string {
       lines.push(
         unitLineV7(view, unit, unit.ownerId === view.viewer.id, offered, false),
       );
+    // Siege rules (`pulp_wars-0pgd`, 7r80): why no tile command is offered.
+    if (publicTileEnemyOccupiedV7(view, at))
+      lines.push(
+        "an enemy unit stands on this tile: nothing can be built or gathered on it (only Blast Mountain may target it)",
+      );
     const here = offered.filter((entry) => {
       const command = entry.command;
       if (command.kind === "MOVE") {
@@ -5161,7 +5196,9 @@ function replaySessionV7(session: SessionV7): ReplayedV7 {
           open(owner).losses += 1;
           totals(owner).losses += 1;
         }
-        if (owner !== actor) {
+        // Siege rules (`pulp_wars-0pgd`, 7r80): a unit a reward unit pushed
+        // off a center with nowhere to go is nobody's kill.
+        if (owner !== actor && event.cause !== "DISPLACED") {
           open(actor).kills += 1;
           totals(actor).kills += 1;
         }

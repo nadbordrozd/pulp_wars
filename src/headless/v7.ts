@@ -135,7 +135,7 @@ export interface AiCommandRecordV7 {
 }
 
 export interface HeadlessMetricsV7 {
-  readonly rulesetId: "pulp-wars-poc-7r79";
+  readonly rulesetId: "pulp-wars-poc-7r80";
   readonly setupHash: string;
   readonly mapHash: string;
   readonly postGenerationPrngHash: string;
@@ -1101,7 +1101,7 @@ export async function runAiBatchV7(
           const factions = options.factions ?? distinctFactionsV7(aiCount + 1);
           const result = runAiMatchInternalV7(
             {
-              rulesetId: "pulp-wars-poc-7r79",
+              rulesetId: "pulp-wars-poc-7r80",
               mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
               seed,
               width: size,
@@ -1222,7 +1222,7 @@ function createMetricsV7(state: GameStateV7): HeadlessMetricsV7 {
   for (const tile of state.board.tiles)
     if (tile.resource !== null) generated[tile.resource] += 1;
   return {
-    rulesetId: "pulp-wars-poc-7r79",
+    rulesetId: "pulp-wars-poc-7r80",
     setupHash: canonicalHash(state.setup),
     mapHash: canonicalHash({
       board: state.board,
@@ -1862,12 +1862,10 @@ function recordEventsV7(
       metrics.undead.devourHealing += event.amount;
       metrics.undead.devourDenials += Number(event.amount === 0);
     }
-    if (
-      event.kind === "UNIT_DIED" ||
-      (event.kind === "UNIT_SPAWN_DISPLACED" && event.to === null)
-    ) {
-      const removedUnitId =
-        event.kind === "UNIT_DIED" ? event.unitId : event.displacedUnitId;
+    // Siege rules (`pulp_wars-0pgd`, 7r80): a unit a reward unit removed
+    // from a center has its own `UNIT_DIED` (cause `DISPLACED`).
+    if (event.kind === "UNIT_DIED") {
+      const removedUnitId = event.unitId;
       // A burrowed unit dies with its eliminated seat (an all-units read).
       const unit = allOwnedUnitsV7(before).find(
         (item) => item.id === removedUnitId,

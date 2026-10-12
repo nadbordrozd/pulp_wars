@@ -45,8 +45,8 @@ const READY: UnitStateV7["activation"] = {
 
 describe("Ruleset 7 revision 10 playtest corrections", () => {
   it("uses the exact current identity while retaining numeric schema 7", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r79");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r79.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r80");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r80.current");
     expect(initialV7().schemaVersion).toBe(7);
   });
 
@@ -434,10 +434,11 @@ describe("Ruleset 7 revision 10 playtest corrections", () => {
     expect(rejected.state).toBe(fixture.state);
   });
 
-  // Tuning 6 (`pulp_wars-w49.6`, 7r49): the occupant of the center stays
-  // and the Militia unit appears beside it. Before, the Militia unit took
-  // the center and the occupant was displaced to that same cell.
-  it("places the Militia reward unit beside an occupied center in y/x order without touching the occupant", () => {
+  // Siege rules (`pulp_wars-0pgd`, 7r80): the Militia unit takes the
+  // center and the occupant steps to the first cell in y/x order it may
+  // enter. (Tuning 6, 7r49 to 7r79, left the occupant on the center and
+  // put the Militia unit on that cell.)
+  it("places the Militia reward unit on an occupied center and moves the occupant aside in y/x order", () => {
     const fixture = occupiedTrainingState(10_007);
     const [mountain, expected] = canonicalNeighbors(
       fixture.state,
@@ -488,20 +489,35 @@ describe("Ruleset 7 revision 10 playtest corrections", () => {
       result.state.units.find((unit) => unit.id === fixture.occupantId),
       "occupant missing afterwards",
     );
-    // The occupant is the same unit on the same tile.
-    expect(occupant).toEqual(before);
-    expect(occupant.at).toEqual(fixture.cityAt);
+    // The occupant is the same unit, moved: the Mountain is skipped (no
+    // Engineering), so it stands on the next cell in y/x order.
+    expect(occupant).toEqual({
+      ...before,
+      at: expected,
+      captureEligible: false,
+    });
     expect(occupant.homeCityId).toBe(fixture.otherCityId);
     expect(occupant.activation).toEqual(fixture.activation);
-    // The Mountain is skipped (no Engineering): the next cell in y/x order.
-    expect(
+    const militia = required(
       result.state.units.find(
-        (unit) => unit.id !== fixture.occupantId && same(unit.at, expected),
+        (unit) =>
+          unit.id !== fixture.occupantId && same(unit.at, fixture.cityAt),
       ),
-    ).toMatchObject({ role: "FIGHTER", activation: { handled: true } });
-    expect(
-      result.events.some((event) => event.kind === "UNIT_SPAWN_DISPLACED"),
-    ).toBe(false);
+      "Militia unit missing",
+    );
+    expect(militia).toMatchObject({
+      role: "FIGHTER",
+      activation: { handled: true },
+    });
+    expect(result.events).toContainEqual({
+      kind: "UNIT_SPAWN_DISPLACED",
+      playerId: fixture.actor,
+      cityId: fixture.cityId,
+      spawnedUnitId: militia.id,
+      displacedUnitId: fixture.occupantId,
+      from: fixture.cityAt,
+      to: expected,
+    });
     for (const event of result.events)
       expect(parseEventV7(event)).toMatchObject({ ok: true });
     expect(result.events.some((event) => event.kind === "UNIT_DIED")).toBe(
@@ -536,8 +552,9 @@ describe("Ruleset 7 revision 10 playtest corrections", () => {
     );
   });
 
-  // Tuning 6: the Militia unit, not the occupant, takes the Mountain.
-  it("places the Militia reward unit on a Mountain beside the center with its sight bonus", () => {
+  // Siege rules (7r80): the occupant, not the Militia unit, takes the
+  // Mountain.
+  it("moves the occupant onto a Mountain beside the center with its sight bonus", () => {
     const fixture = occupiedTrainingState(10_009);
     const destination = required(
       canonicalNeighbors(fixture.state, fixture.cityAt)[0],
@@ -571,10 +588,11 @@ describe("Ruleset 7 revision 10 playtest corrections", () => {
     if (!result.accepted) throw new Error(result.error.code);
     expect(
       result.state.units.find((unit) => unit.id === fixture.occupantId)?.at,
-    ).toEqual(fixture.cityAt);
+    ).toEqual(destination);
     expect(
       result.state.units.find(
-        (unit) => unit.id !== fixture.occupantId && same(unit.at, destination),
+        (unit) =>
+          unit.id !== fixture.occupantId && same(unit.at, fixture.cityAt),
       ),
     ).toMatchObject({ role: "FIGHTER" });
     const player = required(
@@ -597,7 +615,8 @@ describe("Ruleset 7 revision 10 playtest corrections", () => {
     expect(player.explored).toContainEqual(displacedOnlySight);
   });
 
-  it("keeps Juggernaut reward removal when every adjacent cell is blocked", () => {
+  // Siege rules (7r80): the removal is a death with its own cause.
+  it("kills the occupant for a Juggernaut reward when every adjacent cell is blocked", () => {
     const fixture = occupiedTrainingState(10_011);
     const reward = occupiedRewardState(fixture, "JUGGERNAUT");
     let nextId = reward.state.nextEntityId;
@@ -630,8 +649,8 @@ describe("Ruleset 7 revision 10 playtest corrections", () => {
     expect(result.events).toContainEqual(
       expect.objectContaining({ kind: "UNIT_SPAWN_DISPLACED", to: null }),
     );
-    expect(result.events.some((event) => event.kind === "UNIT_DIED")).toBe(
-      false,
+    expect(result.events.filter((event) => event.kind === "UNIT_DIED")).toEqual(
+      [{ kind: "UNIT_DIED", unitId: fixture.occupantId, cause: "DISPLACED" }],
     );
     expect(
       required(

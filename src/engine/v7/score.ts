@@ -478,6 +478,10 @@ export const FLAWLESS_BREAKING_EVENT_KINDS_V7 = Object.freeze([
 const REMOVAL_CAUSES_V7: ReadonlySet<string> = new Set([
   "ELIMINATION",
   "BRAIN_LOST",
+  // Siege rules (`pulp_wars-0pgd`, 7r80): a unit a reward unit pushed off a
+  // center with nowhere to go. Nobody scores it (no Kills, no Losses, no
+  // Damage taken); it still ends its owner's flawless game.
+  "DISPLACED",
 ]);
 
 interface UnitFactV7 {

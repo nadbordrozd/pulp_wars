@@ -25,6 +25,8 @@ import {
   BLOCKED_ACTIONS_UI_V7,
   blockedActionsMatchV7,
 } from "../fixtures/v7-blocked-actions";
+import { rewardStateV7 } from "../fixtures/v7-dinosaur-arena";
+import { goblinArenaV7 } from "../fixtures/v7-goblin-arena";
 
 /**
  * Blocked actions in the interface (bead pulp_wars-2yc.36,
@@ -320,6 +322,129 @@ describe("Ruleset 7 blocked actions in the interface", () => {
       { role: expect.any(String) as string, blocked: "coins" },
     ]);
     app.destroy();
+  });
+});
+
+/**
+ * Siege rules in the interface (bead pulp_wars-0pgd, 7r80): a besieged
+ * city still builds, a tile an enemy unit stands on says why it offers
+ * nothing, and a reward unit says who makes room for it.
+ */
+describe("Ruleset 7 siege rules in the interface", () => {
+  const CENTER = { x: 8, y: 8 };
+
+  it("offers a Road in a besieged city, and says why a tile under an enemy unit offers none", () => {
+    const state = goblinArenaV7(
+      ["ORIGINAL", "ORIGINAL"],
+      [
+        { seat: 1, role: "FIGHTER", at: CENTER },
+        { seat: 1, role: "FIGHTER", at: { x: 9, y: 9 } },
+      ],
+    );
+    const { app, host } = open(state);
+    host.callbacks?.onSelection({ kind: "TILE", at: { x: 7, y: 7 } });
+    expect(
+      document.querySelector('[data-action="command-build_road"]'),
+    ).not.toBeNull();
+    expect(
+      document.querySelector('[data-disabled-reason="enemy-on-tile"]'),
+    ).toBeNull();
+    host.callbacks?.onSelection({ kind: "TILE", at: { x: 9, y: 9 } });
+    const chip = required<HTMLElement>(
+      '[data-disabled-reason="enemy-on-tile"]',
+    );
+    expect(chip.textContent).toBe("Enemy on this tile");
+    expect(chip.title).toBe(
+      "Nothing is built or gathered on a tile an enemy unit stands on",
+    );
+    expect(
+      document.querySelector('[data-action="command-build_road"]'),
+    ).toBeNull();
+    expect(required(".v7-selection-dock").textContent).not.toMatch(COORDINATES);
+    // The besieged city says what the siege stops.
+    host.callbacks?.onSelection({
+      kind: "CITY",
+      cityId: capitalId(state) as never,
+    });
+    expect(required<HTMLElement>('[data-stat="siege"]').title).toBe(
+      "An enemy unit stands on the center: no income and no new units. The city can still build",
+    );
+    app.destroy();
+  });
+
+  it("says on the reward who steps aside, and warns when an own unit would die", () => {
+    const roomy = rewardStateV7("MILITIA", "ORIGINAL", [
+      { role: "GUARD", at: CENTER },
+    ]);
+    const first = open(roomy.state);
+    const militia = required<HTMLElement>('[data-action="reward-militia"]');
+    const note = required<HTMLElement>(
+      '[data-action="reward-militia"] .v7-reward-arrival',
+    );
+    expect(note.textContent).toBe("Your Guard steps aside");
+    expect(note.dataset.rewardArrival).toBe("move");
+    expect(militia.getAttribute("aria-label")).toMatch(
+      /\. Your Guard steps aside$/,
+    );
+    expect(
+      document.querySelector(
+        '[data-action="reward-stockpile"] .v7-reward-arrival',
+      ),
+    ).toBeNull();
+    expect(required(".v7-mandatory-choice").textContent).not.toMatch(
+      COORDINATES,
+    );
+    first.app.destroy();
+
+    document.body.innerHTML = '<div id="app"></div>';
+    const besieged = rewardStateV7("MILITIA", "ORIGINAL", [], {
+      pieces: [{ role: "FIGHTER", at: CENTER }],
+    });
+    const second = open(besieged.state);
+    expect(
+      required('[data-action="reward-militia"] .v7-reward-arrival').textContent,
+    ).toBe("The enemy Fighter steps aside");
+    second.app.destroy();
+
+    document.body.innerHTML = '<div id="app"></div>';
+    // Eight own Guards around the garrison: it has nowhere to go.
+    const ring = [
+      [7, 7],
+      [8, 7],
+      [9, 7],
+      [7, 8],
+      [9, 8],
+      [7, 9],
+      [8, 9],
+      [9, 9],
+    ] as const;
+    const garrison = roomy.state.units.find(
+      (unit) => unit.at.x === CENTER.x && unit.at.y === CENTER.y,
+    );
+    if (garrison === undefined) throw new Error("No garrison");
+    const crowded: GameStateV7 = {
+      ...roomy.state,
+      nextEntityId: roomy.state.nextEntityId + ring.length,
+      units: [
+        ...roomy.state.units,
+        ...ring.map(([x, y], index) => ({
+          ...garrison,
+          id: (roomy.state.nextEntityId + index) as never,
+          homeCityId: null,
+          at: { x, y },
+        })),
+      ],
+    };
+    const third = open(crowded);
+    const loss = required<HTMLElement>(
+      '[data-action="reward-militia"] .v7-reward-arrival',
+    );
+    expect(loss.textContent).toBe(
+      "Your Guard has no room to step aside and dies",
+    );
+    expect(loss.dataset.rewardArrival).toBe("loss");
+    expect(loss.classList.contains("is-warning")).toBe(true);
+    third.app.destroy();
   });
 });
 

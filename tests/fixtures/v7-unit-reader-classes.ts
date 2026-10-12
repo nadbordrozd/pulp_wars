@@ -297,7 +297,15 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/ai/v7.ts::nextNavalTechnologyV7": "BOARD",
     "src/ai/v7.ts::plunderResearchValueV7": "BOARD",
     "src/ai/v7.ts::policyLookupWorkV7": "BOARD",
-    "src/ai/v7.ts::preferredReward": "BOARD",
+    "src/ai/v7.ts::ladderRewardV7": "BOARD",
+    // Siege rules (`pulp_wars-0pgd`, 7r80): the owner of the unit a reward
+    // unit would move off a center or kill. Only a unit on the board
+    // stands on a center (a mound never does).
+    "src/ai/v7.ts::rewardWithArrivalV7": "BOARD",
+    "src/engine/v7/economy.ts::isTileEnemyOccupiedV7": "BOARD",
+    "src/engine/v7/query.ts::previewRewardArrivalV7": "BOARD",
+    "src/engine/v7/query.ts::publicTileEnemyOccupiedV7": "BOARD",
+    "src/render/blocked-actions-v7.ts::rewardArrivalNoteV7": "BOARD",
     // `pulp_wars-zypi`: a seat short of units takes a level-2 Militia; it
     // counts the units the view shows (burrowed units are not in it).
     "src/ai/v7.ts::rewardSeatShortOfUnitsV7": "BOARD",

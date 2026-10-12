@@ -97,7 +97,10 @@ describe("ruleset-7 exact public-planning performance", () => {
       commandHash:
         // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): recomputed (was
         // 550239…aa61).
-        "2aa89493ab793892fd9aa3f864f0de207b517f4dc90856fe952e8f12fbe49307",
+        // Siege rules (`pulp_wars-0pgd`, 7r80): recomputed; the neutral
+        // Roads under visible enemy units are no longer offered (was
+        // 2aa894…9307).
+        "d2cb99d35b5c98f62b43646d67f03cf3cf2136b0439162a91672cbf18554564a",
       // Tuning 1 (`pulp_wars-w49.3`, 7r46): one contributor counts for one
       // Windmill, Sawmill, Forge, and Market and a Monument gives 2, so the
       // planned values differ (was b32cb8…1f5b and 66 235 operations).
@@ -106,29 +109,40 @@ describe("ruleset-7 exact public-planning performance", () => {
         // 031d3b…d3bb).
         // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): recomputed (was
         // 2d5421…3b8e).
-        "d5416ea26b18c2c9a18637ea8b331c082ea7707de29c9028f56a382045fa9615",
+        // Siege rules (`pulp_wars-0pgd`, 7r80): recomputed, without the
+        // neutral Roads under enemy units (was d5416e…9615).
+        "ec3cf94435ecf46fc9885ac25db421132a073d96dced1ed5d983ae69be53fb1e",
       // Tuning 5: the Swordsman offers (was 66 233). The economy rejig
       // (`pulp_wars-w49.16`): research offers by the price per city, and a
       // mill counts every contributor of its owner (was 66 236). The
       // Industry reshuffle (`pulp_wars-w49.21`): three Guard offers fewer
       // (was 66 238).
-      operations: 66_235,
+      // The siege rules (`pulp_wars-0pgd`, 7r80): two neutral Roads under
+      // enemy units are no longer candidates (was 66 235).
+      operations: 65_491,
     },
     {
       id: "captured-command-425",
       view: () => captured(425),
       commandHash:
-        "d632419ff73726f593d81042df870993e1671ab644636d9076bd203334f67344",
+        // Siege rules (`pulp_wars-0pgd`, 7r80): recomputed; the neutral
+        // Roads under visible enemy units are no longer offered (was
+        // d63241…7344).
+        "3ea5704c71cd4c5a5278d4fc2871c4f2753c118c9901807a50f3caf9dcd9f928",
       // Revision 16 caps a Market at 3 Coins; with the cap at 4 the
       // revision-15 value 209b3326… returns.
       // Tuning 1 (7r46), as above (was c92698…dbc5 and 94 442 operations).
       resultHash:
         // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
         // 2e06bb…623a).
-        "3b01026e6463800ca919bd9058d122b6cc2001953389122b48435fa1fa9e0a9c",
+        // Siege rules (`pulp_wars-0pgd`, 7r80): recomputed, without the
+        // neutral Roads under enemy units (was 3b0102…0a9c).
+        "2a6b148e6b3e57ff5622118452b2d2b65483d3b5e4e86ebe4aff6588c9ebc475",
       // Tuning 5: the Swordsman offer (was 94 438).
       // The economy rejig (`pulp_wars-w49.16`), as above (was 94 439).
-      operations: 94_445,
+      // The siege rules (`pulp_wars-0pgd`, 7r80): one neutral Road under an
+      // enemy unit is no longer a candidate (was 94 445).
+      operations: 94_026,
     },
   ] as const;
 

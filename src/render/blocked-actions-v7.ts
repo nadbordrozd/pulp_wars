@@ -1,7 +1,11 @@
 import {
+  previewRewardArrivalV7,
   queryPlayerCommandsV7,
+  unitRoleRuleV7,
+  type CityId,
   type CommandV7,
   type PlayerViewV7,
+  type RewardIdV7,
 } from "../engine/index";
 
 /**
@@ -181,3 +185,47 @@ export const UNIT_DONE_TOOLTIP_V7 =
 export const OUTSIDE_BORDERS_LABEL_V7 = "Outside your borders";
 export const OUTSIDE_BORDERS_TOOLTIP_V7 =
   "A resource is used only inside your own borders";
+
+/**
+ * Siege rules (`pulp_wars-0pgd`, 7r80): the chip of an own tile an enemy
+ * unit stands on (no tile command but Blast Mountain targets it).
+ */
+export const ENEMY_ON_TILE_LABEL_V7 = "Enemy on this tile";
+export const ENEMY_ON_TILE_TOOLTIP_V7 =
+  "Nothing is built or gathered on a tile an enemy unit stands on";
+
+/** The tooltip of a besieged city's status. */
+export const BESIEGED_TOOLTIP_V7 =
+  "An enemy unit stands on the center: no income and no new units. The city can still build";
+
+/**
+ * Siege rules (`pulp_wars-0pgd`, 7r80): what a reward unit does to the unit
+ * on its city's center, in a few words for the reward choice, from the
+ * engine's public preview (`previewRewardArrivalV7`); null when the reward
+ * grants no unit or nothing stands on the center. `warning` marks the loss
+ * of one of the viewer's own units.
+ */
+export function rewardArrivalNoteV7(
+  view: PlayerViewV7,
+  cityId: CityId,
+  reward: RewardIdV7,
+): { readonly text: string; readonly warning: boolean } | null {
+  const arrival = previewRewardArrivalV7(view, cityId, reward);
+  if (arrival === null) return null;
+  if (arrival.displacedUnitId === null) {
+    const city = view.cities.find((candidate) => candidate.id === cityId);
+    return city === undefined ||
+      (arrival.at.x === city.at.x && arrival.at.y === city.at.y)
+      ? null
+      : { text: "Appears beside the center", warning: false };
+  }
+  const unit = view.units.find(
+    (candidate) => candidate.id === arrival.displacedUnitId,
+  );
+  if (unit === undefined) return null;
+  const own = unit.ownerId === view.viewer.id;
+  const name = `${own ? "Your" : "The enemy"} ${unitRoleRuleV7(view, unit).label}`;
+  return arrival.dies
+    ? { text: `${name} has no room to step aside and dies`, warning: own }
+    : { text: `${name} steps aside`, warning: false };
+}

@@ -269,6 +269,28 @@ export function isCityBesiegedV7(
 }
 
 /**
+ * Siege rules (`pulp_wars-0pgd`, `pulp-wars-poc-7r80`; RULESET_7_CURRENT.md
+ * section 8.1): whether a unit hostile to `playerId` stands on `at`. No tile
+ * command but Blast Mountain (a building, a Monument, a Port, a Road, a
+ * resource or Forest action, Redevelop) targets such a tile, in a besieged
+ * city or not. A neutral unit counts (it is hostile to every player); an
+ * ally's unit does not.
+ */
+export function isTileEnemyOccupiedV7(
+  state: Pick<GameStateV7, "units" | "setup" | "humanPlayerId">,
+  playerId: PlayerId,
+  at: { readonly x: number; readonly y: number },
+): boolean {
+  return state.units.some(
+    (unit) =>
+      unit.hp > 0 &&
+      unit.at.x === at.x &&
+      unit.at.y === at.y &&
+      arePlayersHostileV7(state, unit.ownerId, playerId),
+  );
+}
+
+/**
  * Revision 16 (economy deflation): the level term of city income is capped at
  * 4 (revision 14 E2 capped it at 5); levels 5+ still grant rewards, capacity,
  * and Juggernauts.

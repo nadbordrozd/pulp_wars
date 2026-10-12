@@ -90,6 +90,10 @@ export const KIND_READER_CLASSES_V7: Readonly<
   "src/engine/v7/query.ts::appendPublicCityCommandsV7": "SEAT",
   "src/engine/v7/query.ts::publicAssembleFactsV7": "SEAT",
   "src/engine/v7/query.ts::previewLayEggV7": "SEAT",
+  // Siege rules (`pulp_wars-0pgd`, 7r80): the reward unit is of the
+  // viewer's own faction; the occupant's movement is read through its kind
+  // (`unitMovementModeV7`, `unitIsMountainBornV7`).
+  "src/engine/v7/query.ts::previewRewardArrivalV7": "SEAT",
   "src/engine/v7/query.ts::createPublicPlanningFactKeyWorkV7": "SEAT",
   "src/engine/v7/query.ts::publicEconomyGraph": "SEAT",
   "src/engine/v7/query.ts::publicGraphNavalConnectivityV7": "SEAT",

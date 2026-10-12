@@ -82,7 +82,7 @@ import {
 } from "../fixtures/v7-revision20";
 
 /**
- * The economy rejig (`pulp_wars-w49.16`, `pulp-wars-poc-7r79`;
+ * The economy rejig (`pulp_wars-w49.16`, `pulp-wars-poc-7r80`;
  * docs/product/RULESET_7_ECONOMY_REJIG.md, and Part C of
  * docs/product/RULESET_7_DESIGN_HEAVY_SLOT_AND_ECONOMY.md): mills count
  * contributors across their owner's cities, Monuments give 3, research is
@@ -389,11 +389,11 @@ function harvest(state: GameStateV7, where: CoordV7): Step {
 
 describe("the economy rejig: identity", () => {
   it("is 7r54, with 7r53 the last prior identity and an obsolete save key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r79");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r79.current");
-    expect(PRIOR_RULESET_7_IDS.at(-26)).toBe("pulp-wars-poc-7r53");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r80");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r80.current");
+    expect(PRIOR_RULESET_7_IDS.at(-27)).toBe("pulp-wars-poc-7r53");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-26)).toBe(
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-27)).toBe(
       "pulpWars.save.v7r53.current",
     );
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
@@ -1364,15 +1364,15 @@ describe("the reward ladder: the giant in every city at every level from 5", () 
       expect(giants(taken.state)).toHaveLength(before + 1);
       const giant = giants(taken.state).at(-1);
       expect(giant?.homeCityId).toBe(city.id);
-      // The Fighter that captured the city still stands on its center, so
-      // the giant is placed beside it.
-      expect(unitAtV7(taken.state, where).role).toBe("FIGHTER");
+      // The Fighter that captured the city stood on its center: the giant
+      // takes it and the Fighter steps aside (siege rules, 7r80).
+      expect(unitAtV7(taken.state, where).role).toBe("JUGGERNAUT");
       expect(
         Math.max(
           Math.abs((giant?.at.x ?? 0) - where.x),
           Math.abs((giant?.at.y ?? 0) - where.y),
         ),
-      ).toBe(1);
+      ).toBe(0);
       // Level 6 in the same city: the giant again.
       const six = harvest(
         oneShortOf(taken.state, where, 6, { 5: "JUGGERNAUT" }),
@@ -1388,7 +1388,7 @@ describe("the reward ladder: the giant in every city at every level from 5", () 
     expect(giants(state)).toHaveLength(2);
   });
 
-  it("a city that took the Treasury at level 5 is offered the giant at level 6, beside an occupied center", () => {
+  it("a city that took the Treasury at level 5 is offered the giant at level 6, on an occupied center", () => {
     const SECOND = VILLAGES[0] as CoordV7;
     const start = standing(empire(2), 0, SECOND);
     const human = seatIdV7(start, 0);
@@ -1411,14 +1411,16 @@ describe("the reward ladder: the giant in every city at every level from 5", () 
       (unit) => unit.ownerId === human && unit.role === "JUGGERNAUT",
     );
     if (giant === undefined) throw new Error("no giant");
-    // The Fighter keeps the center; the giant stands beside it.
-    expect(unitAtV7(taken.state, SECOND).role).toBe("FIGHTER");
-    expect(
-      Math.max(
-        Math.abs(giant.at.x - SECOND.x),
-        Math.abs(giant.at.y - SECOND.y),
-      ),
-    ).toBe(1);
+    // The giant takes the center; the Fighter that stood there steps
+    // aside (siege rules, 7r80).
+    expect(giant.at).toEqual(SECOND);
+    expect(taken.events).toContainEqual(
+      expect.objectContaining({
+        kind: "UNIT_SPAWN_DISPLACED",
+        spawnedUnitId: giant.id,
+        from: SECOND,
+      }),
+    );
   });
 
   it("the Economic Miracle adds a Coin to its city's income every turn, and the AI picks a legal reward at every level", () => {

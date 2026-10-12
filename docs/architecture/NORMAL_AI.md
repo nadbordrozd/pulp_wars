@@ -154,6 +154,32 @@ stretches, and for each scout two searches from its tile and one from its
 goal at most: the searches the campaign plan made for a scout before, plus
 one.
 
+## The siege rules (`pulp_wars-0pgd`)
+
+[The siege rules](../product/RULESET_7_CURRENT.md#47-siege-and-capture)
+(`pulp-wars-poc-7r80`) let a besieged city build, refuse every tile
+command but Blast Mountain on a tile a hostile unit stands on, and put a
+level-up reward unit on its city's center, where the unit standing there
+steps aside or dies. The policy was kept working, with one rule added.
+
+- **Building under siege.** Nothing in the policy filters build commands
+  by siege: it scores the commands the engine offers, so a besieged seat
+  now builds what it would have built anyway. A tile under an enemy unit
+  is simply not offered. The public economic potentials (the long plan)
+  ignore where enemy units stand this turn.
+- **The reward choice** (`rewardWithArrivalV7`, `src/ai/v7.ts`, on top of
+  [the ladder policy](#the-reward-ladder-rework-pulp_wars-zypi), from
+  `previewRewardArrivalV7`): a reward unit that would shove or kill a
+  besieger on the city's center is taken whenever one is offered (it ends
+  the siege); a reward unit that would kill the seat's own unit on the
+  center, because that unit has no tile to step to, is not taken when the
+  other reward is on offer.
+
+What it does not do: free a tile beside the center before it takes a
+reward unit, or weigh the besieger's strength against the unit it gets.
+Proven on hand-built states in `tests/unit/ruleset-v7-siege-rules.test.ts`;
+no match was played.
+
 ## The giants' signatures (`pulp_wars-w49.31`)
 
 Every faction's giant has a signature ability since `pulp_wars-w49.30`

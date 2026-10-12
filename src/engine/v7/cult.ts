@@ -879,6 +879,9 @@ export function withMartyrFavourV7(
       event.cause === "ELIMINATION" ||
       event.cause === "BRAIN_LOST" ||
       event.cause === "CONSUMED" ||
+      // Siege rules (`pulp_wars-0pgd`, 7r80): nor for a Chosen a reward
+      // unit pushed off a center with nowhere to go (a removal).
+      event.cause === "DISPLACED" ||
       sacrificed.has(event.unitId) ||
       wildVictims.has(event.unitId)
     )

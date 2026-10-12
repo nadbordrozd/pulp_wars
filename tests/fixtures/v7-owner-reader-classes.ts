@@ -134,7 +134,12 @@ export const OWNER_READER_CLASSES_V7: Readonly<
   "src/engine/v7/reducer.ts::resolveAttackExchangeV7": "NEUTRAL_AWARE",
   "src/engine/v7/reducer.ts::resolveTreasure": "PLAYER_ONLY",
   "src/engine/v7/reducer.ts::revealRadius": "PLAYER_ONLY",
-  "src/engine/v7/reducer.ts::rewardDisplacementCellV7": "PLAYER_ONLY",
+  // Siege rules (`pulp_wars-0pgd`, 7r80): the technologies of the owner of
+  // a unit put beside a center. A neutral unit on a center (an Unbound
+  // daemon) has no record, which reads as no technology: the right answer.
+  "src/engine/v7/reducer.ts::rewardCellLegalV7": "NEUTRAL_SAFE",
+  // The reward unit of the viewer's own seat.
+  "src/engine/v7/query.ts::previewRewardArrivalV7": "PLAYER_ONLY",
   "src/engine/v7/reducer.ts::settleCityRewardsV7": "PLAYER_ONLY",
   "src/engine/v7/reducer.ts::treasureKnightPlacement": "PLAYER_ONLY",
   "src/engine/v7/reducer.ts::unitSightRadius": "PLAYER_ONLY",

@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r79`, for all nine offered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r80`, for all nine offered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), Candy (`CANDY`), and
 the Cultists (`CULT`). The ninth faction, the Cultists of the Ancient Ones,
@@ -436,6 +436,22 @@ links to another, by Road or by Port. A sea link needs only **Shorecraft**
 the Roads technology, and unexplored water no longer breaks a link. A save,
 replay, or setup of `7r75` is rejected, and the browser autosave has a new
 key.
+`pulp-wars-poc-7r80` (`pulp_wars-0pgd`, the user, 2026-10-12) is **the
+siege rules**, three changes for every faction. **A besieged city builds**
+([section 4.7](#47-siege-and-capture)): a siege no longer blocks the tile
+economy (buildings, Monuments, Ports, Roads, the resource and Forest
+actions, Redevelop, Blast Mountain); it still stops the city's income,
+training, hiring, Egg laying, Land Grant, and Offering. **No building on a
+tile an enemy unit stands on**
+([section 8.1](#81-common-placement-gates)): every tile command but Blast
+Mountain is refused there with `TILE_ENEMY_OCCUPIED`, in a besieged city
+or not. **A reward unit takes the center**
+([section 4.6](#46-training-and-city-center-spawning)): the unit standing
+on the center, the garrison or a besieger, steps to one of the eight tiles
+around it, and dies when it has none (`UNIT_DIED` cause `DISPLACED`, no
+credit to anyone); from `7r49` to `7r79` the garrison stayed and the
+reward unit appeared beside it. A save, replay, or setup of `7r79` is
+rejected, and the browser autosave has a new key.
 `pulp-wars-poc-7r79` (`pulp_wars-9s0.12`) is **villages spread over the
 land**, a fix to map generation ([section 2.2](#22-settlements-and-treasures)): no
 village is chosen by its place in `(y, x)` order any more. On a water map
@@ -937,7 +953,7 @@ the build differs (its sections 20 to 24 list them);
 the values here are current. Where a document and the code disagreed, the
 code's behavior is the rule and is stated below;
 [Known discrepancies](#25-known-discrepancies) lists the open items and the
-resolved ones as of `pulp-wars-poc-7r79`.
+resolved ones as of `pulp-wars-poc-7r80`.
 
 **Terms.** "On the board" means a unit that currently exists (HP above 0).
 **Living** has the narrower revision-13 meaning used by Wail, Plague,
@@ -1038,10 +1054,10 @@ separate [Ruleset 6](RULESET_6.md) route.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r79`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Ruleset                                    | `pulp-wars-poc-7r80`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r79.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Browser autosave                           | `pulpWars.save.v7r80.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, `CULT`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`, `CULT_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -3382,7 +3398,9 @@ the UI beads `pulp_wars-kaw6.3` and `kaw6.4`.
   credited to it ([section 18.9](#189-kill-credit-plunder-and-friendly-fire),
   every cause there including a Wail's, the Monster counting as hostile and
   crediting nobody); `X` the value of its units that died (any cause but the
-  removals `ELIMINATION` and `BRAIN_LOST`); `H` the HP its units lost: after
+  removals `ELIMINATION`, `BRAIN_LOST`, and, since `7r80`, `DISPLACED`:
+  a unit a reward unit pushed off a center with no tile to step to,
+  [section 4.6](#46-training-and-city-center-spawning)); `H` the HP its units lost: after
   every accepted command, `max(0, hp before − hp after)` for every unit it
   commanded before (0 after for a death; removals and units that left its
   control alive are skipped; Shield is not HP; a heal in the same command
@@ -3617,22 +3635,62 @@ else max(1, min(level, 4) + capital + landTrade + market + min(0, population))
   Hammerer; Juggernaut, Abomination, Troll, Brontosaurus, Colossus, Frost
   Giant, or Brass Titan) appear
   on the city center, hatched (no reward ever creates an Egg) and at full
-  Shield. **Round 6** (`7r49`): when the center is occupied, **the
-  occupant stays** and the reward unit appears on the first free adjacent
-  land cell in `(y, x)` order that it can legally enter (Engineering for
-  Mountain unless it strides, flies, or is Mountain-born, no unit, Egg, or
-  mound, no treasure, not allied territory), a cell of that city's own
-  territory before any other. Only when no adjacent cell is free does the
-  earlier rule apply: the reward unit takes the center and the occupant
-  moves to the first free adjacent cell it can enter by the same test (an
-  Egg is never displaced); if
-  none exists, the occupant is removed with no refund or kill credit (and
-  no Grave or death blast; a removed Brain's controlled unit is released).
-  Before `7r49` the occupant was always the one that moved.
+  Shield. **The siege rules** (`pulp_wars-0pgd`, `7r80`; the shared rule
+  is `rewardArrivalV7`): when the center is occupied, **the reward unit
+  takes the center** and the unit standing there makes room, whoever owns
+  it (the owner's garrison or a besieger).
+  - **Where it steps.** To one of the eight cells around the center that
+    it may stand on (`rewardCellLegalV7`): on the board, land, enterable
+    by its own movement (a Mountain needs its owner's Engineering unless
+    the unit strides, flies, or is Mountain-born; a neutral unit has no
+    technology), with no unit, Egg, mound, or Barricade and no treasure,
+    and not in territory allied to it. A land cell only: the unit on a
+    center is in land form, and it is never put on water or embarked. A
+    unit of the city's owner goes to **a cell of its own seat's territory
+    first**, then to the first cell in `(y, x)` order; any other unit (a
+    besieger; a neutral daemon) takes the first cell in `(y, x)` order,
+    whoever's land it is. The choice is fixed by the board: there is no
+    draw.
+  - **What it keeps.** Its Hit Points, statuses, activation, home, and
+    kills. It loses `captureEligible`, so a besieger shoved off a center
+    cannot capture that city from where it stands, and the siege is over.
+    The step is a forced move like a Push: a channelling cultist that is
+    moved loses its strand, a gripping Thing its grip, a raised idol
+    drops ([section 26](#26-cultist-faction-rules)).
+  - **With no cell to step to it dies.** `UNIT_SPAWN_DISPLACED` has `to`
+    null and `UNIT_DIED` with the cause **`DISPLACED`** follows. It is a
+    removal, like the removal of this rule before `7r80` (which had no
+    death event) and a Tentacle that sank: no kill credit for a player or
+    a unit, no Plunder, no Slayer count, no Grave, Crumbs, or death blast,
+    no rising, **no Martyr Favour**, and no score for anyone (no Kills, no
+    Losses, no Damage taken); it does end its owner's flawless game. A
+    Brain that dies releases its controlled unit, and the victim an
+    Abomination held is gone with it.
+  - **A unit that nothing moves holds the center.** A Jawbreaker (Rock
+    Hard) and a rooted Tentacle are not displaced and not killed for
+    being immovable: the reward unit appears **beside** the center, on
+    the first free cell of the city's own territory in `(y, x)` order it
+    may stand on, then on any other. Only when there is no such cell does
+    the reward unit take the center, and the immovable unit dies as
+    above. (An Egg never stands on a center.)
+  - **The giant** is one tile wide like every unit and arrives the same
+    way; a giant standing on the center steps aside like any unit (the
+    reward rule is no Push, so a Juggernaut-role unit is moved).
+  - **Preview.** `previewRewardArrivalV7(view, cityId, reward)` is the
+    public preview: the role, where the unit appears, the unit that
+    leaves the center, where it steps, and whether it dies; `exact` is
+    false only when another seat's unit stands on the center and its
+    private Engineering could change the answer. The reward choice names
+    the unit and says whether it steps aside or dies.
+  - **History.** Before `7r49` the occupant always moved, in `(y, x)`
+    order with no territory preference, and was removed without a death
+    event when it had no cell. **Round 6** (`7r49` to `7r79`) left the
+    occupant on the center and put the reward unit beside it, displacing
+    only when no cell beside the center was free.
 - **Goblin Militia** is two Goblins (`MILITIA_FIGHTERS_V7`): the first
-  appears on the center, or beside an occupied one, as above; the second
-  then appears on the first
-  adjacent cell in `(y, x)` order that the same displacement rule allows, or
+  appears on the center as above (the unit standing there steps aside
+  first); the second then appears on the first
+  adjacent cell in `(y, x)` order that the same cell test allows, or
   is not created (no substitute). Each is full-HP, exhausted, homed to the
   city, may exceed capacity, and emits `UNIT_REWARD_GRANTED`; the reward ID
   stays `MILITIA`.
@@ -3641,9 +3699,22 @@ else max(1, min(level, 4) + capital + landTrade + market + min(0, population))
 ### 4.7 Siege and capture
 
 - A city is **besieged** while a hostile unit stands on its center: zero income
-  and no training, Egg laying, Land Grant, or tile economy for that city.
-  Pending rewards can still be chosen, and the city's Eggs still count down
-  and hatch. A flyer (Saucer, Mothership, Gyrocopter) and a Sabretooth
+  and no training, hiring, Egg laying, Land Grant, or Offering for that city.
+  **A besieged city builds** (the siege rules, `pulp_wars-0pgd`, `7r80`;
+  the user, 2026-10-12): the tile economy of its territory (buildings,
+  Monuments, Ports and Shipyards, Roads, the resource and Forest actions,
+  Redevelop, Blast Mountain) is not blocked by the siege, only by a hostile
+  unit on the target tile itself
+  ([section 8.1](#81-common-placement-gates)). Before `7r80` a siege
+  blocked every tile command of the city with `CITY_BESIEGED`; that code
+  now answers only the commands listed in the first sentence. No command
+  places a building on a city center (Walls are a reward, and tile
+  commands never target a site), so nothing is built under the besieger.
+  Pending rewards can still be chosen (Walls included: they are the
+  city's, not a building on a tile), and a reward **unit** takes the
+  center and shoves the besieger off it, which ends the siege
+  ([section 4.6](#46-training-and-city-center-spawning)). The city's Eggs
+  still count down and hatch. A flyer (Saucer, Mothership, Gyrocopter) and a Sabretooth
   besiege like any land unit since `pulp_wars-ke95` (they never stood on a
   hostile or neutral center before). A mound never stands on a center, so a
   burrowed unit never besieges, and a siege its Mole or rider made ends when
@@ -3907,7 +3978,8 @@ added the last four, constants in `src/engine/v7/achievements.ts`):
   live population (`MONUMENT_POPULATION_V7`; 3 since the economy rejig,
   `7r54`, 2 from tuning 1, `7r46`, to `7r53`, and 3 before), on an explored owned land tile with no site, resource,
   improvement, or treasure (Mountain needs Engineering), at most one Monument
-  per city, no siege or pending reward. A player can therefore place at most
+  per city, no pending reward, and no hostile unit on the tile (a siege
+  has not mattered since `7r80`). A player can therefore place at most
   seven Monuments in a match, never more than one per owned city.
 - **A Monument keeps its builder's look** (`pulp_wars-eu3r.3`, the user
   2026-10-08). Unlike every other building, which takes the look of the
@@ -4488,7 +4560,19 @@ raw read is Board's Deep Water gate, the boarder's owner's Navigation
 ### 8.1 Common placement gates
 
 Tile economy targets an explored tile assigned to one of the actor's cities
-that is not besieged and has no pending reward. No unit is needed. Resource
+that has no pending reward. A siege of the city does not matter (the siege
+rules, `7r80`; [section 4.7](#47-siege-and-capture)). **No tile command
+targets a tile a hostile unit stands on** (`pulp_wars-0pgd`, `7r80`): a
+building, a Monument, a Port, a Road (a neutral Road too), a resource or
+Forest action, Gather Pearls, and Redevelop are rejected with
+`TILE_ENEMY_OCCUPIED` and not offered, in a besieged city or not
+(`isTileEnemyOccupiedV7`; the public copy is `publicTileEnemyOccupiedV7`).
+A neutral unit counts as hostile; an ally's unit and the actor's own do
+not block. **Blast Mountain is the exception**: it is an explosion on the
+tile, not a building, and may still target a Mountain an enemy stands on.
+A Shipyard was already refused on a blockaded Port (`INVALID_TILE`). The
+tile dock says "Enemy on this tile" on such a tile of the player's land.
+No unit is needed. Resource
 actions, buildings, and Monuments never target a site (city center or village)
 or a treasure tile. Mountain targets for buildings, Monuments, and Roads
 require Engineering. Roads always coexist. **No tile command targets a
@@ -4586,8 +4670,9 @@ and no tile command changes a tile into water, a Rift, or a site.
   still reports `resourceBefore: null` for every tile.
 - **Blast Mountain explodes** (round 3, `7r47`;
   [the Human tuning, section 6.3](RULESET_7_TUNING_HUMAN.md#63-blast-mountain)).
-  - **Where.** A Mountain of the player's territory, as before (the city not
-    besieged, no reward pending), or a Mountain outside it that is not in an
+  - **Where.** A Mountain of the player's territory (no reward pending
+    for its city; a siege has not mattered since `7r80`), or a Mountain
+    outside it that is not in an
     ally's territory and has one of the player's land-form units next to it;
     then no city is involved and no population is gained
     (`MOUNTAIN_BLASTED.cityId` is null).
@@ -4616,7 +4701,8 @@ and no tile command changes a tile into water, a Rift, or a site.
 - Redevelop can remove Monuments, Ports, and Shipyards (Port or Shipyard only
   when unoccupied); it never removes Roads, Field Defense, terrain, city
   centers, or Walls. A Fish or Pearls marker under a removed Port stays.
-- Neutral Road construction skips the siege and pending-reward gates.
+- Neutral Road construction skips the pending-reward gate (it has no
+  city); a hostile unit on the tile blocks it like any Road (`7r80`).
 
 ## 9. Roads, trade, and Market
 
@@ -7342,6 +7428,14 @@ Harbours from it.
   cities, otherwise the Treasury. (The economy rejig, `7r54`, took the
   giant whenever it was offered while the seat had fewer giants than
   cities.)
+- **The siege rules** (`pulp_wars-0pgd`, `7r80`). The policy builds in a
+  besieged city whenever it would build anyway (it reads the offered
+  commands, and a siege no longer removes them). Its reward choice has two
+  rules on top of the ladder (`rewardWithArrivalV7`, from the public
+  preview): a reward unit that would shove or kill **a besieger** is taken
+  whenever one is offered, and a reward unit that would **kill the seat's
+  own garrison** (no tile to step to) is not taken when the other reward
+  is on offer.
 - **Any unit can capture** (`pulp_wars-ke95`; mechanics only, no AI
   tuning yet). The policy reads every capturing land unit as a capturer
   (its village errands, sieges, villages first, and the counts of units
@@ -8371,7 +8465,7 @@ one `UNDEAD` seat) and stays enabled after the Undead seats are eliminated.
   not a settlement site (capital, city, or village center); the death did not
   rise (Infect or Bitten); and the tile has no Grave yet.
 - **No Grave** comes from a water, embarked, or naval death, an Egg's death
-  (form `EGG`), Disband, reward displacement removal, elimination removal,
+  (form `EGG`), Disband, reward displacement removal (`DISPLACED`), elimination removal,
   the destruction of Eggs with a captured city, a `BRAIN_LOST` removal, a
   Shatter (`SHATTER`), the death of a Dwarf
   construct, or a death that rises. A
@@ -8837,7 +8931,8 @@ explosions on death harder": the blasts are the Goblins' crowd control): killed 
 at its owner's Start Turn), by another blast (`EXPLOSION`), or by a Dwarf
 bomb (`BOMB`) or eruption (`ERUPTION`). A unit
 explodes at most once: a Kaboom is that unit's explosion. Disband, reward
-displacement removal, and elimination removal are removals, not deaths, and
+displacement removal (a `UNIT_DIED` with the cause `DISPLACED` since
+`7r80`), and elimination removal are removals, not deaths, and
 never explode. Goblins and Wolf Riders never explode on death, and neither
 does a shattered exploding unit (`SHATTER`,
 [section 21.4](#214-shatter)).
@@ -13446,6 +13541,7 @@ first guesses.
 | Cult, E5        | `pulp-wars-poc-7r77` | `pulp_wars-mch9.7` the Cult's rituals and the Herald, the fifth engine step of the Cultists (a save, replay, or setup of `7r76` is rejected): the ritual frame (a leader and its chanters begin a ritual with `BEGIN_RITUAL`, a disrupted participant leaves it, and it completes or fizzles at the seat's next Start Turn after the channel check); Star-fall (a Stargazer that has not moved, one chanter or more, a mark 2 to 4 tiles away: 5 + 1 for each chanter as a fixed hit to every unit on the mark and the eight tiles around it, friend and foe, with every Field Defense and Barricade there destroyed); the Great Summoning (a Summoner with The Stars Are Right and three chanters or more, 20 Favour: the unit on the mark is consumed or blocks the arrival, then the Herald arrives and the circle channels it); the Herald (60 HP, Attack 7, Defense 4, Move 2, Control 3; Ravage, two attacks a turn and never an advance; Unstoppable, its attacks ignore fortification and destroy Field Defense, and no status or shove takes it; Proclaim, one attack spent to Cow a hostile city within 3 tiles: no income and no city action until its owner's turn ends); the commands `BEGIN_RITUAL` and `PROCLAIM`, seven events, the `cult` lists `rituals` and `cowed`, the death causes `STARFALL` and `CONSUMED`, the Favour source `CONSUMPTION` and purpose `GREAT_SUMMONING`, and the Field Defense reasons `STARFALL` and `UNSTOPPABLE`. An Unbound Herald can be bound again. No rule of the eight offered factions changed                      |
 | Cult, E6        | `pulp-wars-poc-7r78` | `pulp_wars-mch9.8` the Cult's hexes and tricks, the sixth and last engine step of the Cultists (a save, replay, or setup of `7r77` is rejected): Ribbit (a Hexer turns a hostile unit within 2 tiles into a frog until its owner's next turn ends: Defense 0.5 with no fortification and no cover, Move 1, no attack, strike back, or capture; Seizable at half its Hit Points; cured by Tend Wounded, Repair, and Top-Up; a status for the disruption rule); Switcheroo (a Familiar with Scouting swaps with a unit within 2 tiles, never on a settlement center, each unit where it may stand); each waits out its owner's next turn; the Tentacle (a Caller calls a neutral unit of the breed `TENTACLE` within 3 tiles: 8 HP, Attack 3, Defense 1, rooted; it slaps the weakest unit beside it at once and in every neutral turn, friend or foe, credited to nobody, and sinks after its third) and Grab (the slapped unit moves only beside it); Pick Me! (hostile units beside a taunting Chosen may `ATTACK` only it until its owner's next Start Turn); Pamphlets (an Initiate captures a neutral village in the turn it walks onto it); the `cult` lists `frogs`, `hexCooldowns`, `taunts`, and `tentacles`, four commands, six events, the death cause `SANK`, and the hidden lab `LAB_CULT_MID` (a mission's Cult seat may start with Favour); no rule of another faction changed ([section 1](#1-identity-and-compatibility)).                                                                                                                              |
 | Village spread  | `pulp-wars-poc-7r79` | `pulp_wars-9s0.12` villages spread over the land, a map generation fix (a save, replay, or setup of `7r78` is rejected): no village is chosen by its place in `(y, x)` order any more. On every water map the coastal settlement a landmass needs is the legal coast tile of lowest tile rank (the first in `(y, x)` order before, a village on the top row of nearly every Pangea whose capitals stand inland); on Continents and Archipelago the villages are the sites of a full packing of the land, kept in tile-rank order until the density count stands (the `(y, x)` fill before left the bottom third of a two-player Continents board with 14% to 17% of its villages; about a third now), the first scan chosen by the seed. No draw is added, the density, the spacing, the landmass shares, the home-island rule, and the village balance are unchanged, and candidates per board are as before. Dry Land maps are byte-identical; Pangea and Lakes maps change only where no capital stands on the coast; most Continents and Archipelago maps change. The parity rules `CAPITAL_DOMAINS*` reproduce the `7r78` maps; the current rules are `SPREAD_VILLAGES_CURIOSITIES` ([map scale section 5.7](RULESET_7_MAP_SCALE.md#57-villages-spread-over-the-land-pulp_wars-9s012-pulp-wars-poc-7r79)); the browser autosave has a new key                                                                                                                                                                                                                      |
+| Siege rules     | `pulp-wars-poc-7r80` | `pulp_wars-0pgd` the siege rules (the user, 2026-10-12; a save, replay, or setup of `7r79` is rejected): a besieged city builds (a siege blocks no tile command; it still stops income, training, hiring, Egg laying, Land Grant, and Offering); no tile command but Blast Mountain targets a tile a hostile unit stands on (`TILE_ENEMY_OCCUPIED`); a level-up reward unit takes the center and the unit standing there, the garrison or a besieger, steps to a tile beside it (own territory first for the owner's unit, then `(y, x)` order) or dies with the cause `DISPLACED` when it has none (no credit, Plunder, Grave, Martyr, or score), a unit that nothing moves (a Jawbreaker) holding the center while the reward unit appears beside it. The Normal AI builds under siege, takes the reward unit that shoves a besieger off, and avoids one that would kill its own garrison.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 
 **Documentation parity (2026-09-28, no ruleset or identity change):** where
 older documents disagreed with the code, the code's behavior was adopted as

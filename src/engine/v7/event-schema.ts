@@ -2233,6 +2233,8 @@ function validPayload(
           "CONSUMED",
           // A Tentacle that sank (`pulp_wars-mch9.8`).
           "SANK",
+          // Siege rules (`pulp_wars-0pgd`): no tile to step to off a center.
+          "DISPLACED",
         ].includes(e.cause as string)
       );
     // The giants' signatures (docs/product/RULESET_7_GIANTS.md section 8).

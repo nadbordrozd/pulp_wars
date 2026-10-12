@@ -69,7 +69,10 @@ describe("ruleset-7 exact public query indexing", () => {
     expect(canonicalHash(commands)).toBe(
       // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): recomputed (was
       // 550239…aa61).
-      "2aa89493ab793892fd9aa3f864f0de207b517f4dc90856fe952e8f12fbe49307",
+      // Siege rules (`pulp_wars-0pgd`, 7r80): recomputed; the neutral
+      // Roads under visible enemy units are no longer offered (was
+      // 2aa894…9307).
+      "d2cb99d35b5c98f62b43646d67f03cf3cf2136b0439162a91672cbf18554564a",
     );
     const reads = measured.reads();
     expect(reads.tileReads).toBeLessThan(6_000);
@@ -103,14 +106,16 @@ describe("ruleset-7 exact public query indexing", () => {
       // The economy rejig (`pulp_wars-w49.16`): the research offers follow
       // the price per city (was 66 236). The Industry reshuffle
       // (`pulp_wars-w49.21`): three Guard offers fewer (was 66 238).
-      66_235 + publicPlanningFactScanOperations(measured.view),
+      65_491 + publicPlanningFactScanOperations(measured.view),
     );
     expect(canonicalHash(planned.result)).toBe(
       // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
       // 031d3b…d3bb).
       // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): recomputed (was
       // 2d5421…3b8e).
-      "d5416ea26b18c2c9a18637ea8b331c082ea7707de29c9028f56a382045fa9615",
+      // Siege rules (`pulp_wars-0pgd`, 7r80): recomputed, without the
+      // neutral Roads under enemy units (was d5416e…9615).
+      "ec3cf94435ecf46fc9885ac25db421132a073d96dced1ed5d983ae69be53fb1e",
     );
   });
 
@@ -192,10 +197,18 @@ describe("ruleset-7 exact public query indexing", () => {
         ),
       },
     };
-    const hostile: PlayerViewV7 = {
+    // Siege rules (`pulp_wars-0pgd`, 7r80): a besieger on the center no
+    // longer hides the command; a hostile unit on the tile itself does.
+    const besieged: PlayerViewV7 = {
       ...retained,
       units: retained.units.map((unit) =>
         unit === visibleUnit ? { ...unit, at: city.at } : unit,
+      ),
+    };
+    const hostile: PlayerViewV7 = {
+      ...retained,
+      units: retained.units.map((unit) =>
+        unit === visibleUnit ? { ...unit, at: command.at } : unit,
       ),
     };
     const pending: PlayerViewV7 = {
@@ -213,11 +226,34 @@ describe("ruleset-7 exact public query indexing", () => {
 
     expect(queryPlayerCommandsV7(retained)).toContainEqual(command);
     expect(queryPlayerCommandsV7(hidden)).not.toContainEqual(command);
+    expect(queryPlayerCommandsV7(besieged)).toContainEqual(command);
     expect(queryPlayerCommandsV7(hostile)).not.toContainEqual(command);
+    // The other seat's unit on the center: an ally's in a Cooperative
+    // match, a besieger in a Rival one. Neither hides the command (siege
+    // rules, 7r80); on the tile itself only the hostile one does.
+    const onTile = (view: PlayerViewV7): PlayerViewV7 => ({
+      ...view,
+      units: view.units.map((unit) =>
+        unit.ownerId !== view.viewer.id &&
+        view.cities.some(
+          (candidate) =>
+            candidate.ownerId === view.viewer.id &&
+            candidate.at.x === unit.at.x &&
+            candidate.at.y === unit.at.y,
+        ) &&
+        "at" in allied.command
+          ? { ...unit, at: allied.command.at }
+          : unit,
+      ),
+    });
     expect(queryPlayerCommandsV7(allied.cooperative)).toContainEqual(
       allied.command,
     );
-    expect(queryPlayerCommandsV7(allied.rival)).not.toContainEqual(
+    expect(queryPlayerCommandsV7(allied.rival)).toContainEqual(allied.command);
+    expect(queryPlayerCommandsV7(onTile(allied.cooperative))).toContainEqual(
+      allied.command,
+    );
+    expect(queryPlayerCommandsV7(onTile(allied.rival))).not.toContainEqual(
       allied.command,
     );
     expect(queryPlayerCommandsV7(pending)).toEqual([

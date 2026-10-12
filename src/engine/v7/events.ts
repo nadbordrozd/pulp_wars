@@ -1031,6 +1031,12 @@ export type DomainEventV7 =
       readonly role: UnitRoleIdV7;
     }
   | {
+      /**
+       * The reward unit `spawnedUnitId` of `playerId` took the center
+       * `from` of `cityId`; the unit that stood there (`displacedUnitId`,
+       * of any owner) stepped to `to`, or died when `to` is null (its
+       * `UNIT_DIED` cause `DISPLACED` follows; siege rules, `7r80`).
+       */
       readonly kind: "UNIT_SPAWN_DISPLACED";
       readonly playerId: PlayerId;
       readonly cityId: CityId;
@@ -1960,7 +1966,14 @@ export type DomainEventV7 =
          * sank at the end of its third neutral turn (after
          * `TENTACLE_SANK`). Nothing is left of it.
          */
-        | "SANK";
+        | "SANK"
+        /**
+         * Siege rules (`pulp_wars-0pgd`, `7r80`): the unit on a city center
+         * that a level-up reward unit took, with no tile next to the center
+         * to step to (after `UNIT_SPAWN_DISPLACED` with `to` null). A
+         * removal: no credit, Plunder, Grave, Crumbs, blast, or Martyr.
+         */
+        | "DISPLACED";
     }
   | {
       /**

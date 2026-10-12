@@ -270,7 +270,7 @@ export const UNPROVEN_DISRUPTION_PATHS_V7: Readonly<
     "a Saucer beams only its own seat's units, and no Martian seat has a cultist",
   GOBLIN_TOSSED: "a Troll throws only a Goblin of its own seat",
   UNIT_SPAWN_DISPLACED:
-    "a new unit takes the center only when every tile next to it is taken (tuning 6); the shove is a plain change of tile",
+    "a reward unit takes its center and the unit there steps aside (siege rules, 7r80); the proof with a channelling besieger is in tests/unit/ruleset-v7-siege-rules.test.ts, and the shove is a plain change of tile",
   GATE_DISPLACED:
     "needs a Dimensional Gate pair (a generated curiosity board); the shove is a plain change of tile",
   CRUMBS_EATEN:

@@ -488,7 +488,13 @@ describe("ruleset-7 revision-13 Graves: exclusions", () => {
     expect(result.state.units.some((unit) => unit.id === occupant.id)).toBe(
       false,
     );
-    expect(result.events.map((event) => event.kind)).not.toContain("UNIT_DIED");
+    // Siege rules (`pulp_wars-0pgd`, 7r80): the removal is a death with
+    // its own cause, and still leaves nothing.
+    expect(result.events).toContainEqual({
+      kind: "UNIT_DIED",
+      unitId: occupant.id,
+      cause: "DISPLACED",
+    });
     expect(result.events.map((event) => event.kind)).not.toContain(
       "GRAVE_CREATED",
     );

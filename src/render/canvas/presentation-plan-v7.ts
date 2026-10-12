@@ -716,6 +716,31 @@ export function corePresentationPlanV7(
           ...(enemyTurn ? { followCamera: true as const } : {}),
         });
       origins.set(event.unitId, event.to);
+    } else if (event.kind === "UNIT_SPAWN_DISPLACED") {
+      // Siege rules (`pulp_wars-0pgd`, 7r80): the unit on the center slides
+      // aside for the reward unit (the shove of a push), or fades where it
+      // stood when it has no tile to step to.
+      if (event.to === null) {
+        if (isExplored(event.from))
+          steps.push({
+            kind: "DISBAND",
+            unitId: event.displacedUnitId,
+            at: event.from,
+            durationMs: 320,
+            ...(enemyTurn ? { followCamera: true as const } : {}),
+          });
+      } else {
+        if (isExplored(event.from) && isExplored(event.to))
+          steps.push({
+            kind: "MOVE",
+            unitId: event.displacedUnitId,
+            path: [event.from, event.to],
+            durationMs: 160,
+            pushSlide: true,
+            ...(enemyTurn ? { followCamera: true as const } : {}),
+          });
+        origins.set(event.displacedUnitId, event.to);
+      }
     } else if (event.kind === "GATE_TRAVERSED") {
       // The burst at both gates; the unit comes out of the exit.
       const cells = [event.from, event.to].filter(isExplored);
