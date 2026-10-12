@@ -1,0 +1,36 @@
+{
+  "id": "portrait-frog-a-mouth",
+  "jobId": "798202bb-46b6-4ec6-b9fd-999b89f31348",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "interface-cult",
+    "asset": "chibi-direction-portrait-cult-frog",
+    "subject": "PORTRAIT:CULT:FROG",
+    "faction": "CULT",
+    "recipeClass": "creature",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 93703,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only one small thing: the small red line of the mouth becomes plain black, with no red, no pink and no orange left in it. Do not redraw anything else: keep the teal body, the cream belly, the two eyes, the arms, the feet, the shape, the black outline and the art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only one small thing: the small red line of the mouth becomes plain black, with no red, no pink and no orange left in it. Do not redraw anything else: keep the teal body, the cream belly, the two eyes, the arms, the feet, the shape, the black outline and the art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only one small thing: the small red line of the mouth becomes plain black, with no red, no pink and no orange left in it. Do not redraw anything else: keep the teal body, the cream belly, the two eyes, the arms, the feet, the shape, the black outline and the art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only one small thing: the small red line of the mouth becomes plain black, with no red, no pink and no orange left in it. Do not redraw anything else: keep the teal body, the cream belly, the two eyes, the arms, the feet, the shape, the black outline and the art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "portrait-frog-a",
+      "candidate": 0,
+      "sha256": "6914e3b832c7354a2765d70ad87f91f6080b3050611c50f836da38937f9fe208"
+    }
+  }
+}

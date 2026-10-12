@@ -16,7 +16,7 @@ import type { CultMarkV7 } from "./cult-ritual-board-plan-v7";
  *   tile (a star for Star-fall, an eye in a circle for the Great
  *   Summoning).
  * - **Over the pieces:** the countdown on the marked tile, the banner of a
- *   Cowed city, the rite's badge on its leader, the frog and its pip on a
+ *   Cowed city, the rite's badge on its leader, the badge of what it was on a
  *   hexed unit, the "ME!" bubble of a Chosen that shouted and the red
  *   tether to each unit it binds, a Tentacle's turns and the coil round
  *   the unit it holds, and the arrows of an aimed Switcheroo.
@@ -40,8 +40,12 @@ export const CULT_TRICK_FRAME_V7 = {
   banner: { y: -62, height: 22 },
   /** The rite's badge on its leader: the piece's right side. */
   rite: { x: 46, y: -8, radius: 13 },
-  /** The frog: the lower left of the unit's base, its pip beside it. */
-  frog: { x: -38, y: 36, size: 34 },
+  /**
+   * The badge of what a frog was (bead `pulp_wars-mch9.26`): a round token
+   * at the lower left of the frog's base, clear of the rite's badge and the
+   * eye on the right and of the status slots above it.
+   */
+  frog: { x: -38, y: 32, size: 48 },
   /** The "ME!" bubble: over the Chosen's head, to its right. */
   bubble: { x: 26, y: -64, width: 44, height: 24 },
   /** A Tentacle's turns: the row under it. */
@@ -297,7 +301,15 @@ export function drawCowedShuttersV7(
 
 /** Rasters of the over-piece marks, each optional (code-drawn without). */
 export interface CultTrickArtV7 {
-  readonly frog?: CanvasImageSource | null;
+  /**
+   * The picture in a frog's badge: the portrait of what it was (at sea the
+   * frog's own portrait), else its sprite, whose head and shoulders are
+   * shown. Without one the badge is drawn in code.
+   */
+  readonly frog?: {
+    readonly image: CanvasImageSource;
+    readonly fit: "portrait" | "sprite";
+  } | null;
   readonly starfall?: CanvasImageSource | null;
   readonly summoning?: CanvasImageSource | null;
 }
@@ -426,6 +438,9 @@ function drawCodeFrog(
   context.stroke();
 }
 
+/** The ground of a frog's badge: a pale parchment, so a dark unit reads. */
+const FROG_BADGE_GROUND = "#e9dfc3";
+
 /** The dark disc under a badge, rimmed in `rim`. */
 function badgeDisc(
   context: CanvasRenderingContext2D,
@@ -447,7 +462,7 @@ function badgeDisc(
 
 /**
  * The trick marks of one unit at its tile centre (`x`, `y`): the rite's
- * badge of a ritual's leader, the frog and its pip, the "ME!" bubble, and a
+ * badge of a ritual's leader, the badge of what a frog was, the "ME!" bubble, and a
  * Tentacle's turns. (The candle, the pips and the Unbound marks are the
  * channel's, `drawCultUnitMarkersV7`.)
  */
@@ -460,6 +475,8 @@ export function drawCultTrickUnitMarkersV7(
   options: CultDrawOptionsV7 & {
     readonly art?: CultTrickArtV7;
     readonly bubble?: string;
+    /** The colour of the unit's owner: the rim of a frog's badge. */
+    readonly ownerColor?: string | undefined;
   } = {},
 ): void {
   const highContrast = options.highContrast ?? false;
@@ -505,30 +522,86 @@ export function drawCultTrickUnitMarkersV7(
       context.fill();
     }
   }
-  if (markers.frog === true) {
+  if (markers.frog !== undefined) {
     const cx = x + frame.frog.x * zoom;
     const cy = y + frame.frog.y * zoom;
-    const size = Math.max(16, frame.frog.size * zoom);
-    const image = options.art?.frog ?? null;
-    // A dark halo, so the frog reads on Grass.
+    const size = Math.max(18, frame.frog.size * zoom);
+    const radius = size / 2;
+    const picture = options.art?.frog ?? null;
+    const rim = highContrast
+      ? "#ffffff"
+      : (options.ownerColor ?? CULT_PALETTE_V7.wax);
+    // The token: a dark disc in a rim of the owner's colour.
+    context.beginPath();
+    context.arc(cx, cy, radius, 0, Math.PI * 2);
     context.fillStyle = highContrast ? "#000000" : CULT_PALETTE_V7.casing;
-    context.globalAlpha *= 0.7;
-    context.beginPath();
-    context.arc(cx, cy, size * 0.56, 0, Math.PI * 2);
     context.fill();
-    context.globalAlpha /= 0.7;
-    if (image !== null)
-      context.drawImage(image, cx - size / 2, cy - size / 2, size, size);
-    else drawCodeFrog(context, cx, cy, size * 0.82, highContrast);
-    // The pip of the turn it has left.
-    const pip = Math.max(2.4, 4.4 * zoom);
-    context.fillStyle = palette.chalk;
-    context.strokeStyle = palette.casing;
-    context.lineWidth = Math.max(1, 1.6 * zoom);
-    context.beginPath();
-    context.arc(cx + size * 0.62, cy + size * 0.3, pip, 0, Math.PI * 2);
-    context.fill();
+    context.lineWidth = Math.max(1.2, 2.2 * zoom);
+    context.strokeStyle = highContrast ? "#ffffff" : "#10131c";
     context.stroke();
+    context.beginPath();
+    context.arc(cx, cy, radius - 1.5 * zoom, 0, Math.PI * 2);
+    context.lineWidth = Math.max(1, 1.9 * zoom);
+    context.strokeStyle = rim;
+    context.stroke();
+    // What it was (at sea: the frog), clipped to the token.
+    context.save();
+    context.beginPath();
+    context.arc(cx, cy, Math.max(1, radius - 2.4 * zoom), 0, Math.PI * 2);
+    context.clip();
+    if (!highContrast) {
+      context.fillStyle = FROG_BADGE_GROUND;
+      context.fillRect(cx - radius, cy - radius, size, size);
+    }
+    if (picture !== null) {
+      const image = picture.image as { width?: number; height?: number };
+      const width = Number(image.width ?? 1) || 1;
+      const height = Number(image.height ?? 1) || 1;
+      const smoothing = context.imageSmoothingEnabled;
+      context.imageSmoothingEnabled = true;
+      if (picture.fit === "sprite") {
+        // The head and shoulders of its sprite fill the token.
+        const scale = (size * 1.25) / Math.max(width, height * 0.75);
+        context.drawImage(
+          picture.image,
+          cx - (width * scale) / 2,
+          cy - radius * 0.85,
+          width * scale,
+          height * scale,
+        );
+      } else {
+        // A portrait fills the token.
+        const scale = size / Math.min(width, height);
+        context.drawImage(
+          picture.image,
+          cx - (width * scale) / 2,
+          cy - (height * scale) / 2,
+          width * scale,
+          height * scale,
+        );
+      }
+      context.imageSmoothingEnabled = smoothing;
+    } else if (markers.frog.afloat)
+      drawCodeFrog(context, cx, cy + size * 0.06, size * 0.7, highContrast);
+    else {
+      // No picture of it: a plain figure in its owner's colour.
+      context.fillStyle = rim;
+      context.beginPath();
+      context.arc(cx, cy - radius * 0.22, radius * 0.3, 0, Math.PI * 2);
+      context.fill();
+      context.beginPath();
+      context.ellipse(
+        cx,
+        cy + radius * 0.55,
+        radius * 0.55,
+        radius * 0.42,
+        0,
+        Math.PI,
+        0,
+      );
+      context.fill();
+    }
+    context.restore();
   }
   if (markers.taunt === true) {
     const text = options.bubble ?? "ME!";

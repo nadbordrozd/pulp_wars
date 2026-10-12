@@ -702,7 +702,9 @@ import {
   cultTrickChipsV7,
   cultTrickCommandsV7,
   cultTrickUnavailableTextV7,
+  FROG_NAME_V7,
   frogCardStatsV7,
+  frogLookV7,
   type CultTrickKindV7,
 } from "../cult-ritual-presentation-v7";
 import {
@@ -4991,15 +4993,21 @@ export class Ruleset7DomAppView {
           : breed === "BIGFOOT"
             ? bigfootFigureV7(this.#document)
             : undefined;
+      // Bead pulp_wars-mch9.26: a frog (on land) is shown as the frog, with
+      // a small badge and one line for what it was.
+      const frogLook = frogLookV7(view, unit);
+      const frog = frogLook !== null && !frogLook.afloat ? frogLook : null;
       const unitSubject: ArtSubjectV7 =
         breed !== null
           ? neutralArtSubjectsV7(breed, unit.role).portrait
-          : unitArtSubjectV7({
-              ...unit,
-              ...(gingerbreadMan ? { role: "JUGGERNAUT" as const } : {}),
-              faction: unitFaction,
-              machine,
-            });
+          : frog !== null
+            ? frog.subject
+            : unitArtSubjectV7({
+                ...unit,
+                ...(gingerbreadMan ? { role: "JUGGERNAUT" as const } : {}),
+                faction: unitFaction,
+                machine,
+              });
       const transportArt = unit.form === "EMBARKED" && !machine;
       const unitColour = this.#playerColour(view, unit.ownerId);
       const dockArt = this.#chibiArt(
@@ -5021,14 +5029,42 @@ export class Ruleset7DomAppView {
           transportArt
             ? "unit-shared-embarked-transport"
             : UNIT_ART_KEYS_V7[unit.role],
-          unit.form === "EMBARKED"
-            ? `${roleLabel} (${machine ? "afloat" : "at sea"})`
-            : roleLabel,
-          dockArt?.factionArt === true || egg ? null : unitBadge,
+          frog !== null
+            ? FROG_NAME_V7
+            : unit.form === "EMBARKED"
+              ? `${roleLabel} (${machine ? "afloat" : "at sea"})`
+              : roleLabel,
+          dockArt?.factionArt === true || egg || frog !== null
+            ? null
+            : unitBadge,
           dockArt?.element ?? eggFigure,
           eggFigure === undefined ? "chibi" : "code",
         ),
       );
+      if (frog !== null) {
+        // What it was: its portrait in a small round badge on the frog,
+        // and its name under "Frog".
+        const identityBox = dock.querySelector<HTMLElement>(".v7-identity");
+        const was = this.#chibiArt(
+          frog.portraitSubject,
+          CHIBI_DOM_BOXES_V7.passenger,
+          unitColour,
+        )?.element;
+        if (was !== undefined) {
+          const badge = el(this.#document, "span", "v7-frog-was-badge");
+          badge.setAttribute("aria-hidden", "true");
+          badge.append(was);
+          identityBox?.querySelector(".v7-identity-art")?.append(badge);
+        }
+        const name = text(
+          this.#document,
+          "span",
+          frog.original,
+          "v7-identity-kind v7-frog-was",
+        );
+        name.dataset.frogWas = "true";
+        identityBox?.append(name);
+      }
       // The Mind Control revision (section 9): a controlled unit's badge
       // names its controller and original owner, so no owner line.
       const control = mindControlledInfoV7(view, unit);
@@ -5127,7 +5163,8 @@ export class Ruleset7DomAppView {
         faction.dataset.faction = unitBadge.toLowerCase();
         identityColumn?.append(faction);
       }
-      if (!egg)
+      // A frog fills no tactical role (bead pulp_wars-mch9.26): no line.
+      if (!egg && frog === null)
         identityColumn?.append(
           text(
             this.#document,

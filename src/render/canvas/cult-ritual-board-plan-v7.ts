@@ -33,6 +33,7 @@ import {
   TENTACLE_SLAP_LABEL_V7,
   beginRitualTargetNameV7,
   cultTrickCommandsV7,
+  frogLookV7,
   proclaimTargetNameV7,
   ribbitTargetNameV7,
   ritualMarkNameV7,
@@ -61,8 +62,8 @@ import {
  * **Always on the board, for every viewer:** the chalk ring of a ritual
  * under its leader and its chanters, the rite's badge, its marked tile with
  * the countdown, a star's nine tiles with what each unit there takes, the
- * unit that decides a Great Summoning, the banner of a Cowed city, the frog
- * on a hexed unit, a Tentacle's turns and the unit it holds, and a taunting
+ * unit that decides a Great Summoning, the banner of a Cowed city, a hexed
+ * unit drawn as a frog, a Tentacle's turns and the unit it holds, and a taunting
  * Chosen with a tether to each unit it binds. **While the unit is
  * selected:** whom an offered Pick Me! would bind. **While aimed:** the
  * mark of a rite (chosen first, begun when chosen again), the city of a
@@ -154,7 +155,7 @@ const chebyshev = (left: CoordV7, right: CoordV7): number =>
 /**
  * The marks of rituals, hexes and tricks on every visible unit, added to
  * the channel's (`cultUnitMarkersV7`): a ritual's leader and chanters are
- * Candlelit, the leader wears the rite's badge, a frog its frog, a taunting
+ * Candlelit, the leader wears the rite's badge, a frog its look, a taunting
  * Chosen its bubble, a Tentacle its turns, and the unit a Tentacle slaps
  * next the daemons' eye (bead `pulp_wars-mch9.24`).
  */
@@ -181,9 +182,13 @@ export function cultTrickUnitMarkersV7(
       mark(ritual.leaderUnitId, { candle: true, ritual: ritual.kind });
     for (const unitId of ritual.chanterUnitIds) mark(unitId, { candle: true });
   }
-  for (const unitId of tricks.frogs) mark(unitId, { frog: true });
-  for (const unitId of tricks.taunts) mark(unitId, { taunt: true });
   const unitById = new Map(view.units.map((unit) => [unit.id, unit]));
+  for (const unitId of tricks.frogs) {
+    const unit = unitById.get(unitId);
+    const frog = unit === undefined ? null : frogLookV7(view, unit);
+    if (frog !== null) mark(unitId, { frog });
+  }
+  for (const unitId of tricks.taunts) mark(unitId, { taunt: true });
   for (const entry of tricks.tentacles) {
     mark(entry.unitId, { sinks: entry.turnsLeft });
     // Section 9.3: in every neutral turn it slaps the weakest unit beside

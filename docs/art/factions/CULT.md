@@ -612,13 +612,24 @@ slot, as the Candy status icons are):
 
 ## Markers and effects
 
-**The frog overlay** (`FROG`, `chibi-direction-cult-frog`, **40 x 40**,
-`RESOURCE` class, centred: the Grave's and the Crumbs' class and canvas): a
-fat squat frog in the summoned palette, deep-sea teal with a cream belly and
-two big yellow eyes, so that it reads as Cult magic on every ground and is
-never a green frog lost on Grass. One frog for every victim; it sits on the
-frogged unit's base and the pip for the turn left is code-drawn. Nothing
-under it.
+**The frog** (`UNIT:CULT:FROG`, `chibi-direction-cult-frog-unit`,
+**56 x 80**, `STANDARD_UNIT` class, bottom-centred like every unit; bead
+`pulp_wars-mch9.26`): what a unit hit by Ribbit is drawn as. A plump
+upright frog, slightly surprised, in the summoned palette: deep-sea teal
+with a cream belly, two big yellow eyes and a small open mouth, so that it
+reads as Cult magic on every ground and is never a green frog lost on
+Grass. One frog for every victim of every faction; it has no owner colour
+(the player is shown by the unit's base and by the rim of its badge).
+
+**The small frog** (`FROG`, `chibi-direction-cult-frog`, **40 x 40**,
+`RESOURCE` class, centred: the Grave's and the Crumbs' class and canvas):
+the fat squat frog the first interface drew on a frogged unit's base.
+Nothing draws it since bead `pulp_wars-mch9.26`; it stays registered.
+
+**The frog's portrait** (`PORTRAIT:CULT:FROG`,
+`chibi-direction-portrait-cult-frog`, 48 x 48, `PORTRAIT` class; bead
+`pulp_wars-mch9.26`): the same frog whole, for the badge on the transport
+of a frog at sea.
 
 **Effects** (`EFFECT` class, at most 48 x 48, centred on a cell and moved,
 scaled and faded by code; a palette swap on a new
@@ -666,9 +677,49 @@ shutters are always two code-drawn cream leaves with louvre slits: the
 13 to 20 px and is not drawn on the board); a Chosen that shouted has a cream "ME!" bubble; a Grab is a teal
 arm that coils once round the held unit; the Switcheroo ghosts are the two
 units' own sprites, faint, each beside the other's tile; a Tentacle's
-turns are three pips under it. The frog is the `FROG` raster on a dark
-halo (a teal code-drawn frog without it). Nothing draws a hole or a ripple
+turns are three pips under it. A frogged unit is drawn as the frog
+(`UNIT:CULT:FROG`; bead `pulp_wars-mch9.26`) and wears a round badge of
+what it was on the frog's lower left ([the frog's look](#the-frogs-look)). Nothing draws a hole or a ripple
 under the Tentacle: its sprite stands on the tile.
+
+### The frog's look
+
+Bead `pulp_wars-mch9.26` (the user, 2026-10-12: "I want the unit to appear
+as a frog and have a little icon of what it was originally").
+
+- **On the board** a frog on land is the frog's sprite on the unit's own
+  base: its owner's ring and shadow, its HP bar, its selection and its
+  status marks are the unit's. A round badge 48 world units across (30 px
+  at the default zoom) sits on the frog's lower left, where the small frog
+  used to sit: a parchment disc in a dark casing with a rim in the owner's
+  colour, holding the portrait of what it was (`PORTRAIT:<FACTION>:<SLOT>`
+  as the card of an Abomination's victim asks for it), or the head and
+  shoulders of its sprite in a look without portraits, or a plain figure in
+  the owner's colour without either. The rite's badge and the daemons' eye
+  are on the right of the piece and the affliction slots above, so nothing
+  collides. The pip for the turn left is gone (it was always one).
+- **Who can be a frog.** Ribbit takes a one-slot land unit of a player:
+  never a reward giant, a two-slot unit, an Egg, a neutral unit or a
+  summoned one, so there is no giant frog. A large one-slot unit (a Knight
+  on its horse, a Familiar) becomes the same standard-sized frog.
+- **At sea.** A frog may still move, so it may embark. The engine's frog
+  rules are a land unit's and the boat is what is on the water: the
+  transport keeps its sprite, and its badge shows the frog's portrait
+  (`PORTRAIT:CULT:FROG`; a code-drawn teal frog without the raster). Its
+  card is the transport's own, with the "Frog" chip.
+- **Without the raster** (the Classic look, a failed load) the frog is the
+  lettered disc of every missing unit, "F", in its owner's colour, with
+  its badge.
+- **The card** shows the frog's sprite (the card of a selected unit shows
+  its map sprite) with the badge as a small round portrait on its lower
+  left, the name "Frog", the unit's own name on the line under it, and no
+  tactical role.
+- **Becoming a frog and turning back** both play the Ribbit puff
+  (`EFFECT:RIBBIT`); the return has no spark and no croak (the plain puff
+  sound). With Motion off the board shows the result alone, as for every
+  cue.
+- **The Gallery** lists no status or summoned art of the Cult, so the frog
+  has no row there.
 
 ## Asset list by bead
 
@@ -822,25 +873,26 @@ derived. `npm run art:chibi-cult-direction-review` now also writes
 
 ![The whole Cult roster on Grass, Forest, Mountain, Snow and Shallow Water at zoom 0.75](../../../art/pixellab/reviews/chibi-batch-direction-cult/roster-zoom-0.75.png)
 
-| Asset                                  | Accepted recipe      | Sprite     | Class, accent            | How it was made                                                          |
-| -------------------------------------- | -------------------- | ---------- | ------------------------ | ------------------------------------------------------------------------ |
-| `chibi-direction-cult-idol-bearer`     | `idol-bearer-s-one`  | 43 x 71 px | `unit`, `cult-lodge`     | a sibling edit of the Initiate, then one edit (two small idols into one) |
-| `chibi-direction-cult-familiar`        | `familiar-a-brass`   | 58 x 65 px | `creature`, `cult-lodge` | a creation, then one edit (a leather collar to brass, the tongue gone)   |
-| `chibi-direction-cult-hexer`           | `hexer-s`            | 50 x 73 px | `unit`, `cult-lodge`     | a sibling edit of the Initiate                                           |
-| `chibi-direction-cult-summoner`        | `summoner-s`         | 36 x 75 px | `unit`, `cult-lodge`     | a sibling edit of the Initiate                                           |
-| `chibi-direction-cult-stargazer`       | `stargazer-a-hood`   | 68 x 54 px | `unit`, `cult-lodge`     | a creation, then one edit (a bearded face into a hood with two eyes)     |
-| `chibi-direction-cult-caller`          | `caller-a`           | 62 x 79 px | `unit`, `cult-lodge`     | the first creation                                                       |
-| `chibi-direction-cult-chosen`          | `chosen-s`           | 56 x 73 px | `unit`, `cult-lodge`     | a sibling edit of the Initiate                                           |
-| `chibi-direction-cult-thing`           | `thing-c-heap`       | 80 x 84 px | `creature`, `cult-green` | the third creation, then one edit (a small face into a tentacle coil)    |
-| `chibi-direction-cult-tentacle`        | `tentacle-b`         | 53 x 74 px | `creature`, `cult-green` | the second creation                                                      |
-| `chibi-direction-cult-horror-unbound`  | `horror-unbound-a`   | 68 x 68 px | `unit`, `cult-green`     | one edit of the accepted Horror                                          |
-| `chibi-direction-cult-herald-unbound`  | `herald-unbound-a`   | 53 x 97 px | `machine`, `cult-lodge`  | one edit of the accepted Herald                                          |
-| `chibi-direction-cult-frog`            | `frog-a`             | 33 x 34 px | `creature`, `cult-green` | the first creation                                                       |
-| `chibi-naval-cult-patrol-boat`         | `cult-patrol-boat-a` | 59 x 68 px | `ship`, `cult-lodge`     | one edit of the shared cog                                               |
-| `chibi-naval-cult-battleship`          | `cult-battleship-a`  | 71 x 79 px | `ship`, `cult-lodge`     | one edit of the shared carrack                                           |
-| `chibi-naval-cult-transport`           | `cult-transport-a`   | 60 x 49 px | `ship`, `cult-lodge`     | one edit of the shared barge                                             |
-| `chibi-naval-cult-submarine`           | `cult-submarine-a`   | 61 x 52 px | `ship`, `cult-lodge`     | one sibling edit of the accepted gondola                                 |
-| `chibi-naval-cult-submarine-submerged` | derived              | 61 x 46 px | none                     | `scripts/art/naval-branch/submerged.ts`                                  |
+| Asset                                  | Accepted recipe      | Sprite     | Class, accent            | How it was made                                                                                |
+| -------------------------------------- | -------------------- | ---------- | ------------------------ | ---------------------------------------------------------------------------------------------- |
+| `chibi-direction-cult-idol-bearer`     | `idol-bearer-s-one`  | 43 x 71 px | `unit`, `cult-lodge`     | a sibling edit of the Initiate, then one edit (two small idols into one)                       |
+| `chibi-direction-cult-familiar`        | `familiar-a-brass`   | 58 x 65 px | `creature`, `cult-lodge` | a creation, then one edit (a leather collar to brass, the tongue gone)                         |
+| `chibi-direction-cult-hexer`           | `hexer-s`            | 50 x 73 px | `unit`, `cult-lodge`     | a sibling edit of the Initiate                                                                 |
+| `chibi-direction-cult-summoner`        | `summoner-s`         | 36 x 75 px | `unit`, `cult-lodge`     | a sibling edit of the Initiate                                                                 |
+| `chibi-direction-cult-stargazer`       | `stargazer-a-hood`   | 68 x 54 px | `unit`, `cult-lodge`     | a creation, then one edit (a bearded face into a hood with two eyes)                           |
+| `chibi-direction-cult-caller`          | `caller-a`           | 62 x 79 px | `unit`, `cult-lodge`     | the first creation                                                                             |
+| `chibi-direction-cult-chosen`          | `chosen-s`           | 56 x 73 px | `unit`, `cult-lodge`     | a sibling edit of the Initiate                                                                 |
+| `chibi-direction-cult-thing`           | `thing-c-heap`       | 80 x 84 px | `creature`, `cult-green` | the third creation, then one edit (a small face into a tentacle coil)                          |
+| `chibi-direction-cult-tentacle`        | `tentacle-b`         | 53 x 74 px | `creature`, `cult-green` | the second creation                                                                            |
+| `chibi-direction-cult-horror-unbound`  | `horror-unbound-a`   | 68 x 68 px | `unit`, `cult-green`     | one edit of the accepted Horror                                                                |
+| `chibi-direction-cult-herald-unbound`  | `herald-unbound-a`   | 53 x 97 px | `machine`, `cult-lodge`  | one edit of the accepted Herald                                                                |
+| `chibi-direction-cult-frog`            | `frog-a`             | 33 x 34 px | `creature`, `cult-green` | the first creation                                                                             |
+| `chibi-direction-cult-frog-unit`       | `frog-unit-b-mouth`  | 50 x 64 px | `creature`, `cult-green` | the second of three creations, then one edit (a red tongue to black; bead `pulp_wars-mch9.26`) |
+| `chibi-naval-cult-patrol-boat`         | `cult-patrol-boat-a` | 59 x 68 px | `ship`, `cult-lodge`     | one edit of the shared cog                                                                     |
+| `chibi-naval-cult-battleship`          | `cult-battleship-a`  | 71 x 79 px | `ship`, `cult-lodge`     | one edit of the shared carrack                                                                 |
+| `chibi-naval-cult-transport`           | `cult-transport-a`   | 60 x 49 px | `ship`, `cult-lodge`     | one edit of the shared barge                                                                   |
+| `chibi-naval-cult-submarine`           | `cult-submarine-a`   | 61 x 52 px | `ship`, `cult-lodge`     | one sibling edit of the accepted gondola                                                       |
+| `chibi-naval-cult-submarine-submerged` | derived              | 61 x 46 px | none                     | `scripts/art/naval-branch/submerged.ts`                                                        |
 
 ### What the batches changed
 
@@ -1054,23 +1106,24 @@ recipe, sprite box, colour shares, call counts).
 
 ### The portraits
 
-| Asset                                       | Subject                     | Accepted recipe               | Sprite     | Class, accent                 | Calls              |
-| ------------------------------------------- | --------------------------- | ----------------------------- | ---------- | ----------------------------- | ------------------ |
-| `chibi-direction-portrait-cult-initiate`    | `PORTRAIT:CULT:FIGHTER`     | `portrait-initiate-b-eyes`    | 43 x 42 px | `portrait`, `cult-lodge-icon` | 1 creation, 1 edit |
-| `chibi-direction-portrait-cult-idol-bearer` | `PORTRAIT:CULT:GUARD`       | `portrait-idol-bearer-s`      | 34 x 42 px | `portrait`, `cult-lodge-icon` | 1 edit             |
-| `chibi-direction-portrait-cult-familiar`    | `PORTRAIT:CULT:RAIDER`      | `portrait-familiar-a`         | 48 x 44 px | `creature`, `cult-lodge-icon` | 1 creation         |
-| `chibi-direction-portrait-cult-hexer`       | `PORTRAIT:CULT:MARKSMAN`    | `portrait-hexer-s`            | 43 x 42 px | `portrait`, `cult-lodge-icon` | 1 edit             |
-| `chibi-direction-portrait-cult-summoner`    | `PORTRAIT:CULT:CAPTAIN`     | `portrait-summoner-s`         | 34 x 44 px | `portrait`, `cult-lodge-icon` | 1 edit             |
-| `chibi-direction-portrait-cult-stargazer`   | `PORTRAIT:CULT:CATAPULT`    | `portrait-stargazer-s`        | 45 x 42 px | `portrait`, `cult-lodge-icon` | 1 edit             |
-| `chibi-direction-portrait-cult-caller`      | `PORTRAIT:CULT:KNIGHT`      | `portrait-caller-s-helmet`    | 38 x 38 px | `portrait`, `cult-lodge-icon` | 2 edits            |
-| `chibi-direction-portrait-cult-chosen`      | `PORTRAIT:CULT:SWORDSMAN`   | `portrait-chosen-s`           | 42 x 43 px | `portrait`, `cult-lodge-icon` | 1 edit             |
-| `chibi-direction-portrait-cult-thing`       | `PORTRAIT:CULT:JUGGERNAUT`  | `portrait-thing-a`            | 42 x 40 px | `creature`, `cult-green`      | 1 creation         |
-| `chibi-direction-portrait-cult-horror`      | `PORTRAIT:CULT:HORROR`      | `portrait-horror-a-horns`     | 39 x 36 px | `creature`, `cult-green`      | 1 creation, 1 edit |
-| `chibi-direction-portrait-cult-herald`      | `PORTRAIT:CULT:HERALD`      | `portrait-herald-a-yellow`    | 37 x 48 px | `portrait`, `cult-lodge-icon` | 1 creation, 1 edit |
-| `chibi-direction-portrait-cult-tentacle`    | `PORTRAIT:CULT:TENTACLE`    | `portrait-tentacle-b`         | 21 x 42 px | `creature`, `cult-green`      | 2 creations        |
-| `chibi-naval-cult-portrait-patrol-boat`     | `PORTRAIT:CULT:PATROL_BOAT` | `cult-portrait-patrol-boat-a` | 43 x 38 px | `portrait`, `cult-lodge-icon` | 1 edit             |
-| `chibi-naval-cult-portrait-battleship`      | `PORTRAIT:CULT:BATTLESHIP`  | `cult-portrait-battleship-a`  | 34 x 43 px | `portrait`, `cult-lodge-icon` | 1 edit             |
-| `chibi-naval-cult-portrait-submarine`       | `PORTRAIT:CULT:SUBMARINE`   | `cult-portrait-submarine-a`   | 41 x 35 px | `portrait`, `cult-lodge-icon` | 1 edit             |
+| Asset                                       | Subject                     | Accepted recipe               | Sprite     | Class, accent                 | Calls                                          |
+| ------------------------------------------- | --------------------------- | ----------------------------- | ---------- | ----------------------------- | ---------------------------------------------- |
+| `chibi-direction-portrait-cult-initiate`    | `PORTRAIT:CULT:FIGHTER`     | `portrait-initiate-b-eyes`    | 43 x 42 px | `portrait`, `cult-lodge-icon` | 1 creation, 1 edit                             |
+| `chibi-direction-portrait-cult-idol-bearer` | `PORTRAIT:CULT:GUARD`       | `portrait-idol-bearer-s`      | 34 x 42 px | `portrait`, `cult-lodge-icon` | 1 edit                                         |
+| `chibi-direction-portrait-cult-familiar`    | `PORTRAIT:CULT:RAIDER`      | `portrait-familiar-a`         | 48 x 44 px | `creature`, `cult-lodge-icon` | 1 creation                                     |
+| `chibi-direction-portrait-cult-hexer`       | `PORTRAIT:CULT:MARKSMAN`    | `portrait-hexer-s`            | 43 x 42 px | `portrait`, `cult-lodge-icon` | 1 edit                                         |
+| `chibi-direction-portrait-cult-summoner`    | `PORTRAIT:CULT:CAPTAIN`     | `portrait-summoner-s`         | 34 x 44 px | `portrait`, `cult-lodge-icon` | 1 edit                                         |
+| `chibi-direction-portrait-cult-stargazer`   | `PORTRAIT:CULT:CATAPULT`    | `portrait-stargazer-s`        | 45 x 42 px | `portrait`, `cult-lodge-icon` | 1 edit                                         |
+| `chibi-direction-portrait-cult-caller`      | `PORTRAIT:CULT:KNIGHT`      | `portrait-caller-s-helmet`    | 38 x 38 px | `portrait`, `cult-lodge-icon` | 2 edits                                        |
+| `chibi-direction-portrait-cult-chosen`      | `PORTRAIT:CULT:SWORDSMAN`   | `portrait-chosen-s`           | 42 x 43 px | `portrait`, `cult-lodge-icon` | 1 edit                                         |
+| `chibi-direction-portrait-cult-thing`       | `PORTRAIT:CULT:JUGGERNAUT`  | `portrait-thing-a`            | 42 x 40 px | `creature`, `cult-green`      | 1 creation                                     |
+| `chibi-direction-portrait-cult-horror`      | `PORTRAIT:CULT:HORROR`      | `portrait-horror-a-horns`     | 39 x 36 px | `creature`, `cult-green`      | 1 creation, 1 edit                             |
+| `chibi-direction-portrait-cult-herald`      | `PORTRAIT:CULT:HERALD`      | `portrait-herald-a-yellow`    | 37 x 48 px | `portrait`, `cult-lodge-icon` | 1 creation, 1 edit                             |
+| `chibi-direction-portrait-cult-tentacle`    | `PORTRAIT:CULT:TENTACLE`    | `portrait-tentacle-b`         | 21 x 42 px | `creature`, `cult-green`      | 2 creations                                    |
+| `chibi-direction-portrait-cult-frog`        | `PORTRAIT:CULT:FROG`        | `portrait-frog-a-mouth`       | 33 x 40 px | `creature`, `cult-green`      | 2 creations, 1 edit (bead `pulp_wars-mch9.26`) |
+| `chibi-naval-cult-portrait-patrol-boat`     | `PORTRAIT:CULT:PATROL_BOAT` | `cult-portrait-patrol-boat-a` | 43 x 38 px | `portrait`, `cult-lodge-icon` | 1 edit                                         |
+| `chibi-naval-cult-portrait-battleship`      | `PORTRAIT:CULT:BATTLESHIP`  | `cult-portrait-battleship-a`  | 34 x 43 px | `portrait`, `cult-lodge-icon` | 1 edit                                         |
+| `chibi-naval-cult-portrait-submarine`       | `PORTRAIT:CULT:SUBMARINE`   | `cult-portrait-submarine-a`   | 41 x 35 px | `portrait`, `cult-lodge-icon` | 1 edit                                         |
 
 ### The icons
 
@@ -1279,6 +1332,8 @@ document's and differ from a look written in the spec or the proposal.
 11. **The Tentacle sprite has no hole**; the hole and the ripple are code.
 12. **The gondola is indigo, not black:** the black hull is the Undead's.
 13. **The frog is teal**, in the summoned palette, on the Grave's canvas.
+    (Since bead `pulp_wars-mch9.26` a second, unit-sized frog on the
+    standard unit canvas is what a victim is drawn as.)
 14. **The Farm, the Windmill and the Mine stay shared**; seven buildings and
     the Monuments get a Cult look.
 15. **Walls are pale** (cream-grey weatherboard) under indigo roofs.

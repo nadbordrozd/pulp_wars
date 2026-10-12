@@ -1908,7 +1908,9 @@ separate [Ruleset 6](RULESET_6.md) route.
   - **Interface.** The browser has one button for each of the four
     commands (the unit and the tile are picked on the board; Pick Me! is
     cast by its button) and draws the frog, the taunt, and the Grab; a
-    frog's card shows its real Defense and Move (`pulp_wars-mch9.19`,
+    frog's card shows its real Defense and Move (`pulp_wars-mch9.19`; since
+    `pulp_wars-mch9.26` the unit is drawn as a frog, on the board and on its
+    card, with a small badge of what it was,
     [the Cultists, section 14.3](RULESET_7_CULTISTS.md#143-how-it-reads-on-the-board-without-text)).
     The text
     harness offers `.ribbit.uN`, `.switch.uN`, `.tentacle.x,y`, and
@@ -15299,8 +15301,8 @@ and tricks). In summary:
     against its Control, the eye mark on the unit a daemon would go for, a
     chalk ring round a raised idol, a tentacle from a gripping Thing, the
     circle of a ritual with its mark and countdown and what a star will
-    deal to each unit, a banner over a Cowed city, a small frog on a
-    frogged unit, a "ME!" bubble and tethers for Pick Me!, and a Tentacle's
+    deal to each unit, a banner over a Cowed city, a frogged unit
+    drawn as a frog with a small badge of what it was, a "ME!" bubble and tethers for Pick Me!, and a Tentacle's
     arm round the unit it holds.
   - **End Turn** with a daemon short of its Control asks once.
   - The unit glossary has one sentence for every ability and status. The

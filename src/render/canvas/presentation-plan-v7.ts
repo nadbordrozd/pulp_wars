@@ -185,6 +185,11 @@ export type CorePresentationStepV7 =
       readonly effect: CultFeedbackEffectV7;
       readonly cells: readonly CoordV7[];
       readonly from?: CoordV7;
+      /**
+       * RIBBIT only (bead `pulp_wars-mch9.26`): the hex ending, a frog
+       * turning back into what it was. The same puff, without the croak.
+       */
+      readonly undone?: true;
       readonly durationMs: number;
       /** Another player's cue: the camera frames it, like enemy moves. */
       readonly followCamera?: true;
@@ -2374,6 +2379,19 @@ export function corePresentationPlanV7(
       return unit === undefined || !isExplored(unit.at) ? [] : [unit.at];
     });
     if (woke.length > 0) pushCandy({ effect: "WAKE", cells: woke });
+  }
+  // The Cultists (bead pulp_wars-mch9.26): a frog's end has no event
+  // either. A unit that was a frog before the boundary, is none after it
+  // and still stands in sight turns back in the puff it became one in.
+  const frogsBefore = before.cult?.frogs ?? [];
+  if (frogsBefore.length > 0) {
+    const frogsAfter = after.cult?.frogs ?? [];
+    for (const unitId of frogsBefore) {
+      if (frogsAfter.includes(unitId)) continue;
+      const unit = after.units.find((candidate) => candidate.id === unitId);
+      if (unit !== undefined && unit.form === "LAND" && isExplored(unit.at))
+        pushCult({ effect: "RIBBIT", cells: [unit.at], undone: true });
+    }
   }
   return steps;
 }

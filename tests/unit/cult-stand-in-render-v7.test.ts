@@ -397,6 +397,8 @@ describe("Cult art subjects stand in with the shared art", () => {
       cultSummonedArtSubjectV7("HORROR", true),
       cultSummonedArtSubjectV7("HERALD", true),
       "FROG",
+      // Bead pulp_wars-mch9.26: the frog a Ribbit victim is drawn as.
+      "UNIT:CULT:FROG",
       // Bead pulp_wars-mch9.16: the lodge town, the seven buildings, the
       // seven Monuments and the obelisk.
       ...([1, 2, 3] as const).map((artLevel) =>
@@ -441,6 +443,9 @@ describe("Cult art subjects stand in with the shared art", () => {
       "UNIT:CULT:HERALD_UNBOUND",
       "UNIT:CULT:TENTACLE",
       "FROG",
+      // Bead pulp_wars-mch9.26: nor has the frog a victim is drawn as.
+      "UNIT:CULT:FROG",
+      "PORTRAIT:CULT:FROG",
     ] as const)
       expect(chibiFallbackSubjectV7(subject), subject).toBeNull();
     expect(assetGroupOfSubjectV7("UNIT:CULT:FIGHTER")).toBe("CULT");
@@ -453,11 +458,11 @@ describe("Cult art subjects stand in with the shared art", () => {
     const cultFiles = assetInventoryV7("LIVE").filter(
       (entry) => entry.group === "CULT",
     );
-    // The sprites, the terrain, and (bead pulp_wars-mch9.23) the 21
+    // The sprites, the terrain, and (bead pulp_wars-mch9.23) the 22
     // interface rasters whose subject names the faction: twelve unit
-    // portraits, three ship portraits, three technology icons and three HUD
-    // icons.
-    expect(cultFiles).toHaveLength(expected.length - 1 + 21 + terrainFiles);
+    // portraits and the frog's (bead pulp_wars-mch9.26), three ship
+    // portraits, three technology icons and three HUD icons.
+    expect(cultFiles).toHaveLength(expected.length - 1 + 22 + terrainFiles);
     expect(assetInventoryForFactionsV7("LIVE", ["CULT", "ORIGINAL"])).toEqual(
       expect.arrayContaining([...cultFiles]),
     );

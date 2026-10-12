@@ -5190,6 +5190,248 @@
         "reviewedAt": "2026-10-10T11:24:20.370Z"
       }
     },
+    "portrait-frog-a": {
+      "id": "portrait-frog-a",
+      "asset": "chibi-direction-portrait-cult-frog",
+      "jobId": "sync-5d5e08ca-92f4-45e5-a01f-1dd0edd80255",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "interface-cult",
+        "asset": "chibi-direction-portrait-cult-frog",
+        "subject": "PORTRAIT:CULT:FROG",
+        "faction": "CULT",
+        "recipeClass": "creature",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 93701,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-creature.txt + scripts/art/chibi/fragments/class-creature.negative.txt",
+            "text": "Class: one chunky cute creature map piece, a single living thing with big simple rounded rubbery shapes, big round eyes and a clear silhouette that reads at a glance, thick single-colour black outline; the whole creature is visible, and its lowest part is the lowest thing in the image. It holds no weapon and no tool.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple creatures, crowd, robe, hood, cloak, cloth, armour, weapon, flames, fire, candle, horns, claws, fangs, blood, gore, horror, realistic"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/CULT.json",
+            "text": "Subject: one chunky cute fat frog shown whole, sitting upright and facing the viewer, looking slightly surprised: a big round plump rubbery deep-sea teal body, colour #1f8f95, with a wide pale cream belly and throat, two big round bulging pale yellow eyes with small black pupils on top of its head, a small round open mouth and two fat front feet; nothing under it and nothing else; silly, not scary; simple shapes and very few details."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The creature is drawn large and fills the whole square. It is teal, not green.",
+            "negative": "lily pad, leaf, water, pond, crown, tongue, fly, green frog, lime, purple, violet, pink, red, person"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one chunky cute creature map piece, a single living thing with big simple rounded rubbery shapes, big round eyes and a clear silhouette that reads at a glance, thick single-colour black outline; the whole creature is visible, and its lowest part is the lowest thing in the image. It holds no weapon and no tool. Subject: one chunky cute fat frog shown whole, sitting upright and facing the viewer, looking slightly surprised: a big round plump rubbery deep-sea teal body, colour #1f8f95, with a wide pale cream belly and throat, two big round bulging pale yellow eyes with small black pupils on top of its head, a small round open mouth and two fat front feet; nothing under it and nothing else; silly, not scary; simple shapes and very few details. The creature is drawn large and fills the whole square. It is teal, not green.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple creatures, crowd, robe, hood, cloak, cloth, armour, weapon, flames, fire, candle, horns, claws, fangs, blood, gore, horror, realistic, lily pad, leaf, water, pond, crown, tongue, fly, green frog, lime, purple, violet, pink, red, person",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one chunky cute creature map piece, a single living thing with big simple rounded rubbery shapes, big round eyes and a clear silhouette that reads at a glance, thick single-colour black outline; the whole creature is visible, and its lowest part is the lowest thing in the image. It holds no weapon and no tool. Subject: one chunky cute fat frog shown whole, sitting upright and facing the viewer, looking slightly surprised: a big round plump rubbery deep-sea teal body, colour #1f8f95, with a wide pale cream belly and throat, two big round bulging pale yellow eyes with small black pupils on top of its head, a small round open mouth and two fat front feet; nothing under it and nothing else; silly, not scary; simple shapes and very few details. The creature is drawn large and fills the whole square. It is teal, not green. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple creatures, crowd, robe, hood, cloak, cloth, armour, weapon, flames, fire, candle, horns, claws, fangs, blood, gore, horror, realistic, lily pad, leaf, water, pond, crown, tongue, fly, green frog, lime, purple, violet, pink, red, person."
+      },
+      "submittedAt": "2026-10-12T14:37:25.919Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-interface-cult/portrait-frog-a.png",
+      "rawSheetSha256": "6914e3b832c7354a2765d70ad87f91f6080b3050611c50f836da38937f9fe208",
+      "plateHints": [
+        {
+          "bandRows": 8,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9118,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-12T14:38:00.545Z",
+      "usageUsd": 0.007435730589760674,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": 0,
+        "notes": "A small upright teal frog with a cream belly and two yellow eyes, whole (33 x 40 px), matching the unit frog: the badge on the transport of a frog at sea. (First set aside as not needed; the badge at sea takes a portrait like every other badge.) Superseded by portrait-frog-a-mouth.",
+        "reviewedAt": "2026-10-12T14:52:29.516Z"
+      }
+    },
+    "portrait-frog-a-mouth": {
+      "id": "portrait-frog-a-mouth",
+      "asset": "chibi-direction-portrait-cult-frog",
+      "jobId": "798202bb-46b6-4ec6-b9fd-999b89f31348",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "interface-cult",
+        "asset": "chibi-direction-portrait-cult-frog",
+        "subject": "PORTRAIT:CULT:FROG",
+        "faction": "CULT",
+        "recipeClass": "creature",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 93703,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only one small thing: the small red line of the mouth becomes plain black, with no red, no pink and no orange left in it. Do not redraw anything else: keep the teal body, the cream belly, the two eyes, the arms, the feet, the shape, the black outline and the art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change only one small thing: the small red line of the mouth becomes plain black, with no red, no pink and no orange left in it. Do not redraw anything else: keep the teal body, the cream belly, the two eyes, the arms, the feet, the shape, the black outline and the art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change only one small thing: the small red line of the mouth becomes plain black, with no red, no pink and no orange left in it. Do not redraw anything else: keep the teal body, the cream belly, the two eyes, the arms, the feet, the shape, the black outline and the art style exactly the same, on a transparent background.",
+        "editInstruction": "Change only one small thing: the small red line of the mouth becomes plain black, with no red, no pink and no orange left in it. Do not redraw anything else: keep the teal body, the cream belly, the two eyes, the arms, the feet, the shape, the black outline and the art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "portrait-frog-a",
+          "candidate": 0,
+          "sha256": "6914e3b832c7354a2765d70ad87f91f6080b3050611c50f836da38937f9fe208"
+        }
+      },
+      "submittedAt": "2026-10-12T14:54:00.560Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-interface-cult/portrait-frog-a-mouth.png",
+      "rawSheetSha256": "fe3e221d9a612d47bb14a0eca67b45bf346a472265e468fe9e3e4d7d755ca8a6",
+      "plateHints": [
+        {
+          "bandRows": 8,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9118,
+          "suspect": false
+        },
+        {
+          "bandRows": 8,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9118,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-12T14:55:00.064Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "portrait-frog-a with a small black mouth and no red: the teal frog whole (33 x 40 px), for the badge on the transport of a frog at sea.",
+        "reviewedAt": "2026-10-12T14:55:20.396Z"
+      }
+    },
+    "portrait-frog-b": {
+      "id": "portrait-frog-b",
+      "asset": "chibi-direction-portrait-cult-frog",
+      "jobId": "sync-d22053d3-e31d-4b93-aed3-3f0182e64cc1",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "interface-cult",
+        "asset": "chibi-direction-portrait-cult-frog",
+        "subject": "PORTRAIT:CULT:FROG",
+        "faction": "CULT",
+        "recipeClass": "creature",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 93702,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "light",
+            "source": "scripts/art/chibi/fragments/light-south-west.txt",
+            "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-creature.txt + scripts/art/chibi/fragments/class-creature.negative.txt",
+            "text": "Class: one chunky cute creature map piece, a single living thing with big simple rounded rubbery shapes, big round eyes and a clear silhouette that reads at a glance, thick single-colour black outline; the whole creature is visible, and its lowest part is the lowest thing in the image. It holds no weapon and no tool.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple creatures, crowd, robe, hood, cloak, cloth, armour, weapon, flames, fire, candle, horns, claws, fangs, blood, gore, horror, realistic"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/CULT.json",
+            "text": "Subject: one chunky cute fat frog shown whole, sitting upright and facing the viewer, looking slightly surprised: a big round plump rubbery deep-sea teal body, colour #1f8f95, with a wide pale cream belly and throat, two big round bulging pale yellow eyes with small black pupils on top of its head, a small round open mouth and two fat front feet; nothing under it and nothing else; silly, not scary; simple shapes and very few details."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The creature is drawn large and fills the whole square. It is teal, not green.",
+            "negative": "lily pad, leaf, water, pond, crown, tongue, fly, green frog, lime, purple, violet, pink, red, person"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one chunky cute creature map piece, a single living thing with big simple rounded rubbery shapes, big round eyes and a clear silhouette that reads at a glance, thick single-colour black outline; the whole creature is visible, and its lowest part is the lowest thing in the image. It holds no weapon and no tool. Subject: one chunky cute fat frog shown whole, sitting upright and facing the viewer, looking slightly surprised: a big round plump rubbery deep-sea teal body, colour #1f8f95, with a wide pale cream belly and throat, two big round bulging pale yellow eyes with small black pupils on top of its head, a small round open mouth and two fat front feet; nothing under it and nothing else; silly, not scary; simple shapes and very few details. The creature is drawn large and fills the whole square. It is teal, not green.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple creatures, crowd, robe, hood, cloak, cloth, armour, weapon, flames, fire, candle, horns, claws, fangs, blood, gore, horror, realistic, lily pad, leaf, water, pond, crown, tongue, fly, green frog, lime, purple, violet, pink, red, person",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one chunky cute creature map piece, a single living thing with big simple rounded rubbery shapes, big round eyes and a clear silhouette that reads at a glance, thick single-colour black outline; the whole creature is visible, and its lowest part is the lowest thing in the image. It holds no weapon and no tool. Subject: one chunky cute fat frog shown whole, sitting upright and facing the viewer, looking slightly surprised: a big round plump rubbery deep-sea teal body, colour #1f8f95, with a wide pale cream belly and throat, two big round bulging pale yellow eyes with small black pupils on top of its head, a small round open mouth and two fat front feet; nothing under it and nothing else; silly, not scary; simple shapes and very few details. The creature is drawn large and fills the whole square. It is teal, not green. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple creatures, crowd, robe, hood, cloak, cloth, armour, weapon, flames, fire, candle, horns, claws, fangs, blood, gore, horror, realistic, lily pad, leaf, water, pond, crown, tongue, fly, green frog, lime, purple, violet, pink, red, person."
+      },
+      "submittedAt": "2026-10-12T14:38:00.554Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-interface-cult/portrait-frog-b.png",
+      "rawSheetSha256": "d4eef44e817a3d9a0760c6424cb8e017d666cf2bf80d7d6f9bd02aeaf7bd56fa",
+      "plateHints": [
+        {
+          "bandRows": 8,
+          "groundShare": 0.2463,
+          "footprintWidthShare": 0.8974,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-12T14:39:22.063Z",
+      "usageUsd": 0.008664173867967393,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "A pink belly and throat (pink is not in the summoned palette), and not needed: the card shows the map sprite.",
+        "reviewedAt": "2026-10-12T14:41:00.768Z"
+      }
+    },
     "portrait-herald-a": {
       "id": "portrait-herald-a",
       "asset": "chibi-direction-portrait-cult-herald",
@@ -9822,6 +10064,77 @@
       },
       "notes": "The Familiar whole, as the map sprite: a pet sitting upright with pointed ears, bat wings, a cream belly and muzzle and a brass collar with a bell. Pixen drew its fur azure; the cult-lodge-icon accent makes it the sprite's indigo (and its pink ears and nose with it). Its eyes have pupils, as the sprite's do. Reviewed at 1:1 and x6.",
       "acceptedAt": "2026-10-10T11:24:20.370Z"
+    },
+    "chibi-direction-portrait-cult-frog": {
+      "id": "chibi-direction-portrait-cult-frog",
+      "subject": "PORTRAIT:CULT:FROG",
+      "assetClass": "PORTRAIT",
+      "status": "ACCEPTED",
+      "recipe": "portrait-frog-a-mouth",
+      "candidate": 0,
+      "candidateSha256": "c8fe773577905c093bcd7c2f5c54e9ea8c0c57360eb7ee55f4d72c6bfbac6e6a",
+      "master": {
+        "path": "public/assets/chibi/portraits/chibi-direction-portrait-cult-frog.png",
+        "sha256": "c8fe773577905c093bcd7c2f5c54e9ea8c0c57360eb7ee55f4d72c6bfbac6e6a",
+        "pixelSha256": "838facc2b76e191817d37a60531196277df5e3d07912cd78b44a98214b12d41c",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is",
+        "accent": {
+          "preset": "cult-green",
+          "spec": {
+            "band": {
+              "hueFrom": 80,
+              "hueTo": 152,
+              "saturationMin": 0.5,
+              "valueMin": 0.45,
+              "hueCentre": 120
+            },
+            "hue": 148,
+            "hueSpread": 0.07,
+            "then": {
+              "band": {
+                "hueFrom": 262,
+                "hueTo": 345,
+                "saturationMin": 0.3,
+                "valueMin": 0.14,
+                "hueCentre": 300
+              },
+              "hue": 228,
+              "hueSpread": 0
+            }
+          },
+          "accentPixels": 0,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 8,
+        "groundShare": 0,
+        "footprintWidthShare": 0.9118,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "portrait-frog-a with a small black mouth and no red: the teal frog whole (33 x 40 px), for the badge on the transport of a frog at sea.",
+      "acceptedAt": "2026-10-12T14:55:20.396Z"
     },
     "chibi-direction-portrait-cult-herald": {
       "id": "chibi-direction-portrait-cult-herald",

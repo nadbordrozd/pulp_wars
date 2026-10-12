@@ -433,6 +433,17 @@ const BATCHES = [
     null,
   ],
   ["frog", "FROG", "RESOURCE", 40, 40, "creature", "cult-green", null],
+  // Bead pulp_wars-mch9.26: the frog a Ribbit victim is drawn as.
+  [
+    "frog-unit",
+    "UNIT:CULT:FROG",
+    "STANDARD_UNIT",
+    56,
+    80,
+    "creature",
+    "cult-green",
+    4,
+  ],
 ] as const;
 
 const SHIPS = [

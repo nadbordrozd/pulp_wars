@@ -31,7 +31,9 @@ import { ruleset7FixtureMountExpressionV7 } from "./browser-undead-fixture-v7";
  * capital, Proclaim aimed and done, each hex and trick aimed with its
  * focused target, the frog's card, the Grab, the taunt, an Unbound Herald
  * being bound, every mark on four grounds, and the cues held at their
- * midpoint. `evidence.json` records
+ * midpoint. Frogs (bead `pulp_wars-mch9.26`; scene `frogs`): seven hexed
+ * units drawn as frogs with their badges, for the Cult player and for
+ * their owner. `evidence.json` records
  * each capture's texts and whether anything overflows the viewport. It needs
  * the Vite dev server, because the fixtures are imported from
  * `tests/fixtures`.
@@ -152,6 +154,7 @@ try {
     if (wanted("tricks")) await tricks(connection, size);
     if (wanted("hexed")) await hexed(connection, size);
     if (wanted("herald")) await heraldBind(connection, size);
+    if (wanted("frogs")) await frogs(connection, size);
   }
   await viewport(connection, "desktop");
   if (wanted("grounds")) await grounds(connection);
@@ -674,6 +677,44 @@ async function hexed(connection: Connection, size: Size): Promise<void> {
   await capture(connection, `hexed-rival-tentacle-${size}.png`);
 }
 
+/**
+ * Frogs (bead `pulp_wars-mch9.26`): seven units of one player, each drawn
+ * as the frog with a badge of what it was, beside one that is no frog: for
+ * the Cult player, for their owner (with a frog's card and a plain unit's),
+ * and with Undead victims, at the default zoom and enlarged.
+ */
+async function frogs(connection: Connection, size: Size): Promise<void> {
+  const tiles = async (): Promise<Record<string, Coord>> =>
+    (await evaluate(connection, `${REVIEW}.frogAt`)) as Record<string, Coord>;
+  await mount(connection, "cultFrogsUiFixtureV7");
+  const at = await tiles();
+  await record(connection, `${size}FrogsRival`);
+  await capture(connection, `frogs-rival-${size}.png`);
+  await activate(connection, at.KNIGHT as Coord);
+  await record(connection, `${size}FrogsRivalCard`);
+  await capture(connection, `frogs-rival-card-${size}.png`);
+  await deselect(connection);
+  await zoomIn(connection);
+  await capture(connection, `frogs-rival-zoom-${size}.png`);
+
+  await mount(connection, "cultFrogsOwnerUiFixtureV7");
+  await capture(connection, `frogs-owner-${size}.png`);
+  await activate(connection, at.CATAPULT as Coord);
+  await record(connection, `${size}FrogsOwnerCard`);
+  await capture(connection, `frogs-owner-card-${size}.png`);
+  await activate(connection, at.plain as Coord);
+  await record(connection, `${size}FrogsOwnerPlainCard`);
+  await capture(connection, `frogs-owner-plain-card-${size}.png`);
+  await deselect(connection);
+  await zoomIn(connection);
+  await capture(connection, `frogs-owner-zoom-${size}.png`);
+
+  await mount(connection, "cultFrogsUndeadUiFixtureV7");
+  await capture(connection, `frogs-undead-${size}.png`);
+  await zoomIn(connection);
+  await capture(connection, `frogs-undead-zoom-${size}.png`);
+}
+
 /** An Unbound Herald being bound again: two of its three pips. */
 async function heraldBind(connection: Connection, size: Size): Promise<void> {
   await mount(connection, "cultHeraldBindUiFixtureV7");
@@ -722,7 +763,7 @@ async function trickMarks(connection: Connection): Promise<void> {
           draw.drawCultOverMarkV7(context, { kind: 'COUNTDOWN', ritual: 'GREAT_SUMMONING', turns: 1, damage: null }, x + 150 * zoom, y + 150 * zoom, zoom);
           draw.drawCultGroundMarkV7(context, { kind: 'RITUAL_MARK', ritual: 'STARFALL', preview: true }, x + 20 * zoom, y + 280 * zoom, zoom);
           draw.drawCultOverMarkV7(context, { kind: 'COWED' }, x + 170 * zoom, y + 320 * zoom, zoom);
-          draw.drawCultTrickUnitMarkersV7(context, { frog: true }, x + 20 * zoom, y + 390 * zoom, zoom);
+          draw.drawCultTrickUnitMarkersV7(context, { frog: { subject: 'UNIT:CULT:FROG', original: 'Knight', portraitSubject: 'PORTRAIT:KNIGHT', artSubject: 'UNIT:KNIGHT', afloat: true } }, x + 20 * zoom, y + 390 * zoom, zoom);
           draw.drawCultTrickUnitMarkersV7(context, { taunt: true }, x + 100 * zoom, y + 430 * zoom, zoom);
           draw.drawCultTrickUnitMarkersV7(context, { sinks: 2 }, x + 190 * zoom, y + 340 * zoom, zoom);
           draw.drawCultGrabV7(context, { x: x - 40 * zoom, y: y + 470 * zoom }, { x: x + 80 * zoom, y: y + 470 * zoom }, zoom);
@@ -1023,7 +1064,7 @@ async function mount(
       artSet: "CHIBI",
       global: "__CULT_REVIEW__",
       extras:
-        "at: fixtures.CULT_UI_V7, channelAt: fixtures.CULT_CHANNEL_UI_V7, ritualAt: fixtures.CULT_RITUAL_UI_V7, trickAt: fixtures.CULT_TRICK_UI_V7",
+        "at: fixtures.CULT_UI_V7, channelAt: fixtures.CULT_CHANNEL_UI_V7, ritualAt: fixtures.CULT_RITUAL_UI_V7, trickAt: fixtures.CULT_TRICK_UI_V7, frogAt: fixtures.CULT_FROGS_UI_V7",
     }),
     true,
   );

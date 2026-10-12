@@ -1184,7 +1184,7 @@ Bearer is one figure, and the gondola is indigo.
 | Anchor                     | A teal tentacle from the Thing wrapped round the gripped cultist                                                                         |
 | A ritual                   | A chalk ring under the leader, a candle at each chanter, the icon, a countdown ring; Star-fall's and the Herald's target tiles marked    |
 | Sacrifice, Seize, Offering | The help mark on legal victims (own) and the attack mark (enemy), labelled with the Favour; the city button shows "+3 Favour, −2 people" |
-| A frog                     | A small frog on the unit's base with a pip for the turn left                                                                             |
+| A frog                     | The unit is drawn as a frog, with a small round badge of what it was (bead `pulp_wars-mch9.26`)                                          |
 | Switcheroo                 | Ghosts of the two units in each other's places before the click                                                                          |
 | Grab                       | A tentacle curled round the grabbed unit                                                                                                 |
 | Cowed                      | Shutters closed on the city and a "KNEEL!" banner                                                                                        |
@@ -1334,11 +1334,19 @@ The decisions U3 took where this table left room:
   labelled "Bound" with a pale tether. A Chosen that shouted has a "ME!"
   bubble over it and a red tether from each unit it binds, for every
   viewer. The raised hand is the Chosen's own sprite.
-- **A frog** is the unit's own sprite with a small frog on the lower left
-  of its base (the art's `FROG`, teal so it reads on Grass) and one pip
-  for the turn it has left. Its card shows the frog's real numbers:
-  Defense 0.5, Move 1 and no Attack ("—"), with no modifier, beside the
-  chip "Frog". The chips of harm done to a unit (Frog, Grabbed, Taunted)
+- **A frog** is drawn as a frog (since bead `pulp_wars-mch9.26`; the first
+  interface drew the unit's own sprite with a small frog on its base): the
+  art's `UNIT:CULT:FROG`, one teal frog for every victim, on the unit's own
+  base, with its HP bar, ring and selection. A small round badge on the
+  lower left of the frog, rimmed in the owner's colour, shows what it was:
+  the unit's portrait (its sprite's head and shoulders where the look has
+  no portrait). The cursor reads "Frog (Human Knight)". Its card shows the
+  frog with the same badge, the name "Frog" with the unit's own name under
+  it, no tactical role, and the frog's real numbers: Defense 0.5, Move 1
+  and no Attack ("—"), with no modifier, beside the chip "Frog". A frog at
+  sea (it may embark) keeps its transport, whose badge shows the
+  frog's portrait, and its own card. When the frog ends, the unit turns back
+  in the puff it became one in, without the croak. The chips of harm done to a unit (Frog, Grabbed, Taunted)
   take the loss colour; a Hexer or Familiar that used its trick has the
   chip "Spent" and the reason "Spent: ready again next turn" on its
   button; a frogged cultist's tricks read "A frog can only hop".

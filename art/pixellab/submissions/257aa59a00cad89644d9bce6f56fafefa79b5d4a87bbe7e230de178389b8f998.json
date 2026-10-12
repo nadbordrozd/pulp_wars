@@ -1,0 +1,36 @@
+{
+  "id": "frog-unit-b-mouth",
+  "jobId": "d6854c6a-948c-463a-8c1a-e031cc6de446",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-cult",
+    "asset": "chibi-direction-cult-frog-unit",
+    "subject": "UNIT:CULT:FROG",
+    "faction": "CULT",
+    "recipeClass": "creature",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 91704,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only one small thing: the red tongue inside the small open mouth becomes plain black, so the mouth is a small black oval with no red, no pink and no orange left in it. Do not redraw anything else: keep the teal body, the cream belly and throat, the two big yellow eyes, the arms, the feet, the shape, the thick black outline and the art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only one small thing: the red tongue inside the small open mouth becomes plain black, so the mouth is a small black oval with no red, no pink and no orange left in it. Do not redraw anything else: keep the teal body, the cream belly and throat, the two big yellow eyes, the arms, the feet, the shape, the thick black outline and the art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only one small thing: the red tongue inside the small open mouth becomes plain black, so the mouth is a small black oval with no red, no pink and no orange left in it. Do not redraw anything else: keep the teal body, the cream belly and throat, the two big yellow eyes, the arms, the feet, the shape, the thick black outline and the art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only one small thing: the red tongue inside the small open mouth becomes plain black, so the mouth is a small black oval with no red, no pink and no orange left in it. Do not redraw anything else: keep the teal body, the cream belly and throat, the two big yellow eyes, the arms, the feet, the shape, the thick black outline and the art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "frog-unit-b",
+      "candidate": 0,
+      "sha256": "84a20d23a01f51c4c83382e88e151dc11bb719dbf073778493db89ed055f1838"
+    }
+  }
+}

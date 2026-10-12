@@ -35,6 +35,7 @@ import type {
   BoardRenderPlanEntryV7,
   MapCommandTargetV7,
 } from "./board-renderer-v7";
+import type { FrogLookV7 } from "../cult-ritual-presentation-v7";
 
 /**
  * The channel's part of the board plan (bead `pulp_wars-mch9.18`;
@@ -83,8 +84,12 @@ export interface CultUnitMarkersV7 {
    * rite's badge over it.
    */
   readonly ritual?: "STARFALL" | "GREAT_SUMMONING";
-  /** A frog (Ribbit): the small frog on the unit's base and its pip. */
-  readonly frog?: true;
+  /**
+   * A frog (Ribbit; bead `pulp_wars-mch9.26`): the unit is drawn as the
+   * frog and wears a small round badge of what it was (at sea its transport
+   * keeps its look and the badge shows the frog).
+   */
+  readonly frog?: FrogLookV7;
   /** A Chosen that shouted Pick Me!: its "ME!" bubble. */
   readonly taunt?: true;
   /** A Tentacle: the neutral turns it has left, as pips under it. */

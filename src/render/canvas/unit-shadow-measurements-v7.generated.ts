@@ -1005,6 +1005,17 @@ export const UNIT_SHADOW_MEASUREMENTS_V7: Readonly<
     baseLeft: 1,
     baseRight: 42,
   },
+  "UNIT:CULT:FROG": {
+    assetId: "chibi-direction-cult-frog-unit",
+    assetClass: "STANDARD_UNIT",
+    width: 56,
+    height: 80,
+    contactY: 76,
+    footLeft: 7,
+    footRight: 51,
+    baseLeft: 3,
+    baseRight: 52,
+  },
   "UNIT:MONSTER_GIANT_SPIDER": {
     assetId: "chibi-curiosity-giant-spider",
     assetClass: "GIANT_UNIT",

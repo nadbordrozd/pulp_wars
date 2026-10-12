@@ -6,6 +6,7 @@ import {
   projectEventsV7,
   queryPlayerCommandsV7,
   tentacleSlapTargetV7,
+  unitRoleRuleV7,
   viewForV7,
   type CommandV7,
   type CoordV7,
@@ -68,6 +69,8 @@ import {
   cultTrickTileLinesV7,
   cultTrickUnavailableTextV7,
   frogCardStatsV7,
+  frogLookV7,
+  frogNameV7,
   ritualMarkNameV7,
   tricksOfV7,
 } from "../../src/render/cult-ritual-presentation-v7";
@@ -76,7 +79,14 @@ import {
   statusGlossaryV7,
 } from "../../src/render/unit-glossary-v7";
 import { withCowedV7, withTentacleV7 } from "../fixtures/v7-cult";
+import { boardUnitNameV7 } from "../../src/render/canvas/board-host-v7";
+import { unitArtSubjectV7 } from "../../src/assets/chibi-art-v7";
+import { portraitSubjectV7 } from "../../src/assets/chibi-ui-art-v7";
 import {
+  CULT_FROGS_UI_V7,
+  CULT_FROG_ROLES_UI_V7,
+  cultFrogsOwnerUiFixtureV7,
+  cultFrogsUiFixtureV7,
   CULT_RITUAL_UI_V7,
   CULT_TRICK_UI_V7,
   cultChannelUiFixtureV7,
@@ -103,6 +113,15 @@ import { at } from "../fixtures/v7-revision20";
 
 const R = CULT_RITUAL_UI_V7;
 const T = CULT_TRICK_UI_V7;
+
+/** A frog that was a Human Knight, for the canvas tests. */
+const WAS_KNIGHT = {
+  subject: "UNIT:CULT:FROG",
+  original: "Knight",
+  portraitSubject: "PORTRAIT:KNIGHT",
+  artSubject: "UNIT:KNIGHT",
+  afloat: false,
+} as const;
 
 const idAt = (state: GameStateV7, where: CoordV7): UnitId =>
   unitAtV7(state, where).id;
@@ -377,6 +396,141 @@ describe("a ritual on the board, for every viewer", () => {
         (entry) => entry.cultMark?.kind === "COWED",
       ),
     ).toHaveLength(1);
+  });
+});
+
+describe("a frog's look (pulp_wars-mch9.26)", () => {
+  const F = CULT_FROGS_UI_V7;
+  const unitEntry = (view: PlayerViewV7, state: GameStateV7, where: CoordV7) =>
+    required(
+      planOf(view).entries.find(
+        (entry) => entry.key === `unit:${idAt(state, where)}`,
+      ),
+    );
+
+  it("plans every frog as the frog with a badge of what it was, for each faction and role", () => {
+    for (const victim of [
+      "ORIGINAL",
+      "UNDEAD",
+      "GOBLIN",
+      "DINOSAUR",
+      "MARTIAN",
+      "ICE_FOLK",
+      "DWARF",
+      "CANDY",
+    ] as const) {
+      const state = cultFrogsUiFixtureV7(victim);
+      const view = viewOf(state);
+      for (const role of CULT_FROG_ROLES_UI_V7) {
+        const unit = required(
+          view.units.find((entry) => entry.id === idAt(state, F[role])),
+        );
+        const entry = unitEntry(view, state, F[role]);
+        const own = unitRoleRuleV7(view, unit).label;
+        const where = `${victim} ${role}`;
+        expect(entry.artSubject, where).toBe("UNIT:CULT:FROG");
+        expect(entry.label, where).toBe(`Frog (${own})`);
+        expect(entry.cult?.frog, where).toEqual({
+          subject: "UNIT:CULT:FROG",
+          original: own,
+          portraitSubject: portraitSubjectV7(role, victim),
+          artSubject: unitArtSubjectV7({ role, form: "LAND", faction: victim }),
+          afloat: false,
+        });
+        // Its owner's colour and seat, its HP and its tile are its own.
+        const plainEntry = unitEntry(view, state, F.plain);
+        expect(entry.ownerColor, where).toBe(plainEntry.ownerColor);
+        expect(entry.ownerSeat, where).toBe(plainEntry.ownerSeat);
+        expect(entry.hp, where).toBe(unit.hp);
+        expect(entry.at, where).toEqual(F[role]);
+        expect(boardUnitNameV7(view, unit), where).toMatch(/^Frog \(.+\)$/);
+      }
+      // The unit beside them and the Hexer keep their own look.
+      for (const where of [F.plain, F.hexer]) {
+        const entry = unitEntry(view, state, where);
+        expect(entry.artSubject, victim).not.toBe("UNIT:CULT:FROG");
+        expect(entry.cult?.frog, victim).toBeUndefined();
+        expect(entry.label, victim).not.toMatch(/Frog/);
+      }
+    }
+  });
+
+  it("shows the owner the same frogs, and the unit's own look when the frog ends", () => {
+    const state = cultFrogsOwnerUiFixtureV7();
+    const view = viewOf(state);
+    expect(view.viewer.id).toBe(unitAtV7(state, F.KNIGHT).ownerId);
+    for (const role of CULT_FROG_ROLES_UI_V7)
+      expect(unitEntry(view, state, F[role]).artSubject, role).toBe(
+        "UNIT:CULT:FROG",
+      );
+    // The frogs end: every unit is planned as itself again.
+    const ended: GameStateV7 = {
+      ...state,
+      cult: { ...state.cult, frogs: [] },
+    };
+    const after = viewOf(ended);
+    for (const role of CULT_FROG_ROLES_UI_V7) {
+      const entry = unitEntry(after, ended, F[role]);
+      expect(entry.artSubject, role).toBe(
+        unitArtSubjectV7({ role, form: "LAND", faction: "ORIGINAL" }),
+      );
+      expect(entry.cult?.frog, role).toBeUndefined();
+      expect(entry.label, role).not.toMatch(/Frog/);
+    }
+    // Turning back plays the puff of the hex on each tile, without the
+    // croak; nothing plays while they stay frogs.
+    const envelope = projectEventsV7(state, ended, view.viewer.id, []);
+    const cues = corePresentationPlanV7(view, envelope, after).flatMap(
+      (step) => (step.kind === "CULT" ? [step] : []),
+    );
+    const sorted = (rows: readonly unknown[]) =>
+      rows.map((row) => JSON.stringify(row)).sort();
+    expect(
+      sorted(cues.map((step) => [step.effect, step.cells, step.undone])),
+    ).toEqual(
+      sorted(CULT_FROG_ROLES_UI_V7.map((role) => ["RIBBIT", [F[role]], true])),
+    );
+    for (const step of cues)
+      expect(
+        soundCuesForStepV7({
+          step,
+          before: view,
+          after,
+          envelope,
+          durationScale: 1,
+        }).map((cue) => cue.id),
+      ).toEqual(["special.puff"]);
+    expect(
+      corePresentationPlanV7(view, envelope, view).filter(
+        (step) => step.kind === "CULT",
+      ),
+    ).toEqual([]);
+  });
+
+  it("keeps the transport of a frog at sea and badges it with the frog", () => {
+    const state = cultFrogsUiFixtureV7();
+    const view = viewOf(state);
+    const knight = required(
+      view.units.find((entry) => entry.id === idAt(state, F.KNIGHT)),
+    );
+    const atSea = { ...knight, form: "EMBARKED" as const };
+    const afloat: PlayerViewV7 = {
+      ...view,
+      units: view.units.map((unit) => (unit.id === knight.id ? atSea : unit)),
+    };
+    expect(required(frogLookV7(afloat, atSea)).afloat).toBe(true);
+    const entry = unitEntry(afloat, state, F.KNIGHT);
+    expect(entry.artSubject).toBe(
+      unitArtSubjectV7({ ...atSea, faction: "ORIGINAL" }),
+    );
+    expect(entry.cult?.frog?.afloat).toBe(true);
+    expect(entry.label).not.toMatch(/^Frog/);
+    expect(boardUnitNameV7(afloat, atSea)).not.toMatch(/^Frog/);
+    expect(frogNameV7("Knight")).toBe("Frog (Knight)");
+    const plain = required(
+      view.units.find((unit) => unit.id === idAt(state, F.plain)),
+    );
+    expect(frogLookV7(view, plain)).toBeNull();
   });
 });
 
@@ -792,18 +946,46 @@ describe("the marks, drawn", () => {
     }
   });
 
-  it("draws the frog, the bubble, the badge and a Tentacle's turns", () => {
-    const frog = draw((context) =>
-      drawCultTrickUnitMarkersV7(context, { frog: true }, 100, 100, 1),
+  it("draws the badge of what a frog was, the bubble, the badge and a Tentacle's turns", () => {
+    // Bead pulp_wars-mch9.26. Without a picture: a plain figure (its head
+    // and shoulders); at sea a code frog (two legs and a body).
+    const plain = draw((context) =>
+      drawCultTrickUnitMarkersV7(context, { frog: WAS_KNIGHT }, 100, 100, 1),
     );
-    expect(frog.filter((entry) => entry === "ellipse").length).toBe(3);
-    expect(
-      draw((context) =>
-        drawCultTrickUnitMarkersV7(context, { frog: true }, 100, 100, 1, {
-          art: { frog: { assetId: "frog" } as unknown as CanvasImageSource },
-        }),
+    expect(plain.filter((entry) => entry === "ellipse").length).toBe(1);
+    expect(plain).toContain("clip");
+    const afloat = draw((context) =>
+      drawCultTrickUnitMarkersV7(
+        context,
+        { frog: { ...WAS_KNIGHT, afloat: true } },
+        100,
+        100,
+        1,
       ),
-    ).toContain("drawImage:frog");
+    );
+    expect(afloat.filter((entry) => entry === "ellipse").length).toBe(3);
+    for (const fit of ["portrait", "sprite"] as const)
+      expect(
+        draw((context) =>
+          drawCultTrickUnitMarkersV7(
+            context,
+            { frog: WAS_KNIGHT },
+            100,
+            100,
+            1,
+            {
+              art: {
+                frog: {
+                  image: { assetId: "was" } as unknown as CanvasImageSource,
+                  fit,
+                },
+              },
+              ownerColor: "#123456",
+            },
+          ),
+        ),
+        fit,
+      ).toContain("drawImage:was");
     expect(
       draw((context) =>
         drawCultTrickUnitMarkersV7(context, { taunt: true }, 100, 100, 1, {
@@ -832,7 +1014,7 @@ describe("the marks, drawn", () => {
     const context = recordingContext(log);
     drawCultTrickUnitMarkersV7(
       context,
-      { frog: true, taunt: true, sinks: 2, ritual: "STARFALL" },
+      { frog: WAS_KNIGHT, taunt: true, sinks: 2, ritual: "STARFALL" },
       100,
       100,
       1,
@@ -944,13 +1126,43 @@ describe("the board", () => {
     return log;
   }
 
-  it("draws a hexed board with the frog's raster and a Cowed city's code-drawn shutters", () => {
+  it("draws a hexed board with the frog's sprite, the badge of what it was and a Cowed city's code-drawn shutters", () => {
     const log = drawn(cultTricksRivalUiFixtureV7());
     expect(balanced(log)).toBe(true);
-    expect(
-      log.some((entry) => /^drawImage:.*frog/i.test(entry)),
-      "the frog marker",
-    ).toBe(true);
+    // Bead pulp_wars-mch9.26: the Knight is drawn as the frog; its badge
+    // is the Knight's own picture (its portrait where the board's look has
+    // one, else its sprite) clipped into a disc; the small frog marker of
+    // the first interface is gone.
+    const images = (entries: readonly string[]) =>
+      entries.filter((entry) => entry.startsWith("drawImage:"));
+    const knight = new Set(
+      (["UNIT:KNIGHT", "PORTRAIT:KNIGHT"] as const).map(
+        (subject) =>
+          `drawImage:${required(LIVE_DIRECTION_ART_REGISTRY_V7.variants(subject)[0]).id}`,
+      ),
+    );
+    const knights = (entries: readonly string[]) =>
+      images(entries).filter((entry) => knight.has(entry));
+    for (const hexedBoard of [log, drawn(cultTricksDoneUiFixtureV7())]) {
+      expect(images(hexedBoard)).toContain(
+        "drawImage:chibi-direction-cult-frog-unit",
+      );
+      // One picture of the Knight: in the badge, after a clip.
+      expect(knights(hexedBoard)).toHaveLength(1);
+      const badge = hexedBoard.lastIndexOf(required(knights(hexedBoard)[0]));
+      expect(hexedBoard.slice(0, badge).lastIndexOf("clip")).toBeGreaterThan(
+        hexedBoard.indexOf("drawImage:chibi-direction-cult-frog-unit"),
+      );
+      expect(images(hexedBoard)).not.toContain(
+        "drawImage:chibi-direction-cult-frog",
+      );
+    }
+    // Before the hex the Knight is itself, and no frog is drawn.
+    const before = drawn(cultTricksUiFixtureV7());
+    expect(knights(before)).toHaveLength(1);
+    expect(images(before)).not.toContain(
+      "drawImage:chibi-direction-cult-frog-unit",
+    );
     expect(log).toContain("fillText:ME!");
     const cowed = drawn(withCowedV7(cultTricksUiFixtureV7(), R.enemyCapital));
     expect(cowed).toContain("fillText:KNEEL!");

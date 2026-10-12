@@ -190,6 +190,19 @@
         "height": 40
       },
       "accent": "cult-green"
+    },
+    {
+      "id": "chibi-direction-cult-frog-unit",
+      "subject": "UNIT:CULT:FROG",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "creature",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false,
+      "accent": "cult-green",
+      "bottomMargin": 4
     }
   ],
   "recipes": [
@@ -947,6 +960,61 @@
       },
       "editInstruction": "Change only the small creature at the bottom right of the heap: its head with the two big white eyes and its mouth become one more fat teal tentacle coil with one small round pale yellow eye, colour #ffe27a, like the other tentacles of the heap, so the heap has no face. Keep the pile of teal tentacles, every yellow eye, the broken round wooden trapdoor in the middle, the striped party hat, the shape, the thick black outline and the art style the same, on a transparent background.",
       "notes": "thing-c is the mound of the direction (a heap of teal tentacles with yellow eyes all over, a broken wooden trapdoor in its middle, a party hat; 80 x 84 px), but a small creature with a face and two white eyes sits at its bottom right."
+    },
+    {
+      "id": "frog-unit-a",
+      "asset": "chibi-direction-cult-frog-unit",
+      "endpoint": "create-image-pixen",
+      "seed": 91701,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "The frog is drawn large: about 52 pixels wide and 50 pixels tall, wider than it is tall. It is teal, not green.",
+      "negativeAddendum": "lily pad, leaf, water, pond, crown, tongue, fly, green frog, lime, purple, violet, pink, red, person, clothes, hat, collar, wings, tail",
+      "notes": "The frog a Ribbit victim is drawn as (bead pulp_wars-mch9.26): a unit-sized frog with the creature class, the 40 x 40 marker's palette."
+    },
+    {
+      "id": "frog-unit-b",
+      "asset": "chibi-direction-cult-frog-unit",
+      "endpoint": "create-image-pixen",
+      "seed": 91702,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "The frog is drawn large: about 52 pixels wide and 50 pixels tall, wider than it is tall. It is teal, not green.",
+      "negativeAddendum": "lily pad, leaf, water, pond, crown, tongue, fly, green frog, lime, purple, violet, pink, red, person, clothes, hat, collar, wings, tail",
+      "notes": "The frog a Ribbit victim is drawn as (bead pulp_wars-mch9.26): a unit-sized frog with the creature class, the 40 x 40 marker's palette."
+    },
+    {
+      "id": "frog-unit-c",
+      "asset": "chibi-direction-cult-frog-unit",
+      "endpoint": "create-image-pixen",
+      "seed": 91703,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "The frog is drawn large and fills the width of the image: about 54 pixels wide and 54 pixels tall. It is teal, not green, and its eyes are wide with surprise.",
+      "negativeAddendum": "lily pad, leaf, water, pond, crown, tongue, fly, green frog, lime, purple, violet, pink, red, person, clothes, hat, collar, wings, tail",
+      "notes": "The frog a Ribbit victim is drawn as (bead pulp_wars-mch9.26): a unit-sized frog with the creature class, the 40 x 40 marker's palette."
+    },
+    {
+      "id": "frog-unit-b-mouth",
+      "asset": "chibi-direction-cult-frog-unit",
+      "endpoint": "edit-image-pixen",
+      "seed": 91704,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "frog-unit-b",
+        "candidate": 0
+      },
+      "editInstruction": "Change only one small thing: the red tongue inside the small open mouth becomes plain black, so the mouth is a small black oval with no red, no pink and no orange left in it. Do not redraw anything else: keep the teal body, the cream belly and throat, the two big yellow eyes, the arms, the feet, the shape, the thick black outline and the art style exactly the same, on a transparent background.",
+      "notes": "frog-unit-b is the frog wanted, but its tongue is red (7 px in the red band): red is the cue of an Unbound daemon and no other Cult piece carries it."
     }
   ]
 }

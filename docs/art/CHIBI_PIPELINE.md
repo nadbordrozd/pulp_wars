@@ -2053,3 +2053,28 @@ What worked, added to the prompt notes of the earlier batches:
 It still starts no browser.
 
 <!-- pulp_wars-mch9.23: end -->
+
+## The frog unit (bead `pulp_wars-mch9.26`)
+
+Two assets, both with the `creature` class and the `cult-green` accent:
+`chibi-direction-cult-frog-unit` in batch `direction-cult`
+(`UNIT:CULT:FROG`, `STANDARD_UNIT`, 56 x 80, `bottomMargin` 4), the frog a
+Ribbit victim is drawn as ([the frog's look](factions/CULT.md#the-frogs-look)),
+and `chibi-direction-portrait-cult-frog` in `interface-cult`
+(`PORTRAIT:CULT:FROG`, 48 x 48), the badge on the transport of a frog at
+sea. Seven PixelLab calls for two accepted pieces: three unit creations
+(seeds 91701 to 91703) and one edit (91704), two portrait creations (93701, 93702) and one edit (93703).
+
+- "Sitting upright" with a stated size ("about 52 pixels wide and 50
+  pixels tall") gave the upright chunky frog twice of three; `frog-unit-a`
+  came back a thin-outlined naturalistic frog on all fours and
+  `frog-unit-c` paler and greener than the summoned teal.
+- **"A small open mouth" draws a red tongue** whatever the negative text
+  says ("red, pink, tongue" were all in it): both accepted creations had 4
+  to 7 px in the red band, which is the cue of an Unbound daemon and is
+  kept off every other Cult piece by a test. One edit each ("the red
+  tongue becomes plain black") fixed it without redrawing the frog.
+- `portrait-frog-b` drew a pink belly and throat.
+
+The unit shadow measurements were regenerated
+(`npm run art:unit-shadows-measure`).

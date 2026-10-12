@@ -153,7 +153,18 @@ export const CHIBI_DIRECTION_CULT_ART_ASSETS_V7: readonly ChibiArtAssetV7[] = [
     url: chibiArtUrl("assets/chibi/units/chibi-direction-cult-tentacle.png"),
     fixedColours: true,
   },
-  // --- The frog of Ribbit: a marker like the Crumbs, on the Grave's canvas ---
+  // --- The frog a Ribbit victim is drawn as (bead pulp_wars-mch9.26) ---
+  {
+    id: "chibi-direction-cult-frog-unit",
+    subject: "UNIT:CULT:FROG",
+    assetClass: "STANDARD_UNIT",
+    width: 56,
+    height: 80,
+    url: chibiArtUrl("assets/chibi/units/chibi-direction-cult-frog-unit.png"),
+    fixedColours: true,
+  },
+  // --- The small frog: a marker like the Crumbs, on the Grave's canvas;
+  // since bead pulp_wars-mch9.26 the badge on a frog's transport at sea ---
   {
     id: "chibi-direction-cult-frog",
     subject: "FROG",

@@ -152,6 +152,18 @@
       "accent": "cult-green"
     },
     {
+      "id": "chibi-direction-portrait-cult-frog",
+      "subject": "PORTRAIT:CULT:FROG",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "creature",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "cult-green"
+    },
+    {
       "id": "chibi-direction-icon-cult-tech-warding-circles",
       "subject": "ICON:TECH:CULT:FORTIFICATION",
       "assetClass": "ICON",
@@ -1533,6 +1545,48 @@
       },
       "editInstruction": "Change only one thing: erase the blue cloth hood tip that sticks up behind the top of the brass helmet, leaving that area transparent, so the round brass diving helmet has nothing on top of it. Do not redraw anything else: keep the helmet with its green porthole and rivets, the cream conch shell, the blue robe shoulders, the thick black outline and the art style exactly the same, on a transparent background.",
       "notes": "portrait-caller-s is the Caller's helmet and conch, but the Initiate's hood tip still sits on top of the helmet: the map sprite's helmet replaces the hood."
+    },
+    {
+      "id": "portrait-frog-a",
+      "asset": "chibi-direction-portrait-cult-frog",
+      "endpoint": "create-image-pixen",
+      "seed": 93701,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The creature is drawn large and fills the whole square. It is teal, not green.",
+      "negativeAddendum": "lily pad, leaf, water, pond, crown, tongue, fly, green frog, lime, purple, violet, pink, red, person",
+      "notes": "The frog whole with the creature class (bead pulp_wars-mch9.26): the badge on the transport of a frog at sea."
+    },
+    {
+      "id": "portrait-frog-b",
+      "asset": "chibi-direction-portrait-cult-frog",
+      "endpoint": "create-image-pixen",
+      "seed": 93702,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The creature is drawn large and fills the whole square. It is teal, not green.",
+      "negativeAddendum": "lily pad, leaf, water, pond, crown, tongue, fly, green frog, lime, purple, violet, pink, red, person",
+      "notes": "The frog whole with the creature class (bead pulp_wars-mch9.26): the badge on the transport of a frog at sea."
+    },
+    {
+      "id": "portrait-frog-a-mouth",
+      "asset": "chibi-direction-portrait-cult-frog",
+      "endpoint": "edit-image-pixen",
+      "seed": 93703,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-frog-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only one small thing: the small red line of the mouth becomes plain black, with no red, no pink and no orange left in it. Do not redraw anything else: keep the teal body, the cream belly, the two eyes, the arms, the feet, the shape, the black outline and the art style exactly the same, on a transparent background.",
+      "notes": "portrait-frog-a is the frog wanted, but its mouth is red (4 px in the red band): red is the cue of an Unbound daemon."
     }
   ]
 }

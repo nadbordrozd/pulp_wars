@@ -43,6 +43,14 @@ import {
   type UnitId,
 } from "../engine/index";
 import {
+  CULT_FROG_UNIT_SUBJECT_V7,
+  unitArtSubjectV7,
+  type ArtSubjectV7,
+} from "../assets/chibi-art-v7";
+import { portraitSubjectV7 } from "../assets/chibi-ui-art-v7";
+import { unitDisplayNameV7 } from "./dinosaur-presentation-v7";
+import { presentedUnitFactionV7 } from "./neutral-presentation-v7";
+import {
   CHANNEL_ALREADY_ACTED_V7,
   CHANNEL_EMBARKED_V7,
   favourCostTextV7,
@@ -533,6 +541,58 @@ export function frogCardStatsV7(
         attack: "—",
       }
     : null;
+}
+
+// ------------------------------------------------------ A frog's look ---
+
+/** What a frog is called, whatever it was. */
+export const FROG_NAME_V7 = "Frog";
+
+/** "Frog (Knight)": a frog's name in one line (the cursor, the board). */
+export function frogNameV7(original: string): string {
+  return `${FROG_NAME_V7} (${original})`;
+}
+
+/**
+ * How a unit that is a frog is shown (bead `pulp_wars-mch9.26`): it is
+ * drawn as the frog, and a small round badge shows what it was.
+ */
+export interface FrogLookV7 {
+  /** The sprite it is drawn as: the frog, for every victim. */
+  readonly subject: typeof CULT_FROG_UNIT_SUBJECT_V7;
+  /** The name of what it was: "Knight". */
+  readonly original: string;
+  /** The portrait of what it was, for the badge. */
+  readonly portraitSubject: ArtSubjectV7;
+  /** The sprite of what it was: the badge without a portrait. */
+  readonly artSubject: ArtSubjectV7;
+  /**
+   * A frog at sea: its transport keeps its look (the boat is what is on the
+   * water, and the engine's frog rules are a land unit's) and the badge
+   * shows the frog instead.
+   */
+  readonly afloat: boolean;
+}
+
+/**
+ * The frog look of a visible unit, any owner's (the frogs are public), or
+ * null for a unit that is no frog.
+ */
+export function frogLookV7(
+  view: PlayerViewV7,
+  unit: PublicUnitV7,
+): FrogLookV7 | null {
+  if (!unitIsFrogV7(view, unit)) return null;
+  const faction = presentedUnitFactionV7(view, unit);
+  // A Gingerbread Man is its Giant's art (the board draws it small).
+  const role = unit.variant === "GINGERBREAD_MAN" ? "JUGGERNAUT" : unit.role;
+  return {
+    subject: CULT_FROG_UNIT_SUBJECT_V7,
+    original: unitDisplayNameV7(view, { ...unit, form: "LAND" }),
+    portraitSubject: portraitSubjectV7(role, faction),
+    artSubject: unitArtSubjectV7({ role, form: "LAND", faction }),
+    afloat: unit.form !== "LAND",
+  };
 }
 
 // ------------------------------------------------------------- Chips ---

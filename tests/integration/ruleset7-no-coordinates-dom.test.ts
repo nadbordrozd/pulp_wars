@@ -102,6 +102,8 @@ import {
   cultSummoningBlockedUiFixtureV7,
   cultSummoningUiFixtureV7,
   cultTricksDoneUiFixtureV7,
+  cultFrogsOwnerUiFixtureV7,
+  cultFrogsUiFixtureV7,
   cultTricksRivalUiFixtureV7,
   cultTricksUiFixtureV7,
 } from "../fixtures/v7-cult-ui";
@@ -345,6 +347,10 @@ const FIXTURES: readonly (readonly [
   ],
   ["Cult: hexed", cultTricksDoneUiFixtureV7, []],
   ["Cult: a hexed rival", cultTricksRivalUiFixtureV7, []],
+  // Bead pulp_wars-mch9.26: seven units drawn as frogs, each with its
+  // badge, name and card, for the Cult player and for their owner.
+  ["Cult: frogs", () => cultFrogsUiFixtureV7(), []],
+  ["Cult: the owner's frogs", cultFrogsOwnerUiFixtureV7, []],
   [
     "Cult: binding a Herald",
     cultHeraldBindUiFixtureV7,

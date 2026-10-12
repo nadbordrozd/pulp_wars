@@ -157,6 +157,18 @@ export const CHIBI_DIRECTION_CULT_INTERFACE_ART_ASSETS_V7: readonly ChibiArtAsse
       ),
       fixedColours: true,
     },
+    // The frog (bead pulp_wars-mch9.26): the badge of a frog at sea.
+    {
+      id: "chibi-direction-portrait-cult-frog",
+      subject: "PORTRAIT:CULT:FROG",
+      assetClass: "PORTRAIT",
+      width: 48,
+      height: 48,
+      url: chibiArtUrl(
+        "assets/chibi/portraits/chibi-direction-portrait-cult-frog.png",
+      ),
+      fixedColours: true,
+    },
     // --- Technology: Warding Circles, The Stars Are Right, Harvest Rites ---
     {
       id: "chibi-direction-icon-cult-tech-warding-circles",

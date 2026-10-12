@@ -240,10 +240,12 @@ import {
   drawCultSwapArrowsV7,
   drawCultTauntTetherV7,
   drawCultTrickUnitMarkersV7,
+  type CultTrickArtV7,
 } from "./cult-ritual-canvas-v7";
 import {
   COWED_BANNER_V7,
   PICK_ME_BUBBLE_V7,
+  frogNameV7,
 } from "../cult-ritual-presentation-v7";
 import {
   addFreezePickEntriesV7,
@@ -403,6 +405,8 @@ import {
   territoryTerrainSubjectV7,
   unitArtSubjectV7,
   isCultSummonedArtSubjectV7,
+  CULT_FROG_PORTRAIT_SUBJECT_V7,
+  CULT_FROG_UNIT_SUBJECT_V7,
   type TerritoryGroundV7,
 } from "../../assets/chibi-art-v7";
 import {
@@ -1712,6 +1716,9 @@ export function buildBoardRenderPlanV7(
     const gingerbreadMan =
       unit.variant === "GINGERBREAD_MAN" && unit.form === "LAND";
     const swallowed = swallowedBadgeOfV7(view, unit.id);
+    // Bead pulp_wars-mch9.26: a frog on land wears the frog's sprite.
+    const frogLook =
+      cult?.frog !== undefined && !cult.frog.afloat ? cult.frog : null;
     entries.push({
       key: `unit:${unit.id}`,
       kind: "UNIT",
@@ -1738,26 +1745,32 @@ export function buildBoardRenderPlanV7(
       artSubject:
         breed !== null
           ? neutralArtSubjectsV7(breed, unit.role).unit
-          : // A submerged Submarine asks for its low-riding sprite (bead
-            // pulp_wars-5ti.6); without one (the Classic look, a faction with
-            // no Submarine art) it falls back to the whole Submarine.
-            // The giants' signatures (`pulp_wars-w49.32`): a Gingerbread Man
-            // is its Giant's sprite, drawn small.
-            unitArtSubjectV7({
-              ...unit,
-              ...(gingerbreadMan ? { role: "JUGGERNAUT" as const } : {}),
-              faction,
-              machine,
-              submerged: naval?.submerged === true,
-            }),
+          : // Bead pulp_wars-mch9.26: a frog is drawn as the frog, whatever
+            // it was (its badge shows that); at sea its transport is kept.
+            frogLook !== null
+            ? frogLook.subject
+            : // A submerged Submarine asks for its low-riding sprite (bead
+              // pulp_wars-5ti.6); without one (the Classic look, a faction with
+              // no Submarine art) it falls back to the whole Submarine.
+              // The giants' signatures (`pulp_wars-w49.32`): a Gingerbread Man
+              // is its Giant's sprite, drawn small.
+              unitArtSubjectV7({
+                ...unit,
+                ...(gingerbreadMan ? { role: "JUGGERNAUT" as const } : {}),
+                faction,
+                machine,
+                submerged: naval?.submerged === true,
+              }),
       label:
         breed !== null
           ? neutralUnitLabelV7(breed)
-          : unit.form === "EMBARKED" && machine
-            ? `${factionLabel ?? heavyOrRoleTitle} afloat`
-            : unit.form === "EMBARKED"
-              ? `Embarked Transport · ${factionLabel ?? heavyOrRoleTitle} passenger`
-              : (factionLabel ?? heavyOrRoleTitle),
+          : frogLook !== null
+            ? frogNameV7(frogLook.original)
+            : unit.form === "EMBARKED" && machine
+              ? `${factionLabel ?? heavyOrRoleTitle} afloat`
+              : unit.form === "EMBARKED"
+                ? `Embarked Transport · ${factionLabel ?? heavyOrRoleTitle} passenger`
+                : (factionLabel ?? heavyOrRoleTitle),
       ready:
         unit.ownerId === view.viewer.id &&
         !unit.activation.handled &&
@@ -3981,7 +3994,9 @@ export function drawBoardV7(input: {
           chibi !== null &&
           chibi.kind !== "MISSING" &&
           entry.artSubject !== undefined &&
-          isCultSummonedArtSubjectV7(entry.artSubject)
+          (isCultSummonedArtSubjectV7(entry.artSubject) ||
+            // Nor has a frog (bead pulp_wars-mch9.26): no badge, no letter.
+            entry.artSubject === CULT_FROG_UNIT_SUBJECT_V7)
         )
           factionArt = true;
         const chibiReady = chibi?.kind === "READY" ? chibi : null;
@@ -5239,12 +5254,22 @@ export function drawBoardV7(input: {
     input.plan.entries,
     input.highContrast ?? false,
     sceneAlpha,
-    (subject) => {
-      const resolved = chibiArt.resolve({
+    (subject, owned) => {
+      const request = {
         subject,
         at: { x: 0, y: 0 },
         deviceScale: chibiMasterScale(camera) * devicePixelRatio,
-      });
+      };
+      // A unit's portrait or sprite (the badge of what a frog was, bead
+      // pulp_wars-mch9.26) is resolved as the board resolves a piece: in
+      // its owner's colour, with its look's fallback.
+      const resolved =
+        owned === undefined
+          ? chibiArt.resolve(request)
+          : resolveChibiWithFallbackV7(chibiArt, {
+              ...request,
+              ownerColor: owned.ownerColor,
+            }).resolution;
       return resolved.kind === "READY" ? resolved.image : null;
     },
   );
@@ -5862,7 +5887,13 @@ function drawCultChannelV7(
   entries: readonly BoardRenderPlanEntryV7[],
   highContrast: boolean,
   sceneAlpha: number,
-  raster: ((subject: ArtSubjectV7) => CanvasImageSource | null) | null,
+  raster:
+    | ((
+        subject: ArtSubjectV7,
+        /** Given for a unit's own art: its owner's colour. */
+        owned?: { readonly ownerColor: string | undefined },
+      ) => CanvasImageSource | null)
+    | null,
 ): void {
   const centre = (at: CoordV7): { readonly x: number; readonly y: number } => ({
     x: camera.offsetX + at.x * TILE_WIDTH * camera.zoom,
@@ -5926,22 +5957,34 @@ function drawCultChannelV7(
           furious: entry.cult.furious === true ? icon("FURIOUS") : null,
         },
       });
-      // Bead pulp_wars-mch9.19: the rite's badge, the frog, the "ME!"
-      // bubble and a Tentacle's turns.
+      // Bead pulp_wars-mch9.19: the rite's badge, the "ME!" bubble and a
+      // Tentacle's turns; bead pulp_wars-mch9.26: the badge of what a frog
+      // was (its portrait, else its sprite; at sea the frog's portrait).
       if (
         entry.cult.ritual !== undefined ||
-        entry.cult.frog === true ||
+        entry.cult.frog !== undefined ||
         entry.cult.taunt === true ||
         entry.cult.sinks !== undefined
-      )
+      ) {
+        const frog = entry.cult.frog;
+        const frogPicture = (): NonNullable<CultTrickArtV7["frog"]> | null => {
+          if (frog === undefined || raster === null) return null;
+          if (frog.afloat) {
+            const whole = raster(CULT_FROG_PORTRAIT_SUBJECT_V7);
+            return whole === null ? null : { image: whole, fit: "portrait" };
+          }
+          const owned = { ownerColor: entry.ownerColor };
+          const portrait = raster(frog.portraitSubject, owned);
+          if (portrait !== null) return { image: portrait, fit: "portrait" };
+          const sprite = raster(frog.artSubject, owned);
+          return sprite === null ? null : { image: sprite, fit: "sprite" };
+        };
         drawCultTrickUnitMarkersV7(context, entry.cult, x, y, camera.zoom, {
           highContrast,
           bubble: PICK_ME_BUBBLE_V7,
+          ownerColor: entry.ownerColor,
           art: {
-            frog:
-              entry.cult.frog === true && raster !== null
-                ? raster("FROG")
-                : null,
+            frog: frogPicture(),
             starfall:
               entry.cult.ritual === "STARFALL" && raster !== null
                 ? raster("ICON:ACTION:STARFALL")
@@ -5952,6 +5995,7 @@ function drawCultChannelV7(
                 : null,
           },
         });
+      }
     }
   // The countdown of each ritual and the banner of each Cowed city.
   for (const entry of entries)

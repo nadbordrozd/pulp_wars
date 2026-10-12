@@ -541,7 +541,8 @@ and what is always drawn), `src/render/canvas/cult-ritual-canvas-v7.ts`
 - **Icons.** The buttons draw `ICON:ACTION:STARFALL`, `GREAT_SUMMONING`,
   `PROCLAIM`, `RIBBIT`, `SWITCHEROO`, `TENTACLE` and `PICK_ME`, the chips
   `ICON:STATUS:CANDLELIT`, `FROG`, `GRABBED` and `PICK_ME`, the board the
-  `FROG` marker and the two rites' icons on their leaders (the Cowed
+  frog's sprite `UNIT:CULT:FROG` (and `PORTRAIT:CULT:FROG` on the badge of a frog at sea,
+  bead `pulp_wars-mch9.26`) and the two rites' icons on their leaders (the Cowed
   banner's shutters are drawn in code at every size, bead
   `pulp_wars-mch9.24`: the raster did not read at the banner's 13 to 20 px), and the cues their `EFFECT:*` sprites
   ([the Cult's art](../art/factions/CULT.md)). In the classic look, and
@@ -549,16 +550,16 @@ and what is always drawn), `src/render/canvas/cult-ritual-canvas-v7.ts`
 
 **Always on the board, for every player** (none of it is a target):
 
-| What            | Drawn as                                                                                                                                                                                                                             |
-| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| A ritual        | A chalk ring on the ground under the leader (double) and under each chanter, a candle over each, and the rite's badge on the leader (a star, or the lodge's eye)                                                                     |
-| Its marked tile | A chalk sign on the ground (an eight-pointed star, or the eye, in a circle) and, at the tile's upper right, the countdown: a dark dial with its ring and the turns left (always 1)                                                   |
-| A star's path   | Its nine tiles outlined on a warning tint, and each unit there labelled with what it takes as the board stands ("−7", red when it dies; the warning stripes on the viewer's own units)                                               |
-| The Herald's    | The unit on the mark labelled with the Favour it is consumed for, or "Blocks" in grey                                                                                                                                                |
-| Cowed           | An indigo banner over the city: two closed cream shutters with louvre slits, drawn in code, and "KNEEL!"; the city's panel adds "Status: Cowed"                                                                                      |
-| A frog          | A small frog on the lower left of the unit's base with one pip for the turn left; its card shows Defense 0.5, Move 1 and no Attack                                                                                                   |
-| Pick Me!        | A "ME!" bubble over the Chosen and a red dashed tether from each unit it binds                                                                                                                                                       |
-| A Tentacle      | Three pips under it, lit for the neutral turns it has left, a teal arm that coils once round the unit it holds, and the daemons' eye on the unit it slaps next as the board stands (the weakest beside it; bead `pulp_wars-mch9.24`) |
+| What            | Drawn as                                                                                                                                                                                                                                     |
+| --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| A ritual        | A chalk ring on the ground under the leader (double) and under each chanter, a candle over each, and the rite's badge on the leader (a star, or the lodge's eye)                                                                             |
+| Its marked tile | A chalk sign on the ground (an eight-pointed star, or the eye, in a circle) and, at the tile's upper right, the countdown: a dark dial with its ring and the turns left (always 1)                                                           |
+| A star's path   | Its nine tiles outlined on a warning tint, and each unit there labelled with what it takes as the board stands ("−7", red when it dies; the warning stripes on the viewer's own units)                                                       |
+| The Herald's    | The unit on the mark labelled with the Favour it is consumed for, or "Blocks" in grey                                                                                                                                                        |
+| Cowed           | An indigo banner over the city: two closed cream shutters with louvre slits, drawn in code, and "KNEEL!"; the city's panel adds "Status: Cowed"                                                                                              |
+| A frog          | The unit is drawn as a frog on its own base, with a small round badge of what it was on the frog's lower left (bead `pulp_wars-mch9.26`); its card shows the frog, the badge, "Frog" over the unit's name, Defense 0.5, Move 1 and no Attack |
+| Pick Me!        | A "ME!" bubble over the Chosen and a red dashed tether from each unit it binds                                                                                                                                                               |
+| A Tentacle      | Three pips under it, lit for the neutral turns it has left, a teal arm that coils once round the unit it holds, and the daemons' eye on the unit it slaps next as the board stands (the weakest beside it; bead `pulp_wars-mch9.24`)         |
 
 The cursor reads each in one sentence: the mark ("Star-fall lands here at
 the start of Player 2's next turn: 7 damage to every unit on the nine

@@ -373,9 +373,13 @@ export type CandyArtRoleV7 = UndeadArtRoleV7;
  * `UNIT:CULT:<SUMMONED ROLE>`, which `cultSummonedArtSubjectV7` names; the
  * Horror and the Herald have a second, Unbound look
  * (`UNIT:CULT:HORROR_UNBOUND`, `UNIT:CULT:HERALD_UNBOUND`: red eyes, the
- * collar cracked). They have no Human counterpart and no fallback. `FROG` is
- * the marker drawn over a unit turned into a frog by Ribbit, a tile marker
- * like `CRUMBS`.
+ * collar cracked). They have no Human counterpart and no fallback.
+ * `UNIT:CULT:FROG` is the sprite a unit turned into a frog by Ribbit is
+ * drawn as, whatever it was (bead `pulp_wars-mch9.26`, `CULT_FROG_UNIT_SUBJECT_V7`);
+ * it has no fallback either (the board draws a code frog without it).
+ * `PORTRAIT:CULT:FROG` is the badge on the transport of a frog at sea.
+ * `FROG` is the small frog of the first interface (bead `pulp_wars-mch9.19`),
+ * a tile marker like `CRUMBS`; nothing draws it since bead `pulp_wars-mch9.26`.
  *
  * `ICON:HUD:CULT:FAVOUR` is the Favour candle of the HUD, the leaderboard
  * and the Offering's chip (bead `pulp_wars-mch9.17`; docs/art/factions/
@@ -389,8 +393,22 @@ export type CultArtSubjectV7 =
   | `PORTRAIT:CULT:${CultArtRoleV7}`
   | `CITY:CULT:${1 | 2 | 3}`
   | CultSummonedArtSubjectV7
+  | typeof CULT_FROG_UNIT_SUBJECT_V7
+  | typeof CULT_FROG_PORTRAIT_SUBJECT_V7
   | "FROG"
   | "ICON:HUD:CULT:FAVOUR";
+
+/**
+ * The sprite of a unit that is a frog (Ribbit, bead `pulp_wars-mch9.26`):
+ * one frog for every victim of every faction, in the summoned palette.
+ */
+export const CULT_FROG_UNIT_SUBJECT_V7 = "UNIT:CULT:FROG";
+
+/**
+ * The frog whole at portrait size (bead `pulp_wars-mch9.26`): the badge on
+ * the transport of a frog at sea, whose sprite stays the boat.
+ */
+export const CULT_FROG_PORTRAIT_SUBJECT_V7 = "PORTRAIT:CULT:FROG";
 
 /** The sprites of the Cult's summoned units, bound and Unbound. */
 export type CultSummonedArtSubjectV7 =
@@ -1040,7 +1058,7 @@ export function factionStandInLetterV7(
 const CULT_SUMMONED_SUBJECT_PATTERN_V7 =
   /^UNIT:CULT:(HORROR|HERALD|TENTACLE)(_UNBOUND)?$/;
 const CULT_SUMMONED_PORTRAIT_PATTERN_V7 =
-  /^PORTRAIT:CULT:(HORROR|HERALD|TENTACLE)$/;
+  /^PORTRAIT:CULT:(HORROR|HERALD|TENTACLE|FROG)$/;
 
 /**
  * The Dwarf revision (bead pulp_wars-78i.6): the subject of a mound, the
@@ -1102,6 +1120,8 @@ export function chibiFallbackSubjectV7(
   // The Cult's summoned units (bead pulp_wars-mch9.15) are no unit roles:
   // no Human sprite stands in for a Horror, a Herald or a Tentacle.
   if (CULT_SUMMONED_SUBJECT_PATTERN_V7.test(subject)) return null;
+  // Nor for a frog (bead pulp_wars-mch9.26): the board draws a code frog.
+  if (subject === CULT_FROG_UNIT_SUBJECT_V7) return null;
   // The ninth unit (`pulp_wars-w49.17`, 7r55): STAND-IN. A new unit listed
   // in `NINTH_UNIT_STAND_INS_V7` is drawn as the nearest unit of its own
   // faction until its art bead registers its subjects (the board and the

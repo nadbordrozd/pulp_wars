@@ -1,4 +1,4 @@
-import type { CoordV7, GameStateV7 } from "../../src/engine/index";
+import type { CoordV7, FactionIdV7, GameStateV7 } from "../../src/engine/index";
 import { checkedV7 } from "./v7-builders";
 import {
   cultFieldV7,
@@ -570,4 +570,68 @@ export function cultHeraldBindUiFixtureV7(): GameStateV7 {
     at(5, 4),
     [at(3, 3), at(7, 3)],
   );
+}
+
+/** The frogs of the frog scenes: where each victim stands, by role. */
+export const CULT_FROGS_UI_V7 = {
+  hexer: at(5, 3),
+  FIGHTER: at(3, 4),
+  MARKSMAN: at(4, 4),
+  GUARD: at(5, 4),
+  RAIDER: at(6, 4),
+  KNIGHT: at(4, 5),
+  CAPTAIN: at(6, 5),
+  CATAPULT: at(3, 6),
+  /** A victim that is no frog, beside the frogs. */
+  plain: at(6, 6),
+} as const satisfies Readonly<Record<string, CoordV7>>;
+
+/** The roles that are frogs in the frog scenes, in reading order. */
+export const CULT_FROG_ROLES_UI_V7 = [
+  "FIGHTER",
+  "MARKSMAN",
+  "GUARD",
+  "RAIDER",
+  "KNIGHT",
+  "CAPTAIN",
+  "CATAPULT",
+] as const;
+
+/**
+ * Seven frogs (bead `pulp_wars-mch9.26`): a Cult Hexer among seven units of
+ * `victim`, each a frog, and one more Fighter that is none. Seat 0 is the
+ * Cult unless `asVictim`, which seats the victim first (the owner's view).
+ */
+export function cultFrogsUiFixtureV7(
+  victim: Exclude<FactionIdV7, "CULT"> = "ORIGINAL",
+  asVictim = false,
+): GameStateV7 {
+  const A = CULT_FROGS_UI_V7;
+  const cult = asVictim ? 1 : 0;
+  const other = asVictim ? 0 : 1;
+  return withFrogsV7(
+    fieldV7(
+      [
+        { seat: cult, role: "MARKSMAN", at: A.hexer },
+        ...CULT_FROG_ROLES_UI_V7.map((role) => ({
+          seat: other,
+          role,
+          at: A[role],
+        })),
+        { seat: other, role: "FIGHTER", at: A.plain },
+      ],
+      { factions: asVictim ? [victim, "CULT"] : ["CULT", victim] },
+    ),
+    CULT_FROG_ROLES_UI_V7.map((role) => A[role]),
+  );
+}
+
+/** The same frogs as their Human owner sees them. */
+export function cultFrogsOwnerUiFixtureV7(): GameStateV7 {
+  return cultFrogsUiFixtureV7("ORIGINAL", true);
+}
+
+/** The same scene with Undead victims, for the Cult player. */
+export function cultFrogsUndeadUiFixtureV7(): GameStateV7 {
+  return cultFrogsUiFixtureV7("UNDEAD");
 }

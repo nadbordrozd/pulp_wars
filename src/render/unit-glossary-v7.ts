@@ -274,7 +274,7 @@ const ENTRIES = {
   ],
   STATUS_FROG: [
     "Frog",
-    "It can only hop one tile and cannot attack, strike back or capture, and it is easy to hurt. A healer cures it.",
+    "A frog for now, with a badge of what it was: it hops one tile, cannot attack, strike back or capture, and is easy to hurt. A healer cures it.",
   ],
   STATUS_GRABBED: [
     "Grabbed",

@@ -55,6 +55,8 @@ const PORTRAITS = [
   ["horror", "HORROR", "creature", "cult-green"],
   ["herald", "HERALD", "portrait", "cult-lodge-icon"],
   ["tentacle", "TENTACLE", "creature", "cult-green"],
+  // Bead pulp_wars-mch9.26: the badge on the transport of a frog at sea.
+  ["frog", "FROG", "creature", "cult-green"],
 ] as const;
 
 /** CULT.md, "Icons": asset name and subject, in the manifest's order. */

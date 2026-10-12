@@ -93,6 +93,27 @@ const cultButtons = (): readonly (string | undefined)[] =>
     (button) => button.dataset.cultAbility,
   );
 
+/** A frog's card: the frog, a badge of what it was and its name. */
+function expectFrogCard(original: string): void {
+  const identity = requiredElement<HTMLElement>(
+    ".v7-selection-dock .v7-identity",
+  );
+  expect(identity.querySelector("h2")?.textContent).toBe("Frog");
+  expect(
+    identity.querySelector<HTMLElement>("[data-frog-was]")?.textContent,
+  ).toBe(original);
+  const art = requiredElement<HTMLElement>(
+    ".v7-selection-dock .v7-identity-art",
+  );
+  expect(
+    art.querySelector<HTMLElement>(":scope > img")?.dataset.chibiSubject,
+  ).toBe("UNIT:CULT:FROG");
+  expect(
+    art.querySelector<HTMLElement>(".v7-frog-was-badge img")?.dataset
+      .chibiSubject,
+  ).toBe("PORTRAIT:KNIGHT");
+}
+
 const chips = (): readonly (readonly [string | undefined, string | null])[] =>
   [...dock().querySelectorAll<HTMLElement>(".v7-cult-chip")].map((chip) => [
     chip.dataset.unitStatus,
@@ -645,10 +666,12 @@ describe("Ribbit and the frog", () => {
     await waitUntil(() => controller.accepted.length === 1);
     expect(controller.accepted[0]).toMatchObject({ kind: "RIBBIT" });
     expect(live()).toContain("Ribbit! The Knight is a frog");
-    await waitUntil(() => unitMarks(scene, T.knight)?.frog === true);
+    await waitUntil(() => unitMarks(scene, T.knight)?.frog !== undefined);
 
-    // The frog's card: its real numbers, and the chip.
+    // The frog's card: the frog with a badge and a line for what it was
+    // (bead pulp_wars-mch9.26), its real numbers, and the chip.
     select(scene, T.knight);
+    expectFrogCard("Knight");
     expect(chips()).toContainEqual(["frog", "Frog"]);
     expect(stat("defense")).toBe("0.5");
     expect(stat("move")).toBe("1");
@@ -822,7 +845,24 @@ describe("The hexes on the board and on the card, for their victim", () => {
   it("draws the frog, the Grab, the taunt and the Tentacle's turns", () => {
     const scene = rig(cultTricksRivalUiFixtureV7());
     // The eye: the Tentacle beside it slaps it next (pulp_wars-mch9.24).
-    expect(unitMarks(scene, T.knight)).toEqual({ frog: true, eye: true });
+    expect(unitMarks(scene, T.knight)).toEqual({
+      frog: {
+        subject: "UNIT:CULT:FROG",
+        original: "Knight",
+        portraitSubject: "PORTRAIT:KNIGHT",
+        artSubject: "UNIT:KNIGHT",
+        afloat: false,
+      },
+      eye: true,
+    });
+    // The board draws the frog, not the Knight, and names both.
+    const knightEntry = required(
+      entries(scene, "unit:").find(
+        (entry) => entry.at.x === T.knight.x && entry.at.y === T.knight.y,
+      ),
+    );
+    expect(knightEntry.artSubject).toBe("UNIT:CULT:FROG");
+    expect(knightEntry.label).toBe("Frog (Knight)");
     expect(unitMarks(scene, T.chosen)).toEqual({ taunt: true });
     expect(unitMarks(scene, T.tentacle)).toEqual({ sinks: 2 });
     expect(
@@ -833,8 +873,16 @@ describe("The hexes on the board and on the card, for their victim", () => {
       ]),
     ).toEqual([[T.tentacle, T.knight, { kind: "GRAB" }]]);
     expect(entries(scene, "cult-taunt:")).toHaveLength(2);
-    // The viewer's own frog: its real numbers and every chip.
+    // The viewer's own frog: the frog's card, its real numbers and every
+    // chip. Its Fighter beside it keeps its own card.
+    select(scene, T.fighter);
+    expect(dock().querySelector(".v7-identity h2")?.textContent).toBe(
+      "Fighter",
+    );
+    expect(dock().querySelector(".v7-frog-was-badge")).toBeNull();
+    expect(dock().querySelector("[data-frog-was]")).toBeNull();
     select(scene, T.knight);
+    expectFrogCard("Knight");
     expect(chips()).toEqual([
       ["frog", "Frog"],
       ["grabbed", "Grabbed"],

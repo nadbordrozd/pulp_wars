@@ -383,6 +383,8 @@ export function soundCuesForStepV7(
         case "PROCLAIM":
           return [{ id: "cult.proclaim", delayMs: 0 }];
         case "RIBBIT":
+          // A frog turning back (bead pulp_wars-mch9.26): the puff alone.
+          if (step.undone === true) return [{ id: "special.puff", delayMs: 0 }];
           // The croak as the frog jumps out of the puff.
           return [{ id: "cult.ribbit", delayMs: step.durationMs * 0.35 }];
         case "SWITCHEROO":

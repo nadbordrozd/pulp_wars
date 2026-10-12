@@ -1,6 +1,7 @@
 import {
   previewRitualV7,
   unitFactionV7,
+  unitIsFrogV7,
   unitRoleRuleV7,
   type CoordV7,
   type PlayerEventEnvelopeV7,
@@ -36,7 +37,10 @@ import {
   type CultFeedbackV7,
 } from "./cult-effects-v7";
 import { favourEntriesV7 } from "../cult-presentation-v7";
-import { cultTrickTileLinesV7 } from "../cult-ritual-presentation-v7";
+import {
+  cultTrickTileLinesV7,
+  frogNameV7,
+} from "../cult-ritual-presentation-v7";
 import {
   MARTIAN_EFFECT_SUBJECTS_V7,
   drawMartianFeedbackV7,
@@ -3931,6 +3935,18 @@ function unitName(
 
 /** The name the board's cursor reads for a visible unit. */
 export function boardUnitNameV7(
+  view: PlayerViewV7,
+  unit: PlayerViewV7["units"][number],
+): string {
+  // Bead pulp_wars-mch9.26: a frog (on land) by what it is drawn as, with
+  // what it was: "Frog (Human Knight)".
+  const own = ownBoardUnitNameV7(view, unit);
+  return unit.form === "LAND" && unitIsFrogV7(view, unit)
+    ? frogNameV7(own)
+    : own;
+}
+/** The name of a visible unit's own kind (a frog's: what it was). */
+function ownBoardUnitNameV7(
   view: PlayerViewV7,
   unit: PlayerViewV7["units"][number],
 ): string {
