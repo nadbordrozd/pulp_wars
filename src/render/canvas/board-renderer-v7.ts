@@ -511,7 +511,7 @@ import {
 } from "./missing-art-v7";
 import { drawLegacyRiftV7, riftPieceV7 } from "./rift-presentation-v7";
 import { factionColourV7 } from "./faction-colours-v7";
-import { drawDirtRoadV7 } from "./dirt-road-v7";
+import { DOCK_LINK_V7, drawDirtRoadV7, type DockLinkV7 } from "./dirt-road-v7";
 import {
   DIRECTED_BASE_HP_BAR_TOP_V7,
   drawDirectedFlagV7,
@@ -1071,6 +1071,15 @@ export interface BoardRenderPlanEntryV7 {
   readonly artSubject?: ArtSubjectV7;
   readonly roadNeighbors?: readonly CoordV7[];
   readonly roadJoins?: readonly (readonly [CoordV7, CoordV7])[];
+  /**
+   * Bead pulp_wars-2yc.47: the links between a land cell of the Road
+   * network (a city center or a Road) and a Port or Shipyard beside it that
+   * cross this cell: on the land cell's and the dock's ROAD entry, and on
+   * the ROAD_JOIN entry of a cell whose corner a diagonal one passes. The
+   * dirt of such a link stays on the land cell; a wooden gangway goes on
+   * from the shore to the dock.
+   */
+  readonly roadDockLinks?: readonly DockLinkV7[];
   /** A pair Farm is cropped into one source half per authoritative cell. */
   readonly sourceCrop?: {
     readonly x: number;
@@ -1320,8 +1329,11 @@ export function buildBoardRenderPlanV7(
   );
   for (const cityKey of cityKeys) roadKeys.add(cityKey);
   // Bead pulp_wars-5ti.12: a Port or Shipyard joins the Road network as if
-  // a Road lay on it, so a Road is drawn onto it from every city center or
-  // Road tile beside it. Two docks side by side get no track over the water.
+  // a Road lay on it, so it is linked to every city center or Road tile
+  // beside it. Bead pulp_wars-2yc.47: that link is a dock link
+  // (`roadDockLinks`), dirt on the land and a wooden gangway over the
+  // water, and never a Road on the dock's cell. Two docks side by side get
+  // no link.
   const portKeys = new Set(
     view.board.tiles
       .filter(
@@ -1440,37 +1452,53 @@ export function buildBoardRenderPlanV7(
       ...(glazed.has(coordKey(tile.at)) ? { glazed: true as const } : {}),
     });
     const joins: (readonly [CoordV7, CoordV7])[] = [];
+    const joinDocks: DockLinkV7[] = [];
     for (const dx of [-1, 1])
       for (const dy of [-1, 1]) {
         const horizontal = { x: tile.at.x + dx, y: tile.at.y };
         const vertical = { x: tile.at.x, y: tile.at.y + dy };
         if (
-          roadKeys.has(coordKey(horizontal)) &&
-          roadKeys.has(coordKey(vertical)) &&
-          !(
-            portKeys.has(coordKey(horizontal)) &&
-            portKeys.has(coordKey(vertical))
-          )
+          !roadKeys.has(coordKey(horizontal)) ||
+          !roadKeys.has(coordKey(vertical))
         )
-          joins.push([horizontal, vertical]);
+          continue;
+        const horizontalDock = portKeys.has(coordKey(horizontal));
+        const verticalDock = portKeys.has(coordKey(vertical));
+        if (horizontalDock && verticalDock) continue;
+        if (horizontalDock)
+          joinDocks.push({ land: vertical, dock: horizontal });
+        else if (verticalDock)
+          joinDocks.push({ land: horizontal, dock: vertical });
+        else joins.push([horizontal, vertical]);
       }
-    if (joins.length > 0)
+    if (joins.length > 0 || joinDocks.length > 0)
       entries.push({
         key: `road-join:${tile.at.x},${tile.at.y}`,
         kind: "ROAD_JOIN",
         layer: tile.improvement === "MINE" ? 0.4 : 1.9,
         at: tile.at,
         roadJoins: joins,
+        ...(joinDocks.length > 0 ? { roadDockLinks: joinDocks } : {}),
       });
     const portNode = portKeys.has(coordKey(tile.at));
     const cityNode = cityKeys.has(coordKey(tile.at)) || portNode;
-    const neighbors =
-      tile.road || cityNode
-        ? roadNeighbors(tile.at, roadKeys).filter(
-            (near) => !portNode || !portKeys.has(coordKey(near)),
-          )
-        : [];
-    if (tile.road || (cityNode && neighbors.length > 0))
+    const linked =
+      tile.road || cityNode ? roadNeighbors(tile.at, roadKeys) : [];
+    // A dock has no Road on its cell: only dock links to the land beside it.
+    const neighbors = portNode
+      ? []
+      : linked.filter((near) => !portKeys.has(coordKey(near)));
+    const dockLinks: DockLinkV7[] = portNode
+      ? linked
+          .filter((near) => !portKeys.has(coordKey(near)))
+          .map((near) => ({ land: near, dock: tile.at }))
+      : linked
+          .filter((near) => portKeys.has(coordKey(near)))
+          .map((near) => ({ land: tile.at, dock: near }));
+    if (
+      (tile.road && !portNode) ||
+      (cityNode && neighbors.length + dockLinks.length > 0)
+    )
       entries.push({
         key: `road:${tile.at.x},${tile.at.y}`,
         kind: "ROAD",
@@ -1478,6 +1506,7 @@ export function buildBoardRenderPlanV7(
         layer: tile.improvement === "MINE" ? 0.5 : 2,
         at: tile.at,
         roadNeighbors: neighbors,
+        ...(dockLinks.length > 0 ? { roadDockLinks: dockLinks } : {}),
       });
     if (tile.resource !== null && tile.resource !== "UNKNOWN_RESOURCE")
       entries.push({
@@ -3652,7 +3681,11 @@ export function drawBoardV7(input: {
               joins: entry.roadJoins ?? [],
               isolated:
                 entry.kind === "ROAD" &&
-                (entry.roadNeighbors?.length ?? 0) === 0,
+                (entry.roadNeighbors?.length ?? 0) === 0 &&
+                (entry.roadDockLinks?.length ?? 0) === 0,
+              ...(entry.roadDockLinks === undefined
+                ? {}
+                : { docks: entry.roadDockLinks }),
             },
             x,
             y,
@@ -3670,6 +3703,7 @@ export function drawBoardV7(input: {
             CHIBI_ROAD_STROKES_V7.slice(
               ...(pass === "ROAD_CASING" ? [0, 1] : [1]),
             ),
+            pass === "ROAD",
           );
         continue;
       }
@@ -8240,8 +8274,26 @@ function drawRoad(
   y: number,
   zoom: number,
   strokes: readonly (readonly [string, number])[],
+  gangways: boolean,
 ): void {
   const half = (TILE_WIDTH * zoom) / 2;
+  const docks = entry.roadDockLinks ?? [];
+  // Bead pulp_wars-2yc.47: where along a dock link (0 at the land cell's
+  // center, 1 at the dock's) the stroke stops short of the shore, the
+  // wooden line starts, and the wooden line stops short of the dock.
+  const dockPoint = (
+    dock: DockLinkV7,
+    share: number,
+  ): readonly [number, number] => [
+    x +
+      (dock.land.x - entry.at.x + (dock.dock.x - dock.land.x) * share) *
+        half *
+        2,
+    y +
+      (dock.land.y - entry.at.y + (dock.dock.y - dock.land.y) * share) *
+        half *
+        2,
+  ];
   context.save();
   context.beginPath();
   context.rect(x - half, y - half, half * 2, half * 2);
@@ -8269,12 +8321,39 @@ function drawRoad(
         y + (to.y - entry.at.y) * half * 2,
       );
     }
+    // A dock link's stroke stays on its land cell, short of the shore.
+    for (const dock of docks) {
+      if (dock.land.x !== entry.at.x || dock.land.y !== entry.at.y) continue;
+      context.moveTo(x, y);
+      context.lineTo(...dockPoint(dock, 0.34));
+    }
     // An isolated Road remains visible as a short dirt patch.
-    if (entry.kind === "ROAD" && (entry.roadNeighbors?.length ?? 0) === 0) {
+    if (
+      entry.kind === "ROAD" &&
+      (entry.roadNeighbors?.length ?? 0) === 0 &&
+      docks.length === 0
+    ) {
       context.moveTo(x - 4 * zoom, y);
       context.lineTo(x + 4 * zoom, y);
     }
     context.stroke();
+  }
+  // The gangway from the shore to the dock: a thin wooden line.
+  if (gangways && docks.length > 0) {
+    context.lineCap = "butt";
+    for (const [color, width] of [
+      [DOCK_LINK_V7.edge, 7],
+      [DOCK_LINK_V7.plank, 4],
+    ] as const) {
+      context.strokeStyle = color;
+      context.lineWidth = width * zoom;
+      context.beginPath();
+      for (const dock of docks) {
+        context.moveTo(...dockPoint(dock, 0.4));
+        context.lineTo(...dockPoint(dock, 0.84));
+      }
+      context.stroke();
+    }
   }
   context.restore();
 }

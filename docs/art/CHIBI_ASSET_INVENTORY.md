@@ -519,6 +519,29 @@ sprite and one portrait, and the Stegosaurus's Egg is the shared one.
    is drawn before any dirt, so junctions and corner joins read as one
    track. A Road is linked only to explored Road cells, as before, so at
    the fog it ends in a rough round end at its cell's centre.
+   **Dock links** (bead `pulp_wars-2yc.47`; the user, 2026-10-12: a Road
+   drawn from a city onto its Port "appears to go over water. let's find a
+   more subtle cue that the things are connected"). A Port or Shipyard has
+   no Road on its cell. The link between it and a city centre or Road tile
+   beside it, orthogonal or diagonal, is drawn by the same module
+   (`DOCK_LINK_V7`): the dirt lies on the land cell only and ends in a
+   round cap 8 art pixels short of the shore (11 on a diagonal, so the cap
+   stays off the corner cells), and from 10 (14) pixels short of the shore
+   a plank gangway follows the link's own curve over the sand and the
+   water (or the sea ice) to 4 pixels from the dock cell's centre, under
+   the dock's sprite. The gangway is 5 pixels of planks in two tones of
+   weathered wood with a dark gap every third pixel, a one-pixel dark rail
+   on each side and a pair of posts every 9 pixels, lit on their
+   south-west face; a soft shadow lies one and two pixels to its
+   north-east. It is one palette for every faction's dock. The wood is
+   kept in the cell's dirt sprite and the shadow in its underlay sprite,
+   so a dock link costs no extra draws. The BOLD and classic looks stop
+   their strokes at a third of the way and draw the gangway as a brown
+   line with a dark casing. Three cues were tried on the port-link review
+   boards: the plank gangway, a rope between single posts, and a row of
+   stepping posts. The rope disappears at the default zoom and the posts
+   read as loose dots; the gangway is the only one that still says
+   "joined" at 80 px a cell without reading as a Road.
    Field Defense is a palisade badge (four pale birch stakes on a light
    steel crossbar, thick outline) in the cell's top-left corner above the
    HP bar strip (`CHIBI_OVERLAY_FRAME_V7.fieldDefense`); a city's

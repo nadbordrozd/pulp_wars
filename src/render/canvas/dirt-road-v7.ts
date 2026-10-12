@@ -62,6 +62,52 @@ export const DIRT_ROAD_V7 = {
   wobble: 4,
 } as const;
 
+/**
+ * The wooden link from a shore to a dock (bead pulp_wars-2yc.47). The user,
+ * 2026-10-12: a Road drawn from a city onto its Port "looks weird though
+ * because the road appears to go over water. let's find a more subtle cue
+ * that the things are connected."
+ *
+ * The dirt of a link between a land cell (a city centre or a Road) and a
+ * dock (a Port or a Shipyard) is painted only on the land cell, and ends in
+ * a round cap short of the shore. From there a narrow plank gangway on
+ * posts follows the same curve over the beach and the water and stops
+ * short of the dock cell's centre, under the dock's sprite.
+ */
+export const DOCK_LINK_V7 = {
+  /** The gangway's side rails, plank gaps and post shadows. */
+  edge: "#4d2f1c",
+  /** The dark line between two planks. */
+  gap: "#7a5231",
+  /** The planks, in two tones of weathered wood. */
+  plank: "#b98a55",
+  plankLight: "#d4a973",
+  /** The posts the gangway stands on, and their lit south-west face. */
+  post: "#5e3b23",
+  postLit: "#93653c",
+  /**
+   * The gangway's shadow on the water, the sand or the ice, to its
+   * north-east (the light comes from the south-west).
+   */
+  shadow: "rgba(16, 44, 62, 0.3)",
+  /** The planks' half-width, in art pixels; a rail of one pixel beside. */
+  halfWidth: 2.5,
+  /** A plank and its gap are this many art pixels along the gangway. */
+  plankPitch: 3,
+  /** A pair of posts stands every this many art pixels. */
+  postPitch: 9,
+  /**
+   * The dirt's round cap is centred this far short of the shore, so the
+   * whole cap and its edge line lie on the land cell: [orthogonal,
+   * diagonal] links, in art pixels.
+   */
+  dirtShort: [8, 11],
+  /** The gangway starts this far short of the shore, on the land. */
+  lead: [10, 14],
+  /** The gangway stops this far from the dock cell's centre. */
+  dockShort: 4,
+} as const;
+
 /** Art pixels along one side of a cell: the ground tiles' own size. */
 export const DIRT_ROAD_GRID_V7 = CHIBI_TILE_CSS_PX;
 /** World units in one art pixel. */
@@ -78,6 +124,14 @@ export const DIRT_ROAD_PIXEL_V7 = {
   DIRT_LIGHT: 6,
   RUT: 7,
   PEBBLE: 8,
+  /** The gangway of a dock link (`DOCK_LINK_V7`): its shadow, then wood. */
+  WOOD_SHADOW: 9,
+  WOOD_EDGE: 10,
+  WOOD_GAP: 11,
+  PLANK: 12,
+  PLANK_LIGHT: 13,
+  POST: 14,
+  POST_LIT: 15,
 } as const;
 
 const PIXEL_COLOURS: readonly string[] = [
@@ -90,6 +144,13 @@ const PIXEL_COLOURS: readonly string[] = [
   DIRT_ROAD_V7.fillLight,
   DIRT_ROAD_V7.rut,
   DIRT_ROAD_V7.pebble,
+  DOCK_LINK_V7.shadow,
+  DOCK_LINK_V7.edge,
+  DOCK_LINK_V7.gap,
+  DOCK_LINK_V7.plank,
+  DOCK_LINK_V7.plankLight,
+  DOCK_LINK_V7.post,
+  DOCK_LINK_V7.postLit,
 ];
 
 /**
@@ -163,6 +224,15 @@ export function dirtRoadPointV7(
   };
 }
 
+/**
+ * A link between a land cell of the Road network (a city centre or a Road)
+ * and a dock beside it (a Port or a Shipyard), orthogonal or diagonal.
+ */
+export interface DockLinkV7 {
+  readonly land: CoordV7;
+  readonly dock: CoordV7;
+}
+
 /** What one Road or corner-join entry asks to draw. */
 export interface DirtRoadCellV7 {
   readonly at: CoordV7;
@@ -172,6 +242,12 @@ export interface DirtRoadCellV7 {
   readonly joins: readonly (readonly [CoordV7, CoordV7])[];
   /** A Road with no linked neighbour: a short patch of dirt. */
   readonly isolated: boolean;
+  /**
+   * Dock links that cross `at`: those of the land cell `at`, those of the
+   * dock `at`, and diagonal ones passing a corner of `at`. Only the land
+   * cell paints the link's dirt; every cell paints its part of the gangway.
+   */
+  readonly docks?: readonly DockLinkV7[];
 }
 
 /** A uniform number in [0, 1) for a place in the world's pixel grid. */
@@ -229,6 +305,13 @@ interface Trace {
   /** The unit normal the bend is measured along. */
   readonly nx: number;
   readonly ny: number;
+  /**
+   * The part of the link that is dirt, as `t` from and to: the whole link,
+   * or from the land cell's centre to the cap short of the shore for a dock
+   * link.
+   */
+  readonly t0: number;
+  readonly t1: number;
 }
 
 /** Ruts lie this far to each side of the centreline, in art pixels. */
@@ -248,7 +331,7 @@ const CRUMB_REACH = 3.2;
 export const DIRT_ROAD_REACH_V7 =
   DIRT_ROAD_V7.halfWidth + DIRT_ROAD_V7.roughness + EDGE + CRUMB_REACH;
 
-function traceOf(link: DirtRoadLinkV7, at: CoordV7): Trace {
+function traceOf(link: DirtRoadLinkV7, at: CoordV7, t0 = 0, t1 = 1): Trace {
   const half = DIRT_ROAD_GRID_V7 / 2;
   const normal = normalOf(link);
   const cx = (link.to.x - link.from.x) * DIRT_ROAD_GRID_V7;
@@ -262,7 +345,85 @@ function traceOf(link: DirtRoadLinkV7, at: CoordV7): Trace {
     length: Math.sqrt(cx * cx + cy * cy),
     nx: normal.x,
     ny: normal.y,
+    t0,
+    t1,
   };
+}
+
+/** A dock link in the art pixels of one cell. */
+interface DockTrace {
+  readonly trace: Trace;
+  /** Whether the land cell is the link's `from` end. */
+  readonly landFirst: boolean;
+  /** Where the gangway starts and stops, in art pixels from the land centre. */
+  readonly start: number;
+  readonly end: number;
+}
+
+function dockTraceOf(dock: DockLinkV7, at: CoordV7): DockTrace {
+  const link = dirtRoadLinkV7(dock.land, dock.dock);
+  const landFirst = link.from.x === dock.land.x && link.from.y === dock.land.y;
+  const diagonal =
+    dock.land.x !== dock.dock.x && dock.land.y !== dock.dock.y ? 1 : 0;
+  const length = DIRT_ROAD_GRID_V7 * (diagonal === 1 ? Math.SQRT2 : 1);
+  const share = (length / 2 - DOCK_LINK_V7.dirtShort[diagonal]) / length;
+  return {
+    trace: landFirst
+      ? traceOf(link, at, 0, share)
+      : traceOf(link, at, 1 - share, 1),
+    landFirst,
+    start: length / 2 - DOCK_LINK_V7.lead[diagonal],
+    end: length - DOCK_LINK_V7.dockShort,
+  };
+}
+
+/**
+ * What the gangway of a dock link shows at a place (`px`, `py` in the art
+ * pixels of the trace's cell): a wood value of `DIRT_ROAD_PIXEL_V7`, or
+ * `CLEAR` off the gangway. A function of the link and the place alone, so
+ * the cells a gangway crosses paint one gangway.
+ */
+function gangwayAt(dock: DockTrace, px: number, py: number): number {
+  const P = DIRT_ROAD_PIXEL_V7;
+  const { trace } = dock;
+  const rx = px - trace.ax;
+  const ry = py - trace.ay;
+  const t = (rx * trace.cx + ry * trace.cy) / (trace.length * trace.length);
+  if (t <= 0 || t >= 1) return P.CLEAR;
+  const along = (dock.landFirst ? t : 1 - t) * trace.length - dock.start;
+  const span = dock.end - dock.start;
+  if (along < 0 || along > span) return P.CLEAR;
+  const side =
+    rx * trace.nx + ry * trace.ny - dirtRoadBendV7(trace.link, t) / UNIT;
+  const off = Math.abs(side);
+  const { halfWidth, plankPitch, postPitch } = DOCK_LINK_V7;
+  const link = trace.link;
+  // Posts in pairs, a little proud of the rails; the lit face is the one
+  // towards the south-west.
+  const post = along - Math.floor(along / postPitch) * postPitch;
+  if (
+    off > halfWidth + 0.4 &&
+    off <= halfWidth + 2.4 &&
+    post >= 1 &&
+    post < 3 &&
+    along < span - 1
+  )
+    return side * (trace.ny - trace.nx) > 0 && post < 2 ? P.POST_LIT : P.POST;
+  if (off > halfWidth + 1) return P.CLEAR;
+  // The rails along both sides and a dark end board at each end.
+  if (off > halfWidth || along < 1 || along > span - 1) return P.WOOD_EDGE;
+  const plank = Math.floor(along / plankPitch);
+  if (along - plank * plankPitch < 1) return P.WOOD_GAP;
+  return forestHashV7(
+    link.from.x * 131 + link.to.x,
+    link.from.y * 137 + link.to.y,
+    plank,
+    0x90c,
+  ) /
+    0x100000000 <
+    0.45
+    ? P.PLANK_LIGHT
+    : P.PLANK;
 }
 
 /**
@@ -273,11 +434,23 @@ function traceOf(link: DirtRoadLinkV7, at: CoordV7): Trace {
 export function dirtRoadPixelsV7(cell: DirtRoadCellV7): Uint8Array {
   const size = DIRT_ROAD_GRID_V7;
   const pixels = new Uint8Array(size * size);
+  const dockLinks = cell.docks ?? [];
+  const docks = dockLinks.map((dock) => dockTraceOf(dock, cell.at));
   const traces = [
-    ...cell.neighbours.map((neighbour) => dirtRoadLinkV7(cell.at, neighbour)),
-    ...cell.joins.map(([from, to]) => dirtRoadLinkV7(from, to)),
-  ].map((link) => traceOf(link, cell.at));
-  if (traces.length === 0 && !cell.isolated) return pixels;
+    ...[
+      ...cell.neighbours.map((neighbour) => dirtRoadLinkV7(cell.at, neighbour)),
+      ...cell.joins.map(([from, to]) => dirtRoadLinkV7(from, to)),
+    ].map((link) => traceOf(link, cell.at)),
+    // The dirt of a dock link lies on its land cell only.
+    ...docks
+      .filter((_, which) => {
+        const land = dockLinks[which]?.land;
+        return land?.x === cell.at.x && land.y === cell.at.y;
+      })
+      .map((dock) => dock.trace),
+  ];
+  if (traces.length === 0 && docks.length === 0 && !cell.isolated)
+    return pixels;
   const { halfWidth } = DIRT_ROAD_V7;
   const P = DIRT_ROAD_PIXEL_V7;
   const bendReach = DIRT_ROAD_V7.wobble / UNIT + DIRT_ROAD_REACH_V7;
@@ -317,6 +490,15 @@ export function dirtRoadPixelsV7(cell: DirtRoadCellV7): Uint8Array {
           const ey = t <= 0 ? ry : ry - trace.cy;
           best = Math.sqrt(ex * ex + ey * ey);
           bestSouthWest = ey - ex;
+        } else if (t < trace.t0 || t > trace.t1) {
+          // Past the cap of a dock link's dirt: round the curve's point
+          // there, short of the shore.
+          const cap = t < trace.t0 ? trace.t0 : trace.t1;
+          const bend = dirtRoadBendV7(trace.link, cap) / UNIT;
+          const ex = rx - trace.cx * cap - trace.nx * bend;
+          const ey = ry - trace.cy * cap - trace.ny * bend;
+          best = Math.sqrt(ex * ex + ey * ey);
+          bestSouthWest = ey - ex;
         } else {
           // Beside the link: the bend is slight (its slope stays under
           // 0.1), so the distance to the curve is the sideways distance to
@@ -336,6 +518,8 @@ export function dirtRoadPixelsV7(cell: DirtRoadCellV7): Uint8Array {
           if (
             bestAlong > RUT_HUB &&
             bestAlong < trace.length - RUT_HUB &&
+            t >= trace.t0 &&
+            t <= trace.t1 &&
             within > 0.1 &&
             within < 0.9 &&
             forestHashV7(
@@ -362,11 +546,31 @@ export function dirtRoadPixelsV7(cell: DirtRoadCellV7): Uint8Array {
           southWest = oy - ox;
         }
       }
-      if (nearest > DIRT_ROAD_REACH_V7) continue;
+      const index = row * size + column;
+      // The gangways lie over the dirt; their shadow falls to the
+      // north-east, on whatever is not wood.
+      let wood: number = P.CLEAR;
+      let shaded = false;
+      for (const dock of docks) {
+        const here = gangwayAt(dock, px, py);
+        if (here !== P.CLEAR) wood = here;
+        else if (
+          gangwayAt(dock, px - 1, py + 1) !== P.CLEAR ||
+          gangwayAt(dock, px - 2, py + 2) !== P.CLEAR
+        )
+          shaded = true;
+      }
+      if (wood !== P.CLEAR) {
+        pixels[index] = wood;
+        continue;
+      }
+      if (nearest > DIRT_ROAD_REACH_V7) {
+        if (shaded) pixels[index] = P.WOOD_SHADOW;
+        continue;
+      }
       const gx = cell.at.x * size + column;
       const gy = cell.at.y * size + row;
       const half = halfWidth + dirtRoadEdgeNoiseV7(gx, gy);
-      const index = row * size + column;
       if (nearest < half) {
         const inside = half - nearest;
         depth[index] = inside;
@@ -402,7 +606,7 @@ export function dirtRoadPixelsV7(cell: DirtRoadCellV7): Uint8Array {
       ) {
         // Crumbs of dirt, in small scatters rather than an even spray.
         pixels[index] = P.CRUMB;
-      }
+      } else if (shaded) pixels[index] = P.WOOD_SHADOW;
     }
   // Pebbles well inside the dirt, each with a shadow to its upper right
   // (the light comes from the bottom-left).
@@ -441,6 +645,11 @@ export interface DirtRoadRunV7 {
 function layerColour(value: number, layer: "CASING" | "FILL"): string {
   const P = DIRT_ROAD_PIXEL_V7;
   if (value === P.CLEAR) return "";
+  // A gangway's shadow lies with the underlays, its wood with the dirt.
+  if (value === P.WOOD_SHADOW)
+    return layer === "CASING" ? DOCK_LINK_V7.shadow : "";
+  if (value > P.WOOD_SHADOW)
+    return layer === "FILL" ? (PIXEL_COLOURS[value] as string) : "";
   if (layer === "FILL")
     return value >= P.DIRT ? (PIXEL_COLOURS[value] as string) : "";
   return value >= P.DIRT
@@ -514,6 +723,9 @@ function cellKey(cell: DirtRoadCellV7): string {
     cell.neighbours.map(coordText).join(";"),
     cell.joins.map(([a, b]) => `${coordText(a)}:${coordText(b)}`).join(";"),
     cell.isolated ? "i" : "",
+    (cell.docks ?? [])
+      .map((dock) => `${coordText(dock.land)}>${coordText(dock.dock)}`)
+      .join(";"),
   ].join("|");
 }
 

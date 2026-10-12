@@ -16,6 +16,7 @@ import {
   DIRT_ROAD_PIXEL_V7,
   DIRT_ROAD_REACH_V7,
   DIRT_ROAD_V7,
+  DOCK_LINK_V7,
   clearDirtRoadCacheV7,
   dirtRoadBendV7,
   dirtRoadEdgeNoiseV7,
@@ -25,6 +26,7 @@ import {
   dirtRoadRunsV7,
   drawDirtRoadV7,
   type DirtRoadCellV7,
+  type DockLinkV7,
 } from "../../src/render/canvas/dirt-road-v7";
 import { TILE_WIDTH } from "../../src/render/canvas/geometry";
 import {
@@ -46,7 +48,10 @@ const UNIT = TILE_WIDTH / SIZE;
 const at = (x: number, y: number): CoordV7 => ({ x, y });
 const key = (cell: CoordV7): string => `${cell.x},${cell.y}`;
 const isDirt = (value: number | undefined): boolean =>
-  value !== undefined && value >= P.DIRT;
+  value !== undefined && value >= P.DIRT && value <= P.PEBBLE;
+/** The wood of a dock link's gangway (not its shadow). */
+const isWood = (value: number | undefined): boolean =>
+  value !== undefined && value > P.WOOD_SHADOW;
 
 const CASING_COLOURS: readonly string[] = [
   DIRT_ROAD_V7.casing,
@@ -930,5 +935,363 @@ describe("Dirt-track Roads (beads pulp_wars-g6b5, pulp_wars-2yc.43)", () => {
     expect(bold.strokes).toEqual(
       CHIBI_ROAD_STROKES_V7.map(([colour]) => colour),
     );
+  });
+});
+
+/**
+ * The wooden link from a shore to a dock (bead pulp_wars-2yc.47): the dirt
+ * of a link between a land cell and a Port or Shipyard stays on the land,
+ * and a plank gangway goes on over the water.
+ */
+describe("Dock links (bead pulp_wars-2yc.47)", () => {
+  beforeEach(() => clearDirtRoadCacheV7());
+
+  const WOOD_COLOURS: readonly string[] = [
+    DOCK_LINK_V7.edge,
+    DOCK_LINK_V7.gap,
+    DOCK_LINK_V7.plank,
+    DOCK_LINK_V7.plankLight,
+    DOCK_LINK_V7.post,
+    DOCK_LINK_V7.postLit,
+  ];
+  const LAND = at(3, 3);
+  const DIRECTIONS = [-1, 0, 1]
+    .flatMap((dy) => [-1, 0, 1].map((dx) => [dx, dy] as const))
+    .filter(([dx, dy]) => dx !== 0 || dy !== 0);
+
+  /**
+   * The entries the board plan makes for one dock link: the land cell, the
+   * dock, and the two corner cells of a diagonal link.
+   */
+  function linkCells(link: DockLinkV7): readonly DirtRoadCellV7[] {
+    const cell = (where: CoordV7): DirtRoadCellV7 => ({
+      at: where,
+      neighbours: [],
+      joins: [],
+      isolated: false,
+      docks: [link],
+    });
+    const diagonal = link.land.x !== link.dock.x && link.land.y !== link.dock.y;
+    return [
+      cell(link.land),
+      cell(link.dock),
+      ...(diagonal
+        ? [
+            cell(at(link.dock.x, link.land.y)),
+            cell(at(link.land.x, link.dock.y)),
+          ]
+        : []),
+    ];
+  }
+
+  /** The value of every painted pixel of the entries, by world pixel. */
+  function world(entries: readonly DirtRoadCellV7[]): Map<string, number> {
+    const painted = new Map<string, number>();
+    for (const entry of entries) {
+      const pixels = dirtRoadPixelsV7(entry);
+      for (let row = 0; row < SIZE; row += 1)
+        for (let column = 0; column < SIZE; column += 1) {
+          const value = pixels[row * SIZE + column] as number;
+          if (value !== P.CLEAR)
+            painted.set(
+              `${entry.at.x * SIZE + column},${entry.at.y * SIZE + row}`,
+              value,
+            );
+        }
+    }
+    return painted;
+  }
+
+  it("is weathered wood, narrower than the track, with a soft shadow", () => {
+    for (const colour of WOOD_COLOURS) expect(colour).toMatch(/^#[0-9a-f]{6}$/);
+    expect(new Set(WOOD_COLOURS).size).toBe(WOOD_COLOURS.length);
+    expect(DOCK_LINK_V7.shadow).toMatch(/^rgba\(/);
+    // Planks and both rails together are narrower than the dirt alone.
+    expect(2 * DOCK_LINK_V7.halfWidth + 2).toBeLessThan(
+      2 * DIRT_ROAD_V7.halfWidth,
+    );
+    // The dirt's cap and its edge line end before the shore.
+    for (const short of DOCK_LINK_V7.dirtShort)
+      expect(short).toBeGreaterThan(
+        DIRT_ROAD_V7.halfWidth + DIRT_ROAD_V7.roughness + 1.15,
+      );
+  });
+
+  it("paints no dirt on the dock's cell or on a corner cell, for every neighbour direction", () => {
+    for (const [dx, dy] of DIRECTIONS) {
+      const link = { land: LAND, dock: at(LAND.x + dx, LAND.y + dy) };
+      const [land, ...others] = linkCells(link);
+      expect(others).toHaveLength(dx !== 0 && dy !== 0 ? 3 : 1);
+      for (const other of others) {
+        const pixels = dirtRoadPixelsV7(other);
+        // Only the gangway and its shadow: never dirt, an edge line or a
+        // crumb of the track.
+        for (const value of pixels)
+          expect(value === P.CLEAR || value >= P.WOOD_SHADOW).toBe(true);
+      }
+      // The land cell has the track from its centre, and the track is
+      // closed before the cell's edge: no dirt or edge line on its border.
+      const pixels = dirtRoadPixelsV7(land as DirtRoadCellV7);
+      expect(isDirt(pixels[(SIZE / 2) * SIZE + SIZE / 2])).toBe(true);
+      let dirt = 0;
+      for (let row = 0; row < SIZE; row += 1)
+        for (let column = 0; column < SIZE; column += 1) {
+          const value = pixels[row * SIZE + column] as number;
+          if (isDirt(value)) dirt += 1;
+          const border =
+            row === 0 ||
+            column === 0 ||
+            row === SIZE - 1 ||
+            column === SIZE - 1;
+          if (border)
+            expect(
+              isDirt(value) || value === P.EDGE || value === P.EDGE_SOFT,
+            ).toBe(false);
+        }
+      expect(dirt).toBeGreaterThan(150);
+    }
+  });
+
+  it("draws one gangway from the dirt on the land to the dock, for every neighbour direction", () => {
+    for (const [dx, dy] of DIRECTIONS) {
+      const link = { land: LAND, dock: at(LAND.x + dx, LAND.y + dy) };
+      const painted = world(linkCells(link));
+      const wood = [...painted]
+        .filter(([, value]) => isWood(value))
+        .map(([place]) => place);
+      expect(wood.length).toBeGreaterThan(150);
+      // One piece: every wood pixel is reached from the first by steps up,
+      // down, left and right.
+      const isWoodAt = (gx: number, gy: number): boolean =>
+        isWood(painted.get(`${gx},${gy}`));
+      const [startX, startY] = (wood[0] as string).split(",").map(Number) as [
+        number,
+        number,
+      ];
+      expect(reachFrom(isWoodAt, [startX, startY]).size).toBe(wood.length);
+      // It starts on the land cell, against the dirt, and ends within a few
+      // pixels of the dock cell's centre, under the dock's sprite.
+      const cellOf = (place: string): string => {
+        const [gx, gy] = place.split(",").map(Number) as [number, number];
+        return `${Math.floor(gx / SIZE)},${Math.floor(gy / SIZE)}`;
+      };
+      const cells = new Set(wood.map(cellOf));
+      expect(cells.has(key(link.land))).toBe(true);
+      expect(cells.has(key(link.dock))).toBe(true);
+      const touchesDirt = wood.some((place) => {
+        const [gx, gy] = place.split(",").map(Number) as [number, number];
+        return [
+          [1, 0],
+          [-1, 0],
+          [0, 1],
+          [0, -1],
+        ].some(([sx, sy]) =>
+          isDirt(painted.get(`${gx + (sx as number)},${gy + (sy as number)}`)),
+        );
+      });
+      expect(touchesDirt).toBe(true);
+      const [dockX, dockY] = centreOf(link.dock);
+      const [landX, landY] = centreOf(link.land);
+      const nearest = (toX: number, toY: number): number =>
+        Math.min(
+          ...wood.map((place) => {
+            const [gx, gy] = place.split(",").map(Number) as [number, number];
+            return Math.hypot(gx + 0.5 - toX, gy + 0.5 - toY);
+          }),
+        );
+      expect(nearest(dockX, dockY)).toBeLessThan(DOCK_LINK_V7.dockShort + 4);
+      // No wood near the land cell's centre: the gangway is at the shore.
+      expect(nearest(landX, landY)).toBeGreaterThan(SIZE / 2 - 16);
+      // It is narrow: no wood further from the straight line between the
+      // two centres than the planks, a rail, a post and the link's bend.
+      const length = Math.hypot(dockX - landX, dockY - landY);
+      for (const place of wood) {
+        const [gx, gy] = place.split(",").map(Number) as [number, number];
+        const lateral =
+          ((gx + 0.5 - landX) * (dockY - landY) -
+            (gy + 0.5 - landY) * (dockX - landX)) /
+          length;
+        expect(Math.abs(lateral)).toBeLessThan(
+          DOCK_LINK_V7.halfWidth + 3.2 + DIRT_ROAD_V7.wobble / UNIT,
+        );
+      }
+      // Planks of both tones, gaps between them, rails and posts.
+      const values = new Set(painted.values());
+      for (const value of [
+        P.WOOD_EDGE,
+        P.WOOD_GAP,
+        P.PLANK,
+        P.PLANK_LIGHT,
+        P.POST,
+      ])
+        expect(values.has(value)).toBe(true);
+      // The posts on the gangway's south-west side have a lit face; a
+      // gangway that runs north-east to south-west has no such side.
+      expect(values.has(P.POST_LIT)).toBe(dx !== -dy);
+      // The shadow lies to the north-east of wood (light from the
+      // south-west), one or two pixels away.
+      const shadows = [...painted].filter(
+        ([, value]) => value === P.WOOD_SHADOW,
+      );
+      expect(shadows.length).toBeGreaterThan(20);
+      for (const [place] of shadows) {
+        const [gx, gy] = place.split(",").map(Number) as [number, number];
+        expect(isWoodAt(gx - 1, gy + 1) || isWoodAt(gx - 2, gy + 2)).toBe(true);
+      }
+    }
+  });
+
+  it("is the same on every call, and leaves the cell's Roads and other links as they were", () => {
+    const link = { land: LAND, dock: at(4, 3) };
+    const other = { land: LAND, dock: at(2, 4) };
+    const alone: DirtRoadCellV7 = {
+      at: LAND,
+      neighbours: [at(3, 2)],
+      joins: [],
+      isolated: false,
+    };
+    const one = { ...alone, docks: [link] };
+    const both = { ...alone, docks: [link, other] };
+    expect(dirtRoadPixelsV7(one)).toEqual(dirtRoadPixelsV7(one));
+    // An empty list of dock links is no dock link.
+    expect(dirtRoadPixelsV7({ ...alone, docks: [] })).toEqual(
+      dirtRoadPixelsV7(alone),
+    );
+    const plain = dirtRoadPixelsV7(alone);
+    const first = dirtRoadPixelsV7(one);
+    const second = dirtRoadPixelsV7(both);
+    for (let index = 0; index < plain.length; index += 1) {
+      // A dock link only adds: the Road to the north keeps its dirt (under
+      // no wood), and the first gangway is unchanged by the second.
+      if (isDirt(plain[index])) expect(isDirt(first[index])).toBe(true);
+      if (isWood(first[index])) expect(isWood(second[index])).toBe(true);
+    }
+    // The dock's cell shows the same gangway whichever links it has.
+    const dock = dirtRoadPixelsV7(linkCells(link)[1] as DirtRoadCellV7);
+    const shared = dirtRoadPixelsV7({
+      at: link.dock,
+      neighbours: [],
+      joins: [],
+      isolated: false,
+      docks: [link, { land: at(4, 2), dock: link.dock }],
+    });
+    for (let index = 0; index < dock.length; index += 1)
+      if (isWood(dock[index])) expect(isWood(shared[index])).toBe(true);
+  });
+
+  it("keeps the wood with the dirt fills and its shadow with the underlays, and caches cells by their dock links", () => {
+    const link = { land: LAND, dock: at(3, 4) };
+    const [land, dock] = linkCells(link) as [DirtRoadCellV7, DirtRoadCellV7];
+    const pixels = dirtRoadPixelsV7(dock);
+    const colourAt = (layer: "CASING" | "FILL"): Map<number, string> => {
+      const painted = new Map<number, string>();
+      for (const run of dirtRoadRunsV7(dock, layer))
+        for (let column = run.x; column < run.x + run.length; column += 1)
+          painted.set(run.y * SIZE + column, run.colour);
+      return painted;
+    };
+    const casing = colourAt("CASING");
+    const fill = colourAt("FILL");
+    for (let index = 0; index < pixels.length; index += 1) {
+      const value = pixels[index] as number;
+      expect(fill.has(index)).toBe(isWood(value));
+      expect(casing.has(index)).toBe(value === P.WOOD_SHADOW);
+      if (isWood(value)) expect(WOOD_COLOURS).toContain(fill.get(index));
+      if (value === P.WOOD_SHADOW)
+        expect(casing.get(index)).toBe(DOCK_LINK_V7.shadow);
+    }
+    // The same cell without its dock link is another cached cell.
+    const bare = recordingContext();
+    drawDirtRoadV7(
+      bare.context,
+      { ...land, docks: [] },
+      100,
+      100,
+      0.625,
+      "FILL",
+    );
+    const linked = recordingContext();
+    drawDirtRoadV7(linked.context, land, 100, 100, 0.625, "FILL");
+    const woodRects = (recording: ReturnType<typeof recordingContext>) =>
+      recording.rects.filter(({ colour }) =>
+        WOOD_COLOURS.includes(String(colour)),
+      );
+    expect(bare.rects).toHaveLength(0);
+    expect(woodRects(linked).length).toBeGreaterThan(5);
+    const again = recordingContext();
+    drawDirtRoadV7(again.context, land, 100, 100, 0.625, "FILL");
+    expect(again.log).toEqual(linked.log);
+  });
+
+  it("draws the gangway on the board in the live look and a wooden line in the BOLD look, and no Road on the dock's cell", () => {
+    const link = { land: at(1, 1), dock: at(2, 1) };
+    const board = plan([
+      {
+        key: "road:1,1",
+        kind: "ROAD",
+        layer: 2,
+        at: at(1, 1),
+        roadNeighbors: [at(0, 1)],
+        roadDockLinks: [link],
+      },
+      {
+        key: "road:0,1",
+        kind: "ROAD",
+        layer: 2,
+        at: at(0, 1),
+        roadNeighbors: [at(1, 1)],
+      },
+      {
+        key: "road:2,1",
+        kind: "ROAD",
+        layer: 2,
+        at: at(2, 1),
+        roadNeighbors: [],
+        roadDockLinks: [link],
+      },
+    ]);
+    // The camera of `draw`: 80 CSS px a cell, cell (0,0) centred on 64,64.
+    const dockLeft = 64 + 2 * 80 - 40;
+    const live = draw(board);
+    const dirtColours = [...CASING_COLOURS, ...FILL_COLOURS];
+    const onDock = live.rects.filter(
+      ({ rect }) => (rect[0] as number) >= dockLeft - 1e-6,
+    );
+    expect(onDock.length).toBeGreaterThan(10);
+    for (const { colour } of onDock)
+      expect(dirtColours).not.toContain(String(colour));
+    for (const colour of [...WOOD_COLOURS, DOCK_LINK_V7.shadow])
+      expect(onDock.map((entry) => entry.colour)).toContain(colour);
+    // The dock is not an isolated Road: no patch of dirt at its centre.
+    expect(
+      live.rects.filter(({ colour }) => colour === DIRT_ROAD_V7.fill).length,
+    ).toBeGreaterThan(0);
+    // The shadows are drawn with the underlays, before any fill.
+    const colours = live.rects.map((entry) => entry.colour);
+    expect(colours.lastIndexOf(DOCK_LINK_V7.shadow)).toBeLessThan(
+      Math.min(
+        ...[...FILL_COLOURS, ...WOOD_COLOURS]
+          .map((colour) => colours.indexOf(colour))
+          .filter((index) => index >= 0),
+      ),
+    );
+    expect(draw(board).log).toEqual(live.log);
+    // The BOLD look: its strokes, then a wooden line for each cell the
+    // link crosses, and no rectangles of the live look.
+    const bold = draw(board, BASELINE_DIRECTION_V7);
+    for (const colour of [...dirtColours, ...WOOD_COLOURS])
+      expect(bold.rects.map((entry) => entry.colour)).not.toContain(colour);
+    expect(
+      bold.strokes.filter((colour) => colour === DOCK_LINK_V7.plank),
+    ).toHaveLength(2);
+    expect(
+      bold.strokes.filter((colour) => colour === DOCK_LINK_V7.edge),
+    ).toHaveLength(2);
+    // No path of the BOLD look ends on the dock's cell centre: the
+    // cobblestones stop on the land and the wooden line short of the dock.
+    const dockCentre = 64 + 2 * 80;
+    for (const call of bold.log)
+      if (call[0] === "lineTo" || call[0] === "moveTo")
+        expect(call[1] as number).toBeLessThan(dockCentre - 10);
   });
 });

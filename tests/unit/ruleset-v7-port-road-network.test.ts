@@ -859,11 +859,15 @@ describe("Ports join the Road network (pulp_wars-5ti.12, 7r76)", () => {
     });
     const road = (x: number, y: number) =>
       plan.entries.find((entry) => entry.key === `road:${x},${y}`);
-    // A Road stub from each center to its dock, and from the dock back.
-    expect(road(2, 2)?.roadNeighbors).toEqual([{ x: 2, y: 3 }]);
-    expect(road(2, 3)?.roadNeighbors).toEqual([{ x: 2, y: 2 }]);
-    expect(road(2, 7)?.roadNeighbors).toEqual([{ x: 2, y: 8 }]);
-    expect(road(2, 8)?.roadNeighbors).toEqual([{ x: 2, y: 7 }]);
+    // `pulp_wars-2yc.47`: a dock link from each center to its dock, on the
+    // center's entry and on the dock's, and no Road link onto the water.
+    const north = { land: { x: 2, y: 2 }, dock: { x: 2, y: 3 } };
+    const south = { land: { x: 2, y: 8 }, dock: { x: 2, y: 7 } };
+    expect(road(2, 2)?.roadDockLinks).toEqual([north]);
+    expect(road(2, 3)?.roadDockLinks).toEqual([north]);
+    expect(road(2, 7)?.roadDockLinks).toEqual([south]);
+    expect(road(2, 8)?.roadDockLinks).toEqual([south]);
+    for (const y of [2, 3, 7, 8]) expect(road(2, y)?.roadNeighbors).toEqual([]);
     // No Road on the open water, and the dashed line from dock to dock.
     expect(road(2, 5)).toBeUndefined();
     expect(
@@ -886,8 +890,8 @@ describe("Ports join the Road network (pulp_wars-5ti.12, 7r76)", () => {
       earlier.entries.filter((entry) => entry.label === "SEA_ROUTE"),
     ).toEqual([]);
     expect(
-      earlier.entries.find((entry) => entry.key === "road:2,3")?.roadNeighbors,
-    ).toEqual([{ x: 2, y: 2 }]);
+      earlier.entries.find((entry) => entry.key === "road:2,3")?.roadDockLinks,
+    ).toEqual([north]);
   });
 
   it("the review boards: an adjacent Port, two cities linked by Ports, and the mixed chain", () => {
@@ -930,15 +934,46 @@ describe("Ports join the Road network (pulp_wars-5ti.12, 7r76)", () => {
       { selection: null, selectedUnitId: null, selectedAchievement: null },
     );
     const at = PORT_LINK_UI_V7;
+    // `pulp_wars-2yc.47`: the Road tile is linked to the capital by a Road
+    // and to the dock by a dock link; the dock's cell has no Road link.
+    const chainRoad = plan.entries.find(
+      (entry) => entry.key === `road:${at.chainRoad.x},${at.chainRoad.y}`,
+    );
+    const chainPort = plan.entries.find(
+      (entry) => entry.key === `road:${at.chainPort.x},${at.chainPort.y}`,
+    );
+    const chainLink = { land: at.chainRoad, dock: at.chainPort };
+    expect(chainRoad?.roadNeighbors).toEqual([at.capital]);
+    expect(chainRoad?.roadDockLinks).toEqual([chainLink]);
+    expect(chainPort?.roadNeighbors).toEqual([]);
+    expect(chainPort?.roadDockLinks).toEqual([chainLink]);
+    // The second city's dock is linked to its center (south of it) and,
+    // diagonally, to the Road east of the center; the diagonal link passes
+    // the corner of the center's cell and of the water east of the dock.
+    const second = { land: at.second, dock: at.secondPort };
+    const diagonal = { land: at.thirdRoads[0], dock: at.secondPort };
     expect(
       plan.entries.find(
-        (entry) => entry.key === `road:${at.chainRoad.x},${at.chainRoad.y}`,
-      )?.roadNeighbors,
-    ).toEqual([at.capital, at.chainPort]);
-    expect(
-      plan.entries.find(
-        (entry) => entry.key === `road:${at.chainPort.x},${at.chainPort.y}`,
-      )?.roadNeighbors,
-    ).toEqual([at.chainRoad]);
+        (entry) => entry.key === `road:${at.secondPort.x},${at.secondPort.y}`,
+      )?.roadDockLinks,
+    ).toEqual([second, diagonal]);
+    for (const corner of [at.second, { x: 3, y: 7 }]) {
+      const join = plan.entries.find(
+        (entry) => entry.key === `road-join:${corner.x},${corner.y}`,
+      );
+      expect(join?.roadDockLinks).toEqual([diagonal]);
+      expect(join?.roadJoins).toEqual([]);
+    }
+    // No entry anywhere links a Road onto a dock or a dock onto anything.
+    const docks = new Set(
+      [at.chainPort, at.secondPort].map((dock) => `${dock.x},${dock.y}`),
+    );
+    for (const entry of plan.entries) {
+      for (const near of entry.roadNeighbors ?? [])
+        expect(docks.has(`${near.x},${near.y}`)).toBe(false);
+      for (const pair of entry.roadJoins ?? [])
+        for (const end of pair)
+          expect(docks.has(`${end.x},${end.y}`)).toBe(false);
+    }
   });
 });

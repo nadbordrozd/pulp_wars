@@ -4818,10 +4818,13 @@ Roads technology, and sea trade was a separate income.)
   Shipyard that nothing joins to its city's center says "No link: needs a
   Road to its city". The text harness prints the trade line under each
   city.
-- The board draws a Road onto every city center and every Port or Shipyard
-  from each Road tile or center beside it (two docks side by side get no
-  track over the water), and the link animation runs along the Roads and
-  across the dashed sea link.
+- The board draws a Road onto every city center from each Road tile
+  beside it. A Port or Shipyard is joined to each Road tile or center
+  beside it by a dock link (`pulp_wars-2yc.47`): the dirt track stays on
+  the land and stops short of the shore, and a narrow plank gangway goes
+  on over the beach and the water to the dock, so no Road is ever drawn on
+  water (two docks side by side get no link). The link animation runs
+  along the Roads and across the dashed sea link.
 - Allies never join this graph. Disconnection removes
   the population without lowering level or repeating rewards.
 
