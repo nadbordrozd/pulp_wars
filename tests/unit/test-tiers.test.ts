@@ -14,10 +14,8 @@ const root = join(import.meta.dirname, "..", "..");
 const MATCH_RUNNERS = [
   // src/headless
   "runAiMatch",
-  "runAiMatchV6",
   "runAiMatchV7",
   "runAiBatch",
-  "runAiBatchV6",
   "runAiBatchV7",
   "runMartianMobilityProbeMatchV7",
   // tests/fixtures

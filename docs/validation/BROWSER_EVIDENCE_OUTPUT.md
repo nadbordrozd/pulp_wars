@@ -1,14 +1,15 @@
 # Browser smoke evidence output
 
-The v5, v6, and v7 smoke harnesses capture into a unique temporary directory by
-default. They print its absolute path before launching Chrome. Captures remain
+The Ruleset 7 smoke harness captures into a unique temporary directory by
+default. It prints the absolute path before launching Chrome. Captures remain
 there after success or failure for inspection; the harness does not delete them
-or replace checked-in evidence during a routine validation run.
+or replace checked-in evidence during a routine validation run. (The harnesses
+of the retired prototypes, `smoke:browser:ruleset6` and
+`smoke:browser:legacy-v5`, were removed with `pulp_wars-lky5`, with their
+archives under `art/integration/reviews/`.)
 
 ```bash
 npm run smoke:browser
-npm run smoke:browser:ruleset6
-npm run smoke:browser:legacy-v5
 ```
 
 For a chosen output directory, use `--output-dir=<new-directory>`. Its parent
@@ -17,7 +18,7 @@ empty directories, files, and symlinks. Relative paths resolve from the reposito
 root. The equals sign keeps the path distinct from the optional positional URL.
 
 ```bash
-npm run smoke:browser:legacy-v5 -- --output-dir=/tmp/pulp-wars-v5-review-new
+npm run smoke:browser -- --output-dir=/tmp/pulp-wars-v7-review-new
 ```
 
 Deliberate archive replacement requires `--archive-evidence`, which cannot be
@@ -31,42 +32,21 @@ existing edits before requesting archive replacement, or use a routine run to
 inspect new captures alongside those edits.
 
 ```bash
-npm run smoke:browser:legacy-v5 -- --archive-evidence
-npm run smoke:browser:ruleset6 -- --archive-evidence
 npm run smoke:browser -- --archive-evidence
 ```
 
-| Harness | Archive destination                               |
-| ------- | ------------------------------------------------- |
-| v5      | `art/integration/reviews/`                        |
-| v6      | `art/integration/reviews/ruleset6-browser-smoke/` |
-| v7      | `art/integration/reviews/ruleset7-preview/`       |
+| Harness | Archive destination                         |
+| ------- | ------------------------------------------- |
+| v7      | `art/integration/reviews/ruleset7-preview/` |
 
-The v5 resource review's `fruit-production-evidence.json` is captured alongside
-screenshots and archives to its historical location at
-`art/feedback/reviews/fruit-production-evidence.json`; that destination receives
-the same cleanliness checks. V6 evidence manifests keep their canonical archive
-paths even when the current run's physical files are in temporary output. The
-v6 `--mountain-live` diagnostic uses the isolated output directory and does not
-publish archive evidence.
-
-V6 uses Chromium's
-[`--disable-partial-raster` setting](https://github.com/GoogleChrome/chrome-launcher/blob/main/docs/chrome-flags-for-tools.md#rendering--gpu)
-so rounded and dashed borders are rasterized independently of earlier partial
-invalidation regions. On Chrome 153/macOS, technology captures stayed identical
-within a browser process but varied across fresh processes despite identical
-DOM, geometry, focus, fonts, and animation state. Waiting for further frames
-did not remove the variation. Disabling partial rasterization produced identical
-captures across 16 fresh browser processes covering both factions, while a
-deliberate border-color change still changed every capture. This affects only
-the smoke browser; production CSS and captured pixels are not rewritten. Byte
-comparisons require the same Chrome version, host, viewport, and inputs.
-
-V7 archive mode retains its strict performance acceptance rules described in
-[Ruleset 7 release validation](RULESET_7_RELEASE.md). Failed runs leave diagnostic
-output in the printed capture directory and never start archive publication.
-Copying a successful run into the archive is not a multi-file transaction: a
-filesystem error can leave part of that clean archive updated. Captured originals
-remain available for recovery, and a retry refuses the now-dirty archive. Do not
-edit archive files concurrently with publication. Review the resulting evidence
-before committing it; successful capture alone is not visual acceptance.
+The archive holds the frozen revision-2 evidence; replacing it is not a
+current release step
+([Ruleset 7 release validation](RULESET_7_RELEASE.md)). Archive mode retains
+the strict performance acceptance rules described there. Failed runs leave
+diagnostic output in the printed capture directory and never start archive
+publication. Copying a successful run into the archive is not a multi-file
+transaction: a filesystem error can leave part of that clean archive updated.
+Captured originals remain available for recovery, and a retry refuses the
+now-dirty archive. Do not edit archive files concurrently with publication.
+Review the resulting evidence before committing it; successful capture alone is
+not visual acceptance.

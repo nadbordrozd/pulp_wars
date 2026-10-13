@@ -1,8 +1,21 @@
-# Pulp Wars Ruleset-6 Screen Flow
+# Pulp Wars Screen Flow
 
 **Status:** authoritative interaction and responsive-flow specification
 
-**Rules:** [Ruleset 6](../product/RULESET_6.md)
+**Rules:** [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md)
+
+**One game (bead `pulp_wars-lky5`).** Ruleset 7 is the only game. The
+earlier prototypes, Ruleset 6 and the legacy game before it, are retired:
+the menu has no "Classic rules" link, an address that still carries
+`?ruleset=6` or `?legacy-v5=1` opens the Ruleset 7 title screen as if the
+parameter were not there, and a saved game of a retired prototype (the
+storage key `pulpWars.save.current`) is removed at startup without a notice.
+Any other `ruleset` value still shows the plain "Unsupported ruleset" page.
+This file began as the Ruleset 6 screen flow: its numbered sections
+([section 0](#0-ruleset-6-replacement-contract) onward) are kept for the
+navigation, layout, focus and accessibility behaviour Ruleset 7 inherits,
+and whatever they say about Ruleset 6 or ruleset-5 content, routes and
+saves is history.
 
 **Architecture:** [Client Architecture](../architecture/CLIENT_ARCHITECTURE.md)
 
@@ -20,7 +33,7 @@ governs current Ruleset 7 HUD, dock, dialog, and copy presentation. Player-facin
 text is short and plain. Rules are discovered through play and the `?` and
 tech-detail views, not spelled out in the HUD or dock. Where later sections
 require specific verbose labels, formula prose, or `+N/turn` wording for
-Ruleset 7, this overlay wins. Ruleset 6 and legacy routes are unchanged.
+Ruleset 7, this overlay wins.
 
 **One art set (bead `pulp_wars-67q.15`).** Ruleset 7 draws the CHIBI art
 only. Where a section below says what the "LEGACY" art set draws, or that
@@ -35,8 +48,7 @@ is a lettered marker, [client architecture](../architecture/CLIENT_ARCHITECTURE.
 
 This rule binds every Ruleset 7 player-facing string: dock prompts and
 chips, board labels, tooltips, the log, Help, notices, the cursor
-description and every accessible name, shown or spoken. Legacy
-Ruleset 5 and 6 interfaces are unchanged.
+description and every accessible name, shown or spoken.
 
 - **No tile coordinates, ever.** No text says "4, 2", "Tunnel to 5, 11?",
   "now at 3, 1" or "Windmill (2, 7)". A place is picked on the board, or
@@ -799,8 +811,8 @@ Roads, that text now describes the **Classic look** developer option
 
 ## Current Ruleset 7 revision 9 overlay
 
-This overlay applies only to the current Ruleset 7 route. The Ruleset 6
-sections below remain authoritative for the unchanged Ruleset 6 route.
+This overlay applies to the current Ruleset 7 game. The Ruleset 6 route the
+sections below were written for is retired (`pulp_wars-lky5`).
 
 - The current Original tree has five visible branches and 23 technologies.
   Dry Land keeps all three Naval cards visible in a disabled state; their
@@ -2222,12 +2234,13 @@ the screens it opens (new game, campaign, Settings, save recovery). Ruleset
   front screens follow UI size and contrast too. The match-only actions
   (Restart, Delete save, the map seed, developer tools) stay in a match's
   Settings.
-- **Foot of the menu.** Small and out of the stack: **Delete save** (only
-  with a saved game; it deletes at once, as before) and the Classic rules
-  link.
+- **Foot of the menu.** Small and out of the stack: **Delete save**, only
+  with a saved game (it deletes at once, as before). Without a saved game
+  the menu has no foot. There is no link to an earlier ruleset
+  (`pulp_wars-lky5`).
 - **Save can't be loaded.** One panel with the sentence, the diagnostic
-  under Details, Delete save and the Classic rules link; no Menu button
-  (there is nothing else to do until the save is deleted).
+  under Details and Delete save; no Menu button (there is nothing else to
+  do until the save is deleted).
 - **Title scene.** A diorama drawn on a canvas from the game's art by the
   board's own art chain, behind every front screen: a sky with drifting
   clouds, the mountain range (the massif pieces), woods (the composed
@@ -2699,6 +2712,12 @@ minimal-text rule above: the pulp flavour is confined to the story blurbs.
   ordinary Victory and Defeat dialog: **Play again** and **Main menu**.
 
 ## 0. Ruleset-6 replacement contract
+
+> **Historical (`pulp_wars-lky5`).** Ruleset 6 and ruleset 5 are retired.
+> This section and the numbered sections after it are kept for the
+> navigation, layout, focus, target-size and motion rules Ruleset 7
+> inherits; their Ruleset 6 and ruleset-5 content, routes and saves no
+> longer exist.
 
 The responsive navigation, fixed Canvas host, map-first selection, non-modal
 docks, direct contextual commands, one-activation positional commands,

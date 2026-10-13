@@ -1,24 +1,13 @@
-import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import {
-  copyFile,
-  mkdir,
-  mkdtemp,
-  readFile,
-  readdir,
-  rm,
-  writeFile,
-} from "node:fs/promises";
+import { mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { pathToFileURL } from "node:url";
 import { afterEach, describe, expect, it } from "vitest";
 import {
   assertRecoveryReference,
   loadSubmissionReceipt,
   resolveRecoveryRequest,
   saveSubmissionReceipt,
-  type JobSnapshot,
 } from "../../scripts/art/pixellab-recovery";
 
 const hash = (bytes: string | Buffer): string =>
@@ -216,146 +205,5 @@ describe("PixelLab job recovery provenance", () => {
     await expect(loadSubmissionReceipt(directory, "job")).rejects.toThrow(
       "Invalid PixelLab submission receipt; recovery refused",
     );
-  });
-});
-
-describe("PixelLab interrupted CLI recovery", () => {
-  it("persists submitted style bytes before polling and recovers after reference replacement", async () => {
-    const directory = await temporaryDirectory();
-    const root = process.cwd();
-    const sourcePath = "scripts/art/pixellab-manifest.json";
-    const generatedPath = "scripts/art/pixellab-generated.json";
-    const source = JSON.parse(await readFile(sourcePath, "utf8")) as {
-      recipes: { id: string; output: string; styleReference?: string }[];
-    };
-    const generated = JSON.parse(await readFile(generatedPath, "utf8")) as {
-      records: Record<string, JobSnapshot<typeof request>>;
-    };
-    // The Survey reward icon: a recipe with a live style reference that
-    // no generation-order gate ties to another (Defection, used here
-    // before, is frozen on a retired reference; bead pulp_wars-67q.15).
-    const recipe = source.recipes.find(({ id }) => id === "ui-reward-survey");
-    if (recipe === undefined) throw new Error("Recipe fixture missing");
-    const reference = source.recipes.find(
-      ({ id }) => id === recipe.styleReference,
-    );
-    if (reference === undefined) throw new Error("Style fixture missing");
-    Reflect.deleteProperty(generated.records, recipe.id);
-    await mkdir(path.join(directory, "scripts/art"), { recursive: true });
-    await copyFile(sourcePath, path.join(directory, sourcePath));
-    await writeFile(
-      path.join(directory, generatedPath),
-      JSON.stringify(generated),
-    );
-    await mkdir(path.dirname(path.join(directory, reference.output)), {
-      recursive: true,
-    });
-    await copyFile(reference.output, path.join(directory, reference.output));
-    const originalReferenceHash = hash(await readFile(reference.output));
-    // This fixture is only returned by mocked fetch; no provider is contacted.
-    await copyFile(recipe.output, path.join(directory, "provider.png"));
-    const runner = path.join(directory, "mock-provider.mjs");
-    await writeFile(
-      runner,
-      `
-import { readFileSync } from "node:fs";
-const timeout = globalThis.setTimeout;
-globalThis.setTimeout = (callback, _delay, ...args) => timeout(callback, 0, ...args);
-globalThis.fetch = async (_url, options) => {
-  if (options?.method === "POST") return Response.json({ background_job_id: "fixture-job" });
-  if (process.argv[2] === "generate") process.exit(0);
-  return Response.json({ status: "completed", last_response: {
-    base64: "data:image/png;base64," + readFileSync("provider.png").toString("base64")
-  } });
-};
-await import(${JSON.stringify(pathToFileURL(path.join(root, "scripts/art/pixellab.ts")).href)});
-`,
-    );
-    const run = (...args: string[]): string =>
-      execFileSync(
-        process.execPath,
-        [
-          "--import",
-          pathToFileURL(path.join(root, "node_modules/tsx/dist/loader.mjs"))
-            .href,
-          runner,
-          ...args,
-        ],
-        {
-          cwd: directory,
-          env: { ...process.env, PIXELLAB_API_KEY: "fixture-only" },
-          encoding: "utf8",
-          stdio: "pipe",
-        },
-      );
-    const untouchedManifest = await readFile(
-      path.join(directory, generatedPath),
-      "utf8",
-    );
-    expect(() =>
-      run("resume-job", "--id", recipe.id, "--job-id", "unrecorded-job"),
-    ).toThrow("unknown historical request");
-    expect(await readFile(path.join(directory, generatedPath), "utf8")).toBe(
-      untouchedManifest,
-    );
-    expect(run("generate", "--stage", "batch", "--ids", recipe.id)).toContain(
-      "submitted job fixture-job",
-    );
-    const receipt = await loadSubmissionReceipt<typeof request>(
-      path.join(directory, "art/pixellab/submissions"),
-      "fixture-job",
-    );
-    expect(receipt?.request?.styleReference.sha256).toBe(originalReferenceHash);
-    expect(
-      JSON.parse(await readFile(path.join(directory, generatedPath), "utf8"))
-        .records[recipe.id],
-    ).toBeUndefined();
-    await writeFile(
-      path.join(directory, reference.output),
-      "replacement style bytes",
-    );
-    expect(
-      run("resume-job", "--id", recipe.id, "--job-id", "fixture-job"),
-    ).toContain("resumed candidate ready");
-    const recovered = JSON.parse(
-      await readFile(path.join(directory, generatedPath), "utf8"),
-    ).records[recipe.id];
-    expect(recovered.request).toEqual(receipt?.request);
-    expect(recovered.request.styleReference.sha256).toBe(originalReferenceHash);
-    expect(recovered.status).toBe("CANDIDATE");
-  });
-
-  it("refuses to generate or resume a recipe frozen on a retired style reference", () => {
-    // The real manifest: Defection's reference icon is retired.
-    const run = (...args: string[]): string =>
-      execFileSync(
-        process.execPath,
-        [
-          "--import",
-          pathToFileURL(
-            path.join(process.cwd(), "node_modules/tsx/dist/loader.mjs"),
-          ).href,
-          "scripts/art/pixellab.ts",
-          ...args,
-        ],
-        {
-          // No credential: the refusal comes before any provider call.
-          env: { ...process.env, PIXELLAB_API_KEY: "" },
-          encoding: "utf8",
-          stdio: "pipe",
-        },
-      );
-    expect(() =>
-      run(
-        "generate",
-        "--stage",
-        "batch",
-        "--ids",
-        "ui-action-defection,ui-action-blackout",
-      ),
-    ).toThrow("ui-action-defection is frozen");
-    expect(() =>
-      run("resume-job", "--id", "ui-action-blackout", "--job-id", "none"),
-    ).toThrow("ui-action-blackout is frozen");
   });
 });

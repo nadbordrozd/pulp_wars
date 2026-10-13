@@ -1053,44 +1053,8 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
   };
 
 /**
- * Ruleset 5 and 6 code: it has no burrowed list, so every reader in these
- * files is board-only by construction.
+ * Files outside Ruleset 7 whose unit-list reads are not classified. The
+ * Ruleset 5 and 6 code this listed is retired (pulp_wars-lky5); every source
+ * file is Ruleset 7 now, so the list is empty.
  */
-export const LEGACY_UNIT_READER_FILES_V7: readonly string[] = [
-  "src/ai/index.ts",
-  "src/ai/v6.ts",
-  "src/app/controller.ts",
-  "src/engine/capture/eligibility.ts",
-  "src/engine/combat/combat.ts",
-  "src/engine/commands/predicates.ts",
-  "src/engine/commands/reducers.ts",
-  "src/engine/fog/view.ts",
-  "src/engine/movement/movement.ts",
-  "src/engine/queries/player-query.ts",
-  "src/engine/rules/economy.ts",
-  "src/engine/rules/ruleset.ts",
-  "src/engine/scenarios/demo.ts",
-  "src/engine/simulation.ts",
-  "src/engine/turns/lifecycle.ts",
-  "src/engine/v6/combat.ts",
-  "src/engine/v6/economy.ts",
-  "src/engine/v6/map.ts",
-  "src/engine/v6/movement.ts",
-  "src/engine/v6/query.ts",
-  "src/engine/v6/reducer.ts",
-  "src/engine/v6/state-schema.ts",
-  "src/engine/v6/view.ts",
-  "src/headless/index.ts",
-  "src/headless/v6.ts",
-  "src/render/canvas/board-host-v6.ts",
-  "src/render/canvas/board-host.ts",
-  "src/render/canvas/board-renderer.ts",
-  "src/render/canvas/combat-presentation-v6.ts",
-  "src/render/canvas/movement-presentation-v6.ts",
-  "src/render/canvas/render-plan-v6.ts",
-  "src/render/canvas/render-plan.ts",
-  "src/render/dom/app-view-v6.ts",
-  "src/render/dom/app-view.ts",
-  "src/render/dom/selection-identity-v6.ts",
-  "src/render/dom/unit-presentation-v6.ts",
-];
+export const LEGACY_UNIT_READER_FILES_V7: readonly string[] = [];

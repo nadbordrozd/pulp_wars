@@ -47,10 +47,10 @@ describe("GitHub Pages deployment", () => {
     const completeModuleSource = moduleSources.join("\n");
 
     expect(completeModuleSource).toContain(PAGES_BASE);
-    expect(completeModuleSource).toContain("assets/pixellab/units/");
-    expect(completeModuleSource).not.toMatch(/["'`]\/assets\/pixellab\//);
+    expect(completeModuleSource).toContain("assets/chibi/terrain/");
+    expect(completeModuleSource).not.toMatch(/["'`]\/assets\/chibi\//);
     await expect(
-      readFile(path.join(outputRoot, "assets/pixellab/units/warrior.png")),
+      readFile(path.join(outputRoot, "assets/chibi/terrain/chibi-grass-1.png")),
     ).resolves.not.toHaveLength(0);
   });
 

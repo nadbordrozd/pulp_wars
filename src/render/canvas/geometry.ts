@@ -1,4 +1,8 @@
-import type { Coord } from "../../engine/index";
+/** A grid cell: column and row. */
+export interface Coord {
+  readonly x: number;
+  readonly y: number;
+}
 
 export const TILE_WIDTH = 128;
 export const TILE_HEIGHT = 128;
@@ -28,68 +32,7 @@ export interface WorldBounds {
   readonly bottom: number;
 }
 
-export interface GroundAnchor {
-  readonly at: Coord;
-  readonly tie: number;
-  readonly id: number;
-}
-
-export interface Rectangle {
-  readonly left: number;
-  readonly top: number;
-  readonly width: number;
-  readonly height: number;
-}
-
-export interface UnitHealthBarGeometry {
-  readonly background: Rectangle;
-  readonly fill: Rectangle;
-}
-
 export type TileEdge = "NORTH" | "EAST" | "SOUTH" | "WEST";
-
-export interface TerritoryBoundarySegment {
-  readonly at: Coord;
-  readonly edge: TileEdge;
-}
-
-const TILE_EDGES: readonly {
-  readonly edge: TileEdge;
-  readonly neighbor: Coord;
-}[] = [
-  { edge: "NORTH", neighbor: { x: 0, y: -1 } },
-  { edge: "EAST", neighbor: { x: 1, y: 0 } },
-  { edge: "SOUTH", neighbor: { x: 0, y: 1 } },
-  { edge: "WEST", neighbor: { x: -1, y: 0 } },
-];
-
-/**
- * Returns only the perimeter of the supplied, already-observable territory.
- * Missing neighbors are treated as outside, so callers never need to inspect
- * fogged tiles to produce a closed and readable boundary.
- */
-export function territoryBoundarySegments(
-  observableTerritory: readonly Coord[],
-): readonly TerritoryBoundarySegment[] {
-  const coordinates = new Set(
-    observableTerritory.map((at) => `${at.x},${at.y}`),
-  );
-  const ordered = [...observableTerritory].sort(
-    (left, right) => left.y - right.y || left.x - right.x,
-  );
-  const segments: TerritoryBoundarySegment[] = [];
-  for (const at of ordered) {
-    for (const { edge, neighbor } of TILE_EDGES) {
-      if (!coordinates.has(`${at.x + neighbor.x},${at.y + neighbor.y}`))
-        segments.push({ at, edge });
-    }
-  }
-  return segments;
-}
-
-export function tileEdgeIndex(edge: TileEdge): number {
-  return TILE_EDGES.findIndex((candidate) => candidate.edge === edge);
-}
 
 /**
  * Axis-aligned square presentation only. Logical coordinates and cardinal
@@ -196,20 +139,6 @@ export function fitCamera(
     zoom,
     offsetX: viewport.width / 2 - ((bounds.left + bounds.right) / 2) * zoom,
     offsetY: viewport.height / 2 - ((bounds.top + bounds.bottom) / 2) * zoom,
-  };
-}
-
-export function zoomCameraAt(
-  camera: CameraState,
-  nextZoom: number,
-  fixedScreenPoint: Point,
-): CameraState {
-  const zoom = clampZoom(nextZoom);
-  const fixedWorldPoint = screenToWorld(fixedScreenPoint, camera);
-  return {
-    zoom,
-    offsetX: fixedScreenPoint.x - fixedWorldPoint.x * zoom,
-    offsetY: fixedScreenPoint.y - fixedWorldPoint.y * zoom,
   };
 }
 
@@ -507,61 +436,6 @@ export function cellWorldBounds(cells: readonly Coord[]): WorldBounds | null {
 
 export function clampZoom(value: number): number {
   return Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, value));
-}
-
-export function compareGroundAnchors(
-  left: GroundAnchor,
-  right: GroundAnchor,
-): number {
-  const leftPoint = projectGrid(left.at);
-  const rightPoint = projectGrid(right.at);
-  return (
-    leftPoint.y - rightPoint.y ||
-    leftPoint.x - rightPoint.x ||
-    left.tie - right.tie ||
-    left.id - right.id
-  );
-}
-
-export function sameCoord(left: Coord, right: Coord): boolean {
-  return left.x === right.x && left.y === right.y;
-}
-
-/**
- * Code-native unit health geometry in CSS pixels. The bar hugs the feet/ground
- * anchor while its bounded status scale keeps it legible at every camera zoom.
- */
-export function unitHealthBarGeometry(
-  center: Point,
-  zoom: number,
-  hpRatio: number,
-): UnitHealthBarGeometry {
-  const statusScale = Math.min(1.25, Math.max(0.75, zoom));
-  const width = 42 * statusScale;
-  const barTop = center.y + 4 * zoom;
-  const left = center.x - width / 2;
-  return {
-    background: {
-      left: left - 2,
-      top: barTop - 2,
-      width: width + 4,
-      height: 10,
-    },
-    fill: {
-      left,
-      top: barTop,
-      width: width * Math.min(1, Math.max(0, hpRatio)),
-      height: 6,
-    },
-  };
-}
-
-export function cityLabelVerticalBounds(
-  centerY: number,
-  zoom: number,
-): readonly [top: number, bottom: number] {
-  const labelY = centerY + 38 * zoom;
-  return [labelY - 10, labelY + 11];
 }
 
 function squaredDistance(left: Point, right: Point): number {

@@ -5,6 +5,7 @@ import {
 import type { StorageAdapter } from "../persistence/index";
 import {
   cleanupObsoleteRuleset7Saves,
+  clearRetiredRulesetSavesV7,
   type ObsoleteSaveCleanupResultV7,
 } from "../persistence/index";
 import { clearStoredArtSetV7 } from "./art-set-v7";
@@ -36,6 +37,9 @@ export function bootstrapRuleset7App(
   const storage =
     options.storage === undefined ? browserStorageV7(browser) : options.storage;
   const obsoleteSaveCleanup = cleanupObsoleteRuleset7Saves(storage);
+  // A saved game of the retired prototypes goes without a word
+  // (pulp_wars-lky5).
+  clearRetiredRulesetSavesV7(storage);
   const controller = new Ruleset7BrowserController({
     ...options,
     storage,

@@ -6,6 +6,10 @@
 > separately registered copy with Candy unit substitutions, is
 > [Pulp Wars Ruleset 6](product/RULESET_6.md). The MVP section below defines
 > sequencing, not a reduction of final ruleset-6 scope.
+>
+> Ruleset 6 is retired (`pulp_wars-lky5`); this brief stays as the design
+> source of the economy and technology tree that
+> [Ruleset 7](product/RULESET_7_CURRENT.md) grew from.
 
 ## 1. Design goal
 

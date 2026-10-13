@@ -1,4 +1,3 @@
-import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
@@ -35,15 +34,6 @@ describe("Ruleset 7 Farm presentation", () => {
       expect(manifest.retired.some((entry) => entry.id === id)).toBe(true);
     }
     expect(new Set(Object.values(FARM_ART_KEYS_V7)).size).toBe(3);
-  });
-
-  it("preserves the accepted v6 processed Farm unchanged", async () => {
-    const bytes = await readFile(
-      path.join(root, "public/assets/pixellab/buildings-square/farm.png"),
-    );
-    expect(createHash("sha256").update(bytes).digest("hex")).toBe(
-      "34f46d4f1aad59200a53511dadfe460ba2ca465a7f4536985425d19b5cc03d0f",
-    );
   });
 
   it("pairs canonical same-city revealed cardinal layouts without holes", () => {

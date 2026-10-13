@@ -631,36 +631,8 @@ export const KIND_READER_CLASSES_V7: Readonly<
 };
 
 /**
- * Ruleset 5 and 6 files (and their shared shells) whose faction reads have
- * no Mind Control: they are not classified.
+ * Files outside Ruleset 7 whose faction reads are not classified. The
+ * Ruleset 5 and 6 code this listed is retired (pulp_wars-lky5); every source
+ * file is Ruleset 7 now, so the list is empty.
  */
-export const LEGACY_KIND_READER_FILES_V7: readonly string[] = [
-  "src/ai/index.ts",
-  "src/engine/combat/combat.ts",
-  "src/engine/commands/predicates.ts",
-  "src/engine/commands/reducers.ts",
-  "src/engine/fog/view.ts",
-  "src/engine/queries/player-query.ts",
-  "src/engine/rules/ruleset-v6.ts",
-  "src/engine/simulation.ts",
-  "src/engine/v6/combat.ts",
-  "src/engine/v6/movement.ts",
-  "src/engine/v6/query.ts",
-  "src/engine/v6/reducer.ts",
-  "src/engine/v6/state-schema.ts",
-  "src/engine/v6/unit-stats.ts",
-  "src/engine/v6/view.ts",
-  "src/headless/index.ts",
-  "src/headless/v6.ts",
-  "src/render/canvas/board-host-v6.ts",
-  "src/render/canvas/board-host.ts",
-  "src/render/canvas/board-renderer-v6.ts",
-  "src/render/canvas/board-renderer.ts",
-  "src/render/canvas/combat-presentation-v6.ts",
-  "src/render/canvas/movement-presentation-v6.ts",
-  "src/render/canvas/render-plan-v6.ts",
-  "src/render/dom/app-view-v6.ts",
-  "src/render/dom/app-view.ts",
-  "src/render/dom/selection-identity-v6.ts",
-  "src/render/dom/unit-presentation-v6.ts",
-];
+export const LEGACY_KIND_READER_FILES_V7: readonly string[] = [];

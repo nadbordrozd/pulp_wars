@@ -1,66 +1,21 @@
-# Deterministic engine scaffold
+# Deterministic engine
 
 `src/engine` is the authoritative, DOM-independent simulation boundary. Its
-public API is exported by `index.ts`; browser, headless, and future AI callers
-should not reach through that boundary to internal modules.
+public API is exported by `index.ts`; browser, headless, and AI callers should
+not reach through that boundary to internal modules.
 
-Match creation constructs the supported seeded land maps, reserves settlement
-centers as Grass, then assigns exactly 18% of the non-settlement tiles as
-Mountain and 24% as Forest from one stable shuffle. Resources are drawn in
-settlement/neighbor coordinate order with terrain-specific thresholds: Fruit on
-Grass, Ore on Mountain, and Animal on Forest. They occur only in territories.
-Every settlement has at least two distinct, immediately controllable adjacent
-opportunities; there is no fixed upper or per-type quota. Every valid map has at
-least one Animal, connected capitals through Grass or Forest, and four
-non-Mountain capital neighbors. Map generation is bounded to 256 deterministic
-candidates and reports stable failure context without weakening constraints.
-Capital assignment and turn order use their own stable shuffles in the specified
-retained v4 draw order, and neither `aiMode` nor per-seat faction selection
-changes the board or PRNG stream.
+The engine implements one game, Ruleset 7. Its rules are specified in
+[Ruleset 7: current rules](../../docs/product/RULESET_7_CURRENT.md) and live
+in `v7/` with their numbers in `rules/ruleset-v7.ts`. The shared pieces
+beside them are small: entity ids (`model/ids.ts`), deep freezing
+(`model/freeze.ts`), the seeded generator (`random/random.ts`), canonical JSON
+and hashing (`replay/canonical.ts`) and UTF-8 encoding (`encoding/utf8.ts`).
 
-The ruleset-5 target supports square sizes 11, 14, 16, explicit Large 20, and
-explicit Huge 25. Auto remains 11/14/16 for 1/2/3 AI and generates 3/4/6
-neutral villages. Large generates 15 settlements (13/12/11 neutral villages)
-and 72 mountains; Huge generates 22 settlements (20/19/18 neutral villages)
-and 113 mountains. Capitals remain one per player. New standard setup writers
-select these counts with `mapGenerationRevision: "REDUCED_VILLAGES"`.
-Historical v5 setup data without that optional marker is preserved exactly and
-uses the former Auto 4/6/8, Large 18/17/16, and Huge 28/27/26 tables. Demo stays
-unmarked to preserve its established v5 golden map.
-
-Commands use shared pure eligibility predicates for both legal enumeration and
-transactional application. Fruit harvesting, Animal hunting, explicit-ore
-Mines, empty-Forest Lumber Mills, uncapped city growth, level-based non-exempt
-training, movement, combat, Wait, recovery, promotion, capture, cooperative
-relationships, and turn lifecycle reducers apply effects in stable event order,
-freeze the next state, and increment `commandIndex` exactly once. Lumber Mills
-and Mines remain on captured territory. Forest movement ends on entry; Archery
-grants Forest defenders the greater 3/2 defense multiplier. Every ordinary
-starting capital Warrior carries a durable capacity exemption; legal
-over-capacity acquired states are preserved. Rejected commands retain the
-identical state object and consume no randomness.
-
-The v5 schemas use ruleset `pulp-wars-poc-5`, require exact seat-ordered
-`ORIGINAL`/`CANDY` faction identity in setup and player state, and publish that
-identity in every player view. Save/replay versions 1 through 4
-are deliberately incompatible; loaders report that incompatibility without
-rewriting stored bytes or attempting migration.
-
-Default Vitest keeps the seed-zero canonical board hashes and a bounded paired
-10-seed smoke across all twelve supported size/AI configurations. The complete
-9,300-input, 18,600-board Rival/Cooperative corpus is an explicit validation
-gate so ordinary `npm test` stays within its roughly 60-second host target:
-
-```sh
-npm run validate:v4-map
-```
-
-Its checked evidence is
-[`POC_V4_MAP_CORPUS.json`](../../docs/validation/POC_V4_MAP_CORPUS.json).
-
-The bounded complete-match Normal-policy corpus, including Mathematics and
-positive Catapult training/attack/kill participation, is checked in at
-[`POC_V4_AI_CORPUS.json`](../../docs/validation/POC_V4_AI_CORPUS.json).
+The earlier prototypes, the legacy ruleset-5 engine and Ruleset 6, were
+retired with bead `pulp_wars-lky5` and their code is gone. One function of
+the Ruleset 6 map generator is still used and kept its name:
+`placeTreasureChestsV6` in `v7/treasure-placement.ts` draws the treasure
+chests of a Ruleset 7 map with the same samples as before.
 
 Deterministic additions must use `nextUint32`/`nextBounded`, explicitly sort
 candidate collections before sampling, allocate city/unit IDs from the shared

@@ -21,8 +21,8 @@ import type {
  * The keys were the ids of the retired Ruleset 7 PixelLab rasters (bead
  * pulp_wars-67q.15). Those that named a retired raster now start with
  * `v7-` and end in the same word, so every stand-in keeps its letter. The
- * others still spell the id of a raster of the frozen Ruleset 6 art; that
- * is history, not a lookup.
+ * others still spell the id of a raster of the Ruleset 6 art, which is
+ * retired too (bead pulp_wars-lky5); that is history, not a lookup.
  */
 
 export const UNIT_ART_KEYS_V7 = {

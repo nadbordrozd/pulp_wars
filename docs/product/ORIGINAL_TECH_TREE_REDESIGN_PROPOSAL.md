@@ -10,6 +10,11 @@
 > revision 2 are in the
 > [Ruleset 7 design review](RULESET_7_DESIGN_REVIEW.md). Ruleset 6 and Candy
 > remain unchanged.
+>
+> Since `pulp_wars-lky5` Ruleset 6 is retired: the Ruleset 6 source files
+> and the Normal AI sections this proposal audited are removed, so the
+> "Sources audited" table names them without links. The
+> [Ruleset 6 rules](RULESET_6.md) are kept as a historical record.
 
 ## 1. Decision summary
 
@@ -91,13 +96,13 @@ and each resulting change.
 | [Ruleset 6 §§4–9](RULESET_6.md#4-map-resources-and-basic-development)                                               | Exact generator frequencies, current improvements, graph, costs, roles, combat abilities, and movement rules.                                                                    |
 | [Original economy brief](../new_instructions.md#9-technology-structure)                                             | Five-branch intent, spatial-economy goals, processor formulas, and the desire for multi-unlock technologies.                                                                     |
 | [Polytopia core reference §§7–11](../research/POLYTOPIA_CORE_REFERENCE.md#7-stars-resources-and-economic-decisions) | Useful comparative evidence for resource costs, five-root readability, movement, retaliation, and role differentiation. It is reference material, not an imported specification. |
-| [Normal AI §§5–6](../architecture/NORMAL_AI.md#5-research-growth-and-roads)                                         | Current shortest-unlock-chain research assumptions and fixed role preferences that a redesign would invalidate.                                                                  |
+| Normal AI §§5–6 (Ruleset 6 policy, removed)                                                                         | Current shortest-unlock-chain research assumptions and fixed role preferences that a redesign would invalidate.                                                                  |
 | [Screen flow: Technology tree](../ui/SCREEN_FLOW.md#technology-tree)                                                | Five wide columns, compact single-branch navigation, one visual parent per node, full-graph cards, and detail-sheet requirements.                                                |
-| [`ruleset-v6.ts`](../../src/engine/rules/ruleset-v6.ts)                                                             | Actual registered nodes, effects, role bindings, and cost function.                                                                                                              |
-| [`map.ts`](../../src/engine/v6/map.ts)                                                                              | Actual terrain targets, conditional resource draw intervals, and map acceptance constraints.                                                                                     |
-| [`spatial-economy.ts`](../../src/engine/v6/spatial-economy.ts)                                                      | Actual contribution arithmetic and adjacency/cluster semantics.                                                                                                                  |
-| [`economy.ts`](../../src/engine/v6/economy.ts) and [`reducer.ts`](../../src/engine/v6/reducer.ts)                   | Growth thresholds, mandatory reward-queue sequencing, capture/move transactions, and current treasure/unit placement behavior.                                                   |
-| [`combat.ts`](../../src/engine/v6/combat.ts) and [`movement.ts`](../../src/engine/v6/movement.ts)                   | Exact damage, retaliation, terrain-stop, road, exploration, and ZOC mechanics.                                                                                                   |
+| `ruleset-v6.ts` (removed)                                                                                           | Actual registered nodes, effects, role bindings, and cost function.                                                                                                              |
+| `v6/map.ts` (removed)                                                                                               | Actual terrain targets, conditional resource draw intervals, and map acceptance constraints.                                                                                     |
+| `v6/spatial-economy.ts` (removed)                                                                                   | Actual contribution arithmetic and adjacency/cluster semantics.                                                                                                                  |
+| `v6/economy.ts` and `v6/reducer.ts` (removed)                                                                       | Growth thresholds, mandatory reward-queue sequencing, capture/move transactions, and current treasure/unit placement behavior.                                                   |
+| `v6/combat.ts` and `v6/movement.ts` (removed)                                                                       | Exact damage, retaliation, terrain-stop, road, exploration, and ZOC mechanics.                                                                                                   |
 
 ## 3. Current-state diagnosis
 

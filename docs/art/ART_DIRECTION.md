@@ -14,9 +14,9 @@ are unchanged.
 
 Technical class contracts live under [`docs/art/classes/`](classes/) and
 may specialize, but never contradict, this direction. The direction of the
-frozen Ruleset 6 art, which this file described before, is kept at the end
-under [Frozen Ruleset 6 art](#frozen-ruleset-6-art); it governs no new
-asset.
+Ruleset 6 art, which this file described before, is kept at the end
+under [Frozen Ruleset 6 art](#frozen-ruleset-6-art); that art is retired
+(`pulp_wars-lky5`) and the section governs no asset.
 
 The decision rests on two studies:
 
@@ -343,6 +343,11 @@ the batches and their user reviews in the
 - [UI](classes/ui.md)
 
 ## Frozen Ruleset 6 art
+
+**Retired (`pulp_wars-lky5`).** Ruleset 6 and the older screens are removed
+and every raster under `public/assets/pixellab/` with them; where this
+section says that art "still" exists or stays as a fallback, it no longer
+does.
 
 **Historical.** Everything below is the direction this file carried before
 the chibi direction replaced it. It faithfully reproduces the

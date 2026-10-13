@@ -1047,8 +1047,10 @@ evidence ([release validation](../validation/RULESET_7_RELEASE.md),
 [tactical AI validation](../validation/RULESET_7_TACTICAL_AI.md)), and
 performance work ([public planning](../architecture/PUBLIC_PLANNING_V7.md)).
 
-Ruleset 7 does not change Ruleset 6, which remains playable through the
-separate [Ruleset 6](RULESET_6.md) route.
+Ruleset 7 is the only game. The earlier prototypes, Ruleset 6 and the
+legacy ruleset 5, are retired (`pulp_wars-lky5`): they cannot be played, and
+[Ruleset 6](RULESET_6.md) is kept only as a historical record that some
+sections here cite.
 
 ## 1. Identity and compatibility
 
@@ -1218,11 +1220,15 @@ separate [Ruleset 6](RULESET_6.md) route.
   ([sections 14](#14-naval-rules) and [21.16](#2116-the-frozen-sea)); a
   match without an Ice Folk seat is the `7r43` match apart from the empty
   list.
-- The current browser route deletes only the known obsolete Ruleset 7 autosave
-  keys (through `pulpWars.save.v7r49.current`) and preserves the Ruleset 6
-  save, settings, the art-set preference, and unrelated storage.
-- The normal browser entry and `?ruleset=7` launch Ruleset 7; exact
-  `?ruleset=6` launches Ruleset 6; any other value is an unsupported-ruleset
+- The browser deletes the known obsolete Ruleset 7 autosave keys (through
+  `pulpWars.save.v7r49.current`) and reports how many it removed. It also
+  removes `pulpWars.save.current`, the autosave of the retired prototypes
+  (Ruleset 6 and the legacy game shared that key), without a notice
+  (`pulp_wars-lky5`). Settings, the art-set preference, and unrelated storage
+  are preserved.
+- The normal browser entry and `?ruleset=7` launch Ruleset 7. The retired
+  `?ruleset=6` and `?legacy-v5=1` are ignored: an address that carries one
+  opens Ruleset 7. Any other `ruleset` value is an unsupported-ruleset
   error. There is no other rules parameter: the former `?undead=1`
   development flag is gone, and a save or replay with Undead, Goblin,
   Dinosaur, Martian, Ice Folk, Dwarf, or Candy seats loads like any other.

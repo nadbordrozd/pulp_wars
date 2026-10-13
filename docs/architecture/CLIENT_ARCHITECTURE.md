@@ -126,10 +126,17 @@ carries the one-cell `MOVE` plus a follow-up `DISEMBARK`; the DOM sends the
 landing only when the accepted Move left the unit embarked on that water cell
 and the landing is still offered.
 
-**Status:** frozen Ruleset-6 compatibility architecture below the current
-Ruleset-7 boundary
+**Status:** the Ruleset 7 boundary above is current. From
+[section 0](#0-ruleset-6-replacement-boundary) on, this file is the
+architecture of the retired Ruleset 6 and ruleset-5 clients
+(`pulp_wars-lky5`): their engine, controllers, renderers, persistence and
+headless runners are removed. Those sections are kept for the constraints
+Ruleset 7 inherits (dependency direction, the renderer boundary,
+determinism, canonical data, the storage adapter) and for the Ruleset 7
+subsections inside them; their schemas, routes, storage keys, module names
+and test lists are history.
 
-**Rules:** [Ruleset 6](../product/RULESET_6.md)
+**Rules:** [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md)
 
 **UI contract:** [Screen Flow](../ui/SCREEN_FLOW.md)
 
@@ -799,6 +806,9 @@ Ice Folk frozen sea). The interface (`pulp_wars-5ti.7`) and the art
 
 ## 0. Ruleset-6 replacement boundary
 
+> **Historical (`pulp_wars-lky5`).** Ruleset 6 is retired and its code is
+> removed; this section records the client it had.
+
 Ruleset 6 uses `pulp-wars-poc-6` and schema/command/event/save/replay version 6. The ruleset-5 interfaces and examples later in this file are retained only
 as historical implementation context. Where an identifier, union, table,
 currency, faction rule, or version differs, this section and Ruleset 6 are the
@@ -988,8 +998,11 @@ equality. New v6 goldens and corpora never overwrite v5 fixtures.
 
 ## Historical ruleset-5 architecture detail
 
-The numbered sections below document the implemented v5 client and retained
-cross-version infrastructure. Versioned examples are not v6 schemas.
+The numbered sections below document the v5 client as it was implemented
+and the cross-version infrastructure Ruleset 7 kept (ids, the seeded
+generator, canonical JSON and hashing, the canvas geometry, the storage
+adapter and the settings envelope). The v5 and v6 code itself is removed
+(`pulp_wars-lky5`). Versioned examples are not v6 or v7 schemas.
 
 ## 1. Architectural constraints
 
@@ -1869,9 +1882,10 @@ view.
   cell size, for the review scripts that read it.
 
 **A subject without a raster is drawn in code** (decision of
-`pulp_wars-67q.15`), never with a raster of the earlier set. No Ruleset 7
-module resolves `ACCEPTED_ART_URLS` (the PixelLab set under
-`public/assets/pixellab/`, which Ruleset 6 and the older screens draw):
+`pulp_wars-67q.15`), never with a raster of the earlier set. That earlier
+PixelLab set (`public/assets/pixellab/` and its `ACCEPTED_ART_URLS` table),
+which Ruleset 6 and the older screens drew, is retired in full with those
+games (`pulp_wars-lky5`):
 
 - On the board (`src/render/canvas/missing-art-v7.ts`), ground whose
   raster is not registered or failed to load is a flat wash of its terrain,
@@ -1895,13 +1909,14 @@ overlay geometry, and the interface names its stand-ins with them; none is
 looked up as a file. A key that named one of the 42 rasters only the
 removed path could reach starts with `v7-` (`v7-terrain-grass-1`,
 `v7-improvement-port`) and ends in the word its old id ended in, so a
-stand-in keeps its letter; the others still spell a Ruleset 6 raster id.
+stand-in keeps its letter; the others still spell the id of a Ruleset 6
+raster, retired since `pulp_wars-lky5`, and are names only as well.
 Those 42 rasters, their PixelLab recipes and records and the Ruleset 7 art
 id tables are deleted (see the
 [migration plan](../art/CHIBI_MIGRATION_PLAN.md#retired-the-earlier-ruleset-7-rasters)). Where this document and
 the art and interface documents still say what "LEGACY" draws, they
-describe the removed path. Ruleset 6, rules, commands, saves, replay and
-hashes never saw the art set.
+describe the removed path. Rules, commands, saves, replay and hashes never
+saw the art set.
 
 CHIBI follows [chibi direction](../art/ART_DIRECTION.md) sections 3–4:
 
@@ -2328,6 +2343,13 @@ and replay data are authoritative. A reload during animation resumes at the
 latest accepted command without trying to recreate animation progress.
 
 ## 10. Persistence and versioning
+
+The retired prototypes kept their autosave in `pulpWars.save.current`.
+Ruleset 7 never reads that key: its autosave is `SAVE_STORAGE_KEY_V7`
+(`src/engine/v7/replay.ts`), and at startup it removes
+`pulpWars.save.current` without a notice
+(`clearRetiredRulesetSavesV7`, `src/persistence/browser-v7.ts`). The
+settings key below is the one Ruleset 7 still uses.
 
 Use browser `localStorage` behind injected repositories for the POC:
 

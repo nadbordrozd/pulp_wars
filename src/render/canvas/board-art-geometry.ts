@@ -245,70 +245,6 @@ export const RULESET7_LOGISTICS_ART_GEOMETRY = {
   },
 } as const satisfies Readonly<Record<string, SourceGeometry>>;
 
-export const RULESET6_UNIT_COSMETIC_OFFSET_Y =
-  RULESET6_UNIT_ART_GEOMETRY.standard.offsetY;
-
-export const ECONOMIC_ART_GEOMETRY = {
-  low: BOARD_ART_GEOMETRY.lowObject,
-  processor: {
-    width: 384,
-    height: 384,
-    anchor: { x: 192, y: 288 },
-    displayScale: 0.3,
-  },
-} as const satisfies Readonly<Record<string, SourceGeometry>>;
-
-/**
- * Placement corrections for accepted silhouettes that otherwise sit visibly
- * high over their owning tile. Source anchors remain authoritative.
- */
-export const PLACEMENT_ART_GEOMETRY = {
-  forest: {
-    ...BOARD_ART_GEOMETRY.lowObject,
-    offsetY: 23,
-  },
-  animal: {
-    ...BOARD_ART_GEOMETRY.lowObject,
-    offsetY: 23,
-  },
-  fruit: {
-    ...BOARD_ART_GEOMETRY.lowObject,
-    offsetY: 23,
-  },
-  candyWarrior: {
-    ...BOARD_ART_GEOMETRY.unit,
-    offsetY: 7.5,
-  },
-  fertileGround: {
-    ...BOARD_ART_GEOMETRY.lowObject,
-    offsetY: 18,
-  },
-} as const satisfies Readonly<Record<string, SourceGeometry>>;
-
-export const MOUNTAIN_ART_GEOMETRY = Object.freeze([
-  {
-    width: 256,
-    height: 296,
-    anchor: { x: 128, y: 179 },
-    displayScale: 0.42,
-    lowerDiamondClip: true,
-  },
-  {
-    width: 256,
-    height: 296,
-    anchor: { x: 128, y: 179 },
-    displayScale: 0.42,
-    lowerDiamondClip: true,
-  },
-  {
-    width: 256,
-    height: 296,
-    anchor: { x: 128, y: 186 },
-    displayScale: 0.4,
-    lowerDiamondClip: true,
-  },
-] as const satisfies readonly SourceGeometry[]);
-
 export const SETTLEMENT_ART_GEOMETRY = {
   village: {
     width: 256,
@@ -337,13 +273,6 @@ export const SETTLEMENT_ART_GEOMETRY = {
     },
   },
 } as const;
-
-export function mountainGeometryForVariant(variant: number): SourceGeometry {
-  const index =
-    ((variant % MOUNTAIN_ART_GEOMETRY.length) + MOUNTAIN_ART_GEOMETRY.length) %
-    MOUNTAIN_ART_GEOMETRY.length;
-  return MOUNTAIN_ART_GEOMETRY[index] ?? MOUNTAIN_ART_GEOMETRY[0];
-}
 
 export function cityArtLevel(level: number): 1 | 2 | 3 {
   return Math.max(1, Math.min(3, level)) as 1 | 2 | 3;

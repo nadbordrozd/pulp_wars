@@ -222,7 +222,7 @@ try {
       localStorage.setItem('pulpWars.save.v7r41.current', 'old-v7r41-bytes');
       localStorage.setItem('pulpWars.save.v7r42.current', 'old-v7r42-bytes');
       localStorage.setItem('pulpWars.save.v7r44.current', 'old-v7r44-bytes');
-      localStorage.setItem('pulpWars.save.current', 'v6-bytes');
+      localStorage.setItem('pulpWars.save.current', 'retired-prototype-bytes');
       localStorage.setItem('pulpWars.settings.v1', JSON.stringify({ format: 'pulp-wars-settings', version: 1, settings: { uiScale: 1, motion: 'REDUCED', animationSpeed: 'NORMAL', highContrast: false } }));
       localStorage.setItem('pulpWars.unrelated', 'unrelated-bytes');
       localStorage.setItem(${JSON.stringify(CAMPAIGN_KEY_V7)}, ${JSON.stringify(SEEDED_CAMPAIGN_PROGRESS_V7)});
@@ -643,13 +643,13 @@ try {
     readonly oldV7r41: string | null;
     readonly oldV7r42: string | null;
     readonly oldV7r44: string | null;
-    readonly v6: string | null;
+    readonly retiredPrototype: string | null;
     readonly settings: string | null;
     readonly unrelated: string | null;
     readonly campaign: string | null;
   }>(
     connection,
-    `({ campaign: localStorage.getItem(${JSON.stringify(CAMPAIGN_KEY_V7)}), current: localStorage.getItem('pulpWars.save.v7r80.current'), oldV7: localStorage.getItem('pulpWars.save.v7.current'), oldV7r2: localStorage.getItem('pulpWars.save.v7r2.current'), oldV7r3: localStorage.getItem('pulpWars.save.v7r3.current'), oldV7r4: localStorage.getItem('pulpWars.save.v7r4.current'), oldV7r5: localStorage.getItem('pulpWars.save.v7r5.current'), oldV7r6: localStorage.getItem('pulpWars.save.v7r6.current'), oldV7r7: localStorage.getItem('pulpWars.save.v7r7.current'), oldV7r8: localStorage.getItem('pulpWars.save.v7r8.current'), oldV7r9: localStorage.getItem('pulpWars.save.v7r9.current'), oldV7r10: localStorage.getItem('pulpWars.save.v7r10.current'), oldV7r11: localStorage.getItem('pulpWars.save.v7r11.current'), oldV7r12: localStorage.getItem('pulpWars.save.v7r12.current'), oldV7r13: localStorage.getItem('pulpWars.save.v7r13.current'), oldV7r14: localStorage.getItem('pulpWars.save.v7r14.current'), oldV7r15: localStorage.getItem('pulpWars.save.v7r15.current'), oldV7r16: localStorage.getItem('pulpWars.save.v7r16.current'), oldV7r17: localStorage.getItem('pulpWars.save.v7r17.current'), oldV7r18: localStorage.getItem('pulpWars.save.v7r18.current'), oldV7r19: localStorage.getItem('pulpWars.save.v7r19.current'), oldV7r20: localStorage.getItem('pulpWars.save.v7r20.current'), oldV7r21: localStorage.getItem('pulpWars.save.v7r21.current'), oldV7r22: localStorage.getItem('pulpWars.save.v7r22.current'), oldV7r23: localStorage.getItem('pulpWars.save.v7r23.current'), oldV7r24: localStorage.getItem('pulpWars.save.v7r24.current'), oldV7r25: localStorage.getItem('pulpWars.save.v7r25.current'), oldV7r26: localStorage.getItem('pulpWars.save.v7r26.current'), oldV7r27: localStorage.getItem('pulpWars.save.v7r27.current'), oldV7r28: localStorage.getItem('pulpWars.save.v7r28.current'), oldV7r29: localStorage.getItem('pulpWars.save.v7r29.current'), oldV7r30: localStorage.getItem('pulpWars.save.v7r30.current'), oldV7r31: localStorage.getItem('pulpWars.save.v7r31.current'), oldV7r32: localStorage.getItem('pulpWars.save.v7r32.current'), oldV7r33: localStorage.getItem('pulpWars.save.v7r33.current'), oldV7r34: localStorage.getItem('pulpWars.save.v7r34.current'), oldV7r35: localStorage.getItem('pulpWars.save.v7r35.current'), oldV7r36: localStorage.getItem('pulpWars.save.v7r36.current'), oldV7r37: localStorage.getItem('pulpWars.save.v7r37.current'), oldV7r38: localStorage.getItem('pulpWars.save.v7r38.current'), oldV7r39: localStorage.getItem('pulpWars.save.v7r39.current'), oldV7r40: localStorage.getItem('pulpWars.save.v7r40.current'), oldV7r41: localStorage.getItem('pulpWars.save.v7r41.current'), oldV7r42: localStorage.getItem('pulpWars.save.v7r42.current'), oldV7r44: localStorage.getItem('pulpWars.save.v7r44.current'), v6: localStorage.getItem('pulpWars.save.current'), settings: localStorage.getItem('pulpWars.settings.v1'), unrelated: localStorage.getItem('pulpWars.unrelated') })`,
+    `({ campaign: localStorage.getItem(${JSON.stringify(CAMPAIGN_KEY_V7)}), current: localStorage.getItem('pulpWars.save.v7r80.current'), oldV7: localStorage.getItem('pulpWars.save.v7.current'), oldV7r2: localStorage.getItem('pulpWars.save.v7r2.current'), oldV7r3: localStorage.getItem('pulpWars.save.v7r3.current'), oldV7r4: localStorage.getItem('pulpWars.save.v7r4.current'), oldV7r5: localStorage.getItem('pulpWars.save.v7r5.current'), oldV7r6: localStorage.getItem('pulpWars.save.v7r6.current'), oldV7r7: localStorage.getItem('pulpWars.save.v7r7.current'), oldV7r8: localStorage.getItem('pulpWars.save.v7r8.current'), oldV7r9: localStorage.getItem('pulpWars.save.v7r9.current'), oldV7r10: localStorage.getItem('pulpWars.save.v7r10.current'), oldV7r11: localStorage.getItem('pulpWars.save.v7r11.current'), oldV7r12: localStorage.getItem('pulpWars.save.v7r12.current'), oldV7r13: localStorage.getItem('pulpWars.save.v7r13.current'), oldV7r14: localStorage.getItem('pulpWars.save.v7r14.current'), oldV7r15: localStorage.getItem('pulpWars.save.v7r15.current'), oldV7r16: localStorage.getItem('pulpWars.save.v7r16.current'), oldV7r17: localStorage.getItem('pulpWars.save.v7r17.current'), oldV7r18: localStorage.getItem('pulpWars.save.v7r18.current'), oldV7r19: localStorage.getItem('pulpWars.save.v7r19.current'), oldV7r20: localStorage.getItem('pulpWars.save.v7r20.current'), oldV7r21: localStorage.getItem('pulpWars.save.v7r21.current'), oldV7r22: localStorage.getItem('pulpWars.save.v7r22.current'), oldV7r23: localStorage.getItem('pulpWars.save.v7r23.current'), oldV7r24: localStorage.getItem('pulpWars.save.v7r24.current'), oldV7r25: localStorage.getItem('pulpWars.save.v7r25.current'), oldV7r26: localStorage.getItem('pulpWars.save.v7r26.current'), oldV7r27: localStorage.getItem('pulpWars.save.v7r27.current'), oldV7r28: localStorage.getItem('pulpWars.save.v7r28.current'), oldV7r29: localStorage.getItem('pulpWars.save.v7r29.current'), oldV7r30: localStorage.getItem('pulpWars.save.v7r30.current'), oldV7r31: localStorage.getItem('pulpWars.save.v7r31.current'), oldV7r32: localStorage.getItem('pulpWars.save.v7r32.current'), oldV7r33: localStorage.getItem('pulpWars.save.v7r33.current'), oldV7r34: localStorage.getItem('pulpWars.save.v7r34.current'), oldV7r35: localStorage.getItem('pulpWars.save.v7r35.current'), oldV7r36: localStorage.getItem('pulpWars.save.v7r36.current'), oldV7r37: localStorage.getItem('pulpWars.save.v7r37.current'), oldV7r38: localStorage.getItem('pulpWars.save.v7r38.current'), oldV7r39: localStorage.getItem('pulpWars.save.v7r39.current'), oldV7r40: localStorage.getItem('pulpWars.save.v7r40.current'), oldV7r41: localStorage.getItem('pulpWars.save.v7r41.current'), oldV7r42: localStorage.getItem('pulpWars.save.v7r42.current'), oldV7r44: localStorage.getItem('pulpWars.save.v7r44.current'), retiredPrototype: localStorage.getItem('pulpWars.save.current'), settings: localStorage.getItem('pulpWars.settings.v1'), unrelated: localStorage.getItem('pulpWars.unrelated') })`,
   );
   if (
     keys.current !== null ||
@@ -696,7 +696,8 @@ try {
     keys.oldV7r41 !== null ||
     keys.oldV7r42 !== null ||
     keys.oldV7r44 !== null ||
-    keys.v6 !== "v6-bytes" ||
+    // The retired prototypes' autosave is cleared quietly (pulp_wars-lky5).
+    keys.retiredPrototype !== null ||
     JSON.parse(keys.settings ?? "null")?.settings?.motion !== "REDUCED" ||
     keys.unrelated !== "unrelated-bytes" ||
     // Campaign progress (pulp_wars-68k.5) is not a save: it survives the
@@ -773,12 +774,12 @@ try {
           resumeSameCommandIndex: true,
           routeOwnedDelete: true,
           obsoleteV7KeysRemoved: true,
-          v6KeyPreserved: true,
+          retiredPrototypeKeyCleared: true,
           settingsAndUnrelatedKeysPreserved: true,
           campaignProgressKeyPreserved: true,
         },
         compatibility: {
-          explicitRuleset6OriginalAndCandy: true,
+          retiredRuleset6LinkOpensRuleset7: true,
           unsupportedRouteTouchesNoStorage: true,
         },
         note: "Natural production match: the human used only offered End Turn and reward buttons while the shipped Normal AI played every non-human command.",
@@ -889,30 +890,31 @@ try {
     "the many-players match",
   );
   const campaign = await probeCampaign(connection);
-  await evaluate(
+  // The retired prototypes (pulp_wars-lky5): no link leads to one, and an
+  // old `?ruleset=6` address opens the Ruleset 7 title screen.
+  const retiredLink = await evaluate<boolean>(
     connection,
-    `localStorage.removeItem('pulpWars.save.current')`,
+    `document.querySelector('[data-route="ruleset-6"], a[href*="ruleset=6"]') !== null`,
   );
-  await pointerClick(connection, '[data-route="ruleset-6"]');
+  if (retiredLink)
+    throw new Error("a link to the retired Ruleset 6 is still on the page");
+  await connection.send("Page.navigate", {
+    url: routeUrl(baseUrl, "?ruleset=6"),
+  });
   await waitForExpression(
     connection,
-    `document.querySelector('[data-v6-setup]') !== null`,
+    `document.querySelector('[data-v7-setup]') !== null`,
   );
-  const explicitSix = await evaluate<{
-    readonly hasOriginal: boolean;
-    readonly hasCandy: boolean;
-    readonly hasV7Preview: boolean;
+  const retiredRoute = await evaluate<{
+    readonly hasV6Setup: boolean;
+    readonly unsupported: boolean;
   }>(
     connection,
-    `(() => { const text = document.body.textContent ?? ''; return { hasOriginal: text.includes('Original'), hasCandy: text.includes('Candy'), hasV7Preview: document.querySelector('[data-v7-setup]') !== null }; })()`,
+    `({ hasV6Setup: document.querySelector('[data-v6-setup]') !== null, unsupported: document.querySelector('[data-unsupported-ruleset]') !== null })`,
   );
-  if (
-    !explicitSix.hasOriginal ||
-    !explicitSix.hasCandy ||
-    explicitSix.hasV7Preview
-  )
+  if (retiredRoute.hasV6Setup || retiredRoute.unsupported)
     throw new Error(
-      `explicit ruleset-6 route failed: ${JSON.stringify(explicitSix)}`,
+      `retired ruleset-6 address failed: ${JSON.stringify(retiredRoute)}`,
     );
 
   await connection.send("Page.addScriptToEvaluateOnNewDocument", {

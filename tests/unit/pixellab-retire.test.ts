@@ -299,7 +299,7 @@ describe("retiring PixelLab recipes", () => {
   });
 });
 
-describe("the checked-in retirement of the Ruleset 7 legacy art", () => {
+describe("the checked-in retirement of the legacy PixelLab art", () => {
   const manifest = JSON.parse(
     readFileSync("scripts/art/pixellab-manifest.json", "utf8"),
   ) as RetirableSource;
@@ -309,11 +309,47 @@ describe("the checked-in retirement of the Ruleset 7 legacy art", () => {
 
   it("is sound, complete and leaves no raster behind", () => {
     expect(retirementProblems(manifest, records)).toEqual([]);
-    expect(manifest.retired).toHaveLength(42);
+    // 42 went with bead pulp_wars-67q.15 (the Ruleset 7 legacy art) and
+    // the other 188 with bead pulp_wars-lky5 (the art of the retired
+    // Ruleset 6 and legacy prototypes): every recipe this manifest held.
+    expect(manifest.retired).toHaveLength(230);
+    expect(manifest.recipes).toEqual([]);
+    expect(manifest.aliases).toEqual([]);
+    expect(Object.keys(records.records)).toEqual([]);
+    const withoutHash: string[] = [];
     for (const entry of manifest.retired ?? []) {
       expect(existsSync(entry.output), entry.output).toBe(false);
-      expect(entry.outputSha256, entry.id).toMatch(/^[a-f0-9]{64}$/);
+      if (entry.outputSha256 === undefined) withoutHash.push(entry.id);
+      else expect(entry.outputSha256, entry.id).toMatch(/^[a-f0-9]{64}$/);
     }
+    // Two Fruit attempts were rejected and never had an accepted raster.
+    expect(withoutHash).toEqual([
+      "terrain-fruit-attempt-1",
+      "terrain-fruit-attempt-2",
+    ]);
+    for (const folder of [
+      "public/assets/pixellab",
+      "art/pixellab/candidates",
+      "art/pixellab/quarantine",
+      "art/pixellab/reframe-sources",
+      "src/assets/generated-art-manifest.ts",
+    ])
+      expect(existsSync(folder), folder).toBe(false);
+  });
+
+  it("keeps the hash of each accepted raster on record", () => {
+    const hashOf = (id: string): string | undefined =>
+      manifest.retired?.find((entry) => entry.id === id)?.outputSha256;
+    // Hashes the art tests pinned while these rasters were drawn.
+    expect(hashOf("building-square-farm")).toBe(
+      "34f46d4f1aad59200a53511dadfe460ba2ca465a7f4536985425d19b5cc03d0f",
+    );
+    expect(hashOf("building-square-barracks")).toBe(
+      "f924d1646ec42185ef42dbb79966e0405b2e619447365044bda8b2d46037fae6",
+    );
+    expect(hashOf("unit-original-catapult")).toBe(
+      "67e7f8cb6fc9a36b385eed9aecc2a12fb2884701cb7661d5503f8dbcf373c360",
+    );
   });
 
   it("keeps the generated manifest chained to the source text", () => {
@@ -324,14 +360,11 @@ describe("the checked-in retirement of the Ruleset 7 legacy art", () => {
     );
   });
 
-  it("freezes exactly Defection and Blackout on a retired style reference", () => {
+  it("leaves no recipe frozen on a retired style reference", () => {
+    // Defection and Blackout were frozen on the retired Disband and
+    // Pillage icons; they are retired themselves now.
     expect(
-      manifest.recipes
-        .filter((recipe) => frozenByRetirement(manifest, recipe))
-        .map(({ id, styleReference }) => [id, styleReference]),
-    ).toEqual([
-      ["ui-action-defection", "ui-action-disband"],
-      ["ui-action-blackout", "ui-action-pillage"],
-    ]);
+      manifest.recipes.filter((recipe) => frozenByRetirement(manifest, recipe)),
+    ).toEqual([]);
   });
 });

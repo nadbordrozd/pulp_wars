@@ -472,12 +472,12 @@ describe("Ruleset 7 mission dialogs", () => {
         "Play again",
         "Main menu",
       ]);
-      // Tab order after the list: Play again, Main menu, Classic rules.
+      // Tab order after the list: Play again, Main menu.
       expect(
         ownButtons("button, a").map(
           (node) => node.dataset.action ?? node.tagName,
         ),
-      ).toEqual(["restart", "results-menu", "A"]);
+      ).toEqual(["restart", "results-menu"]);
       requiredButton('[data-action="results-menu"]').click();
       await settle();
       // The finished match leaves the save slot: the menu has no Continue.

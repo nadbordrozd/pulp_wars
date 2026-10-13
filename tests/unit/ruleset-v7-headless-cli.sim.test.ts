@@ -39,10 +39,16 @@ describe("ruleset-7 revision-3 headless CLI dispatch", () => {
       "--max-rounds",
       "5",
     );
+    // Ruleset 7 is the only game and the default (pulp_wars-lky5).
     expect(readFileSync("src/headless/cli.ts", "utf8")).toContain(
-      'const ruleset = stringArg("--ruleset", "pulp-wars-poc-6")',
+      'const ruleset = stringArg("--ruleset", "pulp-wars-poc-7r80")',
     );
-    expect(defaultResult.metrics).not.toHaveProperty("rulesetId");
+    expect(defaultResult.metrics).toMatchObject({
+      rulesetId: "pulp-wars-poc-7r80",
+    });
+    expect(() =>
+      runCli("match", "--ruleset", "pulp-wars-poc-6", "--max-commands", "1"),
+    ).toThrow(/--ruleset must be pulp-wars-poc-7r80/);
 
     const result = runCli(
       "match",

@@ -378,7 +378,7 @@ export function createAssetCacheWorkerV1(
     } catch {
       return null;
     }
-    // A page load may carry a query (?ruleset=6); a file request may not.
+    // A page load may carry a query (?ruleset=7); a file request may not.
     if (navigation) return path === "" || path === "index.html" ? path : null;
     return url.search === "" && path !== "" ? path : null;
   };

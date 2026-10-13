@@ -957,15 +957,6 @@
   font-size: var(--pw-fs-lg);
 }
 
-.v7-compatibility-link {
-  display: inline-flex;
-  justify-self: start;
-  min-height: 44px;
-  align-items: center;
-  color: var(--pw-text-2);
-  font-size: var(--pw-fs-md);
-}
-
 .v7-recovery-details summary {
   min-height: 44px;
   cursor: pointer;

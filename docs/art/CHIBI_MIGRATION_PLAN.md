@@ -27,8 +27,9 @@ records the plan in git, so it survives a move to a new machine.
 
 Replace every sprite the Ruleset 7 game uses with the approved
 [chibi art direction](ART_DIRECTION.md), in five batches. The user
-reviews each batch before the next begins. Ruleset 6 and its frozen art stay
-untouched.
+reviews each batch before the next begins. Ruleset 6 and its frozen art
+stayed untouched by the migration; both were retired afterwards
+([Retired: the art of the old prototypes](#retired-the-art-of-the-old-prototypes)).
 
 The user also wants more factions later. For now only the shared style and
 the [faction layer](factions/README.md) are documented; specific factions
@@ -150,6 +151,61 @@ the reference's hash, and a postprocess that does not read the reference).
   raster and stays, with its script.
 - The asset tests of the retired art; the tests of families with a recipe
   that stays keep that recipe's checks and assert the retirement.
+
+## Retired: the art of the old prototypes
+
+Bead `pulp_wars-lky5` (2026-10-13) removed Ruleset 6 and the legacy game,
+and with them the rest of the earlier PixelLab art: nothing the Ruleset 7
+game runs names it. The proof is the built game itself: no script, page or
+style sheet of a production build contains `assets/pixellab`, and
+`src/assets/generated-art-manifest.ts`, the only table that mapped ids to
+those files, was imported by no Ruleset 7 module.
+
+- **All 188 remaining recipes** of
+  [`pixellab-manifest.json`](../../scripts/art/pixellab-manifest.json) went
+  through `npm run art:retire` in one run: 186 accepted rasters under
+  `public/assets/pixellab/` (units, interface, terrain, buildings and their
+  square-grid families), their candidates, quarantined attempts, reframe
+  sources and receipts. The manifest now has no recipe and no alias, and
+  230 `retired` entries (these and the 42 above) that keep each id, output
+  path and accepted hash. Two Fruit attempts had only been rejected and
+  have no hash. This includes the eight interface files bead
+  `pulp_wars-67q.16` listed as orphans.
+- **The 67 aliases** were removed first: an alias pins its source, and
+  every one named a retired raster.
+- **Defection and Blackout**, frozen above on a retired style reference,
+  are retired themselves; no recipe is frozen any more.
+- **The 32 derived Road masks** (`terrain/road-masks/` and
+  `terrain-square/road-masks/`), which no recipe owned, with their
+  generators `road-masks.ts` and `square-road-masks.ts` and manifests.
+- **The runtime table** `src/assets/generated-art-manifest.ts`. The
+  pipeline writes it only when a recipe is accepted, so `art:validate` no
+  longer creates it.
+- **Contracts in `pixellab.ts`** that required named Ruleset 6 recipes to
+  exist (the sample gates, the square terrain, resource, improvement and
+  city geometry tables, the role aliases and portraits) and its Road-mask
+  validation. The generation commands and their order checks are still in
+  the file but have no recipe to act on.
+- **Review scripts and evidence**: the `art:ruleset6-*`, `art:square-*`,
+  Candy terrain and city, footprint, unit-scale, treasure-chest and
+  `art:ruleset7-original-unit-review` scripts; the browser reviews that
+  drove the old games; the review folders of that art under
+  `art/pixellab/reviews/`; everything under `art/integration/reviews/`
+  but the five `ruleset7-*` folders; and `art/feedback/`.
+- **Three Ruleset 7 review scripts** that drew the board with the legacy
+  table (`browser-farm-review-v7.ts`, `browser-logistics-review-v7.ts`,
+  `browser-territory-review-v7.ts`) and could not run after
+  `pulp_wars-67q.15`.
+- **Tests** of the retired rasters; the art key, retirement and order
+  checks stay, and `tests/unit/pixellab-retire.test.ts` pins the retired
+  list.
+
+The art keys of [`art-keys-v7.ts`](../../src/assets/art-keys-v7.ts) are
+unchanged: a key that spells a Ruleset 6 raster id (`unit-warrior`) is a
+name, as the `v7-` keys are. The shot of an Archer or a Gumball Guard still
+leaves from the same point of the unit frame: the two attachment points the
+retired table carried are constants in
+`src/render/canvas/combat-presentation.ts`.
 
 ## Why this shape
 

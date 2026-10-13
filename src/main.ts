@@ -30,18 +30,14 @@ const assetCache = startAssetCacheV1({
 });
 
 const location = new URL(globalThis.location.href);
-const route = selectBrowserRulesetRoute(location.search, import.meta.env.DEV);
+const route = selectBrowserRulesetRoute(location.search);
 const app =
   route.kind === "RULESET_7"
     ? // The look's art is preloaded behind the loading screen first.
       await (
         await import("./app/v7-preload-boot")
       ).bootstrapPreloadedRuleset7App(document)
-    : route.kind === "RULESET_6"
-      ? (await import("./app/v6-bootstrap")).bootstrapRuleset6App(document)
-      : route.kind === "LEGACY_V5"
-        ? (await import("./app/bootstrap")).bootstrapApp(document)
-        : renderUnsupportedRuleset(route.value);
+    : renderUnsupportedRuleset(route.value);
 export { app };
 void assetCache.pageLoaded();
 if (
@@ -60,7 +56,7 @@ function renderUnsupportedRuleset(value: string): { destroy(): void } {
   const title = document.createElement("h1");
   title.textContent = "Unsupported ruleset";
   const detail = document.createElement("p");
-  detail.textContent = `Ruleset ${value} is not available. Use ?ruleset=6 or ?ruleset=7.`;
+  detail.textContent = `Ruleset ${value} is not available.`;
   main.append(title, detail);
   root.replaceChildren(main);
   return { destroy: () => root.replaceChildren() };

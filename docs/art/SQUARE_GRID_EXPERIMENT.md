@@ -3,9 +3,11 @@
 **Status:** historical since `pulp_wars-67q.13` (2026-10-10). This was the
 presentation contract, from rollback baseline `07229e2`, of the art that
 came before the chibi direction: the 128 px cell, its footprints and its
-layers. It still describes the frozen Ruleset 6 presentation; the LEGACY
+layers. It described the Ruleset 6 presentation, which is retired with its
+art, renderer and review scripts (`pulp_wars-lky5`); the LEGACY
 path of the Ruleset 7 renderer, which also followed it, was removed in
-`pulp_wars-67q.15`. The game a player sees
+`pulp_wars-67q.15`. The commands and files this document names no longer
+exist. The game a player sees
 follows [ART_DIRECTION.md, section 3](ART_DIRECTION.md#3-geometry-and-resolution)
 (an 80 px cell, discrete zoom steps) and takes its light from the
 [south-west](ART_DIRECTION.md#light); where the two differ, that file wins.

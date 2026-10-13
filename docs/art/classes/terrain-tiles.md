@@ -17,6 +17,13 @@
 > their review scripts and evidence went with them (see the
 > [migration plan](../CHIBI_MIGRATION_PLAN.md#retired-the-earlier-ruleset-7-rasters)).
 > What is written about them below is a record.
+>
+> **All of the earlier art is retired (`pulp_wars-lky5`).** Ruleset 6 and the
+> older screens are removed, and with them every raster under
+> `public/assets/pixellab/`, its recipes (now under `retired` in the
+> manifest), its review scripts and its evidence. Every section below about
+> that art, its inventories, gates and review commands, is history (see the
+> [migration plan](../CHIBI_MIGRATION_PLAN.md#retired-the-art-of-the-old-prototypes)).
 
 ## Active square-grid override
 
@@ -516,7 +523,7 @@ cocoa, warm-pink, cream and marshmallow material bands, but remain quieter and
 simpler than units and cities.
 
 The checked-in production and rejection record is
-[`art/pixellab/reviews/candy-terrain/README.md`](../../../art/pixellab/reviews/candy-terrain/README.md).
+`art/pixellab/reviews/candy-terrain/README.md` (removed with the art, `pulp_wars-lky5`).
 
 ## Sea ice (naval branch, bead `pulp_wars-5ti.6`)
 

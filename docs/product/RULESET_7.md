@@ -54,7 +54,13 @@ specification remains the inherited land baseline. Ruleset 6 is unchanged.
 [Original technology-tree redesign proposal](ORIGINAL_TECH_TREE_REDESIGN_PROPOSAL.md)
 and [Ruleset 7 design review](RULESET_7_DESIGN_REVIEW.md)
 
-**Compatibility contract:** [Pulp Wars Ruleset 6](RULESET_6.md)
+**Compatibility contract:** [Pulp Wars Ruleset 6](RULESET_6.md), retired
+with `pulp_wars-lky5`: wherever this document says the Ruleset 6 route
+stays, that `?ruleset=6` launches it, that a Ruleset 6 link is offered, or
+that the Ruleset 6 `pulpWars.save.current` save is preserved, read that
+Ruleset 6 and the legacy game are gone, the parameter is ignored, there is
+no link, and that key is removed at startup
+([current rules, section 1](RULESET_7_CURRENT.md#1-identity-and-compatibility)).
 
 **Related contracts:** [client architecture](../architecture/CLIENT_ARCHITECTURE.md),
 [headless simulation](../architecture/HEADLESS_SIMULATION.md),

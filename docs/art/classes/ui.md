@@ -17,6 +17,13 @@
 > their review scripts and evidence went with them (see the
 > [migration plan](../CHIBI_MIGRATION_PLAN.md#retired-the-earlier-ruleset-7-rasters)).
 > What is written about them below is a record.
+>
+> **All of the earlier art is retired (`pulp_wars-lky5`).** Ruleset 6 and the
+> older screens are removed, and with them every raster under
+> `public/assets/pixellab/`, its recipes (now under `retired` in the
+> manifest), its review scripts and its evidence. Every section below about
+> that art, its inventories, gates and review commands, is history (see the
+> [migration plan](../CHIBI_MIGRATION_PLAN.md#retired-the-art-of-the-old-prototypes)).
 
 ## Ruleset-7 revision-9 action and status inventory
 

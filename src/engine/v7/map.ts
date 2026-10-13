@@ -8,7 +8,7 @@ import {
   effectiveRoleRuleV7,
   factionTreeV7,
 } from "../rules/ruleset-v7";
-import { placeTreasureChestsV6 } from "../v6/map";
+import { placeTreasureChestsV6 } from "./treasure-placement";
 import { initialAchievementEntitlementsV7 } from "./achievements";
 import { withFullShieldsV7 } from "./martian";
 import {

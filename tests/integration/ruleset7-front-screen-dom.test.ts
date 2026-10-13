@@ -154,7 +154,6 @@ describe("Ruleset 7 front screen", () => {
       "campaign",
       "gallery",
       "front-settings",
-      "A",
     ]);
     // No coordinates on the front screen.
     expect(screen.textContent).not.toMatch(/\(\d+\s*,\s*\d+\)/);

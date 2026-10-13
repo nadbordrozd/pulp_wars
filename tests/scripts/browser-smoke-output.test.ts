@@ -69,11 +69,6 @@ async function fixture() {
 
 describe("browser smoke evidence output", () => {
   it.each([
-    ["scripts/browser-smoke.ts", "art/integration/reviews"],
-    [
-      "scripts/browser-smoke-v6.ts",
-      "art/integration/reviews/ruleset6-browser-smoke",
-    ],
     ["scripts/browser-smoke-v7.ts", "art/integration/reviews/ruleset7-preview"],
   ])(
     "%s refuses a dirty archive before starting Chrome",

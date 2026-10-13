@@ -35,10 +35,8 @@ import { FACTION_GRASS_TILES_V7 } from "./faction-grass-manifest";
  * The looks of the client. LIVE is the CHIBI art set with the new visual
  * direction, CLASSIC the CHIBI set as it was before the direction (the
  * developer option "Classic look"). The legacy PixelLab set of
- * `?art=legacy` is no longer a look (bead pulp_wars-67q.13): no player can
- * select it, so none of its files is preloaded. They stay on disk as the
- * last per-subject fallback of a chibi raster that failed to load, and as
- * the frozen art of Ruleset 6, and load on demand.
+ * `?art=legacy` is no longer a look (bead pulp_wars-67q.13), and its files
+ * are deleted with the retired prototypes (bead pulp_wars-lky5).
  */
 export type AssetLookV7 = "LIVE" | "CLASSIC";
 

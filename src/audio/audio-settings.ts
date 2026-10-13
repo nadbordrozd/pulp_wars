@@ -4,8 +4,8 @@ import type { StorageAdapter } from "../persistence/index";
  * The sound preference (beads pulp_wars-2yc.10 and pulp_wars-2yc.27): two
  * levels, each with its own on or off. **Sound** is the effects, **Music**
  * the themes. Like the art set and the board saturation they are
- * presentation preferences under their own keys, so the shared
- * exact-schema settings envelope (also read by Ruleset 6) stays unchanged.
+ * presentation preferences under their own keys, so the exact-schema
+ * settings envelope stays unchanged.
  * They never enter a save, a replay or the engine.
  *
  * Sound keeps the key and the shape it had while it was the only level.

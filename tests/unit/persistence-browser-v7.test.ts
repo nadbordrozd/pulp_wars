@@ -8,15 +8,18 @@ import {
 import {
   BrowserPersistenceV7,
   OBSOLETE_SAVE_STORAGE_KEYS_V7,
-  SAVE_STORAGE_KEY,
+  RETIRED_RULESET_SAVE_STORAGE_KEYS_V7,
   SAVE_STORAGE_KEY_V7,
   createSaveEnvelopeV7,
   cleanupObsoleteRuleset7Saves,
+  clearRetiredRulesetSavesV7,
   type PersistenceScheduler,
   type StorageAdapter,
 } from "../../src/persistence/index";
 
 const OLD_V7_KEY = "pulpWars.save.v7.current";
+/** The autosave key Ruleset 6 and the legacy game shared; both are retired. */
+const SAVE_STORAGE_KEY = RETIRED_RULESET_SAVE_STORAGE_KEYS_V7[0];
 
 describe("Ruleset 7 browser persistence", () => {
   it("reads, writes, and deletes only the revision-10 key", () => {
@@ -225,6 +228,41 @@ describe("Ruleset 7 browser persistence", () => {
       removedCount: 0,
       warning: null,
     });
+  });
+
+  it("clears a retired prototype's saved game quietly and touches nothing else (pulp_wars-lky5)", () => {
+    expect(RETIRED_RULESET_SAVE_STORAGE_KEYS_V7).toEqual([
+      "pulpWars.save.current",
+    ]);
+    const storage = new MemoryStorage([
+      [SAVE_STORAGE_KEY, "a Ruleset 6 or legacy save"],
+      [SAVE_STORAGE_KEY_V7, "current"],
+      [OLD_V7_KEY, "old v7"],
+      ["pulpWars.settings.v1", "settings"],
+      ["other", "unrelated"],
+    ]);
+    expect(clearRetiredRulesetSavesV7(storage)).toBeUndefined();
+    expect([...storage.values.keys()]).toEqual([
+      SAVE_STORAGE_KEY_V7,
+      OLD_V7_KEY,
+      "pulpWars.settings.v1",
+      "other",
+    ]);
+    // Only the retired key is looked at.
+    expect(storage.readKeys).toEqual([SAVE_STORAGE_KEY]);
+    // Nothing stored, no storage, a storage that refuses: all quiet.
+    expect(() => clearRetiredRulesetSavesV7(storage)).not.toThrow();
+    expect(() => clearRetiredRulesetSavesV7(null)).not.toThrow();
+    expect(() =>
+      clearRetiredRulesetSavesV7(new ThrowingStorage("read")),
+    ).not.toThrow();
+    const refused = new SelectiveFailureStorage(
+      new Map([[SAVE_STORAGE_KEY, "kept by a refusing storage"]]),
+      new Set(),
+      new Set([SAVE_STORAGE_KEY]),
+    );
+    expect(() => clearRetiredRulesetSavesV7(refused)).not.toThrow();
+    expect(refused.values.has(SAVE_STORAGE_KEY)).toBe(true);
   });
 
   it("reports partial read/remove failures without claiming false success", () => {

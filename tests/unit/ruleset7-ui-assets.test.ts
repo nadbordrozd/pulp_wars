@@ -1,6 +1,5 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { ACCEPTED_ART_URLS } from "../../src/assets/generated-art-manifest";
 import {
   ACTION_ART_KEYS_V7,
   FARM_ART_KEYS_V7,
@@ -48,13 +47,22 @@ describe("Ruleset 7 art keys", () => {
     );
   });
 
-  it("names no retired raster and resolves no v7 key as a file", () => {
-    const retired = (
-      JSON.parse(
-        readFileSync("scripts/art/pixellab-manifest.json", "utf8"),
-      ) as { readonly retired: readonly { readonly id: string }[] }
-    ).retired.map(({ id }) => id);
-    expect(retired.length).toBeGreaterThan(0);
+  it("resolves no key as a file: every legacy raster is retired", () => {
+    // Bead pulp_wars-lky5: the legacy PixelLab art went with the retired
+    // prototypes. A key that still spells one of its ids ("unit-warrior")
+    // is a name only, like the `v7-` keys.
+    const manifest = JSON.parse(
+      readFileSync("scripts/art/pixellab-manifest.json", "utf8"),
+    ) as {
+      readonly recipes: readonly unknown[];
+      readonly aliases: readonly unknown[];
+      readonly retired: readonly { readonly id: string }[];
+    };
+    expect(manifest.recipes).toEqual([]);
+    expect(manifest.aliases).toEqual([]);
+    expect(manifest.retired.length).toBeGreaterThan(200);
+    expect(existsSync("src/assets/generated-art-manifest.ts")).toBe(false);
+    expect(existsSync("public/assets/pixellab")).toBe(false);
     const keys = [
       ...Object.values(UNIT_ART_KEYS_V7),
       ...Object.values(PORTRAIT_ART_KEYS_V7),
@@ -68,11 +76,9 @@ describe("Ruleset 7 art keys", () => {
       rewardArtKeyV7("TREASURY"),
     ];
     for (const key of keys) {
-      expect(retired, key).not.toContain(key);
-      if (key.startsWith("v7-"))
-        expect(ACCEPTED_ART_URLS[key], key).toBeUndefined();
+      expect(key, key).not.toMatch(/[/.]/);
+      expect(key.length, key).toBeGreaterThan(0);
     }
-    for (const id of retired) expect(ACCEPTED_ART_URLS[id], id).toBeUndefined();
   });
 
   it("keeps the letter every stand-in had under its retired name", () => {

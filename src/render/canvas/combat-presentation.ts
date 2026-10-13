@@ -1,20 +1,5 @@
-import type { CombatPresentation } from "../../app/types";
-import { ACCEPTED_ART_ATTACHMENTS } from "../../assets/generated-art-manifest";
-import { BOARD_ART_GEOMETRY } from "./pixellab-asset-bindings";
+import { BOARD_ART_GEOMETRY } from "./board-art-geometry";
 import type { Point } from "./geometry";
-
-export interface CombatAnimationFrame {
-  /** Fraction of the source-to-target vector used by a lunging attacker. */
-  readonly attackerTravel: number;
-  /** Cubic-out fraction of the Archer source-to-target projectile vector. */
-  readonly arrowTravel: number;
-  /** Decaying 0..1 intensity for impact feedback. */
-  readonly impact: number;
-  readonly defenderOpacity: number;
-  readonly attackerOpacity: number;
-  /** Old snapshot opacity during the impact-boundary crossfade. */
-  readonly preCombatOpacity: number;
-}
 
 export interface ArcherProjectileEndpoints {
   readonly from: Point;
@@ -30,79 +15,18 @@ export interface ArrowGeometry {
   readonly outlineWidth: number;
 }
 
-export const ARCHER_PROJECTILE_TIMING = {
-  flightMs: 280,
-  impactMs: 100,
-} as const;
-
-const ARCHER_ATTACHMENT =
-  ACCEPTED_ART_ATTACHMENTS["unit-archer"]?.projectileOrigin;
-const GUMBALL_ATTACHMENT =
-  ACCEPTED_ART_ATTACHMENTS["unit-candy-gumball-guard"]?.projectileOrigin;
+/**
+ * Where a shot leaves the shooter, as a fraction of the unit frame. These
+ * were the attachments of the retired Ruleset 6 Archer and Gumball Guard
+ * rasters (bead pulp_wars-lky5); the numbers stay, so a shot starts where it
+ * always did.
+ */
+const ARCHER_ATTACHMENT = { x: 0.7, y: 0.37 } as const;
+const GUMBALL_ATTACHMENT = { x: 0.6523, y: 0.5156 } as const;
 const DEFENDER_TORSO_NORMALIZED = { x: 0.5, y: 0.43 } as const;
 
-/** Pure timing projection so browser rendering and fake-time tests agree. */
-export function combatAnimationFrame(
-  presentation: CombatPresentation,
-  elapsedMs: number,
-): CombatAnimationFrame {
-  const progress = clamp(
-    presentation.phaseDurationMs <= 0
-      ? 1
-      : elapsedMs / presentation.phaseDurationMs,
-  );
-  if (presentation.kind === "ARCHER_ARROW") {
-    if (presentation.phase === "FLIGHT") {
-      return {
-        attackerTravel: 0,
-        arrowTravel: easeOutCubic(progress),
-        impact: 0,
-        defenderOpacity: 1,
-        attackerOpacity: 1,
-        preCombatOpacity: 1,
-      };
-    }
-    return {
-      attackerTravel: 0,
-      arrowTravel: 1,
-      impact: 1 - progress,
-      defenderOpacity: 1,
-      attackerOpacity: 1,
-      preCombatOpacity: 1 - progress,
-    };
-  }
-  if (presentation.motion === "REDUCED") {
-    return {
-      attackerTravel: presentation.advances ? 1 : 0,
-      arrowTravel: 0,
-      impact: 1 - progress * 0.7,
-      defenderOpacity: presentation.defenderDies ? 1 - progress : 1,
-      attackerOpacity: presentation.attackerDies ? 1 - progress : 1,
-      preCombatOpacity: 1,
-    };
-  }
-  if (presentation.phase === "CONTACT") {
-    return {
-      attackerTravel: easeOutCubic(progress) * 0.72,
-      arrowTravel: 0,
-      impact: 0,
-      defenderOpacity: 1,
-      attackerOpacity: 1,
-      preCombatOpacity: 1,
-    };
-  }
-  return {
-    attackerTravel: presentation.advances ? 1 : 0.72 * (1 - progress),
-    arrowTravel: 0,
-    impact: 1 - progress,
-    defenderOpacity: presentation.defenderDies ? 1 - progress : 1,
-    attackerOpacity: presentation.attackerDies ? 1 - progress : 1,
-    preCombatOpacity: 1,
-  };
-}
-
 /**
- * Reprojects the manifest attachment and target torso from current entity
+ * Reprojects the shooter's attachment and target torso from current entity
  * ground anchors. Calling this every frame makes pan/zoom/resize camera-only.
  */
 export function archerProjectileEndpoints(
@@ -113,8 +37,6 @@ export function archerProjectileEndpoints(
 ): ArcherProjectileEndpoints {
   const attachment =
     projectile === "GUMBALL" ? GUMBALL_ATTACHMENT : ARCHER_ATTACHMENT;
-  if (attachment === undefined)
-    throw new Error(`${projectile} projectile attachment is missing`);
   return {
     from: normalizedUnitAttachment(attackerGround, attachment, zoom),
     to: normalizedUnitAttachment(
@@ -187,8 +109,4 @@ function clamp(value: number): number {
 
 function clampBetween(value: number, minimum: number, maximum: number): number {
   return Math.max(minimum, Math.min(maximum, value));
-}
-
-function easeOutCubic(value: number): number {
-  return 1 - Math.pow(1 - value, 3);
 }

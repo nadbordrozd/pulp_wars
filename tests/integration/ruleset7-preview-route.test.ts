@@ -13,6 +13,7 @@ import {
   type PlayerViewV7,
 } from "../../src/engine/index";
 import type { NormalAiDecisionV7 } from "../../src/ai/index";
+import { RETIRED_RULESET_SAVE_STORAGE_KEYS_V7 } from "../../src/persistence/index";
 
 beforeEach(() => {
   document.body.innerHTML = '<div id="app"></div>';
@@ -20,33 +21,62 @@ beforeEach(() => {
 });
 
 describe("Ruleset 7 application route", () => {
-  it("makes v7 the production default and keeps exact v6 compatibility while rejecting unsupported values", () => {
-    expect(selectBrowserRulesetRoute("", true)).toEqual({
+  it("opens Ruleset 7 by default, ignores the retired prototypes' parameters, and rejects unknown values", () => {
+    expect(selectBrowserRulesetRoute("")).toEqual({
       kind: "RULESET_7",
     });
-    expect(selectBrowserRulesetRoute("?ruleset=", true)).toEqual({
+    expect(selectBrowserRulesetRoute("?ruleset=")).toEqual({
       kind: "RULESET_7",
     });
-    expect(selectBrowserRulesetRoute("?ruleset=6", true)).toEqual({
-      kind: "RULESET_6",
-    });
-    expect(selectBrowserRulesetRoute("?ruleset=7", true)).toEqual({
+    expect(selectBrowserRulesetRoute("?ruleset=7")).toEqual({
       kind: "RULESET_7",
     });
-    expect(selectBrowserRulesetRoute("?legacy-v5=1", true)).toEqual({
-      kind: "LEGACY_V5",
-    });
-    expect(selectBrowserRulesetRoute("?legacy-v5=1", false)).toEqual({
+    // The retired prototypes (pulp_wars-lky5): an old link opens the game.
+    expect(selectBrowserRulesetRoute("?ruleset=6")).toEqual({
       kind: "RULESET_7",
     });
-    expect(selectBrowserRulesetRoute("?ruleset=8", true)).toEqual({
+    expect(selectBrowserRulesetRoute("?ruleset=6&browser-smoke=1")).toEqual({
+      kind: "RULESET_7",
+    });
+    expect(selectBrowserRulesetRoute("?legacy-v5=1")).toEqual({
+      kind: "RULESET_7",
+    });
+    expect(selectBrowserRulesetRoute("?ruleset=7&ruleset=6")).toEqual({
+      kind: "RULESET_7",
+    });
+    expect(selectBrowserRulesetRoute("?ruleset=8")).toEqual({
       kind: "UNSUPPORTED",
       value: "8",
     });
-    expect(selectBrowserRulesetRoute("?ruleset=7&ruleset=6", true)).toEqual({
+    expect(selectBrowserRulesetRoute("?ruleset=7&ruleset=8")).toEqual({
       kind: "UNSUPPORTED",
-      value: "7,6",
+      value: "7,8",
     });
+  });
+
+  it("offers no way into a retired prototype and quietly clears its saved game", () => {
+    const retiredSave = "pulpWars.save.current";
+    window.localStorage.setItem(retiredSave, "a Ruleset 6 or legacy save");
+    window.localStorage.setItem("pulpWars.settings.v1", "kept");
+    const app = bootstrapRuleset7App(document, {
+      createAiPolicyWork: immediateEndTurnWork,
+    });
+    try {
+      expect(RETIRED_RULESET_SAVE_STORAGE_KEYS_V7).toEqual([retiredSave]);
+      expect(window.localStorage.getItem(retiredSave)).toBeNull();
+      expect(window.localStorage.getItem("pulpWars.settings.v1")).toBe("kept");
+      // The title screen, with no notice about the removed save.
+      expect(app.controller.snapshot().phase).toBe("EMPTY");
+      expect(app.obsoleteSaveCleanup.removedCount).toBe(0);
+      expect(document.querySelector("h1")?.textContent).toBe("Pulp Wars");
+      expect(document.querySelector(".v7-toast")).toBeNull();
+      expect(document.querySelector('[data-route="ruleset-6"]')).toBeNull();
+      expect(document.querySelector('a[href*="ruleset="]')).toBeNull();
+      expect(document.body.textContent).not.toContain("Ruleset 6");
+      expect(document.body.textContent).not.toContain("Classic rules");
+    } finally {
+      app.destroy();
+    }
   });
 
   it("launches a fixed-Original human-first setup without replacing controls on field changes", async () => {
@@ -61,11 +91,7 @@ describe("Ruleset 7 application route", () => {
     });
     expect(document.querySelector("h1")?.textContent).toBe("Pulp Wars");
     expect(document.body.textContent).not.toContain("CANDY");
-    const frozenSix = document.querySelector<HTMLAnchorElement>(
-      '[data-route="ruleset-6"]',
-    );
-    expect(frozenSix?.textContent).toContain("Ruleset 6");
-    expect(frozenSix?.getAttribute("href")).toBe("?ruleset=6");
+    expect(document.querySelector('[data-route="ruleset-6"]')).toBeNull();
 
     const count = requiredSelect("v7-ai-count");
     const launch = requiredButton('[data-action="launch"]');

@@ -1,5 +1,5 @@
 import type { PlayerId } from "../model/ids";
-import type { RandomState } from "../model/types";
+import type { RandomState } from "../random/random";
 import { nextBounded, randomState, seedFromText } from "../random/random";
 import {
   PROMOTION_HP_V7,

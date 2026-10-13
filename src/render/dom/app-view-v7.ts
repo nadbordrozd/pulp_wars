@@ -2582,8 +2582,8 @@ export class Ruleset7DomAppView {
       prebuilt.append(this.#setupForm(false));
       main.append(prebuilt);
     }
-    const footer = el(this.#document, "div", "v7-menu-footer");
     if (resumable) {
+      const footer = el(this.#document, "div", "v7-menu-footer");
       const remove = button(
         this.#document,
         "Delete save",
@@ -2592,9 +2592,8 @@ export class Ruleset7DomAppView {
       );
       remove.onclick = () => void this.#deleteSave();
       footer.append(remove);
+      main.append(footer);
     }
-    footer.append(this.#ruleset6Link());
-    main.append(footer);
     return main;
   }
 
@@ -3915,7 +3914,7 @@ export class Ruleset7DomAppView {
       "destructive",
     );
     remove.onclick = () => void this.#deleteSave();
-    panel.append(remove, this.#ruleset6Link());
+    panel.append(remove);
     return main;
   }
 
@@ -4043,22 +4042,6 @@ export class Ruleset7DomAppView {
     shell.dataset.phase = "gallery";
     shell.append(gallery.root);
     this.#root.replaceChildren(shell);
-  }
-
-  #ruleset6Link(): HTMLAnchorElement {
-    const link = this.#document.createElement("a");
-    const params = new URLSearchParams({ ruleset: "6" });
-    if (
-      new URLSearchParams(this.#document.defaultView?.location.search).get(
-        "browser-smoke",
-      ) === "1"
-    )
-      params.set("browser-smoke", "1");
-    link.className = "v7-compatibility-link";
-    link.dataset.route = "ruleset-6";
-    link.href = `?${params.toString()}`;
-    link.textContent = "Classic rules (Ruleset 6)";
-    return link;
   }
 
   #renderStableMatch(view: PlayerViewV7): void {
@@ -9443,7 +9426,7 @@ export class Ruleset7DomAppView {
     // score toggles (pulp_wars-kaw6.3).
     restart.dataset.v7InitialFocus = "true";
     actions.append(restart, this.#resultsMenuButton());
-    result.append(actions, this.#ruleset6Link());
+    result.append(actions);
     return result;
   }
 

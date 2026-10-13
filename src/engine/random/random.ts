@@ -1,10 +1,15 @@
-import type { RandomState } from "../model/types";
 import { utf8Bytes } from "../encoding/utf8";
 
 const UINT32_RANGE = 0x1_0000_0000;
 const FNV_OFFSET_BASIS = 2_166_136_261;
 const FNV_PRIME = 16_777_619;
 const MULBERRY_INCREMENT = 0x6d2b_79f5;
+
+export interface RandomState {
+  readonly algorithm: "MULBERRY32";
+  readonly version: 1;
+  readonly state: number;
+}
 
 export interface RandomDraw {
   readonly value: number;

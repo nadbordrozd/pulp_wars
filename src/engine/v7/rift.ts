@@ -1,4 +1,4 @@
-import type { RandomState } from "../model/types";
+import type { RandomState } from "../random/random";
 import { nextBounded, randomState, seedFromText } from "../random/random";
 import type { BoardStateV7, CoordV7, TerrainIdV7 } from "./types";
 

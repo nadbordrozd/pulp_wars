@@ -153,6 +153,32 @@ export function cleanupObsoleteRuleset7Saves(
   };
 }
 
+/**
+ * The autosave key of the retired prototypes: Ruleset 6 and the legacy game
+ * before it shared this one key (bead pulp_wars-lky5). Nothing reads it any
+ * more.
+ */
+export const RETIRED_RULESET_SAVE_STORAGE_KEYS_V7 = Object.freeze([
+  "pulpWars.save.current",
+] as const);
+
+/**
+ * Removes a retired prototype's saved game. It is quiet on purpose: no
+ * notice, no warning, and a storage that refuses is left alone.
+ */
+export function clearRetiredRulesetSavesV7(
+  storage: StorageAdapter | null,
+): void {
+  if (storage === null) return;
+  for (const key of RETIRED_RULESET_SAVE_STORAGE_KEYS_V7) {
+    try {
+      if (storage.getItem(key) !== null) storage.removeItem(key);
+    } catch {
+      // Nothing to report: the key belongs to a game that no longer exists.
+    }
+  }
+}
+
 /** Browser-only current-revision repository. It owns exactly the v7r80 save key. */
 export class BrowserPersistenceV7 {
   readonly #storage: StorageAdapter;

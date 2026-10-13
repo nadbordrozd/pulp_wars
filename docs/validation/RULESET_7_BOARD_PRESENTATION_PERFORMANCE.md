@@ -15,7 +15,11 @@ screenshots, and a fixed-time mixed-terrain board PNG. Use
 Use `--dpr=2` to request desktop device-pixel ratio 2 through Chrome device
 metrics; the default remains 1. The probe records and verifies actual DPR.
 `--skip-graphics` is for comparison with revisions that do not contain the
-glow cache; it omits the direct draw and pixel-comparison portions only. Chrome
+glow cache; it omits the direct draw and pixel-comparison portions only.
+Since `pulp_wars-lky5` the probe always runs that way: the pixel comparison
+drew the legacy unit rasters, which are retired, and it has not been moved
+to the chibi sprites. The graphics figures below are the record of the runs
+made while those rasters existed. Chrome
 uses an isolated temporary profile; the probe never touches the user's browser
 profile or save. It writes no checked-in review evidence.
 

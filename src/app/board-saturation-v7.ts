@@ -8,8 +8,8 @@ import {
 /**
  * Developer experiment (bead pulp_wars-x6c): board saturation of buildings
  * and cities. Like the art set it is a presentation-only client preference
- * under its own key, so the shared exact-schema settings envelope (also
- * read by Ruleset 6) stays unchanged. It never enters a save or a replay.
+ * under its own key, so the exact-schema settings envelope stays
+ * unchanged. It never enters a save or a replay.
  */
 export const BOARD_SATURATION_STORAGE_KEY_V7 =
   "pulpWars.ruleset7.boardSaturation.v1";

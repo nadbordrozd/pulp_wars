@@ -528,9 +528,9 @@ The naval branch has no balance evidence yet: its water-map matrix is
 - **Gate order.** Run `npm run check:full` **before** the art review
   commands, then restore the checked-in review evidence with
   `git checkout -- art/` after them: on macOS Chrome the reviews rewrite
-  tracked review evidence, which breaks the deterministic-evidence test
-  (`board-renderer-v6`) if `npm run check` runs afterwards. Never commit the rewritten evidence as
-  part of a release.
+  tracked review evidence. Never commit the rewritten evidence as part of a
+  release. (The deterministic-evidence test this once broke,
+  `board-renderer-v6`, went with Ruleset 6 in `pulp_wars-lky5`.)
 - The revision-2 sections below, `RULESET_7_RELEASE_CORPUS.json`, and the
   archived browser evidence in `art/integration/reviews/ruleset7-preview/`
   (whose `evidence.json` records `pulp-wars-poc-7r2` and a runtime
@@ -539,9 +539,13 @@ The naval branch has no balance evidence yet: its water-map matrix is
   `npm run smoke:browser -- --archive-evidence` is not a current release step,
   because it would overwrite that revision-2 evidence with current
   (`7r41`) captures. The revision-2 validator described below as
-  `validate:ruleset7-release` is now `npm run validate:ruleset7-archive-r2`,
-  and its `:refresh` variant no longer exists. That archive validator
-  refuses every runtime but `pulp-wars-poc-7r2`, so it does not run today.
+  `validate:ruleset7-release` became `npm run validate:ruleset7-archive-r2`
+  and lost its `:refresh` variant; it refused every runtime but
+  `pulp-wars-poc-7r2`, regenerated Ruleset 6 maps for its parity matrix and
+  read the Ruleset 6 corpus, and it was removed with Ruleset 6 in
+  `pulp_wars-lky5` (`scripts/validate-ruleset7-release.ts`). The corpus
+  file, its contract (`scripts/ruleset7-release-contract.ts`) and the
+  contract's test stay.
   Four PixelLab evidence folders its corpus names
   (`art/pixellab/reviews/ruleset7-catapult`, `-building-economy`,
   `-tactical-ui` and `-farms`) were deleted in `pulp_wars-67q.15` with the
@@ -564,19 +568,8 @@ asks (`pulp_wars-2fvp`):
 ```bash
 npm run validate:ruleset7-release
 npm run validate:ruleset7-curiosity-maps
-npm run validate:ruleset6-release
 npm run check:full
 npm run art:validate
-npm run art:ruleset6-terrain-review
-npm run art:ruleset6-building-road-review
-npm run art:ruleset6-original-unit-review
-npm run art:ruleset6-candy-unit-review
-npm run art:ruleset6-tech-economy-ui-review
-npm run art:ruleset6-renderer-review
-npm run art:ruleset6-host-review
-npm run art:ruleset6-combat-review
-npm run art:ruleset6-shell-review
-npm run art:ruleset7-original-unit-review
 npm run art:chibi-goblin-review
 npm run art:chibi-dinosaur-review
 npm run art:chibi-martian-direction-review
@@ -588,10 +581,14 @@ npm run art:chibi-naval-faction-review
 npm run art:naval-branch-ice-review
 git checkout -- art/
 npm run smoke:browser
-npm run smoke:browser:legacy-v5
 npm audit --audit-level=high
 git diff --check
 ```
+
+Until `pulp_wars-lky5` this list also ran the Ruleset 6 release validator,
+the nine `art:ruleset6-*` reviews, `art:ruleset7-original-unit-review` and
+the legacy smoke; they were removed with the retired prototypes and the
+legacy PixelLab art.
 
 The results of a release run are recorded on its bead
 (`pulp_wars-0ao.9` for revision 17, `pulp_wars-c87.9` for the four-faction
@@ -624,8 +621,9 @@ the retained legacy smoke.
 
 The machine-readable deterministic record is
 [RULESET_7_RELEASE_CORPUS.json](RULESET_7_RELEASE_CORPUS.json). The frozen
-[Ruleset 6 corpus](RULESET_6_RELEASE_CORPUS.json) is an input whose bytes and
-hash are verified; the Ruleset 7 workflow never refreshes or relabels it.
+Ruleset 6 corpus (`RULESET_6_RELEASE_CORPUS.json`, removed with Ruleset 6 in
+`pulp_wars-lky5`) was an input whose bytes and hash were verified; the
+Ruleset 7 corpus still records its path and hash.
 
 ## Reproducible deterministic evidence
 
@@ -764,6 +762,11 @@ desktop docks, unique Technology headings, compact reflow, and route-owned Main
 menu/resume at an accepted authoritative boundary.
 
 ## Final release gates
+
+The frozen revision-2 list. Several of its commands no longer exist: the
+Ruleset 6 validator, reviews and smoke and the legacy smoke were removed
+with the retired prototypes (`pulp_wars-lky5`), and
+`scripts/browser-farm-review-v7.ts` with the legacy art it drew.
 
 Run from the reviewed release revision:
 

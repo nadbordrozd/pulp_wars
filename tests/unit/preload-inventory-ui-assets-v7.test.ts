@@ -49,26 +49,18 @@ const urlsOf = (look: Parameters<typeof assetInventoryV7>[0]): Set<string> =>
 describe("Ruleset 7 asset inventory", () => {
   it("covers every raster a manifest under src/assets exports", async () => {
     const manifests = await manifestRasterUrls();
-    // The scan sees the manifests: the CHIBI set and the PixelLab set.
-    expect(manifests.size).toBeGreaterThan(900);
+    // The scan sees the manifests: the CHIBI set. The legacy PixelLab set
+    // is retired with its runtime table (bead pulp_wars-lky5).
+    expect(manifests.size).toBeGreaterThan(700);
     // The CHIBI set: the live look and the classic look's own rasters.
     const chibi = new Set([...urlsOf("LIVE"), ...urlsOf("CLASSIC")]);
     const uncovered: string[] = [];
-    let pixellab = 0;
     for (const [url, file] of manifests) {
-      // The PixelLab set is no look (bead pulp_wars-67q.13): the frozen
-      // art of Ruleset 6 and the last per-subject fallback of a failed
-      // chibi raster, never preloaded.
-      if (url.includes("assets/pixellab/")) {
-        pixellab += 1;
-        expect(chibi.has(url), url).toBe(false);
-        continue;
-      }
+      expect(url, file).not.toContain("assets/pixellab/");
       if (!url.includes("assets/chibi/") || !chibi.has(url))
         uncovered.push(`${file}: ${url}`);
     }
     expect(uncovered).toEqual([]);
-    expect(pixellab).toBeGreaterThan(200);
     // And nothing in an inventory comes from anywhere but a manifest.
     for (const url of chibi) expect(manifests.has(url), url).toBe(true);
   });

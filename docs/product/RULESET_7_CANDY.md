@@ -290,6 +290,10 @@ return.
 
 ### 2.3 The faction ID audit
 
+(The audit is a record of `main` at `0dd3686`. Rulesets 5 and 6, the files
+and art named for them below, and the review commands of that art were
+removed with `pulp_wars-lky5`; only the Ruleset 7 side remains.)
+
 The design asked whether the Ruleset 7 faction can be `CANDY`, since
 Rulesets 5 and 6 already have a faction of that name in shared code
 (`src/headless/cli.ts`, `src/render/dom/app-view.ts`,

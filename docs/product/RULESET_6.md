@@ -1,6 +1,15 @@
 # Pulp Wars Ruleset 6
 
-**Status:** authoritative new-match contract
+> **RETIRED, HISTORICAL (`pulp_wars-lky5`, 2026-10-13).** Ruleset 6 can no
+> longer be played: its menu link, its `?ruleset=6` route, its engine, AI,
+> interface, saves, validators and art are removed, and so is the legacy
+> ruleset 5 before it. The game is
+> [Ruleset 7](RULESET_7_CURRENT.md). This document is kept only because
+> Ruleset 7 design documents cite it (the faction role mapping of section
+> 10, the economy it inherited); the files, commands and validation
+> documents it names no longer exist.
+
+**Status:** the new-match contract of the retired Ruleset 6
 
 **Ruleset ID:** `pulp-wars-poc-6`
 
@@ -9,14 +18,14 @@
 **Related contracts:** [client architecture](../architecture/CLIENT_ARCHITECTURE.md),
 [headless simulation](../architecture/HEADLESS_SIMULATION.md),
 [Normal AI](../architecture/NORMAL_AI.md), [screen flow](../ui/SCREEN_FLOW.md),
-[validation](../validation/POC_VALIDATION.md), and
+validation (the removed `POC_VALIDATION.md`), and
 [art direction](../art/ART_DIRECTION.md)
 
 This document converts the source brief into the complete deterministic
 ruleset-6 contract. The brief's MVP list is implementation order only: all 25
 technologies, all nine roles, both faction registrations, and every system in
 this document are final ruleset-6 scope. Ruleset 5 remains historical evidence
-in [POC Rules](POC_RULES.md); it is not a fallback for an omitted rule here.
+in POC Rules (the removed ruleset-5 `POC_RULES.md`); it is not a fallback for an omitted rule here.
 
 ## 1. Version, compatibility, and frozen order
 
@@ -829,8 +838,7 @@ Implementation is serialized but scope is not reduced:
 8. full deterministic, browser, accessibility, performance, and corpus audit.
 
 No stage may label ruleset 6 complete while later stages remain. The exact
-validation matrix is authoritative in
-[POC Validation](../validation/POC_VALIDATION.md).
+validation matrix was authoritative in the removed `POC_VALIDATION.md`.
 
 ## 18. Deliberate resolutions
 

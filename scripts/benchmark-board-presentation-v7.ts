@@ -24,7 +24,15 @@ const requestedDpr = Number(
 );
 if (requestedDpr !== 1 && requestedDpr !== 2)
   throw new Error("--dpr must be 1 or 2");
-const skipGraphics = process.argv.includes("--skip-graphics");
+// The pixel probe of the glow cache drew the legacy unit rasters, which are
+// retired with the old prototypes (bead pulp_wars-lky5). Until it draws the
+// chibi sprites the probe measures planning and drawing time only, as with
+// `--skip-graphics`.
+const skipGraphics = true;
+if (!process.argv.includes("--skip-graphics"))
+  process.stderr.write(
+    "The glow-cache pixel probe is off: it needs sprites the game no longer ships.\n",
+  );
 const instrumentGlow =
   !skipGraphics && !process.argv.includes("--no-glow-instrumentation");
 const chrome = process.env.CHROME_PATH;
@@ -430,7 +438,7 @@ EventTarget.prototype.addEventListener=function(type,fn,options){
     const renderer=await import('/src/render/canvas/board-renderer-v7.ts');
     const glow=globalThis.__glowModule;
     const geometry=await import('/src/render/canvas/geometry.ts');
-    const art=await import('/src/assets/generated-art-manifest.ts');
+    const art={ACCEPTED_ART_URLS:{}};
     const view=__mixedFixture.view;
     const first=view.units[0];
     const plan=renderer.buildBoardRenderPlanV7(view,__mixedFixture.offeredCommands,{

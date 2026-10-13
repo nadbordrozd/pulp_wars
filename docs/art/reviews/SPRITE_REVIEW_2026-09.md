@@ -6,6 +6,10 @@ describes the production sprites that the current Ruleset 7 runtime
 asset, manifest, registry, or runtime code. It feeds the art-style exploration
 in `pulp_wars-73l.2`.
 
+The sprites it reviews were replaced by the chibi art and are deleted
+(`pulp_wars-67q.15` and `pulp_wars-lky5`), with the art table and the review
+script named below; the evidence images stay.
+
 **Evidence:** every image referenced below is in
 [`art/reviews/sprite-review-2026-09/`](../../../art/reviews/sprite-review-2026-09/).
 [How the evidence was produced](#how-the-evidence-was-produced) explains the
@@ -46,7 +50,7 @@ named below; the review stays as the record of why.)
 The runtime mapping was in `src/assets/ruleset7-ui-art.ts` and
 [`src/render/canvas/board-renderer-v7.ts`](../../../src/render/canvas/board-renderer-v7.ts).
 Files are resolved through
-[`src/assets/generated-art-manifest.ts`](../../../src/assets/generated-art-manifest.ts).
+`src/assets/generated-art-manifest.ts` (since removed).
 Visible sizes are the non-transparent bounds multiplied by the renderer's
 display scale ([`board-art-geometry.ts`](../../../src/render/canvas/board-art-geometry.ts)).
 A tile is 128 CSS px at 1x.
@@ -448,7 +452,7 @@ All files are PNG. "zN" is camera zoom and "dprN" is device-pixel ratio.
   production `buildBoardRenderPlanV7`, `drawBoardV7` and
   `createBoardImageResolverV7`, which includes raised Forest and Mountain
   terrain. This is the same technique as
-  [`scripts/browser-farm-review-v7.ts`](../../../scripts/browser-farm-review-v7.ts).
+  `scripts/browser-farm-review-v7.ts` (since removed).
   Each scene was rendered at zoom 1 and 0.625, DPR 1 and 2, with four owner
   colors. Placement legality was not enforced, because only presentation was
   being judged.
