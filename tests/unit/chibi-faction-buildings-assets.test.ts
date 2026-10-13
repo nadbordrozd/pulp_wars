@@ -32,8 +32,13 @@ import {
   GLOAM_MASTERS,
   deriveGloamGrass,
   gloamGrassProblems,
+  gloamMasterColour,
   type GloamGrassRecord,
 } from "../../scripts/art/faction-buildings/gloam-grass";
+import {
+  fieldGroundLook,
+  fieldGroundRecipe,
+} from "../../scripts/art/faction-grass";
 
 /**
  * The production art of the faction building looks (bead pulp_wars-xdh.2,
@@ -353,21 +358,35 @@ describe("the Undead Graveyard", () => {
 });
 
 describe("the Undead territory ground masters", () => {
-  it("are what the ashen recipe derives from the Grass masters, pixel for pixel", async () => {
+  it("are what the burnt ground's colours derive from the Grass masters, pixel for pixel", async () => {
     expect(await gloamGrassProblems(ROOT)).toEqual([]);
     const recorded = JSON.parse(
       await readFile(path.join(ROOT, GLOAM_GRASS_RECORD), "utf8"),
     ) as GloamGrassRecord;
-    // The ashen ground of bead pulp_wars-2yc.14 (the first was the gloam).
-    expect(recorded.variant).toBe("ashen");
-    expect(recorded.colours["#8ab85c"]).toBe("#7a8a9d");
-    expect(recorded.motifs.map((motif) => motif.kind)).toEqual([
-      "patch",
-      "tufts",
-      "pebble",
-      "stamp",
-      "stamp",
-    ]);
+    // The burnt ground of bead pulp_wars-2yc.48 (first the gloam, then the
+    // ashen ground). The board draws its baked tiles over these masters;
+    // they carry its colours on the Grass tufts and no motif.
+    expect(recorded.variant).toBe("wildfire");
+    expect(recorded.motifs).toEqual([]);
+    // The master colour of the ash is the board colour of the look taken
+    // back through the terrain tone (contrast 65% round #89b75b).
+    const ash = fieldGroundRecipe(fieldGroundLook("UNDEAD")).fields[0]?.to[0];
+    if (ash === undefined) throw new Error("no ash");
+    expect(recorded.colours["#8ab85c"]).toBe(gloamMasterColour(ash));
+    const pivot = [137, 183, 91];
+    for (const [index, at] of [1, 3, 5].entries()) {
+      const master = Number.parseInt(
+        gloamMasterColour(ash).slice(at, at + 2),
+        16,
+      );
+      const board = Number.parseInt(ash.slice(at, at + 2), 16);
+      const centre = pivot[index] ?? 0;
+      expect(Math.abs(centre + (master - centre) * 0.65 - board)).toBeLessThan(
+        1,
+      );
+    }
+    // A colour the tone would soften as an outline is refused.
+    expect(() => gloamMasterColour("#202020")).toThrow(/too dark/);
     expect(recorded.masters.map((master) => master.id)).toEqual(
       GLOAM_MASTERS.map((master) => master.id),
     );
@@ -422,10 +441,9 @@ describe("the Undead territory ground masters", () => {
         } else if (map.has(from) && map.get(from) !== to) changedInside += 1;
       }
       expect(map.size).toBeLessThanOrEqual(5);
-      // The motifs (mist, dry tufts, stones, a bone) are a small share of
-      // the tile: it stays ground, not a picture.
-      expect(changedInside).toBeGreaterThan(0);
-      expect(changedInside / (80 * 80)).toBeLessThan(0.08);
+      // No motif since bead pulp_wars-2yc.48: the colour swap alone, on
+      // the whole tile.
+      expect(changedInside).toBe(0);
     }
   });
 });

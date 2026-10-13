@@ -1,0 +1,1 @@
+Class: one seamless repeating ground texture swatch, the same everywhere from edge to edge, with no focal object and nothing tall: only flat ground with small low details scattered evenly over it. The texture continues past all four edges of the image.

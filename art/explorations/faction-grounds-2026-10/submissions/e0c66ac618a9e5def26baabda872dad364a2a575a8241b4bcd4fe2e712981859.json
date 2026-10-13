@@ -1,0 +1,61 @@
+{
+  "id": "goblin-savannah-b",
+  "jobId": "sync-da092e6c-58bb-43c8-92cf-b03429491a77",
+  "request": {
+    "endpoint": "create-image-pixflux",
+    "model": "create-image-pixflux",
+    "batch": "faction-grounds",
+    "asset": "chibi-ground-goblin-savannah-b",
+    "subject": "TERRAIN:GRASS",
+    "faction": "TEST-FACTION-GROUNDS",
+    "recipeClass": "terrain",
+    "requestSize": {
+      "width": 160,
+      "height": 160
+    },
+    "seed": 48602,
+    "noBackground": false,
+    "options": {
+      "shading": "flat shading",
+      "detail": "low detail",
+      "view": "high top-down"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "art/explorations/faction-grounds-2026-10/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: clean flat pixel art game texture: flat colours, low detail, small simple shapes, no outlines.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-top-down.txt",
+        "text": "Camera: straight top-down view of flat ground filling the whole canvas edge to edge, no perspective, no horizon, no lighting gradient."
+      },
+      {
+        "layer": "class",
+        "source": "art/explorations/faction-grounds-2026-10/fragments/class-terrain.txt + art/explorations/faction-grounds-2026-10/fragments/class-terrain.negative.txt",
+        "text": "Class: one seamless repeating ground texture swatch, the same everywhere from edge to edge, with no focal object and nothing tall: only flat ground with small low details scattered evenly over it. The texture continues past all four edges of the image.",
+        "negative": "border, frame, hedge, outline around the image, vignette, dark corners, light spot, lighting gradient, path, road, buildings, characters, people, perspective, horizon, tile edge, square island, neon, oversaturated, scene, landscape, clearing, tree tops, canopy, mounds, anything tall, big shapes in the corners"
+      },
+      {
+        "layer": "subject",
+        "source": "art/explorations/faction-grounds-2026-10/subjects.json",
+        "text": "Subject: a flat seamless ground texture seen from directly above, with no shading and no shadows: a dry savannah, one flat even pale golden straw colour everywhere, with many small separate tufts of dry golden-brown grass of different sizes, several small bare patches of cracked tan earth and a very few small olive-green tufts scattered evenly, nothing else; dry grass only."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "",
+        "negative": "trees, bushes, shrubs, animals, people, path, road, river, shore, cliff, big rocks, boulders, wall, fence, acacia, flowers, bones, tall grass"
+      }
+    ],
+    "prompt": "Style: clean flat pixel art game texture: flat colours, low detail, small simple shapes, no outlines. Camera: straight top-down view of flat ground filling the whole canvas edge to edge, no perspective, no horizon, no lighting gradient. Class: one seamless repeating ground texture swatch, the same everywhere from edge to edge, with no focal object and nothing tall: only flat ground with small low details scattered evenly over it. The texture continues past all four edges of the image. Subject: a flat seamless ground texture seen from directly above, with no shading and no shadows: a dry savannah, one flat even pale golden straw colour everywhere, with many small separate tufts of dry golden-brown grass of different sizes, several small bare patches of cracked tan earth and a very few small olive-green tufts scattered evenly, nothing else; dry grass only.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, border, hedge, outline around the image, vignette, dark corners, light spot, lighting gradient, path, road, buildings, characters, people, perspective, horizon, tile edge, square island, neon, oversaturated, scene, landscape, clearing, tree tops, canopy, mounds, anything tall, big shapes in the corners, trees, bushes, shrubs, animals, river, shore, cliff, big rocks, boulders, wall, fence, acacia, flowers, bones, tall grass",
+    "description": "Style: clean flat pixel art game texture: flat colours, low detail, small simple shapes, no outlines. Camera: straight top-down view of flat ground filling the whole canvas edge to edge, no perspective, no horizon, no lighting gradient. Class: one seamless repeating ground texture swatch, the same everywhere from edge to edge, with no focal object and nothing tall: only flat ground with small low details scattered evenly over it. The texture continues past all four edges of the image. Subject: a flat seamless ground texture seen from directly above, with no shading and no shadows: a dry savannah, one flat even pale golden straw colour everywhere, with many small separate tufts of dry golden-brown grass of different sizes, several small bare patches of cracked tan earth and a very few small olive-green tufts scattered evenly, nothing else; dry grass only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, border, hedge, outline around the image, vignette, dark corners, light spot, lighting gradient, path, road, buildings, characters, people, perspective, horizon, tile edge, square island, neon, oversaturated, scene, landscape, clearing, tree tops, canopy, mounds, anything tall, big shapes in the corners, trees, bushes, shrubs, animals, river, shore, cliff, big rocks, boulders, wall, fence, acacia, flowers, bones, tall grass.",
+    "colorImage": {
+      "path": "scripts/art/chibi/palettes/ground-goblin-savannah.png",
+      "sha256": "3869cce3e116b3caef479a6f26fa68a8941d3ee6dbce21da13d787c1f3cf31cb"
+    }
+  }
+}

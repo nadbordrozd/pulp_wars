@@ -19,12 +19,14 @@ import { chibiArtUrl } from "./chibi-art-manifest";
  * (factionImprovementSubjectV7): the board asks with the faction that owns
  * the improvement's territory, so a captured city's buildings change look.
  *
- * The ground is the "ashen" look of the three Grass masters (bead
- * pulp_wars-2yc.14; the "gloam" recolour before) and the two Forest
- * masters over it (scripts/art/faction-buildings/gloam-grass.ts, no
- * PixelLab call), under `TERRAIN:UNDEAD:GRASS` and `TERRAIN:UNDEAD:FOREST`
+ * The ground is the three Grass masters in the colours of the burnt ground
+ * (bead pulp_wars-2yc.48; the "ashen" look and the "gloam" recolour
+ * before) and the two Forest masters over it
+ * (scripts/art/faction-buildings/gloam-grass.ts, no PixelLab call), under
+ * `TERRAIN:UNDEAD:GRASS` and `TERRAIN:UNDEAD:FOREST`
  * (territoryTerrainSubjectV7). The Forest entries reuse the body layers of
- * the shared Forest.
+ * the shared Forest. In the live look the board draws the baked tiles of
+ * the burnt ground over these (src/assets/faction-grass-manifest.ts).
  *
  * Stage 2 of bead pulp_wars-2yc.38 adds a Forge, a Workshop, a Port and a
  * Shipyard per faction the same way (twenty-eight masters), and bead

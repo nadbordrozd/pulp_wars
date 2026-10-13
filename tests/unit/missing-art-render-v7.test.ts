@@ -127,8 +127,12 @@ describe("a board subject without a raster (pulp_wars-67q.15)", () => {
     expect(missingTerrainWashV7("TERRAIN:DEEP_WATER")).not.toBe(
       missingTerrainWashV7("TERRAIN:SHALLOW_WATER"),
     );
-    expect(missingTerrainWashV7("TERRAIN:UNDEAD:GRASS")).toBe(
-      missingTerrainWashV7("TERRAIN:GRASS"),
+    // The Undead territory ground is burnt (bead pulp_wars-2yc.48): its
+    // wash is ash and its wood's a darker ash, not the greens.
+    expect(missingTerrainWashV7("TERRAIN:UNDEAD:GRASS")).toBe("#716a64");
+    expect(missingTerrainWashV7("TERRAIN:UNDEAD:FOREST")).toBe("#5a5552");
+    expect(missingTerrainWashV7("TERRAIN:FOREST")).not.toBe(
+      missingTerrainWashV7("TERRAIN:UNDEAD:FOREST"),
     );
     expect(missingTerrainWashV7(undefined)).toBe(
       missingTerrainWashV7("TERRAIN:GRASS"),

@@ -54,7 +54,7 @@ pipeline:
 ```sh
 MOUNTAIN_RANGES_RUN=art/pixellab/faction-forests npx tsx scripts/art/chibi-mountain-ranges.ts plan
 MOUNTAIN_RANGES_RUN=art/pixellab/faction-forests \
-  node node_modules/.bin/tsx --env-file=<file> scripts/art/chibi-mountain-ranges.ts generate <id>...
+  node node_modules/.bin/tsx scripts/art/chibi-mountain-ranges.ts generate <id>...
 npm run art:faction-forests -- bake
 npm run art:faction-forests -- check      # also in art:validate
 npm run art:faction-forests -- lighting
@@ -177,7 +177,13 @@ that has the faction sets behind the default one:
   trees exactly on it.
 - **The shade is the faction's.** The veil under the trees takes a dark
   tone of the faction's ground (`FACTION_FOREST_FLOOR_V7`), where it was
-  the default dark green on every ground. It is cut back along a border as
+  the default dark green on every ground. Since bead `pulp_wars-2yc.48`
+  (the Cult bog, the Undead burnt ground and the Dwarf gravel,
+  [faction grass](FACTION_GRASS.md#grounds-from-pixellab-fields)) it is a
+  dark moss under the lantern wood, a dark soot under the dead wood and a
+  dark stone under the pines, and those three sets were baked again: their
+  foliage is lifted toward the new grounds (the Undead set's ground is the
+  baked tile `faction-grass/chibi-undead-grass-1.png` now). It is cut back along a border as
   it is at the edge of a wood.
 - **Glades** show the cell's own ground, the faction grass included, as
   before.
@@ -246,11 +252,13 @@ review held by a Cult city, whole and cut.
 
 ## Known limits
 
-- **The lantern wood is the bluest forest**: a teal mass on the rose-mauve
-  moor, beside the default green and the grey Undead wood, with the
-  lanterns only visible enlarged. Its foliage is lifted toward the moor, so
-  it was baked again when the moor's base changed
-  ([faction grass](FACTION_GRASS.md)).
+- **The lantern wood is the bluest forest**: a teal mass on the olive bog
+  (first on the rose-mauve moor), beside the default green and the grey
+  Undead wood, with the lanterns only visible enlarged. Its foliage is
+  lifted toward its ground, so it is baked again whenever the ground's
+  base changes ([faction grass](FACTION_GRASS.md)). It was drawn for the
+  moor: on the bog it reads, but a wood made for a bog (darker trunks, a
+  warmer lantern light) would be a new set of clumps.
 
 - **A clearing is one single piece.** A Forest cell with a Treasure, a
   Grave, a curiosity, a Field Defense or a building draws a 1x1 piece of

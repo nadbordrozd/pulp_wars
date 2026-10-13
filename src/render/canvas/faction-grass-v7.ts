@@ -16,9 +16,9 @@ import {
  * EXPERIMENT: faction grass (bead pulp_wars-2o7.4, docs/art/FACTION_GRASS.md).
  * The Grass inside a faction's territory is drawn in that faction's own
  * look, and turns with the territory when a city changes hands. Humans keep
- * the default Grass; Ice Folk territory is Snow already; the Undead keep
- * their gloam Grass (bead pulp_wars-xdh.2), which this module only gives a
- * soft border.
+ * the default Grass; Ice Folk territory is Snow already. A ground need not
+ * be grass: it is the faction's native land (the Cult's peat bog, the
+ * Undead's burnt ground, the Dwarves' mine gravel, bead pulp_wars-2yc.48).
  *
  * Everything here is presentation, in the live look of the CHIBI art set
  * only. To turn it off: set FACTION_GRASS_ENABLED_V7 to false, or open the
@@ -70,22 +70,27 @@ export function factionGrassEnabledV7(search?: string): boolean {
  */
 export const FACTION_GRASS_IDS_V7 = [
   "CANDY",
-  "GOBLIN",
-  // The heather moor (bead pulp_wars-mch9.22): lighter than the red dust.
-  "CULT",
-  "MARTIAN",
+  // The mine gravel (bead pulp_wars-2yc.48): the palest after the meadow.
   "DWARF",
-  "UNDEAD",
+  "GOBLIN",
+  "MARTIAN",
   "DINOSAUR",
+  // The burnt ground and the peat bog (bead pulp_wars-2yc.48) are the two
+  // darkest, the bog a little the darker.
+  "UNDEAD",
+  "CULT",
 ] as const;
 
 export type FactionGrassIdV7 = (typeof FACTION_GRASS_IDS_V7)[number];
 
 /**
- * Grounds whose own cell is drawn by other code: the Undead gloam Grass is
- * the terrain tile itself (`territoryGround`), so only its spill is ours.
+ * Grounds whose own cell is drawn by other code. None since bead
+ * pulp_wars-2yc.48: until then the Undead ground was the terrain tile
+ * itself (`territoryGround`) and only its spill was drawn here. The burnt
+ * ground is a baked tile like every other, drawn over that terrain tile,
+ * which stays underneath for the switch being off and for the tile dock.
  */
-const DRAWN_ELSEWHERE: ReadonlySet<FactionGrassIdV7> = new Set(["UNDEAD"]);
+const DRAWN_ELSEWHERE: ReadonlySet<FactionGrassIdV7> = new Set();
 
 const RANK = new Map<FactionGrassIdV7, number>(
   FACTION_GRASS_IDS_V7.map((id, index) => [id, index + 1]),
@@ -120,6 +125,15 @@ export function factionGrassPlanMemberV7(
 
 const CELL = 80;
 export const FACTION_GRASS_VARIANTS_V7 = 3;
+/**
+ * The most tiles a ground may have (bead pulp_wars-2yc.48: the grounds
+ * made from PixelLab fields have six, so a pool or a burnt bush does not
+ * come back every third cell). A cell's `variant` is one of this many; a
+ * ground with fewer tiles takes it modulo its own count, and since this is
+ * a multiple of FACTION_GRASS_VARIANTS_V7 a ground of three draws the tile
+ * it always drew.
+ */
+export const FACTION_GRASS_CELL_VARIANTS_V7 = 6;
 /** The spill masks repeat every this many cells, so a border never beats. */
 export const FACTION_GRASS_PHASES_V7 = 3;
 
@@ -290,7 +304,7 @@ export function factionGrassCellsV7(
     if (own === null && around.size === 0) continue;
     cells.set(`${x},${y}`, {
       own,
-      variant: forestHashV7(x, y, 3, 0x51) % FACTION_GRASS_VARIANTS_V7,
+      variant: forestHashV7(x, y, 3, 0x51) % FACTION_GRASS_CELL_VARIANTS_V7,
       phase:
         modulo(x, FACTION_GRASS_PHASES_V7) +
         FACTION_GRASS_PHASES_V7 * modulo(y, FACTION_GRASS_PHASES_V7),
@@ -390,13 +404,20 @@ export function createFactionGrassArtV7(input: {
       surfaces.set(key(tile.id, tile.variant), surface);
     }
     const spills = new Map<string, CanvasImageSource | null>();
+    // A cell's variant is one of FACTION_GRASS_CELL_VARIANTS_V7; a ground
+    // takes it modulo the number of tiles it has.
+    const counts = new Map<FactionGrassIdV7, number>();
+    for (const tile of tiles)
+      counts.set(tile.id, Math.max(counts.get(tile.id) ?? 0, tile.variant + 1));
+    const own = (id: FactionGrassIdV7, variant: number): string =>
+      key(id, variant % (counts.get(id) ?? 1));
     return {
-      tile: (id, variant) => surfaces.get(key(id, variant)) ?? null,
+      tile: (id, variant) => surfaces.get(own(id, variant)) ?? null,
       spill(id, variant, neighbours, phase) {
-        const spillKey = `${key(id, variant)}:${neighbours}:${phase}`;
+        const spillKey = `${own(id, variant)}:${neighbours}:${phase}`;
         const known = spills.get(spillKey);
         if (known !== undefined) return known;
-        const tile = pixels.get(key(id, variant));
+        const tile = pixels.get(own(id, variant));
         const surface =
           tile === undefined
             ? null

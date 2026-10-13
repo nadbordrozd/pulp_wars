@@ -36,7 +36,7 @@ each board.
 MOUNTAIN_RANGES_RUN=art/explorations/mountain-styles-2026-10 \
   npx tsx scripts/art/chibi-mountain-ranges.ts plan
 MOUNTAIN_RANGES_RUN=art/explorations/mountain-styles-2026-10 \
-  node node_modules/.bin/tsx --env-file=<file> scripts/art/chibi-mountain-ranges.ts generate <id>...
+  node node_modules/.bin/tsx scripts/art/chibi-mountain-ranges.ts generate <id>...
 npx tsx scripts/art/mountain-styles.ts sheet <out.png>
 npx tsx scripts/art/mountain-styles-review.ts <out-dir>   # a dev server on 6593, CHROME_PATH set
 ```

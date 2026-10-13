@@ -1,0 +1,61 @@
+{
+  "id": "candy-cookie-b",
+  "jobId": "sync-465dbff9-4e04-4463-b68a-d1d459736165",
+  "request": {
+    "endpoint": "create-image-pixflux",
+    "model": "create-image-pixflux",
+    "batch": "faction-grounds",
+    "asset": "chibi-ground-candy-cookie-b",
+    "subject": "TERRAIN:GRASS",
+    "faction": "TEST-FACTION-GROUNDS",
+    "recipeClass": "terrain",
+    "requestSize": {
+      "width": 160,
+      "height": 160
+    },
+    "seed": 48412,
+    "noBackground": false,
+    "options": {
+      "shading": "flat shading",
+      "detail": "low detail",
+      "view": "high top-down"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "art/explorations/faction-grounds-2026-10/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: clean flat pixel art game texture: flat colours, low detail, small simple shapes, no outlines.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-top-down.txt",
+        "text": "Camera: straight top-down view of flat ground filling the whole canvas edge to edge, no perspective, no horizon, no lighting gradient."
+      },
+      {
+        "layer": "class",
+        "source": "art/explorations/faction-grounds-2026-10/fragments/class-terrain.txt + art/explorations/faction-grounds-2026-10/fragments/class-terrain.negative.txt",
+        "text": "Class: one seamless repeating ground texture swatch, the same everywhere from edge to edge, with no focal object and nothing tall: only flat ground with small low details scattered evenly over it. The texture continues past all four edges of the image.",
+        "negative": "border, frame, hedge, outline around the image, vignette, dark corners, light spot, lighting gradient, path, road, buildings, characters, people, perspective, horizon, tile edge, square island, neon, oversaturated, scene, landscape, clearing, tree tops, canopy, mounds, anything tall, big shapes in the corners"
+      },
+      {
+        "layer": "subject",
+        "source": "art/explorations/faction-grounds-2026-10/subjects.json",
+        "text": "Subject: a flat seamless ground texture seen from directly above, with no shading and no shadows: the smooth top of a big biscuit, one flat even pale golden cookie dough colour everywhere, with a few small dark chocolate chips, a few rod-shaped sugar sprinkles in pink, mint and white and a few tiny darker baked dots scattered evenly and sparsely, nothing else; smooth biscuit only."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "",
+        "negative": "trees, bushes, shrubs, animals, people, path, road, river, shore, cliff, big rocks, boulders, wall, fence, plate, bite, cracks, cookie edge, round cookie, crumbs, flour, sugar dust, white patches"
+      }
+    ],
+    "prompt": "Style: clean flat pixel art game texture: flat colours, low detail, small simple shapes, no outlines. Camera: straight top-down view of flat ground filling the whole canvas edge to edge, no perspective, no horizon, no lighting gradient. Class: one seamless repeating ground texture swatch, the same everywhere from edge to edge, with no focal object and nothing tall: only flat ground with small low details scattered evenly over it. The texture continues past all four edges of the image. Subject: a flat seamless ground texture seen from directly above, with no shading and no shadows: the smooth top of a big biscuit, one flat even pale golden cookie dough colour everywhere, with a few small dark chocolate chips, a few rod-shaped sugar sprinkles in pink, mint and white and a few tiny darker baked dots scattered evenly and sparsely, nothing else; smooth biscuit only.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, border, hedge, outline around the image, vignette, dark corners, light spot, lighting gradient, path, road, buildings, characters, people, perspective, horizon, tile edge, square island, neon, oversaturated, scene, landscape, clearing, tree tops, canopy, mounds, anything tall, big shapes in the corners, trees, bushes, shrubs, animals, river, shore, cliff, big rocks, boulders, wall, fence, plate, bite, cracks, cookie edge, round cookie, crumbs, flour, sugar dust, white patches",
+    "description": "Style: clean flat pixel art game texture: flat colours, low detail, small simple shapes, no outlines. Camera: straight top-down view of flat ground filling the whole canvas edge to edge, no perspective, no horizon, no lighting gradient. Class: one seamless repeating ground texture swatch, the same everywhere from edge to edge, with no focal object and nothing tall: only flat ground with small low details scattered evenly over it. The texture continues past all four edges of the image. Subject: a flat seamless ground texture seen from directly above, with no shading and no shadows: the smooth top of a big biscuit, one flat even pale golden cookie dough colour everywhere, with a few small dark chocolate chips, a few rod-shaped sugar sprinkles in pink, mint and white and a few tiny darker baked dots scattered evenly and sparsely, nothing else; smooth biscuit only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, border, hedge, outline around the image, vignette, dark corners, light spot, lighting gradient, path, road, buildings, characters, people, perspective, horizon, tile edge, square island, neon, oversaturated, scene, landscape, clearing, tree tops, canopy, mounds, anything tall, big shapes in the corners, trees, bushes, shrubs, animals, river, shore, cliff, big rocks, boulders, wall, fence, plate, bite, cracks, cookie edge, round cookie, crumbs, flour, sugar dust, white patches.",
+    "colorImage": {
+      "path": "scripts/art/chibi/palettes/ground-candy-cookie.png",
+      "sha256": "00943c57ac26a01dc432c569b24077c60510e3cab4d2804df1f1b92b5a3f309d"
+    }
+  }
+}

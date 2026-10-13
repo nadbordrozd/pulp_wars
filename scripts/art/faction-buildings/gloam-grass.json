@@ -1,62 +1,23 @@
 {
   "schemaVersion": 1,
-  "bead": "pulp_wars-2yc.14",
-  "variant": "ashen",
-  "label": "Ashen: a cold grey-green with slate tufts, a third of them dry, pale mist patches, ash stones and a stray bone",
+  "bead": "pulp_wars-2yc.48",
+  "variant": "wildfire",
+  "label": "Wildfire: the ash, soot and pale ash of the burnt ground on the Grass tufts, under the baked tiles",
   "colours": {
-    "#8ab85c": "#7a8a9d",
-    "#a3cc72": "#9fa8bf",
-    "#6e9c4a": "#50597e",
-    "#557f3c": "#36306c",
-    "#52793a": "#36306c"
+    "#8ab85c": "#644169",
+    "#a3cc72": "#b491b4",
+    "#6e9c4a": "#502d58",
+    "#557f3c": "#3c1947",
+    "#52793a": "#3c1947"
   },
-  "motifs": [
-    {
-      "kind": "patch",
-      "count": [1, 2],
-      "radius": [6, 9],
-      "fill": "#979ebf",
-      "speck": {
-        "colour": "#acb1d3",
-        "share": 14
-      }
-    },
-    {
-      "kind": "tufts",
-      "share": 30,
-      "inside": true,
-      "light": "#d3b7c2",
-      "mid": "#9d818e",
-      "dark": "#75596f"
-    },
-    {
-      "kind": "pebble",
-      "count": [1, 2],
-      "top": "#b3a3d1",
-      "foot": "#474175"
-    },
-    {
-      "kind": "stamp",
-      "stamp": "bone",
-      "count": [0, 1],
-      "dark": "#b19bb4",
-      "light": "#ffe4f6"
-    },
-    {
-      "kind": "stamp",
-      "stamp": "boneSmall",
-      "count": [0, 1],
-      "dark": "#b19bb4",
-      "light": "#ffe4f6"
-    }
-  ],
+  "motifs": [],
   "seed": 14,
   "masters": [
     {
       "id": "chibi-undead-grass-1",
       "path": "public/assets/chibi/terrain/chibi-undead-grass-1.png",
-      "sha256": "98c2c04244f8d633300ccf22aed1c43fe53d1e602a600506bbc9490a5c1c51b4",
-      "pixelSha256": "c4f88a664ffeee4cc0abbf9fff46b2a1d61b71797e1bbe7c61cbf8aed29284e2",
+      "sha256": "d293125ce3e667d19b838633f095a5ac17a8c9dd598b73a2fbd00c1b0da115c5",
+      "pixelSha256": "d907fbaea32b651fdc1bbc5a15a7d0faea9a6716e1ec58fbe555b7a137f93e3a",
       "width": 80,
       "height": 80,
       "source": {
@@ -67,8 +28,8 @@
     {
       "id": "chibi-undead-grass-2",
       "path": "public/assets/chibi/terrain/chibi-undead-grass-2.png",
-      "sha256": "15d002f2b7c81c3675117248478f984fd9e90164a5d3c8bddfc3f33632462909",
-      "pixelSha256": "98f47825cfa97ea884fba2d5f33d01853959bdb28304a12e51c3e442f4654148",
+      "sha256": "0ab8b162655fd0b6284ceee8ca7d244f7a5e5a04ecbfcaa6ca3872b9d631570c",
+      "pixelSha256": "d279f2fd1aed5b48d0f7249e1d02ad2ce659aa3e6e12c0ffad51a41e2e0e9dce",
       "width": 80,
       "height": 80,
       "source": {
@@ -79,8 +40,8 @@
     {
       "id": "chibi-undead-grass-3",
       "path": "public/assets/chibi/terrain/chibi-undead-grass-3.png",
-      "sha256": "2ce745f434c81eb61fc1d1143fa2f2a3d35f17883cab94b183cbe128fa1c112a",
-      "pixelSha256": "52ec75cc383e5f5de21f0a21deb3cc297f36e9c702c91b4d3b0ddf6fef28d774",
+      "sha256": "51bfe68f2ad7a3a10acbb6272808a4901c6a7ee8b24f603eb32f6fe9b341d177",
+      "pixelSha256": "7a752563a3e6efc880b1b9107a4ebb3a17eb7b537eb32f59a7adf8101a7ade3c",
       "width": 80,
       "height": 80,
       "source": {
@@ -91,8 +52,8 @@
     {
       "id": "chibi-undead-forest-1",
       "path": "public/assets/chibi/terrain/chibi-undead-forest-1.png",
-      "sha256": "18e16aa81940aa25d6327aaab0d99019c02514ebc0f7182b209b3d3bbc06b052",
-      "pixelSha256": "b510fe022abc78f569ebce04e97cb377635380afea7ed72e7f567deb7053b276",
+      "sha256": "7b85a814b96a71041be81851d07e928f69650c81d6ffb057470bc3eebf57763d",
+      "pixelSha256": "42eb3d215bcc231d1064d152e45aaab0571516e92503dcb5606ec97b407ae223",
       "width": 80,
       "height": 104,
       "source": {
@@ -101,14 +62,14 @@
       },
       "ground": {
         "path": "public/assets/chibi/terrain/chibi-undead-grass-1.png",
-        "sha256": "98c2c04244f8d633300ccf22aed1c43fe53d1e602a600506bbc9490a5c1c51b4"
+        "sha256": "d293125ce3e667d19b838633f095a5ac17a8c9dd598b73a2fbd00c1b0da115c5"
       }
     },
     {
       "id": "chibi-undead-forest-2",
       "path": "public/assets/chibi/terrain/chibi-undead-forest-2.png",
-      "sha256": "2cb799c1684c815efc5071bb345177af056e3c0934a20817045dc3c35258fa43",
-      "pixelSha256": "e18fa8d4202121587bbe9c5c6a700d2a9dddb52f5122370bba30170653793068",
+      "sha256": "820ef629e1c92deb48043d8f13688dbf762a875d7220bdd7ff292a26be3ab96e",
+      "pixelSha256": "bb2378ae6b43ec139c1e864ca9587508036a03ba53ab4ed47fd8f1fdf31b6a7f",
       "width": 80,
       "height": 104,
       "source": {
@@ -117,7 +78,7 @@
       },
       "ground": {
         "path": "public/assets/chibi/terrain/chibi-undead-grass-1.png",
-        "sha256": "98c2c04244f8d633300ccf22aed1c43fe53d1e602a600506bbc9490a5c1c51b4"
+        "sha256": "d293125ce3e667d19b838633f095a5ac17a8c9dd598b73a2fbd00c1b0da115c5"
       }
     }
   ]

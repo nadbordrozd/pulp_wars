@@ -1,0 +1,1 @@
+Style: clean flat pixel art game texture: flat colours, low detail, small simple shapes, no outlines.

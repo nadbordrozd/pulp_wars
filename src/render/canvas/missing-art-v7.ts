@@ -12,6 +12,9 @@ const INK = "#171722";
 const NEUTRAL = "#c9d2dc";
 
 const TERRAIN_WASH_V7: readonly (readonly [string, string])[] = [
+  // The Undead territory ground is burnt, not green (bead pulp_wars-2yc.48).
+  ["UNDEAD:FOREST", "#5a5552"],
+  ["UNDEAD:GRASS", "#716a64"],
   ["DEEP_WATER", "#2f5f8f"],
   ["SHALLOW_WATER", "#5fa3c7"],
   ["WATER", "#5fa3c7"],

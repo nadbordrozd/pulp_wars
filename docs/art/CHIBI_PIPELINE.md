@@ -1396,6 +1396,22 @@ Dinosaur stand-in. No sheet draws a plate. Captures start Vite on port
 6534 unless `--port` says otherwise and need `CHROME_PATH` (and `node` on
 the `PATH` for Vite); `--copy-to DIR` copies the key sheets.
 
+## Faction ground fields (bead `pulp_wars-2yc.48`)
+
+The exploration run `art/explorations/faction-grounds-2026-10/` holds the
+PixelLab fields the Cult, Undead and Dwarf grounds are composed from, and
+those of the Candy, Martian and Goblin samples: `terrain` recipes (Pixflux,
+flat shading, a forced palette each, 160 x 160). The run overrides
+`style.txt`, `class-terrain.txt` and its negative, because the production
+texts drew scenes. Its manifest, subjects and palettes
+(`scripts/art/chibi/palettes/ground-*.png`) are written from
+`scripts/art/faction-grounds/candidates.ts` by
+`npx tsx scripts/art/faction-grounds.ts plan`. No field is accepted as a
+seamless crop: `scripts/art/faction-grass.ts` composes the board tiles from
+a field's motifs ([faction grass](FACTION_GRASS.md#grounds-from-pixellab-fields)).
+`generate` reads the key from the `PIXELLAB_API_KEY` environment variable,
+as every PixelLab script does.
+
 ## Faction building study (bead `pulp_wars-xdh.1`)
 
 The exploration run `art/explorations/faction-buildings-2026-10/` holds the

@@ -236,10 +236,10 @@ What worked, for the production batches:
   background with nothing at all under them: no slab, no plate, no glass,
   no shadow" worked where "Erase only the flat slab" drew a glass plate.
 
-To add or redo a recipe (the key is loaded by Node, never printed):
+To add or redo a recipe (the key is read from the `PIXELLAB_API_KEY` environment variable, never printed):
 
 ```sh
-node node_modules/.bin/tsx --env-file=$HOME/.zshrc scripts/art/chibi-pipeline.ts \
+node node_modules/.bin/tsx scripts/art/chibi-pipeline.ts \
   generate --exploration art/explorations/faction-buildings-2026-10 --ids <recipe>
 npm run art:chibi -- accept --exploration art/explorations/faction-buildings-2026-10 \
   --id <recipe> --candidate 0 --notes "..." --native-pass --enlarged-pass --owners-pass --no-plate-pass --camera-pass

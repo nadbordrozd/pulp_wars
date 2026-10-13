@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "bead": "pulp_wars-2o7.4",
   "sources": [
     {
@@ -18,6 +18,7 @@
   "recipes": [
     {
       "id": "GOBLIN",
+      "seed": 1,
       "label": "Scrubland: yellowed, trampled turf with dry straw tufts and mud patches",
       "base": "#a9ac5c",
       "light": "#bcbe70",
@@ -68,6 +69,7 @@
     },
     {
       "id": "DINOSAUR",
+      "seed": 2,
       "label": "Jungle floor: lush, darker, bluer green with ferns",
       "base": "#5f9f58",
       "light": "#77b56b",
@@ -115,6 +117,7 @@
     },
     {
       "id": "MARTIAN",
+      "seed": 3,
       "label": "Red dust: ochre-red ground, dark scrub, teal lichen and stones",
       "base": "#b98c6a",
       "light": "#c9a07e",
@@ -164,50 +167,8 @@
       ]
     },
     {
-      "id": "DWARF",
-      "label": "Stony moor: grey-khaki short turf, moss patches and grey stones",
-      "base": "#959c7c",
-      "light": "#a8af8d",
-      "mid": "#7b8366",
-      "dark": "#697158",
-      "motifs": [
-        {
-          "kind": "patch",
-          "count": [1, 2],
-          "radius": [5, 8],
-          "fill": "#869c6a",
-          "speck": {
-            "colour": "#93a876",
-            "share": 12
-          }
-        },
-        {
-          "kind": "pebble",
-          "count": [4, 6],
-          "top": "#bcbdb2",
-          "foot": "#74776c"
-        }
-      ],
-      "tiles": [
-        {
-          "path": "public/assets/chibi/terrain/faction-grass/chibi-dwarf-grass-1.png",
-          "sha256": "250809208891922eb760b4232e8f4a3cf91e3476c830243e3a85b43fd118b690",
-          "pixelSha256": "60f494874a4c64fa919f756ec7c68f9f73207fb9f06ba4e20d0269f9c74662a7"
-        },
-        {
-          "path": "public/assets/chibi/terrain/faction-grass/chibi-dwarf-grass-2.png",
-          "sha256": "3ed2c2a005b2ad57fc88fc9aef0a04b0e60b99e5b5f7cacc70c480de2f8b8be9",
-          "pixelSha256": "4c1b09d15a85db0f9c4dac88244a22d429dd9b3911d207e51ac9d2c121873d15"
-        },
-        {
-          "path": "public/assets/chibi/terrain/faction-grass/chibi-dwarf-grass-3.png",
-          "sha256": "5a78ea737b3ff06e579235da648576a4949247f2215fcb5a2ab758004cee1bcf",
-          "pixelSha256": "25e9b8cd62380008a2f740db0939eb812b06ebf84eb5e6b040eb5662a438c705"
-        }
-      ]
-    },
-    {
       "id": "CANDY",
+      "seed": 5,
       "label": "Sugar meadow: pastel mint with sprinkles",
       "base": "#9cd4b6",
       "light": "#b8e6ce",
@@ -243,63 +204,315 @@
           "pixelSha256": "80bc4b761dac5bd5ba87139838a3998c225d5c4cc8729cf8e1117e08dd9b8260"
         }
       ]
-    },
+    }
+  ],
+  "grounds": [
     {
       "id": "CULT",
-      "label": "Heather moor: dusty rose-mauve turf, sage tufts, paler heather, a chalk arc or a toadstool ring",
-      "base": "#cc95a0",
-      "light": "#a9b29c",
-      "mid": "#879281",
-      "dark": "#778174",
-      "motifs": [
+      "look": "cult-bog",
+      "label": "Olive peat bog: teal puddles, reeds, glow specks",
+      "bead": "pulp_wars-2yc.48",
+      "fields": [
         {
-          "kind": "stamp",
-          "stamp": "chalkArc",
-          "count": [0, 1],
-          "dark": "#dbb1b9",
-          "light": "#dbb1b9"
+          "recipe": "cult-swamp-b",
+          "path": "art/explorations/faction-grounds-2026-10/raw/cult-swamp-b.png",
+          "sha256": "bc74f968566c7fb30b23aa6107337049b4de44a3b8a426a1676fd821a0f88983"
         },
         {
-          "kind": "patch",
-          "count": [1, 2],
-          "radius": [5, 8],
-          "fill": "#d6a4ae",
-          "speck": {
-            "colour": "#e0b4bc",
-            "share": 14
-          }
-        },
-        {
-          "kind": "tufts",
-          "share": 30,
-          "inside": true,
-          "light": "#b99acb",
-          "mid": "#9a7db2",
-          "dark": "#836899"
-        },
-        {
-          "kind": "stamp",
-          "stamp": "toadstoolRing",
-          "count": [0, 1],
-          "dark": "#a67a86",
-          "light": "#e6dcc4"
+          "recipe": "cult-swamp-d",
+          "path": "art/explorations/faction-grounds-2026-10/raw/cult-swamp-d.png",
+          "sha256": "3201e78ed3703703c679fbb62245eb30ce140c80db6c018a1668e2b0aec0ada7"
         }
       ],
+      "recipe": {
+        "fields": [
+          {
+            "to": [
+              "#5f6a48",
+              "#76805a",
+              "#8fa79a",
+              "#56603f",
+              "#98a56c",
+              "#c6d398"
+            ],
+            "from": [
+              "#55786a",
+              "#3d5c5e",
+              "#7fa39a",
+              "#3f5a45",
+              "#8aa66e",
+              "#d9e8a8"
+            ]
+          },
+          {
+            "to": ["#76805a", "#48696c", "#93a58a", "#5c6748"],
+            "from": ["#777a56", "#466a6c", "#8fa79a", "#5f6a48"]
+          }
+        ],
+        "ground": "#76805a",
+        "variants": 6,
+        "seed": 4811,
+        "kinds": [
+          {
+            "id": "puddle",
+            "field": 1,
+            "area": [40, 130],
+            "has": [1],
+            "lacks": [2],
+            "count": [1, 2]
+          },
+          {
+            "id": "reed",
+            "area": [50, 110],
+            "has": [5],
+            "count": [0, 2]
+          },
+          {
+            "id": "blade",
+            "area": [5, 30],
+            "has": [5],
+            "lacks": [2],
+            "count": [2, 4]
+          },
+          {
+            "id": "sprig",
+            "field": 1,
+            "area": [6, 30],
+            "has": [2],
+            "lacks": [1],
+            "count": [0, 2]
+          },
+          {
+            "id": "glow",
+            "area": [4, 9],
+            "box": [3, 3],
+            "has": [5],
+            "count": [0, 2],
+            "to": {
+              "4": "#d6e6a4",
+              "5": "#eef6c4"
+            }
+          },
+          {
+            "id": "speck",
+            "area": [1, 3],
+            "count": [3, 6]
+          }
+        ]
+      },
       "tiles": [
         {
           "path": "public/assets/chibi/terrain/faction-grass/chibi-cult-grass-1.png",
-          "sha256": "6187541ae574fcfdb86e520562d22d9424ccdc1b083434af7dbf432d4b19ad7e",
-          "pixelSha256": "72680c930203bb2706f585804244329dca04406a7c88523b1476717a1b272e81"
+          "sha256": "889889d0999f95fe3ff4888fc2a6c976ab79c878ab383403018e12cee9c6b723",
+          "pixelSha256": "c7855cbdb8950a3bb303a0610a06c8a091ffe06496839528cc8a36e5eaab3bcf"
         },
         {
           "path": "public/assets/chibi/terrain/faction-grass/chibi-cult-grass-2.png",
-          "sha256": "eaec061acaa76746ae12e6c4e73873bef7f9059cd5b15396ce6ef0d35efcd7c6",
-          "pixelSha256": "e913de6f4f26057d248551b2fbde583440a5b15854dc59114afe770d1f220b84"
+          "sha256": "91312f04ad3372019516424933422116f2cfcb67973b9892067f46e37145986f",
+          "pixelSha256": "352a0740f1ea2facea99baa1ae0895c0adaa859a862e794fb18a72a770a42fe0"
         },
         {
           "path": "public/assets/chibi/terrain/faction-grass/chibi-cult-grass-3.png",
-          "sha256": "1c56210f9c1a50e4b74a4e7826d57e3fbaeb03b08d0f9849dd1a9ee791468b27",
-          "pixelSha256": "92bac45112524f7e4bc80a228ae4dcbf10b25aa228b25fc4a02f248d8949274e"
+          "sha256": "567c36ecffbaf911054b73ddf6f74a68122a1495ef7552c2f3ec64642cc48570",
+          "pixelSha256": "4b894047c77104548caffa46ae700430e002b3171ec26181625876bf52577675"
+        },
+        {
+          "path": "public/assets/chibi/terrain/faction-grass/chibi-cult-grass-4.png",
+          "sha256": "4d5355e20732b146de008b1b52783d192786455edb1e05563ca8066a61c1629d",
+          "pixelSha256": "2a14712833a5855ed08dc3162e2d6379cd8e264219df8eaf05edb5333545bc9f"
+        },
+        {
+          "path": "public/assets/chibi/terrain/faction-grass/chibi-cult-grass-5.png",
+          "sha256": "d621ade18c57c5e0fa7a56a72719e8b7814c9c9605d9307f04d78ae0647a6985",
+          "pixelSha256": "d0318f53fa27e31d90fb715b09268d6e0895534faf1c1295992f7c628e34dc1e"
+        },
+        {
+          "path": "public/assets/chibi/terrain/faction-grass/chibi-cult-grass-6.png",
+          "sha256": "43cb1593759a79c0ae5aeb2ae022045151453aa56a707d30edd42468cd6bcf72",
+          "pixelSha256": "ffc5da0b50f592ce2febc244a1688be4a8540efcc10834516290cc1a770d1a72"
+        }
+      ]
+    },
+    {
+      "id": "UNDEAD",
+      "look": "undead-wildfire",
+      "label": "Wildfire aftermath: ash, soot, burnt twigs, charred lumps, embers",
+      "bead": "pulp_wars-2yc.48",
+      "fields": [
+        {
+          "recipe": "undead-ash-b",
+          "path": "art/explorations/faction-grounds-2026-10/raw/undead-ash-b.png",
+          "sha256": "c26583ac5cf454e0977f97e87b8e1c0a1b6f4cde96905116193c0376785ead68"
+        },
+        {
+          "recipe": "undead-ash-c",
+          "path": "art/explorations/faction-grounds-2026-10/raw/undead-ash-c.png",
+          "sha256": "d15b08cfb0c5fcb5aa0d95563b49bf966c6b2185f29d178a2f6e3fa8765cb44d"
+        }
+      ],
+      "recipe": {
+        "fields": [
+          {
+            "to": ["#716a64", "#57504e", "#46403f", "#a59e95", "#d07a3a"],
+            "from": ["#8a8580", "#5e5856", "#3b3637", "#b4aea6", "#d07a3a"]
+          },
+          {
+            "to": ["#a59e95", "#57504e", "#46403f", "#d07a3a"],
+            "from": ["#8a8580", "#5e5856", "#3b3637", "#d07a3a"]
+          }
+        ],
+        "variants": 6,
+        "seed": 4821,
+        "kinds": [
+          {
+            "id": "soot",
+            "area": [0, 0],
+            "count": [0, 2],
+            "blob": {
+              "radius": [6, 13],
+              "fill": "#635d59"
+            }
+          },
+          {
+            "id": "lump",
+            "field": 1,
+            "area": [20, 75],
+            "has": [2],
+            "count": [0, 2],
+            "hollow": "#57504e"
+          },
+          {
+            "id": "scrub",
+            "area": [30, 140],
+            "has": [1],
+            "lacks": [4],
+            "count": [0, 1]
+          },
+          {
+            "id": "twig",
+            "area": [5, 29],
+            "lacks": [4],
+            "count": [2, 4]
+          },
+          {
+            "id": "ember",
+            "area": [4, 40],
+            "has": [4],
+            "count": [0, 1]
+          },
+          {
+            "id": "fleck",
+            "area": [1, 3],
+            "count": [5, 8]
+          }
+        ]
+      },
+      "tiles": [
+        {
+          "path": "public/assets/chibi/terrain/faction-grass/chibi-undead-grass-1.png",
+          "sha256": "cd608980f28fa003831c6fc5e790abb7094ddcad71df84316965ec7e3fef7650",
+          "pixelSha256": "7a9930cd644176adeb8c8746b55e67f8017e4e49480d11f0c2ceb9fe5da26c6d"
+        },
+        {
+          "path": "public/assets/chibi/terrain/faction-grass/chibi-undead-grass-2.png",
+          "sha256": "c4a686351eef5fd4e0c08ab404f961ead18e3466533df790fc9aff534a11ee44",
+          "pixelSha256": "b5ac597d44105528927142daad6b6391395242aac5adc0c2246ee3a7f1e71c93"
+        },
+        {
+          "path": "public/assets/chibi/terrain/faction-grass/chibi-undead-grass-3.png",
+          "sha256": "b11d2c703c4aec36d10b1d58a59bb5c5cea33e17dec42265fdd10a90a2846100",
+          "pixelSha256": "54139bfc571a8cf11c473c13dbb6ba71f4d3efdd82d760942dd194cdf3343a61"
+        },
+        {
+          "path": "public/assets/chibi/terrain/faction-grass/chibi-undead-grass-4.png",
+          "sha256": "08e26d47eab15923e9cd55f240ef64e7f5f1b9a4e5fc3a1996e9f2dffdeb9269",
+          "pixelSha256": "4fa2b8a079c557170a49596ee830a1c9af38c571dec66cabbcf9a7619017e6c9"
+        },
+        {
+          "path": "public/assets/chibi/terrain/faction-grass/chibi-undead-grass-5.png",
+          "sha256": "c721d02f7f47ae5485c35ea1fdeaca1de77896dfc474d30ae518c4e29a2c81e5",
+          "pixelSha256": "2db104ce766e9a3c498eb295943ed451961fb813b12ad8f5cb1a51ea518813eb"
+        },
+        {
+          "path": "public/assets/chibi/terrain/faction-grass/chibi-undead-grass-6.png",
+          "sha256": "28badf477fef8e7f0261adfdd6e89a1ba74f72033a2d8e7431aee28fec249a10",
+          "pixelSha256": "dc191b36162096d3dddd228046f1921c0f0a931d72db78e410804f7e8a51ef22"
+        }
+      ]
+    },
+    {
+      "id": "DWARF",
+      "look": "dwarf-gravel",
+      "label": "Mine gravel: verdigris stones, copper chips",
+      "bead": "pulp_wars-2yc.48",
+      "fields": [
+        {
+          "recipe": "dwarf-gravel-a",
+          "path": "art/explorations/faction-grounds-2026-10/raw/dwarf-gravel-a.png",
+          "sha256": "0016cd004d67e2fadf6aab6c1d6014788baf2a64625a110413ced30c4e16fd94"
+        }
+      ],
+      "recipe": {
+        "fields": [
+          {
+            "to": ["#9a9483", "#b5ae9c", "#7b7667", "#5f9e8c", "#b87748"],
+            "from": ["#a39a86", "#c2b9a6", "#7d7564", "#6fa392", "#b87748"]
+          }
+        ],
+        "variants": 6,
+        "seed": 4831,
+        "kinds": [
+          {
+            "id": "stone",
+            "area": [12, 70],
+            "has": [2],
+            "lacks": [4],
+            "count": [3, 5]
+          },
+          {
+            "id": "copper",
+            "area": [1, 8],
+            "has": [4],
+            "count": [1, 3]
+          },
+          {
+            "id": "grit",
+            "area": [1, 4],
+            "lacks": [4, 3],
+            "count": [26, 36]
+          }
+        ]
+      },
+      "tiles": [
+        {
+          "path": "public/assets/chibi/terrain/faction-grass/chibi-dwarf-grass-1.png",
+          "sha256": "c8171441d1d5081b01a84f3244c48a8a4444f297893de009849a4a6e737eb892",
+          "pixelSha256": "79f3edd14c3e45a7eb7b759cf414ea3f156b434c8516081525db12879a0ebdb3"
+        },
+        {
+          "path": "public/assets/chibi/terrain/faction-grass/chibi-dwarf-grass-2.png",
+          "sha256": "f6ea067446ef71ebcd3d2237343a9e95dae0bc644e93ede19c599fff37dccbf6",
+          "pixelSha256": "65e44616f5b7e31099cf4f5a1bf67666bfc4117e1bbedb94afc123a5775ac99d"
+        },
+        {
+          "path": "public/assets/chibi/terrain/faction-grass/chibi-dwarf-grass-3.png",
+          "sha256": "de7caaefa001a8d231c046d58bd51d9d1bd73ff4be2385025701bf719a11a82e",
+          "pixelSha256": "09ab57505888b9dedd3b090d60dffe8f02984f786ad50ea360efd5385f16916f"
+        },
+        {
+          "path": "public/assets/chibi/terrain/faction-grass/chibi-dwarf-grass-4.png",
+          "sha256": "c75eab951c1fc814a73b6fb2d2f42077b152e2c4eb5ada149b83e3de2250c93d",
+          "pixelSha256": "28bcf92e734f21b54079cc8e35f9435b0c0cd8f331b92e10024220718727b2ad"
+        },
+        {
+          "path": "public/assets/chibi/terrain/faction-grass/chibi-dwarf-grass-5.png",
+          "sha256": "327a0e2ad055b8436f38c16feaadae54b2d4b1f907aafd6c6bc5a566b4ef38a7",
+          "pixelSha256": "20a1f69fd1c0b2a5593f71423e7d2392fb63263c5e5383b999af277f50d829cf"
+        },
+        {
+          "path": "public/assets/chibi/terrain/faction-grass/chibi-dwarf-grass-6.png",
+          "sha256": "60ef8c9a274cccc07c13826acf1f2ee669e6345d952b67ca856dfbe695c31087",
+          "pixelSha256": "3594942d76b5f1d237cabb2c0bcf5c4b4b1708db6db88e6207ec0be6a911ae8c"
         }
       ]
     }

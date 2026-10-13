@@ -778,8 +778,10 @@ export function monumentArtSubjectV7(
 
 /**
  * The ground of a faction's territory (FACTION_BUILDINGS.md, section 4):
- * the Undead "gloam" Grass, a cooler, duller green, under the Grass, the
- * Forest trees and the Mountain fringe inside Undead borders.
+ * the Undead ground (first the "gloam" Grass; the burnt ground's colours
+ * since bead pulp_wars-2yc.48) under the Grass, the Forest trees and the
+ * Mountain fringe inside Undead borders. The live look draws a faction's
+ * baked ground tile over it (docs/art/FACTION_GRASS.md).
  */
 export type TerritoryGroundV7 = "UNDEAD";
 

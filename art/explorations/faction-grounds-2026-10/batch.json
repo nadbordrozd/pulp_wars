@@ -1,0 +1,768 @@
+{
+  "schemaVersion": 1,
+  "batch": "faction-grounds",
+  "title": "Faction grounds: PixelLab fields for the native ground of the Cultists, the Undead, the Dwarves, Candy, the Martians and the Goblins (exploration; the board tiles are derived from a chosen field by scripts/art/faction-grass.ts)",
+  "bead": "pulp_wars-2yc.48",
+  "faction": "TEST-FACTION-GROUNDS",
+  "dryRun": false,
+  "assets": [
+    {
+      "id": "chibi-ground-cult-swamp-a",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/CULT_SWAMP"
+    },
+    {
+      "id": "chibi-ground-cult-swamp-b",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/CULT_SWAMP_B"
+    },
+    {
+      "id": "chibi-ground-cult-swamp-c",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/CULT_SWAMP_C"
+    },
+    {
+      "id": "chibi-ground-cult-swamp-d",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/CULT_SWAMP_D"
+    },
+    {
+      "id": "chibi-ground-cult-moss-a",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/CULT_MOSS"
+    },
+    {
+      "id": "chibi-ground-undead-ash-a",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/UNDEAD_ASH"
+    },
+    {
+      "id": "chibi-ground-undead-ash-b",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/UNDEAD_ASH_B"
+    },
+    {
+      "id": "chibi-ground-undead-ash-c",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/UNDEAD_ASH_C"
+    },
+    {
+      "id": "chibi-ground-undead-char-a",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/UNDEAD_CHAR"
+    },
+    {
+      "id": "chibi-ground-dwarf-flags-a",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/DWARF_FLAGS"
+    },
+    {
+      "id": "chibi-ground-dwarf-flags-b",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/DWARF_FLAGS_B"
+    },
+    {
+      "id": "chibi-ground-dwarf-flags-c",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/DWARF_FLAGS_C"
+    },
+    {
+      "id": "chibi-ground-dwarf-slate-a",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/DWARF_SLATE"
+    },
+    {
+      "id": "chibi-ground-dwarf-gravel-a",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/DWARF_GRAVEL"
+    },
+    {
+      "id": "chibi-ground-candy-frosting-a",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/CANDY_FROSTING"
+    },
+    {
+      "id": "chibi-ground-candy-cookie-a",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/CANDY_COOKIE"
+    },
+    {
+      "id": "chibi-ground-candy-cookie-b",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/CANDY_COOKIE_B"
+    },
+    {
+      "id": "chibi-ground-candy-icing-a",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/CANDY_ICING"
+    },
+    {
+      "id": "chibi-ground-martian-regolith-a",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/MARTIAN_REGOLITH"
+    },
+    {
+      "id": "chibi-ground-martian-regolith-b",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/MARTIAN_REGOLITH_B"
+    },
+    {
+      "id": "chibi-ground-martian-rust-a",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/MARTIAN_RUST"
+    },
+    {
+      "id": "chibi-ground-martian-ripples-a",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/MARTIAN_RIPPLES"
+    },
+    {
+      "id": "chibi-ground-martian-ripples-b",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/MARTIAN_RIPPLES_B"
+    },
+    {
+      "id": "chibi-ground-goblin-savannah-a",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/GOBLIN_SAVANNAH"
+    },
+    {
+      "id": "chibi-ground-goblin-savannah-b",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/GOBLIN_SAVANNAH_B"
+    },
+    {
+      "id": "chibi-ground-goblin-badlands-a",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/GOBLIN_BADLANDS"
+    },
+    {
+      "id": "chibi-ground-goblin-mud-a",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/GOBLIN_MUD"
+    },
+    {
+      "id": "chibi-ground-goblin-mud-b",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/GOBLIN_MUD_B"
+    }
+  ],
+  "recipes": [
+    {
+      "id": "cult-swamp-a",
+      "asset": "chibi-ground-cult-swamp-a",
+      "endpoint": "create-image-pixflux",
+      "seed": 48101,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/ground-cult-swamp.png",
+        "sha256": "8b5a578cc4009667c5e8287042b6da67c9e83d9150cd574444eb0d5571bedd09"
+      },
+      "negativeAddendum": "trees, bushes, shrubs, animals, people, path, road, river, shore, cliff, big rocks, boulders, wall, fence, flowers, lily, frog, fish, purple, pink",
+      "notes": "CULT, Bog with still pools and reeds. First field: peat base, pools, reeds, glow specks."
+    },
+    {
+      "id": "cult-swamp-b",
+      "asset": "chibi-ground-cult-swamp-b",
+      "endpoint": "create-image-pixflux",
+      "seed": 48102,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/ground-cult-swamp.png",
+        "sha256": "8b5a578cc4009667c5e8287042b6da67c9e83d9150cd574444eb0d5571bedd09"
+      },
+      "negativeAddendum": "trees, bushes, shrubs, animals, people, path, road, river, shore, cliff, big rocks, boulders, wall, fence, flowers, lily, frog, fish, purple, pink",
+      "notes": "CULT, Bog with still pools and reeds. The texture wording of the run (style and class overrides), and small words: tiny puddles and reed tufts, no pools."
+    },
+    {
+      "id": "cult-swamp-c",
+      "asset": "chibi-ground-cult-swamp-c",
+      "endpoint": "create-image-pixflux",
+      "seed": 48103,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/ground-cult-swamp-c.png",
+        "sha256": "bd289556ef66fac45474f372cbf3df33ed385d0d33a71e3d352b8931881efdc2"
+      },
+      "negativeAddendum": "trees, bushes, shrubs, animals, people, path, road, river, shore, cliff, big rocks, boulders, wall, fence, flowers, lily, frog, fish, purple, pink, reeds, grass, stones",
+      "notes": "CULT, Bog with still pools and reeds. Pools only, for the pool motifs: cult-swamp-b gave reeds and glow specks but its water is a band through the field."
+    },
+    {
+      "id": "cult-swamp-d",
+      "asset": "chibi-ground-cult-swamp-d",
+      "endpoint": "create-image-pixflux",
+      "seed": 48104,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/ground-cult-swamp-d.png",
+        "sha256": "7396f114a6495e03de0d6ebd8b5bb095c2273cc6c9d8c7dbfb2da3489577e388"
+      },
+      "negativeAddendum": "trees, bushes, shrubs, animals, people, path, road, river, shore, cliff, big rocks, boulders, wall, fence, flowers, lily, frog, fish, purple, pink, reeds, grass, stones, holes, pits, craters, walls, depth, big ponds",
+      "notes": "CULT, Bog with still pools and reeds. cult-swamp-c drew four pits 60 px wide with walls. Tiny flat puddles, a tenth of the image, no depth."
+    },
+    {
+      "id": "cult-moss-a",
+      "asset": "chibi-ground-cult-moss-a",
+      "endpoint": "create-image-pixflux",
+      "seed": 48111,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/ground-cult-moss.png",
+        "sha256": "79a532f06a8222b3a9d3318e31d161bbae4482d0d85c66ded84e9a5bebb55f72"
+      },
+      "negativeAddendum": "trees, bushes, shrubs, animals, people, path, road, river, shore, cliff, big rocks, boulders, wall, fence, flowers, frog, fish, purple, pink, reeds, tall grass",
+      "notes": "CULT, Moss bog with duckweed and puddles. The alternative: moss patches and puddles, no reeds."
+    },
+    {
+      "id": "undead-ash-a",
+      "asset": "chibi-ground-undead-ash-a",
+      "endpoint": "create-image-pixflux",
+      "seed": 48201,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/ground-undead-ash.png",
+        "sha256": "7427f918c199af263a1550123465ab046ec11116ce0cd8d01fcd32462bf905e9"
+      },
+      "negativeAddendum": "trees, bushes, shrubs, animals, people, path, road, river, shore, cliff, big rocks, boulders, wall, fence, flames, fire, smoke, grass, green, skulls, bones, graves",
+      "notes": "UNDEAD, Ash field after a wildfire. First field: ash base, char patches, stubs, embers."
+    },
+    {
+      "id": "undead-ash-b",
+      "asset": "chibi-ground-undead-ash-b",
+      "endpoint": "create-image-pixflux",
+      "seed": 48202,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/ground-undead-ash.png",
+        "sha256": "7427f918c199af263a1550123465ab046ec11116ce0cd8d01fcd32462bf905e9"
+      },
+      "negativeAddendum": "trees, bushes, shrubs, animals, people, path, road, river, shore, cliff, big rocks, boulders, wall, fence, flames, fire, smoke, grass, green, skulls, bones, graves, stumps, logs, flowers",
+      "notes": "UNDEAD, Ash field after a wildfire. The texture wording of the run, and nothing that stands: soot blotches, charcoal bits, twigs lying flat, ember dots."
+    },
+    {
+      "id": "undead-ash-c",
+      "asset": "chibi-ground-undead-ash-c",
+      "endpoint": "create-image-pixflux",
+      "seed": 48203,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/ground-undead-ash-c.png",
+        "sha256": "22c196b9a8d5838fe750afc0ddc1670ffe8341009d9ad723fcf01f9682aa6a75"
+      },
+      "negativeAddendum": "trees, bushes, shrubs, animals, people, path, road, river, shore, cliff, big rocks, boulders, wall, fence, flames, fire, smoke, grass, green, skulls, bones, graves, stumps, logs, flowers, twigs",
+      "notes": "UNDEAD, Ash field after a wildfire. Soot patches only, for the patch motifs: undead-ash-b gave twigs, embers and flecks but no patch of a second tone."
+    },
+    {
+      "id": "undead-char-a",
+      "asset": "chibi-ground-undead-char-a",
+      "endpoint": "create-image-pixflux",
+      "seed": 48211,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/ground-undead-char.png",
+        "sha256": "fce488220f9ffaa7f0fbdae5d2ececd143404c9e0c8d6ea35c68dc3c33ab441e"
+      },
+      "negativeAddendum": "trees, bushes, shrubs, animals, people, path, road, river, shore, cliff, big rocks, boulders, wall, fence, flames, fire, smoke, grass, green, skulls, bones, graves, lava",
+      "notes": "UNDEAD, Charred earth with ash drifts. The alternative: a darker scorched base with pale ash drifts."
+    },
+    {
+      "id": "dwarf-flags-a",
+      "asset": "chibi-ground-dwarf-flags-a",
+      "endpoint": "create-image-pixflux",
+      "seed": 48301,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/ground-dwarf-flags.png",
+        "sha256": "efd71ce5262454d19375c650f81fd7f318d3c13a577b642ca6f263d88a03395d"
+      },
+      "negativeAddendum": "trees, bushes, shrubs, animals, people, path, road, river, shore, cliff, big rocks, boulders, wall, fence, bricks, regular grid, tiles, cobblestones, runes, letters",
+      "notes": "DWARF, Worked stone flags with mossy joints. Candidate A: worked flags, moss in the joints."
+    },
+    {
+      "id": "dwarf-flags-b",
+      "asset": "chibi-ground-dwarf-flags-b",
+      "endpoint": "create-image-pixflux",
+      "seed": 48302,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/ground-dwarf-flags.png",
+        "sha256": "efd71ce5262454d19375c650f81fd7f318d3c13a577b642ca6f263d88a03395d"
+      },
+      "negativeAddendum": "trees, bushes, shrubs, animals, people, path, road, river, shore, cliff, big rocks, boulders, wall, fence, bricks, regular grid, tiles, cobblestones, runes, letters, grass, lawn, green ground",
+      "notes": "DWARF, Worked stone flags with mossy joints. The texture wording of the run; the floor covers the image edge to edge (dwarf-flags-a drew a paved road across a lawn)."
+    },
+    {
+      "id": "dwarf-flags-c",
+      "asset": "chibi-ground-dwarf-flags-c",
+      "endpoint": "create-image-pixflux",
+      "seed": 48303,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/ground-dwarf-flags.png",
+        "sha256": "efd71ce5262454d19375c650f81fd7f318d3c13a577b642ca6f263d88a03395d"
+      },
+      "negativeAddendum": "trees, bushes, shrubs, animals, people, path, road, river, shore, cliff, big rocks, boulders, wall, fence, bricks, small tiles, cobblestones, runes, letters, grass, lawn, green ground",
+      "notes": "DWARF, Worked stone flags with mossy joints. dwarf-flags-b is a floor, but its flagstones are 34 px: no 80 px window of it repeats. Four across and four down would be 40 px, two to a cell."
+    },
+    {
+      "id": "dwarf-slate-a",
+      "asset": "chibi-ground-dwarf-slate-a",
+      "endpoint": "create-image-pixflux",
+      "seed": 48311,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/ground-dwarf-slate.png",
+        "sha256": "00bcd488cad038a5a2109028b1f2f50acfac8bc7b387a3b4f75c477765adea06"
+      },
+      "negativeAddendum": "trees, bushes, shrubs, animals, people, path, road, river, shore, cliff, big rocks, boulders, wall, fence, snow, grass tufts, flowers",
+      "notes": "DWARF, Slate highland with moss and scree. Candidate B: slate with moss patches and scree."
+    },
+    {
+      "id": "dwarf-gravel-a",
+      "asset": "chibi-ground-dwarf-gravel-a",
+      "endpoint": "create-image-pixflux",
+      "seed": 48321,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/ground-dwarf-gravel.png",
+        "sha256": "0b7a267f36ea12390c9889792d7136d753a106f19f14332cca5d14c85a76539a"
+      },
+      "negativeAddendum": "trees, bushes, shrubs, animals, people, path, road, river, shore, cliff, big rocks, boulders, wall, fence, grass, moss, flowers, rails, cart",
+      "notes": "DWARF, Copper-stained gravel. Candidate C: gravel with verdigris stains and copper chips."
+    },
+    {
+      "id": "candy-frosting-a",
+      "asset": "chibi-ground-candy-frosting-a",
+      "endpoint": "create-image-pixflux",
+      "seed": 48401,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/ground-candy-frosting.png",
+        "sha256": "0683417da2d2bcea20f87316bafee786092f0d7c692a7ddaec51a9eaeb0cda53"
+      },
+      "negativeAddendum": "trees, bushes, shrubs, animals, people, path, road, river, shore, cliff, big rocks, boulders, wall, fence, cake slice, plate, candles, cherries, fruit, cupcake",
+      "notes": "CANDY, Mint frosting with sprinkles and sugar crystals. Candidate A: the mint meadow as frosting, larger sprinkles."
+    },
+    {
+      "id": "candy-cookie-a",
+      "asset": "chibi-ground-candy-cookie-a",
+      "endpoint": "create-image-pixflux",
+      "seed": 48411,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/ground-candy-cookie.png",
+        "sha256": "00943c57ac26a01dc432c569b24077c60510e3cab4d2804df1f1b92b5a3f309d"
+      },
+      "negativeAddendum": "trees, bushes, shrubs, animals, people, path, road, river, shore, cliff, big rocks, boulders, wall, fence, plate, bite, cracks, cookie edge, round cookie",
+      "notes": "CANDY, Cookie crumb with chocolate chips and sprinkles. Candidate B: a biscuit ground, chips and sprinkles."
+    },
+    {
+      "id": "candy-cookie-b",
+      "asset": "chibi-ground-candy-cookie-b",
+      "endpoint": "create-image-pixflux",
+      "seed": 48412,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/ground-candy-cookie.png",
+        "sha256": "00943c57ac26a01dc432c569b24077c60510e3cab4d2804df1f1b92b5a3f309d"
+      },
+      "negativeAddendum": "trees, bushes, shrubs, animals, people, path, road, river, shore, cliff, big rocks, boulders, wall, fence, plate, bite, cracks, cookie edge, round cookie, crumbs, flour, sugar dust, white patches",
+      "notes": "CANDY, Cookie crumb with chocolate chips and sprinkles. candy-cookie-a is half white crumbs: noise, and no flat base. Smooth biscuit, fewer things."
+    },
+    {
+      "id": "candy-icing-a",
+      "asset": "chibi-ground-candy-icing-a",
+      "endpoint": "create-image-pixflux",
+      "seed": 48421,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/ground-candy-icing.png",
+        "sha256": "d93be3524483d3a40fbbdb8a986c2056d32f25aada02b7694e6affbeecc1a2d4"
+      },
+      "negativeAddendum": "trees, bushes, shrubs, animals, people, path, road, river, shore, cliff, big rocks, boulders, wall, fence, cake slice, plate, candles, cherries, fruit, cupcake",
+      "notes": "CANDY, Vanilla icing with pastel swirls. Candidate C: cream icing, piped swirls and sugar pearls."
+    },
+    {
+      "id": "martian-regolith-a",
+      "asset": "chibi-ground-martian-regolith-a",
+      "endpoint": "create-image-pixflux",
+      "seed": 48501,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/ground-martian-regolith.png",
+        "sha256": "510226fbd3d87a91ac1cd4a755069675a2be1fa0c8a89f9a25a8c1d823234a3e"
+      },
+      "negativeAddendum": "trees, bushes, shrubs, animals, people, path, road, river, shore, cliff, big rocks, boulders, wall, fence, plants, grass, water, rover, footprints, big crater",
+      "notes": "MARTIAN, Butterscotch dust with rocks and small craters. Candidate A: lighter butterscotch regolith, craters."
+    },
+    {
+      "id": "martian-regolith-b",
+      "asset": "chibi-ground-martian-regolith-b",
+      "endpoint": "create-image-pixflux",
+      "seed": 48502,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/ground-martian-regolith.png",
+        "sha256": "510226fbd3d87a91ac1cd4a755069675a2be1fa0c8a89f9a25a8c1d823234a3e"
+      },
+      "negativeAddendum": "trees, bushes, shrubs, animals, people, path, road, river, shore, cliff, big rocks, boulders, wall, fence, plants, grass, water, rover, footprints, big crater",
+      "notes": "MARTIAN, Butterscotch dust with rocks and small craters. More motifs for the look: martian-regolith-a has six rocks and no crater."
+    },
+    {
+      "id": "martian-rust-a",
+      "asset": "chibi-ground-martian-rust-a",
+      "endpoint": "create-image-pixflux",
+      "seed": 48511,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/ground-martian-rust.png",
+        "sha256": "e659568c816ce8ff3335fabd5f3b40c0e0ab82855259f1005ac092682c26672b"
+      },
+      "negativeAddendum": "trees, bushes, shrubs, animals, people, path, road, river, shore, cliff, big rocks, boulders, wall, fence, plants, grass, water, rover, footprints, crater, lava",
+      "notes": "MARTIAN, Deep rust plain with scattered stones. Candidate B: deeper rust with flat stones."
+    },
+    {
+      "id": "martian-ripples-a",
+      "asset": "chibi-ground-martian-ripples-a",
+      "endpoint": "create-image-pixflux",
+      "seed": 48521,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/ground-martian-ripples.png",
+        "sha256": "022639c0d28e411bf2c183a3e5b1a8e0e4e118b1fd22ac44399d10950e2706cf"
+      },
+      "negativeAddendum": "trees, bushes, shrubs, animals, people, path, road, river, shore, cliff, big rocks, boulders, wall, fence, plants, grass, water, rover, footprints, crater, dunes, waves",
+      "notes": "MARTIAN, Wind-rippled salmon dust. Candidate C: wind ripples, no craters."
+    },
+    {
+      "id": "martian-ripples-b",
+      "asset": "chibi-ground-martian-ripples-b",
+      "endpoint": "create-image-pixflux",
+      "seed": 48522,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/ground-martian-ripples.png",
+        "sha256": "022639c0d28e411bf2c183a3e5b1a8e0e4e118b1fd22ac44399d10950e2706cf"
+      },
+      "negativeAddendum": "trees, bushes, shrubs, animals, people, path, road, river, shore, cliff, big rocks, boulders, wall, fence, plants, grass, water, rover, footprints, crater, rings, circles, dunes, waves",
+      "notes": "MARTIAN, Wind-rippled salmon dust. martian-ripples-a drew crater rings in outline, no ripples and no stones. Ripple strokes, no circles."
+    },
+    {
+      "id": "goblin-savannah-a",
+      "asset": "chibi-ground-goblin-savannah-a",
+      "endpoint": "create-image-pixflux",
+      "seed": 48601,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/ground-goblin-savannah.png",
+        "sha256": "3869cce3e116b3caef479a6f26fa68a8941d3ee6dbce21da13d787c1f3cf31cb"
+      },
+      "negativeAddendum": "trees, bushes, shrubs, animals, people, path, road, river, shore, cliff, big rocks, boulders, wall, fence, acacia, flowers, bones, tall grass",
+      "notes": "GOBLIN, Dry golden savannah. Candidate A, the lead idea: golden dry grass, cracked earth."
+    },
+    {
+      "id": "goblin-savannah-b",
+      "asset": "chibi-ground-goblin-savannah-b",
+      "endpoint": "create-image-pixflux",
+      "seed": 48602,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/ground-goblin-savannah.png",
+        "sha256": "3869cce3e116b3caef479a6f26fa68a8941d3ee6dbce21da13d787c1f3cf31cb"
+      },
+      "negativeAddendum": "trees, bushes, shrubs, animals, people, path, road, river, shore, cliff, big rocks, boulders, wall, fence, acacia, flowers, bones, tall grass",
+      "notes": "GOBLIN, Dry golden savannah. More motifs for the look: the big tufts of goblin-savannah-a are cut by the field's edge, and it has no cracked earth."
+    },
+    {
+      "id": "goblin-badlands-a",
+      "asset": "chibi-ground-goblin-badlands-a",
+      "endpoint": "create-image-pixflux",
+      "seed": 48611,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/ground-goblin-badlands.png",
+        "sha256": "03f0ce5d9cc85a6c2851567576dbb51e82df3bdcff453a228ae91de9578be50b"
+      },
+      "negativeAddendum": "trees, bushes, shrubs, animals, people, path, road, river, shore, cliff, big rocks, boulders, wall, fence, cactus, flowers, bones, skulls, canyon",
+      "notes": "GOBLIN, Scrubby badlands. Candidate B: khaki cracked earth with olive scrub."
+    },
+    {
+      "id": "goblin-mud-a",
+      "asset": "chibi-ground-goblin-mud-a",
+      "endpoint": "create-image-pixflux",
+      "seed": 48621,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/ground-goblin-mud.png",
+        "sha256": "e7874ca6ff694901ac2dd6fdcc61319bea11d2b3e9c88a6eda7e88e5c7915ffa"
+      },
+      "negativeAddendum": "trees, bushes, shrubs, animals, people, path, road, river, shore, cliff, big rocks, boulders, wall, fence, footprints, tents, campfire, bones, wheel tracks",
+      "notes": "GOBLIN, Muddy trampled camp ground. Candidate C: trampled mud, straw and puddles."
+    },
+    {
+      "id": "goblin-mud-b",
+      "asset": "chibi-ground-goblin-mud-b",
+      "endpoint": "create-image-pixflux",
+      "seed": 48622,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/ground-goblin-mud-b.png",
+        "sha256": "1056f61dfe4d81a7936e30899b031e84d14d60558d36feee677228e9a479888e"
+      },
+      "negativeAddendum": "trees, bushes, shrubs, animals, people, path, road, river, shore, cliff, big rocks, boulders, wall, fence, footprints, tents, campfire, bones, wheel tracks",
+      "notes": "GOBLIN, Muddy trampled camp ground. goblin-mud-a is a flat dark olive with thin green blades: no puddles, no straw, and as dark as the bog. A lighter tan mud, puddles asked for by shape."
+    }
+  ]
+}

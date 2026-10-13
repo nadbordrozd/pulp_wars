@@ -17,6 +17,7 @@ import {
   galleryTerrainDetailsV7,
   galleryTerrainLookV7,
   galleryTerrainPerFactionV7,
+  galleryTerrainNameV7,
   galleryTerrainPiecesV7,
   galleryTerrainRasterUrlsV7,
   galleryTerrainVariantsV7,
@@ -51,6 +52,17 @@ describe("Gallery terrain presentation", () => {
       expect(galleryTerrainLookV7("GRASS", faction), faction).toBe("OWN");
     const snow = galleryTerrainCellV7("GRASS", "ICE_FOLK");
     expect(snow.kind === "OWN" && snow.name).toBe("Snow");
+    // A ground that is not grass has its own name (bead pulp_wars-2yc.48).
+    expect(galleryTerrainNameV7("GRASS", "CULT")).toBe("Bog");
+    expect(galleryTerrainNameV7("GRASS", "UNDEAD")).toBe("Burnt ground");
+    expect(galleryTerrainNameV7("GRASS", "DWARF")).toBe("Gravel");
+    expect(galleryTerrainNameV7("GRASS", "GOBLIN")).toBe("Grass");
+    expect(galleryTerrainNameV7("FOREST", "CULT")).toBe("Forest");
+    // Six tiles for a ground made from PixelLab fields, three otherwise.
+    expect(galleryTerrainPiecesV7("GRASS", "CULT")).toHaveLength(6);
+    expect(galleryTerrainPiecesV7("GRASS", "UNDEAD")).toHaveLength(6);
+    expect(galleryTerrainPiecesV7("GRASS", "DWARF")).toHaveLength(6);
+    expect(galleryTerrainPiecesV7("GRASS", "GOBLIN")).toHaveLength(3);
     expect(
       snow.kind === "OWN" && snow.swatch.layers.map((layer) => layer.kind),
     ).toEqual(["SUBJECT", "SNOW"]);

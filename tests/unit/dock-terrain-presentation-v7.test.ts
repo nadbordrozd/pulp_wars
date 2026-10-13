@@ -102,15 +102,16 @@ describe("the tile dock's terrain picture", () => {
           at: { x: 0, y: 0 },
         });
     }
-    // Six factions have a baked ground of their own (the Cult heather moor
-    // is the sixth, bead pulp_wars-mch9.22).
+    // Seven factions have a baked ground of their own (the Undead burnt
+    // ground is the seventh, bead pulp_wars-2yc.48: until then the Undead
+    // ground was a terrain tile the board tones).
     expect(
       FACTION_IDS_V7.filter(
         (faction) =>
           dockTerrainSwatchV7(request("MOUNTAIN", faction))?.layers[0]?.kind ===
           "RASTER",
       ),
-    ).toHaveLength(6);
+    ).toHaveLength(7);
     // Snow lies over the ground, under the mountain.
     const snowy = dockTerrainSwatchV7(
       request("MOUNTAIN", "ICE_FOLK", { snow: true }),

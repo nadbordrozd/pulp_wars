@@ -423,12 +423,26 @@ export type GalleryTerrainCellV7 =
       readonly faction: FactionIdV7;
     };
 
+/**
+ * What a faction's ground is called where it is not grass: Snow, and the
+ * grounds of bead pulp_wars-2yc.48. The rule and the row are still Grass.
+ */
+const GROUND_NAMES: Partial<Readonly<Record<FactionIdV7, string>>> = {
+  ICE_FOLK: "Snow",
+  CULT: "Bog",
+  UNDEAD: "Burnt ground",
+  DWARF: "Gravel",
+};
+
 /** The name of a terrain as a faction has it ("Snow" for the Ice Folk). */
 export function galleryTerrainNameV7(
   row: GalleryTerrainRowIdV7,
   faction: FactionIdV7 | null,
 ): string {
-  return row === "GRASS" && faction === "ICE_FOLK" ? "Snow" : ROW_NAMES[row];
+  return (
+    (row === "GRASS" && faction !== null ? GROUND_NAMES[faction] : undefined) ??
+    ROW_NAMES[row]
+  );
 }
 
 export const GALLERY_TERRAIN_SAME_TEXT_V7 = "Same as default";

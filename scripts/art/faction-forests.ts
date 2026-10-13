@@ -8,7 +8,7 @@
  *   MOUNTAIN_RANGES_RUN=art/pixellab/faction-forests \
  *     npx tsx scripts/art/chibi-mountain-ranges.ts plan
  *   MOUNTAIN_RANGES_RUN=art/pixellab/faction-forests \
- *     node node_modules/.bin/tsx --env-file=<file> scripts/art/chibi-mountain-ranges.ts generate <id>...
+ *     node node_modules/.bin/tsx scripts/art/chibi-mountain-ranges.ts generate <id>...
  *   npx tsx scripts/art/faction-forests.ts bake
  *   npx tsx scripts/art/faction-forests.ts check        # also in art:validate
  *   npx tsx scripts/art/faction-forests.ts lighting

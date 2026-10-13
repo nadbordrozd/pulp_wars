@@ -1,29 +1,33 @@
 /**
  * The Undead territory ground as production masters (bead pulp_wars-xdh.2,
- * docs/art/FACTION_BUILDINGS.md, section 4; restyled in bead
- * pulp_wars-2yc.14, docs/art/FACTION_GRASS.md): the three Grass masters in
- * the "ashen" look, and the two Forest masters re-composited over the first
- * ashen tile (their recorded ground is `chibi-grass-1`).
+ * docs/art/FACTION_BUILDINGS.md, section 4; docs/art/FACTION_GRASS.md): the
+ * three Grass masters in the colours of the burnt ground, and the two
+ * Forest masters re-composited over the first of them (their recorded
+ * ground is `chibi-grass-1`).
  *
  *   npx tsx scripts/art/faction-buildings/gloam-grass.ts bake
  *   npx tsx scripts/art/faction-buildings/gloam-grass.ts check
  *
  * No PixelLab call: every master is derived from a reviewed production
- * master as the faction grounds are (scripts/art/faction-grass.ts,
- * `deriveFactionGrassTile`): the four Grass colours are swapped, so the
- * tufts, the seamless joins and the three variants stay, and a few motifs
- * are placed at least 3 px inside the tile (dry tufts, pale mist patches,
- * ash stones, a stray bone). The first look was the "gloam", a colour swap
- * alone; the user asked for a spookier ground on 2026-10-06. `bake` writes
- * the masters and `gloam-grass.json` (the recipe and the hash of every
- * source and output); `art:validate` re-derives each master from its
- * sources and fails when the bytes differ (`gloamGrassProblems`). The file
- * and its names keep "gloam" for the history of the ground.
+ * master (scripts/art/faction-grass.ts, `deriveFactionGrassTile`): the four
+ * Grass colours are swapped, so the tufts, the seamless joins and the three
+ * variants stay. `bake` writes the masters and `gloam-grass.json` (the
+ * recipe and the hash of every source and output); `art:validate`
+ * re-derives each master from its sources and fails when the bytes differ
+ * (`gloamGrassProblems`). The file and its names keep "gloam" for the
+ * history of the ground: the gloam (a colour swap), the ashen ground of
+ * bead pulp_wars-2yc.14 (with mist, stones and a bone), and since bead
+ * pulp_wars-2yc.48 the burnt ground.
+ *
+ * Since that bead these masters are not what the board shows of Undead
+ * land: the burnt ground is a baked tile composed from PixelLab fields and
+ * drawn over them (`faction-grass/chibi-undead-grass-1..6.png`). They are
+ * what lies under it: with `?faction-grass=0`, and in the tile dock of a
+ * plain Grass cell.
  *
  * The board tones these masters like every Grass tile (contrast 65% round
  * the Grass pivot #89b75b), so the recipe's colours are master colours: a
- * board colour c is the master colour pivot + (c - pivot) / 0.65. The board
- * colour of each is noted beside it.
+ * board colour c is the master colour pivot + (c - pivot) / 0.65.
  *
  * The Forest body layers are not copied: the runtime draws the ground
  * tile, a Road, and the existing `chibi-forest-N.body.png` over it.
@@ -36,66 +40,78 @@ import { encodePng, pixelSha256, readRaster, sha256 } from "../chibi/pipeline";
 import { groundComposite } from "../chibi/raster";
 import {
   deriveFactionGrassTile,
+  fieldGroundLook,
+  fieldGroundRecipe,
   type GrassRecipeColours,
 } from "../faction-grass";
 
 const TERRAIN = "public/assets/chibi/terrain";
 export const GLOAM_GRASS_RECORD =
   "scripts/art/faction-buildings/gloam-grass.json";
-export const GLOAM_VARIANT = "ashen";
+export const GLOAM_VARIANT = "wildfire";
 const GLOAM_LABEL =
-  "Ashen: a cold grey-green with slate tufts, a third of them dry, pale mist patches, ash stones and a stray bone";
-/** The seed of the motif placement. */
+  "Wildfire: the ash, soot and pale ash of the burnt ground on the Grass tufts, under the baked tiles";
+/** The seed of the motif placement (the recipe has no motif now). */
 const GLOAM_SEED = 14;
 
-/** Master colours; the board colour after the terrain tone is noted. */
-export const GLOAM_RECIPE: GrassRecipeColours = {
-  base: "#7a8a9d", // board #7f9a86
-  light: "#9fa8bf", // board #97ad9c
-  mid: "#50597e", // board #647a72
-  dark: "#36306c", // board #535f66
-  motifs: [
-    {
-      // Pale mist lying on the ground: board #92a79c, specks #a0b3a9.
-      kind: "patch",
-      count: [1, 2],
-      radius: [6, 9],
-      fill: "#979ebf",
-      speck: { colour: "#acb1d3", share: 14 },
-    },
-    {
-      // Dry tufts: board #b9b79e, #96947c, #7c7a68.
-      kind: "tufts",
-      share: 30,
-      inside: true,
-      light: "#d3b7c2",
-      mid: "#9d818e",
-      dark: "#75596f",
-    },
-    {
-      // Ash stones: board #a4aaa8 over #5e6a6c.
-      kind: "pebble",
-      count: [1, 2],
-      top: "#b3a3d1",
-      foot: "#474175",
-    },
-    {
-      // A stray bone on some tiles: board #d6d4c0, shade #a3a595.
-      kind: "stamp",
-      stamp: "bone",
-      count: [0, 1],
-      dark: "#b19bb4",
-      light: "#ffe4f6",
-    },
-    {
-      kind: "stamp",
-      stamp: "boneSmall",
-      count: [0, 1],
-      dark: "#b19bb4",
-      light: "#ffe4f6",
-    },
-  ],
-};
+/** The Grass pivot of the terrain tone and its contrast (visual-direction-v7.ts). */
+const PIVOT = [137, 183, 91] as const;
+const CONTRAST = 0.65;
+
+/** The master colour the terrain tone turns into this board colour. */
+export function gloamMasterColour(board: string): string {
+  const channels = [1, 3, 5].map((at, index) => {
+    const value = Number.parseInt(board.slice(at, at + 2), 16);
+    const pivot = PIVOT[index] ?? 0;
+    return Math.max(
+      0,
+      Math.min(255, Math.round(pivot + (value - pivot) / CONTRAST)),
+    );
+  });
+  // The tone softens a pixel whose channels are all 62 or less as an
+  // outline; no colour of this ground may be one.
+  if (Math.max(...channels) <= 62)
+    throw new Error(`${board} is too dark for an Undead ground master`);
+  return `#${channels.map((value) => value.toString(16).padStart(2, "0")).join("")}`;
+}
+
+function mix(left: string, right: string): string {
+  return `#${[1, 3, 5]
+    .map((at) =>
+      Math.round(
+        (Number.parseInt(left.slice(at, at + 2), 16) +
+          Number.parseInt(right.slice(at, at + 2), 16)) /
+          2,
+      )
+        .toString(16)
+        .padStart(2, "0"),
+    )
+    .join("")}`;
+}
+
+/**
+ * Master colours: the board colours of the burnt ground
+ * (scripts/art/faction-grounds/looks.ts, the Undead look CHOSEN: its ash,
+ * soot and pale ash) taken back through the terrain tone. Since bead
+ * pulp_wars-2yc.48 the Undead ground the board shows is a baked tile drawn
+ * over these masters (docs/art/FACTION_GRASS.md); they are what is under
+ * it: the Grass tufts in the burnt ground's colours, no motif.
+ */
+function gloamRecipe(): GrassRecipeColours {
+  const [ash, soot, , pale] =
+    fieldGroundRecipe(fieldGroundLook("UNDEAD")).fields[0]?.to ?? [];
+  if (ash === undefined || soot === undefined || pale === undefined)
+    throw new Error("the Undead ground look has no ash, soot and pale ash");
+  return {
+    base: gloamMasterColour(ash),
+    light: gloamMasterColour(pale),
+    mid: gloamMasterColour(mix(ash, soot)),
+    dark: gloamMasterColour(soot),
+    motifs: [],
+  };
+}
+
+export const GLOAM_RECIPE: GrassRecipeColours = gloamRecipe();
 
 /** The Grass masters' colours by the recipe colour that replaces them. */
 const GRASS_COLOUR_ROLES = {
@@ -198,7 +214,7 @@ export async function deriveGloamGrass(root: string): Promise<{
   return {
     record: {
       schemaVersion: 1,
-      bead: "pulp_wars-2yc.14",
+      bead: "pulp_wars-2yc.48",
       variant: GLOAM_VARIANT,
       label: GLOAM_LABEL,
       colours,

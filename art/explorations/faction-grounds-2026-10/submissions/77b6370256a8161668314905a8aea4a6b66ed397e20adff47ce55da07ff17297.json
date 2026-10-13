@@ -1,0 +1,61 @@
+{
+  "id": "dwarf-flags-a",
+  "jobId": "sync-f85918e1-ad13-47ae-bacc-8c8650db1ea5",
+  "request": {
+    "endpoint": "create-image-pixflux",
+    "model": "create-image-pixflux",
+    "batch": "faction-grounds",
+    "asset": "chibi-ground-dwarf-flags-a",
+    "subject": "TERRAIN:GRASS",
+    "faction": "TEST-FACTION-GROUNDS",
+    "recipeClass": "terrain",
+    "requestSize": {
+      "width": 160,
+      "height": 160
+    },
+    "seed": 48301,
+    "noBackground": false,
+    "options": {
+      "shading": "flat shading",
+      "detail": "low detail",
+      "view": "high top-down"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-top-down.txt",
+        "text": "Camera: straight top-down view of flat ground filling the whole canvas edge to edge, no perspective, no horizon, no lighting gradient."
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-terrain.txt + art/explorations/faction-grounds-2026-10/fragments/class-terrain.negative.txt",
+        "text": "Class: calm terrain ground for a strategy map, less saturated than the pieces placed on it, flat colour fills with two or three close tones, low detail, a few small features scattered evenly, the same everywhere with no single focal object. The ground continues past all four edges of the image.",
+        "negative": "border, frame, hedge, outline around the image, vignette, dark corners, light spot, lighting gradient, path, road, buildings, characters, people, perspective, horizon, tile edge, square island, neon, oversaturated"
+      },
+      {
+        "layer": "subject",
+        "source": "art/explorations/faction-grounds-2026-10/subjects.json",
+        "text": "Subject: a flat seamless ground texture seen from directly above, with no shading and no shadows: an old dwarf-built stone pavement, one flat even pale warm grey stone colour everywhere, big irregular flat flagstones separated by thin slightly darker joints, a little green moss in a few joints and a very few small stone chips, nothing else; worn flagstones only."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "",
+        "negative": "trees, bushes, shrubs, animals, people, path, road, river, shore, cliff, big rocks, boulders, wall, fence, bricks, regular grid, tiles, cobblestones, runes, letters"
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: straight top-down view of flat ground filling the whole canvas edge to edge, no perspective, no horizon, no lighting gradient. Class: calm terrain ground for a strategy map, less saturated than the pieces placed on it, flat colour fills with two or three close tones, low detail, a few small features scattered evenly, the same everywhere with no single focal object. The ground continues past all four edges of the image. Subject: a flat seamless ground texture seen from directly above, with no shading and no shadows: an old dwarf-built stone pavement, one flat even pale warm grey stone colour everywhere, big irregular flat flagstones separated by thin slightly darker joints, a little green moss in a few joints and a very few small stone chips, nothing else; worn flagstones only.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, border, hedge, outline around the image, vignette, dark corners, light spot, lighting gradient, path, road, buildings, characters, people, perspective, horizon, tile edge, square island, neon, oversaturated, trees, bushes, shrubs, animals, river, shore, cliff, big rocks, boulders, wall, fence, bricks, regular grid, tiles, cobblestones, runes",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: straight top-down view of flat ground filling the whole canvas edge to edge, no perspective, no horizon, no lighting gradient. Class: calm terrain ground for a strategy map, less saturated than the pieces placed on it, flat colour fills with two or three close tones, low detail, a few small features scattered evenly, the same everywhere with no single focal object. The ground continues past all four edges of the image. Subject: a flat seamless ground texture seen from directly above, with no shading and no shadows: an old dwarf-built stone pavement, one flat even pale warm grey stone colour everywhere, big irregular flat flagstones separated by thin slightly darker joints, a little green moss in a few joints and a very few small stone chips, nothing else; worn flagstones only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, border, hedge, outline around the image, vignette, dark corners, light spot, lighting gradient, path, road, buildings, characters, people, perspective, horizon, tile edge, square island, neon, oversaturated, trees, bushes, shrubs, animals, river, shore, cliff, big rocks, boulders, wall, fence, bricks, regular grid, tiles, cobblestones, runes.",
+    "colorImage": {
+      "path": "scripts/art/chibi/palettes/ground-dwarf-flags.png",
+      "sha256": "efd71ce5262454d19375c650f81fd7f318d3c13a577b642ca6f263d88a03395d"
+    }
+  }
+}

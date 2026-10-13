@@ -433,19 +433,24 @@ In the live look a faction's territory has its own Grass
 ([faction grass](../FACTION_GRASS.md)) and its own Forest
 ([faction forests](../FACTION_FORESTS.md)). The Cult's:
 
-- **Ground: heather moor.** A dusty rose-mauve turf, base `#cc95a0`, with
-  sage-green tufts, clumps of paler heather, and on some tiles a faint
-  chalk arc or a ring of small cream toadstools. It is made as the other
-  grounds are (the tile derivation of `deriveFactionGrassTile`, three
-  variants `chibi-cult-grass-1..3`, 80 x 80, opaque, seamless). Measured:
-  113 from the Cult border, 38 from the wax cream; 37 from the Undead ashen
-  ground, 34 from the Dwarf moor, 25 from the Martian dust, 49 from the
-  Candy meadow, 66 from the default Grass. **This document first gave a
-  dusty lilac grey, `#9d94ab`; a root decision in bead `pulp_wars-mch9.22`
-  supersedes it**: on the board that grey read as the dusk cloud of
-  unexplored land beside it (18 to 32 from the cloud's colours; the
-  rose-mauve is 29 to 44). The measures and the reason are in
-  [faction grass](../FACTION_GRASS.md).
+- **Ground: a peat bog** (bead `pulp_wars-2yc.48`; the user, 2026-10-12:
+  "cultists' grass is just pink and looks like nothing in particular [...]
+  it could be swamp or volcanic terrain"). Olive peat at mid value, base
+  `#76805a`, with small dark teal puddles, tufts of pale reeds, loose
+  blades and a few pale yellow-green glow specks: six tiles
+  (`chibi-cult-grass-1..6`, 80 x 80, opaque, every edge pixel the base
+  colour) composed from the motifs of two PixelLab fields, `cult-swamp-b`
+  and `cult-swamp-d`. How, what else was tried and the measures are in
+  [faction grass](../FACTION_GRASS.md#grounds-from-pixellab-fields). **It
+  is olive and not the dark teal first thought of**: the robes are a dark
+  indigo and the Horror, the frog and the lantern wood are teal, and on a
+  dark teal ground all four sink into it (the runner-up look
+  `cult-dark-swamp` shows it). Measured: 60 from the cloud of unexplored
+  land, 35 from the default Grass, 21 from the Undead burnt ground, its
+  nearest. **The first ground was a heather moor** (bead
+  `pulp_wars-mch9.22`: a dusty rose-mauve `#cc95a0`, and before it, on
+  paper, a lilac grey `#9d94ab` that read as the dusk cloud); this
+  supersedes both.
 - **Forest: a lantern wood.** Crooked dark-barked trees with drooping
   blue-green willow canopies, a few with a small hanging lantern with a
   green flame, fat cream-spotted toadstools at the foot; no bare dead trees
@@ -457,7 +462,12 @@ In the live look a faction's territory has its own Grass
 Mountain ground; the rose-mauve was not measured against it, and stands off
 grey rock by its hue.
 
-**Both exist and are wired** (bead `pulp_wars-mch9.22`, ART5). The moor is
+**The ground since bead `pulp_wars-2yc.48` is the bog above**; the lantern
+wood is unchanged but for its foliage, lifted toward the bog, and the shade
+under it, a dark moss. What follows describes the first ground and the wood
+as bead `pulp_wars-mch9.22` made them.
+
+**Both exist and are wired** (bead `pulp_wars-mch9.22`, ART5). The moor was
 the last recipe of [faction grass](../FACTION_GRASS.md) (sage tufts, three
 in ten of them heather, paler heather patches, a toadstool ring on one tile
 of three; the chalk arc is in the recipe and the seeded roll placed none).

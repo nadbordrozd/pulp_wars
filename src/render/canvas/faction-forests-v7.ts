@@ -95,22 +95,23 @@ export const FACTION_FOREST_STRIDE_V7 = 100;
 
 /**
  * The shade under each faction's trees (RGBA, as the default `[22, 58, 38,
- * 32]`): a dark tone of the faction's ground, about an eighth opaque. The
- * Undead keep the default: their gloam Grass is a green.
+ * 32]`): a dark tone of the faction's ground, about an eighth opaque.
  */
 export const FACTION_FOREST_FLOOR_V7: Readonly<
   Record<FactionForestIdV7, readonly [number, number, number, number]>
 > = {
-  UNDEAD: [22, 58, 38, 32],
+  // A dark soot shadow on the burnt ground (bead pulp_wars-2yc.48).
+  UNDEAD: [38, 33, 32, 36],
   GOBLIN: [58, 56, 20, 34],
   DINOSAUR: [12, 48, 34, 36],
   MARTIAN: [78, 40, 26, 34],
-  DWARF: [44, 50, 38, 34],
+  // A dark stone shadow on the mine gravel (bead pulp_wars-2yc.48).
+  DWARF: [58, 54, 44, 34],
   CANDY: [36, 96, 84, 30],
   // A cold blue-slate shadow on the Snow.
   ICE_FOLK: [44, 66, 92, 30],
-  // A dark plum shadow on the heather moor.
-  CULT: [70, 42, 60, 34],
+  // A dark moss shadow on the peat bog (bead pulp_wars-2yc.48).
+  CULT: [34, 44, 30, 36],
 };
 
 /**

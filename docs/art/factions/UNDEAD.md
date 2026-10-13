@@ -338,3 +338,33 @@ Record: [faction buildings, section 14](../FACTION_BUILDINGS.md#14-a-market-per-
 The seven achievement Monuments and the faction obelisk in Undead materials. Pale slate (`#8b92a3`) with ivory bone, dark iron and small violet glows (`chibi-undead-monument-<achievement>`): the Explorer an obelisk with a bone compass rose; the Engineer a pillar under a bone cogwheel; the Muster a pillar hung with iron and bone shields, its bone horn at the foot; the Conqueror an arch with a bone wreath and a violet skull; the Land Baron a boundary stone with a skull, a bone crown and a crooked signpost; the Sea Dog a column with an iron anchor and a bone wheel; the Slayer an iron sword in slate in a grey wreath. **Obelisk** (`chibi-undead-monument`): a slate obelisk with violet gems and bone trim, candidate 13 of the Explorer sheet reused (no new PixelLab job). Art only: the board still draws the Human (achievement) Monument or the shared obelisk until bead `pulp_wars-eu3r.3` wires the skin rule.
 
 Record: [faction buildings, section 15](../FACTION_BUILDINGS.md#15-faction-monuments-bead-pulp_wars-eu3r2).
+
+## Ground (bead `pulp_wars-2yc.48`)
+
+The user, 2026-10-12: "undead could be better [...] for the undead probably
+aftermath of a wildfire is what we're looking for."
+
+The Undead's land is **burnt ground**: a warm ash grey, base `#716a64`,
+with patches of darker soot, burnt twigs and bushes, charred lumps with an
+ember on their rim, a rare ember and pale ash flecks. Six tiles
+(`faction-grass/chibi-undead-grass-1..6`, 80 x 80, opaque, every edge pixel
+the base colour) composed from the motifs of two PixelLab fields,
+`undead-ash-b` and `undead-ash-c`; the soot patches are cut in code. How,
+what else was tried and the measures are in
+[faction grass](../FACTION_GRASS.md#grounds-from-pixellab-fields). It
+supersedes the ashen ground of bead `pulp_wars-2yc.14` (a cold grey-green
+`#7f9a86` with mist, stones and a bone).
+
+- **Value.** 42% luma, the darkest ground on the map: between the pale ash
+  flesh and bone and the near-black cloth, so both stand off it. Warm,
+  where the dead wood and the Mountain rock are cool greys.
+- **The dead wood** is a pale grey on it and reads better than on the
+  grey-green; its foliage lift and the shade under it (a dark soot) follow
+  the new ground.
+- **Dark buildings.** The Sawmill (a dark slate shed, a near-black roof)
+  and the City's dark walls have less ground contrast than on the ashen
+  ground; the bone blade, the violet windows and the pale tower carry
+  them. A lighter Sawmill would be a new recipe.
+- **The terrain masters** `chibi-undead-grass-1..3` stay under the baked
+  tiles: the Grass tufts in the burnt ground's colours. They show with
+  `?faction-grass=0` and in the tile dock of a plain Grass cell.

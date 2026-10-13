@@ -1,0 +1,61 @@
+{
+  "id": "goblin-mud-a",
+  "jobId": "sync-90843621-956b-4f4d-92fc-d4bf4ab1c258",
+  "request": {
+    "endpoint": "create-image-pixflux",
+    "model": "create-image-pixflux",
+    "batch": "faction-grounds",
+    "asset": "chibi-ground-goblin-mud-a",
+    "subject": "TERRAIN:GRASS",
+    "faction": "TEST-FACTION-GROUNDS",
+    "recipeClass": "terrain",
+    "requestSize": {
+      "width": 160,
+      "height": 160
+    },
+    "seed": 48621,
+    "noBackground": false,
+    "options": {
+      "shading": "flat shading",
+      "detail": "low detail",
+      "view": "high top-down"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "art/explorations/faction-grounds-2026-10/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: clean flat pixel art game texture: flat colours, low detail, small simple shapes, no outlines.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-top-down.txt",
+        "text": "Camera: straight top-down view of flat ground filling the whole canvas edge to edge, no perspective, no horizon, no lighting gradient."
+      },
+      {
+        "layer": "class",
+        "source": "art/explorations/faction-grounds-2026-10/fragments/class-terrain.txt + art/explorations/faction-grounds-2026-10/fragments/class-terrain.negative.txt",
+        "text": "Class: one seamless repeating ground texture swatch, the same everywhere from edge to edge, with no focal object and nothing tall: only flat ground with small low details scattered evenly over it. The texture continues past all four edges of the image.",
+        "negative": "border, frame, hedge, outline around the image, vignette, dark corners, light spot, lighting gradient, path, road, buildings, characters, people, perspective, horizon, tile edge, square island, neon, oversaturated, scene, landscape, clearing, tree tops, canopy, mounds, anything tall, big shapes in the corners"
+      },
+      {
+        "layer": "subject",
+        "source": "art/explorations/faction-grounds-2026-10/subjects.json",
+        "text": "Subject: a flat seamless ground texture seen from directly above, with no shading and no shadows: the trampled muddy ground of a war camp, one flat even dull olive-brown mud colour everywhere, with a few small darker wet puddles, small bits of pale straw, a few short tufts of yellow-green grass and tiny pebbles scattered evenly and sparsely, nothing else; mud only."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "",
+        "negative": "trees, bushes, shrubs, animals, people, path, road, river, shore, cliff, big rocks, boulders, wall, fence, footprints, tents, campfire, bones, wheel tracks"
+      }
+    ],
+    "prompt": "Style: clean flat pixel art game texture: flat colours, low detail, small simple shapes, no outlines. Camera: straight top-down view of flat ground filling the whole canvas edge to edge, no perspective, no horizon, no lighting gradient. Class: one seamless repeating ground texture swatch, the same everywhere from edge to edge, with no focal object and nothing tall: only flat ground with small low details scattered evenly over it. The texture continues past all four edges of the image. Subject: a flat seamless ground texture seen from directly above, with no shading and no shadows: the trampled muddy ground of a war camp, one flat even dull olive-brown mud colour everywhere, with a few small darker wet puddles, small bits of pale straw, a few short tufts of yellow-green grass and tiny pebbles scattered evenly and sparsely, nothing else; mud only.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, border, hedge, outline around the image, vignette, dark corners, light spot, lighting gradient, path, road, buildings, characters, people, perspective, horizon, tile edge, square island, neon, oversaturated, scene, landscape, clearing, tree tops, canopy, mounds, anything tall, big shapes in the corners, trees, bushes, shrubs, animals, river, shore, cliff, big rocks, boulders, wall, fence, footprints, tents, campfire, bones, wheel tracks",
+    "description": "Style: clean flat pixel art game texture: flat colours, low detail, small simple shapes, no outlines. Camera: straight top-down view of flat ground filling the whole canvas edge to edge, no perspective, no horizon, no lighting gradient. Class: one seamless repeating ground texture swatch, the same everywhere from edge to edge, with no focal object and nothing tall: only flat ground with small low details scattered evenly over it. The texture continues past all four edges of the image. Subject: a flat seamless ground texture seen from directly above, with no shading and no shadows: the trampled muddy ground of a war camp, one flat even dull olive-brown mud colour everywhere, with a few small darker wet puddles, small bits of pale straw, a few short tufts of yellow-green grass and tiny pebbles scattered evenly and sparsely, nothing else; mud only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, border, hedge, outline around the image, vignette, dark corners, light spot, lighting gradient, path, road, buildings, characters, people, perspective, horizon, tile edge, square island, neon, oversaturated, scene, landscape, clearing, tree tops, canopy, mounds, anything tall, big shapes in the corners, trees, bushes, shrubs, animals, river, shore, cliff, big rocks, boulders, wall, fence, footprints, tents, campfire, bones, wheel tracks.",
+    "colorImage": {
+      "path": "scripts/art/chibi/palettes/ground-goblin-mud.png",
+      "sha256": "e7874ca6ff694901ac2dd6fdcc61319bea11d2b3e9c88a6eda7e88e5c7915ffa"
+    }
+  }
+}

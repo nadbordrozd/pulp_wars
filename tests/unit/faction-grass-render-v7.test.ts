@@ -1,9 +1,13 @@
 import { describe, expect, it, vi } from "vitest";
 import { viewForV7, type FactionIdV7 } from "../../src/engine/index";
-import { FACTION_GRASS_TILES_V7 } from "../../src/assets/faction-grass-manifest";
+import {
+  FACTION_GRASS_TILE_COUNTS_V7,
+  FACTION_GRASS_TILES_V7,
+} from "../../src/assets/faction-grass-manifest";
 import { buildBoardRenderPlanV7 } from "../../src/render/canvas/board-renderer-v7";
 import type { ChibiForestRasterEnvironmentV7 } from "../../src/render/canvas/chibi-forest-v7";
 import {
+  FACTION_GRASS_CELL_VARIANTS_V7,
   FACTION_GRASS_ENABLED_V7,
   FACTION_GRASS_IDS_V7,
   FACTION_GRASS_PHASES_V7,
@@ -74,7 +78,7 @@ describe("the faction grass switch", () => {
       ICE_FOLK: null,
       DWARF: "DWARF",
       CANDY: "CANDY",
-      // The heather moor (`pulp_wars-mch9.22`).
+      // The peat bog (`pulp_wars-2yc.48`; first the heather moor).
       CULT: "CULT",
     };
     for (const [faction, id] of Object.entries(expected))
@@ -83,13 +87,43 @@ describe("the faction grass switch", () => {
     expect(new Set(FACTION_GRASS_IDS_V7).size).toBe(7);
   });
 
-  it("has three tiles per ground, the Undead ones toned like Grass", () => {
+  it("has three tiles per recoloured ground and six per ground made from fields, all baked", () => {
     for (const id of FACTION_GRASS_IDS_V7) {
       const tiles = FACTION_GRASS_TILES_V7.filter((tile) => tile.id === id);
-      expect(tiles.map((tile) => tile.variant)).toEqual([0, 1, 2]);
+      const count = FACTION_GRASS_TILE_COUNTS_V7[id];
+      // Bead pulp_wars-2yc.48: the Cult bog, the Undead burnt ground and
+      // the Dwarf gravel are composed from PixelLab fields, six tiles each.
+      expect(count, id).toBe(
+        id === "CULT" || id === "UNDEAD" || id === "DWARF" ? 6 : 3,
+      );
+      expect(tiles.map((tile) => tile.variant)).toEqual(
+        Array.from({ length: count }, (_, variant) => variant),
+      );
+      // A cell's variant is one of six; every count divides it, so a
+      // ground of three draws the tile it always drew.
+      expect(FACTION_GRASS_CELL_VARIANTS_V7 % count).toBe(0);
+      // No tile is toned by the board: each is drawn as baked.
+      for (const tile of tiles) expect(tile.toned).toBeUndefined();
       for (const tile of tiles)
-        expect(tile.toned === true).toBe(id === "UNDEAD");
+        expect(tile.url).toContain(
+          `faction-grass/chibi-${id.toLowerCase()}-grass-${tile.variant + 1}.png`,
+        );
     }
+  });
+
+  it("ranks the grounds from the palest to the darkest", () => {
+    // A ground spills over every ground before it: the darker land runs
+    // out into the lighter one (the bog and the burnt ground are the
+    // darkest since bead pulp_wars-2yc.48, the gravel the palest but one).
+    expect(FACTION_GRASS_IDS_V7).toEqual([
+      "CANDY",
+      "DWARF",
+      "GOBLIN",
+      "MARTIAN",
+      "DINOSAUR",
+      "UNDEAD",
+      "CULT",
+    ]);
   });
 });
 
@@ -199,7 +233,7 @@ describe("the faction grass cells", () => {
     expect(cells.has("3,3")).toBe(false);
     for (const cell of cells.values()) {
       expect(cell.variant).toBeGreaterThanOrEqual(0);
-      expect(cell.variant).toBeLessThan(3);
+      expect(cell.variant).toBeLessThan(FACTION_GRASS_CELL_VARIANTS_V7);
       expect(cell.phase).toBeLessThan(FACTION_GRASS_PHASES_V7 ** 2);
     }
   });
@@ -216,15 +250,16 @@ describe("the faction grass cells", () => {
     expect(cells.get("1,0")).toMatchObject({ own: "DINOSAUR", spills: [] });
   });
 
-  it("leaves an Undead cell to its gloam tile and softens its border", () => {
+  it("draws an Undead cell's own tile too, and softens its border", () => {
     const cells = factionGrassCellsV7([
       entry(0, 0),
       entry(1, 0, "UNDEAD"),
       entry(2, 0, "UNDEAD"),
     ]);
-    // The cell itself is the terrain tile; an inner cell draws nothing.
-    expect(cells.has("1,0")).toBe(false);
-    expect(cells.has("2,0")).toBe(false);
+    // Until bead pulp_wars-2yc.48 the cell was left to its terrain tile;
+    // the burnt ground is a baked tile drawn over it, like every ground.
+    expect(cells.get("1,0")).toMatchObject({ own: "UNDEAD", spills: [] });
+    expect(cells.get("2,0")).toMatchObject({ own: "UNDEAD", spills: [] });
     expect(cells.get("0,0")?.spills).toEqual([
       { id: "UNDEAD", neighbours: GRASS_E },
     ]);
@@ -375,16 +410,26 @@ describe("the faction grass art and drawing", () => {
     expect(art.resolve()).toBeNull();
   });
 
-  it("serves tiles as baked, the Undead ones toned, and caches spills", () => {
+  it("serves tiles as baked, a ground's own count of them, and caches spills", () => {
     const resolved = harness().art.resolve();
     if (resolved === null) throw new Error("no art");
     const goblin = pixelsOf(resolved.tile("GOBLIN", 0));
     expect([goblin[1], goblin[2], goblin[3]]).toEqual([60, 118, 255]);
-    // Toned toward the Grass pivot (green 183): 155 moves up.
+    // As baked: the Undead tile is no longer toned (bead pulp_wars-2yc.48).
     const undead = pixelsOf(resolved.tile("UNDEAD", 0));
-    expect(undead[1]).toBeGreaterThan(155);
-    expect(undead[1]).toBeLessThan(183);
-    expect(resolved.tile("GOBLIN", 7)).toBeNull();
+    expect(undead[1]).toBe(155);
+    // A cell's variant is one of six. A ground of three takes it modulo
+    // three; a ground of six has a tile for each.
+    expect(resolved.tile("GOBLIN", 4)).toBe(resolved.tile("GOBLIN", 1));
+    expect(resolved.tile("GOBLIN", 5)).not.toBe(resolved.tile("GOBLIN", 1));
+    expect(resolved.tile("UNDEAD", 4)).not.toBe(resolved.tile("UNDEAD", 1));
+    expect(resolved.tile("UNDEAD", 7)).toBe(resolved.tile("UNDEAD", 1));
+    expect(resolved.spill("GOBLIN", 4, GRASS_E, 2)).toBe(
+      resolved.spill("GOBLIN", 1, GRASS_E, 2),
+    );
+    expect(resolved.spill("CULT", 4, GRASS_E, 2)).not.toBe(
+      resolved.spill("CULT", 1, GRASS_E, 2),
+    );
     const spill = resolved.spill("UNDEAD", 1, GRASS_E, 2);
     expect(spill).not.toBeNull();
     expect(resolved.spill("UNDEAD", 1, GRASS_E, 2)).toBe(spill);

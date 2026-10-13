@@ -1,0 +1,61 @@
+{
+  "id": "cult-swamp-a",
+  "jobId": "sync-8d29d449-546d-4053-92a2-31c7331ae898",
+  "request": {
+    "endpoint": "create-image-pixflux",
+    "model": "create-image-pixflux",
+    "batch": "faction-grounds",
+    "asset": "chibi-ground-cult-swamp-a",
+    "subject": "TERRAIN:GRASS",
+    "faction": "TEST-FACTION-GROUNDS",
+    "recipeClass": "terrain",
+    "requestSize": {
+      "width": 160,
+      "height": 160
+    },
+    "seed": 48101,
+    "noBackground": false,
+    "options": {
+      "shading": "flat shading",
+      "detail": "low detail",
+      "view": "high top-down"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-top-down.txt",
+        "text": "Camera: straight top-down view of flat ground filling the whole canvas edge to edge, no perspective, no horizon, no lighting gradient."
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-terrain.txt + art/explorations/faction-grounds-2026-10/fragments/class-terrain.negative.txt",
+        "text": "Class: calm terrain ground for a strategy map, less saturated than the pieces placed on it, flat colour fills with two or three close tones, low detail, a few small features scattered evenly, the same everywhere with no single focal object. The ground continues past all four edges of the image.",
+        "negative": "border, frame, hedge, outline around the image, vignette, dark corners, light spot, lighting gradient, path, road, buildings, characters, people, perspective, horizon, tile edge, square island, neon, oversaturated"
+      },
+      {
+        "layer": "subject",
+        "source": "art/explorations/faction-grounds-2026-10/subjects.json",
+        "text": "Subject: a flat seamless ground texture seen from directly above, with no shading and no shadows: a murky peat bog, one flat even dull grey teal-green colour everywhere, with a few small round still pools of darker teal water, a few small clumps of short reeds and a very few tiny pale yellow-green glowing specks scattered evenly and sparsely, nothing else; wet peat only."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "",
+        "negative": "trees, bushes, shrubs, animals, people, path, road, river, shore, cliff, big rocks, boulders, wall, fence, flowers, lily, frog, fish, purple, pink"
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: straight top-down view of flat ground filling the whole canvas edge to edge, no perspective, no horizon, no lighting gradient. Class: calm terrain ground for a strategy map, less saturated than the pieces placed on it, flat colour fills with two or three close tones, low detail, a few small features scattered evenly, the same everywhere with no single focal object. The ground continues past all four edges of the image. Subject: a flat seamless ground texture seen from directly above, with no shading and no shadows: a murky peat bog, one flat even dull grey teal-green colour everywhere, with a few small round still pools of darker teal water, a few small clumps of short reeds and a very few tiny pale yellow-green glowing specks scattered evenly and sparsely, nothing else; wet peat only.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, border, hedge, outline around the image, vignette, dark corners, light spot, lighting gradient, path, road, buildings, characters, people, perspective, horizon, tile edge, square island, neon, oversaturated, trees, bushes, shrubs, animals, river, shore, cliff, big rocks, boulders, wall, fence, flowers, lily, frog, fish, purple, pink",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: straight top-down view of flat ground filling the whole canvas edge to edge, no perspective, no horizon, no lighting gradient. Class: calm terrain ground for a strategy map, less saturated than the pieces placed on it, flat colour fills with two or three close tones, low detail, a few small features scattered evenly, the same everywhere with no single focal object. The ground continues past all four edges of the image. Subject: a flat seamless ground texture seen from directly above, with no shading and no shadows: a murky peat bog, one flat even dull grey teal-green colour everywhere, with a few small round still pools of darker teal water, a few small clumps of short reeds and a very few tiny pale yellow-green glowing specks scattered evenly and sparsely, nothing else; wet peat only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, border, hedge, outline around the image, vignette, dark corners, light spot, lighting gradient, path, road, buildings, characters, people, perspective, horizon, tile edge, square island, neon, oversaturated, trees, bushes, shrubs, animals, river, shore, cliff, big rocks, boulders, wall, fence, flowers, lily, frog, fish, purple, pink.",
+    "colorImage": {
+      "path": "scripts/art/chibi/palettes/ground-cult-swamp.png",
+      "sha256": "8b5a578cc4009667c5e8287042b6da67c9e83d9150cd574444eb0d5571bedd09"
+    }
+  }
+}

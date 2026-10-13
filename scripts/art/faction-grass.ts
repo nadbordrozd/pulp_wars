@@ -1,7 +1,12 @@
 /**
  * EXPERIMENT: faction grass (bead pulp_wars-2o7.4, docs/art/FACTION_GRASS.md).
- * The Grass of each faction's territory, derived in code from the three
- * accepted Grass masters. No PixelLab call.
+ * The ground of each faction's territory. No PixelLab call is made here.
+ *
+ * There are two kinds of ground. The Goblin, Dinosaur, Martian and Candy
+ * grounds are the three accepted Grass masters recoloured, as described
+ * below. The Cult, Undead and Dwarf grounds (bead pulp_wars-2yc.48) are not
+ * grass: their tiles are composed from the motifs of reviewed PixelLab
+ * fields (FIELD_GROUNDS below, scripts/art/faction-grounds/derive.ts).
  *
  *   npx tsx scripts/art/faction-grass.ts bake
  *   npx tsx scripts/art/faction-grass.ts check          # also in art:validate
@@ -30,6 +35,7 @@ import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
 import {
+  FACTION_GRASS_CELL_VARIANTS_V7,
   FACTION_GRASS_VARIANTS_V7,
   GRASS_E,
   GRASS_N,
@@ -47,6 +53,17 @@ import {
 } from "../../src/render/canvas/visual-direction-v7";
 import { encodePng, pixelSha256, readRaster, sha256 } from "./chibi/pipeline";
 import type { RgbaRaster } from "./chibi/owner-mask";
+import {
+  GROUND_CANDIDATES,
+  GROUND_RUN,
+  groundRecipeId,
+} from "./faction-grounds/candidates";
+import {
+  deriveGroundTile,
+  groundKindMotifs,
+  type GroundTileRecipe,
+} from "./faction-grounds/derive";
+import { GROUND_LOOKS, type GroundLook } from "./faction-grounds/looks";
 
 const CELL = 80;
 const TERRAIN = "public/assets/chibi/terrain";
@@ -152,8 +169,14 @@ export type GrassRecipeColours = Pick<
 >;
 
 export interface FactionGrassRecipe {
-  readonly id: Exclude<FactionGrassIdV7, "UNDEAD">;
+  readonly id: Exclude<FactionGrassIdV7, FieldGroundId>;
   readonly label: string;
+  /**
+   * The seed of the motif placement. It was a recipe's place in this list
+   * (1-based) until bead pulp_wars-2yc.48 took the Dwarf and the Cult
+   * recipes out of it; written down, so the four tiles left did not move.
+   */
+  readonly seed: number;
   readonly base: string;
   readonly light: string;
   readonly mid: string;
@@ -168,6 +191,7 @@ export interface FactionGrassRecipe {
 export const FACTION_GRASS_RECIPES: readonly FactionGrassRecipe[] = [
   {
     id: "GOBLIN",
+    seed: 1,
     label:
       "Scrubland: yellowed, trampled turf with dry straw tufts and mud patches",
     base: "#a9ac5c",
@@ -195,6 +219,7 @@ export const FACTION_GRASS_RECIPES: readonly FactionGrassRecipe[] = [
   },
   {
     id: "DINOSAUR",
+    seed: 2,
     label: "Jungle floor: lush, darker, bluer green with ferns",
     base: "#5f9f58",
     light: "#77b56b",
@@ -225,6 +250,7 @@ export const FACTION_GRASS_RECIPES: readonly FactionGrassRecipe[] = [
   },
   {
     id: "MARTIAN",
+    seed: 3,
     label: "Red dust: ochre-red ground, dark scrub, teal lichen and stones",
     base: "#b98c6a",
     light: "#c9a07e",
@@ -254,30 +280,8 @@ export const FACTION_GRASS_RECIPES: readonly FactionGrassRecipe[] = [
     ],
   },
   {
-    id: "DWARF",
-    label: "Stony moor: grey-khaki short turf, moss patches and grey stones",
-    base: "#959c7c",
-    light: "#a8af8d",
-    mid: "#7b8366",
-    dark: "#697158",
-    motifs: [
-      {
-        kind: "patch",
-        count: [1, 2],
-        radius: [5, 8],
-        fill: "#869c6a",
-        speck: { colour: "#93a876", share: 12 },
-      },
-      {
-        kind: "pebble",
-        count: [4, 6],
-        top: "#bcbdb2",
-        foot: "#74776c",
-      },
-    ],
-  },
-  {
     id: "CANDY",
+    seed: 5,
     label: "Sugar meadow: pastel mint with sprinkles",
     base: "#9cd4b6",
     light: "#b8e6ce",
@@ -297,48 +301,47 @@ export const FACTION_GRASS_RECIPES: readonly FactionGrassRecipe[] = [
       },
     ],
   },
-  // Last, so the seeds of the five before it stay what they were.
-  {
-    id: "CULT",
-    label:
-      "Heather moor: dusty rose-mauve turf, sage tufts, paler heather, a chalk arc or a toadstool ring",
-    base: "#cc95a0",
-    light: "#a9b29c",
-    mid: "#879281",
-    dark: "#778174",
-    motifs: [
-      {
-        kind: "stamp",
-        stamp: "chalkArc",
-        count: [0, 1],
-        dark: "#dbb1b9",
-        light: "#dbb1b9",
-      },
-      {
-        kind: "patch",
-        count: [1, 2],
-        radius: [5, 8],
-        fill: "#d6a4ae",
-        speck: { colour: "#e0b4bc", share: 14 },
-      },
-      {
-        kind: "tufts",
-        share: 30,
-        inside: true,
-        light: "#b99acb",
-        mid: "#9a7db2",
-        dark: "#836899",
-      },
-      {
-        kind: "stamp",
-        stamp: "toadstoolRing",
-        count: [0, 1],
-        dark: "#a67a86",
-        light: "#e6dcc4",
-      },
-    ],
-  },
 ];
+
+// ------------------------------------------------- grounds from fields
+
+/** The grounds whose tiles are composed from PixelLab fields. */
+export const FIELD_GROUND_IDS = ["CULT", "UNDEAD", "DWARF"] as const;
+export type FieldGroundId = (typeof FIELD_GROUND_IDS)[number];
+
+/** The look of each, the one of GROUND_LOOKS with the status CHOSEN. */
+export function fieldGroundLook(id: FieldGroundId): GroundLook {
+  const chosen = GROUND_LOOKS.filter(
+    (look) => look.faction === id && look.status === "CHOSEN",
+  );
+  const look = chosen[0];
+  if (look === undefined || chosen.length !== 1)
+    throw new Error(`${id}: exactly one ground look must be CHOSEN`);
+  return look;
+}
+
+function fieldPalette(recipeId: string): readonly string[] {
+  for (const candidate of GROUND_CANDIDATES)
+    for (const recipe of candidate.recipes)
+      if (groundRecipeId(candidate, recipe) === recipeId)
+        return recipe.palette ?? candidate.palette;
+  throw new Error(`no ground recipe ${recipeId}`);
+}
+
+/** A look's whole derivation recipe, the fields' palettes filled in. */
+export function fieldGroundRecipe(look: GroundLook): GroundTileRecipe {
+  return {
+    ...look.recipe,
+    fields: look.recipe.fields.map((source, index) => ({
+      ...source,
+      from: source.from ?? fieldPalette(look.fields[index] ?? ""),
+    })),
+  };
+}
+
+export function fieldGroundFieldPath(recipeId: string): string {
+  return `${GROUND_RUN}/raw/${recipeId}.png`;
+}
 
 function hash(a: number, b: number, c: number, d: number): number {
   let h =
@@ -561,15 +564,36 @@ export function deriveFactionGrassTile(
 }
 
 export function factionGrassTilePath(
-  id: FactionGrassRecipe["id"],
+  id: FactionGrassIdV7,
   variant: number,
 ): string {
   return `${FACTION_GRASS_DIRECTORY}/chibi-${id.toLowerCase()}-grass-${variant + 1}.png`;
 }
 
+interface TileRecord {
+  readonly path: string;
+  readonly sha256: string;
+  readonly pixelSha256: string;
+}
+
 export interface FactionGrassRecord {
-  readonly schemaVersion: 1;
+  readonly schemaVersion: 2;
   readonly bead: string;
+  /** The grounds composed from PixelLab fields (bead pulp_wars-2yc.48). */
+  readonly grounds: readonly {
+    readonly id: FieldGroundId;
+    readonly look: string;
+    readonly label: string;
+    readonly bead: string;
+    /** The raw fields of the exploration run, as generated. */
+    readonly fields: readonly {
+      readonly recipe: string;
+      readonly path: string;
+      readonly sha256: string;
+    }[];
+    readonly recipe: GroundTileRecipe;
+    readonly tiles: readonly TileRecord[];
+  }[];
   readonly sources: readonly {
     readonly path: string;
     readonly sha256: string;
@@ -598,10 +622,15 @@ export async function deriveFactionGrass(root: string): Promise<{
   }
   const files = new Map<string, Buffer>();
   const recipes: FactionGrassRecord["recipes"][number][] = [];
-  for (const [seed, recipe] of FACTION_GRASS_RECIPES.entries()) {
+  for (const recipe of FACTION_GRASS_RECIPES) {
     const tiles = [];
     for (const [variant, master] of masters.entries()) {
-      const raster = deriveFactionGrassTile(master, recipe, variant, seed + 1);
+      const raster = deriveFactionGrassTile(
+        master,
+        recipe,
+        variant,
+        recipe.seed,
+      );
       const bytes = await encodePng(raster);
       const file = factionGrassTilePath(recipe.id, variant);
       files.set(file, bytes);
@@ -613,8 +642,50 @@ export async function deriveFactionGrass(root: string): Promise<{
     }
     recipes.push({ ...recipe, tiles });
   }
+  const grounds: FactionGrassRecord["grounds"][number][] = [];
+  for (const id of FIELD_GROUND_IDS) {
+    const look = fieldGroundLook(id);
+    const recipe = fieldGroundRecipe(look);
+    const fields: FactionGrassRecord["grounds"][number]["fields"][number][] =
+      [];
+    const rasters: RgbaRaster[] = [];
+    for (const recipeId of look.fields) {
+      const file = fieldGroundFieldPath(recipeId);
+      const bytes = await readFile(path.join(root, file));
+      fields.push({ recipe: recipeId, path: file, sha256: sha256(bytes) });
+      rasters.push(await readRaster(bytes));
+    }
+    const motifs = groundKindMotifs(rasters, recipe);
+    const tiles: TileRecord[] = [];
+    for (let variant = 0; variant < recipe.variants; variant += 1) {
+      const { raster } = deriveGroundTile(rasters, recipe, variant, motifs);
+      const bytes = await encodePng(raster);
+      const file = factionGrassTilePath(id, variant);
+      files.set(file, bytes);
+      tiles.push({
+        path: file,
+        sha256: sha256(bytes),
+        pixelSha256: pixelSha256(raster),
+      });
+    }
+    grounds.push({
+      id,
+      look: look.id,
+      label: look.label,
+      bead: "pulp_wars-2yc.48",
+      fields,
+      recipe,
+      tiles,
+    });
+  }
   return {
-    record: { schemaVersion: 1, bead: "pulp_wars-2o7.4", sources, recipes },
+    record: {
+      schemaVersion: 2,
+      bead: "pulp_wars-2o7.4",
+      sources,
+      recipes,
+      grounds,
+    },
     files,
   };
 }
@@ -677,14 +748,6 @@ async function grounds(root: string): Promise<Ground[]> {
       ),
     ),
   });
-  list.push({
-    label: "UNDEAD",
-    tiles: await Promise.all(
-      three.map(async (v) =>
-        tonedGrass(await read(`${TERRAIN}/chibi-undead-grass-${v + 1}.png`)),
-      ),
-    ),
-  });
   for (const recipe of FACTION_GRASS_RECIPES)
     list.push({
       label: recipe.id,
@@ -693,6 +756,19 @@ async function grounds(root: string): Promise<Ground[]> {
           async (v) =>
             new Uint8ClampedArray(
               (await read(factionGrassTilePath(recipe.id, v))).data,
+            ),
+        ),
+      ),
+    });
+  for (const id of FIELD_GROUND_IDS)
+    list.push({
+      label: id,
+      tiles: await Promise.all(
+        Array.from(
+          { length: fieldGroundLook(id).recipe.variants },
+          async (_, v) =>
+            new Uint8ClampedArray(
+              (await read(factionGrassTilePath(id, v))).data,
             ),
         ),
       ),
@@ -716,7 +792,7 @@ async function sheet(root: string, out: string): Promise<void> {
   const height = all.length * (rows * CELL + gap) - gap;
   const data = new Uint8Array(width * height * 4);
   const variantOf = (x: number, y: number): number =>
-    hash(x, y, 3, 0x51) % FACTION_GRASS_VARIANTS_V7;
+    hash(x, y, 3, 0x51) % FACTION_GRASS_CELL_VARIANTS_V7;
   for (const [index, ground] of all.entries()) {
     const top = index * (rows * CELL + gap);
     const own = (x: number, y: number): boolean =>
@@ -724,7 +800,8 @@ async function sheet(root: string, out: string): Promise<void> {
     for (let cy = 0; cy < rows; cy += 1)
       for (let cx = 0; cx < columns; cx += 1) {
         const variant = variantOf(cx, cy + index * 7);
-        const base = (own(cx, cy) ? ground : fallback).tiles[variant];
+        const under = own(cx, cy) ? ground : fallback;
+        const base = under.tiles[variant % under.tiles.length];
         if (base === undefined) continue;
         let neighbours = 0;
         if (!own(cx, cy)) {
@@ -740,7 +817,7 @@ async function sheet(root: string, out: string): Promise<void> {
           neighbours,
           (cx % 3) + 3 * (cy % 3),
         );
-        const over = ground.tiles[variant];
+        const over = ground.tiles[variant % ground.tiles.length];
         for (let y = 0; y < CELL; y += 1)
           for (let x = 0; x < CELL; x += 1) {
             const from = (y * CELL + x) * 4;

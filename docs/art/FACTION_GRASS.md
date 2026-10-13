@@ -3,6 +3,14 @@
 **Bead:** `pulp_wars-2o7.4`. **Status:** an experiment, on by default, built
 to be switched off or reverted.
 
+**A ground need not be grass** (bead `pulp_wars-2yc.48`; the user,
+2026-10-12: "The grass doesn't literally have to be grass. it's just the
+native terrain for the faction"). The Cult's is a peat bog, the Undead's
+the ground after a wildfire and the Dwarves' mine gravel, each made from
+PixelLab art: see [Grounds from PixelLab fields](#grounds-from-pixellab-fields).
+The rule, the terrain's name in the rules and the code's names still say
+Grass.
+
 The user asked on 2026-10-05: "create a version of grass tile(s) for each
 faction. Humans can go with the default grass. other factions will get their
 own grass - when they take over some territory the grass turns into their
@@ -24,9 +32,9 @@ are unchanged.
 | Remove it                   | `git revert` the bead's one commit. It added new files and 69 inserted lines in four existing files; it changed no existing line. |
 
 With the switch off the board plan carries no `factionGrass` member, the
-board host loads no tile, and the board is drawn exactly as before the
-bead: the Undead ground with its straight border and Ice Folk Snow
-included.
+board host loads no tile, and the board is drawn as before the bead: the
+Undead ground (its terrain tile: the Grass tufts in the burnt ground's
+colours, no motif) with its straight border, and Ice Folk Snow.
 
 The inserted lines are in `board-renderer-v7.ts` (the plan member, the
 renderer input and three draw calls), `board-host-v7.ts` (the art is
@@ -36,70 +44,193 @@ the tiles) and `package.json` (two script names). Each is marked
 
 ## The grounds
 
-| Faction   | Ground                                                                                           | Base      |
-| --------- | ------------------------------------------------------------------------------------------------ | --------- |
-| Humans    | The default Grass.                                                                               | `#8ab85c` |
-| Undead    | Ashen ground (bead `pulp_wars-2yc.14`): cold grey-green, slate tufts, mist, ash stones, a bone.  | `#7f9a86` |
-| Goblins   | Scrubland: yellowed, trampled turf, a third of the tufts dry straw, one or two mud patches.      | `#a9ac5c` |
-| Dinosaurs | Jungle floor: a darker, bluer green with ferns.                                                  | `#5f9f58` |
-| Martians  | Red dust: ochre-red ground with teal lichen patches and pale stones.                             | `#b98c6a` |
-| Dwarves   | Stony moor: grey-khaki short turf with moss patches and grey stones.                             | `#959c7c` |
-| Candy     | Sugar meadow: pastel mint with sprinkles in pink, yellow, white, blue and lilac.                 | `#9cd4b6` |
-| Ice Folk  | Snow. Every land tile of Ice Folk territory is Snow by rule, so they need no grass of their own. | n/a       |
-| Cultists  | Heather moor (bead `pulp_wars-mch9.22`): dusty rose-mauve turf, sage tufts, paler heather.       | `#cc95a0` |
+| Faction   | Ground                                                                                                                    | Base      | Tiles |
+| --------- | ------------------------------------------------------------------------------------------------------------------------- | --------- | ----- |
+| Humans    | The default Grass.                                                                                                        | `#8ab85c` | 3     |
+| Undead    | Burnt ground (bead `pulp_wars-2yc.48`): warm ash grey, soot patches, burnt twigs and bushes, charred lumps, a few embers. | `#716a64` | 6     |
+| Goblins   | Scrubland: yellowed, trampled turf, a third of the tufts dry straw, one or two mud patches.                               | `#a9ac5c` | 3     |
+| Dinosaurs | Jungle floor: a darker, bluer green with ferns.                                                                           | `#5f9f58` | 3     |
+| Martians  | Red dust: ochre-red ground with teal lichen patches and pale stones.                                                      | `#b98c6a` | 3     |
+| Dwarves   | Mine gravel (bead `pulp_wars-2yc.48`): pale warm grey gravel, grit, stones stained with verdigris, copper chips.          | `#b5ae9c` | 6     |
+| Candy     | Sugar meadow: pastel mint with sprinkles in pink, yellow, white, blue and lilac.                                          | `#9cd4b6` | 3     |
+| Ice Folk  | Snow. Every land tile of Ice Folk territory is Snow by rule, so they need no grass of their own.                          | n/a       | n/a   |
+| Cultists  | Peat bog (bead `pulp_wars-2yc.48`): olive peat, small teal puddles, reed tufts, pale glow specks.                         | `#76805a` | 6     |
 
-**The Undead ground was redone in bead `pulp_wars-2yc.14`** (the user,
-2026-10-06: "make undead grass ... more spooky"). The first one, the
-"gloam" of bead `pulp_wars-xdh.2`, was a cooler green and a colour swap
-alone. The ashen ground is a cold grey-green (`#7f9a86`) with slate tufts
-(`#97ad9c`, `#647a72`, `#535f66`), and on each tile: a third of the inner
-tufts dry (`#b9b79e`), one or two pale mist patches (`#92a79c`), one or two
-ash stones, and on some tiles a stray bone (`#d6d4c0`). It is still the
-terrain tile itself (`chibi-undead-grass-1..3`), baked by
-[`gloam-grass.ts`](../../scripts/art/faction-buildings/gloam-grass.ts) with
-the tile derivation of this page (`deriveFactionGrassTile`), and the board
-tones it like every Grass tile, so its recipe is written in master colours
-(a board colour c is the master colour pivot + (c - pivot) / 0.65). A tuft
-within 3 px of an edge keeps the ground's own colours, so the edge band of
-a tile is the colour swap alone and the three variants join as before.
+The Goblin, Martian and Candy grounds are to be redone the same way; their
+samples wait for the user's choice
+([the samples](#samples-candy-martians-goblins)).
+
+## Grounds from PixelLab fields
+
+Bead `pulp_wars-2yc.48`. The user, 2026-10-12: "some of the grass skins
+require more work. cultists' grass is just pink and looks like nothing in
+particular. dwarf grass is so so. undead could be better. [...] for
+cultists it could be swamp or volcanic terrain. not sure. for the undead
+probably aftermath of a wildfire is what we're looking for." Root
+decisions: the Cult a bog, the Undead a wildfire's aftermath, the Dwarves a
+candidate of the worker's choice.
+
+### The pipeline
+
+1. **Fields.** A field is one 160 x 160 Pixflux image forced to a small
+   palette, made by the chibi pipeline's `terrain` class in the exploration
+   run `art/explorations/faction-grounds-2026-10/` (recipes, subjects,
+   palettes, raw fields, credential-free receipts and the review of every
+   field). [`candidates.ts`](../../scripts/art/faction-grounds/candidates.ts)
+   is the one list of candidates; `faction-grounds.ts plan` writes the
+   run's manifest, subjects and palettes from it.
+2. **Motifs.** Pixflux does not draw a tile: it draws a field with a band
+   of moss through it or a rock in a corner, as dense as it likes. So a
+   tile is composed in code from the field's features
+   ([`derive.ts`](../../scripts/art/faction-grounds/derive.ts)): every
+   connected group of pixels that is not the field's base colour and does
+   not touch its edge is a motif (a reed tuft, a puddle, a burnt bush, an
+   ember, a stone). No pixel of a motif is redrawn.
+3. **Looks.** A look ([`looks.ts`](../../scripts/art/faction-grounds/looks.ts))
+   names its fields, the board colour of each palette colour, and its kinds
+   of motif (by size and colour) with how many a tile gets. A tile is the
+   flat ground colour with a seeded number of each kind on it, at least
+   2 px inside the tile and 3 px apart. So every edge pixel of every tile
+   is the ground colour: any tile joins any other, and any other ground's
+   spill, without a seam. Colours are tuned in the look and never by
+   another generation. The one shape cut in code is a `blob`, a flat patch
+   of a second ground tone (the Undead soot), as the patches of the
+   recoloured grounds are.
+4. **Bake.** `npm run art:faction-grass -- bake` writes the tiles of the
+   three looks marked `CHOSEN` beside the recoloured grounds
+   (`faction-grass/chibi-<faction>-grass-1..6.png`) and records each look's
+   fields with their hashes in `scripts/art/faction-grass.json`; `check`
+   (in `art:validate`) re-derives them.
 
 ```sh
-npx tsx scripts/art/faction-buildings/gloam-grass.ts bake    # then faction-forests bake
-npx tsx scripts/art/faction-buildings/gloam-grass.ts check   # also in art:validate
+npx tsx scripts/art/faction-grounds.ts plan
+npm run art:chibi -- plan --exploration art/explorations/faction-grounds-2026-10
+node node_modules/.bin/tsx scripts/art/chibi-pipeline.ts \
+  generate --exploration art/explorations/faction-grounds-2026-10 --ids <recipe>
+npx tsx scripts/art/faction-grounds.ts contact <out.png> <recipe>...
+npx tsx scripts/art/faction-grounds.ts motifs <recipe> <out.png>
+npx tsx scripts/art/faction-grounds.ts look <look> <out.png>
+npx tsx scripts/art/faction-grounds.ts sheet <FACTION> <out.png> [--ref main]
+npx tsx scripts/art/faction-grounds.ts overview <out.png>
 ```
 
-**The Cult heather moor** (bead `pulp_wars-mch9.22`,
-[the Cult direction](factions/CULT.md#ground-and-forest)) is the last recipe
-of the list, so the seeds of the five before it did not move and their tiles
-are byte for byte what they were. The turf is a dusty rose-mauve, `#cc95a0`, with
-sage tufts (`#a9b29c`, `#879281`, `#778174`); three in ten of the inner
-tufts are purple heather (`#b99acb`, `#9a7db2`, `#836899`), each tile has
-one or two paler heather patches (`#d6a4ae`), and one tile of the three has
-a ring of six cream toadstools. The recipe also holds a faint chalk arc,
-which the seeded roll put on none of the three tiles: a ring and an arc on
-one tile read as a face.
+Only `generate` calls PixelLab; it reads the key from the
+`PIXELLAB_API_KEY` environment variable.
 
-**The base is not the direction's `#9d94ab`** (a root decision in the same
-bead, 2026-10-10). That lilac grey sat too close to the dusk cloud of
-unexplored land (`FOG_PALETTES_V7.dusk`): explored Cult land beside the fog
-read as more fog. By the colour distance of the direction reviews (`deltaE`
-of `scripts/art/ice-folk-direction/colour.ts`) it was 22 to 32 from the
-cloud's body colours (mist, puff, puff shade) and 18 to 21 from its lit puff
-and rim. The rose-mauve is 35 to 44 from the body and 29 to 30 from the
-highlights; it is 35 or more from every colour of the `slate` cloud, and 34
-or more from the body of the `plum` one (24 and 17 from its lit puff and
-its rim). It does not reach
-the Undead ground's separation from the dusk cloud (47 to 53 and 41 to 43):
-a pink warm enough to do that is the Martian dust. From the other grounds it
-is 66 from the default Grass, 49 from Candy, 37 from the Undead, 34 from the
-Dwarves and 25 from the Martian dust, its nearest; 113 from the Cult border
-and 38 from the wax cream.
+**The run's own style and class texts.** The first three fields, with the
+production texts ("a board game come to life", "terrain ground for a
+strategy map"), were scenes: lily pads in the four corners, clumps of burnt
+trees, a paved road across a lawn. The run's `fragments/` ask for "one
+seamless repeating ground texture swatch" with "nothing tall", and the
+subjects use small words ("tiny puddles", "twigs lying flat"); every field
+after that is a texture. The class negative of the run has no "red" (the
+Martian rust).
+
+**Six tiles.** A ground made from fields has six tiles, a recoloured one
+three. A cell's variant is one of six (`FACTION_GRASS_CELL_VARIANTS_V7`);
+a ground of three takes it modulo three, which is the tile it always drew.
+With three tiles a puddle or a burnt bush came back every third cell.
+
+### The three grounds
+
+| Ground                                       | Fields                                                                                                 | Motifs per tile                                                                                               | What was tried                                                                                                                                                                                          |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Cult: peat bog** (`cult-bog`)              | `cult-swamp-b` (reeds, blades, glow specks), `cult-swamp-d` (puddles, sprigs)                          | 1 or 2 puddles, 0 to 2 reed tufts, 2 to 4 blades, 0 to 2 sprigs, 0 to 2 glow specks, 3 to 6 specks            | `cult-swamp-a`: lily-pad rosettes in the corners. `cult-swamp-c`: four pits with walls. `cult-moss-a`: water with outlined pads. Runner-up `cult-dark-swamp`: the same motifs on a dark teal `#55706a`. |
+| **Undead: burnt ground** (`undead-wildfire`) | `undead-ash-b` (twigs, burnt bushes, embers, flecks), `undead-ash-c` (charred lumps with an ember rim) | 0 to 2 soot patches (cut in code), 0 to 2 lumps, 0 or 1 burnt bush, 2 to 4 twigs, 0 or 1 ember, 5 to 8 flecks | `undead-ash-a`: clumps of burnt trees. `undead-char-a`: flames. Runner-up `undead-pale-ash`: twigs and embers on a pale ash `#928d87`, no soot.                                                         |
+| **Dwarf: mine gravel** (`dwarf-gravel`)      | `dwarf-gravel-a`                                                                                       | 3 to 5 stones (some with verdigris), 1 to 3 copper chips, 26 to 36 grains of grit                             | `dwarf-flags-a`, `-b`, `-c`: worked stone flags, dropped (below). Runner-up `dwarf-slate`: a blue-grey slate highland with moss cushions and cracks.                                                    |
+
+**Why these.**
+
+- **The bog is olive, not teal.** The root's first idea was a dark teal
+  swamp. The Cult's robes are a dark indigo, and the Horror, the frog and
+  the lantern wood are teal: on the dark teal runner-up all four sink into
+  the ground. On olive peat at mid value the robes, the teal creatures and
+  the blue-green willows each stand off it, and the teal is kept for the
+  puddles.
+- **The burnt ground is a warm ash at 42% luma.** The Undead's flesh is a
+  pale ash grey and their cloth near black: the ground sits between the
+  two, warm where the dead wood and the mountain rock are cool. It is the
+  darkest ground on the map.
+- **The gravel, not the slate or the flags.** The slate highland is the
+  prettier tile, but it is the blue-grey of the rocky Mountain ground and
+  of the Dwarf city's stone: a Dwarf land read as one bare rock. Gravel is
+  pale and warm, so the grey forts, the dark pines and the copper of the
+  units all stand off it, and the verdigris and copper are the Dwarves'
+  own metals. Flagstones were dropped: Pixflux lays them 34 px wide, so no
+  80 px tile of them repeats, and their straight joints run beside
+  borders, roads and move highlights.
+
+Measured (CIE76, `faction-grounds.ts overview`): the bog is 60 from the
+cloud of unexplored land (`#685f9c`), 35 from the default Grass and 21 from
+the burnt ground, its nearest; the burnt ground 40 from the cloud and 55
+from the Grass; the gravel 54 from the cloud, 44 from the Grass and 22 from
+the Martian dust, its nearest ground. The three differ in value too: 47%,
+42% and 68% luma, with the default Grass at 62%.
+
+### The Undead ground on the board
+
+Until this bead the Undead ground was the terrain tile itself
+(`TERRAIN:UNDEAD:GRASS`, three masters the board tones like Grass), and
+this module drew only its spill. The tone cannot be taken back for a
+ground with near-black charcoal in it: it softens every pixel whose
+channels are all 62 or less as an outline. So the burnt ground is a baked
+tile like every other ground's, drawn over the terrain tile, and
+`FACTION_GRASS_TILES_V7` lists it untoned. The terrain masters
+(`chibi-undead-grass-1..3`, [`gloam-grass.ts`](../../scripts/art/faction-buildings/gloam-grass.ts))
+stay underneath: the Grass tufts in the burnt ground's ash, soot and pale
+ash (each colour taken back through the tone), with no motif. They are
+what shows with `?faction-grass=0` and in the tile dock of a plain Grass
+cell.
+
+### What follows the ground
+
+- **Rank.** Palest first: Candy, Dwarves, Goblins, Martians, Dinosaurs,
+  Undead, Cultists.
+- **Forests.** Each faction's foliage is lifted toward its ground, so the
+  Cult, Undead and Dwarf sets were baked again (72 files); the Undead
+  set's ground is now the baked tile. The shade under the trees
+  (`FACTION_FOREST_FLOOR_V7`) is a dark moss for the Cult, a dark soot for
+  the Undead and a dark stone for the Dwarves.
+- **Missing art.** A missing Undead ground is washed ash (`#716a64`) and a
+  missing Undead wood a darker ash, where both were the default greens.
+- **The Gallery** names the three "Bog", "Burnt ground" and "Gravel" in
+  the Grass row and shows the six tiles of each.
+
+### Samples: Candy, Martians, Goblins
+
+The user, 2026-10-12: "make candy grass also more interesting. with
+sprinkles and stuff. for martians we can make it look more like mars. for
+goblins, idk savannah? make some samples and I'll review." Nine looks with
+the status `SAMPLE` are in `looks.ts` and none is wired; the game draws
+these three grounds as before. `faction-grounds.ts sheet <FACTION>` draws
+each beside the current ground.
+
+| Faction  | A                                                                    | B                                                                  | C                                                                     | Recommended                                                                                                           |
+| -------- | -------------------------------------------------------------------- | ------------------------------------------------------------------ | --------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| Candy    | Mint frosting with sprinkles and sugar crystals (`candy-frosting-a`) | Cookie dough with chocolate chips and sprinkles (`candy-cookie-b`) | Vanilla icing with sugar pearls and piped squiggles (`candy-icing-a`) | A: it keeps the mint the candy grove was coloured against; the chocolate units are lost on B, and C is close to Snow. |
+| Martians | Butterscotch dust with rocks (`martian-regolith-a`, `-b`)            | Deep rust plain with stones (`martian-rust-a`)                     | Salmon dust with small crater rings (`martian-ripples-a`)             | B: the reddest and the farthest from the Dwarf gravel and a Goblin savannah; the chrome units stand off it most.      |
+| Goblins  | Dry golden savannah (`goblin-savannah-a`, `-b`)                      | Scrubby badlands (`goblin-badlands-a`)                             | Trampled camp mud (`goblin-mud-b`)                                    | A: a clear step from the default green, where B is the Dwarf gravel's tan and C the bog's value.                      |
+
+To wire one: give its look the status `CHOSEN`, add the faction to
+`FIELD_GROUND_IDS` (taking its recipe out of `FACTION_GRASS_RECIPES`), set
+its count in `FACTION_GRASS_TILE_COUNTS_V7`, bake the grass and the
+forests, and place it in the rank.
+
+## The recoloured grounds
+
+**The first Cult ground** was a heather moor (bead `pulp_wars-mch9.22`,
+dusty rose-mauve `#cc95a0`) and the first Dwarf ground a stony moor
+(`#959c7c`), both recipes of the list below until bead `pulp_wars-2yc.48`;
+the Undead ground was the "gloam" (bead `pulp_wars-xdh.2`) and then the
+ashen ground (bead `pulp_wars-2yc.14`, `#7f9a86`). Their tiles are in the
+repository's history. The recipes of the list carry their seed since then,
+so the four grounds left are byte for byte what they were.
 
 ### How the tiles are made
 
 [`scripts/art/faction-grass.ts`](../../scripts/art/faction-grass.ts) derives
-every tile in code from the three accepted Grass masters. No PixelLab call
-was made.
+every tile of the Goblin, Dinosaur, Martian and Candy grounds in code from
+the three accepted Grass masters. No PixelLab call was made for these.
 
 ```sh
 npm run art:faction-grass -- bake
@@ -120,10 +251,9 @@ The motifs are drawn by the script (a patch is a noisy ellipse, a fern a
 7 x 6 stamp). That is the one place where shapes come from code rather than
 from PixelLab, and it is the first thing to replace if the experiment stays.
 
-The tiles are baked in their final colours and drawn as they are; only the
-Undead tiles go through the terrain tone, to match the tile the board
-already draws. `scripts/art/faction-grass.json` records the recipes and the
-hash of every source and tile.
+The tiles are baked in their final colours and drawn as they are.
+`scripts/art/faction-grass.json` records the recipes and the hash of every
+source and tile.
 
 ### Tone
 
@@ -132,17 +262,17 @@ hash of every source and tile.
 | Ground    | Luma  | Saturation | Luma spread | Pixels off the base colour |
 | --------- | ----- | ---------- | ----------- | -------------------------- |
 | Default   | 62.4% | 50.0%      | 1.9%        | 2.5%                       |
-| Undead    | 56.2% | 17.4%      | 2.8%        | 5.1%                       |
 | Goblins   | 63.0% | 46.5%      | 2.6%        | 4.4%                       |
 | Dinosaurs | 51.3% | 44.7%      | 2.8%        | 5.2%                       |
 | Martians  | 58.3% | 42.6%      | 2.5%        | 4.9%                       |
-| Dwarves   | 58.6% | 20.7%      | 2.4%        | 4.5%                       |
 | Candy     | 75.0% | 26.6%      | 2.4%        | 3.8%                       |
-| Cultists  | 65.2% | 26.6%      | 2.5%        | 5.0%                       |
+| Cultists  | 47.2% | 29.8%      | 3.6%        | 4.6%                       |
+| Undead    | 41.8% | 11.5%      | 2.0%        | 4.2%                       |
+| Dwarves   | 67.9% | 13.9%      | 2.7%        | 2.1%                       |
 
-Every ground is as flat as the default Grass (a luma spread under 3%). The
-Dinosaur ground is the darkest and Candy the lightest; the Undead ground is
-the greyest.
+Every ground is nearly as flat as the default Grass (a luma spread under
+3%; the bog's reeds and puddles make it 3.6%). The Undead ground is the
+darkest and the greyest, Candy the lightest.
 
 ## On the board
 
@@ -152,14 +282,14 @@ territory of a faction with a ground carries `factionGrass: <FACTION>`
 the cell's Grass and under the forest shade, Snow, Roads, resources,
 improvements and units:
 
-1. **the cell's own tile** (not for the Undead, whose tile is the terrain
-   tile itself);
+1. **the cell's own tile** (the Undead's too since bead
+   `pulp_wars-2yc.48`, over its terrain tile);
 2. **the spill of every neighbouring ground of a higher rank**: that
    ground's tile cut to an irregular strip about 10 px wide along the
    shared edge, with a blob at a shared corner and a few loose specks.
 
-The ranks, lowest first: default Grass, Candy, Goblins, Cultists, Martians,
-Dwarves, Undead, Dinosaurs. A ground runs out over every ground below it, so no
+The ranks, lowest first: default Grass, Candy, Dwarves, Goblins, Martians,
+Dinosaurs, Undead, Cultists. A ground runs out over every ground below it, so no
 border between two grounds is a straight line, and the darker land always
 runs into the lighter one. The strip's width is a wave over board pixels
 that repeats every three cells: the strips of two cells meet without a
@@ -183,6 +313,18 @@ The Undead ground, wood and Graveyard are reviewed together by
 `scripts/art/undead-terrain/review-scenes.ts` (and `review-scenes-grass.ts`
 for this switch) through `scripts/art/look-switch-review.ts`.
 
+The scenes of bead `pulp_wars-2yc.48`
+([`review-scenes.ts`](../../scripts/art/faction-grounds/review-scenes.ts),
+run through `look-switch-review.ts` with `SWITCH_BEFORE_URL` naming a
+second server on the commit before) are the Cult's, the Undead's and the
+Dwarves' land as the player's own, eight cells by eight, between Human
+land and another faction's, with a neutral row and unexplored land round
+it: a capital, a wood, Mountains, Fruit, Game, Ore, a Farm, a Road, three
+units and a Human unit beside one, at the default zoom, one step in with
+that unit selected (its moves and its target), and at phone width.
+[`gallery-capture.ts`](../../scripts/art/faction-grounds/gallery-capture.ts)
+captures the Gallery's Terrain tab.
+
 `npm run art:faction-grass-review -- <out-dir>` (a dev server on port 6593,
 `CHROME_PATH` set) captures the real game over drawn scenes: for each
 faction, its capital and territory beside the Human one with Forest,
@@ -194,19 +336,27 @@ overview scenes with `?faction-grass=0`.
 
 - **A Rift inside a faction's territory keeps default Grass** round its
   crack: the Rift pieces carry their Grass in the master.
-- **The forest shade and the glade's edge stay green.** Under trees on red
-  dust or mint the shade reads as a darker, greener patch.
+- **The glade's edge stays green.** Under a resource in a wood on red dust,
+  mint, gravel or ash the glade's rim reads as a greener ring.
 - **A glade does not draw the neighbour's spill to its edge**: its open
   ground is cut to the glade's round, soft-edged shape.
-- **Shared Farms keep their own look** on Goblin, Dinosaur and Candy
-  ground: brown beds with green crops, which read well on all three.
-- **The tile dock, the Gallery and Help** show the default Grass (and the
-  Undead ground, which is a terrain tile).
+- **Shared Farms keep their own look** on Goblin, Dinosaur, Candy and Cult
+  ground: brown beds with green crops, which read on all four.
+- **The tile dock of a plain Grass, Road or resource cell** shows the
+  default Grass (for the Undead: the terrain tile, tufts in ash colours).
+  Only a Forest or a Mountain cell's dock shows the faction's ground.
 - **Candy is the loudest ground**: light mint over a large territory is a
-  bright area on the map. **The Dwarf ground is the dullest**, and beside
-  the rocky Mountain ground it can read as bare land.
-- **The Undead motifs are drawn by the script**, like the others: a bone
-  is a 7 x 3 stamp, the mist a noisy ellipse. With three variants a bone
-  or a mist patch repeats every few cells of a large territory.
-- **The Undead ground is grey beside the default green**: the border is a
-  clear step in colour, softened only by the spill.
+  bright area on the map.
+- **The gravel's stones are round and alike**: seen over a large Dwarf land
+  they can read as dots.
+- **A puddle of the bog is 8 to 12 px**: a dark teal spot at board size, a
+  pool only enlarged.
+- **The lantern wood and the Horror are teal on olive**: they read, and the
+  wood no longer stands on a pink moor, but a wood drawn for the bog
+  (darker trunks, warmer lantern light) would sit better. The Undead dead
+  wood is a pale grey on dark ash and reads well.
+- **The soot patches of the burnt ground are cut in code**, as the patches
+  of the recoloured grounds are; every other shape of the three new
+  grounds is PixelLab's.
+- **The burnt ground is dark beside the default green**: the border is a
+  clear step in value, softened only by the spill.

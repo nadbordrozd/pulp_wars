@@ -2,7 +2,7 @@
   "bead": "pulp_wars-2yc.2",
   "sets": {
     "UNDEAD": {
-      "grass": "public/assets/chibi/terrain/chibi-undead-grass-1.png",
+      "grass": "public/assets/chibi/terrain/faction-grass/chibi-undead-grass-1.png",
       "clumps": [
         {
           "recipe": "undead-d",

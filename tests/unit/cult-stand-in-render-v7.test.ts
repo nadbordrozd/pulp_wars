@@ -450,11 +450,12 @@ describe("Cult art subjects stand in with the shared art", () => {
       expect(chibiFallbackSubjectV7(subject), subject).toBeNull();
     expect(assetGroupOfSubjectV7("UNIT:CULT:FIGHTER")).toBe("CULT");
     // A match with a Cult seat preloads the Cult's sprites in the live look
-    // with its ground and its wood (bead pulp_wars-mch9.22: three moor
-    // tiles, twenty forest pieces and five seam clumps, which the inventory
+    // with its ground and its wood (bead pulp_wars-mch9.22; six bog tiles
+    // since bead pulp_wars-2yc.48, twenty forest pieces and five seam
+    // clumps, which the inventory
     // lists with the composed terrain of every look but LEGACY, as it lists
     // every faction's).
-    const terrainFiles = 3 + 20 + 5;
+    const terrainFiles = 6 + 20 + 5;
     const cultFiles = assetInventoryV7("LIVE").filter(
       (entry) => entry.group === "CULT",
     );
