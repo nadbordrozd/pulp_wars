@@ -153,7 +153,10 @@ export const GROUND_LOOKS: readonly GroundLook[] = [
     faction: "UNDEAD",
     letter: "A",
     label: "Wildfire aftermath: ash, soot, burnt twigs, charred lumps, embers",
-    status: "CHOSEN",
+    // The Undead ground from 2026-10-13 until the burnt ground became a
+    // texture (docs/art/TEXTURED_GROUNDS.md); its fields are that
+    // texture's twigs, lumps and embers.
+    status: "SAMPLE",
     fields: ["undead-ash-b", "undead-ash-c"],
     recipe: {
       fields: [

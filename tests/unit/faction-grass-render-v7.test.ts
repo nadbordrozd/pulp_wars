@@ -421,32 +421,25 @@ describe("the faction grass art and drawing", () => {
   it("serves tiles as baked, a ground's own count of them, and caches spills", () => {
     const resolved = harness().art.resolve();
     if (resolved === null) throw new Error("no art");
-    const dinosaur = pixelsOf(resolved.tile("DINOSAUR", 0));
-    expect([dinosaur[1], dinosaur[2], dinosaur[3]]).toEqual([60, 118, 255]);
-    // As baked: the Undead tile is no longer toned (bead pulp_wars-2yc.48).
-    const undead = pixelsOf(resolved.tile("UNDEAD", 0));
-    expect(undead[1]).toBe(155);
-    // A cell's variant is one of six. A ground of three takes it modulo
-    // three; a ground of six has a tile for each.
-    expect(resolved.tile("DINOSAUR", 4)).toBe(resolved.tile("DINOSAUR", 1));
-    expect(resolved.tile("DINOSAUR", 5)).not.toBe(resolved.tile("DINOSAUR", 1));
-    expect(resolved.tile("UNDEAD", 4)).not.toBe(resolved.tile("UNDEAD", 1));
-    expect(resolved.tile("UNDEAD", 7)).toBe(resolved.tile("UNDEAD", 1));
-    expect(resolved.spill("DINOSAUR", 4, GRASS_E, 2)).toBe(
-      resolved.spill("DINOSAUR", 1, GRASS_E, 2),
-    );
+    const cult = pixelsOf(resolved.tile("CULT", 1));
+    // A cell's variant is one of six, and a ground of tiles has a tile for
+    // each. (No ground of three is left: the Dinosaur one is a texture.)
+    expect(resolved.tile("CULT", 4)).not.toBe(resolved.tile("CULT", 1));
+    expect(resolved.tile("CULT", 7)).toBe(resolved.tile("CULT", 1));
     expect(resolved.spill("CULT", 4, GRASS_E, 2)).not.toBe(
       resolved.spill("CULT", 1, GRASS_E, 2),
     );
-    const spill = resolved.spill("UNDEAD", 1, GRASS_E, 2);
+    const spill = resolved.spill("CULT", 1, GRASS_E, 2);
     expect(spill).not.toBeNull();
-    expect(resolved.spill("UNDEAD", 1, GRASS_E, 2)).toBe(spill);
-    expect(resolved.spill("UNDEAD", 1, GRASS_E, 3)).not.toBe(spill);
+    expect(resolved.spill("CULT", 1, GRASS_E, 2)).toBe(spill);
+    expect(resolved.spill("CULT", 1, GRASS_E, 3)).not.toBe(spill);
     const cut = pixelsOf(spill);
     // Opaque at the east edge, clear at the west one, in the tile's colour.
     expect(cut[(40 * CELL + CELL - 1) * 4 + 3]).toBe(255);
     expect(cut[40 * CELL * 4 + 3]).toBe(0);
-    expect(cut[(40 * CELL + CELL - 1) * 4 + 1]).toBe(undead[1]);
+    expect(cut[(40 * CELL + CELL - 1) * 4 + 1]).toBe(
+      cult[(40 * CELL + CELL - 1) * 4 + 1],
+    );
   });
 
   function context() {
@@ -539,14 +532,35 @@ describe("the faction grass art and drawing", () => {
       cells,
       true,
     );
-    // Candy north of it and the Dinosaurs north-east: two spills.
-    expect(rock.drawn.length).toBe(2);
+    // The default ground under its fringe, then Candy north of it and the
+    // Dinosaurs north-east: two spills.
+    expect(rock.drawn.length).toBe(3);
+    expect(rock.drawn[0]).toBe(resolved.tile("NEUTRAL", 0, mountainEntry.at));
     // No art (the switch off, or still loading) and far cells: nothing.
     const none = context();
     drawFactionGrassV7(none.context, frame, null, candyEntry, cells, false);
     drawFactionGrassV7(none.context, frame, resolved, candyEntry, null, false);
-    drawFactionGrassV7(none.context, frame, resolved, farEntry, cells, false);
     expect(none.drawn).toEqual([]);
+    // A far Grass cell with no faction ground near it wears the default
+    // ground alone (docs/art/TEXTURED_GROUNDS.md).
+    drawFactionGrassV7(none.context, frame, resolved, farEntry, cells, false);
+    expect(none.drawn).toEqual([resolved.tile("NEUTRAL", 0, farEntry.at)]);
+    // Water, fog and a Rift wear nothing.
+    for (const other of [
+      { kind: "FOG", at: { x: 9, y: 9 } },
+      {
+        kind: "TERRAIN",
+        at: { x: 9, y: 8 },
+        artSubject: "TERRAIN:SHALLOW_WATER",
+      },
+      {
+        kind: "TERRAIN",
+        at: { x: 9, y: 7 },
+        artSubject: "TERRAIN:RIFT_H_WEST",
+      },
+    ])
+      drawFactionGrassV7(none.context, frame, resolved, other, cells, false);
+    expect(none.drawn).toHaveLength(1);
     expect(factionGrassGladeLayersV7(null, candyEntry, cells)).toEqual([]);
     // Used: GRASS_S is part of the mask vocabulary.
     expect(GRASS_S).toBe(4);

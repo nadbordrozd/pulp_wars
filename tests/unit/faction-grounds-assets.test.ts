@@ -248,15 +248,11 @@ describe("a ground tile", () => {
 });
 
 describe("the grounds made from PixelLab fields", () => {
-  it("are the Cult's, the Undead's, Candy's and the Goblins', one chosen look each", () => {
-    // The Dwarf gravel was one until the Dwarves' ground became a texture
-    // (docs/art/TEXTURED_GROUNDS.md); its look stays as a sample.
-    expect([...FIELD_GROUND_IDS]).toEqual([
-      "CULT",
-      "UNDEAD",
-      "CANDY",
-      "GOBLIN",
-    ]);
+  it("are the Cult's, Candy's and the Goblins', one chosen look each", () => {
+    // The Dwarf gravel and the Undead wildfire tiles were two more until
+    // those grounds became textures (docs/art/TEXTURED_GROUNDS.md); their
+    // looks stay as samples.
+    expect([...FIELD_GROUND_IDS]).toEqual(["CULT", "CANDY", "GOBLIN"]);
     for (const id of FIELD_GROUND_IDS) {
       const look = fieldGroundLook(id);
       expect(look.faction).toBe(id);
@@ -283,11 +279,9 @@ describe("the grounds made from PixelLab fields", () => {
     expect(record.grounds.map((ground) => ground.id)).toEqual([
       ...FIELD_GROUND_IDS,
     ]);
-    // The recoloured grounds kept their seeds, so their tiles did not move
-    // when the other recipes left the list.
-    expect(record.recipes.map((recipe) => [recipe.id, recipe.seed])).toEqual([
-      ["DINOSAUR", 2],
-    ]);
+    // No recoloured ground is left: the Dinosaur jungle floor, the last,
+    // is a texture (docs/art/TEXTURED_GROUNDS.md).
+    expect(record.recipes).toEqual([]);
     for (const ground of record.grounds) {
       for (const source of ground.fields) {
         expect(source.path).toBe(fieldGroundFieldPath(source.recipe));

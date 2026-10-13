@@ -91,8 +91,11 @@ describe("the textured grounds of the manifest", () => {
         size?.rows,
       ]);
       // Bare regolith has the longer period (a boulder every six cells
-      // was a lattice on a large territory); the denser grounds have six.
-      expect(size?.columns).toBe(tile.id === "MARTIAN" ? 8 : 6);
+      // was a lattice on a large territory), and so has the default Grass,
+      // the most-seen ground; the denser grounds have six.
+      expect(size?.columns).toBe(
+        tile.id === "DWARF" || tile.id === "DINOSAUR" ? 6 : 8,
+      );
       expect(size?.rows).toBe(size?.columns);
       expect(tile.url).toContain(
         `faction-grass/world/chibi-${tile.id.toLowerCase()}-ground.png`,
@@ -103,7 +106,8 @@ describe("the textured grounds of the manifest", () => {
         `faction-grass/chibi-${tile.id.toLowerCase()}-grass-1.png`,
       );
       // A textured ground has no tiles, and is the ground's only asset.
-      expect(FACTION_GRASS_TILE_COUNTS_V7[tile.id]).toBe(0);
+      if (tile.id !== "NEUTRAL")
+        expect(FACTION_GRASS_TILE_COUNTS_V7[tile.id]).toBe(0);
       expect(
         FACTION_GRASS_TILES_V7.filter((other) => other.id === tile.id),
       ).toEqual([tile]);
@@ -198,7 +202,7 @@ describe("a ground sampled by map place", () => {
 
   it("costs the board what tiles cost: one image a cell, the same surfaces every frame", () => {
     for (const [id, textured] of [
-      ["DINOSAUR", false],
+      ["CULT", false],
       ["DWARF", true],
     ] as const) {
       const { art, surfaces } = harness();
@@ -233,8 +237,8 @@ describe("a ground sampled by map place", () => {
       expect(surfaces()).toBe(made);
       expect(drawn).toHaveLength(288);
       expect(drawn.slice(144)).toEqual(drawn.slice(0, 144));
-      // 36 different parts of the texture, where tiles have three.
-      expect(new Set(drawn).size).toBe(textured ? 36 : 3);
+      // 36 different parts of the texture, where tiles have six.
+      expect(new Set(drawn).size).toBe(textured ? 36 : 6);
     }
   });
 });

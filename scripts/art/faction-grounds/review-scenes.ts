@@ -198,6 +198,8 @@ export const sceneGoblinGround = (): GameStateV7 =>
   groundScene("GOBLIN", "CANDY");
 export const sceneMartianGround = (): GameStateV7 =>
   groundScene("MARTIAN", "DWARF");
+export const sceneDinosaurGround = (): GameStateV7 =>
+  groundScene("DINOSAUR", "GOBLIN");
 
 /**
  * The whole 16 x 16 map as one faction's explored Grass: the field the
@@ -233,6 +235,26 @@ export function fieldScene(faction: FactionIdV7): GameStateV7 {
 }
 export const sceneMartianField = (): GameStateV7 => fieldScene("MARTIAN");
 export const sceneDwarfField = (): GameStateV7 => fieldScene("DWARF");
+export const sceneUndeadField = (): GameStateV7 => fieldScene("UNDEAD");
+export const sceneGoblinField = (): GameStateV7 => fieldScene("GOBLIN");
+export const sceneDinosaurField = (): GameStateV7 => fieldScene("DINOSAUR");
+/**
+ * The whole map as nobody's Grass, the default ground, but for the one
+ * cell under the player's capital (a seat needs a city).
+ */
+export function sceneNeutralField(): GameStateV7 {
+  const state = fieldScene("MARTIAN");
+  return {
+    ...state,
+    board: {
+      ...state.board,
+      tiles: state.board.tiles.map((tile) => ({
+        ...tile,
+        territoryCityId: tile.site === null ? null : tile.territoryCityId,
+      })),
+    },
+  };
+}
 
 /** No switch: "before" is another server (SWITCH_BEFORE_URL). */
 export const SWITCH_PARAMETER = "faction-grounds-review";
@@ -249,6 +271,7 @@ const GROUND_SHOTS: readonly LookSwitchShot[] = (
     ["candy", "sceneCandyGround"],
     ["goblin", "sceneGoblinGround"],
     ["martian", "sceneMartianGround"],
+    ["dinosaur", "sceneDinosaurGround"],
   ] as const
 ).flatMap(([name, scene]): LookSwitchShot[] => [
   // The whole scene at the board's default zoom, and its middle at 3x.
@@ -272,6 +295,10 @@ export const FIELD_SHOTS: readonly LookSwitchShot[] = (
   [
     ["martian", "sceneMartianField"],
     ["dwarf", "sceneDwarfField"],
+    ["neutral", "sceneNeutralField"],
+    ["undead", "sceneUndeadField"],
+    ["goblin", "sceneGoblinField"],
+    ["dinosaur", "sceneDinosaurField"],
   ] as const
 ).map(([name, scene]) => ({
   name: `${name}-field`,

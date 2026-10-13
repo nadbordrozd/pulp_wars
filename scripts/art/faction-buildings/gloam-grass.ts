@@ -20,8 +20,8 @@
  * pulp_wars-2yc.48 the burnt ground.
  *
  * Since that bead these masters are not what the board shows of Undead
- * land: the burnt ground is a baked tile composed from PixelLab fields and
- * drawn over them (`faction-grass/chibi-undead-grass-1..6.png`). They are
+ * land: the burnt ground is a texture quilted from PixelLab fields and
+ * drawn over them (`faction-grass/world/chibi-undead-ground.png`). They are
  * what lies under it: with `?faction-grass=0`, and in the tile dock of a
  * plain Grass cell.
  *
@@ -40,8 +40,6 @@ import { encodePng, pixelSha256, readRaster, sha256 } from "../chibi/pipeline";
 import { groundComposite } from "../chibi/raster";
 import {
   deriveFactionGrassTile,
-  fieldGroundLook,
-  fieldGroundRecipe,
   type GrassRecipeColours,
 } from "../faction-grass";
 
@@ -90,18 +88,18 @@ function mix(left: string, right: string): string {
 }
 
 /**
- * Master colours: the board colours of the burnt ground
- * (scripts/art/faction-grounds/looks.ts, the Undead look CHOSEN: its ash,
- * soot and pale ash) taken back through the terrain tone. Since bead
- * pulp_wars-2yc.48 the Undead ground the board shows is a baked tile drawn
- * over these masters (docs/art/FACTION_GRASS.md); they are what is under
- * it: the Grass tufts in the burnt ground's colours, no motif.
+ * Master colours: the board colours of the burnt ground (its ash, soot
+ * and pale ash: the things' colours of the Undead look in
+ * scripts/art/textured-grounds/looks.ts) taken back through the terrain
+ * tone. Since bead pulp_wars-2yc.48 the Undead ground the board shows is
+ * drawn over these masters (docs/art/TEXTURED_GROUNDS.md); they are what
+ * is under it: the Grass tufts in the burnt ground's colours, no motif.
  */
+const ASH = "#716a64";
+const SOOT = "#57504e";
+const PALE_ASH = "#a59e95";
 function gloamRecipe(): GrassRecipeColours {
-  const [ash, soot, , pale] =
-    fieldGroundRecipe(fieldGroundLook("UNDEAD")).fields[0]?.to ?? [];
-  if (ash === undefined || soot === undefined || pale === undefined)
-    throw new Error("the Undead ground look has no ash, soot and pale ash");
+  const [ash, soot, pale] = [ASH, SOOT, PALE_ASH];
   return {
     base: gloamMasterColour(ash),
     light: gloamMasterColour(pale),

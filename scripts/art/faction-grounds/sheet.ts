@@ -17,9 +17,12 @@ import { GROUND_CELL } from "./derive";
 const CELL = GROUND_CELL;
 const CHIBI = "public/assets/chibi";
 
+/** Whose pieces stand on a panel: a faction, or the Humans on neutral Grass. */
+export type SheetFaction = GroundFaction | "NEUTRAL" | "DINOSAUR" | "ICE_FOLK";
+
 export interface GroundPanel {
   readonly label: string;
-  readonly faction: GroundFaction;
+  readonly faction: SheetFaction;
   /** The tiles as the board draws them, RGBA, 80 x 80. */
   readonly tiles: readonly (Uint8Array | Uint8ClampedArray)[];
   /**
@@ -74,7 +77,7 @@ function overlaySvg(width: number, height: number, top: number): Buffer {
 /** What stands on a faction's panel. */
 const CAST: Readonly<
   Record<
-    GroundFaction,
+    SheetFaction,
     {
       readonly units: readonly string[];
       readonly city: string;
@@ -141,6 +144,32 @@ const CAST: Readonly<
     ],
     city: "chibi-direction-goblin-city-2",
     forest: "goblin",
+    resources: ["chibi-fruit", "chibi-game"],
+  },
+  NEUTRAL: {
+    units: ["direction-fighter", "direction-marksman", "direction-knight"],
+    city: "chibi-direction-city-2",
+    forest: "",
+    resources: ["chibi-fruit", "chibi-game"],
+  },
+  DINOSAUR: {
+    units: [
+      "direction-dinosaur-caveman",
+      "direction-dinosaur-raptor",
+      "direction-dinosaur-triceratops",
+    ],
+    city: "chibi-direction-dinosaur-city-2",
+    forest: "dinosaur",
+    resources: ["chibi-fruit", "chibi-game"],
+  },
+  ICE_FOLK: {
+    units: [
+      "direction-ice-folk-snow-hunter",
+      "direction-ice-folk-ice-witch",
+      "direction-ice-folk-yeti",
+    ],
+    city: "chibi-direction-ice-folk-city-2",
+    forest: "ice-folk",
     resources: ["chibi-fruit", "chibi-game"],
   },
 };
@@ -237,19 +266,18 @@ export async function groundPanelPng(
     });
   };
   // A 2 x 2 piece and a 1 x 1 piece of the faction's wood.
-  const big = await sprite(
-    root,
-    `${CHIBI}/forest/${cast.forest}/chibi-forest-${cast.forest}-piece-2x2-a.png`,
-  );
+  // The default wood's pieces are in the forest folder itself.
+  const piece = (shape: string): string =>
+    cast.forest === ""
+      ? `${CHIBI}/forest/chibi-forest-piece-${shape}.png`
+      : `${CHIBI}/forest/${cast.forest}/chibi-forest-${cast.forest}-piece-${shape}.png`;
+  const big = await sprite(root, piece("2x2-a"));
   layers.push({
     input: big.input,
     left: 0,
     top: cellAt(0, 2).top - big.height,
   });
-  const small = await sprite(
-    root,
-    `${CHIBI}/forest/${cast.forest}/chibi-forest-${cast.forest}-piece-1x1-b.png`,
-  );
+  const small = await sprite(root, piece("1x1-b"));
   layers.push({
     input: small.input,
     left: cellAt(5, 0).left,

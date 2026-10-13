@@ -12,7 +12,7 @@ import type { RgbaRaster } from "../chibi/owner-mask";
 import { readRaster } from "../chibi/pipeline";
 import { texturedFieldPath } from "./candidates";
 import { scatter, scatterMotifs, type ScatterRecipe } from "./compose";
-import { swapped, type TexturedLook } from "./looks";
+import { swapped, type TexturedField, type TexturedLook } from "./looks";
 import {
   busyness,
   paint,
@@ -59,8 +59,20 @@ function tone(rasters: readonly RgbaRaster[]): {
   };
 }
 
-async function fieldRaster(root: string, id: string): Promise<RgbaRaster> {
-  return readRaster(await readFile(path.join(root, texturedFieldPath(id))));
+/** The file of a field: of this run, or of the flat grounds' run. */
+export function texturedLookFieldPath(field: TexturedField): string {
+  return field.flat === undefined
+    ? texturedFieldPath(field.id)
+    : `art/explorations/faction-grounds-2026-10/raw/${field.id}.png`;
+}
+
+async function fieldRaster(
+  root: string,
+  field: TexturedField,
+): Promise<RgbaRaster> {
+  return readRaster(
+    await readFile(path.join(root, texturedLookFieldPath(field))),
+  );
 }
 
 /** A look's ground: quilted from its fields, its things strewn over it. */
@@ -70,7 +82,7 @@ export async function texturedGround(
 ): Promise<TexturedGround> {
   const sources: QuiltSource[] = [];
   for (const field of look.fields) {
-    const raster = await fieldRaster(root, field.id);
+    const raster = await fieldRaster(root, field);
     const indices = paletteIndices(raster, swapped(look.from, field.swap));
     if (process.env.TEXTURED_STATS !== undefined) {
       const counts = new Array<number>(look.from.length).fill(0);
@@ -89,14 +101,14 @@ export async function texturedGround(
   const things = look.things;
   const thingFields: RgbaRaster[] = [];
   for (const field of things?.fields ?? [])
-    thingFields.push(await fieldRaster(root, field.id));
+    thingFields.push(await fieldRaster(root, field));
   const recipe = (margin?: number): ScatterRecipe | null =>
     things === undefined
       ? null
       : {
           fields: things.fields.map((field) => ({
-            from: swapped(look.from, field.swap),
-            to: swapped(look.to, field.swap),
+            from: field.flat?.from ?? swapped(look.from, field.swap),
+            to: field.flat?.to ?? swapped(look.to, field.swap),
             ...(field.base === undefined ? {} : { base: field.base }),
             ...(field.ground === undefined ? {} : { ground: field.ground }),
           })),

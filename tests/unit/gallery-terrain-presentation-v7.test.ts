@@ -62,11 +62,11 @@ describe("Gallery terrain presentation", () => {
     expect(galleryTerrainNameV7("GRASS", "CANDY")).toBe("Frosting");
     expect(galleryTerrainNameV7("GRASS", "GOBLIN")).toBe("Savannah");
     expect(galleryTerrainNameV7("GRASS", "MARTIAN")).toBe("Regolith");
-    expect(galleryTerrainNameV7("GRASS", "DINOSAUR")).toBe("Grass");
+    expect(galleryTerrainNameV7("GRASS", "DINOSAUR")).toBe("Jungle floor");
     expect(galleryTerrainNameV7("FOREST", "CULT")).toBe("Forest");
     // Six tiles for a ground made from PixelLab fields, three otherwise.
     expect(galleryTerrainPiecesV7("GRASS", "CULT")).toHaveLength(6);
-    expect(galleryTerrainPiecesV7("GRASS", "UNDEAD")).toHaveLength(6);
+    expect(galleryTerrainPiecesV7("GRASS", "UNDEAD")).toHaveLength(1);
     // A textured ground shows one cell of its texture, as an 80 x 80 file.
     const dwarf = galleryTerrainPiecesV7("GRASS", "DWARF");
     expect(dwarf).toHaveLength(1);
@@ -74,14 +74,23 @@ describe("Gallery terrain presentation", () => {
     expect(JSON.stringify(dwarf)).not.toContain("world/");
     expect(galleryTerrainPiecesV7("GRASS", "GOBLIN")).toHaveLength(6);
     expect(galleryTerrainPiecesV7("GRASS", "MARTIAN")).toHaveLength(1);
-    expect(galleryTerrainPiecesV7("GRASS", "DINOSAUR")).toHaveLength(3);
+    expect(galleryTerrainPiecesV7("GRASS", "DINOSAUR")).toHaveLength(1);
+    // The Humans' Grass is the default one: a cell of its texture.
+    const human = galleryTerrainPiecesV7("GRASS", "ORIGINAL");
+    expect(human).toHaveLength(1);
+    expect(JSON.stringify(human)).toContain("chibi-neutral-grass-1.png");
+    expect(galleryTerrainPiecesV7("GRASS", null)).toEqual(human);
     expect(
       snow.kind === "OWN" && snow.swatch.layers.map((layer) => layer.kind),
     ).toEqual(["SUBJECT", "SNOW"]);
     for (const tile of FACTION_GRASS_TILES_V7.filter(
       (entry) => entry.toned !== true,
     )) {
-      const pieces = galleryTerrainPiecesV7("GRASS", tile.id);
+      // The default Grass is the Humans' column, and the shared cell.
+      const pieces = galleryTerrainPiecesV7(
+        "GRASS",
+        tile.id === "NEUTRAL" ? "ORIGINAL" : tile.id,
+      );
       expect(pieces.flatMap(galleryTerrainRasterUrlsV7)).toContain(
         factionGrassSwatchUrlV7(tile),
       );

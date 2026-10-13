@@ -46,19 +46,20 @@ the tiles) and `package.json` (two script names). Each is marked
 
 | Faction   | Ground                                                                                                                                               | Base      | Tiles                    |
 | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | ------------------------ |
-| Humans    | The default Grass.                                                                                                                                   | `#8ab85c` | 3                        |
-| Undead    | Burnt ground (bead `pulp_wars-2yc.48`): warm ash grey, soot patches, burnt twigs and bushes, charred lumps, a few embers.                            | `#716a64` | 6                        |
+| Humans    | The default Grass, also neutral land's ([textured](TEXTURED_GROUNDS.md)): the same green, faintly mottled, with small tufts.                         | `#8ab85c` | one texture, 8 x 8 cells |
+| Undead    | Burnt ground (bead `pulp_wars-2yc.48`, [textured](TEXTURED_GROUNDS.md)): mottled warm ash, burnt twigs and bushes, charred lumps, a few embers.      | `#716a64` | one texture, 8 x 8 cells |
 | Goblins   | Savannah (bead `pulp_wars-2yc.48`): pale golden straw, tufts and clumps of dry grass, loose blades.                                                  | `#d3c176` | 6                        |
-| Dinosaurs | Jungle floor: a darker, bluer green with ferns.                                                                                                      | `#5f9f58` | 3                        |
+| Dinosaurs | Jungle floor ([textured](TEXTURED_GROUNDS.md)): a darker, bluer green mottled with moss, leaf litter and low plants.                                 | `#63a35b` | one texture, 6 x 6 cells |
 | Martians  | Regolith (bead `pulp_wars-2yc.48`, [textured](TEXTURED_GROUNDS.md)): speckled rust dust with shaded rocks of several sizes.                          | `#b56c46` | one texture, 8 x 8 cells |
 | Dwarves   | Moss-covered stones (bead `pulp_wars-2yc.48`, [textured](TEXTURED_GROUNDS.md)): mottled grey-green moss thick with grey stones, moss on top of them. | `#7d8f66` | one texture, 6 x 6 cells |
 | Candy     | Frosting (bead `pulp_wars-2yc.48`): pastel mint frosting, sugar sprinkles in pink, yellow, white and lilac, sugar crystals.                          | `#a4dabd` | 6                        |
 | Ice Folk  | Snow. Every land tile of Ice Folk territory is Snow by rule, so they need no grass of their own.                                                     | n/a       | n/a                      |
 | Cultists  | Peat bog (bead `pulp_wars-2yc.48`): olive peat, small teal puddles, reed tufts, pale glow specks.                                                    | `#76805a` | 6                        |
 
-**Two grounds are textures, not tiles**
-([textured grounds](TEXTURED_GROUNDS.md)): the Martian regolith and the
-Dwarf moss-covered stones are each one large texture the board samples by a
+**Some grounds are textures, not tiles**
+([textured grounds](TEXTURED_GROUNDS.md)): the default Grass, the Martian
+regolith, the Dwarf moss-covered stones, the Undead burnt ground and the
+Dinosaur jungle floor are each one large texture the board samples by a
 cell's place on the map. The Dwarf mine gravel described further down was
 the Dwarf ground for a day (2026-10-13) and is a sample look now; the
 Martian red dust was a recipe of the recoloured grounds.

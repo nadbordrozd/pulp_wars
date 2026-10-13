@@ -307,7 +307,7 @@ async function sheet(
     {
       label: `${faction}  current (${ref})`,
       faction,
-      tiles: await groundAt(root, faction, ref),
+      ...(await groundAt(root, faction, ref)),
       overlays: true,
     },
   ];

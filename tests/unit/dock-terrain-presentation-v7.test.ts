@@ -6,6 +6,7 @@ import {
 import { FACTION_FOREST_ART_SETS_V7 } from "../../src/assets/faction-forest-pieces-manifest";
 import {
   FACTION_GRASS_TILES_V7,
+  NEUTRAL_GROUND_TILE_V7,
   factionGrassSwatchUrlV7,
 } from "../../src/assets/faction-grass-manifest";
 import { FACTION_IDS_V7, type FactionIdV7 } from "../../src/engine/index";
@@ -56,7 +57,13 @@ describe("the tile dock's terrain picture", () => {
     expect(swatch?.id).toBe(single?.id);
     expect(swatch?.box).toEqual({ kind: "CELL", rise: DOCK_MOUNTAIN_RISE_V7 });
     expect(swatch?.layers).toEqual([
-      { kind: "SUBJECT", subject: "TERRAIN:GRASS", at: { x: 0, y: 0 } },
+      // The default Grass: a cell of its texture.
+      {
+        kind: "RASTER",
+        url: NEUTRAL_GROUND_TILE_V7?.world?.swatchUrl,
+        width: 80,
+        height: 80,
+      },
       {
         kind: "RASTER",
         url: single?.url,
@@ -99,11 +106,13 @@ describe("the tile dock's terrain picture", () => {
           height: 80,
         });
       else
+        // No ground of its own (the Humans, and the Ice Folk under their
+        // Snow): the default Grass, a cell of its texture.
         expect(ground, faction).toEqual({
-          kind: "SUBJECT",
-          subject:
-            faction === "UNDEAD" ? "TERRAIN:UNDEAD:GRASS" : "TERRAIN:GRASS",
-          at: { x: 0, y: 0 },
+          kind: "RASTER",
+          url: NEUTRAL_GROUND_TILE_V7?.world?.swatchUrl,
+          width: 80,
+          height: 80,
         });
     }
     // Seven factions have a baked ground of their own (the Undead burnt
@@ -115,13 +124,13 @@ describe("the tile dock's terrain picture", () => {
           dockTerrainSwatchV7(request("MOUNTAIN", faction))?.layers[0]?.kind ===
           "RASTER",
       ),
-    ).toHaveLength(7);
+    ).toHaveLength(FACTION_IDS_V7.length);
     // Snow lies over the ground, under the mountain.
     const snowy = dockTerrainSwatchV7(
       request("MOUNTAIN", "ICE_FOLK", { snow: true }),
     );
     expect(snowy?.layers.map((layer) => layer.kind)).toEqual([
-      "SUBJECT",
+      "RASTER",
       "SNOW",
       "RASTER",
     ]);

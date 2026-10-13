@@ -72,7 +72,13 @@ async function main(): Promise<void> {
       deviceScaleFactor: 1,
       mobile: false,
     });
-    for (const scene of ["sceneMartianField", "sceneDwarfField"])
+    for (const scene of [
+      "sceneMartianField",
+      "sceneDwarfField",
+      "sceneNeutralField",
+      "sceneUndeadField",
+      "sceneDinosaurField",
+    ])
       for (const round of [0, 1, 2])
         for (const base of bases) {
           const url = new URL(base);

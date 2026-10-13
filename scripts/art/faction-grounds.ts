@@ -61,6 +61,7 @@ import {
   groundField,
   groundSheet,
   type GroundPanel,
+  type SheetFaction,
 } from "./faction-grounds/sheet";
 import {
   GROUND_BEAD,
@@ -479,31 +480,59 @@ async function contact(
   console.log(`wrote ${out}`);
 }
 
-/** The ground of a faction at a Git revision, as the board draws it. */
+/**
+ * The ground of a faction (or the default Grass) at a Git revision, as the
+ * board draws it: its tiles, or its texture where it has one.
+ */
 export async function groundAt(
   root: string,
-  faction: GroundFaction,
+  faction: SheetFaction,
   ref: string,
-): Promise<Uint8ClampedArray[]> {
-  const tiles: Uint8ClampedArray[] = [];
-  for (const index of [1, 2, 3]) {
-    const file =
-      faction === "UNDEAD"
-        ? `public/assets/chibi/terrain/chibi-undead-grass-${index}.png`
-        : `public/assets/chibi/terrain/faction-grass/chibi-${faction.toLowerCase()}-grass-${index}.png`;
-    const raster = await readRaster(
-      execFileSync("git", ["show", `${ref}:${file}`], {
+): Promise<Pick<GroundPanel, "tiles" | "world">> {
+  const show = (file: string): Buffer | null => {
+    try {
+      return execFileSync("git", ["show", `${ref}:${file}`], {
         cwd: root,
         maxBuffer: 1 << 24,
-      }),
+        stdio: ["ignore", "pipe", "ignore"],
+      });
+    } catch {
+      return null;
+    }
+  };
+  const terrain = "public/assets/chibi/terrain";
+  const world = show(
+    `${terrain}/faction-grass/world/chibi-${faction.toLowerCase()}-ground.png`,
+  );
+  if (world !== null) {
+    const raster = await readRaster(world);
+    return { tiles: [], world: raster };
+  }
+  if (faction === "ICE_FOLK") {
+    // The Snow the forest bake derives: the Grass under the Snow wash.
+    const snow = show("art/pixellab/faction-forests/ground/ice-folk-snow.png");
+    if (snow === null) throw new Error("no Ice Folk snow tile");
+    return { tiles: [new Uint8ClampedArray((await readRaster(snow)).data)] };
+  }
+  const tiles: Uint8ClampedArray[] = [];
+  for (const index of [1, 2, 3, 4, 5, 6]) {
+    const bytes = show(
+      faction === "NEUTRAL"
+        ? `${terrain}/chibi-grass-${index}.png`
+        : faction === "UNDEAD" && index <= 3
+          ? `${terrain}/faction-grass/chibi-undead-grass-${index}.png`
+          : `${terrain}/faction-grass/chibi-${faction.toLowerCase()}-grass-${index}.png`,
     );
+    if (bytes === null) break;
+    const raster = await readRaster(bytes);
     tiles.push(
-      faction === "UNDEAD"
+      faction === "NEUTRAL"
         ? tonedGrass(raster)
         : new Uint8ClampedArray(raster.data),
     );
   }
-  return tiles;
+  if (tiles.length === 0) throw new Error(`no ground of ${faction} at ${ref}`);
+  return { tiles };
 }
 
 async function sheet(
@@ -516,7 +545,7 @@ async function sheet(
     {
       label: `${faction}  current (${ref})`,
       faction,
-      tiles: await groundAt(root, faction, ref),
+      ...(await groundAt(root, faction, ref)),
     },
   ];
   for (const look of GROUND_LOOKS) {

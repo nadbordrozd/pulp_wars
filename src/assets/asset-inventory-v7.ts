@@ -206,7 +206,8 @@ function classicEntries(live = false): AssetInventoryEntryV7[] {
         ...(tile.world?.swatchUrl === undefined ? [] : [tile.world.swatchUrl]),
       ].map((url) => ({
         url,
-        group: tile.id satisfies AssetGroupV7,
+        // The default ground is no faction's: it loads with the shared art.
+        group: (tile.id === "NEUTRAL" ? "SHARED" : tile.id) as AssetGroupV7,
         front: true as const,
       })),
     ),

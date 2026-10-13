@@ -35,10 +35,7 @@ import {
   gloamMasterColour,
   type GloamGrassRecord,
 } from "../../scripts/art/faction-buildings/gloam-grass";
-import {
-  fieldGroundLook,
-  fieldGroundRecipe,
-} from "../../scripts/art/faction-grass";
+import { worldGroundLook } from "../../scripts/art/faction-grass";
 
 /**
  * The production art of the faction building looks (bead pulp_wars-xdh.2,
@@ -364,14 +361,15 @@ describe("the Undead territory ground masters", () => {
       await readFile(path.join(ROOT, GLOAM_GRASS_RECORD), "utf8"),
     ) as GloamGrassRecord;
     // The burnt ground of bead pulp_wars-2yc.48 (first the gloam, then the
-    // ashen ground). The board draws its baked tiles over these masters;
-    // they carry its colours on the Grass tufts and no motif.
+    // ashen ground). The board draws its texture over these masters; they
+    // carry its colours on the Grass tufts and no motif.
     expect(recorded.variant).toBe("wildfire");
     expect(recorded.motifs).toEqual([]);
     // The master colour of the ash is the board colour of the look taken
     // back through the terrain tone (contrast 65% round #89b75b).
-    const ash = fieldGroundRecipe(fieldGroundLook("UNDEAD")).fields[0]?.to[0];
-    if (ash === undefined) throw new Error("no ash");
+    // The ash is the ground colour of the Undead texture.
+    const ash = "#716a64";
+    expect(worldGroundLook("UNDEAD").to).toContain(ash);
     expect(recorded.colours["#8ab85c"]).toBe(gloamMasterColour(ash));
     const pivot = [137, 183, 91];
     for (const [index, at] of [1, 3, 5].entries()) {

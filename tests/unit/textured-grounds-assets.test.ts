@@ -17,7 +17,10 @@ import {
   worldGroundPath,
   type FactionGrassRecord,
 } from "../../scripts/art/faction-grass";
-import { texturedGround } from "../../scripts/art/textured-grounds/ground";
+import {
+  texturedGround,
+  texturedLookFieldPath,
+} from "../../scripts/art/textured-grounds/ground";
 import {
   TEXTURED_CANDIDATES,
   TEXTURED_RUN,
@@ -222,6 +225,14 @@ describe("the textured ground samples", () => {
     const known = new Set(TEXTURED_CANDIDATES.map((entry) => entry.id));
     for (const look of TEXTURED_LOOKS)
       for (const field of [...look.fields, ...(look.things?.fields ?? [])]) {
+        if (field.flat !== undefined) {
+          // A field of the flat grounds' run, with its own palette.
+          expect(
+            existsSync(path.join(ROOT, texturedLookFieldPath(field))),
+          ).toBe(true);
+          expect(field.flat.from.length).toBe(field.flat.to.length);
+          continue;
+        }
         expect(known.has(field.id), field.id).toBe(true);
         expect(records.recipes[field.id]?.rawSheet, field.id).toBe(
           texturedFieldPath(field.id),

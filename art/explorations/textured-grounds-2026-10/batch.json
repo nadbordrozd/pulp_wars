@@ -236,6 +236,105 @@
         "height": 80
       },
       "subjectKey": "TERRAIN:GRASS/CULT_MARSH_B"
+    },
+    {
+      "id": "chibi-textured-cult-peat-a",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/CULT_PEAT_A"
+    },
+    {
+      "id": "chibi-textured-cult-pools-a",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/CULT_POOLS_A"
+    },
+    {
+      "id": "chibi-textured-neutral-grass-a",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/NEUTRAL_GRASS_A"
+    },
+    {
+      "id": "chibi-textured-neutral-grass-b",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/NEUTRAL_GRASS_B"
+    },
+    {
+      "id": "chibi-textured-undead-burnt-a",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/UNDEAD_BURNT_A"
+    },
+    {
+      "id": "chibi-textured-goblin-savannah-t",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/GOBLIN_SAVANNAH_T"
+    },
+    {
+      "id": "chibi-textured-candy-frosting-t",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/CANDY_FROSTING_T"
+    },
+    {
+      "id": "chibi-textured-dinosaur-jungle-a",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/DINOSAUR_JUNGLE_A"
+    },
+    {
+      "id": "chibi-textured-ice-folk-snow-a",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/ICE_FOLK_SNOW_A"
     }
   ],
   "recipes": [
@@ -679,6 +778,195 @@
       },
       "negativeAddendum": "trees, bushes, animals, people, path, road, river, cliff, wall, fence, buildings, big boulders, mountains, horizon, sky, flowers, lily, frog, fish, purple, pink, bridge, stream, channel, tall reeds, bank, ledge",
       "notes": "CULT, Marsh: hummocks, sedge and small pools only. cult-marsh-a is a stream 60 px wide between banks with ledges: pools only, small."
+    },
+    {
+      "id": "cult-peat-a",
+      "asset": "chibi-textured-cult-peat-a",
+      "endpoint": "create-image-pixflux",
+      "seed": 48723,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "options": {
+        "shading": "medium shading",
+        "detail": "medium detail",
+        "outline": "lineless"
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/textured-cult-peat-a.png",
+        "sha256": "c9930d0cb31b1e450aa59c5132bf0a043d5d38f9f4693d08ca2d2ff50d824043"
+      },
+      "negativeAddendum": "trees, bushes, animals, people, path, road, river, water, cliff, wall, fence, buildings, big boulders, mountains, horizon, sky, flowers, lily, frog, fish, purple, pink, bridge, stream, channel, tall reeds, bank, ledge, pond",
+      "notes": "CULT, Peat bog: bare peat and low moss, sparse sedge. The calmer marsh: the ground alone, mostly peat, so the teal Horror, frog and willows stand off it. cult-marsh-b is sedge on every few pixels."
+    },
+    {
+      "id": "cult-pools-a",
+      "asset": "chibi-textured-cult-pools-a",
+      "endpoint": "create-image-pixflux",
+      "seed": 48724,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "options": {
+        "shading": "medium shading",
+        "detail": "medium detail",
+        "outline": "lineless"
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/textured-cult-pools-a.png",
+        "sha256": "c9930d0cb31b1e450aa59c5132bf0a043d5d38f9f4693d08ca2d2ff50d824043"
+      },
+      "negativeAddendum": "trees, bushes, animals, people, path, road, river, cliff, wall, fence, buildings, big boulders, mountains, horizon, sky, flowers, lily, frog, fish, purple, pink, bridge, stream, channel, river, tall reeds, bank, ledge, big pond",
+      "notes": "CULT, Peat with separate small whole pools, for the pool motifs. Whole small pools to strew: a stream cannot be quilted without its banks, and came out as cut-off reaches."
+    },
+    {
+      "id": "neutral-grass-a",
+      "asset": "chibi-textured-neutral-grass-a",
+      "endpoint": "create-image-pixflux",
+      "seed": 48741,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "options": {
+        "shading": "medium shading",
+        "detail": "medium detail",
+        "outline": "lineless"
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/textured-neutral-grass-a.png",
+        "sha256": "e923b1b7127af5ccbe950c62c5554f14be1b3235b30270d649d57eae0b1319a6"
+      },
+      "negativeAddendum": "trees, bushes, animals, people, path, road, river, water, cliff, wall, fence, buildings, big boulders, mountains, horizon, sky, flowers, clover, daisies, mushrooms, rocks, stones, soil, dirt, tall grass, hedge, yellow, brown",
+      "notes": "NEUTRAL, Meadow: short grass with soft tone patches and small tufts. The default Grass as a painted meadow, in greens close to today's #8ab85c so the map does not shift."
+    },
+    {
+      "id": "neutral-grass-b",
+      "asset": "chibi-textured-neutral-grass-b",
+      "endpoint": "create-image-pixflux",
+      "seed": 48742,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "options": {
+        "shading": "medium shading",
+        "detail": "medium detail",
+        "outline": "lineless"
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/textured-neutral-grass-b.png",
+        "sha256": "e923b1b7127af5ccbe950c62c5554f14be1b3235b30270d649d57eae0b1319a6"
+      },
+      "negativeAddendum": "trees, bushes, animals, people, path, road, river, water, cliff, wall, fence, buildings, big boulders, mountains, horizon, sky, flowers, clover, daisies, mushrooms, rocks, stones, soil, dirt, tall grass, hedge, yellow, brown",
+      "notes": "NEUTRAL, Meadow: a second field, finer blades. A second exemplar for the quilt."
+    },
+    {
+      "id": "undead-burnt-a",
+      "asset": "chibi-textured-undead-burnt-a",
+      "endpoint": "create-image-pixflux",
+      "seed": 48751,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "options": {
+        "shading": "medium shading",
+        "detail": "medium detail",
+        "outline": "lineless"
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/textured-undead-burnt-a.png",
+        "sha256": "b3cd6736aa3f1b0a482323852538a59c67d6729c4e1b8fda85399a480efd9c80"
+      },
+      "negativeAddendum": "trees, bushes, plants, grass, animals, people, path, road, river, water, cliff, wall, fence, buildings, big boulders, mountains, horizon, sky, flames, fire, smoke, green, skulls, bones, graves, stumps, logs, tree trunks, flowers",
+      "notes": "UNDEAD, Burnt ground: ash and charred earth, mottled. The Undead burnt ground as a painted surface: ash that is not one colour."
+    },
+    {
+      "id": "goblin-savannah-t",
+      "asset": "chibi-textured-goblin-savannah-t",
+      "endpoint": "create-image-pixflux",
+      "seed": 48761,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "options": {
+        "shading": "medium shading",
+        "detail": "medium detail",
+        "outline": "lineless"
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/textured-goblin-savannah-t.png",
+        "sha256": "2ee44e1b3b99137dc0c9b509b30c1922d9b520dc82086840037d10c606554235"
+      },
+      "negativeAddendum": "trees, bushes, plants, animals, people, path, road, river, water, cliff, wall, fence, buildings, big boulders, mountains, horizon, sky, acacia, flowers, bones, green, tall grass, rocks",
+      "notes": "GOBLIN, Savannah: dry grass with tone patches and fine blades. The Goblin savannah as a painted surface."
+    },
+    {
+      "id": "candy-frosting-t",
+      "asset": "chibi-textured-candy-frosting-t",
+      "endpoint": "create-image-pixflux",
+      "seed": 48771,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "options": {
+        "shading": "medium shading",
+        "detail": "medium detail",
+        "outline": "lineless"
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/textured-candy-frosting-t.png",
+        "sha256": "1b51945f171d915ed18f6fb6b562fe78c3d61e3ac01ef81aeed0e3f54a1128c0"
+      },
+      "negativeAddendum": "trees, bushes, plants, grass, animals, people, path, road, river, water, cliff, wall, fence, buildings, big boulders, mountains, horizon, sky, cake slice, plate, candles, cherries, fruit, cupcake, pink, yellow, chocolate",
+      "notes": "CANDY, Frosting: mint icing spread with a knife, soft ridges. The Candy frosting as a surface with relief; the coloured sprinkles are strewn from the flat field."
+    },
+    {
+      "id": "dinosaur-jungle-a",
+      "asset": "chibi-textured-dinosaur-jungle-a",
+      "endpoint": "create-image-pixflux",
+      "seed": 48781,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "options": {
+        "shading": "medium shading",
+        "detail": "medium detail",
+        "outline": "lineless"
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/textured-dinosaur-jungle-a.png",
+        "sha256": "f7b01b4b9ee0ea2a55bf06fe98598c9894432bd5769ea14c9f8d3d01d1248405"
+      },
+      "negativeAddendum": "trees, bushes, animals, people, path, road, river, water, cliff, wall, fence, buildings, big boulders, mountains, horizon, sky, flowers, tree trunks, palm trees, vines, roots, pink, red, tall plants",
+      "notes": "DINOSAUR, Jungle floor: low ferns, broad leaves and moss. The Dinosaur jungle floor as a painted surface."
+    },
+    {
+      "id": "ice-folk-snow-a",
+      "asset": "chibi-textured-ice-folk-snow-a",
+      "endpoint": "create-image-pixflux",
+      "seed": 48791,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "options": {
+        "shading": "medium shading",
+        "detail": "medium detail",
+        "outline": "lineless"
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/textured-ice-folk-snow-a.png",
+        "sha256": "e5443f42e32f23c80f8ef100c65eed2920a0782ad026ccfd084dc6e17b3e4ec4"
+      },
+      "negativeAddendum": "trees, bushes, plants, grass, animals, people, path, road, river, water, cliff, wall, fence, buildings, big boulders, mountains, horizon, sky, footprints, tracks, rocks, ice blocks, snowman, pine, dark shadows",
+      "notes": "ICE_FOLK, Snow: wind-packed snow with soft drifts. The Ice Folk Snow as a painted surface, for a sample."
     }
   ]
 }

@@ -11,7 +11,17 @@
  * and the batch manifest of the exploration run
  * `art/explorations/textured-grounds-2026-10/` from this list.
  */
-export type TexturedFaction = "MARTIAN" | "DWARF" | "CULT";
+export type TexturedFaction =
+  | "MARTIAN"
+  | "DWARF"
+  | "CULT"
+  // The default Grass: neutral land and the Humans'.
+  | "NEUTRAL"
+  | "UNDEAD"
+  | "GOBLIN"
+  | "CANDY"
+  | "DINOSAUR"
+  | "ICE_FOLK";
 
 export interface TexturedCandidate {
   /** The recipe id in the run. */
@@ -38,6 +48,44 @@ export const TEXTURED_FIELD = 400;
 
 const NOTHING_TALL =
   "trees, bushes, plants, grass, animals, people, path, road, river, water, cliff, wall, fence, buildings, big boulders, mountains, horizon, sky";
+
+/** Close greens round the default Grass (#8ab85c and its three tufts). */
+const GRASS = [
+  "#8ab85c",
+  "#92be64",
+  "#82b055",
+  "#78a650",
+  "#9bc56a",
+  "#679347",
+];
+const ASH = [
+  "#716a64",
+  "#7b746d",
+  "#665f5a",
+  "#57504e",
+  "#46403f",
+  "#a59e95",
+  "#d07a3a",
+];
+const STRAW = [
+  "#d3c176",
+  "#dbca83",
+  "#c9b66b",
+  "#bca859",
+  "#9a873f",
+  "#a98c5e",
+];
+const MINT = ["#a4dabd", "#b0e2c8", "#98d1b2", "#8cc8a8", "#ffffff", "#c8eedb"];
+const JUNGLE = [
+  "#5f9f58",
+  "#6aab61",
+  "#55924f",
+  "#4a8549",
+  "#3c703f",
+  "#86c474",
+  "#7a8a4a",
+];
+const SNOW = ["#e6eef0", "#f4f8f9", "#d6e2e8", "#c4d4de", "#ffffff", "#b4c6d4"];
 
 const MARS = [
   "#a9623f",
@@ -333,6 +381,119 @@ export const TEXTURED_CANDIDATES: readonly TexturedCandidate[] = [
     seed: 48722,
     notes:
       "cult-marsh-a is a stream 60 px wide between banks with ledges: pools only, small.",
+  },
+  {
+    id: "cult-peat-a",
+    faction: "CULT",
+    size: 160,
+    label: "Peat bog: bare peat and low moss, sparse sedge",
+    subject:
+      "Subject: a peat bog seen from directly above, filling the whole image: wet olive peat and low moss in soft uneven patches of slightly lighter and darker olive, with only a few small low tufts of sedge far apart; no water, no pools, no stream; soft shading.",
+    palette: MARSH,
+    negative: `${NOTHING_TALL.replace("grass, ", "").replace("plants, ", "")}, flowers, lily, frog, fish, purple, pink, bridge, stream, channel, tall reeds, bank, ledge, pond`,
+    seed: 48723,
+    notes:
+      "The calmer marsh: the ground alone, mostly peat, so the teal Horror, frog and willows stand off it. cult-marsh-b is sedge on every few pixels.",
+  },
+  {
+    id: "cult-pools-a",
+    faction: "CULT",
+    size: 160,
+    label: "Peat with separate small whole pools, for the pool motifs",
+    subject:
+      "Subject: flat wet olive peat seen from directly above, one even olive colour, with about twelve separate small round pools of dark teal still water spread evenly over the whole image, each of a different rounded shape and none wider than a tenth of the image, each with a thin paler rim and one tiny glint, and a small tuft of sedge beside a few of them; the pools do not touch each other and none touches the edge of the image; no stream.",
+    palette: MARSH,
+    negative: `${NOTHING_TALL.replace("water, ", "").replace("grass, ", "").replace("plants, ", "")}, flowers, lily, frog, fish, purple, pink, bridge, stream, channel, river, tall reeds, bank, ledge, big pond`,
+    seed: 48724,
+    notes:
+      "Whole small pools to strew: a stream cannot be quilted without its banks, and came out as cut-off reaches.",
+  },
+  {
+    id: "neutral-grass-a",
+    faction: "NEUTRAL",
+    size: 160,
+    label: "Meadow: short grass with soft tone patches and small tufts",
+    subject:
+      "Subject: a meadow of short lawn grass seen from directly above, filling the whole image: one calm mid green with soft uneven patches of slightly lighter and slightly darker green, and many small grass tufts and short blades spread evenly over it; no flowers, no stones, no bare earth; very soft shading.",
+    palette: GRASS,
+    negative: `${NOTHING_TALL.replace("grass, ", "").replace("plants, ", "")}, flowers, clover, daisies, mushrooms, rocks, stones, soil, dirt, tall grass, hedge, yellow, brown`,
+    seed: 48741,
+    notes:
+      "The default Grass as a painted meadow, in greens close to today's #8ab85c so the map does not shift.",
+  },
+  {
+    id: "neutral-grass-b",
+    faction: "NEUTRAL",
+    size: 160,
+    label: "Meadow: a second field, finer blades",
+    subject:
+      "Subject: a soft grassy lawn seen from directly above, filling the whole image: fine short grass in one calm mid green, with a gentle mottling of slightly lighter and darker green all over and small darker tufts here and there; no flowers, no stones, no bare earth; very soft shading.",
+    palette: GRASS,
+    negative: `${NOTHING_TALL.replace("grass, ", "").replace("plants, ", "")}, flowers, clover, daisies, mushrooms, rocks, stones, soil, dirt, tall grass, hedge, yellow, brown`,
+    seed: 48742,
+    notes: "A second exemplar for the quilt.",
+  },
+  {
+    id: "undead-burnt-a",
+    faction: "UNDEAD",
+    size: 160,
+    label: "Burnt ground: ash and charred earth, mottled",
+    subject:
+      "Subject: burnt ground after a wildfire seen from directly above, filling the whole image: warm grey ash and charred earth in soft uneven patches of lighter ash and darker soot, with fine charcoal specks and short burnt twigs lying flat all over it and a very few tiny glowing orange embers; nothing stands up; soft shading.",
+    palette: ASH,
+    negative: `${NOTHING_TALL}, flames, fire, smoke, green, skulls, bones, graves, stumps, logs, tree trunks, flowers`,
+    seed: 48751,
+    notes:
+      "The Undead burnt ground as a painted surface: ash that is not one colour.",
+  },
+  {
+    id: "goblin-savannah-t",
+    faction: "GOBLIN",
+    size: 160,
+    label: "Savannah: dry grass with tone patches and fine blades",
+    subject:
+      "Subject: a dry savannah grassland seen from directly above, filling the whole image: pale golden straw-coloured dry grass with soft uneven patches of slightly lighter and darker straw, fine dry blades and small tufts all over it, and a few small bare patches of tan earth; no trees, no green; soft shading.",
+    palette: STRAW,
+    negative: `${NOTHING_TALL.replace("grass, ", "")}, acacia, flowers, bones, green, tall grass, rocks`,
+    seed: 48761,
+    notes: "The Goblin savannah as a painted surface.",
+  },
+  {
+    id: "candy-frosting-t",
+    faction: "CANDY",
+    size: 160,
+    label: "Frosting: mint icing spread with a knife, soft ridges",
+    subject:
+      "Subject: the top of a frosted cake seen from directly above, filling the whole image: thick pastel mint green frosting spread with a knife, with soft low swirls and ridges in slightly lighter and slightly darker mint all over it, and tiny white sugar crystals sprinkled on it; no sprinkles of other colours, no decorations; very soft shading.",
+    palette: MINT,
+    negative: `${NOTHING_TALL}, cake slice, plate, candles, cherries, fruit, cupcake, pink, yellow, chocolate`,
+    seed: 48771,
+    notes:
+      "The Candy frosting as a surface with relief; the coloured sprinkles are strewn from the flat field.",
+  },
+  {
+    id: "dinosaur-jungle-a",
+    faction: "DINOSAUR",
+    size: 160,
+    label: "Jungle floor: low ferns, broad leaves and moss",
+    subject:
+      "Subject: a jungle floor seen from directly above, filling the whole image: deep green moss and low ground plants in soft uneven patches of lighter and darker green, with many small ferns and broad leaves lying flat all over it and a little olive leaf litter; nothing tall; soft shading.",
+    palette: JUNGLE,
+    negative: `${NOTHING_TALL.replace("grass, ", "").replace("plants, ", "")}, flowers, tree trunks, palm trees, vines, roots, pink, red, tall plants`,
+    seed: 48781,
+    notes: "The Dinosaur jungle floor as a painted surface.",
+  },
+  {
+    id: "ice-folk-snow-a",
+    faction: "ICE_FOLK",
+    size: 160,
+    label: "Snow: wind-packed snow with soft drifts",
+    subject:
+      "Subject: a snowfield seen from directly above, filling the whole image: white wind-packed snow with soft low drifts and ripples in very pale blue-grey shadow, a few small patches of glinting ice crystals; nothing else; very soft shading.",
+    palette: SNOW,
+    negative: `${NOTHING_TALL}, footprints, tracks, rocks, ice blocks, snowman, pine, dark shadows`,
+    seed: 48791,
+    notes: "The Ice Folk Snow as a painted surface, for a sample.",
   },
 ];
 

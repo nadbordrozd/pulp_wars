@@ -19,6 +19,17 @@ export interface TexturedField {
    * grounds is a patchwork.
    */
   readonly swap?: readonly (readonly [number, number])[];
+  /**
+   * A field of the flat grounds' run instead
+   * (art/explorations/faction-grounds-2026-10/, another palette): its own
+   * forced palette and the board colour of each of its colours. For the
+   * things only: the reeds, twigs, sprinkles and tufts cut for the tiles
+   * are strewn over a texture too.
+   */
+  readonly flat?: {
+    readonly from: readonly string[];
+    readonly to: readonly string[];
+  };
 }
 
 export interface TexturedLook {
@@ -108,6 +119,51 @@ export function compressed(
         .join("")}`,
   );
 }
+
+const GRASS = [
+  "#8ab85c",
+  "#92be64",
+  "#82b055",
+  "#78a650",
+  "#9bc56a",
+  "#679347",
+];
+const ASH = [
+  "#716a64",
+  "#7b746d",
+  "#665f5a",
+  "#57504e",
+  "#46403f",
+  "#a59e95",
+  "#d07a3a",
+];
+const STRAW = [
+  "#d3c176",
+  "#dbca83",
+  "#c9b66b",
+  "#bca859",
+  "#9a873f",
+  "#a98c5e",
+];
+const JUNGLE = [
+  "#5f9f58",
+  "#6aab61",
+  "#55924f",
+  "#4a8549",
+  "#3c703f",
+  "#86c474",
+  "#7a8a4a",
+];
+
+/** Six cells a side, blocks of 48 px overlapping by 16. */
+const STANDARD_QUILT = (seed: number): QuiltRecipe => ({
+  width: 480,
+  height: 480,
+  block: 48,
+  overlap: 16,
+  seed,
+  sample: 40,
+});
 
 const MARS = [
   "#a9623f",
@@ -462,5 +518,253 @@ export const TEXTURED_LOOKS: readonly TexturedLook[] = [
       seed: 4892,
       sample: 40,
     },
+  },
+  // --------------------------------------------------------------- Neutral
+  {
+    id: "neutral-meadow-world",
+    faction: "NEUTRAL",
+    letter: "A",
+    label: "Meadow: today's green with two-tone tufts",
+    mode: "WORLD",
+    from: GRASS,
+    // Its ground is the palette's fourth colour: today's #8ab85c exactly.
+    to: ["#8fbc60", "#93bf65", "#84b257", "#8ab85c", "#9bc56a", "#7aa852"],
+    fields: [{ id: "neutral-grass-a", regions: [[0, 68, 160, 92]] }],
+    quilt: STANDARD_QUILT(4901),
+  },
+  {
+    id: "neutral-mottled-world",
+    faction: "NEUTRAL",
+    letter: "B",
+    label: "Meadow: mottled, fine pale blades",
+    mode: "WORLD",
+    from: GRASS,
+    to: ["#8ab85c", "#93bf65", "#8ab85c", "#8ebb60", "#99c46a", "#85b358"],
+    fields: [{ id: "neutral-grass-b", regions: [[58, 48, 62, 76]] }],
+    quilt: STANDARD_QUILT(4902),
+  },
+  {
+    id: "neutral-painted-world",
+    faction: "NEUTRAL",
+    letter: "C",
+    label: "Meadow: the mottle of B with the tufts of A strewn over it",
+    mode: "WORLD",
+    chosen: true,
+    from: GRASS,
+    to: ["#8ab85c", "#93bf65", "#8ab85c", "#8ebb60", "#99c46a", "#85b358"],
+    fields: [{ id: "neutral-grass-b", regions: [[58, 48, 62, 76]] }],
+    // The most-seen ground: eight cells a side.
+    quilt: { ...STANDARD_QUILT(4902), width: 640, height: 640 },
+    things: {
+      // The tufts of neutral-grass-a, whose ground is the fourth colour,
+      // in today's tuft green.
+      fields: [{ id: "neutral-grass-a", base: 3 }],
+      seed: 4903,
+      gap: 3,
+      kinds: [
+        {
+          id: "tuft",
+          area: [14, 160],
+          box: [30, 20],
+          region: [0, 60, 160, 100],
+          perCell: 2.6,
+          to: {
+            5: "#78a650",
+            2: "#84b257",
+            0: "#8fbc60",
+            1: "#93bf65",
+            4: "#9bc56a",
+          },
+        },
+      ],
+    },
+  },
+  // ----------------------------------------------------------- Cult, peat
+  {
+    id: "cult-peat-world",
+    faction: "CULT",
+    letter: "C",
+    label: "Peat: star sedge and low mounds, whole puddles and reeds strewn",
+    mode: "WORLD",
+    from: MARSH,
+    to: [
+      "#7c865e",
+      "#869066",
+      "#76805a",
+      "#6c7652",
+      "#587878",
+      "#5e766a",
+      "#93a06c",
+      "#628088",
+    ],
+    fields: [{ id: "cult-peat-a", regions: [[44, 36, 84, 112]] }],
+    quilt: STANDARD_QUILT(4893),
+    things: {
+      fields: [
+        {
+          id: "cult-swamp-d",
+          flat: {
+            from: ["#777a56", "#466a6c", "#8fa79a", "#5f6a48"],
+            to: ["#76805a", "#48696c", "#93a58a", "#5c6748"],
+          },
+        },
+        {
+          id: "cult-swamp-b",
+          flat: {
+            from: [
+              "#55786a",
+              "#3d5c5e",
+              "#7fa39a",
+              "#3f5a45",
+              "#8aa66e",
+              "#d9e8a8",
+            ],
+            to: [
+              "#5f6a48",
+              "#76805a",
+              "#8fa79a",
+              "#56603f",
+              "#98a56c",
+              "#c6d398",
+            ],
+          },
+        },
+      ],
+      seed: 4894,
+      gap: 4,
+      kinds: [
+        {
+          id: "puddle",
+          field: 0,
+          area: [40, 130],
+          has: [1],
+          lacks: [2],
+          perCell: 0.8,
+        },
+        { id: "reed", field: 1, area: [50, 110], has: [5], perCell: 0.5 },
+        {
+          id: "glow",
+          field: 1,
+          area: [4, 9],
+          box: [3, 3],
+          has: [5],
+          perCell: 0.5,
+          to: { 4: "#d6e6a4", 5: "#eef6c4" },
+        },
+      ],
+    },
+  },
+  // ---------------------------------------------------------------- Undead
+  {
+    id: "undead-burnt-world",
+    faction: "UNDEAD",
+    letter: "A",
+    label: "Burnt ground: mottled ash and soot, twigs, lumps and embers strewn",
+    mode: "WORLD",
+    chosen: true,
+    from: ASH,
+    // Its ground is the palette's fifth colour (the darkest): today's ash.
+    to: [
+      "#89827a",
+      "#8f887f",
+      "#7f7870",
+      "#7b746d",
+      "#716a64",
+      "#a59e95",
+      "#d07a3a",
+    ],
+    fields: [{ id: "undead-burnt-a", regions: [[50, 60, 58, 100]] }],
+    // Discrete lumps and embers: eight cells a side, as the regolith.
+    quilt: { ...STANDARD_QUILT(4911), width: 640, height: 640 },
+    things: {
+      fields: [
+        {
+          id: "undead-ash-b",
+          flat: {
+            from: ["#8a8580", "#5e5856", "#3b3637", "#b4aea6", "#d07a3a"],
+            to: ["#716a64", "#57504e", "#46403f", "#a59e95", "#d07a3a"],
+          },
+        },
+        {
+          id: "undead-ash-c",
+          flat: {
+            from: ["#8a8580", "#5e5856", "#3b3637", "#d07a3a"],
+            to: ["#a59e95", "#57504e", "#46403f", "#d07a3a"],
+          },
+        },
+      ],
+      seed: 4912,
+      gap: 4,
+      kinds: [
+        {
+          id: "lump",
+          field: 1,
+          area: [20, 75],
+          has: [2],
+          perCell: 0.7,
+          hollow: "#57504e",
+        },
+        {
+          id: "scrub",
+          field: 0,
+          area: [30, 140],
+          has: [1],
+          lacks: [4],
+          perCell: 0.4,
+        },
+        { id: "twig", field: 0, area: [5, 29], lacks: [4], perCell: 2 },
+        { id: "ember", field: 0, area: [4, 40], has: [4], perCell: 0.35 },
+      ],
+    },
+  },
+  // ---------------------------------------------------------------- Goblin
+  {
+    id: "goblin-savannah-world",
+    faction: "GOBLIN",
+    letter: "A",
+    label: "Savannah: speckled dry ground, grass tufts and clumps strewn",
+    mode: "WORLD",
+    from: STRAW,
+    // Its ground is the palette's second colour: today's straw.
+    to: ["#cbb86c", "#d3c176", "#c3b064", "#bca859", "#a8964a", "#a98c5e"],
+    fields: [{ id: "goblin-savannah-t", regions: [[34, 16, 92, 128]] }],
+    quilt: STANDARD_QUILT(4921),
+    things: {
+      fields: [0, 1].map((index) => ({
+        id: index === 0 ? "goblin-savannah-a" : "goblin-savannah-b",
+        flat: {
+          from: ["#cdbb68", "#a8964a", "#e2d48e", "#a98c5e", "#8e9a4c"],
+          to: ["#bca859", "#9a873f", "#d3c176", "#a98c5e", "#8e9a4c"],
+        },
+      })),
+      seed: 4922,
+      gap: 4,
+      kinds: [
+        { id: "tuft", field: 0, area: [40, 400], box: [34, 34], perCell: 0.3 },
+        { id: "clump", field: 1, area: [14, 80], perCell: 1.3 },
+        { id: "blade", field: 1, area: [3, 13], perCell: 2 },
+      ],
+    },
+  },
+  // -------------------------------------------------------------- Dinosaur
+  {
+    id: "dinosaur-jungle-world",
+    faction: "DINOSAUR",
+    letter: "A",
+    label: "Jungle floor: moss, leaf litter and low plants",
+    mode: "WORLD",
+    chosen: true,
+    from: JUNGLE,
+    to: [
+      "#6aab61",
+      "#70b066",
+      "#63a35b",
+      "#63a35b",
+      "#5a9954",
+      "#80bd70",
+      "#7a9a55",
+    ],
+    fields: [{ id: "dinosaur-jungle-a", regions: [[40, 60, 70, 100]] }],
+    quilt: STANDARD_QUILT(4931),
   },
 ];

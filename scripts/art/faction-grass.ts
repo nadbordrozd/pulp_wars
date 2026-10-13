@@ -64,8 +64,10 @@ import {
   type GroundTileRecipe,
 } from "./faction-grounds/derive";
 import { GROUND_LOOKS, type GroundLook } from "./faction-grounds/looks";
-import { texturedFieldPath } from "./textured-grounds/candidates";
-import { texturedGround } from "./textured-grounds/ground";
+import {
+  texturedGround,
+  texturedLookFieldPath,
+} from "./textured-grounds/ground";
 import { TEXTURED_LOOKS, type TexturedLook } from "./textured-grounds/looks";
 
 const CELL = 80;
@@ -191,46 +193,15 @@ export interface FactionGrassRecipe {
  * The recipes. Every colour is the colour on the board. The default Grass
  * is `#8ab85c` with tufts `#9bc56a`, `#78a650`, `#679347`.
  */
-export const FACTION_GRASS_RECIPES: readonly FactionGrassRecipe[] = [
-  {
-    id: "DINOSAUR",
-    seed: 2,
-    label: "Jungle floor: lush, darker, bluer green with ferns",
-    base: "#5f9f58",
-    light: "#77b56b",
-    mid: "#4a8549",
-    dark: "#3c703f",
-    motifs: [
-      {
-        kind: "stamp",
-        stamp: "fern",
-        count: [2, 3],
-        dark: "#357040",
-        light: "#86c474",
-      },
-      {
-        kind: "stamp",
-        stamp: "fernSmall",
-        count: [2, 3],
-        dark: "#3a7743",
-        light: "#86c474",
-      },
-      {
-        kind: "patch",
-        count: [1, 2],
-        radius: [5, 7],
-        fill: "#569652",
-      },
-    ],
-  },
-];
+// The last of them, the Dinosaur jungle floor, became a texture on
+// 2026-10-14 (docs/art/TEXTURED_GROUNDS.md): the list is empty.
+export const FACTION_GRASS_RECIPES: readonly FactionGrassRecipe[] = [];
 
 // ------------------------------------------------- grounds from fields
 
 /** The grounds whose tiles are composed from PixelLab fields. */
 export const FIELD_GROUND_IDS = [
   "CULT",
-  "UNDEAD",
   // Bead pulp_wars-2yc.48, second round: the user's picks of the samples.
   "CANDY",
   "GOBLIN",
@@ -245,7 +216,14 @@ export type FieldGroundId = (typeof FIELD_GROUND_IDS)[number];
  * fields by scripts/art/textured-grounds/ground.ts. The user, 2026-10-13:
  * "the textured terrain is great. use it."
  */
-export const WORLD_GROUND_IDS = ["MARTIAN", "DWARF"] as const;
+export const WORLD_GROUND_IDS = [
+  "MARTIAN",
+  "DWARF",
+  // The default Grass: neutral land and the Humans'.
+  "NEUTRAL",
+  "UNDEAD",
+  "DINOSAUR",
+] as const;
 export type WorldGroundId = (typeof WORLD_GROUND_IDS)[number];
 
 /** The look of each: the one of TEXTURED_LOOKS marked `chosen`. */
@@ -519,7 +497,7 @@ export function deriveFactionGrassTile(
 }
 
 export function factionGrassTilePath(
-  id: FactionGrassIdV7,
+  id: FactionGrassIdV7 | WorldGroundId,
   variant: number,
 ): string {
   return `${FACTION_GRASS_DIRECTORY}/chibi-${id.toLowerCase()}-grass-${variant + 1}.png`;
@@ -657,10 +635,13 @@ export async function deriveFactionGrass(root: string): Promise<{
   for (const id of WORLD_GROUND_IDS) {
     const look = worldGroundLook(id);
     const fields: FactionGrassRecord["worlds"][number]["fields"][number][] = [];
-    for (const recipeId of new Set(
-      [...look.fields, ...(look.things?.fields ?? [])].map((field) => field.id),
-    )) {
-      const file = texturedFieldPath(recipeId);
+    const paths = new Map(
+      [...look.fields, ...(look.things?.fields ?? [])].map((field) => [
+        field.id,
+        texturedLookFieldPath(field),
+      ]),
+    );
+    for (const [recipeId, file] of paths) {
       fields.push({
         recipe: recipeId,
         path: file,

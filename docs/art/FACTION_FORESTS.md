@@ -184,7 +184,7 @@ that has the faction sets behind the default one:
   dark stone under the pines (and a dark straw under the Goblin scrub on
   its savannah), and those sets were baked again, the Candy grove too: their
   foliage is lifted toward the new grounds (the Undead set's ground is the
-  baked tile `faction-grass/chibi-undead-grass-1.png` now). It is cut back along a border as
+  first cell of its texture, `faction-grass/chibi-undead-grass-1.png`, now). It is cut back along a border as
   it is at the edge of a wood.
 - **Glades** show the cell's own ground, the faction grass included, as
   before.

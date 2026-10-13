@@ -346,12 +346,13 @@ aftermath of a wildfire is what we're looking for."
 
 The Undead's land is **burnt ground**: a warm ash grey, base `#716a64`,
 with patches of darker soot, burnt twigs and bushes, charred lumps with an
-ember on their rim, a rare ember and pale ash flecks. Six tiles
-(`faction-grass/chibi-undead-grass-1..6`, 80 x 80, opaque, every edge pixel
-the base colour) composed from the motifs of two PixelLab fields,
-`undead-ash-b` and `undead-ash-c`; the soot patches are cut in code. How,
-what else was tried and the measures are in
-[faction grass](../FACTION_GRASS.md#grounds-from-pixellab-fields). It
+ember on their rim, a rare ember and pale ash flecks. Since 2026-10-14 it
+is one [texture](../TEXTURED_GROUNDS.md) of 8 x 8 cells
+(`faction-grass/world/chibi-undead-ground.png`): ash mottled with paler
+tones, quilted from the PixelLab field `undead-burnt-a`, with the twigs,
+bushes, lumps and embers of `undead-ash-b` and `undead-ash-c` strewn over
+it. For a day before that it was six tiles composed from those two fields
+([faction grass](../FACTION_GRASS.md#grounds-from-pixellab-fields)). It
 supersedes the ashen ground of bead `pulp_wars-2yc.14` (a cold grey-green
 `#7f9a86` with mist, stones and a bone).
 
@@ -365,6 +366,6 @@ supersedes the ashen ground of bead `pulp_wars-2yc.14` (a cold grey-green
   and the City's dark walls have less ground contrast than on the ashen
   ground; the bone blade, the violet windows and the pale tower carry
   them. A lighter Sawmill would be a new recipe.
-- **The terrain masters** `chibi-undead-grass-1..3` stay under the baked
-  tiles: the Grass tufts in the burnt ground's colours. They show with
+- **The terrain masters** `chibi-undead-grass-1..3` stay under the
+  texture: the Grass tufts in the burnt ground's colours. They show with
   `?faction-grass=0` and in the tile dock of a plain Grass cell.

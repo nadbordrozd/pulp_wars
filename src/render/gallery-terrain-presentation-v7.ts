@@ -18,6 +18,7 @@ import {
 import { FACTION_FOREST_ART_SETS_V7 } from "../assets/faction-forest-pieces-manifest";
 import {
   FACTION_GRASS_TILES_V7,
+  NEUTRAL_GROUND_TILE_V7,
   factionGrassSwatchUrlV7,
 } from "../assets/faction-grass-manifest";
 import { factionForestIdV7 } from "./canvas/faction-forests-v7";
@@ -252,6 +253,18 @@ export function galleryTerrainPiecesV7(
           },
         ]),
       );
+    // The default Grass, where it is a texture: a cell of it.
+    if (ground === null && NEUTRAL_GROUND_TILE_V7 !== undefined)
+      return [
+        tile("NEUTRAL-0", [
+          {
+            kind: "RASTER",
+            url: factionGrassSwatchUrlV7(NEUTRAL_GROUND_TILE_V7),
+            width: 80,
+            height: 80,
+          },
+        ]),
+      ];
     return subjectTiles(territoryTerrainSubjectV7("TERRAIN:GRASS", ground));
   }
   const forest = row === "FOREST" ? factionForestIdV7(faction) : null;
@@ -448,6 +461,7 @@ const GROUND_NAMES: Partial<Readonly<Record<FactionIdV7, string>>> = {
   MARTIAN: "Regolith",
   CANDY: "Frosting",
   GOBLIN: "Savannah",
+  DINOSAUR: "Jungle floor",
 };
 
 /** The name of a terrain as a faction has it ("Snow" for the Ice Folk). */

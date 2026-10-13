@@ -6,8 +6,9 @@ note to investigate the tileset endpoint at pixellab but this is already
 acceptable." (The tileset endpoint is bead `pulp_wars-2yc.50`.)
 
 **Textured now:** the Martian regolith and the Dwarf moss-covered stones
-(stage 1). The other grounds are tiles until each has a texture that is
-clearly better than what is published ([faction grass](FACTION_GRASS.md)).
+(stage 1), and the default Grass, the Undead burnt ground and the Dinosaur jungle
+floor (stage 2, below). The other grounds are tiles until each has a texture that is clearly better than what is
+published ([faction grass](FACTION_GRASS.md)).
 
 The user, 2026-10-13, on the grounds of
 [faction grass](FACTION_GRASS.md): "My main concern is the texture. the
@@ -173,6 +174,85 @@ baked by `npm run art:faction-grass -- bake` from the look marked `chosen`
 
 The `?textured-grounds=1` switch of the experiment is gone.
 
+## The default Grass
+
+The most-seen ground: neutral land and the Humans' (`NEUTRAL` in
+`FACTION_GRASS_TILES_V7`; it is no faction's and loads with the shared
+art). Its texture is the same green as the Grass tile, `#8ab85c`, with a
+faint mottle of two near tones quilted from `neutral-grass-b` and the
+small tufts of `neutral-grass-a` strewn over it in today's tuft greens,
+eight cells a side. Three looks were compared (A, tufts on flat green; B,
+the mottle alone; C, both) and C was taken: the map keeps its colour, and
+a large meadow is no longer the same three tiles.
+
+- **Where it is drawn.** `drawFactionGrassV7` draws it on every Grass,
+  Forest and Mountain cell with no faction ground, over the Grass tile and
+  under the spill of a neighbouring faction ground; a faction ground stays
+  ranked above it, so the borders are as they were. Water, a Rift and fog
+  are untouched.
+- **Left on the old Grass tile:** the Rift pieces (their art carries its
+  own grass), and the pictures of plain Grass outside a live match (the
+  title screen, the Help pages). The Gallery's Grass row and the tile dock
+  show a cell of the texture.
+- **Period.** A 16 x 16 map of neutral Grass shows no repeat at eight
+  cells.
+- **Draw time.** One more cached image for each neutral grassy cell, where
+  there was none. The same measure as above, the stage 1 commit against
+  this one: a 16 x 16 map of neutral Grass 0.42 to 0.45 ms a redraw before
+  and 0.54 to 0.55 ms after; Martian 0.62 to 0.70 ms and 0.60 to 0.71 ms;
+  Dwarf 0.59 to 0.60 ms and 0.56 to 0.58 ms. Neutral land now costs what a
+  faction's land costs, and less than the textured faction grounds'
+  0.6 ms.
+- **Memory.** 3.3 MB (8 x 8 cells), a 68 kB file.
+
+## Stage 2: ground by ground
+
+Each ground got a field or two, a look and a sheet beside what is
+published (`npm run art:textured-grounds -- sheet <FACTION>`), and was
+wired only where the texture was clearly the better ground.
+
+- **Undead: wired.** `undead-burnt-world`: the ash of the published tiles
+  mottled with three paler tones (field `undead-burnt-a`), and the same
+  twigs, burnt bushes, lumps and embers, from the fields of the tiles,
+  strewn over the whole texture. The tiles were a flat grey with things on
+  it; this is ash everywhere. At six cells a side the same lump and ember
+  came back in rows on a 16 x 16 territory, so it is eight cells (3.3 MB,
+  a 55 kB file). The masters under it and the wash keep their colours.
+- **Dinosaurs: wired.** `dinosaur-jungle-world`, quilted from
+  `dinosaur-jungle-a`: a darker, bluer green than the Grass, mottled with
+  moss, a little leaf litter and low plants. The published ground was the
+  Grass tile recoloured, with ferns, and read as the same meadow in
+  another green beside Human land; this one is a different surface. It is
+  dense and alike all over, and a 16 x 16 territory shows no repeat at six
+  cells (1.8 MB). The Gallery calls it "Jungle floor". It was the last
+  recoloured ground: `FACTION_GRASS_RECIPES` is empty.
+- **Cult: the published bog stays.** Two more fields were generated.
+  `cult-peat-a` with the puddles and reeds of the bog's own fields strewn
+  over it (`cult-peat-world`) gave the same teal mounds again and again,
+  busier than the bog and no clearer; `cult-pools-a` was pits in rows and
+  is rejected; the marsh of the first samples (`cult-marsh-world`) is a
+  good picture and too loud under units. The six bog tiles, the user's
+  "clearest improvement", are the better ground.
+- **Goblins: the published savannah stays.** `goblin-savannah-world`
+  (speckled dry ground from `goblin-savannah-t`, the tiles' tufts strewn)
+  is a little grainier than the six tiles and otherwise the same picture:
+  not clearly better, so not worth 1.5 MB more.
+- **Candy: the published frosting stays.** The one field asked for,
+  `candy-frosting-t`, was a plaque of frosting with a piped border, an
+  object and not a ground; rejected. Frosting is smooth by nature: flat
+  mint with sprinkles is what it should be.
+- **Ice Folk: none.** Their land is Snow by rule, drawn by the Snow
+  overlay, not by a ground of this module. `ice-folk-snow-a` was a blank
+  white field; rejected.
+- **Humans:** the default Grass, above.
+
+After stage 2 the board holds five textures (three of 8 x 8 cells, two of
+6 x 6): 13.5 MB, where the same five grounds as tiles held 1.2 MB; the
+three grounds of tiles hold 0.9 MB. Draw time, the stage 1 commit against
+the last of stage 2, same measure: Undead 0.67 to 0.73 ms a redraw before
+and 0.72 to 0.74 ms after; Dinosaur 0.59 to 0.63 ms and 0.59 to 0.63 ms;
+neutral Grass as said above.
+
 ## Rolling it out
 
 For each ground, and for the default Grass:
@@ -188,7 +268,9 @@ For each ground, and for the default Grass:
    first tile: it needs a tile cut from the texture), the Gallery and the
    tile dock given a cell of the texture, the review scenes.
 
-Open before that: whether 480 px is a long enough period on a large
-territory (a boulder comes back every six cells; 640 px costs 64 surfaces a
-ground), and large-scale variation, which wants a second, slower layer of
-tone over the quilt.
+The period: a ground of few, distinct things (regolith, burnt ground)
+wants eight cells a side, since the same boulder or ember every six cells
+is picked out on a 16 x 16 territory; a dense ground that is alike all
+over (mossy stones, jungle floor) is fine at six. The default Grass has
+eight because it is everywhere. A second, slower layer of tone over the
+quilt was not needed at these sizes and was not tried.

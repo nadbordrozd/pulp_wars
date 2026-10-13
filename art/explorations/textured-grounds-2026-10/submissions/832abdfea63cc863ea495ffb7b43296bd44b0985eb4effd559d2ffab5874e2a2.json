@@ -1,0 +1,62 @@
+{
+  "id": "dinosaur-jungle-a",
+  "jobId": "sync-285b8514-6aec-4523-a2c2-3b1ae32c25d1",
+  "request": {
+    "endpoint": "create-image-pixflux",
+    "model": "create-image-pixflux",
+    "batch": "textured-grounds",
+    "asset": "chibi-textured-dinosaur-jungle-a",
+    "subject": "TERRAIN:GRASS",
+    "faction": "TEST-TEXTURED-GROUNDS",
+    "recipeClass": "terrain",
+    "requestSize": {
+      "width": 160,
+      "height": 160
+    },
+    "seed": 48781,
+    "noBackground": false,
+    "options": {
+      "shading": "medium shading",
+      "detail": "medium detail",
+      "view": "high top-down",
+      "outline": "lineless"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "art/explorations/textured-grounds-2026-10/fragments/style.txt + art/explorations/textured-grounds-2026-10/fragments/style.negative.txt",
+        "text": "Style: hand-painted pixel art terrain texture for the adventure map of a classic 1990s fantasy strategy game: rich and soft, many close tones of the same few hues, gentle shading, no outlines.",
+        "negative": "photorealism, blur, text, letters, numbers, logo, UI, frame, black outlines, thick outlines, cartoon outlines, neon, oversaturated"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-top-down.txt",
+        "text": "Camera: straight top-down view of flat ground filling the whole canvas edge to edge, no perspective, no horizon, no lighting gradient."
+      },
+      {
+        "layer": "class",
+        "source": "art/explorations/textured-grounds-2026-10/fragments/class-terrain.txt + art/explorations/textured-grounds-2026-10/fragments/class-terrain.negative.txt",
+        "text": "Class: one dense ground texture that covers the whole image from edge to edge with the same material everywhere, evenly lit, with no focal object, nothing tall and no large empty flat area. The texture continues past all four edges of the image.",
+        "negative": "border, frame, vignette, dark corners, light spot, lighting gradient, perspective, horizon, tile edge, square island, scene, landscape, clearing, single big object, flat empty background"
+      },
+      {
+        "layer": "subject",
+        "source": "art/explorations/textured-grounds-2026-10/subjects.json",
+        "text": "Subject: a jungle floor seen from directly above, filling the whole image: deep green moss and low ground plants in soft uneven patches of lighter and darker green, with many small ferns and broad leaves lying flat all over it and a little olive leaf litter; nothing tall; soft shading."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "",
+        "negative": "trees, bushes, animals, people, path, road, river, water, cliff, wall, fence, buildings, big boulders, mountains, horizon, sky, flowers, tree trunks, palm trees, vines, roots, pink, red, tall plants"
+      }
+    ],
+    "prompt": "Style: hand-painted pixel art terrain texture for the adventure map of a classic 1990s fantasy strategy game: rich and soft, many close tones of the same few hues, gentle shading, no outlines. Camera: straight top-down view of flat ground filling the whole canvas edge to edge, no perspective, no horizon, no lighting gradient. Class: one dense ground texture that covers the whole image from edge to edge with the same material everywhere, evenly lit, with no focal object, nothing tall and no large empty flat area. The texture continues past all four edges of the image. Subject: a jungle floor seen from directly above, filling the whole image: deep green moss and low ground plants in soft uneven patches of lighter and darker green, with many small ferns and broad leaves lying flat all over it and a little olive leaf litter; nothing tall; soft shading.",
+    "negativePrompt": "photorealism, blur, text, letters, numbers, logo, UI, frame, black outlines, thick outlines, cartoon outlines, neon, oversaturated, border, vignette, dark corners, light spot, lighting gradient, perspective, horizon, tile edge, square island, scene, landscape, clearing, single big object, flat empty background, trees, bushes, animals, people, path, road, river, water, cliff, wall, fence, buildings, big boulders, mountains, sky, flowers, tree trunks, palm trees, vines, roots, pink, red, tall plants",
+    "description": "Style: hand-painted pixel art terrain texture for the adventure map of a classic 1990s fantasy strategy game: rich and soft, many close tones of the same few hues, gentle shading, no outlines. Camera: straight top-down view of flat ground filling the whole canvas edge to edge, no perspective, no horizon, no lighting gradient. Class: one dense ground texture that covers the whole image from edge to edge with the same material everywhere, evenly lit, with no focal object, nothing tall and no large empty flat area. The texture continues past all four edges of the image. Subject: a jungle floor seen from directly above, filling the whole image: deep green moss and low ground plants in soft uneven patches of lighter and darker green, with many small ferns and broad leaves lying flat all over it and a little olive leaf litter; nothing tall; soft shading. Must not include: photorealism, blur, text, letters, numbers, logo, UI, frame, black outlines, thick outlines, cartoon outlines, neon, oversaturated, border, vignette, dark corners, light spot, lighting gradient, perspective, horizon, tile edge, square island, scene, landscape, clearing, single big object, flat empty background, trees, bushes, animals, people, path, road, river, water, cliff, wall, fence, buildings, big boulders, mountains, sky, flowers, tree trunks, palm trees, vines, roots, pink, red, tall plants.",
+    "colorImage": {
+      "path": "scripts/art/chibi/palettes/textured-dinosaur-jungle-a.png",
+      "sha256": "f7b01b4b9ee0ea2a55bf06fe98598c9894432bd5769ea14c9f8d3d01d1248405"
+    }
+  }
+}

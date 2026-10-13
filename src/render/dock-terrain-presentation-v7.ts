@@ -10,6 +10,7 @@ import {
 import { FACTION_FOREST_ART_SETS_V7 } from "../assets/faction-forest-pieces-manifest";
 import {
   FACTION_GRASS_TILES_V7,
+  NEUTRAL_GROUND_TILE_V7,
   factionGrassSwatchUrlV7,
 } from "../assets/faction-grass-manifest";
 import {
@@ -79,12 +80,21 @@ const raster = (piece: {
 export function dockTerrainGroundV7(
   request: Pick<DockTerrainRequestV7, "faction" | "snow" | "live">,
 ): readonly GalleryTerrainLayerV7[] {
-  const baked =
+  const own =
     request.live && factionGrassEnabledV7()
       ? FACTION_GRASS_TILES_V7.find(
           (entry) => entry.id === request.faction && entry.toned !== true,
         )
       : undefined;
+  // No faction ground and no territory ground of its own: the default
+  // Grass, a cell of its texture where it has one.
+  const baked =
+    own ??
+    (request.live &&
+    factionGrassEnabledV7() &&
+    territoryGroundV7(request.faction) === null
+      ? NEUTRAL_GROUND_TILE_V7
+      : undefined);
   return [
     baked === undefined
       ? {

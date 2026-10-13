@@ -84,6 +84,16 @@ export const FACTION_GRASS_IDS_V7 = [
 export type FactionGrassIdV7 = (typeof FACTION_GRASS_IDS_V7)[number];
 
 /**
+ * The default Grass as a ground of this module (docs/art/TEXTURED_GROUNDS.md):
+ * where the tiles' list holds an asset of this id, every Grass, Forest and
+ * Mountain cell that has no faction ground draws it over its Grass tile.
+ * It is no faction's and has the lowest rank: it never spills, and every
+ * faction's ground spills over it as over the Grass tile.
+ */
+export const NEUTRAL_GROUND_ID_V7 = "NEUTRAL";
+export type GroundIdV7 = FactionGrassIdV7 | typeof NEUTRAL_GROUND_ID_V7;
+
+/**
  * Grounds whose own cell is drawn by other code. None since bead
  * pulp_wars-2yc.48: until then the Undead ground was the terrain tile
  * itself (`territoryGround`) and only its spill was drawn here. The burnt
@@ -342,7 +352,7 @@ export function factionGrassCellsOfV7(
 // --------------------------------------------------------------------- art
 
 export interface FactionGrassTileAssetV7 {
-  readonly id: FactionGrassIdV7;
+  readonly id: GroundIdV7;
   readonly variant: number;
   readonly url: string;
   /**
@@ -367,12 +377,12 @@ export interface FactionGrassTileAssetV7 {
 export interface FactionGrassArtV7 {
   /** `at` is the cell's place on the map; a textured ground needs it. */
   tile(
-    id: FactionGrassIdV7,
+    id: GroundIdV7,
     variant: number,
     at?: { readonly x: number; readonly y: number },
   ): CanvasImageSource | null;
   spill(
-    id: FactionGrassIdV7,
+    id: GroundIdV7,
     variant: number,
     neighbours: number,
     phase: number,
@@ -397,14 +407,13 @@ export function createFactionGrassArtV7(input: {
   const images = new Map<string, CanvasImageSource>();
   let pending = 0;
   let failed = false;
-  const key = (id: FactionGrassIdV7, variant: number): string =>
-    `${id}:${variant}`;
+  const key = (id: GroundIdV7, variant: number): string => `${id}:${variant}`;
 
   const build = (): FactionGrassArtV7 | null => {
     const pixels = new Map<string, Uint8ClampedArray>();
     const surfaces = new Map<string, CanvasImageSource>();
     const worlds = new Map<
-      FactionGrassIdV7,
+      GroundIdV7,
       { readonly columns: number; readonly rows: number }
     >();
     for (const tile of tiles) {
@@ -453,11 +462,11 @@ export function createFactionGrassArtV7(input: {
     const spills = new Map<string, CanvasImageSource | null>();
     // A cell's variant is one of FACTION_GRASS_CELL_VARIANTS_V7; a ground
     // takes it modulo the number of tiles it has.
-    const counts = new Map<FactionGrassIdV7, number>();
+    const counts = new Map<GroundIdV7, number>();
     for (const tile of tiles)
       counts.set(tile.id, Math.max(counts.get(tile.id) ?? 0, tile.variant + 1));
     const own = (
-      id: FactionGrassIdV7,
+      id: GroundIdV7,
       variant: number,
       at?: { readonly x: number; readonly y: number },
     ): string => {
@@ -545,8 +554,9 @@ export function factionGrassLayersV7(
   cell: FactionGrassCellV7,
 ): CanvasImageSource[] {
   const layers: CanvasImageSource[] = [];
-  const own =
-    cell.own === null ? null : art.tile(cell.own, cell.variant, cell.at);
+  // A cell with no faction ground wears the default one, where there is
+  // one (null where the default Grass is the terrain tile alone).
+  const own = art.tile(cell.own ?? NEUTRAL_GROUND_ID_V7, cell.variant, cell.at);
   if (own !== null) layers.push(own);
   for (const spill of cell.spills) {
     const image = art.spill(
@@ -571,10 +581,33 @@ export function factionGrassGladeLayersV7(
   cells: ReadonlyMap<string, FactionGrassCellV7> | null,
 ): CanvasImageSource[] {
   if (art === null || cells === null) return [];
+  const cell = cellOf(entry, cells);
+  return cell === null || cell.mountain ? [] : factionGrassLayersV7(art, cell);
+}
+
+/**
+ * The cell of a terrain entry: the one the plan's faction grounds give it,
+ * or, for a Grass, Forest or Mountain cell they give nothing, a plain cell
+ * that wears the default ground alone.
+ */
+function cellOf(
+  entry: FactionGrassEntryV7,
+  cells: ReadonlyMap<string, FactionGrassCellV7>,
+): FactionGrassCellV7 | null {
   const cell = cells.get(`${entry.at.x},${entry.at.y}`);
-  return cell === undefined || cell.mountain
-    ? []
-    : factionGrassLayersV7(art, cell);
+  if (cell !== undefined) return cell;
+  if (entry.kind !== "TERRAIN" || !GRASSY.has(entry.artSubject ?? ""))
+    return null;
+  return {
+    at: entry.at,
+    own: null,
+    variant: 0,
+    phase: 0,
+    mountain:
+      entry.artSubject !== "TERRAIN:GRASS" &&
+      entry.artSubject !== "TERRAIN:FOREST",
+    spills: [],
+  };
 }
 
 /**
@@ -591,8 +624,10 @@ export function drawFactionGrassV7(
   underRock: boolean,
 ): void {
   if (art === null || cells === null) return;
-  const cell = cells.get(`${entry.at.x},${entry.at.y}`);
-  if (cell === undefined || cell.mountain !== underRock) return;
+  const cell = cellOf(entry, cells);
+  if (cell === null || cell.mountain !== underRock) return;
+  const layers = factionGrassLayersV7(art, cell);
+  if (layers.length === 0) return;
   const rect = chibiForestRectV7(frame, entry.at, {
     x: 0,
     y: 0,
@@ -605,7 +640,7 @@ export function drawFactionGrassV7(
   context.imageSmoothingEnabled = !isWholeScale(
     chibiMasterScale(frame.camera) * frame.devicePixelRatio,
   );
-  for (const image of factionGrassLayersV7(art, cell))
+  for (const image of layers)
     context.drawImage(image, rect.x, rect.y, rect.width, rect.height);
   context.restore();
 }
