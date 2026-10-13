@@ -5,7 +5,10 @@ import { CHIBI_FOREST_ART_SET_V7 } from "../../src/assets/chibi-forest-pieces-ma
 import { FACTION_FOREST_ART_SETS_V7 } from "../../src/assets/faction-forest-pieces-manifest";
 import { FACTION_FOREST_IDS_V7 } from "../../src/render/canvas/faction-forests-v7";
 import { CHIBI_MOUNTAIN_ART_SET_V7 } from "../../src/assets/chibi-mountain-ranges-manifest";
-import { FACTION_GRASS_TILES_V7 } from "../../src/assets/faction-grass-manifest";
+import {
+  FACTION_GRASS_TILES_V7,
+  factionGrassSwatchUrlV7,
+} from "../../src/assets/faction-grass-manifest";
 import { OFFERED_FACTION_IDS_V7 } from "../../src/engine/index";
 import {
   DEFAULT_GALLERY_FILTERS_V7,
@@ -55,17 +58,23 @@ describe("Gallery terrain presentation", () => {
     // A ground that is not grass has its own name (bead pulp_wars-2yc.48).
     expect(galleryTerrainNameV7("GRASS", "CULT")).toBe("Bog");
     expect(galleryTerrainNameV7("GRASS", "UNDEAD")).toBe("Burnt ground");
-    expect(galleryTerrainNameV7("GRASS", "DWARF")).toBe("Gravel");
+    expect(galleryTerrainNameV7("GRASS", "DWARF")).toBe("Mossy stones");
     expect(galleryTerrainNameV7("GRASS", "CANDY")).toBe("Frosting");
     expect(galleryTerrainNameV7("GRASS", "GOBLIN")).toBe("Savannah");
-    expect(galleryTerrainNameV7("GRASS", "MARTIAN")).toBe("Grass");
+    expect(galleryTerrainNameV7("GRASS", "MARTIAN")).toBe("Regolith");
+    expect(galleryTerrainNameV7("GRASS", "DINOSAUR")).toBe("Grass");
     expect(galleryTerrainNameV7("FOREST", "CULT")).toBe("Forest");
     // Six tiles for a ground made from PixelLab fields, three otherwise.
     expect(galleryTerrainPiecesV7("GRASS", "CULT")).toHaveLength(6);
     expect(galleryTerrainPiecesV7("GRASS", "UNDEAD")).toHaveLength(6);
-    expect(galleryTerrainPiecesV7("GRASS", "DWARF")).toHaveLength(6);
+    // A textured ground shows one cell of its texture, as an 80 x 80 file.
+    const dwarf = galleryTerrainPiecesV7("GRASS", "DWARF");
+    expect(dwarf).toHaveLength(1);
+    expect(JSON.stringify(dwarf)).toContain("chibi-dwarf-grass-1.png");
+    expect(JSON.stringify(dwarf)).not.toContain("world/");
     expect(galleryTerrainPiecesV7("GRASS", "GOBLIN")).toHaveLength(6);
-    expect(galleryTerrainPiecesV7("GRASS", "MARTIAN")).toHaveLength(3);
+    expect(galleryTerrainPiecesV7("GRASS", "MARTIAN")).toHaveLength(1);
+    expect(galleryTerrainPiecesV7("GRASS", "DINOSAUR")).toHaveLength(3);
     expect(
       snow.kind === "OWN" && snow.swatch.layers.map((layer) => layer.kind),
     ).toEqual(["SUBJECT", "SNOW"]);
@@ -73,7 +82,9 @@ describe("Gallery terrain presentation", () => {
       (entry) => entry.toned !== true,
     )) {
       const pieces = galleryTerrainPiecesV7("GRASS", tile.id);
-      expect(pieces.flatMap(galleryTerrainRasterUrlsV7)).toContain(tile.url);
+      expect(pieces.flatMap(galleryTerrainRasterUrlsV7)).toContain(
+        factionGrassSwatchUrlV7(tile),
+      );
     }
   });
 

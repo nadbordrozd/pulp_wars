@@ -223,7 +223,9 @@ export const GROUND_LOOKS: readonly GroundLook[] = [
     faction: "DWARF",
     letter: "A",
     label: "Mine gravel: verdigris stones, copper chips",
-    status: "CHOSEN",
+    // The Dwarf ground from 2026-10-13 until the mossy stones of
+    // docs/art/TEXTURED_GROUNDS.md replaced it.
+    status: "SAMPLE",
     fields: ["dwarf-gravel-a"],
     recipe: {
       // Palette of dwarf-gravel-a: grit, gravel (the field's base), stone,

@@ -27,8 +27,8 @@ export interface TexturedLook {
   readonly letter: string;
   readonly label: string;
   readonly mode: "WORLD" | "TILES";
-  /** Of a faction's looks, the one the board switch draws. */
-  readonly best?: true;
+  /** Of a ground's looks, the one the game draws (scripts/art/faction-grass.ts). */
+  readonly chosen?: true;
   /** The fields' forced palette. */
   readonly from: readonly string[];
   /** The board colour of each palette colour: the value range, compressed. */
@@ -179,9 +179,13 @@ const MARS_ROCKS: NonNullable<TexturedLook["things"]> = {
   ]),
 };
 
+/**
+ * Eight cells a side, where the denser grounds have six: on bare regolith
+ * a boulder that comes back every six cells is seen as a lattice.
+ */
 const MARS_QUILT = {
-  width: 480,
-  height: 480,
+  width: 640,
+  height: 640,
   block: 48,
   overlap: 16,
   seed: 4871,
@@ -200,17 +204,31 @@ const MOSS = [
 
 /**
  * The moss on the board: paler and greyer than the fields' (a grey-green
- * at about 55% luma), so it is neither the default Grass, nor the Dinosaur
+ * at about 53% luma, nine points under the default Grass), so it is neither the default Grass, nor the Dinosaur
  * jungle, nor the olive bog; the stones a warm light grey.
  */
 const MOSS_BOARD = [
-  "#a9ab9f",
-  "#babcb0",
+  "#a2a498",
+  "#b0b2a6",
   "#96998e",
   "#7b8172",
-  "#8c9c74",
-  "#9aa980",
-  "#80906a",
+  "#7d8f66",
+  "#8b9c72",
+  "#71835c",
+];
+
+/**
+ * The cobble bed on the board: stones a mid grey and moss a grey-green, so
+ * the whole sits near 52% luma, ten points under the default Grass.
+ */
+const COBBLE_BOARD = [
+  "#8f9388",
+  "#9da195",
+  "#7f8379",
+  "#6a7062",
+  "#74865a",
+  "#84966a",
+  "#667852",
 ];
 
 /**
@@ -246,21 +264,21 @@ function mossStones(density: number): NonNullable<TexturedLook["things"]> {
         field,
         area: [220, 900],
         box: [40, 40],
-        perCell: 0.3 * density,
+        perCell: 0.36 * density,
         flip: true,
       },
       {
         id: `stone-${field}`,
         field,
         area: [50, 219],
-        perCell: 2.2 * density,
+        perCell: 2.9 * density,
         flip: true,
       },
       {
         id: `cobble-${field}`,
         field,
         area: [14, 49],
-        perCell: 1.6 * density,
+        perCell: 2.2 * density,
         flip: true,
       },
     ]),
@@ -297,7 +315,7 @@ export const TEXTURED_LOOKS: readonly TexturedLook[] = [
     letter: "A",
     label: "Regolith: one 480 px texture sampled by map place",
     mode: "WORLD",
-    best: true,
+    chosen: true,
     from: MARS,
     to: compressed(MARS, 0.75, 1),
     fields: MARS_DUST,
@@ -343,7 +361,7 @@ export const TEXTURED_LOOKS: readonly TexturedLook[] = [
     letter: "A",
     label: "Moss-covered stones: one 480 px texture, stones thick",
     mode: "WORLD",
-    best: true,
+    chosen: true,
     from: MOSS,
     to: MOSS_BOARD,
     fields: MOSS_GROUND,
@@ -382,6 +400,23 @@ export const TEXTURED_LOOKS: readonly TexturedLook[] = [
     tiles: { count: 6, band: 6 },
     things: mossStones(1),
   },
+  {
+    id: "dwarf-cobbles-world",
+    faction: "DWARF",
+    letter: "D",
+    label: "A bed of mossy cobbles, quilted from one field",
+    mode: "WORLD",
+    from: MOSS,
+    to: COBBLE_BOARD,
+    fields: [{ id: "dwarf-cobbles-a", regions: [[44, 4, 86, 124]] }],
+    quilt: {
+      width: 480,
+      height: 480,
+      block: 48,
+      overlap: 16,
+      seed: 4885,
+    },
+  },
   // ------------------------------------------------------------------ Cult
   {
     id: "cult-marsh-world",
@@ -389,7 +424,7 @@ export const TEXTURED_LOOKS: readonly TexturedLook[] = [
     letter: "A",
     label: "Marsh: sedge and peat with winding water, one 480 px texture",
     mode: "WORLD",
-    best: true,
+    chosen: true,
     from: MARSH,
     to: MARSH_BOARD,
     fields: [{ id: "cult-marsh-b", regions: [[0, 0, 160, 160]] }],
@@ -429,8 +464,3 @@ export const TEXTURED_LOOKS: readonly TexturedLook[] = [
     },
   },
 ];
-
-/** The file of a look's texture (`WORLD`) in the game's assets. */
-export function texturedWorldPath(look: TexturedLook): string {
-  return `public/assets/chibi/terrain/faction-grass/world/chibi-${look.id}.png`;
-}

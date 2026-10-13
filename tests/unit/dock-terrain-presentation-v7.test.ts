@@ -4,7 +4,10 @@ import {
   CHIBI_RANGE_MINED_MOUNTAIN_ART_ASSETS_V7,
 } from "../../src/assets/chibi-mountain-ranges-manifest";
 import { FACTION_FOREST_ART_SETS_V7 } from "../../src/assets/faction-forest-pieces-manifest";
-import { FACTION_GRASS_TILES_V7 } from "../../src/assets/faction-grass-manifest";
+import {
+  FACTION_GRASS_TILES_V7,
+  factionGrassSwatchUrlV7,
+} from "../../src/assets/faction-grass-manifest";
 import { FACTION_IDS_V7, type FactionIdV7 } from "../../src/engine/index";
 import { FACTION_FOREST_IDS_V7 } from "../../src/render/canvas/faction-forests-v7";
 import {
@@ -90,7 +93,8 @@ describe("the tile dock's terrain picture", () => {
       if (baked !== undefined)
         expect(ground, faction).toEqual({
           kind: "RASTER",
-          url: baked.url,
+          // A tile's own file; a textured ground's first cell.
+          url: factionGrassSwatchUrlV7(baked),
           width: 80,
           height: 80,
         });

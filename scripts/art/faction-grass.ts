@@ -64,6 +64,9 @@ import {
   type GroundTileRecipe,
 } from "./faction-grounds/derive";
 import { GROUND_LOOKS, type GroundLook } from "./faction-grounds/looks";
+import { texturedFieldPath } from "./textured-grounds/candidates";
+import { texturedGround } from "./textured-grounds/ground";
+import { TEXTURED_LOOKS, type TexturedLook } from "./textured-grounds/looks";
 
 const CELL = 80;
 const TERRAIN = "public/assets/chibi/terrain";
@@ -169,7 +172,7 @@ export type GrassRecipeColours = Pick<
 >;
 
 export interface FactionGrassRecipe {
-  readonly id: Exclude<FactionGrassIdV7, FieldGroundId>;
+  readonly id: Exclude<FactionGrassIdV7, FieldGroundId | WorldGroundId>;
   readonly label: string;
   /**
    * The seed of the motif placement. It was a recipe's place in this list
@@ -220,37 +223,6 @@ export const FACTION_GRASS_RECIPES: readonly FactionGrassRecipe[] = [
       },
     ],
   },
-  {
-    id: "MARTIAN",
-    seed: 3,
-    label: "Red dust: ochre-red ground, dark scrub, teal lichen and stones",
-    base: "#b98c6a",
-    light: "#c9a07e",
-    mid: "#a07556",
-    dark: "#8b6248",
-    motifs: [
-      {
-        kind: "patch",
-        count: [1, 2],
-        radius: [4, 6],
-        fill: "#7fa698",
-        rim: "#67897e",
-        speck: { colour: "#98bcae", share: 14 },
-      },
-      {
-        kind: "pebble",
-        count: [2, 3],
-        top: "#d8bfaa",
-        foot: "#8b6248",
-      },
-      {
-        kind: "patch",
-        count: [1, 1],
-        radius: [5, 7],
-        fill: "#b28462",
-      },
-    ],
-  },
 ];
 
 // ------------------------------------------------- grounds from fields
@@ -259,12 +231,38 @@ export const FACTION_GRASS_RECIPES: readonly FactionGrassRecipe[] = [
 export const FIELD_GROUND_IDS = [
   "CULT",
   "UNDEAD",
-  "DWARF",
   // Bead pulp_wars-2yc.48, second round: the user's picks of the samples.
   "CANDY",
   "GOBLIN",
 ] as const;
 export type FieldGroundId = (typeof FIELD_GROUND_IDS)[number];
+
+// ------------------------------------------------------ textured grounds
+
+/**
+ * The grounds that are one large texture the board samples by a cell's
+ * place on the map (docs/art/TEXTURED_GROUNDS.md): quilted from PixelLab
+ * fields by scripts/art/textured-grounds/ground.ts. The user, 2026-10-13:
+ * "the textured terrain is great. use it."
+ */
+export const WORLD_GROUND_IDS = ["MARTIAN", "DWARF"] as const;
+export type WorldGroundId = (typeof WORLD_GROUND_IDS)[number];
+
+/** The look of each: the one of TEXTURED_LOOKS marked `chosen`. */
+export function worldGroundLook(id: WorldGroundId): TexturedLook {
+  const chosen = TEXTURED_LOOKS.filter(
+    (look) => look.faction === id && look.chosen === true,
+  );
+  const look = chosen[0];
+  if (look === undefined || chosen.length !== 1 || look.mode !== "WORLD")
+    throw new Error(`${id}: exactly one WORLD look must be chosen`);
+  return look;
+}
+
+/** The texture of a textured ground: `columns` x `rows` board cells. */
+export function worldGroundPath(id: WorldGroundId): string {
+  return `${FACTION_GRASS_DIRECTORY}/world/chibi-${id.toLowerCase()}-ground.png`;
+}
 
 /** The look of each, the one of GROUND_LOOKS with the status CHOSEN. */
 export function fieldGroundLook(id: FieldGroundId): GroundLook {
@@ -534,7 +532,27 @@ interface TileRecord {
 }
 
 export interface FactionGrassRecord {
-  readonly schemaVersion: 2;
+  readonly schemaVersion: 3;
+  /** The textured grounds (bead pulp_wars-2yc.48, third round). */
+  readonly worlds: readonly {
+    readonly id: WorldGroundId;
+    readonly look: string;
+    readonly label: string;
+    /** The raw fields of the exploration run, as generated. */
+    readonly fields: readonly {
+      readonly recipe: string;
+      readonly path: string;
+      readonly sha256: string;
+    }[];
+    readonly columns: number;
+    readonly rows: number;
+    readonly texture: TileRecord;
+    /**
+     * The texture's first cell as a tile of its own: what the Gallery, the
+     * tile dock and the forest bake show of the ground.
+     */
+    readonly swatch: TileRecord;
+  }[];
   readonly bead: string;
   /** The grounds composed from PixelLab fields (bead pulp_wars-2yc.48). */
   readonly grounds: readonly {
@@ -635,13 +653,63 @@ export async function deriveFactionGrass(root: string): Promise<{
       tiles,
     });
   }
+  const worlds: FactionGrassRecord["worlds"][number][] = [];
+  for (const id of WORLD_GROUND_IDS) {
+    const look = worldGroundLook(id);
+    const fields: FactionGrassRecord["worlds"][number]["fields"][number][] = [];
+    for (const recipeId of new Set(
+      [...look.fields, ...(look.things?.fields ?? [])].map((field) => field.id),
+    )) {
+      const file = texturedFieldPath(recipeId);
+      fields.push({
+        recipe: recipeId,
+        path: file,
+        sha256: sha256(await readFile(path.join(root, file))),
+      });
+    }
+    const { world } = await texturedGround(root, look);
+    if (world === undefined) throw new Error(`${id}: no texture`);
+    const swatch: RgbaRaster = {
+      width: CELL,
+      height: CELL,
+      data: new Uint8Array(CELL * CELL * 4),
+    };
+    for (let y = 0; y < CELL; y += 1)
+      swatch.data.set(
+        world.data.subarray(y * world.width * 4, (y * world.width + CELL) * 4),
+        y * CELL * 4,
+      );
+    const record = async (
+      file: string,
+      raster: RgbaRaster,
+    ): Promise<TileRecord> => {
+      const bytes = await encodePng(raster);
+      files.set(file, bytes);
+      return {
+        path: file,
+        sha256: sha256(bytes),
+        pixelSha256: pixelSha256(raster),
+      };
+    };
+    worlds.push({
+      id,
+      look: look.id,
+      label: look.label,
+      fields,
+      columns: world.width / CELL,
+      rows: world.height / CELL,
+      texture: await record(worldGroundPath(id), world),
+      swatch: await record(factionGrassTilePath(id, 0), swatch),
+    });
+  }
   return {
     record: {
-      schemaVersion: 2,
+      schemaVersion: 3,
       bead: "pulp_wars-2o7.4",
       sources,
       recipes,
       grounds,
+      worlds,
     },
     files,
   };
@@ -730,6 +798,22 @@ async function grounds(root: string): Promise<Ground[]> {
         ),
       ),
     });
+  // A textured ground as its cells (for `stats`; a sheet lays them by the
+  // tiles' hash, which is not how the board lays a texture).
+  for (const id of WORLD_GROUND_IDS) {
+    const world = await read(worldGroundPath(id));
+    const tiles: Uint8ClampedArray[] = [];
+    for (let cy = 0; cy < world.height / CELL; cy += 1)
+      for (let cx = 0; cx < world.width / CELL; cx += 1) {
+        const tile = new Uint8ClampedArray(CELL * CELL * 4);
+        for (let y = 0; y < CELL; y += 1) {
+          const from = ((cy * CELL + y) * world.width + cx * CELL) * 4;
+          tile.set(world.data.subarray(from, from + CELL * 4), y * CELL * 4);
+        }
+        tiles.push(tile);
+      }
+    list.push({ label: id, tiles });
+  }
   return list;
 }
 
@@ -836,7 +920,9 @@ async function main(): Promise<void> {
   const [command = "check", ...rest] = process.argv.slice(2);
   if (command === "bake") {
     const { record, files } = await deriveFactionGrass(root);
-    await mkdir(path.join(root, FACTION_GRASS_DIRECTORY), { recursive: true });
+    await mkdir(path.join(root, FACTION_GRASS_DIRECTORY, "world"), {
+      recursive: true,
+    });
     for (const [file, bytes] of files) {
       await writeFile(path.join(root, file), bytes);
       console.log(`wrote ${file}`);

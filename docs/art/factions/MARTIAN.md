@@ -654,3 +654,26 @@ Record: [faction buildings, section 14](../FACTION_BUILDINGS.md#14-a-market-per-
 The seven achievement Monuments and the faction obelisk in Martian materials. Silver-white chrome, gunmetal and hot magenta lights (`chibi-martian-monument-<achievement>`): the Explorer a chrome needle with a magenta compass rose and a telescope; the Engineer a gunmetal pillar under a chrome cogwheel; the Muster a chrome pylon with shields under horn loudspeakers; the Conqueror a chrome arch with a magenta-lit wreath and crossed ray guns; the Land Baron a gunmetal block with a saucer shield and a chrome crown; the Sea Dog a chrome column with a gunmetal anchor and cable (no wheel); the Slayer a chrome sword with a glass space helmet. **Obelisk** (`chibi-martian-monument`): a chrome needle spire like a rocket antenna on three gunmetal fins, with a chrome ring and a hot magenta tip light (`obelisk-a`, bead `pulp_wars-eu3r.10`). Art only: the board still draws the Human (achievement) Monument or the shared obelisk until bead `pulp_wars-eu3r.3` wires the skin rule.
 
 Record: [faction buildings, section 15](../FACTION_BUILDINGS.md#15-faction-monuments-bead-pulp_wars-eu3r2).
+
+## Ground (bead `pulp_wars-2yc.48`)
+
+The user, 2026-10-12: "for martians we can make it look more like mars",
+and of the first samples, 2026-10-13: "the martian texture is half assed.
+I'd do more varied (but still discrete!) rocks", then of the textured
+sample: "the textured terrain is great. use it."
+
+The Martians' land is **Mars regolith**: speckled rust dust, base
+`#b56c46`, with shaded rocks strewn over it, about one rock, one and a half
+stones and a fifth of a boulder a cell, each whole and apart. It is one
+texture of 640 x 640 px (eight cells a side) the board samples by a cell's
+place on the map, quilted from the dust of two PixelLab fields with the
+rocks of six ([textured grounds](../TEXTURED_GROUNDS.md)). It supersedes
+the red dust (an ochre `#b98c6a` with teal lichen and pale stones): the
+regolith is redder and darker (49% luma against 58%), and the chrome and
+magenta units stand off it more. The fungal wood's foliage is lifted toward
+it.
+
+- **Weak spots.** Most rocks are rounded: three fields asked for shards and
+  slabs gave round rocks again (the last, `martian-rocks-c`, a pit of
+  them). No crater and no ripple came out of any field. The dust is one
+  speckle from edge to edge.

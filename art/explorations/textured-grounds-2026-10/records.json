@@ -154,6 +154,158 @@
       "completedAt": "2026-10-13T17:20:31.235Z",
       "usageUsd": 0.006254995610978868
     },
+    "dwarf-cobbles-a": {
+      "id": "dwarf-cobbles-a",
+      "asset": "chibi-textured-dwarf-cobbles-a",
+      "jobId": "sync-1ea0dde2-6395-4e62-956c-40a68b95cb76",
+      "request": {
+        "endpoint": "create-image-pixflux",
+        "model": "create-image-pixflux",
+        "batch": "textured-grounds",
+        "asset": "chibi-textured-dwarf-cobbles-a",
+        "subject": "TERRAIN:GRASS",
+        "faction": "TEST-TEXTURED-GROUNDS",
+        "recipeClass": "terrain",
+        "requestSize": {
+          "width": 160,
+          "height": 160
+        },
+        "seed": 48731,
+        "noBackground": false,
+        "options": {
+          "shading": "medium shading",
+          "detail": "medium detail",
+          "view": "high top-down",
+          "outline": "lineless"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "art/explorations/textured-grounds-2026-10/fragments/style.txt + art/explorations/textured-grounds-2026-10/fragments/style.negative.txt",
+            "text": "Style: hand-painted pixel art terrain texture for the adventure map of a classic 1990s fantasy strategy game: rich and soft, many close tones of the same few hues, gentle shading, no outlines.",
+            "negative": "photorealism, blur, text, letters, numbers, logo, UI, frame, black outlines, thick outlines, cartoon outlines, neon, oversaturated"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-top-down.txt",
+            "text": "Camera: straight top-down view of flat ground filling the whole canvas edge to edge, no perspective, no horizon, no lighting gradient."
+          },
+          {
+            "layer": "class",
+            "source": "art/explorations/textured-grounds-2026-10/fragments/class-terrain.txt + art/explorations/textured-grounds-2026-10/fragments/class-terrain.negative.txt",
+            "text": "Class: one dense ground texture that covers the whole image from edge to edge with the same material everywhere, evenly lit, with no focal object, nothing tall and no large empty flat area. The texture continues past all four edges of the image.",
+            "negative": "border, frame, vignette, dark corners, light spot, lighting gradient, perspective, horizon, tile edge, square island, scene, landscape, clearing, single big object, flat empty background"
+          },
+          {
+            "layer": "subject",
+            "source": "art/explorations/textured-grounds-2026-10/subjects.json",
+            "text": "Subject: a cobblestone ground texture seen from directly above, covering the entire image from edge to edge: irregular rounded grey cobblestones of many different sizes fitted closely together like an old cobbled yard, with green moss filling every joint between them and soft patches of moss over some of the stones; soft shading, lit from one side."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "",
+            "negative": "trees, bushes, plants, grass, animals, people, path, road, river, water, cliff, wall, fence, buildings, big boulders, mountains, horizon, sky, bricks, regular grid, rows, flowers, mushrooms, snow, identical stones, wall, border, frame, lawn, garden, large rock, cliff, stream, river, path, banks"
+          }
+        ],
+        "prompt": "Style: hand-painted pixel art terrain texture for the adventure map of a classic 1990s fantasy strategy game: rich and soft, many close tones of the same few hues, gentle shading, no outlines. Camera: straight top-down view of flat ground filling the whole canvas edge to edge, no perspective, no horizon, no lighting gradient. Class: one dense ground texture that covers the whole image from edge to edge with the same material everywhere, evenly lit, with no focal object, nothing tall and no large empty flat area. The texture continues past all four edges of the image. Subject: a cobblestone ground texture seen from directly above, covering the entire image from edge to edge: irregular rounded grey cobblestones of many different sizes fitted closely together like an old cobbled yard, with green moss filling every joint between them and soft patches of moss over some of the stones; soft shading, lit from one side.",
+        "negativePrompt": "photorealism, blur, text, letters, numbers, logo, UI, frame, black outlines, thick outlines, cartoon outlines, neon, oversaturated, border, vignette, dark corners, light spot, lighting gradient, perspective, horizon, tile edge, square island, scene, landscape, clearing, single big object, flat empty background, trees, bushes, plants, grass, animals, people, path, road, river, water, cliff, wall, fence, buildings, big boulders, mountains, sky, bricks, regular grid, rows, flowers, mushrooms, snow, identical stones, lawn, garden, large rock, stream, banks",
+        "description": "Style: hand-painted pixel art terrain texture for the adventure map of a classic 1990s fantasy strategy game: rich and soft, many close tones of the same few hues, gentle shading, no outlines. Camera: straight top-down view of flat ground filling the whole canvas edge to edge, no perspective, no horizon, no lighting gradient. Class: one dense ground texture that covers the whole image from edge to edge with the same material everywhere, evenly lit, with no focal object, nothing tall and no large empty flat area. The texture continues past all four edges of the image. Subject: a cobblestone ground texture seen from directly above, covering the entire image from edge to edge: irregular rounded grey cobblestones of many different sizes fitted closely together like an old cobbled yard, with green moss filling every joint between them and soft patches of moss over some of the stones; soft shading, lit from one side. Must not include: photorealism, blur, text, letters, numbers, logo, UI, frame, black outlines, thick outlines, cartoon outlines, neon, oversaturated, border, vignette, dark corners, light spot, lighting gradient, perspective, horizon, tile edge, square island, scene, landscape, clearing, single big object, flat empty background, trees, bushes, plants, grass, animals, people, path, road, river, water, cliff, wall, fence, buildings, big boulders, mountains, sky, bricks, regular grid, rows, flowers, mushrooms, snow, identical stones, lawn, garden, large rock, stream, banks.",
+        "colorImage": {
+          "path": "scripts/art/chibi/palettes/textured-dwarf-cobbles-a.png",
+          "sha256": "dc11810a380059c3d795353c3062ff09fcbd002b5dbdacbbcc2b26c6feeeffed"
+        }
+      },
+      "submittedAt": "2026-10-13T21:19:46.102Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 160,
+        "height": 160
+      },
+      "rawSheet": "art/explorations/textured-grounds-2026-10/raw/dwarf-cobbles-a.png",
+      "rawSheetSha256": "ef19512c3b25f80338b97c9bae0a248bb97593917265cbef8216ce0d4e5bb10a",
+      "completedAt": "2026-10-13T21:20:02.311Z",
+      "usageUsd": 0.0061509009467230905
+    },
+    "dwarf-cobbles-b": {
+      "id": "dwarf-cobbles-b",
+      "asset": "chibi-textured-dwarf-cobbles-b",
+      "jobId": "sync-69e12ed4-6e51-4af2-9f6d-dab9c3a07132",
+      "request": {
+        "endpoint": "create-image-pixflux",
+        "model": "create-image-pixflux",
+        "batch": "textured-grounds",
+        "asset": "chibi-textured-dwarf-cobbles-b",
+        "subject": "TERRAIN:GRASS",
+        "faction": "TEST-TEXTURED-GROUNDS",
+        "recipeClass": "terrain",
+        "requestSize": {
+          "width": 160,
+          "height": 160
+        },
+        "seed": 48732,
+        "noBackground": false,
+        "options": {
+          "shading": "medium shading",
+          "detail": "medium detail",
+          "view": "high top-down",
+          "outline": "lineless"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "art/explorations/textured-grounds-2026-10/fragments/style.txt + art/explorations/textured-grounds-2026-10/fragments/style.negative.txt",
+            "text": "Style: hand-painted pixel art terrain texture for the adventure map of a classic 1990s fantasy strategy game: rich and soft, many close tones of the same few hues, gentle shading, no outlines.",
+            "negative": "photorealism, blur, text, letters, numbers, logo, UI, frame, black outlines, thick outlines, cartoon outlines, neon, oversaturated"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-top-down.txt",
+            "text": "Camera: straight top-down view of flat ground filling the whole canvas edge to edge, no perspective, no horizon, no lighting gradient."
+          },
+          {
+            "layer": "class",
+            "source": "art/explorations/textured-grounds-2026-10/fragments/class-terrain.txt + art/explorations/textured-grounds-2026-10/fragments/class-terrain.negative.txt",
+            "text": "Class: one dense ground texture that covers the whole image from edge to edge with the same material everywhere, evenly lit, with no focal object, nothing tall and no large empty flat area. The texture continues past all four edges of the image.",
+            "negative": "border, frame, vignette, dark corners, light spot, lighting gradient, perspective, horizon, tile edge, square island, scene, landscape, clearing, single big object, flat empty background"
+          },
+          {
+            "layer": "subject",
+            "source": "art/explorations/textured-grounds-2026-10/subjects.json",
+            "text": "Subject: an old mossy cobblestone pavement texture seen from directly above, covering the entire image from edge to edge with no gaps: worn round-edged grey stones of different sizes set tightly side by side in an irregular pattern, thick green moss in the joints and growing over a third of the stones; soft shading, lit from one side."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "",
+            "negative": "trees, bushes, plants, grass, animals, people, path, road, river, water, cliff, wall, fence, buildings, big boulders, mountains, horizon, sky, bricks, regular grid, rows, flowers, mushrooms, snow, identical stones, wall, border, frame, lawn, garden, large rock, cliff, stream, river, path, banks"
+          }
+        ],
+        "prompt": "Style: hand-painted pixel art terrain texture for the adventure map of a classic 1990s fantasy strategy game: rich and soft, many close tones of the same few hues, gentle shading, no outlines. Camera: straight top-down view of flat ground filling the whole canvas edge to edge, no perspective, no horizon, no lighting gradient. Class: one dense ground texture that covers the whole image from edge to edge with the same material everywhere, evenly lit, with no focal object, nothing tall and no large empty flat area. The texture continues past all four edges of the image. Subject: an old mossy cobblestone pavement texture seen from directly above, covering the entire image from edge to edge with no gaps: worn round-edged grey stones of different sizes set tightly side by side in an irregular pattern, thick green moss in the joints and growing over a third of the stones; soft shading, lit from one side.",
+        "negativePrompt": "photorealism, blur, text, letters, numbers, logo, UI, frame, black outlines, thick outlines, cartoon outlines, neon, oversaturated, border, vignette, dark corners, light spot, lighting gradient, perspective, horizon, tile edge, square island, scene, landscape, clearing, single big object, flat empty background, trees, bushes, plants, grass, animals, people, path, road, river, water, cliff, wall, fence, buildings, big boulders, mountains, sky, bricks, regular grid, rows, flowers, mushrooms, snow, identical stones, lawn, garden, large rock, stream, banks",
+        "description": "Style: hand-painted pixel art terrain texture for the adventure map of a classic 1990s fantasy strategy game: rich and soft, many close tones of the same few hues, gentle shading, no outlines. Camera: straight top-down view of flat ground filling the whole canvas edge to edge, no perspective, no horizon, no lighting gradient. Class: one dense ground texture that covers the whole image from edge to edge with the same material everywhere, evenly lit, with no focal object, nothing tall and no large empty flat area. The texture continues past all four edges of the image. Subject: an old mossy cobblestone pavement texture seen from directly above, covering the entire image from edge to edge with no gaps: worn round-edged grey stones of different sizes set tightly side by side in an irregular pattern, thick green moss in the joints and growing over a third of the stones; soft shading, lit from one side. Must not include: photorealism, blur, text, letters, numbers, logo, UI, frame, black outlines, thick outlines, cartoon outlines, neon, oversaturated, border, vignette, dark corners, light spot, lighting gradient, perspective, horizon, tile edge, square island, scene, landscape, clearing, single big object, flat empty background, trees, bushes, plants, grass, animals, people, path, road, river, water, cliff, wall, fence, buildings, big boulders, mountains, sky, bricks, regular grid, rows, flowers, mushrooms, snow, identical stones, lawn, garden, large rock, stream, banks.",
+        "colorImage": {
+          "path": "scripts/art/chibi/palettes/textured-dwarf-cobbles-b.png",
+          "sha256": "dc11810a380059c3d795353c3062ff09fcbd002b5dbdacbbcc2b26c6feeeffed"
+        }
+      },
+      "submittedAt": "2026-10-13T21:20:02.316Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 160,
+        "height": 160
+      },
+      "rawSheet": "art/explorations/textured-grounds-2026-10/raw/dwarf-cobbles-b.png",
+      "rawSheetSha256": "dbd6e0a6c1c69e2d9f437bfedd42cdb906acd918eaf48ecbf67a97aa46c0423f",
+      "completedAt": "2026-10-13T21:20:23.099Z",
+      "usageUsd": 0.0067214819060431585,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "A brick road between mossy boulders: a scene, and bricks.",
+        "reviewedAt": "2026-10-13T21:21:25.983Z"
+      }
+    },
     "dwarf-moss-a": {
       "id": "dwarf-moss-a",
       "asset": "chibi-textured-dwarf-moss-a",
@@ -1363,6 +1515,85 @@
       "rawSheetSha256": "241185434835b9f21d3b958f14458ab01ba0817860ee2f51a1f554f97a4fd935",
       "completedAt": "2026-10-13T17:24:27.263Z",
       "usageUsd": 0.006660273657904731
+    },
+    "martian-rocks-c": {
+      "id": "martian-rocks-c",
+      "asset": "chibi-textured-martian-rocks-c",
+      "jobId": "sync-e204e410-4f33-4b9e-8397-34fc50cc3cb9",
+      "request": {
+        "endpoint": "create-image-pixflux",
+        "model": "create-image-pixflux",
+        "batch": "textured-grounds",
+        "asset": "chibi-textured-martian-rocks-c",
+        "subject": "TERRAIN:GRASS",
+        "faction": "TEST-TEXTURED-GROUNDS",
+        "recipeClass": "terrain",
+        "requestSize": {
+          "width": 160,
+          "height": 160
+        },
+        "seed": 48709,
+        "noBackground": false,
+        "options": {
+          "shading": "medium shading",
+          "detail": "medium detail",
+          "view": "high top-down",
+          "outline": "lineless"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "art/explorations/textured-grounds-2026-10/fragments/style.txt + art/explorations/textured-grounds-2026-10/fragments/style.negative.txt",
+            "text": "Style: hand-painted pixel art terrain texture for the adventure map of a classic 1990s fantasy strategy game: rich and soft, many close tones of the same few hues, gentle shading, no outlines.",
+            "negative": "photorealism, blur, text, letters, numbers, logo, UI, frame, black outlines, thick outlines, cartoon outlines, neon, oversaturated"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-top-down.txt",
+            "text": "Camera: straight top-down view of flat ground filling the whole canvas edge to edge, no perspective, no horizon, no lighting gradient."
+          },
+          {
+            "layer": "class",
+            "source": "art/explorations/textured-grounds-2026-10/fragments/class-terrain.txt + art/explorations/textured-grounds-2026-10/fragments/class-terrain.negative.txt",
+            "text": "Class: one dense ground texture that covers the whole image from edge to edge with the same material everywhere, evenly lit, with no focal object, nothing tall and no large empty flat area. The texture continues past all four edges of the image.",
+            "negative": "border, frame, vignette, dark corners, light spot, lighting gradient, perspective, horizon, tile edge, square island, scene, landscape, clearing, single big object, flat empty background"
+          },
+          {
+            "layer": "subject",
+            "source": "art/explorations/textured-grounds-2026-10/subjects.json",
+            "text": "Subject: the flat dusty surface of the planet Mars seen from directly above, one even rust-red dust colour, with about twenty-five separate small rocks spread evenly over the whole image, all of them sharp and angular, none round and none wider than a seventh of the image: jagged splinters, flat square-edged slabs, cracked plates broken in two, wedge-shaped shards, long thin blades of stone, small heaps of sharp rubble; every rock stands well apart from the others, with a lit side and a soft shadow."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "",
+            "negative": "trees, bushes, plants, grass, animals, people, path, road, river, water, cliff, wall, fence, buildings, big boulders, mountains, horizon, sky, crater lake, rover, footprints, green, blue, lava, fire, canyon, cliffs, stripes, furrows, mesa, plateau, large rock, round boulders, pebbles, layered rock"
+          }
+        ],
+        "prompt": "Style: hand-painted pixel art terrain texture for the adventure map of a classic 1990s fantasy strategy game: rich and soft, many close tones of the same few hues, gentle shading, no outlines. Camera: straight top-down view of flat ground filling the whole canvas edge to edge, no perspective, no horizon, no lighting gradient. Class: one dense ground texture that covers the whole image from edge to edge with the same material everywhere, evenly lit, with no focal object, nothing tall and no large empty flat area. The texture continues past all four edges of the image. Subject: the flat dusty surface of the planet Mars seen from directly above, one even rust-red dust colour, with about twenty-five separate small rocks spread evenly over the whole image, all of them sharp and angular, none round and none wider than a seventh of the image: jagged splinters, flat square-edged slabs, cracked plates broken in two, wedge-shaped shards, long thin blades of stone, small heaps of sharp rubble; every rock stands well apart from the others, with a lit side and a soft shadow.",
+        "negativePrompt": "photorealism, blur, text, letters, numbers, logo, UI, frame, black outlines, thick outlines, cartoon outlines, neon, oversaturated, border, vignette, dark corners, light spot, lighting gradient, perspective, horizon, tile edge, square island, scene, landscape, clearing, single big object, flat empty background, trees, bushes, plants, grass, animals, people, path, road, river, water, cliff, wall, fence, buildings, big boulders, mountains, sky, crater lake, rover, footprints, green, blue, lava, fire, canyon, cliffs, stripes, furrows, mesa, plateau, large rock, round boulders, pebbles, layered rock",
+        "description": "Style: hand-painted pixel art terrain texture for the adventure map of a classic 1990s fantasy strategy game: rich and soft, many close tones of the same few hues, gentle shading, no outlines. Camera: straight top-down view of flat ground filling the whole canvas edge to edge, no perspective, no horizon, no lighting gradient. Class: one dense ground texture that covers the whole image from edge to edge with the same material everywhere, evenly lit, with no focal object, nothing tall and no large empty flat area. The texture continues past all four edges of the image. Subject: the flat dusty surface of the planet Mars seen from directly above, one even rust-red dust colour, with about twenty-five separate small rocks spread evenly over the whole image, all of them sharp and angular, none round and none wider than a seventh of the image: jagged splinters, flat square-edged slabs, cracked plates broken in two, wedge-shaped shards, long thin blades of stone, small heaps of sharp rubble; every rock stands well apart from the others, with a lit side and a soft shadow. Must not include: photorealism, blur, text, letters, numbers, logo, UI, frame, black outlines, thick outlines, cartoon outlines, neon, oversaturated, border, vignette, dark corners, light spot, lighting gradient, perspective, horizon, tile edge, square island, scene, landscape, clearing, single big object, flat empty background, trees, bushes, plants, grass, animals, people, path, road, river, water, cliff, wall, fence, buildings, big boulders, mountains, sky, crater lake, rover, footprints, green, blue, lava, fire, canyon, cliffs, stripes, furrows, mesa, plateau, large rock, round boulders, pebbles, layered rock.",
+        "colorImage": {
+          "path": "scripts/art/chibi/palettes/textured-martian-rocks-c.png",
+          "sha256": "b023499d8d6aa6539c5c6fb5d3012f1039500184b447ade2d16f39a467f89aa0"
+        }
+      },
+      "submittedAt": "2026-10-13T21:19:17.711Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 160,
+        "height": 160
+      },
+      "rawSheet": "art/explorations/textured-grounds-2026-10/raw/martian-rocks-c.png",
+      "rawSheetSha256": "01721412990ce78954fda03d65fe9d09f661f80f164a1ee2e59fd51201d067f0",
+      "completedAt": "2026-10-13T21:19:46.100Z",
+      "usageUsd": 0.006582911941740249,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "A square pit framed by flagstones with round rocks in it: a scene, and not one angular rock.",
+        "reviewedAt": "2026-10-13T21:21:25.669Z"
+      }
     }
   },
   "assets": {}

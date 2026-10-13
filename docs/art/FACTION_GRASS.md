@@ -44,21 +44,24 @@ the tiles) and `package.json` (two script names). Each is marked
 
 ## The grounds
 
-| Faction   | Ground                                                                                                                      | Base      | Tiles |
-| --------- | --------------------------------------------------------------------------------------------------------------------------- | --------- | ----- |
-| Humans    | The default Grass.                                                                                                          | `#8ab85c` | 3     |
-| Undead    | Burnt ground (bead `pulp_wars-2yc.48`): warm ash grey, soot patches, burnt twigs and bushes, charred lumps, a few embers.   | `#716a64` | 6     |
-| Goblins   | Savannah (bead `pulp_wars-2yc.48`): pale golden straw, tufts and clumps of dry grass, loose blades.                         | `#d3c176` | 6     |
-| Dinosaurs | Jungle floor: a darker, bluer green with ferns.                                                                             | `#5f9f58` | 3     |
-| Martians  | Red dust: ochre-red ground with teal lichen patches and pale stones.                                                        | `#b98c6a` | 3     |
-| Dwarves   | Mine gravel (bead `pulp_wars-2yc.48`): pale warm grey gravel, grit, stones stained with verdigris, copper chips.            | `#b5ae9c` | 6     |
-| Candy     | Frosting (bead `pulp_wars-2yc.48`): pastel mint frosting, sugar sprinkles in pink, yellow, white and lilac, sugar crystals. | `#a4dabd` | 6     |
-| Ice Folk  | Snow. Every land tile of Ice Folk territory is Snow by rule, so they need no grass of their own.                            | n/a       | n/a   |
-| Cultists  | Peat bog (bead `pulp_wars-2yc.48`): olive peat, small teal puddles, reed tufts, pale glow specks.                           | `#76805a` | 6     |
+| Faction   | Ground                                                                                                                                               | Base      | Tiles                    |
+| --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | ------------------------ |
+| Humans    | The default Grass.                                                                                                                                   | `#8ab85c` | 3                        |
+| Undead    | Burnt ground (bead `pulp_wars-2yc.48`): warm ash grey, soot patches, burnt twigs and bushes, charred lumps, a few embers.                            | `#716a64` | 6                        |
+| Goblins   | Savannah (bead `pulp_wars-2yc.48`): pale golden straw, tufts and clumps of dry grass, loose blades.                                                  | `#d3c176` | 6                        |
+| Dinosaurs | Jungle floor: a darker, bluer green with ferns.                                                                                                      | `#5f9f58` | 3                        |
+| Martians  | Regolith (bead `pulp_wars-2yc.48`, [textured](TEXTURED_GROUNDS.md)): speckled rust dust with shaded rocks of several sizes.                          | `#b56c46` | one texture, 8 x 8 cells |
+| Dwarves   | Moss-covered stones (bead `pulp_wars-2yc.48`, [textured](TEXTURED_GROUNDS.md)): mottled grey-green moss thick with grey stones, moss on top of them. | `#7d8f66` | one texture, 6 x 6 cells |
+| Candy     | Frosting (bead `pulp_wars-2yc.48`): pastel mint frosting, sugar sprinkles in pink, yellow, white and lilac, sugar crystals.                          | `#a4dabd` | 6                        |
+| Ice Folk  | Snow. Every land tile of Ice Folk territory is Snow by rule, so they need no grass of their own.                                                     | n/a       | n/a                      |
+| Cultists  | Peat bog (bead `pulp_wars-2yc.48`): olive peat, small teal puddles, reed tufts, pale glow specks.                                                    | `#76805a` | 6                        |
 
-The Martian ground is to be redone; its samples are
-[below](#samples-and-the-users-picks), and a fully textured ground is being
-tried for it and for the Dwarves: [textured grounds](TEXTURED_GROUNDS.md).
+**Two grounds are textures, not tiles**
+([textured grounds](TEXTURED_GROUNDS.md)): the Martian regolith and the
+Dwarf moss-covered stones are each one large texture the board samples by a
+cell's place on the map. The Dwarf mine gravel described further down was
+the Dwarf ground for a day (2026-10-13) and is a sample look now; the
+Martian red dust was a recipe of the recoloured grounds.
 
 ## Grounds from PixelLab fields
 
@@ -184,8 +187,8 @@ cell.
 
 ### What follows the ground
 
-- **Rank.** Palest first: Candy, Goblins, Dwarves, Martians, Dinosaurs,
-  Undead, Cultists.
+- **Rank.** Palest first: Candy, Goblins, Dwarves, Dinosaurs, Martians,
+  Cultists, Undead.
 - **Forests.** Each faction's foliage is lifted toward its ground, so the
   Cult, Undead and Dwarf sets were baked again (72 files), and the Candy
   and Goblin sets with their grounds (49 files); the Undead set's ground is
@@ -242,12 +245,12 @@ until bead `pulp_wars-2yc.48`;
 the Undead ground was the "gloam" (bead `pulp_wars-xdh.2`) and then the
 ashen ground (bead `pulp_wars-2yc.14`, `#7f9a86`). Their tiles are in the
 repository's history. The recipes of the list carry their seed since then,
-so the two grounds left are byte for byte what they were.
+so the ground left, the Dinosaurs', is byte for byte what it was.
 
 ### How the tiles are made
 
 [`scripts/art/faction-grass.ts`](../../scripts/art/faction-grass.ts) derives
-every tile of the Dinosaur and Martian grounds in code from
+every tile of the Dinosaur ground in code from
 the three accepted Grass masters. No PixelLab call was made for these.
 
 ```sh
@@ -282,11 +285,11 @@ source and tile.
 | Default   | 62.4% | 50.0%      | 1.9%        | 2.5%                       |
 | Goblins   | 74.0% | 44.4%      | 2.7%        | 3.0%                       |
 | Dinosaurs | 51.3% | 44.7%      | 2.8%        | 5.2%                       |
-| Martians  | 58.3% | 42.6%      | 2.5%        | 4.9%                       |
+| Martians  | 48.5% | 61.1%      | 3.0%        | 10.8%                      |
 | Candy     | 78.0% | 24.7%      | 1.9%        | 1.2%                       |
 | Cultists  | 47.2% | 29.8%      | 3.6%        | 4.6%                       |
 | Undead    | 41.8% | 11.5%      | 2.0%        | 4.2%                       |
-| Dwarves   | 67.9% | 13.9%      | 2.7%        | 2.1%                       |
+| Dwarves   | 54.1% | 23.9%      | 5.6%        | 41.1%                      |
 
 Every ground is nearly as flat as the default Grass (a luma spread under
 3%; the bog's reeds and puddles make it 3.6%). The Undead ground is the
@@ -306,8 +309,8 @@ improvements and units:
    ground's tile cut to an irregular strip about 10 px wide along the
    shared edge, with a blob at a shared corner and a few loose specks.
 
-The ranks, lowest first: default Grass, Candy, Goblins, Dwarves, Martians,
-Dinosaurs, Undead, Cultists. A ground runs out over every ground below it, so no
+The ranks, lowest first: default Grass, Candy, Goblins, Dwarves, Dinosaurs,
+Martians, Cultists, Undead. A ground runs out over every ground below it, so no
 border between two grounds is a straight line, and the darker land always
 runs into the lighter one. The strip's width is a wave over board pixels
 that repeats every three cells: the strips of two cells meet without a

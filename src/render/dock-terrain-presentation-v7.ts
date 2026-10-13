@@ -8,7 +8,10 @@ import {
   CHIBI_RANGE_MINED_MOUNTAIN_ART_ASSETS_V7,
 } from "../assets/chibi-mountain-ranges-manifest";
 import { FACTION_FOREST_ART_SETS_V7 } from "../assets/faction-forest-pieces-manifest";
-import { FACTION_GRASS_TILES_V7 } from "../assets/faction-grass-manifest";
+import {
+  FACTION_GRASS_TILES_V7,
+  factionGrassSwatchUrlV7,
+} from "../assets/faction-grass-manifest";
 import {
   factionForestIdV7,
   factionForestsEnabledV7,
@@ -92,7 +95,12 @@ export function dockTerrainGroundV7(
           ),
           at: { x: 0, y: 0 },
         }
-      : { kind: "RASTER", url: baked.url, width: 80, height: 80 },
+      : {
+          kind: "RASTER",
+          url: factionGrassSwatchUrlV7(baked),
+          width: 80,
+          height: 80,
+        },
     ...(request.snow ? [{ kind: "SNOW", variant: 0 } as const] : []),
   ];
 }

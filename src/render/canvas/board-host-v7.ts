@@ -209,7 +209,7 @@ import {
   createChibiMassifArtV7,
   type ChibiMassifArtV7,
 } from "./chibi-massif-v7";
-import { factionGrassTilesV7 } from "./textured-grounds-experiment-v7";
+import { FACTION_GRASS_TILES_V7 } from "../../assets/faction-grass-manifest";
 import {
   coastSandEnabledV7,
   createCoastSandArtV7,
@@ -251,7 +251,6 @@ import {
 import {
   createFactionGrassArtV7,
   factionGrassEnabledV7,
-  texturedGroundsEnabledV7,
   type FactionGrassArtV7,
 } from "./faction-grass-v7";
 import {
@@ -735,7 +734,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       this.#factionGrassArt = createFactionGrassArtV7({
         environment: browserChibiRasterEnvironmentV7(documentRoot),
         redraw: () => this.#draw(),
-        tiles: factionGrassTilesV7(texturedGroundsEnabledV7()),
+        tiles: FACTION_GRASS_TILES_V7,
       });
   }
 

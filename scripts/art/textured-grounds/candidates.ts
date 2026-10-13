@@ -145,6 +145,19 @@ export const TEXTURED_CANDIDATES: readonly TexturedCandidate[] = [
     notes: "A second sheet of rock motifs, with craters asked for.",
   },
   {
+    id: "martian-rocks-c",
+    faction: "MARTIAN",
+    label: "Mars rocks at 160 px: angular shards and flat slabs",
+    subject:
+      "Subject: the flat dusty surface of the planet Mars seen from directly above, one even rust-red dust colour, with about twenty-five separate small rocks spread evenly over the whole image, all of them sharp and angular, none round and none wider than a seventh of the image: jagged splinters, flat square-edged slabs, cracked plates broken in two, wedge-shaped shards, long thin blades of stone, small heaps of sharp rubble; every rock stands well apart from the others, with a lit side and a soft shadow.",
+    palette: MARS,
+    negative: `${NOTHING_TALL}, crater lake, rover, footprints, green, blue, lava, fire, canyon, cliffs, stripes, furrows, mesa, plateau, large rock, round boulders, pebbles, layered rock`,
+    seed: 48709,
+    size: 160,
+    notes:
+      "The user: 'more varied (but still discrete!) rocks'. The rocks of the six fields are mostly round; angular ones asked for by name.",
+  },
+  {
     id: "dwarf-moss-c",
     faction: "DWARF",
     label: "Moss-covered stones at 160 px",
@@ -269,6 +282,31 @@ export const TEXTURED_CANDIDATES: readonly TexturedCandidate[] = [
     seed: 48720,
     size: 160,
     notes: "A second sheet of stone motifs, smaller and more.",
+  },
+  {
+    id: "dwarf-cobbles-a",
+    faction: "DWARF",
+    label: "Mossy cobbles at 160 px: a cobblestone texture",
+    subject:
+      "Subject: a cobblestone ground texture seen from directly above, covering the entire image from edge to edge: irregular rounded grey cobblestones of many different sizes fitted closely together like an old cobbled yard, with green moss filling every joint between them and soft patches of moss over some of the stones; soft shading, lit from one side.",
+    palette: MOSS,
+    negative: `${NOTHING_TALL}, bricks, regular grid, rows, flowers, mushrooms, snow, identical stones, wall, border, frame, lawn, garden, large rock, cliff, stream, river, path, banks`,
+    seed: 48731,
+    size: 160,
+    notes:
+      "The user: 'moss covered stones'. A bed of stones came back a stream five times; 'cobblestone texture' is a thing Pixflux may know as a surface.",
+  },
+  {
+    id: "dwarf-cobbles-b",
+    faction: "DWARF",
+    label: "Mossy cobbles at 160 px: a second texture",
+    subject:
+      "Subject: an old mossy cobblestone pavement texture seen from directly above, covering the entire image from edge to edge with no gaps: worn round-edged grey stones of different sizes set tightly side by side in an irregular pattern, thick green moss in the joints and growing over a third of the stones; soft shading, lit from one side.",
+    palette: MOSS,
+    negative: `${NOTHING_TALL}, bricks, regular grid, rows, flowers, mushrooms, snow, identical stones, wall, border, frame, lawn, garden, large rock, cliff, stream, river, path, banks`,
+    seed: 48732,
+    size: 160,
+    notes: "A second cobble texture, other wording.",
   },
   {
     id: "cult-marsh-a",

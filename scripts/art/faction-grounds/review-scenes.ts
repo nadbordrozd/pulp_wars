@@ -241,15 +241,13 @@ const PHONE = [390, 844] as const;
 /** Where unit `1` stands on the 1440 x 900 page, one zoom step in. */
 const SELECT = [600, 500] as const;
 
-export const REVIEW_SHOTS: readonly LookSwitchShot[] = (
+const GROUND_SHOTS: readonly LookSwitchShot[] = (
   [
     ["cult", "sceneCultGround"],
     ["undead", "sceneUndeadGround"],
     ["dwarf", "sceneDwarfGround"],
     ["candy", "sceneCandyGround"],
     ["goblin", "sceneGoblinGround"],
-    // The Martian ground is unchanged; the scene is for the textured-grounds
-    // experiment (SWITCH_PARAMETER=textured-grounds SWITCH_AFTER_VALUE=1).
     ["martian", "sceneMartianGround"],
   ] as const
 ).flatMap(([name, scene]): LookSwitchShot[] => [
@@ -265,3 +263,24 @@ export const REVIEW_SHOTS: readonly LookSwitchShot[] = (
   },
   { name: `${name}-phone`, scene, zoomIn: 0, size: PHONE },
 ]);
+
+/**
+ * A whole 16 x 16 map as one faction's land, on a page tall enough to show
+ * it: whether a textured ground's period shows on a large territory.
+ */
+export const FIELD_SHOTS: readonly LookSwitchShot[] = (
+  [
+    ["martian", "sceneMartianField"],
+    ["dwarf", "sceneDwarfField"],
+  ] as const
+).map(([name, scene]) => ({
+  name: `${name}-field`,
+  scene,
+  zoomIn: 0 as const,
+  size: [1440, 1500] as const,
+}));
+
+export const REVIEW_SHOTS: readonly LookSwitchShot[] = [
+  ...GROUND_SHOTS,
+  ...FIELD_SHOTS,
+];

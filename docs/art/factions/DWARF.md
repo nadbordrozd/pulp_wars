@@ -639,7 +639,30 @@ The seven achievement Monuments and the faction obelisk in Dwarf materials. Warm
 
 Record: [faction buildings, section 15](../FACTION_BUILDINGS.md#15-faction-monuments-bead-pulp_wars-eu3r2).
 
-## Ground (bead `pulp_wars-2yc.48`)
+## Ground: moss-covered stones (bead `pulp_wars-2yc.48`)
+
+The user, 2026-10-13: "Dwarfs is pretty hard to understand too (mine
+gravel? no one would guess that). [...] for dwarves let's try 'moss covered
+stones' as a direction", and of the textured sample: "the textured terrain
+is great. use it."
+
+The Dwarves' land is **moss-covered stones**: a mottled grey-green moss,
+base `#7d8f66`, thick with grey stones of several sizes (about three stones,
+two cobbles and a third of a boulder a cell), the moss showing on top of
+them. One texture of 480 x 480 px (six cells a side) the board samples by a
+cell's place on the map: the moss quilted from the inside of one PixelLab
+field, the stones cut from three
+([textured grounds](../TEXTURED_GROUNDS.md)). It is 54% luma, eight points
+under the default Grass and greyer; the Mountain rock has no green.
+
+- **A bed of cobbles was tried** (`dwarf-cobbles-a`, look
+  `dwarf-cobbles-world`): the one field of packed cobbles Pixflux gave,
+  quilted, is as even as scale mail, and the strewn stones stayed.
+- **Weak spot.** It is stones in moss more than a bed of mossy cobbles, and
+  the moss is a dither. Beside the Cult bog both are greyish greens of near
+  value; the stones tell them apart.
+
+## The mine gravel, superseded (bead `pulp_wars-2yc.48`)
 
 The user, 2026-10-12: "dwarf grass is so so."
 

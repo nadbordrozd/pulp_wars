@@ -1,7 +1,13 @@
-# Textured grounds (experiment)
+# Textured grounds
 
-**Bead:** `pulp_wars-2yc.48`, second round. **Status:** samples for review.
-Nothing here is drawn unless the game is opened with `?textured-grounds=1`.
+**Bead:** `pulp_wars-2yc.48`. **Status:** in use. The user, 2026-10-13, on
+the samples of this page: "the textured terrain is great. use it. make a
+note to investigate the tileset endpoint at pixellab but this is already
+acceptable." (The tileset endpoint is bead `pulp_wars-2yc.50`.)
+
+**Textured now:** the Martian regolith and the Dwarf moss-covered stones
+(stage 1). The other grounds are tiles until each has a texture that is
+clearly better than what is published ([faction grass](FACTION_GRASS.md)).
 
 The user, 2026-10-13, on the grounds of
 [faction grass](FACTION_GRASS.md): "My main concern is the texture. the
@@ -86,11 +92,11 @@ ground, with three units, the faction's wood, a city, two resources, a
 Road, a border line and two move highlights (the last three drawn by the
 sheet, like the board's).
 
-| Faction  | Looks                                                                                                | Fields                                                                                                                                                                            |
-| -------- | ---------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Martians | **A** regolith, WORLD (best); B the same at the fields' own contrast; C six tiles with a shared band | dust: `martian-regolith-e`, `-f`; rocks: those and `martian-regolith-c`, `-d`, `martian-rocks-a`, `-b`. About one rock, one and a half stones and a fifth of a boulder a cell.    |
-| Dwarves  | **A** moss-covered stones, WORLD (best); B the same moss with half the stones; C tiles               | moss: the inside of `dwarf-moss-c`; stones: `dwarf-stones-a`, `-b`, `dwarf-moss-c`, with every green of the palette as ground, so the moss of the ground shows on top of a stone. |
-| Cultists | **A** marsh with water, WORLD (preview); B sedge and peat only                                       | `cult-marsh-b`, quilted whole (A) or from its banks only (B). No strewn layer.                                                                                                    |
+| Faction  | Looks                                                                                                                                                                             | Fields                                                                                                                                                                            |
+| -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Martians | **A** regolith, WORLD (chosen); B the same at the fields' own contrast; C six tiles with a shared band                                                                            | dust: `martian-regolith-e`, `-f`; rocks: those and `martian-regolith-c`, `-d`, `martian-rocks-a`, `-b`. About one rock, one and a half stones and a fifth of a boulder a cell.    |
+| Dwarves  | **A** moss-covered stones, WORLD (chosen); B the same moss with half the stones; C tiles; D a bed of cobbles quilted from `dwarf-cobbles-a`, which came out as even as scale mail | moss: the inside of `dwarf-moss-c`; stones: `dwarf-stones-a`, `-b`, `dwarf-moss-c`, with every green of the palette as ground, so the moss of the ground shows on top of a stone. |
+| Cultists | **A** marsh with water, WORLD (preview); B sedge and peat only                                                                                                                    | `cult-marsh-b`, quilted whole (A) or from its banks only (B). No strewn layer.                                                                                                    |
 
 Rejected fields and why are in the run's `records.json` (eight of eighteen:
 every "bed of stones" asked of Pixflux came back a scene with a stream, a
@@ -123,32 +129,49 @@ sheets of separate stones on plain moss).
 
 ## On the board
 
-`?textured-grounds=1` (`TEXTURED_GROUNDS_PARAMETER_V7`; the constant
-`TEXTURED_GROUNDS_ENABLED_V7` is false) replaces the tiles of the grounds
-that have a texture with it
-([`textured-grounds-experiment-v7.ts`](../../src/render/canvas/textured-grounds-experiment-v7.ts)).
-The textures are in `public/assets/chibi/terrain/faction-grass/world/`
-(three files, 30 to 51 kB) and in no asset manifest, so nothing preloads
-them.
+A textured ground is an asset of `FACTION_GRASS_TILES_V7` with `world: {
+columns, rows, swatchUrl }`
+([`faction-grass-manifest.ts`](../../src/assets/faction-grass-manifest.ts)),
+baked by `npm run art:faction-grass -- bake` from the look marked `chosen`
+(`WORLD_GROUND_IDS` of `scripts/art/faction-grass.ts`; `check`, in
+`art:validate`, re-derives it):
 
-- **Cells.** A tile asset with `world: { columns, rows }` is read once and
-  cut into its cells; `art.tile` and `art.spill` take the cell's place and
-  return the cached surface of that part. A ground of tiles ignores the
-  place.
+- `faction-grass/world/chibi-<faction>-ground.png`, the texture;
+- `faction-grass/chibi-<faction>-grass-1.png`, its first cell as a tile of
+  its own (the **swatch**): what the Gallery's Terrain tab, the tile dock
+  and the forest bake show of the ground, each of which wants one 80 x 80
+  file.
+
+- **Cells.** The texture is read once and cut into its cells; `art.tile`
+  and `art.spill` take the cell's place and return the cached surface of
+  that part. A ground of tiles ignores the place.
 - **Borders, spill and fog.** Unchanged: a ground still spills into a
   paler neighbour through the same irregular mask, now filled with the
   texture at the neighbour's own place, so the texture runs on under the
   spill; the fog and its fringe are drawn over the terrain as before.
-- **Cost.** The same draw calls: one image a cell, cached. 36 surfaces a
-  ground (three megabytes of pixels) where tiles have three or six.
-  Measured in the real game over a 16 x 16 map of one faction's land,
-  400 redraws, three rounds
+- **Period.** Six cells a side (480 px), and eight (640 px) for the
+  regolith. On a bare 16 x 16 territory of regolith a boulder that came
+  back every six cells was seen as a lattice of the same boulder; at eight
+  it comes back twice a side and is not picked out. The moss-covered
+  stones are dense and alike, and no repeat is seen at six. A second, slow
+  layer of tone was not tried: the period, not the tone, was what showed.
+- **Memory.** A cell is 80 x 80 x 4 bytes, 25.6 kB, held twice (the pixels
+  a spill is cut from, and the surface drawn): 1.8 MB for a ground of
+  6 x 6 cells and 3.3 MB for one of 8 x 8, where a ground of six tiles
+  holds 0.3 MB. The board loads every ground whoever plays, so nine
+  textured grounds at six cells would be about 17 MB, at eight about 30 MB.
+  The files themselves are 52 and 53 kB.
+- **Draw time.** The same draw calls: one cached image a cell. Measured in
+  the real game over a 16 x 16 map of one faction's land, 400 redraws,
+  three rounds, the commit before against this one
   ([`draw-timing.ts`](../../scripts/art/textured-grounds/draw-timing.ts)):
-  Martian 0.66 to 0.77 ms a redraw with tiles and 0.67 to 0.69 ms
-  textured; Dwarf 0.60 to 0.66 ms and 0.63 to 0.66 ms. No difference
+  Martian 0.60 to 0.73 ms a redraw with tiles and 0.59 to 0.63 ms
+  textured; Dwarf 0.60 to 0.61 ms and 0.60 to 0.61 ms. No difference
   outside the noise. (`scripts/benchmark-board-presentation-v7.ts` fails
-  on main as on this branch, "No glow surface for the byte-limit
-  comparison", so it gave no number; its fixture test is green.)
+  on main, "No glow surface for the byte-limit comparison", so it gave no
+  number; its fixture test is green.)
+
+The `?textured-grounds=1` switch of the experiment is gone.
 
 ## Rolling it out
 

@@ -973,8 +973,8 @@
             "path": "public/assets/chibi/forest/martian/chibi-forest-martian-seam-1.png",
             "width": 50,
             "height": 81,
-            "sha256": "6910407341d39781f122bc7aeb14e6a66a45fd934760b9104d4ab993793a7b56",
-            "pixelSha256": "c990b38a1f9023bc93b18f35e317d78239e82a9712b1ae14ba8e18a9f3385ce1"
+            "sha256": "a5d6e96d63413402fed459d1e0743c66860e6129f22241799aaff150d38683cd",
+            "pixelSha256": "12aec3958076c35333a71cfd937c711d365f4f585c3532e5dd3810bf2ee3cbae"
           }
         },
         {
@@ -992,8 +992,8 @@
             "path": "public/assets/chibi/forest/martian/chibi-forest-martian-seam-2.png",
             "width": 67,
             "height": 80,
-            "sha256": "cf7636c3b6f3a9fa0070b7f82b64478e39adafd5f6422c91a3c2b3880952b08e",
-            "pixelSha256": "ac0ecb0fda513afb521c06e586d579f8c2ba1f834a772df453feca764b72a1ab"
+            "sha256": "a9434296f539654a845e6e4ec974eeed3f1c4e9ee844986862698baed1bf65b2",
+            "pixelSha256": "91aaa0a55482976e504c4d93d0e41f0578e8a5768407fa24e4a2ba73dd459269"
           }
         },
         {
@@ -1011,8 +1011,8 @@
             "path": "public/assets/chibi/forest/martian/chibi-forest-martian-seam-3.png",
             "width": 62,
             "height": 80,
-            "sha256": "8375c86ecc90bb793bb4cfcfca4761ab2ad26fbbeeeb58bf1af322838d72c9f9",
-            "pixelSha256": "8f0b3984dfbd457d4eaad97b44fe55b592db9f2f287728755f002b1633dc73d3"
+            "sha256": "122367ef2f71c6dff9e9945ee11d4d3a5d83ee0767bc7982499da723f5691913",
+            "pixelSha256": "6842e478d1f5c6f519e3ef8dfcb7157370d034c20fdddd285b1cf680259d335a"
           }
         }
       ],
@@ -1025,8 +1025,8 @@
           "width": 80,
           "height": 104,
           "seed": 9100,
-          "sha256": "16b64e023664b2f94ab620ae0ec0596234955bd699444d257092bf9463c7d1cf",
-          "pixelSha256": "c656bc83055a9f7f24ae364fbd74c4e15c73e35f7a0035288e4a889b193a9c97"
+          "sha256": "02f324944a956c75e30933f1e8f7e57d2f588c83526d27be7d0a75f07646b3fd",
+          "pixelSha256": "51fce6afd654f41ec7f6dffc7d9296575af6aa243b2c5ace3e5e2624a23a060f"
         },
         {
           "id": "chibi-forest-martian-piece-1x1-b",
@@ -1036,8 +1036,8 @@
           "width": 80,
           "height": 104,
           "seed": 9107,
-          "sha256": "8c054867a1cfd8c4b6e995f9aa4ae9ce1a529ec7d2b966c9197109c723e273e2",
-          "pixelSha256": "1146d05d3fb1bf6b84acd14a0bd65c26116dbc6c54d022019f985302e4df4e47"
+          "sha256": "2996addc66ec9c963cd5fac28a469116d54e58350fb9bca5668548792cdf9209",
+          "pixelSha256": "6000fbdaa9a54c0424e44cbba33e14724949f21fd2c8dd9f692d505ee4cdeadd"
         },
         {
           "id": "chibi-forest-martian-piece-1x1-c",
@@ -1047,8 +1047,8 @@
           "width": 80,
           "height": 104,
           "seed": 9114,
-          "sha256": "ab065aca31027da6f1d4dbc65b1ee14bcacab199f178ad50b8e9b2f9147e358a",
-          "pixelSha256": "47911d8ae0d91180931da29ca36fdeb3326c83bc406cac8012d8816a677ee2ac"
+          "sha256": "eff94e0b29e99b5d56dfe0997b5a82cfa9bd4849b3f432110e3280b957474bf0",
+          "pixelSha256": "06d44db5e78ccbd68828729965419004794824e14bc82b753d07b004e98219bc"
         },
         {
           "id": "chibi-forest-martian-piece-2x1-a",
@@ -1058,8 +1058,8 @@
           "width": 160,
           "height": 104,
           "seed": 9121,
-          "sha256": "dd911c596057514e86d99e1ed384904fe3e30052312d0b87318a070301b3ddb1",
-          "pixelSha256": "4ca3df05ad45caa22d8b83045188b404971eeca5a11f7585f9136803574b0eb7"
+          "sha256": "72e0e04964a79be58512282b4d2ef31ecaafd23fd7ca3993e89bc0627205a83f",
+          "pixelSha256": "937acadfeaaacb8d40bcb00663d52a6b237b8414939d3cc5eece310e0f00ff0c"
         },
         {
           "id": "chibi-forest-martian-piece-2x1-b",
@@ -1069,8 +1069,8 @@
           "width": 160,
           "height": 104,
           "seed": 9128,
-          "sha256": "f56e8585dfb2be6193b44dc706315f6d4a3f04fa1cfd8bcf7962492b5d1ab692",
-          "pixelSha256": "9ce7f3dfdb5c316987732f584352180d8a8d246eba5dec443f2f6d8f2e88cfb0"
+          "sha256": "fe5379e3ba5e103d58e57f3bdec68d392b88e30aadfff845d962a91646434260",
+          "pixelSha256": "4cddb16a1668b211e2f43a4cee2026f2888495365df02bf6d1a4b020c07a70b1"
         },
         {
           "id": "chibi-forest-martian-piece-2x1-c",
@@ -1080,8 +1080,8 @@
           "width": 160,
           "height": 104,
           "seed": 9135,
-          "sha256": "ec7b1b2c78c480636b13c52b32885ee6396d36f63bb8958f1f6f33eb6e3c1c32",
-          "pixelSha256": "16f9d70d1228a0b116a5122d3d0ba5c73dd7b80e025d16ebfc0687823fb3181c"
+          "sha256": "123fc8fad4b2c3c9a42c32247ca437b31f4ca3c86200015456131ce8ce95232e",
+          "pixelSha256": "dadbcd0e59bce8e1d8c909a75ee3f4b30134628a4324a451376ccf0af6ed055a"
         },
         {
           "id": "chibi-forest-martian-piece-1x2-a",
@@ -1091,8 +1091,8 @@
           "width": 80,
           "height": 184,
           "seed": 9142,
-          "sha256": "cb310ac946b7f01d6dd99c896b0f4e76bc5e7ca107f9605cb0b9cbd250b8ef85",
-          "pixelSha256": "519c99cd51a60d567b23174ce20500ba9ca6f8af78f736bf07b5eb37ec51ac3e"
+          "sha256": "86a5f8f05883647c9d668fc9b05e7ecc51be908e9d2b584e39be85e96b5ae756",
+          "pixelSha256": "658873e66866a09e046251be8d9b38650ce3ae99e0fa90667caa908ab6004517"
         },
         {
           "id": "chibi-forest-martian-piece-1x2-b",
@@ -1102,8 +1102,8 @@
           "width": 80,
           "height": 184,
           "seed": 9149,
-          "sha256": "9e843caebba2a86fa5e1759a0502d004276d84bc3c2590d2b93cfd664e73029a",
-          "pixelSha256": "903081310e693cdfc99b8facf639c200312a10812885e8f1ed1761c7a9f750a7"
+          "sha256": "9bb6a0115709f200d4dc228a7ca22dcc44f5768c34c523a7d264caf725c5bf63",
+          "pixelSha256": "13495be921562abf649b6a0225821e064ad18d9a6e6518d0dd1d4051b6ab162d"
         },
         {
           "id": "chibi-forest-martian-piece-1x2-c",
@@ -1113,8 +1113,8 @@
           "width": 80,
           "height": 184,
           "seed": 9156,
-          "sha256": "6f10cd9434871b85a409749ae8358b7b42189eb7c342eeca04e8809c34f0415d",
-          "pixelSha256": "7430f3ce043ecdce4fb7b5684a1808caa56b56cb98c49397162ab085925ae0f5"
+          "sha256": "0aa5106311c224aa9c183bda38d808b518c981b15dd4919f1eb59e781e57a5df",
+          "pixelSha256": "4fa4478a21c7ba6a5dffc7d07b9768c1696c702aed442aceb57524037fc8c8ed"
         },
         {
           "id": "chibi-forest-martian-piece-2x2-a",
@@ -1124,8 +1124,8 @@
           "width": 160,
           "height": 184,
           "seed": 9163,
-          "sha256": "5e70288d0d55c8cd692b6d1e17b38e0703d279562ef3ec558dccb4165fd8b47a",
-          "pixelSha256": "e92678b0d1cb93a6b5aa97e1a1c233b3bb47c11d1f80cd6deaa1f0d84546d1e7"
+          "sha256": "f87e14fb198b612566561e4e0b02564cf1171caa9916fe5eccfeba26653e215c",
+          "pixelSha256": "887276f9b2f9ec50bfb3578ce03e809f8b7df870ace73648e7b4b1c23537a844"
         },
         {
           "id": "chibi-forest-martian-piece-2x2-b",
@@ -1135,8 +1135,8 @@
           "width": 160,
           "height": 184,
           "seed": 9170,
-          "sha256": "2113339b4b0e8fda5dc1759cc67ad90b14ff831b1f3018816d35eff6faa39f43",
-          "pixelSha256": "f576538813b0005f70067fe68b167d5b682427391d6f7e7875c601817ce9a4ba"
+          "sha256": "5cc895d52b04dd5300e23dc8cb8dfdb9acdd38b0dfa335b5abf548453f48876f",
+          "pixelSha256": "77bb34700f2218c7fee3fa42f02e85871acb907e83575e944f8655a5bd8aef81"
         },
         {
           "id": "chibi-forest-martian-piece-2x2-c",
@@ -1146,8 +1146,8 @@
           "width": 160,
           "height": 184,
           "seed": 9177,
-          "sha256": "50f4e253c2d99a7cfed813f2669b19ed9f73488a6c3bf379be19ce7c08e49bcd",
-          "pixelSha256": "919f16587c24cf59f9983d5b4d54f47cac1f8fa619b3bfab9ef3e84438f20b06"
+          "sha256": "a1778a0c002cd3a74fef79669574139f90c8c167041467a8fe3106a7f1d73292",
+          "pixelSha256": "cdb543d5b9b3bc2ab12fbd96781e2e79273320b9f022327a48ed406fd856df4b"
         },
         {
           "id": "chibi-forest-martian-piece-l-nw-a",
@@ -1157,8 +1157,8 @@
           "width": 160,
           "height": 184,
           "seed": 9184,
-          "sha256": "86824a0dee80c00b484abbe9af16f659072ce1ffb2fdf4f0c5bb6059c5826f58",
-          "pixelSha256": "9e5a4e09bf10e49e5237dbea3e8f503f2744d3bf34ede4de4a7e9844c4dcd1cd"
+          "sha256": "eb84b5343a0a1fa50d53eb1ff4390ed1fe55ef5e548c2a74b090d1a3a3a83bbf",
+          "pixelSha256": "cde586f072fb7386149223e136e68ce56df2ee8c114e77bade3d51bed50e570a"
         },
         {
           "id": "chibi-forest-martian-piece-l-nw-b",
@@ -1168,8 +1168,8 @@
           "width": 160,
           "height": 184,
           "seed": 9191,
-          "sha256": "56916041f0b3e6d647e9794952c2617068ff86d337b39d8946450cd3ec38a84a",
-          "pixelSha256": "650fa3041e6a1b7843e08be0ae01d15bec2b9bda3c07fe402c4168cb93d6b4d2"
+          "sha256": "c4cf9d036106ae4a56b006464844e557eec1c5f844ee0c7ed9e73f87e78a9741",
+          "pixelSha256": "a4dc9fb6562bd072e4d10f527c4e7f8933e41e360142ccc63ca1802920899d8e"
         },
         {
           "id": "chibi-forest-martian-piece-l-ne-a",
@@ -1179,8 +1179,8 @@
           "width": 160,
           "height": 184,
           "seed": 9198,
-          "sha256": "0fa5720eadd6d61e64fdc7275254e72cbfdc773622d527fda06ee51ebdba631f",
-          "pixelSha256": "bc5273be84c879a39b265fb1f8383873454e8a784f8b597d705935325c1ecd5b"
+          "sha256": "ffec460cc2108207eb20a7dfbcd85cab13f5f5838baed37b39d68e7e54c49940",
+          "pixelSha256": "6e74e8d25a91767ead68bfc8a38a8666e4fa513bacfc3e00e182255d10e04f68"
         },
         {
           "id": "chibi-forest-martian-piece-l-ne-b",
@@ -1190,8 +1190,8 @@
           "width": 160,
           "height": 184,
           "seed": 9205,
-          "sha256": "a2812317d6db085d2580f4c91d47e847d3250c0e037eb15b3612a286fbc76339",
-          "pixelSha256": "c9c3d84afae28db787d003d0cb5615d3b1d316de63b59d40b4ff5660c9def6ca"
+          "sha256": "9d75d7a5b8ef826269451d740830d9bb0efb8dd32c5c39d90f9860360ffb1522",
+          "pixelSha256": "cd636857085a134a5df7c87cdc3864c964edf321089e58c3725394c260b5ddc3"
         },
         {
           "id": "chibi-forest-martian-piece-l-sw-a",
@@ -1201,8 +1201,8 @@
           "width": 160,
           "height": 184,
           "seed": 9212,
-          "sha256": "63063df25fe32c3847072be2113250bd762da916a566af0b546984c449324b5b",
-          "pixelSha256": "efb714b4e2f8f8f790324ce7c0e1e66fb77f1aaca66d59a3aef68a0abbea4486"
+          "sha256": "1f70f611f97f88843b312996d9b5bd9481c44942c70acc22330a86e52286e78e",
+          "pixelSha256": "37c7045184997d38b484a5a134fc0b01843b6b235dce874ded9d64c0a03204ef"
         },
         {
           "id": "chibi-forest-martian-piece-l-sw-b",
@@ -1212,8 +1212,8 @@
           "width": 160,
           "height": 184,
           "seed": 9219,
-          "sha256": "32fda647e3c8d98211265e916afffa11692c7fdb4b2b7a8c8cdf37ac658e4144",
-          "pixelSha256": "4e4cd1547d5215688af60ddab92e2451f8fbe8895b1e9ea201136ce55f4e4299"
+          "sha256": "cb2b0c945ccc5d7d3f52041e6167928ce9477d4b866ce037d94feb823f904e4b",
+          "pixelSha256": "b60b5abc4dc26573bca6df3df3d30ec747e124fd4eafc81168811a7cf47c3d56"
         },
         {
           "id": "chibi-forest-martian-piece-l-se-a",
@@ -1223,8 +1223,8 @@
           "width": 160,
           "height": 184,
           "seed": 9226,
-          "sha256": "fbe6ae06e01c7d9d4a9204bb2b65396fc63b68708be525cd812054f3088723eb",
-          "pixelSha256": "674894b84c8afd11c0d61ab13b4aed9c64553f0b7d12d2af27ab31f92886fe1e"
+          "sha256": "9687dccd9816365ebe6f5043f9950880920d678f438b11d4d2e6460e908a2342",
+          "pixelSha256": "79dd541a91c1417465cf200dbda385d31e63c478214bfd1d9ad753ef5064eac3"
         },
         {
           "id": "chibi-forest-martian-piece-l-se-b",
@@ -1234,8 +1234,8 @@
           "width": 160,
           "height": 184,
           "seed": 9233,
-          "sha256": "ba2f36ea0bb8514f85439153f4bc7d8bbc121e96b83356c4a943f7616128bf51",
-          "pixelSha256": "5590a2fcbbdf07cc854133a1552b55ceff7e48e459a9f9f38e36b823a79aacd8"
+          "sha256": "6bf19fd42d2096bcee3fb194c46bf77d430c5a97984a42c6fb2cda3e57802764",
+          "pixelSha256": "917ed8bdac07ca1ac3d91f15c6e400ef7ad24f8ea3f4d7c600d2b82fc476b929"
         }
       ]
     },
@@ -1272,8 +1272,8 @@
             "path": "public/assets/chibi/forest/dwarf/chibi-forest-dwarf-seam-1.png",
             "width": 67,
             "height": 83,
-            "sha256": "35ee5620a0509770f998d4081848c2de8c400cabf3b90133da856880acb88300",
-            "pixelSha256": "34fde2c49c92d481d6e8f79f297aee1e9710afa05dab020783a10d1cdd837c80"
+            "sha256": "8b384fe7868f28e06a15f6914b3d91175fab97a1247564ff785a7dd96760b325",
+            "pixelSha256": "3149a3cadab75749f67289203604997ac4fd493c8cf4bb73a83862a01cfec6c3"
           }
         },
         {
@@ -1291,8 +1291,8 @@
             "path": "public/assets/chibi/forest/dwarf/chibi-forest-dwarf-seam-2.png",
             "width": 64,
             "height": 81,
-            "sha256": "ec31de71245b0d23cd34fde2035d08aafa71364cf3f28421e959559b94ed6d07",
-            "pixelSha256": "6a7dd79a06d3073e8564055b02aa6007c4b7796bd441dc9155a9f8512cd45b26"
+            "sha256": "894c572c70ef227fdde2202d22774a490e6f6f20c47e250cc8815c28da10f719",
+            "pixelSha256": "7d242730c9fd001d28729e801f21277eccb649abde6fa82ab3bdd87277ea128d"
           }
         },
         {
@@ -1310,8 +1310,8 @@
             "path": "public/assets/chibi/forest/dwarf/chibi-forest-dwarf-seam-3.png",
             "width": 68,
             "height": 84,
-            "sha256": "784b90e3795aedc2e7413852b490dac094d46fb0d7615c8bc748aa5ce9079351",
-            "pixelSha256": "b6d45284d0e21d14582f45933ce68bc6782dfc639690772740e4e6d6fba085ea"
+            "sha256": "22b0559253214e863069ec64609197103a3b4d8c9a6bb92a2ee946838f72c8d6",
+            "pixelSha256": "29f000f28893495da38dcec4d91f2e4e765afbacb421e74bb734d17a0e492fde"
           }
         }
       ],
@@ -1324,8 +1324,8 @@
           "width": 80,
           "height": 104,
           "seed": 9100,
-          "sha256": "4c8d25be0712355854213817e7e8e17d20771cc2e3f6e9ed9030f2b86dfe0086",
-          "pixelSha256": "f54b2f774a3efc7b4b91ec7a970209f24aedd38297b4958ebf50bf756f8ec3ba"
+          "sha256": "c7b032b4e01db5544bda55248713afd30c190d3914e20885e335e5f79b999960",
+          "pixelSha256": "b425893a468e93901af0d06cae8ef73869d7990e4f9bf2cff270d9ebe28860e2"
         },
         {
           "id": "chibi-forest-dwarf-piece-1x1-b",
@@ -1335,8 +1335,8 @@
           "width": 80,
           "height": 104,
           "seed": 9107,
-          "sha256": "4c8d25be0712355854213817e7e8e17d20771cc2e3f6e9ed9030f2b86dfe0086",
-          "pixelSha256": "f54b2f774a3efc7b4b91ec7a970209f24aedd38297b4958ebf50bf756f8ec3ba"
+          "sha256": "c7b032b4e01db5544bda55248713afd30c190d3914e20885e335e5f79b999960",
+          "pixelSha256": "b425893a468e93901af0d06cae8ef73869d7990e4f9bf2cff270d9ebe28860e2"
         },
         {
           "id": "chibi-forest-dwarf-piece-1x1-c",
@@ -1346,8 +1346,8 @@
           "width": 80,
           "height": 104,
           "seed": 9114,
-          "sha256": "88a555a7b2eb6fa7998c088822a6eae0a555d069abb215231e9ede16cb4341cd",
-          "pixelSha256": "7083bc5531da050a3dd7dee294f3844444f25f8f92f2e2fff15a4eeb1f7e58ab"
+          "sha256": "871f1b3099ff4b7f381840c058ff6584cbde788fa37eb01c03c8868b4e01a74a",
+          "pixelSha256": "137b1f24858e2b2053a4eba65331492727d167e5f7de864e7f28dfd13c81db2f"
         },
         {
           "id": "chibi-forest-dwarf-piece-2x1-a",
@@ -1357,8 +1357,8 @@
           "width": 160,
           "height": 104,
           "seed": 9121,
-          "sha256": "2ab61d1df1ef7a4c1d1a7f9e17549c04d76bcd95d7330579f228e731a9ec27eb",
-          "pixelSha256": "830b95b78fb7387b42334a4a27a9197341ab9f08b12350e6e893a6454fa4259e"
+          "sha256": "2ae2e07f5686a328cf666fad78faca6c5bdddfb7500e59dbb50751bf4f192b25",
+          "pixelSha256": "4ed005b678ce7322325fa6fa2e1583dbdf86820873ccc054338f2e4182a0eb9d"
         },
         {
           "id": "chibi-forest-dwarf-piece-2x1-b",
@@ -1368,8 +1368,8 @@
           "width": 160,
           "height": 104,
           "seed": 9128,
-          "sha256": "7d2916574def84a213b4117ccbc73286e5faf0b4a4377b217a8efeedd558952e",
-          "pixelSha256": "be70ebccde51ec858f3189a6b34aaac62e45a1832e9cab12e7fa5e0c02816ee6"
+          "sha256": "5151689c2183dc8d0ac5c932bfb0ad4d9e971b464a4cfb451172bacb0663b890",
+          "pixelSha256": "4683119ad589bdfb2ca9b44f09ab83dcd38c2c417815c9e1e0095340aaf91a0f"
         },
         {
           "id": "chibi-forest-dwarf-piece-2x1-c",
@@ -1379,8 +1379,8 @@
           "width": 160,
           "height": 104,
           "seed": 9135,
-          "sha256": "75539d0e1785ffb2e3e6875030207f4572d22ce0be5c2dab2b142bbc10cc40a9",
-          "pixelSha256": "15d7ec82860f60612125c50bfe50210b8a84a83916d7891b64ce4ab263db37fb"
+          "sha256": "e35b357231daf86cb561198f9ce6e201c74cd33232a7004d919ab83e92b314bd",
+          "pixelSha256": "6359a3b1ca22c9f659cc1250ff932bcc8676519bda13aecf3505e9299d1a4996"
         },
         {
           "id": "chibi-forest-dwarf-piece-1x2-a",
@@ -1390,8 +1390,8 @@
           "width": 80,
           "height": 184,
           "seed": 9142,
-          "sha256": "b8666bc59dbe4a247ce572f673e550e58e2d65e24af41271474247e9318db48e",
-          "pixelSha256": "2577915aee36173b81068d1877f58025b54844652c47cbd10a7e0553262d1d0a"
+          "sha256": "9f30125747bb3169f69d5e678b4d5980e7f3ba02182a0c2ae2bfdf00e1424a5b",
+          "pixelSha256": "87156c6d40e6e179210706eb1bb1b451f30fd6b4322b99f81b30e63f646bf0ee"
         },
         {
           "id": "chibi-forest-dwarf-piece-1x2-b",
@@ -1401,8 +1401,8 @@
           "width": 80,
           "height": 184,
           "seed": 9149,
-          "sha256": "88ead68bc05406720ba5759b68ed86fc681bcad4e637abecbf72dc8065a83e0d",
-          "pixelSha256": "4c480f076eea4c21604f3dc1fb01d481fd8abfdb1da4994ec32f7e1862048570"
+          "sha256": "e41e1fc02941a94b06ea6cd17e460ec902d398d36d59dce2d868d6a0ce49cc58",
+          "pixelSha256": "3c6dbf3110fdfcd001aaea6191792a939fd99d84d472df677166adeec112ad5f"
         },
         {
           "id": "chibi-forest-dwarf-piece-1x2-c",
@@ -1412,8 +1412,8 @@
           "width": 80,
           "height": 184,
           "seed": 9156,
-          "sha256": "c27f7002febcdbbf65fbd0a426f88ea66f61c932076467f103f780f4a17ea6bc",
-          "pixelSha256": "ff2976e8b71929911bc5ba088697c5df2924ad7cfa3602b5c929139822f6ca78"
+          "sha256": "8015f3e8c13f0542085a4e1d15731c37c9cc9bb58244f0a8d9ff795f75961f04",
+          "pixelSha256": "69f5f9795424aae7e29054b3d01b38177d7425c9be84ac6e6468229e9eefde68"
         },
         {
           "id": "chibi-forest-dwarf-piece-2x2-a",
@@ -1423,8 +1423,8 @@
           "width": 160,
           "height": 184,
           "seed": 9163,
-          "sha256": "b7f6ea80c7a1facf99d9a4fe22759dabd44c05a14bfff9301ff60fdf55f4a3b4",
-          "pixelSha256": "2848f853ec1e5990e9280938c20bd48e501094294ef5525972c3932613b48939"
+          "sha256": "e92d56e647dfe46f619228954a197bdb30273ed108b4621a94be70d06922144d",
+          "pixelSha256": "86477236493088a564c4a6ee947a6d0eafd42fe1a5a5bbe5ca153af1b13732ad"
         },
         {
           "id": "chibi-forest-dwarf-piece-2x2-b",
@@ -1434,8 +1434,8 @@
           "width": 160,
           "height": 184,
           "seed": 9170,
-          "sha256": "6c65feee5dd2b955d0fa62eb250d141d50eb5c87f6404ed7bbcdd4d374d1deba",
-          "pixelSha256": "5db5e7fb3dc65b9bd17efff76e62208d75c353e6c4af67184511e323fa592563"
+          "sha256": "461846e6a1b324219c35b121cda04f86140cefbaf7125c520c6a0cf311f1fbcc",
+          "pixelSha256": "dab4a86c1445dbfbb391524957ac58ffc5d5dab109360152e7ef3f0a689757d4"
         },
         {
           "id": "chibi-forest-dwarf-piece-2x2-c",
@@ -1445,8 +1445,8 @@
           "width": 160,
           "height": 184,
           "seed": 9177,
-          "sha256": "d7194eb2182d2701f9c1411be6ca4a433016d91e071bad399ee2fff97e7d5e67",
-          "pixelSha256": "42f644379214d57c06c478df449690ffdb975247fdef2b06210506f0e98f47c1"
+          "sha256": "10923c3d755accc43c53023dbc78f4ebd229e73942cc0935596423f47754f3a4",
+          "pixelSha256": "02b0e6765620cf9a2fd8bf4c850160997677744426236f9b06f39b5ff53a4685"
         },
         {
           "id": "chibi-forest-dwarf-piece-l-nw-a",
@@ -1456,8 +1456,8 @@
           "width": 160,
           "height": 184,
           "seed": 9184,
-          "sha256": "c19247936b1c9d7474f32f334930584e65a0cad3befc7893acb2e5fddd57b64b",
-          "pixelSha256": "369e02fc749a0f11a9b04d26539c0f636651529e9faa1f8851a3d72799e665ff"
+          "sha256": "512ec380cc06ff650e9a42fe85d19407ffb472aa69b6f241a88df1d7aa5605f1",
+          "pixelSha256": "940b90f608802412b5f29ead9645619ead143b4c5db66b92643ff25b79476c37"
         },
         {
           "id": "chibi-forest-dwarf-piece-l-nw-b",
@@ -1467,8 +1467,8 @@
           "width": 160,
           "height": 184,
           "seed": 9191,
-          "sha256": "573b734031cebc3c1285ff44ad092d38def70d665f62dbe40537f050ec697973",
-          "pixelSha256": "7d807cc6709821c203eb836a97231de7da25dd394634a54b11bb44f1677c97bb"
+          "sha256": "10345225c8687973528a4c8c12b15dfcd2ed139973bbfe89b48d9e3a5bceef0d",
+          "pixelSha256": "6fef8cb9d55ba14aa87e7e179fa2c08633ac40f5d78444eec83a2212d01e7f4b"
         },
         {
           "id": "chibi-forest-dwarf-piece-l-ne-a",
@@ -1478,8 +1478,8 @@
           "width": 160,
           "height": 184,
           "seed": 9198,
-          "sha256": "a8de71e58ba73b02327a216d43d490f226ce666d6f42c9ab94d44931dfab9f7d",
-          "pixelSha256": "43d0e2fcc8f2f374603176d7199a366467436b23c16f22121d2ff24b65290b0b"
+          "sha256": "3cd127525e695498f894ad0862c5e3d0fc70559244768e7ffce0dd9839cb6bcc",
+          "pixelSha256": "3a04fad1937451927c99ecbcd201b098e73e58358779f4c0c97475c5853183bd"
         },
         {
           "id": "chibi-forest-dwarf-piece-l-ne-b",
@@ -1489,8 +1489,8 @@
           "width": 160,
           "height": 184,
           "seed": 9205,
-          "sha256": "9867c291f8ef6ac0a191affa903f524b080a060b4fbc98f3345dd99ea4ab2cbc",
-          "pixelSha256": "bc47abfe72eb7a55dde88b38dff3e6f746c4a67250a08eee56d081b6eaa435cb"
+          "sha256": "5ac3424b8647d8bcdadde18c4f3e3ea6b9a075aab51f6e322c9ba1c9f74b4e3f",
+          "pixelSha256": "37a4faac4c7171499c7138cc606468c1a0509382c8caa03e076c37ce31ab5407"
         },
         {
           "id": "chibi-forest-dwarf-piece-l-sw-a",
@@ -1500,8 +1500,8 @@
           "width": 160,
           "height": 184,
           "seed": 9212,
-          "sha256": "2b365085c422c68c0250e1db6df767d502d2431c81ab936fe94b552f92a179e0",
-          "pixelSha256": "f134a245f834a239ec83d6c7654c0ecf6ebe56eee7b122e06af5c9a5c6b0b5fb"
+          "sha256": "147563ed19df6d13845ea76a54036aa5fcae2d92c65f20420c406f526498d6e4",
+          "pixelSha256": "1eb7d699c1e0984a33ece4494ff6e1c531c7679b5538ef2e889dc4b35b56d32c"
         },
         {
           "id": "chibi-forest-dwarf-piece-l-sw-b",
@@ -1511,8 +1511,8 @@
           "width": 160,
           "height": 184,
           "seed": 9219,
-          "sha256": "3e35e1f2e511ebdfd4e3461f06d349f9eecc4c994d22b5c4d14c314bb810ee0c",
-          "pixelSha256": "0d2ed5f54181bb8f508499b6c61c2e1b0cfa14a149645f47578abddddf4de6b2"
+          "sha256": "cdade3e2499f9ef2e616027711e4bebd44be9715fe6a9bdbdff8ec9465750760",
+          "pixelSha256": "659cb5d1ac957b4a6a2d398243396425124315af6ab12a40a466ac2c3a39621e"
         },
         {
           "id": "chibi-forest-dwarf-piece-l-se-a",
@@ -1522,8 +1522,8 @@
           "width": 160,
           "height": 184,
           "seed": 9226,
-          "sha256": "6433ab79f53e750420f927c81aa4fd6281d51b7fbb8328388dfd1b2e5c740570",
-          "pixelSha256": "c5adc1e9e4a21bd29dd65da0264d412075396c0013ef3e54fa91851a2ff8161d"
+          "sha256": "abae330a4b80a9b106c63a93ddf0088fa59c0ccc624fab877325282fff104efe",
+          "pixelSha256": "fa357d77ca3f3e427af1d4e300472ee02a449f43b02e06b752356d0fdb85df65"
         },
         {
           "id": "chibi-forest-dwarf-piece-l-se-b",
@@ -1533,8 +1533,8 @@
           "width": 160,
           "height": 184,
           "seed": 9233,
-          "sha256": "1a2e85de04ed980f33d2a62233434c9a23f9f4c311d7835b12048355421b560f",
-          "pixelSha256": "736f986e3fd104dac16867702976c69625355608b58a207d8f9e7bfe61c7fe56"
+          "sha256": "66badb7d6ed9dde664b8dd36dea9e4bdc1e2e507b6a548788313a6cc2e2888cc",
+          "pixelSha256": "187d98db7593308756f4e40ed1ca47b1b132a9ba5da1cc3ec754b916e7b01dfc"
         }
       ]
     },

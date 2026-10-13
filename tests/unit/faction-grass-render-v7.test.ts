@@ -3,6 +3,7 @@ import { viewForV7, type FactionIdV7 } from "../../src/engine/index";
 import {
   FACTION_GRASS_TILE_COUNTS_V7,
   FACTION_GRASS_TILES_V7,
+  FACTION_GRASS_WORLDS_V7,
 } from "../../src/assets/faction-grass-manifest";
 import { buildBoardRenderPlanV7 } from "../../src/render/canvas/board-renderer-v7";
 import type { ChibiForestRasterEnvironmentV7 } from "../../src/render/canvas/chibi-forest-v7";
@@ -87,13 +88,21 @@ describe("the faction grass switch", () => {
     expect(new Set(FACTION_GRASS_IDS_V7).size).toBe(7);
   });
 
-  it("has three tiles per recoloured ground and six per ground made from fields, all baked", () => {
+  it("has three tiles per recoloured ground, six per ground made from fields and one texture per textured ground, all baked", () => {
     for (const id of FACTION_GRASS_IDS_V7) {
       const tiles = FACTION_GRASS_TILES_V7.filter((tile) => tile.id === id);
       const count = FACTION_GRASS_TILE_COUNTS_V7[id];
-      // Bead pulp_wars-2yc.48: every ground but the Dinosaurs' and the
-      // Martians' is composed from PixelLab fields, six tiles each.
-      expect(count, id).toBe(id === "DINOSAUR" || id === "MARTIAN" ? 3 : 6);
+      if (FACTION_GRASS_WORLDS_V7[id] !== undefined) {
+        // A textured ground: one texture, no tiles
+        // (tests/unit/textured-grounds-render-v7.test.ts).
+        expect(count, id).toBe(0);
+        expect(tiles).toHaveLength(1);
+        expect(tiles[0]?.world).toBeDefined();
+        continue;
+      }
+      // Bead pulp_wars-2yc.48: composed from PixelLab fields, six tiles
+      // each; the Dinosaur ground is still the Grass recoloured, three.
+      expect(count, id).toBe(id === "DINOSAUR" ? 3 : 6);
       expect(tiles.map((tile) => tile.variant)).toEqual(
         Array.from({ length: count }, (_, variant) => variant),
       );
@@ -118,10 +127,10 @@ describe("the faction grass switch", () => {
       "CANDY",
       "GOBLIN",
       "DWARF",
-      "MARTIAN",
       "DINOSAUR",
-      "UNDEAD",
+      "MARTIAN",
       "CULT",
+      "UNDEAD",
     ]);
   });
 });
@@ -412,19 +421,19 @@ describe("the faction grass art and drawing", () => {
   it("serves tiles as baked, a ground's own count of them, and caches spills", () => {
     const resolved = harness().art.resolve();
     if (resolved === null) throw new Error("no art");
-    const martian = pixelsOf(resolved.tile("MARTIAN", 0));
-    expect([martian[1], martian[2], martian[3]]).toEqual([60, 118, 255]);
+    const dinosaur = pixelsOf(resolved.tile("DINOSAUR", 0));
+    expect([dinosaur[1], dinosaur[2], dinosaur[3]]).toEqual([60, 118, 255]);
     // As baked: the Undead tile is no longer toned (bead pulp_wars-2yc.48).
     const undead = pixelsOf(resolved.tile("UNDEAD", 0));
     expect(undead[1]).toBe(155);
     // A cell's variant is one of six. A ground of three takes it modulo
     // three; a ground of six has a tile for each.
-    expect(resolved.tile("MARTIAN", 4)).toBe(resolved.tile("MARTIAN", 1));
-    expect(resolved.tile("MARTIAN", 5)).not.toBe(resolved.tile("MARTIAN", 1));
+    expect(resolved.tile("DINOSAUR", 4)).toBe(resolved.tile("DINOSAUR", 1));
+    expect(resolved.tile("DINOSAUR", 5)).not.toBe(resolved.tile("DINOSAUR", 1));
     expect(resolved.tile("UNDEAD", 4)).not.toBe(resolved.tile("UNDEAD", 1));
     expect(resolved.tile("UNDEAD", 7)).toBe(resolved.tile("UNDEAD", 1));
-    expect(resolved.spill("MARTIAN", 4, GRASS_E, 2)).toBe(
-      resolved.spill("MARTIAN", 1, GRASS_E, 2),
+    expect(resolved.spill("DINOSAUR", 4, GRASS_E, 2)).toBe(
+      resolved.spill("DINOSAUR", 1, GRASS_E, 2),
     );
     expect(resolved.spill("CULT", 4, GRASS_E, 2)).not.toBe(
       resolved.spill("CULT", 1, GRASS_E, 2),

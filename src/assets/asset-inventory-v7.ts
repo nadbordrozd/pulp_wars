@@ -198,11 +198,18 @@ function classicEntries(live = false): AssetInventoryEntryV7[] {
     ].map(({ url }) => ({ url, group: "SHARED" as const })),
     // Territory ground of each faction. The board loads the set whole,
     // whoever plays (15 files of 0.6 kB), so it loads with the shared art.
-    ...FACTION_GRASS_TILES_V7.map((tile) => ({
-      url: tile.url,
-      group: tile.id satisfies AssetGroupV7,
-      front: true as const,
-    })),
+    ...FACTION_GRASS_TILES_V7.flatMap((tile) =>
+      // A textured ground is its texture and the one cell the interface
+      // shows of it.
+      [
+        tile.url,
+        ...(tile.world?.swatchUrl === undefined ? [] : [tile.world.swatchUrl]),
+      ].map((url) => ({
+        url,
+        group: tile.id satisfies AssetGroupV7,
+        front: true as const,
+      })),
+    ),
     // The forest of each faction (pulp_wars-2yc.2), loaded with its faction.
     ...Object.entries(FACTION_FOREST_ART_SETS_V7).flatMap(([id, set]) =>
       [...set.pieces, ...set.clumps].map(({ url }) => ({

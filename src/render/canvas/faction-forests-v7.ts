@@ -106,8 +106,8 @@ export const FACTION_FOREST_FLOOR_V7: Readonly<
   GOBLIN: [80, 66, 24, 34],
   DINOSAUR: [12, 48, 34, 36],
   MARTIAN: [78, 40, 26, 34],
-  // A dark stone shadow on the mine gravel (bead pulp_wars-2yc.48).
-  DWARF: [58, 54, 44, 34],
+  // A dark moss shadow on the mossy stones (bead pulp_wars-2yc.48).
+  DWARF: [40, 52, 34, 36],
   CANDY: [36, 96, 84, 30],
   // A cold blue-slate shadow on the Snow.
   ICE_FOLK: [44, 66, 92, 30],

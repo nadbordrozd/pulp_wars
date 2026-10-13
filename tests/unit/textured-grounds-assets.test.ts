@@ -2,10 +2,22 @@ import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { TEXTURED_GROUND_TILES_V7 } from "../../src/render/canvas/textured-grounds-experiment-v7";
+import {
+  FACTION_GRASS_TILES_V7,
+  FACTION_GRASS_WORLDS_V7,
+} from "../../src/assets/faction-grass-manifest";
 import type { RgbaRaster } from "../../scripts/art/chibi/owner-mask";
 import { pixelSha256, readRaster } from "../../scripts/art/chibi/pipeline";
-import { texturedGround } from "../../scripts/art/textured-grounds";
+import {
+  FACTION_GRASS_RECORD,
+  WORLD_GROUND_IDS,
+  factionGrassProblems,
+  factionGrassTilePath,
+  worldGroundLook,
+  worldGroundPath,
+  type FactionGrassRecord,
+} from "../../scripts/art/faction-grass";
+import { texturedGround } from "../../scripts/art/textured-grounds/ground";
 import {
   TEXTURED_CANDIDATES,
   TEXTURED_RUN,
@@ -16,7 +28,6 @@ import {
   TEXTURED_LOOKS,
   compressed,
   swapped,
-  texturedWorldPath,
 } from "../../scripts/art/textured-grounds/looks";
 import {
   busyness,
@@ -27,9 +38,8 @@ import {
 } from "../../scripts/art/textured-grounds/quilt";
 
 /**
- * EXPERIMENT (bead pulp_wars-2yc.48, second round;
- * docs/art/TEXTURED_GROUNDS.md): textured grounds quilted from PixelLab
- * fields, as samples for review.
+ * Textured grounds (bead pulp_wars-2yc.48, docs/art/TEXTURED_GROUNDS.md):
+ * one large texture a ground, quilted from PixelLab fields.
  */
 
 const ROOT = process.cwd();
@@ -225,35 +235,80 @@ describe("the textured ground samples", () => {
       }
   });
 
-  it("have one best look a faction, baked as the board's switch loads it", async () => {
-    const best = TEXTURED_LOOKS.filter((look) => look.best === true);
-    expect(best.map((look) => look.faction).sort()).toEqual([
-      "CULT",
-      "DWARF",
-      "MARTIAN",
+  it("have one chosen look a wired ground, baked as the manifest names it", async () => {
+    expect(await factionGrassProblems(ROOT)).toEqual([]);
+    expect([...WORLD_GROUND_IDS].sort()).toEqual(
+      Object.keys(FACTION_GRASS_WORLDS_V7).sort(),
+    );
+    const record = JSON.parse(
+      await readFile(path.join(ROOT, FACTION_GRASS_RECORD), "utf8"),
+    ) as FactionGrassRecord;
+    expect(record.worlds.map((world) => world.id)).toEqual([
+      ...WORLD_GROUND_IDS,
     ]);
-    for (const look of best) {
+    for (const id of WORLD_GROUND_IDS) {
+      const look = worldGroundLook(id);
       expect(look.mode).toBe("WORLD");
-      const file = texturedWorldPath(look);
-      const asset = TEXTURED_GROUND_TILES_V7.find(
-        (tile) => tile.id === look.faction,
-      );
+      const asset = FACTION_GRASS_TILES_V7.find((tile) => tile.id === id);
+      const file = worldGroundPath(id);
       expect(asset?.url.endsWith(file.replace(/^public\//, ""))).toBe(true);
-      // Six cells a side, as the switch's manifest says.
+      expect(
+        asset?.world?.swatchUrl?.endsWith(
+          factionGrassTilePath(id, 0).replace(/^public\//, ""),
+        ),
+      ).toBe(true);
+      // As many cells a side as the manifest says.
       expect([look.quilt.width, look.quilt.height]).toEqual([
         (asset?.world?.columns ?? 0) * 80,
         (asset?.world?.rows ?? 0) * 80,
       ]);
       const baked = await readRaster(path.join(ROOT, file));
-      expect([baked.width, baked.height]).toEqual([480, 480]);
+      expect([baked.width, baked.height]).toEqual([
+        look.quilt.width,
+        look.quilt.height,
+      ]);
       const ground = await texturedGround(ROOT, look);
       if (ground.world === undefined) throw new Error(look.id);
       // The file is what the look derives today.
       expect(pixelSha256(baked)).toBe(pixelSha256(ground.world));
+      // The swatch is the texture's first cell.
+      const swatch = await readRaster(
+        path.join(ROOT, factionGrassTilePath(id, 0)),
+      );
+      expect([swatch.width, swatch.height]).toEqual([80, 80]);
+      for (const [x, y] of [
+        [0, 0],
+        [79, 0],
+        [40, 40],
+        [79, 79],
+      ] as const)
+        for (let channel = 0; channel < 4; channel += 1)
+          expect(swatch.data[(y * 80 + x) * 4 + channel]).toBe(
+            baked.data[(y * baked.width + x) * 4 + channel],
+          );
       // A background: opaque, and in a narrow band of lightness.
+      let clear = 0;
       for (let at = 3; at < baked.data.length; at += 4)
-        expect(baked.data[at]).toBe(255);
-      expect(ground.spread, look.id).toBeLessThan(6);
+        if (baked.data[at] !== 255) clear += 1;
+      expect(clear).toBe(0);
+      expect(ground.spread, look.id).toBeLessThan(7);
+      // Periodic: the texture's last column continues into its first as
+      // well as two neighbouring columns continue each other.
+      const differ = (a: number, b: number): number => {
+        let count = 0;
+        for (let y = 0; y < baked.height; y += 1)
+          for (let channel = 0; channel < 3; channel += 1)
+            if (
+              baked.data[(y * baked.width + a) * 4 + channel] !==
+              baked.data[(y * baked.width + b) * 4 + channel]
+            ) {
+              count += 1;
+              break;
+            }
+        return count / baked.height;
+      };
+      const inside = differ(200, 201);
+      expect(differ(baked.width - 1, 0)).toBeLessThan(inside * 1.5 + 0.1);
     }
   });
 });

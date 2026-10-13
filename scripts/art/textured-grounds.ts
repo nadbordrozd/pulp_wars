@@ -23,13 +23,12 @@
  *       writes the texture of each look marked `best` where the board's
  *       `?textured-grounds=1` switch loads it
  */
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
 import sharp, { type OverlayOptions } from "sharp";
-import type { RgbaRaster } from "./chibi/owner-mask";
-import { encodePng, readRaster, sha256 } from "./chibi/pipeline";
+import { encodePng, sha256 } from "./chibi/pipeline";
 import { groundAt } from "./faction-grounds";
 import {
   groundField,
@@ -37,24 +36,8 @@ import {
   worldField,
   type GroundPanel,
 } from "./faction-grounds/sheet";
-import {
-  scatter,
-  scatterMotifs,
-  type ScatterRecipe,
-} from "./textured-grounds/compose";
-import {
-  TEXTURED_LOOKS,
-  swapped,
-  texturedWorldPath,
-  type TexturedLook,
-} from "./textured-grounds/looks";
-import {
-  busyness,
-  paint,
-  paletteIndices,
-  quilt,
-  type QuiltSource,
-} from "./textured-grounds/quilt";
+import { texturedGround, type TexturedGround } from "./textured-grounds/ground";
+import { TEXTURED_LOOKS, type TexturedLook } from "./textured-grounds/looks";
 import {
   TEXTURED_BEAD,
   TEXTURED_CANDIDATES,
@@ -259,160 +242,6 @@ function option(name: string): string | undefined {
   return index < 0 ? undefined : process.argv[index + 1];
 }
 
-export interface TexturedGround {
-  /** `WORLD`: the periodic texture. */
-  readonly world?: RgbaRaster;
-  /** `TILES`: the tiles. */
-  readonly tiles?: readonly RgbaRaster[];
-  /** The share of neighbouring pixel pairs that differ, of 100. */
-  readonly busy: number;
-  /** Mean luma and its spread, of 100. */
-  readonly luma: number;
-  readonly spread: number;
-}
-
-function tone(rasters: readonly RgbaRaster[]): {
-  luma: number;
-  spread: number;
-} {
-  let sum = 0;
-  let squares = 0;
-  let count = 0;
-  for (const raster of rasters)
-    for (let at = 0; at < raster.data.length; at += 4) {
-      const value =
-        0.299 * (raster.data[at] ?? 0) +
-        0.587 * (raster.data[at + 1] ?? 0) +
-        0.114 * (raster.data[at + 2] ?? 0);
-      sum += value;
-      squares += value * value;
-      count += 1;
-    }
-  const mean = sum / count;
-  return {
-    luma: Number(((mean / 255) * 100).toFixed(1)),
-    spread: Number(
-      ((Math.sqrt(squares / count - mean * mean) / 255) * 100).toFixed(1),
-    ),
-  };
-}
-
-async function fieldRaster(root: string, id: string): Promise<RgbaRaster> {
-  return readRaster(await readFile(path.join(root, texturedFieldPath(id))));
-}
-
-/** A look's ground: quilted from its fields, its things strewn over it. */
-export async function texturedGround(
-  root: string,
-  look: TexturedLook,
-): Promise<TexturedGround> {
-  const sources: QuiltSource[] = [];
-  for (const field of look.fields) {
-    const raster = await fieldRaster(root, field.id);
-    const indices = paletteIndices(raster, swapped(look.from, field.swap));
-    if (process.env.TEXTURED_STATS !== undefined) {
-      const counts = new Array<number>(look.from.length).fill(0);
-      for (const index of indices) counts[index] = (counts[index] ?? 0) + 1;
-      console.log(
-        `  ${field.id}: ${counts.map((count, index) => `${index} ${((count / indices.length) * 100).toFixed(0)}%`).join(", ")}`,
-      );
-    }
-    sources.push({
-      indices,
-      width: raster.width,
-      height: raster.height,
-      regions: field.regions,
-    });
-  }
-  const things = look.things;
-  const thingFields: RgbaRaster[] = [];
-  for (const field of things?.fields ?? [])
-    thingFields.push(await fieldRaster(root, field.id));
-  const recipe = (margin?: number): ScatterRecipe | null =>
-    things === undefined
-      ? null
-      : {
-          fields: things.fields.map((field) => ({
-            from: swapped(look.from, field.swap),
-            to: swapped(look.to, field.swap),
-            ...(field.base === undefined ? {} : { base: field.base }),
-            ...(field.ground === undefined ? {} : { ground: field.ground }),
-          })),
-          kinds: things.kinds,
-          seed: things.seed,
-          ...(things.gap === undefined ? {} : { gap: things.gap }),
-          ...(margin === undefined ? {} : { margin }),
-        };
-  const strew = (
-    canvas: RgbaRaster,
-    variant: number,
-    margin?: number,
-  ): void => {
-    const scatterRecipe = recipe(margin);
-    if (scatterRecipe === null) return;
-    const placed = scatter(canvas, thingFields, scatterRecipe, variant);
-    if (process.env.TEXTURED_STATS !== undefined)
-      console.log(
-        `  placed: ${Object.entries(placed)
-          .map(([kind, count]) => `${kind} ${count}`)
-          .join(", ")}`,
-      );
-  };
-  if (process.env.TEXTURED_STATS !== undefined && things !== undefined) {
-    const scatterRecipe = recipe();
-    if (scatterRecipe !== null)
-      console.log(
-        `  motifs: ${scatterMotifs(thingFields, scatterRecipe)
-          .map((list, index) => `${things.kinds[index]?.id} ${list.length}`)
-          .join(", ")}`,
-      );
-  }
-  if (look.mode === "WORLD") {
-    const indices = quilt(sources, look.from, look.quilt);
-    const world = paint(indices, look.quilt.width, look.to);
-    strew(world, 0);
-    return {
-      world,
-      busy: Number((busyness(indices, look.quilt.width) * 100).toFixed(1)),
-      ...tone([world]),
-    };
-  }
-  // TILES: one toroidal tile gives the band every tile shares; each tile is
-  // quilted again inside that band with its own seed.
-  const spec = look.tiles ?? { count: 6, band: 6 };
-  const first = quilt(sources, look.from, look.quilt);
-  const { width, height } = look.quilt;
-  const band = new Uint8Array(width * height).fill(255);
-  for (let y = 0; y < height; y += 1)
-    for (let x = 0; x < width; x += 1)
-      if (
-        x < spec.band ||
-        y < spec.band ||
-        x >= width - spec.band ||
-        y >= height - spec.band
-      )
-        band[y * width + x] = first[y * width + x] ?? 0;
-  const tiles: RgbaRaster[] = [];
-  let busy = 0;
-  for (let index = 0; index < spec.count; index += 1) {
-    const indices = quilt(
-      sources,
-      look.from,
-      { ...look.quilt, seed: look.quilt.seed + 31 * (index + 1) },
-      band,
-    );
-    busy += busyness(indices, width);
-    const tile = paint(indices, width, look.to);
-    strew(tile, index, spec.band + 2);
-    tiles.push(tile);
-  }
-  return {
-    tiles,
-    busy: Number(((busy / spec.count) * 100).toFixed(1)),
-    ...tone(tiles),
-  };
-}
-
 function panelOf(
   look: TexturedLook,
   ground: TexturedGround,
@@ -492,26 +321,13 @@ async function sheet(
       panelOf(
         look,
         ground,
-        `${faction}  ${look.letter}: ${look.label}${look.best === true ? "  (best)" : ""}`,
+        `${faction}  ${look.letter}: ${look.label}${look.chosen === true ? "  (chosen)" : ""}`,
       ),
     );
   }
   await mkdir(path.dirname(path.resolve(out)), { recursive: true });
   await groundSheet(root, panels, out, 2);
   console.log(`wrote ${out}`);
-}
-
-/** Writes the texture of every `WORLD` look marked `best` into the assets. */
-async function bake(root: string): Promise<void> {
-  for (const look of TEXTURED_LOOKS) {
-    if (look.best !== true || look.mode !== "WORLD") continue;
-    const ground = await texturedGround(root, look);
-    if (ground.world === undefined) continue;
-    const file = texturedWorldPath(look);
-    await mkdir(path.dirname(path.join(root, file)), { recursive: true });
-    await writeFile(path.join(root, file), await encodePng(ground.world));
-    console.log(`wrote ${file}`);
-  }
 }
 
 async function main(): Promise<void> {
@@ -524,9 +340,8 @@ async function main(): Promise<void> {
     return quiltCommand(root, first, second);
   if (command === "sheet" && first !== undefined && second !== undefined)
     return sheet(root, first as TexturedFaction, second);
-  if (command === "bake") return bake(root);
   throw new Error(
-    "usage: textured-grounds.ts plan | contact <out.png> <recipe>... | quilt <look> <out.png> | sheet <FACTION> <out.png> [--ref main] | bake",
+    "usage: textured-grounds.ts plan | contact <out.png> <recipe>... | quilt <look> <out.png> | sheet <FACTION> <out.png> [--ref main]",
   );
 }
 

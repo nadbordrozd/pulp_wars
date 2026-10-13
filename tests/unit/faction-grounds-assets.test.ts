@@ -248,11 +248,12 @@ describe("a ground tile", () => {
 });
 
 describe("the grounds made from PixelLab fields", () => {
-  it("are every faction's but the Dinosaurs' and the Martians', one chosen look each", () => {
+  it("are the Cult's, the Undead's, Candy's and the Goblins', one chosen look each", () => {
+    // The Dwarf gravel was one until the Dwarves' ground became a texture
+    // (docs/art/TEXTURED_GROUNDS.md); its look stays as a sample.
     expect([...FIELD_GROUND_IDS]).toEqual([
       "CULT",
       "UNDEAD",
-      "DWARF",
       "CANDY",
       "GOBLIN",
     ]);
@@ -286,7 +287,6 @@ describe("the grounds made from PixelLab fields", () => {
     // when the other recipes left the list.
     expect(record.recipes.map((recipe) => [recipe.id, recipe.seed])).toEqual([
       ["DINOSAUR", 2],
-      ["MARTIAN", 3],
     ]);
     for (const ground of record.grounds) {
       for (const source of ground.fields) {

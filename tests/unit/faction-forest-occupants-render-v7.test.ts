@@ -173,7 +173,12 @@ describe("a wood changing hands under what stands on it", () => {
         const tile =
           own === null
             ? null
-            : grass.tile(own, grassCells.get(at)?.variant ?? 0);
+            : grass.tile(
+                own,
+                grassCells.get(at)?.variant ?? 0,
+                // A textured ground is sampled by the cell's place.
+                grassCells.get(at)?.at,
+              );
         const drawnGrass = second.filter(
           (paint) =>
             paint.image.of === "grass" &&
@@ -191,7 +196,11 @@ describe("a wood changing hands under what stands on it", () => {
         const oldTile =
           oldOwn === null
             ? null
-            : grass.tile(oldOwn, oldCells.get(at)?.variant ?? 0);
+            : grass.tile(
+                oldOwn,
+                oldCells.get(at)?.variant ?? 0,
+                oldCells.get(at)?.at,
+              );
         if (oldTile !== null) {
           expect(
             first.some(

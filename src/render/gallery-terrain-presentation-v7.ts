@@ -16,7 +16,10 @@ import {
   CHIBI_RANGE_MINED_MOUNTAIN_ART_ASSETS_V7,
 } from "../assets/chibi-mountain-ranges-manifest";
 import { FACTION_FOREST_ART_SETS_V7 } from "../assets/faction-forest-pieces-manifest";
-import { FACTION_GRASS_TILES_V7 } from "../assets/faction-grass-manifest";
+import {
+  FACTION_GRASS_TILES_V7,
+  factionGrassSwatchUrlV7,
+} from "../assets/faction-grass-manifest";
 import { factionForestIdV7 } from "./canvas/faction-forests-v7";
 import { factionNameV7 } from "./undead-presentation-v7";
 
@@ -241,7 +244,12 @@ export function galleryTerrainPiecesV7(
     if (baked.length > 0)
       return baked.map((entry) =>
         tile(`${entry.id}-${entry.variant}`, [
-          { kind: "RASTER", url: entry.url, width: 80, height: 80 },
+          {
+            kind: "RASTER",
+            url: factionGrassSwatchUrlV7(entry),
+            width: 80,
+            height: 80,
+          },
         ]),
       );
     return subjectTiles(territoryTerrainSubjectV7("TERRAIN:GRASS", ground));
@@ -274,7 +282,12 @@ export function galleryTerrainPiecesV7(
                 ? subjectLayer(
                     territoryTerrainSubjectV7("TERRAIN:GRASS", ground),
                   )
-                : { kind: "RASTER", url: grass.url, width: 80, height: 80 },
+                : {
+                    kind: "RASTER",
+                    url: factionGrassSwatchUrlV7(grass),
+                    width: 80,
+                    height: 80,
+                  },
               // The tundra forest stands on the Ice Folk Snow.
               ...(forest === "ICE_FOLK"
                 ? [{ kind: "SNOW", variant: 0 } as const]
@@ -431,7 +444,8 @@ const GROUND_NAMES: Partial<Readonly<Record<FactionIdV7, string>>> = {
   ICE_FOLK: "Snow",
   CULT: "Bog",
   UNDEAD: "Burnt ground",
-  DWARF: "Gravel",
+  DWARF: "Mossy stones",
+  MARTIAN: "Regolith",
   CANDY: "Frosting",
   GOBLIN: "Savannah",
 };

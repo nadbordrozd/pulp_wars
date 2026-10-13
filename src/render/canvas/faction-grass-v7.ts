@@ -64,50 +64,21 @@ export function factionGrassEnabledV7(search?: string): boolean {
 }
 
 /**
- * EXPERIMENT, off: textured grounds (bead pulp_wars-2yc.48, second round;
- * docs/art/TEXTURED_GROUNDS.md). `?textured-grounds=1` draws the grounds
- * that have one as a large painted texture sampled by a cell's place on
- * the map, in place of their tiles. Nothing draws them without the
- * parameter.
- */
-export const TEXTURED_GROUNDS_ENABLED_V7 = false;
-export const TEXTURED_GROUNDS_PARAMETER_V7 = "textured-grounds";
-
-export function texturedGroundsEnabledV7(search?: string): boolean {
-  const query =
-    search ??
-    (globalThis as { location?: { search?: string } }).location?.search ??
-    "";
-  let value: string | null;
-  try {
-    value = new URLSearchParams(query).get(TEXTURED_GROUNDS_PARAMETER_V7);
-  } catch {
-    value = null;
-  }
-  if (value === null) return TEXTURED_GROUNDS_ENABLED_V7;
-  const text = value.trim().toLowerCase();
-  if (text === "1" || text === "on" || text === "true") return true;
-  if (text === "0" || text === "off" || text === "false") return false;
-  return TEXTURED_GROUNDS_ENABLED_V7;
-}
-
-/**
  * The grounds, lowest rank first: a ground spills over every ground before
  * it in this list, and over default Grass. Darker grounds rank higher, so
  * a border reads as the darker land running out into the lighter one.
  */
 export const FACTION_GRASS_IDS_V7 = [
-  // The mint frosting, the golden savannah and the mine gravel (bead
-  // pulp_wars-2yc.48) are the three palest, in this order.
+  // By mean lightness (bead pulp_wars-2yc.48): the mint frosting 78%, the
+  // golden savannah 74%, the mossy stones 54%, the jungle floor 51%, the
+  // Mars regolith 49%, the peat bog 47%, the burnt ground 42%.
   "CANDY",
   "GOBLIN",
   "DWARF",
-  "MARTIAN",
   "DINOSAUR",
-  // The burnt ground and the peat bog (bead pulp_wars-2yc.48) are the two
-  // darkest, the bog a little the darker.
-  "UNDEAD",
+  "MARTIAN",
   "CULT",
+  "UNDEAD",
 ] as const;
 
 export type FactionGrassIdV7 = (typeof FACTION_GRASS_IDS_V7)[number];
@@ -380,12 +351,17 @@ export interface FactionGrassTileAssetV7 {
    */
   readonly toned?: boolean;
   /**
-   * The textured-grounds experiment: the file is not one tile but a
-   * periodic texture of `columns` x `rows` cells, and a cell draws the
+   * A textured ground (docs/art/TEXTURED_GROUNDS.md): the file is not one
+   * tile but a periodic texture of `columns` x `rows` cells, and a cell draws the
    * part at its own place on the map (modulo the period), so neighbouring
    * cells always continue each other. `variant` is 0.
    */
-  readonly world?: { readonly columns: number; readonly rows: number };
+  readonly world?: {
+    readonly columns: number;
+    readonly rows: number;
+    /** The texture's first cell as an 80 x 80 file, for the interface. */
+    readonly swatchUrl?: string;
+  };
 }
 
 export interface FactionGrassArtV7 {

@@ -73,6 +73,17 @@
       "subjectKey": "TERRAIN:GRASS/MARTIAN_ROCKS_B"
     },
     {
+      "id": "chibi-textured-martian-rocks-c",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/MARTIAN_ROCKS_C"
+    },
+    {
       "id": "chibi-textured-dwarf-moss-c",
       "subject": "TERRAIN:GRASS",
       "assetClass": "TERRAIN",
@@ -181,6 +192,28 @@
         "height": 80
       },
       "subjectKey": "TERRAIN:GRASS/DWARF_STONES_B"
+    },
+    {
+      "id": "chibi-textured-dwarf-cobbles-a",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/DWARF_COBBLES_A"
+    },
+    {
+      "id": "chibi-textured-dwarf-cobbles-b",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/DWARF_COBBLES_B"
     },
     {
       "id": "chibi-textured-cult-marsh-a",
@@ -331,6 +364,27 @@
       },
       "negativeAddendum": "trees, bushes, plants, grass, animals, people, path, road, river, water, cliff, wall, fence, buildings, big boulders, mountains, horizon, sky, crater lake, rover, footprints, green, blue, lava, fire, canyon, cliffs, stripes, furrows, mesa, plateau, large rock, big crater",
       "notes": "MARTIAN, Mars rocks at 160 px: slabs, shards and small craters. A second sheet of rock motifs, with craters asked for."
+    },
+    {
+      "id": "martian-rocks-c",
+      "asset": "chibi-textured-martian-rocks-c",
+      "endpoint": "create-image-pixflux",
+      "seed": 48709,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "options": {
+        "shading": "medium shading",
+        "detail": "medium detail",
+        "outline": "lineless"
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/textured-martian-rocks-c.png",
+        "sha256": "b023499d8d6aa6539c5c6fb5d3012f1039500184b447ade2d16f39a467f89aa0"
+      },
+      "negativeAddendum": "trees, bushes, plants, grass, animals, people, path, road, river, water, cliff, wall, fence, buildings, big boulders, mountains, horizon, sky, crater lake, rover, footprints, green, blue, lava, fire, canyon, cliffs, stripes, furrows, mesa, plateau, large rock, round boulders, pebbles, layered rock",
+      "notes": "MARTIAN, Mars rocks at 160 px: angular shards and flat slabs. The user: 'more varied (but still discrete!) rocks'. The rocks of the six fields are mostly round; angular ones asked for by name."
     },
     {
       "id": "dwarf-moss-c",
@@ -541,6 +595,48 @@
       },
       "negativeAddendum": "trees, bushes, plants, grass, animals, people, path, road, river, water, cliff, wall, fence, buildings, big boulders, mountains, horizon, sky, bricks, regular grid, rows, paving, tiles, flowers, mushrooms, snow, identical stones, wall, border, frame, garden, large rock, cliff, stream, river, path",
       "notes": "DWARF, Mossy stones at 160 px: a second sheet. A second sheet of stone motifs, smaller and more."
+    },
+    {
+      "id": "dwarf-cobbles-a",
+      "asset": "chibi-textured-dwarf-cobbles-a",
+      "endpoint": "create-image-pixflux",
+      "seed": 48731,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "options": {
+        "shading": "medium shading",
+        "detail": "medium detail",
+        "outline": "lineless"
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/textured-dwarf-cobbles-a.png",
+        "sha256": "dc11810a380059c3d795353c3062ff09fcbd002b5dbdacbbcc2b26c6feeeffed"
+      },
+      "negativeAddendum": "trees, bushes, plants, grass, animals, people, path, road, river, water, cliff, wall, fence, buildings, big boulders, mountains, horizon, sky, bricks, regular grid, rows, flowers, mushrooms, snow, identical stones, wall, border, frame, lawn, garden, large rock, cliff, stream, river, path, banks",
+      "notes": "DWARF, Mossy cobbles at 160 px: a cobblestone texture. The user: 'moss covered stones'. A bed of stones came back a stream five times; 'cobblestone texture' is a thing Pixflux may know as a surface."
+    },
+    {
+      "id": "dwarf-cobbles-b",
+      "asset": "chibi-textured-dwarf-cobbles-b",
+      "endpoint": "create-image-pixflux",
+      "seed": 48732,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "options": {
+        "shading": "medium shading",
+        "detail": "medium detail",
+        "outline": "lineless"
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/textured-dwarf-cobbles-b.png",
+        "sha256": "dc11810a380059c3d795353c3062ff09fcbd002b5dbdacbbcc2b26c6feeeffed"
+      },
+      "negativeAddendum": "trees, bushes, plants, grass, animals, people, path, road, river, water, cliff, wall, fence, buildings, big boulders, mountains, horizon, sky, bricks, regular grid, rows, flowers, mushrooms, snow, identical stones, wall, border, frame, lawn, garden, large rock, cliff, stream, river, path, banks",
+      "notes": "DWARF, Mossy cobbles at 160 px: a second texture. A second cobble texture, other wording."
     },
     {
       "id": "cult-marsh-a",

@@ -1,13 +1,14 @@
 /**
- * EXPERIMENT (bead pulp_wars-2yc.48, second round; docs/art/TEXTURED_GROUNDS.md):
- * what a ground sampled by map place costs the board to draw. The real
- * game in a muted headless Chrome over a 16 x 16 map that is all one
- * faction's land, redrawn many times, with `?textured-grounds=0` and `=1`.
- * No match is played and no PixelLab call is made.
+ * What a ground sampled by map place costs the board to draw
+ * (docs/art/TEXTURED_GROUNDS.md). The real game in a muted headless Chrome
+ * over a 16 x 16 map that is all one faction's land, redrawn many times,
+ * on each server named: the one of this checkout, and to compare one of a
+ * checkout whose ground is tiles (with this file's scenes module copied to
+ * the same path). No match is played and no PixelLab call is made.
  *
  *   npx vite --host localhost --port 6593 --strictPort &
  *   CHROME_PATH=... npx tsx scripts/art/textured-grounds/draw-timing.ts \
- *     [http://localhost:6593/]
+ *     [http://localhost:6593/ [http://localhost:6594/]]
  */
 import { spawn } from "node:child_process";
 import { mkdtemp } from "node:fs/promises";
@@ -26,7 +27,10 @@ const delay = (ms: number): Promise<void> =>
   new Promise((resolve) => setTimeout(resolve, ms));
 
 async function main(): Promise<void> {
-  const base = process.argv[2] ?? "http://localhost:6593/";
+  const bases =
+    process.argv.length > 2
+      ? process.argv.slice(2)
+      : ["http://localhost:6593/"];
   const chrome = process.env.CHROME_PATH;
   if (!chrome) throw new Error("Set CHROME_PATH");
   const port = 10_700 + (process.pid % 80);
@@ -70,10 +74,9 @@ async function main(): Promise<void> {
     });
     for (const scene of ["sceneMartianField", "sceneDwarfField"])
       for (const round of [0, 1, 2])
-        for (const value of ["0", "1"]) {
+        for (const base of bases) {
           const url = new URL(base);
           url.searchParams.set("art", "chibi");
-          url.searchParams.set("textured-grounds", value);
           await evaluate(connection, `globalThis.__TIMING_OLD__ = true`).catch(
             () => undefined,
           );
@@ -100,7 +103,7 @@ async function main(): Promise<void> {
             })()`,
           );
           console.log(
-            `${scene} round ${round + 1} textured-grounds=${value}: ${milliseconds.toFixed(3)} ms a redraw`,
+            `${scene} round ${round + 1} ${base}: ${milliseconds.toFixed(3)} ms a redraw`,
           );
         }
     connection.close();
