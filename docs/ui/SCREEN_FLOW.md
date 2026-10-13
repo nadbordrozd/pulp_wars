@@ -464,6 +464,99 @@ dock, and the terms of a unit card.
 - The dock itself is unchanged: its chips keep their tooltips, which may
   be exact where the dialog is plain.
 
+### Calm playback (bead `pulp_wars-2yc.49`)
+
+How accepted commands are played back on the board: how fast units walk and
+when the camera moves. The numbers live in
+`src/render/canvas/playback-pacing-v7.ts` and
+`src/render/canvas/playback-camera-v7.ts`; the board host applies them.
+Nothing here changes a rule, an event or a saved game.
+
+**Pacing.**
+
+- An ordinary Move takes **240 ms a tile** at Normal animation speed, up to
+  **1200 ms** for a whole Move (a path of six tiles or more walks faster).
+  The viewer's own units and every other player's use the same time a tile;
+  a stretch of another player's Move that the fog splits is timed by the
+  tiles the viewer sees. (Before this bead a tile took 90 ms and a Move at
+  most 900 ms, for every player.)
+- A walk eases in and out: the unit speeds up over its first half tile,
+  holds one pace, and slows down over its last half tile. Shoves keep their
+  short, abrupt slides (120 ms for a Charge! push and a Boo! hop, 160 ms for
+  a Knockback, a Bounce and a unit stepping aside; 200 ms a tile for a
+  Tractor Beam pull). Every other step keeps its duration (a lunge 230 ms,
+  a shot 280 ms, the hit 100 ms, a Build 180 ms, each faction cue its own).
+- **A beat between units.** In another player's turn, the next unit starts
+  walking no sooner than **120 ms** after the last one stopped. Time that
+  already passed counts (the AI thinking, a camera glide), so nothing is
+  added to a pause that is already there, and the same unit moving twice
+  does not wait.
+- **Fast** halves every duration, as before: a tile takes 120 ms, about
+  what Normal took before this bead. The camera glide and the beat halve
+  too.
+- **Catching up.** When more than three boundaries wait to play, playback
+  shortens with the queue, down to 0.375 of Normal (90 ms a tile, the old
+  Normal) at eight waiting; Fast never goes below the same floor. A long AI
+  turn therefore takes no longer than it used to once the queue is deep.
+  The existing last resort stays: past twelve waiting boundaries the queue
+  is cut to the newest.
+- **Out of view.** An event the fog hides has no step and takes no time. An
+  event wholly off the canvas, when the player has taken the camera (below),
+  plays at the 0.375 floor.
+- **Fast Forward** and the Fast setting's skip are unchanged: Fast Forward
+  finishes queued playback at once.
+
+**The camera during another player's turn** (and the neutral turn inside the
+viewer's own End Turn).
+
+- **The comfort zone** is the map region the top HUD and the open dock leave
+  free, inset by 15% of its width and of its height on every side (and by
+  at least half a tile, so a unit in the zone is drawn whole).
+- **Hold still.** Before a step plays, its tiles are checked: a Move's whole
+  visible path, an attack's attacker and target, a cue's source and
+  targets, a built improvement's tile. If every tile's centre is inside the
+  comfort zone the camera does not move at all. A group of units moving in
+  one area therefore plays on a still map. The camera never follows a
+  walking unit.
+- **Frame once.** If a tile is outside the zone, the camera moves once, at
+  the same zoom, before the step starts: the event is centred in the free
+  region together with the later steps of the same command and the same
+  player's queued commands (up to eight) that fit the zone with it. An
+  event too wide for the zone is centred alone when it fits the free
+  region; one longer than that keeps where the Move ends inside the zone.
+  The camera then shows no void beyond the board's edge where the board is
+  larger than the region, so an event in a corner of the map is framed near
+  the screen's edge.
+- **Glide, never cut.** The move is a critically damped spring: it starts
+  from rest, covers most of the way early and eases onto its target with no
+  overshoot. It takes **260 ms** for a nudge, growing with the distance to
+  **600 ms** from one long side of the canvas on. A move across several
+  screens takes the same 600 ms (it travels faster; there is no fade). The
+  step, and its sound, start when the camera rests.
+- **Player input wins.** A pan, pinch, wheel, zoom button, cursor key or tap
+  on the map stops a glide where it is and takes the camera for the rest of
+  that player's playback: their later events no longer move it (the ones
+  off the canvas play quickly). The next player's playback is followed
+  again.
+- **What is framed.** Another player's Moves, attacks, builds, Disbands and
+  ability cues, and the neutral units' steps. The viewer's own commands
+  never move the camera. A step the fog hides does not exist for the
+  viewer, so it never moves the camera.
+- **Reduced motion.** The same comfort-zone rule decides whether the camera
+  moves; when it must, it cuts to the framed position instead of gliding.
+- A finished or skipped presentation puts a gliding camera on its target.
+  Opening Settings pauses a glide with the rest of the playback.
+
+The same glide replaces the 180 ms pan that frames an aimed ability or a
+Kaboom! preview above the dock. The new-match framing, a resize and the
+keyboard cursor's nudge still cut: there is nothing to glide from, or the
+move answers a key directly. The game has no next-unit control, city jump
+or start-of-turn camera move to change.
+
+Evidence script: `scripts/browser-enemy-camera-review-v7.ts` plays a
+hand-built list of moves on the real board in headless Chrome and records
+the camera at every frame.
+
 ## Current CHIBI board look (visual direction, October 2026)
 
 This overlay applies to the CHIBI art set of the current Ruleset 7 route

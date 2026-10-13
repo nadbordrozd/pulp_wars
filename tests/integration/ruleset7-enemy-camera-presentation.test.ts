@@ -1,20 +1,82 @@
 // @vitest-environment jsdom
 
 import { afterEach, describe, expect, it, vi } from "vitest";
+import type { CoordV7 } from "../../src/engine/index";
 import {
   CanvasBoardHostV7,
   type BoardHostModelV7,
 } from "../../src/render/canvas/board-host-v7";
 import * as renderer from "../../src/render/canvas/board-renderer-v7";
-import { corePresentationPlanV7 } from "../../src/render/canvas/presentation-plan-v7";
 import {
-  centerCameraOn,
-  projectGrid,
+  corePresentationPlanV7,
+  type PresentationStepCueV7,
+} from "../../src/render/canvas/presentation-plan-v7";
+import { chibiBoardWorldBounds } from "../../src/render/canvas/chibi-geometry-v7";
+import {
+  TILE_HEIGHT,
   type CameraState,
 } from "../../src/render/canvas/geometry";
+import {
+  CAMERA_GLIDE_MAX_MS_V7,
+  CAMERA_GLIDE_MIN_MS_V7,
+  cellsOffscreenV7,
+  playbackCameraTargetV7,
+} from "../../src/render/canvas/playback-camera-v7";
+import { MOVE_TILE_MS_V7 } from "../../src/render/canvas/playback-pacing-v7";
 import { enemyCameraFixtureV7 } from "../fixtures/ruleset7-enemy-camera";
 
 afterEach(() => vi.restoreAllMocks());
+
+type FixtureV7 = ReturnType<typeof enemyCameraFixtureV7>;
+
+/**
+ * The same boundary played `dy` rows away (a hand-built event list: the
+ * fixture's unit and its Move, shifted on the fully explored board). The
+ * fixture's own Move runs along row 4, inside the comfort zone of the
+ * fitted camera; rows 0 and 9 are in view but outside the zone.
+ */
+function shifted(fixture: FixtureV7, dy: number, unitId?: number): FixtureV7 {
+  const shift = (at: CoordV7): CoordV7 => ({ x: at.x, y: at.y + dy });
+  const own = fixture.before.units[0];
+  if (own === undefined) throw new Error("Missing the fixture unit");
+  const id = (unitId ?? own.id) as typeof own.id;
+  const units = (view: FixtureV7["before"]): FixtureV7["before"] => ({
+    ...view,
+    units: view.units.map((unit) => ({ ...unit, id, at: shift(unit.at) })),
+  });
+  return {
+    ...fixture,
+    before: units(fixture.before),
+    after: units(fixture.after),
+    events: {
+      ...fixture.events,
+      events: fixture.events.events.map((event) =>
+        event.kind === "UNIT_MOVED"
+          ? { ...event, unitId: id, path: event.path.map(shift) }
+          : event,
+      ),
+    },
+    at: shift(fixture.at),
+  };
+}
+
+/** The fixture's boundary as another seat's (a third player's) playback. */
+function otherSeat(fixture: FixtureV7): FixtureV7 {
+  return {
+    ...fixture,
+    before: {
+      ...fixture.before,
+      turnOrder: [
+        ...fixture.before.turnOrder,
+        99 as (typeof fixture.before.turnOrder)[number],
+      ],
+      activeSeatIndex: fixture.before.turnOrder.length,
+    },
+  };
+}
+
+const path = (fixture: FixtureV7): readonly CoordV7[] =>
+  [4, 5, 6, 7].map((x) => ({ x, y: fixture.at.y }));
 
 describe("Enemy action camera presentation through public observations", () => {
   it.each(["FULL", "REDUCED"] as const)(
@@ -36,106 +98,318 @@ describe("Enemy action camera presentation through public observations", () => {
     },
   );
 
-  it.each(["NORMAL", "FAST"] as const)(
-    "centers the moving enemy each frame, keeps zoom and releases the camera in %s mode",
-    async (speed) => {
+  // Bead pulp_wars-2yc.49: the camera used to cut to the unit and then
+  // re-centre on it every frame of its walk. Now a move in view plays on a
+  // still map.
+  it.each([
+    ["NORMAL", 1],
+    ["FAST", 0.5],
+  ] as const)(
+    "holds the camera still for a move inside the comfort zone, at %s speed",
+    async (speed, scale) => {
       const fixture = enemyCameraFixtureV7("visible-move");
       const rig = hostRig(fixture, "FULL", speed);
-      rig.host.zoom("IN");
-      const zoom = rig.camera().zoom;
+      const initial = rig.camera();
+      expect(rig.target(path(fixture))).toBeNull();
       const done = rig.host.presentBoundary(
         fixture.before,
         fixture.after,
         fixture.events,
       );
-      expect(rig.camera()).toEqual(
-        centerCameraOn(
-          { ...rig.camera(), zoom },
-          projectGrid({ x: 4, y: 4 }),
-          rig.viewport,
-        ),
-      );
-      await rig.frame(speed === "FAST" ? 67.5 : 135);
-      // The existing movement easing reaches 87.5% at half duration.
-      expect(rig.camera()).toEqual(
-        centerCameraOn(
-          { ...rig.camera(), zoom },
-          projectGrid({ x: 6.625, y: 4 }),
-          rig.viewport,
-        ),
+      const duration = 3 * MOVE_TILE_MS_V7 * scale;
+      // The unit starts at once, eased in: an eighth of the way through
+      // its time it has covered well under an eighth of the path.
+      await rig.frame(0);
+      await rig.frame(duration / 8);
+      const early = rig.unitAt(fixture);
+      expect(early?.x).toBeGreaterThan(4);
+      expect(early?.x).toBeLessThan(4 + 3 / 8);
+      await rig.frame(duration * (3 / 8));
+      expect(rig.unitAt(fixture)?.x).toBeCloseTo(5.5);
+      // It is still walking just before its time is up, and done at it.
+      await rig.frame(duration / 2 - 1);
+      expect(rig.frames.size).toBe(1);
+      await rig.frame(1);
+      await done;
+      expect(rig.frames.size).toBe(0);
+      expect(rig.cameras.every((camera) => same(camera, initial))).toBe(true);
+      rig.host.destroy();
+    },
+  );
+
+  it("plays a cluster of moves in view without moving the camera once", async () => {
+    const fixture = enemyCameraFixtureV7("visible-move");
+    const rig = hostRig(fixture);
+    const initial = rig.camera();
+    // Six units walk rows 3 to 6, all inside the comfort zone.
+    for (const [index, dy] of [0, 1, -1, 2, 0, 1].entries()) {
+      const boundary = shifted(fixture, dy, 100 + index);
+      const done = rig.host.presentBoundary(
+        boundary.before,
+        boundary.after,
+        boundary.events,
       );
       await rig.drain();
       await done;
-      expect(rig.camera()).toEqual(
-        centerCameraOn(
-          { ...rig.camera(), zoom },
-          projectGrid(fixture.at),
-          rig.viewport,
-        ),
-      );
-      rig.host.zoom("OUT");
-      const manual = rig.camera();
-      rig.host.update(rig.model);
-      expect(rig.camera()).toEqual(manual);
-      rig.host.destroy();
-    },
-  );
+    }
+    expect(rig.cameras.length).toBeGreaterThan(6);
+    expect(rig.cameras.every((camera) => same(camera, initial))).toBe(true);
+    rig.host.destroy();
+  });
 
-  it.each(["visible-build", "visible-move"] as const)(
-    "frames %s once in reduced motion and settles cancellation",
-    async (scenario) => {
-      const fixture = enemyCameraFixtureV7(scenario);
-      const rig = hostRig(fixture, "REDUCED");
-      const done = rig.host.presentBoundary(
-        fixture.before,
-        fixture.after,
-        fixture.events,
-      );
-      await rig.frame(0);
-      const framed = rig.camera();
-      expect(framed).toEqual(
-        centerCameraOn(framed, projectGrid(fixture.at), rig.viewport),
-      );
-      await rig.frame(50);
-      expect(rig.camera()).toEqual(framed);
-      rig.host.finishPresentations();
-      await done;
-      expect(rig.frames.size).toBe(0);
-      rig.host.destroy();
-    },
-  );
-
-  it("frames a visible improvement while the build crossfade runs", async () => {
-    const fixture = enemyCameraFixtureV7("visible-build");
+  it("glides once to a move outside the comfort zone, and the unit starts when the camera rests", async () => {
+    const fixture = shifted(enemyCameraFixtureV7("visible-move"), 5);
     const rig = hostRig(fixture);
     const initial = rig.camera();
+    const target = rig.target(path(fixture));
+    if (target === null) throw new Error("Row 9 is inside the comfort zone");
+    const heard: PresentationStepCueV7[] = [];
+    rig.host.setPresentationStepListener((cue) => heard.push(cue));
     const done = rig.host.presentBoundary(
       fixture.before,
       fixture.after,
       fixture.events,
     );
-    await rig.frame(90);
-    expect(rig.camera()).not.toEqual(initial);
-    expect(rig.camera()).toEqual(
-      centerCameraOn(initial, projectGrid(fixture.at), rig.viewport),
+    // No cut: the first frame is where the camera was, the unit waiting.
+    await rig.frame(0);
+    expect(rig.camera()).toEqual(initial);
+    expect(rig.unitAt(fixture)).toEqual({ x: 4, y: 9 });
+    let previous = initial.offsetY;
+    let elapsed = 0;
+    while (!same(rig.camera(), target)) {
+      await rig.frame(16);
+      elapsed += 16;
+      // Straight towards the target, never past it; the unit has not left
+      // its first tile and its step has not been announced.
+      expect(rig.camera().offsetY).toBeLessThanOrEqual(previous);
+      expect(rig.camera().offsetY).toBeGreaterThanOrEqual(target.offsetY);
+      expect(rig.camera().offsetX).toBeGreaterThanOrEqual(
+        Math.min(initial.offsetX, target.offsetX),
+      );
+      expect(rig.camera().offsetX).toBeLessThanOrEqual(
+        Math.max(initial.offsetX, target.offsetX),
+      );
+      expect(rig.camera().zoom).toBe(initial.zoom);
+      expect(rig.unitAt(fixture)).toEqual({ x: 4, y: 9 });
+      if (!same(rig.camera(), target)) expect(heard).toEqual([]);
+      previous = rig.camera().offsetY;
+      if (elapsed > 2000) throw new Error("The glide never settled");
+    }
+    expect(elapsed).toBeGreaterThanOrEqual(CAMERA_GLIDE_MIN_MS_V7);
+    expect(elapsed).toBeLessThanOrEqual(CAMERA_GLIDE_MAX_MS_V7 + 16);
+    // The event is framed: every tile of it is on the canvas (the board's
+    // edge keeps it out of the middle), and asked again the camera holds.
+    expect(cellsOffscreenV7(target, path(fixture), rig.viewport)).toBe(false);
+    for (const cell of path(fixture)) {
+      const y = target.offsetY + cell.y * TILE_HEIGHT * target.zoom;
+      expect(y - (TILE_HEIGHT * target.zoom) / 2).toBeGreaterThanOrEqual(0);
+      expect(y + (TILE_HEIGHT * target.zoom) / 2).toBeLessThanOrEqual(600);
+    }
+    expect(rig.target(path(fixture))).toBeNull();
+    // Then the unit walks, on a camera that no longer moves.
+    const settledAt = rig.cameras.length;
+    await rig.frame(0);
+    await rig.frame(MOVE_TILE_MS_V7);
+    expect(heard.map((cue) => cue.step.kind)).toEqual(["MOVE"]);
+    expect(rig.unitAt(fixture)?.x).toBeGreaterThan(4);
+    await rig.drain();
+    await done;
+    expect(
+      rig.cameras.slice(settledAt).every((camera) => same(camera, target)),
+    ).toBe(true);
+    // A second move in the same place: the camera holds.
+    const again = rig.host.presentBoundary(
+      fixture.before,
+      fixture.after,
+      fixture.events,
     );
+    await rig.drain();
+    await again;
+    expect(rig.camera()).toEqual(target);
+    rig.host.destroy();
+  });
+
+  it("frames the move with a queued move near it, and hurries a long queue", async () => {
+    const fixture = shifted(enemyCameraFixtureV7("visible-move"), 5);
+    const near = shifted(enemyCameraFixtureV7("visible-move"), 2, 77);
+    // A small canvas, so the board is much larger than the view.
+    const rig = hostRig(fixture, "FULL", "NORMAL", { width: 400, height: 320 });
+    const queued = {
+      before: near.before,
+      after: near.after,
+      events: near.events,
+    };
+    const alone = rig.target(path(fixture));
+    const together = rig.target(path(fixture), [path(near)]);
+    if (alone === null || together === null)
+      throw new Error("Row 9 is inside the comfort zone");
+    expect(together).not.toEqual(alone);
+    const done = rig.host.presentBoundary(
+      fixture.before,
+      fixture.after,
+      fixture.events,
+      { upcoming: [queued] },
+    );
+    await rig.drain();
+    await done;
+    expect(rig.camera()).toEqual(together);
+    // The queued move then plays without a camera move.
+    const next = rig.host.presentBoundary(near.before, near.after, near.events);
+    await rig.drain();
+    await next;
+    expect(rig.camera()).toEqual(together);
+    // Eight boundaries waiting: the walk takes 90 ms a tile, as it used to.
+    const hurried = rig.host.presentBoundary(
+      near.before,
+      near.after,
+      near.events,
+      { upcoming: Array.from({ length: 8 }, () => queued) },
+    );
+    await rig.frame(0);
+    await rig.frame(3 * 90 - 1);
+    expect(rig.frames.size).toBe(1);
+    await rig.frame(1);
+    await hurried;
+    expect(rig.frames.size).toBe(0);
+    rig.host.destroy();
+  });
+
+  it("waits a beat before the next unit walks in the same view", async () => {
+    const fixture = enemyCameraFixtureV7("visible-move");
+    const second = shifted(fixture, 1, 55);
+    const rig = hostRig(fixture);
+    const first = rig.host.presentBoundary(
+      fixture.before,
+      fixture.after,
+      fixture.events,
+    );
+    await rig.drain();
+    await first;
+    // 40 ms later the next unit's boundary arrives: it waits the other 80.
+    rig.advance(40);
+    const done = rig.host.presentBoundary(
+      second.before,
+      second.after,
+      second.events,
+    );
+    await rig.frame(0);
+    await rig.frame(79);
+    expect(rig.unitAt(second)).toEqual({ x: 4, y: 5 });
+    await rig.frame(1);
+    await rig.frame(0);
+    await rig.frame(MOVE_TILE_MS_V7);
+    expect(rig.unitAt(second)?.x).toBeGreaterThan(4);
+    await rig.drain();
+    await done;
+    // The same unit moving again does not wait.
+    const again = rig.host.presentBoundary(
+      second.before,
+      second.after,
+      second.events,
+    );
+    await rig.frame(0);
+    await rig.frame(MOVE_TILE_MS_V7);
+    expect(rig.unitAt(second)?.x).toBeGreaterThan(4);
+    rig.host.finishPresentations();
+    await again;
+    rig.host.destroy();
+  });
+
+  it.each(["inside", "outside"] as const)(
+    "cuts in reduced motion only for a move %s the comfort zone",
+    async (where) => {
+      const base = enemyCameraFixtureV7("visible-move");
+      const fixture = where === "inside" ? base : shifted(base, 5);
+      const rig = hostRig(fixture, "REDUCED");
+      const initial = rig.camera();
+      const target = rig.target(path(fixture));
+      expect(target === null).toBe(where === "inside");
+      const done = rig.host.presentBoundary(
+        fixture.before,
+        fixture.after,
+        fixture.events,
+      );
+      // No travel: the very next frame is the framed camera, or the old one.
+      await rig.frame(0);
+      const framed = rig.camera();
+      expect(framed).toEqual(target ?? initial);
+      await rig.frame(50);
+      expect(rig.camera()).toEqual(framed);
+      rig.host.finishPresentations();
+      await done;
+      expect(rig.frames.size).toBe(0);
+      expect(
+        rig.cameras.every(
+          (camera) => same(camera, initial) || same(camera, framed),
+        ),
+      ).toBe(true);
+      rig.host.destroy();
+    },
+  );
+
+  it("glides to a visible improvement outside the comfort zone, then holds for the next one", async () => {
+    const fixture = enemyCameraFixtureV7("visible-build");
+    const rig = hostRig(fixture);
+    const initial = rig.camera();
+    const target = rig.target([fixture.at]);
+    if (target === null) throw new Error("The build is in the comfort zone");
+    const done = rig.host.presentBoundary(
+      fixture.before,
+      fixture.after,
+      fixture.events,
+    );
+    await rig.frame(0);
+    await rig.frame(90);
+    // Part of the way: a glide, not the cut it used to be.
+    expect(rig.camera()).not.toEqual(initial);
+    expect(rig.camera()).not.toEqual(target);
     expect(rig.frames.size).toBe(1);
     await rig.drain();
     await done;
+    expect(rig.camera()).toEqual(target);
+    const again = rig.host.presentBoundary(
+      fixture.before,
+      fixture.after,
+      fixture.events,
+    );
+    await rig.drain();
+    await again;
+    expect(rig.cameras.at(-1)).toEqual(target);
+    rig.host.destroy();
+  });
+
+  it("puts the camera on its target when the presentation is finished mid-glide", async () => {
+    const fixture = shifted(enemyCameraFixtureV7("visible-move"), 5);
+    const rig = hostRig(fixture);
+    const target = rig.target(path(fixture));
+    const done = rig.host.presentBoundary(
+      fixture.before,
+      fixture.after,
+      fixture.events,
+    );
+    await rig.frame(0);
+    await rig.frame(48);
+    expect(rig.camera()).not.toEqual(target);
+    rig.host.finishPresentations();
+    await done;
+    expect(rig.camera()).toEqual(target);
+    expect(rig.frames.size).toBe(0);
     rig.host.destroy();
   });
 
   it.each(["drag", "wheel", "keyboard", "zoom-button"])(
-    "honors %s camera input during tracking until the next action",
+    "lets %s input take the camera for the rest of that seat's playback",
     async (input) => {
-      const fixture = enemyCameraFixtureV7("visible-move");
+      const fixture = shifted(enemyCameraFixtureV7("visible-move"), 5);
       const rig = hostRig(fixture);
       const done = rig.host.presentBoundary(
         fixture.before,
         fixture.after,
         fixture.events,
       );
-      await rig.frame(30);
+      // Mid-glide.
+      await rig.frame(0);
+      await rig.frame(48);
       if (input === "zoom-button") rig.host.zoom("IN");
       else if (input === "wheel")
         rig.canvas.dispatchEvent(
@@ -155,20 +429,29 @@ describe("Enemy action camera presentation through public observations", () => {
         pointer("pointermove", 280);
         pointer("pointerup", 280);
       }
+      // The glide stops where the player left the camera.
+      await rig.frame(0);
       const manual = rig.camera();
       await rig.drain();
       await done;
       expect(rig.camera()).toEqual(manual);
-      const next = rig.host.presentBoundary(
-        fixture.before,
-        fixture.after,
-        fixture.events,
-      );
-      expect(rig.camera()).toEqual(
-        centerCameraOn(manual, projectGrid({ x: 4, y: 4 }), rig.viewport),
-      );
-      rig.host.finishPresentations();
+      // The same seat's next event, on the far edge, does not move it.
+      const far = shifted(enemyCameraFixtureV7("visible-move"), -4);
+      const next = rig.host.presentBoundary(far.before, far.after, far.events);
+      await rig.drain();
       await next;
+      expect(rig.camera()).toEqual(manual);
+      // Another seat's playback is followed again.
+      const other = otherSeat(far);
+      const followed = rig.host.presentBoundary(
+        other.before,
+        other.after,
+        other.events,
+      );
+      await rig.drain();
+      await followed;
+      expect(rig.camera()).not.toEqual(manual);
+      expect(rig.target(path(far))).toBeNull();
       rig.host.destroy();
     },
   );
@@ -189,10 +472,12 @@ describe("Enemy action camera presentation through public observations", () => {
       expect(steps.map((step) => step.path.map((at) => at.x))).toEqual(
         expected,
       );
+      // Bead pulp_wars-2yc.49: a stretch of one tile takes 240 ms (was 90).
       expect(steps.map((step) => step.durationMs)).toEqual(
-        expected.map(() => 90),
+        expected.map(() => MOVE_TILE_MS_V7),
       );
       const rig = hostRig(fixture);
+      const initial = rig.camera();
       const done = rig.host.presentBoundary(
         fixture.before,
         fixture.after,
@@ -200,22 +485,17 @@ describe("Enemy action camera presentation through public observations", () => {
       );
       await rig.drain();
       await done;
-      const finalX = expected.at(-1)?.at(-1);
-      if (finalX === undefined) throw new Error("Missing expected endpoint");
-      expect(rig.camera()).toEqual(
-        centerCameraOn(
-          rig.camera(),
-          projectGrid({ x: finalX, y: 4 }),
-          rig.viewport,
-        ),
-      );
+      // Every public stretch is in view: the camera never moved.
+      expect(rig.cameras.every((camera) => same(camera, initial))).toBe(true);
       rig.host.destroy();
     },
   );
 
   it("does not track human moves or builds", async () => {
     for (const scenario of ["visible-move", "visible-build"] as const) {
-      const fixture = enemyCameraFixtureV7(scenario);
+      const base = enemyCameraFixtureV7(scenario);
+      // Out of the comfort zone, where another player's move is framed.
+      const fixture = scenario === "visible-move" ? shifted(base, 5) : base;
       const humanBefore = {
         ...fixture.before,
         activeSeatIndex: fixture.before.turnOrder.indexOf(
@@ -237,14 +517,25 @@ describe("Enemy action camera presentation through public observations", () => {
   });
 });
 
+function same(left: CameraState, right: CameraState): boolean {
+  return (
+    left.offsetX === right.offsetX &&
+    left.offsetY === right.offsetY &&
+    left.zoom === right.zoom
+  );
+}
+
 function hostRig(
-  fixture: ReturnType<typeof enemyCameraFixtureV7>,
+  fixture: FixtureV7,
   motion: BoardHostModelV7["motion"] = "FULL",
   speed: BoardHostModelV7["animationSpeed"] = "NORMAL",
+  viewport = { width: 800, height: 600 },
 ) {
   let now = 0;
   let nextFrame = 1;
   let camera: CameraState = { offsetX: 0, offsetY: 0, zoom: 1 };
+  let units = new Map<string, CoordV7>();
+  const cameras: CameraState[] = [];
   const frames = new Map<number, FrameRequestCallback>();
   vi.spyOn(window.performance, "now").mockImplementation(() => now);
   vi.spyOn(window, "requestAnimationFrame").mockImplementation((callback) => {
@@ -261,8 +552,14 @@ function hostRig(
   } as unknown as CanvasRenderingContext2D);
   vi.spyOn(renderer, "drawBoardV7").mockImplementation((input) => {
     camera = input.camera;
+    cameras.push(input.camera);
+    units = new Map(
+      input.plan.entries
+        .filter((entry) => entry.kind === "UNIT")
+        .map((entry) => [entry.key, entry.at]),
+    );
   });
-  const viewport = { width: 800, height: 600 };
+  const band = { top: 0, bottom: viewport.height };
   const container = document.createElement("div");
   document.body.replaceChildren(container);
   vi.spyOn(container, "getBoundingClientRect").mockReturnValue({
@@ -271,8 +568,8 @@ function hostRig(
     y: 0,
     left: 0,
     top: 0,
-    right: 800,
-    bottom: 600,
+    right: viewport.width,
+    bottom: viewport.height,
     toJSON: () => ({}),
   });
   const host = new CanvasBoardHostV7(document);
@@ -307,8 +604,30 @@ function hostRig(
     model,
     canvas,
     viewport,
+    band,
     frames,
+    /** Every camera a board frame was drawn with, in order. */
+    cameras,
     camera: () => camera,
+    /** Where the last frame drew the boundary's unit. */
+    unitAt: (boundary: FixtureV7) =>
+      units.get(`unit:${boundary.before.units[0]?.id ?? -1}`),
+    /** The comfort-zone rule for `cells` under the camera last drawn. */
+    target: (
+      cells: readonly CoordV7[],
+      upcoming: readonly (readonly CoordV7[])[] = [],
+    ) =>
+      playbackCameraTargetV7({
+        camera,
+        viewport,
+        band,
+        cells,
+        upcoming,
+        board: chibiBoardWorldBounds(fixture.before.board),
+      }),
+    advance: (milliseconds: number) => {
+      now += milliseconds;
+    },
     frame,
     drain: async () => {
       for (let index = 0; index < 20 && frames.size; index++) await frame(1000);

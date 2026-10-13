@@ -142,6 +142,22 @@ import {
 } from "./presentation-plan-v7";
 import { selectionJumpDurationMs } from "./selection-jump-presentation";
 import {
+  cameraGlideAtV7,
+  cellsOffscreenV7,
+  playbackCameraEventsV7,
+  playbackCameraTargetV7,
+  playbackFollowAllowedV7,
+  startCameraGlideV7,
+  suppressedSeatAfterInputV7,
+  type CameraGlideV7,
+} from "./playback-camera-v7";
+import {
+  MIN_DURATION_SCALE_V7,
+  movePathProgressV7,
+  playbackDurationScaleV7,
+  settleRemainingMsV7,
+} from "./playback-pacing-v7";
+import {
   archerProjectileEndpoints,
   arrowGeometry,
 } from "./combat-presentation";
@@ -291,6 +307,26 @@ export interface BoardHostModelV7 {
   readonly firstStepMarker?: FirstStepMarkerV7 | null;
 }
 
+/** A boundary waiting to play after the one being presented. */
+export interface QueuedBoundaryV7 {
+  readonly before: PlayerViewV7;
+  readonly after: PlayerViewV7;
+  readonly events: PlayerEventEnvelopeV7;
+}
+
+/** Calm playback (bead pulp_wars-2yc.49): what the host may know ahead. */
+export interface PresentBoundaryOptionsV7 {
+  /**
+   * The boundaries queued behind this one, in order. The camera frames an
+   * event together with the same player's queued events that fit the view
+   * with it, and playback hurries as the queue grows.
+   */
+  readonly upcoming?: readonly QueuedBoundaryV7[];
+}
+
+/** How many queued boundaries the camera looks ahead when it frames. */
+const PLAYBACK_LOOKAHEAD_V7 = 8;
+
 export interface BoardHostCallbacksV7 {
   readonly onSelection: (selection: BoardSelectionV7 | null) => void;
   readonly onCommand: (target: MapCommandTargetV7) => void;
@@ -307,6 +343,7 @@ export interface BoardHostV7 {
     before: PlayerViewV7,
     after: PlayerViewV7,
     events: PlayerEventEnvelopeV7,
+    options?: PresentBoundaryOptionsV7,
   ): Promise<void>;
   finishPresentations?(): void;
   /**
@@ -392,6 +429,28 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
   #presentationToken = 0;
   #stepListener: ((cue: PresentationStepCueV7) => void) | null = null;
   #cameraFollowAllowed = false;
+  /**
+   * Calm playback (bead pulp_wars-2yc.49). The seat of the boundary last
+   * played with steps the camera frames (it is playing while a presented
+   * view is held); the seat the player took the
+   * camera from (its events no longer move the camera until another seat
+   * plays); and the last unit of another player that walked, with when it
+   * stopped (the beat before the next unit starts).
+   */
+  #presentingFollowSeat: number | null = null;
+  #followSuppressedSeat: number | null = null;
+  #lastFollowMove: {
+    readonly unitId: number;
+    readonly endedAt: number;
+  } | null = null;
+  /** The camera glide in progress (playback-camera-v7.ts). */
+  #cameraGlide: {
+    readonly glide: CameraGlideV7;
+    readonly target: CameraState;
+    startedAt: number;
+    pausedAt: number | null;
+    readonly resolve: () => void;
+  } | null = null;
   #ambientFrame: number | null = null;
   #readinessStartedAt = 0;
   #readinessKey: string | null = null;
@@ -822,7 +881,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
    * Revision 17: while a Kaboom! is previewed (focused, hovered or armed),
    * pans the camera the least distance that shows every blast area of the
    * chain above the dock and below the HUD. The zoom never changes; reduced
-   * motion jumps, full motion eases for a moment.
+   * motion jumps, full motion glides (playback-camera-v7.ts).
    */
   #frameKaboomPreview(model: BoardHostModelV7): void {
     const unitId = model.interaction.kaboomPreviewUnitId ?? null;
@@ -913,10 +972,32 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     if (area === null) return;
     const delta = panToFrameArea(this.#camera, area, this.#viewport, band);
     if (delta.x === 0 && delta.y === 0) return;
-    this.#panCameraTo(panCamera(this.#camera, delta), model.motion === "FULL");
+    void this.#glideCameraTo(
+      panCamera(this.#camera, delta),
+      model.motion === "FULL",
+    );
   }
 
-  #panCameraTo(target: CameraState, animate: boolean): void {
+  /**
+   * Moves the camera to `target` at the same zoom: a spring glide
+   * (playback-camera-v7.ts), or a cut when `animate` is false or no frame
+   * can be asked for. The promise resolves when the camera rests there, or
+   * when the glide is cancelled: a player's pan, zoom or tap leaves the
+   * camera where it is; a finished presentation puts it on the target.
+   */
+  #glideCameraTo(
+    target: CameraState,
+    animate: boolean,
+    durationScale = 1,
+  ): Promise<void> {
+    const prior = this.#cameraGlide;
+    const velocity =
+      prior === null
+        ? undefined
+        : cameraGlideAtV7(
+            prior.glide,
+            (prior.pausedAt ?? this.#now()) - prior.startedAt,
+          ).velocity;
     this.#cancelCameraPan();
     const browser = this.#document.defaultView;
     if (
@@ -925,29 +1006,112 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       typeof browser.requestAnimationFrame !== "function"
     ) {
       this.#camera = target;
-      return;
+      return Promise.resolve();
     }
-    const start = this.#camera;
-    const startedAt = this.#now();
-    const step = (): void => {
-      const progress = Math.min(1, (this.#now() - startedAt) / 180);
-      const eased = 1 - (1 - progress) * (1 - progress);
-      this.#camera = {
-        ...start,
-        offsetX: start.offsetX + (target.offsetX - start.offsetX) * eased,
-        offsetY: start.offsetY + (target.offsetY - start.offsetY) * eased,
+    return new Promise((resolve) => {
+      const state = {
+        glide: startCameraGlideV7({
+          from: { x: this.#camera.offsetX, y: this.#camera.offsetY },
+          target: { x: target.offsetX, y: target.offsetY },
+          viewport: this.#viewport,
+          durationScale,
+          ...(velocity === undefined ? {} : { velocity }),
+        }),
+        target,
+        startedAt: this.#now(),
+        pausedAt: null as number | null,
+        resolve,
       };
-      this.#draw();
-      this.#cameraPanFrame =
-        progress < 1 ? browser.requestAnimationFrame(step) : null;
-    };
-    this.#cameraPanFrame = browser.requestAnimationFrame(step);
+      this.#cameraGlide = state;
+      const frame = (): void => {
+        if (this.#cameraGlide !== state) return;
+        const now = this.#now();
+        if (this.#model?.presentationPaused) {
+          state.pausedAt ??= now;
+          this.#cameraPanFrame = browser.requestAnimationFrame(frame);
+          return;
+        }
+        if (state.pausedAt !== null) {
+          state.startedAt += now - state.pausedAt;
+          state.pausedAt = null;
+        }
+        const sample = cameraGlideAtV7(state.glide, now - state.startedAt);
+        this.#camera = {
+          ...this.#camera,
+          offsetX: sample.offset.x,
+          offsetY: sample.offset.y,
+        };
+        if (sample.settled) {
+          this.#cameraPanFrame = null;
+          this.#cameraGlide = null;
+          this.#draw();
+          resolve();
+          return;
+        }
+        this.#draw();
+        this.#cameraPanFrame = browser.requestAnimationFrame(frame);
+      };
+      this.#cameraPanFrame = browser.requestAnimationFrame(frame);
+    });
   }
 
-  #cancelCameraPan(): void {
+  /** Stops a glide where it is, or (`finish`) on its target. */
+  #cancelCameraPan(finish = false): void {
     if (this.#cameraPanFrame !== null)
       this.#document.defaultView?.cancelAnimationFrame(this.#cameraPanFrame);
     this.#cameraPanFrame = null;
+    const state = this.#cameraGlide;
+    this.#cameraGlide = null;
+    if (state === null) return;
+    if (finish)
+      this.#camera = {
+        ...this.#camera,
+        offsetX: state.target.offsetX,
+        offsetY: state.target.offsetY,
+      };
+    state.resolve();
+  }
+
+  /**
+   * Player input wins (bead pulp_wars-2yc.49): a pan, zoom, tap or cursor
+   * key stops a glide where it is and takes the camera from the seat whose
+   * events are playing, until another seat's playback starts.
+   */
+  #playerTookCamera(): void {
+    this.#cameraFollowAllowed = false;
+    const model = this.#model;
+    if (model !== null)
+      this.#followSuppressedSeat = suppressedSeatAfterInputV7({
+        // A boundary is playing while a presented view is held.
+        presentingSeat:
+          this.#presentedView === null ? null : this.#presentingFollowSeat,
+        activeSeat: model.view.turnOrder[model.view.activeSeatIndex] ?? null,
+        viewerSeat: model.view.viewer.id,
+        suppressedSeat: this.#followSuppressedSeat,
+      });
+    this.#cancelCameraPan();
+  }
+
+  /**
+   * The comfort-zone rule for the event on `cells`: null while the camera
+   * should hold still (the event is in view, or the player has the
+   * camera), else the camera that frames it with what is still to play.
+   */
+  #playbackTarget(
+    cells: readonly CoordV7[],
+    upcoming: () => readonly (readonly CoordV7[])[],
+  ): CameraState | null {
+    const model = this.#model;
+    if (!this.#cameraFollowAllowed || model === null) return null;
+    const input = {
+      camera: this.#camera,
+      viewport: this.#viewport,
+      band: this.#unobscuredBand(),
+      cells,
+      board: chibiBoardWorldBounds(model.view.board),
+    };
+    if (playbackCameraTargetV7(input) === null) return null;
+    return playbackCameraTargetV7({ ...input, upcoming: upcoming() });
   }
 
   activate(at: CoordV7): void {
@@ -959,8 +1123,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
   }
 
   zoom(direction: "IN" | "OUT"): void {
-    this.#cameraFollowAllowed = false;
-    this.#cancelCameraPan();
+    this.#playerTookCamera();
     this.#camera = this.#limitCamera(
       zoomChibiCameraAt(
         this.#camera,
@@ -1033,6 +1196,8 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
 
   finishPresentations(redraw = true): void {
     this.#cameraFollowAllowed = false;
+    this.#presentingFollowSeat = null;
+    this.#cancelCameraPan(true);
     this.#presentationToken += 1;
     if (this.#animationFrame !== null)
       this.#document.defaultView?.cancelAnimationFrame(this.#animationFrame);
@@ -1086,6 +1251,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     before: PlayerViewV7,
     after: PlayerViewV7,
     envelope: PlayerEventEnvelopeV7,
+    options: PresentBoundaryOptionsV7 = {},
   ): Promise<void> {
     this.finishPresentations(false);
     this.#cancelAmbientFrame();
@@ -1095,8 +1261,53 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     if (model === null) return;
     const steps = corePresentationPlanV7(before, envelope, after);
     if (steps.length === 0) return;
-    this.#cameraFollowAllowed = this.#pointers.size === 0;
-    const durationScale = model.animationSpeed === "FAST" ? 0.5 : 1;
+    // Calm playback (bead pulp_wars-2yc.49): the camera frames another
+    // player's steps by the comfort-zone rule, unless the player took the
+    // camera during this seat's playback.
+    const seat = before.turnOrder[before.activeSeatIndex] ?? null;
+    const cameraEvents = playbackCameraEventsV7(
+      steps,
+      seat !== before.viewer.id,
+    );
+    if (this.#followSuppressedSeat !== seat) this.#followSuppressedSeat = null;
+    this.#cameraFollowAllowed =
+      this.#pointers.size === 0 &&
+      playbackFollowAllowedV7(this.#followSuppressedSeat, seat);
+    this.#presentingFollowSeat = cameraEvents.length > 0 ? seat : null;
+    const cameraCells = new Map(
+      cameraEvents.map((event) => [steps[event.index], event.cells]),
+    );
+    let queuedCells: readonly (readonly CoordV7[])[] | null = null;
+    /** The tiles of the events still to play after step `index`. */
+    const laterCells = (index: number): readonly (readonly CoordV7[])[] => {
+      queuedCells ??= (options.upcoming ?? [])
+        .slice(0, PLAYBACK_LOOKAHEAD_V7)
+        .flatMap((queued) => {
+          const queuedSeat =
+            queued.before.turnOrder[queued.before.activeSeatIndex] ?? null;
+          return queuedSeat !== seat
+            ? []
+            : playbackCameraEventsV7(
+                corePresentationPlanV7(
+                  queued.before,
+                  queued.events,
+                  queued.after,
+                ),
+                queuedSeat !== queued.before.viewer.id,
+              ).map((event) => event.cells);
+        });
+      return [
+        ...cameraEvents
+          .filter((event) => event.index > index)
+          .map((event) => event.cells),
+        ...queuedCells,
+      ];
+    };
+    const baseDurationScale = playbackDurationScaleV7(
+      model.animationSpeed,
+      options.upcoming?.length ?? 0,
+    );
+    let durationScale = baseDurationScale;
     this.#presentedView = before;
     // Bead pulp_wars-2yc.10: each step is announced once, as it starts.
     const announced = new Set<CorePresentationStepV7>();
@@ -1110,21 +1321,25 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       }
     };
     if (model.motion === "REDUCED") {
-      // Reduced motion frames the final public location once, without travel.
-      const focus = [...steps]
-        .reverse()
-        .find(
-          (step) =>
-            step.kind === "BUILD" ||
-            (step.kind === "MOVE" && step.followCamera),
-        );
-      const at =
-        focus?.kind === "BUILD"
-          ? focus.at
-          : focus?.kind === "MOVE"
-            ? focus.path.at(-1)
-            : undefined;
-      if (at !== undefined) this.#followCamera(at);
+      // Reduced motion never glides: the camera cuts, and only when the
+      // comfort-zone rule finds an event out of view (it frames the first
+      // such event with the later ones that fit, then holds still).
+      const cut = (
+        step: CorePresentationStepV7,
+        later: readonly (readonly CoordV7[])[] = [],
+      ): void => {
+        const cells = cameraCells.get(step);
+        if (cells === undefined) return;
+        const target = this.#playbackTarget(cells, () => later);
+        if (target === null) return;
+        this.#camera = target;
+        this.#draw();
+      };
+      const firstEvent = cameraEvents[0];
+      const firstStep =
+        firstEvent === undefined ? undefined : steps[firstEvent.index];
+      if (firstEvent !== undefined && firstStep !== undefined)
+        cut(firstStep, laterCells(firstEvent.index));
       const supportSteps = steps.filter((step) => step.kind === "SUPPORT");
       const windmillSteps = steps.filter(
         (step) => step.kind === "WINDMILL_HEALING",
@@ -1176,6 +1391,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         for (const step of attackSteps) {
           const effect = attackEffectOf(step);
           if (effect === null) continue;
+          cut(step);
           announce(step);
           this.#attackFeedback = this.#attackFeedbackOf(
             effect,
@@ -1196,8 +1412,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         // laid Egg show their new sprite and marker at once.
         for (const step of dinosaurSteps) {
           announce(step);
-          if (step.followCamera === true && step.cells[0] !== undefined)
-            this.#followCamera(step.cells[0]);
+          cut(step);
           if (step.effect === "GROW" || step.effect === "EGG_LAID") continue;
           this.#dinosaurFeedback = {
             effect: step.effect,
@@ -1214,8 +1429,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         // The Martian revision: each Martian cue holds its midpoint.
         for (const step of martianSteps) {
           announce(step);
-          if (step.followCamera === true && step.cells[0] !== undefined)
-            this.#followCamera(step.cells[0]);
+          cut(step);
           this.#martianFeedback = martianFeedbackOf(step, 0.5);
           this.#drawSupportOverlay();
           await this.#animate(220 * durationScale, () => undefined);
@@ -1227,8 +1441,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         // midpoint (a Shatter shows its burst, the shattered unit gone).
         for (const step of iceFolkSteps) {
           announce(step);
-          if (step.followCamera === true && step.cells[0] !== undefined)
-            this.#followCamera(step.cells[0]);
+          cut(step);
           this.#iceFolkFeedback = iceFolkFeedbackOf(
             step,
             step.effect === "SHATTER" ? 0.4 : 0.6,
@@ -1243,8 +1456,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         // its peak) long enough to read.
         for (const step of dwarfSteps) {
           announce(step);
-          if (step.followCamera === true && step.cells[0] !== undefined)
-            this.#followCamera(step.cells[0]);
+          cut(step);
           this.#dwarfFeedback = dwarfFeedbackOf(
             step,
             dwarfReducedMotionProgressV7(step.effect),
@@ -1259,8 +1471,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         // reads (the strand red and parted, the collar bursting).
         for (const step of cultSteps) {
           announce(step);
-          if (step.followCamera === true && step.cells[0] !== undefined)
-            this.#followCamera(step.cells[0]);
+          cut(step);
           this.#cultFeedback = cultFeedbackOf(
             step,
             cultReducedMotionProgressV7(step.effect),
@@ -1275,8 +1486,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         // reads (a Sugar Toss its "+n", the swirl settled).
         for (const step of candySteps) {
           announce(step);
-          if (step.followCamera === true && step.cells[0] !== undefined)
-            this.#followCamera(step.cells[0]);
+          cut(step);
           this.#candyFeedback = candyFeedbackOf(
             step,
             candyReducedMotionProgressV7(step.effect),
@@ -1292,7 +1502,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         // the Goblin at the top of its arc); the board never shakes.
         for (const step of giantSteps) {
           announce(step);
-          if (step.followCamera === true) this.#followCamera(step.from);
+          cut(step);
           this.#giantFeedback = this.#giantFeedbackOf(
             step,
             giantReducedMotionProgressV7(step.effect),
@@ -1323,7 +1533,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
           announce(step);
           // Revision 17: the still "+N" of Troll regeneration holds long
           // enough to read; a Recover's "+N" a little less.
-          if (step.followCamera === true) this.#followCamera(step.actor.at);
+          cut(step);
           const hold =
             step.effect === "REGENERATE" ||
             // Map curiosities: the still "+N" of a Fountain, a Wreck or a
@@ -1407,7 +1617,8 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       this.#heldUnits = pushBoundary
         ? heldUnitsAfterV7(steps, index)
         : NO_HELD_UNITS;
-      announce(step);
+      durationScale = baseDurationScale;
+      const cells = cameraCells.get(step);
       if (step.kind === "MOVE") {
         this.#presentedView = after;
         const unit = before.units.find(
@@ -1419,19 +1630,59 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
           !after.units.some((candidate) => candidate.id === unit.id)
         )
           this.#presentedView = { ...after, units: [...after.units, unit] };
+        // The unit waits on its first tile while the camera comes to it.
+        const first = step.path[0];
+        if (cells !== undefined && first !== undefined)
+          this.#animatedUnit = { id: step.unitId, at: first };
+      }
+      if (cells !== undefined) {
+        // The camera moves only for an event outside the comfort zone, and
+        // the step starts once it rests (playback-camera-v7.ts).
+        const target = this.#playbackTarget(cells, () => laterCells(index));
+        if (target !== null) {
+          await this.#glideCameraTo(target, true, durationScale);
+          if (token !== this.#presentationToken) return;
+        }
+        if (
+          !this.#cameraFollowAllowed &&
+          cellsOffscreenV7(this.#camera, cells, this.#viewport)
+        )
+          // The player has the camera and this plays out of view: quickly.
+          durationScale = Math.min(durationScale, MIN_DURATION_SCALE_V7);
+        else if (
+          target === null &&
+          step.kind === "MOVE" &&
+          step.pushSlide !== true &&
+          this.#lastFollowMove !== null &&
+          this.#lastFollowMove.unitId !== step.unitId
+        ) {
+          // A beat between two units that walk in the same view.
+          const rest = settleRemainingMsV7({
+            nowMs: this.#now(),
+            lastEndedAtMs: this.#lastFollowMove.endedAt,
+            durationScale,
+          });
+          if (rest > 0) {
+            this.#draw();
+            await this.#animate(rest, () => undefined);
+            if (token !== this.#presentationToken) return;
+          }
+        }
+      }
+      announce(step);
+      if (step.kind === "MOVE") {
         await this.#animatePath(
           step.unitId,
           step.path,
           step.durationMs * durationScale,
-          step.followCamera === true,
+          step.pushSlide !== true,
         );
         if (token !== this.#presentationToken) return;
+        if (cells !== undefined && step.pushSlide !== true)
+          this.#lastFollowMove = { unitId: step.unitId, endedAt: this.#now() };
         this.#animatedUnit = null;
         this.#presentedView = after;
       } else if (step.kind === "DINOSAUR") {
-        const first = step.cells[0];
-        if (first !== undefined && step.followCamera === true)
-          this.#followCamera(first);
         // Hatching shows the Egg first; every other cue shows the result.
         this.#presentedView = step.effect === "HATCH" ? before : after;
         this.#draw();
@@ -1461,9 +1712,6 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         this.#presentedView = after;
         this.#drawSupportOverlay();
       } else if (step.kind === "MARTIAN") {
-        const first = step.cells[0];
-        if (first !== undefined && step.followCamera === true)
-          this.#followCamera(first);
         // A heat ray shows the target before the hit and the result after
         // it; every other cue shows the result (the arrival, the pull's
         // start, the taken unit under its control halo, the released unit
@@ -1485,9 +1733,6 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         this.#draw();
         this.#drawSupportOverlay();
       } else if (step.kind === "ICE_FOLK") {
-        const first = step.cells[0];
-        if (first !== undefined && step.followCamera === true)
-          this.#followCamera(first);
         // A Shatter shows the defender cased in ice, cracking, until it
         // bursts (ICE_FOLK.md timeline); every other cue shows the result
         // (the Frozen markers appear as the frost forms).
@@ -1517,9 +1762,6 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         this.#draw();
         this.#drawSupportOverlay();
       } else if (step.kind === "DWARF") {
-        const first = step.cells[0];
-        if (first !== undefined && step.followCamera === true)
-          this.#followCamera(first);
         // An eruption shows the mound until the Mole and its rider are back
         // (DWARF_ERUPTION_TIMELINE_V7.surface); every other cue shows the
         // result (the mound, the bombed target, the new Gunner).
@@ -1551,9 +1793,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       } else if (step.kind === "CANDY") {
         // The Candy revision: every Candy cue plays over the result (the
         // new marker, the re-baked unit, the healed HP).
-        const first = step.cells[0];
-        if (first !== undefined && step.followCamera === true)
-          this.#followCamera(first);
+
         this.#presentedView = after;
         this.#draw();
         await this.#animate(step.durationMs * durationScale, (progress) => {
@@ -1567,9 +1807,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         // The Cultists' channel: every cue plays over the result (the
         // Horror arrived, the strand drawn or gone, the daemon off the
         // board).
-        const first = step.cells[0];
-        if (first !== undefined && step.followCamera === true)
-          this.#followCamera(first);
+
         this.#presentedView = after;
         this.#draw();
         await this.#animate(step.durationMs * durationScale, (progress) => {
@@ -1586,7 +1824,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         // its tile; the victim shrinks; the men are not there yet), then
         // the result; the cue moves its units, and a Stomp shakes the
         // board.
-        if (step.followCamera === true) this.#followCamera(step.from);
+
         const hit = GIANT_EFFECT_HIT_V7[step.effect];
         const flying = step.effect === "TOSS" ? step.unitIds : [];
         const beforeView =
@@ -1620,7 +1858,6 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         this.#draw();
         this.#drawSupportOverlay();
       } else if (step.kind === "BUILD") {
-        this.#followCamera(step.at);
         this.#crossfade = { before, after, progress: 0 };
         await this.#animate(step.durationMs * durationScale, (progress) => {
           this.#crossfade = { before, after, progress };
@@ -1684,7 +1921,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         this.#presentedView = after;
       } else if (step.kind === "DISBAND") {
         // Tuning 7: the disbanded unit fades out where it stood.
-        if (step.followCamera === true) this.#followCamera(step.at);
+
         this.#crossfade = { before, after, progress: 0 };
         await this.#animate(step.durationMs * durationScale, (progress) => {
           this.#crossfade = { before, after, progress };
@@ -1709,7 +1946,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         // The Vampire and Banshee rework (`pulp_wars-iqhp`): the bats swirl
         // round the Vampire where it still stands, before its Escape Move.
         this.#presentedView = step.effect === "BAT_SWIRL" ? before : after;
-        if (step.followCamera === true) this.#followCamera(step.actor.at);
+
         this.#draw();
         await this.#animate(step.durationMs * durationScale, (progress) => {
           this.#supportFeedback = {
@@ -1751,9 +1988,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       } else if (step.kind === "EXPLOSION") {
         // Revision 17: the blast bursts over the units it hits, then the
         // board shows the result under the fading smoke.
-        const first = step.blasts[0];
-        if (first !== undefined && step.followCamera === true)
-          this.#followCamera(first.at);
+
         this.#draw();
         await this.#animate(step.durationMs * durationScale, (progress) => {
           if (progress >= 0.45 && this.#presentedView !== after) {
@@ -2944,8 +3179,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
   }
 
   readonly #onPointerDown = (event: PointerEvent): void => {
-    this.#cameraFollowAllowed = false;
-    this.#cancelCameraPan();
+    this.#playerTookCamera();
     const canvas = this.#canvas;
     if (canvas === null) return;
     const point = localPoint(canvas, event);
@@ -3091,7 +3325,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     this.#pinchStart = null;
   };
   readonly #onWheel = (event: WheelEvent): void => {
-    this.#cameraFollowAllowed = false;
+    this.#playerTookCamera();
     event.preventDefault();
     const canvas = this.#canvas;
     if (canvas === null) return;
@@ -3187,7 +3421,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       const cell = cells[next];
       if (cell === undefined) return;
       event.preventDefault();
-      this.#cameraFollowAllowed = false;
+      this.#playerTookCamera();
       this.#focused = cell;
       this.#keepFocusedOnscreen();
       this.#describe();
@@ -3202,7 +3436,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     };
     const delta = directions[event.key];
     if (delta === undefined) return;
-    this.#cameraFollowAllowed = false;
+    this.#playerTookCamera();
     event.preventDefault();
     const current = this.#focused ?? { x: 0, y: 0 };
     const multiplier = event.shiftKey ? 1 : 0;
@@ -3359,24 +3593,28 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     this.#readinessKey = null;
   }
 
+  /**
+   * Slides a unit along `path`. A `walk` (an ordinary Move) speeds up,
+   * holds its pace and slows down (playback-pacing-v7.ts); a shove keeps
+   * the abrupt ease-out of `#animate`. The camera does not follow it: it
+   * was framed before the step started.
+   */
   async #animatePath(
     unitId: number,
     path: readonly CoordV7[],
     duration: number,
-    followCamera = false,
+    walk: boolean,
   ): Promise<void> {
     const first = path[0];
     if (first === undefined) return;
-    if (followCamera) {
-      this.#animatedUnit = { id: unitId, at: first };
-      this.#followCamera(first);
-      this.#draw();
-    }
-    await this.#animate(duration, (progress) => {
+    await this.#animate(duration, (eased) => {
       if (path.length === 1) {
         this.#draw();
         return;
       }
+      const progress = walk
+        ? movePathProgressV7(1 - Math.cbrt(1 - eased), path.length - 1)
+        : eased;
       const scaled = progress * (path.length - 1);
       const index = Math.min(path.length - 2, Math.floor(scaled));
       const from = path[index];
@@ -3396,18 +3634,8 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
           y: from.y + (to.y - from.y) * local - hop,
         },
       };
-      if (followCamera) this.#followCamera(this.#animatedUnit.at);
       this.#draw();
     });
-  }
-
-  #followCamera(at: CoordV7): void {
-    if (!this.#cameraFollowAllowed) return;
-    this.#camera = centerCameraOn(
-      this.#camera,
-      projectGrid(at),
-      this.#viewport,
-    );
   }
 
   async #animateLunge(

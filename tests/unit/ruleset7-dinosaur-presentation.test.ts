@@ -817,7 +817,9 @@ describe("Revision 19 presentation steps", () => {
         kind: "MOVE",
         unitId: triceratops.id,
         path: [AT.chargeFrom, AT.pushTarget],
-        durationMs: 90,
+        // Bead pulp_wars-2yc.49: a tile of an ordinary Move takes 240 ms
+        // (was 90); the pushed unit's slide keeps its 120.
+        durationMs: 240,
       },
     ]);
   });

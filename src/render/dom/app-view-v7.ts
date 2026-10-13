@@ -10420,6 +10420,17 @@ export class Ruleset7DomAppView {
           next.boundary.beforeView,
           next.boundary.afterView,
           next.boundary.playerEvents,
+          // Calm playback (bead pulp_wars-2yc.49): the board frames an
+          // event with the queued ones near it and hurries a long queue.
+          {
+            upcoming: this.#presentationQueue
+              .filter((queued) => queued.matchInstance === next.matchInstance)
+              .map((queued) => ({
+                before: queued.boundary.beforeView,
+                after: queued.boundary.afterView,
+                events: queued.boundary.playerEvents,
+              })),
+          },
         );
         if (!this.#destroyed && next.matchInstance === this.#matchInstance)
           // The boundary has played: its coins and population leave their

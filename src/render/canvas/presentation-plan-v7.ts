@@ -30,6 +30,7 @@ import {
   type BroadsideShellV7,
 } from "./attack-effects-v7";
 import { playerFactionColourV7 } from "./faction-colours-v7";
+import { moveDurationMsV7 } from "./playback-pacing-v7";
 import {
   GIANT_EFFECT_DURATIONS_V7,
   type GiantFeedbackEffectV7,
@@ -317,7 +318,10 @@ export interface PresentationStepCueV7 {
   readonly before: PlayerViewV7;
   readonly after: PlayerViewV7;
   readonly envelope: PlayerEventEnvelopeV7;
-  /** 0.5 at Fast animation speed: delays shrink with the animation. */
+  /**
+   * 0.5 at Fast animation speed: delays shrink with the animation. Less
+   * while playback catches up (playback-pacing-v7.ts).
+   */
   readonly durationScale: number;
 }
 
@@ -861,7 +865,7 @@ export function corePresentationPlanV7(
               kind: "MOVE",
               unitId: event.unitId,
               path: segment,
-              durationMs: Math.min(900, Math.max(1, segment.length - 1) * 90),
+              durationMs: moveDurationMsV7(segment.length - 1),
               followCamera: true,
             });
           segment = [];
@@ -879,7 +883,7 @@ export function corePresentationPlanV7(
           kind: "MOVE",
           unitId: event.unitId,
           path: [origin, ...event.path],
-          durationMs: Math.min(900, event.path.length * 90),
+          durationMs: moveDurationMsV7(event.path.length),
         });
       const destination = event.path.at(-1);
       if (destination !== undefined) origins.set(event.unitId, destination);

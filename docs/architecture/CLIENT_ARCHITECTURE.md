@@ -1635,6 +1635,13 @@ off-board margin in the region when the board is larger
 starting camera: opening a dock never moves it, and pan and zoom stay
 unclamped.
 
+During another player's playback the camera follows the comfort-zone rule
+of [calm playback](../ui/SCREEN_FLOW.md#calm-playback-bead-pulp_wars-2yc49):
+`playback-camera-v7.ts` is the pure module (where the camera should rest
+for an event, and the spring glide over a caller-owned clock) and
+`playback-pacing-v7.ts` holds the walk's timing; the board host only asks
+them and draws.
+
 Canvas 2D responsibilities:
 
 - camera pan/zoom, device-pixel-ratio backing size, grid projection, stable draw
