@@ -109,7 +109,7 @@ const moveTargets = (state: GameStateV7, from: CoordV7): readonly string[] => {
 
 describe("tuning 4 keeps the unpublished identity", () => {
   it("is 7r47", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r80");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r81");
   });
 });
 
@@ -152,18 +152,18 @@ describe("research price (by the cities owned since the economy rejig)", () => {
   it("is the tier base whatever the technologies owned, with one city", () => {
     expect(TECHNOLOGY_RESEARCH_COST_V7).toEqual({
       1: { base: 5, step: 1 },
-      2: { base: 7, step: 2 },
-      3: { base: 9, step: 3 },
+      2: { base: 6, step: 2 },
+      3: { base: 7, step: 3 },
     });
     expect(playerTechnologyResearchCostV7(1, 0, 1)).toBe(0);
     expect(costs([]).cost("HUNTING")).toBe(0);
     const one = costs(["HUNTING"]);
     expect(one.cost("DRILL")).toBe(5);
-    expect(one.cost("FORESTRY")).toBe(7);
+    expect(one.cost("FORESTRY")).toBe(6);
     const two = costs(["HUNTING", "FORESTRY"]);
     expect(two.cost("DRILL")).toBe(5);
-    expect(two.cost("MARKSMANSHIP")).toBe(7);
-    expect(two.cost("SAWMILLING")).toBe(9);
+    expect(two.cost("MARKSMANSHIP")).toBe(6);
+    expect(two.cost("SAWMILLING")).toBe(7);
     const seven = costs([
       "GATHERING",
       "HUNTING",
@@ -173,8 +173,8 @@ describe("research price (by the cities owned since the economy rejig)", () => {
       "RAIDING",
       "DRILL",
     ]);
-    expect(seven.cost("CHIVALRY")).toBe(9);
-    expect(seven.cost("FARMING")).toBe(7);
+    expect(seven.cost("CHIVALRY")).toBe(7);
+    expect(seven.cost("FARMING")).toBe(6);
   });
 
   it("reads the number of cities", () => {
@@ -195,15 +195,15 @@ describe("research price (by the cities owned since the economy rejig)", () => {
     // A second city: +1 / +2 / +3.
     for (const [id, cost] of [
       ["DRILL", 6],
-      ["MARKSMANSHIP", 9],
-      ["SAWMILLING", 12],
+      ["MARKSMANSHIP", 8],
+      ["SAWMILLING", 10],
     ] as const)
       expect(tree.nodes.find((node) => node.id === id)?.cost, id).toBe(cost);
     // The reducer charges the offered price.
     const result = applied(captured, { kind: "RESEARCH", tech: "SAWMILLING" });
     expect(result.events[0]).toMatchObject({
       kind: "TECH_RESEARCHED",
-      cost: 12,
+      cost: 10,
     });
   });
 });

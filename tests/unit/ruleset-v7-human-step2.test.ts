@@ -163,8 +163,8 @@ describe("step two of the Human pass: identity", () => {
     // (Step two of the Undead pass, `pulp_wars-w49.24`, took 7r57, and
     // step two of the Martian pass, `pulp_wars-w49.25`, 7r58; step two of
     // the Ice Folk pass, `pulp_wars-w49.27`, 7r59.)
-    expect(PRIOR_RULESET_7_IDS.at(-24)).toBe("pulp-wars-poc-7r56");
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r80");
+    expect(PRIOR_RULESET_7_IDS.at(-25)).toBe("pulp-wars-poc-7r56");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r81");
   });
 });
 
@@ -253,13 +253,14 @@ describe("1. the garrison rule yields to a ranged unit", () => {
 describe("2. a city chooses among the units the kept Coins allow", () => {
   it("trains the Fighter that fits when the Coins kept for its due technology do not allow the Marksman", () => {
     // Round 30 with four technologies and the root: the research clock
-    // says Fortification (7 Coins) is due. The seat has 6, earns 3 a turn
-    // (a level-2 capital), and keeps 4: that pays for a Fighter and not
-    // for a Marksman.
+    // says Fortification (6 Coins since 7r81, `pulp_wars-w49.40`; 7
+    // before) is due. The seat has 5 (6 before), earns 3 a turn (a level-2
+    // capital), and keeps 3: that pays for a Fighter and not for a
+    // Marksman.
     const start = position(
       [...BODIES, ENEMY_GARRISON, { seat: 1, role: "RAIDER", at: at(5, 8) }],
       {
-        coins: 6,
+        coins: 5,
         round: 30,
         techs: techs(...MARKSMEN, "DRILL"),
         levelTwo: true,
@@ -269,6 +270,6 @@ describe("2. a city chooses among the units the kept Coins allow", () => {
     // (Before this pass the shares chose the Marksman, the kept Coins
     // refused it, and the city trained nothing.)
     expect(trainedOf(turn.commands)).toEqual(["FIGHTER"]);
-    expect(coinsOf(turn.state)).toBe(4);
+    expect(coinsOf(turn.state)).toBe(3);
   });
 });

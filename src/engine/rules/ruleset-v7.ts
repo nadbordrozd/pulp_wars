@@ -5174,13 +5174,19 @@ export const RULESET_7 = deepFreeze({
  * a technology of tier `t` costs `5 / 7 / 9 + (T - 1)`, `T` being the
  * technologies the researcher already owns.
  *
- * The economy rejig (`pulp_wars-w49.16`, `pulp-wars-poc-7r80`,
+ * The economy rejig (`pulp_wars-w49.16`, `pulp-wars-poc-7r54`,
  * docs/product/RULESET_7_ECONOMY_REJIG.md): the price is per city again and
  * the technologies owned no longer enter it. A technology of tier `t`
  * costs `5 / 7 / 9 + (1 / 2 / 3) * (C - 1)`, `C` being the cities the
  * researcher owns when it researches. There is no rule against holding
  * fewer cities to pay less (the user: "a fine strategic choice and self
  * limiting").
+ *
+ * Flatter tier bases (`pulp_wars-w49.40`, `pulp-wars-poc-7r81`; the user,
+ * 2026-10-13, "I wanna see how it plays"): the bases are 5 / 6 / 7 (5 / 7 /
+ * 9 before), so a technology of tier `t` costs
+ * `5 / 6 / 7 + (1 / 2 / 3) * (C - 1)`. The per-city steps and the free
+ * opening research are unchanged.
  */
 export const TECHNOLOGY_RESEARCH_COST_V7: Readonly<
   Record<1 | 2 | 3, { readonly base: number; readonly step: number }>
@@ -5196,9 +5202,11 @@ export const TECHNOLOGY_RESEARCH_COST_V7: Readonly<
   // The economy rejig (`pulp_wars-w49.16`, 7r54): `step` is per city the
   // player owns beyond its first, 1 / 2 / 3 by tier. It was per technology
   // owned beyond the first (1 for every tier) from tuning 4 to 7r53.
+  // Flatter tier bases (`pulp_wars-w49.40`, 7r81): the bases are 5 / 6 / 7
+  // (5 / 7 / 9 before); the steps are unchanged.
   1: { base: 5, step: 1 },
-  2: { base: 7, step: 2 },
-  3: { base: 9, step: 3 },
+  2: { base: 6, step: 2 },
+  3: { base: 7, step: 3 },
 });
 
 /**

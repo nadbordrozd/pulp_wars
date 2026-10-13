@@ -1150,7 +1150,11 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       // unchanged; the cause is in the pin's comment (was ea7230…0f77).
       // The exploration plan (`pulp_wars-nc6`): the command is unchanged;
       // the cause is in the pin's comment (was 908c1b…53ba).
-      "a5c9181a7e782c48c9d9835f7f928e73bedebb58e9313e494f2a55ddc56ac937",
+      // Technology base cost 5 / 6 / 7 (`pulp_wars-w49.40`, 7r81): a
+      // tier 2 costs 12 with the view's four cities, so its 12 Coins
+      // buy one and six RESEARCH commands are offered again (was
+      // a5c918…c937).
+      "bba722970ae038f521d1fbc40c2bc4512c3181565fc9a97db3ee65e26f064f4c",
     );
     const revision4Commands = new Set([
       '{"kind":"ATTACK","unitId":19,"targetUnitId":34}',
@@ -1259,7 +1263,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     const source = upgradeRetainedPublicViewV7(retained);
 
     expect(canonicalJson(retained)).toBe(retainedBytes);
-    expect(source.rulesetId).toBe("pulp-wars-poc-7r80");
+    expect(source.rulesetId).toBe("pulp-wars-poc-7r81");
     expect(source.viewer.factionTreeId).toBe("ORIGINAL_BASELINE_V5");
     expect(
       source.players.every(

@@ -514,7 +514,7 @@ slot (3/3) | c9 center occupied`), and a rejected `c1.t.fighter` names the
   right place recovers by itself (the `recover` preview says how much).
 - A unit captures a settlement it stands on with `.capture`; `can-capture-now`
   in its unit line says when. Move onto the center first.
-- Research costs its tier's base (5 / 7 / 9 Coins) plus 1 / 2 / 3 Coins
+- Research costs its tier's base (5 / 6 / 7 Coins) plus 1 / 2 / 3 Coins
   for each city you own beyond your first (the technologies you own do not
   matter); the first technology is free. `tech` shows the cost now and
   prints your city count and the three formulas in its first line.

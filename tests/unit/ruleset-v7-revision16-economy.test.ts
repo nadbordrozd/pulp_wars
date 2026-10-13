@@ -42,24 +42,25 @@ import {
 // Tuning 1 (`pulp_wars-w49.3`, 7r46): the per-city steps were 1 / 2 / 2
 // (1 / 3 / 5 before). Tunings 4 to 8 priced by the technologies owned. The
 // economy rejig (`pulp_wars-w49.16`, 7r54): per city again, with steps of
-// 1 / 2 / 3. Rows: 1..8 cities.
+// 1 / 2 / 3. The bases are 5 / 6 / 7 since 7r81 (`pulp_wars-w49.40`; 5 / 7
+// / 9 before). Rows: 1..8 cities.
 const RESEARCH_COST_TABLE: readonly (readonly [number, number, number])[] = [
-  [5, 7, 9],
-  [6, 9, 12],
-  [7, 11, 15],
-  [8, 13, 18],
-  [9, 15, 21],
-  [10, 17, 24],
-  [11, 19, 27],
-  [12, 21, 30],
+  [5, 6, 7],
+  [6, 8, 10],
+  [7, 10, 13],
+  [8, 12, 16],
+  [9, 14, 19],
+  [10, 16, 22],
+  [11, 18, 25],
+  [12, 20, 28],
 ];
 
 describe("ruleset-7 revision-16 research costs", () => {
   it("prices every tier by the cities owned (1 / 2 / 3 a city since the economy rejig)", () => {
     expect(TECHNOLOGY_RESEARCH_COST_V7).toEqual({
       1: { base: 5, step: 1 },
-      2: { base: 7, step: 2 },
-      3: { base: 9, step: 3 },
+      2: { base: 6, step: 2 },
+      3: { base: 7, step: 3 },
     });
     expect(
       RESEARCH_COST_TABLE.map((_, index) =>
@@ -69,15 +70,15 @@ describe("ruleset-7 revision-16 research costs", () => {
       ),
     ).toEqual(RESEARCH_COST_TABLE);
     // No city prices like one (the free opener is separate).
-    expect(technologyResearchCostV7(2, 0)).toBe(7);
+    expect(technologyResearchCostV7(2, 0)).toBe(6);
   });
 
   it("keeps the free opener: the first tier-1 technology costs 0", () => {
     expect(playerTechnologyResearchCostV7(1, 0, 1)).toBe(0);
     expect(playerTechnologyResearchCostV7(1, 0, 6)).toBe(0);
     // Only tier 1 is free, and only while nothing is researched.
-    expect(playerTechnologyResearchCostV7(2, 0, 1)).toBe(7);
-    expect(playerTechnologyResearchCostV7(3, 0, 1)).toBe(9);
+    expect(playerTechnologyResearchCostV7(2, 0, 1)).toBe(6);
+    expect(playerTechnologyResearchCostV7(3, 0, 1)).toBe(7);
     for (let cities = 1; cities <= 8; cities += 1) {
       const [tier1, tier2, tier3] = RESEARCH_COST_TABLE[cities - 1] ?? [];
       // Whatever the technologies owned.
@@ -102,12 +103,13 @@ describe("ruleset-7 revision-16 research costs", () => {
         );
     expect(factionTreeV7("ORIGINAL").nodes).toHaveLength(25);
     // Dry Land has 20 technologies (no Naval branch of five). With one
-    // city throughout: 143 Coins; with five 315; with twelve 616 (314
-    // whatever the cities from tuning 6 to 7r53).
+    // city throughout: 119 Coins; with five 291; with twelve 592 (24 more
+    // each with the bases 5 / 7 / 9 of 7r54 to 7r80; 314 whatever the
+    // cities from tuning 6 to 7r53).
     expect([1, 3, 5, 8, 12].map((cities) => whole(true, cities))).toEqual([
-      143, 229, 315, 444, 616,
+      119, 205, 291, 420, 592,
     ]);
-    expect(whole(false, 1)).toBe(180);
+    expect(whole(false, 1)).toBe(150);
   });
 
   it("offers the revision-16 costs in the public tree and charges them", () => {
@@ -121,10 +123,10 @@ describe("ruleset-7 revision-16 research costs", () => {
     );
     const costOf = (id: TechnologyIdV7) =>
       tree.nodes.find((node) => node.id === id)?.cost;
-    // One city: the free opener, then 7 and 9 (12 before `pulp_wars-if6`).
+    // One city: the free opener, then 6 and 7 (7 and 9 before 7r81).
     expect(costOf("GATHERING")).toBe(0);
-    expect(costOf("FARMING")).toBe(7);
-    expect(costOf("COMMERCE")).toBe(9);
+    expect(costOf("FARMING")).toBe(6);
+    expect(costOf("COMMERCE")).toBe(7);
 
     let state = initial;
     for (const tech of ["GATHERING", "FARMING"] as const) {
@@ -135,13 +137,13 @@ describe("ruleset-7 revision-16 research costs", () => {
       if (!result.accepted) throw new Error(result.error.code);
       expect(result.events[0]).toMatchObject({
         kind: "TECH_RESEARCHED",
-        cost: tech === "GATHERING" ? 0 : 7,
+        cost: tech === "GATHERING" ? 0 : 6,
       });
       state = result.state;
     }
     expect(
       state.players.find((player) => player.id === state.humanPlayerId)?.coins,
-    ).toBe(1_000 - 7);
+    ).toBe(1_000 - 6);
   });
 });
 

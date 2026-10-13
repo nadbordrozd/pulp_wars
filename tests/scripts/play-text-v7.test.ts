@@ -872,10 +872,10 @@ describe("text-mode play harness", () => {
         // rejig, `pulp_wars-w49.16`; 16 as the tenth technology before.)
         // (Revision 3 of the lab, 7r56: Nesting, the Ankylosaurus's
         // technology, is owned; Wallbreaker, behind it, is on offer for
-        // the tier 3 price with five cities, 9 + 12.)
+        // the tier 3 price with five cities, 7 + 12 since 7r81.)
         expect(started).toContain('FORTIFICATION "Nesting"');
         expect(started).not.toContain('FORTIFICATION "Nesting" 15c');
-        expect(started).toContain('EXPLOSIVES "Wallbreaker" 21c');
+        expect(started).toContain('EXPLOSIVES "Wallbreaker" 19c');
         expect(started).toContain("eight free unit slots");
         expect(ok("help")).toContain("LAB_DINOSAUR_MID: the Dinosaurs");
         const tech = ok("tech", "--session", session);
@@ -1011,13 +1011,13 @@ describe("text-mode play harness", () => {
     // `pulp_wars-w49.16`; by the technologies owned from tuning 4 to 7r53).
     const tech = ok("tech", "--session", session);
     expect(tech).toContain(
-      "cities 6 (price = tier 1: 5c +1c, tier 2: 7c +2c, tier 3: 9c +3c per city you own beyond the first; technologies owned do not matter)",
+      "cities 6 (price = tier 1: 5c +1c, tier 2: 6c +2c, tier 3: 7c +3c per city you own beyond the first; technologies owned do not matter)",
     );
-    // Tier 3 with six cities: 9 + 15 (also 24 as the seventeenth
-    // technology under tuning 6).
+    // Tier 3 with six cities: 7 + 15 since 7r81 (`pulp_wars-w49.40`; 9 +
+    // 15 before, and 24 as the seventeenth technology under tuning 6).
     // (The ninth unit, 7r55: the harness prints the ID and then the name
     // wherever the two differ.)
-    expect(tech).toContain('T3 PLANNING "Land Grants" | AVAILABLE 24c');
+    expect(tech).toContain('T3 PLANNING "Land Grants" | AVAILABLE 22c');
     expect(tech).toContain(
       "cmd BUILD_MARKET (6c; a Market pays 2 or 3 Coins every turn: 1, plus 1 for each family of buildings beside it (farms, timber, metal), 3 at most; needs one of your Farms, Lumber Camps, Mines or their mills next to it)",
     );
@@ -1033,12 +1033,13 @@ describe("text-mode play harness", () => {
     const session = path.join(root, "siege-blast.json");
     ok("lab", "--session", session, "LAB_SIEGE");
     ok("do", "--session", session, "r.EXPLOSIVES", "u2.m.5,5", "--end");
-    // (Explosives costs 12 Coins with the lab's two cities since the
-    // economy rejig, `pulp_wars-w49.16`; it was 16 as the ninth technology.
-    // With one turn of income the 60 Coins are 64.)
+    // (Explosives costs 10 Coins with the lab's two cities since 7r81,
+    // `pulp_wars-w49.40`; 12 since the economy rejig, `pulp_wars-w49.16`,
+    // and 16 as the ninth technology before. With one turn of income the
+    // 60 Coins are 66.)
     const blast = ok("options", "--session", session, "--tile", "6,5");
     expect(blast).toContain(
-      "t.6,5.blast_mountain  blast mountain at 6,5 (mountain neutral) | cost 3c (coins 64->61; not your territory, so no population) | BLAST 5 damage on and around the tile, to your units too except the one that sets it:",
+      "t.6,5.blast_mountain  blast mountain at 6,5 (mountain neutral) | cost 3c (coins 66->63; not your territory, so no population) | BLAST 5 damage on and around the tile, to your units too except the one that sets it:",
     );
     expect(blast).not.toContain("no exact public preview");
     // Three Guards; the Fighter that sets the charge is not hit (tuning 5).

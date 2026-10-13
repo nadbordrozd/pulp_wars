@@ -155,7 +155,7 @@ const research = (state: GameStateV7) =>
 describe("step two of the Dinosaur pass: no rule changed", () => {
   it("kept the identity of step two of the Martian pass", () => {
     // (7r58 then; step two of the Ice Folk pass took 7r59.)
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r80");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r81");
   });
 });
 
@@ -313,7 +313,8 @@ describe("step two of the Dinosaur pass: the Dinosaur Normal AI's opening", () =
 
 describe("step two of the Dinosaur pass: the price of a due technology is kept", () => {
   it("on the recorded position (seed 9, round 13) buys Spitters where it laid an Egg and kept 5 Coins", () => {
-    // Five cities at war, 16 Coins, Spitters due at 15. The seat laid an
+    // Five cities at war, 16 Coins, Spitters due at 14 (15 before 7r81,
+    // `pulp_wars-w49.40`). The seat laid an
     // Ankylosaurus Egg in a threatened city first (5 Coins), could no
     // longer pay, and bought Spitters four rounds later.
     const start = recorded("ruleset-v7-dinosaur-spitters-due");
@@ -322,7 +323,7 @@ describe("step two of the Dinosaur pass: the price of a due technology is kept",
     expect(seat?.coins).toBe(16);
     expect(inspectNormalArmyV7(viewOf(start))).toMatchObject({
       war: true,
-      research: { tech: "MARKSMANSHIP", cost: 15, unlocks: "MARKSMAN" },
+      research: { tech: "MARKSMANSHIP", cost: 14, unlocks: "MARKSMAN" },
     });
     const turn = policyTurn(start);
     const kinds = kindsOf(turn.commands);

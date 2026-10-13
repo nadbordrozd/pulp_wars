@@ -70,7 +70,11 @@ describe("ruleset-7 exact public-planning performance", () => {
         // 9fd994…1b96).
         // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): recomputed (was
         // 4b8b7c…d029).
-        "4eb8ff841a02d2e31170dfa3038b8cbc826f53afc6e23ef8ccb920722670e1fc",
+        // Technology base cost 5 / 6 / 7 (`pulp_wars-w49.40`, 7r81): a
+        // tier 2 costs 12 with the view's four cities, so its 12 Coins
+        // buy one and six RESEARCH commands are offered again (was
+        // 4eb8ff…e1fc).
+        "5d18df44f6c0367b6ed3c153e14baaef93f2eb2fc9fb97298d5cc42a280d04ef",
       resultHash:
         // Tuning 6 (`pulp_wars-w49.6`): research costs 1 Coin for each
         // technology owned, so the retained view's 12 Coins buy a technology
@@ -79,7 +83,11 @@ describe("ruleset-7 exact public-planning performance", () => {
         // 2df0a7…6a92).
         // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): recomputed (was
         // 6a3551…3ef5).
-        "41c906a2ed416a56fef3c3c9662382a55f6ba62176af396eef4bcf510d9e446d",
+        // Technology base cost 5 / 6 / 7 (`pulp_wars-w49.40`, 7r81): a
+        // tier 2 costs 12 with the view's four cities, so its 12 Coins
+        // buy one and six RESEARCH commands are offered again (was
+        // 41c906…446d).
+        "a763fd68eb9222bfe9fde304cb97e91d6696d9b38af00fff43cd0496efdbf270",
       // 4 097 since tuning 4 (one RESEARCH fewer in the retained view);
       // 4 099 since tuning 5 (`pulp_wars-w49.4`: two cities offer the
       // Swordsman); 4 105 since tuning 6 (six RESEARCH commands again);
@@ -89,7 +97,10 @@ describe("ruleset-7 exact public-planning performance", () => {
       // 4 098 since the Industry reshuffle (`pulp_wars-w49.21`, 7r56: the
       // Guard is at Fortification, which the view does not own, so two
       // cities no longer offer it).
-      operations: 4_098,
+      // 4 103 since the technology base cost 5 / 6 / 7 (`pulp_wars-w49.40`,
+      // 7r81: a tier 2 costs 12 with the view's four cities, so six
+      // RESEARCH commands are offered again).
+      operations: 4_103,
     },
     {
       id: "captured-command-300",

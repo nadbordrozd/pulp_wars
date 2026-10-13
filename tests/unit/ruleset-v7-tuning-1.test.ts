@@ -113,13 +113,13 @@ describe("tuning 1 identity", () => {
   // Tuning 1 took 7r46; tuning 2 (tests/unit/ruleset-v7-tuning-2.test.ts)
   // took 7r47, so 7r46 is the last prior identity.
   it("was 7r46, after 7r45 in the prior list", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r80");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r80.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-35, -33)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r81");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r81.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-36, -34)).toEqual([
       "pulp-wars-poc-7r45",
       "pulp-wars-poc-7r46",
     ]);
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(79);
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(80);
   });
 });
 
@@ -278,19 +278,20 @@ describe("A: retaliation uses the base Defense, without fortification or cover",
 // The economy rejig (`pulp_wars-w49.16`, 7r54) went back to the cities, with
 // steps of 1 / 2 / 3 (tests/unit/ruleset-v7-economy-rejig.test.ts).
 describe("B: research cost steps per city (1 / 2 / 3 since the economy rejig)", () => {
-  it("costs 5/7/9 with one city and 10/17/24 with six", () => {
+  it("costs 5/6/7 with one city and 10/16/22 with six", () => {
     const table = [1, 2, 3, 4, 5, 6].map((cities) => [
       technologyResearchCostV7(1, cities),
       technologyResearchCostV7(2, cities),
       technologyResearchCostV7(3, cities),
     ]);
     expect(table).toEqual([
-      [5, 7, 9],
-      [6, 9, 12],
-      [7, 11, 15],
-      [8, 13, 18],
-      [9, 15, 21],
-      [10, 17, 24],
+      // Bases 5 / 6 / 7 since 7r81 (`pulp_wars-w49.40`; 5 / 7 / 9 before).
+      [5, 6, 7],
+      [6, 8, 10],
+      [7, 10, 13],
+      [8, 12, 16],
+      [9, 14, 19],
+      [10, 16, 22],
     ]);
   });
 });

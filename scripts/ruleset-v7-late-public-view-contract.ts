@@ -117,6 +117,14 @@ export const RULESET7_LATE_PUBLIC_VIEW_COMMAND_INDEX = 150;
  * tile at (9, 3), by a route outside every enemy's reach) and unit 20
  * marches on city 1. Unit 31's three Moves keep their endgame priority and
  * make no progress toward its new job (objective value 0, was 1).
+ *
+ * Technology base cost 5 / 6 / 7 (`pulp_wars-w49.40`, 7r81):
+ * `policyDecisionHash` was e00a20…2d64 and the command was the training of
+ * the Champion in city 16. A tier 2 technology costs 12 Coins with the
+ * view's four cities (13 before), which is what the seat has, so
+ * Marksmanship, the technology its research clock says is due, is on
+ * offer again and is bought before the unit, as it was until the economy
+ * rejig priced it out of reach.
  */
 export const RULESET7_LATE_PUBLIC_VIEW_NORMAL_DECISION = Object.freeze({
   /** `canonicalHash` of the retained fixture as read from disk. */
@@ -176,11 +184,12 @@ export const RULESET7_LATE_PUBLIC_VIEW_NORMAL_DECISION = Object.freeze({
     // TENTACLE, and PICK_ME after PROCLAIM, moving the later command kinds
     // forward by four (was 68445a…5827); the revision-12-ordinal value is
     // unchanged.
-    "e00a20ab41f823c63f81e7fe2c42ded471b464650b6706f57547863e7f3c2d64",
+    // Technology base cost 5 / 6 / 7 (`pulp_wars-w49.40`, 7r81): see the
+    // comment above (was e00a20…2d64).
+    "5158ffe01c14b70ce9eab087908f14a5850ef3eade6722b1feff0b41fcf4336d",
   command: Object.freeze({
-    kind: "TRAIN",
-    cityId: 16,
-    role: "SWORDSMAN",
+    kind: "RESEARCH",
+    tech: "MARKSMANSHIP",
   }),
   // Tuning 4 (`pulp_wars-w49.3`): 27 (28 before): the view's 12 Coins no
   // longer buy a technology (a tier 1 as the sixth costs 13).
@@ -193,7 +202,9 @@ export const RULESET7_LATE_PUBLIC_VIEW_NORMAL_DECISION = Object.freeze({
   // on offer, so seven construction candidates are back.
   // The economy rejig (`pulp_wars-w49.16`): 26, without Research
   // Marksmanship (13 Coins with the view's four cities; it has 12).
-  candidateCount: 26,
+  // Technology base cost 5 / 6 / 7 (`pulp_wars-w49.40`, 7r81): 27, with
+  // Research Marksmanship again (12 Coins).
+  candidateCount: 27,
 });
 
 /**
@@ -265,10 +276,10 @@ export function upgradeRetainedPublicViewV7(
   });
   return {
     ...retained,
-    rulesetId: "pulp-wars-poc-7r80",
+    rulesetId: "pulp-wars-poc-7r81",
     setup: {
       ...retained.setup,
-      rulesetId: "pulp-wars-poc-7r80",
+      rulesetId: "pulp-wars-poc-7r81",
       mapType: "DRY_LAND",
       mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
       curiosities: false,

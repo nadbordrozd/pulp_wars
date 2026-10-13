@@ -82,7 +82,7 @@ import {
 } from "../fixtures/v7-revision20";
 
 /**
- * The economy rejig (`pulp_wars-w49.16`, `pulp-wars-poc-7r80`;
+ * The economy rejig (`pulp_wars-w49.16`, `pulp-wars-poc-7r81`;
  * docs/product/RULESET_7_ECONOMY_REJIG.md, and Part C of
  * docs/product/RULESET_7_DESIGN_HEAVY_SLOT_AND_ECONOMY.md): mills count
  * contributors across their owner's cities, Monuments give 3, research is
@@ -389,11 +389,11 @@ function harvest(state: GameStateV7, where: CoordV7): Step {
 
 describe("the economy rejig: identity", () => {
   it("is 7r54, with 7r53 the last prior identity and an obsolete save key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r80");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r80.current");
-    expect(PRIOR_RULESET_7_IDS.at(-27)).toBe("pulp-wars-poc-7r53");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r81");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r81.current");
+    expect(PRIOR_RULESET_7_IDS.at(-28)).toBe("pulp-wars-poc-7r53");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-27)).toBe(
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-28)).toBe(
       "pulpWars.save.v7r53.current",
     );
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
@@ -794,19 +794,21 @@ describe("C.2: a Monument gives 3 population", () => {
 
 describe("C.3: research is priced per city", () => {
   const TABLE: Readonly<Record<number, readonly [number, number, number]>> = {
-    1: [5, 7, 9],
-    3: [7, 11, 15],
-    5: [9, 15, 21],
-    8: [12, 21, 30],
-    12: [16, 29, 42],
+    // The bases are 5 / 6 / 7 since 7r81 (`pulp_wars-w49.40`; 5 / 7 / 9
+    // before, so tier 2 cost 1 Coin more and tier 3 cost 2 more).
+    1: [5, 6, 7],
+    3: [7, 10, 13],
+    5: [9, 14, 19],
+    8: [12, 20, 28],
+    12: [16, 28, 40],
   };
   const tiers = [1, 2, 3] as const;
 
-  it("is the tier base 5 / 7 / 9 plus 1 / 2 / 3 Coins per city beyond the first", () => {
+  it("is the tier base 5 / 6 / 7 plus 1 / 2 / 3 Coins per city beyond the first", () => {
     expect(TECHNOLOGY_RESEARCH_COST_V7).toEqual({
       1: { base: 5, step: 1 },
-      2: { base: 7, step: 2 },
-      3: { base: 9, step: 3 },
+      2: { base: 6, step: 2 },
+      3: { base: 7, step: 3 },
     });
     for (const [cities, prices] of Object.entries(TABLE))
       expect(
@@ -815,7 +817,7 @@ describe("C.3: research is priced per city", () => {
       ).toEqual(prices);
     // No city (never in a match) prices as one.
     expect(tiers.map((tier) => technologyResearchCostV7(tier, 0))).toEqual([
-      5, 7, 9,
+      5, 6, 7,
     ]);
     expect(() => technologyResearchCostV7(3, -1)).toThrow("INVALID_CITY_COUNT");
     expect(() => technologyResearchCostV7(3, Number.MAX_SAFE_INTEGER)).toThrow(
@@ -840,7 +842,7 @@ describe("C.3: research is priced per city", () => {
       );
     }
     expect(researchPriceRuleTextV7(3)).toBe(
-      "Tier 3: 9 Coins, +3 for each city you own beyond your first",
+      "Tier 3: 7 Coins, +3 for each city you own beyond your first",
     );
     expect(ECONOMY_REJIG_HELP_TIP_V7).toContain(
       "1 / 2 / 3 Coins more (tier 1 / 2 / 3) for each city you own beyond your first",
@@ -882,7 +884,7 @@ describe("C.3: research is priced per city", () => {
       viewForV7(empire(3, { techs }), seatIdV7(empire(3, { techs }), 0)),
     ).nodes.find((item) => item.tier === 2 && item.state === "AVAILABLE");
     if (node === undefined) throw new Error("no tier 2 offer");
-    const short = empire(3, { techs, coins: 10 });
+    const short = empire(3, { techs, coins: 9 });
     const refused = applyCommandV7(short, seatIdV7(short, 0), {
       kind: "RESEARCH",
       tech: node.id,
@@ -891,12 +893,12 @@ describe("C.3: research is priced per city", () => {
     if (!refused.accepted)
       expect(refused.error).toMatchObject({
         code: "INSUFFICIENT_COINS",
-        params: { cost: 11 },
+        params: { cost: 10 },
       });
     expect(
       queryPlayerCommandsV7(viewForV7(short, seatIdV7(short, 0))),
     ).not.toContainEqual({ kind: "RESEARCH", tech: node.id });
-    const exact = empire(3, { techs, coins: 11 });
+    const exact = empire(3, { techs, coins: 10 });
     expect(
       coinsOf(applied(exact, 0, { kind: "RESEARCH", tech: node.id }).state),
     ).toBe(0);
@@ -910,8 +912,8 @@ describe("C.3: research is priced per city", () => {
       queryTechnologyTreeV7(viewForV7(state, seatIdV7(state, 0))).nodes.find(
         (item) => item.id === node.id,
       )?.cost;
-    expect(cost(before)).toBe(7);
-    expect(cost(capture(before, VILLAGES[0] as CoordV7).state)).toBe(9);
+    expect(cost(before)).toBe(6);
+    expect(cost(capture(before, VILLAGES[0] as CoordV7).state)).toBe(8);
   });
 });
 

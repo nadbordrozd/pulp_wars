@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r80`, for all nine offered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r81`, for all nine offered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), Candy (`CANDY`), and
 the Cultists (`CULT`). The ninth faction, the Cultists of the Ancient Ones,
@@ -436,6 +436,14 @@ links to another, by Road or by Port. A sea link needs only **Shorecraft**
 the Roads technology, and unexplored water no longer breaks a link. A save,
 replay, or setup of `7r75` is rejected, and the browser autosave has a new
 key.
+`pulp-wars-poc-7r81` (`pulp_wars-w49.40`, the user, 2026-10-13: "I wanna
+see how it plays") is **flatter technology prices**
+([section 6.1](#61-research-cost)): the base cost of a technology is
+**5 / 6 / 7 Coins** for tier 1 / 2 / 3 (5 / 7 / 9 before), in every
+faction's tree. The 1 / 2 / 3 Coins for each city owned beyond the first,
+the free first technology, and every other rule are unchanged. A save,
+replay, or setup of `7r80` is rejected, and the browser autosave has a new
+key.
 `pulp-wars-poc-7r80` (`pulp_wars-0pgd`, the user, 2026-10-12) is **the
 siege rules**, three changes for every faction. **A besieged city builds**
 ([section 4.7](#47-siege-and-capture)): a siege no longer blocks the tile
@@ -586,7 +594,7 @@ two cities' mills share the buildings between them; a Market still counts
 a building once ([section 8.3](#83-processors-and-mixed-buildings)); a
 **Monument gives +3 population** (2 before;
 [section 5](#5-achievements-and-monuments)); **research costs its tier's
-base (5 / 7 / 9) plus 1 / 2 / 3 Coins for each city the player owns beyond
+base (5 / 7 / 9 then; 5 / 6 / 7 since `7r81`) plus 1 / 2 / 3 Coins for each city the player owns beyond
 its first**, and the technologies it owns no longer enter the price
 ([section 6.1](#61-research-cost)); **the achievements are harder and none
 needs a technology**: half the map explored, 8 cities, 6 kinds of unit, a
@@ -953,7 +961,7 @@ the build differs (its sections 20 to 24 list them);
 the values here are current. Where a document and the code disagreed, the
 code's behavior is the rule and is stated below;
 [Known discrepancies](#25-known-discrepancies) lists the open items and the
-resolved ones as of `pulp-wars-poc-7r80`.
+resolved ones as of `pulp-wars-poc-7r81`.
 
 **Terms.** "On the board" means a unit that currently exists (HP above 0).
 **Living** has the narrower revision-13 meaning used by Wail, Plague,
@@ -1056,10 +1064,10 @@ sections here cite.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r80`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Ruleset                                    | `pulp-wars-poc-7r81`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r80.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Browser autosave                           | `pulpWars.save.v7r81.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, `CULT`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`, `CULT_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -4024,8 +4032,8 @@ added the last four, constants in `src/engine/v7/achievements.ts`):
 
 ```text
 tier 1 = 5  + 1 * (C - 1)
-tier 2 = 7  + 2 * (C - 1)
-tier 3 = 9  + 3 * (C - 1)
+tier 2 = 6  + 2 * (C - 1)
+tier 3 = 7  + 3 * (C - 1)
 ```
 
 `C` is the number of cities the researcher owns when it researches
@@ -4038,26 +4046,31 @@ first" of `7r49` to `7r53`. The price follows the cities the player owns
 at that moment and there is no rule against researching before a capture
 or holding fewer cities to pay less (the user: "a fine strategic choice
 and self limiting"). The technology detail states the rule under the
-price ("Tier 3: 9 Coins, +3 for each city you own beyond your first"),
+price ("Tier 3: 7 Coins, +3 for each city you own beyond your first"),
 and the text harness's `tech` prints the city count and the three
 formulas.
 
 | Cities `C` | Tier 1 | Tier 2 | Tier 3 |
 | ---------: | -----: | -----: | -----: |
-|          1 |      5 |      7 |      9 |
-|          2 |      6 |      9 |     12 |
-|          3 |      7 |     11 |     15 |
-|          4 |      8 |     13 |     18 |
-|          5 |      9 |     15 |     21 |
-|          6 |     10 |     17 |     24 |
-|          8 |     12 |     21 |     30 |
-|         12 |     16 |     29 |     42 |
+|          1 |      5 |      6 |      7 |
+|          2 |      6 |      8 |     10 |
+|          3 |      7 |     10 |     13 |
+|          4 |      8 |     12 |     16 |
+|          5 |      9 |     14 |     19 |
+|          6 |     10 |     16 |     22 |
+|          8 |     12 |     20 |     28 |
+|         12 |     16 |     28 |     40 |
 
 The whole land tree of 20 technologies in tier order (the first free)
-costs 143 Coins with one city throughout, 229 with three, 315 with five,
-444 with eight, and 616 with twelve (314 at `7r53`, whatever the cities).
+costs 119 Coins with one city throughout, 205 with three, 291 with five,
+420 with eight, and 592 with twelve (24 more each from `7r54` to `7r80`,
+with the bases 5 / 7 / 9; 314 at `7r53`, whatever the cities).
 
-**History.** The tier 3 base is 9 since `pulp-wars-poc-7r41`
+**History.** The bases are 5 / 6 / 7 since `pulp-wars-poc-7r81`
+(`pulp_wars-w49.40`, the user, 2026-10-13, to see how it plays); they were
+5 / 7 / 9 from `7r41` to `7r80`, so a tier 2 technology cost 1 Coin more
+and a tier 3 technology 2 Coins more at every city count. The tier 3 base
+was 9 since `pulp-wars-poc-7r41`
 (`pulp_wars-if6`; 12 before). The price was per city before: steps 1, 3,
 and 5 until tuning 1 (`pulp-wars-poc-7r46`,
 [tuning 1 section B](RULESET_7_TUNING_1.md#b-research-cost-per-city-steps-of-1--2--2)),
@@ -13553,6 +13566,7 @@ first guesses.
 | Cult, E6        | `pulp-wars-poc-7r78` | `pulp_wars-mch9.8` the Cult's hexes and tricks, the sixth and last engine step of the Cultists (a save, replay, or setup of `7r77` is rejected): Ribbit (a Hexer turns a hostile unit within 2 tiles into a frog until its owner's next turn ends: Defense 0.5 with no fortification and no cover, Move 1, no attack, strike back, or capture; Seizable at half its Hit Points; cured by Tend Wounded, Repair, and Top-Up; a status for the disruption rule); Switcheroo (a Familiar with Scouting swaps with a unit within 2 tiles, never on a settlement center, each unit where it may stand); each waits out its owner's next turn; the Tentacle (a Caller calls a neutral unit of the breed `TENTACLE` within 3 tiles: 8 HP, Attack 3, Defense 1, rooted; it slaps the weakest unit beside it at once and in every neutral turn, friend or foe, credited to nobody, and sinks after its third) and Grab (the slapped unit moves only beside it); Pick Me! (hostile units beside a taunting Chosen may `ATTACK` only it until its owner's next Start Turn); Pamphlets (an Initiate captures a neutral village in the turn it walks onto it); the `cult` lists `frogs`, `hexCooldowns`, `taunts`, and `tentacles`, four commands, six events, the death cause `SANK`, and the hidden lab `LAB_CULT_MID` (a mission's Cult seat may start with Favour); no rule of another faction changed ([section 1](#1-identity-and-compatibility)).                                                                                                                              |
 | Village spread  | `pulp-wars-poc-7r79` | `pulp_wars-9s0.12` villages spread over the land, a map generation fix (a save, replay, or setup of `7r78` is rejected): no village is chosen by its place in `(y, x)` order any more. On every water map the coastal settlement a landmass needs is the legal coast tile of lowest tile rank (the first in `(y, x)` order before, a village on the top row of nearly every Pangea whose capitals stand inland); on Continents and Archipelago the villages are the sites of a full packing of the land, kept in tile-rank order until the density count stands (the `(y, x)` fill before left the bottom third of a two-player Continents board with 14% to 17% of its villages; about a third now), the first scan chosen by the seed. No draw is added, the density, the spacing, the landmass shares, the home-island rule, and the village balance are unchanged, and candidates per board are as before. Dry Land maps are byte-identical; Pangea and Lakes maps change only where no capital stands on the coast; most Continents and Archipelago maps change. The parity rules `CAPITAL_DOMAINS*` reproduce the `7r78` maps; the current rules are `SPREAD_VILLAGES_CURIOSITIES` ([map scale section 5.7](RULESET_7_MAP_SCALE.md#57-villages-spread-over-the-land-pulp_wars-9s012-pulp-wars-poc-7r79)); the browser autosave has a new key                                                                                                                                                                                                                      |
 | Siege rules     | `pulp-wars-poc-7r80` | `pulp_wars-0pgd` the siege rules (the user, 2026-10-12; a save, replay, or setup of `7r79` is rejected): a besieged city builds (a siege blocks no tile command; it still stops income, training, hiring, Egg laying, Land Grant, and Offering); no tile command but Blast Mountain targets a tile a hostile unit stands on (`TILE_ENEMY_OCCUPIED`); a level-up reward unit takes the center and the unit standing there, the garrison or a besieger, steps to a tile beside it (own territory first for the owner's unit, then `(y, x)` order) or dies with the cause `DISPLACED` when it has none (no credit, Plunder, Grave, Martyr, or score), a unit that nothing moves (a Jawbreaker) holding the center while the reward unit appears beside it. The Normal AI builds under siege, takes the reward unit that shoves a besieger off, and avoids one that would kill its own garrison.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| Technology cost | `pulp-wars-poc-7r81` | `pulp_wars-w49.40` flatter technology prices (the user, 2026-10-13, to see how it plays; a save, replay, or setup of `7r80` is rejected): the tier bases are 5 / 6 / 7 Coins (5 / 7 / 9 before) in every faction's tree, so tier 2 costs 1 Coin less and tier 3 costs 2 Coins less at every city count; the per-city steps (1 / 2 / 3), the free first technology, and every other rule unchanged; the Normal AI reads the price from the public technology tree and needed no change                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | [section 6.1](#61-research-cost)                                                                                                      |
 
 **Documentation parity (2026-09-28, no ruleset or identity change):** where
 older documents disagreed with the code, the code's behavior was adopted as
@@ -14098,7 +14112,7 @@ items left after the fold, and the pending balance steps below.
   - **Where the code differs from the overlay's rules text** (this
     document states the code's behavior): (1) Glacier's cover is the Snow
     cover of today, × 1.25 (the overlay's section 8.10 quotes × 1.5); (2)
-    tier 3 costs 9 with one city, so Submersibles costs 9 (the overlay's
+    tier 3 costs 7 with one city, so Submersibles costs 7 (the overlay's
     section 2 quotes 12); (3) eight factions, the Candy among the
     seafarers; (4) an embarked unit never strikes back at a ram or a
     torpedo; (5) a ram's shove has exactly its own conditions (it does not

@@ -121,13 +121,19 @@ const offered = (state: GameStateV7, command: CommandV7): boolean =>
   );
 
 describe("siege rules: the identity", () => {
-  it("is 7r80 after 7r79, with the old save key obsolete", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r80");
-    expect(PRIOR_RULESET_7_IDS.at(-1)).toBe("pulp-wars-poc-7r79");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r80.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
+  // The flatter technology bases (`pulp_wars-w49.40`) took 7r81, so 7r80
+  // is a prior identity.
+  it("was 7r80 after 7r79, with both save keys obsolete now", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r81");
+    expect(PRIOR_RULESET_7_IDS.slice(-2)).toEqual([
+      "pulp-wars-poc-7r79",
+      "pulp-wars-poc-7r80",
+    ]);
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r81.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-2)).toEqual([
       "pulpWars.save.v7r79.current",
-    );
+      "pulpWars.save.v7r80.current",
+    ]);
   });
 });
 

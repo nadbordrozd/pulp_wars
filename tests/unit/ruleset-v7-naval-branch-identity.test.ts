@@ -246,14 +246,15 @@ describe("the five-node Naval branch in every tree", () => {
         { kind: "NAVAL_TRAINING_DISCOUNT", coins: 2 },
       ]);
     }
-    // Costs follow the ordinary tier formula (tier 3 base 9 since 7r41; a
-    // step per city owned since the economy rejig, 7r54: 2 and 3).
+    // Costs follow the ordinary tier formula (bases 6 and 7 since 7r81,
+    // `pulp_wars-w49.40`; a step per city owned since the economy rejig,
+    // 7r54: 2 and 3).
     expect(
       [1, 2, 3].map((cities) => technologyResearchCostV7(2, cities)),
-    ).toEqual([7, 9, 11]);
+    ).toEqual([6, 8, 10]);
     expect(
       [1, 2, 3].map((cities) => technologyResearchCostV7(3, cities)),
-    ).toEqual([9, 12, 15]);
+    ).toEqual([7, 10, 13]);
   });
 
   it("registers the same Submarine and the rammer Patrol Boat for every faction", () => {
@@ -349,7 +350,7 @@ describe("the five-node Naval branch in every tree", () => {
         prerequisites: ["SHORECRAFT"],
         missingPrerequisites: [],
         state: "AVAILABLE",
-        cost: 7,
+        cost: 6,
         affordable: true,
       });
       expect(byId.get("SUBMERSIBLES"), faction).toMatchObject({
@@ -357,7 +358,7 @@ describe("the five-node Naval branch in every tree", () => {
         prerequisites: ["SEAMANSHIP"],
         missingPrerequisites: ["SEAMANSHIP"],
         state: "BLOCKED",
-        cost: 9,
+        cost: 7,
         affordable: false,
       });
       expect(
@@ -393,13 +394,13 @@ describe("the five-node Naval branch in every tree", () => {
       kind: "TECH_RESEARCHED",
       playerId: actor,
       tech: "SEAMANSHIP",
-      cost: 7,
+      cost: 6,
     });
     const second = applyResearch(first.state, "SUBMERSIBLES");
     if (!second.accepted) throw new Error(second.error.code);
-    // Tier 3 with one city: 9, whatever the technologies owned (the
-    // economy rejig, 7r54; 9 + 1 as the third technology before).
-    expect(second.events[0]).toMatchObject({ tech: "SUBMERSIBLES", cost: 9 });
+    // Tier 3 with one city: 7 (9 before 7r81), whatever the technologies
+    // owned (the economy rejig, 7r54; 9 + 1 as the third technology before).
+    expect(second.events[0]).toMatchObject({ tech: "SUBMERSIBLES", cost: 7 });
     // The stored list keeps the frozen technology order.
     expect(
       second.state.players.find((player) => player.id === actor)

@@ -62,7 +62,7 @@ import {
 } from "../fixtures/v7-revision20";
 
 /**
- * Tuning 8 (`pulp_wars-w49.11`, identity unchanged at `pulp-wars-poc-7r80`;
+ * Tuning 8 (`pulp_wars-w49.11`, identity unchanged at `pulp-wars-poc-7r81`;
  * docs/product/RULESET_7_TUNING_HUMAN.md section 15, the Normal AI of a
  * Human, Undead, or Goblin seat). Round 7 was played by hand four times
  * (`r7a` to `r7d`); every position below is one of those games, or the
@@ -380,7 +380,7 @@ function scene(options: SceneV7): GameStateV7 {
 
 describe("tuning 8 identity", () => {
   it("is still 7r49: no rule, command, state, or event shape changed", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r80");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r81");
   });
 });
 
@@ -1120,11 +1120,14 @@ describe("2. research while at war", () => {
     // technology costs its tier's base, 5 / 7 / 9, whatever it owns, so
     // the 38 Coins left after the unit buy the Knight's three technologies
     // and Fieldcraft; they bought Scouting and Raiding at 13 and 16.)
+    // (7r81, `pulp_wars-w49.40`: with the bases 5 / 6 / 7 the same Coins
+    // also reach Explosives, an army technology.)
     expect(researchOf(turn.commands)).toEqual([
       "SCOUTING",
       "RAIDING",
       "CHIVALRY",
       "FIELDCRAFT",
+      "EXPLOSIVES",
     ]);
     // A seat with every unit of its order unlocked goes on to the
     // technologies an army uses (correction pass: a rich Human seat bought
@@ -1214,18 +1217,22 @@ describe("2. research while at war", () => {
     // also buy Raiding and Chivalry (7 and 9; they were 12 and 15 as the
     // eighth and ninth technologies).
     // (The ninth unit, 7r55: Metallurgy, the Champion's technology,
-    // follows Engineering, and the Coins end at Raiding.)
+    // follows Engineering, and the Coins ended at Raiding.)
+    // (7r81, `pulp_wars-w49.40`: with the bases 5 / 6 / 7 the four cost
+    // 24 Coins, not 28, and the 40 Coins reach Chivalry, 7, too.)
     expect(researchOf(turn.commands)).toEqual([
       "ENGINEERING",
       "METALLURGY",
       "SCOUTING",
       "RAIDING",
+      "CHIVALRY",
     ]);
     const second = policyTurn(withRound(nextRound(turn.state), 14, 20));
     // (With Chivalry bought in the first turn, a Knight; a Marksman while
-    // the 40 Coins stop short of Chivalry, as they do again since the
-    // ninth unit, 7r55: Metallurgy is bought before the Knight's chain.)
-    expect(trainedOf(second.commands)).toEqual(["MARKSMAN"]);
+    // the 40 Coins stopped short of Chivalry, as they did from the ninth
+    // unit, 7r55, when Metallurgy went before the Knight's chain, to 7r80.
+    // With the bases 5 / 6 / 7 of 7r81 they reach Chivalry again.)
+    expect(trainedOf(second.commands)).toEqual(["KNIGHT"]);
     // Six units against three, the same Coins: the Catapult first, and
     // the technology only with what is left.
     const ordinary = policyTurn(rich(6, cost + 7));
@@ -1317,8 +1324,9 @@ describe("2. research while at war", () => {
   });
 
   // The economy rejig (`pulp_wars-w49.16`, 7r54): with its three cities
-  // Marksmanship costs 11 (9 as its fourth technology before), and the
-  // seat earns 4 a turn: four turns, three before.
+  // Marksmanship costs 10 (11 before 7r81, `pulp_wars-w49.40`; 9 as its
+  // fourth technology before the rejig), and the seat earns 4 a turn:
+  // four turns, three before.
   // Step two of the Undead pass (`pulp_wars-w49.24`): five turns. The seat
   // has four units on its cities and is short of units (its cities and two
   // more), so it trains first and keeps no Coins until its research clock
@@ -1334,7 +1342,7 @@ describe("2. research while at war", () => {
       tech: "MARKSMANSHIP",
       unlocks: "MARKSMAN",
     });
-    expect(armyOf(start).research?.cost).toBe(11);
+    expect(armyOf(start).research?.cost).toBe(10);
     const { research, trained } = played(start, 5);
     expect(research[0]).toBe("MARKSMANSHIP");
     expect(trained).toBeGreaterThan(0);

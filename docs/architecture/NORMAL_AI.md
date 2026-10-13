@@ -1933,7 +1933,9 @@ Those are tuning, left for a later pass.
 (`pulp-wars-poc-7r54`) changed shared rules for every faction: mills count
 their owner's contributors across cities, a Monument gives 3 population,
 research is priced by the cities owned (5 / 7 / 9 plus 1 / 2 / 3 Coins
-for each city beyond the first), the achievements are harder and need no
+for each city beyond the first; the bases are 5 / 6 / 7 since
+`pulp-wars-poc-7r81`, `pulp_wars-w49.40`, which the policy reads from the
+public technology tree), the achievements are harder and need no
 technology, and every city offers its faction's giant once from level 6
 (replaced by the reward ladder rework, `pulp_wars-zypi`, below).
 The policy was kept working and not improved.

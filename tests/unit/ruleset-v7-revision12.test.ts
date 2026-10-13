@@ -42,15 +42,15 @@ import {
 
 describe("ruleset-7 revision-12 identity", () => {
   it("keeps rejecting r11 after the r54 identity and cleans every obsolete Ruleset-7 key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r80");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r80.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-26)).toBe(
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r81");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r81.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-27)).toBe(
       "pulpWars.save.v7r54.current",
     );
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
 
     const state = initialV7();
-    expect(state.rulesetId).toBe("pulp-wars-poc-7r80");
+    expect(state.rulesetId).toBe("pulp-wars-poc-7r81");
     expect(
       parseGameStateV7({ ...state, rulesetId: "pulp-wars-poc-7r11" }),
     ).toBeNull();
@@ -104,7 +104,7 @@ describe("ruleset-7 revision-12 free opening technology", () => {
     ]);
     expect(tree.nodes.find((node) => node.id === "FARMING")).toMatchObject({
       state: "BLOCKED",
-      cost: 7,
+      cost: 6,
       missingPrerequisites: ["GATHERING"],
     });
     expect(

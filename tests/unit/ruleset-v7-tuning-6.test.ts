@@ -67,7 +67,7 @@ import {
 } from "../fixtures/v7-revision20";
 
 /**
- * Tuning 6 (`pulp_wars-w49.6`, identity `pulp-wars-poc-7r80`;
+ * Tuning 6 (`pulp_wars-w49.6`, identity `pulp-wars-poc-7r81`;
  * docs/product/RULESET_7_TUNING_HUMAN.md section 13): the Normal AI breaks
  * a line with numbers, expands and grows, researches toward its army and
  * buys its dear units, and keeps its discipline; research costs 1 Coin more
@@ -176,13 +176,13 @@ describe("tuning 6 identity and the research price", () => {
   // and the Undead pass 7r51, so 7r49 is the prior identity before the
   // last.
   it("was 7r49 after 7r48, with both save keys obsolete now", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r80");
-    expect(PRIOR_RULESET_7_IDS.slice(-32, -30)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r81");
+    expect(PRIOR_RULESET_7_IDS.slice(-33, -31)).toEqual([
       "pulp-wars-poc-7r48",
       "pulp-wars-poc-7r49",
     ]);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r80.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-32, -30)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r81.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-33, -31)).toEqual([
       "pulpWars.save.v7r48.current",
       "pulpWars.save.v7r49.current",
     ]);
@@ -194,8 +194,8 @@ describe("tuning 6 identity and the research price", () => {
   it("costs the tier base plus 1 / 2 / 3 for each city owned beyond the first", () => {
     expect(TECHNOLOGY_RESEARCH_COST_V7).toEqual({
       1: { base: 5, step: 1 },
-      2: { base: 7, step: 2 },
-      3: { base: 9, step: 3 },
+      2: { base: 6, step: 2 },
+      3: { base: 7, step: 3 },
     });
     expect(
       [1, 2, 3, 6, 10].map((cities) =>
@@ -204,15 +204,15 @@ describe("tuning 6 identity and the research price", () => {
         ),
       ),
     ).toEqual([
-      [5, 7, 9],
-      [6, 9, 12],
-      [7, 11, 15],
-      [10, 17, 24],
-      [14, 25, 36],
+      [5, 6, 7],
+      [6, 8, 10],
+      [7, 10, 13],
+      [10, 16, 22],
+      [14, 24, 34],
     ]);
     // The opener is still free, and only a tier-1 technology.
     expect(playerTechnologyResearchCostV7(1, 0, 1)).toBe(0);
-    expect(playerTechnologyResearchCostV7(2, 0, 1)).toBe(7);
+    expect(playerTechnologyResearchCostV7(2, 0, 1)).toBe(6);
   });
 
   it("is what the public technology tree and the engine charge", () => {
@@ -225,26 +225,27 @@ describe("tuning 6 identity and the research price", () => {
     const view = viewForV7(state, seatIdV7(state, 0));
     const cost = (tech: TechnologyIdV7): number | undefined =>
       queryTechnologyTreeV7(view).nodes.find((node) => node.id === tech)?.cost;
-    // One city: 5 / 7 / 9, whatever the three technologies owned.
+    // One city: 5 / 6 / 7 (5 / 7 / 9 before 7r81), whatever the three
+    // technologies owned.
     expect(cost("SCOUTING")).toBe(5);
-    expect(cost("MARKSMANSHIP")).toBe(7);
-    expect(cost("ENGINEERING")).toBe(7);
+    expect(cost("MARKSMANSHIP")).toBe(6);
+    expect(cost("ENGINEERING")).toBe(6);
     const result = applyOkV7(state, seatIdV7(state, 0), {
       kind: "RESEARCH",
       tech: "MARKSMANSHIP",
     });
     expect(result.events).toContainEqual(
-      expect.objectContaining({ kind: "TECH_RESEARCHED", cost: 7 }),
+      expect.objectContaining({ kind: "TECH_RESEARCHED", cost: 6 }),
     );
     expect(
       result.state.players.find((player) => player.seat === 0)?.coins,
-    ).toBe(33);
+    ).toBe(34);
     // The fourth technology owned makes the next one no dearer.
     expect(
       queryTechnologyTreeV7(
         viewForV7(result.state, seatIdV7(state, 0)),
       ).nodes.find((node) => node.id === "ENGINEERING")?.cost,
-    ).toBe(7);
+    ).toBe(6);
   });
 
   it("puts every faction's siege and breakthrough technologies within reach", () => {
@@ -265,14 +266,28 @@ describe("tuning 6 identity and the research price", () => {
         const tier = tree.nodes.find((node) => node.id === tech)?.tier ?? 1;
         return total + (5 + 2 * (tier - 1)) + step * index;
       }, 0);
-    // 49 Coins for the seven technologies' bases, plus the step (the
-    // per-technology step of tunings 4 to 8: 70 at 1 Coin, 91 at 2).
+    // The history, with the bases 5 / 7 / 9 of 7r41 to 7r80: 49 Coins for
+    // the seven technologies' bases, plus the step (the per-technology
+    // step of tunings 4 to 8: 70 at 1 Coin, 91 at 2).
     expect(price(1)).toBe(70);
     expect(price(2)).toBe(91);
     // The economy rejig (7r54): with one city the chain costs its bases,
-    // and with the AI's usual four cities a tier-3 technology costs 18.
+    // 49 then and 42 with the bases 5 / 6 / 7 of 7r81 (`pulp_wars-w49.40`),
+    // and with the AI's usual four cities a tier-3 technology costs 16 (18
+    // before 7r81).
     expect(price(0)).toBe(49);
-    expect(technologyResearchCostV7(3, 4)).toBe(18);
+    expect(
+      chain.reduce(
+        (total, tech) =>
+          total +
+          technologyResearchCostV7(
+            tree.nodes.find((node) => node.id === tech)?.tier ?? 1,
+            1,
+          ),
+        0,
+      ),
+    ).toBe(42);
+    expect(technologyResearchCostV7(3, 4)).toBe(16);
   });
 });
 

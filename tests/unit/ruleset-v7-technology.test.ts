@@ -68,15 +68,16 @@ describe("ruleset-7 technology", () => {
   });
 
   it("uses the exact formula by owned cities without unsafe arithmetic", () => {
-    // The economy rejig (`pulp_wars-w49.16`, 7r54): 5 / 7 / 9 plus 1 / 2 /
+    // The economy rejig (`pulp_wars-w49.16`, 7r54): the tier base (5 / 6 /
+    // 7 since 7r81, `pulp_wars-w49.40`; 5 / 7 / 9 before) plus 1 / 2 /
     // 3 for each city owned beyond the first. (Tunings 4 to 8: a step for
     // each technology owned beyond the first, 1 Coin since tuning 6.)
     expect(
       [1, 2, 3].map((tier) => technologyResearchCostV7(tier as 1 | 2 | 3, 1)),
-    ).toEqual([5, 7, 9]);
+    ).toEqual([5, 6, 7]);
     expect(
       [1, 2, 3].map((tier) => technologyResearchCostV7(tier as 1 | 2 | 3, 4)),
-    ).toEqual([8, 13, 18]);
+    ).toEqual([8, 12, 16]);
     expect(() => technologyResearchCostV7(3, Number.MAX_SAFE_INTEGER)).toThrow(
       "INTEGER_OVERFLOW",
     );
@@ -122,9 +123,10 @@ describe("ruleset-7 technology", () => {
     expect(Object.isFrozen(ORIGINAL_ROLE_RULES_V7)).toBe(true);
   });
 
-  // One city pays the base price for every technology: 180 Coins (456
-  // from tuning 6 to 7r53, when each technology owned added a Coin).
-  it("researches the entire graph for 180 coins without PRNG use", () => {
+  // One city pays the base price for every technology: 150 Coins (180
+  // with the bases 5 / 7 / 9 of 7r54 to 7r80; 456 from tuning 6 to 7r53,
+  // when each technology owned added a Coin).
+  it("researches the entire graph for 150 coins without PRNG use", () => {
     let state = richV7(
       checkedV7({
         ...initialV7(),
@@ -155,7 +157,7 @@ describe("ruleset-7 technology", () => {
       state = result.state;
     }
     expect(state.players[0]).toMatchObject({
-      coins: 820,
+      coins: 850,
       researchedTechs: TECHNOLOGY_IDS_V7,
     });
   });
@@ -180,7 +182,7 @@ describe("ruleset-7 technology", () => {
     });
     expect(tree.nodes.find((node) => node.id === "FARMING")).toMatchObject({
       state: "AVAILABLE",
-      cost: 7,
+      cost: 6,
       affordable: true,
     });
     expect(tree.nodes.find((node) => node.id === "MILLING")).toMatchObject({

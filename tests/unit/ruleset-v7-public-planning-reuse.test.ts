@@ -40,7 +40,11 @@ describe("ruleset-7 exact public planning reuse", () => {
       // 2df0a7…6a92).
       // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): recomputed (was
       // 6a3551…3ef5).
-      "41c906a2ed416a56fef3c3c9662382a55f6ba62176af396eef4bcf510d9e446d",
+      // Technology base cost 5 / 6 / 7 (`pulp_wars-w49.40`, 7r81): a
+      // tier 2 costs 12 with the view's four cities, so its 12 Coins
+      // buy one and six RESEARCH commands are offered again (was
+      // 41c906…446d).
+      "a763fd68eb9222bfe9fde304cb97e91d6696d9b38af00fff43cd0496efdbf270",
     );
   });
 

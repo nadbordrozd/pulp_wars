@@ -184,14 +184,14 @@ describe("step two of the Undead pass: the identity", () => {
   it("was 7r57 after 7r56, with both save keys obsolete now", () => {
     // (Step two of the Martian pass, `pulp_wars-w49.25`, took 7r58, and
     // step two of the Ice Folk pass, `pulp_wars-w49.27`, 7r59.)
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r80");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r80.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-24, -22)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r81");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r81.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-25, -23)).toEqual([
       "pulp-wars-poc-7r56",
       "pulp-wars-poc-7r57",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-24, -22)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-25, -23)).toEqual([
       "pulpWars.save.v7r56.current",
       "pulpWars.save.v7r57.current",
     ]);
@@ -374,17 +374,18 @@ describe("step two of the Undead pass: the Undead Normal AI's opening", () => {
     // Three Skeletons: the technology first, as before.
     const full = policyTurn(opening(3));
     expect(kindsOf(full.commands)[0]).toBe("RESEARCH");
-    // One step from the Zombie with 6 Coins, a Coin short of Fortification:
+    // One step from the Zombie with 5 Coins, a Coin short of Fortification
+    // (6 Coins since 7r81, `pulp_wars-w49.40`; 7 before, and 6 in hand):
     // short of units the Skeleton is trained and no Coins are kept; with
     // its units the seat keeps them, as since the Industry reshuffle.
     const beforeZombie = techsOf("GATHERING", "HUNTING", "DRILL");
-    const poor = policyTurn(opening(2, { coins: 6, techs: beforeZombie }));
+    const poor = policyTurn(opening(2, { coins: 5, techs: beforeZombie }));
     expect(kindsOf(poor.commands)).toContain("TRAIN");
-    const saving = policyTurn(opening(3, { coins: 6, techs: beforeZombie }));
+    const saving = policyTurn(opening(3, { coins: 5, techs: beforeZombie }));
     expect(kindsOf(saving.commands)).not.toContain("TRAIN");
     expect(
       saving.state.players.find((player) => player.seat === 0)?.coins,
-    ).toBe(6);
+    ).toBe(5);
   });
 
   it("holds in a war too, and not with enough units, without the Coins, or for another faction", () => {
@@ -403,17 +404,18 @@ describe("step two of the Undead pass: the Undead Normal AI's opening", () => {
     });
     expect(kindsOf(policyTurn(war).commands)[0]).toBe("TRAIN");
     // Until the research clock of the war is a whole technology behind.
-    // One technology beside the root; a technology stands for five rounds
-    // on this seat's clock (Fortification is 7 Coins, the capital earns 2:
-    // four turns and one more), so the next is due from round 5 and is
-    // bought before the units again from round 10.
+    // One technology beside the root; a technology stands for four rounds
+    // on this seat's clock (Fortification is 6 Coins, the capital earns 2:
+    // three turns and one more), so the next is due from round 4 and is
+    // bought before the units again from round 8. (At 7 Coins, before
+    // 7r81, `pulp_wars-w49.40`: five rounds, so rounds 5 and 10.)
     expect(ARMY_UNDEAD_WAR_RESEARCH_GRACE_V7).toBe(1);
     expect(inspectNormalArmyV7(viewOf(war)).research).toMatchObject({
       tech: "FORTIFICATION",
-      cost: 7,
+      cost: 6,
     });
     expect(
-      [4, 5, 9, 10, 11].map(
+      [3, 4, 7, 8, 9].map(
         (round) => inspectNormalArmyV7(viewOf({ ...war, round })).bodiesFirst,
       ),
     ).toEqual([true, true, true, false, false]);

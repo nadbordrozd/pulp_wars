@@ -46,7 +46,10 @@ describe("ruleset-7 late public query performance", () => {
     // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): 64. The view owns
     // the root and not Fortification, where the Guard is now, so its two
     // cities that can train no longer offer the Guard.
-    expect(commands).toHaveLength(64);
+    // Technology base cost 5 / 6 / 7 (`pulp_wars-w49.40`, 7r81): 69. A
+    // tier 2 costs 12 with the view's four cities, so its 12 Coins buy
+    // five more technologies (six RESEARCH commands instead of one).
+    expect(commands).toHaveLength(69);
     expect(canonicalHash(commands)).toBe(
       // Tuning 6 (`pulp_wars-w49.6`): research costs 1 Coin for each
       // technology owned, so the retained view's 12 Coins buy a technology
@@ -55,7 +58,11 @@ describe("ruleset-7 late public query performance", () => {
       // 9fd994…1b96).
       // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): recomputed (was
       // 4b8b7c…d029).
-      "4eb8ff841a02d2e31170dfa3038b8cbc826f53afc6e23ef8ccb920722670e1fc",
+      // Technology base cost 5 / 6 / 7 (`pulp_wars-w49.40`, 7r81): a
+      // tier 2 costs 12 with the view's four cities, so its 12 Coins
+      // buy one and six RESEARCH commands are offered again (was
+      // 4eb8ff…e1fc).
+      "5d18df44f6c0367b6ed3c153e14baaef93f2eb2fc9fb97298d5cc42a280d04ef",
     );
     expect(
       commands.flatMap((command) =>
@@ -96,7 +103,11 @@ describe("ruleset-7 late public query performance", () => {
       // 9fd994…1b96).
       // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): recomputed (was
       // 4b8b7c…d029).
-      "4eb8ff841a02d2e31170dfa3038b8cbc826f53afc6e23ef8ccb920722670e1fc",
+      // Technology base cost 5 / 6 / 7 (`pulp_wars-w49.40`, 7r81): a
+      // tier 2 costs 12 with the view's four cities, so its 12 Coins
+      // buy one and six RESEARCH commands are offered again (was
+      // 4eb8ff…e1fc).
+      "5d18df44f6c0367b6ed3c153e14baaef93f2eb2fc9fb97298d5cc42a280d04ef",
     );
     const ready = queryAiReadyCommandsV7(view);
     // Revision 17 inserts KABOOM after WAIL, shifting the later command-kind
@@ -158,7 +169,11 @@ describe("ruleset-7 late public query performance", () => {
       // TENTACLE, and PICK_ME after PROCLAIM, moving the later command kinds
       // forward by four (was b5d92f…1a5a); the revision-12-ordinal value is
       // unchanged.
-      "4f21a548f8ee63354957109d04bfac4829dce2fd15cd6f685cacecba2f9e2a8a",
+      // Technology base cost 5 / 6 / 7 (`pulp_wars-w49.40`, 7r81): a
+      // tier 2 costs 12 with the view's four cities, so its 12 Coins
+      // buy one and six RESEARCH commands are offered again (was
+      // 4f21a5…2a8a).
+      "67e5172f1da5bf9db181c08a073d9add76490332009a740832f987653ec27ea5",
     );
     // Revision 13 shifts the command-kind ordinals in AI tie-break tuples
     // (spec section 8); with revision-12 ordinals the value is unchanged.
@@ -169,7 +184,11 @@ describe("ruleset-7 late public query performance", () => {
       // 999e50…a79f).
       // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): recomputed (was
       // 15be87…b4f2).
-      "724d39a5997ab848ec309b8c580f7ce0f29d890ea89e6d4a5d6c6bf456b25de0",
+      // Technology base cost 5 / 6 / 7 (`pulp_wars-w49.40`, 7r81): a
+      // tier 2 costs 12 with the view's four cities, so its 12 Coins
+      // buy one and six RESEARCH commands are offered again (was
+      // 724d39…5de0).
+      "414a641fdec511aa73fa84a717afa8aeb2e51438deb0dbc1403cbed5a3bf0796",
     );
     expect(
       canonicalHash(
@@ -180,7 +199,11 @@ describe("ruleset-7 late public query performance", () => {
       ),
       // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
       // fe39b7…68d3).
-    ).toBe("25ba7bc15c09e8d20505c900f4f635a35dc1c336905c56be939267e8d3fe4a55");
+      // Technology base cost 5 / 6 / 7 (`pulp_wars-w49.40`, 7r81): a
+      // tier 2 costs 12 with the view's four cities, so its 12 Coins
+      // buy one and six RESEARCH commands are offered again (was
+      // 25ba7b…4a55).
+    ).toBe("9aa14d697724b0dd7b83d92cf0e1d62dcd186e8c511d0d7ece34a9c2ac72a856");
     expect(
       canonicalHash(
         commands.filter(isRetainedLandCommand).map((command) => ({
@@ -190,7 +213,11 @@ describe("ruleset-7 late public query performance", () => {
       ),
       // The economy rejig (`pulp_wars-w49.16`, 7r54): recomputed (was
       // fe39b7…68d3).
-    ).toBe("25ba7bc15c09e8d20505c900f4f635a35dc1c336905c56be939267e8d3fe4a55");
+      // Technology base cost 5 / 6 / 7 (`pulp_wars-w49.40`, 7r81): a
+      // tier 2 costs 12 with the view's four cities, so its 12 Coins
+      // buy one and six RESEARCH commands are offered again (was
+      // 25ba7b…4a55).
+    ).toBe("9aa14d697724b0dd7b83d92cf0e1d62dcd186e8c511d0d7ece34a9c2ac72a856");
     expect(elapsed).toBeLessThan(250);
 
     const incrementalView = structuredClone(RETAINED_VIEW);
@@ -295,7 +322,11 @@ describe("ruleset-7 late public query performance", () => {
         // 447868…9983).
         // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): recomputed (was
         // be2fb4…6066).
-        "70afe9e8f47129c996d843d5a251a8b29a8350e4ecab74f257766f0f6fa82b43",
+        // Technology base cost 5 / 6 / 7 (`pulp_wars-w49.40`, 7r81): a
+        // tier 2 costs 12 with the view's four cities, so its 12 Coins
+        // buy one and six RESEARCH commands are offered again (was
+        // 70afe9…2b43).
+        "b219a154ec0b5d104ff547ed04d678a337c481ec70fec9f6da918b2a81529cd9",
       );
       const revision8Scores = leftResult.scores.filter(({ command }) =>
         isRevision8MergedUnlockCommand(command),
@@ -317,7 +348,11 @@ describe("ruleset-7 late public query performance", () => {
         // 447868…9983).
         // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): recomputed (was
         // be2fb4…6066).
-        "70afe9e8f47129c996d843d5a251a8b29a8350e4ecab74f257766f0f6fa82b43",
+        // Technology base cost 5 / 6 / 7 (`pulp_wars-w49.40`, 7r81): a
+        // tier 2 costs 12 with the view's four cities, so its 12 Coins
+        // buy one and six RESEARCH commands are offered again (was
+        // 70afe9…2b43).
+        "b219a154ec0b5d104ff547ed04d678a337c481ec70fec9f6da918b2a81529cd9",
       );
       expect(queryPublicEconomicPotentialsV7(leftView)).toBe(
         leftResult.potentials,
@@ -385,7 +420,11 @@ describe("ruleset-7 late public query performance", () => {
       // 9fd994…1b96).
       // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): recomputed (was
       // 4b8b7c…d029).
-      "4eb8ff841a02d2e31170dfa3038b8cbc826f53afc6e23ef8ccb920722670e1fc",
+      // Technology base cost 5 / 6 / 7 (`pulp_wars-w49.40`, 7r81): a
+      // tier 2 costs 12 with the view's four cities, so its 12 Coins
+      // buy one and six RESEARCH commands are offered again (was
+      // 4eb8ff…e1fc).
+      "5d18df44f6c0367b6ed3c153e14baaef93f2eb2fc9fb97298d5cc42a280d04ef",
     );
     const firstMove = required(
       queryPlayerCommandsV7(original).find(
@@ -416,7 +455,11 @@ describe("ruleset-7 late public query performance", () => {
       // 8e4aa3…e4bd).
       // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): recomputed (was
       // 39a0b0…a63b).
-      "099b6189664e3cbe9663c70590f79a6e970ca44ef3a60bffacd819aeefd56db1",
+      // Technology base cost 5 / 6 / 7 (`pulp_wars-w49.40`, 7r81): a
+      // tier 2 costs 12 with the view's four cities, so its 12 Coins
+      // buy one and six RESEARCH commands are offered again (was
+      // 099b61…6db1).
+      "60641ede587dac5dbea11620f258375e2919ea3c3dc9cc94c35c05cf1de65ff7",
     );
     expect(canonicalHash(changedCommands.filter(isRetainedLandCommand))).toBe(
       // Tuning 6 (`pulp_wars-w49.6`): research costs 1 Coin for each
@@ -426,7 +469,11 @@ describe("ruleset-7 late public query performance", () => {
       // 8e4aa3…e4bd).
       // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): recomputed (was
       // 39a0b0…a63b).
-      "099b6189664e3cbe9663c70590f79a6e970ca44ef3a60bffacd819aeefd56db1",
+      // Technology base cost 5 / 6 / 7 (`pulp_wars-w49.40`, 7r81): a
+      // tier 2 costs 12 with the view's four cities, so its 12 Coins
+      // buy one and six RESEARCH commands are offered again (was
+      // 099b61…6db1).
+      "60641ede587dac5dbea11620f258375e2919ea3c3dc9cc94c35c05cf1de65ff7",
     );
   });
 
