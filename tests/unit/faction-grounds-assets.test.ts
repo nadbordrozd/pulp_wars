@@ -248,8 +248,14 @@ describe("a ground tile", () => {
 });
 
 describe("the grounds made from PixelLab fields", () => {
-  it("are the Cult's, the Undead's and the Dwarves', one chosen look each", () => {
-    expect([...FIELD_GROUND_IDS]).toEqual(["CULT", "UNDEAD", "DWARF"]);
+  it("are every faction's but the Dinosaurs' and the Martians', one chosen look each", () => {
+    expect([...FIELD_GROUND_IDS]).toEqual([
+      "CULT",
+      "UNDEAD",
+      "DWARF",
+      "CANDY",
+      "GOBLIN",
+    ]);
     for (const id of FIELD_GROUND_IDS) {
       const look = fieldGroundLook(id);
       expect(look.faction).toBe(id);
@@ -257,7 +263,7 @@ describe("the grounds made from PixelLab fields", () => {
         FACTION_GRASS_TILE_COUNTS_V7[id],
       );
     }
-    // Candy, the Martians and the Goblins have samples only: none is wired.
+    // The Martians have samples only: none is wired.
     for (const look of GROUND_LOOKS)
       if (look.status === "CHOSEN")
         expect(FIELD_GROUND_IDS).toContain(look.faction);
@@ -265,7 +271,7 @@ describe("the grounds made from PixelLab fields", () => {
       GROUND_LOOKS.filter((look) => look.lead === true).map(
         (look) => look.faction,
       ),
-    ).toEqual(["CANDY", "MARTIAN", "GOBLIN"]);
+    ).toEqual(["MARTIAN"]);
   });
 
   it("are what their looks derive from the recorded fields, pixel for pixel", async () => {
@@ -276,13 +282,11 @@ describe("the grounds made from PixelLab fields", () => {
     expect(record.grounds.map((ground) => ground.id)).toEqual([
       ...FIELD_GROUND_IDS,
     ]);
-    // The four recoloured grounds kept their seeds, so their tiles did not
-    // move when the Dwarf and the Cult recipes left the list.
+    // The recoloured grounds kept their seeds, so their tiles did not move
+    // when the other recipes left the list.
     expect(record.recipes.map((recipe) => [recipe.id, recipe.seed])).toEqual([
-      ["GOBLIN", 1],
       ["DINOSAUR", 2],
       ["MARTIAN", 3],
-      ["CANDY", 5],
     ]);
     for (const ground of record.grounds) {
       for (const source of ground.fields) {

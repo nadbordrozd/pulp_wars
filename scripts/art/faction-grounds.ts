@@ -480,7 +480,7 @@ async function contact(
 }
 
 /** The ground of a faction at a Git revision, as the board draws it. */
-async function groundAt(
+export async function groundAt(
   root: string,
   faction: GroundFaction,
   ref: string,

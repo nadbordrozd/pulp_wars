@@ -263,8 +263,7 @@ export const GROUND_LOOKS: readonly GroundLook[] = [
     faction: "CANDY",
     letter: "A",
     label: "Mint frosting with sprinkles and sugar crystals",
-    status: "SAMPLE",
-    lead: true,
+    status: "CHOSEN",
     fields: ["candy-frosting-a"],
     recipe: {
       // Palette of candy-frosting-a: mint, pale mint (the field's base),
@@ -423,8 +422,7 @@ export const GROUND_LOOKS: readonly GroundLook[] = [
     faction: "GOBLIN",
     letter: "A",
     label: "Dry golden savannah",
-    status: "SAMPLE",
-    lead: true,
+    status: "CHOSEN",
     fields: ["goblin-savannah-a", "goblin-savannah-b"],
     recipe: {
       // Both fields: straw shade, dry grass, pale straw (the fields'

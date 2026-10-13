@@ -56,13 +56,16 @@ describe("Gallery terrain presentation", () => {
     expect(galleryTerrainNameV7("GRASS", "CULT")).toBe("Bog");
     expect(galleryTerrainNameV7("GRASS", "UNDEAD")).toBe("Burnt ground");
     expect(galleryTerrainNameV7("GRASS", "DWARF")).toBe("Gravel");
-    expect(galleryTerrainNameV7("GRASS", "GOBLIN")).toBe("Grass");
+    expect(galleryTerrainNameV7("GRASS", "CANDY")).toBe("Frosting");
+    expect(galleryTerrainNameV7("GRASS", "GOBLIN")).toBe("Savannah");
+    expect(galleryTerrainNameV7("GRASS", "MARTIAN")).toBe("Grass");
     expect(galleryTerrainNameV7("FOREST", "CULT")).toBe("Forest");
     // Six tiles for a ground made from PixelLab fields, three otherwise.
     expect(galleryTerrainPiecesV7("GRASS", "CULT")).toHaveLength(6);
     expect(galleryTerrainPiecesV7("GRASS", "UNDEAD")).toHaveLength(6);
     expect(galleryTerrainPiecesV7("GRASS", "DWARF")).toHaveLength(6);
-    expect(galleryTerrainPiecesV7("GRASS", "GOBLIN")).toHaveLength(3);
+    expect(galleryTerrainPiecesV7("GRASS", "GOBLIN")).toHaveLength(6);
+    expect(galleryTerrainPiecesV7("GRASS", "MARTIAN")).toHaveLength(3);
     expect(
       snow.kind === "OWN" && snow.swatch.layers.map((layer) => layer.kind),
     ).toEqual(["SUBJECT", "SNOW"]);

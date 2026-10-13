@@ -2,11 +2,11 @@
  * EXPERIMENT: faction grass (bead pulp_wars-2o7.4, docs/art/FACTION_GRASS.md).
  * The ground of each faction's territory. No PixelLab call is made here.
  *
- * There are two kinds of ground. The Goblin, Dinosaur, Martian and Candy
- * grounds are the three accepted Grass masters recoloured, as described
- * below. The Cult, Undead and Dwarf grounds (bead pulp_wars-2yc.48) are not
- * grass: their tiles are composed from the motifs of reviewed PixelLab
- * fields (FIELD_GROUNDS below, scripts/art/faction-grounds/derive.ts).
+ * There are two kinds of ground. The Dinosaur and Martian grounds are the
+ * three accepted Grass masters recoloured, as described below. The Cult,
+ * Undead, Dwarf, Candy and Goblin grounds (bead pulp_wars-2yc.48) are
+ * composed from the motifs of reviewed PixelLab fields (FIELD_GROUND_IDS
+ * below, scripts/art/faction-grounds/derive.ts).
  *
  *   npx tsx scripts/art/faction-grass.ts bake
  *   npx tsx scripts/art/faction-grass.ts check          # also in art:validate
@@ -173,8 +173,8 @@ export interface FactionGrassRecipe {
   readonly label: string;
   /**
    * The seed of the motif placement. It was a recipe's place in this list
-   * (1-based) until bead pulp_wars-2yc.48 took the Dwarf and the Cult
-   * recipes out of it; written down, so the four tiles left did not move.
+   * (1-based) until bead pulp_wars-2yc.48 took the Dwarf, Cult, Candy and
+   * Goblin recipes out of it; written down, so the tiles left did not move.
    */
   readonly seed: number;
   readonly base: string;
@@ -189,34 +189,6 @@ export interface FactionGrassRecipe {
  * is `#8ab85c` with tufts `#9bc56a`, `#78a650`, `#679347`.
  */
 export const FACTION_GRASS_RECIPES: readonly FactionGrassRecipe[] = [
-  {
-    id: "GOBLIN",
-    seed: 1,
-    label:
-      "Scrubland: yellowed, trampled turf with dry straw tufts and mud patches",
-    base: "#a9ac5c",
-    light: "#bcbe70",
-    mid: "#8f9249",
-    dark: "#7b7d3e",
-    motifs: [
-      {
-        kind: "patch",
-        count: [1, 2],
-        radius: [5, 8],
-        fill: "#9d905e",
-        rim: "#887a4c",
-        speck: { colour: "#a99c6a", share: 10 },
-      },
-      {
-        kind: "tufts",
-        share: 35,
-        light: "#cdc47e",
-        mid: "#a59a54",
-        dark: "#8a7f45",
-      },
-      { kind: "fleck", count: [3, 5], colours: ["#8f8250", "#b8b46a"] },
-    ],
-  },
   {
     id: "DINOSAUR",
     seed: 2,
@@ -279,34 +251,19 @@ export const FACTION_GRASS_RECIPES: readonly FactionGrassRecipe[] = [
       },
     ],
   },
-  {
-    id: "CANDY",
-    seed: 5,
-    label: "Sugar meadow: pastel mint with sprinkles",
-    base: "#9cd4b6",
-    light: "#b8e6ce",
-    mid: "#7ec0a0",
-    dark: "#6aae8e",
-    motifs: [
-      {
-        kind: "fleck",
-        count: [10, 13],
-        colours: ["#f39cc2", "#f7e27c", "#ffffff", "#8fb9f0", "#c9a2ea"],
-      },
-      {
-        kind: "patch",
-        count: [1, 1],
-        radius: [5, 7],
-        fill: "#a6dabd",
-      },
-    ],
-  },
 ];
 
 // ------------------------------------------------- grounds from fields
 
 /** The grounds whose tiles are composed from PixelLab fields. */
-export const FIELD_GROUND_IDS = ["CULT", "UNDEAD", "DWARF"] as const;
+export const FIELD_GROUND_IDS = [
+  "CULT",
+  "UNDEAD",
+  "DWARF",
+  // Bead pulp_wars-2yc.48, second round: the user's picks of the samples.
+  "CANDY",
+  "GOBLIN",
+] as const;
 export type FieldGroundId = (typeof FIELD_GROUND_IDS)[number];
 
 /** The look of each, the one of GROUND_LOOKS with the status CHOSEN. */

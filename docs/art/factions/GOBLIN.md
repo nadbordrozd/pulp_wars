@@ -917,3 +917,20 @@ Record: [faction buildings, section 14](../FACTION_BUILDINGS.md#14-a-market-per-
 The seven achievement Monuments and the faction obelisk in Goblin materials. Riveted light grey tin (`#9aa5a8`), grey-tan planks, buff hide and hazard yellow (`#fdd20f`) (`chibi-goblin-monument-<achievement>`): the Explorer a crooked tin obelisk with a yellow compass dial; the Engineer a tin pillar with tin cogwheels; the Muster a plank post hung with a pot lid and plank shields under a horn; the Conqueror a tin and plank arch with a yellow wreath; the Land Baron a tin block with a yellow crown and a grinning shield; the Sea Dog a crooked post with a yellow wheel and a tin anchor; the Slayer a cleaver sword in tin scrap. **Obelisk** (`chibi-goblin-monument`): a crooked tin obelisk with a hide skirt and one yellow star, candidate 14 of the Explorer sheet reused (no new PixelLab job). Art only: the board still draws the Human (achievement) Monument or the shared obelisk until bead `pulp_wars-eu3r.3` wires the skin rule.
 
 Record: [faction buildings, section 15](../FACTION_BUILDINGS.md#15-faction-monuments-bead-pulp_wars-eu3r2).
+
+## Ground (bead `pulp_wars-2yc.48`)
+
+The user, 2026-10-12: "for goblins, idk savannah?"
+
+The Goblins' land is a **dry savannah**: a pale golden straw, base
+`#d3c176`, with tufts and clumps of dry golden-brown grass and loose
+blades. Six tiles (`faction-grass/chibi-goblin-grass-1..6`, 80 x 80,
+opaque, every edge pixel the base colour) composed from the motifs of two
+PixelLab fields, `goblin-savannah-a` and `-b`. Of three samples the user
+picked this one over scrubby badlands (the Dwarf gravel's tan) and
+trampled camp mud (the Cult bog's value)
+([faction grass](../FACTION_GRASS.md#samples-and-the-users-picks)). It
+supersedes the scrubland (a yellow-green `#a9ac5c`): the savannah is 28
+from the default Grass where the scrubland was 18, and the green Goblins
+stand off it more. The scrub wood's foliage is lifted toward it, and the
+shade under the scrub is a dark straw.

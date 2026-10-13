@@ -192,6 +192,47 @@ export const sceneCultGround = (): GameStateV7 => groundScene("CULT", "UNDEAD");
 export const sceneUndeadGround = (): GameStateV7 =>
   groundScene("UNDEAD", "DWARF");
 export const sceneDwarfGround = (): GameStateV7 => groundScene("DWARF", "CULT");
+export const sceneCandyGround = (): GameStateV7 =>
+  groundScene("CANDY", "GOBLIN");
+export const sceneGoblinGround = (): GameStateV7 =>
+  groundScene("GOBLIN", "CANDY");
+export const sceneMartianGround = (): GameStateV7 =>
+  groundScene("MARTIAN", "DWARF");
+
+/**
+ * The whole 16 x 16 map as one faction's explored Grass: the field the
+ * draw-time measure of the textured grounds redraws
+ * (scripts/art/textured-grounds/draw-timing.ts).
+ */
+export function fieldScene(faction: FactionIdV7): GameStateV7 {
+  const state = groundScene(faction, faction === "DWARF" ? "CULT" : "DWARF");
+  const own = state.cities.find((city) => city.ownerId === state.humanPlayerId);
+  if (own === undefined) throw new Error("no city");
+  const tiles = state.board.tiles.map((tile): TileStateV7 => ({
+    ...tile,
+    biome: tile.biome ?? "PLAINS",
+    terrain: "GRASS",
+    resource: null,
+    improvement: null,
+    road: false,
+    fieldDefense: false,
+    site: tile.at.x === own.at.x && tile.at.y === own.at.y ? "CAPITAL" : null,
+    territoryCityId: own.id,
+  }));
+  return {
+    ...state,
+    units: state.units.filter((unit) => unit.ownerId === state.humanPlayerId),
+    cities: state.cities.filter((city) => city.id === own.id),
+    board: { ...state.board, tiles },
+    players: state.players.map((player) =>
+      player.id === state.humanPlayerId
+        ? { ...player, explored: tiles.map((tile) => tile.at) }
+        : player,
+    ),
+  };
+}
+export const sceneMartianField = (): GameStateV7 => fieldScene("MARTIAN");
+export const sceneDwarfField = (): GameStateV7 => fieldScene("DWARF");
 
 /** No switch: "before" is another server (SWITCH_BEFORE_URL). */
 export const SWITCH_PARAMETER = "faction-grounds-review";
@@ -205,6 +246,11 @@ export const REVIEW_SHOTS: readonly LookSwitchShot[] = (
     ["cult", "sceneCultGround"],
     ["undead", "sceneUndeadGround"],
     ["dwarf", "sceneDwarfGround"],
+    ["candy", "sceneCandyGround"],
+    ["goblin", "sceneGoblinGround"],
+    // The Martian ground is unchanged; the scene is for the textured-grounds
+    // experiment (SWITCH_PARAMETER=textured-grounds SWITCH_AFTER_VALUE=1).
+    ["martian", "sceneMartianGround"],
   ] as const
 ).flatMap(([name, scene]): LookSwitchShot[] => [
   // The whole scene at the board's default zoom, and its middle at 3x.

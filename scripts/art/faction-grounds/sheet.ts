@@ -20,8 +20,55 @@ const CHIBI = "public/assets/chibi";
 export interface GroundPanel {
   readonly label: string;
   readonly faction: GroundFaction;
-  /** The three tiles as the board draws them, RGBA, 80 x 80. */
+  /** The tiles as the board draws them, RGBA, 80 x 80. */
   readonly tiles: readonly (Uint8Array | Uint8ClampedArray)[];
+  /**
+   * A ground the board samples by a cell's place on the map (the textured
+   * grounds experiment): one periodic RGBA texture, used instead of `tiles`.
+   */
+  readonly world?: {
+    readonly data: Uint8Array | Uint8ClampedArray;
+    readonly width: number;
+    readonly height: number;
+  };
+  /**
+   * Draws a Road, a border line and two move highlights on the ground, in
+   * code and only like the board's: enough to see whether they read.
+   */
+  readonly overlays?: boolean;
+}
+
+/** A field of a periodic texture, RGBA. */
+export function worldField(
+  world: NonNullable<GroundPanel["world"]>,
+  columns: number,
+  rows: number,
+): Buffer {
+  const width = columns * CELL;
+  const data = Buffer.alloc(width * rows * CELL * 4);
+  for (let y = 0; y < rows * CELL; y += 1)
+    for (let x = 0; x < width; x += 1) {
+      const from = ((y % world.height) * world.width + (x % world.width)) * 4;
+      data.set(world.data.subarray(from, from + 4), (y * width + x) * 4);
+    }
+  return data;
+}
+
+function overlaySvg(width: number, height: number, top: number): Buffer {
+  const y = (row: number): number => top + row * CELL;
+  const road = y(1) + CELL / 2;
+  const cell = (cx: number, cy: number): string =>
+    `<rect x="${cx * CELL + 3}" y="${y(cy) + 3}" width="${CELL - 6}" height="${CELL - 6}" fill="none" stroke="#1d5a58" stroke-width="4" stroke-dasharray="9 5"/><rect x="${cx * CELL + 3}" y="${y(cy) + 3}" width="${CELL - 6}" height="${CELL - 6}" fill="none" stroke="#5fe0cf" stroke-width="2" stroke-dasharray="9 5"/>`;
+  return Buffer.from(
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" shape-rendering="crispEdges">` +
+      `<rect x="0" y="${road - 7}" width="${3 * CELL + 20}" height="14" fill="#7a5230"/>` +
+      `<rect x="0" y="${road - 5}" width="${3 * CELL + 20}" height="9" fill="#a8743f"/>` +
+      `<rect x="${5 * CELL - 1}" y="${top}" width="3" height="${height - top}" fill="#7a1f1a"/>` +
+      `<rect x="${5 * CELL}" y="${top}" width="1" height="${height - top}" fill="#f0604c"/>` +
+      cell(3, 2) +
+      cell(3, 3) +
+      `</svg>`,
+  );
 }
 
 /** What stands on a faction's panel. */
@@ -164,10 +211,13 @@ export async function groundPanelPng(
   const cast = CAST[panel.faction];
   const width = PANEL_COLUMNS * CELL;
   const fieldRows = PANEL_ROWS + 1;
-  const field = groundField(panel.tiles, PANEL_COLUMNS, fieldRows, {
-    x: seedOf * 7,
-    y: seedOf * 3,
-  });
+  const field =
+    panel.world === undefined
+      ? groundField(panel.tiles, PANEL_COLUMNS, fieldRows, {
+          x: seedOf * 7,
+          y: seedOf * 3,
+        })
+      : worldField(panel.world, PANEL_COLUMNS, fieldRows);
   const top = HEADER;
   // The field starts one cell above the panel, so the band of tree tops
   // has ground behind it; the panel shows the last BAND px of that row.
@@ -243,6 +293,9 @@ export async function groundPanelPng(
         left: 0,
         top,
       },
+      ...(panel.overlays === true
+        ? [{ input: overlaySvg(width, height, top + BAND), left: 0, top: 0 }]
+        : []),
       ...layers,
       { input: header(panel.label, width), left: 0, top: 0 },
     ])

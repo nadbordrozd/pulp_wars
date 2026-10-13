@@ -91,11 +91,9 @@ describe("the faction grass switch", () => {
     for (const id of FACTION_GRASS_IDS_V7) {
       const tiles = FACTION_GRASS_TILES_V7.filter((tile) => tile.id === id);
       const count = FACTION_GRASS_TILE_COUNTS_V7[id];
-      // Bead pulp_wars-2yc.48: the Cult bog, the Undead burnt ground and
-      // the Dwarf gravel are composed from PixelLab fields, six tiles each.
-      expect(count, id).toBe(
-        id === "CULT" || id === "UNDEAD" || id === "DWARF" ? 6 : 3,
-      );
+      // Bead pulp_wars-2yc.48: every ground but the Dinosaurs' and the
+      // Martians' is composed from PixelLab fields, six tiles each.
+      expect(count, id).toBe(id === "DINOSAUR" || id === "MARTIAN" ? 3 : 6);
       expect(tiles.map((tile) => tile.variant)).toEqual(
         Array.from({ length: count }, (_, variant) => variant),
       );
@@ -114,11 +112,12 @@ describe("the faction grass switch", () => {
   it("ranks the grounds from the palest to the darkest", () => {
     // A ground spills over every ground before it: the darker land runs
     // out into the lighter one (the bog and the burnt ground are the
-    // darkest since bead pulp_wars-2yc.48, the gravel the palest but one).
+    // darkest since bead pulp_wars-2yc.48; the frosting, the savannah and
+    // the gravel the three palest).
     expect(FACTION_GRASS_IDS_V7).toEqual([
       "CANDY",
-      "DWARF",
       "GOBLIN",
+      "DWARF",
       "MARTIAN",
       "DINOSAUR",
       "UNDEAD",
@@ -413,19 +412,19 @@ describe("the faction grass art and drawing", () => {
   it("serves tiles as baked, a ground's own count of them, and caches spills", () => {
     const resolved = harness().art.resolve();
     if (resolved === null) throw new Error("no art");
-    const goblin = pixelsOf(resolved.tile("GOBLIN", 0));
-    expect([goblin[1], goblin[2], goblin[3]]).toEqual([60, 118, 255]);
+    const martian = pixelsOf(resolved.tile("MARTIAN", 0));
+    expect([martian[1], martian[2], martian[3]]).toEqual([60, 118, 255]);
     // As baked: the Undead tile is no longer toned (bead pulp_wars-2yc.48).
     const undead = pixelsOf(resolved.tile("UNDEAD", 0));
     expect(undead[1]).toBe(155);
     // A cell's variant is one of six. A ground of three takes it modulo
     // three; a ground of six has a tile for each.
-    expect(resolved.tile("GOBLIN", 4)).toBe(resolved.tile("GOBLIN", 1));
-    expect(resolved.tile("GOBLIN", 5)).not.toBe(resolved.tile("GOBLIN", 1));
+    expect(resolved.tile("MARTIAN", 4)).toBe(resolved.tile("MARTIAN", 1));
+    expect(resolved.tile("MARTIAN", 5)).not.toBe(resolved.tile("MARTIAN", 1));
     expect(resolved.tile("UNDEAD", 4)).not.toBe(resolved.tile("UNDEAD", 1));
     expect(resolved.tile("UNDEAD", 7)).toBe(resolved.tile("UNDEAD", 1));
-    expect(resolved.spill("GOBLIN", 4, GRASS_E, 2)).toBe(
-      resolved.spill("GOBLIN", 1, GRASS_E, 2),
+    expect(resolved.spill("MARTIAN", 4, GRASS_E, 2)).toBe(
+      resolved.spill("MARTIAN", 1, GRASS_E, 2),
     );
     expect(resolved.spill("CULT", 4, GRASS_E, 2)).not.toBe(
       resolved.spill("CULT", 1, GRASS_E, 2),

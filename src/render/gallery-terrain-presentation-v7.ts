@@ -432,6 +432,8 @@ const GROUND_NAMES: Partial<Readonly<Record<FactionIdV7, string>>> = {
   CULT: "Bog",
   UNDEAD: "Burnt ground",
   DWARF: "Gravel",
+  CANDY: "Frosting",
+  GOBLIN: "Savannah",
 };
 
 /** The name of a terrain as a faction has it ("Snow" for the Ice Folk). */

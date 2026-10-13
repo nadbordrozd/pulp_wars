@@ -1,0 +1,62 @@
+{
+  "id": "dwarf-moss-e",
+  "jobId": "sync-b5c29fca-9cd3-49a3-90b8-8b571d276397",
+  "request": {
+    "endpoint": "create-image-pixflux",
+    "model": "create-image-pixflux",
+    "batch": "textured-grounds",
+    "asset": "chibi-textured-dwarf-moss-e",
+    "subject": "TERRAIN:GRASS",
+    "faction": "TEST-TEXTURED-GROUNDS",
+    "recipeClass": "terrain",
+    "requestSize": {
+      "width": 160,
+      "height": 160
+    },
+    "seed": 48715,
+    "noBackground": false,
+    "options": {
+      "shading": "medium shading",
+      "detail": "medium detail",
+      "view": "high top-down",
+      "outline": "lineless"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "art/explorations/textured-grounds-2026-10/fragments/style.txt + art/explorations/textured-grounds-2026-10/fragments/style.negative.txt",
+        "text": "Style: hand-painted pixel art terrain texture for the adventure map of a classic 1990s fantasy strategy game: rich and soft, many close tones of the same few hues, gentle shading, no outlines.",
+        "negative": "photorealism, blur, text, letters, numbers, logo, UI, frame, black outlines, thick outlines, cartoon outlines, neon, oversaturated"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-top-down.txt",
+        "text": "Camera: straight top-down view of flat ground filling the whole canvas edge to edge, no perspective, no horizon, no lighting gradient."
+      },
+      {
+        "layer": "class",
+        "source": "art/explorations/textured-grounds-2026-10/fragments/class-terrain.txt + art/explorations/textured-grounds-2026-10/fragments/class-terrain.negative.txt",
+        "text": "Class: one dense ground texture that covers the whole image from edge to edge with the same material everywhere, evenly lit, with no focal object, nothing tall and no large empty flat area. The texture continues past all four edges of the image.",
+        "negative": "border, frame, vignette, dark corners, light spot, lighting gradient, perspective, horizon, tile edge, square island, scene, landscape, clearing, single big object, flat empty background"
+      },
+      {
+        "layer": "subject",
+        "source": "art/explorations/textured-grounds-2026-10/subjects.json",
+        "text": "Subject: a bed of moss-covered stones seen from directly above, filling the whole image: rounded grey stones of many different sizes, none wider than a tenth of the image, packed close together at random and covering most of the image, with soft green moss in every gap between them and patches of moss on top of many stones; soft shading, lit from one side."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "",
+        "negative": "trees, bushes, plants, grass, animals, people, path, road, river, water, cliff, wall, fence, buildings, big boulders, mountains, horizon, sky, bricks, regular grid, rows, paving, tiles, flowers, mushrooms, snow, identical stones, wall, border, frame, lawn, large rock"
+      }
+    ],
+    "prompt": "Style: hand-painted pixel art terrain texture for the adventure map of a classic 1990s fantasy strategy game: rich and soft, many close tones of the same few hues, gentle shading, no outlines. Camera: straight top-down view of flat ground filling the whole canvas edge to edge, no perspective, no horizon, no lighting gradient. Class: one dense ground texture that covers the whole image from edge to edge with the same material everywhere, evenly lit, with no focal object, nothing tall and no large empty flat area. The texture continues past all four edges of the image. Subject: a bed of moss-covered stones seen from directly above, filling the whole image: rounded grey stones of many different sizes, none wider than a tenth of the image, packed close together at random and covering most of the image, with soft green moss in every gap between them and patches of moss on top of many stones; soft shading, lit from one side.",
+    "negativePrompt": "photorealism, blur, text, letters, numbers, logo, UI, frame, black outlines, thick outlines, cartoon outlines, neon, oversaturated, border, vignette, dark corners, light spot, lighting gradient, perspective, horizon, tile edge, square island, scene, landscape, clearing, single big object, flat empty background, trees, bushes, plants, grass, animals, people, path, road, river, water, cliff, wall, fence, buildings, big boulders, mountains, sky, bricks, regular grid, rows, paving, tiles, flowers, mushrooms, snow, identical stones, lawn, large rock",
+    "description": "Style: hand-painted pixel art terrain texture for the adventure map of a classic 1990s fantasy strategy game: rich and soft, many close tones of the same few hues, gentle shading, no outlines. Camera: straight top-down view of flat ground filling the whole canvas edge to edge, no perspective, no horizon, no lighting gradient. Class: one dense ground texture that covers the whole image from edge to edge with the same material everywhere, evenly lit, with no focal object, nothing tall and no large empty flat area. The texture continues past all four edges of the image. Subject: a bed of moss-covered stones seen from directly above, filling the whole image: rounded grey stones of many different sizes, none wider than a tenth of the image, packed close together at random and covering most of the image, with soft green moss in every gap between them and patches of moss on top of many stones; soft shading, lit from one side. Must not include: photorealism, blur, text, letters, numbers, logo, UI, frame, black outlines, thick outlines, cartoon outlines, neon, oversaturated, border, vignette, dark corners, light spot, lighting gradient, perspective, horizon, tile edge, square island, scene, landscape, clearing, single big object, flat empty background, trees, bushes, plants, grass, animals, people, path, road, river, water, cliff, wall, fence, buildings, big boulders, mountains, sky, bricks, regular grid, rows, paving, tiles, flowers, mushrooms, snow, identical stones, lawn, large rock.",
+    "colorImage": {
+      "path": "scripts/art/chibi/palettes/textured-dwarf-moss-e.png",
+      "sha256": "dc11810a380059c3d795353c3062ff09fcbd002b5dbdacbbcc2b26c6feeeffed"
+    }
+  }
+}

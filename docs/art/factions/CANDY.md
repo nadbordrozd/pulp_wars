@@ -822,3 +822,20 @@ the units' feet, so a row of Glazed cells reads as one trail), and the
 "pink frosting": the Chocolatier look keeps pink to the territory border,
 and the Donut Racer's own glaze is chocolate; its sprinkles carry the
 faction pink.
+
+## Ground (bead `pulp_wars-2yc.48`)
+
+The user, 2026-10-12: "make candy grass also more interesting. with
+sprinkles and stuff."
+
+The Candy's land is **mint frosting**: the sugar meadow's pastel mint a
+shade paler, base `#a4dabd`, with rod-shaped sugar sprinkles in pink,
+yellow, white and lilac lying in every direction and small white sugar
+crystals, and no grass tufts. Six tiles
+(`faction-grass/chibi-candy-grass-1..6`, 80 x 80, opaque, every edge pixel
+the base colour) composed from the motifs of one PixelLab field,
+`candy-frosting-a`. Of three samples the user picked this one: on the
+cookie-dough ground the chocolate units were lost, and the vanilla icing
+was close to Snow
+([faction grass](../FACTION_GRASS.md#samples-and-the-users-picks)). The
+candy grove was coloured against the mint and keeps its shade.

@@ -64,15 +64,44 @@ export function factionGrassEnabledV7(search?: string): boolean {
 }
 
 /**
+ * EXPERIMENT, off: textured grounds (bead pulp_wars-2yc.48, second round;
+ * docs/art/TEXTURED_GROUNDS.md). `?textured-grounds=1` draws the grounds
+ * that have one as a large painted texture sampled by a cell's place on
+ * the map, in place of their tiles. Nothing draws them without the
+ * parameter.
+ */
+export const TEXTURED_GROUNDS_ENABLED_V7 = false;
+export const TEXTURED_GROUNDS_PARAMETER_V7 = "textured-grounds";
+
+export function texturedGroundsEnabledV7(search?: string): boolean {
+  const query =
+    search ??
+    (globalThis as { location?: { search?: string } }).location?.search ??
+    "";
+  let value: string | null;
+  try {
+    value = new URLSearchParams(query).get(TEXTURED_GROUNDS_PARAMETER_V7);
+  } catch {
+    value = null;
+  }
+  if (value === null) return TEXTURED_GROUNDS_ENABLED_V7;
+  const text = value.trim().toLowerCase();
+  if (text === "1" || text === "on" || text === "true") return true;
+  if (text === "0" || text === "off" || text === "false") return false;
+  return TEXTURED_GROUNDS_ENABLED_V7;
+}
+
+/**
  * The grounds, lowest rank first: a ground spills over every ground before
  * it in this list, and over default Grass. Darker grounds rank higher, so
  * a border reads as the darker land running out into the lighter one.
  */
 export const FACTION_GRASS_IDS_V7 = [
+  // The mint frosting, the golden savannah and the mine gravel (bead
+  // pulp_wars-2yc.48) are the three palest, in this order.
   "CANDY",
-  // The mine gravel (bead pulp_wars-2yc.48): the palest after the meadow.
-  "DWARF",
   "GOBLIN",
+  "DWARF",
   "MARTIAN",
   "DINOSAUR",
   // The burnt ground and the peat bog (bead pulp_wars-2yc.48) are the two
@@ -249,6 +278,8 @@ export interface FactionGrassEntryV7 {
 }
 
 export interface FactionGrassCellV7 {
+  /** The cell's place on the map: a textured ground is sampled by it. */
+  readonly at: { readonly x: number; readonly y: number };
   /** The cell's own tile, or null (default Grass, or drawn elsewhere). */
   readonly own: FactionGrassIdV7 | null;
   readonly variant: number;
@@ -303,6 +334,7 @@ export function factionGrassCellsV7(
     const own = id !== null && !DRAWN_ELSEWHERE.has(id) ? id : null;
     if (own === null && around.size === 0) continue;
     cells.set(`${x},${y}`, {
+      at: { x, y },
       own,
       variant: forestHashV7(x, y, 3, 0x51) % FACTION_GRASS_CELL_VARIANTS_V7,
       phase:
@@ -347,15 +379,28 @@ export interface FactionGrassTileAssetV7 {
    * gloam masters); the others are baked in their final colours.
    */
   readonly toned?: boolean;
+  /**
+   * The textured-grounds experiment: the file is not one tile but a
+   * periodic texture of `columns` x `rows` cells, and a cell draws the
+   * part at its own place on the map (modulo the period), so neighbouring
+   * cells always continue each other. `variant` is 0.
+   */
+  readonly world?: { readonly columns: number; readonly rows: number };
 }
 
 export interface FactionGrassArtV7 {
-  tile(id: FactionGrassIdV7, variant: number): CanvasImageSource | null;
+  /** `at` is the cell's place on the map; a textured ground needs it. */
+  tile(
+    id: FactionGrassIdV7,
+    variant: number,
+    at?: { readonly x: number; readonly y: number },
+  ): CanvasImageSource | null;
   spill(
     id: FactionGrassIdV7,
     variant: number,
     neighbours: number,
     phase: number,
+    at?: { readonly x: number; readonly y: number },
   ): CanvasImageSource | null;
 }
 
@@ -382,9 +427,35 @@ export function createFactionGrassArtV7(input: {
   const build = (): FactionGrassArtV7 | null => {
     const pixels = new Map<string, Uint8ClampedArray>();
     const surfaces = new Map<string, CanvasImageSource>();
+    const worlds = new Map<
+      FactionGrassIdV7,
+      { readonly columns: number; readonly rows: number }
+    >();
     for (const tile of tiles) {
       const image = images.get(tile.url);
       if (image === undefined) return null;
+      if (tile.world !== undefined) {
+        // One read of the whole texture, cut once into its cells: a cell
+        // of the board then draws one cached surface, as with tiles.
+        const { columns, rows } = tile.world;
+        const width = columns * CELL;
+        const whole = environment.readPixels(image, width, rows * CELL);
+        if (whole === null) return null;
+        for (let cy = 0; cy < rows; cy += 1)
+          for (let cx = 0; cx < columns; cx += 1) {
+            const cut = new Uint8ClampedArray(CELL * CELL * 4);
+            for (let y = 0; y < CELL; y += 1) {
+              const from = ((cy * CELL + y) * width + cx * CELL) * 4;
+              cut.set(whole.subarray(from, from + CELL * 4), y * CELL * 4);
+            }
+            const surface = environment.createSurface(cut, CELL, CELL);
+            if (surface === null) return null;
+            pixels.set(key(tile.id, cx + columns * cy), cut);
+            surfaces.set(key(tile.id, cx + columns * cy), surface);
+          }
+        worlds.set(tile.id, tile.world);
+        continue;
+      }
       const read = environment.readPixels(image, CELL, CELL);
       if (read === null) return null;
       const final =
@@ -409,15 +480,27 @@ export function createFactionGrassArtV7(input: {
     const counts = new Map<FactionGrassIdV7, number>();
     for (const tile of tiles)
       counts.set(tile.id, Math.max(counts.get(tile.id) ?? 0, tile.variant + 1));
-    const own = (id: FactionGrassIdV7, variant: number): string =>
-      key(id, variant % (counts.get(id) ?? 1));
+    const own = (
+      id: FactionGrassIdV7,
+      variant: number,
+      at?: { readonly x: number; readonly y: number },
+    ): string => {
+      const world = worlds.get(id);
+      return world === undefined
+        ? key(id, variant % (counts.get(id) ?? 1))
+        : key(
+            id,
+            modulo(at?.x ?? 0, world.columns) +
+              world.columns * modulo(at?.y ?? 0, world.rows),
+          );
+    };
     return {
-      tile: (id, variant) => surfaces.get(own(id, variant)) ?? null,
-      spill(id, variant, neighbours, phase) {
-        const spillKey = `${own(id, variant)}:${neighbours}:${phase}`;
+      tile: (id, variant, at) => surfaces.get(own(id, variant, at)) ?? null,
+      spill(id, variant, neighbours, phase, at) {
+        const spillKey = `${own(id, variant, at)}:${neighbours}:${phase}`;
         const known = spills.get(spillKey);
         if (known !== undefined) return known;
-        const tile = pixels.get(own(id, variant));
+        const tile = pixels.get(own(id, variant, at));
         const surface =
           tile === undefined
             ? null
@@ -486,7 +569,8 @@ export function factionGrassLayersV7(
   cell: FactionGrassCellV7,
 ): CanvasImageSource[] {
   const layers: CanvasImageSource[] = [];
-  const own = cell.own === null ? null : art.tile(cell.own, cell.variant);
+  const own =
+    cell.own === null ? null : art.tile(cell.own, cell.variant, cell.at);
   if (own !== null) layers.push(own);
   for (const spill of cell.spills) {
     const image = art.spill(
@@ -494,6 +578,7 @@ export function factionGrassLayersV7(
       cell.variant,
       spill.neighbours,
       cell.phase,
+      cell.at,
     );
     if (image !== null) layers.push(image);
   }

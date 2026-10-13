@@ -60,7 +60,7 @@ const delay = (ms: number): Promise<void> =>
   new Promise((resolve) => setTimeout(resolve, ms));
 
 /** Replaces the running app with the app view over a fixed state. */
-function mountExpression(module: string, scene: string): string {
+export function mountExpression(module: string, scene: string): string {
   return `(async () => {
       const engine = await import('/src/engine/index.ts');
       const scenes = await import(${JSON.stringify(`/${module}`)});
@@ -94,12 +94,12 @@ function mountExpression(module: string, scene: string): string {
     })()`;
 }
 
-interface Connection {
+export interface Connection {
   send(method: string, params?: Record<string, unknown>): Promise<unknown>;
   close(): void;
 }
 
-async function connect(url: string): Promise<Connection> {
+export async function connect(url: string): Promise<Connection> {
   const socket = new WebSocket(url);
   await new Promise<void>((resolve, reject) => {
     socket.addEventListener("open", () => resolve(), { once: true });
@@ -139,7 +139,7 @@ async function connect(url: string): Promise<Connection> {
   };
 }
 
-async function evaluate<T>(
+export async function evaluate<T>(
   connection: Connection,
   expression: string,
 ): Promise<T> {
@@ -160,7 +160,7 @@ async function evaluate<T>(
   return response.result?.value as T;
 }
 
-async function waitFor(
+export async function waitFor(
   connection: Connection,
   expression: string,
 ): Promise<void> {

@@ -181,7 +181,8 @@ that has the faction sets behind the default one:
   (the Cult bog, the Undead burnt ground and the Dwarf gravel,
   [faction grass](FACTION_GRASS.md#grounds-from-pixellab-fields)) it is a
   dark moss under the lantern wood, a dark soot under the dead wood and a
-  dark stone under the pines, and those three sets were baked again: their
+  dark stone under the pines (and a dark straw under the Goblin scrub on
+  its savannah), and those sets were baked again, the Candy grove too: their
   foliage is lifted toward the new grounds (the Undead set's ground is the
   baked tile `faction-grass/chibi-undead-grass-1.png` now). It is cut back along a border as
   it is at the edge of a wood.

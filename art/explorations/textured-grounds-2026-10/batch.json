@@ -1,0 +1,588 @@
+{
+  "schemaVersion": 1,
+  "batch": "textured-grounds",
+  "title": "Textured grounds: PixelLab fields whose whole surface is the material, for a ground sampled by world coordinates (experiment, never registered)",
+  "bead": "pulp_wars-2yc.48",
+  "faction": "TEST-TEXTURED-GROUNDS",
+  "dryRun": false,
+  "assets": [
+    {
+      "id": "chibi-textured-martian-regolith-a",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/MARTIAN_REGOLITH_A"
+    },
+    {
+      "id": "chibi-textured-dwarf-moss-a",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/DWARF_MOSS_A"
+    },
+    {
+      "id": "chibi-textured-martian-regolith-c",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/MARTIAN_REGOLITH_C"
+    },
+    {
+      "id": "chibi-textured-martian-regolith-d",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/MARTIAN_REGOLITH_D"
+    },
+    {
+      "id": "chibi-textured-martian-rocks-a",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/MARTIAN_ROCKS_A"
+    },
+    {
+      "id": "chibi-textured-martian-rocks-b",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/MARTIAN_ROCKS_B"
+    },
+    {
+      "id": "chibi-textured-dwarf-moss-c",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/DWARF_MOSS_C"
+    },
+    {
+      "id": "chibi-textured-dwarf-moss-d",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/DWARF_MOSS_D"
+    },
+    {
+      "id": "chibi-textured-martian-regolith-e",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/MARTIAN_REGOLITH_E"
+    },
+    {
+      "id": "chibi-textured-martian-regolith-f",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/MARTIAN_REGOLITH_F"
+    },
+    {
+      "id": "chibi-textured-dwarf-moss-e",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/DWARF_MOSS_E"
+    },
+    {
+      "id": "chibi-textured-dwarf-moss-f",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/DWARF_MOSS_F"
+    },
+    {
+      "id": "chibi-textured-dwarf-moss-g",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/DWARF_MOSS_G"
+    },
+    {
+      "id": "chibi-textured-dwarf-moss-h",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/DWARF_MOSS_H"
+    },
+    {
+      "id": "chibi-textured-dwarf-stones-a",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/DWARF_STONES_A"
+    },
+    {
+      "id": "chibi-textured-dwarf-stones-b",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/DWARF_STONES_B"
+    },
+    {
+      "id": "chibi-textured-cult-marsh-a",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/CULT_MARSH_A"
+    },
+    {
+      "id": "chibi-textured-cult-marsh-b",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/CULT_MARSH_B"
+    }
+  ],
+  "recipes": [
+    {
+      "id": "martian-regolith-a",
+      "asset": "chibi-textured-martian-regolith-a",
+      "endpoint": "create-image-pixflux",
+      "seed": 48701,
+      "requestSize": {
+        "width": 400,
+        "height": 400
+      },
+      "options": {
+        "shading": "medium shading",
+        "detail": "medium detail",
+        "outline": "lineless"
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/textured-martian-regolith-a.png",
+        "sha256": "b023499d8d6aa6539c5c6fb5d3012f1039500184b447ade2d16f39a467f89aa0"
+      },
+      "negativeAddendum": "trees, bushes, plants, grass, animals, people, path, road, river, water, cliff, wall, fence, buildings, big boulders, mountains, horizon, sky, crater lake, rover, footprints, green, blue, lava, fire",
+      "notes": "MARTIAN, Mars regolith: dust with scattered rocks of many sizes. The lead Mars texture: dust that is not flat, discrete varied rocks."
+    },
+    {
+      "id": "dwarf-moss-a",
+      "asset": "chibi-textured-dwarf-moss-a",
+      "endpoint": "create-image-pixflux",
+      "seed": 48711,
+      "requestSize": {
+        "width": 400,
+        "height": 400
+      },
+      "options": {
+        "shading": "medium shading",
+        "detail": "medium detail",
+        "outline": "lineless"
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/textured-dwarf-moss-a.png",
+        "sha256": "dc11810a380059c3d795353c3062ff09fcbd002b5dbdacbbcc2b26c6feeeffed"
+      },
+      "negativeAddendum": "trees, bushes, plants, grass, animals, people, path, road, river, water, cliff, wall, fence, buildings, big boulders, mountains, horizon, sky, bricks, regular grid, paving, tiles, flowers, mushrooms, snow",
+      "notes": "DWARF, Moss-covered stones: cobbles with moss in the gaps and on top. The lead Dwarf texture: stones and moss everywhere, no bare ground."
+    },
+    {
+      "id": "martian-regolith-c",
+      "asset": "chibi-textured-martian-regolith-c",
+      "endpoint": "create-image-pixflux",
+      "seed": 48703,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "options": {
+        "shading": "medium shading",
+        "detail": "medium detail",
+        "outline": "lineless"
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/textured-martian-regolith-c.png",
+        "sha256": "b023499d8d6aa6539c5c6fb5d3012f1039500184b447ade2d16f39a467f89aa0"
+      },
+      "negativeAddendum": "trees, bushes, plants, grass, animals, people, path, road, river, water, cliff, wall, fence, buildings, big boulders, mountains, horizon, sky, crater lake, rover, footprints, green, blue, lava, fire, canyon, cliffs, stripes, furrows",
+      "notes": "MARTIAN, Mars regolith at 160 px: dust with scattered rocks of many sizes. martian-regolith-a at 400 px was a canyon mouth over striped dust: Pixflux does not hold a texture at that size. The size the flat fields were made at."
+    },
+    {
+      "id": "martian-regolith-d",
+      "asset": "chibi-textured-martian-regolith-d",
+      "endpoint": "create-image-pixflux",
+      "seed": 48704,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "options": {
+        "shading": "medium shading",
+        "detail": "medium detail",
+        "outline": "lineless"
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/textured-martian-regolith-d.png",
+        "sha256": "b023499d8d6aa6539c5c6fb5d3012f1039500184b447ade2d16f39a467f89aa0"
+      },
+      "negativeAddendum": "trees, bushes, plants, grass, animals, people, path, road, river, water, cliff, wall, fence, buildings, big boulders, mountains, horizon, sky, crater lake, rover, footprints, green, blue, lava, fire, canyon, cliffs, stripes, furrows, big crater",
+      "notes": "MARTIAN, Mars regolith at 160 px: slabs, pebble clusters, a small crater. A second exemplar for the quilt: other rocks, craters asked for."
+    },
+    {
+      "id": "martian-rocks-a",
+      "asset": "chibi-textured-martian-rocks-a",
+      "endpoint": "create-image-pixflux",
+      "seed": 48707,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "options": {
+        "shading": "medium shading",
+        "detail": "medium detail",
+        "outline": "lineless"
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/textured-martian-rocks-a.png",
+        "sha256": "b023499d8d6aa6539c5c6fb5d3012f1039500184b447ade2d16f39a467f89aa0"
+      },
+      "negativeAddendum": "trees, bushes, plants, grass, animals, people, path, road, river, water, cliff, wall, fence, buildings, big boulders, mountains, horizon, sky, crater lake, rover, footprints, green, blue, lava, fire, canyon, cliffs, stripes, furrows, mesa, plateau, large rock",
+      "notes": "MARTIAN, Mars rocks at 160 px: many shapes, for the rock motifs. The four fields hold about forty rocks, most of them round: a field asked for the shapes, to cut the rock motifs from."
+    },
+    {
+      "id": "martian-rocks-b",
+      "asset": "chibi-textured-martian-rocks-b",
+      "endpoint": "create-image-pixflux",
+      "seed": 48708,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "options": {
+        "shading": "medium shading",
+        "detail": "medium detail",
+        "outline": "lineless"
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/textured-martian-rocks-b.png",
+        "sha256": "b023499d8d6aa6539c5c6fb5d3012f1039500184b447ade2d16f39a467f89aa0"
+      },
+      "negativeAddendum": "trees, bushes, plants, grass, animals, people, path, road, river, water, cliff, wall, fence, buildings, big boulders, mountains, horizon, sky, crater lake, rover, footprints, green, blue, lava, fire, canyon, cliffs, stripes, furrows, mesa, plateau, large rock, big crater",
+      "notes": "MARTIAN, Mars rocks at 160 px: slabs, shards and small craters. A second sheet of rock motifs, with craters asked for."
+    },
+    {
+      "id": "dwarf-moss-c",
+      "asset": "chibi-textured-dwarf-moss-c",
+      "endpoint": "create-image-pixflux",
+      "seed": 48713,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "options": {
+        "shading": "medium shading",
+        "detail": "medium detail",
+        "outline": "lineless"
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/textured-dwarf-moss-c.png",
+        "sha256": "dc11810a380059c3d795353c3062ff09fcbd002b5dbdacbbcc2b26c6feeeffed"
+      },
+      "negativeAddendum": "trees, bushes, plants, grass, animals, people, path, road, river, water, cliff, wall, fence, buildings, big boulders, mountains, horizon, sky, bricks, regular grid, rows, paving, tiles, flowers, mushrooms, snow, identical stones",
+      "notes": "DWARF, Moss-covered stones at 160 px. dwarf-moss-a at 400 px was rows of one stone on a flat green. The size the flat fields were made at; 'at random', 'many different sizes'."
+    },
+    {
+      "id": "dwarf-moss-d",
+      "asset": "chibi-textured-dwarf-moss-d",
+      "endpoint": "create-image-pixflux",
+      "seed": 48714,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "options": {
+        "shading": "medium shading",
+        "detail": "medium detail",
+        "outline": "lineless"
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/textured-dwarf-moss-d.png",
+        "sha256": "dc11810a380059c3d795353c3062ff09fcbd002b5dbdacbbcc2b26c6feeeffed"
+      },
+      "negativeAddendum": "trees, bushes, plants, grass, animals, people, path, road, river, water, cliff, wall, fence, buildings, big boulders, mountains, horizon, sky, bricks, regular grid, rows, paving, tiles, flowers, mushrooms, snow, identical stones",
+      "notes": "DWARF, Moss-covered stones at 160 px: larger boulder tops. A second exemplar for the quilt: larger stones, more moss on top."
+    },
+    {
+      "id": "martian-regolith-e",
+      "asset": "chibi-textured-martian-regolith-e",
+      "endpoint": "create-image-pixflux",
+      "seed": 48705,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "options": {
+        "shading": "medium shading",
+        "detail": "medium detail",
+        "outline": "lineless"
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/textured-martian-regolith-e.png",
+        "sha256": "b023499d8d6aa6539c5c6fb5d3012f1039500184b447ade2d16f39a467f89aa0"
+      },
+      "negativeAddendum": "trees, bushes, plants, grass, animals, people, path, road, river, water, cliff, wall, fence, buildings, big boulders, mountains, horizon, sky, crater lake, rover, footprints, green, blue, lava, fire, canyon, cliffs, stripes, furrows, mesa, plateau, large rock, rock taller than a pebble",
+      "notes": "MARTIAN, Mars regolith at 160 px: small rocks only. martian-regolith-c and -d have mesas and tree-stump rocks 50 px wide: tall things. Small rocks only, by size."
+    },
+    {
+      "id": "martian-regolith-f",
+      "asset": "chibi-textured-martian-regolith-f",
+      "endpoint": "create-image-pixflux",
+      "seed": 48706,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "options": {
+        "shading": "medium shading",
+        "detail": "medium detail",
+        "outline": "lineless"
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/textured-martian-regolith-f.png",
+        "sha256": "b023499d8d6aa6539c5c6fb5d3012f1039500184b447ade2d16f39a467f89aa0"
+      },
+      "negativeAddendum": "trees, bushes, plants, grass, animals, people, path, road, river, water, cliff, wall, fence, buildings, big boulders, mountains, horizon, sky, crater lake, rover, footprints, green, blue, lava, fire, canyon, cliffs, stripes, furrows, mesa, plateau, large rock, big crater",
+      "notes": "MARTIAN, Mars regolith at 160 px: small rocks, dust ripples, small craters. A further exemplar: ripples and small craters."
+    },
+    {
+      "id": "dwarf-moss-e",
+      "asset": "chibi-textured-dwarf-moss-e",
+      "endpoint": "create-image-pixflux",
+      "seed": 48715,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "options": {
+        "shading": "medium shading",
+        "detail": "medium detail",
+        "outline": "lineless"
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/textured-dwarf-moss-e.png",
+        "sha256": "dc11810a380059c3d795353c3062ff09fcbd002b5dbdacbbcc2b26c6feeeffed"
+      },
+      "negativeAddendum": "trees, bushes, plants, grass, animals, people, path, road, river, water, cliff, wall, fence, buildings, big boulders, mountains, horizon, sky, bricks, regular grid, rows, paving, tiles, flowers, mushrooms, snow, identical stones, wall, border, frame, lawn, large rock",
+      "notes": "DWARF, Moss-covered stones at 160 px: stones over most of the image. dwarf-moss-c is a lawn with stones inside a stone wall, dwarf-moss-d a cliff: stones over most of the image, small, no wall."
+    },
+    {
+      "id": "dwarf-moss-f",
+      "asset": "chibi-textured-dwarf-moss-f",
+      "endpoint": "create-image-pixflux",
+      "seed": 48716,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "options": {
+        "shading": "medium shading",
+        "detail": "medium detail",
+        "outline": "lineless"
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/textured-dwarf-moss-f.png",
+        "sha256": "dc11810a380059c3d795353c3062ff09fcbd002b5dbdacbbcc2b26c6feeeffed"
+      },
+      "negativeAddendum": "trees, bushes, plants, grass, animals, people, path, road, river, water, cliff, wall, fence, buildings, big boulders, mountains, horizon, sky, bricks, regular grid, rows, paving, tiles, flowers, mushrooms, snow, identical stones, wall, border, frame, lawn, large rock",
+      "notes": "DWARF, Moss-covered stones at 160 px: a second bed. A second exemplar for the quilt."
+    },
+    {
+      "id": "dwarf-moss-g",
+      "asset": "chibi-textured-dwarf-moss-g",
+      "endpoint": "create-image-pixflux",
+      "seed": 48717,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "options": {
+        "shading": "medium shading",
+        "detail": "medium detail",
+        "outline": "lineless"
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/textured-dwarf-moss-g.png",
+        "sha256": "dc11810a380059c3d795353c3062ff09fcbd002b5dbdacbbcc2b26c6feeeffed"
+      },
+      "negativeAddendum": "trees, bushes, plants, grass, animals, people, path, road, river, water, cliff, wall, fence, buildings, big boulders, mountains, horizon, sky, bricks, regular grid, rows, paving, tiles, flowers, mushrooms, snow, identical stones, wall, border, frame, lawn, garden, large rock, cliff",
+      "notes": "DWARF, Moss-covered stones at 160 px: river pebbles packed tight. dwarf-moss-e is a walled garden and dwarf-moss-f boulders beside a scree stream: scenes. A pebble beach, packed edge to edge."
+    },
+    {
+      "id": "dwarf-moss-h",
+      "asset": "chibi-textured-dwarf-moss-h",
+      "endpoint": "create-image-pixflux",
+      "seed": 48718,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "options": {
+        "shading": "medium shading",
+        "detail": "medium detail",
+        "outline": "lineless"
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/textured-dwarf-moss-h.png",
+        "sha256": "dc11810a380059c3d795353c3062ff09fcbd002b5dbdacbbcc2b26c6feeeffed"
+      },
+      "negativeAddendum": "trees, bushes, plants, grass, animals, people, path, road, river, water, cliff, wall, fence, buildings, big boulders, mountains, horizon, sky, bricks, regular grid, rows, paving, tiles, flowers, mushrooms, snow, identical stones, wall, border, frame, lawn, garden, large rock, cliff",
+      "notes": "DWARF, Moss-covered stones at 160 px: mossy scree. The same ground as angular scree."
+    },
+    {
+      "id": "dwarf-stones-a",
+      "asset": "chibi-textured-dwarf-stones-a",
+      "endpoint": "create-image-pixflux",
+      "seed": 48719,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "options": {
+        "shading": "medium shading",
+        "detail": "medium detail",
+        "outline": "lineless"
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/textured-dwarf-stones-a.png",
+        "sha256": "dc11810a380059c3d795353c3062ff09fcbd002b5dbdacbbcc2b26c6feeeffed"
+      },
+      "negativeAddendum": "trees, bushes, plants, grass, animals, people, path, road, river, water, cliff, wall, fence, buildings, big boulders, mountains, horizon, sky, bricks, regular grid, rows, paving, tiles, flowers, mushrooms, snow, identical stones, wall, border, frame, garden, large rock, cliff, stream, river, path",
+      "notes": "DWARF, Mossy stones at 160 px: separate stones on moss, for the stone motifs. Every field asked for a bed of stones came back a scene with a stream or a cliff. Separate stones on plain moss, to cut the stone motifs from and strew thickly."
+    },
+    {
+      "id": "dwarf-stones-b",
+      "asset": "chibi-textured-dwarf-stones-b",
+      "endpoint": "create-image-pixflux",
+      "seed": 48720,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "options": {
+        "shading": "medium shading",
+        "detail": "medium detail",
+        "outline": "lineless"
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/textured-dwarf-stones-b.png",
+        "sha256": "dc11810a380059c3d795353c3062ff09fcbd002b5dbdacbbcc2b26c6feeeffed"
+      },
+      "negativeAddendum": "trees, bushes, plants, grass, animals, people, path, road, river, water, cliff, wall, fence, buildings, big boulders, mountains, horizon, sky, bricks, regular grid, rows, paving, tiles, flowers, mushrooms, snow, identical stones, wall, border, frame, garden, large rock, cliff, stream, river, path",
+      "notes": "DWARF, Mossy stones at 160 px: a second sheet. A second sheet of stone motifs, smaller and more."
+    },
+    {
+      "id": "cult-marsh-a",
+      "asset": "chibi-textured-cult-marsh-a",
+      "endpoint": "create-image-pixflux",
+      "seed": 48721,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "options": {
+        "shading": "medium shading",
+        "detail": "medium detail",
+        "outline": "lineless"
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/textured-cult-marsh-a.png",
+        "sha256": "c9930d0cb31b1e450aa59c5132bf0a043d5d38f9f4693d08ca2d2ff50d824043"
+      },
+      "negativeAddendum": "trees, bushes, animals, people, path, road, river, cliff, wall, fence, buildings, big boulders, mountains, horizon, sky, flowers, lily, frog, fish, purple, pink, bridge",
+      "notes": "CULT, Marsh: peat hummocks, sedge and dark pools. The Cult bog as a full painted marsh, a preview of rolling the method out."
+    },
+    {
+      "id": "cult-marsh-b",
+      "asset": "chibi-textured-cult-marsh-b",
+      "endpoint": "create-image-pixflux",
+      "seed": 48722,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "options": {
+        "shading": "medium shading",
+        "detail": "medium detail",
+        "outline": "lineless"
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/textured-cult-marsh-b.png",
+        "sha256": "c9930d0cb31b1e450aa59c5132bf0a043d5d38f9f4693d08ca2d2ff50d824043"
+      },
+      "negativeAddendum": "trees, bushes, animals, people, path, road, river, cliff, wall, fence, buildings, big boulders, mountains, horizon, sky, flowers, lily, frog, fish, purple, pink, bridge, stream, channel, tall reeds, bank, ledge",
+      "notes": "CULT, Marsh: hummocks, sedge and small pools only. cult-marsh-a is a stream 60 px wide between banks with ledges: pools only, small."
+    }
+  ]
+}

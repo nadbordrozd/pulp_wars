@@ -102,7 +102,8 @@ export const FACTION_FOREST_FLOOR_V7: Readonly<
 > = {
   // A dark soot shadow on the burnt ground (bead pulp_wars-2yc.48).
   UNDEAD: [38, 33, 32, 36],
-  GOBLIN: [58, 56, 20, 34],
+  // A dark straw shadow on the savannah (bead pulp_wars-2yc.48).
+  GOBLIN: [80, 66, 24, 34],
   DINOSAUR: [12, 48, 34, 36],
   MARTIAN: [78, 40, 26, 34],
   // A dark stone shadow on the mine gravel (bead pulp_wars-2yc.48).

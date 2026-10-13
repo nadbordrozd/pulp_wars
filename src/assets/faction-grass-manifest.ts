@@ -10,14 +10,15 @@ import { chibiArtUrl } from "./chibi-art-manifest";
  * scripts/art/faction-grass.ts in their final colours and drawn as they
  * are. The grounds recoloured from the Grass masters have three tiles; the
  * grounds composed from PixelLab fields (bead pulp_wars-2yc.48: the Cult
- * bog, the Undead burnt ground, the Dwarf gravel) have six, so a puddle or
- * a burnt bush does not come back every third cell.
+ * bog, the Undead burnt ground, the Dwarf gravel, the Candy frosting and
+ * the Goblin savannah) have six, so a puddle or a burnt bush does not come
+ * back every third cell.
  */
 export const FACTION_GRASS_TILE_COUNTS_V7: Readonly<
   Record<FactionGrassIdV7, number>
 > = {
-  CANDY: 3,
-  GOBLIN: 3,
+  CANDY: 6,
+  GOBLIN: 6,
   MARTIAN: 3,
   DINOSAUR: 3,
   DWARF: 6,

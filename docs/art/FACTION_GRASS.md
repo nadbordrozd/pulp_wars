@@ -44,21 +44,21 @@ the tiles) and `package.json` (two script names). Each is marked
 
 ## The grounds
 
-| Faction   | Ground                                                                                                                    | Base      | Tiles |
-| --------- | ------------------------------------------------------------------------------------------------------------------------- | --------- | ----- |
-| Humans    | The default Grass.                                                                                                        | `#8ab85c` | 3     |
-| Undead    | Burnt ground (bead `pulp_wars-2yc.48`): warm ash grey, soot patches, burnt twigs and bushes, charred lumps, a few embers. | `#716a64` | 6     |
-| Goblins   | Scrubland: yellowed, trampled turf, a third of the tufts dry straw, one or two mud patches.                               | `#a9ac5c` | 3     |
-| Dinosaurs | Jungle floor: a darker, bluer green with ferns.                                                                           | `#5f9f58` | 3     |
-| Martians  | Red dust: ochre-red ground with teal lichen patches and pale stones.                                                      | `#b98c6a` | 3     |
-| Dwarves   | Mine gravel (bead `pulp_wars-2yc.48`): pale warm grey gravel, grit, stones stained with verdigris, copper chips.          | `#b5ae9c` | 6     |
-| Candy     | Sugar meadow: pastel mint with sprinkles in pink, yellow, white, blue and lilac.                                          | `#9cd4b6` | 3     |
-| Ice Folk  | Snow. Every land tile of Ice Folk territory is Snow by rule, so they need no grass of their own.                          | n/a       | n/a   |
-| Cultists  | Peat bog (bead `pulp_wars-2yc.48`): olive peat, small teal puddles, reed tufts, pale glow specks.                         | `#76805a` | 6     |
+| Faction   | Ground                                                                                                                      | Base      | Tiles |
+| --------- | --------------------------------------------------------------------------------------------------------------------------- | --------- | ----- |
+| Humans    | The default Grass.                                                                                                          | `#8ab85c` | 3     |
+| Undead    | Burnt ground (bead `pulp_wars-2yc.48`): warm ash grey, soot patches, burnt twigs and bushes, charred lumps, a few embers.   | `#716a64` | 6     |
+| Goblins   | Savannah (bead `pulp_wars-2yc.48`): pale golden straw, tufts and clumps of dry grass, loose blades.                         | `#d3c176` | 6     |
+| Dinosaurs | Jungle floor: a darker, bluer green with ferns.                                                                             | `#5f9f58` | 3     |
+| Martians  | Red dust: ochre-red ground with teal lichen patches and pale stones.                                                        | `#b98c6a` | 3     |
+| Dwarves   | Mine gravel (bead `pulp_wars-2yc.48`): pale warm grey gravel, grit, stones stained with verdigris, copper chips.            | `#b5ae9c` | 6     |
+| Candy     | Frosting (bead `pulp_wars-2yc.48`): pastel mint frosting, sugar sprinkles in pink, yellow, white and lilac, sugar crystals. | `#a4dabd` | 6     |
+| Ice Folk  | Snow. Every land tile of Ice Folk territory is Snow by rule, so they need no grass of their own.                            | n/a       | n/a   |
+| Cultists  | Peat bog (bead `pulp_wars-2yc.48`): olive peat, small teal puddles, reed tufts, pale glow specks.                           | `#76805a` | 6     |
 
-The Goblin, Martian and Candy grounds are to be redone the same way; their
-samples wait for the user's choice
-([the samples](#samples-candy-martians-goblins)).
+The Martian ground is to be redone; its samples are
+[below](#samples-and-the-users-picks), and a fully textured ground is being
+tried for it and for the Dwarves: [textured grounds](TEXTURED_GROUNDS.md).
 
 ## Grounds from PixelLab fields
 
@@ -97,7 +97,7 @@ candidate of the worker's choice.
    of a second ground tone (the Undead soot), as the patches of the
    recoloured grounds are.
 4. **Bake.** `npm run art:faction-grass -- bake` writes the tiles of the
-   three looks marked `CHOSEN` beside the recoloured grounds
+   looks marked `CHOSEN` beside the recoloured grounds
    (`faction-grass/chibi-<faction>-grass-1..6.png`) and records each look's
    fields with their hashes in `scripts/art/faction-grass.json`; `check`
    (in `art:validate`) re-derives them.
@@ -184,26 +184,42 @@ cell.
 
 ### What follows the ground
 
-- **Rank.** Palest first: Candy, Dwarves, Goblins, Martians, Dinosaurs,
+- **Rank.** Palest first: Candy, Goblins, Dwarves, Martians, Dinosaurs,
   Undead, Cultists.
 - **Forests.** Each faction's foliage is lifted toward its ground, so the
-  Cult, Undead and Dwarf sets were baked again (72 files); the Undead
-  set's ground is now the baked tile. The shade under the trees
+  Cult, Undead and Dwarf sets were baked again (72 files), and the Candy
+  and Goblin sets with their grounds (49 files); the Undead set's ground is
+  now the baked tile. The shade under the trees
   (`FACTION_FOREST_FLOOR_V7`) is a dark moss for the Cult, a dark soot for
-  the Undead and a dark stone for the Dwarves.
+  the Undead, a dark stone for the Dwarves and a dark straw for the
+  Goblins; the Candy's dark mint is unchanged.
 - **Missing art.** A missing Undead ground is washed ash (`#716a64`) and a
   missing Undead wood a darker ash, where both were the default greens.
-- **The Gallery** names the three "Bog", "Burnt ground" and "Gravel" in
-  the Grass row and shows the six tiles of each.
+- **The Gallery** names them "Bog", "Burnt ground", "Gravel", "Frosting"
+  and "Savannah" in the Grass row and shows the six tiles of each.
 
-### Samples: Candy, Martians, Goblins
+### Samples and the user's picks
 
 The user, 2026-10-12: "make candy grass also more interesting. with
 sprinkles and stuff. for martians we can make it look more like mars. for
-goblins, idk savannah? make some samples and I'll review." Nine looks with
-the status `SAMPLE` are in `looks.ts` and none is wired; the game draws
-these three grounds as before. `faction-grounds.ts sheet <FACTION>` draws
-each beside the current ground.
+goblins, idk savannah? make some samples and I'll review." Nine looks were
+made, three a faction (`faction-grounds.ts sheet <FACTION>` draws each
+beside the ground of a revision). **The user's answer, 2026-10-13:** "I
+agree with all your picks for which option is best", and of the Martian
+one, "the martian texture is half assed. I'd do more varied (but still
+discrete!) rocks". So **Candy A and Goblin A are wired** (the frosting and
+the savannah of the table at the top), and the Martian ground stays the
+recoloured red dust while a textured ground is tried for it.
+
+- **The frosting** is the sugar meadow's mint, a shade paler (`#a4dabd`),
+  with sprinkles of 5 to 16 px where the meadow had specks of two, and no
+  grass tufts: four to six sprinkles and five to eight sugar crystals a
+  tile, from the field `candy-frosting-a`.
+- **The savannah** is a pale golden straw (`#d3c176`, 74% luma, where the
+  scrubland was a yellow-green `#a9ac5c` at 63%): up to one large tuft, one
+  or two clumps, three to six blades and a few specks a tile, from the
+  fields `goblin-savannah-a` and `-b`. It is 28 from the default Grass,
+  where the scrubland was 18, and the green Goblins stand off it more.
 
 | Faction  | A                                                                    | B                                                                  | C                                                                     | Recommended                                                                                                           |
 | -------- | -------------------------------------------------------------------- | ------------------------------------------------------------------ | --------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
@@ -211,7 +227,7 @@ each beside the current ground.
 | Martians | Butterscotch dust with rocks (`martian-regolith-a`, `-b`)            | Deep rust plain with stones (`martian-rust-a`)                     | Salmon dust with small crater rings (`martian-ripples-a`)             | B: the reddest and the farthest from the Dwarf gravel and a Goblin savannah; the chrome units stand off it most.      |
 | Goblins  | Dry golden savannah (`goblin-savannah-a`, `-b`)                      | Scrubby badlands (`goblin-badlands-a`)                             | Trampled camp mud (`goblin-mud-b`)                                    | A: a clear step from the default green, where B is the Dwarf gravel's tan and C the bog's value.                      |
 
-To wire one: give its look the status `CHOSEN`, add the faction to
+To wire another: give its look the status `CHOSEN`, add the faction to
 `FIELD_GROUND_IDS` (taking its recipe out of `FACTION_GRASS_RECIPES`), set
 its count in `FACTION_GRASS_TILE_COUNTS_V7`, bake the grass and the
 forests, and place it in the rank.
@@ -219,17 +235,19 @@ forests, and place it in the rank.
 ## The recoloured grounds
 
 **The first Cult ground** was a heather moor (bead `pulp_wars-mch9.22`,
-dusty rose-mauve `#cc95a0`) and the first Dwarf ground a stony moor
-(`#959c7c`), both recipes of the list below until bead `pulp_wars-2yc.48`;
+dusty rose-mauve `#cc95a0`), the first Dwarf ground a stony moor
+(`#959c7c`), the first Goblin ground a scrubland (`#a9ac5c`) and the first
+Candy ground a sugar meadow (`#9cd4b6`), all recipes of the list below
+until bead `pulp_wars-2yc.48`;
 the Undead ground was the "gloam" (bead `pulp_wars-xdh.2`) and then the
 ashen ground (bead `pulp_wars-2yc.14`, `#7f9a86`). Their tiles are in the
 repository's history. The recipes of the list carry their seed since then,
-so the four grounds left are byte for byte what they were.
+so the two grounds left are byte for byte what they were.
 
 ### How the tiles are made
 
 [`scripts/art/faction-grass.ts`](../../scripts/art/faction-grass.ts) derives
-every tile of the Goblin, Dinosaur, Martian and Candy grounds in code from
+every tile of the Dinosaur and Martian grounds in code from
 the three accepted Grass masters. No PixelLab call was made for these.
 
 ```sh
@@ -262,10 +280,10 @@ source and tile.
 | Ground    | Luma  | Saturation | Luma spread | Pixels off the base colour |
 | --------- | ----- | ---------- | ----------- | -------------------------- |
 | Default   | 62.4% | 50.0%      | 1.9%        | 2.5%                       |
-| Goblins   | 63.0% | 46.5%      | 2.6%        | 4.4%                       |
+| Goblins   | 74.0% | 44.4%      | 2.7%        | 3.0%                       |
 | Dinosaurs | 51.3% | 44.7%      | 2.8%        | 5.2%                       |
 | Martians  | 58.3% | 42.6%      | 2.5%        | 4.9%                       |
-| Candy     | 75.0% | 26.6%      | 2.4%        | 3.8%                       |
+| Candy     | 78.0% | 24.7%      | 1.9%        | 1.2%                       |
 | Cultists  | 47.2% | 29.8%      | 3.6%        | 4.6%                       |
 | Undead    | 41.8% | 11.5%      | 2.0%        | 4.2%                       |
 | Dwarves   | 67.9% | 13.9%      | 2.7%        | 2.1%                       |
@@ -288,7 +306,7 @@ improvements and units:
    ground's tile cut to an irregular strip about 10 px wide along the
    shared edge, with a blob at a shared corner and a few loose specks.
 
-The ranks, lowest first: default Grass, Candy, Dwarves, Goblins, Martians,
+The ranks, lowest first: default Grass, Candy, Goblins, Dwarves, Martians,
 Dinosaurs, Undead, Cultists. A ground runs out over every ground below it, so no
 border between two grounds is a straight line, and the darker land always
 runs into the lighter one. The strip's width is a wave over board pixels
