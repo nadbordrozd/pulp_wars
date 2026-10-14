@@ -68,6 +68,14 @@ export interface StockSoundV1 {
    * are then only offered for comparison).
    */
   readonly default: number;
+  /**
+   * The candidate the user chose by ear (the firework rocket's recording,
+   * 2026-10-14): the game plays it by default, ahead of the sound's
+   * ElevenLabs default (`sound-choices.ts`), and the Gallery calls it
+   * "Your pick". `default` stays what the sound played before the
+   * ElevenLabs takes. Absent on a sound nobody has chosen for.
+   */
+  readonly userPick?: number;
   readonly confidence: StockSoundConfidenceV1;
   /** Present when a person should listen to this sound before others. */
   readonly listenFirst?: string;

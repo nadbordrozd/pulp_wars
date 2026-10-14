@@ -5,6 +5,7 @@ import {
   SOUND_IDS_V1,
   SOUND_MANIFEST_V1,
 } from "../../src/audio/sound-manifest";
+import { stockSoundV1 } from "../../src/audio/stock-sounds";
 import {
   ELEVENLABS_SFX_CLIPS_PATH,
   ELEVENLABS_SFX_DOC_PATH,
@@ -81,6 +82,14 @@ export function elevenLabsSfxMarkdownV1(): string {
     0,
   );
   const none = measured.filter((sound) => sound.kept.length === 0);
+  // Sounds added after the takes were made (no take was ever asked for).
+  const later = SOUND_IDS_V1.filter(
+    (id) => !measured.some((sound) => sound.id === id),
+  );
+  // Sounds whose recording the user chose by ear: it plays ahead of the takes.
+  const picked = measured.filter(
+    (sound) => stockSoundV1(sound.id)?.userPick !== undefined,
+  );
   const regenerated = prompts.sounds.filter(
     (sound) => (sound.revisions ?? []).length > 0,
   );
@@ -125,7 +134,11 @@ export function elevenLabsSfxMarkdownV1(): string {
     "",
     "## The count",
     "",
-    `- ${measured.length} sound effects, every one of the game's (${SOUND_IDS_V1.length}).`,
+    `- ${measured.length} sound effects, every one of the game's (${SOUND_IDS_V1.length})${
+      later.length === 0
+        ? ""
+        : ` but ${later.map((id) => `\`${id}\``).join(", ")}, added later with the user's own recording`
+    }.`,
     `- ${records.takes.length} takes generated in ${rounds.length} rounds: ${rounds
       .map((round) => `${takesOf(round)} in round ${round}`)
       .join(", ")}.`,
@@ -143,6 +156,11 @@ export function elevenLabsSfxMarkdownV1(): string {
         )
         .join(", ") || "none"
     }.`,
+    ...(picked.length === 0
+      ? []
+      : [
+          `- ${picked.length} ${picked.length === 1 ? "sound plays" : "sounds play"} the user's own pick of a recording ahead of ${picked.length === 1 ? "its" : "their"} default take, which stays a choice: ${picked.map((sound) => `\`${sound.id}\``).join(", ")} ([STOCK_SOUND_CHOICES.md](STOCK_SOUND_CHOICES.md)).`,
+        ]),
     `- ${files.length} clips, ${(bytes / 1e6).toFixed(2)} MB together: AAC at 96 kbit/s like the stock clips.`,
     `- The service reported a cost of ${cost} credits in all (its \`character-cost\` header, summed over every take).`,
     "",

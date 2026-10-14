@@ -188,7 +188,7 @@ export interface GallerySoundChoiceV7 {
    * ElevenLabs take, 1 to 4 for a stock recording, 0 for the synth.
    */
   readonly n: number;
-  /** What its control reads: "New 1", "Old 2", or "Synth". */
+  /** What its control reads: "Pick", "New 1", "Old 2", or "Synth". */
   readonly label: string;
   /** The checked-in default: what everyone hears without a pick. */
   readonly isDefault: boolean;
@@ -310,7 +310,11 @@ const NOTES: Readonly<Partial<Record<SoundIdV1, SoundNoteV7>>> = {
   },
   "impact.hit": { when: "Attack lands", picture: icon("attack") },
   "impact.heavy": { when: "Siege or charge lands", picture: icon("stampede") },
-  "impact.explosion": { when: "Bomb or rocket bursts", picture: icon("bomb") },
+  "impact.explosion": { when: "Bomb or shell bursts", picture: icon("bomb") },
+  "impact.rocket": {
+    when: `${unitName("CATAPULT", "GOBLIN")}'s rocket lands`,
+    picture: unit("CATAPULT", "GOBLIN"),
+  },
   "impact.ice": { when: "Ice breaks", picture: icon("ice-peak") },
   "impact.splat": {
     when: "Pie or acid lands",
@@ -493,8 +497,19 @@ function originOf(
   };
 }
 
-/** "New 1" for the first ElevenLabs take, "Old 2" for a stock recording. */
+/**
+ * What the recording the user chose by ear reads in its sound's row (the
+ * firework rocket's, 2026-10-14): it is the default, ahead of the takes.
+ */
+export const GALLERY_SOUND_USER_PICK_TEXT_V7 = "Pick";
+
+/**
+ * "New 1" for the first ElevenLabs take, "Old 2" for a stock recording,
+ * "Pick" for the recording the user chose.
+ */
 function candidateLabel(clip: SoundClipV1): string {
+  if (clip.origin === "STOCK" && clip.userPick)
+    return GALLERY_SOUND_USER_PICK_TEXT_V7;
   const ordinal = soundCandidateOrdinalV1(clip.id, clip);
   return `${clip.origin === "ELEVENLABS" ? "New" : "Old"} ${ordinal}`;
 }
@@ -768,7 +783,7 @@ export function gallerySoundChoicePlayLabelV7(
   if (choice.origin.kind !== "RECORDED")
     return `Play synth: ${entry.name}${isDefault}`;
   return (
-    `Play old recording ${choice.label.replace(/^Old /, "")} of ${entry.name}` +
+    `Play ${recordingName(choice)} of ${entry.name}` +
     `${choice.isDefault ? " (default)" : ""}: ` +
     `${choice.origin.text}, ${choice.origin.cut}` +
     (choice.note === "" ? "" : `. ${choice.note}`)
@@ -787,6 +802,13 @@ export function gallerySoundChoiceUseLabelV7(
   if (choice.origin.kind === "ELEVENLABS")
     return `Use ${choice.label.toLowerCase()} for ${entry.name}`;
   return choice.origin.kind === "RECORDED"
-    ? `Use old recording ${choice.label.replace(/^Old /, "")} for ${entry.name}`
+    ? `Use ${recordingName(choice)} for ${entry.name}`
     : `Use the synth sound for ${entry.name}`;
+}
+
+/** A recording's choice in words: "old recording 2", or "your pick". */
+function recordingName(choice: GallerySoundChoiceV7): string {
+  return choice.label === GALLERY_SOUND_USER_PICK_TEXT_V7
+    ? "your pick"
+    : `old recording ${choice.label.replace(/^Old /, "")}`;
 }

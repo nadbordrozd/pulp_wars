@@ -261,13 +261,17 @@ describe("Gallery Sounds tab: the recordings of a sound", () => {
             `Use new ${newCount} for ${label}`,
           );
         } else {
-          oldCount += 1;
+          // The user's own pick reads "Pick"; the other recordings keep
+          // their "Old" numbers.
+          const pick = candidate.userPick;
+          if (!pick) oldCount += 1;
+          const name = pick ? "your pick" : `old recording ${oldCount}`;
           const origin = `${candidate.library} / ${candidate.originalFile}`;
           const cut = `${candidate.startSeconds}–${candidate.endSeconds} s`;
           expect(item?.dataset.soundOrigin).toBe("recorded");
           expect(
             play.querySelector(".v7-gallery-sound-choice-number")?.textContent,
-          ).toBe(`Old ${oldCount}`);
+          ).toBe(pick ? "Pick" : `Old ${oldCount}`);
           expect(
             play.querySelector(".v7-gallery-sound-choice-file")?.textContent,
           ).toBe(candidate.originalFile);
@@ -275,10 +279,10 @@ describe("Gallery Sounds tab: the recordings of a sound", () => {
             play.querySelector(".v7-gallery-sound-choice-cut")?.textContent,
           ).toBe(cut);
           expect(play.getAttribute("aria-label")).toBe(
-            `Play old recording ${oldCount} of ${label}${def}: ${origin}, ${cut}. ${candidate.note}`,
+            `Play ${name} of ${label}${def}: ${origin}, ${cut}. ${candidate.note}`,
           );
           expect(use.getAttribute("aria-label")).toBe(
-            `Use old recording ${oldCount} for ${label}`,
+            `Use ${name} for ${label}`,
           );
         }
         expect(play.title).toBe(play.getAttribute("aria-label"));

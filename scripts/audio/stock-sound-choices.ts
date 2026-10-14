@@ -34,9 +34,17 @@ export const STOCK_SOUND_CHOICES_DOC_PATH = resolve(
   "docs/audio/STOCK_SOUND_CHOICES.md",
 );
 
-/** The four things a game sound can be, as the document says them. */
+/**
+ * The things a game sound can be, as the document says them. USER_PICK is
+ * a sound whose recording the user chose by ear (`userPick`): it plays
+ * ahead of the ElevenLabs takes.
+ */
 export type StockSoundStatusV1 =
-  "RECORDED_SINGLE" | "RECORDED_OPTIONS" | "GENERATED_OPTIONS" | "GENERATED";
+  | "USER_PICK"
+  | "RECORDED_SINGLE"
+  | "RECORDED_OPTIONS"
+  | "GENERATED_OPTIONS"
+  | "GENERATED";
 
 export interface StockSoundStatusRowV1 {
   readonly id: string;
@@ -44,7 +52,10 @@ export interface StockSoundStatusRowV1 {
   readonly status: StockSoundStatusV1;
   /** How many recordings it has. */
   readonly candidates: number;
-  /** The default candidate's number; 0 when the default is generated. */
+  /**
+   * The default candidate's number (the user's pick where there is one);
+   * 0 when the default is generated.
+   */
   readonly default: number;
 }
 
@@ -56,17 +67,19 @@ export function stockSoundStatusRowsV1(): readonly StockSoundStatusRowV1[] {
     const status: StockSoundStatusV1 =
       sound === null
         ? "GENERATED"
-        : sound.default === 0
-          ? "GENERATED_OPTIONS"
-          : candidates === 1
-            ? "RECORDED_SINGLE"
-            : "RECORDED_OPTIONS";
+        : sound.userPick !== undefined
+          ? "USER_PICK"
+          : sound.default === 0
+            ? "GENERATED_OPTIONS"
+            : candidates === 1
+              ? "RECORDED_SINGLE"
+              : "RECORDED_OPTIONS";
     return {
       id,
       label: SOUND_MANIFEST_V1[id].label,
       status,
       candidates,
-      default: sound?.default ?? 0,
+      default: sound?.userPick ?? sound?.default ?? 0,
     };
   });
 }
@@ -74,6 +87,8 @@ export function stockSoundStatusRowsV1(): readonly StockSoundStatusRowV1[] {
 /** A status in words: "Recorded — 3 options awaiting your pick". */
 export function stockSoundStatusTextV1(row: StockSoundStatusRowV1): string {
   switch (row.status) {
+    case "USER_PICK":
+      return "Recorded — your pick";
     case "RECORDED_SINGLE":
       return "Recorded — single option";
     case "RECORDED_OPTIONS":
@@ -101,11 +116,18 @@ function sourceOf(candidate: StockSoundCandidateV1): string {
 }
 
 function defaultText(sound: StockSoundV1): string {
-  if (sound.default === 0) return "Generated";
-  const candidate = sound.candidates.find((entry) => entry.n === sound.default);
+  const n = sound.userPick ?? sound.default;
+  if (n === 0) return "Generated";
+  const candidate = sound.candidates.find((entry) => entry.n === n);
   return candidate === undefined
     ? "Generated"
-    : `#${candidate.n}: part ${candidate.part}, ${sourceOf(candidate)}`;
+    : `#${candidate.n}${sound.userPick === n ? " (your pick)" : ""}: part ${candidate.part}, ${sourceOf(candidate)}`;
+}
+
+/** A recording's Default column: "your pick", "yes" or nothing. */
+function defaultCell(sound: StockSoundV1, n: number): string {
+  if (sound.userPick === n) return "your pick";
+  return n === sound.default ? "yes" : "";
 }
 
 /** The document, before Prettier lays out its tables. */
@@ -138,11 +160,17 @@ export function stockSoundChoicesMarkdownV1(): string {
     'stay in the Gallery as that sound\'s "Old" choices, numbered as here, and',
     "a sound's default below is what it played before the takes.",
     "",
+    "**A recording marked _your pick_ was chosen by the user by ear** (the",
+    "Rocket Cart's firework, 2026-10-14). It plays by default ahead of the",
+    'ElevenLabs takes and reads "Pick" in the Gallery, first in its row; the',
+    "takes and the other recordings stay there to choose.",
+    "",
     "## How to choose",
     "",
     "1. Open the Gallery and its **Sounds** tab. A sound with recordings has a",
-    '   row under its card: its new takes ("New 1" first), its old recordings',
-    '   ("Old 1" is recording 1 below), and **Synth** last.',
+    '   row under its card: your pick ("Pick") where there is one, its new',
+    '   takes ("New 1" first), its old recordings ("Old 1" is the first',
+    "   recording below that is not your pick), and **Synth** last.",
     "2. Press a line to hear it. Press **Use** on the one you like: the game",
     "   plays it from then on, in that browser only.",
     "3. Press **Copy my picks** at the top of the tab and paste the text to",
@@ -154,7 +182,11 @@ export function stockSoundChoicesMarkdownV1(): string {
     "## The count",
     "",
     `- ${rows.length} game sounds.`,
-    `- ${count("RECORDED_SINGLE") + count("RECORDED_OPTIONS")} play a recording by default: ${count("RECORDED_OPTIONS")} have several to choose from, ${count("RECORDED_SINGLE")} have one.`,
+    `- ${count("USER_PICK")} play your pick: ${rows
+      .filter((row) => row.status === "USER_PICK")
+      .map((row) => `\`${row.id}\``)
+      .join(", ")}.`,
+    `- ${count("RECORDED_SINGLE") + count("RECORDED_OPTIONS")} more play a recording by default: ${count("RECORDED_OPTIONS")} have several to choose from, ${count("RECORDED_SINGLE")} have one.`,
     `- ${count("GENERATED_OPTIONS")} are generated by default and have recordings to compare with: none of those recordings is a clear match, so none replaces the generated sound until you pick it.`,
     `- ${count("GENERATED")} are generated and have no recording: the bundle has nothing that fits.`,
     `- ${clips} clips in the repository.`,
@@ -209,7 +241,7 @@ export function stockSoundChoicesMarkdownV1(): string {
     );
     for (const candidate of sound.candidates)
       lines.push(
-        `| ${candidate.n} | ${candidate.n === sound.default ? "yes" : ""} | ${candidate.part} | ${cell(sourceOf(candidate))} | ${seconds(candidate.startSeconds)}–${seconds(candidate.endSeconds)} | ${candidate.gain} | ${cell(`${candidate.note} ${candidate.take}`)} |`,
+        `| ${candidate.n} | ${defaultCell(sound, candidate.n)} | ${candidate.part} | ${cell(sourceOf(candidate))} | ${seconds(candidate.startSeconds)}–${seconds(candidate.endSeconds)} | ${candidate.gain} | ${cell(`${candidate.note} ${candidate.take}`)} |`,
       );
     lines.push(
       `| Generated | ${sound.default === 0 ? "yes" : ""} |  | The synthesised sound |  |  | Always there: it plays until a clip has loaded, and it can be picked. |`,

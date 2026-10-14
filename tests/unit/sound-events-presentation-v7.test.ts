@@ -18,7 +18,11 @@ import {
   soundCuesForStepV7,
   type SoundCueV1,
 } from "../../src/audio/index";
-import { ATTACK_EFFECT_IDS_V7 } from "../../src/render/canvas/attack-effects-v7";
+import {
+  ATTACK_EFFECT_DURATIONS_V7,
+  ATTACK_EFFECT_HIT_V7,
+  ATTACK_EFFECT_IDS_V7,
+} from "../../src/render/canvas/attack-effects-v7";
 import {
   CULT_EFFECT_DURATIONS_V7,
   type CultFeedbackEffectV7,
@@ -545,6 +549,59 @@ describe("sounds of presentation steps", () => {
       durationScale: 1,
     });
     expect(cues).toEqual([{ id: "attack.melee", delayMs: 0 }]);
+  });
+
+  it("plays the user's rocket recording in two halves, its impact on the hit", () => {
+    const view = viewForV7(
+      exploredAllV7(initialV7(1518)),
+      exploredAllV7(initialV7(1518)).humanPlayerId,
+    );
+    const envelope: PlayerEventEnvelopeV7 = {
+      format: "pulp-wars-player-events",
+      version: 7,
+      viewerId: view.viewer.id,
+      commandIndex: view.commandIndex,
+      events: [],
+    };
+    const cues = (
+      attackEffect: (typeof ATTACK_EFFECT_IDS_V7)[number],
+    ): readonly SoundCueV1[] =>
+      soundCuesForStepV7({
+        step: {
+          kind: "CATAPULT",
+          unitId: 1,
+          from: { x: 1, y: 1 },
+          to: { x: 3, y: 1 },
+          durationMs: 280,
+          attackEffect,
+        },
+        before: view,
+        after: view,
+        envelope,
+        durationScale: 1,
+      });
+    const hitMs =
+      ATTACK_EFFECT_DURATIONS_V7.FIREWORK_ROCKET *
+      ATTACK_EFFECT_HIT_V7.FIREWORK_ROCKET;
+    // The launch half at once, the impact half on the hit; no explosion
+    // over it.
+    expect(cues("FIREWORK_ROCKET")).toEqual([
+      { id: "attack.rocket", delayMs: 0 },
+      { id: "impact.rocket", delayMs: hitMs },
+    ]);
+    // The two halves are 275 ms apart in the recording: the hit is there.
+    expect(hitMs).toBeGreaterThan(260);
+    expect(hitMs).toBeLessThan(300);
+    // The other weapons keep their sounds; only the rocket plays its own.
+    expect(ids(cues("BROADSIDE"))).toEqual([
+      "attack.cannon",
+      "impact.explosion",
+    ]);
+    for (const effect of ATTACK_EFFECT_IDS_V7) {
+      if (effect === "FIREWORK_ROCKET") continue;
+      expect(ids(cues(effect)), effect).not.toContain("attack.rocket");
+      expect(ids(cues(effect)), effect).not.toContain("impact.rocket");
+    }
   });
 });
 

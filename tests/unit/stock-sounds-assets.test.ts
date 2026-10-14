@@ -388,6 +388,49 @@ describe("recorded sound clips", () => {
     expect(soundAssetUrlsV7(false)).toEqual([]);
   });
 
+  it("plays the user's own pick of a recording ahead of every take", () => {
+    // The firework rocket (2026-10-14): one recording, cut in two halves.
+    const picked = STOCK_SOUNDS_V1.filter(
+      (sound) => sound.userPick !== undefined,
+    );
+    expect(picked.map((sound) => sound.id)).toEqual([
+      "attack.rocket",
+      "impact.rocket",
+    ]);
+    for (const sound of picked) {
+      const pick = stockSoundCandidateV1(sound.id, sound.userPick ?? -1);
+      if (pick === null) throw new Error(`${sound.id}: no such candidate`);
+      expect(soundChoiceSetV1(sound.id)?.default, sound.id).toBe(pick.n);
+      expect(SOUND_DEFAULT_CLIPS_V1, sound.id).toContainEqual(
+        expect.objectContaining({ id: sound.id, n: pick.n, origin: "STOCK" }),
+      );
+      // Taken unedited from the bundle; the note says whose choice it is.
+      expect(pick.part).toBe(6);
+      expect(pick.library).toBe("Pole Position - The Warfare 2 Library");
+      expect(pick.originalFile).toBe(
+        "RPG - FIRING AND IMPACT - Through Car Roof Hit Metal - XY - MKH8040.wav",
+      );
+      expect(pick.note, sound.id).toMatch(/^User's pick/);
+      expect(pick.gain).toBeLessThanOrEqual(1);
+    }
+    // The two halves meet: the launch is cut just after the impact cut
+    // starts, before the impact (0.589 s), and the impact starts 4 ms
+    // before it, so that played at the hit the two keep their spacing.
+    const launch = stockSoundCandidateV1("attack.rocket", 2);
+    const impact = stockSoundCandidateV1("impact.rocket", 1);
+    if (launch === null || impact === null) throw new Error("halves missing");
+    expect(launch.endSeconds).toBeGreaterThan(impact.startSeconds);
+    expect(launch.endSeconds).toBeLessThan(0.589);
+    expect(0.589 - impact.startSeconds).toBeCloseTo(0.004, 3);
+    // The tail is trimmed: the recording is 3.66 s.
+    expect(impact.endSeconds - impact.startSeconds).toBeLessThan(1.5);
+    // The old recording and the synth fallback stay.
+    expect(stockSoundV1("attack.rocket")?.default).toBe(1);
+    expect(soundRecipeV1("impact.rocket")).toEqual(
+      soundRecipeV1("impact.explosion"),
+    );
+  });
+
   it("lists the picked clip of a sound instead of its default", () => {
     const hit = "impact.hit";
     const death = "unit.death";
@@ -665,11 +708,13 @@ describe("the document of the choices", () => {
       expect(row.status, row.id).toBe(
         sound === null
           ? "GENERATED"
-          : sound.default === 0
-            ? "GENERATED_OPTIONS"
-            : sound.candidates.length === 1
-              ? "RECORDED_SINGLE"
-              : "RECORDED_OPTIONS",
+          : sound.userPick !== undefined
+            ? "USER_PICK"
+            : sound.default === 0
+              ? "GENERATED_OPTIONS"
+              : sound.candidates.length === 1
+                ? "RECORDED_SINGLE"
+                : "RECORDED_OPTIONS",
       );
       // Its row in the table of every sound.
       expect(text, row.id).toContain(
@@ -685,6 +730,22 @@ describe("the document of the choices", () => {
         default: 1,
       }),
     ).toBe("Recorded — 3 options awaiting your pick");
+    expect(
+      stockSoundStatusTextV1({
+        id: "x",
+        label: "X",
+        status: "USER_PICK",
+        candidates: 2,
+        default: 2,
+      }),
+    ).toBe("Recorded — your pick");
+    // The document marks the pick in the table of every sound.
+    expect(stockSoundChoicesMarkdownV1()).toContain(
+      "- 2 play your pick: `attack.rocket`, `impact.rocket`.",
+    );
+    expect(stockSoundChoicesMarkdownV1()).toMatch(
+      /\| 2 \| your pick \| 6 \| Pole Position/,
+    );
   });
 
   it("names every candidate's origin and note, and what to listen to first", () => {

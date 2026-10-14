@@ -114,8 +114,9 @@
     {
       "id": "attack.rocket",
       "default": 1,
-      "confidence": "medium",
-      "why": "A flare leaving its tube for the Rocket Cart's firework.",
+      "userPick": 2,
+      "confidence": "high",
+      "why": "A flare leaving its tube for the Rocket Cart's firework. Since 2026-10-14 the user's pick by ear: an RPG fired at a car, whose launch is this sound and whose impact is `impact.rocket`.",
       "candidates": [
         {
           "n": 1,
@@ -131,6 +132,21 @@
           "gain": 0.45,
           "take": "The flare shot (the first event, 0 to 0.64 s), without the burst that follows at 0.84 s.",
           "note": "A noisy launch at 1 to 3 kHz for a quarter of a second; 0.5 s."
+        },
+        {
+          "n": 2,
+          "file": "attack-rocket-2.m4a",
+          "part": 6,
+          "library": "Pole Position - The Warfare 2 Library",
+          "originalFile": "RPG - FIRING AND IMPACT - Through Car Roof Hit Metal - XY - MKH8040.wav",
+          "startSeconds": 0.308,
+          "endSeconds": 0.587,
+          "fadeInMs": 2,
+          "fadeOutMs": 20,
+          "highpassHz": 40,
+          "gain": 1,
+          "take": "The firing (it starts at 0.314 s) up to the impact at 0.589 s, which is `impact.rocket` #1: the two play 278 ms apart, as in the recording. Level 1 with the impact at 0.85 keeps the recording's balance and makes the pair as loud as the launch and explosion it replaces (-21.5 against -20.8 LUFS over the loudest 400 ms).",
+          "note": "User's pick: the RPG's firing blast and its rush, 0.28 s, cut just before the impact."
         }
       ]
     },
@@ -346,6 +362,30 @@
           "gain": 0.7,
           "take": "The blast and the first second of its tail (the file is one explosion of 1.9 s).",
           "note": "A full explosion with its rumble; 1.05 s."
+        }
+      ]
+    },
+    {
+      "id": "impact.rocket",
+      "default": 1,
+      "userPick": 1,
+      "confidence": "high",
+      "why": "The user's pick by ear (2026-10-14) for the Rocket Cart's firework: the impact of the RPG recording whose firing is `attack.rocket` #2. It replaces `impact.explosion` on that hit only.",
+      "candidates": [
+        {
+          "n": 1,
+          "file": "impact-rocket-1.m4a",
+          "part": 6,
+          "library": "Pole Position - The Warfare 2 Library",
+          "originalFile": "RPG - FIRING AND IMPACT - Through Car Roof Hit Metal - XY - MKH8040.wav",
+          "startSeconds": 0.585,
+          "endSeconds": 2,
+          "fadeInMs": 2,
+          "fadeOutMs": 500,
+          "highpassHz": 40,
+          "gain": 0.85,
+          "take": "The impact (at 0.589 s, 4 ms into the cut) and its debris to 2 s, faded over the last half second; the recording runs on to 3.66 s.",
+          "note": "User's pick: the rocket punching through a car roof, a hard metal hit with debris; 1.42 s."
         }
       ]
     },

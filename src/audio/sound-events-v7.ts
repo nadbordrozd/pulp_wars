@@ -44,7 +44,10 @@ const ATTACK_EFFECT_SOUNDS: Readonly<
   >
 > = {
   NECRO_BOLT: { launch: "attack.magic", impact: "impact.hit" },
-  FIREWORK_ROCKET: { launch: "attack.rocket", impact: "impact.explosion" },
+  // The user's own recording (2026-10-14), one take cut in two: its launch
+  // and its impact, 275 ms apart in the original and 278 ms in the
+  // animation, so the impact stays on the hit at every animation speed.
+  FIREWORK_ROCKET: { launch: "attack.rocket", impact: "impact.rocket" },
   GATLING_BURST: { launch: "attack.gatling", impact: "impact.hit" },
   CANNON_BLAST: { launch: "attack.cannon", impact: "impact.heavy" },
   ICE_BOULDER: { launch: "attack.siege", impact: "impact.ice" },

@@ -42,6 +42,13 @@ const ROOT = resolve(import.meta.dirname, "../..");
 const FOLDER = join(ROOT, STOCK_SOUND_OUTPUT_V1.folder);
 /** The sounds no take passed for: they keep their old default. */
 const NO_PASSING_TAKE = ["unit.train"];
+/**
+ * The sounds added after the takes were made: only the user's own
+ * recording (the firework rocket's impact, 2026-10-14).
+ */
+const NO_TAKES = ["impact.rocket"];
+/** The sounds whose recording the user chose by ear plays first. */
+const USER_PICKED = ["attack.rocket", "impact.rocket"];
 /** At most this many passing takes a sound. */
 const MAX_KEPT = 3;
 /** The longest a take may be (the victory fanfare's range). */
@@ -50,15 +57,40 @@ const MAX_CLIP_BYTES = 60_000;
 
 describe("ElevenLabs sound effects", () => {
   it("gives every sound effect an ElevenLabs default, but the listed few", () => {
-    expect(ELEVENLABS_SOUNDS_V1.map((sound) => sound.id)).toEqual([
-      ...SOUND_IDS_V1,
-    ]);
+    expect(ELEVENLABS_SOUNDS_V1.map((sound) => sound.id)).toEqual(
+      SOUND_IDS_V1.filter((id) => !NO_TAKES.includes(id)),
+    );
+    expect(
+      STOCK_SOUNDS_V1.filter((sound) => sound.userPick !== undefined).map(
+        (sound) => sound.id,
+      ),
+    ).toEqual(USER_PICKED);
     for (const id of SOUND_IDS_V1) {
+      const set = soundChoiceSetV1(id);
+      const source = SOUND_MANIFEST_V1[id].source;
+      const pick = stockSoundV1(id)?.userPick;
+      if (pick !== undefined) {
+        // The user's pick plays, the takes stay to choose.
+        expect(set?.default, id).toBe(pick);
+        expect(set?.candidates[0], id).toMatchObject({
+          n: pick,
+          origin: "STOCK",
+          userPick: true,
+        });
+        const clip = soundCandidateV1(id, pick);
+        expect(source.kind, id).toBe("FILE");
+        if (source.kind !== "FILE" || clip === null) continue;
+        expect(source.url, id).toBe(soundCandidateUrlV1(clip));
+        expect(source.gain, id).toBe(clip.gain);
+        for (const take of elevenLabsSoundV1(id)?.takes ?? [])
+          expect(isStockSoundChoiceV1(id, take.n), `${id} #${take.n}`).toBe(
+            true,
+          );
+        continue;
+      }
       const sound = elevenLabsSoundV1(id);
       if (sound === null) throw new Error(`${id} has no takes`);
       expect(sound.takes.length, id).toBeGreaterThan(0);
-      const set = soundChoiceSetV1(id);
-      const source = SOUND_MANIFEST_V1[id].source;
       if (NO_PASSING_TAKE.includes(id)) {
         // No take passed: the old default stays, the takes are there to hear.
         expect(sound.default, id).toBeNull();
@@ -166,8 +198,12 @@ describe("ElevenLabs sound effects", () => {
     for (const sound of ELEVENLABS_SOUNDS_V1)
       for (const take of sound.takes)
         expect(urls.includes(soundCandidateUrlV1(take)), take.file).toBe(
-          take.n === sound.default,
+          take.n === soundChoiceSetV1(sound.id)?.default,
         );
+    // A sound the user picked a recording for fetches that, not its take.
+    const rocket = soundCandidateV1("attack.rocket", 2);
+    if (rocket === null) throw new Error("attack.rocket #2 is missing");
+    expect(urls).toContain(soundCandidateUrlV1(rocket));
   });
 
   it("keeps every old recording and the synth selectable", () => {
@@ -196,11 +232,16 @@ describe("ElevenLabs sound effects", () => {
     }
   });
 
-  it("orders a sound's choices: new takes (the default first), old, synth", () => {
+  it("orders a sound's choices: the user's pick, new takes (the default first), old, synth", () => {
     for (const id of SOUND_IDS_V1) {
       const set = soundChoiceSetV1(id);
       if (set === null) throw new Error(id);
-      const origins = set.candidates.map((candidate) => candidate.origin);
+      const picked = set.candidates.filter(
+        (candidate) => candidate.origin === "STOCK" && candidate.userPick,
+      );
+      expect(set.candidates.slice(0, picked.length), id).toEqual(picked);
+      const rest = set.candidates.slice(picked.length);
+      const origins = rest.map((candidate) => candidate.origin);
       const firstStock = origins.indexOf("STOCK");
       if (firstStock >= 0)
         expect(
@@ -209,7 +250,7 @@ describe("ElevenLabs sound effects", () => {
         ).toBe(true);
       const sound = elevenLabsSoundV1(id);
       if (sound?.default !== null && sound !== null)
-        expect(set.candidates[0]?.n, id).toBe(sound.default);
+        expect(rest[0]?.n, id).toBe(sound.default);
     }
   });
 

@@ -730,6 +730,16 @@ describe("Gallery Sounds tab: origins", () => {
     openSounds();
     expect(SOUND_DEFAULT_CLIPS_V1.length).toBeGreaterThan(0);
     for (const clip of SOUND_DEFAULT_CLIPS_V1) {
+      // The user's own pick of a recording (the firework rocket's halves)
+      // names its library file instead.
+      if (clip.origin === "STOCK" && clip.userPick) {
+        expect(row(clip.id).dataset.origin).toBe("recorded");
+        expect(
+          origin(clip.id).querySelector(".v7-gallery-sound-origin-library")
+            ?.textContent,
+        ).toBe(`${clip.library} /`);
+        continue;
+      }
       if (clip.origin !== "ELEVENLABS") throw new Error(`${clip.id} is old`);
       // A provenance row without a card fails here (the card is required).
       expect(row(clip.id).dataset.origin).toBe("elevenlabs");
@@ -758,16 +768,21 @@ describe("Gallery Sounds tab: origins", () => {
   it("says Synth on every other card, and agrees with the manifest", () => {
     mount();
     openSounds();
-    const recorded = new Set(SOUND_DEFAULT_CLIPS_V1.map((clip) => clip.id));
+    const recorded = new Map(
+      SOUND_DEFAULT_CLIPS_V1.map((clip) => [
+        clip.id,
+        clip.origin === "STOCK" ? "recorded" : "elevenlabs",
+      ]),
+    );
     for (const id of SOUND_IDS_V1) {
       const node = origin(id);
       // A card whose origin disagrees with the manifest fails here.
       expect(node.dataset.soundOrigin, id).toBe(
         SOUND_MANIFEST_V1[id].source.kind === "FILE"
-          ? "elevenlabs"
+          ? recorded.get(id)
           : "generated",
       );
-      expect(node.dataset.soundOrigin === "elevenlabs", id).toBe(
+      expect(node.dataset.soundOrigin !== "generated", id).toBe(
         recorded.has(id),
       );
       if (recorded.has(id)) continue;
@@ -782,8 +797,9 @@ describe("Gallery Sounds tab: origins", () => {
       ).toBeNull();
     }
     expect(
-      document.querySelectorAll('.v7-gallery-sound[data-origin="elevenlabs"]')
-        .length,
+      document.querySelectorAll(
+        '.v7-gallery-sound[data-origin="elevenlabs"], .v7-gallery-sound[data-origin="recorded"]',
+      ).length,
     ).toBe(SOUND_DEFAULT_CLIPS_V1.length);
     // A theme's row names its file.
     expect(

@@ -33,11 +33,12 @@ a listener can say whether it is the right sound.
 
 ## The count
 
-- 65 sound effects, every one of the game's (65).
+- 65 sound effects, every one of the game's (66) but `impact.rocket`, added later with the user's own recording.
 - 278 takes generated in 3 rounds: 195 in round 1, 68 in round 2, 15 in round 3.
 - 65 of round 1, 30 of round 2, 8 of round 3 failed their rules. 40 prompts were revised and their failed takes generated again (round 2), and the 6 sounds still short of takes once more (round 3).
 - 173 takes kept: 64 sounds play a new take by default, 63 of them with at least one other to choose.
 - 1 sound with no passing take, which keeps its old default: `unit.train` (the best 2 failed takes offered to listen to).
+- 1 sound plays the user's own pick of a recording ahead of its default take, which stays a choice: `attack.rocket` ([STOCK_SOUND_CHOICES.md](STOCK_SOUND_CHOICES.md)).
 - 175 clips, 2.61 MB together: AAC at 96 kbit/s like the stock clips.
 - The service reported a cost of 2448 credits in all (its `character-cost` header, summed over every take).
 

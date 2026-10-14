@@ -19,9 +19,11 @@ import {
  * start-of-game fetch, the stored picks and the Gallery, made from the two
  * provenance manifests (`elevenlabs-sounds.json`, `stock-sounds.json`).
  *
- * The default is the sound's ElevenLabs default. A sound none of whose
- * takes passed its measurements keeps the default it had (a stock
- * recording or the synthesised sound). Numbers never collide: stock
+ * The default is the recording the user chose by ear, where there is one
+ * (`userPick` of `stock-sounds.json`, since 2026-10-14), else the sound's
+ * ElevenLabs default. A sound none of whose takes passed its measurements
+ * keeps the default it had (a stock recording or the synthesised sound).
+ * Numbers never collide: stock
  * recordings are 1 to 4, ElevenLabs takes 101 and up, so a pick stored
  * before the ElevenLabs takes existed still names the same recording.
  */
@@ -34,6 +36,8 @@ export interface ElevenLabsCandidateV1 extends ElevenLabsTakeV1 {
 /** A stock recording as one of a sound's candidates. */
 export interface StockCandidateV1 extends StockSoundCandidateV1 {
   readonly origin: "STOCK";
+  /** The recording the user chose by ear: "Your pick" in the Gallery. */
+  readonly userPick: boolean;
 }
 
 export type SoundCandidateV1 = ElevenLabsCandidateV1 | StockCandidateV1;
@@ -46,8 +50,9 @@ export interface SoundChoiceSetV1 {
   /** The candidate played without a pick; 0 for the synthesised sound. */
   readonly default: number;
   /**
-   * The ElevenLabs takes (the default first, then the others in the order
-   * they measured), then the stock recordings in their own order.
+   * The user's pick first where there is one, then the ElevenLabs takes
+   * (their default first, then the others in the order they measured),
+   * then the other stock recordings in their own order.
    */
   readonly candidates: readonly SoundCandidateV1[];
 }
@@ -62,25 +67,48 @@ function choiceSet(id: string): SoundChoiceSetV1 {
     (take) => ({ ...take, origin: "ELEVENLABS" as const }),
   );
   const recordings: StockCandidateV1[] = (stock?.candidates ?? []).map(
-    (candidate) => ({ ...candidate, origin: "STOCK" as const }),
+    (candidate) => ({
+      ...candidate,
+      origin: "STOCK" as const,
+      userPick: candidate.n === stock?.userPick,
+    }),
   );
+  const picked = recordings.filter((candidate) => candidate.userPick);
   return {
     id,
-    default: generated?.default ?? stock?.default ?? SOUND_GENERATED_CHOICE_V1,
-    candidates: [...takes, ...recordings],
+    default:
+      picked[0]?.n ??
+      generated?.default ??
+      stock?.default ??
+      SOUND_GENERATED_CHOICE_V1,
+    candidates: [
+      ...picked,
+      ...takes,
+      ...recordings.filter((candidate) => !candidate.userPick),
+    ],
   };
 }
 
 /**
- * Every game sound that has something to choose between: the ElevenLabs
- * manifest's order, then any sound that has only stock recordings.
+ * The ElevenLabs manifest's order, with a sound that has only stock
+ * recordings (one added after the takes) placed after the sound before it
+ * in the stock manifest: both manifests follow the sound manifest's order,
+ * so the result does too.
  */
-export const SOUND_CHOICE_SETS_V1: readonly SoundChoiceSetV1[] = [
-  ...ELEVENLABS_SOUNDS_V1.map((sound) => sound.id),
-  ...STOCK_SOUNDS_V1.map((sound) => sound.id).filter(
-    (id) => elevenLabsSoundV1(id) === null,
-  ),
-].map(choiceSet);
+function choiceOrder(): readonly string[] {
+  const ids = ELEVENLABS_SOUNDS_V1.map((sound) => sound.id);
+  let after = -1;
+  for (const { id } of STOCK_SOUNDS_V1) {
+    const at = ids.indexOf(id);
+    if (at >= 0) after = at;
+    else ids.splice((after += 1), 0, id);
+  }
+  return ids;
+}
+
+/** Every game sound that has something to choose between. */
+export const SOUND_CHOICE_SETS_V1: readonly SoundChoiceSetV1[] =
+  choiceOrder().map(choiceSet);
 
 const SETS = new Map(SOUND_CHOICE_SETS_V1.map((set) => [set.id, set]));
 
@@ -128,15 +156,20 @@ export function soundCandidateUrlV1(candidate: {
 /**
  * A candidate's place among its kind: an ElevenLabs take's position among
  * the sound's takes ("New 1" is the first), a stock recording's position
- * among its recordings ("Old 1").
+ * among its recordings ("Old 1"). The user's pick is counted apart, so the
+ * other recordings keep the numbers they had.
  */
 export function soundCandidateOrdinalV1(
   id: string,
   candidate: SoundCandidateV1,
 ): number {
+  const pickOf = (entry: SoundCandidateV1): boolean =>
+    entry.origin === "STOCK" && entry.userPick;
   const same =
     SETS.get(id)?.candidates.filter(
-      (entry) => entry.origin === candidate.origin,
+      (entry) =>
+        entry.origin === candidate.origin &&
+        pickOf(entry) === pickOf(candidate),
     ) ?? [];
   return same.findIndex((entry) => entry.n === candidate.n) + 1;
 }

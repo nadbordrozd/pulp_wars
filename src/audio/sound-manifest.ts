@@ -32,6 +32,8 @@ export const SOUND_IDS_V1 = [
   "impact.hit",
   "impact.heavy",
   "impact.explosion",
+  // The Rocket Cart's rocket landing: the user's own recording (2026-10-14).
+  "impact.rocket",
   "impact.ice",
   "impact.splat",
   "impact.shield",
@@ -305,6 +307,20 @@ function round(at: number): SynthLayerV1[] {
   ];
 }
 
+/** An explosion's boom (a bomb, a blast, a rocket landing). */
+const EXPLOSION: readonly SynthLayerV1[] = [
+  {
+    wave: "noise",
+    ms: 420,
+    lowpassHz: 2600,
+    lowpassEndHz: 180,
+    attackMs: 2,
+    decay: 1.6,
+  },
+  { wave: "sine", ms: 380, hz: 90, hzEnd: 36, gain: 0.9, decay: 1.8 },
+  { wave: "noise", ms: 200, hz: 900, lowpassHz: 1200, gain: 0.3 },
+];
+
 /** Every sound as the synthesiser makes it. */
 const SYNTH_SOUNDS: Readonly<Record<SoundIdV1, SoundEntryV1>> = {
   "attack.melee": synth("Melee swing", "combat", 2, 60, 0.3, [
@@ -446,18 +462,9 @@ const SYNTH_SOUNDS: Readonly<Record<SoundIdV1, SoundEntryV1>> = {
       gain: 0.3,
     },
   ]),
-  "impact.explosion": synth("Explosion", "combat", 3, 40, 0.5, [
-    {
-      wave: "noise",
-      ms: 420,
-      lowpassHz: 2600,
-      lowpassEndHz: 180,
-      attackMs: 2,
-      decay: 1.6,
-    },
-    { wave: "sine", ms: 380, hz: 90, hzEnd: 36, gain: 0.9, decay: 1.8 },
-    { wave: "noise", ms: 200, hz: 900, lowpassHz: 1200, gain: 0.3 },
-  ]),
+  "impact.explosion": synth("Explosion", "combat", 3, 40, 0.5, EXPLOSION),
+  // Its fallback is the explosion it replaced on the rocket's hit.
+  "impact.rocket": synth("Rocket hit", "combat", 3, 40, 0.5, EXPLOSION),
   "impact.ice": synth("Ice crack", "combat", 2, 60, 0.26, [
     tick(0, 1),
     tick(35, 0.8),

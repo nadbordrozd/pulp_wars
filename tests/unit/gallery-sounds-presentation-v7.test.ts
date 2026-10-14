@@ -347,6 +347,11 @@ describe("Gallery sound origins", () => {
       const entry = effects.find((candidate) => candidate.rowId === clip.id);
       expect(entry, `${clip.id} has no card`).toBeDefined();
       const origin = entry?.origin;
+      // The user's own pick of a recording plays ahead of the takes.
+      if (clip.origin === "STOCK" && clip.userPick) {
+        expect(origin?.kind, clip.id).toBe("RECORDED");
+        continue;
+      }
       expect(origin?.kind, clip.id).toBe("ELEVENLABS");
       if (
         origin?.kind !== "ELEVENLABS" ||
@@ -395,17 +400,22 @@ describe("Gallery sound origins", () => {
   });
 
   it("says Synth for every sound without a default clip, and no other", () => {
-    const recorded = new Set(SOUND_DEFAULT_CLIPS_V1.map((clip) => clip.id));
+    const recorded = new Map(
+      SOUND_DEFAULT_CLIPS_V1.map((clip) => [
+        clip.id,
+        clip.origin === "STOCK" ? "RECORDED" : "ELEVENLABS",
+      ]),
+    );
     for (const entry of effects) {
-      const expected = recorded.has(entry.rowId) ? "ELEVENLABS" : "GENERATED";
+      const expected = recorded.get(entry.rowId) ?? "GENERATED";
       // A card whose origin disagrees with the manifest fails here.
       expect(entry.origin?.kind, entry.rowId).toBe(expected);
       expect(
         SOUND_MANIFEST_V1[entry.rowId as (typeof SOUND_IDS_V1)[number]].source
           .kind,
         entry.rowId,
-      ).toBe(expected === "ELEVENLABS" ? "FILE" : "SYNTH");
-      if (expected === "ELEVENLABS") continue;
+      ).toBe(expected === "GENERATED" ? "SYNTH" : "FILE");
+      if (expected !== "GENERATED") continue;
       expect(entry.origin).toEqual({
         kind: "GENERATED",
         text: GALLERY_SOUND_GENERATED_TEXT_V7,
@@ -413,8 +423,14 @@ describe("Gallery sound origins", () => {
       expect(gallerySoundCardLabelV7(entry)).toBe(`Play: ${entry.name}. Synth`);
     }
     expect(
-      effects.filter((entry) => entry.origin?.kind === "ELEVENLABS").length,
+      effects.filter((entry) => entry.origin?.kind !== "GENERATED").length,
     ).toBe(SOUND_DEFAULT_CLIPS_V1.length);
+    // The user's own recordings, the firework rocket's two halves.
+    expect(
+      effects
+        .filter((entry) => entry.origin?.kind === "RECORDED")
+        .map((entry) => entry.rowId),
+    ).toEqual(["attack.rocket", "impact.rocket"]);
     // The one sound none of whose takes passed (docs/audio/ELEVENLABS_SFX.md).
     expect(
       effects
@@ -535,10 +551,14 @@ describe("Gallery sound choices", () => {
       const takes = sound.candidates.filter(
         (candidate) => candidate.origin === "ELEVENLABS",
       );
+      const picked = sound.candidates.filter(
+        (candidate) => candidate.origin === "STOCK" && candidate.userPick,
+      );
       const old = sound.candidates.filter(
-        (candidate) => candidate.origin === "STOCK",
+        (candidate) => candidate.origin === "STOCK" && !candidate.userPick,
       );
       expect(entry.choices.map((choice) => choice.label)).toEqual([
+        ...picked.map(() => "Pick"),
         ...takes.map((_, index) => `New ${index + 1}`),
         ...old.map((_, index) => `Old ${index + 1}`),
         "Synth",
@@ -630,6 +650,63 @@ describe("Gallery sound choices", () => {
     expect(gallerySoundChoicePlayLabelV7(train, trainSynth)).toBe(
       "Play synth: Unit trained (default)",
     );
+  });
+
+  it("puts the user's pick first for the firework rocket, the takes and old ones after", () => {
+    const rocket = entryOf("attack.rocket");
+    const takes = soundChoiceSetV1("attack.rocket")?.candidates.filter(
+      (candidate) => candidate.origin === "ELEVENLABS",
+    );
+    expect(rocket.choices.map((choice) => choice.label)).toEqual([
+      "Pick",
+      ...(takes ?? []).map((_, index) => `New ${index + 1}`),
+      "Old 1",
+      "Synth",
+    ]);
+    expect(rocket.choices.map((choice) => choice.n)).toEqual([
+      2,
+      ...(takes ?? []).map((take) => take.n),
+      1,
+      0,
+    ]);
+    const [pick] = rocket.choices;
+    if (pick === undefined) throw new Error("missing choice");
+    expect(pick).toMatchObject({ isDefault: true, chosen: true });
+    expect(rocket.origin).toMatchObject({
+      kind: "RECORDED",
+      library: "Pole Position - The Warfare 2 Library",
+      cut: "0.308–0.587 s",
+    });
+    expect(gallerySoundChoicePlayLabelV7(rocket, pick)).toMatch(
+      /^Play your pick of Rocket launch \(default\): Pole Position - The Warfare 2 Library \/ RPG - FIRING AND IMPACT/,
+    );
+    expect(gallerySoundChoiceUseLabelV7(rocket, pick)).toBe(
+      "Use your pick for Rocket launch",
+    );
+    const old1 = rocket.choices.find((choice) => choice.n === 1);
+    if (old1 === undefined) throw new Error("missing choice");
+    expect(gallerySoundChoiceUseLabelV7(rocket, old1)).toBe(
+      "Use old recording 1 for Rocket launch",
+    );
+    // An ElevenLabs take picked in this browser still plays instead.
+    const first = takes?.[0];
+    if (first === undefined) throw new Error("attack.rocket has no take");
+    const picked = entryOf("attack.rocket", {
+      picks: { "attack.rocket": first.n },
+    });
+    expect(picked.origin?.kind).toBe("ELEVENLABS");
+    expect(
+      picked.choices.filter((choice) => choice.chosen).map((c) => c.n),
+    ).toEqual([first.n]);
+    // The impact half: its own card, the pick and the synth.
+    const hit = entryOf("impact.rocket");
+    expect(hit.name).toBe("Rocket hit");
+    expect(hit.when).toBe("Rocket Cart's rocket lands");
+    expect(hit.choices.map((choice) => choice.label)).toEqual([
+      "Pick",
+      "Synth",
+    ]);
+    expect(hit.choices[0]?.isDefault).toBe(true);
   });
 
   it("shows the picked recording as the card's origin and marks it", () => {
