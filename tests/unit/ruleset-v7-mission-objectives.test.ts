@@ -854,17 +854,21 @@ describe("natural maps", () => {
       "FRONTIER_2",
       "FRONTIER_3",
       "FRONTIER_4",
+      "FRONTIER_5",
+      "FRONTIER_6",
       "FRONTIER_7",
       "FRONTIER_8",
     ]);
     for (const mission of MISSION_REGISTRY_V7)
       expect(missionMapDriftV7(mission), mission.id).toEqual([]);
-    // The edit lists are small: the board is the generator's.
+    // The edit lists are small: the board is the generator's. (Ten at most
+    // since missions 5 and 6, `pulp_wars-v642.2`: a three-seat board has
+    // more villages to take away from the AI seats; it was eight.)
     for (const mission of natural) {
       const source = mission.source as NonNullable<
         MissionDefinitionV7["source"]
       >;
-      expect(source.edits.length, mission.id).toBeLessThanOrEqual(8);
+      expect(source.edits.length, mission.id).toBeLessThanOrEqual(10);
       expect(source.size).toBe(mission.size);
       expect(source.seats).toBe(mission.seats.length);
       // Terrain is changed on two tiles in all (Bone Neck); every other

@@ -2665,9 +2665,10 @@ city plus rectangles). The registry holds only the current revision of each
 mission. The objective `DOMINATION` is the ordinary outcome rule of
 [section 3](#3-players-turns-and-victory); the other objectives are below
 (**Objectives**). The registered missions
-are the four built missions of the campaign, `FRONTIER_1`–`FRONTIER_4`
+are the built missions of the campaign, `FRONTIER_1`–`FRONTIER_4`
 ([campaign design](CAMPAIGN.md) section 9, `pulp_wars-68k.4`, reworked by
-`pulp_wars-v642.1`), with `FRONTIER_7` and `FRONTIER_8`
+`pulp_wars-v642.1`), with `FRONTIER_5` and `FRONTIER_6`
+(`pulp_wars-v642.2`) and `FRONTIER_7` and `FRONTIER_8`
 (`pulp_wars-v642.3`), and the hidden
 test fixtures `TEST_GROUNDS`, `TEST_RUSH`, `TEST_HOLD`, `TEST_GUARD`,
 `TEST_NECK`, and the four objective fixtures `TEST_ESCORT`,

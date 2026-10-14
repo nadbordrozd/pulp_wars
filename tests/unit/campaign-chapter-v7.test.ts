@@ -37,6 +37,9 @@ const BUILT = [
   "FRONTIER_2",
   "FRONTIER_3",
   "FRONTIER_4",
+  // `pulp_wars-v642.2`.
+  "FRONTIER_5",
+  "FRONTIER_6",
   // Missions 7 and 8 (`pulp_wars-v642.3`).
   "FRONTIER_7",
   "FRONTIER_8",
@@ -150,6 +153,150 @@ describe("Chapter One data", () => {
     ).toHaveLength(
       ["FRONTIER_9", "FRONTIER_10"].filter((id) => !BUILT.includes(id)).length,
     );
+  });
+
+  it("builds missions 5 and 6 to the design: an escort and a hold-out against two enemies", () => {
+    // Mission 5, "Dead Men's Road" (`pulp_wars-v642.2`).
+    const road = mission("FRONTIER_5");
+    expect([road.size, road.source?.mapType, road.source?.seed]).toEqual([
+      16,
+      "DRY_LAND",
+      9,
+    ]);
+    expect(road.seats.map((item) => item.faction)).toEqual([
+      "UNDEAD",
+      "ORIGINAL",
+      "ICE_FOLK",
+    ]);
+    // The toll-men and the raiders are one side.
+    expect(road.teams).toEqual([0, 1, 1]);
+    expect(road.objective).toEqual({
+      kind: "ESCORT",
+      unit: "ARCHIVIST",
+      to: "IRONBRAID_GATE",
+      within: 1,
+      byRound: 20,
+      bonus: [{ kind: "WITHIN_ROUNDS", rounds: 16 }, { kind: "KEEP_CITIES" }],
+    });
+    // The Doctor is a Necromancer of seat 0, and the gate a neutral village.
+    expect(
+      seat(road, 0).units.filter((unit) => unit.tag !== undefined),
+    ).toEqual([
+      { role: "CAPTAIN", at: { x: 5, y: 11 }, home: 1, tag: "ARCHIVIST" },
+    ]);
+    expect(road.landmarks).toEqual([
+      { tag: "IRONBRAID_GATE", at: { x: 14, y: 2 } },
+    ]);
+    expect(road.villages).toContainEqual({ x: 14, y: 2 });
+    // The whole fort guards the pass; the raiders hold their camp until
+    // round 6 and then rush; their waves come in rounds 9 and 13.
+    expect(seat(road, 1).directive).toEqual({
+      kind: "GUARD",
+      zone: [{ x0: 9, y0: 7, x1: 11, y1: 9 }],
+      garrison: 6,
+    });
+    expect(missionSeatDirectivesV7(seat(road, 2))).toEqual([
+      {
+        kind: "HOLD",
+        zone: [{ x0: 13, y0: 13, x1: 15, y1: 15 }],
+        untilRound: 6,
+      },
+      { kind: "RUSH" },
+    ]);
+    expect(
+      (road.reinforcements ?? []).map((wave) => [
+        wave.seat,
+        wave.round,
+        wave.units.length,
+      ]),
+    ).toEqual([
+      [2, 9, 3],
+      [2, 13, 4],
+    ]);
+    // Nobody climbs (the Yetis are Mountain-born), and neither enemy city
+    // can grow to a giant or blast the mountains.
+    expect([...road.forbiddenTechnologies].sort()).toEqual(
+      [...NAVAL, "ENGINEERING", "METALLURGY"].sort(),
+    );
+    expect(seat(road, 0).forbiddenTechnologies).toBeUndefined();
+    for (const index of [1, 2])
+      expect(seat(road, index).forbiddenTechnologies).toEqual(
+        expect.arrayContaining(["FORESTRY", "FARMING", "EXPLOSIVES"]),
+      );
+    expect(() => validateMissionDirectivesV7(road)).not.toThrow();
+
+    // Mission 6, "The Deep Gate" (`pulp_wars-v642.2`).
+    const gate = mission("FRONTIER_6");
+    expect([gate.size, gate.source?.mapType, gate.source?.seed]).toEqual([
+      14,
+      "DRY_LAND",
+      18,
+    ]);
+    expect(gate.seats.map((item) => item.faction)).toEqual([
+      "DWARF",
+      "ICE_FOLK",
+      "ORIGINAL",
+    ]);
+    expect(gate.aiMode).toBe("RIVAL");
+    expect(gate.teams).toBeUndefined();
+    expect(gate.objective).toEqual({
+      kind: "SURVIVE",
+      rounds: 14,
+      protect: [{ place: "DEEP_GATE" }],
+      bonus: [{ kind: "KEEP_CITIES" }, { kind: "UNIT_ALIVE", unit: "THANE" }],
+    });
+    expect(gate.landmarks).toEqual([{ tag: "DEEP_GATE", at: { x: 5, y: 6 } }]);
+    expect(seat(gate, 0).cities[0]).toEqual({
+      at: { x: 5, y: 6 },
+      level: 4,
+      rewards: ["STOCKPILE", "WALLS", "BOOM"],
+    });
+    expect(
+      seat(gate, 0).units.filter((unit) => unit.tag !== undefined),
+    ).toEqual([{ role: "CAPTAIN", at: { x: 5, y: 6 }, tag: "THANE" }]);
+    // The Ice Folk rush from the start; the Baron holds until round 6.
+    expect(missionSeatDirectivesV7(seat(gate, 1))).toEqual([{ kind: "RUSH" }]);
+    expect(
+      missionSeatDirectivesV7(seat(gate, 2)).map((directive) => [
+        directive.kind,
+        directive.untilRound,
+      ]),
+    ).toEqual([
+      ["HOLD", 6],
+      ["RUSH", undefined],
+    ]);
+    // Three waves a side that escalate to a giant, from two directions (the
+    // peaks north of the gate, the valley east of it), and the relief.
+    const waves = (gate.reinforcements ?? []).map((wave) => ({
+      seat: wave.seat,
+      round: wave.round,
+      roles: wave.units.map((unit) => unit.role),
+      north: wave.units.every((unit) => unit.at.y <= 3),
+      east: wave.units.every((unit) => unit.at.x >= 8),
+    }));
+    const of = (index: number) => waves.filter((wave) => wave.seat === index);
+    expect(of(1).map((wave) => wave.round)).toEqual([3, 7, 11]);
+    expect(of(2).map((wave) => wave.round)).toEqual([6, 9, 12]);
+    expect(of(0).map((wave) => wave.round)).toEqual([9]);
+    expect(of(1).every((wave) => wave.north)).toBe(true);
+    expect(of(2).every((wave) => wave.east)).toBe(true);
+    for (const index of [1, 2]) {
+      const [first, second, last] = of(index);
+      expect(first?.roles).not.toContain("JUGGERNAUT");
+      expect(second?.roles).not.toContain("JUGGERNAUT");
+      expect(last?.roles).toContain("JUGGERNAUT");
+    }
+    // The Humans come through a door: the Dwarves alone walk the peaks
+    // (the Yetis are Mountain-born). Nobody has land to grant or to farm.
+    expect(seat(gate, 0).technologies).toContain("ENGINEERING");
+    expect(seat(gate, 2).forbiddenTechnologies).toEqual([
+      "ENGINEERING",
+      "METALLURGY",
+    ]);
+    expect([...gate.forbiddenTechnologies].sort()).toEqual(
+      [...NAVAL, "PLANNING", "FARMING", "MILLING"].sort(),
+    );
+    expect(() => validateMissionDirectivesV7(gate)).not.toThrow();
   });
 
   it("unlocks every faction, one mission at a time from mission 4, with the Cultists last", () => {

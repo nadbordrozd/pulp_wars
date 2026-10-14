@@ -1261,18 +1261,18 @@ unlocked in mission 10.
 "Rounds" is the target length for a competent player; the star column is
 the two secondary goals (the first star is the win).
 
-| #   | Mission (`ID`)                             | You lead          | Against                                           | Format                    | Map                            | Win / lose                                            | Lesson or twist                                                         | Unlocks   | Rounds | Difficulty | Stars                             |
-| --- | ------------------------------------------ | ----------------- | ------------------------------------------------- | ------------------------- | ------------------------------ | ----------------------------------------------------- | ----------------------------------------------------------------------- | --------- | ------ | ---------- | --------------------------------- |
-| 1   | Goblins at the Gate (`FRONTIER_1`)         | Humans            | Goblins (rush)                                    | Conquest                  | Dry Land 11                    | capture the Goblin camp                               | hold a wall against a rush, then counter-attack; your first giant       | none      | 10–12  | Easy       | by turn 12; lose no city          |
-| 2   | The Warrens (`FRONTIER_2`)                 | Humans            | Goblins (three cities)                            | Capture                   | Dry Land 14                    | capture the Warrens (their capital)                   | expand first: villages, then an army that sticks together               | Goblins   | 14–18  | Medium     | by turn 18; lose no city          |
-| 3   | Green Tide (`FRONTIER_3`)                  | Goblins           | Undead (holds its plain until turn 16)            | Capture                   | Dry Land 14                    | capture the Barrow (their capital)                    | play the horde: Troll toss, Kaboom, Gang Up; your dead rise against you | none      | 11–15  | Medium     | by turn 15; lose no city          |
-| 4   | Bone Neck (`FRONTIER_4`)                   | Humans or Goblins | Undead (guards the gate)                          | Capture                   | Continents 16, one land bridge | capture the gate city                                 | a breach: two siege engines, no boats, one way in                       | Undead    | 10–14  | Hard       | by turn 12; lose no city          |
-| 5   | Dead Men's Road (`FRONTIER_5`)             | Undead            | Humans (toll fort), Ice Folk (raiders)            | Escort                    | Dry Land 16, hills             | bring Doctor Crane to the Ironbraid gate / he dies    | protect one fragile unit on a long road; go round or go through         | Dwarves   | 12–16  | Medium     | by turn 16; lose no city          |
-| 6   | The Deep Gate (`FRONTIER_6`)               | Dwarves           | Ice Folk (north), Humans (south)                  | Hold out                  | Dry Land 14                    | 14 turns pass / the Deep Gate falls                   | defend against waves from two sides; relief on turn 9                   | Ice Folk  | 14     | Medium     | lose no city; the Thane lives     |
-| 7   | The Island That Time Forgot (`FRONTIER_7`) | Ice Folk          | Dinosaurs (natives), Humans (the Baron)           | Capture against the clock | Archipelago 16                 | capture the Crater by turn 18 / time runs out         | the naval mission without ships: freeze a road over the sea; a race     | Dinosaurs | 11–16  | Hard       | by turn 14; lose no city          |
-| 8   | Brain Wave (`FRONTIER_8`)                  | Dinosaurs         | Martians (guard), Humans (thralls)                | Hunt                      | Pangea 16                      | kill the Overmind by turn 20 / time runs out          | a raid: ignore the cities, reach one unit behind its guard              | Martians  | 11–16  | Hard       | by turn 15; the Old Queen lives   |
-| 9   | Sugar and Spite (`FRONTIER_9`)             | Martians          | Undead, Goblins; ally: Candy                      | Rescue (hold out)         | Lakes 16 with a Rift           | 16 turns pass / Sugarcrest (the ally's capital) falls | defend someone else's city; only flyers cross the Rift                  | Candy     | 16     | Hard       | lose no city; Queen Praline lives |
-| 10  | The Stars Are Right (`FRONTIER_10`)        | Humans            | Cultists (guard), Undead (thralls); ally: Goblins | Capture against the clock | Pangea 20                      | capture the Lodge by turn 24 / time runs out          | the finale: four seats, an ally, a fortress, a deadline                 | Cultists  | 20–24  | Very hard  | by turn 20; lose no city          |
+| #   | Mission (`ID`)                             | You lead          | Against                                                            | Format                    | Map                            | Win / lose                                                                      | Lesson or twist                                                          | Unlocks   | Rounds | Difficulty | Stars                             |
+| --- | ------------------------------------------ | ----------------- | ------------------------------------------------------------------ | ------------------------- | ------------------------------ | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------ | --------- | ------ | ---------- | --------------------------------- |
+| 1   | Goblins at the Gate (`FRONTIER_1`)         | Humans            | Goblins (rush)                                                     | Conquest                  | Dry Land 11                    | capture the Goblin camp                                                         | hold a wall against a rush, then counter-attack; your first giant        | none      | 10–12  | Easy       | by turn 12; lose no city          |
+| 2   | The Warrens (`FRONTIER_2`)                 | Humans            | Goblins (three cities)                                             | Capture                   | Dry Land 14                    | capture the Warrens (their capital)                                             | expand first: villages, then an army that sticks together                | Goblins   | 14–18  | Medium     | by turn 18; lose no city          |
+| 3   | Green Tide (`FRONTIER_3`)                  | Goblins           | Undead (holds its plain until turn 16)                             | Capture                   | Dry Land 14                    | capture the Barrow (their capital)                                              | play the horde: Troll toss, Kaboom, Gang Up; your dead rise against you  | none      | 11–15  | Medium     | by turn 15; lose no city          |
+| 4   | Bone Neck (`FRONTIER_4`)                   | Humans or Goblins | Undead (guards the gate)                                           | Capture                   | Continents 16, one land bridge | capture the gate city                                                           | a breach: two siege engines, no boats, one way in                        | Undead    | 10–14  | Hard       | by turn 12; lose no city          |
+| 5   | Dead Men's Road (`FRONTIER_5`)             | Undead            | Humans (toll fort), Ice Folk (raiders), one side                   | Escort                    | Dry Land 16, a mountain wall   | bring Doctor Crane to the Ironbraid gate by turn 20 / he dies, or time runs out | protect one fragile unit on a long road; go round or go through          | Dwarves   | 13–16  | Medium     | by turn 16; lose no city          |
+| 6   | The Deep Gate (`FRONTIER_6`)               | Dwarves           | Ice Folk (north, over the peaks), Humans (east, through the doors) | Hold out                  | Dry Land 14, a mountain pocket | 14 turns pass / the Deep Gate falls                                             | defend against waves from two sides that end in giants; relief on turn 9 | Ice Folk  | 14     | Medium     | lose no city; the Thane lives     |
+| 7   | The Island That Time Forgot (`FRONTIER_7`) | Ice Folk          | Dinosaurs (natives), Humans (the Baron)                            | Capture against the clock | Archipelago 16                 | capture the Crater by turn 18 / time runs out                                   | the naval mission without ships: freeze a road over the sea; a race      | Dinosaurs | 11–16  | Hard       | by turn 14; lose no city          |
+| 8   | Brain Wave (`FRONTIER_8`)                  | Dinosaurs         | Martians (guard), Humans (thralls)                                 | Hunt                      | Pangea 16                      | kill the Overmind by turn 20 / time runs out                                    | a raid: ignore the cities, reach one unit behind its guard               | Martians  | 11–16  | Hard       | by turn 15; the Old Queen lives   |
+| 9   | Sugar and Spite (`FRONTIER_9`)             | Martians          | Undead, Goblins; ally: Candy                                       | Rescue (hold out)         | Lakes 16 with a Rift           | 16 turns pass / Sugarcrest (the ally's capital) falls                           | defend someone else's city; only flyers cross the Rift                   | Candy     | 16     | Hard       | lose no city; Queen Praline lives |
+| 10  | The Stars Are Right (`FRONTIER_10`)        | Humans            | Cultists (guard), Undead (thralls); ally: Goblins                  | Capture against the clock | Pangea 20                      | capture the Lodge by turn 24 / time runs out                                    | the finale: four seats, an ally, a fortress, a deadline                  | Cultists  | 20–24  | Very hard  | by turn 20; lose no city          |
 
 Formats covered: classic conquest (1), capture a place (2, 3, 4), escort
 (5), survive N rounds (6, 9), capture against a clock (7, 10), kill or raid
@@ -1287,31 +1287,52 @@ and needs nothing the framework lacks. Seeds are picked with the seed
 browser when the mission is built ([section 12](#12-the-mission-builders-guide));
 the numbers below are starting points for the hand play that tunes them.
 
-**5, Dead Men's Road.** Dry Land 16, a hilly seed with a mountain range
-across the middle and one or two passes; three seats, Rival. You (Undead,
-south-west): a level 3 capital, a town, about eight units, and the tagged
-unit `ARCHIVIST` (a Necromancer). Seat 1, Humans (Baron Kessler's
-toll-men): a walled level 3 fort on the best pass, `GUARD` its 3 × 3 zone
-with a garrison of 4, forbidden Chivalry and Sawmilling (no Knights, no
-siege). Seat 2, Ice Folk: a level 2 camp in the north-east, `HOLD` its
-corner until round 6, then `RUSH`. Landmark `IRONBRAID_GATE`: a neutral
-village in the far north-east corner, in sight from the start. Objective
-`ESCORT { unit: ARCHIVIST, to: IRONBRAID_GATE, within: 1 }`, stars
-`WITHIN_ROUNDS 16` and `KEEP_CITIES`. Graves along the road give the
-Necromancer something to do on the way. The lesson is a moving defence: the
-second pass is longer but unguarded, and the Ice Folk raiders arrive on it
-about when you do.
+**5, Dead Men's Road** (built by `pulp_wars-v642.2`; the numbers are the
+hand play's, [section 11.6](#116-dead-mens-road)). Dry Land 16, seed 9: a
+mountain wall down the middle of the board, and nobody climbs (Engineering
+is forbidden to everybody; the Yetis are Mountain-born). Three seats, the
+two enemies one team. You (Undead, south-west): a level 2 capital and a
+level 2 town, eight units, a Lich among them, and the tagged unit
+`ARCHIVIST`, a Necromancer like any other (10 Hit Points, Attack 1, one
+step a turn; Rally and Raise Dead each cost him his step). Seat 1, Humans
+(Baron Kessler's toll-men): a walled level 3 fort in the pass, five units
+that all `GUARD` its 3 × 3 zone (garrison 6), forbidden Chivalry,
+Sawmilling, Forestry, Farming and Explosives (no Knights, no siege, no
+growth, no blasting). Seat 2, Ice Folk: a walled level 3 camp in the
+south-east corner, `HOLD` its 3 × 3 zone until round 6, then `RUSH`, with
+waves of three and four onto the plain before the gate in rounds 9 and 13.
+Landmark `IRONBRAID_GATE`: a neutral village in the far north-east, in
+sight from the start. Objective
+`ESCORT { unit: ARCHIVIST, to: IRONBRAID_GATE, within: 1, byRound: 20 }`,
+stars `WITHIN_ROUNDS 16` and `KEEP_CITIES`. Graves along both roads give
+the Necromancer something to do on the way. **The choice:** the pass is
+nine steps and every free tile of it is next to the fort's zone, so the
+garrison has to be broken (a Lich outranges Guards, and what a Zombie
+bites gets up on your side) or walked round (Blast Mountain opens a tile
+out of its reach); the south road is fifteen steps round the mountain
+block, empty until the raiders wake in round 6, and it passes their camp.
+The clock and the waves are what stop "kill everything, then walk".
 
-**6, The Deep Gate.** Dry Land 14, a seed with the capital in a mountain
-pocket; three seats, Rival. You (Dwarves, centre): the capital `DEEP_GATE`
-at level 4 with Walls, one town, Field Defenses on the two approaches, the
-tagged Captain `THANE`. Seat 1, Ice Folk (north): a level 2 camp, `RUSH`.
-Seat 2, Humans (south): a level 2 camp, `HOLD` until round 6, then `RUSH`.
-Reinforcements: Ice Folk waves of three in rounds 4, 8 and 11; Human waves
-of three in rounds 7, 10 and 13 (the last with a Catapult); your relief of
-three in round 9. Both enemy capitals are small with no room to grow, so
-neither fields a giant: the pressure is the waves. Objective `SURVIVE { rounds: 14, protect: [DEEP_GATE] }`,
-stars `KEEP_CITIES` and `UNIT_ALIVE THANE`.
+**6, The Deep Gate** (built by `pulp_wars-v642.2`;
+[section 11.7](#117-the-deep-gate)). Dry Land 14, seed 18: the capital in
+a pocket of the western mountains with two doors (east, two Forest tiles;
+south, past your town). Three seats, Rival. You (Dwarves): the capital
+`DEEP_GATE` at level 4 with Walls and two Mines, a level 2 town at the
+south door, Field Defenses inside both doors, seven units, the tagged
+Engineer `THANE`; you own Mining, so the Dwarves walk the peaks. Seat 1,
+Ice Folk: a walled level 3 camp far to the north-east and a war band of
+four already under the peaks north of the gate, `RUSH`; their Yetis are
+Mountain-born and throw rocks two tiles down into the pocket. Seat 2,
+Humans: a walled level 3 camp in the south-east, `HOLD` until round 6, then
+`RUSH`; Engineering is forbidden to them, so they come through a door.
+Reinforcements: Ice Folk waves north of the gate in rounds 3, 7 and 11 (a
+Boulder Yeti from round 7, a Frost Giant in round 11); Human waves one or
+two steps from the east door in rounds 6, 9 and 12 (a Juggernaut and a
+Catapult in round 12); your relief of three (a Steam Tank among them) in
+round 9. Land Grants and Farming are forbidden to everybody: the enemy
+camps field no giant of their own, and yours comes only from a Monument.
+Objective `SURVIVE { rounds: 14, protect: [DEEP_GATE] }`, stars
+`KEEP_CITIES` and `UNIT_ALIVE THANE`.
 
 **7, The Island That Time Forgot** (built, `pulp_wars-v642.3`; the record
 is [section 11.8](#118-the-island-that-time-forgot)). Archipelago 16, seed
@@ -1663,6 +1684,98 @@ Raider; they are the only two of the mission.
 - A `RUSH` seat does not throw itself at a prepared line; give the player a
   reason to come out.
 - Do not start the player far over capacity: nothing can be replaced.
+- (Missions 5 and 6.) The Normal AI attacks what it can reach from where it
+  is safe and does not march on a strong position: a siege needs waves that
+  arrive in reach, and a defender who cannot out-build them.
+- Taking a seat's last city ends the seat and its waves. Put a camp where
+  that is a choice with a price, wall it, and garrison it.
+- A city's level decides whether it fields a giant, for the player too:
+  count the population within reach (Fruit, Game, Mines, Monuments, a Blast
+  Mountain in one's own land) before choosing levels and technologies.
+
+### 11.6 Dead Men's Road
+
+`pulp_wars-v642.2`. Dry Land 16, seed 9; ten villages removed (the fort's,
+the camp's and the gate's neighbours, and those an AI seat would take; two
+stay in the far north-west). Five attempts over four configurations; the
+transcripts are in `scratchpad/pulp_wars-v642.2/transcripts/`.
+
+1. **Abandoned in round 6.** A level 4 capital with a Land Grant harvested
+   its Fruit to level 5 on the first turn (an Abomination led the column);
+   the fort grew to level 5 by round 5 (a Juggernaut in the pass); two
+   roaming toll-men killed the scout on round 1 and took a village. Now:
+   two level 2 Undead cities, no Lumber Camp or Farm for either enemy,
+   every toll-man in the `GUARD` zone, the villages gone.
+2. **Won in round 16 through the pass, three stars** (by one round). The
+   Lich broke nine Guards over ten rounds (a Guard is open to a shot from
+   two tiles, and the splash plagues its neighbours), bitten toll-men got
+   up as Zombies, and a Blast Mountain opened a tile of the wall out of the
+   Guards' reach. The round 13 wave killed the vanguard at the gate and the
+   Doctor ended a turn next to a Yeti. The fort, with Explosives, had
+   blasted its own mountains for population (a Juggernaut in round 14) and
+   opened the block between the two roads: Explosives is forbidden to both
+   enemy seats now.
+3. **Abandoned in round 5.** The south road with the raiders holding the
+   whole south-east: they were on the column from round 2, and the long
+   road was no safer than the short one. Now the camp is in the corner and
+   they hold its nine tiles.
+4. **Lost in round 8 on the south road** ("Doctor Crane was killed."): the
+   column beat the raiders at their camp, and the Doctor then ended a turn
+   on the one tile of the road next to the fort's corner; a Marksman and a
+   Fighter killed him from inside the zone. The final configuration, and
+   the mission's fail condition seen for real.
+5. **Won in round 15 on the south road, three stars**, the final
+   configuration. Roads (researched on turn 1, fourteen tiles built) carried
+   the Doctor two steps a turn; the raiders came out in round 6 and lost
+   all six of their units to the Lich and the Zombies; a Ghoul took their camp in round
+   10, the round after their wave arrived and a Sled froze the Doctor.
+   Taking the camp ends the Ice Folk and their waves: that is the south
+   road's fight, and whoever wins it walks the rest.
+
+**What nearly went wrong:** a lone scout dies on round 1 on either road;
+the Doctor dies in one enemy turn on any tile next to two enemies, so every
+step is counted against what can reach it. The pass on the final
+configuration (the Ice camp one tile further off and no Explosives for the
+AI) was not replayed: both changes take pressure off that road.
+
+### 11.7 The Deep Gate
+
+`pulp_wars-v642.2`. Dry Land 14, seed 18; nine villages and a chest
+removed (one village stays, in the rock west of the gate, for the Dwarves
+to climb to). **Won in round 14, three stars, with 5 of 15 units left**, in
+the fifth configuration; an earlier one was won with two stars and three
+units. What the runs taught:
+
+1. An Ice camp three tiles north of the gate could be captured in round 4,
+   which ends the seat and its waves. Both camps are far off and walled,
+   and the Ice Folk's war band and waves arrive under the peaks instead.
+2. **The Normal AI does not attack a prepared line.** With Land Grants (the
+   ore of a wider territory) or a Farm in each city the Dwarves had two
+   Brass Titans by round 5 or 6 and sixteen units, and neither enemy came
+   within reach for the rest of the mission, giants included. Land Grants
+   and Farming are forbidden, the chest in the pocket (a free Gyrocopter,
+   and with it the Explorer's Monument on round 2) is gone, and a Titan
+   comes from a Monument: about round 5 from the Explorer's, round 9 from
+   the Muster's.
+3. Human waves that arrived four steps from the door never attacked, with
+   or without Catapults; waves that arrive one or two steps away do, at
+   once. They arrive there, and the hints give every wave's round, because
+   a Catapult that arrived unannounced shot the Thane the turn it came.
+4. A Titan that leaves the walls to hunt Yetis is dead in one turn (31 Hit
+   Points to a wave that had just arrived). The gate is held from inside;
+   the peaks are cleared by Clockwork Gunners, which shoot twice when they
+   have not moved.
+
+The winning line: the town's Mines to level 3 and Walls on turn 1; a
+Gyrocopter to explore, the Explorer's Monument and a Brass Titan in the
+gate in round 5; Gunners behind the doors; the relief's Steam Tank makes
+six kinds for the Muster's Monument and a second Titan in the town in
+round 9. The last three rounds are the Frost Giant (it freezes what it
+stands next to) from the north and the Juggernaut through the east door:
+ten of fifteen units died in them. **What nearly went wrong:** nothing in
+the open survives the peaks; the Thane was kept four tiles back and
+finished unhurt. The deliberate loss: with the garrison disbanded, a Yeti
+captured the Deep Gate in round 5 ("The Deep Gate fell.").
 
 ### 11.8 The Island That Time Forgot
 

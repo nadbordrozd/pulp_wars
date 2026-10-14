@@ -410,6 +410,50 @@ const SCENES: readonly Scene[] = [
       );
     },
   })),
+  // Missions 5 and 6 (`pulp_wars-v642.2`): each one's briefing, its first
+  // turn with the tracker and the marks, and both of its end dialogs.
+  ...(
+    [
+      ["frontier-5", "FRONTIER_5", 4, "ESCORT_ARRIVED", "ESCORT_LOST"],
+      ["frontier-6", "FRONTIER_6", 5, "SURVIVED", "PLACE_LOST"],
+    ] as const
+  ).flatMap(([slug, mission, wonBefore, won, lost]): Scene[] => [
+    {
+      name: `campaign-briefing-${slug}`,
+      match: false,
+      full: true,
+      run: async (c) => {
+        await front(c);
+        await evaluate(c, campaignProgressThrough(wonBefore));
+        await click(c, "campaign");
+        await click(c, `mission-${mission.toLowerCase()}`);
+      },
+    },
+    ...(
+      [
+        ["hud", "null"],
+        [
+          "victory",
+          `{ kind: 'VICTORY', winnerId: live.humanPlayerId, cause: '${won}' }`,
+        ],
+        [
+          "defeat",
+          `{ kind: 'DEFEAT', humanId: live.humanPlayerId, defeatedByPlayerId: live.players[1].id, cause: '${lost}' }`,
+        ],
+      ] as const
+    ).map(([what, outcome]): Scene => ({
+      name: `mission-${what}-${slug}`,
+      match: true,
+      run: async (c) => {
+        await mount(
+          c,
+          "/tests/fixtures/v7-score-ui.ts",
+          "null",
+          missionState(mission, outcome),
+        );
+      },
+    })),
+  ]),
   {
     name: "settings",
     match: false,
@@ -1367,6 +1411,16 @@ const CAMPAIGN_PROGRESS = `localStorage.setItem('pulpWars.campaign.v1', JSON.str
   FRONTIER_1: { firstWonAt: '2026-10-14T10:00:00.000Z', bestRounds: 11, stars: 3 },
   FRONTIER_2: { firstWonAt: '2026-10-14T11:00:00.000Z', bestRounds: 19, stars: 2 },
   FRONTIER_3: { firstWonAt: '2026-10-14T12:00:00.000Z', bestRounds: 17 } } }))`;
+
+/** Campaign progress with the first `count` missions won, three stars each. */
+function campaignProgressThrough(count: number): string {
+  const completed = Array.from(
+    { length: count },
+    (_, index) =>
+      `FRONTIER_${String(index + 1)}: { firstWonAt: '2026-10-14T10:00:00.000Z', bestRounds: 12, stars: 3 }`,
+  ).join(", ");
+  return `localStorage.setItem('pulpWars.campaign.v1', JSON.stringify({ format: 'pulp-wars-campaign-progress', version: 1, completed: { ${completed} } }))`;
+}
 
 /**
  * Campaign progress with missions 1 to `count` won with two stars each, so

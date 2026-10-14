@@ -96,6 +96,11 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
   // Natural maps and objectives (`pulp_wars-v642.1`): revision 4.
   "FRONTIER_4@4:GOBLIN":
     "fcdf664be1a23a75dd0cac1ddecb35716eba441957489605138576a2711063bf",
+  // Missions 5 and 6 (`pulp_wars-v642.2`).
+  "FRONTIER_5@1:UNDEAD":
+    "283973129144392407f31f188a284006ae937403512ee2d7e176b337fd321574",
+  "FRONTIER_6@1:DWARF":
+    "441ef76a743519ff8cfe388364442c85715c55eefb01656e79e821510fcbde9c",
   // Missions 7 and 8 (`pulp_wars-v642.3`).
   "FRONTIER_7@1:ICE_FOLK":
     "fd877e75e45aa80ba394499860eed7419c2efbfbf7f12a22ddca71ce9712bec7",
@@ -357,6 +362,11 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
   // Natural maps and objectives (`pulp_wars-v642.1`): revision 4.
   "FRONTIER_4@4:GOBLIN":
     "f6ae30e00a22df17c7d98fadc0cfbe4d4bb2340e7a8ff9f9fa3a074a3e7697b8",
+  // Missions 5 and 6 (`pulp_wars-v642.2`).
+  "FRONTIER_5@1:UNDEAD":
+    "9dd66709874221dc012d48dcb0b118eb3560583925e0f6f7b91254aaee4e662e",
+  "FRONTIER_6@1:DWARF":
+    "e164e6e6753a7b820ec2ac5a178df25e2e9c925792eb508464981ab71d8beb86",
   // Missions 7 and 8 (`pulp_wars-v642.3`).
   "FRONTIER_7@1:ICE_FOLK":
     "756596ca5574f77c4d1f6719d102a2d29a671f5a531a7c353614afcb380358b2",

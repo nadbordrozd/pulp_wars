@@ -18,7 +18,10 @@ import {
 } from "../../src/engine/index";
 import { CAMPAIGN_PROGRESS_STORAGE_KEY_V7 } from "../../src/persistence/index";
 import type { BoardHostV7 } from "../../src/render/canvas/board-host-v7";
-import { missionOutcomeLineV7 } from "../../src/render/mission-presentation-v7";
+import {
+  missionOutcomeLineV7,
+  missionStarGoalsV7,
+} from "../../src/render/mission-presentation-v7";
 import {
   Ruleset7DomAppView,
   type Ruleset7ControllerPortV7,
@@ -94,8 +97,9 @@ describe("Ruleset 7 campaign front screen", () => {
       "open",
       "locked",
       "locked",
-      "soon",
-      "soon",
+      // Missions 5 and 6 are built (`pulp_wars-v642.2`).
+      "locked",
+      "locked",
       // Missions 7 and 8 are built (`pulp_wars-v642.3`).
       "locked",
       "locked",
@@ -107,8 +111,8 @@ describe("Ruleset 7 campaign front screen", () => {
       "Mission 2, The Warrens, Capture, open, unlocks Goblin",
       "Mission 3, Green Tide, Capture, locked",
       "Mission 4, Bone Neck, Capture, locked, unlocks Undead",
-      "Mission 5, Dead Men's Road, Escort, coming soon, unlocks Dwarf",
-      "Mission 6, The Deep Gate, Hold out, coming soon, unlocks Ice Folk",
+      "Mission 5, Dead Men's Road, Escort, locked, unlocks Dwarf",
+      "Mission 6, The Deep Gate, Hold out, locked, unlocks Ice Folk",
       "Mission 7, The Island That Time Forgot, Capture, locked, unlocks Dinosaur",
       "Mission 8, Brain Wave, Hunt, locked, unlocks Martian",
       "Mission 9, Sugar and Spite, Rescue, coming soon, unlocks Candy",
@@ -117,7 +121,8 @@ describe("Ruleset 7 campaign front screen", () => {
     expect(cards[0]?.textContent).toContain("Best: 14 turns");
     expect(cards[1]?.textContent).toContain("Open");
     expect(cards[2]?.textContent).toContain("Win the previous mission");
-    expect(cards[4]?.textContent).toContain("Coming soon");
+    expect(cards[4]?.textContent).toContain("Win the previous mission");
+    expect(cards[8]?.textContent).toContain("Coming soon");
     // Stars: only on a mission that is won, filled as far as they were won.
     expect(
       cards.map((card) => {
@@ -607,7 +612,7 @@ describe("Ruleset 7 mission dialogs", () => {
 
   it("after the last built mission: the unlock, the outro, Retry, Campaign and Main menu", () => {
     const fake = new FakeController(
-      completeView("FRONTIER_4", "GOBLIN", (view) => ({
+      completeView("FRONTIER_8", "DINOSAUR", (view) => ({
         kind: "VICTORY",
         winnerId: view.humanPlayerId,
       })),
@@ -618,11 +623,15 @@ describe("Ruleset 7 mission dialogs", () => {
           FRONTIER_2: won(),
           FRONTIER_3: won(),
           FRONTIER_4: won(),
+          FRONTIER_5: won(),
+          FRONTIER_6: won(),
+          FRONTIER_7: won(),
+          FRONTIER_8: won(),
         },
         lastWin: {
-          missionId: "FRONTIER_4",
+          missionId: "FRONTIER_8",
           firstWin: true,
-          unlocked: ["UNDEAD"],
+          unlocked: ["MARTIAN"],
         },
         diagnostic: null,
       },
@@ -634,11 +643,11 @@ describe("Ruleset 7 mission dialogs", () => {
     expect(dialog.querySelector("h2")?.textContent).toBe("Mission complete");
     expect(
       dialog.querySelector("[data-v7-region='unlock-notice']")?.textContent,
-    ).toBe("New faction: Undead");
+    ).toBe("New faction: Martian");
     expect(dialog.querySelector(".v7-campaign-outro")?.textContent).toBe(
       CHAPTER_ONE_V7.outro,
     );
-    // Mission 5 is not built: there is no Next mission to offer.
+    // Mission 9 is not built: there is no Next mission to offer.
     expect(
       [...dialog.querySelectorAll("button")].map((node) => node.textContent),
     ).toEqual(["Retry", "Campaign", "Main menu"]);
@@ -814,6 +823,128 @@ describe("Ruleset 7 mission objective in a match", () => {
     expect(
       document.querySelector("[data-v7-region='mission-tracker']"),
     ).toBeNull();
+  });
+
+  it("missions 5 and 6: the tracker, the marks, the stars, and why each ends", () => {
+    // `pulp_wars-v642.2`: an escort against a clock, and a hold-out.
+    const start = (missionId: string) => {
+      const setup = required(
+        missionMatchSetupV7(required(missionByIdV7(missionId))),
+      );
+      const created = createPlayableGameV7(setup);
+      if (!created.ok) throw new Error(created.error.code);
+      return created.state;
+    };
+    const shown = (view: PlayerViewV7) => {
+      document.body.innerHTML = '<div id="app"></div>';
+      const host = new NullBoardHost();
+      const mounted = mount(
+        new FakeController(view, undefined, "ACTIVE"),
+        host,
+      );
+      const tracker = required(
+        document.querySelector<HTMLElement>(
+          "[data-v7-region='mission-tracker']",
+        ),
+      );
+      const found = {
+        icon: tracker.querySelector("svg")?.dataset.icon,
+        line: tracker.querySelector(".v7-mission-tracker-line")?.textContent,
+        counter: tracker.querySelector(".v7-mission-tracker-counter")
+          ?.textContent,
+        said: tracker.getAttribute("aria-label") ?? "",
+        marks: (host.last?.missionMarkers ?? []).map(
+          (mark) =>
+            `${mark.kind}:${mark.on}:${mark.label}@${String(mark.at.x)},${String(mark.at.y)}`,
+        ),
+      };
+      mounted.destroy();
+      return found;
+    };
+    const ended = (
+      view: PlayerViewV7,
+      kind: "VICTORY" | "DEFEAT",
+      cause: string,
+    ): string | null => {
+      const other = required(
+        view.turnOrder.find((id) => id !== view.humanPlayerId),
+      );
+      const outcome =
+        kind === "VICTORY"
+          ? { kind, winnerId: view.humanPlayerId, cause }
+          : {
+              kind,
+              humanId: view.humanPlayerId,
+              defeatedByPlayerId: other,
+              cause,
+            };
+      return missionOutcomeLineV7({
+        ...view,
+        outcome: outcome as MatchOutcomeV7,
+      });
+    };
+
+    // Mission 5: the clock is the counter, the steps are in the sentence.
+    const road = start("FRONTIER_5");
+    const roadView = viewForV7(road, road.humanPlayerId);
+    const roadShown = shown(roadView);
+    expect([roadShown.icon, roadShown.line, roadShown.counter]).toEqual([
+      "move",
+      "Get Doctor Crane to the gate by turn 20.",
+      "20 turns",
+    ]);
+    expect(roadShown.said).toContain("20 turns left.");
+    expect(roadShown.said).toContain("8 steps to go.");
+    expect(roadShown.said).not.toMatch(/\d\s*,\s*\d/);
+    // A flag on the gate, a star on the Doctor.
+    expect(roadShown.marks).toEqual([
+      "GOAL:TILE:the Ironbraid gate@14,2",
+      "ESCORT:UNIT:Doctor Crane@5,11",
+    ]);
+    expect(
+      missionStarGoalsV7("FRONTIER_5", null).map((goal) => goal.text),
+    ).toEqual(["Win the mission", "Win by turn 16", "Lose no city"]);
+    expect(ended(roadView, "VICTORY", "ESCORT_ARRIVED")).toBe(
+      "Doctor Crane made it.",
+    );
+    expect(ended(roadView, "DEFEAT", "ESCORT_LOST")).toBe(
+      "Doctor Crane was killed.",
+    );
+    expect(ended(roadView, "DEFEAT", "OUT_OF_TIME")).toBe("Out of time.");
+
+    // Mission 6: fourteen turns, a shield on the gate, a star on the Thane.
+    const gate = start("FRONTIER_6");
+    const gateView = viewForV7(gate, gate.humanPlayerId);
+    const gateShown = shown(gateView);
+    expect([gateShown.icon, gateShown.line, gateShown.counter]).toEqual([
+      "defense",
+      "Hold the Deep Gate for 14 turns.",
+      "14 turns",
+    ]);
+    expect(gateShown.marks).toEqual([
+      "DEFEND:TILE:the Deep Gate@5,6",
+      "ESCORT:UNIT:the Thane@5,6",
+    ]);
+    expect(
+      missionStarGoalsV7("FRONTIER_6", null).map((goal) => goal.text),
+    ).toEqual(["Win the mission", "Lose no city", "Keep the Thane alive"]);
+    expect(ended(gateView, "VICTORY", "SURVIVED")).toBe("You held out.");
+    // The Deep Gate in an enemy's hands.
+    const taker = required(
+      gate.turnOrder.find((id) => id !== gate.humanPlayerId),
+    );
+    const fallen = viewForV7(
+      {
+        ...gate,
+        cities: gate.cities.map((city) =>
+          city.at.x === 5 && city.at.y === 6
+            ? { ...city, ownerId: taker }
+            : city,
+        ),
+      },
+      gate.humanPlayerId,
+    );
+    expect(ended(fallen, "DEFEAT", "PLACE_LOST")).toBe("The Deep Gate fell.");
   });
 });
 

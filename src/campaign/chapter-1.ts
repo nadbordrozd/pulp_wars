@@ -9,7 +9,7 @@ import type { FactionIdV7 } from "../engine/v7/types";
  * objective, and directives live in its engine definition
  * (`src/engine/v7/missions/frontier-*.ts`), which `missionId` names.
  *
- * Missions 1 to 4 are built. Missions 5 to 10 are designed and listed, so
+ * Missions 1 to 8 are built. Missions 9 and 10 are designed and listed, so
  * the roster shows the whole of part one, but not yet built: an entry with
  * `planned` carries what its card shows until its mission is registered.
  *
@@ -167,12 +167,12 @@ export const CHAPTER_ONE_V7: CampaignChapterV7 = Object.freeze({
       name: "Dead Men's Road",
       format: "ESCORT",
       briefing:
-        "Only the Marquis's archivist, Doctor Mortimer Crane, can read the bell's score, and only the Dwarves of Ironbraid Hold know the mountain. Walk him up the pass. Baron Kessler's toll-men hold the road, and something white hunts above the snowline.",
-      objective: "Bring Doctor Crane to the Ironbraid gate.",
+        "Only the Marquis's archivist, Doctor Mortimer Crane, can read the bell's score, and only the Dwarves of Ironbraid Hold know the mountain. Walk him to their gate before the snows close it, twenty days from now. Baron Kessler's toll-men hold the pass, and something white hunts the long way round.",
+      objective: "Get Doctor Crane to the gate by turn 20.",
       hints: Object.freeze([
         "If the Doctor dies, the mission is lost.",
-        "The toll fort guards the road: go round or go through.",
-        "The dead do not rest: they recover only on their own land.",
+        "The toll fort guards the pass: go round or go through.",
+        "A Lich outranges the fort. The Doctor can raise the dead.",
       ]),
       closing:
         "Thane Brunhild Ironbraid reads the score twice and bars her doors. 'That bell is ours, Captain. It hangs in the Deep Gate. And nobody is ringing it.'",
@@ -180,11 +180,6 @@ export const CHAPTER_ONE_V7: CampaignChapterV7 = Object.freeze({
       names: Object.freeze({
         ARCHIVIST: "Doctor Crane",
         IRONBRAID_GATE: "the Ironbraid gate",
-      }),
-      planned: Object.freeze({
-        leads: Object.freeze(["UNDEAD"] as const),
-        opponents: Object.freeze(["ORIGINAL", "ICE_FOLK"] as const),
-        size: 16,
       }),
     }),
     Object.freeze({
@@ -196,18 +191,16 @@ export const CHAPTER_ONE_V7: CampaignChapterV7 = Object.freeze({
         "The bell calls everything on the mountain to the Deep Gate: the Ice Folk down from the peaks, the Baron's hired guns up from the valley. Thane Ironbraid needs fourteen days to cut the bell loose. Give them to her.",
       objective: "Hold the Deep Gate for 14 turns.",
       hints: Object.freeze([
-        "They come in waves: north first, then south.",
-        "Dig in. Dwarves are hard to shift.",
-        "Help arrives on turn 9.",
+        "Ice Folk: turn 3, then 7 and 11. Baron: 6, then 9 and 12.",
+        "Yetis throw rocks from the peaks. Keep the Thane back.",
+        "A level 5 city sends a giant. Help arrives on turn 9.",
       ]),
       closing:
         "The bell falls silent, and the Ice Folk stop where they stand. Mother Rime lowers her spear. 'It was not your bell we came for. It was calling a star down. It fell in the sea, where the old beasts live.'",
       unlocks: Object.freeze(["ICE_FOLK"] as const),
-      names: Object.freeze({ DEEP_GATE: "the Deep Gate" }),
-      planned: Object.freeze({
-        leads: Object.freeze(["DWARF"] as const),
-        opponents: Object.freeze(["ICE_FOLK", "ORIGINAL"] as const),
-        size: 14,
+      names: Object.freeze({
+        DEEP_GATE: "the Deep Gate",
+        THANE: "the Thane",
       }),
     }),
     Object.freeze({

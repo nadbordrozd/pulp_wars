@@ -284,8 +284,8 @@ describe("derived campaign state", () => {
       true,
       true,
       true,
-      false,
-      false,
+      true,
+      true,
       // Missions 7 and 8 (`pulp_wars-v642.3`).
       true,
       true,
@@ -468,8 +468,11 @@ describe("derived campaign state", () => {
     expect(campaignMissionV7("FRONTIER_2")?.entry.number).toBe(2);
     expect(campaignMissionV7("TEST_GROUNDS")).toBeNull();
     expect(campaignNextMissionV7("FRONTIER_1")?.missionId).toBe("FRONTIER_2");
-    // Mission 5 is designed, not built: nothing to go on to.
-    expect(campaignNextMissionV7("FRONTIER_4")).toBeNull();
+    expect(campaignNextMissionV7("FRONTIER_4")?.missionId).toBe("FRONTIER_5");
+    expect(campaignNextMissionV7("FRONTIER_5")?.missionId).toBe("FRONTIER_6");
+    expect(campaignNextMissionV7("FRONTIER_6")?.missionId).toBe("FRONTIER_7");
+    // Mission 9 is designed, not built: nothing to go on to.
+    expect(campaignNextMissionV7("FRONTIER_8")).toBeNull();
     expect(campaignTagNameV7("FRONTIER_2", "WARRENS")).toBe("the Warrens");
     expect(campaignTagNameV7("TEST_ESCORT", "SOME_PLACE")).toBe("some place");
     expect(campaignNextMissionV7("TEST_GROUNDS")).toBeNull();
