@@ -276,7 +276,7 @@ describe("derived campaign state", () => {
         FRONTIER_4: won(),
       }),
     ).toEqual(["DONE", "DONE", "DONE", "DONE", "OPEN", ...rest.slice(1)]);
-    // Missions 5 to 10 are designed, not built: listed, never playable.
+    // A mission that is designed, not built, is listed and never playable.
     expect(
       campaignMissionCardsV7(CHAPTER_ONE_V7, {}).map((card) => card.built),
     ).toEqual([
@@ -286,8 +286,9 @@ describe("derived campaign state", () => {
       true,
       false,
       false,
-      false,
-      false,
+      // Missions 7 and 8 (`pulp_wars-v642.3`).
+      true,
+      true,
       false,
       false,
     ]);

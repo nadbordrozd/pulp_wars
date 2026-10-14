@@ -30,7 +30,17 @@ const NAVAL = [
   "SUBMERSIBLES",
 ] as const;
 
-const BUILT = ["FRONTIER_1", "FRONTIER_2", "FRONTIER_3", "FRONTIER_4"];
+// The missions that are registered and built, one per line so that the
+// builders of missions 5 to 10 each add their own.
+const BUILT = [
+  "FRONTIER_1",
+  "FRONTIER_2",
+  "FRONTIER_3",
+  "FRONTIER_4",
+  // Missions 7 and 8 (`pulp_wars-v642.3`).
+  "FRONTIER_7",
+  "FRONTIER_8",
+];
 
 function mission(id: string): MissionDefinitionV7 {
   const found = missionByIdV7(id);
@@ -75,9 +85,12 @@ function playerText(): { readonly where: string; readonly text: string }[] {
 }
 
 describe("Chapter One data", () => {
-  it("lists ten missions in order: the first four registered and built, the rest designed", () => {
+  it("lists ten missions in order: the built ones registered, the rest designed", () => {
     expect(CHAPTER_ONE_V7.missions.map((entry) => entry.missionId)).toEqual([
-      ...BUILT,
+      "FRONTIER_1",
+      "FRONTIER_2",
+      "FRONTIER_3",
+      "FRONTIER_4",
       "FRONTIER_5",
       "FRONTIER_6",
       "FRONTIER_7",
@@ -125,15 +138,18 @@ describe("Chapter One data", () => {
     const planned = CHAPTER_ONE_V7.missions.flatMap((entry) =>
       entry.planned === undefined ? [] : [entry.planned],
     );
-    expect(planned).toHaveLength(6);
+    expect(planned).toHaveLength(10 - BUILT.length);
     for (const plan of planned) {
       expect(plan.leads).toHaveLength(1);
       expect(plan.opponents).toHaveLength(2);
       expect([14, 16, 20]).toContain(plan.size);
     }
+    // Missions 9 and 10 have an ally, while they are still only designed.
     expect(
       planned.filter((plan) => (plan.allies ?? []).length > 0),
-    ).toHaveLength(2);
+    ).toHaveLength(
+      ["FRONTIER_9", "FRONTIER_10"].filter((id) => !BUILT.includes(id)).length,
+    );
   });
 
   it("unlocks every faction, one mission at a time from mission 4, with the Cultists last", () => {
@@ -298,6 +314,140 @@ describe("Chapter One data", () => {
       zone: [{ x0: 9, y0: 5, x1: 11, y1: 7 }],
       garrison: 4,
     });
+  });
+
+  it("builds missions 7 and 8 as designed: the frozen sea against a clock, and a hunt", () => {
+    // Mission 7: the Ice Folk cross the strait on ice to the Crater.
+    const island = mission("FRONTIER_7");
+    expect(island.size).toBe(16);
+    expect(island.source?.mapType).toBe("ARCHIPELAGO");
+    expect(island.seats.map((item) => item.faction)).toEqual([
+      "ICE_FOLK",
+      "DINOSAUR",
+      "ORIGINAL",
+    ]);
+    expect(island.aiMode).toBe("RIVAL");
+    expect(island.teams).toBeUndefined();
+    expect(island.objective).toEqual({
+      kind: "CAPTURE",
+      places: ["CRATER"],
+      byRound: 18,
+      bonus: [{ kind: "WITHIN_ROUNDS", rounds: 14 }, { kind: "KEEP_CITIES" }],
+    });
+    // You own the frozen sea but Icebound, and no seat is forbidden it
+    // mission-wide: the Baron sails, and the natives alone may not.
+    expect(island.forbiddenTechnologies).toEqual([]);
+    expect(seat(island, 0).forbiddenTechnologies).toBeUndefined();
+    for (const technology of [
+      "SHORECRAFT",
+      "NAVIGATION",
+      "SEAMANSHIP",
+      "SUBMERSIBLES",
+    ] as const)
+      expect(seat(island, 0).technologies).toContain(technology);
+    expect(seat(island, 0).technologies).not.toContain("NAVAL_ENGINEERING");
+    for (const technology of NAVAL)
+      expect(seat(island, 1).forbiddenTechnologies).toContain(technology);
+    expect(seat(island, 2).technologies).toContain("NAVIGATION");
+    expect(seat(island, 2).forbiddenTechnologies).toEqual([
+      "NAVAL_ENGINEERING",
+    ]);
+    // The Baron has a Port and a ship, and the landing of round 8 brings
+    // another.
+    expect(island.improvements).toEqual([
+      { at: { x: 11, y: 2 }, improvement: "PORT" },
+    ]);
+    expect(seat(island, 2).units.map((unit) => unit.role)).toContain(
+      "PATROL_BOAT",
+    );
+    expect(island.reinforcements).toHaveLength(1);
+    expect(island.reinforcements?.[0]?.seat).toBe(2);
+    expect(island.reinforcements?.[0]?.round).toBe(8);
+    expect(
+      island.reinforcements?.[0]?.units.map((unit) => unit.role),
+    ).toContain("PATROL_BOAT");
+    // The Crater is the Dinosaur town across the strait, kept by a
+    // garrison of three, and the strait is water on every column.
+    const crater = island.landmarks?.find((mark) => mark.tag === "CRATER");
+    expect(crater?.at).toEqual({ x: 5, y: 11 });
+    expect(seat(island, 1).cities.map((city) => city.at)).toContainEqual(
+      crater?.at,
+    );
+    expect(seat(island, 1).directive).toEqual({
+      kind: "GUARD",
+      zone: [{ x0: 4, y0: 10, x1: 6, y1: 12 }],
+      garrison: 3,
+    });
+    expect(island.terrain[7]).toBe("~".repeat(16));
+    expect(island.terrain[8]).toBe("~".repeat(16));
+    expect(() => validateMissionDirectivesV7(island)).not.toThrow();
+
+    // Mission 8: the Dinosaurs hunt the Overmind in its crater.
+    const hunt = mission("FRONTIER_8");
+    expect(hunt.size).toBe(16);
+    expect(hunt.source?.mapType).toBe("PANGEA");
+    expect(hunt.seats.map((item) => item.faction)).toEqual([
+      "DINOSAUR",
+      "MARTIAN",
+      "ORIGINAL",
+    ]);
+    // The Martians and their thralls are one side.
+    expect(hunt.teams).toEqual([0, 1, 1]);
+    expect(hunt.objective).toEqual({
+      kind: "KILL",
+      units: ["OVERMIND"],
+      byRound: 20,
+      bonus: [
+        { kind: "WITHIN_ROUNDS", rounds: 15 },
+        { kind: "UNIT_ALIVE", unit: "OLD_QUEEN" },
+      ],
+    });
+    expect([...hunt.forbiddenTechnologies].sort()).toEqual([...NAVAL].sort());
+    expect(seat(hunt, 0).forbiddenTechnologies).toBeUndefined();
+    // You climb: every way but the long southern road crosses a Mountain.
+    expect(seat(hunt, 0).technologies).toContain("ENGINEERING");
+    // The Old Queen is your giant; the Overmind is a Brain, the Martian
+    // seat's first unit, on its walled capital, with a Colossus beside it.
+    const queen = seat(hunt, 0).units.find((unit) => unit.tag === "OLD_QUEEN");
+    expect(queen?.role).toBe("JUGGERNAUT");
+    const martians = seat(hunt, 1);
+    expect(martians.units[0]).toEqual({
+      role: "CAPTAIN",
+      at: { x: 12, y: 4 },
+      tag: "OVERMIND",
+    });
+    expect(martians.cities[0]?.at).toEqual({ x: 12, y: 4 });
+    expect(martians.cities[0]?.rewards).toContain("WALLS");
+    expect(martians.units[1]?.role).toBe("JUGGERNAUT");
+    expect(martians.directive).toEqual({
+      kind: "GUARD",
+      zone: [{ x0: 10, y0: 3, x1: 14, y1: 7 }],
+      garrison: 6,
+    });
+    // No Mothership, and nothing that grows the crater into a second
+    // Colossus.
+    for (const technology of [
+      "CHIVALRY",
+      "ENGINEERING",
+      "EXPLOSIVES",
+      "FARMING",
+      "FORESTRY",
+    ] as const)
+      expect(martians.forbiddenTechnologies).toContain(technology);
+    // The thralls rush, and three waves of three follow them.
+    expect(seat(hunt, 2).directive).toEqual({ kind: "RUSH" });
+    expect(
+      hunt.reinforcements?.map((wave) => [
+        wave.seat,
+        wave.round,
+        wave.units.length,
+      ]),
+    ).toEqual([
+      [2, 5, 3],
+      [2, 9, 3],
+      [2, 13, 3],
+    ]);
+    expect(() => validateMissionDirectivesV7(hunt)).not.toThrow();
   });
 
   it("names every place and unit an objective talks about", () => {

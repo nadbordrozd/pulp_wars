@@ -64,11 +64,14 @@ describe("Ruleset 7 campaign front screen", () => {
     expect(document.querySelector(".v7-campaign-title")?.textContent).toBe(
       "Part One: The Hollow Frontier",
     );
-    // Ten missions: four built, six still to come (`pulp_wars-v642.1`).
+    // Ten missions (`pulp_wars-v642.1`); the ones not built yet say so.
     expect(document.querySelectorAll(".v7-mission-card")).toHaveLength(10);
     expect(
       document.querySelectorAll('.v7-mission-card[data-status="soon"]'),
-    ).toHaveLength(6);
+    ).toHaveLength(
+      CHAPTER_ONE_V7.missions.filter((entry) => entry.planned !== undefined)
+        .length,
+    );
     requiredButton('[data-action="front-back"]').click();
     await settle();
     expect(document.querySelector("[data-v7-campaign]")).toBeNull();
@@ -93,8 +96,9 @@ describe("Ruleset 7 campaign front screen", () => {
       "locked",
       "soon",
       "soon",
-      "soon",
-      "soon",
+      // Missions 7 and 8 are built (`pulp_wars-v642.3`).
+      "locked",
+      "locked",
       "soon",
       "soon",
     ]);
@@ -105,8 +109,8 @@ describe("Ruleset 7 campaign front screen", () => {
       "Mission 4, Bone Neck, Capture, locked, unlocks Undead",
       "Mission 5, Dead Men's Road, Escort, coming soon, unlocks Dwarf",
       "Mission 6, The Deep Gate, Hold out, coming soon, unlocks Ice Folk",
-      "Mission 7, The Island That Time Forgot, Capture, coming soon, unlocks Dinosaur",
-      "Mission 8, Brain Wave, Hunt, coming soon, unlocks Martian",
+      "Mission 7, The Island That Time Forgot, Capture, locked, unlocks Dinosaur",
+      "Mission 8, Brain Wave, Hunt, locked, unlocks Martian",
       "Mission 9, Sugar and Spite, Rescue, coming soon, unlocks Candy",
       "Mission 10, The Stars Are Right, Capture, coming soon, unlocks Cultists",
     ]);
@@ -864,7 +868,9 @@ describe("Ruleset 7 campaign progress recovery and reset", () => {
       "locked",
       "locked",
       "locked",
-      ...Array.from({ length: 6 }, () => "soon"),
+      ...CHAPTER_ONE_V7.missions
+        .slice(4)
+        .map((entry) => (entry.planned === undefined ? "locked" : "soon")),
     ]);
     app.destroy();
   });

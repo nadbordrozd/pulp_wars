@@ -220,18 +220,13 @@ export const CHAPTER_ONE_V7: CampaignChapterV7 = Object.freeze({
       objective: "Capture the Crater by turn 18.",
       hints: Object.freeze([
         "Freeze a road across the strait.",
-        "The beasts keep to their island at first.",
+        "Whoever steps on your ice freezes. Then break them.",
         "The Baron lands on turn 8.",
       ]),
       closing:
         "In the crater lies a ship of glass and brass, and around it the great beasts keep watch like dogs at a door. They let you pass. Whatever is inside, they hate it more than they hate you.",
       unlocks: Object.freeze(["DINOSAUR"] as const),
       names: Object.freeze({ CRATER: "the Crater" }),
-      planned: Object.freeze({
-        leads: Object.freeze(["ICE_FOLK"] as const),
-        opponents: Object.freeze(["DINOSAUR", "ORIGINAL"] as const),
-        size: 16,
-      }),
     }),
     Object.freeze({
       missionId: "FRONTIER_8",
@@ -243,8 +238,8 @@ export const CHAPTER_ONE_V7: CampaignChapterV7 = Object.freeze({
       objective: "Kill the Overmind by turn 20.",
       hints: Object.freeze([
         "The Overmind never leaves the crater.",
-        "The Baron's men are its puppets: they only attack.",
-        "Dinosaurs grow with every kill. Feed them.",
+        "A wounded beast near the Overmind changes sides.",
+        "Spitter acid ignores walls: shoot it from the peaks.",
       ]),
       closing:
         "The Overmind bursts like a wet lantern, and every Martian on the island blinks. Their captain salutes with three hands. 'We were not invading. We were answering. Someone here has been calling the stars.'",
@@ -252,11 +247,6 @@ export const CHAPTER_ONE_V7: CampaignChapterV7 = Object.freeze({
       names: Object.freeze({
         OVERMIND: "the Overmind",
         OLD_QUEEN: "the Old Queen",
-      }),
-      planned: Object.freeze({
-        leads: Object.freeze(["DINOSAUR"] as const),
-        opponents: Object.freeze(["MARTIAN", "ORIGINAL"] as const),
-        size: 16,
       }),
     }),
     Object.freeze({

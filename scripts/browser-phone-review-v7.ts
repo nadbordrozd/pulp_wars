@@ -332,6 +332,52 @@ const SCENES: readonly Scene[] = [
       await click(c, "mission-frontier_4");
     },
   },
+  // Missions 7 and 8 (`pulp_wars-v642.3`): the briefing of each (opened
+  // from the roster with the missions before it won), its first turn with
+  // the tracker and the marks, and its Victory dialog.
+  ...(
+    [
+      ["mission-7-briefing", "frontier_7", 6],
+      ["mission-8-briefing", "frontier_8", 7],
+    ] as const
+  ).map(([name, card, won]): Scene => ({
+    name,
+    match: false,
+    full: true,
+    run: async (c) => {
+      await front(c);
+      await evaluate(c, campaignProgressThrough(won));
+      await click(c, "campaign");
+      await click(c, `mission-${card}`);
+    },
+  })),
+  ...(
+    [
+      ["mission-7-hud", "FRONTIER_7", "null"],
+      [
+        "mission-7-victory",
+        "FRONTIER_7",
+        "{ kind: 'VICTORY', winnerId: live.humanPlayerId, cause: 'PLACES_CAPTURED' }",
+      ],
+      ["mission-8-hud", "FRONTIER_8", "null"],
+      [
+        "mission-8-victory",
+        "FRONTIER_8",
+        "{ kind: 'VICTORY', winnerId: live.humanPlayerId, cause: 'TARGETS_KILLED' }",
+      ],
+    ] as const
+  ).map(([name, mission, outcome]): Scene => ({
+    name,
+    match: true,
+    run: async (c) => {
+      await mount(
+        c,
+        "/tests/fixtures/v7-score-ui.ts",
+        "null",
+        missionState(mission, outcome),
+      );
+    },
+  })),
   // A mission in play: the objective tracker and the board's marks; and
   // the mission's Victory and Defeat dialogs.
   ...(
@@ -1321,6 +1367,19 @@ const CAMPAIGN_PROGRESS = `localStorage.setItem('pulpWars.campaign.v1', JSON.str
   FRONTIER_1: { firstWonAt: '2026-10-14T10:00:00.000Z', bestRounds: 11, stars: 3 },
   FRONTIER_2: { firstWonAt: '2026-10-14T11:00:00.000Z', bestRounds: 19, stars: 2 },
   FRONTIER_3: { firstWonAt: '2026-10-14T12:00:00.000Z', bestRounds: 17 } } }))`;
+
+/**
+ * Campaign progress with missions 1 to `count` won with two stars each, so
+ * that mission `count + 1` is open.
+ */
+function campaignProgressThrough(count: number): string {
+  const completed = Array.from(
+    { length: count },
+    (_, index) =>
+      `FRONTIER_${String(index + 1)}: { firstWonAt: '2026-10-14T10:00:00.000Z', bestRounds: 14, stars: 2 }`,
+  ).join(", ");
+  return `localStorage.setItem('pulpWars.campaign.v1', JSON.stringify({ format: 'pulp-wars-campaign-progress', version: 1, completed: { ${completed} } }))`;
+}
 
 /**
  * A mission's initial state, built by the mission builder (no command is

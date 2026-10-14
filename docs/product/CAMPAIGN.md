@@ -1269,8 +1269,8 @@ the two secondary goals (the first star is the win).
 | 4   | Bone Neck (`FRONTIER_4`)                   | Humans or Goblins | Undead (guards the gate)                          | Capture                   | Continents 16, one land bridge | capture the gate city                                 | a breach: two siege engines, no boats, one way in                       | Undead    | 10–14  | Hard       | by turn 12; lose no city          |
 | 5   | Dead Men's Road (`FRONTIER_5`)             | Undead            | Humans (toll fort), Ice Folk (raiders)            | Escort                    | Dry Land 16, hills             | bring Doctor Crane to the Ironbraid gate / he dies    | protect one fragile unit on a long road; go round or go through         | Dwarves   | 12–16  | Medium     | by turn 16; lose no city          |
 | 6   | The Deep Gate (`FRONTIER_6`)               | Dwarves           | Ice Folk (north), Humans (south)                  | Hold out                  | Dry Land 14                    | 14 turns pass / the Deep Gate falls                   | defend against waves from two sides; relief on turn 9                   | Ice Folk  | 14     | Medium     | lose no city; the Thane lives     |
-| 7   | The Island That Time Forgot (`FRONTIER_7`) | Ice Folk          | Dinosaurs (natives), Humans (the Baron)           | Capture against the clock | Archipelago 16                 | capture the Crater by turn 18 / time runs out         | the naval mission without ships: freeze a road over the sea; a race     | Dinosaurs | 14–18  | Hard       | by turn 14; lose no city          |
-| 8   | Brain Wave (`FRONTIER_8`)                  | Dinosaurs         | Martians (guard), Humans (thralls)                | Hunt                      | Pangea 16                      | kill the Overmind by turn 20 / time runs out          | a raid: ignore the cities, reach one unit behind its guard              | Martians  | 14–18  | Hard       | by turn 15; the Old Queen lives   |
+| 7   | The Island That Time Forgot (`FRONTIER_7`) | Ice Folk          | Dinosaurs (natives), Humans (the Baron)           | Capture against the clock | Archipelago 16                 | capture the Crater by turn 18 / time runs out         | the naval mission without ships: freeze a road over the sea; a race     | Dinosaurs | 11–16  | Hard       | by turn 14; lose no city          |
+| 8   | Brain Wave (`FRONTIER_8`)                  | Dinosaurs         | Martians (guard), Humans (thralls)                | Hunt                      | Pangea 16                      | kill the Overmind by turn 20 / time runs out          | a raid: ignore the cities, reach one unit behind its guard              | Martians  | 11–16  | Hard       | by turn 15; the Old Queen lives   |
 | 9   | Sugar and Spite (`FRONTIER_9`)             | Martians          | Undead, Goblins; ally: Candy                      | Rescue (hold out)         | Lakes 16 with a Rift           | 16 turns pass / Sugarcrest (the ally's capital) falls | defend someone else's city; only flyers cross the Rift                  | Candy     | 16     | Hard       | lose no city; Queen Praline lives |
 | 10  | The Stars Are Right (`FRONTIER_10`)        | Humans            | Cultists (guard), Undead (thralls); ally: Goblins | Capture against the clock | Pangea 20                      | capture the Lodge by turn 24 / time runs out          | the finale: four seats, an ally, a fortress, a deadline                 | Cultists  | 20–24  | Very hard  | by turn 20; lose no city          |
 
@@ -1313,28 +1313,54 @@ three in round 9. Both enemy capitals are small with no room to grow, so
 neither fields a giant: the pressure is the waves. Objective `SURVIVE { rounds: 14, protect: [DEEP_GATE] }`,
 stars `KEEP_CITIES` and `UNIT_ALIVE THANE`.
 
-**7, The Island That Time Forgot.** Archipelago 16; three seats, Rival;
-the Naval branch is allowed for the other seats, and you have no ships
-(the Ice Folk freeze the sea). You (Ice Folk, the north island): a level 3
-capital and seven units. Seat 1, Dinosaurs (the large middle island): a
-level 3 capital and the level 2 town on the landmark `CRATER`, `HOLD` the
-island until round 8, then `NORMAL`. Seat 2, Humans (the Baron's
-expedition, the south island): a level 2 port, `HOLD` until round 8, then
-`RUSH`; a landing party of four arrives beside the Crater in round 8.
+**7, The Island That Time Forgot** (built, `pulp_wars-v642.3`; the record
+is [section 11.8](#118-the-island-that-time-forgot)). Archipelago 16, seed
+9; three seats, Rival. The Ice Folk have no ships at all
+([current rules section 21.16](RULESET_7_CURRENT.md#2116-the-frozen-sea)),
+so the naval mission is theirs on foot and the Baron's by sea. You (Ice
+Folk, the north-west island): a level 2 capital, a level 2 town, seven
+units, and the frozen sea from the first turn: Rime, Pack Ice, Black Ice
+and Glacier (Icebound, which freezes a ship in, is yours to research).
+Seat 1, Dinosaurs (the southern island, two rows of sea away): a level 2
+capital in the middle and the level 2 town on the landmark `CRATER`, on the
+shore that faces you; `GUARD` the Crater with a garrison of three, the rest
+`NORMAL`; the Naval branch and Nesting (no more Ankylosauruses, small
+Eggs) are forbidden to them. Seat 2, Humans (the Baron's expedition, the
+north-east island): a level 2 port town with a Patrol Boat, Sailing and
+Navigation, no Battleship; `HOLD` until round 8, then `RUSH`; a landing
+party of four and a second Patrol Boat arrive beside the Crater in round 8.
 Objective `CAPTURE { places: [CRATER], byRound: 18 }`, stars
 `WITHIN_ROUNDS 14` and `KEEP_CITIES`. The lesson is the frozen sea as a
-road, and a race: after round 8 the island wakes up and the Baron lands.
+road and as a weapon (whoever steps onto your ice is Frozen at your next
+turn, and a Frozen unit shatters), and a race: the Baron's ship harries
+the crossing from round 3, and in round 8 his men land.
 
-**8, Brain Wave.** Pangea 16; three seats, Rival. You (Dinosaurs, west): a
-level 3 capital, eight units, two of them grown, and the tagged giant
-`OLD_QUEEN`. Seat 1, Martians (the crater, east): a walled level 3 capital,
-`GUARD` its zone with a garrison of 5, and the tagged Brain `OVERMIND`
-standing on the capital; forbidden the Mothership's technology. Seat 2,
-Humans (thralls, south): a level 2 town, `RUSH`, with waves of three in
-rounds 5, 9 and 13. Objective `KILL { units: [OVERMIND], byRound: 20 }`,
-stars `WITHIN_ROUNDS 15` and `UNIT_ALIVE OLD_QUEEN`. The lesson is a raid:
-the cities do not matter, one unit behind a guard does, and Mind Control
-punishes sending the Old Queen in alone.
+**8, Brain Wave** (built, `pulp_wars-v642.3`; the record is
+[section 11.9](#119-brain-wave)). Pangea 16, seed 2; three seats, teams
+`[0, 1, 1]`: the Martians and their thralls are one side. You (Dinosaurs,
+north-west): a level 3 capital, a level 2 town three tiles south of it,
+eight units, two of them grown, and the tagged giant `OLD_QUEEN` (a
+Brontosaurus); you own Engineering, so your dinosaurs cross Mountains.
+Seat 1, Martians (the crater, a basin in the eastern mountains open only
+to the south): a walled level 3 capital with the tagged Brain `OVERMIND`
+on its center; `GUARD` the basin with a garrison of six (the Overmind, a
+Colossus, two Shield Projectors, a Ray Gunner, a Tripod), while two
+Grunts, a Ray Gunner and two Saucers hunt; forbidden the Mothership's
+technology and everything that grows the capital into a second Colossus
+(Farming, Forestry, Engineering, Explosives, Roads, Land Grants and what
+follows them). Seat 2, Humans (thralls, a camp in the south): a level 2
+town, `RUSH`, with waves of three in rounds 5, 9 and 13. Objective
+`KILL { units: [OVERMIND], byRound: 20 }`, stars `WITHIN_ROUNDS 15` and
+`UNIT_ALIVE OLD_QUEEN`. There are three ways in: the Rim (along the north;
+the peaks north of the crater are two tiles from the Overmind), the Pass
+(two Mountain tiles on the row of your town), and the long southern road
+past the thralls, with no Mountain on it. The lesson is a raid: no city
+has to fall, one unit behind its guard does. What guards it: Mind Control
+takes a wounded one-slot unit within two tiles of a Brain (the Old Queen,
+a giant, is immune: what punishes sending her in alone is the Colossus
+and the rays), a Saucer's Tractor Beam pulls a unit out of your line, and
+a Force Field keeps a Martian at full strength alive through one hit. What
+kills it: a Spitter's Acid ignores the Walls.
 
 **9, Sugar and Spite.** Lakes 16 with a band of Rift tiles edited across
 the middle (terrain edits; the lakes keep the band short); four seats,
@@ -1637,6 +1663,96 @@ Raider; they are the only two of the mission.
 - A `RUSH` seat does not throw itself at a prepared line; give the player a
   reason to come out.
 - Do not start the player far over capacity: nothing can be replaced.
+
+### 11.8 The Island That Time Forgot
+
+`pulp_wars-v642.3`. Archipelago 16, seed 9, three seats; five villages
+removed (your town, the Crater, and the three an AI seat would have taken
+for a free city). **Won in round 11** by capturing the Crater, three
+stars, two units lost. The fifth configuration (transcripts `m7a` to
+`m7e` in `scratchpad/pulp_wars-v642.3/transcripts/`):
+
+1. A level 3 capital with a land grant: the Fish of its home waters and a
+   Population Boom made a Frost Giant in round 1. The capital is level 2.
+2. The Crater as the town in the middle of the island, behind the Dinosaur
+   capital: with Nesting the natives laid a third Ankylosaurus and stood
+   three of them (60 Hit Points, Armoured) around it, with 14 to 17 units
+   by round 11; the Baron, with two villages, fielded a Juggernaut and a
+   Battleship that shelled your home island from the open sea. Out of time
+   in round 18 (played to the end as the deliberate loss: "Out of time").
+   The Crater is now the town on the shore that faces you, the natives are
+   forbidden Nesting, three villages went, and the Baron has no Battleship.
+3. Told to `HOLD` their island, every Dinosaur walked to the capital and
+   the Crater stood empty in round 3. Three of them `GUARD` it now.
+4. With Rime and Pack Ice alone the road melted every third turn, the one
+   lane jammed, and the army reached the island in a trickle; the giant
+   killed whoever stood on the Crater, and the natives trained another
+   Caveman onto it every turn. Not on course in round 16. You now start
+   with Black Ice and Glacier too (the road lasts five turns and a unit
+   slides the whole lane in one Move), and the town's units start at the
+   capital.
+
+The winning line: Fish and a Farm for a level 3 capital (a free Sled),
+five units on the ice for the Sea Dog Monument, a Boom and two Lumber Camps
+for a Frost Giant in round 4; the Ice Witch freezes the road while a Sled
+sinks the Baron's Patrol Boat (round 3); a Raptor that kills a Yeti on the
+ice is Frozen by Black Ice and shattered; the giant slides down the lane,
+freezes the Crater's Ankylosaurus with its Cold Aura and shatters it
+(round 8). **What nearly went wrong:** the Baron's landing party killed
+the Caveman the natives trained onto the empty Crater and a Fighter stood
+on it, one turn from capturing it (a Frost Bolt and the giant's Glacial
+Smash removed him); and a giant does not advance after a kill, so a
+second unit has to enter the Crater in the same turn (a Sled over the ice
+of the west shore, with Bolas on the Raptor and a Frost Bolt on the
+Spitter that could have killed it).
+
+The AI on an island board: the Baron's seat sails by itself. Its Patrol
+Boat attacked the units on the ice in round 3, its transports carried a
+Guard, a Raider, a Marksman and, in configurations 2 and 4, a Juggernaut
+to the island from round 8 on, and an icebound transport's crew climbed
+out onto the ice and was Frozen there. The natives have no ships by
+design: they counter-attack onto the ice and train on the Crater.
+
+### 11.9 Brain Wave
+
+`pulp_wars-v642.3`. Pangea 16, seed 2, three seats; eight villages removed
+(your town, three in and beside the crater, and the four of the south).
+**Won in round 11** by killing the Overmind, three stars (the Old Queen
+alive with 20 of 45 Hit Points), seven units lost. The third
+configuration (transcripts `m8a` to `m8c`):
+
+1. A garrison of five without a Colossus, and a Martian seat free to
+   build: with Mines on every peak of its land the crater was a level 7
+   city in round 5, and the Colossus of its level 7 took the center and
+   pushed the Overmind off its own Walls, beside the Old Queen, who had
+   walked in alone and killed it in round 6. The thralls took the four
+   southern villages and were a four-city power by round 6.
+2. With a Colossus, a garrison of six and no Mines, the Martians blasted
+   the peaks of their rim with Explosives for population (level 5 in round
+   4). Stopped in round 5: Explosives is forbidden to them too.
+
+The winning line: Mines for a level 3 town (a free Raptor), the two
+villages on the Rim and the Pass for forward nests, a Triceratops and
+Spitters; the Old Queen pulled back and tended by the Shaman after the
+Colossus and the Tripod took 19 Hit Points from her in one turn; in round
+9, with their heat rays Cooling, the Queen and the Triceratops (Charge!,
+which pushed the Colossus off the Rim) cleared the way; in round 11 the
+Queen climbed the Rim and struck the Overmind on its Walls (its Shield and
+2 Hit Points), and a Spitter on the peak two tiles away finished it with
+Acid: a Force Field holds only for a unit at full strength. **What nearly
+went wrong:** a Saucer's Tractor Beam twice pulled the Ankylosaurus out of
+the line into the rays, and it died; the Colossus one-shot a Spitter on a
+peak; the Triceratops died on the Rim the turn after its charge; and the
+Queen stood on the Rim with 22 Hit Points for one enemy turn. No unit was
+mind-controlled in the winning game, because none was left wounded within
+two tiles of the Overmind: the rule shaped the approach and did not fire.
+
+The deliberate loss: passing every turn runs the clock out ("Out of
+time" after round 20). It also showed that neither the thralls nor the
+Martian hunters attack a player who never leaves home (two cities and
+nine units intact at the end): a `RUSH` seat does not storm a line, as
+[section 11.5](#115-what-the-hand-play-taught) says, and here the clock
+is what brings the player out.
 
 ## 12. The mission builder's guide
 

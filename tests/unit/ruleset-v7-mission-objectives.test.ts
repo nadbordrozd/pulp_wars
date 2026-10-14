@@ -854,6 +854,8 @@ describe("natural maps", () => {
       "FRONTIER_2",
       "FRONTIER_3",
       "FRONTIER_4",
+      "FRONTIER_7",
+      "FRONTIER_8",
     ]);
     for (const mission of MISSION_REGISTRY_V7)
       expect(missionMapDriftV7(mission), mission.id).toEqual([]);

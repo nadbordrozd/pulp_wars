@@ -96,6 +96,11 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
   // Natural maps and objectives (`pulp_wars-v642.1`): revision 4.
   "FRONTIER_4@4:GOBLIN":
     "fcdf664be1a23a75dd0cac1ddecb35716eba441957489605138576a2711063bf",
+  // Missions 7 and 8 (`pulp_wars-v642.3`).
+  "FRONTIER_7@1:ICE_FOLK":
+    "fd877e75e45aa80ba394499860eed7419c2efbfbf7f12a22ddca71ce9712bec7",
+  "FRONTIER_8@1:DINOSAUR":
+    "b345f58a64ee3261fd6462574887094f5588fc1897f05bac31319ed64408e9fe",
   // The siege fixture of the Normal AI (`pulp_wars-68k.6`).
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 2.
   "TEST_NECK@2:ORIGINAL":
@@ -352,6 +357,11 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
   // Natural maps and objectives (`pulp_wars-v642.1`): revision 4.
   "FRONTIER_4@4:GOBLIN":
     "f6ae30e00a22df17c7d98fadc0cfbe4d4bb2340e7a8ff9f9fa3a074a3e7697b8",
+  // Missions 7 and 8 (`pulp_wars-v642.3`).
+  "FRONTIER_7@1:ICE_FOLK":
+    "756596ca5574f77c4d1f6719d102a2d29a671f5a531a7c353614afcb380358b2",
+  "FRONTIER_8@1:DINOSAUR":
+    "65841349cf754fcad34203a6d51f90a8e1236af3ac200c831a3958959e45caa6",
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 2.
   "TEST_NECK@2:ORIGINAL":
     "32595babd0a4d5371b260320b8d360786ba69b01808d2716eaadec332213500e",
