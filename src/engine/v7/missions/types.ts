@@ -40,9 +40,17 @@ export interface MissionDefinitionV7 {
    * `MISSION` setup of such a mission repeats a faction.
    */
   readonly mirror?: true;
-  readonly size: 11 | 14 | 16;
+  readonly size: 11 | 14 | 16 | 20;
   /** Fixed; it only seeds the treasure-chest draws. */
   readonly seed: number;
+  /**
+   * Natural maps (`pulp_wars-v642.1`, CAMPAIGN.md section 10.3): where the
+   * layers below came from: the map generator's output for this map type,
+   * size, seat count, and seed, with these edits. The layers are baked
+   * here, so the builder never runs the generator; a test regenerates them
+   * from the source and compares (`missionMapDriftV7`).
+   */
+  readonly source?: MissionMapSourceV7;
   /** Rows of `size` characters, y = 0 first (legend above). */
   readonly terrain: readonly string[];
   /** Same shape: resources; "." for none. */
@@ -61,6 +69,17 @@ export interface MissionDefinitionV7 {
   readonly aiMode: "RIVAL" | "COOPERATIVE";
   /** Seat 0 is the human; 2–4 seats. */
   readonly seats: readonly MissionSeatV7[];
+  /**
+   * Teams (`pulp_wars-v642.1`, CAMPAIGN.md section 10.2): one team number
+   * per seat. Two seats are allies exactly when their numbers are equal, so
+   * an AI seat may fight beside the human. Absent: the `aiMode` rule (every
+   * AI seat against the human, and against each other in Rival mode).
+   */
+  readonly teams?: readonly number[];
+  /** Named tiles the objective and the interface refer to. */
+  readonly landmarks?: readonly MissionLandmarkV7[];
+  /** Units that arrive later, at a seat's Start Turn of a round. */
+  readonly reinforcements?: readonly MissionReinforcementV7[];
   /** Closed under prerequisites (section 2.3). */
   readonly forbiddenTechnologies: readonly TechnologyIdV7[];
   readonly objective: MissionObjectiveV7;
@@ -91,8 +110,20 @@ export interface MissionSeatV7 {
     readonly radius: number;
     readonly rects?: readonly RectV7[];
   };
-  /** AI seats only; absent means NORMAL. Read by the AI, never the engine. */
-  readonly directive?: MissionDirectiveV7;
+  /**
+   * Technologies this seat alone may not research (`pulp_wars-v642.1`,
+   * CAMPAIGN.md section 10.2), on top of the mission's own list: with the
+   * mission's list it is closed under prerequisites, and the seat starts
+   * with none of them. A handicap for one side: an AI seat without its
+   * ranged unit, a player without ships.
+   */
+  readonly forbiddenTechnologies?: readonly TechnologyIdV7[];
+  /**
+   * AI seats only; absent means NORMAL. Read by the AI, never the engine.
+   * A list is a schedule: the first entry whose rounds
+   * (`fromRound` ≤ round < `untilRound`) hold the current round is played.
+   */
+  readonly directive?: MissionDirectiveV7 | readonly MissionDirectiveV7[];
 }
 
 export interface MissionCityV7 {
@@ -126,10 +157,139 @@ export interface MissionUnitV7 {
    * never a seat's first unit.
    */
   readonly egg?: number;
+  /**
+   * A name the objective refers to (`pulp_wars-v642.1`): the escorted
+   * unit, a target to kill, a unit that must live. Unique in the mission.
+   */
+  readonly tag?: string;
 }
 
-/** The teaser objective; later kinds are additive (section 3). */
-export type MissionObjectiveV7 = { readonly kind: "DOMINATION" };
+/** A named tile: a city or village to capture or defend, a destination. */
+export interface MissionLandmarkV7 {
+  /** Unique in the mission, SCREAMING_SNAKE. */
+  readonly tag: string;
+  readonly at: CoordV7;
+}
+
+/**
+ * Units that arrive at `seat`'s Start Turn of `round` (2 or later), each
+ * on its tile or the nearest free tile it may stand on within two steps
+ * (rings outward, `(y, x)` order); a unit with no such tile does not come.
+ * Nothing arrives for an eliminated seat. They are homed to the seat's
+ * capital while it holds it, otherwise to its city with the lowest ID, and
+ * may stand above the unit limit.
+ */
+export interface MissionReinforcementV7 {
+  readonly seat: number;
+  readonly round: number;
+  readonly units: readonly {
+    readonly role: UnitRoleIdV7;
+    readonly at: CoordV7;
+  }[];
+}
+
+/** The generated map types a mission board may come from. */
+export type MissionMapTypeV7 =
+  "DRY_LAND" | "PANGEA" | "CONTINENTS" | "ARCHIPELAGO" | "LAKES";
+
+export interface MissionMapSourceV7 {
+  readonly mapType: MissionMapTypeV7;
+  readonly size: 11 | 14 | 16 | 20;
+  /** The seat count the generator was asked for (its capitals). */
+  readonly seats: number;
+  readonly seed: number;
+  readonly edits: readonly MissionMapEditV7[];
+  /**
+   * The generator changed after this map was baked: the baked layers are
+   * the truth and the source is history, no longer compared.
+   */
+  readonly frozen?: true;
+}
+
+/** One recorded change to the generator's board (legend characters). */
+export type MissionMapEditV7 =
+  | {
+      readonly kind: "TERRAIN";
+      readonly at: CoordV7;
+      readonly terrain: string;
+      /** The tile's resource afterwards; absent: none. */
+      readonly resource?: string;
+    }
+  | {
+      readonly kind: "RESOURCE";
+      readonly at: CoordV7;
+      readonly resource: string;
+    }
+  | { readonly kind: "BIOME"; readonly at: CoordV7; readonly biome: string }
+  | {
+      readonly kind: "VILLAGE";
+      readonly at: CoordV7;
+      readonly present: boolean;
+    }
+  | {
+      readonly kind: "CHEST";
+      readonly at: CoordV7;
+      readonly present: boolean;
+    };
+
+/**
+ * What wins and loses a mission (`pulp_wars-v642.1`, CAMPAIGN.md section
+ * 10.1). In every kind the human loses when eliminated and wins when no
+ * seat hostile to it is left; the kind adds one more way to win, and the
+ * shared keys add ways to lose.
+ *
+ * - `DOMINATION`: nothing more.
+ * - `ESCORT`: the tagged unit of seat 0 stands within `within` tiles of the
+ *   landmark `to`. The mission is lost when that unit is dead.
+ * - `SURVIVE`: the round `rounds` ends (its last seat ends its turn).
+ * - `CAPTURE`: seat 0 or an ally owns the city on every landmark of
+ *   `places`.
+ * - `KILL`: every tagged unit of `units` is dead.
+ */
+export type MissionObjectiveV7 = MissionObjectiveCommonV7 &
+  (
+    | { readonly kind: "DOMINATION" }
+    | {
+        readonly kind: "ESCORT";
+        readonly unit: string;
+        readonly to: string;
+        readonly within: 0 | 1 | 2;
+      }
+    | { readonly kind: "SURVIVE"; readonly rounds: number }
+    | { readonly kind: "CAPTURE"; readonly places: readonly string[] }
+    | { readonly kind: "KILL"; readonly units: readonly string[] }
+  );
+
+export interface MissionObjectiveCommonV7 {
+  /**
+   * The mission is lost when this round ends without a win (never with
+   * `SURVIVE`, whose `rounds` is the clock).
+   */
+  readonly byRound?: number;
+  /**
+   * The mission is lost when a protected city is no longer owned by the
+   * seat that started with it (a landmark nobody started with: when a seat
+   * hostile to the human owns it), or a protected unit is dead.
+   */
+  readonly protect?: readonly MissionProtectedV7[];
+  /** Up to two secondary goals; each one met at the win is a star. */
+  readonly bonus?: readonly MissionBonusGoalV7[];
+}
+
+export type MissionProtectedV7 =
+  { readonly place: string } | { readonly unit: string };
+
+/**
+ * A secondary goal, judged at the win from the final state alone:
+ * `WITHIN_ROUNDS` (the win came in this round or earlier), `KEEP_CITIES`
+ * (seat 0 owns every city it started with), `UNIT_ALIVE` (the tagged unit
+ * lives), `HOLD_PLACE` (seat 0 or an ally owns the city on the landmark).
+ */
+export type MissionBonusGoalV7 =
+  | { readonly kind: "WITHIN_ROUNDS"; readonly rounds: number }
+  | { readonly kind: "KEEP_CITIES" }
+  | { readonly kind: "UNIT_ALIVE"; readonly unit: string }
+  | { readonly kind: "HOLD_PLACE"; readonly place: string };
 
 /** An inclusive rectangle of tiles. */
 export interface RectV7 {
@@ -144,17 +304,24 @@ export interface RectV7 {
  * outside the pinned initial-state hash; only the Normal AI reads it
  * (`pulp_wars-68k.3`), never the engine.
  */
-export type MissionDirectiveV7 =
-  | { readonly kind: "NORMAL" }
-  | { readonly kind: "RUSH"; readonly untilRound?: number }
-  | {
-      readonly kind: "HOLD";
-      readonly zone: readonly RectV7[];
-      readonly untilRound?: number;
-    }
-  | {
-      readonly kind: "GUARD";
-      readonly zone: readonly RectV7[];
-      readonly garrison: number;
-      readonly untilRound?: number;
-    };
+export type MissionDirectiveV7 = MissionDirectiveWindowV7 &
+  (
+    | { readonly kind: "NORMAL" }
+    | { readonly kind: "RUSH" }
+    | { readonly kind: "HOLD"; readonly zone: readonly RectV7[] }
+    | {
+        readonly kind: "GUARD";
+        readonly zone: readonly RectV7[];
+        readonly garrison: number;
+      }
+  );
+
+/**
+ * When a directive is played: from `fromRound` (absent: the start) while
+ * the round is below `untilRound` (absent: for good). Outside its rounds a
+ * seat plays the next matching entry of its schedule, or `NORMAL`.
+ */
+export interface MissionDirectiveWindowV7 {
+  readonly fromRound?: number;
+  readonly untilRound?: number;
+}

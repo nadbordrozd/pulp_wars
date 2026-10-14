@@ -1,4 +1,5 @@
 import {
+  cooperativeAlliesV7,
   BEAM_DOWN_PICKUP_RANGE_V7,
   isMindControlledV7,
   previewBeamDownV7,
@@ -260,9 +261,12 @@ export function addMartianPickEntriesV7(
       )
         continue;
       if (
-        view.setup.aiMode === "COOPERATIVE" &&
-        unit.ownerId !== view.humanPlayerId &&
-        actor.ownerId !== view.humanPlayerId
+        cooperativeAlliesV7(
+          view.setup,
+          view.humanPlayerId,
+          unit.ownerId,
+          actor.ownerId,
+        )
       )
         continue;
       const reason = mindControlTargetReasonV7(view, unit);

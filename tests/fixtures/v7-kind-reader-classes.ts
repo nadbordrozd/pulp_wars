@@ -123,6 +123,11 @@ export const KIND_READER_CLASSES_V7: Readonly<
   "src/engine/v7/missions/index.ts::missionMatchSetupV7": "SEAT",
   "src/engine/v7/missions/build.ts::buildMissionStateV7": "SEAT",
   "src/engine/v7/missions/build.ts::validateMissionDefinitionV7": "SEAT",
+  // Mission objectives (`pulp_wars-v642.1`): the faction of a seat a wave
+  // of reinforcements belongs to. A reinforcement is the seat's own unit.
+  "src/engine/v7/missions/build.ts::validateMissionGoalsV7": "SEAT",
+  "src/engine/v7/reducer.ts::resolveMissionReinforcementsV7": "SEAT",
+  "src/engine/v7/reducer.ts::missionArrivalTileV7": "SEAT",
   "src/engine/v7/showcase.ts::createShowcaseEntitiesV7": "SEAT",
   "src/engine/v7/state-schema.ts::parsePlayers": "SEAT",
   "src/engine/v7/state-schema.ts::parsePlayer": "SEAT",
@@ -383,7 +388,6 @@ export const KIND_READER_CLASSES_V7: Readonly<
   // The campaign screens (pulp_wars-68k.5) read the factions of a mission's
   // seats and of the unlock table; no unit is involved.
   "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#campaignList": "SEAT",
-  "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#briefing": "SEAT",
   "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#factionEmblem": "SEAT",
   // Asset tiers (`pulp_wars-2yc.42`): the factions seated in the match,
   // whose art a board waits for. A mind-controlled unit's kind is the

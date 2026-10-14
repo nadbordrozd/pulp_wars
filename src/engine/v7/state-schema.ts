@@ -45,6 +45,8 @@ import {
   BIOME_IDS_V7,
   CURIOSITY_KINDS_V7,
   FACTION_IDS_V7,
+  MISSION_OUTCOME_CAUSES_V7,
+  MISSION_WIN_CAUSES_V7,
   NEUTRAL_BREEDS_V7,
   IMPROVEMENT_IDS_V7,
   RESOURCE_IDS_V7,
@@ -1512,6 +1514,27 @@ function parseChoices(input: unknown): readonly PendingChoiceV7[] | null {
 
 function parseOutcome(input: unknown): MatchOutcomeV7 | null | undefined {
   if (input === null) return null;
+  // Mission objectives (`pulp_wars-v642.1`): a result a mission's objective
+  // decided carries its `cause`, a win for a Victory and a loss for a
+  // Defeat; it is never a score result.
+  if (
+    typeof input === "object" &&
+    Object.prototype.hasOwnProperty.call(input, "cause")
+  ) {
+    const { cause, ...rest } = input as { readonly cause?: unknown };
+    const base = parseOutcome(rest);
+    const known = MISSION_OUTCOME_CAUSES_V7.find((item) => item === cause);
+    if (
+      known === undefined ||
+      base === null ||
+      base === undefined ||
+      base.kind === "HEADLESS_VICTORY" ||
+      base.decidedBy !== undefined ||
+      MISSION_WIN_CAUSES_V7.includes(known) !== (base.kind === "VICTORY")
+    )
+      return undefined;
+    return { ...base, cause: known };
+  }
   // Score and modes (section 4.2): a Perfection result decided by the score
   // carries `decidedBy: "SCORE"` and the final ranking.
   if (
@@ -3886,7 +3909,7 @@ function populationLedgerValid(
                     sameCoordV7(unit.at, tile.at) &&
                     unit.ownerId !== city.ownerId &&
                     !cooperativeAlliesV7(
-                      setup.aiMode,
+                      setup,
                       humanPlayerId,
                       unit.ownerId,
                       city.ownerId,

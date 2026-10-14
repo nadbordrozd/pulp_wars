@@ -2,7 +2,10 @@ import type { PlayerId, UnitId } from "../engine/model/ids";
 import type { CommandV7 } from "../engine/v7/commands";
 import { unitMayEnterMountainV7 } from "../engine/rules/ruleset-v7";
 import { cooperativeAlliesV7 } from "../engine/v7/economy";
-import { missionDefinitionV7 } from "../engine/v7/missions/index";
+import {
+  missionDefinitionV7,
+  missionSeatDirectivesV7,
+} from "../engine/v7/missions/index";
 import type {
   MissionDefinitionV7,
   MissionDirectiveV7,
@@ -70,11 +73,16 @@ export function activeMissionDirectiveV7(
 ): Exclude<MissionDirectiveV7, { readonly kind: "NORMAL" }> | null {
   const setup = view.setup;
   if (setup.mapType !== "MISSION" || setup.mission === undefined) return null;
-  const mission = missionDefinitionV7(setup.mission);
-  const directive = mission?.seats[view.viewer.seat]?.directive;
+  const seat = missionDefinitionV7(setup.mission)?.seats[view.viewer.seat];
+  if (seat === undefined) return null;
+  // A schedule (`pulp_wars-v642.1`): the first entry whose rounds hold the
+  // current round; a single directive is a schedule of one.
+  const directive = missionSeatDirectivesV7(seat).find(
+    (entry) =>
+      (entry.fromRound === undefined || view.round >= entry.fromRound) &&
+      (entry.untilRound === undefined || view.round < entry.untilRound),
+  );
   if (directive === undefined || directive.kind === "NORMAL") return null;
-  if (directive.untilRound !== undefined && view.round >= directive.untilRound)
-    return null;
   return directive;
 }
 
@@ -97,12 +105,7 @@ const chebyshev = (left: CoordV7, right: CoordV7): number =>
 function allied(view: PlayerViewV7, ownerId: PlayerId): boolean {
   return (
     ownerId === view.viewer.id ||
-    cooperativeAlliesV7(
-      view.setup.aiMode,
-      view.humanPlayerId,
-      ownerId,
-      view.viewer.id,
-    )
+    cooperativeAlliesV7(view.setup, view.humanPlayerId, ownerId, view.viewer.id)
   );
 }
 
@@ -387,19 +390,36 @@ export function leashReadyCommandsV7<T extends { readonly command: CommandV7 }>(
 export function validateMissionDirectivesV7(
   mission: MissionDefinitionV7,
 ): void {
-  mission.seats.forEach((seat, index) => {
-    const directive = seat.directive;
-    if (directive === undefined) return;
+  for (const [index, seat] of mission.seats.entries())
+    for (const directive of missionSeatDirectivesV7(seat))
+      validateDirective(mission, index, directive);
+}
+
+function validateDirective(
+  mission: MissionDefinitionV7,
+  index: number,
+  directive: MissionDirectiveV7,
+): void {
+  {
     const where = `${mission.id} seat ${String(index)}`;
     if (index === 0)
       throw new RangeError(`${where}: the human seat takes no directive`);
-    if (directive.kind === "NORMAL") return;
     if (
       directive.untilRound !== undefined &&
       (!Number.isSafeInteger(directive.untilRound) || directive.untilRound < 2)
     )
       throw new RangeError(`${where}: untilRound must be an integer >= 2`);
-    if (directive.kind === "RUSH") return;
+    if (
+      directive.fromRound !== undefined &&
+      (!Number.isSafeInteger(directive.fromRound) ||
+        directive.fromRound < 2 ||
+        (directive.untilRound !== undefined &&
+          directive.fromRound >= directive.untilRound))
+    )
+      throw new RangeError(
+        `${where}: fromRound must be an integer >= 2 and below untilRound`,
+      );
+    if (directive.kind === "NORMAL" || directive.kind === "RUSH") return;
     if (directive.zone.length === 0)
       throw new RangeError(`${where}: the zone is empty`);
     for (const rect of directive.zone)
@@ -418,5 +438,5 @@ export function validateMissionDirectivesV7(
       (!Number.isSafeInteger(directive.garrison) || directive.garrison < 1)
     )
       throw new RangeError(`${where}: the garrison must be a positive integer`);
-  });
+  }
 }

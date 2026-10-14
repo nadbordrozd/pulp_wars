@@ -1,4 +1,5 @@
 import {
+  cooperativeAlliesV7,
   HARBOUR_POPULATION_V7,
   RAM_BONUS2_V7,
   boardTargetBlockV7,
@@ -144,11 +145,7 @@ const chebyshev = (a: CoordV7, b: CoordV7): number =>
 
 function hostile(view: PlayerViewV7, left: number, right: number): boolean {
   if (left === right) return false;
-  return (
-    view.setup.aiMode === "RIVAL" ||
-    left === view.humanPlayerId ||
-    right === view.humanPlayerId
-  );
+  return !cooperativeAlliesV7(view.setup, view.humanPlayerId, left, right);
 }
 
 /** Whether the viewer's ships may Board at all (its Seamanship). */

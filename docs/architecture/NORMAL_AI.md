@@ -6317,6 +6317,18 @@ a seat without a directive, `NORMAL`, and every non-mission match, the
 directive plan is null. A zone is a union of inclusive rectangles. Nothing
 reads hidden state, the clock, or the PRNG.
 
+A seat may carry a **schedule** instead of one directive
+(`pulp_wars-v642.1`, [campaign design](../product/CAMPAIGN.md) section
+10.4): a list whose entries may have `fromRound` and `untilRound`. The
+first entry whose rounds hold `view.round` is the seat's directive for the
+turn (`activeMissionDirectiveV7`), and `NORMAL` when none does; a single
+directive is a schedule of one. The same bead taught the policy's alliance
+reads the mission's **teams** (`queryAlliedV7(view, left, right)`, the
+public copy of the alliance rule): an AI seat on the human's team treats
+the human as an ally and the other team as hostile, with no other change
+to its play. A seat's own forbidden technologies reach the policy through
+the public technology tree, like a mission's.
+
 The directive enters the policy at exactly two points; scoring, tactics,
 faction modules, research, and production are untouched.
 

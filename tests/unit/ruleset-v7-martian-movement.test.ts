@@ -267,7 +267,11 @@ describe("the shared terrain-entry rule", () => {
       // `rewardCellLegalV7`; tested in ruleset-v7-siege-rules.test.ts).
       "src/engine/v7/query.ts": 10,
       // was 4: the canonical gate displacement (`pulp_wars-737.14`).
-      "src/engine/v7/reducer.ts": 5,
+      // was 5: the tile a mission's reinforcement arrives on
+      // (`pulp_wars-v642.1`, `missionArrivalTileV7`: the unit's own
+      // movement mode, never afloat; tested in
+      // ruleset-v7-mission-objectives.test.ts).
+      "src/engine/v7/reducer.ts": 6,
       "src/engine/v7/dwarf-reducer.ts": 1,
       "src/engine/v7/martian.ts": 2,
       "src/engine/v7/candy-reducer.ts": 1,

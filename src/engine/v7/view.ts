@@ -34,6 +34,10 @@ import {
   daemonRoleV7,
   holdingStrandsV7,
 } from "./cult-channel";
+import {
+  missionStatusV7,
+  type PublicMissionStatusV7,
+} from "./missions/objectives";
 import { isUnitVisibleToPlayerV7 } from "./observation";
 import { spatialContributionAtV7 } from "./spatial-economy";
 import { knownWinterV7 } from "./ice-folk";
@@ -590,6 +594,14 @@ export interface PlayerViewV7 {
   readonly score: PlayerScoreViewV7;
   readonly pendingChoices: readonly PendingChoiceV7[];
   readonly outcome: MatchOutcomeV7 | null;
+  /**
+   * Mission objectives (`pulp_wars-v642.1`, `pulp-wars-poc-7r82`;
+   * docs/product/CAMPAIGN.md section 10.1): the public state of the
+   * mission's objective, the same for every viewer. Present exactly in a
+   * `MISSION` match of a registered mission; a view of any other match has
+   * no such key.
+   */
+  readonly mission?: PublicMissionStatusV7;
 }
 
 /**
@@ -688,6 +700,7 @@ export function viewForV7(
 ): PlayerViewV7 {
   const viewer = state.players.find((player) => player.id === viewerId);
   if (viewer === undefined) throw new RangeError(`Unknown viewer: ${viewerId}`);
+  const mission = missionStatusV7(state);
   const explored = new Set(viewer.explored.map(key));
   // The Ice Folk revision section 6.5: the Snow and Blizzard the viewer knows.
   const winter = knownWinterV7(
@@ -1396,6 +1409,8 @@ export function viewForV7(
       ),
     ),
     outcome: state.outcome,
+    // Mission objectives (7r82): present exactly in a mission match.
+    ...(mission === null ? {} : { mission }),
   });
 }
 

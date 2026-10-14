@@ -37,7 +37,17 @@ import type {
   Ruleset7CampaignProgressV7,
   Ruleset7TribeStarsV7,
 } from "../../app/v7-controller";
-import { CHAPTER_ONE_V7 } from "../../campaign/chapter-1";
+import {
+  CAMPAIGN_FORMAT_LABELS_V7,
+  CHAPTER_ONE_V7,
+} from "../../campaign/chapter-1";
+import {
+  missionMarkersV7,
+  missionObjectiveIconV7,
+  missionOutcomeLineV7,
+  missionStarGoalsV7,
+  missionTrackerV7,
+} from "../mission-presentation-v7";
 import {
   campaignFactionChoicesV7,
   campaignMissionCardsV7,
@@ -143,6 +153,7 @@ import {
   type StarGradeV7,
   WELL_TOSS_COST_V7,
   FACTION_IDS_V7,
+  cooperativeAlliesV7,
 } from "../../engine/index";
 import {
   CROWDED_HINT_V7,
@@ -2818,9 +2829,34 @@ export class Ruleset7DomAppView {
     return section;
   }
 
-  /** One mission card: number, name, emblems, and its state. */
+  /** The stars of a mission: `earned` filled out of `of`, with a label. */
+  #missionStars(earned: number, of: number): HTMLElement {
+    const stars = el(this.#document, "span", "v7-mission-stars");
+    stars.dataset.stars = String(earned);
+    stars.setAttribute("role", "img");
+    stars.setAttribute(
+      "aria-label",
+      `${String(earned)} of ${String(of)} stars`,
+    );
+    for (let index = 0; index < of; index += 1)
+      stars.append(
+        uiIconV7(
+          this.#document,
+          index < earned ? "star" : "star-outline",
+          "v7-ui-icon v7-mission-star",
+        ),
+      );
+    return stars;
+  }
+
+  /**
+   * One mission card: number, name, format, who fights whom, what it
+   * unlocks, and its state (locked, open, its stars, or still to come).
+   */
   #missionCard(card: CampaignMissionCardV7): HTMLButtonElement {
-    const { entry, status } = card;
+    const { entry } = card;
+    const status = card.built ? card.status : "SOON";
+    const closed = status === "LOCKED" || status === "SOON";
     const action = `mission-${entry.missionId.toLowerCase()}`;
     const node = this.#document.createElement("button");
     node.type = "button";
@@ -2832,44 +2868,67 @@ export class Ruleset7DomAppView {
       status === "DONE" && card.bestRounds !== null
         ? `Best: ${card.bestRounds} turns`
         : null;
+    const format = CAMPAIGN_FORMAT_LABELS_V7[entry.format];
+    node.dataset.format = entry.format.toLowerCase();
     const stateText =
-      status === "LOCKED"
-        ? "Win the previous mission"
-        : status === "OPEN"
-          ? "Open"
-          : (best ?? "Done");
+      status === "SOON"
+        ? "Coming soon"
+        : status === "LOCKED"
+          ? "Win the previous mission"
+          : status === "OPEN"
+            ? "Open"
+            : (best ?? "Done");
+    const unlockText =
+      entry.unlocks.length === 0
+        ? ""
+        : `, unlocks ${entry.unlocks.map((faction) => FACTION_LABELS[faction] ?? title(faction)).join(" and ")}`;
     node.setAttribute(
       "aria-label",
-      `Mission ${entry.number}, ${entry.name}, ${
-        status === "LOCKED"
-          ? "locked"
-          : status === "OPEN"
-            ? "open"
-            : best === null
-              ? "done"
-              : `done, best ${card.bestRounds} turns`
-      }`,
+      `Mission ${entry.number}, ${entry.name}, ${format}, ${
+        status === "SOON"
+          ? "coming soon"
+          : status === "LOCKED"
+            ? "locked"
+            : status === "OPEN"
+              ? "open"
+              : `done, ${String(card.stars)} of ${String(card.maxStars)} stars${
+                  best === null ? "" : `, best ${String(card.bestRounds)} turns`
+                }`
+      }${unlockText}`,
     );
-    if (status === "LOCKED") node.setAttribute("aria-disabled", "true");
+    if (closed) node.setAttribute("aria-disabled", "true");
     const sides = el(this.#document, "span", "v7-mission-sides");
     sides.setAttribute("aria-hidden", "true");
-    for (const faction of card.leads)
-      sides.append(this.#factionEmblem(faction));
+    for (const faction of [...card.leads, ...card.allies])
+      sides.append(this.#factionEmblem(faction, "small"));
     sides.append(text(this.#document, "span", "vs", "v7-mission-versus"));
     for (const faction of card.opponents)
-      sides.append(this.#factionEmblem(faction));
+      sides.append(this.#factionEmblem(faction, "small"));
     const state = el(this.#document, "span", "v7-mission-state");
     state.setAttribute("aria-hidden", "true");
-    if (status === "DONE") state.append(uiIconV7(this.#document, "trophy"));
-    state.append(text(this.#document, "span", stateText));
+    if (status === "DONE")
+      state.append(this.#missionStars(card.stars, card.maxStars));
+    state.append(
+      text(this.#document, "span", format, "v7-mission-format"),
+      text(this.#document, "span", stateText, "v7-mission-state-text"),
+    );
     node.append(
       text(this.#document, "span", String(entry.number), "v7-mission-number"),
       text(this.#document, "span", entry.name, "v7-mission-name"),
       sides,
       state,
     );
+    if (entry.unlocks.length > 0) {
+      const unlock = el(this.#document, "span", "v7-mission-unlock");
+      unlock.setAttribute("aria-hidden", "true");
+      unlock.dataset.unlocked = String(status === "DONE");
+      unlock.append(text(this.#document, "span", "Unlocks"));
+      for (const faction of entry.unlocks)
+        unlock.append(this.#factionEmblem(faction, "tiny"));
+      node.append(unlock);
+    }
     node.onclick = () => {
-      if (status === "LOCKED") return;
+      if (closed) return;
       this.#openBriefing(entry.missionId);
     };
     return node;
@@ -2971,18 +3030,22 @@ export class Ruleset7DomAppView {
       text(
         this.#document,
         "p",
-        `Mission ${entry.number}`,
+        `Mission ${entry.number} · ${CAMPAIGN_FORMAT_LABELS_V7[entry.format]}`,
         "v7-briefing-kicker",
       ),
       heading,
       text(this.#document, "p", entry.briefing, "v7-campaign-story"),
     );
     const objective = el(this.#document, "p", "v7-briefing-objective");
+    objective.dataset.objective = mission.objective.kind.toLowerCase();
     objective.append(
+      uiIconV7(this.#document, missionObjectiveIconV7(mission.objective.kind)),
       text(this.#document, "strong", "Objective"),
       text(this.#document, "span", entry.objective),
     );
     section.append(objective);
+    const goals = missionStarGoalsV7(missionId, null);
+    if (goals.length > 1) section.append(this.#missionStarGoals(goals, false));
     if (entry.hints.length > 0) {
       const hints = el(this.#document, "ul", "v7-briefing-hints");
       hints.setAttribute("aria-label", "Hints");
@@ -2991,10 +3054,11 @@ export class Ruleset7DomAppView {
       section.append(hints);
     }
     const facts = el(this.#document, "div", "v7-briefing-facts");
-    const opponents = mission.seats
-      .slice(1)
-      .map((seat) => (typeof seat.faction === "string" ? seat.faction : null))
-      .filter((faction): faction is FactionIdV7 => faction !== null);
+    const card = campaignMissionCardsV7(chapter, progress.completed).find(
+      (candidate) => candidate.entry === entry,
+    );
+    const opponents = card?.opponents ?? [];
+    const allies = card?.allies ?? [];
     const map = text(
       this.#document,
       "span",
@@ -3010,7 +3074,37 @@ export class Ruleset7DomAppView {
         text(this.#document, "span", FACTION_LABELS[faction] ?? title(faction)),
       );
     facts.append(map, enemy);
+    if (allies.length > 0) {
+      const friends = el(this.#document, "span", "v7-briefing-opponent");
+      friends.dataset.side = "ally";
+      friends.append(text(this.#document, "span", "with", "v7-mission-versus"));
+      for (const faction of allies)
+        friends.append(
+          this.#factionEmblem(faction),
+          text(
+            this.#document,
+            "span",
+            FACTION_LABELS[faction] ?? title(faction),
+          ),
+        );
+      facts.append(friends);
+    }
     section.append(facts);
+    if (entry.unlocks.length > 0) {
+      const reward = el(this.#document, "p", "v7-briefing-unlock");
+      reward.dataset.v7Region = "briefing-unlock";
+      reward.append(text(this.#document, "span", "Win to unlock"));
+      for (const faction of entry.unlocks)
+        reward.append(
+          this.#factionEmblem(faction, "small"),
+          text(
+            this.#document,
+            "strong",
+            FACTION_LABELS[faction] ?? title(faction),
+          ),
+        );
+      section.append(reward);
+    }
     const choices = campaignFactionChoicesV7(missionId, progress.completed);
     const chosen =
       this.#briefingFaction !== null && choices.includes(this.#briefingFaction)
@@ -3080,6 +3174,38 @@ export class Ruleset7DomAppView {
     actions.append(start, back);
     section.append(actions);
     return section;
+  }
+
+  /**
+   * What the stars are for: the win, then each secondary goal. In the
+   * debrief (`scored`) each line says whether it was earned.
+   */
+  #missionStarGoals(
+    goals: ReturnType<typeof missionStarGoalsV7>,
+    scored: boolean,
+  ): HTMLElement {
+    const list = el(this.#document, "ul", "v7-mission-goals");
+    list.dataset.v7Region = "mission-goals";
+    list.setAttribute("aria-label", "Stars");
+    for (const goal of goals) {
+      const item = el(this.#document, "li", "v7-mission-goal");
+      if (scored) item.dataset.met = String(goal.met);
+      item.append(
+        uiIconV7(
+          this.#document,
+          !scored || goal.met ? "star" : "star-outline",
+          "v7-ui-icon v7-mission-star",
+        ),
+        text(this.#document, "span", goal.text),
+      );
+      if (scored)
+        item.setAttribute(
+          "aria-label",
+          `${goal.text}: ${goal.met ? "earned" : "missed"}`,
+        );
+      list.append(item);
+    }
+    return list;
   }
 
   /**
@@ -4226,6 +4352,33 @@ export class Ruleset7DomAppView {
     stats.append(round, status);
     const strip = this.#turnStrip(view);
     if (strip !== null) stats.append(strip);
+    // A mission's objective (`pulp_wars-v642.1`): an icon, one line, and
+    // what is left.
+    const tracker = missionTrackerV7(view);
+    if (tracker !== null) {
+      const chip = el(this.#document, "p", "v7-mission-tracker");
+      chip.dataset.v7Region = "mission-tracker";
+      chip.dataset.missionId = tracker.missionId;
+      if (tracker.urgent) chip.dataset.urgent = "true";
+      chip.setAttribute("aria-label", tracker.description);
+      chip.title = tracker.description;
+      chip.append(
+        uiIconV7(this.#document, tracker.icon),
+        text(this.#document, "span", tracker.line, "v7-mission-tracker-line"),
+      );
+      if (tracker.counter !== null)
+        chip.append(
+          text(
+            this.#document,
+            "strong",
+            tracker.counter,
+            "v7-mission-tracker-counter",
+          ),
+        );
+      for (const child of chip.children)
+        child.setAttribute("aria-hidden", "true");
+      stats.append(chip);
+    }
     const nav = el(this.#document, "nav", "v7-hud-nav");
     nav.setAttribute("aria-label", "Game");
     nav.dataset.compactMenu = this.#compactMenuOpen ? "open" : "closed";
@@ -4836,6 +4989,7 @@ export class Ruleset7DomAppView {
         (this.#screen === "MATCH" ? this.#tutorialCue?.marker : null) ??
         this.#firstStepCue?.marker ??
         null,
+      missionMarkers: missionMarkersV7(view),
       motion: this.#motion,
       animationSpeed: this.#animationSpeed,
       presentationPaused: this.#screen === "SETTINGS",
@@ -9639,8 +9793,30 @@ export class Ruleset7DomAppView {
       ),
       heading,
     );
+    const cause = missionOutcomeLineV7(view);
+    if (cause !== null) {
+      const line = text(this.#document, "p", cause, "v7-mission-cause");
+      line.dataset.v7Region = "mission-cause";
+      result.append(line);
+    }
+    const goals = missionStarGoalsV7(entry.missionId, view);
     const actions = el(this.#document, "div", "button-row");
+    const retry = (primary: boolean): HTMLButtonElement => {
+      const again = button(
+        this.#document,
+        "Retry",
+        "mission-retry",
+        primary ? "primary-action" : "",
+      );
+      again.onclick = () => void this.#restart();
+      return again;
+    };
     if (victory) {
+      const earned = goals.filter((goal) => goal.met).length;
+      const stars = this.#missionStars(earned, goals.length);
+      stars.classList.add("v7-mission-stars-large");
+      result.append(stars);
+      if (goals.length > 1) result.append(this.#missionStarGoals(goals, true));
       result.append(
         text(this.#document, "p", entry.closing, "v7-campaign-story"),
       );
@@ -9678,16 +9854,9 @@ export class Ruleset7DomAppView {
         proceed.onclick = () => void this.#leaveFinishedMission(next.missionId);
         actions.append(proceed);
       }
-    } else {
-      const retry = button(
-        this.#document,
-        "Retry",
-        "mission-retry",
-        "primary-action",
-      );
-      retry.onclick = () => void this.#restart();
-      actions.append(retry);
-    }
+      // A win short of every star can be played again for the rest.
+      actions.append(retry(next === null));
+    } else actions.append(retry(true));
     const campaign = button(this.#document, "Campaign", "campaign-menu");
     campaign.onclick = () => void this.#leaveFinishedMission(null);
     actions.append(campaign, this.#resultsMenuButton());
@@ -14281,7 +14450,9 @@ export class Ruleset7DomAppView {
   #technologyUnavailableText(tech: TechnologyIdV7): string {
     const view = this.#snapshot.view;
     return technologyUnavailableTextV7(
-      view === null ? null : forbiddenTechnologiesV7(view.setup).get(tech),
+      view === null
+        ? null
+        : forbiddenTechnologiesV7(view.setup, view.viewer.seat).get(tech),
     );
   }
 
@@ -14722,7 +14893,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffff_ffff)
     return null;
   return {
-    rulesetId: "pulp-wars-poc-7r81",
+    rulesetId: "pulp-wars-poc-7r82",
     seed,
     width: effectiveBoardSize(draft),
     height: effectiveBoardSize(draft),
@@ -15222,11 +15393,7 @@ export function monumentSourceForViewerV7(
 }
 function hostile(view: PlayerViewV7, left: number, right: number): boolean {
   if (left === right) return false;
-  return (
-    view.setup.aiMode === "RIVAL" ||
-    left === view.humanPlayerId ||
-    right === view.humanPlayerId
-  );
+  return !cooperativeAlliesV7(view.setup, view.humanPlayerId, left, right);
 }
 export function specialBoundaryNoticeV7(
   events: Ruleset7AcceptedBoundary["playerEvents"]["events"],

@@ -1050,6 +1050,26 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/engine/v7/reducer.ts::resolveTentacleSlapV7": "BOARD",
     "src/engine/v7/state-schema.ts::tricksValid": "BOARD",
     "src/render/curiosity-presentation-v7.ts::daemonInfoLinesV7": "BOARD",
+    // Mission objectives (`pulp_wars-v642.1`). The definition's authored
+    // unit lists (seats and reinforcement waves) and the units of a freshly
+    // built mission stand on the board: nothing starts burrowed. An escort
+    // arrives, and its distance is counted, only while it stands on the
+    // board. Whether a named unit lives counts a burrowed one as alive.
+    "src/engine/v7/missions/build.ts::validateMissionGoalsV7": "BOARD",
+    "src/engine/v7/missions/objectives.ts::missionTaggedUnitsV7": "BOARD",
+    "src/engine/v7/missions/objectives.ts::objectiveWon": "BOARD",
+    "src/engine/v7/missions/objectives.ts::missionStatusV7": "BOARD",
+    // A reinforcement arrives on a tile no unit stands on (a mound is a
+    // site, which the arrival refuses as well).
+    "src/engine/v7/reducer.ts::resolveMissionReinforcementsV7": "BOARD",
+    "src/engine/v7/reducer.ts::missionArrivalTileV7": "BOARD",
+    // The objective's text and marks: the objective's own unit tags, the
+    // named units of the public status, and the view's units for the tile a
+    // mark stands over (a burrowed unit is not drawn, so it gets no mark).
+    "src/render/mission-presentation-v7.ts::fallbackObjectiveV7": "BOARD",
+    "src/render/mission-presentation-v7.ts::missionTrackerV7": "BOARD",
+    "src/render/mission-presentation-v7.ts::missionMarkersV7": "BOARD",
+    "src/render/mission-presentation-v7.ts::missionOutcomeLineV7": "BOARD",
   };
 
 /**

@@ -35,7 +35,9 @@ export function projectEventsV7(
         // Revision 14: a Zombie rising in a projected BITTEN_UNIT_RISEN.
         event.kind === "BITTEN_UNIT_RISEN" ||
         // The ninth unit (7r55): the Wight of a projected WIGHT_RISEN.
-        event.kind === "WIGHT_RISEN") &&
+        event.kind === "WIGHT_RISEN" ||
+        // Mission objectives (7r82): a projected reinforcement.
+        event.kind === "REINFORCEMENT_ARRIVED") &&
       eventVisible(
         beforeState,
         afterState,
@@ -864,10 +866,12 @@ function eventVisible(
       return event.playerId === viewerId;
     // Revision 19 section 9.6: the owner and every viewer that explored the
     // Egg's tile. The ninth unit (`pulp_wars-w49.17`, 7r55): a Wight
-    // climbing out of its Grave, like a hatching Egg.
+    // climbing out of its Grave, like a hatching Egg. Mission objectives
+    // (7r82): a reinforcement, like a hatching Egg.
     case "EGG_LAID":
     case "EGG_HATCHED":
     case "WIGHT_RISEN":
+    case "REINFORCEMENT_ARRIVED":
       return (
         event.playerId === viewerId ||
         coordVisible(before, after, viewerId, event.at)

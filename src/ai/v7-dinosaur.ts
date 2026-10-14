@@ -14,7 +14,7 @@ import {
   type TechnologyUnlockV7,
 } from "../engine/rules/ruleset-v7";
 import type { CommandV7 } from "../engine/v7/commands";
-import { previewHatchV7 } from "../engine/v7/query";
+import { previewHatchV7, queryAlliedV7 } from "../engine/v7/query";
 import type { CoordV7, TechnologyIdV7 } from "../engine/v7/types";
 import type { PlayerViewV7, PublicUnitV7 } from "../engine/v7/view";
 
@@ -582,11 +582,7 @@ export function hatchScoreV7(
 
 function hostileV7(view: PlayerViewV7, ownerId: number): boolean {
   if (ownerId === view.viewer.id) return false;
-  return (
-    view.setup.aiMode === "RIVAL" ||
-    ownerId === view.humanPlayerId ||
-    view.viewer.id === view.humanPlayerId
-  );
+  return !queryAlliedV7(view, ownerId, view.viewer.id);
 }
 
 function compareTupleV7(

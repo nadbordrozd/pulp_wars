@@ -25,24 +25,34 @@ const MISSION_CACHE_V7 = new Map<
  * technology tree (`DISABLED`), and the research offers read. On `DRY_LAND`
  * the three Naval technologies are forbidden (`DRY_LAND`, the
  * revision-6 rule, unchanged); on `MISSION` the registered mission's
- * `forbiddenTechnologies` (`MISSION`); otherwise none. Every faction tree
+ * `forbiddenTechnologies` (`MISSION`) and, when `seat` is given, that
+ * seat's own list too (`MissionSeatV7.forbiddenTechnologies`); otherwise
+ * none. Every faction tree
  * shares the Human tree's branches, so the Naval branch is read from it.
  */
 export function forbiddenTechnologiesV7(
   setup: Pick<MatchSetupV7, "mapType" | "mission">,
+  seat?: number,
 ): ReadonlyMap<TechnologyIdV7, ForbiddenTechnologyReasonV7> {
   if (setup.mapType === "DRY_LAND") return DRY_LAND_V7;
   if (setup.mapType !== "MISSION" || setup.mission === undefined)
     return NONE_V7;
-  const key = `${setup.mission.id}@${String(setup.mission.revision)}`;
+  const key = `${setup.mission.id}@${String(setup.mission.revision)}:${seat === undefined ? "*" : String(seat)}`;
   const cached = MISSION_CACHE_V7.get(key);
   if (cached !== undefined) return cached;
   const mission = missionDefinitionV7(setup.mission);
+  // Per-seat lists (`pulp_wars-v642.1`, 7r82; CAMPAIGN.md section 10.2): a
+  // seat may also be forbidden technologies of its own. Without a seat the
+  // answer is the match-wide list alone.
+  const own =
+    seat === undefined
+      ? []
+      : (mission?.seats[seat]?.forbiddenTechnologies ?? []);
   const result: ReadonlyMap<TechnologyIdV7, ForbiddenTechnologyReasonV7> =
     mission === null
       ? NONE_V7
       : new Map(
-          mission.forbiddenTechnologies.map(
+          [...mission.forbiddenTechnologies, ...own].map(
             (tech) => [tech, "MISSION"] as const,
           ),
         );

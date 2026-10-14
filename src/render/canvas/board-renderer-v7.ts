@@ -20,6 +20,7 @@ import type {
   UnitRoleIdV7,
 } from "../../engine/index";
 import {
+  cooperativeAlliesV7,
   GLACIER_ICE_MOVE_BONUS_V7,
   isRallyTargetV7,
   previewTrampleV7,
@@ -1911,10 +1912,12 @@ export function buildBoardRenderPlanV7(
           tile.biome === null &&
           !(
             tile.territoryOwnerId !== null &&
-            tile.territoryOwnerId !== view.viewer.id &&
-            view.setup.aiMode === "COOPERATIVE" &&
-            tile.territoryOwnerId !== view.humanPlayerId &&
-            view.viewer.id !== view.humanPlayerId
+            cooperativeAlliesV7(
+              view.setup,
+              view.humanPlayerId,
+              tile.territoryOwnerId,
+              view.viewer.id,
+            )
           ) &&
           (tile.terrain !== "DEEP_WATER" ||
             view.viewer.researchedTechs.includes("NAVIGATION")) &&

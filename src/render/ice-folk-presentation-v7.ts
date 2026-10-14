@@ -1,4 +1,5 @@
 import {
+  cooperativeAlliesV7,
   BLIZZARD_RADIUS_V7,
   BOLAS_RANGE_V7,
   BRITTLE_SHATTER_HP_V7,
@@ -285,8 +286,7 @@ export function iceFolkStatsV7(
 
 function allied(view: PlayerViewV7, left: number, right: number): boolean {
   if (left === right) return true;
-  if (view.setup.aiMode !== "COOPERATIVE") return false;
-  return left !== view.humanPlayerId && right !== view.humanPlayerId;
+  return cooperativeAlliesV7(view.setup, view.humanPlayerId, left, right);
 }
 
 /**

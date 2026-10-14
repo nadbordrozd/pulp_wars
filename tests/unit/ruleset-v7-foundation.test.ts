@@ -39,7 +39,7 @@ const setup: MatchSetupV7 = {
 
 describe("ruleset-7 revision-8 deterministic foundation", () => {
   it("freezes the exact identity and registries", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r81");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r82");
     expect(FACTION_IDS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",
@@ -170,7 +170,7 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
     // DAEMON_BOUND, from RITUAL_BEGUN to CITY_COWED (148).
     // The Cult's tricks (`pulp_wars-mch9.8`) add six kinds after
     // CITY_COWED, from UNIT_FROGGED to PICK_ME_SHOUTED (154).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(154);
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(155);
     // Revision 19 inserts HATCH after KABOOM (and, until revision 20,
     // STAMPEDE between them), LAY_EGG after TRAIN_NAVAL, EGG_LAID and
     // EGG_HATCHED after NAVAL_UNIT_TRAINED, and UNIT_GREW after

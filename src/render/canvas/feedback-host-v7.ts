@@ -5,8 +5,10 @@ import {
   type FeedbackPlanV7,
 } from "../feedback-plan-v7";
 import type { FirstStepMarkerV7 } from "../first-steps-v7";
+import type { MissionMarkerV7 } from "../mission-presentation-v7";
 import {
   drawFirstStepMarkerV7,
+  drawMissionMarkerV7,
   drawGroundRingV7,
   drawPopulationIconV7,
   drawPromotionMarkerV7,
@@ -93,7 +95,18 @@ export interface BoardFeedbackModelV7 {
    * useful thing, or null. Omitted draws none.
    */
   readonly firstStepMarker?: FirstStepMarkerV7 | null;
+  /**
+   * A mission's marks (`pulp_wars-v642.1`): the objective's places and
+   * named units. Omitted draws none.
+   */
+  readonly missionMarkers?: readonly MissionMarkerV7[];
 }
+
+/** How far over its tile's centre a mission mark points, in tiles. */
+const MISSION_MARKER_LIFT: Readonly<Record<MissionMarkerV7["on"], number>> = {
+  TILE: 0.52,
+  UNIT: 0.6,
+};
 
 /** How far over its tile's centre a first-steps marker points, in tiles. */
 const FIRST_STEP_MARKER_LIFT: Readonly<
@@ -699,6 +712,17 @@ export class BoardFeedbackV7 implements BoardFeedbackPortV7 {
     const now = this.timeMs();
     const tile = TILE_WIDTH * camera.zoom;
     const centre = (at: CoordV7) => worldToScreen(projectGrid(at), camera);
+    for (const marker of this.#model?.missionMarkers ?? []) {
+      const at = worldToScreen(projectGrid(marker.at), camera);
+      drawMissionMarkerV7(
+        context,
+        at.x,
+        at.y - TILE_WIDTH * camera.zoom * MISSION_MARKER_LIFT[marker.on],
+        camera.zoom,
+        marker.kind,
+        { highContrast: this.#model?.highContrast ?? false },
+      );
+    }
     this.#drawFirstStepMarker(context, camera, now);
     this.#drawRoadCues(context, camera, now, icon("POPULATION"));
     if (this.#flights.length === 0 && this.#bursts.length === 0) return;

@@ -6,6 +6,7 @@ import {
   campaignMissionV7,
   campaignNewlyUnlockedV7,
   campaignNextMissionV7,
+  campaignTagNameV7,
   campaignUnlockedFactionsV7,
   type CampaignCompletedV7,
 } from "../../src/campaign/progress-v7";
@@ -63,9 +64,45 @@ describe("campaign progress store", () => {
     expect(JSON.parse(source ?? "")).toEqual({
       format: "pulp-wars-campaign-progress",
       version: 1,
-      completed: { FRONTIER_1: { firstWonAt: AT, bestRounds: 14 } },
+      completed: { FRONTIER_1: { firstWonAt: AT, bestRounds: 14, stars: 1 } },
     });
     expect(parseCampaignProgressV7(source ?? "")).toEqual(store.load());
+  });
+
+  it("keeps the most stars of any win, and reads progress written before stars as one star", () => {
+    const storage = new MemoryStorage();
+    // What a build before stars wrote: still valid, never rewritten on load.
+    storage.setItem(
+      CAMPAIGN_PROGRESS_STORAGE_KEY_V7,
+      stored({ FRONTIER_1: won(14) }),
+    );
+    const store = new CampaignProgressStoreV7(storage, { now: () => AT });
+    expect(store.load()).toMatchObject({
+      kind: "VALID",
+      progress: { completed: { FRONTIER_1: { bestRounds: 14 } } },
+    });
+    const best = (): unknown =>
+      JSON.parse(storage.getItem(CAMPAIGN_PROGRESS_STORAGE_KEY_V7) ?? "")
+        .completed.FRONTIER_1;
+    expect(
+      campaignMissionCardsV7(CHAPTER_ONE_V7, { FRONTIER_1: won(14) })[0],
+    ).toMatchObject({ stars: 1, maxStars: 3 });
+    // A slower win with more stars raises the stars and keeps the rounds.
+    store.recordWin("FRONTIER_1", 20, 3);
+    expect(best()).toEqual({ firstWonAt: AT, bestRounds: 14, stars: 3 });
+    // A faster win with fewer stars lowers the rounds and keeps the stars.
+    store.recordWin("FRONTIER_1", 9, 2);
+    expect(best()).toEqual({ firstWonAt: AT, bestRounds: 9, stars: 3 });
+    storage.writes = 0;
+    store.recordWin("FRONTIER_1", 12, 1);
+    expect(storage.writes).toBe(0);
+    expect(() => store.recordWin("FRONTIER_1", 12, 4)).toThrow(RangeError);
+    expect(() => store.recordWin("FRONTIER_1", 12, 0)).toThrow(RangeError);
+    const loaded = store.load();
+    if (loaded.kind !== "VALID") throw new Error(loaded.kind);
+    expect(
+      campaignMissionCardsV7(CHAPTER_ONE_V7, loaded.progress.completed)[0],
+    ).toMatchObject({ status: "DONE", stars: 3, maxStars: 3, bestRounds: 9 });
   });
 
   it("is idempotent: a replayed win keeps the first date and only lowers the best", () => {
@@ -80,6 +117,7 @@ describe("campaign progress store", () => {
     expect(JSON.parse(before ?? "").completed.FRONTIER_1).toEqual({
       firstWonAt: AT,
       bestRounds: 14,
+      stars: 1,
     });
     // Recording the same win again writes nothing new.
     storage.writes = 0;
@@ -89,7 +127,7 @@ describe("campaign progress store", () => {
     expect(
       JSON.parse(storage.getItem(CAMPAIGN_PROGRESS_STORAGE_KEY_V7) ?? "")
         .completed.FRONTIER_1,
-    ).toEqual({ firstWonAt: AT, bestRounds: 9 });
+    ).toEqual({ firstWonAt: AT, bestRounds: 9, stars: 1 });
   });
 
   it("keeps unknown mission IDs (a mission removed from a later build)", () => {
@@ -130,7 +168,13 @@ describe("campaign progress store", () => {
       stored({ FRONTIER_1: { firstWonAt: AT, bestRounds: 0 } }),
       stored({ FRONTIER_1: { firstWonAt: "yesterday", bestRounds: 3 } }),
       stored({
-        FRONTIER_1: { firstWonAt: AT, bestRounds: 3, stars: 3 },
+        FRONTIER_1: { firstWonAt: AT, bestRounds: 3, stars: 4 },
+      }),
+      stored({
+        FRONTIER_1: { firstWonAt: AT, bestRounds: 3, stars: 0 },
+      }),
+      stored({
+        FRONTIER_1: { firstWonAt: AT, bestRounds: 3, glow: true },
       } as never),
       stored({ "frontier one": won() }),
       stored({ ["__proto__"]: won() }),
@@ -209,12 +253,20 @@ describe("derived campaign state", () => {
     );
 
   it("opens missions in order and keeps completed ones playable", () => {
-    expect(statuses({})).toEqual(["OPEN", "LOCKED", "LOCKED", "LOCKED"]);
+    const rest = ["LOCKED", "LOCKED", "LOCKED", "LOCKED", "LOCKED", "LOCKED"];
+    expect(statuses({})).toEqual([
+      "OPEN",
+      "LOCKED",
+      "LOCKED",
+      "LOCKED",
+      ...rest,
+    ]);
     expect(statuses({ FRONTIER_1: won() })).toEqual([
       "DONE",
       "OPEN",
       "LOCKED",
       "LOCKED",
+      ...rest,
     ]);
     expect(
       statuses({
@@ -223,7 +275,22 @@ describe("derived campaign state", () => {
         FRONTIER_3: won(),
         FRONTIER_4: won(),
       }),
-    ).toEqual(["DONE", "DONE", "DONE", "DONE"]);
+    ).toEqual(["DONE", "DONE", "DONE", "DONE", "OPEN", ...rest.slice(1)]);
+    // Missions 5 to 10 are designed, not built: listed, never playable.
+    expect(
+      campaignMissionCardsV7(CHAPTER_ONE_V7, {}).map((card) => card.built),
+    ).toEqual([
+      true,
+      true,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]);
   });
 
   it("describes each card from the mission definitions", () => {
@@ -231,7 +298,7 @@ describe("derived campaign state", () => {
       FRONTIER_1: won(17),
     });
     expect(
-      cards.map((card) => ({
+      cards.slice(0, 4).map((card) => ({
         id: card.entry.missionId,
         leads: card.leads,
         opponents: card.opponents,
@@ -268,6 +335,82 @@ describe("derived campaign state", () => {
         best: null,
       },
     ]);
+    expect(
+      cards.slice(0, 4).map((card) => [card.stars, card.maxStars]),
+    ).toEqual([
+      [1, 3],
+      [0, 3],
+      [0, 3],
+      [0, 3],
+    ]);
+    expect(cards.slice(0, 4).every((card) => card.allies.length === 0)).toBe(
+      true,
+    );
+    // A designed mission's card comes from its plan.
+    expect(
+      cards.slice(4).map((card) => ({
+        id: card.entry.missionId,
+        leads: card.leads,
+        opponents: card.opponents,
+        allies: card.allies,
+        size: card.size,
+      })),
+    ).toEqual([
+      {
+        id: "FRONTIER_5",
+        leads: ["UNDEAD"],
+        opponents: ["ORIGINAL", "ICE_FOLK"],
+        allies: [],
+        size: 16,
+      },
+      {
+        id: "FRONTIER_6",
+        leads: ["DWARF"],
+        opponents: ["ICE_FOLK", "ORIGINAL"],
+        allies: [],
+        size: 14,
+      },
+      {
+        id: "FRONTIER_7",
+        leads: ["ICE_FOLK"],
+        opponents: ["DINOSAUR", "ORIGINAL"],
+        allies: [],
+        size: 16,
+      },
+      {
+        id: "FRONTIER_8",
+        leads: ["DINOSAUR"],
+        opponents: ["MARTIAN", "ORIGINAL"],
+        allies: [],
+        size: 16,
+      },
+      {
+        id: "FRONTIER_9",
+        leads: ["MARTIAN"],
+        opponents: ["UNDEAD", "GOBLIN"],
+        allies: ["CANDY"],
+        size: 16,
+      },
+      {
+        id: "FRONTIER_10",
+        leads: ["ORIGINAL"],
+        opponents: ["CULT", "UNDEAD"],
+        allies: ["GOBLIN"],
+        size: 20,
+      },
+    ]);
+  });
+
+  it("puts an allied AI seat of a mission with teams among the allies", () => {
+    // The capture fixture: seat 1 is on your team, seat 2 is the enemy.
+    const fixture = {
+      ...CHAPTER_ONE_V7,
+      missions: [{ ...CHAPTER_ONE_V7.missions[0], missionId: "TEST_CAPTURE" }],
+    } as typeof CHAPTER_ONE_V7;
+    const [card] = campaignMissionCardsV7(fixture, {});
+    expect(card?.allies).toHaveLength(1);
+    expect(card?.opponents).toHaveLength(1);
+    expect(card?.maxStars).toBe(2);
   });
 
   it("derives unlocks from completions: Human always, Goblin after 2, Undead after 4", () => {
@@ -324,7 +467,10 @@ describe("derived campaign state", () => {
     expect(campaignMissionV7("FRONTIER_2")?.entry.number).toBe(2);
     expect(campaignMissionV7("TEST_GROUNDS")).toBeNull();
     expect(campaignNextMissionV7("FRONTIER_1")?.missionId).toBe("FRONTIER_2");
+    // Mission 5 is designed, not built: nothing to go on to.
     expect(campaignNextMissionV7("FRONTIER_4")).toBeNull();
+    expect(campaignTagNameV7("FRONTIER_2", "WARRENS")).toBe("the Warrens");
+    expect(campaignTagNameV7("TEST_ESCORT", "SOME_PLACE")).toBe("some place");
     expect(campaignNextMissionV7("TEST_GROUNDS")).toBeNull();
   });
 });

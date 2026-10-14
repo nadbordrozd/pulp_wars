@@ -1,33 +1,69 @@
 import type { FactionIdV7 } from "../engine/v7/types";
 
 /**
- * Campaign Chapter One, "The Hollow Frontier" (`pulp_wars-68k.4`,
- * docs/product/CAMPAIGN.md sections 4.3, 5, and 6): the teaser's mission
- * order, story, briefings, hints, closing lines, and unlock table. Data
- * only; the campaign UI and progress (`pulp_wars-68k.5`) read it. Each
- * mission's board, seats, and directives live in its engine definition
+ * The campaign, part one, "The Hollow Frontier" (`pulp_wars-v642.1`,
+ * docs/product/CAMPAIGN.md section 9): the order of its ten missions, the
+ * story, the briefings, hints, closing lines, the names of the things a
+ * mission's objective talks about, and the unlock table. Data only; the
+ * campaign screens and progress read it. Each mission's board, seats,
+ * objective, and directives live in its engine definition
  * (`src/engine/v7/missions/frontier-*.ts`), which `missionId` names.
+ *
+ * Missions 1 to 4 are built. Missions 5 to 10 are designed and listed, so
+ * the roster shows the whole of part one, but not yet built: an entry with
+ * `planned` carries what its card shows until its mission is registered.
  *
  * Player-facing text follows the simplified interface overlay
  * (docs/ui/SCREEN_FLOW.md): short and plain, the pulp flavour confined to
  * the story, and never a tile coordinate.
  */
+export type CampaignFormatV7 =
+  "CONQUEST" | "ESCORT" | "SURVIVE" | "CAPTURE" | "KILL" | "ALLY";
+
+/** One word for a mission's format, on its card and its briefing. */
+export const CAMPAIGN_FORMAT_LABELS_V7: Readonly<
+  Record<CampaignFormatV7, string>
+> = Object.freeze({
+  CONQUEST: "Conquest",
+  ESCORT: "Escort",
+  SURVIVE: "Hold out",
+  CAPTURE: "Capture",
+  KILL: "Hunt",
+  ALLY: "Rescue",
+});
+
 export interface CampaignMissionEntryV7 {
-  /** A registered, non-hidden mission (`MISSION_REGISTRY_V7`). */
+  /** The mission's ID: registered once built (`MISSION_REGISTRY_V7`). */
   readonly missionId: string;
   /** 1-based position in the chapter; mission N opens when N − 1 is won. */
   readonly number: number;
   readonly name: string;
+  readonly format: CampaignFormatV7;
   /** The briefing's story blurb. */
   readonly briefing: string;
-  /** The briefing's Objective line. */
+  /** The Objective line of the briefing and of the tracker in a match. */
   readonly objective: string;
   /** At most three short hints. */
   readonly hints: readonly string[];
-  /** The Victory dialog's closing line. */
+  /** The debrief: the Victory dialog's closing line. */
   readonly closing: string;
   /** Factions this mission's first win unlocks. */
   readonly unlocks: readonly FactionIdV7[];
+  /**
+   * What the mission's landmarks and tagged units are called, by tag (the
+   * engine definition's `landmarks[].tag` and `units[].tag`).
+   */
+  readonly names?: Readonly<Record<string, string>>;
+  /**
+   * A mission that is designed but not built yet: who leads, against whom,
+   * and on what size of board, for its card. Absent once it is registered.
+   */
+  readonly planned?: {
+    readonly leads: readonly FactionIdV7[];
+    readonly opponents: readonly FactionIdV7[];
+    readonly allies?: readonly FactionIdV7[];
+    readonly size: number;
+  };
 }
 
 export interface CampaignChapterV7 {
@@ -43,27 +79,26 @@ export interface CampaignChapterV7 {
   readonly outro: string;
 }
 
-const DOMINATION_OBJECTIVE = "Capture every enemy city.";
-
 export const CHAPTER_ONE_V7: CampaignChapterV7 = Object.freeze({
   id: "CHAPTER_1",
   number: 1,
-  title: "Chapter One: The Hollow Frontier",
+  title: "Part One: The Hollow Frontier",
   intro:
-    "Captain Vera Steele of the Frontier Rangers holds the last fort before the Hollow Hills. The goblins of Grubnak the Loud are coming down out of the hills, and they are not coming to trade.",
+    "Captain Vera Steele of the Frontier Rangers holds the last fort before the Hollow Hills. Something is driving every creature in those hills downhill, and the first of them are already at her gate.",
   startingFactions: Object.freeze(["ORIGINAL"] as const),
   missions: Object.freeze([
     Object.freeze({
       missionId: "FRONTIER_1",
       number: 1,
       name: "Goblins at the Gate",
+      format: "CONQUEST",
       briefing:
         "Fort Hollow was meant to be a quiet posting. Then the drums started. Grubnak's goblins are pouring out of the eastern hills, and they are not here to trade. Hold the fort, Captain Steele, then show them the way home.",
-      objective: DOMINATION_OBJECTIVE,
+      objective: "Capture the Goblin camp.",
       hints: Object.freeze([
-        "Keep a Guard on your city.",
-        "Goblins hit hard and break easily.",
-        "When the rush breaks, march east.",
+        "Keep your Guards on the walls.",
+        "Goblins hit hard together: don't stand alone in the open.",
+        "Grow the fort: a level 5 city sends a giant.",
       ]),
       closing:
         "The rush broke on your walls. Grubnak fled north-east, to something his goblins call the Warrens.",
@@ -73,50 +108,206 @@ export const CHAPTER_ONE_V7: CampaignChapterV7 = Object.freeze({
       missionId: "FRONTIER_2",
       number: 2,
       name: "The Warrens",
+      format: "CAPTURE",
       briefing:
-        "The rush broke, but Grubnak has three strongholds and a grudge. Your scouts count more goblins than bullets. The villages in the valley will answer to whoever gets there first. Be first.",
-      objective: DOMINATION_OBJECTIVE,
+        "Grubnak has three strongholds and a grudge. The villages in the valley will answer to whoever gets there first. Be first, then dig him out of the Warrens.",
+      objective: "Capture the Warrens.",
       hints: Object.freeze([
         "Villages become cities: take them early.",
-        "The outpost to the east is the weak point.",
-        "The walled capital comes last.",
+        "The outpost on the road falls first.",
+        "A giant alone gets mobbed: keep your army together.",
       ]),
       closing:
-        "Grubnak, cornered in his own warrens, asks to talk. His goblins did not come for your fort, he says. Something drove them out of the hills. Something that does not breathe.",
+        "Grubnak, cornered in his own Warrens, asks to talk. His goblins did not come for your fort, he says. Something drove them out of the hills. Something that does not breathe.",
       unlocks: Object.freeze(["GOBLIN"] as const),
+      names: Object.freeze({ WARRENS: "the Warrens" }),
     }),
     Object.freeze({
       missionId: "FRONTIER_3",
       number: 3,
       name: "Green Tide",
+      format: "CAPTURE",
       briefing:
-        "The dead took the warrens, and Grubnak wants them back. They are digging in behind the ridge. Scouts say they won't cross it until the new moon, sixteen days from now. Hit them before they're ready. And remember: a goblin's best weapon is his last one.",
-      objective: DOMINATION_OBJECTIVE,
+        "The dead hold the high plain where the goblins grazed their wolves, and Grubnak wants it back. Scouts say they will not march before the new moon, sixteen days off. Hit the Barrow before they are ready. And remember: a goblin's best weapon is his last one.",
+      objective: "Capture the Barrow.",
       hints: Object.freeze([
-        "The Undead won't cross the ridge before turn 16.",
-        "Goblins are cheap: spend them.",
-        "Kaboom hurts everything around it, yours too.",
+        "The Undead stay on their plain until turn 16.",
+        "A Troll can throw a Goblin. Then: Kaboom.",
+        "Whoever dies bitten gets up on their side.",
       ]),
       closing:
-        "The warrens are green again. Among the ashes, Grubnak finds a seal: a skull in a crown. The Ashen Marquis. His tower stands on Bone Neck.",
+        "The plain is green again. In the Barrow's ashes Grubnak finds a seal: a skull in a crown. The Ashen Marquis. His tower stands beyond Bone Neck.",
       unlocks: Object.freeze([]),
+      names: Object.freeze({ BARROW: "the Barrow" }),
     }),
     Object.freeze({
       missionId: "FRONTIER_4",
       number: 4,
       name: "Bone Neck",
+      format: "CAPTURE",
       briefing:
-        "The Ashen Marquis waits on the far shore of Bone Neck, a strip of land one road wide. No boat will cross those waters. Who leads the charge: Steele's Rangers or Grubnak's horde?",
-      objective: DOMINATION_OBJECTIVE,
+        "The Ashen Marquis waits beyond Bone Neck, a strip of land one cart wide. No boat will cross that water. Break his gate. Who leads the charge: Steele's Rangers or Grubnak's horde?",
+      objective: "Capture the gate.",
       hints: Object.freeze([
-        "One way in: the isthmus.",
-        "Catapults or Rocket Carts outrange the gate.",
+        "One way in: the Neck.",
+        "Catapults and Rocket Carts outrange the gate.",
         "Nobody builds siege engines here: keep yours alive.",
       ]),
       closing:
-        "The tower falls. From its ashes a dry voice offers terms: 'Every army needs soldiers who never tire, Captain.'",
+        "The gate falls, and a dry voice offers terms. 'I did not choose to wake, Captain. Someone is ringing a bell under the mountains. Find the bell-ringer, and my soldiers are yours. They never tire.'",
       unlocks: Object.freeze(["UNDEAD"] as const),
+      names: Object.freeze({
+        GATE: "the gate",
+        TOWER: "the Marquis's tower",
+      }),
+    }),
+    Object.freeze({
+      missionId: "FRONTIER_5",
+      number: 5,
+      name: "Dead Men's Road",
+      format: "ESCORT",
+      briefing:
+        "Only the Marquis's archivist, Doctor Mortimer Crane, can read the bell's score, and only the Dwarves of Ironbraid Hold know the mountain. Walk him up the pass. Baron Kessler's toll-men hold the road, and something white hunts above the snowline.",
+      objective: "Bring Doctor Crane to the Ironbraid gate.",
+      hints: Object.freeze([
+        "If the Doctor dies, the mission is lost.",
+        "The toll fort guards the road: go round or go through.",
+        "The dead do not rest: they recover only on their own land.",
+      ]),
+      closing:
+        "Thane Brunhild Ironbraid reads the score twice and bars her doors. 'That bell is ours, Captain. It hangs in the Deep Gate. And nobody is ringing it.'",
+      unlocks: Object.freeze(["DWARF"] as const),
+      names: Object.freeze({
+        ARCHIVIST: "Doctor Crane",
+        IRONBRAID_GATE: "the Ironbraid gate",
+      }),
+      planned: Object.freeze({
+        leads: Object.freeze(["UNDEAD"] as const),
+        opponents: Object.freeze(["ORIGINAL", "ICE_FOLK"] as const),
+        size: 16,
+      }),
+    }),
+    Object.freeze({
+      missionId: "FRONTIER_6",
+      number: 6,
+      name: "The Deep Gate",
+      format: "SURVIVE",
+      briefing:
+        "The bell calls everything on the mountain to the Deep Gate: the Ice Folk down from the peaks, the Baron's hired guns up from the valley. Thane Ironbraid needs fourteen days to cut the bell loose. Give them to her.",
+      objective: "Hold the Deep Gate for 14 turns.",
+      hints: Object.freeze([
+        "They come in waves: north first, then south.",
+        "Dig in. Dwarves are hard to shift.",
+        "Help arrives on turn 9.",
+      ]),
+      closing:
+        "The bell falls silent, and the Ice Folk stop where they stand. Mother Rime lowers her spear. 'It was not your bell we came for. It was calling a star down. It fell in the sea, where the old beasts live.'",
+      unlocks: Object.freeze(["ICE_FOLK"] as const),
+      names: Object.freeze({ DEEP_GATE: "the Deep Gate" }),
+      planned: Object.freeze({
+        leads: Object.freeze(["DWARF"] as const),
+        opponents: Object.freeze(["ICE_FOLK", "ORIGINAL"] as const),
+        size: 14,
+      }),
+    }),
+    Object.freeze({
+      missionId: "FRONTIER_7",
+      number: 7,
+      name: "The Island That Time Forgot",
+      format: "CAPTURE",
+      briefing:
+        "A star fell on an island no chart admits to, and the Baron's ships are already under sail. The Ice Folk need no ships: they walk on the sea they freeze. Reach the crater before the Baron does. Mind the natives. They have teeth.",
+      objective: "Capture the Crater by turn 18.",
+      hints: Object.freeze([
+        "Freeze a road across the strait.",
+        "The beasts keep to their island at first.",
+        "The Baron lands on turn 8.",
+      ]),
+      closing:
+        "In the crater lies a ship of glass and brass, and around it the great beasts keep watch like dogs at a door. They let you pass. Whatever is inside, they hate it more than they hate you.",
+      unlocks: Object.freeze(["DINOSAUR"] as const),
+      names: Object.freeze({ CRATER: "the Crater" }),
+      planned: Object.freeze({
+        leads: Object.freeze(["ICE_FOLK"] as const),
+        opponents: Object.freeze(["DINOSAUR", "ORIGINAL"] as const),
+        size: 16,
+      }),
+    }),
+    Object.freeze({
+      missionId: "FRONTIER_8",
+      number: 8,
+      name: "Brain Wave",
+      format: "KILL",
+      briefing:
+        "The thing in the glass ship is awake. It calls itself the Overmind, and it has the Baron's men marching in step. The beasts of the island want it dead. So do you. Kill it before it finishes its signal.",
+      objective: "Kill the Overmind by turn 20.",
+      hints: Object.freeze([
+        "The Overmind never leaves the crater.",
+        "The Baron's men are its puppets: they only attack.",
+        "Dinosaurs grow with every kill. Feed them.",
+      ]),
+      closing:
+        "The Overmind bursts like a wet lantern, and every Martian on the island blinks. Their captain salutes with three hands. 'We were not invading. We were answering. Someone here has been calling the stars.'",
+      unlocks: Object.freeze(["MARTIAN"] as const),
+      names: Object.freeze({
+        OVERMIND: "the Overmind",
+        OLD_QUEEN: "the Old Queen",
+      }),
+      planned: Object.freeze({
+        leads: Object.freeze(["DINOSAUR"] as const),
+        opponents: Object.freeze(["MARTIAN", "ORIGINAL"] as const),
+        size: 16,
+      }),
+    }),
+    Object.freeze({
+      missionId: "FRONTIER_9",
+      number: 9,
+      name: "Sugar and Spite",
+      format: "ALLY",
+      briefing:
+        "The call tore a hole in the world, and a kingdom fell out of it: Sugarcrest, soft, sweet and besieged. The Rift is closing. If Sugarcrest falls before it shuts, whatever is on the other side comes through instead. Only wings cross a Rift, and the Martians have saucers.",
+      objective: "Keep Sugarcrest standing for 16 turns.",
+      hints: Object.freeze([
+        "Sugarcrest fights beside you: don't fight in its streets.",
+        "Only flyers cross the Rift.",
+        "Kill the besiegers' siege engines first.",
+      ]),
+      closing:
+        "The Rift seals with a sound like a kiss. Queen Praline curtsies, armed to the teeth. 'They wear grey hoods,' she says, 'and they sing to the hole. They call it a door.'",
+      unlocks: Object.freeze(["CANDY"] as const),
+      names: Object.freeze({ SUGARCREST: "Sugarcrest" }),
+      planned: Object.freeze({
+        leads: Object.freeze(["MARTIAN"] as const),
+        opponents: Object.freeze(["UNDEAD", "GOBLIN"] as const),
+        allies: Object.freeze(["CANDY"] as const),
+        size: 16,
+      }),
+    }),
+    Object.freeze({
+      missionId: "FRONTIER_10",
+      number: 10,
+      name: "The Stars Are Right",
+      format: "CAPTURE",
+      briefing:
+        "The Lodge of the Unblinking Eye stands on the summit where the bell was cast, and tonight the stars are right. The Hierophant needs twenty-four tolls to finish the Great Summoning. Steele has an army nobody would have believed a month ago. Take the Lodge before the last toll.",
+      objective: "Capture the Lodge by turn 24.",
+      hints: Object.freeze([
+        "Grubnak's horde fights beside you.",
+        "The Lodge's thralls come at you: the Lodge stays home.",
+        "Break their circles: a ritual needs its cultists standing.",
+      ]),
+      closing:
+        "The Lodge falls one toll short, and the hooded ones kneel to the winning side, as they always have. But far below, in the shaft where the bell hung, something that was called has opened one eye.",
+      unlocks: Object.freeze(["CULT"] as const),
+      names: Object.freeze({ LODGE: "the Lodge" }),
+      planned: Object.freeze({
+        leads: Object.freeze(["ORIGINAL"] as const),
+        opponents: Object.freeze(["CULT", "UNDEAD"] as const),
+        allies: Object.freeze(["GOBLIN"] as const),
+        size: 20,
+      }),
     }),
   ]),
-  outro: "To be continued…",
+  outro:
+    "End of Part One. To be continued in Part Two: The Thing in the Shaft.",
 });

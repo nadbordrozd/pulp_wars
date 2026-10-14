@@ -296,16 +296,16 @@ describe("ruleset-7 Normal AI siege of a single-file front (pulp_wars-68k.6)", (
         })),
       });
       const human = required(planFor(viewFor(explored)));
+      // Revision 4 (`pulp_wars-v642.1`): the generator's two lands, joined
+      // by the two tiles of Bone Neck.
       expect(human.corridor).toEqual([
-        { x: 7, y: 8 },
-        { x: 8, y: 8 },
-        { x: 9, y: 8 },
+        { x: 7, y: 6 },
+        { x: 8, y: 6 },
       ]);
-      expect(human.target.at).toEqual({ x: 11, y: 8 });
+      expect(human.target.at).toEqual({ x: 10, y: 6 });
       expect(human.holders.map((unit) => unit.at)).toEqual([
-        { x: 10, y: 7 },
-        { x: 10, y: 8 },
-        { x: 10, y: 9 },
+        { x: 9, y: 6 },
+        { x: 9, y: 7 },
       ]);
     });
 

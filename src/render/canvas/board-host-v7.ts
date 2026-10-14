@@ -267,6 +267,7 @@ import {
 } from "../curiosity-presentation-v7";
 import { BoardFeedbackV7, type BoardFeedbackPortV7 } from "./feedback-host-v7";
 import type { FirstStepMarkerV7 } from "../first-steps-v7";
+import type { MissionMarkerV7 } from "../mission-presentation-v7";
 import { cityAccessibleNameV7 } from "../city-names-presentation-v7";
 
 export interface BoardHostModelV7 {
@@ -305,6 +306,11 @@ export interface BoardHostModelV7 {
    * city, tile or unit with. Omitted or null draws none.
    */
   readonly firstStepMarker?: FirstStepMarkerV7 | null;
+  /**
+   * A mission's marks over the board (`pulp_wars-v642.1`): the objective's
+   * places and named units. Omitted draws none.
+   */
+  readonly missionMarkers?: readonly MissionMarkerV7[];
 }
 
 /** A boundary waiting to play after the one being presented. */
@@ -817,6 +823,15 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
             ? "hop"
             : "still";
       }
+    }
+    // A mission's marks, by kind and name (never a coordinate).
+    if (marked !== null) {
+      const marks = model.missionMarkers ?? [];
+      if (marks.length === 0) delete marked.dataset.missionMarkers;
+      else
+        marked.dataset.missionMarkers = marks
+          .map((mark) => `${mark.kind.toLowerCase()}:${mark.label}`)
+          .join("|");
     }
     const activePlayerId = model.view.turnOrder[model.view.activeSeatIndex];
     const readinessKey = `${String(model.matchInstanceId)}:${model.view.round}:${activePlayerId ?? "none"}`;

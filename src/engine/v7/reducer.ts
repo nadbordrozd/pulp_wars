@@ -364,6 +364,9 @@ import {
   type RecoveryFactsV7,
 } from "./recovery";
 import { spatialContributionAtV7, tileAtV7 } from "./spatial-economy";
+import { missionOfSetupV7, missionOutcomeV7 } from "./missions/objectives";
+import type { MissionDefinitionV7 } from "./missions/types";
+import type { UnitRoleIdV7 } from "./types";
 import {
   collectScoreCreditsV7,
   foldScoreLedgerV7,
@@ -670,8 +673,15 @@ export function applyCommandV7(
   // Score and modes (docs/product/RULESET_7_SCORE_AND_STARS.md section
   // 3.3): the command's credited deaths are collected for the score ledger,
   // which is updated after every other step of the command.
+  // Mission objectives (`pulp_wars-v642.1`, 7r82): the reinforcements a
+  // mission brings at this Start Turn and the outcome its objective decides
+  // follow every other step of the command and precede the ledger.
   const collected = collectScoreCreditsV7(() =>
-    applyCommandUnscoredV7(stateInput, actor, input),
+    withMissionResultV7(
+      stateInput,
+      actor,
+      applyCommandUnscoredV7(stateInput, actor, input),
+    ),
   );
   return withScoreLedgerResultV7(
     stateInput,
@@ -705,6 +715,176 @@ function withScoreLedgerResultV7(
   if (!scoreLedgerShapeValidV7(ledger, result.state.players))
     throw new RangeError("INVALID_STATE");
   return accepted({ ...result.state, scoreLedger: ledger }, result.events);
+}
+
+/**
+ * Mission objectives (`pulp_wars-v642.1`, `pulp-wars-poc-7r82`;
+ * docs/product/CAMPAIGN.md sections 10.1 and 10.2). After an accepted
+ * command of a mission match that is still open:
+ *
+ * 1. when the command began a seat's turn (an `END_TURN`), that seat's
+ *    reinforcements of the new round arrive (`REINFORCEMENT_ARRIVED` per
+ *    unit, then one `TILES_REVEALED`);
+ * 2. the mission's objective is asked for the outcome
+ *    (`missionOutcomeV7`); a decided match gets its `MATCH_ENDED`.
+ *
+ * Returns `result` itself for any other match and when nothing happened.
+ */
+function withMissionResultV7(
+  before: GameStateV7,
+  actor: PlayerId,
+  result: ApplyCommandResultV7,
+): ApplyCommandResultV7 {
+  if (!result.accepted || result.state.outcome !== null) return result;
+  const mission = missionOfSetupV7(result.state.setup);
+  if (mission === null) return result;
+  let state = result.state;
+  const events: DomainEventV7[] = [];
+  if (
+    (mission.reinforcements ?? []).length > 0 &&
+    (before.round !== state.round ||
+      before.activeSeatIndex !== state.activeSeatIndex)
+  ) {
+    const arrived = resolveMissionReinforcementsV7(state, mission);
+    state = arrived.state;
+    events.push(...arrived.events);
+  }
+  const outcome = missionOutcomeV7(before, state, actor);
+  if (outcome !== null) {
+    state = { ...state, outcome };
+    events.push({ kind: "MATCH_ENDED", outcome });
+  }
+  if (state === result.state) return result;
+  return accepted(checked(state), [...result.events, ...events]);
+}
+
+/**
+ * The reinforcements of the active seat's Start Turn in the current round
+ * (`MissionReinforcementV7`): each unit on its tile, or on the nearest free
+ * tile it may stand on within two steps (rings outward, `(y, x)` order); a
+ * unit with no such tile does not come. The units are homeless (they count
+ * for no city's unit limit), start at full HP and Shield, and may act this
+ * turn.
+ */
+function resolveMissionReinforcementsV7(
+  state: GameStateV7,
+  mission: MissionDefinitionV7,
+): { readonly state: GameStateV7; readonly events: readonly DomainEventV7[] } {
+  const playerId = state.turnOrder[state.activeSeatIndex];
+  const player = state.players.find((item) => item.id === playerId);
+  if (
+    playerId === undefined ||
+    player === undefined ||
+    player.status !== "ACTIVE"
+  )
+    return { state, events: [] };
+  const events: DomainEventV7[] = [];
+  const revealed: CoordV7[] = [];
+  let current = state;
+  for (const wave of mission.reinforcements ?? []) {
+    if (wave.seat !== player.seat || wave.round !== state.round) continue;
+    for (const written of wave.units) {
+      const at = missionArrivalTileV7(current, playerId, written);
+      if (at === null) continue;
+      const rule = effectiveRoleRuleV7(written.role, player.faction);
+      const allocation = allocateUnitId(current.nextEntityId);
+      const unit: UnitStateV7 = {
+        id: allocation.id,
+        ownerId: playerId,
+        homeCityId: null,
+        role: written.role,
+        form: isNavalRoleV7(written.role) ? "NAVAL" : "LAND",
+        at,
+        hp: rule.maxHp,
+        maxHp: rule.maxHp,
+        kills: 0,
+        veteran: false,
+        captureEligible: false,
+        activation: freshActivationV7(),
+      };
+      current = {
+        ...current,
+        nextEntityId: allocation.nextEntityId,
+        units: [...current.units, unit],
+        shields: withFullShieldsV7(current, current.shields, [unit]),
+      };
+      events.push({
+        kind: "REINFORCEMENT_ARRIVED",
+        playerId,
+        unitId: unit.id,
+        role: unit.role,
+        at: unit.at,
+      });
+      const reveal = revealRadius(
+        current,
+        playerId,
+        unit.at,
+        unitSightRadiusAtV7(current, unit),
+      );
+      current = {
+        ...current,
+        players: setExplored(current.players, playerId, reveal.explored),
+      };
+      revealed.push(...reveal.revealed);
+    }
+  }
+  if (revealed.length > 0)
+    events.push({
+      kind: "TILES_REVEALED",
+      playerId,
+      tiles: [...revealed].sort(compareCoords),
+    });
+  return { state: current, events };
+}
+
+/** Where a reinforcement unit appears, or null (no free tile it may enter). */
+function missionArrivalTileV7(
+  state: GameStateV7,
+  playerId: PlayerId,
+  written: { readonly role: UnitRoleIdV7; readonly at: CoordV7 },
+): CoordV7 | null {
+  const player = requirePlayer(state, playerId);
+  const naval = isNavalRoleV7(written.role);
+  const mechanics = seatRoleMechanicsV7(state, playerId, written.role);
+  const navigation = player.researchedTechs.includes("NAVIGATION");
+  const free = (at: CoordV7): boolean => {
+    const tile = tileAtV7(state.board, at);
+    if (
+      tile === undefined ||
+      tile.site !== null ||
+      tile.improvement === "PORT" ||
+      tile.improvement === "SHIPYARD" ||
+      state.units.some((unit) => unit.hp > 0 && same(unit.at, at)) ||
+      state.treasureChests.some((chest) => same(chest, at)) ||
+      state.curiosities.some((curiosity) => same(curiosity.at, at)) ||
+      state.barricades.some((barricade) => same(barricade.at, at))
+    )
+      return false;
+    return naval
+      ? !isIceAtV7(state, at) &&
+          (tile.terrain === "SHALLOW_WATER" ||
+            (tile.terrain === "DEEP_WATER" && navigation))
+      : canEnterTerrainV7({
+          terrain: tile.terrain,
+          movementMode: mechanics.movementMode,
+          afloat: false,
+          engineering: technologyCapabilitiesV7(
+            player.researchedTechs,
+            player.faction,
+          ).mountainMovement,
+          navigation,
+          mountainBorn: mechanics.mountainBorn,
+          ice: false,
+        });
+  };
+  for (let ring = 0; ring <= 2; ring += 1)
+    for (let dy = -ring; dy <= ring; dy += 1)
+      for (let dx = -ring; dx <= ring; dx += 1) {
+        if (Math.max(Math.abs(dx), Math.abs(dy)) !== ring) continue;
+        const at = { x: written.at.x + dx, y: written.at.y + dy };
+        if (free(at)) return at;
+      }
+  return null;
 }
 
 function applyCommandUnscoredV7(
@@ -1831,7 +2011,7 @@ function applyResearch(
   if (node === undefined) return rejected(original, "TECH_NOT_FOUND", { tech });
   // Forbidden technologies (docs/product/CAMPAIGN.md section 2.3): the Dry
   // Land Naval branch and a mission's list, from the one source.
-  const forbidden = forbiddenTechnologiesV7(state.setup).get(tech);
+  const forbidden = forbiddenTechnologiesV7(state.setup, player.seat).get(tech);
   if (forbidden !== undefined)
     return rejected(original, "TECH_REQUIRED", { tech, reason: forbidden });
   if (player.researchedTechs.includes(tech))

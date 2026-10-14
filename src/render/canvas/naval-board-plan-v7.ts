@@ -1,4 +1,5 @@
 import {
+  cooperativeAlliesV7,
   isAfloatFormV7,
   previewBoardV7,
   unitRoleRuleV7,
@@ -52,11 +53,7 @@ const chebyshev = (a: CoordV7, b: CoordV7): number =>
 
 function hostile(view: PlayerViewV7, left: number, right: number): boolean {
   if (left === right) return false;
-  return (
-    view.setup.aiMode === "RIVAL" ||
-    left === view.humanPlayerId ||
-    right === view.humanPlayerId
-  );
+  return !cooperativeAlliesV7(view.setup, view.humanPlayerId, left, right);
 }
 
 /** The board markers of a visible unit, from its public stats. */

@@ -99,7 +99,7 @@ import { at, kindsV7, movedV7 } from "../fixtures/v7-revision20";
 // (docs/product/RULESET_7_MARTIANS.md sections 2 to 4, 10.9, 10.10, and 11).
 
 /** The revision number of this identity (`pulp-wars-poc-7rNN`). */
-const REVISION = 81;
+const REVISION = 82;
 const ID = `pulp-wars-poc-7r${REVISION}`;
 const PREVIOUS_ID = `pulp-wars-poc-7r${REVISION - 1}`;
 
@@ -313,7 +313,7 @@ describe("Martian faction registration (sections 2 and 11)", () => {
     // DAEMON_UNBOUND (141).
     // The Cult's rituals (`pulp_wars-mch9.7`) add seven kinds after
     // DAEMON_BOUND, from RITUAL_BEGUN to CITY_COWED (148).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(154);
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(155);
     const after = (kind: string) =>
       DOMAIN_EVENT_KIND_ORDER_V7[
         DOMAIN_EVENT_KIND_ORDER_V7.indexOf(kind as never) + 1

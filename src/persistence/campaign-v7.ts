@@ -18,6 +18,11 @@ export interface CampaignCompletionV7 {
   readonly firstWonAt: string;
   /** The fewest rounds any win of the mission took. */
   readonly bestRounds: number;
+  /**
+   * The most stars any win earned (`pulp_wars-v642.1`): 1 to 3. Absent in
+   * progress written before stars existed, which reads as one star.
+   */
+  readonly stars?: number;
 }
 
 export interface CampaignProgressV7 {
@@ -91,7 +96,14 @@ export function parseCampaignProgressV7(
       return unreadable("Campaign progress names an invalid mission.");
     if (
       !isRecord(entry) ||
-      !hasExactKeys(entry, ["firstWonAt", "bestRounds"]) ||
+      !(
+        hasExactKeys(entry, ["firstWonAt", "bestRounds"]) ||
+        hasExactKeys(entry, ["firstWonAt", "bestRounds", "stars"])
+      ) ||
+      (Object.hasOwn(entry, "stars") &&
+        entry.stars !== 1 &&
+        entry.stars !== 2 &&
+        entry.stars !== 3) ||
       typeof entry.firstWonAt !== "string" ||
       !ISO_INSTANT_PATTERN.test(entry.firstWonAt) ||
       !Number.isSafeInteger(entry.bestRounds) ||
@@ -103,6 +115,9 @@ export function parseCampaignProgressV7(
       Object.freeze({
         firstWonAt: entry.firstWonAt,
         bestRounds: entry.bestRounds as number,
+        ...(Object.hasOwn(entry, "stars")
+          ? { stars: entry.stars as number }
+          : {}),
       }),
     ]);
   }
@@ -147,32 +162,43 @@ export class CampaignProgressStoreV7 {
   }
 
   /**
-   * Records a won mission. Idempotent: a later win keeps `firstWonAt` and
-   * only ever lowers `bestRounds`. Unreadable progress records nothing
-   * until it is reset.
+   * Records a won mission. Idempotent: a later win keeps `firstWonAt`, only
+   * ever lowers `bestRounds`, and only ever raises `stars`. Unreadable
+   * progress records nothing until it is reset.
    */
-  recordWin(missionId: string, rounds: number): CampaignRecordResultV7 {
+  recordWin(
+    missionId: string,
+    rounds: number,
+    stars = 1,
+  ): CampaignRecordResultV7 {
     if (!MISSION_ID_PATTERN.test(missionId))
       throw new RangeError(`Invalid mission ID ${missionId}`);
     if (!Number.isSafeInteger(rounds) || rounds < 1)
       throw new RangeError("rounds must be a positive integer");
+    if (stars !== 1 && stars !== 2 && stars !== 3)
+      throw new RangeError("stars must be 1, 2, or 3");
     const loaded = this.load();
     if (loaded.kind !== "VALID") return { ok: false, ...loaded };
     const before = loaded.progress;
     const prior = before.completed[missionId];
     const completion: CampaignCompletionV7 =
       prior === undefined
-        ? { firstWonAt: this.#now(), bestRounds: rounds }
+        ? { firstWonAt: this.#now(), bestRounds: rounds, stars }
         : {
             firstWonAt: prior.firstWonAt,
             bestRounds: Math.min(prior.bestRounds, rounds),
+            stars: Math.max(prior.stars ?? 1, stars),
           };
     const progress = freezeProgress({
       ...before.completed,
       [missionId]: completion,
     });
     // A win that does not beat the best changes nothing: no write.
-    if (prior !== undefined && prior.bestRounds === completion.bestRounds)
+    if (
+      prior !== undefined &&
+      prior.bestRounds === completion.bestRounds &&
+      (prior.stars ?? 1) === completion.stars
+    )
       return { ok: true, firstWin: false, before, progress: before };
     if (this.#storage !== null) {
       try {

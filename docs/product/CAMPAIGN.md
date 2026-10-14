@@ -14,7 +14,13 @@ and the campaign UI and progress bead `68k.5` (its notes are in
 `68k.6` (the Normal AI's siege of a single-file front and mission 4's
 revision 2; its notes are in
 [section 8.5](#85-68k6-normal-ai-siege-of-a-single-file-front)) are
-implemented. The
+implemented. **The campaign framework and part one**
+(`pulp_wars-v642.1`, `pulp-wars-poc-7r82`) are
+[sections 9 to 13](#9-part-one-the-hollow-frontier-ten-missions): ten
+missions (four built, six designed), objectives beyond conquest, teams,
+reinforcements, natural maps, the objective tracker, stars, and the
+hand-play record; where they differ from sections 1 to 8, they are the
+current design. The
 implementation beads in
 [section 8](#8-implementation-beads) follow this document; where an
 implementation bead finds that this design and the code disagree, it stops
@@ -46,6 +52,12 @@ in the engine and AI (`MissionDefinitionV7`, `src/engine/v7/missions/`,
 (`src/campaign/`). No existing identifier is renamed.
 
 ## 1. Decisions at a glance
+
+The teaser's decisions. Three of them were changed by `pulp_wars-v642.1`:
+the **map** is now the generator's output with recorded edits
+([section 10.5](#105-natural-maps)), the **objective** has five kinds
+([section 10.1](#101-objectives-are-data)), and there are **triggers** of
+one kind, reinforcement waves ([section 10.3](#103-reinforcements)).
 
 | Question               | Decision                                                                                                                                                                                                                                                                              |
 | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -375,6 +387,12 @@ The skirmish setup never builds a `MISSION` setup.
 
 ## 3. Objectives
 
+This section is the teaser's. The objectives that exist now (`ESCORT`,
+`SURVIVE`, `CAPTURE`, `KILL`, deadlines, protected places and units,
+secondary goals) are in [section 10.1](#101-objectives-are-data); they took
+the identity bump this section foresaw (`pulp-wars-poc-7r82`). Capture the
+flag is still not built.
+
 The teaser uses only `DOMINATION`, which is the existing outcome rule: the
 human wins when every other player is eliminated (owns zero cities) and loses
 when eliminated. It therefore needs no engine change beyond carrying the
@@ -526,6 +544,13 @@ A painted campaign map in the HoMM manner is out of scope: it is new
 production art and needs an approved art direction first.
 
 ## 6. The teaser: Chapter One, "The Hollow Frontier"
+
+This section describes the four missions as the teaser shipped them, on
+hand-authored boards with conquest objectives. They were rebuilt by
+`pulp_wars-v642.1`: the current boards, seats, and objectives are in
+[section 9](#9-part-one-the-hollow-frontier-ten-missions) and
+[section 11](#11-hand-play-record-missions-1-to-4), and the sketches and
+coordinates below are history.
 
 Captain Vera Steele of the Frontier Rangers holds the last fort before the
 Hollow Hills. The goblins of Grubnak the Loud are coming down out of the
@@ -1187,6 +1212,518 @@ of the table above: in band, which is revision 2.
   1, where they work (the Human proxy researches Sawmilling by round 4 and
   fields two Catapults by round 6) but the Liches still win. A mission
   with a Lich behind a single-file gate stays beyond the proxy.
+
+## 9. Part one, "The Hollow Frontier": ten missions
+
+`pulp_wars-v642.1` (epic `pulp_wars-v642`; the user, 2026-10-14: "I want
+more. Make 10 total for now", maps "as natural looking as the generated
+ones", "a narrative connecting the missions", "different format missions",
+"New missions should unlock more factions but keep cultists for last").
+This section replaces [section 6](#6-the-teaser-chapter-one-the-hollow-frontier)
+as the description of the campaign's content: the four teaser missions keep
+their lessons and are rebuilt on generated maps
+([section 11](#11-hand-play-record-missions-1-to-4)); six more are designed
+here and listed in the game as "Coming soon" until they are built. The
+text the player reads is in `src/campaign/chapter-1.ts`.
+
+### 9.1 The story
+
+A pulp serial in ten instalments, part one of more.
+
+1. Captain Vera Steele of the Frontier Rangers holds Fort Hollow when
+   Grubnak the Loud's goblins come down out of the hills. She beats them,
+   follows them home, and learns they were running from something.
+2. The something is the dead. Steele and Grubnak, now on the same side,
+   break the Ashen Marquis's gate at Bone Neck, and the Marquis asks for
+   terms: he did not choose to wake. **Someone is ringing a bell under the
+   mountains.**
+3. The trail runs up the mountain (the Dwarves of Ironbraid Hold, whose
+   bell it is, and the Ice Folk it called down), then out to sea, where the
+   bell called a star down onto an island of dinosaurs. The star is a
+   Martian ship, and the Martians say they were not invading: they were
+   answering.
+4. The call has torn a hole in the world, and a besieged kingdom of sweets
+   falls out of it. Its queen has seen who sings to the hole: grey hoods,
+   the Lodge of the Unblinking Eye.
+5. Steele takes the Lodge one toll short of the Great Summoning, and the
+   Cultists, as always, kneel to the winner. **But in the shaft where the
+   bell hung, something that was called has opened one eye.** End of part
+   one.
+
+The recurring villain of the middle missions is Baron Kessler, a Human
+robber baron who sells his guns to whoever pays, so that Human AI seats
+have a reason to oppose every faction the player leads. The Cultists are
+foreshadowed from mission 4 (the bell), named in mission 9, fought and
+unlocked in mission 10.
+
+### 9.2 The ten missions
+
+"Rounds" is the target length for a competent player; the star column is
+the two secondary goals (the first star is the win).
+
+| #   | Mission (`ID`)                             | You lead          | Against                                           | Format                    | Map                            | Win / lose                                            | Lesson or twist                                                         | Unlocks   | Rounds | Difficulty | Stars                             |
+| --- | ------------------------------------------ | ----------------- | ------------------------------------------------- | ------------------------- | ------------------------------ | ----------------------------------------------------- | ----------------------------------------------------------------------- | --------- | ------ | ---------- | --------------------------------- |
+| 1   | Goblins at the Gate (`FRONTIER_1`)         | Humans            | Goblins (rush)                                    | Conquest                  | Dry Land 11                    | capture the Goblin camp                               | hold a wall against a rush, then counter-attack; your first giant       | none      | 10–12  | Easy       | by turn 12; lose no city          |
+| 2   | The Warrens (`FRONTIER_2`)                 | Humans            | Goblins (three cities)                            | Capture                   | Dry Land 14                    | capture the Warrens (their capital)                   | expand first: villages, then an army that sticks together               | Goblins   | 14–18  | Medium     | by turn 18; lose no city          |
+| 3   | Green Tide (`FRONTIER_3`)                  | Goblins           | Undead (holds its plain until turn 16)            | Capture                   | Dry Land 14                    | capture the Barrow (their capital)                    | play the horde: Troll toss, Kaboom, Gang Up; your dead rise against you | none      | 11–15  | Medium     | by turn 15; lose no city          |
+| 4   | Bone Neck (`FRONTIER_4`)                   | Humans or Goblins | Undead (guards the gate)                          | Capture                   | Continents 16, one land bridge | capture the gate city                                 | a breach: two siege engines, no boats, one way in                       | Undead    | 10–14  | Hard       | by turn 12; lose no city          |
+| 5   | Dead Men's Road (`FRONTIER_5`)             | Undead            | Humans (toll fort), Ice Folk (raiders)            | Escort                    | Dry Land 16, hills             | bring Doctor Crane to the Ironbraid gate / he dies    | protect one fragile unit on a long road; go round or go through         | Dwarves   | 12–16  | Medium     | by turn 16; lose no city          |
+| 6   | The Deep Gate (`FRONTIER_6`)               | Dwarves           | Ice Folk (north), Humans (south)                  | Hold out                  | Dry Land 14                    | 14 turns pass / the Deep Gate falls                   | defend against waves from two sides; relief on turn 9                   | Ice Folk  | 14     | Medium     | lose no city; the Thane lives     |
+| 7   | The Island That Time Forgot (`FRONTIER_7`) | Ice Folk          | Dinosaurs (natives), Humans (the Baron)           | Capture against the clock | Archipelago 16                 | capture the Crater by turn 18 / time runs out         | the naval mission without ships: freeze a road over the sea; a race     | Dinosaurs | 14–18  | Hard       | by turn 14; lose no city          |
+| 8   | Brain Wave (`FRONTIER_8`)                  | Dinosaurs         | Martians (guard), Humans (thralls)                | Hunt                      | Pangea 16                      | kill the Overmind by turn 20 / time runs out          | a raid: ignore the cities, reach one unit behind its guard              | Martians  | 14–18  | Hard       | by turn 15; the Old Queen lives   |
+| 9   | Sugar and Spite (`FRONTIER_9`)             | Martians          | Undead, Goblins; ally: Candy                      | Rescue (hold out)         | Lakes 16 with a Rift           | 16 turns pass / Sugarcrest (the ally's capital) falls | defend someone else's city; only flyers cross the Rift                  | Candy     | 16     | Hard       | lose no city; Queen Praline lives |
+| 10  | The Stars Are Right (`FRONTIER_10`)        | Humans            | Cultists (guard), Undead (thralls); ally: Goblins | Capture against the clock | Pangea 20                      | capture the Lodge by turn 24 / time runs out          | the finale: four seats, an ally, a fortress, a deadline                 | Cultists  | 20–24  | Very hard  | by turn 20; lose no city          |
+
+Formats covered: classic conquest (1), capture a place (2, 3, 4), escort
+(5), survive N rounds (6, 9), capture against a clock (7, 10), kill or raid
+(8), naval or island (7), an allied AI (9, 10). Seven of the ten have a
+single opponent or a pair; missions 5 to 10 each have two opponents, and
+missions 9 and 10 have four seats.
+
+### 9.3 Missions 5 to 10 in detail
+
+Each is designed to the framework of [section 10](#10-the-mission-framework)
+and needs nothing the framework lacks. Seeds are picked with the seed
+browser when the mission is built ([section 12](#12-the-mission-builders-guide));
+the numbers below are starting points for the hand play that tunes them.
+
+**5, Dead Men's Road.** Dry Land 16, a hilly seed with a mountain range
+across the middle and one or two passes; three seats, Rival. You (Undead,
+south-west): a level 3 capital, a town, about eight units, and the tagged
+unit `ARCHIVIST` (a Necromancer). Seat 1, Humans (Baron Kessler's
+toll-men): a walled level 3 fort on the best pass, `GUARD` its 3 × 3 zone
+with a garrison of 4, forbidden Chivalry and Sawmilling (no Knights, no
+siege). Seat 2, Ice Folk: a level 2 camp in the north-east, `HOLD` its
+corner until round 6, then `RUSH`. Landmark `IRONBRAID_GATE`: a neutral
+village in the far north-east corner, in sight from the start. Objective
+`ESCORT { unit: ARCHIVIST, to: IRONBRAID_GATE, within: 1 }`, stars
+`WITHIN_ROUNDS 16` and `KEEP_CITIES`. Graves along the road give the
+Necromancer something to do on the way. The lesson is a moving defence: the
+second pass is longer but unguarded, and the Ice Folk raiders arrive on it
+about when you do.
+
+**6, The Deep Gate.** Dry Land 14, a seed with the capital in a mountain
+pocket; three seats, Rival. You (Dwarves, centre): the capital `DEEP_GATE`
+at level 4 with Walls, one town, Field Defenses on the two approaches, the
+tagged Captain `THANE`. Seat 1, Ice Folk (north): a level 2 camp, `RUSH`.
+Seat 2, Humans (south): a level 2 camp, `HOLD` until round 6, then `RUSH`.
+Reinforcements: Ice Folk waves of three in rounds 4, 8 and 11; Human waves
+of three in rounds 7, 10 and 13 (the last with a Catapult); your relief of
+three in round 9. Both enemy capitals are small with no room to grow, so
+neither fields a giant: the pressure is the waves. Objective `SURVIVE { rounds: 14, protect: [DEEP_GATE] }`,
+stars `KEEP_CITIES` and `UNIT_ALIVE THANE`.
+
+**7, The Island That Time Forgot.** Archipelago 16; three seats, Rival;
+the Naval branch is allowed for the other seats, and you have no ships
+(the Ice Folk freeze the sea). You (Ice Folk, the north island): a level 3
+capital and seven units. Seat 1, Dinosaurs (the large middle island): a
+level 3 capital and the level 2 town on the landmark `CRATER`, `HOLD` the
+island until round 8, then `NORMAL`. Seat 2, Humans (the Baron's
+expedition, the south island): a level 2 port, `HOLD` until round 8, then
+`RUSH`; a landing party of four arrives beside the Crater in round 8.
+Objective `CAPTURE { places: [CRATER], byRound: 18 }`, stars
+`WITHIN_ROUNDS 14` and `KEEP_CITIES`. The lesson is the frozen sea as a
+road, and a race: after round 8 the island wakes up and the Baron lands.
+
+**8, Brain Wave.** Pangea 16; three seats, Rival. You (Dinosaurs, west): a
+level 3 capital, eight units, two of them grown, and the tagged giant
+`OLD_QUEEN`. Seat 1, Martians (the crater, east): a walled level 3 capital,
+`GUARD` its zone with a garrison of 5, and the tagged Brain `OVERMIND`
+standing on the capital; forbidden the Mothership's technology. Seat 2,
+Humans (thralls, south): a level 2 town, `RUSH`, with waves of three in
+rounds 5, 9 and 13. Objective `KILL { units: [OVERMIND], byRound: 20 }`,
+stars `WITHIN_ROUNDS 15` and `UNIT_ALIVE OLD_QUEEN`. The lesson is a raid:
+the cities do not matter, one unit behind a guard does, and Mind Control
+punishes sending the Old Queen in alone.
+
+**9, Sugar and Spite.** Lakes 16 with a band of Rift tiles edited across
+the middle (terrain edits; the lakes keep the band short); four seats,
+teams `[0, 0, 1, 1]`. You (Martians, west of the Rift): a level 3 capital
+with Saucers. Seat 1, Candy (your ally, east of the Rift): the walled level
+4 capital `SUGARCREST`, `HOLD` its zone, the tagged giant `PRALINE`. Seat 2,
+Undead (north-east): `RUSH`. Seat 3, Goblins (south-east): `HOLD` until
+round 4, then `RUSH`. Besieger waves in rounds 6, 10 and 13. Objective
+`SURVIVE { rounds: 16, protect: [SUGARCREST] }`, stars `KEEP_CITIES` and
+`UNIT_ALIVE PRALINE`. The lesson is defending a city that is not yours,
+with only the units that can fly there.
+
+**10, The Stars Are Right.** Pangea 20; four seats, teams `[0, 0, 1, 1]`.
+You (Humans, south-west): a level 4 capital and two towns, ten units. Seat
+1, Goblins (Grubnak, your ally, south-east): a level 3 capital, `NORMAL`.
+Seat 2, Cultists (the summit, north): the walled level 4 capital `LODGE`,
+two towns, `GUARD` the Lodge's zone with a garrison of 6. Seat 3, Undead
+(thralls, the middle): two towns, `RUSH`, with waves of four in rounds 6,
+12 and 18. Objective `CAPTURE { places: [LODGE], byRound: 24 }`, stars
+`WITHIN_ROUNDS 20` and `KEEP_CITIES`. The Cult's rituals are the clock in
+the story and its daemons the obstacle; the thralls exist to pull your army
+away from the summit.
+
+### 9.4 Unlock order, and free play
+
+Humans (from the start), Goblins (mission 2), Undead (4), Dwarves (5), Ice
+Folk (6), Dinosaurs (7), Martians (8), Candy (9), Cultists (10, the reward
+of part one). A mission unlocks the faction the story has just made peace
+with, and the next mission is led by it, so each new faction is learned in
+a mission built around what makes it different. Missions 1 and 3 unlock
+nothing: 1 is the first lesson, and 3 is played as the Goblins unlocked by 2.
+
+**Free play is not gated.** Skirmish offers every faction from the first
+launch, as before ([section 4.3](#43-what-unlocks-gate)): unlocks decide
+which faction you may lead in a campaign mission that offers a choice
+(mission 4) and fill the campaign screen's faction row. The user asked for
+unlocks as the campaign's reward, not as a lock on the rest of the game,
+and the existing behaviour already said so.
+
+## 10. The mission framework
+
+Built by `pulp_wars-v642.1` on the engine of [section 2](#2-architecture).
+The rules are in
+[current rules section 2.6](RULESET_7_CURRENT.md#26-mission-setup); this
+section says what there is and why.
+
+### 10.1 Objectives are data
+
+`MissionDefinitionV7.objective` (`src/engine/v7/missions/types.ts`):
+
+```ts
+type MissionObjectiveV7 = {
+  byRound?: number; // lose when this round ends without the win
+  protect?: ({ place: string } | { unit: string })[]; // lose when one is lost
+  bonus?: MissionBonusGoalV7[]; // at most two: the second and third star
+} & (
+  | { kind: "DOMINATION" }
+  | { kind: "ESCORT"; unit: string; to: string; within: 0 | 1 | 2 }
+  | { kind: "SURVIVE"; rounds: number }
+  | { kind: "CAPTURE"; places: string[] }
+  | { kind: "KILL"; units: string[] }
+);
+type MissionBonusGoalV7 =
+  | { kind: "WITHIN_ROUNDS"; rounds: number }
+  | { kind: "KEEP_CITIES" }
+  | { kind: "UNIT_ALIVE"; unit: string }
+  | { kind: "HOLD_PLACE"; place: string };
+```
+
+Places are `landmarks` (`{ tag, at }`) and units are tagged in a seat's unit
+list (`tag`). The objective is **not stored in the state**: the reducer asks
+`missionOutcomeV7(before, after, actor)` (`src/engine/v7/missions/objectives.ts`)
+after every accepted command and writes only the outcome, with its `cause`.
+A unit's tag resolves to its unit ID through the builder's deterministic
+numbering, so no tag is stored either. Order within one command: the win is
+judged before the loss; the clock only when the command ended a round.
+Eliminating every hostile seat wins every objective.
+
+The public query is `missionStatusV7(state)`, carried in every mission view
+as `PlayerViewV7.mission`: kind, clock, escort distance, places, units,
+secondary goals with whether each holds now, and the stars at a victory.
+Events: `MATCH_ENDED` as for every end (the cause is on the outcome), and
+`REINFORCEMENT_ARRIVED`. The text harness prints `OBJECTIVE`, `CLOCK`,
+`STARS`, and `REINFORCEMENTS` lines and names the cause in `OUTCOME`
+([text-mode play](../validation/TEXT_PLAY.md#missions)).
+
+### 10.2 Seats: teams and a seat's own forbidden technologies
+
+- Two to four seats, as before. `teams` (one number per seat) makes seats
+  of one team allies under every alliance rule, so an AI seat may fight
+  beside the human; without it the mission's AI mode decides.
+- `MissionSeatV7.forbiddenTechnologies` forbids a seat technologies of its
+  own. It is the framework's handicap lever: hand play found that what
+  makes a mission unfair is usually one unit of the AI's (Bomb Chuckers
+  against a wall, Necromancers on a field of Graves), and taking that unit's
+  technology from the AI seat is exact where an economy tweak is not. The
+  human seat is never handicapped this way in the built missions.
+
+### 10.3 Reinforcements
+
+`reinforcements: [{ seat, round, units: [{ role, at }] }]`: a wave arrives
+at its seat's Start Turn of that round, on or beside the written tile, with
+no home city. Waves are the scripted events of the framework: a relief
+column, a landing party, the next assault of a siege. They are
+deterministic and unconditional (a wave does not depend on what happened),
+which keeps replays and the AI's view simple.
+
+### 10.4 Directive schedules
+
+A seat's `directive` may be a list; each entry may carry `fromRound` and
+`untilRound`, and the first entry whose rounds hold the current round is
+played (`HOLD` until round 6, then `RUSH`). The kinds are the four of
+[section 2.5](#25-ai-directives); nothing else about the Normal AI changed.
+An allied AI seat needs no directive of its own: with `teams` it treats the
+human as an ally in every rule and plays its ordinary game against the
+rest.
+
+### 10.5 Natural maps
+
+A mission board is the map generator's output plus a short recorded list of
+edits. The definition keeps its ASCII layers (they are what the builder
+reads and what a reviewer sees), and beside them `source { mapType, size,
+seats, seed, edits }`. `tests/unit/ruleset-v7-mission-objectives.test.ts`
+rebuilds every registered mission's layers from its source
+(`missionMapDriftV7`) and fails when they differ, so nobody can hand-edit a
+board without recording the edit. Edits are one tile each: terrain (with an
+optional resource), a resource, a biome, a village or a chest added or
+removed. The four built missions change terrain on two tiles in all (Bone
+Neck); every other edit removes a village where a mission city stands or
+where a village would hand the AI a free city.
+
+`scripts/mission-map-v7.ts` is the seed browser:
+
+```bash
+npx tsx scripts/mission-map-v7.ts browse --map dry-land --size 14 --seats 2 --seeds 1-24 --out <dir>
+npx tsx scripts/mission-map-v7.ts bake --map continents --size 16 --seats 2 --seed 6
+npx tsx scripts/mission-map-v7.ts show --mission FRONTIER_4 --out <dir>
+```
+
+`browse` writes a contact sheet of the seeds (terrain, resources, villages,
+the generator's capitals) as one PNG; `bake` prints the layers of one seed
+as the TypeScript of a definition; `show` draws a registered mission's
+board.
+
+### 10.6 The interface
+
+- **Roster** (the campaign screen): ten cards. Each shows its number, name,
+  format, who fights whom (an ally stands on your side of "vs"), what it
+  unlocks, and its state: locked, open, its stars and best turn count once
+  won, or "Coming soon" for a mission that is designed but not built.
+- **Briefing**: the mission number and format, the story, the Objective
+  line with the objective's icon, what the three stars are for, up to three
+  hints, the map size, the opponents and allies with their emblems, what a
+  win unlocks, and the faction you lead (a choice where the mission offers
+  one).
+- **Objective tracker**: one chip in the top bar: an icon, the Objective
+  line, and one counter (turns left, steps to go, or how many of several
+  places or targets are done); the counter turns red in the last two rounds
+  of a deadline. On a phone it is a row of its own under the chips.
+- **Marks on the board**: a round badge on a stem over each place and named
+  unit of the objective that the player can see: a flag (go there, take
+  it), a shield (it must not fall), a star (this one must live), a
+  crosshair (this one must die). No tile coordinate is shown anywhere; a
+  distance is a count of steps. The marks do not move, so the Motion
+  setting does not concern them.
+- **Debrief**: "Mission complete" or "Mission failed", one line that says
+  why ("The Warrens is yours.", "Out of time.", "Doctor Crane was killed."),
+  on a win the stars with each goal marked earned or missed, the closing
+  line of the story, and the unlock notice. A win offers **Next mission**
+  and **Retry** (for the missing stars); a defeat offers **Retry**; both
+  offer Campaign and Main menu.
+
+The presentation is pure functions of the player view in
+`src/render/mission-presentation-v7.ts` (`missionTrackerV7`,
+`missionMarkersV7`, `missionStarGoalsV7`, `missionOutcomeLineV7`); the
+phone review has scenes for the roster with progress, a briefing with a
+choice, the tracker of every objective kind, and both end dialogs
+(`campaign-progress`, `campaign-briefing-choice`, `mission-hud-*`,
+`mission-victory`, `mission-defeat`).
+
+### 10.7 Progress and stars
+
+Progress stays in `pulpWars.campaign.v1`, behind try/catch, and holds only
+completed missions. A completion gains an optional `stars` (1 to 3): the
+most stars any win of the mission earned. Progress written before stars
+existed has no `stars` and reads as one star, so **existing progress stays
+valid**: a player who had won the four teaser missions keeps them won, with
+one star each and their unlocks, and may replay them for the rest. A win is
+recorded with `1 + the secondary goals that hold at the victory`.
+
+### 10.8 Identity
+
+The ruleset identity is `pulp-wars-poc-7r82`. [Section 3](#3-objectives)
+already said that an objective kind is a rules change with an identity
+bump, because the objective decides the outcome and the outcome is state a
+replay must reproduce; the outcome also gained a field (`cause`), the event
+list a kind, and the alliance rule a case (teams). A match that is not a
+mission plays exactly as at `7r81`, but its saves are refused like any
+other identity change. Mission content added later (missions 5 to 10) does
+not change the identity again unless it needs a new rule.
+
+## 11. Hand-play record: missions 1 to 4
+
+Each mission was played by hand through the text harness
+(`scripts/play-text mission …`, [section 12](#12-the-mission-builders-guide))
+as a competent but not perfect player, with the mission's AI seats played
+by the Normal AI under their directives, and tuned until it was won in its
+target length. The transcripts are kept with the bead's evidence
+(`scratchpad/pulp_wars-v642.1/transcripts/`). "Turn" below is the round of
+the win.
+
+### 11.1 Goblins at the Gate
+
+Dry Land 11, seed 1; five villages removed so that only the one behind your
+fort remains. **Won in round 11** with all three stars, one Fighter lost.
+The fifth configuration:
+
+1. The war band walked off to take the villages in the lane instead of
+   attacking: the villages went.
+2. Bomb Chuckers' splash killed the Guards on the wall from out of reach:
+   Marksmanship is forbidden to the Goblin seat.
+3. Five Wolf Riders overran the fort in round 4: Scouting is forbidden to
+   the Goblin seat.
+4. Orc Brutes, an Ogre and Mines made the Goblin camp uncrackable, and a
+   large starting reveal handed the AI the Explorer Monument: the Goblins
+   start with Gathering only, Engineering and Metallurgy are forbidden to
+   them, and their reveal is under half the board.
+
+The winning line: fortify the two Guards on the wall, research Gathering
+and harvest to level 4, Farming to level 5 and the Juggernaut in round 5,
+kill the war band on the wall, then march. **What nearly went wrong:** a
+lone Fighter sent ahead dies to Gang Up; the hint says so now.
+
+### 11.2 The Warrens
+
+Dry Land 14, seed 9; five villages removed (three of them are the Goblin
+cities). **Won in round 16** by capturing the Warrens, three stars. The
+fifth configuration:
+
+1. A three-city Goblin economy with Bomb Chuckers, Wolf Riders and Brutes
+   overran the player by round 9.
+2. An even war ended on a Troll at the Warrens.
+3. The Warrens in woods with Bomb Chuckers behind Walls was a fortress.
+4. A level 5 Warrens fielded two Trolls.
+
+Final: you start with Guards and Marksmen and eight units; the Goblins
+start without Hunting and Scouting and are forbidden Marksmanship,
+Fieldcraft and Metallurgy; the Warrens is a level 2 city without Walls; and
+the objective is the Warrens, not every city, which ends the mission when
+the lesson is learned instead of after a mop-up. **What nearly went
+wrong:** two Juggernauts sent in one at a time each died to Gang Up, and a
+Knight dash was lost; the win came from two Juggernauts and Knights
+arriving together.
+
+### 11.3 Green Tide
+
+Dry Land 14, seed 24; two villages removed (the Undead town and your own).
+**Won in round 11** by capturing the Barrow, three stars, about nine
+Goblins lost (and risen as Zombies). The third configuration:
+
+1. Six units and 5 Coins a turn: the first Bomb Chucker came in round 6,
+   too late.
+2. A horde of twelve far over capacity could not replace its dead, and one
+   death-blast chain wiped the Bomb Chuckers.
+
+Final: a level 4 capital with a land grant and a Mine (a Troll in round 1
+by hunting, a second in round 6), and the Undead hold only the open plain
+around the Barrow, so the villages of the forest belt are yours. **What
+nearly went wrong:** clustering the horde next to its own Kaboom; the Troll
+toss, Gang Up and Explosives' Breach decided it.
+
+### 11.4 Bone Neck
+
+Continents 16, seed 6; two channel tiles turned to land (Bone Neck) and
+three villages removed (your town, the gate, an Undead town). **Won in
+round 11 as the Humans** (one Guard lost) **and in round 11 as the
+Goblins**, three stars each. The second configuration:
+
+1. Objective "capture the tower" with three Necromancers: they raised a
+   Skeleton on every Grave of the gate every turn, and the siege never
+   ended.
+
+Final: Administration and Planning are forbidden to the Undead seat (no
+Necromancer), and the objective is the gate. The winning line: the economy
+to a level 5 giant by round 2, the two siege engines on the near shore
+killing whatever stands on the neck's exit, a Guard (or a Brute) plugging
+the bridge, then the giant kills the gate's occupant and enters.
+**What nearly went wrong:** a siege engine left within reach of the gate's
+Raider; they are the only two of the mission.
+
+### 11.5 What the hand play taught
+
+- A capture objective bounds a mission's length; "every city" turns a won
+  position into ten more rounds.
+- Handicap the AI by forbidding one technology to its seat, not by starving
+  its economy.
+- Keep AI capitals small: a level 5 city fields a giant.
+- Keep a seat's starting reveal under half the board, or it starts with
+  the Explorer Monument.
+- A `RUSH` seat does not throw itself at a prepared line; give the player a
+  reason to come out.
+- Do not start the player far over capacity: nothing can be replaced.
+
+## 12. The mission builder's guide
+
+How to add a mission.
+
+1. **Design it** in the table of [section 9.2](#92-the-ten-missions): who
+   leads, against whom, the format, the lesson, the unlock, the target
+   rounds.
+2. **Pick a map.** Browse seeds of the map type and size
+   (`npx tsx scripts/mission-map-v7.ts browse --map <type> --size <n>
+--seats <n> --seeds 1-24 --out <dir>`), look at the contact sheet, pick a
+   seed whose shape tells the mission's story (a pass, a neck, an island),
+   and keep the sheet with the bead's evidence.
+3. **Bake it.** `mission-map-v7.ts bake …` prints the layers; paste them
+   into `src/engine/v7/missions/<id>.ts` between the `// <map>` markers,
+   with `source { mapType, size, seats, seed, edits: [] }`. Add an edit for
+   every change you make to a layer (remove the village where a city
+   stands; a land bridge; a Rift band), and keep the list short: the board
+   should read as generated.
+4. **Seat it.** For each seat: faction (seat 0 may offer a choice), Coins,
+   technologies, cities with levels and rewards, units by role, a reveal.
+   Put every landmark of the objective inside seat 0's reveal. Name
+   landmarks and tag units in capitals (`GATE`, `ARCHIVIST`).
+5. **Set the objective**, the stars, the teams, the waves, and each AI
+   seat's directive (a schedule when it changes with the round) and its own
+   forbidden technologies.
+6. **Register it** in `src/engine/v7/missions/index.ts`, and write its
+   story in `src/campaign/chapter-1.ts`: name, format, briefing (three
+   sentences), the Objective line (one short sentence, it is the tracker's
+   text), up to three hints of at most 60 characters, the closing line, the
+   unlock, and the names of its landmarks and tagged units. Remove its
+   `planned` block.
+7. **Pin it.** Run `tests/unit/ruleset-v7-missions.test.ts` and add the
+   mission's initial-state hashes to its two tables; the chapter test
+   (`tests/unit/campaign-chapter-v7.test.ts`) lists what each built mission
+   must be.
+8. **Hand-play it** as seat 0:
+   `scripts/play-text mission --session <file> <ID> [--faction <f>]`, then
+   `view`, `options`, `do <ids> --end`. Play it as a competent but not
+   perfect player. If it is not won within its target rounds, or is won
+   without the lesson, change the definition (bump its `revision` when its
+   initial state changes, and re-pin) and play again. Record the seed, the
+   rounds, and what nearly went wrong in [section 11](#11-hand-play-record-missions-1-to-4),
+   and keep the transcripts.
+
+## 13. Decisions and follow-ups of `pulp_wars-v642.1`
+
+**Decisions made** (the user asked for them to be made):
+
+- Ten missions, one part, ending on a hook; the names of
+  [section 9.1](#91-the-story) (Captain Vera Steele, Grubnak the Loud, the
+  Ashen Marquis, Doctor Mortimer Crane, Thane Brunhild Ironbraid, Baron
+  Kessler, Mother Rime, the Overmind, Queen Praline, the Lodge of the
+  Unblinking Eye) are placeholders open to the user's veto.
+- The unlock order of [section 9.4](#94-unlock-order-and-free-play), the
+  Cultists last; free play stays ungated.
+- Missions 2, 3 and 4 became capture missions (the enemy capital or the
+  gate), because hand play showed that conquest missions drag after the
+  lesson is learned. Mission 1 stays a conquest: the Goblins have one camp.
+- Objectives are data and are not stored in the state; the identity is
+  `7r82` ([section 10.8](#108-identity)).
+- The AI is handicapped by a seat's own forbidden technologies, never by a
+  change to the Normal AI.
+- Three stars: the win and two secondary goals per mission, the most ever
+  earned is kept, and they gate nothing.
+- Missions 5 to 10 are on the roster as "Coming soon" rather than hidden,
+  so the player sees the whole of part one and what each mission unlocks.
+- The interface says "turn" where the rules say "round", as the top bar
+  already does.
+- The board's marks are code-drawn badges in the Newsstand recipe; no new
+  production art was generated.
+
+**Not done here, for later beads:**
+
+- Build missions 5 to 10 ([section 9.3](#93-missions-5-to-10-in-detail)),
+  each with its own hand play.
+- Map curiosities on mission boards: the state schema ties curiosities to
+  generated boards, so a mission board has none. A mission that wants a
+  curiosity as a landmark needs that rule changed.
+- The AI-proxy playtest (`npm run playtest:campaign`,
+  [section 7.1](#71-headless-playability-npm-run-playtestcampaign)) plays
+  whole matches and was not run under the standing no-simulations rule; its
+  expectations predate the capture objectives and the new boards.
+- An allied AI seat plays its ordinary game: it does not come to the
+  human's aid on purpose. Mission 9 and 10 may want a directive for that.
+- Mid-mission story beats (a line when a wave arrives) and portraits of the
+  named characters.
 
 ## Appendix A: critique of the first draft
 

@@ -382,7 +382,7 @@ function hostileZocCellsV7(
       unitFliesV7(view, other) ||
       unitIsIceboundV7(view, other) ||
       cooperativeAlliesV7(
-        view.setup.aiMode,
+        view.setup,
         view.humanPlayerId,
         unit.ownerId,
         other.ownerId,

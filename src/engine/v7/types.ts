@@ -5,7 +5,7 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r81" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r82" as const;
 /**
  * Every earlier Ruleset 7 identity, oldest first. Readers report these as
  * incompatible (never invalid). An identity bump must append the outgoing
@@ -92,8 +92,9 @@ export const PRIOR_RULESET_7_IDS = Object.freeze([
   "pulp-wars-poc-7r78",
   "pulp-wars-poc-7r79",
   "pulp-wars-poc-7r80",
+  "pulp-wars-poc-7r81",
 ] as const);
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r81.current" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r82.current" as const;
 /**
  * The map generator a setup names (docs/product/RULESET_7_MAP_SCALE.md
  * section 8.8): `V4` is the many-seats generator of `pulp_wars-ykw.3`
@@ -648,6 +649,9 @@ export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   // Map curiosities (section 7): an afloat unit salvaged a Sunken Wreck.
   "WRECK_SALVAGED",
   "PLAYER_ELIMINATED",
+  // Mission objectives (`pulp_wars-v642.1`, 7r82): a unit of a mission's
+  // reinforcements arrived at its seat's Start Turn.
+  "REINFORCEMENT_ARRIVED",
   "MATCH_ENDED",
 ] as const);
 export const PLAYER_EVENT_KIND_ORDER_V7 = Object.freeze([
@@ -1220,6 +1224,10 @@ export interface PendingChoiceV7 {
  * end of round 30 carries `decidedBy: "SCORE"` and the final `ranking`
  * (every player, first to last); an elimination result has neither key, so
  * older outcomes parse unchanged.
+ *
+ * Mission objectives (`pulp_wars-v642.1`, `pulp-wars-poc-7r82`,
+ * docs/product/CAMPAIGN.md section 10.1): a result a mission's objective
+ * decided carries its `cause`; an elimination result has no such key.
  */
 export type MatchOutcomeV7 =
   | {
@@ -1227,6 +1235,7 @@ export type MatchOutcomeV7 =
       readonly winnerId: PlayerId;
       readonly decidedBy?: "SCORE";
       readonly ranking?: readonly PlayerId[];
+      readonly cause?: MissionOutcomeCauseV7;
     }
   | {
       readonly kind: "DEFEAT";
@@ -1234,8 +1243,35 @@ export type MatchOutcomeV7 =
       readonly defeatedByPlayerId: PlayerId;
       readonly decidedBy?: "SCORE";
       readonly ranking?: readonly PlayerId[];
+      readonly cause?: MissionOutcomeCauseV7;
     }
   | { readonly kind: "HEADLESS_VICTORY"; readonly winnerId: PlayerId };
+
+/**
+ * Why a mission's objective ended the match: the first five are wins
+ * (`VICTORY`), the last four losses (`DEFEAT`).
+ */
+export const MISSION_OUTCOME_CAUSES_V7 = Object.freeze([
+  "ENEMIES_ELIMINATED",
+  "ESCORT_ARRIVED",
+  "SURVIVED",
+  "PLACES_CAPTURED",
+  "TARGETS_KILLED",
+  "ESCORT_LOST",
+  "UNIT_LOST",
+  "PLACE_LOST",
+  "OUT_OF_TIME",
+] as const);
+export type MissionOutcomeCauseV7 = (typeof MISSION_OUTCOME_CAUSES_V7)[number];
+/** The causes that are wins. */
+export const MISSION_WIN_CAUSES_V7: readonly MissionOutcomeCauseV7[] =
+  Object.freeze([
+    "ENEMIES_ELIMINATED",
+    "ESCORT_ARRIVED",
+    "SURVIVED",
+    "PLACES_CAPTURED",
+    "TARGETS_KILLED",
+  ] as const);
 
 export interface GameStateV7 {
   readonly schemaVersion: 7;

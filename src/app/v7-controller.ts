@@ -13,6 +13,7 @@ import {
   createPlayableGameV7,
   createReplayV7,
   createSafeLiveLogV7,
+  missionStatusV7,
   projectEventsV7,
   queryPlayerCommandsV7,
   viewForV7,
@@ -1049,7 +1050,12 @@ export class Ruleset7BrowserController {
       campaignMissionV7(missionId) === null
     )
       return;
-    const recorded = this.#campaign.recordWin(missionId, state.round);
+    const stars = Math.min(3, Math.max(1, missionStatusV7(state)?.stars ?? 1));
+    const recorded = this.#campaign.recordWin(
+      missionId,
+      state.round,
+      stars as 1 | 2 | 3,
+    );
     if (!recorded.ok) {
       this.#campaignDiagnostic = recorded.diagnostic;
       return;

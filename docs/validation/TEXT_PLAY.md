@@ -205,6 +205,49 @@ explored, you see every unit on it for the rest of the match. A unit on an
 unexplored tile, and a city whose center is unexplored, never appear in any
 output before `debrief`.
 
+## Missions
+
+`mission` starts a registered mission (`pulp_wars-v642.1`,
+[the campaign design](../product/CAMPAIGN.md)); you play seat 0, which moves
+first, and every other seat is the Normal AI under the mission's directives.
+
+```bash
+# The list: every registered mission with its size, seats, and objective.
+npm run --silent play:text -- mission --session S.json
+# Start one. --faction picks among seat 0's choices (mission 4: original or goblin).
+npm run --silent play:text -- mission --session m2.json FRONTIER_2
+npm run --silent play:text -- mission --session m4.json FRONTIER_4 --faction goblin
+```
+
+A campaign mission prints its briefing, the Objective line as the game
+words it, and its hints. Every view of a mission then has, under the
+players line:
+
+```text
+OBJECTIVE: own GATE @10,6 (eliminating every enemy also wins) | LOSE if you are eliminated
+CLOCK: you lose when round 4 ends | rounds left 4 (this one counts)
+STARS: 1 for the win, +1 win by round 12 (so far yes), +1 own every city you started with (so far yes)
+REINFORCEMENTS (yours): round 3: Guard
+```
+
+- `OBJECTIVE` names the places and units of the objective by their tag,
+  with the tile of a place and, for a unit you can see, its id, tile, and
+  Hit Points (an escort also shows its steps to go); then everything that
+  loses the mission.
+- `CLOCK` appears with a deadline or a number of rounds to survive. The
+  round counts when its last seat ends its turn.
+- `STARS` lists the secondary goals and whether each holds now.
+- `REINFORCEMENTS (yours)` lists your own waves still to come (the enemy's are
+  not announced). A wave arrives at its
+  seat's Start Turn of that round and is reported in the turn report.
+
+When the objective ends the match, the outcome line says why:
+`OUTCOME: VICTORY in round 11: the objective is captured`.
+
+Hand-playing a mission is how it is tuned: play it as a competent but not
+perfect player, keep the transcript, and record the seed, the rounds, and
+what nearly went wrong in the campaign design (section 11).
+
 ## Labs
 
 Six staged positions for the Human tuning. The first three

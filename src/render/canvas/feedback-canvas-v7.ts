@@ -233,6 +233,111 @@ export function drawFirstStepMarkerV7(
   context.restore();
 }
 
+/** The mission mark's badge diameter in CSS px, never under 20. */
+export function missionMarkerSizeCssPxV7(zoom: number): number {
+  return Math.max(20, 34 * zoom);
+}
+
+const MISSION_MARKER_FILL: Readonly<
+  Record<"GOAL" | "DEFEND" | "ESCORT" | "TARGET", string>
+> = {
+  GOAL: FIRST_STEP_YELLOW,
+  DEFEND: "#cfe9d6",
+  ESCORT: "#d5e4f6",
+  TARGET: "#c4261c",
+};
+
+/**
+ * A mission's mark over the board (`pulp_wars-v642.1`): a round badge on a
+ * short stem whose tip is at (`x`, `tipY`), in the Newsstand recipe (a
+ * flat fill, an ink keyline, a hard offset shadow). The glyph says what the
+ * objective wants: a flag (go there, take it), a shield (it must not
+ * fall), a star (this one must live), a crosshair (this one must die). It
+ * stands still: nothing here depends on the Motion setting.
+ */
+export function drawMissionMarkerV7(
+  context: CanvasRenderingContext2D,
+  x: number,
+  tipY: number,
+  zoom: number,
+  kind: "GOAL" | "DEFEND" | "ESCORT" | "TARGET",
+  options: { readonly highContrast?: boolean } = {},
+): void {
+  const size = missionMarkerSizeCssPxV7(zoom);
+  const radius = size / 2;
+  const stem = size * 0.34;
+  const cy = tipY - stem - radius;
+  const ink = options.highContrast === true ? "#000000" : FIRST_STEP_INK;
+  const offset = Math.max(1.5, size * 0.08);
+  const line = Math.max(2, size * 0.09);
+  const plate = (dx: number, dy: number): void => {
+    context.beginPath();
+    context.arc(x + dx, cy + dy, radius, Math.PI * 0.62, Math.PI * 2.38);
+    context.lineTo(x + dx, tipY + dy);
+    context.closePath();
+  };
+  context.save();
+  context.lineJoin = "round";
+  context.lineCap = "round";
+  plate(offset, offset);
+  context.fillStyle = ink;
+  context.fill();
+  plate(0, 0);
+  context.fillStyle =
+    options.highContrast === true ? "#ffffff" : MISSION_MARKER_FILL[kind];
+  context.fill();
+  context.strokeStyle = ink;
+  context.lineWidth = line;
+  context.stroke();
+  // The glyph, in ink (cream on the red of a target).
+  const glyph =
+    kind === "TARGET" && options.highContrast !== true ? "#fff8e6" : ink;
+  const unit = radius * 0.5;
+  context.strokeStyle = glyph;
+  context.fillStyle = glyph;
+  context.lineWidth = Math.max(1.5, size * 0.08);
+  context.beginPath();
+  if (kind === "GOAL") {
+    // A pennant on its pole.
+    context.moveTo(x - unit * 0.7, cy + unit * 1.1);
+    context.lineTo(x - unit * 0.7, cy - unit * 1.1);
+    context.stroke();
+    context.beginPath();
+    context.moveTo(x - unit * 0.7, cy - unit * 1.1);
+    context.lineTo(x + unit * 1.1, cy - unit * 0.45);
+    context.lineTo(x - unit * 0.7, cy + unit * 0.2);
+    context.closePath();
+    context.fill();
+  } else if (kind === "DEFEND") {
+    context.moveTo(x - unit, cy - unit);
+    context.lineTo(x + unit, cy - unit);
+    context.lineTo(x + unit, cy + unit * 0.1);
+    context.quadraticCurveTo(x + unit, cy + unit, x, cy + unit * 1.25);
+    context.quadraticCurveTo(x - unit, cy + unit, x - unit, cy + unit * 0.1);
+    context.closePath();
+    context.fill();
+  } else if (kind === "ESCORT") {
+    for (let point = 0; point < 10; point += 1) {
+      const angle = -Math.PI / 2 + (point * Math.PI) / 5;
+      const reach = point % 2 === 0 ? unit * 1.3 : unit * 0.55;
+      const px = x + Math.cos(angle) * reach;
+      const py = cy + Math.sin(angle) * reach;
+      if (point === 0) context.moveTo(px, py);
+      else context.lineTo(px, py);
+    }
+    context.closePath();
+    context.fill();
+  } else {
+    context.arc(x, cy, unit * 0.8, 0, Math.PI * 2);
+    context.moveTo(x - unit * 1.35, cy);
+    context.lineTo(x + unit * 1.35, cy);
+    context.moveTo(x, cy - unit * 1.35);
+    context.lineTo(x, cy + unit * 1.35);
+    context.stroke();
+  }
+  context.restore();
+}
+
 /**
  * The marker's side in CSS px at this zoom: 38 nominal px for the viewer's
  * unit (a little under a third of its tile), 32 for another player's, and

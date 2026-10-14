@@ -2152,6 +2152,19 @@ export type DomainEventV7 =
     }
   | {
       /**
+       * Mission objectives (`pulp_wars-v642.1`, 7r82;
+       * docs/product/CAMPAIGN.md section 10.2): at the Start Turn of
+       * `playerId` the new unit `unitId` of a mission's reinforcements
+       * arrived on `at`.
+       */
+      readonly kind: "REINFORCEMENT_ARRIVED";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly role: UnitRoleIdV7;
+      readonly at: CoordV7;
+    }
+  | {
+      /**
        * The ninth unit (`pulp_wars-w49.17`, 7r55): Rise Again. At the Start
        * Turn of `playerId` a Wight climbed out of its own Grave on `at` as
        * the new unit `unitId` with `hp`; the Grave is gone.

@@ -14,6 +14,7 @@ import {
 import { hasAcceptedStateCertificateV7 } from "./accepted-state-certificate";
 import { resolveFountainHealingV7 } from "./curiosities";
 import type { DomainEventV7 } from "./events";
+import { missionDefinitionV7 } from "./missions/index";
 import { spatialContributionAtV7 } from "./spatial-economy";
 import { allOwnedUnitsV7, type UnitListsV7 } from "./units";
 import {
@@ -215,12 +216,7 @@ export function arePlayersAlliedV7(
   left: PlayerId,
   right: PlayerId,
 ): boolean {
-  return cooperativeAlliesV7(
-    state.setup.aiMode,
-    state.humanPlayerId,
-    left,
-    right,
-  );
+  return cooperativeAlliesV7(state.setup, state.humanPlayerId, left, right);
 }
 
 /**
@@ -229,21 +225,47 @@ export function arePlayersAlliedV7(
  * the Normal AI): two different seats are allies exactly in a Cooperative
  * match when neither is the human. Map curiosities (section 8.1): the
  * neutral owner is never allied to anyone, in either mode.
+ *
+ * Mission teams (`pulp_wars-v642.1`, `pulp-wars-poc-7r82`;
+ * docs/product/CAMPAIGN.md section 10.2): in a match whose mission names
+ * `teams`, two different seats are allies exactly when their team numbers
+ * are equal, whatever the mode and whichever is the human. The first
+ * argument is the setup (the mode alone still means a match without teams).
  */
 export function cooperativeAlliesV7(
-  aiMode: MatchSetupV7["aiMode"],
-  humanPlayerId: PlayerId,
-  left: PlayerId,
-  right: PlayerId,
+  setup: MatchSetupV7["aiMode"] | Pick<MatchSetupV7, "aiMode" | "mission">,
+  humanPlayerId: number,
+  left: number,
+  right: number,
 ): boolean {
+  if (
+    left === right ||
+    isNeutralOwnerV7(left as PlayerId) ||
+    isNeutralOwnerV7(right as PlayerId)
+  )
+    return false;
+  if (typeof setup !== "string" && setup.mission !== undefined) {
+    const teams = missionTeamsV7(setup.mission);
+    // A seat's player ID is its seat number plus 1.
+    if (teams !== null) return teams[left - 1] === teams[right - 1];
+  }
   return (
-    left !== right &&
-    aiMode === "COOPERATIVE" &&
+    (typeof setup === "string" ? setup : setup.aiMode) === "COOPERATIVE" &&
     left !== humanPlayerId &&
-    right !== humanPlayerId &&
-    !isNeutralOwnerV7(left) &&
-    !isNeutralOwnerV7(right)
+    right !== humanPlayerId
   );
+}
+
+const MISSION_TEAMS_BY_REF_V7 = new WeakMap<object, readonly number[] | null>();
+/** The teams of a setup's mission, or null (no teams: the mode rule). */
+function missionTeamsV7(
+  ref: NonNullable<MatchSetupV7["mission"]>,
+): readonly number[] | null {
+  const cached = MISSION_TEAMS_BY_REF_V7.get(ref);
+  if (cached !== undefined) return cached;
+  const teams = missionDefinitionV7(ref)?.teams ?? null;
+  MISSION_TEAMS_BY_REF_V7.set(ref, teams);
+  return teams;
 }
 export function arePlayersHostileV7(
   state: Pick<GameStateV7, "setup" | "humanPlayerId">,

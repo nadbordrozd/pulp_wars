@@ -34,9 +34,17 @@ export interface CampaignMissionCardV7 {
   readonly bestRounds: number | null;
   /** The factions seat 0 may lead: its fixed faction or its choice list. */
   readonly leads: readonly FactionIdV7[];
-  /** The AI seats' factions, in seat order. */
+  /** The factions of the AI seats that fight you, in seat order. */
   readonly opponents: readonly FactionIdV7[];
+  /** The factions of the AI seats on your side, in seat order. */
+  readonly allies: readonly FactionIdV7[];
   readonly size: number;
+  /** False for a mission that is designed but not built: never playable. */
+  readonly built: boolean;
+  /** The best stars of a win (1 to `maxStars`); 0 until the mission is won. */
+  readonly stars: number;
+  /** One star for the win plus one for each secondary goal. */
+  readonly maxStars: number;
 }
 
 /** The chapter and entry of a chapter mission, or null (hidden fixtures). */
@@ -73,18 +81,45 @@ export function campaignMissionCardsV7(
 ): readonly CampaignMissionCardV7[] {
   return chapter.missions.map((entry) => {
     const mission = missionByIdV7(entry.missionId);
-    if (mission === null)
-      throw new Error(`Chapter mission ${entry.missionId} is not registered`);
-    const [human, ...ai] = mission.seats;
-    return {
+    const done = Object.hasOwn(completed, entry.missionId)
+      ? (completed[entry.missionId] ?? null)
+      : null;
+    const progress = {
       entry,
       status: campaignMissionStatusV7(chapter, entry, completed),
-      bestRounds: Object.hasOwn(completed, entry.missionId)
-        ? (completed[entry.missionId]?.bestRounds ?? null)
-        : null,
+      bestRounds: done?.bestRounds ?? null,
+    };
+    if (mission === null) {
+      // Designed, not built (docs/product/CAMPAIGN.md section 9).
+      if (entry.planned === undefined)
+        throw new Error(`Chapter mission ${entry.missionId} is not registered`);
+      return {
+        ...progress,
+        leads: entry.planned.leads,
+        opponents: entry.planned.opponents,
+        allies: entry.planned.allies ?? [],
+        size: entry.planned.size,
+        built: false,
+        stars: 0,
+        maxStars: 3,
+      };
+    }
+    const [human, ...ai] = mission.seats;
+    const team = (seat: number): number => mission.teams?.[seat] ?? seat;
+    const maxStars = 1 + (mission.objective?.bonus?.length ?? 0);
+    return {
+      ...progress,
       leads: human === undefined ? [] : missionSeatFactionsV7(human),
-      opponents: ai.flatMap((seat) => missionSeatFactionsV7(seat)),
+      opponents: ai.flatMap((seat, index) =>
+        team(index + 1) === team(0) ? [] : missionSeatFactionsV7(seat),
+      ),
+      allies: ai.flatMap((seat, index) =>
+        team(index + 1) === team(0) ? missionSeatFactionsV7(seat) : [],
+      ),
       size: mission.size,
+      built: true,
+      stars: done === null ? 0 : Math.min(maxStars, done.stars ?? 1),
+      maxStars,
     };
   });
 }
@@ -124,14 +159,26 @@ export function campaignFactionChoicesV7(
   return human.faction.choice.filter((faction) => unlocked.includes(faction));
 }
 
-/** The mission after this one in its chapter, or null after the last. */
+/**
+ * The mission after this one in its chapter, or null after the last built
+ * one: a mission that is designed but not built is nothing to go on to.
+ */
 export function campaignNextMissionV7(
   missionId: string,
 ): CampaignMissionEntryV7 | null {
   const found = campaignMissionV7(missionId);
   if (found === null) return null;
   const index = found.chapter.missions.indexOf(found.entry);
-  return found.chapter.missions[index + 1] ?? null;
+  const next = found.chapter.missions[index + 1] ?? null;
+  return next !== null && missionByIdV7(next.missionId) !== null ? next : null;
+}
+
+/** What a mission calls one of its landmarks or tagged units. */
+export function campaignTagNameV7(missionId: string, tag: string): string {
+  return (
+    campaignMissionV7(missionId)?.entry.names?.[tag] ??
+    tag.toLowerCase().replaceAll("_", " ")
+  );
 }
 
 /** Factions in `after` that `before` did not have (an unlock notice). */

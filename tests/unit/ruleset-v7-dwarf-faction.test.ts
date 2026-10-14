@@ -209,7 +209,7 @@ describe("Dwarf faction registration (sections 2 and 14)", () => {
     // DAEMON_UNBOUND (141).
     // The Cult's rituals (`pulp_wars-mch9.7`) add seven kinds after
     // DAEMON_BOUND, from RITUAL_BEGUN to CITY_COWED (148).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(154);
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(155);
     const after = (order: readonly string[], kind: string) =>
       order[order.indexOf(kind) + 1];
     for (const order of [

@@ -1,4 +1,4 @@
-import { queryTechnologyTreeV7 } from "../engine/v7/query";
+import { queryAlliedV7, queryTechnologyTreeV7 } from "../engine/v7/query";
 import {
   TECHNOLOGY_IDS_V7,
   type CoordV7,
@@ -250,10 +250,7 @@ function openingScore(tech: TechnologyIdV7, survey: CapitalSurveyV7): number {
 
 function hostileToViewer(view: PlayerViewV7, ownerId: number): boolean {
   return (
-    ownerId !== view.viewer.id &&
-    (view.setup.aiMode === "RIVAL" ||
-      ownerId === view.humanPlayerId ||
-      view.viewer.id === view.humanPlayerId)
+    ownerId !== view.viewer.id && !queryAlliedV7(view, ownerId, view.viewer.id)
   );
 }
 

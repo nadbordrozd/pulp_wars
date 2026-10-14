@@ -138,6 +138,9 @@ export const OWNER_READER_CLASSES_V7: Readonly<
   // a unit put beside a center. A neutral unit on a center (an Unbound
   // daemon) has no record, which reads as no technology: the right answer.
   "src/engine/v7/reducer.ts::rewardCellLegalV7": "NEUTRAL_SAFE",
+  // Mission objectives (`pulp_wars-v642.1`): the seat a wave of
+  // reinforcements belongs to, a seat of the mission's definition.
+  "src/engine/v7/reducer.ts::missionArrivalTileV7": "PLAYER_ONLY",
   // The reward unit of the viewer's own seat.
   "src/engine/v7/query.ts::previewRewardArrivalV7": "PLAYER_ONLY",
   "src/engine/v7/reducer.ts::settleCityRewardsV7": "PLAYER_ONLY",

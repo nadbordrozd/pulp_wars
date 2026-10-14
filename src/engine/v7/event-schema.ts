@@ -74,6 +74,8 @@ import {
   type NavalRoleIdV7,
   type RewardIdV7,
   type UnitRoleIdV7,
+  MISSION_OUTCOME_CAUSES_V7,
+  MISSION_WIN_CAUSES_V7,
 } from "./types";
 import {
   hasExactKeysV7,
@@ -723,6 +725,7 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
     "homeCityId",
   ],
   WIGHT_RISEN: ["kind", "playerId", "unitId", "at", "hp"],
+  REINFORCEMENT_ARRIVED: ["kind", "playerId", "unitId", "role", "at"],
   GRAVE_CREATED: ["kind", "at"],
   PLAGUE_CLEARED: ["kind", "unitIds"],
   CITY_CAPTURED: ["kind", "cityId", "from", "to"],
@@ -2467,6 +2470,13 @@ function validPayload(
         parseCoordV7(e.at) !== null &&
         e.coins === WRECK_COINS_V7
       );
+    case "REINFORCEMENT_ARRIVED":
+      return (
+        id(e.playerId) &&
+        id(e.unitId) &&
+        UNIT_ROLE_IDS_V7.includes(e.role as UnitRoleIdV7) &&
+        parseCoordV7(e.at) !== null
+      );
     case "MATCH_ENDED":
       return outcome(e.outcome);
   }
@@ -3096,6 +3106,24 @@ function treasure(e: Record<string, unknown>): boolean {
   );
 }
 function outcome(input: unknown): boolean {
+  // Mission objectives (`pulp_wars-v642.1`): a result a mission's objective
+  // decided carries its `cause`.
+  if (
+    typeof input === "object" &&
+    input !== null &&
+    Object.prototype.hasOwnProperty.call(input, "cause")
+  ) {
+    const { cause, ...rest } = input as { readonly cause?: unknown };
+    const known = MISSION_OUTCOME_CAUSES_V7.find((item) => item === cause);
+    const kind = (rest as { readonly kind?: unknown }).kind;
+    return (
+      known !== undefined &&
+      !Object.prototype.hasOwnProperty.call(rest, "decidedBy") &&
+      (kind === "VICTORY" || kind === "DEFEAT") &&
+      MISSION_WIN_CAUSES_V7.includes(known) === (kind === "VICTORY") &&
+      outcome(rest)
+    );
+  }
   // Score and modes (docs/product/RULESET_7_SCORE_AND_STARS.md section
   // 4.2): a result decided by the score adds `decidedBy` and the ranking.
   if (

@@ -480,7 +480,7 @@ export function queryTechnologyTreeV7(
   const tree = factionTreeV7(player.faction);
   // Forbidden technologies (docs/product/CAMPAIGN.md section 2.3): the Dry
   // Land Naval branch and a mission's list are DISABLED, never offered.
-  const forbidden = forbiddenTechnologiesV7(view.setup);
+  const forbidden = forbiddenTechnologiesV7(view.setup, player.seat);
   return {
     id: tree.id,
     faction: tree.faction,
@@ -10198,11 +10198,7 @@ function publicHostile(
   right: PlayerId,
 ): boolean {
   if (left === right) return false;
-  return (
-    view.setup.aiMode === "RIVAL" ||
-    left === view.humanPlayerId ||
-    right === view.humanPlayerId
-  );
+  return !cooperativeAlliesV7(view.setup, view.humanPlayerId, left, right);
 }
 
 /**
@@ -12245,12 +12241,20 @@ function publicAllied(
   left: PlayerId,
   right: PlayerId,
 ): boolean {
-  return cooperativeAlliesV7(
-    view.setup.aiMode,
-    view.humanPlayerId,
-    left,
-    right,
-  );
+  return cooperativeAlliesV7(view.setup, view.humanPlayerId, left, right);
+}
+
+/**
+ * Whether two seats are allies in this match, from the public view: the
+ * Cooperative rule, or a mission's teams (`pulp_wars-v642.1`). The Normal
+ * AI's helpers ask this rather than reading the mode themselves.
+ */
+export function queryAlliedV7(
+  view: Pick<PlayerViewV7, "setup" | "humanPlayerId">,
+  left: number,
+  right: number,
+): boolean {
+  return cooperativeAlliesV7(view.setup, view.humanPlayerId, left, right);
 }
 
 function rationalToHalfUnits(value: {

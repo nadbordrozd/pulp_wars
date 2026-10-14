@@ -2170,7 +2170,7 @@ player and up to eight opponents:
 - **Everywhere else.** The Cult is the ninth column of the Gallery's Units,
   Buildings (its cities, obelisk and seven Monuments) and Terrain (its
   ground and forest) tabs, the ninth entry of the campaign roster (locked:
-  no mission unlocks it yet), and stands in the title scene (its Initiate
+  mission 10 unlocks it, `pulp_wars-v642.1`), and stands in the title scene (its Initiate
   in the front rank; its Thing in the Cellar joins the back rank on a
   canvas 1000 px wide or more). The Stargazer's Gallery card has no
   animation preview: it cannot attack and Star-fall needs a circle.
@@ -2710,6 +2710,58 @@ minimal-text rule above: the pulp flavour is confined to the story blurbs.
   (`pulp_wars-2yc.18`).
 - A hidden fixture mission (in no chapter) and every skirmish keep the
   ordinary Victory and Defeat dialog: **Play again** and **Main menu**.
+
+**Part one and objectives (`pulp_wars-v642.1`).** The campaign has ten
+missions, formats beyond conquest, and stars
+([Campaign mode](../product/CAMPAIGN.md) section 10.6). Where the list
+above differs, this is current:
+
+- **Campaign screen.** The title is "Part One: The Hollow Frontier", and
+  there are ten cards. A card adds its **format** as a small chip
+  (Conquest, Capture, Escort, Hold out, Hunt, Rescue), an ally's emblem on
+  your side of "vs", and **Unlocks** with the emblem of the faction a win
+  unlocks. A won mission shows its **stars** (three, filled as far as they
+  were earned; "2 of 3 stars" in its accessible name) before "Best: N
+  turns", in place of the trophy. A mission that is designed but not built
+  is dashed and dimmed and says **Coming soon**; like a locked card it is
+  focusable and opens nothing.
+- **Briefing.** The kicker is "Mission N · Format". The Objective line has
+  the objective's icon (crossed sword: conquest; flag: capture; arrow:
+  escort; shield: hold out; skull: hunt). Under it, **what the stars are
+  for**: "Win the mission" and the two secondary goals ("Win by turn 12",
+  "Lose no city", "Keep Doctor Crane alive", "Hold the gate"). Allies are
+  listed after the opponents with "with". A mission that unlocks a faction
+  says "Win to unlock" with its emblem and name.
+- **Objective tracker.** In a mission the top bar has one more chip, after
+  the turn chips: the objective's icon, the Objective line, and one
+  counter: "5 turns" (a deadline or the rounds to hold out), "3 steps" (an
+  escort), or "1 of 2" (several places or targets). The counter turns red
+  in the last two rounds of a deadline. The chip's accessible name is the
+  whole of it ("Objective: Capture the Crater by turn 18. 5 turns left.").
+  On a phone the chip is a row of its own under the other chips and its
+  line is cut with an ellipsis when it does not fit.
+- **Marks on the board.** Each place and named unit of the objective the
+  player can see carries a round badge on a short stem, in the Newsstand
+  recipe (flat fill, ink keyline, hard shadow): a **flag** on yellow (go
+  there, or take it), a **shield** on green (it must not fall; a captured
+  goal turns into one), a **star** on blue (this unit must live: the
+  escort, a protected unit), a **crosshair** on red (this unit must die).
+  The marks stand still, are drawn over the board with the coach's marker,
+  and go when the match ends. A target out of sight has no mark. No text
+  anywhere names a tile.
+- **Victory.** Under "Mission complete": one line that says why ("The
+  Warrens is yours.", "You held out.", "Doctor Crane made it.", "The
+  Overmind is dead.", "Every enemy is beaten."), the three stars large, the
+  goals each marked earned or missed, then the closing line and the unlock
+  notice. Buttons: **Next mission**, **Retry** (play again for the missing
+  stars), **Campaign**, **Main menu**. After the last built mission the
+  chapter's closing line replaces Next mission and Retry is the primary
+  button.
+- **Defeat.** Under "Mission failed": why ("Out of time.", "Doctor Crane
+  was killed.", "Sugarcrest fell.", "Your last city fell."). No stars.
+  Buttons as before: **Retry**, **Campaign**, **Main menu**.
+- **Glossary.** A mission adds no ability; "turn" in these texts is the
+  rules' round, as on the top bar.
 
 ## 0. Ruleset-6 replacement contract
 

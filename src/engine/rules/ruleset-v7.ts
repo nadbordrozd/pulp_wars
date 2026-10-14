@@ -5182,7 +5182,7 @@ export const RULESET_7 = deepFreeze({
  * fewer cities to pay less (the user: "a fine strategic choice and self
  * limiting").
  *
- * Flatter tier bases (`pulp_wars-w49.40`, `pulp-wars-poc-7r81`; the user,
+ * Flatter tier bases (`pulp_wars-w49.40`, `pulp-wars-poc-7r82`; the user,
  * 2026-10-13, "I wanna see how it plays"): the bases are 5 / 6 / 7 (5 / 7 /
  * 9 before), so a technology of tier `t` costs
  * `5 / 6 / 7 + (1 / 2 / 3) * (C - 1)`. The per-city steps and the free

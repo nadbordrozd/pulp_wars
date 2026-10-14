@@ -1218,10 +1218,6 @@
   gap: 0.5rem;
 }
 
-.v7-briefing-opponent span:last-child {
-  font-weight: var(--pw-fw-bold);
-}
-
 .v7-briefing-lead {
   display: flex;
   gap: 0.75rem;
@@ -1291,13 +1287,223 @@
   font-style: italic;
 }
 
+/* ---------- Campaign: formats, stars, objectives (pulp_wars-v642.1) ---------- */
+
+.v7-mission-card {
+  grid-template-areas:
+    "number name sides"
+    "number state unlock";
+}
+
+/* A mission that is designed but not built: listed, never opened. */
+.v7-mission-card[data-status="soon"] {
+  cursor: default;
+  background: var(--pw-surface-2);
+  border-style: dashed;
+  border-color: var(--pw-line-soft);
+  box-shadow: none;
+  color: var(--pw-text-2);
+}
+
+.v7-mission-card[data-status="soon"]:hover {
+  border-color: var(--pw-line-soft);
+  translate: none;
+}
+
+.v7-mission-state {
+  flex-wrap: wrap;
+}
+
+.v7-mission-format {
+  padding: 0.05rem 0.5rem;
+  border: var(--pw-line-w-sm) solid var(--pw-line-soft);
+  border-radius: var(--pw-radius-pill);
+  color: var(--pw-text);
+  font-weight: var(--pw-fw-bold);
+  background: var(--pw-surface);
+}
+
+.v7-mission-stars {
+  display: inline-flex;
+  gap: 0.1rem;
+  align-items: center;
+  color: var(--pw-coin);
+}
+
+.v7-mission-star {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.v7-mission-star path {
+  fill: none;
+  stroke: var(--pw-line-soft);
+  stroke-width: 1.6;
+}
+
+.v7-mission-star[data-icon="star"] path {
+  fill: var(--pw-yellow);
+  stroke: var(--pw-ink);
+}
+
+.v7-mission-stars-large {
+  justify-content: center;
+  gap: 0.3rem;
+}
+
+.v7-mission-stars-large .v7-mission-star {
+  width: 2.4rem;
+  height: 2.4rem;
+}
+
+.v7-mission-unlock {
+  display: flex;
+  grid-area: unlock;
+  gap: 0.3rem;
+  align-items: center;
+  justify-content: flex-end;
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-sm);
+  font-weight: var(--pw-fw-bold);
+}
+
+.v7-mission-unlock[data-unlocked="true"] {
+  color: var(--pw-teal);
+}
+
+.v7-briefing-objective .v7-ui-icon {
+  align-self: center;
+  width: 1.3rem;
+  height: 1.3rem;
+  color: var(--pw-accent);
+}
+
+.v7-mission-goals {
+  display: grid;
+  gap: 0.3rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.v7-mission-goal {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+  font-weight: var(--pw-fw-bold);
+}
+
+.v7-mission-goal .v7-mission-star {
+  flex: none;
+  color: var(--pw-coin);
+}
+
+.v7-mission-goal[data-met="false"] {
+  color: var(--pw-text-2);
+  font-weight: var(--pw-fw-body);
+}
+
+.v7-mission-results .v7-mission-goals {
+  justify-self: center;
+  text-align: left;
+}
+
+.v7-briefing-opponent span:not(.v7-mission-versus, .v7-faction-emblem) {
+  font-weight: var(--pw-fw-bold);
+}
+
+.v7-briefing-unlock {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+  color: var(--pw-text-2);
+  font-size: var(--pw-fs-sm);
+}
+
+.v7-briefing-unlock strong {
+  color: var(--pw-text);
+  font-size: var(--pw-fs-md);
+}
+
+.v7-mission-cause {
+  font-size: var(--pw-fs-lg);
+  font-weight: var(--pw-fw-bold);
+}
+
+/* The objective tracker of the top bar: an icon, one line, a counter. */
+.v7-mission-tracker {
+  display: inline-flex;
+  flex: 0 1 auto;
+  gap: 0.4rem;
+  align-items: center;
+  min-width: 0;
+  max-width: min(26rem, 100%);
+  min-height: 2.5rem;
+  margin: 0;
+  padding: 0.2rem 0.35rem 0.2rem 0.7rem;
+  border: var(--pw-line-w-sm) solid var(--pw-line);
+  border-radius: var(--pw-radius-sm);
+  background: var(--pw-yellow);
+  box-shadow: var(--pw-shadow-sm);
+  color: var(--pw-text);
+  font-size: var(--pw-fs-md);
+  font-weight: var(--pw-fw-bold);
+}
+
+.v7-mission-tracker > .v7-ui-icon {
+  flex: none;
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.v7-mission-tracker-line {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.v7-mission-tracker-counter {
+  flex: none;
+  padding: 0.15rem 0.55rem;
+  border: var(--pw-line-w-sm) solid var(--pw-line);
+  border-radius: var(--pw-radius-pill);
+  background: var(--pw-surface);
+  white-space: nowrap;
+}
+
+.v7-mission-tracker[data-urgent="true"] .v7-mission-tracker-counter {
+  background: var(--pw-red-fill);
+  color: var(--pw-red);
+}
+
+.v7-mission-tracker:not(:has(.v7-mission-tracker-counter)) {
+  padding-right: 0.7rem;
+}
+
 @media (width < 30rem) {
   .v7-mission-card {
     grid-template-areas:
       "number name"
       "number state"
-      "number sides";
+      "number sides"
+      "number unlock";
     grid-template-columns: 2.2rem minmax(0, 1fr);
+  }
+
+  .v7-mission-unlock {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 599px) {
+  /* A phone: the tracker is a row of its own under the chips. */
+  .v7-mission-tracker {
+    flex: 1 1 100%;
+    max-width: 100%;
+    min-height: 2.1rem;
+    font-size: var(--pw-fs-sm);
   }
 }
 

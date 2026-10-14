@@ -521,7 +521,7 @@ function computeIcePlan(
   tools: Pick<FrozenSeaToolsV7, "isHostile" | "isAllied">,
 ): IcePlanV7 | null {
   if (!iceSeaSeatV7(view)) return null;
-  const forbidden = forbiddenTechnologiesV7(view.setup);
+  const forbidden = forbiddenTechnologiesV7(view.setup, view.viewer.seat);
   if (forbidden.has("SHORECRAFT")) return null;
   const width = view.board.width;
   const indexOf = (at: CoordV7): number => at.y * width + at.x;

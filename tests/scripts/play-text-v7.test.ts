@@ -2213,3 +2213,76 @@ describe("text play: the AI head start (pulp_wars-w49.39)", () => {
     expect(refused.output).toContain("--ai-head-start must be 0, 5, 10, or 20");
   });
 });
+
+describe("text play: missions and their objectives (pulp_wars-v642.1)", () => {
+  it("lists the missions, starts one, and prints its objective, clock, and stars", () => {
+    const session = path.join(root, "mission.json");
+    const list = ok("mission", "--session", session);
+    expect(list).toContain('FRONTIER_2  mission 2, "The Warrens"');
+    expect(list).toContain("TEST_ESCORT  (fixture)");
+    const started = ok("mission", "--session", session, "TEST_CAPTURE");
+    expect(started).toContain("MISSION TEST_CAPTURE");
+    expect(started).toContain(
+      "OBJECTIVE: own OUTPOST @5,3 (eliminating every enemy also wins) | LOSE if you are eliminated, or ALLY_HOME @8,8 falls, or round 4 ends without the win",
+    );
+    expect(started).toContain(
+      "CLOCK: you lose when round 4 ends | rounds left 4 (this one counts)",
+    );
+    expect(started).toContain(
+      "STARS: 1 for the win, +1 hold ALLY_HOME @8,8 (so far yes)",
+    );
+    const state = sessionState(session);
+    expect(state.setup.mission).toEqual({ id: "TEST_CAPTURE", revision: 1 });
+    expect(state.round).toBe(1);
+    // A second start needs --overwrite; an unknown mission is refused.
+    expect(run("mission", "--session", session, "TEST_KILL").exitCode).toBe(1);
+    expect(
+      run("mission", "--session", path.join(root, "none.json"), "NO_SUCH")
+        .exitCode,
+    ).toBe(1);
+  });
+
+  it("starts a chapter mission with its briefing, as the chosen faction, and names the cause of the end", () => {
+    const session = path.join(root, "mission-chapter.json");
+    const started = ok(
+      "mission",
+      "--session",
+      session,
+      "FRONTIER_4",
+      "--faction",
+      "goblin",
+    );
+    expect(started).toContain('MISSION FRONTIER_4 | mission 4, "Bone Neck"');
+    expect(started).toContain("BRIEFING: The Ashen Marquis waits");
+    expect(started).toContain(
+      "OBJECTIVE (as the game words it): Capture the gate.",
+    );
+    expect(started).toContain("you are S0 Goblin");
+    expect(started).toContain(
+      "STARS: 1 for the win, +1 win by round 12 (so far yes), +1 own every city you started with (so far yes)",
+    );
+    expect(sessionState(session).setup.factions).toEqual(["GOBLIN", "UNDEAD"]);
+    patchState(session, (state) => ({
+      ...state,
+      outcome: {
+        kind: "VICTORY",
+        winnerId: state.humanPlayerId,
+        cause: "PLACES_CAPTURED",
+      },
+    }));
+    expect(ok("view", "--session", session)).toContain(
+      "OUTCOME: VICTORY in round 1: the objective is captured",
+    );
+    // Human is the other choice; Undead is not offered.
+    expect(
+      run(
+        "mission",
+        "--session",
+        path.join(root, "mission-undead.json"),
+        "FRONTIER_4",
+        "--faction",
+        "undead",
+      ).exitCode,
+    ).toBe(1);
+  });
+});

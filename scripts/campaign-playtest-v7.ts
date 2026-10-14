@@ -65,6 +65,7 @@ import {
   createPlayableGameV7,
   missionByIdV7,
   missionMatchSetupV7,
+  missionSeatDirectivesV7,
   missionSeatFactionsV7,
   type CoordV7,
   type FactionIdV7,
@@ -214,9 +215,10 @@ function runCell(cell: PlaytestCell): PlaytestEntry {
   const human = state.players[0]?.id;
   const ai = state.players[1]?.id;
   if (human === undefined || ai === undefined) throw new Error("no seats");
-  const directive: MissionDirectiveV7 = definition.seats[1]?.directive ?? {
-    kind: "NORMAL",
-  };
+  const seat = definition.seats[1];
+  const directive: MissionDirectiveV7 = (seat === undefined
+    ? undefined
+    : missionSeatDirectivesV7(seat)[0]) ?? { kind: "NORMAL" };
   const untilRound =
     directive.kind === "NORMAL" ? undefined : directive.untilRound;
   const active = (round: number): boolean =>

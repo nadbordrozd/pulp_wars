@@ -1,4 +1,5 @@
 import {
+  cooperativeAlliesV7,
   BEAM_DOWN_PICKUP_RANGE_V7,
   FORCE_FIELD_SHIELD_V7,
   HEAVY_TRACTOR_PULL_V7,
@@ -731,8 +732,7 @@ function possessive(view: PlayerViewV7, playerId: number): string {
 
 function allied(view: PlayerViewV7, left: number, right: number): boolean {
   if (left === right) return true;
-  if (view.setup.aiMode !== "COOPERATIVE") return false;
-  return left !== view.humanPlayerId && right !== view.humanPlayerId;
+  return cooperativeAlliesV7(view.setup, view.humanPlayerId, left, right);
 }
 
 /**

@@ -309,6 +309,62 @@ const SCENES: readonly Scene[] = [
     },
   },
   {
+    // The roster with progress (`pulp_wars-v642.1`): three missions won
+    // with one, two and three stars, the fourth open, the rest to come.
+    name: "campaign-progress",
+    match: false,
+    full: true,
+    run: async (c) => {
+      await front(c);
+      await evaluate(c, CAMPAIGN_PROGRESS);
+      await click(c, "campaign");
+    },
+  },
+  {
+    // A briefing with a faction choice, star goals and an unlock.
+    name: "campaign-briefing-choice",
+    match: false,
+    full: true,
+    run: async (c) => {
+      await front(c);
+      await evaluate(c, CAMPAIGN_PROGRESS);
+      await click(c, "campaign");
+      await click(c, "mission-frontier_4");
+    },
+  },
+  // A mission in play: the objective tracker and the board's marks; and
+  // the mission's Victory and Defeat dialogs.
+  ...(
+    [
+      ["mission-hud-capture", "FRONTIER_2", "null"],
+      ["mission-hud-escort", "TEST_ESCORT", "null"],
+      ["mission-hud-deadline", "TEST_CAPTURE", "null"],
+      ["mission-hud-survive", "TEST_SURVIVE", "null"],
+      ["mission-hud-kill", "TEST_KILL", "null"],
+      [
+        "mission-victory",
+        "FRONTIER_2",
+        "{ kind: 'VICTORY', winnerId: live.humanPlayerId, cause: 'PLACES_CAPTURED' }",
+      ],
+      [
+        "mission-defeat",
+        "FRONTIER_4",
+        "{ kind: 'DEFEAT', humanId: live.humanPlayerId, defeatedByPlayerId: live.players[1].id }",
+      ],
+    ] as const
+  ).map(([name, mission, outcome]): Scene => ({
+    name,
+    match: true,
+    run: async (c) => {
+      await mount(
+        c,
+        "/tests/fixtures/v7-score-ui.ts",
+        "null",
+        missionState(mission, outcome),
+      );
+    },
+  })),
+  {
     name: "settings",
     match: false,
     full: true,
@@ -1256,6 +1312,29 @@ function nineSeatCult(
  * fresh nine-seat setup: every rival eliminated by the human (no turn is
  * played).
  */
+/**
+ * Campaign progress for the roster scenes (`pulp_wars-v642.1`): missions 1
+ * to 3 won with three, two and one star (the third in the format written
+ * before stars existed).
+ */
+const CAMPAIGN_PROGRESS = `localStorage.setItem('pulpWars.campaign.v1', JSON.stringify({ format: 'pulp-wars-campaign-progress', version: 1, completed: {
+  FRONTIER_1: { firstWonAt: '2026-10-14T10:00:00.000Z', bestRounds: 11, stars: 3 },
+  FRONTIER_2: { firstWonAt: '2026-10-14T11:00:00.000Z', bestRounds: 19, stars: 2 },
+  FRONTIER_3: { firstWonAt: '2026-10-14T12:00:00.000Z', bestRounds: 17 } } }))`;
+
+/**
+ * A mission's initial state, built by the mission builder (no command is
+ * played), with `outcome` written over it for the end dialogs.
+ */
+function missionState(missionId: string, outcome: string): string {
+  return `(() => {
+  const mission = engine.missionByIdV7('${missionId}');
+  const setup = engine.missionMatchSetupV7(mission, mission.seats[0].faction.choice?.[0] ?? mission.seats[0].faction);
+  const live = engine.buildMissionStateV7(mission, setup);
+  return { ...live, outcome: ${outcome} };
+})()`;
+}
+
 const NINE_PLAYER_VICTORY = `(() => {
   const builders = globalThis.__PHONE_BUILDERS__;
   const created = engine.createPlayableGameV7({ ...builders.browserSetupV7(4127, 3), aiCount: 8, width: 25, height: 25, factions: ${NINE_FACTIONS} });

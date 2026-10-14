@@ -181,7 +181,12 @@ import {
   barricadesOfV7,
   missionByIdV7,
   missionMatchSetupV7,
+  missionSeatFactionsV7,
+  MISSION_REGISTRY_V7,
+  type MissionOutcomeCauseV7,
+  type MissionSeatV7,
 } from "../src/engine/index";
+import { campaignMissionV7 } from "../src/campaign/progress-v7";
 import {
   DIGEST_DAMAGE_V7,
   arePlayersAlliedV7,
@@ -361,6 +366,8 @@ const HELP_V7 = `Pulp Wars text play (Ruleset 7). One command per invocation; st
   lab     --session S <LAB> [--giant] [--overwrite]
                                         start a staged position (you play the Humans; LAB_GOBLIN_MID: the Goblins; LAB_UNDEAD_MID: the Undead; LAB_MARTIAN_MID: the Martians; LAB_DINOSAUR_MID: the Dinosaurs; LAB_ICE_FOLK_MID: the Ice Folk; LAB_DWARF_MID: the Dwarves; LAB_CULT_MID: the Cultists); lab alone lists them
                                         --giant (a *_MID lab or LAB_BREAKTHROUGH): your faction's reward giant stands at the front, full HP
+  mission --session S <ID> [--faction F] [--overwrite]
+                                        start a campaign mission or an objective fixture as its human seat; mission alone lists them
   view    --session S [--full]          public view of your seat: header, map, cities, units
   tech    --session S                   technology tree with costs and unlocks
   options --session S [--unit ID | --city ID | --tile x,y | --all]
@@ -402,6 +409,7 @@ const VALUE_FLAGS_V7 = new Set([
   "size",
   "seed",
   "factions",
+  "faction",
   "seat",
   "curiosities",
   "mode",
@@ -479,6 +487,8 @@ function dispatchV7(args: ArgsV7): string {
       return commandNewV7(args);
     case "lab":
       return commandLabV7(args);
+    case "mission":
+      return commandMissionV7(args);
     case "view":
       return commandViewV7(args);
     case "tech":
@@ -3032,6 +3042,166 @@ function commandLabV7(args: ArgsV7): string {
   ].join("\n");
 }
 
+/**
+ * `mission` (`pulp_wars-v642.1`, docs/product/CAMPAIGN.md section 10.5): a
+ * registered mission that is not a lab, played as its human seat against
+ * the mission's AI seats with their directives: the campaign missions and
+ * the hidden fixtures. `--faction` picks the faction of a choice seat.
+ */
+function commandMissionV7(args: ArgsV7): string {
+  const name = (args.positionals[0] ?? "").toUpperCase().replaceAll("-", "_");
+  const playable = MISSION_REGISTRY_V7.filter(
+    (mission) => TEXT_PLAY_LABS_V7[mission.id] === undefined,
+  );
+  const listing = playable.map((mission) => {
+    const entry = campaignMissionV7(mission.id)?.entry;
+    return `  ${mission.id}${entry === undefined ? "  (fixture)" : `  mission ${String(entry.number)}, "${entry.name}"`}  ${String(mission.size)}x${String(mission.size)}, ${mission.seats.map((seat) => missionSeatFactionsV7(seat).join("/")).join(" vs ")}, ${mission.objective.kind.toLowerCase()}`;
+  });
+  if (name === "")
+    return [
+      "MISSIONS (mission --session S <ID> [--faction F]): you play seat 0 and move first",
+      ...listing,
+    ].join("\n");
+  const mission = playable.find((candidate) => candidate.id === name) ?? null;
+  if (mission === null)
+    throw new TextPlayErrorV7(
+      `unknown mission "${args.positionals[0] ?? ""}"; the missions are:\n${listing.join("\n")}`,
+    );
+  const path = sessionPathV7(args);
+  if (existsSync(path) && !args.switches.has("overwrite"))
+    throw new TextPlayErrorV7(
+      `${path} already exists; pass --overwrite to replace it`,
+    );
+  const wanted = args.flags.get("faction");
+  const faction =
+    wanted === undefined
+      ? undefined
+      : missionSeatFactionsV7(mission.seats[0] as MissionSeatV7).find(
+          (candidate) =>
+            candidate ===
+            (wanted.toUpperCase() === "HUMAN"
+              ? "ORIGINAL"
+              : wanted.toUpperCase().replaceAll("-", "_")),
+        );
+  if (wanted !== undefined && faction === undefined)
+    throw new TextPlayErrorV7(
+      `${name} does not offer the faction "${wanted}"; it offers ${missionSeatFactionsV7(mission.seats[0] as MissionSeatV7).join(", ")}`,
+    );
+  const setup = missionMatchSetupV7(mission, faction);
+  const created = setup === null ? null : createPlayableGameV7(setup);
+  if (created === null || !created.ok)
+    throw new TextPlayErrorV7(`the engine refused the mission ${name}`);
+  const playerId = created.state.humanPlayerId;
+  const base: SessionV7 = {
+    format: TEXT_PLAY_SESSION_FORMAT_V7,
+    version: TEXT_PLAY_SESSION_VERSION_V7,
+    rulesetId: RULESET_7_ID,
+    seat: 0,
+    playerId,
+    setup: created.state.setup,
+    commands: [],
+    state: created.state,
+    stateHash: canonicalHash(created.state),
+    journal: { rounds: [], notes: [], observed: [] },
+  };
+  const memory = new UnitMemoryV7();
+  memory.remember(viewForV7(base.state, playerId));
+  const played = playAiSeatsV7(base, memory);
+  saveSessionV7(path, played.session);
+  const entry = campaignMissionV7(mission.id)?.entry;
+  return [
+    `MISSION ${name}${entry === undefined ? "" : ` | mission ${String(entry.number)}, "${entry.name}"`} | session ${path}`,
+    ...(entry === undefined
+      ? []
+      : [
+          `BRIEFING: ${entry.briefing}`,
+          `OBJECTIVE (as the game words it): ${entry.objective}`,
+          ...entry.hints.map((hint) => `HINT: ${hint}`),
+        ]),
+    ...played.lines,
+    ...viewLinesV7(played.session, false),
+  ].join("\n");
+}
+
+/**
+ * The objective of a mission match (`PlayerViewV7.mission`): what wins,
+ * what loses, the clock, every named tile and unit, and the secondary
+ * goals. The text harness names tiles; the game never does.
+ */
+function missionLinesV7(view: PlayerViewV7): string[] {
+  const status = view.mission;
+  if (status === undefined) return [];
+  const mission = missionByIdV7(status.missionId);
+  if (mission === null) return [];
+  const objective = mission.objective;
+  const unitText = (tag: string): string => {
+    const named = status.units.find((unit) => unit.tag === tag);
+    if (named === undefined) return tag;
+    const seen = view.units.find((unit) => unit.id === named.unitId);
+    return `${tag} (u${String(named.unitId)}${!named.alive ? ", DEAD" : seen === undefined ? ", not in sight" : ` @${xyV7(seen.at)} hp ${String(seen.hp)}/${String(seen.maxHp)}`})`;
+  };
+  const placeText = (tag: string): string => {
+    const named = status.places.find((place) => place.tag === tag);
+    return named === undefined ? tag : `${tag} @${xyV7(named.at)}`;
+  };
+  const win =
+    objective.kind === "DOMINATION"
+      ? "capture every enemy city"
+      : objective.kind === "ESCORT"
+        ? `bring ${unitText(objective.unit)} within ${String(objective.within)} of ${placeText(objective.to)}${status.escortDistance === null ? "" : ` (${String(status.escortDistance)} to go)`}`
+        : objective.kind === "SURVIVE"
+          ? `survive until round ${String(objective.rounds)} ends`
+          : objective.kind === "CAPTURE"
+            ? `own ${objective.places.map((tag) => `${placeText(tag)}${status.places.find((place) => place.tag === tag)?.held === true ? " (HELD)" : ""}`).join(" and ")}`
+            : `kill ${objective.units.map(unitText).join(" and ")}`;
+  const lose = [
+    "you are eliminated",
+    ...(objective.kind === "ESCORT" ? [`${objective.unit} dies`] : []),
+    ...(objective.protect ?? []).map((item) =>
+      "unit" in item
+        ? `${unitText(item.unit)} dies`
+        : `${placeText(item.place)} falls`,
+    ),
+    ...(status.clock?.kind === "DEADLINE"
+      ? [`round ${String(status.clock.lastRound)} ends without the win`]
+      : []),
+  ];
+  const lines = [
+    `OBJECTIVE: ${win}${objective.kind === "DOMINATION" ? "" : " (eliminating every enemy also wins)"} | LOSE if ${lose.join(", or ")}`,
+  ];
+  if (status.clock !== null)
+    lines.push(
+      `CLOCK: ${status.clock.kind === "SURVIVE" ? "you win" : "you lose"} when round ${String(status.clock.lastRound)} ends | rounds left ${String(status.clock.roundsLeft)} (this one counts)`,
+    );
+  if (status.bonus.length > 0)
+    lines.push(
+      `STARS: 1 for the win${status.bonus
+        .map(
+          (item) =>
+            `, +1 ${
+              item.goal.kind === "WITHIN_ROUNDS"
+                ? `win by round ${String(item.goal.rounds)}`
+                : item.goal.kind === "KEEP_CITIES"
+                  ? "own every city you started with"
+                  : item.goal.kind === "UNIT_ALIVE"
+                    ? `${unitText(item.goal.unit)} lives`
+                    : `hold ${placeText(item.goal.place)}`
+            } (${item.met ? "so far yes" : "no"})`,
+        )
+        .join(
+          "",
+        )}${status.stars === null ? "" : ` | EARNED ${String(status.stars)} of ${String(1 + status.bonus.length)}`}`,
+    );
+  const waves = (mission.reinforcements ?? []).filter(
+    (wave) => wave.seat === view.viewer.seat && wave.round > view.round,
+  );
+  if (waves.length > 0)
+    lines.push(
+      `REINFORCEMENTS (yours): ${waves.map((wave) => `round ${String(wave.round)}: ${wave.units.map((unit) => effectiveRoleRuleV7(unit.role, view.viewer.faction).label).join(", ")}`).join(" | ")}`,
+    );
+  return lines;
+}
+
 /** The labs `--giant` works with (`pulp_wars-w49.30`). */
 const LAB_GIANT_NAMES_V7 = /^(LAB_[A-Z_]+_MID|LAB_BREAKTHROUGH)$/;
 
@@ -4024,6 +4194,7 @@ function headerLinesV7(session: SessionV7, view: PlayerViewV7): string[] {
       )
       .join(" > ")}`,
   ];
+  lines.push(...missionLinesV7(view));
   if (score.own !== null)
     lines.push(`SCORE (yours): ${scoreBreakdownTextV7(score.own)}`);
   if (view.outcome !== null) lines.push(...outcomeLinesV7(view));
@@ -4033,6 +4204,18 @@ function headerLinesV7(session: SessionV7, view: PlayerViewV7): string[] {
     );
   return lines;
 }
+
+const MISSION_CAUSE_TEXT_V7: Readonly<Record<MissionOutcomeCauseV7, string>> = {
+  ENEMIES_ELIMINATED: "every enemy is eliminated",
+  ESCORT_ARRIVED: "the escorted unit arrived",
+  SURVIVED: "you survived the last round",
+  PLACES_CAPTURED: "the objective is captured",
+  TARGETS_KILLED: "the target is dead",
+  ESCORT_LOST: "the escorted unit died",
+  UNIT_LOST: "a unit you had to keep alive died",
+  PLACE_LOST: "a place you had to hold fell",
+  OUT_OF_TIME: "the last round ended without the win",
+};
 
 function outcomeLineV7(view: PlayerViewV7): string {
   const outcome = view.outcome;
@@ -4049,6 +4232,9 @@ function outcomeLineV7(view: PlayerViewV7): string {
       ? `OUTCOME: VICTORY after round ${view.round}: you have the highest score (${ranking})`
       : `OUTCOME: DEFEAT after round ${view.round}: ${seatNameV7(view, outcome.defeatedByPlayerId)} has the highest score (${ranking})`;
   }
+  // Mission objectives (`pulp_wars-v642.1`): the objective decided it.
+  if (outcome.kind !== "HEADLESS_VICTORY" && outcome.cause !== undefined)
+    return `OUTCOME: ${outcome.kind} in round ${view.round}: ${MISSION_CAUSE_TEXT_V7[outcome.cause]}`;
   if (outcome.kind === "DEFEAT")
     return `OUTCOME: DEFEAT in round ${view.round}: you were eliminated by ${seatNameV7(view, outcome.defeatedByPlayerId)}`;
   return `OUTCOME: ${outcome.winnerId === view.viewer.id ? "VICTORY" : "DEFEAT"} in round ${view.round}: ${seatNameV7(view, outcome.winnerId)} won`;

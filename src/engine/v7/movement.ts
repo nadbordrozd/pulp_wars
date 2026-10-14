@@ -1721,12 +1721,7 @@ function publicAllied(
   left: PlayerId,
   right: PlayerId,
 ): boolean {
-  return cooperativeAlliesV7(
-    view.setup.aiMode,
-    view.humanPlayerId,
-    left,
-    right,
-  );
+  return cooperativeAlliesV7(view.setup, view.humanPlayerId, left, right);
 }
 function publicHostileZoc(
   view: PlayerViewV7,

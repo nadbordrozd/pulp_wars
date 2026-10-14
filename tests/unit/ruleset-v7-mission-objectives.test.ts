@@ -1,0 +1,1017 @@
+import { describe, expect, it } from "vitest";
+import { activeMissionDirectiveV7 } from "../../src/ai/v7-directives";
+import {
+  DOMAIN_EVENT_KIND_ORDER_V7,
+  MISSION_REGISTRY_V7,
+  PRIOR_RULESET_7_IDS,
+  RULESET_7_ID,
+  SAVE_STORAGE_KEY_V7,
+  applyCommandV7,
+  arePlayersAlliedV7,
+  canonicalHash,
+  createPlayableGameV7,
+  forbiddenTechnologiesV7,
+  generatedMissionLayersV7,
+  missionByIdV7,
+  missionHasGoalsV7,
+  missionMapDriftV7,
+  missionMapLayersV7,
+  missionMatchSetupV7,
+  missionOutcomeV7,
+  missionSeatFactionsV7,
+  missionStatusV7,
+  missionTaggedUnitsV7,
+  parseGameStateV7,
+  validateMissionDefinitionV7,
+  viewForV7,
+  type CoordV7,
+  type DomainEventV7,
+  type FactionIdV7,
+  type GameStateV7,
+  type MissionDefinitionV7,
+  type PlayerId,
+  type UnitId,
+} from "../../src/engine/index";
+import { OBSOLETE_SAVE_STORAGE_KEYS_V7 } from "../../src/persistence/index";
+import {
+  missionMarkersV7,
+  missionOutcomeLineV7,
+  missionStarGoalsV7,
+  missionTrackerV7,
+} from "../../src/render/mission-presentation-v7";
+
+// Mission objectives (`pulp_wars-v642.1`, `pulp-wars-poc-7r82`;
+// docs/product/CAMPAIGN.md section 10, RULESET_7_CURRENT.md section 2.6):
+// each objective kind's win, loss and edges, the order of the two, the
+// clock, teams, reinforcements, a seat's own forbidden technologies, the
+// directive schedule, the public status, the board marks and the tracker,
+// and the natural maps. Every state is a mission's initial state with a few
+// units or cities moved by hand; the only commands applied are End Turns.
+
+function definition(id: string): MissionDefinitionV7 {
+  const mission = missionByIdV7(id);
+  if (mission === null) throw new Error(`${id} is not registered`);
+  return mission;
+}
+
+function start(id: string, faction?: FactionIdV7): GameStateV7 {
+  const mission = definition(id);
+  const setup = missionMatchSetupV7(
+    mission,
+    faction ?? missionSeatFactionsV7(mission.seats[0] as never)[0],
+  );
+  if (setup === null) throw new Error(`${id}: no setup`);
+  const created = createPlayableGameV7(setup);
+  if (!created.ok) throw new Error(created.error.code);
+  return created.state;
+}
+
+function tagged(state: GameStateV7, tag: string): UnitId {
+  const mission = definition(state.setup.mission?.id ?? "");
+  const id = missionTaggedUnitsV7(mission, state.setup).get(tag);
+  if (id === undefined) throw new Error(`no unit tagged ${tag}`);
+  return id;
+}
+
+const at = (x: number, y: number): CoordV7 => ({ x, y });
+
+function moved(state: GameStateV7, id: UnitId, to: CoordV7): GameStateV7 {
+  return {
+    ...state,
+    units: state.units.map((unit) =>
+      unit.id === id ? { ...unit, at: to } : unit,
+    ),
+  };
+}
+
+function killed(state: GameStateV7, ...ids: UnitId[]): GameStateV7 {
+  return {
+    ...state,
+    units: state.units.filter((unit) => !ids.includes(unit.id)),
+  };
+}
+
+function cityTaken(state: GameStateV7, where: CoordV7, by: PlayerId) {
+  return {
+    ...state,
+    cities: state.cities.map((city) =>
+      city.at.x === where.x && city.at.y === where.y
+        ? { ...city, ownerId: by }
+        : city,
+    ),
+  };
+}
+
+function seatId(state: GameStateV7, seat: number): PlayerId {
+  const player = state.players[seat];
+  if (player === undefined) throw new Error(`no seat ${String(seat)}`);
+  return player.id;
+}
+
+/** The outcome after a command that left the round as it was. */
+function decided(after: GameStateV7, actor = after.humanPlayerId) {
+  return missionOutcomeV7({ round: after.round }, after, actor);
+}
+
+/** The outcome after the command that ended round `ended`. */
+function decidedAtRoundEnd(after: GameStateV7, ended: number, actor: PlayerId) {
+  return missionOutcomeV7(
+    { round: ended },
+    { ...after, round: ended + 1 },
+    actor,
+  );
+}
+
+/** Ends turns, seat after seat, until the match ends or `rounds` have gone. */
+function endTurns(
+  state: GameStateV7,
+  rounds: number,
+): { readonly state: GameStateV7; readonly events: readonly DomainEventV7[] } {
+  let current = state;
+  const events: DomainEventV7[] = [];
+  const stopAt = state.round + rounds;
+  while (current.outcome === null && current.round < stopAt) {
+    const actor = current.turnOrder[current.activeSeatIndex] as PlayerId;
+    const applied = applyCommandV7(current, actor, { kind: "END_TURN" });
+    if (!applied.accepted) throw new Error(applied.error.code);
+    events.push(...applied.events);
+    current = applied.state;
+  }
+  return { state: current, events };
+}
+
+describe("the identity", () => {
+  // Objectives decide a match's outcome, an outcome carries its cause, a
+  // seat may be forbidden technologies of its own, a mission may bring
+  // reinforcements (a new event kind) and name teams: 7r82.
+  it("is 7r82 after 7r81, whose save key is obsolete", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r82");
+    expect(PRIOR_RULESET_7_IDS.at(-1)).toBe("pulp-wars-poc-7r81");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r82.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
+      "pulpWars.save.v7r81.current",
+    );
+    expect(DOMAIN_EVENT_KIND_ORDER_V7.at(-2)).toBe("REINFORCEMENT_ARRIVED");
+    expect(DOMAIN_EVENT_KIND_ORDER_V7.at(-1)).toBe("MATCH_ENDED");
+  });
+});
+
+describe("ESCORT", () => {
+  it("is won when the escorted unit stands within the distance of the place", () => {
+    const state = start("TEST_ESCORT");
+    const envoy = tagged(state, "ENVOY");
+    expect(decided(state)).toBeNull();
+    // The gate is at (2, 2) and `within` is 1: two tiles away is not there.
+    expect(decided(moved(state, envoy, at(2, 4)))).toBeNull();
+    expect(decided(moved(state, envoy, at(3, 3)))).toEqual({
+      kind: "VICTORY",
+      winnerId: state.humanPlayerId,
+      cause: "ESCORT_ARRIVED",
+    });
+  });
+
+  it("is not won by another unit, nor by the escorted unit in other hands", () => {
+    const state = start("TEST_ESCORT");
+    const envoy = tagged(state, "ENVOY");
+    const other = state.units.find(
+      (unit) => unit.ownerId === state.humanPlayerId && unit.id !== envoy,
+    );
+    if (other === undefined) throw new Error("no second unit");
+    expect(decided(moved(state, other.id, at(3, 3)))).toBeNull();
+    const taken = moved(state, envoy, at(3, 3));
+    expect(
+      decided({
+        ...taken,
+        units: taken.units.map((unit) =>
+          unit.id === envoy ? { ...unit, ownerId: seatId(state, 1) } : unit,
+        ),
+      }),
+    ).toBeNull();
+  });
+
+  it("is lost when the escorted unit dies, by whoever killed it", () => {
+    const state = start("TEST_ESCORT");
+    const goblin = seatId(state, 1);
+    const dead = killed(state, tagged(state, "ENVOY"));
+    expect(decided(dead, goblin)).toEqual({
+      kind: "DEFEAT",
+      humanId: state.humanPlayerId,
+      defeatedByPlayerId: goblin,
+      cause: "ESCORT_LOST",
+    });
+    // Its own owner's command (a Kaboom, say): the first hostile seat.
+    expect(decided(dead, state.humanPlayerId)).toMatchObject({
+      defeatedByPlayerId: goblin,
+      cause: "ESCORT_LOST",
+    });
+  });
+
+  it("reports the steps to go, the place and the unit in the public status", () => {
+    const state = start("TEST_ESCORT");
+    const envoy = tagged(state, "ENVOY");
+    const status = missionStatusV7(state);
+    expect(status).toMatchObject({
+      missionId: "TEST_ESCORT",
+      kind: "ESCORT",
+      clock: null,
+      // From (2, 7) to within 1 of (2, 2).
+      escortDistance: 4,
+      places: [{ tag: "GATE", at: at(2, 2), role: "DESTINATION", held: false }],
+      units: [{ tag: "ENVOY", unitId: envoy, role: "ESCORT", alive: true }],
+      stars: null,
+    });
+    expect(missionStatusV7(moved(state, envoy, at(2, 3)))?.escortDistance).toBe(
+      0,
+    );
+    expect(missionStatusV7(killed(state, envoy))).toMatchObject({
+      escortDistance: null,
+      units: [{ tag: "ENVOY", alive: false }],
+    });
+  });
+});
+
+describe("SURVIVE", () => {
+  it("is won by the End Turn that ends the last round, not before", () => {
+    const state = start("TEST_SURVIVE");
+    expect(missionStatusV7(state)?.clock).toEqual({
+      kind: "SURVIVE",
+      lastRound: 3,
+      roundsLeft: 3,
+    });
+    const two = endTurns(state, 2).state;
+    expect(two.round).toBe(3);
+    expect(two.outcome).toBeNull();
+    expect(missionStatusV7(two)?.clock?.roundsLeft).toBe(1);
+    // The human's own End Turn of round 3 does not end the round.
+    const mine = applyCommandV7(two, two.humanPlayerId, { kind: "END_TURN" });
+    if (!mine.accepted) throw new Error(mine.error.code);
+    expect(mine.state.outcome).toBeNull();
+    const done = endTurns(two, 1);
+    expect(done.state.outcome).toEqual({
+      kind: "VICTORY",
+      winnerId: state.humanPlayerId,
+      cause: "SURVIVED",
+    });
+    expect(done.events.at(-1)).toMatchObject({ kind: "MATCH_ENDED" });
+    expect(parseGameStateV7(done.state)).not.toBeNull();
+    // One star: the fixture has no secondary goal.
+    expect(missionStatusV7(done.state)?.stars).toBe(1);
+  });
+
+  it("is lost when the protected place changes hands", () => {
+    const state = start("TEST_SURVIVE");
+    const goblin = seatId(state, 1);
+    const fallen = cityTaken(state, at(2, 8), goblin);
+    // The capture of the human's last city is the ordinary defeat, decided
+    // before the objective is asked; here the human keeps a second city.
+    const second = {
+      ...fallen,
+      cities: [
+        ...fallen.cities,
+        {
+          ...(fallen.cities[0] as GameStateV7["cities"][number]),
+          id: 99 as never,
+          at: at(8, 8),
+          ownerId: state.humanPlayerId,
+          isCapital: false,
+        },
+      ],
+    };
+    expect(decided(second, goblin)).toEqual({
+      kind: "DEFEAT",
+      humanId: state.humanPlayerId,
+      defeatedByPlayerId: goblin,
+      cause: "PLACE_LOST",
+    });
+    expect(missionStatusV7(second)?.places).toEqual([
+      { tag: "KEEP", at: at(2, 8), role: "PROTECT", held: false },
+    ]);
+  });
+
+  it("judges the win before the loss in one command", () => {
+    const state = start("TEST_SURVIVE");
+    const goblin = seatId(state, 1);
+    const fallen = cityTaken(state, at(2, 8), goblin);
+    expect(decidedAtRoundEnd(fallen, 3, goblin)).toMatchObject({
+      kind: "VICTORY",
+      cause: "SURVIVED",
+    });
+    expect(decidedAtRoundEnd(fallen, 2, goblin)).toMatchObject({
+      kind: "DEFEAT",
+      cause: "PLACE_LOST",
+    });
+  });
+});
+
+describe("reinforcements", () => {
+  it("arrive at their seat's Start Turn of the round, on or beside their tile, homeless", () => {
+    const state = start("TEST_SURVIVE");
+    const goblin = seatId(state, 1);
+    const before = new Set(state.units.map((unit) => unit.id));
+    // Round 1 has none.
+    const first = applyCommandV7(state, state.humanPlayerId, {
+      kind: "END_TURN",
+    });
+    if (!first.accepted) throw new Error(first.error.code);
+    expect(
+      first.events.some((event) => event.kind === "REINFORCEMENT_ARRIVED"),
+    ).toBe(false);
+    const two = endTurns(state, 1);
+    expect(two.state.round).toBe(2);
+    // Round 2: the human's Start Turn brings nothing; the Goblins' brings
+    // two Fighters, the second beside the first.
+    const mine = applyCommandV7(two.state, state.humanPlayerId, {
+      kind: "END_TURN",
+    });
+    if (!mine.accepted) throw new Error(mine.error.code);
+    const arrived = mine.events.filter(
+      (event) => event.kind === "REINFORCEMENT_ARRIVED",
+    );
+    expect(
+      arrived.map((event) =>
+        event.kind === "REINFORCEMENT_ARRIVED"
+          ? [event.playerId, event.role, event.at]
+          : null,
+      ),
+    ).toEqual([
+      [goblin, "FIGHTER", at(5, 5)],
+      [goblin, "FIGHTER", at(4, 4)],
+    ]);
+    const fresh = mine.state.units.filter((unit) => !before.has(unit.id));
+    expect(fresh).toHaveLength(2);
+    for (const unit of fresh) {
+      expect(unit.ownerId).toBe(goblin);
+      expect(unit.homeCityId).toBeNull();
+      expect(unit.hp).toBe(unit.maxHp);
+    }
+    expect(parseGameStateV7(mine.state)).not.toBeNull();
+    // Round 3: the relief Guard, beside the occupied capital.
+    const three = endTurns(mine.state, 1);
+    const relief = three.events.filter(
+      (event) =>
+        event.kind === "REINFORCEMENT_ARRIVED" &&
+        event.playerId === state.humanPlayerId,
+    );
+    expect(relief).toHaveLength(1);
+    expect(relief[0]).toMatchObject({ role: "GUARD" });
+  });
+
+  it("are the same on a replay", () => {
+    const run = (): string =>
+      canonicalHash(endTurns(start("TEST_SURVIVE"), 3).state);
+    expect(run()).toBe(run());
+  });
+});
+
+describe("CAPTURE, a deadline, and an ally", () => {
+  it("makes the allied seat an ally and the third seat an enemy, whatever the mode", () => {
+    const state = start("TEST_CAPTURE");
+    const [human, ally, enemy] = [0, 1, 2].map((seat) =>
+      seatId(state, seat),
+    ) as [PlayerId, PlayerId, PlayerId];
+    expect(state.setup.aiMode).toBe("RIVAL");
+    expect(arePlayersAlliedV7(state, human, ally)).toBe(true);
+    expect(arePlayersAlliedV7(state, ally, human)).toBe(true);
+    expect(arePlayersAlliedV7(state, human, enemy)).toBe(false);
+    expect(arePlayersAlliedV7(state, ally, enemy)).toBe(false);
+    // A mission without teams keeps the mode's rule.
+    const plain = start("TEST_ESCORT");
+    expect(
+      arePlayersAlliedV7(plain, plain.humanPlayerId, seatId(plain, 1)),
+    ).toBe(false);
+    // The ally's units are not attack targets of the human's commands.
+    const view = viewForV7(state, human);
+    expect(view.mission?.places).toEqual([
+      { tag: "OUTPOST", at: at(5, 3), role: "CAPTURE", held: false },
+      { tag: "ALLY_HOME", at: at(8, 8), role: "PROTECT", held: true },
+    ]);
+  });
+
+  it("is won when the human or the ally owns every named place", () => {
+    const state = start("TEST_CAPTURE");
+    expect(decided(state)).toBeNull();
+    for (const seat of [0, 1])
+      expect(
+        decided(cityTaken(state, at(5, 3), seatId(state, seat))),
+        `seat ${String(seat)}`,
+      ).toEqual({
+        kind: "VICTORY",
+        winnerId: state.humanPlayerId,
+        cause: "PLACES_CAPTURED",
+      });
+  });
+
+  it("is lost at the end of the last round, not a round earlier, and won on the last command", () => {
+    const state = start("TEST_CAPTURE");
+    const enemy = seatId(state, 2);
+    expect(missionStatusV7(state)?.clock).toEqual({
+      kind: "DEADLINE",
+      lastRound: 4,
+      roundsLeft: 4,
+    });
+    expect(decidedAtRoundEnd(state, 3, enemy)).toBeNull();
+    expect(decidedAtRoundEnd(state, 4, enemy)).toEqual({
+      kind: "DEFEAT",
+      humanId: state.humanPlayerId,
+      defeatedByPlayerId: enemy,
+      cause: "OUT_OF_TIME",
+    });
+    // Captured by the very command that ends the last round: a win.
+    expect(
+      decidedAtRoundEnd(
+        cityTaken(state, at(5, 3), state.humanPlayerId),
+        4,
+        enemy,
+      ),
+    ).toMatchObject({ kind: "VICTORY", cause: "PLACES_CAPTURED" });
+    // Played out: four rounds of End Turns end in the defeat.
+    const played = endTurns(state, 4).state;
+    expect(played.outcome).toMatchObject({
+      kind: "DEFEAT",
+      cause: "OUT_OF_TIME",
+    });
+    expect(played.round).toBe(5);
+  });
+
+  it("is lost when the ally's protected city falls, and won when every enemy is gone", () => {
+    const state = start("TEST_CAPTURE");
+    const enemy = seatId(state, 2);
+    expect(decided(cityTaken(state, at(8, 8), enemy), enemy)).toMatchObject({
+      kind: "DEFEAT",
+      cause: "PLACE_LOST",
+    });
+    // The ally stays active: only the hostile seat has to be eliminated.
+    const cleared = {
+      ...state,
+      players: state.players.map((player) =>
+        player.id === enemy
+          ? { ...player, status: "ELIMINATED" as const }
+          : player,
+      ),
+    };
+    expect(decided(cleared)).toEqual({
+      kind: "VICTORY",
+      winnerId: state.humanPlayerId,
+      cause: "ENEMIES_ELIMINATED",
+    });
+  });
+
+  it("counts the stars at the victory: one, plus each secondary goal that holds", () => {
+    const state = start("TEST_CAPTURE");
+    const won = (after: GameStateV7): GameStateV7 => ({
+      ...after,
+      outcome: {
+        kind: "VICTORY",
+        winnerId: state.humanPlayerId,
+        cause: "PLACES_CAPTURED",
+      },
+    });
+    expect(missionStatusV7(state)?.stars).toBeNull();
+    expect(missionStatusV7(won(state))?.stars).toBe(2);
+    expect(
+      missionStatusV7(won(cityTaken(state, at(8, 8), seatId(state, 2))))?.stars,
+    ).toBe(1);
+    // FRONTIER_2: by round 18 and with every own city.
+    const frontier = start("FRONTIER_2");
+    const frontierWon = (after: GameStateV7): GameStateV7 => ({
+      ...after,
+      outcome: { kind: "VICTORY", winnerId: after.humanPlayerId },
+    });
+    expect(missionStatusV7(frontierWon(frontier))?.stars).toBe(3);
+    expect(
+      missionStatusV7(frontierWon({ ...frontier, round: 19 }))?.stars,
+    ).toBe(2);
+    const town = definition("FRONTIER_2").seats[0]?.cities[1]?.at as CoordV7;
+    expect(
+      missionStatusV7(
+        frontierWon(
+          cityTaken({ ...frontier, round: 19 }, town, seatId(frontier, 1)),
+        ),
+      )?.stars,
+    ).toBe(1);
+    // A defeat has no stars.
+    expect(
+      missionStatusV7({
+        ...frontier,
+        outcome: {
+          kind: "DEFEAT",
+          humanId: frontier.humanPlayerId,
+          defeatedByPlayerId: seatId(frontier, 1),
+        },
+      })?.stars,
+    ).toBeNull();
+  });
+});
+
+describe("KILL", () => {
+  it("is won when every target is dead, lost when a protected unit dies, the win first", () => {
+    const state = start("TEST_KILL");
+    const boss = tagged(state, "BOSS");
+    const hero = tagged(state, "HERO");
+    const goblin = seatId(state, 1);
+    expect(decided(state)).toBeNull();
+    expect(decided(killed(state, boss))).toEqual({
+      kind: "VICTORY",
+      winnerId: state.humanPlayerId,
+      cause: "TARGETS_KILLED",
+    });
+    expect(decided(killed(state, hero), goblin)).toEqual({
+      kind: "DEFEAT",
+      humanId: state.humanPlayerId,
+      defeatedByPlayerId: goblin,
+      cause: "UNIT_LOST",
+    });
+    expect(decided(killed(state, boss, hero), goblin)).toMatchObject({
+      kind: "VICTORY",
+      cause: "TARGETS_KILLED",
+    });
+  });
+
+  it("counts a target at 0 hit points as dead and one swallowed by an Abomination as alive", () => {
+    const state = start("TEST_KILL");
+    const boss = tagged(state, "BOSS");
+    const zero = {
+      ...state,
+      units: state.units.map((unit) =>
+        unit.id === boss ? { ...unit, hp: 0 } : unit,
+      ),
+    };
+    expect(decided(zero)).toMatchObject({ cause: "TARGETS_KILLED" });
+    const record = state.units.find((unit) => unit.id === boss);
+    if (record === undefined) throw new Error("no boss");
+    const swallowed = {
+      ...killed(state, boss),
+      giants: {
+        ...state.giants,
+        swallowed: [{ unit: record }] as never,
+      },
+    };
+    expect(decided(swallowed)).toBeNull();
+    expect(missionStatusV7(swallowed)?.units).toEqual([
+      { tag: "BOSS", unitId: boss, role: "KILL", alive: true },
+      {
+        tag: "HERO",
+        unitId: tagged(state, "HERO"),
+        role: "PROTECT",
+        alive: true,
+      },
+    ]);
+  });
+});
+
+describe("a mission without goals", () => {
+  it("keeps the ordinary elimination rule and still has a public status", () => {
+    const grounds = definition("TEST_GROUNDS");
+    expect(missionHasGoalsV7(grounds)).toBe(false);
+    expect(missionHasGoalsV7(definition("FRONTIER_1"))).toBe(true);
+    const state = start("TEST_GROUNDS");
+    const cleared = {
+      ...state,
+      players: state.players.map((player) =>
+        player.id === state.humanPlayerId
+          ? player
+          : { ...player, status: "ELIMINATED" as const },
+      ),
+    };
+    expect(decided(cleared)).toBeNull();
+    expect(missionStatusV7(state)).toEqual({
+      missionId: "TEST_GROUNDS",
+      kind: "DOMINATION",
+      clock: null,
+      escortDistance: null,
+      places: [],
+      units: [],
+      bonus: [],
+      stars: null,
+    });
+  });
+
+  it("decides nothing once the match has an outcome", () => {
+    const state = start("TEST_KILL");
+    const over: GameStateV7 = {
+      ...killed(state, tagged(state, "BOSS")),
+      outcome: {
+        kind: "DEFEAT",
+        humanId: state.humanPlayerId,
+        defeatedByPlayerId: seatId(state, 1),
+      },
+    };
+    expect(decided(over)).toBeNull();
+  });
+});
+
+describe("the public status and the saved outcome", () => {
+  it("is the same for every viewer, is in every mission view, and in no other", () => {
+    const state = start("TEST_CAPTURE");
+    const views = state.players.map((player) => viewForV7(state, player.id));
+    for (const view of views)
+      expect(view.mission).toEqual(missionStatusV7(state));
+    expect(views[0]?.mission?.missionId).toBe("TEST_CAPTURE");
+    // The same state gives the same status, key for key.
+    expect(canonicalHash(missionStatusV7(state))).toBe(
+      canonicalHash(missionStatusV7(start("TEST_CAPTURE"))),
+    );
+  });
+
+  it("round-trips an outcome with its cause, and refuses a cause of the wrong side", () => {
+    const state = start("TEST_KILL");
+    const victory = (cause: string) =>
+      parseGameStateV7({
+        ...state,
+        outcome: {
+          kind: "VICTORY",
+          winnerId: state.humanPlayerId,
+          cause,
+        } as never,
+      });
+    expect(victory("TARGETS_KILLED")?.outcome).toEqual({
+      kind: "VICTORY",
+      winnerId: state.humanPlayerId,
+      cause: "TARGETS_KILLED",
+    });
+    expect(victory("OUT_OF_TIME")).toBeNull();
+    expect(victory("NO_SUCH_CAUSE")).toBeNull();
+    expect(
+      parseGameStateV7({
+        ...state,
+        outcome: {
+          kind: "DEFEAT",
+          humanId: state.humanPlayerId,
+          defeatedByPlayerId: seatId(state, 1),
+          cause: "SURVIVED",
+        } as never,
+      }),
+    ).toBeNull();
+  });
+});
+
+describe("a seat's own forbidden technologies and its directive schedule", () => {
+  it("forbids the AI seat's list to that seat alone", () => {
+    const state = start("FRONTIER_1");
+    const everyone = forbiddenTechnologiesV7(state.setup);
+    const human = forbiddenTechnologiesV7(state.setup, 0);
+    const goblins = forbiddenTechnologiesV7(state.setup, 1);
+    expect(everyone.has("SHORECRAFT")).toBe(true);
+    expect(everyone.has("ENGINEERING")).toBe(false);
+    expect([...human.keys()].sort()).toEqual([...everyone.keys()].sort());
+    expect(goblins.has("SHORECRAFT")).toBe(true);
+    for (const technology of [
+      "ENGINEERING",
+      "MARKSMANSHIP",
+      "SCOUTING",
+    ] as const)
+      expect(goblins.has(technology), technology).toBe(true);
+    // The Goblin seat is refused the research; the human is not offered it
+    // as forbidden.
+    const goblin = seatId(state, 1);
+    const turned = {
+      ...state,
+      activeSeatIndex: state.turnOrder.indexOf(goblin),
+      players: state.players.map((player) =>
+        player.id === goblin ? { ...player, coins: 99 } : player,
+      ),
+    };
+    const refused = applyCommandV7(turned, goblin, {
+      kind: "RESEARCH",
+      technologyId: "SCOUTING",
+    } as never);
+    expect(refused.accepted).toBe(false);
+  });
+
+  it("plays the schedule's first entry whose rounds hold the round", () => {
+    const state = start("TEST_SURVIVE");
+    const goblin = seatId(state, 1);
+    const kind = (round: number): string | null =>
+      activeMissionDirectiveV7(viewForV7({ ...state, round }, goblin))?.kind ??
+      null;
+    expect([1, 2, 3].map(kind)).toEqual(["HOLD", "RUSH", "RUSH"]);
+    // The human's seat has no directive.
+    expect(
+      activeMissionDirectiveV7(viewForV7(state, state.humanPlayerId)),
+    ).toBeNull();
+  });
+});
+
+describe("definition validity", () => {
+  const edited = (
+    id: string,
+    change: (mission: MissionDefinitionV7) => Partial<MissionDefinitionV7>,
+  ): MissionDefinitionV7 => {
+    const base = JSON.parse(
+      JSON.stringify(definition(id)),
+    ) as MissionDefinitionV7;
+    return { ...base, ...change(base) };
+  };
+
+  it("accepts every registered mission, whose objective names only what the mission has", () => {
+    for (const mission of MISSION_REGISTRY_V7) {
+      expect(
+        () => validateMissionDefinitionV7(mission),
+        mission.id,
+      ).not.toThrow();
+      // Every tag resolves to a unit of the built state, for every choice.
+      for (const faction of missionSeatFactionsV7(mission.seats[0] as never)) {
+        const state = start(mission.id, faction);
+        const status = missionStatusV7(state);
+        expect(status?.missionId).toBe(mission.id);
+        for (const unit of status?.units ?? [])
+          expect(
+            state.units.some((candidate) => candidate.id === unit.unitId),
+            `${mission.id} ${unit.tag}`,
+          ).toBe(true);
+        for (const place of status?.places ?? [])
+          expect(
+            state.board.tiles.some(
+              (tile) => tile.at.x === place.at.x && tile.at.y === place.at.y,
+            ),
+            `${mission.id} ${place.tag}`,
+          ).toBe(true);
+        expect((mission.objective.bonus ?? []).length).toBeLessThanOrEqual(2);
+      }
+    }
+  });
+
+  it("refuses an objective that names nothing, a hostile escort, bad teams and bad waves", () => {
+    const cases: readonly (readonly [string, MissionDefinitionV7])[] = [
+      [
+        "no landmark",
+        edited("TEST_ESCORT", (mission) => ({
+          objective: { ...mission.objective, to: "NOWHERE" } as never,
+        })),
+      ],
+      [
+        "no unit",
+        edited("TEST_ESCORT", (mission) => ({
+          objective: { ...mission.objective, unit: "NOBODY" } as never,
+        })),
+      ],
+      [
+        "escort distance",
+        edited("TEST_ESCORT", (mission) => ({
+          objective: { ...mission.objective, within: 3 } as never,
+        })),
+      ],
+      [
+        "survive with a deadline",
+        edited("TEST_SURVIVE", (mission) => ({
+          objective: { ...mission.objective, byRound: 5 } as never,
+        })),
+      ],
+      [
+        "survive one round",
+        edited("TEST_SURVIVE", (mission) => ({
+          objective: { ...mission.objective, rounds: 1 } as never,
+        })),
+      ],
+      [
+        "capture your own city",
+        edited("TEST_CAPTURE", (mission) => ({
+          objective: { ...mission.objective, places: ["ALLY_HOME"] } as never,
+        })),
+      ],
+      [
+        "kill your own unit",
+        edited("TEST_KILL", (mission) => ({
+          objective: { ...mission.objective, units: ["HERO"] } as never,
+        })),
+      ],
+      [
+        "three secondary goals",
+        edited("TEST_ESCORT", (mission) => ({
+          objective: {
+            ...mission.objective,
+            bonus: [
+              { kind: "KEEP_CITIES" },
+              { kind: "KEEP_CITIES" },
+              { kind: "KEEP_CITIES" },
+            ],
+          } as never,
+        })),
+      ],
+      [
+        "teams of the wrong length",
+        edited("TEST_CAPTURE", () => ({ teams: [0, 1] })),
+      ],
+      [
+        "everyone on one team",
+        edited("TEST_CAPTURE", () => ({ teams: [0, 0, 0] })),
+      ],
+      [
+        "a wave in round 1",
+        edited("TEST_SURVIVE", (mission) => ({
+          reinforcements: [
+            {
+              ...(mission.reinforcements?.[0] as NonNullable<
+                MissionDefinitionV7["reinforcements"]
+              >[number]),
+              round: 1,
+            },
+          ],
+        })),
+      ],
+      [
+        "a wave for no seat",
+        edited("TEST_SURVIVE", (mission) => ({
+          reinforcements: [
+            {
+              ...(mission.reinforcements?.[0] as NonNullable<
+                MissionDefinitionV7["reinforcements"]
+              >[number]),
+              seat: 7,
+            },
+          ],
+        })),
+      ],
+      [
+        "a landmark off the board",
+        edited("TEST_ESCORT", () => ({
+          landmarks: [{ tag: "GATE", at: at(40, 2) }],
+        })),
+      ],
+      [
+        "a seat forbidden a technology it starts with",
+        edited("TEST_ESCORT", (mission) => ({
+          seats: mission.seats.map((seat, index) =>
+            index === 0 ? { ...seat, forbiddenTechnologies: ["DRILL"] } : seat,
+          ),
+        })),
+      ],
+    ];
+    for (const [label, mission] of cases)
+      expect(() => validateMissionDefinitionV7(mission), label).toThrow(
+        /^Mission TEST_/,
+      );
+  });
+});
+
+describe("natural maps", () => {
+  it("rebuilds every registered mission's board from its recorded seed and edits", () => {
+    const natural = MISSION_REGISTRY_V7.filter(
+      (mission) => mission.source !== undefined,
+    );
+    expect(natural.map((mission) => mission.id)).toEqual([
+      "FRONTIER_1",
+      "FRONTIER_2",
+      "FRONTIER_3",
+      "FRONTIER_4",
+    ]);
+    for (const mission of MISSION_REGISTRY_V7)
+      expect(missionMapDriftV7(mission), mission.id).toEqual([]);
+    // The edit lists are small: the board is the generator's.
+    for (const mission of natural) {
+      const source = mission.source as NonNullable<
+        MissionDefinitionV7["source"]
+      >;
+      expect(source.edits.length, mission.id).toBeLessThanOrEqual(8);
+      expect(source.size).toBe(mission.size);
+      expect(source.seats).toBe(mission.seats.length);
+      // Terrain is changed on two tiles in all (Bone Neck); every other
+      // edit removes a village or a chest.
+      expect(
+        source.edits.filter((edit) => edit.kind === "TERRAIN").length,
+        mission.id,
+      ).toBe(mission.id === "FRONTIER_4" ? 2 : 0);
+    }
+  });
+
+  it("reports a board that no longer matches its source", () => {
+    const mission = definition("FRONTIER_4");
+    const terrain = [...mission.terrain];
+    terrain[6] = (terrain[6] as string).replace("........", "...~....");
+    expect(missionMapDriftV7({ ...mission, terrain })).not.toEqual([]);
+    const source = mission.source as NonNullable<MissionDefinitionV7["source"]>;
+    expect(
+      missionMapDriftV7({ ...mission, source: { ...source, seed: 7 } }),
+    ).not.toEqual([]);
+    expect(
+      missionMapDriftV7({
+        ...mission,
+        terrain,
+        source: { ...source, frozen: true },
+      }),
+    ).toEqual([]);
+    // The generator alone, without the edits, has water where the neck is.
+    const raw = generatedMissionLayersV7(source);
+    expect(raw.terrain[6]?.slice(7, 9)).toBe("~~");
+    expect(missionMapLayersV7(source).terrain[6]?.slice(7, 9)).toBe("..");
+  });
+});
+
+describe("how the objective is shown", () => {
+  it("builds the tracker: the line, one counter, and urgency near a deadline", () => {
+    const capture = start("TEST_CAPTURE");
+    const view = viewForV7(capture, capture.humanPlayerId);
+    expect(missionTrackerV7(view)).toEqual({
+      missionId: "TEST_CAPTURE",
+      icon: "flag",
+      line: "Capture outpost by turn 4.",
+      counter: "4 turns",
+      urgent: false,
+      description: "Objective: Capture outpost by turn 4. 4 turns left.",
+    });
+    const late = viewForV7({ ...capture, round: 4 }, capture.humanPlayerId);
+    expect(missionTrackerV7(late)).toMatchObject({
+      counter: "1 turn",
+      urgent: true,
+    });
+    const escort = start("TEST_ESCORT");
+    expect(
+      missionTrackerV7(viewForV7(escort, escort.humanPlayerId)),
+    ).toMatchObject({
+      icon: "move",
+      counter: "4 steps",
+      description: "Objective: Bring envoy to gate. 4 steps to go.",
+    });
+    // A chapter mission uses the campaign's own line.
+    const frontier = start("FRONTIER_3");
+    expect(
+      missionTrackerV7(viewForV7(frontier, frontier.humanPlayerId)),
+    ).toMatchObject({ line: "Capture the Barrow.", counter: null });
+    // A mission without goals still has its line; no mission, no tracker.
+    const plain = start("TEST_GROUNDS");
+    expect(
+      missionTrackerV7(viewForV7(plain, plain.humanPlayerId)),
+    ).toMatchObject({ line: "Capture every enemy city.", counter: null });
+    expect(missionTrackerV7({})).toBeNull();
+  });
+
+  it("marks places and the named units the viewer sees, and nothing once the match is over", () => {
+    const state = start("TEST_KILL");
+    const view = viewForV7(state, state.humanPlayerId);
+    expect(missionMarkersV7(view)).toEqual([
+      { kind: "TARGET", at: at(5, 5), on: "UNIT", label: "boss" },
+      { kind: "ESCORT", at: at(4, 6), on: "UNIT", label: "hero" },
+    ]);
+    // A target out of sight has no mark.
+    const boss = tagged(state, "BOSS");
+    const unseen = {
+      ...view,
+      units: view.units.filter((unit) => unit.id !== boss),
+    };
+    expect(missionMarkersV7(unseen).map((mark) => mark.label)).toEqual([
+      "hero",
+    ]);
+    expect(
+      missionMarkersV7({
+        ...view,
+        outcome: { kind: "VICTORY", winnerId: state.humanPlayerId },
+      }),
+    ).toEqual([]);
+    // A captured place turns from a goal into a place to hold.
+    const capture = start("TEST_CAPTURE");
+    const held = cityTaken(capture, at(5, 3), capture.humanPlayerId);
+    expect(
+      missionMarkersV7(viewForV7(held, held.humanPlayerId)).map(
+        (mark) => mark.kind,
+      ),
+    ).toEqual(["DEFEND", "DEFEND"]);
+  });
+
+  it("says in one line why a mission ended, and what each star was for", () => {
+    const state = start("TEST_KILL");
+    const view = viewForV7(state, state.humanPlayerId);
+    const ended = (kind: "VICTORY" | "DEFEAT", cause?: string) =>
+      missionOutcomeLineV7({
+        ...view,
+        outcome: (kind === "VICTORY"
+          ? { kind, winnerId: state.humanPlayerId, cause }
+          : {
+              kind,
+              humanId: state.humanPlayerId,
+              defeatedByPlayerId: seatId(state, 1),
+              cause,
+            }) as never,
+      });
+    expect(missionOutcomeLineV7(view)).toBeNull();
+    expect(ended("VICTORY", "TARGETS_KILLED")).toBe("Boss is dead.");
+    expect(ended("VICTORY", "ENEMIES_ELIMINATED")).toBe(
+      "Every enemy is beaten.",
+    );
+    expect(ended("VICTORY")).toBe("Every enemy is beaten.");
+    expect(ended("DEFEAT", "OUT_OF_TIME")).toBe("Out of time.");
+    expect(ended("DEFEAT")).toBe("Your last city fell.");
+    const lost = viewForV7(
+      killed(state, tagged(state, "HERO")),
+      state.humanPlayerId,
+    );
+    expect(
+      missionOutcomeLineV7({
+        ...lost,
+        outcome: {
+          kind: "DEFEAT",
+          humanId: state.humanPlayerId,
+          defeatedByPlayerId: seatId(state, 1),
+          cause: "UNIT_LOST",
+        },
+      }),
+    ).toBe("Hero was killed.");
+    expect(missionStarGoalsV7("TEST_KILL", null)).toEqual([
+      { text: "Win the mission", met: false },
+      { text: "Keep hero alive", met: false },
+    ]);
+    expect(
+      missionStarGoalsV7("FRONTIER_4", null).map((goal) => goal.text),
+    ).toEqual(["Win the mission", "Win by turn 12", "Lose no city"]);
+    expect(missionStarGoalsV7("NO_SUCH_MISSION", null)).toEqual([]);
+  });
+});

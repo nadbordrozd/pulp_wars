@@ -274,7 +274,7 @@ export function buildMissionStateV7(
       fail(
         `the city at ${coordText(city.at)} lies in another city's footprint`,
       );
-  const board: BoardStateV7 = {
+  let board: BoardStateV7 = {
     ...bare,
     tiles: bare.tiles.map((tile, index) => ({
       ...tile,
@@ -429,6 +429,7 @@ export function buildMissionStateV7(
     humanPlayerId: (players[0] as PlayerStateV7).id,
   };
   const ledger: PopulationContributionV7[] = [];
+  const harvestedFruit = new Set<string>();
   const settledCities = new Map<CityId, CityStateV7>();
   mission.seats.forEach((seat, seatIndex) =>
     seat.cities.forEach((written, cityIndex) => {
@@ -471,7 +472,7 @@ export function buildMissionStateV7(
         growthSpentV7(written.level) -
         economicPopulation -
         (boom ? BOOM_POPULATION_V7 : 0);
-      const harvested = board.tiles.filter(
+      const bareGrass = board.tiles.filter(
         (tile) =>
           tile.territoryCityId === id &&
           tile.terrain === "GRASS" &&
@@ -479,9 +480,26 @@ export function buildMissionStateV7(
           tile.resource === null &&
           tile.improvement === null,
       );
+      // Natural maps (`pulp_wars-v642.1`): a generated board has little
+      // bare Grass, so a city that needs more records than its bare Grass
+      // holds has harvested the Fruit of its own land: those tiles, in
+      // `(y, x)` order, lose their Fruit (below), as a harvest leaves them.
+      const fruit = board.tiles.filter(
+        (tile) =>
+          tile.territoryCityId === id &&
+          tile.terrain === "GRASS" &&
+          tile.site === null &&
+          tile.resource === "FRUIT" &&
+          tile.improvement === null,
+      );
+      const eaten = fruit.slice(0, Math.max(0, needed - bareGrass.length));
+      for (const tile of eaten) harvestedFruit.add(coordText(tile.at));
+      const harvested = [...bareGrass, ...eaten].sort(
+        (left, right) => left.at.y - right.at.y || left.at.x - right.at.x,
+      );
       if (harvested.length < needed)
         fail(
-          `the city at ${coordText(written.at)} needs ${String(needed)} harvested Grass tiles and has ${String(harvested.length)}`,
+          `the city at ${coordText(written.at)} needs ${String(needed)} harvested Grass tiles (bare, or with Fruit) and has ${String(harvested.length)}`,
         );
       const permanent: PopulationContributionV7[] = [
         ...(boom
@@ -539,6 +557,15 @@ export function buildMissionStateV7(
   const cities = draftCities.map(
     (city) => settledCities.get(city.id) as CityStateV7,
   );
+  if (harvestedFruit.size > 0)
+    board = {
+      ...board,
+      tiles: board.tiles.map((tile) =>
+        harvestedFruit.has(coordText(tile.at))
+          ? { ...tile, resource: null }
+          : tile,
+      ),
+    };
 
   // The other units, numbered after the ledger in seat order.
   const units: UnitStateV7[] = draftUnits
@@ -652,8 +679,8 @@ export function validateMissionDefinitionV7(
     fail("the ID is not SCREAMING_SNAKE");
   if (!Number.isSafeInteger(mission.revision) || mission.revision < 1)
     fail("the revision is not a positive integer");
-  if (size !== 11 && size !== 14 && size !== 16)
-    fail("the size is not 11, 14, or 16");
+  if (size !== 11 && size !== 14 && size !== 16 && size !== 20)
+    fail("the size is not 11, 14, 16, or 20");
   if (
     !Number.isSafeInteger(mission.seed) ||
     mission.seed < 0 ||
@@ -737,9 +764,33 @@ export function validateMissionDefinitionV7(
       );
       if (node?.prerequisites.some((item) => !seat.technologies.includes(item)))
         fail(`seat ${String(index)} knows ${tech} without its prerequisite`);
-      if (mission.forbiddenTechnologies.includes(tech))
+      if (
+        mission.forbiddenTechnologies.includes(tech) ||
+        (seat.forbiddenTechnologies ?? []).includes(tech)
+      )
         fail(`seat ${String(index)} starts with the forbidden ${tech}`);
     }
+    // The seat's own forbidden technologies: with the mission's, closed
+    // under prerequisites.
+    const own = seat.forbiddenTechnologies ?? [];
+    if (
+      new Set(own).size !== own.length ||
+      own.some(
+        (tech) =>
+          !TECHNOLOGY_IDS_V7.includes(tech) ||
+          mission.forbiddenTechnologies.includes(tech),
+      )
+    )
+      fail(`seat ${String(index)} has invalid forbidden technologies`);
+    const closed = new Set([...mission.forbiddenTechnologies, ...own]);
+    for (const node of ORIGINAL_BASELINE_V5_TREE.nodes)
+      if (
+        !closed.has(node.id) &&
+        node.prerequisites.some((tech) => closed.has(tech))
+      )
+        fail(
+          `seat ${String(index)}: ${node.id} must be forbidden with its prerequisite`,
+        );
     if (seat.cities.length === 0) fail(`seat ${String(index)} has no capital`);
     if (seat.units.length === 0) fail(`seat ${String(index)} has no unit`);
     if (seat.units.some((unit) => !UNIT_ROLE_IDS_V7.includes(unit.role)))
@@ -851,7 +902,7 @@ export function validateMissionDefinitionV7(
         `the Grave at ${coordText(grave)} is on a settlement or treasure chest`,
       );
   }
-  if (mission.objective.kind !== "DOMINATION") fail("the objective is unknown");
+  validateMissionGoalsV7(mission, fail);
   // Forbidden technologies: known IDs, closed under prerequisites, and the
   // whole Naval branch on a board without water.
   const forbidden = new Set(mission.forbiddenTechnologies);
@@ -878,6 +929,175 @@ export function validateMissionDefinitionV7(
     )
   )
     fail("a board without water must forbid the whole Naval branch");
+}
+
+/**
+ * Mission objectives (`pulp_wars-v642.1`, docs/product/CAMPAIGN.md section
+ * 10): the teams, landmarks, unit tags, objective, and reinforcements of a
+ * definition. Everything the objective names must exist, so the outcome
+ * rule never meets a name it cannot resolve.
+ */
+function validateMissionGoalsV7(
+  mission: MissionDefinitionV7,
+  fail: (reason: string) => never,
+): void {
+  const size = mission.size;
+  const tagged = /^[A-Z][A-Z0-9_]*$/;
+  const round = (value: number | undefined): boolean =>
+    value === undefined || (Number.isSafeInteger(value) && value >= 2);
+  // Teams: one number per seat, and at least one seat against the human.
+  const teams = mission.teams;
+  if (teams !== undefined) {
+    if (
+      teams.length !== mission.seats.length ||
+      teams.some((team) => !Number.isSafeInteger(team) || team < 0)
+    )
+      fail("the teams are not one whole number per seat");
+    if (teams.every((team) => team === teams[0]))
+      fail("no seat is against the human");
+  }
+  const hostileSeat = (seat: number): boolean =>
+    seat !== 0 && (teams === undefined || teams[seat] !== teams[0]);
+  // Landmarks: unique names on the board, on ground seat 0 has explored.
+  const landmarks = new Map<string, CoordV7>();
+  const human = mission.seats[0] as MissionSeatV7;
+  const explored = (at: CoordV7): boolean =>
+    human.cities.some(
+      (city) =>
+        Math.max(Math.abs(city.at.x - at.x), Math.abs(city.at.y - at.y)) <=
+        human.reveal.radius,
+    ) ||
+    (human.reveal.rects ?? []).some(
+      (rect) =>
+        at.x >= rect.x0 &&
+        at.x <= rect.x1 &&
+        at.y >= rect.y0 &&
+        at.y <= rect.y1,
+    );
+  for (const landmark of mission.landmarks ?? []) {
+    if (!tagged.test(landmark.tag) || landmarks.has(landmark.tag))
+      fail(`the landmark ${landmark.tag} is misnamed or repeated`);
+    if (!onBoard(size, landmark.at))
+      fail(`the landmark ${landmark.tag} is off the board`);
+    if (!explored(landmark.at))
+      fail(`the landmark ${landmark.tag} is not on ground seat 0 has explored`);
+    landmarks.set(landmark.tag, landmark.at);
+  }
+  // Unit tags: unique, with the seat that owns each.
+  const units = new Map<string, number>();
+  mission.seats.forEach((seat, index) => {
+    for (const unit of seat.units) {
+      if (unit.tag === undefined) continue;
+      if (!tagged.test(unit.tag) || units.has(unit.tag))
+        fail(`the unit tag ${unit.tag} is misnamed or repeated`);
+      if (unit.egg !== undefined) fail(`the Egg ${unit.tag} cannot be named`);
+      units.set(unit.tag, index);
+    }
+  });
+  const settlement = (tag: string): void => {
+    const at = landmarks.get(tag);
+    if (at === undefined) return fail(`no landmark ${tag}`);
+    const site =
+      mission.villages.some((village) => sameCoord(village, at)) ||
+      mission.seats.some((seat) =>
+        seat.cities.some((city) => sameCoord(city.at, at)),
+      );
+    if (!site) fail(`the landmark ${tag} is not a city or village`);
+  };
+  const unitOf = (tag: string): number => {
+    const seat = units.get(tag);
+    return seat === undefined ? fail(`no unit tagged ${tag}`) : seat;
+  };
+  const objective = mission.objective;
+  switch (objective.kind) {
+    case "DOMINATION":
+      break;
+    case "ESCORT":
+      if (unitOf(objective.unit) !== 0)
+        fail("the escorted unit is not seat 0's");
+      if (!landmarks.has(objective.to)) fail(`no landmark ${objective.to}`);
+      if (![0, 1, 2].includes(objective.within))
+        fail("the escort distance is not 0, 1, or 2");
+      break;
+    case "SURVIVE":
+      if (!Number.isSafeInteger(objective.rounds) || objective.rounds < 2)
+        fail("the rounds to survive are not a whole number of 2 or more");
+      if (objective.byRound !== undefined)
+        fail("a SURVIVE objective takes no byRound");
+      break;
+    case "CAPTURE":
+      if (objective.places.length === 0) fail("nothing to capture");
+      for (const tag of objective.places) {
+        settlement(tag);
+        const at = landmarks.get(tag) as CoordV7;
+        if (
+          mission.seats.some(
+            (seat, index) =>
+              !hostileSeat(index) &&
+              seat.cities.some((city) => sameCoord(city.at, at)),
+          )
+        )
+          fail(`the place ${tag} is already the human side's`);
+      }
+      break;
+    case "KILL":
+      if (objective.units.length === 0) fail("nothing to kill");
+      for (const tag of objective.units)
+        if (!hostileSeat(unitOf(tag)))
+          fail(`the target ${tag} is not a hostile seat's unit`);
+      break;
+    default:
+      fail("the objective is unknown");
+  }
+  if (!round(objective.byRound))
+    fail("byRound is not a whole number of 2 or more");
+  for (const item of objective.protect ?? [])
+    if ("unit" in item) {
+      if (hostileSeat(unitOf(item.unit)))
+        fail(`the protected unit ${item.unit} is a hostile seat's`);
+    } else settlement(item.place);
+  const bonus = objective.bonus ?? [];
+  if (bonus.length > 2) fail("more than two secondary goals");
+  for (const goal of bonus)
+    switch (goal.kind) {
+      case "WITHIN_ROUNDS":
+        if (!Number.isSafeInteger(goal.rounds) || goal.rounds < 1)
+          fail("a WITHIN_ROUNDS goal needs a positive whole number");
+        break;
+      case "KEEP_CITIES":
+        break;
+      case "UNIT_ALIVE":
+        if (hostileSeat(unitOf(goal.unit)))
+          fail(`the unit ${goal.unit} of a secondary goal is hostile`);
+        break;
+      case "HOLD_PLACE":
+        settlement(goal.place);
+        break;
+      default:
+        fail("a secondary goal is unknown");
+    }
+  for (const wave of mission.reinforcements ?? []) {
+    if (
+      !Number.isSafeInteger(wave.seat) ||
+      wave.seat < 0 ||
+      wave.seat >= mission.seats.length
+    )
+      fail("a reinforcement names no seat");
+    if (!Number.isSafeInteger(wave.round) || wave.round < 2)
+      fail("a reinforcement round is not a whole number of 2 or more");
+    if (wave.units.length === 0) fail("a reinforcement brings no unit");
+    if (
+      typeof mission.seats[wave.seat]?.faction !== "string" &&
+      wave.seat !== 0
+    )
+      fail("a reinforcement seat has no fixed faction");
+    for (const unit of wave.units) {
+      if (!UNIT_ROLE_IDS_V7.includes(unit.role))
+        fail("a reinforcement has an unknown unit role");
+      if (!onBoard(size, unit.at))
+        fail(`a reinforcement at ${coordText(unit.at)} is off the board`);
+    }
+  }
 }
 
 function bareBoard(mission: MissionDefinitionV7): BoardStateV7 {

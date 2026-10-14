@@ -185,14 +185,14 @@ describe("the Industry reshuffle: identity", () => {
   it("was 7r56 after 7r55, with both save keys obsolete now", () => {
     // (Step two of the Undead pass, `pulp_wars-w49.24`, took 7r57, and
     // step two of the Martian pass, `pulp_wars-w49.25`, 7r58.)
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r81");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r81.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-26, -24)).toEqual([
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r82");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r82.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-27, -25)).toEqual([
       "pulp-wars-poc-7r55",
       "pulp-wars-poc-7r56",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-26, -24)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-27, -25)).toEqual([
       "pulpWars.save.v7r55.current",
       "pulpWars.save.v7r56.current",
     ]);
@@ -473,10 +473,11 @@ describe("the Industry reshuffle: the missions", () => {
         "LAB_DINOSAUR_MID",
       ].map((id) => [id, revision(id)]),
     ).toEqual([
-      ["FRONTIER_1", 2],
-      ["FRONTIER_2", 2],
-      ["FRONTIER_3", 2],
-      ["FRONTIER_4", 3],
+      // Natural maps and objectives (`pulp_wars-v642.1`): one revision on.
+      ["FRONTIER_1", 3],
+      ["FRONTIER_2", 3],
+      ["FRONTIER_3", 3],
+      ["FRONTIER_4", 4],
       ["TEST_NECK", 2],
       // Unchanged: both seats owned Fortification already.
       ["LAB_SIEGE", 1],

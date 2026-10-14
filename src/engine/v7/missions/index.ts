@@ -26,8 +26,18 @@ import { LAB_UNDEAD_MID_V7 } from "./lab-undead";
 import { TEST_GROUNDS_V7 } from "./test-grounds";
 import { TEST_GUARD_V7, TEST_HOLD_V7, TEST_RUSH_V7 } from "./test-directives";
 import { TEST_NECK_V7 } from "./test-neck";
+import {
+  TEST_CAPTURE_V7,
+  TEST_ESCORT_V7,
+  TEST_KILL_V7,
+  TEST_SURVIVE_V7,
+} from "./test-objectives";
 import { TUTORIAL_1_V7 } from "./tutorial";
-import type { MissionDefinitionV7, MissionSeatV7 } from "./types";
+import type {
+  MissionDefinitionV7,
+  MissionDirectiveV7,
+  MissionSeatV7,
+} from "./types";
 
 export type * from "./types";
 
@@ -45,6 +55,11 @@ export const MISSION_REGISTRY_V7: readonly MissionDefinitionV7[] = deepFreeze([
   TEST_GUARD_V7,
   // The siege fixture of the Normal AI (`pulp_wars-68k.6`).
   TEST_NECK_V7,
+  // The objective fixtures (`pulp_wars-v642.1`): one per objective kind.
+  TEST_ESCORT_V7,
+  TEST_SURVIVE_V7,
+  TEST_CAPTURE_V7,
+  TEST_KILL_V7,
   // Chapter One, "The Hollow Frontier" (`pulp_wars-68k.4`, section 6).
   FRONTIER_1_V7,
   FRONTIER_2_V7,
@@ -114,6 +129,18 @@ export function missionSeatFactionsV7(
   return typeof seat.faction === "string"
     ? [seat.faction]
     : seat.faction.choice;
+}
+
+/**
+ * A seat's directive schedule (docs/product/CAMPAIGN.md section 10.2): its
+ * one directive, or its list, in order; empty for a seat without one.
+ */
+export function missionSeatDirectivesV7(
+  seat: MissionSeatV7,
+): readonly MissionDirectiveV7[] {
+  const directive = seat.directive;
+  if (directive === undefined) return [];
+  return "kind" in directive ? [directive] : directive;
 }
 
 /**

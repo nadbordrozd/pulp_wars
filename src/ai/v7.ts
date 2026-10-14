@@ -2654,7 +2654,7 @@ function* navalPlanWorkV7(
 ): Generator<void, NavalPlanV7> {
   // pulp_wars-68k.3: no naval plan while Shorecraft is forbidden (the Dry
   // Land Naval branch, or a mission that forbids it; CAMPAIGN.md 2.3).
-  if (forbiddenTechnologiesV7(view.setup).has("SHORECRAFT"))
+  if (forbiddenTechnologiesV7(view.setup, view.viewer.seat).has("SHORECRAFT"))
     return NO_NAVAL_PLAN_V7;
   // The frozen sea engine (`pulp_wars-5ti.3`, RULESET_7_NAVAL_BRANCH.md
   // section 17): a seat whose tree unlocks no ship (the Ice Folk) has no
@@ -3851,7 +3851,9 @@ function computeSavingsPlanV7(context: PolicyContextV7): SavingsPlanV7 | null {
     // A siege unit the match forbids (a mission) is no goal.
     (siegeRule.technology === null ||
       view.viewer.researchedTechs.includes(siegeRule.technology) ||
-      !forbiddenTechnologiesV7(view.setup).has(siegeRule.technology))
+      !forbiddenTechnologiesV7(view.setup, view.viewer.seat).has(
+        siegeRule.technology,
+      ))
       ? CHOKEPOINT_SIEGE_ROLE_V7
       : SAVINGS_GOAL_ROLE_V7;
   const rule = effectiveRoleRuleV7(goalRole, faction);
@@ -4010,7 +4012,7 @@ function armyResearchTargetV7(
   ) {
     const view = context.view;
     const faction = view.viewer.faction;
-    const forbidden = forbiddenTechnologiesV7(view.setup);
+    const forbidden = forbiddenTechnologiesV7(view.setup, view.viewer.seat);
     const uselessBanshee =
       faction === "UNDEAD" &&
       !hasLivingHostileSeatV7(view, (owner) => isHostile(view, owner));
@@ -8850,7 +8852,7 @@ function armyGrowthResearchV7(
   const economyFirst = armyEconomyFirstV7(context);
   for (const landOnly of economyFirst ? [true, false] : [false]) {
     if (chosen !== null || (!landOnly && !stalled)) break;
-    const forbidden = forbiddenTechnologiesV7(view.setup);
+    const forbidden = forbiddenTechnologiesV7(view.setup, view.viewer.seat);
     const technologyOf = (
       kind: (typeof ARMY_GROWTH_KINDS_V7)[number],
     ): TechnologyIdV7 =>
@@ -25139,12 +25141,7 @@ export function rewardWithArrivalV7(
       : (view.units.find((unit) => unit.id === unitId)?.ownerId ?? null);
   const friendly = (owner: PlayerId): boolean =>
     owner === view.viewer.id ||
-    cooperativeAlliesV7(
-      view.setup.aiMode,
-      view.humanPlayerId,
-      owner,
-      view.viewer.id,
-    );
+    cooperativeAlliesV7(view.setup, view.humanPlayerId, owner, view.viewer.id);
   const lifts = arrivals.find(([, arrival]) => {
     const owner = ownerOf(arrival?.displacedUnitId ?? null);
     return owner !== null && !friendly(owner);
@@ -26999,9 +26996,12 @@ function drain<T>(work: Generator<void, T>): T {
 function isHostile(view: PlayerViewV7, ownerId: PlayerId): boolean {
   return (
     ownerId !== view.viewer.id &&
-    (view.setup.aiMode === "RIVAL" ||
-      ownerId === view.humanPlayerId ||
-      view.viewer.id === view.humanPlayerId)
+    !cooperativeAlliesV7(
+      view.setup,
+      view.humanPlayerId,
+      ownerId,
+      view.viewer.id,
+    )
   );
 }
 
@@ -27012,7 +27012,7 @@ function publicPlayersAllied(
 ): boolean {
   return (
     left === right ||
-    cooperativeAlliesV7(view.setup.aiMode, view.humanPlayerId, left, right)
+    cooperativeAlliesV7(view.setup, view.humanPlayerId, left, right)
   );
 }
 

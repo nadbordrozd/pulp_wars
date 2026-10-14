@@ -75,22 +75,27 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
     "75569e71228d50c8bdf4977e655316676c8f0b626a657b8c6c00bf5cefc31a50",
   // Chapter One (`pulp_wars-68k.4`).
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 2.
-  "FRONTIER_1@2:ORIGINAL":
-    "ab23ed59117f506f2051c81223970b38cf63e55dde984c990f31602faea61111",
+  // Natural maps and objectives (`pulp_wars-v642.1`): revision 3.
+  "FRONTIER_1@3:ORIGINAL":
+    "e31edbe9e71807d9d2af6b97eca0b8f8f34c5432fa71022ea9cfb0e886e29ce2",
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 2.
-  "FRONTIER_2@2:ORIGINAL":
-    "8b3d4cea10e2a99d414026b761b03946db9ec7b1557a577d694c850c7a2ea8a1",
+  // Natural maps and objectives (`pulp_wars-v642.1`): revision 3.
+  "FRONTIER_2@3:ORIGINAL":
+    "18e051141cb4c6d4d3d78b197c2a6c4cb95624342ca3f7780a5bfe024c24fde0",
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 2.
-  "FRONTIER_3@2:GOBLIN":
-    "7951fb00ba2da62b103f9d04f6d9d6e59dbcef77b1fcad4f80c30e44b266ffbd",
+  // Natural maps and objectives (`pulp_wars-v642.1`): revision 3.
+  "FRONTIER_3@3:GOBLIN":
+    "801aebef19a2d866f3d4591c5f78cefa605a7e7a173a34e51595ca230f51ada8",
   // Revision 2 (`pulp_wars-68k.6`): Sawmilling forbidden, two starting siege
   // units for you, a Skeleton in the Lich's place.
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 3.
-  "FRONTIER_4@3:ORIGINAL":
-    "dd7d6248798094fb275a3a70265c3f4c8da81a2224811ba2653034768bafd7e8",
+  // Natural maps and objectives (`pulp_wars-v642.1`): revision 4.
+  "FRONTIER_4@4:ORIGINAL":
+    "034d9e453ef6b8263d508c9c84b7ff649bce09c9e0179e2d26b935ab1f249c8b",
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 3.
-  "FRONTIER_4@3:GOBLIN":
-    "4c813e47cf92b6f05554349f960f09749b0738910c315490ffd0dbd9a2421337",
+  // Natural maps and objectives (`pulp_wars-v642.1`): revision 4.
+  "FRONTIER_4@4:GOBLIN":
+    "fcdf664be1a23a75dd0cac1ddecb35716eba441957489605138576a2711063bf",
   // The siege fixture of the Normal AI (`pulp_wars-68k.6`).
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 2.
   "TEST_NECK@2:ORIGINAL":
@@ -166,6 +171,16 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
   // The tutorial board (`pulp_wars-0yxy`): Humans against one Goblin seat.
   "TUTORIAL_1@1:ORIGINAL":
     "f8d36a0cd1ab6b2e351b45b3f2721d0b1cfab3b58728cbd5b7cd9b471bc3ecb1",
+  // The objective fixtures (`pulp_wars-v642.1`): escort, survive, capture
+  // with a deadline and an ally, and kill.
+  "TEST_ESCORT@1:ORIGINAL":
+    "0d59aa296b814e5e73a4e227bb7fb12170e055490a26ac51f9dc90ffe2dadad0",
+  "TEST_SURVIVE@1:ORIGINAL":
+    "a182fcdd2eeea0afa0bfc11a87aaf944b85159a255aa94cec7607d33c0b108e6",
+  "TEST_CAPTURE@1:ORIGINAL":
+    "c1a9c6e665e9e14c05ac8a5491ccf63ed521856a59244947320947660caa2553",
+  "TEST_KILL@1:ORIGINAL":
+    "a84ae828b0d7ad1d45cdf73e0e130f7704e8bdcc78673dcadc59f8aca317a197",
 };
 
 /**
@@ -318,20 +333,25 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
   // Chapter One (`pulp_wars-68k.4`), added after the curiosities: the same
   // states with the two curiosities keys left out.
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 2.
-  "FRONTIER_1@2:ORIGINAL":
-    "80f5bb1ceb7595b7dde7b530da3f005a61375a557becf16903b7b6cae4cdd143",
+  // Natural maps and objectives (`pulp_wars-v642.1`): revision 3.
+  "FRONTIER_1@3:ORIGINAL":
+    "52314a7830374a1409de1b86efafd4d896888b7be29e28adb510629cccdb8206",
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 2.
-  "FRONTIER_2@2:ORIGINAL":
-    "f500ee34c7251d2b46c26fb3d672e7fcad1f1eae1d2909841aa3bd8b327a1057",
+  // Natural maps and objectives (`pulp_wars-v642.1`): revision 3.
+  "FRONTIER_2@3:ORIGINAL":
+    "c369dabe5f1021c0d42375578f6b169a3680edbb784bd69ec96f0c7a014f1798",
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 2.
-  "FRONTIER_3@2:GOBLIN":
-    "3d7e4f81a3b7bbc91b73ac02e3808e0893cf661645de53fa20cf83106f2c697d",
+  // Natural maps and objectives (`pulp_wars-v642.1`): revision 3.
+  "FRONTIER_3@3:GOBLIN":
+    "9024e48f50a61765f91bec4a895c5f33bed9deeb8ab9afa24f1d13721ef1d1d3",
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 3.
-  "FRONTIER_4@3:ORIGINAL":
-    "4eb94830e0c15cd9e702617ebcc0e3c2064d8218d28eab8791c3a7a8610b1333",
+  // Natural maps and objectives (`pulp_wars-v642.1`): revision 4.
+  "FRONTIER_4@4:ORIGINAL":
+    "87467bfe2b707797a6a4cc6e4179dd5a54c4e47b1b66612ae0b2799436bcb790",
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 3.
-  "FRONTIER_4@3:GOBLIN":
-    "86603ef994f586e9a9531fff162bb322e2bc2c27ed77ac754f4c4a2ce4117d14",
+  // Natural maps and objectives (`pulp_wars-v642.1`): revision 4.
+  "FRONTIER_4@4:GOBLIN":
+    "f6ae30e00a22df17c7d98fadc0cfbe4d4bb2340e7a8ff9f9fa3a074a3e7697b8",
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 2.
   "TEST_NECK@2:ORIGINAL":
     "32595babd0a4d5371b260320b8d360786ba69b01808d2716eaadec332213500e",
@@ -390,6 +410,16 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
   // The tutorial board (`pulp_wars-0yxy`).
   "TUTORIAL_1@1:ORIGINAL":
     "7740c5e7f57484e405c12cb665cfd33322eadbaf3c4907bc9b2483c5c05b0463",
+  // The objective fixtures (`pulp_wars-v642.1`): escort, survive, capture
+  // with a deadline and an ally, and kill.
+  "TEST_ESCORT@1:ORIGINAL":
+    "6621c2ebd6bbdd5938cd2d1e6722157e60f3ea7633a5ef114684a9b65a6592ff",
+  "TEST_SURVIVE@1:ORIGINAL":
+    "16ca39ad86c7548c276066af2086cd722b551e852067c0da2b6baf3bc37c3a4c",
+  "TEST_CAPTURE@1:ORIGINAL":
+    "932a21d3cb32380ba5492e2a1164fc9a2c1d40d76b2f9eaab343d5fbe9545662",
+  "TEST_KILL@1:ORIGINAL":
+    "962127daaa5f691cb2954eecf46fc8ef06aefbc69821de6f3e32636c8182a7c9",
 };
 
 function preCuriosityMissionStateHash(state: GameStateV7): string {

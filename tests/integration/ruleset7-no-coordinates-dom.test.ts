@@ -499,7 +499,12 @@ describe("Ruleset 7 player-facing text names no tile coordinates", () => {
         const card = document.querySelector<HTMLButtonElement>(
           `[data-action="mission-${entry.missionId.toLowerCase()}"]`,
         );
-        if (card === null || card.dataset.status === "locked") continue;
+        if (
+          card === null ||
+          card.dataset.status === "locked" ||
+          card.dataset.status === "soon"
+        )
+          continue;
         card.click();
         await settle();
         check(`briefing ${entry.missionId}`);
@@ -512,7 +517,12 @@ describe("Ruleset 7 player-facing text names no tile coordinates", () => {
       app.destroy();
     }
     // Every briefing was reached with full progress.
-    expect(steps).toBe(1 + 2 + CHAPTER_ONE_V7.missions.length);
+    expect(steps).toBe(
+      1 +
+        2 +
+        CHAPTER_ONE_V7.missions.filter((entry) => entry.planned === undefined)
+          .length,
+    );
     // A mission in play: Settings, then the resume screen.
     document.body.innerHTML = '<div id="app"></div>';
     window.localStorage.clear();
@@ -558,8 +568,31 @@ describe("Ruleset 7 player-facing text names no tile coordinates", () => {
     );
     check("mission resume");
     app.destroy();
-    // The mission dialogs, each with its unlocks announced.
-    for (const entry of CHAPTER_ONE_V7.missions)
+    // A mission's objective in the top bar (`pulp_wars-v642.1`): every
+    // objective kind, with its counter.
+    for (const missionId of [
+      "FRONTIER_2",
+      "TEST_ESCORT",
+      "TEST_SURVIVE",
+      "TEST_CAPTURE",
+      "TEST_KILL",
+    ]) {
+      document.body.innerHTML = '<div id="app"></div>';
+      const mounted = mount(
+        new FixtureController(missionStateV7(missionId)),
+        new RecordingBoardHost(),
+      );
+      expect(
+        document.querySelector("[data-v7-region='mission-tracker']"),
+      ).not.toBeNull();
+      check(`${missionId} tracker`);
+      mounted.destroy();
+    }
+    // The mission dialogs, each with its unlocks announced. The missions
+    // that are designed but not built have no match to end.
+    for (const entry of CHAPTER_ONE_V7.missions.filter(
+      (candidate) => candidate.planned === undefined,
+    ))
       for (const victory of [true, false]) {
         document.body.innerHTML = '<div id="app"></div>';
         const state = missionStateV7(entry.missionId);

@@ -56,6 +56,7 @@ import {
   unitRoleRuleV7,
 } from "../engine/rules/ruleset-v7";
 import type { CommandV7 } from "../engine/v7/commands";
+import { cooperativeAlliesV7 } from "../engine/v7/economy";
 import { tractorBeamRuleV7 } from "../engine/v7/martian";
 import {
   previewTractorBeamV7,
@@ -168,9 +169,12 @@ export function probeHostileV7(view: PlayerViewV7, ownerId: PlayerId): boolean {
   return (
     ownerId !== view.viewer.id &&
     !isNeutralOwnerV7(ownerId) &&
-    (view.setup.aiMode === "RIVAL" ||
-      ownerId === view.humanPlayerId ||
-      view.viewer.id === view.humanPlayerId)
+    !cooperativeAlliesV7(
+      view.setup,
+      view.humanPlayerId,
+      ownerId,
+      view.viewer.id,
+    )
   );
 }
 
