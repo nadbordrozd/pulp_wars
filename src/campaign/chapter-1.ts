@@ -9,9 +9,9 @@ import type { FactionIdV7 } from "../engine/v7/types";
  * objective, and directives live in its engine definition
  * (`src/engine/v7/missions/frontier-*.ts`), which `missionId` names.
  *
- * Missions 1 to 8 are built. Missions 9 and 10 are designed and listed, so
- * the roster shows the whole of part one, but not yet built: an entry with
- * `planned` carries what its card shows until its mission is registered.
+ * All ten missions are built (missions 9 and 10 by `pulp_wars-v642.4`).
+ * An entry with `planned` would be a mission that is designed and listed
+ * but not yet registered: it carries what its card shows until then.
  *
  * Player-facing text follows the simplified interface overlay
  * (docs/ui/SCREEN_FLOW.md): short and plain, the pulp flavour confined to
@@ -249,21 +249,19 @@ export const CHAPTER_ONE_V7: CampaignChapterV7 = Object.freeze({
       format: "ALLY",
       briefing:
         "The call tore a hole in the world, and a kingdom fell out of it: Sugarcrest, soft, sweet and besieged. The Rift is closing. If Sugarcrest falls before it shuts, whatever is on the other side comes through instead. Only wings cross a Rift, and the Martians have saucers.",
-      objective: "Keep Sugarcrest standing for 16 turns.",
+      objective: "Hold Sugarcrest for 16 turns.",
       hints: Object.freeze([
-        "Sugarcrest fights beside you: don't fight in its streets.",
-        "Only flyers cross the Rift.",
-        "Kill the besiegers' siege engines first.",
+        "Sugarcrest's land is closed to you: fight in front of it.",
+        "Only flyers cross the Rift. Saucers carry the rest over.",
+        "Siege engines outrange walls: hunt them with Saucers.",
       ]),
       closing:
         "The Rift seals with a sound like a kiss. Queen Praline curtsies, armed to the teeth. 'They wear grey hoods,' she says, 'and they sing to the hole. They call it a door.'",
       unlocks: Object.freeze(["CANDY"] as const),
-      names: Object.freeze({ SUGARCREST: "Sugarcrest" }),
-      planned: Object.freeze({
-        leads: Object.freeze(["MARTIAN"] as const),
-        opponents: Object.freeze(["UNDEAD", "GOBLIN"] as const),
-        allies: Object.freeze(["CANDY"] as const),
-        size: 16,
+      names: Object.freeze({
+        SUGARCREST: "Sugarcrest",
+        PRALINE: "Queen Praline",
+        RIFTWATCH: "Riftwatch",
       }),
     }),
     Object.freeze({
@@ -272,23 +270,17 @@ export const CHAPTER_ONE_V7: CampaignChapterV7 = Object.freeze({
       name: "The Stars Are Right",
       format: "CAPTURE",
       briefing:
-        "The Lodge of the Unblinking Eye stands on the summit where the bell was cast, and tonight the stars are right. The Hierophant needs twenty-four tolls to finish the Great Summoning. Steele has an army nobody would have believed a month ago. Take the Lodge before the last toll.",
+        "The Lodge of the Unblinking Eye stands on the summit where the bell was cast, and tonight the stars are right. Every toll of the bell, and every soldier their Horrors take, feeds the Great Summoning. At the twenty-fourth toll the door opens. Steele has an army nobody would have believed a month ago, and Grubnak's horde beside it. Take the Lodge first.",
       objective: "Capture the Lodge by turn 24.",
       hints: Object.freeze([
-        "Grubnak's horde fights beside you.",
-        "The Lodge's thralls come at you: the Lodge stays home.",
-        "Break their circles: a ritual needs its cultists standing.",
+        "The Lodge's Favour is the countdown: at 20, the Herald.",
+        "No Summoner, no summoning: shoot the candle-bearers.",
+        "The dead rise at the barrow every six turns.",
       ]),
       closing:
         "The Lodge falls one toll short, and the hooded ones kneel to the winning side, as they always have. But far below, in the shaft where the bell hung, something that was called has opened one eye.",
       unlocks: Object.freeze(["CULT"] as const),
       names: Object.freeze({ LODGE: "the Lodge" }),
-      planned: Object.freeze({
-        leads: Object.freeze(["ORIGINAL"] as const),
-        opponents: Object.freeze(["CULT", "UNDEAD"] as const),
-        allies: Object.freeze(["GOBLIN"] as const),
-        size: 20,
-      }),
     }),
   ]),
   outro:

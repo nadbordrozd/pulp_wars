@@ -2668,8 +2668,8 @@ mission. The objective `DOMINATION` is the ordinary outcome rule of
 are the built missions of the campaign, `FRONTIER_1`–`FRONTIER_4`
 ([campaign design](CAMPAIGN.md) section 9, `pulp_wars-68k.4`, reworked by
 `pulp_wars-v642.1`), with `FRONTIER_5` and `FRONTIER_6`
-(`pulp_wars-v642.2`) and `FRONTIER_7` and `FRONTIER_8`
-(`pulp_wars-v642.3`), and the hidden
+(`pulp_wars-v642.2`), `FRONTIER_7` and `FRONTIER_8` (`pulp_wars-v642.3`),
+and `FRONTIER_9` and `FRONTIER_10` (`pulp_wars-v642.4`), and the hidden
 test fixtures `TEST_GROUNDS`, `TEST_RUSH`, `TEST_HOLD`, `TEST_GUARD`,
 `TEST_NECK`, and the four objective fixtures `TEST_ESCORT`,
 `TEST_SURVIVE`, `TEST_CAPTURE`, and `TEST_KILL`, which belong to no

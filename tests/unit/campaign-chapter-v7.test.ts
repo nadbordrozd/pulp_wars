@@ -30,8 +30,19 @@ const NAVAL = [
   "SUBMERSIBLES",
 ] as const;
 
-// The missions that are registered and built, one per line so that the
-// builders of missions 5 to 10 each add their own.
+const ORDER = [
+  "FRONTIER_1",
+  "FRONTIER_2",
+  "FRONTIER_3",
+  "FRONTIER_4",
+  "FRONTIER_5",
+  "FRONTIER_6",
+  "FRONTIER_7",
+  "FRONTIER_8",
+  "FRONTIER_9",
+  "FRONTIER_10",
+];
+/** The built missions; the rest are designed and carry a plan. */
 const BUILT = [
   "FRONTIER_1",
   "FRONTIER_2",
@@ -43,6 +54,9 @@ const BUILT = [
   // Missions 7 and 8 (`pulp_wars-v642.3`).
   "FRONTIER_7",
   "FRONTIER_8",
+  // Missions 9 and 10 (`pulp_wars-v642.4`).
+  "FRONTIER_9",
+  "FRONTIER_10",
 ];
 
 function mission(id: string): MissionDefinitionV7 {
@@ -89,18 +103,9 @@ function playerText(): { readonly where: string; readonly text: string }[] {
 
 describe("Chapter One data", () => {
   it("lists ten missions in order: the built ones registered, the rest designed", () => {
-    expect(CHAPTER_ONE_V7.missions.map((entry) => entry.missionId)).toEqual([
-      "FRONTIER_1",
-      "FRONTIER_2",
-      "FRONTIER_3",
-      "FRONTIER_4",
-      "FRONTIER_5",
-      "FRONTIER_6",
-      "FRONTIER_7",
-      "FRONTIER_8",
-      "FRONTIER_9",
-      "FRONTIER_10",
-    ]);
+    expect(CHAPTER_ONE_V7.missions.map((entry) => entry.missionId)).toEqual(
+      ORDER,
+    );
     expect(CHAPTER_ONE_V7.missions.map((entry) => entry.number)).toEqual([
       1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
     ]);
@@ -141,7 +146,7 @@ describe("Chapter One data", () => {
     const planned = CHAPTER_ONE_V7.missions.flatMap((entry) =>
       entry.planned === undefined ? [] : [entry.planned],
     );
-    expect(planned).toHaveLength(10 - BUILT.length);
+    expect(planned).toHaveLength(ORDER.length - BUILT.length);
     for (const plan of planned) {
       expect(plan.leads).toHaveLength(1);
       expect(plan.opponents).toHaveLength(2);
@@ -595,6 +600,139 @@ describe("Chapter One data", () => {
       [2, 13, 3],
     ]);
     expect(() => validateMissionDirectivesV7(hunt)).not.toThrow();
+  });
+
+  it("builds missions 9 and 10 with an ally: seats, teams, directives, and objectives", () => {
+    // Mission 9: the Martians and the Candy kingdom against the Undead and
+    // the Goblins; hold the ally's capital for sixteen rounds.
+    const rescue = mission("FRONTIER_9");
+    expect(rescue.size).toBe(16);
+    expect(rescue.source?.mapType).toBe("LAKES");
+    expect(rescue.seats.map((item) => item.faction)).toEqual([
+      "MARTIAN",
+      "CANDY",
+      "UNDEAD",
+      "GOBLIN",
+    ]);
+    expect(rescue.teams).toEqual([0, 0, 1, 1]);
+    expect(rescue.objective).toEqual({
+      kind: "SURVIVE",
+      rounds: 16,
+      protect: [{ place: "SUGARCREST" }],
+      bonus: [
+        { kind: "UNIT_ALIVE", unit: "PRALINE" },
+        { kind: "HOLD_PLACE", place: "RIFTWATCH" },
+      ],
+    });
+    // Sugarcrest is the ally's capital, and the Queen its giant.
+    expect(seat(rescue, 1).cities[0]?.at).toEqual({ x: 7, y: 8 });
+    expect(
+      seat(rescue, 1).units.find((unit) => unit.tag === "PRALINE")?.role,
+    ).toBe("JUGGERNAUT");
+    // Riftwatch is a neutral village at the start.
+    expect(rescue.villages).toContainEqual({ x: 5, y: 14 });
+    // The ally holds the land of its two cities; the besiegers rush, the
+    // Goblins from round 4.
+    expect(seat(rescue, 1).directive).toEqual({
+      kind: "HOLD",
+      zone: [
+        { x0: 5, y0: 6, x1: 9, y1: 10 },
+        { x0: 7, y0: 4, x1: 9, y1: 5 },
+      ],
+    });
+    expect(seat(rescue, 2).directive).toEqual({ kind: "RUSH" });
+    expect(
+      missionSeatDirectivesV7(seat(rescue, 3)).map((entry) => entry.kind),
+    ).toEqual(["HOLD", "RUSH"]);
+    // A band of Rift cuts your strip off: seven tiles in one column.
+    const rift = rescue.terrain.flatMap((row, y) =>
+      [...row].flatMap((cell, x) =>
+        cell === "x" ? [`${String(x)},${String(y)}`] : [],
+      ),
+    );
+    expect(rift).toEqual(["4,0", "4,1", "4,2", "4,12", "4,13", "4,14", "4,15"]);
+    expect(
+      rescue.reinforcements?.map((wave) => [wave.seat, wave.round]),
+    ).toEqual([
+      [2, 4],
+      [3, 6],
+      [2, 8],
+      [3, 10],
+      [2, 12],
+      [3, 12],
+    ]);
+
+    // Mission 10: the Humans and the Goblins against the Cultists and the
+    // Undead; capture the Lodge by round 24.
+    const finale = mission("FRONTIER_10");
+    expect(finale.size).toBe(20);
+    expect(finale.source?.mapType).toBe("PANGEA");
+    expect(finale.seats.map((item) => item.faction)).toEqual([
+      "ORIGINAL",
+      "GOBLIN",
+      "CULT",
+      "UNDEAD",
+    ]);
+    expect(finale.teams).toEqual([0, 0, 1, 1]);
+    expect(finale.objective).toEqual({
+      kind: "CAPTURE",
+      places: ["LODGE"],
+      byRound: 24,
+      bonus: [{ kind: "WITHIN_ROUNDS", rounds: 20 }, { kind: "KEEP_CITIES" }],
+    });
+    // The Lodge is the Cult's walled capital.
+    expect(seat(finale, 2).cities[0]).toMatchObject({
+      at: { x: 10, y: 2 },
+      rewards: ["STOCKPILE", "WALLS"],
+    });
+    expect(finale.landmarks).toEqual([{ tag: "LODGE", at: { x: 10, y: 2 } }]);
+    // The ally grows, then marches; the Lodge guards its summit; the
+    // thralls rush.
+    expect(seat(finale, 1).directive).toEqual([
+      { kind: "NORMAL", untilRound: 10 },
+      { kind: "RUSH" },
+    ]);
+    expect(seat(finale, 2).directive).toEqual({
+      kind: "GUARD",
+      zone: [{ x0: 8, y0: 0, x1: 12, y1: 4 }],
+      garrison: 6,
+    });
+    expect(seat(finale, 3).directive).toEqual({ kind: "RUSH" });
+    // The Cult meets the player with what makes it the Cult: Favour for
+    // the first Horrors, two Summoners, the Great Summoning known, and no
+    // Offering (its Favour is paid in blood).
+    const lodge = seat(finale, 2);
+    expect(lodge.favour).toBe(9);
+    expect(lodge.technologies).toContain("ADMINISTRATION");
+    expect(lodge.technologies).toContain("EXPLOSIVES");
+    expect(lodge.forbiddenTechnologies).toContain("FARMING");
+    expect(lodge.units.filter((unit) => unit.role === "CAPTAIN")).toHaveLength(
+      2,
+    );
+    for (const role of ["JUGGERNAUT", "CATAPULT", "KNIGHT", "SWORDSMAN"])
+      expect(
+        lodge.units.some((unit) => unit.role === role),
+        role,
+      ).toBe(true);
+    expect(
+      finale.reinforcements?.map((wave) => [wave.seat, wave.round]),
+    ).toEqual([
+      [3, 6],
+      [3, 12],
+      [3, 18],
+      [2, 8],
+      [2, 14],
+      [2, 20],
+    ]);
+
+    for (const definition of [rescue, finale]) {
+      expect(() => validateMissionDirectivesV7(definition)).not.toThrow();
+      // You are never handicapped, and nobody sails.
+      expect(seat(definition, 0).forbiddenTechnologies).toBeUndefined();
+      expect([...definition.forbiddenTechnologies].sort()).toEqual(
+        [...NAVAL].sort(),
+      );
+    }
   });
 
   it("names every place and unit an objective talks about", () => {

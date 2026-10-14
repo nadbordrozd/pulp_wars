@@ -97,14 +97,13 @@ describe("Ruleset 7 campaign front screen", () => {
       "open",
       "locked",
       "locked",
-      // Missions 5 and 6 are built (`pulp_wars-v642.2`).
+      // Missions 5 to 10 are built (`pulp_wars-v642.2` to `.4`).
       "locked",
       "locked",
-      // Missions 7 and 8 are built (`pulp_wars-v642.3`).
       "locked",
       "locked",
-      "soon",
-      "soon",
+      "locked",
+      "locked",
     ]);
     expect(cards.map((card) => card.getAttribute("aria-label"))).toEqual([
       "Mission 1, Goblins at the Gate, Conquest, done, 2 of 3 stars, best 14 turns",
@@ -115,14 +114,18 @@ describe("Ruleset 7 campaign front screen", () => {
       "Mission 6, The Deep Gate, Hold out, locked, unlocks Ice Folk",
       "Mission 7, The Island That Time Forgot, Capture, locked, unlocks Dinosaur",
       "Mission 8, Brain Wave, Hunt, locked, unlocks Martian",
-      "Mission 9, Sugar and Spite, Rescue, coming soon, unlocks Candy",
-      "Mission 10, The Stars Are Right, Capture, coming soon, unlocks Cultists",
+      "Mission 9, Sugar and Spite, Rescue, locked, unlocks Candy",
+      "Mission 10, The Stars Are Right, Capture, locked, unlocks Cultists",
     ]);
     expect(cards[0]?.textContent).toContain("Best: 14 turns");
     expect(cards[1]?.textContent).toContain("Open");
     expect(cards[2]?.textContent).toContain("Win the previous mission");
     expect(cards[4]?.textContent).toContain("Win the previous mission");
-    expect(cards[8]?.textContent).toContain("Coming soon");
+    // Every mission is built (`pulp_wars-v642.4`): none says "Coming soon".
+    expect(cards[8]?.textContent).toContain("Win the previous mission");
+    expect(cards.some((card) => card.textContent.includes("Coming soon"))).toBe(
+      false,
+    );
     // Stars: only on a mission that is won, filled as far as they were won.
     expect(
       cards.map((card) => {
@@ -612,7 +615,7 @@ describe("Ruleset 7 mission dialogs", () => {
 
   it("after the last built mission: the unlock, the outro, Retry, Campaign and Main menu", () => {
     const fake = new FakeController(
-      completeView("FRONTIER_8", "DINOSAUR", (view) => ({
+      completeView("FRONTIER_10", "ORIGINAL", (view) => ({
         kind: "VICTORY",
         winnerId: view.humanPlayerId,
       })),
@@ -627,11 +630,13 @@ describe("Ruleset 7 mission dialogs", () => {
           FRONTIER_6: won(),
           FRONTIER_7: won(),
           FRONTIER_8: won(),
+          FRONTIER_9: won(),
+          FRONTIER_10: won(),
         },
         lastWin: {
-          missionId: "FRONTIER_8",
+          missionId: "FRONTIER_10",
           firstWin: true,
-          unlocked: ["MARTIAN"],
+          unlocked: ["CULT"],
         },
         diagnostic: null,
       },
@@ -643,11 +648,12 @@ describe("Ruleset 7 mission dialogs", () => {
     expect(dialog.querySelector("h2")?.textContent).toBe("Mission complete");
     expect(
       dialog.querySelector("[data-v7-region='unlock-notice']")?.textContent,
-    ).toBe("New faction: Martian");
+    ).toBe("New faction: Cultists");
     expect(dialog.querySelector(".v7-campaign-outro")?.textContent).toBe(
       CHAPTER_ONE_V7.outro,
     );
-    // Mission 9 is not built: there is no Next mission to offer.
+    // Mission 10 is the last of part one (`pulp_wars-v642.4`): there is no
+    // Next mission to offer.
     expect(
       [...dialog.querySelectorAll("button")].map((node) => node.textContent),
     ).toEqual(["Retry", "Campaign", "Main menu"]);

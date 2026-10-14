@@ -9,11 +9,13 @@ import {
 import { FRONTIER_1_V7 } from "./frontier-1";
 import { FRONTIER_2_V7 } from "./frontier-2";
 import { FRONTIER_3_V7 } from "./frontier-3";
+import { FRONTIER_10_V7 } from "./frontier-10";
 import { FRONTIER_4_V7 } from "./frontier-4";
 import { FRONTIER_5_V7 } from "./frontier-5";
 import { FRONTIER_6_V7 } from "./frontier-6";
 import { FRONTIER_7_V7 } from "./frontier-7";
 import { FRONTIER_8_V7 } from "./frontier-8";
+import { FRONTIER_9_V7 } from "./frontier-9";
 import {
   LAB_BREAKTHROUGH_GOBLIN_V7,
   LAB_BREAKTHROUGH_UNDEAD_V7,
@@ -75,6 +77,9 @@ export const MISSION_REGISTRY_V7: readonly MissionDefinitionV7[] = deepFreeze([
   // Missions 7 and 8 (`pulp_wars-v642.3`, section 9.3).
   FRONTIER_7_V7,
   FRONTIER_8_V7,
+  // Missions 9 and 10 (`pulp_wars-v642.4`).
+  FRONTIER_9_V7,
+  FRONTIER_10_V7,
   // The Human tuning labs (`pulp_wars-w49.3`): hidden mirror fixtures of
   // the text harness (docs/validation/TEXT_PLAY.md).
   LAB_SIEGE_V7,

@@ -276,22 +276,11 @@ describe("derived campaign state", () => {
         FRONTIER_4: won(),
       }),
     ).toEqual(["DONE", "DONE", "DONE", "DONE", "OPEN", ...rest.slice(1)]);
-    // A mission that is designed, not built, is listed and never playable.
+    // Every mission of part one is built (missions 5 and 6 by
+    // `pulp_wars-v642.2`, 7 and 8 by `.3`, 9 and 10 by `.4`).
     expect(
       campaignMissionCardsV7(CHAPTER_ONE_V7, {}).map((card) => card.built),
-    ).toEqual([
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      // Missions 7 and 8 (`pulp_wars-v642.3`).
-      true,
-      true,
-      false,
-      false,
-    ]);
+    ).toEqual([true, true, true, true, true, true, true, true, true, true]);
   });
 
   it("describes each card from the mission definitions", () => {
@@ -347,7 +336,8 @@ describe("derived campaign state", () => {
     expect(cards.slice(0, 4).every((card) => card.allies.length === 0)).toBe(
       true,
     );
-    // A designed mission's card comes from its plan.
+    // A designed mission's card comes from its plan; missions 9 and 10
+    // are built, and their cards read the same from their definitions.
     expect(
       cards.slice(4).map((card) => ({
         id: card.entry.missionId,
@@ -471,8 +461,11 @@ describe("derived campaign state", () => {
     expect(campaignNextMissionV7("FRONTIER_4")?.missionId).toBe("FRONTIER_5");
     expect(campaignNextMissionV7("FRONTIER_5")?.missionId).toBe("FRONTIER_6");
     expect(campaignNextMissionV7("FRONTIER_6")?.missionId).toBe("FRONTIER_7");
-    // Mission 9 is designed, not built: nothing to go on to.
-    expect(campaignNextMissionV7("FRONTIER_8")).toBeNull();
+    // Missions 9 and 10 are built (`pulp_wars-v642.4`); after the last
+    // there is nothing to go on to.
+    expect(campaignNextMissionV7("FRONTIER_8")?.missionId).toBe("FRONTIER_9");
+    expect(campaignNextMissionV7("FRONTIER_9")?.missionId).toBe("FRONTIER_10");
+    expect(campaignNextMissionV7("FRONTIER_10")).toBeNull();
     expect(campaignTagNameV7("FRONTIER_2", "WARRENS")).toBe("the Warrens");
     expect(campaignTagNameV7("TEST_ESCORT", "SOME_PLACE")).toBe("some place");
     expect(campaignNextMissionV7("TEST_GROUNDS")).toBeNull();

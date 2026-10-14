@@ -17,7 +17,8 @@ revision 2; its notes are in
 implemented. **The campaign framework and part one**
 (`pulp_wars-v642.1`, `pulp-wars-poc-7r82`) are
 [sections 9 to 13](#9-part-one-the-hollow-frontier-ten-missions): ten
-missions (four built, six designed), objectives beyond conquest, teams,
+missions (all ten built: 1 to 4 here, 5 to 10 by `pulp_wars-v642.2` to
+`pulp_wars-v642.4`), objectives beyond conquest, teams,
 reinforcements, natural maps, the objective tracker, stars, and the
 hand-play record; where they differ from sections 1 to 8, they are the
 current design. The
@@ -1223,7 +1224,8 @@ This section replaces [section 6](#6-the-teaser-chapter-one-the-hollow-frontier)
 as the description of the campaign's content: the four teaser missions keep
 their lessons and are rebuilt on generated maps
 ([section 11](#11-hand-play-record-missions-1-to-4)); six more are designed
-here and listed in the game as "Coming soon" until they are built. The
+here and were listed in the game as "Coming soon" until they were built
+(missions 9 and 10, the last, by `pulp_wars-v642.4`). The
 text the player reads is in `src/campaign/chapter-1.ts`.
 
 ### 9.1 The story
@@ -1271,7 +1273,7 @@ the two secondary goals (the first star is the win).
 | 6   | The Deep Gate (`FRONTIER_6`)               | Dwarves           | Ice Folk (north, over the peaks), Humans (east, through the doors) | Hold out                  | Dry Land 14, a mountain pocket | 14 turns pass / the Deep Gate falls                                             | defend against waves from two sides that end in giants; relief on turn 9 | Ice Folk  | 14     | Medium     | lose no city; the Thane lives     |
 | 7   | The Island That Time Forgot (`FRONTIER_7`) | Ice Folk          | Dinosaurs (natives), Humans (the Baron)                            | Capture against the clock | Archipelago 16                 | capture the Crater by turn 18 / time runs out                                   | the naval mission without ships: freeze a road over the sea; a race      | Dinosaurs | 11–16  | Hard       | by turn 14; lose no city          |
 | 8   | Brain Wave (`FRONTIER_8`)                  | Dinosaurs         | Martians (guard), Humans (thralls)                                 | Hunt                      | Pangea 16                      | kill the Overmind by turn 20 / time runs out                                    | a raid: ignore the cities, reach one unit behind its guard               | Martians  | 11–16  | Hard       | by turn 15; the Old Queen lives   |
-| 9   | Sugar and Spite (`FRONTIER_9`)             | Martians          | Undead, Goblins; ally: Candy                                       | Rescue (hold out)         | Lakes 16 with a Rift           | 16 turns pass / Sugarcrest (the ally's capital) falls                           | defend someone else's city; only flyers cross the Rift                   | Candy     | 16     | Hard       | lose no city; Queen Praline lives |
+| 9   | Sugar and Spite (`FRONTIER_9`)             | Martians          | Undead, Goblins; ally: Candy                                       | Rescue (hold out)         | Lakes 16 with a Rift           | 16 turns pass / Sugarcrest (the ally's capital) falls                           | defend someone else's city; only flyers cross the Rift                   | Candy     | 16     | Hard       | Praline lives; Riftwatch is yours |
 | 10  | The Stars Are Right (`FRONTIER_10`)        | Humans            | Cultists (guard), Undead (thralls); ally: Goblins                  | Capture against the clock | Pangea 20                      | capture the Lodge by turn 24 / time runs out                                    | the finale: four seats, an ally, a fortress, a deadline                  | Cultists  | 20–24  | Very hard  | by turn 20; lose no city          |
 
 Formats covered: classic conquest (1), capture a place (2, 3, 4), escort
@@ -1383,27 +1385,76 @@ and the rays), a Saucer's Tractor Beam pulls a unit out of your line, and
 a Force Field keeps a Martian at full strength alive through one hit. What
 kills it: a Spitter's Acid ignores the Walls.
 
-**9, Sugar and Spite.** Lakes 16 with a band of Rift tiles edited across
-the middle (terrain edits; the lakes keep the band short); four seats,
-teams `[0, 0, 1, 1]`. You (Martians, west of the Rift): a level 3 capital
-with Saucers. Seat 1, Candy (your ally, east of the Rift): the walled level
-4 capital `SUGARCREST`, `HOLD` its zone, the tagged giant `PRALINE`. Seat 2,
-Undead (north-east): `RUSH`. Seat 3, Goblins (south-east): `HOLD` until
-round 4, then `RUSH`. Besieger waves in rounds 6, 10 and 13. Objective
-`SURVIVE { rounds: 16, protect: [SUGARCREST] }`, stars `KEEP_CITIES` and
-`UNIT_ALIVE PRALINE`. The lesson is defending a city that is not yours,
-with only the units that can fly there.
+**9, Sugar and Spite** (built by `pulp_wars-v642.4`,
+`src/engine/v7/missions/frontier-9.ts`; its hand play is in
+[section 11.10](#1110-sugar-and-spite)). Lakes 16, seed 5, with seven tiles
+turned to Rift in one column, north and south of the western lake (the
+lake keeps the band short); four seats, teams `[0, 0, 1, 1]`; the Naval
+branch forbidden, so nobody sails the lakes. You (Martians, the strip west
+of the Rift): a level 4 capital and a town, three Saucers, two Grunts, a
+Ray Gunner and a Shield Projector. Seat 1, Candy (your ally, between the
+lakes): the walled level 3 capital `SUGARCREST` and the town Gumdrop,
+`HOLD` the land of the two cities, the tagged giant `PRALINE`; no Coins and
+a small economy (Farming, Forestry, Engineering and Planning forbidden to
+it). Seat 2, Undead (north-east): `RUSH`. Seat 3, Goblins (south-east):
+`HOLD` until round 4, then `RUSH`. Six besieger waves muster in the enemy
+camps, out of your sight: the Undead's in rounds 4, 8 and 12, the Goblins'
+in rounds 6, 10 and 12, the later ones with Liches and Rocket Carts.
+Objective `SURVIVE { rounds: 16, protect: [SUGARCREST] }`, stars
+`UNIT_ALIVE PRALINE` and `HOLD_PLACE RIFTWATCH` (a neutral village just
+east of the Rift: take it and keep it). The lesson is defending a city
+that is not yours: your ground troops cross one at a time under a Saucer,
+an ally's land is closed to your units, and the siege engines behind the
+besiegers' line are yours to hunt.
 
-**10, The Stars Are Right.** Pangea 20; four seats, teams `[0, 0, 1, 1]`.
-You (Humans, south-west): a level 4 capital and two towns, ten units. Seat
-1, Goblins (Grubnak, your ally, south-east): a level 3 capital, `NORMAL`.
-Seat 2, Cultists (the summit, north): the walled level 4 capital `LODGE`,
-two towns, `GUARD` the Lodge's zone with a garrison of 6. Seat 3, Undead
-(thralls, the middle): two towns, `RUSH`, with waves of four in rounds 6,
-12 and 18. Objective `CAPTURE { places: [LODGE], byRound: 24 }`, stars
-`WITHIN_ROUNDS 20` and `KEEP_CITIES`. The Cult's rituals are the clock in
-the story and its daemons the obstacle; the thralls exist to pull your army
-away from the summit.
+Changed from the first design, by hand play: the kingdom's capital is
+level 3, not 4, and its seat is poor (a rich Candy seat won the mission
+alone); the waves are six, not three, and come with siege engines; the
+second star is the village of Riftwatch, not "lose no city" (nothing
+walks to your strip, so that star was free; and the kingdom's town of
+Gumdrop cannot be saved from outside its land).
+
+**10, The Stars Are Right** (built by `pulp_wars-v642.4`,
+`src/engine/v7/missions/frontier-10.ts`; its hand play is in
+[section 11.11](#1111-the-stars-are-right)). Pangea 20, seed 23; four
+seats, teams `[0, 0, 1, 1]`; the Naval branch forbidden. The Lodge stands
+in the northern highlands with Mountains on three sides, a wooded slope
+below it and a goat path from the west. You (Humans, south-west): a level
+5 capital and two towns, ten units (the whole roster but the Champion; no
+Engineering yet). Seat 1, Goblins (Grubnak, your ally, south-east): a
+level 3 capital, `NORMAL` until round 10, then `RUSH`. Seat 2, Cultists
+(the summit, north): the walled level 3 capital `LODGE` and two towns,
+`GUARD` the summit with a garrison of 6; eighteen units, far over its
+unit limit, among them two Summoners, a Stargazer, a Caller, a Chosen and
+the Thing in the Cellar; 9 Favour and The Stars Are Right; every other
+technology forbidden to it; waves of four behind the Lodge in rounds 8, 14
+and 20, the last two with a Summoner. Seat 3, Undead (thralls): the barrow
+on your road and a town in the east, `RUSH`, waves of four at the barrow
+in rounds 6, 12 and 18 for as long as the seat lives. Objective
+`CAPTURE { places: [LODGE], byRound: 24 }`, stars `WITHIN_ROUNDS 20` and
+`KEEP_CITIES`.
+
+**The clock and the Great Summoning.** In the story the Hierophant needs
+twenty-four tolls. In the rules the Lodge's Favour is the Summoning's
+progress, and it is public (the candles beside the seat's name): the Lodge
+starts with 9, spends 5 on its first Horror and 5 more on a second once it
+has sacrificed an Initiate, and is paid from then on in blood: every unit
+a Horror kills (a Knight is 9), every Seizure, every dead Chosen (6). It
+has no Offering (Harvest Rites is forbidden to it). With 10 or more it
+saves, and at 20, with a Summoner and three chanters whom nobody
+threatens, it begins the Great Summoning: a circle on the summit for one
+round, and then the Herald. So a player who feeds the Horrors, or who is
+slow, meets the Herald; one who shoots the Summoners or keeps an army on
+the slope does not. Round 24 is the hard stop: the last toll. A mechanical
+link between the deadline itself and the rite (the rite completing as the
+loss) would need a scripted ritual, which the framework does not have; it
+was not added.
+
+Changed from the first design, by hand play: the Lodge is level 3 (its
+summit has room for no more), your capital level 5; the ally turns to
+`RUSH` at round 10; the Cult's tree is closed and its Favour paid in
+blood only (with the whole tree it fielded forty units and summoned the
+Herald in round 3).
 
 ### 9.4 Unlock order, and free play
 
@@ -1498,6 +1549,34 @@ played (`HOLD` until round 6, then `RUSH`). The kinds are the four of
 An allied AI seat needs no directive of its own: with `teams` it treats the
 human as an ally in every rule and plays its ordinary game against the
 rest.
+
+**Allies that behave** (`pulp_wars-v642.4`). An allied AI seat takes a
+directive like any other AI seat (only the human seat takes none), and
+the four kinds were enough for the two missions with an ally; no new kind
+was added.
+
+- **An ally that must defend** (mission 9, the Candy kingdom): `HOLD` with
+  the zone drawn as the land of its cities and nothing more. The leash
+  then keeps every unit of the ally on or beside its walls. Hand play
+  showed why the zone must be narrow: with a zone that reached the
+  approaches the Normal AI sent the ally's giant out to the zone's edge to
+  meet the first Goblins, and it was mobbed in round 3. Give the ally a
+  starting reveal that covers the approaches, too: the Normal AI keeps a
+  unit on a city center only while it sees a hostile unit near it, and an
+  ally that could not see the besiegers coming walked its garrison off the
+  center a turn before they arrived.
+- **An ally that must attack with you** (mission 10, the Goblins): a
+  schedule, `NORMAL` until a round and `RUSH` from then on. The ordinary
+  game first (villages, an economy, an army), then every free unit marches
+  on the nearest hostile city, which brought the horde to the Lodge's
+  slope in the rounds in which the player's siege stood there. `RUSH` from
+  round 1 would send the starting eight in a stream and leave the ally
+  with no economy.
+- **What an ally changes for the player.** No unit may enter an ally's
+  land (the ordinary alliance rule), so the player fights in front of an
+  allied city, never inside it, and an allied city that stands in a
+  corridor closes it. A capture objective is met by the ally's capture
+  too.
 
 ### 10.5 Natural maps
 
@@ -1867,6 +1946,161 @@ nine units intact at the end): a `RUSH` seat does not storm a line, as
 [section 11.5](#115-what-the-hand-play-taught) says, and here the clock
 is what brings the player out.
 
+### 11.10 Sugar and Spite
+
+`pulp_wars-v642.4`. Lakes 16, seed 5 (the contact sheet of seeds 1 to 24
+is with the bead's evidence, `scratchpad/pulp_wars-v642.4/maps/`); seven
+tiles turned to Rift, one chest and nine villages removed (six under
+cities, three on the besiegers' roads). **Won when round 16 ended, three
+stars**: Sugarcrest standing with four Candy units left, Queen Praline
+alive on 9 of 40 Hit Points, Riftwatch held since round 2; ten units lost
+(two Saucers, five Ray Gunners, two Shield Projectors, a Grunt). The fifth
+configuration, and the second full game on it:
+
+1. A level 4 Sugarcrest with a level 2 town, 6 Coins and the whole tree:
+   the kingdom grew to level 5, fielded eighteen units and **won by itself
+   in three stars with the player absent**.
+2. A poor kingdom, larger waves, and a `HOLD` zone that reached the
+   approaches: the Queen ran to the zone's edge and was mobbed in round 3.
+3. A `HOLD` zone of the cities' own land: the kingdom held to round 16
+   alone with one star; the waves were made six, with siege engines, and
+   then it fell in round 12 without help.
+4. First full game: a wave of five rose beside the player's southern
+   squad in round 7 and killed all three units of it in the turn it
+   arrived. The waves now muster in the besiegers' own camps, out of the
+   player's sight; the mission was then won in round 16 with one star
+   (Gumdrop, the kingdom's town and then the third star, fell in round 11
+   whatever the player did: its land is closed to the player's units).
+5. The third star became the village of Riftwatch, east of the Rift:
+   something the player takes and then has to keep.
+
+**The deliberate loss:** ending every turn without a command loses in
+round 14, "a place you had to hold fell" (Riftwatch goes to the Goblins in
+round 8, the Queen dies in round 10).
+
+The winning line: grow both cities at once (hunting, then Forestry and
+lumber camps; the capital's level 5 and 6 rewards taken as Coins, since a
+Colossus cannot cross), take Riftwatch with a Saucer in round 2 and train
+a Shield Projector there, carry Ray Gunners over under the Saucers into a
+block beside it, shoot whatever walks into range, and send a Saucer at
+every Rocket Cart (one kill set off a chain of three death blasts).
+**What nearly went wrong:** a Ray Gunner one tile in front of the Shield
+Projector's field dies to one rocket; a northern bastion of two units
+beside the Rift held for five rounds and saved nothing; and in the last
+round the kingdom was down to a Bunny on its center and the Queen on 9 Hit
+Points, with fifty enemy units on the board.
+
+### 11.11 The Stars Are Right
+
+`pulp_wars-v642.4`. Pangea 20, seed 23 (contact sheet with the bead's
+evidence); two Mountain tiles beside the Lodge turned to Grass and eleven
+villages removed (seven under cities, one on the Goblin capital's land,
+three that would have been free cities for the lodge). **Won in round 19 by capturing the Lodge, three
+stars**, eight units lost (two Juggernauts, a Knight, three Catapults, two
+Guards), the Lodge's Favour at 21 and no Summoner left to spend it. The
+third configuration:
+
+1. The design's seats with the Cult's whole tree and Harvest Rites: with
+   the player absent the lodge made an Offering in every city every turn,
+   began the Great Summoning in round 2, had the Herald in round 3, and
+   fielded forty units by round 17. The tree was closed, the Offering
+   taken away (Favour in blood only), and the lodge's economy left as it
+   starts. Played on that: **won in round 18** after a poor first half
+   (three Knights and a Juggernaut lost by round 9), because the Lodge fell
+   three rounds after the army reached it, and the thralls were eliminated
+   in round 12.
+2. Toughened: the Thing in the Cellar and a third Hexer at the Lodge, a
+   third Undead town in the north-west with the waves rising there, the
+   lodge's waves moved behind the summit. The Undead waves of rounds 6 and
+   12 rose in the player's rear beside the siege train, and a Caller's
+   Tentacle killed a Catapult a round; abandoned in round 13 with the
+   barrow not yet taken.
+3. Final: the Thing and the third Hexer stay; the Undead have their two
+   towns again and their waves rise at the barrow, where the player
+   expects the dead; a hint says so.
+
+**The deliberate loss:** ending every turn without a command, the lodge
+begins the Great Summoning in round 18, the Herald stands on the summit in
+round 19, and the thralls take the last of the player's cities in round
+21 ("you were eliminated"). The clock itself (round 24 ends, "Out of
+time") is covered by a test that ends turns without playing a seat.
+
+The winning line: the capital to level 6 and the northern town to level 5
+at once (two Juggernauts in two rounds), Catapults behind them, the barrow
+shot empty and taken in round 7 and grown into a forward base with the
+Conqueror's Monument (a third Juggernaut), Engineering for the Mountains,
+then the slope: Catapults on the Summoners, a Juggernaut onto the Lodge's
+center, capture. **What nearly went wrong, and what the Cult did:**
+
+- A Horror came out of the western town and killed a Knight in the forest
+  in round 5 of two games out of three: 9 Favour to the lodge each time.
+- A Juggernaut the reward had pushed off the barrow's center was killed in
+  one enemy phase by a Horror, a Hexer and the wave that had just risen.
+- The Stargazer dropped a star on the siege camp in round 11 (10 damage)
+  and marked the camp again in rounds 11, 13 and 14. The camp stepped out
+  of the first; a Catapult that stayed under the second to shoot a
+  Summoner killed him and died; a Knight's Overrun ended the third in
+  round 15: a Hexer, the Stargazer, and the Summoner on the Lodge's center
+  in one charge. The Horror then killed the Knight on the center (Favour
+  10).
+- A Hexer frogged a Guard, which a Familiar and an Idol Bearer then
+  killed; a Caller's Tentacle killed a Marksman in the first game and
+  three Catapults in the second.
+- The Lodge's Favour stood at 16 in round 17 and 21 in round 18: the
+  Great Summoning was one Summoner short when the Lodge fell.
+- The Goblins took the thralls' eastern town in round 9 (which eliminated
+  the Undead, the barrow being the player's) and fought on the slope from
+  round 13.
+
+**The Cult seat in its first real matches** (it had been built on
+hand-built states only). No rule broke: three games and four games played
+with the player absent ran to their end, the two winning sessions replay
+to the same state hash, and every Cult mechanic was seen working: Summon
+and Channel (with the Thing's Anchor on a channeller), Unbound and Bind
+again (a Horror whose channeller the Goblins hurt killed its own Summoner
+and an Initiate, and was bound again the next turn), Sacrifice, Seize, the
+Offering, Martyr, the Great Summoning (begun, fizzled, completed), the
+Herald, Star-fall (fell, and fizzled when its leader died), Ribbit, the
+Tentacle and its Grab, and Blast Mountain used on three units beside the
+Lodge. What the seat does poorly, for the AI's owner to weigh; none of it
+was changed here:
+
+1. **Its capital's center is held by whoever is nearest.** The Thing in
+   the Cellar walked off the Lodge's center in the first rounds and never returned;
+   in the winning game the center was held in turn by a Summoner, a
+   Hexer, and an Initiate while Idol Bearers stood beside it. A
+   Knight's Overrun killed the Summoner there and took the center; three
+   rounds later a Juggernaut did the same to the Initiate and the mission
+   was over. A seat should keep its sturdiest unit on a walled center.
+2. **A Summoner fights like an Initiate.** A Summoner that arrived with a
+   wave attacked a wounded Catapult, advanced after the kill into the
+   player's line, and died the next turn. The seat's summoning needs that
+   unit; it should not make melee attacks that advance.
+3. **With Harvest Rites and a full city it summons the Herald at once.**
+   A seat whose cities start at their unit limit makes an Offering in each
+   of them every turn (the rule of
+   [the Cult's AI](RULESET_7_CULTISTS.md#154-everything-else-in-simple-high-value-ways):
+   "at its unit limit or with nothing to train") and tops the pool up with
+   a spare Initiate: from 9 Favour the Great Summoning began in round 2.
+   An ordinary game does not start that way, but a mission or a late
+   skirmish position does; the mission forbids the technology.
+4. **A Horror leaves the guarded zone with its channellers.** A daemon is
+   not part of a `GUARD` garrison, and the cultists that follow it are the
+   free ones, so one Horror hunted five tiles from the Lodge. In the
+   mission that is welcome (it is how the player first meets one).
+
+Two things about the framework rather than the Cult:
+
+- **A wave acts in the turn it arrives.** A wave written onto tiles the
+  player's army has reached arrives beside it and attacks at once, and a
+  unit whose tile is taken appears up to two tiles away, which can be in
+  the player's line (a Summoner did). Missions write their waves where the
+  player is not expected and say when they come; a rule that a wave
+  arrives with its turn spent would be fairer.
+- **The Normal AI keeps a unit on a center only while it sees a hostile
+  unit near.** An allied or guarding seat needs a starting reveal that
+  covers its approaches ([section 10.4](#104-directive-schedules)).
+
 ## 12. The mission builder's guide
 
 How to add a mission.
@@ -1951,6 +2185,8 @@ How to add a mission.
   expectations predate the capture objectives and the new boards.
 - An allied AI seat plays its ordinary game: it does not come to the
   human's aid on purpose. Mission 9 and 10 may want a directive for that.
+  (`pulp_wars-v642.4`: the existing kinds were enough, see
+  [section 10.4](#104-directive-schedules).)
 - Mid-mission story beats (a line when a wave arrives) and portraits of the
   named characters.
 

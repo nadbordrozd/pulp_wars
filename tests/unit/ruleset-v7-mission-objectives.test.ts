@@ -858,25 +858,52 @@ describe("natural maps", () => {
       "FRONTIER_6",
       "FRONTIER_7",
       "FRONTIER_8",
+      "FRONTIER_9",
+      "FRONTIER_10",
     ]);
     for (const mission of MISSION_REGISTRY_V7)
       expect(missionMapDriftV7(mission), mission.id).toEqual([]);
     // The edit lists are small: the board is the generator's. (Ten at most
     // since missions 5 and 6, `pulp_wars-v642.2`: a three-seat board has
-    // more villages to take away from the AI seats; it was eight.)
+    // more villages to take away from the AI seats; it was eight.) The
+    // four-seat boards (`pulp_wars-v642.4`) remove a village under each of
+    // their six or seven cities, and mission 9 has its band of Rift.
+    const mostEdits: Readonly<Record<string, number>> = {
+      FRONTIER_9: 17,
+      FRONTIER_10: 13,
+    };
+    const terrainEdits: Readonly<Record<string, number>> = {
+      // Bone Neck.
+      FRONTIER_4: 2,
+      // The Rift band: seven tiles in one column.
+      FRONTIER_9: 7,
+      // The clearing on the Lodge's summit.
+      FRONTIER_10: 2,
+    };
     for (const mission of natural) {
       const source = mission.source as NonNullable<
         MissionDefinitionV7["source"]
       >;
-      expect(source.edits.length, mission.id).toBeLessThanOrEqual(10);
+      expect(source.edits.length, mission.id).toBeLessThanOrEqual(
+        mostEdits[mission.id] ?? 10,
+      );
       expect(source.size).toBe(mission.size);
       expect(source.seats).toBe(mission.seats.length);
-      // Terrain is changed on two tiles in all (Bone Neck); every other
-      // edit removes a village or a chest.
+      // Terrain is changed where a mission's story needs it (a neck, a
+      // Rift, a clearing); every other edit removes a village or a chest.
       expect(
         source.edits.filter((edit) => edit.kind === "TERRAIN").length,
         mission.id,
-      ).toBe(mission.id === "FRONTIER_4" ? 2 : 0);
+      ).toBe(terrainEdits[mission.id] ?? 0);
+      expect(
+        source.edits.every(
+          (edit) =>
+            edit.kind === "TERRAIN" ||
+            ((edit.kind === "VILLAGE" || edit.kind === "CHEST") &&
+              !edit.present),
+        ),
+        mission.id,
+      ).toBe(true);
     }
   });
 
