@@ -7,6 +7,7 @@ import {
   SOUND_IDS_V1,
   SOUND_MANIFEST_V1,
 } from "../../src/audio/sound-manifest";
+import { soundUserPickV1 } from "../../src/audio/sound-choices";
 import {
   STOCK_SOUND_GENERATED_V1,
   STOCK_SOUNDS_V1,
@@ -14,6 +15,18 @@ import {
   type StockSoundCandidateV1,
   type StockSoundV1,
 } from "../../src/audio/stock-sounds";
+
+/**
+ * The recording the user chose by ear for a sound (`sound-picks.json`),
+ * when their pick is one of its stock recordings; undefined otherwise (no
+ * pick, or a pick of an ElevenLabs take).
+ */
+function stockPickOf(sound: StockSoundV1): number | undefined {
+  const n = soundUserPickV1(sound.id)?.n;
+  return sound.candidates.some((candidate) => candidate.n === n)
+    ? n
+    : undefined;
+}
 
 /**
  * Writes `docs/audio/STOCK_SOUND_CHOICES.md` from the provenance manifest
@@ -36,7 +49,7 @@ export const STOCK_SOUND_CHOICES_DOC_PATH = resolve(
 
 /**
  * The things a game sound can be, as the document says them. USER_PICK is
- * a sound whose recording the user chose by ear (`userPick`): it plays
+ * a sound whose recording the user chose by ear (`sound-picks.json`): it plays
  * ahead of the ElevenLabs takes.
  */
 export type StockSoundStatusV1 =
@@ -67,7 +80,7 @@ export function stockSoundStatusRowsV1(): readonly StockSoundStatusRowV1[] {
     const status: StockSoundStatusV1 =
       sound === null
         ? "GENERATED"
-        : sound.userPick !== undefined
+        : stockPickOf(sound) !== undefined
           ? "USER_PICK"
           : sound.default === 0
             ? "GENERATED_OPTIONS"
@@ -79,7 +92,10 @@ export function stockSoundStatusRowsV1(): readonly StockSoundStatusRowV1[] {
       label: SOUND_MANIFEST_V1[id].label,
       status,
       candidates,
-      default: sound?.userPick ?? sound?.default ?? 0,
+      default:
+        (sound === null ? undefined : stockPickOf(sound)) ??
+        sound?.default ??
+        0,
     };
   });
 }
@@ -116,17 +132,17 @@ function sourceOf(candidate: StockSoundCandidateV1): string {
 }
 
 function defaultText(sound: StockSoundV1): string {
-  const n = sound.userPick ?? sound.default;
+  const n = stockPickOf(sound) ?? sound.default;
   if (n === 0) return "Generated";
   const candidate = sound.candidates.find((entry) => entry.n === n);
   return candidate === undefined
     ? "Generated"
-    : `#${candidate.n}${sound.userPick === n ? " (your pick)" : ""}: part ${candidate.part}, ${sourceOf(candidate)}`;
+    : `#${candidate.n}${stockPickOf(sound) === n ? " (your pick)" : ""}: part ${candidate.part}, ${sourceOf(candidate)}`;
 }
 
 /** A recording's Default column: "your pick", "yes" or nothing. */
 function defaultCell(sound: StockSoundV1, n: number): string {
-  if (sound.userPick === n) return "your pick";
+  if (stockPickOf(sound) === n) return "your pick";
   return n === sound.default ? "yes" : "";
 }
 
@@ -161,21 +177,24 @@ export function stockSoundChoicesMarkdownV1(): string {
     "a sound's default below is what it played before the takes.",
     "",
     "**A recording marked _your pick_ was chosen by the user by ear** (the",
-    "Rocket Cart's firework, 2026-10-14). It plays by default ahead of the",
+    "Rocket Cart's firework and the listening of 2026-10-14, listed in",
+    "`src/audio/sound-picks.json`). It plays by default ahead of the",
     'ElevenLabs takes and reads "Pick" in the Gallery, first in its row; the',
-    "takes and the other recordings stay there to choose.",
+    "takes and the other recordings stay there to choose. A pick of an",
+    "ElevenLabs take is in [ELEVENLABS_SFX.md](ELEVENLABS_SFX.md).",
     "",
     "## How to choose",
     "",
     "1. Open the Gallery and its **Sounds** tab. A sound with recordings has a",
     '   row under its card: your pick ("Pick") where there is one, its new',
     '   takes ("New 1" first), its old recordings ("Old 1" is the first',
-    "   recording below that is not your pick), and **Synth** last.",
+    "   recording below; a pick keeps its number free, so the others keep",
+    "   theirs), and **Synth** last.",
     "2. Press a line to hear it. Press **Use** on the one you like: the game",
     "   plays it from then on, in that browser only.",
     "3. Press **Copy my picks** at the top of the tab and paste the text to",
     "   the developer. The default everyone gets changes only when",
-    "   `src/audio/stock-sounds.json` does.",
+    "   `src/audio/sound-picks.json` or a manifest does.",
     "",
     "A number below is the recording's number in that row.",
     "",

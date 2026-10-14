@@ -1,4 +1,11 @@
-import type { PlayerEventEnvelopeV7, PlayerViewV7 } from "../engine/index";
+import {
+  NEUTRAL_KIND_V7,
+  unitFactionV7,
+  type CoordV7,
+  type FactionIdV7,
+  type PlayerEventEnvelopeV7,
+  type PlayerViewV7,
+} from "../engine/index";
 import {
   ATTACK_EFFECT_DURATIONS_V7,
   ATTACK_EFFECT_HIT_V7,
@@ -120,6 +127,70 @@ const MELEE_HIT_SHARE = 0.56;
 /** A death is heard just after the blow that caused it. */
 const DEATH_AFTER_HIT_MS = 60;
 
+/** A hurt sound is heard just after the blow, a little before a death. */
+const HURT_AFTER_HIT_MS = 40;
+
+/** Each faction's hurt sound (bead pulp_wars-2yc.52). */
+const FACTION_HURT_SOUNDS_V7: Readonly<Record<FactionIdV7, SoundIdV1>> = {
+  ORIGINAL: "unit.hurt.human",
+  UNDEAD: "unit.hurt.undead",
+  GOBLIN: "unit.hurt.goblin",
+  DINOSAUR: "unit.hurt.dinosaur",
+  MARTIAN: "unit.hurt.martian",
+  ICE_FOLK: "unit.hurt.icefolk",
+  DWARF: "unit.hurt.dwarf",
+  CANDY: "unit.hurt.candy",
+  CULT: "unit.hurt.cultist",
+};
+
+/**
+ * The hurt sound of a damaged unit (bead pulp_wars-2yc.52), from what the
+ * viewer sees of it: a Cult summoning (a Horror, the Herald, a Tentacle)
+ * is a daemon, the neutral Giant Spider a monster, any faction's giant a
+ * giant, every other unit its kind's faction (the faction of its original
+ * owner while it is mind-controlled, as its art). A unit neither view
+ * holds is the plain `unit.hurt`.
+ */
+export function hurtSoundOfUnitV7(
+  views: readonly PlayerViewV7[],
+  find: { readonly unitId: number } | { readonly at: CoordV7 },
+): SoundIdV1 {
+  for (const view of views) {
+    const unit = view.units.find((candidate) =>
+      "unitId" in find
+        ? candidate.id === find.unitId
+        : candidate.at.x === find.at.x && candidate.at.y === find.at.y,
+    );
+    if (unit === undefined) continue;
+    if (unit.summoned !== undefined) return "unit.hurt.daemon";
+    const kind = unitFactionV7(view, unit);
+    if (kind === NEUTRAL_KIND_V7) return "unit.hurt.monster";
+    if (unit.role === "JUGGERNAUT") return "unit.hurt.giant";
+    return FACTION_HURT_SOUNDS_V7[kind];
+  }
+  return "unit.hurt";
+}
+
+/**
+ * The target's hurt sound when the attack by `unitId` in this boundary
+ * damaged it and it lived; null otherwise (a kill sounds the death).
+ */
+function attackHurt(
+  cue: PresentationStepCueV7,
+  unitId: number,
+): SoundIdV1 | null {
+  for (const event of cue.envelope.events)
+    if (event.kind === "COMBAT_RESOLVED" && event.preview.attackerId === unitId)
+      return event.preview.damageToDefender > 0 &&
+        !event.preview.defenderDies &&
+        !deadUnitIds(cue.envelope).has(event.preview.targetUnitId)
+        ? hurtSoundOfUnitV7([cue.before, cue.after], {
+            unitId: event.preview.targetUnitId,
+          })
+        : null;
+  return null;
+}
+
 /** The units that died in this boundary, as far as the viewer was told. */
 function deadUnitIds(envelope: PlayerEventEnvelopeV7): ReadonlySet<number> {
   const dead = new Set<number>();
@@ -160,6 +231,9 @@ export function soundCuesForStepV7(
     case "RANGED":
     case "CATAPULT": {
       const kills = attackKills(cue, step.unitId);
+      // Bead pulp_wars-2yc.52: a target that lives through the blow is
+      // heard taking it, in the voice of its kind.
+      const hurt = attackHurt(cue, step.unitId);
       if (step.attackEffect !== undefined) {
         const sounds = ATTACK_EFFECT_SOUNDS[step.attackEffect];
         const hitMs =
@@ -172,6 +246,9 @@ export function soundCuesForStepV7(
             ? []
             : [
                 { id: sounds.impact, delayMs: hitMs },
+                ...(hurt === null
+                  ? []
+                  : [{ id: hurt, delayMs: hitMs + HURT_AFTER_HIT_MS }]),
                 // The Candy redesign: a ricochet pops again on the next unit.
                 ...(step.ricochet === undefined
                   ? []
@@ -221,6 +298,9 @@ export function soundCuesForStepV7(
                     : ("impact.hit" as const),
                 delayMs: hitMs,
               },
+              ...(hurt === null
+                ? []
+                : [{ id: hurt, delayMs: hitMs + HURT_AFTER_HIT_MS }]),
             ]
           : []),
         ...(kills && step.holdTarget !== true
@@ -235,7 +315,12 @@ export function soundCuesForStepV7(
     }
     case "DAMAGE":
       return [
-        { id: "unit.hurt", delayMs: 0 },
+        {
+          id: hurtSoundOfUnitV7([cue.before, cue.after], {
+            unitId: step.unitId,
+          }),
+          delayMs: 0,
+        },
         ...(step.lethal
           ? [{ id: "unit.death" as const, delayMs: DEATH_AFTER_HIT_MS }]
           : []),
@@ -261,9 +346,14 @@ export function soundCuesForStepV7(
       switch (step.effect) {
         case "HEAT_RAY": {
           const hitMs = step.durationMs * 0.5;
+          const hurt =
+            step.unitId === undefined ? null : attackHurt(cue, step.unitId);
           return [
             { id: "attack.ray", delayMs: 0 },
             { id: "impact.hit", delayMs: hitMs },
+            ...(hurt === null
+              ? []
+              : [{ id: hurt, delayMs: hitMs + HURT_AFTER_HIT_MS }]),
             ...(step.unitId !== undefined && attackKills(cue, step.unitId)
               ? [
                   {
@@ -417,11 +507,19 @@ export function soundCuesForStepV7(
           return [{ id: "impact.splat", delayMs: 0 }];
         case "BOUNCE":
           return [{ id: "special.boing", delayMs: 0 }];
-        case "PEPPERMINT":
+        case "PEPPERMINT": {
+          const at = step.cells[0];
           return [
             { id: "special.pop", delayMs: 0 },
-            { id: "unit.hurt", delayMs: 40 },
+            {
+              id:
+                at === undefined
+                  ? "unit.hurt"
+                  : hurtSoundOfUnitV7([cue.before, cue.after], { at }),
+              delayMs: 40,
+            },
           ];
+        }
         case "CRUMBS_EATEN":
           return [{ id: "economy.harvest", delayMs: 0 }];
         // The Candy redesign: the Bunny's stomp, then the ring's hits.
@@ -541,10 +639,10 @@ export function soundCuesForBoundaryV7(
       case "MOUNTAIN_BLASTED":
         if (event.playerId === viewer) start.push("economy.build");
         break;
+      // The user, 2026-10-14: "for monument let's not have a sound effect
+      // at all". A Monument is silent; `achievement.monument` stays in the
+      // Gallery, marked as not played.
       case "MONUMENT_BUILT":
-        // Another player's Monument is projected as a building only.
-        if (event.visibility === "FULL" && event.playerId === viewer)
-          start.push("achievement.monument");
         break;
       case "UNIT_TRAINED":
       case "NAVAL_UNIT_TRAINED":

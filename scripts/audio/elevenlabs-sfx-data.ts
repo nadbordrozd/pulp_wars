@@ -94,6 +94,53 @@ export interface SfxPromptV1 {
   readonly maxSeconds: number;
   readonly promptInfluence: number;
   readonly revisions?: readonly SfxRevisionV1[];
+  /**
+   * Takes that may no longer be the default (bead pulp_wars-2yc.52): the
+   * user heard them and wanted something else. They stay in the Gallery
+   * to choose, after the takes that may be the default.
+   */
+  readonly retired?: readonly SfxRetiredTakeV1[];
+  /**
+   * Sound files the user made with ElevenLabs and handed over (bead
+   * pulp_wars-2yc.52): `import` brings each in as a take of its own,
+   * numbered from 101 in this order, and the first is the sound's
+   * default, ahead of any generated take, whatever it measures.
+   */
+  readonly supplied?: readonly SfxSuppliedFileV1[];
+  /**
+   * How many takes round 1 asks for, when not the file's `takes`; 0 for a
+   * sound whose takes are all supplied.
+   */
+  readonly firstRoundTakes?: number;
+  /**
+   * Its level against another sound's (bead pulp_wars-2yc.52): the takes
+   * are matched to the loudness that sound's takes are matched to, moved
+   * by `offsetDb`, instead of to this sound's previous default.
+   */
+  readonly loudness?: {
+    readonly like: string;
+    readonly offsetDb: number;
+    readonly reason: string;
+  };
+}
+
+/** A sound file the user generated and handed over. */
+export interface SfxSuppliedFileV1 {
+  /** Its file name as the user handed it over. */
+  readonly file: string;
+  /** The day it was made. */
+  readonly date: string;
+  /** Who made it and how: "the user's ElevenLabs generation". */
+  readonly by: string;
+  /** What the user said when handing it over. */
+  readonly said: string;
+}
+
+/** A take kept to choose but never the default again. */
+export interface SfxRetiredTakeV1 {
+  readonly n: number;
+  /** Why, with the user's words where there are any. */
+  readonly reason: string;
 }
 
 export interface SfxPromptsFileV1 {
@@ -117,7 +164,8 @@ export interface SfxTakeRecordV1 {
   /** The whole text sent. */
   readonly prompt: string;
   readonly durationSeconds: number;
-  readonly promptInfluence: number;
+  /** Null for a take the user supplied: what they asked is not known. */
+  readonly promptInfluence: number | null;
   readonly model: string;
   readonly outputFormat: string;
   /** The day it was generated (UTC). */
@@ -127,6 +175,14 @@ export interface SfxTakeRecordV1 {
   readonly bytes: number;
   /** Cost headers the service sent, when any. */
   readonly cost?: Readonly<Record<string, string>>;
+  /**
+   * A take the user made and handed over (the prompt's `supplied`),
+   * brought in by `import` rather than generated: round 0.
+   */
+  readonly supplied?: {
+    readonly file: string;
+    readonly by: string;
+  };
 }
 
 export interface SfxRecordsFileV1 {
@@ -208,13 +264,15 @@ export function roundRequestV1(
   round: number,
 ): SfxRoundRequestV1 | null {
   if (round === 1)
-    return {
-      round,
-      takes: file.takes,
-      prompt: fullPromptV1(file, sound),
-      durationSeconds: sound.durationSeconds,
-      promptInfluence: sound.promptInfluence,
-    };
+    return (sound.firstRoundTakes ?? file.takes) === 0
+      ? null
+      : {
+          round,
+          takes: sound.firstRoundTakes ?? file.takes,
+          prompt: fullPromptV1(file, sound),
+          durationSeconds: sound.durationSeconds,
+          promptInfluence: sound.promptInfluence,
+        };
   const revision = sound.revisions?.find((entry) => entry.round === round);
   if (revision === undefined) return null;
   return {

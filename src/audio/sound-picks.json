@@ -1,0 +1,107 @@
+{
+  "about": "The versions the user chose by ear in the Gallery's Sounds tab. Each pick names a candidate of the sound (an ElevenLabs take from 101, a stock recording from 1): the game plays it by default, ahead of the sound's measured default, and the Gallery lists it first as \"Pick\". A browser's own pick still wins. docs/ui/SOUND.md \"Choosing between recordings\".",
+  "picks": [
+    {
+      "id": "attack.rocket",
+      "n": 2,
+      "date": "2026-10-14",
+      "said": "The Rocket Cart's firework: the RPG recording the user chose, its firing."
+    },
+    {
+      "id": "impact.rocket",
+      "n": 1,
+      "date": "2026-10-14",
+      "said": "The Rocket Cart's firework: the RPG recording the user chose, its impact."
+    },
+    {
+      "id": "support.rally",
+      "n": 1,
+      "date": "2026-10-14",
+      "said": "for rally sound use the old one instead of the new one"
+    },
+    {
+      "id": "support.dark",
+      "n": 1,
+      "date": "2026-10-14",
+      "said": "for dark magic also use the old one"
+    },
+    {
+      "id": "special.mind",
+      "n": 109,
+      "date": "2026-10-14",
+      "said": "for mind control use the second version"
+    },
+    {
+      "id": "special.hatch",
+      "n": 102,
+      "date": "2026-10-14",
+      "said": "for egg crack use 3rd version"
+    },
+    {
+      "id": "special.sparkle",
+      "n": 104,
+      "date": "2026-10-14",
+      "said": "for sparkle use 2nd version"
+    },
+    {
+      "id": "special.dizzy",
+      "n": 105,
+      "date": "2026-10-14",
+      "said": "for dizzy use the 2nd version"
+    },
+    {
+      "id": "cult.herald",
+      "n": 2,
+      "date": "2026-10-14",
+      "said": "for herald arrives use the second old version"
+    },
+    {
+      "id": "cult.sacrifice",
+      "n": 1,
+      "date": "2026-10-14",
+      "said": "for sacrifice use the first old version"
+    },
+    {
+      "id": "city.lost",
+      "n": 2,
+      "date": "2026-10-14",
+      "said": "for city lost use the old one but can you make it shorter"
+    },
+    {
+      "id": "reward.chosen",
+      "n": 104,
+      "date": "2026-10-14",
+      "said": "for reward is chosen use the second one"
+    },
+    {
+      "id": "economy.build",
+      "n": 1,
+      "date": "2026-10-14",
+      "said": "for build use the first old one"
+    },
+    {
+      "id": "economy.harvest",
+      "n": 105,
+      "date": "2026-10-14",
+      "said": "for harvest use the second one"
+    },
+    {
+      "id": "turn.end",
+      "n": 1,
+      "date": "2026-10-14",
+      "said": "for end turn use the first old one"
+    },
+    {
+      "id": "ui.select",
+      "n": 1,
+      "date": "2026-10-14",
+      "said": "'select' is supposed to be 'UIClick_Operating System UI...'"
+    },
+    {
+      "id": "ui.click",
+      "n": 1,
+      "date": "2026-10-14",
+      "said": "click is supposed to be 'UClick_UI Click 33_CB...'"
+    }
+  ]
+}

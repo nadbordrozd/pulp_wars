@@ -58,6 +58,7 @@ import {
   soundCandidateUrlV1,
   soundCandidateV1,
   soundChoiceSetV1,
+  soundUserPickV1,
   renderSynthRecipeV1,
   soundRecipeV1,
   stockSoundCandidateV1,
@@ -111,9 +112,12 @@ const MAX_CLIP_BYTES = 60_000;
  * every sound to be replaced by ElevenLabs takes while the old recordings
  * stay to compare, and its 175 takes are 2.6 MB. Only one clip a sound is
  * fetched at the game's start; the others load when they are heard or
- * picked. Raise it again only with more takes, and not past about 6 MB.
+ * picked. Bead pulp_wars-2yc.52 raised it to 4.6 MB: twelve new hurt
+ * sounds (one per faction and three creatures, 26 clips of about 13 kB,
+ * 0.33 MB), Village captured's new takes and the generic death's take.
+ * Raise it again only with more takes, and not past about 6 MB.
  */
-const MAX_TOTAL_BYTES = 4_200_000;
+const MAX_TOTAL_BYTES = 4_600_000;
 /** The longest clip the game needs (a fanfare). */
 const MAX_CLIP_SECONDS = 3.2;
 /** A sound keeps at most this many recordings to choose from. */
@@ -250,11 +254,12 @@ describe("recorded sound clips", () => {
       expect(clip.note.length, name).toBeGreaterThan(10);
       expect(clip.note, name).not.toMatch(/\n/);
     }
-    // Two candidates of a sound are never the same stretch of the same file.
+    // Two candidates of a sound are never the same stretch of the same file
+    // (City lost's #2 is #1's opening cut shorter, at the user's request).
     for (const sound of STOCK_SOUNDS_V1) {
       const cuts = sound.candidates.map(
         (candidate) =>
-          `${candidate.library}/${candidate.originalFile}@${candidate.startSeconds}`,
+          `${candidate.library}/${candidate.originalFile}@${candidate.startSeconds}-${candidate.endSeconds}`,
       );
       expect(new Set(cuts).size, sound.id).toBe(cuts.length);
     }
@@ -390,15 +395,18 @@ describe("recorded sound clips", () => {
 
   it("plays the user's own pick of a recording ahead of every take", () => {
     // The firework rocket (2026-10-14): one recording, cut in two halves.
-    const picked = STOCK_SOUNDS_V1.filter(
-      (sound) => sound.userPick !== undefined,
+    const picked = STOCK_SOUNDS_V1.filter((sound) =>
+      ["attack.rocket", "impact.rocket"].includes(sound.id),
     );
     expect(picked.map((sound) => sound.id)).toEqual([
       "attack.rocket",
       "impact.rocket",
     ]);
     for (const sound of picked) {
-      const pick = stockSoundCandidateV1(sound.id, sound.userPick ?? -1);
+      const pick = stockSoundCandidateV1(
+        sound.id,
+        soundUserPickV1(sound.id)?.n ?? -1,
+      );
       if (pick === null) throw new Error(`${sound.id}: no such candidate`);
       expect(soundChoiceSetV1(sound.id)?.default, sound.id).toBe(pick.n);
       expect(SOUND_DEFAULT_CLIPS_V1, sound.id).toContainEqual(
@@ -708,7 +716,9 @@ describe("the document of the choices", () => {
       expect(row.status, row.id).toBe(
         sound === null
           ? "GENERATED"
-          : sound.userPick !== undefined
+          : sound.candidates.some(
+                (candidate) => candidate.n === soundUserPickV1(row.id)?.n,
+              )
             ? "USER_PICK"
             : sound.default === 0
               ? "GENERATED_OPTIONS"
@@ -741,7 +751,7 @@ describe("the document of the choices", () => {
     ).toBe("Recorded — your pick");
     // The document marks the pick in the table of every sound.
     expect(stockSoundChoicesMarkdownV1()).toContain(
-      "- 2 play your pick: `attack.rocket`, `impact.rocket`.",
+      "- 11 play your pick: `attack.rocket`, `impact.rocket`, `support.rally`, `support.dark`, `cult.herald`, `cult.sacrifice`, `city.lost`, `economy.build`, `turn.end`, `ui.select`, `ui.click`.",
     );
     expect(stockSoundChoicesMarkdownV1()).toMatch(
       /\| 2 \| your pick \| 6 \| Pole Position/,

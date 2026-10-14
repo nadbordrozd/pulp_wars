@@ -156,9 +156,11 @@ describe("presentation step announcements", () => {
     expect(scene.cues[0]?.durationScale).toBe(1);
     expect(scene.cues[0]?.before).toBe(scene.shot.before);
     expect(scene.cues[0]?.envelope).toBe(scene.shot.envelope);
+    // The bolt, its hit, and the surviving Human target's hurt sound (bead
+    // pulp_wars-2yc.52).
     expect(
       soundCuesForStepV7(required(scene.cues[0])).map((cue) => cue.id),
-    ).toEqual(["attack.magic", "impact.hit"]);
+    ).toEqual(["attack.magic", "impact.hit", "unit.hurt.human"]);
     let done = false;
     void presentation.then(() => {
       done = true;

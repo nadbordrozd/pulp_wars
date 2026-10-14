@@ -75,7 +75,7 @@ export interface ElevenLabsTakeManifestV1 {
   readonly model: string;
   readonly prompt: string;
   readonly durationSeconds: number;
-  readonly promptInfluence: number;
+  readonly promptInfluence: number | null;
   /** The stretch of the raw take that was kept. */
   readonly startSeconds: number;
   readonly endSeconds: number;
@@ -113,6 +113,7 @@ interface MeasuredSelectionV1 {
   readonly id: string;
   readonly kept: readonly number[];
   readonly offered: readonly number[];
+  readonly retired?: readonly number[];
   readonly confidence: "high" | "medium" | "low";
   readonly why: string;
 }
@@ -155,6 +156,24 @@ function referenceOf(
         momentaryLufsV1(renderSynthRecipeV1(recipe, SAMPLE_RATE), SAMPLE_RATE) *
           10,
       ) / 10,
+  };
+}
+
+/**
+ * The loudness a sound's takes are matched to: its previous default's, or,
+ * for a sound with a `loudness` of its own (bead pulp_wars-2yc.52), the
+ * loudness another sound's takes are matched to, moved by `offsetDb`.
+ */
+function soundReferenceOf(
+  sound: ReturnType<typeof readPromptsV1>["sounds"][number],
+  work: string,
+): { readonly source: string; readonly lufs: number } {
+  if (sound.loudness === undefined) return referenceOf(sound.id, work);
+  const like = referenceOf(sound.loudness.like, work);
+  const offset = sound.loudness.offsetDb;
+  return {
+    source: `${offset >= 0 ? "+" : ""}${offset} dB against \`${sound.loudness.like}\`'s reference, ${like.source}`,
+    lufs: Math.round((like.lufs + offset) * 10) / 10,
   };
 }
 
@@ -207,7 +226,24 @@ export function leanManifestV1(
   };
 }
 
-export function encodeElevenLabsSfxV1(rawFolder: string): string[] {
+/**
+ * Encodes the chosen takes. With `only` (one sound id, or several joined
+ * by commas), those sounds are encoded again and every other sound keeps
+ * its entry and its clips as they are (AAC encoding is not byte-stable
+ * across runs, so encoding all again would change every clip's bytes for
+ * nothing).
+ */
+export function encodeElevenLabsSfxV1(
+  rawFolder: string,
+  onlyList?: string,
+): string[] {
+  const onlyIds = onlyList?.split(",").filter((id) => id !== "");
+  return onlyIds === undefined
+    ? encodeOnly(rawFolder, undefined)
+    : onlyIds.flatMap((id) => encodeOnly(rawFolder, id));
+}
+
+function encodeOnly(rawFolder: string, only: string | undefined): string[] {
   if (!existsSync(AFCONVERT))
     throw new Error(`${AFCONVERT} not found: encoding needs macOS.`);
   const prompts = readPromptsV1();
@@ -216,6 +252,12 @@ export function encodeElevenLabsSfxV1(rawFolder: string): string[] {
     ELEVENLABS_SFX_MEASUREMENTS_PATH,
     { sounds: [] },
   );
+  const previous = readJsonV1<ElevenLabsManifestV1 | null>(
+    ELEVENLABS_SFX_CLIPS_PATH,
+    null,
+  );
+  if (only !== undefined && !prompts.sounds.some((sound) => sound.id === only))
+    throw new Error(`No prompt for the sound "${only}".`);
   const out = join(ROOT, STOCK_SOUND_OUTPUT_V1.folder);
   const work = mkdtempSync(join(tmpdir(), "elevenlabs-sfx-"));
   const lines: string[] = [];
@@ -224,12 +266,20 @@ export function encodeElevenLabsSfxV1(rawFolder: string): string[] {
   let bytesTotal = 0;
   try {
     for (const sound of prompts.sounds) {
+      if (only !== undefined && sound.id !== only) {
+        const kept = previous?.sounds.find((entry) => entry.id === sound.id);
+        if (kept === undefined) continue;
+        sounds.push(kept);
+        for (const take of kept.takes) written.add(take.file);
+        continue;
+      }
       const selection = measured.sounds.find((entry) => entry.id === sound.id);
       if (selection === undefined) continue;
-      const reference = referenceOf(sound.id, work);
+      const reference = soundReferenceOf(sound, work);
       const chosen = [
         ...selection.kept.map((n) => ({ n, passed: true })),
         ...selection.offered.map((n) => ({ n, passed: false })),
+        ...(selection.retired ?? []).map((n) => ({ n, passed: false })),
       ];
       const takes: ElevenLabsTakeManifestV1[] = [];
       for (const { n, passed } of chosen) {
@@ -321,7 +371,11 @@ export function encodeElevenLabsSfxV1(rawFolder: string): string[] {
   }
   // ElevenLabs clips (numbers from 101) the manifest no longer lists.
   for (const file of readdirSync(out).sort())
-    if (/-1\d\d\.m4a$/.test(file) && !written.has(file)) {
+    if (
+      /-1\d\d\.m4a$/.test(file) &&
+      !written.has(file) &&
+      (only === undefined || file.startsWith(`${fileStemV1(only)}-1`))
+    ) {
       rmSync(join(out, file));
       lines.push(`${file} is no longer listed: removed`);
     }

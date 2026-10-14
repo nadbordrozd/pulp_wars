@@ -260,6 +260,9 @@ function unitName(role: UnitRoleIdV7, faction: FactionIdV7): string {
   return cell.kind === "UNIT" ? cell.name : factionNameV7(faction);
 }
 
+/** What a card says of a sound no event plays (the Monument's). */
+export const GALLERY_SOUND_NOT_PLAYED_TEXT_V7 = "Not played";
+
 interface SoundNoteV7 {
   readonly when: string;
   readonly picture: GallerySoundPictureV7;
@@ -322,7 +325,57 @@ const NOTES: Readonly<Partial<Record<SoundIdV1, SoundNoteV7>>> = {
   },
   "impact.shield": { when: "Shield takes a hit", picture: icon("shield") },
   "impact.splash": { when: "Splash, ice melts", picture: icon("periscope") },
-  "unit.hurt": { when: "Unit damaged", picture: icon("hp") },
+  // Bead pulp_wars-2yc.52: a damaged unit is heard in its kind's voice;
+  // the plain sound is left for a unit the viewer cannot name.
+  "unit.hurt": { when: "Unknown unit damaged", picture: icon("hp") },
+  "unit.hurt.human": {
+    when: "A Human is hit",
+    picture: unit("FIGHTER", "ORIGINAL"),
+  },
+  "unit.hurt.undead": {
+    when: "An Undead is hit",
+    picture: unit("FIGHTER", "UNDEAD"),
+  },
+  "unit.hurt.goblin": {
+    when: "A Goblin is hit",
+    picture: unit("FIGHTER", "GOBLIN"),
+  },
+  "unit.hurt.dinosaur": {
+    when: "A Dinosaur is hit",
+    picture: unit("FIGHTER", "DINOSAUR"),
+  },
+  "unit.hurt.martian": {
+    when: "A Martian is hit",
+    picture: unit("FIGHTER", "MARTIAN"),
+  },
+  "unit.hurt.icefolk": {
+    when: "Ice Folk hit",
+    picture: unit("FIGHTER", "ICE_FOLK"),
+  },
+  "unit.hurt.dwarf": {
+    when: "A Dwarf is hit",
+    picture: unit("FIGHTER", "DWARF"),
+  },
+  "unit.hurt.candy": {
+    when: "A Candy unit hit",
+    picture: unit("FIGHTER", "CANDY"),
+  },
+  "unit.hurt.cultist": {
+    when: "A Cultist is hit",
+    picture: unit("FIGHTER", "CULT"),
+  },
+  "unit.hurt.daemon": {
+    when: "Horror or Tentacle hit",
+    picture: art("PORTRAIT:CULT:HORROR"),
+  },
+  "unit.hurt.giant": {
+    when: "A giant is hit",
+    picture: unit("JUGGERNAUT", "ORIGINAL"),
+  },
+  "unit.hurt.monster": {
+    when: "Giant Spider hit",
+    picture: art("PORTRAIT:MONSTER_GIANT_SPIDER"),
+  },
   "unit.death": { when: "Unit dies", picture: icon("skull") },
   "unit.step": { when: "Your unit moves", picture: icon("move") },
   "unit.train": { when: "New unit joins", picture: icon("units") },
@@ -425,8 +478,10 @@ const NOTES: Readonly<Partial<Record<SoundIdV1, SoundNoteV7>>> = {
     when: "Achievement earned",
     picture: icon("trophy"),
   },
+  // The user, 2026-10-14: a Monument makes no sound. The card stays, to
+  // hear what it was.
   "achievement.monument": {
-    when: "Monument built",
+    when: GALLERY_SOUND_NOT_PLAYED_TEXT_V7,
     picture: art("IMPROVEMENT:MONUMENT"),
   },
   "match.victory": { when: "Match won", picture: icon("trophy") },
@@ -498,18 +553,19 @@ function originOf(
 }
 
 /**
- * What the recording the user chose by ear reads in its sound's row (the
- * firework rocket's, 2026-10-14): it is the default, ahead of the takes.
+ * What the version the user chose by ear reads in its sound's row
+ * (`sound-picks.json`: the firework rocket's and the listening of
+ * 2026-10-14): it is the default, ahead of the takes.
  */
 export const GALLERY_SOUND_USER_PICK_TEXT_V7 = "Pick";
 
 /**
  * "New 1" for the first ElevenLabs take, "Old 2" for a stock recording,
- * "Pick" for the recording the user chose.
+ * "Pick" for the version the user chose (an ElevenLabs take or a stock
+ * recording; the others keep their numbers).
  */
 function candidateLabel(clip: SoundClipV1): string {
-  if (clip.origin === "STOCK" && clip.userPick)
-    return GALLERY_SOUND_USER_PICK_TEXT_V7;
+  if (clip.userPick) return GALLERY_SOUND_USER_PICK_TEXT_V7;
   const ordinal = soundCandidateOrdinalV1(clip.id, clip);
   return `${clip.origin === "ELEVENLABS" ? "New" : "Old"} ${ordinal}`;
 }
@@ -776,7 +832,7 @@ export function gallerySoundChoicePlayLabelV7(
   const isDefault = choice.isDefault ? " (default)" : "";
   if (choice.origin.kind === "ELEVENLABS")
     return (
-      `Play ${choice.label.toLowerCase()} of ${entry.name}${isDefault}: ` +
+      `Play ${takeName(choice)} of ${entry.name}${isDefault}: ` +
       `${choice.origin.prompt} (${choice.origin.cut}, ${choice.origin.text})` +
       (choice.note === "" ? "" : `. ${choice.note}`)
     );
@@ -800,10 +856,17 @@ export function gallerySoundChoiceUseLabelV7(
   choice: GallerySoundChoiceV7,
 ): string {
   if (choice.origin.kind === "ELEVENLABS")
-    return `Use ${choice.label.toLowerCase()} for ${entry.name}`;
+    return `Use ${takeName(choice)} for ${entry.name}`;
   return choice.origin.kind === "RECORDED"
     ? `Use ${recordingName(choice)} for ${entry.name}`
     : `Use the synth sound for ${entry.name}`;
+}
+
+/** A take's choice in words: "new 2", or "your pick". */
+function takeName(choice: GallerySoundChoiceV7): string {
+  return choice.label === GALLERY_SOUND_USER_PICK_TEXT_V7
+    ? "your pick"
+    : choice.label.toLowerCase();
 }
 
 /** A recording's choice in words: "old recording 2", or "your pick". */

@@ -12,6 +12,7 @@ import {
   SOUND_DEFAULT_CLIPS_V1,
   STOCK_SOUND_PICKS_STORAGE_KEY_V1,
   clearSoundFilesV1,
+  soundCandidateOrdinalV1,
   soundCandidateUrlV1,
   soundCandidateV1,
   soundChoiceSetV1,
@@ -228,9 +229,11 @@ describe("Gallery Sounds tab: the recordings of a sound", () => {
           .querySelector(".v7-gallery-sound-choices")
           ?.getAttribute("aria-label"),
       ).toBe(`Versions of ${label}`);
-      let newCount = 0;
-      let oldCount = 0;
       for (const candidate of sound.candidates) {
+        // The user's pick reads "Pick"; every other take and recording
+        // keeps its place in its manifest ("New 3" stays "New 3").
+        const pick = candidate.userPick;
+        const ordinal = soundCandidateOrdinalV1(sound.id, candidate);
         const play = choicePlay(sound.id, candidate.n);
         const isDefault = candidate.n === sound.default;
         const def = isDefault ? " (default)" : "";
@@ -241,13 +244,14 @@ describe("Gallery Sounds tab: the recordings of a sound", () => {
         ).toBe(isDefault ? "default" : undefined);
         const use = choiceUse(sound.id, candidate.n);
         if (candidate.origin === "ELEVENLABS") {
-          newCount += 1;
+          const take = pick ? "Pick" : `New ${ordinal}`;
+          const name = pick ? "your pick" : take.toLowerCase();
           // "New 1", the prompt and the length are shown; the whole of it
           // and the note are in the name and the title.
           expect(item?.dataset.soundOrigin).toBe("elevenlabs");
           expect(
             play.querySelector(".v7-gallery-sound-choice-number")?.textContent,
-          ).toBe(`New ${newCount}`);
+          ).toBe(take);
           expect(
             play.querySelector(".v7-gallery-sound-choice-file")?.textContent,
           ).toBe(candidate.prompt);
@@ -255,23 +259,19 @@ describe("Gallery Sounds tab: the recordings of a sound", () => {
             play.querySelector(".v7-gallery-sound-choice-cut")?.textContent,
           ).toBe(`${candidate.seconds} s`);
           expect(play.getAttribute("aria-label")).toBe(
-            `Play new ${newCount} of ${label}${def}: ${candidate.prompt} (${candidate.seconds} s, ElevenLabs, generated ${candidate.generated}). ${candidate.note}`,
+            `Play ${name} of ${label}${def}: ${candidate.prompt} (${candidate.seconds} s, ElevenLabs, generated ${candidate.generated}). ${candidate.note}`,
           );
           expect(use.getAttribute("aria-label")).toBe(
-            `Use new ${newCount} for ${label}`,
+            `Use ${name} for ${label}`,
           );
         } else {
-          // The user's own pick reads "Pick"; the other recordings keep
-          // their "Old" numbers.
-          const pick = candidate.userPick;
-          if (!pick) oldCount += 1;
-          const name = pick ? "your pick" : `old recording ${oldCount}`;
+          const name = pick ? "your pick" : `old recording ${ordinal}`;
           const origin = `${candidate.library} / ${candidate.originalFile}`;
           const cut = `${candidate.startSeconds}–${candidate.endSeconds} s`;
           expect(item?.dataset.soundOrigin).toBe("recorded");
           expect(
             play.querySelector(".v7-gallery-sound-choice-number")?.textContent,
-          ).toBe(pick ? "Pick" : `Old ${oldCount}`);
+          ).toBe(pick ? "Pick" : `Old ${ordinal}`);
           expect(
             play.querySelector(".v7-gallery-sound-choice-file")?.textContent,
           ).toBe(candidate.originalFile);

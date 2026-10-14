@@ -6,13 +6,16 @@ import {
   SOUND_CHOICE_SETS_V1,
   SOUND_DEFAULT_CLIPS_V1,
   SOUND_THEMES_V1,
+  elevenLabsSoundV1,
   playableSoundIdsV1,
   playableSoundV1,
   soundCandidateSecondsV1,
   soundCandidateV1,
   soundChoiceSetV1,
   soundRecipeV1,
+  soundUserPickV1,
   stockSoundCandidateV1,
+  stockSoundV1,
   synthRecipeDurationMsV1,
   type SoundThemeEntryV1,
 } from "../../src/audio/index";
@@ -106,18 +109,29 @@ describe("Gallery sounds", () => {
       ["cult.pamphlets", "Paper rustle", "ELEVENLABS"],
       ["cult.proclaim", "Proclaim", "ELEVENLABS"],
       ["cult.summon", "Summoning", "ELEVENLABS"],
-      ["cult.herald", "Herald arrives", "ELEVENLABS"],
+      // The user's picks of 2026-10-14: an old recording each.
+      ["cult.herald", "Herald arrives", "RECORDED"],
       ["cult.starfall", "Falling star", "ELEVENLABS"],
       ["cult.snap", "Strand snaps", "ELEVENLABS"],
       ["cult.unbound", "Daemon unbound", "ELEVENLABS"],
       ["cult.tentacle", "Tentacle", "ELEVENLABS"],
-      ["cult.sacrifice", "Sacrifice", "ELEVENLABS"],
+      ["cult.sacrifice", "Sacrifice", "RECORDED"],
     ]);
     // Inside a group the manifest's order is kept.
     for (const group of groups.filter((entry) => entry.id !== "THEMES"))
       expect(group.entries.map((entry) => entry.key)).toEqual(
         SOUND_IDS_V1.filter((id) => gallerySoundGroupOfV7(id) === group.id),
       );
+  });
+
+  it("keeps the silent Monument's card, marked as not played", () => {
+    // The user, 2026-10-14: "for monument let's not have a sound effect at
+    // all". The event is silent (sound-events-v7.ts); the card stays.
+    const monument = gallerySoundGroupsV7()
+      .flatMap((group) => group.entries)
+      .find((entry) => entry.rowId === "achievement.monument");
+    expect(monument?.when).toBe("Not played");
+    expect(monument?.key).toBe("achievement.monument");
   });
 
   it("names every sound, says when it plays and pictures what makes it", () => {
@@ -347,9 +361,14 @@ describe("Gallery sound origins", () => {
       const entry = effects.find((candidate) => candidate.rowId === clip.id);
       expect(entry, `${clip.id} has no card`).toBeDefined();
       const origin = entry?.origin;
-      // The user's own pick of a recording plays ahead of the takes.
-      if (clip.origin === "STOCK" && clip.userPick) {
-        expect(origin?.kind, clip.id).toBe("RECORDED");
+      // The user's own pick (a recording or a take) plays ahead of the
+      // measured default, and reads "Pick".
+      if (clip.userPick) {
+        expect(origin?.kind, clip.id).toBe(
+          clip.origin === "STOCK" ? "RECORDED" : "ELEVENLABS",
+        );
+        if (origin?.kind === "ELEVENLABS")
+          expect(origin.take, clip.id).toBe("Pick");
         continue;
       }
       expect(origin?.kind, clip.id).toBe("ELEVENLABS");
@@ -425,12 +444,25 @@ describe("Gallery sound origins", () => {
     expect(
       effects.filter((entry) => entry.origin?.kind !== "GENERATED").length,
     ).toBe(SOUND_DEFAULT_CLIPS_V1.length);
-    // The user's own recordings, the firework rocket's two halves.
+    // The user's own picks of a recording: the firework rocket's two
+    // halves, and the old recordings chosen on 2026-10-14.
     expect(
       effects
         .filter((entry) => entry.origin?.kind === "RECORDED")
         .map((entry) => entry.rowId),
-    ).toEqual(["attack.rocket", "impact.rocket"]);
+    ).toEqual([
+      "attack.rocket",
+      "impact.rocket",
+      "support.rally",
+      "support.dark",
+      "cult.herald",
+      "cult.sacrifice",
+      "city.lost",
+      "economy.build",
+      "turn.end",
+      "ui.select",
+      "ui.click",
+    ]);
     // The one sound none of whose takes passed (docs/audio/ELEVENLABS_SFX.md).
     expect(
       effects
@@ -548,21 +580,29 @@ describe("Gallery sound choices", () => {
         ...sound.candidates.map((candidate) => candidate.n),
         0,
       ]);
-      const takes = sound.candidates.filter(
-        (candidate) => candidate.origin === "ELEVENLABS",
+      // The pick reads "Pick"; every other take and recording keeps its
+      // place in its manifest ("New 3" is the third take with or without
+      // a pick of "New 2").
+      const takes = (elevenLabsSoundV1(entry.rowId)?.takes ?? []).map(
+        (take) => take.n,
       );
-      const picked = sound.candidates.filter(
-        (candidate) => candidate.origin === "STOCK" && candidate.userPick,
-      );
-      const old = sound.candidates.filter(
-        (candidate) => candidate.origin === "STOCK" && !candidate.userPick,
+      const recordings = (stockSoundV1(entry.rowId)?.candidates ?? []).map(
+        (candidate) => candidate.n,
       );
       expect(entry.choices.map((choice) => choice.label)).toEqual([
-        ...picked.map(() => "Pick"),
-        ...takes.map((_, index) => `New ${index + 1}`),
-        ...old.map((_, index) => `Old ${index + 1}`),
+        ...sound.candidates.map((candidate) =>
+          candidate.userPick
+            ? "Pick"
+            : candidate.origin === "ELEVENLABS"
+              ? `New ${takes.indexOf(candidate.n) + 1}`
+              : `Old ${recordings.indexOf(candidate.n) + 1}`,
+        ),
         "Synth",
       ]);
+      expect(
+        entry.choices.filter((choice) => choice.label === "Pick").length,
+        entry.rowId,
+      ).toBe(soundUserPickV1(entry.rowId) === null ? 0 : 1);
       // Exactly one default and one in use, and without a pick the same.
       expect(
         entry.choices.filter((choice) => choice.isDefault).map((c) => c.n),

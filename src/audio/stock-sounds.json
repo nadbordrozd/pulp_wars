@@ -114,7 +114,6 @@
     {
       "id": "attack.rocket",
       "default": 1,
-      "userPick": 2,
       "confidence": "high",
       "why": "A flare leaving its tube for the Rocket Cart's firework. Since 2026-10-14 the user's pick by ear: an RPG fired at a car, whose launch is this sound and whose impact is `impact.rocket`.",
       "candidates": [
@@ -368,7 +367,6 @@
     {
       "id": "impact.rocket",
       "default": 1,
-      "userPick": 1,
       "confidence": "high",
       "why": "The user's pick by ear (2026-10-14) for the Rocket Cart's firework: the impact of the RPG recording whose firing is `attack.rocket` #2. It replaces `impact.explosion` on that hit only.",
       "candidates": [
@@ -1502,6 +1500,21 @@
           "gain": 0.4,
           "take": "The first 1.7 s of a 5 s chord, faded out.",
           "note": "One held A minor chord on a worn keyboard, centred near 450 Hz: a mood, not a tune; 1.7 s."
+        },
+        {
+          "n": 2,
+          "file": "city-lost-2.m4a",
+          "part": 9,
+          "library": "Used Bin Loops - Lo-Tech Premium Degraded Tape FX",
+          "originalFile": "UBL_Lo-Tech_70_one_shot_key_Amin.wav",
+          "startSeconds": 0,
+          "endSeconds": 0.85,
+          "fadeInMs": 5,
+          "fadeOutMs": 400,
+          "highpassHz": 60,
+          "gain": 0.4,
+          "take": "The user's pick (2026-10-14), #1 made shorter: the first 0.85 s of the same chord, faded out over its last 0.4 s. The chord is held without a break (within 2 dB from 0 to 1.3 s), so the fade is the ending; the level is #1's, whose loudest moment is the same opening.",
+          "note": "User's pick: the held A minor chord of #1, half as long; 0.85 s."
         }
       ]
     },
@@ -2022,6 +2035,66 @@
       "id": "attack.siege",
       "why": "No catapult, sling or throw. The whooshes are long science-fiction passes with most of their energy below 150 Hz.",
       "wanted": "A catapult arm or sling release: a wooden creak-and-thump with a heavy whoosh, about 0.5 s."
+    },
+    {
+      "id": "unit.hurt.human",
+      "why": "Added by bead pulp_wars-2yc.52 with ElevenLabs takes; the bundle was not searched for it.",
+      "wanted": "A short wordless pained grunt of a small soldier, 0.3 to 0.7 s."
+    },
+    {
+      "id": "unit.hurt.undead",
+      "why": "Added by bead pulp_wars-2yc.52 with ElevenLabs takes; the bundle was not searched for it.",
+      "wanted": "A dry rattle of bones or a ghostly hiss, no scream, 0.3 to 0.7 s."
+    },
+    {
+      "id": "unit.hurt.goblin",
+      "why": "Added by bead pulp_wars-2yc.52: the user's own ElevenLabs generation plays.",
+      "wanted": "Nothing: the user chose it."
+    },
+    {
+      "id": "unit.hurt.dinosaur",
+      "why": "Added by bead pulp_wars-2yc.52: the user's own ElevenLabs generation plays.",
+      "wanted": "Nothing: the user chose it."
+    },
+    {
+      "id": "unit.hurt.martian",
+      "why": "Added by bead pulp_wars-2yc.52 with ElevenLabs takes; the bundle was not searched for it.",
+      "wanted": "A short robotic or alien zap-squeak, 0.3 to 0.7 s."
+    },
+    {
+      "id": "unit.hurt.icefolk",
+      "why": "Added by bead pulp_wars-2yc.52 with ElevenLabs takes; the bundle was not searched for it.",
+      "wanted": "A gruff grunt with a crackle of ice, 0.3 to 0.7 s."
+    },
+    {
+      "id": "unit.hurt.dwarf",
+      "why": "Added by bead pulp_wars-2yc.52 with ElevenLabs takes; the bundle was not searched for it.",
+      "wanted": "A gruff low grunt, 0.3 to 0.7 s."
+    },
+    {
+      "id": "unit.hurt.candy",
+      "why": "Added by bead pulp_wars-2yc.52 with ElevenLabs takes; the bundle was not searched for it.",
+      "wanted": "A squishy or crunchy confection squelch, 0.3 to 0.7 s."
+    },
+    {
+      "id": "unit.hurt.cultist",
+      "why": "Added by bead pulp_wars-2yc.52 with ElevenLabs takes; the bundle was not searched for it.",
+      "wanted": "A muffled grunt from under a hood, 0.3 to 0.7 s."
+    },
+    {
+      "id": "unit.hurt.daemon",
+      "why": "Added by bead pulp_wars-2yc.52 with ElevenLabs takes; the bundle was not searched for it.",
+      "wanted": "A wet otherworldly growl or gurgle, 0.3 to 0.7 s."
+    },
+    {
+      "id": "unit.hurt.giant",
+      "why": "Added by bead pulp_wars-2yc.52 with ElevenLabs takes; the bundle was not searched for it.",
+      "wanted": "A deep voiced grunt of a huge creature, 0.3 to 0.7 s."
+    },
+    {
+      "id": "unit.hurt.monster",
+      "why": "Added by bead pulp_wars-2yc.52 with ElevenLabs takes; the bundle was not searched for it.",
+      "wanted": "A giant spider's angry chittering hiss, 0.3 to 0.7 s."
     },
     {
       "id": "unit.train",

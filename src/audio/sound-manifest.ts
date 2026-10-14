@@ -40,6 +40,22 @@ export const SOUND_IDS_V1 = [
   "impact.splash",
   // Units.
   "unit.hurt",
+  // A damaged unit's own hurt sound, by its kind (bead pulp_wars-2yc.52,
+  // `hurtSoundOfUnitV7`): one per faction, then the Cult's summoned
+  // daemons, the giants and the curiosities' monster. `unit.hurt` is the
+  // fallback for a unit the viewer cannot name.
+  "unit.hurt.human",
+  "unit.hurt.undead",
+  "unit.hurt.goblin",
+  "unit.hurt.dinosaur",
+  "unit.hurt.martian",
+  "unit.hurt.icefolk",
+  "unit.hurt.dwarf",
+  "unit.hurt.candy",
+  "unit.hurt.cultist",
+  "unit.hurt.daemon",
+  "unit.hurt.giant",
+  "unit.hurt.monster",
   "unit.death",
   "unit.step",
   "unit.train",
@@ -321,6 +337,21 @@ const EXPLOSION: readonly SynthLayerV1[] = [
   { wave: "noise", ms: 200, hz: 900, lowpassHz: 1200, gain: 0.3 },
 ];
 
+/** A unit's hurt grunt: the synthesised sound of every hurt sound. */
+function hurt(label: string): SoundEntryV1 {
+  return synth(label, "combat", 2, 70, 0.3, [
+    {
+      wave: "square",
+      ms: 120,
+      hz: 330,
+      hzEnd: 165,
+      duty: 0.3,
+      lowpassHz: 1800,
+    },
+    { wave: "noise", ms: 40, lowpassHz: 2000, gain: 0.4, attackMs: 1 },
+  ]);
+}
+
 /** Every sound as the synthesiser makes it. */
 const SYNTH_SOUNDS: Readonly<Record<SoundIdV1, SoundEntryV1>> = {
   "attack.melee": synth("Melee swing", "combat", 2, 60, 0.3, [
@@ -514,17 +545,20 @@ const SYNTH_SOUNDS: Readonly<Record<SoundIdV1, SoundEntryV1>> = {
     },
     { wave: "sine", ms: 120, hz: 500, hzEnd: 250, gain: 0.4 },
   ]),
-  "unit.hurt": synth("Damage", "combat", 2, 70, 0.3, [
-    {
-      wave: "square",
-      ms: 120,
-      hz: 330,
-      hzEnd: 165,
-      duty: 0.3,
-      lowpassHz: 1800,
-    },
-    { wave: "noise", ms: 40, lowpassHz: 2000, gain: 0.4, attackMs: 1 },
-  ]),
+  "unit.hurt": hurt("Damage"),
+  // Bead pulp_wars-2yc.52: each falls back to the same synthesised grunt.
+  "unit.hurt.human": hurt("Human hurt"),
+  "unit.hurt.undead": hurt("Undead hurt"),
+  "unit.hurt.goblin": hurt("Goblin hurt"),
+  "unit.hurt.dinosaur": hurt("Dinosaur hurt"),
+  "unit.hurt.martian": hurt("Martian hurt"),
+  "unit.hurt.icefolk": hurt("Ice Folk hurt"),
+  "unit.hurt.dwarf": hurt("Dwarf hurt"),
+  "unit.hurt.candy": hurt("Candy hurt"),
+  "unit.hurt.cultist": hurt("Cultist hurt"),
+  "unit.hurt.daemon": hurt("Daemon hurt"),
+  "unit.hurt.giant": hurt("Giant hurt"),
+  "unit.hurt.monster": hurt("Monster hurt"),
   "unit.death": synth("Death", "combat", 3, 40, 0.34, [
     {
       wave: "triangle",

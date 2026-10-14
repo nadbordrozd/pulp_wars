@@ -4221,6 +4221,91 @@
       }
     },
     {
+      "id": "unit.death",
+      "n": 104,
+      "round": 4,
+      "take": 1,
+      "prompt": "A small game piece is knocked out: one soft muffled thud on earth with a faint puff of dust, quiet and short, no voice, no groan. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 0.6,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-death-104.wav",
+      "date": "2026-10-14",
+      "bytes": 105840,
+      "cost": {
+        "character-cost": "7"
+      }
+    },
+    {
+      "id": "unit.death",
+      "n": 105,
+      "round": 4,
+      "take": 2,
+      "prompt": "A small game piece is knocked out: one soft muffled thud on earth with a faint puff of dust, quiet and short, no voice, no groan. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 0.6,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-death-105.wav",
+      "date": "2026-10-14",
+      "bytes": 105840,
+      "cost": {
+        "character-cost": "7"
+      }
+    },
+    {
+      "id": "unit.death",
+      "n": 106,
+      "round": 5,
+      "take": 1,
+      "prompt": "A unit vanishes from the board: a quiet low soft poof, like a small cloud of smoke puffing out, gentle and short, no voice. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 0.6,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-death-106.wav",
+      "date": "2026-10-14",
+      "bytes": 105840,
+      "cost": {
+        "character-cost": "7"
+      }
+    },
+    {
+      "id": "unit.death",
+      "n": 107,
+      "round": 5,
+      "take": 2,
+      "prompt": "A unit vanishes from the board: a quiet low soft poof, like a small cloud of smoke puffing out, gentle and short, no voice. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 0.6,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-death-107.wav",
+      "date": "2026-10-14",
+      "bytes": 105840,
+      "cost": {
+        "character-cost": "7"
+      }
+    },
+    {
+      "id": "unit.death",
+      "n": 108,
+      "round": 6,
+      "take": 1,
+      "prompt": "A unit is knocked out: a soft short puff of air, like a small pillow dropped on a wooden floor, gentle, no deep bass, no voice. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 0.6,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-death-108.wav",
+      "date": "2026-10-14",
+      "bytes": 105840,
+      "cost": {
+        "character-cost": "7"
+      }
+    },
+    {
       "id": "unit.hurt",
       "n": 101,
       "round": 1,
@@ -4286,6 +4371,620 @@
       "bytes": 84672,
       "cost": {
         "character-cost": "6"
+      }
+    },
+    {
+      "id": "unit.hurt.candy",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "A cartoon gummy candy creature takes a hit: a short squishy gummy squelch with a little sugary crunch. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-hurt-candy-101.wav",
+      "date": "2026-10-14",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "unit.hurt.candy",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "A cartoon gummy candy creature takes a hit: a short squishy gummy squelch with a little sugary crunch. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-hurt-candy-102.wav",
+      "date": "2026-10-14",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "unit.hurt.candy",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "A cartoon gummy candy creature takes a hit: a short squishy gummy squelch with a little sugary crunch. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-hurt-candy-103.wav",
+      "date": "2026-10-14",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "unit.hurt.cultist",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "A hooded cartoon cultist in robes takes a hit: one short muffled grunt from under a heavy hood. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-hurt-cultist-101.wav",
+      "date": "2026-10-14",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "unit.hurt.cultist",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "A hooded cartoon cultist in robes takes a hit: one short muffled grunt from under a heavy hood. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-hurt-cultist-102.wav",
+      "date": "2026-10-14",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "unit.hurt.cultist",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "A hooded cartoon cultist in robes takes a hit: one short muffled grunt from under a heavy hood. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-hurt-cultist-103.wav",
+      "date": "2026-10-14",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "unit.hurt.daemon",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "A tentacled cartoon horror from beyond the stars takes a hit: a short wet gurgling growl, otherworldly. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-hurt-daemon-101.wav",
+      "date": "2026-10-14",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "unit.hurt.daemon",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "A tentacled cartoon horror from beyond the stars takes a hit: a short wet gurgling growl, otherworldly. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-hurt-daemon-102.wav",
+      "date": "2026-10-14",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "unit.hurt.daemon",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "A tentacled cartoon horror from beyond the stars takes a hit: a short wet gurgling growl, otherworldly. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-hurt-daemon-103.wav",
+      "date": "2026-10-14",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "unit.hurt.dinosaur",
+      "n": 101,
+      "round": 0,
+      "take": 1,
+      "prompt": "The user's ElevenLabs generation: dinosaur_taking_dama_#1-1791924507764.wav",
+      "durationSeconds": 1,
+      "promptInfluence": null,
+      "model": "not recorded (made by the user)",
+      "outputFormat": "wav 48000 Hz, 2 channels, 16-bit; mixed to mono and resampled to 44100 Hz",
+      "date": "2026-10-13",
+      "rawFile": "unit-hurt-dinosaur-101.wav",
+      "bytes": 192078,
+      "supplied": {
+        "file": "dinosaur_taking_dama_#1-1791924507764.wav",
+        "by": "The user's ElevenLabs generation"
+      }
+    },
+    {
+      "id": "unit.hurt.dwarf",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "A stout bearded cartoon dwarf takes a hit: one short gruff low grunt, hmph. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-hurt-dwarf-101.wav",
+      "date": "2026-10-14",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "unit.hurt.dwarf",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "A stout bearded cartoon dwarf takes a hit: one short gruff low grunt, hmph. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-hurt-dwarf-102.wav",
+      "date": "2026-10-14",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "unit.hurt.dwarf",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "A stout bearded cartoon dwarf takes a hit: one short gruff low grunt, hmph. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-hurt-dwarf-103.wav",
+      "date": "2026-10-14",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "unit.hurt.dwarf",
+      "n": 104,
+      "round": 2,
+      "take": 1,
+      "prompt": "A stout bearded cartoon dwarf takes a hit: one short gruff grunt, hmph, clean and not distorted, straight away. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-hurt-dwarf-104.wav",
+      "date": "2026-10-14",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "unit.hurt.dwarf",
+      "n": 105,
+      "round": 2,
+      "take": 2,
+      "prompt": "A stout bearded cartoon dwarf takes a hit: one short gruff grunt, hmph, clean and not distorted, straight away. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-hurt-dwarf-105.wav",
+      "date": "2026-10-14",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "unit.hurt.giant",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "A huge cartoon giant takes a hit: one short deep booming grunt, oof. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-hurt-giant-101.wav",
+      "date": "2026-10-14",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "unit.hurt.giant",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "A huge cartoon giant takes a hit: one short deep booming grunt, oof. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-hurt-giant-102.wav",
+      "date": "2026-10-14",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "unit.hurt.giant",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "A huge cartoon giant takes a hit: one short deep booming grunt, oof. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-hurt-giant-103.wav",
+      "date": "2026-10-14",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "unit.hurt.giant",
+      "n": 104,
+      "round": 2,
+      "take": 1,
+      "prompt": "A huge cartoon giant takes a hit: one short deep voiced grunt, oof, a big chesty voice rather than a bass rumble. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-hurt-giant-104.wav",
+      "date": "2026-10-14",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "unit.hurt.giant",
+      "n": 105,
+      "round": 2,
+      "take": 2,
+      "prompt": "A huge cartoon giant takes a hit: one short deep voiced grunt, oof, a big chesty voice rather than a bass rumble. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-hurt-giant-105.wav",
+      "date": "2026-10-14",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "unit.hurt.goblin",
+      "n": 101,
+      "round": 0,
+      "take": 1,
+      "prompt": "The user's ElevenLabs generation: goblin_taking_damage_#2-1791924587712.wav",
+      "durationSeconds": 1,
+      "promptInfluence": null,
+      "model": "not recorded (made by the user)",
+      "outputFormat": "wav 48000 Hz, 2 channels, 16-bit; mixed to mono and resampled to 44100 Hz",
+      "date": "2026-10-13",
+      "rawFile": "unit-hurt-goblin-101.wav",
+      "bytes": 192078,
+      "supplied": {
+        "file": "goblin_taking_damage_#2-1791924587712.wav",
+        "by": "The user's ElevenLabs generation"
+      }
+    },
+    {
+      "id": "unit.hurt.human",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "A small cartoon human soldier takes a hit: one short wordless pained grunt, ugh, quick and not loud. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-hurt-human-101.wav",
+      "date": "2026-10-14",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "unit.hurt.human",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "A small cartoon human soldier takes a hit: one short wordless pained grunt, ugh, quick and not loud. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-hurt-human-102.wav",
+      "date": "2026-10-14",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "unit.hurt.human",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "A small cartoon human soldier takes a hit: one short wordless pained grunt, ugh, quick and not loud. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-hurt-human-103.wav",
+      "date": "2026-10-14",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "unit.hurt.icefolk",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "A cartoon ice warrior in furs takes a hit: one short gruff grunt with a crisp crackle of ice. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-hurt-icefolk-101.wav",
+      "date": "2026-10-14",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "unit.hurt.icefolk",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "A cartoon ice warrior in furs takes a hit: one short gruff grunt with a crisp crackle of ice. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-hurt-icefolk-102.wav",
+      "date": "2026-10-14",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "unit.hurt.icefolk",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "A cartoon ice warrior in furs takes a hit: one short gruff grunt with a crisp crackle of ice. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-hurt-icefolk-103.wav",
+      "date": "2026-10-14",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "unit.hurt.martian",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "A little cartoon Martian takes a hit: a short robotic alien zap-squeak, a quick wobbling electronic warble. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-hurt-martian-101.wav",
+      "date": "2026-10-14",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "unit.hurt.martian",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "A little cartoon Martian takes a hit: a short robotic alien zap-squeak, a quick wobbling electronic warble. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-hurt-martian-102.wav",
+      "date": "2026-10-14",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "unit.hurt.martian",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "A little cartoon Martian takes a hit: a short robotic alien zap-squeak, a quick wobbling electronic warble. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-hurt-martian-103.wav",
+      "date": "2026-10-14",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "unit.hurt.monster",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "A giant cartoon spider takes a hit: a short angry chittering hiss. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-hurt-monster-101.wav",
+      "date": "2026-10-14",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "unit.hurt.monster",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "A giant cartoon spider takes a hit: a short angry chittering hiss. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-hurt-monster-102.wav",
+      "date": "2026-10-14",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "unit.hurt.monster",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "A giant cartoon spider takes a hit: a short angry chittering hiss. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-hurt-monster-103.wav",
+      "date": "2026-10-14",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "unit.hurt.undead",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "A cartoon skeleton takes a hit: a short dry rattle of clattering bones with a faint ghostly hiss, no scream. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-hurt-undead-101.wav",
+      "date": "2026-10-14",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "unit.hurt.undead",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "A cartoon skeleton takes a hit: a short dry rattle of clattering bones with a faint ghostly hiss, no scream. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-hurt-undead-102.wav",
+      "date": "2026-10-14",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "unit.hurt.undead",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "A cartoon skeleton takes a hit: a short dry rattle of clattering bones with a faint ghostly hiss, no scream. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-hurt-undead-103.wav",
+      "date": "2026-10-14",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
       }
     },
     {
@@ -4728,6 +5427,91 @@
       "bytes": 105840,
       "cost": {
         "character-cost": "7"
+      }
+    },
+    {
+      "id": "village.capture",
+      "n": 108,
+      "round": 4,
+      "take": 1,
+      "prompt": "A village joins you: a short triumphant flourish of a small brass band, a snare drum roll into one bright major chord, ending quickly. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 1,
+      "promptInfluence": 0.4,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "village-capture-108.wav",
+      "date": "2026-10-14",
+      "bytes": 176400,
+      "cost": {
+        "character-cost": "11"
+      }
+    },
+    {
+      "id": "village.capture",
+      "n": 109,
+      "round": 4,
+      "take": 2,
+      "prompt": "A village joins you: a short triumphant flourish of a small brass band, a snare drum roll into one bright major chord, ending quickly. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 1,
+      "promptInfluence": 0.4,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "village-capture-109.wav",
+      "date": "2026-10-14",
+      "bytes": 176400,
+      "cost": {
+        "character-cost": "11"
+      }
+    },
+    {
+      "id": "village.capture",
+      "n": 110,
+      "round": 5,
+      "take": 1,
+      "prompt": "A village joins you: a bright village bell rings twice over a quick happy xylophone run up, cheerful and welcoming. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 1,
+      "promptInfluence": 0.4,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "village-capture-110.wav",
+      "date": "2026-10-14",
+      "bytes": 176400,
+      "cost": {
+        "character-cost": "11"
+      }
+    },
+    {
+      "id": "village.capture",
+      "n": 111,
+      "round": 5,
+      "take": 2,
+      "prompt": "A village joins you: a bright village bell rings twice over a quick happy xylophone run up, cheerful and welcoming. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 1,
+      "promptInfluence": 0.4,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "village-capture-111.wav",
+      "date": "2026-10-14",
+      "bytes": 176400,
+      "cost": {
+        "character-cost": "11"
+      }
+    },
+    {
+      "id": "village.capture",
+      "n": 112,
+      "round": 6,
+      "take": 1,
+      "prompt": "A village joins you: one quick triumphant brass hit with a snare drum, a single bright major chord, stopping at once. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 0.7,
+      "promptInfluence": 0.4,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "village-capture-112.wav",
+      "date": "2026-10-14",
+      "bytes": 119952,
+      "cost": {
+        "character-cost": "8"
       }
     }
   ]

@@ -241,6 +241,160 @@
       ]
     },
     {
+      "id": "unit.hurt.human",
+      "kind": "vocal",
+      "suffix": "vocal",
+      "prompt": "A small cartoon human soldier takes a hit: one short wordless pained grunt, ugh, quick and not loud.",
+      "durationSeconds": 0.8,
+      "minSeconds": 0.2,
+      "maxSeconds": 0.7,
+      "promptInfluence": 0.5
+    },
+    {
+      "id": "unit.hurt.undead",
+      "kind": "vocal",
+      "suffix": "vocal",
+      "prompt": "A cartoon skeleton takes a hit: a short dry rattle of clattering bones with a faint ghostly hiss, no scream.",
+      "durationSeconds": 0.8,
+      "minSeconds": 0.2,
+      "maxSeconds": 0.7,
+      "promptInfluence": 0.5
+    },
+    {
+      "id": "unit.hurt.goblin",
+      "kind": "vocal",
+      "suffix": "vocal",
+      "prompt": "A goblin taking damage (the user's own ElevenLabs generation).",
+      "durationSeconds": 1,
+      "minSeconds": 0.2,
+      "maxSeconds": 0.7,
+      "promptInfluence": 0.5,
+      "firstRoundTakes": 0,
+      "supplied": [
+        {
+          "file": "goblin_taking_damage_#2-1791924587712.wav",
+          "date": "2026-10-13",
+          "by": "The user's ElevenLabs generation",
+          "said": "here are two effects i generated for creatures taking damage. generate others as appropriate."
+        }
+      ]
+    },
+    {
+      "id": "unit.hurt.dinosaur",
+      "kind": "vocal",
+      "suffix": "vocal",
+      "prompt": "A dinosaur taking damage (the user's own ElevenLabs generation).",
+      "durationSeconds": 1,
+      "minSeconds": 0.2,
+      "maxSeconds": 0.7,
+      "promptInfluence": 0.5,
+      "firstRoundTakes": 0,
+      "supplied": [
+        {
+          "file": "dinosaur_taking_dama_#1-1791924507764.wav",
+          "date": "2026-10-13",
+          "by": "The user's ElevenLabs generation",
+          "said": "here are two effects i generated for creatures taking damage. generate others as appropriate."
+        }
+      ]
+    },
+    {
+      "id": "unit.hurt.martian",
+      "kind": "vocal",
+      "suffix": "vocal",
+      "prompt": "A little cartoon Martian takes a hit: a short robotic alien zap-squeak, a quick wobbling electronic warble.",
+      "durationSeconds": 0.8,
+      "minSeconds": 0.2,
+      "maxSeconds": 0.7,
+      "promptInfluence": 0.5
+    },
+    {
+      "id": "unit.hurt.icefolk",
+      "kind": "vocal",
+      "suffix": "vocal",
+      "prompt": "A cartoon ice warrior in furs takes a hit: one short gruff grunt with a crisp crackle of ice.",
+      "durationSeconds": 0.8,
+      "minSeconds": 0.2,
+      "maxSeconds": 0.7,
+      "promptInfluence": 0.5
+    },
+    {
+      "id": "unit.hurt.dwarf",
+      "kind": "vocal",
+      "suffix": "vocal",
+      "prompt": "A stout bearded cartoon dwarf takes a hit: one short gruff low grunt, hmph.",
+      "durationSeconds": 0.8,
+      "minSeconds": 0.2,
+      "maxSeconds": 0.7,
+      "promptInfluence": 0.5,
+      "revisions": [
+        {
+          "round": 2,
+          "takes": 2,
+          "prompt": "A stout bearded cartoon dwarf takes a hit: one short gruff grunt, hmph, clean and not distorted, straight away.",
+          "reason": "Bead pulp_wars-2yc.52: two of three takes clipped (one also swelled in slowly), so only one passed and there was nothing to compare it with."
+        }
+      ]
+    },
+    {
+      "id": "unit.hurt.candy",
+      "kind": "vocal",
+      "suffix": "vocal",
+      "prompt": "A cartoon gummy candy creature takes a hit: a short squishy gummy squelch with a little sugary crunch.",
+      "durationSeconds": 0.8,
+      "minSeconds": 0.2,
+      "maxSeconds": 0.7,
+      "promptInfluence": 0.5
+    },
+    {
+      "id": "unit.hurt.cultist",
+      "kind": "vocal",
+      "suffix": "vocal",
+      "prompt": "A hooded cartoon cultist in robes takes a hit: one short muffled grunt from under a heavy hood.",
+      "durationSeconds": 0.8,
+      "minSeconds": 0.2,
+      "maxSeconds": 0.7,
+      "promptInfluence": 0.5
+    },
+    {
+      "id": "unit.hurt.daemon",
+      "kind": "vocal",
+      "suffix": "vocal",
+      "prompt": "A tentacled cartoon horror from beyond the stars takes a hit: a short wet gurgling growl, otherworldly.",
+      "durationSeconds": 0.8,
+      "minSeconds": 0.2,
+      "maxSeconds": 0.7,
+      "promptInfluence": 0.5
+    },
+    {
+      "id": "unit.hurt.giant",
+      "kind": "vocal",
+      "suffix": "vocal",
+      "prompt": "A huge cartoon giant takes a hit: one short deep booming grunt, oof.",
+      "durationSeconds": 0.8,
+      "minSeconds": 0.2,
+      "maxSeconds": 0.7,
+      "promptInfluence": 0.5,
+      "revisions": [
+        {
+          "round": 2,
+          "takes": 2,
+          "prompt": "A huge cartoon giant takes a hit: one short deep voiced grunt, oof, a big chesty voice rather than a bass rumble.",
+          "reason": "Bead pulp_wars-2yc.52: two of three takes were all bass (centroid 54 and 149 Hz), a rumble more than a voice; asks for a voice."
+        }
+      ]
+    },
+    {
+      "id": "unit.hurt.monster",
+      "kind": "vocal",
+      "suffix": "vocal",
+      "prompt": "A giant cartoon spider takes a hit: a short angry chittering hiss.",
+      "durationSeconds": 0.8,
+      "minSeconds": 0.2,
+      "maxSeconds": 0.7,
+      "promptInfluence": 0.5
+    },
+    {
       "id": "unit.death",
       "kind": "vocal",
       "suffix": "vocal",
@@ -248,7 +402,52 @@
       "durationSeconds": 0.8,
       "minSeconds": 0.25,
       "maxSeconds": 0.9,
-      "promptInfluence": 0.5
+      "promptInfluence": 0.5,
+      "revisions": [
+        {
+          "round": 4,
+          "takes": 2,
+          "prompt": "A small game piece is knocked out: one soft muffled thud on earth with a faint puff of dust, quiet and short, no voice, no groan.",
+          "durationSeconds": 0.6,
+          "promptInfluence": 0.5,
+          "reason": "Bead pulp_wars-2yc.52, the user: \"have a generic sound on death and make it more discreet than the current groan. units die a lot and I can't be hearing this all the time\". One generic sound for every unit, with no voice: a soft thud with a puff."
+        },
+        {
+          "round": 5,
+          "takes": 2,
+          "prompt": "A unit vanishes from the board: a quiet low soft poof, like a small cloud of smoke puffing out, gentle and short, no voice.",
+          "durationSeconds": 0.6,
+          "promptInfluence": 0.5,
+          "reason": "Bead pulp_wars-2yc.52: a second idea for the same request, a quiet low poof without the thud."
+        },
+        {
+          "round": 6,
+          "takes": 1,
+          "prompt": "A unit is knocked out: a soft short puff of air, like a small pillow dropped on a wooden floor, gentle, no deep bass, no voice.",
+          "durationSeconds": 0.6,
+          "promptInfluence": 0.5,
+          "reason": "Three of rounds 4 and 5 were all sub-bass (centroids of 22 to 25 Hz, which a laptop cannot play); the fifth and last take asks for a puff with no deep bass."
+        }
+      ],
+      "retired": [
+        {
+          "n": 101,
+          "reason": "The user, 2026-10-14: \"have a generic sound on death and make it more discreet than the current groan. units die a lot and I can't be hearing this all the time\"."
+        },
+        {
+          "n": 102,
+          "reason": "The user, 2026-10-14: \"have a generic sound on death and make it more discreet than the current groan. units die a lot and I can't be hearing this all the time\"."
+        },
+        {
+          "n": 103,
+          "reason": "The user, 2026-10-14: \"have a generic sound on death and make it more discreet than the current groan. units die a lot and I can't be hearing this all the time\"."
+        }
+      ],
+      "loudness": {
+        "like": "unit.hurt",
+        "offsetDb": -6,
+        "reason": "Bead pulp_wars-2yc.52: units die often, so a death plays 6 dB under the level every hurt sound is matched to (the synthesised hurt sound's), and under the groan it replaces."
+      }
     },
     {
       "id": "unit.step",
@@ -720,6 +919,44 @@
           "durationSeconds": 0.6,
           "promptInfluence": 0.3,
           "reason": "Four of five trumpet toots clipped: asks for a softer toy trumpet, at a lower prompt influence."
+        },
+        {
+          "round": 4,
+          "takes": 2,
+          "prompt": "A village joins you: a short triumphant flourish of a small brass band, a snare drum roll into one bright major chord, ending quickly.",
+          "durationSeconds": 1,
+          "promptInfluence": 0.4,
+          "reason": "Bead pulp_wars-2yc.52: the user heard every take and wanted none (\"for village captured generate something new i don't like any of these\"). A new idea, not a trumpet toot: a brass-and-drum flourish."
+        },
+        {
+          "round": 5,
+          "takes": 2,
+          "prompt": "A village joins you: a bright village bell rings twice over a quick happy xylophone run up, cheerful and welcoming.",
+          "durationSeconds": 1,
+          "promptInfluence": 0.4,
+          "reason": "Bead pulp_wars-2yc.52: a second new idea for the same request, a bell and a xylophone instead of brass (a crowd cheer would be voices, which the jingle style leaves out)."
+        },
+        {
+          "round": 6,
+          "takes": 1,
+          "prompt": "A village joins you: one quick triumphant brass hit with a snare drum, a single bright major chord, stopping at once.",
+          "durationSeconds": 0.7,
+          "promptInfluence": 0.4,
+          "reason": "Round 4's brass flourishes ran past a second or swelled in slowly; the fifth and last take asks for one short brass hit, so a brass idea can be compared with round 5's bell."
+        }
+      ],
+      "retired": [
+        {
+          "n": 103,
+          "reason": "The user, 2026-10-14: \"for village captured generate something new i don't like any of these\"."
+        },
+        {
+          "n": 106,
+          "reason": "The user, 2026-10-14: \"for village captured generate something new i don't like any of these\"."
+        },
+        {
+          "n": 107,
+          "reason": "The user, 2026-10-14: \"for village captured generate something new i don't like any of these\"."
         }
       ]
     },

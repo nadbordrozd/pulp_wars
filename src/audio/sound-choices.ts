@@ -1,3 +1,4 @@
+import picksFile from "./sound-picks.json";
 import {
   ELEVENLABS_SOUNDS_V1,
   elevenLabsSoundV1,
@@ -19,10 +20,12 @@ import {
  * start-of-game fetch, the stored picks and the Gallery, made from the two
  * provenance manifests (`elevenlabs-sounds.json`, `stock-sounds.json`).
  *
- * The default is the recording the user chose by ear, where there is one
- * (`userPick` of `stock-sounds.json`, since 2026-10-14), else the sound's
- * ElevenLabs default. A sound none of whose takes passed its measurements
- * keeps the default it had (a stock recording or the synthesised sound).
+ * The default is the version the user chose by ear, where there is one
+ * (`sound-picks.json`: an ElevenLabs take or a stock recording, since
+ * 2026-10-14), else the sound's ElevenLabs default. A sound none of whose
+ * takes passed its measurements keeps the default it had (a stock
+ * recording or the synthesised sound). A browser's own pick
+ * (`stock-sound-picks.ts`) still wins over every default.
  * Numbers never collide: stock
  * recordings are 1 to 4, ElevenLabs takes 101 and up, so a pick stored
  * before the ElevenLabs takes existed still names the same recording.
@@ -31,13 +34,34 @@ import {
 /** An ElevenLabs take as one of a sound's candidates. */
 export interface ElevenLabsCandidateV1 extends ElevenLabsTakeV1 {
   readonly origin: "ELEVENLABS";
+  /** The version the user chose by ear: "Pick" in the Gallery. */
+  readonly userPick: boolean;
 }
 
 /** A stock recording as one of a sound's candidates. */
 export interface StockCandidateV1 extends StockSoundCandidateV1 {
   readonly origin: "STOCK";
-  /** The recording the user chose by ear: "Your pick" in the Gallery. */
+  /** The version the user chose by ear: "Pick" in the Gallery. */
   readonly userPick: boolean;
+}
+
+/** One version the user chose by ear (`sound-picks.json`). */
+export interface SoundUserPickV1 {
+  readonly id: string;
+  /** The candidate: an ElevenLabs take (101 and up) or a stock recording. */
+  readonly n: number;
+  /** The day the user chose it. */
+  readonly date: string;
+  /** What the user said, in their own words where there are any. */
+  readonly said: string;
+}
+
+/** Every version the user chose by ear, in the sound manifest's order. */
+export const SOUND_USER_PICKS_V1: readonly SoundUserPickV1[] = picksFile.picks;
+
+/** The user's pick for a sound; null when there is none. */
+export function soundUserPickV1(id: string): SoundUserPickV1 | null {
+  return SOUND_USER_PICKS_V1.find((pick) => pick.id === id) ?? null;
 }
 
 export type SoundCandidateV1 = ElevenLabsCandidateV1 | StockCandidateV1;
@@ -63,17 +87,23 @@ export const SOUND_GENERATED_CHOICE_V1 = STOCK_SOUND_GENERATED_CHOICE_V1;
 function choiceSet(id: string): SoundChoiceSetV1 {
   const generated = elevenLabsSoundV1(id);
   const stock = stockSoundV1(id);
+  const pick = soundUserPickV1(id)?.n;
   const takes: ElevenLabsCandidateV1[] = (generated?.takes ?? []).map(
-    (take) => ({ ...take, origin: "ELEVENLABS" as const }),
+    (take) => ({
+      ...take,
+      origin: "ELEVENLABS" as const,
+      userPick: take.n === pick,
+    }),
   );
   const recordings: StockCandidateV1[] = (stock?.candidates ?? []).map(
     (candidate) => ({
       ...candidate,
       origin: "STOCK" as const,
-      userPick: candidate.n === stock?.userPick,
+      userPick: candidate.n === pick,
     }),
   );
-  const picked = recordings.filter((candidate) => candidate.userPick);
+  const all: readonly SoundCandidateV1[] = [...takes, ...recordings];
+  const picked = all.filter((candidate) => candidate.userPick);
   return {
     id,
     default:
@@ -81,11 +111,7 @@ function choiceSet(id: string): SoundChoiceSetV1 {
       generated?.default ??
       stock?.default ??
       SOUND_GENERATED_CHOICE_V1,
-    candidates: [
-      ...picked,
-      ...takes,
-      ...recordings.filter((candidate) => !candidate.userPick),
-    ],
+    candidates: [...picked, ...all.filter((candidate) => !candidate.userPick)],
   };
 }
 
@@ -154,22 +180,19 @@ export function soundCandidateUrlV1(candidate: {
 }
 
 /**
- * A candidate's place among its kind: an ElevenLabs take's position among
- * the sound's takes ("New 1" is the first), a stock recording's position
- * among its recordings ("Old 1"). The user's pick is counted apart, so the
- * other recordings keep the numbers they had.
+ * A candidate's place among its kind, in its provenance manifest: an
+ * ElevenLabs take's position among the sound's takes ("New 1" is the
+ * first), a stock recording's position among its recordings ("Old 1").
+ * The user's pick is shown first, as "Pick"; the others keep the numbers
+ * they had, so "New 3" names the same take before and after a pick.
  */
 export function soundCandidateOrdinalV1(
   id: string,
   candidate: SoundCandidateV1,
 ): number {
-  const pickOf = (entry: SoundCandidateV1): boolean =>
-    entry.origin === "STOCK" && entry.userPick;
-  const same =
-    SETS.get(id)?.candidates.filter(
-      (entry) =>
-        entry.origin === candidate.origin &&
-        pickOf(entry) === pickOf(candidate),
-    ) ?? [];
+  const same: readonly { readonly n: number }[] =
+    candidate.origin === "ELEVENLABS"
+      ? (elevenLabsSoundV1(id)?.takes ?? [])
+      : (stockSoundV1(id)?.candidates ?? []);
   return same.findIndex((entry) => entry.n === candidate.n) + 1;
 }

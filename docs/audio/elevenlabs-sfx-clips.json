@@ -1,6 +1,6 @@
 {
   "provider": "ElevenLabs sound effects",
-  "provenance": "ElevenLabs sound effects, generated 2026-10-14",
+  "provenance": "ElevenLabs sound effects, generated 2026-10-13, 2026-10-14",
   "bead": "pulp_wars-2yc.51",
   "output": {
     "folder": "public/assets/audio",
@@ -1049,15 +1049,584 @@
       ]
     },
     {
-      "id": "unit.death",
+      "id": "unit.hurt.human",
       "default": 101,
       "confidence": "medium",
-      "why": "#101 scored best (0.567) of 3 kept: 0.9 s for a range of 0.25–0.9 s, onset 0 ms, tail 120 ms, centred near 1171 Hz; the next, #103, scored 0.584.",
+      "why": "#101 scored best (0.581) of 2 kept: 0.682 s for a range of 0.2–0.7 s, onset 0 ms, tail 160 ms, centred near 787 Hz; the next, #102, scored 0.594.",
       "reference": {
         "source": "the synthesised sound",
-        "lufs": -21.1
+        "lufs": -22.5
       },
       "takes": [
+        {
+          "n": 101,
+          "file": "unit-hurt-human-101.m4a",
+          "generated": "2026-10-14",
+          "round": 1,
+          "take": 1,
+          "model": "eleven_text_to_sound_v2",
+          "prompt": "A small cartoon human soldier takes a hit: one short wordless pained grunt, ugh, quick and not loud. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+          "durationSeconds": 0.8,
+          "promptInfluence": 0.5,
+          "startSeconds": 0,
+          "endSeconds": 0.682,
+          "gain": 0.49,
+          "lufs": -16.3,
+          "note": "0.682 s, hard attack, centred near 787 Hz, 85% of its energy under 1 kHz, crest 15.2 dB.",
+          "passed": true
+        },
+        {
+          "n": 102,
+          "file": "unit-hurt-human-102.m4a",
+          "generated": "2026-10-14",
+          "round": 1,
+          "take": 2,
+          "model": "eleven_text_to_sound_v2",
+          "prompt": "A small cartoon human soldier takes a hit: one short wordless pained grunt, ugh, quick and not loud. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+          "durationSeconds": 0.8,
+          "promptInfluence": 0.5,
+          "startSeconds": 0,
+          "endSeconds": 0.7,
+          "gain": 0.45,
+          "lufs": -15.5,
+          "note": "0.7 s, hard attack, centred near 869 Hz, 87% of its energy under 1 kHz, crest 14.7 dB.",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "unit.hurt.undead",
+      "default": 102,
+      "confidence": "medium",
+      "why": "#102 scored best (0.586) of 2 kept: 0.672 s for a range of 0.2–0.7 s, onset 5 ms, tail 140 ms, centred near 1343 Hz; the next, #101, scored 1.05.",
+      "reference": {
+        "source": "the synthesised sound",
+        "lufs": -22.5
+      },
+      "takes": [
+        {
+          "n": 102,
+          "file": "unit-hurt-undead-102.m4a",
+          "generated": "2026-10-14",
+          "round": 1,
+          "take": 2,
+          "model": "eleven_text_to_sound_v2",
+          "prompt": "A cartoon skeleton takes a hit: a short dry rattle of clattering bones with a faint ghostly hiss, no scream. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+          "durationSeconds": 0.8,
+          "promptInfluence": 0.5,
+          "startSeconds": 0,
+          "endSeconds": 0.672,
+          "gain": 0.67,
+          "lufs": -19,
+          "note": "0.672 s, hard attack, centred near 1.3 kHz, 49% of its energy under 1 kHz, crest 18.2 dB.",
+          "passed": true
+        },
+        {
+          "n": 101,
+          "file": "unit-hurt-undead-101.m4a",
+          "generated": "2026-10-14",
+          "round": 1,
+          "take": 1,
+          "model": "eleven_text_to_sound_v2",
+          "prompt": "A cartoon skeleton takes a hit: a short dry rattle of clattering bones with a faint ghostly hiss, no scream. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+          "durationSeconds": 0.8,
+          "promptInfluence": 0.5,
+          "startSeconds": 0,
+          "endSeconds": 0.7,
+          "gain": 1,
+          "lufs": -26.2,
+          "note": "0.7 s, quick attack, centred near 897 Hz, 64% of its energy under 1 kHz, crest 25.3 dB.",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "unit.hurt.goblin",
+      "default": 101,
+      "confidence": "high",
+      "why": "#101 is the user's own, chosen by ear and kept whatever it measures: 0.7 s for a range of 0.2–0.7 s, onset 30 ms, tail 55 ms, centred near 1537 Hz; it passes the rules too.",
+      "reference": {
+        "source": "the synthesised sound",
+        "lufs": -22.5
+      },
+      "takes": [
+        {
+          "n": 101,
+          "file": "unit-hurt-goblin-101.m4a",
+          "generated": "2026-10-13",
+          "round": 0,
+          "take": 1,
+          "model": "not recorded (made by the user)",
+          "prompt": "The user's ElevenLabs generation: goblin_taking_damage_#2-1791924587712.wav",
+          "durationSeconds": 1,
+          "promptInfluence": null,
+          "startSeconds": 0,
+          "endSeconds": 0.7,
+          "gain": 0.21,
+          "lufs": -8.8,
+          "note": "0.7 s, quick attack, centred near 1.5 kHz, 22% of its energy under 1 kHz, crest 8.5 dB.",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "unit.hurt.dinosaur",
+      "default": 101,
+      "confidence": "high",
+      "why": "#101 is the user's own, chosen by ear and kept whatever it measures: 0.7 s for a range of 0.2–0.7 s, onset 0 ms, tail 85 ms, centred near 583 Hz; it passes the rules too.",
+      "reference": {
+        "source": "the synthesised sound",
+        "lufs": -22.5
+      },
+      "takes": [
+        {
+          "n": 101,
+          "file": "unit-hurt-dinosaur-101.m4a",
+          "generated": "2026-10-13",
+          "round": 0,
+          "take": 1,
+          "model": "not recorded (made by the user)",
+          "prompt": "The user's ElevenLabs generation: dinosaur_taking_dama_#1-1791924507764.wav",
+          "durationSeconds": 1,
+          "promptInfluence": null,
+          "startSeconds": 0,
+          "endSeconds": 0.7,
+          "gain": 0.32,
+          "lufs": -12.7,
+          "note": "0.7 s, hard attack, centred near 583 Hz, 68% of its energy under 1 kHz, crest 11.1 dB.",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "unit.hurt.martian",
+      "default": 101,
+      "confidence": "medium",
+      "why": "#101 scored best (0.437) of 2 kept: 0.561 s for a range of 0.2–0.7 s, onset 0 ms, tail 241 ms, centred near 1477 Hz; the next, #102, scored 0.558.",
+      "reference": {
+        "source": "the synthesised sound",
+        "lufs": -22.5
+      },
+      "takes": [
+        {
+          "n": 101,
+          "file": "unit-hurt-martian-101.m4a",
+          "generated": "2026-10-14",
+          "round": 1,
+          "take": 1,
+          "model": "eleven_text_to_sound_v2",
+          "prompt": "A little cartoon Martian takes a hit: a short robotic alien zap-squeak, a quick wobbling electronic warble. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+          "durationSeconds": 0.8,
+          "promptInfluence": 0.5,
+          "startSeconds": 0,
+          "endSeconds": 0.561,
+          "gain": 0.39,
+          "lufs": -14.4,
+          "note": "0.561 s, hard attack, centred near 1.5 kHz, 44% of its energy under 1 kHz, crest 13.7 dB.",
+          "passed": true
+        },
+        {
+          "n": 102,
+          "file": "unit-hurt-martian-102.m4a",
+          "generated": "2026-10-14",
+          "round": 1,
+          "take": 2,
+          "model": "eleven_text_to_sound_v2",
+          "prompt": "A little cartoon Martian takes a hit: a short robotic alien zap-squeak, a quick wobbling electronic warble. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+          "durationSeconds": 0.8,
+          "promptInfluence": 0.5,
+          "startSeconds": 0,
+          "endSeconds": 0.7,
+          "gain": 0.31,
+          "lufs": -12.2,
+          "note": "0.7 s, hard attack, centred near 1.4 kHz, 58% of its energy under 1 kHz, crest 12.1 dB.",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "unit.hurt.icefolk",
+      "default": 101,
+      "confidence": "medium",
+      "why": "#101 scored best (0.574) of 2 kept: 0.7 s for a range of 0.2–0.7 s, onset 0 ms, tail 75 ms, centred near 598 Hz; the next, #103, scored 0.576.",
+      "reference": {
+        "source": "the synthesised sound",
+        "lufs": -22.5
+      },
+      "takes": [
+        {
+          "n": 101,
+          "file": "unit-hurt-icefolk-101.m4a",
+          "generated": "2026-10-14",
+          "round": 1,
+          "take": 1,
+          "model": "eleven_text_to_sound_v2",
+          "prompt": "A cartoon ice warrior in furs takes a hit: one short gruff grunt with a crisp crackle of ice. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+          "durationSeconds": 0.8,
+          "promptInfluence": 0.5,
+          "startSeconds": 0,
+          "endSeconds": 0.7,
+          "gain": 0.37,
+          "lufs": -13.9,
+          "note": "0.7 s, hard attack, centred near 598 Hz, 92% of its energy under 1 kHz, crest 12.7 dB.",
+          "passed": true
+        },
+        {
+          "n": 103,
+          "file": "unit-hurt-icefolk-103.m4a",
+          "generated": "2026-10-14",
+          "round": 1,
+          "take": 3,
+          "model": "eleven_text_to_sound_v2",
+          "prompt": "A cartoon ice warrior in furs takes a hit: one short gruff grunt with a crisp crackle of ice. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+          "durationSeconds": 0.8,
+          "promptInfluence": 0.5,
+          "startSeconds": 0,
+          "endSeconds": 0.7,
+          "gain": 0.4,
+          "lufs": -14.6,
+          "note": "0.7 s, hard attack, centred near 630 Hz, 95% of its energy under 1 kHz, crest 13.3 dB.",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "unit.hurt.dwarf",
+      "default": 104,
+      "confidence": "medium",
+      "why": "#104 scored best (0.486) of 3 kept: 0.667 s for a range of 0.2–0.7 s, onset 0 ms, tail 70 ms, centred near 796 Hz; the next, #101, scored 0.572.",
+      "reference": {
+        "source": "the synthesised sound",
+        "lufs": -22.5
+      },
+      "takes": [
+        {
+          "n": 104,
+          "file": "unit-hurt-dwarf-104.m4a",
+          "generated": "2026-10-14",
+          "round": 2,
+          "take": 1,
+          "model": "eleven_text_to_sound_v2",
+          "prompt": "A stout bearded cartoon dwarf takes a hit: one short gruff grunt, hmph, clean and not distorted, straight away. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+          "durationSeconds": 0.8,
+          "promptInfluence": 0.5,
+          "startSeconds": 0,
+          "endSeconds": 0.667,
+          "gain": 0.39,
+          "lufs": -14.4,
+          "note": "0.667 s, hard attack, centred near 796 Hz, 83% of its energy under 1 kHz, crest 12.2 dB.",
+          "passed": true
+        },
+        {
+          "n": 101,
+          "file": "unit-hurt-dwarf-101.m4a",
+          "generated": "2026-10-14",
+          "round": 1,
+          "take": 1,
+          "model": "eleven_text_to_sound_v2",
+          "prompt": "A stout bearded cartoon dwarf takes a hit: one short gruff low grunt, hmph. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+          "durationSeconds": 0.8,
+          "promptInfluence": 0.5,
+          "startSeconds": 0,
+          "endSeconds": 0.7,
+          "gain": 0.39,
+          "lufs": -14.3,
+          "note": "0.7 s, hard attack, centred near 822 Hz, 88% of its energy under 1 kHz, crest 13.5 dB.",
+          "passed": true
+        },
+        {
+          "n": 105,
+          "file": "unit-hurt-dwarf-105.m4a",
+          "generated": "2026-10-14",
+          "round": 2,
+          "take": 2,
+          "model": "eleven_text_to_sound_v2",
+          "prompt": "A stout bearded cartoon dwarf takes a hit: one short gruff grunt, hmph, clean and not distorted, straight away. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+          "durationSeconds": 0.8,
+          "promptInfluence": 0.5,
+          "startSeconds": 0,
+          "endSeconds": 0.7,
+          "gain": 0.36,
+          "lufs": -13.7,
+          "note": "0.7 s, hard attack, centred near 1.0 kHz, 51% of its energy under 1 kHz, crest 13.1 dB.",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "unit.hurt.candy",
+      "default": 102,
+      "confidence": "medium",
+      "why": "#102 scored best (0.829) of 2 kept: 0.7 s for a range of 0.2–0.7 s, onset 0 ms, tail 461 ms, centred near 1536 Hz; the next, #101, scored 0.953.",
+      "reference": {
+        "source": "the synthesised sound",
+        "lufs": -22.5
+      },
+      "takes": [
+        {
+          "n": 102,
+          "file": "unit-hurt-candy-102.m4a",
+          "generated": "2026-10-14",
+          "round": 1,
+          "take": 2,
+          "model": "eleven_text_to_sound_v2",
+          "prompt": "A cartoon gummy candy creature takes a hit: a short squishy gummy squelch with a little sugary crunch. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+          "durationSeconds": 0.8,
+          "promptInfluence": 0.5,
+          "startSeconds": 0,
+          "endSeconds": 0.7,
+          "gain": 0.38,
+          "lufs": -14,
+          "note": "0.7 s, hard attack, centred near 1.5 kHz, 23% of its energy under 1 kHz, crest 14.6 dB.",
+          "passed": true
+        },
+        {
+          "n": 101,
+          "file": "unit-hurt-candy-101.m4a",
+          "generated": "2026-10-14",
+          "round": 1,
+          "take": 1,
+          "model": "eleven_text_to_sound_v2",
+          "prompt": "A cartoon gummy candy creature takes a hit: a short squishy gummy squelch with a little sugary crunch. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+          "durationSeconds": 0.8,
+          "promptInfluence": 0.5,
+          "startSeconds": 0,
+          "endSeconds": 0.7,
+          "gain": 0.52,
+          "lufs": -16.8,
+          "note": "0.7 s, quick attack, centred near 1.3 kHz, 19% of its energy under 1 kHz, crest 16.4 dB.",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "unit.hurt.cultist",
+      "default": 101,
+      "confidence": "medium",
+      "why": "#101 scored best (0.356) of 3 kept: 0.571 s for a range of 0.2–0.7 s, onset 0 ms, tail 130 ms, centred near 231 Hz; the next, #103, scored 0.602.",
+      "reference": {
+        "source": "the synthesised sound",
+        "lufs": -22.5
+      },
+      "takes": [
+        {
+          "n": 101,
+          "file": "unit-hurt-cultist-101.m4a",
+          "generated": "2026-10-14",
+          "round": 1,
+          "take": 1,
+          "model": "eleven_text_to_sound_v2",
+          "prompt": "A hooded cartoon cultist in robes takes a hit: one short muffled grunt from under a heavy hood. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+          "durationSeconds": 0.8,
+          "promptInfluence": 0.5,
+          "startSeconds": 0,
+          "endSeconds": 0.571,
+          "gain": 0.45,
+          "lufs": -15.5,
+          "note": "0.571 s, hard attack, centred near 231 Hz, 100% of its energy under 1 kHz, crest 12.8 dB.",
+          "passed": true
+        },
+        {
+          "n": 103,
+          "file": "unit-hurt-cultist-103.m4a",
+          "generated": "2026-10-14",
+          "round": 1,
+          "take": 3,
+          "model": "eleven_text_to_sound_v2",
+          "prompt": "A hooded cartoon cultist in robes takes a hit: one short muffled grunt from under a heavy hood. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+          "durationSeconds": 0.8,
+          "promptInfluence": 0.5,
+          "startSeconds": 0,
+          "endSeconds": 0.601,
+          "gain": 0.53,
+          "lufs": -17,
+          "note": "0.601 s, hard attack, centred near 459 Hz, 95% of its energy under 1 kHz, crest 14.9 dB.",
+          "passed": true
+        },
+        {
+          "n": 102,
+          "file": "unit-hurt-cultist-102.m4a",
+          "generated": "2026-10-14",
+          "round": 1,
+          "take": 2,
+          "model": "eleven_text_to_sound_v2",
+          "prompt": "A hooded cartoon cultist in robes takes a hit: one short muffled grunt from under a heavy hood. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+          "durationSeconds": 0.8,
+          "promptInfluence": 0.5,
+          "startSeconds": 0,
+          "endSeconds": 0.7,
+          "gain": 0.77,
+          "lufs": -20.2,
+          "note": "0.7 s, hard attack, centred near 483 Hz, 96% of its energy under 1 kHz, crest 18.1 dB.",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "unit.hurt.daemon",
+      "default": 101,
+      "confidence": "medium",
+      "why": "#101 scored best (0.598) of 2 kept: 0.7 s for a range of 0.2–0.7 s, onset 0 ms, tail 85 ms, centred near 940 Hz; the next, #103, scored 0.886.",
+      "reference": {
+        "source": "the synthesised sound",
+        "lufs": -22.5
+      },
+      "takes": [
+        {
+          "n": 101,
+          "file": "unit-hurt-daemon-101.m4a",
+          "generated": "2026-10-14",
+          "round": 1,
+          "take": 1,
+          "model": "eleven_text_to_sound_v2",
+          "prompt": "A tentacled cartoon horror from beyond the stars takes a hit: a short wet gurgling growl, otherworldly. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+          "durationSeconds": 0.8,
+          "promptInfluence": 0.5,
+          "startSeconds": 0,
+          "endSeconds": 0.7,
+          "gain": 0.38,
+          "lufs": -14,
+          "note": "0.7 s, hard attack, centred near 940 Hz, 79% of its energy under 1 kHz, crest 12.2 dB.",
+          "passed": true
+        },
+        {
+          "n": 103,
+          "file": "unit-hurt-daemon-103.m4a",
+          "generated": "2026-10-14",
+          "round": 1,
+          "take": 3,
+          "model": "eleven_text_to_sound_v2",
+          "prompt": "A tentacled cartoon horror from beyond the stars takes a hit: a short wet gurgling growl, otherworldly. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+          "durationSeconds": 0.8,
+          "promptInfluence": 0.5,
+          "startSeconds": 0,
+          "endSeconds": 0.7,
+          "gain": 0.34,
+          "lufs": -13.1,
+          "note": "0.7 s, hard attack, centred near 803 Hz, 77% of its energy under 1 kHz, crest 11.3 dB.",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "unit.hurt.giant",
+      "default": 104,
+      "confidence": "medium",
+      "why": "#104 scored best (0.473) of 2 kept: 0.606 s for a range of 0.2–0.7 s, onset 0 ms, tail 195 ms, centred near 410 Hz; the next, #103, scored 0.58.",
+      "reference": {
+        "source": "the synthesised sound",
+        "lufs": -22.5
+      },
+      "takes": [
+        {
+          "n": 104,
+          "file": "unit-hurt-giant-104.m4a",
+          "generated": "2026-10-14",
+          "round": 2,
+          "take": 1,
+          "model": "eleven_text_to_sound_v2",
+          "prompt": "A huge cartoon giant takes a hit: one short deep voiced grunt, oof, a big chesty voice rather than a bass rumble. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+          "durationSeconds": 0.8,
+          "promptInfluence": 0.5,
+          "startSeconds": 0,
+          "endSeconds": 0.606,
+          "gain": 0.54,
+          "lufs": -17.1,
+          "note": "0.606 s, hard attack, centred near 410 Hz, 97% of its energy under 1 kHz, crest 14.7 dB.",
+          "passed": true
+        },
+        {
+          "n": 103,
+          "file": "unit-hurt-giant-103.m4a",
+          "generated": "2026-10-14",
+          "round": 1,
+          "take": 3,
+          "model": "eleven_text_to_sound_v2",
+          "prompt": "A huge cartoon giant takes a hit: one short deep booming grunt, oof. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+          "durationSeconds": 0.8,
+          "promptInfluence": 0.5,
+          "startSeconds": 0,
+          "endSeconds": 0.656,
+          "gain": 0.51,
+          "lufs": -16.6,
+          "note": "0.656 s, hard attack, centred near 530 Hz, 98% of its energy under 1 kHz, crest 15.7 dB.",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "unit.hurt.monster",
+      "default": 102,
+      "confidence": "medium",
+      "why": "#102 scored best (0.49) of 2 kept: 0.601 s for a range of 0.2–0.7 s, onset 0 ms, tail 226 ms, centred near 1000 Hz; the next, #103, scored 0.74.",
+      "reference": {
+        "source": "the synthesised sound",
+        "lufs": -22.5
+      },
+      "takes": [
+        {
+          "n": 102,
+          "file": "unit-hurt-monster-102.m4a",
+          "generated": "2026-10-14",
+          "round": 1,
+          "take": 2,
+          "model": "eleven_text_to_sound_v2",
+          "prompt": "A giant cartoon spider takes a hit: a short angry chittering hiss. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+          "durationSeconds": 0.8,
+          "promptInfluence": 0.5,
+          "startSeconds": 0,
+          "endSeconds": 0.601,
+          "gain": 0.5,
+          "lufs": -16.5,
+          "note": "0.601 s, hard attack, centred near 1.0 kHz, 90% of its energy under 1 kHz, crest 9.1 dB.",
+          "passed": true
+        },
+        {
+          "n": 103,
+          "file": "unit-hurt-monster-103.m4a",
+          "generated": "2026-10-14",
+          "round": 1,
+          "take": 3,
+          "model": "eleven_text_to_sound_v2",
+          "prompt": "A giant cartoon spider takes a hit: a short angry chittering hiss. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+          "durationSeconds": 0.8,
+          "promptInfluence": 0.5,
+          "startSeconds": 0,
+          "endSeconds": 0.7,
+          "gain": 0.31,
+          "lufs": -12.2,
+          "note": "0.7 s, hard attack, centred near 1.7 kHz, 56% of its energy under 1 kHz, crest 12.4 dB.",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "unit.death",
+      "default": 105,
+      "confidence": "low",
+      "why": "#105 scored best (1.165) of 1 kept: 0.384 s for a range of 0.25–0.9 s, onset 70 ms, tail 266 ms, centred near 197 Hz. Retired by the user, kept to choose but never the default: #101, #102, #103.",
+      "reference": {
+        "source": "-6 dB against `unit.hurt`'s reference, the synthesised sound",
+        "lufs": -28.5
+      },
+      "takes": [
+        {
+          "n": 105,
+          "file": "unit-death-105.m4a",
+          "generated": "2026-10-14",
+          "round": 4,
+          "take": 2,
+          "model": "eleven_text_to_sound_v2",
+          "prompt": "A small game piece is knocked out: one soft muffled thud on earth with a faint puff of dust, quiet and short, no voice, no groan. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+          "durationSeconds": 0.6,
+          "promptInfluence": 0.5,
+          "startSeconds": 0.503,
+          "endSeconds": 0.887,
+          "gain": 0.59,
+          "lufs": -23.9,
+          "note": "0.384 s, swells over 70 ms, centred near 197 Hz, 99% of its energy under 1 kHz, crest 18.5 dB.",
+          "passed": true
+        },
         {
           "n": 101,
           "file": "unit-death-101.m4a",
@@ -1070,27 +1639,10 @@
           "promptInfluence": 0.5,
           "startSeconds": 0,
           "endSeconds": 0.9,
-          "gain": 0.37,
+          "gain": 0.16,
           "lufs": -12.5,
           "note": "0.9 s, hard attack, centred near 1.2 kHz, 46% of its energy under 1 kHz, crest 12.8 dB.",
-          "passed": true
-        },
-        {
-          "n": 103,
-          "file": "unit-death-103.m4a",
-          "generated": "2026-10-14",
-          "round": 1,
-          "take": 3,
-          "model": "eleven_text_to_sound_v2",
-          "prompt": "A cartoon soldier is defeated: a comic wordless groan falling in pitch, then a soft thud as he drops, not gory. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
-          "durationSeconds": 0.8,
-          "promptInfluence": 0.5,
-          "startSeconds": 0,
-          "endSeconds": 0.9,
-          "gain": 0.34,
-          "lufs": -11.8,
-          "note": "0.9 s, hard attack, centred near 897 Hz, 66% of its energy under 1 kHz, crest 10.3 dB.",
-          "passed": true
+          "passed": false
         },
         {
           "n": 102,
@@ -1104,10 +1656,27 @@
           "promptInfluence": 0.5,
           "startSeconds": 0,
           "endSeconds": 0.9,
-          "gain": 0.34,
+          "gain": 0.14,
           "lufs": -11.7,
           "note": "0.9 s, hard attack, centred near 1.0 kHz, 55% of its energy under 1 kHz, crest 9.8 dB.",
-          "passed": true
+          "passed": false
+        },
+        {
+          "n": 103,
+          "file": "unit-death-103.m4a",
+          "generated": "2026-10-14",
+          "round": 1,
+          "take": 3,
+          "model": "eleven_text_to_sound_v2",
+          "prompt": "A cartoon soldier is defeated: a comic wordless groan falling in pitch, then a soft thud as he drops, not gory. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+          "durationSeconds": 0.8,
+          "promptInfluence": 0.5,
+          "startSeconds": 0,
+          "endSeconds": 0.9,
+          "gain": 0.15,
+          "lufs": -11.8,
+          "note": "0.9 s, hard attack, centred near 897 Hz, 66% of its energy under 1 kHz, crest 10.3 dB.",
+          "passed": false
         }
       ]
     },
@@ -2673,46 +3242,46 @@
     },
     {
       "id": "village.capture",
-      "default": 107,
+      "default": 110,
       "confidence": "medium",
-      "why": "#107 scored best (0.253) of 3 kept: 0.787 s for a range of 0.3–1 s, onset 0 ms, tail 90 ms, centred near 564 Hz; the next, #106, scored 0.565.",
+      "why": "#110 scored best (0.759) of 2 kept: 1 s for a range of 0.3–1 s, onset 0 ms, tail 45 ms, centred near 1218 Hz; the next, #112, scored 0.779. Retired by the user, kept to choose but never the default: #103, #106, #107.",
       "reference": {
         "source": "the synthesised sound",
         "lufs": -24.2
       },
       "takes": [
         {
-          "n": 107,
-          "file": "village-capture-107.m4a",
+          "n": 110,
+          "file": "village-capture-110.m4a",
           "generated": "2026-10-14",
-          "round": 3,
-          "take": 2,
+          "round": 5,
+          "take": 1,
           "model": "eleven_text_to_sound_v2",
-          "prompt": "A village joins you: a quick cheerful two-note toy trumpet toot, played softly, ending quickly. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
-          "durationSeconds": 0.6,
-          "promptInfluence": 0.3,
+          "prompt": "A village joins you: a bright village bell rings twice over a quick happy xylophone run up, cheerful and welcoming. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+          "durationSeconds": 1,
+          "promptInfluence": 0.4,
           "startSeconds": 0,
-          "endSeconds": 0.787,
-          "gain": 0.29,
-          "lufs": -13.5,
-          "note": "0.787 s, hard attack, centred near 564 Hz, 98% of its energy under 1 kHz, crest 11.3 dB.",
+          "endSeconds": 1,
+          "gain": 0.34,
+          "lufs": -14.9,
+          "note": "1 s, hard attack, centred near 1.2 kHz, 72% of its energy under 1 kHz, crest 13.4 dB.",
           "passed": true
         },
         {
-          "n": 106,
-          "file": "village-capture-106.m4a",
+          "n": 112,
+          "file": "village-capture-112.m4a",
           "generated": "2026-10-14",
-          "round": 3,
+          "round": 6,
           "take": 1,
           "model": "eleven_text_to_sound_v2",
-          "prompt": "A village joins you: a quick cheerful two-note toy trumpet toot, played softly, ending quickly. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
-          "durationSeconds": 0.6,
-          "promptInfluence": 0.3,
+          "prompt": "A village joins you: one quick triumphant brass hit with a snare drum, a single bright major chord, stopping at once. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+          "durationSeconds": 0.7,
+          "promptInfluence": 0.4,
           "startSeconds": 0,
-          "endSeconds": 1,
-          "gain": 0.17,
-          "lufs": -8.6,
-          "note": "1 s, hard attack, centred near 492 Hz, 95% of its energy under 1 kHz, crest 6.1 dB.",
+          "endSeconds": 0.471,
+          "gain": 0.65,
+          "lufs": -20.5,
+          "note": "0.471 s, quick attack, centred near 603 Hz, 84% of its energy under 1 kHz, crest 17.6 dB.",
           "passed": true
         },
         {
@@ -2730,7 +3299,41 @@
           "gain": 0.27,
           "lufs": -12.7,
           "note": "1 s, quick attack, centred near 1.2 kHz, 64% of its energy under 1 kHz, crest 12.4 dB.",
-          "passed": true
+          "passed": false
+        },
+        {
+          "n": 106,
+          "file": "village-capture-106.m4a",
+          "generated": "2026-10-14",
+          "round": 3,
+          "take": 1,
+          "model": "eleven_text_to_sound_v2",
+          "prompt": "A village joins you: a quick cheerful two-note toy trumpet toot, played softly, ending quickly. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+          "durationSeconds": 0.6,
+          "promptInfluence": 0.3,
+          "startSeconds": 0,
+          "endSeconds": 1,
+          "gain": 0.17,
+          "lufs": -8.6,
+          "note": "1 s, hard attack, centred near 492 Hz, 95% of its energy under 1 kHz, crest 6.1 dB.",
+          "passed": false
+        },
+        {
+          "n": 107,
+          "file": "village-capture-107.m4a",
+          "generated": "2026-10-14",
+          "round": 3,
+          "take": 2,
+          "model": "eleven_text_to_sound_v2",
+          "prompt": "A village joins you: a quick cheerful two-note toy trumpet toot, played softly, ending quickly. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+          "durationSeconds": 0.6,
+          "promptInfluence": 0.3,
+          "startSeconds": 0,
+          "endSeconds": 0.787,
+          "gain": 0.29,
+          "lufs": -13.5,
+          "note": "0.787 s, hard attack, centred near 564 Hz, 98% of its energy under 1 kHz, crest 11.3 dB.",
+          "passed": false
         }
       ]
     },

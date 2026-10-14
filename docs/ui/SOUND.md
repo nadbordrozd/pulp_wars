@@ -3,14 +3,20 @@
 Bead `pulp_wars-2yc.10`. The game has sound effects for attacks, damage,
 deaths, cities, the economy, turns, achievements and the interface, and ten
 of the Cultists' own (bead `pulp_wars-mch9.24`,
-[The Cultists' own sounds](#the-cultists-own-sounds)), and since
-2026-10-14 the Rocket Cart's `impact.rocket`: 66 sounds.
-Sixty-three of them play a take generated with ElevenLabs by default (bead
-`pulp_wars-2yc.51`, [ElevenLabs sound effects](#elevenlabs-sound-effects));
-`unit.train`, none of whose takes passed their measurements, still plays
-its synthesised sound, and the Rocket Cart's firework (`attack.rocket`,
-`impact.rocket`) plays a recording the user chose by ear
-([Event mapping](#event-mapping)). Before that bead thirty-eight played a clip cut
+[The Cultists' own sounds](#the-cultists-own-sounds)), since
+2026-10-14 the Rocket Cart's `impact.rocket`, and a hurt sound for each
+kind of unit (bead `pulp_wars-2yc.52`, [Hurt sounds](#hurt-sounds)): 78
+sounds. Fifty-eight of them play the take generated with ElevenLabs that
+measured best (bead `pulp_wars-2yc.51`,
+[ElevenLabs sound effects](#elevenlabs-sound-effects)), and the Goblin and
+Dinosaur hurt sounds the user's own ElevenLabs generations; seventeen play
+the version the user chose by ear (the Rocket Cart's firework, and the
+listening of 2026-10-14, bead `pulp_wars-2yc.52`: six other ElevenLabs
+takes and eleven old recordings, listed in `src/audio/sound-picks.json`,
+[The user's picks](#the-users-picks)); and `unit.train`, none of whose
+takes passed their measurements, still plays its synthesised sound. The
+Monument makes no sound since that listening. Before bead
+`pulp_wars-2yc.51` thirty-eight played a clip cut
 from a stock sound library (beads `pulp_wars-2yc.20` and
 `pulp_wars-2yc.24`, [Stock recordings](#stock-recordings)); those clips
 stay as choices. Every sound keeps its synthesised version as a fallback.
@@ -173,75 +179,76 @@ economy is silent.
 
 ### Presentation steps
 
-| Step                                                            | Sounds                                                                |
-| --------------------------------------------------------------- | --------------------------------------------------------------------- |
-| Melee attack                                                    | `attack.melee`, then `impact.hit`                                     |
-| Ranged attack                                                   | `attack.ranged`, then `impact.hit`                                    |
-| Siege attack (Catapult class)                                   | `attack.siege`, then `impact.heavy`                                   |
-| Lich bolt                                                       | `attack.magic`, then `impact.hit`                                     |
-| Rocket Cart firework                                            | `attack.rocket`, then `impact.rocket` (see below)                     |
-| Clockwork Gunner burst                                          | `attack.gatling`, then `impact.hit`                                   |
-| Steam Cannon                                                    | `attack.cannon`, then `impact.heavy`                                  |
-| Ice boulder and Rockfall                                        | `attack.siege`, then `impact.ice`                                     |
-| Harpoon                                                         | `attack.ranged`, then `impact.hit`                                    |
-| Pie Launcher                                                    | `attack.siege`, then `impact.splat`                                   |
-| Gumball Gunner                                                  | `attack.pop`, then `impact.hit`                                       |
-| Martian heat ray and ray pistol                                 | `attack.ray`, then `impact.hit`                                       |
-| Any attack that kills either side                               | `unit.death` just after the hit                                       |
-| Splash, Wail, Plague, crush and eruption damage                 | `unit.hurt`, and `unit.death` when lethal                             |
-| Explosion wave, Mole eruption, Gyrocopter bomb                  | `impact.explosion`                                                    |
-| Bomb Chucker bomb, Spitter acid                                 | `attack.siege`; the burst or `impact.splat` follows from its own step |
-| Shield flare                                                    | `impact.shield`                                                       |
-| Beam Down, Tractor Beam                                         | `special.beam`                                                        |
-| Mind Control                                                    | `special.mind`                                                        |
-| Control released, ice crush                                     | `impact.ice`                                                          |
-| Shatter                                                         | `special.freeze`, then `impact.ice`                                   |
-| Cold Snap, Cold Aura, Freeze                                    | `special.freeze`                                                      |
-| Bolas                                                           | `attack.ranged`, then `special.freeze`                                |
-| Frost Bolt                                                      | `attack.ranged`, then `special.freeze`                                |
-| Black Ice and Frostbite freezes                                 | `special.freeze`                                                      |
-| Stampede                                                        | `impact.heavy`, then `impact.hit` as it reaches each unit in its way  |
-| Sweep                                                           | `attack.melee`                                                        |
-| Ice melting                                                     | `impact.splash`                                                       |
-| Lich splash                                                     | `impact.splash`                                                       |
-| Prize flag, Rally, Hatch call                                   | `support.rally`                                                       |
-| Tend, Cure, Regenerate, Recover, Fountain, Windmill, Sugar Toss | `support.heal`                                                        |
-| Raise, Devour, Wail, Infect, Grave, Plague, Bitten              | `support.dark`                                                        |
-| Lifesteal                                                       | `support.drain`                                                       |
-| Feast                                                           | `support.drain`                                                       |
-| Bat Escape swirl                                                | `special.puff`, then `special.puff` again as the bats fly off         |
-| Terror                                                          | `support.dark`                                                        |
-| Shrine blessing, Sugar Rush, Re-bake                            | `special.sparkle`                                                     |
-| Salvage, Spider bounty                                          | `economy.coin`                                                        |
-| Tunnel                                                          | `special.burrow`                                                      |
-| Assemble, Repair                                                | `economy.build`                                                       |
-| Knockback                                                       | `special.puff`                                                        |
-| Crash                                                           | `special.dizzy`                                                       |
-| Crash ending, Egg laid                                          | `special.pop`                                                         |
-| Peppermint Surprise                                             | `special.pop`, then `unit.hurt`                                       |
-| Splat, acid landing                                             | `impact.splat`                                                        |
-| Bounce                                                          | `special.boing`                                                       |
-| Crumbs eaten                                                    | `economy.harvest`                                                     |
-| Charge! hit, Bow Ram                                            | `impact.heavy`                                                        |
-| Hatch, Egg destroyed                                            | `special.hatch`                                                       |
-| Grow                                                            | `unit.levelup`                                                        |
-| Horror summoned                                                 | `cult.summon`                                                         |
-| Strand broken                                                   | `cult.snap`                                                           |
-| Daemon Unbound                                                  | `cult.unbound`                                                        |
-| Star-fall                                                       | `cult.starfall`, then `impact.explosion` as the star lands            |
-| The Herald arrives                                              | `cult.herald`                                                         |
-| Proclaim (a city Cowed)                                         | `cult.proclaim`                                                       |
-| Ribbit                                                          | `cult.ribbit` as the frog jumps out                                   |
-| Tentacle rises or sinks                                         | `cult.tentacle`                                                       |
-| Pamphlets take a village                                        | `cult.pamphlets`                                                      |
-| Behold!, Pick Me!                                               | `support.rally`                                                       |
-| Boo!, Grab                                                      | `special.boing`                                                       |
-| A rite begun                                                    | `support.dark`                                                        |
-| A rite fizzled, a unit consumed by the Herald                   | `special.puff`                                                        |
-| Switcheroo                                                      | `special.sparkle`                                                     |
-| The viewer's own unit moving                                    | `unit.step`                                                           |
-| Another player's move, a push, a visibility crossfade           | none                                                                  |
-| Another player's building in sight                              | `economy.build`, quieter                                              |
+| Step                                                            | Sounds                                                                     |
+| --------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| Melee attack                                                    | `attack.melee`, then `impact.hit`                                          |
+| Ranged attack                                                   | `attack.ranged`, then `impact.hit`                                         |
+| Siege attack (Catapult class)                                   | `attack.siege`, then `impact.heavy`                                        |
+| Lich bolt                                                       | `attack.magic`, then `impact.hit`                                          |
+| Rocket Cart firework                                            | `attack.rocket`, then `impact.rocket` (see below)                          |
+| Clockwork Gunner burst                                          | `attack.gatling`, then `impact.hit`                                        |
+| Steam Cannon                                                    | `attack.cannon`, then `impact.heavy`                                       |
+| Ice boulder and Rockfall                                        | `attack.siege`, then `impact.ice`                                          |
+| Harpoon                                                         | `attack.ranged`, then `impact.hit`                                         |
+| Pie Launcher                                                    | `attack.siege`, then `impact.splat`                                        |
+| Gumball Gunner                                                  | `attack.pop`, then `impact.hit`                                            |
+| Martian heat ray and ray pistol                                 | `attack.ray`, then `impact.hit`                                            |
+| Any attack that kills either side                               | `unit.death` just after the hit                                            |
+| An attack whose target lives (melee, ranged, siege, ray)        | the target's hurt sound, 40 ms after the hit ([Hurt sounds](#hurt-sounds)) |
+| Splash, Wail, Plague, crush and eruption damage                 | the damaged unit's hurt sound, and `unit.death` when lethal                |
+| Explosion wave, Mole eruption, Gyrocopter bomb                  | `impact.explosion`                                                         |
+| Bomb Chucker bomb, Spitter acid                                 | `attack.siege`; the burst or `impact.splat` follows from its own step      |
+| Shield flare                                                    | `impact.shield`                                                            |
+| Beam Down, Tractor Beam                                         | `special.beam`                                                             |
+| Mind Control                                                    | `special.mind`                                                             |
+| Control released, ice crush                                     | `impact.ice`                                                               |
+| Shatter                                                         | `special.freeze`, then `impact.ice`                                        |
+| Cold Snap, Cold Aura, Freeze                                    | `special.freeze`                                                           |
+| Bolas                                                           | `attack.ranged`, then `special.freeze`                                     |
+| Frost Bolt                                                      | `attack.ranged`, then `special.freeze`                                     |
+| Black Ice and Frostbite freezes                                 | `special.freeze`                                                           |
+| Stampede                                                        | `impact.heavy`, then `impact.hit` as it reaches each unit in its way       |
+| Sweep                                                           | `attack.melee`                                                             |
+| Ice melting                                                     | `impact.splash`                                                            |
+| Lich splash                                                     | `impact.splash`                                                            |
+| Prize flag, Rally, Hatch call                                   | `support.rally`                                                            |
+| Tend, Cure, Regenerate, Recover, Fountain, Windmill, Sugar Toss | `support.heal`                                                             |
+| Raise, Devour, Wail, Infect, Grave, Plague, Bitten              | `support.dark`                                                             |
+| Lifesteal                                                       | `support.drain`                                                            |
+| Feast                                                           | `support.drain`                                                            |
+| Bat Escape swirl                                                | `special.puff`, then `special.puff` again as the bats fly off              |
+| Terror                                                          | `support.dark`                                                             |
+| Shrine blessing, Sugar Rush, Re-bake                            | `special.sparkle`                                                          |
+| Salvage, Spider bounty                                          | `economy.coin`                                                             |
+| Tunnel                                                          | `special.burrow`                                                           |
+| Assemble, Repair                                                | `economy.build`                                                            |
+| Knockback                                                       | `special.puff`                                                             |
+| Crash                                                           | `special.dizzy`                                                            |
+| Crash ending, Egg laid                                          | `special.pop`                                                              |
+| Peppermint Surprise                                             | `special.pop`, then the hurt sound of the unit on the tile                 |
+| Splat, acid landing                                             | `impact.splat`                                                             |
+| Bounce                                                          | `special.boing`                                                            |
+| Crumbs eaten                                                    | `economy.harvest`                                                          |
+| Charge! hit, Bow Ram                                            | `impact.heavy`                                                             |
+| Hatch, Egg destroyed                                            | `special.hatch`                                                            |
+| Grow                                                            | `unit.levelup`                                                             |
+| Horror summoned                                                 | `cult.summon`                                                              |
+| Strand broken                                                   | `cult.snap`                                                                |
+| Daemon Unbound                                                  | `cult.unbound`                                                             |
+| Star-fall                                                       | `cult.starfall`, then `impact.explosion` as the star lands                 |
+| The Herald arrives                                              | `cult.herald`                                                              |
+| Proclaim (a city Cowed)                                         | `cult.proclaim`                                                            |
+| Ribbit                                                          | `cult.ribbit` as the frog jumps out                                        |
+| Tentacle rises or sinks                                         | `cult.tentacle`                                                            |
+| Pamphlets take a village                                        | `cult.pamphlets`                                                           |
+| Behold!, Pick Me!                                               | `support.rally`                                                            |
+| Boo!, Grab                                                      | `special.boing`                                                            |
+| A rite begun                                                    | `support.dark`                                                             |
+| A rite fizzled, a unit consumed by the Herald                   | `special.puff`                                                             |
+| Switcheroo                                                      | `special.sparkle`                                                          |
+| The viewer's own unit moving                                    | `unit.step`                                                                |
+| Another player's move, a push, a visibility crossfade           | none                                                                       |
+| Another player's building in sight                              | `economy.build`, quieter                                                   |
 
 **The Rocket Cart's firework** (the user's pick, 2026-10-14) plays one
 recording, a Sonniss RPG fired through a car roof, cut in two: its firing
@@ -253,6 +260,84 @@ the impact still lands on the hit, which one clip of both could not do.
 `impact.rocket` belongs to this attack only; the Battleship's broadside and
 every bomb keep `impact.explosion`. The cuts, the levels and the reasons are
 in [STOCK_SOUND_CHOICES.md](../audio/STOCK_SOUND_CHOICES.md).
+
+### Hurt sounds
+
+Bead `pulp_wars-2yc.52`. The user, 2026-10-14, handing over two sounds
+they made with ElevenLabs: "here are two effects i generated for
+creatures taking damage. generate others as appropriate." A damaged unit
+is heard in its own kind's voice. `hurtSoundOfUnitV7`
+(`src/audio/sound-events-v7.ts`) reads only what the viewer sees of the
+unit (the views before and after the step):
+
+| The damaged unit                                   | Sound                                                                                                        |
+| -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| A Cult summoning: a Horror, the Herald, a Tentacle | `unit.hurt.daemon`                                                                                           |
+| The neutral Giant Spider                           | `unit.hurt.monster`                                                                                          |
+| A giant of any faction                             | `unit.hurt.giant`                                                                                            |
+| Any other unit, by its kind's faction              | `unit.hurt.human`, `.undead`, `.goblin`, `.dinosaur`, `.martian`, `.icefolk`, `.dwarf`, `.candy`, `.cultist` |
+| A unit neither view holds                          | `unit.hurt`, the sound every unit had before                                                                 |
+
+A mind-controlled unit has its original owner's voice, as it has its
+original owner's art. The hurt sound plays where a unit takes damage and
+lives: 40 ms after the hit of a melee, ranged or siege attack and of a
+Martian ray (a death sound replaces it when the blow kills), and on the
+damage of a splash, a Wail, a Plague, a crush, an eruption and a
+Peppermint Surprise. Before this bead an ordinary hit was heard as the
+impact alone and only that area damage used `unit.hurt`; giving every
+blow a voice is a decision of this bead, so that the sounds the user made
+for "creatures taking damage" are heard when creatures take damage. The
+retaliation a target strikes back is not voiced.
+
+- **The user's two.** The Goblin's and the Dinosaur's are the user's own
+  files (`goblin_taking_damage_#2-1791924587712.wav`,
+  `dinosaur_taking_dama_#1-1791924507764.wav`, made 2026-10-13, 1.0 s at
+  48 kHz in stereo), brought in by `npm run audio:elevenlabs-sfx -- import
+--from <folder>`: mixed to mono, resampled to 44.1 kHz, trimmed,
+  cut at 0.7 s with a fade, loudness-matched and encoded like every take.
+  The files themselves stay outside the repository. They play by default
+  whatever they measure, and have no other take.
+- **The others** were generated with ElevenLabs, three takes each from
+  prompts written to the user's two (a short wordless creature sound, 0.2
+  to 0.7 s, the shared voice style): a soldier's grunt for the Humans, a
+  rattle of bones with a ghostly hiss for the Undead (no scream), a robotic
+  zap-squeak for the Martians, a gruff grunt with an ice crackle for the
+  Ice Folk, a gruff low grunt for the Dwarves, a squishy gummy squelch for
+  Candy, a muffled hooded grunt for the Cultists, a wet otherworldly growl
+  for the daemons, a deep voiced grunt for the giants and an angry
+  chittering hiss for the Giant Spider. The Dwarves' and the giants' had
+  one passing take; two more each were asked for in a second round. The
+  best-measuring take is the default and the others are choices
+  ([docs/audio/ELEVENLABS_SFX.md](../audio/ELEVENLABS_SFX.md)).
+- **Level.** Every hurt sound is matched to the loudness of the
+  synthesised hurt sound, as `unit.hurt`'s takes were.
+- **Gallery.** Each has its own card under Units, with the faction's
+  Fighter (the Horror, a giant, the Giant Spider) for its picture.
+
+### The death sound
+
+Bead `pulp_wars-2yc.52`. The user, 2026-10-14: "have a generic sound on
+death and make it more discreet than the current groan. units die a lot
+and I can't be hearing this all the time". `unit.death` stays one sound
+for every unit, played where it was (just after a killing blow, and on
+lethal area damage), and its default is no longer a voice:
+
+- **The sound.** Five new ElevenLabs takes from three prompts with no
+  voice in them (a soft muffled thud with a puff of dust, a quiet low
+  poof, a soft puff of air). Four of them came back as sub-bass (a centre
+  of 22 to 25 Hz, which a laptop's speakers do not play; one was nearly
+  silent) and failed their measurements; the one that passed, #105, is
+  the default: a soft thud of 0.38 s centred near 200 Hz.
+- **The level.** Its takes are matched to the loudness every hurt sound
+  is matched to (the synthesised hurt sound's, -22.5 LUFS over the
+  loudest 400 ms) less 6 dB: -28.5 LUFS. The groan it replaces played at
+  about -21 LUFS, so a death is now about 7 dB quieter than before and 6
+  dB under a hurt sound. The level is the clip's own (`gain`), so the
+  Gallery's card plays it as a match does.
+- **The groans stay.** The three groans (#101 to #103) are retired: kept
+  in the Gallery to choose, never the default, and matched to the same
+  quieter level. The old stock recording and the synthesised sound are
+  unchanged.
 
 ### Events without a step
 
@@ -266,7 +351,7 @@ the viewer's.
 | Own harvest, hunt, fishing, pearls                | at once              | `economy.harvest`      |
 | Own building, Port, Shipyard, Road, Field Defense | at once              | `economy.build`        |
 | Own forest or mountain work                       | at once              | `economy.build`        |
-| Own Monument                                      | at once              | `achievement.monument` |
+| Own Monument                                      |                      | none (see below)       |
 | Own unit trained or granted                       | at once              | `unit.train`           |
 | Own city reward chosen                            | at once              | `reward.chosen`        |
 | Own Disband that returns Coins                    | at once              | `economy.coin`         |
@@ -286,6 +371,11 @@ the viewer's.
 
 Several sounds of one phase are played 140 ms apart, each once. The end of the
 match plays its tune alone.
+
+**A Monument is silent.** The user, 2026-10-14: "for monument let's not
+have a sound effect at all". `MONUMENT_BUILT` plays nothing;
+`achievement.monument` stays in the manifest and in the Gallery, whose
+card reads "Not played".
 
 A new Road link (bead `pulp_wars-v56v`) plays its `special.sparkle` at half
 level, once however many cities link, when the first population icon lands on
@@ -373,8 +463,8 @@ remembered with the others. It replaces the header's Sounds button of
   card, ♭ and ♯: the flat and the sharp end of its range. The card itself
   plays it as a match does, at a random pitch in between. **Build** has a
   third, an eye: the quieter level of another player's building in sight.
-  No sound differs by faction; a unit with a sound of its own has its own
-  card. A sound that plays a clip has one more button, labelled **Synth**:
+  A sound that differs by kind of unit (the hurt sounds) has a card for
+  each kind. A sound that plays a clip has one more button, labelled **Synth**:
   the synthesised sound the clip replaced, so both can be heard. The card
   and its ♭ and ♯ play the recording. A recorded card's buttons are in a row
   under the card, so its words keep the card's width.
@@ -590,6 +680,18 @@ full scale). A unit test compares this table with the manifest.
 | `impact.shield`        | Shield           | combat   | sine + triangle                  | 620–1240   | 252         | 0.26 |
 | `impact.splash`        | Splash           | combat   | noise + sine                     | 250–500    | 172         | 0.24 |
 | `unit.hurt`            | Damage           | combat   | square + noise                   | 165–330    | 132         | 0.3  |
+| `unit.hurt.human`      | Human hurt       | combat   | square + noise                   | 165–330    | 132         | 0.3  |
+| `unit.hurt.undead`     | Undead hurt      | combat   | square + noise                   | 165–330    | 132         | 0.3  |
+| `unit.hurt.goblin`     | Goblin hurt      | combat   | square + noise                   | 165–330    | 132         | 0.3  |
+| `unit.hurt.dinosaur`   | Dinosaur hurt    | combat   | square + noise                   | 165–330    | 132         | 0.3  |
+| `unit.hurt.martian`    | Martian hurt     | combat   | square + noise                   | 165–330    | 132         | 0.3  |
+| `unit.hurt.icefolk`    | Ice Folk hurt    | combat   | square + noise                   | 165–330    | 132         | 0.3  |
+| `unit.hurt.dwarf`      | Dwarf hurt       | combat   | square + noise                   | 165–330    | 132         | 0.3  |
+| `unit.hurt.candy`      | Candy hurt       | combat   | square + noise                   | 165–330    | 132         | 0.3  |
+| `unit.hurt.cultist`    | Cultist hurt     | combat   | square + noise                   | 165–330    | 132         | 0.3  |
+| `unit.hurt.daemon`     | Daemon hurt      | combat   | square + noise                   | 165–330    | 132         | 0.3  |
+| `unit.hurt.giant`      | Giant hurt       | combat   | square + noise                   | 165–330    | 132         | 0.3  |
+| `unit.hurt.monster`    | Monster hurt     | combat   | square + noise                   | 165–330    | 132         | 0.3  |
 | `unit.death`           | Death            | combat   | triangle + square + noise        | 82–392     | 372         | 0.34 |
 | `unit.step`            | Step             | combat   | noise + sine                     | 110–150    | 42          | 0.1  |
 | `unit.train`           | Unit trained     | economy  | square + sine + noise            | 70–784     | 332         | 0.26 |
@@ -699,26 +801,27 @@ number. What it means for this repository:
 
 ### What is in the repository
 
-| Path                                    | What it is                                                                                            |
-| --------------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| `public/assets/audio/*.m4a`             | The 103 stock clips, 1.28 MB together (5.3 to 37 kB each). Named after the game's sound and a number. |
-| `public/assets/audio/themes/`           | The theme music, which is not from the bundle ([Theme music](#theme-music)).                          |
-| `src/audio/stock-sounds.json`           | The provenance manifest: each sound's recordings, where each was cut from and how, and the default.   |
-| `docs/audio/STOCK_SOUND_CHOICES.md`     | The manifest as a document for the person who chooses. Generated.                                     |
-| `scripts/audio/cut-stock-sounds.ts`     | Cuts the clips from the bundle, from the manifest. Needs the bundle and macOS.                        |
-| `scripts/audio/measure-stock-sounds.ts` | Measures every file of a bundle folder, for choosing clips without listening.                         |
-| `scripts/audio/stock-sound-choices.ts`  | Writes the document from the manifest, and checks it.                                                 |
-| `scripts/audio/wav-pcm.ts`              | The WAV reader and writer the scripts use.                                                            |
+| Path                                    | What it is                                                                                           |
+| --------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `public/assets/audio/*.m4a`             | The 104 stock clips, 1.3 MB together (5.3 to 37 kB each). Named after the game's sound and a number. |
+| `public/assets/audio/themes/`           | The theme music, which is not from the bundle ([Theme music](#theme-music)).                         |
+| `src/audio/stock-sounds.json`           | The provenance manifest: each sound's recordings, where each was cut from and how, and the default.  |
+| `docs/audio/STOCK_SOUND_CHOICES.md`     | The manifest as a document for the person who chooses. Generated.                                    |
+| `scripts/audio/cut-stock-sounds.ts`     | Cuts the clips from the bundle, from the manifest. Needs the bundle and macOS.                       |
+| `scripts/audio/measure-stock-sounds.ts` | Measures every file of a bundle folder, for choosing clips without listening.                        |
+| `scripts/audio/stock-sound-choices.ts`  | Writes the document from the manifest, and checks it.                                                |
+| `scripts/audio/wav-pcm.ts`              | The WAV reader and writer the scripts use.                                                           |
 
 The bundle itself is not in the repository and must never be. `.gitignore`
 refuses WAV, AIFF, FLAC and CAF files and a `Sonniss*` folder, and
 `tests/unit/stock-sounds-assets.test.ts` fails when any audio file in the
 repository other than a theme of the theme manifest is larger than 200 kB,
 when any is uncompressed, when a clip is larger than
-60 kB or all of them together exceed 4.2 MB (1.5 MB before bead
+60 kB or all of them together exceed 4.6 MB (1.5 MB before bead
 `pulp_wars-2yc.51`; its 175 ElevenLabs takes are 2.6 MB beside the 1.25 MB
 of stock clips, raised on purpose so that the old recordings stay to
-compare), when the clip folder holds a
+compare; 4.2 MB until bead `pulp_wars-2yc.52`, whose twelve hurt sounds
+add 26 clips of about 13 kB, raised again with them), when the clip folder holds a
 file the manifest does not list, and when a file under `public/` has a
 library file's name. The total is the alternatives included: 78 clips fit
 the 1.5 MB that bead `pulp_wars-2yc.20` set for fifteen, and the 101 clips
@@ -737,7 +840,6 @@ lists.
 | ------------- | --------------------------------------------------------------------------------------------------------- |
 | `id`          | The game sound.                                                                                           |
 | `default`     | The number of the candidate the game plays, or 0 for the generated sound. Exactly one default a sound.    |
-| `userPick`    | Present on a sound whose recording the user chose by ear: that candidate plays ahead of every take.       |
 | `confidence`  | `high`, `medium` or `low`: how sure the choice is.                                                        |
 | `listenFirst` | Present on the sounds a person should hear before the others, with the reason.                            |
 | `why`         | Why these recordings for this sound.                                                                      |
@@ -766,6 +868,11 @@ A sound whose `default` is 0 keeps its synthesised source in the sound
 manifest. Its recordings are in the repository and in the Gallery, and are
 played only when a browser picks one
 ([Choosing between recordings](#choosing-between-recordings)).
+
+A recording the user chose by ear is not marked here: every pick, of a
+recording or of an ElevenLabs take, is in `src/audio/sound-picks.json`
+([The user's picks](#the-users-picks)). The `userPick` field the Rocket
+Cart's two recordings had here moved there (bead `pulp_wars-2yc.52`).
 
 ### What was chosen
 
@@ -934,8 +1041,8 @@ hears as louder. It is a starting point, not a mix.
   the title 1.8 s later on a slow link. It does not wait for any of them:
   no screen depends on sound, and a click in the two seconds the clips
   need on such a link plays the synthesised sound. The factions' art
-  loads after the clips. No alternative is fetched at the start: 64 files
-  of the 276 (175 ElevenLabs takes and 101 stock clips).
+  loads after the clips. No alternative is fetched at the start: 77 files
+  of the 305 (201 ElevenLabs takes and 104 stock clips).
 - **First gesture.** The audio device opens and decodes the clips that have
   arrived (`web-audio-output.ts`). A browser cannot decode sound before the
   gesture.
@@ -954,14 +1061,15 @@ hears as louder. It is a starting point, not a mix.
 The recordings were chosen without hearing them, so the last word is a
 listener's. The Gallery's Sounds tab is where it is given.
 
-- **The row.** Every sound has a list under its card: the recording the
-  user chose by ear where there is one (**Pick**, the default; `userPick`
-  in the manifest, so far the Rocket Cart's `attack.rocket` and
-  `impact.rocket`), its ElevenLabs takes (**New 1**, otherwise the
-  default, then **New 2** and **New 3**; bead `pulp_wars-2yc.51`), its old
-  stock recordings (**Old 1** and on, in the manifest's order, the pick
-  left out), and **Synth** last. A take's line shows its prompt and
-  its length; the whole of it is in the line's title.
+- **The row.** Every sound has a list under its card: the version the
+  user chose by ear where there is one (**Pick**, the default; a take or a
+  recording, [The user's picks](#the-users-picks)), its ElevenLabs takes
+  (**New 1**, otherwise the default, then **New 2** and **New 3**; bead
+  `pulp_wars-2yc.51`), its old stock recordings (**Old 1** and on, in the
+  manifest's order), and **Synth** last. A pick is listed only once, as
+  **Pick**; the others keep the numbers they have without it, so "New 3"
+  is the same take whichever is picked. A take's line shows its prompt
+  and its length; the whole of it is in the line's title.
   A line shows the candidate's number, the file it was cut from and the
   stretch. The file name wraps anywhere and is cut after two lines; the
   line's title and name have the whole origin and the candidate's note:
@@ -1006,11 +1114,14 @@ listener's. The Gallery's Sounds tab is where it is given.
   `picks` is what to apply. `sources` says the same in words, so a pick can
   still be recognised if a number has moved.
 
-- **Making a pick the default.** The developer sets that sound's `default`
-  in `src/audio/stock-sounds.json` to the picked number (0 for generated),
-  runs `npm run audio:stock-sound-choices -- render`, and commits both. No
-  clip is cut again. A candidate nobody wants can then be removed from the
-  manifest (keep the numbers of the others) and its file deleted with
+- **Making a pick the default.** The developer adds the sound to
+  `src/audio/sound-picks.json` (its id, the picked number, the day and
+  what the user said), runs `npm run audio:stock-sound-choices -- render`
+  and `npm run audio:elevenlabs-sfx -- doc`, and commits them. No clip is
+  cut or encoded again. A take nobody wants as the default can be retired
+  in the prompts ([ElevenLabs sound effects](#elevenlabs-sound-effects));
+  a recording nobody wants can be removed from the manifest (keep the
+  numbers of the others) and its file deleted with
   `cut-stock-sounds.ts --prune`, which needs the bundle.
 - **With the recordings off** (`?stock-sounds=0`) there is no row and no
   picks line, the stored picks are left alone and not applied, and nothing
@@ -1021,6 +1132,54 @@ picks; `GameAudioV1.setPick`, `.picks`, `.clearPicks` and
 `.prepareCandidate` are what the Gallery calls; the device
 (`web-audio-output.ts`) keeps one decoded buffer a file and plays, for each
 sound, the pick or the default.
+
+### The user's picks
+
+Bead `pulp_wars-2yc.52`. The user listened in the Gallery on 2026-10-14
+and said which version each of fifteen sounds should play, and that the
+Monument should make none. `src/audio/sound-picks.json` holds every such
+pick: the sound, the candidate's number (an ElevenLabs take from 101 or a
+stock recording from 1), the day and the user's words. A pick is the
+sound's default, ahead of its measured ElevenLabs default; a browser's
+own pick still wins over it. The Rocket Cart's two recordings (2026-10-14)
+are in the same list.
+
+| Sound             | Plays                                                   | Was                 |
+| ----------------- | ------------------------------------------------------- | ------------------- |
+| `support.rally`   | #1, the cinematic horn recording                        | Old 1               |
+| `support.dark`    | #1, the dark glass tone recording                       | Old 1               |
+| `special.mind`    | #109, a theremin wobble take                            | New 2               |
+| `special.hatch`   | #102, an eggshell crack take                            | New 3               |
+| `special.sparkle` | #104, a twinkle of small bells                          | New 2               |
+| `special.dizzy`   | #105, a slide whistle wobble with bird tweets           | New 2               |
+| `cult.herald`     | #2, the cinematic hit recording                         | Old 2               |
+| `cult.sacrifice`  | #1, the axe chop recording                              | Old 1               |
+| `city.lost`       | #2, the old minor chord cut to 0.85 s (new)             | Old 1, made shorter |
+| `reward.chosen`   | #104, one bright chime ding                             | New 2               |
+| `economy.build`   | #1, the stone hammer recording                          | Old 1               |
+| `economy.harvest` | #105, a leafy rustle and pluck                          | New 2               |
+| `turn.end`        | #1, the book page-turn recording                        | Old 1               |
+| `ui.select`       | #1, `UIClick_Operating System UI Cursor` (Kawaii UI)    | Old 1               |
+| `ui.click`        | #1, `UIClick_UI Click 33_CB Sounddesign` (Activation 2) | Old 1               |
+
+- **City lost, shorter.** "Use the old one but can you make it shorter":
+  the old one is a held A minor chord with no break in it (within 2 dB from
+  0 to 1.3 s), so a shorter cut ends on a fade. Stock recording #2 is
+  its first 0.85 s with a 400 ms fade-out, cut by `cut-stock-sounds.ts`
+  from the same file at the same level; the 1.7 s #1 stays to choose.
+- **Village captured, new.** "Generate something new, I don't like any of
+  these": five new takes from two new ideas (a brass-and-drum flourish and
+  a short brass hit; a village bell over a xylophone run), measured like
+  the others. The bell (#110) is the default and the short brass hit
+  (#112) the other choice; the three old trumpet toots (#103, #106, #107)
+  are retired: kept to choose, never the default
+  ([docs/audio/ELEVENLABS_SFX.md](../audio/ELEVENLABS_SFX.md)).
+- **Select and Click.** The user corrected the first reading of "the first
+  old version": Select is the stock recording cut from
+  `UIClick_Operating System UI Cursor_RogueWaves_KawaiiUI.wav` and Click
+  the one from `UIClick_UI Click 33_CB Sounddesign_ACTIVATION2.wav` (the
+  user wrote "UClick"); both are the first stock recording of their row.
+- **Monument.** Silent ([Event mapping](#events-without-a-step)).
 
 ### Turning the recordings off
 
@@ -1116,7 +1275,18 @@ the data by `npm run audio:elevenlabs-sfx -- doc`; in short:
   plays its synthesised sound, and its two best takes are offered to hear.
 - **The user's pick comes first.** `attack.rocket` plays the recording the
   user chose by ear (2026-10-14) ahead of its takes, which stay choices;
-  `impact.rocket`, added with it, has no takes.
+  `impact.rocket`, added with it, has no takes. Since bead
+  `pulp_wars-2yc.52` fifteen more sounds play a version the user chose
+  ([The user's picks](#the-users-picks)).
+- **Retired takes.** A take the user heard and did not want as the
+  default is listed under `retired` in its sound's prompt: it is measured
+  and kept to choose like the others, but never ranks for the default
+  (`village.capture` #103, #106 and #107, `unit.death`'s groans #101 to
+  #103). A sound may also take its level from another's reference
+  (`loudness` in its prompt: `unit.death` is 6 dB under the hurt sounds).
+  `encode --only <id>[,<id>...]` encodes those sounds again and leaves
+  every other clip's bytes as they are (AAC
+  encoding is not byte-stable from one run to the next).
 - **Encoded like the stock clips.** Trimmed from the attack, cut at the
   sound's longest length with a fade, peak 0.708, AAC-LC at 96 kbit/s with
   `afconvert`, and a level that makes it as loud as the sound it replaces
@@ -1179,9 +1349,18 @@ instrumentation, never by listening
   lists the fifteen to listen to first.
 - Which of a sound's recordings is the best one. Twenty-eight sounds have
   two to four; the default is a guess.
-- Whether the sounds fit together in one game. Sixty-four now play
-  ElevenLabs takes made with one shared style, one a synthesised tone; a
-  browser's picks can mix in stock recordings and synth tones.
+- Whether the sounds fit together in one game. Most play ElevenLabs takes
+  made with one shared style, one a synthesised tone, and the user's picks
+  mix in old stock recordings; a browser's picks can mix in more.
+- **The hurt sounds** (bead `pulp_wars-2yc.52`): whether the ten generated
+  voices suit their factions next to the user's two, and whether a voice
+  on every blow that does not kill is too busy in a large fight. The
+  takes are on record; the attack-hit hurt is one line in
+  `sound-events-v7.ts` (`attackHurt`) to drop if it is.
+- **The death thud** (the same bead): the only passing take of five, a
+  soft thud whose energy is mostly under 200 Hz. Whether it is heard at
+  all on a laptop or a phone, and whether 6 dB under the hurt sounds is
+  discreet enough, needs a listener.
 - The clips in Safari and Firefox. They decode correctly in Chrome; the
   other two have not been tried.
 - Relative loudness between sounds and categories. Peaks and RMS are bounded,

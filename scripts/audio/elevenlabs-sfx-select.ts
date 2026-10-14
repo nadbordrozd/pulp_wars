@@ -40,6 +40,11 @@ export interface SoundSelectionV1 {
    * previous default, which stays. Never a clipped or silent take.
    */
   readonly offered: readonly number[];
+  /**
+   * Takes the user heard and did not want as the default (the prompt's
+   * `retired`): kept to choose, after the others, never the default.
+   */
+  readonly retired: readonly number[];
   readonly confidence: "high" | "medium" | "low";
   /** Why the default was picked, in a sentence. */
   readonly why: string;
@@ -58,16 +63,38 @@ const HARD_FAILURES: readonly string[] = [
 const CHARACTER_KINDS: readonly SfxKindV1[] = ["vocal", "stinger", "effect"];
 
 export function selectTakesV1(
-  sound: Pick<SfxPromptV1, "id" | "kind" | "minSeconds" | "maxSeconds">,
+  sound: Pick<
+    SfxPromptV1,
+    "id" | "kind" | "minSeconds" | "maxSeconds" | "retired"
+  >,
   takes: readonly {
     readonly n: number;
     readonly round: number;
     readonly take: number;
     readonly measured: TakeMeasurementV1;
   }[],
+  /**
+   * Takes the user made and handed over (bead pulp_wars-2yc.52): kept
+   * first, the first of them the default, whatever they measure. The
+   * rules choose among generated takes; the user chose these by ear.
+   */
+  supplied: readonly number[] = [],
 ): SoundSelectionV1 {
+  const retiredReason = new Map(
+    (sound.retired ?? []).map((entry) => [entry.n, entry.reason]),
+  );
+  const outsideRules = new Map<number, readonly string[]>();
   const judged = takes.map((take) => {
-    const failures = takeFailuresV1(sound, take.measured);
+    const measuredFailures = takeFailuresV1(sound, take.measured);
+    const reason = retiredReason.get(take.n);
+    if (supplied.includes(take.n)) outsideRules.set(take.n, measuredFailures);
+    // A retired take passed once; it is judged again, and kept to choose
+    // when it still passes, but it never ranks for the default.
+    const failures = supplied.includes(take.n)
+      ? []
+      : reason === undefined || measuredFailures.length > 0
+        ? measuredFailures
+        : [`retired: ${reason}`];
     return {
       ...take,
       failures,
@@ -75,10 +102,21 @@ export function selectTakesV1(
       score: takeScoreV1(sound, take.measured),
     };
   });
+  const own = supplied.flatMap((n) => {
+    const take = judged.find((entry) => entry.n === n);
+    return take === undefined ? [] : [take];
+  });
+  const retired = judged
+    .filter(
+      (take) =>
+        retiredReason.has(take.n) &&
+        take.failures.every((failure) => failure.startsWith("retired: ")),
+    )
+    .map((take) => take.n);
   const ranked = judged
-    .filter((take) => take.pass)
+    .filter((take) => take.pass && !supplied.includes(take.n))
     .sort((a, b) => a.score - b.score || a.n - b.n);
-  const kept: typeof ranked = [];
+  const kept: typeof ranked = [...own];
   const dropped = new Map<number, string>();
   for (const take of ranked) {
     const twin = kept.find(
@@ -87,7 +125,7 @@ export function selectTakesV1(
         NEAR_DUPLICATE_SIMILARITY,
     );
     if (twin !== undefined) dropped.set(take.n, `near-duplicate of #${twin.n}`);
-    else if (kept.length >= ELEVENLABS_SFX_KEEP)
+    else if (kept.length - own.length >= ELEVENLABS_SFX_KEEP)
       dropped.set(take.n, "passed, but three better takes were kept");
     else kept.push(take);
   }
@@ -100,28 +138,40 @@ export function selectTakesV1(
   const best = kept[0];
   const second = kept[1];
   const confidence: SoundSelectionV1["confidence"] =
-    best === undefined || kept.length < 2
-      ? "low"
-      : CHARACTER_KINDS.includes(sound.kind) ||
-          (second !== undefined && second.score - best.score < 0.05)
-        ? "medium"
-        : "high";
+    own.length > 0
+      ? "high"
+      : best === undefined || kept.length < 2
+        ? "low"
+        : CHARACTER_KINDS.includes(sound.kind) ||
+            (second !== undefined && second.score - best.score < 0.05)
+          ? "medium"
+          : "high";
+  const outside = best === undefined ? [] : (outsideRules.get(best.n) ?? []);
   const why =
     best === undefined
       ? "No take passed its rules; the sound keeps its previous default."
-      : `#${best.n} scored best (${best.score}) of ${kept.length} kept: ` +
-        `${best.measured.clipSeconds} s for a range of ${sound.minSeconds}–${sound.maxSeconds} s, ` +
-        `onset ${best.measured.onsetMs} ms, tail ${best.measured.tailMs} ms, ` +
-        `centred near ${best.measured.centroidHz} Hz` +
-        (second === undefined
-          ? "."
-          : `; the next, #${second.n}, scored ${second.score}.`);
+      : own.length > 0
+        ? `#${best.n} is the user's own, chosen by ear and kept whatever it measures: ` +
+          `${best.measured.clipSeconds} s for a range of ${sound.minSeconds}–${sound.maxSeconds} s, ` +
+          `onset ${best.measured.onsetMs} ms, tail ${best.measured.tailMs} ms, ` +
+          `centred near ${best.measured.centroidHz} Hz` +
+          (outside.length === 0
+            ? "; it passes the rules too."
+            : `; by the rules it would have failed: ${outside.join("; ")}.`)
+        : `#${best.n} scored best (${best.score}) of ${kept.length} kept: ` +
+          `${best.measured.clipSeconds} s for a range of ${sound.minSeconds}–${sound.maxSeconds} s, ` +
+          `onset ${best.measured.onsetMs} ms, tail ${best.measured.tailMs} ms, ` +
+          `centred near ${best.measured.centroidHz} Hz` +
+          (second === undefined
+            ? "."
+            : `; the next, #${second.n}, scored ${second.score}.`);
   const offered =
     kept.length > 0
       ? []
       : judged
           .filter(
             (take) =>
+              !retiredReason.has(take.n) &&
               !take.failures.some((failure) =>
                 HARD_FAILURES.some((hard) => failure.startsWith(hard)),
               ),
@@ -134,11 +184,15 @@ export function selectTakesV1(
     takes: final,
     kept: kept.map((take) => take.n),
     offered,
+    retired,
     confidence,
     why:
-      offered.length === 0
+      (offered.length === 0
         ? why
-        : `${why} The best two that failed only on their shape (#${offered.join(", #")}) are offered to listen to.`,
+        : `${why} The best two that failed only on their shape (#${offered.join(", #")}) are offered to listen to.`) +
+      (retired.length === 0
+        ? ""
+        : ` Retired by the user, kept to choose but never the default: #${retired.join(", #")}.`),
   };
 }
 

@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, statSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import process from "node:process";
 import {
@@ -27,6 +27,7 @@ import {
   encodeWav16V1,
   readWavFramesV1,
   readWavInfoV1,
+  resampleV1,
 } from "./wav-pcm";
 
 /**
@@ -34,8 +35,9 @@ import {
  * docs/audio/ELEVENLABS_SFX.md).
  *
  *   npm run audio:elevenlabs-sfx -- generate [--round <n>] [--only <id>] [--group <prefix>] [--out <folder>]
+ *   npm run audio:elevenlabs-sfx -- import --from <folder> [--only <id>] [--out <folder>]
  *   npm run audio:elevenlabs-sfx -- measure [--out <folder>]
- *   npm run audio:elevenlabs-sfx -- encode [--out <folder>]
+ *   npm run audio:elevenlabs-sfx -- encode [--only <id>] [--out <folder>]
  *   npm run audio:elevenlabs-sfx -- doc
  *   npm run audio:elevenlabs-sfx -- usage
  *
@@ -83,12 +85,15 @@ interface ArgumentsV1 {
   readonly only: string | undefined;
   readonly group: string | undefined;
   readonly out: string;
+  /** `import`: the folder the supplied files are in. */
+  readonly from: string | undefined;
 }
 
 function readArguments(args: readonly string[]): ArgumentsV1 {
   let round = 1;
   let only: string | undefined;
   let group: string | undefined;
+  let from: string | undefined;
   let out = process.env.ELEVENLABS_SFX_RAW ?? ELEVENLABS_SFX_DEFAULT_RAW_FOLDER;
   const rest: string[] = [];
   for (let index = 0; index < args.length; index += 1) {
@@ -97,11 +102,72 @@ function readArguments(args: readonly string[]): ArgumentsV1 {
     else if (arg === "--only") only = args[(index += 1)];
     else if (arg === "--group") group = args[(index += 1)];
     else if (arg === "--out") out = args[(index += 1)] ?? out;
+    else if (arg === "--from") from = args[(index += 1)];
     else if (arg.startsWith("--")) fail(`Unknown option: ${arg}`);
     else rest.push(arg);
   }
   if (!Number.isInteger(round) || round < 1) fail("--round wants 1, 2, ...");
-  return { command: rest[0] ?? "", round, only, group, out };
+  return { command: rest[0] ?? "", round, only, group, out, from };
+}
+
+/**
+ * Brings the sound files the user handed over (a prompt's `supplied`) in
+ * as takes: each is read from `--from`, mixed to mono, resampled to 44.1
+ * kHz and written to the raw folder like a generated take, and recorded
+ * as round 0 with the file's name, its maker and its day. The user's
+ * files are only read; nothing calls the service.
+ */
+function importSupplied(args: ArgumentsV1): void {
+  if (args.from === undefined) fail("import wants --from <folder>");
+  const prompts = readPromptsV1();
+  mkdirSync(args.out, { recursive: true });
+  let count = 0;
+  for (const sound of prompts.sounds) {
+    if (args.only !== undefined && sound.id !== args.only) continue;
+    for (const [index, supplied] of (sound.supplied ?? []).entries()) {
+      const path = join(args.from, supplied.file);
+      if (!existsSync(path)) fail(`${sound.id}: ${path} not found`);
+      const info = readWavInfoV1(path);
+      const mono = downmixV1(readWavFramesV1(info));
+      const samples = resampleV1(mono, info.sampleRate, SAMPLE_RATE);
+      const n = ELEVENLABS_FIRST_CANDIDATE_V1 + index;
+      const rawFile = `${fileStemV1(sound.id)}-${n}.wav`;
+      writeFileSync(
+        join(args.out, rawFile),
+        encodeWav16V1([samples], SAMPLE_RATE),
+      );
+      const record: SfxTakeRecordV1 = {
+        id: sound.id,
+        n,
+        round: 0,
+        take: index + 1,
+        prompt: `${supplied.by}: ${supplied.file}`,
+        durationSeconds: Math.round(info.durationSeconds * 1000) / 1000,
+        promptInfluence: null,
+        model: "not recorded (made by the user)",
+        outputFormat: `wav ${info.sampleRate} Hz, ${info.channels} channels, ${info.bitsPerSample}-bit; mixed to mono and resampled to ${SAMPLE_RATE} Hz`,
+        date: supplied.date,
+        rawFile,
+        bytes: statSync(path).size,
+        supplied: { file: supplied.file, by: supplied.by },
+      };
+      const records = readRecordsV1();
+      writeJsonV1(ELEVENLABS_SFX_RECORDS_PATH, {
+        ...records,
+        takes: [
+          ...records.takes.filter(
+            (take) => !(take.id === record.id && take.n === record.n),
+          ),
+          record,
+        ].sort((a, b) => a.id.localeCompare(b.id) || a.n - b.n),
+      } satisfies SfxRecordsFileV1);
+      count += 1;
+      console.log(
+        `${sound.id} #${n}: ${supplied.file} (${info.sampleRate} Hz, ${info.channels} ch, ${info.durationSeconds.toFixed(3)} s) -> ${rawFile}`,
+      );
+    }
+  }
+  console.log(`${count} supplied files imported`);
 }
 
 function today(): string {
@@ -167,7 +233,10 @@ function pcmToSamples(bytes: Uint8Array): Float32Array {
 }
 
 interface PendingTakeV1 {
-  readonly record: Omit<SfxTakeRecordV1, "bytes" | "cost" | "date">;
+  readonly record: Omit<
+    SfxTakeRecordV1,
+    "bytes" | "cost" | "date" | "promptInfluence" | "supplied"
+  > & { readonly promptInfluence: number };
 }
 
 async function generateTake(
@@ -351,7 +420,11 @@ function measure(args: ArgumentsV1): void {
         sound,
       ) as TakeMeasurementV1,
     }));
-    const selection = selectTakesV1(sound, measured);
+    const selection = selectTakesV1(
+      sound,
+      measured,
+      takes.filter((take) => take.supplied !== undefined).map((take) => take.n),
+    );
     sounds.push({
       ...selection,
       kind: sound.kind,
@@ -393,6 +466,7 @@ function measure(args: ArgumentsV1): void {
 async function main(): Promise<void> {
   const args = readArguments(process.argv.slice(2));
   if (args.command === "generate") return generate(args);
+  if (args.command === "import") return importSupplied(args);
   if (args.command === "measure") return measure(args);
   if (args.command === "doc") {
     writeFileSync(ELEVENLABS_SFX_DOC_PATH, await renderElevenLabsSfxDocV1());
@@ -400,7 +474,7 @@ async function main(): Promise<void> {
     return;
   }
   if (args.command === "encode") {
-    console.log(encodeElevenLabsSfxV1(args.out).join("\n"));
+    console.log(encodeElevenLabsSfxV1(args.out, args.only).join("\n"));
     return;
   }
   if (args.command === "usage") {
@@ -408,7 +482,7 @@ async function main(): Promise<void> {
     return;
   }
   fail(
-    "Usage: tsx scripts/audio/elevenlabs-sfx.ts generate|measure|encode|doc|usage [--round <n>] [--only <id>] [--group <prefix>] [--out <folder>]",
+    "Usage: tsx scripts/audio/elevenlabs-sfx.ts generate|import|measure|encode|doc|usage [--round <n>] [--only <id>] [--group <prefix>] [--from <folder>] [--out <folder>]",
   );
 }
 

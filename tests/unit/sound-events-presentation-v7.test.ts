@@ -1,9 +1,12 @@
 import { describe, expect, it } from "vitest";
 import {
+  FACTION_IDS_V7,
+  NEUTRAL_OWNER_ID_V7,
   applyCommandV7,
   projectEventsV7,
   viewForV7,
   type CityId,
+  type FactionIdV7,
   type GameStateV7,
   type PlayerEventEnvelopeV7,
   type PlayerEventV7,
@@ -14,6 +17,7 @@ import {
 } from "../../src/engine/index";
 import {
   SOUND_IDS_V1,
+  hurtSoundOfUnitV7,
   soundCuesForBoundaryV7,
   soundCuesForStepV7,
   type SoundCueV1,
@@ -122,6 +126,102 @@ function ids(cues: readonly SoundCueV1[]): string[] {
   return cues.map((cue) => cue.id);
 }
 
+/** Each faction's hurt sound (bead pulp_wars-2yc.52). */
+const HURT_BY_FACTION: Readonly<Record<FactionIdV7, string>> = {
+  ORIGINAL: "unit.hurt.human",
+  UNDEAD: "unit.hurt.undead",
+  GOBLIN: "unit.hurt.goblin",
+  DINOSAUR: "unit.hurt.dinosaur",
+  MARTIAN: "unit.hurt.martian",
+  ICE_FOLK: "unit.hurt.icefolk",
+  DWARF: "unit.hurt.dwarf",
+  CANDY: "unit.hurt.candy",
+  CULT: "unit.hurt.cultist",
+};
+
+describe("hurt sounds by the damaged unit's kind", () => {
+  const state = exploredAllV7(initialV7(1518));
+  const view = viewForV7(state, state.humanPlayerId);
+  const unit = view.units[0];
+  const other = view.players.find((player) => player.id !== unit?.ownerId);
+  if (unit === undefined || other === undefined)
+    throw new Error("hurt fixture missing");
+  const owned = (faction: FactionIdV7): PlayerViewV7 => ({
+    ...view,
+    players: view.players.map((player) =>
+      player.id === unit.ownerId ? { ...player, faction } : player,
+    ),
+  });
+  const withUnit = (
+    change: Partial<PlayerViewV7["units"][number]>,
+  ): PlayerViewV7 => ({
+    ...view,
+    units: view.units.map((candidate) =>
+      candidate.id === unit.id ? { ...candidate, ...change } : candidate,
+    ),
+  });
+
+  it("gives every faction its own hurt sound, all in the manifest", () => {
+    for (const faction of FACTION_IDS_V7) {
+      const id = hurtSoundOfUnitV7([owned(faction)], { unitId: unit.id });
+      expect(id, faction).toBe(HURT_BY_FACTION[faction]);
+      expect(SOUND_IDS_V1 as readonly string[], id).toContain(id);
+      // Found by its tile as well (a Peppermint burst names a tile).
+      expect(hurtSoundOfUnitV7([owned(faction)], { at: unit.at })).toBe(id);
+    }
+    expect(new Set(Object.values(HURT_BY_FACTION)).size).toBe(
+      FACTION_IDS_V7.length,
+    );
+  });
+
+  it("voices daemons, giants and the Giant Spider apart", () => {
+    expect(
+      hurtSoundOfUnitV7([withUnit({ summoned: "HORROR" })], {
+        unitId: unit.id,
+      }),
+    ).toBe("unit.hurt.daemon");
+    expect(
+      hurtSoundOfUnitV7([withUnit({ summoned: "TENTACLE" })], {
+        unitId: unit.id,
+      }),
+    ).toBe("unit.hurt.daemon");
+    expect(
+      hurtSoundOfUnitV7([withUnit({ role: "JUGGERNAUT" })], {
+        unitId: unit.id,
+      }),
+    ).toBe("unit.hurt.giant");
+    expect(
+      hurtSoundOfUnitV7(
+        [withUnit({ ownerId: NEUTRAL_OWNER_ID_V7, role: "JUGGERNAUT" })],
+        { unitId: unit.id },
+      ),
+    ).toBe("unit.hurt.monster");
+  });
+
+  it("hears a mind-controlled unit in its original kind's voice", () => {
+    const controlled: PlayerViewV7 = {
+      ...owned("MARTIAN"),
+      players: owned("MARTIAN").players.map((player) =>
+        player.id === other.id ? { ...player, faction: "DWARF" } : player,
+      ),
+      mindControlled: [
+        { unitId: unit.id, brainUnitId: null, originalOwnerId: other.id },
+      ],
+    };
+    expect(hurtSoundOfUnitV7([controlled], { unitId: unit.id })).toBe(
+      "unit.hurt.dwarf",
+    );
+  });
+
+  it("falls back to the plain hurt sound for a unit no view holds", () => {
+    expect(hurtSoundOfUnitV7([view], { unitId: 987_654 })).toBe("unit.hurt");
+    expect(hurtSoundOfUnitV7([view], { at: { x: -5, y: -5 } })).toBe(
+      "unit.hurt",
+    );
+    expect(hurtSoundOfUnitV7([], { unitId: unit.id })).toBe("unit.hurt");
+  });
+});
+
 describe("sounds of presentation steps", () => {
   it("times a melee swing, its hit and a death with the lunge", () => {
     const { state, next, events } = duel("FIGHTER", 1);
@@ -143,6 +243,44 @@ describe("sounds of presentation steps", () => {
     const seen = boundary(state, next, events, state.humanPlayerId);
     expect(ids(seen.cues)).toContain("impact.hit");
     expect(ids(seen.cues)).not.toContain("unit.death");
+  });
+
+  it("voices a surviving target's hurt after the hit, by its kind, and not a killed one's", () => {
+    // Bead pulp_wars-2yc.52.
+    const { state, next, events } = duel("FIGHTER", 17);
+    const seen = boundary(state, next, events, state.humanPlayerId);
+    const target = state.units.find(
+      (unit) => unit.ownerId !== state.humanPlayerId,
+    );
+    const faction = state.players.find(
+      (player) => player.id === target?.ownerId,
+    )?.faction;
+    if (target === undefined || faction === undefined)
+      throw new Error("target missing");
+    const hurt = hurtSoundOfUnitV7([seen.before], { unitId: target.id });
+    expect(hurt).toBe(HURT_BY_FACTION[faction]);
+    expect(seen.cues.slice(0, 3)).toEqual([
+      { id: "attack.melee", delayMs: 0 },
+      { id: "impact.hit", delayMs: 230 * 0.56 },
+      { id: hurt, delayMs: 230 * 0.56 + 40 },
+    ]);
+    // A kill is heard as a death, without the hurt.
+    const killed = duel("FIGHTER", 1);
+    const kill = boundary(
+      killed.state,
+      killed.next,
+      killed.events,
+      killed.state.humanPlayerId,
+    );
+    expect(ids(kill.cues).filter((id) => id.startsWith("unit.hurt"))).toEqual(
+      [],
+    );
+    // A ranged shot too.
+    const shot = duel("MARKSMAN", 17);
+    expect(
+      boundary(shot.state, shot.next, shot.events, shot.state.humanPlayerId)
+        .cues[2],
+    ).toEqual({ id: hurt, delayMs: 280 + 40 });
   });
 
   it("sounds an arrow and a siege shot by the attacker's role", () => {
@@ -247,19 +385,34 @@ describe("sounds of presentation steps", () => {
     expect(
       cue({ kind: "MOVE", unitId: 1, path, durationMs: 120, pushSlide: true }),
     ).toEqual([]);
+    const damaged = view.units[0]?.id ?? 1;
     expect(
       cue({
         kind: "DAMAGE",
-        unitId: 1,
+        unitId: damaged,
         at: origin,
         damage: 3,
         lethal: true,
         durationMs: 100,
       }),
     ).toEqual([
-      { id: "unit.hurt", delayMs: 0 },
+      // The damaged unit's own hurt sound (bead pulp_wars-2yc.52).
+      { id: hurtSoundOfUnitV7([view], { unitId: damaged }), delayMs: 0 },
       { id: "unit.death", delayMs: 60 },
     ]);
+    expect(hurtSoundOfUnitV7([view], { unitId: damaged })).not.toBe(
+      "unit.hurt",
+    );
+    expect(
+      cue({
+        kind: "DAMAGE",
+        unitId: 987_654,
+        at: origin,
+        damage: 3,
+        lethal: false,
+        durationMs: 100,
+      }),
+    ).toEqual([{ id: "unit.hurt", delayMs: 0 }]);
     expect(cue({ kind: "VISIBILITY_CROSSFADE", durationMs: 180 })).toEqual([]);
     expect(cue({ kind: "BUILD", at: origin, durationMs: 180 })).toEqual([
       { id: "economy.build", delayMs: 0, gain: 0.6 },
@@ -731,6 +884,22 @@ describe("sounds of a boundary", () => {
       { id: "economy.coin", delayMs: 0 },
       { id: "city.levelup", delayMs: 140 },
     ]);
+  });
+
+  it("keeps a Monument silent, the viewer's own too (the user, 2026-10-14)", () => {
+    expect(
+      sounds([
+        {
+          kind: "MONUMENT_BUILT",
+          visibility: "FULL",
+          playerId: viewer,
+          cityId: city.id,
+          achievement: "EXPLORER",
+          at: city.at,
+          populationAdded: 3,
+        },
+      ]),
+    ).toEqual({ start: [], end: [], essential: [] });
   });
 
   it("sounds a Sacrifice for the viewer and both sides of a Seize", () => {

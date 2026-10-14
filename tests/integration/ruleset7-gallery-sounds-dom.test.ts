@@ -730,8 +730,9 @@ describe("Gallery Sounds tab: origins", () => {
     openSounds();
     expect(SOUND_DEFAULT_CLIPS_V1.length).toBeGreaterThan(0);
     for (const clip of SOUND_DEFAULT_CLIPS_V1) {
-      // The user's own pick of a recording (the firework rocket's halves)
-      // names its library file instead.
+      // The user's own pick of a recording (the firework rocket's halves,
+      // the old recordings chosen on 2026-10-14) names its library file
+      // instead.
       if (clip.origin === "STOCK" && clip.userPick) {
         expect(row(clip.id).dataset.origin).toBe("recorded");
         expect(
@@ -751,11 +752,13 @@ describe("Gallery Sounds tab: origins", () => {
       expect(
         node.querySelector(".v7-gallery-sound-origin-file")?.textContent,
       ).toBe(clip.prompt);
+      // A take the user picked reads "Pick"; the measured default "New 1".
+      const take = clip.userPick ? "Pick" : "New 1";
       expect(
         node.querySelector(".v7-gallery-sound-origin-cut")?.textContent,
-      ).toBe(`New 1 · ${clip.seconds} s`);
+      ).toBe(`${take} · ${clip.seconds} s`);
       // The whole of it on hover and for a screen reader, however it wraps.
-      const label = `ElevenLabs new 1: ${clip.prompt} (${clip.seconds} s, generated ${clip.generated})`;
+      const label = `ElevenLabs ${take.toLowerCase()}: ${clip.prompt} (${clip.seconds} s, generated ${clip.generated})`;
       expect(node.title).toBe(label);
       const play = card(clip.id);
       expect(play.getAttribute("aria-label")).toBe(

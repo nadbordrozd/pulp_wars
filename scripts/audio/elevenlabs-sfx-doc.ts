@@ -5,7 +5,12 @@ import {
   SOUND_IDS_V1,
   SOUND_MANIFEST_V1,
 } from "../../src/audio/sound-manifest";
-import { stockSoundV1 } from "../../src/audio/stock-sounds";
+import {
+  SOUND_USER_PICKS_V1,
+  soundCandidateOrdinalV1,
+  soundCandidateV1,
+  soundUserPickV1,
+} from "../../src/audio/sound-choices";
 import {
   ELEVENLABS_SFX_CLIPS_PATH,
   ELEVENLABS_SFX_DOC_PATH,
@@ -47,6 +52,41 @@ function label(id: string): string {
   );
 }
 
+/**
+ * The versions the user chose by ear (`src/audio/sound-picks.json`): what
+ * each sound plays, what the Gallery called it when it was chosen, and
+ * what the user said.
+ */
+function picksSectionV1(): string[] {
+  if (SOUND_USER_PICKS_V1.length === 0) return [];
+  const lines = [
+    "## The user's picks",
+    "",
+    "The user listened in the Gallery and chose a version for these sounds",
+    "([sound-picks.json](../../src/audio/sound-picks.json)). A pick plays by",
+    "default, ahead of the measured default of the tables below, which stays",
+    'a choice. It reads "Pick" in the Gallery, first in its row; the other',
+    "versions keep the numbers they had. A browser's own pick still wins.",
+    "",
+    "| Sound | Name | Plays | Its number in the Gallery | The user said |",
+    "| --- | --- | --- | --- | --- |",
+  ];
+  for (const pick of SOUND_USER_PICKS_V1) {
+    const clip = soundCandidateV1(pick.id, pick.n);
+    if (clip === null) throw new Error(`${pick.id} has no #${pick.n}`);
+    const plays =
+      clip.origin === "ELEVENLABS"
+        ? `#${clip.n}, a take: ${clip.prompt}`
+        : `#${clip.n}, a recording: ${clip.library} / \`${clip.originalFile}\`, ${clip.startSeconds}–${clip.endSeconds} s`;
+    const was = `${clip.origin === "ELEVENLABS" ? "New" : "Old"} ${soundCandidateOrdinalV1(pick.id, clip)}`;
+    lines.push(
+      `| \`${pick.id}\` | ${cell(label(pick.id))} | ${cell(plays)} | ${was} | ${cell(pick.said)} (${pick.date}) |`,
+    );
+  }
+  lines.push("");
+  return lines;
+}
+
 /** The document, before Prettier lays out its tables. */
 export function elevenLabsSfxMarkdownV1(): string {
   const prompts = readPromptsV1();
@@ -60,9 +100,16 @@ export function elevenLabsSfxMarkdownV1(): string {
     null,
   );
   const clipSounds = clips?.sounds ?? [];
-  const rounds = [...new Set(records.takes.map((take) => take.round))].sort();
+  // The takes the user made and handed over are not generated (round 0).
+  const generatedTakes = records.takes.filter(
+    (take) => take.supplied === undefined,
+  );
+  const suppliedTakes = records.takes.filter(
+    (take) => take.supplied !== undefined,
+  );
+  const rounds = [...new Set(generatedTakes.map((take) => take.round))].sort();
   const takesOf = (round: number): number =>
-    records.takes.filter((take) => take.round === round).length;
+    generatedTakes.filter((take) => take.round === round).length;
   const failedIn = (round: number): number =>
     measured
       .flatMap((sound) => sound.takes)
@@ -70,7 +117,11 @@ export function elevenLabsSfxMarkdownV1(): string {
         (take) =>
           take.round === round &&
           !take.pass &&
-          !take.failures.some((failure) => failure.startsWith("passed, but")),
+          !take.failures.some(
+            (failure) =>
+              failure.startsWith("passed, but") ||
+              failure.startsWith("retired: "),
+          ),
       ).length;
   const cost = records.takes.reduce(
     (sum, take) => sum + Number(take.cost?.["character-cost"] ?? 0),
@@ -87,9 +138,7 @@ export function elevenLabsSfxMarkdownV1(): string {
     (id) => !measured.some((sound) => sound.id === id),
   );
   // Sounds whose recording the user chose by ear: it plays ahead of the takes.
-  const picked = measured.filter(
-    (sound) => stockSoundV1(sound.id)?.userPick !== undefined,
-  );
+  const picked = measured.filter((sound) => soundUserPickV1(sound.id) !== null);
   const regenerated = prompts.sounds.filter(
     (sound) => (sound.revisions ?? []).length > 0,
   );
@@ -139,14 +188,33 @@ export function elevenLabsSfxMarkdownV1(): string {
         ? ""
         : ` but ${later.map((id) => `\`${id}\``).join(", ")}, added later with the user's own recording`
     }.`,
-    `- ${records.takes.length} takes generated in ${rounds.length} rounds: ${rounds
+    `- ${generatedTakes.length} takes generated in ${rounds.length} rounds: ${rounds
       .map((round) => `${takesOf(round)} in round ${round}`)
       .join(", ")}.`,
+    ...(suppliedTakes.length === 0
+      ? []
+      : [
+          `- ${suppliedTakes.length} takes the user made with ElevenLabs and handed over, brought in by \`import\` (round 0) and played by default whatever they measure: ${suppliedTakes
+            .map(
+              (take) =>
+                `\`${take.id}\` #${take.n} (\`${take.supplied?.file ?? ""}\`, ${take.date})`,
+            )
+            .join(", ")}.`,
+        ]),
     `- ${rounds.map((round) => `${failedIn(round)} of round ${round}`).join(", ")} failed their rules. ${regenerated.length} prompts were revised and their failed takes generated again (round 2), and the ${
       prompts.sounds.filter((sound) =>
         (sound.revisions ?? []).some((revision) => revision.round === 3),
       ).length
-    } sounds still short of takes once more (round 3).`,
+    } sounds still short of takes once more (round 3).${
+      rounds.some((round) => round > 3)
+        ? ` Bead \`pulp_wars-2yc.52\` added rounds 4 to 6, new prompts for the sounds whose takes the user heard and did not want (${prompts.sounds
+            .filter((sound) => (sound.retired ?? []).length > 0)
+            .map((sound) => `\`${sound.id}\``)
+            .join(
+              ", ",
+            )}; their old takes are retired, kept to choose but never the default), and the first two rounds of its new sounds.`
+        : ""
+    }`,
     `- ${kept} takes kept: ${measured.filter((sound) => sound.kept.length > 0).length} sounds play a new take by default, ${measured.filter((sound) => sound.kept.length >= 2).length} of them with at least one other to choose.`,
     `- ${none.length} ${none.length === 1 ? "sound" : "sounds"} with no passing take, which ${none.length === 1 ? "keeps its" : "keep their"} old default: ${
       none
@@ -159,11 +227,12 @@ export function elevenLabsSfxMarkdownV1(): string {
     ...(picked.length === 0
       ? []
       : [
-          `- ${picked.length} ${picked.length === 1 ? "sound plays" : "sounds play"} the user's own pick of a recording ahead of ${picked.length === 1 ? "its" : "their"} default take, which stays a choice: ${picked.map((sound) => `\`${sound.id}\``).join(", ")} ([STOCK_SOUND_CHOICES.md](STOCK_SOUND_CHOICES.md)).`,
+          `- ${picked.length} ${picked.length === 1 ? "sound plays" : "sounds play"} the version the user chose by ear ahead of ${picked.length === 1 ? "its" : "their"} measured default, which stays a choice ([The user's picks](#the-users-picks)).`,
         ]),
     `- ${files.length} clips, ${(bytes / 1e6).toFixed(2)} MB together: AAC at 96 kbit/s like the stock clips.`,
     `- The service reported a cost of ${cost} credits in all (its \`character-cost\` header, summed over every take).`,
     "",
+    ...picksSectionV1(),
     "## Listen to these first",
     "",
     "The least certain defaults: a sound with fewer than two passing takes",
@@ -174,6 +243,13 @@ export function elevenLabsSfxMarkdownV1(): string {
     "| --- | --- | --- | --- |",
   ];
   for (const sound of measured) {
+    // The user's own take was chosen by ear: nothing to listen to first.
+    if (
+      suppliedTakes.some(
+        (take) => take.id === sound.id && take.n === sound.kept[0],
+      )
+    )
+      continue;
     const why =
       sound.kept.length === 0
         ? "No take passed: the old default plays."
@@ -282,6 +358,13 @@ export function elevenLabsSfxMarkdownV1(): string {
     "Its level (`gain`) makes it as loud as the sound's previous default: the",
     "stock recording at its level, or the synthesised sound, measured the",
     "same way. A take quieter than that even at full level plays at 1.",
+    ...prompts.sounds.flatMap((sound) =>
+      sound.loudness === undefined
+        ? []
+        : [
+            `\`${sound.id}\` is matched instead to \`${sound.loudness.like}\`'s reference, ${sound.loudness.offsetDb} dB: ${sound.loudness.reason}`,
+          ],
+    ),
     "",
     "The game reads `src/audio/elevenlabs-sounds.json` (each take's file,",
     "level, length, prompt and a line on its character, and the default);",
@@ -334,7 +417,9 @@ export function elevenLabsSfxMarkdownV1(): string {
         ? "kept"
         : sound.offered.includes(take.n)
           ? "offered"
-          : "rejected";
+          : (sound.retired ?? []).includes(take.n)
+            ? "retired"
+            : "rejected";
   for (const sound of measured)
     for (const take of [...sound.takes].sort((a, b) => a.n - b.n)) {
       const m = take.measured;

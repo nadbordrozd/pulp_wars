@@ -1,6 +1,6 @@
 {
   "provider": "ElevenLabs sound effects",
-  "provenance": "ElevenLabs sound effects, generated 2026-10-14",
+  "provenance": "ElevenLabs sound effects, generated 2026-10-13, 2026-10-14",
   "bead": "pulp_wars-2yc.51",
   "model": "eleven_text_to_sound_v2",
   "sounds": [
@@ -614,39 +614,373 @@
       ]
     },
     {
-      "id": "unit.death",
+      "id": "unit.hurt.human",
       "default": 101,
       "confidence": "medium",
       "takes": [
         {
           "n": 101,
-          "file": "unit-death-101.m4a",
+          "file": "unit-hurt-human-101.m4a",
           "generated": "2026-10-14",
-          "seconds": 0.9,
+          "seconds": 0.682,
+          "gain": 0.49,
+          "passed": true,
+          "prompt": "A small cartoon human soldier takes a hit: one short wordless pained grunt, ugh, quick and not loud.",
+          "note": "0.682 s, hard attack, centred near 787 Hz, 85% of its energy under 1 kHz, crest 15.2 dB."
+        },
+        {
+          "n": 102,
+          "file": "unit-hurt-human-102.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.7,
+          "gain": 0.45,
+          "passed": true,
+          "prompt": "A small cartoon human soldier takes a hit: one short wordless pained grunt, ugh, quick and not loud.",
+          "note": "0.7 s, hard attack, centred near 869 Hz, 87% of its energy under 1 kHz, crest 14.7 dB."
+        }
+      ]
+    },
+    {
+      "id": "unit.hurt.undead",
+      "default": 102,
+      "confidence": "medium",
+      "takes": [
+        {
+          "n": 102,
+          "file": "unit-hurt-undead-102.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.672,
+          "gain": 0.67,
+          "passed": true,
+          "prompt": "A cartoon skeleton takes a hit: a short dry rattle of clattering bones with a faint ghostly hiss, no scream.",
+          "note": "0.672 s, hard attack, centred near 1.3 kHz, 49% of its energy under 1 kHz, crest 18.2 dB."
+        },
+        {
+          "n": 101,
+          "file": "unit-hurt-undead-101.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.7,
+          "gain": 1,
+          "passed": true,
+          "prompt": "A cartoon skeleton takes a hit: a short dry rattle of clattering bones with a faint ghostly hiss, no scream.",
+          "note": "0.7 s, quick attack, centred near 897 Hz, 64% of its energy under 1 kHz, crest 25.3 dB."
+        }
+      ]
+    },
+    {
+      "id": "unit.hurt.goblin",
+      "default": 101,
+      "confidence": "high",
+      "takes": [
+        {
+          "n": 101,
+          "file": "unit-hurt-goblin-101.m4a",
+          "generated": "2026-10-13",
+          "seconds": 0.7,
+          "gain": 0.21,
+          "passed": true,
+          "prompt": "The user's ElevenLabs generation: goblin_taking_damage_#2-1791924587712.wav",
+          "note": "0.7 s, quick attack, centred near 1.5 kHz, 22% of its energy under 1 kHz, crest 8.5 dB."
+        }
+      ]
+    },
+    {
+      "id": "unit.hurt.dinosaur",
+      "default": 101,
+      "confidence": "high",
+      "takes": [
+        {
+          "n": 101,
+          "file": "unit-hurt-dinosaur-101.m4a",
+          "generated": "2026-10-13",
+          "seconds": 0.7,
+          "gain": 0.32,
+          "passed": true,
+          "prompt": "The user's ElevenLabs generation: dinosaur_taking_dama_#1-1791924507764.wav",
+          "note": "0.7 s, hard attack, centred near 583 Hz, 68% of its energy under 1 kHz, crest 11.1 dB."
+        }
+      ]
+    },
+    {
+      "id": "unit.hurt.martian",
+      "default": 101,
+      "confidence": "medium",
+      "takes": [
+        {
+          "n": 101,
+          "file": "unit-hurt-martian-101.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.561,
+          "gain": 0.39,
+          "passed": true,
+          "prompt": "A little cartoon Martian takes a hit: a short robotic alien zap-squeak, a quick wobbling electronic warble.",
+          "note": "0.561 s, hard attack, centred near 1.5 kHz, 44% of its energy under 1 kHz, crest 13.7 dB."
+        },
+        {
+          "n": 102,
+          "file": "unit-hurt-martian-102.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.7,
+          "gain": 0.31,
+          "passed": true,
+          "prompt": "A little cartoon Martian takes a hit: a short robotic alien zap-squeak, a quick wobbling electronic warble.",
+          "note": "0.7 s, hard attack, centred near 1.4 kHz, 58% of its energy under 1 kHz, crest 12.1 dB."
+        }
+      ]
+    },
+    {
+      "id": "unit.hurt.icefolk",
+      "default": 101,
+      "confidence": "medium",
+      "takes": [
+        {
+          "n": 101,
+          "file": "unit-hurt-icefolk-101.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.7,
           "gain": 0.37,
           "passed": true,
-          "prompt": "A cartoon soldier is defeated: a comic wordless groan falling in pitch, then a soft thud as he drops, not gory.",
-          "note": "0.9 s, hard attack, centred near 1.2 kHz, 46% of its energy under 1 kHz, crest 12.8 dB."
+          "prompt": "A cartoon ice warrior in furs takes a hit: one short gruff grunt with a crisp crackle of ice.",
+          "note": "0.7 s, hard attack, centred near 598 Hz, 92% of its energy under 1 kHz, crest 12.7 dB."
         },
         {
           "n": 103,
-          "file": "unit-death-103.m4a",
+          "file": "unit-hurt-icefolk-103.m4a",
           "generated": "2026-10-14",
-          "seconds": 0.9,
+          "seconds": 0.7,
+          "gain": 0.4,
+          "passed": true,
+          "prompt": "A cartoon ice warrior in furs takes a hit: one short gruff grunt with a crisp crackle of ice.",
+          "note": "0.7 s, hard attack, centred near 630 Hz, 95% of its energy under 1 kHz, crest 13.3 dB."
+        }
+      ]
+    },
+    {
+      "id": "unit.hurt.dwarf",
+      "default": 104,
+      "confidence": "medium",
+      "takes": [
+        {
+          "n": 104,
+          "file": "unit-hurt-dwarf-104.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.667,
+          "gain": 0.39,
+          "passed": true,
+          "prompt": "A stout bearded cartoon dwarf takes a hit: one short gruff grunt, hmph, clean and not distorted, straight away.",
+          "note": "0.667 s, hard attack, centred near 796 Hz, 83% of its energy under 1 kHz, crest 12.2 dB."
+        },
+        {
+          "n": 101,
+          "file": "unit-hurt-dwarf-101.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.7,
+          "gain": 0.39,
+          "passed": true,
+          "prompt": "A stout bearded cartoon dwarf takes a hit: one short gruff low grunt, hmph.",
+          "note": "0.7 s, hard attack, centred near 822 Hz, 88% of its energy under 1 kHz, crest 13.5 dB."
+        },
+        {
+          "n": 105,
+          "file": "unit-hurt-dwarf-105.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.7,
+          "gain": 0.36,
+          "passed": true,
+          "prompt": "A stout bearded cartoon dwarf takes a hit: one short gruff grunt, hmph, clean and not distorted, straight away.",
+          "note": "0.7 s, hard attack, centred near 1.0 kHz, 51% of its energy under 1 kHz, crest 13.1 dB."
+        }
+      ]
+    },
+    {
+      "id": "unit.hurt.candy",
+      "default": 102,
+      "confidence": "medium",
+      "takes": [
+        {
+          "n": 102,
+          "file": "unit-hurt-candy-102.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.7,
+          "gain": 0.38,
+          "passed": true,
+          "prompt": "A cartoon gummy candy creature takes a hit: a short squishy gummy squelch with a little sugary crunch.",
+          "note": "0.7 s, hard attack, centred near 1.5 kHz, 23% of its energy under 1 kHz, crest 14.6 dB."
+        },
+        {
+          "n": 101,
+          "file": "unit-hurt-candy-101.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.7,
+          "gain": 0.52,
+          "passed": true,
+          "prompt": "A cartoon gummy candy creature takes a hit: a short squishy gummy squelch with a little sugary crunch.",
+          "note": "0.7 s, quick attack, centred near 1.3 kHz, 19% of its energy under 1 kHz, crest 16.4 dB."
+        }
+      ]
+    },
+    {
+      "id": "unit.hurt.cultist",
+      "default": 101,
+      "confidence": "medium",
+      "takes": [
+        {
+          "n": 101,
+          "file": "unit-hurt-cultist-101.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.571,
+          "gain": 0.45,
+          "passed": true,
+          "prompt": "A hooded cartoon cultist in robes takes a hit: one short muffled grunt from under a heavy hood.",
+          "note": "0.571 s, hard attack, centred near 231 Hz, 100% of its energy under 1 kHz, crest 12.8 dB."
+        },
+        {
+          "n": 103,
+          "file": "unit-hurt-cultist-103.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.601,
+          "gain": 0.53,
+          "passed": true,
+          "prompt": "A hooded cartoon cultist in robes takes a hit: one short muffled grunt from under a heavy hood.",
+          "note": "0.601 s, hard attack, centred near 459 Hz, 95% of its energy under 1 kHz, crest 14.9 dB."
+        },
+        {
+          "n": 102,
+          "file": "unit-hurt-cultist-102.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.7,
+          "gain": 0.77,
+          "passed": true,
+          "prompt": "A hooded cartoon cultist in robes takes a hit: one short muffled grunt from under a heavy hood.",
+          "note": "0.7 s, hard attack, centred near 483 Hz, 96% of its energy under 1 kHz, crest 18.1 dB."
+        }
+      ]
+    },
+    {
+      "id": "unit.hurt.daemon",
+      "default": 101,
+      "confidence": "medium",
+      "takes": [
+        {
+          "n": 101,
+          "file": "unit-hurt-daemon-101.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.7,
+          "gain": 0.38,
+          "passed": true,
+          "prompt": "A tentacled cartoon horror from beyond the stars takes a hit: a short wet gurgling growl, otherworldly.",
+          "note": "0.7 s, hard attack, centred near 940 Hz, 79% of its energy under 1 kHz, crest 12.2 dB."
+        },
+        {
+          "n": 103,
+          "file": "unit-hurt-daemon-103.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.7,
           "gain": 0.34,
           "passed": true,
+          "prompt": "A tentacled cartoon horror from beyond the stars takes a hit: a short wet gurgling growl, otherworldly.",
+          "note": "0.7 s, hard attack, centred near 803 Hz, 77% of its energy under 1 kHz, crest 11.3 dB."
+        }
+      ]
+    },
+    {
+      "id": "unit.hurt.giant",
+      "default": 104,
+      "confidence": "medium",
+      "takes": [
+        {
+          "n": 104,
+          "file": "unit-hurt-giant-104.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.606,
+          "gain": 0.54,
+          "passed": true,
+          "prompt": "A huge cartoon giant takes a hit: one short deep voiced grunt, oof, a big chesty voice rather than a bass rumble.",
+          "note": "0.606 s, hard attack, centred near 410 Hz, 97% of its energy under 1 kHz, crest 14.7 dB."
+        },
+        {
+          "n": 103,
+          "file": "unit-hurt-giant-103.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.656,
+          "gain": 0.51,
+          "passed": true,
+          "prompt": "A huge cartoon giant takes a hit: one short deep booming grunt, oof.",
+          "note": "0.656 s, hard attack, centred near 530 Hz, 98% of its energy under 1 kHz, crest 15.7 dB."
+        }
+      ]
+    },
+    {
+      "id": "unit.hurt.monster",
+      "default": 102,
+      "confidence": "medium",
+      "takes": [
+        {
+          "n": 102,
+          "file": "unit-hurt-monster-102.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.601,
+          "gain": 0.5,
+          "passed": true,
+          "prompt": "A giant cartoon spider takes a hit: a short angry chittering hiss.",
+          "note": "0.601 s, hard attack, centred near 1.0 kHz, 90% of its energy under 1 kHz, crest 9.1 dB."
+        },
+        {
+          "n": 103,
+          "file": "unit-hurt-monster-103.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.7,
+          "gain": 0.31,
+          "passed": true,
+          "prompt": "A giant cartoon spider takes a hit: a short angry chittering hiss.",
+          "note": "0.7 s, hard attack, centred near 1.7 kHz, 56% of its energy under 1 kHz, crest 12.4 dB."
+        }
+      ]
+    },
+    {
+      "id": "unit.death",
+      "default": 105,
+      "confidence": "low",
+      "takes": [
+        {
+          "n": 105,
+          "file": "unit-death-105.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.384,
+          "gain": 0.59,
+          "passed": true,
+          "prompt": "A small game piece is knocked out: one soft muffled thud on earth with a faint puff of dust, quiet and short, no voice, no groan.",
+          "note": "0.384 s, swells over 70 ms, centred near 197 Hz, 99% of its energy under 1 kHz, crest 18.5 dB."
+        },
+        {
+          "n": 101,
+          "file": "unit-death-101.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.9,
+          "gain": 0.16,
+          "passed": false,
           "prompt": "A cartoon soldier is defeated: a comic wordless groan falling in pitch, then a soft thud as he drops, not gory.",
-          "note": "0.9 s, hard attack, centred near 897 Hz, 66% of its energy under 1 kHz, crest 10.3 dB."
+          "note": "0.9 s, hard attack, centred near 1.2 kHz, 46% of its energy under 1 kHz, crest 12.8 dB."
         },
         {
           "n": 102,
           "file": "unit-death-102.m4a",
           "generated": "2026-10-14",
           "seconds": 0.9,
-          "gain": 0.34,
-          "passed": true,
+          "gain": 0.14,
+          "passed": false,
           "prompt": "A cartoon soldier is defeated: a comic wordless groan falling in pitch, then a soft thud as he drops, not gory.",
           "note": "0.9 s, hard attack, centred near 1.0 kHz, 55% of its energy under 1 kHz, crest 9.8 dB."
+        },
+        {
+          "n": 103,
+          "file": "unit-death-103.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.9,
+          "gain": 0.15,
+          "passed": false,
+          "prompt": "A cartoon soldier is defeated: a comic wordless groan falling in pitch, then a soft thud as he drops, not gory.",
+          "note": "0.9 s, hard attack, centred near 897 Hz, 66% of its energy under 1 kHz, crest 10.3 dB."
         }
       ]
     },
@@ -1568,28 +1902,28 @@
     },
     {
       "id": "village.capture",
-      "default": 107,
+      "default": 110,
       "confidence": "medium",
       "takes": [
         {
-          "n": 107,
-          "file": "village-capture-107.m4a",
-          "generated": "2026-10-14",
-          "seconds": 0.787,
-          "gain": 0.29,
-          "passed": true,
-          "prompt": "A village joins you: a quick cheerful two-note toy trumpet toot, played softly, ending quickly.",
-          "note": "0.787 s, hard attack, centred near 564 Hz, 98% of its energy under 1 kHz, crest 11.3 dB."
-        },
-        {
-          "n": 106,
-          "file": "village-capture-106.m4a",
+          "n": 110,
+          "file": "village-capture-110.m4a",
           "generated": "2026-10-14",
           "seconds": 1,
-          "gain": 0.17,
+          "gain": 0.34,
           "passed": true,
-          "prompt": "A village joins you: a quick cheerful two-note toy trumpet toot, played softly, ending quickly.",
-          "note": "1 s, hard attack, centred near 492 Hz, 95% of its energy under 1 kHz, crest 6.1 dB."
+          "prompt": "A village joins you: a bright village bell rings twice over a quick happy xylophone run up, cheerful and welcoming.",
+          "note": "1 s, hard attack, centred near 1.2 kHz, 72% of its energy under 1 kHz, crest 13.4 dB."
+        },
+        {
+          "n": 112,
+          "file": "village-capture-112.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.471,
+          "gain": 0.65,
+          "passed": true,
+          "prompt": "A village joins you: one quick triumphant brass hit with a snare drum, a single bright major chord, stopping at once.",
+          "note": "0.471 s, quick attack, centred near 603 Hz, 84% of its energy under 1 kHz, crest 17.6 dB."
         },
         {
           "n": 103,
@@ -1597,9 +1931,29 @@
           "generated": "2026-10-14",
           "seconds": 1,
           "gain": 0.27,
-          "passed": true,
+          "passed": false,
           "prompt": "A village joins you: a quick cheerful two-note trumpet toot.",
           "note": "1 s, quick attack, centred near 1.2 kHz, 64% of its energy under 1 kHz, crest 12.4 dB."
+        },
+        {
+          "n": 106,
+          "file": "village-capture-106.m4a",
+          "generated": "2026-10-14",
+          "seconds": 1,
+          "gain": 0.17,
+          "passed": false,
+          "prompt": "A village joins you: a quick cheerful two-note toy trumpet toot, played softly, ending quickly.",
+          "note": "1 s, hard attack, centred near 492 Hz, 95% of its energy under 1 kHz, crest 6.1 dB."
+        },
+        {
+          "n": 107,
+          "file": "village-capture-107.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.787,
+          "gain": 0.29,
+          "passed": false,
+          "prompt": "A village joins you: a quick cheerful two-note toy trumpet toot, played softly, ending quickly.",
+          "note": "0.787 s, hard attack, centred near 564 Hz, 98% of its energy under 1 kHz, crest 11.3 dB."
         }
       ]
     },

@@ -68,6 +68,11 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     // training and Tunnels are heard from events and presentation steps,
     // not from this list.
     "src/audio/sound-events-v7.ts::soundCuesForBoundaryV7": "BOARD",
+    // Bead pulp_wars-2yc.52: a damaged unit's hurt sound reads the views'
+    // units for the unit that was hit (by its ID, or the tile a Peppermint
+    // burst on), to hear it in its kind's voice. A burrowed unit cannot be
+    // attacked or splashed, so the unit hit always stands on the board.
+    "src/audio/sound-events-v7.ts::hurtSoundOfUnitV7": "BOARD",
     // `pulp_wars-737.4`: the curiosity policy reads the board: the visible
     // Monsters, the units that walk to a Fountain, a Shrine, or a Wreck, and
     // the units that defend a center (a burrowed unit takes no errand and
