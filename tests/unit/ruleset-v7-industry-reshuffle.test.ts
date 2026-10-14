@@ -443,7 +443,13 @@ describe("the Industry reshuffle: the missions", () => {
     for (const mission of MISSION_REGISTRY_V7)
       for (const [index, seat] of mission.seats.entries()) {
         const defenders = seat.units.some((unit) => unit.role === "GUARD");
-        if (defenders && seat.technologies.includes("DRILL"))
+        // A seat a mission forbids Fortification keeps its starting
+        // defenders and trains no more (Bone Neck's gate since
+        // `pulp_wars-v642.7`).
+        const forbidden = (seat.forbiddenTechnologies ?? []).includes(
+          "FORTIFICATION",
+        );
+        if (defenders && seat.technologies.includes("DRILL") && !forbidden)
           expect(
             seat.technologies,
             `${mission.id} seat ${String(index)}`,
@@ -475,9 +481,10 @@ describe("the Industry reshuffle: the missions", () => {
     ).toEqual([
       // Natural maps and objectives (`pulp_wars-v642.1`): one revision on.
       ["FRONTIER_1", 3],
-      ["FRONTIER_2", 3],
-      ["FRONTIER_3", 3],
-      ["FRONTIER_4", 4],
+      // The campaign difficulty pass (`pulp_wars-v642.7`): one more.
+      ["FRONTIER_2", 4],
+      ["FRONTIER_3", 4],
+      ["FRONTIER_4", 5],
       ["TEST_NECK", 2],
       // Unchanged: both seats owned Fortification already.
       ["LAB_SIEGE", 1],

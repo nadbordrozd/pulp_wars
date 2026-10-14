@@ -6,11 +6,21 @@ import type { MissionDefinitionV7 } from "./types";
  * The lesson is a breach: the Undead realm is the eastern land, joined to
  * yours by Bone Neck, a strip of land two tiles long, under a gate city
  * with Field Defenses. The Naval branch is forbidden, so the neck is the
- * only way in; Sawmilling is forbidden too, so the two siege engines you
- * start with are the only ones in the mission. The Undead `GUARD` the gate
- * with a garrison of four while the rest of their army plays `NORMAL`. The
- * choice is Human or Goblin only: a Martian flyer or a Dwarf Mole would
- * bypass the neck.
+ * only way in. The Undead `GUARD` the gate with a garrison of five while
+ * the rest of their army plays `NORMAL`, and the tower restocks the gate
+ * in round 6. The choice is Human or Goblin only: a Martian flyer or a
+ * Dwarf Mole would bypass the neck.
+ *
+ * Revision 5 (`pulp_wars-v642.7`, the campaign difficulty pass,
+ * CAMPAIGN.md section 11.15): the problem is a front rank. Two Zombies on
+ * Field Defenses hold the neck's exit and Skeletons stand behind them;
+ * whatever walks over the neck in single file dies there and rises on the
+ * other side. Your two siege engines break the front rank from the near
+ * shore, and a rider's Overrun (Knight or Scrap Buggy) sweeps the weak
+ * bone-men behind it onto the gate's center. You start with little
+ * research (Chivalry is one step away) and a deadline of round 14; the
+ * Undead seat may not train Liches, Ghouls, Banshees or new Zombies, and
+ * builds no Field Defenses.
  *
  * Revision 4 (`pulp_wars-v642.1`): the board is the map generator's
  * (Continents, seed 6): two lands and the channel between them, with two
@@ -40,7 +50,7 @@ import type { MissionDefinitionV7 } from "./types";
  */
 export const FRONTIER_4_V7: MissionDefinitionV7 = {
   id: "FRONTIER_4",
-  revision: 4,
+  revision: 5,
   seed: 20261104,
   // <map>
   size: 16,
@@ -136,15 +146,11 @@ export const FRONTIER_4_V7: MissionDefinitionV7 = {
   seats: [
     {
       faction: { choice: ["ORIGINAL", "GOBLIN"] },
-      coins: 12,
-      technologies: [
-        "DRILL",
-        "FORTIFICATION",
-        "SCOUTING",
-        "HUNTING",
-        "FORESTRY",
-        "MARKSMANSHIP",
-      ],
+      coins: 10,
+      // Little researched (the difficulty pass, `pulp_wars-v642.7`): the
+      // siege train is in hand and the riders are one step from their
+      // Knights; the rest of the tree is yours to find.
+      technologies: ["DRILL", "FORTIFICATION", "SCOUTING", "RAIDING"],
       cities: [
         {
           name: "Camp Concord",
@@ -160,12 +166,8 @@ export const FRONTIER_4_V7: MissionDefinitionV7 = {
         },
       ],
       units: [
-        { role: "FIGHTER", at: { x: 2, y: 9 } },
-        { role: "FIGHTER", at: { x: 3, y: 8 } },
         { role: "GUARD", at: { x: 3, y: 9 } },
-        { role: "MARKSMAN", at: { x: 2, y: 8 } },
         { role: "RAIDER", at: { x: 4, y: 8 } },
-        { role: "GUARD", at: { x: 5, y: 7 }, home: 1 },
         { role: "MARKSMAN", at: { x: 5, y: 6 }, home: 1 },
         // The siege train: the only siege units of the mission.
         { role: "CATAPULT", at: { x: 4, y: 7 }, home: 1 },
@@ -183,13 +185,7 @@ export const FRONTIER_4_V7: MissionDefinitionV7 = {
     {
       faction: "UNDEAD",
       coins: 6,
-      technologies: [
-        "GATHERING",
-        "HUNTING",
-        "FORESTRY",
-        "DRILL",
-        "FORTIFICATION",
-      ],
+      technologies: ["GATHERING", "HUNTING", "FORESTRY", "DRILL"],
       cities: [
         {
           name: "Ashen Tower",
@@ -212,30 +208,59 @@ export const FRONTIER_4_V7: MissionDefinitionV7 = {
         { role: "GUARD", at: { x: 9, y: 7 }, home: 1 },
         { role: "FIGHTER", at: { x: 10, y: 6 }, home: 1 },
         { role: "FIGHTER", at: { x: 10, y: 7 }, home: 1 },
-        { role: "RAIDER", at: { x: 13, y: 5 }, home: 2 },
+        { role: "FIGHTER", at: { x: 11, y: 7 }, home: 1 },
+        { role: "FIGHTER", at: { x: 13, y: 5 }, home: 2 },
       ],
       // Bone Neck, watched from the gate.
       reveal: { radius: 2, rects: [{ x0: 6, y0: 6, x1: 8, y1: 6 }] },
       // No Necromancers (hand play, CAMPAIGN.md section 11.4): three of
       // them raised a Skeleton on every Grave of the gate every turn, and
-      // the siege never ended.
-      forbiddenTechnologies: ["ADMINISTRATION", "PLANNING"],
+      // the siege never ended. The difficulty pass (section 11.15) took
+      // the Lich (Sawmilling: it would outrange the siege train), the
+      // Ghoul (Scouting), the Banshee (Marksmanship) and new Zombies and
+      // Field Defenses (Fortification) too: with them, every Knight that
+      // broke through to the gate's center was killed on it the same
+      // night. The two Zombies on the exit's Field Defenses are the front
+      // rank; behind them stand Skeletons.
+      forbiddenTechnologies: [
+        "ADMINISTRATION",
+        "PLANNING",
+        "SAWMILLING",
+        "SCOUTING",
+        "ROADS",
+        "COMMERCE",
+        "RAIDING",
+        "CHIVALRY",
+        "MARKSMANSHIP",
+        "FIELDCRAFT",
+        "FORTIFICATION",
+        "EXPLOSIVES",
+      ],
       directive: {
         kind: "GUARD",
         zone: [{ x0: 9, y0: 5, x1: 11, y1: 7 }],
-        garrison: 4,
+        garrison: 5,
       },
     },
   ],
-  // The Naval branch (Bone Neck is the only way in) and Sawmilling (no
-  // Catapult, Rocket Cart, or Lich is trained; the Sawmill goes with it).
+  // The tower restocks the gate.
+  reinforcements: [
+    {
+      seat: 1,
+      round: 6,
+      units: [
+        { role: "FIGHTER", at: { x: 12, y: 8 } },
+        { role: "FIGHTER", at: { x: 13, y: 9 } },
+      ],
+    },
+  ],
+  // The Naval branch: Bone Neck is the only way in.
   forbiddenTechnologies: [
     "SHORECRAFT",
     "NAVIGATION",
     "NAVAL_ENGINEERING",
     "SEAMANSHIP",
     "SUBMERSIBLES",
-    "SAWMILLING",
   ],
   landmarks: [
     { tag: "TOWER", at: { x: 11, y: 10 } },
@@ -246,6 +271,7 @@ export const FRONTIER_4_V7: MissionDefinitionV7 = {
   objective: {
     kind: "CAPTURE",
     places: ["GATE"],
-    bonus: [{ kind: "WITHIN_ROUNDS", rounds: 12 }, { kind: "KEEP_CITIES" }],
+    byRound: 14,
+    bonus: [{ kind: "WITHIN_ROUNDS", rounds: 9 }, { kind: "KEEP_CITIES" }],
   },
 };

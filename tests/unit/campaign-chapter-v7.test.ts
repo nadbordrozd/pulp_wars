@@ -409,22 +409,39 @@ describe("Chapter One data", () => {
         },
         aiForbidden: ["MARKSMANSHIP", "FIELDCRAFT", "METALLURGY"],
       },
+      // The campaign difficulty pass (`pulp_wars-v642.7`): a build-up on a
+      // bigger board against a clock.
       FRONTIER_3: {
         human: ["GOBLIN"],
         ai: "UNDEAD",
         directive: "HOLD",
-        size: 14,
+        size: 16,
         map: "DRY_LAND",
         objective: {
           kind: "CAPTURE",
           places: ["BARROW"],
+          byRound: 26,
           bonus: [
-            { kind: "WITHIN_ROUNDS", rounds: 15 },
+            { kind: "WITHIN_ROUNDS", rounds: 20 },
             { kind: "KEEP_CITIES" },
           ],
         },
-        aiForbidden: [],
+        aiForbidden: [
+          "GATHERING",
+          "FARMING",
+          "MILLING",
+          "ADMINISTRATION",
+          "PLANNING",
+          "MARKSMANSHIP",
+          "FIELDCRAFT",
+          "SCOUTING",
+          "ROADS",
+          "COMMERCE",
+          "RAIDING",
+          "CHIVALRY",
+        ],
       },
+      // The difficulty pass: a front rank to break, against a clock.
       FRONTIER_4: {
         human: ["ORIGINAL", "GOBLIN"],
         ai: "UNDEAD",
@@ -434,12 +451,26 @@ describe("Chapter One data", () => {
         objective: {
           kind: "CAPTURE",
           places: ["GATE"],
+          byRound: 14,
           bonus: [
-            { kind: "WITHIN_ROUNDS", rounds: 12 },
+            { kind: "WITHIN_ROUNDS", rounds: 9 },
             { kind: "KEEP_CITIES" },
           ],
         },
-        aiForbidden: ["ADMINISTRATION", "PLANNING"],
+        aiForbidden: [
+          "ADMINISTRATION",
+          "PLANNING",
+          "SAWMILLING",
+          "SCOUTING",
+          "ROADS",
+          "COMMERCE",
+          "RAIDING",
+          "CHIVALRY",
+          "MARKSMANSHIP",
+          "FIELDCRAFT",
+          "FORTIFICATION",
+          "EXPLOSIVES",
+        ],
       },
     };
     for (const [id, want] of Object.entries(expected)) {
@@ -461,23 +492,29 @@ describe("Chapter One data", () => {
       expect([...(seat(definition, 1).forbiddenTechnologies ?? [])]).toEqual(
         want.aiForbidden,
       );
-      // The whole Naval branch is forbidden everywhere; nothing else, except
-      // Sawmilling in mission 4 (`pulp_wars-68k.6`: no siege unit is built).
+      // The whole Naval branch is forbidden everywhere; nothing else (since
+      // `pulp_wars-v642.7` mission 4 forbids Sawmilling to the Undead seat
+      // only, so your Catapults can be rebuilt).
       expect([...definition.forbiddenTechnologies].sort()).toEqual(
-        [...NAVAL, ...(id === "FRONTIER_4" ? ["SAWMILLING"] : [])].sort(),
+        [...NAVAL].sort(),
       );
     }
     // Mission 3 holds the plain around the Barrow until the new moon.
     expect(seat(mission("FRONTIER_3"), 1).directive).toEqual({
       kind: "HOLD",
-      zone: [{ x0: 0, y0: 0, x1: 13, y1: 4 }],
-      untilRound: 16,
+      zone: [{ x0: 0, y0: 0, x1: 15, y1: 5 }],
+      untilRound: 12,
     });
-    // Mission 4 guards the gate with four.
+    // Mission 3 is a build-up: one camp, three units, no technology.
+    expect(seat(mission("FRONTIER_3"), 0).cities).toHaveLength(1);
+    expect(seat(mission("FRONTIER_3"), 0).units).toHaveLength(3);
+    expect(seat(mission("FRONTIER_3"), 0).technologies).toEqual([]);
+    expect(seat(mission("FRONTIER_3"), 1).cities).toHaveLength(3);
+    // Mission 4 guards the gate with five.
     expect(seat(mission("FRONTIER_4"), 1).directive).toEqual({
       kind: "GUARD",
       zone: [{ x0: 9, y0: 5, x1: 11, y1: 7 }],
-      garrison: 4,
+      garrison: 5,
     });
   });
 

@@ -7,6 +7,13 @@ import type { MissionDefinitionV7 } from "./types";
  * villages first, then the weak outpost on the way, and then the walled
  * capital, the Warrens: taking it wins the mission.
  *
+ * Revision 4 (`pulp_wars-v642.7`, the campaign difficulty pass,
+ * CAMPAIGN.md section 11.15): easy to medium. You start with 10 Coins and
+ * less research (no Scouting); the Goblins start with six units. The
+ * problem is gentle: Goblins Gang Up, so a unit that stands alone in the
+ * open dies, and the Warrens is re-garrisoned every turn. Keep the army
+ * together, shoot first, and grow a giant.
+ *
  * Revision 3 (`pulp_wars-v642.1`): the board is the map generator's (Dry
  * Land, seed 9). Three of its villages are cities at the start: the Goblin
  * towns in the north-west and the east, and your own second town. You hold
@@ -33,7 +40,7 @@ import type { MissionDefinitionV7 } from "./types";
  */
 export const FRONTIER_2_V7: MissionDefinitionV7 = {
   id: "FRONTIER_2",
-  revision: 3,
+  revision: 4,
   seed: 20261102,
   // <map>
   size: 14,
@@ -118,13 +125,9 @@ export const FRONTIER_2_V7: MissionDefinitionV7 = {
   seats: [
     {
       faction: "ORIGINAL",
-      coins: 12,
-      // Hand play (CAMPAIGN.md section 11.2): with Gathering and Scouting
-      // alone the Goblins' raids outran you; you start with Guards and
-      // Marksmen and the technologies behind them.
+      coins: 10,
       technologies: [
         "GATHERING",
-        "SCOUTING",
         "HUNTING",
         "MARKSMANSHIP",
         "DRILL",
@@ -160,13 +163,8 @@ export const FRONTIER_2_V7: MissionDefinitionV7 = {
     {
       faction: "GOBLIN",
       coins: 0,
-      // Neither Hunting nor Scouting (hand play, CAMPAIGN.md section
-      // 11.2): the Bomb Chuckers and the Wolf Riders come later.
       technologies: ["DRILL", "FORTIFICATION"],
       cities: [
-        // A small capital (hand play, CAMPAIGN.md section 11.2): at level 3
-        // with Lumber Camps it reached level 5 by round 10 and its two
-        // Trolls held the Warrens against everything.
         {
           name: "The Warrens",
           at: { x: 11, y: 2 },
@@ -181,11 +179,10 @@ export const FRONTIER_2_V7: MissionDefinitionV7 = {
         { role: "FIGHTER", at: { x: 10, y: 3 } },
         { role: "FIGHTER", at: { x: 12, y: 1 } },
         { role: "FIGHTER", at: { x: 5, y: 2 }, home: 1 },
+        { role: "FIGHTER", at: { x: 6, y: 3 }, home: 1 },
         { role: "FIGHTER", at: { x: 11, y: 8 }, home: 2 },
       ],
       reveal: { radius: 2 },
-      // No Bomb Chuckers and no Ogres (hand play, CAMPAIGN.md section
-      // 11.2): from the deep woods their bombs made the Warrens a fortress.
       forbiddenTechnologies: ["MARKSMANSHIP", "FIELDCRAFT", "METALLURGY"],
     },
   ],

@@ -83,22 +83,26 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
     "e31edbe9e71807d9d2af6b97eca0b8f8f34c5432fa71022ea9cfb0e886e29ce2",
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 2.
   // Natural maps and objectives (`pulp_wars-v642.1`): revision 3.
-  "FRONTIER_2@3:ORIGINAL":
-    "18e051141cb4c6d4d3d78b197c2a6c4cb95624342ca3f7780a5bfe024c24fde0",
+  // The campaign difficulty pass (`pulp_wars-v642.7`): revision 4.
+  "FRONTIER_2@4:ORIGINAL":
+    "ae50b8841ba0ad5b9e9cc54df3df67b50fc005ae5681594d29893fa9e9720cb7",
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 2.
   // Natural maps and objectives (`pulp_wars-v642.1`): revision 3.
-  "FRONTIER_3@3:GOBLIN":
-    "801aebef19a2d866f3d4591c5f78cefa605a7e7a173a34e51595ca230f51ada8",
+  // The campaign difficulty pass (`pulp_wars-v642.7`): revision 4.
+  "FRONTIER_3@4:GOBLIN":
+    "dbca7f59e9fd797b069d917e2ca45981155190c3f69408d0da30c8842195a495",
   // Revision 2 (`pulp_wars-68k.6`): Sawmilling forbidden, two starting siege
   // units for you, a Skeleton in the Lich's place.
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 3.
   // Natural maps and objectives (`pulp_wars-v642.1`): revision 4.
-  "FRONTIER_4@4:ORIGINAL":
-    "034d9e453ef6b8263d508c9c84b7ff649bce09c9e0179e2d26b935ab1f249c8b",
+  // The campaign difficulty pass (`pulp_wars-v642.7`): revision 5.
+  "FRONTIER_4@5:ORIGINAL":
+    "756713662c6ca47c19309f94bd9930f5d294d8a11c6e533527d402234aed9f94",
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 3.
   // Natural maps and objectives (`pulp_wars-v642.1`): revision 4.
-  "FRONTIER_4@4:GOBLIN":
-    "fcdf664be1a23a75dd0cac1ddecb35716eba441957489605138576a2711063bf",
+  // The campaign difficulty pass (`pulp_wars-v642.7`): revision 5.
+  "FRONTIER_4@5:GOBLIN":
+    "65e303d06ef43154780f820ea31bfa7e3c0222e7ea8ed83c0a8e8dc34a051363",
   // Missions 5 and 6 (`pulp_wars-v642.2`).
   "FRONTIER_5@1:UNDEAD":
     "283973129144392407f31f188a284006ae937403512ee2d7e176b337fd321574",
@@ -362,20 +366,24 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
     "52314a7830374a1409de1b86efafd4d896888b7be29e28adb510629cccdb8206",
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 2.
   // Natural maps and objectives (`pulp_wars-v642.1`): revision 3.
-  "FRONTIER_2@3:ORIGINAL":
-    "c369dabe5f1021c0d42375578f6b169a3680edbb784bd69ec96f0c7a014f1798",
+  // The campaign difficulty pass (`pulp_wars-v642.7`): revision 4.
+  "FRONTIER_2@4:ORIGINAL":
+    "bea27783827641a38a785a1383fcff8ab3d1a406684c9908859ea626d8b70136",
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 2.
   // Natural maps and objectives (`pulp_wars-v642.1`): revision 3.
-  "FRONTIER_3@3:GOBLIN":
-    "9024e48f50a61765f91bec4a895c5f33bed9deeb8ab9afa24f1d13721ef1d1d3",
+  // The campaign difficulty pass (`pulp_wars-v642.7`): revision 4.
+  "FRONTIER_3@4:GOBLIN":
+    "087ba2538953baea9671caa5feeda964e773847b1d3b3dfab3131b9ed336643d",
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 3.
   // Natural maps and objectives (`pulp_wars-v642.1`): revision 4.
-  "FRONTIER_4@4:ORIGINAL":
-    "87467bfe2b707797a6a4cc6e4179dd5a54c4e47b1b66612ae0b2799436bcb790",
+  // The campaign difficulty pass (`pulp_wars-v642.7`): revision 5.
+  "FRONTIER_4@5:ORIGINAL":
+    "573c34627c88615f7a364461dfe8615532e7fb537a6af37b3aed712a0a80a920",
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 3.
   // Natural maps and objectives (`pulp_wars-v642.1`): revision 4.
-  "FRONTIER_4@4:GOBLIN":
-    "f6ae30e00a22df17c7d98fadc0cfbe4d4bb2340e7a8ff9f9fa3a074a3e7697b8",
+  // The campaign difficulty pass (`pulp_wars-v642.7`): revision 5.
+  "FRONTIER_4@5:GOBLIN":
+    "8295da4abdfbee9d838484861d9252fa776f16c9f7370e0b4eff90e9b596a5a9",
   // Missions 5 and 6 (`pulp_wars-v642.2`).
   "FRONTIER_5@1:UNDEAD":
     "9dd66709874221dc012d48dcb0b118eb3560583925e0f6f7b91254aaee4e662e",

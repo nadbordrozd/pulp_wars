@@ -1282,22 +1282,22 @@ unlocked in mission 10.
 "Rounds" is the target length for a competent player; the star column is
 the two secondary goals (the first star is the win).
 
-| #   | Mission (`ID`)                             | You lead          | Against                                                            | Format                    | Map                            | Win / lose                                                                      | Lesson or twist                                                              | Unlocks   | Rounds | Difficulty | Stars                             |
-| --- | ------------------------------------------ | ----------------- | ------------------------------------------------------------------ | ------------------------- | ------------------------------ | ------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | --------- | ------ | ---------- | --------------------------------- |
-| 1   | Goblins at the Gate (`FRONTIER_1`)         | Humans            | Goblins (rush)                                                     | Conquest                  | Dry Land 11                    | capture the Goblin camp                                                         | hold a wall against a rush, then counter-attack; your first giant            | none      | 10–12  | Easy       | by turn 12; lose no city          |
-| 2   | The Warrens (`FRONTIER_2`)                 | Humans            | Goblins (three cities)                                             | Capture                   | Dry Land 14                    | capture the Warrens (their capital)                                             | expand first: villages, then an army that sticks together                    | Goblins   | 14–18  | Medium     | by turn 18; lose no city          |
-| 3   | Green Tide (`FRONTIER_3`)                  | Goblins           | Undead (holds its plain until turn 16)                             | Capture                   | Dry Land 14                    | capture the Barrow (their capital)                                              | play the horde: Troll toss, Kaboom, Gang Up; your dead rise against you      | none      | 11–15  | Medium     | by turn 15; lose no city          |
-| 4   | Bone Neck (`FRONTIER_4`)                   | Humans or Goblins | Undead (guards the gate)                                           | Capture                   | Continents 16, one land bridge | capture the gate city                                                           | a breach: two siege engines, no boats, one way in                            | Undead    | 10–14  | Hard       | by turn 12; lose no city          |
-| 5   | Dead Men's Road (`FRONTIER_5`)             | Undead            | Humans (toll fort), Ice Folk (raiders), one side                   | Escort                    | Dry Land 16, a mountain wall   | bring Doctor Crane to the Ironbraid gate by turn 20 / he dies, or time runs out | protect one fragile unit on a long road; go round or go through              | Dwarves   | 13–16  | Medium     | by turn 16; lose no city          |
-| 6   | The Deep Gate (`FRONTIER_6`)               | Dwarves           | Ice Folk (north, over the peaks), Humans (east, through the doors) | Hold out                  | Dry Land 14, a mountain pocket | 14 turns pass / the Deep Gate falls                                             | defend against waves from two sides that end in giants; relief on turn 9     | Ice Folk  | 14     | Medium     | lose no city; the Thane lives     |
-| 7   | The Island That Time Forgot (`FRONTIER_7`) | Ice Folk          | Dinosaurs (natives), Humans (the Baron)                            | Capture against the clock | Archipelago 16                 | capture the Crater by turn 18 / time runs out                                   | the naval mission without ships: freeze a road over the sea; a race          | Dinosaurs | 11–16  | Hard       | by turn 14; lose no city          |
-| 8   | Brain Wave (`FRONTIER_8`)                  | Dinosaurs         | Martians (guard), Humans (thralls)                                 | Hunt (build-up)           | Pangea 16                      | kill the Overmind by turn 26 / time runs out                                    | build up from one nest; climb where they cannot; grow the Queen on prey      | Martians  | 15–22  | Hard       | by turn 18; the Old Queen lives   |
-| 9   | Sugar and Spite (`FRONTIER_9`)             | Martians          | Undead, Goblins; ally: Candy                                       | Rescue (hold out)         | Lakes 16 with a Rift           | 16 turns pass / Sugarcrest (the ally's capital) falls                           | defend someone else's city; Saucers hunt the siege engines                   | Candy     | 16     | Hard       | Praline lives; Riftwatch is yours |
-| 10  | The Stars Are Right (`FRONTIER_10`)        | Humans            | Cultists (guard), Undead (thralls); ally: Goblins                  | Capture against the clock | Pangea 20                      | capture the Lodge by turn 24 / time runs out                                    | the finale: crack the ring with Catapults, then the Knights; starve the rite | Cultists  | 20–24  | Very hard  | by turn 20; lose no city          |
+| #   | Mission (`ID`)                             | You lead          | Against                                                            | Format                    | Map                            | Win / lose                                                                      | Lesson or twist                                                              | Unlocks   | Rounds | Difficulty  | Stars                             |
+| --- | ------------------------------------------ | ----------------- | ------------------------------------------------------------------ | ------------------------- | ------------------------------ | ------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | --------- | ------ | ----------- | --------------------------------- |
+| 1   | Goblins at the Gate (`FRONTIER_1`)         | Humans            | Goblins (rush)                                                     | Conquest                  | Dry Land 11                    | capture the Goblin camp                                                         | hold a wall against a rush, then counter-attack; your first giant            | none      | 10–12  | Easy        | by turn 12; lose no city          |
+| 2   | The Warrens (`FRONTIER_2`)                 | Humans            | Goblins (three cities)                                             | Capture                   | Dry Land 14                    | capture the Warrens (their capital)                                             | Gang Up: an army that sticks together and shoots first; a giant              | Goblins   | 15–18  | Easy–medium | by turn 18; lose no city          |
+| 3   | Green Tide (`FRONTIER_3`)                  | Goblins           | Undead (three towns; hold their plain until turn 12)               | Capture against the clock | Dry Land 16                    | capture the Barrow by turn 26 / time runs out                                   | a build-up from one camp: Mines, Trolls, then Troll toss and Kaboom          | none      | 17–22  | Medium–hard | by turn 20; lose no city          |
+| 4   | Bone Neck (`FRONTIER_4`)                   | Humans or Goblins | Undead (guards the gate)                                           | Capture against the clock | Continents 16, one land bridge | capture the gate city by turn 14 / time runs out                                | a front rank: siege engines dent it, a rider's Overrun sweeps behind it      | Undead    | 6–12   | Hard        | by turn 9; lose no city           |
+| 5   | Dead Men's Road (`FRONTIER_5`)             | Undead            | Humans (toll fort), Ice Folk (raiders), one side                   | Escort                    | Dry Land 16, a mountain wall   | bring Doctor Crane to the Ironbraid gate by turn 20 / he dies, or time runs out | protect one fragile unit on a long road; go round or go through              | Dwarves   | 13–16  | Medium      | by turn 16; lose no city          |
+| 6   | The Deep Gate (`FRONTIER_6`)               | Dwarves           | Ice Folk (north, over the peaks), Humans (east, through the doors) | Hold out                  | Dry Land 14, a mountain pocket | 14 turns pass / the Deep Gate falls                                             | defend against waves from two sides that end in giants; relief on turn 9     | Ice Folk  | 14     | Medium      | lose no city; the Thane lives     |
+| 7   | The Island That Time Forgot (`FRONTIER_7`) | Ice Folk          | Dinosaurs (natives), Humans (the Baron)                            | Capture against the clock | Archipelago 16                 | capture the Crater by turn 18 / time runs out                                   | the naval mission without ships: freeze a road over the sea; a race          | Dinosaurs | 11–16  | Hard        | by turn 14; lose no city          |
+| 8   | Brain Wave (`FRONTIER_8`)                  | Dinosaurs         | Martians (guard), Humans (thralls)                                 | Hunt (build-up)           | Pangea 16                      | kill the Overmind by turn 26 / time runs out                                    | build up from one nest; climb where they cannot; grow the Queen on prey      | Martians  | 15–22  | Hard        | by turn 18; the Old Queen lives   |
+| 9   | Sugar and Spite (`FRONTIER_9`)             | Martians          | Undead, Goblins; ally: Candy                                       | Rescue (hold out)         | Lakes 16 with a Rift           | 16 turns pass / Sugarcrest (the ally's capital) falls                           | defend someone else's city; Saucers hunt the siege engines                   | Candy     | 16     | Hard        | Praline lives; Riftwatch is yours |
+| 10  | The Stars Are Right (`FRONTIER_10`)        | Humans            | Cultists (guard), Undead (thralls); ally: Goblins                  | Capture against the clock | Pangea 20                      | capture the Lodge by turn 24 / time runs out                                    | the finale: crack the ring with Catapults, then the Knights; starve the rite | Cultists  | 20–24  | Very hard   | by turn 20; lose no city          |
 
-Formats covered: classic conquest (1), capture a place (2, 3, 4), escort
-(5), survive N rounds (6, 9), capture against a clock (7, 10), kill or raid
-(8), naval or island (7), an allied AI (9, 10). Seven of the ten have a
+Formats covered: classic conquest (1), capture a place (2), escort (5),
+survive N rounds (6, 9), capture against a clock (3, 4, 7, 10), kill or
+raid (8), naval or island (7), an allied AI (9, 10). Seven of the ten have a
 single opponent or a pair; missions 5 to 10 each have two opponents, and
 missions 9 and 10 have four seats.
 
@@ -1573,6 +1573,83 @@ which faction you may lead in a campaign mission that offers a choice
 unlocks as the campaign's reward, not as a lock on the rest of the game,
 and the existing behaviour already said so.
 
+### 9.5 Missions 2 to 4 after the difficulty pass (`pulp_wars-v642.7`)
+
+The user, 2026-10-14: the missions were "a bit too easy", "past 2nd or 3rd
+mission the victory shouldn't be guaranteed if you play on autopilot",
+ideally with "some sort of tactical trick that is necessary to win", hinted
+in the flavour text, and "at least some of the missions should involve
+building up your base and army from scratch", with more of the tree left
+to discover. The target for this pass: mission 2 easy to medium (naive play
+already costs something), missions 3 and 4 lost or out of time on
+autopilot (research the cheapest technology, train the default line unit,
+march everything at the objective, attack whatever is in reach), and won by
+a player who reads the briefing. The hand play is in
+[section 11.15](#1115-the-difficulty-pass-missions-2-to-4-pulp_wars-v6427).
+
+**2, The Warrens** (revision 4). The board, the seats' cities and the
+objective are revision 3's. You start with 10 Coins (was 12) and without
+Scouting (your Raider is still there); the Goblins start with a second
+Goblin at Stinkwell (six units). **The problem** is gentle and is the
+Goblins' own rule: Gang Up. A unit that stands alone in the open is mobbed
+and killed, a giant sent ahead alone is mobbed too, and the Warrens trains
+a fresh Orc Brute onto its center every turn. **The answer:** an army that
+moves as one block with Marksmen shooting first (they take no blow in
+return), a giant grown early (Fort Ashby reaches level 5 in round 2 with a
+Workshop, a Fruit, a Hunt, the Boom and a Farm), Explosives' Breach for the
+Field Defenses, and a kill that advances onto a center (a Juggernaut's, or a
+Knight's Overrun). The briefing says it ("a goblin is a coward alone and a
+terror in a crowd"), and so do two hints.
+
+**3, Green Tide** (revision 4): a **build-up mission** on a bigger board.
+Dry Land 16, seed 23; six villages removed (the two Undead towns, and four
+that would have handed the dead a free empire). You (Goblins): one camp,
+Wolfden, at level 2 with its Land Grant in ore-rich hills in the south,
+two Goblins and a Wolf Rider, no technology (the first is free), 5 Coins;
+seven villages between you and the plain. The Undead: the walled level 3
+Barrow and the level 2 towns Gravesend and Cairnholm on the high plain,
+five units, Graves; `HOLD` the plain (rows 0 to 5) until the new moon,
+round 12, then `NORMAL`; a wave of three (a Lich among them) out of the
+Barrow in round 16. Their seat may not research Gathering, Farming,
+Milling, Administration, Planning, Marksmanship, Fieldcraft, Scouting,
+Roads, Commerce, Raiding or Chivalry: no Necromancer's Rally, no Banshee's
+Wail, no Ghoul's charge, no growth from harvests (hand play: with them the
+first build's Barrow reached level 5 and fielded an Abomination, and every
+skirmish at the plain's edge was lost). Objective
+`CAPTURE { places: [BARROW], byRound: 26 }`, stars `WITHIN_ROUNDS 20` and
+`KEEP_CITIES`. **The problem:** an economy from nothing, then a ring of the
+dead that a Goblin cannot touch: whatever dies bitten gets up on their side.
+**The answer:** Drill and Engineering first, Mines on the hills (seven ore
+Mountains in the camp's grant), a Troll at level 5 (round 6) and a second
+at level 6 (round 9), the villages for slots and Coins, Fortification and
+Explosives, and then the Trolls: a Troll throws a Goblin into the ring and
+the Goblin's Kaboom hurts every bone-man around it, and a Troll's kill on
+the Barrow's center (Breach ignores the Walls) puts it on the center. Hinted
+in the briefing ("grow a Troll before the new moon", "a Troll can throw it
+a long way") and the hints.
+
+**4, Bone Neck** (revision 5): **a front rank**. The board is revision 4's.
+You start with 10 Coins and Drill, Fortification, Scouting and Raiding
+(Chivalry is one step away), a Guard and a Raider at Camp Concord and a
+Marksman and the two Catapults at Ferry Rest. The Bone Gate's garrison is
+five: the two Zombies on the Field Defenses at the neck's exit (the front
+rank) and Skeletons behind; `GUARD` with a garrison of 5; the tower sends
+two Skeletons in round 6. The Undead seat may not research Sawmilling (no
+Lich: it would outrange the siege train), Scouting and what follows it (no
+Ghoul), Marksmanship (no Banshee), Fortification and Explosives (no new
+Zombie and no new Field Defense), Administration or Planning (no
+Necromancer). Sawmilling is no longer forbidden to you. Objective
+`CAPTURE { places: [GATE], byRound: 14 }`, stars `WITHIN_ROUNDS 9` and
+`KEEP_CITIES`. **The problem:** the neck is one tile wide, so whatever walks
+over it meets the two Zombies alone, dies, and rises on the other side.
+**The answer** is the user's own example: the Catapults on the near shore
+(three tiles from the exit) strip the Field Defenses and wear the Zombies
+down, the Marksman finishes one, and a Knight (or a Scrap Buggy) crosses
+the neck and kills the wounded Zombie: Overrun carries it on through
+every Skeleton it kills, onto the gate's center. The briefing says "crack
+the front rank with stones, then send riders through the gap before the
+tower sends more"; the hints say the same in short.
+
 ## 10. The mission framework
 
 Built by `pulp_wars-v642.1` on the engine of [section 2](#2-architecture).
@@ -1752,7 +1829,7 @@ board.
   landmark's name in the chapter ("the Lodge") is its board name ("The
   Lodge") in a sentence, which the chapter test holds. The places of part
   one: Fort Hollow and Drum Camp (1); Fort Ashby, Millbrook, the Warrens,
-  Stinkwell and Muckgate (2); Wolfden, Mudpot, the Barrow and Gravesend (3);
+  Stinkwell and Muckgate (2); Wolfden, the Barrow, Gravesend and Cairnholm (3);
   Camp Concord, Ferry Rest, the Ashen Tower, the Bone Gate and Cinderfield
   (4); Lantern Hill, Gallows Cross, Kessler's Toll, Whitefang and the
   Ironbraid Gate (5); the Deep Gate, Copperstep, Rime Camp and Fort Bullion
@@ -2561,6 +2638,110 @@ What the games taught went into the text: the briefing now says that a
 dying Chosen feeds the Summoning, and the hints name the trick (Catapults
 on the ring's Idol Bearers and Chosen, then the Knights' Overrun; the
 Summoners first).
+
+### 11.15 The difficulty pass: missions 2 to 4 (`pulp_wars-v642.7`)
+
+Each mission was played by hand through the text harness, once on
+autopilot (as defined in [section 9.5](#95-missions-2-to-4-after-the-difficulty-pass-pulp_wars-v6427))
+and as a player who reads the briefing, on `7r84`; the sessions and
+transcripts are in `scratchpad/pulp_wars-v642.7/s/`. Every earlier draft
+that the hand play rejected is listed. Where an autopilot game was decided
+long before its clock, its last rounds were played by a small loop of the
+same autopilot rules (attack what is in reach, kills first; research the
+cheapest; train the line unit), marked "loop" below; it plays nothing else.
+No rule or AI code changed; the ruleset identity stays `7r84`.
+
+**Mission 2, The Warrens** (Dry Land 14, seed 9; revision 4).
+
+1. First draft (8 Coins; Gathering, Scouting, Drill, Fortification; six
+   units; the Goblins with Hunting, 6 Coins, nine units, three level 2
+   towns). Autopilot: by round 7 four units against twenty, five Goblin
+   cities. Read-the-briefing: the Goblins snowballed to twenty units and
+   seven cities; abandoned in round 6. Far too hard for mission 2.
+2. Eased (Goblins at 0 Coins, Drill and Fortification only, seven units,
+   level 1 towns): read-the-briefing play lost both giants to Gang Up and
+   was at the Warrens' door with nothing left in round 20; with Marksmen
+   back (seven units) another game stalled at Muckgate until round 16.
+3. **Revision 4** (above). **Autopilot:** Muckgate fell in round 4 (a
+   Guard killed the Brute on it), then the march north lost the Raider,
+   the capital's Guard, two Fighters and a Marksman one by one to Gang Up,
+   and the Goblins took two villages; in round 9 six units (a Guard, a
+   Marksman, four Fighters) stood at the Warrens' ring against six Orc
+   Brutes (two on Field Defenses), with no giant, no Breach and no slot
+   left to train in; stopped there, with no capture in reach of round 18. **Read the
+   briefing: won in round 17, three stars.** Fort Ashby reached level 5 in
+   round 2 (a Juggernaut), Larkfen level 5 in round 5 (a second, with the
+   Explorer Monument); Explosives in round 6; Muckgate fell in round 9 at
+   the third try (the Warrens and Muckgate train a Brute onto an empty
+   center every turn); Chivalry in round 11. Both Juggernauts were mobbed
+   and killed (rounds 7 and 15) the moment they stood alone, and Larkfen
+   was lost for two rounds to a Brute on its walled center. The win: the
+   last Juggernaut died breaking the Warrens' ring in round 15, and in
+   round 16 a Knight's Overrun killed the Wolf Rider beside the Warrens and
+   the Brute on its center and stood on it; captured in round 17.
+
+**Mission 3, Green Tide** (Dry Land 16, seed 23; revision 4; the build-up
+mission).
+
+1. First draft (the Undead with Gathering, Administration, a Necromancer,
+   5 Coins, seven units and two waves; the plain held to row 6): the
+   read-the-briefing game lost every Goblin that came near the plain's edge
+   (Rally, the Banshees' Wail, Ghouls) and stood at round 17 with two
+   Trolls but no Barrow; with a Necromancer-free seat the Barrow grew to
+   level 5 by round 12 and fielded an Abomination.
+2. **Revision 4** (above). **Autopilot:** researched Gathering, Hunting,
+   Scouting and Drill, never grew Wolfden past level 2 (four slots), and
+   marched its three units and every new Goblin up the hills; the Wolf
+   Rider and the Goblins died at the plain's edge and rose as Zombies by
+   round 6; from round 9 (loop) it only trained, and the dead took Wolfden
+   in round 20: **eliminated in round 20.** **Read the briefing: won in
+   round 17, three stars** (the clock is 26). Drill free and Engineering
+   in round 1, the chest by the camp for 5 Coins; Mines on four ore
+   Mountains and a Workshop: level 3 in round 2, level 4 (the Boom) in
+   round 5, level 5 in round 6 (a Troll), level 6 in round 9 (a second
+   Troll); Oddnog and Duskmere taken by a Wolf Rider and a Goblin; Fortification
+   in round 10, Explosives in round 12. The Trolls walked up from round 7
+   (the hills cost a round per tile); in round 13 a Troll's blow and a
+   Goblin finished a Zombie, in rounds 14 to 16 the Trolls killed
+   Skeletons, a Ghoul and the Zombies on the ring, one blow on the Wight
+   on the center pushed it off, and in round 16 a Troll's kill on the
+   center (Breach) put it there; captured in round 17. In the first draft
+   the throw-and-Kaboom hurt four bone-men by 6 each in one blow (round
+   13), the trick the briefing names. **What went wrong:** every Goblin
+   that stood on the plain's edge died and rose as a Zombie, and Duskmere,
+   on that edge, was besieged from round 14; Goblins in the open are only
+   ammunition for a Troll.
+
+**Mission 4, Bone Neck** (Continents 16, seed 6; revision 5; played as the
+Humans).
+
+1. First draft (the gate's garrison six with two Zombies more, waves in
+   rounds 6 and 10, the Undead tree open but for Sawmilling): the
+   read-the-briefing line worked at once (Catapults stripped the Field
+   Defenses, a Knight's Overrun killed seven and stood on the center in
+   round 5), but the Knight died on the center that night to the two
+   Zombies left beside it, every time (four games), and rose on their side;
+   the gate grew Walls and trained Zombies and rebuilt the Field Defenses
+   every turn, and a Ghoul from the next town finished any rider.
+2. **Revision 5** (above). **Autopilot** (Human): researched Gathering,
+   Hunting, Roads, Engineering, Farming; the Catapults on the shore wore
+   the exit down well, but the Marksman, the Raider and the Fighters went
+   over the neck one at a time, died beside the gate and rose as Zombies on
+   the exit; from round 8 (loop) **out of time when round 14 ended.**
+   **Read the briefing: won in round 6, three stars.** Chivalry in round
+   1, Knights in rounds 2 and 3; the Catapults three tiles from the exit by
+   round 2, the Marksman on the neck's first tile in round 4; in round 4
+   the Catapults stripped both Field Defenses (the Undead cannot rebuild
+   them); in round 5 the Catapults and the Marksman left the Zombies at 2
+   and 8 Hit Points and the Knight crossed the neck: Overrun killed both
+   Zombies and five Skeletons and ended on the center with nothing beside
+   it; captured in round 6. A player who does not find the trick in the
+   first rounds meets the tower's wave in round 6; the round-9 star is for
+   finding it.
+
+**Not played:** mission 4 as the Goblins (their rider is the Scrap Buggy:
+Attack 3, 10 Hit Points, Overrun, and Rocket Carts for siege engines); a
+follow-up.
 
 ## 12. The mission builder's guide
 

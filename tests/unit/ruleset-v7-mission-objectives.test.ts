@@ -1076,10 +1076,10 @@ describe("how the objective is shown", () => {
       description: "Objective: Bring envoy to gate. 4 steps to go.",
     });
     // A chapter mission uses the campaign's own line.
-    const frontier = start("FRONTIER_3");
+    const frontier = start("FRONTIER_2");
     expect(
       missionTrackerV7(viewForV7(frontier, frontier.humanPlayerId)),
-    ).toMatchObject({ line: "Capture the Barrow.", counter: null });
+    ).toMatchObject({ line: "Capture the Warrens.", counter: null });
     // A mission without goals still has its line; no mission, no tracker.
     const plain = start("TEST_GROUNDS");
     expect(
@@ -1164,7 +1164,7 @@ describe("how the objective is shown", () => {
     ]);
     expect(
       missionStarGoalsV7("FRONTIER_4", null).map((goal) => goal.text),
-    ).toEqual(["Win the mission", "Win by turn 12", "Lose no city"]);
+    ).toEqual(["Win the mission", "Win by turn 9", "Lose no city"]);
     expect(missionStarGoalsV7("NO_SUCH_MISSION", null)).toEqual([]);
   });
 });

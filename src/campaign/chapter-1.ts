@@ -117,12 +117,12 @@ export const CHAPTER_ONE_V7: CampaignChapterV7 = Object.freeze({
       name: "The Warrens",
       format: "CAPTURE",
       briefing:
-        "Grubnak has three strongholds and a grudge: Muckgate on the road, Stinkwell in the hills, and the Warrens. The villages in the valley will answer to whoever gets there first. Be first, then dig him out.",
+        "Grubnak has three strongholds and a grudge: Muckgate on the road, Stinkwell in the hills, and the Warrens. The villages in the valley will answer to whoever gets there first. Be first, then dig him out. A goblin is a coward alone and a terror in a crowd, so never give him the crowd.",
       objective: "Capture the Warrens.",
       hints: Object.freeze([
-        "Villages become cities: take them early.",
+        "Goblins mob whatever stands alone: keep together.",
+        "Marksmen shoot first and take no blow in return.",
         "Muckgate, the outpost on the road, falls first.",
-        "A giant alone gets mobbed: keep your army together.",
       ]),
       closing:
         "Grubnak, cornered in his own Warrens, asks to talk. His goblins did not come for your fort, he says. Something drove them out of the hills. Something that does not breathe.",
@@ -135,12 +135,12 @@ export const CHAPTER_ONE_V7: CampaignChapterV7 = Object.freeze({
       name: "Green Tide",
       format: "CAPTURE",
       briefing:
-        "The dead hold the high plain where the goblins grazed their wolves, and Grubnak wants it back. Scouts say they will not march before the new moon, sixteen days off. Hit the Barrow before they are ready. And remember: a goblin's best weapon is his last one.",
-      objective: "Capture the Barrow.",
+        "The dead hold the high plain where the goblins grazed their wolves, and Grubnak wants it back. All he has left is one camp in the hills and a handful of goblins. Dig in, dig deep and grow a Troll before the new moon, when the dead march. And remember: a goblin's best weapon is his last one, and a Troll can throw it a long way.",
+      objective: "Capture the Barrow by turn 26.",
       hints: Object.freeze([
-        "The Undead stay on their plain until turn 16.",
+        "The hills are full of ore: Mines grow the camp.",
+        "The dead stay on their plain until turn 12.",
         "A Troll can throw a Goblin. Then: Kaboom.",
-        "Whoever dies bitten gets up on their side.",
       ]),
       closing:
         "The plain is green again. In the Barrow's ashes Grubnak finds a seal: a skull in a crown. The Ashen Marquis. His tower stands beyond Bone Neck.",
@@ -153,12 +153,12 @@ export const CHAPTER_ONE_V7: CampaignChapterV7 = Object.freeze({
       name: "Bone Neck",
       format: "CAPTURE",
       briefing:
-        "The Ashen Marquis waits beyond Bone Neck, a strip of land one cart wide. No boat will cross that water. Break the Bone Gate. Who leads the charge: Steele's Rangers or Grubnak's horde?",
-      objective: "Capture the Bone Gate.",
+        "The Ashen Marquis waits beyond Bone Neck, a strip of land one cart wide. No boat will cross that water. Two Zombies hold the far end, and behind them his bone-men stand thick as a hedge. Crack the front rank with stones, then send riders through the gap before the tower sends more. Who leads the charge: Steele's Rangers or Grubnak's horde?",
+      objective: "Capture the Bone Gate by turn 14.",
       hints: Object.freeze([
-        "One way in: the Neck.",
-        "Catapults and Rocket Carts outrange the gate.",
-        "Nobody builds siege engines here: keep yours alive.",
+        "One way in: the Neck. Walk it alone and you rise dead.",
+        "Siege engines break the front rank from the shore.",
+        "A rider who kills keeps charging: let him run.",
       ]),
       closing:
         "The gate falls, and a dry voice offers terms. 'I did not choose to wake, Captain. Someone is ringing a bell under the mountains. Find the bell-ringer, and my soldiers are yours. They never tire.'",

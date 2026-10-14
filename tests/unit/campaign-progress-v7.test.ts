@@ -314,7 +314,7 @@ describe("derived campaign state", () => {
         id: "FRONTIER_3",
         leads: ["GOBLIN"],
         opponents: ["UNDEAD"],
-        size: 14,
+        size: 16,
         best: null,
       },
       {

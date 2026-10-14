@@ -2255,11 +2255,11 @@ describe("text play: missions and their objectives (pulp_wars-v642.1)", () => {
     expect(started).toContain('MISSION FRONTIER_4 | mission 4, "Bone Neck"');
     expect(started).toContain("BRIEFING: The Ashen Marquis waits");
     expect(started).toContain(
-      "OBJECTIVE (as the game words it): Capture the Bone Gate.",
+      "OBJECTIVE (as the game words it): Capture the Bone Gate by turn 14.",
     );
     expect(started).toContain("you are S0 Goblin");
     expect(started).toContain(
-      "STARS: 1 for the win, +1 win by round 12 (so far yes), +1 own every city you started with (so far yes)",
+      "STARS: 1 for the win, +1 win by round 9 (so far yes), +1 own every city you started with (so far yes)",
     );
     expect(sessionState(session).setup.factions).toEqual(["GOBLIN", "UNDEAD"]);
     patchState(session, (state) => ({
