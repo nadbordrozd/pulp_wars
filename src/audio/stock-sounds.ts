@@ -2,7 +2,10 @@ import provenance from "./stock-sounds.json";
 
 /**
  * The recorded sounds (beads pulp_wars-2yc.20 and pulp_wars-2yc.24,
- * docs/ui/SOUND.md "Stock recordings"). `stock-sounds.json` is the
+ * docs/ui/SOUND.md "Stock recordings"). Since bead pulp_wars-2yc.51 most
+ * sounds play an ElevenLabs take by default; the stock recordings are
+ * still offered beside them (`sound-choices.ts`), and their own `default`
+ * is what the sound played before. `stock-sounds.json` is the
  * provenance manifest and the one list of recordings: for each game sound
  * that has any, its candidates (the library file each was cut from, the
  * stretch that was cut and how it was processed) and which of them the
@@ -120,8 +123,10 @@ export const STOCK_SOUND_ALL_CLIPS_V1: readonly StockSoundClipV1[] =
   );
 
 /**
- * The default clip of each sound whose default is a recording: what the
- * game fetches at its start and plays without a pick.
+ * The stock default of each sound whose stock default is a recording.
+ * Since bead pulp_wars-2yc.51 the game plays its ElevenLabs default
+ * instead where it has one (`SOUND_DEFAULT_CLIPS_V1` of
+ * `sound-choices.ts`); the stock recordings stay as choices.
  */
 export const STOCK_SOUND_CLIPS_V1: readonly StockSoundClipV1[] =
   STOCK_SOUND_ALL_CLIPS_V1.filter(

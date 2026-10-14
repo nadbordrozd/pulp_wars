@@ -1,0 +1,4734 @@
+{
+  "bead": "pulp_wars-2yc.51",
+  "provider": "ElevenLabs sound effects",
+  "endpoint": "POST https://api.elevenlabs.io/v1/sound-generation",
+  "usage": [],
+  "takes": [
+    {
+      "id": "achievement.monument",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "A grand monument is completed: a big gong strike with a short majestic brass chord, about one and a half seconds. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 1.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "achievement-monument-101.wav",
+      "date": "2026-10-14",
+      "bytes": 310464,
+      "cost": {
+        "character-cost": "20"
+      }
+    },
+    {
+      "id": "achievement.monument",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "A grand monument is completed: a big gong strike with a short majestic brass chord, about one and a half seconds. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 1.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "achievement-monument-102.wav",
+      "date": "2026-10-14",
+      "bytes": 310464,
+      "cost": {
+        "character-cost": "20"
+      }
+    },
+    {
+      "id": "achievement.monument",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "A grand monument is completed: a big gong strike with a short majestic brass chord, about one and a half seconds. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 1.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "achievement-monument-103.wav",
+      "date": "2026-10-14",
+      "bytes": 310464,
+      "cost": {
+        "character-cost": "20"
+      }
+    },
+    {
+      "id": "achievement.monument",
+      "n": 104,
+      "round": 2,
+      "take": 1,
+      "prompt": "A grand monument is completed: a big gong strike and a short majestic brass chord, about one and a half seconds. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 1.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "achievement-monument-104.wav",
+      "date": "2026-10-14",
+      "bytes": 310464,
+      "cost": {
+        "character-cost": "20"
+      }
+    },
+    {
+      "id": "achievement.unlocked",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "An achievement is unlocked: a bright triumphant brass and glockenspiel flourish, about one second. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 1.3,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "achievement-unlocked-101.wav",
+      "date": "2026-10-14",
+      "bytes": 225792,
+      "cost": {
+        "character-cost": "14"
+      }
+    },
+    {
+      "id": "achievement.unlocked",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "An achievement is unlocked: a bright triumphant brass and glockenspiel flourish, about one second. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 1.3,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "achievement-unlocked-102.wav",
+      "date": "2026-10-14",
+      "bytes": 225792,
+      "cost": {
+        "character-cost": "14"
+      }
+    },
+    {
+      "id": "achievement.unlocked",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "An achievement is unlocked: a bright triumphant brass and glockenspiel flourish, about one second. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 1.3,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "achievement-unlocked-103.wav",
+      "date": "2026-10-14",
+      "bytes": 225792,
+      "cost": {
+        "character-cost": "14"
+      }
+    },
+    {
+      "id": "achievement.unlocked",
+      "n": 104,
+      "round": 2,
+      "take": 1,
+      "prompt": "An achievement is unlocked: a bright triumphant brass flourish with a glockenspiel accent, about one second, ending cleanly. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 1.3,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "achievement-unlocked-104.wav",
+      "date": "2026-10-14",
+      "bytes": 225792,
+      "cost": {
+        "character-cost": "14"
+      }
+    },
+    {
+      "id": "attack.cannon",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "An old iron cannon firing a single shot: one deep punchy boom. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "attack-cannon-101.wav",
+      "date": "2026-10-14",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "attack.cannon",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "An old iron cannon firing a single shot: one deep punchy boom. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "attack-cannon-102.wav",
+      "date": "2026-10-14",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "attack.cannon",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "An old iron cannon firing a single shot: one deep punchy boom. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "attack-cannon-103.wav",
+      "date": "2026-10-14",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "attack.cannon",
+      "n": 104,
+      "round": 2,
+      "take": 1,
+      "prompt": "A pirate ship cannon fires once: a sharp deep boom with a short crack. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "attack-cannon-104.wav",
+      "date": "2026-10-14",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "attack.gatling",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "A steampunk gatling gun firing one short burst: a rapid mechanical rat-a-tat of five shots. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.6,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "attack-gatling-101.wav",
+      "date": "2026-10-14",
+      "bytes": 105840,
+      "cost": {
+        "character-cost": "7"
+      }
+    },
+    {
+      "id": "attack.gatling",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "A steampunk gatling gun firing one short burst: a rapid mechanical rat-a-tat of five shots. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.6,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "attack-gatling-102.wav",
+      "date": "2026-10-14",
+      "bytes": 105840,
+      "cost": {
+        "character-cost": "7"
+      }
+    },
+    {
+      "id": "attack.gatling",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "A steampunk gatling gun firing one short burst: a rapid mechanical rat-a-tat of five shots. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.6,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "attack-gatling-103.wav",
+      "date": "2026-10-14",
+      "bytes": 105840,
+      "cost": {
+        "character-cost": "7"
+      }
+    },
+    {
+      "id": "attack.magic",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "A dark magic bolt cast by a skeleton wizard: a crackling eerie energy whoosh with a low ghostly hum. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.7,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "attack-magic-101.wav",
+      "date": "2026-10-14",
+      "bytes": 119952,
+      "cost": {
+        "character-cost": "8"
+      }
+    },
+    {
+      "id": "attack.magic",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "A dark magic bolt cast by a skeleton wizard: a crackling eerie energy whoosh with a low ghostly hum. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.7,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "attack-magic-102.wav",
+      "date": "2026-10-14",
+      "bytes": 119952,
+      "cost": {
+        "character-cost": "8"
+      }
+    },
+    {
+      "id": "attack.magic",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "A dark magic bolt cast by a skeleton wizard: a crackling eerie energy whoosh with a low ghostly hum. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.7,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "attack-magic-103.wav",
+      "date": "2026-10-14",
+      "bytes": 119952,
+      "cost": {
+        "character-cost": "8"
+      }
+    },
+    {
+      "id": "attack.melee",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "A fast sword swing whoosh: a short sharp swish of a blade cutting the air, no impact. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "attack-melee-101.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "attack.melee",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "A fast sword swing whoosh: a short sharp swish of a blade cutting the air, no impact. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "attack-melee-102.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "attack.melee",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "A fast sword swing whoosh: a short sharp swish of a blade cutting the air, no impact. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "attack-melee-103.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "attack.melee",
+      "n": 104,
+      "round": 2,
+      "take": 1,
+      "prompt": "A cartoon sword swing: one quick clean whoosh of a blade through the air, light and airy, not distorted, no impact. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "attack-melee-104.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "attack.melee",
+      "n": 105,
+      "round": 2,
+      "take": 2,
+      "prompt": "A cartoon sword swing: one quick clean whoosh of a blade through the air, light and airy, not distorted, no impact. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "attack-melee-105.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "attack.pop",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "A toy gumball launcher firing: a hollow rubbery pop like a cork shot from a toy gun, bright and bouncy, very short. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "attack-pop-101.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "attack.pop",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "A toy gumball launcher firing: a hollow rubbery pop like a cork shot from a toy gun, bright and bouncy, very short. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "attack-pop-102.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "attack.pop",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "A toy gumball launcher firing: a hollow rubbery pop like a cork shot from a toy gun, bright and bouncy, very short. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "attack-pop-103.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "attack.ranged",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "A bow string twang and a quick arrow whoosh flying away, no impact. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "attack-ranged-101.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "attack.ranged",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "A bow string twang and a quick arrow whoosh flying away, no impact. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "attack-ranged-102.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "attack.ranged",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "A bow string twang and a quick arrow whoosh flying away, no impact. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "attack-ranged-103.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "attack.ray",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "A retro 1950s ray gun zap: a wobbly electric pew laser blast. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "attack-ray-101.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "attack.ray",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "A retro 1950s ray gun zap: a wobbly electric pew laser blast. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "attack-ray-102.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "attack.ray",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "A retro 1950s ray gun zap: a wobbly electric pew laser blast. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "attack-ray-103.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "attack.rocket",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "A firework rocket launched: a fizzing hiss and a whoosh as it shoots off, no explosion. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.7,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "attack-rocket-101.wav",
+      "date": "2026-10-14",
+      "bytes": 119952,
+      "cost": {
+        "character-cost": "8"
+      }
+    },
+    {
+      "id": "attack.rocket",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "A firework rocket launched: a fizzing hiss and a whoosh as it shoots off, no explosion. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.7,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "attack-rocket-102.wav",
+      "date": "2026-10-14",
+      "bytes": 119952,
+      "cost": {
+        "character-cost": "8"
+      }
+    },
+    {
+      "id": "attack.rocket",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "A firework rocket launched: a fizzing hiss and a whoosh as it shoots off, no explosion. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.7,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "attack-rocket-103.wav",
+      "date": "2026-10-14",
+      "bytes": 119952,
+      "cost": {
+        "character-cost": "8"
+      }
+    },
+    {
+      "id": "attack.rocket",
+      "n": 104,
+      "round": 2,
+      "take": 1,
+      "prompt": "A small firework rocket: a quick ignition fizz and a rising whistling whoosh as it flies off, no explosion. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.7,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "attack-rocket-104.wav",
+      "date": "2026-10-14",
+      "bytes": 119952,
+      "cost": {
+        "character-cost": "8"
+      }
+    },
+    {
+      "id": "attack.siege",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "A wooden catapult arm released: a creak, a heavy wooden thunk and a big boulder whooshing away, no impact. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "attack-siege-101.wav",
+      "date": "2026-10-14",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "attack.siege",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "A wooden catapult arm released: a creak, a heavy wooden thunk and a big boulder whooshing away, no impact. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "attack-siege-102.wav",
+      "date": "2026-10-14",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "attack.siege",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "A wooden catapult arm released: a creak, a heavy wooden thunk and a big boulder whooshing away, no impact. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "attack-siege-103.wav",
+      "date": "2026-10-14",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "attack.siege",
+      "n": 104,
+      "round": 2,
+      "take": 1,
+      "prompt": "A catapult fires: a wooden creak and a heavy wooden thunk as the arm swings, then a deep whoosh of a boulder flying away, clean and not distorted, no impact. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "attack-siege-104.wav",
+      "date": "2026-10-14",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "city.capture",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "A city is captured: a short triumphant brass fanfare of three bold notes and a cymbal crash. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 1.2,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "city-capture-101.wav",
+      "date": "2026-10-14",
+      "bytes": 211680,
+      "cost": {
+        "character-cost": "13"
+      }
+    },
+    {
+      "id": "city.capture",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "A city is captured: a short triumphant brass fanfare of three bold notes and a cymbal crash. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 1.2,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "city-capture-102.wav",
+      "date": "2026-10-14",
+      "bytes": 211680,
+      "cost": {
+        "character-cost": "13"
+      }
+    },
+    {
+      "id": "city.capture",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "A city is captured: a short triumphant brass fanfare of three bold notes and a cymbal crash. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 1.2,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "city-capture-103.wav",
+      "date": "2026-10-14",
+      "bytes": 211680,
+      "cost": {
+        "character-cost": "13"
+      }
+    },
+    {
+      "id": "city.levelup",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "A city grows: a bright cheerful rising xylophone and bell flourish. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 1,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "city-levelup-101.wav",
+      "date": "2026-10-14",
+      "bytes": 176400,
+      "cost": {
+        "character-cost": "11"
+      }
+    },
+    {
+      "id": "city.levelup",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "A city grows: a bright cheerful rising xylophone and bell flourish. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 1,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "city-levelup-102.wav",
+      "date": "2026-10-14",
+      "bytes": 176400,
+      "cost": {
+        "character-cost": "11"
+      }
+    },
+    {
+      "id": "city.levelup",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "A city grows: a bright cheerful rising xylophone and bell flourish. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 1,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "city-levelup-103.wav",
+      "date": "2026-10-14",
+      "bytes": 176400,
+      "cost": {
+        "character-cost": "11"
+      }
+    },
+    {
+      "id": "city.levelup",
+      "n": 104,
+      "round": 2,
+      "take": 1,
+      "prompt": "A city grows: a quick bright rising xylophone run ending on a bell, clean and not distorted. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 1,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "city-levelup-104.wav",
+      "date": "2026-10-14",
+      "bytes": 176400,
+      "cost": {
+        "character-cost": "11"
+      }
+    },
+    {
+      "id": "city.lost",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "A city is lost: a short sad descending trombone wah-wah, comic failure. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 1.2,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "city-lost-101.wav",
+      "date": "2026-10-14",
+      "bytes": 211680,
+      "cost": {
+        "character-cost": "13"
+      }
+    },
+    {
+      "id": "city.lost",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "A city is lost: a short sad descending trombone wah-wah, comic failure. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 1.2,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "city-lost-102.wav",
+      "date": "2026-10-14",
+      "bytes": 211680,
+      "cost": {
+        "character-cost": "13"
+      }
+    },
+    {
+      "id": "city.lost",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "A city is lost: a short sad descending trombone wah-wah, comic failure. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 1.2,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "city-lost-103.wav",
+      "date": "2026-10-14",
+      "bytes": 211680,
+      "cost": {
+        "character-cost": "13"
+      }
+    },
+    {
+      "id": "city.lost",
+      "n": 104,
+      "round": 2,
+      "take": 1,
+      "prompt": "A city is lost: a short sad descending trombone wah-wah of three notes, clean and not distorted, ending quickly. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 1.1,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "city-lost-104.wav",
+      "date": "2026-10-14",
+      "bytes": 190512,
+      "cost": {
+        "character-cost": "12"
+      }
+    },
+    {
+      "id": "city.lost",
+      "n": 105,
+      "round": 2,
+      "take": 2,
+      "prompt": "A city is lost: a short sad descending trombone wah-wah of three notes, clean and not distorted, ending quickly. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 1.1,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "city-lost-105.wav",
+      "date": "2026-10-14",
+      "bytes": 190512,
+      "cost": {
+        "character-cost": "12"
+      }
+    },
+    {
+      "id": "city.lost",
+      "n": 106,
+      "round": 3,
+      "take": 1,
+      "prompt": "A city is lost: a short sad descending wah-wah of three muted trombone notes, played softly, ending quickly. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 1,
+      "promptInfluence": 0.3,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "city-lost-106.wav",
+      "date": "2026-10-14",
+      "bytes": 176400,
+      "cost": {
+        "character-cost": "11"
+      }
+    },
+    {
+      "id": "city.lost",
+      "n": 107,
+      "round": 3,
+      "take": 2,
+      "prompt": "A city is lost: a short sad descending wah-wah of three muted trombone notes, played softly, ending quickly. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 1,
+      "promptInfluence": 0.3,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "city-lost-107.wav",
+      "date": "2026-10-14",
+      "bytes": 176400,
+      "cost": {
+        "character-cost": "11"
+      }
+    },
+    {
+      "id": "cult.herald",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "A colossal otherworldly monster arrives: a deep metallic boom with a low growling rumble. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 1.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "cult-herald-101.wav",
+      "date": "2026-10-14",
+      "bytes": 261072,
+      "cost": {
+        "character-cost": "17"
+      }
+    },
+    {
+      "id": "cult.herald",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "A colossal otherworldly monster arrives: a deep metallic boom with a low growling rumble. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 1.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "cult-herald-102.wav",
+      "date": "2026-10-14",
+      "bytes": 261072,
+      "cost": {
+        "character-cost": "17"
+      }
+    },
+    {
+      "id": "cult.herald",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "A colossal otherworldly monster arrives: a deep metallic boom with a low growling rumble. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 1.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "cult-herald-103.wav",
+      "date": "2026-10-14",
+      "bytes": 261072,
+      "cost": {
+        "character-cost": "17"
+      }
+    },
+    {
+      "id": "cult.pamphlets",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "A handful of paper leaflets thrown in the air: a quick rustle and flutter of paper. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.6,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "cult-pamphlets-101.wav",
+      "date": "2026-10-14",
+      "bytes": 105840,
+      "cost": {
+        "character-cost": "7"
+      }
+    },
+    {
+      "id": "cult.pamphlets",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "A handful of paper leaflets thrown in the air: a quick rustle and flutter of paper. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.6,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "cult-pamphlets-102.wav",
+      "date": "2026-10-14",
+      "bytes": 105840,
+      "cost": {
+        "character-cost": "7"
+      }
+    },
+    {
+      "id": "cult.pamphlets",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "A handful of paper leaflets thrown in the air: a quick rustle and flutter of paper. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.6,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "cult-pamphlets-103.wav",
+      "date": "2026-10-14",
+      "bytes": 105840,
+      "cost": {
+        "character-cost": "7"
+      }
+    },
+    {
+      "id": "cult.pamphlets",
+      "n": 104,
+      "round": 2,
+      "take": 1,
+      "prompt": "A bundle of paper leaflets tossed into the air: a sudden quick flutter and rustle of paper, starting at once. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.6,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "cult-pamphlets-104.wav",
+      "date": "2026-10-14",
+      "bytes": 105840,
+      "cost": {
+        "character-cost": "7"
+      }
+    },
+    {
+      "id": "cult.pamphlets",
+      "n": 105,
+      "round": 2,
+      "take": 2,
+      "prompt": "A bundle of paper leaflets tossed into the air: a sudden quick flutter and rustle of paper, starting at once. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.6,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "cult-pamphlets-105.wav",
+      "date": "2026-10-14",
+      "bytes": 105840,
+      "cost": {
+        "character-cost": "7"
+      }
+    },
+    {
+      "id": "cult.proclaim",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "A cult leader commands a town to kneel: one deep booming wordless shout, HAAH, over a low ominous horn. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 1,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "cult-proclaim-101.wav",
+      "date": "2026-10-14",
+      "bytes": 176400,
+      "cost": {
+        "character-cost": "11"
+      }
+    },
+    {
+      "id": "cult.proclaim",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "A cult leader commands a town to kneel: one deep booming wordless shout, HAAH, over a low ominous horn. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 1,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "cult-proclaim-102.wav",
+      "date": "2026-10-14",
+      "bytes": 176400,
+      "cost": {
+        "character-cost": "11"
+      }
+    },
+    {
+      "id": "cult.proclaim",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "A cult leader commands a town to kneel: one deep booming wordless shout, HAAH, over a low ominous horn. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 1,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "cult-proclaim-103.wav",
+      "date": "2026-10-14",
+      "bytes": 176400,
+      "cost": {
+        "character-cost": "11"
+      }
+    },
+    {
+      "id": "cult.proclaim",
+      "n": 104,
+      "round": 2,
+      "take": 1,
+      "prompt": "A cult leader commands a town to kneel: one deep commanding wordless shout, HAAH, over a low horn, recorded clean and not distorted at a moderate level. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 1,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "cult-proclaim-104.wav",
+      "date": "2026-10-14",
+      "bytes": 176400,
+      "cost": {
+        "character-cost": "11"
+      }
+    },
+    {
+      "id": "cult.proclaim",
+      "n": 105,
+      "round": 2,
+      "take": 2,
+      "prompt": "A cult leader commands a town to kneel: one deep commanding wordless shout, HAAH, over a low horn, recorded clean and not distorted at a moderate level. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 1,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "cult-proclaim-105.wav",
+      "date": "2026-10-14",
+      "bytes": 176400,
+      "cost": {
+        "character-cost": "11"
+      }
+    },
+    {
+      "id": "cult.proclaim",
+      "n": 106,
+      "round": 2,
+      "take": 3,
+      "prompt": "A cult leader commands a town to kneel: one deep commanding wordless shout, HAAH, over a low horn, recorded clean and not distorted at a moderate level. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 1,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "cult-proclaim-106.wav",
+      "date": "2026-10-14",
+      "bytes": 176400,
+      "cost": {
+        "character-cost": "11"
+      }
+    },
+    {
+      "id": "cult.proclaim",
+      "n": 107,
+      "round": 3,
+      "take": 1,
+      "prompt": "A cult leader commands a town to kneel: a low ominous horn and one deep wordless chanted HAAH, spoken firmly but not shouted, short. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.3,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "cult-proclaim-107.wav",
+      "date": "2026-10-14",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "cult.proclaim",
+      "n": 108,
+      "round": 3,
+      "take": 2,
+      "prompt": "A cult leader commands a town to kneel: a low ominous horn and one deep wordless chanted HAAH, spoken firmly but not shouted, short. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.3,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "cult-proclaim-108.wav",
+      "date": "2026-10-14",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "cult.proclaim",
+      "n": 109,
+      "round": 3,
+      "take": 3,
+      "prompt": "A cult leader commands a town to kneel: a low ominous horn and one deep wordless chanted HAAH, spoken firmly but not shouted, short. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.3,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "cult-proclaim-109.wav",
+      "date": "2026-10-14",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "cult.ribbit",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "A big frog: one deep comic ribbit croak. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "cult-ribbit-101.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "cult.ribbit",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "A big frog: one deep comic ribbit croak. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "cult-ribbit-102.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "cult.ribbit",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "A big frog: one deep comic ribbit croak. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "cult-ribbit-103.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "cult.ribbit",
+      "n": 104,
+      "round": 2,
+      "take": 1,
+      "prompt": "A big frog: one short deep comic ribbit croak, nothing else. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "cult-ribbit-104.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "cult.sacrifice",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "A dark ritual offering: a ritual dagger strike, a dark magical whoosh and a low gong. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "cult-sacrifice-101.wav",
+      "date": "2026-10-14",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "cult.sacrifice",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "A dark ritual offering: a ritual dagger strike, a dark magical whoosh and a low gong. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "cult-sacrifice-102.wav",
+      "date": "2026-10-14",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "cult.sacrifice",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "A dark ritual offering: a ritual dagger strike, a dark magical whoosh and a low gong. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "cult-sacrifice-103.wav",
+      "date": "2026-10-14",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "cult.snap",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "A taut magical rope snapping: one sharp elastic twang snap, very short. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "cult-snap-101.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "cult.snap",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "A taut magical rope snapping: one sharp elastic twang snap, very short. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "cult-snap-102.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "cult.snap",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "A taut magical rope snapping: one sharp elastic twang snap, very short. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "cult-snap-103.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "cult.starfall",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "A falling star streaking down from the sky: a descending fiery whoosh with a sizzling trail, no explosion. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.7,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "cult-starfall-101.wav",
+      "date": "2026-10-14",
+      "bytes": 119952,
+      "cost": {
+        "character-cost": "8"
+      }
+    },
+    {
+      "id": "cult.starfall",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "A falling star streaking down from the sky: a descending fiery whoosh with a sizzling trail, no explosion. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.7,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "cult-starfall-102.wav",
+      "date": "2026-10-14",
+      "bytes": 119952,
+      "cost": {
+        "character-cost": "8"
+      }
+    },
+    {
+      "id": "cult.starfall",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "A falling star streaking down from the sky: a descending fiery whoosh with a sizzling trail, no explosion. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.7,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "cult-starfall-103.wav",
+      "date": "2026-10-14",
+      "bytes": 119952,
+      "cost": {
+        "character-cost": "8"
+      }
+    },
+    {
+      "id": "cult.starfall",
+      "n": 104,
+      "round": 2,
+      "take": 1,
+      "prompt": "A falling star: a quick descending fiery whoosh with a sizzling trail, clean and not distorted, no explosion. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.7,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "cult-starfall-104.wav",
+      "date": "2026-10-14",
+      "bytes": 119952,
+      "cost": {
+        "character-cost": "8"
+      }
+    },
+    {
+      "id": "cult.summon",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "An eldritch horror is summoned: a swirling magical vortex whoosh that rises, with a deep otherworldly hum. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 1,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "cult-summon-101.wav",
+      "date": "2026-10-14",
+      "bytes": 176400,
+      "cost": {
+        "character-cost": "11"
+      }
+    },
+    {
+      "id": "cult.summon",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "An eldritch horror is summoned: a swirling magical vortex whoosh that rises, with a deep otherworldly hum. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 1,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "cult-summon-102.wav",
+      "date": "2026-10-14",
+      "bytes": 176400,
+      "cost": {
+        "character-cost": "11"
+      }
+    },
+    {
+      "id": "cult.summon",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "An eldritch horror is summoned: a swirling magical vortex whoosh that rises, with a deep otherworldly hum. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 1,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "cult-summon-103.wav",
+      "date": "2026-10-14",
+      "bytes": 176400,
+      "cost": {
+        "character-cost": "11"
+      }
+    },
+    {
+      "id": "cult.tentacle",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "A giant slimy tentacle rising out of the water: a wet squelching slither and a watery surge. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.9,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "cult-tentacle-101.wav",
+      "date": "2026-10-14",
+      "bytes": 155232,
+      "cost": {
+        "character-cost": "10"
+      }
+    },
+    {
+      "id": "cult.tentacle",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "A giant slimy tentacle rising out of the water: a wet squelching slither and a watery surge. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.9,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "cult-tentacle-102.wav",
+      "date": "2026-10-14",
+      "bytes": 155232,
+      "cost": {
+        "character-cost": "10"
+      }
+    },
+    {
+      "id": "cult.tentacle",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "A giant slimy tentacle rising out of the water: a wet squelching slither and a watery surge. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.9,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "cult-tentacle-103.wav",
+      "date": "2026-10-14",
+      "bytes": 155232,
+      "cost": {
+        "character-cost": "10"
+      }
+    },
+    {
+      "id": "cult.unbound",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "A demon bursts its iron collar: heavy chains shattering and a deep monstrous roar. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 1.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "cult-unbound-101.wav",
+      "date": "2026-10-14",
+      "bytes": 261072,
+      "cost": {
+        "character-cost": "17"
+      }
+    },
+    {
+      "id": "cult.unbound",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "A demon bursts its iron collar: heavy chains shattering and a deep monstrous roar. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 1.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "cult-unbound-102.wav",
+      "date": "2026-10-14",
+      "bytes": 261072,
+      "cost": {
+        "character-cost": "17"
+      }
+    },
+    {
+      "id": "cult.unbound",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "A demon bursts its iron collar: heavy chains shattering and a deep monstrous roar. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 1.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "cult-unbound-103.wav",
+      "date": "2026-10-14",
+      "bytes": 261072,
+      "cost": {
+        "character-cost": "17"
+      }
+    },
+    {
+      "id": "cult.unbound",
+      "n": 104,
+      "round": 2,
+      "take": 1,
+      "prompt": "A demon bursts its iron collar: chains shattering and a short deep monstrous roar, clean and not distorted. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 1.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "cult-unbound-104.wav",
+      "date": "2026-10-14",
+      "bytes": 261072,
+      "cost": {
+        "character-cost": "17"
+      }
+    },
+    {
+      "id": "economy.build",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "Quick construction: two hammer blows on wood and a solid thunk. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.6,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "economy-build-101.wav",
+      "date": "2026-10-14",
+      "bytes": 105840,
+      "cost": {
+        "character-cost": "7"
+      }
+    },
+    {
+      "id": "economy.build",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "Quick construction: two hammer blows on wood and a solid thunk. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.6,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "economy-build-102.wav",
+      "date": "2026-10-14",
+      "bytes": 105840,
+      "cost": {
+        "character-cost": "7"
+      }
+    },
+    {
+      "id": "economy.build",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "Quick construction: two hammer blows on wood and a solid thunk. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.6,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "economy-build-103.wav",
+      "date": "2026-10-14",
+      "bytes": 105840,
+      "cost": {
+        "character-cost": "7"
+      }
+    },
+    {
+      "id": "economy.coin",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "A few gold coins clinking into a pile, bright, short. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "economy-coin-101.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "economy.coin",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "A few gold coins clinking into a pile, bright, short. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "economy-coin-102.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "economy.coin",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "A few gold coins clinking into a pile, bright, short. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "economy-coin-103.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "economy.coin",
+      "n": 104,
+      "round": 2,
+      "take": 1,
+      "prompt": "A few heavy gold coins dropped onto a wooden table: warm clinks with some body, short. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "economy-coin-104.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "economy.coin",
+      "n": 105,
+      "round": 2,
+      "take": 2,
+      "prompt": "A few heavy gold coins dropped onto a wooden table: warm clinks with some body, short. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "economy-coin-105.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "economy.coin",
+      "n": 106,
+      "round": 2,
+      "take": 3,
+      "prompt": "A few heavy gold coins dropped onto a wooden table: warm clinks with some body, short. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "economy-coin-106.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "economy.harvest",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "Picking fruit: a quick leafy rustle and a soft pluck pop. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "economy-harvest-101.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "economy.harvest",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "Picking fruit: a quick leafy rustle and a soft pluck pop. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "economy-harvest-102.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "economy.harvest",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "Picking fruit: a quick leafy rustle and a soft pluck pop. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "economy-harvest-103.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "economy.harvest",
+      "n": 104,
+      "round": 2,
+      "take": 1,
+      "prompt": "Picking fruit: a quick leafy rustle and a soft round pluck pop, short, nothing after. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "economy-harvest-104.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "economy.harvest",
+      "n": 105,
+      "round": 2,
+      "take": 2,
+      "prompt": "Picking fruit: a quick leafy rustle and a soft round pluck pop, short, nothing after. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "economy-harvest-105.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "economy.treasure",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "A treasure chest opened: a wooden creak, then a sparkling shower of gold coins and a magical shimmer. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 1,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "economy-treasure-101.wav",
+      "date": "2026-10-14",
+      "bytes": 176400,
+      "cost": {
+        "character-cost": "11"
+      }
+    },
+    {
+      "id": "economy.treasure",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "A treasure chest opened: a wooden creak, then a sparkling shower of gold coins and a magical shimmer. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 1,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "economy-treasure-102.wav",
+      "date": "2026-10-14",
+      "bytes": 176400,
+      "cost": {
+        "character-cost": "11"
+      }
+    },
+    {
+      "id": "economy.treasure",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "A treasure chest opened: a wooden creak, then a sparkling shower of gold coins and a magical shimmer. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 1,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "economy-treasure-103.wav",
+      "date": "2026-10-14",
+      "bytes": 176400,
+      "cost": {
+        "character-cost": "11"
+      }
+    },
+    {
+      "id": "impact.explosion",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "A cartoon bomb explosion: a punchy deep boom with crackling debris, short, no long rumble. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 1,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "impact-explosion-101.wav",
+      "date": "2026-10-14",
+      "bytes": 176400,
+      "cost": {
+        "character-cost": "11"
+      }
+    },
+    {
+      "id": "impact.explosion",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "A cartoon bomb explosion: a punchy deep boom with crackling debris, short, no long rumble. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 1,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "impact-explosion-102.wav",
+      "date": "2026-10-14",
+      "bytes": 176400,
+      "cost": {
+        "character-cost": "11"
+      }
+    },
+    {
+      "id": "impact.explosion",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "A cartoon bomb explosion: a punchy deep boom with crackling debris, short, no long rumble. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 1,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "impact-explosion-103.wav",
+      "date": "2026-10-14",
+      "bytes": 176400,
+      "cost": {
+        "character-cost": "11"
+      }
+    },
+    {
+      "id": "impact.explosion",
+      "n": 104,
+      "round": 2,
+      "take": 1,
+      "prompt": "A cartoon bomb goes off: one round punchy boom with a short crackle of debris, clean and not distorted, no long rumble. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 1,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "impact-explosion-104.wav",
+      "date": "2026-10-14",
+      "bytes": 176400,
+      "cost": {
+        "character-cost": "11"
+      }
+    },
+    {
+      "id": "impact.heavy",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "A heavy impact: a big wooden and stone crashing thud, deep and punchy, short. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.7,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "impact-heavy-101.wav",
+      "date": "2026-10-14",
+      "bytes": 119952,
+      "cost": {
+        "character-cost": "8"
+      }
+    },
+    {
+      "id": "impact.heavy",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "A heavy impact: a big wooden and stone crashing thud, deep and punchy, short. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.7,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "impact-heavy-102.wav",
+      "date": "2026-10-14",
+      "bytes": 119952,
+      "cost": {
+        "character-cost": "8"
+      }
+    },
+    {
+      "id": "impact.heavy",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "A heavy impact: a big wooden and stone crashing thud, deep and punchy, short. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.7,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "impact-heavy-103.wav",
+      "date": "2026-10-14",
+      "bytes": 119952,
+      "cost": {
+        "character-cost": "8"
+      }
+    },
+    {
+      "id": "impact.hit",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "A cartoon punch impact: one punchy meaty thwack, very short. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "impact-hit-101.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "impact.hit",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "A cartoon punch impact: one punchy meaty thwack, very short. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "impact-hit-102.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "impact.hit",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "A cartoon punch impact: one punchy meaty thwack, very short. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "impact-hit-103.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "impact.ice",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "Ice shattering: a sharp crack and tinkling crystal shards falling, short. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.6,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "impact-ice-101.wav",
+      "date": "2026-10-14",
+      "bytes": 105840,
+      "cost": {
+        "character-cost": "7"
+      }
+    },
+    {
+      "id": "impact.ice",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "Ice shattering: a sharp crack and tinkling crystal shards falling, short. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.6,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "impact-ice-102.wav",
+      "date": "2026-10-14",
+      "bytes": 105840,
+      "cost": {
+        "character-cost": "7"
+      }
+    },
+    {
+      "id": "impact.ice",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "Ice shattering: a sharp crack and tinkling crystal shards falling, short. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.6,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "impact-ice-103.wav",
+      "date": "2026-10-14",
+      "bytes": 105840,
+      "cost": {
+        "character-cost": "7"
+      }
+    },
+    {
+      "id": "impact.shield",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "A sword striking a round metal shield: one clang with a short metallic ring. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "impact-shield-101.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "impact.shield",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "A sword striking a round metal shield: one clang with a short metallic ring. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "impact-shield-102.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "impact.shield",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "A sword striking a round metal shield: one clang with a short metallic ring. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "impact-shield-103.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "impact.shield",
+      "n": 104,
+      "round": 2,
+      "take": 1,
+      "prompt": "A sword hits a round iron shield: one bright metallic clang with a short ring. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "impact-shield-104.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "impact.splash",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "A small water splash: a quick splosh of something dropped in a pond, short. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "impact-splash-101.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "impact.splash",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "A small water splash: a quick splosh of something dropped in a pond, short. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "impact-splash-102.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "impact.splash",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "A small water splash: a quick splosh of something dropped in a pond, short. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "impact-splash-103.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "impact.splat",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "A wet cream pie hitting a face: a squelchy splat, short. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "impact-splat-101.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "impact.splat",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "A wet cream pie hitting a face: a squelchy splat, short. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "impact-splat-102.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "impact.splat",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "A wet cream pie hitting a face: a squelchy splat, short. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "impact-splat-103.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "impact.splat",
+      "n": 104,
+      "round": 2,
+      "take": 1,
+      "prompt": "A soft custard pie lands with a wet squishy splat, gentle and clean, not distorted, short. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "impact-splat-104.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "impact.splat",
+      "n": 105,
+      "round": 2,
+      "take": 2,
+      "prompt": "A soft custard pie lands with a wet squishy splat, gentle and clean, not distorted, short. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "impact-splat-105.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "match.defeat",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "Defeat: a short sad descending brass melody ending on a low note, comic and gloomy, about two seconds. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 2,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "match-defeat-101.wav",
+      "date": "2026-10-14",
+      "bytes": 352800,
+      "cost": {
+        "character-cost": "22"
+      }
+    },
+    {
+      "id": "match.defeat",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "Defeat: a short sad descending brass melody ending on a low note, comic and gloomy, about two seconds. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 2,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "match-defeat-102.wav",
+      "date": "2026-10-14",
+      "bytes": 352800,
+      "cost": {
+        "character-cost": "22"
+      }
+    },
+    {
+      "id": "match.defeat",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "Defeat: a short sad descending brass melody ending on a low note, comic and gloomy, about two seconds. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 2,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "match-defeat-103.wav",
+      "date": "2026-10-14",
+      "bytes": 352800,
+      "cost": {
+        "character-cost": "22"
+      }
+    },
+    {
+      "id": "match.victory",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "Victory: a short heroic brass and snare drum fanfare in the style of an old adventure serial, triumphant, about two seconds. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 2.2,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "match-victory-101.wav",
+      "date": "2026-10-14",
+      "bytes": 388080,
+      "cost": {
+        "character-cost": "24"
+      }
+    },
+    {
+      "id": "match.victory",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "Victory: a short heroic brass and snare drum fanfare in the style of an old adventure serial, triumphant, about two seconds. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 2.2,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "match-victory-102.wav",
+      "date": "2026-10-14",
+      "bytes": 388080,
+      "cost": {
+        "character-cost": "24"
+      }
+    },
+    {
+      "id": "match.victory",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "Victory: a short heroic brass and snare drum fanfare in the style of an old adventure serial, triumphant, about two seconds. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 2.2,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "match-victory-103.wav",
+      "date": "2026-10-14",
+      "bytes": 388080,
+      "cost": {
+        "character-cost": "24"
+      }
+    },
+    {
+      "id": "match.victory",
+      "n": 104,
+      "round": 2,
+      "take": 1,
+      "prompt": "Victory: a heroic brass and snare drum fanfare that starts at once on the first beat, old adventure serial style, triumphant, about two seconds. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 2.2,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "match-victory-104.wav",
+      "date": "2026-10-14",
+      "bytes": 388080,
+      "cost": {
+        "character-cost": "24"
+      }
+    },
+    {
+      "id": "research.complete",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "A discovery is made: a short bright eureka bell chime with a rising shimmer, retro pulp science. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 1,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "research-complete-101.wav",
+      "date": "2026-10-14",
+      "bytes": 176400,
+      "cost": {
+        "character-cost": "11"
+      }
+    },
+    {
+      "id": "research.complete",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "A discovery is made: a short bright eureka bell chime with a rising shimmer, retro pulp science. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 1,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "research-complete-102.wav",
+      "date": "2026-10-14",
+      "bytes": 176400,
+      "cost": {
+        "character-cost": "11"
+      }
+    },
+    {
+      "id": "research.complete",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "A discovery is made: a short bright eureka bell chime with a rising shimmer, retro pulp science. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 1,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "research-complete-103.wav",
+      "date": "2026-10-14",
+      "bytes": 176400,
+      "cost": {
+        "character-cost": "11"
+      }
+    },
+    {
+      "id": "research.complete",
+      "n": 104,
+      "round": 2,
+      "take": 1,
+      "prompt": "A discovery is made: a short bright bell chime with a rising shimmer, clean and not distorted. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 1,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "research-complete-104.wav",
+      "date": "2026-10-14",
+      "bytes": 176400,
+      "cost": {
+        "character-cost": "11"
+      }
+    },
+    {
+      "id": "reward.chosen",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "A reward is chosen: a quick sparkling magical confirmation ding. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.6,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "reward-chosen-101.wav",
+      "date": "2026-10-14",
+      "bytes": 105840,
+      "cost": {
+        "character-cost": "7"
+      }
+    },
+    {
+      "id": "reward.chosen",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "A reward is chosen: a quick sparkling magical confirmation ding. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.6,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "reward-chosen-102.wav",
+      "date": "2026-10-14",
+      "bytes": 105840,
+      "cost": {
+        "character-cost": "7"
+      }
+    },
+    {
+      "id": "reward.chosen",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "A reward is chosen: a quick sparkling magical confirmation ding. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.6,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "reward-chosen-103.wav",
+      "date": "2026-10-14",
+      "bytes": 105840,
+      "cost": {
+        "character-cost": "7"
+      }
+    },
+    {
+      "id": "reward.chosen",
+      "n": 104,
+      "round": 2,
+      "take": 1,
+      "prompt": "A reward is chosen: one bright high sparkling chime ding with a twinkle. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.6,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "reward-chosen-104.wav",
+      "date": "2026-10-14",
+      "bytes": 105840,
+      "cost": {
+        "character-cost": "7"
+      }
+    },
+    {
+      "id": "reward.chosen",
+      "n": 105,
+      "round": 2,
+      "take": 2,
+      "prompt": "A reward is chosen: one bright high sparkling chime ding with a twinkle. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.6,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "reward-chosen-105.wav",
+      "date": "2026-10-14",
+      "bytes": 105840,
+      "cost": {
+        "character-cost": "7"
+      }
+    },
+    {
+      "id": "special.beam",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "A flying saucer tractor beam: a warbling retro sci-fi teleport hum that rises. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.9,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "special-beam-101.wav",
+      "date": "2026-10-14",
+      "bytes": 155232,
+      "cost": {
+        "character-cost": "10"
+      }
+    },
+    {
+      "id": "special.beam",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "A flying saucer tractor beam: a warbling retro sci-fi teleport hum that rises. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.9,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "special-beam-102.wav",
+      "date": "2026-10-14",
+      "bytes": 155232,
+      "cost": {
+        "character-cost": "10"
+      }
+    },
+    {
+      "id": "special.beam",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "A flying saucer tractor beam: a warbling retro sci-fi teleport hum that rises. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.9,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "special-beam-103.wav",
+      "date": "2026-10-14",
+      "bytes": 155232,
+      "cost": {
+        "character-cost": "10"
+      }
+    },
+    {
+      "id": "special.beam",
+      "n": 104,
+      "round": 2,
+      "take": 1,
+      "prompt": "A flying saucer beam: a short warbling sci-fi teleport hum that rises and stops quickly, clean and not distorted. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.7,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "special-beam-104.wav",
+      "date": "2026-10-14",
+      "bytes": 119952,
+      "cost": {
+        "character-cost": "8"
+      }
+    },
+    {
+      "id": "special.beam",
+      "n": 105,
+      "round": 2,
+      "take": 2,
+      "prompt": "A flying saucer beam: a short warbling sci-fi teleport hum that rises and stops quickly, clean and not distorted. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.7,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "special-beam-105.wav",
+      "date": "2026-10-14",
+      "bytes": 119952,
+      "cost": {
+        "character-cost": "8"
+      }
+    },
+    {
+      "id": "special.beam",
+      "n": 106,
+      "round": 2,
+      "take": 3,
+      "prompt": "A flying saucer beam: a short warbling sci-fi teleport hum that rises and stops quickly, clean and not distorted. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.7,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "special-beam-106.wav",
+      "date": "2026-10-14",
+      "bytes": 119952,
+      "cost": {
+        "character-cost": "8"
+      }
+    },
+    {
+      "id": "special.boing",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "A cartoon spring bounce: one bouncy boing twang. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "special-boing-101.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "special.boing",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "A cartoon spring bounce: one bouncy boing twang. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "special-boing-102.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "special.boing",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "A cartoon spring bounce: one bouncy boing twang. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "special-boing-103.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "special.burrow",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "Digging underground fast: a rumbling burrow with crunching earth and gravel. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.7,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "special-burrow-101.wav",
+      "date": "2026-10-14",
+      "bytes": 119952,
+      "cost": {
+        "character-cost": "8"
+      }
+    },
+    {
+      "id": "special.burrow",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "Digging underground fast: a rumbling burrow with crunching earth and gravel. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.7,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "special-burrow-102.wav",
+      "date": "2026-10-14",
+      "bytes": 119952,
+      "cost": {
+        "character-cost": "8"
+      }
+    },
+    {
+      "id": "special.burrow",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "Digging underground fast: a rumbling burrow with crunching earth and gravel. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.7,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "special-burrow-103.wav",
+      "date": "2026-10-14",
+      "bytes": 119952,
+      "cost": {
+        "character-cost": "8"
+      }
+    },
+    {
+      "id": "special.dizzy",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "Cartoon dizziness: a woozy wobbling slide whistle with little tweeting birds. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "special-dizzy-101.wav",
+      "date": "2026-10-14",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "special.dizzy",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "Cartoon dizziness: a woozy wobbling slide whistle with little tweeting birds. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "special-dizzy-102.wav",
+      "date": "2026-10-14",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "special.dizzy",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "Cartoon dizziness: a woozy wobbling slide whistle with little tweeting birds. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "special-dizzy-103.wav",
+      "date": "2026-10-14",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "special.dizzy",
+      "n": 104,
+      "round": 2,
+      "take": 1,
+      "prompt": "Cartoon dizziness: a short woozy slide whistle wobble with two little bird tweets, ending quickly, clean and not distorted. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.7,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "special-dizzy-104.wav",
+      "date": "2026-10-14",
+      "bytes": 119952,
+      "cost": {
+        "character-cost": "8"
+      }
+    },
+    {
+      "id": "special.dizzy",
+      "n": 105,
+      "round": 2,
+      "take": 2,
+      "prompt": "Cartoon dizziness: a short woozy slide whistle wobble with two little bird tweets, ending quickly, clean and not distorted. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.7,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "special-dizzy-105.wav",
+      "date": "2026-10-14",
+      "bytes": 119952,
+      "cost": {
+        "character-cost": "8"
+      }
+    },
+    {
+      "id": "special.freeze",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "A freezing spell: a quick crystalline crackle of ice forming with a cold shimmer. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.6,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "special-freeze-101.wav",
+      "date": "2026-10-14",
+      "bytes": 105840,
+      "cost": {
+        "character-cost": "7"
+      }
+    },
+    {
+      "id": "special.freeze",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "A freezing spell: a quick crystalline crackle of ice forming with a cold shimmer. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.6,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "special-freeze-102.wav",
+      "date": "2026-10-14",
+      "bytes": 105840,
+      "cost": {
+        "character-cost": "7"
+      }
+    },
+    {
+      "id": "special.freeze",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "A freezing spell: a quick crystalline crackle of ice forming with a cold shimmer. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.6,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "special-freeze-103.wav",
+      "date": "2026-10-14",
+      "bytes": 105840,
+      "cost": {
+        "character-cost": "7"
+      }
+    },
+    {
+      "id": "special.hatch",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "A big egg cracking open: a crisp eggshell crack and a little pop. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "special-hatch-101.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "special.hatch",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "A big egg cracking open: a crisp eggshell crack and a little pop. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "special-hatch-102.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "special.hatch",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "A big egg cracking open: a crisp eggshell crack and a little pop. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "special-hatch-103.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "special.mind",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "Hypnotic mind control: a wobbling theremin warble that spirals, retro 1950s sci-fi. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "special-mind-101.wav",
+      "date": "2026-10-14",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "special.mind",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "Hypnotic mind control: a wobbling theremin warble that spirals, retro 1950s sci-fi. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "special-mind-102.wav",
+      "date": "2026-10-14",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "special.mind",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "Hypnotic mind control: a wobbling theremin warble that spirals, retro 1950s sci-fi. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "special-mind-103.wav",
+      "date": "2026-10-14",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "special.mind",
+      "n": 104,
+      "round": 2,
+      "take": 1,
+      "prompt": "Hypnotic mind control: a short wobbling theremin warble that spirals and stops quickly, retro 1950s sci-fi, clean and not distorted. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.7,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "special-mind-104.wav",
+      "date": "2026-10-14",
+      "bytes": 119952,
+      "cost": {
+        "character-cost": "8"
+      }
+    },
+    {
+      "id": "special.mind",
+      "n": 105,
+      "round": 2,
+      "take": 2,
+      "prompt": "Hypnotic mind control: a short wobbling theremin warble that spirals and stops quickly, retro 1950s sci-fi, clean and not distorted. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.7,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "special-mind-105.wav",
+      "date": "2026-10-14",
+      "bytes": 119952,
+      "cost": {
+        "character-cost": "8"
+      }
+    },
+    {
+      "id": "special.mind",
+      "n": 106,
+      "round": 2,
+      "take": 3,
+      "prompt": "Hypnotic mind control: a short wobbling theremin warble that spirals and stops quickly, retro 1950s sci-fi, clean and not distorted. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.7,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "special-mind-106.wav",
+      "date": "2026-10-14",
+      "bytes": 119952,
+      "cost": {
+        "character-cost": "8"
+      }
+    },
+    {
+      "id": "special.mind",
+      "n": 107,
+      "round": 3,
+      "take": 1,
+      "prompt": "Hypnotic mind control: a soft gentle theremin wobble that spirals, quiet and smooth, retro 1950s sci-fi, stopping quickly. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.7,
+      "promptInfluence": 0.3,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "special-mind-107.wav",
+      "date": "2026-10-14",
+      "bytes": 119952,
+      "cost": {
+        "character-cost": "8"
+      }
+    },
+    {
+      "id": "special.mind",
+      "n": 108,
+      "round": 3,
+      "take": 2,
+      "prompt": "Hypnotic mind control: a soft gentle theremin wobble that spirals, quiet and smooth, retro 1950s sci-fi, stopping quickly. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.7,
+      "promptInfluence": 0.3,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "special-mind-108.wav",
+      "date": "2026-10-14",
+      "bytes": 119952,
+      "cost": {
+        "character-cost": "8"
+      }
+    },
+    {
+      "id": "special.mind",
+      "n": 109,
+      "round": 3,
+      "take": 3,
+      "prompt": "Hypnotic mind control: a soft gentle theremin wobble that spirals, quiet and smooth, retro 1950s sci-fi, stopping quickly. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.7,
+      "promptInfluence": 0.3,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "special-mind-109.wav",
+      "date": "2026-10-14",
+      "bytes": 119952,
+      "cost": {
+        "character-cost": "8"
+      }
+    },
+    {
+      "id": "special.pop",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "A small pop like a bubble or a cork popping, bright, very short. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.6,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "special-pop-101.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "special.pop",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "A small pop like a bubble or a cork popping, bright, very short. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.6,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "special-pop-102.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "special.pop",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "A small pop like a bubble or a cork popping, bright, very short. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.6,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "special-pop-103.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "special.puff",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "A quick puff of steam: a short soft hiss burst. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "special-puff-101.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "special.puff",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "A quick puff of steam: a short soft hiss burst. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "special-puff-102.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "special.puff",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "A quick puff of steam: a short soft hiss burst. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "special-puff-103.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "special.sparkle",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "A magic sparkle: a bright glittering bell tree twinkle. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.6,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "special-sparkle-101.wav",
+      "date": "2026-10-14",
+      "bytes": 105840,
+      "cost": {
+        "character-cost": "7"
+      }
+    },
+    {
+      "id": "special.sparkle",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "A magic sparkle: a bright glittering bell tree twinkle. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.6,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "special-sparkle-102.wav",
+      "date": "2026-10-14",
+      "bytes": 105840,
+      "cost": {
+        "character-cost": "7"
+      }
+    },
+    {
+      "id": "special.sparkle",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "A magic sparkle: a bright glittering bell tree twinkle. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.6,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "special-sparkle-103.wav",
+      "date": "2026-10-14",
+      "bytes": 105840,
+      "cost": {
+        "character-cost": "7"
+      }
+    },
+    {
+      "id": "special.sparkle",
+      "n": 104,
+      "round": 2,
+      "take": 1,
+      "prompt": "A magic sparkle: a soft glittering twinkle of small high bells. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.6,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "special-sparkle-104.wav",
+      "date": "2026-10-14",
+      "bytes": 105840,
+      "cost": {
+        "character-cost": "7"
+      }
+    },
+    {
+      "id": "support.dark",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "Spooky necromancy: a low ominous whoosh swelling with a wordless ghostly moan. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.9,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "support-dark-101.wav",
+      "date": "2026-10-14",
+      "bytes": 155232,
+      "cost": {
+        "character-cost": "10"
+      }
+    },
+    {
+      "id": "support.dark",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "Spooky necromancy: a low ominous whoosh swelling with a wordless ghostly moan. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.9,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "support-dark-102.wav",
+      "date": "2026-10-14",
+      "bytes": 155232,
+      "cost": {
+        "character-cost": "10"
+      }
+    },
+    {
+      "id": "support.dark",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "Spooky necromancy: a low ominous whoosh swelling with a wordless ghostly moan. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.9,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "support-dark-103.wav",
+      "date": "2026-10-14",
+      "bytes": 155232,
+      "cost": {
+        "character-cost": "10"
+      }
+    },
+    {
+      "id": "support.dark",
+      "n": 104,
+      "round": 2,
+      "take": 1,
+      "prompt": "Necromancy: a sudden burst of dark magic, a low ominous whoosh that starts at once, with a wordless ghostly moan, clean and not distorted. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.9,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "support-dark-104.wav",
+      "date": "2026-10-14",
+      "bytes": 155232,
+      "cost": {
+        "character-cost": "10"
+      }
+    },
+    {
+      "id": "support.dark",
+      "n": 105,
+      "round": 2,
+      "take": 2,
+      "prompt": "Necromancy: a sudden burst of dark magic, a low ominous whoosh that starts at once, with a wordless ghostly moan, clean and not distorted. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.9,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "support-dark-105.wav",
+      "date": "2026-10-14",
+      "bytes": 155232,
+      "cost": {
+        "character-cost": "10"
+      }
+    },
+    {
+      "id": "support.dark",
+      "n": 106,
+      "round": 2,
+      "take": 3,
+      "prompt": "Necromancy: a sudden burst of dark magic, a low ominous whoosh that starts at once, with a wordless ghostly moan, clean and not distorted. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.9,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "support-dark-106.wav",
+      "date": "2026-10-14",
+      "bytes": 155232,
+      "cost": {
+        "character-cost": "10"
+      }
+    },
+    {
+      "id": "support.drain",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "A vampire drains life: a slurping magical suction whoosh rising in pitch. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.9,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "support-drain-101.wav",
+      "date": "2026-10-14",
+      "bytes": 155232,
+      "cost": {
+        "character-cost": "10"
+      }
+    },
+    {
+      "id": "support.drain",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "A vampire drains life: a slurping magical suction whoosh rising in pitch. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.9,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "support-drain-102.wav",
+      "date": "2026-10-14",
+      "bytes": 155232,
+      "cost": {
+        "character-cost": "10"
+      }
+    },
+    {
+      "id": "support.drain",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "A vampire drains life: a slurping magical suction whoosh rising in pitch. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.9,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "support-drain-103.wav",
+      "date": "2026-10-14",
+      "bytes": 155232,
+      "cost": {
+        "character-cost": "10"
+      }
+    },
+    {
+      "id": "support.drain",
+      "n": 104,
+      "round": 2,
+      "take": 1,
+      "prompt": "A vampire drains life: a quick slurping magical suction whoosh rising in pitch, ending quickly. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.7,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "support-drain-104.wav",
+      "date": "2026-10-14",
+      "bytes": 119952,
+      "cost": {
+        "character-cost": "8"
+      }
+    },
+    {
+      "id": "support.heal",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "A gentle healing spell: a soft rising harp glissando with a warm magical shimmer. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.7,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "support-heal-101.wav",
+      "date": "2026-10-14",
+      "bytes": 119952,
+      "cost": {
+        "character-cost": "8"
+      }
+    },
+    {
+      "id": "support.heal",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "A gentle healing spell: a soft rising harp glissando with a warm magical shimmer. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.7,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "support-heal-102.wav",
+      "date": "2026-10-14",
+      "bytes": 119952,
+      "cost": {
+        "character-cost": "8"
+      }
+    },
+    {
+      "id": "support.heal",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "A gentle healing spell: a soft rising harp glissando with a warm magical shimmer. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.7,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "support-heal-103.wav",
+      "date": "2026-10-14",
+      "bytes": 119952,
+      "cost": {
+        "character-cost": "8"
+      }
+    },
+    {
+      "id": "support.heal",
+      "n": 104,
+      "round": 2,
+      "take": 1,
+      "prompt": "A healing spell: a soft rising run of high bright harp notes with a twinkling shimmer. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.7,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "support-heal-104.wav",
+      "date": "2026-10-14",
+      "bytes": 119952,
+      "cost": {
+        "character-cost": "8"
+      }
+    },
+    {
+      "id": "support.rally",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "A rallying war horn: one bold heroic horn blast calling the troops. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 1,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "support-rally-101.wav",
+      "date": "2026-10-14",
+      "bytes": 176400,
+      "cost": {
+        "character-cost": "11"
+      }
+    },
+    {
+      "id": "support.rally",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "A rallying war horn: one bold heroic horn blast calling the troops. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 1,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "support-rally-102.wav",
+      "date": "2026-10-14",
+      "bytes": 176400,
+      "cost": {
+        "character-cost": "11"
+      }
+    },
+    {
+      "id": "support.rally",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "A rallying war horn: one bold heroic horn blast calling the troops. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 1,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "support-rally-103.wav",
+      "date": "2026-10-14",
+      "bytes": 176400,
+      "cost": {
+        "character-cost": "11"
+      }
+    },
+    {
+      "id": "support.rally",
+      "n": 104,
+      "round": 2,
+      "take": 1,
+      "prompt": "A rallying horn: one short bold heroic horn blast, clean and not distorted, ending quickly. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 0.9,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "support-rally-104.wav",
+      "date": "2026-10-14",
+      "bytes": 155232,
+      "cost": {
+        "character-cost": "10"
+      }
+    },
+    {
+      "id": "support.rally",
+      "n": 105,
+      "round": 2,
+      "take": 2,
+      "prompt": "A rallying horn: one short bold heroic horn blast, clean and not distorted, ending quickly. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 0.9,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "support-rally-105.wav",
+      "date": "2026-10-14",
+      "bytes": 155232,
+      "cost": {
+        "character-cost": "10"
+      }
+    },
+    {
+      "id": "support.rally",
+      "n": 106,
+      "round": 3,
+      "take": 1,
+      "prompt": "A rallying call: one short heroic horn blast, played softly from a little distance, ending quickly. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 0.9,
+      "promptInfluence": 0.3,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "support-rally-106.wav",
+      "date": "2026-10-14",
+      "bytes": 155232,
+      "cost": {
+        "character-cost": "10"
+      }
+    },
+    {
+      "id": "support.rally",
+      "n": 107,
+      "round": 3,
+      "take": 2,
+      "prompt": "A rallying call: one short heroic horn blast, played softly from a little distance, ending quickly. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 0.9,
+      "promptInfluence": 0.3,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "support-rally-107.wav",
+      "date": "2026-10-14",
+      "bytes": 155232,
+      "cost": {
+        "character-cost": "10"
+      }
+    },
+    {
+      "id": "turn.end",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "End of turn: a soft two-note wooden marimba chime falling in pitch. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 0.6,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "turn-end-101.wav",
+      "date": "2026-10-14",
+      "bytes": 105840,
+      "cost": {
+        "character-cost": "7"
+      }
+    },
+    {
+      "id": "turn.end",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "End of turn: a soft two-note wooden marimba chime falling in pitch. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 0.6,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "turn-end-102.wav",
+      "date": "2026-10-14",
+      "bytes": 105840,
+      "cost": {
+        "character-cost": "7"
+      }
+    },
+    {
+      "id": "turn.end",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "End of turn: a soft two-note wooden marimba chime falling in pitch. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 0.6,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "turn-end-103.wav",
+      "date": "2026-10-14",
+      "bytes": 105840,
+      "cost": {
+        "character-cost": "7"
+      }
+    },
+    {
+      "id": "turn.end",
+      "n": 104,
+      "round": 2,
+      "take": 1,
+      "prompt": "End of turn: a soft two-note wooden marimba tap falling in pitch, short and dry, notes stopping quickly. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 0.6,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "turn-end-104.wav",
+      "date": "2026-10-14",
+      "bytes": 105840,
+      "cost": {
+        "character-cost": "7"
+      }
+    },
+    {
+      "id": "turn.end",
+      "n": 105,
+      "round": 2,
+      "take": 2,
+      "prompt": "End of turn: a soft two-note wooden marimba tap falling in pitch, short and dry, notes stopping quickly. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 0.6,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "turn-end-105.wav",
+      "date": "2026-10-14",
+      "bytes": 105840,
+      "cost": {
+        "character-cost": "7"
+      }
+    },
+    {
+      "id": "turn.start",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "Your turn begins: a bright short double bell ding, a cheerful game notification. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 0.7,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "turn-start-101.wav",
+      "date": "2026-10-14",
+      "bytes": 119952,
+      "cost": {
+        "character-cost": "8"
+      }
+    },
+    {
+      "id": "turn.start",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "Your turn begins: a bright short double bell ding, a cheerful game notification. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 0.7,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "turn-start-102.wav",
+      "date": "2026-10-14",
+      "bytes": 119952,
+      "cost": {
+        "character-cost": "8"
+      }
+    },
+    {
+      "id": "turn.start",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "Your turn begins: a bright short double bell ding, a cheerful game notification. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 0.7,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "turn-start-103.wav",
+      "date": "2026-10-14",
+      "bytes": 119952,
+      "cost": {
+        "character-cost": "8"
+      }
+    },
+    {
+      "id": "turn.start",
+      "n": 104,
+      "round": 2,
+      "take": 1,
+      "prompt": "Your turn begins: a bright high double bell ding, cheerful game notification. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 0.7,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "turn-start-104.wav",
+      "date": "2026-10-14",
+      "bytes": 119952,
+      "cost": {
+        "character-cost": "8"
+      }
+    },
+    {
+      "id": "ui.click",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "A crisp interface button click: one tiny clean mechanical tick, very short. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.6,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "ui-click-101.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "ui.click",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "A crisp interface button click: one tiny clean mechanical tick, very short. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.6,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "ui-click-102.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "ui.click",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "A crisp interface button click: one tiny clean mechanical tick, very short. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.6,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "ui-click-103.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "ui.click",
+      "n": 104,
+      "round": 2,
+      "take": 1,
+      "prompt": "A crisp interface button click: one tiny clean plastic tick, very short, nothing else. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.6,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "ui-click-104.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "ui.click",
+      "n": 105,
+      "round": 2,
+      "take": 2,
+      "prompt": "A crisp interface button click: one tiny clean plastic tick, very short, nothing else. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.6,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "ui-click-105.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "ui.error",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "A refused command: a short low cartoon error buzz, two quick nope beeps. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "ui-error-101.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "ui.error",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "A refused command: a short low cartoon error buzz, two quick nope beeps. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "ui-error-102.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "ui.error",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "A refused command: a short low cartoon error buzz, two quick nope beeps. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "ui-error-103.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "ui.error",
+      "n": 104,
+      "round": 2,
+      "take": 1,
+      "prompt": "A refused command: a short low cartoon error buzz of two quick beeps, clean and not distorted. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "ui-error-104.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "ui.select",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "A soft bright interface select blip: one tiny wooden tick, very short. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.6,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "ui-select-101.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "ui.select",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "A soft bright interface select blip: one tiny wooden tick, very short. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.6,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "ui-select-102.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "ui.select",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "A soft bright interface select blip: one tiny wooden tick, very short. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.6,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "ui-select-103.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "ui.select",
+      "n": 104,
+      "round": 2,
+      "take": 1,
+      "prompt": "A soft interface select blip: one tiny bright high wooden tick, very short, nothing else. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.6,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "ui-select-104.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "ui.select",
+      "n": 105,
+      "round": 2,
+      "take": 2,
+      "prompt": "A soft interface select blip: one tiny bright high wooden tick, very short, nothing else. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.6,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "ui-select-105.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "ui.toggle",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "A small switch flipped: one crisp two-step click, very short. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.6,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "ui-toggle-101.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "ui.toggle",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "A small switch flipped: one crisp two-step click, very short. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.6,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "ui-toggle-102.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "ui.toggle",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "A small switch flipped: one crisp two-step click, very short. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.6,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "ui-toggle-103.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "ui.toggle",
+      "n": 104,
+      "round": 2,
+      "take": 1,
+      "prompt": "A small light switch flipped: one crisp short plastic click, very short, nothing else. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.6,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "ui-toggle-104.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "ui.toggle",
+      "n": 105,
+      "round": 2,
+      "take": 2,
+      "prompt": "A small light switch flipped: one crisp short plastic click, very short, nothing else. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.6,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "ui-toggle-105.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "ui.toggle",
+      "n": 106,
+      "round": 2,
+      "take": 3,
+      "prompt": "A small light switch flipped: one crisp short plastic click, very short, nothing else. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.6,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "ui-toggle-106.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "unit.death",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "A cartoon soldier is defeated: a comic wordless groan falling in pitch, then a soft thud as he drops, not gory. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-death-101.wav",
+      "date": "2026-10-14",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "unit.death",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "A cartoon soldier is defeated: a comic wordless groan falling in pitch, then a soft thud as he drops, not gory. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-death-102.wav",
+      "date": "2026-10-14",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "unit.death",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "A cartoon soldier is defeated: a comic wordless groan falling in pitch, then a soft thud as he drops, not gory. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-death-103.wav",
+      "date": "2026-10-14",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "unit.hurt",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "A small cartoon soldier gets hurt: one short wordless pained grunt, oof. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-hurt-101.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "unit.hurt",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "A small cartoon soldier gets hurt: one short wordless pained grunt, oof. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-hurt-102.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "unit.hurt",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "A small cartoon soldier gets hurt: one short wordless pained grunt, oof. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-hurt-103.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "unit.hurt",
+      "n": 104,
+      "round": 2,
+      "take": 1,
+      "prompt": "A small cartoon soldier gets hit: one short wordless yelp of pain, ow, clean and not distorted. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-hurt-104.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "unit.levelup",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "A unit is promoted: a quick rising sparkly bell arpeggio, bright and happy. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 0.7,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-levelup-101.wav",
+      "date": "2026-10-14",
+      "bytes": 119952,
+      "cost": {
+        "character-cost": "8"
+      }
+    },
+    {
+      "id": "unit.levelup",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "A unit is promoted: a quick rising sparkly bell arpeggio, bright and happy. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 0.7,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-levelup-102.wav",
+      "date": "2026-10-14",
+      "bytes": 119952,
+      "cost": {
+        "character-cost": "8"
+      }
+    },
+    {
+      "id": "unit.levelup",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "A unit is promoted: a quick rising sparkly bell arpeggio, bright and happy. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 0.7,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-levelup-103.wav",
+      "date": "2026-10-14",
+      "bytes": 119952,
+      "cost": {
+        "character-cost": "8"
+      }
+    },
+    {
+      "id": "unit.levelup",
+      "n": 104,
+      "round": 2,
+      "take": 1,
+      "prompt": "A unit is promoted: a quick rising arpeggio of high bright glockenspiel notes, sparkling and happy. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 0.7,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-levelup-104.wav",
+      "date": "2026-10-14",
+      "bytes": 119952,
+      "cost": {
+        "character-cost": "8"
+      }
+    },
+    {
+      "id": "unit.levelup",
+      "n": 105,
+      "round": 2,
+      "take": 2,
+      "prompt": "A unit is promoted: a quick rising arpeggio of high bright glockenspiel notes, sparkling and happy. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 0.7,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-levelup-105.wav",
+      "date": "2026-10-14",
+      "bytes": 119952,
+      "cost": {
+        "character-cost": "8"
+      }
+    },
+    {
+      "id": "unit.step",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "One single soft footstep on grass: a tiny light boot thump, very short. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.6,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-step-101.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "unit.step",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "One single soft footstep on grass: a tiny light boot thump, very short. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.6,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-step-102.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "unit.step",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "One single soft footstep on grass: a tiny light boot thump, very short. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.6,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-step-103.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "unit.step",
+      "n": 104,
+      "round": 2,
+      "take": 1,
+      "prompt": "One single tiny footstep on soft earth: a short muted thud, very short, nothing else. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.6,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-step-104.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "unit.step",
+      "n": 105,
+      "round": 2,
+      "take": 2,
+      "prompt": "One single tiny footstep on soft earth: a short muted thud, very short, nothing else. Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+      "durationSeconds": 0.5,
+      "promptInfluence": 0.6,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-step-105.wav",
+      "date": "2026-10-14",
+      "bytes": 84672,
+      "cost": {
+        "character-cost": "6"
+      }
+    },
+    {
+      "id": "unit.train",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "A toy soldier recruit call: a short bright brass bugle call of three rising notes. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-train-101.wav",
+      "date": "2026-10-14",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "unit.train",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "A toy soldier recruit call: a short bright brass bugle call of three rising notes. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-train-102.wav",
+      "date": "2026-10-14",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "unit.train",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "A toy soldier recruit call: a short bright brass bugle call of three rising notes. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-train-103.wav",
+      "date": "2026-10-14",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "unit.train",
+      "n": 104,
+      "round": 2,
+      "take": 1,
+      "prompt": "A toy soldier joins the army: a quick bright three-note call on a small brass bugle, clean and not distorted, ending quickly. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 0.7,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-train-104.wav",
+      "date": "2026-10-14",
+      "bytes": 119952,
+      "cost": {
+        "character-cost": "8"
+      }
+    },
+    {
+      "id": "unit.train",
+      "n": 105,
+      "round": 2,
+      "take": 2,
+      "prompt": "A toy soldier joins the army: a quick bright three-note call on a small brass bugle, clean and not distorted, ending quickly. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 0.7,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-train-105.wav",
+      "date": "2026-10-14",
+      "bytes": 119952,
+      "cost": {
+        "character-cost": "8"
+      }
+    },
+    {
+      "id": "unit.train",
+      "n": 106,
+      "round": 2,
+      "take": 3,
+      "prompt": "A toy soldier joins the army: a quick bright three-note call on a small brass bugle, clean and not distorted, ending quickly. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 0.7,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-train-106.wav",
+      "date": "2026-10-14",
+      "bytes": 119952,
+      "cost": {
+        "character-cost": "8"
+      }
+    },
+    {
+      "id": "unit.train",
+      "n": 107,
+      "round": 3,
+      "take": 1,
+      "prompt": "A new recruit joins the army: a quick snare drum flourish and a short toy trumpet toot, played softly, ending quickly. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 0.7,
+      "promptInfluence": 0.3,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-train-107.wav",
+      "date": "2026-10-14",
+      "bytes": 119952,
+      "cost": {
+        "character-cost": "8"
+      }
+    },
+    {
+      "id": "unit.train",
+      "n": 108,
+      "round": 3,
+      "take": 2,
+      "prompt": "A new recruit joins the army: a quick snare drum flourish and a short toy trumpet toot, played softly, ending quickly. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 0.7,
+      "promptInfluence": 0.3,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-train-108.wav",
+      "date": "2026-10-14",
+      "bytes": 119952,
+      "cost": {
+        "character-cost": "8"
+      }
+    },
+    {
+      "id": "unit.train",
+      "n": 109,
+      "round": 3,
+      "take": 3,
+      "prompt": "A new recruit joins the army: a quick snare drum flourish and a short toy trumpet toot, played softly, ending quickly. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 0.7,
+      "promptInfluence": 0.3,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "unit-train-109.wav",
+      "date": "2026-10-14",
+      "bytes": 119952,
+      "cost": {
+        "character-cost": "8"
+      }
+    },
+    {
+      "id": "village.capture",
+      "n": 101,
+      "round": 1,
+      "take": 1,
+      "prompt": "A village joins you: a quick cheerful two-note trumpet toot. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "village-capture-101.wav",
+      "date": "2026-10-14",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "village.capture",
+      "n": 102,
+      "round": 1,
+      "take": 2,
+      "prompt": "A village joins you: a quick cheerful two-note trumpet toot. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "village-capture-102.wav",
+      "date": "2026-10-14",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "village.capture",
+      "n": 103,
+      "round": 1,
+      "take": 3,
+      "prompt": "A village joins you: a quick cheerful two-note trumpet toot. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "village-capture-103.wav",
+      "date": "2026-10-14",
+      "bytes": 141120,
+      "cost": {
+        "character-cost": "9"
+      }
+    },
+    {
+      "id": "village.capture",
+      "n": 104,
+      "round": 2,
+      "take": 1,
+      "prompt": "A village joins you: a quick cheerful two-note toot on a small trumpet, clean and not distorted, ending quickly. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 0.7,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "village-capture-104.wav",
+      "date": "2026-10-14",
+      "bytes": 119952,
+      "cost": {
+        "character-cost": "8"
+      }
+    },
+    {
+      "id": "village.capture",
+      "n": 105,
+      "round": 2,
+      "take": 2,
+      "prompt": "A village joins you: a quick cheerful two-note toot on a small trumpet, clean and not distorted, ending quickly. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 0.7,
+      "promptInfluence": 0.5,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "village-capture-105.wav",
+      "date": "2026-10-14",
+      "bytes": 119952,
+      "cost": {
+        "character-cost": "8"
+      }
+    },
+    {
+      "id": "village.capture",
+      "n": 106,
+      "round": 3,
+      "take": 1,
+      "prompt": "A village joins you: a quick cheerful two-note toy trumpet toot, played softly, ending quickly. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 0.6,
+      "promptInfluence": 0.3,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "village-capture-106.wav",
+      "date": "2026-10-14",
+      "bytes": 105840,
+      "cost": {
+        "character-cost": "7"
+      }
+    },
+    {
+      "id": "village.capture",
+      "n": 107,
+      "round": 3,
+      "take": 2,
+      "prompt": "A village joins you: a quick cheerful two-note toy trumpet toot, played softly, ending quickly. Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+      "durationSeconds": 0.6,
+      "promptInfluence": 0.3,
+      "model": "eleven_text_to_sound_v2",
+      "outputFormat": "pcm_44100",
+      "rawFile": "village-capture-107.wav",
+      "date": "2026-10-14",
+      "bytes": 105840,
+      "cost": {
+        "character-cost": "7"
+      }
+    }
+  ]
+}

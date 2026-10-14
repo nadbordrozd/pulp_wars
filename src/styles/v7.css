@@ -7039,12 +7039,17 @@
   line-clamp: 2;
 }
 
-.v7-gallery-sound-origin:not([data-sound-origin="recorded"])
+.v7-gallery-sound-origin:not(
+    [data-sound-origin="recorded"],
+    [data-sound-origin="elevenlabs"]
+  )
   .v7-gallery-sound-origin-file {
   grid-row: 1;
 }
 
 .v7-gallery-sound-origin[data-sound-origin="recorded"]
+  .v7-gallery-sound-origin-file,
+.v7-gallery-sound-origin[data-sound-origin="elevenlabs"]
   .v7-gallery-sound-origin-file {
   color: var(--pw-coin);
 }
@@ -7055,13 +7060,16 @@
   white-space: nowrap;
 }
 
-/* A recorded card has a file name and one more control: its controls go
-   under it, so the words keep the card's width. */
-.v7-gallery-sound[data-origin="recorded"] {
+/* A recorded card (a stock recording or an ElevenLabs take) has a file
+   name or a prompt and one more control: its controls go under it, so the
+   words keep the card's width. */
+.v7-gallery-sound[data-origin="recorded"],
+.v7-gallery-sound[data-origin="elevenlabs"] {
   flex-wrap: wrap;
 }
 
-.v7-gallery-sound[data-origin="recorded"] .v7-gallery-sound-play {
+.v7-gallery-sound[data-origin="recorded"] .v7-gallery-sound-play,
+.v7-gallery-sound[data-origin="elevenlabs"] .v7-gallery-sound-play {
   flex-basis: 100%;
 }
 
@@ -7281,18 +7289,30 @@
   outline-offset: -3px;
 }
 
+/* "New 1", "Old 2" or the synth's loudspeaker, in a pill of one width
+   so the prompts and file names line up. */
 .v7-gallery-sound-choice-number {
   display: grid;
   flex: none;
   place-items: center;
-  width: 1.5rem;
+  min-width: 3.3rem;
   height: 1.5rem;
+  padding: 0 0.35rem;
   border: 1px solid currentColor;
-  border-radius: 50%;
+  border-radius: var(--pw-radius-pill);
   color: var(--pw-text);
-  font-size: var(--pw-fs-sm);
+  font-size: var(--pw-fs-xs);
   font-weight: var(--pw-fw-bold);
   line-height: 1;
+  white-space: nowrap;
+}
+
+/* An ElevenLabs take: the pill is filled, so the new takes stand apart
+   from the old recordings. */
+.v7-gallery-sound-choice[data-sound-origin="elevenlabs"]
+  .v7-gallery-sound-choice-number {
+  border-color: var(--pw-line);
+  background: color-mix(in srgb, var(--pw-yellow) 30%, var(--pw-surface));
 }
 
 .v7-gallery-sound-choice-number .v7-ui-icon {
@@ -7350,15 +7370,8 @@
   color: var(--pw-text);
 }
 
-/* The numbered recording being heard. */
-.v7-gallery-sound[data-playing-choice="1"]
-  .v7-gallery-sound-choice-play[data-choice="1"],
-.v7-gallery-sound[data-playing-choice="2"]
-  .v7-gallery-sound-choice-play[data-choice="2"],
-.v7-gallery-sound[data-playing-choice="3"]
-  .v7-gallery-sound-choice-play[data-choice="3"],
-.v7-gallery-sound[data-playing-choice="4"]
-  .v7-gallery-sound-choice-play[data-choice="4"] {
+/* The take or recording being heard. */
+.v7-gallery-sound-choice-play[data-heard="true"] {
   border-color: var(--pw-accent);
   background: color-mix(in srgb, var(--pw-yellow) 16%, var(--pw-surface));
 }

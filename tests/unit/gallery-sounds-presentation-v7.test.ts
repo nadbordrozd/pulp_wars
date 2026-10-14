@@ -3,14 +3,16 @@ import {
   OTHER_PLAYER_BUILD_GAIN_V7,
   SOUND_IDS_V1,
   SOUND_MANIFEST_V1,
+  SOUND_CHOICE_SETS_V1,
+  SOUND_DEFAULT_CLIPS_V1,
   SOUND_THEMES_V1,
-  STOCK_SOUNDS_V1,
-  STOCK_SOUND_CLIPS_V1,
   playableSoundIdsV1,
   playableSoundV1,
+  soundCandidateSecondsV1,
+  soundCandidateV1,
+  soundChoiceSetV1,
   soundRecipeV1,
   stockSoundCandidateV1,
-  stockSoundV1,
   synthRecipeDurationMsV1,
   type SoundThemeEntryV1,
 } from "../../src/audio/index";
@@ -100,16 +102,16 @@ describe("Gallery sounds", () => {
         .find((group) => group.id === "CULT")
         ?.entries.map((entry) => [entry.key, entry.name, entry.origin?.kind]),
     ).toEqual([
-      ["cult.ribbit", "Frog croak", "RECORDED"],
-      ["cult.pamphlets", "Paper rustle", "RECORDED"],
-      ["cult.proclaim", "Proclaim", "RECORDED"],
-      ["cult.summon", "Summoning", "RECORDED"],
-      ["cult.herald", "Herald arrives", "RECORDED"],
-      ["cult.starfall", "Falling star", "RECORDED"],
-      ["cult.snap", "Strand snaps", "RECORDED"],
-      ["cult.unbound", "Daemon unbound", "RECORDED"],
-      ["cult.tentacle", "Tentacle", "RECORDED"],
-      ["cult.sacrifice", "Sacrifice", "RECORDED"],
+      ["cult.ribbit", "Frog croak", "ELEVENLABS"],
+      ["cult.pamphlets", "Paper rustle", "ELEVENLABS"],
+      ["cult.proclaim", "Proclaim", "ELEVENLABS"],
+      ["cult.summon", "Summoning", "ELEVENLABS"],
+      ["cult.herald", "Herald arrives", "ELEVENLABS"],
+      ["cult.starfall", "Falling star", "ELEVENLABS"],
+      ["cult.snap", "Strand snaps", "ELEVENLABS"],
+      ["cult.unbound", "Daemon unbound", "ELEVENLABS"],
+      ["cult.tentacle", "Tentacle", "ELEVENLABS"],
+      ["cult.sacrifice", "Sacrifice", "ELEVENLABS"],
     ]);
     // Inside a group the manifest's order is kept.
     for (const group of groups.filter((entry) => entry.id !== "THEMES"))
@@ -201,8 +203,8 @@ describe("Gallery sounds", () => {
       const recipe = soundRecipeV1(id);
       const lengths = [
         recipe === null ? 0 : synthRecipeDurationMsV1(recipe),
-        ...(stockSoundV1(id)?.candidates ?? []).map(
-          (candidate) => (candidate.endSeconds - candidate.startSeconds) * 1000,
+        ...(soundChoiceSetV1(id)?.candidates ?? []).map(
+          (candidate) => soundCandidateSecondsV1(candidate) * 1000,
         ),
       ];
       expect(long.includes(id), id).toBe(Math.max(...lengths) >= 1000);
@@ -330,94 +332,122 @@ describe("Gallery sounds", () => {
 });
 
 /**
- * Where each sound comes from (bead pulp_wars-2yc.20, docs/ui/SOUND.md
- * "Stock recordings"): read from the provenance manifest, which is the
- * only list of recordings.
+ * Where each sound comes from (beads pulp_wars-2yc.20 and pulp_wars-2yc.51,
+ * docs/ui/SOUND.md "Stock recordings"): read from the provenance
+ * manifests, which are the only lists of takes and recordings.
  */
 describe("Gallery sound origins", () => {
   const entries = gallerySoundGroupsV7().flatMap((group) => group.entries);
   const effects = entries.filter((entry) => !entry.theme);
 
-  it("shows the library file and the cut of every recorded sound", () => {
-    expect(STOCK_SOUND_CLIPS_V1.length).toBeGreaterThan(0);
-    for (const clip of STOCK_SOUND_CLIPS_V1) {
+  it("shows the take, its prompt and its length for every ElevenLabs default", () => {
+    expect(SOUND_DEFAULT_CLIPS_V1.length).toBeGreaterThan(0);
+    for (const clip of SOUND_DEFAULT_CLIPS_V1) {
       // A provenance row without a card fails here.
       const entry = effects.find((candidate) => candidate.rowId === clip.id);
       expect(entry, `${clip.id} has no card`).toBeDefined();
       const origin = entry?.origin;
-      expect(origin?.kind, clip.id).toBe("RECORDED");
-      if (origin?.kind !== "RECORDED" || entry === undefined) continue;
-      expect(origin.library).toBe(clip.library);
-      expect(origin.file).toBe(clip.originalFile);
-      expect(origin.startSeconds).toBe(clip.startSeconds);
-      expect(origin.endSeconds).toBe(clip.endSeconds);
-      // The vendor folder and the file name exactly as the bundle has them.
-      expect(origin.text).toBe(`${clip.library} / ${clip.originalFile}`);
-      expect(origin.cut).toBe(`${clip.startSeconds}–${clip.endSeconds} s`);
+      expect(origin?.kind, clip.id).toBe("ELEVENLABS");
+      if (
+        origin?.kind !== "ELEVENLABS" ||
+        entry === undefined ||
+        clip.origin !== "ELEVENLABS"
+      )
+        continue;
+      expect(origin.take).toBe("New 1");
+      expect(origin.prompt).toBe(clip.prompt);
+      expect(origin.generated).toBe(clip.generated);
+      expect(origin.seconds).toBe(clip.seconds);
+      expect(origin.text).toBe(`ElevenLabs, generated ${clip.generated}`);
+      expect(origin.cut).toBe(`${clip.seconds} s`);
       expect(gallerySoundOriginLabelV7(origin)).toBe(
-        `Recorded: ${clip.library} / ${clip.originalFile}, ${clip.startSeconds}–${clip.endSeconds} s`,
+        `ElevenLabs new 1: ${clip.prompt} (${clip.seconds} s, generated ${clip.generated})`,
       );
       expect(gallerySoundCardLabelV7(entry)).toBe(
-        `Play: ${entry.name}. Recorded: ${origin.text}, ${origin.cut}`,
+        `Play: ${entry.name}. ${gallerySoundOriginLabelV7(origin)}`,
       );
     }
-    const explosion = effects.find(
-      (entry) => entry.rowId === "impact.explosion",
-    );
-    expect(explosion?.origin).toMatchObject({
+  });
+
+  it("shows the library file and the cut of an old recording in use", () => {
+    const picks = { "impact.explosion": 1 };
+    const explosion = gallerySoundGroupsV7(SOUND_THEMES_V1, { picks })
+      .flatMap((group) => group.entries)
+      .find((entry) => entry.rowId === "impact.explosion");
+    const clip = stockSoundCandidateV1("impact.explosion", 1);
+    if (explosion === undefined || clip === null) throw new Error("missing");
+    expect(explosion.origin).toMatchObject({
       kind: "RECORDED",
+      library: clip.library,
+      file: clip.originalFile,
+      startSeconds: clip.startSeconds,
+      endSeconds: clip.endSeconds,
       text: "DavidDumais - Explosion SFX Pack / EXPLReal_Medium Realistic Explosion 15_DDUMAIS_NONE.wav",
       cut: "0–1.05 s",
     });
+    if (explosion.origin?.kind !== "RECORDED") throw new Error("not recorded");
+    expect(gallerySoundOriginLabelV7(explosion.origin)).toBe(
+      `Recorded: ${clip.library} / ${clip.originalFile}, ${clip.startSeconds}–${clip.endSeconds} s`,
+    );
+    expect(gallerySoundCardLabelV7(explosion)).toBe(
+      `Play: ${explosion.name}. Recorded: ${explosion.origin.text}, ${explosion.origin.cut}`,
+    );
   });
 
-  it("says Generated for every sound without a recording, and no other", () => {
-    const recorded = new Set(STOCK_SOUND_CLIPS_V1.map((clip) => clip.id));
+  it("says Synth for every sound without a default clip, and no other", () => {
+    const recorded = new Set(SOUND_DEFAULT_CLIPS_V1.map((clip) => clip.id));
     for (const entry of effects) {
-      const expected = recorded.has(entry.rowId) ? "RECORDED" : "GENERATED";
+      const expected = recorded.has(entry.rowId) ? "ELEVENLABS" : "GENERATED";
       // A card whose origin disagrees with the manifest fails here.
       expect(entry.origin?.kind, entry.rowId).toBe(expected);
       expect(
         SOUND_MANIFEST_V1[entry.rowId as (typeof SOUND_IDS_V1)[number]].source
           .kind,
         entry.rowId,
-      ).toBe(expected === "RECORDED" ? "FILE" : "SYNTH");
-      if (expected === "RECORDED") continue;
+      ).toBe(expected === "ELEVENLABS" ? "FILE" : "SYNTH");
+      if (expected === "ELEVENLABS") continue;
       expect(entry.origin).toEqual({
         kind: "GENERATED",
         text: GALLERY_SOUND_GENERATED_TEXT_V7,
       });
-      expect(gallerySoundCardLabelV7(entry)).toBe(
-        `Play: ${entry.name}. Generated`,
-      );
+      expect(gallerySoundCardLabelV7(entry)).toBe(`Play: ${entry.name}. Synth`);
     }
     expect(
-      effects.filter((entry) => entry.origin?.kind === "RECORDED").length,
-    ).toBe(STOCK_SOUND_CLIPS_V1.length);
-    expect(GALLERY_SOUND_GENERATED_TEXT_V7).toBe("Generated");
+      effects.filter((entry) => entry.origin?.kind === "ELEVENLABS").length,
+    ).toBe(SOUND_DEFAULT_CLIPS_V1.length);
+    // The one sound none of whose takes passed (docs/audio/ELEVENLABS_SFX.md).
+    expect(
+      effects
+        .filter((entry) => entry.origin?.kind === "GENERATED")
+        .map((entry) => entry.rowId),
+    ).toEqual(["unit.train"]);
+    expect(GALLERY_SOUND_GENERATED_TEXT_V7).toBe("Synth");
   });
 
-  it("offers the generated version of a recorded sound, and of no other", () => {
+  it("offers the synth version of a sound with a clip, and of no other", () => {
     for (const entry of effects) {
       const generated = entry.variants.filter(
         (variant) => variant.id === "GENERATED",
       );
-      if (entry.origin?.kind !== "RECORDED") {
+      if (
+        entry.origin?.kind !== "RECORDED" &&
+        entry.origin?.kind !== "ELEVENLABS"
+      ) {
         expect(generated, entry.rowId).toEqual([]);
         continue;
       }
       expect(generated, entry.rowId).toEqual([
-        { id: "GENERATED", label: "Play generated", generated: true },
+        { id: "GENERATED", label: "Play synth", generated: true },
       ]);
       // It is the last control of the card.
       expect(entry.variants.at(-1)?.id).toBe("GENERATED");
       expect(gallerySoundPlayLabelV7(entry, generated[0])).toBe(
-        `Play generated: ${entry.name}`,
+        `Play synth: ${entry.name}`,
       );
     }
   });
 
-  it("shows every sound as generated when recordings are switched off", () => {
+  it("shows every sound as synth when recordings are switched off", () => {
     const off = gallerySoundGroupsV7(SOUND_THEMES_V1, { stockSounds: false })
       .flatMap((group) => group.entries)
       .filter((entry) => !entry.theme);
@@ -431,8 +461,8 @@ describe("Gallery sound origins", () => {
     }
     expect(
       gallerySoundOriginV7("impact.explosion", { stockSounds: false }),
-    ).toEqual({ kind: "GENERATED", text: "Generated" });
-    expect(gallerySoundOriginV7("impact.explosion")?.kind).toBe("RECORDED");
+    ).toEqual({ kind: "GENERATED", text: "Synth" });
+    expect(gallerySoundOriginV7("impact.explosion")?.kind).toBe("ELEVENLABS");
   });
 
   it("shows a theme's source once one is registered", () => {
@@ -460,15 +490,16 @@ describe("Gallery sound origins", () => {
     );
     expect(
       themes?.entries.find((entry) => entry.faction === "GOBLIN")?.origin,
-    ).toEqual({ kind: "GENERATED", text: "Generated" });
+    ).toEqual({ kind: "GENERATED", text: "Synth" });
     expect(gallerySoundOriginV7("theme.none")).toBeNull();
   });
 });
 
 /**
- * The recordings a sound can be set to play (bead pulp_wars-2yc.24,
- * docs/ui/SOUND.md "Choosing between recordings"): read from the
- * provenance manifest, with the default and this browser's pick marked.
+ * What a sound can be set to play (beads pulp_wars-2yc.24 and
+ * pulp_wars-2yc.51, docs/ui/SOUND.md "Choosing between recordings"): its
+ * ElevenLabs takes, its old stock recordings and the synth, read from the
+ * provenance manifests, with the default and this browser's pick marked.
  */
 describe("Gallery sound choices", () => {
   const entriesWith = (
@@ -487,25 +518,30 @@ describe("Gallery sound choices", () => {
     if (entry === undefined) throw new Error(`no card for ${id}`);
     return entry;
   };
+  const HIT_NEW = soundChoiceSetV1("impact.hit")?.default ?? -1;
 
-  it("lists a sound's recordings in order, then the generated sound", () => {
+  it("lists new takes (the default first), old recordings, then the synth", () => {
     expect(gallerySoundChoiceIdsV7()).toEqual(
-      STOCK_SOUNDS_V1.map((sound) => sound.id),
+      SOUND_CHOICE_SETS_V1.map((sound) => sound.id),
     );
+    expect(gallerySoundChoiceIdsV7()).toEqual([...SOUND_IDS_V1]);
     for (const entry of entriesWith()) {
-      const sound = stockSoundV1(entry.rowId);
-      if (sound === null) {
-        // A sound without recordings has nothing to choose.
-        expect(entry.choices, entry.rowId).toEqual([]);
-        continue;
-      }
+      const sound = soundChoiceSetV1(entry.rowId);
+      if (sound === null) throw new Error(`${entry.rowId} has no choices`);
       expect(entry.choices.map((choice) => choice.n)).toEqual([
         ...sound.candidates.map((candidate) => candidate.n),
         0,
       ]);
+      const takes = sound.candidates.filter(
+        (candidate) => candidate.origin === "ELEVENLABS",
+      );
+      const old = sound.candidates.filter(
+        (candidate) => candidate.origin === "STOCK",
+      );
       expect(entry.choices.map((choice) => choice.label)).toEqual([
-        ...sound.candidates.map((candidate) => String(candidate.n)),
-        "Generated",
+        ...takes.map((_, index) => `New ${index + 1}`),
+        ...old.map((_, index) => `Old ${index + 1}`),
+        "Synth",
       ]);
       // Exactly one default and one in use, and without a pick the same.
       expect(
@@ -518,15 +554,22 @@ describe("Gallery sound choices", () => {
       ).toEqual([sound.default]);
       for (const choice of entry.choices) {
         if (choice.n === 0) {
-          expect(choice.origin).toEqual({
-            kind: "GENERATED",
-            text: "Generated",
-          });
+          expect(choice.origin).toEqual({ kind: "GENERATED", text: "Synth" });
           expect(choice.note).toBe("");
           continue;
         }
-        const clip = stockSoundCandidateV1(entry.rowId, choice.n);
+        const clip = soundCandidateV1(entry.rowId, choice.n);
         if (clip === null) throw new Error("missing candidate");
+        expect(choice.note).toBe(clip.note);
+        if (clip.origin === "ELEVENLABS") {
+          expect(choice.origin).toMatchObject({
+            kind: "ELEVENLABS",
+            take: choice.label,
+            prompt: clip.prompt,
+            cut: `${clip.seconds} s`,
+          });
+          continue;
+        }
         expect(choice.origin).toMatchObject({
           kind: "RECORDED",
           library: clip.library,
@@ -534,7 +577,6 @@ describe("Gallery sound choices", () => {
           text: `${clip.library} / ${clip.originalFile}`,
           cut: `${clip.startSeconds}–${clip.endSeconds} s`,
         });
-        expect(choice.note).toBe(clip.note);
       }
       if (entry.key !== null)
         expect(gallerySoundChoicesV7(entry.key)).toEqual(entry.choices);
@@ -545,42 +587,54 @@ describe("Gallery sound choices", () => {
     const hit = entryOf("impact.hit");
     const first = hit.choices[0];
     const second = hit.choices[1];
+    const old2 = hit.choices.find((choice) => choice.n === 2);
     const generated = hit.choices.at(-1);
+    const take = soundCandidateV1("impact.hit", second?.n ?? -1);
     const clip = stockSoundCandidateV1("impact.hit", 2);
     if (
       first === undefined ||
       second === undefined ||
+      old2 === undefined ||
       generated === undefined ||
-      clip === null
+      clip === null ||
+      take === null ||
+      take.origin !== "ELEVENLABS"
     )
       throw new Error("missing choice");
+    expect(first.n).toBe(HIT_NEW);
     expect(gallerySoundChoicePlayLabelV7(hit, second)).toBe(
-      `Play recording 2 of Hit: ${clip.library} / ${clip.originalFile}, ${clip.startSeconds}–${clip.endSeconds} s. ${clip.note}`,
+      `Play new 2 of Hit: ${take.prompt} (${take.seconds} s, ElevenLabs, generated ${take.generated}). ${take.note}`,
     );
     expect(gallerySoundChoicePlayLabelV7(hit, first)).toMatch(
-      /^Play recording 1 of Hit \(default\): /,
+      /^Play new 1 of Hit \(default\): .*ElevenLabs, generated /,
+    );
+    expect(old2.label).toBe("Old 2");
+    expect(gallerySoundChoicePlayLabelV7(hit, old2)).toBe(
+      `Play old recording 2 of Hit: ${clip.library} / ${clip.originalFile}, ${clip.startSeconds}–${clip.endSeconds} s. ${clip.note}`,
     );
     expect(gallerySoundChoicePlayLabelV7(hit, generated)).toBe(
-      "Play generated: Hit",
+      "Play synth: Hit",
     );
-    expect(gallerySoundChoiceUseLabelV7(hit, second)).toBe(
-      "Use recording 2 for Hit",
+    expect(gallerySoundChoiceUseLabelV7(hit, second)).toBe("Use new 2 for Hit");
+    expect(gallerySoundChoiceUseLabelV7(hit, old2)).toBe(
+      "Use old recording 2 for Hit",
     );
     expect(gallerySoundChoiceUseLabelV7(hit, generated)).toBe(
-      "Use the generated sound for Hit",
+      "Use the synth sound for Hit",
     );
-    // A sound that is generated by default says so on that choice.
-    const death = entryOf("unit.death");
-    const deathGenerated = death.choices.at(-1);
-    if (deathGenerated === undefined) throw new Error("missing choice");
-    expect(deathGenerated.isDefault).toBe(true);
-    expect(gallerySoundChoicePlayLabelV7(death, deathGenerated)).toBe(
-      "Play generated: Death (default)",
+    // A sound that plays the synth by default says so on that choice.
+    const train = entryOf("unit.train");
+    const trainSynth = train.choices.at(-1);
+    if (trainSynth === undefined) throw new Error("missing choice");
+    expect(trainSynth.isDefault).toBe(true);
+    expect(gallerySoundChoicePlayLabelV7(train, trainSynth)).toBe(
+      "Play synth: Unit trained (default)",
     );
   });
 
   it("shows the picked recording as the card's origin and marks it", () => {
-    const picks = { "impact.hit": 3, "unit.death": 1, "impact.heavy": 0 };
+    const train = soundChoiceSetV1("unit.train")?.candidates[0]?.n ?? -1;
+    const picks = { "impact.hit": 3, "unit.train": train, "impact.heavy": 0 };
     const hit = entryOf("impact.hit", { picks });
     const clip = stockSoundCandidateV1("impact.hit", 3);
     if (clip === null) throw new Error("missing candidate");
@@ -594,23 +648,23 @@ describe("Gallery sound choices", () => {
     // The default is still marked: the pick is this browser's alone.
     expect(
       hit.choices.filter((choice) => choice.isDefault).map((c) => c.n),
-    ).toEqual([1]);
+    ).toEqual([HIT_NEW]);
     expect(gallerySoundOriginV7("impact.hit", { picks })).toEqual(hit.origin);
 
-    // A sound that is generated by default, set to its recording.
-    const death = entryOf("unit.death", { picks });
-    expect(death.origin?.kind).toBe("RECORDED");
-    expect(death.variants.map((variant) => variant.id)).toContain("GENERATED");
-    expect(entryOf("unit.death").origin?.kind).toBe("GENERATED");
+    // A sound that plays the synth by default, set to a take.
+    const picked = entryOf("unit.train", { picks });
+    expect(picked.origin?.kind).toBe("ELEVENLABS");
+    expect(picked.variants.map((variant) => variant.id)).toContain("GENERATED");
+    expect(entryOf("unit.train").origin?.kind).toBe("GENERATED");
     expect(
-      entryOf("unit.death").variants.map((variant) => variant.id),
+      entryOf("unit.train").variants.map((variant) => variant.id),
     ).not.toContain("GENERATED");
 
-    // A recorded sound set to its generated version.
+    // A sound with a take set to its synth version.
     const heavy = entryOf("impact.heavy", { picks });
-    expect(heavy.origin).toEqual({ kind: "GENERATED", text: "Generated" });
+    expect(heavy.origin).toEqual({ kind: "GENERATED", text: "Synth" });
     expect(heavy.choices.at(-1)?.chosen).toBe(true);
-    expect(gallerySoundCardLabelV7(heavy)).toBe("Play: Heavy hit. Generated");
+    expect(gallerySoundCardLabelV7(heavy)).toBe("Play: Heavy hit. Synth");
 
     // A pick the sound does not have is no pick.
     expect(entryOf("impact.hit", { picks: { "impact.hit": 99 } })).toEqual(

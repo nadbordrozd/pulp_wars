@@ -171,7 +171,7 @@ function fail(message: string): never {
 }
 
 /** A biquad filter in place (direct form I). */
-function biquad(
+export function biquad(
   samples: Float32Array,
   b: readonly [number, number, number],
   a: readonly [number, number],
@@ -194,7 +194,7 @@ function biquad(
 }
 
 /** The two K-weighting filters of BS.1770 for a sample rate. */
-function kWeighting(rate: number): {
+export function kWeighting(rate: number): {
   shelf: { b: [number, number, number]; a: [number, number] };
   highpass: { b: [number, number, number]; a: [number, number] };
 } {

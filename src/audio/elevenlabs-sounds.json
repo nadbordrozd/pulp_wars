@@ -1,0 +1,2213 @@
+{
+  "provider": "ElevenLabs sound effects",
+  "provenance": "ElevenLabs sound effects, generated 2026-10-14",
+  "bead": "pulp_wars-2yc.51",
+  "model": "eleven_text_to_sound_v2",
+  "sounds": [
+    {
+      "id": "attack.melee",
+      "default": 104,
+      "confidence": "high",
+      "takes": [
+        {
+          "n": 104,
+          "file": "attack-melee-104.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.436,
+          "gain": 0.52,
+          "passed": true,
+          "prompt": "A cartoon sword swing: one quick clean whoosh of a blade through the air, light and airy, not distorted, no impact.",
+          "note": "0.436 s, hard attack, centred near 1.6 kHz, 62% of its energy under 1 kHz, crest 16.2 dB."
+        },
+        {
+          "n": 105,
+          "file": "attack-melee-105.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.5,
+          "gain": 0.46,
+          "passed": true,
+          "prompt": "A cartoon sword swing: one quick clean whoosh of a blade through the air, light and airy, not distorted, no impact.",
+          "note": "0.5 s, hard attack, centred near 3.7 kHz, 40% of its energy under 1 kHz, crest 15.4 dB."
+        },
+        {
+          "n": 103,
+          "file": "attack-melee-103.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.5,
+          "gain": 0.52,
+          "passed": true,
+          "prompt": "A fast sword swing whoosh: a short sharp swish of a blade cutting the air, no impact.",
+          "note": "0.5 s, hard attack, centred near 81 Hz, 100% of its energy under 1 kHz, crest 11.3 dB."
+        }
+      ]
+    },
+    {
+      "id": "attack.ranged",
+      "default": 102,
+      "confidence": "high",
+      "takes": [
+        {
+          "n": 102,
+          "file": "attack-ranged-102.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.411,
+          "gain": 0.32,
+          "passed": true,
+          "prompt": "A bow string twang and a quick arrow whoosh flying away, no impact.",
+          "note": "0.411 s, hard attack, centred near 2.6 kHz, 45% of its energy under 1 kHz, crest 14.5 dB."
+        },
+        {
+          "n": 103,
+          "file": "attack-ranged-103.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.5,
+          "gain": 0.4,
+          "passed": true,
+          "prompt": "A bow string twang and a quick arrow whoosh flying away, no impact.",
+          "note": "0.5 s, hard attack, centred near 899 Hz, 93% of its energy under 1 kHz, crest 17.1 dB."
+        },
+        {
+          "n": 101,
+          "file": "attack-ranged-101.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.5,
+          "gain": 0.27,
+          "passed": true,
+          "prompt": "A bow string twang and a quick arrow whoosh flying away, no impact.",
+          "note": "0.5 s, hard attack, centred near 1.7 kHz, 70% of its energy under 1 kHz, crest 13.4 dB."
+        }
+      ]
+    },
+    {
+      "id": "attack.siege",
+      "default": 102,
+      "confidence": "medium",
+      "takes": [
+        {
+          "n": 102,
+          "file": "attack-siege-102.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.8,
+          "gain": 0.53,
+          "passed": true,
+          "prompt": "A wooden catapult arm released: a creak, a heavy wooden thunk and a big boulder whooshing away, no impact.",
+          "note": "0.8 s, hard attack, centred near 277 Hz, 96% of its energy under 1 kHz, crest 15.1 dB."
+        },
+        {
+          "n": 104,
+          "file": "attack-siege-104.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.8,
+          "gain": 0.5,
+          "passed": true,
+          "prompt": "A catapult fires: a wooden creak and a heavy wooden thunk as the arm swings, then a deep whoosh of a boulder flying away, clean and not distorted, no impact.",
+          "note": "0.8 s, hard attack, centred near 168 Hz, 96% of its energy under 1 kHz, crest 10.3 dB."
+        },
+        {
+          "n": 103,
+          "file": "attack-siege-103.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.8,
+          "gain": 0.6,
+          "passed": true,
+          "prompt": "A wooden catapult arm released: a creak, a heavy wooden thunk and a big boulder whooshing away, no impact.",
+          "note": "0.8 s, hard attack, centred near 315 Hz, 98% of its energy under 1 kHz, crest 15.5 dB."
+        }
+      ]
+    },
+    {
+      "id": "attack.ray",
+      "default": 103,
+      "confidence": "medium",
+      "takes": [
+        {
+          "n": 103,
+          "file": "attack-ray-103.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.6,
+          "gain": 0.4,
+          "passed": true,
+          "prompt": "A retro 1950s ray gun zap: a wobbly electric pew laser blast.",
+          "note": "0.6 s, hard attack, centred near 528 Hz, 93% of its energy under 1 kHz, crest 12.4 dB."
+        },
+        {
+          "n": 101,
+          "file": "attack-ray-101.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.6,
+          "gain": 0.38,
+          "passed": true,
+          "prompt": "A retro 1950s ray gun zap: a wobbly electric pew laser blast.",
+          "note": "0.6 s, hard attack, centred near 802 Hz, 75% of its energy under 1 kHz, crest 14.3 dB."
+        },
+        {
+          "n": 102,
+          "file": "attack-ray-102.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.6,
+          "gain": 0.55,
+          "passed": true,
+          "prompt": "A retro 1950s ray gun zap: a wobbly electric pew laser blast.",
+          "note": "0.6 s, hard attack, centred near 580 Hz, 88% of its energy under 1 kHz, crest 14 dB."
+        }
+      ]
+    },
+    {
+      "id": "attack.magic",
+      "default": 103,
+      "confidence": "medium",
+      "takes": [
+        {
+          "n": 103,
+          "file": "attack-magic-103.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.7,
+          "gain": 0.7,
+          "passed": true,
+          "prompt": "A dark magic bolt cast by a skeleton wizard: a crackling eerie energy whoosh with a low ghostly hum.",
+          "note": "0.7 s, hard attack, centred near 2.7 kHz, 54% of its energy under 1 kHz, crest 18 dB."
+        },
+        {
+          "n": 101,
+          "file": "attack-magic-101.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.7,
+          "gain": 0.79,
+          "passed": true,
+          "prompt": "A dark magic bolt cast by a skeleton wizard: a crackling eerie energy whoosh with a low ghostly hum.",
+          "note": "0.7 s, hard attack, centred near 2.3 kHz, 65% of its energy under 1 kHz, crest 18.5 dB."
+        },
+        {
+          "n": 102,
+          "file": "attack-magic-102.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.7,
+          "gain": 0.83,
+          "passed": true,
+          "prompt": "A dark magic bolt cast by a skeleton wizard: a crackling eerie energy whoosh with a low ghostly hum.",
+          "note": "0.7 s, swells over 90 ms, centred near 626 Hz, 90% of its energy under 1 kHz, crest 13.3 dB."
+        }
+      ]
+    },
+    {
+      "id": "attack.rocket",
+      "default": 103,
+      "confidence": "high",
+      "takes": [
+        {
+          "n": 103,
+          "file": "attack-rocket-103.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.8,
+          "gain": 0.18,
+          "passed": true,
+          "prompt": "A firework rocket launched: a fizzing hiss and a whoosh as it shoots off, no explosion.",
+          "note": "0.8 s, hard attack, centred near 4.1 kHz, 19% of its energy under 1 kHz, crest 10.8 dB."
+        },
+        {
+          "n": 102,
+          "file": "attack-rocket-102.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.8,
+          "gain": 0.2,
+          "passed": true,
+          "prompt": "A firework rocket launched: a fizzing hiss and a whoosh as it shoots off, no explosion.",
+          "note": "0.8 s, hard attack, centred near 5.1 kHz, 12% of its energy under 1 kHz, crest 13.1 dB."
+        }
+      ]
+    },
+    {
+      "id": "attack.gatling",
+      "default": 102,
+      "confidence": "medium",
+      "takes": [
+        {
+          "n": 102,
+          "file": "attack-gatling-102.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.6,
+          "gain": 0.46,
+          "passed": true,
+          "prompt": "A steampunk gatling gun firing one short burst: a rapid mechanical rat-a-tat of five shots.",
+          "note": "0.6 s, hard attack, centred near 1.4 kHz, 68% of its energy under 1 kHz, crest 11.7 dB."
+        },
+        {
+          "n": 101,
+          "file": "attack-gatling-101.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.6,
+          "gain": 0.37,
+          "passed": true,
+          "prompt": "A steampunk gatling gun firing one short burst: a rapid mechanical rat-a-tat of five shots.",
+          "note": "0.6 s, hard attack, centred near 1.8 kHz, 76% of its energy under 1 kHz, crest 9.8 dB."
+        },
+        {
+          "n": 103,
+          "file": "attack-gatling-103.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.6,
+          "gain": 0.43,
+          "passed": true,
+          "prompt": "A steampunk gatling gun firing one short burst: a rapid mechanical rat-a-tat of five shots.",
+          "note": "0.6 s, hard attack, centred near 1.3 kHz, 79% of its energy under 1 kHz, crest 7.9 dB."
+        }
+      ]
+    },
+    {
+      "id": "attack.cannon",
+      "default": 104,
+      "confidence": "medium",
+      "takes": [
+        {
+          "n": 104,
+          "file": "attack-cannon-104.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.9,
+          "gain": 0.57,
+          "passed": true,
+          "prompt": "A pirate ship cannon fires once: a sharp deep boom with a short crack.",
+          "note": "0.9 s, hard attack, centred near 156 Hz, 98% of its energy under 1 kHz, crest 12.2 dB."
+        },
+        {
+          "n": 101,
+          "file": "attack-cannon-101.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.9,
+          "gain": 1,
+          "passed": true,
+          "prompt": "An old iron cannon firing a single shot: one deep punchy boom.",
+          "note": "0.9 s, hard attack, centred near 29 Hz, 100% of its energy under 1 kHz, crest 11.3 dB."
+        },
+        {
+          "n": 103,
+          "file": "attack-cannon-103.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.9,
+          "gain": 1,
+          "passed": true,
+          "prompt": "An old iron cannon firing a single shot: one deep punchy boom.",
+          "note": "0.9 s, hard attack, centred near 32 Hz, 100% of its energy under 1 kHz, crest 13.2 dB."
+        }
+      ]
+    },
+    {
+      "id": "attack.pop",
+      "default": 101,
+      "confidence": "high",
+      "takes": [
+        {
+          "n": 101,
+          "file": "attack-pop-101.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.35,
+          "gain": 0.28,
+          "passed": true,
+          "prompt": "A toy gumball launcher firing: a hollow rubbery pop like a cork shot from a toy gun, bright and bouncy, very short.",
+          "note": "0.35 s, hard attack, centred near 3.2 kHz, 24% of its energy under 1 kHz, crest 15.9 dB."
+        },
+        {
+          "n": 102,
+          "file": "attack-pop-102.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.349,
+          "gain": 0.27,
+          "passed": true,
+          "prompt": "A toy gumball launcher firing: a hollow rubbery pop like a cork shot from a toy gun, bright and bouncy, very short.",
+          "note": "0.349 s, hard attack, centred near 2.9 kHz, 60% of its energy under 1 kHz, crest 16.1 dB."
+        },
+        {
+          "n": 103,
+          "file": "attack-pop-103.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.259,
+          "gain": 0.33,
+          "passed": true,
+          "prompt": "A toy gumball launcher firing: a hollow rubbery pop like a cork shot from a toy gun, bright and bouncy, very short.",
+          "note": "0.259 s, hard attack, centred near 1.6 kHz, 42% of its energy under 1 kHz, crest 16.2 dB."
+        }
+      ]
+    },
+    {
+      "id": "impact.hit",
+      "default": 102,
+      "confidence": "high",
+      "takes": [
+        {
+          "n": 102,
+          "file": "impact-hit-102.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.35,
+          "gain": 0.6,
+          "passed": true,
+          "prompt": "A cartoon punch impact: one punchy meaty thwack, very short.",
+          "note": "0.35 s, hard attack, centred near 225 Hz, 90% of its energy under 1 kHz, crest 11.2 dB."
+        },
+        {
+          "n": 101,
+          "file": "impact-hit-101.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.35,
+          "gain": 1,
+          "passed": true,
+          "prompt": "A cartoon punch impact: one punchy meaty thwack, very short.",
+          "note": "0.35 s, hard attack, centred near 845 Hz, 65% of its energy under 1 kHz, crest 19.2 dB."
+        },
+        {
+          "n": 103,
+          "file": "impact-hit-103.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.35,
+          "gain": 0.67,
+          "passed": true,
+          "prompt": "A cartoon punch impact: one punchy meaty thwack, very short.",
+          "note": "0.35 s, hard attack, centred near 600 Hz, 80% of its energy under 1 kHz, crest 11.3 dB."
+        }
+      ]
+    },
+    {
+      "id": "impact.heavy",
+      "default": 102,
+      "confidence": "high",
+      "takes": [
+        {
+          "n": 102,
+          "file": "impact-heavy-102.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.7,
+          "gain": 1,
+          "passed": true,
+          "prompt": "A heavy impact: a big wooden and stone crashing thud, deep and punchy, short.",
+          "note": "0.7 s, hard attack, centred near 216 Hz, 100% of its energy under 1 kHz, crest 19.5 dB."
+        },
+        {
+          "n": 101,
+          "file": "impact-heavy-101.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.7,
+          "gain": 0.52,
+          "passed": true,
+          "prompt": "A heavy impact: a big wooden and stone crashing thud, deep and punchy, short.",
+          "note": "0.7 s, hard attack, centred near 107 Hz, 99% of its energy under 1 kHz, crest 9.5 dB."
+        },
+        {
+          "n": 103,
+          "file": "impact-heavy-103.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.7,
+          "gain": 0.67,
+          "passed": true,
+          "prompt": "A heavy impact: a big wooden and stone crashing thud, deep and punchy, short.",
+          "note": "0.7 s, hard attack, centred near 130 Hz, 99% of its energy under 1 kHz, crest 11.5 dB."
+        }
+      ]
+    },
+    {
+      "id": "impact.explosion",
+      "default": 101,
+      "confidence": "high",
+      "takes": [
+        {
+          "n": 101,
+          "file": "impact-explosion-101.m4a",
+          "generated": "2026-10-14",
+          "seconds": 1.2,
+          "gain": 0.6,
+          "passed": true,
+          "prompt": "A cartoon bomb explosion: a punchy deep boom with crackling debris, short, no long rumble.",
+          "note": "1.2 s, hard attack, centred near 74 Hz, 99% of its energy under 1 kHz, crest 10.2 dB."
+        },
+        {
+          "n": 103,
+          "file": "impact-explosion-103.m4a",
+          "generated": "2026-10-14",
+          "seconds": 1.2,
+          "gain": 0.74,
+          "passed": true,
+          "prompt": "A cartoon bomb explosion: a punchy deep boom with crackling debris, short, no long rumble.",
+          "note": "1.2 s, hard attack, centred near 71 Hz, 99% of its energy under 1 kHz, crest 12.6 dB."
+        },
+        {
+          "n": 104,
+          "file": "impact-explosion-104.m4a",
+          "generated": "2026-10-14",
+          "seconds": 1.2,
+          "gain": 0.65,
+          "passed": true,
+          "prompt": "A cartoon bomb goes off: one round punchy boom with a short crackle of debris, clean and not distorted, no long rumble.",
+          "note": "1.2 s, hard attack, centred near 295 Hz, 89% of its energy under 1 kHz, crest 16.7 dB."
+        }
+      ]
+    },
+    {
+      "id": "impact.ice",
+      "default": 101,
+      "confidence": "high",
+      "takes": [
+        {
+          "n": 101,
+          "file": "impact-ice-101.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.7,
+          "gain": 0.81,
+          "passed": true,
+          "prompt": "Ice shattering: a sharp crack and tinkling crystal shards falling, short.",
+          "note": "0.7 s, hard attack, centred near 4.8 kHz, 5% of its energy under 1 kHz, crest 24.4 dB."
+        },
+        {
+          "n": 102,
+          "file": "impact-ice-102.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.7,
+          "gain": 0.9,
+          "passed": true,
+          "prompt": "Ice shattering: a sharp crack and tinkling crystal shards falling, short.",
+          "note": "0.7 s, hard attack, centred near 7.8 kHz, 2% of its energy under 1 kHz, crest 25.5 dB."
+        },
+        {
+          "n": 103,
+          "file": "impact-ice-103.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.7,
+          "gain": 0.85,
+          "passed": true,
+          "prompt": "Ice shattering: a sharp crack and tinkling crystal shards falling, short.",
+          "note": "0.7 s, quick attack, centred near 4.7 kHz, 5% of its energy under 1 kHz, crest 24.8 dB."
+        }
+      ]
+    },
+    {
+      "id": "impact.splat",
+      "default": 105,
+      "confidence": "high",
+      "takes": [
+        {
+          "n": 105,
+          "file": "impact-splat-105.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.406,
+          "gain": 1,
+          "passed": true,
+          "prompt": "A soft custard pie lands with a wet squishy splat, gentle and clean, not distorted, short.",
+          "note": "0.406 s, hard attack, centred near 2.0 kHz, 32% of its energy under 1 kHz, crest 22.7 dB."
+        },
+        {
+          "n": 104,
+          "file": "impact-splat-104.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.5,
+          "gain": 0.97,
+          "passed": true,
+          "prompt": "A soft custard pie lands with a wet squishy splat, gentle and clean, not distorted, short.",
+          "note": "0.5 s, hard attack, centred near 2.5 kHz, 38% of its energy under 1 kHz, crest 21.2 dB."
+        },
+        {
+          "n": 103,
+          "file": "impact-splat-103.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.479,
+          "gain": 0.5,
+          "passed": true,
+          "prompt": "A wet cream pie hitting a face: a squelchy splat, short.",
+          "note": "0.479 s, hard attack, centred near 996 Hz, 74% of its energy under 1 kHz, crest 14.4 dB."
+        }
+      ]
+    },
+    {
+      "id": "impact.shield",
+      "default": 101,
+      "confidence": "medium",
+      "takes": [
+        {
+          "n": 101,
+          "file": "impact-shield-101.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.6,
+          "gain": 0.68,
+          "passed": true,
+          "prompt": "A sword striking a round metal shield: one clang with a short metallic ring.",
+          "note": "0.6 s, hard attack, centred near 1.1 kHz, 35% of its energy under 1 kHz, crest 17.5 dB."
+        },
+        {
+          "n": 102,
+          "file": "impact-shield-102.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.6,
+          "gain": 0.6,
+          "passed": true,
+          "prompt": "A sword striking a round metal shield: one clang with a short metallic ring.",
+          "note": "0.6 s, hard attack, centred near 925 Hz, 94% of its energy under 1 kHz, crest 16.1 dB."
+        },
+        {
+          "n": 104,
+          "file": "impact-shield-104.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.6,
+          "gain": 0.51,
+          "passed": true,
+          "prompt": "A sword hits a round iron shield: one bright metallic clang with a short ring.",
+          "note": "0.6 s, hard attack, centred near 1.2 kHz, 6% of its energy under 1 kHz, crest 15.2 dB."
+        }
+      ]
+    },
+    {
+      "id": "impact.splash",
+      "default": 102,
+      "confidence": "high",
+      "takes": [
+        {
+          "n": 102,
+          "file": "impact-splash-102.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.5,
+          "gain": 1,
+          "passed": true,
+          "prompt": "A small water splash: a quick splosh of something dropped in a pond, short.",
+          "note": "0.5 s, hard attack, centred near 2.8 kHz, 43% of its energy under 1 kHz, crest 23.3 dB."
+        },
+        {
+          "n": 103,
+          "file": "impact-splash-103.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.5,
+          "gain": 0.73,
+          "passed": true,
+          "prompt": "A small water splash: a quick splosh of something dropped in a pond, short.",
+          "note": "0.5 s, hard attack, centred near 805 Hz, 90% of its energy under 1 kHz, crest 17.7 dB."
+        },
+        {
+          "n": 101,
+          "file": "impact-splash-101.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.5,
+          "gain": 1,
+          "passed": true,
+          "prompt": "A small water splash: a quick splosh of something dropped in a pond, short.",
+          "note": "0.5 s, hard attack, centred near 812 Hz, 89% of its energy under 1 kHz, crest 21.2 dB."
+        }
+      ]
+    },
+    {
+      "id": "unit.hurt",
+      "default": 102,
+      "confidence": "medium",
+      "takes": [
+        {
+          "n": 102,
+          "file": "unit-hurt-102.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.45,
+          "gain": 0.36,
+          "passed": true,
+          "prompt": "A small cartoon soldier gets hurt: one short wordless pained grunt, oof.",
+          "note": "0.45 s, hard attack, centred near 562 Hz, 98% of its energy under 1 kHz, crest 10.6 dB."
+        },
+        {
+          "n": 101,
+          "file": "unit-hurt-101.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.45,
+          "gain": 0.38,
+          "passed": true,
+          "prompt": "A small cartoon soldier gets hurt: one short wordless pained grunt, oof.",
+          "note": "0.45 s, hard attack, centred near 751 Hz, 88% of its energy under 1 kHz, crest 11.4 dB."
+        }
+      ]
+    },
+    {
+      "id": "unit.death",
+      "default": 101,
+      "confidence": "medium",
+      "takes": [
+        {
+          "n": 101,
+          "file": "unit-death-101.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.9,
+          "gain": 0.37,
+          "passed": true,
+          "prompt": "A cartoon soldier is defeated: a comic wordless groan falling in pitch, then a soft thud as he drops, not gory.",
+          "note": "0.9 s, hard attack, centred near 1.2 kHz, 46% of its energy under 1 kHz, crest 12.8 dB."
+        },
+        {
+          "n": 103,
+          "file": "unit-death-103.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.9,
+          "gain": 0.34,
+          "passed": true,
+          "prompt": "A cartoon soldier is defeated: a comic wordless groan falling in pitch, then a soft thud as he drops, not gory.",
+          "note": "0.9 s, hard attack, centred near 897 Hz, 66% of its energy under 1 kHz, crest 10.3 dB."
+        },
+        {
+          "n": 102,
+          "file": "unit-death-102.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.9,
+          "gain": 0.34,
+          "passed": true,
+          "prompt": "A cartoon soldier is defeated: a comic wordless groan falling in pitch, then a soft thud as he drops, not gory.",
+          "note": "0.9 s, hard attack, centred near 1.0 kHz, 55% of its energy under 1 kHz, crest 9.8 dB."
+        }
+      ]
+    },
+    {
+      "id": "unit.step",
+      "default": 105,
+      "confidence": "high",
+      "takes": [
+        {
+          "n": 105,
+          "file": "unit-step-105.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.2,
+          "gain": 0.12,
+          "passed": true,
+          "prompt": "One single tiny footstep on soft earth: a short muted thud, very short, nothing else.",
+          "note": "0.2 s, hard attack, centred near 24 Hz, 100% of its energy under 1 kHz, crest 8.2 dB."
+        },
+        {
+          "n": 101,
+          "file": "unit-step-101.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.2,
+          "gain": 0.73,
+          "passed": true,
+          "prompt": "One single soft footstep on grass: a tiny light boot thump, very short.",
+          "note": "0.2 s, hard attack, centred near 146 Hz, 99% of its energy under 1 kHz, crest 8.6 dB."
+        }
+      ]
+    },
+    {
+      "id": "unit.train",
+      "default": null,
+      "confidence": "low",
+      "takes": [
+        {
+          "n": 107,
+          "file": "unit-train-107.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.656,
+          "gain": 0.65,
+          "passed": false,
+          "prompt": "A new recruit joins the army: a quick snare drum flourish and a short toy trumpet toot, played softly, ending quickly.",
+          "note": "0.656 s, hard attack, centred near 838 Hz, 88% of its energy under 1 kHz, crest 19.7 dB."
+        },
+        {
+          "n": 108,
+          "file": "unit-train-108.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.9,
+          "gain": 0.76,
+          "passed": false,
+          "prompt": "A new recruit joins the army: a quick snare drum flourish and a short toy trumpet toot, played softly, ending quickly.",
+          "note": "0.9 s, hard attack, centred near 1.2 kHz, 78% of its energy under 1 kHz, crest 22.7 dB."
+        }
+      ]
+    },
+    {
+      "id": "unit.levelup",
+      "default": 101,
+      "confidence": "high",
+      "takes": [
+        {
+          "n": 101,
+          "file": "unit-levelup-101.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.792,
+          "gain": 0.23,
+          "passed": true,
+          "prompt": "A unit is promoted: a quick rising sparkly bell arpeggio, bright and happy.",
+          "note": "0.792 s, hard attack, centred near 1.2 kHz, 51% of its energy under 1 kHz, crest 10.4 dB."
+        },
+        {
+          "n": 102,
+          "file": "unit-levelup-102.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.8,
+          "gain": 0.49,
+          "passed": true,
+          "prompt": "A unit is promoted: a quick rising sparkly bell arpeggio, bright and happy.",
+          "note": "0.8 s, hard attack, centred near 1.6 kHz, 35% of its energy under 1 kHz, crest 18 dB."
+        }
+      ]
+    },
+    {
+      "id": "support.heal",
+      "default": 101,
+      "confidence": "medium",
+      "takes": [
+        {
+          "n": 101,
+          "file": "support-heal-101.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.9,
+          "gain": 0.32,
+          "passed": true,
+          "prompt": "A gentle healing spell: a soft rising harp glissando with a warm magical shimmer.",
+          "note": "0.9 s, hard attack, centred near 1.7 kHz, 81% of its energy under 1 kHz, crest 13.8 dB."
+        },
+        {
+          "n": 102,
+          "file": "support-heal-102.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.9,
+          "gain": 0.51,
+          "passed": true,
+          "prompt": "A gentle healing spell: a soft rising harp glissando with a warm magical shimmer.",
+          "note": "0.9 s, hard attack, centred near 1.5 kHz, 74% of its energy under 1 kHz, crest 17.6 dB."
+        }
+      ]
+    },
+    {
+      "id": "support.rally",
+      "default": 101,
+      "confidence": "low",
+      "takes": [
+        {
+          "n": 101,
+          "file": "support-rally-101.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.867,
+          "gain": 0.21,
+          "passed": true,
+          "prompt": "A rallying war horn: one bold heroic horn blast calling the troops.",
+          "note": "0.867 s, hard attack, centred near 419 Hz, 100% of its energy under 1 kHz, crest 13.2 dB."
+        }
+      ]
+    },
+    {
+      "id": "support.dark",
+      "default": 104,
+      "confidence": "medium",
+      "takes": [
+        {
+          "n": 104,
+          "file": "support-dark-104.m4a",
+          "generated": "2026-10-14",
+          "seconds": 1,
+          "gain": 0.5,
+          "passed": true,
+          "prompt": "Necromancy: a sudden burst of dark magic, a low ominous whoosh that starts at once, with a wordless ghostly moan, clean and not distorted.",
+          "note": "1 s, hard attack, centred near 33 Hz, 100% of its energy under 1 kHz, crest 13.1 dB."
+        },
+        {
+          "n": 106,
+          "file": "support-dark-106.m4a",
+          "generated": "2026-10-14",
+          "seconds": 1,
+          "gain": 0.23,
+          "passed": true,
+          "prompt": "Necromancy: a sudden burst of dark magic, a low ominous whoosh that starts at once, with a wordless ghostly moan, clean and not distorted.",
+          "note": "1 s, swells over 110 ms, centred near 51 Hz, 100% of its energy under 1 kHz, crest 8.9 dB."
+        }
+      ]
+    },
+    {
+      "id": "support.drain",
+      "default": 104,
+      "confidence": "medium",
+      "takes": [
+        {
+          "n": 104,
+          "file": "support-drain-104.m4a",
+          "generated": "2026-10-14",
+          "seconds": 1,
+          "gain": 0.42,
+          "passed": true,
+          "prompt": "A vampire drains life: a quick slurping magical suction whoosh rising in pitch, ending quickly.",
+          "note": "1 s, quick attack, centred near 2.2 kHz, 77% of its energy under 1 kHz, crest 15.2 dB."
+        },
+        {
+          "n": 101,
+          "file": "support-drain-101.m4a",
+          "generated": "2026-10-14",
+          "seconds": 1,
+          "gain": 0.32,
+          "passed": true,
+          "prompt": "A vampire drains life: a slurping magical suction whoosh rising in pitch.",
+          "note": "1 s, quick attack, centred near 1.2 kHz, 78% of its energy under 1 kHz, crest 13.4 dB."
+        },
+        {
+          "n": 103,
+          "file": "support-drain-103.m4a",
+          "generated": "2026-10-14",
+          "seconds": 1,
+          "gain": 0.33,
+          "passed": true,
+          "prompt": "A vampire drains life: a slurping magical suction whoosh rising in pitch.",
+          "note": "1 s, swells over 95 ms, centred near 2.1 kHz, 73% of its energy under 1 kHz, crest 13.3 dB."
+        }
+      ]
+    },
+    {
+      "id": "special.beam",
+      "default": 106,
+      "confidence": "medium",
+      "takes": [
+        {
+          "n": 106,
+          "file": "special-beam-106.m4a",
+          "generated": "2026-10-14",
+          "seconds": 1,
+          "gain": 0.38,
+          "passed": true,
+          "prompt": "A flying saucer beam: a short warbling sci-fi teleport hum that rises and stops quickly, clean and not distorted.",
+          "note": "1 s, hard attack, centred near 138 Hz, 100% of its energy under 1 kHz, crest 10.8 dB."
+        },
+        {
+          "n": 105,
+          "file": "special-beam-105.m4a",
+          "generated": "2026-10-14",
+          "seconds": 1,
+          "gain": 0.58,
+          "passed": true,
+          "prompt": "A flying saucer beam: a short warbling sci-fi teleport hum that rises and stops quickly, clean and not distorted.",
+          "note": "1 s, hard attack, centred near 100 Hz, 100% of its energy under 1 kHz, crest 12.6 dB."
+        }
+      ]
+    },
+    {
+      "id": "special.mind",
+      "default": 107,
+      "confidence": "medium",
+      "takes": [
+        {
+          "n": 107,
+          "file": "special-mind-107.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.9,
+          "gain": 0.24,
+          "passed": true,
+          "prompt": "Hypnotic mind control: a soft gentle theremin wobble that spirals, quiet and smooth, retro 1950s sci-fi, stopping quickly.",
+          "note": "0.9 s, hard attack, centred near 455 Hz, 100% of its energy under 1 kHz, crest 9.6 dB."
+        },
+        {
+          "n": 109,
+          "file": "special-mind-109.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.9,
+          "gain": 0.23,
+          "passed": true,
+          "prompt": "Hypnotic mind control: a soft gentle theremin wobble that spirals, quiet and smooth, retro 1950s sci-fi, stopping quickly.",
+          "note": "0.9 s, hard attack, centred near 506 Hz, 100% of its energy under 1 kHz, crest 9.4 dB."
+        }
+      ]
+    },
+    {
+      "id": "special.freeze",
+      "default": 103,
+      "confidence": "medium",
+      "takes": [
+        {
+          "n": 103,
+          "file": "special-freeze-103.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.687,
+          "gain": 0.63,
+          "passed": true,
+          "prompt": "A freezing spell: a quick crystalline crackle of ice forming with a cold shimmer.",
+          "note": "0.687 s, quick attack, centred near 8.7 kHz, 8% of its energy under 1 kHz, crest 24.8 dB."
+        },
+        {
+          "n": 101,
+          "file": "special-freeze-101.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.8,
+          "gain": 0.41,
+          "passed": true,
+          "prompt": "A freezing spell: a quick crystalline crackle of ice forming with a cold shimmer.",
+          "note": "0.8 s, hard attack, centred near 4.1 kHz, 25% of its energy under 1 kHz, crest 18.2 dB."
+        },
+        {
+          "n": 102,
+          "file": "special-freeze-102.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.8,
+          "gain": 0.45,
+          "passed": true,
+          "prompt": "A freezing spell: a quick crystalline crackle of ice forming with a cold shimmer.",
+          "note": "0.8 s, hard attack, centred near 6.8 kHz, 21% of its energy under 1 kHz, crest 21.3 dB."
+        }
+      ]
+    },
+    {
+      "id": "special.burrow",
+      "default": 102,
+      "confidence": "medium",
+      "takes": [
+        {
+          "n": 102,
+          "file": "special-burrow-102.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.9,
+          "gain": 0.59,
+          "passed": true,
+          "prompt": "Digging underground fast: a rumbling burrow with crunching earth and gravel.",
+          "note": "0.9 s, hard attack, centred near 1.9 kHz, 71% of its energy under 1 kHz, crest 18.8 dB."
+        },
+        {
+          "n": 101,
+          "file": "special-burrow-101.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.9,
+          "gain": 0.73,
+          "passed": true,
+          "prompt": "Digging underground fast: a rumbling burrow with crunching earth and gravel.",
+          "note": "0.9 s, hard attack, centred near 775 Hz, 91% of its energy under 1 kHz, crest 20.3 dB."
+        },
+        {
+          "n": 103,
+          "file": "special-burrow-103.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.9,
+          "gain": 0.55,
+          "passed": true,
+          "prompt": "Digging underground fast: a rumbling burrow with crunching earth and gravel.",
+          "note": "0.9 s, hard attack, centred near 1.6 kHz, 67% of its energy under 1 kHz, crest 18.2 dB."
+        }
+      ]
+    },
+    {
+      "id": "special.hatch",
+      "default": 103,
+      "confidence": "high",
+      "takes": [
+        {
+          "n": 103,
+          "file": "special-hatch-103.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.5,
+          "gain": 0.25,
+          "passed": true,
+          "prompt": "A big egg cracking open: a crisp eggshell crack and a little pop.",
+          "note": "0.5 s, hard attack, centred near 1.9 kHz, 75% of its energy under 1 kHz, crest 20.3 dB."
+        },
+        {
+          "n": 101,
+          "file": "special-hatch-101.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.5,
+          "gain": 0.29,
+          "passed": true,
+          "prompt": "A big egg cracking open: a crisp eggshell crack and a little pop.",
+          "note": "0.5 s, hard attack, centred near 1.7 kHz, 41% of its energy under 1 kHz, crest 21.2 dB."
+        },
+        {
+          "n": 102,
+          "file": "special-hatch-102.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.5,
+          "gain": 0.19,
+          "passed": true,
+          "prompt": "A big egg cracking open: a crisp eggshell crack and a little pop.",
+          "note": "0.5 s, hard attack, centred near 1.4 kHz, 86% of its energy under 1 kHz, crest 16.9 dB."
+        }
+      ]
+    },
+    {
+      "id": "special.pop",
+      "default": 101,
+      "confidence": "high",
+      "takes": [
+        {
+          "n": 101,
+          "file": "special-pop-101.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.153,
+          "gain": 0.43,
+          "passed": true,
+          "prompt": "A small pop like a bubble or a cork popping, bright, very short.",
+          "note": "0.153 s, hard attack, centred near 411 Hz, 100% of its energy under 1 kHz, crest 10.5 dB."
+        },
+        {
+          "n": 102,
+          "file": "special-pop-102.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.25,
+          "gain": 1,
+          "passed": true,
+          "prompt": "A small pop like a bubble or a cork popping, bright, very short.",
+          "note": "0.25 s, hard attack, centred near 419 Hz, 100% of its energy under 1 kHz, crest 19.7 dB."
+        },
+        {
+          "n": 103,
+          "file": "special-pop-103.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.25,
+          "gain": 0.6,
+          "passed": true,
+          "prompt": "A small pop like a bubble or a cork popping, bright, very short.",
+          "note": "0.25 s, hard attack, centred near 444 Hz, 100% of its energy under 1 kHz, crest 12.8 dB."
+        }
+      ]
+    },
+    {
+      "id": "special.puff",
+      "default": 101,
+      "confidence": "high",
+      "takes": [
+        {
+          "n": 101,
+          "file": "special-puff-101.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.5,
+          "gain": 0.18,
+          "passed": true,
+          "prompt": "A quick puff of steam: a short soft hiss burst.",
+          "note": "0.5 s, hard attack, centred near 6.5 kHz, 9% of its energy under 1 kHz, crest 13.9 dB."
+        },
+        {
+          "n": 103,
+          "file": "special-puff-103.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.5,
+          "gain": 0.16,
+          "passed": true,
+          "prompt": "A quick puff of steam: a short soft hiss burst.",
+          "note": "0.5 s, hard attack, centred near 7.2 kHz, 3% of its energy under 1 kHz, crest 12.8 dB."
+        },
+        {
+          "n": 102,
+          "file": "special-puff-102.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.5,
+          "gain": 0.22,
+          "passed": true,
+          "prompt": "A quick puff of steam: a short soft hiss burst.",
+          "note": "0.5 s, hard attack, centred near 6.6 kHz, 15% of its energy under 1 kHz, crest 15.1 dB."
+        }
+      ]
+    },
+    {
+      "id": "special.sparkle",
+      "default": 101,
+      "confidence": "medium",
+      "takes": [
+        {
+          "n": 101,
+          "file": "special-sparkle-101.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.7,
+          "gain": 0.33,
+          "passed": true,
+          "prompt": "A magic sparkle: a bright glittering bell tree twinkle.",
+          "note": "0.7 s, hard attack, centred near 5.7 kHz, 0% of its energy under 1 kHz, crest 17.7 dB."
+        },
+        {
+          "n": 104,
+          "file": "special-sparkle-104.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.7,
+          "gain": 0.3,
+          "passed": true,
+          "prompt": "A magic sparkle: a soft glittering twinkle of small high bells.",
+          "note": "0.7 s, hard attack, centred near 9.3 kHz, 5% of its energy under 1 kHz, crest 17 dB."
+        },
+        {
+          "n": 102,
+          "file": "special-sparkle-102.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.7,
+          "gain": 0.37,
+          "passed": true,
+          "prompt": "A magic sparkle: a bright glittering bell tree twinkle.",
+          "note": "0.7 s, hard attack, centred near 4.0 kHz, 0% of its energy under 1 kHz, crest 18.7 dB."
+        }
+      ]
+    },
+    {
+      "id": "special.dizzy",
+      "default": 101,
+      "confidence": "medium",
+      "takes": [
+        {
+          "n": 101,
+          "file": "special-dizzy-101.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.9,
+          "gain": 0.19,
+          "passed": true,
+          "prompt": "Cartoon dizziness: a woozy wobbling slide whistle with little tweeting birds.",
+          "note": "0.9 s, hard attack, centred near 702 Hz, 81% of its energy under 1 kHz, crest 7.7 dB."
+        },
+        {
+          "n": 105,
+          "file": "special-dizzy-105.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.9,
+          "gain": 0.18,
+          "passed": true,
+          "prompt": "Cartoon dizziness: a short woozy slide whistle wobble with two little bird tweets, ending quickly, clean and not distorted.",
+          "note": "0.9 s, hard attack, centred near 710 Hz, 100% of its energy under 1 kHz, crest 8 dB."
+        },
+        {
+          "n": 104,
+          "file": "special-dizzy-104.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.9,
+          "gain": 0.21,
+          "passed": true,
+          "prompt": "Cartoon dizziness: a short woozy slide whistle wobble with two little bird tweets, ending quickly, clean and not distorted.",
+          "note": "0.9 s, hard attack, centred near 801 Hz, 100% of its energy under 1 kHz, crest 8.8 dB."
+        }
+      ]
+    },
+    {
+      "id": "special.boing",
+      "default": 103,
+      "confidence": "high",
+      "takes": [
+        {
+          "n": 103,
+          "file": "special-boing-103.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.421,
+          "gain": 0.66,
+          "passed": true,
+          "prompt": "A cartoon spring bounce: one bouncy boing twang.",
+          "note": "0.421 s, hard attack, centred near 656 Hz, 99% of its energy under 1 kHz, crest 16.3 dB."
+        },
+        {
+          "n": 102,
+          "file": "special-boing-102.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.5,
+          "gain": 0.51,
+          "passed": true,
+          "prompt": "A cartoon spring bounce: one bouncy boing twang.",
+          "note": "0.5 s, hard attack, centred near 805 Hz, 58% of its energy under 1 kHz, crest 15.4 dB."
+        },
+        {
+          "n": 101,
+          "file": "special-boing-101.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.476,
+          "gain": 0.58,
+          "passed": true,
+          "prompt": "A cartoon spring bounce: one bouncy boing twang.",
+          "note": "0.476 s, hard attack, centred near 697 Hz, 95% of its energy under 1 kHz, crest 17 dB."
+        }
+      ]
+    },
+    {
+      "id": "cult.ribbit",
+      "default": 103,
+      "confidence": "medium",
+      "takes": [
+        {
+          "n": 103,
+          "file": "cult-ribbit-103.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.381,
+          "gain": 0.48,
+          "passed": true,
+          "prompt": "A big frog: one deep comic ribbit croak.",
+          "note": "0.381 s, hard attack, centred near 342 Hz, 100% of its energy under 1 kHz, crest 15.2 dB."
+        },
+        {
+          "n": 101,
+          "file": "cult-ribbit-101.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.416,
+          "gain": 0.56,
+          "passed": true,
+          "prompt": "A big frog: one deep comic ribbit croak.",
+          "note": "0.416 s, quick attack, centred near 446 Hz, 100% of its energy under 1 kHz, crest 16.3 dB."
+        }
+      ]
+    },
+    {
+      "id": "cult.pamphlets",
+      "default": 104,
+      "confidence": "high",
+      "takes": [
+        {
+          "n": 104,
+          "file": "cult-pamphlets-104.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.7,
+          "gain": 0.31,
+          "passed": true,
+          "prompt": "A bundle of paper leaflets tossed into the air: a sudden quick flutter and rustle of paper, starting at once.",
+          "note": "0.7 s, quick attack, centred near 6.2 kHz, 11% of its energy under 1 kHz, crest 20.8 dB."
+        },
+        {
+          "n": 101,
+          "file": "cult-pamphlets-101.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.7,
+          "gain": 0.39,
+          "passed": true,
+          "prompt": "A handful of paper leaflets thrown in the air: a quick rustle and flutter of paper.",
+          "note": "0.7 s, swells over 75 ms, centred near 4.0 kHz, 34% of its energy under 1 kHz, crest 20.8 dB."
+        },
+        {
+          "n": 105,
+          "file": "cult-pamphlets-105.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.7,
+          "gain": 0.29,
+          "passed": true,
+          "prompt": "A bundle of paper leaflets tossed into the air: a sudden quick flutter and rustle of paper, starting at once.",
+          "note": "0.7 s, swells over 130 ms, centred near 2.5 kHz, 21% of its energy under 1 kHz, crest 19.5 dB."
+        }
+      ]
+    },
+    {
+      "id": "cult.proclaim",
+      "default": 108,
+      "confidence": "medium",
+      "takes": [
+        {
+          "n": 108,
+          "file": "cult-proclaim-108.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.902,
+          "gain": 0.51,
+          "passed": true,
+          "prompt": "A cult leader commands a town to kneel: a low ominous horn and one deep wordless chanted HAAH, spoken firmly but not shouted, short.",
+          "note": "0.902 s, hard attack, centred near 510 Hz, 93% of its energy under 1 kHz, crest 14.2 dB."
+        },
+        {
+          "n": 109,
+          "file": "cult-proclaim-109.m4a",
+          "generated": "2026-10-14",
+          "seconds": 1.1,
+          "gain": 0.57,
+          "passed": true,
+          "prompt": "A cult leader commands a town to kneel: a low ominous horn and one deep wordless chanted HAAH, spoken firmly but not shouted, short.",
+          "note": "1.1 s, hard attack, centred near 229 Hz, 99% of its energy under 1 kHz, crest 13.2 dB."
+        }
+      ]
+    },
+    {
+      "id": "cult.summon",
+      "default": 101,
+      "confidence": "medium",
+      "takes": [
+        {
+          "n": 101,
+          "file": "cult-summon-101.m4a",
+          "generated": "2026-10-14",
+          "seconds": 1.173,
+          "gain": 0.42,
+          "passed": true,
+          "prompt": "An eldritch horror is summoned: a swirling magical vortex whoosh that rises, with a deep otherworldly hum.",
+          "note": "1.173 s, hard attack, centred near 1.8 kHz, 76% of its energy under 1 kHz, crest 15.9 dB."
+        },
+        {
+          "n": 102,
+          "file": "cult-summon-102.m4a",
+          "generated": "2026-10-14",
+          "seconds": 1.2,
+          "gain": 0.35,
+          "passed": true,
+          "prompt": "An eldritch horror is summoned: a swirling magical vortex whoosh that rises, with a deep otherworldly hum.",
+          "note": "1.2 s, hard attack, centred near 1.2 kHz, 89% of its energy under 1 kHz, crest 14.3 dB."
+        },
+        {
+          "n": 103,
+          "file": "cult-summon-103.m4a",
+          "generated": "2026-10-14",
+          "seconds": 1.2,
+          "gain": 0.33,
+          "passed": true,
+          "prompt": "An eldritch horror is summoned: a swirling magical vortex whoosh that rises, with a deep otherworldly hum.",
+          "note": "1.2 s, hard attack, centred near 2.3 kHz, 71% of its energy under 1 kHz, crest 13.2 dB."
+        }
+      ]
+    },
+    {
+      "id": "cult.herald",
+      "default": 103,
+      "confidence": "high",
+      "takes": [
+        {
+          "n": 103,
+          "file": "cult-herald-103.m4a",
+          "generated": "2026-10-14",
+          "seconds": 1.6,
+          "gain": 0.52,
+          "passed": true,
+          "prompt": "A colossal otherworldly monster arrives: a deep metallic boom with a low growling rumble.",
+          "note": "1.6 s, hard attack, centred near 44 Hz, 100% of its energy under 1 kHz, crest 9.9 dB."
+        },
+        {
+          "n": 101,
+          "file": "cult-herald-101.m4a",
+          "generated": "2026-10-14",
+          "seconds": 1.6,
+          "gain": 0.87,
+          "passed": true,
+          "prompt": "A colossal otherworldly monster arrives: a deep metallic boom with a low growling rumble.",
+          "note": "1.6 s, hard attack, centred near 38 Hz, 100% of its energy under 1 kHz, crest 13 dB."
+        },
+        {
+          "n": 102,
+          "file": "cult-herald-102.m4a",
+          "generated": "2026-10-14",
+          "seconds": 1.6,
+          "gain": 0.99,
+          "passed": true,
+          "prompt": "A colossal otherworldly monster arrives: a deep metallic boom with a low growling rumble.",
+          "note": "1.6 s, hard attack, centred near 35 Hz, 100% of its energy under 1 kHz, crest 13.8 dB."
+        }
+      ]
+    },
+    {
+      "id": "cult.starfall",
+      "default": 101,
+      "confidence": "high",
+      "takes": [
+        {
+          "n": 101,
+          "file": "cult-starfall-101.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.9,
+          "gain": 0.49,
+          "passed": true,
+          "prompt": "A falling star streaking down from the sky: a descending fiery whoosh with a sizzling trail, no explosion.",
+          "note": "0.9 s, hard attack, centred near 3.8 kHz, 65% of its energy under 1 kHz, crest 12.7 dB."
+        },
+        {
+          "n": 102,
+          "file": "cult-starfall-102.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.9,
+          "gain": 0.32,
+          "passed": true,
+          "prompt": "A falling star streaking down from the sky: a descending fiery whoosh with a sizzling trail, no explosion.",
+          "note": "0.9 s, quick attack, centred near 209 Hz, 97% of its energy under 1 kHz, crest 10.6 dB."
+        },
+        {
+          "n": 104,
+          "file": "cult-starfall-104.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.9,
+          "gain": 0.35,
+          "passed": true,
+          "prompt": "A falling star: a quick descending fiery whoosh with a sizzling trail, clean and not distorted, no explosion.",
+          "note": "0.9 s, swells over 60 ms, centred near 145 Hz, 99% of its energy under 1 kHz, crest 11.6 dB."
+        }
+      ]
+    },
+    {
+      "id": "cult.snap",
+      "default": 103,
+      "confidence": "high",
+      "takes": [
+        {
+          "n": 103,
+          "file": "cult-snap-103.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.35,
+          "gain": 0.24,
+          "passed": true,
+          "prompt": "A taut magical rope snapping: one sharp elastic twang snap, very short.",
+          "note": "0.35 s, hard attack, centred near 1.8 kHz, 68% of its energy under 1 kHz, crest 13.4 dB."
+        },
+        {
+          "n": 101,
+          "file": "cult-snap-101.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.35,
+          "gain": 0.31,
+          "passed": true,
+          "prompt": "A taut magical rope snapping: one sharp elastic twang snap, very short.",
+          "note": "0.35 s, hard attack, centred near 925 Hz, 91% of its energy under 1 kHz, crest 14.9 dB."
+        },
+        {
+          "n": 102,
+          "file": "cult-snap-102.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.35,
+          "gain": 0.24,
+          "passed": true,
+          "prompt": "A taut magical rope snapping: one sharp elastic twang snap, very short.",
+          "note": "0.35 s, hard attack, centred near 3.1 kHz, 42% of its energy under 1 kHz, crest 14.2 dB."
+        }
+      ]
+    },
+    {
+      "id": "cult.unbound",
+      "default": 102,
+      "confidence": "medium",
+      "takes": [
+        {
+          "n": 102,
+          "file": "cult-unbound-102.m4a",
+          "generated": "2026-10-14",
+          "seconds": 1.473,
+          "gain": 0.61,
+          "passed": true,
+          "prompt": "A demon bursts its iron collar: heavy chains shattering and a deep monstrous roar.",
+          "note": "1.473 s, hard attack, centred near 2.5 kHz, 59% of its energy under 1 kHz, crest 17.2 dB."
+        },
+        {
+          "n": 101,
+          "file": "cult-unbound-101.m4a",
+          "generated": "2026-10-14",
+          "seconds": 1.6,
+          "gain": 0.48,
+          "passed": true,
+          "prompt": "A demon bursts its iron collar: heavy chains shattering and a deep monstrous roar.",
+          "note": "1.6 s, hard attack, centred near 1.2 kHz, 74% of its energy under 1 kHz, crest 13.4 dB."
+        }
+      ]
+    },
+    {
+      "id": "cult.tentacle",
+      "default": 101,
+      "confidence": "medium",
+      "takes": [
+        {
+          "n": 101,
+          "file": "cult-tentacle-101.m4a",
+          "generated": "2026-10-14",
+          "seconds": 1,
+          "gain": 0.47,
+          "passed": true,
+          "prompt": "A giant slimy tentacle rising out of the water: a wet squelching slither and a watery surge.",
+          "note": "1 s, hard attack, centred near 1.7 kHz, 59% of its energy under 1 kHz, crest 15.9 dB."
+        },
+        {
+          "n": 103,
+          "file": "cult-tentacle-103.m4a",
+          "generated": "2026-10-14",
+          "seconds": 1,
+          "gain": 0.44,
+          "passed": true,
+          "prompt": "A giant slimy tentacle rising out of the water: a wet squelching slither and a watery surge.",
+          "note": "1 s, quick attack, centred near 1.7 kHz, 55% of its energy under 1 kHz, crest 14.7 dB."
+        },
+        {
+          "n": 102,
+          "file": "cult-tentacle-102.m4a",
+          "generated": "2026-10-14",
+          "seconds": 1,
+          "gain": 0.44,
+          "passed": true,
+          "prompt": "A giant slimy tentacle rising out of the water: a wet squelching slither and a watery surge.",
+          "note": "1 s, quick attack, centred near 2.5 kHz, 61% of its energy under 1 kHz, crest 15.5 dB."
+        }
+      ]
+    },
+    {
+      "id": "cult.sacrifice",
+      "default": 103,
+      "confidence": "medium",
+      "takes": [
+        {
+          "n": 103,
+          "file": "cult-sacrifice-103.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.491,
+          "gain": 0.51,
+          "passed": true,
+          "prompt": "A dark ritual offering: a ritual dagger strike, a dark magical whoosh and a low gong.",
+          "note": "0.491 s, hard attack, centred near 1.3 kHz, 69% of its energy under 1 kHz, crest 12.5 dB."
+        },
+        {
+          "n": 101,
+          "file": "cult-sacrifice-101.m4a",
+          "generated": "2026-10-14",
+          "seconds": 1,
+          "gain": 0.33,
+          "passed": true,
+          "prompt": "A dark ritual offering: a ritual dagger strike, a dark magical whoosh and a low gong.",
+          "note": "1 s, swells over 45 ms, centred near 718 Hz, 92% of its energy under 1 kHz, crest 12.8 dB."
+        },
+        {
+          "n": 102,
+          "file": "cult-sacrifice-102.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.987,
+          "gain": 0.35,
+          "passed": true,
+          "prompt": "A dark ritual offering: a ritual dagger strike, a dark magical whoosh and a low gong.",
+          "note": "0.987 s, quick attack, centred near 973 Hz, 78% of its energy under 1 kHz, crest 13.7 dB."
+        }
+      ]
+    },
+    {
+      "id": "city.capture",
+      "default": 103,
+      "confidence": "medium",
+      "takes": [
+        {
+          "n": 103,
+          "file": "city-capture-103.m4a",
+          "generated": "2026-10-14",
+          "seconds": 1.293,
+          "gain": 0.22,
+          "passed": true,
+          "prompt": "A city is captured: a short triumphant brass fanfare of three bold notes and a cymbal crash.",
+          "note": "1.293 s, hard attack, centred near 1.6 kHz, 56% of its energy under 1 kHz, crest 12.2 dB."
+        },
+        {
+          "n": 101,
+          "file": "city-capture-101.m4a",
+          "generated": "2026-10-14",
+          "seconds": 1.5,
+          "gain": 0.32,
+          "passed": true,
+          "prompt": "A city is captured: a short triumphant brass fanfare of three bold notes and a cymbal crash.",
+          "note": "1.5 s, hard attack, centred near 1.8 kHz, 77% of its energy under 1 kHz, crest 15.6 dB."
+        },
+        {
+          "n": 102,
+          "file": "city-capture-102.m4a",
+          "generated": "2026-10-14",
+          "seconds": 1.478,
+          "gain": 0.26,
+          "passed": true,
+          "prompt": "A city is captured: a short triumphant brass fanfare of three bold notes and a cymbal crash.",
+          "note": "1.478 s, hard attack, centred near 1.1 kHz, 75% of its energy under 1 kHz, crest 13.8 dB."
+        }
+      ]
+    },
+    {
+      "id": "village.capture",
+      "default": 107,
+      "confidence": "medium",
+      "takes": [
+        {
+          "n": 107,
+          "file": "village-capture-107.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.787,
+          "gain": 0.29,
+          "passed": true,
+          "prompt": "A village joins you: a quick cheerful two-note toy trumpet toot, played softly, ending quickly.",
+          "note": "0.787 s, hard attack, centred near 564 Hz, 98% of its energy under 1 kHz, crest 11.3 dB."
+        },
+        {
+          "n": 106,
+          "file": "village-capture-106.m4a",
+          "generated": "2026-10-14",
+          "seconds": 1,
+          "gain": 0.17,
+          "passed": true,
+          "prompt": "A village joins you: a quick cheerful two-note toy trumpet toot, played softly, ending quickly.",
+          "note": "1 s, hard attack, centred near 492 Hz, 95% of its energy under 1 kHz, crest 6.1 dB."
+        },
+        {
+          "n": 103,
+          "file": "village-capture-103.m4a",
+          "generated": "2026-10-14",
+          "seconds": 1,
+          "gain": 0.27,
+          "passed": true,
+          "prompt": "A village joins you: a quick cheerful two-note trumpet toot.",
+          "note": "1 s, quick attack, centred near 1.2 kHz, 64% of its energy under 1 kHz, crest 12.4 dB."
+        }
+      ]
+    },
+    {
+      "id": "city.lost",
+      "default": 106,
+      "confidence": "medium",
+      "takes": [
+        {
+          "n": 106,
+          "file": "city-lost-106.m4a",
+          "generated": "2026-10-14",
+          "seconds": 1.5,
+          "gain": 0.32,
+          "passed": true,
+          "prompt": "A city is lost: a short sad descending wah-wah of three muted trombone notes, played softly, ending quickly.",
+          "note": "1.5 s, hard attack, centred near 375 Hz, 100% of its energy under 1 kHz, crest 10.8 dB."
+        },
+        {
+          "n": 101,
+          "file": "city-lost-101.m4a",
+          "generated": "2026-10-14",
+          "seconds": 1.5,
+          "gain": 0.33,
+          "passed": true,
+          "prompt": "A city is lost: a short sad descending trombone wah-wah, comic failure.",
+          "note": "1.5 s, hard attack, centred near 389 Hz, 99% of its energy under 1 kHz, crest 12 dB."
+        }
+      ]
+    },
+    {
+      "id": "city.levelup",
+      "default": 104,
+      "confidence": "medium",
+      "takes": [
+        {
+          "n": 104,
+          "file": "city-levelup-104.m4a",
+          "generated": "2026-10-14",
+          "seconds": 1.2,
+          "gain": 0.34,
+          "passed": true,
+          "prompt": "A city grows: a quick bright rising xylophone run ending on a bell, clean and not distorted.",
+          "note": "1.2 s, hard attack, centred near 529 Hz, 92% of its energy under 1 kHz, crest 14.5 dB."
+        },
+        {
+          "n": 103,
+          "file": "city-levelup-103.m4a",
+          "generated": "2026-10-14",
+          "seconds": 1.2,
+          "gain": 0.29,
+          "passed": true,
+          "prompt": "A city grows: a bright cheerful rising xylophone and bell flourish.",
+          "note": "1.2 s, hard attack, centred near 1.1 kHz, 34% of its energy under 1 kHz, crest 14.6 dB."
+        },
+        {
+          "n": 101,
+          "file": "city-levelup-101.m4a",
+          "generated": "2026-10-14",
+          "seconds": 1.2,
+          "gain": 0.3,
+          "passed": true,
+          "prompt": "A city grows: a bright cheerful rising xylophone and bell flourish.",
+          "note": "1.2 s, hard attack, centred near 1.1 kHz, 38% of its energy under 1 kHz, crest 11.7 dB."
+        }
+      ]
+    },
+    {
+      "id": "reward.chosen",
+      "default": 102,
+      "confidence": "high",
+      "takes": [
+        {
+          "n": 102,
+          "file": "reward-chosen-102.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.616,
+          "gain": 0.55,
+          "passed": true,
+          "prompt": "A reward is chosen: a quick sparkling magical confirmation ding.",
+          "note": "0.616 s, hard attack, centred near 1.4 kHz, 82% of its energy under 1 kHz, crest 16.6 dB."
+        },
+        {
+          "n": 104,
+          "file": "reward-chosen-104.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.8,
+          "gain": 0.44,
+          "passed": true,
+          "prompt": "A reward is chosen: one bright high sparkling chime ding with a twinkle.",
+          "note": "0.8 s, hard attack, centred near 1.2 kHz, 0% of its energy under 1 kHz, crest 15.4 dB."
+        },
+        {
+          "n": 105,
+          "file": "reward-chosen-105.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.762,
+          "gain": 0.48,
+          "passed": true,
+          "prompt": "A reward is chosen: one bright high sparkling chime ding with a twinkle.",
+          "note": "0.762 s, hard attack, centred near 1.1 kHz, 0% of its energy under 1 kHz, crest 16 dB."
+        }
+      ]
+    },
+    {
+      "id": "research.complete",
+      "default": 104,
+      "confidence": "medium",
+      "takes": [
+        {
+          "n": 104,
+          "file": "research-complete-104.m4a",
+          "generated": "2026-10-14",
+          "seconds": 1.2,
+          "gain": 0.49,
+          "passed": true,
+          "prompt": "A discovery is made: a short bright bell chime with a rising shimmer, clean and not distorted.",
+          "note": "1.2 s, hard attack, centred near 2.4 kHz, 32% of its energy under 1 kHz, crest 15.6 dB."
+        },
+        {
+          "n": 103,
+          "file": "research-complete-103.m4a",
+          "generated": "2026-10-14",
+          "seconds": 1.2,
+          "gain": 0.52,
+          "passed": true,
+          "prompt": "A discovery is made: a short bright eureka bell chime with a rising shimmer, retro pulp science.",
+          "note": "1.2 s, hard attack, centred near 2.8 kHz, 48% of its energy under 1 kHz, crest 17.8 dB."
+        },
+        {
+          "n": 101,
+          "file": "research-complete-101.m4a",
+          "generated": "2026-10-14",
+          "seconds": 1.2,
+          "gain": 0.47,
+          "passed": true,
+          "prompt": "A discovery is made: a short bright eureka bell chime with a rising shimmer, retro pulp science.",
+          "note": "1.2 s, hard attack, centred near 2.6 kHz, 51% of its energy under 1 kHz, crest 17.6 dB."
+        }
+      ]
+    },
+    {
+      "id": "economy.build",
+      "default": 101,
+      "confidence": "medium",
+      "takes": [
+        {
+          "n": 101,
+          "file": "economy-build-101.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.484,
+          "gain": 0.39,
+          "passed": true,
+          "prompt": "Quick construction: two hammer blows on wood and a solid thunk.",
+          "note": "0.484 s, hard attack, centred near 403 Hz, 98% of its energy under 1 kHz, crest 13.7 dB."
+        },
+        {
+          "n": 103,
+          "file": "economy-build-103.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.7,
+          "gain": 0.72,
+          "passed": true,
+          "prompt": "Quick construction: two hammer blows on wood and a solid thunk.",
+          "note": "0.7 s, hard attack, centred near 144 Hz, 100% of its energy under 1 kHz, crest 19.1 dB."
+        },
+        {
+          "n": 102,
+          "file": "economy-build-102.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.606,
+          "gain": 0.6,
+          "passed": true,
+          "prompt": "Quick construction: two hammer blows on wood and a solid thunk.",
+          "note": "0.606 s, hard attack, centred near 263 Hz, 100% of its energy under 1 kHz, crest 18 dB."
+        }
+      ]
+    },
+    {
+      "id": "economy.harvest",
+      "default": 104,
+      "confidence": "medium",
+      "takes": [
+        {
+          "n": 104,
+          "file": "economy-harvest-104.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.5,
+          "gain": 0.47,
+          "passed": true,
+          "prompt": "Picking fruit: a quick leafy rustle and a soft round pluck pop, short, nothing after.",
+          "note": "0.5 s, hard attack, centred near 4.0 kHz, 15% of its energy under 1 kHz, crest 17 dB."
+        },
+        {
+          "n": 105,
+          "file": "economy-harvest-105.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.5,
+          "gain": 1,
+          "passed": true,
+          "prompt": "Picking fruit: a quick leafy rustle and a soft round pluck pop, short, nothing after.",
+          "note": "0.5 s, hard attack, centred near 3.8 kHz, 18% of its energy under 1 kHz, crest 27.1 dB."
+        },
+        {
+          "n": 103,
+          "file": "economy-harvest-103.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.5,
+          "gain": 0.65,
+          "passed": true,
+          "prompt": "Picking fruit: a quick leafy rustle and a soft pluck pop.",
+          "note": "0.5 s, hard attack, centred near 4.9 kHz, 34% of its energy under 1 kHz, crest 19 dB."
+        }
+      ]
+    },
+    {
+      "id": "economy.coin",
+      "default": 106,
+      "confidence": "medium",
+      "takes": [
+        {
+          "n": 106,
+          "file": "economy-coin-106.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.6,
+          "gain": 0.58,
+          "passed": true,
+          "prompt": "A few heavy gold coins dropped onto a wooden table: warm clinks with some body, short.",
+          "note": "0.6 s, hard attack, centred near 5.9 kHz, 3% of its energy under 1 kHz, crest 20.1 dB."
+        },
+        {
+          "n": 104,
+          "file": "economy-coin-104.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.6,
+          "gain": 0.42,
+          "passed": true,
+          "prompt": "A few heavy gold coins dropped onto a wooden table: warm clinks with some body, short.",
+          "note": "0.6 s, hard attack, centred near 6.1 kHz, 8% of its energy under 1 kHz, crest 17.1 dB."
+        },
+        {
+          "n": 105,
+          "file": "economy-coin-105.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.6,
+          "gain": 0.38,
+          "passed": true,
+          "prompt": "A few heavy gold coins dropped onto a wooden table: warm clinks with some body, short.",
+          "note": "0.6 s, hard attack, centred near 5.2 kHz, 14% of its energy under 1 kHz, crest 15.6 dB."
+        }
+      ]
+    },
+    {
+      "id": "economy.treasure",
+      "default": 103,
+      "confidence": "medium",
+      "takes": [
+        {
+          "n": 103,
+          "file": "economy-treasure-103.m4a",
+          "generated": "2026-10-14",
+          "seconds": 1.2,
+          "gain": 0.5,
+          "passed": true,
+          "prompt": "A treasure chest opened: a wooden creak, then a sparkling shower of gold coins and a magical shimmer.",
+          "note": "1.2 s, hard attack, centred near 6.2 kHz, 31% of its energy under 1 kHz, crest 17.7 dB."
+        },
+        {
+          "n": 101,
+          "file": "economy-treasure-101.m4a",
+          "generated": "2026-10-14",
+          "seconds": 1.2,
+          "gain": 0.43,
+          "passed": true,
+          "prompt": "A treasure chest opened: a wooden creak, then a sparkling shower of gold coins and a magical shimmer.",
+          "note": "1.2 s, hard attack, centred near 5.5 kHz, 4% of its energy under 1 kHz, crest 19.6 dB."
+        },
+        {
+          "n": 102,
+          "file": "economy-treasure-102.m4a",
+          "generated": "2026-10-14",
+          "seconds": 1.2,
+          "gain": 0.33,
+          "passed": true,
+          "prompt": "A treasure chest opened: a wooden creak, then a sparkling shower of gold coins and a magical shimmer.",
+          "note": "1.2 s, swells over 45 ms, centred near 4.7 kHz, 13% of its energy under 1 kHz, crest 15.2 dB."
+        }
+      ]
+    },
+    {
+      "id": "turn.start",
+      "default": 104,
+      "confidence": "medium",
+      "takes": [
+        {
+          "n": 104,
+          "file": "turn-start-104.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.8,
+          "gain": 0.31,
+          "passed": true,
+          "prompt": "Your turn begins: a bright high double bell ding, cheerful game notification.",
+          "note": "0.8 s, hard attack, centred near 10.2 kHz, 0% of its energy under 1 kHz, crest 15.3 dB."
+        },
+        {
+          "n": 102,
+          "file": "turn-start-102.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.8,
+          "gain": 0.24,
+          "passed": true,
+          "prompt": "Your turn begins: a bright short double bell ding, a cheerful game notification.",
+          "note": "0.8 s, hard attack, centred near 8.1 kHz, 1% of its energy under 1 kHz, crest 13.5 dB."
+        },
+        {
+          "n": 103,
+          "file": "turn-start-103.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.8,
+          "gain": 0.35,
+          "passed": true,
+          "prompt": "Your turn begins: a bright short double bell ding, a cheerful game notification.",
+          "note": "0.8 s, hard attack, centred near 10.5 kHz, 0% of its energy under 1 kHz, crest 17 dB."
+        }
+      ]
+    },
+    {
+      "id": "turn.end",
+      "default": 102,
+      "confidence": "medium",
+      "takes": [
+        {
+          "n": 102,
+          "file": "turn-end-102.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.436,
+          "gain": 0.31,
+          "passed": true,
+          "prompt": "End of turn: a soft two-note wooden marimba chime falling in pitch.",
+          "note": "0.436 s, hard attack, centred near 682 Hz, 100% of its energy under 1 kHz, crest 13.7 dB."
+        },
+        {
+          "n": 105,
+          "file": "turn-end-105.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.7,
+          "gain": 0.31,
+          "passed": true,
+          "prompt": "End of turn: a soft two-note wooden marimba tap falling in pitch, short and dry, notes stopping quickly.",
+          "note": "0.7 s, hard attack, centred near 224 Hz, 100% of its energy under 1 kHz, crest 16.3 dB."
+        }
+      ]
+    },
+    {
+      "id": "achievement.unlocked",
+      "default": 104,
+      "confidence": "medium",
+      "takes": [
+        {
+          "n": 104,
+          "file": "achievement-unlocked-104.m4a",
+          "generated": "2026-10-14",
+          "seconds": 1.6,
+          "gain": 0.61,
+          "passed": true,
+          "prompt": "An achievement is unlocked: a bright triumphant brass flourish with a glockenspiel accent, about one second, ending cleanly.",
+          "note": "1.6 s, hard attack, centred near 3.8 kHz, 21% of its energy under 1 kHz, crest 21 dB."
+        },
+        {
+          "n": 101,
+          "file": "achievement-unlocked-101.m4a",
+          "generated": "2026-10-14",
+          "seconds": 1.6,
+          "gain": 0.44,
+          "passed": true,
+          "prompt": "An achievement is unlocked: a bright triumphant brass and glockenspiel flourish, about one second.",
+          "note": "1.6 s, quick attack, centred near 2.1 kHz, 19% of its energy under 1 kHz, crest 16.8 dB."
+        },
+        {
+          "n": 102,
+          "file": "achievement-unlocked-102.m4a",
+          "generated": "2026-10-14",
+          "seconds": 1.6,
+          "gain": 0.56,
+          "passed": true,
+          "prompt": "An achievement is unlocked: a bright triumphant brass and glockenspiel flourish, about one second.",
+          "note": "1.6 s, hard attack, centred near 3.4 kHz, 14% of its energy under 1 kHz, crest 21.2 dB."
+        }
+      ]
+    },
+    {
+      "id": "achievement.monument",
+      "default": 104,
+      "confidence": "medium",
+      "takes": [
+        {
+          "n": 104,
+          "file": "achievement-monument-104.m4a",
+          "generated": "2026-10-14",
+          "seconds": 2.2,
+          "gain": 0.23,
+          "passed": true,
+          "prompt": "A grand monument is completed: a big gong strike and a short majestic brass chord, about one and a half seconds.",
+          "note": "2.2 s, hard attack, centred near 393 Hz, 98% of its energy under 1 kHz, crest 9 dB."
+        },
+        {
+          "n": 101,
+          "file": "achievement-monument-101.m4a",
+          "generated": "2026-10-14",
+          "seconds": 2.2,
+          "gain": 0.37,
+          "passed": true,
+          "prompt": "A grand monument is completed: a big gong strike with a short majestic brass chord, about one and a half seconds.",
+          "note": "2.2 s, hard attack, centred near 347 Hz, 99% of its energy under 1 kHz, crest 16.5 dB."
+        },
+        {
+          "n": 103,
+          "file": "achievement-monument-103.m4a",
+          "generated": "2026-10-14",
+          "seconds": 2.2,
+          "gain": 0.31,
+          "passed": true,
+          "prompt": "A grand monument is completed: a big gong strike with a short majestic brass chord, about one and a half seconds.",
+          "note": "2.2 s, hard attack, centred near 282 Hz, 99% of its energy under 1 kHz, crest 16.2 dB."
+        }
+      ]
+    },
+    {
+      "id": "match.victory",
+      "default": 102,
+      "confidence": "medium",
+      "takes": [
+        {
+          "n": 102,
+          "file": "match-victory-102.m4a",
+          "generated": "2026-10-14",
+          "seconds": 2.33,
+          "gain": 0.35,
+          "passed": true,
+          "prompt": "Victory: a short heroic brass and snare drum fanfare in the style of an old adventure serial, triumphant, about two seconds.",
+          "note": "2.33 s, hard attack, centred near 870 Hz, 79% of its energy under 1 kHz, crest 14 dB."
+        },
+        {
+          "n": 104,
+          "file": "match-victory-104.m4a",
+          "generated": "2026-10-14",
+          "seconds": 2.26,
+          "gain": 0.42,
+          "passed": true,
+          "prompt": "Victory: a heroic brass and snare drum fanfare that starts at once on the first beat, old adventure serial style, triumphant, about two seconds.",
+          "note": "2.26 s, quick attack, centred near 916 Hz, 86% of its energy under 1 kHz, crest 15.3 dB."
+        },
+        {
+          "n": 103,
+          "file": "match-victory-103.m4a",
+          "generated": "2026-10-14",
+          "seconds": 1.714,
+          "gain": 0.49,
+          "passed": true,
+          "prompt": "Victory: a short heroic brass and snare drum fanfare in the style of an old adventure serial, triumphant, about two seconds.",
+          "note": "1.714 s, swells over 55 ms, centred near 863 Hz, 88% of its energy under 1 kHz, crest 14.2 dB."
+        }
+      ]
+    },
+    {
+      "id": "match.defeat",
+      "default": 102,
+      "confidence": "medium",
+      "takes": [
+        {
+          "n": 102,
+          "file": "match-defeat-102.m4a",
+          "generated": "2026-10-14",
+          "seconds": 2.6,
+          "gain": 0.34,
+          "passed": true,
+          "prompt": "Defeat: a short sad descending brass melody ending on a low note, comic and gloomy, about two seconds.",
+          "note": "2.6 s, hard attack, centred near 284 Hz, 100% of its energy under 1 kHz, crest 10.6 dB."
+        },
+        {
+          "n": 103,
+          "file": "match-defeat-103.m4a",
+          "generated": "2026-10-14",
+          "seconds": 2.6,
+          "gain": 0.34,
+          "passed": true,
+          "prompt": "Defeat: a short sad descending brass melody ending on a low note, comic and gloomy, about two seconds.",
+          "note": "2.6 s, hard attack, centred near 266 Hz, 100% of its energy under 1 kHz, crest 10.7 dB."
+        },
+        {
+          "n": 101,
+          "file": "match-defeat-101.m4a",
+          "generated": "2026-10-14",
+          "seconds": 2.6,
+          "gain": 0.44,
+          "passed": true,
+          "prompt": "Defeat: a short sad descending brass melody ending on a low note, comic and gloomy, about two seconds.",
+          "note": "2.6 s, hard attack, centred near 290 Hz, 100% of its energy under 1 kHz, crest 12.3 dB."
+        }
+      ]
+    },
+    {
+      "id": "ui.select",
+      "default": 105,
+      "confidence": "high",
+      "takes": [
+        {
+          "n": 105,
+          "file": "ui-select-105.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.15,
+          "gain": 0.28,
+          "passed": true,
+          "prompt": "A soft interface select blip: one tiny bright high wooden tick, very short, nothing else.",
+          "note": "0.15 s, hard attack, centred near 1.3 kHz, 10% of its energy under 1 kHz, crest 14.5 dB."
+        },
+        {
+          "n": 103,
+          "file": "ui-select-103.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.15,
+          "gain": 0.31,
+          "passed": true,
+          "prompt": "A soft bright interface select blip: one tiny wooden tick, very short.",
+          "note": "0.15 s, hard attack, centred near 4.3 kHz, 49% of its energy under 1 kHz, crest 17.2 dB."
+        }
+      ]
+    },
+    {
+      "id": "ui.click",
+      "default": 104,
+      "confidence": "high",
+      "takes": [
+        {
+          "n": 104,
+          "file": "ui-click-104.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.12,
+          "gain": 0.32,
+          "passed": true,
+          "prompt": "A crisp interface button click: one tiny clean plastic tick, very short, nothing else.",
+          "note": "0.12 s, hard attack, centred near 1.6 kHz, 64% of its energy under 1 kHz, crest 13.7 dB."
+        },
+        {
+          "n": 102,
+          "file": "ui-click-102.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.12,
+          "gain": 0.33,
+          "passed": true,
+          "prompt": "A crisp interface button click: one tiny clean mechanical tick, very short.",
+          "note": "0.12 s, hard attack, centred near 8.6 kHz, 6% of its energy under 1 kHz, crest 20.4 dB."
+        }
+      ]
+    },
+    {
+      "id": "ui.toggle",
+      "default": 105,
+      "confidence": "high",
+      "takes": [
+        {
+          "n": 105,
+          "file": "ui-toggle-105.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.139,
+          "gain": 0.32,
+          "passed": true,
+          "prompt": "A small light switch flipped: one crisp short plastic click, very short, nothing else.",
+          "note": "0.138 s, hard attack, centred near 2.1 kHz, 45% of its energy under 1 kHz, crest 16.5 dB."
+        },
+        {
+          "n": 104,
+          "file": "ui-toggle-104.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.154,
+          "gain": 0.32,
+          "passed": true,
+          "prompt": "A small light switch flipped: one crisp short plastic click, very short, nothing else.",
+          "note": "0.153 s, hard attack, centred near 7.1 kHz, 14% of its energy under 1 kHz, crest 17.8 dB."
+        }
+      ]
+    },
+    {
+      "id": "ui.error",
+      "default": 102,
+      "confidence": "high",
+      "takes": [
+        {
+          "n": 102,
+          "file": "ui-error-102.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.13,
+          "gain": 0.36,
+          "passed": true,
+          "prompt": "A refused command: a short low cartoon error buzz, two quick nope beeps.",
+          "note": "0.13 s, hard attack, centred near 493 Hz, 98% of its energy under 1 kHz, crest 10.5 dB."
+        },
+        {
+          "n": 103,
+          "file": "ui-error-103.m4a",
+          "generated": "2026-10-14",
+          "seconds": 0.45,
+          "gain": 0.32,
+          "passed": true,
+          "prompt": "A refused command: a short low cartoon error buzz, two quick nope beeps.",
+          "note": "0.45 s, hard attack, centred near 837 Hz, 88% of its energy under 1 kHz, crest 10.4 dB."
+        }
+      ]
+    }
+  ]
+}

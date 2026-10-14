@@ -1,16 +1,19 @@
 import type { StorageAdapter } from "../persistence/index";
 import {
-  STOCK_SOUNDS_V1,
-  STOCK_SOUND_GENERATED_CHOICE_V1,
-  stockSoundCandidateV1,
-  stockSoundV1,
-} from "./stock-sounds";
+  SOUND_CHOICE_SETS_V1,
+  SOUND_GENERATED_CHOICE_V1,
+  soundCandidateV1,
+  soundChoiceSetV1,
+} from "./sound-choices";
 
 /**
  * A listener's own choice among the recordings of a sound (bead
  * pulp_wars-2yc.24, docs/ui/SOUND.md "Choosing between recordings"). The
  * recordings were chosen without anyone hearing them, so where a sound has
  * several candidates the Gallery lets a person compare them and pick one.
+ * Since bead pulp_wars-2yc.51 a sound's choices are its ElevenLabs takes
+ * (numbered from 101), its stock recordings (1 to 4) and the synthesised
+ * sound (0), so a pick stored before the takes existed keeps its meaning.
  * A pick is kept in this browser only and changes what the game plays
  * here at once; the default everyone gets changes when the provenance
  * manifest does. The Gallery's "Copy my picks" hands the picks back to
@@ -31,11 +34,8 @@ export type StockSoundPicksV1 = Readonly<Record<string, number>>;
 /** Whether `n` can be chosen for the sound: a candidate of it, or 0. */
 export function isStockSoundChoiceV1(id: string, n: unknown): n is number {
   if (typeof n !== "number" || !Number.isInteger(n)) return false;
-  if (stockSoundV1(id) === null) return false;
-  return (
-    n === STOCK_SOUND_GENERATED_CHOICE_V1 ||
-    stockSoundCandidateV1(id, n) !== null
-  );
+  if (soundChoiceSetV1(id) === null) return false;
+  return n === SOUND_GENERATED_CHOICE_V1 || soundCandidateV1(id, n) !== null;
 }
 
 /**
@@ -57,7 +57,7 @@ export function parseStockSoundPicksV1(
     return {};
   const picks: Record<string, number> = {};
   // In the manifest's order, whatever order they were stored in.
-  for (const sound of STOCK_SOUNDS_V1) {
+  for (const sound of SOUND_CHOICE_SETS_V1) {
     const n = (parsed as Readonly<Record<string, unknown>>)[sound.id];
     if (isStockSoundChoiceV1(sound.id, n)) picks[sound.id] = n;
   }
@@ -103,7 +103,7 @@ export function stockSoundChoiceV1(
   id: string,
   picks: StockSoundPicksV1 = {},
 ): number | null {
-  const sound = stockSoundV1(id);
+  const sound = soundChoiceSetV1(id);
   if (sound === null) return null;
   const pick = picks[id];
   return isStockSoundChoiceV1(id, pick) ? pick : sound.default;
@@ -116,7 +116,10 @@ export interface StockSoundPickLineV1 {
   readonly pick: number;
   /** The sound's checked-in default, for comparison. */
   readonly default: number;
-  /** "generated", or the library file the candidate was cut from. */
+  /**
+   * "generated", the library file a stock recording was cut from, or
+   * "ElevenLabs: " and the prompt of a take.
+   */
   readonly source: string;
 }
 
@@ -124,10 +127,10 @@ export function stockSoundPickLinesV1(
   picks: StockSoundPicksV1,
 ): readonly StockSoundPickLineV1[] {
   const lines: StockSoundPickLineV1[] = [];
-  for (const sound of STOCK_SOUNDS_V1) {
+  for (const sound of SOUND_CHOICE_SETS_V1) {
     const pick = picks[sound.id];
     if (!isStockSoundChoiceV1(sound.id, pick)) continue;
-    const candidate = stockSoundCandidateV1(sound.id, pick);
+    const candidate = soundCandidateV1(sound.id, pick);
     lines.push({
       id: sound.id,
       pick,
@@ -135,7 +138,9 @@ export function stockSoundPickLinesV1(
       source:
         candidate === null
           ? "generated"
-          : `${candidate.library} / ${candidate.originalFile}`,
+          : candidate.origin === "ELEVENLABS"
+            ? `ElevenLabs: ${candidate.prompt}`
+            : `${candidate.library} / ${candidate.originalFile}`,
     });
   }
   return lines;

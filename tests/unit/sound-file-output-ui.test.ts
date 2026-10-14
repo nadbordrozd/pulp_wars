@@ -4,15 +4,16 @@ import {
   GameAudioV1,
   OTHER_PLAYER_BUILD_GAIN_V7,
   SOUND_MANIFEST_V1,
-  STOCK_SOUND_CLIPS_V1,
+  SOUND_DEFAULT_CLIPS_V1,
   clearSoundFilesV1,
   createWebAudioOutputV1,
   prefetchSoundFilesV1,
   requestedSoundFilesV1,
   soundFileBytesV1,
+  soundCandidateUrlV1,
+  soundCandidateV1,
+  soundChoiceSetV1,
   soundRecipeV1,
-  stockSoundClipV1,
-  stockSoundUrlV1,
   synthRecipeDurationMsV1,
   type SoundIdV1,
   type WebAudioOutputV1,
@@ -23,12 +24,19 @@ import {
 } from "../fixtures/fake-audio-context";
 
 /**
- * A sound backed by a recorded clip (bead pulp_wars-2yc.20, docs/ui/SOUND.md
- * "Stock recordings"), on a stand-in device: the clip plays once it is
+ * A sound backed by a recorded clip (beads pulp_wars-2yc.20 and
+ * pulp_wars-2yc.51, docs/ui/SOUND.md "Stock recordings"; the default clip
+ * is an ElevenLabs take now), on a stand-in device: the clip plays once it is
  * decoded, the synthesised sound until then and whenever the clip cannot
  * be fetched or decoded, and the mixer's detune, levels, stop and length
  * work for a clip as they do for a synthesised sound.
  */
+
+/** The clip a sound plays by default (an ElevenLabs take, bead 2yc.51). */
+function defaultClip(id: SoundIdV1): ReturnType<typeof soundCandidateV1> {
+  const set = soundChoiceSetV1(id);
+  return set === null ? null : soundCandidateV1(id, set.default);
+}
 
 /** A decoded clip is this long in the stand-in device. */
 const CLIP_SECONDS = 0.777;
@@ -110,8 +118,8 @@ afterEach(() => clearSoundFilesV1());
 
 describe("a sound with a recorded clip", () => {
   it("is in the manifest for this test to be about something", () => {
-    expect(stockSoundClipV1(HIT)).not.toBeNull();
-    expect(stockSoundClipV1(BUILD)).not.toBeNull();
+    expect(defaultClip(HIT)).not.toBeNull();
+    expect(defaultClip(BUILD)).not.toBeNull();
     expect(SOUND_MANIFEST_V1[HIT].source.kind).toBe("FILE");
   });
 
@@ -126,7 +134,7 @@ describe("a sound with a recorded clip", () => {
     output.unlock();
     // The clips are asked for; none has arrived yet.
     expect(log.urls).toEqual(
-      STOCK_SOUND_CLIPS_V1.map((clip) => stockSoundUrlV1(clip)),
+      SOUND_DEFAULT_CLIPS_V1.map((clip) => soundCandidateUrlV1(clip)),
     );
     expect(output.soundSource(HIT)).toBe("GENERATED");
     expect(start(output, HIT)).not.toBeNull();
@@ -139,11 +147,11 @@ describe("a sound with a recorded clip", () => {
     expect(start(output, HIT)).not.toBeNull();
     expect(device.sources.at(-1)?.seconds).toBe(CLIP_SECONDS);
     expect(output.durationMs(HIT)).toBeCloseTo(CLIP_SECONDS * 1000, 6);
-    // A sound without a clip is untouched.
-    expect(output.soundSource("attack.ranged")).toBe("GENERATED");
-    start(output, "attack.ranged");
+    // A sound without a default clip (none of its takes passed) is untouched.
+    expect(output.soundSource("unit.train")).toBe("GENERATED");
+    start(output, "unit.train");
     expect(device.sources.at(-1)?.seconds).toBeCloseTo(
-      synthSeconds("attack.ranged"),
+      synthSeconds("unit.train"),
       6,
     );
   });
@@ -153,7 +161,7 @@ describe("a sound with a recorded clip", () => {
     const output = required(createWebAudioOutputV1(browser));
     output.unlock();
     await settle();
-    const clip = required(stockSoundClipV1(HIT));
+    const clip = required(defaultClip(HIT));
     const voice = required(start(output, HIT, { rate: 1.04, gain: 0.5 }));
     const source = required(device.sources.at(-1));
     expect(source.rate).toBe(1.04);
@@ -189,7 +197,7 @@ describe("a sound with a recorded clip", () => {
   ] as const)(
     "plays the synth, without an error, when the clip %s",
     async (_name, reply) => {
-      const hitUrl = stockSoundUrlV1(required(stockSoundClipV1(HIT)));
+      const hitUrl = soundCandidateUrlV1(required(defaultClip(HIT)));
       const { browser, device } = browserWith(
         (url) => (url === hitUrl ? reply : "OK"),
         { urls: [] },
@@ -226,7 +234,7 @@ describe("a sound with a recorded clip", () => {
     output.unlock();
     await settle();
     expect(log.urls).toEqual([]);
-    for (const clip of STOCK_SOUND_CLIPS_V1) {
+    for (const clip of SOUND_DEFAULT_CLIPS_V1) {
       const id = clip.id as SoundIdV1;
       expect(output.soundSource(id), id).toBe("GENERATED");
       expect(start(output, id), id).not.toBeNull();
@@ -271,7 +279,7 @@ describe("the game's audio over a recorded clip", () => {
     const { audio } = await audioWithClips();
     expect(audio.stockSounds).toBe(true);
     expect(audio.soundSource(HIT)).toBe("RECORDED");
-    expect(audio.soundSource("attack.ranged")).toBe("GENERATED");
+    expect(audio.soundSource("unit.train")).toBe("GENERATED");
     const silent = new GameAudioV1({ storage: null, output: null });
     expect(silent.stockSounds).toBe(true);
     expect(silent.soundSource(HIT)).toBeNull();
@@ -279,7 +287,7 @@ describe("the game's audio over a recorded clip", () => {
 
   it("detunes a clip by its playback rate and keeps the category level", async () => {
     const { audio, device } = await audioWithClips();
-    const clip = required(stockSoundClipV1(HIT));
+    const clip = required(defaultClip(HIT));
     const cents = SOUND_MANIFEST_V1[HIT].jitterCents;
     expect(cents).toBeGreaterThan(0);
     expect(audio.play(HIT, { detune: 1 })).toBe("PLAYED");
@@ -304,7 +312,7 @@ describe("the game's audio over a recorded clip", () => {
 
   it("plays another player's building quieter, from the clip", async () => {
     const { audio, device } = await audioWithClips();
-    const clip = required(stockSoundClipV1(BUILD));
+    const clip = required(defaultClip(BUILD));
     expect(audio.play(BUILD, { gain: OTHER_PLAYER_BUILD_GAIN_V7 })).toBe(
       "PLAYED",
     );

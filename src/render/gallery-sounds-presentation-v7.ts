@@ -4,20 +4,22 @@ import {
   OTHER_PLAYER_BUILD_GAIN_V7,
   SOUND_IDS_V1,
   SOUND_MANIFEST_V1,
+  SOUND_CHOICE_SETS_V1,
+  SOUND_GENERATED_CHOICE_V1,
   SOUND_THEMES_V1,
-  STOCK_SOUNDS_V1,
-  STOCK_SOUND_GENERATED_CHOICE_V1,
   playableRecipeV1,
   playableSoundV1,
-  stockSoundCandidateV1,
+  soundCandidateOrdinalV1,
+  soundCandidateSecondsV1,
+  soundCandidateV1,
+  soundChoiceSetV1,
   stockSoundChoiceV1,
-  stockSoundV1,
   synthRecipeDurationMsV1,
+  type SoundClipV1,
   type SoundIdV1,
   type SoundKeyV1,
   type SoundSourceV1,
   type SoundThemeEntryV1,
-  type StockSoundClipV1,
   type StockSoundPicksV1,
 } from "../audio/index";
 import type { FactionIdV7, UnitRoleIdV7 } from "../engine/index";
@@ -129,12 +131,28 @@ export interface GallerySoundVariantV7 {
 }
 
 /**
- * Where a sound comes from (bead pulp_wars-2yc.20): a recording cut from a
- * library file, the synthesiser, or a registered file without a record of
- * its origin. A recording's origin is read from the provenance manifest
- * (`src/audio/stock-sounds.json`), which is the only list of them.
+ * Where a sound comes from (beads pulp_wars-2yc.20 and pulp_wars-2yc.51):
+ * an ElevenLabs take, a recording cut from a library file, the
+ * synthesiser, or a registered file without a record of its origin. The
+ * origin is read from the provenance manifests
+ * (`src/audio/elevenlabs-sounds.json`, `src/audio/stock-sounds.json`),
+ * which are the only lists of them.
  */
 export type GallerySoundOriginV7 =
+  | {
+      readonly kind: "ELEVENLABS";
+      /** The take's place among the sound's takes: "New 1". */
+      readonly take: string;
+      /** What was asked for. */
+      readonly prompt: string;
+      /** The day it was generated. */
+      readonly generated: string;
+      readonly seconds: number;
+      /** "ElevenLabs, generated 2026-10-14". */
+      readonly text: string;
+      /** Its length: "0.31 s". */
+      readonly cut: string;
+    }
   | {
       readonly kind: "RECORDED";
       /** The library's folder in the bundle: "Vendor - Library". */
@@ -151,27 +169,34 @@ export type GallerySoundOriginV7 =
   | { readonly kind: "GENERATED"; readonly text: string }
   | { readonly kind: "FILE"; readonly text: string };
 
-/** What a synthesised sound's origin reads. */
-export const GALLERY_SOUND_GENERATED_TEXT_V7 = "Generated";
+/**
+ * What a synthesised sound's origin reads. "Synth" since bead
+ * pulp_wars-2yc.51: the ElevenLabs takes are generated too.
+ */
+export const GALLERY_SOUND_GENERATED_TEXT_V7 = "Synth";
 
 /**
- * One thing a sound with recordings can be set to play (bead
- * pulp_wars-2yc.24): one of its recordings, or the generated sound. The
- * Gallery shows them as a numbered row, so a listener can compare them
- * and pick one for this browser.
+ * One thing a sound with recordings can be set to play (beads
+ * pulp_wars-2yc.24 and pulp_wars-2yc.51): one of its ElevenLabs takes, one
+ * of the stock recordings it had before, or the synthesised sound. The
+ * Gallery shows them as a row, so a listener can compare them and pick
+ * one for this browser.
  */
 export interface GallerySoundChoiceV7 {
-  /** The candidate's number in the provenance manifest; 0 is generated. */
+  /**
+   * The candidate's number in its provenance manifest: 101 and up for an
+   * ElevenLabs take, 1 to 4 for a stock recording, 0 for the synth.
+   */
   readonly n: number;
-  /** What its control reads: "1", "2", or "Generated". */
+  /** What its control reads: "New 1", "Old 2", or "Synth". */
   readonly label: string;
   /** The checked-in default: what everyone hears without a pick. */
   readonly isDefault: boolean;
   /** What this browser is set to play: its pick, else the default. */
   readonly chosen: boolean;
-  /** Where it comes from: a recording's library file, or "Generated". */
+  /** Where it comes from: a take, a recording's library file, or "Synth". */
   readonly origin: GallerySoundOriginV7;
-  /** Its character in a line ("brighter, shorter"); "" for generated. */
+  /** Its character in a line ("brighter, shorter"); "" for the synth. */
   readonly note: string;
 }
 
@@ -197,9 +222,10 @@ export interface GallerySoundEntryV7 {
   /** Where the sound comes from; null for a theme that is not there yet. */
   readonly origin: GallerySoundOriginV7 | null;
   /**
-   * What the sound can be set to play, when it has recordings: each of
-   * them in the manifest's order, then the generated sound. Empty for a
-   * sound without recordings, and with the recordings switched off.
+   * What the sound can be set to play, when it has recordings: its
+   * ElevenLabs takes (the default first), its stock recordings, then the
+   * synth. Empty for a sound without recordings, and with the recordings
+   * switched off.
    */
   readonly choices: readonly GallerySoundChoiceV7[];
 }
@@ -455,8 +481,8 @@ function originOf(
       ? null
       : stockSoundChoiceV1(key, options.picks ?? {});
   if (choice !== null) {
-    const clip = stockSoundCandidateV1(key, choice);
-    return clip === null ? generated : recordedOrigin(clip);
+    const clip = soundCandidateV1(key, choice);
+    return clip === null ? generated : candidateOrigin(clip);
   }
   if (source.kind === "SYNTH") return generated;
   if (options.stockSounds === false && source.fallback !== undefined)
@@ -467,7 +493,23 @@ function originOf(
   };
 }
 
-function recordedOrigin(clip: StockSoundClipV1): GallerySoundOriginV7 {
+/** "New 1" for the first ElevenLabs take, "Old 2" for a stock recording. */
+function candidateLabel(clip: SoundClipV1): string {
+  const ordinal = soundCandidateOrdinalV1(clip.id, clip);
+  return `${clip.origin === "ELEVENLABS" ? "New" : "Old"} ${ordinal}`;
+}
+
+function candidateOrigin(clip: SoundClipV1): GallerySoundOriginV7 {
+  if (clip.origin === "ELEVENLABS")
+    return {
+      kind: "ELEVENLABS",
+      take: candidateLabel(clip),
+      prompt: clip.prompt,
+      generated: clip.generated,
+      seconds: clip.seconds,
+      text: `ElevenLabs, generated ${clip.generated}`,
+      cut: `${seconds(clip.seconds)} s`,
+    };
   return {
     kind: "RECORDED",
     library: clip.library,
@@ -488,28 +530,28 @@ export function gallerySoundChoicesV7(
   key: SoundKeyV1,
   options: GallerySoundOptionsV7 = {},
 ): readonly GallerySoundChoiceV7[] {
-  const sound = stockSoundV1(key);
+  const sound = soundChoiceSetV1(key);
   if (sound === null || options.stockSounds === false) return [];
   const chosen = stockSoundChoiceV1(key, options.picks ?? {});
   const choices: GallerySoundChoiceV7[] = [];
   for (const candidate of sound.candidates) {
-    const clip = stockSoundCandidateV1(key, candidate.n);
+    const clip = soundCandidateV1(key, candidate.n);
     if (clip === null) continue;
     choices.push({
       n: candidate.n,
-      label: String(candidate.n),
+      label: candidateLabel(clip),
       isDefault: sound.default === candidate.n,
       chosen: chosen === candidate.n,
-      origin: recordedOrigin(clip),
+      origin: candidateOrigin(clip),
       note: candidate.note,
     });
   }
   if (playableRecipeV1(key) !== null)
     choices.push({
-      n: STOCK_SOUND_GENERATED_CHOICE_V1,
+      n: SOUND_GENERATED_CHOICE_V1,
       label: GALLERY_SOUND_GENERATED_TEXT_V7,
-      isDefault: sound.default === STOCK_SOUND_GENERATED_CHOICE_V1,
-      chosen: chosen === STOCK_SOUND_GENERATED_CHOICE_V1,
+      isDefault: sound.default === SOUND_GENERATED_CHOICE_V1,
+      chosen: chosen === SOUND_GENERATED_CHOICE_V1,
       origin: { kind: "GENERATED", text: GALLERY_SOUND_GENERATED_TEXT_V7 },
       note: "",
     });
@@ -522,16 +564,19 @@ export function gallerySoundChoiceIdsV7(
 ): readonly string[] {
   return options.stockSounds === false
     ? []
-    : STOCK_SOUNDS_V1.map((sound) => sound.id);
+    : SOUND_CHOICE_SETS_V1.map((sound) => sound.id);
 }
 
 /**
- * An origin in words, for the name of a play control: "Recorded: Vendor -
- * Library / file.wav, 0–0.8 s", "Generated", "File: theme.ogg".
+ * An origin in words, for the name of a play control: "ElevenLabs new 1:
+ * A cartoon punch impact. (0.31 s, generated 2026-10-14)", "Recorded: Vendor - Library /
+ * file.wav, 0–0.8 s", "Synth", "File: theme.ogg".
  */
 export function gallerySoundOriginLabelV7(
   origin: GallerySoundOriginV7,
 ): string {
+  if (origin.kind === "ELEVENLABS")
+    return `ElevenLabs ${origin.take.toLowerCase()}: ${origin.prompt} (${origin.cut}, generated ${origin.generated})`;
   if (origin.kind === "RECORDED")
     return `Recorded: ${origin.text}, ${origin.cut}`;
   return origin.kind === "FILE" ? `File: ${origin.text}` : origin.text;
@@ -559,10 +604,13 @@ function variantsOf(
       label: "Play as another player's",
       gain: OTHER_PLAYER_BUILD_GAIN_V7,
     });
-  if (origin?.kind === "RECORDED" && playableRecipeV1(id) !== null)
+  if (
+    (origin?.kind === "RECORDED" || origin?.kind === "ELEVENLABS") &&
+    playableRecipeV1(id) !== null
+  )
     variants.push({
       id: "GENERATED",
-      label: "Play generated",
+      label: "Play synth",
       generated: true,
     });
   return variants;
@@ -579,9 +627,11 @@ function effectEntry(
   const lengthMs =
     origin?.kind === "RECORDED"
       ? (origin.endSeconds - origin.startSeconds) * 1000
-      : recipe === null
-        ? Infinity
-        : synthRecipeDurationMsV1(recipe);
+      : origin?.kind === "ELEVENLABS"
+        ? origin.seconds * 1000
+        : recipe === null
+          ? Infinity
+          : synthRecipeDurationMsV1(recipe);
   return {
     key: id,
     rowId: id,
@@ -593,11 +643,10 @@ function effectEntry(
     long:
       Math.max(
         lengthMs,
-        ...choices.map((choice) =>
-          choice.origin.kind === "RECORDED"
-            ? (choice.origin.endSeconds - choice.origin.startSeconds) * 1000
-            : 0,
-        ),
+        ...choices.map((choice) => {
+          const clip = soundCandidateV1(id, choice.n);
+          return clip === null ? 0 : soundCandidateSecondsV1(clip) * 1000;
+        }),
       ) >= GALLERY_SOUND_LONG_MS_V7,
     faction: null,
     theme: false,
@@ -700,17 +749,26 @@ export function gallerySoundCardLabelV7(entry: GallerySoundEntryV7): string {
 }
 
 /**
- * The name of a choice's play control: "Play recording 2 of Hit: Vendor -
- * Library / file.wav, 0.6–0.9 s. A harder smack.", "Play generated: Hit".
+ * The name of a choice's play control: "Play new 1 of Hit (default): A
+ * cartoon punch impact. (0.31 s, ElevenLabs, generated 2026-10-14). 0.31 s,
+ * hard attack…", "Play old recording 2 of Hit: Vendor - Library /
+ * file.wav, 0.6–0.9 s. A harder smack.", "Play synth: Hit".
  */
 export function gallerySoundChoicePlayLabelV7(
   entry: GallerySoundEntryV7,
   choice: GallerySoundChoiceV7,
 ): string {
+  const isDefault = choice.isDefault ? " (default)" : "";
+  if (choice.origin.kind === "ELEVENLABS")
+    return (
+      `Play ${choice.label.toLowerCase()} of ${entry.name}${isDefault}: ` +
+      `${choice.origin.prompt} (${choice.origin.cut}, ${choice.origin.text})` +
+      (choice.note === "" ? "" : `. ${choice.note}`)
+    );
   if (choice.origin.kind !== "RECORDED")
-    return `Play generated: ${entry.name}${choice.isDefault ? " (default)" : ""}`;
+    return `Play synth: ${entry.name}${isDefault}`;
   return (
-    `Play recording ${choice.label} of ${entry.name}` +
+    `Play old recording ${choice.label.replace(/^Old /, "")} of ${entry.name}` +
     `${choice.isDefault ? " (default)" : ""}: ` +
     `${choice.origin.text}, ${choice.origin.cut}` +
     (choice.note === "" ? "" : `. ${choice.note}`)
@@ -718,15 +776,17 @@ export function gallerySoundChoicePlayLabelV7(
 }
 
 /**
- * The name of a choice's select control: "Use recording 2 for Hit", "Use
- * the generated sound for Hit". Its pressed state says whether it is the
- * one in use.
+ * The name of a choice's select control: "Use new 1 for Hit", "Use old
+ * recording 2 for Hit", "Use the synth sound for Hit". Its pressed state
+ * says whether it is the one in use.
  */
 export function gallerySoundChoiceUseLabelV7(
   entry: GallerySoundEntryV7,
   choice: GallerySoundChoiceV7,
 ): string {
+  if (choice.origin.kind === "ELEVENLABS")
+    return `Use ${choice.label.toLowerCase()} for ${entry.name}`;
   return choice.origin.kind === "RECORDED"
-    ? `Use recording ${choice.label} for ${entry.name}`
-    : `Use the generated sound for ${entry.name}`;
+    ? `Use old recording ${choice.label.replace(/^Old /, "")} for ${entry.name}`
+    : `Use the synth sound for ${entry.name}`;
 }

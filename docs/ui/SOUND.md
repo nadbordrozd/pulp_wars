@@ -4,12 +4,15 @@ Bead `pulp_wars-2yc.10`. The game has sound effects for attacks, damage,
 deaths, cities, the economy, turns, achievements and the interface, and ten
 of the Cultists' own (bead `pulp_wars-mch9.24`,
 [The Cultists' own sounds](#the-cultists-own-sounds)): 65 sounds.
-Thirty-eight of them play a recorded clip cut from a stock sound library
-(beads `pulp_wars-2yc.20` and `pulp_wars-2yc.24`,
-[Stock recordings](#stock-recordings)). The other twenty-seven are
-synthesised in the browser, and every recorded sound keeps its synthesised
-version as a fallback. Where several recordings could serve one sound they
-are all kept, and the Gallery lets a listener compare them and pick one
+Sixty-four of them play a take generated with ElevenLabs by default (bead
+`pulp_wars-2yc.51`, [ElevenLabs sound effects](#elevenlabs-sound-effects));
+`unit.train`, none of whose takes passed their measurements, still plays
+its synthesised sound. Before that bead thirty-eight played a clip cut
+from a stock sound library (beads `pulp_wars-2yc.20` and
+`pulp_wars-2yc.24`, [Stock recordings](#stock-recordings)); those clips
+stay as choices. Every sound keeps its synthesised version as a fallback.
+A sound's other takes, its old recordings and its synthesised version are
+listed in the Gallery, where a listener compares them and picks one
 ([Choosing between recordings](#choosing-between-recordings)). There are no
 dependencies.
 
@@ -46,10 +49,11 @@ relative loudness still need a human ear
   first gesture, like the effects.
 - **Gallery.** The Gallery has a **Sounds** tab: every sound as a card with a
   picture, grouped, and a row per faction for its theme. Each card says where
-  its sound comes from: the library file of a recording, or "Generated"
-  ([The Gallery's Sounds tab](#the-gallerys-sounds-tab)). A sound with
-  recordings lists them under its card, to hear side by side and to pick
-  one for this browser
+  its sound comes from: the prompt of an ElevenLabs take, the library file
+  of a recording, or "Synth"
+  ([The Gallery's Sounds tab](#the-gallerys-sounds-tab)). Under each card
+  are its versions (its ElevenLabs takes, its old recordings and the
+  synth), to hear side by side and to pick one for this browser
   ([Choosing between recordings](#choosing-between-recordings)).
 - **All-synth switch.** Opening the game with `?stock-sounds=0` plays every
   sound from the synthesiser and fetches no clip
@@ -78,25 +82,28 @@ relative loudness still need a human ear
 
 Everything is in `src/audio/`. Importing it creates nothing.
 
-| File                   | What it does                                                                                                                                                                                  |
-| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `sound-manifest.ts`    | The list of sound ids and, for each, its label, category, priority, detune range and source (a synth recipe or a file). Also the list of themes.                                              |
-| `theme-music.json`     | The encoded themes: for each its file, the master it came from, its measured loudness, the level it is played at and its loop overlap. Written by `scripts/audio/encode-themes.ts`.           |
-| `theme-music.ts`       | Reads that file for the rest of the code and builds a theme's URL.                                                                                                                            |
-| `music-player.ts`      | Plays one theme at a time: loads it when it is first asked for, holds only the one that plays, crosses from one to the next, and schedules the passes of a loop on the audio clock.           |
-| `theme-scene.ts`       | Which theme a screen plays: a pure function from what is shown (menu, New game, a match and its viewer) to a theme id.                                                                        |
-| `playable-sound.ts`    | One lookup for the mixer and the device over both lists: an effect or a theme by its id.                                                                                                      |
-| `synth.ts`             | Renders a recipe to samples with plain arithmetic: oscillators (sine, triangle, band-limited square and saw), seeded noise, pitch glides, vibrato, simple FM, envelopes and one-pole filters. |
-| `mixer.ts`             | Decides which requested sounds start: coalescing, the voice limit, category levels and detune.                                                                                                |
-| `stock-sounds.json`    | The provenance manifest and the only list of recordings: for each sound that has any, its candidates (the library file, the stretch cut from it, the processing, the level) and the default.  |
-| `stock-sounds.ts`      | Reads that manifest for the rest of the code, builds a clip's URL, and holds the `?stock-sounds` switch.                                                                                      |
-| `stock-sound-picks.ts` | This browser's picks among the recordings: parsing, storing, and the text of "Copy my picks".                                                                                                 |
-| `sound-file-store.ts`  | The bytes of the sound files: each file is fetched once, without waiting for it. A sound's default clip at the game's start, another candidate when it is asked for.                          |
-| `web-audio-output.ts`  | The WebAudio device: one `AudioBuffer` per sound (a rendered recipe or a decoded file), a master gain and a limiter, and the music's own gain. The `AudioContext` is created in `unlock`.     |
-| `sound-events-v7.ts`   | Maps presentation steps and projected events to sounds. Pure functions.                                                                                                                       |
-| `audio-settings.ts`    | Loads and stores the two levels, and gives the music the sound's stored value when it has none.                                                                                               |
-| `game-audio.ts`        | The object the interface talks to: preference, gesture gating, hidden-tab silence, the theme of the screen and a log of requests.                                                             |
-| `sound-table.ts`       | The recipe table below, computed from the manifest.                                                                                                                                           |
+| File                     | What it does                                                                                                                                                                                           |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `sound-manifest.ts`      | The list of sound ids and, for each, its label, category, priority, detune range and source (a synth recipe or a file). Also the list of themes.                                                       |
+| `theme-music.json`       | The encoded themes: for each its file, the master it came from, its measured loudness, the level it is played at and its loop overlap. Written by `scripts/audio/encode-themes.ts`.                    |
+| `theme-music.ts`         | Reads that file for the rest of the code and builds a theme's URL.                                                                                                                                     |
+| `music-player.ts`        | Plays one theme at a time: loads it when it is first asked for, holds only the one that plays, crosses from one to the next, and schedules the passes of a loop on the audio clock.                    |
+| `theme-scene.ts`         | Which theme a screen plays: a pure function from what is shown (menu, New game, a match and its viewer) to a theme id.                                                                                 |
+| `playable-sound.ts`      | One lookup for the mixer and the device over both lists: an effect or a theme by its id.                                                                                                               |
+| `synth.ts`               | Renders a recipe to samples with plain arithmetic: oscillators (sine, triangle, band-limited square and saw), seeded noise, pitch glides, vibrato, simple FM, envelopes and one-pole filters.          |
+| `mixer.ts`               | Decides which requested sounds start: coalescing, the voice limit, category levels and detune.                                                                                                         |
+| `stock-sounds.json`      | The provenance manifest and the only list of recordings: for each sound that has any, its candidates (the library file, the stretch cut from it, the processing, the level) and the default.           |
+| `elevenlabs-sounds.json` | The ElevenLabs takes the game can play: for each sound its takes (the clip, the level, the length, the prompt, a line on its character) and its default. Written by `scripts/audio/elevenlabs-sfx.ts`. |
+| `elevenlabs-sounds.ts`   | Reads that manifest for the rest of the code.                                                                                                                                                          |
+| `sound-choices.ts`       | What each sound can play: its ElevenLabs takes, its stock recordings and the synth (0), with the default. The device, the start-of-game fetch, the picks and the Gallery read this one list.           |
+| `stock-sounds.ts`        | Reads that manifest for the rest of the code, builds a clip's URL, and holds the `?stock-sounds` switch.                                                                                               |
+| `stock-sound-picks.ts`   | This browser's picks among the recordings: parsing, storing, and the text of "Copy my picks".                                                                                                          |
+| `sound-file-store.ts`    | The bytes of the sound files: each file is fetched once, without waiting for it. A sound's default clip at the game's start, another candidate when it is asked for.                                   |
+| `web-audio-output.ts`    | The WebAudio device: one `AudioBuffer` per sound (a rendered recipe or a decoded file), a master gain and a limiter, and the music's own gain. The `AudioContext` is created in `unlock`.              |
+| `sound-events-v7.ts`     | Maps presentation steps and projected events to sounds. Pure functions.                                                                                                                                |
+| `audio-settings.ts`      | Loads and stores the two levels, and gives the music the sound's stored value when it has none.                                                                                                        |
+| `game-audio.ts`          | The object the interface talks to: preference, gesture gating, hidden-tab silence, the theme of the screen and a log of requests.                                                                      |
+| `sound-table.ts`         | The recipe table below, computed from the manifest.                                                                                                                                                    |
 
 A recipe is rendered once, on first use, into a buffer at 44.1 kHz. Rendering
 in ordinary code instead of with live oscillator nodes means the same samples
@@ -319,7 +326,10 @@ remembered with the others. It replaces the header's Sounds button of
   folder and the original file name exactly as the bundle has them, and the
   stretch that was cut, in seconds: "DavidDumais - Explosion SFX Pack /",
   "0–1.05 s", and under them "EXPLReal_Medium Realistic Explosion
-  15_DDUMAIS_NONE.wav". A synthesised sound says "Generated". The origin is
+  15_DDUMAIS_NONE.wav". An ElevenLabs take (bead `pulp_wars-2yc.51`) shows
+  "ElevenLabs, 2026-10-14 /", its prompt and "New 1 · 0.44 s". A
+  synthesised sound says "Synth" ("Generated" before that bead, when it
+  was the only generated sound). The origin is
   read from the provenance manifest (`src/audio/stock-sounds.json`); the
   Gallery has no list of its own, and two tests fail when a provenance row
   has no card or a card disagrees with the manifest. The library has one
@@ -327,11 +337,11 @@ remembered with the others. It replaces the header's Sounds button of
   two (it wraps anywhere); the whole origin is in the title shown on hover
   and in the name of the play control. This tab shows more text than the
   rest of the game on purpose. A theme's row shows the name of its file
-  ("theme-undead.m4a"), or "Generated" for a synthesised one. The origin
+  ("theme-undead.m4a"), or "Synth" for a synthesised one. The origin
   is that of what the sound is set to play: its default, or this browser's
   pick.
-- **Recordings to choose from.** A sound with recordings has a numbered
-  list under its card: its candidates and the generated sound, each with a
+- **Versions to choose from.** Every sound has a list under its card: its
+  ElevenLabs takes, its old recordings and the synth, each with a
   control that plays it and a **Use** control that picks it for this
   browser. At the top of the tab are **Copy my picks** and **Reset picks**.
   [Choosing between recordings](#choosing-between-recordings) has the
@@ -350,8 +360,8 @@ remembered with the others. It replaces the header's Sounds button of
   plays it as a match does, at a random pitch in between. **Build** has a
   third, an eye: the quieter level of another player's building in sight.
   No sound differs by faction; a unit with a sound of its own has its own
-  card. A recorded sound has one more button, labelled **Generated**: the
-  synthesised sound the recording replaced, so both can be heard. The card
+  card. A sound that plays a clip has one more button, labelled **Synth**:
+  the synthesised sound the clip replaced, so both can be heard. The card
   and its ♭ and ♯ play the recording. A recorded card's buttons are in a row
   under the card, so its words keep the card's width.
 - **Themes.** A theme row plays its theme through the music, in place of
@@ -379,7 +389,7 @@ remembered with the others. It replaces the header's Sounds button of
   a card's variants, its stop and the lines of its recordings (the line,
   then its Use), Home and End go to the first and last card. Enter or Space
   plays or picks. Each control has a name, and a card's name ends
-  with its origin: "Play: Arrow shot. Generated", "Play: Hit. Recorded:
+  with its origin: "Play: Unit trained. Synth", "Play: Hit. Recorded:
   Doex Studio - 90s Anime SFX Pack / Noise_Punch_006.wav, 0.075–0.33 s",
   "Play lower: Hit", "Play generated: Hit", "Stop: Victory", "Play: Undead
   theme. File: theme-undead.m4a". A faction without a theme would read
@@ -686,7 +696,10 @@ refuses WAV, AIFF, FLAC and CAF files and a `Sonniss*` folder, and
 `tests/unit/stock-sounds-assets.test.ts` fails when any audio file in the
 repository other than a theme of the theme manifest is larger than 200 kB,
 when any is uncompressed, when a clip is larger than
-60 kB or all of them together exceed 1.5 MB, when the clip folder holds a
+60 kB or all of them together exceed 4.2 MB (1.5 MB before bead
+`pulp_wars-2yc.51`; its 175 ElevenLabs takes are 2.6 MB beside the 1.25 MB
+of stock clips, raised on purpose so that the old recordings stay to
+compare), when the clip folder holds a
 file the manifest does not list, and when a file under `public/` has a
 library file's name. The total is the alternatives included: 78 clips fit
 the 1.5 MB that bead `pulp_wars-2yc.20` set for fifteen, and the 101 clips
@@ -892,7 +905,8 @@ hears as louder. It is a starting point, not a mix.
 
 ### How a clip is played
 
-- **Start of the game.** The start asks for one clip a sound
+- **Start of the game.** The start asks for one clip a sound (since bead
+  `pulp_wars-2yc.51` its ElevenLabs default)
   (`soundAssetUrlsV7` in `src/assets/asset-inventory-v7.ts`,
   `src/app/v7-preload-boot.ts`): the sound's default recording, or the one
   this browser picked. It asks when the title screen is up, not before
@@ -900,8 +914,8 @@ hears as louder. It is a starting point, not a mix.
   the title 1.8 s later on a slow link. It does not wait for any of them:
   no screen depends on sound, and a click in the two seconds the clips
   need on such a link plays the synthesised sound. The factions' art
-  loads after the clips. No alternative is fetched at the start: 38 files
-  of the 101.
+  loads after the clips. No alternative is fetched at the start: 64 files
+  of the 276 (175 ElevenLabs takes and 101 stock clips).
 - **First gesture.** The audio device opens and decodes the clips that have
   arrived (`web-audio-output.ts`). A browser cannot decode sound before the
   gesture.
@@ -920,8 +934,11 @@ hears as louder. It is a starting point, not a mix.
 The recordings were chosen without hearing them, so the last word is a
 listener's. The Gallery's Sounds tab is where it is given.
 
-- **The row.** A sound with recordings has a numbered list under its card:
-  one line a candidate, in the manifest's order, and **Generated** last.
+- **The row.** Every sound has a list under its card: its ElevenLabs
+  takes (**New 1**, the default, then **New 2** and **New 3**; bead
+  `pulp_wars-2yc.51`), its old stock recordings (**Old 1** and on, in the
+  manifest's order), and **Synth** last. A take's line shows its prompt and
+  its length; the whole of it is in the line's title.
   A line shows the candidate's number, the file it was cut from and the
   stretch. The file name wraps anywhere and is cut after two lines; the
   line's title and name have the whole origin and the candidate's note:
@@ -937,7 +954,9 @@ listener's. The Gallery's Sounds tab is where it is given.
   for this browser: the game plays it from then on, at once, and the card's
   origin line and name change to it. The pick is stored in the browser's
   local storage under `pulpWars.stockSoundPicks.v1` as
-  `{"<sound id>": <candidate number>}`, 0 for the generated sound. Using
+  `{"<sound id>": <candidate number>}`: 101 and up for an ElevenLabs
+  take, 1 to 4 for a stock recording, 0 for the synthesised sound, so a pick
+  stored before the takes existed still names its recording. Using
   the default again removes the pick. A stored pick of a candidate that no
   longer exists, or for a sound without recordings, is ignored. A pick
   never enters a save, a replay or the engine, and changes nothing for
@@ -984,13 +1003,13 @@ sound, the pick or the default.
 
 Open the game with `?stock-sounds=0` (also `off`, `false`): every sound is
 synthesised, no clip is fetched, and the Gallery shows every card as
-"Generated". `=1` forces the recordings on. To turn them off for everyone,
+"Synth". `=1` forces the recordings on. To turn them off for everyone,
 set `STOCK_SOUNDS_ENABLED_V1` to `false` in `src/audio/stock-sounds.ts`. The
 switch combines with the board's own switches (`?starfield`, `?fog-style`,
 `?water-blend`, `?coast-sand`, `?faction-grass`, `?city-shadow`).
 
-To hear both versions of one sound without the switch, use the **Generated**
-button of its card in the Gallery's Sounds tab, or the Generated line of
+To hear both versions of one sound without the switch, use the **Synth**
+button of its card in the Gallery's Sounds tab, or the Synth line of
 its row.
 
 ### Adding or changing a clip
@@ -1045,6 +1064,44 @@ medieval weapons, bow, coins, footsteps, bells, chimes, 8-bit, retro,
 interface, stinger, fanfare, jingle, orchestral. `measure-stock-sounds.ts`
 takes a part's folder or the folder all parts are in.
 
+## ElevenLabs sound effects
+
+Bead `pulp_wars-2yc.51`. The user, 2026-10-14, asked for every sound
+effect to be replaced with ElevenLabs generations and for the old ones to
+stay in the Gallery to compare. The whole record is in
+[docs/audio/ELEVENLABS_SFX.md](../audio/ELEVENLABS_SFX.md), written from
+the data by `npm run audio:elevenlabs-sfx -- doc`; in short:
+
+- **Made by a checked-in script.** `scripts/audio/elevenlabs-sfx.ts`
+  (`npm run audio:elevenlabs-sfx`) asks the sound-generation endpoint for
+  three takes of every prompt of
+  [docs/audio/elevenlabs-sfx-prompts.json](../audio/elevenlabs-sfx-prompts.json)
+  and records every request (prompt, length asked, prompt influence, model,
+  day, cost) in
+  [elevenlabs-sfx-records.json](../audio/elevenlabs-sfx-records.json). It
+  is resumable, reads the key from `ELEVENLAB_API_KEY` only, and keeps the
+  raw takes outside the repository. The theme music is not a sound effect
+  and is unchanged.
+- **Chosen by measurement.** Nobody can listen while choosing, so each take
+  is measured (length after trimming, onset, tail, loudness, crest,
+  centroid, energy below 1 kHz, flat-topped clipping, how alike it is to
+  the other takes) and held to the rules of its kind of sound (a click, a
+  hit, a boom, a chime, a jingle…). Failed takes were generated again from
+  revised prompts, twice at most. 278 takes in three rounds; 173 passed.
+  The best-scoring passing take is the default; up to two more are kept.
+- **One sound kept its old default.** No take of `unit.train` passed; it
+  plays its synthesised sound, and its two best takes are offered to hear.
+- **Encoded like the stock clips.** Trimmed from the attack, cut at the
+  sound's longest length with a fade, peak 0.708, AAC-LC at 96 kbit/s with
+  `afconvert`, and a level that makes it as loud as the sound it replaces
+  (`docs/audio/elevenlabs-sfx-clips.json` has each clip's loudness and
+  reference). The game reads `src/audio/elevenlabs-sounds.json`; the file
+  of a take is the sound's id and its number from 101
+  (`impact-hit-102.m4a`), so a take never shares a number with a stock
+  recording.
+- **Provenance.** "ElevenLabs sound effects, generated 2026-10-14", in the
+  manifest and on every card and line of the Gallery.
+
 ## Test hook
 
 `tests/fixtures/fake-audio-context.ts` is a recording `AudioContext` for
@@ -1085,16 +1142,20 @@ instrumentation, never by listening
 ## What has not been checked
 
 - How the sounds actually sound: character, pleasantness, whether an attack
-  reads as an attack. This holds for the recorded clips too: they were
+  reads as an attack. This holds for the ElevenLabs takes too: they were
+  chosen by measurement, and
+  [docs/audio/ELEVENLABS_SFX.md](../audio/ELEVENLABS_SFX.md#listen-to-these-first)
+  lists the ones to hear first (the voices, the jingles and the sounds with
+  a single passing take). This holds for the recorded clips too: they were
   chosen from names and measurements
   ([How the clips were chosen](#how-the-clips-were-chosen)), and
   [docs/audio/STOCK_SOUND_CHOICES.md](../audio/STOCK_SOUND_CHOICES.md)
   lists the fifteen to listen to first.
 - Which of a sound's recordings is the best one. Twenty-eight sounds have
   two to four; the default is a guess.
-- Whether the recorded and the synthesised sounds fit together in one game.
-  Thirty-eight sounds are now recordings of real or designed sources and
-  twenty-seven are simple synthesised tones.
+- Whether the sounds fit together in one game. Sixty-four now play
+  ElevenLabs takes made with one shared style, one a synthesised tone; a
+  browser's picks can mix in stock recordings and synth tones.
 - The clips in Safari and Firefox. They decode correctly in Chrome; the
   other two have not been tried.
 - Relative loudness between sounds and categories. Peaks and RMS are bounded,

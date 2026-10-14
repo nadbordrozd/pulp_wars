@@ -156,7 +156,7 @@ describe("a registered faction theme", () => {
     );
     expect(
       required('[data-sound-play="theme:GOBLIN"]').getAttribute("aria-label"),
-    ).toBe("Play: Goblin theme. Generated");
+    ).toBe("Play: Goblin theme. Synth");
     expect(undead.getAttribute("aria-disabled")).toBeNull();
     expect(undead.dataset.soundId).toBe("theme.undead");
     expect(undead.textContent).toBe("UndeadThemetheme-undead.ogg");

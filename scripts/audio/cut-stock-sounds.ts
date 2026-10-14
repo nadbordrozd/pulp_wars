@@ -12,6 +12,7 @@ import {
 import { tmpdir } from "node:os";
 import { delimiter, dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { SOUND_ALL_CLIPS_V1 } from "../../src/audio/sound-choices";
 import { soundRecipeV1, type SoundIdV1 } from "../../src/audio/sound-manifest";
 import {
   STOCK_SOUND_ALL_CLIPS_V1,
@@ -193,7 +194,11 @@ export function cutClipV1(
  * Zeroes the creation and modification times in an MP4 file, so the same
  * cut always gives the same bytes.
  */
-function clearMp4Times(file: Buffer, from = 0, to: number = file.length): void {
+export function clearMp4Times(
+  file: Buffer,
+  from = 0,
+  to: number = file.length,
+): void {
   let at = from;
   while (at + 8 <= to) {
     const size = file.readUInt32BE(at);
@@ -368,8 +373,9 @@ function main(): void {
   } finally {
     rmSync(work, { recursive: true, force: true });
   }
-  // Clips the manifest does not list: said always, removed with --prune.
-  const listed = new Set(STOCK_SOUND_ALL_CLIPS_V1.map((clip) => clip.file));
+  // Clips neither manifest lists (the ElevenLabs takes of bead
+  // pulp_wars-2yc.51 share the folder): said always, removed with --prune.
+  const listed = new Set(SOUND_ALL_CLIPS_V1.map((clip) => clip.file));
   for (const file of readdirSync(out).sort()) {
     // The theme music has a folder of its own in there; it is not a clip.
     if (listed.has(file) || statSync(join(out, file)).isDirectory()) continue;

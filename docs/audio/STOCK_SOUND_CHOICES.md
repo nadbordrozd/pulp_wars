@@ -12,11 +12,17 @@ from file names and measurements, and the note beside a recording says
 what was measured, not what it sounds like. That is why a sound with
 more than one plausible recording keeps them all: the choice is yours.
 
+**Since bead `pulp_wars-2yc.51` the game plays an ElevenLabs take by
+default** for every sound whose takes passed their measurements
+([docs/audio/ELEVENLABS_SFX.md](ELEVENLABS_SFX.md)). The recordings below
+stay in the Gallery as that sound's "Old" choices, numbered as here, and
+a sound's default below is what it played before the takes.
+
 ## How to choose
 
 1. Open the Gallery and its **Sounds** tab. A sound with recordings has a
-   numbered row under its card, one line a recording, and **Generated**
-   last.
+   row under its card: its new takes ("New 1" first), its old recordings
+   ("Old 1" is recording 1 below), and **Synth** last.
 2. Press a line to hear it. Press **Use** on the one you like: the game
    plays it from then on, in that browser only.
 3. Press **Copy my picks** at the top of the tab and paste the text to

@@ -22,11 +22,11 @@ import {
   type StockSoundPicksV1,
 } from "./stock-sound-picks";
 import {
-  STOCK_SOUND_GENERATED_CHOICE_V1,
-  stockSoundCandidateV1,
-  stockSoundUrlV1,
-  stockSoundV1,
-} from "./stock-sounds";
+  SOUND_GENERATED_CHOICE_V1,
+  soundCandidateUrlV1,
+  soundCandidateV1,
+  soundChoiceSetV1,
+} from "./sound-choices";
 import {
   SYNTH_SAMPLE_RATE_V1,
   renderSynthRecipeV1,
@@ -175,11 +175,11 @@ export function createWebAudioOutputV1(
   /** One recording of a sound, by its candidate number. */
   const candidateChoice = (id: SoundKeyV1, n: number): FileChoice | null => {
     if (!stockSounds) return null;
-    const candidate = stockSoundCandidateV1(id, n);
+    const candidate = soundCandidateV1(id, n);
     return candidate === null
       ? null
       : {
-          url: stockSoundUrlV1(candidate),
+          url: soundCandidateUrlV1(candidate),
           gain: level(candidate.gain),
           candidate: n,
         };
@@ -187,10 +187,10 @@ export function createWebAudioOutputV1(
 
   /** The file a plain play of the sound uses; null for the synthesiser. */
   const choiceOf = (id: SoundKeyV1): FileChoice | null => {
-    if (stockSoundV1(id) !== null) {
+    if (soundChoiceSetV1(id) !== null) {
       if (!stockSounds) return null;
       const n = stockSoundChoiceV1(id, Object.fromEntries(picks));
-      return n === null || n === STOCK_SOUND_GENERATED_CHOICE_V1
+      return n === null || n === SOUND_GENERATED_CHOICE_V1
         ? null
         : candidateChoice(id, n);
     }
@@ -459,11 +459,11 @@ export function createWebAudioOutputV1(
       return playableRecipeV1(id) === null ? null : "GENERATED";
     },
     soundCandidate(id: SoundKeyV1): number | null {
-      if (stockSoundV1(id) === null) return null;
+      if (soundChoiceSetV1(id) === null) return null;
       const choice = choiceOf(id);
       return choice !== null && fileBuffers.has(choice.url)
-        ? (choice.candidate ?? STOCK_SOUND_GENERATED_CHOICE_V1)
-        : STOCK_SOUND_GENERATED_CHOICE_V1;
+        ? (choice.candidate ?? SOUND_GENERATED_CHOICE_V1)
+        : SOUND_GENERATED_CHOICE_V1;
     },
     setPick(id: SoundKeyV1, pick: number | null): void {
       if (pick === null) picks.delete(id);

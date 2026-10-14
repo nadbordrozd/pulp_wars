@@ -235,6 +235,12 @@ export function gallerySoundsPanelV7(
     if (playing && choice !== null)
       row.node.dataset.playingChoice = String(choice);
     else delete row.node.dataset.playingChoice;
+    for (const line of row.node.querySelectorAll<HTMLElement>(
+      ".v7-gallery-sound-choice-play",
+    ))
+      line.dataset.heard = String(
+        playing && choice !== null && line.dataset.choice === String(choice),
+      );
     if (row.stop !== null) row.stop.hidden = !playing;
   };
 
@@ -499,6 +505,21 @@ export function gallerySoundsPanelV7(
           " ",
           part("v7-gallery-sound-origin-cut", entry.origin.cut),
         );
+      else if (entry.origin.kind === "ELEVENLABS")
+        // The take, the prompt it was made from, and its length.
+        origin.append(
+          part(
+            "v7-gallery-sound-origin-library",
+            `ElevenLabs, ${entry.origin.generated} /`,
+          ),
+          " ",
+          part("v7-gallery-sound-origin-file", entry.origin.prompt),
+          " ",
+          part(
+            "v7-gallery-sound-origin-cut",
+            `${entry.origin.take} · ${entry.origin.cut}`,
+          ),
+        );
       else
         origin.append(part("v7-gallery-sound-origin-file", entry.origin.text));
       words.append(origin);
@@ -568,16 +589,17 @@ export function gallerySoundsPanelV7(
   };
 
   /**
-   * The recordings of a sound and its generated version as a numbered
-   * list: each line plays one (its number, the file it was cut from and
-   * the stretch) and has a control that picks it for this browser. The
-   * default is marked, and so is the one in use.
+   * What a sound can play, as a list: its ElevenLabs takes ("New 1", the
+   * prompt, the length), its old stock recordings ("Old 1", the file it
+   * was cut from, the stretch) and the synth. Each line plays one and has
+   * a control that picks it for this browser. The default is marked, and
+   * so is the one in use.
    */
   const choiceList = (row: RowV7): HTMLElement => {
     const { entry } = row;
     const list = documentRoot.createElement("ul");
     list.className = "v7-gallery-sound-choices";
-    list.setAttribute("aria-label", `Recordings of ${entry.name}`);
+    list.setAttribute("aria-label", `Versions of ${entry.name}`);
     for (const choice of entry.choices) {
       const item = documentRoot.createElement("li");
       item.className = "v7-gallery-sound-choice";
@@ -609,6 +631,12 @@ export function gallerySoundsPanelV7(
           number,
           // One line, cut short; the whole origin is in the title.
           part("v7-gallery-sound-choice-file", choice.origin.file),
+          part("v7-gallery-sound-choice-cut", choice.origin.cut),
+        );
+      else if (choice.origin.kind === "ELEVENLABS")
+        playButton.append(
+          number,
+          part("v7-gallery-sound-choice-file", choice.origin.prompt),
           part("v7-gallery-sound-choice-cut", choice.origin.cut),
         );
       else {
@@ -673,7 +701,7 @@ export function gallerySoundsPanelV7(
   picksCount.dataset.soundPickCount = "true";
   picksText.append(
     picksCount,
-    ` ${choosable} sounds have recordings. Play the numbered ones under a card and press Use on the one you like: the game plays it from then on, in this browser.`,
+    ` ${choosable} sounds have versions: New (ElevenLabs), Old (the recordings before) and Synth. Press Use on the one you like: the game plays it from then on, in this browser.`,
   );
   const picksButton = (action: string, text: string): HTMLButtonElement => {
     const node = documentRoot.createElement("button");

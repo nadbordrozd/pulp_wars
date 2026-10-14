@@ -9,8 +9,8 @@ import {
   OTHER_PLAYER_BUILD_GAIN_V7,
   SOUND_IDS_V1,
   SOUND_MANIFEST_V1,
+  SOUND_DEFAULT_CLIPS_V1,
   SOUND_THEMES_V1,
-  STOCK_SOUND_CLIPS_V1,
   audioVolumeGainV1,
   playableSoundIdsV1,
   type SoundIdV1,
@@ -195,11 +195,14 @@ describe("Gallery Sounds tab", () => {
       expect(picture?.querySelector("svg, img")).not.toBeNull();
       expect(node.textContent ?? "").not.toMatch(COORDINATE);
     }
-    expect(card("attack.ranged").getAttribute("aria-label")).toBe(
-      "Play: Arrow shot. Generated",
+    expect(card("unit.train").getAttribute("aria-label")).toBe(
+      "Play: Unit trained. Synth",
     );
-    expect(card("city.capture").textContent).toBe(
-      "City capturedYou take a cityGenerated",
+    expect(card("unit.train").textContent).toBe(
+      "Unit trainedNew unit joinsSynth",
+    );
+    expect(card("attack.ranged").getAttribute("aria-label")).toMatch(
+      /^Play: Arrow shot\. ElevenLabs new 1: /,
     );
     // No manifest id is shown as text.
     for (const id of SOUND_IDS_V1)
@@ -297,7 +300,7 @@ describe("Gallery Sounds tab", () => {
     expect(variants.map((node) => node.getAttribute("aria-label"))).toEqual([
       "Play lower: Hit",
       "Play higher: Hit",
-      "Play generated: Hit",
+      "Play synth: Hit",
     ]);
     const cents = SOUND_MANIFEST_V1["impact.hit"].jitterCents;
     variants[0]?.click();
@@ -305,10 +308,12 @@ describe("Gallery Sounds tab", () => {
     expect(playing()).toEqual(["impact.hit"]);
     variants[1]?.click();
     expect(device.sources.at(-1)?.rate).toBeCloseTo(2 ** (cents / 1200), 6);
-    // A tune is never detuned: it has no variants.
+    // A tune is never detuned: its only variant is its synth version.
     expect(
-      row("match.victory").querySelector(".v7-gallery-sound-variant"),
-    ).toBeNull();
+      [
+        ...row("match.victory").querySelectorAll(".v7-gallery-sound-variant"),
+      ].map((node) => node.getAttribute("aria-label")),
+    ).toEqual(["Play synth: Victory"]);
     // Another player's building is heard quieter than one's own.
     const far = required<HTMLButtonElement>(
       '[data-sound-row="economy.build"] [data-variant="far"]',
@@ -611,7 +616,8 @@ describe("Gallery Sounds tab", () => {
     key(first, "ArrowUp");
     expect(document.activeElement).toBe(first);
     // Right goes through the card's own controls, then on to the next card.
-    // The second card (the arrow) is generated: a lower and a higher.
+    // The second card (the arrow) has a lower, a higher and its synth, then
+    // its row of versions: each line and its Use.
     second.focus();
     key(second, "ArrowRight");
     const lower = document.activeElement as HTMLElement;
@@ -620,13 +626,29 @@ describe("Gallery Sounds tab", () => {
     expect(document.activeElement?.getAttribute("aria-label")).toBe(
       "Play higher: Arrow shot",
     );
+    key(document.activeElement as HTMLElement, "ArrowRight");
+    expect(document.activeElement?.getAttribute("aria-label")).toBe(
+      "Play synth: Arrow shot",
+    );
+    key(document.activeElement as HTMLElement, "ArrowRight");
+    expect(document.activeElement?.getAttribute("aria-label")).toMatch(
+      /^Play new 1 of Arrow shot \(default\): /,
+    );
     const third = cards[2];
     if (third === undefined) throw new Error("missing cards");
+    const lines = row("attack.ranged").querySelectorAll(
+      ".v7-gallery-sound-choice-play, .v7-gallery-sound-choice-use",
+    ).length;
+    for (let step = 1; step < lines; step += 1)
+      key(document.activeElement as HTMLElement, "ArrowRight");
+    expect(document.activeElement?.getAttribute("aria-label")).toBe(
+      "Use the synth sound for Arrow shot",
+    );
     key(document.activeElement as HTMLElement, "ArrowRight");
     expect(document.activeElement).toBe(third);
     key(third, "ArrowLeft");
     expect(document.activeElement?.getAttribute("aria-label")).toBe(
-      "Play higher: Arrow shot",
+      "Use the synth sound for Arrow shot",
     );
     // Down from a variant goes to the next card.
     key(document.activeElement as HTMLElement, "ArrowDown");
@@ -645,13 +667,19 @@ describe("Gallery Sounds tab", () => {
     expect(document.activeElement).toBe(first);
     // A hidden stop control is skipped; a shown one is a stop on the way.
     const victory = card("match.victory");
-    const defeat = card("match.defeat");
     victory.focus();
     key(victory, "ArrowRight");
-    expect(document.activeElement).toBe(defeat);
+    expect(document.activeElement?.getAttribute("aria-label")).toBe(
+      "Play synth: Victory",
+    );
+    key(document.activeElement as HTMLElement, "ArrowRight");
+    expect(document.activeElement?.getAttribute("aria-label")).toMatch(
+      /^Play new 1 of Victory/,
+    );
     victory.click();
     victory.focus();
     key(victory, "ArrowRight");
+    key(document.activeElement as HTMLElement, "ArrowRight");
     expect(document.activeElement?.getAttribute("aria-label")).toBe(
       "Stop: Victory",
     );
@@ -686,69 +714,67 @@ describe("Gallery Sounds tab", () => {
 });
 
 /**
- * Where each sound comes from (bead pulp_wars-2yc.20, docs/ui/SOUND.md
- * "Stock recordings"): the card of a recorded sound shows the library file
- * it was cut from and the cut, a generated one says so, and a recorded card
- * also plays the generated sound it replaced.
+ * Where each sound comes from (beads pulp_wars-2yc.20 and pulp_wars-2yc.51,
+ * docs/ui/SOUND.md "Stock recordings"): the card of a sound that plays an
+ * ElevenLabs take shows the take, its prompt and its length, one that plays
+ * a stock recording the library file it was cut from and the cut, a synth
+ * one says so, and a card with a clip also plays its synth version.
  */
 describe("Gallery Sounds tab: origins", () => {
   function origin(id: string): HTMLElement {
     return required(`[data-sound-row="${id}"] .v7-gallery-sound-origin`);
   }
 
-  it("shows the origin file and the cut of every recorded sound", () => {
+  it("shows the take, its prompt and its length on every ElevenLabs card", () => {
     mount();
     openSounds();
-    expect(STOCK_SOUND_CLIPS_V1.length).toBeGreaterThan(0);
-    for (const clip of STOCK_SOUND_CLIPS_V1) {
+    expect(SOUND_DEFAULT_CLIPS_V1.length).toBeGreaterThan(0);
+    for (const clip of SOUND_DEFAULT_CLIPS_V1) {
+      if (clip.origin !== "ELEVENLABS") throw new Error(`${clip.id} is old`);
       // A provenance row without a card fails here (the card is required).
-      expect(row(clip.id).dataset.origin).toBe("recorded");
+      expect(row(clip.id).dataset.origin).toBe("elevenlabs");
       const node = origin(clip.id);
-      expect(node.dataset.soundOrigin).toBe("recorded");
-      const text = `${clip.library} / ${clip.originalFile}`;
-      const cut = `${clip.startSeconds}–${clip.endSeconds} s`;
-      // The folder and the file name exactly as the bundle has them.
+      expect(node.dataset.soundOrigin).toBe("elevenlabs");
       expect(
         node.querySelector(".v7-gallery-sound-origin-library")?.textContent,
-      ).toBe(`${clip.library} /`);
+      ).toBe(`ElevenLabs, ${clip.generated} /`);
       expect(
         node.querySelector(".v7-gallery-sound-origin-file")?.textContent,
-      ).toBe(clip.originalFile);
+      ).toBe(clip.prompt);
       expect(
         node.querySelector(".v7-gallery-sound-origin-cut")?.textContent,
-      ).toBe(cut);
-      expect(node.textContent).toBe(`${text} ${cut}`);
-      // The whole name on hover and for a screen reader, however it wraps.
-      expect(node.title).toBe(`Recorded: ${text}, ${cut}`);
+      ).toBe(`New 1 · ${clip.seconds} s`);
+      // The whole of it on hover and for a screen reader, however it wraps.
+      const label = `ElevenLabs new 1: ${clip.prompt} (${clip.seconds} s, generated ${clip.generated})`;
+      expect(node.title).toBe(label);
       const play = card(clip.id);
       expect(play.getAttribute("aria-label")).toBe(
-        `Play: ${SOUND_MANIFEST_V1[clip.id as SoundIdV1].label}. Recorded: ${text}, ${cut}`,
+        `Play: ${SOUND_MANIFEST_V1[clip.id as SoundIdV1].label}. ${label}`,
       );
       expect(play.title).toBe(play.getAttribute("aria-label"));
     }
-    expect(origin("impact.explosion").textContent).toBe(
-      "DavidDumais - Explosion SFX Pack / EXPLReal_Medium Realistic Explosion 15_DDUMAIS_NONE.wav 0–1.05 s",
-    );
   });
 
-  it("says Generated on every other card, and agrees with the manifest", () => {
+  it("says Synth on every other card, and agrees with the manifest", () => {
     mount();
     openSounds();
-    const recorded = new Set(STOCK_SOUND_CLIPS_V1.map((clip) => clip.id));
+    const recorded = new Set(SOUND_DEFAULT_CLIPS_V1.map((clip) => clip.id));
     for (const id of SOUND_IDS_V1) {
       const node = origin(id);
       // A card whose origin disagrees with the manifest fails here.
       expect(node.dataset.soundOrigin, id).toBe(
-        SOUND_MANIFEST_V1[id].source.kind === "FILE" ? "recorded" : "generated",
+        SOUND_MANIFEST_V1[id].source.kind === "FILE"
+          ? "elevenlabs"
+          : "generated",
       );
-      expect(node.dataset.soundOrigin === "recorded", id).toBe(
+      expect(node.dataset.soundOrigin === "elevenlabs", id).toBe(
         recorded.has(id),
       );
       if (recorded.has(id)) continue;
-      expect(node.textContent, id).toBe("Generated");
-      expect(node.title, id).toBe("Generated");
+      expect(node.textContent, id).toBe("Synth");
+      expect(node.title, id).toBe("Synth");
       expect(card(id).getAttribute("aria-label"), id).toBe(
-        `Play: ${SOUND_MANIFEST_V1[id].label}. Generated`,
+        `Play: ${SOUND_MANIFEST_V1[id].label}. Synth`,
       );
       expect(
         row(id).querySelector('[data-variant="generated"]'),
@@ -756,9 +782,9 @@ describe("Gallery Sounds tab: origins", () => {
       ).toBeNull();
     }
     expect(
-      document.querySelectorAll('.v7-gallery-sound[data-origin="recorded"]')
+      document.querySelectorAll('.v7-gallery-sound[data-origin="elevenlabs"]')
         .length,
-    ).toBe(STOCK_SOUND_CLIPS_V1.length);
+    ).toBe(SOUND_DEFAULT_CLIPS_V1.length);
     // A theme's row names its file.
     expect(
       document.querySelector<HTMLElement>(
@@ -767,7 +793,7 @@ describe("Gallery Sounds tab: origins", () => {
     ).toBe("file");
   });
 
-  it("plays the generated sound of a recorded card from its own control", () => {
+  it("plays the synth sound of a card with a clip from its own control", () => {
     const view = mount().view;
     openSounds();
     const play = vi.spyOn(view.audio, "play");
@@ -775,9 +801,9 @@ describe("Gallery Sounds tab: origins", () => {
       '[data-sound-row="impact.hit"] [data-variant="generated"]',
     );
     // Each control is named after what it plays.
-    expect(generated.textContent).toBe("Generated");
-    expect(generated.getAttribute("aria-label")).toBe("Play generated: Hit");
-    expect(generated.title).toBe("Play generated: Hit");
+    expect(generated.textContent).toBe("Synth");
+    expect(generated.getAttribute("aria-label")).toBe("Play synth: Hit");
+    expect(generated.title).toBe("Play synth: Hit");
     generated.click();
     expect(play).toHaveBeenLastCalledWith("impact.hit", { generated: true });
     expect(playing()).toEqual(["impact.hit"]);
@@ -796,19 +822,20 @@ describe("Gallery Sounds tab: origins", () => {
     expect(document.activeElement).toBe(generated);
   });
 
-  it("shows every card as generated with ?stock-sounds=0", () => {
+  it("shows every card as synth with ?stock-sounds=0", () => {
     window.history.replaceState(null, "", "?stock-sounds=0");
     try {
       const view = mount().view;
       expect(view.audio.stockSounds).toBe(false);
       openSounds();
       expect(
-        document.querySelectorAll('.v7-gallery-sound[data-origin="recorded"]')
-          .length,
+        document.querySelectorAll(
+          '.v7-gallery-sound[data-origin="recorded"], .v7-gallery-sound[data-origin="elevenlabs"]',
+        ).length,
       ).toBe(0);
       expect(document.querySelector('[data-variant="generated"]')).toBeNull();
       for (const id of SOUND_IDS_V1)
-        expect(origin(id).textContent, id).toBe("Generated");
+        expect(origin(id).textContent, id).toBe("Synth");
     } finally {
       window.history.replaceState(null, "", window.location.pathname);
     }

@@ -149,6 +149,31 @@ export {
   type StockSoundV1,
 } from "./stock-sounds";
 export {
+  ELEVENLABS_FIRST_TAKE_V1,
+  ELEVENLABS_SOUNDS_V1,
+  ELEVENLABS_SOUND_MODEL_V1,
+  ELEVENLABS_SOUND_PROVENANCE_V1,
+  elevenLabsSoundV1,
+  type ElevenLabsSoundV1,
+  type ElevenLabsTakeV1,
+} from "./elevenlabs-sounds";
+export {
+  SOUND_ALL_CLIPS_V1,
+  SOUND_CHOICE_SETS_V1,
+  SOUND_DEFAULT_CLIPS_V1,
+  SOUND_GENERATED_CHOICE_V1,
+  soundCandidateOrdinalV1,
+  soundCandidateSecondsV1,
+  soundCandidateUrlV1,
+  soundCandidateV1,
+  soundChoiceSetV1,
+  type ElevenLabsCandidateV1,
+  type SoundCandidateV1,
+  type SoundChoiceSetV1,
+  type SoundClipV1,
+  type StockCandidateV1,
+} from "./sound-choices";
+export {
   createWebAudioOutputV1,
   type WebAudioOutputOptionsV1,
   type WebAudioOutputV1,

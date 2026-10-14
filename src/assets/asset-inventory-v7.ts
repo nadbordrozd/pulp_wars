@@ -3,7 +3,7 @@ import {
   stockSoundChoiceV1,
   type StockSoundPicksV1,
 } from "../audio/stock-sound-picks";
-import { stockSoundCandidateV1, stockSoundUrlV1 } from "../audio/stock-sounds";
+import { soundCandidateUrlV1, soundCandidateV1 } from "../audio/sound-choices";
 import { FACTION_IDS_V7, type FactionIdV7 } from "../engine/index";
 import { CHIBI_ART_ASSETS_V7 } from "./chibi-art-manifest";
 import { navalArtRoleOfSubjectV7, type ChibiArtAssetV7 } from "./chibi-art-v7";
@@ -346,8 +346,8 @@ export function soundAssetUrlsV7(
     // default; none when that is the generated sound.
     const choice = stockSoundChoiceV1(id, picks);
     if (choice !== null) {
-      const clip = stockSounds ? stockSoundCandidateV1(id, choice) : null;
-      if (clip !== null) urls.add(stockSoundUrlV1(clip));
+      const clip = stockSounds ? soundCandidateV1(id, choice) : null;
+      if (clip !== null) urls.add(soundCandidateUrlV1(clip));
       continue;
     }
     const entry = playableSoundV1(id);

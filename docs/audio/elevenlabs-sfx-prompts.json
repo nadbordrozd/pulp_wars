@@ -1,0 +1,1036 @@
+{
+  "bead": "pulp_wars-2yc.51",
+  "model": "eleven_text_to_sound_v2",
+  "takes": 3,
+  "styleSuffix": "Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no echo, no music, no voices.",
+  "stingerSuffix": "Short cartoon pulp-adventure game jingle, dry and close, no reverb tail, no singing, no voices.",
+  "vocalSuffix": "Punchy cartoon pulp-adventure game sound effect, dry and close, no reverb, no music, no words.",
+  "sounds": [
+    {
+      "id": "attack.melee",
+      "kind": "whoosh",
+      "suffix": "style",
+      "prompt": "A fast sword swing whoosh: a short sharp swish of a blade cutting the air, no impact.",
+      "durationSeconds": 0.5,
+      "minSeconds": 0.12,
+      "maxSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "revisions": [
+        {
+          "round": 2,
+          "takes": 2,
+          "prompt": "A cartoon sword swing: one quick clean whoosh of a blade through the air, light and airy, not distorted, no impact.",
+          "reason": "Two takes clipped (flat-topped peaks); asks for a lighter, cleaner swing."
+        }
+      ]
+    },
+    {
+      "id": "attack.ranged",
+      "kind": "whoosh",
+      "suffix": "style",
+      "prompt": "A bow string twang and a quick arrow whoosh flying away, no impact.",
+      "durationSeconds": 0.5,
+      "minSeconds": 0.12,
+      "maxSeconds": 0.5,
+      "promptInfluence": 0.5
+    },
+    {
+      "id": "attack.siege",
+      "kind": "heavy",
+      "suffix": "style",
+      "prompt": "A wooden catapult arm released: a creak, a heavy wooden thunk and a big boulder whooshing away, no impact.",
+      "durationSeconds": 0.8,
+      "minSeconds": 0.25,
+      "maxSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "revisions": [
+        {
+          "round": 2,
+          "takes": 1,
+          "prompt": "A catapult fires: a wooden creak and a heavy wooden thunk as the arm swings, then a deep whoosh of a boulder flying away, clean and not distorted, no impact.",
+          "reason": "One take clipped; asks for a clean recording."
+        }
+      ]
+    },
+    {
+      "id": "attack.ray",
+      "kind": "zap",
+      "suffix": "style",
+      "prompt": "A retro 1950s ray gun zap: a wobbly electric pew laser blast.",
+      "durationSeconds": 0.5,
+      "minSeconds": 0.15,
+      "maxSeconds": 0.6,
+      "promptInfluence": 0.5
+    },
+    {
+      "id": "attack.magic",
+      "kind": "effect",
+      "suffix": "style",
+      "prompt": "A dark magic bolt cast by a skeleton wizard: a crackling eerie energy whoosh with a low ghostly hum.",
+      "durationSeconds": 0.7,
+      "minSeconds": 0.2,
+      "maxSeconds": 0.7,
+      "promptInfluence": 0.5
+    },
+    {
+      "id": "attack.rocket",
+      "kind": "whoosh",
+      "suffix": "style",
+      "prompt": "A firework rocket launched: a fizzing hiss and a whoosh as it shoots off, no explosion.",
+      "durationSeconds": 0.7,
+      "minSeconds": 0.2,
+      "maxSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "revisions": [
+        {
+          "round": 2,
+          "takes": 1,
+          "prompt": "A small firework rocket: a quick ignition fizz and a rising whistling whoosh as it flies off, no explosion.",
+          "reason": "One take was a near-duplicate of another; a whistle is asked for to vary it."
+        }
+      ]
+    },
+    {
+      "id": "attack.gatling",
+      "kind": "burst",
+      "suffix": "style",
+      "prompt": "A steampunk gatling gun firing one short burst: a rapid mechanical rat-a-tat of five shots.",
+      "durationSeconds": 0.6,
+      "minSeconds": 0.15,
+      "maxSeconds": 0.6,
+      "promptInfluence": 0.5
+    },
+    {
+      "id": "attack.cannon",
+      "kind": "boom",
+      "suffix": "style",
+      "prompt": "An old iron cannon firing a single shot: one deep punchy boom.",
+      "durationSeconds": 0.8,
+      "minSeconds": 0.25,
+      "maxSeconds": 0.9,
+      "promptInfluence": 0.5,
+      "revisions": [
+        {
+          "round": 2,
+          "takes": 1,
+          "prompt": "A pirate ship cannon fires once: a sharp deep boom with a short crack.",
+          "reason": "One take was a near-duplicate of another; a crack is asked for to vary it."
+        }
+      ]
+    },
+    {
+      "id": "attack.pop",
+      "kind": "pop",
+      "suffix": "style",
+      "prompt": "A toy gumball launcher firing: a hollow rubbery pop like a cork shot from a toy gun, bright and bouncy, very short.",
+      "durationSeconds": 0.5,
+      "minSeconds": 0.05,
+      "maxSeconds": 0.35,
+      "promptInfluence": 0.5
+    },
+    {
+      "id": "impact.hit",
+      "kind": "hit",
+      "suffix": "style",
+      "prompt": "A cartoon punch impact: one punchy meaty thwack, very short.",
+      "durationSeconds": 0.5,
+      "minSeconds": 0.05,
+      "maxSeconds": 0.35,
+      "promptInfluence": 0.5
+    },
+    {
+      "id": "impact.heavy",
+      "kind": "boom",
+      "suffix": "style",
+      "prompt": "A heavy impact: a big wooden and stone crashing thud, deep and punchy, short.",
+      "durationSeconds": 0.7,
+      "minSeconds": 0.15,
+      "maxSeconds": 0.7,
+      "promptInfluence": 0.5
+    },
+    {
+      "id": "impact.explosion",
+      "kind": "boom",
+      "suffix": "style",
+      "prompt": "A cartoon bomb explosion: a punchy deep boom with crackling debris, short, no long rumble.",
+      "durationSeconds": 1,
+      "minSeconds": 0.35,
+      "maxSeconds": 1.2,
+      "promptInfluence": 0.5,
+      "revisions": [
+        {
+          "round": 2,
+          "takes": 1,
+          "prompt": "A cartoon bomb goes off: one round punchy boom with a short crackle of debris, clean and not distorted, no long rumble.",
+          "reason": "One take clipped."
+        }
+      ]
+    },
+    {
+      "id": "impact.ice",
+      "kind": "bright",
+      "suffix": "style",
+      "prompt": "Ice shattering: a sharp crack and tinkling crystal shards falling, short.",
+      "durationSeconds": 0.6,
+      "minSeconds": 0.12,
+      "maxSeconds": 0.7,
+      "promptInfluence": 0.5
+    },
+    {
+      "id": "impact.splat",
+      "kind": "hit",
+      "suffix": "style",
+      "prompt": "A wet cream pie hitting a face: a squelchy splat, short.",
+      "durationSeconds": 0.5,
+      "minSeconds": 0.08,
+      "maxSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "revisions": [
+        {
+          "round": 2,
+          "takes": 2,
+          "prompt": "A soft custard pie lands with a wet squishy splat, gentle and clean, not distorted, short.",
+          "reason": "Two takes clipped; asks for a softer, cleaner splat."
+        }
+      ]
+    },
+    {
+      "id": "impact.shield",
+      "kind": "clang",
+      "suffix": "style",
+      "prompt": "A sword striking a round metal shield: one clang with a short metallic ring.",
+      "durationSeconds": 0.5,
+      "minSeconds": 0.1,
+      "maxSeconds": 0.6,
+      "promptInfluence": 0.5,
+      "revisions": [
+        {
+          "round": 2,
+          "takes": 1,
+          "prompt": "A sword hits a round iron shield: one bright metallic clang with a short ring.",
+          "reason": "One take too dull for a clang (centroid under 800 Hz); asks for a brighter one."
+        }
+      ]
+    },
+    {
+      "id": "impact.splash",
+      "kind": "hit",
+      "suffix": "style",
+      "prompt": "A small water splash: a quick splosh of something dropped in a pond, short.",
+      "durationSeconds": 0.5,
+      "minSeconds": 0.08,
+      "maxSeconds": 0.5,
+      "promptInfluence": 0.5
+    },
+    {
+      "id": "unit.hurt",
+      "kind": "vocal",
+      "suffix": "vocal",
+      "prompt": "A small cartoon soldier gets hurt: one short wordless pained grunt, oof.",
+      "durationSeconds": 0.5,
+      "minSeconds": 0.08,
+      "maxSeconds": 0.45,
+      "promptInfluence": 0.5,
+      "revisions": [
+        {
+          "round": 2,
+          "takes": 1,
+          "prompt": "A small cartoon soldier gets hit: one short wordless yelp of pain, ow, clean and not distorted.",
+          "reason": "One take clipped."
+        }
+      ]
+    },
+    {
+      "id": "unit.death",
+      "kind": "vocal",
+      "suffix": "vocal",
+      "prompt": "A cartoon soldier is defeated: a comic wordless groan falling in pitch, then a soft thud as he drops, not gory.",
+      "durationSeconds": 0.8,
+      "minSeconds": 0.25,
+      "maxSeconds": 0.9,
+      "promptInfluence": 0.5
+    },
+    {
+      "id": "unit.step",
+      "kind": "step",
+      "suffix": "style",
+      "prompt": "One single soft footstep on grass: a tiny light boot thump, very short.",
+      "durationSeconds": 0.5,
+      "minSeconds": 0.02,
+      "maxSeconds": 0.2,
+      "promptInfluence": 0.6,
+      "revisions": [
+        {
+          "round": 2,
+          "takes": 2,
+          "prompt": "One single tiny footstep on soft earth: a short muted thud, very short, nothing else.",
+          "reason": "One take too long, one squashed; asks for one muted thud and nothing after."
+        }
+      ]
+    },
+    {
+      "id": "unit.train",
+      "kind": "stinger",
+      "suffix": "stinger",
+      "prompt": "A toy soldier recruit call: a short bright brass bugle call of three rising notes.",
+      "durationSeconds": 0.8,
+      "minSeconds": 0.3,
+      "maxSeconds": 0.9,
+      "promptInfluence": 0.5,
+      "revisions": [
+        {
+          "round": 2,
+          "takes": 3,
+          "prompt": "A toy soldier joins the army: a quick bright three-note call on a small brass bugle, clean and not distorted, ending quickly.",
+          "reason": "All three clipped and ran past 0.9 s; a quicker call, asked at 0.7 s.",
+          "durationSeconds": 0.7
+        },
+        {
+          "round": 3,
+          "takes": 3,
+          "prompt": "A new recruit joins the army: a quick snare drum flourish and a short toy trumpet toot, played softly, ending quickly.",
+          "durationSeconds": 0.7,
+          "promptInfluence": 0.3,
+          "reason": "Five of six brass calls clipped and three ran long: tried a softer drum flourish with a toy trumpet, at a lower prompt influence."
+        }
+      ]
+    },
+    {
+      "id": "unit.levelup",
+      "kind": "bright",
+      "suffix": "stinger",
+      "prompt": "A unit is promoted: a quick rising sparkly bell arpeggio, bright and happy.",
+      "durationSeconds": 0.7,
+      "minSeconds": 0.25,
+      "maxSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "revisions": [
+        {
+          "round": 2,
+          "takes": 2,
+          "prompt": "A unit is promoted: a quick rising arpeggio of high bright glockenspiel notes, sparkling and happy.",
+          "reason": "Two takes too dull for a chime (centroid under 1.5 kHz); asks for high glockenspiel notes."
+        }
+      ]
+    },
+    {
+      "id": "support.heal",
+      "kind": "bright",
+      "suffix": "style",
+      "prompt": "A gentle healing spell: a soft rising harp glissando with a warm magical shimmer.",
+      "durationSeconds": 0.7,
+      "minSeconds": 0.25,
+      "maxSeconds": 0.9,
+      "promptInfluence": 0.5,
+      "revisions": [
+        {
+          "round": 2,
+          "takes": 1,
+          "prompt": "A healing spell: a soft rising run of high bright harp notes with a twinkling shimmer.",
+          "reason": "One take too dull; asks for high harp notes."
+        }
+      ]
+    },
+    {
+      "id": "support.rally",
+      "kind": "stinger",
+      "suffix": "stinger",
+      "prompt": "A rallying war horn: one bold heroic horn blast calling the troops.",
+      "durationSeconds": 1.0,
+      "minSeconds": 0.3,
+      "maxSeconds": 1.1,
+      "promptInfluence": 0.5,
+      "revisions": [
+        {
+          "round": 2,
+          "takes": 2,
+          "prompt": "A rallying horn: one short bold heroic horn blast, clean and not distorted, ending quickly.",
+          "reason": "Two takes clipped.",
+          "durationSeconds": 0.9
+        },
+        {
+          "round": 3,
+          "takes": 2,
+          "prompt": "A rallying call: one short heroic horn blast, played softly from a little distance, ending quickly.",
+          "durationSeconds": 0.9,
+          "promptInfluence": 0.3,
+          "reason": "Four of five horn blasts clipped: asks for a softer blast, at a lower prompt influence."
+        }
+      ]
+    },
+    {
+      "id": "support.dark",
+      "kind": "effect",
+      "suffix": "style",
+      "prompt": "Spooky necromancy: a low ominous whoosh swelling with a wordless ghostly moan.",
+      "durationSeconds": 0.9,
+      "minSeconds": 0.3,
+      "maxSeconds": 1.0,
+      "promptInfluence": 0.5,
+      "revisions": [
+        {
+          "round": 2,
+          "takes": 3,
+          "prompt": "Necromancy: a sudden burst of dark magic, a low ominous whoosh that starts at once, with a wordless ghostly moan, clean and not distorted.",
+          "reason": "All three swelled too slowly (over 150 ms) and two clipped; asks for a burst that starts at once."
+        }
+      ]
+    },
+    {
+      "id": "support.drain",
+      "kind": "effect",
+      "suffix": "style",
+      "prompt": "A vampire drains life: a slurping magical suction whoosh rising in pitch.",
+      "durationSeconds": 0.9,
+      "minSeconds": 0.25,
+      "maxSeconds": 1.0,
+      "promptInfluence": 0.5,
+      "revisions": [
+        {
+          "round": 2,
+          "takes": 1,
+          "prompt": "A vampire drains life: a quick slurping magical suction whoosh rising in pitch, ending quickly.",
+          "reason": "One take ran long.",
+          "durationSeconds": 0.7
+        }
+      ]
+    },
+    {
+      "id": "special.beam",
+      "kind": "effect",
+      "suffix": "style",
+      "prompt": "A flying saucer tractor beam: a warbling retro sci-fi teleport hum that rises.",
+      "durationSeconds": 0.9,
+      "minSeconds": 0.3,
+      "maxSeconds": 1.0,
+      "promptInfluence": 0.5,
+      "revisions": [
+        {
+          "round": 2,
+          "takes": 3,
+          "prompt": "A flying saucer beam: a short warbling sci-fi teleport hum that rises and stops quickly, clean and not distorted.",
+          "reason": "All three ran past 1 s and two clipped; a shorter hum, asked at 0.7 s.",
+          "durationSeconds": 0.7
+        }
+      ]
+    },
+    {
+      "id": "special.mind",
+      "kind": "effect",
+      "suffix": "style",
+      "prompt": "Hypnotic mind control: a wobbling theremin warble that spirals, retro 1950s sci-fi.",
+      "durationSeconds": 0.8,
+      "minSeconds": 0.25,
+      "maxSeconds": 0.9,
+      "promptInfluence": 0.5,
+      "revisions": [
+        {
+          "round": 2,
+          "takes": 3,
+          "prompt": "Hypnotic mind control: a short wobbling theremin warble that spirals and stops quickly, retro 1950s sci-fi, clean and not distorted.",
+          "reason": "Two clipped and two ran long; a shorter warble, asked at 0.7 s.",
+          "durationSeconds": 0.7
+        },
+        {
+          "round": 3,
+          "takes": 3,
+          "prompt": "Hypnotic mind control: a soft gentle theremin wobble that spirals, quiet and smooth, retro 1950s sci-fi, stopping quickly.",
+          "durationSeconds": 0.7,
+          "promptInfluence": 0.3,
+          "reason": "Five of six warbles clipped or ran long: asks for a soft, quiet wobble, at a lower prompt influence."
+        }
+      ]
+    },
+    {
+      "id": "special.freeze",
+      "kind": "bright",
+      "suffix": "style",
+      "prompt": "A freezing spell: a quick crystalline crackle of ice forming with a cold shimmer.",
+      "durationSeconds": 0.6,
+      "minSeconds": 0.15,
+      "maxSeconds": 0.8,
+      "promptInfluence": 0.5
+    },
+    {
+      "id": "special.burrow",
+      "kind": "heavy",
+      "suffix": "style",
+      "prompt": "Digging underground fast: a rumbling burrow with crunching earth and gravel.",
+      "durationSeconds": 0.7,
+      "minSeconds": 0.2,
+      "maxSeconds": 0.9,
+      "promptInfluence": 0.5
+    },
+    {
+      "id": "special.hatch",
+      "kind": "hit",
+      "suffix": "style",
+      "prompt": "A big egg cracking open: a crisp eggshell crack and a little pop.",
+      "durationSeconds": 0.5,
+      "minSeconds": 0.08,
+      "maxSeconds": 0.5,
+      "promptInfluence": 0.5
+    },
+    {
+      "id": "special.pop",
+      "kind": "pop",
+      "suffix": "style",
+      "prompt": "A small pop like a bubble or a cork popping, bright, very short.",
+      "durationSeconds": 0.5,
+      "minSeconds": 0.03,
+      "maxSeconds": 0.25,
+      "promptInfluence": 0.6
+    },
+    {
+      "id": "special.puff",
+      "kind": "whoosh",
+      "suffix": "style",
+      "prompt": "A quick puff of steam: a short soft hiss burst.",
+      "durationSeconds": 0.5,
+      "minSeconds": 0.08,
+      "maxSeconds": 0.5,
+      "promptInfluence": 0.5
+    },
+    {
+      "id": "special.sparkle",
+      "kind": "bright",
+      "suffix": "style",
+      "prompt": "A magic sparkle: a bright glittering bell tree twinkle.",
+      "durationSeconds": 0.6,
+      "minSeconds": 0.2,
+      "maxSeconds": 0.7,
+      "promptInfluence": 0.5,
+      "revisions": [
+        {
+          "round": 2,
+          "takes": 1,
+          "prompt": "A magic sparkle: a soft glittering twinkle of small high bells.",
+          "reason": "One take was hiss (over 90% above 4 kHz); asks for bells."
+        }
+      ]
+    },
+    {
+      "id": "special.dizzy",
+      "kind": "effect",
+      "suffix": "style",
+      "prompt": "Cartoon dizziness: a woozy wobbling slide whistle with little tweeting birds.",
+      "durationSeconds": 0.8,
+      "minSeconds": 0.25,
+      "maxSeconds": 0.9,
+      "promptInfluence": 0.5,
+      "revisions": [
+        {
+          "round": 2,
+          "takes": 2,
+          "prompt": "Cartoon dizziness: a short woozy slide whistle wobble with two little bird tweets, ending quickly, clean and not distorted.",
+          "reason": "One take clipped, one ran long.",
+          "durationSeconds": 0.7
+        }
+      ]
+    },
+    {
+      "id": "special.boing",
+      "kind": "pop",
+      "suffix": "style",
+      "prompt": "A cartoon spring bounce: one bouncy boing twang.",
+      "durationSeconds": 0.5,
+      "minSeconds": 0.12,
+      "maxSeconds": 0.5,
+      "promptInfluence": 0.5
+    },
+    {
+      "id": "cult.ribbit",
+      "kind": "vocal",
+      "suffix": "style",
+      "prompt": "A big frog: one deep comic ribbit croak.",
+      "durationSeconds": 0.5,
+      "minSeconds": 0.1,
+      "maxSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "revisions": [
+        {
+          "round": 2,
+          "takes": 1,
+          "prompt": "A big frog: one short deep comic ribbit croak, nothing else.",
+          "reason": "One take ran long."
+        }
+      ]
+    },
+    {
+      "id": "cult.pamphlets",
+      "kind": "whoosh",
+      "suffix": "style",
+      "prompt": "A handful of paper leaflets thrown in the air: a quick rustle and flutter of paper.",
+      "durationSeconds": 0.6,
+      "minSeconds": 0.15,
+      "maxSeconds": 0.7,
+      "promptInfluence": 0.5,
+      "revisions": [
+        {
+          "round": 2,
+          "takes": 2,
+          "prompt": "A bundle of paper leaflets tossed into the air: a sudden quick flutter and rustle of paper, starting at once.",
+          "reason": "Two takes swelled too slowly; asks for a sudden flutter."
+        }
+      ]
+    },
+    {
+      "id": "cult.proclaim",
+      "kind": "vocal",
+      "suffix": "vocal",
+      "prompt": "A cult leader commands a town to kneel: one deep booming wordless shout, HAAH, over a low ominous horn.",
+      "durationSeconds": 1.0,
+      "minSeconds": 0.3,
+      "maxSeconds": 1.1,
+      "promptInfluence": 0.5,
+      "revisions": [
+        {
+          "round": 2,
+          "takes": 3,
+          "prompt": "A cult leader commands a town to kneel: one deep commanding wordless shout, HAAH, over a low horn, recorded clean and not distorted at a moderate level.",
+          "reason": "All three clipped (flat-topped shouts); asks for a clean recording at a moderate level."
+        },
+        {
+          "round": 3,
+          "takes": 3,
+          "prompt": "A cult leader commands a town to kneel: a low ominous horn and one deep wordless chanted HAAH, spoken firmly but not shouted, short.",
+          "durationSeconds": 0.8,
+          "promptInfluence": 0.3,
+          "reason": "Every shout clipped or ran long: asks for a firm, not shouted, voice over the horn, shorter, at a lower prompt influence."
+        }
+      ]
+    },
+    {
+      "id": "cult.summon",
+      "kind": "effect",
+      "suffix": "style",
+      "prompt": "An eldritch horror is summoned: a swirling magical vortex whoosh that rises, with a deep otherworldly hum.",
+      "durationSeconds": 1.0,
+      "minSeconds": 0.3,
+      "maxSeconds": 1.2,
+      "promptInfluence": 0.5
+    },
+    {
+      "id": "cult.herald",
+      "kind": "boom",
+      "suffix": "style",
+      "prompt": "A colossal otherworldly monster arrives: a deep metallic boom with a low growling rumble.",
+      "durationSeconds": 1.5,
+      "minSeconds": 0.4,
+      "maxSeconds": 1.6,
+      "promptInfluence": 0.5
+    },
+    {
+      "id": "cult.starfall",
+      "kind": "whoosh",
+      "suffix": "style",
+      "prompt": "A falling star streaking down from the sky: a descending fiery whoosh with a sizzling trail, no explosion.",
+      "durationSeconds": 0.7,
+      "minSeconds": 0.2,
+      "maxSeconds": 0.9,
+      "promptInfluence": 0.5,
+      "revisions": [
+        {
+          "round": 2,
+          "takes": 1,
+          "prompt": "A falling star: a quick descending fiery whoosh with a sizzling trail, clean and not distorted, no explosion.",
+          "reason": "One take clipped."
+        }
+      ]
+    },
+    {
+      "id": "cult.snap",
+      "kind": "pop",
+      "suffix": "style",
+      "prompt": "A taut magical rope snapping: one sharp elastic twang snap, very short.",
+      "durationSeconds": 0.5,
+      "minSeconds": 0.04,
+      "maxSeconds": 0.35,
+      "promptInfluence": 0.5
+    },
+    {
+      "id": "cult.unbound",
+      "kind": "boom",
+      "suffix": "vocal",
+      "prompt": "A demon bursts its iron collar: heavy chains shattering and a deep monstrous roar.",
+      "durationSeconds": 1.5,
+      "minSeconds": 0.4,
+      "maxSeconds": 1.6,
+      "promptInfluence": 0.5,
+      "revisions": [
+        {
+          "round": 2,
+          "takes": 1,
+          "prompt": "A demon bursts its iron collar: chains shattering and a short deep monstrous roar, clean and not distorted.",
+          "reason": "One take clipped."
+        }
+      ]
+    },
+    {
+      "id": "cult.tentacle",
+      "kind": "effect",
+      "suffix": "style",
+      "prompt": "A giant slimy tentacle rising out of the water: a wet squelching slither and a watery surge.",
+      "durationSeconds": 0.9,
+      "minSeconds": 0.3,
+      "maxSeconds": 1.0,
+      "promptInfluence": 0.5
+    },
+    {
+      "id": "cult.sacrifice",
+      "kind": "effect",
+      "suffix": "style",
+      "prompt": "A dark ritual offering: a ritual dagger strike, a dark magical whoosh and a low gong.",
+      "durationSeconds": 0.8,
+      "minSeconds": 0.2,
+      "maxSeconds": 1,
+      "promptInfluence": 0.5
+    },
+    {
+      "id": "city.capture",
+      "kind": "stinger",
+      "suffix": "stinger",
+      "prompt": "A city is captured: a short triumphant brass fanfare of three bold notes and a cymbal crash.",
+      "durationSeconds": 1.2,
+      "minSeconds": 0.5,
+      "maxSeconds": 1.5,
+      "promptInfluence": 0.5
+    },
+    {
+      "id": "village.capture",
+      "kind": "stinger",
+      "suffix": "stinger",
+      "prompt": "A village joins you: a quick cheerful two-note trumpet toot.",
+      "durationSeconds": 0.8,
+      "minSeconds": 0.3,
+      "maxSeconds": 1,
+      "promptInfluence": 0.5,
+      "revisions": [
+        {
+          "round": 2,
+          "takes": 2,
+          "prompt": "A village joins you: a quick cheerful two-note toot on a small trumpet, clean and not distorted, ending quickly.",
+          "reason": "Two takes clipped, one ran long.",
+          "durationSeconds": 0.7
+        },
+        {
+          "round": 3,
+          "takes": 2,
+          "prompt": "A village joins you: a quick cheerful two-note toy trumpet toot, played softly, ending quickly.",
+          "durationSeconds": 0.6,
+          "promptInfluence": 0.3,
+          "reason": "Four of five trumpet toots clipped: asks for a softer toy trumpet, at a lower prompt influence."
+        }
+      ]
+    },
+    {
+      "id": "city.lost",
+      "kind": "stinger",
+      "suffix": "stinger",
+      "prompt": "A city is lost: a short sad descending trombone wah-wah, comic failure.",
+      "durationSeconds": 1.2,
+      "minSeconds": 0.5,
+      "maxSeconds": 1.5,
+      "promptInfluence": 0.5,
+      "revisions": [
+        {
+          "round": 2,
+          "takes": 2,
+          "prompt": "A city is lost: a short sad descending trombone wah-wah of three notes, clean and not distorted, ending quickly.",
+          "reason": "One take clipped, one ran long.",
+          "durationSeconds": 1.1
+        },
+        {
+          "round": 3,
+          "takes": 2,
+          "prompt": "A city is lost: a short sad descending wah-wah of three muted trombone notes, played softly, ending quickly.",
+          "durationSeconds": 1.0,
+          "promptInfluence": 0.3,
+          "reason": "Three of four trombones clipped or ran long: asks for a muted, softer trombone, at a lower prompt influence."
+        }
+      ]
+    },
+    {
+      "id": "city.levelup",
+      "kind": "stinger",
+      "suffix": "stinger",
+      "prompt": "A city grows: a bright cheerful rising xylophone and bell flourish.",
+      "durationSeconds": 1,
+      "minSeconds": 0.4,
+      "maxSeconds": 1.2,
+      "promptInfluence": 0.5,
+      "revisions": [
+        {
+          "round": 2,
+          "takes": 1,
+          "prompt": "A city grows: a quick bright rising xylophone run ending on a bell, clean and not distorted.",
+          "reason": "One take clipped."
+        }
+      ]
+    },
+    {
+      "id": "reward.chosen",
+      "kind": "bright",
+      "suffix": "style",
+      "prompt": "A reward is chosen: a quick sparkling magical confirmation ding.",
+      "durationSeconds": 0.6,
+      "minSeconds": 0.15,
+      "maxSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "revisions": [
+        {
+          "round": 2,
+          "takes": 2,
+          "prompt": "A reward is chosen: one bright high sparkling chime ding with a twinkle.",
+          "reason": "Two takes too dull for a chime; asks for a high ding."
+        }
+      ]
+    },
+    {
+      "id": "research.complete",
+      "kind": "stinger",
+      "suffix": "stinger",
+      "prompt": "A discovery is made: a short bright eureka bell chime with a rising shimmer, retro pulp science.",
+      "durationSeconds": 1,
+      "minSeconds": 0.4,
+      "maxSeconds": 1.2,
+      "promptInfluence": 0.5,
+      "revisions": [
+        {
+          "round": 2,
+          "takes": 1,
+          "prompt": "A discovery is made: a short bright bell chime with a rising shimmer, clean and not distorted.",
+          "reason": "One take clipped."
+        }
+      ]
+    },
+    {
+      "id": "economy.build",
+      "kind": "hit",
+      "suffix": "style",
+      "prompt": "Quick construction: two hammer blows on wood and a solid thunk.",
+      "durationSeconds": 0.6,
+      "minSeconds": 0.12,
+      "maxSeconds": 0.7,
+      "promptInfluence": 0.5
+    },
+    {
+      "id": "economy.harvest",
+      "kind": "pop",
+      "suffix": "style",
+      "prompt": "Picking fruit: a quick leafy rustle and a soft pluck pop.",
+      "durationSeconds": 0.5,
+      "minSeconds": 0.08,
+      "maxSeconds": 0.5,
+      "promptInfluence": 0.5,
+      "revisions": [
+        {
+          "round": 2,
+          "takes": 2,
+          "prompt": "Picking fruit: a quick leafy rustle and a soft round pluck pop, short, nothing after.",
+          "reason": "One take had a long tail, one was too thin (little energy under 1 kHz)."
+        }
+      ]
+    },
+    {
+      "id": "economy.coin",
+      "kind": "bright",
+      "suffix": "style",
+      "prompt": "A few gold coins clinking into a pile, bright, short.",
+      "durationSeconds": 0.5,
+      "minSeconds": 0.12,
+      "maxSeconds": 0.6,
+      "promptInfluence": 0.5,
+      "revisions": [
+        {
+          "round": 2,
+          "takes": 3,
+          "prompt": "A few heavy gold coins dropped onto a wooden table: warm clinks with some body, short.",
+          "reason": "All three were hiss (over 90% of energy above 4 kHz); asks for heavier coins on wood."
+        }
+      ]
+    },
+    {
+      "id": "economy.treasure",
+      "kind": "stinger",
+      "suffix": "style",
+      "prompt": "A treasure chest opened: a wooden creak, then a sparkling shower of gold coins and a magical shimmer.",
+      "durationSeconds": 1,
+      "minSeconds": 0.4,
+      "maxSeconds": 1.2,
+      "promptInfluence": 0.5
+    },
+    {
+      "id": "turn.start",
+      "kind": "bright",
+      "suffix": "stinger",
+      "prompt": "Your turn begins: a bright short double bell ding, a cheerful game notification.",
+      "durationSeconds": 0.7,
+      "minSeconds": 0.2,
+      "maxSeconds": 0.8,
+      "promptInfluence": 0.5,
+      "revisions": [
+        {
+          "round": 2,
+          "takes": 1,
+          "prompt": "Your turn begins: a bright high double bell ding, cheerful game notification.",
+          "reason": "One take too dull for a bell."
+        }
+      ]
+    },
+    {
+      "id": "turn.end",
+      "kind": "stinger",
+      "suffix": "stinger",
+      "prompt": "End of turn: a soft two-note wooden marimba chime falling in pitch.",
+      "durationSeconds": 0.6,
+      "minSeconds": 0.2,
+      "maxSeconds": 0.7,
+      "promptInfluence": 0.5,
+      "revisions": [
+        {
+          "round": 2,
+          "takes": 2,
+          "prompt": "End of turn: a soft two-note wooden marimba tap falling in pitch, short and dry, notes stopping quickly.",
+          "reason": "One take had a long tail, one was nearly silent."
+        }
+      ]
+    },
+    {
+      "id": "achievement.unlocked",
+      "kind": "stinger",
+      "suffix": "stinger",
+      "prompt": "An achievement is unlocked: a bright triumphant brass and glockenspiel flourish, about one second.",
+      "durationSeconds": 1.3,
+      "minSeconds": 0.6,
+      "maxSeconds": 1.6,
+      "promptInfluence": 0.5,
+      "revisions": [
+        {
+          "round": 2,
+          "takes": 1,
+          "prompt": "An achievement is unlocked: a bright triumphant brass flourish with a glockenspiel accent, about one second, ending cleanly.",
+          "reason": "One take had a long hissy tail."
+        }
+      ]
+    },
+    {
+      "id": "achievement.monument",
+      "kind": "stinger",
+      "suffix": "stinger",
+      "prompt": "A grand monument is completed: a big gong strike with a short majestic brass chord, about one and a half seconds.",
+      "durationSeconds": 1.8,
+      "minSeconds": 0.8,
+      "maxSeconds": 2.2,
+      "promptInfluence": 0.5,
+      "revisions": [
+        {
+          "round": 2,
+          "takes": 1,
+          "prompt": "A grand monument is completed: a big gong strike and a short majestic brass chord, about one and a half seconds.",
+          "reason": "One take was a near-duplicate of another."
+        }
+      ]
+    },
+    {
+      "id": "match.victory",
+      "kind": "stinger",
+      "suffix": "stinger",
+      "prompt": "Victory: a short heroic brass and snare drum fanfare in the style of an old adventure serial, triumphant, about two seconds.",
+      "durationSeconds": 2.2,
+      "minSeconds": 1,
+      "maxSeconds": 2.8,
+      "promptInfluence": 0.5,
+      "revisions": [
+        {
+          "round": 2,
+          "takes": 1,
+          "prompt": "Victory: a heroic brass and snare drum fanfare that starts at once on the first beat, old adventure serial style, triumphant, about two seconds.",
+          "reason": "One take started too slowly."
+        }
+      ]
+    },
+    {
+      "id": "match.defeat",
+      "kind": "stinger",
+      "suffix": "stinger",
+      "prompt": "Defeat: a short sad descending brass melody ending on a low note, comic and gloomy, about two seconds.",
+      "durationSeconds": 2,
+      "minSeconds": 0.9,
+      "maxSeconds": 2.6,
+      "promptInfluence": 0.5
+    },
+    {
+      "id": "ui.select",
+      "kind": "ui",
+      "suffix": "style",
+      "prompt": "A soft bright interface select blip: one tiny wooden tick, very short.",
+      "durationSeconds": 0.5,
+      "minSeconds": 0.015,
+      "maxSeconds": 0.15,
+      "promptInfluence": 0.6,
+      "revisions": [
+        {
+          "round": 2,
+          "takes": 2,
+          "prompt": "A soft interface select blip: one tiny bright high wooden tick, very short, nothing else.",
+          "reason": "Two takes too dull for an interface tick; one clipped and ran long."
+        }
+      ]
+    },
+    {
+      "id": "ui.click",
+      "kind": "ui",
+      "suffix": "style",
+      "prompt": "A crisp interface button click: one tiny clean mechanical tick, very short.",
+      "durationSeconds": 0.5,
+      "minSeconds": 0.01,
+      "maxSeconds": 0.12,
+      "promptInfluence": 0.6,
+      "revisions": [
+        {
+          "round": 2,
+          "takes": 2,
+          "prompt": "A crisp interface button click: one tiny clean plastic tick, very short, nothing else.",
+          "reason": "One take too dull, one hiss."
+        }
+      ]
+    },
+    {
+      "id": "ui.toggle",
+      "kind": "ui",
+      "suffix": "style",
+      "prompt": "A small switch flipped: one crisp two-step click, very short.",
+      "durationSeconds": 0.5,
+      "minSeconds": 0.02,
+      "maxSeconds": 0.2,
+      "promptInfluence": 0.6,
+      "revisions": [
+        {
+          "round": 2,
+          "takes": 3,
+          "prompt": "A small light switch flipped: one crisp short plastic click, very short, nothing else.",
+          "reason": "One take nearly silent, two ran long or had a tail."
+        }
+      ]
+    },
+    {
+      "id": "ui.error",
+      "kind": "ui-error",
+      "suffix": "style",
+      "prompt": "A refused command: a short low cartoon error buzz, two quick nope beeps.",
+      "durationSeconds": 0.5,
+      "minSeconds": 0.1,
+      "maxSeconds": 0.45,
+      "promptInfluence": 0.5,
+      "revisions": [
+        {
+          "round": 2,
+          "takes": 1,
+          "prompt": "A refused command: a short low cartoon error buzz of two quick beeps, clean and not distorted.",
+          "reason": "One take clipped and ran long."
+        }
+      ]
+    }
+  ]
+}

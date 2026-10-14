@@ -20,11 +20,12 @@ import {
 import { FACTION_IDS_V7 } from "../../src/engine/index";
 import { factionAssetUrlsV7 } from "../../src/assets/asset-inventory-v7";
 import {
-  STOCK_SOUND_ALL_CLIPS_V1,
-  STOCK_SOUND_CLIPS_V1,
+  SOUND_ALL_CLIPS_V1,
+  SOUND_DEFAULT_CLIPS_V1,
   STOCK_SOUND_PICKS_STORAGE_KEY_V1,
-  stockSoundCandidateV1,
-  stockSoundUrlV1,
+  soundCandidateUrlV1,
+  soundCandidateV1,
+  soundChoiceSetV1,
 } from "../../src/audio/index";
 import type {
   BoardHostCallbacksV7,
@@ -918,9 +919,9 @@ describe("Ruleset 7 start and the sound clips", () => {
 
   it("asks for one clip a sound: its default, or the one this browser picked", async () => {
     const urlOf = (id: string, n: number): string => {
-      const clip = stockSoundCandidateV1(id, n);
+      const clip = soundCandidateV1(id, n);
       if (clip === null) throw new Error(`${id} #${n}`);
-      return stockSoundUrlV1(clip);
+      return soundCandidateUrlV1(clip);
     };
     const start = async (): Promise<readonly string[]> => {
       const { preloader, requests } = manualPreloader();
@@ -941,32 +942,37 @@ describe("Ruleset 7 start and the sound clips", () => {
       expect(asked).toHaveLength(1);
       return asked[0] ?? [];
     };
+    // The default of a sound: an ElevenLabs take (bead pulp_wars-2yc.51).
+    const byDefault = (id: string): string =>
+      urlOf(id, soundChoiceSetV1(id)?.default ?? -1);
+    const train = soundChoiceSetV1("unit.train")?.candidates[0]?.n ?? -1;
     // Without a pick: the defaults, and no alternative.
     const defaults = await start();
     expect(defaults).toEqual(
-      STOCK_SOUND_CLIPS_V1.map((clip) => stockSoundUrlV1(clip)),
+      SOUND_DEFAULT_CLIPS_V1.map((clip) => soundCandidateUrlV1(clip)),
     );
-    expect(defaults.length).toBeLessThan(STOCK_SOUND_ALL_CLIPS_V1.length);
-    expect(defaults).toContain(urlOf("impact.hit", 1));
+    expect(defaults.length).toBeLessThan(SOUND_ALL_CLIPS_V1.length);
+    expect(defaults).toContain(byDefault("impact.hit"));
+    expect(defaults).not.toContain(urlOf("impact.hit", 1));
     expect(defaults).not.toContain(urlOf("impact.hit", 2));
-    expect(defaults).not.toContain(urlOf("unit.death", 1));
+    expect(defaults).not.toContain(urlOf("unit.train", train));
     // With stored picks: the picked recordings instead.
     window.localStorage.setItem(
       STOCK_SOUND_PICKS_STORAGE_KEY_V1,
       JSON.stringify({
         "impact.hit": 2,
-        "unit.death": 1,
+        "unit.train": train,
         "impact.heavy": 0,
         "impact.ice": 99,
       }),
     );
     const picked = await start();
     expect(picked).toContain(urlOf("impact.hit", 2));
-    expect(picked).not.toContain(urlOf("impact.hit", 1));
-    expect(picked).toContain(urlOf("unit.death", 1));
-    expect(picked).not.toContain(urlOf("impact.heavy", 1));
+    expect(picked).not.toContain(byDefault("impact.hit"));
+    expect(picked).toContain(urlOf("unit.train", train));
+    expect(picked).not.toContain(byDefault("impact.heavy"));
     // A pick of a recording that does not exist is no pick.
-    expect(picked).toContain(urlOf("impact.ice", 1));
+    expect(picked).toContain(byDefault("impact.ice"));
     expect(picked.length).toBe(defaults.length);
   });
 
