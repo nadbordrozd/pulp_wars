@@ -172,7 +172,9 @@ export function battleshipBombardmentV7(
               role: "GUARD" as const,
               form: "LAND" as const,
               at: hostileCity.at,
-              hp: 17,
+              // A wounded Guard (`pulp_wars-5ti.13`): the Attack-5 Battleship
+              // of 7r84 (Attack 6 before) still kills it in one shot (14 of 17).
+              hp: 14,
               maxHp: 17,
             }
           : unit,

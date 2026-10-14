@@ -161,7 +161,7 @@ describe("ruleset-7 Goblin Gang Up", () => {
     );
     expect(resolvedAttack(naval, ATTACKER, TARGET)).toMatchObject({
       gangUp: 0,
-      attack2: 12,
+      attack2: 10,
     });
   });
 

@@ -256,7 +256,7 @@ describe("the Ram bonus", () => {
     });
   });
 
-  it("matches the worked examples: a transport takes 10 (6 without the Ram), a Battleship 6 and sinks the boat, a Submarine 8", () => {
+  it("matches the worked examples: a transport takes 10 (6 without the Ram), a Battleship 7 and the boat survives, a Submarine 8", () => {
     const transportArena = (moved: boolean) => {
       // An Undead Patrol Boat against a Human Fighter (12 HP) at sea.
       const base = navalArenaV7({
@@ -308,10 +308,12 @@ describe("the Ram bonus", () => {
     const battleship = attack(
       duel({ x: 2, y: 5 }, { x: 2, y: 6 }, { targetRole: "BATTLESHIP" }),
     );
+    // `pulp_wars-5ti.13` (7r84, Battleship Attack 5 and Defense 3): 7 and
+    // 7, the boat lives (6 and 10, the boat sunk, before).
     expect(exact(battleship.preview)).toMatchObject({
-      damageToDefender: 6,
-      damageToAttacker: 10,
-      attackerDies: true,
+      damageToDefender: 7,
+      damageToAttacker: 7,
+      attackerDies: false,
       ram: true,
       push: "WILL_PUSH",
     });

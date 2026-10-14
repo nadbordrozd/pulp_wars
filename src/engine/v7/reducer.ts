@@ -86,6 +86,8 @@ import {
   HIRE_EXTRA_CAPACITY_V7,
   BLAST_MOUNTAIN_COST_V7,
   PILLAGE_COINS_V7,
+  GATHER_PEARLS_V7,
+  GATHER_PEARLS_GAIN_V7,
   RICOCHET_DIVISOR_V7,
 } from "../rules/ruleset-v7";
 import { hasExactKeysV7 } from "./schema";
@@ -2923,8 +2925,10 @@ function applyPearls(
     return rejected(original, "TILE_ENEMY_OCCUPIED");
   if (hasCityChoice(state, city.id))
     return rejected(original, "CITY_REWARD_PENDING");
-  if (player.coins < 2)
-    return rejected(original, "INSUFFICIENT_COINS", { cost: 2 });
+  // `GATHER_PEARLS_V7`: 2 Coins up front, 12 back (`pulp_wars-5ti.13`).
+  const cost = GATHER_PEARLS_V7.cost;
+  if (player.coins < cost)
+    return rejected(original, "INSUFFICIENT_COINS", { cost });
   try {
     const next = checked({
       ...state,
@@ -2932,7 +2936,10 @@ function applyPearls(
       board: replaceTile(state, at, { ...tile, resource: null }),
       players: state.players.map((candidate) =>
         candidate.id === actor
-          ? { ...candidate, coins: nextSafeBy(candidate.coins, 2) }
+          ? {
+              ...candidate,
+              coins: nextSafeBy(candidate.coins, GATHER_PEARLS_GAIN_V7),
+            }
           : candidate,
       ),
     });
@@ -2942,9 +2949,9 @@ function applyPearls(
         playerId: actor,
         cityId: city.id,
         at,
-        cost: 2,
-        coinsReceived: 4,
-        coinDelta: 2,
+        cost,
+        coinsReceived: GATHER_PEARLS_V7.coinsReceived,
+        coinDelta: GATHER_PEARLS_GAIN_V7,
       },
     ]);
   } catch (cause) {

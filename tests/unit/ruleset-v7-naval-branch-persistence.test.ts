@@ -110,7 +110,8 @@ describe("naval branch persistence", () => {
       "PATROL_BOAT",
       "BATTLESHIP",
     ]);
-    // Turn 1: the Submarine closes in and torpedoes the Battleship (9); the
+    // Turn 1: the Submarine closes in and torpedoes the Battleship (10 since
+    // 7r84, 9 before); the
     // Patrol Boat sails toward the rival's dock.
     moveTo(submarine.id, cx + 3, 13);
     play({
@@ -151,7 +152,7 @@ describe("naval branch persistence", () => {
         preview.push,
       ]),
     ).toEqual([
-      [true, false, 9, 0, "BLOCKED"],
+      [true, false, 10, 0, "BLOCKED"],
       [false, true, 8, 4, "BLOCKED"],
     ]);
     expect(

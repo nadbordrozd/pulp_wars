@@ -522,18 +522,19 @@ describe("Torpedo", () => {
       ram: false,
       advances: false,
     });
-    // A Battleship: 9, no reply; a second torpedo on 16 HP: 11.
+    // A Battleship: 10, no reply; a second torpedo on 15 HP: 12
+    // (`pulp_wars-5ti.13`, 7r84, Defense 3; 9, then 11 on 16 HP, before).
     const battleship = duel("BATTLESHIP");
     expect(battleship.preview).toMatchObject({
-      damageToDefender: 9,
+      damageToDefender: 10,
       damageToAttacker: 0,
       retaliation: false,
       noRetaliationReason: "UNANSWERED",
       torpedo: true,
     });
-    expect(navalUnitV7(battleship.state, battleship.targetId).hp).toBe(16);
-    expect(duel("BATTLESHIP", 16).preview).toMatchObject({
-      damageToDefender: 11,
+    expect(navalUnitV7(battleship.state, battleship.targetId).hp).toBe(15);
+    expect(duel("BATTLESHIP", 15).preview).toMatchObject({
+      damageToDefender: 12,
       retaliation: false,
       noRetaliationReason: "UNANSWERED",
     });
@@ -603,12 +604,12 @@ describe("Torpedo", () => {
       targetUnitId: submarine.id,
     });
     expect(resolved(hit.events)).toMatchObject({
-      damageToDefender: 10,
+      damageToDefender: 8,
       damageToAttacker: 5,
       attackerDies: true,
       retaliation: true,
     });
-    expect(navalUnitV7(hit.state, submarine.id).hp).toBe(2);
+    expect(navalUnitV7(hit.state, submarine.id).hp).toBe(4);
   });
 });
 

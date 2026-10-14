@@ -1074,6 +1074,20 @@ export const BARRACKS_CAPACITY_V7 = 1 as const;
  */
 export const ECONOMIC_MIRACLE_COINS_V7 = 1 as const;
 /**
+ * Gather Pearls (Navigation): the Coins it costs and the Coins it pays, so
+ * the player gains `coinsReceived - cost`. `pulp_wars-5ti.13`
+ * (`pulp-wars-poc-7r84`; the user, 2026-10-14, "make pearls more
+ * meaningful"): it pays 12 for 2, a gain of 10 (4 for 2, a gain of 2,
+ * before). The cost is unchanged.
+ */
+export const GATHER_PEARLS_V7 = Object.freeze({
+  cost: 2,
+  coinsReceived: 12,
+} as const);
+/** The Coins one Gather Pearls adds to its player's treasury (10). */
+export const GATHER_PEARLS_GAIN_V7 =
+  GATHER_PEARLS_V7.coinsReceived - GATHER_PEARLS_V7.cost;
+/**
  * Tuning 4: the Coins a Pillage pays (1 before), and the Field Defense's
  * fortification levels (1 before).
  */
@@ -1669,8 +1683,11 @@ export const ORIGINAL_ROLE_RULES_V7: Readonly<
     tacticalRole: "NAVAL_CAPITAL",
     cost: 16,
     maxHp: 25,
-    attack2: 12,
-    defense2: 8,
+    // `pulp_wars-5ti.13` (`pulp-wars-poc-7r84`; the user, 2026-10-14, "way
+    // op right now"): Attack 5 and Defense 3 (6 and 4 before), for every
+    // faction's Battleship (each copies this role).
+    attack2: 10,
+    defense2: 6,
     move: 2,
     range: 3,
     minimumRange: 1,

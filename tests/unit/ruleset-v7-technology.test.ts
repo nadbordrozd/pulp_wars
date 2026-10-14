@@ -113,7 +113,7 @@ describe("ruleset-7 technology", () => {
       ["KNIGHT", 9, 13, 8, 2, 3, 1, 1, "CHIVALRY", true],
       ["JUGGERNAUT", null, 40, 8, 8, 1, 1, 1, null, true],
       ["PATROL_BOAT", 5, 10, 4, 4, 2, 1, 1, "SHORECRAFT", true],
-      ["BATTLESHIP", 16, 25, 12, 8, 2, 3, 1, "NAVAL_ENGINEERING", false],
+      ["BATTLESHIP", 16, 25, 10, 6, 2, 3, 1, "NAVAL_ENGINEERING", false],
       // The naval branch (`pulp_wars-5ti.2`).
       ["SUBMARINE", 9, 12, 8, 4, 2, 1, 1, "SUBMERSIBLES", true],
       // Tuning 5 (`pulp_wars-w49.4`); the Champion since the ninth unit

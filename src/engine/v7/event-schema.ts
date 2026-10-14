@@ -49,6 +49,8 @@ import {
   TRAMPLE_DAMAGE_V7,
   CITY_REWARD_COINS_V7,
   PILLAGE_COINS_V7,
+  GATHER_PEARLS_V7,
+  GATHER_PEARLS_GAIN_V7,
   PLUNDER_COINS_V7,
   OFFERING_FAVOUR_V7,
   OFFERING_POPULATION_V7,
@@ -1144,9 +1146,9 @@ function validPayload(
     case "PEARLS_GATHERED":
       return (
         playerCityAt(e) &&
-        e.cost === 2 &&
-        e.coinsReceived === 4 &&
-        e.coinDelta === 2
+        e.cost === GATHER_PEARLS_V7.cost &&
+        e.coinsReceived === GATHER_PEARLS_V7.coinsReceived &&
+        e.coinDelta === GATHER_PEARLS_GAIN_V7
       );
     case "PORT_BUILT":
       // The naval branch section 5.4: 2 for an owner with Harbours.

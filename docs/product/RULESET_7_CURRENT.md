@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r83`, for all nine offered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r84`, for all nine offered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), Candy (`CANDY`), and
 the Cultists (`CULT`). The ninth faction, the Cultists of the Ancient Ones,
@@ -436,7 +436,16 @@ links to another, by Road or by Port. A sea link needs only **Shorecraft**
 the Roads technology, and unexplored water no longer breaks a link. A save,
 replay, or setup of `7r75` is rejected, and the browser autosave has a new
 key.
-`pulp-wars-poc-7r83` (`pulp_wars-v642.5`, the campaign follow-ups) is
+`pulp-wars-poc-7r84` (`pulp_wars-5ti.13`, the user, 2026-10-14: the
+Battleship was "way op", and Pearls should be "more meaningful") is **a
+lighter Battleship and richer Pearls**: the Battleship of every roster has
+Attack 5 and Defense 3 (6 and 4 before;
+[section 11](#11-unit-roster), [section 14.3](#143-the-submarine-submerged-and-torpedo)),
+and Gather Pearls pays 12 Coins for its 2, a gain of 10 (4, a gain of 2,
+before; [section 8.2](#82-resource-and-basic-actions)). A
+save, replay, or setup of `7r83` is rejected, and the browser autosave has
+a new key.
+`pulp-wars-poc-7r83` (`pulp_wars-v642.5`, the campaign follow-ups) was
 **waves that arrive calmly** ([section 2.6](#26-mission-setup)): a mission's
 reinforcement arrives with its turn spent (it neither moves nor attacks
 until its seat's next turn), and on the nearest free tile it may enter
@@ -982,7 +991,7 @@ the build differs (its sections 20 to 24 list them);
 the values here are current. Where a document and the code disagreed, the
 code's behavior is the rule and is stated below;
 [Known discrepancies](#25-known-discrepancies) lists the open items and the
-resolved ones as of `pulp-wars-poc-7r83`.
+resolved ones as of `pulp-wars-poc-7r84`.
 
 **Terms.** "On the board" means a unit that currently exists (HP above 0).
 **Living** has the narrower revision-13 meaning used by Wail, Plague,
@@ -1085,10 +1094,10 @@ sections here cite.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r83`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Ruleset                                    | `pulp-wars-poc-7r84`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r83.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Browser autosave                           | `pulpWars.save.v7r84.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, `CULT`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`, `CULT_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -4741,15 +4750,25 @@ and no tile command changes a tile into water, a Rift, or a site.
 
 ### 8.2 Resource and basic actions
 
-| Action            | Tech        | Target                                     | Cost | Result                                  |
-| ----------------- | ----------- | ------------------------------------------ | ---: | --------------------------------------- |
-| Harvest Fruit     | Gathering   | Grass + Fruit                              |    2 | remove Fruit; +1 permanent population   |
-| Hunt Game         | Hunting     | Forest + Game                              |    2 | remove Game; +1 permanent population    |
-| Harvest Fish      | Shorecraft  | Shallow Water + Fish (Port tile if active) |    2 | remove Fish; +1 permanent population    |
-| Gather Pearls     | Navigation  | any water + Pearls (Port tile if active)   |    2 | remove Pearls; receive 4 Coins (net +2) |
-| Build Farm        | Farming     | Grass + Fertile Ground                     |    5 | Farm; +2 live population                |
-| Build Lumber Camp | Forestry    | Forest, no resource or improvement         |    3 | Lumber Camp; +1 live population         |
-| Build Mine        | Engineering | Mountain + Ore                             |    5 | Mine; +2 live population                |
+| Action            | Tech        | Target                                     | Cost | Result                                     |
+| ----------------- | ----------- | ------------------------------------------ | ---: | ------------------------------------------ |
+| Harvest Fruit     | Gathering   | Grass + Fruit                              |    2 | remove Fruit; +1 permanent population      |
+| Hunt Game         | Hunting     | Forest + Game                              |    2 | remove Game; +1 permanent population       |
+| Harvest Fish      | Shorecraft  | Shallow Water + Fish (Port tile if active) |    2 | remove Fish; +1 permanent population       |
+| Gather Pearls     | Navigation  | any water + Pearls (Port tile if active)   |    2 | remove Pearls; receive 12 Coins (net +10)¹ |
+| Build Farm        | Farming     | Grass + Fertile Ground                     |    5 | Farm; +2 live population                   |
+| Build Lumber Camp | Forestry    | Forest, no resource or improvement         |    3 | Lumber Camp; +1 live population            |
+| Build Mine        | Engineering | Mountain + Ore                             |    5 | Mine; +2 live population                   |
+
+¹ `pulp_wars-5ti.13` (`pulp-wars-poc-7r84`; the user, 2026-10-14: "make
+pearls more meaningful"): Gather Pearls pays 12 Coins (4 before), so the
+player gains 10 (2 before); the 2-Coin cost, the Navigation requirement,
+and the targets are unchanged (`GATHER_PEARLS_V7` in
+`src/engine/rules/ruleset-v7.ts`). Each Pearls tile is gathered once: the
+Pearls are removed. The Normal AI gathers Pearls whatever its plan (before,
+only a seat with an active naval plan did), and no savings plan, research
+floor, or naval Coin reserve holds the gathering back, since it pays more
+than it costs.
 
 ### 8.3 Processors and mixed buildings
 
@@ -5257,7 +5276,7 @@ numbers are first guesses ([the ninth unit](RULESET_7_NINTH_UNIT.md)):
 | Knight      | Chivalry          |    9 | 13³ |     4⁵ |       1 |    3 |     1 |     1 | yes               | yes⁴    | Overrun                                                      |
 | Juggernaut  | reward only       |    — |  40 |      4 |       4 |    1 |     1 |     1 | yes               | yes     | Push; Crushing Shove                                         |
 | Patrol Boat | Shorecraft        |    5 |  10 |      2 |       2 |    2 |     1 |     2 | yes               | no      | naval; Ram (Seamanship)                                      |
-| Battleship  | Naval Engineering |   16 |  25 |      6 |       4 |    2 |   1–3 |     3 | no                | no      | naval; splash                                                |
+| Battleship⁸ | Naval Engineering |   16 |  25 |      5 |       3 |    2 |   1–3 |     3 | no                | no      | naval; splash                                                |
 | Submarine   | Submersibles      |    9 |  12 |      4 |       2 |    2 |     1 |     2 | yes               | no      | naval; Submerged; Torpedo                                    |
 
 ¹ Marksman Sight becomes 2 with Fieldcraft.
@@ -5322,6 +5341,18 @@ three Fighters kill it. Every faction has a unit of the role since `7r55`
 (the table above). Its art is the Swordsman's own sprite and portrait
 (bead `pulp_wars-w49.9`), unchanged.
 
+⁸ `pulp_wars-5ti.13` (`pulp-wars-poc-7r84`; the user, 2026-10-14: the
+Battleship was "way op"): the Battleship has Attack 5 and Defense 3 (6 and
+4 before) in every roster that has one (Human, Undead, Goblin, Dinosaur,
+Martian, Dwarf, Candy, and Cult; the Ice Folk registration copies it but
+never fields one). Its cost, HP, Move, range, Sight, and splash are
+unchanged. At full HP it still sinks a Patrol Boat in one shot (16 by the
+formula; 20 before), deals 14 to a Battleship and takes 5 (16 and 7
+before); a Submarine's torpedo deals
+it 10 (9 before), and a Patrol Boat's ram deals it 7 and takes 7, so the
+boat survives (6 and 10, the boat sunk, before;
+[section 14.3](#143-the-submarine-submerged-and-torpedo)).
+
 The **Submarine** (role `SUBMARINE`, tactical label `NAVAL_HUNTER`;
 `pulp-wars-poc-7r43`) is the third ship: trained with `TRAIN_NAVAL` like the
 other two (7 Coins at a Shipyard), promoted to 17 HP, attackable only from
@@ -5351,7 +5382,7 @@ parentheses):
 | Wight       | `SWORDSMAN`   | Metallurgy        |    6 |  14 |    3 (6) | 2.5 (5) |    1 |     1 |     1 | yes               | yes     | Rise Again (7 HP, once; `7r55`); no Field Defense |
 | Abomination | `JUGGERNAUT`  | reward only       |    — |  40 |    4 (8) |   4 (8) |    1 |     1 |     1 | yes               | yes     | Swallow; Infect³; never advances³                 |
 | Patrol Boat | `PATROL_BOAT` | Shorecraft        |    5 |  10 |    2 (4) |   2 (4) |    2 |     1 |     2 | yes               | no      | naval; Ram (Seamanship)                           |
-| Battleship  | `BATTLESHIP`  | Naval Engineering |   16 |  25 |   6 (12) |   4 (8) |    2 |   1–3 |     3 | no                | no      | naval; splash                                     |
+| Battleship  | `BATTLESHIP`  | Naval Engineering |   16 |  25 |   5 (10) |   3 (6) |    2 |   1–3 |     3 | no                | no      | naval; splash                                     |
 | Submarine   | `SUBMARINE`   | Submersibles      |    9 |  12 |    4 (8) |   2 (4) |    2 |     1 |     2 | yes               | no      | naval; Submerged; Torpedo                         |
 
 ² Banshee Sight becomes 2 with Fieldcraft.
@@ -5442,7 +5473,7 @@ damages of [section 18.4](#184-kaboom) and [18.5](#185-death-blasts):
 | Ogre         | `SWORDSMAN`   | Metallurgy        |    5 |  16 | 2.5 (5) |   2 (4) |    1 |     1 |     1 | yes               | yes     |      — |           — | Heavyweight (two helpers for Gang Up; `7r55`); no Field Defense |
 | Troll        | `JUGGERNAUT`  | reward only       |    — |  40 |   4 (8) |   3 (6) |    1 |     1 |     1 | yes               | yes     |      — |           — | Goblin Toss; Regenerate 4                                       |
 | Patrol Boat  | `PATROL_BOAT` | Shorecraft        |    5 |  10 |   2 (4) |   2 (4) |    2 |     1 |     2 | yes               | no      |      — |           — | naval; Ram (Seamanship)                                         |
-| Battleship   | `BATTLESHIP`  | Naval Engineering |   16 |  25 |  6 (12) |   4 (8) |    2 |   1–3 |     3 | no                | no      |      — |           — | naval; splash                                                   |
+| Battleship   | `BATTLESHIP`  | Naval Engineering |   16 |  25 |  5 (10) |   3 (6) |    2 |   1–3 |     3 | no                | no      |      — |           — | naval; splash                                                   |
 | Submarine    | `SUBMARINE`   | Submersibles      |    9 |  12 |   4 (8) |   2 (4) |    2 |     1 |     2 | yes               | no      |      — |           — | naval; Submerged; Torpedo                                       |
 
 ³ Bomb Chucker Sight becomes 2 with Fieldcraft.
@@ -5510,7 +5541,7 @@ capacity the unit, or its Egg, uses
 | T-Rex        | `KNIGHT`      | Chivalry          |   14 | 4       |     2 |  28 |   4 (8) |   2 (4) |    2 |     1 |     1 | yes               | yes     | yes   | Rampage                                                                |
 | Brontosaurus | `JUGGERNAUT`  | reward only       |    — | —       |     2 |  45 | 3.5 (7) |   4 (8) |    1 |     1 |     1 | yes               | yes     | yes   | Thunder Stomp                                                          |
 | Patrol Boat  | `PATROL_BOAT` | Shorecraft        |    5 | trained |     1 |  10 |   2 (4) |   2 (4) |    2 |     1 |     2 | yes               | no      | no    | naval; Ram (Seamanship)                                                |
-| Battleship   | `BATTLESHIP`  | Naval Engineering |   16 | trained |     1 |  25 |  6 (12) |   4 (8) |    2 |   1–3 |     3 | no                | no      | no    | naval; splash                                                          |
+| Battleship   | `BATTLESHIP`  | Naval Engineering |   16 | trained |     1 |  25 |  5 (10) |   3 (6) |    2 |   1–3 |     3 | no                | no      | no    | naval; splash                                                          |
 | Submarine    | `SUBMARINE`   | Submersibles      |    9 | trained |     1 |  12 |   4 (8) |   2 (4) |    2 |     1 |     2 | yes               | no      | no    | naval; Submerged; Torpedo                                              |
 
 ⁴ Spitter Sight becomes 2 with Fieldcraft.
@@ -5595,7 +5626,7 @@ is its movement mode ([section 20.6](#206-movement-stride-flying-and-crossing-wa
 | Shock Trooper    | `SWORDSMAN`   | Metallurgy        |    6 |     1 |  12 |      3 |   3 (6) |    2 (4) |    1 |     1 |     1 | ground | yes               | yes     | Shock Field 3 (`7r55`); no Field Defense                                            |
 | Colossus         | `JUGGERNAUT`  | reward only       |    — |     2 |  32 |      3 |   4 (8) | 2.5 (5)⁶ |    2 |   1–2 |     1 | stride | yes               | yes     | heat ray; Overstride                                                                |
 | Patrol Boat      | `PATROL_BOAT` | Shorecraft        |    5 |     1 |  10 |      0 |   2 (4) |    2 (4) |    2 |     1 |     2 | —      | yes               | no      | naval; Ram (Seamanship)                                                             |
-| Battleship       | `BATTLESHIP`  | Naval Engineering |   16 |     1 |  25 |      0 |  6 (12) |    4 (8) |    2 |   1–3 |     3 | —      | no                | no      | naval; splash                                                                       |
+| Battleship       | `BATTLESHIP`  | Naval Engineering |   16 |     1 |  25 |      0 |  5 (10) |    3 (6) |    2 |   1–3 |     3 | —      | no                | no      | naval; splash                                                                       |
 | Submarine        | `SUBMARINE`   | Submersibles      |    9 |     1 |  12 |      0 |   4 (8) |    2 (4) |    2 |     1 |     2 | —      | yes               | no      | naval; Submerged; Torpedo                                                           |
 
 ⁵ Ray Gunner Sight becomes 2 with Fieldcraft.
@@ -5798,7 +5829,7 @@ The Dwarf (`DWARF`) roster, by mechanical role, with the
 | Steam Tank       | `SWORDSMAN`   | Metallurgy        |    9 |  16 |     3 (6) |   2 (4) |    2 |     1 |     1 | living; machine    | yes                  | yes     | Plated 4; no Overrun (the heavy role since `7r55`; `KNIGHT` at Chivalry before)                                   |
 | Brass Titan      | `JUGGERNAUT`  | reward only       |    — |  36 |     4 (8) |   3 (6) |    1 |     1 |     1 | construct; machine | yes                  | yes     | Siege Hammer                                                                                                      |
 | Patrol Boat      | `PATROL_BOAT` | Shorecraft        |    5 |  10 |     2 (4) |   2 (4) |    2 |     1 |     2 | —                  | yes                  | no      | naval; Ram (Seamanship)                                                                                           |
-| Battleship       | `BATTLESHIP`  | Naval Engineering |   16 |  25 |    6 (12) |   4 (8) |    2 |   1–3 |     3 | —                  | no                   | no      | naval; splash                                                                                                     |
+| Battleship       | `BATTLESHIP`  | Naval Engineering |   16 |  25 |    5 (10) |   3 (6) |    2 |   1–3 |     3 | —                  | no                   | no      | naval; splash                                                                                                     |
 | Submarine        | `SUBMARINE`   | Submersibles      |    9 |  12 |     4 (8) |   2 (4) |    2 |     1 |     2 | —                  | yes                  | no      | naval; Submerged; Torpedo                                                                                         |
 
 ¹⁰ Clockwork Gunner Sight becomes 2 with Fieldcraft.
@@ -5891,7 +5922,7 @@ living, and every Candy land unit is a ground unit:
 | Jawbreaker        | `SWORDSMAN`   | Metallurgy        |    6 |  16 |   3 (6) | 2.5 (5) |    1 |     1 |     1 | yes               | yes     | Sugar Rush; Rock Hard (`7r55`); Toothache; no Field Defense |
 | Gingerbread Giant | `JUGGERNAUT`  | reward only       |    — |  40 |   4 (8) | 3.5 (7) |    1 |     1 |     1 | yes               | yes     | Sugar Rush; Break Off; Bounce                               |
 | Patrol Boat       | `PATROL_BOAT` | Shorecraft        |    5 |  10 |   2 (4) |   2 (4) |    2 |     1 |     2 | yes               | no      | naval; Ram (Seamanship)                                     |
-| Battleship        | `BATTLESHIP`  | Naval Engineering |   16 |  25 |  6 (12) |   4 (8) |    2 |   1–3 |     3 | no                | no      | naval; splash                                               |
+| Battleship        | `BATTLESHIP`  | Naval Engineering |   16 |  25 |  5 (10) |   3 (6) |    2 |   1–3 |     3 | no                | no      | naval; splash                                               |
 | Submarine         | `SUBMARINE`   | Submersibles      |    9 |  12 |   4 (8) |   2 (4) |    2 |     1 |     2 | yes               | no      | naval; Submerged; Torpedo                                   |
 
 ¹³ Gumball Gunner Sight becomes 2 with Fieldcraft.
@@ -5974,7 +6005,7 @@ trained Cult land unit is a ground unit:
 | Chosen              | `SWORDSMAN`   | Metallurgy        |    6 |  15 | 3.5 (7) |   2 (4) |    1 |     1 |     1 | yes               | yes     | Pick Me!; Martyr; Channel                        |
 | Thing in the Cellar | `JUGGERNAUT`  | reward only       |    — |  40 |   4 (8) | 3.5 (7) |    1 |     1 |     1 | yes               | yes     | Anchor; no Push                                  |
 | Patrol Boat         | `PATROL_BOAT` | Shorecraft        |    5 |  10 |   2 (4) |   2 (4) |    2 |     1 |     2 | yes               | no      | naval; Ram (Seamanship)                          |
-| Battleship          | `BATTLESHIP`  | Naval Engineering |   16 |  25 |  6 (12) |   4 (8) |    2 |   1–3 |     3 | no                | no      | naval; splash                                    |
+| Battleship          | `BATTLESHIP`  | Naval Engineering |   16 |  25 |  5 (10) |   3 (6) |    2 |   1–3 |     3 | no                | no      | naval; splash                                    |
 | Submarine           | `SUBMARINE`   | Submersibles      |    9 |  12 |   4 (8) |   2 (4) |    2 |     1 |     2 | yes               | no      | naval; Submerged; Torpedo                        |
 
 ¹⁴ Hexer Sight becomes 2 with Fieldcraft.
@@ -7326,11 +7357,11 @@ Attack and costs no Coins. Legality, in this order (all rejections atomic):
 
 Worked examples (full HP, open water, the attacker first; "dealt; taken"):
 
-| Attacker → defender | Patrol Boat             | Submarine                | Battleship        |
-| ------------------- | ----------------------- | ------------------------ | ----------------- |
-| Patrol Boat         | 5; 5 (ram 8; 4)         | 5; 5 (ram 8; 4)          | 3; 12 (ram 6; 10) |
-| Submarine           | 12 (sunk); 0            | 12 (sunk); 0             | 9; 0              |
-| Battleship          | 20 (sunk), from 3 tiles | 20 (sunk), only adjacent | 16; 7             |
+| Attacker → defender | Patrol Boat             | Submarine                | Battleship      |
+| ------------------- | ----------------------- | ------------------------ | --------------- |
+| Patrol Boat         | 5; 5 (ram 8; 4)         | 5; 5 (ram 8; 4)          | 4; 8 (ram 7; 7) |
+| Submarine           | 12 (sunk); 0            | 12 (sunk); 0             | 10; 0           |
+| Battleship          | 16 (sunk), from 3 tiles | 16 (sunk), only adjacent | 14; 5           |
 
 | Exchange                                                   | Result                                                                                        |
 | ---------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
@@ -7338,12 +7369,12 @@ Worked examples (full HP, open water, the attacker first; "dealt; taken"):
 | a second ship boards that Patrol Boat                      | it is the boarder's at 4 HP                                                                   |
 | Patrol Boat rams a transport (any land unit embarked)      | 10 dealt (6 without the ram), 0 taken (an embarked unit never strikes back); transport shoved |
 | Patrol Boat rams a Submarine                               | 8 (4 left: boardable), 4 taken                                                                |
-| two Submarines torpedo a Battleship, then a boat boards it | 9 and 11 dealt (5 left), then the Battleship is the boarder's at 9 HP                         |
+| two Submarines torpedo a Battleship, then a boat boards it | 10 and 12 dealt (3 left), then the Battleship is the boarder's at 9 HP                        |
 | Submarine torpedoes a transport                            | 14, no reply                                                                                  |
 | a Battleship two or three tiles from a Submarine           | cannot target it at all                                                                       |
 | a Fighter on the shore attacks an adjacent Submarine       | 5 dealt, 5 taken                                                                              |
 | a Dwarf Gyrocopter bombs a Submarine                       | 5 (6 with Dive), never answered                                                               |
-| a Battleship at 5 HP shoots an adjacent Submarine          | 10 dealt (2 left), 5 taken: the Battleship sinks in its own attack                            |
+| a Battleship at 5 HP shoots an adjacent Submarine          | 8 dealt (4 left), 5 taken: the Battleship sinks in its own attack                             |
 
 ### 14.4 Harbours
 
@@ -13703,6 +13734,7 @@ first guesses.
 | Technology cost    | `pulp-wars-poc-7r81` | `pulp_wars-w49.40` flatter technology prices (the user, 2026-10-13, to see how it plays; a save, replay, or setup of `7r80` is rejected): the tier bases are 5 / 6 / 7 Coins (5 / 7 / 9 before) in every faction's tree, so tier 2 costs 1 Coin less and tier 3 costs 2 Coins less at every city count; the per-city steps (1 / 2 / 3), the free first technology, and every other rule unchanged; the Normal AI reads the price from the public technology tree and needed no change                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | [section 6.1](#61-research-cost)                                                                                                      |
 | Mission objectives | `pulp-wars-poc-7r82` | `pulp_wars-v642.1` the campaign framework (a save, replay, or setup of `7r81` is rejected): a mission objective may be `ESCORT`, `SURVIVE`, `CAPTURE`, or `KILL` besides `DOMINATION`, with a deadline (`byRound`), protected places and units, and up to two secondary goals for stars; it is evaluated after every accepted command, the win before the loss, and writes only the outcome, which carries a `cause`; the public mission status is in every mission view; a mission may name teams (an AI seat allied to the human), bring reinforcements at a seat's Start Turn (`REINFORCEMENT_ARRIVED`, 155 event kinds), forbid a seat technologies of its own, schedule a seat's AI directive by round, and record the generator source of its board (size 20 is allowed); missions 1 to 4 are rebuilt on generated maps with capture objectives for 2 to 4 (revisions 3, 3, 3, 4); a match that is not a mission is unchanged                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Calm waves         | `pulp-wars-poc-7r83` | `pulp_wars-v642.5` the campaign follow-ups (a save, replay, or setup of `7r82` is rejected): a mission's reinforcement arrives with its turn spent and on the nearest free tile not next to a hostile unit, searched to the edge of the board; a match that is not a mission is unchanged                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| Battleship, Pearls | `pulp-wars-poc-7r84` | `pulp_wars-5ti.13` (the user, 2026-10-14; a save, replay, or setup of `7r83` is rejected): the Battleship of every roster has Attack 5 and Defense 3 (6 and 4 before); Gather Pearls pays 12 Coins for its 2, a gain of 10 (4, a gain of 2, before); the Normal AI gathers Pearls whatever its plan                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 
 **Documentation parity (2026-09-28, no ruleset or identity change):** where
 older documents disagreed with the code, the code's behavior was adopted as

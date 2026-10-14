@@ -395,18 +395,34 @@ describe("the Ram", () => {
       unitId: boat,
       targetUnitId: idAt(without.state, { x: 3, y: 5 }),
     });
-    // A Patrol Boat that rams a Battleship deals 6 and takes 10.
+    // A full Patrol Boat that rams a Battleship deals 7 and takes 7 since
+    // `pulp_wars-5ti.13` (7r84, Battleship Attack 5 and Defense 3): a ram
+    // worth planning (6 and 10, the boat sunk, before).
     const capital = arena({
       units: [
         { seat: 0, role: "PATROL_BOAT", at: { x: 1, y: 3 } },
         { seat: 1, role: "BATTLESHIP", at: { x: 3, y: 5 } },
       ],
     });
+    const rammer = idAt(capital.state, { x: 1, y: 3 });
     expect(
       navalRamApproachV7(
         capital.view,
         toolsOf(capital.view),
-        publicUnit(capital.view, idAt(capital.state, { x: 1, y: 3 })),
+        publicUnit(capital.view, rammer),
+        { x: 2, y: 4 },
+        1,
+      ),
+    ).toMatchObject({
+      preview: { ram: true, damageToDefender: 7, damageToAttacker: 7 },
+    });
+    // A battered one (6 HP) would sink in that exchange: no ram.
+    const battered = viewOf(patchNavalUnitV7(capital.state, rammer, { hp: 6 }));
+    expect(
+      navalRamApproachV7(
+        battered,
+        toolsOf(battered),
+        publicUnit(battered, rammer),
         { x: 2, y: 4 },
         1,
       ),

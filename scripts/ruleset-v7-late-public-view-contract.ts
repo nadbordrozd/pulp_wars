@@ -280,10 +280,10 @@ export function upgradeRetainedPublicViewV7(
   });
   return {
     ...retained,
-    rulesetId: "pulp-wars-poc-7r83",
+    rulesetId: "pulp-wars-poc-7r84",
     setup: {
       ...retained.setup,
-      rulesetId: "pulp-wars-poc-7r83",
+      rulesetId: "pulp-wars-poc-7r84",
       mapType: "DRY_LAND",
       mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
       curiosities: false,

@@ -50,6 +50,8 @@ import {
   type SpatialEconomicCommandKindV7,
   cityBarracksV7,
   CITY_REWARD_COINS_V7,
+  GATHER_PEARLS_V7,
+  GATHER_PEARLS_GAIN_V7,
 } from "../engine/rules/ruleset-v7";
 import {
   attack2AfterToothacheV7,
@@ -12041,6 +12043,15 @@ function isPolicyCandidate(
     return usefulDisband(context, command as DisbandCommandV7);
   }
   const economic = previewEconomicV7(context.view, command);
+  // `pulp_wars-5ti.13` (7r84): Gather Pearls pays back more than it costs
+  // (`GATHER_PEARLS_GAIN_V7`, 10), so no savings plan, war footing,
+  // research floor, or naval reserve holds it back.
+  if (
+    economic.ok &&
+    command.kind === "GATHER_PEARLS" &&
+    GATHER_PEARLS_GAIN_V7 > 0
+  )
+    return true;
   // pulp_wars-9s0.8: the savings plan holds construction it cannot spare
   // (never a city level-up or the opening growth harvest).
   if (
@@ -13810,9 +13821,13 @@ function scoreCommandWithContext(
             ? nearestDistance(command.at, context.naval.frontier)
             : distance(command.at, context.naval.target)) -
         (cityId?.explored === true ? (cityId.territoryCityId ?? 0) : 0);
-    } else if (context.naval.active && command.kind === "GATHER_PEARLS") {
-      priority = Math.max(priority, 1225);
-      immediateValue += 4;
+    } else if (command.kind === "GATHER_PEARLS") {
+      // The Coins the Pearls pay (`GATHER_PEARLS_V7`; the cost is already
+      // subtracted above). `pulp_wars-5ti.13` (7r84): 12 for 2, so every
+      // seat gathers them, not only a naval one (1225), as it takes a
+      // population harvest (1140).
+      priority = Math.max(priority, context.naval.active ? 1225 : 1140);
+      immediateValue += GATHER_PEARLS_V7.coinsReceived;
     } else if (context.naval.active && command.kind === "HARVEST_FISH") {
       priority = Math.max(priority, 1170);
     }

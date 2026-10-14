@@ -104,6 +104,7 @@ import {
   cityBarracksV7,
   cityEconomicMiracleIncomeV7,
   FIELD_DEFENSE_FORTIFICATION_LEVELS_V7,
+  GATHER_PEARLS_V7,
 } from "../rules/ruleset-v7";
 import {
   attackGrantsEscapeV7,
@@ -7333,7 +7334,7 @@ function calculatePublicEconomicPreviewV7(
     basic?.cost ??
     spatial?.cost ??
     (command.kind === "GATHER_PEARLS"
-      ? 2
+      ? GATHER_PEARLS_V7.cost
       : command.kind === "BUILD_PORT"
         ? 4
         : command.kind === "BUILD_SHIPYARD"
@@ -10387,7 +10388,7 @@ function publicTileCommandLegal(
     );
   if (kind === "GATHER_PEARLS")
     return (
-      view.viewer.coins >= 2 &&
+      view.viewer.coins >= GATHER_PEARLS_V7.cost &&
       tile.resource === "PEARLS" &&
       (tile.terrain === "SHALLOW_WATER" || tile.terrain === "DEEP_WATER") &&
       (tile.terrain !== "DEEP_WATER" ||

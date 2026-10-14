@@ -703,9 +703,12 @@ export type DomainEventV7 =
       readonly playerId: PlayerId;
       readonly cityId: CityId;
       readonly at: CoordV7;
+      /** `GATHER_PEARLS_V7`: 2 Coins paid. */
       readonly cost: 2;
-      readonly coinsReceived: 4;
-      readonly coinDelta: 2;
+      /** `GATHER_PEARLS_V7`: 12 Coins received (4 before `7r84`). */
+      readonly coinsReceived: 12;
+      /** `GATHER_PEARLS_GAIN_V7`: the net gain, 10 (2 before `7r84`). */
+      readonly coinDelta: number;
     }
   | {
       readonly kind: "PORT_BUILT";
