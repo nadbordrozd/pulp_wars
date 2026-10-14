@@ -91,6 +91,13 @@ export const CULT_ANCHOR_PRIORITY_V7 = 1950;
 export const CULT_CHANNEL_PRIORITY_V7 = 1940;
 export const CULT_BIND_PRIORITY_V7 = 1930;
 export const CULT_BEHOLD_PRIORITY_V7 = 1920;
+/**
+ * `pulp_wars-mch9.27` (section 15.10): the step of a cultist off a watched
+ * own center for a clearly better garrison beside it (the general garrison
+ * swap of `src/ai/v7.ts`), before the Summon, the Sacrifice, and the
+ * Offering a Summoner on that center would otherwise make there.
+ */
+export const CULT_GARRISON_SWAP_PRIORITY_V7 = 1912;
 export const CULT_SUMMON_PRIORITY_V7 = 1910;
 export const CULT_SACRIFICE_PRIORITY_V7 = 1900;
 export const CULT_OFFERING_PRIORITY_V7 = 1890;
@@ -1205,11 +1212,16 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
   // --------------------------------------------------------- Offering
   // Section 15.4: a city at its unit limit or with nothing to train, when
   // Favour is short of the next threshold and no enemy is within 3.
+  // `pulp_wars-mch9.27` (section 15.10): paced, at most one a round
+  // (`cultOfferingDueV7`). A lodge whose three cities started at their unit
+  // limit offered in each of them every turn and began the Great Summoning
+  // in round 2 from 9 Favour.
   if (short)
     for (const command of offerings) {
       const city = view.cities.find((item) => item.id === command.cityId);
       if (
         city === undefined ||
+        !cultOfferingDueV7(view, city.id) ||
         enemyGap(city.at) <= CULT_HOME_GUARD_V7 ||
         (tools.freeCapacity(city.id) > 0 && trainingCities.has(city.id))
       )
@@ -1255,6 +1267,46 @@ export function cultPlanV7(tools: CultToolsV7): CultPlanV7 {
       return !ownDaemonIds.has(unitId) || daemonMayEnd(unitId, at);
     },
   };
+}
+
+/**
+ * An Offering is made once in this many rounds at most, on average: the
+ * seat's Offerings so far (its cities' offered population, 2 each) stay
+ * below the rounds played divided by this (`pulp_wars-mch9.27`, section
+ * 15.10).
+ */
+export const CULT_OFFERING_PACE_ROUNDS_V7 = 2;
+
+/**
+ * Whether the Offering of the own city `cityId` is due this round
+ * (`pulp_wars-mch9.27`, RULESET_7_CULTISTS.md section 15.10). The policy
+ * remembers nothing between decisions, so the pace is read from the board:
+ *
+ * - **One a round.** Only the city whose turn it is offers: the seat's
+ *   cities by ID, the round modulo their number. The others wait for their
+ *   round, so a lodge whose cities all stand at their unit limit offers in
+ *   one of them, not in each.
+ * - **One every other round.** The seat's Offerings so far (the population
+ *   its cities gave up, `offeredPopulation`, 2 an Offering) times
+ *   `CULT_OFFERING_PACE_ROUNDS_V7` stay below the round: in round 1 one, in
+ *   round 3 the second, and so on, also for a seat that bought Harvest
+ *   Rites late (its unused rounds give it no burst: still one a round).
+ *
+ * From 9 Favour with The Stars Are Right (the case that summoned the Herald
+ * in round 2) the Offerings alone reach 20 in round 7.
+ */
+export function cultOfferingDueV7(view: PlayerViewV7, cityId: CityId): boolean {
+  const me = view.viewer.id;
+  const cities = view.cities
+    .filter((city) => city.ownerId === me)
+    .sort((left, right) => left.id - right.id);
+  if (cities.length === 0) return false;
+  if (cities[view.round % cities.length]?.id !== cityId) return false;
+  const offered = cities.reduce(
+    (sum, city) => sum + Math.floor((city.offeredPopulation ?? 0) / 2),
+    0,
+  );
+  return offered * CULT_OFFERING_PACE_ROUNDS_V7 < view.round;
 }
 
 /** The step of the plan that is `command` (the same command, by content). */

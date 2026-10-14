@@ -886,8 +886,11 @@ describe("step two of the Martian pass: a ray unit does not walk out in front of
       }
       state = applyOkV7(state, actor, command).state;
     }
-    // (One Tripod walks up for a kill of a Champion with 3 HP.)
-    expect(shotsAfterMove).toBeLessThanOrEqual(1);
+    // (One Tripod walks up for a kill of a Champion with 3 HP. Since the
+    // garrison of a watched center, `pulp_wars-mch9.27`, the Saucer leaves
+    // the empty center at (5, 4) to the Shield Projector, and a second Tripod
+    // walks up for a kill as well; every shot after a Move kills, above.)
+    expect(shotsAfterMove).toBeLessThanOrEqual(2);
   });
 });
 

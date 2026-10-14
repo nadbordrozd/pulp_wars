@@ -248,6 +248,10 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/ai/v7.ts::armyStormV7": "BOARD",
     "src/ai/v7.ts::armyAttackValueV7": "BOARD",
     "src/ai/v7.ts::armyBesideCenterWorthV7": "BOARD",
+    // `pulp_wars-mch9.27`: the garrison of a watched center (who stands on
+    // it, beside it, and near enough to step on) is what stands on the
+    // board; a burrowed unit holds no center and steps onto none.
+    "src/ai/v7.ts::armyGarrisonPlanV7": "BOARD",
     // The Martian pass's correction (`pulp_wars-w49.14`): the Projector by
     // a center, and the capturers and enemies around a free village.
     "src/ai/v7.ts::armyHelplessGarrisonV7": "BOARD",
@@ -328,7 +332,7 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     // the board (Pestilence), the unit beside a center that takes it, the
     // own units that tend, and a Zombie's company.
     "src/ai/v7.ts::armyResearchTargetV7": "BOARD",
-    "src/ai/v7.ts::armySwapsOutV7": "BOARD",
+    "src/ai/v7.ts::armyHelplessSwapsOutV7": "BOARD",
     "src/ai/v7.ts::armyCureDueV7": "BOARD",
     // The Dinosaur pass (`pulp_wars-w49.15`): the own units and Eggs on
     // the board of a Dinosaur seat, which has no burrowed unit.

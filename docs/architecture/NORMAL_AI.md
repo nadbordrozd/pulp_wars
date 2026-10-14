@@ -294,14 +294,15 @@ against (the Gingerbread Men are Toffee Troopers).
 
 Tests: `tests/unit/ruleset-v7-giants-ai.test.ts`.
 
-## The Cult seat (`pulp_wars-mch9.9` to `mch9.12`)
+## The Cult seat (`pulp_wars-mch9.9` to `mch9.12`, `mch9.27`)
 
 The ninth faction, the Cultists
 ([current rules, section 26](../product/RULESET_7_CURRENT.md#26-cultist-faction-rules)),
 has a Normal AI in four parts: the Cult seat on the army rules (bead A1,
 `pulp_wars-mch9.9`), its own commands (A2, `pulp_wars-mch9.10`), its
 rituals and tricks (A3, `pulp_wars-mch9.11`), and every seat's play against
-the Cult (A4, `pulp_wars-mch9.12`). None changed a rule or moved the
+the Cult (A4, `pulp_wars-mch9.12`); the corrections from its first real
+matches (`pulp_wars-mch9.27`) followed. None changed a rule or moved the
 identity. Everything reads the viewer's `PlayerViewV7`, the offered
 commands, and the public previews; the policy imports no reducer and draws
 nothing from the PRNG. Strands, Control, grips, rituals, marks, and Favour
@@ -314,13 +315,14 @@ passes; each rule is a decision, or the one turn a seat plays, on a small
 hand-built state, and the numbers should be read as first values. The
 design and the record of what each bead built and decided are in
 [the Cultists spec, section 15](../product/RULESET_7_CULTISTS.md#15-normal-ai)
-(15.1 to 15.5 the design, 15.6 to 15.9 as built); where the two differ,
+(15.1 to 15.5 the design, 15.6 to 15.10 as built); where the two differ,
 what is written here is what the code does.
 
 Tests: `tests/unit/ruleset-v7-cult-ai.test.ts`,
 `tests/unit/ruleset-v7-cult-channel-ai.test.ts`,
 `tests/unit/ruleset-v7-cult-rituals-ai.test.ts`,
-`tests/unit/ruleset-v7-cult-against-ai.test.ts`.
+`tests/unit/ruleset-v7-cult-against-ai.test.ts`,
+`tests/unit/ruleset-v7-cult-corrections-ai.test.ts`.
 
 ### The Cult seat on the army rules (`src/ai/v7-cult.ts`)
 
@@ -396,6 +398,12 @@ also with a Thing for every city already: a body that grips.
   holder's) Move to a Seizure. A Stargazer is also a siege unit to the
   shared policy, which keeps it four tiles from its objective until a unit
   with Defense 2 or more can screen it; four tiles is the reach of a star.
+  `pulp_wars-mch9.27` (`armyCultBackRowAdvanceHeldV7`): nor does a unit of
+  the back row make an attack whose kill advances it onto a tile another
+  visible hostile unit can attack next turn (a Summoner killed a wounded
+  Catapult, advanced into the player's line, and died), unless the visible
+  enemy kills it where it stands anyway. Its kill where nobody else
+  reaches, and its hit that does not kill, are the ordinary rules'.
 
 ### The plan: channel first (`src/ai/v7-cult-channel.ts`)
 
@@ -423,6 +431,7 @@ the army policy say.
 | 1930            | Bind again                                                                               |
 | 1920            | Behold!                                                                                  |
 | 1915            | The Great Summoning, and the gathering for it                                            |
+| 1912            | The garrison swap on the lodge or a threatened center (step off, or out of the ring)     |
 | 1910            | Summon a Horror                                                                          |
 | 1900            | The Sacrifice of a spare Initiate                                                        |
 | 1890            | The Offering                                                                             |
@@ -515,6 +524,15 @@ tiles of its center, when Favour is below 5, or below 20 with The Stars Are
 Right; and only with a Summoner on the board and the robed cultists to hold
 one more Horror, else the Favour buys nothing and the population is gone
 for good. The same condition gates the Sacrifice of a spare Initiate.
+`pulp_wars-mch9.27` (`cultOfferingDueV7`): paced, because the policy
+remembers nothing. Only the city whose turn it is offers (the seat's cities
+by ID, the round modulo their number), and only while the seat's Offerings
+so far (its cities' `offeredPopulation`, 2 each) times
+`CULT_OFFERING_PACE_ROUNDS_V7` (2) are below the round: one a round at most,
+one every other round on average. A lodge whose three cities started at
+their unit limit offered in each of them every turn and began the Great
+Summoning in round 2 from 9 Favour; from 9 the Offerings alone now reach 20
+in round 7.
 
 ### Rituals and tricks (`src/ai/v7-cult-rituals.ts`)
 
@@ -689,6 +707,87 @@ settlement center, a village, or a treasure chest.
 whose kill would advance it), and the Move onto an empty Cowed center of
 the seat's own has the priority of the Move onto an empty threatened city
 (1250).
+
+### The garrison of a watched center (`pulp_wars-mch9.27`, every army seat)
+
+Seen first in the Cult's first real matches
+([campaign design section 11.11](../product/CAMPAIGN.md#1111-the-stars-are-right)):
+the Thing in the Cellar walked off the Lodge's center, and a Summoner, a
+Hexer, and an Initiate held it in turn while Idol Bearers stood beside it,
+until a Knight and then a Juggernaut killed them there. The rule had been
+"whoever is on a center stays while a hostile land unit is seen within six
+tiles" (`armyGarrisonHoldsV7`), with nothing to say who that is. The
+garrison plan (`armyGarrisonPlanV7`, once a decision, `src/ai/v7.ts`) adds
+it **for every army seat**:
+
+- **Watched.** A center is watched when a visible hostile unit can attack
+  it next turn (threatened), or when a visible hostile land unit outside its
+  own seat's land stands within `ARMY_GARRISON_RADIUS_V7` (6). A unit in its
+  own land (the garrison of its city, a fortified line) watches nothing: an
+  assault column of Knights went home to its empty capital for the Fighter
+  on the enemy capital six tiles away, and a siege column at a neck for the
+  Guard on the fortified mouth.
+- **Not trained onto.** The plan leaves a center its city trains onto this
+  turn to the rules it had (the garrison steps aside, the trained unit takes
+  the center), except a threatened one where the unit that can step on is a
+  clearly better garrison than the best the seat can train now: then that
+  unit steps on and the city trains nobody (its `TRAIN` is no candidate). A
+  city trains onto its center when it is offered a `TRAIN`, or when its
+  garrison could step aside for one (its action, a free slot, and the Coins
+  of its basic unit: the offer appears only once the center is free).
+- **Garrisons.** A line or defender unit, or a reward giant (the Thing in
+  the Cellar); not a ranged, siege, support, or fast unit, whose job is
+  elsewhere (with them in, a Martian Tripod or a Saucer stepped onto a
+  center, and a Dinosaur's Triceratops went home instead of striking).
+- **The best garrison steps on.** Of the own garrisons within
+  `ARMY_GARRISON_FILL_REACH_V7` (2) that can end a Move on an empty watched
+  center, the best (HP times Defense, `armyDefenderWorthV7`) steps on; a
+  unit it is a clearly better garrison than
+  (`ARMY_GARRISON_UPGRADE_RATIO_V7`, twice the worth) makes no Move onto the
+  center in its place (`armyGarrisonFillWaitsV7`).
+- **The garrison swap.** When an own garrison beside a watched center that
+  has neither moved nor acted is a clearly better one than the unit on it,
+  that unit steps off to a tile beside the center (`armySwapsOutV7`, which
+  did this for an opening seat's Banshee only), and the better one steps on.
+  When every tile beside the center is taken (a summit with Mountains
+  around it), the weakest own unit beside it that can leave the ring goes
+  first.
+- **Priorities.** The step on has a threatened center's priority (1250,
+  above training) on a threatened center, and just above every routine Move
+  (`ARMY_GARRISON_WATCH_PRIORITY_V7`, 736) on one that is only watched; the
+  steps off and out of the ring come at 737, after every attack, hunt,
+  engagement, and siege job of the turn (the better unit may strike first,
+  and then the garrison stays as it was). **A Cult seat** puts its steps
+  off at 1251 on a threatened center, and **its capital** (its lodge)
+  counts as threatened as soon as it is watched (the Lodge stands on a
+  summit no enemy strikes in one turn); there a cultist's step off has 1912,
+  before the Summon, the Sacrifice, and the Offering a Summoner on the
+  center would make there (after its action it could not step off).
+- Not a candidate for any of it: a unit on another own center, a summoned
+  unit (a daemon), and a unit the Cult seat's plan holds or keeps from that
+  tile (a channeller holding a strand stays where it channels).
+
+**What changed for the other factions.** Every army seat (every match of
+the nine factions) now fills an empty watched center that its city does not
+train onto with its best line or defender unit within two tiles (before:
+nobody stepped on unless a hostile unit could strike the center next turn,
+and then any unit at 1250, which a unit half as good may no longer take),
+swaps a weak garrison for a unit beside it with twice its worth after its
+attacks, and on a threatened center prefers such a unit to the unit its
+city could train. Two decision tests changed: the Cowed center of
+`tests/unit/ruleset-v7-cult-against-ai.test.ts` (the step onto the empty
+center is now made with the module against the Cult switched off as well),
+and the recorded Martian lab turn of
+`tests/unit/ruleset-v7-martian-step2.test.ts` (the Saucer leaves an empty
+center to the Shield Projector, and a second Tripod walks up for a kill:
+two shots after a Move, both kills, where the bound was one). The late
+public view's decision is unchanged, with one candidate more (unit 32's
+step onto the empty center beside it, 736). Every other faction's decision
+test passes unchanged. Not built: the
+best garrison is not walked back from farther than two tiles, and with no
+hostile unit in sight a center is not watched (the policy has no memory; a
+mission that wants a guarded seat to hold needs a starting reveal, campaign
+design section 10.4).
 
 ### What it does not do
 

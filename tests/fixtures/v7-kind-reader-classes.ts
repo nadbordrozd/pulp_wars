@@ -286,6 +286,9 @@ export const KIND_READER_CLASSES_V7: Readonly<
   // the growth technology and the roles of its faction's research order,
   // and whether the seat plays the Goblin rules.
   "src/ai/v7.ts::armyBestDefenderWorthV7": "SEAT",
+  // `pulp_wars-mch9.27`: the price of the seat's basic unit, for whether a
+  // city of it can train onto its center this turn.
+  "src/ai/v7.ts::armyGarrisonPlanV7": "SEAT",
   "src/ai/v7.ts::armyWarGrowthDueV7": "SEAT",
   "src/ai/v7.ts::armyFrontShooterV7": "SEAT",
   // Tuning 8, correction pass: what the seat can train onto a center.

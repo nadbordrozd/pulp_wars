@@ -1737,3 +1737,33 @@ export const ARMY_BOMBER_NEIGHBOUR_COST_V7 = 12;
  * point taken).
  */
 export const ARMY_GARRISON_HIT_VALUE_V7 = 30;
+
+/**
+ * The garrison of a watched center (`pulp_wars-mch9.27`, docs/architecture/
+ * NORMAL_AI.md "The garrison of a watched center"): an own unit is a clearly
+ * better garrison than another when its garrison worth (HP times Defense,
+ * `armyDefenderWorthV7`) is at least this many times the other's. A Cult
+ * seat's Idol Bearer (16 HP, Defense 2.5) is one against an Initiate, the
+ * Thing (40 HP, Defense 3.5) against an Idol Bearer; an Initiate is not one
+ * against a Summoner, nor a Human Guard against a Swordsman.
+ */
+export const ARMY_GARRISON_UPGRADE_RATIO_V7 = 2;
+/**
+ * The step of the best garrison that can reach an empty watched center which
+ * its city does not train onto this turn: the priority of the step onto a
+ * threatened center.
+ */
+export const ARMY_GARRISON_FILL_PRIORITY_V7 = 1250;
+/**
+ * The garrison steps of a watched center that no visible hostile unit can
+ * attack next turn: the step onto it at this priority, just above every
+ * routine Move (735) and below the firing position (740), the engagements,
+ * the hunts, the siege lanes, and every attack; the step off for a better
+ * garrison, and the step that makes room for it, one above.
+ */
+export const ARMY_GARRISON_WATCH_PRIORITY_V7 = 736;
+/**
+ * A unit this near an empty watched center is a candidate to step onto it
+ * as its garrison (a unit farther off is at the front, and stays there).
+ */
+export const ARMY_GARRISON_FILL_REACH_V7 = 2;

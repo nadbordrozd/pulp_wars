@@ -802,8 +802,13 @@ describe("against the Cult: a Cowed city (section 15.5)", () => {
       moves(state, at(7, 7)).find((move) => gap(move.to, at(8, 8)) === 0)
         ?.priority,
     ).toBe(CULT_AGAINST_COWED_PRIORITY_V7);
+    // `pulp_wars-mch9.27`: with the module switched off the step is made
+    // too now, by every army seat's garrison rule: an empty center that a
+    // visible enemy within six tiles watches (here the Cult's garrison and
+    // the Initiate) and that its city does not train onto (a Cowed city
+    // trains nobody) gets its best garrison.
     const before = decides(state, false);
-    expect(before?.kind === "MOVE" ? before.path.at(-1) : null).not.toEqual(
+    expect(before?.kind === "MOVE" ? before.path.at(-1) : null).toEqual(
       at(8, 8),
     );
   });

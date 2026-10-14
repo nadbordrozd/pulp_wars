@@ -140,6 +140,10 @@ import {
   ARMY_ESCORT_VALUE_V7,
   ARMY_FIRING_POSITION_PRIORITY_V7,
   ARMY_GARRISON_RADIUS_V7,
+  ARMY_GARRISON_FILL_PRIORITY_V7,
+  ARMY_GARRISON_FILL_REACH_V7,
+  ARMY_GARRISON_UPGRADE_RATIO_V7,
+  ARMY_GARRISON_WATCH_PRIORITY_V7,
   ARMY_HUNT_ATTACK_PRIORITY_V7,
   ARMY_HUNT_MOVE_PRIORITY_V7,
   ARMY_HUNT_REACH_V7,
@@ -295,6 +299,7 @@ import {
 } from "./v7-cult";
 import {
   CULT_DAEMON_PRIORITY_V7,
+  CULT_GARRISON_SWAP_PRIORITY_V7,
   cultPlanV7,
   cultStepForV7,
   cultTileKeyV7,
@@ -1016,6 +1021,8 @@ interface PolicyContextV7 {
   armyRich: boolean | undefined;
   /** Correction pass: `armyWeakGarrisonV7` by hostile unit. */
   armyWeakGarrison: Map<UnitId, boolean>;
+  /** `pulp_wars-mch9.27`: `armyGarrisonPlanV7`, once a decision. */
+  armyGarrisonPlan: ArmyGarrisonPlanV7 | undefined;
   /** Correction pass: `armyBatteryOverV7` by center. */
   armyBattery: Map<string, readonly PublicUnitV7[]>;
   /** Tuning 8: the Coins kept for the due technology (cached). */
@@ -2056,6 +2063,7 @@ function bareContext(
     armySpent: new Map(),
     armyRich: undefined,
     armyWeakGarrison: new Map(),
+    armyGarrisonPlan: undefined,
     armyBattery: new Map(),
     armyResearchFloor: undefined,
     dangerByUnitAndTile: new Map(),
@@ -5382,12 +5390,28 @@ function armyHelplessRuleV7(
  * step of the first off the center, to a tile next to it, is a Move worth
  * making: the second then steps on (`movesOntoThreatenedCity`). (A capital
  * fell with an 8-HP Banshee on its center and a Zombie beside it.)
+ * `pulp_wars-mch9.27`: for every army seat also the steps of the garrison
+ * plan (`armyGarrisonStepsOffV7`).
  */
 function armySwapsOutV7(
   context: PolicyContextV7,
   command: Extract<CommandV7, { kind: "MOVE" | "ATTACK" }>,
 ): boolean {
-  if (command.kind !== "MOVE" || !armyOpeningSeatV7(context)) return false;
+  if (command.kind !== "MOVE" || !context.army) return false;
+  // `pulp_wars-mch9.27`, every army seat: the garrison of a watched center
+  // steps off for a clearly better garrison beside it.
+  return (
+    armyHelplessSwapsOutV7(context, command) ||
+    armyGarrisonStepsOffV7(context, command)
+  );
+}
+
+/** The Undead pass's garrison swap of `armySwapsOutV7` (a helpless unit). */
+function armyHelplessSwapsOutV7(
+  context: PolicyContextV7,
+  command: Extract<CommandV7, { kind: "MOVE" }>,
+): boolean {
+  if (!armyOpeningSeatV7(context)) return false;
   const view = context.view;
   const actor = context.lookup.unitsById.get(command.unitId);
   const to = command.path.at(-1);
@@ -5985,6 +6009,362 @@ function armyBestGarrisonStaysV7(
       unitRoleMechanicsV7(view, actor),
       actor.hp,
     ) > armyBesideCenterWorthV7(context, center)
+  );
+}
+
+/**
+ * The garrison of a watched center (`pulp_wars-mch9.27`,
+ * docs/architecture/NORMAL_AI.md "The garrison of a watched center"; first
+ * seen in the Cult seat's first real matches, RULESET_7_CULTISTS.md section
+ * 15.10). Made once a decision for an army seat.
+ */
+interface ArmyGarrisonPlanV7 {
+  /**
+   * For each empty watched center (by its key): the own unit whose step
+   * onto it is the garrison's, and its garrison worth.
+   */
+  readonly fill: ReadonlyMap<
+    string,
+    { readonly unitId: UnitId; readonly worth: number }
+  >;
+  /**
+   * The garrison that steps off for a clearly better one, by its unit: the
+   * center it leaves.
+   */
+  readonly swapOut: ReadonlyMap<UnitId, CoordV7>;
+  /**
+   * The own unit that leaves the ring around such a center, by its unit,
+   * when every tile beside the center is taken: the center.
+   */
+  readonly makeRoom: ReadonlyMap<UnitId, CoordV7>;
+  /**
+   * The keys of the centers among them that a visible hostile unit can
+   * attack next turn: their steps go at the priorities of a threatened
+   * center, the others' just above the routine Moves.
+   */
+  readonly urgent: ReadonlySet<string>;
+}
+
+const NO_GARRISON_PLAN_V7: ArmyGarrisonPlanV7 = {
+  fill: new Map(),
+  swapOut: new Map(),
+  makeRoom: new Map(),
+  urgent: new Set(),
+};
+
+/**
+ * `pulp_wars-mch9.27`: the garrison plan of an army seat. A center is
+ * **watched** when a visible hostile unit can attack it next turn (it is
+ * threatened), or when a visible hostile land unit that stands outside its
+ * own seat's land is within `ARMY_GARRISON_RADIUS_V7` of it (the radius of
+ * the rule that keeps the unit on it, `armyGarrisonHoldsV7`). A watched
+ * center is **not trained onto** when the engine offers its city no `TRAIN`
+ * this turn (at its unit limit, without its action, or without the Coins),
+ * or when it is threatened and the unit that would step on is a clearly
+ * better garrison (`ARMY_GARRISON_UPGRADE_RATIO_V7`) than the best the seat
+ * can train now (`armyBestDefenderWorthV7`; the city then trains nobody).
+ * For such a center:
+ *
+ * - **Empty:** of the own units within `ARMY_GARRISON_FILL_REACH_V7` that
+ *   can end a Move on it this turn, the best garrison (HP times Defense,
+ *   `armyDefenderWorthV7`; the lowest ID on a tie) steps on; a unit it is a
+ *   clearly better garrison than does not step on in its place
+ *   (`armyGarrisonFillWaitsV7`).
+ * - **Held:** when an own unit beside the center that has neither moved nor
+ *   acted is a clearly better garrison than the unit on it, the latter
+ *   steps off to a tile beside the center (`armySwapsOutV7`, the garrison
+ *   swap), and the better one steps on as above. When every tile beside the
+ *   center is taken, the weakest own unit beside it first leaves the ring.
+ *
+ * The steps of a threatened center (and of a Cult seat's capital: its
+ * lodge) have the priorities of a threatened center's
+ * (`ARMY_GARRISON_FILL_PRIORITY_V7`, `ARMY_SWAP_PRIORITY_V7`); the others
+ * come just above the routine Moves (`ARMY_GARRISON_WATCH_PRIORITY_V7`),
+ * after every attack, hunt, and siege job. Not a candidate for any step: a
+ * unit on another own center, a summoned unit (a daemon), and a unit a Cult
+ * seat's plan holds or keeps from that tile. A city its seat trains onto
+ * otherwise keeps the rules it had: the garrison steps aside and the
+ * trained unit takes the center.
+ */
+function armyGarrisonPlanV7(context: PolicyContextV7): ArmyGarrisonPlanV7 {
+  if (context.armyGarrisonPlan !== undefined) return context.armyGarrisonPlan;
+  if (!context.army) {
+    context.armyGarrisonPlan = NO_GARRISON_PLAN_V7;
+    return NO_GARRISON_PLAN_V7;
+  }
+  const view = context.view;
+  const hostiles = armyHostilesV7(context);
+  const fill = new Map<string, { unitId: UnitId; worth: number }>();
+  const swapOut = new Map<UnitId, CoordV7>();
+  const makeRoom = new Map<UnitId, CoordV7>();
+  const urgent = new Set<string>();
+  const plan: ArmyGarrisonPlanV7 = { fill, swapOut, makeRoom, urgent };
+  // While the plan is made, a rule that asks for it gets none.
+  context.armyGarrisonPlan = NO_GARRISON_PLAN_V7;
+  const cultPlan = cultPlanForV7(context);
+  // A city trains onto its center this turn when it is offered a TRAIN, or
+  // when its garrison could step aside for one (`armyVacatesCenterV7`: its
+  // action, a free slot, and the Coins for its basic unit).
+  const trained = new Set<CityId>();
+  for (const command of context.commands)
+    if (command.kind === "TRAIN") trained.add(command.cityId);
+  const basicCost =
+    effectiveRoleRuleV7("FIGHTER", view.viewer.faction).cost ?? 0;
+  for (const city of view.cities)
+    if (
+      city.ownerId === view.viewer.id &&
+      city.cityActionAvailable !== false &&
+      freeCapacity(view, city.id) > 0 &&
+      view.viewer.coins >= basicCost
+    )
+      trained.add(city.id);
+  const worthOf = (unit: PublicUnitV7, center: CoordV7): number =>
+    armyDefenderWorthV7(
+      context,
+      center,
+      unitRoleRuleV7(view, unit),
+      unitRoleMechanicsV7(view, unit),
+      unit.hp,
+    );
+  // A garrison is a line or defender unit, or a reward giant (the Thing in
+  // the Cellar): not a ranged, siege, support, or fast unit, whose job is
+  // elsewhere (a Martian Tripod stepped onto a center and fired from it
+  // without a kill, a Dinosaur's Triceratops went home instead of striking).
+  const garrisonClass = (unit: PublicUnitV7): boolean => {
+    const rule = unitRoleRuleV7(view, unit);
+    const kind = armyClassV7(rule);
+    return (
+      kind === "LINE" || kind === "DEFENDER" || rule.tacticalRole === "MYTHIC"
+    );
+  };
+  const eligible = (unit: PublicUnitV7, center: CoordV7): boolean =>
+    garrisonClass(unit) &&
+    unit.ownerId === view.viewer.id &&
+    unit.form === "LAND" &&
+    unit.hp > 0 &&
+    unit.summoned === undefined &&
+    !context.lookup.citiesByKey.has(coordKey(unit.at)) &&
+    (cultPlan === null ||
+      (!cultPlan.held.has(unit.id) && cultPlan.mayEnd(unit.id, center)));
+  // A hostile unit in its own land (the garrison of its city, a fortified
+  // line) is defending: it watches nothing. (A Human assault column of
+  // three Knights went home to its empty capital because the Fighter on the
+  // enemy capital stood six tiles away.)
+  const coming = hostiles.filter(
+    (unit) => !inOwnTerritoryForPolicyV7(view, unit.ownerId, unit.at),
+  );
+  for (const city of view.cities) {
+    if (city.ownerId !== view.viewer.id) continue;
+    const threatened = threatenedCity(context, city.id);
+    if (
+      !threatened &&
+      !coming.some(
+        (unit) => distance(unit.at, city.at) <= ARMY_GARRISON_RADIUS_V7,
+      )
+    )
+      continue;
+    // A Cult seat's capital is its lodge: the Great Summoning is begun
+    // beside it and the seat's Summoners stand there, so its garrison steps
+    // go at a threatened center's priorities as soon as it is watched (the
+    // Lodge of the Unblinking Eye stands on a summit no enemy can strike in
+    // one turn, and a Summoner held it).
+    if (threatened || (armyCultSeatV7(context) && city.isCapital))
+      urgent.add(coordKey(city.at));
+    // What a unit that steps on must beat: nothing for a city that trains
+    // nobody this turn; the best it can train on a threatened center; and
+    // on another center its city trains onto, it never steps on.
+    let floor = 0;
+    if (trained.has(city.id)) {
+      if (!threatened) continue;
+      floor =
+        ARMY_GARRISON_UPGRADE_RATIO_V7 *
+        armyBestDefenderWorthV7(context, city.at);
+    }
+    const occupants = view.units.filter((unit) => same(unit.at, city.at));
+    if (occupants.length === 0) {
+      let best: { unitId: UnitId; worth: number } | undefined;
+      for (const unit of view.units) {
+        if (
+          distance(unit.at, city.at) > ARMY_GARRISON_FILL_REACH_V7 ||
+          !eligible(unit, city.at) ||
+          !(context.lookup.moveDestinationsByUnit.get(unit.id) ?? []).some(
+            (to) => same(to, city.at),
+          )
+        )
+          continue;
+        const worth = worthOf(unit, city.at);
+        if (
+          worth > 0 &&
+          (best === undefined ||
+            worth > best.worth ||
+            (worth === best.worth && unit.id < best.unitId))
+        )
+          best = { unitId: unit.id, worth };
+      }
+      if (best !== undefined && best.worth >= floor)
+        fill.set(coordKey(city.at), best);
+      continue;
+    }
+    const garrison = occupants.find(
+      (unit) => unit.ownerId === view.viewer.id && unit.form === "LAND",
+    );
+    if (
+      garrison === undefined ||
+      garrison.summoned !== undefined ||
+      garrison.activation.moved ||
+      garrison.activation.attacked ||
+      garrison.activation.specialActed ||
+      (cultPlan !== null && cultPlan.held.has(garrison.id))
+    )
+      continue;
+    const own = worthOf(garrison, city.at);
+    const beside = view.units.filter(
+      (unit) =>
+        unit.id !== garrison.id &&
+        distance(unit.at, city.at) === 1 &&
+        unit.ownerId === view.viewer.id &&
+        unit.form === "LAND",
+    );
+    // (A unit beside the center that has neither moved nor acted can step
+    // onto it once it is free, whatever other tiles it is offered now.)
+    const better = beside.filter(
+      (unit) =>
+        !unit.activation.moved &&
+        !unit.activation.attacked &&
+        !unit.activation.specialActed &&
+        eligible(unit, city.at) &&
+        worthOf(unit, city.at) >=
+          Math.max(1, floor, ARMY_GARRISON_UPGRADE_RATIO_V7 * own),
+    );
+    if (better.length === 0) continue;
+    if (
+      (context.lookup.moveDestinationsByUnit.get(garrison.id) ?? []).some(
+        (to) =>
+          distance(to, city.at) === 1 &&
+          !context.lookup.citiesByKey.has(coordKey(to)),
+      )
+    ) {
+      swapOut.set(garrison.id, city.at);
+      continue;
+    }
+    // Every tile beside the center is taken (a summit with Mountains
+    // around it): the weakest own unit beside it that can leave the ring,
+    // and is not the only clearly better garrison, makes room first.
+    let room: { unit: PublicUnitV7; worth: number } | undefined;
+    for (const unit of beside) {
+      if (
+        unit.summoned !== undefined ||
+        (cultPlan !== null && cultPlan.held.has(unit.id)) ||
+        (better.length === 1 && better[0]?.id === unit.id) ||
+        !(context.lookup.moveDestinationsByUnit.get(unit.id) ?? []).some(
+          (to) =>
+            distance(to, city.at) >= 2 &&
+            !context.lookup.citiesByKey.has(coordKey(to)),
+        )
+      )
+        continue;
+      const worth = worthOf(unit, city.at);
+      if (
+        room === undefined ||
+        worth < room.worth ||
+        (worth === room.worth && unit.id < room.unit.id)
+      )
+        room = { unit, worth };
+    }
+    if (room !== undefined) makeRoom.set(room.unit.id, city.at);
+  }
+  context.armyGarrisonPlan = plan;
+  return plan;
+}
+
+/**
+ * `pulp_wars-mch9.27`: the Move is the step of the garrison of a watched
+ * center off it, to a tile beside it that is no center, for a clearly
+ * better garrison beside it; or, when every tile beside the center is
+ * taken, the step of the unit that makes room for it out of that ring
+ * (`armyGarrisonPlanV7`).
+ */
+function armyGarrisonStepsOffV7(
+  context: PolicyContextV7,
+  command: Extract<CommandV7, { kind: "MOVE" }>,
+): boolean {
+  return armyGarrisonStepOffCenterV7(context, command) !== null;
+}
+
+/** The center the step of `armyGarrisonStepsOffV7` is for, or null. */
+function armyGarrisonStepOffCenterV7(
+  context: PolicyContextV7,
+  command: Extract<CommandV7, { kind: "MOVE" }>,
+): CoordV7 | null {
+  if (!context.army) return null;
+  const plan = armyGarrisonPlanV7(context);
+  const end = command.path.at(-1);
+  if (end === undefined || context.lookup.citiesByKey.has(coordKey(end)))
+    return null;
+  const center = plan.swapOut.get(command.unitId);
+  if (center !== undefined) return distance(end, center) === 1 ? center : null;
+  const ring = plan.makeRoom.get(command.unitId);
+  return ring !== undefined && distance(end, ring) >= 2 ? ring : null;
+}
+
+/**
+ * `pulp_wars-mch9.27`: the priority of a garrison step (a step off, a step
+ * that makes room, or the step on) for `center`: those of a threatened
+ * center when a visible hostile unit can attack it next turn, else just
+ * above the routine Moves (`ARMY_GARRISON_WATCH_PRIORITY_V7`), so a unit
+ * with an attack, a hunt, or a siege job makes it first.
+ */
+function armyGarrisonStepPriorityV7(
+  context: PolicyContextV7,
+  center: CoordV7,
+  urgentPriority: number,
+  offset: number,
+): number {
+  return armyGarrisonPlanV7(context).urgent.has(coordKey(center))
+    ? urgentPriority
+    : ARMY_GARRISON_WATCH_PRIORITY_V7 + offset;
+}
+
+/**
+ * `pulp_wars-mch9.27`: the Move of `actor` onto `to` is the garrison's step
+ * onto an empty watched center (`armyGarrisonPlanV7`).
+ */
+function armyGarrisonFillsV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+  to: CoordV7,
+): boolean {
+  return (
+    armyGarrisonPlanV7(context).fill.get(coordKey(to))?.unitId === actor.id
+  );
+}
+
+/**
+ * `pulp_wars-mch9.27`: the Move ends on an empty watched center for whose
+ * garrison the plan has a clearly better unit than the mover
+ * (`ARMY_GARRISON_UPGRADE_RATIO_V7`): it waits for that unit.
+ */
+function armyGarrisonFillWaitsV7(
+  context: PolicyContextV7,
+  command: Extract<CommandV7, { kind: "MOVE" }>,
+): boolean {
+  if (!context.army) return false;
+  const to = command.path.at(-1);
+  if (to === undefined) return false;
+  const chosen = armyGarrisonPlanV7(context).fill.get(coordKey(to));
+  const actor = context.lookup.unitsById.get(command.unitId);
+  if (chosen === undefined || actor === undefined || chosen.unitId === actor.id)
+    return false;
+  return (
+    chosen.worth >=
+    ARMY_GARRISON_UPGRADE_RATIO_V7 *
+      armyDefenderWorthV7(
+        context,
+        to,
+        unitRoleRuleV7(context.view, actor),
+        unitRoleMechanicsV7(context.view, actor),
+        actor.hp,
+      )
   );
 }
 
@@ -6730,6 +7110,43 @@ function armyIceFolkShooterHeldV7(
 }
 
 /**
+ * The Cult seat's first real matches (`pulp_wars-mch9.27`,
+ * docs/product/RULESET_7_CULTISTS.md section 15.10): a Cult seat's back-row
+ * unit (`cultBackRowV7`: the Summoner, and the Hexer and the Stargazer,
+ * which never advance) makes no attack whose kill advances it onto a tile
+ * that another visible hostile unit can attack next turn. The seat's
+ * summoning needs the Summoner: one that came with a wave killed a wounded
+ * Catapult, advanced into the player's line, and died the next turn. Its
+ * attack that kills where nobody else reaches the tile, and its hit that
+ * does not kill (the ordinary exchange rules judge it), are still made; so
+ * is every attack of a Summoner the visible enemy kills where it stands.
+ */
+function armyCultBackRowAdvanceHeldV7(
+  context: PolicyContextV7,
+  command: Extract<CommandV7, { kind: "ATTACK" }>,
+): boolean {
+  if (!armyCultSeatV7(context)) return false;
+  const view = context.view;
+  const actor = context.lookup.unitsById.get(command.unitId);
+  const target = context.lookup.unitsById.get(command.targetUnitId);
+  if (
+    actor === undefined ||
+    target === undefined ||
+    actor.ownerId !== view.viewer.id ||
+    !cultBackRowV7(view, actor)
+  )
+    return false;
+  const preview = queryCombatPreviewV7(view, actor.id, target.id);
+  if (preview === null || !preview.advances) return false;
+  if (visibleImmediateDamage(view, actor, actor.at, context) >= actor.hp)
+    return false;
+  const key = coordKey(target.at);
+  for (const [unitId, tiles] of context.threatenedTiles)
+    if (unitId !== target.id && tiles.has(key)) return true;
+  return false;
+}
+
+/**
  * Step two of the Ice Folk pass: whether a visible hostile unit with
  * Overrun can attack a unit on `at` next turn (the public threat lookup,
  * which stops another faction's ground unit at known Snow).
@@ -6989,6 +7406,32 @@ function armyPlainMoveValueV7(
   const unchanged = { priority, strategic: 0 };
   if (!context.army || actor.form !== "LAND") return unchanged;
   const view = context.view;
+  const asMove = { kind: "MOVE" as const, unitId: actor.id, path: [to] };
+  // `pulp_wars-mch9.27`: the garrison of a watched center steps off for a
+  // clearly better one (and a unit makes room for it), at the priority of
+  // its center (`armyGarrisonStepPriorityV7`); the Undead pass's swap of a
+  // helpless garrison keeps its own (below).
+  const stepOff = armyHelplessSwapsOutV7(context, asMove)
+    ? null
+    : armyGarrisonStepOffCenterV7(context, asMove);
+  if (stepOff !== null)
+    return {
+      priority: Math.max(
+        priority,
+        // (For a Cult seat on its lodge or a threatened center: before its
+        // attacks. Any other seat steps off after them: the better unit
+        // beside the center may strike first, and then it stays as it was.)
+        armyCultSeatV7(context)
+          ? armyGarrisonStepPriorityV7(
+              context,
+              stepOff,
+              ARMY_SWAP_PRIORITY_V7,
+              1,
+            )
+          : ARMY_GARRISON_WATCH_PRIORITY_V7 + 1,
+      ),
+      strategic: -4 * visibleImmediateDamage(view, actor, to, context),
+    };
   // The Undead pass, correction: the garrison swap (`armySwapsOutV7`).
   if (armySwapsOutV7(context, { kind: "MOVE", unitId: actor.id, path: [to] }))
     return {
@@ -7001,6 +7444,24 @@ function armyPlainMoveValueV7(
             ).value
           : 0) -
         4 * visibleImmediateDamage(view, actor, to, context),
+    };
+  // `pulp_wars-mch9.27`: the best garrison steps onto an empty watched
+  // center its city does not train onto (`armyGarrisonPlanV7`).
+  if (armyGarrisonFillsV7(context, actor, to))
+    return {
+      priority: Math.max(
+        priority,
+        armyGarrisonStepPriorityV7(
+          context,
+          to,
+          ARMY_GARRISON_FILL_PRIORITY_V7,
+          0,
+        ),
+      ),
+      strategic: Math.min(
+        ARMY_CENTER_HOLDER_VALUE_MAXIMUM_V7,
+        armyGarrisonPlanV7(context).fill.get(coordKey(to))?.worth ?? 0,
+      ),
     };
   if (armyVacatesCenterV7(context, actor, to))
     return {
@@ -11142,6 +11603,20 @@ function isPolicyCandidate(
     !armySwapsOutV7(context, command)
   )
     return false;
+  // `pulp_wars-mch9.27`: an empty watched center waits for its best
+  // garrison when that is a clearly better one than the mover; and its city
+  // trains nobody onto it when that garrison is a clearly better one than
+  // what it can train (`armyGarrisonPlanV7`).
+  if (command.kind === "MOVE" && armyGarrisonFillWaitsV7(context, command))
+    return false;
+  if (command.kind === "TRAIN" && context.army) {
+    const city = context.lookup.citiesById.get(command.cityId);
+    if (
+      city !== undefined &&
+      armyGarrisonPlanV7(context).fill.has(coordKey(city.at))
+    )
+      return false;
+  }
   // The Undead pass, correction (`pulp_wars-w49.13`): villages first; a
   // Zombie moves with company; the shots before the melee on a biter.
   if (
@@ -11197,6 +11672,13 @@ function isPolicyCandidate(
   // Boulder Yeti does not walk out in front of its line. Step two of the
   // Dwarf pass (`pulp_wars-w49.28`): nor does a Clockwork Gunner.
   if (command.kind === "MOVE" && armyIceFolkShooterHeldV7(context, command))
+    return false;
+  // The Cult's first real matches (`pulp_wars-mch9.27`): nor does a
+  // Summoner kill its way into the enemy line.
+  if (
+    command.kind === "ATTACK" &&
+    armyCultBackRowAdvanceHeldV7(context, command)
+  )
     return false;
   // Tuning 6 (`pulp_wars-w49.6`): so does a unit on a village it will
   // capture next turn.
@@ -15042,6 +15524,19 @@ function scoreCommandWithContext(
       if (command.kind === "MOVE") {
         if (resultAt === null || !cultPlan.mayEnd(actor.id, resultAt))
           priority = -1;
+        // `pulp_wars-mch9.27` (RULESET_7_CULTISTS.md section 15.10): a
+        // Summoner on a watched center steps off for the better garrison
+        // beside it before it Summons, Sacrifices, or Offers: after its
+        // action it could not, and a Summoner held a walled capital for
+        // eight rounds that way until a Knight killed it there.
+        else if (priority >= 0) {
+          const center = armyGarrisonStepOffCenterV7(context, command);
+          if (
+            center !== null &&
+            armyGarrisonPlanV7(context).urgent.has(coordKey(center))
+          )
+            priority = Math.max(priority, CULT_GARRISON_SWAP_PRIORITY_V7);
+        }
       } else if (
         command.kind === "ATTACK" &&
         priority >= 0 &&

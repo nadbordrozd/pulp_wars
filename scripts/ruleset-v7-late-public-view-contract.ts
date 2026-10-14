@@ -186,7 +186,9 @@ export const RULESET7_LATE_PUBLIC_VIEW_NORMAL_DECISION = Object.freeze({
     // unchanged.
     // Technology base cost 5 / 6 / 7 (`pulp_wars-w49.40`, 7r81): see the
     // comment above (was e00a20…2d64).
-    "5158ffe01c14b70ce9eab087908f14a5850ef3eade6722b1feff0b41fcf4336d",
+    // The garrison of a watched center (`pulp_wars-mch9.27`): one Move
+    // more, see `candidateCount` (was 5158ff…336d).
+    "9dd7942a25566c0ac2a68ceff2805fafef4613cdba787b85bc54bd1980918639",
   command: Object.freeze({
     kind: "RESEARCH",
     tech: "MARKSMANSHIP",
@@ -204,7 +206,9 @@ export const RULESET7_LATE_PUBLIC_VIEW_NORMAL_DECISION = Object.freeze({
   // Marksmanship (13 Coins with the view's four cities; it has 12).
   // Technology base cost 5 / 6 / 7 (`pulp_wars-w49.40`, 7r81): 27, with
   // Research Marksmanship again (12 Coins).
-  candidateCount: 27,
+  // The garrison of a watched center (`pulp_wars-mch9.27`): 28, with unit
+  // 32's step onto the empty center of city 9 beside it (736).
+  candidateCount: 28,
 });
 
 /**

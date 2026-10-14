@@ -1154,7 +1154,10 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       // tier 2 costs 12 with the view's four cities, so its 12 Coins
       // buy one and six RESEARCH commands are offered again (was
       // a5c918…c937).
-      "bba722970ae038f521d1fbc40c2bc4512c3181565fc9a97db3ee65e26f064f4c",
+      // The garrison of a watched center (`pulp_wars-mch9.27`): the
+      // command is unchanged; one Move more, unit 32's step onto the empty
+      // center of city 9 (was bba722…4f4c).
+      "5645425e75a83f2f684c0279c4599c69d4861844afaead9ef08ebffc0cedd382",
     );
     const revision4Commands = new Set([
       '{"kind":"ATTACK","unitId":19,"targetUnitId":34}',

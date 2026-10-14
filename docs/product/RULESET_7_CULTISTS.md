@@ -1835,6 +1835,9 @@ and the first lines of `isPolicyCandidate`).
     Right. Decided here: **only with a Summoner on the board and the robed
     cultists to hold one more Horror**, else the Favour buys nothing and
     the population is gone for good. The same condition gates (b) above.
+    (Paced since the first real matches: one a round at most, one every
+    other round on average; [section 15.10](#1510-as-built-the-corrections-from-the-first-real-matches-pulp_wars-mch927),
+    rule 3.)
 12. **Behold!** An Idol Bearer with its action, next to two or more own
     cultists that hold a strand and stand on a tile a visible enemy can
     attack next turn, raises its idol, once every channeller is placed.
@@ -2109,6 +2112,83 @@ before the Cult seat's own).
     unit blocks a mark by anything but its Hit Points; walk toward a far
     mark over several turns; or weigh a step out of a ring or back from an
     eye mark against the danger of the tile it steps to.
+
+### 15.10 As built: the corrections from the first real matches (`pulp_wars-mch9.27`)
+
+The Cult seat was built on hand-built states only; its first real matches
+were campaign mission 10 played by hand
+([campaign design section 11.11](CAMPAIGN.md#1111-the-stars-are-right)),
+which listed four things it did poorly. Three are corrected here; no rule
+changed and the ruleset identity did not move. No match was played: every
+rule below is a decision, or the one turn a seat plays, on a hand-built
+state in `tests/unit/ruleset-v7-cult-corrections-ai.test.ts`, each shown
+beside the state in which it does not apply, and each test was seen to fail
+with its rule switched off.
+
+1. **The lodge's center is held by its sturdiest unit.** The Thing in the
+   Cellar walked off the Lodge's center and never returned; a Summoner, a
+   Hexer, and an Initiate held it in turn while Idol Bearers stood beside
+   it. The fix is the **general** Normal AI rule of the garrison of a
+   watched center ([Normal AI, "The garrison of a watched center"](../architecture/NORMAL_AI.md#the-garrison-of-a-watched-center-pulp_wars-mch927-every-army-seat)),
+   for every army seat: a center a visible hostile unit can strike next
+   turn, or that one outside its own land stands within six tiles of, gets
+   its best garrison (HP times Defense) from the own units within two tiles
+   when its city does not train onto it; a unit the best is twice as good as
+   does not step on in its place; a garrison with a unit twice as good
+   beside it steps off for it, and on a ringed summit the weakest unit
+   beside it leaves the ring first. Decided here for the Cult seat: **its
+   capital counts as threatened as soon as it is watched** (the Lodge
+   stands on a summit no enemy strikes in one turn, so the general rule
+   would have put these steps below every attack), and a cultist's step off
+   that center comes at **1912**, before the Summon (1910), the Sacrifice,
+   and the Offering a Summoner on the center would make there (it cannot
+   step off after its action). A garrison is a line or defender unit or a
+   reward giant: for the Cult, by worth, the Thing (40 HP, Defense 3.5), the
+   Idol Bearer, the Chosen, and the Initiate; a Summoner, a Hexer, a Caller,
+   a Familiar, or a Stargazer never steps on as one (it is stepped off for
+   one), a daemon never, nor a channeller that holds a strand (it channels
+   from where it stands). On the recorded positions of the winning session
+   (each Cult turn played by the new policy from the recorded state) the
+   Idol Bearer steps onto the Lodge in rounds 6, 9, and 11 and the Thing in
+   rounds 7, 8, 10, 16, and 17, the Summoner stepping off first; in rounds
+   12 to 14 the Summoner on the center holds a strand of a Horror and stays.
+2. **A Summoner does not kill its way into the enemy line**
+   (`armyCultBackRowAdvanceHeldV7`). A unit of the back row (the Summoner;
+   the Hexer and the Stargazer never advance) makes no attack whose kill
+   advances it onto a tile another visible hostile unit can attack next
+   turn, unless the visible enemy kills it where it stands anyway. Its kill
+   where nobody else reaches, and its hit that does not kill, are the
+   ordinary rules'. The Initiate, the Chosen, the Caller, and the Familiar
+   are not held by it: they are the line.
+3. **The Offering is paced** (`cultOfferingDueV7`). A lodge whose three
+   cities started at their unit limit made an Offering in each of them
+   every turn (the rule "at its unit limit or with nothing to train") and,
+   with a spare Initiate Sacrificed, began the Great Summoning in round 2
+   from 9 Favour. The policy remembers nothing, so the pace is read from the
+   board: only the city whose turn it is offers (the seat's cities by ID,
+   the round modulo their number: **one a round at most**), and only while
+   the seat's Offerings so far (its cities' `offeredPopulation`, 2 each)
+   times `CULT_OFFERING_PACE_ROUNDS_V7` (2) are below the round (**one every
+   other round on average**, also for a seat that bought Harvest Rites
+   late: its unused rounds give it no burst). From 9 Favour with The Stars
+   Are Right the Offerings alone reach 20 in round 7 (a spare Initiate's
+   Sacrifice at 18 can bring that to round 5), never in round 2. The
+   conditions of section 15.7 rule 11 (a Summoner, the bodies, no enemy
+   within 3) stand.
+4. **A Horror leaving a `GUARD` zone is no bug.** A `GUARD` garrison is the
+   first so many own land units inside the zone by unit ID
+   (`guardGarrisonV7`); a Horror summoned later has a higher ID, so it is a
+   free unit, and the free cultists follow it as its channellers. That is
+   the directive as specified (the garrison stays, the free units act), and
+   the mission welcomes it (it is how the player first meets one). Nothing
+   was changed.
+
+**Not built, and what follows.** With no hostile unit in sight the lodge's
+center is not watched (the Thing walked off in round 1 with nobody near);
+a seat with no memory cannot know of an army it has not seen, and a
+guarding mission seat needs a starting reveal of its approaches. A
+Summoner on the center that holds a strand stays there; the channel plan
+does not yet move a channeller off a watched lodge for a better garrison.
 
 ## 16. Worked examples
 

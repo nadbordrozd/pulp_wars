@@ -2063,7 +2063,9 @@ Offering, Martyr, the Great Summoning (begun, fizzled, completed), the
 Herald, Star-fall (fell, and fizzled when its leader died), Ribbit, the
 Tentacle and its Grab, and Blast Mountain used on three units beside the
 Lodge. What the seat does poorly, for the AI's owner to weigh; none of it
-was changed here:
+was changed here (points 1 to 3 were corrected afterwards, and point 4
+judged no bug, by `pulp_wars-mch9.27`:
+[the Cultists spec, section 15.10](RULESET_7_CULTISTS.md#1510-as-built-the-corrections-from-the-first-real-matches-pulp_wars-mch927)):
 
 1. **Its capital's center is held by whoever is nearest.** The Thing in
    the Cellar walked off the Lodge's center in the first rounds and never returned;
