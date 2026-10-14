@@ -87,8 +87,8 @@ import {
 
 export const CHIBI_API_BASE_URL = "https://api.pixellab.ai/v2";
 export const CHIBI_CREDENTIAL_VARIABLE = "PIXELLAB_API_KEY";
-const POLL_INTERVAL_MS = 5_000;
-const MAX_POLL_MS = 12 * 60_000;
+export const POLL_INTERVAL_MS = 5_000;
+export const MAX_POLL_MS = 12 * 60_000;
 
 export const CHIBI_PATHS = {
   fragments: "scripts/art/chibi/fragments",
@@ -904,7 +904,7 @@ function decodeImage(encoded: string): Buffer {
   return Buffer.from(payload, "base64");
 }
 
-async function safeError(response: Response): Promise<string> {
+export async function safeError(response: Response): Promise<string> {
   const text = (await response.text())
     .replaceAll(/[\r\n]+/g, " ")
     .replaceAll(

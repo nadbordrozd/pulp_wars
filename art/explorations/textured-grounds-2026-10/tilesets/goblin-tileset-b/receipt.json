@@ -1,0 +1,234 @@
+{
+  "recipe": "goblin-tileset-b",
+  "endpoint": "create-tileset",
+  "submittedAt": "2026-10-14T22:25:20.372Z",
+  "request": {
+    "lower_description": "dry golden savannah grassland seen from above, pale straw-coloured dry grass with dry tufts and golden seed heads",
+    "upper_description": "bare sun-baked tan earth seen from above with fine cracks and a few small pebbles",
+    "mode": "pro",
+    "tile_size": {
+      "width": 64,
+      "height": 64
+    },
+    "transition_size": 0,
+    "view": "high top-down",
+    "outline": "lineless",
+    "shading": "medium shading",
+    "detail": "medium detail",
+    "raggedness": 0.6,
+    "boundary_amplitude": 0.2,
+    "boundary_seed": 7,
+    "seed": 53103,
+    "color_image": {
+      "path": "art/explorations/textured-grounds-2026-10/tilesets/goblin-tileset-b/palette.png",
+      "sha256": "a936c98fba42d269eb7724a46acc176f7521a8ac59e023bc7b61420f5235e3f9"
+    }
+  },
+  "jobId": "635d0c3f-0612-4144-bde6-4d5f732ac8ba",
+  "tilesetId": "bfe860c1-3447-4d0b-a93f-e2c249539dd1",
+  "seconds": 144,
+  "usageUsd": 0.1520905499988132,
+  "metadata": {
+    "edge_types": ["lower", "upper"],
+    "terrain_prompts": {
+      "lower": "dry golden savannah grassland seen from above, pale straw-coloured dry grass with dry tufts and golden seed heads",
+      "upper": "bare sun-baked tan earth seen from above with fine cracks and a few small pebbles"
+    },
+    "terrain_ids": {
+      "lower": "ba5fe23b-a412-4e29-af4d-05e51ade7dd3",
+      "upper": "ae6409ad-7b9a-48dd-93cd-5a27771a9052"
+    },
+    "transition_size": 0,
+    "view": "high top-down",
+    "generation_parameters": {
+      "mode": "pro",
+      "spread_x": 0.5,
+      "raggedness": 0.6,
+      "slope_size": 0,
+      "tile_strength": 1,
+      "tileset_adherence": 100,
+      "text_guidance_scale": 8,
+      "requested_transition_size": 0,
+      "tileset_adherence_freedom": 500
+    },
+    "created_at": "2026-10-14T22:25:24.769611+00:00"
+  },
+  "tiles": [
+    {
+      "file": "tile-00.png",
+      "name": "wang_13",
+      "corners": {
+        "NW": "upper",
+        "NE": "upper",
+        "SW": "lower",
+        "SE": "upper"
+      },
+      "sha256": "74583c0ab9f5fd1eef835d2c8d53fe66916e849527ea0912a9efdda11c7fefe8"
+    },
+    {
+      "file": "tile-01.png",
+      "name": "wang_10",
+      "corners": {
+        "NW": "upper",
+        "NE": "lower",
+        "SW": "upper",
+        "SE": "lower"
+      },
+      "sha256": "1860a12201df8d1e02804ac9963c36674b6ddfd546988f71f387fcd322b0b6e2"
+    },
+    {
+      "file": "tile-02.png",
+      "name": "wang_4",
+      "corners": {
+        "NW": "lower",
+        "NE": "upper",
+        "SW": "lower",
+        "SE": "lower"
+      },
+      "sha256": "f47fa07a7679f5424359427855d4f8a016ded6142bd510d90277db2f000c8065"
+    },
+    {
+      "file": "tile-03.png",
+      "name": "wang_12",
+      "corners": {
+        "NW": "upper",
+        "NE": "upper",
+        "SW": "lower",
+        "SE": "lower"
+      },
+      "sha256": "13d10487e1038596f324645b7a4b10e0f96cd8d1aee4cb5df259ce9035688128"
+    },
+    {
+      "file": "tile-04.png",
+      "name": "wang_6",
+      "corners": {
+        "NW": "lower",
+        "NE": "upper",
+        "SW": "upper",
+        "SE": "lower"
+      },
+      "sha256": "40adc64055e611fa4eb7cb4d069ed946a2aad3d0671aaac0717e57b0ac1b7580"
+    },
+    {
+      "file": "tile-05.png",
+      "name": "wang_8",
+      "corners": {
+        "NW": "upper",
+        "NE": "lower",
+        "SW": "lower",
+        "SE": "lower"
+      },
+      "sha256": "b8e4d6f5872622ac79b8f281cc3a70900f7c03f7e18ea9d3693b6347f307e1d6"
+    },
+    {
+      "file": "tile-06.png",
+      "name": "wang_0",
+      "corners": {
+        "NW": "lower",
+        "NE": "lower",
+        "SW": "lower",
+        "SE": "lower"
+      },
+      "sha256": "a42883d1efcf460ce926b62b8b7bfa7cd97a732c56015b87417ad196db514d3f"
+    },
+    {
+      "file": "tile-07.png",
+      "name": "wang_1",
+      "corners": {
+        "NW": "lower",
+        "NE": "lower",
+        "SW": "lower",
+        "SE": "upper"
+      },
+      "sha256": "f3a5e365fc6be59357f2011dd220ff8309d51610600b32699cb9ad9b9a0427c0"
+    },
+    {
+      "file": "tile-08.png",
+      "name": "wang_11",
+      "corners": {
+        "NW": "upper",
+        "NE": "lower",
+        "SW": "upper",
+        "SE": "upper"
+      },
+      "sha256": "dacd2bf6a9cd8b8076a1aef2e619dbc3ec4d2f7379e8153bd8cd69c58983c930"
+    },
+    {
+      "file": "tile-09.png",
+      "name": "wang_3",
+      "corners": {
+        "NW": "lower",
+        "NE": "lower",
+        "SW": "upper",
+        "SE": "upper"
+      },
+      "sha256": "68eb96a9175d36fb486576a0db0df9759784fbe496d849a602061b6daa4516d2"
+    },
+    {
+      "file": "tile-10.png",
+      "name": "wang_2",
+      "corners": {
+        "NW": "lower",
+        "NE": "lower",
+        "SW": "upper",
+        "SE": "lower"
+      },
+      "sha256": "bf241188a5766e97aebd6b10877de6580a25ce8cb8174bfee4dbd5c9331771e1"
+    },
+    {
+      "file": "tile-11.png",
+      "name": "wang_5",
+      "corners": {
+        "NW": "lower",
+        "NE": "upper",
+        "SW": "lower",
+        "SE": "upper"
+      },
+      "sha256": "cab5bb9cdfdff03b6baf5e57f3778823fb26a228d23cd14e321ca223f14a5d24"
+    },
+    {
+      "file": "tile-12.png",
+      "name": "wang_15",
+      "corners": {
+        "NW": "upper",
+        "NE": "upper",
+        "SW": "upper",
+        "SE": "upper"
+      },
+      "sha256": "6099319fd3bf59cbbc92fac90fa24c070fcccdcbfda3885a1e1af1900fffa6b4"
+    },
+    {
+      "file": "tile-13.png",
+      "name": "wang_14",
+      "corners": {
+        "NW": "upper",
+        "NE": "upper",
+        "SW": "upper",
+        "SE": "lower"
+      },
+      "sha256": "127ed59f809405ebda09865bac8a15895f6d6c671e8ab4a8de91b394223de436"
+    },
+    {
+      "file": "tile-14.png",
+      "name": "wang_9",
+      "corners": {
+        "NW": "upper",
+        "NE": "lower",
+        "SW": "lower",
+        "SE": "upper"
+      },
+      "sha256": "de357899c2ad29854fdeb903dce474b2236137369b560e7cfa070c337bbf9409"
+    },
+    {
+      "file": "tile-15.png",
+      "name": "wang_7",
+      "corners": {
+        "NW": "lower",
+        "NE": "upper",
+        "SW": "upper",
+        "SE": "upper"
+      },
+      "sha256": "18041cdb1d95b540b36e883c005c7ec8f194285cf7d92eb146be27c816919b84"
+    }
+  ]
+}

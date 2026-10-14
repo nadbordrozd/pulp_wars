@@ -12,6 +12,7 @@ import type { RgbaRaster } from "../chibi/owner-mask";
 import { readRaster } from "../chibi/pipeline";
 import { texturedFieldPath } from "./candidates";
 import { scatter, scatterMotifs, type ScatterRecipe } from "./compose";
+import { driftField, paintDrifted } from "./drift";
 import { swapped, type TexturedField, type TexturedLook } from "./looks";
 import {
   busyness,
@@ -99,6 +100,8 @@ export async function texturedGround(
     });
   }
   const things = look.things;
+  // The drift field of a WORLD look with drifts, once it is quilted.
+  let gatherField: Float32Array | undefined;
   const thingFields: RgbaRaster[] = [];
   for (const field of things?.fields ?? [])
     thingFields.push(await fieldRaster(root, field));
@@ -107,8 +110,14 @@ export async function texturedGround(
       ? null
       : {
           fields: things.fields.map((field) => ({
-            from: field.flat?.from ?? swapped(look.from, field.swap),
-            to: field.flat?.to ?? swapped(look.to, field.swap),
+            from:
+              field.flat?.from ??
+              field.palette?.from ??
+              swapped(look.from, field.swap),
+            to:
+              field.flat?.to ??
+              field.palette?.to ??
+              swapped(look.to, field.swap),
             ...(field.base === undefined ? {} : { base: field.base }),
             ...(field.ground === undefined ? {} : { ground: field.ground }),
           })),
@@ -116,6 +125,10 @@ export async function texturedGround(
           seed: things.seed,
           ...(things.gap === undefined ? {} : { gap: things.gap }),
           ...(margin === undefined ? {} : { margin }),
+          ...(things.whole === undefined || margin !== undefined
+            ? {}
+            : { whole: things.whole }),
+          ...(gatherField === undefined ? {} : { gatherField }),
         };
   const strew = (
     canvas: RgbaRaster,
@@ -143,7 +156,15 @@ export async function texturedGround(
   }
   if (look.mode === "WORLD") {
     const indices = quilt(sources, look.from, look.quilt);
-    const world = paint(indices, look.quilt.width, look.to);
+    const drift = look.drift;
+    const world =
+      drift === undefined
+        ? paint(indices, look.quilt.width, look.to)
+        : paintDrifted(indices, look.quilt.width, look.to, drift);
+    gatherField =
+      drift === undefined
+        ? undefined
+        : driftField(look.quilt.width, look.quilt.height, drift);
     strew(world, 0);
     return {
       world,

@@ -48,7 +48,7 @@ the tiles) and `package.json` (two script names). Each is marked
 | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | ------------------------ |
 | Humans    | The default Grass, also neutral land's ([textured](TEXTURED_GROUNDS.md)): the same green, faintly mottled, with small tufts.                         | `#8ab85c` | one texture, 8 x 8 cells |
 | Undead    | Burnt ground (bead `pulp_wars-2yc.48`, [textured](TEXTURED_GROUNDS.md)): mottled warm ash, burnt twigs and bushes, charred lumps, a few embers.      | `#716a64` | one texture, 8 x 8 cells |
-| Goblins   | Savannah (bead `pulp_wars-2yc.48`): pale golden straw, tufts and clumps of dry grass, loose blades.                                                  | `#d3c176` | 6                        |
+| Goblins   | Dry grass (bead `pulp_wars-2yc.53`, [textured](TEXTURED_GROUNDS.md)): straw in soft drifts, thick with tall tufts, seed heads, scrub, a few bones.   | `#d3c176` | one texture, 8 x 8 cells |
 | Dinosaurs | Jungle floor ([textured](TEXTURED_GROUNDS.md)): a darker, bluer green mottled with moss, leaf litter and low plants.                                 | `#63a35b` | one texture, 6 x 6 cells |
 | Martians  | Regolith (bead `pulp_wars-2yc.48`, [textured](TEXTURED_GROUNDS.md)): speckled rust dust with shaded rocks of several sizes.                          | `#b56c46` | one texture, 8 x 8 cells |
 | Dwarves   | Moss-covered stones (bead `pulp_wars-2yc.48`, [textured](TEXTURED_GROUNDS.md)): mottled grey-green moss thick with grey stones, moss on top of them. | `#7d8f66` | one texture, 6 x 6 cells |
@@ -58,10 +58,12 @@ the tiles) and `package.json` (two script names). Each is marked
 
 **Some grounds are textures, not tiles**
 ([textured grounds](TEXTURED_GROUNDS.md)): the default Grass, the Martian
-regolith, the Dwarf moss-covered stones, the Undead burnt ground and the
-Dinosaur jungle floor are each one large texture the board samples by a
-cell's place on the map. The Dwarf mine gravel described further down was
-the Dwarf ground for a day (2026-10-13) and is a sample look now; the
+regolith, the Dwarf moss-covered stones, the Undead burnt ground, the
+Dinosaur jungle floor and the Goblin dry grass are each one large texture
+the board samples by a cell's place on the map. The Dwarf mine gravel
+described further down was the Dwarf ground for a day (2026-10-13), and
+the Goblin savannah tiles until 2026-10-14 (bead `pulp_wars-2yc.53`);
+both are sample looks now; the
 Martian red dust was a recipe of the recoloured grounds.
 
 ## Grounds from PixelLab fields

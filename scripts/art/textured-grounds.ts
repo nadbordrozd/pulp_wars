@@ -39,6 +39,12 @@ import {
 import { texturedGround, type TexturedGround } from "./textured-grounds/ground";
 import { TEXTURED_LOOKS, type TexturedLook } from "./textured-grounds/looks";
 import {
+  TILESET_RECIPES,
+  generateTileset,
+  tilesetContact,
+  tilesetWorld,
+} from "./textured-grounds/tilesets";
+import {
   TEXTURED_BEAD,
   TEXTURED_CANDIDATES,
   TEXTURED_FIELD,
@@ -325,8 +331,41 @@ async function sheet(
       ),
     );
   }
+  // PixelLab's own tilesets of the faction, laid as a world
+  // (textured-grounds/tilesets.ts).
+  for (const recipe of TILESET_RECIPES) {
+    if (recipe.faction !== faction) continue;
+    panels.push({
+      label: `${faction}  tileset ${recipe.id}: ${recipe.label}`,
+      faction,
+      tiles: [],
+      world: await tilesetWorld(root, recipe.id),
+      overlays: true,
+    });
+  }
   await mkdir(path.dirname(path.resolve(out)), { recursive: true });
   await groundSheet(root, panels, out, 2);
+  console.log(`wrote ${out}`);
+}
+
+/** A tileset laid as a world texture: 8 x 6 cells, and its corner at 3x. */
+async function tilesetWorldCommand(
+  root: string,
+  id: string,
+  out: string,
+): Promise<void> {
+  const world = await tilesetWorld(root, id);
+  const field = worldField(world, 8, 6);
+  await mkdir(path.dirname(path.resolve(out)), { recursive: true });
+  await sharp(field, {
+    raw: { width: 8 * CELL, height: 6 * CELL, channels: 4 },
+  })
+    .png()
+    .toFile(out);
+  await sharp(out)
+    .extract({ left: 0, top: 0, width: 4 * CELL, height: 3 * CELL })
+    .resize(4 * CELL * 3, 3 * CELL * 3, { kernel: "nearest" })
+    .toFile(out.replace(/\.png$/, "-x3.png"));
   console.log(`wrote ${out}`);
 }
 
@@ -340,8 +379,22 @@ async function main(): Promise<void> {
     return quiltCommand(root, first, second);
   if (command === "sheet" && first !== undefined && second !== undefined)
     return sheet(root, first as TexturedFaction, second);
+  if (command === "tileset-generate" && first !== undefined)
+    return generateTileset(root, first);
+  if (
+    command === "tileset-contact" &&
+    first !== undefined &&
+    second !== undefined
+  )
+    return tilesetContact(root, first, second);
+  if (
+    command === "tileset-world" &&
+    first !== undefined &&
+    second !== undefined
+  )
+    return tilesetWorldCommand(root, first, second);
   throw new Error(
-    "usage: textured-grounds.ts plan | contact <out.png> <recipe>... | quilt <look> <out.png> | sheet <FACTION> <out.png> [--ref main]",
+    "usage: textured-grounds.ts plan | contact <out.png> <recipe>... | quilt <look> <out.png> | sheet <FACTION> <out.png> [--ref main] | tileset-generate <recipe> | tileset-contact <recipe> <out.png> | tileset-world <recipe> <out.png>",
   );
 }
 

@@ -204,7 +204,6 @@ export const FIELD_GROUND_IDS = [
   "CULT",
   // Bead pulp_wars-2yc.48, second round: the user's picks of the samples.
   "CANDY",
-  "GOBLIN",
 ] as const;
 export type FieldGroundId = (typeof FIELD_GROUND_IDS)[number];
 
@@ -223,6 +222,8 @@ export const WORLD_GROUND_IDS = [
   "NEUTRAL",
   "UNDEAD",
   "DINOSAUR",
+  // Bead pulp_wars-2yc.53: dry grass strewn over drifts of straw.
+  "GOBLIN",
 ] as const;
 export type WorldGroundId = (typeof WORLD_GROUND_IDS)[number];
 

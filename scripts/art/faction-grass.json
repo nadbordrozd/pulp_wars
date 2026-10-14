@@ -225,95 +225,6 @@
           "pixelSha256": "7f4e587a8516cfa4e4b7acf04f6831ac39a3fd1a0dc54e7a75427968d9d40a9e"
         }
       ]
-    },
-    {
-      "id": "GOBLIN",
-      "look": "goblin-savannah",
-      "label": "Dry golden savannah",
-      "bead": "pulp_wars-2yc.48",
-      "fields": [
-        {
-          "recipe": "goblin-savannah-a",
-          "path": "art/explorations/faction-grounds-2026-10/raw/goblin-savannah-a.png",
-          "sha256": "1116c421f994266418b16a156faad2c1a9baca7c90c1b7d48aba31ae1f6519eb"
-        },
-        {
-          "recipe": "goblin-savannah-b",
-          "path": "art/explorations/faction-grounds-2026-10/raw/goblin-savannah-b.png",
-          "sha256": "d2336c26a801856d1d41fe04436677d6276684f42c6f535cf93d7a0ee66e2698"
-        }
-      ],
-      "recipe": {
-        "fields": [
-          {
-            "to": ["#bca859", "#9a873f", "#d3c176", "#a98c5e", "#8e9a4c"],
-            "from": ["#cdbb68", "#a8964a", "#e2d48e", "#a98c5e", "#8e9a4c"]
-          },
-          {
-            "to": ["#bca859", "#9a873f", "#d3c176", "#a98c5e", "#8e9a4c"],
-            "from": ["#cdbb68", "#a8964a", "#e2d48e", "#a98c5e", "#8e9a4c"]
-          }
-        ],
-        "variants": 6,
-        "seed": 4861,
-        "kinds": [
-          {
-            "id": "tuft",
-            "area": [40, 400],
-            "box": [34, 34],
-            "count": [0, 1]
-          },
-          {
-            "id": "clump",
-            "field": 1,
-            "area": [14, 80],
-            "count": [1, 2]
-          },
-          {
-            "id": "blade",
-            "field": 1,
-            "area": [3, 13],
-            "count": [3, 6]
-          },
-          {
-            "id": "speck",
-            "area": [1, 2],
-            "count": [3, 6]
-          }
-        ]
-      },
-      "tiles": [
-        {
-          "path": "public/assets/chibi/terrain/faction-grass/chibi-goblin-grass-1.png",
-          "sha256": "7dcf89cbb4c07ce33015ebfd4884aeec94814b1cce62ecb54f3f91b1887d1f4e",
-          "pixelSha256": "f7e9b98e8ba30d5dcdd07d5cd0df794853ba062b50ddad9f8b7ee826141bb170"
-        },
-        {
-          "path": "public/assets/chibi/terrain/faction-grass/chibi-goblin-grass-2.png",
-          "sha256": "abc0fcdc026d110e9891ff7972f0f5efacd6410964fa57dbf82b176856b8342f",
-          "pixelSha256": "244ee53b17069004c4ff56de12edfc0105d96b30b45c3a5f3f233f43e53b219e"
-        },
-        {
-          "path": "public/assets/chibi/terrain/faction-grass/chibi-goblin-grass-3.png",
-          "sha256": "a70a806af61d8967eb5ae49259d036d3907b078ad79537f372204fd2b8dc2198",
-          "pixelSha256": "c5ab6c4811fbfb2c96c6e00054fa2b975bef60a6b4ddfddcca154ac33b2fa272"
-        },
-        {
-          "path": "public/assets/chibi/terrain/faction-grass/chibi-goblin-grass-4.png",
-          "sha256": "ff8c618c4460fd66225e589aa89c679891e83cd4f42a95803642b0ba6df232ff",
-          "pixelSha256": "9ca78601d89b896892d0bf008caf94ea745e80a74fe8ccdad74f19845b053e00"
-        },
-        {
-          "path": "public/assets/chibi/terrain/faction-grass/chibi-goblin-grass-5.png",
-          "sha256": "9e93ea01f5294e6317f9a20412d954269db993b59d16325c156e42f497d3b2a9",
-          "pixelSha256": "88089670bb395244304f08c6513b1f7dfb59a3a911f902d3887d6f572474ff7d"
-        },
-        {
-          "path": "public/assets/chibi/terrain/faction-grass/chibi-goblin-grass-6.png",
-          "sha256": "cff4d58f4f74e0a7e18e6df4306b8f6ed1c1e76ecef1c29b30f7c1aad610f9c2",
-          "pixelSha256": "978072fd9e45a1be4fb7b0fa178ed9c6e12e5b0daa053b094d3a2b0ba27ce696"
-        }
-      ]
     }
   ],
   "worlds": [
@@ -485,6 +396,55 @@
         "path": "public/assets/chibi/terrain/faction-grass/chibi-dinosaur-grass-1.png",
         "sha256": "abc87b61c408182c4bf8213a5b4f4d631140495f1dbbec46dbab9366ab92bb92",
         "pixelSha256": "a285243bddd45ff973e70aba38c7013cfba50a7feb4d46a124a7ab2c6bafbf73"
+      }
+    },
+    {
+      "id": "GOBLIN",
+      "look": "goblin-dry-grass-b",
+      "label": "Dry grass: drifts of straw, tufts, seed heads and scrub",
+      "fields": [
+        {
+          "recipe": "goblin-savannah-t",
+          "path": "art/explorations/textured-grounds-2026-10/raw/goblin-savannah-t.png",
+          "sha256": "c499a838ff10287d1e6bb8be135c054600bf863bb0836cfcfd87a8b4fa444d46"
+        },
+        {
+          "recipe": "goblin-tufts-a",
+          "path": "art/explorations/textured-grounds-2026-10/raw/goblin-tufts-a.png",
+          "sha256": "4b5386aeb61c3606044ddc6c6d51449076ee2a658e245b69f693b1ccfab9df6b"
+        },
+        {
+          "recipe": "goblin-seedheads-b",
+          "path": "art/explorations/textured-grounds-2026-10/raw/goblin-seedheads-b.png",
+          "sha256": "720920c68dd89db50cd64ce7b4ae9eff10f92e44632b6e7c4b3ba28d8f8efc01"
+        },
+        {
+          "recipe": "goblin-scrub-a",
+          "path": "art/explorations/textured-grounds-2026-10/raw/goblin-scrub-a.png",
+          "sha256": "ccbb92272a73ec6caea4e2bb9ffbec8fd18b8702222c3c9767455b939fd5a4f4"
+        },
+        {
+          "recipe": "goblin-bones-a",
+          "path": "art/explorations/textured-grounds-2026-10/raw/goblin-bones-a.png",
+          "sha256": "043b16f6a8d92b3e4dc682c30ab0f6044f02fdf659a6b1c97f5b206fe6fc0404"
+        },
+        {
+          "recipe": "goblin-tufts-b",
+          "path": "art/explorations/textured-grounds-2026-10/raw/goblin-tufts-b.png",
+          "sha256": "293ac21b3265464b54d1bbe3fb125901cfd9da3b1a9e4c092d569f1767584ad2"
+        }
+      ],
+      "columns": 8,
+      "rows": 8,
+      "texture": {
+        "path": "public/assets/chibi/terrain/faction-grass/world/chibi-goblin-ground.png",
+        "sha256": "e0ae06945a032e7dd9434f3199620b11f5213080a1e82522b044cd3505c48e49",
+        "pixelSha256": "fd8a24f79c723c8bc7b04b211986d476aaa6b022d2a0a08daa03e27fc298f08b"
+      },
+      "swatch": {
+        "path": "public/assets/chibi/terrain/faction-grass/chibi-goblin-grass-1.png",
+        "sha256": "e37cffea072bcf14a1e03862407c34fdade345ff0bcd16112437759d339dd959",
+        "pixelSha256": "6106f2a33a6a639d6f398784feace64d22143fd593591aefca90acd463dce26c"
       }
     }
   ]

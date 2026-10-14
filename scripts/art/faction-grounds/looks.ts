@@ -427,7 +427,10 @@ export const GROUND_LOOKS: readonly GroundLook[] = [
     faction: "GOBLIN",
     letter: "A",
     label: "Dry golden savannah",
-    status: "CHOSEN",
+    // The Goblin ground from 2026-10-13 until the dry grass became a
+    // texture (bead pulp_wars-2yc.53, docs/art/TEXTURED_GROUNDS.md): the
+    // user, "just uniform yellow with very little on it".
+    status: "SAMPLE",
     fields: ["goblin-savannah-a", "goblin-savannah-b"],
     recipe: {
       // Both fields: straw shade, dry grass, pale straw (the fields'

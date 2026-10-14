@@ -75,6 +75,33 @@ const STRAW = [
   "#9a873f",
   "#a98c5e",
 ];
+/** The dry-grass mat of bead pulp_wars-2yc.53: straw with pale tan earth. */
+const STRAW_MAT = [
+  "#d3c176",
+  "#dbca83",
+  "#c9b66b",
+  "#bca859",
+  "#e3d391",
+  "#b49c5c",
+  "#c4ad74",
+];
+/**
+ * The dry-grass pieces of bead pulp_wars-2yc.53, on plain straw (the first
+ * colour): golds and ochres for the grass, a dried olive, tan earth, bone
+ * and stone.
+ */
+const DRY_PIECES = [
+  "#d3c176",
+  "#e6d796",
+  "#e2bd58",
+  "#c19a42",
+  "#93742f",
+  "#6b5428",
+  "#a7a35a",
+  "#efe9d6",
+  "#a59d8c",
+  "#c9a77a",
+];
 const MINT = ["#a4dabd", "#b0e2c8", "#98d1b2", "#8cc8a8", "#ffffff", "#c8eedb"];
 const JUNGLE = [
   "#5f9f58",
@@ -494,6 +521,172 @@ export const TEXTURED_CANDIDATES: readonly TexturedCandidate[] = [
     negative: `${NOTHING_TALL}, footprints, tracks, rocks, ice blocks, snowman, pine, dark shadows`,
     seed: 48791,
     notes: "The Ice Folk Snow as a painted surface, for a sample.",
+  },
+  // ------------------------------------------- Goblin dry grass (2yc.53)
+  // The user, 2026-10-14: "The goblin terrain looks bad. just uniform
+  // yellow with very little on it. it was supposed to be dry grass." A
+  // mottled straw ground with dry-grass pieces strewn thickly over it: each
+  // field below but the first is separate pieces on plain straw, cut out
+  // whole as the Dwarf stones were.
+  {
+    id: "goblin-straw-b",
+    faction: "GOBLIN",
+    size: 160,
+    label: "Dry grass mat: short straw with large soft light and dark patches",
+    subject:
+      "Subject: a dry grassland seen from directly above, filling the whole image: a mat of short dry straw-coloured grass with large soft blotchy patches of lighter straw and darker golden straw, fine short blades and grain all over it, and a few small patches of pale tan bare earth; flat, nothing stands up; soft shading.",
+    palette: STRAW_MAT,
+    negative: `${NOTHING_TALL.replace("grass, ", "")}, acacia, flowers, bones, green, tall grass, rocks, stripes, rows, furrows`,
+    seed: 48801,
+    notes:
+      "The ground under the pieces: a mottle at a larger scale than goblin-savannah-t's speckle.",
+  },
+  {
+    id: "goblin-tufts-a",
+    faction: "GOBLIN",
+    size: 160,
+    label: "Tall dry grass tufts of several sizes, separate on plain straw",
+    subject:
+      "Subject: flat plain ground seen from above, one even pale straw colour, with about sixteen separate tufts of tall dry grass spread evenly over the whole image, of several sizes from small to a fifth of the image wide: each tuft a fountain of long thin golden and ochre blades springing from one root and bending outward, with darker blades at its base and a small soft shadow; the tufts do not touch each other.",
+    palette: DRY_PIECES,
+    negative: `trees, bushes, flowers, animals, people, path, road, river, water, cliff, wall, fence, buildings, mountains, horizon, sky, green grass, lawn, rows, regular grid, identical tufts, border, frame`,
+    seed: 48803,
+    notes: "The tall tufts of the Goblin dry grass.",
+  },
+  {
+    id: "goblin-seedheads-a",
+    faction: "GOBLIN",
+    size: 160,
+    label: "Golden seed-head clumps, separate on plain straw",
+    subject:
+      "Subject: flat plain ground seen from above, one even pale straw colour, with about sixteen separate clumps of dry wild grass spread evenly over the whole image, each clump a few stiff stalks with drooping golden seed heads like wild wheat or foxtail, in golden yellow and ochre with darker stems, some small and some larger; the clumps do not touch each other.",
+    palette: DRY_PIECES,
+    negative: `trees, bushes, flowers, animals, people, path, road, river, water, cliff, wall, fence, buildings, mountains, horizon, sky, green grass, lawn, rows, regular grid, field of wheat, farm, border, frame`,
+    seed: 48805,
+    notes: "Seed-head clumps: the warm gold accents of the dry grass.",
+  },
+  {
+    id: "goblin-seedheads-b",
+    faction: "GOBLIN",
+    size: 160,
+    label: "Golden seed-head clumps, small and apart, on plain straw",
+    subject:
+      "Subject: flat plain ground seen from above, one even pale straw colour, with about fourteen separate small round clumps of dry wild grass spread evenly over the whole image, each clump a little bunch of stiff stalks with drooping golden seed heads like wild oats or foxtail, golden yellow and ochre with darker stems and a small soft shadow, none wider than an eighth of the image; every clump stands alone with plain ground all round it and none touches the edge of the image.",
+    palette: DRY_PIECES,
+    negative: `trees, bushes, flowers, animals, people, path, road, river, water, cliff, wall, fence, buildings, mountains, horizon, sky, green grass, lawn, rows, regular grid, field of wheat, farm, border, frame, hedge, edge of a field, clearing`,
+    seed: 48813,
+    notes:
+      "goblin-seedheads-a drew a wheat field round a bare clearing: the clumps asked small and apart.",
+  },
+  {
+    id: "goblin-straw-c",
+    faction: "GOBLIN",
+    size: 160,
+    label: "Dry grass mat: short straw with soft blotches, no path",
+    subject:
+      "Subject: a dry grassland seen from directly above, filling the whole image evenly: a mat of short dry straw-coloured grass with large soft blotches of slightly lighter straw and slightly darker golden straw scattered all over it, and fine short dry blades and grain everywhere; the same all over, flat, nothing stands up; soft shading.",
+    palette: STRAW_MAT,
+    negative: `${NOTHING_TALL.replace("grass, ", "")}, acacia, flowers, bones, green, tall grass, rocks, stripes, rows, furrows, track, trail, bare earth, sand`,
+    seed: 48815,
+    notes: "goblin-straw-b drew a winding path down its middle.",
+  },
+  {
+    id: "goblin-straw-d",
+    faction: "GOBLIN",
+    size: 160,
+    label: "Steppe: dense short dry blades in close golds, soft patches",
+    subject:
+      "Subject: dry steppe grass seen from directly above, filling the whole image: countless short dry blades of grass lying every way in close tones of pale straw, gold and light ochre, thicker and darker in some soft patches and thinner and paler in others; the same material from edge to edge, flat, nothing stands up; soft shading.",
+    palette: STRAW_MAT,
+    negative: `${NOTHING_TALL.replace("grass, ", "")}, acacia, flowers, bones, green, tall grass, rocks, stripes, rows, furrows, track, trail, border, frame, square, sand, bare earth`,
+    seed: 48817,
+    notes:
+      "goblin-straw-c came back framed: a dense steppe texture asked instead.",
+  },
+  {
+    id: "goblin-straw-e",
+    faction: "GOBLIN",
+    size: 160,
+    label: "Hay meadow: matted dry grass with soft light and dark drifts",
+    subject:
+      "Subject: a dry hay-coloured meadow seen from directly above, filling the whole image: matted short dry grass, pale golden straw, with large soft drifts of slightly lighter and slightly darker straw blending into each other and fine blades everywhere; evenly the same all over, no shapes; soft shading.",
+    palette: STRAW_MAT,
+    negative: `${NOTHING_TALL.replace("grass, ", "")}, acacia, flowers, bones, green, tall grass, rocks, stripes, rows, furrows, track, trail, border, frame, square, circle, sand, bare earth`,
+    seed: 48819,
+    notes: "A second try at the mottled mat.",
+  },
+  {
+    id: "goblin-cracks-b",
+    faction: "GOBLIN",
+    size: 160,
+    label: "Cracked mud patches, separate on plain straw",
+    subject:
+      "Subject: flat plain ground seen from above, one even pale straw colour, with about eight separate patches of dried cracked mud spread evenly over the whole image: each patch an irregular flat area of tan earth broken by thin dark cracks into small angular plates like a dry lake bed, of several sizes up to a fifth of the image; the patches do not touch each other or the edge of the image.",
+    palette: DRY_PIECES,
+    negative: `trees, bushes, grass, flowers, animals, people, path, road, river, water, puddle, cliff, wall, fence, buildings, mountains, horizon, sky, green, rows, regular grid, tiles, paving, border, frame, circles, rings, holes, craters`,
+    seed: 48821,
+    notes: "goblin-cracks-a drew rings in a frame, no cracks.",
+  },
+  {
+    id: "goblin-cracks-c",
+    faction: "GOBLIN",
+    size: 160,
+    label: "Flat cracked clay patches, separate on plain straw",
+    subject:
+      "Subject: flat plain ground seen from directly above, one even pale straw colour, with about seven separate flat patches of dry cracked clay lying in it, flat as paper: each patch a light tan irregular shape covered with a crazed net of thin dark brown crack lines, like pieces of a dried-up lake bed, with no height and no shadow; the patches do not touch each other or the edge of the image.",
+    palette: DRY_PIECES,
+    negative: `trees, bushes, grass, flowers, animals, people, path, road, river, water, puddle, cliff, wall, fence, buildings, mountains, horizon, sky, green, rows, regular grid, tiles, paving, border, frame, circles, rings, holes, craters, rocks, boulders, stones, mounds`,
+    seed: 48823,
+    notes: "goblin-cracks-b drew rocks: the patches asked flat and shadowless.",
+  },
+  {
+    id: "goblin-tufts-b",
+    faction: "GOBLIN",
+    size: 160,
+    label: "More dry grass tufts, separate on plain straw",
+    subject:
+      "Subject: flat plain ground seen from above, one even pale straw colour, with about twenty separate tufts of dry grass spread evenly over the whole image, each of a different size and shape from tiny to a sixth of the image wide: some tall and upright, some leaning in the wind, some low and wide, long thin pale gold and ochre blades with darker blades inside; the tufts do not touch each other.",
+    palette: DRY_PIECES,
+    negative: `trees, bushes, flowers, animals, people, path, road, river, water, cliff, wall, fence, buildings, mountains, horizon, sky, green grass, lawn, rows, regular grid, identical tufts, border, frame`,
+    seed: 48825,
+    notes:
+      "goblin-tufts-a gave twenty tufts: more shapes, so a tuft comes back less often.",
+  },
+  {
+    id: "goblin-scrub-a",
+    faction: "GOBLIN",
+    size: 160,
+    label: "Low scrubby dry grass patches, separate on plain straw",
+    subject:
+      "Subject: flat plain ground seen from above, one even pale straw colour, with about fourteen separate low patches of scrubby dry grass spread evenly over the whole image: flat spreading mats of short wiry ochre and dull olive-brown grass with tiny dry twigs, each patch irregular and wider than it is tall, of several sizes; the patches do not touch each other.",
+    palette: DRY_PIECES,
+    negative: `trees, tall bushes, flowers, animals, people, path, road, river, water, cliff, wall, fence, buildings, mountains, horizon, sky, bright green, lawn, rows, regular grid, border, frame`,
+    seed: 48807,
+    notes: "Low scrub: the mid-sized pieces between the tufts.",
+  },
+  {
+    id: "goblin-cracks-a",
+    faction: "GOBLIN",
+    size: 160,
+    label: "Cracked-earth patches and pebbles, separate on plain straw",
+    subject:
+      "Subject: flat plain ground seen from above, one even pale straw colour, with about ten separate small patches of bare sun-baked tan earth spread evenly over the whole image, each an irregular patch of dry mud split by thin dark cracks into small plates, and between them about twenty small separate pebbles and stones in tan and grey, each with a small shadow; nothing touches anything else.",
+    palette: DRY_PIECES,
+    negative: `trees, bushes, grass, flowers, animals, people, path, road, river, water, puddle, cliff, wall, fence, buildings, mountains, horizon, sky, green, rows, regular grid, tiles, paving, border, frame`,
+    seed: 48809,
+    notes: "Cracked earth and pebbles.",
+  },
+  {
+    id: "goblin-bones-a",
+    faction: "GOBLIN",
+    size: 160,
+    label: "Bleached bones and small skulls, separate on plain straw",
+    subject:
+      "Subject: flat plain ground seen from above, one even pale straw colour, with about twelve separate small bleached things lying flat on it, spread evenly over the whole image: a few small horned animal skulls, single long bones, a curved rib bone or two, a jawbone, and some small pale stones; each is bone white with soft grey-brown shading and a small shadow, and nothing touches anything else.",
+    palette: DRY_PIECES,
+    negative: `trees, bushes, grass, flowers, people, human skull, blood, gore, path, road, river, water, cliff, wall, fence, buildings, mountains, horizon, sky, green, rows, regular grid, skeleton, border, frame`,
+    seed: 48811,
+    notes: "The Goblin flavour: an occasional bone or skull.",
   },
 ];
 

@@ -460,7 +460,7 @@ const GROUND_NAMES: Partial<Readonly<Record<FactionIdV7, string>>> = {
   DWARF: "Mossy stones",
   MARTIAN: "Regolith",
   CANDY: "Frosting",
-  GOBLIN: "Savannah",
+  GOBLIN: "Dry grass",
   DINOSAUR: "Jungle floor",
 };
 

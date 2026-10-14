@@ -60,7 +60,7 @@ describe("Gallery terrain presentation", () => {
     expect(galleryTerrainNameV7("GRASS", "UNDEAD")).toBe("Burnt ground");
     expect(galleryTerrainNameV7("GRASS", "DWARF")).toBe("Mossy stones");
     expect(galleryTerrainNameV7("GRASS", "CANDY")).toBe("Frosting");
-    expect(galleryTerrainNameV7("GRASS", "GOBLIN")).toBe("Savannah");
+    expect(galleryTerrainNameV7("GRASS", "GOBLIN")).toBe("Dry grass");
     expect(galleryTerrainNameV7("GRASS", "MARTIAN")).toBe("Regolith");
     expect(galleryTerrainNameV7("GRASS", "DINOSAUR")).toBe("Jungle floor");
     expect(galleryTerrainNameV7("FOREST", "CULT")).toBe("Forest");
@@ -72,7 +72,7 @@ describe("Gallery terrain presentation", () => {
     expect(dwarf).toHaveLength(1);
     expect(JSON.stringify(dwarf)).toContain("chibi-dwarf-grass-1.png");
     expect(JSON.stringify(dwarf)).not.toContain("world/");
-    expect(galleryTerrainPiecesV7("GRASS", "GOBLIN")).toHaveLength(6);
+    expect(galleryTerrainPiecesV7("GRASS", "GOBLIN")).toHaveLength(1);
     expect(galleryTerrainPiecesV7("GRASS", "MARTIAN")).toHaveLength(1);
     expect(galleryTerrainPiecesV7("GRASS", "DINOSAUR")).toHaveLength(1);
     // The Humans' Grass is the default one: a cell of its texture.

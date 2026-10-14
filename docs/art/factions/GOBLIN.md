@@ -934,3 +934,17 @@ supersedes the scrubland (a yellow-green `#a9ac5c`): the savannah is 28
 from the default Grass where the scrubland was 18, and the green Goblins
 stand off it more. The scrub wood's foliage is lifted toward it, and the
 shade under the scrub is a dark straw.
+
+### Dry grass (bead `pulp_wars-2yc.53`)
+
+The user, 2026-10-14: "The goblin terrain looks bad. just uniform yellow
+with very little on it. it was supposed to be dry grass." The six tiles
+are replaced by a **textured ground** of 8 x 8 cells
+(`faction-grass/world/chibi-goblin-ground.png`,
+[textured grounds](../TEXTURED_GROUNDS.md#goblins-dry-grass-bead-pulp_wars-2yc53)):
+the same straw, quilted from `goblin-savannah-t` and broken into soft
+lighter and darker drifts a few cells across, with tall dry grass tufts,
+golden seed-head clumps, dry scrub, loose sprigs and an occasional bone
+strewn thickly over it, the tall pieces gathered in the darker drifts and
+kept off the middle of every cell, where a unit stands. The Gallery calls
+it "Dry grass". The scrub wood was baked again over it.

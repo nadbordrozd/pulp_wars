@@ -8,6 +8,7 @@
  */
 import type { TexturedFaction } from "./candidates";
 import type { ScatterKind } from "./compose";
+import type { DriftRecipe } from "./drift";
 import type { QuiltRecipe } from "./quilt";
 
 /** A field of the textured run a ground or its things are taken from. */
@@ -27,6 +28,15 @@ export interface TexturedField {
    * are strewn over a texture too.
    */
   readonly flat?: {
+    readonly from: readonly string[];
+    readonly to: readonly string[];
+  };
+  /**
+   * A field of this run with a forced palette of its own (the dry-grass
+   * pieces of bead pulp_wars-2yc.53): that palette and the board colour of
+   * each of its colours. For the things only.
+   */
+  readonly palette?: {
     readonly from: readonly string[];
     readonly to: readonly string[];
   };
@@ -54,6 +64,8 @@ export interface TexturedLook {
   readonly quilt: QuiltRecipe;
   /** `TILES` only: how many tiles, and the width of the shared band. */
   readonly tiles?: { readonly count: number; readonly band: number };
+  /** `WORLD` only: soft lighter and darker reaches of the ground (drift.ts). */
+  readonly drift?: DriftRecipe;
   /** What lies on the ground (compose.ts). */
   readonly things?: {
     /**
@@ -67,6 +79,8 @@ export interface TexturedLook {
     readonly kinds: readonly ScatterKind[];
     readonly gap?: number;
     readonly seed: number;
+    /** No thing crosses the edge of this rectangle (compose.ts). */
+    readonly whole?: readonly [number, number, number, number];
   };
 }
 
@@ -362,6 +376,211 @@ const MARSH_BOARD = [
   "#547069",
   "#93a06c",
   "#62868c",
+];
+
+// ------------------------------------------- Goblin dry grass (2yc.53)
+
+/** The forced palette of the dry-grass pieces (candidates.ts DRY_PIECES). */
+const DRY_PIECES = [
+  "#d3c176",
+  "#e6d796",
+  "#e2bd58",
+  "#c19a42",
+  "#93742f",
+  "#6b5428",
+  "#a7a35a",
+  "#efe9d6",
+  "#a59d8c",
+  "#c9a77a",
+];
+/** Their board colours. */
+const DRY_PIECES_BOARD = [
+  "#d3c176",
+  "#e6d796",
+  "#e2bd58",
+  "#c4a24c",
+  "#a68a40",
+  "#8a7236",
+  "#a7a35a",
+  "#e8e0c4",
+  "#a59d8c",
+  "#c9a77a",
+];
+
+/** A field of pieces; its plain ground is its commonest colour. */
+const dryPieces = (id: string): TexturedField => ({
+  id,
+  palette: { from: DRY_PIECES, to: DRY_PIECES_BOARD },
+});
+
+/** The Goblin dry grass at a density (1 is the chosen). */
+function goblinDryGrass(
+  letter: string,
+  label: string,
+  density: number,
+  seed: number,
+  drift = true,
+  chosen = false,
+  skull = false,
+): TexturedLook {
+  return {
+    id: `goblin-dry-grass-${letter.toLowerCase()}`,
+    faction: "GOBLIN",
+    letter,
+    label,
+    mode: "WORLD",
+    ...(chosen ? { chosen: true as const } : {}),
+    from: STRAW,
+    to: ["#cbb86c", "#d3c176", "#c3b064", "#bca859", "#a8964a", "#a98c5e"],
+    fields: [{ id: "goblin-savannah-t", regions: [[34, 16, 92, 128]] }],
+    quilt: { ...STANDARD_QUILT(seed), width: 640, height: 640 },
+    ...(drift
+      ? {
+          drift: {
+            seed: seed + 2,
+            // Paler, sun-bleached reaches and darker, thicker golden ones.
+            light: [
+              "#d6c47c",
+              "#ddcb85",
+              "#cfbc70",
+              "#c7b366",
+              "#b4a257",
+              "#b39668",
+            ],
+            dark: [
+              "#c2ad62",
+              "#c8b46a",
+              "#baa55c",
+              "#b09c50",
+              "#9d8b43",
+              "#a08454",
+            ],
+            lightShare: 0.3,
+            darkShare: 0.3,
+            dither: 0.12,
+          },
+        }
+      : {}),
+    things: {
+      fields: [
+        // Its pale straw is the light ring round each tuft: ground.
+        { ...dryPieces("goblin-tufts-a"), ground: [1] },
+        dryPieces("goblin-seedheads-b"),
+        dryPieces("goblin-scrub-a"),
+        dryPieces("goblin-bones-a"),
+        dryPieces("goblin-tufts-b"),
+      ],
+      seed: seed + 1,
+      gap: 2,
+      whole: [0, 0, 80, 80],
+      kinds: [
+        // The skull first, rarest and largest. One a texture of 8 x 8
+        // cells is still a square lattice of the same skull on a large bare
+        // territory, so only a sample look has it.
+        ...(skull
+          ? [
+              {
+                id: "skull",
+                field: 3,
+                area: [450, 900] as const,
+                has: [7],
+                perCell: 0.012 * density,
+                clear: 24,
+              },
+            ]
+          : []),
+        {
+          id: "tuft-large",
+          field: 0,
+          area: [400, 2400],
+          box: [56, 56],
+          perCell: 0.4 * density,
+          clear: 22,
+          gather: 0.9,
+        },
+        {
+          id: "wisp",
+          field: 4,
+          area: [150, 700],
+          perCell: 0.15 * density,
+          clear: 20,
+          gather: 0.9,
+        },
+        {
+          id: "seedheads",
+          field: 1,
+          area: [150, 900],
+          box: [40, 40],
+          perCell: 0.5 * density,
+          clear: 18,
+          gather: 0.5,
+          to: { 6: "#c3b064" },
+        },
+        {
+          id: "scrub",
+          field: 2,
+          area: [60, 700],
+          has: [4, 5],
+          perCell: 0.3 * density,
+          clear: 16,
+          gather: 0.5,
+        },
+        {
+          id: "tuft",
+          field: 0,
+          area: [40, 399],
+          perCell: 1.1 * density,
+          clear: 16,
+          gather: 0.8,
+        },
+        {
+          id: "bone",
+          field: 3,
+          area: [90, 130],
+          has: [7],
+          perCell: 0.06 * density,
+          clear: 12,
+        },
+        {
+          id: "sprig",
+          field: 2,
+          area: [5, 40],
+          has: [3, 4, 5],
+          lacks: [1, 7],
+          perCell: 2.5 * density,
+        },
+        {
+          id: "speck",
+          field: 1,
+          area: [3, 40],
+          lacks: [4, 5, 7],
+          perCell: 2 * density,
+        },
+      ],
+    },
+  };
+}
+
+const GOBLIN_DRY_GRASS: readonly TexturedLook[] = [
+  goblinDryGrass(
+    "B",
+    "Dry grass: drifts of straw, tufts, seed heads and scrub",
+    1,
+    5301,
+    true,
+    true,
+  ),
+  goblinDryGrass("C", "Dry grass: the same, six tenths as thick", 0.6, 5301),
+  goblinDryGrass(
+    "D",
+    "Dry grass: four tenths thicker, with a skull",
+    1.4,
+    5301,
+    true,
+    false,
+    true,
+  ),
+  goblinDryGrass("E", "Dry grass: B without the drifts", 1, 5301, false),
 ];
 
 export const TEXTURED_LOOKS: readonly TexturedLook[] = [
@@ -746,6 +965,7 @@ export const TEXTURED_LOOKS: readonly TexturedLook[] = [
       ],
     },
   },
+  ...GOBLIN_DRY_GRASS,
   // -------------------------------------------------------------- Dinosaur
   {
     id: "dinosaur-jungle-world",

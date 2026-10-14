@@ -28,6 +28,10 @@ import {
 } from "../../scripts/art/textured-grounds/candidates";
 import { scatter } from "../../scripts/art/textured-grounds/compose";
 import {
+  driftField,
+  paintDrifted,
+} from "../../scripts/art/textured-grounds/drift";
+import {
   TEXTURED_LOOKS,
   compressed,
   swapped,
@@ -210,6 +214,97 @@ describe("the things strewn over a textured ground", () => {
       ] as const)
         expect(canvas.data[(y * 80 + x) * 4]).toBe(0x33);
   });
+
+  it("keep clear of the cell centres and whole on the swatch cell", () => {
+    const canvas = blank(160);
+    const placed = scatter(canvas, [field], {
+      ...recipe,
+      kinds: [{ id: "stone", area: [6, 6], perCell: 6, clear: 20 }],
+      whole: [0, 0, 80, 80],
+    });
+    expect(placed.stone).toBeGreaterThan(12);
+    for (let y = 0; y < 160; y += 1)
+      for (let x = 0; x < 160; x += 1) {
+        const stone = canvas.data[(y * 160 + x) * 4] !== 0x33;
+        // Nothing within 20 px of a cell's centre, where a unit stands.
+        if (Math.hypot((x % 80) - 40, (y % 80) - 40) < 20)
+          expect(stone).toBe(false);
+      }
+    // No stone on the first cell is cut by its edge: every stone pixel in
+    // it has its other row inside it too.
+    for (let y = 0; y < 80; y += 1)
+      for (const x of [0, 79]) {
+        const left = canvas.data[(y * 160 + x) * 4] !== 0x33;
+        const across =
+          canvas.data[(y * 160 + (x === 0 ? 159 : 80)) * 4] !== 0x33;
+        expect(left && across).toBe(false);
+      }
+  });
+
+  it("gather where the gather field is high", () => {
+    const canvas = blank(160);
+    // High on the left half, nothing on the right.
+    const gatherField = new Float32Array(160 * 160);
+    for (let y = 0; y < 160; y += 1)
+      for (let x = 0; x < 80; x += 1) gatherField[y * 160 + x] = 1;
+    scatter(canvas, [field], {
+      ...recipe,
+      kinds: [{ id: "stone", area: [6, 6], perCell: 3, gather: 1 }],
+      gatherField,
+    });
+    let left = 0;
+    let right = 0;
+    for (let y = 0; y < 160; y += 1)
+      for (let x = 0; x < 160; x += 1)
+        if (canvas.data[(y * 160 + x) * 4] === 0xee)
+          if (x < 82 || x >= 158) left += 1;
+          else right += 1;
+    expect(left).toBeGreaterThan(0);
+    expect(right).toBe(0);
+  });
+});
+
+describe("the drifts of a textured ground", () => {
+  it("are a smooth periodic field from 0 to 1", () => {
+    const field = driftField(160, 120, { seed: 5 });
+    let low = Infinity;
+    let high = -Infinity;
+    for (const value of field) {
+      low = Math.min(low, value);
+      high = Math.max(high, value);
+    }
+    expect(low).toBeCloseTo(0, 6);
+    expect(high).toBeCloseTo(1, 6);
+    // The last column continues into the first as neighbours continue.
+    let step = 0;
+    let wrap = 0;
+    for (let y = 0; y < 120; y += 1) {
+      step = Math.max(
+        step,
+        Math.abs((field[y * 160 + 80] ?? 0) - (field[y * 160 + 79] ?? 0)),
+      );
+      wrap = Math.max(
+        wrap,
+        Math.abs((field[y * 160] ?? 0) - (field[y * 160 + 159] ?? 0)),
+      );
+    }
+    expect(wrap).toBeLessThan(step * 2 + 0.01);
+  });
+
+  it("paint each pixel from one of three palettes, never a blend", () => {
+    const indices = new Uint8Array(64 * 64).fill(0);
+    const raster = paintDrifted(indices, 64, ["#808080"], {
+      seed: 3,
+      light: ["#a0a0a0"],
+      dark: ["#606060"],
+      lightShare: 0.3,
+      darkShare: 0.3,
+      dither: 0.1,
+    });
+    const seen = new Set<number>();
+    for (let at = 0; at < 64 * 64; at += 1) seen.add(raster.data[at * 4] ?? 0);
+    expect([...seen].sort((a, b) => a - b)).toEqual([0x60, 0x80, 0xa0]);
+  });
 });
 
 describe("the textured ground samples", () => {
@@ -302,7 +397,10 @@ describe("the textured ground samples", () => {
       for (let at = 3; at < baked.data.length; at += 4)
         if (baked.data[at] !== 255) clear += 1;
       expect(clear).toBe(0);
-      expect(ground.spread, look.id).toBeLessThan(7);
+      // The Goblin dry grass is a field of separate tall tufts by design
+      // (bead pulp_wars-2yc.53: the flat savannah had "very little on it"),
+      // so it may spread a little further.
+      expect(ground.spread, look.id).toBeLessThan(id === "GOBLIN" ? 9 : 7);
       // Periodic: the texture's last column continues into its first as
       // well as two neighbouring columns continue each other.
       const differ = (a: number, b: number): number => {

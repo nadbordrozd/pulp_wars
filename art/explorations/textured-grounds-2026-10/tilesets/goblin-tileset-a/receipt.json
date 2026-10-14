@@ -1,0 +1,226 @@
+{
+  "recipe": "goblin-tileset-a",
+  "endpoint": "create-tileset",
+  "submittedAt": "2026-10-14T22:23:06.919Z",
+  "request": {
+    "lower_description": "dry golden savannah grassland seen from above, pale straw-coloured dry grass with small dry tufts and fine blades",
+    "upper_description": "bare sun-baked tan earth seen from above with fine cracks and a few small pebbles",
+    "mode": "standard",
+    "tile_size": {
+      "width": 32,
+      "height": 32
+    },
+    "transition_size": 0,
+    "view": "high top-down",
+    "outline": "lineless",
+    "shading": "medium shading",
+    "detail": "medium detail",
+    "seed": 53101,
+    "color_image": {
+      "path": "art/explorations/textured-grounds-2026-10/tilesets/goblin-tileset-a/palette.png",
+      "sha256": "a936c98fba42d269eb7724a46acc176f7521a8ac59e023bc7b61420f5235e3f9"
+    }
+  },
+  "jobId": "787cb5ea-6061-428a-94eb-19de2ca6ee0c",
+  "tilesetId": "16880d17-f98a-4a0d-bbc5-075d3a2ea0e5",
+  "seconds": 113,
+  "usageUsd": 0.0067519396675957575,
+  "metadata": {
+    "edge_types": ["lower", "upper"],
+    "terrain_prompts": {
+      "lower": "dry golden savannah grassland seen from above, pale straw-coloured dry grass with small dry tufts and fine blades",
+      "upper": "bare sun-baked tan earth seen from above with fine cracks and a few small pebbles"
+    },
+    "terrain_ids": {
+      "lower": "bb93afeb-e9ed-436b-b680-a5a6901cf779",
+      "upper": "5581f0a8-3b19-426d-a4e1-a95bf7a9b32d"
+    },
+    "transition_size": 0,
+    "view": "high top-down",
+    "generation_parameters": {
+      "tile_strength": 1,
+      "tileset_adherence": 100,
+      "text_guidance_scale": 8,
+      "tileset_adherence_freedom": 500
+    },
+    "created_at": "2026-10-14T22:23:11.323347+00:00"
+  },
+  "tiles": [
+    {
+      "file": "tile-00.png",
+      "name": "wang_13",
+      "corners": {
+        "NW": "upper",
+        "NE": "upper",
+        "SW": "lower",
+        "SE": "upper"
+      },
+      "sha256": "1df12fb1ebf701091fe27d3bf7b8a1d92c484550872f16b0480a22935e8ae8b0"
+    },
+    {
+      "file": "tile-01.png",
+      "name": "wang_10",
+      "corners": {
+        "NW": "upper",
+        "NE": "lower",
+        "SW": "upper",
+        "SE": "lower"
+      },
+      "sha256": "53ec7506c3be018744eb05c2555e4a95ad99d5eb45f3222a623a4c8a69c76546"
+    },
+    {
+      "file": "tile-02.png",
+      "name": "wang_4",
+      "corners": {
+        "NW": "lower",
+        "NE": "upper",
+        "SW": "lower",
+        "SE": "lower"
+      },
+      "sha256": "78f594234b8ea0cc6f2436a614069473820e96105215ebe58fea3f84d13bb507"
+    },
+    {
+      "file": "tile-03.png",
+      "name": "wang_12",
+      "corners": {
+        "NW": "upper",
+        "NE": "upper",
+        "SW": "lower",
+        "SE": "lower"
+      },
+      "sha256": "1a2c7e242490c4d6f7594eac45364966be212cc0d14b251be4824ca9e8f38620"
+    },
+    {
+      "file": "tile-04.png",
+      "name": "wang_6",
+      "corners": {
+        "NW": "lower",
+        "NE": "upper",
+        "SW": "upper",
+        "SE": "lower"
+      },
+      "sha256": "756b07f93f53568a18be27bf32b3f601f2dee0e9429a841c81b99a163a00e232"
+    },
+    {
+      "file": "tile-05.png",
+      "name": "wang_8",
+      "corners": {
+        "NW": "upper",
+        "NE": "lower",
+        "SW": "lower",
+        "SE": "lower"
+      },
+      "sha256": "84451f317d4343bd6d20416bf796050c579e567a053811a7e2596c5cc69d013b"
+    },
+    {
+      "file": "tile-06.png",
+      "name": "wang_0",
+      "corners": {
+        "NW": "lower",
+        "NE": "lower",
+        "SW": "lower",
+        "SE": "lower"
+      },
+      "sha256": "74611236259dbe08b204bb32ec909adf55436e6743b04b38d7bb06661e68e862"
+    },
+    {
+      "file": "tile-07.png",
+      "name": "wang_1",
+      "corners": {
+        "NW": "lower",
+        "NE": "lower",
+        "SW": "lower",
+        "SE": "upper"
+      },
+      "sha256": "484efefddcb2591fdadf42e220a0ca91982922c88562e99180498acdaec87e5f"
+    },
+    {
+      "file": "tile-08.png",
+      "name": "wang_11",
+      "corners": {
+        "NW": "upper",
+        "NE": "lower",
+        "SW": "upper",
+        "SE": "upper"
+      },
+      "sha256": "ce73877a7e5e2d78b8e5e318c87df3f3b4a7315bd78f68e7d701f7152123fcd5"
+    },
+    {
+      "file": "tile-09.png",
+      "name": "wang_3",
+      "corners": {
+        "NW": "lower",
+        "NE": "lower",
+        "SW": "upper",
+        "SE": "upper"
+      },
+      "sha256": "3b8176b015ab2166be6f3d7b3c23e1e973d72a452830d9bea3925c4038fbdbdb"
+    },
+    {
+      "file": "tile-10.png",
+      "name": "wang_2",
+      "corners": {
+        "NW": "lower",
+        "NE": "lower",
+        "SW": "upper",
+        "SE": "lower"
+      },
+      "sha256": "3b08dd1b38f670433e95bbcfb69e1ca129660fb5f5fe7738e4e29805fc12ad1e"
+    },
+    {
+      "file": "tile-11.png",
+      "name": "wang_5",
+      "corners": {
+        "NW": "lower",
+        "NE": "upper",
+        "SW": "lower",
+        "SE": "upper"
+      },
+      "sha256": "e545a3d1dbd1de3501a3cd9c6a304713348e2bb97f69686539bc01845714f4c4"
+    },
+    {
+      "file": "tile-12.png",
+      "name": "wang_15",
+      "corners": {
+        "NW": "upper",
+        "NE": "upper",
+        "SW": "upper",
+        "SE": "upper"
+      },
+      "sha256": "24bad243951836012620ba0b22b9c797ed99182e0be644648fe49cc5bb059103"
+    },
+    {
+      "file": "tile-13.png",
+      "name": "wang_14",
+      "corners": {
+        "NW": "upper",
+        "NE": "upper",
+        "SW": "upper",
+        "SE": "lower"
+      },
+      "sha256": "d45dcf8ef6f4cca349902915436a1f45615f580084260196def575934f99e126"
+    },
+    {
+      "file": "tile-14.png",
+      "name": "wang_9",
+      "corners": {
+        "NW": "upper",
+        "NE": "lower",
+        "SW": "lower",
+        "SE": "upper"
+      },
+      "sha256": "8f5805323eabac155b7d14975c221e3094c5ece9127ee992d8bb9b66788952ff"
+    },
+    {
+      "file": "tile-15.png",
+      "name": "wang_7",
+      "corners": {
+        "NW": "lower",
+        "NE": "upper",
+        "SW": "upper",
+        "SE": "upper"
+      },
+      "sha256": "a83489c1da22c133aa0fdf1b6e5994c2adebb8626438ba90da00d86284b2c634"
+    }
+  ]
+}

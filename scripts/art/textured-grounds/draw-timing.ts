@@ -72,12 +72,14 @@ async function main(): Promise<void> {
       deviceScaleFactor: 1,
       mobile: false,
     });
-    for (const scene of [
+    // DRAW_TIMING_SCENES (comma-separated) times some scenes only.
+    for (const scene of process.env.DRAW_TIMING_SCENES?.split(",") ?? [
       "sceneMartianField",
       "sceneDwarfField",
       "sceneNeutralField",
       "sceneUndeadField",
       "sceneDinosaurField",
+      "sceneGoblinField",
     ])
       for (const round of [0, 1, 2])
         for (const base of bases) {

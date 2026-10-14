@@ -1,0 +1,62 @@
+{
+  "id": "goblin-cracks-a",
+  "jobId": "sync-d173e572-1ccd-4992-bd41-9e2d66a9fb60",
+  "request": {
+    "endpoint": "create-image-pixflux",
+    "model": "create-image-pixflux",
+    "batch": "textured-grounds",
+    "asset": "chibi-textured-goblin-cracks-a",
+    "subject": "TERRAIN:GRASS",
+    "faction": "TEST-TEXTURED-GROUNDS",
+    "recipeClass": "terrain",
+    "requestSize": {
+      "width": 160,
+      "height": 160
+    },
+    "seed": 48809,
+    "noBackground": false,
+    "options": {
+      "shading": "medium shading",
+      "detail": "medium detail",
+      "view": "high top-down",
+      "outline": "lineless"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "art/explorations/textured-grounds-2026-10/fragments/style.txt + art/explorations/textured-grounds-2026-10/fragments/style.negative.txt",
+        "text": "Style: hand-painted pixel art terrain texture for the adventure map of a classic 1990s fantasy strategy game: rich and soft, many close tones of the same few hues, gentle shading, no outlines.",
+        "negative": "photorealism, blur, text, letters, numbers, logo, UI, frame, black outlines, thick outlines, cartoon outlines, neon, oversaturated"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-top-down.txt",
+        "text": "Camera: straight top-down view of flat ground filling the whole canvas edge to edge, no perspective, no horizon, no lighting gradient."
+      },
+      {
+        "layer": "class",
+        "source": "art/explorations/textured-grounds-2026-10/fragments/class-terrain.txt + art/explorations/textured-grounds-2026-10/fragments/class-terrain.negative.txt",
+        "text": "Class: one dense ground texture that covers the whole image from edge to edge with the same material everywhere, evenly lit, with no focal object, nothing tall and no large empty flat area. The texture continues past all four edges of the image.",
+        "negative": "border, frame, vignette, dark corners, light spot, lighting gradient, perspective, horizon, tile edge, square island, scene, landscape, clearing, single big object, flat empty background"
+      },
+      {
+        "layer": "subject",
+        "source": "art/explorations/textured-grounds-2026-10/subjects.json",
+        "text": "Subject: flat plain ground seen from above, one even pale straw colour, with about ten separate small patches of bare sun-baked tan earth spread evenly over the whole image, each an irregular patch of dry mud split by thin dark cracks into small plates, and between them about twenty small separate pebbles and stones in tan and grey, each with a small shadow; nothing touches anything else."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "",
+        "negative": "trees, bushes, grass, flowers, animals, people, path, road, river, water, puddle, cliff, wall, fence, buildings, mountains, horizon, sky, green, rows, regular grid, tiles, paving, border, frame"
+      }
+    ],
+    "prompt": "Style: hand-painted pixel art terrain texture for the adventure map of a classic 1990s fantasy strategy game: rich and soft, many close tones of the same few hues, gentle shading, no outlines. Camera: straight top-down view of flat ground filling the whole canvas edge to edge, no perspective, no horizon, no lighting gradient. Class: one dense ground texture that covers the whole image from edge to edge with the same material everywhere, evenly lit, with no focal object, nothing tall and no large empty flat area. The texture continues past all four edges of the image. Subject: flat plain ground seen from above, one even pale straw colour, with about ten separate small patches of bare sun-baked tan earth spread evenly over the whole image, each an irregular patch of dry mud split by thin dark cracks into small plates, and between them about twenty small separate pebbles and stones in tan and grey, each with a small shadow; nothing touches anything else.",
+    "negativePrompt": "photorealism, blur, text, letters, numbers, logo, UI, frame, black outlines, thick outlines, cartoon outlines, neon, oversaturated, border, vignette, dark corners, light spot, lighting gradient, perspective, horizon, tile edge, square island, scene, landscape, clearing, single big object, flat empty background, trees, bushes, grass, flowers, animals, people, path, road, river, water, puddle, cliff, wall, fence, buildings, mountains, sky, green, rows, regular grid, tiles, paving",
+    "description": "Style: hand-painted pixel art terrain texture for the adventure map of a classic 1990s fantasy strategy game: rich and soft, many close tones of the same few hues, gentle shading, no outlines. Camera: straight top-down view of flat ground filling the whole canvas edge to edge, no perspective, no horizon, no lighting gradient. Class: one dense ground texture that covers the whole image from edge to edge with the same material everywhere, evenly lit, with no focal object, nothing tall and no large empty flat area. The texture continues past all four edges of the image. Subject: flat plain ground seen from above, one even pale straw colour, with about ten separate small patches of bare sun-baked tan earth spread evenly over the whole image, each an irregular patch of dry mud split by thin dark cracks into small plates, and between them about twenty small separate pebbles and stones in tan and grey, each with a small shadow; nothing touches anything else. Must not include: photorealism, blur, text, letters, numbers, logo, UI, frame, black outlines, thick outlines, cartoon outlines, neon, oversaturated, border, vignette, dark corners, light spot, lighting gradient, perspective, horizon, tile edge, square island, scene, landscape, clearing, single big object, flat empty background, trees, bushes, grass, flowers, animals, people, path, road, river, water, puddle, cliff, wall, fence, buildings, mountains, sky, green, rows, regular grid, tiles, paving.",
+    "colorImage": {
+      "path": "scripts/art/chibi/palettes/textured-goblin-cracks-a.png",
+      "sha256": "b71ca963684e4dfb2ce7ddce6d43d164a0317be41043d52bdf75c6e332e05fea"
+    }
+  }
+}

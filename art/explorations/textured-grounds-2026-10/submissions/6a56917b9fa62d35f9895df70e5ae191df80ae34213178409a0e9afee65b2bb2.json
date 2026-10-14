@@ -1,0 +1,62 @@
+{
+  "id": "goblin-straw-d",
+  "jobId": "sync-a5ecbe94-fd2e-4516-af75-3fe42394da95",
+  "request": {
+    "endpoint": "create-image-pixflux",
+    "model": "create-image-pixflux",
+    "batch": "textured-grounds",
+    "asset": "chibi-textured-goblin-straw-d",
+    "subject": "TERRAIN:GRASS",
+    "faction": "TEST-TEXTURED-GROUNDS",
+    "recipeClass": "terrain",
+    "requestSize": {
+      "width": 160,
+      "height": 160
+    },
+    "seed": 48817,
+    "noBackground": false,
+    "options": {
+      "shading": "medium shading",
+      "detail": "medium detail",
+      "view": "high top-down",
+      "outline": "lineless"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "art/explorations/textured-grounds-2026-10/fragments/style.txt + art/explorations/textured-grounds-2026-10/fragments/style.negative.txt",
+        "text": "Style: hand-painted pixel art terrain texture for the adventure map of a classic 1990s fantasy strategy game: rich and soft, many close tones of the same few hues, gentle shading, no outlines.",
+        "negative": "photorealism, blur, text, letters, numbers, logo, UI, frame, black outlines, thick outlines, cartoon outlines, neon, oversaturated"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-top-down.txt",
+        "text": "Camera: straight top-down view of flat ground filling the whole canvas edge to edge, no perspective, no horizon, no lighting gradient."
+      },
+      {
+        "layer": "class",
+        "source": "art/explorations/textured-grounds-2026-10/fragments/class-terrain.txt + art/explorations/textured-grounds-2026-10/fragments/class-terrain.negative.txt",
+        "text": "Class: one dense ground texture that covers the whole image from edge to edge with the same material everywhere, evenly lit, with no focal object, nothing tall and no large empty flat area. The texture continues past all four edges of the image.",
+        "negative": "border, frame, vignette, dark corners, light spot, lighting gradient, perspective, horizon, tile edge, square island, scene, landscape, clearing, single big object, flat empty background"
+      },
+      {
+        "layer": "subject",
+        "source": "art/explorations/textured-grounds-2026-10/subjects.json",
+        "text": "Subject: dry steppe grass seen from directly above, filling the whole image: countless short dry blades of grass lying every way in close tones of pale straw, gold and light ochre, thicker and darker in some soft patches and thinner and paler in others; the same material from edge to edge, flat, nothing stands up; soft shading."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "",
+        "negative": "trees, bushes, plants, animals, people, path, road, river, water, cliff, wall, fence, buildings, big boulders, mountains, horizon, sky, acacia, flowers, bones, green, tall grass, rocks, stripes, rows, furrows, track, trail, border, frame, square, sand, bare earth"
+      }
+    ],
+    "prompt": "Style: hand-painted pixel art terrain texture for the adventure map of a classic 1990s fantasy strategy game: rich and soft, many close tones of the same few hues, gentle shading, no outlines. Camera: straight top-down view of flat ground filling the whole canvas edge to edge, no perspective, no horizon, no lighting gradient. Class: one dense ground texture that covers the whole image from edge to edge with the same material everywhere, evenly lit, with no focal object, nothing tall and no large empty flat area. The texture continues past all four edges of the image. Subject: dry steppe grass seen from directly above, filling the whole image: countless short dry blades of grass lying every way in close tones of pale straw, gold and light ochre, thicker and darker in some soft patches and thinner and paler in others; the same material from edge to edge, flat, nothing stands up; soft shading.",
+    "negativePrompt": "photorealism, blur, text, letters, numbers, logo, UI, frame, black outlines, thick outlines, cartoon outlines, neon, oversaturated, border, vignette, dark corners, light spot, lighting gradient, perspective, horizon, tile edge, square island, scene, landscape, clearing, single big object, flat empty background, trees, bushes, plants, animals, people, path, road, river, water, cliff, wall, fence, buildings, big boulders, mountains, sky, acacia, flowers, bones, green, tall grass, rocks, stripes, rows, furrows, track, trail, square, sand, bare earth",
+    "description": "Style: hand-painted pixel art terrain texture for the adventure map of a classic 1990s fantasy strategy game: rich and soft, many close tones of the same few hues, gentle shading, no outlines. Camera: straight top-down view of flat ground filling the whole canvas edge to edge, no perspective, no horizon, no lighting gradient. Class: one dense ground texture that covers the whole image from edge to edge with the same material everywhere, evenly lit, with no focal object, nothing tall and no large empty flat area. The texture continues past all four edges of the image. Subject: dry steppe grass seen from directly above, filling the whole image: countless short dry blades of grass lying every way in close tones of pale straw, gold and light ochre, thicker and darker in some soft patches and thinner and paler in others; the same material from edge to edge, flat, nothing stands up; soft shading. Must not include: photorealism, blur, text, letters, numbers, logo, UI, frame, black outlines, thick outlines, cartoon outlines, neon, oversaturated, border, vignette, dark corners, light spot, lighting gradient, perspective, horizon, tile edge, square island, scene, landscape, clearing, single big object, flat empty background, trees, bushes, plants, animals, people, path, road, river, water, cliff, wall, fence, buildings, big boulders, mountains, sky, acacia, flowers, bones, green, tall grass, rocks, stripes, rows, furrows, track, trail, square, sand, bare earth.",
+    "colorImage": {
+      "path": "scripts/art/chibi/palettes/textured-goblin-straw-d.png",
+      "sha256": "63d170b2be93dd4bf09b748b698b360fcbd74dcc52d1ba362155c4ef6bd467a1"
+    }
+  }
+}

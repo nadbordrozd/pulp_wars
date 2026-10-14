@@ -355,8 +355,8 @@
             "path": "public/assets/chibi/forest/goblin/chibi-forest-goblin-seam-1.png",
             "width": 74,
             "height": 68,
-            "sha256": "4d5418a9ed82632d303b650a1b66fa6cf66370a74554f7d42a89b9e95ac9c6fe",
-            "pixelSha256": "24b71c7aa1f306e6091a2360fb874d1d914d830f900df42b5588c262d0225e49"
+            "sha256": "487e3e39f296f4c1886a77ac1c9b1fce4c992394543b94aa92c975d7be72863f",
+            "pixelSha256": "e10f27a064a799ac83ef5d0c36c4e536516bd44ddb7f8deb7c2a2f069d89b122"
           }
         },
         {
@@ -374,8 +374,8 @@
             "path": "public/assets/chibi/forest/goblin/chibi-forest-goblin-seam-2.png",
             "width": 75,
             "height": 64,
-            "sha256": "83952a857aabafa793c40087a3ec2ad61de63e28e805cafb6af6f8dfc9984e53",
-            "pixelSha256": "b2a844ebca618d2e84dd284e916b64db4910abcc8d23f4617fdb9e4941618ee5"
+            "sha256": "7edba2af6e54c3941e6244cbbce8887bb90cdbb124fcfef17450e29939ec04d1",
+            "pixelSha256": "85cbea31bb308589927907e9469deeba5f26fffc82d30b265ab587feb851e7e0"
           }
         },
         {
@@ -393,8 +393,8 @@
             "path": "public/assets/chibi/forest/goblin/chibi-forest-goblin-seam-3.png",
             "width": 69,
             "height": 84,
-            "sha256": "e7d22b52ac7f820cada7e13ff5a89aeccf8394c429ccfbb943da2e40858a2e28",
-            "pixelSha256": "6ddd3234c731f69e67871d045c0a1a2b57d4b69788dcc22421c5a6a3a5fc1df4"
+            "sha256": "3bf87dec4e3581dc4664c46def05181d485f3b296fa38c199dd3b99a527ea265",
+            "pixelSha256": "63b5ff066b95b0a704d04dc9890320142e32e55762f47997e58f14a9d712331f"
           }
         },
         {
@@ -412,8 +412,8 @@
             "path": "public/assets/chibi/forest/goblin/chibi-forest-goblin-seam-4.png",
             "width": 64,
             "height": 58,
-            "sha256": "b883d6827a8e986194436820844cb337e85fed8056078acc097daeb9d31938d6",
-            "pixelSha256": "7a87854faad4b98bcbe1a9f4e11fc37a8f879e3defb1c6fe00375931603c88ac"
+            "sha256": "f55e2b4a80756578486947c8e65aa4532bdba82cbcc1b33882af668df0f98884",
+            "pixelSha256": "7772363c412d58ec7fcd048e0ae05c4ef79796f7147faf783cb573b1267f43ba"
           }
         }
       ],
@@ -426,8 +426,8 @@
           "width": 80,
           "height": 104,
           "seed": 9100,
-          "sha256": "3fb023d63627d7d5a21456d386407f1f051aa1446486df236affec899ea802cf",
-          "pixelSha256": "9b3bc5509e4482d61a8d82b2ff527454ef200b81e79c300bff3b35fecacc8379"
+          "sha256": "4177b75a0fd874a3b6a247ed0f4f5519adac66bedb645ad49dfaa9e8aa46cef2",
+          "pixelSha256": "f7200c874d9536e3f8cf614f9cb6b843908591b7cfec4741bf406a184602cfe7"
         },
         {
           "id": "chibi-forest-goblin-piece-1x1-b",
@@ -437,8 +437,8 @@
           "width": 80,
           "height": 104,
           "seed": 9107,
-          "sha256": "5518476c822f6b5fe01f4aca0311e0ccbd78f66067299b8ad15f375f3840d573",
-          "pixelSha256": "316d37436ea545eff48f63981eca424746b640d80fb8e5ce4a55327f6514bc86"
+          "sha256": "aaf9a8c66fa1a1c4f945bdc9a8ce26023f3140fed847ecede6d09f3f4dff4658",
+          "pixelSha256": "13366a4214b784d7952b8b0e31c318dafc3bf480e245de8143bcea9e0e4b3b15"
         },
         {
           "id": "chibi-forest-goblin-piece-1x1-c",
@@ -448,8 +448,8 @@
           "width": 80,
           "height": 104,
           "seed": 9114,
-          "sha256": "6c34c28dd9f783f66804ae8951345934cddb8151e1b74342e349cf72751e0ee0",
-          "pixelSha256": "0ea6a384c4cf3f3352544e99d05d5d3217aa8a9c6bbde43b4d17bdc8063b47c4"
+          "sha256": "02095b7bf02a9969610aabe70822945817b783b088dac4d47d6a5b1c43b24e05",
+          "pixelSha256": "922873c4b6650e48a02e17a8b5edcabd8c7ff2c823b904993d37fe9c3b2f2e21"
         },
         {
           "id": "chibi-forest-goblin-piece-2x1-a",
@@ -459,8 +459,8 @@
           "width": 160,
           "height": 104,
           "seed": 9121,
-          "sha256": "ddd2918c56a3512500a0dfad5084566a891e26da9d32c160876f2c56e218ec36",
-          "pixelSha256": "52e4698d6eb2d9de98dc640886d1e8f6888d328bb62e621abfa14d72b4eb72ce"
+          "sha256": "d4c3ad467415b505207932f1b36a1bdc6dfcf6cd624b93a2c34bbe8f2d8ba31c",
+          "pixelSha256": "8df9f9072d7438a885f0004f6e49aa5eaff3a4469d12287588d1da4a6bfe5f30"
         },
         {
           "id": "chibi-forest-goblin-piece-2x1-b",
@@ -470,8 +470,8 @@
           "width": 160,
           "height": 104,
           "seed": 9128,
-          "sha256": "c42570f1e6b168c21a8ad9ec31e6b271b34474f405f06f09e3aa3b39fec2dfc4",
-          "pixelSha256": "a916a15bf555b7751739470576f72639f469b5ab3c11cf5ae8fa8216ffdb1ebe"
+          "sha256": "8240040442e42d6783d79864ff4946d81127b692c30fd361a68d97171d7fb3e6",
+          "pixelSha256": "8ff935fd5b2b71eb41c230a2028ca43b1bee1a88b736937642e17d3270f018fa"
         },
         {
           "id": "chibi-forest-goblin-piece-2x1-c",
@@ -481,8 +481,8 @@
           "width": 160,
           "height": 104,
           "seed": 9135,
-          "sha256": "94b2271cb65d86032356d4c6fde9ef1c5ed8861a60271ace8df6dcdfe2ef391d",
-          "pixelSha256": "1fd02a737d659252c4fd72f54cdd5a8c5d3ff494c5c51141f459bc29025c7614"
+          "sha256": "d1160c3b2b1cad1169db88f16574dfa881fc27bd2aa4bbdbd7cffeaf6ac16022",
+          "pixelSha256": "9667922342bc4cc83bf895227d46110cf7f51f9a6f8b0ac7fe992a44e52298b5"
         },
         {
           "id": "chibi-forest-goblin-piece-1x2-a",
@@ -492,8 +492,8 @@
           "width": 80,
           "height": 184,
           "seed": 9142,
-          "sha256": "37643ff593f04f3f27c55d55e59185e51316135970d48a8a391b3d7e67f4867b",
-          "pixelSha256": "65848ed7540de59fbc5d2a4df65d7b67526a19b39337e2b4460cfa25683868e2"
+          "sha256": "5992c4e15b455b1a938577d80111b80836220ad78f83f5d8428774d81cdec9de",
+          "pixelSha256": "f154aea2bf88ffdde91de5e0e7d0eeeedd9de647d7d50218f4f436c5192b2b4c"
         },
         {
           "id": "chibi-forest-goblin-piece-1x2-b",
@@ -503,8 +503,8 @@
           "width": 80,
           "height": 184,
           "seed": 9149,
-          "sha256": "42a1535588e233e2463bc88a17a6413836955b9be2cc45f7284feb8092e550f6",
-          "pixelSha256": "74fce2c9f439c67c4cbfbc75679ee933577bd0b6c46c5b830f28f314663b6b0e"
+          "sha256": "ce0d35de72bc3ace059b0536d7aaa0f6e14d5f76714702c40352b1d68ea9d8af",
+          "pixelSha256": "6b6ac2904a50eb3d37f408a8ee6bfec9e3d20fd4f6092712dd9e0d407b146624"
         },
         {
           "id": "chibi-forest-goblin-piece-1x2-c",
@@ -514,8 +514,8 @@
           "width": 80,
           "height": 184,
           "seed": 9156,
-          "sha256": "73a37ac2685e162ec84843138646ec634ad42461f764b1268b4319fbfebf1b5a",
-          "pixelSha256": "7f3c6cec581c3f6b0ebe7f259f30e855074f728d11765ea3910aa8519efeee87"
+          "sha256": "8cbdd482bae02454090f1ec68bfa12978a981d18f9787aa2a9f7466575d39030",
+          "pixelSha256": "4e6bc5b3b9426eee936e45aeb28bb6c9a812391b56bb4b8f948bcad015ea3425"
         },
         {
           "id": "chibi-forest-goblin-piece-2x2-a",
@@ -525,8 +525,8 @@
           "width": 160,
           "height": 184,
           "seed": 9163,
-          "sha256": "61367046c5a6ffb1e79a61c162c3401fe66e44c9df5f6f8512dce1ae11e2b85b",
-          "pixelSha256": "8a0165e92f967db50b547766f999386a832f6e08cd9d3d80e1413db490e3064f"
+          "sha256": "de731b401eb034914ca7f15dad3859e31cf162e567d7c7253a80bf2bbaaad96d",
+          "pixelSha256": "7003cd64e66888405859dfef19db4983c717b55a84e8584d33069aff21e38847"
         },
         {
           "id": "chibi-forest-goblin-piece-2x2-b",
@@ -536,8 +536,8 @@
           "width": 160,
           "height": 184,
           "seed": 9170,
-          "sha256": "870ede8b477e6e124b95daa4fa927a7cdfa927a4a531f3a995b58c8e235c4f9d",
-          "pixelSha256": "67799f9d4d25ce2e3c387355c8fe84e2129bf2f470d154b710a7a51b34fa0f13"
+          "sha256": "0d31e0befc1c7e005c484a78b374e1e899d3dfa0ec353042a44eb3e7b5a23280",
+          "pixelSha256": "e7fa2fba84638fd84af2d7f268ea81b5370a3037e73c15dc57a54a3a327c761e"
         },
         {
           "id": "chibi-forest-goblin-piece-2x2-c",
@@ -547,8 +547,8 @@
           "width": 160,
           "height": 184,
           "seed": 9177,
-          "sha256": "12ba0a9c3ad6bab08a87305777fddc67201c1b62f0d58452b9fd09a12abfaefa",
-          "pixelSha256": "ffb9914ea212c572f1a8382e07e179dc24782d88f4acab5eb4e25e4a3c3066c5"
+          "sha256": "edd10153d81bb9aa54fa0b7d03342eb4edcdf8a7bdb3929a0a3c92b029046d07",
+          "pixelSha256": "8a80122c61d0f09edfde2d7a347476e5ae9d1e5b9a63676352f6d701bfa5b7d3"
         },
         {
           "id": "chibi-forest-goblin-piece-l-nw-a",
@@ -558,8 +558,8 @@
           "width": 160,
           "height": 184,
           "seed": 9184,
-          "sha256": "09f846f8d68ca8c33ba619ea562bc8b290202982b255f52bbaa4087709a8a7b0",
-          "pixelSha256": "4c2837689fb1a915540bb585911723cd6610df5a3b23930d538f670c479e34c5"
+          "sha256": "6b806366d0a11d43390a5e4d47291d32185f4964bbd4a4fa81b0dbdfa6f86fbd",
+          "pixelSha256": "e248db12f052ed04177525e9ce250992c2c605fb44168e11c66a53dd2a4c7393"
         },
         {
           "id": "chibi-forest-goblin-piece-l-nw-b",
@@ -569,8 +569,8 @@
           "width": 160,
           "height": 184,
           "seed": 9191,
-          "sha256": "183c4dc51e884662cbcf0cb00edf9c72c1f04b887a1968ee8fa1af9817a060fc",
-          "pixelSha256": "c0e17ac035b230cdcb602174bdb74283abdee3a50f38b296bdee97b103e0d9bf"
+          "sha256": "f77036c86b595305a1e1af5a2e6deed991948f9938063b4baf7916e075cb38a6",
+          "pixelSha256": "51bbc4d79479532255dc0a5f2a69787219ee30032e0840688ddfe0b09c7a1631"
         },
         {
           "id": "chibi-forest-goblin-piece-l-ne-a",
@@ -580,8 +580,8 @@
           "width": 160,
           "height": 184,
           "seed": 9198,
-          "sha256": "83d44cf2aa3dde9cb44d28196659030472c7cc0d284f3f758dd70273cec4ea42",
-          "pixelSha256": "cac77a794b5e14859808cddffbc62fc614c7db4286a9016a3bd30b7375fecb11"
+          "sha256": "81e15595ddd0b6d6918cb08dc84c9d4ac5f6f21d8f4f159c95e91ec6c293a8e6",
+          "pixelSha256": "a31389334810d0b9cc1b9b63eb548d32febddb66ca5b6122844c9077a03a4d84"
         },
         {
           "id": "chibi-forest-goblin-piece-l-ne-b",
@@ -591,8 +591,8 @@
           "width": 160,
           "height": 184,
           "seed": 9205,
-          "sha256": "769bc8e54c0e85d69a43213ef0ba9019f18b61dbbe86f691cb952fb2742ce44c",
-          "pixelSha256": "8e3b9bc5163b23420e930354e3ccf739789aee098ae14d6c6aa7638bfba69630"
+          "sha256": "835eb0ee8f49e10076a89e22245093a32647c5275a1cb01305f4c7096181163c",
+          "pixelSha256": "23032effc20c2702913ad4d47e0fb3c1e4d2c08253cc4e0020c1c02727dcfb11"
         },
         {
           "id": "chibi-forest-goblin-piece-l-sw-a",
@@ -602,8 +602,8 @@
           "width": 160,
           "height": 184,
           "seed": 9212,
-          "sha256": "9594d200e2654e1ee61cb59e5898b32cff97044c3c2014409bedb8f0fe4c4c75",
-          "pixelSha256": "604ed7df788a92fbc61279e054aaac304430df49f5814b0fbd6216bb124b2295"
+          "sha256": "4581e31319375327593ffae872a60f49b8760f9befdb0003447dbc8ba775cbe8",
+          "pixelSha256": "e7952651edb3f329a4c273c7d3965514e529e1d8cffcbbc00b37216e78b14fd7"
         },
         {
           "id": "chibi-forest-goblin-piece-l-sw-b",
@@ -613,8 +613,8 @@
           "width": 160,
           "height": 184,
           "seed": 9219,
-          "sha256": "a314456229aaca995b272cf1565a1c5e600f98c4eda1c59faa3b26e366f44b57",
-          "pixelSha256": "fc86e7eaac439425841540391d3901327e4d130352b88a20222f37ef95b8890d"
+          "sha256": "fe5c974573f6a5b37e492d225d6c219df89d3efbc2caf481a54ec438d4e9756f",
+          "pixelSha256": "d6ecbbff7301105c516ff2f3a3bb590972b4df63369e348f049e207886657334"
         },
         {
           "id": "chibi-forest-goblin-piece-l-se-a",
@@ -624,8 +624,8 @@
           "width": 160,
           "height": 184,
           "seed": 9226,
-          "sha256": "aa6205570f97f6c284f99085c7efcd399cc8d0118f5c0148a69ce84f528ca3ed",
-          "pixelSha256": "d06f4b9bcb8408d230877a1e457fbbab57a7c1b8ed60e52f4701fe4b2b0d8005"
+          "sha256": "33aeb63b98803fe9620c349ea635197bc7ec2d2f235273205219f7b03bd61dd7",
+          "pixelSha256": "efb331d0cc1b7f07045bc2297562bc952890740ea45045fbc86639947c86d731"
         },
         {
           "id": "chibi-forest-goblin-piece-l-se-b",
@@ -635,8 +635,8 @@
           "width": 160,
           "height": 184,
           "seed": 9233,
-          "sha256": "b33ca11973c9b141e5539f66081a8f08cb75a3a87da1f86bd50a83e818462229",
-          "pixelSha256": "f91285ad504b358f1331208ec64de13492984796a48ab93f2a846731f9ea995b"
+          "sha256": "f91bc0a9a62956a978838951c85992f6a10461ebf23ac6fb9f9a77f966188d13",
+          "pixelSha256": "c12102d2f52eec96326caf8beb8423af99e6d8e8248ca7bd3977c9ab2e362c61"
         }
       ]
     },

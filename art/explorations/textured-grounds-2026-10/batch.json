@@ -335,6 +335,149 @@
         "height": 80
       },
       "subjectKey": "TERRAIN:GRASS/ICE_FOLK_SNOW_A"
+    },
+    {
+      "id": "chibi-textured-goblin-straw-b",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/GOBLIN_STRAW_B"
+    },
+    {
+      "id": "chibi-textured-goblin-tufts-a",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/GOBLIN_TUFTS_A"
+    },
+    {
+      "id": "chibi-textured-goblin-seedheads-a",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/GOBLIN_SEEDHEADS_A"
+    },
+    {
+      "id": "chibi-textured-goblin-seedheads-b",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/GOBLIN_SEEDHEADS_B"
+    },
+    {
+      "id": "chibi-textured-goblin-straw-c",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/GOBLIN_STRAW_C"
+    },
+    {
+      "id": "chibi-textured-goblin-straw-d",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/GOBLIN_STRAW_D"
+    },
+    {
+      "id": "chibi-textured-goblin-straw-e",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/GOBLIN_STRAW_E"
+    },
+    {
+      "id": "chibi-textured-goblin-cracks-b",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/GOBLIN_CRACKS_B"
+    },
+    {
+      "id": "chibi-textured-goblin-cracks-c",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/GOBLIN_CRACKS_C"
+    },
+    {
+      "id": "chibi-textured-goblin-tufts-b",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/GOBLIN_TUFTS_B"
+    },
+    {
+      "id": "chibi-textured-goblin-scrub-a",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/GOBLIN_SCRUB_A"
+    },
+    {
+      "id": "chibi-textured-goblin-cracks-a",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/GOBLIN_CRACKS_A"
+    },
+    {
+      "id": "chibi-textured-goblin-bones-a",
+      "subject": "TERRAIN:GRASS",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "subjectKey": "TERRAIN:GRASS/GOBLIN_BONES_A"
     }
   ],
   "recipes": [
@@ -967,6 +1110,279 @@
       },
       "negativeAddendum": "trees, bushes, plants, grass, animals, people, path, road, river, water, cliff, wall, fence, buildings, big boulders, mountains, horizon, sky, footprints, tracks, rocks, ice blocks, snowman, pine, dark shadows",
       "notes": "ICE_FOLK, Snow: wind-packed snow with soft drifts. The Ice Folk Snow as a painted surface, for a sample."
+    },
+    {
+      "id": "goblin-straw-b",
+      "asset": "chibi-textured-goblin-straw-b",
+      "endpoint": "create-image-pixflux",
+      "seed": 48801,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "options": {
+        "shading": "medium shading",
+        "detail": "medium detail",
+        "outline": "lineless"
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/textured-goblin-straw-b.png",
+        "sha256": "63d170b2be93dd4bf09b748b698b360fcbd74dcc52d1ba362155c4ef6bd467a1"
+      },
+      "negativeAddendum": "trees, bushes, plants, animals, people, path, road, river, water, cliff, wall, fence, buildings, big boulders, mountains, horizon, sky, acacia, flowers, bones, green, tall grass, rocks, stripes, rows, furrows",
+      "notes": "GOBLIN, Dry grass mat: short straw with large soft light and dark patches. The ground under the pieces: a mottle at a larger scale than goblin-savannah-t's speckle."
+    },
+    {
+      "id": "goblin-tufts-a",
+      "asset": "chibi-textured-goblin-tufts-a",
+      "endpoint": "create-image-pixflux",
+      "seed": 48803,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "options": {
+        "shading": "medium shading",
+        "detail": "medium detail",
+        "outline": "lineless"
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/textured-goblin-tufts-a.png",
+        "sha256": "b71ca963684e4dfb2ce7ddce6d43d164a0317be41043d52bdf75c6e332e05fea"
+      },
+      "negativeAddendum": "trees, bushes, flowers, animals, people, path, road, river, water, cliff, wall, fence, buildings, mountains, horizon, sky, green grass, lawn, rows, regular grid, identical tufts, border, frame",
+      "notes": "GOBLIN, Tall dry grass tufts of several sizes, separate on plain straw. The tall tufts of the Goblin dry grass."
+    },
+    {
+      "id": "goblin-seedheads-a",
+      "asset": "chibi-textured-goblin-seedheads-a",
+      "endpoint": "create-image-pixflux",
+      "seed": 48805,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "options": {
+        "shading": "medium shading",
+        "detail": "medium detail",
+        "outline": "lineless"
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/textured-goblin-seedheads-a.png",
+        "sha256": "b71ca963684e4dfb2ce7ddce6d43d164a0317be41043d52bdf75c6e332e05fea"
+      },
+      "negativeAddendum": "trees, bushes, flowers, animals, people, path, road, river, water, cliff, wall, fence, buildings, mountains, horizon, sky, green grass, lawn, rows, regular grid, field of wheat, farm, border, frame",
+      "notes": "GOBLIN, Golden seed-head clumps, separate on plain straw. Seed-head clumps: the warm gold accents of the dry grass."
+    },
+    {
+      "id": "goblin-seedheads-b",
+      "asset": "chibi-textured-goblin-seedheads-b",
+      "endpoint": "create-image-pixflux",
+      "seed": 48813,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "options": {
+        "shading": "medium shading",
+        "detail": "medium detail",
+        "outline": "lineless"
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/textured-goblin-seedheads-b.png",
+        "sha256": "b71ca963684e4dfb2ce7ddce6d43d164a0317be41043d52bdf75c6e332e05fea"
+      },
+      "negativeAddendum": "trees, bushes, flowers, animals, people, path, road, river, water, cliff, wall, fence, buildings, mountains, horizon, sky, green grass, lawn, rows, regular grid, field of wheat, farm, border, frame, hedge, edge of a field, clearing",
+      "notes": "GOBLIN, Golden seed-head clumps, small and apart, on plain straw. goblin-seedheads-a drew a wheat field round a bare clearing: the clumps asked small and apart."
+    },
+    {
+      "id": "goblin-straw-c",
+      "asset": "chibi-textured-goblin-straw-c",
+      "endpoint": "create-image-pixflux",
+      "seed": 48815,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "options": {
+        "shading": "medium shading",
+        "detail": "medium detail",
+        "outline": "lineless"
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/textured-goblin-straw-c.png",
+        "sha256": "63d170b2be93dd4bf09b748b698b360fcbd74dcc52d1ba362155c4ef6bd467a1"
+      },
+      "negativeAddendum": "trees, bushes, plants, animals, people, path, road, river, water, cliff, wall, fence, buildings, big boulders, mountains, horizon, sky, acacia, flowers, bones, green, tall grass, rocks, stripes, rows, furrows, track, trail, bare earth, sand",
+      "notes": "GOBLIN, Dry grass mat: short straw with soft blotches, no path. goblin-straw-b drew a winding path down its middle."
+    },
+    {
+      "id": "goblin-straw-d",
+      "asset": "chibi-textured-goblin-straw-d",
+      "endpoint": "create-image-pixflux",
+      "seed": 48817,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "options": {
+        "shading": "medium shading",
+        "detail": "medium detail",
+        "outline": "lineless"
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/textured-goblin-straw-d.png",
+        "sha256": "63d170b2be93dd4bf09b748b698b360fcbd74dcc52d1ba362155c4ef6bd467a1"
+      },
+      "negativeAddendum": "trees, bushes, plants, animals, people, path, road, river, water, cliff, wall, fence, buildings, big boulders, mountains, horizon, sky, acacia, flowers, bones, green, tall grass, rocks, stripes, rows, furrows, track, trail, border, frame, square, sand, bare earth",
+      "notes": "GOBLIN, Steppe: dense short dry blades in close golds, soft patches. goblin-straw-c came back framed: a dense steppe texture asked instead."
+    },
+    {
+      "id": "goblin-straw-e",
+      "asset": "chibi-textured-goblin-straw-e",
+      "endpoint": "create-image-pixflux",
+      "seed": 48819,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "options": {
+        "shading": "medium shading",
+        "detail": "medium detail",
+        "outline": "lineless"
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/textured-goblin-straw-e.png",
+        "sha256": "63d170b2be93dd4bf09b748b698b360fcbd74dcc52d1ba362155c4ef6bd467a1"
+      },
+      "negativeAddendum": "trees, bushes, plants, animals, people, path, road, river, water, cliff, wall, fence, buildings, big boulders, mountains, horizon, sky, acacia, flowers, bones, green, tall grass, rocks, stripes, rows, furrows, track, trail, border, frame, square, circle, sand, bare earth",
+      "notes": "GOBLIN, Hay meadow: matted dry grass with soft light and dark drifts. A second try at the mottled mat."
+    },
+    {
+      "id": "goblin-cracks-b",
+      "asset": "chibi-textured-goblin-cracks-b",
+      "endpoint": "create-image-pixflux",
+      "seed": 48821,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "options": {
+        "shading": "medium shading",
+        "detail": "medium detail",
+        "outline": "lineless"
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/textured-goblin-cracks-b.png",
+        "sha256": "b71ca963684e4dfb2ce7ddce6d43d164a0317be41043d52bdf75c6e332e05fea"
+      },
+      "negativeAddendum": "trees, bushes, grass, flowers, animals, people, path, road, river, water, puddle, cliff, wall, fence, buildings, mountains, horizon, sky, green, rows, regular grid, tiles, paving, border, frame, circles, rings, holes, craters",
+      "notes": "GOBLIN, Cracked mud patches, separate on plain straw. goblin-cracks-a drew rings in a frame, no cracks."
+    },
+    {
+      "id": "goblin-cracks-c",
+      "asset": "chibi-textured-goblin-cracks-c",
+      "endpoint": "create-image-pixflux",
+      "seed": 48823,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "options": {
+        "shading": "medium shading",
+        "detail": "medium detail",
+        "outline": "lineless"
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/textured-goblin-cracks-c.png",
+        "sha256": "b71ca963684e4dfb2ce7ddce6d43d164a0317be41043d52bdf75c6e332e05fea"
+      },
+      "negativeAddendum": "trees, bushes, grass, flowers, animals, people, path, road, river, water, puddle, cliff, wall, fence, buildings, mountains, horizon, sky, green, rows, regular grid, tiles, paving, border, frame, circles, rings, holes, craters, rocks, boulders, stones, mounds",
+      "notes": "GOBLIN, Flat cracked clay patches, separate on plain straw. goblin-cracks-b drew rocks: the patches asked flat and shadowless."
+    },
+    {
+      "id": "goblin-tufts-b",
+      "asset": "chibi-textured-goblin-tufts-b",
+      "endpoint": "create-image-pixflux",
+      "seed": 48825,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "options": {
+        "shading": "medium shading",
+        "detail": "medium detail",
+        "outline": "lineless"
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/textured-goblin-tufts-b.png",
+        "sha256": "b71ca963684e4dfb2ce7ddce6d43d164a0317be41043d52bdf75c6e332e05fea"
+      },
+      "negativeAddendum": "trees, bushes, flowers, animals, people, path, road, river, water, cliff, wall, fence, buildings, mountains, horizon, sky, green grass, lawn, rows, regular grid, identical tufts, border, frame",
+      "notes": "GOBLIN, More dry grass tufts, separate on plain straw. goblin-tufts-a gave twenty tufts: more shapes, so a tuft comes back less often."
+    },
+    {
+      "id": "goblin-scrub-a",
+      "asset": "chibi-textured-goblin-scrub-a",
+      "endpoint": "create-image-pixflux",
+      "seed": 48807,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "options": {
+        "shading": "medium shading",
+        "detail": "medium detail",
+        "outline": "lineless"
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/textured-goblin-scrub-a.png",
+        "sha256": "b71ca963684e4dfb2ce7ddce6d43d164a0317be41043d52bdf75c6e332e05fea"
+      },
+      "negativeAddendum": "trees, tall bushes, flowers, animals, people, path, road, river, water, cliff, wall, fence, buildings, mountains, horizon, sky, bright green, lawn, rows, regular grid, border, frame",
+      "notes": "GOBLIN, Low scrubby dry grass patches, separate on plain straw. Low scrub: the mid-sized pieces between the tufts."
+    },
+    {
+      "id": "goblin-cracks-a",
+      "asset": "chibi-textured-goblin-cracks-a",
+      "endpoint": "create-image-pixflux",
+      "seed": 48809,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "options": {
+        "shading": "medium shading",
+        "detail": "medium detail",
+        "outline": "lineless"
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/textured-goblin-cracks-a.png",
+        "sha256": "b71ca963684e4dfb2ce7ddce6d43d164a0317be41043d52bdf75c6e332e05fea"
+      },
+      "negativeAddendum": "trees, bushes, grass, flowers, animals, people, path, road, river, water, puddle, cliff, wall, fence, buildings, mountains, horizon, sky, green, rows, regular grid, tiles, paving, border, frame",
+      "notes": "GOBLIN, Cracked-earth patches and pebbles, separate on plain straw. Cracked earth and pebbles."
+    },
+    {
+      "id": "goblin-bones-a",
+      "asset": "chibi-textured-goblin-bones-a",
+      "endpoint": "create-image-pixflux",
+      "seed": 48811,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "options": {
+        "shading": "medium shading",
+        "detail": "medium detail",
+        "outline": "lineless"
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/textured-goblin-bones-a.png",
+        "sha256": "b71ca963684e4dfb2ce7ddce6d43d164a0317be41043d52bdf75c6e332e05fea"
+      },
+      "negativeAddendum": "trees, bushes, grass, flowers, people, human skull, blood, gore, path, road, river, water, cliff, wall, fence, buildings, mountains, horizon, sky, green, rows, regular grid, skeleton, border, frame",
+      "notes": "GOBLIN, Bleached bones and small skulls, separate on plain straw. The Goblin flavour: an occasional bone or skull."
     }
   ]
 }

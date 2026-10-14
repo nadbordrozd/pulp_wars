@@ -7,7 +7,9 @@ acceptable." (The tileset endpoint is bead `pulp_wars-2yc.50`.)
 
 **Textured now:** the Martian regolith and the Dwarf moss-covered stones
 (stage 1), and the default Grass, the Undead burnt ground and the Dinosaur jungle
-floor (stage 2, below). The other grounds are tiles until each has a texture that is clearly better than what is
+floor (stage 2, below), and the Goblin dry grass (bead `pulp_wars-2yc.53`,
+[below](#goblins-dry-grass-bead-pulp_wars-2yc53)). The other grounds are
+tiles until each has a texture that is clearly better than what is
 published ([faction grass](FACTION_GRASS.md)).
 
 The user, 2026-10-13, on the grounds of
@@ -78,13 +80,13 @@ Only `generate` calls PixelLab; it reads the key from the
 
 ## Seamlessness: what was tried
 
-| Method                                                                 | Result                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| ---------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **(a) One large field from PixelLab**, made periodic                   | **Failed at the first step.** At 400 x 400 Pixflux does not hold a texture: `martian-regolith-a` is a canyon mouth over evenly striped dust, `dwarf-moss-a` rows of one identical stone on flat green. A painted texture comes only at about 160 px.                                                                                                                                                                                               |
-| **(a') A large texture quilted in code from 160 px fields**, WORLD     | **Works; the method above.** Seamless everywhere by construction; repeats every 480 px.                                                                                                                                                                                                                                                                                                                                                            |
-| Quilting fields that hold dust and rocks together                      | **Failed.** The nearest window is always the emptiest dust (its join costs nothing), and the texture ends flat with one pebble; with a random draw it is a patchwork of two dusts. Hence two layers: quilt the ground, strew the things.                                                                                                                                                                                                           |
-| **(b) PixelLab's own tileset or seamless option**                      | **Not available to the pipeline.** The client (`scripts/art/chibi/batch-manifest.ts`) knows `create-image-pixen`, `create-image-pixflux`, `edit-image-pixen` and `generate-image-v2`; none has a seamless option, and it sends no init or mask image, so no inpainting over a seam. The published OpenAPI names a `create-tileset` (Wang tiles for transitions between two terrains, a background job); it was not added on a guess of its schema. |
-| **(c) Tiles that all share one border band**, quilted inside it, TILES | **Works less well.** Any tile joins any other, so the board may pick at random as it does now, but the shared band comes back on every cell edge (a faint lattice), a thing can never cross an edge, and the cut may replace band pixels, so two tiles' edges agree only nearly. It is look C of the Martian and Dwarf sheets.                                                                                                                     |
+| Method                                                                 | Result                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **(a) One large field from PixelLab**, made periodic                   | **Failed at the first step.** At 400 x 400 Pixflux does not hold a texture: `martian-regolith-a` is a canyon mouth over evenly striped dust, `dwarf-moss-a` rows of one identical stone on flat green. A painted texture comes only at about 160 px.                                                                                                                                                                                                                                                                                                                                                                                              |
+| **(a') A large texture quilted in code from 160 px fields**, WORLD     | **Works; the method above.** Seamless everywhere by construction; repeats every 480 px.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Quilting fields that hold dust and rocks together                      | **Failed.** The nearest window is always the emptiest dust (its join costs nothing), and the texture ends flat with one pebble; with a random draw it is a patchwork of two dusts. Hence two layers: quilt the ground, strew the things.                                                                                                                                                                                                                                                                                                                                                                                                          |
+| **(b) PixelLab's own tileset or seamless option**                      | **Tried since (bead `pulp_wars-2yc.53`): see [PixelLab's tileset endpoint](#pixellabs-tileset-endpoint-bead-pulp_wars-2yc50); its one interior tile a terrain repeats as a lattice.** At first **not available to the pipeline.** The client (`scripts/art/chibi/batch-manifest.ts`) knows `create-image-pixen`, `create-image-pixflux`, `edit-image-pixen` and `generate-image-v2`; none has a seamless option, and it sends no init or mask image, so no inpainting over a seam. The published OpenAPI names a `create-tileset` (Wang tiles for transitions between two terrains, a background job); it was not added on a guess of its schema. |
+| **(c) Tiles that all share one border band**, quilted inside it, TILES | **Works less well.** Any tile joins any other, so the board may pick at random as it does now, but the shared band comes back on every cell edge (a faint lattice), a thing can never cross an edge, and the cut may replace band pixels, so two tiles' edges agree only nearly. It is look C of the Martian and Dwarf sheets.                                                                                                                                                                                                                                                                                                                    |
 
 ## The three samples
 
@@ -236,7 +238,9 @@ wired only where the texture was clearly the better ground.
 - **Goblins: the published savannah stays.** `goblin-savannah-world`
   (speckled dry ground from `goblin-savannah-t`, the tiles' tufts strewn)
   is a little grainier than the six tiles and otherwise the same picture:
-  not clearly better, so not worth 1.5 MB more.
+  not clearly better, so not worth 1.5 MB more. (Superseded on 2026-10-14
+  by the dry grass, below: the tiles were "just uniform yellow with very
+  little on it".)
 - **Candy: the published frosting stays.** The one field asked for,
   `candy-frosting-t`, was a plaque of frosting with a piped border, an
   object and not a ground; rejected. Frosting is smooth by nature: flat
@@ -252,6 +256,133 @@ three grounds of tiles hold 0.9 MB. Draw time, the stage 1 commit against
 the last of stage 2, same measure: Undead 0.67 to 0.73 ms a redraw before
 and 0.72 to 0.74 ms after; Dinosaur 0.59 to 0.63 ms and 0.59 to 0.63 ms;
 neutral Grass as said above.
+
+## Goblins: dry grass (bead `pulp_wars-2yc.53`)
+
+The user, 2026-10-14: "The goblin terrain looks bad. just uniform yellow
+with very little on it. it was supposed to be dry grass. figure out how
+to make it look good. consider pixellab tileset endpoint or just
+generating a bunch of dry grass decorations with pixellab and then
+pasting them on top of the yellow tile at random places." Both were
+tried; the decorations won.
+
+**Wired: `goblin-dry-grass-b`**, 8 x 8 cells (3.3 MB in memory, a 99 kB file):
+
+1. **The straw** is quilted from `goblin-savannah-t` as before, in the
+   same board colours (`#d3c176` the ground).
+2. **Drifts** ([`drift.ts`](../../scripts/art/textured-grounds/drift.ts)):
+   a smooth periodic field (a sum of cosines of whole frequencies, so it
+   wraps with the texture) splits the straw into soft reaches a few cells
+   across, three tenths of it a paler sun-bleached straw and three tenths
+   a darker golden one. A pixel takes its colour from one of three board
+   palettes, never a blend; the edge of a reach is a dither of single
+   pixels. This is the large-scale variation the quilts lacked; five
+   fields asked of Pixflux for a mottled mat came back framed, striped or
+   with a path through them (`goblin-straw-b` to `-e`, rejected).
+3. **Pieces**, each a separate thing cut whole from a field of separate
+   things on plain straw, as the Dwarf stones were: tall dry tufts of
+   several sizes (`goblin-tufts-a`, with its pale ring round each tuft
+   counted as ground; `goblin-tufts-b`, two wispy ones), golden seed-head
+   clumps (`goblin-seedheads-b`), round dry scrub and loose sprigs
+   (`goblin-scrub-a`, whose field had a path through it; only the pieces
+   apart from it are cut), golden specks, and bones (`goblin-bones-a`).
+   About 60 pieces in all. Per cell, on average: 0.4 large tufts, 1.1
+   tufts, 0.5 seed-head clumps, 0.3 scrub, 0.15 wisps, 0.06 bones, 2.5
+   sprigs, 2 specks ([`looks.ts`](../../scripts/art/textured-grounds/looks.ts),
+   `goblinDryGrass`).
+4. **Where they lie** ([`compose.ts`](../../scripts/art/textured-grounds/compose.ts)):
+   - `clear`: no pixel of a tall piece within 16 to 24 px of a cell's
+     centre, where a unit stands; the tall grass keeps to the edges and
+     corners of the cells.
+   - `gather`: the tall pieces gather in the darker drifts (0.8 to 0.9),
+     so the grass is thick in some reaches and thin in the paler ones.
+   - `whole`: no piece crosses the edge of the texture's first cell, the
+     swatch the Gallery, the tile dock and the forest bake show alone.
+     Everywhere else a piece may cross a cell edge: the board samples the
+     texture by map place, so the next cell continues it, and where the
+     Goblin land ends the spill's irregular edge cuts it, as it cuts the
+     ground.
+5. **Colours.** The darkest browns of the pieces are lifted
+   (`#6b5428` to `#8a7236`, `#93742f` to `#a68a40`) so the ground stays
+   calm: luma spread 8.6% (the other textures 3 to 5.6%; the test allows
+   the Goblin ground 9%, a field of separate tall tufts being the point).
+
+Rejected on the way: a skull (`goblin-bones-a`'s horned skull), lovely
+alone, came back as a square lattice of the same skull every eight cells
+on a bare 16 x 16 territory, so only sample D has it. Cracked earth: three
+fields asked for flat patches of cracked mud gave rings in a frame and two
+sets of boulders (`goblin-cracks-a` to `-c`, rejected), so there is none.
+`goblin-seedheads-a` was a wheat field round a clearing.
+
+**Samples** (`npm run art:textured-grounds -- sheet GOBLIN <out.png>`,
+beside the tiles of main): A the old savannah texture; **B** the chosen;
+C the same at six tenths; D at 1.4 with a skull; E B without drifts; and
+the two tilesets below. B over C: C is calmer but reads as the old flat
+yellow from a distance; D crowds the move highlights. B over E: the
+drifts are what keep a large Goblin land from being one even carpet.
+
+**On the board.** The scrub wood was baked again (25 files: its foliage
+is lifted toward the ground's first cell). Review in the real game:
+`scripts/art/textured-grounds/goblin-review-scenes.ts` through
+`look-switch-review.ts` (desktop, selected, phone and a 16 x 16 field,
+against main). Draw time over a 16 x 16 Goblin field, 400 redraws, three
+rounds, main against this: 0.61 to 0.73 ms a redraw with the six tiles,
+0.59 to 0.65 ms textured (Martian, unchanged, 0.60 to 0.66 ms on both):
+no difference outside the noise.
+
+## PixelLab's tileset endpoint (bead `pulp_wars-2yc.50`)
+
+Read from PixelLab's OpenAPI (`https://api.pixellab.ai/v2/openapi.json`,
+2026-10-14) and its tool page
+(`https://www.pixellab.ai/docs/tools/create-tileset`), and now in the
+checked-in client
+([`tileset-client.ts`](../../scripts/art/chibi/tileset-client.ts),
+recipes and the world layout in
+[`tilesets.ts`](../../scripts/art/textured-grounds/tilesets.ts)):
+
+- **`POST /v2/create-tileset`** takes `lower_description` and
+  `upper_description` (both required), `transition_description`, `mode`
+  (`standard`, or the experimental `pro`), `tile_size` (16 or 32, and 64
+  with `pro`), `transition_size` (0, 0.25, 0.5 or 1: under `pro` the
+  height of the upper terrain, 0 flat), `view` (`high top-down` or
+  `low top-down`), `outline`, `shading`, `detail`, `text_guidance_scale`,
+  `color_image` (a forced palette), `seed`, reference images per terrain,
+  and border shape controls (`shape_style` for standard; `raggedness`,
+  `roundness`, `boundary_amplitude`, `boundary_seed`, `step_slope`,
+  `connect_diagonals` for pro). It answers at once with
+  `background_job_id` and `tileset_id`; the job is polled at
+  `GET /v2/background-jobs/{id}` and the tiles read from
+  `GET /v2/tilesets/{tileset_id}` (HTTP 423 while it is being made).
+- **Output:** 16 Wang corner tiles (25 with `transition_size` 1), each a
+  base64 PNG with its `corners` (NW, NE, SW, SE: lower or upper) and a
+  `pattern_4x4`. A map is a grid of vertices, one terrain each; a cell
+  takes the tile whose corners match its four vertices.
+- **What it cost here:** the standard set of 32 px took 113 s and
+  $0.007; the pro set of 64 px 144 s and $0.15.
+
+`npx tsx scripts/art/textured-grounds.ts tileset-generate <recipe>` (calls
+PixelLab), `tileset-contact` and `tileset-world` (a texture laid from the
+set over a periodic noise of vertices, about three tenths bare earth).
+Two dry grass and cracked earth sets were made
+(`art/explorations/textured-grounds-2026-10/tilesets/`):
+
+- **`goblin-tileset-a`, standard, 32 px:** two near-flat straws, a thin
+  outline along part of the border, and the speckle of the one full tile
+  of each terrain repeating every 32 px as a visible grid. Unusable.
+- **`goblin-tileset-b`, pro, 64 px:** a real painted dry grass and a
+  convincing cracked earth with pebbles, and a ragged, natural border:
+  the best single painting of any PixelLab ground so far. But each
+  terrain has exactly **one** full tile, so the grass is the same 64 px
+  square of tufts in a lattice over every cell, and the saturated yellow
+  and brown are loud under units.
+
+**Verdict.** The endpoint makes transitions between **two** terrains;
+it is not a way to make one large ground, because the inside of each
+terrain is one tile repeated. Worth using for (a) a border between two
+grounds or a terrain and its patches (coast, a road or a burnt patch),
+where the set's ragged edges are better than the spill's, or (b) as a
+source of fields to quilt (the pro set's painted grass is good material),
+not as a faction ground by itself.
 
 ## Rolling it out
 

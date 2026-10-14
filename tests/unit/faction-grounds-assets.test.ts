@@ -248,11 +248,11 @@ describe("a ground tile", () => {
 });
 
 describe("the grounds made from PixelLab fields", () => {
-  it("are the Cult's, Candy's and the Goblins', one chosen look each", () => {
-    // The Dwarf gravel and the Undead wildfire tiles were two more until
-    // those grounds became textures (docs/art/TEXTURED_GROUNDS.md); their
-    // looks stay as samples.
-    expect([...FIELD_GROUND_IDS]).toEqual(["CULT", "CANDY", "GOBLIN"]);
+  it("are the Cult's and Candy's, one chosen look each", () => {
+    // The Dwarf gravel, the Undead wildfire and the Goblin savannah tiles
+    // were three more until those grounds became textures
+    // (docs/art/TEXTURED_GROUNDS.md); their looks stay as samples.
+    expect([...FIELD_GROUND_IDS]).toEqual(["CULT", "CANDY"]);
     for (const id of FIELD_GROUND_IDS) {
       const look = fieldGroundLook(id);
       expect(look.faction).toBe(id);

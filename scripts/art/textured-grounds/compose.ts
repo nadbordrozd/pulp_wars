@@ -28,6 +28,18 @@ export interface ScatterKind extends Omit<
 > {
   /** How many lie on a board cell (80 x 80), on average. */
   readonly perCell: number;
+  /**
+   * No pixel of a motif lies closer than this to a cell centre, where a
+   * unit stands (bead pulp_wars-2yc.53): the tall grass keeps to the edges
+   * and corners of the cells, and the middle stays calm.
+   */
+  readonly clear?: number;
+  /**
+   * How strongly the kind gathers where the recipe's `gather` field is
+   * high (0 evenly, 1 only there): tall grass thick in the darker drifts
+   * and thin in the paler ones (drift.ts).
+   */
+  readonly gather?: number;
 }
 
 export interface ScatterRecipe {
@@ -41,6 +53,15 @@ export interface ScatterRecipe {
    * Without it the canvas is a torus.
    */
   readonly margin?: number;
+  /**
+   * A rectangle `[left, top, width, height]` whose edge no motif crosses:
+   * the texture's first cell, which the Gallery, the tile dock and the
+   * forest bake show as a tile of its own (its swatch), so nothing on it is
+   * cut by its edge.
+   */
+  readonly whole?: readonly [number, number, number, number];
+  /** A field of 0 to 1 by pixel of the canvas that kinds may gather in. */
+  readonly gatherField?: Float32Array;
 }
 
 function hex(colour: string): readonly [number, number, number] {
@@ -86,6 +107,31 @@ export function scatter(
     return groundHash(recipe.seed, variant, roll, 0x53);
   };
   const wrap = (value: number, by: number): number => ((value % by) + by) % by;
+  /** Whether a motif at this place crosses the edge of `whole`. */
+  const crosses = (left: number, top: number, motif: GroundMotif): boolean => {
+    if (recipe.whole === undefined) return false;
+    const [wx, wy, ww, wh] = recipe.whole;
+    for (const dx of [0, -width])
+      for (const dy of [0, -height]) {
+        const bx = wrap(left, width) + dx;
+        const by = wrap(top, height) + dy;
+        const overlaps =
+          bx < wx + ww &&
+          bx + motif.width > wx &&
+          by < wy + wh &&
+          by + motif.height > wy;
+        const inside =
+          bx >= wx &&
+          by >= wy &&
+          bx + motif.width <= wx + ww &&
+          by + motif.height <= wy + wh;
+        if (overlaps && !inside) return true;
+      }
+    return false;
+  };
+  /** How far a pixel lies from the nearest board cell's centre. */
+  const fromCentre = (x: number, y: number): number =>
+    Math.hypot(wrap(x, 80) - 40, wrap(y, 80) - 40);
   for (const [kindIndex, kind] of recipe.kinds.entries()) {
     const list = motifs[kindIndex] ?? [];
     placed[kind.id] = 0;
@@ -118,6 +164,26 @@ export function scatter(
               free = false;
           }
         if (!free) continue;
+        if (crosses(left, top, motif)) continue;
+        if (kind.gather !== undefined && recipe.gatherField !== undefined) {
+          const middle =
+            wrap(top + (motif.height >> 1), height) * width +
+            wrap(left + (motif.width >> 1), width);
+          const chance =
+            1 - kind.gather + kind.gather * (recipe.gatherField[middle] ?? 0);
+          if (next() % 1000 >= chance * 1000) continue;
+        }
+        if (kind.clear !== undefined) {
+          let near = false;
+          for (let y = 0; y < motif.height && !near; y += 1)
+            for (let x = 0; x < motif.width && !near; x += 1)
+              if (
+                motif.pixels[y * motif.width + x] !== 255 &&
+                fromCentre(left + x, top + y) < kind.clear
+              )
+                near = true;
+          if (near) continue;
+        }
         for (let y = 0; y < motif.height; y += 1)
           for (let x = 0; x < motif.width; x += 1) {
             const index = motif.pixels[y * motif.width + x] ?? 255;

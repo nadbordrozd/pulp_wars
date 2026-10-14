@@ -39,6 +39,8 @@ export const FACTION_GRASS_WORLDS_V7: Partial<
   NEUTRAL: { columns: 8, rows: 8 },
   UNDEAD: { columns: 8, rows: 8 },
   DINOSAUR: { columns: 6, rows: 6 },
+  // Dry grass (bead pulp_wars-2yc.53): distinct tufts and a skull, so eight.
+  GOBLIN: { columns: 8, rows: 8 },
 };
 
 /** How many tiles a ground of tiles has. A textured ground has none. */
@@ -46,7 +48,7 @@ export const FACTION_GRASS_TILE_COUNTS_V7: Readonly<
   Record<FactionGrassIdV7, number>
 > = {
   CANDY: 6,
-  GOBLIN: 6,
+  GOBLIN: 0,
   MARTIAN: 0,
   DINOSAUR: 0,
   DWARF: 0,
