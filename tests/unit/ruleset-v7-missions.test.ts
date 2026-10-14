@@ -112,8 +112,9 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
   // Missions 9 and 10 (`pulp_wars-v642.4`).
   "FRONTIER_9@1:MARTIAN":
     "16cb4bc0f0d7e2bcbf21439b85655a7de1091ccefc92f5e876c192a8d8d1f26b",
-  "FRONTIER_10@1:ORIGINAL":
-    "549375dec6a7756528197057e137e2623d2d96e57e6dbc78caf9a09ff9edefef",
+  // Mission 10 replayed on the corrected Cult AI (`pulp_wars-v642.6`): revision 2.
+  "FRONTIER_10@2:ORIGINAL":
+    "f50c51fc2bace84e06d3ee0d7e01e75ece913b0f2a662c5455497fc6aa17ee4e",
   // The siege fixture of the Normal AI (`pulp_wars-68k.6`).
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 2.
   "TEST_NECK@2:ORIGINAL":
@@ -386,8 +387,9 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
   // Missions 9 and 10 (`pulp_wars-v642.4`).
   "FRONTIER_9@1:MARTIAN":
     "cc96d97432fae475a10796a26be4e505bae939220cc5ed6a9a0cafc5bb683d50",
-  "FRONTIER_10@1:ORIGINAL":
-    "d6145571960778b288efa43c9f430fd710b37c67f9ab7b626206aa32d7eeb886",
+  // Mission 10 replayed on the corrected Cult AI (`pulp_wars-v642.6`): revision 2.
+  "FRONTIER_10@2:ORIGINAL":
+    "e140613652331ecada12b69f31f055f1426382dd5c1ff26169b88f5fe1de8111",
   // The Industry reshuffle (`pulp_wars-w49.21`, 7r56): revision 2.
   "TEST_NECK@2:ORIGINAL":
     "32595babd0a4d5371b260320b8d360786ba69b01808d2716eaadec332213500e",

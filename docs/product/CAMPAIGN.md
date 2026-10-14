@@ -1446,15 +1446,17 @@ seats, teams `[0, 0, 1, 1]`; the Naval branch forbidden. The Lodge stands
 in the northern highlands with Mountains on three sides, a wooded slope
 below it and a goat path from the west. You (Humans, south-west): a level
 5 capital and two towns, ten units (the whole roster but the Champion; no
-Engineering yet). Seat 1, Goblins (Grubnak, your ally, south-east): a
+Engineering yet), 5 Coins. Seat 1, Goblins (Grubnak, your ally, south-east): a
 level 3 capital, `NORMAL` until round 10, then `RUSH`. Seat 2, Cultists
 (the summit, north): the walled level 3 capital `LODGE` and two towns,
-`GUARD` the summit with a garrison of 6; eighteen units, far over its
-unit limit, among them two Summoners, a Stargazer, a Caller, a Chosen and
-the Thing in the Cellar; 9 Favour and The Stars Are Right; every other
-technology forbidden to it; waves of four behind the Lodge in rounds 8, 14
-and 20, the last two with a Summoner. Seat 3, Undead (thralls): the barrow
-on your road and a town in the east, `RUSH`, waves of four at the barrow
+`GUARD` the summit with a garrison of 8 (the Thing on the Lodge, two Idol
+Bearers, a Chosen, both Summoners, two Hexers); eighteen units, far over
+its unit limit, among them two Summoners, a Stargazer, a Caller, two
+Chosen and the Thing in the Cellar; 9 Favour and The Stars Are Right;
+every other technology forbidden to it; waves of four behind the Lodge in
+rounds 8, 12 and 17, the last two with a Summoner. Seat 3, Undead
+(thralls): the barrow on your road (a Zombie on its center) and a town in
+the east, `RUSH`, waves of four at the barrow
 in rounds 6, 12 and 18 for as long as the seat lives. Objective
 `CAPTURE { places: [LODGE], byRound: 24 }`, stars `WITHIN_ROUNDS 20` and
 `KEEP_CITIES`.
@@ -1479,7 +1481,13 @@ Changed from the first design, by hand play: the Lodge is level 3 (its
 summit has room for no more), your capital level 5; the ally turns to
 `RUSH` at round 10; the Cult's tree is closed and its Favour paid in
 blood only (with the whole tree it fielded forty units and summoned the
-Herald in round 3).
+Herald in round 3). Revision 2 (`pulp_wars-v642.6`,
+[section 11.13](#1113-mission-10-on-the-corrected-cult-ai-pulp_wars-v6426)):
+replayed on the corrected Cult AI, the first build fell in round 12 with
+nothing lost, so your Coins went from 15 to 5, the ring got an Idol Bearer
+and a Chosen for a Hexer and an Initiate and a garrison of 8 (it was 6),
+the barrow a Zombie on its center, and the Summoner waves came forward
+from rounds 14 and 20 to 12 and 17.
 
 ### 9.4 Unlock order, and free play
 
@@ -2253,7 +2261,123 @@ the missions, as before.
   is nearest). The Cult AI corrections of `pulp_wars-mch9.27` (a sturdy
   garrison kept on a watched center, a Summoner that no longer advances
   into the enemy line) landed after this replay; the round-20 star is kept
-  until the mission is played again on them.
+  until the mission is played again on them (done in
+  [section 11.13](#1113-mission-10-on-the-corrected-cult-ai-pulp_wars-v6426)).
+
+### 11.13 Mission 10 on the corrected Cult AI (`pulp_wars-v642.6`)
+
+Mission 10 played again by hand on `7r83` with the Cult AI corrections of
+`pulp_wars-mch9.27`
+([the Cultists spec, section 15.10](RULESET_7_CULTISTS.md#1510-as-built-the-corrections-from-the-first-real-matches-pulp_wars-mch927)).
+Four games and a passive one; the transcripts and sessions are in
+`scratchpad/pulp_wars-v642.6/`. No rule or AI code changed, the ruleset
+identity stays `7r83`, and the mission is at revision 2.
+
+1. **Revision 1: won in round 12, three stars, nothing lost. A
+   walkover.** The capital reached level 6 in round 1 (the Muster
+   Monument, a Farm and a Fruit: a Juggernaut) and Northwatch level 5 in
+   round 2 (a second); a Juggernaut killed the Skeleton on the barrow's
+   center in round 4 and took the barrow in round 5, and the Conqueror's
+   Monument, a Boom and a Farm made it level 5 (a third) that turn. The
+   lodge spent its 9 Favour on two Horrors in rounds 4 and 5, and both
+   died to Juggernauts without a kill. In round 7 one Knight's Overrun
+   killed eighteen units in one charge: an Initiate and an Idol Bearer by
+   the barrow, a Familiar, two thralls of the round 6 wave (placed by
+   Candlewick), a Hexer, **both Summoners**, an Initiate, the Familiar on
+   the Lodge's center, two Hexers, the Stargazer, two Initiates, a
+   Skeleton, a Zombie, and the Caller. Every cultist but the Idol Bearer,
+   the Chosen and the Thing dies to one Knight's blow. With no Summoner
+   until the round 14 wave, the Favour never passed 9; Candlewick fell in
+   round 9 (a fifth Juggernaut), the Thing in round 11, and the Lodge in
+   round 12. The Goblins took Bonefield in round 8, which eliminated the
+   thralls.
+2. **Toughened** (revision 2): 5 Coins for you instead of 15 (the second
+   Juggernaut a round later, Engineering and Explosives later); in the
+   ring an Idol Bearer on the goat path for the Hexer and a Chosen beside
+   the Summoners for the Initiate, and the `GUARD` garrison 8 instead of 6
+   (the Thing, two Idol Bearers, the Chosen, both Summoners and two Hexers
+   stay on the summit), so a Knight's Overrun ends on the first Idol
+   Bearer or Chosen it meets; a Zombie on the barrow's center instead of a
+   Skeleton. **Won in round 15, three stars**, ten units lost (the
+   Captain, two Fighters, three Knights, a Catapult, a Marksman, two
+   Juggernauts). The barrow took two blows and fell in round 7. The lodge
+   now fought: Horrors killed the Captain (Favour 9) and a fresh Knight on
+   the barrow's center (13), and the second stood on that center until two
+   Catapults killed it; Tentacles killed two Fighters, a Catapult and a
+   Marksman; the ring killed a Juggernaut that stood beside the Lodge
+   (the Thing, two Chosen and a Hexer in one turn). A Summoner Sacrificed
+   a Chosen (19) and, when a Juggernaut reached the ring, the threatened
+   Summoner was Sacrificed by the other (24): one Summoner and 24 Favour
+   in round 11, the Great Summoning one unthreatened Summoner away. The
+   Juggernaut killed that Summoner in round 12. The Thing died in round 13
+   to a Catapult, a Juggernaut's blow and its crush, and a Knight, which
+   advanced onto the center and was frogged and killed there; in round 14
+   a Knight's hit and a Juggernaut's kill put the Juggernaut on the
+   center, and it captured in round 15.
+3. **Toughened again**: the lodge's Summoner waves in rounds 12 and 17
+   instead of 14 and 20, so a player still at the ring around round 13
+   meets a fresh Summoner with the Favour already banked. Replayed with
+   the same commands as game 2 through round 12 (nothing before the round
+   12 wave changed, and the game is deterministic), then played on: the
+   wave's Hexer and Summoner arrived behind the Lodge, the same assault put
+   a Juggernaut on the center in round 14, and **the lodge began the Great
+   Summoning that same turn** (24 Favour to 4). **Won in round 15, three
+   stars**, eleven lost: the capture came at the start of the round the
+   Herald would have come.
+4. **A slower round 14** (branched from game 3: the center hit but not
+   taken): the Summoner stayed threatened by the Juggernaut beside the
+   center and no rite began; the wounded Idol Bearer on the center stepped
+   off for a fresh one beside it (the garrison swap); a Chosen died
+   attacking a Juggernaut (Martyr, 30) and paid for a Horror; a Tentacle
+   killed a Knight and a Juggernaut. Two Juggernauts took the center in
+   round 15, **won in round 16**.
+
+**Played passively** (ending every turn without a command): the thralls
+took Northwatch in round 10 and Fort Steele in round 18, and Millford in
+round 21 ("you were eliminated"). The lodge spent its 9 Favour on Horrors
+against the Goblins and never held more than 7 again; no rite began.
+
+**The round-20 star is kept.** Every win on revision 2 came in round 15
+or 16 with ten or more units lost, by a player who knew the board from
+the walkover and found the Muster and Conqueror Juggernauts at once; a
+first game should land near round 20, and the Herald is a round away for
+a player who reaches the ring with the lodge's Favour banked and a
+Summoner unthreatened.
+
+**What the Cult AI did that mattered.**
+
+- **A sturdy garrison: yes, on revision 2.** The Thing (first in the
+  garrison) stood on the Lodge's center from round 1 until it was killed in
+  round 13, striking from it without leaving it; an Idol Bearer stepped on
+  every time the center was emptied, and a wounded one stepped off for a
+  fresh one. On revision 1 (a garrison of 6) the center leaked twice, both
+  by rules older than the correction: in round 8 the Idol Bearer on the
+  watched (not threatened) Lodge stepped aside so the city could train,
+  and the Lodge trained a Familiar onto it (8 HP, the worst garrison it
+  can train; "a city its seat trains onto keeps the rules it had"); the
+  Thing stepped back on the round after. In round 10 the wounded Thing
+  stepped off to strike a Juggernaut because an Idol Bearer could take
+  its place (the tactical defender replacement, which lets the best
+  garrison go when the replacement is more than half as good, as the
+  correction's pinned test allows). A follow-up for the AI's owner: a
+  watched lodge should step its garrison aside to train only when it then
+  trains a garrison at least as good.
+- **The Summoner's advance: none seen.** No Summoner made a melee attack;
+  they stayed in the ring and channelled. A threatened Summoner was
+  Sacrificed by the other for 5 Favour.
+- **The Herald: never.** The Great Summoning began once (game 3, round 14) and the Lodge fell before it completed. The Favour came in blood:
+  Horror kills (a Captain 5, a Knight 9), a Chosen and a Summoner
+  Sacrificed (6 and 5), and a Martyr (6).
+- **Blast Mountain on its own summit.** The lodge blasts the Mountains
+  beside the player's units (8,2, 8,3 and 9,3 in each won game, 7,3 too in
+  one), which
+  hurts the units beside them by 5 but turns the summit's Mountain wall to
+  Grass and opens the Lodge to Juggernauts and Knights. Worth weighing for
+  a guarding Cult seat.
+- **Waves away from the army.** With the army at the barrow, the thralls'
+  round 6 wave appeared beside Candlewick and on the Cult's summit (the
+  nearest free tiles not beside a hostile unit, section 10.3), where it
+  was no threat; the rule is as built.
 
 ## 12. The mission builder's guide
 

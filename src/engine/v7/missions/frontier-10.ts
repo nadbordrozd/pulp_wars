@@ -7,23 +7,32 @@ import type { MissionDefinitionV7 } from "./types";
  * thralls on a 20 x 20 board. Very hard. Capture the Lodge of the
  * Unblinking Eye before round 24 ends.
  *
+ * Revision 2 (`pulp_wars-v642.6`, CAMPAIGN.md section 11.13): replayed on
+ * the corrected Cult AI, the first build was won in round 12 with nothing
+ * lost (a Knight's Overrun ran through the summit's Initiates, Hexers, and
+ * both Summoners in one charge). Toughened: 5 Coins for you (was 15), an
+ * Idol Bearer and a Chosen in the ring where a Hexer and an Initiate stood
+ * and a garrison of eight (was six), a Zombie on the barrow's center, and
+ * the lodge's Summoner waves in rounds 12 and 17 (were 14 and 20).
+ *
  * The board is the map generator's (Pangea, seed 23). The Lodge stands in
  * the northern highlands with Mountains on three sides: a wooded slope
  * leads up to it from the south and a goat path from the west. Two
  * Mountain tiles beside it are turned to Grass (the summit's clearing: the
  * Lodge's Walls need the level).
  *
- * - **The Cultists** `GUARD` the summit with a garrison of six; the rest
- *   of the lodge roams. They start with 9 Favour, two Summoners, and The
- *   Stars Are Right, so the first Horrors come in the opening rounds and
- *   every unit a Horror kills, every Seizure, and every dead Chosen feeds
- *   the pool: at 20 Favour, with a Summoner and three chanters left
- *   unthreatened, the Great Summoning begins and the Herald comes. The
- *   Favour is public: it is the Summoning's clock, and round 24 is its last
- *   toll. The seat may research nothing else (no Offering: the Favour is
- *   paid in blood), starts far over its unit limit, and is kept up by three
- *   waves that arrive behind the Lodge (rounds 8, 14, and 20), the last two
- *   with a fresh Summoner.
+ * - **The Cultists** `GUARD` the summit with a garrison of eight (the
+ *   Thing on the Lodge, two Idol Bearers, a Chosen, both Summoners, and two
+ *   Hexers); the rest of the lodge roams. They start with 9 Favour, two
+ *   Summoners, and The Stars Are Right, so the first Horrors come in the
+ *   opening rounds and every unit a Horror kills, every Seizure, and every
+ *   dead Chosen feeds the pool: at 20 Favour, with a Summoner and three
+ *   chanters left unthreatened, the Great Summoning begins and the Herald
+ *   comes. The Favour is public: it is the Summoning's clock, and round 24
+ *   is its last toll. The seat may research nothing else (no Offering: the
+ *   Favour is paid in blood), starts far over its unit limit, and is kept
+ *   up by three waves that arrive behind the Lodge (rounds 8, 12, and 17),
+ *   the last two with a fresh Summoner.
  * - **The Undead** (the thralls) hold the barrow on your road and a town in
  *   the east, and `RUSH`. Three waves rise at the barrow (rounds 6, 12, and
  *   18) for as long as the seat lives: take both towns and the dead stop
@@ -58,7 +67,7 @@ import type { MissionDefinitionV7 } from "./types";
  */
 export const FRONTIER_10_V7: MissionDefinitionV7 = {
   id: "FRONTIER_10",
-  revision: 1,
+  revision: 2,
   seed: 20261110,
   // <map>
   size: 20,
@@ -173,7 +182,9 @@ export const FRONTIER_10_V7: MissionDefinitionV7 = {
   seats: [
     {
       faction: "ORIGINAL",
-      coins: 15,
+      // 15 in revision 1: the capital and Northwatch reached their
+      // Juggernauts in rounds 1 and 2.
+      coins: 5,
       // Everything Steele has learned on the way: the whole Human roster
       // but the Champion, and no Engineering yet (the Mountains around the
       // Lodge are a research away).
@@ -288,12 +299,15 @@ export const FRONTIER_10_V7: MissionDefinitionV7 = {
         { name: "Greyhood", at: { x: 13, y: 1 }, level: 1, rewards: [] },
       ],
       units: [
+        // The ring (the GUARD garrison: the first eight inside the zone):
+        // the Idol Bearer on the goat path and the Chosen beside the
+        // Summoners end a Knight's Overrun (revision 2).
         { role: "JUGGERNAUT", at: { x: 10, y: 2 } },
         { role: "GUARD", at: { x: 11, y: 1 } },
-        { role: "MARKSMAN", at: { x: 8, y: 1 } },
+        { role: "GUARD", at: { x: 8, y: 1 } },
         { role: "CAPTAIN", at: { x: 9, y: 1 } },
         { role: "CAPTAIN", at: { x: 10, y: 1 } },
-        { role: "FIGHTER", at: { x: 9, y: 2 } },
+        { role: "SWORDSMAN", at: { x: 9, y: 2 } },
         { role: "MARKSMAN", at: { x: 10, y: 3 } },
         { role: "MARKSMAN", at: { x: 11, y: 3 } },
         { role: "GUARD", at: { x: 10, y: 4 } },
@@ -328,7 +342,7 @@ export const FRONTIER_10_V7: MissionDefinitionV7 = {
       directive: {
         kind: "GUARD",
         zone: [{ x0: 8, y0: 0, x1: 12, y1: 4 }],
-        garrison: 6,
+        garrison: 8,
       },
     },
     {
@@ -356,9 +370,11 @@ export const FRONTIER_10_V7: MissionDefinitionV7 = {
         },
       ],
       units: [
-        { role: "FIGHTER", at: { x: 7, y: 5 } },
+        // A Zombie on the barrow's center (revision 2: a Skeleton fell to
+        // one Juggernaut's blow in round 4).
+        { role: "GUARD", at: { x: 7, y: 5 } },
         { role: "FIGHTER", at: { x: 6, y: 5 } },
-        { role: "GUARD", at: { x: 7, y: 4 } },
+        { role: "FIGHTER", at: { x: 7, y: 4 } },
         { role: "RAIDER", at: { x: 6, y: 6 } },
         { role: "FIGHTER", at: { x: 8, y: 5 } },
         { role: "FIGHTER", at: { x: 13, y: 8 }, home: 1 },
@@ -425,7 +441,7 @@ export const FRONTIER_10_V7: MissionDefinitionV7 = {
     },
     {
       seat: 2,
-      round: 14,
+      round: 12,
       units: [
         { role: "FIGHTER", at: { x: 13, y: 2 } },
         { role: "FIGHTER", at: { x: 13, y: 3 } },
@@ -435,7 +451,7 @@ export const FRONTIER_10_V7: MissionDefinitionV7 = {
     },
     {
       seat: 2,
-      round: 20,
+      round: 17,
       units: [
         { role: "FIGHTER", at: { x: 13, y: 2 } },
         { role: "FIGHTER", at: { x: 13, y: 3 } },

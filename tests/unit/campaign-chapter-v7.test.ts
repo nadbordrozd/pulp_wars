@@ -712,7 +712,7 @@ describe("Chapter One data", () => {
     expect(seat(finale, 2).directive).toEqual({
       kind: "GUARD",
       zone: [{ x0: 8, y0: 0, x1: 12, y1: 4 }],
-      garrison: 6,
+      garrison: 8,
     });
     expect(seat(finale, 3).directive).toEqual({ kind: "RUSH" });
     // The Cult meets the player with what makes it the Cult: Favour for
@@ -738,8 +738,8 @@ describe("Chapter One data", () => {
       [3, 12],
       [3, 18],
       [2, 8],
-      [2, 14],
-      [2, 20],
+      [2, 12],
+      [2, 17],
     ]);
 
     for (const definition of [rescue, finale]) {

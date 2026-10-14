@@ -356,14 +356,32 @@ describe("mission 10, The Stars Are Right", () => {
     expect(plan?.leashed.size).toBe(0);
   });
 
-  it("guards the summit with six and keeps the rest of the lodge free", () => {
+  it("guards the summit with eight and keeps the rest of the lodge free", () => {
     const state = start("FRONTIER_10");
     const cult = seatId(state, 2);
     const plan = directivePlanForViewV7(viewForV7(state, cult));
     expect(plan?.directive.kind).toBe("GUARD");
-    expect(plan?.garrison).toHaveLength(6);
-    expect(plan?.leashed.size).toBe(6);
+    expect(plan?.garrison).toHaveLength(8);
+    expect(plan?.leashed.size).toBe(8);
     const units = new Map(state.units.map((unit) => [unit.id, unit]));
+    // Revision 2 (`pulp_wars-v642.6`): the ring holds the Thing, two Idol
+    // Bearers, a Chosen, both Summoners, and two Hexers, so a Knight's
+    // Overrun ends on the first Idol Bearer or Chosen it meets instead of
+    // running through the summit.
+    expect(
+      (plan?.garrison ?? []).map((id) => units.get(id)?.role).sort(),
+    ).toEqual(
+      [
+        "CAPTAIN",
+        "CAPTAIN",
+        "GUARD",
+        "GUARD",
+        "JUGGERNAUT",
+        "MARKSMAN",
+        "MARKSMAN",
+        "SWORDSMAN",
+      ].sort(),
+    );
     for (const id of plan?.garrison ?? []) {
       const unit = units.get(id);
       expect(unit?.ownerId).toBe(cult);
