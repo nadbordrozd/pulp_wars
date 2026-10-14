@@ -234,12 +234,12 @@ export const CHAPTER_ONE_V7: CampaignChapterV7 = Object.freeze({
       name: "Brain Wave",
       format: "KILL",
       briefing:
-        "The thing in the glass ship is awake. It calls itself the Overmind, and it has the Baron's men marching in step. The beasts of the island want it dead. So do you. Kill it before it finishes its signal.",
-      objective: "Kill the Overmind by turn 20.",
+        "The thing in the glass ship is awake. It calls itself the Overmind, its saucers hold the crater, and the Baron's men march in step for it. All the island has left is one nest and a young queen. Hatch an army first, then hunt it down before it finishes its signal, and keep your wounded away from that brain.",
+      objective: "Kill the Overmind by turn 26.",
       hints: Object.freeze([
-        "The Overmind never leaves the Glass Ship's crater.",
-        "A wounded beast near the Overmind changes sides.",
-        "Spitter acid ignores walls: shoot it from the peaks.",
+        "One nest won't do it: take the villages, then grow.",
+        "The crater has one gate. Climbers have more.",
+        "Feed the Queen small prey: an Alpha bites through walls.",
       ]),
       closing:
         "The Overmind bursts like a wet lantern, and every Martian on the island blinks. Their captain salutes with three hands. 'We were not invading. We were answering. Someone here has been calling the stars.'",
@@ -277,12 +277,12 @@ export const CHAPTER_ONE_V7: CampaignChapterV7 = Object.freeze({
       name: "The Stars Are Right",
       format: "CAPTURE",
       briefing:
-        "The Lodge of the Unblinking Eye stands on the summit where the bell was cast, and tonight the stars are right. Every toll of the bell, and every soldier their Horrors take, feeds the Great Summoning. At the twenty-fourth toll the door opens. Steele has an army nobody would have believed a month ago, and Grubnak's horde beside it. Take the Lodge first.",
+        "The Lodge of the Unblinking Eye stands on the summit where the bell was cast, and tonight the stars are right. Every toll, every soldier a Horror takes and every Chosen who dies a martyr feeds the Great Summoning. At the twenty-fourth toll the door opens. Steele has her army, Grubnak his horde, and the dead still rise at Hollow Barrow. Take the Lodge first.",
       objective: "Capture the Lodge by turn 24.",
       hints: Object.freeze([
         "The Lodge's Favour is the countdown: at 20, the Herald.",
         "No Summoner, no summoning: shoot the candle-bearers.",
-        "The dead rise at Hollow Barrow every six turns.",
+        "Catapults crack the ring; then the Knights ride through.",
       ]),
       closing:
         "The Lodge falls one toll short, and the hooded ones kneel to the winning side, as they always have. But far below, in the shaft where the bell hung, something that was called has opened one eye.",

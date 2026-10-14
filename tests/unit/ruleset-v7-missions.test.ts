@@ -107,11 +107,13 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
   // Missions 7 and 8 (`pulp_wars-v642.3`).
   "FRONTIER_7@1:ICE_FOLK":
     "fd877e75e45aa80ba394499860eed7419c2efbfbf7f12a22ddca71ce9712bec7",
-  "FRONTIER_8@1:DINOSAUR":
-    "b345f58a64ee3261fd6462574887094f5588fc1897f05bac31319ed64408e9fe",
-  // Missions 9 and 10 (`pulp_wars-v642.4`).
-  "FRONTIER_9@1:MARTIAN":
-    "16cb4bc0f0d7e2bcbf21439b85655a7de1091ccefc92f5e876c192a8d8d1f26b",
+  // Mission 8 as a build-up (`pulp_wars-v642.9`): revision 2.
+  "FRONTIER_8@2:DINOSAUR":
+    "ffac8c79a235a46a3f6d08f748929a36f51d1d355e8bb45438f0a472f7b1cfb4",
+  // Missions 9 and 10 (`pulp_wars-v642.4`); mission 9 with less
+  // pre-research (`pulp_wars-v642.9`): revision 2.
+  "FRONTIER_9@2:MARTIAN":
+    "413a8bdae4f1733fb4f67625837aa5d6297bc02a7fe37db68d9c405a851a226f",
   // Mission 10 replayed on the corrected Cult AI (`pulp_wars-v642.6`): revision 2.
   "FRONTIER_10@2:ORIGINAL":
     "f50c51fc2bace84e06d3ee0d7e01e75ece913b0f2a662c5455497fc6aa17ee4e",
@@ -382,11 +384,13 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
   // Missions 7 and 8 (`pulp_wars-v642.3`).
   "FRONTIER_7@1:ICE_FOLK":
     "756596ca5574f77c4d1f6719d102a2d29a671f5a531a7c353614afcb380358b2",
-  "FRONTIER_8@1:DINOSAUR":
-    "65841349cf754fcad34203a6d51f90a8e1236af3ac200c831a3958959e45caa6",
-  // Missions 9 and 10 (`pulp_wars-v642.4`).
-  "FRONTIER_9@1:MARTIAN":
-    "cc96d97432fae475a10796a26be4e505bae939220cc5ed6a9a0cafc5bb683d50",
+  // Mission 8 as a build-up (`pulp_wars-v642.9`): revision 2.
+  "FRONTIER_8@2:DINOSAUR":
+    "753db292217b431598e51169f082a5edc4dfba57db2ddf629c6370d022687c75",
+  // Missions 9 and 10 (`pulp_wars-v642.4`); mission 9 with less
+  // pre-research (`pulp_wars-v642.9`): revision 2.
+  "FRONTIER_9@2:MARTIAN":
+    "82e2e17c0f8e0a6f37ffdaf99f6b514d9e081892d6a7f12e80f7452aea9fc720",
   // Mission 10 replayed on the corrected Cult AI (`pulp_wars-v642.6`): revision 2.
   "FRONTIER_10@2:ORIGINAL":
     "e140613652331ecada12b69f31f055f1426382dd5c1ff26169b88f5fe1de8111",

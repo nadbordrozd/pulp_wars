@@ -558,23 +558,27 @@ describe("Chapter One data", () => {
     ]);
     // The Martians and their thralls are one side.
     expect(hunt.teams).toEqual([0, 1, 1]);
+    // A build-up (`pulp_wars-v642.9`, revision 2): a longer clock.
     expect(hunt.objective).toEqual({
       kind: "KILL",
       units: ["OVERMIND"],
-      byRound: 20,
+      byRound: 26,
       bonus: [
-        { kind: "WITHIN_ROUNDS", rounds: 15 },
+        { kind: "WITHIN_ROUNDS", rounds: 18 },
         { kind: "UNIT_ALIVE", unit: "OLD_QUEEN" },
       ],
     });
     expect([...hunt.forbiddenTechnologies].sort()).toEqual([...NAVAL].sort());
     expect(seat(hunt, 0).forbiddenTechnologies).toBeUndefined();
-    // You climb: every way but the long southern road crosses a Mountain.
-    expect(seat(hunt, 0).technologies).toContain("ENGINEERING");
-    // The Old Queen is your giant; the Overmind is a Brain, the Martian
-    // seat's first unit, on its walled capital, with a Colossus beside it.
+    // One nest and no technology: Engineering (the climb over the Rim and
+    // the Pass) is the player's to research; the Martians may never climb.
+    expect(seat(hunt, 0).technologies).toEqual([]);
+    expect(seat(hunt, 0).cities).toHaveLength(1);
+    // The Old Queen is a T-Rex: grown on the hunters, her bite ends the
+    // hunt. The Overmind is a Brain, the Martian seat's first unit, on its
+    // walled capital; the colony has two cities, the thralls two.
     const queen = seat(hunt, 0).units.find((unit) => unit.tag === "OLD_QUEEN");
-    expect(queen?.role).toBe("JUGGERNAUT");
+    expect(queen?.role).toBe("KNIGHT");
     const martians = seat(hunt, 1);
     expect(martians.units[0]).toEqual({
       role: "CAPTAIN",
@@ -583,11 +587,15 @@ describe("Chapter One data", () => {
     });
     expect(martians.cities[0]?.at).toEqual({ x: 12, y: 4 });
     expect(martians.cities[0]?.rewards).toContain("WALLS");
-    expect(martians.units[1]?.role).toBe("JUGGERNAUT");
+    expect(martians.cities).toHaveLength(2);
+    expect(seat(hunt, 2).cities).toHaveLength(2);
+    // No Colossus in the guard: with one, every Spitter was shot off the
+    // Rim.
+    expect(martians.units.map((unit) => unit.role)).not.toContain("JUGGERNAUT");
     expect(martians.directive).toEqual({
       kind: "GUARD",
       zone: [{ x0: 10, y0: 3, x1: 14, y1: 7 }],
-      garrison: 6,
+      garrison: 9,
     });
     // No Mothership, and nothing that grows the crater into a second
     // Colossus.
@@ -599,11 +607,15 @@ describe("Chapter One data", () => {
       "FORESTRY",
     ] as const)
       expect(martians.forbiddenTechnologies).toContain(technology);
-    // The thralls rush, and three waves of three follow them.
-    // `pulp_wars-v642.5`: from round 9 the thralls assault Egg Rock.
+    // The thralls keep their camps until round 10, then assault the nest;
+    // three waves of three follow them.
     expect(seat(hunt, 2).directive).toEqual([
-      { kind: "RUSH", untilRound: 9 },
-      { kind: "ASSAULT", target: { x: 4, y: 7 } },
+      {
+        kind: "HOLD",
+        zone: [{ x0: 2, y0: 12, x1: 12, y1: 14 }],
+        untilRound: 10,
+      },
+      { kind: "ASSAULT", target: { x: 4, y: 3 } },
     ]);
     expect(
       hunt.reinforcements?.map((wave) => [
@@ -612,9 +624,9 @@ describe("Chapter One data", () => {
         wave.units.length,
       ]),
     ).toEqual([
-      [2, 5, 3],
-      [2, 9, 3],
-      [2, 13, 3],
+      [2, 10, 3],
+      [2, 16, 3],
+      [2, 22, 3],
     ]);
     expect(() => validateMissionDirectivesV7(hunt)).not.toThrow();
   });

@@ -5,48 +5,58 @@ import type { MissionDefinitionV7 } from "./types";
  * 8). You lead the Dinosaurs against the Martians and their Human thralls
  * on a 16 x 16 board, the two of them allied. Hard. It is a hunt: the
  * mission is won when the Overmind, a Martian Brain, is dead, and lost
- * when round 20 ends. The Overmind stands on the walled center of its
- * crater with a garrison of six (`GUARD`): itself, a Colossus, two Shield
- * Projectors, a Ray Gunner, and a Tripod; the other Martians hunt, and the
- * thralls come at you in waves. The lesson is a raid: no city has to
- * fall, one unit behind its guard does. A Brain takes over a wounded
- * one-slot unit that comes within two tiles of it, a Saucer pulls a unit
- * out of your line, and a Force Field keeps a full-strength Martian alive
- * through one hit; a Spitter's Acid ignores the Walls.
+ * when round 26 ends.
+ *
+ * Revision 2 (`pulp_wars-v642.9`, the campaign difficulty pass,
+ * CAMPAIGN.md section 11.14) makes it a build-up: you start with one nest,
+ * no technology at all (the first research is free), the Old Queen (now a
+ * T-Rex) and a Raptor, against a Martian colony of two cities in its crater
+ * and the Baron's thralls with two camps in the south, on a clock of 26
+ * rounds. Revision 1 was won on autopilot in round 7: its Brontosaurus
+ * walked the Rim alone and stepped on the Overmind.
  *
  * The board is the map generator's (Pangea, seed 2): the crater is the
- * basin in the eastern mountains, open only to the south. There are three
- * ways in: the Rim (from your capital along the north; the peaks north of
- * the crater are two tiles from the Overmind, and one Mountain tile leads
- * onto its back), the Pass (the row of your town, through two Mountain
- * tiles), and the long southern road past the thralls' camp, which needs
- * no Mountain at all. You start with Engineering, so your dinosaurs climb.
- * Eight villages are removed: your town, three in and beside the crater,
- * and the four of the south that made the thralls a four-city power.
+ * basin in the eastern mountains, and for anything that cannot climb it
+ * has one gate, in the south. The Rim (the peaks north of the crater; the
+ * Mountains beside the Glass Ship touch the Overmind) and the Pass (two
+ * Mountain tiles on the row of Egg Rock) are open only to a seat with
+ * Engineering, which is yours to research and forbidden to the Martians.
+ * Five villages are removed (where the enemy towns stand, and the three of
+ * the south that made the thralls a four-city power); seven stay.
+ *
+ * The problem: the guard (two Shield Projectors, three Ray Gunners, a
+ * Tripod, and two Grunts, nine with the Overmind) shoots down anything that
+ * walks up alone, a Brain takes over a wounded one-slot unit within two
+ * tiles of it, and a Force Field keeps an unhurt Martian alive through one
+ * hit. The answer: grow first (the villages, Mines on the peaks), research
+ * Engineering (the Martians cannot follow you onto a Mountain), and feed
+ * the Old Queen the hunters (Saucers, Ray Gunners, Grunts) until she is an
+ * Alpha: a T-Rex grows with every kill, an Alpha bites through the walls,
+ * and her Overrun ends the hunt.
  *
  * ```text
  *      x 0123456789012345
  * y  0   ~~~~~~~~~~~~~~~~
- *    1   ~~~fff..f.^^~~~~
+ *    1   ~~~fff..fv^^~~~~      v: villages
  *    2   ~~..f.^^^^^^^^~~      the peaks of the Rim
  *    3   ~~..D..^^..^^f~~      D: your capital
- *    4   ~vff...vf.^^O.^~      O: the Overmind's crater; v: villages
+ *    4   ~vff...vf.^^O.^~      O: the Overmind's crater (the Glass Ship)
  *    5   ~..ff.^^^^^^...~
  *    6   ~f.ff^^^^^f...f~
- *    7   ~v..d.fv^^.....~      d: your town; ^^: the Pass
+ *    7   ~v..v.fv^^v..m.~      m: Ray Hollow; ^^: the Pass
  *    8   ~f.f^^^f^^^.^.^~
  *    9   ~fff.^f^^^^^f.f~
  *   10   ~..f.f^.^f..f^^~
  *   11   ~ffffff..f...ff~
  *   12   ~~....f......^~~
- *   13   ~~~.ffT....^..~~      T: the thralls' camp
+ *   13   ~~~pffT....^..~~      T: the thralls' camp; p: Puppet Ford
  *   14   ~~~~ff^...f.~~~~
  *   15   ~~~~~~~~~~~~~~~~
  * ```
  */
 export const FRONTIER_8_V7: MissionDefinitionV7 = {
   id: "FRONTIER_8",
-  revision: 1,
+  revision: 2,
   seed: 20261108,
   // <map>
   size: 16,
@@ -56,9 +66,6 @@ export const FRONTIER_8_V7: MissionDefinitionV7 = {
     seats: 3,
     seed: 2,
     edits: [
-      { kind: "VILLAGE", at: { x: 4, y: 7 }, present: false },
-      { kind: "VILLAGE", at: { x: 9, y: 1 }, present: false },
-      { kind: "VILLAGE", at: { x: 10, y: 7 }, present: false },
       { kind: "VILLAGE", at: { x: 13, y: 7 }, present: false },
       { kind: "VILLAGE", at: { x: 1, y: 10 }, present: false },
       { kind: "VILLAGE", at: { x: 4, y: 10 }, present: false },
@@ -122,10 +129,13 @@ export const FRONTIER_8_V7: MissionDefinitionV7 = {
     "PPPPPPPPPPPPPPPP",
   ],
   villages: [
+    { x: 9, y: 1 },
     { x: 1, y: 4 },
     { x: 7, y: 4 },
     { x: 1, y: 7 },
+    { x: 4, y: 7 },
     { x: 7, y: 7 },
+    { x: 10, y: 7 },
   ],
   treasureChests: [
     { x: 14, y: 7 },
@@ -138,50 +148,31 @@ export const FRONTIER_8_V7: MissionDefinitionV7 = {
   seats: [
     {
       faction: "DINOSAUR",
-      coins: 12,
-      // Engineering: your dinosaurs cross Mountains (the Pass, the Rim).
-      technologies: [
-        "GATHERING",
-        "ADMINISTRATION",
-        "HUNTING",
-        "MARKSMANSHIP",
-        "SCOUTING",
-        "DRILL",
-        "FORTIFICATION",
-        "ENGINEERING",
-      ],
+      coins: 5,
+      // A build-up: no technology (the first research is free, and the
+      // rest of the tree is yours to discover).
+      technologies: [],
       cities: [
         {
           name: "Thunder Nest",
           at: { x: 4, y: 3 },
-          level: 3,
-          rewards: ["STOCKPILE", "MILITIA"],
-        },
-        {
-          name: "Egg Rock",
-          at: { x: 4, y: 7 },
           level: 2,
           rewards: ["STOCKPILE"],
         },
       ],
       units: [
-        // The Old Queen, a Brontosaurus.
-        { role: "JUGGERNAUT", at: { x: 5, y: 3 }, tag: "OLD_QUEEN" },
-        { role: "FIGHTER", at: { x: 4, y: 3 } },
-        { role: "RAIDER", at: { x: 5, y: 4 }, kills: 1 },
-        { role: "MARKSMAN", at: { x: 4, y: 4 }, kills: 1 },
-        { role: "CAPTAIN", at: { x: 3, y: 3 } },
-        { role: "FIGHTER", at: { x: 4, y: 7 }, home: 1 },
-        { role: "RAIDER", at: { x: 5, y: 7 }, home: 1 },
-        { role: "MARKSMAN", at: { x: 3, y: 7 }, home: 1 },
-        { role: "GUARD", at: { x: 5, y: 5 }, home: 1 },
+        // The Old Queen, a T-Rex (revision 1's Brontosaurus walked the Rim
+        // alone and stepped on the Overmind): sent in young and alone she
+        // is shot down; grown on the hunters, her bite ends the hunt.
+        { role: "KNIGHT", at: { x: 5, y: 3 }, tag: "OLD_QUEEN" },
+        { role: "RAIDER", at: { x: 4, y: 3 } },
       ],
       // The crater, seen from the peaks.
       reveal: { radius: 2, rects: [{ x0: 10, y0: 2, x1: 14, y1: 7 }] },
     },
     {
       faction: "MARTIAN",
-      coins: 5,
+      coins: 8,
       technologies: [
         "GATHERING",
         "ADMINISTRATION",
@@ -199,32 +190,38 @@ export const FRONTIER_8_V7: MissionDefinitionV7 = {
           rewards: ["STOCKPILE", "WALLS"],
           landGrant: true,
         },
+        {
+          name: "Ray Hollow",
+          at: { x: 13, y: 7 },
+          level: 2,
+          rewards: ["STOCKPILE"],
+        },
       ],
       units: [
         // The Overmind, a Brain: the seat's first unit, so the garrison
         // always counts it in. It stands on the walled center.
         { role: "CAPTAIN", at: { x: 12, y: 4 }, tag: "OVERMIND" },
-        // Its bodyguard, a Colossus (hand play, CAMPAIGN.md section 11.9:
-        // without one the Old Queen walked in alone and won in round 6).
-        { role: "JUGGERNAUT", at: { x: 12, y: 5 } },
+        // Its guard (the garrison is the first nine, by unit order): two
+        // Shield Projectors, three Ray Gunners, a Tripod, and two Grunts.
+        // No Colossus: with one the guard shot every Spitter off the Rim.
         { role: "GUARD", at: { x: 11, y: 6 } },
         { role: "GUARD", at: { x: 13, y: 5 } },
         { role: "MARKSMAN", at: { x: 13, y: 4 } },
-        { role: "CATAPULT", at: { x: 12, y: 6 } },
-        // The rest are not the garrison: they hunt.
-        { role: "FIGHTER", at: { x: 13, y: 6 } },
-        { role: "FIGHTER", at: { x: 11, y: 7 } },
-        { role: "MARKSMAN", at: { x: 10, y: 6 } },
-        { role: "RAIDER", at: { x: 10, y: 8 } },
-        { role: "RAIDER", at: { x: 9, y: 4 } },
+        { role: "MARKSMAN", at: { x: 12, y: 6 } },
+        { role: "MARKSMAN", at: { x: 11, y: 7 } },
+        { role: "CATAPULT", at: { x: 13, y: 6 } },
+        { role: "FIGHTER", at: { x: 13, y: 7 }, home: 1 },
+        { role: "FIGHTER", at: { x: 12, y: 7 }, home: 1 },
+        // The hunters.
+        { role: "RAIDER", at: { x: 10, y: 6 } },
+        { role: "RAIDER", at: { x: 14, y: 6 } },
       ],
-      reveal: { radius: 2, rects: [{ x0: 2, y0: 2, x1: 9, y1: 8 }] },
-      // No Mothership, and no growth (hand play, CAMPAIGN.md section
-      // 11.9): with Mines on every peak of its land the crater was a
-      // level 7 city in round 5, and the Colossus of its level 7 pushed
-      // the Overmind off its own walls; without Mines it blasted the
-      // peaks of its rim for population instead. What is left grows it by
-      // two.
+      reveal: { radius: 2 },
+      // No Mothership, no climbing, and no growth (hand play, CAMPAIGN.md
+      // section 11.9): with Mines on every peak of its land the crater was
+      // a level 7 city in round 5, and the Colossus of its level 7 pushed
+      // the Overmind off its own walls; without Mines it blasted the peaks
+      // of its rim for population instead.
       forbiddenTechnologies: [
         "CHIVALRY",
         "FARMING",
@@ -238,10 +235,14 @@ export const FRONTIER_8_V7: MissionDefinitionV7 = {
         "ROADS",
         "COMMERCE",
       ],
+      // The colony guards the crater with nine and hunts with the rest
+      // (hand play: with three towns and a garrison of seven its Grunts,
+      // Ray Gunners, and the Colossus were on the nest's villages from
+      // round 3, and a build-up was not possible).
       directive: {
         kind: "GUARD",
         zone: [{ x0: 10, y0: 3, x1: 14, y1: 7 }],
-        garrison: 6,
+        garrison: 9,
       },
     },
     {
@@ -255,22 +256,36 @@ export const FRONTIER_8_V7: MissionDefinitionV7 = {
           level: 2,
           rewards: ["STOCKPILE"],
         },
+        { name: "Puppet Ford", at: { x: 3, y: 13 }, level: 1, rewards: [] },
       ],
       units: [
         { role: "GUARD", at: { x: 6, y: 13 } },
         { role: "FIGHTER", at: { x: 7, y: 12 } },
         { role: "FIGHTER", at: { x: 7, y: 13 } },
         { role: "MARKSMAN", at: { x: 5, y: 12 } },
+        { role: "FIGHTER", at: { x: 3, y: 13 }, home: 1 },
       ],
-      // The Overmind shows its puppets where to go.
-      reveal: { radius: 2, rects: [{ x0: 2, y0: 2, x1: 6, y1: 8 }] },
-      // `pulp_wars-v642.5`: a RUSH seat does not storm a player who stays
-      // home (the deliberate loss of the first build: nine units intact
-      // at the end). From round 9, with the second wave in, the thralls
-      // assault Egg Rock, the town nearest their camp.
+      reveal: { radius: 2 },
+      // Thralls: no Knights, no Champions, and no growth (hand play: a
+      // thrall camp that farmed and took the villages of the south fielded
+      // twenty units and overran the nest's towns).
+      forbiddenTechnologies: [
+        "CHIVALRY",
+        "METALLURGY",
+        "FARMING",
+        "MILLING",
+        "FORESTRY",
+        "SAWMILLING",
+        "PLANNING",
+      ],
+      // They keep the south first; from round 10 they march on the nest.
       directive: [
-        { kind: "RUSH", untilRound: 9 },
-        { kind: "ASSAULT", target: { x: 4, y: 7 } },
+        {
+          kind: "HOLD",
+          zone: [{ x0: 2, y0: 12, x1: 12, y1: 14 }],
+          untilRound: 10,
+        },
+        { kind: "ASSAULT", target: { x: 4, y: 3 } },
       ],
     },
   ],
@@ -286,7 +301,7 @@ export const FRONTIER_8_V7: MissionDefinitionV7 = {
   reinforcements: [
     {
       seat: 2,
-      round: 5,
+      round: 10,
       units: [
         { role: "FIGHTER", at: { x: 6, y: 12 } },
         { role: "FIGHTER", at: { x: 6, y: 12 } },
@@ -295,7 +310,7 @@ export const FRONTIER_8_V7: MissionDefinitionV7 = {
     },
     {
       seat: 2,
-      round: 9,
+      round: 16,
       units: [
         { role: "FIGHTER", at: { x: 6, y: 12 } },
         { role: "FIGHTER", at: { x: 6, y: 12 } },
@@ -304,7 +319,7 @@ export const FRONTIER_8_V7: MissionDefinitionV7 = {
     },
     {
       seat: 2,
-      round: 13,
+      round: 22,
       units: [
         { role: "FIGHTER", at: { x: 6, y: 12 } },
         { role: "FIGHTER", at: { x: 6, y: 12 } },
@@ -312,14 +327,14 @@ export const FRONTIER_8_V7: MissionDefinitionV7 = {
       ],
     },
   ],
-  // Kill the Overmind before round 20 ends. The stars are for doing it by
-  // round 15 and for the Old Queen living to see it.
+  // Kill the Overmind before round 26 ends. The stars are for doing it by
+  // round 18 and for the Old Queen living to see it.
   objective: {
     kind: "KILL",
     units: ["OVERMIND"],
-    byRound: 20,
+    byRound: 26,
     bonus: [
-      { kind: "WITHIN_ROUNDS", rounds: 15 },
+      { kind: "WITHIN_ROUNDS", rounds: 18 },
       { kind: "UNIT_ALIVE", unit: "OLD_QUEEN" },
     ],
   },

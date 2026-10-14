@@ -1282,18 +1282,18 @@ unlocked in mission 10.
 "Rounds" is the target length for a competent player; the star column is
 the two secondary goals (the first star is the win).
 
-| #   | Mission (`ID`)                             | You lead          | Against                                                            | Format                    | Map                            | Win / lose                                                                      | Lesson or twist                                                          | Unlocks   | Rounds | Difficulty | Stars                             |
-| --- | ------------------------------------------ | ----------------- | ------------------------------------------------------------------ | ------------------------- | ------------------------------ | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------ | --------- | ------ | ---------- | --------------------------------- |
-| 1   | Goblins at the Gate (`FRONTIER_1`)         | Humans            | Goblins (rush)                                                     | Conquest                  | Dry Land 11                    | capture the Goblin camp                                                         | hold a wall against a rush, then counter-attack; your first giant        | none      | 10–12  | Easy       | by turn 12; lose no city          |
-| 2   | The Warrens (`FRONTIER_2`)                 | Humans            | Goblins (three cities)                                             | Capture                   | Dry Land 14                    | capture the Warrens (their capital)                                             | expand first: villages, then an army that sticks together                | Goblins   | 14–18  | Medium     | by turn 18; lose no city          |
-| 3   | Green Tide (`FRONTIER_3`)                  | Goblins           | Undead (holds its plain until turn 16)                             | Capture                   | Dry Land 14                    | capture the Barrow (their capital)                                              | play the horde: Troll toss, Kaboom, Gang Up; your dead rise against you  | none      | 11–15  | Medium     | by turn 15; lose no city          |
-| 4   | Bone Neck (`FRONTIER_4`)                   | Humans or Goblins | Undead (guards the gate)                                           | Capture                   | Continents 16, one land bridge | capture the gate city                                                           | a breach: two siege engines, no boats, one way in                        | Undead    | 10–14  | Hard       | by turn 12; lose no city          |
-| 5   | Dead Men's Road (`FRONTIER_5`)             | Undead            | Humans (toll fort), Ice Folk (raiders), one side                   | Escort                    | Dry Land 16, a mountain wall   | bring Doctor Crane to the Ironbraid gate by turn 20 / he dies, or time runs out | protect one fragile unit on a long road; go round or go through          | Dwarves   | 13–16  | Medium     | by turn 16; lose no city          |
-| 6   | The Deep Gate (`FRONTIER_6`)               | Dwarves           | Ice Folk (north, over the peaks), Humans (east, through the doors) | Hold out                  | Dry Land 14, a mountain pocket | 14 turns pass / the Deep Gate falls                                             | defend against waves from two sides that end in giants; relief on turn 9 | Ice Folk  | 14     | Medium     | lose no city; the Thane lives     |
-| 7   | The Island That Time Forgot (`FRONTIER_7`) | Ice Folk          | Dinosaurs (natives), Humans (the Baron)                            | Capture against the clock | Archipelago 16                 | capture the Crater by turn 18 / time runs out                                   | the naval mission without ships: freeze a road over the sea; a race      | Dinosaurs | 11–16  | Hard       | by turn 14; lose no city          |
-| 8   | Brain Wave (`FRONTIER_8`)                  | Dinosaurs         | Martians (guard), Humans (thralls)                                 | Hunt                      | Pangea 16                      | kill the Overmind by turn 20 / time runs out                                    | a raid: ignore the cities, reach one unit behind its guard               | Martians  | 11–16  | Hard       | by turn 15; the Old Queen lives   |
-| 9   | Sugar and Spite (`FRONTIER_9`)             | Martians          | Undead, Goblins; ally: Candy                                       | Rescue (hold out)         | Lakes 16 with a Rift           | 16 turns pass / Sugarcrest (the ally's capital) falls                           | defend someone else's city; only flyers cross the Rift                   | Candy     | 16     | Hard       | Praline lives; Riftwatch is yours |
-| 10  | The Stars Are Right (`FRONTIER_10`)        | Humans            | Cultists (guard), Undead (thralls); ally: Goblins                  | Capture against the clock | Pangea 20                      | capture the Lodge by turn 24 / time runs out                                    | the finale: four seats, an ally, a fortress, a deadline                  | Cultists  | 20–24  | Very hard  | by turn 20; lose no city          |
+| #   | Mission (`ID`)                             | You lead          | Against                                                            | Format                    | Map                            | Win / lose                                                                      | Lesson or twist                                                              | Unlocks   | Rounds | Difficulty | Stars                             |
+| --- | ------------------------------------------ | ----------------- | ------------------------------------------------------------------ | ------------------------- | ------------------------------ | ------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | --------- | ------ | ---------- | --------------------------------- |
+| 1   | Goblins at the Gate (`FRONTIER_1`)         | Humans            | Goblins (rush)                                                     | Conquest                  | Dry Land 11                    | capture the Goblin camp                                                         | hold a wall against a rush, then counter-attack; your first giant            | none      | 10–12  | Easy       | by turn 12; lose no city          |
+| 2   | The Warrens (`FRONTIER_2`)                 | Humans            | Goblins (three cities)                                             | Capture                   | Dry Land 14                    | capture the Warrens (their capital)                                             | expand first: villages, then an army that sticks together                    | Goblins   | 14–18  | Medium     | by turn 18; lose no city          |
+| 3   | Green Tide (`FRONTIER_3`)                  | Goblins           | Undead (holds its plain until turn 16)                             | Capture                   | Dry Land 14                    | capture the Barrow (their capital)                                              | play the horde: Troll toss, Kaboom, Gang Up; your dead rise against you      | none      | 11–15  | Medium     | by turn 15; lose no city          |
+| 4   | Bone Neck (`FRONTIER_4`)                   | Humans or Goblins | Undead (guards the gate)                                           | Capture                   | Continents 16, one land bridge | capture the gate city                                                           | a breach: two siege engines, no boats, one way in                            | Undead    | 10–14  | Hard       | by turn 12; lose no city          |
+| 5   | Dead Men's Road (`FRONTIER_5`)             | Undead            | Humans (toll fort), Ice Folk (raiders), one side                   | Escort                    | Dry Land 16, a mountain wall   | bring Doctor Crane to the Ironbraid gate by turn 20 / he dies, or time runs out | protect one fragile unit on a long road; go round or go through              | Dwarves   | 13–16  | Medium     | by turn 16; lose no city          |
+| 6   | The Deep Gate (`FRONTIER_6`)               | Dwarves           | Ice Folk (north, over the peaks), Humans (east, through the doors) | Hold out                  | Dry Land 14, a mountain pocket | 14 turns pass / the Deep Gate falls                                             | defend against waves from two sides that end in giants; relief on turn 9     | Ice Folk  | 14     | Medium     | lose no city; the Thane lives     |
+| 7   | The Island That Time Forgot (`FRONTIER_7`) | Ice Folk          | Dinosaurs (natives), Humans (the Baron)                            | Capture against the clock | Archipelago 16                 | capture the Crater by turn 18 / time runs out                                   | the naval mission without ships: freeze a road over the sea; a race          | Dinosaurs | 11–16  | Hard       | by turn 14; lose no city          |
+| 8   | Brain Wave (`FRONTIER_8`)                  | Dinosaurs         | Martians (guard), Humans (thralls)                                 | Hunt (build-up)           | Pangea 16                      | kill the Overmind by turn 26 / time runs out                                    | build up from one nest; climb where they cannot; grow the Queen on prey      | Martians  | 15–22  | Hard       | by turn 18; the Old Queen lives   |
+| 9   | Sugar and Spite (`FRONTIER_9`)             | Martians          | Undead, Goblins; ally: Candy                                       | Rescue (hold out)         | Lakes 16 with a Rift           | 16 turns pass / Sugarcrest (the ally's capital) falls                           | defend someone else's city; Saucers hunt the siege engines                   | Candy     | 16     | Hard       | Praline lives; Riftwatch is yours |
+| 10  | The Stars Are Right (`FRONTIER_10`)        | Humans            | Cultists (guard), Undead (thralls); ally: Goblins                  | Capture against the clock | Pangea 20                      | capture the Lodge by turn 24 / time runs out                                    | the finale: crack the ring with Catapults, then the Knights; starve the rite | Cultists  | 20–24  | Very hard  | by turn 20; lose no city          |
 
 Formats covered: classic conquest (1), capture a place (2, 3, 4), escort
 (5), survive N rounds (6, 9), capture against a clock (7, 10), kill or raid
@@ -1410,6 +1410,47 @@ and the rays), a Saucer's Tractor Beam pulls a unit out of your line, and
 a Force Field keeps a Martian at full strength alive through one hit. What
 kills it: a Spitter's Acid ignores the Walls.
 
+**Revision 2, a build-up** (`pulp_wars-v642.9`, the campaign difficulty
+pass; the record is
+[section 11.14](#1114-campaign-difficulty-pass-c-missions-8-to-10-pulp_wars-v6429)).
+Revision 1 was won on autopilot in round 7 with three stars: the
+Brontosaurus walked the Rim alone and stepped on the Overmind. The same
+board, seats and teams; what changed:
+
+- **You**: the nest Thunder Nest alone, at level 2, **no technology** (the
+  first research is free; Engineering, Spitters, Nesting and the rest are
+  yours to discover), 5 Coins, a Raptor, and the Old Queen as a **T-Rex**
+  (`KNIGHT`, 28 Hit Points, Overrun; she grows with every kill, and an
+  Alpha's bite of Attack 5 kills the Overmind on its walled center in one
+  blow). Five villages are removed (the two enemy towns and the three of
+  the south); seven stay, five of them in your quarter, one behind the Pass
+  and one on the northern shore under the Rim.
+- **The Martians**: two cities in the crater (the Glass Ship, level 3 and
+  walled, and Ray Hollow, level 2), no Colossus, and a `GUARD` of nine
+  from round 1: the Overmind, two Shield Projectors, three Ray Gunners, a
+  Tripod and two Grunts; two Saucers and everything the colony trains
+  hunt. Engineering is forbidden to them as before, so nothing of theirs
+  follows you onto a Mountain.
+- **The thralls**: two camps (Kessler's Camp and Puppet Ford), `HOLD` their
+  own row of the south until round 10 and then `ASSAULT` the nest, with
+  waves of three in rounds 10, 16 and 22; Knights, Champions and every
+  growth technology (Farming, Milling, Forestry, Sawmilling, Land Grants)
+  are forbidden to them.
+- **The clock**: `KILL { OVERMIND }` by round 26; stars `WITHIN_ROUNDS 18`
+  and `UNIT_ALIVE OLD_QUEEN`.
+
+**The problem and its hint.** The guard shoots down anything that walks up
+alone (a young Queen dies in one enemy turn beside the crater), a Brain
+takes over a wounded one-slot unit within two tiles, and one nest cannot
+out-train a colony. The answer is the build-up: villages and Mines on the
+peaks, Engineering, and the Old Queen fed on the hunters (Saucers, Ray
+Gunners, Grunts that wander out of the crater) until she is an Alpha, then
+over the Mountains, where nothing of the Martians can follow, onto the
+Overmind. The hints say "One nest won't do it: take the villages, then
+grow.", "The crater has one gate. Climbers have more." and "Feed the Queen
+small prey: an Alpha bites through walls."; the briefing warns to keep the
+wounded away from the brain.
+
 **9, Sugar and Spite** (built by `pulp_wars-v642.4`,
 `src/engine/v7/missions/frontier-9.ts`; its hand play is in
 [section 11.10](#1110-sugar-and-spite)). Lakes 16, seed 5, with seven tiles
@@ -1438,6 +1479,20 @@ alone); the waves are six, not three, and come with siege engines; the
 second star is the village of Riftwatch, not "lose no city" (nothing
 walks to your strip, so that star was free; and the kingdom's town of
 Gumdrop cannot be saved from outside its land).
+
+**Revision 2** (`pulp_wars-v642.9`, the campaign difficulty pass;
+[section 11.14](#1114-campaign-difficulty-pass-c-missions-8-to-10-pulp_wars-v6429)):
+you start with three technologies, Hunting, Saucers and Ray Gunners
+(seven before: Gathering, Crafting, Force Fields and the Saucers' Charge
+are a research away, so the Shield Projector that anchors the block at
+Riftwatch must be researched first). Revision 1 was held to the end on
+autopilot with one star; on revision 2 the autopilot, whose ground troops
+never cross the Rift, loses Sugarcrest in the last round. **The problem and
+its hint**: the kingdom falls to the siege engines of the waves (Rocket
+Carts, Bomb Chuckers, Liches) unless someone hunts them, and only your
+flyers reach them in time; the hints say "Only flyers cross the Rift.
+Saucers carry the rest over." and "Siege engines outrange walls: hunt
+them with Saucers." Board, seats, waves and stars are unchanged.
 
 **10, The Stars Are Right** (built by `pulp_wars-v642.4`,
 `src/engine/v7/missions/frontier-10.ts`; its hand play is in
@@ -1488,6 +1543,19 @@ nothing lost, so your Coins went from 15 to 5, the ring got an Idol Bearer
 and a Chosen for a Hexer and an Initiate and a garrison of 8 (it was 6),
 the barrow a Zombie on its center, and the Summoner waves came forward
 from rounds 14 and 20 to 12 and 17.
+
+**The campaign difficulty pass** (`pulp_wars-v642.9`;
+[section 11.14](#1114-campaign-difficulty-pass-c-missions-8-to-10-pulp_wars-v6429))
+kept revision 2: on autopilot it is lost (the thralls take the last city
+in round 22), and a trial with less pre-research (no Gathering, Farming
+or Leadership) was lost twice by hand, so the finale keeps the army
+Steele brought with her and hits the ground running. **The problem and its
+hints**: the Favour is the countdown, and it is fed by every unit a Horror
+kills and every Chosen that dies a martyr (the briefing now says so); the
+ring's Idol Bearers and Chosen stop a Knight's Overrun, so "Catapults crack
+the ring; then the Knights ride through.", and "No Summoner, no summoning:
+shoot the candle-bearers." The barrow hint moved into the briefing. Only
+the text changed.
 
 ### 9.4 Unlock order, and free play
 
@@ -1689,7 +1757,8 @@ board.
   (4); Lantern Hill, Gallows Cross, Kessler's Toll, Whitefang and the
   Ironbraid Gate (5); the Deep Gate, Copperstep, Rime Camp and Fort Bullion
   (6); Coldharbour, Skerry, Fernmaw, the Crater and Port Kessler (7);
-  Thunder Nest, Egg Rock, the Glass Ship and Kessler's Camp (8); Saucer
+  Thunder Nest, the Glass Ship, Ray Hollow, Kessler's Camp and Puppet Ford
+  (8; Egg Rock until revision 2 made it a village); Saucer
   Field, Red Dust, Sugarcrest, Gumdrop, Wormwood, Coffin Hill, Spitewood,
   Sourmash and Riftwatch (9); Fort Steele, Northwatch, Millford, Grubnak's
   Hall, the Lodge, Candlewick, Greyhood, Hollow Barrow and Bonefield (10).
@@ -2378,6 +2447,120 @@ Summoner unthreatened.
   round 6 wave appeared beside Candlewick and on the Cult's summit (the
   nearest free tiles not beside a hostile unit, section 10.3), where it
   was no threat; the rule is as built.
+
+### 11.14 Campaign difficulty pass C: missions 8 to 10 (`pulp_wars-v642.9`)
+
+The user, 2026-10-14: the missions were too easy ("you just push forward
+and it's fine no matter what"); past mission 2 or 3 an autopilot should
+not win, a mission should pose a problem whose trick the flavour text
+hints at, and some missions should be built up from one city with the
+technology left to discover. Missions 8 to 10 were played on `7r84` (the
+Battleship and Pearls change); Gather Pearls needs Navigation, and the
+whole Naval branch is forbidden in all three missions, so their 11 to 15
+Pearls tiles pay nobody and the economy is unchanged by it. No rule, AI,
+or framework code changed; the ruleset identity stays `7r84`. Sessions,
+logs and the autopilot script are in `scratchpad/pulp_wars-v642.9/`
+(`sessions/`, `transcripts/`, `tools/autopilot.ts`), the screenshots of
+the new briefings and trackers in `screens/`.
+
+**Autopilot** is played by a script through the text harness, by the
+brief's definition: one research a turn, the cheapest offered; the first
+reward offered; train the line unit (`FIGHTER`) wherever it can; every
+unit marches by the shortest land route it can walk (Mountains only with
+Engineering, water and Rift only for flyers) straight at the objective,
+attacks whatever is in reach (a kill first, then the most damage),
+captures what it stands on, never retreats and never uses an ability.
+
+**Mission 8, Brain Wave: revision 2, a build-up.** Revision 1 on
+autopilot: **won in round 7, three stars** (the Brontosaurus walked the
+Rim alone and killed the Overmind in one blow). The design of
+[section 9.3](#93-missions-5-to-10-in-detail) took five configurations:
+
+1. One nest with the Brontosaurus, a Caveman and a Raptor; three Martian
+   cities (a town outside the crater), a garrison of seven, the thralls
+   `NORMAL` until round 8. Autopilot eliminated in round 11. By hand,
+   abandoned in round 6: the colony's Grunts and Saucers were on the nest's
+   villages from round 3 and the thralls took the four southern villages.
+2. The colony held its half until round 6 and the thralls their row:
+   abandoned in round 10, the thralls had four cities and eighteen units.
+3. The three southern villages removed: the thralls stayed at two camps,
+   but the Colossus was outside the crater when the `GUARD` began, so it
+   hunted, and abandoned in round 13 (nothing of a Dinosaur army of
+   Cavemen and Spitters scratches a Colossus).
+4. The Colossus kept home (a garrison of ten): the guard's rays, the
+   Tripod and the Colossus shot three Spitters off the Rim in one turn on
+   their way to the peaks two tiles from the Overmind; abandoned in round 16.
+5. **Final.** The Old Queen a T-Rex, no Colossus, a garrison of nine, two
+   Martian cities, the thralls kept to their camps and without growth.
+   **Autopilot: lost, out of time** (round 26 ended; nothing left). It
+   researched Gathering, Hunting, Scouting, Crafting, Farming, Leadership,
+   Forestry, Spitters, Roads and Raiding, never Engineering, and sent the
+   young Queen down the long road, where she lived to the end without ever
+   reaching the gate. **By hand: won in round 15, three stars** (the Queen
+   on 26 of 36), five units lost. The line: Gathering free and three fruit
+   for a level 3 nest and the Scouts' Raptor on turn 1; the Queen took the
+   village by the Pass and the Raptors the four of the west by round 8;
+   Crafting, Engineering (round 6, before the next capture so it cost less)
+   and Spitters; Mines on the peaks; the Explorer's Monument and a Boom in
+   round 11; Nesting in round 13. The Queen killed a Ray Gunner and the
+   Tripod that came out into the pocket west of the crater (round 9), two
+   Saucers (round 13: her third kill made her an Alpha, which heals her
+   full and gives Attack 5) and a Grunt (round 14), each time on or beside
+   a Mountain the Martians cannot climb, and in round 15 she stepped onto
+   the Mountain beside the Glass Ship and killed the Overmind on its walls
+   in one bite (8 of 8 through the shield). **The naive raid, tested on a
+   copy in round 10:** the young Queen (two kills, Attack 4) took the
+   Overmind to 2 of 8 and was killed by two Ray Gunners and the Brain in the
+   enemy turn. The second star was tightened from round 20 to 18. **What
+   nearly went wrong:** every Spitter or Caveman that ended a turn within
+   two of the crater's edge died to the rays, and eggs laid at the front
+   were shot before they hatched.
+
+**Mission 9, Sugar and Spite: revision 2.** Revision 1 on autopilot: **won
+when round 16 ended, one star** (its three Saucers flew to the kingdom
+and attacked whatever was in reach; Praline died in round 13). Revision 2
+takes four of the seven starting technologies away. **Autopilot: lost in
+round 16** (Sugarcrest fell to the Goblins in the last round; its Grunts
+never crossed the Rift). **By hand: won when round 16 ended, two stars**
+(Riftwatch held, Praline dead in round 10), eight units lost (mostly
+Saucers). The line: hunting to a level 2 Red Dust on turn 1, Riftwatch by
+Saucer in round 2 with a Shield Projector and a Ray Gunner beamed beside
+it, Raiding and Crafting, Force Fields in round 5; Saucer charges on every
+Bomb Chucker and Wolf Rider south of the kingdom (a Bomb Chucker's death
+blast took two Goblins with it); a Workshop and the Explorer's Monument
+made Riftwatch level 3 for slots; a village on the western shore taken in
+round 12; Heat Sinks in round 13. **What nearly went wrong:** every city
+stood at its unit limit until Riftwatch grew; a Saucer left beside the
+Goblin line died each time; in round 16 Sugarcrest was held by its
+Confectioner and one Toffee Trooper, with Gumdrop lost that round.
+
+**Mission 10, The Stars Are Right: revision 2 kept.** On autopilot
+revision 2 is **lost** (eliminated by the thralls in round 22). A trial
+revision without Gathering, Farming and Leadership (the player's
+economy) was **lost on autopilot in round 20** and **twice by hand**:
+
+1. **Lost, out of time.** A Knight's Overrun ran into Candlewick and a
+   Horror killed it (Favour 13, round 4); in round 14 a Catapult killed a
+   Chosen beside the barrow (a martyr, Favour 19), the lodge Sacrificed an
+   Idol Bearer for 21 and began the Great Summoning out of reach of the
+   army, and the Herald came in round 15. Its two blows a turn killed five
+   Knights and the Juggernaut; two Knights took the Lodge's center in
+   rounds 18 and 19 (Explosives' Breach through the walls, both Summoners
+   killed, the Herald Unbound), and the Herald, now nobody's, killed each
+   of them on the center and stayed on the summit to the end.
+2. **Abandoned in round 11**, the barrow not taken: without Farming the
+   second Juggernaut never came, and a Knight and the Juggernaut that
+   stood on the barrow's center died to its four Zombies and were bitten.
+
+Both games failed by the player's mistakes, but they are the mistakes the
+finale should punish, not ten rounds of slow economy, so the finale keeps
+its army ([section 9.3](#93-missions-5-to-10-in-detail)); the record of
+revision 2's wins (rounds 15 and 16, ten units lost) is
+[section 11.13](#1113-mission-10-on-the-corrected-cult-ai-pulp_wars-v6426).
+What the games taught went into the text: the briefing now says that a
+dying Chosen feeds the Summoning, and the hints name the trick (Catapults
+on the ring's Idol Bearers and Chosen, then the Knights' Overrun; the
+Summoners first).
 
 ## 12. The mission builder's guide
 

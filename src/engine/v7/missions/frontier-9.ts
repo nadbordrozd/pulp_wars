@@ -7,6 +7,14 @@ import type { MissionDefinitionV7 } from "./types";
  * A rescue: the mission is won when round 16 ends with Sugarcrest, the
  * ally's capital, still the ally's, and lost the moment it falls.
  *
+ * Revision 2 (`pulp_wars-v642.9`, the campaign difficulty pass,
+ * CAMPAIGN.md section 11.15): you start with three technologies (Hunting,
+ * Saucers, Ray Gunners) instead of seven; Gathering, Crafting, Force
+ * Fields (the Shield Projector), and the Saucers' Charge are a research
+ * away. Revision 1 was held to the end on autopilot with one star; on
+ * revision 2 an autopilot that only flies its Saucers at the kingdom loses
+ * Sugarcrest in the last round.
+ *
  * The board is the map generator's (Lakes, seed 5): a western strip, two
  * long lakes, the kingdom between them, and the enemy camps in the east.
  * Seven tiles of the western lake's line are turned to Rift, north and
@@ -51,7 +59,7 @@ import type { MissionDefinitionV7 } from "./types";
  */
 export const FRONTIER_9_V7: MissionDefinitionV7 = {
   id: "FRONTIER_9",
-  revision: 1,
+  revision: 2,
   seed: 20261109,
   // <map>
   size: 16,
@@ -148,18 +156,10 @@ export const FRONTIER_9_V7: MissionDefinitionV7 = {
     {
       faction: "MARTIAN",
       coins: 10,
-      // Saucers (and their Strafe), Ray Gunners, and Shield Projectors:
-      // the relief force. Motherships, Brains, and Tripods are a research
-      // away.
-      technologies: [
-        "GATHERING",
-        "HUNTING",
-        "SCOUTING",
-        "RAIDING",
-        "DRILL",
-        "FORTIFICATION",
-        "MARKSMANSHIP",
-      ],
+      // Saucers and Ray Gunners: the relief force. Everything else (the
+      // Saucers' Charge, Shield Projectors, the economy) is a research
+      // away (revision 2, `pulp_wars-v642.9`: less pre-research).
+      technologies: ["HUNTING", "SCOUTING", "MARKSMANSHIP"],
       cities: [
         {
           name: "Saucer Field",
